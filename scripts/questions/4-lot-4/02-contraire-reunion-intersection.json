@@ -1,0 +1,277 @@
+{
+	"title": "Contraire, réunion, intersection",
+	"description": "Écrire le contraire, la réunion et l'intersection d'évènements comme des ensembles d'issues ; reconnaître l'évènement impossible ; lire ∩, ∪ et la barre",
+	"grades": ["4"],
+	"theme": "Probabilités",
+	"domain": "Évènements",
+	"subdomain": "Opérations",
+	"level": 2,
+	"delay": 75,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On lance un dé équilibré à douze faces, numérotées de $1$ à $12$. On note $A$ l'évènement « {{if:j==0|obtenir un nombre pair|{{if:j==1|obtenir un nombre premier|obtenir un multiple de $4$}}}} » et $B$ l'évènement « {{if:j==0|obtenir un multiple de $3$|{{if:j==1|obtenir un nombre supérieur ou égal à $8$|obtenir un diviseur de $12$}}}} ».\n\nÉcris l'évènement $\\overline{A}$ comme un ensemble d'issues. Écris l'ensemble entre accolades, en séparant les éléments par des points-virgules (par exemple $\\{1 ; 3 ; 5\\}$).\n\n$$?$$",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:j==0|\\{ 1;3;5;7;9;11 \\}|{{if:j==1|\\{ 1;4;6;8;9;10;12 \\}|\\{ 1;2;3;5;6;7;9;10;11 \\}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Opérations.** $\\overline{A}$ (« non $A$ », le contraire de $A$) contient les issues qui ne sont pas dans $A$ ; $A \\cap B$ (« $A$ et $B$ ») celles qui sont à la fois dans $A$ et dans $B$ ; $A \\cup B$ (« $A$ ou $B$ ») celles qui sont dans $A$, dans $B$ ou dans les deux.",
+					"$A = {{if:j==0|\\{2 ; 4 ; 6 ; 8 ; 10 ; 12\\}|{{if:j==1|\\{2 ; 3 ; 5 ; 7 ; 11\\}|\\{4 ; 8 ; 12\\}}}}}$ et $B = {{if:j==0|\\{3 ; 6 ; 9 ; 12\\}|{{if:j==1|\\{8 ; 9 ; 10 ; 11 ; 12\\}|\\{1 ; 2 ; 3 ; 4 ; 6 ; 12\\}}}}}$.",
+					"On garde les issues de $\\{1 ; 2 ; \\ldots ; 12\\}$ qui ne sont pas dans $A$ : $\\overline{A} = \\textcolor{{{color:primary.0}}}{{{if:j==0|\\{1 ; 3 ; 5 ; 7 ; 9 ; 11\\}|{{if:j==1|\\{1 ; 4 ; 6 ; 8 ; 9 ; 10 ; 12\\}|\\{1 ; 2 ; 3 ; 5 ; 6 ; 7 ; 9 ; 10 ; 11\\}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On lance un dé équilibré à douze faces, numérotées de $1$ à $12$. On note $A$ l'évènement « {{if:j==0|obtenir un nombre pair|{{if:j==1|obtenir un nombre premier|obtenir un multiple de $4$}}}} » et $B$ l'évènement « {{if:j==0|obtenir un multiple de $3$|{{if:j==1|obtenir un nombre supérieur ou égal à $8$|obtenir un diviseur de $12$}}}} ».\n\nÉcris l'évènement $A \\cap B$ comme un ensemble d'issues. Écris l'ensemble entre accolades, en séparant les éléments par des points-virgules (par exemple $\\{1 ; 3 ; 5\\}$).\n\n$$?$$",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:j==0|\\{ 6;12 \\}|{{if:j==1|\\{ 11 \\}|\\{ 4;12 \\}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Opérations.** $\\overline{A}$ (« non $A$ », le contraire de $A$) contient les issues qui ne sont pas dans $A$ ; $A \\cap B$ (« $A$ et $B$ ») celles qui sont à la fois dans $A$ et dans $B$ ; $A \\cup B$ (« $A$ ou $B$ ») celles qui sont dans $A$, dans $B$ ou dans les deux.",
+					"$A = {{if:j==0|\\{2 ; 4 ; 6 ; 8 ; 10 ; 12\\}|{{if:j==1|\\{2 ; 3 ; 5 ; 7 ; 11\\}|\\{4 ; 8 ; 12\\}}}}}$ et $B = {{if:j==0|\\{3 ; 6 ; 9 ; 12\\}|{{if:j==1|\\{8 ; 9 ; 10 ; 11 ; 12\\}|\\{1 ; 2 ; 3 ; 4 ; 6 ; 12\\}}}}}$.",
+					"Les issues qui sont à la fois dans $A$ et dans $B$ : $A \\cap B = \\textcolor{{{color:primary.0}}}{{{if:j==0|\\{6 ; 12\\}|{{if:j==1|\\{11\\}|\\{4 ; 12\\}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On lance un dé équilibré à douze faces, numérotées de $1$ à $12$. On note $A$ l'évènement « {{if:j==0|obtenir un nombre pair|{{if:j==1|obtenir un nombre premier|obtenir un multiple de $4$}}}} » et $B$ l'évènement « {{if:j==0|obtenir un multiple de $3$|{{if:j==1|obtenir un nombre supérieur ou égal à $8$|obtenir un diviseur de $12$}}}} ».\n\nÉcris l'évènement $A \\cup B$ comme un ensemble d'issues. Écris l'ensemble entre accolades, en séparant les éléments par des points-virgules (par exemple $\\{1 ; 3 ; 5\\}$).\n\n$$?$$",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:j==0|\\{ 2;3;4;6;8;9;10;12 \\}|{{if:j==1|\\{ 2;3;5;7;8;9;10;11;12 \\}|\\{ 1;2;3;4;6;8;12 \\}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Opérations.** $\\overline{A}$ (« non $A$ », le contraire de $A$) contient les issues qui ne sont pas dans $A$ ; $A \\cap B$ (« $A$ et $B$ ») celles qui sont à la fois dans $A$ et dans $B$ ; $A \\cup B$ (« $A$ ou $B$ ») celles qui sont dans $A$, dans $B$ ou dans les deux.",
+					"$A = {{if:j==0|\\{2 ; 4 ; 6 ; 8 ; 10 ; 12\\}|{{if:j==1|\\{2 ; 3 ; 5 ; 7 ; 11\\}|\\{4 ; 8 ; 12\\}}}}}$ et $B = {{if:j==0|\\{3 ; 6 ; 9 ; 12\\}|{{if:j==1|\\{8 ; 9 ; 10 ; 11 ; 12\\}|\\{1 ; 2 ; 3 ; 4 ; 6 ; 12\\}}}}}$.",
+					"Les issues qui sont dans $A$, dans $B$ ou dans les deux, chacune écrite une seule fois : $A \\cup B = \\textcolor{{{color:primary.0}}}{{{if:j==0|\\{2 ; 3 ; 4 ; 6 ; 8 ; 9 ; 10 ; 12\\}|{{if:j==1|\\{2 ; 3 ; 5 ; 7 ; 8 ; 9 ; 10 ; 11 ; 12\\}|\\{1 ; 2 ; 3 ; 4 ; 6 ; 8 ; 12\\}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On lance un dé équilibré à douze faces, numérotées de $1$ à $12$. On note $A$ l'évènement « {{if:j==0|obtenir un nombre pair|{{if:j==1|obtenir un nombre inférieur ou égal à $3$|obtenir un multiple de $5$}}}} » et $B$ l'évènement « {{if:j==0|obtenir un nombre impair|{{if:j==1|obtenir un nombre supérieur ou égal à $10$|obtenir un multiple de $7$}}}} ».\n\nÉcris l'évènement $A \\cap B$. Écris l'ensemble entre accolades, en séparant les éléments par des points-virgules (par exemple $\\{1 ; 3 ; 5\\}$). L'ensemble vide s'écrit $\\varnothing$.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\varnothing",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Opérations.** $\\overline{A}$ (« non $A$ », le contraire de $A$) contient les issues qui ne sont pas dans $A$ ; $A \\cap B$ (« $A$ et $B$ ») celles qui sont à la fois dans $A$ et dans $B$ ; $A \\cup B$ (« $A$ ou $B$ ») celles qui sont dans $A$, dans $B$ ou dans les deux.",
+					"$A = {{if:j==0|\\{2 ; 4 ; 6 ; 8 ; 10 ; 12\\}|{{if:j==1|\\{1 ; 2 ; 3\\}|\\{5 ; 10\\}}}}}$ et $B = {{if:j==0|\\{1 ; 3 ; 5 ; 7 ; 9 ; 11\\}|{{if:j==1|\\{10 ; 11 ; 12\\}|\\{7\\}}}}}$ : aucune issue n'est dans les deux.",
+					"$A \\cap B = \\textcolor{{{color:primary.0}}}{\\varnothing}$ : c'est l'évènement impossible. On dit que $A$ et $B$ sont incompatibles."
+				]
+			}
+		},
+		{
+			"statement": "On note $A$ et $B$ deux évènements d'une même expérience aléatoire.\n\nComment se lit {{if:k==0|$A \\cap B$|{{if:k==1|$A \\cup B$|$\\overline{A}$}}}} ?\n\n```choix\nmelanger: non\n- « $A$ et $B$ »\n- « $A$ ou $B$ »\n- « non $A$ »\n- « ni $A$ ni $B$ »\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Opérations.** $\\overline{A}$ (« non $A$ », le contraire de $A$) contient les issues qui ne sont pas dans $A$ ; $A \\cap B$ (« $A$ et $B$ ») celles qui sont à la fois dans $A$ et dans $B$ ; $A \\cup B$ (« $A$ ou $B$ ») celles qui sont dans $A$, dans $B$ ou dans les deux.",
+					"{{if:k==0|$A \\cap B$ se lit $\\textcolor{{{color:primary.0}}}{\\text{« A et B »}}$.|{{if:k==1|$A \\cup B$ se lit $\\textcolor{{{color:primary.0}}}{\\text{« A ou B »}}$.|$\\overline{A}$ se lit $\\textcolor{{{color:primary.0}}}{\\text{« non A »}}$ : c'est le contraire de $A$.}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Non A (A pair)",
+			"variationIndex": 0,
+			"variables": {
+				"j": "0"
+			},
+			"answers": ["\\{1;3;5;7;9;11\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : A au lieu de non A",
+			"variationIndex": 0,
+			"variables": {
+				"j": "0"
+			},
+			"answers": ["\\{2;4;6;8;10;12\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Non A (A premier) : 1 compris",
+			"variationIndex": 0,
+			"variables": {
+				"j": "1"
+			},
+			"answers": ["\\{1;4;6;8;9;10;12\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "A ∩ B (pair, multiple de 3)",
+			"variationIndex": 1,
+			"variables": {
+				"j": "0"
+			},
+			"answers": ["\\{6;12\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : réunion au lieu de l'intersection",
+			"variationIndex": 1,
+			"variables": {
+				"j": "0"
+			},
+			"answers": ["\\{2;3;4;6;8;9;10;12\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A ∩ B (premier, ≥ 8)",
+			"variationIndex": 1,
+			"variables": {
+				"j": "1"
+			},
+			"answers": ["\\{11\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "A ∪ B (pair, multiple de 3)",
+			"variationIndex": 2,
+			"variables": {
+				"j": "0"
+			},
+			"answers": ["\\{2;3;4;6;8;9;10;12\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "A ∪ B dans le désordre",
+			"variationIndex": 2,
+			"variables": {
+				"j": "0"
+			},
+			"answers": ["\\{12;2;3;4;6;8;9;10\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 9 oublié",
+			"variationIndex": 2,
+			"variables": {
+				"j": "0"
+			},
+			"answers": ["\\{2;3;4;6;8;10;12\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Incompatibles : vide",
+			"variationIndex": 3,
+			"variables": {
+				"j": "0"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : {0}",
+			"variationIndex": 3,
+			"variables": {
+				"j": "1"
+			},
+			"answers": ["\\{0\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A ∩ B : « A et B »",
+			"variationIndex": 4,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ∩ lu « ou »",
+			"variationIndex": 4,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Barre : « non A »",
+			"variationIndex": 4,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

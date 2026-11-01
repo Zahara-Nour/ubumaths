@@ -48,16 +48,13 @@ function blanksInstance(
 const qcm: QuestionInstance = {
 	templateId: 'qcm',
 	statement: 'Choisis' as ResolvedMarkdown,
-	choices: [true, false, true].map((isCorrect, i) => ({
-		content: `c${i}` as ResolvedMarkdown,
-		isCorrect
-	})),
-	shuffledChoices: [2, 0, 1].map((originalIndex) => ({
-		content: `c${originalIndex}` as ResolvedMarkdown,
-		originalIndex
-	})),
-	correctChoiceIndex: ['0', '2'],
-	multipleAnswers: true,
+	blanks: [
+		{
+			expectedAnswer: '0;2',
+			type: 'choice',
+			choice: { choices: ['c0', 'c1', 'c2'], order: [2, 0, 1], multiple: true }
+		}
+	],
 	grades: ['6'],
 	theme: 'T',
 	domain: 'D',
@@ -90,25 +87,6 @@ describe('verdict détaillé recalculé = statut global enregistré (non-régres
 		);
 		expect(detail.status).toBe(graded.status);
 		expect(statusFromBlankStatuses(detail.blanks.map((b) => b.status))).toBe(graded.status);
-	});
-
-	it('QCM (indices d’ORIGINE enregistrés) : issue de chaque choix', () => {
-		// Coché c0 seulement : c2 oublié → ½
-		const graded = gradeQuestion(qcm, { choices: [1] });
-		expect(graded.status).toBe('unoptimal_form');
-		const detail = available(
-			detailOfCorrected({
-				instance: qcm,
-				answer: { choiceIndexes: graded.choiceIndexes },
-				status: graded.status
-			})
-		);
-		expect(detail.status).toBe('unoptimal_form');
-		expect(detail.choices?.map((c) => c.outcome)).toEqual([
-			'checked-correct',
-			'unchecked',
-			'missed'
-		]);
 	});
 
 	it('sans réponse : chaque case vide, statut enregistré', () => {
@@ -171,7 +149,7 @@ describe('budget de temps (réponses hostiles) : détail INDISPONIBLE (Q173)', (
 			{ instance: two, answer: { values: ['7', '9'] }, status: 'incorrect' as const },
 			// ½ point (une case vide) : l'ancien repli affichait « forme à améliorer » sur la juste
 			{ instance: two, answer: { values: ['7', ''] }, status: 'unoptimal_form' as const },
-			{ instance: qcm, answer: { choiceIndexes: [0] }, status: 'unoptimal_form' as const }
+			{ instance: qcm, answer: { values: ['0'] }, status: 'unoptimal_form' as const }
 		];
 		const details = detailsWithinBudget(items, { budgetMs: 15, clock: () => now, validate });
 		expect(validate).toHaveBeenCalledTimes(2);

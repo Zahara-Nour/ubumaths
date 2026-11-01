@@ -1,0 +1,169 @@
+{
+	"title": "Est-ce que ça tient ?",
+	"description": "Calculer le tout pour répondre oui ou non : un album de 350 photos, Lucie en a 287 et Léo 72",
+	"grades": ["CE1"],
+	"theme": "Entiers",
+	"domain": "Problèmes",
+	"subdomain": "Parties-tout",
+	"level": 6,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Un album peut contenir ${{C}}$ photos. Lucie a ${{a}}$ photos et Léo en a ${{b}}$.\n\nL'album peut-il contenir toutes les photos de Lucie et de Léo ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "C",
+					"expression": "200|250|300|350|400|500"
+				},
+				{
+					"name": "a",
+					"expression": "100..450"
+				},
+				{
+					"name": "b",
+					"expression": "20..200"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(sign(a+b-C)+1)/2"
+				}
+			],
+			"conditions": ["a + b != C", "abs(a + b - C) >= 2", "abs(a + b - C) <= 50"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche d'abord **le tout** : toutes les photos de Lucie et de Léo.",
+					"$${{a}} + {{b}} = {{eval:a+b}}$$",
+					"{{if:r==0|${{eval:a+b}}$ est plus petit que ${{C}}$ : toutes les photos tiennent, il reste ${{eval:C-a-b}}$ places.|${{eval:a+b}}$ est plus grand que ${{C}}$ : il manque ${{eval:a+b-C}}$ places.}}",
+					"{{if:r==0|**Oui**, l'album peut contenir toutes les photos.|**Non**, l'album ne peut pas contenir toutes les photos.}}"
+				]
+			}
+		},
+		{
+			"statement": "Un car a ${{C}}$ places. ${{a}}$ élèves et ${{b}}$ adultes partent en sortie.\n\nTout le monde peut-il s'asseoir dans le car ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "C",
+					"expression": "40..90"
+				},
+				{
+					"name": "a",
+					"expression": "20..80"
+				},
+				{
+					"name": "b",
+					"expression": "2..15"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(sign(a+b-C)+1)/2"
+				}
+			],
+			"conditions": ["a + b != C", "abs(a + b - C) >= 2", "abs(a + b - C) <= 10"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche d'abord **le tout** : tous les élèves et tous les adultes.",
+					"$${{a}} + {{b}} = {{eval:a+b}}$$",
+					"{{if:r==0|${{eval:a+b}}$ est plus petit que ${{C}}$ : tout le monde a une place, il reste ${{eval:C-a-b}}$ places.|${{eval:a+b}}$ est plus grand que ${{C}}$ : il manque ${{eval:a+b-C}}$ places.}}",
+					"{{if:r==0|**Oui**, tout le monde peut s'asseoir.|**Non**, tout le monde ne peut pas s'asseoir.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 287 + 72 = 359 > 350, non",
+			"variationIndex": 0,
+			"variables": {
+				"C": "350",
+				"a": "287",
+				"b": "72",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : BO, oui",
+			"variationIndex": 0,
+			"variables": {
+				"C": "350",
+				"a": "287",
+				"b": "72",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "album : 215 + 120 = 335 < 350, oui",
+			"variationIndex": 0,
+			"variables": {
+				"C": "350",
+				"a": "215",
+				"b": "120",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : album qui suffit, non",
+			"variationIndex": 0,
+			"variables": {
+				"C": "350",
+				"a": "215",
+				"b": "120",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "car : 48 + 5 = 53 < 55, oui",
+			"variationIndex": 1,
+			"variables": {
+				"C": "55",
+				"a": "48",
+				"b": "5",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "car : 52 + 6 = 58 > 55, non",
+			"variationIndex": 1,
+			"variables": {
+				"C": "55",
+				"a": "52",
+				"b": "6",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

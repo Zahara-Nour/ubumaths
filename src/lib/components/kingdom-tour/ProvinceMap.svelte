@@ -1,31 +1,20 @@
 <script lang="ts">
 	/**
-	 * La carte des six Provinces : la gidouille de Sandomir se dessine jusqu'à la Province
-	 * qu'on lit (grand écran : la spirale reste en place pendant que les fiches défilent).
-	 * Sur téléphone, la spirale, entière, précède les fiches.
+	 * La carte des six Provinces : la grande carte du Royaume, où la Province qu'on lit est
+	 * teintée (grand écran : la carte reste en place pendant que les fiches défilent).
+	 * Sur téléphone, la carte entière précède les fiches.
 	 *
-	 * La spirale est un décor (`aria-hidden`) : tout ce qu'elle dit est dans les fiches.
+	 * La carte est un décor : tout ce qu'elle dit et permet est dans les fiches, et dans le
+	 * lien de Sandomir, sous la carte.
 	 */
 	import type { Action } from 'svelte/action';
 	import { Crown } from '@lucide/svelte';
+	import { resolve } from '$app/paths';
+	import KingdomMap from './KingdomMap.svelte';
+	import { capitalOf, cityPath } from '$lib/kingdom-tour/cities';
 	import { PROVINCES } from '$lib/kingdom-tour/tour';
-	import {
-		buildSpiral,
-		placeLabel,
-		PROVINCE_MAP,
-		type SpiralLabel
-	} from '$lib/kingdom-tour/spiral';
 
 	// Constantes
-
-	const { size: SIZE, turns, innerRadius, outerRadius } = PROVINCE_MAP;
-	const SPIRAL = buildSpiral({
-		size: SIZE,
-		turns,
-		innerRadius,
-		outerRadius,
-		stops: PROVINCES.length
-	});
 
 	/** La fiche qui croise le milieu de l'écran est la Province lue */
 	const READING_LINE = '-50% 0px -50% 0px';
@@ -34,17 +23,8 @@
 
 	/** Province lue ; -1 avant la première */
 	let active = $state(-1);
-	const progress = $derived(active < 0 ? 0 : SPIRAL.stops[active].progress);
 
 	// Functions
-
-	/** Le nom d'une Province, posé à côté de son étape */
-	function labelOf(index: number): SpiralLabel {
-		return placeLabel(SPIRAL.stops[index], PROVINCES[index].name, SIZE);
-	}
-
-	/** JavaScript actif : la spirale peut suivre la lecture (sans lui, elle reste tracée) */
-	let live = $state(false);
 
 	/**
 	 * La fiche n° `index` devient la Province lue quand elle croise le milieu de l'écran.
@@ -52,7 +32,6 @@
 	 */
 	const watch: Action<HTMLElement, number> = (element, index) => {
 		if (typeof IntersectionObserver === 'undefined') return;
-		live = true;
 		const observer = new IntersectionObserver(
 			(entries) => {
 				for (const entry of entries) {
@@ -72,31 +51,13 @@
 	};
 </script>
 
-<div class="map" class:live data-testid="province-map">
-	<div class="spiral" aria-hidden="true">
-		<svg viewBox="0 0 {SIZE} {SIZE}">
-			<path d={SPIRAL.d} class="track" />
-			<path d={SPIRAL.d} class="ink" pathLength="1" style:--progress={progress} />
-			{#each SPIRAL.stops as stop, i (i)}
-				{@const label = labelOf(i)}
-				<g class="stop" class:reached={i <= active} class:current={i === active}>
-					<circle cx={stop.x} cy={stop.y} r="13" />
-					<text x={stop.x} y={stop.y + 4.5} text-anchor="middle" class="number">{i + 1}</text>
-					<text x={label.x} y={label.y} text-anchor={label.anchor} class="name"
-						>{PROVINCES[i].name}</text
-					>
-				</g>
-			{/each}
-			<g class="throne" class:reached={active === PROVINCES.length - 1}>
-				<circle cx={SPIRAL.center.x} cy={SPIRAL.center.y} r="24" />
-				<foreignObject x={SPIRAL.center.x - 11} y={SPIRAL.center.y - 13} width="22" height="22">
-					<Crown size={22} strokeWidth={2} />
-				</foreignObject>
-				<text x={SPIRAL.center.x} y={SPIRAL.center.y + 40} text-anchor="middle" class="name"
-					>Sandomir</text
-				>
-			</g>
-		</svg>
+<div class="map" data-testid="province-map">
+	<div class="kingdom-col">
+		<KingdomMap active={active < 0 ? null : PROVINCES[active].id} />
+		<a class="royal-link" href={resolve(cityPath('sandomir'))}>
+			<Crown size={18} strokeWidth={2} aria-hidden="true" />
+			Sandomir, capitale du Royaume <span aria-hidden="true">→</span>
+		</a>
 	</div>
 
 	<ol class="provinces">
@@ -117,7 +78,11 @@
 					<dl>
 						<div>
 							<dt>Capitale</dt>
-							<dd>{province.capital}</dd>
+							<dd>
+								<a class="capital" href={resolve(cityPath(capitalOf(province.id).slug))}
+									>{province.capital}</a
+								>
+							</dd>
 						</div>
 						<div>
 							<dt>Gouverneur</dt>
@@ -143,89 +108,18 @@
 	@reference "../../../app.css";
 
 	.map {
-		@apply grid gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-12;
+		@apply grid gap-8 lg:grid-cols-[minmax(0,6fr)_minmax(0,5fr)] lg:gap-12;
 	}
 
-	/* Spirale : entière au-dessus des fiches sur téléphone, tenue en place sur grand écran */
-	.spiral {
-		@apply mx-auto w-full max-w-sm lg:sticky lg:top-8 lg:max-w-none lg:self-start;
+	/* Carte : entière au-dessus des fiches sur téléphone, tenue en place sur grand écran */
+	.kingdom-col {
+		@apply flex w-full flex-col items-center gap-3 lg:sticky lg:top-8 lg:self-start;
 	}
-	.spiral svg {
-		@apply h-auto w-full overflow-visible;
+	.royal-link {
+		@apply inline-flex min-h-11 items-center gap-2 rounded-full border border-foreground/40 px-4 py-2 font-medium transition-colors hover:border-primary hover:bg-primary/10 focus-visible:ring-2 focus-visible:ring-foreground focus-visible:outline-none;
 	}
-	.track,
-	.ink {
-		fill: none;
-		stroke-linecap: round;
-		stroke-linejoin: round;
-	}
-	.track {
-		stroke: var(--color-border);
-		stroke-width: 10;
-	}
-	.ink {
-		stroke: var(--color-primary);
-		stroke-width: 10;
-		stroke-dasharray: 1;
-		/* Téléphone : la carte entière, déjà tracée */
-		stroke-dashoffset: 0;
-		transition: stroke-dashoffset 0.9s cubic-bezier(0.22, 1, 0.36, 1);
-	}
-	.stop circle {
-		fill: var(--color-card);
-		stroke: var(--color-border);
-		stroke-width: 3;
-		transition:
-			fill 0.4s,
-			stroke 0.4s,
-			r 0.4s;
-	}
-	.stop .number {
-		fill: var(--color-muted-foreground);
-		font-size: 13px;
-		font-weight: 700;
-	}
-	.name {
-		fill: var(--color-foreground);
-		font-family: 'Lora', Georgia, serif;
-		font-size: 15px;
-		font-weight: 600;
-		paint-order: stroke;
-		stroke: var(--color-background);
-		stroke-width: 4px;
-		stroke-linejoin: round;
-	}
-	.stop.reached circle {
-		fill: var(--color-primary);
-		stroke: var(--color-primary);
-	}
-	.stop.reached .number {
-		fill: var(--color-primary-foreground);
-	}
-	.stop.current circle {
-		r: 17;
-		filter: drop-shadow(0 0 10px var(--color-primary));
-	}
-	.throne circle {
-		fill: var(--color-card);
-		stroke: var(--color-primary);
-		stroke-width: 3;
-	}
-	.throne foreignObject {
-		color: var(--color-primary);
-	}
-	.throne.reached circle {
-		fill: var(--color-primary);
-	}
-	.throne.reached foreignObject {
-		color: var(--color-primary-foreground);
-	}
-
-	/* Grand écran, JavaScript actif : la spirale se dessine au fil de la lecture */
-	@media (min-width: 1024px) {
-		.live .ink {
-			stroke-dashoffset: calc(1 - var(--progress, 0));
-		}
+	.capital {
+		@apply text-primary underline underline-offset-2 hover:no-underline;
 	}
 
 	.provinces {
@@ -285,8 +179,6 @@
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.ink,
-		.stop circle,
 		.provinces > li {
 			transition: none;
 		}

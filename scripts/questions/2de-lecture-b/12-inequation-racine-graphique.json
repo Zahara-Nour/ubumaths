@@ -1,0 +1,188 @@
+{
+	"title": "Résoudre graphiquement une inéquation √x < k",
+	"description": "Inéquation √x < k lue sur la courbe de la fonction racine carrée : k > 0 (les quatre sens, 0 compris à gauche), k < 0 (∅ ou [0 ; +∞[)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Fonction racine carrée",
+	"subdomain": "Lecture graphique",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de la fonction racine carrée $f : x\\mapsto \\sqrt{x}$, définie sur $[0\\,;+\\infty[$.\n\n```courbe\nx: -1 ; 10\ny: -1 ; 4\ngrille: 1 ; 1\nf(x) = sqrt(x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction racine carrée.\n```\n\nRésous graphiquement l'inéquation $\\sqrt{x}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(k)^2"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|[0;{{r}}[|{{if:s==1|[0;{{r}}]|{{if:s==2|]{{r}};+\\infty[|[{{r}};+\\infty[}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{k}}$ ; elle coupe la courbe en $A$, d'abscisse ${{r}}$. On cherche les abscisses des points de la courbe situés {{if:s==0|**strictement sous**|{{if:s==1|**sous ou sur**|{{if:s==2|**strictement au-dessus de**|**au-dessus ou sur**}}}}}} cette droite ; {{if:s==0|l'abscisse de $A$ est **exclue**|{{if:s==1|l'abscisse de $A$ est **comprise**|{{if:s==2|l'abscisse de $A$ est **exclue**|l'abscisse de $A$ est **comprise**}}}}}}. La courbe commence en $x=0$ : $\\sqrt{x}$ n'existe que pour $x\\geqslant 0$.",
+					"```courbe\nx: -1 ; 10\ny: -1 ; 4\ngrille: 1 ; 1\nf(x) = sqrt(x)   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\n{{if:s==0|h(x) = sqrt(x) sur [0 ; {{r}}[   vert|{{if:s==1|h(x) = sqrt(x) sur [0 ; {{r}}]   vert|{{if:s==2|h(x) = sqrt(x) sur ]{{r}} ; 20]   vert|h(x) = sqrt(x) sur [{{r}} ; 20]   vert}}}}}}\n{{if:s==0|t(x) = 0 sur [0 ; {{r}}[   vert|{{if:s==1|t(x) = 0 sur [0 ; {{r}}]   vert|{{if:s==2|t(x) = 0 sur ]{{r}} ; 20]   vert|t(x) = 0 sur [{{r}} ; 20]   vert}}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2| | }}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2| | }}}}}}\npoints: A({{r}} ; {{k}})\ntaille: moyenne\ndescription: Courbe de la fonction racine carrée, droite horizontale en pointillé, partie cherchée en vert. L'ensemble des solutions est repassé en vert sur l'axe des abscisses.\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left[0\\,;{{r}}\\right[|{{if:s==1|\\left[0\\,;{{r}}\\right]|{{if:s==2|\\left]{{r}}\\,;+\\infty\\right[|\\left[{{r}}\\,;+\\infty\\right[}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de la fonction racine carrée $f : x\\mapsto \\sqrt{x}$, définie sur $[0\\,;+\\infty[$.\n\n```courbe\nx: -1 ; 10\ny: -5 ; 4\ngrille: 1 ; 1\nf(x) = sqrt(x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction racine carrée.\n```\n\nRésous graphiquement l'inéquation $\\sqrt{x}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "-4..-1"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|\\varnothing|{{if:s==1|\\varnothing|{{if:s==2|[0;+\\infty[|[0;+\\infty[}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{k}}$ : elle est entièrement **sous** la courbe, car une racine carrée n'est jamais négative.",
+					"```courbe\nx: -1 ; 10\ny: -5 ; 4\ngrille: 1 ; 1\nf(x) = sqrt(x)   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\n{{if:s==0| |{{if:s==1| |{{if:s==2|t(x) = 0 sur [0 ; 20]   vert|t(x) = 0 sur [0 ; 20]   vert}}}}}}\ntaille: moyenne\ndescription: Courbe de la fonction racine carrée et droite y = {{k}}, sous la courbe.{{if:s==0||{{if:s==1||{{if:s==2| L'ensemble des solutions est repassé en vert sur l'axe des abscisses.| L'ensemble des solutions est repassé en vert sur l'axe des abscisses.}}}}}}\n```",
+					"{{if:s==0|Aucun point de la courbe n'est sous la droite. $S=\\textcolor{{{color:primary.0}}}{\\varnothing}$.|{{if:s==1|Aucun point de la courbe n'est sous la droite. $S=\\textcolor{{{color:primary.0}}}{\\varnothing}$.|{{if:s==2|Tous les points de la courbe sont au-dessus de la droite, mais la courbe n'existe que pour $x\\geqslant 0$. $S=\\textcolor{{{color:primary.0}}}{\\left[0\\,;+\\infty\\right[}$.|Tous les points de la courbe sont au-dessus de la droite, mais la courbe n'existe que pour $x\\geqslant 0$. $S=\\textcolor{{{color:primary.0}}}{\\left[0\\,;+\\infty\\right[}$.}}}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "√x < 2 : S = [0 ; 4[",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"r": "4",
+				"s": "0"
+			},
+			"answers": ["[0;4["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ]−∞ ; 4[ (domaine oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"r": "4",
+				"s": "0"
+			},
+			"answers": ["]-\\infty;4["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0 exclu",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"r": "4",
+				"s": "0"
+			},
+			"answers": ["]0;4["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : k lu pour la borne ([0 ; 2[)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"r": "4",
+				"s": "0"
+			},
+			"answers": ["[0;2["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "√x ⩾ 1 : S = [1 ; +∞[",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "1",
+				"s": "3"
+			},
+			"answers": ["[1;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : crochet ouvert",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "1",
+				"s": "3"
+			},
+			"answers": ["]1;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "√x > −2 : S = [0 ; +∞[",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-2",
+				"s": "2"
+			},
+			"answers": ["[0;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ℝ",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-2",
+				"s": "2"
+			},
+			"answers": ["\\mathbb{R}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "√x ⩽ −1 : S = ∅",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-1",
+				"s": "1"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

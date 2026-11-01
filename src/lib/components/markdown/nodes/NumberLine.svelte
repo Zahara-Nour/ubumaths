@@ -20,7 +20,7 @@
 	  réduite) ; chiffres, points, traits à taille fixe, seul l'écart entre
 	  graduations se resserre (droite à placer : avertissement téléphone dans
 	  `NumberLinePlacer`).
-	- Droite à placer (`placer:`) : `NumberLinePlacer.svelte` (l'élève pose son point)
+	- Droite à placer (`placer:`) : `NumberLinePlacer.svelte` (l'élève pose ses points)
 
 	@module components/markdown/nodes/NumberLine
 -->
@@ -43,6 +43,8 @@
 		resolveNumberLineColors
 	} from '$lib/ubumark/utils/number-line-render';
 	import { readAuthoringErrors } from '../authoring-errors';
+	import { readContentLocale } from '../content-locale';
+	import { toLocaleDecimal } from '$lib/utils/french-math';
 	import NumberLinePlacer from './NumberLinePlacer.svelte';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
@@ -50,19 +52,23 @@
 		node: NumberLineNode;
 		/** Montrer les avertissements d'auteur (par défaut : contexte d'édition) */
 		showErrors?: boolean;
-		/** Droite à placer dans une question : sa case */
-		answer?: BuildCase;
+		/** Droite à placer dans une question : ses cases, une par point */
+		answers?: BuildCase[];
 		/** Points posés SUR la droite, plus gros (droite à placer : le point de l'élève) */
 		pointsOnLine?: boolean;
 		class?: string;
 	}
 
-	let { node, showErrors, answer, pointsOnLine = false, class: className = '' }: Props = $props();
+	let { node, showErrors, answers, pointsOnLine = false, class: className = '' }: Props = $props();
 
 	/** Point posé sur la droite : plus gros, il doit se voir sur la graduation */
 	const ON_LINE_POINT_RADIUS = 7;
+	/** Écart (px) entre les noms de points posés au même endroit, côte à côte */
+	const SHARED_LABEL_GAP = 14;
 
 	const authoring = readAuthoringErrors();
+	// Langue du contenu (séparateur décimal des graduations), posée par MarkdownRenderer
+	const contentLocale = readContentLocale();
 	let errorsVisible = $derived(showErrors ?? authoring());
 
 	const {
@@ -102,15 +108,26 @@
 	// POINTS
 	// =========================================================================
 
-	let renderedPoints = $derived(
-		node.points.map((p: NumberLinePoint, i: number) => ({
-			x: valueToX(numVal(p.value), startNum, endNum, scale, width),
-			y: pointsOnLine ? LINE_Y : LINE_Y + POINT_Y_OFFSET,
-			label: p.label,
-			latex: valLatex(p.value),
-			color: colors.points[i].screen
-		}))
-	);
+	let renderedPoints = $derived.by(() => {
+		const xs = node.points.map((p: NumberLinePoint) =>
+			valueToX(numVal(p.value), startNum, endNum, scale, width)
+		);
+		/** Points au même endroit : leurs noms côte à côte, centrés sur le point */
+		const sharing = (x: number) => xs.filter((other) => Math.abs(other - x) < 0.5);
+		return node.points.map((p: NumberLinePoint, i: number) => {
+			const x = xs[i];
+			const rank = xs.slice(0, i).filter((other) => Math.abs(other - x) < 0.5).length;
+			const shift = (rank - (sharing(x).length - 1) / 2) * SHARED_LABEL_GAP;
+			return {
+				x,
+				labelX: x + shift,
+				y: pointsOnLine ? LINE_Y : LINE_Y + POINT_Y_OFFSET,
+				label: p.label,
+				latex: valLatex(p.value),
+				color: colors.points[i].screen
+			};
+		});
+	});
 
 	// =========================================================================
 	// SEGMENTS
@@ -143,7 +160,7 @@
 </script>
 
 {#if node.placer !== undefined}
-	<NumberLinePlacer {node} {answer} {showErrors} class={className} />
+	<NumberLinePlacer {node} {answers} {showErrors} class={className} />
 {:else}
 	<div
 		class="number-line-container {className}"
@@ -192,7 +209,8 @@
 
 				<!-- Labels -->
 				{#if grad.label !== null}
-					<foreignObject x={grad.x - 30} y={LINE_Y + LABEL_Y_OFFSET - 5} width="60" height="30">
+					<!-- 45 px : une fraction (23/10) en math-field en fait 42 -->
+					<foreignObject x={grad.x - 30} y={LINE_Y + LABEL_Y_OFFSET - 5} width="60" height="45">
 						<div class="number-line-label" class:hidden-label={grad.hidden}>
 							{#if grad.hidden}
 								<span class="hidden-mark">?</span>
@@ -201,7 +219,7 @@
 									read-only
 									style="font-size: 0.75rem; display: inline-block; border: none; background: transparent; min-width: 0; padding: 0;"
 								>
-									{grad.label}
+									{toLocaleDecimal(grad.label, contentLocale())}
 								</math-field>
 							{/if}
 						</div>
@@ -248,7 +266,7 @@
 				/>
 				<!-- Point label -->
 				<foreignObject
-					x={point.x - 25}
+					x={point.labelX - 25}
 					y={point.y + POINT_LABEL_Y_OFFSET + 5}
 					width="50"
 					height="20"

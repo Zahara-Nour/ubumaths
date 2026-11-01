@@ -1,0 +1,122 @@
+{
+	"title": "Comparer des fractions de même dénominateur",
+	"description": "Comparer 5/12 et 7/12 : le symbole <, = ou >",
+	"grades": ["CE2"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Comparer",
+	"level": 11,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète avec le symbole qui convient.\n\n$$\\frac{{{a}}}{{{d}}} \\ldots \\frac{{{b}}}{{{d}}}$$\n\n```choix\nmelanger: non\n- $$<$$\n- $$=$$\n- $$>$$\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3..12"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(a-b)+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les deux fractions partagent le tout en ${{d}}$ parts égales : les parts ont la même taille. La plus grande fraction est celle qui prend **le plus de parts**.",
+					"$$\\frac{{{a}}}{{{d}}} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} \\frac{{{b}}}{{{d}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 5/12 < 7/12",
+			"variationIndex": 0,
+			"variables": {
+				"d": "12",
+				"a": "5",
+				"b": "7",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5/12 > 7/12",
+			"variationIndex": 0,
+			"variables": {
+				"d": "12",
+				"a": "5",
+				"b": "7",
+				"r": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "8/9 > 4/9",
+			"variationIndex": 0,
+			"variables": {
+				"d": "9",
+				"a": "8",
+				"b": "4",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "égalité : 3/7 = 3/7",
+			"variationIndex": 0,
+			"variables": {
+				"d": "7",
+				"a": "3",
+				"b": "3",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : égalité, > choisi",
+			"variationIndex": 0,
+			"variables": {
+				"d": "7",
+				"a": "3",
+				"b": "3",
+				"r": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

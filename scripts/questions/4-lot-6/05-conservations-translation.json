@@ -1,0 +1,226 @@
+{
+	"title": "Ce que conserve une translation",
+	"description": "Utiliser les propriétés de conservation d'une translation : longueur, angle, aire d'une figure image, image d'une droite",
+	"grades": ["4"],
+	"theme": "Géométrie",
+	"domain": "Translations",
+	"subdomain": "Conservations",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Qu'est-ce qu'une translation conserve ? Coche toutes les bonnes réponses.\n\n```choix\nplusieurs: oui\n- les longueurs\n- les angles\n- les aires\n- la position de chaque point\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0;1;2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une translation fait glisser la figure sans la déformer : elle **conserve** les longueurs, les angles et les aires : $\\textcolor{{{color:primary.0}}}{\\text{les trois}}$.",
+					"Elle déplace en revanche chaque point : la position change."
+				]
+			}
+		},
+		{
+			"statement": "Le triangle $DEF$ est l'image du triangle $ABC$ par la translation qui transforme $A$ en $D$ (figure qui n'est pas à l'échelle). On donne $AB = {{ab}}~\\unit{cm}$ et $AD = {{ad}}~\\unit{cm}$. Combien mesure $[DE]$ ?\n\n```figure\nfenetre: 0 ; 12 ; 0 ; 7.5\ndescription: Le triangle ABC et son image, le triangle DEF. Figure qui n'est pas à l'échelle.\n---\nA = point(1, 1, etiquette=\"bas-gauche\")\nB = point(5, 1.5, etiquette=\"bas-droite\")\nC = point(2.5, 4, etiquette=\"haut\")\nD = point(6.5, 3.5, etiquette=\"bas-gauche\")\nE = point(10.5, 4, etiquette=\"bas-droite\")\nF = point(8, 6.5, etiquette=\"haut\")\npolygone(A, B, C)\npolygone(D, E, F)\n```\n\n$DE = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "ab",
+					"expression": "3..12"
+				},
+				{
+					"name": "ad",
+					"expression": "5..15"
+				}
+			],
+			"conditions": ["ad != ab"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{ab}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une translation fait glisser la figure sans la déformer : elle **conserve** les longueurs.",
+					"$[DE]$ est l'image de $[AB]$ : $DE = AB = \\textcolor{{{color:primary.0}}}{{{ab}}~\\unit{cm}}$. La longueur $AD$ de la flèche ne sert pas."
+				]
+			}
+		},
+		{
+			"statement": "Le triangle $DEF$ est l'image du triangle $ABC$ par la translation qui transforme $A$ en $D$ (figure qui n'est pas à l'échelle). On donne $\\widehat{ABC} = {{ang}}^\\circ$. Combien mesure $\\widehat{DEF}$ ?\n\n```figure\nfenetre: 0 ; 12 ; 0 ; 7.5\ndescription: Le triangle ABC et son image, le triangle DEF. Figure qui n'est pas à l'échelle.\n---\nA = point(1, 1, etiquette=\"bas-gauche\")\nB = point(5, 1.5, etiquette=\"bas-droite\")\nC = point(2.5, 4, etiquette=\"haut\")\nD = point(6.5, 3.5, etiquette=\"bas-gauche\")\nE = point(10.5, 4, etiquette=\"bas-droite\")\nF = point(8, 6.5, etiquette=\"haut\")\npolygone(A, B, C)\npolygone(D, E, F)\n```\n\n$\\widehat{DEF} = ?^\\circ$",
+			"variables": [
+				{
+					"name": "ang",
+					"expression": "25..80"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{ang}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une translation fait glisser la figure sans la déformer : elle **conserve** les angles.",
+					"$\\widehat{DEF}$ est l'image de $\\widehat{ABC}$ : $\\widehat{DEF} = \\widehat{ABC} = \\textcolor{{{color:primary.0}}}{{{ang}}^\\circ}$."
+				]
+			}
+		},
+		{
+			"statement": "Le triangle $DEF$ est l'image du triangle $ABC$ par la translation qui transforme $A$ en $D$ (figure qui n'est pas à l'échelle). L'aire du triangle $ABC$ est ${{air}}~\\unit{cm^2}$. Quelle est l'aire du triangle $DEF$ ?\n\n```figure\nfenetre: 0 ; 12 ; 0 ; 7.5\ndescription: Le triangle ABC et son image, le triangle DEF. Figure qui n'est pas à l'échelle.\n---\nA = point(1, 1, etiquette=\"bas-gauche\")\nB = point(5, 1.5, etiquette=\"bas-droite\")\nC = point(2.5, 4, etiquette=\"haut\")\nD = point(6.5, 3.5, etiquette=\"bas-gauche\")\nE = point(10.5, 4, etiquette=\"bas-droite\")\nF = point(8, 6.5, etiquette=\"haut\")\npolygone(A, B, C)\npolygone(D, E, F)\n```\n\n$\\text{Aire} = ?~\\unit{cm^2}$",
+			"variables": [
+				{
+					"name": "air",
+					"expression": "6..40"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{air}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une translation fait glisser la figure sans la déformer : elle **conserve** les longueurs et les angles, donc les aires.",
+					"Aire de $DEF$ = aire de $ABC$ = $\\textcolor{{{color:primary.0}}}{{{air}}~\\unit{cm^2}}$."
+				]
+			}
+		},
+		{
+			"statement": "Par une translation, une droite $(d)$ a pour image une droite $(d')$. Que peut-on dire de $(d')$ ?\n\n```choix\n- $(d')$ est parallèle à $(d)$\n- $(d')$ est perpendiculaire à $(d)$\n- $(d')$ coupe $(d)$ en un seul point\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une translation fait glisser la figure sans la déformer : elle **conserve** la direction des droites.",
+					"L'image d'une droite par une translation est \\textcolor{{{color:primary.0}}}{\\text{une droite parallèle}} (parfois confondue avec elle, si la flèche suit la droite)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Longueurs, angles, aires",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0;1;2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la position aussi",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0;1;2;3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "AB = 5 : DE = 5",
+			"variationIndex": 1,
+			"variables": {
+				"ab": "5",
+				"ad": "9"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : AB + AD, 14",
+			"variationIndex": 1,
+			"variables": {
+				"ab": "5",
+				"ad": "9"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : AD, 9",
+			"variationIndex": 1,
+			"variables": {
+				"ab": "5",
+				"ad": "9"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Angle 47° : 47",
+			"variationIndex": 2,
+			"variables": {
+				"ang": "47"
+			},
+			"answers": ["47"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 180 − 47, 133",
+			"variationIndex": 2,
+			"variables": {
+				"ang": "47"
+			},
+			"answers": ["133"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Aire 18 : 18",
+			"variationIndex": 3,
+			"variables": {
+				"air": "18"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : aire doublée, 36",
+			"variationIndex": 3,
+			"variables": {
+				"air": "18"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Parallèle",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : perpendiculaire",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

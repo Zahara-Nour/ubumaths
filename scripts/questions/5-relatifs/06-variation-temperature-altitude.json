@@ -1,0 +1,250 @@
+{
+	"title": "Variation de température ou d'altitude",
+	"description": "Calculer une température qui monte ou baisse en passant par 0 (−5 °C, puis +8 °C), une altitude de sous-marin qui remonte ou descend",
+	"grades": ["5"],
+	"theme": "Relatifs",
+	"domain": "Additionner et soustraire",
+	"subdomain": "Problèmes",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Ce matin, le thermomètre indiquait $-{{a}}~\\unit{°C}$. Dans la journée, la température a monté de ${{b}}~\\unit{°C}$.\n\nQuelle température indique-t-il maintenant ?\n\n$?~\\unit{°C}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..12"
+				},
+				{
+					"name": "b",
+					"expression": "3..20"
+				}
+			],
+			"conditions": ["b>a"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b-a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Monter**, c'est ajouter : on calcule $-{{a}} + {{b}}$.",
+					"$$-{{a}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+					"Le thermomètre indique $\\textcolor{{{color:primary.0}}}{{{solution}}~\\unit{°C}}$."
+				]
+			}
+		},
+		{
+			"statement": "À midi, le thermomètre indiquait ${{a}}~\\unit{°C}$. Dans la nuit, la température a baissé de ${{b}}~\\unit{°C}$.\n\nQuelle température indique-t-il maintenant ?\n\n$?~\\unit{°C}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..12"
+				},
+				{
+					"name": "b",
+					"expression": "3..20"
+				}
+			],
+			"conditions": ["b>a"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a-b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Baisser**, c'est soustraire : on calcule ${{a}} - {{b}}$.",
+					"$${{a}} - {{b}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+					"Le thermomètre indique $\\textcolor{{{color:primary.0}}}{{{solution}}~\\unit{°C}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un sous-marin est à l'altitude $-{{a}}~\\unit{m}$. Il remonte de ${{b}}~\\unit{m}$.\n\nQuelle est sa nouvelle altitude ?\n\n$?~\\unit{m}$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "5..30"
+				},
+				{
+					"name": "B",
+					"expression": "1..20"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*A"
+				},
+				{
+					"name": "b",
+					"expression": "eval:10*B"
+				}
+			],
+			"conditions": ["B<A"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b-a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Remonter**, c'est ajouter : on calcule $-{{a}} + {{b}}$.",
+					"$$-{{a}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+					"Le sous-marin est à l'altitude $\\textcolor{{{color:primary.0}}}{{{solution}}~\\unit{m}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un sous-marin est à l'altitude $-{{a}}~\\unit{m}$. Il descend de ${{b}}~\\unit{m}$.\n\nQuelle est sa nouvelle altitude ?\n\n$?~\\unit{m}$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "5..30"
+				},
+				{
+					"name": "B",
+					"expression": "1..20"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*A"
+				},
+				{
+					"name": "b",
+					"expression": "eval:10*B"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-a-b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Descendre**, c'est soustraire : on calcule $-{{a}} - {{b}}$.",
+					"$$-{{a}} - {{b}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+					"Le sous-marin est à l'altitude $\\textcolor{{{color:primary.0}}}{{{solution}}~\\unit{m}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "−5 °C, monte de 8 : 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "8"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −13 (la hausse retirée)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "8"
+			},
+			"answers": ["-13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −3 (signe de −5 gardé)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "8"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 °C, baisse de 9 : −5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "9"
+			},
+			"answers": ["-5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 (signe oublié)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "9"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−120 m, remonte de 50 : −70",
+			"variationIndex": 2,
+			"variables": {
+				"A": "12",
+				"B": "5",
+				"a": "120",
+				"b": "50"
+			},
+			"answers": ["-70"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −170",
+			"variationIndex": 2,
+			"variables": {
+				"A": "12",
+				"B": "5",
+				"a": "120",
+				"b": "50"
+			},
+			"answers": ["-170"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−120 m, descend de 50 : −170",
+			"variationIndex": 3,
+			"variables": {
+				"A": "12",
+				"B": "5",
+				"a": "120",
+				"b": "50"
+			},
+			"answers": ["-170"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −70",
+			"variationIndex": 3,
+			"variables": {
+				"A": "12",
+				"B": "5",
+				"a": "120",
+				"b": "50"
+			},
+			"answers": ["-70"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

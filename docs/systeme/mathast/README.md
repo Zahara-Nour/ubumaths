@@ -8,7 +8,7 @@ couvre:
 > Code : `src/lib/mathAST/` · Agent spécialisé : `mathast-expert` (`.claude/agents/mathast-expert.md`).
 > Cette page remplace la vue d'ensemble de juin 2026 et le `README.md` de `src/lib/mathAST/`
 > (janvier), écrits avant `tidy`, la réécriture de `simplify()` (#378 → #389) et l'ADR 0007.
-> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21 ; symétrie et égalité de la console, 2026-10-22 ; `tidy` `order` et ordre des facteurs, `\times` devant `3^x`, 2026-10-23 ; espaces de groupement (règle du BIPM, réglage « Espaces dès 4 chiffres »), 2026-10-23 ; registre des règles de superflu, 2026-10-23 ; forme finale de f′, `(eˣ)²` regroupé avec `e^{2x}` par `auto`, racines n-ièmes dans `sqrt-square`/`square-sqrt`/`sqrt-quotient`, 2026-10-23 ; f′ factorisée de l'étude des variations, 2026-10-23 ; valeur exacte à afficher commune, 2026-10-24 ; une fonction en un nombre rangée comme un coefficient, Q30, 2026-10-24 ; `eˣ·eˣ → e^{2x}`, Q29, 2026-10-24 ; des termes à domaine restreint ne s'annulent pas, S3, 2026-10-24 ; forme demandée par l'énoncé, D4, 2026-10-24 ; sommes sous-entendues de f′ ouvertes, lot 5f-1, 2026-10-24 ; étapes de limite : décimaux gardés, développé et factorisé montrés, lot 5f-3, 2026-10-25 ; valeur d'une intégrale bornée à décimaux, Q49, 2026-10-25 ; étapes du solveur écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; inconnue divisée multipliée, membre factorisé défait, Q51-Q52, 2026-10-25 ; puissance d'exposant n/2 écrite avec une racine carrée par `tidy`, quotient et produit de puissances de même base dans `.simplifier`, lot 5f-5, 2026-10-25 ; évaluateur flottant unique des limites (`sin²`, `cos⁻¹`, `∛`), lot 6a, 2026-10-25 ; conditions de `tidyWithConditions` écrites aux points irrationnels, `tan`/`arcsin` (tidy-conditions § 5, 2026-10-26) ; limites en −∞ de (−∞)ⁿ, u^{p/q} hors du domaine, inverse d'une somme à conjuguer, V67-V69, 2026-10-26).
+> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21 ; symétrie et égalité de la console, 2026-10-22 ; `tidy` `order` et ordre des facteurs, `\times` devant `3^x`, 2026-10-23 ; espaces de groupement (règle du BIPM, réglage « Espaces dès 4 chiffres »), 2026-10-23 ; registre des règles de superflu, 2026-10-23 ; forme finale de f′, `(eˣ)²` regroupé avec `e^{2x}` par `auto`, racines n-ièmes dans `sqrt-square`/`square-sqrt`/`sqrt-quotient`, 2026-10-23 ; f′ factorisée de l'étude des variations, 2026-10-23 ; valeur exacte à afficher commune, 2026-10-24 ; une fonction en un nombre rangée comme un coefficient, Q30, 2026-10-24 ; `eˣ·eˣ → e^{2x}`, Q29, 2026-10-24 ; des termes à domaine restreint ne s'annulent pas, S3, 2026-10-24 ; forme demandée par l'énoncé, D4, 2026-10-24 ; sommes sous-entendues de f′ ouvertes, lot 5f-1, 2026-10-24 ; étapes de limite : décimaux gardés, développé et factorisé montrés, lot 5f-3, 2026-10-25 ; valeur d'une intégrale bornée à décimaux, Q49, 2026-10-25 ; étapes du solveur écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; inconnue divisée multipliée, membre factorisé défait, Q51-Q52, 2026-10-25 ; puissance d'exposant n/2 écrite avec une racine carrée par `tidy`, quotient et produit de puissances de même base dans `.simplifier`, lot 5f-5, 2026-10-25 ; évaluateur flottant unique des limites (`sin²`, `cos⁻¹`, `∛`), lot 6a, 2026-10-25 ; conditions de `tidyWithConditions` écrites aux points irrationnels, `tan`/`arcsin` (tidy-conditions § 5, 2026-10-26) ; limites en −∞ de (−∞)ⁿ, u^{p/q} hors du domaine, inverse d'une somme à conjuguer, V67-V69, 2026-10-26 ; eᵘ d'une forme indéterminée, polynôme × exponentielle, V68, 2026-10-27 ; u^{−n} en un point où u s'annule lu 1/uⁿ, zéro sans signe d'un facteur sin / cos d'argument non borné, V70-V71, 2026-10-27 ; signe inconnu d'un paramètre jamais lu positif par `normalizeExtended`, coefficient littéral du terme dominant, limites-parametres, 2026-10-27 ; valeurs remarquables de sin, cos, tan dans `reduire`, `auto`, `.développer`, `.résoudre`, 2026-10-27 ; inconnues indicées dans `solve`, solution vérifiée sur une contrainte non résolue, décalage paramétré sans `approximate`, racine de cubique arrondie non exacte, V13/V45/V42/L27, 2026-11-01 ; forme résolue du 1er degré, coefficient devant dans une somme de primitives, règle arctan à coefficient, V32/V27/V64, 2026-11-01 ; `\imaginaryI`, `\exponentialE` lus par rd, nœuds de la fabrique dans `partial-fractions.ts` et le point d'essai de |f| des limites, 2026-11-01).
 
 ## À quoi ça sert
 
@@ -64,7 +64,6 @@ test, ~14 000 cas (`it(`/`test(`).
 | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Lire et écrire**                                                                                                                  |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | `parser/`                                                                                                                           | `parseLatex`/`parseLatexSafe` (`latex/` : Pratt par défaut, `rd` en option) ; `custom/` : syntaxe maison (`parseCustom`), motifs (`parsePattern`), règles (`parseRule`), contraintes ; `security.ts` (plafonds)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `cache/`                                                                                                                            | `ParseCache`, LRU exporté mais **branché nulle part**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | **Mettre au propre, comparer**                                                                                                      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | `tidy/`                                                                                                                             | `tidy` : mise au propre **sans jamais développer** ; raconte ses gestes (`TidyStepRecorder`) ; grandeurs (`unitChoice`) ; ordre des termes rangé ou écrit (`order`, `tidyTerms`) ; domaine gardé (S3 : `x/x` et `ln(x) − ln(x)` restent, `tidy/sign.ts`) ; ordre des facteurs : valeurs (`√2`, `ln 2` : comme un coefficient, Q30), lettres, parenthèses (ordre écrit), fonctions, exponentielles (Q13, `tidy/order.ts`, [tidy-spec.md](tidy-spec.md) étape 8) ; ordre des termes : le degré ne compte que les inconnues, une constante est de degré 0 (`x + √2`, `x² + 2x + √5`, `x + 1 + √2`, Q14)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `simplify/`                                                                                                                         | `simplify` : `tidy` + règles + « développer seulement si moins cher » (`computeCost`, `costFunction` injectable)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
@@ -73,7 +72,7 @@ test, ~14 000 cas (`it(`/`test(`).
 | `common/`                                                                                                                           | moteur de réécriture `rewrite`, `numericNode`, interruption (`AbortError`), bases des enregistreurs et rendus d'étapes, constructeurs simplifiants (`common/simplify.ts`), `e`, `i` jamais variables (`common/reserved-letters.ts`), signe d'une constante sur sa valeur (`constantSign`, `common/constant-sign.ts`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `numtype/`                                                                                                                          | inférence du type numérique (entier, rationnel, réel…) et `TypeContext`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | **Calculer**                                                                                                                        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `eval/`                                                                                                                             | `substitute`, `evaluate`, `evaluateAstWithModifiers` (`{{eval}}`, grandeurs comprises), `exactValueToShow` (`exact-value.ts`, la valeur exacte à afficher commune, voir ci-dessous), `compile`/`createSafeEvaluator` ; `forbiddenValue` (`forbidden-value.ts`, `.eval`) : la cause, la plus intérieure, qui prive un calcul sans lettre de valeur réelle (dénominateur nul, racine d'indice pair d'un négatif, logarithme ⩽ 0, 0 à une puissance négative, exposant non entier d'un négatif, tangente où cos s'annule, arcsin/arccos hors de [−1 ; 1]), lue exactement — à ne pas confondre avec `integration/forbidden-value.ts` ; `root(a, n)` (forme du solveur et de `denormalize`) s'évalue et se compile comme `\sqrt[n]{a}`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `eval/`                                                                                                                             | `substitute`, `evaluate`, `evaluateAstWithModifiers` (`{{eval}}`, grandeurs comprises), `exactValueToShow` (`exact-value.ts`, la valeur exacte à afficher commune, voir ci-dessous), `compile`/`createSafeEvaluator` ; `indexVariables` / `hasIndexedVariables` (`index-variables.ts`, inconnues indicées `x_1` aplaties en une variable, console et `solve`) ; `forbiddenValue` (`forbidden-value.ts`, `.eval`) : la cause, la plus intérieure, qui prive un calcul sans lettre de valeur réelle (dénominateur nul, racine d'indice pair d'un négatif, logarithme ⩽ 0, 0 à une puissance négative, exposant non entier d'un négatif, tangente où cos s'annule, arcsin/arccos hors de [−1 ; 1]), lue exactement — à ne pas confondre avec `integration/forbidden-value.ts` ; `root(a, n)` (forme du solveur et de `denormalize`) s'évalue et se compile comme `\sqrt[n]{a}`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | `differentiation/`                                                                                                                  | `differentiate`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | `integration/`                                                                                                                      | `integrate` (primitives, intégrales définies, numérique)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `limits/`                                                                                                                           | limites (dont `analyzeSign` unilatéral de `limits/one-sided.ts`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
@@ -235,6 +234,22 @@ puissances de e regroupées (`eˣ·e^{−x} = 1`, `(eˣ)³ = e^{3x}`). Aucune id
 domaine : `e^{ln x}` reste, `(√u)² → u` seulement si un `√u` reste écrit dans le résultat
 (`√x(√x+1) → x + √x`). Pas de phase A : une seule étape `expand` dit qu'il s'est passé quelque
 chose. `expandedForm` (même module) calcule les termes des étapes (`expand-steps.ts`).
+**Valeurs remarquables (2026-10-27, chantier valeurs-remarquables, S4 de l'ADR 0032).**
+`reduire` et `auto` calculent sin, cos, tan aux multiples de π/6, π/4, π/3 (et 0), avec une étape
+nommée : « On utilise une valeur remarquable : cos(π/3) = 1/2 », au pluriel quand plusieurs
+valeurs tombent dans le même passage (`withValuesTogether`, `pipeline.ts`). Règles
+`trigRemarkableStepRules` (`pattern/rule-sets/trig.ts`) : la période d'abord (`cos(7π/3)` →
+« cos est 2π-périodique »), puis la valeur ; la parité (`sin(−π/6)`) passe par
+`trigNegativeAngleRules`. Les trois familles forment `TRIG_REDUCTION_RULES` (`intent-rules.ts`),
+actives avec `enableTrig` (lycée par défaut). Un angle en degrés est lu tel quel (`cos(60°)`,
+`cos(−60°)`, `cos(420°)` → 60°) ; hors table (`cos(π/5)`, `cos(20°)`) ou non défini (`tan(π/2)`),
+il reste écrit. `tidy` ne calcule aucune valeur (une ligne tapée seule garde `cos(π/3)`).
+`developper` n'a pas de phase A : `explainExpansion` calcule d'abord les valeurs
+(`generateRemarkableValueSteps`, `pipeline.ts`, qui ne garde rien si aucune valeur n'est
+atteinte), puis développe — `(x + cos(π/3))²` → étape de valeur, puis `x² + x + 1/4` ; l'atelier
+fait de même avant `.résoudre` (`atelier/solve-steps.ts`). Le rendu d'une étape sur une équation
+n'enchaîne pas par « = » (`renderer.ts`).
+
 Le tableau des écarts, pinné par un test : [panel-simplifications.md](panel-simplifications.md).
 Spec d'`auto` (colonne « attendu ») : [tidy-spec.md](tidy-spec.md) §C.
 
@@ -326,7 +341,9 @@ vaut `null` quand le coefficient porte une lettre. Convention suivie, celle de `
 champ `Solution.condition` n'est jamais rempli). ln et log en tirent une valeur juste pour tout
 paramètre non nul (`a\ln x = 1` → e^{1/a}, `-a\ln x = 1` → e^{−1/a}, signe hors de la fraction
 comme e^{−1/3}, `a\ln(2x + 1) = 3`), sans `approximate` ; tan aussi (`a\tan x = 1` → arctan(1/a),
-période π) ; exp, sin, cos et les décompositions récursives **refusent** (le signe ou la taille de c décide de
+période π). Un **décalage** paramétré (`\ln(2x + a) = 1`, `e^{2x+a} = 3`, `\sin(3x + a) = 0`)
+donne de même une valeur exacte sans `approximate` (V42, 2026-11-01 : le décalage valait 0 dans
+un `catch`, d'où une valeur approchée fausse) ; exp, sin, cos et les décompositions récursives **refusent** (le signe ou la taille de c décide de
 l'existence) et le CLI répond « La solution dépend de a : je ne sais pas encore résoudre avec un
 paramètre ». Un second membre littéral (`\ln x = a`) reste refusé : il peut venir du
 développement `\ln(ax)` → ln a + ln x, valable pour a > 0 seulement. `filterSolutionsByDomain`
@@ -505,6 +522,27 @@ du moteur, statut `no-solution` + `error`, pour un ∅). Les modèles de questio
 de `generatedSteps.kind` pour la valeur absolue (PR suivante). Tests :
 `pedagogical-solve/__tests__/valeur-absolue.test.ts`, `atelier/__tests__/resoudre-valeur-absolue.test.ts`.
 
+Écarts d'écriture vue par l'élève (2026-11-01, chantier `ecarts-ecriture`) :
+
+- **V39** : `toLatex` parenthèse la base `ln` ou `log` d'une puissance, (ln 5)² s'écrit
+  `\left( \ln\left( 5 \right) \right)^2` et non plus `\ln\left( 5 \right)^2`, lisible ln(5²)
+  (`wrapsAsLatexPowerBase`, `latex-generator.ts`). LaTeX seul : `toCustom` ne change pas, ni la lecture
+  de `\ln 5^2` par le parseur ((ln 5)², décision en attente). Les autres fonctions
+  (`\sin\left( x \right)^2`) restent telles quelles. Tests : `__tests__/latex-puissance-logarithme.test.ts`.
+- **V51** : le transfert du lycée (`transpose-terms`) n'écrit plus `0` devant le terme déplacé :
+  `5=2x+1` donne `\textcolor{blue}{-2x} = 1 \textcolor{blue}{- 5}` (`transposedMember`,
+  `linear-renderer.ts`, LaTeX et console). Tests : `pedagogical-solve/__tests__/transfert-membre-vide.test.ts`.
+- **V52** : premier degré, les termes en x que `canonicalForm` laisse séparés (coefficient
+  irrationnel, `-\pi x + 9x`) sont regroupés en `\left( 9 - \pi \right) x` (`groupVariableTerms`,
+  `addToBothSides` avec la variable, `pedagogical-solve/_helpers.ts`) ; la division du collège se fait
+  par `9 - \pi` (`groupedCoefficient`). La solution reste écrite par `canonicalForm`
+  (`x \leqslant \dfrac{-6}{\pi - 9}`). Tests : `pedagogical-solve/__tests__/coefficient-irrationnel-reduit.test.ts`.
+- **V44, V46** : console, « Mismatched environments… », « Expected ')' after \right, got ] »,
+  « Expected delimiter after \left, got … » et « Cannot compute derivative » (`.variations` d'une
+  expression bien lue que le moteur ne sait pas dériver, `\frac{1}{|x|-2}`) sont traduits
+  (`cli/web/french-errors.ts`) ; la garde `ENGLISH` de `cli/web/__tests__/messages-francais.test.ts`
+  couvre « Mismatched » et « got ».
+
 Écart V43 (2026-10-13) : **une identité résolue « dans » un intervalle** rendait tout
 l'intervalle, valeurs interdites comprises (`.résoudre \frac{|x|-2}{|x|-2}=1 dans [-5;5]` →
 `[-5 ; 5]`, `\frac{3x}{3x}=1 dans [-1;1]` → `[-1 ; 1]`). Le domaine de `solve` était exact
@@ -537,8 +575,13 @@ la valeur exacte) ; oracle : `comp-16` (1/(1 − ln x)) n'est plus un refus conn
 (`unresolved` : `x^5 − x + 1 ≠ 0`, deux exclusions périodiques croisées), `solve` le dit dans
 `SolveResult.domainUnresolved` (absent si le domaine est exact) et la console refuse une
 identité sur un tel domaine, avec ou sans `dans`, au lieu de « S = ℝ » ou de tout l'intervalle.
-Reste (V45) : les solutions finies ne sont pas vérifiées contre ces contraintes, et les autres
-lecteurs de `solve` ignorent le champ.
+Les solutions finies sont vérifiées sur l'équation elle-même (`filterSolutionsByDefinition`,
+`solve.ts`, 2026-11-01) : chaque fonction, quotient ou puissance est évaluée à part avec ses
+opérandes (`definitionChecks`) ; interdite au point et de part et d'autre, ou en un pôle, la
+solution est écartée (`2√(x⁵−x+1)/√(x⁵−x+1) = x + 4` rendait x = −2, où x⁵ − x + 1 = −29). Un
+dépassement flottant (`e^{900}`, `x^{200}` en 100) ne conclut rien (revue #2064) ; une solution
+paramétrée ou une équation à plusieurs lettres n'est pas vérifiée. Reste (V45) : les autres
+lecteurs de `solve` (atelier `engineSaysAllReals`, signe, variations) ignorent le champ.
 Écart V47 (2026-10-13) : **les inéquations lisent le domaine de définition sur l'inéquation
 écrite**. `solveInequality` étudie le signe de la forme canonique de f − g, où `normalize`
 simplifie `\frac{3x}{3x}` en 1 et `\ln x − \ln x` en 0 ; le domaine se calculait sur cette forme
@@ -947,6 +990,15 @@ division par un nombre, identités).
   `x_1` est donc une autre lettre que x, comme `a` (avant : `.variations x^2 - x_1 x` ne savait pas
   résoudre f'(x) = 0, `.intégrer x_1 de 0 à 1` rendait 1). Le grec indicé reste un `subscript`.
   `toLatex` écrit une telle variable `x_1`, `a_{12}` (`indexedVariableLatex`), plus `\mathit{x_1}`.
+  **`solve` (l'API) aplatit aussi les inconnues indicées** (V13, 2026-11-01) : `indexVariables`
+  (`eval/index-variables.ts`, partagée avec la console) fait de `x_1`, `u_n`, `u_{n+1}`, `e_1` UNE
+  variable nommée par son LaTeX ; `solve` résout puis rend l'indice tel qu'écrit dans les
+  solutions, conditions, familles périodiques et étapes (`withIndexedRestored`). `variable: 'x_1'`
+  nomme l'inconnue ; une variable demandée qui disparaîtrait à l'aplatissement (`x` pour
+  `x_1 = 2`) garde l'arbre d'origine. Les filtres de noms `e`, `i`, `pi` sur `getVariables`
+  (console, `atelier/solve-steps.ts`, `constantNames` de `questions/calculus/calculus-reading.ts`)
+  sont retirés (L22) : le parseur lit déjà `e`, `i`, `π` en constantes, ces filtres ne voyaient
+  plus que des bases indicées (`e_1` → `e`).
   `.variations` ne conclut pas sur un sens indéterminé : tous les intervalles « ? » → « Signe …
   et sens de variation : non déterminés » et « Extrema : non déterminés » ; un seul « ? » sans
   extremum trouvé → « Extrema : non déterminés », jamais « aucun ».
@@ -983,8 +1035,8 @@ division par un nombre, identités).
      (`i_1`, `i_{n}`) : là, une variable. `toLatex` écrit `\imaginaryI`, `toCustom` écrit `i`.
      Une `variable('i')` est donc toujours une vraie variable : rien ne la lit comme l'imaginaire
      (ni `normalize`, ni `evaluate`) ; `tidy` range `i` comme π et `e`, devant les lettres
-     (`x i` → `i x`, `\pi i` → `i\pi`). Le parseur LaTeX rd ne lit pas `\imaginaryI` (écart
-     connu) ;
+     (`x i` → `i x`, `\pi i` → `i\pi`). Les deux parseurs LaTeX (pratt et rd) lisent
+     `\imaginaryI` et `\exponentialE` (L21, 2026-11-01) ;
    - calculer « par rapport à `e` » ou « à `i` » (intégrer, dériver, résoudre, limite, Taylor,
      variations, `; e` / `pour i` en CLI) est **refusé** : « e est la constante d'Euler, pas une
      variable », « i est l'unité imaginaire, pas une variable » (`reservedVariableRefusal`,
@@ -1183,8 +1235,10 @@ division par un nombre, identités).
   brutes de la formule restent non calculées. **Inéquations comprises** (Q50, 2026-10-25) : mêmes
   règles pour les étapes (`x² − 0,5 < 0`, `x < 0,3`), et les racines des tableaux de signes
   (`quadratic-sign-table`, `rational-domain-restriction`, `rational-locate-roots`,
-  `rational-sign-table`) passent par `exactValueToShow`, comme la borne de la forme résolue
-  d'une inéquation du 1er degré, qui ne conclut pas (`2x < √2` → `x < √2/2`). L'ensemble solution, chaîne écrite par
+  `rational-sign-table`) passent par `exactValueToShow`, comme la forme résolue du 1er degré,
+  qui ne conclut pas (`2x < √2` → `x < √2/2` ; V32, 2026-11-01 : `3x = −π` → `x = −π/3`, et non
+  `-\dfrac{1}{3}\pi`, dans l'étape qui l'obtient comme dans « Solution », dont le rendu lit
+  `before`). L'ensemble solution, chaîne écrite par
   le pipeline (`describeDomain`, `_helpers.ts`), écrit ses bornes par `exactValueToShow`, en
   décimal si l'inéquation tape un décimal : `]−√2/2 ; √2/2[`, `](1 − √5)/2 ; (1 + √5)/2[`,
   `]1/2 ; +∞[` en vraie fraction (avant : `1 / 2` en texte), `[−0,5 ; 0,5]`. Tests :
@@ -1287,7 +1341,12 @@ division par un nombre, identités).
   éventuel (`singleCoefficientTerm` : `\dfrac{1}{2}e^{2x}`, `-\dfrac{1}{3}\cos(3x+1)`),
   gardé tel quel si le coefficient est réduit (un `\dfrac{2}{4}e^x` devient
   `\dfrac{1}{2}e^x` par l'étape) ; un coefficient pas encore calculé
-  (`\dfrac{1}{4}\dfrac{x^2}{2}`) passe par `tidy`. **Exponentielle commune** (lot 4 de
+  (`\dfrac{1}{4}\dfrac{x^2}{2}`) passe par `tidy`. **Dans une somme** (V27, 2026-11-01), chaque
+  terme « coefficient rationnel × fonction » (un appel, `\ln`, `\sin`… ou `e^{u}`) que `tidy`
+  écrit en fraction (`\dfrac{e^{2x}}{2}`) reprend l'écriture d'un terme seul, coefficient devant
+  (`coefficientFirstForm`) : `\dfrac{1}{2}e^{2x} + \ln|x|`, `\sin x - \dfrac{1}{4}\cos(2x)` ;
+  une puissance de x ou de u garde la sienne (`\dfrac{x^3}{3}`, `\dfrac{(2x+1)^4}{8}`), comme
+  un terme seul. **Exponentielle commune** (lot 4 de
   l'ADR 0024, `developAndFactor`) : l'étape développe (intention `developper`), puis met en
   facteur, par `factoriser`, la `e^{u}` que portent au moins deux termes (exposants comparés par
   `areEquivalent`, écrits partout comme dans la primitive brute) : ∫x²eˣ → `(x^2-2x+2)e^x`,
@@ -1388,7 +1447,12 @@ division par un nombre, identités).
 - **Intégrales à paramètre** (V61, 2026-10-14) : la règle arctan (`isArctanPattern`,
   `integrators/basic.ts`) déballe les parenthèses du dénominateur — `1/(x^2+a^2)` tapé en
   notation maison arrive en `delimiter` et n'était pas reconnu (« Unable to factor
-  denominator ») ; numérateur 1 seulement (`3/(x^2+a^2)`, `1/(x^2+a^2+1)` restent refusés).
+  denominator ») ; depuis V64 (2026-11-01), le numérateur est tout facteur sans la variable
+  (`3/(x^2+a^2)` → 3arctan(x/a)/a, `a/(x^2+a^2)` → arctan(x/a)) et a² se lit aussi en
+  puissance paire ou avec un carré parfait devant (`a^4` → a = a², `4a^2` → a = 2a). Restent
+  refusés, honnêtement : un terme constant de signe inconnu (`1/(x^2+b)`, `1/(x^2+2x+a^2)`) et
+  `1/(x^2+a^2+1)` (a = √(a² + 1) serait juste, mais la ligne la rationalise en une écriture
+  illisible).
   La valeur symbolique de `integrateDefinite` réduit `1^u` en 1 (`withoutPowersOfOne` :
   `x^a` de 1 à 2 → (2^{a+1} − 1)/(a + 1)). Les refus des intégrateurs sont écrits en français
   à la source (partial-fractions, trig-substitution, basic), comme le reste du module :
@@ -1576,6 +1640,18 @@ x(x + 2)/x = x + 2`, `(x² − 1)/(x − 1) = (x − 1)(x + 1)/(x − 1) = x + 1
   N/(√A − B) = N(√A + B)/(A − B²), (√A − B)^{−n} = ((√A + B)/(A − B²))ⁿ —
   `\frac{1}{\sqrt{x+1}-\sqrt{x}}` en +∞ = +∞, forme 1/0 dont le signe n'était pas suivi.
   `findConjugate` (`limits/algebraic.ts`) connaît √A − √B (conjugué √A + √B, produit A − B).
+  **Exponentielles** (V68, 2026-10-27) : la **stratégie 2.47** (`tryExponentialOfUnboundedLimit`,
+  après 2.46) traite a^u (a > 0 constant, a ≠ 1, e compris) et `\exp u` quand u → ±∞ selon le
+  moteur entier : +∞ ou 0 selon le signe et a > 1 ou a < 1 — `e^{x^2-x}` en +∞ (+∞),
+  `e^{x-x^2}` (0) sortaient « non supportée », la composition classant u en arithmétique exacte,
+  qui ne lève pas +∞ − ∞. Le produit (2.56) sous la forme 0 × ∞ sans facteur quotient réécrit
+  un facteur a^u de limite nulle en dénominateur, f·a^u = f/a^{−u} (`productOverExponential`) :
+  `(x-3)^2e^{-x}` = `\frac{(x-3)^2}{e^{x}}` en +∞, conclu par L'Hôpital (seule la limite connue
+  xⁿe^{−x} concluait). Enfin `detectIndeterminateForm` (`limits/indeterminate.ts`) tranche une
+  somme exacte +∞ − ∞ en ±∞ par le terme dominant (`limitByGeneralizedDegree`, cas infini
+  seulement) : le repli numérique classait `x^2-6x+9` « fini » (10²⁰), et
+  `\frac{x^2-6x+9}{e^x}` n'était pas vu ∞/∞. Reste refusé (pas faux) : `x^3e^{-x^2+x}` et
+  `x^2e^{-\sqrt{x}}` en +∞.
   Les étapes « limite à gauche /
   à droite » d'une limite bilatérale s'écrivent en `a^-` / `a^+` (côté étudié, pas celui de la
   limite).
@@ -1685,12 +1761,38 @@ Doublons qui restent, chacun pour un autre besoin :
   flottants sur des coefficients décimaux (`domain/preimage.ts`, solveurs de degré 3-4 de
   `solve/`).
 
-## Points ouverts connus (mesurés le 2026-10-10, mis à jour le 2026-10-26)
+## Points ouverts connus (mesurés le 2026-10-10, mis à jour le 2026-10-27)
 
 - Fusion des deux moteurs : `reduire` et `auto` ne passent plus par `normalize` (2026-10-23),
   `developper` non plus (2026-10-25, chantier normalize-usages). Les copies locales de
-  `denormalize(normalize())` passent par `canonicalForm` (lot b) ; restent ~75 appels écrits en
-  ligne, internes (valeurs exactes, comparaisons), voulus (§ 23 de simplify-carte).
+  `denormalize(normalize())` passent par `canonicalForm` (lot b), et les 77 appels écrits en
+  ligne qui restaient aussi (chantier canonical-form, 2026-10-27), sans rien changer à l'écran.
+  Une règle ESLint (`no-restricted-syntax`, `eslint.config.js`) refuse tout nouvel appel en
+  ligne ; deux exceptions marquées : la définition de `canonicalForm` et le lambda
+  `canonicalExponent` de `normalize.ts` (import circulaire).
+  **Futur chantier (David, 2026-10-27) : finir la fusion.** `simplify()` sert encore au repli de
+  l'atelier (`atelier/calcul.ts` : sans étape de `pedagogical-simplify`, `.simplifier` montre
+  la sortie de `simplify()`, calculée en silence — `cos(π/3)/x → 1/(2x)` passait par là avant le
+  chantier valeurs-remarquables), à la commande `simplify` du REPL (`simplify.command.ts`) et à
+  Taylor (`taylor/expand.ts`). Les 3 écarts du panel sont tous en faveur d'`auto` (il sait,
+  `simplify()` non) : ils ne bloquent rien. Question à trancher, après un relevé des entrées
+  qui tombent dans le repli : sans étape, l'atelier garde-t-il l'expression telle quelle
+  (« ce qu'on ne sait pas expliquer, on ne le fait pas », ADR 0007) ou montre-t-il le résultat
+  sans étape, comme aujourd'hui ?
+- Restes de simplify-carte jamais versés ici (relevés le 2026-10-27 dans
+  `docs/archive/wip/simplify-carte-progress.md`) :
+  - **bascule des modèles existants** vers la correction automatique (correction écrite →
+    `generatedSteps`) : « plus tard » (David, § 67-68, Q38) ;
+  - **`pnpm math` à brancher sur l'atelier** (console Calcul en ligne de commande) : futur
+    chantier (§ 68) ; aujourd'hui les deux divergent ;
+  - **conventions d'échec des évaluateurs** (lot 6, § 100) : des évaluateurs laissent passer NaN,
+    d'autres lèvent une exception qui remonte ; le lot « 6c » (une convention, un test rouge par
+    site) n'a pas été fait ; le signe d'un pôle (`1/(−x)` en 0 : signe du numérateur ou −0 de
+    `compile`) reste non tranché, ancienne règle par défaut ;
+  - **`tidy` dans `evaluate`** (§ 13, option B) : A choisie (une fonction « valeur exacte à
+    afficher »), « B reste possible plus tard » ;
+  - **Q29** (§ 62) : `eˣ·eˣ → e^{2x}` fait ; un `(eˣ)²` tapé devait rester tel quel, ce que `tidy`
+    ne distinguait pas — à vérifier.
 - Laissés par le chantier normalize-usages (2026-10-26), écritures de `developper`, aucune
   valeur fausse : `(x+1)/π → x/π + 1/π` et `(x+1)/√2` en deux écritures (le coefficient ne
   passe devant que pour un dénominateur entier) ; `√8` seul reste écrit (`√8(x+1) → 2√2x +
@@ -1733,10 +1835,23 @@ ln(2x) − ln(2x)` garde `ln x − ln x` sur la ligne ;
     plafond (antérieur) ; `e^{ln 1 + x}`, `e^{2 ln e}`, `e^{2 ln √2}` gardent leur écriture ;
     `2^{1/3}` et `∛2` ont des formes normales différentes ;
   - Q14 : entre constantes, le rationnel d'abord, donc `√2 − √3 − 1` s'écrit `√2 − 1 − √3`.
+- Laissés par le chantier valeurs-remarquables (2026-10-27) :
+  - **`.domaine 1/(x − cos(π/3))` → `ℝ \ {1/2}` voulu plus tard** (David, 2026-10-27) ;
+    aujourd'hui `ℝ \ {cos(π/3)}`, juste ;
+  - les corrections d'exercices de résolution (`correction-generator.ts`, `pedagogical-solve`)
+    n'ont pas l'étape de valeur : seul `.résoudre` de l'atelier la fait (les corrections de
+    développement l'ont, par `explainExpansion`) ;
+  - `.simplifier cos(0.5π)x` → `0` sans étape (repli du moteur, décimal) ;
+    `cos(\frac{-\pi}{3})` est refusé comme écriture mélangée ;
+  - revue de la PR (aucune valeur fausse) : `sin(−(π/6))` garde sa parenthèse et n'atteint pas
+    la valeur (`extractPiCoefficient`) ; l'étape réunie de `withValuesTogether` montre la ligne
+    entière, une période du même passage y passe sans être nommée
+    (`sin(π/3) + cos(π/6) + tan(7π/3)`) ; `cos(30° + 30°)` devient `cos(60°)` « au propre » sans
+    que la valeur suive ;
+  - `.résoudre cos(π/5)x = 1` titre « On divise par $\cos(\frac{1}{5}π)$ » (écriture du
+    solveur, antérieur).
 - Laissés par le chantier simplify-carte (2026-10-25), **à trancher par David**, aucun ne donne
   une valeur fausse :
-  - valeurs remarquables (`cos(π/3) → 1/2`) dans `réduire`, avec étape et selon le niveau (S4) :
-    lot reporté ;
   - `.intégrer` à bornes : une borne décimale dans une exponentielle mêle les registres
     (`∫₀^{0,5} 0,5eˣ = \dfrac{1}{2}e^{0,5} − \dfrac{1}{2}`) ; paramètre au dénominateur laissé en
     fraction (`0,5e^{ax}` de 0 à 1 → `(e^a − 1)/(2a)`) ; `0,5x²` de 0 à a → `\dfrac{1}{6}a³` ;
@@ -1762,17 +1877,19 @@ ln(2x) − ln(2x)` garde `ln x − ln x` sur la ligne ;
   multiplie la fraction tapée pour n'avoir que des entiers (`(x − 0,5)/(x + 1) > 0` annonce
   `P(x) = 2x − 1`) ; `(x − 1)/(x² − 1) ≥ 0` raisonne sur la fraction simplifiée (le 1 interdit
   disparaît des étapes, réponse juste) ; `x² < −1` sans étapes.
-- `ParseCache` exporté, jamais branché ; `pedagogical-evaluate/` réduit à des types.
+- `pedagogical-evaluate/` réduit à des types (importés par `pedagogical-arithmetic/`).
 - Cycle dans `runPatternLoop` (`pedagogical-simplify/pipeline.ts`) : sur `x(1+1)` et
   `x(1-1)`, `sum-cubes-numeric` (et `diff-squares-numeric`) tirait jusqu'à la limite de
   20 itérations sans point fixe. **Corrigé pour `factoriser` le 2026-10-11** : ses règles
   d'identité ne touchent plus un nombre seul (`factoriserIdentityRules`, mesuré : `x(1-1)` →
   0 étape). Les règles d'origine gardent ce défaut là où elles servent encore (`simplify`, sous
   barrière de coût) ; la boucle s'arrête toujours sans le signaler.
-- `solve` ne gère pas les inconnues indicées : `x_1+1=3` répond « pas de solution »
-  (`getVariables` rend la base `x`) ; `e_1+1=3` et `i_1+1=3` aussi (le refus « constante
-  d'Euler » / « unité imaginaire » ne s'applique pas quand l'arbre contient une variable `e`
-  ou `i`, base d'une variable indicée : `reservedVariableRefusal`).
+- Cubique à trois racines réelles irrationnelles (`handleCubicThreeReal`, `x^3-3x+1=0`) et
+  quartique résolue en flottants (`numericToSymbolic`, `quartic.ts`, `x^4-x-3=0`) : les
+  racines sont des flottants arrondis à 10 décimales, marqués `exact: false` depuis L27
+  (2026-11-01), mais `canonicalForm` les écrit en fraction décimale géante
+  (`-\dfrac{36706743}{19531250}`) au lieu de la forme trigonométrique exacte (relevé le
+  2026-11-01, non corrigé).
 - Domaine (`domain/compute.ts`, relevé le 2026-10-15) : `shiftedLinearRoot` construit un nœud
   `{ type: 'opposite', … }` à la main, hors `factory.ts` (invariant 2) ; l'inversion exacte de
   `ln u ⊳ c` / `e^u ⊳ c` ne couvre ni u non affine (`\ln(x^2)-1`) ni `log`, `log10`, `log2`
@@ -1786,6 +1903,36 @@ ln(2x) − ln(2x)` garde `ln x − ln x` sur la ligne ;
   `null` pour prendre le chemin exact : les évaluer (ou passer par `compile`) ferait de
   `lim_{x→+∞} (x+1)/(πx)` le décimal `0,3183…` au lieu de `1/π`. À reprendre en rendant le choix
   « exact ou numérique » explicite dans le moteur, pas en dépendant d'une lacune de l'évaluateur.
+- Limites, laissés par le chantier limites-ecarts (2026-10-27, journal archivé
+  `docs/archive/wip/limites-ecarts-progress.md`) :
+  - **valeur fausse, antérieure** : `\frac{1}{e^{-1/x}\sin\frac{1}{x}}` en 0⁺ rend +∞ — sur la
+    fenêtre dense de `oscillatesUnboundedNear` (`limits/sign-tracking.ts`), e^{−1/x} vaut 0 en
+    flottant, aucun changement de signe n'est vu ;
+  - refus (pas faux) : u^{−p/q} non entier (`(1-\cos x)^{-1/2}` en 0, +∞ attendu) ; produit
+    f·u^{−n} jamais réécrit en quotient (`x^{-1}\sin x`, `(1-x)^{-1}\ln x`, `x^2(\cos x-1)^{-1}`,
+    alors que `\frac{\ln x}{1-x}` conclut) ; `x^3e^{-x^2+x}`, `x^2e^{-\sqrt{x}}` en +∞,
+    `x^{\frac{4}{2}}` en −∞ ;
+  - approché : `\frac{x^2}{x\sin\frac1x}` en 0⁺ « ≈ 0 » ;
+  - paramètre de signe inconnu (`e^{kx}` en +∞ rendait +∞) : refusé depuis le chantier
+    `limites-parametres` (choix A, #1869) ; la discussion selon le signe de k (choix C) est pour
+    plus tard (futur chantier, David, 2026-10-27 ; journal archivé
+    `docs/archive/wip/limites-parametres-progress.md`). Cas de départ de C : la substitution
+    directe suppose encore k ≠ 0 / k > 0 (`\frac{1}{x^2+k}` en 0 → 1/k, `\ln(x+k)` en 0⁺ → ln k,
+    `\frac{x}{kx+x^2}` en 0⁺ → 1/k) ; refus à rattraper, qui valent la même chose pour tout k
+    (`x^2+kx`, `x+kx^2`, `x\ln x+kx` en 0⁺ → 0, `\frac{k^2+1}{x}` en 0⁺ → +∞). Piste : un « zéro
+    de côté inconnu » absorbant dans l'addition (pas le 0 exact, neutre : cause des valeurs
+    fausses de la revue 1) ;
+- Conditions de √ et ln à paramètre (Atelier), laissés par le chantier ecarts-conditions
+  (2026-11-01, #2118, journal archivé `docs/archive/wip/ecarts-conditions-progress.md`), aucune
+  condition fausse :
+  - doublons d'écritures différentes entre la saisie et la réponse (`\sqrt{a-1.5}` →
+    « a-3/2 ⩾ 0, a ⩾ 1,5 », `\sqrt{a+(-2)}`, `\ln(a^3)`, `1/\sqrt{a^2}`) ; « a > -0 » ;
+    « a^{1:/2} » (`toCustom`) ; « 2a-2 ≠ 0 » non réduit (antérieur) ;
+  - contradictions affichées telles quelles (`\ln(a-3)\ln(3-a)` → « a < 3, a > 3 ») ;
+  - `1/\ln(a)` garde « ln(a) ≠ 0 » brut (Q4 de David, laissé) : « a > 0, a ≠ 1 » possible ;
+  - `.intégrer e^{\sqrt{a} x} de 0 à 1` : valeur non réduite
+    (`{-sqrt(a)e^{sqrt(a)*0}+sqrt(a)e^{sqrt(a)*1}}/a`, réduction `tidy` → `fusion-moteurs`),
+    condition juste (a > 0).
 
 ## Décisions
 

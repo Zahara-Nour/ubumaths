@@ -1,0 +1,195 @@
+{
+	"title": "Problèmes de partage : le nombre de parts",
+	"description": "Combien d'équipes, de pages, de boîtes : 60 élèves par 5 ; 189 photos à 10 par page (19 pages) ; 75 œufs par 6 (12 boîtes pleines)",
+	"grades": ["CE1"],
+	"theme": "Entiers",
+	"domain": "Problèmes",
+	"subdomain": "Multiplicatifs",
+	"level": 7,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Il y a ${{eval:g*n}}$ élèves de CE1 dans l'école. Pour un rallye, la directrice fait des équipes de ${{n}}$ élèves.\n\nCombien y aura-t-il d'équipes ?\n\nIl y aura $?$ équipes.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2|3|4|5|10"
+				},
+				{
+					"name": "g",
+					"expression": "3..20"
+				}
+			],
+			"conditions": ["g * n <= 100"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:g}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche combien de fois il y a ${{n}}$ élèves dans ${{eval:g*n}}$ élèves : chaque groupe de ${{n}}$ est une équipe.",
+					"$$\\textcolor{{{color:primary.0}}}{{{g}}} \\times {{n}} = {{eval:g*n}}$$",
+					"Il y aura ${{g}}$ équipes."
+				]
+			}
+		},
+		{
+			"statement": "Je veux ranger mes ${{eval:10*q+r}}$ photos dans un album. Je peux ranger $10$ photos par page.\n\nCombien de pages me faut-il pour ranger **toutes** mes photos ?\n\nIl me faut $?$ pages.",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "3..60"
+				},
+				{
+					"name": "r",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:10*q+r}}$, c'est ${{q}}$ dizaines et ${{r}}$ unités : ${{q}}$ pages pleines de $10$ photos, et il reste ${{r}}$ photos.",
+					"Ces ${{r}}$ photos doivent aussi être rangées : il faut une page de plus.",
+					"$${{q}} + 1 = \\textcolor{{{color:primary.0}}}{{{eval:q+1}}}$$",
+					"Il me faut ${{eval:q+1}}$ pages."
+				]
+			}
+		},
+		{
+			"statement": "Un fermier a ${{eval:n*q+r}}$ œufs à vendre au marché. Il les vend par boîtes de ${{n}}$ œufs.\n\nCombien de boîtes pleines va-t-il pouvoir vendre ?\n\nIl va vendre $?$ boîtes.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..6"
+				},
+				{
+					"name": "q",
+					"expression": "3..15"
+				},
+				{
+					"name": "r",
+					"expression": "2..{{eval:n-1}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplit des boîtes de ${{n}}$ œufs : ${{q}}$ boîtes, c'est ${{eval:n*q}}$ œufs.",
+					"$${{q}} \\times {{n}} = {{eval:n*q}}$$",
+					"Il reste ${{eval:n*q+r}} - {{eval:n*q}} = {{r}}$ œufs : pas assez pour remplir une boîte de plus.",
+					"Il va vendre $\\textcolor{{{color:primary.0}}}{{{q}}}$ boîtes."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 60 élèves en équipes de 5 = 12",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"g": "12"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 60 − 5 (55)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"g": "12"
+			},
+			"answers": ["55"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la taille d'une équipe (5)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"g": "12"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 189 photos → 19 pages",
+			"variationIndex": 1,
+			"variables": {
+				"q": "18",
+				"r": "9"
+			},
+			"answers": ["19"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pages, le reste oublié (18)",
+			"variationIndex": 1,
+			"variables": {
+				"q": "18",
+				"r": "9"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 75 œufs par 6 → 12 boîtes",
+			"variationIndex": 2,
+			"variables": {
+				"n": "6",
+				"q": "12",
+				"r": "3"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : boîtes, une de trop (13)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "6",
+				"q": "12",
+				"r": "3"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 609 photos → 61 pages",
+			"variationIndex": 1,
+			"variables": {
+				"q": "60",
+				"r": "9"
+			},
+			"answers": ["61"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

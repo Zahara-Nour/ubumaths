@@ -8,12 +8,9 @@
 	"subdomain": "Variations",
 	"level": 1,
 	"delay": 40,
-	"options": {
-		"shuffleChoices": true
-	},
 	"variations": [
 		{
-			"statement": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n```variation\nvariable: x\ndomain: -inf, {{p}}, {{q}}, +inf\n\nsign: f'(x)\n  -inf,{{p}}: +\n  {{p}}: z\n  {{p}},{{q}}: -\n  {{q}}: z\n  {{q}},+inf: +\n```\n\nQuelle affirmation est vraie ?",
+			"statement": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n```variation\nvariable: x\ndomain: -inf, {{p}}, {{q}}, +inf\n\nsign: f'(x)\n  -inf,{{p}}: +\n  {{p}}: z\n  {{p}},{{q}}: -\n  {{q}}: z\n  {{q}},+inf: +\n```\n\nQuelle affirmation est vraie ?\n\n```choix\n- $f$ est décroissante sur $\\left[{{p}}\\,;{{q}}\\right]$\n- $f$ est croissante sur $\\left[{{p}}\\,;{{q}}\\right]$\n- $f$ est croissante sur $\\left]-\\infty\\,;{{q}}\\right]$\n- $f$ admet un maximum local en $x={{q}}$\n```",
 			"variables": [
 				{
 					"name": "p",
@@ -28,31 +25,21 @@
 					"expression": "eval:p+d"
 				}
 			],
-			"choices": [
-				{
-					"content": "$f$ est décroissante sur $\\left[{{p}}\\,;{{q}}\\right]$"
-				},
-				{
-					"content": "$f$ est croissante sur $\\left[{{p}}\\,;{{q}}\\right]$"
-				},
-				{
-					"content": "$f$ est croissante sur $\\left]-\\infty\\,;{{q}}\\right]$"
-				},
-				{
-					"content": "$f$ admet un maximum local en $x={{q}}$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Sur un intervalle où $f'(x)\\geqslant 0$, $f$ est croissante ; sur un intervalle où $f'(x)\\leqslant 0$, $f$ est décroissante.",
 					"```variation\nvariable: x\ndomain: -inf, {{p}}, {{q}}, +inf\n\nsign: f'(x)\n  -inf,{{p}}: +\n  {{p}}: z\n  {{p}},{{q}}: -\n  {{q}}: z\n  {{q}},+inf: +\n\nvariation: f(x)\n  {{p}}: f\\left({{p}}\\right), top\n  {{q}}: f\\left({{q}}\\right), bottom\n```",
 					"$f'(x)\\leqslant 0$ sur $\\left[{{p}}\\,;{{q}}\\right]$ : $f$ est **décroissante** sur $\\textcolor{{{color:primary.0}}}{\\left[{{p}}\\,;{{q}}\\right]}$. En $x={{q}}$, $f'$ passe de $-$ à $+$ : c'est un **minimum** local, pas un maximum ; et $f$ décroît sur $\\left[{{p}}\\,;{{q}}\\right]$, donc elle n'est pas croissante sur $\\left]-\\infty\\,;{{q}}\\right]$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n```variation\nvariable: x\ndomain: -inf, {{p}}, {{q}}, +inf\n\nsign: f'(x)\n  -inf,{{p}}: -\n  {{p}}: z\n  {{p}},{{q}}: +\n  {{q}}: z\n  {{q}},+inf: -\n```\n\nQuelle affirmation est vraie ?",
+			"statement": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n```variation\nvariable: x\ndomain: -inf, {{p}}, {{q}}, +inf\n\nsign: f'(x)\n  -inf,{{p}}: -\n  {{p}}: z\n  {{p}},{{q}}: +\n  {{q}}: z\n  {{q}},+inf: -\n```\n\nQuelle affirmation est vraie ?\n\n```choix\n- $f$ est croissante sur $\\left[{{p}}\\,;{{q}}\\right]$\n- $f$ est décroissante sur $\\left[{{p}}\\,;{{q}}\\right]$\n- $f$ est décroissante sur $\\left]-\\infty\\,;{{q}}\\right]$\n- $f$ admet un minimum local en $x={{q}}$\n```",
 			"variables": [
 				{
 					"name": "p",
@@ -67,62 +54,42 @@
 					"expression": "eval:p+d"
 				}
 			],
-			"choices": [
-				{
-					"content": "$f$ est croissante sur $\\left[{{p}}\\,;{{q}}\\right]$"
-				},
-				{
-					"content": "$f$ est décroissante sur $\\left[{{p}}\\,;{{q}}\\right]$"
-				},
-				{
-					"content": "$f$ est décroissante sur $\\left]-\\infty\\,;{{q}}\\right]$"
-				},
-				{
-					"content": "$f$ admet un minimum local en $x={{q}}$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Sur un intervalle où $f'(x)\\geqslant 0$, $f$ est croissante ; sur un intervalle où $f'(x)\\leqslant 0$, $f$ est décroissante.",
 					"```variation\nvariable: x\ndomain: -inf, {{p}}, {{q}}, +inf\n\nsign: f'(x)\n  -inf,{{p}}: -\n  {{p}}: z\n  {{p}},{{q}}: +\n  {{q}}: z\n  {{q}},+inf: -\n\nvariation: f(x)\n  {{p}}: f\\left({{p}}\\right), bottom\n  {{q}}: f\\left({{q}}\\right), top\n```",
 					"$f'(x)\\geqslant 0$ sur $\\left[{{p}}\\,;{{q}}\\right]$ : $f$ est **croissante** sur $\\textcolor{{{color:primary.0}}}{\\left[{{p}}\\,;{{q}}\\right]}$. En $x={{q}}$, $f'$ passe de $+$ à $-$ : c'est un **maximum** local ; et $f$ croît sur $\\left[{{p}}\\,;{{q}}\\right]$, donc elle n'est pas décroissante sur $\\left]-\\infty\\,;{{q}}\\right]$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n```variation\nvariable: x\ndomain: -inf, {{r}}, +inf\n\nsign: f'(x)\n  -inf,{{r}}: -\n  {{r}}: z\n  {{r}},+inf: +\n```\n\nQuelle affirmation est vraie ?",
+			"statement": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n```variation\nvariable: x\ndomain: -inf, {{r}}, +inf\n\nsign: f'(x)\n  -inf,{{r}}: -\n  {{r}}: z\n  {{r}},+inf: +\n```\n\nQuelle affirmation est vraie ?\n\n```choix\n- $f$ admet un minimum en $x={{r}}$\n- $f$ admet un maximum en $x={{r}}$\n- $f$ est croissante sur $\\mathbb{R}$\n- $f$ est décroissante sur $\\left[{{r}}\\,;+\\infty\\right[$\n```",
 			"variables": [
 				{
 					"name": "r",
 					"expression": "-6..6"
 				}
 			],
-			"choices": [
-				{
-					"content": "$f$ admet un minimum en $x={{r}}$"
-				},
-				{
-					"content": "$f$ admet un maximum en $x={{r}}$"
-				},
-				{
-					"content": "$f$ est croissante sur $\\mathbb{R}$"
-				},
-				{
-					"content": "$f$ est décroissante sur $\\left[{{r}}\\,;+\\infty\\right[$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Sur un intervalle où $f'(x)\\geqslant 0$, $f$ est croissante ; sur un intervalle où $f'(x)\\leqslant 0$, $f$ est décroissante.",
 					"```variation\nvariable: x\ndomain: -inf, {{r}}, +inf\n\nsign: f'(x)\n  -inf,{{r}}: -\n  {{r}}: z\n  {{r}},+inf: +\n\nvariation: f(x)\n  {{r}}: f\\left({{r}}\\right), bottom\n```",
 					"$f$ est décroissante sur $\\left]-\\infty\\,;{{r}}\\right]$ puis croissante sur $\\left[{{r}}\\,;+\\infty\\right[$ : elle admet un **minimum** en $x=\\textcolor{{{color:primary.0}}}{ {{r}} }$, égal à $f({{r}})$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n```variation\nvariable: x\ndomain: -inf, {{p}}, {{q}}, +inf\n\nsign: f'(x)\n  -inf,{{p}}: +\n  {{p}}: z\n  {{p}},{{q}}: +\n  {{q}}: z\n  {{q}},+inf: -\n```\n\nQuelle affirmation est vraie ?",
+			"statement": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n```variation\nvariable: x\ndomain: -inf, {{p}}, {{q}}, +inf\n\nsign: f'(x)\n  -inf,{{p}}: +\n  {{p}}: z\n  {{p}},{{q}}: +\n  {{q}}: z\n  {{q}},+inf: -\n```\n\nQuelle affirmation est vraie ?\n\n```choix\n- $f$ est croissante sur $\\left]-\\infty\\,;{{q}}\\right]$\n- $f$ admet un maximum local en $x={{p}}$\n- $f$ est décroissante sur $\\left[{{p}}\\,;{{q}}\\right]$\n- $f$ est croissante sur $\\left[{{q}}\\,;+\\infty\\right[$\n```",
 			"variables": [
 				{
 					"name": "p",
@@ -137,28 +104,18 @@
 					"expression": "eval:p+d"
 				}
 			],
-			"choices": [
-				{
-					"content": "$f$ est croissante sur $\\left]-\\infty\\,;{{q}}\\right]$"
-				},
-				{
-					"content": "$f$ admet un maximum local en $x={{p}}$"
-				},
-				{
-					"content": "$f$ est décroissante sur $\\left[{{p}}\\,;{{q}}\\right]$"
-				},
-				{
-					"content": "$f$ est croissante sur $\\left[{{q}}\\,;+\\infty\\right[$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Sur un intervalle où $f'(x)\\geqslant 0$, $f$ est croissante ; sur un intervalle où $f'(x)\\leqslant 0$, $f$ est décroissante.",
 					"```variation\nvariable: x\ndomain: -inf, {{p}}, {{q}}, +inf\n\nsign: f'(x)\n  -inf,{{p}}: +\n  {{p}}: z\n  {{p}},{{q}}: +\n  {{q}}: z\n  {{q}},+inf: -\n\nvariation: f(x)\n  {{q}}: f\\left({{q}}\\right), top\n```",
 					"$f'(x)\\geqslant 0$ sur $\\left]-\\infty\\,;{{q}}\\right]$ ($f'$ ne s'annule qu'en des points isolés) : $f$ est **croissante** sur $\\textcolor{{{color:primary.0}}}{\\left]-\\infty\\,;{{q}}\\right]}$. En $x={{p}}$, $f'$ s'annule **sans changer de signe** : ce n'est pas un extremum."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -170,10 +127,10 @@
 				"d": "3",
 				"q": "1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "croissante sur [p;q] (signe lu à l'envers)",
@@ -183,10 +140,10 @@
 				"d": "3",
 				"q": "1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "croissante sur ]−∞;q]",
@@ -196,10 +153,10 @@
 				"d": "3",
 				"q": "1"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "maximum local en q (min)",
@@ -209,10 +166,10 @@
 				"d": "3",
 				"q": "1"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["3"]
 		},
 		{
 			"description": "croissante sur [p;q]",
@@ -222,10 +179,10 @@
 				"d": "3",
 				"q": "1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "décroissante sur [p;q] (signe lu à l'envers)",
@@ -235,10 +192,10 @@
 				"d": "3",
 				"q": "1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "décroissante sur ]−∞;q]",
@@ -248,10 +205,10 @@
 				"d": "3",
 				"q": "1"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "minimum local en q (max)",
@@ -261,10 +218,10 @@
 				"d": "3",
 				"q": "1"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["3"]
 		},
 		{
 			"description": "minimum en r",
@@ -272,10 +229,10 @@
 			"variables": {
 				"r": "2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "maximum en r",
@@ -283,10 +240,10 @@
 			"variables": {
 				"r": "2"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "croissante sur ℝ",
@@ -294,10 +251,10 @@
 			"variables": {
 				"r": "2"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "décroissante sur [r;+∞[",
@@ -305,10 +262,10 @@
 			"variables": {
 				"r": "2"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["3"]
 		},
 		{
 			"description": "croissante sur ]−∞;q]",
@@ -318,10 +275,10 @@
 				"d": "3",
 				"q": "1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "maximum local en p (pas de changement de signe)",
@@ -331,10 +288,10 @@
 				"d": "3",
 				"q": "1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "décroissante sur [p;q]",
@@ -344,10 +301,10 @@
 				"d": "3",
 				"q": "1"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "croissante sur [q;+∞[",
@@ -357,10 +314,10 @@
 				"d": "3",
 				"q": "1"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["3"]
 		}
 	]
 }

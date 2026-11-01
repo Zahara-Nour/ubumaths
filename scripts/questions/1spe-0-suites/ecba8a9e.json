@@ -1,0 +1,428 @@
+{
+	"id": "ecba8a9e-bedb-478d-a324-a4f3fbdb3967",
+	"title": "Sens de variation à partir du signe de u(n+1) − u(n)",
+	"description": "La différence de deux termes consécutifs est donnée : en déduire le sens de variation",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Sens de variation",
+	"subdomain": "Différence de deux termes",
+	"level": 2,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n={{eval:a*n+b}}$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- ni croissante, ni décroissante\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "n|n"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On étudie le signe de $u_{n+1}-u_n$ pour **tout** entier naturel $n$.",
+					"Comme $n\\geqslant 0$, ${{eval:a*n}}\\geqslant 0$, donc ${{eval:a*n+b}}\\geqslant {{b}}>0$ : $u_{n+1}-u_n>0$, autrement dit $u_{n+1}>u_n$.",
+					"La suite est **croissante**."
+				]
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
+		},
+		{
+			"statement": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n=-{{c}}$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- ni croissante, ni décroissante\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On étudie le signe de $u_{n+1}-u_n$ pour **tout** entier naturel $n$.",
+					"Pour tout $n$, $u_{n+1}-u_n=-{{c}}<0$, autrement dit $u_{n+1}<u_n$.",
+					"La suite est **décroissante**."
+				]
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
+		},
+		{
+			"statement": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n=-n^2-{{c}}$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- ni croissante, ni décroissante\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On étudie le signe de $u_{n+1}-u_n$ pour **tout** entier naturel $n$.",
+					"Un carré est positif : $n^2\\geqslant 0$, donc $-n^2\\leqslant 0$ et $-n^2-{{c}}\\leqslant -{{c}}<0$.",
+					"Pour tout $n$, $u_{n+1}<u_n$ : la suite est **décroissante**. Que la différence dépende de $n$ n'empêche pas de conclure : seul son signe compte."
+				]
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
+		},
+		{
+			"statement": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n=(n-{{k}})^2+{{c}}$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- ni croissante, ni décroissante\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "c",
+					"expression": "1..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On étudie le signe de $u_{n+1}-u_n$ pour **tout** entier naturel $n$.",
+					"Un carré est positif : $(n-{{k}})^2\\geqslant 0$, donc $(n-{{k}})^2+{{c}}\\geqslant {{c}}>0$.",
+					"Pour tout $n$, $u_{n+1}>u_n$ : la suite est **croissante**."
+				]
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
+		},
+		{
+			"statement": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n=\\dfrac{ {{k}} }{n+1}$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- ni croissante, ni décroissante\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On étudie le signe de $u_{n+1}-u_n$ pour **tout** entier naturel $n$.",
+					"Pour tout $n\\geqslant 0$, $n+1>0$ et ${{k}}>0$ : le quotient $\\dfrac{ {{k}} }{n+1}$ est **strictement positif**.",
+					"Pour tout $n$, $u_{n+1}>u_n$ : la suite est **croissante**."
+				]
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
+		},
+		{
+			"statement": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n=n-{{k}}$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- ni croissante, ni décroissante\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..6"
+				},
+				{
+					"name": "k1",
+					"expression": "eval:k+1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On étudie le signe de $u_{n+1}-u_n$ pour **tout** entier naturel $n$.",
+					"Pour $n=0$ : $u_1-u_0=-{{k}}<0$, donc $u_1<u_0$.",
+					"Pour $n={{k1}}$ : $u_{ {{eval:k1+1}} }-u_{ {{k1}} }={{k1}}-{{k}}=1>0$, donc $u_{ {{eval:k1+1}} }>u_{ {{k1}} }$.",
+					"Le signe de la différence **change** : la suite n'est **ni croissante, ni décroissante**."
+				]
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			]
+		},
+		{
+			"statement": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n={{k}}-2n$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- ni croissante, ni décroissante\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "m",
+					"expression": "eval:k"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On étudie le signe de $u_{n+1}-u_n$ pour **tout** entier naturel $n$.",
+					"Pour $n=0$ : $u_1-u_0={{k}}>0$, donc $u_1>u_0$.",
+					"Pour $n={{m}}$ : $u_{ {{eval:m+1}} }-u_{ {{m}} }={{k}}-{{eval:2*m}}=-{{k}}<0$, donc $u_{ {{eval:m+1}} }<u_{ {{m}} }$.",
+					"Le signe de la différence **change** : la suite n'est **ni croissante, ni décroissante**."
+				]
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			]
+		}
+	],
+	"testSpecs": [
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"description": "variation 0 (2n + 3) : « croissante » accepté",
+			"variationIndex": 0,
+			"answers": ["0"]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"description": "variation 0 (2n + 3) : « décroissante » refusé",
+			"variationIndex": 0,
+			"answers": ["1"]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"description": "variation 0 (2n + 3) : « ni croissante, ni décroissante » refusé",
+			"variationIndex": 0,
+			"answers": ["2"]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "5"
+			},
+			"description": "variation 1 (−5) : « croissante » refusé",
+			"variationIndex": 1,
+			"answers": ["0"]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "5"
+			},
+			"description": "variation 1 (−5) : « décroissante » accepté",
+			"variationIndex": 1,
+			"answers": ["1"]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "5"
+			},
+			"description": "variation 1 (−5) : « ni croissante, ni décroissante » refusé",
+			"variationIndex": 1,
+			"answers": ["2"]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "1"
+			},
+			"description": "variation 2 (−n² − 1) : « croissante » refusé",
+			"variationIndex": 2,
+			"answers": ["0"]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "1"
+			},
+			"description": "variation 2 (−n² − 1) : « décroissante » accepté",
+			"variationIndex": 2,
+			"answers": ["1"]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "1"
+			},
+			"description": "variation 2 (−n² − 1) : « ni croissante, ni décroissante » refusé",
+			"variationIndex": 2,
+			"answers": ["2"]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "1",
+				"k": "3"
+			},
+			"description": "variation 3 ((n − 3)² + 1) : « croissante » accepté",
+			"variationIndex": 3,
+			"answers": ["0"]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "1",
+				"k": "3"
+			},
+			"description": "variation 3 ((n − 3)² + 1) : « décroissante » refusé",
+			"variationIndex": 3,
+			"answers": ["1"]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "1",
+				"k": "3"
+			},
+			"description": "variation 3 ((n − 3)² + 1) : « ni croissante, ni décroissante » refusé",
+			"variationIndex": 3,
+			"answers": ["2"]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "3"
+			},
+			"description": "variation 4 (3/(n + 1)) : « croissante » accepté",
+			"variationIndex": 4,
+			"answers": ["0"]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3"
+			},
+			"description": "variation 4 (3/(n + 1)) : « décroissante » refusé",
+			"variationIndex": 4,
+			"answers": ["1"]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3"
+			},
+			"description": "variation 4 (3/(n + 1)) : « ni croissante, ni décroissante » refusé",
+			"variationIndex": 4,
+			"answers": ["2"]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "4",
+				"k1": "5"
+			},
+			"description": "variation 5 (n − 4) : « croissante » refusé",
+			"variationIndex": 5,
+			"answers": ["0"]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "4",
+				"k1": "5"
+			},
+			"description": "variation 5 (n − 4) : « décroissante » refusé",
+			"variationIndex": 5,
+			"answers": ["1"]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "4",
+				"k1": "5"
+			},
+			"description": "variation 5 (n − 4) : « ni croissante, ni décroissante » accepté",
+			"variationIndex": 5,
+			"answers": ["2"]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "5",
+				"m": "5"
+			},
+			"description": "variation 6 (5 − 2n) : « croissante » refusé",
+			"variationIndex": 6,
+			"answers": ["0"]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "5",
+				"m": "5"
+			},
+			"description": "variation 6 (5 − 2n) : « décroissante » refusé",
+			"variationIndex": 6,
+			"answers": ["1"]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "5",
+				"m": "5"
+			},
+			"description": "variation 6 (5 − 2n) : « ni croissante, ni décroissante » accepté",
+			"variationIndex": 6,
+			"answers": ["2"]
+		}
+	]
+}

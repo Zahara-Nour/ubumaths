@@ -4,13 +4,13 @@
 	"grades": ["CE1"],
 	"theme": "Entiers",
 	"domain": "Additionner",
-	"subdomain": "Somme astucieuse",
-	"level": 8,
+	"subdomain": "Somme",
+	"level": 21,
 	"delay": 20,
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+			"statement": "Calcule.\n\n$${{expression1}}$$",
 			"variables": [
 				{
 					"name": "a",
@@ -50,7 +50,7 @@
 			}
 		},
 		{
-			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+			"statement": "Calcule.\n\n$${{expression1}}$$",
 			"variables": [
 				{
 					"name": "a",

@@ -1,0 +1,208 @@
+{
+	"title": "Est-ce un diviseur ?",
+	"description": "Dire si 3, 4, 6, 7, 8 ou 9 est un diviseur d'un entier jusqu'à 999 ; trouver le diviseur parmi quatre nombres qui se suivent (de 2 à 10)",
+	"grades": ["CM1"],
+	"theme": "Entiers",
+	"domain": "Diviser",
+	"subdomain": "Multiples et diviseurs",
+	"level": 3,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "${{d}}$ est-il un diviseur de ${{n}}$ ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3|4|6|7|8|9"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "q",
+					"expression": "4..140"
+				},
+				{
+					"name": "dm",
+					"expression": "eval:d-1"
+				},
+				{
+					"name": "s",
+					"expression": "1..{{dm}}"
+				},
+				{
+					"name": "r",
+					"expression": "eval:s*o"
+				},
+				{
+					"name": "n",
+					"expression": "eval:d*q+r"
+				}
+			],
+			"conditions": ["n>=20", "n<=999"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{o}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Diviseur.** ${{d}}$ est un diviseur de ${{n}}$ si la division de ${{n}}$ par ${{d}}$ tombe juste : le reste est $0$. C'est la même chose que « ${{n}}$ est un multiple de ${{d}}$ ».",
+					"$${{n}} = {{d}} \\times {{q}}{{if:o==1| + {{r}}|}}$$",
+					"{{if:o==0|Le reste est $0$ : \\textcolor{{{color:primary.0}}}{oui}, ${{d}}$ est un diviseur de ${{n}}$.|Le reste est ${{r}}$, pas $0$ : \\textcolor{{{color:primary.0}}}{non}, ${{d}}$ n'est pas un diviseur de ${{n}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "Lequel de ces nombres est un diviseur de ${{n}}$ ?\n\n```choix\n- ${{d}}$\n- ${{e1}}$\n- ${{e2}}$\n- ${{e3}}$\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3..8"
+				},
+				{
+					"name": "e1",
+					"expression": "eval:d-1"
+				},
+				{
+					"name": "e2",
+					"expression": "eval:d+1"
+				},
+				{
+					"name": "e3",
+					"expression": "eval:d+2"
+				},
+				{
+					"name": "q",
+					"expression": "10..140"
+				},
+				{
+					"name": "n",
+					"expression": "eval:d*q"
+				}
+			],
+			"conditions": ["n<=999", "mod(n,e1)!=0", "mod(n,e2)!=0", "mod(n,e3)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Diviseur.** On divise ${{n}}$ par chacun des nombres : le diviseur est celui pour lequel la division tombe juste.",
+					"$${{n}} = {{d}} \\times {{q}}$$ Le reste est $0$ : $\\textcolor{{{color:primary.0}}}{{{d}}}$ est un diviseur de ${{n}}$.",
+					"Pour ${{e1}}$, ${{e2}}$ et ${{e3}}$, le reste n'est pas $0$ : ${{n}} = {{e1}} \\times {{eval:floor(n/e1)}} + {{eval:mod(n,e1)}}$, ${{n}} = {{e2}} \\times {{eval:floor(n/e2)}} + {{eval:mod(n,e2)}}$, ${{n}} = {{e3}} \\times {{eval:floor(n/e3)}} + {{eval:mod(n,e3)}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "7 divise 161 : oui",
+			"variationIndex": 0,
+			"variables": {
+				"d": "7",
+				"o": "0",
+				"q": "23",
+				"dm": "6",
+				"s": "3",
+				"r": "0",
+				"n": "161"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : non",
+			"variationIndex": 0,
+			"variables": {
+				"d": "7",
+				"o": "0",
+				"q": "23",
+				"dm": "6",
+				"s": "3",
+				"r": "0",
+				"n": "161"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 ne divise pas 141 : non",
+			"variationIndex": 0,
+			"variables": {
+				"d": "7",
+				"o": "1",
+				"q": "20",
+				"dm": "6",
+				"s": "1",
+				"r": "1",
+				"n": "141"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : oui",
+			"variationIndex": 0,
+			"variables": {
+				"d": "7",
+				"o": "1",
+				"q": "20",
+				"dm": "6",
+				"s": "1",
+				"r": "1",
+				"n": "141"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 divise 161",
+			"variationIndex": 1,
+			"variables": {
+				"d": "7",
+				"e1": "6",
+				"e2": "8",
+				"e3": "9",
+				"q": "23",
+				"n": "161"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6",
+			"variationIndex": 1,
+			"variables": {
+				"d": "7",
+				"e1": "6",
+				"e2": "8",
+				"e3": "9",
+				"q": "23",
+				"n": "161"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

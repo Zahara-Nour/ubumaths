@@ -1,0 +1,128 @@
+{
+	"id": "7d9d9b81-e11f-4572-8221-21e95107112d",
+	"title": "Formule des coefficients binomiaux",
+	"description": "C(n, 2) = n(n − 1)/2 et C(n, 3) par la formule (piège : n(n − 1) sans diviser par 2)",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Dénombrement",
+	"subdomain": "Coefficients binomiaux",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*(n-1)/2}}"
+				}
+			],
+			"statement": "Calcule $\\binom{ {{n}} }{2}$.\n\n$\\binom{ {{n}} }{2}=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "6..30"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\binom{n}{2}=\\dfrac{n(n-1)}{2}$.",
+					"$\\binom{ {{n}} }{2}=\\dfrac{ {{n}}\\times{{eval:n-1}} }{2}=\\textcolor{{{color:primary.0}}}{{{eval:n*(n-1)/2}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*(n-1)*(n-2)/6}}"
+				}
+			],
+			"statement": "Calcule $\\binom{ {{n}} }{3}$.\n\n$\\binom{ {{n}} }{3}=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "6..12"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\binom{n}{3}=\\dfrac{n!}{3!\\,(n-3)!}=\\dfrac{n(n-1)(n-2)}{3!}$, avec $3!\\,=6$.",
+					"$\\binom{ {{n}} }{3}=\\dfrac{ {{n}}\\times{{eval:n-1}}\\times{{eval:n-2}} }{6}=\\textcolor{{{color:primary.0}}}{{{eval:n*(n-1)*(n-2)/6}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["45"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "10"
+			},
+			"description": "v0 : C(10, 2) = 45",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["90"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "10"
+			},
+			"description": "v0 : n(n − 1) = 90",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["50"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "10"
+			},
+			"description": "v0 : n²/2 = 50",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["56"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "8"
+			},
+			"description": "v1 : C(8, 3) = 56",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["336"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "8"
+			},
+			"description": "v1 : arrangements 336",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\binom{10}{2}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"n": "10"
+			},
+			"description": "v0 : \\binom{10}{2} sans l’option (consigne « Calcule ») : calcul non effectué",
+			"variationIndex": 0
+		}
+	]
+}

@@ -1,0 +1,139 @@
+{
+	"title": "Multiplier une fraction par un entier",
+	"description": "Produit d'une fraction par un entier dans les deux sens (3/7 × 4, 5 × 2/9)",
+	"grades": ["6"],
+	"theme": "Fractions",
+	"domain": "Calculer",
+	"subdomain": "Multiplication",
+	"level": 7,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$$\\frac{{{a}}}{{{b}}} \\times {{n}} = ?$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "gcd(n,b)==1", "a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:a*n}}}{{{b}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fraction $\\times$ entier.** On multiplie le numérateur par l'entier ; le dénominateur ne change pas : $\\frac{a}{b} \\times n = \\frac{a \\times n}{b}$.",
+					"$$\\frac{{{a}}}{{{b}}} \\times {{n}} = \\frac{{{a}} \\times {{n}}}{{{b}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$${{n}} \\times \\frac{{{a}}}{{{b}}} = ?$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "gcd(n,b)==1", "a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:a*n}}}{{{b}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fraction $\\times$ entier.** On multiplie le numérateur par l'entier ; le dénominateur ne change pas : $\\frac{a}{b} \\times n = \\frac{a \\times n}{b}$.",
+					"L'ordre ne compte pas dans un produit : ${{n}} \\times \\frac{{{a}}}{{{b}}} = \\frac{{{a}}}{{{b}}} \\times {{n}}$.",
+					"$${{n}} \\times \\frac{{{a}}}{{{b}}} = \\frac{{{n}} \\times {{a}}}{{{b}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3/7 × 4 = 12/7",
+			"variationIndex": 0,
+			"variables": {
+				"b": "7",
+				"a": "3",
+				"n": "4"
+			},
+			"answers": ["\\frac{12}{7}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 12/28",
+			"variationIndex": 0,
+			"variables": {
+				"b": "7",
+				"a": "3",
+				"n": "4"
+			},
+			"answers": ["\\frac{12}{28}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3/28",
+			"variationIndex": 0,
+			"variables": {
+				"b": "7",
+				"a": "3",
+				"n": "4"
+			},
+			"answers": ["\\frac{3}{28}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5 × 2/9 = 10/9",
+			"variationIndex": 1,
+			"variables": {
+				"b": "9",
+				"a": "2",
+				"n": "5"
+			},
+			"answers": ["\\frac{10}{9}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10/45",
+			"variationIndex": 1,
+			"variables": {
+				"b": "9",
+				"a": "2",
+				"n": "5"
+			},
+			"answers": ["\\frac{10}{45}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

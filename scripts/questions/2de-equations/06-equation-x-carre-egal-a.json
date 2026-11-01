@@ -1,0 +1,254 @@
+{
+	"title": "Résoudre une équation x² = a",
+	"description": "Ensemble des solutions de x² = a : carré parfait, racine non entière, a = 0 ou a < 0, racine à simplifier (x² = 12)",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Equations",
+	"subdomain": "Ensemble des solutions",
+	"level": 6,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $x^2={{eval:(n)^2}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ -{{n}} ; {{n}} \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les nombres dont le carré vaut $a>0$ sont $\\sqrt{a}$ et $-\\sqrt{a}$ : **deux** solutions. Si $a=0$, une seule ($0$) ; si $a<0$, aucune (un carré est positif).",
+					"${{eval:(n)^2}}>0$ et $\\sqrt{ {{eval:(n)^2}} }={{n}}$ : $x^2={{eval:(n)^2}}\\iff x={{n}} \\text{ ou } x=-{{n}}$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\{ -{{n}} ; {{n}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $x^2={{a}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..23"
+				}
+			],
+			"conditions": ["mod(a,4) != 0", "mod(a,9) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ -\\sqrt{ {{a}} } ; \\sqrt{ {{a}} } \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les nombres dont le carré vaut $a>0$ sont $\\sqrt{a}$ et $-\\sqrt{a}$ : **deux** solutions. Si $a=0$, une seule ($0$) ; si $a<0$, aucune (un carré est positif).",
+					"${{a}}>0$ : $x^2={{a}}\\iff x=\\sqrt{ {{a}} } \\text{ ou } x=-\\sqrt{ {{a}} }$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\{ -\\sqrt{ {{a}} } ; \\sqrt{ {{a}} } \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $x^2={{eval:-(t)*(n)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..1"
+				},
+				{
+					"name": "n",
+					"expression": "1..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t==0|\\{ 0 \\}|\\varnothing}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les nombres dont le carré vaut $a>0$ sont $\\sqrt{a}$ et $-\\sqrt{a}$ : **deux** solutions. Si $a=0$, une seule ($0$) ; si $a<0$, aucune (un carré est positif).",
+					"{{if:t==0|$x^2=0\\iff x=0$ : une seule solution.|${{eval:-(n)}}<0$ et un carré n'est jamais négatif : aucune solution.}}",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:t==0|\\{ 0 \\}|\\varnothing}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $x^2={{eval:(k)^2*(m)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..5"
+				},
+				{
+					"name": "m",
+					"expression": "2|3|5|6|7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ -{{k}}\\sqrt{ {{m}} } ; {{k}}\\sqrt{ {{m}} } \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les nombres dont le carré vaut $a>0$ sont $\\sqrt{a}$ et $-\\sqrt{a}$ : **deux** solutions. Si $a=0$, une seule ($0$) ; si $a<0$, aucune (un carré est positif).",
+					"${{eval:(k)^2*(m)}}>0$ : $x=\\sqrt{ {{eval:(k)^2*(m)}} }$ ou $x=-\\sqrt{ {{eval:(k)^2*(m)}} }$.",
+					"On simplifie la racine : $\\sqrt{ {{eval:(k)^2*(m)}} }=\\sqrt{ {{eval:(k)^2}}\\times{{m}} }=\\sqrt{ {{eval:(k)^2}} }\\times\\sqrt{ {{m}} }={{k}}\\sqrt{ {{m}} }$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\{ -{{k}}\\sqrt{ {{m}} } ; {{k}}\\sqrt{ {{m}} } \\}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x² = 49 : S = {−7 ; 7}",
+			"variationIndex": 0,
+			"variables": {
+				"n": "7"
+			},
+			"answers": ["\\{-7;7\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la solution négative oubliée {7}",
+			"variationIndex": 0,
+			"variables": {
+				"n": "7"
+			},
+			"answers": ["\\{7\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a/2 {−24,5 ; 24,5}",
+			"variationIndex": 0,
+			"variables": {
+				"n": "7"
+			},
+			"answers": ["\\{-24{,}5;24{,}5\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x² = 11 : S = {−√11 ; √11}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "11"
+			},
+			"answers": ["\\{-\\sqrt{11};\\sqrt{11}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : {√11}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "11"
+			},
+			"answers": ["\\{\\sqrt{11}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x² = 0 : S = {0}",
+			"variationIndex": 2,
+			"variables": {
+				"t": "0",
+				"n": "5"
+			},
+			"answers": ["\\{0\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ∅ au lieu de {0}",
+			"variationIndex": 2,
+			"variables": {
+				"t": "0",
+				"n": "5"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x² = −5 : S = ∅",
+			"variationIndex": 2,
+			"variables": {
+				"t": "1",
+				"n": "5"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : {−√5 ; √5}",
+			"variationIndex": 2,
+			"variables": {
+				"t": "1",
+				"n": "5"
+			},
+			"answers": ["\\{-\\sqrt{5};\\sqrt{5}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x² = 12 : S = {−2√3 ; 2√3}",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2",
+				"m": "3"
+			},
+			"answers": ["\\{-2\\sqrt{3};2\\sqrt{3}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Racine non simplifiée {−√12 ; √12}",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2",
+				"m": "3"
+			},
+			"answers": ["\\{-\\sqrt{12};\\sqrt{12}\\}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["intervalForm"]
+			}
+		},
+		{
+			"description": "Erreur : {−6 ; 6}",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2",
+				"m": "3"
+			},
+			"answers": ["\\{-6;6\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

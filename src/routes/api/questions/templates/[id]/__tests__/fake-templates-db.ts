@@ -49,7 +49,6 @@ export function templateRow(): Row {
 		options: null,
 		default_display_options: null,
 		test_specs: structuredClone(FIXTURE.testSpecs ?? null),
-		multiple_answers: null,
 		exercise_instruction: null,
 		created_at: '2026-09-28T09:14:03.52+00:00',
 		updated_at: '2026-09-28T09:14:03.52+00:00',

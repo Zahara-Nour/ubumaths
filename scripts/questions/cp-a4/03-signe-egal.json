@@ -10,7 +10,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Quel signe faut-il écrire à la place des points ?\n\n$${{if:f==1|{{a}}+{{b}}\\ldots{{eval:a+b}}|{{if:f==2|{{a}}\\ldots{{b}}={{eval:a+b}}|{{a}}\\ldots{{b}}={{eval:a-b}}}}}}$$",
+			"statement": "Quel signe faut-il écrire à la place des points ?\n\n$${{if:f==1|{{a}}+{{b}}\\ldots{{eval:a+b}}|{{if:f==2|{{a}}\\ldots{{b}}={{eval:a+b}}|{{a}}\\ldots{{b}}={{eval:a-b}}}}}}$$\n\n```choix\n- $+$\n- $-$\n- $=$\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -26,27 +26,20 @@
 				}
 			],
 			"conditions": ["a > b"],
-			"choices": [
-				{
-					"content": "$+$"
-				},
-				{
-					"content": "$-$"
-				},
-				{
-					"content": "$=$"
-				}
-			],
-			"correctChoiceIndex": ["{{eval:mod(f+1,3)}}"],
 			"correction": {
 				"steps": [
 					"{{if:f==1|Les deux côtés ont la même valeur : ${{a}}+{{b}}$ fait ${{eval:a+b}}$. On écrit le signe $=$, qui veut dire « a la même valeur que ».|{{if:f==2|On part de ${{a}}$ et on arrive à ${{eval:a+b}}$, plus grand : on a ajouté ${{b}}$. On écrit le signe $+$.|On part de ${{a}}$ et on arrive à ${{eval:a-b}}$, plus petit : on a enlevé ${{b}}$. On écrit le signe $-$.}}}}",
 					"$${{if:f==1|{{a}}+{{b}}={{eval:a+b}}|{{if:f==2|{{a}}+{{b}}={{eval:a+b}}|{{a}}-{{b}}={{eval:a-b}}}}}}$$"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:mod(f+1,3)}}"
+				}
+			]
 		},
 		{
-			"statement": "Cette égalité est-elle vraie ou fausse ?\n\n$${{if:g==1|{{a}}{{if:s==0|+|-}}{{b}}={{if:s==0|{{eval:a+b+1-t}}|{{eval:a-b+1-t}}}}|{{if:g==2|{{if:s==0|{{eval:a+b+1-t}}|{{eval:a-b+1-t}}}}={{a}}{{if:s==0|+|-}}{{b}}|{{a}}+{{b}}={{if:t==1|{{b}}+{{a}}|{{a}}+{{a}}}}}}}}$$",
+			"statement": "Cette égalité est-elle vraie ou fausse ?\n\n$${{if:g==1|{{a}}{{if:s==0|+|-}}{{b}}={{if:s==0|{{eval:a+b+1-t}}|{{eval:a-b+1-t}}}}|{{if:g==2|{{if:s==0|{{eval:a+b+1-t}}|{{eval:a-b+1-t}}}}={{a}}{{if:s==0|+|-}}{{b}}|{{a}}+{{b}}={{if:t==1|{{b}}+{{a}}|{{a}}+{{a}}}}}}}}$$\n\n```choix\n- Vraie\n- Fausse\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -70,22 +63,18 @@
 				}
 			],
 			"conditions": ["a > b"],
-			"choices": [
-				{
-					"content": "Vraie"
-				},
-				{
-					"content": "Fausse"
-				}
-			],
-			"correctChoiceIndex": ["{{eval:1-t}}"],
 			"correction": {
 				"steps": [
 					"Le signe $=$ veut dire « a la même valeur que » : on calcule chaque côté.",
 					"{{if:g==3|D'un côté ${{a}}+{{b}}={{eval:a+b}}$, de l'autre {{if:t==1|${{b}}+{{a}}={{eval:a+b}}$|${{a}}+{{a}}={{eval:2*a}}$}}.|D'un côté ${{a}}{{if:s==0|+|-}}{{b}}={{if:s==0|{{eval:a+b}}|{{eval:a-b}}}}$, de l'autre ${{if:s==0|{{eval:a+b+1-t}}|{{eval:a-b+1-t}}}}$.}}",
 					"{{if:t==1|Les deux côtés ont la même valeur : l'égalité est **vraie**.|Les deux côtés n'ont pas la même valeur : l'égalité est **fausse**.}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-t}}"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -100,7 +89,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"description": "5 … 3 = 8 : +",
@@ -113,7 +102,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "8 … 3 = 5 : −",
@@ -126,7 +115,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Erreur : + à la place de =",
@@ -139,7 +128,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : = à la place de +",
@@ -152,7 +141,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"description": "Erreur : + à la place de −",
@@ -165,7 +154,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "5 + 3 = 8 : vraie",
@@ -180,7 +169,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "5 + 3 = 9 : fausse",
@@ -195,7 +184,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "8 = 5 + 3 : vraie",
@@ -210,7 +199,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : 8 = 5 + 3 dite fausse",
@@ -225,7 +214,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "8 − 3 = 5 : vraie",
@@ -240,7 +229,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "5 + 3 = 3 + 5 : vraie",
@@ -255,7 +244,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : 5 + 3 = 3 + 5 dite fausse",
@@ -270,7 +259,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "5 + 3 = 5 + 5 : fausse",
@@ -285,7 +274,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		}
 	]
 }

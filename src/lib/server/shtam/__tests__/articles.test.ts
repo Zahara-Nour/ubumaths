@@ -199,3 +199,56 @@ describe('les articles du dépôt', () => {
 		expect(Object.keys(ARTICLE_SOURCES).length).toBeGreaterThan(0);
 	});
 });
+
+describe('espaces insécables', () => {
+	const FINE = ' ';
+	const NBSP = ' ';
+
+	it('colle les guillemets et la ponctuation haute au mot voisin', () => {
+		const a = parseArticle(
+			'triangle-plainte',
+			source({ body: 'Il a dit : « ha ha ». Vraiment ? Oui ! Puis ; rien.' })
+		);
+		expect(a.body).toBe(
+			`Il a dit${NBSP}: «${NBSP}ha ha${NBSP}». Vraiment${FINE}? Oui${FINE}! Puis${FINE}; rien.`
+		);
+	});
+
+	it('traite aussi le titre, le chapeau et le vrai du faux', () => {
+		const a = parseArticle(
+			'triangle-plainte',
+			source({
+				title: 'Mère Ubu et le « petit bout »',
+				lede: "'Il insiste : c’est à lui.'",
+				truth: '## Le vrai du faux\n\nC’est un « paradoxe ».'
+			})
+		);
+		expect(a.title).toBe(`Mère Ubu et le «${NBSP}petit bout${NBSP}»`);
+		expect(a.lede).toBe(`Il insiste${NBSP}: c’est à lui.`);
+		expect(a.truth).toBe(`C’est un «${NBSP}paradoxe${NBSP}».`);
+	});
+
+	it('ne touche ni au code, ni aux formules', () => {
+		const body = [
+			'Voici « ceci » :',
+			'',
+			'```python',
+			'print("a : b ?")',
+			'```',
+			'',
+			'Le code `x ? y : z` et la formule ~f : x \\mapsto x^2~ restent tels quels !'
+		].join('\n');
+		const a = parseArticle('triangle-plainte', source({ body }));
+		expect(a.body).toBe(
+			[
+				`Voici «${NBSP}ceci${NBSP}»${NBSP}:`,
+				'',
+				'```python',
+				'print("a : b ?")',
+				'```',
+				'',
+				`Le code \`x ? y : z\` et la formule ~f : x \\mapsto x^2~ restent tels quels${FINE}!`
+			].join('\n')
+		);
+	});
+});

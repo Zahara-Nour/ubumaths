@@ -1,0 +1,189 @@
+{
+	"title": "Équation d'une droite par un point et un vecteur directeur",
+	"description": "Droite passant par A, de vecteur directeur u : det(AM, u) = 0 développé ; u(0 ; k) donne x = c ; forme libre (pièges : u pris pour vecteur normal, signe de c, (−b ; a) mal lu)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Droites du plan",
+	"subdomain": "Équations de droites",
+	"level": 5,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans un repère du plan, la droite $d$ passe par le point $A({{xa}}\\,;\\,{{ya}})$ et a pour vecteur directeur $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\end{pmatrix}$.\n\nDonne une équation de la droite $d$.\n\n$?$",
+			"variables": [
+				{
+					"name": "xa",
+					"expression": "-5..5!0"
+				},
+				{
+					"name": "ya",
+					"expression": "-5..5!0"
+				},
+				{
+					"name": "u1",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "u2",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "mu1",
+					"expression": "eval:-(u1)"
+				},
+				{
+					"name": "c0",
+					"expression": "eval:(u1)*(ya)-(u2)*(xa)"
+				}
+			],
+			"conditions": ["abs(u1) != abs(u2)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{u2}}x{{eval:-(u1);+}}y{{eval:(u1)*(ya)-(u2)*(xa);+}}=0",
+					"answerKind": "equation"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le point $M(x\\,;\\,y)$ est sur $d$ si et seulement si $\\overrightarrow{AM}\\begin{pmatrix}x{{eval:-(xa);+}}\\\\y{{eval:-(ya);+}}\\end{pmatrix}$ et $\\vec{u}$ sont colinéaires, c'est-à-dire $\\det\\left(\\overrightarrow{AM},\\vec{u}\\right)=0$ :",
+					"$${{u2;()}}(x{{eval:-(xa);+}})-{{u1;()}}(y{{eval:-(ya);+}})=0$$",
+					"On développe : $\\textcolor{{{color:primary.0}}}{{{if:u2==1|x}}{{if:u2==-1|-x}}{{if:u2>1|{{u2}}x}}{{if:u2< -1|{{u2}}x}}{{if:mu1==1|+y}}{{if:mu1==-1|-y}}{{if:mu1>1|+{{mu1}}y}}{{if:mu1< -1|{{mu1}}y}}{{if:c0>0|+{{c0}}}}{{if:c0< 0|{{c0}}}}=0}$.",
+					"Toute équation proportionnelle est aussi juste."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère du plan, la droite $d$ passe par le point $A({{xa}}\\,;\\,{{ya}})$ et a pour vecteur directeur $\\vec{u}\\begin{pmatrix}0\\\\{{u2}}\\end{pmatrix}$.\n\nDonne une équation de la droite $d$.\n\n$?$",
+			"variables": [
+				{
+					"name": "xa",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "ya",
+					"expression": "-6..6"
+				},
+				{
+					"name": "u2",
+					"expression": "1..5;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "x={{xa}}",
+					"answerKind": "equation"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\vec{u}$ a une première coordonnée nulle : $d$ est parallèle à l'axe des ordonnées, tous ses points ont l'abscisse de $A$.",
+					"Une équation de $d$ est donc $\\textcolor{{{color:primary.0}}}{x={{xa}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A(2 ; −1), u(3 ; 2) → 2x − 3y − 7 = 0",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "2",
+				"ya": "-1",
+				"u1": "3",
+				"u2": "2"
+			},
+			"answers": ["2x-3y-7=0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Réduite y = 2/3 x − 7/3",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "2",
+				"ya": "-1",
+				"u1": "3",
+				"u2": "2"
+			},
+			"answers": ["y=\\frac{2}{3}x-\\frac{7}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : u pris pour normal (3x + 2y − 4 = 0)",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "2",
+				"ya": "-1",
+				"u1": "3",
+				"u2": "2"
+			},
+			"answers": ["3x+2y-4=0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signe de c (2x − 3y + 7 = 0)",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "2",
+				"ya": "-1",
+				"u1": "3",
+				"u2": "2"
+			},
+			"answers": ["2x-3y+7=0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u(0 ; 4) → x = −3",
+			"variationIndex": 1,
+			"variables": {
+				"xa": "-3",
+				"ya": "2",
+				"u2": "4"
+			},
+			"answers": ["x=-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écrite 4x + 12 = 0",
+			"variationIndex": 1,
+			"variables": {
+				"xa": "-3",
+				"ya": "2",
+				"u2": "4"
+			},
+			"answers": ["4x+12=0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : y = 2",
+			"variationIndex": 1,
+			"variables": {
+				"xa": "-3",
+				"ya": "2",
+				"u2": "4"
+			},
+			"answers": ["y=2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

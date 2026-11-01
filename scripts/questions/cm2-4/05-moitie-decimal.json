@@ -1,0 +1,234 @@
+{
+	"title": "Calculer la moitié d'un nombre décimal",
+	"description": "Dixièmes pairs (13,6 → 6,8) ; centièmes pairs (1,22 → 0,61) ; dernier chiffre impair (3,9 → 1,95)",
+	"grades": ["CM2"],
+	"theme": "Décimaux",
+	"domain": "Additionner",
+	"subdomain": "Moitié",
+	"level": 2,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Calcule la moitié de ${{eval:n/10;d}}$.\n\nLa moitié de ${{eval:n/10;d}}$ est $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "21..499"
+				},
+				{
+					"name": "A",
+					"expression": "eval:20*floor(n/20)"
+				},
+				{
+					"name": "B",
+					"expression": "eval:n-A"
+				}
+			],
+			"conditions": ["mod(n,2)==0", "mod(n,10)!=0", "mod(n,20)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/20;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On découpe ${{eval:n/10;d}}$ en deux nombres dont la moitié est facile : ${{eval:n/10;d}}={{eval:A/10;d}}+{{eval:B/10;d}}$.",
+					"Moitié de ${{eval:A/10;d}}$ : $\\textcolor{{{color:primary.0}}}{{{eval:A/20;d}}}$. Moitié de ${{eval:B/10;d}}$ : $\\textcolor{{{color:primary.0}}}{{{eval:B/20;d}}}$.",
+					"$${{eval:A/20;d}}+{{eval:B/20;d}}=\\textcolor{{{color:primary.1}}}{{{solution}}}$$",
+					"Vérification : ${{solution}}+{{solution}}={{eval:n/10;d}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule la moitié de ${{eval:n/100;d}}$.\n\nLa moitié de ${{eval:n/100;d}}$ est $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "102..998"
+				},
+				{
+					"name": "A",
+					"expression": "eval:20*floor(n/20)"
+				},
+				{
+					"name": "B",
+					"expression": "eval:n-A"
+				}
+			],
+			"conditions": ["mod(n,2)==0", "mod(n,10)!=0", "mod(n,20)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/200;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On découpe ${{eval:n/100;d}}$ en deux nombres dont la moitié est facile : ${{eval:n/100;d}}={{eval:A/100;d}}+{{eval:B/100;d}}$.",
+					"Moitié de ${{eval:A/100;d}}$ : $\\textcolor{{{color:primary.0}}}{{{eval:A/200;d}}}$. Moitié de ${{eval:B/100;d}}$ : $\\textcolor{{{color:primary.0}}}{{{eval:B/200;d}}}$.",
+					"$${{eval:A/200;d}}+{{eval:B/200;d}}=\\textcolor{{{color:primary.1}}}{{{solution}}}$$",
+					"Vérification : ${{solution}}+{{solution}}={{eval:n/100;d}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule la moitié de ${{eval:n/10;d}}$.\n\nLa moitié de ${{eval:n/10;d}}$ est $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..99"
+				},
+				{
+					"name": "A",
+					"expression": "eval:n-1"
+				},
+				{
+					"name": "B",
+					"expression": "eval:1"
+				}
+			],
+			"conditions": ["mod(n,2)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/20;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On découpe ${{eval:n/10;d}}$ en deux nombres dont la moitié est facile : ${{eval:n/10;d}}={{eval:A/10;d}}+{{eval:B/10;d}}$.",
+					"Moitié de ${{eval:A/10;d}}$ : $\\textcolor{{{color:primary.0}}}{{{eval:A/20;d}}}$. Moitié de ${{eval:B/10;d}}$ : $\\textcolor{{{color:primary.0}}}{{{eval:B/20;d}}}$.",
+					"$${{eval:A/20;d}}+{{eval:B/20;d}}=\\textcolor{{{color:primary.1}}}{{{solution}}}$$",
+					"Vérification : ${{solution}}+{{solution}}={{eval:n/10;d}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "moitié de 13,6 = 6,8",
+			"variationIndex": 0,
+			"variables": {
+				"n": "136"
+			},
+			"answers": ["6,8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : moitié de 13,6 → 6,3 (13 → 6, 6 → 3)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "136"
+			},
+			"answers": ["6,3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : moitié de 13,6 → 7,3",
+			"variationIndex": 0,
+			"variables": {
+				"n": "136"
+			},
+			"answers": ["7,3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "moitié de 12,4 = 6,2",
+			"variationIndex": 0,
+			"variables": {
+				"n": "124"
+			},
+			"answers": ["6,2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "moitié de 1,22 = 0,61",
+			"variationIndex": 1,
+			"variables": {
+				"n": "122"
+			},
+			"answers": ["0,61"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : moitié de 1,22 → 0,11",
+			"variationIndex": 1,
+			"variables": {
+				"n": "122"
+			},
+			"answers": ["0,11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "moitié de 4,86 = 2,43",
+			"variationIndex": 1,
+			"variables": {
+				"n": "486"
+			},
+			"answers": ["2,43"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "moitié de 3,9 = 1,95",
+			"variationIndex": 2,
+			"variables": {
+				"n": "39"
+			},
+			"answers": ["1,95"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : moitié de 3,9 → 1,9 (reste oublié)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "39"
+			},
+			"answers": ["1,9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : moitié de 3,9 → 1,45",
+			"variationIndex": 2,
+			"variables": {
+				"n": "39"
+			},
+			"answers": ["1,45"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "moitié de 0,7 = 0,35",
+			"variationIndex": 2,
+			"variables": {
+				"n": "7"
+			},
+			"answers": ["0,35"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

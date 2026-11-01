@@ -12,6 +12,7 @@
 	  `aria-labelledby` / `aria-describedby` ; la description énumère les données.
 	- Erreur (Q48) : message situé pour le prof, cadre neutre « Figure
 	  indisponible » pour l'élève.
+	- Diagramme en barres à construire (`placer:`) : `BarresPlacer.svelte`.
 
 	@module components/markdown/nodes/StatChart
 -->
@@ -29,6 +30,7 @@
 	import { readContentLocale } from '../content-locale';
 	import { STAT_TEXT } from '$lib/ubumark/utils/stat-chart-text';
 	import StatChart from './StatChart.svelte';
+	import BarresPlacer from './BarresPlacer.svelte';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import { OVER_BUDGET_MESSAGE, readRenderBudget, withinBudget } from '../render-budget';
 
@@ -219,7 +221,10 @@
 	}
 </script>
 
-{#if scene}
+{#if node?.spec?.toPlace && scene}
+	<!-- Diagramme à construire hors question (aperçu, cours) : le geste, rien de jugé -->
+	<BarresPlacer {node} class={className} />
+{:else if scene}
 	<figure class="stat-figure {className}">
 		<!-- Un tableau porte son titre dans <caption> : pas de figcaption en plus -->
 		{#if scene.title && !crossTable && !law && !simulation && !comparison && !frequencyTable}

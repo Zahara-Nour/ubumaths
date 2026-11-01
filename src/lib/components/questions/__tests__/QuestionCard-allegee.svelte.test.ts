@@ -5,13 +5,14 @@
  * Comme le recto de la flash-card : ni titre « Question », ni badge du type, ni
  * intitulés « Énoncé » / « Votre réponse », ni encadré autour de l'énoncé. Pour une
  * question à trous, l'énoncé n'apparaît qu'UNE fois (la zone de saisie le porte
- * déjà) ; pour un QCM : l'énoncé puis les choix.
+ * déjà) ; pour une case choix : l'énoncé puis les choix.
  */
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import QuestionCard from '../QuestionCard.svelte';
-import type { QuestionInstance } from '$lib/questions/types';
-import { resolvedMarkdown } from '$lib/ubumark';
+import { generateInstance } from '$lib/questions/generator/instance-generator';
+import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
+import { resolvedMarkdown, templateMarkdown } from '$lib/ubumark';
 
 const base = {
 	grades: ['6'],
@@ -30,21 +31,24 @@ function blankQuestion(): QuestionInstance {
 	} as unknown as QuestionInstance;
 }
 
-function qcm(): QuestionInstance {
-	return {
+function choiceQuestion(): QuestionInstance {
+	const template = {
 		...base,
-		templateId: 'tpl-qcm',
-		statement: resolvedMarkdown('Quelle est la capitale de la France ?'),
-		choices: [
-			{ content: resolvedMarkdown('Lyon'), isCorrect: false },
-			{ content: resolvedMarkdown('Paris'), isCorrect: true }
-		],
-		shuffledChoices: [
-			{ content: resolvedMarkdown('Lyon'), originalIndex: 0 },
-			{ content: resolvedMarkdown('Paris'), originalIndex: 1 }
-		],
-		correctChoiceIndex: '1'
-	} as QuestionInstance;
+		id: '00000000-0000-4000-8000-0000000000a1',
+		title: 'Capitale',
+		status: 'published',
+		variations: [
+			{
+				statement: templateMarkdown(
+					'Quelle est la capitale de la France ?\n\n```choix\n- Lyon\n- Paris\n```'
+				),
+				blanks: [{ expectedAnswer: '1' }]
+			}
+		]
+	} as unknown as QuestionTemplate;
+	const result = generateInstance(template, 1);
+	if (!result.success) throw new Error('instance non générée');
+	return result.instance;
 }
 
 function occurrences(text: string, needle: string): number {
@@ -74,8 +78,11 @@ describe('QuestionCard — carte allégée', () => {
 		expect(occurrences(container.textContent ?? '', 'Calcule le double de sept.')).toBe(1);
 	});
 
-	it('QCM : l’énoncé une fois, puis les choix', async () => {
-		const { container } = await render(QuestionCard, { instance: qcm(), interactive: true });
+	it('case choix : l’énoncé une fois, puis les choix', async () => {
+		const { container } = await render(QuestionCard, {
+			instance: choiceQuestion(),
+			interactive: true
+		});
 		const text = container.textContent ?? '';
 
 		expect(occurrences(text, 'Quelle est la capitale de la France ?')).toBe(1);
@@ -84,13 +91,19 @@ describe('QuestionCard — carte allégée', () => {
 	});
 
 	it('pas d’encadré autour de l’énoncé', async () => {
-		const { container } = await render(QuestionCard, { instance: qcm(), interactive: true });
+		const { container } = await render(QuestionCard, {
+			instance: choiceQuestion(),
+			interactive: true
+		});
 
 		expect(container.querySelector('.statement-content.border')).toBeNull();
 	});
 
 	it('non interactive : l’énoncé est affiché (lecture seule)', async () => {
-		const { container } = await render(QuestionCard, { instance: qcm(), interactive: false });
+		const { container } = await render(QuestionCard, {
+			instance: choiceQuestion(),
+			interactive: false
+		});
 
 		expect(container.textContent).toContain('Quelle est la capitale de la France ?');
 	});

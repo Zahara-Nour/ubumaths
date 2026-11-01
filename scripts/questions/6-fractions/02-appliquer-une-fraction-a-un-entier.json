@@ -1,0 +1,174 @@
+{
+	"title": "Appliquer une fraction à un entier",
+	"description": "Calculer une fraction d'un entier, en simplifiant d'abord (2/5 de 60 = 2 × 12) ou avec un résultat fractionnaire (5/4 de 3 = 15/4)",
+	"grades": ["6"],
+	"theme": "Fractions",
+	"domain": "Calculer",
+	"subdomain": "Fraction d'une quantité",
+	"level": 4,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$$\\frac{{{p}}}{{{q}}} \\text{ de } {{n}} = ?$$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "k",
+					"expression": "2..12"
+				},
+				{
+					"name": "n",
+					"expression": "eval:q*k"
+				}
+			],
+			"conditions": ["gcd(p,q)==1", "p!=q", "n<=100", "p>=2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p*k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fraction d'un nombre.** Pour calculer une fraction d'un nombre entier, on multiplie la fraction par le nombre : « de » se traduit par « $\\times$ ».",
+					"$\\frac{{{p}}}{{{q}}}$ de ${{n}}$, c'est ${{p}}$ fois $\\frac{1}{{{q}}}$ de ${{n}}$ ; on simplifie d'abord : ${{n}} \\div {{q}} = {{k}}$.",
+					"$$\\frac{{{p}}}{{{q}}} \\times {{n}} = {{p}} \\times \\frac{{{n}}}{{{q}}} = {{p}} \\times {{k}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule. Donne le résultat sous forme d'une fraction.\n\n$$\\frac{{{p}}}{{{q}}} \\text{ de } {{n}} = ?$$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["gcd(p,q)==1", "gcd(n,q)==1", "p!=q", "p>=2"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:p*n}}}{{{q}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fraction d'un nombre.** Pour calculer une fraction d'un nombre entier, on multiplie la fraction par le nombre : « de » se traduit par « $\\times$ ».",
+					"$\\frac{{{p}}}{{{q}}}$ de ${{n}}$, c'est ${{p}}$ fois $\\frac{1}{{{q}}}$ de ${{n}}$, c'est-à-dire ${{p}}$ fois $\\frac{{{n}}}{{{q}}}$.",
+					"$$\\frac{{{p}}}{{{q}}} \\times {{n}} = {{p}} \\times \\frac{{{n}}}{{{q}}} = \\frac{{{p}} \\times {{n}}}{{{q}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2/5 de 60 = 24",
+			"variationIndex": 0,
+			"variables": {
+				"q": "5",
+				"p": "2",
+				"k": "12",
+				"n": "60"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rôles inversés (60 ÷ 2 × 5 = 150)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "5",
+				"p": "2",
+				"k": "12",
+				"n": "60"
+			},
+			"answers": ["150"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : un cinquième seulement (12)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "5",
+				"p": "2",
+				"k": "12",
+				"n": "60"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5/4 de 3 = 15/4",
+			"variationIndex": 1,
+			"variables": {
+				"q": "4",
+				"p": "5",
+				"n": "3"
+			},
+			"answers": ["\\frac{15}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3,75 : la consigne demande une fraction",
+			"variationIndex": 1,
+			"variables": {
+				"q": "4",
+				"p": "5",
+				"n": "3"
+			},
+			"answers": ["3,75"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur : 5/12",
+			"variationIndex": 1,
+			"variables": {
+				"q": "4",
+				"p": "5",
+				"n": "3"
+			},
+			"answers": ["\\frac{5}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 15/12 (dénominateur multiplié aussi)",
+			"variationIndex": 1,
+			"variables": {
+				"q": "4",
+				"p": "5",
+				"n": "3"
+			},
+			"answers": ["\\frac{15}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

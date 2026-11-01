@@ -7,8 +7,7 @@
 		"description": "Nombres inférieurs à $100$",
 		"variations": [
 			{
-				"statement": "Quel est le plus petit de ces 2 nombres ?",
-				"correctChoiceIndex": ["{{if:f<g|0|1}}"],
+				"statement": "Quel est le plus petit de ces 2 nombres ?\n\n```choix\n- $${{f}}$$\n- $${{g}}$$\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -35,18 +34,19 @@
 						"expression": "eval:c*10+d"
 					}
 				],
-				"choices": [
-					{
-						"content": "$${{f}}$$"
-					},
-					{
-						"content": "$${{g}}$$"
-					}
+				"conditions": [
+					"f!=g"
 				],
-				"conditions": ["f!=g"]
+				"blanks": [
+					{
+						"expectedAnswer": "{{if:f<g|0|1}}"
+					}
+				]
 			}
 		],
-		"grades": ["CP"],
+		"grades": [
+			"CP"
+		],
 		"theme": "Entiers",
 		"domain": "Apprivoiser",
 		"subdomain": "Comparer",
@@ -63,10 +63,12 @@
 					"c": "9",
 					"d": "6"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "79 < 96 : mauvais choix",
@@ -77,10 +79,12 @@
 					"c": "9",
 					"d": "6"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "borne : 0 < 99",
@@ -91,10 +95,12 @@
 					"c": "9",
 					"d": "9"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "15 < 91 : bon choix 1",
@@ -105,10 +111,12 @@
 					"c": "1",
 					"d": "5"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			}
 		]
 	}

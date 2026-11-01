@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" font-family="Georgia, 'Times New Roman', serif">
+<style>text{fill:#1B2232;paint-order:stroke;stroke:#F1EDE4;stroke-linejoin:round}.lieu{font-weight:bold;font-style:italic;stroke-width:6px;stroke-opacity:.9}</style>
+<image href="carte-ville.png" width="1024" height="1024"/>
+<g id="lieux">
+<g id="lieu-pont-levis"><title>Le Pont-Levis du Royaume</title><ellipse cx="511" cy="858" rx="42" ry="40" fill="#fff" fill-opacity="0"/><text x="512" y="938" font-size="24" text-anchor="middle" class="lieu">Le Pont-Levis</text></g>
+<g id="lieu-grand-marche"><title>Le Grand Marché Polonais</title><ellipse cx="270" cy="465" rx="46" ry="54" fill="#fff" fill-opacity="0"/><text x="262" y="402" font-size="24" text-anchor="middle" class="lieu">Le Grand Marché</text></g>
+<g id="lieu-caserne"><title>La Caserne des Palotins</title><ellipse cx="729" cy="283" rx="84" ry="84" fill="#fff" fill-opacity="0"/><text x="735" y="396" font-size="24" text-anchor="middle" class="lieu">La Caserne</text></g>
+<g id="lieu-arene"><title>L'Arène des Polonais</title><ellipse cx="602" cy="677" rx="46" ry="46" fill="#fff" fill-opacity="0"/><text x="603" y="748" font-size="24" text-anchor="middle" class="lieu">L'Arène</text></g>
+<g id="lieu-gazette"><title>La Gazette du Royaume</title><ellipse cx="366" cy="514" rx="34" ry="58" fill="#fff" fill-opacity="0"/><text x="322" y="602" font-size="24" text-anchor="middle" class="lieu">La Gazette</text></g>
+<g id="lieu-bibliotheque"><title>La Bibliothèque du Décervelage</title><ellipse cx="552" cy="390" rx="46" ry="42" fill="#fff" fill-opacity="0"/><text x="552" y="340" font-size="24" text-anchor="middle" class="lieu">La Bibliothèque</text></g>
+<g id="lieu-trone-royal"><title>Le Trône Royal (Palais)</title><ellipse cx="512" cy="492" rx="72" ry="72" fill="#fff" fill-opacity="0"/><text x="512" y="608" font-size="24" text-anchor="middle" class="lieu">Le Trône Royal</text></g>
+<g id="lieu-gare"><title>La Gare</title><ellipse cx="920" cy="292" rx="46" ry="30" fill="#fff" fill-opacity="0"/><text x="922" y="348" font-size="24" text-anchor="middle" class="lieu">La Gare</text></g>
+</g>
+</svg>

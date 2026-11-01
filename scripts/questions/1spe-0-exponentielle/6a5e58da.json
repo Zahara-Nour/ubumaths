@@ -1,0 +1,383 @@
+{
+	"id": "6a5e58da-8015-4d0d-9a1f-6c8e8d9cae4d",
+	"title": "Résoudre une inéquation du type eᵘ < eᶜ",
+	"description": "Inéquation avec v constant, réponse en intervalle ; a < 0 dans deux variations",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction exponentielle",
+	"subdomain": "Équations et inéquations",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "]-\\infty;{{eval:(c-b)/a}}["
+				}
+			],
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation $e^{ {{eval:a*x+b}} }<{{if:c==1|e|e^{ {{c}} }}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "-9..9"
+				}
+			],
+			"conditions": ["c != b"],
+			"correction": {
+				"steps": [
+					"La fonction exponentielle est **strictement croissante** sur $\\mathbb{R}$ : elle conserve l'ordre, $e^u<e^v\\iff u<v$.",
+					"$e^{ {{eval:a*x+b}} }<{{if:c==1|e|e^{ {{c}} }}}\\iff {{eval:a*x+b}}<{{c}}\\iff {{eval:a*x}}<{{eval:c-b}}$.",
+					"On divise par ${{a}}>0$ : le sens de l'inégalité ne change pas. $x<{{eval:(c-b)/a}}$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left]-\\infty\\,;{{eval:(c-b)/a}}\\right[ }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "[{{eval:(c-b)/a}};+\\infty["
+				}
+			],
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation $e^{ {{eval:a*x+b}} }\\geqslant {{if:c==1|e|e^{ {{c}} }}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "-9..9"
+				}
+			],
+			"conditions": ["c != b"],
+			"correction": {
+				"steps": [
+					"La fonction exponentielle est **strictement croissante** sur $\\mathbb{R}$ : elle conserve l'ordre, $e^u<e^v\\iff u<v$.",
+					"$e^{ {{eval:a*x+b}} }\\geqslant {{if:c==1|e|e^{ {{c}} }}}\\iff {{eval:a*x+b}}\\geqslant{{c}}\\iff {{eval:a*x}}\\geqslant{{eval:c-b}}$.",
+					"On divise par ${{a}}>0$ : le sens de l'inégalité ne change pas. $x\\geqslant{{eval:(c-b)/a}}$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left[{{eval:(c-b)/a}}\\,;+\\infty\\right[ }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "]{{eval:(c-b)/a}};+\\infty["
+				}
+			],
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation $e^{ {{eval:a*x+b}} }<{{if:c==1|e|e^{ {{c}} }}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "-5..-1"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "-9..9"
+				}
+			],
+			"conditions": ["c != b"],
+			"correction": {
+				"steps": [
+					"La fonction exponentielle est **strictement croissante** sur $\\mathbb{R}$ : elle conserve l'ordre, $e^u<e^v\\iff u<v$.",
+					"$e^{ {{eval:a*x+b}} }<{{if:c==1|e|e^{ {{c}} }}}\\iff {{eval:a*x+b}}<{{c}}\\iff {{eval:a*x}}<{{eval:c-b}}$.",
+					"On divise par ${{a}}<0$ : **le sens de l'inégalité change**. $x>{{eval:(c-b)/a}}$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left]{{eval:(c-b)/a}}\\,;+\\infty\\right[ }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "]-\\infty;{{eval:(c-b)/a}}]"
+				}
+			],
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation $e^{ {{eval:a*x+b}} }\\geqslant {{if:c==1|e|e^{ {{c}} }}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "-5..-1"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "-9..9"
+				}
+			],
+			"conditions": ["c != b"],
+			"correction": {
+				"steps": [
+					"La fonction exponentielle est **strictement croissante** sur $\\mathbb{R}$ : elle conserve l'ordre, $e^u<e^v\\iff u<v$.",
+					"$e^{ {{eval:a*x+b}} }\\geqslant {{if:c==1|e|e^{ {{c}} }}}\\iff {{eval:a*x+b}}\\geqslant{{c}}\\iff {{eval:a*x}}\\geqslant{{eval:c-b}}$.",
+					"On divise par ${{a}}<0$ : **le sens de l'inégalité change**. $x\\leqslant{{eval:(c-b)/a}}$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left]-\\infty\\,;{{eval:(c-b)/a}}\\right] }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["]-\\infty;\\frac{3}{2}["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "4"
+			},
+			"description": "e^{2x+1}<e⁴ : ]-∞;3/2[",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]-\\infty;1{,}5["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "4"
+			},
+			"description": "borne décimale ]-∞;1,5[",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["S=]-\\infty;\\frac{3}{2}["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "4"
+			},
+			"description": "« S = » tapé en tête",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]-\\infty;\\frac{3}{2}]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "4"
+			},
+			"description": "borne incluse à tort",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]\\frac{3}{2};+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "4"
+			},
+			"description": "mauvais sens",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["x<\\frac{3}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "4"
+			},
+			"description": "inégalité au lieu d'un ensemble",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]-\\infty;\\frac{6}{4}["],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["intervalForm"]
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "4"
+			},
+			"description": "borne non simplifiée 6/4",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["[2;+\\infty["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "4"
+			},
+			"description": "e^{3x-2}≥e⁴ : [2;+∞[",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["]2;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "4"
+			},
+			"description": "borne exclue à tort",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["]-\\infty;2]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "4"
+			},
+			"description": "mauvais sens",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["[2;+\\infty]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "4"
+			},
+			"description": "crochet fermé sur l'infini",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["]-\\frac{5}{2};+\\infty["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2",
+				"b": "1",
+				"c": "6"
+			},
+			"description": "e^{-2x+1}<e⁶ : ]-5/2;+∞[",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["]-\\infty;-\\frac{5}{2}["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-2",
+				"b": "1",
+				"c": "6"
+			},
+			"description": "sens non changé en divisant par a<0",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["]\\frac{5}{2};+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-2",
+				"b": "1",
+				"c": "6"
+			},
+			"description": "erreur de signe sur la borne",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["]-\\infty;2]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-3",
+				"b": "2",
+				"c": "-4"
+			},
+			"description": "e^{-3x+2}≥e⁻⁴ : ]-∞;2]",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["[2;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-3",
+				"b": "2",
+				"c": "-4"
+			},
+			"description": "sens non changé en divisant par a<0",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["]-\\infty;2["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-3",
+				"b": "2",
+				"c": "-4"
+			},
+			"description": "borne exclue à tort",
+			"variationIndex": 3
+		}
+	]
+}

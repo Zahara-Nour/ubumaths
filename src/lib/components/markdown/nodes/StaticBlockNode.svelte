@@ -29,11 +29,15 @@
 	import StatChart from './StatChart.svelte';
 	import FigureBlock from './FigureBlock.svelte';
 	import QrBlock from './QrBlock.svelte';
+	import ScratchBlock from './ScratchBlock.svelte';
 	import Horloge from './Horloge.svelte';
+	import Partage from './Partage.svelte';
+	import Espace from './Espace.svelte';
 	import Operation from './Operation.svelte';
 	import Collection from './Collection.svelte';
 	import Monnaie from './Monnaie.svelte';
 	import ChoiceBlock from './ChoiceBlock.svelte';
+	import RangerPlacer from './RangerPlacer.svelte';
 
 	interface Props {
 		node: BlockNode;
@@ -88,8 +92,14 @@
 	<StatChart {node} />
 {:else if node.type === 'qr'}
 	<QrBlock {node} />
+{:else if node.type === 'scratch'}
+	<ScratchBlock {node} />
 {:else if node.type === 'horloge'}
 	<Horloge {node} />
+{:else if node.type === 'partage'}
+	<Partage {node} />
+{:else if node.type === 'espace'}
+	<Espace {node} />
 {:else if node.type === 'operation'}
 	<Operation {node} />
 {:else if node.type === 'collection'}
@@ -98,4 +108,6 @@
 	<Monnaie {node} />
 {:else if node.type === 'choice'}
 	<ChoiceBlock {node} />
+{:else if node.type === 'ranger'}
+	<RangerPlacer {node} />
 {/if}

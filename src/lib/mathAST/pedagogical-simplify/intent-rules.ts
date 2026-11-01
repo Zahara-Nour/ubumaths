@@ -37,6 +37,7 @@ import {
 // Direct import (bypassing the rule-sets barrel) to avoid a Rollup chunk-cycle
 // warning between `rule-sets/index.ts` and the rule set.
 import { commonFactorRules } from '../pattern/rule-sets/common-factor';
+import { trigRemarkableStepRules } from '../pattern/rule-sets/trig';
 import { factoriserIdentityRules } from './pedagogical-rules/polynomial-identities';
 import type { PedagogicalSimplifyCategory, SimplifyIntent } from './types';
 
@@ -54,6 +55,17 @@ export interface IntentRuleFlags {
 	readonly enableAbs: boolean;
 	readonly enableHyperbolic: boolean;
 }
+
+/**
+ * Parité, période et valeurs remarquables de sin, cos, tan : ce que `réduire`
+ * applique aux fonctions trigonométriques, et ce que `.développer` et
+ * `.résoudre` calculent d'abord (`generateRemarkableValueSteps`, pipeline).
+ */
+export const TRIG_REDUCTION_RULES: readonly Rule[] = [
+	...trigNegativeAngleRules,
+	...trigPeriodicRules,
+	...trigRemarkableStepRules
+];
 
 export interface SelectedRules {
 	/** Pattern rules active for the intent + flags. No duplicates. */
@@ -134,9 +146,9 @@ export function selectRulesForIntent(
 			// `|−x| = |x|`, `||x|| = |x|`, `ln(exp(x))`, `exp(a)·exp(b)`. Ici seulement :
 			// dans `factoriser`, `exp-product` passerait avant la mise en facteur et
 			// détruirait le facteur commun (`exp(x)exp(x)+exp(x)`, revue du lot 3)
-			const trigReductions = flags.enableTrig
-				? [...trigNegativeAngleRules, ...trigPeriodicRules]
-				: [];
+			// Valeurs remarquables (`cos(π/3) = 1/2`) : une identité enseignée, donc ici,
+			// avec son étape, jamais dans `tidy` (S4, chantier valeurs-remarquables)
+			const trigReductions = flags.enableTrig ? TRIG_REDUCTION_RULES : [];
 			const absReductions = flags.enableAbs ? absReduceRules : [];
 			const expReductions = flags.enableLogExp ? expFunctionRules : [];
 			const rules = dedupeByName([
@@ -234,6 +246,12 @@ const RULE_CATEGORY_MAP: ReadonlyMap<string, PedagogicalSimplifyCategory> = new 
 	['tan-negative', 'identites-trig'],
 	['sin-period-2pi', 'identites-trig'],
 	['cos-period-2pi', 'identites-trig'],
+	['sin-remarkable-period', 'identites-trig'],
+	['cos-remarkable-period', 'identites-trig'],
+	['tan-remarkable-period', 'identites-trig'],
+	['sin-remarkable-value', 'identites-trig'],
+	['cos-remarkable-value', 'identites-trig'],
+	['tan-remarkable-value', 'identites-trig'],
 	['sin-plus-pi', 'identites-trig'],
 	['cos-plus-pi', 'identites-trig'],
 	['tan-plus-pi-over-2', 'identites-trig'],

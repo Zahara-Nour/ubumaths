@@ -1,0 +1,184 @@
+{
+	"title": "Relation de Chasles",
+	"description": "Simplifier une somme de vecteurs avec la relation de Chasles (deux ou trois termes, aller et retour, termes dans le désordre)",
+	"grades": ["3"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs",
+	"subdomain": "Chasles",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Simplifie : $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}} + \\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}}$.\n\n```choix\n- $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}}$\n- $\\overrightarrow{{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}}$\n- $\\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}}$\n- $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}}$\n```",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Relation de Chasles** : pour tous points $X$, $Y$, $Z$, $\\overrightarrow{XY} + \\overrightarrow{YZ} = \\overrightarrow{XZ}$ (l'extrémité du premier est l'origine du second).",
+					"$\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}} + \\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}} = \\textcolor{{{color:primary.0}}}{\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Simplifie : $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}} + \\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}} + \\overrightarrow{{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}{{if:j==0|D|}}{{if:j==1|Q|}}{{if:j==2|H|}}{{if:j==3|U|}}}$.\n\n```choix\n- $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|D|}}{{if:j==1|Q|}}{{if:j==2|H|}}{{if:j==3|U|}}}$\n- $\\overrightarrow{{{if:j==0|D|}}{{if:j==1|Q|}}{{if:j==2|H|}}{{if:j==3|U|}}{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}}$\n- $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}}$\n- $\\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|D|}}{{if:j==1|Q|}}{{if:j==2|H|}}{{if:j==3|U|}}}$\n```",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Relation de Chasles** : pour tous points $X$, $Y$, $Z$, $\\overrightarrow{XY} + \\overrightarrow{YZ} = \\overrightarrow{XZ}$ (l'extrémité du premier est l'origine du second).",
+					"$\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}} + \\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}} = \\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}}$, donc la somme vaut $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}} + \\overrightarrow{{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}{{if:j==0|D|}}{{if:j==1|Q|}}{{if:j==2|H|}}{{if:j==3|U|}}} = \\textcolor{{{color:primary.0}}}{\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|D|}}{{if:j==1|Q|}}{{if:j==2|H|}}{{if:j==3|U|}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Simplifie : $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}} + \\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}}$.\n\n```choix\n- $\\vec{0}$\n- $2\\,\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}}$\n- $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}}$\n- $\\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}}$\n```",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Relation de Chasles** : pour tous points $X$, $Y$, $Z$, $\\overrightarrow{XY} + \\overrightarrow{YZ} = \\overrightarrow{XZ}$ (l'extrémité du premier est l'origine du second).",
+					"$\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}} + \\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}} = \\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}} = \\textcolor{{{color:primary.0}}}{\\vec{0}}$ : aller de ${{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}$ à ${{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}$ puis revenir, c'est ne pas bouger. $\\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}}$ est l'opposé de $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Simplifie : $\\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}} + \\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}}$.\n\n```choix\n- $\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}}$\n- $\\overrightarrow{{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}}$\n- $\\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}}$\n- $\\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}}$\n```",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On peut changer l'ordre des termes d'une somme : $\\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}} + \\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}} = \\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}} + \\overrightarrow{{{if:j==0|B|}}{{if:j==1|N|}}{{if:j==2|F|}}{{if:j==3|S|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}}$.",
+					"**Relation de Chasles** : pour tous points $X$, $Y$, $Z$, $\\overrightarrow{XY} + \\overrightarrow{YZ} = \\overrightarrow{XZ}$ (l'extrémité du premier est l'origine du second).",
+					"Donc la somme vaut $\\textcolor{{{color:primary.0}}}{\\overrightarrow{{{if:j==0|A|}}{{if:j==1|M|}}{{if:j==2|E|}}{{if:j==3|R|}}{{if:j==0|C|}}{{if:j==1|P|}}{{if:j==2|G|}}{{if:j==3|T|}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "AB + BC = AC",
+			"variationIndex": 0,
+			"variables": {
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : CA",
+			"variationIndex": 0,
+			"variables": {
+				"j": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "MN + NP + PQ = MQ",
+			"variationIndex": 1,
+			"variables": {
+				"j": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : MP (un terme oublié)",
+			"variationIndex": 1,
+			"variables": {
+				"j": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "EF + FE = 0",
+			"variationIndex": 2,
+			"variables": {
+				"j": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 EF",
+			"variationIndex": 2,
+			"variables": {
+				"j": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "ST + RS = RT",
+			"variationIndex": 3,
+			"variables": {
+				"j": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : TR",
+			"variationIndex": 3,
+			"variables": {
+				"j": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

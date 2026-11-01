@@ -1,0 +1,267 @@
+{
+	"title": "Problèmes de division euclidienne",
+	"description": "Interpréter le quotient et le reste, calculs de tête : boîtes pleines et reste (boîtes de 6, 10, 12), nombre de cars (un de plus pour le reste), jours en semaines et jours, heures en jours, minutes en heures",
+	"grades": ["6"],
+	"theme": "Entiers",
+	"domain": "Problèmes",
+	"subdomain": "Division euclidienne",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On range ${{N}}$ œufs dans des boîtes de ${{d}}$. Combien de boîtes pleines obtient-on ? Combien d'œufs reste-t-il ?\n\n$$?~\\text{boîtes pleines et}~?~\\text{œufs restants}$$",
+			"variables": [
+				{
+					"name": "sd",
+					"expression": "0..2"
+				},
+				{
+					"name": "d",
+					"expression": "{{if:sd==0|6|{{if:sd==1|10|12}}}}"
+				},
+				{
+					"name": "q",
+					"expression": "3..15"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "N",
+					"expression": "eval:d*q+r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Division euclidienne.** Diviser $N$ par $d$, c'est trouver le quotient $q$ et le reste $r$ tels que $N = (d \\times q) + r$, avec un reste plus petit que $d$.",
+					"$${{N}} = ({{d}} \\times \\textcolor{{{color:primary.0}}}{{{q}}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+					"On obtient $\\textcolor{{{color:primary.0}}}{{{q}}}$ boîtes pleines et il reste $\\textcolor{{{color:primary.1}}}{{{r}}}$ œuf{{if:r>1|s|}}."
+				]
+			}
+		},
+		{
+			"statement": "${{E}}$ élèves partent en sortie. Un car a ${{c}}$ places. Combien de cars faut-il, au minimum, pour transporter tous les élèves ?\n\n$$?~\\text{cars}$$",
+			"variables": [
+				{
+					"name": "sc",
+					"expression": "0..4"
+				},
+				{
+					"name": "c",
+					"expression": "{{if:sc==0|30|{{if:sc==1|40|{{if:sc==2|45|{{if:sc==3|50|60}}}}}}}}"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{eval:c-1}}"
+				},
+				{
+					"name": "E",
+					"expression": "eval:c*q+r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Division euclidienne.** Diviser $N$ par $d$, c'est trouver le quotient $q$ et le reste $r$ tels que $N = (d \\times q) + r$, avec un reste plus petit que $d$.",
+					"$${{E}} = ({{c}} \\times {{q}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+					"${{q}}$ cars pleins ne suffisent pas : il reste ${{r}}$ élève{{if:r>1|s|}}. Il faut un car de plus : $\\textcolor{{{color:primary.0}}}{{{solution}}}$ cars."
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$${{N}}~\\text{{{if:s==0|jours|{{if:s==1|heures|minutes}}}}} = ?~\\text{{{if:s==0|semaines|{{if:s==1|jours|heures}}}}}~?~\\text{{{if:s==0|jours|{{if:s==1|heures|minutes}}}}}$$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "d",
+					"expression": "{{if:s==0|7|{{if:s==1|24|60}}}}"
+				},
+				{
+					"name": "q",
+					"expression": "2..10"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "N",
+					"expression": "eval:d*q+r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une {{if:s==0|semaine|{{if:s==1|journée|heure}}}} compte ${{d}}$ {{if:s==0|jours|{{if:s==1|heures|minutes}}}} : on fait la division euclidienne de ${{N}}$ par ${{d}}$.",
+					"$${{N}} = ({{d}} \\times \\textcolor{{{color:primary.0}}}{{{q}}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+					"$${{N}}~\\text{{{if:s==0|jours|{{if:s==1|heures|minutes}}}}} = \\textcolor{{{color:primary.0}}}{{{q}}}~\\text{{{if:s==0|semaines|{{if:s==1|jours|heures}}}}}~\\textcolor{{{color:primary.1}}}{{{r}}}~\\text{{{if:s==0|jour|{{if:s==1|heure|minute}}}}{{if:r>1|s|}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "103 œufs, boîtes de 12 : 8 et 7",
+			"variationIndex": 0,
+			"variables": {
+				"sd": "2",
+				"d": "12",
+				"q": "8",
+				"r": "7",
+				"N": "103"
+			},
+			"answers": ["8", "7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : quotient et reste échangés",
+			"variationIndex": 0,
+			"variables": {
+				"sd": "2",
+				"d": "12",
+				"q": "8",
+				"r": "7",
+				"N": "103"
+			},
+			"answers": ["7", "8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : quotient décimal (8,58)",
+			"variationIndex": 0,
+			"variables": {
+				"sd": "2",
+				"d": "12",
+				"q": "8",
+				"r": "7",
+				"N": "103"
+			},
+			"answers": ["8,58", "7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "230 élèves, 45 places : 6 cars",
+			"variationIndex": 1,
+			"variables": {
+				"sc": "2",
+				"c": "45",
+				"q": "5",
+				"r": "5",
+				"E": "230"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le reste oublié (5)",
+			"variationIndex": 1,
+			"variables": {
+				"sc": "2",
+				"c": "45",
+				"q": "5",
+				"r": "5",
+				"E": "230"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : quotient décimal (5,1)",
+			"variationIndex": 1,
+			"variables": {
+				"sc": "2",
+				"c": "45",
+				"q": "5",
+				"r": "5",
+				"E": "230"
+			},
+			"answers": ["5,1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "66 jours = 9 semaines 3 jours",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"d": "7",
+				"q": "9",
+				"r": "3",
+				"N": "66"
+			},
+			"answers": ["9", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 9,4 semaines",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"d": "7",
+				"q": "9",
+				"r": "3",
+				"N": "66"
+			},
+			"answers": ["9,4", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "150 min = 2 h 30 min",
+			"variationIndex": 2,
+			"variables": {
+				"s": "2",
+				"d": "60",
+				"q": "2",
+				"r": "30",
+				"N": "150"
+			},
+			"answers": ["2", "30"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

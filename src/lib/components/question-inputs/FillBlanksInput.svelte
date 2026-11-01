@@ -49,6 +49,7 @@
 	} from '$lib/components/markdown/utils/math-utils';
 	import { toFrenchDecimal } from '$lib/utils/french-math';
 	import { operationCaseCount } from '$lib/ubumark/utils/operation-division-answer';
+	import { barsCaseCount } from '$lib/ubumark/utils/barres-placer';
 	import { buildUnitsKeyboardLayout, unitKeysFor } from '$lib/questions/units/keyboard-units';
 	import { buildIntervalsKeyboardLayout } from '$lib/questions/intervals/keyboard-intervals';
 	import { buildVectorsKeyboardLayout } from '$lib/questions/vectors/keyboard-vectors';
@@ -73,6 +74,13 @@
 	import Operation from '$lib/components/markdown/nodes/Operation.svelte';
 	import Collection from '$lib/components/markdown/nodes/Collection.svelte';
 	import NumberLine from '$lib/components/markdown/nodes/NumberLine.svelte';
+	import Courbe from '$lib/components/markdown/nodes/Courbe.svelte';
+	import HorlogePlacer from '$lib/components/markdown/nodes/HorlogePlacer.svelte';
+	import BarresPlacer from '$lib/components/markdown/nodes/BarresPlacer.svelte';
+	import RangerPlacer from '$lib/components/markdown/nodes/RangerPlacer.svelte';
+	import PartageColorier from '$lib/components/markdown/nodes/PartageColorier.svelte';
+	import CubesGeste from '$lib/components/markdown/nodes/CubesGeste.svelte';
+	import PatronGeste from '$lib/components/markdown/nodes/PatronGeste.svelte';
 	import Monnaie from '$lib/components/markdown/nodes/Monnaie.svelte';
 	import BuildAnswer from '$lib/components/questions/BuildAnswer.svelte';
 	import FigureBlock from '$lib/components/markdown/nodes/FigureBlock.svelte';
@@ -208,9 +216,15 @@
 		if (node.type === 'operation') return node.caseIndex !== undefined;
 		if (node.type === 'collection') return node.caseIndex !== undefined;
 		if (node.type === 'number-line') return node.caseIndex !== undefined;
+		if (node.type === 'horloge') return node.caseIndex !== undefined;
+		if (node.type === 'courbe') return node.caseIndex !== undefined;
+		if (node.type === 'partage') return node.caseIndex !== undefined;
+		if (node.type === 'espace') return node.caseIndex !== undefined;
+		if (node.type === 'stat-chart') return node.caseIndex !== undefined;
 		if (node.type === 'monnaie') return node.caseIndex !== undefined;
 		if (node.type === 'figure') return node.construction?.caseIndex !== undefined;
 		if (node.type === 'choice') return node.caseIndex !== undefined;
+		if (node.type === 'ranger') return node.caseIndex !== undefined;
 		return false;
 	}
 
@@ -448,13 +462,13 @@
 	 * Une case à remplir, dans l'ordre de l'écran : prompt d'un champ MathLive, champ texte,
 	 * ou grille d'un bloc ```operation (ses cases forment UNE réponse ; division
 	 * euclidienne : deux, le quotient puis le reste), ou plan d'une collection ou d'une monnaie à construire,
-	 * ou droite à placer
+	 * ou droite ou horloge à placer, ou diagramme en barres à construire, ou figure à colorier
 	 */
 	type Slot =
 		| { field: MathfieldElement; promptId: string }
 		| { input: HTMLInputElement }
 		| { operation: HTMLElement; index: number }
-		| { build: HTMLElement; index: number };
+		| { build: HTMLElement; index: number; count: number };
 
 	/**
 	 * Cases dans l'ordre du DOM, qui est l'ordre visuel : un tableau `:table-h` est
@@ -469,7 +483,8 @@
 		return [...elements].flatMap((element): Slot[] => {
 			if (element instanceof HTMLInputElement) return element.disabled ? [] : [{ input: element }];
 			if (element.dataset.construireCase !== undefined) {
-				return [{ build: element, index: Number(element.dataset.construireCase) }];
+				const index = Number(element.dataset.construireCase);
+				return [{ build: element, index, count: Number(element.dataset.construireCases ?? 1) }];
 			}
 			if (element.dataset.operationCase !== undefined) {
 				return [{ operation: element, index: Number(element.dataset.operationCase) }];
@@ -482,7 +497,12 @@
 	}
 
 	function slotValue(slot: Slot): string {
-		if ('operation' in slot || 'build' in slot) return values[slot.index] ?? '';
+		if ('build' in slot) {
+			// Droite à plusieurs points : vide tant qu'un point manque
+			const cases = Array.from({ length: slot.count }, (_, k) => values[slot.index + k] ?? '');
+			return cases.some((value) => value === '') ? '' : cases.join(' ');
+		}
+		if ('operation' in slot) return values[slot.index] ?? '';
 		return 'input' in slot ? slot.input.value : (slot.field.getPromptValue(slot.promptId) ?? '');
 	}
 
@@ -491,7 +511,9 @@
 		if ('build' in slot) {
 			// Plan vide : le premier bouton de la réserve ; droite à placer : la droite
 			slot.build
-				.querySelector<HTMLElement>('.construire-ajouter:not(:disabled), [role="slider"]')
+				.querySelector<HTMLElement>(
+					'.construire-ajouter:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), .partage-colorier [role="button"]:not([aria-disabled="true"]), .cubes-geste [role="button"]:not([aria-disabled="true"]), .cubes-saisie input:not(:disabled), .patron-geste [role="button"]:not([aria-disabled="true"])'
+				)
 				?.focus();
 			return;
 		}
@@ -859,15 +881,168 @@
 					/>
 				{/if}
 			{:else if node.type === 'number-line' && node.caseIndex !== undefined && node.placer !== undefined}
-				<!-- Droite à placer : l'élève pose son point, la graduation est la réponse -->
+				<!-- Droite à placer : l'élève pose ses points, une case par point (N, N + 1…),
+				     la graduation de chacun est sa réponse -->
+				{@const firstCase = node.caseIndex}
+				{@const caseCount = node.placer.length}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : la droite avec les points justes -->
+					<BuildAnswer kind="line" source={node.source ?? ''} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={firstCase} data-construire-cases={caseCount}>
+						<NumberLine
+							{node}
+							answers={node.placer.map((_, k) => ({
+								value: inputStates[firstCase + k]?.value ?? '',
+								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value: string) => handleInputChange(firstCase + k, value)
+							}))}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'courbe' && node.caseIndex !== undefined && node.spec?.placer !== undefined}
+				<!-- Repère à points à placer : l'élève pose ses points, une case par point
+				     (N, N + 1…), les coordonnées de chacun sont sa réponse -->
+				{@const firstCase = node.caseIndex}
+				{@const caseCount = node.spec.placer.length}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : le repère avec les points justes -->
+					<BuildAnswer kind="courbe" source={node.source} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={firstCase} data-construire-cases={caseCount}>
+						<Courbe
+							{node}
+							answers={node.spec.placer.map((_, k) => ({
+								value: inputStates[firstCase + k]?.value ?? '',
+								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value: string) => handleInputChange(firstCase + k, value)
+							}))}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'stat-chart' && node.caseIndex !== undefined && node.spec?.toPlace}
+				<!-- Diagramme en barres à construire : l'élève monte ses barres, une case par
+				     barre (N, N + 1…), la hauteur de chacune est sa réponse ; `axe: à choisir` :
+				     la case N est l'échelle, les barres suivent -->
+				{@const firstCase = node.caseIndex}
+				{@const caseCount = barsCaseCount(node.spec)}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : le diagramme juste -->
+					<BuildAnswer kind="barres" source={node.source} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={firstCase} data-construire-cases={caseCount}>
+						<BarresPlacer
+							{node}
+							answers={Array.from({ length: caseCount }, (_, k) => ({
+								value: inputStates[firstCase + k]?.value ?? '',
+								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value: string) => handleInputChange(firstCase + k, value)
+							}))}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'ranger' && node.caseIndex !== undefined && node.errors.length === 0}
+				<!-- Étiquettes à ranger : l'élève pose une étiquette par place, une case par place
+				     (N, N + 1…), la position affichée de l'étiquette posée est la réponse -->
+				{@const firstCase = node.caseIndex}
+				{@const caseCount = node.labels.length}
+				{@const expected = node.labels.map((_, k) => blanks[firstCase + k]?.expectedAnswer ?? '')}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : les étiquettes rangées -->
+					<BuildAnswer
+						kind="ranger"
+						source={node.source}
+						answer={null}
+						status="solution"
+						{expected}
+					/>
+				{:else}
+					<div data-construire-case={firstCase} data-construire-cases={caseCount}>
+						<RangerPlacer
+							{node}
+							expected={flashMode ? undefined : expected}
+							answers={node.labels.map((_, k) => ({
+								value: inputStates[firstCase + k]?.value ?? '',
+								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value: string) => handleInputChange(firstCase + k, value)
+							}))}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'horloge' && node.caseIndex !== undefined && node.spec?.placer !== undefined}
+				<!-- Horloge à placer : l'élève pose les deux aiguilles, leurs crans sont la réponse -->
 				{@const caseIndex = node.caseIndex}
 				{@const state = inputStates[caseIndex]}
 				{#if showCorrectAnswers}
-					<!-- Bonne réponse : la droite avec le point juste -->
-					<BuildAnswer kind="line" source={node.source ?? ''} answer={null} status="solution" />
+					<!-- Bonne réponse : le cadran à l'heure juste -->
+					<BuildAnswer kind="horloge" source={node.source} answer={null} status="solution" />
 				{:else}
 					<div data-construire-case={caseIndex}>
-						<NumberLine
+						<HorlogePlacer
+							{node}
+							answer={{
+								value: state?.value ?? '',
+								isCorrect: flashMode ? null : (state?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value) => handleInputChange(caseIndex, value)
+							}}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'partage' && node.caseIndex !== undefined && node.spec?.colorier !== undefined}
+				<!-- Figure à colorier : l'élève colorie des parts, leurs rangs sont la réponse -->
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : la figure juste, les premières parts coloriées -->
+					<BuildAnswer kind="partage" source={node.source} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={caseIndex}>
+						<PartageColorier
+							{node}
+							answer={{
+								value: state?.value ?? '',
+								isCorrect: flashMode ? null : (state?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value) => handleInputChange(caseIndex, value)
+							}}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'espace' && node.genre === 'patron' && node.caseIndex !== undefined && node.spec?.task !== undefined && node.errors.length === 0}
+				<!-- Patron à geste : l'élève touche des faces, ou pose les faces manquantes -->
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : les faces attendues, ou le patron du prof -->
+					<BuildAnswer kind="patron" source={node.source} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={caseIndex}>
+						<PatronGeste
+							{node}
+							answer={{
+								value: state?.value ?? '',
+								isCorrect: flashMode ? null : (state?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value) => handleInputChange(caseIndex, value)
+							}}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'espace' && node.genre === 'cubes' && node.caseIndex !== undefined && node.spec?.task !== undefined && node.errors.length === 0}
+				<!-- Assemblage de cubes à geste : l'élève colorie une vue ou écrit les hauteurs -->
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : la vue coloriée, ou les hauteurs du bloc -->
+					<BuildAnswer kind="cubes" source={node.source} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={caseIndex}>
+						<CubesGeste
 							{node}
 							answer={{
 								value: state?.value ?? '',

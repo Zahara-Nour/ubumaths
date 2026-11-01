@@ -13,7 +13,8 @@ export const horlogeEntry: BlockCatalogEntry = {
 	title: 'Horloge à aiguilles',
 	fences: ['horloge'],
 	nodeType: 'horloge',
-	summary: 'Une à quatre horloges à lire ou à comparer, cadran 12 ou 24 heures.',
+	summary:
+		'Une à quatre horloges à lire ou à comparer, cadran 12 ou 24 heures ; dans une question, une horloge où l’élève place les aiguilles.',
 	intro:
 		'Le bloc dessine une horloge par heure donnée. La petite aiguille avance avec les minutes, comme sur une vraie horloge. L’heure n’est jamais écrite à côté : c’est la réponse.',
 	settingGroups: [
@@ -58,8 +59,20 @@ export const horlogeEntry: BlockCatalogEntry = {
 				{
 					key: 'taille',
 					values: '2 à 8 cm',
-					defaultValue: '4 cm (3 cm dans un choix de QCM)',
+					defaultValue: '4 cm (3 cm dans un choix de QCM, 6 cm à placer)',
 					description: 'Diamètre du cadran, à l’écran comme sur la fiche PDF.'
+				}
+			]
+		},
+		{
+			title: 'Dans une question : placer les aiguilles',
+			settings: [
+				{
+					key: 'placer',
+					values: 'une heure, écrite 9 h, 9 h 25 ou 14 h 25 (à la place de heure:)',
+					defaultValue: 'aucune',
+					description:
+						'Un cadran sans aiguilles : l’élève pose la petite et la grande aiguille (étiquettes sous le cadran, toucher, boutons ◀ ▶). Juste si la grande aiguille est sur la bonne minute et la petite dans le bon secteur : pile sur l’heure à minutes = 0, entre l’heure et la suivante sinon, ou à sa vraie place (9 h 05 : sur le 9). 14 h 25 se place comme 2 h 25. Jamais écrite à l’écran. Une légende au plus ; minutes: cachées refusé. Sur le PDF, le cadran sans aiguilles : l’enfant les dessine.'
 				}
 			]
 		}
@@ -91,6 +104,12 @@ export const horlogeEntry: BlockCatalogEntry = {
 			explanation: '15 h 45 se dessine comme 3 h 45 ; la couronne intérieure aide à lire 15.'
 		},
 		{
+			title: 'Placer les aiguilles (question)',
+			source: fence('horloge', 'placer: 9 h 25'),
+			explanation:
+				'Dans une question, l’élève pose les deux aiguilles ; la réponse est juste à 9 h 25. La consigne (« Place les aiguilles : il est 9 h 25. ») va dans l’énoncé, au-dessus.'
+		},
+		{
 			title: 'Sans aucun repère',
 			source: fence('horloge', 'heure: 4 h 20', 'chiffres: aucun', 'graduations: aucune'),
 			explanation: 'Un cadran nu, pour lire avec la seule position des aiguilles.'
@@ -108,6 +127,12 @@ export const horlogeEntry: BlockCatalogEntry = {
 			source: fence('horloge', 'heure: 8 h', 'légendes: Matin ; Midi'),
 			message: '2 légende(s) pour 1 horloge(s)',
 			explanation: 'Autant de légendes que d’heures, ou aucune.'
+		},
+		{
+			title: 'placer: avec heure:',
+			source: fence('horloge', 'heure: 9 h', 'placer: 9 h'),
+			message: 'placer: et heure: ne vont pas ensemble',
+			explanation: 'Une horloge à placer n’a pas d’aiguilles dessinées : placer: remplace heure:.'
 		}
 	],
 	tryIt: fence('horloge', 'heure: 10 h 10 ; 2 h 50', 'légendes: Avant ; Après', 'chiffres: quarts')

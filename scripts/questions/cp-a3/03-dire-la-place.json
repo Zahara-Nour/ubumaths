@@ -10,7 +10,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "On enfile des perles sur un fil :\n\n{{if:k==1|●|{{if:n>=1|○|}}}}{{if:k==2| ●|{{if:n>=2| ○|}}}}{{if:k==3| ●|{{if:n>=3| ○|}}}}{{if:k==4| ●|{{if:n>=4| ○|}}}}{{if:k==5| ●|{{if:n>=5| ○|}}}}{{if:k==6| ●|{{if:n>=6| ○|}}}}{{if:k==7| ●|{{if:n>=7| ○|}}}}{{if:k==8| ●|{{if:n>=8| ○|}}}}{{if:k==9| ●|{{if:n>=9| ○|}}}}{{if:k==10| ●|{{if:n>=10| ○|}}}}{{if:k==11| ●|{{if:n>=11| ○|}}}}{{if:k==12| ●|{{if:n>=12| ○|}}}}{{if:k==13| ●|{{if:n>=13| ○|}}}}{{if:k==14| ●|{{if:n>=14| ○|}}}}{{if:k==15| ●|{{if:n>=15| ○|}}}}{{if:k==16| ●|{{if:n>=16| ○|}}}}{{if:k==17| ●|{{if:n>=17| ○|}}}}{{if:k==18| ●|{{if:n>=18| ○|}}}}{{if:k==19| ●|{{if:n>=19| ○|}}}}{{if:k==20| ●|{{if:n>=20| ○|}}}}\n\nEn comptant **à partir de la gauche**, la perle noire est la … perle.",
+			"statement": "On enfile des perles sur un fil :\n\n{{if:k==1|●|{{if:n>=1|○|}}}}{{if:k==2| ●|{{if:n>=2| ○|}}}}{{if:k==3| ●|{{if:n>=3| ○|}}}}{{if:k==4| ●|{{if:n>=4| ○|}}}}{{if:k==5| ●|{{if:n>=5| ○|}}}}{{if:k==6| ●|{{if:n>=6| ○|}}}}{{if:k==7| ●|{{if:n>=7| ○|}}}}{{if:k==8| ●|{{if:n>=8| ○|}}}}{{if:k==9| ●|{{if:n>=9| ○|}}}}{{if:k==10| ●|{{if:n>=10| ○|}}}}{{if:k==11| ●|{{if:n>=11| ○|}}}}{{if:k==12| ●|{{if:n>=12| ○|}}}}{{if:k==13| ●|{{if:n>=13| ○|}}}}{{if:k==14| ●|{{if:n>=14| ○|}}}}{{if:k==15| ●|{{if:n>=15| ○|}}}}{{if:k==16| ●|{{if:n>=16| ○|}}}}{{if:k==17| ●|{{if:n>=17| ○|}}}}{{if:k==18| ●|{{if:n>=18| ○|}}}}{{if:k==19| ●|{{if:n>=19| ○|}}}}{{if:k==20| ●|{{if:n>=20| ○|}}}}\n\nEn comptant **à partir de la gauche**, la perle noire est la … perle.\n\n```choix\n- {{if:k==1|première|{{if:k==2|deuxième|{{if:k==3|troisième|{{if:k==4|quatrième|{{if:k==5|cinquième|{{if:k==6|sixième|{{if:k==7|septième|{{if:k==8|huitième|{{if:k==9|neuvième|{{if:k==10|dixième|{{if:k==11|onzième|{{if:k==12|douzième|{{if:k==13|treizième|{{if:k==14|quatorzième|{{if:k==15|quinzième|{{if:k==16|seizième|{{if:k==17|dix-septième|{{if:k==18|dix-huitième|{{if:k==19|dix-neuvième|vingtième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:k==1|deuxième|{{if:k==2|première|{{if:k==3|deuxième|{{if:k==4|troisième|{{if:k==5|quatrième|{{if:k==6|cinquième|{{if:k==7|sixième|{{if:k==8|septième|{{if:k==9|huitième|{{if:k==10|neuvième|{{if:k==11|dixième|{{if:k==12|onzième|{{if:k==13|douzième|{{if:k==14|treizième|{{if:k==15|quatorzième|{{if:k==16|quinzième|{{if:k==17|seizième|{{if:k==18|dix-septième|{{if:k==19|dix-huitième|dix-huitième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:k==1|troisième|{{if:k==2|troisième|{{if:k==3|quatrième|{{if:k==4|cinquième|{{if:k==5|sixième|{{if:k==6|septième|{{if:k==7|huitième|{{if:k==8|neuvième|{{if:k==9|dixième|{{if:k==10|onzième|{{if:k==11|douzième|{{if:k==12|treizième|{{if:k==13|quatorzième|{{if:k==14|quinzième|{{if:k==15|seizième|{{if:k==16|dix-septième|{{if:k==17|dix-huitième|{{if:k==18|dix-neuvième|{{if:k==19|vingtième|dix-neuvième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:k==1|une|{{if:k==2|deux|{{if:k==3|trois|{{if:k==4|quatre|{{if:k==5|cinq|{{if:k==6|six|{{if:k==7|sept|{{if:k==8|huit|{{if:k==9|neuf|{{if:k==10|dix|{{if:k==11|onze|{{if:k==12|douze|{{if:k==13|treize|{{if:k==14|quatorze|{{if:k==15|quinze|{{if:k==16|seize|{{if:k==17|dix-sept|{{if:k==18|dix-huit|{{if:k==19|dix-neuf|vingt}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n```",
 			"variables": [
 				{
 					"name": "n",
@@ -22,30 +22,20 @@
 				}
 			],
 			"conditions": ["k <= n"],
-			"choices": [
-				{
-					"content": "{{if:k==1|première|{{if:k==2|deuxième|{{if:k==3|troisième|{{if:k==4|quatrième|{{if:k==5|cinquième|{{if:k==6|sixième|{{if:k==7|septième|{{if:k==8|huitième|{{if:k==9|neuvième|{{if:k==10|dixième|{{if:k==11|onzième|{{if:k==12|douzième|{{if:k==13|treizième|{{if:k==14|quatorzième|{{if:k==15|quinzième|{{if:k==16|seizième|{{if:k==17|dix-septième|{{if:k==18|dix-huitième|{{if:k==19|dix-neuvième|vingtième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
-				},
-				{
-					"content": "{{if:k==1|deuxième|{{if:k==2|première|{{if:k==3|deuxième|{{if:k==4|troisième|{{if:k==5|quatrième|{{if:k==6|cinquième|{{if:k==7|sixième|{{if:k==8|septième|{{if:k==9|huitième|{{if:k==10|neuvième|{{if:k==11|dixième|{{if:k==12|onzième|{{if:k==13|douzième|{{if:k==14|treizième|{{if:k==15|quatorzième|{{if:k==16|quinzième|{{if:k==17|seizième|{{if:k==18|dix-septième|{{if:k==19|dix-huitième|dix-huitième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
-				},
-				{
-					"content": "{{if:k==1|troisième|{{if:k==2|troisième|{{if:k==3|quatrième|{{if:k==4|cinquième|{{if:k==5|sixième|{{if:k==6|septième|{{if:k==7|huitième|{{if:k==8|neuvième|{{if:k==9|dixième|{{if:k==10|onzième|{{if:k==11|douzième|{{if:k==12|treizième|{{if:k==13|quatorzième|{{if:k==14|quinzième|{{if:k==15|seizième|{{if:k==16|dix-septième|{{if:k==17|dix-huitième|{{if:k==18|dix-neuvième|{{if:k==19|vingtième|dix-neuvième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
-				},
-				{
-					"content": "{{if:k==1|une|{{if:k==2|deux|{{if:k==3|trois|{{if:k==4|quatre|{{if:k==5|cinq|{{if:k==6|six|{{if:k==7|sept|{{if:k==8|huit|{{if:k==9|neuf|{{if:k==10|dix|{{if:k==11|onze|{{if:k==12|douze|{{if:k==13|treize|{{if:k==14|quatorze|{{if:k==15|quinze|{{if:k==16|seize|{{if:k==17|dix-sept|{{if:k==18|dix-huit|{{if:k==19|dix-neuf|vingt}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"On compte les perles **à partir de la gauche** jusqu'à la perle noire : elle est à la place ${{k}}$.",
 					"La perle noire est la **{{if:k==1|première|{{if:k==2|deuxième|{{if:k==3|troisième|{{if:k==4|quatrième|{{if:k==5|cinquième|{{if:k==6|sixième|{{if:k==7|septième|{{if:k==8|huitième|{{if:k==9|neuvième|{{if:k==10|dixième|{{if:k==11|onzième|{{if:k==12|douzième|{{if:k==13|treizième|{{if:k==14|quatorzième|{{if:k==15|quinzième|{{if:k==16|seizième|{{if:k==17|dix-septième|{{if:k==18|dix-huitième|{{if:k==19|dix-neuvième|vingtième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}** perle."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Des enfants font la queue, **de gauche à droite** : Léo, Mia, Sami, Lina{{if:n>=5|, Tom|}}{{if:n>=6|, Inès|}}{{if:n>=7|, Noé|}}{{if:n>=8|, Jade|}}.\n\n{{if:k==1|Léo est le|{{if:k==2|Mia est la|{{if:k==3|Sami est le|{{if:k==4|Lina est la|{{if:k==5|Tom est le|{{if:k==6|Inès est la|{{if:k==7|Noé est le|Jade est la}}}}}}}}}}}}}} … de la file.",
+			"statement": "Des enfants font la queue, **de gauche à droite** : Léo, Mia, Sami, Lina{{if:n>=5|, Tom|}}{{if:n>=6|, Inès|}}{{if:n>=7|, Noé|}}{{if:n>=8|, Jade|}}.\n\n{{if:k==1|Léo est le|{{if:k==2|Mia est la|{{if:k==3|Sami est le|{{if:k==4|Lina est la|{{if:k==5|Tom est le|{{if:k==6|Inès est la|{{if:k==7|Noé est le|Jade est la}}}}}}}}}}}}}} … de la file.\n\n```choix\n- {{if:k==1|premier|{{if:k==2|deuxième|{{if:k==3|troisième|{{if:k==4|quatrième|{{if:k==5|cinquième|{{if:k==6|sixième|{{if:k==7|septième|huitième}}}}}}}}}}}}}}\n- {{if:k==1|deuxième|{{if:k==2|première|{{if:k==3|deuxième|{{if:k==4|troisième|{{if:k==5|quatrième|{{if:k==6|cinquième|{{if:k==7|sixième|septième}}}}}}}}}}}}}}\n- {{if:k==1|troisième|{{if:k==2|troisième|{{if:k==3|quatrième|{{if:k==4|cinquième|{{if:k==5|sixième|{{if:k==6|septième|{{if:k==7|huitième|neuvième}}}}}}}}}}}}}}\n- {{if:k==1|un|{{if:k==2|deux|{{if:k==3|trois|{{if:k==4|quatre|{{if:k==5|cinq|{{if:k==6|six|{{if:k==7|sept|huit}}}}}}}}}}}}}}\n```",
 			"variables": [
 				{
 					"name": "n",
@@ -57,27 +47,17 @@
 				}
 			],
 			"conditions": ["k <= n"],
-			"choices": [
-				{
-					"content": "{{if:k==1|premier|{{if:k==2|deuxième|{{if:k==3|troisième|{{if:k==4|quatrième|{{if:k==5|cinquième|{{if:k==6|sixième|{{if:k==7|septième|huitième}}}}}}}}}}}}}}"
-				},
-				{
-					"content": "{{if:k==1|deuxième|{{if:k==2|première|{{if:k==3|deuxième|{{if:k==4|troisième|{{if:k==5|quatrième|{{if:k==6|cinquième|{{if:k==7|sixième|septième}}}}}}}}}}}}}}"
-				},
-				{
-					"content": "{{if:k==1|troisième|{{if:k==2|troisième|{{if:k==3|quatrième|{{if:k==4|cinquième|{{if:k==5|sixième|{{if:k==6|septième|{{if:k==7|huitième|neuvième}}}}}}}}}}}}}}"
-				},
-				{
-					"content": "{{if:k==1|un|{{if:k==2|deux|{{if:k==3|trois|{{if:k==4|quatre|{{if:k==5|cinq|{{if:k==6|six|{{if:k==7|sept|huit}}}}}}}}}}}}}}"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"On compte les enfants **à partir de la gauche** jusqu'à {{if:k==1|Léo|{{if:k==2|Mia|{{if:k==3|Sami|{{if:k==4|Lina|{{if:k==5|Tom|{{if:k==6|Inès|{{if:k==7|Noé|Jade}}}}}}}}}}}}}} : {{if:k==1|il est à la place $1$.|{{if:k==2|elle est à la place $2$.|{{if:k==3|il est à la place $3$.|{{if:k==4|elle est à la place $4$.|{{if:k==5|il est à la place $5$.|{{if:k==6|elle est à la place $6$.|{{if:k==7|il est à la place $7$.|elle est à la place $8$.}}}}}}}}}}}}}}",
 					"{{if:k==1|Léo est le **premier** de la file.|{{if:k==2|Mia est la **deuxième** de la file.|{{if:k==3|Sami est le **troisième** de la file.|{{if:k==4|Lina est la **quatrième** de la file.|{{if:k==5|Tom est le **cinquième** de la file.|{{if:k==6|Inès est la **sixième** de la file.|{{if:k==7|Noé est le **septième** de la file.|Jade est la **huitième** de la file.}}}}}}}}}}}}}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -91,7 +71,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : perle 4e, troisième",
@@ -103,7 +83,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Erreur : perle 4e, le nombre « quatre »",
@@ -115,7 +95,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [3]
+			"answers": ["3"]
 		},
 		{
 			"description": "borne : perle 1re, première",
@@ -127,7 +107,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "borne : perle 20e sur 20, vingtième",
@@ -139,7 +119,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Sami 3e : troisième",
@@ -151,7 +131,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : Sami 3e, deuxième",
@@ -163,7 +143,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "borne : Léo 1er, premier",
@@ -175,7 +155,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "borne : Jade 8e sur 8, huitième",
@@ -187,7 +167,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		}
 	]
 }

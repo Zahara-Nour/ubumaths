@@ -5,7 +5,7 @@
  * Le bloc ```figure-de-travail porte une case, jamais notée. L'éditeur la montre
  * en carte de lecture seule (son outil, ses erreurs), sans champ de réponse :
  * elle se modifie dans l'énoncé (décision de David, 2026-10-26,
- * `docs/wip/figure-et-choix-progress.md` § 2.9, Q3).
+ * `docs/archive/wip/figure-et-choix-progress.md` § 2.9, Q3).
  *
  * @module questions/work-figure-editor
  */

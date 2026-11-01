@@ -6,7 +6,7 @@ DOSSIER = sys.argv[1]
 
 # Décisions de David le 2026-10-26 (journal docs/wip/geometrie-validation-progress.md § 8 et § 9) :
 # feuille blanche, outil droite, écart 0,25 carreau, delay 60 s.
-# Réécrit au lot 3 du chantier figure-et-choix (docs/wip/figure-et-choix-progress.md § 2.5) :
+# Réécrit au lot 3 du chantier figure-et-choix (docs/archive/wip/figure-et-choix-progress.md § 2.5) :
 # « Tu PEUX vérifier » → figure de TRAVAIL (l'élève trace s'il veut, rien de noté) ; la réponse
 # est une case choix Oui / Non, dans cet ordre (melanger: non).
 

@@ -1,0 +1,219 @@
+{
+	"title": "Formule de l'aire d'un triangle",
+	"description": "Produire la formule de l'aire d'un triangle (b × h ÷ 2) : hauteur intérieure, hauteur extérieure, figure composée, formule vraisemblable, puis la tester",
+	"grades": ["4"],
+	"theme": "Calcul littéral",
+	"domain": "Produire une formule",
+	"subdomain": "Aires",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris l'aire $\\mathcal{A}$ du triangle $ABC$ en fonction de $b$ et de $h$.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Triangle ABC, hauteur [AH] perpendiculaire à [BC] ; BC = b, AH = h.\n---\nA = point(3.5, 6, etiquette=\"haut\")\nB = point(1, 1, etiquette=\"bas-gauche\")\nC = point(9, 1, etiquette=\"bas-droite\")\nH = point(3.5, 1, etiquette=\"bas\")\nsegment(A, B)\nsegment(B, C)\nsegment(C, A)\nsegment(A, H, trait=\"tirets\")\nangle(A, H, C, marque=\"carre\")\ntexte(6, 0.4, \"b\")\ntexte(3.9, 3.5, \"h\")\n```\n\n$\\mathcal{A} = ?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{b\\times h}{2}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$[AH]$ est la **hauteur** issue de $A$ : elle est perpendiculaire à la base $[BC]$.",
+					"L'aire d'un triangle est la **moitié** de celle du rectangle de côtés $b$ et $h$ : $$\\mathcal{A} = \\textcolor{{{color:primary.0}}}{\\dfrac{b\\times h}{2}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Écris l'aire $\\mathcal{A}$ du triangle $ABC$ en fonction de $b$ et de $h$.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Triangle ABC obtus en C, hauteur [AH] à l'extérieur, H sur le prolongement de [BC] ; BC = b, AH = h.\n---\nA = point(8.5, 6, etiquette=\"haut\")\nB = point(1, 1, etiquette=\"bas-gauche\")\nC = point(5.5, 1, etiquette=\"bas\")\nH = point(8.5, 1, etiquette=\"bas-droite\")\nsegment(A, B)\nsegment(B, C)\nsegment(C, A)\nsegment(C, H, trait=\"tirets\")\nsegment(A, H, trait=\"tirets\")\nangle(A, H, B, marque=\"carre\")\ntexte(3.2, 0.4, \"b\")\ntexte(8.9, 3.5, \"h\")\n```\n\n$\\mathcal{A} = ?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{b\\times h}{2}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La hauteur issue de $A$ tombe **à l'extérieur** du triangle, sur le prolongement de $[BC]$ : la formule ne change pas.",
+					"L'aire d'un triangle est la **moitié** de celle du rectangle de côtés $b$ et $h$ : $$\\mathcal{A} = \\textcolor{{{color:primary.0}}}{\\dfrac{b\\times h}{2}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Écris l'aire $\\mathcal{A}$ de cette maison (rectangle et toit triangulaire) en fonction de $a$, $b$ et $h$.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 8.5\ndescription: Maison : rectangle de côtés a et b surmonté d'un triangle de base a et de hauteur h.\n---\nD = point(2, 1)\nE = point(8, 1)\nF = point(8, 4.5)\nG = point(2, 4.5)\nS = point(5, 7.5)\nK = point(5, 4.5)\npolygone(D, E, F, G)\nsegment(G, S)\nsegment(S, F)\nsegment(S, K, trait=\"tirets\")\nangle(S, K, F, marque=\"carre\")\ntexte(5, 0.4, \"a\")\ntexte(8.5, 2.75, \"b\")\ntexte(5.4, 6, \"h\")\n```\n\n$\\mathcal{A} = ?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "a\\times b+\\dfrac{a\\times h}{2}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Aire du rectangle : $a \\times b$. Aire du toit, triangle de base $a$ et de hauteur $h$ : $\\dfrac{a\\times h}{2}$.",
+					"$$\\mathcal{A} = \\textcolor{{{color:primary.0}}}{a\\times b+\\dfrac{a\\times h}{2}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Le triangle $ABC$ a pour base $b$ et pour hauteur $h$. Quelle formule peut donner son aire ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Triangle ABC, hauteur [AH] perpendiculaire à [BC] ; BC = b, AH = h.\n---\nA = point(3.5, 6, etiquette=\"haut\")\nB = point(1, 1, etiquette=\"bas-gauche\")\nC = point(9, 1, etiquette=\"bas-droite\")\nH = point(3.5, 1, etiquette=\"bas\")\nsegment(A, B)\nsegment(B, C)\nsegment(C, A)\nsegment(A, H, trait=\"tirets\")\nangle(A, H, C, marque=\"carre\")\ntexte(6, 0.4, \"b\")\ntexte(3.9, 3.5, \"h\")\n```\n\n```choix\n- $\\dfrac{b\\times h}{2}$\n- $b + h$\n- $2 \\times b \\times h$\n- $b \\times h \\times h$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une aire est le produit de **deux** longueurs : $b + h$ est une longueur, $b \\times h \\times h$ un volume.",
+					"Le triangle tient dans le rectangle de côtés $b$ et $h$ : son aire est plus petite que $b \\times h$, ce qui écarte $2 \\times b \\times h$.",
+					"L'aire d'un triangle est la **moitié** de celle du rectangle de côtés $b$ et $h$ : $$\\mathcal{A} = \\textcolor{{{color:primary.0}}}{\\dfrac{b\\times h}{2}}$$"
+				]
+			}
+		},
+		{
+			"statement": "L'aire d'un triangle de base $b$ et de hauteur $h$ est $\\mathcal{A} = \\dfrac{b\\times h}{2}$. Calcule l'aire pour $b = {{bb}}~\\unit{cm}$ et $h = {{hh}}~\\unit{cm}$.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Triangle ABC, hauteur [AH] perpendiculaire à [BC] ; BC = b, AH = h.\n---\nA = point(3.5, 6, etiquette=\"haut\")\nB = point(1, 1, etiquette=\"bas-gauche\")\nC = point(9, 1, etiquette=\"bas-droite\")\nH = point(3.5, 1, etiquette=\"bas\")\nsegment(A, B)\nsegment(B, C)\nsegment(C, A)\nsegment(A, H, trait=\"tirets\")\nangle(A, H, C, marque=\"carre\")\ntexte(6, 0.4, \"b\")\ntexte(3.9, 3.5, \"h\")\n```\n\n$\\mathcal{A} = ?~\\unit{cm^2}$",
+			"variables": [
+				{
+					"name": "bb",
+					"expression": "3..15"
+				},
+				{
+					"name": "hh",
+					"expression": "2..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:bb*hh/2;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $b$ par {{bb}} et $h$ par {{hh}} : $$\\mathcal{A} = \\dfrac{ {{bb}} \\times {{hh}} }{2} = \\dfrac{{{eval:bb*hh}}}{2} = \\textcolor{{{color:primary.0}}}{{{eval:bb*hh/2;d}}~\\unit{cm^2}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "b × h ÷ 2",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\dfrac{b\\times h}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Autre écriture : bh/2",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\frac{bh}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Autre écriture : 0,5 × b × h",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0{,}5\\times b\\times h"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : b × h sans ÷ 2",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["b\\times h"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Obtus : b × h ÷ 2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\frac{b\\times h}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Maison : ab + ah/2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["a\\times b+\\frac{a\\times h}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Maison : a(b + h/2)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["a\\left(b+\\frac{h}{2}\\right)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : toit sans ÷ 2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["a\\times b+a\\times h"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Formule vraisemblable",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : b + h",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "b = 6, h = 4 : 12",
+			"variationIndex": 4,
+			"variables": {
+				"bb": "6",
+				"hh": "4"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans ÷ 2, 24",
+			"variationIndex": 4,
+			"variables": {
+				"bb": "6",
+				"hh": "4"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"form": "off",
+			"products": "off"
+		}
+	}
+}

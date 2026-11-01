@@ -11,9 +11,15 @@ import { figureACompleterEntry } from './figure-a-completer';
 import { figureDeTravailEntry } from './figure-de-travail';
 import { horlogeEntry } from './horloge';
 import { numberLineEntry } from './number-line';
+import { partageEntry } from './partage';
+import { cubesEntry } from './cubes';
+import { solideEntry } from './solide';
+import { patronEntry } from './patron';
 import { operationEntry } from './operation';
 import { probtreeEntry } from './probtree';
 import { qrEntry } from './qr';
+import { scratchEntry } from './scratch';
+import { rangerEntry } from './ranger';
 import { statChartEntry } from './stat-chart';
 import { trigEntry } from './trig';
 import { variationEntry } from './variation';
@@ -32,8 +38,14 @@ export const BLOCK_CATALOG: BlockCatalogEntry[] = [
 	statChartEntry,
 	qrEntry,
 	horlogeEntry,
+	partageEntry,
+	cubesEntry,
+	solideEntry,
+	patronEntry,
+	rangerEntry,
 	operationEntry,
-	trigEntry
+	trigEntry,
+	scratchEntry
 ];
 
 /** Fiche d'un bloc par son segment d'adresse */

@@ -1,0 +1,283 @@
+{
+	"title": "Pose et calcule une soustraction (par compensation)",
+	"description": "Soustraction posée, méthode par compensation : un échange, deux échanges, zéro au milieu (504 − 37)",
+	"grades": ["CE1"],
+	"theme": "Nombres",
+	"domain": "Soustraction",
+	"subdomain": "Calcul posé",
+	"level": 2,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{a}} − {{b}}\nméthode: compensation\n```",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..9"
+				},
+				{
+					"name": "a2",
+					"expression": "1..9"
+				},
+				{
+					"name": "a3",
+					"expression": "0..8"
+				},
+				{
+					"name": "b2",
+					"expression": "0..8"
+				},
+				{
+					"name": "b3",
+					"expression": "1..9"
+				},
+				{
+					"name": "a",
+					"expression": "eval:100*a1+10*a2+a3"
+				},
+				{
+					"name": "b",
+					"expression": "eval:10*b2+b3"
+				}
+			],
+			"conditions": ["b3 > a3", "a2 > b2", "b >= 10"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On aligne les chiffres : unités sous les unités, dizaines sous les dizaines.",
+					"Unités : on ne peut pas ôter ${{b3}}$ de ${{a3}}$. On ajoute $10$ unités en haut (${{eval:a3+10}}$) et $1$ dizaine en bas. Puis ${{eval:a3+10}} - {{b3}} = {{eval:a3+10-b3}}$.",
+					"Dizaines : en bas, ${{b2}} + 1 = {{eval:b2+1}}$ ; puis ${{a2}} - {{eval:b2+1}} = {{eval:a2-b2-1}}$.",
+					"Centaines : ${{a1}}$ (rien à ôter).",
+					"$${{a}} - {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a-b}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{a}} − {{b}}\nméthode: compensation\n```",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "2..9"
+				},
+				{
+					"name": "a2",
+					"expression": "1..8"
+				},
+				{
+					"name": "a3",
+					"expression": "0..8"
+				},
+				{
+					"name": "b1",
+					"expression": "1..8"
+				},
+				{
+					"name": "b2",
+					"expression": "1..9"
+				},
+				{
+					"name": "b3",
+					"expression": "1..9"
+				},
+				{
+					"name": "a",
+					"expression": "eval:100*a1+10*a2+a3"
+				},
+				{
+					"name": "b",
+					"expression": "eval:100*b1+10*b2+b3"
+				}
+			],
+			"conditions": ["b3 > a3", "b2 + 1 > a2", "a1 > b1 + 1"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On aligne les chiffres : unités sous les unités, dizaines sous les dizaines.",
+					"Unités : on ne peut pas ôter ${{b3}}$ de ${{a3}}$. On ajoute $10$ unités en haut (${{eval:a3+10}}$) et $1$ dizaine en bas. Puis ${{eval:a3+10}} - {{b3}} = {{eval:a3+10-b3}}$.",
+					"Dizaines : en bas, ${{b2}} + 1 = {{eval:b2+1}}$, qu'on ne peut pas ôter de ${{a2}}$. On ajoute $10$ dizaines en haut et $1$ centaine en bas : ${{eval:a2+10}} - {{eval:b2+1}} = {{eval:a2+9-b2}}$.",
+					"Centaines : en bas, ${{b1}} + 1 = {{eval:b1+1}}$ ; puis ${{a1}} - {{eval:b1+1}} = {{eval:a1-b1-1}}$.",
+					"$${{a}} - {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a-b}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{a}} − {{b}}\nméthode: compensation\n```",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "2..9"
+				},
+				{
+					"name": "a3",
+					"expression": "0..8"
+				},
+				{
+					"name": "b2",
+					"expression": "1..9"
+				},
+				{
+					"name": "b3",
+					"expression": "1..9"
+				},
+				{
+					"name": "a",
+					"expression": "eval:100*a1+a3"
+				},
+				{
+					"name": "b",
+					"expression": "eval:10*b2+b3"
+				}
+			],
+			"conditions": ["b3 > a3"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On aligne les chiffres : unités sous les unités, dizaines sous les dizaines.",
+					"Unités : on ne peut pas ôter ${{b3}}$ de ${{a3}}$. On ajoute $10$ unités en haut (${{eval:a3+10}}$) et $1$ dizaine en bas. Puis ${{eval:a3+10}} - {{b3}} = {{eval:a3+10-b3}}$.",
+					"Dizaines : en bas, ${{b2}} + 1 = {{eval:b2+1}}$, qu'on ne peut pas ôter de $0$. On ajoute $10$ dizaines en haut et $1$ centaine en bas : $10 - {{eval:b2+1}} = {{eval:9-b2}}$.",
+					"Centaines : ${{a1}} - 1 = {{eval:a1-1}}$.",
+					"$${{a}} - {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a-b}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "352 − 27 = 325",
+			"variationIndex": 0,
+			"variables": {
+				"a1": "3",
+				"a3": "2",
+				"b2": "2",
+				"b3": "7",
+				"a": "352",
+				"b": "27",
+				"a2": "5"
+			},
+			"answers": ["325"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : plus petit ôté du plus grand, 352 − 27 = 335",
+			"variationIndex": 0,
+			"variables": {
+				"a1": "3",
+				"a3": "2",
+				"b2": "2",
+				"b3": "7",
+				"a": "352",
+				"b": "27",
+				"a2": "5"
+			},
+			"answers": ["335"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "532 − 178 = 354",
+			"variationIndex": 1,
+			"variables": {
+				"a1": "5",
+				"a3": "2",
+				"b2": "7",
+				"b3": "8",
+				"a": "532",
+				"b": "178",
+				"a2": "3",
+				"b1": "1"
+			},
+			"answers": ["354"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : plus petit ôté du plus grand, 532 − 178 = 446",
+			"variationIndex": 1,
+			"variables": {
+				"a1": "5",
+				"a3": "2",
+				"b2": "7",
+				"b3": "8",
+				"a": "532",
+				"b": "178",
+				"a2": "3",
+				"b1": "1"
+			},
+			"answers": ["446"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Une seule dizaine : 612 − 245 = 367",
+			"variationIndex": 1,
+			"variables": {
+				"a1": "6",
+				"a3": "2",
+				"b2": "4",
+				"b3": "5",
+				"a": "612",
+				"b": "245",
+				"a2": "1",
+				"b1": "2"
+			},
+			"answers": ["367"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BO : 504 − 37 = 467",
+			"variationIndex": 2,
+			"variables": {
+				"a1": "5",
+				"a3": "4",
+				"b2": "3",
+				"b3": "7",
+				"a": "504",
+				"b": "37"
+			},
+			"answers": ["467"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : zéro mal échangé, 504 − 37 = 577",
+			"variationIndex": 2,
+			"variables": {
+				"a1": "5",
+				"a3": "4",
+				"b2": "3",
+				"b3": "7",
+				"a": "504",
+				"b": "37"
+			},
+			"answers": ["577"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : centaine non cassée, 504 − 37 = 567",
+			"variationIndex": 2,
+			"variables": {
+				"a1": "5",
+				"a3": "4",
+				"b2": "3",
+				"b3": "7",
+				"a": "504",
+				"b": "37"
+			},
+			"answers": ["567"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

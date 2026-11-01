@@ -21,6 +21,7 @@ import type {
 	DocumentNode,
 	ParagraphNode,
 	InlineNode,
+	TextNode,
 	ParseOptions,
 	MathPlaceholder,
 	ImageNode,
@@ -92,11 +93,29 @@ import {
 } from './number-line-parser';
 import { findQrBlocks, parseQr, parseQrContent, isQrBlockStart } from './qr-parser';
 import {
+	findScratchBlocks,
+	parseScratch,
+	parseScratchContent,
+	isScratchBlockStart
+} from './scratch-parser';
+import {
 	findHorlogeBlocks,
 	parseHorloge,
 	parseHorlogeContent,
 	isHorlogeBlockStart
 } from './horloge-parser';
+import {
+	findPartageBlocks,
+	parsePartage,
+	parsePartageContent,
+	isPartageBlockStart
+} from './partage-parser';
+import {
+	findEspaceBlocks,
+	parseEspace,
+	parseEspaceContent,
+	isEspaceBlockStart
+} from './espace-parser';
 import {
 	findOperationBlocks,
 	parseOperation,
@@ -116,6 +135,7 @@ import {
 	isMonnaieBlockStart
 } from './monnaie-parser';
 import { findChoiceBlocks, parseChoiceBlock } from './choix-parser';
+import { findRangerBlocks, parseRangerBlock } from './ranger-parser';
 import {
 	findCourbeBlocks,
 	isCourbeBlockStart,
@@ -493,12 +513,17 @@ function parseBlocks(
 	const trigCircleBlocks = findTrigCircleBlocks(lines);
 	const numberLineBlocks = findNumberLineBlocks(lines);
 	const qrBlocks = findQrBlocks(lines);
+	const scratchBlocks = findScratchBlocks(lines);
 	const horlogeBlocks = findHorlogeBlocks(lines);
+	const partageBlocks = findPartageBlocks(lines);
+	const espaceBlocks = findEspaceBlocks(lines);
 	const operationBlocks = findOperationBlocks(lines);
 	const collectionBlocks = findCollectionBlocks(lines);
 	const monnaieBlocks = findMonnaieBlocks(lines);
 	// Bloc ```choix (case « choix ») : ses choix restent du markdown, rendus un à un
 	const choiceBlocks = findChoiceBlocks(lines);
+	// Bloc ```ranger (étiquettes à ranger) : ses étiquettes restent du markdown
+	const rangerBlocks = findRangerBlocks(lines);
 	type SpecialParse = (
 		source: string[],
 		start: number,
@@ -514,11 +539,15 @@ function parseBlocks(
 		{ ranges: trigCircleBlocks, parse: parseTrigCircle, language: 'trig' },
 		{ ranges: numberLineBlocks, parse: parseNumberLine, language: 'line' },
 		{ ranges: qrBlocks, parse: parseQr, language: 'qr' },
+		{ ranges: scratchBlocks, parse: parseScratch, language: 'scratch' },
 		{ ranges: horlogeBlocks, parse: parseHorloge, language: 'horloge' },
+		{ ranges: partageBlocks, parse: parsePartage, language: 'partage' },
+		{ ranges: espaceBlocks, parse: parseEspace, language: 'cubes' },
 		{ ranges: operationBlocks, parse: parseOperation, language: 'operation' },
 		{ ranges: collectionBlocks, parse: parseCollection, language: 'collection' },
 		{ ranges: monnaieBlocks, parse: parseMonnaie, language: 'monnaie' },
-		{ ranges: choiceBlocks, parse: parseChoiceBlock, language: 'choix' }
+		{ ranges: choiceBlocks, parse: parseChoiceBlock, language: 'choix' },
+		{ ranges: rangerBlocks, parse: parseRangerBlock, language: 'ranger' }
 	];
 	const specialBlockAt = (index: number) => {
 		for (const { ranges, parse, language } of SPECIALS) {
@@ -581,11 +610,15 @@ function parseBlocks(
 			...trigCircleBlocks,
 			...numberLineBlocks,
 			...qrBlocks,
+			...scratchBlocks,
 			...horlogeBlocks,
+			...partageBlocks,
+			...espaceBlocks,
 			...operationBlocks,
 			...collectionBlocks,
 			...monnaieBlocks,
 			...choiceBlocks,
+			...rangerBlocks,
 			...courbeBlocks,
 			...figureBlocks,
 			...statChartBlocks
@@ -598,11 +631,15 @@ function parseBlocks(
 			...findTrigCircleBlocks(originalLines),
 			...findNumberLineBlocks(originalLines),
 			...findQrBlocks(originalLines),
+			...findScratchBlocks(originalLines),
 			...findHorlogeBlocks(originalLines),
+			...findPartageBlocks(originalLines),
+			...findEspaceBlocks(originalLines),
 			...findOperationBlocks(originalLines),
 			...findCollectionBlocks(originalLines),
 			...findMonnaieBlocks(originalLines),
 			...findChoiceBlocks(originalLines),
+			...findRangerBlocks(originalLines),
 			...originalCourbeBlocks,
 			...originalFigureBlocks,
 			...originalStatChartBlocks
@@ -1483,70 +1520,142 @@ function parseTextFormattingSegment(text: string): InlineNode[] {
  * @returns Array of inline nodes (text, blank, hint-reference, internal-link, link, hashtag, mention)
  */
 function parseTextFormatting(text: string): InlineNode[] {
-	if (!text) return [];
-
 	// Étape 0 : détails en ligne `[texte]{.rappel}` (ADR 0017). Leur texte suit
 	// le même pipeline, puis chaque nœud texte est marqué du type de détail.
-	// Type inconnu : laissé littéral. Le code en ligne passe avant : on cherche
-	// dans un texte où il est masqué, on découpe l'original aux mêmes indices.
-	const nodes: InlineNode[] = [];
-	const masked = maskSpans(text, [INLINE_CODE_REGEX]);
-	const detailRegex = new RegExp(INLINE_DETAIL_REGEX.source, INLINE_DETAIL_REGEX.flags);
-	let position = 0;
-	let match: RegExpExecArray | null;
-	while ((match = detailRegex.exec(masked)) !== null) {
-		const kind = parseDetailKind(match[2]);
-		if (!kind) continue;
-		if (match.index > position) {
-			nodes.push(...parseTextFormattingPipeline(text.slice(position, match.index)));
+	// Type inconnu : laissé littéral.
+	return parseWithSpanMarks(
+		text,
+		INLINE_DETAIL_REGEX,
+		DETAIL_BOUNDS,
+		parseTextFormattingPipeline,
+		(match) => {
+			const kind = parseDetailKind(match[2]);
+			return kind ? (node) => ({ ...node, detail: kind }) : null;
 		}
-		const inner = text.slice(match.index + 1, match.index + 1 + match[1].length);
-		for (const node of parseTextFormattingPipeline(inner)) {
-			nodes.push(node.type === 'text' ? { ...node, detail: kind } : node);
-		}
-		position = match.index + match[0].length;
-	}
-	if (position < text.length) {
-		nodes.push(...parseTextFormattingPipeline(text.slice(position)));
-	}
-	return nodes;
+	);
 }
 
 /**
  * Pipeline de {@link parseTextFormatting}, hors détails en ligne : d'abord les
  * mots du lexique marqués à la main (`[mot]{.def}`, `{.def=…}`, `{.nodef}`),
- * dont le texte suit le pipeline ordinaire puis reçoit la marque. Le code en
- * ligne est masqué : un marqueur n'y est jamais lu.
+ * dont le texte suit le pipeline ordinaire puis reçoit la marque.
  */
 function parseTextFormattingPipeline(text: string): InlineNode[] {
-	if (!text) return [];
+	return parseWithSpanMarks(
+		text,
+		LEXICON_MARK_REGEX,
+		LEXICON_BOUNDS,
+		parseTextFormattingCore,
+		(match) => {
+			const target = match[3]?.trim();
+			const lexicon: LexiconMark =
+				match[2] === 'nodef'
+					? { mode: 'block' }
+					: target
+						? { mode: 'force', target }
+						: { mode: 'force' };
+			return (node) => ({ ...node, lexicon });
+		}
+	);
+}
 
-	const nodes: InlineNode[] = [];
+/**
+ * Plages de bornes (zone à usage privé d'Unicode), une par passe : un détail
+ * peut contenir un mot marqué, les deux passes s'imbriquent. Dans une plage,
+ * le premier code ferme, les suivants ouvrent (un par marquage).
+ */
+const DETAIL_BOUNDS = 0xe000;
+const LEXICON_BOUNDS = 0xe800;
+const BOUNDS_SIZE = 0x800;
+
+/**
+ * Marquages `[texte]{.…}` lus SANS couper la mise en forme qui les entoure
+ * (L16 : `**un [mot]{.def} pair**` restait en `**` littéraux). Chaque
+ * marquage est remplacé par son texte entre deux bornes invisibles (zone à
+ * usage privé d'Unicode) ; `parse` lit la mise en forme sur le texte entier ;
+ * puis les nœuds texte sont redécoupés aux bornes et ceux du dedans reçoivent
+ * la marque. Le code en ligne est masqué : un marqueur n'y est jamais lu. Une
+ * borne restée dans un autre nœud (texte d'un lien) y est effacée.
+ */
+function parseWithSpanMarks(
+	text: string,
+	regex: RegExp,
+	bounds: number,
+	parse: (text: string) => InlineNode[],
+	markOf: (match: RegExpExecArray) => ((node: TextNode) => TextNode) | null
+): InlineNode[] {
+	if (!text) return [];
+	// Un caractère de la plage déjà présent dans la source serait pris pour une borne
+	text = text.replace(boundsRegex(bounds), '');
+
+	const marks: Array<(node: TextNode) => TextNode> = [];
 	const masked = maskSpans(text, [INLINE_CODE_REGEX]);
-	const markRegex = new RegExp(LEXICON_MARK_REGEX.source, LEXICON_MARK_REGEX.flags);
+	const markRegex = new RegExp(regex.source, regex.flags);
+	let withBounds = '';
 	let position = 0;
 	let match: RegExpExecArray | null;
 	while ((match = markRegex.exec(masked)) !== null) {
-		if (match.index > position) {
-			nodes.push(...parseTextFormattingCore(text.slice(position, match.index)));
-		}
+		const mark = markOf(match);
+		if (!mark || marks.length + 1 >= BOUNDS_SIZE) continue;
 		const inner = text.slice(match.index + 1, match.index + 1 + match[1].length);
-		const target = match[3]?.trim();
-		const lexicon: LexiconMark =
-			match[2] === 'nodef'
-				? { mode: 'block' }
-				: target
-					? { mode: 'force', target }
-					: { mode: 'force' };
-		for (const node of parseTextFormattingCore(inner)) {
-			nodes.push(node.type === 'text' ? { ...node, lexicon } : node);
-		}
+		withBounds +=
+			text.slice(position, match.index) +
+			String.fromCharCode(bounds + 1 + marks.length) +
+			inner +
+			String.fromCharCode(bounds);
+		marks.push(mark);
 		position = match.index + match[0].length;
 	}
-	if (position < text.length) {
-		nodes.push(...parseTextFormattingCore(text.slice(position)));
+	if (marks.length === 0) return parse(text);
+	withBounds += text.slice(position);
+
+	const nodes: InlineNode[] = [];
+	let current: ((node: TextNode) => TextNode) | null = null;
+	for (const node of parse(withBounds)) {
+		if (node.type !== 'text') {
+			nodes.push(stripSpanBounds(node, bounds));
+			continue;
+		}
+		let segment = '';
+		const flush = () => {
+			if (segment.length === 0) return;
+			const piece: TextNode = { ...node, content: segment };
+			nodes.push(current ? current(piece) : piece);
+			segment = '';
+		};
+		for (const char of node.content) {
+			const code = char.charCodeAt(0);
+			if (code === bounds) {
+				flush();
+				current = null;
+			} else if (code > bounds && code < bounds + BOUNDS_SIZE) {
+				flush();
+				current = marks[code - bounds - 1] ?? null;
+			} else {
+				segment += char;
+			}
+		}
+		flush();
 	}
 	return nodes;
+}
+
+/** Les caractères de la plage de bornes d'une passe. */
+function boundsRegex(bounds: number): RegExp {
+	const first = bounds.toString(16);
+	const last = (bounds + BOUNDS_SIZE - 1).toString(16);
+	return new RegExp(`[\\u{${first}}-\\u{${last}}]`, 'gu');
+}
+
+/** Efface les bornes d'une passe des chaînes d'un nœud non textuel. */
+function stripSpanBounds(node: InlineNode, bounds: number): InlineNode {
+	const own = boundsRegex(bounds);
+	if (!own.test(JSON.stringify(node))) return node;
+	const cleaned: Record<string, unknown> = {};
+	for (const [key, value] of Object.entries(node)) {
+		cleaned[key] = typeof value === 'string' ? value.replace(own, '') : value;
+	}
+	return cleaned as unknown as InlineNode;
 }
 
 /**
@@ -1671,10 +1780,28 @@ const SPECIAL_BLOCK_KINDS = [
 		language: 'qr'
 	},
 	{
+		is: isScratchBlockStart,
+		find: findScratchBlocks,
+		parse: parseScratch,
+		language: 'scratch'
+	},
+	{
 		is: isHorlogeBlockStart,
 		find: findHorlogeBlocks,
 		parse: parseHorloge,
 		language: 'horloge'
+	},
+	{
+		is: isPartageBlockStart,
+		find: findPartageBlocks,
+		parse: parsePartage,
+		language: 'partage'
+	},
+	{
+		is: isEspaceBlockStart,
+		find: findEspaceBlocks,
+		parse: parseEspace,
+		language: 'cubes'
 	},
 	{
 		is: isOperationBlockStart,
@@ -1902,12 +2029,21 @@ function parseContentWithCodeBlocks(
 			if (result.node) {
 				blocks.push(result.node);
 			}
+		} else if (language === 'scratch') {
+			// Programme Scratch dans un item de liste : toujours un nœud, même en erreur
+			blocks.push(parseScratchContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'qr') {
 			// QR code dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseQrContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'horloge') {
 			// Horloge dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseHorlogeContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'partage') {
+			// Partage dans un item de liste : toujours un nœud, même en erreur (Q48)
+			blocks.push(parsePartageContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'cubes' || language === 'solide' || language === 'patron') {
+			// Assemblage de cubes dans un item de liste : toujours un nœud, même en erreur (Q48)
+			blocks.push(parseEspaceContent(restoreMathPlaceholders(code, placeholders), language));
 		} else if (language === 'operation') {
 			// Opération posée dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseOperationContent(restoreMathPlaceholders(code, placeholders)));

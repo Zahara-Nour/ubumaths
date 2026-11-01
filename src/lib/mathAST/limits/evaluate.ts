@@ -855,6 +855,39 @@ function evaluateLimitExactForm(
 		);
 	}
 
+	// Stratégie 2.47 : a^u et exp u, u → ±∞, par composition. La composition
+	// (2.5) classe la limite de u en arithmétique exacte, qui ne lève pas
+	// +∞ − ∞ : e^{x² − x} en +∞ restait « non supportée » (V68). La limite de
+	// u vient du moteur entier.
+	const exponentialLimit = tryExponentialOfUnboundedLimit(
+		expression,
+		varName,
+		approachPoint,
+		dir,
+		options
+	);
+	if (exponentialLimit !== null) {
+		recorder.recordStepByRule(
+			'composition',
+			expression,
+			exponentialLimit,
+			'summarized',
+			approachPoint,
+			'Composition : limite de eᵘ à partir de celle de u'
+		);
+		return createResult(
+			exponentialLimit,
+			varName,
+			approachPoint,
+			dir,
+			isInfinity(exponentialLimit) ? 'infinite' : 'exact',
+			'none',
+			'composition',
+			recorder,
+			opts
+		);
+	}
+
 	// Strategy 2.5: Try composition limits (for infinity, function compositions, divisions by zero)
 	const compositionResult = tryCompositionLimit(expression, varName, approachPoint, dir, recorder);
 	if (compositionResult.success && compositionResult.value) {
@@ -1304,6 +1337,38 @@ function evaluateLimitExactForm(
 		return evaluateLimit(expandEulerPowers(expression), varName, approachPoint, dir, options);
 	}
 
+	// Stratégie 7.5 : u^{−n}, n entier, en un point fini : u^{−n} = 1/uⁿ, dont
+	// le signe est suivi. La substitution rendait « 1/0 » exact pour
+	// (cos x − 1)^{−1} en 0 (V70). En dernier recours : x^{−1}, x^{−2} en 0
+	// gardent leur analyse à gauche / à droite.
+	const negativePower = isInfinity(approachPoint)
+		? null
+		: tryNegativePowerAsReciprocal(expression, varName, approachPoint, dir, options);
+	if (negativePower !== null) {
+		const { result, rewritten } = negativePower;
+		recorder.recordStepByRule(
+			'composition',
+			expression,
+			rewritten,
+			'summarized',
+			approachPoint,
+			'Écriture en quotient : u^{-n} = 1/u^n'
+		);
+		return createResult(
+			result.value,
+			varName,
+			approachPoint,
+			dir,
+			result.status,
+			indeterminateForm,
+			'composition',
+			recorder,
+			opts,
+			result.error,
+			result.noLimitReason
+		);
+	}
+
 	// Seule une valeur approchée a été trouvée : rendue comme telle, jamais 'exact'
 	if (approximateValue !== null) {
 		return createResult(
@@ -1616,6 +1681,60 @@ function tryPowerOfUnboundedLimit(
 }
 
 /**
+ * a^u (a > 0 constant, a ≠ 1, e compris) ou exp u, sous la forme
+ * { base, exponent } ; null sinon. `base` vaut null pour e et exp.
+ */
+function exponentialParts(
+	node: MathNode,
+	varName: string
+): { base: MathNode | null; baseValue: number; exponent: MathNode } | null {
+	if (isFunction(node) && node.name === 'exp' && node.args.length === 1) {
+		return { base: null, baseValue: Math.E, exponent: node.args[0] };
+	}
+	if (!isSuperscript(node) || containsVariable(node.base, varName)) return null;
+	if (!containsVariable(node.superscript, varName)) return null;
+	if (isEulerBase(node.base)) return { base: null, baseValue: Math.E, exponent: node.superscript };
+	// Base comparée à 1 en EXACT quand c'est possible ; sinon, un flottant
+	// proche de 1 est refusé : √3² − 2 vaut 1 mais s'évalue 0,9999999999999996,
+	// et (√3² − 2)^x en +∞ était rendu 0 (revue de #1852)
+	const exact = exactConstantRational(node.base);
+	if (exact !== null) {
+		if (exact.n <= 0n || exact.n === exact.d) return null;
+		return {
+			base: node.base,
+			baseValue: Number(exact.n) / Number(exact.d),
+			exponent: node.superscript
+		};
+	}
+	const baseValue = computeNumericValue(node.base);
+	if (baseValue === null || !(baseValue > 0) || Math.abs(baseValue - 1) < 1e-9) return null;
+	return { base: node.base, baseValue, exponent: node.superscript };
+}
+
+/**
+ * a^u ou exp u, u → ±∞ démontré par le moteur entier : +∞ ou 0 selon le
+ * signe de l'infini et a > 1 ou a < 1. Une limite finie de u relève de la
+ * continuité (2.45) ; une limite approchée ou absente ne conclut rien.
+ */
+function tryExponentialOfUnboundedLimit(
+	expression: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): MathNode | null {
+	const parts = exponentialParts(stripDelimiters(expression), varName);
+	if (parts === null) return null;
+
+	const inner = evaluateLimit(parts.exponent, varName, approach, dir, options);
+	if (inner.status !== 'infinite' || inner.value === null || !isInfinity(inner.value)) {
+		return null;
+	}
+	const grows = (inner.value.sign === 'positive') === parts.baseValue > 1;
+	return grows ? positiveInfinity() : number('0');
+}
+
+/**
  * lim f(u) = f(L) quand u tend vers une limite EXACTE et finie L où f est
  * continue : √u et ⁿ√u d'indice pair (L > 0 ; L = 0 relève du côté 0⁺, laissé
  * à la composition), ⁿ√u d'indice impair, exp u, a^u (a > 0 constant, e
@@ -1894,7 +2013,9 @@ function tryProductOfLimits(
 				description: 'Limites à gauche et à droite égales'
 			};
 		}
-		const quotient = productAsQuotient(factors);
+		const quotient =
+			productAsQuotient(factors) ??
+			(zeroTimesInfinity ? productOverExponential(factors, limits, varName) : null);
 		if (quotient === null) return null;
 		const rewritten = evaluateLimit(quotient, varName, approach, dir, options);
 		if (rewritten.value === null || rewritten.value === undefined) return null;
@@ -1947,6 +2068,38 @@ function productAsQuotient(factors: readonly MathNode[]): MathNode | null {
 	});
 	const numerator = numeratorFactors.reduce((acc, f) => multiply(acc, f, 'dot'));
 	return divide(numerator, fraction.denominator, 'fraction');
+}
+
+/**
+ * f₁·…·a^u·…·fₙ, a^u → 0, réécrit (f₁·…·fₙ)/a^{−u} (identité : a > 0) sur le
+ * PREMIER facteur exponentiel de limite nulle. Le quotient ∞/∞ relève de
+ * L'Hôpital ou des croissances comparées : (x − 3)²·e^{−x} = (x − 3)²/eˣ
+ * (V68). Null sans un tel facteur.
+ */
+function productOverExponential(
+	factors: readonly MathNode[],
+	limits: readonly (FactorLimit | null)[],
+	varName: string
+): MathNode | null {
+	const index = factors.findIndex(
+		(f, i) => limits[i]?.kind === 'zero' && exponentialParts(stripDelimiters(f), varName) !== null
+	);
+	if (index === -1) return null;
+	const parts = exponentialParts(stripDelimiters(factors[index]), varName);
+	if (parts === null) return null;
+
+	const negated = isOpposite(parts.exponent) ? parts.exponent.operand : opposite(parts.exponent);
+	const denominator =
+		parts.base === null
+			? power(mathConstant('euler'), negated)
+			: power(
+					isNumber(parts.base) ? parts.base : parentheses(stripDelimiters(parts.base)),
+					negated
+				);
+	const numerator = factors
+		.filter((_, i) => i !== index)
+		.reduce((acc, f) => multiply(acc, f, 'dot'));
+	return divide(numerator, denominator, 'fraction');
 }
 
 // =============================================================================
@@ -2282,6 +2435,37 @@ function tryRewrittenSum(
 			}
 		}
 		return null;
+	} finally {
+		nestedRewrites--;
+	}
+}
+
+/**
+ * u^{−n} (n entier ≥ 1) : limite de 1/uⁿ. « Pas de limite » (1/(x − sin x)
+ * en 0) est rendu tel quel ; une valeur approchée ne conclut pas.
+ */
+function tryNegativePowerAsReciprocal(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): { result: LimitResult; rewritten: MathNode } | null {
+	if (!isSuperscript(expr) || !containsVariable(expr.base, varName)) return null;
+	const exponent = exactConstantRational(expr.superscript);
+	if (exponent === null || exponent.d !== 1n || exponent.n >= 0n) return null;
+	if (nestedRewrites >= MAX_NESTED_REWRITES) return null;
+	const rewritten = divide(
+		number('1'),
+		exponent.n === -1n ? expr.base : power(expr.base, number((-exponent.n).toString())),
+		'fraction'
+	);
+	nestedRewrites++;
+	try {
+		const result = evaluateLimit(rewritten, varName, approach, dir, options);
+		const concluded =
+			(result.status === 'exact' || result.status === 'infinite') && result.value !== null;
+		return concluded || result.status === 'does-not-exist' ? { result, rewritten } : null;
 	} finally {
 		nestedRewrites--;
 	}
@@ -2772,10 +2956,15 @@ function hasVanishingDenominator(
 ): boolean {
 	const inside = nodesInsideExponents(expr);
 	const denominators: MathNode[] = [];
-	for (const node of findNodes(expr, (n) => isDivision(n) || isFunction(n))) {
+	for (const node of findNodes(expr, (n) => isDivision(n) || isFunction(n) || isSuperscript(n))) {
 		if (inside.has(node) !== (where === 'inside-exponent')) continue;
 		if (isDivision(node)) denominators.push(node.denominator);
-		else if (isFunction(node) && node.name === 'tan' && node.args.length === 1) {
+		// u^{−n} = 1/uⁿ : (cos x − 1)^{−1} en 0 rendait « 1/0 » exact (V70)
+		else if (isSuperscript(node)) {
+			if (containsVariable(node.superscript, varName)) continue;
+			const exponent = computeNumericValue(node.superscript);
+			if (exponent !== null && exponent < 0) denominators.push(node.base);
+		} else if (isFunction(node) && node.name === 'tan' && node.args.length === 1) {
 			denominators.push(func('cos', [node.args[0]]));
 		}
 	}

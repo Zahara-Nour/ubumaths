@@ -1,0 +1,296 @@
+{
+	"title": "Intercaler un grand nombre",
+	"description": "Écrire un entier compris entre deux entiers de 7 à 9 chiffres (3 405 270 < … < 3 450 207) ; toute réponse comprise est juste",
+	"grades": ["CM2"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Encadrer",
+	"level": 10,
+	"delay": 20,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris un nombre entier compris entre ${{a}}$ et ${{b}}$.\n\n$${{a}} < ? < {{b}}$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "7..9"
+				},
+				{
+					"name": "a",
+					"expression": "digits:c"
+				},
+				{
+					"name": "g",
+					"expression": "1000..99999"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+g"
+				}
+			],
+			"conditions": ["b<=999999999"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+1}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "range",
+							"min": "{{a}}",
+							"max": "{{b}}",
+							"inclusive": false
+						},
+						{
+							"type": "predicate",
+							"predicate": "isInteger"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compare les deux nombres chiffre à chiffre : tout nombre plus grand que ${{a}}$ et plus petit que ${{b}}$ convient.",
+					"Par exemple $\\textcolor{{{color:primary.0}}}{{{eval:a+1}}}$, ou ${{eval:b-1}}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris un nombre entier compris entre ${{a}}$ et ${{b}}$.\n\n$${{a}} < ? < {{b}}$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "7..9"
+				},
+				{
+					"name": "a",
+					"expression": "digits:c"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+2"
+				}
+			],
+			"conditions": ["b<=999999999"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+1}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "range",
+							"min": "{{a}}",
+							"max": "{{b}}",
+							"inclusive": false
+						},
+						{
+							"type": "predicate",
+							"predicate": "isInteger"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Entre ${{a}}$ et ${{b}}$, il n'y a qu'un seul nombre entier : celui qui suit ${{a}}$.",
+					"$${{a}} < \\textcolor{{{color:primary.0}}}{{{solution}}} < {{b}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Écris un nombre entier compris entre ${{a}}$ et ${{b}}$.\n\n$${{a}} < ? < {{b}}$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "7..9"
+				},
+				{
+					"name": "k",
+					"expression": "3..5"
+				},
+				{
+					"name": "m",
+					"expression": "eval:c-k"
+				},
+				{
+					"name": "x",
+					"expression": "digits:m"
+				},
+				{
+					"name": "r0",
+					"expression": "eval:x*10^k"
+				},
+				{
+					"name": "a",
+					"expression": "eval:r0-1"
+				},
+				{
+					"name": "b",
+					"expression": "eval:r0+1"
+				}
+			],
+			"conditions": ["mod(x,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r0}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "range",
+							"min": "{{a}}",
+							"max": "{{b}}",
+							"inclusive": false
+						},
+						{
+							"type": "predicate",
+							"predicate": "isInteger"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{a}}$ se termine par des $9$ : le nombre qui le suit est ${{r0}}$.",
+					"$${{a}} < \\textcolor{{{color:primary.0}}}{{{solution}}} < {{b}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 405 271",
+			"variationIndex": 0,
+			"variables": {
+				"c": "7",
+				"a": "3405270",
+				"g": "44937",
+				"b": "3450207"
+			},
+			"answers": ["3\\,405\\,271"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3 420 000",
+			"variationIndex": 0,
+			"variables": {
+				"c": "7",
+				"a": "3405270",
+				"g": "44937",
+				"b": "3450207"
+			},
+			"answers": ["3\\,420\\,000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la borne 3 450 207",
+			"variationIndex": 0,
+			"variables": {
+				"c": "7",
+				"a": "3405270",
+				"g": "44937",
+				"b": "3450207"
+			},
+			"answers": ["3\\,450\\,207"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 460 000",
+			"variationIndex": 0,
+			"variables": {
+				"c": "7",
+				"a": "3405270",
+				"g": "44937",
+				"b": "3450207"
+			},
+			"answers": ["3\\,460\\,000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 400 000",
+			"variationIndex": 0,
+			"variables": {
+				"c": "7",
+				"a": "3405270",
+				"g": "44937",
+				"b": "3450207"
+			},
+			"answers": ["3\\,400\\,000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "écart de 2 : 12 345 679",
+			"variationIndex": 1,
+			"variables": {
+				"c": "8",
+				"a": "12345678",
+				"b": "12345680"
+			},
+			"answers": ["12\\,345\\,679"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 12 345 680",
+			"variationIndex": 1,
+			"variables": {
+				"c": "8",
+				"a": "12345678",
+				"b": "12345680"
+			},
+			"answers": ["12\\,345\\,680"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "passage : 3 450 000",
+			"variationIndex": 2,
+			"variables": {
+				"c": "7",
+				"k": "4",
+				"m": "3",
+				"x": "345",
+				"r0": "3450000",
+				"a": "3449999",
+				"b": "3450001"
+			},
+			"answers": ["3\\,450\\,000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 449 1000 lu comme 34 491 000",
+			"variationIndex": 2,
+			"variables": {
+				"c": "7",
+				"k": "4",
+				"m": "3",
+				"x": "345",
+				"r0": "3450000",
+				"a": "3449999",
+				"b": "3450001"
+			},
+			"answers": ["34\\,491\\,000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

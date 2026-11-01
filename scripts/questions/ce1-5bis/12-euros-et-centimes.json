@@ -1,0 +1,222 @@
+{
+	"title": "Euros et centimes",
+	"description": "1 € = 100 centimes ; 300 centimes = 3 € ; 345 centimes = 3 € et 45 centimes ; ce qu'il manque pour 1 €",
+	"grades": ["CE1"],
+	"theme": "Grandeurs",
+	"domain": "Monnaie",
+	"subdomain": "Euros et centimes",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{€} = ?~\\text{centimes}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un euro, c'est cent centimes : $1~\\unit{€} = 100$ centimes.",
+					"{{if:a==1|$1~\\unit{€} = \\textcolor{{{color:primary.0}}}{100}$ centimes.|${{a}}~\\unit{€}$, c'est ${{a}}$ fois $100$ centimes : ${{a}}~\\unit{€} = \\textcolor{{{color:primary.0}}}{{{eval:100*a}}}$ centimes.}}"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:100*a}}~\\text{centimes} = ?~\\text{€}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$100$ centimes, c'est $1~\\unit{€}$ : dans ${{eval:100*a}}$ centimes, il y a ${{a}}$ fois $100$ centimes.",
+					"$${{eval:100*a}}~\\text{centimes} = \\textcolor{{{color:primary.0}}}{{{a}}}~\\unit{€}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:100*a+b}}~\\text{centimes} = ?~\\text{€}~\\text{et}~?~\\text{{{if:b==1|centime|centimes}}}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$${{eval:100*a+b}}~\\text{centimes} = {{eval:100*a}}~\\text{centimes} + {{b}}~\\text{{{if:b==1|centime|centimes}}}$$",
+					"${{eval:100*a}}$ centimes, c'est ${{a}}~\\unit{€}$.",
+					"$${{eval:100*a+b}}~\\text{centimes} = \\textcolor{{{color:primary.0}}}{{{a}}}~\\unit{€}~\\text{et}~\\textcolor{{{color:primary.0}}}{{{b}}}~\\text{{{if:b==1|centime|centimes}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{b}}~\\text{centimes} + ?~\\text{centimes} = 1~\\unit{€}$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..19"
+				},
+				{
+					"name": "b",
+					"expression": "eval:5*k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100-b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{€} = 100$ centimes : on cherche ce qu'il faut ajouter à ${{b}}$ pour arriver à $100$.",
+					"$${{b}} + \\textcolor{{{color:primary.0}}}{{{eval:100-b}}} = 100$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1 € = 100 centimes",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 € = 10 centimes",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 3 € = 300 centimes",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["300"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BO : 200 centimes = 2 €",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 200 centimes = 200 €",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["200"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 345 centimes = 3 € et 45 centimes",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "45"
+			},
+			"answers": ["3", "45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 345 centimes = 34 € et 5 centimes",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "45"
+			},
+			"answers": ["34", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "305 centimes = 3 € et 5 centimes",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["3", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "65 + 35 = 100 centimes",
+			"variationIndex": 3,
+			"variables": {
+				"k": "13",
+				"b": "65"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 65 + 45 (retenue oubliée)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "13",
+				"b": "65"
+			},
+			"answers": ["45"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

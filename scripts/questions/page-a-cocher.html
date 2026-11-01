@@ -194,6 +194,8 @@
 		border-radius: 8px;
 		padding: 10px 12px;
 		display: grid;
+		/* colonne bornée : une formule large défile dans .calc au lieu d'élargir la page */
+		grid-template-columns: minmax(0, 1fr);
 		gap: 6px;
 		min-width: 0;
 		align-content: start;
@@ -201,12 +203,21 @@
 	.enonce {
 		font-size: 1.05rem;
 		display: grid;
+		grid-template-columns: minmax(0, 1fr);
 		gap: 6px;
 	}
 	.calc {
 		font-family: var(--mono);
 		font-size: 1.15rem;
 		overflow-wrap: anywhere;
+		overflow-x: auto;
+	}
+	mtext.case-m {
+		border: 2px solid var(--muted);
+		border-radius: 6px;
+		color: var(--muted);
+		padding: 1px 5px;
+		margin: 2px 0;
 	}
 	.case {
 		display: inline-block;
@@ -387,6 +398,94 @@
 	}
 	.choix li .fig {
 		width: 9rem;
+	}
+
+	/* Bloc python : le programme tel quel */
+	pre.code {
+		white-space: pre;
+		overflow-x: auto;
+		padding: 0.5rem 0.75rem;
+		border: 1px solid var(--line);
+		border-radius: 6px;
+		font-size: 0.85rem;
+	}
+
+	/* Bloc courbe : balisage et styles de Courbe.svelte */
+	.courbe {
+		display: block;
+		width: 100%;
+		height: auto;
+		margin: 0.5rem auto;
+		font-family: var(--body);
+	}
+	.courbe .cg {
+		stroke: var(--line);
+		stroke-width: 0.75;
+	}
+	.courbe .ca {
+		stroke: var(--fg);
+		stroke-width: 1.1;
+	}
+	.courbe .ck {
+		stroke: var(--fg);
+		stroke-width: 1;
+	}
+	.courbe .cf {
+		fill: var(--fg);
+	}
+	.courbe .ct {
+		fill: var(--fg);
+		font-size: 10px;
+	}
+	.courbe .cas {
+		fill: none;
+		stroke: var(--muted);
+		stroke-width: 1.2;
+		stroke-dasharray: 5 4;
+	}
+	.courbe .cc {
+		fill: none;
+		stroke-width: 2;
+		stroke-linejoin: round;
+		stroke-linecap: round;
+	}
+	.courbe .cpt {
+		stroke-dasharray: 6 4;
+	}
+	.courbe .crp {
+		stroke-width: 1;
+		stroke-dasharray: 2 3;
+	}
+	.courbe .ce {
+		fill: none;
+		stroke-width: 1.6;
+		stroke-linejoin: round;
+	}
+	.courbe .ctg {
+		fill: none;
+		stroke-width: 1.4;
+		stroke-dasharray: 6 4;
+	}
+	.courbe .cr,
+	.courbe .cpn,
+	.courbe .cn {
+		font-style: italic;
+		font-size: 12px;
+	}
+	.courbe .cr {
+		font-size: 11px;
+	}
+	.courbe .cn {
+		font-size: 13px;
+	}
+	.courbe .cpn {
+		fill: var(--fg);
+	}
+	.courbe .ci {
+		font-size: 9px;
+	}
+	.choix li .courbe {
+		width: 12rem;
 	}
 
 	/* Bloc monnaie : balisage et couleurs de Monnaie.svelte (--color-primary de app.css) */
@@ -607,6 +706,8 @@
 	<div class="bandeau" id="bandeau" hidden></div>
 	<main id="fiches"><p class="vide">Chargement des fiches…</p></main>
 </div>
+<!-- KaTeX en MathML : les formules du lycée, sans feuille de style ni police à charger -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js"></script>
 <script>
 	const MODELES = /*@@MODELES@@*/ [];
 	let verdicts = {};
@@ -622,25 +723,98 @@
 			(c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]
 		);
 	}
+	/* Commandes que le rendu texte sait écrire ; au-delà (fractions, \\left, exposants), KaTeX */
+	const TEXTE_SEUL =
+		/\{,\}|\\(placeholder\[\d+\]\{\}|unit\{[^}]*\}|text\{[^}]*\}|rightarrow|leftarrow|uparrow|downarrow|ldots|quad|,| )/g;
+	const MACROS = {
+		'\\exponentialE': '\\mathrm{e}',
+		'\\imaginaryI': '\\mathrm{i}',
+		'\\unit': '\\,\\mathrm{#1}'
+	};
+	/* Formule du lycée : KaTeX (MathML), coupée aux cases à remplir, dessinées comme au CP (le MathML
+	   de Chrome ne trace pas \boxed) ; une formule que KaTeX refuse revient au rendu texte */
+	/* Le MathML de Chrome, sans feuille de style, ignore mathvariant="double-struck" (ℝ en R italique) :
+	   lettres ajourées écrites en caractères Unicode */
+	const AJOUREES = { C: 'ℂ', N: 'ℕ', Q: 'ℚ', R: 'ℝ', Z: 'ℤ' };
+	function mathsKatex(t, bloc = false) {
+		if (!window.katex) return null;
+		/* Formule en bloc : coupée, chaque morceau serait un bloc et la case tomberait à la ligne */
+		if (bloc) return mathsKatexEntiere(t, bloc);
+		try {
+			return t
+				.split(/\\placeholder\[\d+\]\{\}/)
+				.map((m) =>
+					m.trim()
+						? katex
+								.renderToString(m, {
+									output: 'mathml',
+									displayMode: bloc,
+									throwOnError: true,
+									macros: { ...MACROS }
+								})
+								.replace(
+									/<mi mathvariant="double-struck">([CNQRZ])<\/mi>/g,
+									(_, l) => `<mi mathvariant="normal">${AJOUREES[l]}</mi>`
+								)
+						: ''
+				)
+				.join('<span class="case">?</span>');
+		} catch {
+			return mathsKatexEntiere(t, bloc);
+		}
+	}
+	/* Case DANS une sous-formule (\dfrac{\placeholder}{4}) : la coupe laisse des accolades orphelines ;
+	   formule rendue d'un tenant, la case devient un repère texte remplacé par une case MathML */
+	function mathsKatexEntiere(t, bloc) {
+		try {
+			return katex
+				.renderToString(t.replace(/\\placeholder\[\d+\]\{\}/g, '\\text{¤}'), {
+					output: 'mathml',
+					displayMode: bloc,
+					throwOnError: true,
+					macros: { ...MACROS }
+				})
+				.replace(/<mtext>¤<\/mtext>/g, '<mtext class="case-m">?</mtext>')
+				.replace(
+					/<mi mathvariant="double-struck">([CNQRZ])<\/mi>/g,
+					(_, l) => `<mi mathvariant="normal">${AJOUREES[l]}</mi>`
+				);
+		} catch {
+			return null;
+		}
+	}
 	/* Les maths du CP sont des nombres et des signes : rendu texte, cases dessinées, signes typographiques */
-	function maths(t) {
-		return esc(t)
-			.replace(/\\placeholder\[\d+\]\{\}/g, '<span class="case">?</span>')
-			.replace(/\\ /g, ' ')
-			.replace(/\\rightarrow/g, '→')
-			.replace(/\\leftarrow/g, '←')
-			.replace(/\\uparrow/g, '↑')
-			.replace(/\\downarrow/g, '↓')
-			.replace(/\\ldots/g, ' … ')
-			.replace(/\\quad/g, ' ')
-			.replace(/ - /g, ' − ')
-			.replace(/^-$/, '−')
-			.replace(/\^\{\\text\{([^}]*)\}\}/g, '<sup>$1</sup>')
-			.replace(/~?\\unit\{([^}]*)\}/g, '\u00a0$1')
-			.replace(/~/g, '\u00a0')
-			.replace(/=/g, ' = ')
-			.replace(/ {2,}/g, ' ')
-			.trim();
+	function maths(t, bloc = false) {
+		if (/[\\^_{}]/.test(t.replace(/\^\{\\text\{[^}]*\}\}/g, '').replace(TEXTE_SEUL, ''))) {
+			/* Exposant sur une espace (« \,^\circ ») : refusé par la sortie MathML de KaTeX, base vide ajoutée */
+			const rendu = mathsKatex(t.replace(/(\\[,;:!]|\\quad)\s*\^/g, '$1{}^'), bloc);
+			if (rendu) return rendu;
+		}
+		return (
+			esc(t)
+				.replace(/\\placeholder\[\d+\]\{\}/g, '<span class="case">?</span>')
+				.replace(/\{,\}/g, ',')
+				.replace(/\\,/g, '\u202f')
+				.replace(/\\ /g, ' ')
+				.replace(/\\rightarrow/g, '→')
+				.replace(/\\leftarrow/g, '←')
+				.replace(/\\uparrow/g, '↑')
+				.replace(/\\downarrow/g, '↓')
+				.replace(/\\ldots/g, ' … ')
+				.replace(/\\quad/g, ' ')
+				.replace(/ - /g, ' − ')
+				.replace(/^-$/, '−')
+				.replace(/\^\{\\text\{([^}]*)\}\}/g, '<sup>$1</sup>')
+				// unité après une case : cm^2 et cm^3 écrits cm² et cm³
+				.replace(
+					/~?\\unit\{([^}]*)\}/g,
+					(_, u) => '\u00a0' + u.replace(/\^2/g, '²').replace(/\^3/g, '³')
+				)
+				.replace(/~/g, '\u00a0')
+				.replace(/=/g, ' = ')
+				.replace(/ {2,}/g, ' ')
+				.trim()
+		);
 	}
 	function enLigne(t) {
 		return t
@@ -671,7 +845,7 @@
 		if (par.startsWith('|')) return tableau(par);
 		if (/^[●▲■★○△□ ]+$/.test(par)) return `<div class="formes">${esc(par)}</div>`;
 		if (par.startsWith('@@HTML@@')) return `<div class="bloc">${par.slice(8)}</div>`;
-		if (par.startsWith('$$')) return `<div class="calc">${maths(par.slice(2, -2))}</div>`;
+		if (par.startsWith('$$')) return `<div class="calc">${maths(par.slice(2, -2), true)}</div>`;
 		return `<div>${enLigne(par)}</div>`;
 	}
 	function rendu(t) {
@@ -698,7 +872,7 @@
 	function exemple(e) {
 		const reponse = e.choices
 			? `<ul class="choix${e.choices.some((c) => c.content.startsWith('@@HTML@@')) ? ' dessins' : ''}">${e.choices.map((c) => `<li class="${c.bon ? 'bon' : ''}">${c.bon ? '✔ ' : ''}${c.content.startsWith('@@HTML@@') ? c.content.slice(8) : enLigne(c.content)}</li>`).join('')}</ul>`
-			: `<div class="attendu">Attendu, case par case : <b>${esc(e.answer)}</b></div>${e.solution ? `<div class="sol"><div class="attendu">Une construction juste, le moins d'objets (celle que montre la correction) :</div><div class="m-bloc">${e.solution}</div></div>` : ''}`;
+			: `<div class="attendu">Attendu, case par case : <b>${e.answer.split(' | ').map(maths).join(' | ')}</b></div>${e.solution ? `<div class="sol"><div class="attendu">Une construction juste, le moins d'objets (celle que montre la correction) :</div><div class="m-bloc">${e.solution}</div></div>` : ''}`;
 		return `<div class="ex"><div class="var">variation ${e.variation}</div><div class="enonce">${rendu(e.statement)}</div>${reponse}<ol class="corrige">${e.steps.map((s) => `<li>${s.includes('@@HTML@@') ? rendu(s) : etape(s)}</li>`).join('')}</ol></div>`;
 	}
 
@@ -707,9 +881,9 @@
 		return `<article class="fiche" data-id="${esc(m.id)}" data-etat="${v.etat ?? ''}">
 		<div class="tete"><h2>${esc(m.titre)}</h2><span class="code">${esc(m.code)}</span><span class="niv">niveau ${m.niveau}</span><span class="niv">${esc({ draft: 'brouillon', published: 'publié', archived: 'archivé' }[m.statut] ?? m.statut)}</span><span class="meta">${esc(m.rangement)} · ${esc(m.id)}</span></div>
 		${m.alertes.length ? `<p class="alerte">⚠ ${esc(m.alertes.join(' · '))}</p>` : ''}
-        <p class="point"><b>${esc(m.libelle)}</b> ${m.bornes.length ? `Borne : ${esc(m.bornes.join(' ; '))}` : 'Aucune borne relevée.'}</p>
+        <p class="point"><b>${enLigne(m.libelle)}</b> ${m.bornes.length ? `Borne : ${enLigne(m.bornes.join(' ; '))}` : 'Aucune borne relevée.'}</p>
 		<div class="exemples">${m.exemples.map(exemple).join('')}</div>
-		<details><summary>Plages tirées et specs (${m.specs.length})</summary><ul>${[...m.variables, ...m.conditions.map((c) => 'condition ' + c)].map((x) => `<li><code>${esc(x)}</code></li>`).join('')}</ul><ul>${m.specs.map((s) => `<li>${esc(s)}</li>`).join('')}</ul></details>
+		<details><summary>Plages tirées et specs (${m.specs.length})</summary><ul>${[...m.variables, ...m.conditions.map((c) => 'condition ' + c)].map((x) => `<li><code>${esc(x)}</code></li>`).join('')}</ul><ul>${m.specs.map((s) => `<li>${enLigne(s)}</li>`).join('')}</ul></details>
 		<div class="verdict">
 			<button class="ok" data-v="ok" aria-pressed="${v.etat === 'ok'}">OK</button>
 			<button class="revoir" data-v="revoir" aria-pressed="${v.etat === 'revoir'}">À revoir</button>

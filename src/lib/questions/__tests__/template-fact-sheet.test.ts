@@ -38,17 +38,15 @@ describe('describeValidationSettings', () => {
 		);
 	});
 
-	it('options hors contraintes : ordre des trous libre, choix non mélangés', () => {
+	it('options hors contraintes : ordre des trous libre', () => {
 		expect(
 			describeValidationSettings({
 				orderIndependent: true,
-				shuffleChoices: false,
 				constraints: { allowBracketsInFirstNegativeTerm: true }
 			})
 		).toEqual([
 			'Parenthèses autorisées sur un premier terme négatif',
-			'Trous dans n’importe quel ordre',
-			'Choix non mélangés'
+			'Trous dans n’importe quel ordre'
 		]);
 	});
 

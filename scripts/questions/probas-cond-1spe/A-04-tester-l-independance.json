@@ -10,7 +10,7 @@
 	"delay": 40,
 	"variations": [
 		{
-			"statement": "On considère deux événements $A$ et $B$ tels que $P(A)={{eval:a/10;d}}$, $P(B)={{eval:b/10;d}}$ et $P(A\\cap B)={{eval:a*b/100;d}}$.\n\nLes événements $A$ et $B$ sont-ils indépendants ?",
+			"statement": "On considère deux événements $A$ et $B$ tels que $P(A)={{eval:a/10;d}}$, $P(B)={{eval:b/10;d}}$ et $P(A\\cap B)={{eval:a*b/100;d}}$.\n\nLes événements $A$ et $B$ sont-ils indépendants ?\n\n```choix\n- Oui, $A$ et $B$ sont indépendants.\n- Non, $A$ et $B$ ne sont pas indépendants.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -22,25 +22,21 @@
 				}
 			],
 			"conditions": ["mod(a*b,10) != 0"],
-			"choices": [
-				{
-					"content": "Oui, $A$ et $B$ sont indépendants."
-				},
-				{
-					"content": "Non, $A$ et $B$ ne sont pas indépendants."
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"$A$ et $B$ sont indépendants lorsque $P(A\\cap B)=P(A)\\times P(B)$.",
 					"$P(A)\\times P(B)={{eval:a/10;d}}\\times{{eval:b/10;d}}={{eval:a*b/100;d}}$.",
 					"C'est bien $P(A\\cap B)$ : $A$ et $B$ **sont indépendants**."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "On considère deux événements $A$ et $B$ tels que $P(A)={{eval:a/10;d}}$, $P(B)={{eval:b/10;d}}$ et $P(A\\cap B)={{eval:m/10;d}}$.\n\nLes événements $A$ et $B$ sont-ils indépendants ?",
+			"statement": "On considère deux événements $A$ et $B$ tels que $P(A)={{eval:a/10;d}}$, $P(B)={{eval:b/10;d}}$ et $P(A\\cap B)={{eval:m/10;d}}$.\n\nLes événements $A$ et $B$ sont-ils indépendants ?\n\n```choix\n- Oui, $A$ et $B$ sont indépendants.\n- Non, $A$ et $B$ ne sont pas indépendants.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -56,25 +52,21 @@
 				}
 			],
 			"conditions": ["m < a", "m < b", "m > a+b-10", "10*m != a*b"],
-			"choices": [
-				{
-					"content": "Oui, $A$ et $B$ sont indépendants."
-				},
-				{
-					"content": "Non, $A$ et $B$ ne sont pas indépendants."
-				}
-			],
-			"correctChoiceIndex": ["1"],
 			"correction": {
 				"steps": [
 					"$A$ et $B$ sont indépendants lorsque $P(A\\cap B)=P(A)\\times P(B)$.",
 					"$P(A)\\times P(B)={{eval:a/10;d}}\\times{{eval:b/10;d}}={{eval:a*b/100;d}}$.",
 					"Or $P(A\\cap B)={{eval:m/10;d}}\\neq{{eval:a*b/100;d}}$ : $A$ et $B$ **ne sont pas indépendants**."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "On considère deux événements $A$ et $B$ tels que $P(A)={{eval:a/10;d}}$, $P(B)={{eval:b/10;d}}$ et $P(A\\cap B)=0$.\n\nLes événements $A$ et $B$ sont-ils indépendants ?",
+			"statement": "On considère deux événements $A$ et $B$ tels que $P(A)={{eval:a/10;d}}$, $P(B)={{eval:b/10;d}}$ et $P(A\\cap B)=0$.\n\nLes événements $A$ et $B$ sont-ils indépendants ?\n\n```choix\n- Oui, $A$ et $B$ sont indépendants.\n- Non, $A$ et $B$ ne sont pas indépendants.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -86,15 +78,6 @@
 				}
 			],
 			"conditions": ["a+b < 10"],
-			"choices": [
-				{
-					"content": "Oui, $A$ et $B$ sont indépendants."
-				},
-				{
-					"content": "Non, $A$ et $B$ ne sont pas indépendants."
-				}
-			],
-			"correctChoiceIndex": ["1"],
 			"correction": {
 				"steps": [
 					"$A$ et $B$ sont indépendants lorsque $P(A\\cap B)=P(A)\\times P(B)$.",
@@ -102,9 +85,19 @@
 					"Or $P(A\\cap B)=0\\neq{{eval:a*b/100;d}}$ : $A$ et $B$ **ne sont pas indépendants**.",
 					"Ici $A$ et $B$ sont incompatibles (ils ne peuvent pas se réaliser ensemble) : incompatibles ne veut pas dire indépendants."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		}
 	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
 	"testSpecs": [
 		{
 			"description": "v0 : 0,3 × 0,4 = 0,12 → oui",
@@ -113,10 +106,10 @@
 				"a": "3",
 				"b": "4"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v0 : « non » refusé",
@@ -125,10 +118,10 @@
 				"a": "3",
 				"b": "4"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 : les deux cochés refusé",
@@ -137,10 +130,10 @@
 				"a": "3",
 				"b": "4"
 			},
-			"selectedChoices": [0, 1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0;1"]
 		},
 		{
 			"description": "v1 : 0,2 ≠ 0,12 → non",
@@ -150,10 +143,10 @@
 				"b": "4",
 				"m": "2"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v1 : « oui » refusé",
@@ -163,10 +156,10 @@
 				"b": "4",
 				"m": "2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 : les deux cochés refusé",
@@ -176,10 +169,10 @@
 				"b": "4",
 				"m": "2"
 			},
-			"selectedChoices": [0, 1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0;1"]
 		},
 		{
 			"description": "v2 : incompatibles, 0 ≠ 0,12 → non",
@@ -188,10 +181,10 @@
 				"a": "3",
 				"b": "4"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v2 : incompatibles pris pour indépendants",
@@ -200,10 +193,10 @@
 				"a": "3",
 				"b": "4"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v2 : les deux cochés refusé",
@@ -212,15 +205,10 @@
 				"a": "3",
 				"b": "4"
 			},
-			"selectedChoices": [0, 1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0;1"]
 		}
-	],
-	"options": {
-		"constraints": {
-			"spaces": "off"
-		}
-	}
+	]
 }

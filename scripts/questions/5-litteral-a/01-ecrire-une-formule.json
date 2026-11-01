@@ -1,0 +1,263 @@
+{
+	"title": "Écrire une formule",
+	"description": "Écrire en fonction de n le double (2n), le triple (3n), la moitié, le carré (n²), le successeur (n + 1) et le prédécesseur (n − 1) d'un nombre n",
+	"grades": ["5"],
+	"theme": "Calcul littéral",
+	"domain": "Écrire",
+	"subdomain": "Formules",
+	"level": 1,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris le double du nombre $n$.\n\n$?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2n"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Écriture.** On peut supprimer le signe $\\times$ devant une lettre : $3 \\times n$ s'écrit $3n$. Le nombre s'écrit devant la lettre.",
+					"Le double de $n$, c'est $2 \\times n$, qui s'écrit $\\textcolor{{{color:primary.0}}}{2n}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris le triple du nombre $n$.\n\n$?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "3n"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Écriture.** On peut supprimer le signe $\\times$ devant une lettre : $3 \\times n$ s'écrit $3n$. Le nombre s'écrit devant la lettre.",
+					"Le triple de $n$, c'est $3 \\times n$, qui s'écrit $\\textcolor{{{color:primary.0}}}{3n}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris la moitié du nombre $n$.\n\n$?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{n}{2}",
+					"requiredForm": {
+						"pattern": "u"
+					},
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Moitié.** Prendre la moitié, c'est diviser par $2$ : on peut écrire $\\dfrac{n}{2}$, $n \\div 2$ ou $0{,}5n$.",
+					"La moitié de $n$, c'est $n \\div 2$, qui s'écrit $\\textcolor{{{color:primary.0}}}{\\dfrac{n}{2}}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris le carré du nombre $n$.\n\n$?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "n^2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Carré.** Le carré d'un nombre est ce nombre multiplié par lui-même : $n \\times n$ s'écrit $n^2$. Attention : $n^2$ n'est pas $2n$.",
+					"Le carré de $n$, c'est $n \\times n$, qui s'écrit $\\textcolor{{{color:primary.0}}}{n^2}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris le successeur du nombre $n$.\n\n$?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "n+1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Successeur.** Le successeur d'un nombre entier est le nombre qui le suit : on ajoute $1$.",
+					"Le successeur de $n$, c'est $n + 1$, qui s'écrit $\\textcolor{{{color:primary.0}}}{n + 1}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris le prédécesseur du nombre $n$.\n\n$?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "n-1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Prédécesseur.** Le prédécesseur d'un nombre entier est le nombre qui le précède : on retire $1$.",
+					"Le prédécesseur de $n$, c'est $n - 1$, qui s'écrit $\\textcolor{{{color:primary.0}}}{n - 1}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Double : 2n",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n² pour le double",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["n^2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n + 2 pour le double",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["n+2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n + n : pas la formule attendue",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["n+n"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Triple : 3n",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n³ pour le triple",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["n^3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Moitié : n/2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\frac{n}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Moitié : n ÷ 2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["n\\div2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Moitié : 0,5n",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0{,}5n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2n pour la moitié",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Carré : n²",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["n^2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2n pour le carré",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["2n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Successeur : n + 1",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["n+1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Successeur : 1 + n",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["1+n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n − 1 pour le successeur",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["n-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Prédécesseur : n − 1",
+			"variationIndex": 5,
+			"variables": {},
+			"answers": ["n-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n + 1 pour le prédécesseur",
+			"variationIndex": 5,
+			"variables": {},
+			"answers": ["n+1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

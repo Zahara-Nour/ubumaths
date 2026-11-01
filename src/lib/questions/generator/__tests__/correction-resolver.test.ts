@@ -7,10 +7,9 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { templateMarkdown, resolvedMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '$lib/ubumark';
 import type { ResolvedVariable } from '../../types';
 import type { InstanceBlank } from '../../types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
 import { buildCorrectionContext, resolveCorrectionContent } from '../correction-resolver';
 
 // ============================================================================
@@ -30,13 +29,15 @@ function makeBlanks(...answers: string[]): InstanceBlank[] {
 	}));
 }
 
-function makeChoices(
-	...items: { text: string; correct: boolean }[]
-): { content: ResolvedMarkdown; isCorrect: boolean }[] {
-	return items.map((item) => ({
-		content: resolvedMarkdown(item.text),
-		isCorrect: item.correct
-	}));
+/** Case choix (bloc ```choix) : bonne(s) réponse(s) en indices d'origine (« 0 », « 0;2 ») */
+function makeChoiceBlank(choices: string[], expectedAnswer: string): InstanceBlank[] {
+	return [
+		{
+			expectedAnswer,
+			type: 'choice',
+			choice: { choices, order: choices.map((_, i) => i), multiple: expectedAnswer.includes(';') }
+		}
+	];
 }
 
 // ============================================================================
@@ -46,7 +47,7 @@ function makeChoices(
 describe('resolveCorrectionContent - {{solution}} resolution', () => {
 	it('1. {{solution}} resolves to blanks[0].expectedAnswer for fill-in-blanks', () => {
 		const blanks = makeBlanks('8');
-		const ctx = buildCorrectionContext(blanks, undefined, undefined, vars);
+		const ctx = buildCorrectionContext(blanks, vars);
 		const result = resolveCorrectionContent(
 			templateMarkdown('La réponse est {{solution}}.'),
 			vars,
@@ -58,7 +59,7 @@ describe('resolveCorrectionContent - {{solution}} resolution', () => {
 
 	it('2. {{solution_0}}, {{solution_1}} resolve to indexed blanks', () => {
 		const blanks = makeBlanks('8', '15');
-		const ctx = buildCorrectionContext(blanks, undefined, undefined, vars);
+		const ctx = buildCorrectionContext(blanks, vars);
 		const result = resolveCorrectionContent(
 			templateMarkdown('Première: {{solution_0}}, Deuxième: {{solution_1}}.'),
 			vars,
@@ -68,12 +69,8 @@ describe('resolveCorrectionContent - {{solution}} resolution', () => {
 		expect(String(result)).toContain('15');
 	});
 
-	it('3. {{solution}} resolves to text of correct choice for QCM', () => {
-		const choices = makeChoices(
-			{ text: 'pair', correct: true },
-			{ text: 'impair', correct: false }
-		);
-		const ctx = buildCorrectionContext(undefined, choices, '0', vars);
+	it('3. {{solution}} resolves to text of correct choice for a case choix', () => {
+		const ctx = buildCorrectionContext(makeChoiceBlank(['pair', 'impair'], '0'), vars);
 		const result = resolveCorrectionContent(
 			templateMarkdown('La réponse est {{solution}}.'),
 			vars,
@@ -90,7 +87,7 @@ describe('resolveCorrectionContent - {{solution}} resolution', () => {
 describe('resolveCorrectionContent - {{expression}} resolution', () => {
 	it('4. {{expression}} resolves to variable "expression" if it exists', () => {
 		const varsWithExpr: ResolvedVariable[] = [...vars, { name: 'expression', value: '2+3' }];
-		const ctx = buildCorrectionContext(undefined, undefined, undefined, varsWithExpr);
+		const ctx = buildCorrectionContext(undefined, varsWithExpr);
 		const result = resolveCorrectionContent(
 			templateMarkdown('Expression: {{expression}}.'),
 			varsWithExpr,
@@ -101,7 +98,7 @@ describe('resolveCorrectionContent - {{expression}} resolution', () => {
 
 	it('5. {{expression}} falls back to expression1 if no "expression" variable', () => {
 		// vars has expression1=5+3 but no "expression"
-		const ctx = buildCorrectionContext(undefined, undefined, undefined, vars);
+		const ctx = buildCorrectionContext(undefined, vars);
 		const result = resolveCorrectionContent(
 			templateMarkdown('Expression: {{expression}}.'),
 			vars,
@@ -118,7 +115,7 @@ describe('resolveCorrectionContent - {{expression}} resolution', () => {
 describe('resolveCorrectionContent - Normal variables and LaTeX', () => {
 	it('6. Normal variables {{a}} resolved alongside pseudo-variables', () => {
 		const blanks = makeBlanks('8');
-		const ctx = buildCorrectionContext(blanks, undefined, undefined, vars);
+		const ctx = buildCorrectionContext(blanks, vars);
 		const result = resolveCorrectionContent(
 			templateMarkdown('{{a}} + {{b}} = {{solution}}.'),
 			vars,
@@ -131,7 +128,7 @@ describe('resolveCorrectionContent - Normal variables and LaTeX', () => {
 
 	it('7. LaTeX conversion works inside $...$ (including solution values)', () => {
 		const blanks = makeBlanks('8');
-		const ctx = buildCorrectionContext(blanks, undefined, undefined, vars);
+		const ctx = buildCorrectionContext(blanks, vars);
 		const result = resolveCorrectionContent(
 			templateMarkdown('${{a}}+{{b}}={{solution}}$'),
 			vars,
@@ -150,7 +147,7 @@ describe('resolveCorrectionContent - Normal variables and LaTeX', () => {
 describe('resolveCorrectionContent - Pre-processing syntax', () => {
 	it('8. {{solution:N}} is converted to {{solution_N}} and resolved', () => {
 		const blanks = makeBlanks('8', '15');
-		const ctx = buildCorrectionContext(blanks, undefined, undefined, vars);
+		const ctx = buildCorrectionContext(blanks, vars);
 		const result = resolveCorrectionContent(
 			templateMarkdown('Première: {{solution:0}}, Deuxième: {{solution:1}}.'),
 			vars,
@@ -162,7 +159,7 @@ describe('resolveCorrectionContent - Pre-processing syntax', () => {
 
 	it('9. {{solution:html}} is treated as alias of {{solution}}', () => {
 		const blanks = makeBlanks('8');
-		const ctx = buildCorrectionContext(blanks, undefined, undefined, vars);
+		const ctx = buildCorrectionContext(blanks, vars);
 		const result = resolveCorrectionContent(
 			templateMarkdown('La réponse est {{solution:html}}.'),
 			vars,
@@ -172,7 +169,7 @@ describe('resolveCorrectionContent - Pre-processing syntax', () => {
 	});
 
 	it('10. {{expression:raw}} is treated as alias of {{expression}}', () => {
-		const ctx = buildCorrectionContext(undefined, undefined, undefined, vars);
+		const ctx = buildCorrectionContext(undefined, vars);
 		const result = resolveCorrectionContent(
 			templateMarkdown('Expression: {{expression:raw}}.'),
 			vars,
@@ -190,7 +187,7 @@ describe('resolveCorrectionContent - Pre-processing syntax', () => {
 describe('resolveCorrectionContent - Client-side preservation', () => {
 	it('11. {{answer}} is preserved (not resolved)', () => {
 		const blanks = makeBlanks('8');
-		const ctx = buildCorrectionContext(blanks, undefined, undefined, vars);
+		const ctx = buildCorrectionContext(blanks, vars);
 		const result = resolveCorrectionContent(
 			templateMarkdown('Vous avez répondu {{answer}}.'),
 			vars,
@@ -201,7 +198,7 @@ describe('resolveCorrectionContent - Client-side preservation', () => {
 
 	it('12. {{answer:N}} is preserved', () => {
 		const blanks = makeBlanks('8', '15');
-		const ctx = buildCorrectionContext(blanks, undefined, undefined, vars);
+		const ctx = buildCorrectionContext(blanks, vars);
 		const result = resolveCorrectionContent(
 			templateMarkdown('Réponse 1: {{answer:0}}, Réponse 2: {{answer:1}}.'),
 			vars,
@@ -212,7 +209,7 @@ describe('resolveCorrectionContent - Client-side preservation', () => {
 	});
 
 	it('13. {{color:name}} is preserved (handled by resolveColorReferences)', () => {
-		const ctx = buildCorrectionContext(undefined, undefined, undefined, vars);
+		const ctx = buildCorrectionContext(undefined, vars);
 		// Note: {{color:...}} is already skipped by the tokenizer (L124),
 		// so it passes through naturally. This test verifies it survives.
 		const result = resolveCorrectionContent(
@@ -226,7 +223,7 @@ describe('resolveCorrectionContent - Client-side preservation', () => {
 	});
 
 	it('14. {{if:cond|then|else}} is preserved', () => {
-		const ctx = buildCorrectionContext(undefined, undefined, undefined, vars);
+		const ctx = buildCorrectionContext(undefined, vars);
 		const result = resolveCorrectionContent(
 			templateMarkdown('{{if:correct|Bravo!|Réessayez}}.'),
 			vars,
@@ -236,7 +233,7 @@ describe('resolveCorrectionContent - Client-side preservation', () => {
 	});
 
 	it('14b. {{if:cond|then}} (two-argument form) is preserved', () => {
-		const ctx = buildCorrectionContext(undefined, undefined, undefined, vars);
+		const ctx = buildCorrectionContext(undefined, vars);
 		const result = resolveCorrectionContent(
 			templateMarkdown('{{if:isCorrect|Bravo!}} texte.'),
 			vars,
@@ -252,7 +249,7 @@ describe('resolveCorrectionContent - Client-side preservation', () => {
 
 describe('resolveCorrectionContent - Edge cases', () => {
 	it('15. No solution available: {{solution}} resolves to empty string', () => {
-		const ctx = buildCorrectionContext(undefined, undefined, undefined, vars);
+		const ctx = buildCorrectionContext(undefined, vars);
 		const result = resolveCorrectionContent(
 			templateMarkdown('La solution est {{solution}}.'),
 			vars,
@@ -268,7 +265,7 @@ describe('resolveCorrectionContent - Edge cases', () => {
 			{ name: 'a', value: '5' },
 			{ name: 'b', value: '3' }
 		];
-		const ctx = buildCorrectionContext(undefined, undefined, undefined, varsNoExpr);
+		const ctx = buildCorrectionContext(undefined, varsNoExpr);
 		const result = resolveCorrectionContent(
 			templateMarkdown('Expression: {{expression}}.'),
 			varsNoExpr,
@@ -285,47 +282,38 @@ describe('resolveCorrectionContent - Edge cases', () => {
 describe('buildCorrectionContext', () => {
 	it('builds context from fill-in-blanks', () => {
 		const blanks = makeBlanks('8', '15');
-		const ctx = buildCorrectionContext(blanks, undefined, undefined, vars);
+		const ctx = buildCorrectionContext(blanks, vars);
 		expect(ctx.solutions).toEqual(['8', '15']);
 	});
 
-	it('builds context from QCM single choice', () => {
-		const choices = makeChoices(
-			{ text: 'pair', correct: true },
-			{ text: 'impair', correct: false }
-		);
-		const ctx = buildCorrectionContext(undefined, choices, '0', vars);
+	it('builds context from a case choix, single answer', () => {
+		const ctx = buildCorrectionContext(makeChoiceBlank(['pair', 'impair'], '0'), vars);
 		expect(ctx.solutions).toEqual(['pair']);
 	});
 
-	it('builds context from QCM multi choice', () => {
-		const choices = makeChoices(
-			{ text: 'pair', correct: true },
-			{ text: 'impair', correct: false },
-			{ text: 'premier', correct: true }
-		);
-		const ctx = buildCorrectionContext(undefined, choices, ['0', '2'], vars);
-		expect(ctx.solutions).toEqual(['pair', 'premier']);
+	it('builds context from a case choix, several answers', () => {
+		const ctx = buildCorrectionContext(makeChoiceBlank(['pair', 'impair', 'premier'], '0;2'), vars);
+		expect(ctx.solutions).toEqual(['pair ; premier']);
 	});
 
 	it('extracts expression from variable "expression"', () => {
 		const varsWithExpr: ResolvedVariable[] = [...vars, { name: 'expression', value: '2+3' }];
-		const ctx = buildCorrectionContext(undefined, undefined, undefined, varsWithExpr);
+		const ctx = buildCorrectionContext(undefined, varsWithExpr);
 		expect(ctx.expression).toBe('2+3');
 	});
 
 	it('falls back to expression1 for expression', () => {
-		const ctx = buildCorrectionContext(undefined, undefined, undefined, vars);
+		const ctx = buildCorrectionContext(undefined, vars);
 		expect(ctx.expression).toBe('5+3');
 	});
 
 	it('returns empty solutions when no blanks or choices', () => {
-		const ctx = buildCorrectionContext(undefined, undefined, undefined, vars);
+		const ctx = buildCorrectionContext(undefined, vars);
 		expect(ctx.solutions).toEqual([]);
 	});
 
 	it('returns empty solutions for empty blanks array', () => {
-		const ctx = buildCorrectionContext([], undefined, undefined, vars);
+		const ctx = buildCorrectionContext([], vars);
 		expect(ctx.solutions).toEqual([]);
 	});
 });
@@ -335,7 +323,7 @@ describe('buildCorrectionContext', () => {
 describe('resolveCorrectionContent - conditions sur les variables', () => {
 	it('résout la condition sur une variable, garde celle sur la réponse', () => {
 		const pairVars: ResolvedVariable[] = [{ name: 'n', value: '1174' }];
-		const ctx = buildCorrectionContext(makeBlanks('oui'), undefined, undefined, pairVars);
+		const ctx = buildCorrectionContext(makeBlanks('oui'), pairVars);
 		const result = String(
 			resolveCorrectionContent(
 				templateMarkdown(

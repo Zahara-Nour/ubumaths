@@ -43,6 +43,9 @@ cliquables s'appelle `src/lib/lexicon/` (nom historique du chantier « lexique �
 | `src/routes/api/dictionnaire/+server.ts`                              | `GET /api/dictionnaire` : les entrées visibles, en JSON, avec cache public               |
 | `src/lib/dictionary/fetch-dictionary.ts`                              | Côté navigateur : `fetchDictionary`, `dictionaryUrl`, `markDictionaryEdited`             |
 | `src/routes/(public)/glossaire/`                                      | Page du glossaire (`+page.server.ts` lit la base, sélecteur de niveau, recherche)        |
+| `src/routes/(public)/glossaire/[slug]/`                               | Page d'un terme : toutes ses définitions avec leur niveau ; renvoi nu → redirection 308  |
+| `src/lib/dictionary/glossary-page.ts`                                 | `termKey`, `pageSlugFor`, `isBareRedirect`, `glossaryDescription` (pages du glossaire)   |
+| `src/lib/server/sitemap-glossary.ts`                                  | `fetchGlossaryPages` : les pages du glossaire du plan du site, lues en anonyme           |
 | `src/routes/(public)/games/mathemo/dictionary-words.ts`               | `playableTerms` : mots jouables réduits à nom / niveau / filières                        |
 | `src/lib/lexicon/linker.ts`                                           | `createLinker` : repérage des mots dans l'AST d'ubumark (`TextNode.terms`)               |
 | `src/lib/lexicon/card.ts`                                             | `lexiconCard`, `findPrincipal` : contenu de la fiche d'un mot                            |
@@ -60,6 +63,7 @@ cliquables s'appelle `src/lib/lexicon/` (nom historique du chantier « lexique �
 | `supabase/migrations/20261013090000_dictionnaire_image_meme_site.sql` | Contrainte : image du site seulement (`//hôte` refusé)                                   |
 | `supabase/migrations/20261015090000_dictionnaire_historique_*.sql`    | Historique écrit par le trigger seul (SECURITY DEFINER gardé par `is_admin()`)           |
 | `supabase/migrations/20261016090300_dictionnaire_mots_lecture.sql`    | Données : les 4 mots de la lecture (copie figée `mots-lecture-2026-10-11.ts`)            |
+| `supabase/migrations/20261030001000_dictionnaire_slug.sql`            | Adresse fixe `slug` de chaque entrée (`/glossaire/<slug>`), posée et figée par trigger   |
 
 Page de test (admin seul) : `/dev/mots-cliquables` (`src/routes/(protected)/dev/mots-cliquables/+page.svelte`, ex-`/demo/mots-cliquables`).
 
@@ -76,7 +80,13 @@ liste fermée de mots trop courants), `derivedFrom` (renvoi d'un verbe ou adject
 principal), `seeAlso` (lien vers une page du Cabinet Noir, liste blanche `SEE_ALSO_PATHS`),
 `sharedWith` (filières parallèles qui lisent aussi le terme). Colonnes propres à la base :
 `position` (ordre d'origine : un renvoi vise le premier terme principal de son nom), `hidden`,
-`updated_by`, dates.
+`updated_by`, dates, et `slug`.
+
+`slug` est l'adresse de la page du terme (`/glossaire/<slug>`, chantier seo) : terme (+ sens), en
+minuscules, sans accents, tirets (`base-puissance`, `ecart-interquartile`). Le trigger
+`dictionary_entries_slug` (droits de l'appelant) la pose à la création, avec un suffixe `-2`, `-3`…
+en cas de collision, puis la **fige** : renommer le terme ne la change pas (lien indexé par Google
+jamais cassé, choix de David du 2026-10-29). Personne ne l'écrit, pas même l'admin.
 
 `dictionary_entry_versions` garde, à chaque modification, l'entrée **telle qu'elle était avant**
 (trigger `dictionary_entries_keep_version`, droits de l'appelant ; auteur et dates posés par le
@@ -98,11 +108,27 @@ personne n'écrit directement dans l'historique.
    `rowToTerm` (une ligne invalide est ignorée et journalisée, pas fatale). Résultat gardé
    `DICTIONARY_MEMO_MS` (90 s) pour toute l'instance ; lectures simultanées fusionnées ; base
    injoignable → dernière lecture servie au plus `DICTIONARY_FALLBACK_MS` (15 min).
-2. **Glossaire et Mathémo** : `+page.server.ts` appelle `loadDictionary` ; l'admin
-   (`isDictionaryAdmin`) lit frais.
+2. **Glossaire et Mathémo** : `+page.server.ts` appelle `loadDictionary` (ou `loadGlossary`,
+   qui rend aussi l'adresse et la date de chaque entrée, lues dans la même requête et gardées
+   dans la même mémoire, hors de `MathTerm`) ; l'admin (`isDictionaryAdmin`) lit frais.
 3. **Navigateur (mots cliquables)** : `GET /api/dictionnaire`, cache `DICTIONARY_PUBLIC_CACHE`
    (navigateur 60 s, CDN 90 s) → une modification est visible en moins de 5 minutes. `?frais`
    n'est honoré que pour l'admin (`DICTIONARY_ADMIN_CACHE`), sinon ignoré.
+
+### Pages du glossaire (chantier seo, 2026-10-29)
+
+- `/glossaire` liste les termes ; chaque terme est un **lien** vers sa page (plus de fenêtre,
+  choix B1 de David). Un renvoi nu (sans définition, exemple ni histoire : « multiplier ») mène
+  droit à la page du terme cité (`pageSlugFor`).
+- `/glossaire/<slug>` : titre « terme (sens) : définition », description = première définition
+  en texte brut (≤ 155 caractères), toutes les définitions et tous les exemples **chacun avec son
+  niveau** (la page ne suit pas le filtre de niveau de la liste), histoire, synonymes, « Voir
+  aussi », `BackLink` vers `/glossaire`. Un renvoi qui a sa propre définition (« Thalès », 6 en
+  prod) garde sa page, avec « Voir : » le terme cité.
+- Adresse inconnue ou hors format, entrée masquée → 404. Renvoi nu → **308** vers le terme
+  cité, en un seul saut (`redirectTargetOf`) : jamais vers un autre renvoi nu ni vers lui-même
+  (sinon le renvoi a sa page, avec « Voir : ») ; 404 si le terme cité manque.
+- `sitemap.xml` liste chaque page (sauf renvois nus), `lastmod` = `updated_at` de l'entrée.
 
 ### Mots cliquables
 
@@ -168,6 +194,7 @@ personne n'écrit directement dans l'historique.
 | `tests/integration/dictionnaire-lecture.test.ts`                                  | Lecture : base locale = référence + ajouts, filtre `hidden`, mémoire 90 s |
 | `tests/integration/dictionnaire-mots-lecture.test.ts`                             | Les 4 mots de la lecture : lus par un visiteur, cohérents                 |
 | `tests/integration/dictionnaire-admin.test.ts`                                    | Enregistrement admin : refus de cohérence, historique, masquage           |
+| `tests/integration/dictionnaire-slug.test.ts`                                     | Adresse fixe : calcul, figée au renommage, suffixe `-2`, masquée cachée   |
 | `src/lib/server/dictionary/__tests__/load.test.ts`                                | Mémoire, repli, lecture unique                                            |
 | `src/routes/api/dictionnaire/__tests__/server.test.ts`                            | Cache public, `?frais` réservé à l'admin                                  |
 | `src/lib/dictionary/__tests__/entry-schema.test.ts`                               | Toutes les entrées relues à l'identique par le schéma                     |
@@ -193,4 +220,3 @@ Copies figées des lots validés par David : `tests/fixtures/lexique/` (aucun te
   (`db:reset`) contient la reprise (la référence), puis les entrées ajoutées par migration, chacune
   avec sa copie figée sous `tests/fixtures/lexique/` (2026-10-11 : `mots-lecture-2026-10-11.ts`) ;
   `dictionnaire-lecture.test.ts` et `dictionnaire-en-base.test.ts` comparent la base à cette suite.
-- Un marquage `[mot]{.def}` au milieu de `**gras**` casse le gras (même limite que `{.rappel}`).

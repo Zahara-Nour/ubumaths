@@ -1,0 +1,213 @@
+{
+	"title": "Repérer un rang, depuis le début ou depuis la fin",
+	"description": "Le 12e nombre d'une liste, le 3e en partant de la fin, la place dans une file retournée",
+	"grades": ["CE1"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Ordinaux",
+	"level": 10,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici des nombres rangés **dans l'ordre**, de 5 en 5 :\n\n$5$, $10$, $15$, $20$, $25$, $30$, $35$, $40$, $45$, $50$, $55$, $60$, $65$, $70$, $75$, $80$, $85$, $90$, $95$, $100$\n\nQuel est le ${{if:k==4|4^{\\text{e}}|{{if:k==5|5^{\\text{e}}|{{if:k==6|6^{\\text{e}}|{{if:k==7|7^{\\text{e}}|{{if:k==8|8^{\\text{e}}|{{if:k==9|9^{\\text{e}}|{{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|20^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ nombre ?\n\nC'est $?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "4..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:5*k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte les nombres à partir du premier : $5$ est le $1^{\\text{er}}$, $10$ le $2^{\\text{e}}$, $15$ le $3^{\\text{e}}$…",
+					"Le ${{if:k==4|4^{\\text{e}}|{{if:k==5|5^{\\text{e}}|{{if:k==6|6^{\\text{e}}|{{if:k==7|7^{\\text{e}}|{{if:k==8|8^{\\text{e}}|{{if:k==9|9^{\\text{e}}|{{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|20^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ nombre est ${{eval:5*k}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici des nombres rangés **dans l'ordre**, de 2 en 2 :\n\n$2$, $4$, $6$, $8$, $10$, $12$, $14$, $16$, $18$, $20$, $22$, $24$, $26$, $28$, $30$, $32$, $34$, $36$, $38$, $40$, $42$, $44$, $46$, $48$, $50$, $52$, $54$, $56$, $58$, $60$\n\nEn comptant **à partir de la fin**, quel est le ${{if:k==2|2^{\\text{e}}|{{if:k==3|3^{\\text{e}}|{{if:k==4|4^{\\text{e}}|{{if:k==5|5^{\\text{e}}|{{if:k==6|6^{\\text{e}}|{{if:k==7|7^{\\text{e}}|{{if:k==8|8^{\\text{e}}|{{if:k==9|9^{\\text{e}}|{{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|{{if:k==20|20^{\\text{e}}|{{if:k==21|21^{\\text{e}}|{{if:k==22|22^{\\text{e}}|{{if:k==23|23^{\\text{e}}|{{if:k==24|24^{\\text{e}}|25^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ nombre ?\n\nC'est $?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..25"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:62-2*k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On part du **dernier** nombre, $60$ : c'est le $1^{\\text{er}}$ en partant de la fin ; $58$ est le $2^{\\text{e}}$, $56$ le $3^{\\text{e}}$…",
+					"En partant de la fin, le ${{if:k==2|2^{\\text{e}}|{{if:k==3|3^{\\text{e}}|{{if:k==4|4^{\\text{e}}|{{if:k==5|5^{\\text{e}}|{{if:k==6|6^{\\text{e}}|{{if:k==7|7^{\\text{e}}|{{if:k==8|8^{\\text{e}}|{{if:k==9|9^{\\text{e}}|{{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|{{if:k==20|20^{\\text{e}}|{{if:k==21|21^{\\text{e}}|{{if:k==22|22^{\\text{e}}|{{if:k==23|23^{\\text{e}}|{{if:k==24|24^{\\text{e}}|25^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ nombre est ${{eval:62-2*k}}$."
+				]
+			}
+		},
+		{
+			"statement": "${{n}}$ élèves sont en file pour entrer au gymnase. Inès est la ${{if:k==2|2^{\\text{e}}|{{if:k==3|3^{\\text{e}}|{{if:k==4|4^{\\text{e}}|{{if:k==5|5^{\\text{e}}|{{if:k==6|6^{\\text{e}}|{{if:k==7|7^{\\text{e}}|{{if:k==8|8^{\\text{e}}|{{if:k==9|9^{\\text{e}}|{{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|{{if:k==20|20^{\\text{e}}|{{if:k==21|21^{\\text{e}}|{{if:k==22|22^{\\text{e}}|{{if:k==23|23^{\\text{e}}|{{if:k==24|24^{\\text{e}}|{{if:k==25|25^{\\text{e}}|{{if:k==26|26^{\\text{e}}|{{if:k==27|27^{\\text{e}}|{{if:k==28|28^{\\text{e}}|{{if:k==29|29^{\\text{e}}|{{if:k==30|30^{\\text{e}}|{{if:k==31|31^{\\text{e}}|{{if:k==32|32^{\\text{e}}|{{if:k==33|33^{\\text{e}}|{{if:k==34|34^{\\text{e}}|{{if:k==35|35^{\\text{e}}|{{if:k==36|36^{\\text{e}}|{{if:k==37|37^{\\text{e}}|{{if:k==38|38^{\\text{e}}|39^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ en partant **de la tête** de la file.\n\nÀ quelle place est-elle en partant **de la fin** de la file ?\n\nElle est à la place numéro $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "20..40"
+				},
+				{
+					"name": "k",
+					"expression": "2..39"
+				},
+				{
+					"name": "q",
+					"expression": "eval:n-k+1"
+				}
+			],
+			"conditions": ["k < n", "2 * k != n + 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Devant Inès, il y a ${{eval:k-1}}$ élèves ; derrière elle, il y en a ${{n}}-{{k}}={{eval:n-k}}$.",
+					"En partant de la fin, on compte les ${{eval:n-k}}$ élèves derrière elle, puis Inès : ${{eval:n-k}}+1={{q}}$. Elle est la ${{if:q==2|2^{\\text{e}}|{{if:q==3|3^{\\text{e}}|{{if:q==4|4^{\\text{e}}|{{if:q==5|5^{\\text{e}}|{{if:q==6|6^{\\text{e}}|{{if:q==7|7^{\\text{e}}|{{if:q==8|8^{\\text{e}}|{{if:q==9|9^{\\text{e}}|{{if:q==10|10^{\\text{e}}|{{if:q==11|11^{\\text{e}}|{{if:q==12|12^{\\text{e}}|{{if:q==13|13^{\\text{e}}|{{if:q==14|14^{\\text{e}}|{{if:q==15|15^{\\text{e}}|{{if:q==16|16^{\\text{e}}|{{if:q==17|17^{\\text{e}}|{{if:q==18|18^{\\text{e}}|{{if:q==19|19^{\\text{e}}|{{if:q==20|20^{\\text{e}}|{{if:q==21|21^{\\text{e}}|{{if:q==22|22^{\\text{e}}|{{if:q==23|23^{\\text{e}}|{{if:q==24|24^{\\text{e}}|{{if:q==25|25^{\\text{e}}|{{if:q==26|26^{\\text{e}}|{{if:q==27|27^{\\text{e}}|{{if:q==28|28^{\\text{e}}|{{if:q==29|29^{\\text{e}}|{{if:q==30|30^{\\text{e}}|{{if:q==31|31^{\\text{e}}|{{if:q==32|32^{\\text{e}}|{{if:q==33|33^{\\text{e}}|{{if:q==34|34^{\\text{e}}|{{if:q==35|35^{\\text{e}}|{{if:q==36|36^{\\text{e}}|{{if:q==37|37^{\\text{e}}|{{if:q==38|38^{\\text{e}}|39^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "5 en 5 : le 12e est 60",
+			"variationIndex": 0,
+			"variables": {
+				"k": "12"
+			},
+			"answers": ["60"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le 11e (55)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "12"
+			},
+			"answers": ["55"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le 13e (65)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "12"
+			},
+			"answers": ["65"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : le 20e est 100",
+			"variationIndex": 0,
+			"variables": {
+				"k": "20"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "depuis la fin : le 3e est 56",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["56"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : compté depuis le début (6)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : le 25e depuis la fin est 12",
+			"variationIndex": 1,
+			"variables": {
+				"k": "25"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "30 élèves, Inès 7e depuis la tête : 24e depuis la fin",
+			"variationIndex": 2,
+			"variables": {
+				"n": "30",
+				"k": "7",
+				"q": "24"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n − k (23)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "30",
+				"k": "7",
+				"q": "24"
+			},
+			"answers": ["23"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le même rang (7)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "30",
+				"k": "7",
+				"q": "24"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 40 élèves, Inès 39e : 2e depuis la fin",
+			"variationIndex": 2,
+			"variables": {
+				"n": "40",
+				"k": "39",
+				"q": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

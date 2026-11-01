@@ -8,7 +8,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import { forgetDictionary, loadDictionary } from '../load';
+import { forgetDictionary, loadDictionary, loadGlossary } from '../load';
 
 const ROW = {
 	term: 'carré',
@@ -24,7 +24,9 @@ const ROW = {
 	auto_link: true,
 	derived_from: null,
 	see_also: null,
-	shared_with: []
+	shared_with: [],
+	slug: 'carre',
+	updated_at: '2026-10-11T21:11:34.721036+00:00'
 };
 
 /** Client dont chaque lecture rend `result()` ; compte les lectures. */
@@ -62,6 +64,13 @@ describe('loadDictionary', () => {
 		const { client } = fakeClient(down);
 		expect(await loadDictionary(client, { now: now + 10 * 60_000 })).toHaveLength(1);
 		await expect(loadDictionary(client, { now: now + 16 * 60_000 })).rejects.toThrow(/illisible/);
+	});
+
+	it('la même lecture rend l’adresse et la date de chaque terme, hors de MathTerm', async () => {
+		const { entries, addresses } = await loadGlossary(fakeClient(ok).client);
+		expect(entries[0]).not.toHaveProperty('slug');
+		expect(addresses.get('carré|')).toEqual({ slug: 'carre', lastmod: '2026-10-11' });
+		expect(await loadDictionary(fakeClient(down).client)).toBe(entries);
 	});
 
 	it('base injoignable sans lecture antérieure : l’erreur remonte', async () => {

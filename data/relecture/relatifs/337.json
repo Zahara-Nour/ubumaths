@@ -5,6 +5,81 @@
 	"editNotes": "Fidèle ; indices vérifiés sur les 8 variations (signe du facteur manquant = signe du produit / signe du facteur connu).",
 	"template": {
 		"title": "Déterminer le signe d'un facteur",
+		"variations": [
+			{
+				"statement": "Quel est le signe du facteur manquant ?\n\n$$(-{{a}})*…={{b}}$$\n\n```choix\n- positif\n- négatif\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le signe du facteur manquant ?\n\n$$(-{{a}})*…=-{{b}}$$\n\n```choix\n- positif\n- négatif\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le signe du facteur manquant ?\n\n$${{a}}*…=-{{b}}$$\n\n```choix\n- positif\n- négatif\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le signe du facteur manquant ?\n\n$${{a}}*…={{b}}$$\n\n```choix\n- positif\n- négatif\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le signe du facteur manquant ?\n\n$$…*(-{{a}})={{b}}$$\n\n```choix\n- positif\n- négatif\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le signe du facteur manquant ?\n\n$$…*(-{{a}})=-{{b}}$$\n\n```choix\n- positif\n- négatif\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le signe du facteur manquant ?\n\n$$…*{{a}}=-{{b}}$$\n\n```choix\n- positif\n- négatif\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			},
+			{
+				"statement": "Quel est le signe du facteur manquant ?\n\n$$…*{{a}}={{b}}$$\n\n```choix\n- positif\n- négatif\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			}
+		],
+		"grades": [
+			"4"
+		],
+		"theme": "Relatifs",
+		"domain": "Multiplier et Diviser",
+		"subdomain": "Produit",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
 		"shared": {
 			"variables": [
 				{
@@ -15,57 +90,8 @@
 					"name": "b",
 					"expression": "30..99"
 				}
-			],
-			"choices": [
-				{
-					"content": "positif"
-				},
-				{
-					"content": "négatif"
-				}
 			]
 		},
-		"variations": [
-			{
-				"statement": "Quel est le signe du facteur manquant ?\n\n$$(-{{a}})*?={{b}}$$",
-				"correctChoiceIndex": ["1"]
-			},
-			{
-				"statement": "Quel est le signe du facteur manquant ?\n\n$$(-{{a}})*?=-{{b}}$$",
-				"correctChoiceIndex": ["0"]
-			},
-			{
-				"statement": "Quel est le signe du facteur manquant ?\n\n$${{a}}*?=-{{b}}$$",
-				"correctChoiceIndex": ["1"]
-			},
-			{
-				"statement": "Quel est le signe du facteur manquant ?\n\n$${{a}}*?={{b}}$$",
-				"correctChoiceIndex": ["0"]
-			},
-			{
-				"statement": "Quel est le signe du facteur manquant ?\n\n$$?*(-{{a}})={{b}}$$",
-				"correctChoiceIndex": ["1"]
-			},
-			{
-				"statement": "Quel est le signe du facteur manquant ?\n\n$$?*(-{{a}})=-{{b}}$$",
-				"correctChoiceIndex": ["0"]
-			},
-			{
-				"statement": "Quel est le signe du facteur manquant ?\n\n$$?*{{a}}=-{{b}}$$",
-				"correctChoiceIndex": ["1"]
-			},
-			{
-				"statement": "Quel est le signe du facteur manquant ?\n\n$$?*{{a}}={{b}}$$",
-				"correctChoiceIndex": ["0"]
-			}
-		],
-		"grades": ["4"],
-		"theme": "Relatifs",
-		"domain": "Multiplier et Diviser",
-		"subdomain": "Produit",
-		"level": 2,
-		"status": "draft",
-		"delay": 20,
 		"testSpecs": [
 			{
 				"description": "v0",
@@ -74,10 +100,12 @@
 					"a": "79",
 					"b": "96"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v1",
@@ -86,10 +114,12 @@
 					"a": "79",
 					"b": "96"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v2",
@@ -98,10 +128,12 @@
 					"a": "79",
 					"b": "96"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v3",
@@ -110,10 +142,12 @@
 					"a": "79",
 					"b": "96"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v4",
@@ -122,10 +156,12 @@
 					"a": "79",
 					"b": "96"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v5",
@@ -134,10 +170,12 @@
 					"a": "79",
 					"b": "96"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v6",
@@ -146,10 +184,12 @@
 					"a": "79",
 					"b": "96"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v7",
@@ -158,10 +198,12 @@
 					"a": "79",
 					"b": "96"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v0 erreur de signe",
@@ -170,10 +212,12 @@
 					"a": "79",
 					"b": "96"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v3 bornes",
@@ -182,10 +226,12 @@
 					"a": "30",
 					"b": "99"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v6 bornes",
@@ -194,10 +240,12 @@
 					"a": "99",
 					"b": "30"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			}
 		]
 	}

@@ -1,0 +1,145 @@
+{
+	"id": "536db399-2e04-45fc-9f0b-a37a7678d8e8",
+	"title": "Espace : plans perpendiculaires ?",
+	"description": "Décider (QCM) si deux plans sont perpendiculaires (vecteurs normaux orthogonaux)",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Orthogonalité et distances dans l'espace",
+	"subdomain": "Orthogonalité droites et plans",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{o}}"
+				}
+			],
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les plans $\\mathcal{P}$ et $\\mathcal{Q}$ d'équations respectives ${{a}}x+({{b}})y+({{c}})z+({{d}})=0$ et ${{p1}}x+({{p2}})y+({{p3}})z+({{q}})=0$.\n\nLes plans $\\mathcal{P}$ et $\\mathcal{Q}$ sont-ils perpendiculaires ?\n\n```choix\n- Oui, $\\mathcal{P}$ et $\\mathcal{Q}$ sont perpendiculaires.\n- Non, $\\mathcal{P}$ et $\\mathcal{Q}$ ne sont pas perpendiculaires.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "-3..3"
+				},
+				{
+					"name": "c",
+					"expression": "-3..3"
+				},
+				{
+					"name": "d",
+					"expression": "-6..6"
+				},
+				{
+					"name": "q",
+					"expression": "-6..6"
+				},
+				{
+					"name": "r",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "p1",
+					"expression": "{{eval:r*b+o*a}}"
+				},
+				{
+					"name": "p2",
+					"expression": "{{eval:-r*a+o*b}}"
+				},
+				{
+					"name": "p3",
+					"expression": "{{eval:o*c}}"
+				}
+			],
+			"conditions": ["b != 0 || c != 0", "abs(p1)+abs(p2)+abs(p3) > 0"],
+			"correction": {
+				"steps": [
+					"Deux plans sont perpendiculaires si et seulement si leurs vecteurs normaux $\\vec{n}\\begin{pmatrix}{{a}}\\\\{{b}}\\\\{{c}}\\end{pmatrix}$ et $\\vec{n}'\\begin{pmatrix}{{p1}}\\\\{{p2}}\\\\{{p3}}\\end{pmatrix}$ sont orthogonaux.",
+					"$\\vec{n}\\cdot\\vec{n}'={{a}}\\times{{p1;()}}+{{b;()}}\\times{{p2;()}}+{{c;()}}\\times{{p3;()}}={{eval:a*p1+b*p2+c*p3}}$.",
+					"{{if:o==0|Le produit scalaire est nul : les plans **sont perpendiculaires**.}}{{if:o==1|Le produit scalaire n'est pas nul : les plans **ne sont pas perpendiculaires**.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-1",
+				"d": "3",
+				"o": "0",
+				"q": "-2",
+				"r": "1"
+			},
+			"description": "v0 : perpendiculaires → Oui",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-1",
+				"d": "3",
+				"o": "0",
+				"q": "-2",
+				"r": "1"
+			},
+			"description": "v0 : Non coché",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-1",
+				"d": "3",
+				"o": "1",
+				"q": "-2",
+				"r": "1"
+			},
+			"description": "v0 : non perpendiculaires → Non",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-1",
+				"d": "3",
+				"o": "1",
+				"q": "-2",
+				"r": "1"
+			},
+			"description": "v0 : non perpendiculaires, Oui coché",
+			"variationIndex": 0
+		}
+	]
+}

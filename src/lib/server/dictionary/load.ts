@@ -8,6 +8,10 @@
  * RLS montre aussi les entrées masquées, lit le même dictionnaire que les
  * élèves, et le résultat peut être gardé en mémoire pour tous.
  *
+ * Chaque lecture rend aussi l'adresse de chaque entrée (`slug`, page
+ * `/glossaire/<slug>`) et sa date de modification, à côté des termes : elles ne
+ * font pas partie de `MathTerm` (`loadGlossary`).
+ *
  * Une modification est visible au plus tard 5 minutes après (spécification,
  * comportement 3) : 90 s ici, 90 s au CDN, 1 min au navigateur, soit 4 min
  * (`/api/dictionnaire`). L'admin demande une lecture fraîche. Base
@@ -20,6 +24,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { MathTerm } from '$lib/dictionary/model';
 import { DICTIONARY_COLUMNS, rowToTerm } from '$lib/dictionary/entry-schema';
+import { termKey, type GlossaryAddress } from '$lib/dictionary/glossary-page';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('server/dictionary/load');
@@ -42,13 +47,23 @@ export const DICTIONARY_ADMIN_CACHE = 'private, no-store';
 const PAGE_SIZE = 1000;
 
 // ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+/** Les termes visibles, et l'adresse de chacun (clé : `termKey`). */
+export interface Glossary {
+	entries: MathTerm[];
+	addresses: Map<string, GlossaryAddress>;
+}
+
+// ---------------------------------------------------------------------------
 // Variables
 // ---------------------------------------------------------------------------
 
-let memo: { entries: MathTerm[]; at: number } | null = null;
+let memo: (Glossary & { at: number }) | null = null;
 
 /** Lecture en cours, partagée par les requêtes qui arrivent en même temps. */
-let inflight: Promise<MathTerm[]> | null = null;
+let inflight: Promise<Glossary> | null = null;
 
 // ---------------------------------------------------------------------------
 // Functions
@@ -61,12 +76,13 @@ let inflight: Promise<MathTerm[]> | null = null;
  * varie selon le lecteur. Une policy par niveau ou par école casserait cette
  * mémoire : lire alors avec un client anonyme dédié.
  */
-async function queryDictionary(supabase: SupabaseClient<Database>): Promise<MathTerm[]> {
+async function queryDictionary(supabase: SupabaseClient<Database>): Promise<Glossary> {
 	const entries: MathTerm[] = [];
+	const addresses = new Map<string, GlossaryAddress>();
 	for (let from = 0; ; from += PAGE_SIZE) {
 		const { data, error } = await supabase
 			.from('dictionary_entries')
-			.select(DICTIONARY_COLUMNS)
+			.select(`${DICTIONARY_COLUMNS}, slug, updated_at`)
 			.eq('hidden', false)
 			.order('position')
 			.order('id')
@@ -75,15 +91,17 @@ async function queryDictionary(supabase: SupabaseClient<Database>): Promise<Math
 		for (const row of data) {
 			const term = rowToTerm(row);
 			// Une ligne invalide ne doit pas priver le site du reste du dictionnaire
-			if (term) entries.push(term);
-			else logger.error('[dictionnaire] entrée invalide, ignorée :', row.term);
+			if (term) {
+				entries.push(term);
+				addresses.set(termKey(term), { slug: row.slug, lastmod: row.updated_at.slice(0, 10) });
+			} else logger.error('[dictionnaire] entrée invalide, ignorée :', row.term);
 		}
-		if (data.length < PAGE_SIZE) return entries;
+		if (data.length < PAGE_SIZE) return { entries, addresses };
 	}
 }
 
 /** Une seule lecture à la fois quand la mémoire expire sous plusieurs requêtes. */
-function readOnce(supabase: SupabaseClient<Database>): Promise<MathTerm[]> {
+function readOnce(supabase: SupabaseClient<Database>): Promise<Glossary> {
 	inflight ??= queryDictionary(supabase).finally(() => {
 		inflight = null;
 	});
@@ -97,17 +115,25 @@ function readOnce(supabase: SupabaseClient<Database>): Promise<MathTerm[]> {
  */
 export async function loadDictionary(
 	supabase: SupabaseClient<Database>,
-	{ fresh = false, now = Date.now() }: { fresh?: boolean; now?: number } = {}
+	options: { fresh?: boolean; now?: number } = {}
 ): Promise<MathTerm[]> {
-	if (!fresh && memo && now - memo.at < DICTIONARY_MEMO_MS) return memo.entries;
+	return (await loadGlossary(supabase, options)).entries;
+}
+
+/** Comme `loadDictionary`, avec l'adresse de chaque entrée (pages `/glossaire/<slug>`, plan du site). */
+export async function loadGlossary(
+	supabase: SupabaseClient<Database>,
+	{ fresh = false, now = Date.now() }: { fresh?: boolean; now?: number } = {}
+): Promise<Glossary> {
+	if (!fresh && memo && now - memo.at < DICTIONARY_MEMO_MS) return memo;
 	try {
-		const entries = fresh ? await queryDictionary(supabase) : await readOnce(supabase);
-		memo = { entries, at: now };
-		return entries;
+		const glossary = fresh ? await queryDictionary(supabase) : await readOnce(supabase);
+		memo = { ...glossary, at: now };
+		return glossary;
 	} catch (error) {
 		if (memo && now - memo.at < DICTIONARY_FALLBACK_MS) {
 			logger.error('[dictionnaire] base injoignable, dernière lecture servie', error);
-			return memo.entries;
+			return memo;
 		}
 		throw error;
 	}

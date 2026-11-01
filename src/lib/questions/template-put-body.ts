@@ -18,7 +18,6 @@ export const CLEARABLE_TEMPLATE_KEYS = [
 	'options',
 	'subdomain',
 	'delay',
-	'multipleAnswers',
 	'testSpecs'
 ] as const satisfies ReadonlyArray<keyof QuestionTemplate>;
 

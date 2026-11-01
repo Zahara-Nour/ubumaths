@@ -1,0 +1,257 @@
+{
+	"title": "Coordonnées d'un vecteur dans une base",
+	"description": "Lire les coordonnées de u = a i + b j (une coordonnée nulle, une fraction), et écrire u à partir de ses coordonnées (pièges : coordonnées échangées, 0 oublié, signe)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs du plan",
+	"subdomain": "Coordonnées",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère le vecteur $\\vec{u}={{a}}\\vec{i}{{b;+}}\\vec{j}$.\n\nDonne ses coordonnées.\n\n$$\\vec{u}\\begin{pmatrix}?\\\\?\\end{pmatrix}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les coordonnées de $\\vec{u}$ sont les nombres $x$ et $y$ tels que $\\vec{u}=x\\,\\vec{i}+y\\,\\vec{j}$ : on les lit devant $\\vec{i}$ puis devant $\\vec{j}$.",
+					"$\\vec{u}=\\textcolor{{{color:primary.0}}}{{{a}}}\\,\\vec{i}{{if:b>0|+|}}\\textcolor{{{color:primary.1}}}{{{b}}}\\,\\vec{j}$, donc $\\vec{u}\\begin{pmatrix}\\textcolor{{{color:primary.0}}}{{{a}}}\\\\\\textcolor{{{color:primary.1}}}{{{b}}}\\end{pmatrix}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère le vecteur $\\vec{u}={{a}}{{if:t==0|\\vec{i}|\\vec{j}}}$.\n\nDonne ses coordonnées.\n\n$$\\vec{u}\\begin{pmatrix}?\\\\?\\end{pmatrix}$$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0|1"
+				},
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t==0|{{a}}|0}}"
+				},
+				{
+					"expectedAnswer": "{{if:t==0|0|{{a}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les coordonnées de $\\vec{u}$ sont les nombres $x$ et $y$ tels que $\\vec{u}=x\\,\\vec{i}+y\\,\\vec{j}$ : on les lit devant $\\vec{i}$ puis devant $\\vec{j}$.",
+					"$\\vec{u}={{if:t==0|{{a}}\\,\\vec{i}+\\textcolor{{{color:primary.1}}}{0}\\,\\vec{j}|\\textcolor{{{color:primary.0}}}{0}\\,\\vec{i}+{{a}}\\,\\vec{j}}}$ : il n'y a pas de {{if:t==0|$\\vec{j}$|$\\vec{i}$}}, sa coordonnée vaut $0$.",
+					"$\\vec{u}\\textcolor{{{color:primary.0}}}{{{if:t==0|\\begin{pmatrix}{{a}}\\\\0\\end{pmatrix}|\\begin{pmatrix}0\\\\{{a}}\\end{pmatrix}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère le vecteur $\\vec{u}\\begin{pmatrix}{{a}}\\\\{{b}}\\end{pmatrix}$.\n\nComplète : $\\vec{u}=?\\,\\vec{i}+?\\,\\vec{j}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les coordonnées de $\\vec{u}$ sont les nombres $x$ et $y$ tels que $\\vec{u}=x\\,\\vec{i}+y\\,\\vec{j}$ : on les lit devant $\\vec{i}$ puis devant $\\vec{j}$.",
+					"La première coordonnée va devant $\\vec{i}$, la seconde devant $\\vec{j}$ : $\\vec{u}=\\textcolor{{{color:primary.0}}}{{{a}}}\\,\\vec{i}+\\textcolor{{{color:primary.1}}}{{{b;()}}}\\,\\vec{j}${{if:b<0|, soit $\\vec{u}={{a}}\\,\\vec{i}{{b}}\\,\\vec{j}$|}}."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère le vecteur $\\vec{u}=-\\dfrac{ {{p}} }{ {{q}} }\\vec{i}{{b;+}}\\vec{j}$.\n\nDonne ses coordonnées.\n\n$$\\vec{u}\\begin{pmatrix}?\\\\?\\end{pmatrix}$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1|2|3"
+				},
+				{
+					"name": "q",
+					"expression": "2|3|4|5"
+				},
+				{
+					"name": "b",
+					"expression": "2..9;±"
+				}
+			],
+			"conditions": ["p == 1 || mod(q, p) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\frac{ {{p}} }{ {{q}} }"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les coordonnées de $\\vec{u}$ sont les nombres $x$ et $y$ tels que $\\vec{u}=x\\,\\vec{i}+y\\,\\vec{j}$ : on les lit devant $\\vec{i}$ puis devant $\\vec{j}$. Une coordonnée peut être une fraction.",
+					"$\\vec{u}\\begin{pmatrix}\\textcolor{{{color:primary.0}}}{-\\dfrac{ {{p}} }{ {{q}} }}\\\\\\textcolor{{{color:primary.1}}}{{{b}}}\\end{pmatrix}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3i − 2j → (3 ; −2)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "-2"
+			},
+			"answers": ["3", "-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : coordonnées échangées",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "-2"
+			},
+			"answers": ["-2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signe perdu",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "-2"
+			},
+			"answers": ["3", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4j → (0 ; 4)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1",
+				"a": "4"
+			},
+			"answers": ["0", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (4 ; 0)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1",
+				"a": "4"
+			},
+			"answers": ["4", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u(−1 ; 4) → −1 et 4",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-1",
+				"b": "4"
+			},
+			"answers": ["-1", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cases échangées",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-1",
+				"b": "4"
+			},
+			"answers": ["4", "-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−½ i + 3 j → (−1/2 ; 3)",
+			"variationIndex": 3,
+			"variables": {
+				"p": "1",
+				"q": "2",
+				"b": "3"
+			},
+			"answers": ["-\\frac{1}{2}", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En décimal (−0,5 ; 3)",
+			"variationIndex": 3,
+			"variables": {
+				"p": "1",
+				"q": "2",
+				"b": "3"
+			},
+			"answers": ["-0.5", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe de la fraction perdu",
+			"variationIndex": 3,
+			"variables": {
+				"p": "1",
+				"q": "2",
+				"b": "3"
+			},
+			"answers": ["\\frac{1}{2}", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

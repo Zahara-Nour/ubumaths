@@ -147,6 +147,8 @@ function barsTypst(scene: BarScene, size: CourbeSize): string {
 	}
 
 	for (const bar of scene.bars) {
+		// Barre à construire (`placer:`) : sur la fiche, l'enfant la dessine
+		if (bar.toPlace) continue;
 		lines.push('  // barre');
 		lines.push(
 			bar.series === 1 && second !== null
@@ -194,7 +196,11 @@ function barsTypst(scene: BarScene, size: CourbeSize): string {
 		scene.indicatorTable === null
 			? ''
 			: `\n// indicateurs\n${comparisonTypst(scene.indicatorTable)}`;
-	return `${CETZ_IMPORT}\n${hatch}\n${keptWithTitle(headOf(scene), `#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`)}${legend}${table}`;
+	// Échelle à choisir : l'enfant l'écrit, puis numérote l'axe
+	const scale = scene.scaleToChoose
+		? `#block(text(size: 9pt)[Une graduation vaut : #box(width: 2cm, stroke: (bottom: 0.5pt))])\n`
+		: '';
+	return `${CETZ_IMPORT}\n${hatch}\n${keptWithTitle(scale + headOf(scene), `#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`)}${legend}${table}`;
 }
 
 // ============================================================================

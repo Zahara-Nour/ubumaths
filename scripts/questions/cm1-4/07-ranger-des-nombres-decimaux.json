@@ -1,0 +1,279 @@
+{
+	"title": "Ranger des nombres décimaux",
+	"description": "Ranger dans l'ordre croissant ou décroissant trois nombres décimaux de même partie entière (2,09 ; 2,12 ; 2,6), l'un parfois en fraction décimale (209/100)",
+	"grades": ["CM1"],
+	"theme": "Décimaux",
+	"domain": "Apprivoiser",
+	"subdomain": "Comparer",
+	"level": 5,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Range ces nombres du plus petit au plus grand.\n\n```ranger\nsigne: <\n- ${{x1}}$\n- ${{x2}}$\n- ${{x3}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "p",
+					"expression": "1..5"
+				},
+				{
+					"name": "q",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:p+1}}..9"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:a+d/100;d"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:a+p/10+q/100;d"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:a+c/10;d"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Comparer des décimaux.** Même partie entière ${{a}}$ : on compare les dixièmes, puis les centièmes. Le nombre de chiffres après la virgule ne compte pas.",
+					"Dixièmes : $0$ pour ${{x1}}$, ${{p}}$ pour ${{x2}}$, ${{c}}$ pour ${{x3}}$.",
+					"$$\\textcolor{{{color:primary.0}}}{{{x1}} < {{x2}} < {{x3}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Range ces nombres du plus grand au plus petit.\n\n```ranger\nsigne: >\n- ${{x3}}$\n- ${{x2}}$\n- ${{x1}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "p",
+					"expression": "1..5"
+				},
+				{
+					"name": "q",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:p+1}}..9"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:a+d/100;d"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:a+p/10+q/100;d"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:a+c/10;d"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Comparer des décimaux.** Même partie entière ${{a}}$ : on compare les dixièmes, puis les centièmes. Le nombre de chiffres après la virgule ne compte pas.",
+					"Dixièmes : $0$ pour ${{x1}}$, ${{p}}$ pour ${{x2}}$, ${{c}}$ pour ${{x3}}$.",
+					"$$\\textcolor{{{color:primary.0}}}{{{x3}} > {{x2}} > {{x1}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Range ces nombres du plus petit au plus grand.\n\n```ranger\nsigne: <\n- $\\frac{{{eval:100*a+d}}}{100}$\n- ${{x2}}$\n- ${{x3}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "p",
+					"expression": "1..5"
+				},
+				{
+					"name": "q",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:p+1}}..9"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:a+d/100;d"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:a+p/10+q/100;d"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:a+c/10;d"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Tout à virgule.** $\\frac{{{eval:100*a+d}}}{100} = {{x1}}$.",
+					"**Comparer des décimaux.** Même partie entière ${{a}}$ : on compare les dixièmes, puis les centièmes. Le nombre de chiffres après la virgule ne compte pas.",
+					"Dixièmes : $0$ pour ${{x1}}$, ${{p}}$ pour ${{x2}}$, ${{c}}$ pour ${{x3}}$.",
+					"$$\\textcolor{{{color:primary.0}}}{\\frac{{{eval:100*a+d}}}{100} < {{x2}} < {{x3}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "croissant : 2,09 < 2,12 < 2,6",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"d": "9",
+				"p": "1",
+				"q": "2",
+				"c": "6",
+				"x1": "2.09",
+				"x2": "2.12",
+				"x3": "2.6"
+			},
+			"answers": ["2", "0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2,6 < 2,09 < 2,12 (après la virgule lu comme un entier)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"d": "9",
+				"p": "1",
+				"q": "2",
+				"c": "6",
+				"x1": "2.09",
+				"x2": "2.12",
+				"x3": "2.6"
+			},
+			"answers": ["1", "2", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ordre décroissant",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"d": "9",
+				"p": "1",
+				"q": "2",
+				"c": "6",
+				"x1": "2.09",
+				"x2": "2.12",
+				"x3": "2.6"
+			},
+			"answers": ["1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "décroissant : 2,6 > 2,12 > 2,09",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"d": "9",
+				"p": "1",
+				"q": "2",
+				"c": "6",
+				"x1": "2.09",
+				"x2": "2.12",
+				"x3": "2.6"
+			},
+			"answers": ["2", "0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2,12 > 2,09 > 2,6 (après la virgule lu comme un entier)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"d": "9",
+				"p": "1",
+				"q": "2",
+				"c": "6",
+				"x1": "2.09",
+				"x2": "2.12",
+				"x3": "2.6"
+			},
+			"answers": ["0", "1", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "croissant, 209/100 < 2,12 < 2,6",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"d": "9",
+				"p": "1",
+				"q": "2",
+				"c": "6",
+				"x1": "2.09",
+				"x2": "2.12",
+				"x3": "2.6"
+			},
+			"answers": ["2", "0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 209/100 le plus grand (numérateur lu)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"d": "9",
+				"p": "1",
+				"q": "2",
+				"c": "6",
+				"x1": "2.09",
+				"x2": "2.12",
+				"x3": "2.6"
+			},
+			"answers": ["0", "1", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

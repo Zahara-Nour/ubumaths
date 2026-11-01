@@ -1,0 +1,209 @@
+{
+	"title": "Un kilogramme, mille grammes",
+	"description": "1 kg = 1 000 g ; ce qu'il manque pour 1 kg ; 250 g + 250 g + 500 g = 1 kg",
+	"grades": ["CE1"],
+	"theme": "Grandeurs",
+	"domain": "Masses",
+	"subdomain": "Unités",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète.\n\n${{if:s==1|1~\\unit{kg} = ?~\\text{g}|1\\,000~\\unit{g} = ?~\\text{kg}}}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1000-999*(s-1)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans un kilogramme, il y a mille grammes.",
+					"$${{if:s==1|1~\\unit{kg} = \\textcolor{{{color:primary.0}}}{1\\,000}~\\unit{g}|1\\,000~\\unit{g} = \\textcolor{{{color:primary.0}}}{1}~\\unit{kg}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{g} + ?~\\text{g} = 1~\\unit{kg}$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..18"
+				},
+				{
+					"name": "a",
+					"expression": "eval:50*k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1000-a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{kg} = 1\\,000~\\unit{g}$ : on cherche ce qu'il faut ajouter à ${{a}}$ pour arriver à $1\\,000$.",
+					"$${{a}} + \\textcolor{{{color:primary.0}}}{{{eval:1000-a}}} = 1\\,000$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:250*p}}~\\unit{g} + {{eval:250*q}}~\\unit{g} + {{eval:250*(4*n-p-q)}}~\\unit{g} = ?~\\text{kg}$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..2"
+				},
+				{
+					"name": "p",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "1..3"
+				}
+			],
+			"conditions": ["4*n-p-q>=1", "4*n-p-q<=3"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On ajoute les grammes :",
+					"$${{eval:250*p}} + {{eval:250*q}} + {{eval:250*(4*n-p-q)}} = {{if:n==1|1\\,000|2\\,000}}$$",
+					"{{if:n==1|$1\\,000~\\unit{g}$, c'est $1~\\unit{kg}$.|$1\\,000~\\unit{g} + 1\\,000~\\unit{g}$, c'est $1~\\unit{kg} + 1~\\unit{kg}$.}}",
+					"$${{eval:250*p}}~\\unit{g} + {{eval:250*q}}~\\unit{g} + {{eval:250*(4*n-p-q)}}~\\unit{g} = \\textcolor{{{color:primary.0}}}{{{n}}}~\\unit{kg}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1 kg = 1 000 g",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1"
+			},
+			"answers": ["1000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 kg = 100 g",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 000 g = 1 kg",
+			"variationIndex": 0,
+			"variables": {
+				"s": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 000 g = 1 000 kg",
+			"variationIndex": 0,
+			"variables": {
+				"s": "2"
+			},
+			"answers": ["1000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "400 g + 600 g = 1 kg",
+			"variationIndex": 1,
+			"variables": {
+				"k": "8",
+				"a": "400"
+			},
+			"answers": ["600"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 400 + 100 (vers 500)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "8",
+				"a": "400"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 650 + 450 (retenue oubliée)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "13",
+				"a": "650"
+			},
+			"answers": ["450"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 250 g + 250 g + 500 g = 1 kg",
+			"variationIndex": 2,
+			"variables": {
+				"n": "1",
+				"p": "1",
+				"q": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 000 kg",
+			"variationIndex": 2,
+			"variables": {
+				"n": "1",
+				"p": "1",
+				"q": "1"
+			},
+			"answers": ["1000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "750 g + 750 g + 500 g = 2 kg",
+			"variationIndex": 2,
+			"variables": {
+				"n": "2",
+				"p": "3",
+				"q": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

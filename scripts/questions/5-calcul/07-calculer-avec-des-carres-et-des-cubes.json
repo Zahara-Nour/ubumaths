@@ -1,0 +1,268 @@
+{
+	"title": "Calculer avec des carrés et des cubes",
+	"description": "Calculer une expression avec des carrés et des cubes en respectant les priorités : 3 × 5² − 7 et (3 × 5)² − 7 ; 4² + 2³ ; 5 + 2 × 3²",
+	"grades": ["5"],
+	"theme": "Puissances",
+	"domain": "Calculer",
+	"subdomain": "Avec carrés et cubes",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$${{a}} \\times {{b}}^2 - {{c}} = ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..20"
+				}
+			],
+			"conditions": ["c<a*b*b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*b*b-c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Priorités.** On calcule d'abord entre les parenthèses, puis les carrés et les cubes, puis les multiplications, enfin les additions et les soustractions.",
+					"Le carré porte seulement sur ${{b}}$ : ${{b}}^2 = {{b}} \\times {{b}} = {{eval:b*b}}$.",
+					"$${{a}} \\times \\textcolor{{{color:primary.1}}}{{{b}}^2} - {{c}} = {{a}} \\times \\textcolor{{{color:primary.1}}}{{{eval:b*b}}} - {{c}} = {{eval:a*b*b}} - {{c}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$$({{a}} \\times {{b}})^2 - {{c}} = ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "c",
+					"expression": "1..20"
+				}
+			],
+			"conditions": ["a*b<=12"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*a*b*b-c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Priorités.** On calcule d'abord entre les parenthèses, puis les carrés et les cubes, puis les multiplications, enfin les additions et les soustractions.",
+					"Le carré porte sur toute la parenthèse : on calcule d'abord ${{a}} \\times {{b}} = {{eval:a*b}}$.",
+					"$$\\textcolor{{{color:primary.1}}}{({{a}} \\times {{b}})}^2 - {{c}} = \\textcolor{{{color:primary.1}}}{{{eval:a*b}}}^2 - {{c}} = {{eval:a*b*a*b}} - {{c}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$${{a}}^2 + {{b}}^3 = ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..12"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*a+b*b*b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Priorités.** On calcule d'abord entre les parenthèses, puis les carrés et les cubes, puis les multiplications, enfin les additions et les soustractions.",
+					"${{a}}^2 = {{a}} \\times {{a}} = {{eval:a*a}}$ et ${{b}}^3 = {{b}} \\times {{b}} \\times {{b}} = {{eval:b*b*b}}$.",
+					"$${{a}}^2 + {{b}}^3 = {{eval:a*a}} + {{eval:b*b*b}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$${{a}} + {{b}} \\times {{c}}^2 = ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..20"
+				},
+				{
+					"name": "b",
+					"expression": "2..4"
+				},
+				{
+					"name": "c",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b*c*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Priorités.** On calcule d'abord entre les parenthèses, puis les carrés et les cubes, puis les multiplications, enfin les additions et les soustractions.",
+					"$${{a}} + {{b}} \\times \\textcolor{{{color:primary.1}}}{{{c}}^2} = {{a}} + {{b}} \\times \\textcolor{{{color:primary.1}}}{{{eval:c*c}}} = {{a}} + {{eval:b*c*c}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 × 5² − 7 = 68",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "7"
+			},
+			"answers": ["68"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (3 × 5)² − 7 = 218",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "7"
+			},
+			"answers": ["218"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 5² lu 5 × 2 (23)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "7"
+			},
+			"answers": ["23"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(3 × 5)² − 7 = 218",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "7"
+			},
+			"answers": ["218"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 × 5² − 7 = 68",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "7"
+			},
+			"answers": ["68"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4² + 2³ = 24",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "2"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 × 2 + 2 × 3 = 14",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "2"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2³ lu 2 × 3 (22)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "2"
+			},
+			"answers": ["22"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5 + 2 × 3² = 23",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"b": "2",
+				"c": "3"
+			},
+			"answers": ["23"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (5 + 2) × 3² = 63",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"b": "2",
+				"c": "3"
+			},
+			"answers": ["63"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : (2 × 3)² + 5 = 41",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"b": "2",
+				"c": "3"
+			},
+			"answers": ["41"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

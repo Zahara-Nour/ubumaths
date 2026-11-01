@@ -5,6 +5,78 @@
 	"editNotes": "Typographie des corrections (« ,  et » / « ,et » → « et », point final) ; v0 : expression en une seule évaluation `eval:ax^2+bx+c`.",
 	"template": {
 		"title": "Reconnaître la forme d'une expression du second degré",
+		"variations": [
+			{
+				"statement": "Quelle est la forme de cette expression du second degré ?\n\n$${{expr1}}$$\n\n```choix\n- développée\n- factorisée\n- canonique\n```",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "expr1",
+						"expression": "eval:ax^2+bx+c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"C'est la forme {{solution:html}} $ax^2+bx+c$ avec $a={{a}}$, $b={{b}}$ et $c={{c}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Quelle est la forme de cette expression du second degré ?\n\n$${{expr2}}$$\n\n```choix\n- développée\n- factorisée\n- canonique\n```",
+				"variables": [
+					{
+						"name": "expr2",
+						"expression": "{{a}}(x{{eval:b;+}})(x{{eval:c;+}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"C'est la forme {{solution:html}} $a(x-x_1)(x-x_2)$ avec $a={{a}}$, $x_1={{eval:-(b)}}$ et $x_2={{eval:-(c)}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			},
+			{
+				"statement": "Quelle est la forme de cette expression du second degré ?\n\n$${{expr3}}$$\n\n```choix\n- développée\n- factorisée\n- canonique\n```",
+				"variables": [
+					{
+						"name": "expr3",
+						"expression": "{{a}}(x{{eval:b;+}})^2{{eval:c;+}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"C'est la forme {{solution:html}} $a(x-\\alpha)^2+\\beta$ avec $a={{a}}$, $\\alpha={{eval:-(b)}}$ et $\\beta={{c}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				]
+			}
+		],
+		"grades": [
+			"1_SPE"
+		],
+		"theme": "Fonctions",
+		"domain": "Polynôme du second degré",
+		"subdomain": "Apprivoiser",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
 		"shared": {
 			"variables": [
 				{
@@ -19,77 +91,8 @@
 					"name": "c",
 					"expression": "1..5;±!b"
 				}
-			],
-			"choices": [
-				{
-					"content": "développée"
-				},
-				{
-					"content": "factorisée"
-				},
-				{
-					"content": "canonique"
-				}
 			]
 		},
-		"variations": [
-			{
-				"statement": "Quelle est la forme de cette expression du second degré ?\n\n$${{expression1}}$$",
-				"correctChoiceIndex": ["0"],
-				"variables": [
-					{
-						"name": "x",
-						"expression": "x|x"
-					},
-					{
-						"name": "expression1",
-						"expression": "eval:ax^2+bx+c"
-					}
-				],
-				"correction": {
-					"steps": [
-						"C'est la forme {{solution:html}} $ax^2+bx+c$ avec $a={{a}}$, $b={{b}}$ et $c={{c}}$."
-					]
-				}
-			},
-			{
-				"statement": "Quelle est la forme de cette expression du second degré ?\n\n$${{expression2}}$$",
-				"correctChoiceIndex": ["1"],
-				"variables": [
-					{
-						"name": "expression2",
-						"expression": "{{a}}(x{{eval:b;+}})(x{{eval:c;+}})"
-					}
-				],
-				"correction": {
-					"steps": [
-						"C'est la forme {{solution:html}} $a(x-x_1)(x-x_2)$ avec $a={{a}}$, $x_1={{eval:-(b)}}$ et $x_2={{eval:-(c)}}$."
-					]
-				}
-			},
-			{
-				"statement": "Quelle est la forme de cette expression du second degré ?\n\n$${{expression3}}$$",
-				"correctChoiceIndex": ["2"],
-				"variables": [
-					{
-						"name": "expression3",
-						"expression": "{{a}}(x{{eval:b;+}})^2{{eval:c;+}}"
-					}
-				],
-				"correction": {
-					"steps": [
-						"C'est la forme {{solution:html}} $a(x-\\alpha)^2+\\beta$ avec $a={{a}}$, $\\alpha={{eval:-(b)}}$ et $\\beta={{c}}$."
-					]
-				}
-			}
-		],
-		"grades": ["1_SPE"],
-		"theme": "Fonctions",
-		"domain": "Polynôme du second degré",
-		"subdomain": "Apprivoiser",
-		"level": 2,
-		"status": "draft",
-		"delay": 20,
 		"testSpecs": [
 			{
 				"description": "développée",
@@ -99,11 +102,13 @@
 					"b": "5",
 					"c": "-4"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "développée : canonique refusé",
@@ -113,11 +118,13 @@
 					"b": "5",
 					"c": "-4"
 				},
-				"selectedChoices": [2],
 				"expected": {
 					"status": "incorrect",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"2"
+				]
 			},
 			{
 				"description": "factorisée",
@@ -127,11 +134,13 @@
 					"b": "5",
 					"c": "-4"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "factorisée : développée refusé",
@@ -141,11 +150,13 @@
 					"b": "5",
 					"c": "-4"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "incorrect",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "canonique",
@@ -155,11 +166,13 @@
 					"b": "5",
 					"c": "-4"
 				},
-				"selectedChoices": [2],
 				"expected": {
 					"status": "correct",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"2"
+				]
 			},
 			{
 				"description": "canonique : factorisée refusé",
@@ -169,11 +182,13 @@
 					"b": "5",
 					"c": "-4"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect",
 					"constraintViolations": []
-				}
+				},
+				"answers": [
+					"1"
+				]
 			}
 		]
 	}

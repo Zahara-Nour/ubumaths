@@ -10,7 +10,8 @@
  */
 
 import { generateInstance } from '../../src/lib/questions/generator/instance-generator';
-import { prepareStatement } from '../../src/lib/questions/expected-result';
+import { prepareStatement, withoutChoiceCases } from '../../src/lib/questions/expected-result';
+import { correctChoiceIndexesOf, isChoiceBlank } from '../../src/lib/questions/choice-case';
 import { parseFigureContent } from '../../src/lib/ubumark/parser/figure-parser';
 import { buildFigureScene } from '../../src/lib/ubumark/utils/figure-scene';
 import { figureToSvg, type FigureShape } from '../../src/lib/ubumark/utils/figure-svg';
@@ -36,6 +37,15 @@ import {
 	HORLOGE_STROKE,
 	HORLOGE_VIEW
 } from '../../src/lib/ubumark/utils/horloge-scene';
+import { parseCourbeContent } from '../../src/lib/ubumark/parser/courbe-parser';
+import {
+	COURBE_COLORS,
+	type CourbeColor,
+	type CourbeLabel
+} from '../../src/lib/ubumark/types/courbe';
+import { buildCourbeScene, type ScenePoint } from '../../src/lib/ubumark/utils/courbe-scene';
+import { namedColorScreen, namedColorTable } from '../../src/lib/theme/named-colors';
+import { toFrenchDecimal } from '../../src/lib/utils/french-math';
 import type { ModeleFichier } from './lot-questions';
 
 // Types
@@ -96,6 +106,8 @@ interface Echelle {
 interface Bloc {
 	html: string;
 	solution?: string;
+	/** Avertissements du bloc (ceux que l'écran montre au prof) : remontés en alerte de fiche */
+	avertissements?: string[];
 }
 
 // Constantes
@@ -346,7 +358,147 @@ function horloge(source: string): Bloc {
 	return { html: figures(cadrans, legendes(spec.captions, spec.times.length)) };
 }
 
-const DESSINS: Record<string, (source: string) => Bloc> = { figure, monnaie, collection, horloge };
+// ---- Courbe : balisage de Courbe.svelte, même scène `buildCourbeScene` ----
+
+/** Marge autour du cadre et décalage des rangs u_k de l'escalier, en px (Courbe.svelte) */
+const COURBE_PAD = 26;
+const COURBE_RANG = 26;
+const COURBE_COULEUR = namedColorTable(COURBE_COLORS, namedColorScreen);
+/** Lettres calligraphiques Unicode (`\mathcal{C}` → 𝒞), comme Courbe.svelte */
+const CALLIGRAPHIE: Record<string, string> = {
+	B: 'ℬ',
+	E: 'ℰ',
+	F: 'ℱ',
+	H: 'ℋ',
+	I: 'ℐ',
+	L: 'ℒ',
+	M: 'ℳ',
+	R: 'ℛ'
+};
+
+function lettreDeCourbe(label: CourbeLabel): string {
+	if (!label.calligraphic) return label.base;
+	const m = label.base.toUpperCase();
+	return CALLIGRAPHIE[m] ?? String.fromCodePoint(0x1d49c + m.charCodeAt(0) - 65);
+}
+
+function courbe(source: string): Bloc {
+	const node = parseCourbeContent(source);
+	if (!node.spec)
+		throw new Error('bloc courbe en erreur : ' + node.errors.map((e) => e.message).join(' ; '));
+	const sc = buildCourbeScene(node.spec, { locale: 'fr' });
+	const avertissements = [...node.warnings, ...sc.warnings].map(
+		(w) => `bloc courbe : ${w.message}`
+	);
+	const { width: w, height: h } = sc.pixelSize;
+	const P = COURBE_PAD;
+	const sx = (x: number) =>
+		+(P + ((x - sc.window.xMin) / (sc.window.xMax - sc.window.xMin)) * w).toFixed(2);
+	const sy = (y: number) =>
+		+(P + ((sc.window.yMax - y) / (sc.window.yMax - sc.window.yMin)) * h).toFixed(2);
+	const pts = (ps: ScenePoint[]) => ps.map((p) => `${sx(p.x)},${sy(p.y)}`).join(' ');
+	const seg = (c: string, a: ScenePoint, b: ScenePoint, style = '') =>
+		`<line class="${c}" x1="${sx(a.x)}" y1="${sy(a.y)}" x2="${sx(b.x)}" y2="${sy(b.y)}"${style}/>`;
+	const trait = (c: CourbeColor) => ` style="stroke:${COURBE_COULEUR[c]}"`;
+	const ax = sy(sc.axes.xAxisY);
+	const ay = sx(sc.axes.yAxisX);
+	const bas = sc.sequences.some((s) => (s.staircase?.termLabels.length ?? 0) > 0) ? COURBE_RANG : 0;
+	const parties = [
+		// Grille
+		...sc.grid.xs.map(
+			(x) => `<line class="cg" x1="${sx(x)}" y1="${P}" x2="${sx(x)}" y2="${P + h}"/>`
+		),
+		...sc.grid.ys.map(
+			(y) => `<line class="cg" x1="${P}" y1="${sy(y)}" x2="${P + w}" y2="${sy(y)}"/>`
+		),
+		// Aires
+		...sc.areas.map(
+			(a) =>
+				`<polygon points="${pts(a.polygon)}" style="fill:color-mix(in srgb, ${COURBE_COULEUR[a.color]} 22%, transparent)"/>`
+		),
+		// Axes et pointes
+		`<line class="ca" x1="${P}" y1="${ax}" x2="${P + w + 8}" y2="${ax}"/>`,
+		`<line class="ca" x1="${ay}" y1="${P + h}" x2="${ay}" y2="${P - 8}"/>`,
+		`<polygon class="cf" points="${P + w + 12},${ax} ${P + w + 5},${ax - 3.5} ${P + w + 5},${ax + 3.5}"/>`,
+		`<polygon class="cf" points="${ay},${P - 12} ${ay - 3.5},${P - 5} ${ay + 3.5},${P - 5}"/>`,
+		// Graduations
+		...sc.ticks.x.map(
+			(t) =>
+				`<line class="ck" x1="${sx(t.value)}" y1="${ax - 3}" x2="${sx(t.value)}" y2="${ax + 3}"/><text class="ct" x="${sx(t.value)}" y="${ax + 13}" text-anchor="middle">${attr(t.label)}</text>`
+		),
+		...sc.ticks.y.map(
+			(t) =>
+				`<line class="ck" x1="${ay - 3}" y1="${sy(t.value)}" x2="${ay + 3}" y2="${sy(t.value)}"/><text class="ct" x="${ay - 5}" y="${sy(t.value) + 3.5}" text-anchor="end">${attr(t.label)}</text>`
+		),
+		sc.originVisible
+			? `<text class="ct" x="${sx(0) - 5}" y="${sy(0) + 13}" text-anchor="end">O</text>`
+			: '',
+		// Asymptotes, courbes
+		...sc.asymptotes.map((a) => seg('cas', a.from, a.to)),
+		...sc.curves.flatMap((c) =>
+			c.polylines.map(
+				(p) => `<polyline class="cc${c.dashed ? ' cpt' : ''}" points="${pts(p)}"${trait(c.color)}/>`
+			)
+		),
+		// Escaliers : y = x, relation, rappels, marches, rangs u_k
+		...sc.sequences.flatMap((s) =>
+			s.staircase
+				? [
+						...s.staircase.diagonal.map((p) => `<polyline class="cas" points="${pts(p)}"/>`),
+						...s.staircase.curve.map(
+							(p) => `<polyline class="cc" points="${pts(p)}"${trait(s.staircase!.relationColor)}/>`
+						),
+						...s.staircase.guides.map((g) => seg('crp', g.from, g.to, trait(s.color))),
+						...s.staircase.steps.map(
+							(p) => `<polyline class="ce" points="${pts(p)}"${trait(s.color)}/>`
+						),
+						...s.staircase.termLabels.map(
+							(l) =>
+								`<text class="cr" x="${sx(l.x)}" y="${ax + COURBE_RANG}" text-anchor="middle" style="fill:${COURBE_COULEUR[s.color]}">${attr(s.name)}<tspan class="ci" dy="3">${l.n}</tspan></text>`
+						)
+					]
+				: []
+		),
+		// Tangentes et point de contact
+		...sc.tangents.flatMap((t) => [
+			...t.line.map((p) => `<polyline class="ctg" points="${pts(p)}"${trait(t.color)}/>`),
+			`<circle cx="${sx(t.point.x)}" cy="${sy(t.point.y)}" r="3" style="fill:${COURBE_COULEUR[t.color]}"/>`
+		]),
+		// Bornes du domaine, termes des suites, points nommés, noms des courbes
+		...sc.endpoints.map(
+			(e) =>
+				`<circle cx="${sx(e.x)}" cy="${sy(e.y)}" r="3.5" stroke-width="1.5" style="stroke:${COURBE_COULEUR[e.color]};fill:${e.open ? 'var(--color-background)' : COURBE_COULEUR[e.color]}"/>`
+		),
+		...sc.sequences.flatMap((s) =>
+			s.terms.map(
+				(t) =>
+					`<circle cx="${sx(t.x)}" cy="${sy(t.y)}" r="3" style="fill:${COURBE_COULEUR[s.color]}"/>`
+			)
+		),
+		...sc.points.map(
+			(p) =>
+				`<circle class="cf" cx="${sx(p.x)}" cy="${sy(p.y)}" r="2.75"/><text class="cpn" x="${sx(p.x) + 5}" y="${sy(p.y) - 5}">${attr(p.name)}</text>`
+		),
+		...sc.curveLabels.map(
+			(l) =>
+				`<text class="cn" x="${sx(l.x) + 6}" y="${sy(l.y) - 6}" style="fill:${COURBE_COULEUR[l.color]}">${attr(lettreDeCourbe(l.label))}${l.label.sub ? `<tspan class="ci" dy="4">${attr(l.label.sub)}</tspan>` : ''}</text>`
+		)
+	].join('');
+	const vw = w + 2 * P;
+	const vh = h + 2 * P + bas;
+	return {
+		html: `<svg class="courbe" role="img" aria-label="${attr(sc.ariaLabel)}" viewBox="0 0 ${vw} ${vh}" style="max-width:${vw}px">${parties}</svg>`,
+		avertissements
+	};
+}
+
+const DESSINS: Record<string, (source: string) => Bloc> = {
+	figure,
+	monnaie,
+	collection,
+	horloge,
+	courbe
+};
 
 /** Types de blocs que la page dessine elle-même */
 export const BLOCS_DESSINES = Object.keys(DESSINS);
@@ -359,10 +511,15 @@ export function dessinerBlocs(markdown: string): {
 	markdown: string;
 	solutions: string[];
 	nonDessines: string[];
+	avertissements: string[];
 } {
 	const solutions: string[] = [];
 	const nonDessines: string[] = [];
+	const avertissements: string[] = [];
 	const rendu = markdown.replace(BLOC, (_m, type: string, source: string) => {
+		// Un programme se lit tel quel : rien à dessiner, rien à signaler
+		if (type === 'python')
+			return `${HTML}<pre class="code"><code>${source.split('\n').map(attr).join('<br>')}</code></pre>`;
 		const dessin = DESSINS[type];
 		if (!dessin) {
 			nonDessines.push(type);
@@ -371,24 +528,44 @@ export function dessinerBlocs(markdown: string): {
 		}
 		const bloc = dessin(source);
 		if (bloc.solution) solutions.push(bloc.solution);
+		avertissements.push(...(bloc.avertissements ?? []));
 		return HTML + bloc.html;
 	});
-	return { markdown: rendu, solutions, nonDessines };
+	return { markdown: rendu, solutions, nonDessines, avertissements };
 }
 
 /** Case de texte `{{blank:N}}` → la même case que dans une formule, que le gabarit dessine */
 const casesDeTexte = (md: string) => md.replace(/\{\{blank:(\d+)\}\}/g, '$\\placeholder[$1]{}$');
 
+/** Nombres des formules à la française (`7{,}2`, espaces fines), comme le rendu de l'appli
+ *  (`toLocaleDecimal` de components/markdown/utils/math-utils.ts) ; les blocs dessinés n'y passent pas */
+const aLaFrancaise = (md: string) =>
+	md
+		.split(/(@@HTML@@[^\n]*)/)
+		.map((p) =>
+			p.startsWith('@@HTML@@')
+				? p
+				: p.replace(/\$\$([\s\S]*?)\$\$|\$([^$]*)\$/g, (_, bloc?: string, ligne?: string) =>
+						bloc === undefined
+							? `$${toFrenchDecimal(ligne ?? '')}$`
+							: `$$${toFrenchDecimal(bloc)}$$`
+					)
+		)
+		.join('');
+
 /** Un exemple par variation, tiré par le vrai générateur (graine fixe : page reproductible) */
 export function exemplesDuModele(modele: ModeleFichier): {
 	exemples: Exemple[];
 	nonDessines: string[];
+	avertissements: string[];
 } {
 	const nonDessines = new Set<string>();
+	const avertissements = new Set<string>();
 	const dessine = (md: string) => {
 		const r = dessinerBlocs(md);
 		r.nonDessines.forEach((t) => nonDessines.add(t));
-		return r;
+		r.avertissements.forEach((a) => avertissements.add(a));
+		return { ...r, markdown: aLaFrancaise(r.markdown) };
 	};
 	const exemples = modele.variations.map((variation, i) => {
 		const r = generateInstance(
@@ -399,19 +576,36 @@ export function exemplesDuModele(modele: ModeleFichier): {
 			throw new Error(`« ${modele.title} » v${i + 1} : ${r.errors.join(' ; ')}`);
 		}
 		const inst = r.instance;
-		const enonce = dessine(casesDeTexte(prepareStatement(inst.statement, inst)));
+		// Case choix : ses choix listés à part (ordre affiché, bon marqué), bloc retiré de l'énoncé
+		const blanks = inst.blanks ?? [];
+		const choiceBlank = blanks.find(isChoiceBlank);
+		const statement = choiceBlank ? withoutChoiceCases(String(inst.statement)) : inst.statement;
+		const enonce = dessine(casesDeTexte(prepareStatement(statement, inst)));
+		const bons = choiceBlank ? correctChoiceIndexesOf(choiceBlank) : [];
 		return {
 			variation: i + 1,
 			statement: enonce.markdown,
-			choices: inst.choices
-				? inst.choices.map((c) => ({ content: dessine(c.content).markdown, bon: c.isCorrect }))
+			choices: choiceBlank
+				? choiceBlank.choice.order.map((index) => ({
+						content: dessine(choiceBlank.choice.choices[index]).markdown,
+						bon: bons.includes(index)
+					}))
 				: null,
-			answer: (inst.blanks ?? []).map((b) => b.expectedAnswer).join(' | '),
+			answer: blanks
+				.filter((b) => !isChoiceBlank(b))
+				.map((b) => toFrenchDecimal(b.expectedAnswer))
+				.join(' | '),
 			solution: enonce.solutions.join(''),
 			steps: (inst.correction?.steps ?? []).map((s) => dessine(s).markdown)
 		};
 	});
-	return { exemples, nonDessines: [...nonDessines] };
+	return { exemples, nonDessines: [...nonDessines], avertissements: [...avertissements] };
+}
+
+/** Programme d'un code de point : ce qui précède le dernier tiret (`1SPE-224` → `1SPE`) */
+export function programmeDuCode(code: string): string {
+	const i = code.lastIndexOf('-');
+	return i === -1 ? code : code.slice(0, i);
 }
 
 /** La fiche d'un modèle : ce que dit le fichier, ce que dit la base, ce que dit le programme */
@@ -422,15 +616,27 @@ export function ficheDuModele(
 ): Fiche {
 	const alertes: string[] = [];
 	if (base.codes.length === 0) alertes.push('sans point');
-	if (base.codes.length > 1) alertes.push(`${base.codes.length} points (ADR 0020 : un seul)`);
+	// ADR 0020 : au plus un point PAR PROGRAMME (1SPE-224 avec 1TECHNO-037 est permis)
+	const parProgramme = new Map<string, number>();
+	for (const code of base.codes)
+		parProgramme.set(programmeDuCode(code), (parProgramme.get(programmeDuCode(code)) ?? 0) + 1);
+	for (const [programme, n] of parProgramme) {
+		if (n > 1) alertes.push(`${n} points de ${programme} (ADR 0020 : un par programme)`);
+	}
 	if (!base.rangement) alertes.push('sans nœud');
 	if (base.niveau !== modele.level) {
 		alertes.push(`niveau ${base.niveau} en base, ${modele.level} dans le fichier`);
 	}
-	const point = base.codes.length === 1 ? bornes[base.codes[0]] : undefined;
-	if (base.codes.length === 1 && !point) alertes.push(`point ${base.codes[0]} absent des bornes`);
-	const { exemples, nonDessines } = exemplesDuModele(modele);
+	const points = base.codes.flatMap((code) => {
+		const point = bornes[code];
+		if (!point) alertes.push(`point ${code} absent des bornes`);
+		return point ? [{ code, point }] : [];
+	});
+	// Plusieurs programmes : chaque libellé et chaque borne disent leur point
+	const prefixe = (code: string) => (points.length > 1 ? `${code} : ` : '');
+	const { exemples, nonDessines, avertissements } = exemplesDuModele(modele);
 	for (const t of nonDessines) alertes.push(`bloc ${t} non dessiné : le jouer dans l'aperçu`);
+	alertes.push(...avertissements);
 	return {
 		id: base.id,
 		code: base.codes.join(', ') || '—',
@@ -439,10 +645,12 @@ export function ficheDuModele(
 		rangement: base.rangement ?? '—',
 		niveau: base.niveau,
 		statut: base.statut,
-		libelle: point?.libelle ?? '',
-		bornes: point
-			? [...point.bornes.map((b) => b.borne), ...(point.remarque ? [point.remarque] : [])]
-			: [],
+		libelle: points.map(({ code, point }) => prefixe(code) + point.libelle).join(' · '),
+		bornes: points.flatMap(({ code, point }) =>
+			[...point.bornes.map((b) => b.borne), ...(point.remarque ? [point.remarque] : [])].map(
+				(b) => prefixe(code) + b
+			)
+		),
 		variables: modele.variations.flatMap((v, i) =>
 			(v.variables ?? []).map((x) => `v${i + 1} : ${x.name} = ${x.expression}`)
 		),
@@ -450,7 +658,8 @@ export function ficheDuModele(
 			(v.conditions ?? []).map((c) => `v${i + 1} : ${c}`)
 		),
 		specs: (modele.testSpecs ?? []).map(
-			(s) => `${s.description} : ${(s.answers ?? []).join(', ')} → ${s.expected.status}`
+			(s) =>
+				`${s.description} : ${(s.answers ?? []).map((a) => `$${a}$`).join(', ')} → ${s.expected.status}`
 		),
 		exemples,
 		alertes

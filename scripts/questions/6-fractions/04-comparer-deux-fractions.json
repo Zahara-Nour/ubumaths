@@ -1,0 +1,209 @@
+{
+	"title": "Comparer deux fractions de même dénominateur ou de même numérateur",
+	"description": "Comparer deux fractions de même dénominateur (3/7 et 5/7) ou de même numérateur (5/7 et 5/9)",
+	"grades": ["6"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Comparer",
+	"level": 5,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète avec le signe qui convient.\n\n$$\\frac{{{gn}}}{{{gd}}} \\ldots \\frac{{{dn}}}{{{dd}}}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "3..12"
+				},
+				{
+					"name": "a",
+					"expression": "1..20"
+				},
+				{
+					"name": "c",
+					"expression": "1..20"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "gn",
+					"expression": "eval:(1-s)*a+s*c"
+				},
+				{
+					"name": "gd",
+					"expression": "eval:(1-s)*b+s*d"
+				},
+				{
+					"name": "dn",
+					"expression": "eval:(1-s)*c+s*a"
+				},
+				{
+					"name": "dd",
+					"expression": "eval:(1-s)*d+s*b"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(gn*dd-dn*gd)+1"
+				}
+			],
+			"conditions": ["a!=c", "mod(a,b)!=0", "mod(c,b)!=0", "a<2*b", "c<2*b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Même dénominateur.** Les deux fractions comptent des parts de même taille, $\\frac{1}{{{b}}}$ : la plus grande est celle qui a le plus grand numérateur.",
+					"$$\\frac{{{gn}}}{{{gd}}} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} \\frac{{{dn}}}{{{dd}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète avec le signe qui convient.\n\n$$\\frac{{{gn}}}{{{gd}}} \\ldots \\frac{{{dn}}}{{{dd}}}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..11"
+				},
+				{
+					"name": "d",
+					"expression": "{{eval:b+1}}..12"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "gn",
+					"expression": "eval:(1-s)*a+s*c"
+				},
+				{
+					"name": "gd",
+					"expression": "eval:(1-s)*b+s*d"
+				},
+				{
+					"name": "dn",
+					"expression": "eval:(1-s)*c+s*a"
+				},
+				{
+					"name": "dd",
+					"expression": "eval:(1-s)*d+s*b"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(gn*dd-dn*gd)+1"
+				}
+			],
+			"conditions": ["mod(a,b)!=0", "mod(a,d)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Même numérateur.** Partager l'unité en ${{d}}$ donne des parts plus petites qu'en ${{b}}$ : $\\frac{1}{{{d}}} < \\frac{1}{{{b}}}$. Avec ${{a}}$ parts de chaque côté, $\\frac{{{a}}}{{{d}}} < \\frac{{{a}}}{{{b}}}$.",
+					"$$\\frac{{{gn}}}{{{gd}}} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} \\frac{{{dn}}}{{{dd}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3/7 < 5/7",
+			"variationIndex": 0,
+			"variables": {
+				"b": "7",
+				"a": "3",
+				"c": "5",
+				"d": "7",
+				"s": "0",
+				"gn": "3",
+				"gd": "7",
+				"dn": "5",
+				"dd": "7",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/7 > 5/7",
+			"variationIndex": 0,
+			"variables": {
+				"b": "7",
+				"a": "3",
+				"c": "5",
+				"d": "7",
+				"s": "0",
+				"gn": "3",
+				"gd": "7",
+				"dn": "5",
+				"dd": "7",
+				"r": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5/7 > 5/9",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "7",
+				"d": "9",
+				"c": "5",
+				"s": "0",
+				"gn": "5",
+				"gd": "7",
+				"dn": "5",
+				"dd": "9",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5/7 < 5/9 (« 9 > 7 »)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "7",
+				"d": "9",
+				"c": "5",
+				"s": "0",
+				"gn": "5",
+				"gd": "7",
+				"dn": "5",
+				"dd": "9",
+				"r": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

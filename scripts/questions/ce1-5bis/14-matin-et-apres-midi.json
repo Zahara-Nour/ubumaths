@@ -1,0 +1,179 @@
+{
+	"title": "Les heures du matin et de l'après-midi",
+	"description": "3 heures de l'après-midi = 15 h ; 14 : 15, le matin ou l'après-midi ? ; 20 h = 8 heures du soir",
+	"grades": ["CE1"],
+	"theme": "Grandeurs",
+	"domain": "Durées",
+	"subdomain": "Moments de la journée",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète.\n\n{{h}} {{if:h==1|heure|heures}} de l'après-midi, c'est $?~\\text{h}$.",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "1..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:h+12}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Après midi, on continue de compter : $13~\\unit{h}$, c'est 1 heure de l'après-midi, $14~\\unit{h}$, 2 heures de l'après-midi, et ainsi de suite (on ajoute $12$).",
+					"$${{h}} + 12 = \\textcolor{{{color:primary.0}}}{{{eval:h+12}}}$$",
+					"{{h}} {{if:h==1|heure|heures}} de l'après-midi, c'est ${{eval:h+12}}~\\unit{h}$."
+				]
+			}
+		},
+		{
+			"statement": "Une horloge digitale affiche :\n\n$${{eval:k+6+floor((k-1)/5)}}\\,:\\,{{if:q==0|00|{{eval:15*q}}}}$$\n\nEst-ce le matin ou l'après-midi ?\n\n```choix\nmelanger: non\n- le matin\n- l'après-midi\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..10"
+				},
+				{
+					"name": "q",
+					"expression": "0..3"
+				},
+				{
+					"name": "r",
+					"expression": "eval:floor((k-1)/5)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le matin, les heures vont jusqu'à midi ($12~\\unit{h}$). Après midi, on continue de compter : $13~\\unit{h}$, c'est 1 heure de l'après-midi, $14~\\unit{h}$, 2 heures de l'après-midi, et ainsi de suite (on ajoute $12$).",
+					"${{eval:k+6+floor((k-1)/5)}}$ est {{if:r==0|plus petit|plus grand}} que $12$ : c'est **{{if:r==0|le matin|l'après-midi}}**{{if:r==1|, {{eval:k-5}} {{if:k==6|heure|heures}} de l'après-midi|}}."
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:h+12}}~\\unit{h}$, c'est $?$ heures du soir.",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "6..11"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{h}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Après midi, on continue de compter : $13~\\unit{h}$, c'est 1 heure de l'après-midi, $14~\\unit{h}$, 2 heures de l'après-midi, et ainsi de suite (on ajoute $12$).",
+					"$${{eval:h+12}} - 12 = \\textcolor{{{color:primary.0}}}{{{h}}}$$",
+					"${{eval:h+12}}~\\unit{h}$, c'est {{h}} heures du soir."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 3 heures de l'après-midi = 15 h",
+			"variationIndex": 0,
+			"variables": {
+				"h": "3"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 heures de l'après-midi = 3 h",
+			"variationIndex": 0,
+			"variables": {
+				"h": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 heure de l'après-midi = 13 h",
+			"variationIndex": 0,
+			"variables": {
+				"h": "1"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BO : 14 : 15, l'après-midi",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7",
+				"q": "1",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 14 : 15, le matin",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7",
+				"q": "1",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "9 : 30, le matin",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"q": "2",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "20 h = 8 heures du soir",
+			"variationIndex": 2,
+			"variables": {
+				"h": "8"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 20 h = 10 heures du soir",
+			"variationIndex": 2,
+			"variables": {
+				"h": "8"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

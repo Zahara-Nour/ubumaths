@@ -17,7 +17,7 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { describe, it, expect } from 'vitest';
-import { draftTemplate, parseReviewFile } from '$lib/migration/review/review-file';
+import { draftTemplate, parseReviewFile } from '$lib/questions/review/review-file';
 import { generateInstance } from '../generator/instance-generator';
 import {
 	ANSWER_COMPLEXITY_LIMITS,
@@ -75,8 +75,23 @@ function answersOf(template: QuestionTemplate): string[] {
 			}
 		}
 	}
-	for (const spec of template.testSpecs ?? []) answers.push(...(spec.answers ?? []));
+	for (const spec of template.testSpecs ?? []) {
+		if (isColoring(template, spec.variationIndex)) continue;
+		answers.push(...(spec.answers ?? []));
+	}
 	return answers.filter((answer) => answer.trim() !== '');
+}
+
+/**
+ * Variation à colorier (```partage + `colorier:`) : la réponse (rangs coloriés, `1, 2, …, 137`)
+ * ne passe pas par la garde en prod (`validateSingleBlank` la juge avant), donc ses specs non
+ * plus ; sinon 1,37 sur deux grilles (137 rangs) ne pourrait pas avoir de spec juste.
+ */
+function isColoring(template: QuestionTemplate, variationIndex: number | undefined): boolean {
+	const variation = template.variations[variationIndex ?? 0];
+	if (!variation) return false;
+	const result = generateInstance({ ...template, variations: [variation] }, 0);
+	return result.success && (result.instance.blanks ?? []).some((b) => b.construire === 'partage');
 }
 
 describe('garde de complexité — corpus du dépôt', () => {

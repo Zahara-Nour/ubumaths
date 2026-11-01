@@ -1,0 +1,382 @@
+{
+	"title": "Norme d'un vecteur",
+	"description": "Norme en base orthonormée : entière (3 ; 4), √n irréductible, k√m à simplifier (√40 = 2√10), coordonnées décimales (pièges : racine oubliée, √(x + y), signe dans le carré)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs du plan",
+	"subdomain": "Norme et distance",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans un repère orthonormé $(O\\,;\\vec{i},\\vec{j})$, on considère le vecteur $\\vec{u}\\begin{pmatrix}{{if:sx==1|{{x}}|-{{x}}}}\\\\{{if:sy==1|{{y}}|-{{y}}}}\\end{pmatrix}$.\n\nCalcule la norme de $\\vec{u}$ (valeur exacte, sous la forme la plus simple).\n\n$$\\|\\vec{u}\\|=?$$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..5"
+				},
+				{
+					"name": "sx",
+					"expression": "1|-1"
+				},
+				{
+					"name": "sy",
+					"expression": "1|-1"
+				},
+				{
+					"name": "x",
+					"expression": "{{if:t==0|3|{{if:t==1|6|{{if:t==2|5|{{if:t==3|8|{{if:t==4|9|12}}}}}}}}}}"
+				},
+				{
+					"name": "y",
+					"expression": "{{if:t==0|4|{{if:t==1|8|{{if:t==2|12|{{if:t==3|15|{{if:t==4|12|5}}}}}}}}}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{if:t==0|25|{{if:t==1|100|{{if:t==2|169|{{if:t==3|289|{{if:t==4|225|169}}}}}}}}}}"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:t==0|5|{{if:t==1|10|{{if:t==2|13|{{if:t==3|17|{{if:t==4|15|13}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"En base orthonormée, $\\|\\vec{u}\\|=\\sqrt{x^2+y^2}$ (théorème de Pythagore).",
+					"$$\\|\\vec{u}\\|=\\sqrt{{{if:sx==1|{{x}}|(-{{x}})}}^2+{{if:sy==1|{{y}}|(-{{y}})}}^2}=\\sqrt{{{c}}}$$",
+					"${{c}}={{r}}^2$, donc $\\|\\vec{u}\\|=\\textcolor{{{color:primary.0}}}{{{r}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère orthonormé $(O\\,;\\vec{i},\\vec{j})$, on considère le vecteur $\\vec{u}\\begin{pmatrix}{{if:sx==1|{{x}}|-{{x}}}}\\\\{{if:sy==1|{{y}}|-{{y}}}}\\end{pmatrix}$.\n\nCalcule la norme de $\\vec{u}$ (valeur exacte, sous la forme la plus simple).\n\n$$\\|\\vec{u}\\|=?$$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..9"
+				},
+				{
+					"name": "sx",
+					"expression": "1|-1"
+				},
+				{
+					"name": "sy",
+					"expression": "1|-1"
+				},
+				{
+					"name": "x",
+					"expression": "{{if:t==0|2|{{if:t==1|1|{{if:t==2|2|{{if:t==3|3|{{if:t==4|1|{{if:t==5|4|{{if:t==6|1|{{if:t==7|1|{{if:t==8|2|3}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "y",
+					"expression": "{{if:t==0|3|{{if:t==1|4|{{if:t==2|5|{{if:t==3|5|{{if:t==4|6|{{if:t==5|5|{{if:t==6|2|{{if:t==7|3|{{if:t==8|7|7}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{if:t==0|13|{{if:t==1|17|{{if:t==2|29|{{if:t==3|34|{{if:t==4|37|{{if:t==5|41|{{if:t==6|5|{{if:t==7|10|{{if:t==8|53|58}}}}}}}}}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\sqrt{ {{c}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"En base orthonormée, $\\|\\vec{u}\\|=\\sqrt{x^2+y^2}$ (théorème de Pythagore).",
+					"$$\\|\\vec{u}\\|=\\sqrt{{{if:sx==1|{{x}}|(-{{x}})}}^2+{{if:sy==1|{{y}}|(-{{y}})}}^2}=\\sqrt{{{c}}}$$",
+					"${{c}}$ n'a aucun facteur carré autre que $1$ : $\\|\\vec{u}\\|=\\textcolor{{{color:primary.0}}}{\\sqrt{ {{c}} }}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère orthonormé $(O\\,;\\vec{i},\\vec{j})$, on considère le vecteur $\\vec{u}\\begin{pmatrix}{{if:sx==1|{{x}}|-{{x}}}}\\\\{{if:sy==1|{{y}}|-{{y}}}}\\end{pmatrix}$.\n\nCalcule la norme de $\\vec{u}$ (valeur exacte, sous la forme la plus simple).\n\n$$\\|\\vec{u}\\|=?$$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..7"
+				},
+				{
+					"name": "sx",
+					"expression": "1|-1"
+				},
+				{
+					"name": "sy",
+					"expression": "1|-1"
+				},
+				{
+					"name": "x",
+					"expression": "{{if:t==0|2|{{if:t==1|2|{{if:t==2|3|{{if:t==3|3|{{if:t==4|4|{{if:t==5|4|{{if:t==6|3|6}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "y",
+					"expression": "{{if:t==0|6|{{if:t==1|4|{{if:t==2|6|{{if:t==3|3|{{if:t==4|4|{{if:t==5|6|{{if:t==6|9|4}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{if:t==0|40|{{if:t==1|20|{{if:t==2|45|{{if:t==3|18|{{if:t==4|32|{{if:t==5|52|{{if:t==6|90|52}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "k",
+					"expression": "{{if:t==0|2|{{if:t==1|2|{{if:t==2|3|{{if:t==3|3|{{if:t==4|4|{{if:t==5|2|{{if:t==6|3|2}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "m",
+					"expression": "{{if:t==0|10|{{if:t==1|5|{{if:t==2|5|{{if:t==3|2|{{if:t==4|2|{{if:t==5|13|{{if:t==6|10|13}}}}}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}\\sqrt{ {{m}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"En base orthonormée, $\\|\\vec{u}\\|=\\sqrt{x^2+y^2}$ (théorème de Pythagore).",
+					"$$\\|\\vec{u}\\|=\\sqrt{{{if:sx==1|{{x}}|(-{{x}})}}^2+{{if:sy==1|{{y}}|(-{{y}})}}^2}=\\sqrt{{{c}}}$$",
+					"On simplifie : $\\sqrt{ {{c}} }=\\sqrt{ {{eval:(k)^2}}\\times{{m}} }=\\sqrt{ {{eval:(k)^2}} }\\times\\sqrt{ {{m}} }$, donc $\\|\\vec{u}\\|=\\textcolor{{{color:primary.0}}}{{{k}}\\sqrt{ {{m}} }}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère orthonormé $(O\\,;\\vec{i},\\vec{j})$, on considère le vecteur $\\vec{u}\\begin{pmatrix}{{if:sx==1|{{eval:(x)/10;d}}|-{{eval:(x)/10;d}}}}\\\\{{if:sy==1|{{eval:(y)/10;d}}|-{{eval:(y)/10;d}}}}\\end{pmatrix}$.\n\nCalcule la norme de $\\vec{u}$.\n\n$$\\|\\vec{u}\\|=?$$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..5"
+				},
+				{
+					"name": "sx",
+					"expression": "1|-1"
+				},
+				{
+					"name": "sy",
+					"expression": "1|-1"
+				},
+				{
+					"name": "x",
+					"expression": "{{if:t==0|6|{{if:t==1|15|{{if:t==2|3|{{if:t==3|12|{{if:t==4|7|24}}}}}}}}}}"
+				},
+				{
+					"name": "y",
+					"expression": "{{if:t==0|8|{{if:t==1|20|{{if:t==2|4|{{if:t==3|5|{{if:t==4|24|10}}}}}}}}}}"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:t==0|10|{{if:t==1|25|{{if:t==2|5|{{if:t==3|13|{{if:t==4|25|26}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(r)/10}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"En base orthonormée, $\\|\\vec{u}\\|=\\sqrt{x^2+y^2}$ (théorème de Pythagore).",
+					"$$\\|\\vec{u}\\|=\\sqrt{{{if:sx==1|{{eval:(x)/10;d}}|(-{{eval:(x)/10;d}})}}^2+{{if:sy==1|{{eval:(y)/10;d}}|(-{{eval:(y)/10;d}})}}^2}=\\sqrt{{{eval:((x)^2+(y)^2)/100;d}}}$$",
+					"Or ${{eval:((x)^2+(y)^2)/100;d}}={{eval:(r)/10;d}}^2$, donc $\\|\\vec{u}\\|=\\textcolor{{{color:primary.0}}}{{{eval:(r)/10;d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u(3 ; −4) → 5",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"sx": "1",
+				"sy": "-1",
+				"x": "3",
+				"y": "4",
+				"c": "25",
+				"r": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : racine oubliée (25)",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"sx": "1",
+				"sy": "-1",
+				"x": "3",
+				"y": "4",
+				"c": "25",
+				"r": "5"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : √(3 − 4)² lu x + y (1)",
+			"variationIndex": 0,
+			"variables": {
+				"t": "0",
+				"sx": "1",
+				"sy": "-1",
+				"x": "3",
+				"y": "4",
+				"c": "25",
+				"r": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u(2 ; −3) → √13",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"sx": "1",
+				"sy": "-1",
+				"x": "2",
+				"y": "3",
+				"c": "13"
+			},
+			"answers": ["\\sqrt{13}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (−3)² = −9, √(4 − 9)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"sx": "1",
+				"sy": "-1",
+				"x": "2",
+				"y": "3",
+				"c": "13"
+			},
+			"answers": ["\\sqrt{-5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x + y (√5)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"sx": "1",
+				"sy": "-1",
+				"x": "2",
+				"y": "3",
+				"c": "13"
+			},
+			"answers": ["\\sqrt{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u(2 ; 6) → 2√10",
+			"variationIndex": 2,
+			"variables": {
+				"t": "0",
+				"sx": "1",
+				"sy": "1",
+				"x": "2",
+				"y": "6",
+				"c": "40",
+				"k": "2",
+				"m": "10"
+			},
+			"answers": ["2\\sqrt{10}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "√40 : juste, à simplifier",
+			"variationIndex": 2,
+			"variables": {
+				"t": "0",
+				"sx": "1",
+				"sy": "1",
+				"x": "2",
+				"y": "6",
+				"c": "40",
+				"k": "2",
+				"m": "10"
+			},
+			"answers": ["\\sqrt{40}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedRadicals"]
+			}
+		},
+		{
+			"description": "Erreur : 4√10",
+			"variationIndex": 2,
+			"variables": {
+				"t": "0",
+				"sx": "1",
+				"sy": "1",
+				"x": "2",
+				"y": "6",
+				"c": "40",
+				"k": "2",
+				"m": "10"
+			},
+			"answers": ["4\\sqrt{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u(0,6 ; 0,8) → 1",
+			"variationIndex": 3,
+			"variables": {
+				"t": "0",
+				"sx": "1",
+				"sy": "1",
+				"x": "6",
+				"y": "8",
+				"r": "10"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x + y (1,4)",
+			"variationIndex": 3,
+			"variables": {
+				"t": "0",
+				"sx": "1",
+				"sy": "1",
+				"x": "6",
+				"y": "8",
+				"r": "10"
+			},
+			"answers": ["1.4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

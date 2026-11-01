@@ -1,0 +1,237 @@
+{
+	"id": "ca8f40c2-bcb9-4f1d-8647-53e84a04ed79",
+	"title": "Suite géométrique de raison exponentielle",
+	"description": "La suite (e^{na}) est géométrique de raison e^a ; terme général v_0 e^{na}",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction exponentielle",
+	"subdomain": "Suites et modélisation",
+	"level": 1,
+	"delay": 40,
+	"status": "draft",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "e^{ {{a}} }"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=e^{ {{a}}x}$.\n\nPour tout réel $x$, calcule le quotient $\\dfrac{f(x+1)}{f(x)}$.\n\n$\\dfrac{f(x+1)}{f(x)}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(x+1)=e^{ {{a}}(x+1)}=e^{ {{a}}x+{{a}}}=e^{ {{a}}x}\\times e^{ {{a}} }$.",
+					"Donc $\\dfrac{f(x+1)}{f(x)}=\\dfrac{e^{ {{a}}x}\\times e^{ {{a}} }}{e^{ {{a}}x}}=e^{ {{a}} }$ : le quotient de deux images distantes de $1$ est toujours le même, quel que soit $x$.",
+					"Conséquence : avec $u_n=f(n)=e^{ {{a}}n}$, on a $u_{n+1}=u_n\\times e^{ {{a}} }$ pour tout entier naturel $n$ : la suite $(u_n)$ est géométrique de raison $e^{ {{a}} }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}n"
+				}
+			],
+			"statement": "La suite $(v_n)$ est géométrique, de premier terme $v_0={{k}}$ et de raison $q=e^{ {{a}} }$.\n\nComplète l'expression de $v_n$ en fonction de $n$.\n\n$v_n={{k}}\\,e^{?}$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour une suite géométrique, $v_n=v_0\\times q^n$, donc $v_n={{k}}\\times\\left(e^{ {{a}} }\\right)^n$.",
+					"Avec la règle $\\left(e^{a}\\right)^n=e^{na}$ : $\\left(e^{ {{a}} }\\right)^n=e^{ {{a}}n}$.",
+					"Conclusion : $v_n={{k}}\\,e^{ {{a}}n}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["e^{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "variation 0 : a=2 : e^2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["e^3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "variation 0 : a=3 : e^3 sans accolades",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["e^{2x}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "variation 0 : a=2 : e^{2x} (f(x), pas le quotient)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "variation 0 : a=2 : 2 (l'exposant seul)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["e"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "variation 0 : a=2 : e",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{e^{2x+2}}{e^{2x}}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "variation 0 : a=2 : quotient non simplifié",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["e^{2}\\times1"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["factorOne"]
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "variation 0 : a=2 : e^2×1 facteur 1 inutile",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["e^{5}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5"
+			},
+			"description": "variation 0 : a=5 : e^5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"k": "3"
+			},
+			"description": "variation 1 : k=3, a=2 : 2n",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["5n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"k": "7"
+			},
+			"description": "variation 1 : k=7, a=5 : 5n",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["n\\times2"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["products"]
+			},
+			"variables": {
+				"a": "2",
+				"k": "3"
+			},
+			"description": "variation 1 : k=3, a=2 : n×2 (ordre et signe ×)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2+n"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"k": "3"
+			},
+			"description": "variation 1 : k=3, a=2 : 2+n (somme au lieu de produit)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["n"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"k": "3"
+			},
+			"description": "variation 1 : k=3, a=2 : n (raison e prise)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2^n"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"k": "3"
+			},
+			"description": "variation 1 : k=3, a=2 : 2^n",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["6n"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"k": "3"
+			},
+			"description": "variation 1 : k=3, a=2 : 6n (premier terme mis dans l'exposant)",
+			"variationIndex": 1
+		}
+	]
+}

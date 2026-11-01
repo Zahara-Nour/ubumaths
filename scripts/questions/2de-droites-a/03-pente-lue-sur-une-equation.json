@@ -1,0 +1,164 @@
+{
+	"title": "Lire la pente d'une droite sur son équation",
+	"description": "Pente d'une droite donnée par y = p + mx, puis par ax + by + c = 0 (m = −a/b) (pièges : terme constant pris pour la pente, a/b sans le signe, b/a)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Droites du plan",
+	"subdomain": "Pente et vecteur directeur",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans un repère du plan, la droite $d$ a pour équation $y={{p}}{{m;+}}x$.\n\nQuelle est la pente $m$ de la droite $d$ ?\n\n$m=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["abs(m) != abs(p)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'équation réduite d'une droite s'écrit $y=mx+p$ : la pente est le **coefficient de $x$**, quelle que soit la place du terme.",
+					"$$y={{p}}{{m;+}}x={{m}}x{{p;+}}\\quad\\text{donc}\\quad m=\\textcolor{{{color:primary.0}}}{{{m}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère du plan, la droite $d$ a pour équation ${{a}}x{{b;+}}y{{c;+}}=0$.\n\nQuelle est la pente $m$ de la droite $d$ ?\n\n$m=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..6;±"
+				},
+				{
+					"name": "c",
+					"expression": "-9..9"
+				}
+			],
+			"conditions": ["abs(a) != abs(b)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-(a)/(b)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On isole $y$ pour obtenir l'équation réduite :",
+					"$${{b}}y={{eval:-(a)}}x{{eval:-(c);+}}\\quad\\text{donc}\\quad y={{eval:-(a)/(b)}}x{{eval:-(c)/(b);+}}$$",
+					"La pente est le coefficient de $x$ : $m=-\\dfrac{a}{b}=\\textcolor{{{color:primary.0}}}{{{eval:-(a)/(b)}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "y = 3 − 2x → −2",
+			"variationIndex": 0,
+			"variables": {
+				"m": "-2",
+				"p": "3"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : terme constant (3)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "-2",
+				"p": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signe (2)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "-2",
+				"p": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2x + 3y − 6 = 0 → −2/3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "-6"
+			},
+			"answers": ["-\\frac{2}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a/b sans signe (2/3)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "-6"
+			},
+			"answers": ["\\frac{2}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −b/a (−3/2)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "-6"
+			},
+			"answers": ["-\\frac{3}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : coefficient de x (2)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "-6"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

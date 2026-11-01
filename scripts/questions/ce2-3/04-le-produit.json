@@ -1,0 +1,203 @@
+{
+	"title": "Le produit de deux nombres",
+	"description": "« Le produit de 3 et de 25 est 75 » ; tables, dizaines entières ; facteur manquant",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Multiplier",
+	"subdomain": "Sens",
+	"level": 3,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quel est le produit de ${{a}}$ et de ${{b}}$ ?\n\nLe produit est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le **produit** de deux nombres, c'est le résultat de leur multiplication.",
+					"Le produit de ${{a}}$ et de ${{b}}$, c'est ${{a}}\\times{{b}}={{solution}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel est le produit de ${{a}}$ et de ${{eval:10*k}}$ ?\n\nLe produit est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "k",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*a*k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le **produit** de deux nombres, c'est le résultat de leur multiplication.",
+					"${{a}}\\times{{k}}={{eval:a*k}}$, donc ${{a}}\\times{{eval:10*k}}={{solution}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel est le produit de ${{a}}$ et de $25$ ?\n\nLe produit est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:25*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le **produit** de deux nombres, c'est le résultat de leur multiplication.",
+					"Le produit de ${{a}}$ et de $25$, c'est ${{a}}\\times 25={{solution}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le produit de ${{a}}$ et d'un autre nombre est ${{eval:a*b}}$.\n\nQuel est cet autre nombre ?\n\nL'autre nombre est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le **produit** de deux nombres, c'est le résultat de leur multiplication.",
+					"On cherche le nombre qui complète ${{a}}\\times ?={{eval:a*b}}$.",
+					"${{a}}\\times{{b}}={{eval:a*b}}$, donc l'autre nombre est ${{solution}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "produit de 4 et de 6 : 24",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "6"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme (10)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "6"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "produit de 3 et de 40 : 120",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"k": "4"
+			},
+			"answers": ["120"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 × 4 sans le zéro (12)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"k": "4"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "produit de 3 et de 25 : 75",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["75"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme (28)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["28"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 × ? = 24 : 6",
+			"variationIndex": 3,
+			"variables": {
+				"a": "4",
+				"b": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 24 − 4 (20)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "4",
+				"b": "6"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

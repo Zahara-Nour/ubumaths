@@ -46,15 +46,6 @@ const STATUS_LABELS: Record<string, string> = {
 
 // Functions
 
-/** Les choix de QCM sont dans `shared` ou dans les variations : on sonde la première. */
-function firstVariationChoices(variations: unknown): unknown[] | undefined {
-	if (!Array.isArray(variations) || variations.length === 0) return undefined;
-	const first: unknown = variations[0];
-	if (typeof first !== 'object' || first === null || !('choices' in first)) return undefined;
-	const choices = (first as { choices?: unknown }).choices;
-	return Array.isArray(choices) ? choices : undefined;
-}
-
 function factSheetPoints(row: FactSheetTemplateRow, tags: TemplateProgrammeTags): FactSheetPoints {
 	if (tags.nodeMissing) return { state: 'unranked' };
 
@@ -86,11 +77,7 @@ export function buildTemplateFactSheet(
 	nodes: readonly ClassificationNode[],
 	tags: TemplateProgrammeTags
 ): TemplateFactSheet {
-	const type = getQuestionType({
-		shared: row.shared,
-		options: row.options,
-		choices: firstVariationChoices(row.variations)
-	});
+	const type = getQuestionType({ options: row.options });
 	return {
 		title: row.title,
 		statusLabel: STATUS_LABELS[row.status] ?? row.status,

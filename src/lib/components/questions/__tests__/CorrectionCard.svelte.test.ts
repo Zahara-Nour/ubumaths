@@ -4,7 +4,7 @@
  * statut global ; verso = correction concise ↔ détaillée (`CorrectionView`).
  *
  * Défauts déjà payés : « undefined » pour une question à trous (2026-09-30), lettre
- * d'un QCM mélangé (2026-10-01), LaTeX brut dans un `<code>`.
+ * d'un QCM mélangé (2026-10-01, aujourd'hui case choix), LaTeX brut dans un `<code>`.
  */
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
@@ -108,33 +108,31 @@ describe('CorrectionCard — recto : résultat attendu et statut global', () => 
 	});
 });
 
-describe('CorrectionCard — QCM', () => {
+describe('CorrectionCard — case choix', () => {
 	const choices = {
-		blanks: undefined,
-		choices: [
-			{ content: resolvedMarkdown('Paris'), isCorrect: true },
-			{ content: resolvedMarkdown('Marseille'), isCorrect: false },
-			{ content: resolvedMarkdown('Lyon'), isCorrect: false }
+		blanks: [
+			{
+				expectedAnswer: '0',
+				type: 'choice',
+				// Lyon (origine 2) affiché en A
+				choice: { choices: ['Paris', 'Marseille', 'Lyon'], order: [2, 0, 1], multiple: false }
+			}
 		],
-		// Lyon (origine 2) affiché en A
-		shuffledChoices: [
-			{ content: resolvedMarkdown('Lyon'), originalIndex: 2 },
-			{ content: resolvedMarkdown('Paris'), originalIndex: 0 },
-			{ content: resolvedMarkdown('Marseille'), originalIndex: 1 }
-		],
-		correctChoiceIndex: '0',
-		statement: resolvedMarkdown('Capitale de la France ?')
+		statement: resolvedMarkdown(
+			'Capitale de la France ?\n\n```choix\ncase: 0\n- Paris\n- Marseille\n- Lyon\n```'
+		)
 	} as Partial<QuestionInstance>;
 
 	it('ordre affiché, lettre vue par l’élève, coché à tort et bonne réponse', async () => {
-		const { container } = await show({ answerResult: result(choices, 2) });
+		// Lyon coché : la réponse porte son indice d'origine
+		const { container } = await show({ answerResult: result(choices, ['2']) });
 		const items = [...front(container).querySelectorAll('[data-kind="choices"] li')];
 		expect(items[0].textContent?.trim().startsWith('A')).toBe(true);
 		expect(items[0].textContent).toContain('Lyon');
 		expect(items[0].getAttribute('data-status')).toBe('incorrect');
 		expect(items[1].textContent).toContain('Paris');
 		expect(items[1].getAttribute('data-status')).toBe('solution');
-		// L'énoncé d'un QCM reste lisible au recto
+		// L'énoncé d'une case choix reste lisible au recto
 		expect(front(container).textContent).toContain('Capitale de la France');
 	});
 });
@@ -199,25 +197,48 @@ describe('Q105 — entraînement noté comme l’évaluation', () => {
 		expect(badge?.textContent).toContain('½ point');
 	});
 
-	it('QCM multiple incomplet (bons cochés, un oublié) : « ½ point », comme en évaluation', async () => {
+	it('case choix multiple incomplète (bons cochés, un oublié) : « ½ point », comme en évaluation', async () => {
 		const { container } = await show({
 			answerResult: result(
 				{
-					blanks: undefined,
-					statement: resolvedMarkdown('Nombres pairs ?'),
-					choices: [
-						{ content: resolvedMarkdown('12'), isCorrect: true },
-						{ content: resolvedMarkdown('15'), isCorrect: false },
-						{ content: resolvedMarkdown('28'), isCorrect: true }
+					blanks: [
+						{
+							expectedAnswer: '0;2',
+							type: 'choice',
+							choice: { choices: ['12', '15', '28'], order: [0, 1, 2], multiple: true }
+						}
 					],
-					correctChoiceIndex: ['0', '2'],
-					multipleAnswers: true
+					statement: resolvedMarkdown(
+						'Nombres pairs ?\n\n```choix\ncase: 0\nplusieurs: oui\n- 12\n- 15\n- 28\n```'
+					)
 				} as Partial<QuestionInstance>,
-				[0]
+				['0']
 			)
 		});
 		expect(
 			front(container).querySelector('[data-testid="global-verdict"]')?.getAttribute('data-kind')
 		).toBe('half');
+	});
+});
+
+// iPhone (David, 2026-10-27) : la carte plafonnée à 80 % de l'écran se mesurait
+// elle-même ; à la 2e mesure elle ne se voyait plus trop haute et coupait sa fin
+describe('CorrectionCard — carte plus haute que l’écran', () => {
+	it('le recto défile au lieu de couper la fin', async () => {
+		const long = Array.from({ length: 80 }, (_, i) => `Ligne ${i + 1}.`).join('\n\n');
+		const { container } = await show({
+			answerResult: result({
+				...oneBlank,
+				statement: resolvedMarkdown(`${long}\n\n$\\placeholder[0]{}$`)
+			})
+		});
+		const recto = front(container);
+		await expect.poll(() => recto.scrollHeight > recto.clientHeight + 1).toBe(true);
+		await new Promise((r) => setTimeout(r, 300));
+		expect(getComputedStyle(recto).overflowY).toBe('auto');
+		expect(recto.classList.contains('scrollable')).toBe(true);
+		// la fiche garde toute sa hauteur (pas écrasée à celle de la face) : sa fin est atteignable
+		const fiche = recto.firstElementChild as HTMLElement;
+		expect(fiche.scrollHeight).toBeLessThanOrEqual(fiche.clientHeight + 1);
 	});
 });

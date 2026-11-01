@@ -1,0 +1,70 @@
+{
+	"title": "Échanger les facteurs d'un produit",
+	"description": "Compléter 3/4 × 7 = 7 × ? : l'ordre des facteurs ne compte pas dans un produit",
+	"grades": ["6"],
+	"theme": "Fractions",
+	"domain": "Calculer",
+	"subdomain": "Multiplication",
+	"level": 9,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète.\n\n$$\\frac{{{a}}}{{{b}}} \\times {{n}} = {{n}} \\times ?$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{a}}}{{{b}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**L'ordre ne compte pas** dans un produit : on peut échanger les deux facteurs.",
+					"$$\\frac{{{a}}}{{{b}}} \\times {{n}} = {{n}} \\times \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3/4 × 7 = 7 × 3/4",
+			"variationIndex": 0,
+			"variables": {
+				"b": "4",
+				"a": "3",
+				"n": "7"
+			},
+			"answers": ["\\frac{3}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 × 3/4 complété par 3",
+			"variationIndex": 0,
+			"variables": {
+				"b": "4",
+				"a": "3",
+				"n": "7"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

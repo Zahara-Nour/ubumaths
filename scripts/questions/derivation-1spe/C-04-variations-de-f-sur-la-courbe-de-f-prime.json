@@ -8,12 +8,9 @@
 	"subdomain": "Variations",
 	"level": 4,
 	"delay": 60,
-	"options": {
-		"shuffleChoices": true
-	},
 	"variations": [
 		{
-			"statement": "La courbe $\\mathcal{C}_{f'}$ ci-dessous représente la **dérivée** $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:p-2}} ; {{eval:q+2}}\ny: -5 ; 5\ngrille: 1 ; 1\ng(x) = ({{k}})*(x-({{p}}))*(x-({{q}}))   bleu   nom=C_{f'}\ntaille: moyenne\ndescription: Courbe de la dérivée f′, une parabole, tracée dans un repère.\n```\n\nQuelle affirmation est vraie ?",
+			"statement": "La courbe $\\mathcal{C}_{f'}$ ci-dessous représente la **dérivée** $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:p-2}} ; {{eval:q+2}}\ny: -5 ; 5\ngrille: 1 ; 1\ng(x) = ({{k}})*(x-({{p}}))*(x-({{q}}))   bleu   nom=C_{f'}\ntaille: moyenne\ndescription: Courbe de la dérivée f′, une parabole, tracée dans un repère.\n```\n\nQuelle affirmation est vraie ?\n\n```choix\n- $f$ est décroissante sur $\\left[{{p}}\\,;{{q}}\\right]$\n- $f$ est croissante sur $\\left[{{p}}\\,;{{q}}\\right]$\n- $f$ est décroissante sur $\\left]-\\infty\\,;{{m}}\\right]$\n- $f$ admet un maximum local en $x={{q}}$\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -36,31 +33,21 @@
 					"expression": "eval:p+d/2"
 				}
 			],
-			"choices": [
-				{
-					"content": "$f$ est décroissante sur $\\left[{{p}}\\,;{{q}}\\right]$"
-				},
-				{
-					"content": "$f$ est croissante sur $\\left[{{p}}\\,;{{q}}\\right]$"
-				},
-				{
-					"content": "$f$ est décroissante sur $\\left]-\\infty\\,;{{m}}\\right]$"
-				},
-				{
-					"content": "$f$ admet un maximum local en $x={{q}}$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"On lit le **signe** de $f'(x)$ (courbe au-dessus ou au-dessous de l'axe des abscisses), et non les variations de $f'$. $\\mathcal{C}_{f'}$ coupe l'axe des abscisses en $x={{p}}$ et $x={{q}}$.",
 					"```variation\nvariable: x\ndomain: -inf, {{p}}, {{q}}, +inf\n\nsign: f'(x)\n  -inf,{{p}}: +\n  {{p}}: z\n  {{p}},{{q}}: -\n  {{q}}: z\n  {{q}},+inf: +\n\nvariation: f(x)\n  {{p}}: f\\left({{p}}\\right), top\n  {{q}}: f\\left({{q}}\\right), bottom\n```",
 					"$f'(x)\\leqslant 0$ sur $\\left[{{p}}\\,;{{q}}\\right]$ : $f$ est **décroissante** sur $\\textcolor{{{color:primary.0}}}{\\left[{{p}}\\,;{{q}}\\right]}$. Le minimum de $f'$ (en $x={{m}}$) ne donne pas un changement de sens de $f$ ; en $x={{q}}$, $f$ admet un minimum local."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "La courbe $\\mathcal{C}_{f'}$ ci-dessous représente la **dérivée** $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:p-2}} ; {{eval:q+2}}\ny: -5 ; 5\ngrille: 1 ; 1\ng(x) = ({{k}})*(x-({{p}}))*(x-({{q}}))   bleu   nom=C_{f'}\ntaille: moyenne\ndescription: Courbe de la dérivée f′, une parabole, tracée dans un repère.\n```\n\nQuelle affirmation est vraie ?",
+			"statement": "La courbe $\\mathcal{C}_{f'}$ ci-dessous représente la **dérivée** $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:p-2}} ; {{eval:q+2}}\ny: -5 ; 5\ngrille: 1 ; 1\ng(x) = ({{k}})*(x-({{p}}))*(x-({{q}}))   bleu   nom=C_{f'}\ntaille: moyenne\ndescription: Courbe de la dérivée f′, une parabole, tracée dans un repère.\n```\n\nQuelle affirmation est vraie ?\n\n```choix\n- $f$ est croissante sur $\\left[{{p}}\\,;{{q}}\\right]$\n- $f$ est décroissante sur $\\left[{{p}}\\,;{{q}}\\right]$\n- $f$ est croissante sur $\\left]-\\infty\\,;{{m}}\\right]$\n- $f$ admet un minimum local en $x={{q}}$\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -83,31 +70,21 @@
 					"expression": "eval:p+d/2"
 				}
 			],
-			"choices": [
-				{
-					"content": "$f$ est croissante sur $\\left[{{p}}\\,;{{q}}\\right]$"
-				},
-				{
-					"content": "$f$ est décroissante sur $\\left[{{p}}\\,;{{q}}\\right]$"
-				},
-				{
-					"content": "$f$ est croissante sur $\\left]-\\infty\\,;{{m}}\\right]$"
-				},
-				{
-					"content": "$f$ admet un minimum local en $x={{q}}$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"On lit le **signe** de $f'(x)$ (courbe au-dessus ou au-dessous de l'axe des abscisses), et non les variations de $f'$. $\\mathcal{C}_{f'}$ coupe l'axe des abscisses en $x={{p}}$ et $x={{q}}$.",
 					"```variation\nvariable: x\ndomain: -inf, {{p}}, {{q}}, +inf\n\nsign: f'(x)\n  -inf,{{p}}: -\n  {{p}}: z\n  {{p}},{{q}}: +\n  {{q}}: z\n  {{q}},+inf: -\n\nvariation: f(x)\n  {{p}}: f\\left({{p}}\\right), bottom\n  {{q}}: f\\left({{q}}\\right), top\n```",
 					"$f'(x)\\geqslant 0$ sur $\\left[{{p}}\\,;{{q}}\\right]$ : $f$ est **croissante** sur $\\textcolor{{{color:primary.0}}}{\\left[{{p}}\\,;{{q}}\\right]}$. Le maximum de $f'$ (en $x={{m}}$) ne donne pas un changement de sens de $f$ ; en $x={{q}}$, $f$ admet un maximum local."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "La courbe $\\mathcal{C}_{f'}$ ci-dessous représente la **dérivée** $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\ng(x) = {{s}}*(x-({{r}}))   bleu   nom=C_{f'}\ntaille: moyenne\ndescription: Courbe de la dérivée f′, une droite, tracée dans un repère.\n```\n\nQuelle affirmation est vraie ?",
+			"statement": "La courbe $\\mathcal{C}_{f'}$ ci-dessous représente la **dérivée** $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\ng(x) = {{s}}*(x-({{r}}))   bleu   nom=C_{f'}\ntaille: moyenne\ndescription: Courbe de la dérivée f′, une droite, tracée dans un repère.\n```\n\nQuelle affirmation est vraie ?\n\n```choix\n- $f$ admet un minimum en $x={{r}}$\n- $f$ admet un maximum en $x={{r}}$\n- $f$ est croissante sur $\\mathbb{R}$\n- $f$ est décroissante sur $\\left[{{r}}\\,;+\\infty\\right[$\n```",
 			"variables": [
 				{
 					"name": "s",
@@ -118,31 +95,21 @@
 					"expression": "-3..3"
 				}
 			],
-			"choices": [
-				{
-					"content": "$f$ admet un minimum en $x={{r}}$"
-				},
-				{
-					"content": "$f$ admet un maximum en $x={{r}}$"
-				},
-				{
-					"content": "$f$ est croissante sur $\\mathbb{R}$"
-				},
-				{
-					"content": "$f$ est décroissante sur $\\left[{{r}}\\,;+\\infty\\right[$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"On lit le **signe** de $f'(x)$, et non les variations de $f'$ : la droite $\\mathcal{C}_{f'}$ est au-dessous de l'axe des abscisses avant $x={{r}}$, au-dessus après.",
 					"```variation\nvariable: x\ndomain: -inf, {{r}}, +inf\n\nsign: f'(x)\n  -inf,{{r}}: -\n  {{r}}: z\n  {{r}},+inf: +\n\nvariation: f(x)\n  {{r}}: f\\left({{r}}\\right), bottom\n```",
 					"$f$ est décroissante puis croissante : elle admet un **minimum** en $x={{r}}$. « $f'$ est croissante » ne dit pas que $f$ l'est."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "La courbe $\\mathcal{C}_{f'}$ ci-dessous représente la **dérivée** $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:p-2}} ; {{eval:q+2}}\ny: -5 ; 5\ngrille: 1 ; 1\ng(x) = ({{k}})*(x-({{p}}))*(x-({{q}}))   bleu   nom=C_{f'}\ntaille: moyenne\ndescription: Courbe de la dérivée f′, une parabole, tracée dans un repère.\n```\n\nEn quelle abscisse $f$ admet-elle un maximum local ?",
+			"statement": "La courbe $\\mathcal{C}_{f'}$ ci-dessous représente la **dérivée** $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:p-2}} ; {{eval:q+2}}\ny: -5 ; 5\ngrille: 1 ; 1\ng(x) = ({{k}})*(x-({{p}}))*(x-({{q}}))   bleu   nom=C_{f'}\ntaille: moyenne\ndescription: Courbe de la dérivée f′, une parabole, tracée dans un repère.\n```\n\nEn quelle abscisse $f$ admet-elle un maximum local ?\n\n```choix\n- $x={{p}}$\n- $x={{q}}$\n- $x={{m}}$\n- $f$ n'admet pas de maximum local\n```",
 			"variables": [
 				{
 					"name": "k",
@@ -165,28 +132,18 @@
 					"expression": "eval:p+d/2"
 				}
 			],
-			"choices": [
-				{
-					"content": "$x={{p}}$"
-				},
-				{
-					"content": "$x={{q}}$"
-				},
-				{
-					"content": "$x={{m}}$"
-				},
-				{
-					"content": "$f$ n'admet pas de maximum local"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"On lit le **signe** de $f'(x)$ (courbe au-dessus ou au-dessous de l'axe des abscisses), et non les variations de $f'$. $\\mathcal{C}_{f'}$ coupe l'axe des abscisses en $x={{p}}$ et $x={{q}}$.",
 					"```variation\nvariable: x\ndomain: -inf, {{p}}, {{q}}, +inf\n\nsign: f'(x)\n  -inf,{{p}}: +\n  {{p}}: z\n  {{p}},{{q}}: -\n  {{q}}: z\n  {{q}},+inf: +\n\nvariation: f(x)\n  {{p}}: f\\left({{p}}\\right), top\n  {{q}}: f\\left({{q}}\\right), bottom\n```",
 					"$f'$ passe de $+$ à $-$ en $x={{p}}$ : $f$ admet un maximum local en $x=\\textcolor{{{color:primary.0}}}{ {{p}} }$ (en $x={{q}}$, c'est un minimum ; $x={{m}}$ est l'abscisse du sommet de $\\mathcal{C}_{f'}$, pas un extremum de $f$)."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -200,10 +157,10 @@
 				"q": "2",
 				"m": "0"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "croissante sur [p;q] (courbe lue comme celle de f)",
@@ -215,10 +172,10 @@
 				"q": "2",
 				"m": "0"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "décroissante sur ]−∞;m] (variations de f′)",
@@ -230,10 +187,10 @@
 				"q": "2",
 				"m": "0"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "maximum local en q",
@@ -245,10 +202,10 @@
 				"q": "2",
 				"m": "0"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["3"]
 		},
 		{
 			"description": "croissante sur [p;q]",
@@ -260,10 +217,10 @@
 				"q": "2",
 				"m": "0"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "décroissante sur [p;q]",
@@ -275,10 +232,10 @@
 				"q": "2",
 				"m": "0"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "croissante sur ]−∞;m] (variations de f′)",
@@ -290,10 +247,10 @@
 				"q": "2",
 				"m": "0"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "minimum local en q",
@@ -305,10 +262,10 @@
 				"q": "2",
 				"m": "0"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["3"]
 		},
 		{
 			"description": "minimum en r",
@@ -317,10 +274,10 @@
 				"s": "2",
 				"r": "1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "maximum en r",
@@ -329,10 +286,10 @@
 				"s": "2",
 				"r": "1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "croissante sur ℝ (f′ croissante)",
@@ -341,10 +298,10 @@
 				"s": "2",
 				"r": "1"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "décroissante sur [r;+∞[",
@@ -353,10 +310,10 @@
 				"s": "2",
 				"r": "1"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["3"]
 		},
 		{
 			"description": "max en p",
@@ -368,10 +325,10 @@
 				"q": "2",
 				"m": "0"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "x = q (minimum)",
@@ -383,10 +340,10 @@
 				"q": "2",
 				"m": "0"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "x = m (sommet de f′)",
@@ -398,10 +355,10 @@
 				"q": "2",
 				"m": "0"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "pas de maximum",
@@ -413,10 +370,10 @@
 				"q": "2",
 				"m": "0"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["3"]
 		}
 	]
 }

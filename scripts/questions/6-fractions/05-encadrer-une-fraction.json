@@ -1,0 +1,223 @@
+{
+	"title": "Encadrer une fraction par deux entiers",
+	"description": "Encadrer une fraction par deux entiers consécutifs à l'aide du nombre mixte (7/3 = 2 + 1/3, donc 2 < 7/3 < 3) ; fractions plus grandes (47/6) ; fraction < 1",
+	"grades": ["6"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Encadrer",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Encadre cette fraction par deux nombres entiers consécutifs.\n\n$$? < \\frac{{{a}}}{{{b}}} < ?$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "q",
+					"expression": "1..4"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{eval:b-1}}"
+				},
+				{
+					"name": "a",
+					"expression": "eval:q*b+r"
+				}
+			],
+			"conditions": ["gcd(r,b)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{eval:q+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Nombre mixte.** On cherche combien de fois ${{b}}$ va dans ${{a}}$ : ${{a}} = {{q}} \\times {{b}} + {{r}}$.",
+					"$$\\frac{{{a}}}{{{b}}} = \\frac{{{eval:q*b}}}{{{b}}} + \\frac{{{r}}}{{{b}}} = {{q}} + \\frac{{{r}}}{{{b}}}$$",
+					"$\\frac{{{r}}}{{{b}}}$ est entre $0$ et $1$, donc $\\textcolor{{{color:primary.0}}}{{{q}}} < \\frac{{{a}}}{{{b}}} < \\textcolor{{{color:primary.0}}}{{{eval:q+1}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Encadre cette fraction par deux nombres entiers consécutifs.\n\n$$? < \\frac{{{a}}}{{{b}}} < ?$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "3..9"
+				},
+				{
+					"name": "q",
+					"expression": "5..10"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{eval:b-1}}"
+				},
+				{
+					"name": "a",
+					"expression": "eval:q*b+r"
+				}
+			],
+			"conditions": ["gcd(r,b)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{eval:q+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Nombre mixte.** On cherche combien de fois ${{b}}$ va dans ${{a}}$ : ${{a}} = {{q}} \\times {{b}} + {{r}}$.",
+					"$$\\frac{{{a}}}{{{b}}} = \\frac{{{eval:q*b}}}{{{b}}} + \\frac{{{r}}}{{{b}}} = {{q}} + \\frac{{{r}}}{{{b}}}$$",
+					"$\\frac{{{r}}}{{{b}}}$ est entre $0$ et $1$, donc $\\textcolor{{{color:primary.0}}}{{{q}}} < \\frac{{{a}}}{{{b}}} < \\textcolor{{{color:primary.0}}}{{{eval:q+1}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Encadre cette fraction par deux nombres entiers consécutifs.\n\n$$? < \\frac{{{a}}}{{{b}}} < ?$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:b-1}}"
+				},
+				{
+					"name": "q",
+					"expression": "0"
+				},
+				{
+					"name": "r",
+					"expression": "eval:a"
+				}
+			],
+			"conditions": ["gcd(a,b)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{a}} < {{b}}$ : la fraction $\\frac{{{a}}}{{{b}}}$ est plus petite que $1$, et plus grande que $0$.",
+					"$$\\textcolor{{{color:primary.0}}}{0} < \\frac{{{a}}}{{{b}}} < \\textcolor{{{color:primary.0}}}{1}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2 < 7/3 < 3",
+			"variationIndex": 0,
+			"variables": {
+				"b": "3",
+				"q": "2",
+				"r": "1",
+				"a": "7"
+			},
+			"answers": ["2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 et 7 (numérateur et dénominateur)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "3",
+				"q": "2",
+				"r": "1",
+				"a": "7"
+			},
+			"answers": ["3", "7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1 et 3",
+			"variationIndex": 0,
+			"variables": {
+				"b": "3",
+				"q": "2",
+				"r": "1",
+				"a": "7"
+			},
+			"answers": ["1", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 < 47/6 < 8",
+			"variationIndex": 1,
+			"variables": {
+				"b": "6",
+				"q": "7",
+				"r": "5",
+				"a": "47"
+			},
+			"answers": ["7", "8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6 et 8",
+			"variationIndex": 1,
+			"variables": {
+				"b": "6",
+				"q": "7",
+				"r": "5",
+				"a": "47"
+			},
+			"answers": ["6", "8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0 < 2/5 < 1",
+			"variationIndex": 2,
+			"variables": {
+				"b": "5",
+				"a": "2",
+				"q": "0",
+				"r": "2"
+			},
+			"answers": ["0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 et 5",
+			"variationIndex": 2,
+			"variables": {
+				"b": "5",
+				"a": "2",
+				"q": "0",
+				"r": "2"
+			},
+			"answers": ["2", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

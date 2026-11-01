@@ -21,7 +21,6 @@
 		SharedVariationDefaults,
 		QuestionVariable
 	} from '$lib/questions/types';
-	import { getQuestionType } from '$lib/questions/types';
 	import type { TestSpecResult } from '$lib/questions/test-spec-runner';
 	import { getRootVariableNames } from '$lib/questions/generator/test-instance-builder';
 	import { readChoiceCase, statementCaseKinds } from '$lib/questions/choice-case-editor';
@@ -109,14 +108,6 @@
 		return allVars.filter((v) => rootNames.has(v.name));
 	});
 
-	// Determine question type from variation
-	let questionType = $derived(
-		getQuestionType({
-			choices: variations[editSpec.variationIndex ?? 0]?.choices,
-			shared
-		})
-	);
-
 	// Count blanks from variation
 	let blankCount = $derived.by(() => {
 		const variation = variations[editSpec.variationIndex ?? 0];
@@ -173,12 +164,6 @@
 	function saveSpec() {
 		if (!editSpec.description.trim()) return;
 		const spec: TestSpec = JSON.parse(JSON.stringify(editSpec));
-		// Clean up: remove empty answers/selectedChoices
-		if (questionType === 'fill_in_blanks') {
-			delete spec.selectedChoices;
-		} else {
-			delete spec.answers;
-		}
 		if (editingIndex !== null) {
 			testSpecs[editingIndex] = spec;
 		} else {
@@ -402,7 +387,7 @@
 				{/if}
 
 				<!-- Answers (fill-in-blanks) -->
-				{#if questionType === 'fill_in_blanks' && blankCount > 0}
+				{#if blankCount > 0}
 					<div>
 						<Label>Reponses (LaTeX)</Label>
 						<div class="space-y-1">
@@ -449,25 +434,6 @@
 								{/if}
 							{/each}
 						</div>
-					</div>
-				{/if}
-
-				<!-- Selected choices (QCM) -->
-				{#if questionType === 'multiple_choice'}
-					<div>
-						<Label>Choix selectionnes (indices, ex: 0, 1)</Label>
-						<Input
-							value={editSpec.selectedChoices?.join(', ') ?? ''}
-							oninput={(e: Event) => {
-								const val = (e.target as HTMLInputElement).value;
-								editSpec.selectedChoices = val
-									.split(',')
-									.map((s) => parseInt(s.trim(), 10))
-									.filter((n) => !isNaN(n));
-							}}
-							placeholder="0"
-							class="h-8 font-mono"
-						/>
 					</div>
 				{/if}
 

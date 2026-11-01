@@ -2482,6 +2482,7 @@ export type Database = {
           see_also: Json | null
           sense: string | null
           shared_with: string[]
+          slug: string
           synonyms: string[]
           tags: string[]
           term: string
@@ -2504,6 +2505,7 @@ export type Database = {
           see_also?: Json | null
           sense?: string | null
           shared_with?: string[]
+          slug: string
           synonyms?: string[]
           tags?: string[]
           term: string
@@ -2526,6 +2528,7 @@ export type Database = {
           see_also?: Json | null
           sense?: string | null
           shared_with?: string[]
+          slug?: string
           synonyms?: string[]
           tags?: string[]
           term?: string
@@ -7024,68 +7027,6 @@ export type Database = {
           },
         ]
       }
-      migration_edits: {
-        Row: {
-          created_at: string | null
-          edit_notes: string | null
-          edited_json: Json
-          editor_id: string
-          id: string
-          migration_tracking_id: string
-          old_question_hash: string
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          edit_notes?: string | null
-          edited_json: Json
-          editor_id: string
-          id?: string
-          migration_tracking_id: string
-          old_question_hash: string
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          edit_notes?: string | null
-          edited_json?: Json
-          editor_id?: string
-          id?: string
-          migration_tracking_id?: string
-          old_question_hash?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "migration_edits_editor_id_fkey"
-            columns: ["editor_id"]
-            isOneToOne: false
-            referencedRelation: "minesweeper_student_achievement_progress"
-            referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "migration_edits_editor_id_fkey"
-            columns: ["editor_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "migration_edits_editor_id_fkey"
-            columns: ["editor_id"]
-            isOneToOne: false
-            referencedRelation: "riddle_progress"
-            referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "migration_edits_migration_tracking_id_fkey"
-            columns: ["migration_tracking_id"]
-            isOneToOne: false
-            referencedRelation: "migration_tracking"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       migration_images: {
         Row: {
           created_at: string | null
@@ -7118,113 +7059,6 @@ export type Database = {
           old_path?: string
         }
         Relationships: []
-      }
-      migration_tracking: {
-        Row: {
-          conversion_errors: Json | null
-          conversion_notes: string | null
-          converted_at: string | null
-          created_at: string | null
-          domain: string | null
-          id: string
-          imported_at: string | null
-          level: number | null
-          migration_status: string
-          new_template_id: string | null
-          old_description: string
-          old_question_hash: string
-          old_question_index: number
-          old_question_json: Json | null
-          phase: number | null
-          review_status: string | null
-          reviewed_at: string | null
-          reviewed_by: string | null
-          subdomain: string | null
-          theme: string | null
-          transformed_json: Json | null
-          updated_at: string | null
-          validated_at: string | null
-        }
-        Insert: {
-          conversion_errors?: Json | null
-          conversion_notes?: string | null
-          converted_at?: string | null
-          created_at?: string | null
-          domain?: string | null
-          id?: string
-          imported_at?: string | null
-          level?: number | null
-          migration_status: string
-          new_template_id?: string | null
-          old_description: string
-          old_question_hash: string
-          old_question_index: number
-          old_question_json?: Json | null
-          phase?: number | null
-          review_status?: string | null
-          reviewed_at?: string | null
-          reviewed_by?: string | null
-          subdomain?: string | null
-          theme?: string | null
-          transformed_json?: Json | null
-          updated_at?: string | null
-          validated_at?: string | null
-        }
-        Update: {
-          conversion_errors?: Json | null
-          conversion_notes?: string | null
-          converted_at?: string | null
-          created_at?: string | null
-          domain?: string | null
-          id?: string
-          imported_at?: string | null
-          level?: number | null
-          migration_status?: string
-          new_template_id?: string | null
-          old_description?: string
-          old_question_hash?: string
-          old_question_index?: number
-          old_question_json?: Json | null
-          phase?: number | null
-          review_status?: string | null
-          reviewed_at?: string | null
-          reviewed_by?: string | null
-          subdomain?: string | null
-          theme?: string | null
-          transformed_json?: Json | null
-          updated_at?: string | null
-          validated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "migration_tracking_new_template_id_fkey"
-            columns: ["new_template_id"]
-            isOneToOne: false
-            referencedRelation: "question_templates"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "migration_tracking_reviewed_by_fkey"
-            columns: ["reviewed_by"]
-            isOneToOne: false
-            referencedRelation: "minesweeper_student_achievement_progress"
-            referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "migration_tracking_reviewed_by_fkey"
-            columns: ["reviewed_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "migration_tracking_reviewed_by_fkey"
-            columns: ["reviewed_by"]
-            isOneToOne: false
-            referencedRelation: "riddle_progress"
-            referencedColumns: ["student_id"]
-          },
-        ]
       }
       minesweeper_achievements: {
         Row: {
@@ -9222,6 +9056,38 @@ export type Database = {
           },
         ]
       }
+      question_template_reviews: {
+        Row: {
+          comment: string
+          reviewed_at: string
+          reviewed_by: string | null
+          template_id: string
+          verdict: string
+        }
+        Insert: {
+          comment?: string
+          reviewed_at?: string
+          reviewed_by?: string | null
+          template_id: string
+          verdict: string
+        }
+        Update: {
+          comment?: string
+          reviewed_at?: string
+          reviewed_by?: string | null
+          template_id?: string
+          verdict?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_template_reviews_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: true
+            referencedRelation: "question_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       question_templates: {
         Row: {
           classification_node_id: string | null
@@ -9235,7 +9101,6 @@ export type Database = {
           grades: string[]
           id: string
           level: number
-          multiple_answers: boolean | null
           options: Json | null
           precision: Json | null
           shared: Json | null
@@ -9260,7 +9125,6 @@ export type Database = {
           grades: string[]
           id?: string
           level: number
-          multiple_answers?: boolean | null
           options?: Json | null
           precision?: Json | null
           shared?: Json | null
@@ -9285,7 +9149,6 @@ export type Database = {
           grades?: string[]
           id?: string
           level?: number
-          multiple_answers?: boolean | null
           options?: Json | null
           precision?: Json | null
           shared?: Json | null
@@ -14076,18 +13939,6 @@ export type Database = {
         }
         Relationships: []
       }
-      migration_review_tree: {
-        Row: {
-          approved: number | null
-          domain: string | null
-          pending: number | null
-          rejected: number | null
-          subdomain: string | null
-          theme: string | null
-          total: number | null
-        }
-        Relationships: []
-      }
       minesweeper_achievements_compat: {
         Row: {
           created_at: string | null
@@ -15042,6 +14893,7 @@ export type Database = {
       delete_all_resolved_errors: { Args: never; Returns: number }
       delete_attachment: { Args: { p_attachment_id: string }; Returns: string }
       delete_user_account: { Args: { p_user_id: string }; Returns: Json }
+      dictionary_slugify: { Args: { source: string }; Returns: string }
       discard_vip_cards: {
         Args: {
           p_instance_ids: string[]

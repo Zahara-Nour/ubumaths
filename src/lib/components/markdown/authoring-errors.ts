@@ -33,3 +33,22 @@ export function readAuthoringErrors(): FlagGetter {
 		? getContext<FlagGetter>(AUTHORING_ERRORS_KEY)
 		: () => false;
 }
+
+const AUTHORING_ADVICE_KEY = Symbol('markdown-authoring-advice');
+
+/**
+ * Conseils d'auteur (ex. graduations trop serrées pour le doigt) : ils suivent
+ * les erreurs d'auteur, sauf dans un sous-arbre qui imite l'écran de l'élève
+ * (onglets de l'aperçu prof), où un conseil n'est que du bruit. Les erreurs,
+ * elles, y restent (Q48).
+ */
+export function provideAuthoringAdvice(get: () => boolean): void {
+	setContext<FlagGetter>(AUTHORING_ADVICE_KEY, get);
+}
+
+/** Les conseils d'auteur sont-ils permis ici ? Repli : oui (à montrer si les erreurs le sont). */
+export function readAuthoringAdvice(): FlagGetter {
+	return hasContext(AUTHORING_ADVICE_KEY)
+		? getContext<FlagGetter>(AUTHORING_ADVICE_KEY)
+		: () => true;
+}

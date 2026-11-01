@@ -205,11 +205,26 @@ export type { FigureNode, FigureHeader, FigureIssue, FigureSize, FigureWindow } 
 
 export type { QrNode, QrIssue } from './qr';
 
+// PROGRAMME SCRATCH (bloc ```scratch)
+export type { ScratchNode, ScratchIssue } from './scratch';
+
 // ============================================================================
 // HORLOGE (bloc ```horloge)
 // ============================================================================
 
 export type { HorlogeNode, HorlogeIssue, HorlogeSpec, HorlogeTime } from './horloge';
+
+// ============================================================================
+// PARTAGE (bloc ```partage)
+// ============================================================================
+
+export type { PartageNode, PartageSpec, PartageShape } from './partage';
+
+// ============================================================================
+// ESPACE (blocs ```cubes, puis ```solide et ```patron)
+// ============================================================================
+
+export type { EspaceNode, EspaceSpec, EspaceKind, CubesView } from './espace';
 
 // ============================================================================
 // OPÉRATION POSÉE (bloc ```operation)

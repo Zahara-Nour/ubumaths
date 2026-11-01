@@ -1,0 +1,173 @@
+{
+	"title": "Résoudre une équation produit nul",
+	"description": "Ensemble des solutions de (x − p)(x − q) = 0 (entiers) et de (ax + b)(cx + d) = 0 (fractions)",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Equations",
+	"subdomain": "Ensemble des solutions",
+	"level": 5,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $(x{{eval:-(p);+}})(x{{eval:-(q);+}})=0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..9;±!p"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{p}} ; {{q}} \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Un produit est nul si et seulement si l'un au moins de ses facteurs est nul.**",
+					"$$(x{{eval:-(p);+}})(x{{eval:-(q);+}})=0\\iff x{{eval:-(p);+}}=0 \\text{ ou } x{{eval:-(q);+}}=0\\iff x={{p}} \\text{ ou } x={{q}}$$",
+					"L'équation a deux solutions. $S=\\textcolor{{{color:primary.0}}}{\\{ {{p}} ; {{q}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $({{eval:(a)*x+(b)}})({{eval:(c)*x+(d)}})=0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "2..5"
+				},
+				{
+					"name": "d",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["(b)*(c) != (a)*(d)", "mod(b,a) != 0 || mod(d,c) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:-(b)/(a)}} ; {{eval:-(d)/(c)}} \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Un produit est nul si et seulement si l'un au moins de ses facteurs est nul.**",
+					"$$\\begin{align} ({{eval:(a)*x+(b)}})({{eval:(c)*x+(d)}})=0 & \\iff {{eval:(a)*x+(b)}}=0 \\text{ ou } {{eval:(c)*x+(d)}}=0 \\\\ & \\iff x={{eval:-(b)/(a)}} \\text{ ou } x={{eval:-(d)/(c)}} \\end{align}$$",
+					"L'équation a deux solutions. $S=\\textcolor{{{color:primary.0}}}{\\{ {{eval:-(b)/(a)}} ; {{eval:-(d)/(c)}} \\}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(x − 3)(x + 5) = 0 : S = {3 ; −5}",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "-5"
+			},
+			"answers": ["\\{3;-5\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Ordre inverse {−5 ; 3}",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "-5"
+			},
+			"answers": ["\\{-5;3\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signes inversés {−3 ; 5}",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "-5"
+			},
+			"answers": ["\\{-3;5\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une seule solution {3}",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "-5"
+			},
+			"answers": ["\\{3\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(2x − 3)(3x + 1) = 0 : S = {3/2 ; −1/3}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "3",
+				"d": "1"
+			},
+			"answers": ["\\{\\frac{3}{2};-\\frac{1}{3}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : b/a au lieu de −b/a",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "3",
+				"d": "1"
+			},
+			"answers": ["\\{-\\frac{3}{2};\\frac{1}{3}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signes changés seulement {3 ; −1}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "3",
+				"d": "1"
+			},
+			"answers": ["\\{3;-1\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

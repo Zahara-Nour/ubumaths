@@ -5,24 +5,9 @@
 	"editNotes": "Variation 3 cassée : la formule TinyMath « -{abs(&1)/(&1)}*$e[1;5] » (c de signe opposé à a) était devenue « {{eval:-{abs(a)/(a)}*1}}..5 » : c valait 0 (énoncé « 5(x-4)^{20} ») ou avait le signe de a (réponse « le signe dépend de x » fausse) → k ∈ 1..5 et c = -a/|a|·k. Corrections réécrites : « {{expression}} » affiché brut hors formule, justification complète (carré positif, signe de a, ajout de c).",
 	"template": {
 		"title": "Déterminer le signe d'une expression du second degré",
-		"shared": {
-			"statement": "Quel est le signe de cette expression ?\n\n$${{expression1}}$$",
-			"choices": [
-				{
-					"content": "positif"
-				},
-				{
-					"content": "négatif"
-				},
-				{
-					"content": "son signe dépend de la valeur de $x$"
-				}
-			]
-		},
 		"variations": [
 			{
-				"statement": "Quel est le signe de cette expression ?\n\n$${{expression1}}$$",
-				"correctChoiceIndex": ["0"],
+				"statement": "Quel est le signe de cette expression ?\n\n$${{expr1}}$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n- son signe dépend de la valeur de $x$\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -37,7 +22,7 @@
 						"expression": "1..5"
 					},
 					{
-						"name": "expression1",
+						"name": "expr1",
 						"expression": "{{a}}(x{{eval:b;+}})^2{{eval:c;+}}"
 					}
 				],
@@ -46,11 +31,15 @@
 						"Un carré est toujours positif et ${{a}} > 0$, donc ${{a}}(x{{eval:b;+}})^2 \\ge 0$.",
 						"On ajoute ${{c}} > 0$ : ${{a}}(x{{eval:b;+}})^2{{eval:c;+}} \\ge {{c}} > 0$. L'expression est **positive** pour tout $x$."
 					]
-				}
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Quel est le signe de cette expression ?\n\n$${{expression1}}$$",
-				"correctChoiceIndex": ["1"],
+				"statement": "Quel est le signe de cette expression ?\n\n$${{expr1}}$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n- son signe dépend de la valeur de $x$\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -65,7 +54,7 @@
 						"expression": "-5..-1"
 					},
 					{
-						"name": "expression1",
+						"name": "expr1",
 						"expression": "{{a}}(x{{eval:b;+}})^2{{eval:c;+}}"
 					}
 				],
@@ -74,11 +63,15 @@
 						"Un carré est toujours positif et ${{a}} < 0$, donc ${{a}}(x{{eval:b;+}})^2 \\le 0$.",
 						"On ajoute ${{c}} < 0$ : ${{a}}(x{{eval:b;+}})^2{{eval:c;+}} \\le {{c}} < 0$. L'expression est **négative** pour tout $x$."
 					]
-				}
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Quel est le signe de cette expression ?\n\n$${{expression1}}$$",
-				"correctChoiceIndex": ["2"],
+				"statement": "Quel est le signe de cette expression ?\n\n$${{expr1}}$$\n\n```choix\nmelanger: non\n- positif\n- négatif\n- son signe dépend de la valeur de $x$\n```",
 				"variables": [
 					{
 						"name": "a",
@@ -97,7 +90,7 @@
 						"expression": "{{eval:-(a)/abs(a)*k}}"
 					},
 					{
-						"name": "expression1",
+						"name": "expr1",
 						"expression": "{{a}}(x{{eval:b;+}})^2{{eval:c;+}}"
 					}
 				],
@@ -106,13 +99,17 @@
 						"Le terme ${{a}}(x{{eval:b;+}})^2$ est du signe de ${{a}}$ et s'annule pour $x = {{eval:-(b)}}$, alors que ${{c}}$ est de signe contraire.",
 						"L'expression change donc de signe : son signe dépend de la valeur de $x$."
 					]
-				}
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				]
 			}
 		],
-		"options": {
-			"shuffleChoices": false
-		},
-		"grades": ["1_SPE"],
+		"grades": [
+			"1_SPE"
+		],
 		"theme": "Fonctions",
 		"domain": "Polynôme du second degré",
 		"subdomain": "Apprivoiser",
@@ -128,10 +125,12 @@
 					"b": "5",
 					"c": "5"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "a>0, c>0 : négatif refusé",
@@ -141,10 +140,12 @@
 					"b": "5",
 					"c": "5"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "a<0, c<0 : négatif",
@@ -154,10 +155,12 @@
 					"b": "5",
 					"c": "-1"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "a<0, c<0 : dépend de x refusé",
@@ -167,10 +170,12 @@
 					"b": "5",
 					"c": "-1"
 				},
-				"selectedChoices": [2],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"2"
+				]
 			},
 			{
 				"description": "a>0, c<0 : dépend de x",
@@ -181,10 +186,12 @@
 					"k": "2",
 					"c": "-2"
 				},
-				"selectedChoices": [2],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"2"
+				]
 			},
 			{
 				"description": "a<0, c>0 : positif refusé",
@@ -195,10 +202,12 @@
 					"k": "3",
 					"c": "3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			}
 		]
 	}

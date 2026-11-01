@@ -4,8 +4,7 @@
  *
  * Le parseur maison lit `pi` comme p × i (les lettres grecques s'écrivent `\pi`,
  * comme `\alpha`). Les calculs d'un modèle — `{{eval:…}}`, `conditions`, expressions de
- * variables `eval:…`, condition `{{if:…}}` du bon choix d'un QCM — lisaient pourtant `pi`
- * comme π
+ * variables `eval:…` — lisaient pourtant `pi` comme π
  * (tolérance `BARE_PI`, du 2026-10-02 au chantier lecture-grandeurs). Ils sont
  * désormais refusés ; ce module les repère, les réécrit `\pi` sans changer la valeur
  * calculée, et rédige le refus.
@@ -36,8 +35,6 @@ export interface BarePiOccurrence {
 export const BARE_PI = /(?<![\p{L}\\])pi(?!\p{L})/gu;
 
 const EVAL_OPEN = '{{eval:';
-/** Bon choix d'un QCM par condition, la forme que lit `resolveConditionalChoice` */
-const CONDITIONAL_CHOICE = /^\{\{if:(.+)\|([^|{}]*)\|([^|{}]*)\}\}$/;
 
 // ============================================================================
 // FUNCTIONS
@@ -74,8 +71,7 @@ function tokenEnd(text: string, start: number): number {
 /**
  * Plages de calcul d'un texte d'auteur : contenu des `{{eval:…}}`. La condition d'un
  * `{{if:…}}` d'énoncé ou de corrigé n'en est pas une : `pi` n'y a jamais été π (nom
- * inconnu, la condition est laissée au navigateur ou refusée en mode strict). Seul le
- * bon choix d'un QCM la calcule (`conditionalChoiceRange`).
+ * inconnu, la condition est laissée au navigateur ou refusée en mode strict).
  */
 function calculationRanges(text: string): [number, number][] {
 	const ranges: [number, number][] = [];
@@ -112,15 +108,6 @@ function isWholeCalculation(path: string[], value: string): boolean {
 	);
 }
 
-/** Condition d'un bon choix de QCM `{{if:condition|A|B}}` (`correctChoiceIndex`) */
-function conditionalChoiceRange(path: string[], value: string): [number, number] | undefined {
-	if (!path.includes('correctChoiceIndex')) return undefined;
-	const match = CONDITIONAL_CHOICE.exec(value.trim());
-	if (!match) return undefined;
-	const from = value.indexOf('{{if:') + '{{if:'.length;
-	return [from, from + match[1].length];
-}
-
 function displayPath(path: string[]): string {
 	return path.reduce(
 		(acc, key) => (/^\d+$/.test(key) ? `${acc}[${key}]` : acc ? `${acc}.${key}` : key),
@@ -131,10 +118,9 @@ function displayPath(path: string[]): string {
 /** Parcourt une valeur JSON et réécrit ses calculs ; `occurrences` reçoit ce qui change */
 function walk(value: unknown, path: string[], occurrences: BarePiOccurrence[]): unknown {
 	if (typeof value === 'string') {
-		const choice = conditionalChoiceRange(path, value);
 		const ranges: [number, number][] = isWholeCalculation(path, value)
 			? [[0, value.length]]
-			: [...calculationRanges(value), ...(choice ? [choice] : [])];
+			: calculationRanges(value);
 		const { text, count } = rewriteRanges(value, ranges);
 		if (count > 0) occurrences.push({ path: displayPath(path), calculation: value, count });
 		return text;

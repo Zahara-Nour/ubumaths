@@ -1,0 +1,314 @@
+{
+	"title": "Développer avec un facteur décimal",
+	"description": "Développer et réduire k(x + q) ou k(x − q) avec un facteur ou un terme décimal : 0,5(x + 4) = 0,5x + 2 ; (x + 2,5) × 4 = 4x + 10",
+	"grades": ["5"],
+	"theme": "Calcul littéral",
+	"domain": "Transformation",
+	"subdomain": "Développement",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Développe et réduis.\n\n$${{k}}(x + {{q}}) = ?$$",
+			"variables": [
+				{
+					"name": "K",
+					"expression": "1..25"
+				},
+				{
+					"name": "k",
+					"expression": "eval:K/10;d"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["K!=10", "K!=20"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}x + {{eval:K*q/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Développer.** On multiplie le facteur par **chaque terme** de la parenthèse : $k(a + b) = k \\times a + k \\times b$ et $k(a - b) = k \\times a - k \\times b$.",
+					"$${{k}}(x + {{q}}) = {{k}} \\times x + {{k}} \\times {{q}} = \\textcolor{{{color:primary.0}}}{{{k}}x + {{eval:K*q/10;d}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Développe et réduis.\n\n$${{k}}(x - {{q}}) = ?$$",
+			"variables": [
+				{
+					"name": "K",
+					"expression": "1..25"
+				},
+				{
+					"name": "k",
+					"expression": "eval:K/10;d"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["K!=10", "K!=20"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}x - {{eval:K*q/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Développer.** On multiplie le facteur par **chaque terme** de la parenthèse : $k(a + b) = k \\times a + k \\times b$ et $k(a - b) = k \\times a - k \\times b$.",
+					"$${{k}}(x - {{q}}) = {{k}} \\times x - {{k}} \\times {{q}} = \\textcolor{{{color:primary.0}}}{{{k}}x - {{eval:K*q/10;d}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Développe et réduis.\n\n$$(x + {{r}}) \\times {{p}} = ?$$",
+			"variables": [
+				{
+					"name": "Q",
+					"expression": "1..25"
+				},
+				{
+					"name": "r",
+					"expression": "eval:Q/10;d"
+				},
+				{
+					"name": "p",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["Q!=10", "Q!=20"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}x + {{eval:p*Q/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Développer.** On multiplie le facteur par **chaque terme** de la parenthèse : $k(a + b) = k \\times a + k \\times b$ et $k(a - b) = k \\times a - k \\times b$.",
+					"$$(x + {{r}}) \\times {{p}} = x \\times {{p}} + {{r}} \\times {{p}} = \\textcolor{{{color:primary.0}}}{{{p}}x + {{eval:p*Q/10;d}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Développe et réduis.\n\n$${{p}}(x - {{r}}) = ?$$",
+			"variables": [
+				{
+					"name": "Q",
+					"expression": "1..25"
+				},
+				{
+					"name": "r",
+					"expression": "eval:Q/10;d"
+				},
+				{
+					"name": "p",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["Q!=10", "Q!=20"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}x - {{eval:p*Q/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Développer.** On multiplie le facteur par **chaque terme** de la parenthèse : $k(a + b) = k \\times a + k \\times b$ et $k(a - b) = k \\times a - k \\times b$.",
+					"$${{p}}(x - {{r}}) = {{p}} \\times x - {{p}} \\times {{r}} = \\textcolor{{{color:primary.0}}}{{{p}}x - {{eval:p*Q/10;d}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "0,5(x + 4) = 0,5x + 2",
+			"variationIndex": 0,
+			"variables": {
+				"K": "5",
+				"k": "0.5",
+				"q": "4"
+			},
+			"answers": ["0{,}5x+2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "0,5(x + 4) = 0,5x + 2 (virgule nue)",
+			"variationIndex": 0,
+			"variables": {
+				"K": "5",
+				"k": "0.5",
+				"q": "4"
+			},
+			"answers": ["0,5x+2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "0,5(x + 4) = 2 + 0,5x",
+			"variationIndex": 0,
+			"variables": {
+				"K": "5",
+				"k": "0.5",
+				"q": "4"
+			},
+			"answers": ["2+0{,}5x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,5x + 4 (second terme oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"K": "5",
+				"k": "0.5",
+				"q": "4"
+			},
+			"answers": ["0{,}5x+4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0,5x + 0,2 (0,5 × 4 mal calculé)",
+			"variationIndex": 0,
+			"variables": {
+				"K": "5",
+				"k": "0.5",
+				"q": "4"
+			},
+			"answers": ["0{,}5x+0{,}2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Non réduit : 0,5x + 0,5 × 4",
+			"variationIndex": 0,
+			"variables": {
+				"K": "5",
+				"k": "0.5",
+				"q": "4"
+			},
+			"answers": ["0{,}5x+0{,}5\\times4"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "1,2(x − 3) = 1,2x − 3,6",
+			"variationIndex": 1,
+			"variables": {
+				"K": "12",
+				"k": "1.2",
+				"q": "3"
+			},
+			"answers": ["1{,}2x-3{,}6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1,2x − 3",
+			"variationIndex": 1,
+			"variables": {
+				"K": "12",
+				"k": "1.2",
+				"q": "3"
+			},
+			"answers": ["1{,}2x-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1,2x + 3,6 (signe)",
+			"variationIndex": 1,
+			"variables": {
+				"K": "12",
+				"k": "1.2",
+				"q": "3"
+			},
+			"answers": ["1{,}2x+3{,}6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(x + 2,5) × 4 = 4x + 10",
+			"variationIndex": 2,
+			"variables": {
+				"Q": "25",
+				"r": "2.5",
+				"p": "4"
+			},
+			"answers": ["4x+10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4x + 2,5",
+			"variationIndex": 2,
+			"variables": {
+				"Q": "25",
+				"r": "2.5",
+				"p": "4"
+			},
+			"answers": ["4x+2{,}5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x + 10",
+			"variationIndex": 2,
+			"variables": {
+				"Q": "25",
+				"r": "2.5",
+				"p": "4"
+			},
+			"answers": ["x+10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3(x − 1,5) = 3x − 4,5",
+			"variationIndex": 3,
+			"variables": {
+				"Q": "15",
+				"r": "1.5",
+				"p": "3"
+			},
+			"answers": ["3x-4{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3x − 1,5",
+			"variationIndex": 3,
+			"variables": {
+				"Q": "15",
+				"r": "1.5",
+				"p": "3"
+			},
+			"answers": ["3x-1{,}5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

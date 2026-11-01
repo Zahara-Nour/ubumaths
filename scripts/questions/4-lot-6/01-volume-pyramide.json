@@ -1,0 +1,340 @@
+{
+	"title": "Volume d'une pyramide",
+	"description": "Calculer le volume d'une pyramide (aire de la base × hauteur ÷ 3) : base carrée, rectangulaire, triangulaire ou d'aire donnée, lien avec le pavé, formule à choisir",
+	"grades": ["4"],
+	"theme": "Grandeurs",
+	"domain": "Volumes",
+	"subdomain": "Pyramide et cône",
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quelle formule donne le volume d'une pyramide ?\n\n```choix\n- $\\mathcal{V} = \\text{aire de la base} \\times \\text{hauteur} \\div 3$\n- $\\mathcal{V} = \\text{aire de la base} \\times \\text{hauteur}$\n- $\\mathcal{V} = \\text{aire de la base} \\times \\text{hauteur} \\div 2$\n- $\\mathcal{V} = (\\text{aire de la base} + \\text{hauteur}) \\div 3$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Volume d'une pyramide : $$\\mathcal{V} = \\dfrac{\\text{aire de la base} \\times \\text{hauteur}}{3}$$",
+					"Aire de la base × hauteur donne le volume du **pavé** (ou du prisme) de même base et de même hauteur : la pyramide en est le tiers."
+				]
+			}
+		},
+		{
+			"statement": "La pyramide $SABCD$ a pour base le carré $ABCD$ de côté ${{a}}~\\unit{cm}$ ; sa hauteur mesure ${{h}}~\\unit{cm}$. Calcule son volume.\n\n```solide\nforme: pyramide carree {{a}} {{h}}\nsommets: S A B C D\ncotes: cm\n```\n\n$\\mathcal{V} = ?~\\unit{cm^3}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..12"
+				},
+				{
+					"name": "h",
+					"expression": "3..15"
+				}
+			],
+			"conditions": ["(a^2*h) % 3 == 0", "h <= 10*a", "a <= 10*h"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a^2*h/3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Volume d'une pyramide : $$\\mathcal{V} = \\dfrac{\\text{aire de la base} \\times \\text{hauteur}}{3}$$",
+					"Aire de la base (carré) : ${{a}} \\times {{a}} = {{eval:a^2}}~\\unit{cm^2}$.",
+					"$$\\mathcal{V} = \\dfrac{{{eval:a^2}} \\times {{h}}}{3} = \\dfrac{{{eval:a^2*h}}}{3} = \\textcolor{{{color:primary.0}}}{{{eval:a^2*h/3}}~\\unit{cm^3}}$$"
+				]
+			}
+		},
+		{
+			"statement": "La pyramide $SABCD$ a pour base le rectangle $ABCD$ de longueur ${{l}}~\\unit{cm}$ et de largeur ${{p}}~\\unit{cm}$ ; sa hauteur mesure ${{h}}~\\unit{cm}$. Calcule son volume.\n\n```solide\nforme: pyramide rectangle {{l}} {{p}} {{h}}\nsommets: S A B C D\ncotes: cm\n```\n\n$\\mathcal{V} = ?~\\unit{cm^3}$",
+			"variables": [
+				{
+					"name": "l",
+					"expression": "4..12"
+				},
+				{
+					"name": "p",
+					"expression": "2..8"
+				},
+				{
+					"name": "h",
+					"expression": "3..15"
+				}
+			],
+			"conditions": ["(l*p*h) % 3 == 0", "p < l", "h <= 10*p"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:l*p*h/3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Volume d'une pyramide : $$\\mathcal{V} = \\dfrac{\\text{aire de la base} \\times \\text{hauteur}}{3}$$",
+					"Aire de la base (rectangle) : ${{l}} \\times {{p}} = {{eval:l*p}}~\\unit{cm^2}$.",
+					"$$\\mathcal{V} = \\dfrac{{{eval:l*p}} \\times {{h}}}{3} = \\dfrac{{{eval:l*p*h}}}{3} = \\textcolor{{{color:primary.0}}}{{{eval:l*p*h/3}}~\\unit{cm^3}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Une pyramide a une base d'aire ${{b}}~\\unit{cm^2}$ et une hauteur de ${{h}}~\\unit{cm}$. Calcule son volume.\n\n$\\mathcal{V} = ?~\\unit{cm^3}$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "10..80"
+				},
+				{
+					"name": "h",
+					"expression": "3..15"
+				}
+			],
+			"conditions": ["(b*h) % 3 == 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b*h/3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Volume d'une pyramide : $$\\mathcal{V} = \\dfrac{\\text{aire de la base} \\times \\text{hauteur}}{3}$$",
+					"$$\\mathcal{V} = \\dfrac{{{b}} \\times {{h}}}{3} = \\dfrac{{{eval:b*h}}}{3} = \\textcolor{{{color:primary.0}}}{{{eval:b*h/3}}~\\unit{cm^3}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Une pyramide a pour base un triangle rectangle dont les côtés de l'angle droit mesurent ${{a}}~\\unit{cm}$ et ${{c}}~\\unit{cm}$ ; sa hauteur mesure ${{h}}~\\unit{cm}$. Calcule son volume.\n\n$\\mathcal{V} = ?~\\unit{cm^3}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..10"
+				},
+				{
+					"name": "c",
+					"expression": "2..10"
+				},
+				{
+					"name": "h",
+					"expression": "3..15"
+				}
+			],
+			"conditions": ["(a*c*h) % 6 == 0", "a != c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*c*h/6}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Volume d'une pyramide : $$\\mathcal{V} = \\dfrac{\\text{aire de la base} \\times \\text{hauteur}}{3}$$",
+					"Aire de la base (triangle rectangle) : $\\dfrac{{{a}} \\times {{c}}}{2} = {{eval:a*c/2}}~\\unit{cm^2}$.",
+					"$$\\mathcal{V} = \\dfrac{{{eval:a*c/2}} \\times {{h}}}{3} = \\dfrac{{{eval:a*c*h/2}}}{3} = \\textcolor{{{color:primary.0}}}{{{eval:a*c*h/6}}~\\unit{cm^3}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Un pavé droit et une pyramide ont la même base et la même hauteur. Le volume du pavé est ${{w}}~\\unit{cm^3}$. Quel est le volume de la pyramide ?\n\n$\\mathcal{V} = ?~\\unit{cm^3}$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "4..90"
+				},
+				{
+					"name": "w",
+					"expression": "eval:3*m"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Volume du pavé : aire de la base × hauteur. Volume de la pyramide : le **tiers** de ce produit (il faut trois pyramides pour remplir le pavé).",
+					"$$\\mathcal{V} = \\dfrac{{{w}}}{3} = \\textcolor{{{color:primary.0}}}{{{m}}~\\unit{cm^3}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Formule aire de la base × hauteur ÷ 3",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans ÷ 3",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ÷ 2",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Carré de côté 3, hauteur 4 : 12",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"h": "4"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans ÷ 3, 36",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"h": "4"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ÷ 2, 18",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"h": "4"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : côté au lieu de l'aire, 4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"h": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rectangle 6 × 4, hauteur 5 : 40",
+			"variationIndex": 2,
+			"variables": {
+				"l": "6",
+				"p": "4",
+				"h": "5"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans ÷ 3, 120",
+			"variationIndex": 2,
+			"variables": {
+				"l": "6",
+				"p": "4",
+				"h": "5"
+			},
+			"answers": ["120"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Base 30 cm², hauteur 7 : 70",
+			"variationIndex": 3,
+			"variables": {
+				"b": "30",
+				"h": "7"
+			},
+			"answers": ["70"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans ÷ 3, 210",
+			"variationIndex": 3,
+			"variables": {
+				"b": "30",
+				"h": "7"
+			},
+			"answers": ["210"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Triangle 3 et 4, hauteur 5 : 10",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"c": "4",
+				"h": "5"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : aire du triangle sans ÷ 2, 20",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"c": "4",
+				"h": "5"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pavé de 75 cm³ : 25",
+			"variationIndex": 5,
+			"variables": {
+				"m": "25",
+				"w": "75"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : même volume, 75",
+			"variationIndex": 5,
+			"variables": {
+				"m": "25",
+				"w": "75"
+			},
+			"answers": ["75"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

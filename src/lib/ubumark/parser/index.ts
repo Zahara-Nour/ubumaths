@@ -129,6 +129,13 @@ export type { NumberLineBlockRange } from '../types/number-line';
 
 // Bloc ```qr
 export { parseQr, parseQrContent, findQrBlocks, isQrBlockStart } from './qr-parser';
+// Bloc ```scratch
+export {
+	parseScratch,
+	parseScratchContent,
+	findScratchBlocks,
+	isScratchBlockStart
+} from './scratch-parser';
 
 // Bloc ```horloge
 export {
@@ -137,6 +144,22 @@ export {
 	findHorlogeBlocks,
 	isHorlogeBlockStart
 } from './horloge-parser';
+
+// Bloc ```partage
+export {
+	parsePartage,
+	parsePartageContent,
+	findPartageBlocks,
+	isPartageBlockStart
+} from './partage-parser';
+
+// Blocs d'espace (```cubes)
+export {
+	parseEspace,
+	parseEspaceContent,
+	findEspaceBlocks,
+	isEspaceBlockStart
+} from './espace-parser';
 
 // Bloc ```operation
 export {

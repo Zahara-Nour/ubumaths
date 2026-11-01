@@ -1,0 +1,353 @@
+{
+	"id": "1ebd1c86-7970-49c9-a373-74ba4d71d9ec",
+	"title": "Limite de a × qⁿ + b, raison positive",
+	"description": "Limite d'une suite géométrique de raison q > 0 (q > 1 ou 0 < q < 1), multipliée et translatée (pièges : qⁿ → 0 pour q > 1, signe de a, q proche de 1)",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Suites",
+	"domain": "Limites de suites",
+	"subdomain": "Suites géométriques",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>0|+\\infty|-\\infty}}"
+				}
+			],
+			"statement": "Soit $(u_n)$ la suite définie pour tout entier naturel $n$ par $u_n={{a}}\\times{{q}}^{n}{{b;+}}$.\n\nDétermine la limite de la suite $(u_n)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "q",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{q}}>1$, donc $\\displaystyle\\lim_{n\\to+\\infty}{{q}}^{n}=+\\infty$.",
+					"${{a}}{{if:a>0|>|<}}0$, donc $\\displaystyle\\lim_{n\\to+\\infty}{{a}}\\times{{q}}^{n}={{if:a>0|+\\infty|-\\infty}}$ ; ajouter ${{b}}$ ne change pas cette limite.",
+					"$\\displaystyle\\lim_{n\\to+\\infty}u_n=\\textcolor{{{color:primary.0}}}{{{if:a>0|+\\infty|-\\infty}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"statement": "Soit $(u_n)$ la suite définie pour tout entier naturel $n$ par $u_n={{a}}\\times{{eval:k/10;d}}^{n}{{b;+}}$.\n\nDétermine la limite de la suite $(u_n)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$0<{{eval:k/10;d}}<1$, donc $\\displaystyle\\lim_{n\\to+\\infty}{{eval:k/10;d}}^{n}=0$, puis $\\displaystyle\\lim_{n\\to+\\infty}{{a}}\\times{{eval:k/10;d}}^{n}=0$.",
+					"Donc $\\displaystyle\\lim_{n\\to+\\infty}u_n=0+{{b;()}}=\\textcolor{{{color:primary.0}}}{ {{b}} }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"statement": "Soit $(u_n)$ la suite définie pour tout entier naturel $n$ par $u_n={{b}}{{a;+}}\\left(\\dfrac{ {{j}} }{ {{eval:j+1}} }\\right)^{n}$.\n\nDétermine la limite de la suite $(u_n)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "j",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$0<\\dfrac{ {{j}} }{ {{eval:j+1}} }<1$, donc $\\displaystyle\\lim_{n\\to+\\infty}\\left(\\dfrac{ {{j}} }{ {{eval:j+1}} }\\right)^{n}=0$.",
+					"Donc $\\displaystyle\\lim_{n\\to+\\infty}u_n={{b}}{{a;+}}\\times0=\\textcolor{{{color:primary.0}}}{ {{b}} }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>0|+\\infty|-\\infty}}"
+				}
+			],
+			"statement": "Soit $(u_n)$ la suite définie pour tout entier naturel $n$ par $u_n={{a}}\\times{{eval:1+t/100;d}}^{n}{{b;+}}$.\n\nDétermine la limite de la suite $(u_n)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "t",
+					"expression": "1|2|5|10|20"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:1+t/100;d}}>1$ (même proche de $1$), donc $\\displaystyle\\lim_{n\\to+\\infty}{{eval:1+t/100;d}}^{n}=+\\infty$.",
+					"${{a}}{{if:a>0|>|<}}0$, donc $\\displaystyle\\lim_{n\\to+\\infty}u_n=\\textcolor{{{color:primary.0}}}{{{if:a>0|+\\infty|-\\infty}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-5",
+				"q": "2"
+			},
+			"description": "v0 : 3×2ⁿ−5 → +∞",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\infty"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-5",
+				"q": "2"
+			},
+			"description": "v0 : ∞ sans signe accepté",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-5",
+				"q": "2"
+			},
+			"description": "v0 : qⁿ → 0 cru pour q > 1 (−5)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-5",
+				"q": "2"
+			},
+			"description": "v0 : 0",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-4",
+				"b": "2",
+				"q": "3"
+			},
+			"description": "v0 : −4×3ⁿ+2 → −∞",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-4",
+				"b": "2",
+				"q": "3"
+			},
+			"description": "v0 : signe de a oublié",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"b": "-3",
+				"k": "8"
+			},
+			"description": "v1 : 5×0,8ⁿ−3 → −3",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"b": "-3",
+				"k": "8"
+			},
+			"description": "v1 : +∞ (confusion q > 1)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"b": "-3",
+				"k": "8"
+			},
+			"description": "v1 : a + b",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"b": "-3",
+				"k": "8"
+			},
+			"description": "v1 : 0 (b oublié)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2",
+				"b": "7",
+				"j": "3"
+			},
+			"description": "v2 : 7 − 2(3/4)ⁿ → 7",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-2",
+				"b": "7",
+				"j": "3"
+			},
+			"description": "v2 : a + b",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-2",
+				"b": "7",
+				"j": "3"
+			},
+			"description": "v2 : −∞",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "4",
+				"t": "5"
+			},
+			"description": "v3 : 2×1,05ⁿ+4 → +∞",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "4",
+				"t": "5"
+			},
+			"description": "v3 : q proche de 1, limite finie crue (6)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-3",
+				"b": "1",
+				"t": "10"
+			},
+			"description": "v3 : −3×1,1ⁿ+1 → −∞",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-3",
+				"b": "1",
+				"t": "10"
+			},
+			"description": "v3 : 1 (qⁿ → 0 cru)",
+			"variationIndex": 3
+		}
+	]
+}

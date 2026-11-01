@@ -1,0 +1,112 @@
+{
+	"title": "Tables de multiplication",
+	"description": "Toutes les tables mêlées : a × b, a et b de 2 à 10",
+	"grades": ["CM1"],
+	"theme": "Entiers",
+	"domain": "Multiplier",
+	"subdomain": "Tables",
+	"level": 10,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..10"
+				},
+				{
+					"name": "b",
+					"expression": "2..10"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{a}}*{{b}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*b}}"
+				}
+			],
+			"correction": {
+				"steps": ["Table de ${{b}}$ : ${{a}}\\times {{b}}={{solution}}$."]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "7 × 8 = 56",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "8"
+			},
+			"answers": ["56"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 10 × 10 = 100",
+			"variationIndex": 0,
+			"variables": {
+				"a": "10",
+				"b": "10"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 2 × 2 = 4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "2"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 × 8 → 54 (table voisine)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "8"
+			},
+			"answers": ["54"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 7 × 8 → 15 (addition)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "8"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "6 × 9 = 54",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "9"
+			},
+			"answers": ["54"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

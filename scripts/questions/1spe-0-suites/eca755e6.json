@@ -1,0 +1,283 @@
+{
+	"id": "eca755e6-dd1f-4a49-996d-88168fcfc4e5",
+	"title": "Terme général d'une suite géométrique",
+	"description": "À partir de u_1 ou d'un terme u_p",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Suites géométriques",
+	"subdomain": "Terme général",
+	"level": 2,
+	"delay": 40,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"form": "warn",
+			"products": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"requiredForm": {
+						"pattern": "a * b^c"
+					},
+					"expectedAnswer": "{{c}}\\times{{eval:q;()}}^{n-1}"
+				}
+			],
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_1={{c}}$ et de raison $q={{q}}$.\n\nExprime $u_n$ en fonction de $n$, pour $n\\geqslant1$.\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "q",
+					"expression": "2..5;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le premier terme est $u_1$ : pour aller de $u_1$ à $u_n$, on multiplie $n-1$ fois par la raison. Donc $u_n=u_1\\times q^{n-1}$.",
+					"Ici $u_1={{c}}$ et $q=\\textcolor{{{color:primary.0}}}{{{q}}}$, donc $u_n={{c}}\\times\\textcolor{{{color:primary.0}}}{{{eval:q;()}}}^{n-1}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"requiredForm": {
+						"pattern": "a * b^c"
+					},
+					"expectedAnswer": "{{c}}\\times{{eval:q;()}}^{n-{{p}}}"
+				}
+			],
+			"statement": "$(u_n)$ est la suite géométrique de raison $q={{q}}$ telle que $u_{ {{p}} }={{c}}$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "q",
+					"expression": "2..3;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour aller de $u_{ {{p}} }$ à $u_n$, on multiplie $n-{{p}}$ fois par la raison. Donc $u_n=u_{ {{p}} }\\times q^{n-{{p}}}$.",
+					"Ici $u_{ {{p}} }={{c}}$ et $q=\\textcolor{{{color:primary.0}}}{{{q}}}$, donc $u_n={{c}}\\times\\textcolor{{{color:primary.0}}}{{{eval:q;()}}}^{n-{{p}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["6\\times2^{n-1}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "6",
+				"q": "2"
+			},
+			"description": "u_1=6, q=2 : 6×2^(n−1)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3\\times2^n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "6",
+				"q": "2"
+			},
+			"description": "forme u_0×q^n acceptée : 3×2^n",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-4\\times(-3)^{n-1}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "-4",
+				"q": "-3"
+			},
+			"description": "u_1=−4, q=−3 : −4×(−3)^(n−1)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["6\\times2^n"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "6",
+				"q": "2"
+			},
+			"description": "u_1 pris comme u_0 : 6×2^n",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["6\\times2^{n+1}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "6",
+				"q": "2"
+			},
+			"description": "exposant n+1 au lieu de n−1",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-4\\times3^{n-1}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "-4",
+				"q": "-3"
+			},
+			"description": "parenthèses oubliées −4×3^(n−1)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["54\\times(-3)^{n-3}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "54",
+				"p": "3",
+				"q": "-3"
+			},
+			"description": "u_3=54, q=−3 : 54×(−3)^(n−3)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["5\\times3^{n-2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "5",
+				"p": "2",
+				"q": "3"
+			},
+			"description": "u_2=5, q=3 : 5×3^(n−2)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-2\\times(-3)^n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "54",
+				"p": "3",
+				"q": "-3"
+			},
+			"description": "forme u_0×q^n, u_0=−2 : −2×(−3)^n",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{5}{9}\\times3^n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "5",
+				"p": "2",
+				"q": "3"
+			},
+			"description": "forme u_0×q^n fractionnaire : 5/9×3^n",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["54\\times(-3)^n"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "54",
+				"p": "3",
+				"q": "-3"
+			},
+			"description": "u_p pris comme u_0 : 54×(−3)^n",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["54\\times(-3)^{n+3}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "54",
+				"p": "3",
+				"q": "-3"
+			},
+			"description": "exposant n+3 au lieu de n−3",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["5+3(n-2)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "5",
+				"p": "2",
+				"q": "3"
+			},
+			"description": "raison ajoutée comme en arithmétique 5+3(n−2)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["5\\times3^n\\div9"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"c": "5",
+				"p": "2",
+				"q": "3"
+			},
+			"description": "calcul inachevé (u_0 × q^n ÷ 9) refusé : forme a × b^c exigée",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3^{n-2}\\times5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "5",
+				"p": "2",
+				"q": "3"
+			},
+			"description": "facteurs dans l'autre ordre",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["6\\times2^n\\div2"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"c": "6",
+				"q": "2"
+			},
+			"description": "calcul inachevé (u_1 × q^n ÷ q) refusé : forme a × b^c exigée",
+			"variationIndex": 0
+		}
+	]
+}

@@ -1,0 +1,63 @@
+{
+	"id": "77498f1b-3625-4701-aa9c-f6132eb3b4ba",
+	"title": "Loi de Bernoulli : identifier la loi",
+	"description": "Variable qui vaut 1 en cas de succès, 0 sinon, sur une seule épreuve",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Probabilités",
+	"domain": "Loi binomiale",
+	"subdomain": "Reconnaître une loi",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Dans une production, ${{t}}\\,\\%$ des pièces sont défectueuses. On prélève une pièce au hasard et on note $X$ la variable qui vaut $1$ si la pièce est défectueuse, $0$ sinon.\n\nQuelle est la loi de $X$ ?\n\n```choix\n- La loi de Bernoulli de paramètre ${{eval:t/100;d}}$\n- La loi de Bernoulli de paramètre ${{eval:1-t/100;d}}$\n- $\\mathcal{G}\\left({{eval:t/100;d}}\\right)$\n- $\\mathcal{B}\\left(100\\,;{{eval:t/100;d}}\\right)$\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "2..15"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$X$ ne prend que les valeurs $1$ (succès) et $0$ (échec), pour **une seule** épreuve.",
+					"$X$ suit la loi **de Bernoulli de paramètre** ${{eval:t/100;d}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"t": "4"
+			},
+			"description": "v0 : Bernoulli",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"t": "4"
+			},
+			"description": "v0 : 1 − p",
+			"variationIndex": 0
+		}
+	]
+}

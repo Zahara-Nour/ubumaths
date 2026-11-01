@@ -1,0 +1,194 @@
+{
+	"title": "Soustraire des fractions de même dénominateur",
+	"description": "3/4 − 1/4 (exemple du BO) ; 1 − 5/9",
+	"grades": ["CE2"],
+	"theme": "Fractions",
+	"domain": "Calculer",
+	"subdomain": "Addition et Soustraction",
+	"level": 20,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$$\\frac{{{a}}}{{{d}}} - \\frac{{{b}}}{{{d}}} = ?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3..12"
+				},
+				{
+					"name": "a",
+					"expression": "2..{{d}}"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{eval:a-1}}"
+				},
+				{
+					"name": "s",
+					"expression": "eval:a-b"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{s}}}{{{d}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On enlève des parts de même taille : ${{a}}$ {{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|{{if:d==8|huitièmes|{{if:d==9|neuvièmes|{{if:d==10|dixièmes|{{if:d==11|onzièmes|douzièmes}}}}}}}}}}}}}}}}}}}} moins ${{b}}$ {{if:b==1|{{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==7|septième|{{if:d==8|huitième|{{if:d==9|neuvième|{{if:d==10|dixième|{{if:d==11|onzième|douzième}}}}}}}}}}}}}}}}}}}}|{{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|{{if:d==8|huitièmes|{{if:d==9|neuvièmes|{{if:d==10|dixièmes|{{if:d==11|onzièmes|douzièmes}}}}}}}}}}}}}}}}}}}}}}, il reste ${{s}}$ {{if:s==1|{{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==7|septième|{{if:d==8|huitième|{{if:d==9|neuvième|{{if:d==10|dixième|{{if:d==11|onzième|douzième}}}}}}}}}}}}}}}}}}}}|{{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|{{if:d==8|huitièmes|{{if:d==9|neuvièmes|{{if:d==10|dixièmes|{{if:d==11|onzièmes|douzièmes}}}}}}}}}}}}}}}}}}}}}}. **Le dénominateur ne change pas.**",
+					"$$\\frac{{{a}}}{{{d}}} - \\frac{{{b}}}{{{d}}} = \\textcolor{{{color:primary.0}}}{\\frac{{{s}}}{{{d}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$$1 - \\frac{{{a}}}{{{d}}} = ?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..12"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:d-1}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:d-a}}}{{{d}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le tout, c'est ${{d}}$ {{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|{{if:d==8|huitièmes|{{if:d==9|neuvièmes|{{if:d==10|dixièmes|{{if:d==11|onzièmes|douzièmes}}}}}}}}}}}}}}}}}}}} : $1 = \\frac{{{d}}}{{{d}}}$.",
+					"$$1 - \\frac{{{a}}}{{{d}}} = \\frac{{{d}}}{{{d}}} - \\frac{{{a}}}{{{d}}} = \\textcolor{{{color:primary.0}}}{\\frac{{{eval:d-a}}}{{{d}}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 3/4 − 1/4 = 2/4",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"a": "3",
+				"b": "1",
+				"s": "2"
+			},
+			"answers": ["\\frac{2}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BO : 3/4 − 1/4 = 1/2, même valeur",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"a": "3",
+				"b": "1",
+				"s": "2"
+			},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2/0 (dénominateurs soustraits)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"a": "3",
+				"b": "1",
+				"s": "2"
+			},
+			"answers": ["\\frac{2}{0}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2 (dénominateur oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"a": "3",
+				"b": "1",
+				"s": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 12/12 − 11/12 = 1/12",
+			"variationIndex": 0,
+			"variables": {
+				"d": "12",
+				"a": "12",
+				"b": "11",
+				"s": "1"
+			},
+			"answers": ["\\frac{1}{12}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1 − 5/9 = 4/9",
+			"variationIndex": 1,
+			"variables": {
+				"d": "9",
+				"a": "5"
+			},
+			"answers": ["\\frac{4}{9}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 − 5/9, 5/9 recopié",
+			"variationIndex": 1,
+			"variables": {
+				"d": "9",
+				"a": "5"
+			},
+			"answers": ["\\frac{5}{9}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1 − 5/9, 4/8 (1 retiré en haut et en bas)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "9",
+				"a": "5"
+			},
+			"answers": ["\\frac{4}{8}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 1 − 1/2 = 1/2",
+			"variationIndex": 1,
+			"variables": {
+				"d": "2",
+				"a": "1"
+			},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

@@ -1208,6 +1208,33 @@ describe('Text Formatting', () => {
 		expect(typst).toContain('*Bold*');
 	});
 
+	// L19 : sans `;` final, un `(`, `[` ou `.lettre` collé après l'appel est lu comme
+	// sa suite (`#emph[mot](voir)` → appel de contenu) et toute la fiche échoue
+	describe.each([
+		['italic', 'emph'],
+		['strikethrough', 'strike'],
+		['highlight', 'highlight']
+	] as const)('%s collé à un caractère spécial', (flag, fonction) => {
+		it.each(['(voir)', '[voir]', '.suite'])("termine l'appel avant « %s »", (suite) => {
+			const ast: DocumentNode = {
+				type: 'document',
+				children: [
+					{
+						type: 'paragraph',
+						children: [
+							{ type: 'text', content: 'mot', [flag]: true },
+							{ type: 'text', content: suite }
+						]
+					}
+				]
+			};
+
+			const typst = generateTypst(ast, { includeSetup: false });
+
+			expect(typst).toContain(`#${fonction}[mot];`);
+		});
+	});
+
 	it('should generate italic text', () => {
 		const ast: DocumentNode = {
 			type: 'document',

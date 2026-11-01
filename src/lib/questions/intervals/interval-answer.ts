@@ -11,7 +11,7 @@
  * - `correct` : même ensemble, écrit comme il faut (ordre des intervalles indifférent) ;
  * - `unoptimal_form` (½) SEULEMENT pour une écriture à reprendre : intervalles
  *   contigus ou chevauchants non réunis, `[a ; a]` au lieu de `{a}`, borne non
- *   simplifiée. Réglage par modèle : contrainte `intervalForm` (`warn` par défaut,
+ *   simplifiée (fraction, ou racine : √12 pour 2√3). Réglage par modèle : contrainte `intervalForm` (`warn` par défaut,
  *   `strict` → mauvaise forme, `off` → juste) ;
  * - `incorrect` : tout le reste, avec le message de l'erreur reconnue ;
  * - `empty` : rien d'écrit (un « S = » seul compris).
@@ -43,6 +43,9 @@ import { variable } from '$lib/mathAST/factory';
 import { isInfinity, isPositiveInfinity } from '$lib/mathAST/guards';
 import { compareNumericNodes } from '$lib/mathAST/eval/compare-numeric';
 import { checkReducedFractions } from '$lib/questions/constraint-validators';
+import { parseLatexSafe } from '$lib/mathAST';
+import { reduceRadicalsAST } from '$lib/mathAST/superflu/transforms';
+import { nodesEqual } from '$lib/mathAST/normal/hash';
 import { judgeComplexFiniteSet, readExpectedComplexSet } from './complex-finite-set';
 
 // Types
@@ -70,6 +73,8 @@ export const INTERVAL_FEEDBACK = {
 	boundsOrder: "Écris les bornes dans l'ordre croissant : la plus petite à gauche.",
 	notASet: "Écris un ensemble (un intervalle ou une réunion d'intervalles), pas une inégalité.",
 	unreadable: "Réponse illisible : écris un intervalle comme ]2 ; 5] ou une réunion d'intervalles.",
+	missingBraces: (values: string) =>
+		`Un ensemble de solutions s'écrit entre accolades : {${values}}.`,
 	singleton: (value: string) =>
 		`Un ensemble réduit à un seul nombre s'écrit entre accolades : {${value}} plutôt que [${value} ; ${value}].`,
 	tooComplex: 'Réponse illisible : une borne est trop longue ou trop compliquée. Simplifie-la.',
@@ -83,7 +88,9 @@ export const INTERVAL_FEEDBACK = {
 			: `Les points ${values.slice(0, -1).join(', ')} et ${values.at(-1)} ne font pas partie de l'ensemble.`,
 	contiguous: 'Réunis en un seul intervalle ceux qui se touchent ou se chevauchent.',
 	unsimplified: 'Simplifie les bornes (par exemple 2 plutôt que 4/2).',
-	unsimplifiedSet: 'La fraction peut être simplifiée.'
+	unsimplifiedSet: 'La fraction peut être simplifiée.',
+	unsimplifiedRadical: 'Simplifie les racines des bornes (par exemple 2√3 plutôt que √12).',
+	unsimplifiedRadicalSet: 'La racine peut être simplifiée.'
 };
 
 /** Mode par défaut de `intervalForm` : écriture à reprendre = ½ */
@@ -94,6 +101,12 @@ const MAX_ANSWER_LENGTH = 400;
 
 /** « S = » (ou « \mathcal{S} = ») en tête de la réponse : ignoré */
 const LEADING_SET_NAME = /^\s*(?:S|\\mathcal\s*\{\s*S\s*\}|\\mathscr\s*\{\s*S\s*\})\s*=\s*/;
+
+/** Séparateurs de valeurs écrites sans accolades : « ; » ou « ou » (`-3 ; 3`, `x = -3 ou x = 3`) */
+const BARE_VALUES_SEPARATOR = /;|\\text\s*\{\s*ou\s*\}|\bou\b/;
+
+/** « x = » devant une valeur écrite sans accolades */
+const LEADING_EQUALS = /^\s*[a-z]\s*=\s*/;
 
 /** Erreurs de `detectDomainMistakes` dont le message vaut pour une inéquation */
 const BOUNDARY_MISTAKES = new Set([
@@ -156,6 +169,22 @@ function isolatedPoints(domain: Domain): string[] | undefined {
 }
 
 /**
+ * Valeurs d'un ensemble fini écrit sans accolades (`1`, `-3 ; 3`, `x = 2`,
+ * `x = -3 ou x = 3`), pour le message ; undefined si la réponse n'en est pas un.
+ */
+function bareValues(written: string): string[] | undefined {
+	// Un infini n'est pas une solution : ne pas souffler {-∞}
+	if (/\\infty|∞/.test(written)) return undefined;
+	const pieces = written
+		.split(BARE_VALUES_SEPARATOR)
+		.map((piece) => piece.replace(LEADING_EQUALS, '').trim());
+	if (pieces.some((piece) => piece === '')) return undefined;
+	const parsed = parseStudentDomainPieces(`\\{${pieces.join(';')}\\}`);
+	if (!parsed.success || parsed.format === 'condition') return undefined;
+	return isolatedPoints(parsed.domain);
+}
+
+/**
  * Réponse hostile ou démesurée (radicaux imbriqués : coût ×9 par niveau) : un
  * morceau entre séparateurs dépasse les limites d'une borne. Vérifié AVANT toute
  * lecture, pour le correcteur serveur des évaluations comme pour le navigateur.
@@ -200,6 +229,19 @@ function finiteSetValues(piece: StudentDomainPiece): string[] {
 		.map((value) => value.trim());
 }
 
+/**
+ * Racine carrée simplifiable (√12 pour 2√3, √4 pour 2), règle `reducedRadicals` du
+ * superflu (décision de David, 2026-10-27, comme une fraction simplifiable)
+ */
+function hasReducibleRadical(values: readonly string[]): boolean {
+	return values.some((latex) => {
+		if (!latex.includes('sqrt') && !latex.includes('√')) return false;
+		const parsed = parseLatexSafe(latex);
+		if (!parsed.ast || parsed.errors.length > 0) return false;
+		return !nodesEqual(parsed.ast, reduceRadicalsAST(parsed.ast));
+	});
+}
+
 /** Écriture à reprendre d'un ensemble JUSTE (½ par défaut), ou undefined */
 function writingIssue(pieces: readonly StudentDomainPiece[], domain: Domain): string | undefined {
 	const singleton = pieces.find(
@@ -216,10 +258,12 @@ function writingIssue(pieces: readonly StudentDomainPiece[], domain: Domain): st
 
 	const bounds = pieces.flatMap((piece) => piece.bounds ?? []);
 	if (checkReducedFractions(bounds).length > 0) return INTERVAL_FEEDBACK.unsimplified;
+	if (hasReducibleRadical(bounds)) return INTERVAL_FEEDBACK.unsimplifiedRadical;
 
 	// Ensemble fini `{a;b}` : ses valeurs, comme des bornes (décision de David, 2026-10-05)
-	if (checkReducedFractions(pieces.flatMap(finiteSetValues)).length > 0)
-		return INTERVAL_FEEDBACK.unsimplifiedSet;
+	const values = pieces.flatMap(finiteSetValues);
+	if (checkReducedFractions(values).length > 0) return INTERVAL_FEEDBACK.unsimplifiedSet;
+	if (hasReducibleRadical(values)) return INTERVAL_FEEDBACK.unsimplifiedRadicalSet;
 
 	return undefined;
 }
@@ -373,8 +417,12 @@ function judgeWritten(
 	if (!target.ok) return incorrect();
 
 	const parsed = parseStudentDomainPieces(written);
-	if (!parsed.success) return incorrect(INTERVAL_FEEDBACK.unreadable);
-	if (parsed.format === 'condition') return incorrect(INTERVAL_FEEDBACK.notASet);
+	if (!parsed.success || parsed.format === 'condition') {
+		// Attendu = ensemble fini, réponse = ses nombres sans accolades : le dire
+		const values = isolatedPoints(target.domain) && bareValues(written);
+		if (values) return incorrect(INTERVAL_FEEDBACK.missingBraces(values.join(' ; ')));
+		return incorrect(parsed.success ? INTERVAL_FEEDBACK.notASet : INTERVAL_FEEDBACK.unreadable);
+	}
 
 	const invalid = parsed.pieces.map(pieceError).find((error) => error !== undefined);
 	if (invalid) return incorrect(invalid);

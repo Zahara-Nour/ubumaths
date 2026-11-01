@@ -1,0 +1,194 @@
+{
+	"title": "Trois points alignés : par une équation de droite",
+	"description": "A, B, C alignés ? en testant C dans l'équation de (AB) ; ordonnée de C pour que A, B, C soient alignés, par l'équation de (AB) (pièges : abscisse et ordonnée échangées, signe de p)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Droites du plan",
+	"subdomain": "Positions relatives",
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans un repère du plan, on considère les points $A({{ax}}\\,;\\,{{eval:(k)*(ax)+(p)}})$, $B({{eval:(ax)+(dx)}}\\,;\\,{{eval:(k)*((ax)+(dx))+(p)}})$ et $C({{xc}}\\,;\\,{{yc}})$. La droite $(AB)$ a pour équation $y={{k}}x{{p;+}}$.\n\nLes points $A$, $B$ et $C$ sont-ils alignés ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-4..4"
+				},
+				{
+					"name": "dx",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "p",
+					"expression": "-4..4"
+				},
+				{
+					"name": "xc",
+					"expression": "-5..5"
+				},
+				{
+					"name": "w",
+					"expression": "0|1"
+				},
+				{
+					"name": "s",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "yc",
+					"expression": "eval:(k)*(xc)+(p)+(1-(w))*(s)"
+				}
+			],
+			"conditions": ["xc != ax", "xc != (ax)+(dx)", "abs((k)*((ax)+(dx))+(p)) <= 12"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-(w)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A$, $B$ et $C$ sont alignés si et seulement si $C$ est sur la droite $(AB)$, c'est-à-dire si ses coordonnées vérifient $y={{k}}x{{p;+}}$.",
+					"$${{k}}\\times{{xc;()}}{{p;+}}={{eval:(k)*(xc)+(p)}}$$",
+					"{{if:w==1|On trouve l'ordonnée de $C$ : **$A$, $B$ et $C$ sont alignés**.|${{eval:(k)*(xc)+(p)}}\\neq{{yc}}$ : $C$ n'est pas sur $(AB)$, **les points ne sont pas alignés**.}}"
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère du plan, on considère les points $A({{ax}}\\,;\\,{{eval:(k)*(ax)+(p)}})$, $B({{eval:(ax)+(dx)}}\\,;\\,{{eval:(k)*((ax)+(dx))+(p)}})$ et $C({{xc}}\\,;\\,y)$, où $y$ est un nombre réel.\n\nDétermine $y$ pour que les points $A$, $B$ et $C$ soient alignés.\n\n$y=?$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-4..4"
+				},
+				{
+					"name": "dx",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "p",
+					"expression": "-4..4"
+				},
+				{
+					"name": "xc",
+					"expression": "-5..5"
+				}
+			],
+			"conditions": ["xc != ax", "xc != (ax)+(dx)", "abs((k)*((ax)+(dx))+(p)) <= 12"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(k)*(xc)+(p)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A$, $B$ et $C$ sont alignés si et seulement si $C$ est sur la droite $(AB)$. On cherche son équation $y=mx+p$.",
+					"$$m=\\dfrac{y_B-y_A}{x_B-x_A}=\\dfrac{ {{eval:(k)*(dx)}} }{ {{dx}} }={{k}}$$",
+					"Elle passe par $A$ : $p={{eval:(k)*(ax)+(p)}}-{{k;()}}\\times{{ax;()}}={{p}}$, donc $(AB)$ a pour équation $y={{k}}x{{p;+}}$.",
+					"$C$ est sur $(AB)$ : $y={{k}}\\times{{xc;()}}{{p;+}}=\\textcolor{{{color:primary.0}}}{{{eval:(k)*(xc)+(p)}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "C(−2 ; −5) sur y = 2x − 1 : « Oui »",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"dx": "2",
+				"k": "2",
+				"p": "-1",
+				"xc": "-2",
+				"w": "1",
+				"s": "1",
+				"yc": "-5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "C(−2 ; −4) : « Non »",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"dx": "2",
+				"k": "2",
+				"p": "-1",
+				"xc": "-2",
+				"w": "0",
+				"s": "1",
+				"yc": "-4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "« Oui » faux",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"dx": "2",
+				"k": "2",
+				"p": "-1",
+				"xc": "-2",
+				"w": "0",
+				"s": "1",
+				"yc": "-4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A(1 ; −1), B(3 ; −7), C(4 ; y) → −10",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "1",
+				"dx": "2",
+				"k": "-3",
+				"p": "2",
+				"xc": "4"
+			},
+			"answers": ["-10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe de p (−14)",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "1",
+				"dx": "2",
+				"k": "-3",
+				"p": "2",
+				"xc": "4"
+			},
+			"answers": ["-14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

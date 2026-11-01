@@ -1,0 +1,125 @@
+{
+	"title": "Comparer deux fractions avec un dénominateur commun",
+	"description": "Comparer deux fractions en cherchant un dénominateur commun (3/4 et 5/6 sur 12 ; 5/6 et 7/9 sur 18)",
+	"grades": ["6"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Comparer",
+	"level": 8,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète avec le signe qui convient.\n\n$$\\frac{{{gn}}}{{{gd}}} \\ldots \\frac{{{dn}}}{{{dd}}}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..3"
+				},
+				{
+					"name": "b",
+					"expression": "{{if:k==0|4|{{if:k==1|6|{{if:k==2|6|4}}}}}}"
+				},
+				{
+					"name": "d",
+					"expression": "{{if:k==0|6|{{if:k==1|8|{{if:k==2|9|10}}}}}}"
+				},
+				{
+					"name": "L",
+					"expression": "eval:b*d/gcd(b,d)"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:b-1}}"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "gn",
+					"expression": "eval:(1-s)*a+s*c"
+				},
+				{
+					"name": "gd",
+					"expression": "eval:(1-s)*b+s*d"
+				},
+				{
+					"name": "dn",
+					"expression": "eval:(1-s)*c+s*a"
+				},
+				{
+					"name": "dd",
+					"expression": "eval:(1-s)*d+s*b"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(gn*dd-dn*gd)+1"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "gcd(c,d)==1", "a*d!=c*b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Même dénominateur.** ${{L}}$ est un multiple de ${{b}}$ et de ${{d}}$ : on écrit les deux fractions avec le dénominateur ${{L}}$.",
+					"$\\frac{{{a}}}{{{b}}} = \\frac{{{eval:a*L/b}}}{{{L}}}$ et $\\frac{{{c}}}{{{d}}} = \\frac{{{eval:c*L/d}}}{{{L}}}$ : on compare ${{eval:a*L/b}}$ et ${{eval:c*L/d}}$.",
+					"$$\\frac{{{gn}}}{{{gd}}} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} \\frac{{{dn}}}{{{dd}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3/4 < 5/6",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"b": "4",
+				"d": "6",
+				"L": "12",
+				"a": "3",
+				"c": "5",
+				"s": "0",
+				"gn": "3",
+				"gd": "4",
+				"dn": "5",
+				"dd": "6",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/4 > 5/6",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"b": "4",
+				"d": "6",
+				"L": "12",
+				"a": "3",
+				"c": "5",
+				"s": "0",
+				"gn": "3",
+				"gd": "4",
+				"dn": "5",
+				"dd": "6",
+				"r": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

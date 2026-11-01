@@ -17,7 +17,8 @@ import { resolvedMarkdown } from '$lib/ubumark';
 
 const STATEMENT = "Le nombre dérivé ~P'(2)~ vaut :";
 
-function qcm(genericFunctions?: string[]): QuestionInstance {
+/** Case choix : un choix écrit avec la fonction déclarée `P` */
+function choiceQuestion(genericFunctions?: string[]): QuestionInstance {
 	return {
 		templateId: 'tpl-fonctions',
 		grades: ['1_SPE'],
@@ -25,16 +26,14 @@ function qcm(genericFunctions?: string[]): QuestionInstance {
 		domain: 'Dérivation',
 		level: 1,
 		generatedAt: new Date().toISOString(),
-		statement: resolvedMarkdown(STATEMENT),
-		choices: [
-			{ content: resolvedMarkdown("~P'(1)~"), isCorrect: false },
-			{ content: resolvedMarkdown('$12$'), isCorrect: true }
+		statement: resolvedMarkdown(`${STATEMENT}\n\n\`\`\`choix\ncase: 0\n- ~P'(1)~\n- $12$\n\`\`\``),
+		blanks: [
+			{
+				expectedAnswer: '1',
+				type: 'choice',
+				choice: { choices: ["~P'(1)~", '$12$'], order: [0, 1], multiple: false }
+			}
 		],
-		shuffledChoices: [
-			{ content: resolvedMarkdown("~P'(1)~"), originalIndex: 0 },
-			{ content: resolvedMarkdown('$12$'), originalIndex: 1 }
-		],
-		correctChoiceIndex: '1',
 		...(genericFunctions && { genericFunctions })
 	} as QuestionInstance;
 }
@@ -48,13 +47,18 @@ function redErrors(container: HTMLElement): number {
 
 describe('Fonctions déclarées — affichage', () => {
 	it('QuestionCard : énoncé et choix lus avec la liste du modèle', async () => {
-		const without = await render(QuestionCard, { instance: qcm(), interactive: true });
+		const without = await render(QuestionCard, { instance: choiceQuestion(), interactive: true });
 		const errorsWithout = redErrors(without.container);
 		await without.unmount();
 
-		const withList = await render(QuestionCard, { instance: qcm(['P']), interactive: true });
+		const withList = await render(QuestionCard, {
+			instance: choiceQuestion(['P']),
+			interactive: true
+		});
 		expect(errorsWithout).toBeGreaterThan(0);
 		expect(redErrors(withList.container)).toBe(0);
+		// Les choix sont bien rendus (sinon « 0 erreur » ne prouverait rien pour eux)
+		expect(withList.container.querySelectorAll('.choice-button')).toHaveLength(2);
 	});
 
 	it('CorrectionView : prop genericFunctions', async () => {
@@ -74,10 +78,9 @@ describe('Fonctions déclarées — affichage', () => {
 	it('CourseCardView : recto lu avec la liste du modèle', async () => {
 		const card = (genericFunctions?: string[]) =>
 			({
-				...qcm(genericFunctions),
-				choices: undefined,
-				shuffledChoices: undefined,
-				correctChoiceIndex: undefined,
+				...choiceQuestion(genericFunctions),
+				statement: resolvedMarkdown(STATEMENT),
+				blanks: undefined,
 				options: { courseCard: true }
 			}) as QuestionInstance;
 		const without = await render(CourseCardView, { instance: card() });

@@ -1,0 +1,382 @@
+{
+	"title": "Résoudre une équation produit nul",
+	"description": "Résoudre une équation produit nul : (x − 3)(x + 5) = 0, (2x − 3)(5x + 7) = 0, coefficients décimaux (2,5x − 7)(8x − 9,6) = 0, x(3x − 5) = 0, puis factoriser d'abord (x + 2)(3x − 1) + (x + 2)(x + 4) = 0 ; ensemble des solutions écrit",
+	"grades": ["3"],
+	"theme": "Calcul littéral",
+	"domain": "Equations",
+	"subdomain": "Produit nul",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Résous l'équation $({{eval:x-(p)}})({{eval:x-(q)}})=0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "p",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["p != q"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{p}} ; {{q}} \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Un produit est nul si et seulement si l'un au moins de ses facteurs est nul.**",
+					"$$({{eval:x-(p)}})({{eval:x-(q)}})=0 \\iff {{eval:x-(p)}}=0 \\text{ ou } {{eval:x-(q)}}=0 \\iff x={{p}} \\text{ ou } x={{q}}$$",
+					"L'équation a deux solutions : $S=\\textcolor{{{color:primary.0}}}{\\{ {{p}} ; {{q}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous l'équation $({{eval:(a)*x+(b)}})({{eval:(c)*x+(d)}})=0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "2..5"
+				},
+				{
+					"name": "d",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["gcd(a, abs(b)) == 1", "gcd(c, abs(d)) == 1", "(b)*(c) != (a)*(d)"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:-(b)/(a)}} ; {{eval:-(d)/(c)}} \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Un produit est nul si et seulement si l'un au moins de ses facteurs est nul.**",
+					"$$\\begin{align} ({{eval:(a)*x+(b)}})({{eval:(c)*x+(d)}})=0 & \\iff {{eval:(a)*x+(b)}}=0 \\text{ ou } {{eval:(c)*x+(d)}}=0 \\\\ & \\iff x=\\dfrac{{{eval:-(b)}}}{{{a}}} \\text{ ou } x=\\dfrac{{{eval:-(d)}}}{{{c}}} \\end{align}$$",
+					"L'équation a deux solutions : $S=\\textcolor{{{color:primary.0}}}{\\{ {{eval:-(b)/(a)}} ; {{eval:-(d)/(c)}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous l'équation $({{eval:n/2;d}}x-{{eval:n*m/10;d}})({{c}}x{{eval:-(c*j/10);d;+}})=0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1|3|5|7|9"
+				},
+				{
+					"name": "m",
+					"expression": "6..24"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "j",
+					"expression": "11..49;±"
+				}
+			],
+			"conditions": ["mod(m,5) != 0", "mod(j,10) != 0", "2*j != 4*m"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:m/5;d}} ; {{eval:j/10;d}} \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Un produit est nul si et seulement si l'un au moins de ses facteurs est nul.**",
+					"$$\\begin{align} ({{eval:n/2;d}}x-{{eval:n*m/10;d}})({{c}}x{{eval:-(c*j/10);d;+}})=0 & \\iff {{eval:n/2;d}}x={{eval:n*m/10;d}} \\text{ ou } {{c}}x={{eval:c*j/10;d}} \\\\ & \\iff x=\\dfrac{{{eval:n*m/10;d}}}{{{eval:n/2;d}}} \\text{ ou } x=\\dfrac{{{eval:c*j/10;d}}}{{{c}}} \\\\ & \\iff x={{eval:m/5;d}} \\text{ ou } x={{eval:j/10;d}} \\end{align}$$",
+					"L'équation a deux solutions : $S=\\textcolor{{{color:primary.0}}}{\\{ {{eval:m/5;d}} ; {{eval:j/10;d}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous l'équation $x({{eval:(a)*x+(b)}})=0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..20;±"
+				}
+			],
+			"conditions": ["gcd(a, abs(b)) == 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ 0 ; {{eval:-(b)/(a)}} \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Un produit est nul si et seulement si l'un au moins de ses facteurs est nul.** Le premier facteur est $x$ lui-même.",
+					"$$x({{eval:(a)*x+(b)}})=0 \\iff x=0 \\text{ ou } {{eval:(a)*x+(b)}}=0 \\iff x=0 \\text{ ou } x={{eval:-(b)/(a)}}$$",
+					"L'équation a deux solutions : $S=\\textcolor{{{color:primary.0}}}{\\{ 0 ; {{eval:-(b)/(a)}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous l'équation $({{eval:x+(a)}})({{eval:(b)*x+(c)}})+({{eval:x+(a)}})({{eval:(d)*x+(f)}})=0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..5"
+				},
+				{
+					"name": "f",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["c+f != 0", "gcd(b+d, abs(c+f)) == 1", "(a)*(b+d) != (c+f)"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:-(a)}} ; {{eval:-(c+f)/(b+d)}} \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Ce n'est pas encore un produit : on **factorise** d'abord par le facteur commun $\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}$.",
+					"$$({{eval:x+(a)}})({{eval:(b)*x+(c)}})+({{eval:x+(a)}})({{eval:(d)*x+(f)}}) = \\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}\\left[({{eval:(b)*x+(c)}})+({{eval:(d)*x+(f)}})\\right] = ({{eval:x+(a)}})({{eval:(b+d)*x+(c+f)}})$$",
+					"**Un produit est nul si et seulement si l'un au moins de ses facteurs est nul.**",
+					"$$({{eval:x+(a)}})({{eval:(b+d)*x+(c+f)}})=0 \\iff {{eval:x+(a)}}=0 \\text{ ou } {{eval:(b+d)*x+(c+f)}}=0 \\iff x={{eval:-(a)}} \\text{ ou } x={{eval:-(c+f)/(b+d)}}$$",
+					"L'équation a deux solutions : $S=\\textcolor{{{color:primary.0}}}{\\{ {{eval:-(a)}} ; {{eval:-(c+f)/(b+d)}} \\}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(x − 3)(x + 5) = 0 : S = {3 ; −5}",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "-5"
+			},
+			"answers": ["\\{3;-5\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Ordre inverse {−5 ; 3}",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "-5"
+			},
+			"answers": ["\\{-5;3\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signes inversés {−3 ; 5}",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "-5"
+			},
+			"answers": ["\\{-3;5\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une seule solution {3}",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "-5"
+			},
+			"answers": ["\\{3\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(2x − 3)(5x + 7) = 0 : S = {3/2 ; −7/5}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "5",
+				"d": "7"
+			},
+			"answers": ["\\{\\frac{3}{2};-\\frac{7}{5}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture décimale {1,5 ; −1,4}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "5",
+				"d": "7"
+			},
+			"answers": ["\\{1{,}5;-1{,}4\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : b/a au lieu de −b/a",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "5",
+				"d": "7"
+			},
+			"answers": ["\\{-\\frac{3}{2};\\frac{7}{5}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(2,5x − 7)(8x − 9,6) = 0 : S = {2,8 ; 1,2}",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5",
+				"m": "14",
+				"c": "8",
+				"j": "12"
+			},
+			"answers": ["\\{2{,}8;1{,}2\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En fractions {14/5 ; 6/5}",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5",
+				"m": "14",
+				"c": "8",
+				"j": "12"
+			},
+			"answers": ["\\{\\frac{14}{5};\\frac{6}{5}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signes inversés",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5",
+				"m": "14",
+				"c": "8",
+				"j": "12"
+			},
+			"answers": ["\\{-2{,}8;-1{,}2\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x(3x − 5) = 0 : S = {0 ; 5/3}",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "-5"
+			},
+			"answers": ["\\{0;\\frac{5}{3}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0 oublié {5/3}",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "-5"
+			},
+			"answers": ["\\{\\frac{5}{3}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(x + 2)(4x + 3) = 0 : S = {−2 ; −3/4}",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "-1",
+				"d": "1",
+				"f": "4"
+			},
+			"answers": ["\\{-2;-\\frac{3}{4}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signes inversés {2 ; 3/4}",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "-1",
+				"d": "1",
+				"f": "4"
+			},
+			"answers": ["\\{2;\\frac{3}{4}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

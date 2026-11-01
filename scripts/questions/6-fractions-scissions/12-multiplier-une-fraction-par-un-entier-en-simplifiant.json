@@ -1,0 +1,92 @@
+{
+	"title": "Multiplier une fraction par un entier en simplifiant d'abord",
+	"description": "Produit d'une fraction par un multiple de son dénominateur, en simplifiant d'abord (5/6 × 12 = 5 × 2 = 10)",
+	"grades": ["6"],
+	"theme": "Fractions",
+	"domain": "Calculer",
+	"subdomain": "Multiplication",
+	"level": 8,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$$\\frac{{{a}}}{{{b}}} \\times {{n}} = ?$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "k",
+					"expression": "2..5"
+				},
+				{
+					"name": "n",
+					"expression": "eval:b*k"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Simplifier d'abord.** ${{n}}$ est un multiple de ${{b}}$ : ${{n}} = {{b}} \\times {{k}}$. On divise ${{n}}$ par ${{b}}$, puis on multiplie par ${{a}}$.",
+					"$$\\frac{{{a}}}{{{b}}} \\times {{n}} = {{a}} \\times \\frac{{{n}}}{{{b}}} = {{a}} \\times {{k}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+					"On peut aussi multiplier d'abord : $\\frac{{{a}}}{{{b}}} \\times {{n}} = \\frac{{{a}} \\times {{n}}}{{{b}}} = \\frac{{{eval:a*n}}}{{{b}}} = {{solution}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "5/6 × 12 = 10",
+			"variationIndex": 0,
+			"variables": {
+				"b": "6",
+				"a": "5",
+				"k": "2",
+				"n": "12"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "60/6 non simplifié : ambre",
+			"variationIndex": 0,
+			"variables": {
+				"b": "6",
+				"a": "5",
+				"k": "2",
+				"n": "12"
+			},
+			"answers": ["\\frac{60}{6}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "Erreur : 60/72",
+			"variationIndex": 0,
+			"variables": {
+				"b": "6",
+				"a": "5",
+				"k": "2",
+				"n": "12"
+			},
+			"answers": ["\\frac{60}{72}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

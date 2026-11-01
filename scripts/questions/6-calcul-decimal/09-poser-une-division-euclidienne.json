@@ -1,0 +1,197 @@
+{
+	"title": "Poser une division euclidienne",
+	"description": "Division euclidienne posée (quotient et reste) : diviseur à un chiffre, à deux chiffres (295 ÷ 18), un 0 au quotient (618 ÷ 3)",
+	"grades": ["6"],
+	"theme": "Entiers",
+	"domain": "Diviser",
+	"subdomain": "Division euclidienne",
+	"level": 5,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Pose et effectue la division euclidienne.\n\n```operation\ncalcul: {{N}} ÷ {{d}}\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3..9"
+				},
+				{
+					"name": "q",
+					"expression": "21..999"
+				},
+				{
+					"name": "r",
+					"expression": "0..{{eval:d-1}}"
+				},
+				{
+					"name": "N",
+					"expression": "eval:d*q+r"
+				}
+			],
+			"conditions": ["N<=9999", "mod(q,10)!=0"],
+			"correction": {
+				"steps": [
+					"**Division euclidienne.** Diviser $N$ par $d$, c'est trouver le quotient $q$ et le reste $r$ tels que $N = (d \\times q) + r$, avec un reste plus petit que $d$.",
+					"$${{N}} = ({{d}} \\times \\textcolor{{{color:primary.0}}}{{{q}}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+					"Le quotient est $\\textcolor{{{color:primary.0}}}{{{q}}}$, le reste $\\textcolor{{{color:primary.1}}}{{{r}}}$, plus petit que ${{d}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pose et effectue la division euclidienne.\n\n```operation\ncalcul: {{N}} ÷ {{d}}\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "11..99"
+				},
+				{
+					"name": "q",
+					"expression": "6..99"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "N",
+					"expression": "eval:d*q+r"
+				}
+			],
+			"conditions": ["N<=9999", "mod(d,10)!=0"],
+			"correction": {
+				"steps": [
+					"**Division euclidienne.** Diviser $N$ par $d$, c'est trouver le quotient $q$ et le reste $r$ tels que $N = (d \\times q) + r$, avec un reste plus petit que $d$.",
+					"$${{N}} = ({{d}} \\times \\textcolor{{{color:primary.0}}}{{{q}}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+					"Le quotient est $\\textcolor{{{color:primary.0}}}{{{q}}}$, le reste $\\textcolor{{{color:primary.1}}}{{{r}}}$, plus petit que ${{d}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pose et effectue la division euclidienne.\n\n```operation\ncalcul: {{N}} ÷ {{d}}\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "eval:100*a+b"
+				},
+				{
+					"name": "r",
+					"expression": "0..{{eval:d-1}}"
+				},
+				{
+					"name": "N",
+					"expression": "eval:d*q+r"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Division euclidienne.** Diviser $N$ par $d$, c'est trouver le quotient $q$ et le reste $r$ tels que $N = (d \\times q) + r$, avec un reste plus petit que $d$.",
+					"$${{N}} = ({{d}} \\times \\textcolor{{{color:primary.0}}}{{{q}}}) + \\textcolor{{{color:primary.1}}}{{{r}}}$$",
+					"Le quotient est $\\textcolor{{{color:primary.0}}}{{{q}}}$, le reste $\\textcolor{{{color:primary.1}}}{{{r}}}$, plus petit que ${{d}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1 357 ÷ 6 = 226 reste 1",
+			"variationIndex": 0,
+			"variables": {
+				"d": "6",
+				"q": "226",
+				"r": "1",
+				"N": "1357"
+			},
+			"answers": ["226", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : reste trop grand (225 reste 7)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "6",
+				"q": "226",
+				"r": "1",
+				"N": "1357"
+			},
+			"answers": ["225", "7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "295 ÷ 18 = 16 reste 7",
+			"variationIndex": 1,
+			"variables": {
+				"d": "18",
+				"q": "16",
+				"r": "7",
+				"N": "295"
+			},
+			"answers": ["16", "7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 15 reste 25",
+			"variationIndex": 1,
+			"variables": {
+				"d": "18",
+				"q": "16",
+				"r": "7",
+				"N": "295"
+			},
+			"answers": ["15", "25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "618 ÷ 3 = 206 reste 0",
+			"variationIndex": 2,
+			"variables": {
+				"d": "3",
+				"a": "2",
+				"b": "6",
+				"q": "206",
+				"r": "0",
+				"N": "618"
+			},
+			"answers": ["206", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : zéro oublié (26)",
+			"variationIndex": 2,
+			"variables": {
+				"d": "3",
+				"a": "2",
+				"b": "6",
+				"q": "206",
+				"r": "0",
+				"N": "618"
+			},
+			"answers": ["26", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

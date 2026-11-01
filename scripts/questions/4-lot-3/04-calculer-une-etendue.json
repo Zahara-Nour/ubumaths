@@ -1,0 +1,360 @@
+{
+	"title": "Calculer une étendue",
+	"description": "Calculer l'étendue d'une série donnée en données brutes (températures relatives), par un tableau d'effectifs ou un diagramme en barres",
+	"grades": ["4"],
+	"theme": "Statistiques",
+	"domain": "Indicateurs",
+	"subdomain": "Étendue",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici les températures minimales (en °C) relevées dans une ville pendant une semaine.\n\n| Jour | Lun. | Mar. | Mer. | Jeu. | Ven. | Sam. | Dim. |\n|---|---|---|---|---|---|---|---|\n| $T$ (°C) | ${{t1}}$ | ${{t2}}$ | ${{t3}}$ | ${{t4}}$ | ${{t5}}$ | ${{t6}}$ | ${{t7}}$ |\n\nCalcule l'étendue de cette série.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "t1",
+					"expression": "-6..12"
+				},
+				{
+					"name": "t2",
+					"expression": "-6..12"
+				},
+				{
+					"name": "t3",
+					"expression": "-6..12"
+				},
+				{
+					"name": "t4",
+					"expression": "-6..12"
+				},
+				{
+					"name": "t5",
+					"expression": "-6..12"
+				},
+				{
+					"name": "t6",
+					"expression": "-6..12"
+				},
+				{
+					"name": "t7",
+					"expression": "-6..12"
+				}
+			],
+			"conditions": [
+				"min(t1,t2,t3,t4,t5,t6,t7)<0",
+				"max(t1,t2,t3,t4,t5,t6,t7)>3",
+				"abs(t7-t1)!=max(t1,t2,t3,t4,t5,t6,t7)-min(t1,t2,t3,t4,t5,t6,t7)"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:max(t1,t2,t3,t4,t5,t6,t7)-min(t1,t2,t3,t4,t5,t6,t7)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Étendue.** L'étendue d'une série est la différence entre sa plus grande valeur et sa plus petite valeur.",
+					"Plus grande valeur : ${{eval:max(t1,t2,t3,t4,t5,t6,t7)}}$ ; plus petite valeur : ${{eval:min(t1,t2,t3,t4,t5,t6,t7)}}$.",
+					"$${{eval:max(t1,t2,t3,t4,t5,t6,t7)}} - ({{eval:min(t1,t2,t3,t4,t5,t6,t7)}}) = \\textcolor{{{color:primary.0}}}{{{solution}}}~\\unit{°C}$$"
+				]
+			}
+		},
+		{
+			"statement": "Dans un club, on a relevé la pointure des chaussures des joueurs.\n\n| Pointure | {{v1}} | {{v2}} | {{v3}} | {{v4}} | {{v5}} |\n|---|---|---|---|---|---|\n| Effectif | {{n1}} | {{n2}} | {{n3}} | {{n4}} | {{n5}} |\n\nCalcule l'étendue des pointures.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "v1",
+					"expression": "35..38"
+				},
+				{
+					"name": "dv2",
+					"expression": "1..2"
+				},
+				{
+					"name": "v2",
+					"expression": "eval:v1+dv2"
+				},
+				{
+					"name": "dv3",
+					"expression": "1..2"
+				},
+				{
+					"name": "v3",
+					"expression": "eval:v2+dv3"
+				},
+				{
+					"name": "dv4",
+					"expression": "1..2"
+				},
+				{
+					"name": "v4",
+					"expression": "eval:v3+dv4"
+				},
+				{
+					"name": "dv5",
+					"expression": "1..2"
+				},
+				{
+					"name": "v5",
+					"expression": "eval:v4+dv5"
+				},
+				{
+					"name": "n1",
+					"expression": "1..9"
+				},
+				{
+					"name": "n2",
+					"expression": "1..9"
+				},
+				{
+					"name": "n3",
+					"expression": "1..9"
+				},
+				{
+					"name": "n4",
+					"expression": "1..9"
+				},
+				{
+					"name": "n5",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["max(n1,n2,n3,n4,n5)-min(n1,n2,n3,n4,n5)!=v5-v1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:v5-v1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Étendue.** L'étendue d'une série est la différence entre sa plus grande valeur et sa plus petite valeur.",
+					"Les valeurs de la série sont les pointures (pas les effectifs) : la plus grande est ${{v5}}$, la plus petite ${{v1}}$.",
+					"$${{v5}} - {{v1}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Le diagramme donne le nombre de livres empruntés au CDI ce mois-ci par les élèves d'une classe.\n\n```barres\naxes: Livres empruntés ; Effectif\n{{v1}} = {{n1}}\n{{v2}} = {{n2}}\n{{v3}} = {{n3}}\n{{v4}} = {{n4}}\n{{v5}} = {{n5}}\n```\n\nCalcule l'étendue de cette série.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "v1",
+					"expression": "0..1"
+				},
+				{
+					"name": "dv2",
+					"expression": "1..2"
+				},
+				{
+					"name": "v2",
+					"expression": "eval:v1+dv2"
+				},
+				{
+					"name": "dv3",
+					"expression": "1..2"
+				},
+				{
+					"name": "v3",
+					"expression": "eval:v2+dv3"
+				},
+				{
+					"name": "dv4",
+					"expression": "1..2"
+				},
+				{
+					"name": "v4",
+					"expression": "eval:v3+dv4"
+				},
+				{
+					"name": "dv5",
+					"expression": "1..2"
+				},
+				{
+					"name": "v5",
+					"expression": "eval:v4+dv5"
+				},
+				{
+					"name": "n1",
+					"expression": "1..9"
+				},
+				{
+					"name": "n2",
+					"expression": "1..9"
+				},
+				{
+					"name": "n3",
+					"expression": "1..9"
+				},
+				{
+					"name": "n4",
+					"expression": "1..9"
+				},
+				{
+					"name": "n5",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["max(n1,n2,n3,n4,n5)-min(n1,n2,n3,n4,n5)!=v5-v1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:v5-v1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Étendue.** L'étendue d'une série est la différence entre sa plus grande valeur et sa plus petite valeur.",
+					"On lit les valeurs sous les barres : la plus grande est ${{v5}}$, la plus petite ${{v1}}$.",
+					"$${{v5}} - {{v1}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Températures de −4 à 12 : 16",
+			"variationIndex": 0,
+			"variables": {
+				"t1": "3",
+				"t2": "-4",
+				"t3": "0",
+				"t4": "8",
+				"t5": "12",
+				"t6": "5",
+				"t7": "1"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 12 − 4 = 8 (signe oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"t1": "3",
+				"t2": "-4",
+				"t3": "0",
+				"t4": "8",
+				"t5": "12",
+				"t6": "5",
+				"t7": "1"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : dernière − première (−2)",
+			"variationIndex": 0,
+			"variables": {
+				"t1": "3",
+				"t2": "-4",
+				"t3": "0",
+				"t4": "8",
+				"t5": "12",
+				"t6": "5",
+				"t7": "1"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pointures 36 à 42 : 6",
+			"variationIndex": 1,
+			"variables": {
+				"v1": "36",
+				"dv2": "1",
+				"v2": "37",
+				"dv3": "2",
+				"v3": "39",
+				"dv4": "1",
+				"v4": "40",
+				"dv5": "2",
+				"v5": "42",
+				"n1": "2",
+				"n2": "5",
+				"n3": "8",
+				"n4": "3",
+				"n5": "1"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : étendue des effectifs (7)",
+			"variationIndex": 1,
+			"variables": {
+				"v1": "36",
+				"dv2": "1",
+				"v2": "37",
+				"dv3": "2",
+				"v3": "39",
+				"dv4": "1",
+				"v4": "40",
+				"dv5": "2",
+				"v5": "42",
+				"n1": "2",
+				"n2": "5",
+				"n3": "8",
+				"n4": "3",
+				"n5": "1"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Livres empruntés 0 à 5 : 5",
+			"variationIndex": 2,
+			"variables": {
+				"v1": "0",
+				"dv2": "1",
+				"v2": "1",
+				"dv3": "1",
+				"v3": "2",
+				"dv4": "1",
+				"v4": "3",
+				"dv5": "2",
+				"v5": "5",
+				"n1": "4",
+				"n2": "9",
+				"n3": "6",
+				"n4": "2",
+				"n5": "1"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : étendue des effectifs (8)",
+			"variationIndex": 2,
+			"variables": {
+				"v1": "0",
+				"dv2": "1",
+				"v2": "1",
+				"dv3": "1",
+				"v3": "2",
+				"dv4": "1",
+				"v4": "3",
+				"dv5": "2",
+				"v5": "5",
+				"n1": "4",
+				"n2": "9",
+				"n3": "6",
+				"n4": "2",
+				"n5": "1"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,297 @@
+{
+	"title": "Volume d'un cône",
+	"description": "Calculer le volume d'un cône de révolution (π × r² × h ÷ 3) : valeur exacte, valeur arrondie, diamètre donné, lien avec le cylindre, formule à choisir",
+	"grades": ["4"],
+	"theme": "Grandeurs",
+	"domain": "Volumes",
+	"subdomain": "Pyramide et cône",
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Un cône de révolution a une base de rayon $r$ et une hauteur $h$. Quelle formule donne son volume ?\n\n```choix\n- $\\mathcal{V} = \\dfrac{\\pi \\times r^2 \\times h}{3}$\n- $\\mathcal{V} = \\pi \\times r^2 \\times h$\n- $\\mathcal{V} = \\dfrac{\\pi \\times r \\times h}{3}$\n- $\\mathcal{V} = \\dfrac{2 \\times \\pi \\times r \\times h}{3}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Volume d'un cône de révolution : $$\\mathcal{V} = \\dfrac{\\text{aire de la base} \\times \\text{hauteur}}{3} = \\dfrac{\\pi \\times r^2 \\times h}{3}$$",
+					"$\\pi \\times r^2 \\times h$ est le volume du **cylindre** de même base et de même hauteur : le cône en est le tiers. $2 \\times \\pi \\times r$ est le périmètre du cercle, pas l'aire du disque."
+				]
+			}
+		},
+		{
+			"statement": "Le cône de révolution de sommet $S$ a une base de centre $O$ et de rayon ${{r}}~\\unit{cm}$ ; sa hauteur mesure ${{h}}~\\unit{cm}$. Calcule la valeur **exacte** de son volume.\n\n```solide\nforme: cone {{r}} {{h}}\nsommets: S O\ncotes: cm\n```\n\n$\\mathcal{V} = ?~\\unit{cm^3}$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..9"
+				},
+				{
+					"name": "h",
+					"expression": "3..15"
+				}
+			],
+			"conditions": ["(r^2*h) % 3 == 0", "2*h > r", "h <= 10*r"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r^2*h/3}}\\pi"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Volume d'un cône de révolution : $$\\mathcal{V} = \\dfrac{\\text{aire de la base} \\times \\text{hauteur}}{3} = \\dfrac{\\pi \\times r^2 \\times h}{3}$$",
+					"$$\\mathcal{V} = \\dfrac{\\pi \\times {{r}}^2 \\times {{h}}}{3} = \\dfrac{{{eval:r^2*h}}\\pi}{3} = \\textcolor{{{color:primary.0}}}{{{eval:r^2*h/3}}\\pi~\\unit{cm^3}}$$",
+					"Valeur exacte : on garde $\\pi$ (environ {{eval:round(r^2*h/3*\\pi)}}~\\unit{cm^3})."
+				]
+			}
+		},
+		{
+			"statement": "Le cône de révolution de sommet $S$ a une base de centre $O$ et de rayon ${{r}}~\\unit{cm}$ ; sa hauteur mesure ${{h}}~\\unit{cm}$. Calcule son volume, arrondi au $\\unit{cm^3}$.\n\n```solide\nforme: cone {{r}} {{h}}\nsommets: S O\ncotes: cm\n```\n\n$\\mathcal{V} \\approx ?~\\unit{cm^3}$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..9"
+				},
+				{
+					"name": "h",
+					"expression": "3..15"
+				}
+			],
+			"conditions": ["abs((r^2*h*\\pi/3) - round(r^2*h*\\pi/3)) < 0.4", "2*h > r", "h <= 10*r"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(r^2*h*\\pi/3)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Volume d'un cône de révolution : $$\\mathcal{V} = \\dfrac{\\text{aire de la base} \\times \\text{hauteur}}{3} = \\dfrac{\\pi \\times r^2 \\times h}{3}$$",
+					"$$\\mathcal{V} = \\dfrac{\\pi \\times {{r}}^2 \\times {{h}}}{3} = \\dfrac{{{eval:r^2*h}}\\pi}{3} \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(r^2*h*\\pi/3)}}~\\unit{cm^3}}$$ (à la calculatrice, arrondi à l'unité)."
+				]
+			}
+		},
+		{
+			"statement": "Un cône de révolution a pour hauteur ${{h}}~\\unit{cm}$ ; sa base est un disque de **diamètre** ${{d}}~\\unit{cm}$. Calcule la valeur exacte de son volume.\n\n$\\mathcal{V} = ?~\\unit{cm^3}$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..9"
+				},
+				{
+					"name": "d",
+					"expression": "eval:2*r"
+				},
+				{
+					"name": "h",
+					"expression": "3..15"
+				}
+			],
+			"conditions": ["(r^2*h) % 3 == 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r^2*h/3}}\\pi"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le rayon est la moitié du diamètre : $r = {{d}} \\div 2 = {{r}}~\\unit{cm}$.",
+					"Volume d'un cône de révolution : $$\\mathcal{V} = \\dfrac{\\text{aire de la base} \\times \\text{hauteur}}{3} = \\dfrac{\\pi \\times r^2 \\times h}{3}$$",
+					"$$\\mathcal{V} = \\dfrac{\\pi \\times {{r}}^2 \\times {{h}}}{3} = \\dfrac{{{eval:r^2*h}}\\pi}{3} = \\textcolor{{{color:primary.0}}}{{{eval:r^2*h/3}}\\pi~\\unit{cm^3}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Un cylindre de révolution et un cône de révolution ont la même base et la même hauteur. Le volume du cylindre est ${{w}}~\\unit{cm^3}$. Quel est le volume du cône ?\n\n$\\mathcal{V} = ?~\\unit{cm^3}$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "4..90"
+				},
+				{
+					"name": "w",
+					"expression": "eval:3*m"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Volume du cylindre : aire de la base × hauteur. Volume du cône : le **tiers** de ce produit (il faut trois cônes pour remplir le cylindre).",
+					"$$\\mathcal{V} = \\dfrac{{{w}}}{3} = \\textcolor{{{color:primary.0}}}{{{m}}~\\unit{cm^3}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Formule π r² h ÷ 3",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : volume du cylindre",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : r au lieu de r²",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "r = 3, h = 4 : 12π",
+			"variationIndex": 1,
+			"variables": {
+				"r": "3",
+				"h": "4"
+			},
+			"answers": ["12\\pi"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme à simplifier : π × 12",
+			"variationIndex": 1,
+			"variables": {
+				"r": "3",
+				"h": "4"
+			},
+			"answers": ["\\pi\\times12"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["products"]
+			}
+		},
+		{
+			"description": "Valeur approchée 37,7 au lieu de la valeur exacte",
+			"variationIndex": 1,
+			"variables": {
+				"r": "3",
+				"h": "4"
+			},
+			"answers": ["37{,}7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans ÷ 3, 36π",
+			"variationIndex": 1,
+			"variables": {
+				"r": "3",
+				"h": "4"
+			},
+			"answers": ["36\\pi"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : r au lieu de r², 4π",
+			"variationIndex": 1,
+			"variables": {
+				"r": "3",
+				"h": "4"
+			},
+			"answers": ["4\\pi"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "r = 3, h = 5 : 47",
+			"variationIndex": 2,
+			"variables": {
+				"r": "3",
+				"h": "5"
+			},
+			"answers": ["47"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans ÷ 3, 141",
+			"variationIndex": 2,
+			"variables": {
+				"r": "3",
+				"h": "5"
+			},
+			"answers": ["141"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Diamètre 6, h = 4 : 12π",
+			"variationIndex": 3,
+			"variables": {
+				"r": "3",
+				"d": "6",
+				"h": "4"
+			},
+			"answers": ["12\\pi"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : diamètre pris pour rayon, 48π",
+			"variationIndex": 3,
+			"variables": {
+				"r": "3",
+				"d": "6",
+				"h": "4"
+			},
+			"answers": ["48\\pi"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Cylindre de 60 cm³ : 20",
+			"variationIndex": 4,
+			"variables": {
+				"m": "20",
+				"w": "60"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : même volume, 60",
+			"variationIndex": 4,
+			"variables": {
+				"m": "20",
+				"w": "60"
+			},
+			"answers": ["60"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

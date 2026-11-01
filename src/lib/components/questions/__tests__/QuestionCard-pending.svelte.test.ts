@@ -11,30 +11,32 @@ import QuestionCard from '../QuestionCard.svelte';
 import type { QuestionInstance } from '$lib/questions/types';
 import { resolvedMarkdown } from '$lib/ubumark';
 
-function qcm(): QuestionInstance {
+function choiceQuestion(): QuestionInstance {
 	return {
-		templateId: 'tpl-qcm',
-		statement: resolvedMarkdown('Combien font 2 + 2 ?'),
+		templateId: 'tpl-choix',
+		statement: resolvedMarkdown('Combien font 2 + 2 ?\n\n```choix\ncase: 0\n- 3\n- 4\n```'),
 		grades: ['6'],
 		theme: 'Entiers',
 		domain: 'Calcul',
 		level: 1,
 		generatedAt: new Date().toISOString(),
-		choices: [
-			{ content: resolvedMarkdown('3'), isCorrect: false },
-			{ content: resolvedMarkdown('4'), isCorrect: true }
-		],
-		shuffledChoices: [
-			{ content: resolvedMarkdown('3'), originalIndex: 0 },
-			{ content: resolvedMarkdown('4'), originalIndex: 1 }
-		],
-		correctChoiceIndex: '1'
+		blanks: [
+			{
+				expectedAnswer: '1',
+				type: 'choice',
+				choice: { choices: ['3', '4'], order: [0, 1], multiple: false }
+			}
+		]
 	} as QuestionInstance;
 }
 
 async function open() {
 	const onAnswerSubmit = vi.fn();
-	const result = await render(QuestionCard, { instance: qcm(), interactive: true, onAnswerSubmit });
+	const result = await render(QuestionCard, {
+		instance: choiceQuestion(),
+		interactive: true,
+		onAnswerSubmit
+	});
 	return { ...result, onAnswerSubmit };
 }
 
@@ -58,7 +60,7 @@ describe('QuestionCard — submitPendingAnswer', () => {
 
 		const answer = component.submitPendingAnswer();
 
-		expect(answer).toMatchObject({ value: 1, isCorrect: true, attempts: 1 });
+		expect(answer).toMatchObject({ value: ['1'], isCorrect: true, attempts: 1 });
 		expect(onAnswerSubmit).not.toHaveBeenCalled();
 		// Carte figée : plus de bouton « Valider », plus de seconde réponse
 		flushSync();

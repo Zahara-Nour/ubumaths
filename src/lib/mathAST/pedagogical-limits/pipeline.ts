@@ -92,7 +92,7 @@ import {
 import { extractExactRational } from '../common/numeric';
 import { tryEvaluateLimitExact, resultToNode, writeLimitValue } from '../limits/exact-evaluation';
 import { compile } from '../eval/compile';
-import { normalize, denormalize, hashNormalForm } from '../normal';
+import { normalize, denormalize, hashNormalForm, canonicalForm } from '../normal';
 import type { NormalForm, NormalTerm, Rational } from '../normal';
 import {
 	absRational,
@@ -519,7 +519,7 @@ function exactValueAt(expression: MathNode, ctx: PipelineContext, value: number)
 	if (raw === null || raw.type === 'infinity') return null;
 	try {
 		// Forme réduite : `\\dfrac{2}{6}` → `\\dfrac{1}{3}`, `\\dfrac{-1}{4}` → `-\\dfrac{1}{4}`
-		const node = denormalize(normalize(raw));
+		const node = canonicalForm(raw);
 		const exact = compile(node)({});
 		const tolerance = 1e-9 * Math.max(1, Math.abs(value));
 		return Math.abs(exact - value) <= tolerance ? node : null;
@@ -1332,7 +1332,7 @@ function irrationalSideTerms(expr: MathNode, variable: string): SideTerm[] | nul
 		const exactSign = numSign === null || denSign === null ? null : numSign === denSign ? 1 : -1;
 		const sign = exactSign ?? numericSign(coefficient);
 		const magnitude =
-			sign === null ? null : sign > 0 ? coefficient : denormalize(normalize(opposite(coefficient)));
+			sign === null ? null : sign > 0 ? coefficient : canonicalForm(opposite(coefficient));
 		return { degree, coefficient, rational: null, sign, magnitude };
 	});
 }
@@ -1718,12 +1718,12 @@ function exactQuotient(
 	try {
 		if (num.rational !== null && den.rational !== null) {
 			// Forme réduite, comme la substitution directe : `\\dfrac{3}{2}`, `-2`
-			return denormalize(normalize(rationalToNode(divRational(num.rational, den.rational))));
+			return canonicalForm(rationalToNode(divRational(num.rational, den.rational)));
 		}
 		// Réduit d'abord par la forme normale (1/(−√2) → −½√2), puis réécrit par
 		// l'évaluation exacte et écrit comme la valeur du moteur (`writeLimitValue`),
 		// signe devant la fraction : `-\\dfrac{\\sqrt{2}}{2}`, `2\\sqrt{2}`.
-		const quotient = denormalize(normalize(divide(num.coefficient, den.coefficient, 'fraction')));
+		const quotient = canonicalForm(divide(num.coefficient, den.coefficient, 'fraction'));
 		const result = tryEvaluateLimitExact(quotient, ctx.variable, ctx.approach, 'both');
 		const node = result === null ? null : resultToNode(result);
 		return node === null || node.type === 'infinity' ? null : writeLimitValue(node);

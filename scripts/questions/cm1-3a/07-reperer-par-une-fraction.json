@@ -1,0 +1,123 @@
+{
+	"title": "Repérer un point par une fraction",
+	"description": "Lire le nombre qui repère un point d'une demi-droite graduée, sous la forme d'une fraction (A repère 3/4) ; unité partagée en 2 à 10 parts",
+	"grades": ["CM1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Repérage",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quel nombre repère le point $A$ ? Écris-le sous la forme d'une fraction.\n\n```line\nstart: 0\nend: {{u}}\nstep: 1/{{d}}\nmajor: {{d}}\npoints: A={{n}}/{{d}}\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2|3|4|5|6|8|10"
+				},
+				{
+					"name": "u",
+					"expression": "eval:min(4,floor(12/d))"
+				},
+				{
+					"name": "nm",
+					"expression": "eval:u*d-1"
+				},
+				{
+					"name": "n",
+					"expression": "1..{{nm}}"
+				}
+			],
+			"conditions": ["mod(n,d)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{n}}}{{{d}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**L'unité.** De $0$ à $1$, l'unité est partagée en ${{d}}$ parts égales : chaque petit intervalle vaut $\\frac{1}{{{d}}}$.",
+					"Le point $A$ est à ${{n}}$ petits intervalles de $0$ : il repère $\\textcolor{{{color:primary.0}}}{\\frac{{{n}}}{{{d}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A repère 3/4",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"u": "3",
+				"nm": "11",
+				"n": "3"
+			},
+			"answers": ["\\frac{3}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "A repère 7/4",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"u": "3",
+				"nm": "11",
+				"n": "7"
+			},
+			"answers": ["\\frac{7}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/12 (toute la droite comptée)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"u": "3",
+				"nm": "11",
+				"n": "3"
+			},
+			"answers": ["\\frac{3}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 (graduations comptées)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"u": "3",
+				"nm": "11",
+				"n": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4/4 (traits comptés depuis 0 inclus)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"u": "3",
+				"nm": "11",
+				"n": "3"
+			},
+			"answers": ["\\frac{4}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

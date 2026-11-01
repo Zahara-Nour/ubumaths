@@ -7,7 +7,9 @@
  * CI de ce commit de version, puis avance `production` jusqu'à lui. Gardé ici :
  * - seul un commit au « CI Summary » vert est livré, toujours avec une version ;
  * - les commits de doc qui le suivent sont enjambés (ils n'ont pas de CI) ;
- * - CI en cours, rouge, ou commit de code sans CI → ni version, ni prod ;
+ * - CI en cours sur main → attente sous le verrou (personne ne merge), puis livraison ;
+ *   `--essai` n'attend pas ; CI rouge ou commit de code sans CI → ni version, ni prod ;
+ * - main local qui diffère d'origin/main → arrêt, en nommant les commits en cause ;
  * - CI de la version rouge → la version reste, la prod ne bouge pas ;
  * - rien de nouveau → ni version, ni prod ; jamais de force-push ;
  * - `--essai` ne crée rien ;
@@ -135,7 +137,9 @@ etat=$(grep "^$sha " "$ETATS_CI" | tail -1 | cut -d' ' -f2)
 if [ "$etat" = running-then-success ]; then
 	n=$(cat "$ETATS_CI.$sha" 2>/dev/null || echo 0)
 	[ "$1" = run ] || echo $((n + 1)) > "$ETATS_CI.$sha"
-	[ "$n" -lt 2 ] && etat=running || etat=success
+	# « gh run » suit le « gh api » du même tour, qui a déjà compté : seuil décalé d'un
+	if [ "$1" = run ]; then seuil=3; else seuil=2; fi
+	[ "$n" -lt "$seuil" ] && etat=running || etat=success
 fi
 if [ "$1" = run ]; then
 	case "$etat" in running) echo in_progress ;; '') echo aucun ;; *) echo completed ;; esac
@@ -279,6 +283,46 @@ describe('deploy-prod.sh — attendre la CI', () => {
 	});
 });
 
+describe('deploy-prod.sh — attendre la CI de main sous le verrou', () => {
+	function deployerAvecAttente(...args: string[]) {
+		const r = spawnSync('bash', [SCRIPT, ...args], {
+			cwd: dansLeBac(local),
+			env: { ...env(), DEPLOY_PROD_ATTENTE_MAX: '60', DEPLOY_PROD_PAUSE: '0' },
+			encoding: 'utf8'
+		});
+		return { status: r.status, sortie: `${r.stdout}${r.stderr}` };
+	}
+
+	it('CI en cours sur la pointe : attend sous le verrou, puis livre', () => {
+		pousser('success', 'src/a.ts');
+		const pointe = pousser('running-then-success', 'src/b.ts');
+		const r = deployerAvecAttente();
+		expect(r.status, r.sortie).toBe(0);
+		expect(r.sortie).toContain('sous le verrou');
+		expect(version().parent).toBe(pointe);
+		expect(production()).toBe(version().sha);
+	});
+
+	it('CI toujours en cours au bout de l’attente : ni version, ni prod', () => {
+		pousser('success', 'src/a.ts');
+		pousser('running', 'src/b.ts');
+		const r = deployerAvecAttente();
+		expect(r.status, r.sortie).toBe(1);
+		expect(r.sortie).toContain('CI en cours');
+		expect(git(local, 'tag')).toBe('');
+		expect(production()).toBeNull();
+	});
+
+	it('--essai n’attend pas la CI en cours', () => {
+		pousser('success', 'src/a.ts');
+		pousser('running-then-success', 'src/b.ts');
+		const r = deployerAvecAttente('--essai');
+		expect(r.status, r.sortie).toBe(1);
+		expect(r.sortie).toContain('CI en cours');
+		expect(r.sortie).not.toContain('sous le verrou');
+	});
+});
+
 describe('deploy-prod.sh — ce qui arrête tout', () => {
 	it('CI de la version rouge : la version reste, la prod ne bouge pas', () => {
 		pousser('success', 'src/a.ts');
@@ -295,6 +339,19 @@ describe('deploy-prod.sh — ce qui arrête tout', () => {
 		const r = deployer();
 		expect(r.status, r.sortie).toBe(1);
 		expect(r.sortie).toContain('diffère de origin/main');
+		expect(production()).toBeNull();
+	});
+
+	it('commit local non poussé : arrêt, en le nommant', () => {
+		pousser('success', 'src/a.ts');
+		mkdirSync(join(local, 'docs'), { recursive: true });
+		writeFileSync(join(local, 'docs/journal.md'), 'local\n');
+		git(local, 'add', '-A');
+		git(local, 'commit', '-q', '-m', 'docs(wip): journal d’une autre session');
+		const r = deployer();
+		expect(r.status, r.sortie).toBe(1);
+		expect(r.sortie).toContain('diffère de origin/main');
+		expect(r.sortie).toContain('journal d’une autre session');
 		expect(production()).toBeNull();
 	});
 

@@ -13,8 +13,11 @@
  * - `<<expr:NAME>>` in math → reserves indices for ? in answerFormats[NAME]
  * - Bloc ```operation à remplir → UNE case, numéro posé dans le bloc (`case: N`) ;
  *   division euclidienne : DEUX cases, N (quotient) et N + 1 (reste), seul N est posé
- * - Bloc ```collection ou ```monnaie à construire (`construire: N`), ou droite à placer
- *   (```line, `placer: N`) → UNE case, `case: N` posé dans le bloc
+ * - Bloc ```collection ou ```monnaie à construire (`construire: N`) → UNE case, `case: N`
+ *   posé dans le bloc ; droite à placer (```line, `placer: A=3 ; B=7`) → une case par point,
+ *   N, N + 1…, seul N est posé ; diagramme en barres à construire (```barres, `placer:`) →
+ *   une case par barre, de même ; repère à points à placer (```courbe, `placer: A=(2 ; 3)`)
+ *   → une case par point, de même (refusé aussi comme option d'un bloc choix)
  * - Bloc ```figure-a-completer → UNE case (la figure de l'élève), `case: N` posé dans le bloc ;
  *   son contenu est mis à l'abri : ni `?` ni `[_]` n'y crée de case
  * - Bloc ```figure-de-travail → de même UNE case, jamais notée (l'élève trace pour vérifier)
@@ -29,6 +32,14 @@ import { findFigureBlocks } from '$lib/ubumark/parser/figure-parser';
 import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
 import { findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
 import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
+import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
+import { findBarsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
+import { findRangersToPlace } from '$lib/ubumark/parser/ranger-parser';
+import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
+import { findCubesToBuild, findPatronsToBuild } from '$lib/ubumark/parser/espace-parser';
+import { findCourbesToPlace } from '$lib/ubumark/parser/courbe-parser';
+import { NESTED_PREFIX } from '$lib/ubumark/parser/nested-line';
+import { buildCaseCount } from './build-answer';
 import { buildKindName, type BuildKind } from '../types';
 import { operationCaseCount } from '$lib/ubumark/utils/operation-division-answer';
 import {
@@ -76,10 +87,11 @@ export interface AssignBlankIndicesResult {
 	/** Blocs ```operation à remplir mal placés (liste, citation) : messages pour l'auteur */
 	operationErrors?: string[];
 	/**
-	 * Case → genre et texte du bloc à construire (```collection, ```monnaie) qui la porte
-	 * (sans `case:`), pour que le générateur lise la valeur attendue. Absent sans tel bloc.
+	 * Case → genre et texte du bloc à construire (```collection, ```monnaie) ou de la
+	 * droite à placer qui la porte (sans `case:`), pour que le générateur lise la valeur
+	 * attendue ; droite : `point`, le rang du point de la case. Absent sans tel bloc.
 	 */
-	buildBlanks?: Record<number, { kind: BuildKind; source: string }>;
+	buildBlanks?: Record<number, BuildBlank>;
 	/** Blocs à construire mal placés (liste, citation) : messages pour l'auteur */
 	buildErrors?: string[];
 	/**
@@ -223,6 +235,11 @@ function choiceBlockErrors(block: MarkedChoiceBlock, caseIndex: number): string[
 	const prefix = `Case ${caseIndex + 1} (bloc choix) :`;
 	const errors: string[] = [];
 	if (!block.closed) errors.push(`${prefix} ${CHOICE_BLOCK_UNCLOSED_MESSAGE}`);
+	// Repère à points à placer en option : le choix est mis à l'abri avant le repérage
+	// des gestes, le repère n'aurait pas de case (jamais jugé)
+	if (findCourbesToPlace(block.body.join('\n')).length > 0) {
+		errors.push(`${prefix} ${buildNestedMessage('courbe')}`);
+	}
 	parseChoiceBody(block.body).choices.forEach((choice, index) => {
 		if (choiceHasBlank(choice)) {
 			errors.push(
@@ -236,9 +253,10 @@ function choiceBlockErrors(block: MarkedChoiceBlock, caseIndex: number): string[
 /** Fence d'ouverture d'un bloc ```figure-a-completer ou ```figure-de-travail, au premier niveau seulement */
 const CONSTRUCTION_FENCE_REGEX = /^```(figure-a-completer|figure-de-travail)\s*$/;
 
-/** La même, en retrait (liste) ou citée : le bloc ne peut pas porter de case */
-const NESTED_CONSTRUCTION_FENCE_REGEX =
-	/^(?:\s+|\s*>\s*)```(figure-a-completer|figure-de-travail)\s*$/;
+/** La même, en retrait (liste), sur la ligne d'un item ou citée : le bloc ne peut pas porter de case */
+const NESTED_CONSTRUCTION_FENCE_REGEX = new RegExp(
+	`^${NESTED_PREFIX}\`\`\`(figure-a-completer|figure-de-travail)\\s*$`
+);
 
 /** Marque d'un bloc ```figure-a-completer ou ```figure-de-travail mis à l'abri : début, rang du bloc, fin */
 const CONSTRUCTION_MARK_START = '\u0000construction:';
@@ -309,8 +327,8 @@ function restoreConstructionBlock(block: ConstructionBlock, caseIndex: number): 
 /** Fence d'ouverture d'un bloc ```operation, au premier niveau seulement */
 const OPERATION_FENCE_REGEX = /^```operation\s*$/;
 
-/** La même, en retrait (liste) ou citée : le bloc ne peut pas porter de case */
-const NESTED_OPERATION_FENCE_REGEX = /^(?:\s+|\s*>\s*)```operation\s*$/;
+/** La même, en retrait (liste), sur la ligne d'un item ou citée : le bloc ne peut pas porter de case */
+const NESTED_OPERATION_FENCE_REGEX = new RegExp(`^${NESTED_PREFIX}\`\`\`operation\\s*$`);
 
 /** Marque provisoire de la case d'un bloc, remplacée par `case: N` à son rang */
 const OPERATION_CASE_MARK = '\u0000operation-case\u0000';
@@ -321,8 +339,21 @@ const OPERATION_NESTED_MESSAGE =
 /** Marque provisoire de la case d'un bloc à construire */
 const BUILD_CASE_MARK = '\u0000build-case\u0000';
 
+const NESTED_BLOCK_NAMES: Record<BuildKind, string> = {
+	collection: 'Un bloc collection à construire',
+	monnaie: 'Un bloc monnaie à construire',
+	line: 'Une droite à placer',
+	horloge: 'Une horloge à placer',
+	barres: 'Un diagramme en barres à construire',
+	ranger: 'Des étiquettes à ranger',
+	partage: 'Une figure à colorier',
+	cubes: 'Un assemblage de cubes à geste',
+	patron: 'Un patron à geste',
+	courbe: 'Un repère à points à placer'
+};
+
 const buildNestedMessage = (kind: BuildKind) =>
-	`${kind === 'line' ? 'Une droite à placer' : `Un bloc ${kind} à construire`} doit être au premier niveau de l’énoncé (ni dans une liste, ni dans une citation)`;
+	`${NESTED_BLOCK_NAMES[kind]} ${kind === 'ranger' ? 'doivent' : 'doit'} être au premier niveau de l’énoncé (ni dans une liste, ni dans une citation)`;
 
 /** Bloc `cases: aucune` : opération résolue, rien à remplir */
 function isSolvedOperation(body: string[]): boolean {
@@ -401,6 +432,18 @@ interface BuildBlock {
 	kind: BuildKind;
 	source: string;
 	closed: boolean;
+	/** Nombre de cases : une par point d'une droite à placer, par barre à construire, sinon une */
+	cases: number;
+}
+
+/**
+ * Case d'un bloc à construire ou d'une droite à placer (`point` : rang du point ;
+ * diagramme en barres : rang de la barre à construire)
+ */
+export interface BuildBlank {
+	kind: BuildKind;
+	source: string;
+	point?: number;
 }
 
 /**
@@ -417,7 +460,14 @@ function markBuildBlocks(statement: string): {
 	const found = [
 		...findBuildCollections(statement).map((b) => ({ ...b, kind: 'collection' as const })),
 		...findBuildMonnaies(statement).map((b) => ({ ...b, kind: 'monnaie' as const })),
-		...findLinesToPlace(statement).map((b) => ({ ...b, kind: 'line' as const }))
+		...findLinesToPlace(statement).map((b) => ({ ...b, kind: 'line' as const })),
+		...findHorlogesToPlace(statement).map((b) => ({ ...b, kind: 'horloge' as const })),
+		...findBarsToPlace(statement).map((b) => ({ ...b, kind: 'barres' as const })),
+		...findRangersToPlace(statement).map((b) => ({ ...b, kind: 'ranger' as const })),
+		...findPartagesToColorier(statement).map((b) => ({ ...b, kind: 'partage' as const })),
+		...findCubesToBuild(statement).map((b) => ({ ...b, kind: 'cubes' as const })),
+		...findPatronsToBuild(statement).map((b) => ({ ...b, kind: 'patron' as const })),
+		...findCourbesToPlace(statement).map((b) => ({ ...b, kind: 'courbe' as const }))
 	].sort((a, b) => a.startIndex - b.startIndex);
 	const errors = found.filter((b) => b.nested).map((b) => buildNestedMessage(b.kind));
 	const marked = found.filter((b) => !b.nested);
@@ -427,7 +477,11 @@ function markBuildBlocks(statement: string): {
 		.flatMap((line, i) => (markAfter.has(i) ? [line, BUILD_CASE_MARK] : [line]));
 	return {
 		statement: out.join('\n'),
-		blocks: marked.map((b) => ({ kind: b.kind, source: b.body.join('\n'), closed: b.closed })),
+		blocks: marked.map((b) => {
+			const source = b.body.join('\n');
+			const cases = buildCaseCount(b.kind, source);
+			return { kind: b.kind, source, closed: b.closed, cases };
+		}),
 		errors
 	};
 }
@@ -474,7 +528,7 @@ export function assignBlankIndices(
 	const builds = markBuildBlocks(operations.statement);
 	const statement = builds.statement;
 	let operationCount = 0;
-	const buildBlanks: Record<number, { kind: BuildKind; source: string }> = {};
+	const buildBlanks: Record<number, BuildBlank> = {};
 	let buildCount = 0;
 
 	// Split statement into math zones and text zones, preserving order.
@@ -581,14 +635,38 @@ export function assignBlankIndices(
 				} else if (text.startsWith(BUILD_CASE_MARK, i)) {
 					newText += `case: ${counter}`;
 					const build = builds.blocks[buildCount++];
-					buildBlanks[counter] = { kind: build.kind, source: build.source };
 					if (!build.closed) {
 						builds.errors.push(
 							`Case ${counter + 1} (${buildKindName(build.kind)}) : bloc non fermé (\`\`\` manquant après la dernière ligne)`
 						);
 					}
-					counter++;
-					blankTypes.push('math');
+					for (let point = 0; point < build.cases; point++) {
+						buildBlanks[counter] = {
+							kind: build.kind,
+							source: build.source,
+							...((build.kind === 'line' ||
+								build.kind === 'barres' ||
+								build.kind === 'ranger' ||
+								build.kind === 'courbe') && {
+								point
+							})
+						};
+						counter++;
+						// Horloge : la réponse est une heure (`9 h 25`), étiquettes : une position
+						// (`2`), figure à colorier : des rangs (`1, 4`), assemblage de cubes : un
+						// quadrillage ou des hauteurs, patron : des faces ou un quadrillage,
+						// point d'un repère : ses coordonnées (`2;3`) ; jamais lues comme un calcul
+						blankTypes.push(
+							build.kind === 'horloge' ||
+								build.kind === 'courbe' ||
+								build.kind === 'ranger' ||
+								build.kind === 'partage' ||
+								build.kind === 'cubes' ||
+								build.kind === 'patron'
+								? 'text'
+								: 'math'
+						);
+					}
 					i += BUILD_CASE_MARK.length;
 				} else if (text[i] === '[' && text[i + 1] === '_' && text[i + 2] === ']') {
 					newText += `{{blank:${counter}}}`;
@@ -626,7 +704,7 @@ export function assignBlankIndices(
 /**
  * A segment of the statement — either a math zone or a text zone
  */
-interface Segment {
+export interface Segment {
 	type: 'math' | 'text';
 	content: string;
 	/** Opening delimiter for math zones ($ or $$) */
@@ -646,7 +724,7 @@ interface Segment {
  * @param statement - The statement to split
  * @returns Array of segments in order of appearance
  */
-function splitIntoSegments(statement: string): Segment[] {
+export function splitIntoSegments(statement: string): Segment[] {
 	const segments: Segment[] = [];
 	let pos = 0;
 

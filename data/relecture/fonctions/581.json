@@ -5,6 +5,49 @@
 	"editNotes": "Génération en échec : les points de suspension « ... » de l'énoncé étaient pris pour une plage aléatoire (a..b) et l'énoncé entier mis entre {{…}}. Énoncé reformulé en question « comment s'appelle le nombre … ? ». Espace finale retirée du choix « l'ordonnée à l'origine ».",
 	"template": {
 		"title": "Vocabulaire des fonctions affines",
+		"variations": [
+			{
+				"statement": "Dans la fonction affine $f(x)={{a}}x{{eval:b;+}}$, comment s'appelle le nombre ${{a}}$ ?\n\n```choix\nmelanger: non\n- le coefficient directeur\n- l'ordonnée à l'origine\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Dans la fonction affine $f(x)={{a}}x{{eval:b;+}}$, comment s'appelle le nombre ${{b}}$ ?\n\n```choix\nmelanger: non\n- le coefficient directeur\n- l'ordonnée à l'origine\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			},
+			{
+				"statement": "Dans la fonction affine $f(x)={{b}}{{eval:a;+}}x$, comment s'appelle le nombre ${{a}}$ ?\n\n```choix\nmelanger: non\n- le coefficient directeur\n- l'ordonnée à l'origine\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Dans la fonction affine $f(x)={{b}}{{eval:a;+}}x$, comment s'appelle le nombre ${{b}}$ ?\n\n```choix\nmelanger: non\n- le coefficient directeur\n- l'ordonnée à l'origine\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			}
+		],
+		"grades": [
+			"3"
+		],
+		"theme": "Fonctions",
+		"domain": "Fonctions affines",
+		"subdomain": "Apprivoiser",
+		"level": 3,
+		"status": "draft",
+		"delay": 10,
 		"shared": {
 			"variables": [
 				{
@@ -15,44 +58,8 @@
 					"name": "b",
 					"expression": "1..9!a,{{eval:-(a)}}"
 				}
-			],
-			"choices": [
-				{
-					"content": "le coefficient directeur"
-				},
-				{
-					"content": "l'ordonnée à l'origine"
-				}
 			]
 		},
-		"variations": [
-			{
-				"statement": "Dans la fonction affine $f(x)={{a}}x{{eval:b;+}}$, comment s'appelle le nombre ${{a}}$ ?",
-				"correctChoiceIndex": ["0"]
-			},
-			{
-				"statement": "Dans la fonction affine $f(x)={{a}}x{{eval:b;+}}$, comment s'appelle le nombre ${{b}}$ ?",
-				"correctChoiceIndex": ["1"]
-			},
-			{
-				"statement": "Dans la fonction affine $f(x)={{b}}{{eval:a;+}}x$, comment s'appelle le nombre ${{a}}$ ?",
-				"correctChoiceIndex": ["0"]
-			},
-			{
-				"statement": "Dans la fonction affine $f(x)={{b}}{{eval:a;+}}x$, comment s'appelle le nombre ${{b}}$ ?",
-				"correctChoiceIndex": ["1"]
-			}
-		],
-		"options": {
-			"shuffleChoices": false
-		},
-		"grades": ["3"],
-		"theme": "Fonctions",
-		"domain": "Fonctions affines",
-		"subdomain": "Apprivoiser",
-		"level": 3,
-		"status": "draft",
-		"delay": 10,
 		"testSpecs": [
 			{
 				"description": "a = coef directeur",
@@ -61,10 +68,12 @@
 					"a": "-5",
 					"b": "3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "b = ordonnée à l'origine",
@@ -73,10 +82,12 @@
 					"a": "-5",
 					"b": "3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v2 a",
@@ -85,10 +96,12 @@
 					"a": "-5",
 					"b": "3"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v3 b",
@@ -97,10 +110,12 @@
 					"a": "-5",
 					"b": "3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "confusion",
@@ -109,10 +124,12 @@
 					"a": "-5",
 					"b": "3"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			}
 		]
 	}

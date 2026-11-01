@@ -1,0 +1,292 @@
+{
+	"title": "Droite des milieux",
+	"description": "Utiliser les trois théorèmes de la droite des milieux : droites parallèles, segment moitié du troisième côté (dans les deux sens), parallèle par un milieu",
+	"grades": ["4"],
+	"theme": "Géométrie",
+	"domain": "Triangles",
+	"subdomain": "Droite des milieux",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}$ est le milieu de $[{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}]$ et ${{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}$ est le milieu de $[{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}]$. Que peut-on dire des droites $({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})$ et $({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})$ ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 9\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} sur [{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}], {{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} sur [{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}].\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point({{if:o==0|4|6}}, 7.5, etiquette=\"haut\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point({{if:o==0|1|9}}, 1, etiquette=\"{{if:o==0|bas-gauche|bas-droite}}\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point({{if:o==0|9|1}}, 1.5, etiquette=\"{{if:o==0|bas-droite|bas-gauche}}\")\n{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} = milieu({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\n{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = milieu({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nstyle({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}, etiquette=\"{{if:o==0|gauche|droite}}\")\nstyle({{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}, etiquette=\"{{if:o==0|droite|gauche}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\nsegment({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}, {{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})\nmarque_segment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}})\nmarque_segment({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nmarque_segment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}, traits=2)\nmarque_segment({{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, traits=2)\n```\n\n```choix\n- Elles sont parallèles\n- Elles sont perpendiculaires\n- Elles sont sécantes\n- On ne peut rien dire\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans un triangle, la droite qui passe par les milieux de deux côtés est **parallèle** au troisième côté.",
+					"Donc $({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})$ et $({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})$ sont \\textcolor{{{color:primary.0}}}{\\text{parallèles}}."
+				]
+			}
+		},
+		{
+			"statement": "${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}$ est le milieu de $[{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}]$ et ${{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}$ est le milieu de $[{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}]$. On donne ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{bc}}~\\unit{cm}$. Calcule ${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}$.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 9\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} sur [{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}], {{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} sur [{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}].\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point({{if:o==0|4|6}}, 7.5, etiquette=\"haut\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point({{if:o==0|1|9}}, 1, etiquette=\"{{if:o==0|bas-gauche|bas-droite}}\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point({{if:o==0|9|1}}, 1.5, etiquette=\"{{if:o==0|bas-droite|bas-gauche}}\")\n{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} = milieu({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\n{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = milieu({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nstyle({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}, etiquette=\"{{if:o==0|gauche|droite}}\")\nstyle({{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}, etiquette=\"{{if:o==0|droite|gauche}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\nsegment({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}, {{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})\nmarque_segment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}})\nmarque_segment({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nmarque_segment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}, traits=2)\nmarque_segment({{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, traits=2)\n```\n\n${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "bc",
+					"expression": "4..19"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:bc/2;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans un triangle, le segment qui joint les milieux de deux côtés mesure la **moitié** du troisième côté.",
+					"$${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = \\dfrac{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}{2} = \\dfrac{{{bc}}}{2} = \\textcolor{{{color:primary.0}}}{{{eval:bc/2;d}}~\\unit{cm}}$$"
+				]
+			}
+		},
+		{
+			"statement": "${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}$ est le milieu de $[{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}]$ et ${{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}$ est le milieu de $[{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}]$. On donne ${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = {{eval:mn;d}}~\\unit{cm}$. Calcule ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 9\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} sur [{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}], {{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} sur [{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}].\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point({{if:o==0|4|6}}, 7.5, etiquette=\"haut\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point({{if:o==0|1|9}}, 1, etiquette=\"{{if:o==0|bas-gauche|bas-droite}}\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point({{if:o==0|9|1}}, 1.5, etiquette=\"{{if:o==0|bas-droite|bas-gauche}}\")\n{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} = milieu({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\n{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = milieu({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nstyle({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}, etiquette=\"{{if:o==0|gauche|droite}}\")\nstyle({{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}, etiquette=\"{{if:o==0|droite|gauche}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\nsegment({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}, {{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})\nmarque_segment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}})\nmarque_segment({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nmarque_segment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}, traits=2)\nmarque_segment({{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, traits=2)\n```\n\n${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "m",
+					"expression": "15..75"
+				},
+				{
+					"name": "mn",
+					"expression": "eval:m/10;d"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*mn;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans un triangle, le segment qui joint les milieux de deux côtés mesure la **moitié** du troisième côté. Le troisième côté mesure donc le **double** :",
+					"$${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = 2 \\times {{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = 2 \\times {{eval:mn;d}} = \\textcolor{{{color:primary.0}}}{{{eval:2*mn;d}}~\\unit{cm}}$$"
+				]
+			}
+		},
+		{
+			"statement": "${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}$ est le milieu de $[{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}]$. La droite parallèle à $({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})$ qui passe par ${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}$ coupe $[{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}]$ en ${{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}$. On donne ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{ac}}~\\unit{cm}$. Calcule ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}$.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 9\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} sur [{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}], {{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} sur [{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}].\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point({{if:o==0|4|6}}, 7.5, etiquette=\"haut\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point({{if:o==0|1|9}}, 1, etiquette=\"{{if:o==0|bas-gauche|bas-droite}}\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point({{if:o==0|9|1}}, 1.5, etiquette=\"{{if:o==0|bas-droite|bas-gauche}}\")\n{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} = milieu({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\n{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = milieu({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nstyle({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}, etiquette=\"{{if:o==0|gauche|droite}}\")\nstyle({{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}, etiquette=\"{{if:o==0|droite|gauche}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\nsegment({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}, {{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})\nmarque_segment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}})\nmarque_segment({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\n```\n\n${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "ac",
+					"expression": "4..19"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:ac/2;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans un triangle, la droite qui passe par le milieu d'un côté et qui est parallèle à un deuxième côté coupe le troisième côté **en son milieu**. Donc ${{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}$ est le milieu de $[{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}]$ :",
+					"$${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = \\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}{2} = \\dfrac{{{ac}}}{2} = \\textcolor{{{color:primary.0}}}{{{eval:ac/2;d}}~\\unit{cm}}$$"
+				]
+			}
+		},
+		{
+			"statement": "${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}$ est le milieu de $[{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}]$. La droite parallèle à $({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})$ qui passe par ${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}$ coupe $[{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}]$ en ${{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}$. Que peut-on dire du point ${{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}$ ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 9\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} sur [{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}], {{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} sur [{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}].\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point({{if:o==0|4|6}}, 7.5, etiquette=\"haut\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point({{if:o==0|1|9}}, 1, etiquette=\"{{if:o==0|bas-gauche|bas-droite}}\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point({{if:o==0|9|1}}, 1.5, etiquette=\"{{if:o==0|bas-droite|bas-gauche}}\")\n{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}} = milieu({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\n{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = milieu({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nstyle({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}, etiquette=\"{{if:o==0|gauche|droite}}\")\nstyle({{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}, etiquette=\"{{if:o==0|droite|gauche}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\nsegment({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}, {{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})\nmarque_segment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}})\nmarque_segment({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\n```\n\n```choix\n- ${{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}$ est le milieu de $[{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}]$\n- ${{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}} = {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}$\n- ${{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}$ est le milieu de $[{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}]$\n- On ne peut rien dire\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans un triangle, la droite qui passe par le milieu d'un côté et qui est parallèle à un deuxième côté coupe le troisième côté **en son milieu**.",
+					"Donc $\\textcolor{{{color:primary.0}}}{{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}}\\text{ est le milieu de }[{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}]}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Parallèles",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"o": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sécantes",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"o": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BC = 9 : MN = 4,5",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"bc": "9"
+			},
+			"answers": ["4{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : MN = BC = 9",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"bc": "9"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le double, 18",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"bc": "9"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "MN = 3,5 : BC = 7",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"m": "35",
+				"mn": "3.5"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la moitié, 1,75",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"m": "35",
+				"mn": "3.5"
+			},
+			"answers": ["1{,}75"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "AC = 11 : AN = 5,5",
+			"variationIndex": 3,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"ac": "11"
+			},
+			"answers": ["5{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : AN = AC = 11",
+			"variationIndex": 3,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"ac": "11"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "N milieu de [AC]",
+			"variationIndex": 4,
+			"variables": {
+				"s": "0",
+				"o": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : on ne peut rien dire",
+			"variationIndex": 4,
+			"variables": {
+				"s": "0",
+				"o": "0"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

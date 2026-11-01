@@ -1,0 +1,306 @@
+{
+	"title": "Mètres, centimètres et kilomètres",
+	"description": "1 m = 100 cm, 1 km = 1 000 m ; 3 m = 300 cm ; 1 m + 46 cm = 146 cm ; 146 cm = 1 m 46 cm ; ce qu'il manque pour 1 km",
+	"grades": ["CE1"],
+	"theme": "Grandeurs",
+	"domain": "Longueurs",
+	"subdomain": "Unités",
+	"level": 7,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète.\n\n$1~\\unit{{{if:s==1|m|km}}} = ?~\\text{{{if:s==1|cm|m}}}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100+900*(s-1)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:s==1|Dans un mètre, il y a cent centimètres.|Dans un kilomètre, il y a mille mètres.}}",
+					"$$1~\\unit{{{if:s==1|m|km}}} = \\textcolor{{{color:primary.0}}}{{{if:s==1|100|1\\,000}}}~\\unit{{{if:s==1|cm|m}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{m} = ?~\\text{cm}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un mètre, c'est $100~\\unit{cm}$ : ${{a}}~\\unit{m}$, c'est ${{a}}$ fois $100~\\unit{cm}$, ${{a}}$ centaines de centimètres.",
+					"$${{a}}~\\unit{m} = \\textcolor{{{color:primary.0}}}{{{eval:100*a}}}~\\unit{cm}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{m} + {{b}}~\\unit{cm} = ?~\\text{cm}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit d'abord les mètres en centimètres : ${{a}}~\\unit{m} = {{eval:100*a}}~\\unit{cm}$.",
+					"Puis on ajoute les centimètres :",
+					"$${{eval:100*a}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:100*a+b}}}$$",
+					"${{a}}~\\unit{m} + {{b}}~\\unit{cm} = {{eval:100*a+b}}~\\unit{cm}$."
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:100*a+b}}~\\unit{cm} = ?~\\text{m}~?~\\text{cm}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans ${{eval:100*a+b}}~\\unit{cm}$, il y a ${{a}}$ {{if:a==1|centaine|centaines}} de centimètres, c'est-à-dire ${{a}}~\\unit{m}$, et il reste ${{b}}~\\unit{cm}$.",
+					"$${{eval:100*a+b}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{a}}}~\\unit{m}~\\textcolor{{{color:primary.0}}}{{{b}}}~\\unit{cm}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{m} + ?~\\text{m} = 1~\\unit{km}$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..18"
+				},
+				{
+					"name": "a",
+					"expression": "eval:50*k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1000-a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{km} = 1\\,000~\\unit{m}$ : on cherche ce qu'il faut ajouter à ${{a}}$ pour arriver à $1\\,000$.",
+					"$${{a}} + \\textcolor{{{color:primary.0}}}{{{eval:1000-a}}} = 1\\,000$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1 m = 100 cm",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 m = 10 cm",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 km = 1 000 m",
+			"variationIndex": 0,
+			"variables": {
+				"s": "2"
+			},
+			"answers": ["1000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 km = 100 m",
+			"variationIndex": 0,
+			"variables": {
+				"s": "2"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 m = 300 cm",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["300"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 m = 30 cm",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 1 m + 46 cm = 146 cm",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "46"
+			},
+			"answers": ["146"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 + 46 = 47",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "46"
+			},
+			"answers": ["47"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1 m + 46 cm = 1 046",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "46"
+			},
+			"answers": ["1046"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 m + 5 cm = 105 cm",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "5"
+			},
+			"answers": ["105"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 m + 5 cm = 15 cm",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "5"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "146 cm = 1 m 46 cm",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"b": "46"
+			},
+			"answers": ["1", "46"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 146 cm = 14 m 6 cm",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"b": "46"
+			},
+			"answers": ["14", "6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "650 m + 350 m = 1 km",
+			"variationIndex": 4,
+			"variables": {
+				"k": "13",
+				"a": "650"
+			},
+			"answers": ["350"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : retenue oubliée (450)",
+			"variationIndex": 4,
+			"variables": {
+				"k": "13",
+				"a": "650"
+			},
+			"answers": ["450"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

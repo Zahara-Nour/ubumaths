@@ -1,0 +1,94 @@
+{
+	"id": "95f73515-63c1-45e2-9b99-242335d8ad03",
+	"title": "Inégalité de concentration : majorant",
+	"description": "Majorant V/(nδ²) de P(|M − μ| ⩾ δ) pour n donné (pièges : V/(nδ), oubli de n)",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Concentration et loi des grands nombres",
+	"subdomain": "Inégalité de concentration",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:v*d^2/n}}"
+				}
+			],
+			"statement": "$M$ est la moyenne d'un échantillon de taille $n={{n}}$ d'une loi d'espérance $\\mu$ et de variance $V={{v}}$.\n\nDonne le majorant de $P\\left(\\left|M-\\mu\\right|\\geqslant {{eval:1/d;d}}\\right)$ fourni par l'inégalité de concentration (nombre décimal).\n\n$P\\left(\\left|M-\\mu\\right|\\geqslant {{eval:1/d;d}}\\right)\\leqslant ?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "100|200|400|500|1000"
+				},
+				{
+					"name": "v",
+					"expression": "1..10"
+				},
+				{
+					"name": "d",
+					"expression": "2|4|5|10"
+				}
+			],
+			"conditions": ["v*d^2 < n"],
+			"correction": {
+				"steps": [
+					"Inégalité de concentration : $P\\left(\\left|M_n-\\mu\\right|\\geqslant\\delta\\right)\\leqslant\\dfrac{V}{n\\delta^{2}}$.",
+					"$\\dfrac{ {{v}} }{ {{n}}\\times{{eval:1/d;d}}^{2} }=\\dfrac{ {{v}} }{ {{eval:n/d^2;d}} }=\\textcolor{{{color:primary.0}}}{{{eval:v*d^2/n;d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0,5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"d": "10",
+				"n": "1000",
+				"v": "5"
+			},
+			"description": "v0 : V = 5, n = 1000, δ = 0,1 → 0,5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0,05"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "10",
+				"n": "1000",
+				"v": "5"
+			},
+			"description": "v0 : V/(nδ) = 0,05",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["500"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "10",
+				"n": "1000",
+				"v": "5"
+			},
+			"description": "v0 : n oublié : 500",
+			"variationIndex": 0
+		}
+	]
+}

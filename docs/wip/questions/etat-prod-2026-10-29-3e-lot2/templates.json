@@ -1,0 +1,1405 @@
+[
+	{
+		"id": "18e2afca-3e36-4dfc-b92b-38c9a6f4bb1a",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 60,
+		"multiple_answers": null,
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Identités remarquables",
+		"level": 10,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "x^2+{{eval:2*n}}x+{{eval:n^2}}"
+					}
+				],
+				"statement": "Développe et réduis :\n\n$$(x+{{n}})^2$$\n\n$?$",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "1..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Carré d'une somme** : $(a+b)^2=a^2+2ab+b^2$. Ici, $a=x$ et $b={{n}}$.",
+						"$$(x+{{n}})^2 = x^2 + 2 \\times x \\times {{n}} + {{n}}^2 = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "x^2-{{eval:2*n}}x+{{eval:n^2}}"
+					}
+				],
+				"statement": "Développe et réduis :\n\n$$(x-{{n}})^2$$\n\n$?$",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "1..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Carré d'une différence** : $(a-b)^2=a^2-2ab+b^2$. Ici, $a=x$ et $b={{n}}$.",
+						"$$(x-{{n}})^2 = x^2 - 2 \\times x \\times {{n}} + {{n}}^2 = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a^2}}x^2+{{eval:2*a*b}}x+{{eval:b^2}}"
+					}
+				],
+				"statement": "Développe et réduis :\n\n$$({{a}}x+{{b}})^2$$\n\n$?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..5"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Carré d'une somme** : $(a+b)^2=a^2+2ab+b^2$. Ici, $a={{a}}x$ et $b={{b}}$.",
+						"$({{a}}x)^2 = {{a}}^2 \\times x^2 = {{eval:a^2}}x^2$ : le carré porte sur ${{a}}$ **et** sur $x$.",
+						"$$({{a}}x+{{b}})^2 = ({{a}}x)^2 + 2 \\times {{a}}x \\times {{b}} + {{b}}^2 = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a^2}}x^2-{{eval:2*a*b}}x+{{eval:b^2}}"
+					}
+				],
+				"statement": "Développe et réduis :\n\n$$({{a}}x-{{b}})^2$$\n\n$?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..5"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					}
+				],
+				"correction": {
+					"steps": [
+						"**Carré d'une différence** : $(a-b)^2=a^2-2ab+b^2$. Ici, $a={{a}}x$ et $b={{b}}$.",
+						"$({{a}}x)^2 = {{a}}^2 \\times x^2 = {{eval:a^2}}x^2$ : le carré porte sur ${{a}}$ **et** sur $x$.",
+						"$$({{a}}x-{{b}})^2 = ({{a}}x)^2 - 2 \\times {{a}}x \\times {{b}} + {{b}}^2 = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{if:t==0|{{eval:a^2}}x^2+{{eval:2*a*b}}x+{{eval:b^2}}|{{if:t==1|{{eval:a^2}}x^2-{{eval:2*a*b}}x+{{eval:b^2}}|{{eval:a^2}}x^2-{{eval:b^2}}}}}}"
+					}
+				],
+				"statement": "Développe et réduis :\n\n$${{if:t==0|({{a}}x+{{b}})^2|{{if:t==1|({{a}}x-{{b}})^2|({{a}}x-{{b}})({{a}}x+{{b}})}}}}$$\n\n$?$",
+				"variables": [
+					{
+						"name": "t",
+						"expression": "0..2"
+					},
+					{
+						"name": "a",
+						"expression": "1..5"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					}
+				],
+				"conditions": ["a>=2 || t==2"],
+				"correction": {
+					"steps": [
+						"**Quelle identité ?** {{if:t==0|**Carré d'une somme** : $(a+b)^2=a^2+2ab+b^2$.|{{if:t==1|**Carré d'une différence** : $(a-b)^2=a^2-2ab+b^2$.|**Produit d'une somme par une différence** : $(a-b)(a+b)=a^2-b^2$.}}}} Ici, $a={{a}}x$ et $b={{b}}$.",
+						"$${{if:t==0|({{a}}x+{{b}})^2 = ({{a}}x)^2 + 2 \\times {{a}}x \\times {{b}} + {{b}}^2|{{if:t==1|({{a}}x-{{b}})^2 = ({{a}}x)^2 - 2 \\times {{a}}x \\times {{b}} + {{b}}^2|({{a}}x-{{b}})({{a}}x+{{b}}) = ({{a}}x)^2 - {{b}}^2}}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Développer (a + b)² et (a − b)²",
+		"description": "Développer avec les identités remarquables : (x + 3)², (x − 5)², (2x + 5)², (3x − 4)², puis l'une des trois identités à reconnaître ((ax + b)², (ax − b)², (ax − b)(ax + b))",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["x^2+6x+9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "3"
+				},
+				"description": "(x + 3)² = x² + 6x + 9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["x^2+9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "3"
+				},
+				"description": "Erreur : double produit oublié x² + 9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["x^2+3x+9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "3"
+				},
+				"description": "Erreur : double produit sans le 2 x² + 3x + 9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["x^2-10x+25"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n": "5"
+				},
+				"description": "(x − 5)² = x² − 10x + 25",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["x^2+10x+25"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "5"
+				},
+				"description": "Erreur : signe du double produit x² + 10x + 25",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["x^2-25"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n": "5"
+				},
+				"description": "Erreur : x² − 25",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["4x^2+20x+25"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "5"
+				},
+				"description": "(2x + 5)² = 4x² + 20x + 25",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["25+20x+4x^2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "5"
+				},
+				"description": "Ordre croissant 25 + 20x + 4x²",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2x^2+20x+25"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "5"
+				},
+				"description": "Erreur : (2x)² écrit 2x²",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["4x^2+10x+25"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "5"
+				},
+				"description": "Erreur : double produit sans le 2",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["9x^2-24x+16"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4"
+				},
+				"description": "(3x − 4)² = 9x² − 24x + 16",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["9x^2-16"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4"
+				},
+				"description": "Erreur : 9x² − 16",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["9x^2-24x-16"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4"
+				},
+				"description": "Erreur : + b² devenu − 16",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["4x^2-25"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "5",
+					"t": "2"
+				},
+				"description": "(2x − 5)(2x + 5) = 4x² − 25",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["4x^2-20x+25"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "5",
+					"t": "2"
+				},
+				"description": "Erreur : traité comme un carré",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["9x^2+6x+1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "1",
+					"t": "0"
+				},
+				"description": "(3x + 1)² = 9x² + 6x + 1",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["9x^2+3x+3x+1"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "1",
+					"t": "0"
+				},
+				"description": "Non réduit 9x² + 3x + 3x + 1",
+				"variationIndex": 4
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "24aff7b0-dded-4530-b743-1072643bd7be",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 60,
+		"multiple_answers": null,
+		"theme": "Calcul littéral",
+		"domain": "Inéquations",
+		"subdomain": "ax ⩾ b",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}"
+					}
+				],
+				"statement": "Résous l'inéquation ${{a}}x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:a*k}}$.\n\nLes solutions sont les nombres $x$ tels que $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "k",
+						"expression": "1..10;±"
+					},
+					{
+						"name": "s",
+						"expression": "0..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On divise les deux membres par ${{a}}$, un nombre **positif** : le sens de l'inégalité **ne change pas**.",
+						"$${{a}}x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:a*k}} \\iff x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}\\dfrac{{{eval:a*k}}}{{{a}}} \\iff \\textcolor{{{color:primary.0}}}{x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}}$$",
+						"{{if:s==0|L'inégalité est **stricte** : la borne n'est pas solution.|{{if:s==2|L'inégalité est **stricte** : la borne n'est pas solution.|L'inégalité est **large** : la borne est solution.}}}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "x{{if:s==0|>|{{if:s==1|\\geqslant |{{if:s==2|<|\\leqslant }}}}}}{{k}}"
+					}
+				],
+				"statement": "Résous l'inéquation ${{a}}x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:a*k}}$.\n\nLes solutions sont les nombres $x$ tels que $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "-9..-2"
+					},
+					{
+						"name": "k",
+						"expression": "1..10;±"
+					},
+					{
+						"name": "s",
+						"expression": "0..3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On divise les deux membres par ${{a}}$, un nombre **négatif** : le sens de l'inégalité **change**.",
+						"$${{a}}x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:a*k}} \\iff x{{if:s==0|>|{{if:s==1|\\geqslant |{{if:s==2|<|\\leqslant }}}}}}\\dfrac{{{eval:a*k}}}{{{a}}} \\iff \\textcolor{{{color:primary.0}}}{x{{if:s==0|>|{{if:s==1|\\geqslant |{{if:s==2|<|\\leqslant }}}}}}{{k}}}$$",
+						"{{if:s==0|L'inégalité est **stricte** : la borne n'est pas solution.|{{if:s==2|L'inégalité est **stricte** : la borne n'est pas solution.|L'inégalité est **large** : la borne est solution.}}}}"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "x{{if:r==0|<|{{if:r==1|\\leqslant |{{if:r==2|>|\\geqslant }}}}}}{{eval:(b)/(a)}}"
+					}
+				],
+				"statement": "Résous l'inéquation ${{a}}x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{b}}$.\n\nLes solutions sont les nombres $x$ tels que $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "-9|-7|-6|-3|3|6|7|9"
+					},
+					{
+						"name": "b",
+						"expression": "1..20;±"
+					},
+					{
+						"name": "s",
+						"expression": "0..3"
+					},
+					{
+						"name": "r",
+						"expression": "{{eval:mod(s+(abs(a)-a)/abs(a),4)}}"
+					}
+				],
+				"conditions": ["gcd(abs(a), abs(b)) == 1"],
+				"correction": {
+					"steps": [
+						"{{if:a>0|On divise les deux membres par ${{a}}$, un nombre **positif** : le sens de l'inégalité **ne change pas**.|On divise les deux membres par ${{a}}$, un nombre **négatif** : le sens de l'inégalité **change**.}}",
+						"$${{a}}x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{b}} \\iff x{{if:r==0|<|{{if:r==1|\\leqslant |{{if:r==2|>|\\geqslant }}}}}}\\dfrac{{{b}}}{{{a}}} \\iff \\textcolor{{{color:primary.0}}}{x{{if:r==0|<|{{if:r==1|\\leqslant |{{if:r==2|>|\\geqslant }}}}}}{{eval:(b)/(a)}}}$$",
+						"La fraction ne tombe pas juste : on la garde sous forme de fraction irréductible, sans valeur approchée. {{if:s==0|L'inégalité est **stricte** : la borne n'est pas solution.|{{if:s==2|L'inégalité est **stricte** : la borne n'est pas solution.|L'inégalité est **large** : la borne est solution.}}}}"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Résoudre une inéquation ax ⩾ b",
+		"description": "Résoudre une inéquation du type ax ⩾ b, les quatre sens (<, ⩽, >, ⩾), a positif ou négatif (3x ⩾ 12, −2x < 6, −7x < 3) ; réponse écrite en inégalité « x > 4 »",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["x>4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"k": "4",
+					"s": "2"
+				},
+				"description": "3x > 12 : x > 4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["x>9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"k": "4",
+					"s": "2"
+				},
+				"description": "Erreur : soustraction x > 9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["x\\geqslant 4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"k": "4",
+					"s": "2"
+				},
+				"description": "Erreur : inégalité large x ⩾ 4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["x>-3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-2",
+					"k": "-3",
+					"s": "0"
+				},
+				"description": "−2x < 6 : x > −3",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["x<-3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "-2",
+					"k": "-3",
+					"s": "0"
+				},
+				"description": "Erreur : sens non changé x < −3",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["x>3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "-2",
+					"k": "-3",
+					"s": "0"
+				},
+				"description": "Erreur : signe perdu x > 3",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["x\\geqslant \\frac{2}{3}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"r": "3",
+					"s": "3"
+				},
+				"description": "3x ⩾ 2 : x ⩾ 2/3",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["x\\geqslant 0{,}67"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"r": "3",
+					"s": "3"
+				},
+				"description": "Erreur : valeur approchée x ⩾ 0,67",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["x>-\\frac{3}{7}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-7",
+					"b": "3",
+					"r": "2",
+					"s": "0"
+				},
+				"description": "−7x < 3 : x > −3/7",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["x<-\\frac{3}{7}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "-7",
+					"b": "3",
+					"r": "2",
+					"s": "0"
+				},
+				"description": "Erreur : sens non changé x < −3/7",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "2ab49a6f-2fc4-4583-9cbb-46ace580c019",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 90,
+		"multiple_answers": null,
+		"theme": "Calcul littéral",
+		"domain": "Equations",
+		"subdomain": "Produit nul",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\{ {{p}} ; {{q}} \\}"
+					}
+				],
+				"statement": "Résous l'équation $({{eval:x-(p)}})({{eval:x-(q)}})=0$.\n\nL'ensemble des solutions est $S=?$.",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "p",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "q",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": ["p != q"],
+				"correction": {
+					"steps": [
+						"**Un produit est nul si et seulement si l'un au moins de ses facteurs est nul.**",
+						"$$({{eval:x-(p)}})({{eval:x-(q)}})=0 \\iff {{eval:x-(p)}}=0 \\text{ ou } {{eval:x-(q)}}=0 \\iff x={{p}} \\text{ ou } x={{q}}$$",
+						"L'équation a deux solutions : $S=\\textcolor{{{color:primary.0}}}{\\{ {{p}} ; {{q}} \\}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\{ {{eval:-(b)/(a)}} ; {{eval:-(d)/(c)}} \\}"
+					}
+				],
+				"statement": "Résous l'équation $({{eval:(a)*x+(b)}})({{eval:(c)*x+(d)}})=0$.\n\nL'ensemble des solutions est $S=?$.",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "2..5"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "2..5"
+					},
+					{
+						"name": "d",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": ["gcd(a, abs(b)) == 1", "gcd(c, abs(d)) == 1", "(b)*(c) != (a)*(d)"],
+				"correction": {
+					"steps": [
+						"**Un produit est nul si et seulement si l'un au moins de ses facteurs est nul.**",
+						"$$\\begin{align} ({{eval:(a)*x+(b)}})({{eval:(c)*x+(d)}})=0 & \\iff {{eval:(a)*x+(b)}}=0 \\text{ ou } {{eval:(c)*x+(d)}}=0 \\\\ & \\iff x=\\dfrac{{{eval:-(b)}}}{{{a}}} \\text{ ou } x=\\dfrac{{{eval:-(d)}}}{{{c}}} \\end{align}$$",
+						"L'équation a deux solutions : $S=\\textcolor{{{color:primary.0}}}{\\{ {{eval:-(b)/(a)}} ; {{eval:-(d)/(c)}} \\}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\{ {{eval:m/5;d}} ; {{eval:j/10;d}} \\}"
+					}
+				],
+				"statement": "Résous l'équation $({{eval:n/2;d}}x-{{eval:n*m/10;d}})({{c}}x{{eval:-(c*j/10);d;+}})=0$.\n\nL'ensemble des solutions est $S=?$.",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "1|3|5|7|9"
+					},
+					{
+						"name": "m",
+						"expression": "6..24"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "j",
+						"expression": "11..49;±"
+					}
+				],
+				"conditions": ["mod(m,5) != 0", "mod(j,10) != 0", "2*j != 4*m"],
+				"correction": {
+					"steps": [
+						"**Un produit est nul si et seulement si l'un au moins de ses facteurs est nul.**",
+						"$$\\begin{align} ({{eval:n/2;d}}x-{{eval:n*m/10;d}})({{c}}x{{eval:-(c*j/10);d;+}})=0 & \\iff {{eval:n/2;d}}x={{eval:n*m/10;d}} \\text{ ou } {{c}}x={{eval:c*j/10;d}} \\\\ & \\iff x=\\dfrac{{{eval:n*m/10;d}}}{{{eval:n/2;d}}} \\text{ ou } x=\\dfrac{{{eval:c*j/10;d}}}{{{c}}} \\\\ & \\iff x={{eval:m/5;d}} \\text{ ou } x={{eval:j/10;d}} \\end{align}$$",
+						"L'équation a deux solutions : $S=\\textcolor{{{color:primary.0}}}{\\{ {{eval:m/5;d}} ; {{eval:j/10;d}} \\}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\{ 0 ; {{eval:-(b)/(a)}} \\}"
+					}
+				],
+				"statement": "Résous l'équation $x({{eval:(a)*x+(b)}})=0$.\n\nL'ensemble des solutions est $S=?$.",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..20;±"
+					}
+				],
+				"conditions": ["gcd(a, abs(b)) == 1"],
+				"correction": {
+					"steps": [
+						"**Un produit est nul si et seulement si l'un au moins de ses facteurs est nul.** Le premier facteur est $x$ lui-même.",
+						"$$x({{eval:(a)*x+(b)}})=0 \\iff x=0 \\text{ ou } {{eval:(a)*x+(b)}}=0 \\iff x=0 \\text{ ou } x={{eval:-(b)/(a)}}$$",
+						"L'équation a deux solutions : $S=\\textcolor{{{color:primary.0}}}{\\{ 0 ; {{eval:-(b)/(a)}} \\}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\{ {{eval:-(a)}} ; {{eval:-(c+f)/(b+d)}} \\}"
+					}
+				],
+				"statement": "Résous l'équation $({{eval:x+(a)}})({{eval:(b)*x+(c)}})+({{eval:x+(a)}})({{eval:(d)*x+(f)}})=0$.\n\nL'ensemble des solutions est $S=?$.",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..5"
+					},
+					{
+						"name": "c",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "d",
+						"expression": "1..5"
+					},
+					{
+						"name": "f",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": ["c+f != 0", "gcd(b+d, abs(c+f)) == 1", "(a)*(b+d) != (c+f)"],
+				"correction": {
+					"steps": [
+						"Ce n'est pas encore un produit : on **factorise** d'abord par le facteur commun $\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}$.",
+						"$$({{eval:x+(a)}})({{eval:(b)*x+(c)}})+({{eval:x+(a)}})({{eval:(d)*x+(f)}}) = \\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}\\left[({{eval:(b)*x+(c)}})+({{eval:(d)*x+(f)}})\\right] = ({{eval:x+(a)}})({{eval:(b+d)*x+(c+f)}})$$",
+						"**Un produit est nul si et seulement si l'un au moins de ses facteurs est nul.**",
+						"$$({{eval:x+(a)}})({{eval:(b+d)*x+(c+f)}})=0 \\iff {{eval:x+(a)}}=0 \\text{ ou } {{eval:(b+d)*x+(c+f)}}=0 \\iff x={{eval:-(a)}} \\text{ ou } x={{eval:-(c+f)/(b+d)}}$$",
+						"L'équation a deux solutions : $S=\\textcolor{{{color:primary.0}}}{\\{ {{eval:-(a)}} ; {{eval:-(c+f)/(b+d)}} \\}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Résoudre une équation produit nul",
+		"description": "Résoudre une équation produit nul : (x − 3)(x + 5) = 0, (2x − 3)(5x + 7) = 0, coefficients décimaux (2,5x − 7)(8x − 9,6) = 0, x(3x − 5) = 0, puis factoriser d'abord (x + 2)(3x − 1) + (x + 2)(x + 4) = 0 ; ensemble des solutions écrit",
+		"shared": {
+			"blankDefaults": {
+				"answerKind": "intervalles"
+			}
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\{3;-5\\}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "3",
+					"q": "-5"
+				},
+				"description": "(x − 3)(x + 5) = 0 : S = {3 ; −5}",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\{-5;3\\}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "3",
+					"q": "-5"
+				},
+				"description": "Ordre inverse {−5 ; 3}",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\{-3;5\\}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "3",
+					"q": "-5"
+				},
+				"description": "Erreur : signes inversés {−3 ; 5}",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\{3\\}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "3",
+					"q": "-5"
+				},
+				"description": "Erreur : une seule solution {3}",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\{\\frac{3}{2};-\\frac{7}{5}\\}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "-3",
+					"c": "5",
+					"d": "7"
+				},
+				"description": "(2x − 3)(5x + 7) = 0 : S = {3/2 ; −7/5}",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\{1{,}5;-1{,}4\\}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "-3",
+					"c": "5",
+					"d": "7"
+				},
+				"description": "Écriture décimale {1,5 ; −1,4}",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\{-\\frac{3}{2};\\frac{7}{5}\\}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "-3",
+					"c": "5",
+					"d": "7"
+				},
+				"description": "Erreur : b/a au lieu de −b/a",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\{2{,}8;1{,}2\\}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "8",
+					"j": "12",
+					"m": "14",
+					"n": "5"
+				},
+				"description": "(2,5x − 7)(8x − 9,6) = 0 : S = {2,8 ; 1,2}",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\{\\frac{14}{5};\\frac{6}{5}\\}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"c": "8",
+					"j": "12",
+					"m": "14",
+					"n": "5"
+				},
+				"description": "En fractions {14/5 ; 6/5}",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\{-2{,}8;-1{,}2\\}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"c": "8",
+					"j": "12",
+					"m": "14",
+					"n": "5"
+				},
+				"description": "Erreur : signes inversés",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\{0;\\frac{5}{3}\\}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "-5"
+				},
+				"description": "x(3x − 5) = 0 : S = {0 ; 5/3}",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["\\{\\frac{5}{3}\\}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "-5"
+				},
+				"description": "Erreur : 0 oublié {5/3}",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["\\{-2;-\\frac{3}{4}\\}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "-1",
+					"d": "1",
+					"f": "4"
+				},
+				"description": "(x + 2)(4x + 3) = 0 : S = {−2 ; −3/4}",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["\\{2;\\frac{3}{4}\\}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "-1",
+					"d": "1",
+					"f": "4"
+				},
+				"description": "Erreur : signes inversés {2 ; 3/4}",
+				"variationIndex": 4
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "dcaabf69-d84c-4498-a0d3-4584d5972cd4",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 90,
+		"multiple_answers": null,
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"subdomain": "Factorisation",
+		"level": 11,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "({{eval:x+(a)}})({{eval:(b+d)*x+(c+f)}})"
+					}
+				],
+				"statement": "Factorise :\n\n$$({{eval:x+(a)}})({{eval:(b)*x+(c)}})+({{eval:x+(a)}})({{eval:(d)*x+(f)}})$$\n\n$?$",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..5"
+					},
+					{
+						"name": "c",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "d",
+						"expression": "1..5"
+					},
+					{
+						"name": "f",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": ["c+f != 0", "gcd(b+d, abs(c+f)) == 1"],
+				"correction": {
+					"steps": [
+						"**Facteur commun** : $k \\times A + k \\times B = k \\times (A + B)$ et $k \\times A - k \\times B = k \\times (A - B)$. Ici, le facteur commun est $\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}$.",
+						"$$\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}({{eval:(b)*x+(c)}})+\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}({{eval:(d)*x+(f)}}) = \\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}\\left[({{eval:(b)*x+(c)}})+({{eval:(d)*x+(f)}})\\right]$$",
+						"On réduit le second facteur : $({{eval:(b)*x+(c)}})+({{eval:(d)*x+(f)}}) = {{eval:(b+d)*x+(c+f)}}$.",
+						"$$\\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "({{eval:x+(a)}})({{eval:(b-d)*x+(c-f)}})"
+					}
+				],
+				"statement": "Factorise :\n\n$$({{eval:x+(a)}})({{eval:(b)*x+(c)}})-({{eval:x+(a)}})({{eval:(d)*x+(f)}})$$\n\n$?$",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..6"
+					},
+					{
+						"name": "c",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "d",
+						"expression": "1..5"
+					},
+					{
+						"name": "f",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": ["b > d", "c-f != 0", "gcd(b-d, abs(c-f)) == 1"],
+				"correction": {
+					"steps": [
+						"**Facteur commun** : $k \\times A + k \\times B = k \\times (A + B)$ et $k \\times A - k \\times B = k \\times (A - B)$. Ici, le facteur commun est $\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}$.",
+						"$$\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}({{eval:(b)*x+(c)}})-\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}({{eval:(d)*x+(f)}}) = \\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}\\left[({{eval:(b)*x+(c)}})-({{eval:(d)*x+(f)}})\\right]$$",
+						"Le signe $-$ devant la parenthèse change **tous** ses signes : $({{eval:(b)*x+(c)}})-({{eval:(d)*x+(f)}}) = {{eval:(b)*x+(c)}}{{eval:-(d)*x-(f)}} = {{eval:(b-d)*x+(c-f)}}$.",
+						"$$\\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "({{eval:(a)*x+(b)}})({{eval:(c+f)*x+(d+g)}})"
+					}
+				],
+				"statement": "Factorise :\n\n$$({{eval:(a)*x+(b)}})({{eval:(c)*x+(d)}})+({{eval:(f)*x+(g)}})({{eval:(a)*x+(b)}})$$\n\n$?$",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "2..5"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "1..4"
+					},
+					{
+						"name": "d",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "f",
+						"expression": "1..4"
+					},
+					{
+						"name": "g",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": [
+					"gcd(a, abs(b)) == 1",
+					"d+g != 0",
+					"gcd(c+f, abs(d+g)) == 1",
+					"c+f != a || d+g != b"
+				],
+				"correction": {
+					"steps": [
+						"**Facteur commun** : $k \\times A + k \\times B = k \\times (A + B)$ et $k \\times A - k \\times B = k \\times (A - B)$. Le facteur commun $\\textcolor{{{color:primary.0}}}{({{eval:(a)*x+(b)}})}$ est placé en tête dans le premier produit, en queue dans le second : l'ordre des facteurs ne compte pas.",
+						"$$\\textcolor{{{color:primary.0}}}{({{eval:(a)*x+(b)}})}({{eval:(c)*x+(d)}})+({{eval:(f)*x+(g)}})\\textcolor{{{color:primary.0}}}{({{eval:(a)*x+(b)}})} = \\textcolor{{{color:primary.0}}}{({{eval:(a)*x+(b)}})}\\left[({{eval:(c)*x+(d)}})+({{eval:(f)*x+(g)}})\\right] = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "({{eval:x+(a)}})({{eval:(b+1)*x+(a+c)}})"
+					}
+				],
+				"statement": "Factorise :\n\n$$({{eval:x+(a)}})^2+({{eval:x+(a)}})({{eval:(b)*x+(c)}})$$\n\n$?$",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..5"
+					},
+					{
+						"name": "c",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": ["a+c != 0", "gcd(b+1, abs(a+c)) == 1"],
+				"correction": {
+					"steps": [
+						"**Facteur commun** : $k \\times A + k \\times B = k \\times (A + B)$ et $k \\times A - k \\times B = k \\times (A - B)$. Un carré est un produit : $({{eval:x+(a)}})^2 = \\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}({{eval:x+(a)}})$.",
+						"$$\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}({{eval:x+(a)}})+\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}({{eval:(b)*x+(c)}}) = \\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}\\left[({{eval:x+(a)}})+({{eval:(b)*x+(c)}})\\right] = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "({{eval:x+(a)}})({{eval:(b)*x+(c+1)}})"
+					}
+				],
+				"statement": "Factorise :\n\n$$({{eval:x+(a)}})({{eval:(b)*x+(c)}})+({{eval:x+(a)}})$$\n\n$?$",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..6"
+					},
+					{
+						"name": "c",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": ["c+1 != 0", "gcd(b, abs(c+1)) == 1"],
+				"correction": {
+					"steps": [
+						"**Facteur commun** : $k \\times A + k \\times B = k \\times (A + B)$ et $k \\times A - k \\times B = k \\times (A - B)$. Le second terme est le facteur commun **tout seul** : $({{eval:x+(a)}}) = \\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})} \\times 1$.",
+						"$$\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}({{eval:(b)*x+(c)}})+\\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})} \\times 1 = \\textcolor{{{color:primary.0}}}{({{eval:x+(a)}})}\\left[({{eval:(b)*x+(c)}})+1\\right] = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Factoriser avec un facteur commun",
+		"description": "Factoriser quand le facteur commun est une expression entre parenthèses : (x + 2)(3x − 1) + (x + 2)(x + 4), avec un −, facteur en tête puis en queue, facteur au carré, facteur seul (le 1 caché)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["(x+2)(4x+3)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "-1",
+					"d": "1",
+					"f": "4"
+				},
+				"description": "(x + 2)(4x + 3)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["(4x+3)(x+2)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "-1",
+					"d": "1",
+					"f": "4"
+				},
+				"description": "Ordre inverse (4x + 3)(x + 2)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["(x+2)(4x+5)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "-1",
+					"d": "1",
+					"f": "4"
+				},
+				"description": "Erreur : (x + 2)(4x + 5)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["(x+2)(3x-1+x+4)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "-1",
+					"d": "1",
+					"f": "4"
+				},
+				"description": "Facteur non réduit",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4x^2+11x+6"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "-1",
+					"d": "1",
+					"f": "4"
+				},
+				"description": "Forme développée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["(x+2)(2x-5)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "-1",
+					"d": "1",
+					"f": "4"
+				},
+				"description": "(x + 2)(2x − 5)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["(x+2)(2x+3)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "-1",
+					"d": "1",
+					"f": "4"
+				},
+				"description": "Erreur : signe du − non distribué (x + 2)(2x + 3)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["(2x+1)(3x+1)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "1",
+					"c": "1",
+					"d": "-3",
+					"f": "2",
+					"g": "4"
+				},
+				"description": "(2x + 1)(3x + 1)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["(2x+1)(3x-7)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "1",
+					"c": "1",
+					"d": "-3",
+					"f": "2",
+					"g": "4"
+				},
+				"description": "Erreur : (2x + 1)(3x − 7)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["(x+3)(3x+2)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "-1"
+				},
+				"description": "(x + 3)(3x + 2)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["(x+3)(2x-1)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "-1"
+				},
+				"description": "Erreur : (x + 3) du carré oublié (x + 3)(2x − 1)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["(x-4)(3x+2)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-4",
+					"b": "3",
+					"c": "1"
+				},
+				"description": "(x − 4)(3x + 2)",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["(x-4)(3x+1)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "-4",
+					"b": "3",
+					"c": "1"
+				},
+				"description": "Erreur : le 1 oublié (x − 4)(3x + 1)",
+				"variationIndex": 4
+			}
+		],
+		"classification_node_id": null
+	}
+]

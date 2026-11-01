@@ -1,0 +1,142 @@
+{
+	"title": "Connaître le centimètre cube",
+	"description": "Savoir qu'un cube de 1 cm d'arête a un volume de 1 cm³, compter les cubes d'un pavé pour trouver son volume, distinguer cm, cm² et cm³",
+	"grades": ["6"],
+	"theme": "Grandeurs",
+	"domain": "Volumes",
+	"subdomain": "Unités",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quel est le volume d'un cube de $1~\\unit{cm}$ d'arête ?\n\n```choix\n- $1~\\unit{cm^3}$\n- $1~\\unit{cm}$\n- $1~\\unit{cm^2}$\n- $1~\\unit{dm^3}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Centimètre cube.** Un cube de $1~\\unit{cm}$ d'arête a un volume de $1~\\unit{cm^3}$ (un centimètre cube). Un volume se mesure en unités « cube » : $\\unit{cm^3}$.",
+					"Son volume est $\\textcolor{{{color:primary.0}}}{1~\\unit{cm^3}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un {{if:c==0|pavé|{{if:c==1|bloc|mur}}}} est formé de ${{n}}$ cubes de $1~\\unit{cm}$ d'arête, sans trou.\n\nQuel est son volume ?\n\n$$?~\\text{cm}^3$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..2"
+				},
+				{
+					"name": "n",
+					"expression": "8..60"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Centimètre cube.** Un cube de $1~\\unit{cm}$ d'arête a un volume de $1~\\unit{cm^3}$ (un centimètre cube). Un volume se mesure en unités « cube » : $\\unit{cm^3}$.",
+					"Chaque cube a un volume de $1~\\unit{cm^3}$ : ${{n}}$ cubes font $\\textcolor{{{color:primary.0}}}{{{n}}~\\unit{cm^3}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quelle unité choisir pour exprimer le volume {{if:c==0|d'une boîte à chaussures|{{if:c==1|d'un dé à jouer|d'une brique de lait}}}} ?\n\n```choix\n- $\\unit{cm^3}$\n- $\\unit{cm}$\n- $\\unit{cm^2}$\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Centimètre cube.** Un cube de $1~\\unit{cm}$ d'arête a un volume de $1~\\unit{cm^3}$ (un centimètre cube). Un volume se mesure en unités « cube » : $\\unit{cm^3}$.",
+					"Un volume s'exprime en $\\textcolor{{{color:primary.0}}}{\\unit{cm^3}}$ ; $\\unit{cm}$ mesure une longueur, $\\unit{cm^2}$ une aire."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Cube de 1 cm : 1 cm³",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 cm²",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "24 cubes : 24 cm³",
+			"variationIndex": 1,
+			"variables": {
+				"c": "0",
+				"n": "24"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6 (arête comptée)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "0",
+				"n": "24"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Volume d'une boîte : cm³",
+			"variationIndex": 2,
+			"variables": {
+				"c": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cm²",
+			"variationIndex": 2,
+			"variables": {
+				"c": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

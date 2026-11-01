@@ -1,0 +1,217 @@
+{
+	"title": "Réciproque et contraposée",
+	"description": "Écrire la réciproque et la contraposée d'une propriété vraie du collège, puis dire si elles sont vraies (contre-exemple)",
+	"grades": ["4"],
+	"theme": "Géométrie",
+	"domain": "Raisonner",
+	"subdomain": "Réciproque et contraposée",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On sait que cette propriété est vraie : « Si {{if:p==0|un quadrilatère est un carré|}}{{if:p==1|un nombre entier se termine par 0|}}{{if:p==2|un triangle est équilatéral|}}{{if:p==3|un nombre entier est divisible par 6|}}{{if:p==4|un quadrilatère est un parallélogramme|}}{{if:p==5|un triangle $ABC$ est rectangle en $A$|}}, alors {{if:p==0|c'est un rectangle|}}{{if:p==1|il est pair|}}{{if:p==2|il est isocèle|}}{{if:p==3|il est divisible par 3|}}{{if:p==4|ses diagonales se coupent en leur milieu|}}{{if:p==5|$BC^2 = AB^2 + AC^2$|}}. » Quelle est sa réciproque ?\n\n```choix\n- « Si {{if:p==0|c'est un rectangle|}}{{if:p==1|il est pair|}}{{if:p==2|il est isocèle|}}{{if:p==3|il est divisible par 3|}}{{if:p==4|ses diagonales se coupent en leur milieu|}}{{if:p==5|$BC^2 = AB^2 + AC^2$|}}, alors {{if:p==0|un quadrilatère est un carré|}}{{if:p==1|un nombre entier se termine par 0|}}{{if:p==2|un triangle est équilatéral|}}{{if:p==3|un nombre entier est divisible par 6|}}{{if:p==4|un quadrilatère est un parallélogramme|}}{{if:p==5|un triangle $ABC$ est rectangle en $A$|}}. »\n- « Si {{if:p==0|ce n'est pas un rectangle|}}{{if:p==1|il n'est pas pair|}}{{if:p==2|il n'est pas isocèle|}}{{if:p==3|il n'est pas divisible par 3|}}{{if:p==4|ses diagonales ne se coupent pas en leur milieu|}}{{if:p==5|$BC^2 \\neq AB^2 + AC^2$|}}, alors {{if:p==0|un quadrilatère n'est pas un carré|}}{{if:p==1|un nombre entier ne se termine pas par 0|}}{{if:p==2|un triangle n'est pas équilatéral|}}{{if:p==3|un nombre entier n'est pas divisible par 6|}}{{if:p==4|un quadrilatère n'est pas un parallélogramme|}}{{if:p==5|un triangle $ABC$ n'est pas rectangle en $A$|}}. »\n- « Si {{if:p==0|un quadrilatère n'est pas un carré|}}{{if:p==1|un nombre entier ne se termine pas par 0|}}{{if:p==2|un triangle n'est pas équilatéral|}}{{if:p==3|un nombre entier n'est pas divisible par 6|}}{{if:p==4|un quadrilatère n'est pas un parallélogramme|}}{{if:p==5|un triangle $ABC$ n'est pas rectangle en $A$|}}, alors {{if:p==0|ce n'est pas un rectangle|}}{{if:p==1|il n'est pas pair|}}{{if:p==2|il n'est pas isocèle|}}{{if:p==3|il n'est pas divisible par 3|}}{{if:p==4|ses diagonales ne se coupent pas en leur milieu|}}{{if:p==5|$BC^2 \\neq AB^2 + AC^2$|}}. »\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0..5"
+				},
+				{
+					"name": "rv",
+					"expression": "{{if:p==0|1|}}{{if:p==1|1|}}{{if:p==2|1|}}{{if:p==3|1|}}{{if:p==4|0|}}{{if:p==5|0|}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La **réciproque** échange le « si » et le « alors » : « Si {{if:p==0|c'est un rectangle|}}{{if:p==1|il est pair|}}{{if:p==2|il est isocèle|}}{{if:p==3|il est divisible par 3|}}{{if:p==4|ses diagonales se coupent en leur milieu|}}{{if:p==5|$BC^2 = AB^2 + AC^2$|}}, alors {{if:p==0|un quadrilatère est un carré|}}{{if:p==1|un nombre entier se termine par 0|}}{{if:p==2|un triangle est équilatéral|}}{{if:p==3|un nombre entier est divisible par 6|}}{{if:p==4|un quadrilatère est un parallélogramme|}}{{if:p==5|un triangle $ABC$ est rectangle en $A$|}}. »"
+				]
+			}
+		},
+		{
+			"statement": "On sait que cette propriété est vraie : « Si {{if:p==0|un quadrilatère est un carré|}}{{if:p==1|un nombre entier se termine par 0|}}{{if:p==2|un triangle est équilatéral|}}{{if:p==3|un nombre entier est divisible par 6|}}{{if:p==4|un quadrilatère est un parallélogramme|}}{{if:p==5|un triangle $ABC$ est rectangle en $A$|}}, alors {{if:p==0|c'est un rectangle|}}{{if:p==1|il est pair|}}{{if:p==2|il est isocèle|}}{{if:p==3|il est divisible par 3|}}{{if:p==4|ses diagonales se coupent en leur milieu|}}{{if:p==5|$BC^2 = AB^2 + AC^2$|}}. » Quelle est sa contraposée ?\n\n```choix\n- « Si {{if:p==0|ce n'est pas un rectangle|}}{{if:p==1|il n'est pas pair|}}{{if:p==2|il n'est pas isocèle|}}{{if:p==3|il n'est pas divisible par 3|}}{{if:p==4|ses diagonales ne se coupent pas en leur milieu|}}{{if:p==5|$BC^2 \\neq AB^2 + AC^2$|}}, alors {{if:p==0|un quadrilatère n'est pas un carré|}}{{if:p==1|un nombre entier ne se termine pas par 0|}}{{if:p==2|un triangle n'est pas équilatéral|}}{{if:p==3|un nombre entier n'est pas divisible par 6|}}{{if:p==4|un quadrilatère n'est pas un parallélogramme|}}{{if:p==5|un triangle $ABC$ n'est pas rectangle en $A$|}}. »\n- « Si {{if:p==0|c'est un rectangle|}}{{if:p==1|il est pair|}}{{if:p==2|il est isocèle|}}{{if:p==3|il est divisible par 3|}}{{if:p==4|ses diagonales se coupent en leur milieu|}}{{if:p==5|$BC^2 = AB^2 + AC^2$|}}, alors {{if:p==0|un quadrilatère est un carré|}}{{if:p==1|un nombre entier se termine par 0|}}{{if:p==2|un triangle est équilatéral|}}{{if:p==3|un nombre entier est divisible par 6|}}{{if:p==4|un quadrilatère est un parallélogramme|}}{{if:p==5|un triangle $ABC$ est rectangle en $A$|}}. »\n- « Si {{if:p==0|un quadrilatère n'est pas un carré|}}{{if:p==1|un nombre entier ne se termine pas par 0|}}{{if:p==2|un triangle n'est pas équilatéral|}}{{if:p==3|un nombre entier n'est pas divisible par 6|}}{{if:p==4|un quadrilatère n'est pas un parallélogramme|}}{{if:p==5|un triangle $ABC$ n'est pas rectangle en $A$|}}, alors {{if:p==0|ce n'est pas un rectangle|}}{{if:p==1|il n'est pas pair|}}{{if:p==2|il n'est pas isocèle|}}{{if:p==3|il n'est pas divisible par 3|}}{{if:p==4|ses diagonales ne se coupent pas en leur milieu|}}{{if:p==5|$BC^2 \\neq AB^2 + AC^2$|}}. »\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0..5"
+				},
+				{
+					"name": "rv",
+					"expression": "{{if:p==0|1|}}{{if:p==1|1|}}{{if:p==2|1|}}{{if:p==3|1|}}{{if:p==4|0|}}{{if:p==5|0|}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La **contraposée** échange le « si » et le « alors » **et** les met à la forme négative : « Si {{if:p==0|ce n'est pas un rectangle|}}{{if:p==1|il n'est pas pair|}}{{if:p==2|il n'est pas isocèle|}}{{if:p==3|il n'est pas divisible par 3|}}{{if:p==4|ses diagonales ne se coupent pas en leur milieu|}}{{if:p==5|$BC^2 \\neq AB^2 + AC^2$|}}, alors {{if:p==0|un quadrilatère n'est pas un carré|}}{{if:p==1|un nombre entier ne se termine pas par 0|}}{{if:p==2|un triangle n'est pas équilatéral|}}{{if:p==3|un nombre entier n'est pas divisible par 6|}}{{if:p==4|un quadrilatère n'est pas un parallélogramme|}}{{if:p==5|un triangle $ABC$ n'est pas rectangle en $A$|}}. »",
+					"Les deux parties sont échangées : on ne garde pas l'ordre de départ."
+				]
+			}
+		},
+		{
+			"statement": "On sait que cette propriété est vraie : « Si {{if:p==0|un quadrilatère est un carré|}}{{if:p==1|un nombre entier se termine par 0|}}{{if:p==2|un triangle est équilatéral|}}{{if:p==3|un nombre entier est divisible par 6|}}{{if:p==4|un quadrilatère est un parallélogramme|}}{{if:p==5|un triangle $ABC$ est rectangle en $A$|}}, alors {{if:p==0|c'est un rectangle|}}{{if:p==1|il est pair|}}{{if:p==2|il est isocèle|}}{{if:p==3|il est divisible par 3|}}{{if:p==4|ses diagonales se coupent en leur milieu|}}{{if:p==5|$BC^2 = AB^2 + AC^2$|}}. » Sa réciproque, « Si {{if:p==0|c'est un rectangle|}}{{if:p==1|il est pair|}}{{if:p==2|il est isocèle|}}{{if:p==3|il est divisible par 3|}}{{if:p==4|ses diagonales se coupent en leur milieu|}}{{if:p==5|$BC^2 = AB^2 + AC^2$|}}, alors {{if:p==0|un quadrilatère est un carré|}}{{if:p==1|un nombre entier se termine par 0|}}{{if:p==2|un triangle est équilatéral|}}{{if:p==3|un nombre entier est divisible par 6|}}{{if:p==4|un quadrilatère est un parallélogramme|}}{{if:p==5|un triangle $ABC$ est rectangle en $A$|}}. », est-elle vraie ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0..5"
+				},
+				{
+					"name": "rv",
+					"expression": "{{if:p==0|1|}}{{if:p==1|1|}}{{if:p==2|1|}}{{if:p==3|1|}}{{if:p==4|0|}}{{if:p==5|0|}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rv}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une propriété vraie n'a pas toujours une réciproque vraie : il faut la vérifier.",
+					"{{if:rv==0|La réciproque est **vraie** : {{if:p==0|un rectangle de longueur 5 cm et de largeur 3 cm n'est pas un carré.|}}{{if:p==1|12 est pair et ne se termine pas par 0.|}}{{if:p==2|un triangle de côtés 5 cm, 5 cm et 3 cm est isocèle sans être équilatéral.|}}{{if:p==3|9 est divisible par 3 mais pas par 6.|}}{{if:p==4|c'est une propriété du cours : un quadrilatère dont les diagonales se coupent en leur milieu est un parallélogramme.|}}{{if:p==5|c'est la réciproque du théorème de Pythagore.|}}|La réciproque est **fausse**. Contre-exemple : {{if:p==0|un rectangle de longueur 5 cm et de largeur 3 cm n'est pas un carré.|}}{{if:p==1|12 est pair et ne se termine pas par 0.|}}{{if:p==2|un triangle de côtés 5 cm, 5 cm et 3 cm est isocèle sans être équilatéral.|}}{{if:p==3|9 est divisible par 3 mais pas par 6.|}}{{if:p==4|c'est une propriété du cours : un quadrilatère dont les diagonales se coupent en leur milieu est un parallélogramme.|}}{{if:p==5|c'est la réciproque du théorème de Pythagore.|}}}}"
+				]
+			}
+		},
+		{
+			"statement": "On sait que cette propriété est vraie : « Si {{if:p==0|un quadrilatère est un carré|}}{{if:p==1|un nombre entier se termine par 0|}}{{if:p==2|un triangle est équilatéral|}}{{if:p==3|un nombre entier est divisible par 6|}}{{if:p==4|un quadrilatère est un parallélogramme|}}{{if:p==5|un triangle $ABC$ est rectangle en $A$|}}, alors {{if:p==0|c'est un rectangle|}}{{if:p==1|il est pair|}}{{if:p==2|il est isocèle|}}{{if:p==3|il est divisible par 3|}}{{if:p==4|ses diagonales se coupent en leur milieu|}}{{if:p==5|$BC^2 = AB^2 + AC^2$|}}. » Sa contraposée, « Si {{if:p==0|ce n'est pas un rectangle|}}{{if:p==1|il n'est pas pair|}}{{if:p==2|il n'est pas isocèle|}}{{if:p==3|il n'est pas divisible par 3|}}{{if:p==4|ses diagonales ne se coupent pas en leur milieu|}}{{if:p==5|$BC^2 \\neq AB^2 + AC^2$|}}, alors {{if:p==0|un quadrilatère n'est pas un carré|}}{{if:p==1|un nombre entier ne se termine pas par 0|}}{{if:p==2|un triangle n'est pas équilatéral|}}{{if:p==3|un nombre entier n'est pas divisible par 6|}}{{if:p==4|un quadrilatère n'est pas un parallélogramme|}}{{if:p==5|un triangle $ABC$ n'est pas rectangle en $A$|}}. », est-elle vraie ?\n\n```choix\n- Oui, toujours\n- Non, jamais\n- Ça dépend de la propriété\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0..5"
+				},
+				{
+					"name": "rv",
+					"expression": "{{if:p==0|1|}}{{if:p==1|1|}}{{if:p==2|1|}}{{if:p==3|1|}}{{if:p==4|0|}}{{if:p==5|0|}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La contraposée d'une propriété vraie est **toujours vraie** : si « {{if:p==0|ce n'est pas un rectangle|}}{{if:p==1|il n'est pas pair|}}{{if:p==2|il n'est pas isocèle|}}{{if:p==3|il n'est pas divisible par 3|}}{{if:p==4|ses diagonales ne se coupent pas en leur milieu|}}{{if:p==5|$BC^2 \\neq AB^2 + AC^2$|}} » était possible avec « {{if:p==0|un quadrilatère est un carré|}}{{if:p==1|un nombre entier se termine par 0|}}{{if:p==2|un triangle est équilatéral|}}{{if:p==3|un nombre entier est divisible par 6|}}{{if:p==4|un quadrilatère est un parallélogramme|}}{{if:p==5|un triangle $ABC$ est rectangle en $A$|}} », la propriété de départ serait fausse."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Carré : la réciproque",
+			"variationIndex": 0,
+			"variables": {
+				"p": "0",
+				"rv": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la contraposée",
+			"variationIndex": 0,
+			"variables": {
+				"p": "0",
+				"rv": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pair : la contraposée",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1",
+				"rv": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « si non… alors non… » dans l'ordre",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1",
+				"rv": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Carré : réciproque fausse",
+			"variationIndex": 2,
+			"variables": {
+				"p": "0",
+				"rv": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : réciproque d'une vraie crue vraie",
+			"variationIndex": 2,
+			"variables": {
+				"p": "0",
+				"rv": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Parallélogramme : réciproque vraie",
+			"variationIndex": 2,
+			"variables": {
+				"p": "4",
+				"rv": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Contraposée toujours vraie",
+			"variationIndex": 3,
+			"variables": {
+				"p": "2",
+				"rv": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ça dépend",
+			"variationIndex": 3,
+			"variables": {
+				"p": "2",
+				"rv": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

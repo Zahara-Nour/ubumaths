@@ -1,0 +1,79 @@
+[
+	{
+		"id": "35f82aad-c94f-4d8a-84d6-12faeebf1c7f",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Puissances : sens et écritures > notation scientifique",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-007"]
+	},
+	{
+		"id": "3806ee3d-efc7-4f7d-ba23-966101aff103",
+		"noeudAvant": null,
+		"noeudApres": "Algèbre > Équations : produit et quotient > x² = a",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-008"]
+	},
+	{
+		"id": "70449b92-5917-4aa1-97db-2ae9774ce8e7",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Racines carrées : calculs > techniques de calcul",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-009"]
+	},
+	{
+		"id": "77ab770d-f591-4ad9-89e9-a03f6b413591",
+		"noeudAvant": null,
+		"noeudApres": "Arithmétique > Nombres premiers > décomposition en facteurs premiers",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-010"]
+	},
+	{
+		"id": "90dca27a-fc58-4821-9648-9cdc406b263f",
+		"noeudAvant": "Nombres et calculs > Fractions : sens et écritures > simplification",
+		"noeudApres": "Nombres et calculs > Fractions : sens et écritures > simplification",
+		"gradesAvant": ["4"],
+		"gradesApres": ["3"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": ["4§4-005"],
+		"tagsApres": ["3§3-001"]
+	},
+	{
+		"id": "93998734-cf93-4db1-b437-ef073f8611de",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Fractions : calculs > fraction d'une quantité",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-003"]
+	},
+	{
+		"id": "acbd2280-4fc8-4842-8474-8693975e6019",
+		"noeudAvant": "Nombres et calculs > Fractions : sens et écritures > simplification",
+		"noeudApres": "Nombres et calculs > Fractions : sens et écritures > simplification",
+		"gradesAvant": ["4"],
+		"gradesApres": ["3"],
+		"statutAvant": "published",
+		"statutApres": "published",
+		"tagsAvant": ["4§4-005"],
+		"tagsApres": ["3§3-001"]
+	}
+]

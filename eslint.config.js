@@ -89,5 +89,25 @@ export default defineConfig(
 		rules: {
 			'supabase/require-error-check': 'error'
 		}
+	},
+	// La forme canonique d'une expression a un nom : `canonicalForm`
+	// (`$lib/mathAST/normal/canonical-form`). Écrit en ligne, l'appel se
+	// recopie sans qu'on sache qu'il sert à comparer ou à calculer, pas à
+	// montrer (ADR 0032). Règle AST : les appels écrits sur plusieurs lignes
+	// sont vus aussi.
+	{
+		files: ['src/**/*.ts', 'src/**/*.svelte'],
+		ignores: ['src/**/__tests__/**', 'src/**/*.test.ts', 'src/**/*.spec.ts'],
+		rules: {
+			'no-restricted-syntax': [
+				'error',
+				{
+					selector:
+						"CallExpression[callee.name='denormalize'] > CallExpression.arguments[callee.name='normalize']",
+					message:
+						'Écrire `canonicalForm(…)` (`$lib/mathAST/normal/canonical-form`) au lieu de `denormalize(normalize(…))`.'
+				}
+			]
+		}
 	}
 );

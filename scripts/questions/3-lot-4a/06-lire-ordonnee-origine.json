@@ -1,0 +1,162 @@
+{
+	"title": "Lire l'ordonnée à l'origine",
+	"description": "Lire graphiquement l'ordonnée à l'origine d'une fonction affine : droite montante, descendante, fonction linéaire (b = 0)",
+	"grades": ["3"],
+	"theme": "Fonctions",
+	"domain": "Fonctions affines",
+	"subdomain": "Lecture graphique",
+	"level": 2,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "La droite $\\mathcal{D}$ ci-dessous représente une fonction affine $f$.\n\n```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-4*abs(m))-1}} ; {{eval:max(1,(p)+4*abs(m))+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=\\mathcal{D}\ntaille: moyenne\ndescription: Droite D représentant une fonction affine f.\n```\n\nQuelle est l'ordonnée à l'origine de $f$ ?\n\n$b=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1|2|3"
+				},
+				{
+					"name": "p",
+					"expression": "1..4;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'ordonnée à l'origine $b$ de $f(x)=ax+b$ est l'**ordonnée du point** où la droite coupe l'**axe des ordonnées** (le point d'abscisse $0$) : $f(0)=b$.",
+					"```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-4*abs(m))-1}} ; {{eval:max(1,(p)+4*abs(m))+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=\\mathcal{D}\npoints: B(0 ; {{p}})\ntaille: moyenne\ndescription: Droite D et son point B sur l'axe des ordonnées.\n```",
+					"$\\mathcal{D}$ coupe l'axe des ordonnées en $B(0\\,;{{p}})$ : $b=\\textcolor{{{color:primary.0}}}{{{p}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La droite $\\mathcal{D}$ ci-dessous représente une fonction affine $f$.\n\n```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-4*abs(m))-1}} ; {{eval:max(1,(p)+4*abs(m))+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=\\mathcal{D}\ntaille: moyenne\ndescription: Droite D représentant une fonction affine f.\n```\n\nQuelle est l'ordonnée à l'origine de $f$ ?\n\n$b=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "-1|-2|-3"
+				},
+				{
+					"name": "p",
+					"expression": "1..4;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'ordonnée à l'origine $b$ de $f(x)=ax+b$ est l'**ordonnée du point** où la droite coupe l'**axe des ordonnées** (le point d'abscisse $0$) : $f(0)=b$.",
+					"```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-4*abs(m))-1}} ; {{eval:max(1,(p)+4*abs(m))+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=\\mathcal{D}\npoints: B(0 ; {{p}})\ntaille: moyenne\ndescription: Droite D et son point B sur l'axe des ordonnées.\n```",
+					"$\\mathcal{D}$ coupe l'axe des ordonnées en $B(0\\,;{{p}})$ : $b=\\textcolor{{{color:primary.0}}}{{{p}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La droite $\\mathcal{D}$ ci-dessous représente une fonction affine $f$.\n\n```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-4*abs(m))-1}} ; {{eval:max(1,(p)+4*abs(m))+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=\\mathcal{D}\ntaille: moyenne\ndescription: Droite D représentant une fonction affine f.\n```\n\nQuelle est l'ordonnée à l'origine de $f$ ?\n\n$b=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1|2|-1|-2"
+				},
+				{
+					"name": "p",
+					"expression": "0"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'ordonnée à l'origine $b$ de $f(x)=ax+b$ est l'**ordonnée du point** où la droite coupe l'**axe des ordonnées** (le point d'abscisse $0$) : $f(0)=b$.",
+					"```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-4*abs(m))-1}} ; {{eval:max(1,(p)+4*abs(m))+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=\\mathcal{D}\npoints: B(0 ; {{p}})\ntaille: moyenne\ndescription: Droite D et son point B sur l'axe des ordonnées.\n```",
+					"$\\mathcal{D}$ coupe l'axe des ordonnées en $B(0\\,;{{p}})$ : $b=\\textcolor{{{color:primary.0}}}{{{p}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Montante, b = 3",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"p": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'abscisse du point sur l'axe des abscisses (−1,5)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"p": "3"
+			},
+			"answers": ["-1{,}5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Descendante, b = −2",
+			"variationIndex": 1,
+			"variables": {
+				"m": "-1",
+				"p": "-2"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur de signe : 2",
+			"variationIndex": 1,
+			"variables": {
+				"m": "-1",
+				"p": "-2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Linéaire : b = 0",
+			"variationIndex": 2,
+			"variables": {
+				"m": "2",
+				"p": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le coefficient 2",
+			"variationIndex": 2,
+			"variables": {
+				"m": "2",
+				"p": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

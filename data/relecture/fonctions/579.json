@@ -5,6 +5,200 @@
 	"template": {
 		"title": "Reconnaître une fonction affine",
 		"description": "A partir de l'expression algébrique",
+		"variations": [
+			{
+				"statement": "Cette fonction est-elle une fonction affine ?\n\n$${{expr1}}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "expr1",
+						"expression": "f(x)={{eval:ax}}{{eval:b;+}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{solution:html}}, $f$ est une fonction affine car son expression est de la forme $ax+b$ avec $a={{a}}$ et $b={{b}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Cette fonction est-elle une fonction affine ?\n\n$${{expr2}}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+				"variables": [
+					{
+						"name": "expr2",
+						"expression": "f(x)={{b}}{{eval:a;+}}x"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{solution:html}}, $f$ est une fonction affine car son expression est de la forme $ax+b$ avec $a={{a}}$ et $b={{b}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Cette fonction est-elle une fonction affine ?\n\n$${{expr3}}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+				"variables": [
+					{
+						"name": "expr3",
+						"expression": "f(x)={{{eval:a/c}}}x{{eval:b/d;+}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{solution:html}}, $f$ est une fonction affine car son expression est de la forme $ax+b$ avec $a={{eval:a/c}}$ et $b={{eval:b/d}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Cette fonction est-elle une fonction affine ?\n\n$${{expr4}}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+				"variables": [
+					{
+						"name": "expr4",
+						"expression": "f(x)={{eval:b/d}}+{{{eval:abs(a)/c}}}x"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{solution:html}}, $f$ est une fonction affine car son expression est de la forme $ax+b$ avec $a={{eval:abs(a)/c}}$ et $b={{eval:b/d}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Cette fonction est-elle une fonction affine ?\n\n$${{expr5}}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "expr5",
+						"expression": "f(x)={{eval:ax}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{solution:html}}, $f$ est une fonction affine car son expression est de la forme $ax+b$ avec $a={{a}}$ et $b=0$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Cette fonction est-elle une fonction affine ?\n\n$${{expr6}}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+				"variables": [
+					{
+						"name": "expr6",
+						"expression": "f(x)=b"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{solution:html}}, $f$ est une fonction affine car son expression est de la forme $ax+b$ avec $a=0$ et $b={{b}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "Cette fonction est-elle une fonction affine ?\n\n$${{expr7}}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "expr7",
+						"expression": "f(x)={{eval:ax^2}}{{eval:b;+}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{solution:html}}, $f$ n'est pas une fonction affine car son expression n'est pas de la forme $ax+b$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			},
+			{
+				"statement": "Cette fonction est-elle une fonction affine ?\n\n$${{expr8}}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+				"variables": [
+					{
+						"name": "expr8",
+						"expression": "f(x)={{b}}{{eval:a;+}}x^3"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{solution:html}}, $f$ n'est pas une fonction affine car son expression n'est pas de la forme $ax+b$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			},
+			{
+				"statement": "Cette fonction est-elle une fonction affine ?\n\n$${{expr9}}$$\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+				"variables": [
+					{
+						"name": "expr9",
+						"expression": "f(x)={{a}}/x{{eval:b;+}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{solution:html}}, $f$ n'est pas une fonction affine car son expression n'est pas de la forme $ax+b$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
+			}
+		],
+		"grades": [
+			"3"
+		],
+		"theme": "Fonctions",
+		"domain": "Fonctions affines",
+		"subdomain": "Apprivoiser",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
 		"shared": {
 			"variables": [
 				{
@@ -23,175 +217,8 @@
 					"name": "d",
 					"expression": "2..9!cd(b)"
 				}
-			],
-			"choices": [
-				{
-					"content": "Oui"
-				},
-				{
-					"content": "Non"
-				}
 			]
 		},
-		"variations": [
-			{
-				"statement": "Cette fonction est-elle une fonction affine ?\n\n$${{expression1}}$$",
-				"correctChoiceIndex": ["0"],
-				"variables": [
-					{
-						"name": "x",
-						"expression": "x|x"
-					},
-					{
-						"name": "expression1",
-						"expression": "f(x)={{eval:ax}}{{eval:b;+}}"
-					}
-				],
-				"correction": {
-					"steps": [
-						"{{solution:html}}, $f$ est une fonction affine car son expression est de la forme $ax+b$ avec $a={{a}}$ et $b={{b}}$."
-					]
-				}
-			},
-			{
-				"statement": "Cette fonction est-elle une fonction affine ?\n\n$${{expression2}}$$",
-				"correctChoiceIndex": ["0"],
-				"variables": [
-					{
-						"name": "expression2",
-						"expression": "f(x)={{b}}{{eval:a;+}}x"
-					}
-				],
-				"correction": {
-					"steps": [
-						"{{solution:html}}, $f$ est une fonction affine car son expression est de la forme $ax+b$ avec $a={{a}}$ et $b={{b}}$."
-					]
-				}
-			},
-			{
-				"statement": "Cette fonction est-elle une fonction affine ?\n\n$${{expression3}}$$",
-				"correctChoiceIndex": ["0"],
-				"variables": [
-					{
-						"name": "expression3",
-						"expression": "f(x)={{{eval:a/c}}}x{{eval:b/d;+}}"
-					}
-				],
-				"correction": {
-					"steps": [
-						"{{solution:html}}, $f$ est une fonction affine car son expression est de la forme $ax+b$ avec $a={{eval:a/c}}$ et $b={{eval:b/d}}$."
-					]
-				}
-			},
-			{
-				"statement": "Cette fonction est-elle une fonction affine ?\n\n$${{expression4}}$$",
-				"correctChoiceIndex": ["0"],
-				"variables": [
-					{
-						"name": "expression4",
-						"expression": "f(x)={{eval:b/d}}+{{{eval:abs(a)/c}}}x"
-					}
-				],
-				"correction": {
-					"steps": [
-						"{{solution:html}}, $f$ est une fonction affine car son expression est de la forme $ax+b$ avec $a={{eval:abs(a)/c}}$ et $b={{eval:b/d}}$."
-					]
-				}
-			},
-			{
-				"statement": "Cette fonction est-elle une fonction affine ?\n\n$${{expression5}}$$",
-				"correctChoiceIndex": ["0"],
-				"variables": [
-					{
-						"name": "x",
-						"expression": "x|x"
-					},
-					{
-						"name": "expression5",
-						"expression": "f(x)={{eval:ax}}"
-					}
-				],
-				"correction": {
-					"steps": [
-						"{{solution:html}}, $f$ est une fonction affine car son expression est de la forme $ax+b$ avec $a={{a}}$ et $b=0$."
-					]
-				}
-			},
-			{
-				"statement": "Cette fonction est-elle une fonction affine ?\n\n$${{expression6}}$$",
-				"correctChoiceIndex": ["0"],
-				"variables": [
-					{
-						"name": "expression6",
-						"expression": "f(x)=b"
-					}
-				],
-				"correction": {
-					"steps": [
-						"{{solution:html}}, $f$ est une fonction affine car son expression est de la forme $ax+b$ avec $a=0$ et $b={{b}}$."
-					]
-				}
-			},
-			{
-				"statement": "Cette fonction est-elle une fonction affine ?\n\n$${{expression7}}$$",
-				"correctChoiceIndex": ["1"],
-				"variables": [
-					{
-						"name": "x",
-						"expression": "x|x"
-					},
-					{
-						"name": "expression7",
-						"expression": "f(x)={{eval:ax^2}}{{eval:b;+}}"
-					}
-				],
-				"correction": {
-					"steps": [
-						"{{solution:html}}, $f$ n'est pas une fonction affine car son expression n'est pas de la forme $ax+b$."
-					]
-				}
-			},
-			{
-				"statement": "Cette fonction est-elle une fonction affine ?\n\n$${{expression8}}$$",
-				"correctChoiceIndex": ["1"],
-				"variables": [
-					{
-						"name": "expression8",
-						"expression": "f(x)={{b}}{{eval:a;+}}x^3"
-					}
-				],
-				"correction": {
-					"steps": [
-						"{{solution:html}}, $f$ n'est pas une fonction affine car son expression n'est pas de la forme $ax+b$."
-					]
-				}
-			},
-			{
-				"statement": "Cette fonction est-elle une fonction affine ?\n\n$${{expression9}}$$",
-				"correctChoiceIndex": ["1"],
-				"variables": [
-					{
-						"name": "expression9",
-						"expression": "f(x)={{a}}/x{{eval:b;+}}"
-					}
-				],
-				"correction": {
-					"steps": [
-						"{{solution:html}}, $f$ n'est pas une fonction affine car son expression n'est pas de la forme $ax+b$."
-					]
-				}
-			}
-		],
-		"options": {
-			"shuffleChoices": false
-		},
-		"grades": ["3"],
-		"theme": "Fonctions",
-		"domain": "Fonctions affines",
-		"subdomain": "Apprivoiser",
-		"level": 1,
-		"status": "draft",
-		"delay": 20,
 		"testSpecs": [
 			{
 				"description": "v0 bonne réponse",
@@ -203,10 +230,12 @@
 					"d": "7",
 					"x": "x|x"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v1 bonne réponse",
@@ -217,10 +246,12 @@
 					"c": "9",
 					"d": "7"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v2 bonne réponse",
@@ -231,10 +262,12 @@
 					"c": "9",
 					"d": "7"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v3 bonne réponse",
@@ -245,10 +278,12 @@
 					"c": "9",
 					"d": "7"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v4 bonne réponse",
@@ -260,10 +295,12 @@
 					"d": "7",
 					"x": "x|x"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v5 bonne réponse",
@@ -274,10 +311,12 @@
 					"c": "9",
 					"d": "7"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "v6 bonne réponse",
@@ -289,10 +328,12 @@
 					"d": "7",
 					"x": "x|x"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v7 bonne réponse",
@@ -303,10 +344,12 @@
 					"c": "9",
 					"d": "7"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v8 bonne réponse",
@@ -317,10 +360,12 @@
 					"c": "9",
 					"d": "7"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v0 : Non refusé",
@@ -332,10 +377,12 @@
 					"d": "7",
 					"x": "x|x"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "v6 x² : Oui refusé",
@@ -347,10 +394,12 @@
 					"d": "7",
 					"x": "x|x"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			}
 		]
 	}

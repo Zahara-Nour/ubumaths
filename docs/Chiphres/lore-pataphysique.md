@@ -201,12 +201,41 @@ Le Royaume comporte **Six Provinces**, qui correspondent aux six grands domaines
 
 **Six provinces, six suffixes différents, six registres distincts** : -ie noble, -stan oriental, -lande nordique, -métrie scientifique, -istan industriel, -ovie slave. La carte sonne comme une vraie Europe imaginaire à six royaumes.
 
+#### Carte du Royaume 🟡
+
+Décision de David (2026-10-29). Plan schématique : `docs/Chiphres/illustrations/carte/plan-schematique.svg` (et `.png`, généré par `plan-schematique.py`, couleurs des provinces d'après leurs lignes « Pour l'illustration ») ; référence pour l'IA (sans texte ni couleur de province, clairières des capitales) : `plan-reference-ia.svg` / `.png`, générée par `plan-schematique.py --reference-ia`.
+
+- **Contour** : celui de la Pologne réelle, simplifié ; la Baltique au nord.
+- **Sandomir** à l'emplacement de Varsovie ; les six provinces rayonnent autour d'elle, frontières irrégulières : **Yoyolande** au nord (Sinusborg, port, à l'emplacement de Gdańsk), **Bedonstan** au nord-est (Lobatchevsk ; les Pythagoriades), **Glitchistan** à l'est (Turingrad, vers Lublin), **Patatovie** au sud (Cracovenn à l'emplacement de Cracovie), **Nombrilie** au sud-ouest (Empoche-les-Bains, sur la Vistule), **Pifométrie** à l'ouest (Bonneteau-sur-Vistule, vers Poznań). Les trois provinces de l'ouest sont plus vastes, Sandomir étant décalée vers l'est.
+- **Voisins** : la Lithuanie au nord-est, l'Empire du Czar à l'est ; l'Isle de la Réunion Pataphysique en encart. Bedonstan et Glitchistan, les deux marches orientales, ont une frontière commune.
+  - **Empire du Czar** 🟡 (décision de David, 2026-10-29) : terre gelée, le froid commence à la frontière (neige, forêts de sapins noirs, brume froide, rivières prises par la glace). Au loin, au bord de la carte, le **palais d'Hiver**, palais de glace aux tours pointues et translucides comme des glaçons, **sans bulbes ni coupoles en oignon** (rien qui évoque un pays réel). Repère sur la carte : le palais de glace. Couleur : Glace du Czar `#66AACC`.
+  - **Lithuanie** 🟡 (décision de David, 2026-10-29) : pays réel, montré neutre : simple bordure de forêts et de lacs, sans ville ni repère. Couleur : Polonais pâle (terre hors du Royaume, laissée en blanc).
+- **L'ordre digestif ne fait pas le tour de Sandomir** sur la carte (dans le sens des aiguilles d'une montre : étapes 3, 4, 6, 5, 1, 2) : il reste celui des étapes, sans flèche.
+- **Mer** : bleu de Pile `#2F62B0`, éclairci (le nuancier n'a pas de bleu de mer).
+
 #### Sandomir, capitale du Royaume 🟢🟡
 
 - **Nom** 🟢 : canon Jarry. Dans _Ubu Roi_ (acte I), le roi Venceslas récompense Ubu : « je te fais aujourd'hui comte de Sandomir ». Chez Jarry, c'est un titre, pas un lieu de bataille : la défaite face au Czar a lieu ailleurs (acte IV).
-- **Géographie** 🟡 (décision de David, 2026-10-06) : Sandomir est une ville **en spirale**, bâtie au point où se rejoignent les six provinces. Elle n'appartient à aucune d'elles. Le **Trône Royal** se trouve au centre de la spirale, comme le cœur d'une gidouille.
+- **Géographie** 🟡 (décision de David, 2026-10-06) : Sandomir est une ville **en spirale**, bâtie au point où se rejoignent les six provinces (à l'emplacement de Varsovie sur la carte, décision de David, 2026-10-29). Elle n'appartient à aucune d'elles. Le **Trône Royal** se trouve au centre de la spirale, comme le cœur d'une gidouille.
 - **Ce qu'on n'en reprend pas** : Sandomierz est aussi une vraie ville de Pologne ; on n'en garde que le nom. Le fondateur du Collège de 'Pataphysique a pris « Sandomir » pour pseudonyme (1948) : le nom vient de Jarry et reste libre, mais rien du Collège n'est repris.
 - **Usage** : « À Sandomir, au Trône Royal… » dans les articles du Shtam et les cinématiques d'Ubu. Pendant de l'Empire du Czar, gouverné depuis son palais d'Hiver.
+- **Pour l'illustration** 🟡 (décision de David, 2026-10-29) :
+  - **Plan** : une seule rue en spirale qui monte doucement vers le centre, bordée de maisons serrées (la spirale est la gidouille, seule forme géométrique de la ville).
+  - **Centre** : le Palais Royal, rond et ventru, coiffé d'un dôme doré surmonté d'une gidouille d'or ; le Trône Royal est dedans.
+  - **Style** : faste ubuesque, beaucoup d'or, bannières vertes de la livrée d'Ubu ; un luxe trop voyant, de mauvais goût assumé. Pas de statues d'Ubu, ni trappe ni machine à décerveler.
+  - **Eau** 🟡 (décision de David, 2026-10-29) : la Vistule ne passe pas par Sandomir (plan de la carte) ; un grand lac voisin alimente des douves qui entourent la ville, franchies par un seul pont, le Pont-Levis.
+  - **Alentours** : campagne neutre, prés et routes qui partent vers les six provinces.
+  - **Gare** 🟡 (décision de David, 2026-10-29) : le chemin de fer à vapeur arrive de l'est (Glitchistan) et s'arrête à une petite gare au bord de la route circulaire, **hors des douves** : les rails ne franchissent pas les douves, le voyageur fait le tour jusqu'au Pont-Levis. La Gare n'est pas un lieu du site.
+  - **Repère sur la carte** : la spirale de la ville avec le dôme doré au centre.
+  - **Couleur** : aucune couleur de province ; Encre et Or pour la ville seule.
+- **Plan de la ville = carte du site** 🟡 (décision de David, 2026-10-29) : les lieux de la Section IV (« Géographie de l'Académie », une page du site = un lieu du Royaume) sont placés le long de la spirale, de l'entrée au centre :
+  1. **Le Pont-Levis du Royaume** (`/`) : l'entrée, sur les douves, seul pont de la ville (une spirale de gidouille n'a qu'une ouverture) ; les routes vers les provinces partent de l'autre bord des douves.
+  2. **Le Grand Marché Polonais** (marché) : les étals de Mère Ubu, au premier tour de la spirale.
+  3. **La Caserne des Palotins** (amis) : la caserne de Bordure.
+  4. **L'Arène des Polonais** (jeux) : petite arène ronde.
+  5. **La Gazette du Royaume** (Shtam) : l'imprimerie, ses presses.
+  6. **La Bibliothèque du Décervelage** (cours).
+  7. **Le Trône Royal** (`/pere-ubu`) : au centre, dans le Palais au dôme doré.
 
 #### Logique sonore et anatomique du Royaume
 
@@ -305,12 +334,16 @@ Bedonstan et Glitchistan sont **les deux provinces -stan** du Royaume. Ce sont *
 - **Cloche de Reset** — bouton de réinitialisation
 - **Pile de Charbon** — file d'attente ou stack
 
-**Capitale Turingrad** : la grande capitale de Glitchistan tire son nom d'**Alan Turing** (1912-1954), mais elle est architecturalement **victorienne-steampunk** plutôt que mid-century. Elle se compose de **quatre quartiers** :
+**Capitale Turingrad** : la grande capitale de Glitchistan tire son nom d'**Alan Turing** (1912-1954), mais elle est architecturalement **victorienne-steampunk** plutôt que mid-century.
 
-- **Quartier Babbage** : machines analytiques, calcul mécanique, polyèdres à engrenages
-- **Quartier Lovelace** : programmation, suites récursives, mascotte Python (Ada Lovelace stylisée en silhouette victorienne tenant un rouleau d'instructions)
-- **Quartier des Tubes** : transmission, mémoires, archives
-- **Place du Reset** : grande place centrale ornée de la **Cloche de Reset** (clocher à vapeur)
+**Plan de la ville** 🟡 (décision de David, 2026-10-29) : ville de brique et de fonte coupée du nord au sud par la Vistule canalisée ; une grande place ronde au centre, trois quartiers autour ; des tubes pneumatiques de laiton relient tous les toits. Six lieux :
+
+1. **Place du Reset** (centre) : la **Machine de Turing** géante (ruban de papier perforé sans fin, tête de lecture cliquetante) au milieu de la place ; au-dessus, la **Cloche de Reset** dans un clocher à vapeur. Quand la machine boucle, on sonne la cloche et tout repart (« Aux grands maux les grands Reset ! »).
+2. **Quartier Babbage** (rive ouest) : usines, cheminées, et la Machine Analytique géante dans une halle à verrière.
+3. **Quartier Lovelace** (rive est) : ateliers de métiers à tisser à cartes perforées (la Machine Analytique « tisse des motifs algébriques comme le métier Jacquard tisse des fleurs », d'après Ada Lovelace, citée de mémoire). Mascotte du quartier : un **python mécanique** en laiton, automate serpent. Le quartier porte le nom d'Ada Lovelace, mais on ne la dessine pas (personne réelle).
+4. **Quartier des Tubes** (nord) : la grande centrale des tubes pneumatiques, les archives où arrivent les cartes perforées.
+5. **La Gare** (sud) : terminus du chemin de fer à vapeur qui traverse la province.
+6. **Les Écluses** : là où la Vistule traverse la ville, avec le dépôt de charbon (la Pile de Charbon).
 
 #### Lecture narrative du cycle des six provinces
 
@@ -368,6 +401,18 @@ Située hors des Six Provinces, **L'Isle de la Réunion Pataphysique** est un te
 - **Observatoire des solutions imaginaires** : le Père Ubu y a installé son observatoire pour noter les _« solutions imaginaires »_ (canon Jarry strict 🟢, _Faustroll_) qui se produisent dans le Royaume.
 - **Lieu transversal sans province** : L'Isle de la Réunion Pataphysique n'est **pas** une 7ᵉ province (le système des Six Provinces reste intact). C'est un **statut différent** — un territoire **outre-mer**, **transversal**, **réservé à l'expérimentation doctrinale**.
 
+#### Pour l'illustration 🟡
+
+Décision de David (2026-10-29). Sur la carte, l'Isle figure en encart.
+
+- **Relief** : île volcanique et montagneuse, volcan au sommet arrondi, pentes vertes et escarpées (le relief de la vraie Réunion, et rien d'autre : ni habitants dessinés ni caricature).
+- **Équivalence des contraires, par la nature** : comme la vraie Réunion, une côte humide et verdoyante à l'est (forêt tropicale), une côte sèche et ensoleillée à l'ouest (savane, herbes sèches) ; les deux se valent.
+- **Observatoire** : au sommet du volcan, la coupole de l'observatoire des solutions imaginaires d'Ubu, lunette pointée vers le ciel.
+- **Réunion des provinces** : un petit port où flottent six drapeaux aux couleurs des six provinces, sans texte.
+- **Repère sur la carte** : l'île entière dans son encart, la coupole au sommet.
+- **Sur la grande carte** (validé par David le 2026-10-29) : encart en bas à droite, sur la neige de l'Empire du Czar, cadre du même style que le cartouche et de taille voisine ; nom « Isle de la Réunion Pataphysique » au-dessus du cadre. Image : `docs/Chiphres/illustrations/carte/vignettes/reunion-ile-ia.webp` (l'île seule, 1264×843, réutilisable pour la page secrète).
+- **Couleur** : mer en bleu de Pile éclairci (comme la Baltique) ; terre sans couleur de province.
+
 #### Fête possible (proposition pour l'Almanach)
 
 ✅ **Adoptée le 2026-10-04** : la **Journée de L'Isle de la Réunion Pataphysique**, le **20 décembre** (16 Glaglavose), date réelle de l'abolition de l'esclavage à La Réunion — clin d'œil au principe d'équivalence : tous les Galopins y sont également libres et également étudiants. Voir Section VIII.
@@ -384,6 +429,20 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
 - **Devise** : « **Patron, la soustraction !** »
 - **Commentaire de la devise** : détournement de l'expression française universelle « Patron, l'addition ! » (cri lancé au serveur en fin de repas pour réclamer la note). En remplaçant _addition_ par _soustraction_, on demande qu'on **enlève** de l'argent au lieu d'en payer — geste pataphysique parfait : escroquerie ubuesque condensée en quatre mots. Mathématiquement, addition et soustraction sont les deux opérations fondatrices de la province ; les détourner l'une par l'autre est l'archétype de l'opération inversée. Lien narratif fort avec Empoche-les-Bains : c'est le cri qu'on entend chaque soir au restaurant du Grand Hôtel thermal.
 - **Paysage canon** : station thermale 1880 plébiscitée par les bourgeois Polonais. Place principale dominée par une grande gidouille de bronze.
+- **Pour l'illustration** 🟡 (décision de David, 2026-10-29) :
+  - **Relief** : collines basses et boisées, au pied de montagnes moyennes au sud-ouest (comme les Sudètes, région thermale de la vraie Pologne).
+  - **Eau** : sources chaudes, bassins ronds et fontaines ; la Vistule traverse Empoche-les-Bains. La vapeur est une brume blanche et légère, jamais les fumées grises du Glitchistan.
+  - **Végétation** : campagne domestiquée et bourgeoise (parcs à l'anglaise, allées de marronniers, pelouses, parterres), rien de sauvage.
+  - **Ville** : Grand Hôtel thermal, buvette à colonnade, kiosque à musique, gidouille de bronze ; à l'entrée des bains, les guichets de péage de Mère Ubu (tout se paie). L'argent de Mère Ubu suffit à dire la province, sans bouliers ni chiffres.
+  - **Repère sur la carte** : la gidouille de bronze devant le Grand Hôtel, avec un filet de vapeur.
+  - **Couleur** : Or phynance `#F3C025`.
+- **Plan de la ville** 🟡 (décision de David, 2026-10-29) : station thermale au fond d'une vallée boisée, traversée par la Vistule ; la ville s'organise autour d'un grand parc thermal, entre la place et les bains. Six lieux :
+  1. **La Place de la Gidouille** : la gidouille de bronze devant le Grand Hôtel thermal, dont le restaurant entend chaque soir « Patron, la soustraction ! ».
+  2. **Le Parc thermal** : allées, parterres, kiosque à musique.
+  3. **La Buvette à colonnade**, bâtie au-dessus de la source chaude.
+  4. **Les Bains** : l'établissement thermal, les guichets de péage de Mère Ubu à l'entrée.
+  5. **La Villa des Phynances** : résidence de Mère Ubu, villa bourgeoise cossue avec sa salle des coffres.
+  6. **La Promenade de la Vistule** : quai planté de marronniers.
 
 #### Bedonstan — _Géométrie_
 
@@ -393,8 +452,21 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
 - **Étymologie** : 🟢 **Lobatchevsk est une vraie ville russe**, homonyme de **Nikolaï Lobatchevski (1792-1856)**, mathématicien russe et l'un des trois fondateurs de la **géométrie non-euclidienne** (avec Bolyai et Gauss). Lobatchevski a fait éclater la géométrie « plate » en proposant des géométries sur des surfaces courbes — exactement les bedaines, patates et polyèdres difformes du Royaume.
 - **Devise** : « **La route est droite, mais la courbe est forte** »
 - **Commentaire de la devise** : détournement de la formule de Jean-Pierre Raffarin (2002, _« la route est droite mais la pente est forte »_) en remplaçant _pente_ par _courbe_. Au premier degré, contradiction Shadok parfaite (une route droite n'a pas de courbe). Au second degré, c'est mathématiquement précis : en **géométrie hyperbolique** (celle de Lobatchevski, gouverneur titulaire de la capitale Lobatchevsk), les droites apparaissent courbes parce que **la courbure de l'espace est forte**. Citation officielle attribuée au Professeur Achras lors de l'inauguration du Polyèdre de la Voie Royale.
-- **Paysage canon** : steppes orientales parsemées de polyèdres en pierre, élevés par les soins d'Achras. Lobatchevsk est entourée de murailles dodécaédriques. Au centre, la grande Académie Achrasienne où l'on étudie les courbures.
+- **Paysage canon** : steppes orientales. Lobatchevsk est entourée d'une enceinte à douze côtés (dodécagone), une tour à chaque angle. Au centre, la grande Académie Achrasienne où l'on étudie les courbures.
 - **Relief de Lobatchevsk** 🟡 (décision de David, 2026-10-08) : la ville est bâtie sur un col en forme de **selle de cheval**, une surface à courbure négative. Comme dans la géométrie de Lobatchevski, la somme des angles d'un triangle tracé dans ses rues est **inférieure à 180°**. Achras en tire une fierté locale : « À Lobatchevsk, un triangle bien élevé a moins de 180 degrés. » Pendant, en géométrie, de la sphère (somme supérieure à 180°).
+- **Pour l'illustration** 🟡 (décision de David, 2026-10-29) : paysage naturel, la géométrie tient à la seule ville (col en selle, enceinte à douze côtés, Académie) ; pas de formes géométriques plaquées sur le paysage.
+  - **Relief** : au nord, steppes rases et ondulées ; à l'est, les **Pythagoriades**, vraies montagnes rocheuses aux sommets enneigés, où la Vistule prend sa source.
+  - **Eau** : la source de la Vistule, quelques lacs ordinaires.
+  - **Végétation** : herbe de steppe, bouquets de bouleaux.
+  - **Polyèdres** : le troupeau d'Achras n'apparaît qu'à ses pieds, sur son portrait ; aucun polyèdre dans le paysage.
+  - **Repère sur la carte** : un dodécaèdre d'or.
+- **Plan de la ville** 🟡 (décision de David, 2026-10-29) : la ville occupe le col en selle entre la steppe et les Pythagoriades (deux pentes montent vers les sommets, deux descendent vers les vallées) ; les rues suivent la courbure. La Vistule naissante, encore torrent, descend des Pythagoriades au pied de la ville. Cinq lieux :
+  1. **L'Académie Achrasienne**, au point-selle, centre exact du col.
+  2. **La Place du Triangle** : place triangulaire dont les angles font moins de 180°.
+  3. **Le Polyèdre de la Voie Royale** : monument à l'entrée, sur la route de Sandomir.
+  4. **Le Pont du Torrent** : pont de pierre sur la Vistule naissante.
+  5. **L'enceinte** à douze côtés, une tour à chaque angle.
+  - **Couleur** : Vert chandelle `#1F9346`.
 
 #### Yoyolande — _Fonctions_
 
@@ -410,7 +482,19 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
 
 - **Devise** : « **Plus ça monte, moins ça descend** »
 - **Commentaire de la devise** : pléonasme contradictoire de pure veine Shadok / Pierre Dac.
-- **Paysage canon** : ville-port nordique aux quais ondulés, toits en sinusoïdes, ponts en courbes parfaites. Le grand phare de Sinusborg projette son faisceau en oscillation cyclique. Les bateaux qui montent et descendent en cadence dans le port créent un ballet permanent.
+- **Paysage canon** : ville-port nordique aux toits en sinusoïdes (quais et ponts ordinaires, décision de David, 2026-10-29 : une seule forme, la plus lisible). Le grand phare de Sinusborg projette son faisceau en oscillation cyclique. Les bateaux qui montent et descendent en cadence dans le port créent un ballet permanent.
+- **Pour l'illustration** 🟡 (décision de David, 2026-10-29) : paysage naturel, les fonctions ne se montrent que dans la ville (toits, phare, bateaux, grue).
+  - **Relief** : côte basse de dunes de sable et de plages, longue flèche de sable avançant dans la mer (comme les dunes de Łeba et la presqu'île de Hel) ; derrière, plaine de lacs et de forêts.
+  - **Eau** : la Baltique ; le delta de la Vistule, dont les bras se ramifient avant la mer, à Sinusborg.
+  - **Végétation** : forêts de pins, herbes des dunes.
+  - **Repère sur la carte** : le phare de Sinusborg.
+  - **Couleur** : Pourpre royal `#8F2447` (la tunique de Bougrelas).
+- **Plan de la ville** 🟡 (décision de David, 2026-10-29) : port nordique bâti sur les îles du delta de la Vistule ; les bras du fleuve découpent la ville en îlots, le port s'ouvre sur la Baltique. Les fonctions passent par ce qui monte et descend. Cinq lieux :
+  1. **Le Grand Phare**, au bout de la jetée, faisceau qui balaie en cycle.
+  2. **Le Port** : bateaux qui montent et descendent avec la houle.
+  3. **La Grue du Port** : grande grue de bois qui monte et descend les cargaisons, comme le yo-yo (d'après la grue médiévale de Gdańsk).
+  4. **La Résidence de Bougrelas** : maison haute et étroite à pignons nordiques, sur le quai principal.
+  5. **Les Ponts du delta**, entre les îlots.
 
 - Pifométrie — _Probabilités et statistiques_
 
@@ -423,7 +507,20 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
   - **Étymologie de la capitale** : du **bonneteau**, jeu de cartes truqué par excellence. La **Vistule** est la vraie rivière de Pologne (1047 km, traverse Cracovie et Varsovie, se jette dans la Baltique près de Gdańsk) — elle est canonisée comme **fleuve principal de la Pologne pataphysique**, traversant plusieurs provinces. **Note historique pédagogique** : les probabilités sont nées en 1654 du **problème des partis** posé par le chevalier de Méré à Pascal — un problème de **paris au jeu**. La discipline mathématique des probabilités est **historiquement** une science du jeu d'argent. Pifométrie réactive cette filiation oubliée : enseigner les probabilités, c'est revenir aux origines tripotardes de la discipline.
   - **Devise** : « **Jamais trois sans deux** »
   - **Commentaire de la devise** : inversion du proverbe « Jamais deux sans trois » (proverbe qui exprime l'illusion que deux occurrences appellent une troisième) qui devient alors vrai : pour avoir trois occurrences, il en faut déjà deux.
-  - **Paysage canon** : ville-tripot fluvial sur la Vistule. Tapis verts à perte de vue, croupiers qui distribuent des cartes au bord de l'eau. Sur la place principale, une grande **Roulette Royale** visible à des lieues — elle tourne en permanence, ses 37 cases numérotées défilant sous le ciel polonais. Le Cheval à Phynances trône sur l'estrade centrale, hennissant à chaque sortie de numéro. Sur les façades des tripots, des inscriptions : _« La maison gagne toujours, et quand elle perd, elle aurait pu gagner. »_ — devise officieuse des établissements de jeu.
+  - **Paysage canon** : ville-tripot fluvial sur la Vistule. Tapis verts à perte de vue, croupiers qui distribuent des cartes au bord de l'eau. Sur la place principale, une grande **Roulette Royale** visible à des lieues — elle tourne en permanence, ses 37 cases numérotées défilant sous le ciel polonais. Le Cheval à Phynances trône sur l'estrade centrale, hennissant à chaque sortie de numéro. La devise officieuse des établissements de jeu, _« La maison gagne toujours, et quand elle perd, elle aurait pu gagner. »_, se dit mais ne s'écrit pas sur les façades (pas de texte dans les illustrations).
+  - **Pour l'illustration** 🟡 (décision de David, 2026-10-29) :
+    - **Relief** : grande plaine plate et agricole, la plus vaste et la plus ouverte des provinces.
+    - **Eau** : la Vistule large et paresseuse, grands méandres, bancs de sable, péniches ; Bonneteau-sur-Vistule sur la rive.
+    - **Végétation** : champs, prairies, haies.
+    - **Champ de courses** dans la plaine : tribunes et piste ovale (le Cheval à Phynances, les paris).
+    - **Repère sur la carte** : la Roulette Royale.
+    - **Couleur** : Brun merdre `#593B26` (la robe du Cheval, le bois des tripots).
+  - **Plan de la ville** 🟡 (décision de David, 2026-10-29) : ville bâtie sur les deux rives d'un grand méandre de la Vistule, un banc de sable au milieu du fleuve ; on y entre par la plaine. Cinq lieux :
+    1. **La Grand-Place** : la Roulette Royale (dessinée sans numéros : pas de texte dans les illustrations) et l'estrade du Cheval à Phynances.
+    2. **Le Quai des Tripots** : maisons de jeu le long du fleuve, tables à tapis vert dehors au bord de l'eau.
+    3. **Le Casino flottant** : bateau à aubes amarré au quai, devenu salle de jeu.
+    4. **Le Champ de courses** : tribunes et piste ovale, à la sortie de la ville, côté plaine.
+    5. **La Caisse du Cheval** : petit comptoir où le Cheval prélève sa commission de 10 % sur tous les paris.
 
 - #### Glitchistan — _Algorithmique_
   - **Gouverneur** : 🟢 **Bosse-de-Nage** (canon Jarry, _Gestes et opinions du docteur Faustroll, pataphysicien_) — cynocéphale (homme à tête de chien) qui **n'articule que « ha ha »**. C'est-à-dire qu'il est **mathématiquement** un programme qui boucle sur une seule instruction (`while True: print('ha ha')`). C'est un **bug humanoïde**, autorité officielle qui répond à toutes les questions par le même son glitché. **Cohérence pataphysique enrichie** : Bosse-de-Nage est aussi, par la même mécanique de répétition automatique, le **maître des bruits inattendus** — son _« ha ha »_ perpétuel **est** le chprout' permanent de la province. C'est le Régent canonique des bugs corporels-numériques. **Voix** : exclusivement « ha ha », parfois « hahaha » lors des grandes décisions, plus rarement un silence (qui est interprété comme un crash royal). Les Galopins apprennent à décoder (« ha ha » suivi d'un sourire = approbation, suivi d'un froncement = désapprobation, simultané avec une morsure = décret royal de bannissement).
@@ -437,6 +534,12 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
   - **Devise** : « **Aux grands maux les grands Reset !** »
   - **Commentaire de la devise** : détournement du proverbe « Aux grands maux, les grands remèdes ». La majuscule à _Reset_ fait du redémarrage une **institution royale** (le Grand Reset comme procédure d'État). Mathématiquement, c'est l'application directe de l'impuissance algorithmique : face au **halting problem** de Turing (1936) — on ne peut pas savoir en général si un programme s'arrêtera —, la seule solution face à une boucle infinie reconnue est le reset. La devise canonise par décret royal le geste universel du dev face au bug irréductible : _« Have you tried turning it off and on again ? »_. Hommage discret au gouverneur conceptuel de Turingrad. **Cohérence digestive** : le _Grand Reset_ est aussi l'équivalent informatique du **rot pataphysique** qui termine un repas ubuesque trop chargé — quand le système ne peut plus avaler, on le redémarre.
   - **Paysage canon** 🟡 (décision de David, 2026-10-25 : steampunk victorien, rien de pixelisé) : province industrielle victorienne. Usines de brique rouge et de fonte noircie, verrières, tubes pneumatiques de laiton qui courent de toit en toit, engrenages de cuivre patiné, cadrans partout. Le glitch y prend la forme mécanique du **raté** : une machine qui hoquette, un piston qui part de travers, un jet de vapeur qui fuse au mauvais moment — le chprout' de la machine. Au centre de Turingrad, **une Machine de Turing géante** de laiton et de fonte — ruban de papier perforé sans fin, tête de lecture cliquetante — marque le rythme officiel de la province. Les usines à vapeur du Glitchistan produisent en permanence des nuages qui s'échappent des cheminées victoriennes — visualisation directe des phlatulences industrielles du Royaume.
+  - **Pour l'illustration** 🟡 (décision de David, 2026-10-29) : l'industrie se concentre dans Turingrad et le long du fleuve ; la campagne n'est traversée que par un chemin de fer à vapeur.
+    - **Relief** : plateau de collines douces creusé de vallées et de ravins (comme le plateau de Lublin).
+    - **Eau** : la Vistule, descendue du Bedonstan, devient un fleuve canalisé : écluses, quais, péniches à vapeur.
+    - **Végétation** : bois de bouleaux et champs, un peu noircis par la suie près de la ville.
+    - **Repère sur la carte** : la Machine de Turing géante.
+    - **Couleur** : cuivre `#AE4E1F` (hors nuancier, d'après la palette Glitchistan).
 
 #### Patatovie — _Logique et ensembles_
 
@@ -446,11 +549,23 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
 - **Étymologie** : **détournement de Cracovie**, ancienne capitale royale de Pologne (jusqu'au XVIIᵉ siècle), située sur la **Vistule** comme Bonneteau-sur-Vistule (les deux capitales partagent le fleuve). Fusion avec **John Venn (1834-1923)**, mathématicien britannique inventeur des **diagrammes de Venn** (1880) — c'est-à-dire **les patates** qui donnent leur nom à la province.
 - **Devise** : « **L'infini n'en finit pas d'en finir, surtout vers la fin** »
 - **Commentaire de la devise** : aphorisme original construit en deux temps. Le premier temps (_« n'en finit pas d'en finir »_) joue sur l'**allitération en F** (fi-ni-fi-ni-fi-nir) qui mime sonorement le processus qu'elle décrit ; et sur l'**auto-contradiction grammaticale** (« finir » et « ne pas finir » s'annulent), qui exprime exactement le **statut paradoxal de l'infini en théorie des ensembles** (l'infini en acte selon Cantor est à la fois achevé comme objet et inachevé comme processus). Le second temps (_« surtout vers la fin »_) détourne la formule cocasse de Woody Allen sur l'éternité (« L'éternité, c'est long, surtout vers la fin »).
-- **Paysage canon** : pays slave doux et vallonné, parsemé de collines-tubercules. Champs de patates à perte de vue. Cracovenn est bâtie en cinq enceintes concentriques (l'enceinte d'A, l'enceinte d'A∪B, etc.) — la ville **est** un diagramme de Venn habitable.
+- **Paysage canon** : pays slave doux et vallonné, parsemé de collines-tubercules. Champs de patates à perte de vue. Cracovenn est bâtie en **trois enceintes rondes qui se chevauchent** (décision de David, 2026-10-29, au lieu de cinq enceintes concentriques, qui ne font pas un diagramme de Venn) : chaque zone est un quartier ; au centre, là où les trois se recoupent, la **bibliothèque de Faustroll**, où il classe les œuvres — la ville **est** un diagramme de Venn habitable.
+- **Pour l'illustration** 🟡 (décision de David, 2026-10-29) : paysage naturel, la logique ne se montre que dans la ville.
+  - **Relief** : collines rondes et douces, pays vallonné ; pas de montagnes (les Pythagoriades restent les seules du Royaume).
+  - **Eau** : la Vistule traverse Cracovenn, comme Cracovie.
+  - **Végétation** : champs de pommes de terre en rangs, fleurs blanches et mauves ; quelques vergers.
+  - **Repère sur la carte** : les trois enceintes de Cracovenn.
+- **Plan de la ville** 🟡 (décision de David, 2026-10-29) : le diagramme de Venn se voit par les **matériaux**, sans étiquette ni quartiers à activités.
+  - Enceinte A en brique rouge, enceinte B en pierre grise, enceinte C en bois clair.
+  - Chaque maison est bâtie dans les matériaux des enceintes qui l'entourent : brique seule dans A seule, moitié brique moitié pierre dans A ∩ B, etc.
+  - Au centre (A ∩ B ∩ C), la bibliothèque de Faustroll mêle les trois matériaux.
+  - Hors des trois enceintes (le complémentaire) : faubourgs et champs de patates.
+  - La Vistule traverse la ville ; trois portes, une par enceinte.
+  - **Couleur** : vert de mer `#3E8E86` (hors nuancier, les moustaches de Faustroll).
 
 ### La Vistule, fleuve de la Pologne pataphysique
 
-Le fleuve **Vistule** (inspiré du fleuve réel de Pologne) traverse la Pologne d'est en ouest. Il prend sa source dans les montagnes de Bedonstan (au pied des Pythagoriades), traverse Cracovenn (Patatovie), longe Bonneteau-sur-Vistule (Pifométrie), et se jette dans la **mer Baltique** au-delà des frontières — la même mer que celle où Ubu et Mère Ubu fuient à la fin d'_Ubu Roi_ (acte V, scène 4 — canon Jarry 🟢).
+Le fleuve **Vistule** (inspiré du fleuve réel de Pologne) **traverse les six provinces** 🟡 (tracé décidé par David le 2026-10-29, voir « Carte du Royaume ») : il prend sa source dans les montagnes de Bedonstan (au pied des Pythagoriades), descend par Glitchistan, passe à Cracovenn (Patatovie) et à Empoche-les-Bains (Nombrilie), remonte par Bonneteau-sur-Vistule (Pifométrie), traverse Yoyolande et se jette dans la **mer Baltique** à Sinusborg, comme la vraie Vistule à Gdańsk — la mer où Ubu et Mère Ubu fuient à la fin d'_Ubu Roi_ (acte V, scène 4 — canon Jarry 🟢). Il fait le tour de Sandomir sans la traverser.
 
 ### Les Axiomes Ubuesques
 
@@ -571,16 +686,25 @@ Le **casting tutoral** des Chiphre est désormais **stratifié sur trois registr
 
 Les Palotins sont les sbires d'Ubu dans la pièce. **Dans Chiphre, ce sont les amis du Galopin**.
 
-| Palotin             | Personnalité           | Rôle                                    | Source (vérifiée 2026-10-05)                                                                                                |
-| ------------------- | ---------------------- | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| **Giron**           | Costaud, simple, loyal | Le pote qui aide aux exercices basiques | 🟢 _Ubu Roi_ — liste des personnages : « Giron, Pile, Cotice… Palotins »                                                    |
-| **Pile**            | Fourbe, opportuniste   | Celui qui propose des trades douteux    | 🟢 _Ubu Roi_ — idem                                                                                                         |
-| **Cotice**          | Lettré, bavard         | Celui qui explique trop                 | 🟢 _Ubu Roi_ — idem                                                                                                         |
-| **Merdranpo**       | Stupide mais brave     | Celui qui rate tout avec panache        | 🟠 _Ubu Cocu_ « Merdanpo » (éd. 1944) + le R de _merdre_ — forme Chiphre décidée par David                                  |
-| **Mousched-Gogh**   | (à définir)            | (à définir)                             | 🟢 _Ubu Cocu_ — orthographe de l'édition de 1944                                                                            |
-| **Quatrezoneilles** | (à définir)            | (à définir)                             | 🟢 _Ubu Cocu_ — les Palotins disent « Hon, Monsieuye ! » ; « Monsieuye des Phynances » (Lexique) non trouvé dans l'éd. 1944 |
+| Palotin             | Personnalité                                        | Rôle                                                                | Source (vérifiée 2026-10-05)                                                                                                |
+| ------------------- | --------------------------------------------------- | ------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **Giron**           | Costaud, simple, loyal                              | Le pote qui aide aux exercices basiques                             | 🟢 _Ubu Roi_ — liste des personnages : « Giron, Pile, Cotice… Palotins »                                                    |
+| **Pile**            | Rêveur philosophe, un brin roublard                 | Celui qui demande « pourquoi ça marche ? » (questions qui guident)  | 🟢 _Ubu Roi_ — idem                                                                                                         |
+| **Cotice**          | Lettré, bavard                                      | Celui qui explique trop                                             | 🟢 _Ubu Roi_ — idem                                                                                                         |
+| **Merdranpo**       | Stupide mais brave                                  | Celui qui rate tout avec panache                                    | 🟠 _Ubu Cocu_ « Merdanpo » (éd. 1944) + le R de _merdre_ — forme Chiphre décidée par David                                  |
+| **Mousched-Gogh**   | Artiste exalté et distrait, voit des formes partout | Celui qui dit « fais une figure ! » ; illustrateur du Shtam         | 🟢 _Ubu Cocu_ — orthographe de l'édition de 1944                                                                            |
+| **Quatrezoneilles** | Valet cérémonieux et obséquieux, entend tout        | Celui qui dit « relis bien l'énoncé ! » ; échos et rumeurs du Shtam | 🟢 _Ubu Cocu_ — les Palotins disent « Hon, Monsieuye ! » ; « Monsieuye des Phynances » (Lexique) non trouvé dans l'éd. 1944 |
 
 Les Palotins viennent de **deux pièces** : Giron, Pile et Cotice sont ceux d'_Ubu Roi_ (leurs noms sont des termes d'héraldique : le giron, la pile et la cotice sont des pièces d'un blason) ; Merdanpo (Merdranpo à Chiphre), Mousched-Gogh et Quatrezoneilles sont « les trois Palotins » d'_Ubu Cocu_, qui chantent ensemble leur chanson (« Dans de grandes boît's en fer-blanc / Empilés la semaine entière… »). Personnalités et rôles sont des extensions Chiphre 🟠.
+
+**Apparence des Palotins** 🟡 (décision de David, 2026-10-28) : les SVG de l'appli (`static/images/buddies/`, 7 expressions) restent tels quels ; pour le lore (cartes, Shtam, scènes), chaque Palotin est redessiné en pied au trait Steinlen, en gardant le visage, le couvre-chef, la couleur d'identité et la pièce héraldique de son SVG (captures de référence : `docs/Chiphres/illustrations/personnages/palotins-appli/`).
+
+- **Giron** : ado trapu et sportif, penché en avant, prêt à foncer, poing levé ; visage rond, joues roses, nez rond, grand sourire confiant ; bonnet pointu mi-orange mi-encre à pompon blanc, tunique orange `#E0612F` à col blanc, écusson gironné or et encre, ceinture brune, culotte encre, bottes courtes brunes. Prompt d'illustration : Section XI, « Illustrations ».
+- **Pile** : grand et mince, silhouette en triangle pointe en bas comme sa pièce héraldique (larges épaules, jambes fines, petits pieds pointus) ; visage allongé au menton pointu, nez en triangle, moustache en guidon, regard rêveur de côté, demi-sourire énigmatique ; pose nonchalante de prestidigitateur, une carte levée entre deux doigts, un éventail de cartes qui coule de l'autre main (cartes blanches à étoile d'or, sans chiffres) ; haut-de-forme encre à bandeau marqué d'un triangle bleu pointe en bas, habit à queue bleu `#2F62B0`, plastron en V doré à col blanc, pantalon encre. Caractère tranché par David le 2026-10-28 : rêveur philosophe un brin roublard, comme dans l'appli (`docs/systeme/buddy-palotins.md`) ; « fourbe, opportuniste » abandonné. Prompt d'illustration : Section XI, « Illustrations ».
+- **Cotice** : taille moyenne, tout en rondeur, entre le trapu Giron et le mince Pile ; tout le corps penché en diagonale vers le spectateur, dans le sens de son écharpe, comme pour confier un secret ; visage rond, joues roses, grosses lunettes rondes, yeux pétillants, bouche ouverte en pleine explication ; livre ouvert dans une main (reliure pourpre, pages à lignes ondulées sans lettres), index de l'autre pointé sur la page ; béret encre barré d'une bande verte en diagonale, plume d'oie blanche piquée dedans, tunique verte à col blanc, large écharpe dorée en diagonale (la cotice héraldique), culotte encre, bas et chaussons pourpres (sa couleur d'identité). Prompt d'illustration : Section XI, « Illustrations ».
+- **Merdranpo** : pas de SVG dans l'appli, dessiné directement au trait Steinlen ; grand échalas désarticulé, tout en genoux et en coudes, saisi en pleine charge héroïque au moment où il trébuche sur ses propres pieds (une jambe en l'air, bras qui moulinent), toujours souriant de fierté ; visage allongé, gros nez de travers, yeux écarquillés d'enthousiasme, sourire édenté, mèches qui dépassent ; casserole cabossée en guise de casque, manche sur le côté ; tunique brun merdre (sa couleur d'identité) trop courte, à col blanc ; à la place d'un blason (les Palotins d'_Ubu Cocu_ n'ont pas de nom héraldique), une pièce de tissu blanc reprisée d'une grosse croix de couture dorée ; culotte encre, bas dépareillés (un vert, un pourpre), souliers bruns trop grands ; carnet de reporter aux pages blanches à la main, crayon doré derrière l'oreille (reporter du Shtam). Prompt d'illustration : Section XI, « Illustrations ».
+- **Mousched-Gogh** : pas de SVG dans l'appli, dessiné directement au trait Steinlen ; l'artiste de la bande (« Gogh » évoque le peintre, jamais cité ni dessiné : ni chapeau de paille, ni tournesols, ni oreille bandée) ; petit, maigre, tout en énergie nerveuse, penché vers un petit chevalet en plein élan d'inspiration, un compas levé comme un pinceau, une règle tenue comme un couteau à peindre ; visage fin, petite barbiche pointue, cheveux en broussaille sous le béret, grands yeux rêveurs et brillants, sourire extatique ; une petite mouche posée sur le bout du nez, qu'il n'a pas remarquée (« Mousch- ») ; béret de peintre encre, ample blouse glace du Czar (sa couleur d'identité) trop grande, constellée de taches or, vertes et pourpres, énorme lavallière pourpre, pantalon encre, souliers bruns usés ; sur la toile, seulement un cercle or, un triangle vert et un carré glace, sans lettres ni chiffres. Prompt d'illustration : Section XI, « Illustrations ».
+- **Quatrezoneilles** : pas de SVG dans l'appli, dessiné directement au trait Steinlen ; valet de pied 1890 petit et bedonnant, en pleine courbette trop cérémonieuse, une main en cornet derrière l'oreille, l'autre tendant un petit plateau ; visage rond, long nez curieux, sourcils levés, petits yeux attentifs qui filent de côté, bouche pincée en petit sourire poli et entendu, cheveux plaqués à raie au milieu ; signe distinctif : deux très grandes oreilles rondes et décollées, toujours dressées vers l'avant (les « quatre oreilles » restent un jeu de mots : ni quatre oreilles dessinées, ni cornets acoustiques) ; livrée or phynance (sa couleur d'identité) : habit à basques or passepoilé d'encre, boutons dorés, gilet rayé or et encre, col et petit nœud blancs, culotte courte encre, bas blancs, escarpins noirs à boucle ; sur le plateau gris-blanc, une enveloppe blanche cachetée de cire pourpre, sans écriture. Prompt d'illustration : Section XI, « Illustrations ».
 
 ### Personnages mineurs et figurants
 
@@ -1690,7 +1814,7 @@ Les easter eggs sont **un moteur de bouche-à-oreille gratuit**. Quand un ado tr
 ### Datés
 
 - **1ᵉʳ avril** (le Poisson à Phynances) : toutes les valeurs numériques affichées sont **multipliées par π** pendant 24 h. À midi pile, restitution. _« Cornegidouille ! Notre Mathres ont rencontré le nombre transcendant. »_
-- **2ᵉ mardi d'octobre** (Ada Lovelace Day international) : la mascotte Lovelace du Quartier Lovelace de Turingrad porte une couronne pour la journée. Tous les exercices d'algorithmique de Glitchistan donnent +50 % gidouilles.
+- **2ᵉ mardi d'octobre** (Ada Lovelace Day international) : le python mécanique du Quartier Lovelace de Turingrad porte une couronne pour la journée. Tous les exercices d'algorithmique de Glitchistan donnent +50 % gidouilles.
 
 ### Pages secrètes
 
@@ -1956,6 +2080,7 @@ Décisions de David (2026-10-25 et 2026-10-26), journal : `docs/wip/illustration
 - **Style** : affiche lithographiée de Montmartre (1896), à la manière de Steinlen ; même famille que les Mathoux. Pas de halo systématique.
 - **Deux nuanciers** (`docs/Chiphres/illustrations/nuancier/`) : _numérique_ (la palette canonique ci-dessus) pour tout ce qui vit dans l'interface (personnages qui parlent à l'élève, icônes, bannières) ; _encre d'imprimerie_ (la même, désaturée, sur papier crème) pour les objets imprimés du Royaume (grande carte, Shtam, Almanach, Édits Royaux, diplômes, affiches d'événements). Les Mathoux et les Palotins gardent leurs couleurs.
 - **Dans un prompt**, nommer les couleurs en anglais courant (navy ink, cream parchment, emerald green, marigold yellow, deep crimson…), jamais par leur nom du Royaume, et joindre le nuancier de référence sans texte.
+- **Images de référence** (`docs/Chiphres/illustrations/personnages/`, une par prompt ci-dessous, nommée d'après le personnage : `pere-ubu.jpg`, `flegmatique.jpg`, `quatrezoneilles.jpg`…) : à joindre au prompt d'un nouveau personnage (Père Ubu toujours, et les personnages de même rang pour l'âge et l'échelle). Captures des SVG des Palotins dans l'appli : `personnages/palotins-appli/`.
 
 #### Prompt de référence — Père Ubu 🟡
 
@@ -2177,6 +2302,114 @@ Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre
 Colors: use only the colors of the attached palette image: navy ink for the outlines and the mane, dark chocolate brown for the coat, white for a blaze on the face and the dice, emerald green for the visor and the saddle cloth, deep crimson for the waistcoat and the dice dots, marigold yellow for the laurel crown, the buttons, the spiral and the gold tooth.
 
 Composition: the horse standing, three-quarter view, centered, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no numbers, no signature.
+```
+
+#### Prompt de référence — Giron (Palotin) 🟡
+
+Validé par David le 2026-10-28 (Nano Banana, avec en pièces jointes `nuancier-numerique-reference.png`, l'image de référence de Père Ubu et la capture de Giron dans l'appli, `palotins-appli/giron.png`). L'orange `#E0612F`, hors nuancier, est sa couleur d'identité : il entre exprès dans le prompt. Pas de halo, contrairement au SVG de l'appli.
+
+```text
+Draw Giron, one of the Palotins (Père Ubu's henchmen from Alfred Jarry's play "Ubu Roi"), as a full-body character portrait in exactly the same drawing style as the attached Père Ubu image, keeping the face, cap, colors and coat of arms of the attached Giron image.
+
+Character: a young, stocky, sporty Palotin, a teenager-like sidekick, smaller and younger than the adults of the court; leaning forward, ready to charge, one fist raised with enthusiasm. A round face with rosy cheeks, a round nose, small bright eyes, a big confident grin. He is brave, loyal, simple and a little reckless: a lovable buddy who rushes in first, funny, never scary, for students aged 11 to 17.
+
+Clothing: a floppy pointed cap split half bright orange, half navy ink, with a white pompom; a bright orange tunic with a white collar; on his chest, a small heraldic shield "gironny": divided into eight triangles alternating marigold yellow and navy ink, like a pinwheel; a dark chocolate brown belt, navy ink breeches and short brown boots.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen, same line and flat colors as the attached Père Ubu image. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes.
+
+Colors: use only the colors of the attached palette image, plus Giron's own bright orange (#E0612F) for the cap and the tunic: navy ink for the outlines, the cap and the breeches, marigold yellow and navy ink for the shield, dark chocolate brown for the belt and the boots, white for the pompom and the collar, a soft pink for the cheeks.
+
+Composition: Giron standing, three-quarter view, centered, no halo, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no signature.
+```
+
+#### Prompt de référence — Pile (Palotin) 🟡
+
+Validé par David le 2026-10-28 (Nano Banana, avec en pièces jointes `nuancier-numerique-reference.png`, l'image de référence de Père Ubu, la capture `palotins-appli/pile.png` et le Giron Steinlen, pour l'âge et l'échelle). Le bleu `#2F62B0`, hors nuancier, est sa couleur d'identité. Garder « no numbers » pour les cartes.
+
+```text
+Draw Pile, one of the Palotins (Père Ubu's henchmen from Alfred Jarry's play "Ubu Roi"), as a full-body character portrait in exactly the same drawing style as the attached Père Ubu image, keeping the face, hat, colors and coat of arms of the attached Pile image, and the same age and scale as the attached Giron.
+
+Character: a tall, slim young Palotin with an inverted-triangle silhouette, like his heraldic charge: broad shoulders tapering down to thin legs and small pointed feet; very different from stocky Giron. A long face with a pointed chin, a triangular nose, a curled handlebar moustache, dreamy eyes looking to the side, an enigmatic half-smile. Relaxed, nonchalant pose: one card raised between two fingers, his other hand letting a fan of cards flow. He is a dreamy, slightly sly card-trick philosopher: calm, mysterious, funny, never scary, for students aged 11 to 17.
+
+Clothing: a navy ink top hat with a band marked by a royal blue downward-pointing triangle; a royal blue tailcoat; a marigold yellow V-shaped shirt front with a white collar; navy ink trousers and small pointed shoes. The playing cards are white with a single marigold yellow star, no numbers.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen, same line and flat colors as the attached Père Ubu image. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes.
+
+Colors: use only the colors of the attached palette image, plus Pile's own royal blue (#2F62B0) for the tailcoat and the hat triangle: navy ink for the outlines, the hat, the moustache and the trousers, marigold yellow for the shirt front and the stars, white for the collar and the cards, a soft pink for the cheeks.
+
+Composition: Pile standing, three-quarter view, centered, no halo, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no numbers, no signature.
+```
+
+#### Prompt de référence — Cotice (Palotin) 🟡
+
+Validé par David le 2026-10-28 (Nano Banana, avec en pièces jointes `nuancier-numerique-reference.png`, l'image de référence de Père Ubu, la capture `palotins-appli/cotice.png` et les Giron et Pile Steinlen, pour l'âge et l'échelle). Toutes ses couleurs sont au nuancier ; le pourpre est sa couleur d'identité.
+
+```text
+Draw Cotice, one of the Palotins (Père Ubu's henchmen from Alfred Jarry's play "Ubu Roi"), as a full-body character portrait in exactly the same drawing style as the attached Père Ubu image, keeping the face, beret, glasses, colors and coat of arms of the attached Cotice image, and the same age and scale as the attached Giron and Pile.
+
+Character: a young Palotin of medium height with a soft, rounded build, between stocky Giron and slim Pile; his whole body leans diagonally toward the viewer, in the same direction as his diagonal sash, as if sharing a secret. A round face with rosy cheeks, big round glasses, sparkling eyes, mouth open in the middle of an enthusiastic explanation. He holds an open book in one hand and points at a page with the other index finger. He is warm, chatty, encouraging and a little too talkative: the friendly know-it-all buddy, funny, never scary, for students aged 11 to 17.
+
+Clothing: a navy ink beret crossed by a diagonal emerald green band, with a white goose-quill feather tucked into it; an emerald green tunic with a white collar; a broad marigold yellow sash worn diagonally across the chest, like the heraldic "cotice"; navy ink breeches, deep crimson stockings and soft crimson slippers. The book has a deep crimson binding and white pages with only wavy lines, no letters.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen, same line and flat colors as the attached Père Ubu image. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes.
+
+Colors: use only the colors of the attached palette image: navy ink for the outlines, the beret, the glasses and the breeches, emerald green for the tunic and the beret band, marigold yellow for the sash, deep crimson for the stockings, the slippers and the book binding, white for the feather, the collar and the pages, a soft pink for the cheeks.
+
+Composition: Cotice standing, three-quarter view, centered, no halo, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no signature.
+```
+
+#### Prompt de référence — Merdranpo (Palotin) 🟡
+
+Validé par David le 2026-10-28 (Nano Banana, avec en pièces jointes `nuancier-numerique-reference.png`, l'image de référence de Père Ubu et les Giron, Pile et Cotice Steinlen, pour l'âge et l'échelle ; pas de capture de l'appli, il n'a pas de SVG). Toutes ses couleurs sont au nuancier ; le brun merdre (« dark chocolate brown ») est sa couleur d'identité. La croix de couture est blanche et or : brune, elle disparaîtrait sur la tunique.
+
+```text
+Draw Merdranpo, one of the Palotins (Père Ubu's henchmen from Alfred Jarry's play "Ubu Cocu"), as a full-body character portrait in exactly the same drawing style as the attached Père Ubu image, and the same age and scale as the attached Giron, Pile and Cotice.
+
+Character: a tall, gangly young Palotin, all knees and elbows, a loose-limbed beanpole; caught in the middle of a brave charge, tripping over his own feet, one leg kicked up, arms flailing, yet still grinning with pride. A long face, a big crooked nose, wide eyes full of enthusiasm, a gap-toothed smile, a few strands of hair sticking out from under his helmet. He is brave but clumsy: he fails everything with panache, gets up and tries again; funny and lovable, never scary, never pitiful, for students aged 11 to 17.
+
+Clothing: a dented cooking pot worn as a helmet, its handle sticking out to the side; a dark chocolate brown tunic, too short for him, with a white collar; on his chest, a darned patch in place of a coat of arms, a white cloth square stitched with a big marigold yellow cross of thick sewing stitches; navy ink breeches, mismatched stockings (one emerald green, one deep crimson) and oversized brown shoes. In one hand, a small reporter's notebook with blank white pages and a pencil tucked behind his ear.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen, same line and flat colors as the attached Père Ubu image. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes.
+
+Colors: use only the colors of the attached palette image: navy ink for the outlines, the hair and the breeches, dark chocolate brown for the tunic and the shoes, white for the collar, the patch and the notebook pages, marigold yellow for the stitched cross and the pencil, emerald green and deep crimson for the mismatched stockings, a light grey-white for the dented pot with navy ink dents, a soft pink for the cheeks.
+
+Composition: Merdranpo in mid-stumble, three-quarter view, centered, no halo, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no signature.
+```
+
+#### Prompt de référence — Mousched-Gogh (Palotin) 🟡
+
+Validé par David le 2026-10-28 (Nano Banana, avec en pièces jointes `nuancier-numerique-reference.png`, l'image de référence de Père Ubu et les Giron, Pile, Cotice et Merdranpo Steinlen, pour l'âge et l'échelle ; pas de capture de l'appli, il n'a pas de SVG). Toutes ses couleurs sont au nuancier ; la glace du Czar (« ice blue ») est sa couleur d'identité. Rien du peintre réel dans le prompt : ni son nom, ni chapeau de paille, ni tournesols, ni oreille bandée.
+
+```text
+Draw Mousched-Gogh, one of the Palotins (Père Ubu's henchmen from Alfred Jarry's play "Ubu Cocu"), as a full-body character portrait in exactly the same drawing style as the attached Père Ubu image, and the same age and scale as the attached Giron, Pile, Cotice and Merdranpo.
+
+Character: a small, wiry young Palotin, all nervous energy, leaning eagerly toward a little wooden easel beside him, caught in a sudden burst of inspiration; one hand raised high holding a drawing compass like a paintbrush, the other holding a ruler like a palette knife. A thin face, a pointed little beard, shaggy hair escaping from his beret, wide dreamy eyes shining with excitement, an ecstatic open-mouthed smile; a small fly resting on the tip of his nose, which he has not noticed. He is an excitable, absent-minded artist who sees shapes everywhere and always says "draw a picture!": funny and warm, never scary, for students aged 11 to 17.
+
+Clothing: a floppy navy ink painter's beret; a loose ice blue painter's smock, too big for him, spattered with small flat dots of marigold yellow, emerald green and deep crimson paint; a huge floppy deep crimson bow tie; navy ink trousers and worn dark chocolate brown shoes. On the easel, a canvas showing only simple geometric shapes: a marigold yellow circle, an emerald green triangle and an ice blue square, no letters, no numbers.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen, same line and flat colors as the attached Père Ubu image. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes.
+
+Colors: use only the colors of the attached palette image: navy ink for the outlines, the hair, the beard, the beret and the trousers, ice blue for the smock, deep crimson for the bow tie, marigold yellow, emerald green and deep crimson for the paint spots, dark chocolate brown for the shoes and the easel, white for the canvas, a soft pink for the cheeks.
+
+Composition: Mousched-Gogh standing next to his easel, three-quarter view, centered, no halo, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no numbers, no signature.
+```
+
+#### Prompt de référence — Quatrezoneilles (Palotin) 🟡
+
+Validé par David le 2026-10-28 (Nano Banana, avec en pièces jointes `nuancier-numerique-reference.png`, l'image de référence de Père Ubu et les Giron, Pile, Cotice, Merdranpo et Mousched-Gogh Steinlen, pour l'âge et l'échelle ; pas de capture de l'appli, il n'a pas de SVG). Toutes ses couleurs sont au nuancier ; l'or phynance (« marigold yellow ») est sa couleur d'identité. Ne pas écrire « four ears » : l'IA dessinerait quatre oreilles (cornets acoustiques sur serre-tête essayés et refusés par David).
+
+```text
+Draw Quatrezoneilles, one of the Palotins (Père Ubu's henchmen from Alfred Jarry's play "Ubu Cocu"), as a full-body character portrait in exactly the same drawing style as the attached Père Ubu image, and the same age and scale as the attached Giron, Pile, Cotice, Merdranpo and Mousched-Gogh.
+
+Character: a short, pot-bellied young Palotin caught in the middle of a deep, overly ceremonious bow; one hand cupped behind his ear, straining to catch every whisper, the other hand holding out a small tray. A round face with a long, curious nose, raised eyebrows, small attentive eyes darting sideways, pursed lips in a polite, knowing little smile, neatly slicked hair parted in the middle. His most striking feature: two very large, round, protruding ears, always pricked up and turned forward, like satellite dishes. He is a fussy, overly polite footman who hears everything and never misses a detail: funny and charming, never scary, for students aged 11 to 17.
+
+Clothing: an 1890s footman's livery: a marigold yellow tailcoat with navy ink piping and gold buttons; a waistcoat striped marigold yellow and navy ink; a white shirt collar and a small white bow tie; navy ink knee breeches, white stockings and black buckled pumps. On the tray, a single white sealed envelope with a deep crimson wax seal, no writing.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen, same line and flat colors as the attached Père Ubu image. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes.
+
+Colors: use only the colors of the attached palette image: navy ink for the outlines, the hair, the piping, the breeches and the pumps, marigold yellow for the tailcoat and the waistcoat stripes, white for the collar, the bow tie, the stockings and the envelope, deep crimson for the wax seal, a light grey-white for the tray, a soft pink for the cheeks, with deeper pink inside the ears.
+
+Composition: Quatrezoneilles bowing, three-quarter view, centered, no halo, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no numbers, no signature.
 ```
 
 ---

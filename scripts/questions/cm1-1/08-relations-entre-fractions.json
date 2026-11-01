@@ -1,0 +1,223 @@
+{
+	"title": "Relations entre fractions usuelles",
+	"description": "Demis, quarts, dixièmes, centièmes et l'unité : 1/2 = ?/4, 1 − 1/4 = ?/4",
+	"grades": ["CM1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Egalité de fractions",
+	"level": 5,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:k==1|2|{{if:k==2|2|{{if:k==3|4|{{if:k==4|10|{{if:k==5|100|10}}}}}}}}}}"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{if:k==1|1/2=?/4|{{if:k==2|1=?/2|{{if:k==3|1=?/4|{{if:k==4|1=?/10|{{if:k==5|1=?/100|1/10=?/100}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==1|Un demi, c'est deux quarts : $\\dfrac{1}{2}=\\dfrac{\\textcolor{{{color:primary.0}}}{2}}{4}$.|{{if:k==2|Une unité, c'est deux demis : $1=\\dfrac{\\textcolor{{{color:primary.0}}}{2}}{2}$.|{{if:k==3|Une unité, c'est quatre quarts : $1=\\dfrac{\\textcolor{{{color:primary.0}}}{4}}{4}$.|{{if:k==4|Une unité, c'est dix dixièmes : $1=\\dfrac{\\textcolor{{{color:primary.0}}}{10}}{10}$.|{{if:k==5|Une unité, c'est cent centièmes : $1=\\dfrac{\\textcolor{{{color:primary.0}}}{100}}{100}$.|Un dixième, c'est dix centièmes : $\\dfrac{1}{10}=\\dfrac{\\textcolor{{{color:primary.0}}}{10}}{100}$.}}}}}}}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:k==1|1|{{if:k==2|1|{{if:k==3|3|{{if:k==4|1|3}}}}}}}}"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{if:k==1|1/2+1/2=?|{{if:k==2|1/4+1/4=?/2|{{if:k==3|1-1/4=?/4|{{if:k==4|1-1/2=?/2|1/2+1/4=?/4}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==1|Deux demis font une unité : $\\dfrac{1}{2}+\\dfrac{1}{2}=\\textcolor{{{color:primary.0}}}{1}$.|{{if:k==2|Deux quarts font un demi : $\\dfrac{1}{4}+\\dfrac{1}{4}=\\dfrac{\\textcolor{{{color:primary.0}}}{1}}{2}$.|{{if:k==3|Une unité, c'est quatre quarts ; on en enlève un, il en reste trois : $1-\\dfrac{1}{4}=\\dfrac{\\textcolor{{{color:primary.0}}}{3}}{4}$.|{{if:k==4|Une unité, c'est deux demis ; on en enlève un, il en reste un : $1-\\dfrac{1}{2}=\\dfrac{\\textcolor{{{color:primary.0}}}{1}}{2}$.|Un demi, c'est deux quarts ; deux quarts et un quart font trois quarts : $\\dfrac{1}{2}+\\dfrac{1}{4}=\\dfrac{\\textcolor{{{color:primary.0}}}{3}}{4}$.}}}}}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1/2 = ?/4 : 2",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/2 = ?/4 → 1 (numérateur recopié)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 = ?/4 : 4",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 = ?/4 → 1",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 = ?/100 : 100",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1/10 = ?/100 : 10",
+			"variationIndex": 0,
+			"variables": {
+				"k": "6"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/10 = ?/100 → 1",
+			"variationIndex": 0,
+			"variables": {
+				"k": "6"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/2 + 1/2 = 1",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/2 + 1/2 → 2 (numérateurs ajoutés)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/4 + 1/4 = ?/2 : 1",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/4 + 1/4 = ?/2 → 2 (numérateurs ajoutés)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 − 1/4 = ?/4 : 3",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1/2 + 1/4 = ?/4 : 3",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/2 + 1/4 = ?/4 → 2 (numérateurs ajoutés)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

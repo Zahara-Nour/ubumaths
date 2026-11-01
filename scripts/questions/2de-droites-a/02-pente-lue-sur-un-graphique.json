@@ -1,0 +1,138 @@
+{
+	"title": "Lire la pente d'une droite sur un graphique",
+	"description": "Pente lue sur une droite tracée dans un repère : entière, puis fractionnaire entre deux points marqués (pièges : horizontal sur vertical, signe d'une droite qui descend)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Droites du plan",
+	"subdomain": "Pente et vecteur directeur",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La droite $d$ est tracée dans le repère ci-dessous.\n\n```courbe\nx: -6 ; 6\ny: -6 ; 6\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=d\ntaille: moyenne\ndescription: Droite d tracée dans un repère.\n```\n\nQuelle est la pente $m$ de la droite $d$ ?\n\n$m=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "p",
+					"expression": "-3..3"
+				}
+			],
+			"conditions": ["abs((p)+4*(m)) <= 12"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La pente se lit entre deux points de la droite : $m=\\dfrac{\\text{déplacement vertical}}{\\text{déplacement horizontal}}$.",
+					"```courbe\nx: -6 ; 6\ny: -6 ; 6\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=d\npoints: A(0 ; {{p}}), B(1 ; {{eval:(p)+(m)}})\ntaille: moyenne\ndescription: Droite d et deux de ses points, A et B, d'abscisses 0 et 1.\n```",
+					"De $A(0\\,;{{p}})$ à $B(1\\,;{{eval:(p)+(m)}})$ : on avance de $1$, on {{if:m>0|monte|descend}} de ${{eval:abs(m)}}$, donc $m=\\textcolor{{{color:primary.0}}}{{{m}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La droite $d$ est tracée dans le repère ci-dessous ; elle passe par les points $A$ et $B$.\n\n```courbe\nx: -6 ; 6\ny: -6 ; 6\ngrille: 1 ; 1\nf(x) = ({{n}})/({{q}})*x+({{p}})   bleu   nom=d\npoints: A(0 ; {{p}}), B({{q}} ; {{eval:(p)+(n)}})\ntaille: moyenne\ndescription: Droite d passant par les points A et B.\n```\n\nQuelle est la pente $m$ de la droite $d$ ?\n\n$m=?$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2|3|4"
+				},
+				{
+					"name": "n",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "p",
+					"expression": "-3..3"
+				}
+			],
+			"conditions": ["mod(n, q) != 0", "abs((p)+(n)) <= 5"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n)/(q)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La pente se lit entre deux points de la droite : $m=\\dfrac{\\text{déplacement vertical}}{\\text{déplacement horizontal}}$.",
+					"De $A(0\\,;{{p}})$ à $B({{q}}\\,;{{eval:(p)+(n)}})$ : on avance de ${{q}}$, on {{if:n>0|monte|descend}} de ${{eval:abs(n)}}$, donc $m=\\dfrac{ {{n}} }{ {{q}} }=\\textcolor{{{color:primary.0}}}{{{eval:(n)/(q)}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "m = −2",
+			"variationIndex": 0,
+			"variables": {
+				"m": "-2",
+				"p": "1"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe (2)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "-2",
+				"p": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ordonnée à l'origine (1)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "-2",
+				"p": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "m = 2/3",
+			"variationIndex": 1,
+			"variables": {
+				"q": "3",
+				"n": "2",
+				"p": "-1"
+			},
+			"answers": ["\\frac{2}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : horizontal sur vertical (3/2)",
+			"variationIndex": 1,
+			"variables": {
+				"q": "3",
+				"n": "2",
+				"p": "-1"
+			},
+			"answers": ["\\frac{3}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

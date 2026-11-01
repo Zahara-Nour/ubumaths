@@ -1,0 +1,174 @@
+{
+	"title": "Fonction de dérivée nulle",
+	"description": "f′ nulle sur un intervalle ⟺ f constante : f(p) connaissant f(m), constante cachée (x + a)² − x² − 2ax, équation de la courbe",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "Variations",
+	"level": 6,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "$f$ est une fonction dérivable sur $\\mathbb{R}$ telle que $f'(x)=0$ pour tout réel $x$, et $f({{m}})={{n}}$.\n\nQue vaut $f({{p}})$ ?\n\n$f({{p}})=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "-5..5"
+				},
+				{
+					"name": "p",
+					"expression": "-9..9"
+				},
+				{
+					"name": "n",
+					"expression": "1..20;±"
+				}
+			],
+			"conditions": ["m != p"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une fonction dérivable sur un intervalle $I$ est **constante** sur $I$ si, et seulement si, sa dérivée est nulle sur $I$.",
+					"$f'$ est nulle sur $\\mathbb{R}$ : $f$ est constante, égale à $f({{m}})={{n}}$.",
+					"$$f({{p}})=\\textcolor{{{color:primary.0}}}{{{n}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=(x{{eval:a;+}})^2-x^2{{eval:-2*a;+}}x$.\n\nCalcule $f'(x)$, puis donne $f(x)$ sous forme réduite.\n\n$f'(x)=?$\n\n$f(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..6;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "{{eval:a^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)=2(x{{eval:a;+}})-2x{{eval:-2*a;+}}=\\textcolor{{{color:primary.0}}}{0}$.",
+					"Une fonction dérivable sur un intervalle $I$ est **constante** sur $I$ si, et seulement si, sa dérivée est nulle sur $I$. Ici $f$ est constante sur $\\mathbb{R}$, égale à $f(0)={{eval:a^2}}$ :",
+					"$$f(x)=\\textcolor{{{color:primary.0}}}{{{eval:a^2}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "$f$ est une fonction dérivable sur $\\mathbb{R}$ telle que $f'(x)=0$ pour tout réel $x$. Sa courbe $\\mathcal{C}_f$ passe par le point $A({{m}}\\,;{{n}})$.\n\nDonne une équation de $\\mathcal{C}_f$.\n\n$y=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["m != n"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une fonction dérivable sur un intervalle $I$ est **constante** sur $I$ si, et seulement si, sa dérivée est nulle sur $I$.",
+					"$f$ est constante, égale à $f({{m}})={{n}}$ : sa courbe est la droite horizontale passant par $A$.",
+					"$$y=\\textcolor{{{color:primary.0}}}{{{n}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "f(2) = 7 : f(−3) = 7",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"p": "-3",
+				"n": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f(−3) = 0",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"p": "-3",
+				"n": "7"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(x + 3)² − x² − 6x : 0 et 9",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["0", "9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f(x) = 0",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["0", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A(2 ; −5) : y = −5",
+			"variationIndex": 2,
+			"variables": {
+				"m": "2",
+				"n": "-5"
+			},
+			"answers": ["-5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : y = 2",
+			"variationIndex": 2,
+			"variables": {
+				"m": "2",
+				"n": "-5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

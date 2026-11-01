@@ -1,0 +1,240 @@
+{
+	"title": "Coordonnées du vecteur AB",
+	"description": "Coordonnées de AB à partir de A et B (entiers, puis décimaux), et de B à partir de A et AB (pièges : A − B, soustraire au lieu d'ajouter)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs du plan",
+	"subdomain": "Coordonnées",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère les points $A({{ax}}\\,;\\,{{ay}})$ et $B({{bx}}\\,;\\,{{by}})$.\n\nDonne les coordonnées du vecteur $\\overrightarrow{AB}$.\n\n$$\\overrightarrow{AB}\\begin{pmatrix}?\\\\?\\end{pmatrix}$$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-9..9"
+				},
+				{
+					"name": "ay",
+					"expression": "-9..9"
+				},
+				{
+					"name": "bx",
+					"expression": "-9..9"
+				},
+				{
+					"name": "by",
+					"expression": "-9..9"
+				}
+			],
+			"conditions": ["bx != ax", "by != ay"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(bx)-(ax)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(by)-(ay)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AB}\\begin{pmatrix}x_B-x_A\\\\y_B-y_A\\end{pmatrix}$ : on retranche les coordonnées de l'origine $A$ à celles de l'extrémité $B$.",
+					"$\\overrightarrow{AB}\\begin{pmatrix}{{bx}}-{{ax;()}}\\\\{{by}}-{{ay;()}}\\end{pmatrix}$, soit $\\overrightarrow{AB}\\textcolor{{{color:primary.0}}}{\\begin{pmatrix}{{eval:(bx)-(ax)}}\\\\{{eval:(by)-(ay)}}\\end{pmatrix}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère le point $A({{ax}}\\,;\\,{{ay}})$ et le vecteur $\\overrightarrow{AB}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\end{pmatrix}$.\n\nDonne les coordonnées du point $B$.\n\n$$B(?\\,;\\,?)$$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-9..9"
+				},
+				{
+					"name": "ay",
+					"expression": "-9..9"
+				},
+				{
+					"name": "u1",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "u2",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["abs(ax+u1) <= 12", "abs(ay+u2) <= 12"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(ax)+(u1)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(ay)+(u2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AB}\\begin{pmatrix}x_B-x_A\\\\y_B-y_A\\end{pmatrix}$ : on retranche les coordonnées de l'origine $A$ à celles de l'extrémité $B$. Donc $x_B=x_A+(x_B-x_A)$ : on **ajoute** les coordonnées de $\\overrightarrow{AB}$ à celles de $A$.",
+					"$x_B={{ax}}+{{u1;()}}=\\textcolor{{{color:primary.0}}}{{{eval:(ax)+(u1)}}}$ et $y_B={{ay}}+{{u2;()}}=\\textcolor{{{color:primary.1}}}{{{eval:(ay)+(u2)}}}$, donc $B(\\textcolor{{{color:primary.0}}}{{{eval:(ax)+(u1)}}}\\,;\\,\\textcolor{{{color:primary.1}}}{{{eval:(ay)+(u2)}}})$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère les points $A({{eval:(ax)/2;d}}\\,;\\,{{ay}})$ et $B({{eval:(bx)/2;d}}\\,;\\,{{eval:(by)/2;d}})$.\n\nDonne les coordonnées du vecteur $\\overrightarrow{AB}$.\n\n$$\\overrightarrow{AB}\\begin{pmatrix}?\\\\?\\end{pmatrix}$$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-9..9"
+				},
+				{
+					"name": "ay",
+					"expression": "-6..6"
+				},
+				{
+					"name": "bx",
+					"expression": "-9..9"
+				},
+				{
+					"name": "by",
+					"expression": "-13..13"
+				}
+			],
+			"conditions": ["mod(ax, 2) != 0", "mod(by, 2) != 0", "bx != ax"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((bx)-(ax))/2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(by)/2-(ay)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AB}\\begin{pmatrix}x_B-x_A\\\\y_B-y_A\\end{pmatrix}$ : on retranche les coordonnées de l'origine $A$ à celles de l'extrémité $B$.",
+					"$\\overrightarrow{AB}\\begin{pmatrix}{{eval:(bx)/2;d}}-{{eval:(ax)/2;d;()}}\\\\{{eval:(by)/2;d}}-{{ay;()}}\\end{pmatrix}$, soit $\\overrightarrow{AB}\\textcolor{{{color:primary.0}}}{\\begin{pmatrix}{{eval:((bx)-(ax))/2;d}}\\\\{{eval:(by)/2-(ay);d}}\\end{pmatrix}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A(2 ; −1), B(−3 ; 4) → (−5 ; 5)",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "2",
+				"ay": "-1",
+				"bx": "-3",
+				"by": "4"
+			},
+			"answers": ["-5", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : A − B (5 ; −5)",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "2",
+				"ay": "-1",
+				"bx": "-3",
+				"by": "4"
+			},
+			"answers": ["5", "-5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : somme (−1 ; 3)",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "2",
+				"ay": "-1",
+				"bx": "-3",
+				"by": "4"
+			},
+			"answers": ["-1", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A(2 ; −1), AB(3 ; −5) → B(5 ; −6)",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "2",
+				"ay": "-1",
+				"u1": "3",
+				"u2": "-5"
+			},
+			"answers": ["5", "-6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : soustraction, B(−1 ; 4)",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "2",
+				"ay": "-1",
+				"u1": "3",
+				"u2": "-5"
+			},
+			"answers": ["-1", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A(1,5 ; 2), B(−0,5 ; 2,5) → (−2 ; 0,5)",
+			"variationIndex": 2,
+			"variables": {
+				"ax": "3",
+				"ay": "2",
+				"bx": "-1",
+				"by": "5"
+			},
+			"answers": ["-2", "0.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En fractions",
+			"variationIndex": 2,
+			"variables": {
+				"ax": "3",
+				"ay": "2",
+				"bx": "-1",
+				"by": "5"
+			},
+			"answers": ["-2", "\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : A − B",
+			"variationIndex": 2,
+			"variables": {
+				"ax": "3",
+				"ay": "2",
+				"bx": "-1",
+				"by": "5"
+			},
+			"answers": ["2", "-0.5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

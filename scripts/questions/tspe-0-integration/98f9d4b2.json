@@ -1,0 +1,92 @@
+{
+	"id": "98f9d4b2-ebdd-4ed9-81a4-deb2e5b58c07",
+	"title": "Point d'inflexion : lecture graphique",
+	"description": "Lire sur la courbe de f l'abscisse de son point d'inflexion (changement de convexité)",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Fonctions convexes",
+	"domain": "Convexité",
+	"subdomain": "Lecture graphique",
+	"level": 5,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:h-3.5}} ; {{eval:h+3.5}}\ny: {{eval:k-4}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = {{s}}*0.5*((x-{{h}})^3-3*(x-{{h}}))+{{k}}   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction polynôme de degré 3 avec un maximum et un minimum locaux.\n```\n\nQuelle est l'abscisse du point d'inflexion de $\\mathcal{C}_f$ ?\n\n```choix\n- ${{h}}$\n- ${{eval:h+1}}$\n- ${{eval:h-1}}$\n- ${{k}}$\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "-1|1"
+				},
+				{
+					"name": "h",
+					"expression": "-2..2"
+				},
+				{
+					"name": "k",
+					"expression": "-2..2"
+				}
+			],
+			"conditions": ["k != h", "k != h+1", "k != h-1"],
+			"correction": {
+				"steps": [
+					"Au point d'inflexion, la courbe **traverse sa tangente** : elle passe de « tournée vers le {{if:s>0|bas|haut}} » à « tournée vers le {{if:s>0|haut|bas}} ».",
+					"C'est le point de coordonnées $({{h}}\\,;{{k}})$ : son abscisse est $\\textcolor{{{color:primary.0}}}{{{h}}}$. Les abscisses ${{eval:h-1}}$ et ${{eval:h+1}}$ sont celles des extremums locaux, pas de l'inflexion."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"h": "0",
+				"k": "2",
+				"s": "1"
+			},
+			"description": "v0 : inflexion",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"h": "0",
+				"k": "2",
+				"s": "1"
+			},
+			"description": "v0 : extremum",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"h": "0",
+				"k": "2",
+				"s": "1"
+			},
+			"description": "v0 : ordonnée",
+			"variationIndex": 0
+		}
+	]
+}

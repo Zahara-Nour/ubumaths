@@ -22,25 +22,23 @@ const COURBE_EN_ERREUR = ['```courbe', 'x: -4 ; 6', 'y: -8 ; 12', 'f(x) = 2*(x+1
 	'\n'
 );
 
-/** QCM : deux choix, le bon est « 4 » (index 1, ordre conservé) */
-function qcm(statement = 'Combien font 2 + 2 ?'): QuestionInstance {
+/** Case choix : deux choix, le bon est « 4 » (index 1, ordre conservé) */
+function choiceQuestion(statement = 'Combien font 2 + 2 ?'): QuestionInstance {
 	return {
-		templateId: 'tpl-qcm',
-		statement: resolvedMarkdown(statement),
+		templateId: 'tpl-choix',
+		statement: resolvedMarkdown(`${statement}\n\n\`\`\`choix\ncase: 0\n- 3\n- 4\n\`\`\``),
 		grades: ['6'],
 		theme: 'Entiers',
 		domain: 'Calcul',
 		level: 1,
 		generatedAt: new Date().toISOString(),
-		choices: [
-			{ content: resolvedMarkdown('3'), isCorrect: false },
-			{ content: resolvedMarkdown('4'), isCorrect: true }
+		blanks: [
+			{
+				expectedAnswer: '1',
+				type: 'choice',
+				choice: { choices: ['3', '4'], order: [0, 1], multiple: false }
+			}
 		],
-		shuffledChoices: [
-			{ content: resolvedMarkdown('3'), originalIndex: 0 },
-			{ content: resolvedMarkdown('4'), originalIndex: 1 }
-		],
-		correctChoiceIndex: '1',
 		correction: { steps: [resolvedMarkdown('Correction détaillée')] }
 	} as QuestionInstance;
 }
@@ -118,7 +116,7 @@ function activePanel(root: HTMLElement): HTMLElement {
 
 describe('QuestionPreviewTabs — onglets', () => {
 	it('trois onglets, Entraînement par défaut pour une question à saisie', async () => {
-		const { container } = await open(qcm());
+		const { container } = await open(choiceQuestion());
 		const labels = [...container.querySelectorAll('[role="tab"]')].map((t) =>
 			t.textContent?.trim()
 		);
@@ -132,7 +130,7 @@ describe('QuestionPreviewTabs — onglets', () => {
 	});
 
 	it('Entraînement : saisie + Valider, puis carte de correction, puis Recommencer', async () => {
-		const { container } = await open(qcm());
+		const { container } = await open(choiceQuestion());
 		const panel = activePanel(container);
 		// QuestionCard interactive : choix cliquables, bouton Valider, pas de retournement
 		expect(panel.querySelectorAll('.choice-button').length).toBe(2);
@@ -156,7 +154,7 @@ describe('QuestionPreviewTabs — onglets', () => {
 	});
 
 	it('Flash-card : carte non interactive, retournable', async () => {
-		const { container } = await open(qcm());
+		const { container } = await open(choiceQuestion());
 		await selectTab(container, 'Flash-card');
 		const panel = activePanel(container);
 		expect(findButton(panel, 'Voir la correction')).toBeDefined();
@@ -164,7 +162,7 @@ describe('QuestionPreviewTabs — onglets', () => {
 	});
 
 	it('En classe : pas de retournement, un bouton montre le verso', async () => {
-		const { container } = await open(qcm());
+		const { container } = await open(choiceQuestion());
 		await selectTab(container, 'En classe');
 		const panel = activePanel(container);
 		expect(findButton(panel, 'Voir la correction')).toBeUndefined();
@@ -177,7 +175,7 @@ describe('QuestionPreviewTabs — onglets', () => {
 	});
 
 	it('En classe : texte agrandi comme la projection (--font-scale 2), tuile du verso non', async () => {
-		const { container } = await open(qcm());
+		const { container } = await open(choiceQuestion());
 		const fontSize = () =>
 			parseFloat(
 				getComputedStyle(
@@ -196,7 +194,7 @@ describe('QuestionPreviewTabs — onglets', () => {
 	});
 
 	it("changer d'onglet ne remplace pas l'instance", async () => {
-		const { container } = await open(qcm('Énoncé unique'));
+		const { container } = await open(choiceQuestion('Énoncé unique'));
 		for (const label of ['Flash-card', 'En classe', 'Entraînement']) {
 			await selectTab(container, label);
 			expect(activePanel(container).textContent).toContain('Énoncé unique');
@@ -206,7 +204,7 @@ describe('QuestionPreviewTabs — onglets', () => {
 
 describe('QuestionPreviewTabs — erreurs d’auteur (Q48)', () => {
 	it('un bloc courbe mal écrit montre « Ligne » dans chaque onglet', async () => {
-		const { container } = await open(qcm(`Lire la figure.\n\n${COURBE_EN_ERREUR}`));
+		const { container } = await open(choiceQuestion(`Lire la figure.\n\n${COURBE_EN_ERREUR}`));
 		for (const label of ['Flash-card', 'Entraînement', 'En classe']) {
 			await selectTab(container, label);
 			const text = activePanel(container).textContent ?? '';
@@ -216,7 +214,7 @@ describe('QuestionPreviewTabs — erreurs d’auteur (Q48)', () => {
 	});
 
 	it('la carte de correction (Entraînement) montre aussi le message détaillé', async () => {
-		const { container } = await open(qcm(`Lire la figure.\n\n${COURBE_EN_ERREUR}`));
+		const { container } = await open(choiceQuestion(`Lire la figure.\n\n${COURBE_EN_ERREUR}`));
 		const panel = activePanel(container);
 		panel.querySelectorAll<HTMLButtonElement>('.choice-button')[1].click();
 		flushSync();
@@ -224,17 +222,30 @@ describe('QuestionPreviewTabs — erreurs d’auteur (Q48)', () => {
 		await vi.waitFor(() => {
 			expect(findButton(activePanel(container), 'Voir la correction')).toBeDefined();
 		});
-		// QCM : l'énoncé est affiché au recto de la carte de correction (lot 2)
+		// Case choix : l'énoncé est affiché au recto de la carte de correction (lot 2)
 		const text = activePanel(container).textContent ?? '';
 		expect(text).toContain('Ligne 3');
 		expect(text).not.toContain('Figure indisponible');
+	});
+
+	// Conseil d'auteur, pas une erreur : les onglets imitent l'écran de l'élève (David,
+	// 2026-10-27) ; l'éditeur et la page d'aide le gardent (NumberLine-largeur)
+	it('droite à placer trop serrée : pas d’avertissement « téléphone » dans les onglets', async () => {
+		const serree = ['```line', 'start: 0', 'end: 20', 'step: 1', 'placer: 3', '```'].join('\n');
+		const { container } = await open(choiceQuestion(`Place 3.\n\n${serree}`));
+		for (const label of ['Flash-card', 'Entraînement', 'En classe']) {
+			await selectTab(container, label);
+			const panel = activePanel(container);
+			expect(panel.querySelector('[role="slider"]'), label).not.toBeNull();
+			expect(panel.textContent ?? '', label).not.toContain('difficiles à viser du doigt');
+		}
 	});
 
 	it('côté élève (FlashSeries) : toujours « Figure indisponible »', async () => {
 		const { container } = await render(FlashSeries, {
 			target: mainElement(),
 			props: {
-				instances: [qcm(`Lire la figure.\n\n${COURBE_EN_ERREUR}`)],
+				instances: [choiceQuestion(`Lire la figure.\n\n${COURBE_EN_ERREUR}`)],
 				isLoggedIn: true,
 				onComplete: vi.fn(),
 				onRestart: vi.fn(),

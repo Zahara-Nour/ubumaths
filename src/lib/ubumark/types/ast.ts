@@ -560,11 +560,15 @@ export type { CourbeNode } from './courbe';
 export type { FigureNode } from './figure';
 export type { StatChartNode } from './stat-chart';
 export type { QrNode } from './qr';
+export type { ScratchNode } from './scratch';
 export type { HorlogeNode } from './horloge';
+export type { PartageNode } from './partage';
+export type { EspaceNode } from './espace';
 export type { OperationNode } from './operation';
 export type { CollectionNode } from './collection';
 export type { MonnaieNode } from './monnaie';
 export type { ChoiceNode } from './choix';
+export type { RangerNode } from './ranger';
 
 // Import the types for use in BlockNode union
 import type { VariationTableNode } from './variation-table';
@@ -575,11 +579,15 @@ import type { CourbeNode } from './courbe';
 import type { FigureNode } from './figure';
 import type { StatChartNode } from './stat-chart';
 import type { QrNode } from './qr';
+import type { ScratchNode } from './scratch';
 import type { HorlogeNode } from './horloge';
+import type { PartageNode } from './partage';
+import type { EspaceNode } from './espace';
 import type { OperationNode } from './operation';
 import type { CollectionNode } from './collection';
 import type { MonnaieNode } from './monnaie';
 import type { ChoiceNode } from './choix';
+import type { RangerNode } from './ranger';
 
 /**
  * Union of block nodes (top-level document structure)
@@ -603,11 +611,15 @@ export type BlockNode =
 	| FigureNode
 	| StatChartNode
 	| QrNode
+	| ScratchNode
 	| HorlogeNode
+	| PartageNode
+	| EspaceNode
 	| OperationNode
 	| CollectionNode
 	| MonnaieNode
-	| ChoiceNode;
+	| ChoiceNode
+	| RangerNode;
 
 // ============================================================================
 // COMPOSITE NODES

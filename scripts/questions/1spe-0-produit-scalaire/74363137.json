@@ -1,0 +1,304 @@
+{
+	"id": "74363137-8fef-4a59-bb0a-ce1c0908198f",
+	"title": "Norme d'une somme ou d'une différence",
+	"description": "Développer ‖u + v‖² et ‖u − v‖² pour calculer une norme",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Produit scalaire",
+	"subdomain": "Propriétés",
+	"level": 4,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{R}}"
+				}
+			],
+			"statement": "On donne $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et $\\vec{u}\\cdot\\vec{v}={{p}}$.\n\nCalcule $\\|\\vec{u}+\\vec{v}\\|^2$.\n\n$\\|\\vec{u}+\\vec{v}\\|^2=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "p",
+					"expression": "{{eval:max(-9,1-a*b)}}..{{eval:min(9,a*b-1)}}"
+				},
+				{
+					"name": "R",
+					"expression": "{{eval:a^2+2*p+b^2}}"
+				}
+			],
+			"conditions": ["p != 0", "abs(p) < a*b"],
+			"correction": {
+				"steps": [
+					"$\\|\\vec{u}+\\vec{v}\\|^2=(\\vec{u}+\\vec{v})\\cdot(\\vec{u}+\\vec{v})$ : on développe par bilinéarité (comme une identité remarquable).",
+					"$\\|\\vec{u}+\\vec{v}\\|^2=\\|\\vec{u}\\|^2+2\\,\\vec{u}\\cdot\\vec{v}+\\|\\vec{v}\\|^2$",
+					"Donc $\\|\\vec{u}+\\vec{v}\\|^2={{eval:a^2}}+2\\times {{p;()}}+{{eval:b^2}}=\\textcolor{{{color:primary.0}}}{ {{R}} }$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{R}}"
+				}
+			],
+			"statement": "On donne $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et $\\vec{u}\\cdot\\vec{v}={{p}}$.\n\nCalcule $\\|\\vec{u}-\\vec{v}\\|^2$.\n\n$\\|\\vec{u}-\\vec{v}\\|^2=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "p",
+					"expression": "{{eval:max(-9,1-a*b)}}..{{eval:min(9,a*b-1)}}"
+				},
+				{
+					"name": "R",
+					"expression": "{{eval:a^2-2*p+b^2}}"
+				}
+			],
+			"conditions": ["p != 0", "abs(p) < a*b"],
+			"correction": {
+				"steps": [
+					"$\\|\\vec{u}-\\vec{v}\\|^2=(\\vec{u}-\\vec{v})\\cdot(\\vec{u}-\\vec{v})$ : on développe par bilinéarité (comme une identité remarquable).",
+					"$\\|\\vec{u}-\\vec{v}\\|^2=\\|\\vec{u}\\|^2-2\\,\\vec{u}\\cdot\\vec{v}+\\|\\vec{v}\\|^2$",
+					"Donc $\\|\\vec{u}-\\vec{v}\\|^2={{eval:a^2}}-2\\times {{p;()}}+{{eval:b^2}}=\\textcolor{{{color:primary.0}}}{ {{R}} }$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{R}}"
+				}
+			],
+			"statement": "On donne $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et $\\vec{u}\\cdot\\vec{v}={{p}}$.\n\nCalcule $\\|\\vec{u}-\\vec{v}\\|$. Donne sa valeur exacte sous la forme $k\\sqrt{n}$, où $k$ et $n$ sont des entiers et $n$ est le plus petit possible.\n\n$\\|\\vec{u}-\\vec{v}\\|=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "p",
+					"expression": "{{eval:max(-9,1-a*b)}}..{{eval:min(9,a*b-1)}}"
+				},
+				{
+					"name": "N",
+					"expression": "{{eval:a^2-2*p+b^2}}"
+				},
+				{
+					"name": "R",
+					"expression": "{{eval:sqrt(N)}}"
+				}
+			],
+			"conditions": ["p != 0", "abs(p) < a*b", "sqrt(N) != round(sqrt(N))"],
+			"correction": {
+				"steps": [
+					"$\\|\\vec{u}-\\vec{v}\\|^2=(\\vec{u}-\\vec{v})\\cdot(\\vec{u}-\\vec{v})$ : on développe par bilinéarité (comme une identité remarquable).",
+					"$\\|\\vec{u}-\\vec{v}\\|^2=\\|\\vec{u}\\|^2-2\\,\\vec{u}\\cdot\\vec{v}+\\|\\vec{v}\\|^2$",
+					"$\\|\\vec{u}-\\vec{v}\\|^2={{eval:a^2}}-2\\times {{p;()}}+{{eval:b^2}}={{N}}$",
+					"Une norme est positive, donc $\\|\\vec{u}-\\vec{v}\\|=\\sqrt{ {{N}} }=\\textcolor{{{color:primary.0}}}{ {{R}} }$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["21"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"p": "4"
+			},
+			"description": "v0 : 21",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["17"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"p": "4"
+			},
+			"description": "v0 : facteur 2 oublié (17)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"p": "4"
+			},
+			"description": "v0 : normes non élevées au carré (3+8+2 = 13)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"p": "4"
+			},
+			"description": "v0 : ‖u‖² + ‖v‖² seulement (13)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"p": "4"
+			},
+			"description": "v1 : 5",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["21"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"p": "4"
+			},
+			"description": "v1 : signe du double produit (21)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["9-8+4"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"p": "4"
+			},
+			"description": "v1 : calcul non effectué",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2\\sqrt{6}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "4",
+				"b": "2",
+				"p": "-2"
+			},
+			"description": "v2 : 2√6",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\sqrt{24}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedRadicals"]
+			},
+			"variables": {
+				"a": "4",
+				"b": "2",
+				"p": "-2"
+			},
+			"description": "v2 : √24 non simplifiée",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "4",
+				"b": "2",
+				"p": "-2"
+			},
+			"description": "v2 : carré de la norme donné (24)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["4,9"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "4",
+				"b": "2",
+				"p": "-2"
+			},
+			"description": "v2 : valeur approchée 4,9",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\sqrt{11}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"p": "1"
+			},
+			"description": "v2 : √11",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\sqrt{21}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"p": "1"
+			},
+			"description": "v2 : norme de u+v (√21)",
+			"variationIndex": 2
+		}
+	]
+}

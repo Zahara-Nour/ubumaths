@@ -1,0 +1,193 @@
+{
+	"title": "Puissance d'un quotient",
+	"description": "Écrire sans parenthèses (x/k)ⁿ et (k/x)ⁿ ; (p/q)⁻ⁿ en fraction irréductible",
+	"grades": ["2"],
+	"theme": "Puissances",
+	"domain": "Calculer",
+	"subdomain": "Puissance d'un quotient",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris sans parenthèses, sous la forme la plus simple.\n\n$$\\left(\\dfrac{ {{L}} }{ {{k}} }\\right)^{ {{n}} }=?$$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "x|y|t|z"
+				},
+				{
+					"name": "k",
+					"expression": "2..5"
+				},
+				{
+					"name": "n",
+					"expression": "2..3"
+				}
+			],
+			"conditions": ["k^n <= 125"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{L}}^{ {{n}} } }{ {{eval:(k)^(n)}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Puissance d'un quotient** : $\\left(\\dfrac{a}{b}\\right)^n=\\dfrac{a^n}{b^n}$ : le numérateur et le dénominateur sont élevés à la puissance $n$.",
+					"$$\\left(\\dfrac{ {{L}} }{ {{k}} }\\right)^{ {{n}} }=\\dfrac{\\textcolor{{{color:primary.1}}}{{{L}}^{ {{n}} }}}{\\textcolor{{{color:primary.0}}}{{{k}}^{ {{n}} }}}=\\textcolor{{{color:primary.0}}}{\\dfrac{ {{L}}^{ {{n}} } }{ {{eval:(k)^(n)}} }}$$"
+				]
+			}
+		},
+		{
+			"statement": "Écris sans parenthèses, sous la forme la plus simple.\n\n$$\\left(\\dfrac{ {{k}} }{ {{L}} }\\right)^{ {{n}} }=?$$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "x|y|t|z"
+				},
+				{
+					"name": "k",
+					"expression": "2..5"
+				},
+				{
+					"name": "n",
+					"expression": "2..3"
+				}
+			],
+			"conditions": ["k^n <= 125"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{eval:(k)^(n)}} }{ {{L}}^{ {{n}} } }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Puissance d'un quotient** : $\\left(\\dfrac{a}{b}\\right)^n=\\dfrac{a^n}{b^n}$ : le numérateur et le dénominateur sont élevés à la puissance $n$. Ici ${{L}}\\neq0$.",
+					"$$\\left(\\dfrac{ {{k}} }{ {{L}} }\\right)^{ {{n}} }=\\dfrac{\\textcolor{{{color:primary.0}}}{{{k}}^{ {{n}} }}}{\\textcolor{{{color:primary.1}}}{{{L}}^{ {{n}} }}}=\\textcolor{{{color:primary.0}}}{\\dfrac{ {{eval:(k)^(n)}} }{ {{L}}^{ {{n}} } }}$$"
+				]
+			}
+		},
+		{
+			"statement": "Écris sous la forme d'une fraction irréductible.\n\n$$\\left(\\dfrac{ {{p}} }{ {{q}} }\\right)^{-{{n}} }=?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..5"
+				},
+				{
+					"name": "q",
+					"expression": "2..5"
+				},
+				{
+					"name": "n",
+					"expression": "2..3"
+				}
+			],
+			"conditions": ["gcd(p,q) == 1", "p^n <= 125", "q^n <= 125"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{eval:(q)^(n)}} }{ {{eval:(p)^(n)}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Exposant négatif** : $a^{-n}=\\dfrac{1}{a^n}$ ; pour une fraction, c'est la puissance de son **inverse** : $\\left(\\dfrac{a}{b}\\right)^{-n}=\\left(\\dfrac{b}{a}\\right)^{n}$.",
+					"$$\\left(\\dfrac{ {{p}} }{ {{q}} }\\right)^{-{{n}} }=\\textcolor{{{color:primary.0}}}{\\left(\\dfrac{ {{q}} }{ {{p}} }\\right)^{ {{n}} }}=\\dfrac{ {{q}}^{ {{n}} } }{ {{p}}^{ {{n}} } }=\\textcolor{{{color:primary.1}}}{\\dfrac{ {{eval:(q)^(n)}} }{ {{eval:(p)^(n)}} }}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(x/3)² = x²/9",
+			"variationIndex": 0,
+			"variables": {
+				"L": "x|x",
+				"k": "3",
+				"n": "2"
+			},
+			"answers": ["\\frac{x^2}{9}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dénominateur oublié (x²/3)",
+			"variationIndex": 0,
+			"variables": {
+				"L": "x|x",
+				"k": "3",
+				"n": "2"
+			},
+			"answers": ["\\frac{x^2}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(2/t)³ = 8/t³",
+			"variationIndex": 1,
+			"variables": {
+				"L": "t|t",
+				"k": "2",
+				"n": "3"
+			},
+			"answers": ["\\frac{8}{t^3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : numérateur oublié (2/t³)",
+			"variationIndex": 1,
+			"variables": {
+				"L": "t|t",
+				"k": "2",
+				"n": "3"
+			},
+			"answers": ["\\frac{2}{t^3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(2/3)⁻² = 9/4",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"n": "2"
+			},
+			"answers": ["\\frac{9}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : inverse oublié (4/9)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"n": "2"
+			},
+			"answers": ["\\frac{4}{9}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : exposant négatif lu comme un signe (−4/9)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"n": "2"
+			},
+			"answers": ["-\\frac{4}{9}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -76,7 +76,25 @@ const LYCEE_CASES: readonly Case[] = [
 		integrand: '\\sin(3x + 1)',
 		expected: '-\\dfrac{1}{3} \\cos\\left( 3 x + 1 \\right)'
 	},
-	{ integrand: '(2x + 1)^3', expected: '\\dfrac{\\left( 2 x + 1 \\right)^4}{8}' }
+	{ integrand: '(2x + 1)^3', expected: '\\dfrac{\\left( 2 x + 1 \\right)^4}{8}' },
+	// V27 : dans une somme, une fonction garde l'écriture d'un terme seul
+	// (coefficient devant) ; une puissance de x garde la sienne
+	{
+		integrand: 'e^{2x} + \\dfrac{1}{x}',
+		expected: '\\dfrac{1}{2} \\exponentialE^{2 x} + \\ln\\left| x \\right|'
+	},
+	{
+		integrand: '\\dfrac{1}{2}\\sin(2x) + \\cos(x)',
+		expected: '\\sin\\left( x \\right) - \\dfrac{1}{4} \\cos\\left( 2 x \\right)'
+	},
+	{
+		integrand: '3e^{2x} - \\sin(4x)',
+		expected: '\\dfrac{3}{2} \\exponentialE^{2 x} + \\dfrac{1}{4} \\cos\\left( 4 x \\right)'
+	},
+	{
+		integrand: 'x^2 + \\sin(2x)',
+		expected: '\\dfrac{x^3}{3} - \\dfrac{1}{2} \\cos\\left( 2 x \\right)'
+	}
 ];
 
 const ALL_CASES = [...DEMO_CASES, ...LYCEE_CASES];

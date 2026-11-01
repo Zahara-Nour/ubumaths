@@ -72,10 +72,32 @@ function publicPageExists(href: string): boolean {
 	return existsSync(join(routes, '(public)', ...segments, '+page.svelte'));
 }
 
-/** Préfixes exclus par `static/robots.txt` */
+/**
+ * Préfixes exclus par `static/robots.txt` pour tous les robots (groupe `User-agent: *`).
+ * Les groupes nommés (robots d'entraînement des IA, fermés à tout le site) ne comptent pas :
+ * un moteur de recherche ne les lit pas.
+ */
 function robotsDisallowed(): string[] {
 	const robots = readFileSync(join(process.cwd(), 'static', 'robots.txt'), 'utf8');
-	return [...robots.matchAll(/^Disallow:\s*(\S+)/gm)].map((m) => m[1]);
+	const disallowed: string[] = [];
+	// Un groupe : des lignes User-agent consécutives, puis ses règles (lignes vides et commentaires ignorés)
+	let agents: string[] = [];
+	let inRules = false;
+	for (const line of robots.split('\n').map((l) => l.trim())) {
+		const agent = /^User-agent:\s*(\S+)/i.exec(line);
+		if (agent) {
+			if (inRules) agents = [];
+			inRules = false;
+			agents.push(agent[1]);
+			continue;
+		}
+		const rule = /^Disallow:\s*(\S+)/i.exec(line);
+		if (rule) {
+			inRules = true;
+			if (agents.includes('*')) disallowed.push(rule[1]);
+		}
+	}
+	return disallowed;
 }
 
 /** Toutes les chaînes d'une valeur, en profondeur */

@@ -39,7 +39,7 @@ export const figureACompleterEntry: BlockCatalogEntry = {
 					values: 'comme pour le bloc figure',
 					defaultValue: 'comme pour le bloc figure',
 					description:
-						'L’en-tête de la figure de départ. Sans repère ni quadrillage, l’élève trace sur une feuille blanche.'
+						'L’en-tête de la figure de départ, sans deplacable: ni rendu: (elle ne se déplace jamais). Sans repère ni quadrillage, l’élève trace sur une feuille blanche.'
 				}
 			]
 		}

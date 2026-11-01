@@ -1,0 +1,237 @@
+{
+	"title": "Coordonnées du produit d'un vecteur par un réel",
+	"description": "k·u avec k entier relatif, k fraction (−⅔u), puis trouver k tel que v = k·u (pièges : une seule coordonnée multipliée, k inversé)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs du plan",
+	"subdomain": "Coordonnées",
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère le vecteur $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\end{pmatrix}$.\n\nDonne les coordonnées du vecteur ${{k}}\\vec{u}$.\n\n$${{k}}\\vec{u}\\begin{pmatrix}?\\\\?\\end{pmatrix}$$",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "u2",
+					"expression": "-9..9"
+				},
+				{
+					"name": "k",
+					"expression": "2..5;±"
+				}
+			],
+			"conditions": ["u2 != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(k)*(u1)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(k)*(u2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$k\\,\\vec{u}\\begin{pmatrix}k\\,x\\\\k\\,y\\end{pmatrix}$ : **chaque** coordonnée est multipliée par $k$.",
+					"${{k}}\\vec{u}\\begin{pmatrix}{{k}}\\times{{u1;()}}\\\\{{k}}\\times{{u2;()}}\\end{pmatrix}$, soit ${{k}}\\vec{u}\\textcolor{{{color:primary.0}}}{\\begin{pmatrix}{{eval:(k)*(u1)}}\\\\{{eval:(k)*(u2)}}\\end{pmatrix}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère le vecteur $\\vec{u}\\begin{pmatrix}{{eval:(q)*(r1)}}\\\\{{eval:(q)*(r2)}}\\end{pmatrix}$.\n\nDonne les coordonnées du vecteur ${{if:s==1||-}}\\dfrac{ {{p}} }{ {{q}} }\\vec{u}$.\n\n$${{if:s==1||-}}\\dfrac{ {{p}} }{ {{q}} }\\vec{u}\\begin{pmatrix}?\\\\?\\end{pmatrix}$$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "p",
+					"expression": "1|2|3"
+				},
+				{
+					"name": "q",
+					"expression": "2|3|4|5"
+				},
+				{
+					"name": "r1",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "r2",
+					"expression": "1..4;±"
+				}
+			],
+			"conditions": ["p == 1 || mod(q, p) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(s)*(p)*(r1)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(s)*(p)*(r2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$k\\,\\vec{u}\\begin{pmatrix}k\\,x\\\\k\\,y\\end{pmatrix}$ : **chaque** coordonnée est multipliée par $k$. Diviser par ${{q}}$ d'abord rend le calcul simple.",
+					"${{if:s==1||-}}\\dfrac{ {{p}} }{ {{q}} }\\times{{eval:(q)*(r1);()}}={{if:s==1||-}}{{p}}\\times{{r1;()}}=\\textcolor{{{color:primary.0}}}{{{eval:(s)*(p)*(r1)}}}$ et ${{if:s==1||-}}\\dfrac{ {{p}} }{ {{q}} }\\times{{eval:(q)*(r2);()}}={{if:s==1||-}}{{p}}\\times{{r2;()}}=\\textcolor{{{color:primary.1}}}{{{eval:(s)*(p)*(r2)}}}$.",
+					"$${{if:s==1||-}}\\dfrac{ {{p}} }{ {{q}} }\\vec{u}\\begin{pmatrix}\\textcolor{{{color:primary.0}}}{{{eval:(s)*(p)*(r1)}}}\\\\\\textcolor{{{color:primary.1}}}{{{eval:(s)*(p)*(r2)}}}\\end{pmatrix}$$"
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère $(O\\,;\\vec{i},\\vec{j})$, on considère les vecteurs $\\vec{u}\\begin{pmatrix}{{eval:(d)*(r1)}}\\\\{{eval:(d)*(r2)}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{eval:(n)*(r1)}}\\\\{{eval:(n)*(r2)}}\\end{pmatrix}$.\n\nDétermine le réel $k$ tel que $\\vec{v}=k\\,\\vec{u}$.\n\n$$k=?$$",
+			"variables": [
+				{
+					"name": "r1",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "r2",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "d",
+					"expression": "1|2"
+				},
+				{
+					"name": "n",
+					"expression": "1..5;±"
+				}
+			],
+			"conditions": ["n != d", "d == 1 || mod(n, 2) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:d==1|{{n}}|\\frac{ {{n}} }{ {{d}} }}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\vec{v}=k\\,\\vec{u}$ : chaque coordonnée de $\\vec{v}$ est $k$ fois celle de $\\vec{u}$. Avec la première : ${{eval:(n)*(r1)}}=k\\times{{eval:(d)*(r1);()}}$, donc $k=\\dfrac{ {{eval:(n)*(r1)}} }{ {{eval:(d)*(r1)}} }=\\textcolor{{{color:primary.0}}}{{{eval:(n)/(d)}}}$.",
+					"On vérifie avec la seconde : ${{eval:(n)/(d);()}}\\times{{eval:(d)*(r2);()}}={{eval:(n)*(r2)}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "−4 × (3 ; −2) = (−12 ; 8)",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "3",
+				"u2": "-2",
+				"k": "-4"
+			},
+			"answers": ["-12", "8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : seule l'abscisse multipliée",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "3",
+				"u2": "-2",
+				"k": "-4"
+			},
+			"answers": ["-12", "-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signe (−12 ; −8)",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "3",
+				"u2": "-2",
+				"k": "-4"
+			},
+			"answers": ["-12", "-8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−⅔ × (6 ; −3) = (−4 ; 2)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "-1",
+				"p": "2",
+				"q": "3",
+				"r1": "2",
+				"r2": "-1"
+			},
+			"answers": ["-4", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe de k oublié",
+			"variationIndex": 1,
+			"variables": {
+				"s": "-1",
+				"p": "2",
+				"q": "3",
+				"r1": "2",
+				"r2": "-1"
+			},
+			"answers": ["4", "-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u(4 ; −2), v(−6 ; 3) → k = −3/2",
+			"variationIndex": 2,
+			"variables": {
+				"r1": "2",
+				"r2": "-1",
+				"d": "2",
+				"n": "-3"
+			},
+			"answers": ["-\\frac{3}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En décimal",
+			"variationIndex": 2,
+			"variables": {
+				"r1": "2",
+				"r2": "-1",
+				"d": "2",
+				"n": "-3"
+			},
+			"answers": ["-1.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : k inversé (−2/3)",
+			"variationIndex": 2,
+			"variables": {
+				"r1": "2",
+				"r2": "-1",
+				"d": "2",
+				"n": "-3"
+			},
+			"answers": ["-\\frac{2}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

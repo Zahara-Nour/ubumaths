@@ -1,0 +1,228 @@
+{
+	"title": "Encadrer un nombre (unité, dizaine, centaine)",
+	"description": "238 < 239 < 240 ; 230 < 239 < 240 ; 200 < 239 < 300",
+	"grades": ["CE1"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Encadrer",
+	"level": 7,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris le nombre juste avant et le nombre juste après ${{n}}$.\n\n$$?<{{n}}<?$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "101..998"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n-1}}"
+				},
+				{
+					"expectedAnswer": "{{eval:n+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre juste avant, c'est celui qui précède ; le nombre juste après, celui qui suit.",
+					"$${{eval:n-1}} < {{n}} < {{eval:n+1}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Encadre ${{n}}$ entre deux dizaines entières qui se suivent.\n\n$$?<{{n}}<?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..9"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:100*a+10*b+u"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*a+10*b}}"
+				},
+				{
+					"expectedAnswer": "{{eval:100*a+10*b+10}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{n}}$, c'est ${{eval:10*a+b}}$ dizaines et ${{u}}$ {{if:u==1|unité|unités}} : il est entre ${{eval:10*a+b}}$ dizaines et ${{eval:10*a+b+1}}$ dizaines.",
+					"$${{eval:100*a+10*b}} < {{n}} < {{eval:100*a+10*b+10}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Encadre ${{n}}$ entre deux centaines entières qui se suivent.\n\n$$?<{{n}}<?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..9"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:100*a+10*b+u"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*a}}"
+				},
+				{
+					"expectedAnswer": "{{eval:100*a+100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{n}}$ a ${{a}}$ {{if:a==1|centaine|centaines}} : il est entre ${{a}}$ {{if:a==1|centaine|centaines}} et ${{eval:a+1}}$ centaines.",
+					"$${{eval:100*a}} < {{n}} < {{eval:100*a+100}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "238 < 239 < 240",
+			"variationIndex": 0,
+			"variables": {
+				"n": "239"
+			},
+			"answers": ["238", "240"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 230 < 239 < 240",
+			"variationIndex": 0,
+			"variables": {
+				"n": "239"
+			},
+			"answers": ["230", "240"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "230 < 239 < 240",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"u": "9",
+				"n": "239"
+			},
+			"answers": ["230", "240"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 220 < 239 < 240",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"u": "9",
+				"n": "239"
+			},
+			"answers": ["220", "240"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 238 < 239 < 240",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"u": "9",
+				"n": "239"
+			},
+			"answers": ["238", "240"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 990 < 991 < 1000",
+			"variationIndex": 1,
+			"variables": {
+				"a": "9",
+				"b": "9",
+				"u": "1",
+				"n": "991"
+			},
+			"answers": ["990", "1000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "200 < 239 < 300",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"u": "9",
+				"n": "239"
+			},
+			"answers": ["200", "300"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dizaines (230 < 239 < 240)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"u": "9",
+				"n": "239"
+			},
+			"answers": ["230", "240"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 900 < 905 < 1000",
+			"variationIndex": 2,
+			"variables": {
+				"a": "9",
+				"b": "0",
+				"u": "5",
+				"n": "905"
+			},
+			"answers": ["900", "1000"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

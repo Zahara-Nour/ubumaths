@@ -7,6 +7,7 @@ couvre:
   - src/lib/config/lore.ts
   - 'src/lib/server/shtam/**'
   - src/lib/server/sitemap-exercises.ts
+  - src/lib/server/sitemap-glossary.ts
   - 'src/routes/(public)/almanach/**'
   - 'src/routes/(public)/chiffrement/**'
   - 'src/routes/(public)/shtam/**'
@@ -72,18 +73,33 @@ Appelants : `src/routes/(public)/+page.server.ts` (ambiance de l'accueil),
 
 ### Shtam (`src/lib/server/shtam/`, serveur seulement)
 
-| Fichier                                   | Rôle                                                                                                                         |
-| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/server/shtam/articles/<slug>.md` | Un article : en-tête YAML, corps ubumark, section `## Le vrai du faux` obligatoire                                           |
-| `src/lib/server/shtam/articles.ts`        | `ARTICLE_SOURCES` (glob embarqué au build), `parseArticle`, `publishedArticles`, `findPublishedArticle`, `pickRandomArticle` |
-| `src/lib/server/shtam/present.ts`         | `todayIsoInParis`, `toSummary` (avec la date de l'Almanach), `toArticleView`                                                 |
-| `src/routes/(public)/shtam/`              | La une, `[slug]/` (l'article), `ShtamFooter.svelte` (avertissement « gazette parodique »)                                    |
+| Fichier                                   | Rôle                                                                                                                                                                                         |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/server/shtam/articles/<slug>.md` | Un article : en-tête YAML, corps ubumark, section `## Le vrai du faux` obligatoire                                                                                                           |
+| `src/lib/server/shtam/articles.ts`        | `ARTICLE_SOURCES` (glob embarqué au build), `parseArticle`, `frenchSpacing`, `publishedArticles`, `findPublishedArticle`, `pickRandomArticle`                                                |
+| `src/lib/server/shtam/present.ts`         | `todayIsoInParis`, `toSummary` (avec la date de l'Almanach), `toArticleView`, `toFrontArticle` / `frontPageParts` (image et extrait de la une), `toEdition`, `pageOfArticle`, `pageCountFor` |
+| `src/routes/(public)/shtam/`              | Le journal (`?page=N`), `ShtamFullArticle.svelte` (un article en entier), `[slug]/` (l'article seul), `ShtamFooter.svelte` (avertissement « gazette parodique »)                             |
+
+**Le journal `/shtam`** se lit comme un vrai journal qu'on feuillette. La **page 1 (la une)** porte le
+bandeau (numéro = nombre d'articles parus, date du jour en Almanach et en grégorien, « Prix : 1 gidouille »,
+jamais en phynances, qui sont de l'argent réel), le dernier article paru (titre, chapeau, image,
+début du corps en deux colonnes) et les trois suivants en titres. Les **pages 2 et suivantes**
+(`?page=N`) portent **tous** les articles en entier, deux par page, avec leur vrai du faux ; la une
+y renvoie (« suite page N », ancre `#<slug>`). Image de la une : la première du corps, sinon celle du
+vrai du faux, où sont toutes les figures aujourd'hui. Extrait : les premiers paragraphes jusqu'à environ
+500 caractères, arrêté avant tout bloc (liste, tableau, code…). Page hors bornes ou mal formée → 404 ; `?page=1` → 308 vers `/shtam`. Les ancres `?page=N#slug` glissent quand un article paraît (rang, pas slug) : le lien stable d'un article reste `/shtam/<slug>`.
+Pages intérieures en `noindex` : chaque article a déjà sa page indexée. Pas de `<header>` dans ces
+pages : `app.css` y force tout à 1rem ; titres du bandeau et de la une agrandis par une classe locale
+qui l'emporte sur `main h1` / `main h2`.
 
 Autres lecteurs : l'accueil (`pickRandomArticle` : un lien vers un article paru) et
 `src/routes/sitemap.xml/+server.ts` (articles parus seulement). Le même plan liste aussi les
 exercices cochés « Afficher sur Google » (`is_public AND search_indexed`, lus par un client anonyme
-via `src/lib/server/sitemap-exercises.ts`, `lastmod` = `updated_at`) ; une panne de la base le sert
-sans eux, jamais en 500.
+via `src/lib/server/sitemap-exercises.ts`, `lastmod` = `updated_at`) et les pages du glossaire
+(`/glossaire/<slug>`, sauf renvois nus, via `src/lib/server/sitemap-glossary.ts`, détail dans
+[dictionnaire.md](dictionnaire.md)) ; une panne de la base le sert sans eux, jamais en 500. Il
+liste enfin les sept pages des villes du Royaume (`/royaume/<ville>`, liste fixe `CITIES`, voir
+[carte-des-fonctionnalites.md](carte-des-fonctionnalites.md)).
 
 ### Lore de l'interface
 
@@ -108,6 +124,8 @@ de 250 fichiers l'importent.
   jamais prérendues (un article daté de demain paraît demain, sans rebuild). Le **Vrai du faux** est
   obligatoire (`parseArticle` lève sinon). Titre sans formule (`~`) : il sert aussi au `<title>`.
   Auteur dans une liste fermée (`AUTHOR_LABELS`). Slug kebab-case (`SLUG_PATTERN`), validé par Zod.
+  Espaces insécables posées à la lecture (`frenchSpacing`, sur titre, chapeau, corps et vrai du
+  faux) : les articles s'écrivent avec des espaces ordinaires, code et formules `~…~` non touchés.
 - **Rien du Collège** (de ’Pataphysique) dans le contenu : règle éditoriale du Compendium.
 
 ## Comment étendre
@@ -181,15 +199,15 @@ pour la Patatovie, les seuils de l'Ordre de la Grande Passoire, « Madame la Fin
 
 ## Tests
 
-| Test                                              | Prouve                                                                                |
-| ------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| `src/lib/ciphers/__tests__/` (17 fichiers)        | Chaque chiffre (aller-retours), attaques, dépêches, progression, lien d'outil         |
-| `src/routes/(public)/chiffrement/__tests__/`      | Pages rendues, campagne des dépêches, ouverture de l'établi depuis une dépêche        |
-| `src/lib/almanach/__tests__/`                     | Conversion dans les deux sens, palettes, contraste du héros                           |
-| `src/routes/(public)/almanach/__tests__/`         | Chargement serveur, page, convertisseur                                               |
-| `src/lib/server/shtam/__tests__/articles.test.ts` | En-tête, Vrai du faux obligatoire, filtrage brouillon / futur, vrais articles valides |
-| `src/routes/(public)/shtam/__tests__/`            | 404 indiscernable, rendu                                                              |
-| `src/routes/sitemap.xml/__tests__/server.test.ts` | Ni brouillon ni article futur ; exercices cochés Google seulement ; panne → sans eux  |
+| Test                                              | Prouve                                                                                                   |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `src/lib/ciphers/__tests__/` (17 fichiers)        | Chaque chiffre (aller-retours), attaques, dépêches, progression, lien d'outil                            |
+| `src/routes/(public)/chiffrement/__tests__/`      | Pages rendues, campagne des dépêches, ouverture de l'établi depuis une dépêche                           |
+| `src/lib/almanach/__tests__/`                     | Conversion dans les deux sens, palettes, contraste du héros                                              |
+| `src/routes/(public)/almanach/__tests__/`         | Chargement serveur, page, convertisseur                                                                  |
+| `src/lib/server/shtam/__tests__/articles.test.ts` | En-tête, Vrai du faux obligatoire, filtrage brouillon / futur, vrais articles valides                    |
+| `src/routes/(public)/shtam/__tests__/`            | Une, pages intérieures, 404 indiscernable, rendu                                                         |
+| `src/routes/sitemap.xml/__tests__/server.test.ts` | Ni brouillon ni article futur ; exercices cochés Google seulement ; panne → sans eux ; villes du Royaume |
 
 ## Décisions et journaux
 
@@ -207,7 +225,5 @@ spec archivée [sprint1-lexique-spec.md](../archive/wip/sprint1-lexique-spec.md)
   comme ceux de l'Almanach et du Shtam (à confirmer par David : récits des dépêches à relire).
 - Shtam : 54 articles dans le dépôt, dont 6 parus au 2026-10-10 et 48 datés du futur (parution
   programmée jusqu'au 2027-03-29).
-- `SEE_ALSO_PATHS` (liens du glossaire vers le Cabinet Noir) ne couvre pas `atbash`, `polybe`,
-  `scytale` : aucune entrée du dictionnaire ne les vise aujourd'hui.
 - « lexique » : le mot désigne le lore (`lore.ts`, `docs/Chiphres/lexique-pataphysique.md`), mais
   le module des mots cliquables s'appelle `src/lib/lexicon/` (voir [dictionnaire.md](dictionnaire.md)).

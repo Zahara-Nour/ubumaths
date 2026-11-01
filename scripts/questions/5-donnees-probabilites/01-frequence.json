@@ -1,0 +1,281 @@
+{
+	"title": "Calculer une fréquence",
+	"description": "Calculer la fréquence d'une catégorie dans un tableau d'effectifs, en fraction, en nombre décimal ou en pourcentage (8 élèves sur 20 : 8/20 = 0,4 = 40 %)",
+	"grades": ["5"],
+	"theme": "Statistiques",
+	"domain": "Représenter des données",
+	"subdomain": "effectifs et fréquences",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "On a demandé aux ${{n}}$ élèves d'une classe comment ils viennent au collège.\n\n| Moyen de transport | À pied | Vélo | Bus | Voiture | Total |\n| --- | --- | --- | --- | --- | --- |\n| Effectif | ${{a}}$ | ${{b}}$ | ${{c}}$ | ${{d}}$ | ${{n}}$ |\n\nQuelle est la fréquence des élèves qui viennent **à pied** ? Donne-la sous forme de fraction.\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "20|25|50"
+				},
+				{
+					"name": "a",
+					"expression": "2..12"
+				},
+				{
+					"name": "b",
+					"expression": "2..12"
+				},
+				{
+					"name": "c",
+					"expression": "2..12"
+				},
+				{
+					"name": "d",
+					"expression": "eval:n-a-b-c"
+				}
+			],
+			"conditions": ["d>=2", "a!=b", "a!=c"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{{{a}}}{{{n}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fréquence.** $\\text{fréquence} = \\dfrac{\\text{effectif de la catégorie}}{\\text{effectif total}}$. Elle s'écrit en fraction, en nombre décimal ou en pourcentage.",
+					"Fréquence : {{if:gcd(a,n)!=1|$\\dfrac{{{a}}}{{{n}}} = \\textcolor{{{color:primary.0}}}{{{eval:(a)/(n)}}}$ (la fraction $\\dfrac{{{a}}}{{{n}}}$ est juste aussi)|$\\textcolor{{{color:primary.0}}}{\\dfrac{{{a}}}{{{n}}}}$}}."
+				]
+			}
+		},
+		{
+			"statement": "On a demandé aux ${{n}}$ élèves d'une classe comment ils viennent au collège.\n\n| Moyen de transport | À pied | Vélo | Bus | Voiture | Total |\n| --- | --- | --- | --- | --- | --- |\n| Effectif | ${{a}}$ | ${{b}}$ | ${{c}}$ | ${{d}}$ | ${{n}}$ |\n\nQuelle est la fréquence des élèves qui viennent **en bus** ? Donne-la sous forme de nombre décimal.\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "20|25|50"
+				},
+				{
+					"name": "a",
+					"expression": "2..12"
+				},
+				{
+					"name": "b",
+					"expression": "2..12"
+				},
+				{
+					"name": "c",
+					"expression": "2..12"
+				},
+				{
+					"name": "d",
+					"expression": "eval:n-a-b-c"
+				}
+			],
+			"conditions": ["d>=2", "a!=b", "a!=c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c/n;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fréquence.** $\\text{fréquence} = \\dfrac{\\text{effectif de la catégorie}}{\\text{effectif total}}$. Elle s'écrit en fraction, en nombre décimal ou en pourcentage.",
+					"$\\dfrac{{{c}}}{{{n}}} = {{c}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{eval:c/n;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On a demandé aux ${{n}}$ élèves d'une classe comment ils viennent au collège.\n\n| Moyen de transport | À pied | Vélo | Bus | Voiture | Total |\n| --- | --- | --- | --- | --- | --- |\n| Effectif | ${{a}}$ | ${{b}}$ | ${{c}}$ | ${{d}}$ | ${{n}}$ |\n\nQuel **pourcentage** des élèves vient **à vélo** ?\n\n$?~\\%$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "20|25|50"
+				},
+				{
+					"name": "a",
+					"expression": "2..12"
+				},
+				{
+					"name": "b",
+					"expression": "2..12"
+				},
+				{
+					"name": "c",
+					"expression": "2..12"
+				},
+				{
+					"name": "d",
+					"expression": "eval:n-a-b-c"
+				}
+			],
+			"conditions": ["d>=2", "a!=b", "a!=c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*b/n;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fréquence.** $\\text{fréquence} = \\dfrac{\\text{effectif de la catégorie}}{\\text{effectif total}}$. Elle s'écrit en fraction, en nombre décimal ou en pourcentage.",
+					"$\\dfrac{{{b}}}{{{n}}} = {{eval:b/n;d}} = \\dfrac{{{eval:100*b/n;d}}}{100}$ : cela fait $\\textcolor{{{color:primary.0}}}{{{eval:100*b/n;d}}~\\%}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "8 sur 20 : 8/20",
+			"variationIndex": 0,
+			"variables": {
+				"n": "20",
+				"a": "8",
+				"b": "5",
+				"c": "4",
+				"d": "3"
+			},
+			"answers": ["\\frac{8}{20}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "8 sur 20 : 2/5 simplifiée",
+			"variationIndex": 0,
+			"variables": {
+				"n": "20",
+				"a": "8",
+				"b": "5",
+				"c": "4",
+				"d": "3"
+			},
+			"answers": ["\\frac{2}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8/12 (sur le reste)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "20",
+				"a": "8",
+				"b": "5",
+				"c": "4",
+				"d": "3"
+			},
+			"answers": ["\\frac{8}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 20/8 (à l'envers)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "20",
+				"a": "8",
+				"b": "5",
+				"c": "4",
+				"d": "3"
+			},
+			"answers": ["\\frac{20}{8}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Bus 6 sur 25 : 0,24",
+			"variationIndex": 1,
+			"variables": {
+				"n": "25",
+				"a": "8",
+				"b": "5",
+				"c": "6",
+				"d": "6"
+			},
+			"answers": ["0,24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6 (l'effectif)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "25",
+				"a": "8",
+				"b": "5",
+				"c": "6",
+				"d": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 24 (le pourcentage)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "25",
+				"a": "8",
+				"b": "5",
+				"c": "6",
+				"d": "6"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Vélo 9 sur 50 : 18 %",
+			"variationIndex": 2,
+			"variables": {
+				"n": "50",
+				"a": "12",
+				"b": "9",
+				"c": "10",
+				"d": "19"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,18 (la fréquence)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "50",
+				"a": "12",
+				"b": "9",
+				"c": "10",
+				"d": "19"
+			},
+			"answers": ["0,18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 9 (l'effectif)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "50",
+				"a": "12",
+				"b": "9",
+				"c": "10",
+				"d": "19"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

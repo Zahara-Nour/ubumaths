@@ -1,0 +1,257 @@
+{
+	"title": "Déterminant de deux vecteurs",
+	"description": "det(u, v) = xy′ − yx′ en base orthonormée : coordonnées entières, une fraction, puis det(AB, AC) à partir de trois points (pièges : somme au lieu de différence, produits mal croisés)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs du plan",
+	"subdomain": "Colinéarité",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans un repère orthonormé $(O\\,;\\vec{i},\\vec{j})$, on considère les vecteurs $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{v1}}\\\\{{v2}}\\end{pmatrix}$.\n\nCalcule $\\det(\\vec{u},\\vec{v})$.\n\n$$\\det(\\vec{u},\\vec{v})=?$$",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "-9..9"
+				},
+				{
+					"name": "u2",
+					"expression": "-9..9"
+				},
+				{
+					"name": "v1",
+					"expression": "-9..9"
+				},
+				{
+					"name": "v2",
+					"expression": "-9..9"
+				}
+			],
+			"conditions": ["u1 != 0", "u2 != 0", "v1 != 0", "v2 != 0", "(u1)*(v2)-(u2)*(v1) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(u1)*(v2)-(u2)*(v1)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\det(\\vec{u},\\vec{v})=\\begin{vmatrix}x&x'\\\\y&y'\\end{vmatrix}=xy'-yx'$ : produit en croix, **différence** des deux produits.",
+					"$$\\det(\\vec{u},\\vec{v})={{u1;()}}\\times{{v2;()}}-{{u2;()}}\\times{{v1;()}}={{eval:(u1)*(v2)}}-{{eval:(u2)*(v1);()}}=\\textcolor{{{color:primary.0}}}{{{eval:(u1)*(v2)-(u2)*(v1)}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère orthonormé $(O\\,;\\vec{i},\\vec{j})$, on considère les vecteurs $\\vec{u}\\begin{pmatrix}\\dfrac{ {{p}} }{ {{q}} }\\\\{{u2}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{v1}}\\\\{{eval:(q)*(r)}}\\end{pmatrix}$.\n\nCalcule $\\det(\\vec{u},\\vec{v})$.\n\n$$\\det(\\vec{u},\\vec{v})=?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1|2|3"
+				},
+				{
+					"name": "q",
+					"expression": "2|3|4|5"
+				},
+				{
+					"name": "u2",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "v1",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..3;±"
+				}
+			],
+			"conditions": ["p == 1 || mod(q, p) != 0", "(p)*(r)-(u2)*(v1) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(p)*(r)-(u2)*(v1)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\det(\\vec{u},\\vec{v})=\\begin{vmatrix}x&x'\\\\y&y'\\end{vmatrix}=xy'-yx'$ : produit en croix, **différence** des deux produits.",
+					"$$\\det(\\vec{u},\\vec{v})=\\dfrac{ {{p}} }{ {{q}} }\\times{{eval:(q)*(r);()}}-{{u2;()}}\\times{{v1;()}}={{eval:(p)*(r)}}-{{eval:(u2)*(v1);()}}=\\textcolor{{{color:primary.0}}}{{{eval:(p)*(r)-(u2)*(v1)}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère orthonormé $(O\\,;\\vec{i},\\vec{j})$, on considère les points $A({{ax}}\\,;\\,{{ay}})$, $B({{bx}}\\,;\\,{{by}})$ et $C({{cx}}\\,;\\,{{cy}})$.\n\nCalcule $\\det(\\overrightarrow{AB},\\overrightarrow{AC})$.\n\n$$\\det(\\overrightarrow{AB},\\overrightarrow{AC})=?$$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-6..6"
+				},
+				{
+					"name": "ay",
+					"expression": "-6..6"
+				},
+				{
+					"name": "bx",
+					"expression": "-6..6"
+				},
+				{
+					"name": "by",
+					"expression": "-6..6"
+				},
+				{
+					"name": "cx",
+					"expression": "-6..6"
+				},
+				{
+					"name": "cy",
+					"expression": "-6..6"
+				}
+			],
+			"conditions": [
+				"bx != ax",
+				"by != ay",
+				"cx != ax",
+				"cy != ay",
+				"cx != bx",
+				"((bx)-(ax))*((cy)-(ay))-((by)-(ay))*((cx)-(ax)) != 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((bx)-(ax))*((cy)-(ay))-((by)-(ay))*((cx)-(ax))}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule d'abord les coordonnées des deux vecteurs : $\\overrightarrow{AB}\\begin{pmatrix}{{eval:(bx)-(ax)}}\\\\{{eval:(by)-(ay)}}\\end{pmatrix}$ et $\\overrightarrow{AC}\\begin{pmatrix}{{eval:(cx)-(ax)}}\\\\{{eval:(cy)-(ay)}}\\end{pmatrix}$.",
+					"$\\det(\\vec{u},\\vec{v})=\\begin{vmatrix}x&x'\\\\y&y'\\end{vmatrix}=xy'-yx'$ : produit en croix, **différence** des deux produits.",
+					"$$\\det(\\overrightarrow{AB},\\overrightarrow{AC})={{eval:(bx)-(ax);()}}\\times{{eval:(cy)-(ay);()}}-{{eval:(by)-(ay);()}}\\times{{eval:(cx)-(ax);()}}=\\textcolor{{{color:primary.0}}}{{{eval:((bx)-(ax))*((cy)-(ay))-((by)-(ay))*((cx)-(ax))}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "det((3 ; −2), (4 ; 5)) = 23",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "3",
+				"u2": "-2",
+				"v1": "4",
+				"v2": "5"
+			},
+			"answers": ["23"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme des produits (7)",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "3",
+				"u2": "-2",
+				"v1": "4",
+				"v2": "5"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ordre inversé (−23)",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "3",
+				"u2": "-2",
+				"v1": "4",
+				"v2": "5"
+			},
+			"answers": ["-23"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : produits non croisés (3×4 − (−2)×5 = 22)",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "3",
+				"u2": "-2",
+				"v1": "4",
+				"v2": "5"
+			},
+			"answers": ["22"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "det((1/2 ; 3), (−2 ; 4)) = 8",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1",
+				"q": "2",
+				"u2": "3",
+				"v1": "-2",
+				"r": "2"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme (−4)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1",
+				"q": "2",
+				"u2": "3",
+				"v1": "-2",
+				"r": "2"
+			},
+			"answers": ["-4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "AB(3 ; 1), AC(−2 ; 3) → 11",
+			"variationIndex": 2,
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"bx": "4",
+				"by": "3",
+				"cx": "-1",
+				"cy": "5"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe (−11)",
+			"variationIndex": 2,
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"bx": "4",
+				"by": "3",
+				"cx": "-1",
+				"cy": "5"
+			},
+			"answers": ["-11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

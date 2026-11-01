@@ -29,6 +29,8 @@ import {
 	LinearEquationRenderer,
 	QuadraticEquationRenderer
 } from '$lib/mathAST/pedagogical-solve';
+import { generateRemarkableValueSteps } from '$lib/mathAST/pedagogical-simplify/pipeline';
+import { PedagogicalSimplifyRenderer } from '$lib/mathAST/pedagogical-simplify/renderer';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { exactValueToShow } from '$lib/mathAST/eval/exact-value';
 import { getVariables } from '$lib/mathAST/eval/substitute';
@@ -40,6 +42,7 @@ import {
 	variableNameOf
 } from '$lib/mathAST/cli/core/variable-argument';
 import { astOf, variablesOf } from './parse';
+import { radiansInTrigonometry } from './angle-radians';
 import { concludedSolutions, conclusionAgrees } from './solve-steps-check';
 import { summaryOf } from './steps-summary';
 import { approximateSolutionsLatex } from '$lib/mathAST/cli/approximation';
@@ -81,9 +84,6 @@ const CONCLUSIONS: ReadonlySet<string> = new Set([
 	// dégénérées tombent alors dans `isSolvedForm`, qui les rejette. Le défaut
 	// est versé au lot mathAST.
 ]);
-
-/** Des lettres qui ne sont pas des paramètres : e (Euler), i, π. */
-const CONSTANT_NAMES: ReadonlySet<string> = new Set(['e', 'i', 'pi']);
 
 /**
  * Ce qu'une résolution donne à afficher : la réponse pour la ligne, les étapes
@@ -230,12 +230,22 @@ export function solveSteps(
 		// Une autre lettre que l'inconnue (`b*x+5=14`, ou `3 = 2t` résolue en x) :
 		// équation à paramètre, repli sur le moteur (L3)
 		// `x_1` est une autre lettre que x (`variablesOf`) : une équation à paramètre
-		const others = [...variablesOf(node, undefined)].filter(
-			(name) => name !== variable && !CONSTANT_NAMES.has(name)
-		);
+		const others = [...variablesOf(node, undefined)].filter((name) => name !== variable);
 		if (others.length > 0) return null;
 
-		const relation: RelationNode = node;
+		const typedRelation: RelationNode = node;
+		// La valeur d'abord, avec son étape (David, 2026-10-27, chantier
+		// valeurs-remarquables) : `cos(π/3)x = 1` se résout comme `½x = 1`, et
+		// « On divise par 1/2 » dit ce que montre la ligne
+		const remarkable = generateRemarkableValueSteps(typedRelation, { schoolLevel: 'lycee' });
+		// Un angle en degrés sans valeur remarquable (`cos(20°)`) se résout en
+		// radians, exact (`cos(π/9)`), comme avant : le solveur ne lit pas les unités
+		const solvable = radiansInTrigonometry(remarkable.result);
+		if (solvable.type !== 'relation') return null;
+		const relation: RelationNode = solvable;
+		const valueRenderer = new PedagogicalSimplifyRenderer();
+		const valuesIn = (verbosity: 'detailed' | 'summarized') =>
+			valueRenderer.renderAll(remarkable.steps, { schoolLevel: 'lycee', verbosity });
 		const steps =
 			relation.relation === '='
 				? generateEquationSteps(relation, { level: 'college', variable })
@@ -257,7 +267,10 @@ export function solveSteps(
 		// Les étapes écrites comme la réponse (lot 5f-4) ; `steps` garde les
 		// valeurs du calcul, lues par le garde-fou et la réponse
 		const shown = stepsAsShown(steps, relation);
-		const rendered = renderer.renderAll(shown, { schoolLevel, verbosity: 'detailed' });
+		const rendered = numbered([
+			...valuesIn('detailed'),
+			...renderer.renderAll(shown, { schoolLevel, verbosity: 'detailed' })
+		]);
 
 		// Sans réponse affichable, la ligne n'aurait RIEN à montrer : une zone
 		// mathématique vide, et le texte du moteur jamais affiché.
@@ -268,11 +281,18 @@ export function solveSteps(
 		// ⚠️ **Garde-fou : la conclusion est vérifiée contre le moteur.** Mesuré
 		// le 2026-10-08 — `(2x-4)=0` concluait `x = 0` (le moteur : x = 2). Une
 		// conclusion que les nombres démentent n'est jamais montrée : repli.
-		if (!conclusionAgrees(relation, variable, steps[steps.length - 1])) return null;
+		// Contre l'équation TAPÉE (degrés en radians), pas celle que les valeurs
+		// remarquables ont réduite : une valeur fausse de la table serait rattrapée
+		const typedSolvable = radiansInTrigonometry(typedRelation);
+		if (typedSolvable.type !== 'relation') return null;
+		if (!conclusionAgrees(typedSolvable, variable, steps[steps.length - 1])) return null;
 
 		const solutions = concludedSolutions(steps[steps.length - 1]);
-		const summarized = renderer.renderAll(shown, { schoolLevel, verbosity: 'summarized' });
-		const decimal = hasDecimalLiteral(relation);
+		const summarized = numbered([
+			...valuesIn('summarized'),
+			...renderer.renderAll(shown, { schoolLevel, verbosity: 'summarized' })
+		]);
+		const decimal = hasDecimalLiteral(typedRelation);
 		if (within !== undefined) {
 			return solutions === null
 				? null
@@ -301,6 +321,11 @@ export function solveSteps(
 		// qui refuse ce qu'on lui donne.
 		return null;
 	}
+}
+
+/** Les étapes numérotées dans l'ordre : le dépliage les clé par `id`. */
+function numbered(steps: readonly RenderedStep[]): RenderedStep[] {
+	return steps.map((step, index) => ({ ...step, id: index + 1 }));
 }
 
 /**

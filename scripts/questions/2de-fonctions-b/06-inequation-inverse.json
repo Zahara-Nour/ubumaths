@@ -1,0 +1,245 @@
+{
+	"title": "Résoudre 1/x < k",
+	"description": "Inéquation 1/x < k par le signe de x et la décroissance de la fonction inverse : k > 0 ou k < 0 (±½ à ±4), les quatre sens (pièges : branche négative oubliée, 0 inclus, sens non changé)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Fonction inverse",
+	"subdomain": "Résolution algébrique",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On note $f$ la fonction inverse : $f(x)=\\dfrac{1}{x}$.\n\nRésous dans $\\mathbb{R}$ l'inéquation $\\dfrac{1}{x}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k;d}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0.5|1|2|3|4"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|]-\\infty;0[\\cup]{{eval:1/(k)}};+\\infty[|{{if:s==1|]-\\infty;0[\\cup[{{eval:1/(k)}};+\\infty[|{{if:s==2|]0;{{eval:1/(k)}}[|]0;{{eval:1/(k)}}]}}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$0$ n'a pas d'image : il n'est **jamais** solution. On sépare les réels négatifs et les réels positifs.",
+					"Pour $x<0$ : $\\dfrac{1}{x}<0<{{k;d}}$, donc {{if:s==0|tous les réels négatifs sont solutions|{{if:s==1|tous les réels négatifs sont solutions|{{if:s==2|aucun réel négatif n'est solution|aucun réel négatif n'est solution}}}}}}.",
+					"Pour $x>0$ : la fonction inverse est **décroissante** sur $\\left]0\\,;+\\infty\\right[$ et $\\dfrac{1}{x}={{k;d}}$ pour $x={{eval:1/(k)}}$ ; une fonction décroissante **change** le sens : $\\dfrac{1}{x}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k;d}}\\iff x{{if:s==0|>|{{if:s==1|\\geqslant |{{if:s==2|<|\\leqslant }}}}}}{{eval:1/(k)}}$ (avec $x>0$).",
+					"```courbe\nx: -4 ; 4\ny: -5 ; 5\nf(x) = 1/x   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\n{{if:s==0|h(x) = 1/x sur ]-20 ; 0[   vert|{{if:s==1|h(x) = 1/x sur ]-20 ; 0[   vert|{{if:s==2|h(x) = 1/x sur ]0 ; 1/({{k}})[   vert|h(x) = 1/x sur ]0 ; 1/({{k}})]   vert}}}}}}\n{{if:s==0|t(x) = 0 sur ]-20 ; 0[   vert|{{if:s==1|t(x) = 0 sur ]-20 ; 0[   vert|{{if:s==2|t(x) = 0 sur ]0 ; 1/({{k}})[   vert|t(x) = 0 sur ]0 ; 1/({{k}})]   vert}}}}}}\n{{if:s==0|j(x) = 1/x sur ]1/({{k}}) ; 20]   vert|{{if:s==1|j(x) = 1/x sur [1/({{k}}) ; 20]   vert|{{if:s==2| | }}}}}}\n{{if:s==0|u(x) = 0 sur ]1/({{k}}) ; 20]   vert|{{if:s==1|u(x) = 0 sur [1/({{k}}) ; 20]   vert|{{if:s==2| | }}}}}}\npoints: A(1/({{k}}) ; {{k}})\ntaille: moyenne\ndescription: Hyperbole de la fonction inverse, droite y = {{k}} en pointillé, partie cherchée en vert. L'ensemble des solutions est repassé en vert sur l'axe des abscisses.\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]-\\infty\\,;0\\right[\\cup\\left]{{eval:1/(k)}}\\,;+\\infty\\right[|{{if:s==1|\\left]-\\infty\\,;0\\right[\\cup\\left[{{eval:1/(k)}}\\,;+\\infty\\right[|{{if:s==2|\\left]0\\,;{{eval:1/(k)}}\\right[|\\left]0\\,;{{eval:1/(k)}}\\right]}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On note $f$ la fonction inverse : $f(x)=\\dfrac{1}{x}$.\n\nRésous dans $\\mathbb{R}$ l'inéquation $\\dfrac{1}{x}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k;d}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "-4|-3|-2|-1|-0.5"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|]{{eval:1/(k)}};0[|{{if:s==1|[{{eval:1/(k)}};0[|{{if:s==2|]-\\infty;{{eval:1/(k)}}[\\cup]0;+\\infty[|]-\\infty;{{eval:1/(k)}}]\\cup]0;+\\infty[}}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$0$ n'a pas d'image : il n'est **jamais** solution. On sépare les réels négatifs et les réels positifs.",
+					"Pour $x>0$ : $\\dfrac{1}{x}>0>{{k;d}}$, donc {{if:s==0|aucun réel positif n'est solution|{{if:s==1|aucun réel positif n'est solution|{{if:s==2|tous les réels positifs sont solutions|tous les réels positifs sont solutions}}}}}}.",
+					"Pour $x<0$ : la fonction inverse est **décroissante** sur $\\left]-\\infty\\,;0\\right[$ et $\\dfrac{1}{x}={{k;d}}$ pour $x={{eval:1/(k)}}$ ; une fonction décroissante **change** le sens : $\\dfrac{1}{x}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k;d}}\\iff x{{if:s==0|>|{{if:s==1|\\geqslant |{{if:s==2|<|\\leqslant }}}}}}{{eval:1/(k)}}$ (avec $x<0$).",
+					"```courbe\nx: -4 ; 4\ny: -5 ; 5\nf(x) = 1/x   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\n{{if:s==0|h(x) = 1/x sur ]1/({{k}}) ; 0[   vert|{{if:s==1|h(x) = 1/x sur [1/({{k}}) ; 0[   vert|{{if:s==2|h(x) = 1/x sur [-20 ; 1/({{k}})[   vert|h(x) = 1/x sur [-20 ; 1/({{k}})]   vert}}}}}}\n{{if:s==0|t(x) = 0 sur ]1/({{k}}) ; 0[   vert|{{if:s==1|t(x) = 0 sur [1/({{k}}) ; 0[   vert|{{if:s==2|t(x) = 0 sur [-20 ; 1/({{k}})[   vert|t(x) = 0 sur [-20 ; 1/({{k}})]   vert}}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2|j(x) = 1/x sur ]0 ; 20]   vert|j(x) = 1/x sur ]0 ; 20]   vert}}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2|u(x) = 0 sur ]0 ; 20]   vert|u(x) = 0 sur ]0 ; 20]   vert}}}}}}\npoints: A(1/({{k}}) ; {{k}})\ntaille: moyenne\ndescription: Hyperbole de la fonction inverse, droite y = {{k}} en pointillé, partie cherchée en vert. L'ensemble des solutions est repassé en vert sur l'axe des abscisses.\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]{{eval:1/(k)}}\\,;0\\right[|{{if:s==1|\\left[{{eval:1/(k)}}\\,;0\\right[|{{if:s==2|\\left]-\\infty\\,;{{eval:1/(k)}}\\right[\\cup\\left]0\\,;+\\infty\\right[|\\left]-\\infty\\,;{{eval:1/(k)}}\\right]\\cup\\left]0\\,;+\\infty\\right[}}}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1/x < 2 : S = ]−∞ ; 0[ ∪ ]1/2 ; +∞[",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"s": "0"
+			},
+			"answers": ["]-\\infty;0[\\cup]\\frac{1}{2};+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En décimal ]−∞ ; 0[ ∪ ]0,5 ; +∞[",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"s": "0"
+			},
+			"answers": ["]-\\infty;0[\\cup]0{,}5;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : branche négative oubliée",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"s": "0"
+			},
+			"answers": ["]\\frac{1}{2};+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0 inclus",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"s": "0"
+			},
+			"answers": ["]-\\infty;0]\\cup]\\frac{1}{2};+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sens non changé ]−∞ ; 1/2[",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"s": "0"
+			},
+			"answers": ["]-\\infty;\\frac{1}{2}["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/x ⩾ 3 : S = ]0 ; 1/3]",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"s": "3"
+			},
+			"answers": ["]0;\\frac{1}{3}]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0 inclus [0 ; 1/3]",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"s": "3"
+			},
+			"answers": ["[0;\\frac{1}{3}]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ]−∞ ; 1/3]",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"s": "3"
+			},
+			"answers": ["]-\\infty;\\frac{1}{3}]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/x > −2 : S = ]−∞ ; −1/2[ ∪ ]0 ; +∞[",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-2",
+				"s": "2"
+			},
+			"answers": ["]-\\infty;-\\frac{1}{2}[\\cup]0;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ]−1/2 ; 0[",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-2",
+				"s": "2"
+			},
+			"answers": ["]-\\frac{1}{2};0["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ]−1/2 ; +∞[",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-2",
+				"s": "2"
+			},
+			"answers": ["]-\\frac{1}{2};+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/x ⩽ −0,5 : S = [−2 ; 0[",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-0.5",
+				"s": "1"
+			},
+			"answers": ["[-2;0["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0 inclus [−2 ; 0]",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-0.5",
+				"s": "1"
+			},
+			"answers": ["[-2;0]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ]−∞ ; −2]",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-0.5",
+				"s": "1"
+			},
+			"answers": ["]-\\infty;-2]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,137 @@
+{
+	"title": "Calculer le périmètre d'un disque",
+	"description": "Calculer le périmètre d'un disque avec 3,14 pour π : 3,14 × D avec le diamètre, 2 × 3,14 × R avec le rayon",
+	"grades": ["6"],
+	"theme": "Grandeurs",
+	"domain": "Périmètres",
+	"subdomain": "Périmètre d'un disque",
+	"level": 3,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On prend $3.14$ pour $\\pi$.\n\nCalcule le périmètre {{if:c==0|d'une roue|{{if:c==1|d'une assiette|d'un disque}}}} de diamètre ${{d}}~\\unit{cm}$.\n\n$$?~\\text{cm}$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..2"
+				},
+				{
+					"name": "d",
+					"expression": "1..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:314*d/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Périmètre d'un disque.** Avec le diamètre $D$ : $P = \\pi \\times D$. Avec le rayon $R$ (la moitié du diamètre) : $P = 2 \\times \\pi \\times R$.",
+					"$$P = 3.14 \\times {{d}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+					"Le périmètre vaut environ ${{solution}}~\\unit{cm}$."
+				]
+			}
+		},
+		{
+			"statement": "On prend $3.14$ pour $\\pi$.\n\nCalcule le périmètre {{if:c==0|d'une roue|{{if:c==1|d'une assiette|d'un disque}}}} de rayon ${{r}}~\\unit{cm}$.\n\n$$?~\\text{cm}$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..2"
+				},
+				{
+					"name": "r",
+					"expression": "1..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:628*r/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Périmètre d'un disque.** Avec le diamètre $D$ : $P = \\pi \\times D$. Avec le rayon $R$ (la moitié du diamètre) : $P = 2 \\times \\pi \\times R$.",
+					"$$P = 2 \\times 3.14 \\times {{r}} = 6.28 \\times {{r}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+					"Le périmètre vaut environ ${{solution}}~\\unit{cm}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Diamètre 5 : 15,7",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"d": "5"
+			},
+			"answers": ["15,7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 78,5 (3,14 × 5 × 5)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"d": "5"
+			},
+			"answers": ["78,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Diamètre 12 : 37,68",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"d": "12"
+			},
+			"answers": ["37,68"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rayon 3 : 18,84",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"r": "3"
+			},
+			"answers": ["18,84"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 9,42 (rayon pris pour diamètre)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"r": "3"
+			},
+			"answers": ["9,42"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 28,26 (3,14 × 3 × 3)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"r": "3"
+			},
+			"answers": ["28,26"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

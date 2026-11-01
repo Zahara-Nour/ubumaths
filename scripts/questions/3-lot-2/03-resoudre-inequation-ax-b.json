@@ -1,0 +1,241 @@
+{
+	"title": "Résoudre une inéquation ax ⩾ b",
+	"description": "Résoudre une inéquation du type ax ⩾ b, les quatre sens (<, ⩽, >, ⩾), a positif ou négatif (3x ⩾ 12, −2x < 6, −7x < 3) ; réponse écrite en inégalité « x > 4 »",
+	"grades": ["3"],
+	"theme": "Calcul littéral",
+	"domain": "Inéquations",
+	"subdomain": "ax ⩾ b",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Résous l'inéquation ${{a}}x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:a*k}}$.\n\nLes solutions sont les nombres $x$ tels que $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "k",
+					"expression": "1..10;±"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On divise les deux membres par ${{a}}$, un nombre **positif** : le sens de l'inégalité **ne change pas**.",
+					"$${{a}}x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:a*k}} \\iff x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}\\dfrac{{{eval:a*k}}}{{{a}}} \\iff \\textcolor{{{color:primary.0}}}{x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}}$$",
+					"{{if:s==0|L'inégalité est **stricte** : la borne n'est pas solution.|{{if:s==2|L'inégalité est **stricte** : la borne n'est pas solution.|L'inégalité est **large** : la borne est solution.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Résous l'inéquation ${{a}}x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:a*k}}$.\n\nLes solutions sont les nombres $x$ tels que $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..-2"
+				},
+				{
+					"name": "k",
+					"expression": "1..10;±"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "x{{if:s==0|>|{{if:s==1|\\geqslant |{{if:s==2|<|\\leqslant }}}}}}{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On divise les deux membres par ${{a}}$, un nombre **négatif** : le sens de l'inégalité **change**.",
+					"$${{a}}x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:a*k}} \\iff x{{if:s==0|>|{{if:s==1|\\geqslant |{{if:s==2|<|\\leqslant }}}}}}\\dfrac{{{eval:a*k}}}{{{a}}} \\iff \\textcolor{{{color:primary.0}}}{x{{if:s==0|>|{{if:s==1|\\geqslant |{{if:s==2|<|\\leqslant }}}}}}{{k}}}$$",
+					"{{if:s==0|L'inégalité est **stricte** : la borne n'est pas solution.|{{if:s==2|L'inégalité est **stricte** : la borne n'est pas solution.|L'inégalité est **large** : la borne est solution.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Résous l'inéquation ${{a}}x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{b}}$.\n\nLes solutions sont les nombres $x$ tels que $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9|-7|-6|-3|3|6|7|9"
+				},
+				{
+					"name": "b",
+					"expression": "1..20;±"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				},
+				{
+					"name": "r",
+					"expression": "{{eval:mod(s+(abs(a)-a)/abs(a),4)}}"
+				}
+			],
+			"conditions": ["gcd(abs(a), abs(b)) == 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "x{{if:r==0|<|{{if:r==1|\\leqslant |{{if:r==2|>|\\geqslant }}}}}}{{eval:(b)/(a)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:a>0|On divise les deux membres par ${{a}}$, un nombre **positif** : le sens de l'inégalité **ne change pas**.|On divise les deux membres par ${{a}}$, un nombre **négatif** : le sens de l'inégalité **change**.}}",
+					"$${{a}}x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{b}} \\iff x{{if:r==0|<|{{if:r==1|\\leqslant |{{if:r==2|>|\\geqslant }}}}}}\\dfrac{{{b}}}{{{a}}} \\iff \\textcolor{{{color:primary.0}}}{x{{if:r==0|<|{{if:r==1|\\leqslant |{{if:r==2|>|\\geqslant }}}}}}{{eval:(b)/(a)}}}$$",
+					"La fraction ne tombe pas juste : on la garde sous forme de fraction irréductible, sans valeur approchée. {{if:s==0|L'inégalité est **stricte** : la borne n'est pas solution.|{{if:s==2|L'inégalité est **stricte** : la borne n'est pas solution.|L'inégalité est **large** : la borne est solution.}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3x > 12 : x > 4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"k": "4",
+				"s": "2"
+			},
+			"answers": ["x>4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : soustraction x > 9",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"k": "4",
+				"s": "2"
+			},
+			"answers": ["x>9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : inégalité large x ⩾ 4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"k": "4",
+				"s": "2"
+			},
+			"answers": ["x\\geqslant 4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−2x < 6 : x > −3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"k": "-3",
+				"s": "0"
+			},
+			"answers": ["x>-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sens non changé x < −3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"k": "-3",
+				"s": "0"
+			},
+			"answers": ["x<-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signe perdu x > 3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"k": "-3",
+				"s": "0"
+			},
+			"answers": ["x>3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3x ⩾ 2 : x ⩾ 2/3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"s": "3",
+				"r": "3"
+			},
+			"answers": ["x\\geqslant \\frac{2}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : valeur approchée x ⩾ 0,67",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"s": "3",
+				"r": "3"
+			},
+			"answers": ["x\\geqslant 0{,}67"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−7x < 3 : x > −3/7",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-7",
+				"b": "3",
+				"s": "0",
+				"r": "2"
+			},
+			"answers": ["x>-\\frac{3}{7}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sens non changé x < −3/7",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-7",
+				"b": "3",
+				"s": "0",
+				"r": "2"
+			},
+			"answers": ["x<-\\frac{3}{7}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

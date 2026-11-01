@@ -12,7 +12,7 @@
 
 import type { MathNode } from '../types';
 import { add, multiply, number, opposite } from '../factory';
-import { denormalize, normalize } from '../normal';
+import { canonicalForm } from '../normal';
 import { tidy } from '../tidy';
 
 /**
@@ -38,7 +38,7 @@ export function periodicMember(base: MathNode, k: number, period: MathNode): Mat
 
 	// Normalize to simplify (e.g. 0 + 2π → 2π, π/2 + 2π → 5π/2)
 	try {
-		return denormalize(normalize(raw));
+		return canonicalForm(raw);
 	} catch {
 		return raw;
 	}

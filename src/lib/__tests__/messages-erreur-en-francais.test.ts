@@ -133,8 +133,7 @@ const TRANSLATED_API_DIRS = [
 	'src/routes/api/python-exercises',
 	'src/routes/api/whiteboard',
 	'src/routes/api/google',
-	'src/routes/api/admin',
-	'src/routes/api/migration'
+	'src/routes/api/admin'
 ];
 
 // ============================================================================

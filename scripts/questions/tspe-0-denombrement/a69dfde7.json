@@ -1,0 +1,124 @@
+{
+	"id": "a69dfde7-44b7-489e-a248-be0a1e5c5117",
+	"title": "Python : générer les paires et les triplets",
+	"description": "Lire un programme qui énumère les parties à 2 ou 3 éléments : paires i < j (C(n, 2)), triplets i < j < k (C(n, 3)) (piège : compter les couples ordonnés)",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Dénombrement",
+	"subdomain": "Algorithmique",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:binom(n,k)}}"
+				}
+			],
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef compte(n):\n    c = 0\n    for i in range(n):\n        for j in range(i + 1, n):\n            c = c + 1\n    return c\n```\n\nQue renvoie `compte({{n}})` ?\n\nLa valeur renvoyée est $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..20"
+				},
+				{
+					"name": "k",
+					"expression": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boucle parcourt les couples $(i\\,;j)$ avec $0\\leqslant i<j\\leqslant {{eval:n-1}}$ : chaque paire $\\{i,j\\}$ est comptée **une** fois.",
+					"$\\binom{ {{n}} }{ 2 }=\\dfrac{ {{n}}\\times{{eval:n-1}} }{2}=\\textcolor{{{color:primary.0}}}{{{eval:binom(n,k)}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:binom(n,k)}}"
+				}
+			],
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef triplets(n):\n    L = []\n    for i in range(n):\n        for j in range(i + 1, n):\n            for k in range(j + 1, n):\n                L.append([i, j, k])\n    return L\n```\n\nQue renvoie `len(triplets({{n}}))` ?\n\nLa valeur renvoyée est $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..12"
+				},
+				{
+					"name": "k",
+					"expression": "3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La liste contient les triplets $(\\mathit{i}\\,;j\\,;k)$ avec $\\mathit{i}<j<k$ : chaque partie à $3$ éléments de $\\{0,\\dots,{{eval:n-1}}\\}$ y figure une fois.",
+					"$\\binom{ {{n}} }{ 3 }=\\textcolor{{{color:primary.0}}}{{{eval:binom(n,k)}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["45"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "10"
+			},
+			"description": "v0 : n = 10 → 45",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["90"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "10"
+			},
+			"description": "v0 : 90 (couples ordonnés)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "10"
+			},
+			"description": "v0 : 100",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["20"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "6"
+			},
+			"description": "v1 : n = 6 → 20",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["120"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "6"
+			},
+			"description": "v1 : 120 (triplets ordonnés)",
+			"variationIndex": 1
+		}
+	]
+}

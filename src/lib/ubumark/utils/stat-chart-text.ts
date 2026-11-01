@@ -40,6 +40,8 @@ interface StatText {
 	};
 	/** Titres d'axe par défaut */
 	axis: { count: string; relative: string; cumulative: string };
+	/** Barre à construire (`placer:`), dans la description accessible : son effectif est tu */
+	toBuild: string;
 	/** Noms des indicateurs (lignes « Moyenne = 12 », en-têtes des tableaux) */
 	rows: Record<IndicatorRowId, string>;
 	/** « Effectif total : 8 » */
@@ -168,6 +170,7 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 			relative: 'Fréquence (%)',
 			cumulative: 'Fréquence cumulée (%)'
 		},
+		toBuild: 'à construire',
 		rows: {
 			count: 'Effectif',
 			mean: 'Moyenne',
@@ -283,6 +286,7 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 			relative: 'Relative frequency (%)',
 			cumulative: 'Cumulative relative frequency (%)'
 		},
+		toBuild: 'to draw',
 		rows: {
 			count: 'Frequency',
 			mean: 'Mean',

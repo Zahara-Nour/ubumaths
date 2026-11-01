@@ -5,13 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1847._
+_Mis à jour le 2026-11-01, après #2135._
 
-- **État** : lot 1 (calcul mental, 6 modèles : 084, 029, 102, 032, 083, 024) en fichiers, MERGÉ (#1847) ; pas encore en base de prod.
-- **Prochaine action** : **David** lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce1-1 --publier` depuis le dépôt principal (prod, brouillons) → relever les 6 `id` → migration nœud + tag (gabarit `20261026210000_questions_cp_c_rangement_tags.sql`) → page à cocher → publication.
-- **En attente de David** : la commande `create-questions --publier` ci-dessus.
-- **Pièges en cours** : modèle publié → deux migrations ; tag = point du nœud ou de sa notion ; QCM en réécriture (case « choix ») → demander la forme au premier lot qui en a besoin ; `collection` n'a pas `centaines:` ; worktree neuf → `pnpm exec svelte-kit sync` avant `create-questions` (`$lib`).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (gardé pour la migration ; brancher la PR de migration depuis `origin/main`).
+- **État** : lots 0 à 7 publiés (lot 7 : données, 6 modèles, § 14, clos le 2026-11-01).
+- **Prochaine action** : lot 8 monnaie (054, 055, 056, 057, 086, § 15) écrit et mergé (#2135) ; brouillons en prod à créer par David (`create-questions --publier`), puis migration nœud + tag ; page à cocher et publication **après le `deploy:prod`** qui livre #2127 ; puis lots 9 et 10 (ex-8 et 9 du § 12).
+- **En attente de David** : rien (phase 0 validée).
+- **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
+  `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
+  non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
+  posée dans Chrome : une case à la fois ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage
+  de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule ; aucun lien
+  de session dans une PR ; migration de données → ligne `Doc-inchangée:` dans un commit (garde du pre-push).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branche `chore/questions-ce1-lot8-monnaie`). `!` de David :
+  toujours préfixer `cd /Users/david/Coding/js/ubumaths &&` (un dossier courant supprimé fait échouer node en `uv_cwd`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -206,3 +212,459 @@ migration nœud + tag ne change aucune règle.
 - 2026-10-26 : écrit, `create-questions` en simulation 6/6 (40 specs), `question:specs` 2 800 tirages
   verts, essai en base locale (6 brouillons), énoncés et corrigés relus dans l'aperçu admin.
 - 2026-10-26 : #1847 mergée (CI verte, revue : aucune, contenu).
+- 2026-10-27 : 6 brouillons créés en prod par David (identifiants dans « Reprendre ici »).
+- 2026-10-27 : #1856 mergée (migration nœud + tag, test 9/9 rouge sans elle, `security-auditor` sans finding), `db:migrate`, vérifiée en prod ; page à cocher publiée.
+- 2026-10-27 : relecture, 084 « À revoir » (« pourquoi de manière astucieuse ? ») → consigne « Calcule. » pour 084, 029, 102 et 032 (décision de David : « tu changes ») ; fichiers d'avant = prod (simulation : 6/6 identiques), tirages verts ; David lance ensuite `create-questions --publier --mettre-a-jour`.
+- 2026-10-27 : `--mettre-a-jour` lancé par David (après un premier essai avant le merge, sans effet), vérifié en base ; relecture 6/6 « OK ».
+- 2026-10-27 : `publier-lot` (simulation) refuse 084, 029, 083, 024 : niveaux 7, 8, 1, 3 déjà pris par des publiés de la même catégorie (choisis en phase 0 sans relever la catégorie). Décision de David (« je suis tes recos ») : premier niveau libre (11, 12 ; 10, 11), aucun publié renuméroté ; `create-questions` cherche par le niveau et `--mettre-a-jour` ne le change pas → migration des niveaux + fichiers dans la même PR ; question d'accès : personne.
+- 2026-10-27 : #1870 mergée (CI verte, `security-auditor` sans finding bloquant), `db:migrate`, vérifiée en prod ; `publier-lot` (simulation) : 6/6.
+- 2026-10-27 : lot 1 publié par David, vérifié (6/6 `published`).
+- 2026-10-27 : catégories (David : « go », accès : personne) — 084, 029 → Additionner / Somme (à côté de « Ajouter 10 »), 102 → Soustraire / Différence (à côté de « Soustraire 10 ») ; 032 reste (− 10 + 1 est une astuce) ; migration sur 3 publiés + fichiers.
+- 2026-10-27 : #1874 mergée (CI verte, `security-auditor` sans finding bloquant) ; `db:migrate` refusé (`DbPushMissingRemoteError` : 20261027180000 de `6EME` non jouée) ; pas de `--include-all` (migration d'une autre session) ; David : option 1, `6EME` la joue, elle est prévenue.
+- 2026-10-27 : `6EME` a joué `db push --include-all` (accord de David) : 20261027180000 puis 20261027200000 ; vérifié au MCP (catégories, `updated_at`, trigger `O`) ; `create-questions` 6/6 « = ». Lot 1 clos.
+
+## 7. Lot 2 : numération — décisions (David, 2026-10-27)
+
+Relevé MCP du 2026-10-27 : CE1-003, 004, 008, 009, 011-015, 093, 094 sans modèle ; 005 (3, les décompositions)
+et 006, 007, 010 (1 chacun). Le CP a des modèles proches (ranger, encadrer, intercaler, ordinaux) : même forme,
+nombres du CE1. Recommandations suivies (« je te suis ») :
+
+1. **Ordinaux (011-015) en lot 2 bis**, juste après : ce lot reste sous 10 modèles ; la forme des deux QCM du CP
+   (rang en lettres, suites de formes) se tranchera alors.
+2. **CE1-004 sans l'écriture en lettres** (aucune borne au CE1 ; aucun outil n'écrit un nombre en lettres jusqu'à 999) : **reportée, pas abandonnée** — à reprendre si un outil « nombre en lettres » naît (servirait au CE2).
+3. **CE1-009 en forme ouverte** : l'élève écrit un nombre qui respecte la phrase (validation par intervalle,
+   comme « Intercaler » du CP) ; le choix d'un symbole relève de 007, déjà couvert.
+
+| Fichier                          | Point   | Sous-notion   | Catégorie · niveau | Variations                                                                          |
+| -------------------------------- | ------- | ------------- | ------------------ | ----------------------------------------------------------------------------------- |
+| `01-unites-dizaines-centaines`   | CE1-003 | décomposition | Décomposition · 13 | c → d ; d → c ; c → u ; dizaines en tout dans 347 (34)                              |
+| `02-unites-non-canoniques`       | CE1-005 | écritures     | Décomposition · 14 | 63 d et 5 u ; 5 u, 5 c et 13 d (ordre mélangé) ; 2 c, 27 d et 14 u                  |
+| `03-suite-jusqu-a-1000`          | CE1-004 | écritures     | Ecriture · 3       | suit (sans passage) ; suit (…9, …99, 999 → 1 000) ; précède (…0, …00, 1 000)        |
+| `04-ranger-cinq-nombres`         | CE1-008 | ordre         | Comparer · 6       | comme 229, 234, 239, 243, 300 : croissant ; décroissant                             |
+| `05-superieur-inferieur-compris` | CE1-009 | ordre         | Comparer · 7       | supérieur à ; inférieur à ; compris entre a et a + 10 ; supérieur et inférieur      |
+| `06-encadrer-dizaine-centaine`   | CE1-093 | ordre         | Encadrer · 7       | juste avant / après ; dizaines entières ; centaines entières                        |
+| `07-intercaler-jusqu-a-1000`     | CE1-094 | ordre         | Encadrer · 8       | a < ? < b (toute réponse juste) ; suite à trous avec passage de dizaine ou centaine |
+
+Case seule, aucun QCM. Niveaux : places libres des catégories relevées en prod avant l'écriture.
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud
+
+- tag ne change aucune règle.
+
+* 2026-10-27 : écrit (`lot-ce1-2.py`), `create-questions` en simulation 7/7 (63 specs), `question:specs` 4 200
+  tirages verts (accord « 1 centaine » corrigé), essai en base locale (7 brouillons), énoncés et corrigés relus
+  dans l'aperçu admin.
+
+- 2026-10-27 : #1884 mergée (CI verte, revue : aucune, contenu).
+- 2026-10-28 : 7 brouillons créés en prod par David ; #1886 (nœud + tag, test rouge 5/9 sans, vert 9/9, `security-auditor` sans finding) mergée, `db:migrate`, vérifiée ; page à cocher : 2 titres « absents » (antislash, bug `titresDuLot`) → #1891 ; relue 7/7 OK ; `publier-lot` refuse c4d4bf70 (Ecriture 3 occupé).
+
+## 8. Lot 2 bis : ordinaux — décisions (David, 2026-10-28)
+
+Relevé MCP du 2026-10-28 : CE1-011 à 015 sans modèle ; au CP, 6 modèles « Ordinaux » (niveaux 1 à 6, rangs ≤ 20e,
+deux QCM). Case « choix » : code en prod (lots 1-4 de `figure-et-choix` dans `production`), base pas encore
+convertie (178 QCM, `migrer-qcm-en-cases --ecrire` pas lancé). Recommandations suivies (« je te suis ») :
+
+1. Choix écrits directement en **case « choix »** (bloc ```choix).
+2. Mots jusqu'à cent écrits par le script, rangs des modèles 1 et 2 tirés dans une liste de cas qui piègent
+   (21, 30, 31, 41, 48, 52, 60, 61, 67, 70, 71, 72, 77, 80, 81, 85, 89, 90, 91, 97, 99, 100) ; orthographe
+   rectifiée du BO (« vingt-et-unième », « soixante-et-onzième »).
+3. Rangs des énoncés des modèles 3 à 7 en chiffres (89e).
+4. « 1, 3, 5, 7, 9… » avec les suites évolutives (modèle 7), jusqu'au 50e.
+
+| Fichier                              | Point   | Niveau | Variations                                                                    |
+| ------------------------------------ | ------- | ------ | ----------------------------------------------------------------------------- |
+| `01-rang-en-lettres-jusqu-a-cent`    | CE1-011 | 7      | 48e → quarante-huitième (choix ; leurres : rangs voisins, le nombre)          |
+| `02-rang-en-chiffres-jusqu-a-cent`   | CE1-011 | 8      | quatre-vingt-unième → 81                                                      |
+| `03-place-dans-une-liste`            | CE1-012 | 9      | listes de 5 en 5, 2 en 2, 10 en 10 (depuis 100), l'alphabet : place de …      |
+| `04-reperer-un-rang-jusqu-a-cent`    | CE1-013 | 10     | le k-ième nombre ; le k-ième depuis la fin ; file retournée (n − k + 1)       |
+| `05-rang-et-nombre-avant`            | CE1-014 | 11     | 167 cyclistes, avant le 48e (BO) ; d avant Lina → rang ; après Noé            |
+| `06-suites-repetitives-jusqu-a-cent` | CE1-015 | 12     | A B (89e), △ ▢ ○ (60e), △ ✕ ▢ ○ (80e), A B G F (17e), jusqu'à la 100e (choix) |
+| `07-suites-evolutives`               | CE1-015 | 13     | 1, 2, 4, 7, 11… ; 1, 2, 4, 8… (≤ 10e) ; 1, 3, 5… (≤ 50e) ; △ ✕ △ ✕✕… (choix)  |
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud
+
+- tag ne change aucune règle.
+
+* 2026-10-28 : écrit (`lot-ce1-2bis.py`), `create-questions` en simulation 7/7 (79 specs), `question:specs`
+  3 000 tirages verts ; deux défauts vus à la relecture des tirages, specs vertes : rang toujours 100 (variable
+  `i` = unité imaginaire → liste `21|30|…`) et « on fait 4 pas » de 100 à 130 (→ « on compte 4 nombres ») ;
+  7 brouillons en base locale, case choix jouée dans l'aperçu admin (juste, coché à tort).
+* 2026-10-28 : #1910 mergée (CI verte, `security-auditor` sans finding bloquant) ; `db:migrate` refusé par le
+  classifieur du mode auto → lancé par David avec `!`.
+* 2026-10-28 : migration de #1910 déjà jouée en prod (le `db:migrate` de David : « up to date »), vérifiée
+  (7/7 sur « ordinaux et rangs », points justes) ; page à cocher publiée (3 alertes : case choix non dessinée).
+* 2026-10-28 : relecture 7/7 OK ; `publier-lot` (simulation 7/7) puis `--publier` par David : 7/7 publiés,
+  vérifié en base ; worktree retiré.
+
+## 9. Lot 3 : fractions — décisions (David, 2026-10-28)
+
+Relevé MCP du 2026-10-28 : aucun modèle sur les 11 points de fractions du CE1 ; thème « Fractions » du CM1 à la
+3e ; « Apprivoiser · Comparer » prend 1 à 5, « Calculer · Addition et Soustraction » 1 à 12. Recommandations
+suivies (« je valide ») :
+
+1. **Texte seul.** 096 et 098 (quelle part de la figure est coloriée ?) passent au lot « outils existants », après
+   vérification que le bloc `figure` dessine les partages du BO (bandes, carrés, disques en secteurs, hexagones) ;
+   à défaut des disques, bandes et carrés d'abord. 095 et 097 attendent l'outil « fractions à colorier ».
+2. **Nouvelle catégorie « Fractions · Apprivoiser · Ecriture »** (niveaux 1 à 5), comme « Ecriture » des entiers et
+   des décimaux.
+3. **Simplification = CE2** : `reducedFractions` coupé ; 4/8 juste sans ambre, 1/2 aussi (même valeur) ; une somme
+   qui fait 1 accepte « 1 » et « 5/5 ».
+4. 05 sans « écrire la fraction de numérateur 2 et de dénominateur 5 » (doublon de 03) ; 06 et 07 avec une égalité
+   de temps en temps (tirages indépendants), comme « Comparer » des entiers.
+
+| Fichier                            | Point   | Catégorie · niveau            | Variations                                                                   |
+| ---------------------------------- | ------- | ----------------------------- | ---------------------------------------------------------------------------- |
+| `01-ecrire-une-fraction-unitaire`  | CE1-016 | Ecriture · 1                  | un quart → 1/4 (demi … dixième)                                              |
+| `02-lire-une-fraction-unitaire`    | CE1-016 | Ecriture · 2                  | 1/4 → un quart (choix ; leurres « un quatre », autre part, « un quatrième ») |
+| `03-ecrire-une-fraction`           | CE1-017 | Ecriture · 3                  | trois huitièmes → 3/8 ; un huitième plus un huitième plus un huitième        |
+| `04-lire-une-fraction`             | CE1-017 | Ecriture · 4                  | 3/8 → trois huitièmes (choix ; « huit tiers », « trois huit », voisin)       |
+| `05-numerateur-et-denominateur`    | CE1-018 | Ecriture · 5                  | numérateur ; dénominateur ; bande en d parts dont n coloriées                |
+| `06-comparer-meme-denominateur`    | CE1-019 | Comparer · 6                  | 2/5 … 3/5 (choix < = >)                                                      |
+| `07-comparer-numerateur-un`        | CE1-020 | Comparer · 7                  | 1/5 … 1/3 (choix < = >)                                                      |
+| `08-additionner-meme-denominateur` | CE1-021 | Addition et Soustraction · 13 | a/d + b/d ; somme = 1 ; 1/d + 1/d + 1/d                                      |
+| `09-soustraire-meme-denominateur`  | CE1-099 | Addition et Soustraction · 14 | a/d − b/d ; 1 − a/d ; Lucie (3/10 en bleu, le reste en rouge)                |
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud +
+tag ne change aucune règle.
+
+- 2026-10-28 : écrit (`lot-ce1-3.py`), `create-questions` en simulation 9/9 (77 specs), `question:specs` 3 200
+  tirages verts ; relecture des tirages : accords au singulier corrigés (« $1$ demis », « les 1/4 »), specs vertes
+  avant comme après ; 9 brouillons en base locale ; aperçu admin : choix juste (02), 3/8 juste et 3/24 faux (08).
+  Vu en passant (pas du lot) : dans la carte de correction, le cadre vert de la réponse attendue coupe le bas d'une
+  fraction.
+- 2026-10-28 : #1936 mergée ; 9 brouillons créés en prod par David ; #1939 (nœud + tag, test rouge 5/9 sans, vert 9/9, `security-auditor` sans finding bloquant) mergée, `db:migrate` joué, vérifié (9/9 sur leur nœud, un point chacun) ; page à cocher publiée, aucune alerte.
+- 2026-11-01 : page à cocher relue, 9/9 OK (verdicts comptés en base) ; `publier-lot` simulé (9 passent), `--publier`
+  par David ; vérifié au MCP : 9/9 publiés et rangés.
+- 2026-10-29 : relecture tranchée par David (ses réponses aux deux questions : les deux recommandations) : 03 sans la variation 2, 09 sans Lucie (gardée pour le lot 4) ; `question:specs` 200 tirages verts sur 03 et 09 ; simulation en prod : 7 « = », 03 et 09 « CONTENU DIFFÉRENT ».
+- 2026-10-29 : #1953 mergée ; `create-questions --publier --mettre-a-jour` par David : 03 et 09 mis à jour, 7 « = » ; vérifié au MCP (03 : 1 variation, 7 specs ; 09 : 2 variations, 10 specs) ; page à cocher régénérée et republiée, verdicts de 03 et 09 remis à zéro.
+- 2026-10-29 : relecture 9/9 OK ; `publier-lot` (simulation) refuse 06, 07, 08 : Comparer 6 et 7, Addition et Soustraction 13 pris le jour même par des modèles 6e publiés. David : « le résultat le plus propre » → 06 → 9, 07 → 10, 08 → 15, 09 → 16 (la soustraction suit l'addition), aucun publié touché ; question d'accès : personne. Migration `20261029233100_questions_ce1_lot3_niveaux` + fichiers, test rouge sans (3 échecs, rollback refusé), vert 7/7. PR #1963 ; `security-auditor` : aucun finding bloquant ; niveaux visés libres en prod, brouillons compris (MCP).
+- 2026-10-29 : #1963 mergée (CI verte) ; `db:migrate` refusé (`DbPushMissingRemoteError`) : collision d'horodatage, `20261029213000` déjà joué en prod par `questions_5_lot3_rangement_tags` ; rien d'appliqué (niveaux 6, 7, 13, 14 relus au MCP) ; migration renommée `20261029233100` (max des worktrees + 1 min).
+- 2026-10-29 : #1972 mergée (CI verte après relance d'un job navigateur instable) ; `db:migrate` lancé par David : 233000 (questions-3) puis 233100 ; vérifié au MCP (9, 10, 15, 16, brouillons, `updated_at` inchangé) ; `publier-lot` en simulation : 9/9 ; `create-questions` en simulation : 9 « = ».
+- 2026-10-29 : `publier-lot --publier` par David : 9/9 publiés, vérifié au MCP. Lot 3 clos.
+
+## 10. Lot 4 : problèmes — décisions (David, 2026-10-29)
+
+Exemples du BO CE1 p.17-19 ; données entières ≤ 1 000, prix à virgule en euros seulement (c2-1). Rangement sur
+les sous-notions existantes de « Problèmes arithmétiques » (parties-tout, comparaison, en deux étapes ou plus,
+multiplicatifs) ; aucun nœud à créer. Catégories `Entiers · Problèmes` : niveaux libres après ceux du CP (relevé
+MCP du 2026-10-29 : Parties-tout 1, 3 ; Deux étapes 4 ; Multiplicatifs 5 ; Comparaison neuve). Recommandations
+suivies (« ok, je valide ») :
+
+1. **Lucie** (3/10 en bleu, le reste en rouge) : modèle à part « La part qui reste », CE1-099, Fractions · Calculer ·
+   Addition et Soustraction · 17.
+2. **« Est-ce que ça tient ? »** (album de 350 photos) : modèle à part en case choix oui / non.
+3. **Partages avec reste** : les deux sens d'arrondi (189 photos → 19 pages ; 75 œufs → 12 boîtes).
+
+| Fichier                  | Point   | Catégorie · niveau            | Variations                                                                                       |
+| ------------------------ | ------- | ----------------------------- | ------------------------------------------------------------------------------------------------ |
+| `01-parties-tout`        | CE1-036 | Parties-tout · 4              | une partie (coffres), tout à 2 et 3 parties, départ inconnu, retrait, « de plus » → soustraction |
+| `02-parties-tout-prix`   | CE1-036 | Parties-tout · 5              | 3 achats (1,20 € + 90 centimes + 12 €), prix manquant, achats en euros entiers                   |
+| `03-est-ce-que-ca-tient` | CE1-036 | Parties-tout · 6              | album, car : oui / non (case choix)                                                              |
+| `04-comparaison`         | CE1-037 | Comparaison · 1               | le plus grand, l'écart, le plus petit (« de plus »), « de moins », en euros                      |
+| `05-deux-etapes`         | CE1-038 | Deux étapes · 5               | 83 + 18 − 27 ; deux achats et un billet (euros, puis centimes)                                   |
+| `06-multiplicatifs-tout` | CE1-039 | Multiplicatifs · 6            | n paquets de p (tables 2 à 5), × 10, dizaines entières (7 × 20)                                  |
+| `07-nombre-de-parts`     | CE1-039 | Multiplicatifs · 7            | sans reste ; reste → arrondi au-dessus (pages), en dessous (boîtes)                              |
+| `08-valeur-d-une-part`   | CE1-039 | Multiplicatifs · 8            | 18 images pour 3 ; 200 élèves en 40 équipes ; 9,60 € pour 3                                      |
+| `09-problemes-mixtes`    | CE1-040 | Deux étapes · 6               | litres et billet ; cahiers et protège-cahiers ; places libres du car                             |
+| `10-la-part-qui-reste`   | CE1-099 | Addition et Soustraction · 17 | Lucie                                                                                            |
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud +
+tag ne change aucune règle.
+
+- 2026-10-29 : écrit (`lot-ce1-4.py`), `create-questions` en simulation 10/10 (87 specs) ; `question:specs` 200 tirages par variation, verts ; relecture des tirages : « deux gâteaux » → « deux achats », nombre hors formule, « tout le monde tient » pour l'album, monnaie rendue sur 5 € par complément (de 1,95 € à 2 €, puis à 5 €) au lieu de « 5 − 1,95 ». 10 brouillons en base locale ; aperçu admin : prix affichés « 1,10 € », 6,65 juste, corrigé lisible ; case choix oui / non juste.
+- 2026-10-29 : #1987 mergée (CI verte) ; brouillons en prod à créer par David.
+- 2026-10-29 : 10 brouillons créés en prod par David (`dfc324b1`, `c43bd203`, `23b13821`, `612eeb31`, `93d318d1`, `f9eeeffe`, `bc521c99`, `5e469f6f`, `e4815e7f`, `584dc8b3`), vérifiés au MCP (brouillons, sans nœud ni tag, niveaux voulus). Migration `20261030004800_questions_ce1_lot4_rangement_tags` (max des worktrees + 1 min) et test : rouge sans (5 échecs sur 9), vert 9/9.
+- 2026-10-30 : #1992 mergée (CI verte, `security-auditor` sans finding bloquant) ; `db:migrate` refusé (`DbPushMissingRemoteError` : 002300 du 3e lot 3 pas joué en prod) ; rien d'appliqué (MCP : dernière jouée 004700).
+
+## 11. Lot 5 : grandeurs — décisions (David, 2026-10-30)
+
+Relevé MCP du 2026-10-30 : aucun modèle CE1 en grandeurs ; le CP en a 22 (`Grandeurs · Longueurs | Masses | Monnaie |
+Durées`). Sous-notions toutes présentes (« Longueurs | Masses › unités et conversions | comparaison et mesure »,
+« Monnaie › euros et centimes », « Durées › lecture de l'heure | conversions ») : aucun nœud à créer. Bornes
+`cycle2.json` et BO CE1 p.27-29 : **pas d'écriture à virgule en longueurs et masses**, nombres écrits ≤ 1 000 ;
+virgule en monnaie seulement ; heures jusqu'à 24 (« 14 : 15 »).
+
+15 points, un par modèle → **deux lots** : 5 (longueurs, 6) puis 5 bis (masses, monnaie, durées, 9). Texte et case
+choix (déjà en prod au lot 4), aucun outil neuf.
+
+### Lot 5 — longueurs
+
+| Fichier                     | Point   | Sous-notion           | Catégorie · niveau                    | Variations                                                                                                                                 |
+| --------------------------- | ------- | --------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `01-unites-de-longueur`     | CE1-041 | unités et conversions | Longueurs · Unités · 5                | symbole d'une unité (km → choix km, m, cm, kg) ; sens d'un symbole ; la plus grande / petite des trois                                     |
+| `02-choisir-l-unite`        | CE1-042 | unités et conversions | Longueurs · Unités · 6                | « Un crayon mesure 15 … » : choix cm, m, km (objets, pièces, trajets : école-piscine 2 km)                                                 |
+| `03-relations-m-cm-km`      | CE1-043 | unités et conversions | Longueurs · Unités · 7                | 1 m = ? cm ; 1 km = ? m ; 3 m = ? cm ; 1 m 46 cm = ? cm ; 146 cm = ? m ? cm ; 650 m + ? m = 1 km                                           |
+| `04-comparer-des-longueurs` | CE1-045 | comparaison et mesure | Longueurs · Comparaison et mesure · 3 | choix < = > : 2 m et 150 cm ; 1 m 20 cm et 125 cm ; 1 km et 900 m ; 3 m et 300 cm (égalité)                                                |
+| `05-longueurs-de-reference` | CE1-046 | comparaison et mesure | Longueurs · Ordres de grandeur · 4    | « Qu'est-ce qui mesure environ 1 m ? » : objet ou distance → choix (doigt 1 cm, porte 2 m, terrain 100 m, 1 km à pied en un quart d'heure) |
+| `06-estimer-une-longueur`   | CE1-047 | comparaison et mesure | Longueurs · Ordres de grandeur · 5    | « Une trousse mesure plutôt… » : 2 cm, 20 cm ou 2 m (même chiffre, ×10 et autre unité)                                                     |
+
+### Lot 5 bis — masses, monnaie, durées
+
+| Fichier                    | Point   | Sous-notion           | Catégorie · niveau                      | Variations                                                                                                                                    |
+| -------------------------- | ------- | --------------------- | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `07-unites-de-masse`       | CE1-049 | unités et conversions | Masses · Unités · 1 (neuve)             | symbole (g, kg ; leurre km) ; « On pèse une pomme en … » : g ou kg                                                                            |
+| `08-un-kilo-mille-grammes` | CE1-050 | unités et conversions | Masses · Unités · 2                     | 1 kg = ? g ; 1 000 g = ? kg ; 400 g + ? g = 1 kg ; 250 g + 250 g + 500 g = ? kg                                                               |
+| `09-comparer-des-masses`   | CE1-051 | comparaison et mesure | Masses · Comparaison · 2                | choix < = > (1 kg et 900 g ; 1 kg et 1 000 g ; 2 kg et 100 g contre 950 g) ; quatre masses du BO : la plus lourde, la plus légère             |
+| `10-masses-de-reference`   | CE1-052 | comparaison et mesure | Masses · Ordres de grandeur · 1 (neuve) | « Qu'est-ce qui pèse environ 1 kg ? » (paquet de sucre) ; « … environ 10 g ? » (sachet de levure)                                             |
+| `11-estimer-une-masse`     | CE1-085 | comparaison et mesure | Masses · Ordres de grandeur · 2         | « Une pomme pèse plutôt… » : 15 g, 150 g ou 15 kg                                                                                             |
+| `12-euros-et-centimes`     | CE1-053 | euros et centimes     | Monnaie · Euros et centimes · 1 (neuve) | 1 € = ? c ; 3 € = ? c ; 300 c = ? € ; 345 c = ? € ? c ; 65 c + ? c = 1 €                                                                      |
+| `13-ecriture-a-virgule`    | CE1-058 | euros et centimes     | Monnaie · Euros et centimes · 2         | 2 € et 17 c → 2,17 € ; 2 € et 5 c → 2,05 € (et 2 € et 50 c) ; 85 c → 0,85 € ; 1 € et 120 c → 2,20 € ; 3,45 € → ? € ? c                        |
+| `14-matin-et-apres-midi`   | CE1-061 | lecture de l'heure    | Durées · Moments de la journée · 2      | « 3 heures de l'après-midi » → ? h (15) ; 14 h 15 → choix matin / après-midi ; 20 h → ? heures du soir                                        |
+| `15-heure-et-minute`       | CE1-062 | conversions           | Durées · Unités · 1 (neuve)             | 1 h = ? min ; demi-heure, quart d'heure ; 3 quarts d'heure ; 2 h = ? min ; 1 h 15 min = ? min ; h ou min (« Je suis resté 2 … à la piscine ») |
+
+Erreurs typiques dans les `testSpecs` : 1 m = 10 cm ; 1 m 46 cm = 1 046 ou 47 ; 2 € et 5 c = 2,5 € ; 85 c = 85 € ;
+1 h = 100 min ; 1 h 15 min = 115 min.
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud +
+tag ne change aucune règle.
+
+### Questions à David
+
+Réponse de David : les quatre recommandations (« je valide »).
+
+1. **Deux lots** (5 longueurs, 5 bis le reste) plutôt qu'un lot de 15 ? Recommandation : oui (plafond de 10).
+2. **Ordonner quatre masses (051)** : la plus lourde et la plus légère en case choix, plutôt que quatre cases où
+   recopier « 1 kg et 300 g » ? Recommandation : choix ; le rangement complet reste au BO, pas au modèle.
+3. **Catégories neuves** : « Masses · Unités », « Masses · Ordres de grandeur », « Monnaie · Euros et centimes »,
+   « Durées · Unités » (calquées sur les longueurs du CP), plutôt que « Durées · Convertir · 13 » après les 12 de 6e ?
+   Recommandation : catégories neuves.
+4. **2,20 € tapé « 2,2 »** (058) : juste comme au lot 4 (`zeros: off`), ou ambre puisque le point porte justement sur
+   l'écriture à virgule ? Recommandation : juste (même règle qu'au lot 4), le corrigé écrit toujours 2,20 €.
+
+- 2026-10-30 : lot 5 écrit (`lot-ce1-5.py`, `scripts/questions/ce1-5/`), `create-questions` en simulation 6/6 (50 specs),
+  `question:specs` 200 tirages par variation, verts ; 6 brouillons en base locale ; aperçu admin : 300 m + 700 m = 1 km
+  juste, corrigé lisible ; comparer 7 m et 720 cm : « > » faux, bonne réponse « < » montrée, corrigé en cm.
+- 2026-10-30 : #2022 mergée (CI verte après relance d'un job navigateur instable) ; brouillons en prod à créer par David.
+- 2026-10-30 : 6 brouillons créés en prod par David (`ee4e61b6`, `48d19e46`, `28c90fa4`, `76908c5f`, `a709b222`,
+  `1bd819dd`), vérifiés au MCP (brouillons, sans nœud ni tag, niveaux voulus, 50 specs). Migration
+  `20261030162100_questions_ce1_lot5_rangement_tags` (max des worktrees + 1 min) et test : rouge sans (5 échecs sur 9),
+  vert 9/9.
+- 2026-10-30 : #2025 mergée (`security-auditor` sans finding bloquant, CI verte) ; `db:migrate` par David (161000 de
+  questions-ce2 avec) ; vérifié au MCP : 6/6 sur le nœud de leur point, un point chacun, `updated_at` inchangé. Page à
+  cocher publiée, aucune alerte.
+- 2026-10-30 : relecture 6/6 OK (verdicts comptés) ; `publier-lot` en simulation 6/6, puis `--publier` par David ;
+  6 `published` vérifiés au MCP.
+- 2026-10-30 : lot 5 bis écrit (`lot-ce1-5bis.py`, `scripts/questions/ce1-5bis/`), niveaux re-relevés au MCP
+  (Masses · Comparaison 1, Durées · Moments de la journée 1, les quatre autres catégories vides) ;
+  `create-questions` en simulation 9/9 (87 specs), `question:specs` 200 tirages par variation, verts ; 9
+  brouillons en base locale ; aperçu admin : 8,16 € = 816 € et 0 centime refusé, corrigé 8 € et 16 centimes.
+- 2026-10-30 : #2028 mergée (CI verte, revue : aucune, contenu) ; `create-questions --publier` par David (depuis le
+  dépôt principal, `--dir ../ubumaths-wt-questions-ce1/…`) ; 9 brouillons vérifiés au MCP (`27903489`, `6db56239`,
+  `c38c9152`, `3ed2e7d0`, `f98ca134`, `5248cab0`, `70fc062a`, `200b1e9f`, `10ec8633`), sans nœud ni tag, 87 specs.
+- 2026-10-30 : migration `20261030162200_questions_ce1_lot5bis_rangement_tags` (max des worktrees + 1 min) et test :
+  rouge sans (5 échecs sur 9), vert 9/9 ; `security-auditor` sans finding ; #2030 mergée (CI verte).
+- 2026-10-30 : `db:migrate` par David (avec les migrations 3e lot 4b et 6e lot 6b d'autres sessions) ; vérifié au MCP :
+  9/9 sur le nœud de leur point, un tag chacun, `updated_at` = `created_at` ; page à cocher publiée, aucune alerte.
+
+## 12. Lots à outils existants — découpage (David, 2026-11-01)
+
+Relevé des outils le 2026-11-01 (`ubumark.md`, en-tête « Vérifié contre le code ») : depuis le § 3, plusieurs outils C
+existent — horloge à placer (060), `barres` à construire (088), ` ```partage ` + `colorier:` (095, 097), ` ```cubes `
+avec `dessiner:` / `retrouver:` (079), ` ```solide `, ` ```patron `. Seul manque `centaines:` de `collection` (001-003).
+
+Recommandations suivies (« je suis tes recos ») :
+
+1. Lots à outils existants, 10 points au plus : **6** calcul posé et monnaie → **7** heure et données → **8** fractions
+   dessinées et géométrie → **9** espace et mesure.
+2. 079 (assemblages de cubes, classé D) repris au lot 9 avec ` ```cubes `.
+3. `centaines:` de `collection` (001, 002) : petit chantier à part, plus tard.
+
+⚠️ **Monnaie : centimes indisponibles.** ` ```monnaie ` n'a ni centimes (`50c` : « pas encore disponible (CE1, plus
+tard) », `monnaie-parser.ts`) ni billets de 200 / 500 € ; `construire:` va de 1 à 100 € entiers. Or 054, 055, 056,
+057 et 086 ont tous pour borne « euros et centimes, ou écriture à virgule » (BO c2 p.28 ; 056 : « pas de pièce de
+1 € »). Ils passent en **C** (outil à prolonger) ; le lot 6 tel quel ne se fait pas → question à David.
+
+| Lot | Thème                            | Points                                              |
+| --- | -------------------------------- | --------------------------------------------------- |
+| 6   | calcul posé (+ monnaie ?)        | 022, 100 ; 054, 055, 056, 057, 086 si centimes      |
+| 7   | heure et données                 | 059, 060, 063, 104 ; 082, 106, 088 ; 089, 107, 081  |
+| 8   | fractions dessinées et géométrie | 096, 098, 095, 097 ; 069, 070, 105 ; 075, 087 ; 073 |
+| 9   | espace et mesure                 | 044 ; 064, 065 ; 079 ; 076, 077 ; 080               |
+
+David (2026-11-01, « tes recos ? » puis « go ») : **A** — lot 6 resserré sur le calcul posé et l'heure, lot 7 les
+données (082, 106, 088, 089, 107, 081), chantier `monnaie-centimes` à part puis lot monnaie (054, 055, 056, 057, 086),
+puis lots 8 et 9.
+
+## 13. Lot 6 : calcul posé et heure — phase 0 (2026-11-01)
+
+Relevé MCP du 2026-11-01 : `Addition · Calcul posé · 1` (CP, `0f7381e6`) ; aucune soustraction posée ; `Durées · Lire
+l'heure · 1, 2` (CP) ; `Durées · Calculer · 1-8` (6e). Nœuds des 6 points présents : « Entiers : addition et
+soustraction › calcul posé » (022, 100), « Durées › lecture de l'heure » (059, 060), « Durées › calcul de durées »
+(063, 104). Outils : ` ```operation ` (cases du résultat, `retenues:`, `méthode: cassage | compensation`),
+` ```horloge ` (`heure:` 1 à 4 cadrans avec `légendes:`, `placer:` = aiguilles à poser, déjà prévu pour CE1-060).
+Bornes : somme ≤ 1 000, 2 ou 3 termes (245 + 437 ; 218 + 48 ; 76 + 7 + 568) ; soustraction ≤ 1 000 ; heures entières,
+demies, quarts, < 24 (« 2 heures et quart » = 14 h 15) ; durées dans la même journée (8 h 30 → 8 h 45 ; 15 h 45 →
+16 h 15 ; midi → 20 h ; 2 heures et 130 minutes).
+
+| Fichier                              | Point   | Catégorie · niveau                     | Variations                                                                                                                                                          |
+| ------------------------------------ | ------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `01-addition-posee`                  | CE1-022 | Addition · Calcul posé · 2             | 3 + 3 chiffres (245 + 437) ; 3 + 2 (218 + 48) ; 3 termes (76 + 7 + 568) ; retenue aux centaines (somme 1 000 au plus) ; `retenues: oui`                             |
+| `02-soustraction-posee-cassage`      | CE1-100 | Soustraction · Calcul posé · 1 (neuve) | 3 − 2 chiffres, un échange (352 − 27) ; 3 − 3, deux échanges (532 − 178) ; zéro au milieu (504 − 37) ; `méthode: cassage`                                           |
+| `03-soustraction-posee-compensation` | CE1-100 | Soustraction · Calcul posé · 2         | mêmes nombres, `méthode: compensation`                                                                                                                              |
+| `04-lire-l-heure`                    | CE1-059 | Durées · Lire l'heure · 3              | « Il est [_] h [_]. » : et demie (8 h 30), et quart (3 h 15), moins le quart (8 h 45, petite aiguille presque sur le 9) ; « C'est l'après-midi » → 14 h 15, 16 h 30 |
+| `05-placer-les-aiguilles`            | CE1-060 | Durées · Lire l'heure · 4              | `placer:` : heure juste, et demie, et quart, moins le quart (« 9 h moins le quart » → 8 h 45), après-midi (15 h 30 se place sur le 3)                               |
+| `06-duree-ecoulee`                   | CE1-063 | Durées · Durée écoulée · 1 (neuve)     | deux cadrans `Début ; Fin` : 8 h 30 → 8 h 45 ([_] min) ; 15 h 45 → 16 h 15 (passage de l'heure) ; midi → 20 h ([_] h) ; 9 h 15 → 11 h 45 ([_] h [_] min)            |
+| `07-comparer-des-durees`             | CE1-104 | Durées · Durée écoulée · 2             | quatre cadrans (film, match) → choix « le film / le match / autant » ; 2 heures ou 130 minutes : la plus longue ; 1 h 30 ou 90 min (égalité)                        |
+
+Erreurs typiques dans les `testSpecs` : retenue oubliée (245 + 437 = 672) ; plus petit chiffre ôté du plus grand
+(352 − 27 = 335) ; zéro mal échangé (504 − 37 = 577) ; 8 h 45 lu 9 h 45 ; aiguilles inversées (3 h 15 lu 3 h) ;
+14 h 15 répondu 2 h 15 ; 15 h 45 → 16 h 15 = 70 min (soustraction décimale) ; 2 h = 200 min.
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud +
+tag ne change aucune règle.
+
+### Questions à David
+
+1. **Soustraction : deux modèles** (cassage, compensation), le prof choisit la méthode de sa classe, plutôt qu'un seul
+   qui mêlerait les deux ? Recommandation : deux (sept modèles au lot).
+2. **Après-midi sur un cadran de 12** : l'énoncé dit « c'est l'après-midi », la réponse est 14 h 15 (exemple du BO),
+   et 2 h 15 est ambre avec le message « l'après-midi, on compte après 12 » ? Recommandation : oui ; le cadran
+   `cadran: 24` reste pour plus tard.
+3. **Catégorie neuve « Durées · Durée écoulée »** plutôt que `Durées · Calculer · 9-10` après la 6e ? Recommandation :
+   neuve (même règle qu'au lot 5 bis).
+4. **Durée : unité de la réponse selon la variation** ([_] min sous l'heure, [_] h [_] min au-delà) plutôt que toujours
+   en minutes ? Recommandation : selon la variation, comme on le dit à l'oral.
+
+Réponse de David (« tes recos ? » puis « go », 2026-11-01) : les quatre recommandations.
+
+⚠️ Question 2, écart à la décision : le juge n'a **pas d'ambre pour une valeur fausse** (une règle de validation ne peut
+que refuser, avec son message). 2 h 15 l'après-midi est donc **faux, avec le message** « L'après-midi, on compte après
+midi : 2 heures de l'après-midi, c'est 14 h » (règle `custom` `answer != {{h}}` sur la case des heures). À confirmer par
+David ; un vrai ambre demanderait du code.
+
+- 2026-11-01 : lot 6 écrit (`lot-ce1-6.py`, `scripts/questions/ce1-6/`), simulation 7/7 (66 specs), `question:specs`
+  verts (30 à 40 tirages par variation) ; 7 brouillons en base locale. Pièges trouvés : une case d'opération posée n'a
+  **pas** d'`expectedAnswer` (le bloc la calcule) ; un `{{if:}}` dont la condition contient un `{{eval:}}` n'est **pas
+  résolu** (« heure: if:0==0 ») et les specs restent vertes → relire les blocs rendus (`--apercu`) ; dans `placer:`,
+  écrire `9 h 0`. Aperçu admin : aiguilles 11 h 45 jugées justes ; 710 − 246 = 464 juste, cases d'échange au-dessus ;
+  quatre cadrans du film et du match lisibles.
+- 2026-11-01 : #2071 mergée (CI verte après deux relances du shard navigateur 2/2 : installation de Chromium
+  bloquée, puis `page-demo-lexique` en échec, sans lien avec le lot) ; brouillons en prod à créer par David.
+- 2026-11-01 : `create-questions --publier` par David : 7 brouillons vérifiés au MCP (`c26cc664`, `1e66bb1f`,
+  `92caa903`, `e3d11972`, `d478935f`, `24a86a39`, `739d58e3`), sans nœud ni tag, `updated_at` intact.
+- 2026-11-01 : migration `20261101141600_questions_ce1_lot6_rangement_tags` (max des worktrees + 1 min) et test :
+  rouge sans (5 échecs sur 9), vert 9/9.
+- 2026-11-01 : David valide « 2 h 15 l'après-midi = **faux avec message** » (pas d'ambre : toucherait au juge commun,
+  chantier à part si un jour on veut l'ambre pour les erreurs typiques). Remarque non bloquante de `security-auditor`
+  (le rollback retirerait un même tag posé à la main entre-temps) acceptée, comme au lot 5 bis.
+- 2026-11-01 : #2083 mergée (CI verte 16/16) ; `db:migrate --include-all` par David (une migration 1re spé plus
+  récente déjà jouée, la nôtre seule appliquée) ; vérifié au MCP : 7/7 sur le nœud de leur point, un tag chacun,
+  `updated_at` = `created_at`. Page à cocher publiée (https://claude.ai/artifact/NtdykbdR6MZfDfChmD2woM) ; alertes :
+  les 3 opérations posées non dessinées (à jouer dans l'aperçu), homonyme CP `0f7381e6` écarté pour l'addition (juste).
+- 2026-11-01 : relecture 7/7 OK (verdicts comptés en base, aucun commentaire) ; `publier-lot` simulé (7 passent), puis
+  `--publier` par David : 7/7 publiés, vérifié au MCP (publiés, rangés, tagués). Lot 6 clos.
+
+## 14. Lot 7 : données — phase 0 (2026-11-01)
+
+Relevé MCP du 2026-11-01 : **aucun** diagramme en barres en base, à aucun niveau (CP-072 et CE2-082 sans modèle) ;
+`Représenter des données · Tableaux · 1` (CP-068, `7752c23e`), `Représenter des données · Tableau à double entrée · 1, 2`
+(CP-069, CP-084). Nœuds des 6 points présents : « Représenter des données › diagrammes en barres » (082, 106, 088),
+« › tableaux » (081), « › tableau à double entrée » (089, 107). Outils : ` ```barres ` (lecture ; `axe: 0 à 15` gradue
+de un en un ; `placer:` = barres à monter, `données:` = série brute que l'élève compte), ` ```tableau-croise `
+(`lignes:`, `colonnes:`, `totaux: oui`, `masquer: Ligne/Colonne` = case `?`), tableau markdown à cases `$?$` (CP-068),
+case `choix`. Bornes (BO c2 p.38) : caractère à 2 à 5 valeurs, moins de 100 individus, axe gradué de un en un ;
+tableau à double entrée avec totaux (filles / garçons × 4 modes de transport, total 282).
+
+| Fichier                            | Point   | Catégorie · niveau                                         | Variations                                                                                                                                                                  |
+| ---------------------------------- | ------- | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `01-lire-un-diagramme-en-barres`   | CE1-082 | Représenter des données · Diagrammes en barres · 1 (neuve) | « Combien d'élèves ont choisi le foot ? » [_] : 3 barres (sports, 2 à 12) ; 4 barres (fruits, jusqu'à 15) ; 5 barres (animaux, axe 0 à 20) ; valeurs non écrites            |
+| `02-interpreter-un-diagramme`      | CE1-106 | Représenter des données · Diagrammes en barres · 2         | le plus choisi (case choix des noms) ; le moins choisi ; « combien de plus que » [_] ; « combien d'élèves en tout » [_] (total < 100) ; effectifs tous différents           |
+| `03-construire-un-diagramme`       | CE1-088 | Représenter des données · Diagrammes en barres · 3         | tableau d'effectifs donné, 2 barres à monter (les autres dessinées) ; toutes les barres (3 à 4) ; série brute (`données:`, 12 à 20 réponses) à compter puis construire      |
+| `04-ranger-dans-un-tableau`        | CE1-081 | Représenter des données · Tableaux · 2                     | liste de réponses (« Léa : chat, Tom : chien… », 12 à 25) → colonne « Nombre d'élèves » du tableau [_] par ligne ; 3, 4 puis 5 valeurs ; avec une ligne Total               |
+| `05-lire-un-tableau-double-entree` | CE1-089 | Représenter des données · Tableau à double entrée · 3      | filles / garçons × lundi… jeudi (cantine) : « combien de filles le mardi ? » [_] ; transport × filles / garçons avec totaux : lire une case, puis un total                  |
+| `06-interpreter-un-tableau`        | CE1-107 | Représenter des données · Tableau à double entrée · 4      | quel jour le plus d'élèves (totaux affichés, case choix) ; sans totaux (il faut additionner) ; case masquée retrouvée par le total [_] ; « combien de garçons de plus » [_] |
+
+Erreurs typiques dans les `testSpecs` : trait voisin lu (±1) ; catégorie voisine lue ; le plus grand nombre de
+l'énoncé plutôt que la plus haute barre ; total qui oublie une barre ; écart répondu par une des deux valeurs ; ligne et
+colonne inversées (garçons du mardi au lieu des filles) ; total de la ligne au lieu de la colonne ; case masquée = total.
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud +
+tag ne change aucune règle.
+
+### Questions à David
+
+1. **081 « produire un tableau »** : l'élève compte une liste de réponses et remplit la colonne des effectifs d'un
+   tableau déjà tracé (noms écrits), comme CP-068 en plus grand ; tracer le tableau lui-même n'a pas d'outil.
+   Recommandation : oui.
+2. **Axe gradué de un en un** (borne BO) : les barres vont au plus à 20 (au-delà l'axe devient illisible au doigt),
+   même si la population peut aller jusqu'à 99 au total. Recommandation : 20 au plus par barre, total < 100.
+3. **Tableau à double entrée** : cases de 5 à 99, totaux jusqu'à 1 000 (l'exemple du BO a 282, le CE1 va à 1 000) ?
+   Recommandation : oui, sommes à deux chiffres d'abord (cases ≤ 60), puis le tableau du BO (total ~ 300).
+4. **Catégories** : neuve « Représenter des données · Diagrammes en barres · 1 à 3 » ; les tableaux continuent le CP
+   (« Tableaux · 2 », « Tableau à double entrée · 3, 4 »). Recommandation : oui (même règle qu'aux lots 5 bis et 6).
+
+Réponse de David (« tes recos ? » puis « go », 2026-11-01) : les quatre recommandations.
+
+- 2026-11-01 : lot 7 écrit (`lot-ce1-7.py`, `scripts/questions/ce1-7/`), `question:specs` 56/56 (800 tirages), simulation
+  6/6 ; 6 brouillons en base locale, joués dans l'aperçu admin (barres montées justes, case choix du tableau juste).
+  Valeur choisie par un indice : polynôme de Lagrange en `{{eval:}}` ; série brute : indicatrices (CP-068). Trouvé :
+  une barre **non construite** parmi d'autres est jugée « forme non optimale », pas « faux » (juge commun) — spec
+  remplacée par une barre fausse ; à signaler, pas corrigé ici. `totaux: oui` ajoute la ligne ET la colonne Total.
+  PR #2102 ouverte.
+- 2026-11-01 : #2102 mergée (CI verte 15/15) ; brouillons en prod à créer par David.
+- 2026-11-01 : `create-questions --publier` par David : 6 brouillons vérifiés au MCP (`f756fc4b`, `cb5a6a89`,
+  `b4527dd3`, `bded0f4a`, `7369d049`, `29edb833`), catégories attendues, sans nœud ni tag, `updated_at` intact.
+- 2026-11-01 : migration `20261101190100_questions_ce1_lot7_rangement_tags` (max des worktrees + 1 min) et test :
+  rouge sans (3 échecs, 4 non joués sur 9), vert 9/9 ; PR #2105.
+- 2026-11-01 : `security-auditor` sans finding (SQL exécuté identique au lot 6) ; #2105 mergée (CI verte 16/16).
+  `db:migrate` NON lancé : `20261101170000_questions_4_lot7` et `20261101183000_questions_3_lot6`, plus anciennes, pas
+  jouées en prod ; `db push` les jouerait aussi (`--include-all`). Attendre qu'elles le soient, puis `db:migrate`.
+- 2026-11-01 : accord des sessions questions-3 et questions-4 ; `db:migrate --include-all` par David depuis main : 170000,
+  183000, 190000 (1re spé, signalée à sa session) et la nôtre 190100 appliquées. Vérifié au MCP : 6/6 sur le nœud de leur
+  point, un tag chacun, brouillons, `updated_at` intact. Page à cocher publiée
+  (https://claude.ai/artifact/C4GhFJ83yChjuhs9KCYu64) ; alertes : 5 modèles à blocs `barres` / `tableau-croise` non
+  dessinés par le script → liens vers l'aperçu admin en prod dans l'intro.
+- 2026-11-01 : relecture 6/6 OK (verdicts comptés en base, aucun commentaire) ; catégories relevées avant publication,
+  sans collision ; `publier-lot` simulé (6 passent), puis `--publier` par David : 6/6 publiés, vérifié au MCP (publiés,
+  rangés, tagués). Lot 7 clos. Reste signalé : une barre non construite parmi d'autres jugée « forme non optimale ».
+
+## 15. Lot 8 : monnaie — phase 0 (2026-11-01)
+
+Relevé MCP du 2026-11-01 : aucun modèle sur 054, 055, 056, 057, 086. Catégories du CP à continuer :
+« Monnaie · Pièces et billets · 1 à 7 » (CP-042 à 045, `construire:` aux niveaux 6 et 7) et « Monnaie · Rendre la
+monnaie · 1, 2 » (CP-071 : en case, puis `construire:`). « Monnaie · Euros et centimes · 1, 2 » = 053, 058 (lot 5 bis).
+Outil : ` ```monnaie ` avec centimes (`pièces: 2×50c 1×20c`), billets de 200 / 500 €, `montant: 3,45`,
+`construire: 3,45` + `réserve:` (#2127, **pas en prod** : les modèles restent en brouillon jusqu'au `deploy:prod` qui
+la livre). Construction jugée sur la somme : toute construction juste est « juste », pas seulement le moins d'objets.
+Bornes (BO c2 p.28) : euros et centimes, centimes < 100, ou écriture à virgule ; 054 : ordonner quatre prix quelles
+que soient leurs écritures (12 € > 60 centimes) ; 056 : contrainte possible « pas de pièce de 1 € » (10, 20, 50 c).
+
+| Fichier                       | Point   | Catégorie · niveau               | Variations                                                                                                                                                                                                                |
+| ----------------------------- | ------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `01-combien-d-argent`         | CE1-055 | Monnaie · Pièces et billets · 8  | pièces de centimes seules (< 1 €) → [_] c ; euros et centimes (< 10 €) → [_] € [_] c ; billets, pièces et centimes (< 100 €) → [_] € à virgule ; une variation avec 1, 2, 5 c                                             |
+| `02-qui-a-le-plus`            | CE1-054 | Monnaie · Pièces et billets · 9  | Léa / Tom, euros et centimes, écart ≤ 50 c, case choix (Léa, Tom, autant) ; beaucoup de petites pièces contre peu de grosses ; quatre prix écrits (2,50 € ; 250 c ; 2 € 5 c ; 60 c ; 12 €…) : le plus cher, le moins cher |
+| `03-pose-la-somme`            | CE1-056 | Monnaie · Pièces et billets · 10 | `construire:` 0,35 à 0,95 € ; 1,05 à 9,95 € (somme écrite « 3,45 € » ou « 3 € et 45 c ») ; sans pièce de 1 € (réserve 10, 20, 50 c, somme 0,60 à 1,90 €)                                                                  |
+| `04-paie-tes-achats`          | CE1-057 | Monnaie · Pièces et billets · 11 | un article à 1,20 à 9,80 € → `construire:` ; deux articles (2,30 € + 1,45 €) → `construire:` de la somme ; « Léa a ceci, peut-elle acheter … à 4,80 € ? » (oui / non, écart ≤ 50 c)                                       |
+| `05-combien-le-marchand-rend` | CE1-086 | Monnaie · Rendre la monnaie · 3  | prix 0,10 à 0,90 € payé avec 1 € → [_] c ; prix 1,10 à 4,90 € payé avec 5 € → [_] € à virgule ; 5,50 à 9,50 € payé avec 10 € ; billet de 20 € (prix 12,30 à 19,70 €)                                                      |
+| `06-rends-la-monnaie`         | CE1-086 | Monnaie · Rendre la monnaie · 4  | mêmes situations, l'élève pose le rendu (`construire:`, réserve 1, 2, 5, 10 € et 10, 20, 50 c)                                                                                                                            |
+
+Prix au multiple de 10 c dans les gestes (`construire:`) et dans le rendu ; multiples de 5 c dans les cases ; 1, 2,
+5 c seulement dans `01` (compter). Corrigé : rendu par complément (« de 3,45 € à 4 €, puis à 5 € »), comme au lot 4.
+
+Erreurs typiques dans les `testSpecs` : nombre d'objets compté au lieu des valeurs ; 2 € et 5 c = 2,5 € ; centimes
+comptés en euros (50 c lus 50 €) ; 345 c écrit 345 € ; rendu = prix ; rendu calculé sur le mauvais billet ; « le plus
+de pièces » choisi au lieu du plus d'argent ; 60 c > 12 € (le plus grand nombre écrit).
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud +
+tag ne change aucune règle.
+
+### Questions à David
+
+1. **Deux modèles pour 086** (en case, puis le geste), comme au CP (CP-071, niveaux 1 et 2) ? Recommandation : oui.
+2. **Prix au multiple de 10 c dans les gestes** : poser 3,47 € demande des pièces de 2 c et 5 c (jusqu'à 8 objets de
+   plus), le geste devient long sans rien apprendre de plus ; les cases gardent le multiple de 5 c. Recommandation : oui.
+3. **Réponse à virgule** : « 2,2 » juste pour 2,20 € (règle du lot 5 bis), corrigé « 2,20 € » ? Recommandation : oui.
+4. **Publication** : les brouillons peuvent être créés tout de suite, mais la page à cocher et la publication attendent
+   le `deploy:prod` qui livre #2127 (sans lui, les centimes affichent une erreur chez l'élève). Recommandation : écrire
+   et ranger le lot maintenant, publier après ton prochain `deploy:prod`.
+5. **Numéro du lot** : « lot 8 » pour la monnaie, les lots « 8 » et « 9 » du § 12 deviennent 9 et 10. Recommandation :
+   oui (les fichiers suivent : `lot-ce1-8.py`, `scripts/questions/ce1-8/`).
+
+Réponse de David (« tes recos ? » puis « go », 2026-11-01) : les cinq recommandations.
+
+- 2026-11-01 : lot 8 écrit (`lot-ce1-8.py`, `scripts/questions/ce1-8/`), `question:specs` 51/51 (4 400 tirages),
+  simulation 6/6 ; 6 brouillons en base locale. Aperçu admin : rendu de 2,20 € posé (2 € + 20 c) jugé juste ; deux
+  porte-monnaie de centimes lisibles, mais petits quand l'un a 11 pièces (même échelle que CP-042). `construire: {{p}}c`
+  (le bloc lit `345c`). Corrigé du rendu en une seule étape (une étape `{{if:}}` vide restait affichée) ; objets à la
+  mesure du billet (sucette pour 1 €, cahier pour 5 €).
+- 2026-11-01 : #2135 mergée (CI verte 14/14, revue : aucune, contenu) ; brouillons en prod à créer par David.

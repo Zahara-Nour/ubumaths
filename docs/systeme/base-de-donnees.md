@@ -178,6 +178,10 @@ points d'un niveau), `src/lib/server/curriculum-coverage.ts`,
 - `question_templates` : le modèle de question (énoncé paramétré, `variations`, cases, correction).
   `question_template_points` le tague aux points du programme (**RESTRICT** côté point : pivot de
   l'acquisition).
+- `question_template_reviews` (depuis `20261029150000`) : le verdict de relecture d'un modèle
+  (`valide` / `a_revoir` + commentaire), un par modèle, posé depuis `/dev/modeles`. **Admin seul** en
+  lecture comme en écriture (`is_admin()`), anon refusé (42501) ; auteur et date posés par un trigger
+  (sauf en service_role, pour la reprise des verdicts des artefacts) ; CASCADE avec le modèle.
 - `series` : composition de questions (catégories, nombre, durée), verrouillée dès qu'un élève a
   commencé.
 - `exercises` (+ `exercise_curriculum_points`, `exercise_classifications`) ; `exercise_assignments`
@@ -188,7 +192,7 @@ points d'un niveau), `src/lib/server/curriculum-coverage.ts`,
     et perd sa balise `noindex` (code à venir, après `db:types`). CHECK `exercises_search_indexed_requires_public` (23514) : un exercice privé ne peut
     pas être affiché sur Google, et dépublier exige de décocher Google dans la même mise à jour. La
     colonne suit les droits de la ligne (aucune policy ni GRANT propre).
-- `migration_*` : outillage de la migration des questions TinyMath.
+- `migration_images` : reste de l'import des questions TinyMath, terminé ; aucun code ne la lit. `migration_tracking`, `migration_edits` et la vue `migration_review_tree` ont été supprimées le 2026-10-29 (migration `20261029203000`) ; leur contenu est exporté dans `data/import-tinymath/`.
 
 Accès : les modèles **publiés** sont lisibles par tous les élèves (et `anon`), les autres par le
 professeur ; l'écriture des modèles est admin. Un exercice est lu par son auteur, par un élève qui y a
@@ -344,7 +348,9 @@ Code : `src/lib/server/` (`evaluations.ts`, `evaluation-attempts.ts`, `test-mode
 Les mots mathématiques et leurs définitions par niveau (ADR 0022) : `dictionary_entries`, et
 `dictionary_entry_versions` pour l'historique des modifications de l'admin. Code : `src/lib/dictionary/`,
 chargement serveur `src/lib/server/dictionary/load.ts` ; affichage : glossaire public et mots
-cliquables (`src/lib/lexicon/`).
+cliquables (`src/lib/lexicon/`). Chaque entrée a une adresse fixe `slug` (`/glossaire/<slug>`),
+posée à la création et figée par le trigger `dictionary_entries_slug` (droits de l'appelant) :
+détail dans [dictionnaire.md](dictionnaire.md).
 
 ### Révisions (SRS)
 

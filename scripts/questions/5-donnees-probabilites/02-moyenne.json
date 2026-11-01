@@ -1,0 +1,170 @@
+{
+	"title": "Calculer une moyenne",
+	"description": "Calculer la moyenne simple d'une série de 4 ou 5 nombres entiers, quand elle tombe juste (12, 15, 9, 14 → 12,5 au niveau suivant)",
+	"grades": ["5"],
+	"theme": "Statistiques",
+	"domain": "Indicateurs",
+	"subdomain": "moyenne",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici les notes de Sami à ses quatre derniers contrôles : $\\text{{{a}} ; {{b}} ; {{c}} ; {{d}}}$.\n\nQuelle est la moyenne de ses notes ?\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "9..15"
+				},
+				{
+					"name": "a",
+					"expression": "6..18"
+				},
+				{
+					"name": "b",
+					"expression": "6..18"
+				},
+				{
+					"name": "c",
+					"expression": "6..18"
+				},
+				{
+					"name": "d",
+					"expression": "eval:4*k-a-b-c"
+				}
+			],
+			"conditions": ["d>=4", "d<=20", "a!=b", "c!=d"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Moyenne.** On additionne toutes les valeurs, puis on divise par le nombre de valeurs.",
+					"$\\dfrac{{{a}} + {{b}} + {{c}} + {{d}}}{4} = \\dfrac{{{eval:4*k}}}{4} = \\textcolor{{{color:primary.0}}}{{{k}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici les températures relevées à midi pendant cinq jours, en degrés Celsius : $\\text{{{a}} ; {{b}} ; {{c}} ; {{d}} ; {{f}}}$.\n\nQuelle est la température moyenne ?\n\n$?~\\unit{°C}$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "12..25"
+				},
+				{
+					"name": "a",
+					"expression": "8..30"
+				},
+				{
+					"name": "b",
+					"expression": "8..30"
+				},
+				{
+					"name": "c",
+					"expression": "8..30"
+				},
+				{
+					"name": "d",
+					"expression": "8..30"
+				},
+				{
+					"name": "f",
+					"expression": "eval:5*k-a-b-c-d"
+				}
+			],
+			"conditions": ["f>=8", "f<=30", "a!=b", "c!=d"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Moyenne.** On additionne toutes les valeurs, puis on divise par le nombre de valeurs.",
+					"$\\dfrac{{{a}} + {{b}} + {{c}} + {{d}} + {{f}}}{5} = \\dfrac{{{eval:5*k}}}{5} = \\textcolor{{{color:primary.0}}}{{{k}}}$ °C."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "12, 16, 9, 11 → 12",
+			"variationIndex": 0,
+			"variables": {
+				"k": "12",
+				"a": "12",
+				"b": "16",
+				"c": "9",
+				"d": "11"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 48 (la somme)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "12",
+				"a": "12",
+				"b": "16",
+				"c": "9",
+				"d": "11"
+			},
+			"answers": ["48"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 12,5 (milieu de 9 et 16)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "12",
+				"a": "12",
+				"b": "16",
+				"c": "9",
+				"d": "11"
+			},
+			"answers": ["12,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Températures → 18",
+			"variationIndex": 1,
+			"variables": {
+				"k": "18",
+				"a": "15",
+				"b": "20",
+				"c": "17",
+				"d": "22",
+				"f": "16"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 90 (la somme)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "18",
+				"a": "15",
+				"b": "20",
+				"c": "17",
+				"d": "22",
+				"f": "16"
+			},
+			"answers": ["90"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

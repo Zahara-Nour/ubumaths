@@ -1,0 +1,210 @@
+{
+	"title": "Encadrer un nombre décimal",
+	"description": "Encadrer un décimal à 3 décimales à l'unité, au dixième ou au centième près (piège du 9 : 2,9 < 2,98 < 3)",
+	"grades": ["6"],
+	"theme": "Décimaux",
+	"domain": "Apprivoiser",
+	"subdomain": "Encadrer",
+	"level": 4,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Encadre ce nombre {{if:k==0|à l'unité près|{{if:k==1|au dixième près|au centième près}}}}.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "a",
+					"expression": "0..99"
+				},
+				{
+					"name": "D",
+					"expression": "1..999"
+				},
+				{
+					"name": "N",
+					"expression": "eval:1000*a+D"
+				},
+				{
+					"name": "x",
+					"expression": "eval:N/1000;d"
+				},
+				{
+					"name": "g",
+					"expression": "eval:floor(N/10^(3-k))/10^k;d"
+				},
+				{
+					"name": "h",
+					"expression": "eval:(floor(N/10^(3-k))+1)/10^k;d"
+				},
+				{
+					"name": "expression1",
+					"expression": "?<{{x}}<?"
+				}
+			],
+			"conditions": ["mod(D,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{g}}"
+				},
+				{
+					"expectedAnswer": "{{h}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Encadrer.** On garde les chiffres jusqu'au rang demandé : c'est le nombre de gauche. On lui ajoute $1$ {{if:k==0|unité|{{if:k==1|dixième|centième}}}} (${{if:k==0|1|{{if:k==1|0.1|0.01}}}}$) : c'est le nombre de droite.",
+					"$${{g}} + \\textcolor{{{color:primary.1}}}{{{if:k==0|1|{{if:k==1|0.1|0.01}}}}} = {{h}}$$",
+					"$$\\textcolor{{{color:primary.0}}}{{{g}}} < {{x}} < \\textcolor{{{color:primary.0}}}{{{h}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Encadre ce nombre {{if:k==0|à l'unité près|{{if:k==1|au dixième près|au centième près}}}}.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "a",
+					"expression": "0..99"
+				},
+				{
+					"name": "b",
+					"expression": "0..8"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "x",
+					"expression": "{{if:k==1|{{eval:a+0.9+d/100;d}}|{{eval:a+b/10+0.09+d/1000;d}}}}"
+				},
+				{
+					"name": "g",
+					"expression": "{{if:k==1|{{eval:a+0.9;d}}|{{eval:a+b/10+0.09;d}}}}"
+				},
+				{
+					"name": "h",
+					"expression": "{{if:k==1|{{eval:a+1}}|{{eval:a+(b+1)/10;d}}}}"
+				},
+				{
+					"name": "expression1",
+					"expression": "?<{{x}}<?"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{g}}"
+				},
+				{
+					"expectedAnswer": "{{h}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Encadrer.** On garde les chiffres jusqu'au rang demandé : c'est le nombre de gauche. On lui ajoute $1$ {{if:k==0|unité|{{if:k==1|dixième|centième}}}} (${{if:k==0|1|{{if:k==1|0.1|0.01}}}}$) : c'est le nombre de droite.",
+					"$${{g}} + \\textcolor{{{color:primary.1}}}{{{if:k==0|1|{{if:k==1|0.1|0.01}}}}} = {{h}}$$",
+					"$$\\textcolor{{{color:primary.0}}}{{{g}}} < {{x}} < \\textcolor{{{color:primary.0}}}{{{h}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3,478 au dixième : 3,4 et 3,5",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "3",
+				"D": "478",
+				"N": "3478",
+				"x": "3.478",
+				"g": "3.4",
+				"h": "3.5"
+			},
+			"answers": ["3,4", "3,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : arrondis (3,5 et 3,6)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "3",
+				"D": "478",
+				"N": "3478",
+				"x": "3.478",
+				"g": "3.4",
+				"h": "3.5"
+			},
+			"answers": ["3,5", "3,6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2,98 au dixième : 2,9 et 3",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"a": "2",
+				"b": "0",
+				"d": "8",
+				"x": "2.98",
+				"g": "2.9",
+				"h": "3"
+			},
+			"answers": ["2,9", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2,9 et 2,10",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"a": "2",
+				"b": "0",
+				"d": "8",
+				"x": "2.98",
+				"g": "2.9",
+				"h": "3"
+			},
+			"answers": ["2,9", "2,10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5,397 au centième : 5,39 et 5,4",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"a": "5",
+				"b": "3",
+				"d": "7",
+				"x": "5.397",
+				"g": "5.39",
+				"h": "5.4"
+			},
+			"answers": ["5,39", "5,4"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

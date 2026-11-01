@@ -1,0 +1,128 @@
+{
+	"title": "La fonction valeur absolue",
+	"description": "Reconnaître la courbe de x ↦ |x| (V de pointe l'origine) ; |x| = −x pour x < 0 ; image d'un négatif (pièges : parabole prise pour le V, |x| = x toujours, image négative)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Valeur absolue",
+	"subdomain": "Courbe",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quelle figure représente la fonction valeur absolue $x\\mapsto\\lvert x\\rvert$ ?\n\n````choix\n- ```courbe\n  x: -4 ; 4\n  y: -4 ; 4\n  grille: 1 ; 1\n  f(x) = abs(x)   bleu\n  taille: petite\n  description: Courbe en V, pointe en bas à l'origine, passant par (−2 ; 2) et (2 ; 2).\n  ```\n- ```courbe\n  x: -4 ; 4\n  y: -4 ; 4\n  grille: 1 ; 1\n  f(x) = -abs(x)   bleu\n  taille: petite\n  description: Courbe en V renversé, pointe en haut à l'origine, passant par (−2 ; −2) et (2 ; −2).\n  ```\n- ```courbe\n  x: -4 ; 4\n  y: -4 ; 4\n  grille: 1 ; 1\n  f(x) = x^2   bleu\n  taille: petite\n  description: Parabole tournée vers le haut, sommet à l'origine, passant par (−2 ; 4) et (2 ; 4).\n  ```\n- ```courbe\n  x: -4 ; 4\n  y: -4 ; 4\n  grille: 1 ; 1\n  f(x) = x   bleu\n  taille: petite\n  description: Droite passant par l'origine et par (2 ; 2).\n  ```\n````",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\lvert x\\rvert=x$ si $x\\geqslant 0$ et $\\lvert x\\rvert=-x$ si $x<0$ : la courbe est formée de deux demi-droites, $y=x$ à droite de l'origine et $y=-x$ à gauche. Elle est en **V**, au-dessus de l'axe des abscisses.",
+					"```courbe\nx: -4 ; 4\ny: -1 ; 4\ngrille: 1 ; 1\nf(x) = abs(x)   bleu   nom=C_f\npoints: A(-2 ; 2), B(2 ; 2)\ntaille: moyenne\ndescription: Courbe de la fonction valeur absolue : un V de pointe l'origine, passant par (−2 ; 2) et (2 ; 2).\n```"
+				]
+			}
+		},
+		{
+			"statement": "Pour tout réel $x<0$, que vaut $\\lvert x\\rvert$ ?\n\n```choix\n- $-x$\n- $x$\n- $0$\n- $\\dfrac{1}{x}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La valeur absolue d'un nombre négatif est son opposé : pour $x<0$, $\\textcolor{{{color:primary.0}}}{\\lvert x\\rvert=-x}$, qui est positif (par exemple $\\lvert -3\\rvert=-(-3)=3$)."
+				]
+			}
+		},
+		{
+			"statement": "On note $f$ la fonction valeur absolue : $f(x)=\\lvert x\\rvert$.\n\nCalcule l'image de ${{eval:-(a)}}$ par $f$.\n\n$f({{eval:-(a)}})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..15"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:-(a)}}<0$ : sa valeur absolue est son opposé.",
+					"$$f({{eval:-(a)}})=\\lvert {{eval:-(a)}}\\rvert=\\textcolor{{{color:primary.0}}}{{{a}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "La courbe en V",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la parabole",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−x",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "|−7| = 7",
+			"variationIndex": 2,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −7",
+			"variationIndex": 2,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["-7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

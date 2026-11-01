@@ -10,7 +10,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Quel porte-monnaie contient exactement ${{n}}~\\unit{€}$ ?",
+			"statement": "Quel porte-monnaie contient exactement ${{n}}~\\unit{€}$ ?\n\n````choix\n- ```monnaie\n  billets: {{a}}×20 {{b}}×10 {{c}}×5\n  pièces: {{d}}×2 {{u}}×1\n  ```\n- ```monnaie\n  billets: {{a}}×20 {{b}}×10 {{c}}×5\n  pièces: {{do}}×2\n  ```\n- ```monnaie\n  billets: {{a}}×20 {{b}}×10 {{c}}×5\n  pièces: {{ds}}×2 {{us}}×1\n  ```\n````",
 			"variables": [
 				{
 					"name": "a",
@@ -50,18 +50,6 @@
 				}
 			],
 			"conditions": ["a + b + c >= 1", "d + u >= 1"],
-			"choices": [
-				{
-					"content": "```monnaie\nbillets: {{a}}×20 {{b}}×10 {{c}}×5\npièces: {{d}}×2 {{u}}×1\n```"
-				},
-				{
-					"content": "```monnaie\nbillets: {{a}}×20 {{b}}×10 {{c}}×5\npièces: {{do}}×2\n```"
-				},
-				{
-					"content": "```monnaie\nbillets: {{a}}×20 {{b}}×10 {{c}}×5\npièces: {{ds}}×2 {{us}}×1\n```"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"On compte l'argent de chaque porte-monnaie, billets d'abord.",
@@ -69,10 +57,15 @@
 					"Les deux autres contiennent {{if:u==1|${{eval:n-1}}~\\unit{€}$ et ${{eval:n+1}}~\\unit{€}$|${{eval:n-2}}~\\unit{€}$ et ${{eval:n-1}}~\\unit{€}$}}, et non ${{n}}~\\unit{€}$.",
 					"Attention : avoir autant de pièces et de billets ne veut pas dire avoir autant d'argent."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Quel porte-monnaie contient exactement ${{n}}~\\unit{€}$, **sans pièce de $1~\\unit{€}$** ?",
+			"statement": "Quel porte-monnaie contient exactement ${{n}}~\\unit{€}$, **sans pièce de $1~\\unit{€}$** ?\n\n````choix\n- ```monnaie\n  billets: {{b}}×10 1×5\n  pièces: {{d}}×2\n  ```\n- ```monnaie\n  billets: {{b}}×10 1×5\n  pièces: {{eval:d-1}}×2 2×1\n  ```\n- ```monnaie\n  billets: {{b}}×10\n  pièces: {{eval:d+2}}×2 1×1\n  ```\n````",
 			"variables": [
 				{
 					"name": "b",
@@ -88,24 +81,17 @@
 				}
 			],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "```monnaie\nbillets: {{b}}×10 1×5\npièces: {{d}}×2\n```"
-				},
-				{
-					"content": "```monnaie\nbillets: {{b}}×10 1×5\npièces: {{eval:d-1}}×2 2×1\n```"
-				},
-				{
-					"content": "```monnaie\nbillets: {{b}}×10\npièces: {{eval:d+2}}×2 1×1\n```"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Les trois porte-monnaie contiennent ${{n}}~\\unit{€}$.",
 					"Un seul n'a aucune pièce de $1~\\unit{€}$. Les deux autres en ont."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -126,7 +112,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : la pièce de 1 € oubliée (47 €)",
@@ -145,7 +131,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Erreur : même nombre d'objets (49 €)",
@@ -164,7 +150,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [2]
+			"answers": ["2"]
 		},
 		{
 			"description": "Sans pièce de 1 € : 29 € = 10 + 10 + 5 + 2 + 2",
@@ -177,7 +163,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Erreur : 29 € mais avec deux pièces de 1 €",
@@ -190,7 +176,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		}
 	]
 }

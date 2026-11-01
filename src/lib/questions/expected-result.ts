@@ -19,6 +19,7 @@
 
 import {
 	getQuestionType,
+	isPlaceKind,
 	type BuildKind,
 	type QuestionInstance,
 	type ValidationStatus
@@ -31,6 +32,20 @@ import { isWorkFigureBlank } from './graded-part';
 import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
 import { findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
 import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
+import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
+import { findBarsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
+import { findCourbesToPlace } from '$lib/ubumark/parser/courbe-parser';
+import { findRangersToPlace } from '$lib/ubumark/parser/ranger-parser';
+import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
+import { NOTHING_COLORED } from '$lib/ubumark/utils/partage-colorier';
+import {
+	findCubesToBuild,
+	findPatronsToBuild,
+	parseEspaceContent
+} from '$lib/ubumark/parser/espace-parser';
+import { MISSING_HEIGHTS, NOTHING_COLORED_CUBES } from '$lib/ubumark/utils/cubes-gestes';
+import { NOTHING_PLACED, NOTHING_TOUCHED } from '$lib/ubumark/utils/patron-gestes';
+import { buildCaseCount } from './generator/build-answer';
 import {
 	validateAnswerDetailed,
 	type DetailedVerdict,
@@ -66,7 +81,7 @@ export interface ExpectedChoice {
 	status: ExpectedStatus;
 }
 
-/** Case « choix » (bloc ```choix) : ses choix, statuts du QCM, ordre AFFICHÉ */
+/** Case « choix » (bloc ```choix) : ses choix et leurs statuts, ordre AFFICHÉ */
 export interface ExpectedChoiceCase {
 	/** Case de la question (`case: N` du bloc) */
 	index: number;
@@ -96,9 +111,6 @@ export type ExpectedLine =
 	  }
 	/** R3 : « Ta réponse : » — l'énoncé rempli par les cases de l'élève */
 	| { kind: 'your-answer'; markdown: string; fills: ExpectedFill[] }
-	/** R5 */
-	/** `multiple` : QCM à plusieurs réponses (case ☐ / ☑), sinon réponse unique (rond ○ / ●) */
-	| { kind: 'choices'; multiple: boolean; choices: ExpectedChoice[] }
 	/** R2 : remarque de forme, rattachée à sa case */
 	| { kind: 'remark'; index: number | null; text: string }
 	/** R8/R10 : réponse attendue seule (case graphique, ou introuvable dans l'énoncé) */
@@ -132,8 +144,9 @@ export type ExpectedLine =
 	 */
 	| { kind: 'work-figure'; index: number; source: string; answer: string | null }
 	/**
-	 * Case à construire (bloc ```collection ou ```monnaie, `construire:`) ou droite à
-	 * placer (```line, `placer:`) : le plan
+	 * Case à construire (bloc ```collection ou ```monnaie, `construire:`), droite ou
+	 * horloge à placer, repère à points à placer (```line, ```horloge, ```courbe,
+	 * `placer:`) : le plan
 	 * lui-même, verrouillé, avec la construction de l'élève (`answer`, la valeur
 	 * posée) ; `null` sans réponse (R9) ou réponse vide : la construction juste seule
 	 */
@@ -145,6 +158,16 @@ export type ExpectedLine =
 			source: string;
 			answer: string | null;
 			status: ExpectedStatus;
+			/**
+			 * Droite à plusieurs points (une case par point) : la réponse et le statut de
+			 * chaque point ; `answer` et `status` disent alors la droite entière
+			 */
+			answers?: { answer: string; status: ExpectedStatus }[];
+			/**
+			 * Étiquettes à ranger : la bonne réponse de chaque place (position affichée) ;
+			 * le bloc de l'énoncé ne dit pas l'ordre juste
+			 */
+			expected?: string[];
 	  };
 
 export interface ExpectedResult {
@@ -159,6 +182,21 @@ export const EMPTY_ANSWER_TEXT = "Tu n'as rien répondu.";
 export const EMPTY_BUILD_TEXT = "Tu n'as rien posé.";
 /** Droite à placer laissée vide (aucun point) */
 export const EMPTY_PLACE_TEXT = "Tu n'as rien placé.";
+/** Texte d'une case de ce genre laissée vide : rien posé, placé, colorié ou rempli */
+function emptyBuildText(kind: BuildKind, source: string): string {
+	if (kind === 'partage') return NOTHING_COLORED;
+	if (kind === 'cubes') {
+		return parseEspaceContent(source).spec?.task?.kind === 'retrouver'
+			? MISSING_HEIGHTS
+			: NOTHING_COLORED_CUBES;
+	}
+	if (kind === 'patron') {
+		const spec = parseEspaceContent(source, 'patron').spec;
+		return spec?.task?.kind === 'completer' ? NOTHING_PLACED : NOTHING_TOUCHED;
+	}
+	return isPlaceKind(kind) ? EMPTY_PLACE_TEXT : EMPTY_BUILD_TEXT;
+}
+
 /** Case sans valeur connue : pointillés, comme sur une fiche */
 const BLANK_TEXT = '……';
 
@@ -241,12 +279,18 @@ export function withoutFigureCases(statement: string): string {
 	return statement.replace(FIGURE_CASE_BLOCK, '');
 }
 
-/** Bloc à construire d'un énoncé, repéré par sa case (`case: N`) : genre, texte sans `case:`, lignes */
+/**
+ * Bloc à construire d'un énoncé, repéré par sa case (`case: N`) : genre, texte sans
+ * `case:`, lignes ; droite à placer : une case par point, `first` = la case posée
+ */
 interface BuildCaseBlock {
 	kind: BuildKind;
 	source: string;
 	startIndex: number;
 	endIndex: number;
+	first: number;
+	/** Nombre de cases du bloc (points d'une droite à placer, barres à construire, sinon 1) */
+	cases: number;
 }
 
 const CASE_LINE = /^case\s*:\s*(\d+)\s*$/i;
@@ -256,19 +300,32 @@ function buildCaseBlocks(statement: string): Map<number, BuildCaseBlock> {
 	const found = [
 		...findBuildCollections(statement).map((b) => ({ ...b, kind: 'collection' as const })),
 		...findBuildMonnaies(statement).map((b) => ({ ...b, kind: 'monnaie' as const })),
-		...findLinesToPlace(statement).map((b) => ({ ...b, kind: 'line' as const }))
+		...findLinesToPlace(statement).map((b) => ({ ...b, kind: 'line' as const })),
+		...findHorlogesToPlace(statement).map((b) => ({ ...b, kind: 'horloge' as const })),
+		...findBarsToPlace(statement).map((b) => ({ ...b, kind: 'barres' as const })),
+		...findRangersToPlace(statement).map((b) => ({ ...b, kind: 'ranger' as const })),
+		...findPartagesToColorier(statement).map((b) => ({ ...b, kind: 'partage' as const })),
+		...findCubesToBuild(statement).map((b) => ({ ...b, kind: 'cubes' as const })),
+		...findPatronsToBuild(statement).map((b) => ({ ...b, kind: 'patron' as const })),
+		...findCourbesToPlace(statement).map((b) => ({ ...b, kind: 'courbe' as const }))
 	];
 	const blocks = new Map<number, BuildCaseBlock>();
 	for (const block of found) {
 		if (block.nested || !block.closed) continue;
 		const caseLine = block.body.map((line) => CASE_LINE.exec(line.trim())).find(Boolean);
 		if (!caseLine) continue;
-		blocks.set(Number(caseLine[1]), {
+		const first = Number(caseLine[1]);
+		const source = block.body.filter((line) => !CASE_LINE.test(line.trim())).join('\n');
+		const cases = buildCaseCount(block.kind, source);
+		const found: BuildCaseBlock = {
 			kind: block.kind,
-			source: block.body.filter((line) => !CASE_LINE.test(line.trim())).join('\n'),
+			source,
 			startIndex: block.startIndex,
-			endIndex: block.startIndex + block.body.length + 1
-		});
+			endIndex: block.startIndex + block.body.length + 1,
+			first,
+			cases
+		};
+		for (let k = 0; k < cases; k++) blocks.set(first + k, found);
 	}
 	return blocks;
 }
@@ -283,7 +340,7 @@ export function withoutBuildCases(statement: string): string {
 		.join('\n');
 }
 
-/** L'énoncé sans ses blocs ```choix (la ligne `choices` de chaque case les montre) */
+/** L'énoncé sans ses blocs ```choix (leurs choix sont montrés à part) */
 export function withoutChoiceCases(statement: string): string {
 	return replaceChoiceBlocks(statement, () => '');
 }
@@ -368,8 +425,11 @@ interface BlankView {
 	remarks: string[];
 	/** Case « figure » : texte du bloc et réponse brute (la figure la dessine, rien n'est rendu) */
 	figure?: { source: string; answer: string };
-	/** Case à construire : son bloc et la valeur posée brute (le plan la redessine, rien n'est rendu) */
-	build?: { kind: BuildKind; source: string; answer: string };
+	/**
+	 * Case à construire : son bloc et la valeur posée brute (le plan la redessine, rien
+	 * n'est rendu) ; droite à placer : `first`, `cases` pour regrouper ses points
+	 */
+	build?: { kind: BuildKind; source: string; answer: string; first: number; cases: number };
 }
 
 function blankViews(
@@ -413,7 +473,13 @@ function blankViews(
 				}),
 				...(blank.construire &&
 					builds.has(index) && {
-						build: { kind: blank.construire, source: builds.get(index)!.source, answer: value }
+						build: {
+							kind: blank.construire,
+							source: builds.get(index)!.source,
+							answer: value,
+							first: builds.get(index)!.first,
+							cases: builds.get(index)!.cases
+						}
 					})
 			}
 		];
@@ -569,7 +635,42 @@ function buildLines(
 	};
 	// Propre à la case : une autre case de l'énoncé peut avoir sa réponse
 	if (withAnswer && status === 'empty') {
-		const text = build.kind === 'line' ? EMPTY_PLACE_TEXT : EMPTY_BUILD_TEXT;
+		const text = emptyBuildText(build.kind, build.source);
+		return [line, { kind: 'empty', text }];
+	}
+	return [line];
+}
+
+/**
+ * Droite à placer à plusieurs points (diagramme à plusieurs barres) : une seule
+ * figure, la réponse de chaque point (barre) ; juste quand tous le sont, « rien
+ * placé » (« rien posé ») quand aucun ne l'est
+ */
+function placeLines(
+	first: BlankView,
+	build: NonNullable<BlankView['build']>,
+	points: BlankView[],
+	withAnswer: boolean
+): ExpectedLine[] {
+	const statuses = points.map((p) => toExpectedStatus(p.status ?? 'empty'));
+	const answers = points.map((p, k) => ({
+		answer: p.build?.answer.trim() ?? '',
+		status: statuses[k]
+	}));
+	const answered = withAnswer && answers.some((a) => a.answer !== '');
+	const allAccepted = statuses.every((s) => s === 'correct' || s === 'unoptimal');
+	const line: ExpectedLine = {
+		kind: 'build',
+		index: first.index,
+		buildKind: build.kind,
+		source: build.source,
+		answer: answered ? answers.map((a) => a.answer).join(' ; ') : null,
+		status: answered ? (allAccepted ? 'correct' : 'incorrect') : 'solution',
+		...(answered && { answers }),
+		...(build.kind === 'ranger' && { expected: points.map((p) => p.expected) })
+	};
+	if (withAnswer && !answered) {
+		const text = emptyBuildText(build.kind, build.source);
 		return [line, { kind: 'empty', text }];
 	}
 	return [line];
@@ -588,50 +689,6 @@ function expectedOnlyLine(view: BlankView, withAnswer: boolean): ExpectedLine {
 			studentStatus: toExpectedStatus(view.status ?? 'empty')
 		})
 	};
-}
-
-function choiceLines(
-	instance: QuestionInstance,
-	verdict: DetailedVerdict | undefined
-): ExpectedLine[] {
-	const choices = instance.choices ?? [];
-	const order =
-		instance.shuffledChoices && instance.shuffledChoices.length === choices.length
-			? instance.shuffledChoices.map((c) => c.originalIndex)
-			: choices.map((_, i) => i);
-	const nothingChecked = verdict !== undefined && !verdict.choices?.some((c) => c.checked);
-	const lines: ExpectedLine[] = [
-		{
-			kind: 'choices',
-			multiple: instance.multipleAnswers === true,
-			choices: order.flatMap((originalIndex) => {
-				const choice = choices[originalIndex];
-				if (!choice) return [];
-				const detail = verdict?.choices?.find((c) => c.originalIndex === originalIndex);
-				const checked = detail?.checked ?? false;
-				// QCM à règles : ce sont elles qui disent quels choix sont bons
-				const isCorrect = detail?.isCorrect ?? choice.isCorrect;
-				let status: ExpectedStatus = isCorrect ? 'solution' : 'neutral';
-				if (detail && !nothingChecked) {
-					if (detail.outcome === 'checked-correct') status = 'correct';
-					else if (detail.outcome === 'checked-wrong') status = 'incorrect';
-					// Bon choix oublié : ambre en QCM à plusieurs réponses (R5), encadré sinon
-					else if (detail.outcome === 'missed' && instance.multipleAnswers) status = 'unoptimal';
-				}
-				return [
-					{
-						originalIndex,
-						content: String(choice.content),
-						checked,
-						isCorrect,
-						status
-					}
-				];
-			})
-		}
-	];
-	if (nothingChecked) lines.push({ kind: 'empty', text: EMPTY_ANSWER_TEXT });
-	return lines;
 }
 
 /**
@@ -700,8 +757,6 @@ function buildAnswers(
 	const verdict = given ?? (answer ? validateAnswerDetailed(instance, answer) : undefined);
 	const status = verdict?.status ?? null;
 
-	if (type === 'multiple_choice') return { status, lines: choiceLines(instance, verdict) };
-
 	const statement = typeof instance.statement === 'string' ? instance.statement : '';
 	// Case « figure » : hors de l'énoncé rempli, sa figure est dans sa ligne. Case
 	// « choix » : son bloc reste À SA PLACE dans l'énoncé rempli (`choiceCases`)
@@ -720,9 +775,17 @@ function buildAnswers(
 	);
 	// Case à construire : son plan, comme une figure, mais APRÈS l'énoncé rempli : la
 	// phrase qui le demande (« Paie le ballon à 35 €. ») vient d'abord
-	const builds = outside.flatMap((v) =>
-		v.build ? buildLines(v, v.build, verdict !== undefined) : []
-	);
+	const builds = outside.flatMap((v) => {
+		if (!v.build) return [];
+		if (v.build.cases === 1) return buildLines(v, v.build, verdict !== undefined);
+		// Droite à plusieurs points, diagramme à plusieurs barres : UNE figure, à la
+		// place de sa première case
+		if (v.index !== v.build.first) return [];
+		const points = outside.filter(
+			(other) => other.build?.first === v.build!.first && other.build.kind === v.build!.kind
+		);
+		return placeLines(v, v.build, points, verdict !== undefined);
+	});
 	const apart = [
 		...builds,
 		...outside.flatMap((v) =>

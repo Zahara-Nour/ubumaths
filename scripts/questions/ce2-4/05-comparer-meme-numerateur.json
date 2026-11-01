@@ -1,0 +1,136 @@
+{
+	"title": "Comparer des fractions de même numérateur",
+	"description": "Comparer 5/12 et 5/8 : plus on fait de parts, plus chaque part est petite",
+	"grades": ["CE2"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Comparer",
+	"level": 12,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète avec le symbole qui convient.\n\n$$\\frac{{{a}}}{{{p}}} \\ldots \\frac{{{a}}}{{{q}}}$$\n\n```choix\nmelanger: non\n- $$<$$\n- $$=$$\n- $$>$$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..10"
+				},
+				{
+					"name": "p",
+					"expression": "{{eval:a+1}}..12"
+				},
+				{
+					"name": "q",
+					"expression": "{{eval:a+1}}..12"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(q-p)+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les deux fractions prennent ${{a}}$ parts. D'un côté, le tout est partagé en ${{p}}$ parts égales ; de l'autre, en ${{q}}$. **Plus on fait de parts, plus chaque part est petite.**",
+					"$$\\frac{{{a}}}{{{p}}} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} \\frac{{{a}}}{{{q}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 5/12 < 5/8",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"p": "12",
+				"q": "8",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5/12 > 5/8 (car 12 > 8)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"p": "12",
+				"q": "8",
+				"r": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3/4 > 3/10",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"p": "4",
+				"q": "10",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/4 < 3/10 (car 4 < 10)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"p": "4",
+				"q": "10",
+				"r": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "égalité : 2/9 = 2/9",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"p": "9",
+				"q": "9",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 10/11 > 10/12",
+			"variationIndex": 0,
+			"variables": {
+				"a": "10",
+				"p": "11",
+				"q": "12",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

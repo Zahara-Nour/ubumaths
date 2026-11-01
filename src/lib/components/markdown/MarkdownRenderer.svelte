@@ -53,11 +53,15 @@
 	import StatChart from './nodes/StatChart.svelte';
 	import FigureBlock from './nodes/FigureBlock.svelte';
 	import QrBlock from './nodes/QrBlock.svelte';
+	import ScratchBlock from './nodes/ScratchBlock.svelte';
 	import Horloge from './nodes/Horloge.svelte';
+	import Partage from './nodes/Partage.svelte';
+	import Espace from './nodes/Espace.svelte';
 	import Operation from './nodes/Operation.svelte';
 	import Collection from './nodes/Collection.svelte';
 	import Monnaie from './nodes/Monnaie.svelte';
 	import ChoiceBlock from './nodes/ChoiceBlock.svelte';
+	import RangerPlacer from './nodes/RangerPlacer.svelte';
 
 	// Raw markdown viewer with syntax highlighting
 	import MarkdownRaw from './MarkdownRaw.svelte';
@@ -372,8 +376,14 @@
 					<StatChart {node} />
 				{:else if node.type === 'qr'}
 					<QrBlock {node} />
+				{:else if node.type === 'scratch'}
+					<ScratchBlock {node} />
 				{:else if node.type === 'horloge'}
 					<Horloge {node} />
+				{:else if node.type === 'partage'}
+					<Partage {node} />
+				{:else if node.type === 'espace'}
+					<Espace {node} />
 				{:else if node.type === 'operation'}
 					<Operation {node} />
 				{:else if node.type === 'collection'}
@@ -382,6 +392,8 @@
 					<Monnaie {node} />
 				{:else if node.type === 'choice'}
 					<ChoiceBlock {node} />
+				{:else if node.type === 'ranger'}
+					<RangerPlacer {node} />
 				{/if}
 			{/each}
 		{:else}

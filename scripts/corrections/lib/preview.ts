@@ -10,6 +10,7 @@
 import type { QuestionInstance, QuestionTemplate } from '../../../src/lib/questions/types';
 import { generateInstance } from '../../../src/lib/questions/generator/instance-generator';
 import { injectCorrection, type Proposal } from './proposal';
+import { parseChoiceAnswer } from '../../../src/lib/questions/choice-case';
 
 // ============================================================================
 // CONSTANTS
@@ -29,13 +30,19 @@ export function readableStatement(statement: string): string {
 		.replace(/\{\{blank:\d+\}\}/g, '…');
 }
 
-/** Réponse attendue : LaTeX de la case, ou texte du bon choix */
+/** Réponse attendue : LaTeX de chaque case, texte du (des) bon(s) choix d'une case choix */
 export function expectedAnswer(instance: QuestionInstance): string {
-	if (instance.blanks && instance.blanks.length > 0) {
-		return instance.blanks.map((b) => `$${b.expectedAnswerLatex ?? b.expectedAnswer}$`).join(' ; ');
-	}
-	const correct = (instance.choices ?? []).filter((c) => c.isCorrect).map((c) => String(c.content));
-	return correct.length > 0 ? correct.join(' ; ') : '(inconnue)';
+	const blanks = instance.blanks ?? [];
+	if (blanks.length === 0) return '(inconnue)';
+	return blanks
+		.map((b) =>
+			b.choice
+				? (parseChoiceAnswer(b.expectedAnswer, b.choice.choices.length) ?? [])
+						.map((index) => b.choice?.choices[index] ?? '')
+						.join(' ; ')
+				: `$${b.expectedAnswerLatex ?? b.expectedAnswer}$`
+		)
+		.join(' ; ');
 }
 
 /** Une étape de correction en markdown GitHub : un bloc `$$` seul sur sa ligne */

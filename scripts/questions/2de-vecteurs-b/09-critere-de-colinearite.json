@@ -1,0 +1,199 @@
+{
+	"title": "Critère de colinéarité",
+	"description": "u et v colinéaires ? par le déterminant (case choix), puis trouver m pour que u(m ; a) et v(b ; c) soient colinéaires (pièges : déterminant nul lu « non », m = b·c/a)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs du plan",
+	"subdomain": "Colinéarité",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans un repère orthonormé $(O\\,;\\vec{i},\\vec{j})$, on considère les vecteurs $\\vec{u}\\begin{pmatrix}{{eval:(d)*(r1)}}\\\\{{eval:(d)*(r2)}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{eval:(k)*(r1)}}\\\\{{eval:(k)*(r2)+(w)}}\\end{pmatrix}$.\n\nLes vecteurs $\\vec{u}$ et $\\vec{v}$ sont-ils colinéaires ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "r1",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "r2",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "d",
+					"expression": "1|2"
+				},
+				{
+					"name": "k",
+					"expression": "2..4;±"
+				},
+				{
+					"name": "w",
+					"expression": "0|1"
+				}
+			],
+			"conditions": ["k != d"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Critère de colinéarité** : $\\vec{u}$ et $\\vec{v}$ sont colinéaires si et seulement si $\\det(\\vec{u},\\vec{v})=0$.",
+					"$$\\det(\\vec{u},\\vec{v})={{eval:(d)*(r1);()}}\\times{{eval:(k)*(r2)+(w);()}}-{{eval:(d)*(r2);()}}\\times{{eval:(k)*(r1);()}}={{eval:(d)*(r1)*((k)*(r2)+(w))}}-{{eval:(d)*(r2)*(k)*(r1);()}}=\\textcolor{{{color:primary.0}}}{{{eval:(d)*(r1)*(w)}}}$$",
+					"{{if:w==0|Le déterminant est nul : **les vecteurs sont colinéaires**.|Le déterminant n'est pas nul : **les vecteurs ne sont pas colinéaires**.}}"
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère orthonormé $(O\\,;\\vec{i},\\vec{j})$, on considère les vecteurs $\\vec{u}\\begin{pmatrix}m\\\\{{u2}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{v1}}\\\\{{v2}}\\end{pmatrix}$, où $m$ est un réel.\n\nDétermine $m$ pour que $\\vec{u}$ et $\\vec{v}$ soient colinéaires.\n\n$$m=?$$",
+			"variables": [
+				{
+					"name": "u2",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "v1",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "v2",
+					"expression": "1..6;±"
+				}
+			],
+			"conditions": ["abs(v2) != 1", "abs(u2) != abs(v2)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(u2)*(v1)/(v2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Critère de colinéarité** : $\\vec{u}$ et $\\vec{v}$ sont colinéaires si et seulement si $\\det(\\vec{u},\\vec{v})=0$.",
+					"$$\\det(\\vec{u},\\vec{v})=m\\times{{v2;()}}-{{u2;()}}\\times{{v1;()}}={{v2}}m{{eval:-(u2)*(v1);+}}$$",
+					"On résout ${{v2}}m{{eval:-(u2)*(v1);+}}=0$ : ${{v2}}m={{eval:(u2)*(v1)}}$, donc $m=\\textcolor{{{color:primary.0}}}{{{eval:(u2)*(v1)/(v2)}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u(2 ; −1), v(6 ; −3) : oui",
+			"variationIndex": 0,
+			"variables": {
+				"r1": "2",
+				"r2": "-1",
+				"d": "1",
+				"k": "3",
+				"w": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Déterminant nul : « non » faux",
+			"variationIndex": 0,
+			"variables": {
+				"r1": "2",
+				"r2": "-1",
+				"d": "1",
+				"k": "3",
+				"w": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u(2 ; −1), v(6 ; −2) : non",
+			"variationIndex": 0,
+			"variables": {
+				"r1": "2",
+				"r2": "-1",
+				"d": "1",
+				"k": "3",
+				"w": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u(m ; 3), v(4 ; 6) → m = 2",
+			"variationIndex": 1,
+			"variables": {
+				"u2": "3",
+				"v1": "4",
+				"v2": "6"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : m = 6 × 4 / 3 = 8",
+			"variationIndex": 1,
+			"variables": {
+				"u2": "3",
+				"v1": "4",
+				"v2": "6"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u(m ; 2), v(3 ; 4) → m = 3/2",
+			"variationIndex": 1,
+			"variables": {
+				"u2": "2",
+				"v1": "3",
+				"v2": "4"
+			},
+			"answers": ["\\frac{3}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En décimal 1,5",
+			"variationIndex": 1,
+			"variables": {
+				"u2": "2",
+				"v1": "3",
+				"v2": "4"
+			},
+			"answers": ["1.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Fraction non simplifiée 6/4",
+			"variationIndex": 1,
+			"variables": {
+				"u2": "2",
+				"v1": "3",
+				"v2": "4"
+			},
+			"answers": ["\\frac{6}{4}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		}
+	]
+}

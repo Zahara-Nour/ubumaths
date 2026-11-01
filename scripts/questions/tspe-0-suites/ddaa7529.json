@@ -1,0 +1,127 @@
+{
+	"id": "ddaa7529-61c0-48cf-93d0-9bd97b88cb2a",
+	"title": "Définition de la convergence : un rang à partir duquel tous les termes conviennent",
+	"description": "Suite convergente : donner UN entier N tel que tous les uₙ pour n ⩾ N sont dans ]ℓ − ε ; ℓ + ε[ (toute réponse qui convient est juste ; pièges : rang trop petit, rang non entier)",
+	"grades": ["T_SPE"],
+	"theme": "Suites",
+	"domain": "Limites de suites",
+	"subdomain": "Définition de la limite",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"rulesSuffice": true,
+					"expectedAnswer": "{{eval:P+1}}",
+					"validationRules": [
+						{
+							"max": "1000000000",
+							"min": "0",
+							"type": "range",
+							"inclusive": true
+						},
+						{
+							"type": "predicate",
+							"predicate": "isInteger"
+						},
+						{
+							"type": "custom",
+							"expression": "answer > {{P}}",
+							"description": "Pour ce rang, $u_N$ n'est pas dans l'intervalle : il est trop petit."
+						}
+					]
+				}
+			],
+			"statement": "Pour tout entier $n\\geqslant1$, $u_n={{L}}+\\dfrac{ {{a}} }{n}$. La suite $(u_n)$ converge vers ${{L}}$ : l'intervalle $\\left]{{eval:L-10^(-t);d}}\\,;{{eval:L+10^(-t);d}}\\right[$ contient tous les termes à partir d'un certain rang.\n\nDonne un entier $N\\geqslant1$ tel que, pour tout $n\\geqslant N$, $u_n$ appartient à cet intervalle.\n\n$N=?$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "1..9"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "t",
+					"expression": "1..2"
+				},
+				{
+					"name": "P",
+					"expression": "eval:a*10^t"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $n\\geqslant1$, $u_n>{{L}}$ ; il suffit que $\\dfrac{ {{a}} }{n}<{{eval:10^(-t);d}}$, soit $n>{{P}}$.",
+					"$\\dfrac{ {{a}} }{n}$ décroît : le plus petit rang qui convient est $N=\\textcolor{{{color:primary.0}}}{ {{eval:P+1}} }$ ; tout entier plus grand convient aussi."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["201"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"L": "3",
+				"P": "200",
+				"a": "2",
+				"t": "2"
+			},
+			"description": "v0 L=3, a=2, ε=0,01 : N=201",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1000"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"L": "3",
+				"P": "200",
+				"a": "2",
+				"t": "2"
+			},
+			"description": "v0 : N=1000 convient",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["200"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"L": "3",
+				"P": "200",
+				"a": "2",
+				"t": "2"
+			},
+			"description": "v0 : N=200 (inégalité large)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"L": "3",
+				"P": "200",
+				"a": "2",
+				"t": "2"
+			},
+			"description": "v0 : N=100 (a oublié)",
+			"variationIndex": 0
+		}
+	]
+}

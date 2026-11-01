@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" font-family="Georgia, 'Times New Roman', serif">
+<style>text{fill:#1B2232;paint-order:stroke;stroke:#F1EDE4;stroke-linejoin:round}.lieu{font-weight:bold;font-style:italic;stroke-width:6px;stroke-opacity:.9}</style>
+<image href="carte-ville.png" width="1024" height="1024"/>
+<g id="lieux">
+<g id="lieu-bibliotheque-de-faustroll"><title>La Bibliothèque de Faustroll</title><ellipse cx="510" cy="470" rx="62" ry="66" fill="#fff" fill-opacity="0"/><text x="510" y="396" font-size="24" text-anchor="middle" class="lieu">La Bibliothèque</text></g>
+<g id="lieu-porte-de-brique"><title>Porte de l'enceinte de brique</title><ellipse cx="220" cy="300" rx="28" ry="45" fill="#fff" fill-opacity="0"/><text x="112" y="368" font-size="24" text-anchor="middle" class="lieu">Porte de brique</text></g>
+<g id="lieu-porte-de-pierre"><title>Porte de l'enceinte de pierre</title><ellipse cx="805" cy="300" rx="30" ry="45" fill="#fff" fill-opacity="0"/><text x="918" y="408" font-size="24" text-anchor="middle" class="lieu">Porte de pierre</text></g>
+<g id="lieu-porte-de-bois"><title>Porte de l'enceinte de bois</title><ellipse cx="512" cy="808" rx="32" ry="28" fill="#fff" fill-opacity="0"/><text x="640" y="848" font-size="24" text-anchor="middle" class="lieu">Porte de bois</text></g>
+</g>
+</svg>

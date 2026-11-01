@@ -5,7 +5,9 @@
  * Pendant une évaluation, le serveur tire et corrige ; le navigateur ne reçoit
  * que ce qu'il faut pour afficher la question et y répondre. Construite en
  * LISTE BLANCHE, champ par champ : ni réponse attendue, ni correction, ni bon
- * choix d'un QCM, ni graine, ni variables tirées, ni règle de validation.
+ * choix d'une case choix, ni graine, ni variables tirées, ni règle de validation ;
+ * l'énoncé lui-même sans la valeur à trouver de ses blocs à geste
+ * (`maskGestureAnswers`).
  *
  * Pas d'identifiant de modèle non plus : avec lui, un élève retrouverait la
  * formule de la correction (les modèles publiés sont lisibles) et pourrait
@@ -21,14 +23,9 @@
 import type { ResolvedMarkdown } from '$lib/ubumark';
 import { unitKeysFor } from '$lib/questions/units/keyboard-units';
 import type { CapitalPairs } from '$lib/mathAST/parser/types';
-import {
-	getQuestionType,
-	type ConstraintMode,
-	type GradeLevel,
-	type InstanceBlank,
-	type QuestionInstance
-} from './types';
+import type { ConstraintMode, GradeLevel, InstanceBlank, QuestionInstance } from './types';
 import { isWorkFigureBlank } from './graded-part';
+import { maskGestureAnswers } from './masked-statement';
 
 // Types
 export interface PublicBlank {
@@ -48,6 +45,17 @@ export interface PublicBlank {
 	choice?: { choices: string[]; multiple: boolean };
 	/** Figure de travail : jamais notée, peut rester vide (rien d'attendu à cacher) */
 	workFigure?: true;
+	/**
+	 * Figure à compléter (notée) : le fait seul, que l'énoncé montre déjà ; jamais
+	 * `construction` (son texte et ses vérifications disent la réponse). Sans lui,
+	 * l'écran la compterait comme une case écrite (aide, numéros des cases)
+	 */
+	figure?: true;
+	/**
+	 * Case d'un bloc à geste : le genre du bloc seul (`line`, `horloge`…), que l'énoncé
+	 * montre déjà ; sans lui, l'écran afficherait l'aide des cases écrites
+	 */
+	construire?: InstanceBlank['construire'];
 }
 
 export interface PublicQuestion {
@@ -55,14 +63,11 @@ export interface PublicQuestion {
 	position: number;
 	/** Durée de la question (Entraînement) */
 	delaySeconds: number;
-	type: 'fill_in_blanks' | 'multiple_choice';
+	type: 'fill_in_blanks';
 	statement: string;
 	exerciseInstruction?: string;
 	blanks?: PublicBlank[];
 	expressions?: { name: string; latex: string; displayLatex?: string; answerFormat?: string }[];
-	/** Choix dans l'ordre AFFICHÉ ; la réponse envoie ces positions */
-	choices?: { content: string }[];
-	multipleAnswers?: boolean;
 	/** Réglage des espaces (clavier : espace fine insérée ou non) */
 	spaces?: ConstraintMode;
 	/** Fonctions déclarées par le modèle (`P`, `C`) : notation de l'énoncé, aucune réponse */
@@ -90,6 +95,8 @@ function publicBlank(blank: InstanceBlank): PublicBlank {
 	if (blank.graphicalConfig) result.graphicalConfig = blank.graphicalConfig;
 	if (blank.answerKind) result.answerKind = blank.answerKind;
 	if (isWorkFigureBlank(blank)) result.workFigure = true;
+	else if (blank.construction) result.figure = true;
+	if (blank.construire) result.construire = blank.construire;
 	if (blank.choice) {
 		const { choices, order, multiple } = blank.choice;
 		result.choice = { choices: order.map((index) => choices[index]), multiple };
@@ -102,13 +109,12 @@ export function toPublicQuestion(
 	instance: QuestionInstance,
 	meta: { position: number; delaySeconds: number }
 ): PublicQuestion {
-	const type =
-		getQuestionType(instance) === 'multiple_choice' ? 'multiple_choice' : 'fill_in_blanks';
 	const question: PublicQuestion = {
 		position: meta.position,
 		delaySeconds: meta.delaySeconds,
-		type,
-		statement: instance.statement
+		type: 'fill_in_blanks',
+		// Les blocs à geste sans la valeur à trouver (`placer: A=?`) : chantier `fuite-enonce`
+		statement: maskGestureAnswers(instance.statement)
 	};
 	if (instance.exerciseInstruction) question.exerciseInstruction = instance.exerciseInstruction;
 	const spaces = instance.options?.constraints?.spaces;
@@ -116,14 +122,6 @@ export function toPublicQuestion(
 	if (instance.genericFunctions?.length) question.genericFunctions = [...instance.genericFunctions];
 	if (instance.capitalPairs) question.capitalPairs = instance.capitalPairs;
 	if (instance.grades?.length) question.grades = [...instance.grades];
-
-	if (type === 'multiple_choice') {
-		question.choices = (instance.shuffledChoices ?? []).map((choice) => ({
-			content: choice.content
-		}));
-		if (instance.multipleAnswers) question.multipleAnswers = true;
-		return question;
-	}
 
 	question.blanks = (instance.blanks ?? []).map(publicBlank);
 	if (instance.expressions?.length) {
@@ -157,24 +155,6 @@ export function toDisplayInstance(question: PublicQuestion): QuestionInstance {
 		...(question.capitalPairs && { capitalPairs: question.capitalPairs })
 	};
 
-	if (question.type === 'multiple_choice') {
-		const choices = question.choices ?? [];
-		instance.choices = choices.map((choice) => ({
-			content: choice.content as ResolvedMarkdown,
-			isCorrect: false
-		}));
-		// Position affichée = indice : l'envoi transmet les positions cochées. Toute
-		// conversion « position affichée → indice d'origine » faite par la carte
-		// (QuestionCard) est donc NEUTRE ici ; seul le serveur, qui a l'instance
-		// complète, convertit (test : QuestionCard-evaluation.svelte.test.ts)
-		instance.shuffledChoices = choices.map((choice, index) => ({
-			content: choice.content as ResolvedMarkdown,
-			originalIndex: index
-		}));
-		if (question.multipleAnswers) instance.multipleAnswers = true;
-		return instance;
-	}
-
 	instance.blanks = (question.blanks ?? []).map((blank) => ({
 		expectedAnswer: '',
 		type: blank.type,
@@ -182,10 +162,13 @@ export function toDisplayInstance(question: PublicQuestion): QuestionInstance {
 		...(blank.unit && { unit: blank.unit }),
 		...(blank.graphicalConfig && { graphicalConfig: blank.graphicalConfig }),
 		...(blank.answerKind && { answerKind: blank.answerKind }),
+		...(blank.construire && { construire: blank.construire }),
 		// Figure de travail : la figure vient de l'énoncé, la case dit seulement qu'elle n'est pas notée
 		...(blank.workFigure && {
 			construction: { source: '', checks: [], work: true as const }
 		}),
+		// Figure à compléter : la figure vient de l'énoncé, jugée par le serveur
+		...(blank.figure && { construction: { source: '', checks: [] } }),
 		// Ordre affiché = ordre d'origine du navigateur : les positions cochées partent telles quelles
 		...(blank.choice && {
 			choice: {

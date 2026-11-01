@@ -5,13 +5,24 @@
 import { describe, it, expect } from 'vitest';
 import { parseMarkdown } from '$lib/ubumark';
 import { BLOCK_CATALOG } from '..';
+import { checkScratchProgram } from '$lib/ubumark/utils/scratch-check';
 
 /** Le seul bloc du document, et ses messages d'erreur */
 function parseSingleBlock(source: string): { type: string; messages: string[] } {
 	const children = parseMarkdown(source).children;
 	expect(children).toHaveLength(1);
-	const node = children[0] as { type: string; errors?: { message: string }[] };
-	return { type: node.type, messages: (node.errors ?? []).map((e) => e.message) };
+	// Messages situés (`{ message }`), ou phrases (```ranger)
+	const node = children[0] as {
+		type: string;
+		source?: string;
+		errors?: ({ message: string } | string)[];
+	};
+	const messages = (node.errors ?? []).map((e) => (typeof e === 'string' ? e : e.message));
+	// ```scratch : les instructions sont vérifiées hors du parseur (au rendu)
+	if (node.type === 'scratch' && node.source !== undefined) {
+		messages.push(...checkScratchProgram(node.source).map((e) => e.message));
+	}
+	return { type: node.type, messages };
 }
 
 describe('catalogue des blocs', () => {

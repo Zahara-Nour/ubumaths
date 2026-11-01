@@ -33,13 +33,11 @@ export type EvaluationStartResponse =
 	  };
 
 /**
- * Réponse de l'élève telle que la copie l'affiche. QCM : choix cochés en
- * indices d'ORIGINE (comme partout dans l'application, cf. `questions/choices`),
- * jamais en positions affichées.
+ * Réponse de l'élève telle que la copie l'affiche : une valeur par case (case
+ * choix : indices d'ORIGINE « 0;2 », jamais des positions affichées).
  */
 export interface CorrectedAnswer {
 	values?: string[];
-	choiceIndexes?: number[];
 }
 
 /**

@@ -1,0 +1,230 @@
+{
+	"title": "La courbe de la fonction carré",
+	"description": "La courbe de la fonction carré : la reconnaître parmi quatre tracés (−x², x² + c, droite), compléter son tableau de valeurs, dire si un point est dessus",
+	"grades": ["3"],
+	"theme": "Fonctions",
+	"domain": "Fonction carré",
+	"subdomain": "Courbe",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Dans le repère ci-dessous, quelle courbe représente la fonction carré $x \\mapsto x^2$ ?\n\n```courbe\nx: -4 ; 4\ny: -6 ; 10\ngrille: 1 ; 1\nf(x) = x^2   bleu   nom={{if:p==0|C_1|}}{{if:p==1|C_2|}}{{if:p==2|C_3|}}{{if:p==3|C_4|}}\ng(x) = -x^2   rouge   nom={{if:p==0|C_2|}}{{if:p==1|C_3|}}{{if:p==2|C_4|}}{{if:p==3|C_1|}}\nh(x) = x^2+({{c}})   vert   nom={{if:p==0|C_3|}}{{if:p==1|C_4|}}{{if:p==2|C_1|}}{{if:p==3|C_2|}}\nk(x) = ({{m}})*x   orange   nom={{if:p==0|C_4|}}{{if:p==1|C_1|}}{{if:p==2|C_2|}}{{if:p==3|C_3|}}\ntaille: moyenne\ndescription: Quatre tracés nommés C1 à C4 : trois paraboles et une droite.\n```\n\n\n\n```choix\n- ${{if:p==0|C_1|}}{{if:p==1|C_2|}}{{if:p==2|C_3|}}{{if:p==3|C_4|}}$\n- ${{if:p==0|C_2|}}{{if:p==1|C_3|}}{{if:p==2|C_4|}}{{if:p==3|C_1|}}$\n- ${{if:p==0|C_3|}}{{if:p==1|C_4|}}{{if:p==2|C_1|}}{{if:p==3|C_2|}}$\n- ${{if:p==0|C_4|}}{{if:p==1|C_1|}}{{if:p==2|C_2|}}{{if:p==3|C_3|}}$\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2|3|-2|-3"
+				},
+				{
+					"name": "m",
+					"expression": "1|-1"
+				},
+				{
+					"name": "p",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La courbe de la fonction carré passe par $O(0\\,;0)$, $(1\\,;1)$ et $(-1\\,;1)$, $(2\\,;4)$ et $(-2\\,;4)$ : elle est **symétrique** par rapport à l'axe des ordonnées et tournée vers le haut.",
+					"$\\textcolor{{{color:primary.0}}}{{{if:p==0|C_1|}}{{if:p==1|C_2|}}{{if:p==2|C_3|}}{{if:p==3|C_4|}}}$ passe par tous ces points : c'est elle.",
+					"${{if:p==0|C_2|}}{{if:p==1|C_3|}}{{if:p==2|C_4|}}{{if:p==3|C_1|}}$ est tournée vers le bas ($-x^2$), ${{if:p==0|C_3|}}{{if:p==1|C_4|}}{{if:p==2|C_1|}}{{if:p==3|C_2|}}$ ne passe pas par l'origine ($x^2{{if:c<0|{{c}}|+{{c}}}}$) et ${{if:p==0|C_4|}}{{if:p==1|C_1|}}{{if:p==2|C_2|}}{{if:p==3|C_3|}}$ est une droite."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction carré $f : x \\mapsto x^2$.\n\nComplète son tableau de valeurs :\n\n$\\begin{array}{|l|c|c|c|c|} x & -1 & 0 & 1 & {{n}} \\\\ f(x) & 1 & 0 & 1 & ? \\end{array}$\n\n",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..7;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n)^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f({{n}})$ est le **carré** de ${{n}}$ : on multiplie ${{n}}$ par lui-même, **parenthèses comprises** pour un nombre négatif.",
+					"$$f({{n}}) = {{if:n<0|({{n}})|{{n}}}}^2 = {{if:n<0|({{n}})|{{n}}}} \\times {{if:n<0|({{n}})|{{n}}}} = \\textcolor{{{color:primary.0}}}{{{eval:(n)^2}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Le point $A({{n}}\\,;{{b}})$ est-il sur la courbe de la fonction carré $x \\mapsto x^2$ ?\n\n```choix\n- {{if:t==0|Oui|Non}}\n- {{if:t==0|Non|Oui}}\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..6;±"
+				},
+				{
+					"name": "t",
+					"expression": "0|1|2"
+				},
+				{
+					"name": "b",
+					"expression": "eval:((t)-1)*((t)-2)/2*(n)^2+(t)*(2-(t))*2*(n)-(t)*((t)-1)/2*(n)^2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A$ est sur la courbe si son ordonnée est le **carré** de son abscisse.",
+					"$${{if:n<0|({{n}})|{{n}}}}^2 = {{eval:(n)^2}}$$",
+					"{{if:t==0|L'ordonnée de $A$ vaut bien ${{eval:(n)^2}}$ : \\textcolor{{{color:primary.0}}}{\\text{oui}}, $A$ est sur la courbe.|L'ordonnée de $A$ est ${{b}}$, et non ${{eval:(n)^2}}$ : \\textcolor{{{color:primary.0}}}{\\text{non}}, $A$ n'est pas sur la courbe.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Quatre tracés : la parabole x²",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"m": "1",
+				"p": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x² + 2",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"m": "1",
+				"p": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −x²",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"m": "1",
+				"p": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Tableau : f(−4) = 16",
+			"variationIndex": 1,
+			"variables": {
+				"n": "-4"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −4² = −16",
+			"variationIndex": 1,
+			"variables": {
+				"n": "-4"
+			},
+			"answers": ["-16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le double, −8",
+			"variationIndex": 1,
+			"variables": {
+				"n": "-4"
+			},
+			"answers": ["-8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A(−3 ; 9) est dessus : oui",
+			"variationIndex": 2,
+			"variables": {
+				"n": "-3",
+				"t": "0",
+				"b": "9"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : non",
+			"variationIndex": 2,
+			"variables": {
+				"n": "-3",
+				"t": "0",
+				"b": "9"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A(4 ; 8) n'est pas dessus : non",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4",
+				"t": "1",
+				"b": "8"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "A(−3 ; −9) n'est pas dessus : non",
+			"variationIndex": 2,
+			"variables": {
+				"n": "-3",
+				"t": "2",
+				"b": "-9"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −3² = −9, oui",
+			"variationIndex": 2,
+			"variables": {
+				"n": "-3",
+				"t": "2",
+				"b": "-9"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,337 @@
+{
+	"title": "Développer (a + b)² et (a − b)²",
+	"description": "Développer avec les identités remarquables : (x + 3)², (x − 5)², (2x + 5)², (3x − 4)², puis l'une des trois identités à reconnaître ((ax + b)², (ax − b)², (ax − b)(ax + b))",
+	"grades": ["3"],
+	"theme": "Calcul littéral",
+	"domain": "Transformation",
+	"subdomain": "Identités remarquables",
+	"level": 10,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Développe et réduis :\n\n$$(x+{{n}})^2$$\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "x^2+{{eval:2*n}}x+{{eval:n^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Carré d'une somme** : $(a+b)^2=a^2+2ab+b^2$. Ici, $a=x$ et $b={{n}}$.",
+					"$$(x+{{n}})^2 = x^2 + 2 \\times x \\times {{n}} + {{n}}^2 = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Développe et réduis :\n\n$$(x-{{n}})^2$$\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "x^2-{{eval:2*n}}x+{{eval:n^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Carré d'une différence** : $(a-b)^2=a^2-2ab+b^2$. Ici, $a=x$ et $b={{n}}$.",
+					"$$(x-{{n}})^2 = x^2 - 2 \\times x \\times {{n}} + {{n}}^2 = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Développe et réduis :\n\n$$({{a}}x+{{b}})^2$$\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a^2}}x^2+{{eval:2*a*b}}x+{{eval:b^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Carré d'une somme** : $(a+b)^2=a^2+2ab+b^2$. Ici, $a={{a}}x$ et $b={{b}}$.",
+					"$({{a}}x)^2 = {{a}}^2 \\times x^2 = {{eval:a^2}}x^2$ : le carré porte sur ${{a}}$ **et** sur $x$.",
+					"$$({{a}}x+{{b}})^2 = ({{a}}x)^2 + 2 \\times {{a}}x \\times {{b}} + {{b}}^2 = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Développe et réduis :\n\n$$({{a}}x-{{b}})^2$$\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a^2}}x^2-{{eval:2*a*b}}x+{{eval:b^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Carré d'une différence** : $(a-b)^2=a^2-2ab+b^2$. Ici, $a={{a}}x$ et $b={{b}}$.",
+					"$({{a}}x)^2 = {{a}}^2 \\times x^2 = {{eval:a^2}}x^2$ : le carré porte sur ${{a}}$ **et** sur $x$.",
+					"$$({{a}}x-{{b}})^2 = ({{a}}x)^2 - 2 \\times {{a}}x \\times {{b}} + {{b}}^2 = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Développe et réduis :\n\n$${{if:t==0|({{a}}x+{{b}})^2|{{if:t==1|({{a}}x-{{b}})^2|({{a}}x-{{b}})({{a}}x+{{b}})}}}}$$\n\n$?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["a>=2 || t==2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t==0|{{eval:a^2}}x^2+{{eval:2*a*b}}x+{{eval:b^2}}|{{if:t==1|{{eval:a^2}}x^2-{{eval:2*a*b}}x+{{eval:b^2}}|{{eval:a^2}}x^2-{{eval:b^2}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Quelle identité ?** {{if:t==0|**Carré d'une somme** : $(a+b)^2=a^2+2ab+b^2$.|{{if:t==1|**Carré d'une différence** : $(a-b)^2=a^2-2ab+b^2$.|**Produit d'une somme par une différence** : $(a-b)(a+b)=a^2-b^2$.}}}} Ici, $a={{a}}x$ et $b={{b}}$.",
+					"$${{if:t==0|({{a}}x+{{b}})^2 = ({{a}}x)^2 + 2 \\times {{a}}x \\times {{b}} + {{b}}^2|{{if:t==1|({{a}}x-{{b}})^2 = ({{a}}x)^2 - 2 \\times {{a}}x \\times {{b}} + {{b}}^2|({{a}}x-{{b}})({{a}}x+{{b}}) = ({{a}}x)^2 - {{b}}^2}}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(x + 3)² = x² + 6x + 9",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3"
+			},
+			"answers": ["x^2+6x+9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : double produit oublié x² + 9",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3"
+			},
+			"answers": ["x^2+9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : double produit sans le 2 x² + 3x + 9",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3"
+			},
+			"answers": ["x^2+3x+9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(x − 5)² = x² − 10x + 25",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["x^2-10x+25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe du double produit x² + 10x + 25",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["x^2+10x+25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x² − 25",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["x^2-25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(2x + 5)² = 4x² + 20x + 25",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"answers": ["4x^2+20x+25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Ordre croissant 25 + 20x + 4x²",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"answers": ["25+20x+4x^2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (2x)² écrit 2x²",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"answers": ["2x^2+20x+25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : double produit sans le 2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"answers": ["4x^2+10x+25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(3x − 4)² = 9x² − 24x + 16",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["9x^2-24x+16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 9x² − 16",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["9x^2-16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : + b² devenu − 16",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["9x^2-24x-16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(2x − 5)(2x + 5) = 4x² − 25",
+			"variationIndex": 4,
+			"variables": {
+				"t": "2",
+				"a": "2",
+				"b": "5"
+			},
+			"answers": ["4x^2-25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : traité comme un carré",
+			"variationIndex": 4,
+			"variables": {
+				"t": "2",
+				"a": "2",
+				"b": "5"
+			},
+			"answers": ["4x^2-20x+25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(3x + 1)² = 9x² + 6x + 1",
+			"variationIndex": 4,
+			"variables": {
+				"t": "0",
+				"a": "3",
+				"b": "1"
+			},
+			"answers": ["9x^2+6x+1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Non réduit 9x² + 3x + 3x + 1",
+			"variationIndex": 4,
+			"variables": {
+				"t": "0",
+				"a": "3",
+				"b": "1"
+			},
+			"answers": ["9x^2+3x+3x+1"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	]
+}

@@ -1,5 +1,4 @@
 {
-	"id": "b48d72dd-e93b-4f5c-ac81-117ff1c2c79c",
 	"title": "Déterminer le signe d'une expression du second degré",
 	"grades": ["1_SPE"],
 	"theme": "Fonctions",
@@ -8,27 +7,9 @@
 	"level": 8,
 	"delay": 20,
 	"status": "published",
-	"shared": {
-		"choices": [
-			{
-				"content": "positif"
-			},
-			{
-				"content": "négatif"
-			},
-			{
-				"content": "son signe dépend de la valeur de $x$"
-			}
-		],
-		"statement": "Quel est le signe de cette expression ?\n\n$${{expression1}}$$",
-		"cleanCoefficients": true
-	},
-	"options": {
-		"shuffleChoices": false
-	},
 	"variations": [
 		{
-			"statement": "Quel est le signe de cette expression ?\n\n$${{expression1}}$$",
+			"statement": "Quel est le signe de cette expression ?\n\n$${{expr1}}$$\n\n```choix\nmelanger: non\n- strictement positif pour tout réel $x$\n- positif, et nul pour une seule valeur de $x$\n- strictement négatif pour tout réel $x$\n- négatif, et nul pour une seule valeur de $x$\n- de signe variable : il dépend de la valeur de $x$\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -43,7 +24,7 @@
 					"expression": "1..5"
 				},
 				{
-					"name": "expression1",
+					"name": "expr1",
 					"expression": "{{a}}(x{{eval:b;+}})^2{{eval:c;+}}"
 				}
 			],
@@ -53,27 +34,14 @@
 					"On ajoute ${{c}} > 0$ : ${{a}}(x{{eval:b;+}})^2{{eval:c;+}} \\ge {{c}} > 0$. L'expression est **strictement positive** pour tout $x$."
 				]
 			},
-			"correctChoiceIndex": ["0"],
-			"choices": [
+			"blanks": [
 				{
-					"content": "strictement positif pour tout réel $x$"
-				},
-				{
-					"content": "positif, et nul pour une seule valeur de $x$"
-				},
-				{
-					"content": "strictement négatif pour tout réel $x$"
-				},
-				{
-					"content": "négatif, et nul pour une seule valeur de $x$"
-				},
-				{
-					"content": "de signe variable : il dépend de la valeur de $x$"
+					"expectedAnswer": "0"
 				}
 			]
 		},
 		{
-			"statement": "Quel est le signe de cette expression ?\n\n$${{expression1}}$$",
+			"statement": "Quel est le signe de cette expression ?\n\n$${{expr1}}$$\n\n```choix\nmelanger: non\n- strictement positif pour tout réel $x$\n- positif, et nul pour une seule valeur de $x$\n- strictement négatif pour tout réel $x$\n- négatif, et nul pour une seule valeur de $x$\n- de signe variable : il dépend de la valeur de $x$\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -88,7 +56,7 @@
 					"expression": "-5..-1"
 				},
 				{
-					"name": "expression1",
+					"name": "expr1",
 					"expression": "{{a}}(x{{eval:b;+}})^2{{eval:c;+}}"
 				}
 			],
@@ -98,27 +66,14 @@
 					"On ajoute ${{c}} < 0$ : ${{a}}(x{{eval:b;+}})^2{{eval:c;+}} \\le {{c}} < 0$. L'expression est **strictement négative** pour tout $x$."
 				]
 			},
-			"correctChoiceIndex": ["2"],
-			"choices": [
+			"blanks": [
 				{
-					"content": "strictement positif pour tout réel $x$"
-				},
-				{
-					"content": "positif, et nul pour une seule valeur de $x$"
-				},
-				{
-					"content": "strictement négatif pour tout réel $x$"
-				},
-				{
-					"content": "négatif, et nul pour une seule valeur de $x$"
-				},
-				{
-					"content": "de signe variable : il dépend de la valeur de $x$"
+					"expectedAnswer": "2"
 				}
 			]
 		},
 		{
-			"statement": "Quel est le signe de cette expression ?\n\n$${{expression1}}$$",
+			"statement": "Quel est le signe de cette expression ?\n\n$${{expr1}}$$\n\n```choix\nmelanger: non\n- strictement positif pour tout réel $x$\n- positif, et nul pour une seule valeur de $x$\n- strictement négatif pour tout réel $x$\n- négatif, et nul pour une seule valeur de $x$\n- de signe variable : il dépend de la valeur de $x$\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -137,7 +92,7 @@
 					"expression": "{{eval:-(a)/abs(a)*k}}"
 				},
 				{
-					"name": "expression1",
+					"name": "expr1",
 					"expression": "{{a}}(x{{eval:b;+}})^2{{eval:c;+}}"
 				}
 			],
@@ -149,27 +104,14 @@
 					"L'expression change donc de signe : son signe dépend de la valeur de $x$."
 				]
 			},
-			"correctChoiceIndex": ["4"],
-			"choices": [
+			"blanks": [
 				{
-					"content": "strictement positif pour tout réel $x$"
-				},
-				{
-					"content": "positif, et nul pour une seule valeur de $x$"
-				},
-				{
-					"content": "strictement négatif pour tout réel $x$"
-				},
-				{
-					"content": "négatif, et nul pour une seule valeur de $x$"
-				},
-				{
-					"content": "de signe variable : il dépend de la valeur de $x$"
+					"expectedAnswer": "4"
 				}
 			]
 		},
 		{
-			"statement": "Quel est le signe de cette expression ?\n\n$${{expression1}}$$",
+			"statement": "Quel est le signe de cette expression ?\n\n$${{expr1}}$$\n\n```choix\nmelanger: non\n- strictement positif pour tout réel $x$\n- positif, et nul pour une seule valeur de $x$\n- strictement négatif pour tout réel $x$\n- négatif, et nul pour une seule valeur de $x$\n- de signe variable : il dépend de la valeur de $x$\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -180,37 +122,24 @@
 					"expression": "1..5;±"
 				},
 				{
-					"name": "expression1",
+					"name": "expr1",
 					"expression": "{{a}}(x{{eval:b;+}})^2"
 				}
 			],
-			"correctChoiceIndex": ["1"],
 			"correction": {
 				"steps": [
 					"Un carré est toujours positif ou nul et ${{a}} > 0$, donc ${{a}}(x{{eval:b;+}})^2 \\ge 0$.",
 					"Il est nul seulement quand $x{{eval:b;+}} = 0$, c'est-à-dire pour $x = {{eval:-b}}$. L'expression est **positive, et nulle pour $x={{eval:-b}}$**."
 				]
 			},
-			"choices": [
+			"blanks": [
 				{
-					"content": "strictement positif pour tout réel $x$"
-				},
-				{
-					"content": "positif, et nul pour une seule valeur de $x$"
-				},
-				{
-					"content": "strictement négatif pour tout réel $x$"
-				},
-				{
-					"content": "négatif, et nul pour une seule valeur de $x$"
-				},
-				{
-					"content": "de signe variable : il dépend de la valeur de $x$"
+					"expectedAnswer": "1"
 				}
 			]
 		},
 		{
-			"statement": "Quel est le signe de cette expression ?\n\n$${{expression1}}$$",
+			"statement": "Quel est le signe de cette expression ?\n\n$${{expr1}}$$\n\n```choix\nmelanger: non\n- strictement positif pour tout réel $x$\n- positif, et nul pour une seule valeur de $x$\n- strictement négatif pour tout réel $x$\n- négatif, et nul pour une seule valeur de $x$\n- de signe variable : il dépend de la valeur de $x$\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -221,36 +150,26 @@
 					"expression": "1..5;±"
 				},
 				{
-					"name": "expression1",
+					"name": "expr1",
 					"expression": "{{a}}(x{{eval:b;+}})^2"
 				}
 			],
-			"correctChoiceIndex": ["3"],
 			"correction": {
 				"steps": [
 					"Un carré est toujours positif ou nul et ${{a}} < 0$, donc ${{a}}(x{{eval:b;+}})^2 \\le 0$.",
 					"Il est nul seulement quand $x{{eval:b;+}} = 0$, c'est-à-dire pour $x = {{eval:-b}}$. L'expression est **négative, et nulle pour $x={{eval:-b}}$**."
 				]
 			},
-			"choices": [
+			"blanks": [
 				{
-					"content": "strictement positif pour tout réel $x$"
-				},
-				{
-					"content": "positif, et nul pour une seule valeur de $x$"
-				},
-				{
-					"content": "strictement négatif pour tout réel $x$"
-				},
-				{
-					"content": "négatif, et nul pour une seule valeur de $x$"
-				},
-				{
-					"content": "de signe variable : il dépend de la valeur de $x$"
+					"expectedAnswer": "3"
 				}
 			]
 		}
 	],
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"testSpecs": [
 		{
 			"description": "a>0, c>0 : strictement positif",
@@ -260,10 +179,10 @@
 				"b": "5",
 				"c": "5"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "a>0, c>0 : « positif et nul » refusé",
@@ -273,10 +192,10 @@
 				"b": "5",
 				"c": "5"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "a<0, c<0 : strictement négatif",
@@ -286,10 +205,10 @@
 				"b": "5",
 				"c": "-1"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "a<0, c<0 : dépend de x refusé",
@@ -299,10 +218,10 @@
 				"b": "5",
 				"c": "-1"
 			},
-			"selectedChoices": [4],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["4"]
 		},
 		{
 			"description": "a>0, c<0 : dépend de x",
@@ -313,10 +232,10 @@
 				"c": "-2",
 				"k": "2"
 			},
-			"selectedChoices": [4],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["4"]
 		},
 		{
 			"description": "a<0, c>0 : strictement positif refusé",
@@ -327,10 +246,10 @@
 				"c": "3",
 				"k": "3"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "c=0, a>0 : positif et nul en -b",
@@ -339,10 +258,10 @@
 				"a": "2",
 				"b": "3"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "c=0, a>0 : strictement positif refusé (nul en -b)",
@@ -351,10 +270,10 @@
 				"a": "2",
 				"b": "3"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "c=0, a<0 : négatif et nul en -b",
@@ -363,10 +282,10 @@
 				"a": "-3",
 				"b": "-1"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["3"]
 		},
 		{
 			"description": "c=0, a<0 : strictement négatif refusé",
@@ -375,10 +294,10 @@
 				"a": "-3",
 				"b": "-1"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v2 a=-1 (−(x−2)²+4) : signe variable",
@@ -388,10 +307,10 @@
 				"b": "-2",
 				"k": "4"
 			},
-			"selectedChoices": [4],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["4"]
 		},
 		{
 			"description": "v2 a=-1 : « strictement négatif » refusé",
@@ -401,10 +320,10 @@
 				"b": "-2",
 				"k": "4"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v3 a=1 ((x−1)²) : positif, nul en 1",
@@ -413,10 +332,10 @@
 				"a": "1",
 				"b": "-1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v3 a=1 : « strictement positif » refusé",
@@ -425,10 +344,10 @@
 				"a": "1",
 				"b": "-1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v4 a=-1 (−(x+1)²) : négatif, nul en −1",
@@ -437,10 +356,10 @@
 				"a": "-1",
 				"b": "1"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["3"]
 		}
 	]
 }

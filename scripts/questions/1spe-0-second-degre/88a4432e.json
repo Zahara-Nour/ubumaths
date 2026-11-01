@@ -1,0 +1,207 @@
+{
+	"id": "88a4432e-f4a6-4109-833d-9640cb0d225f",
+	"title": "Produit des racines",
+	"description": "x₁x₂ = c/a sans calculer les racines",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"subdomain": "Racines",
+	"level": 7,
+	"delay": 40,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"statement": "Le polynôme $P(x)={{eval:ax^2+bx+c}}$ a deux racines $x_1$ et $x_2$. Sans les calculer, détermine leur produit.\n\n$x_1\\times x_2=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["b^2-4*a*c > 0"],
+			"correction": {
+				"steps": [
+					"Le discriminant vaut $\\Delta={{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}}={{eval:b^2-4*a*c}}>0$ : les deux racines existent.",
+					"Quand un trinôme $ax^2+bx+c$ a deux racines, $x_1\\times x_2=\\dfrac{c}{a}$.",
+					"Ici $a=1$ : $x_1\\times x_2=c={{c}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c/a}}"
+				}
+			],
+			"statement": "Le polynôme $P(x)={{eval:ax^2+bx+c}}$ a deux racines $x_1$ et $x_2$. Sans les calculer, détermine leur produit.\n\n$x_1\\times x_2=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["b^2-4*a*c > 0"],
+			"correction": {
+				"steps": [
+					"Le discriminant vaut $\\Delta={{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}}={{eval:b^2-4*a*c}}>0$ : les deux racines existent.",
+					"Quand un trinôme $ax^2+bx+c$ a deux racines, $x_1\\times x_2=\\dfrac{c}{a}$.",
+					"$$x_1\\times x_2=\\dfrac{c}{a}={{if:a<0 && c<0|\\dfrac{ {{eval:-c}} }{ {{eval:-a}} }|\\dfrac{ {{c}} }{ {{a}} }}}{{if:a<0 && c>0|={{eval:c/a}}|{{if:gcd(c,a)!=1|={{eval:c/a}}|}}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "-5",
+				"c": "3"
+			},
+			"description": "x^2-5x+3 : P=3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"b": "-5",
+				"c": "3"
+			},
+			"description": "somme donnée pour le produit",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"b": "-5",
+				"c": "3"
+			},
+			"description": "P = −c (signe)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-7"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "3",
+				"c": "-7"
+			},
+			"description": "x^2+3x-7 : P=−7",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{3}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-7",
+				"c": "3"
+			},
+			"description": "2x^2-7x+3 : P=3/2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1{,}5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-7",
+				"c": "3"
+			},
+			"description": "décimal exact 1,5",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-7",
+				"c": "3"
+			},
+			"description": "c sans diviser par a",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-\\frac{9}{4}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-4",
+				"b": "6",
+				"c": "9"
+			},
+			"description": "-4x^2+6x+9 : P=−9/4",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-\\frac{18}{8}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variables": {
+				"a": "-4",
+				"b": "6",
+				"c": "9"
+			},
+			"description": "fraction non réduite 18/8",
+			"variationIndex": 1
+		}
+	]
+}

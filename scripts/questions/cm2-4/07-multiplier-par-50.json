@@ -1,0 +1,168 @@
+{
+	"title": "Multiplier un nombre décimal par $50$",
+	"description": "Multiplier par 100, puis prendre la moitié : 50 × 12,4 ; 50 × 1,24",
+	"grades": ["CM2"],
+	"theme": "Décimaux",
+	"domain": "Multiplier",
+	"subdomain": "Produit particulier",
+	"level": 7,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$$50\\times {{eval:t/10^q;d}}=?$$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1"
+				},
+				{
+					"name": "t",
+					"expression": "11..198"
+				}
+			],
+			"conditions": ["mod(t,2)==0", "mod(t,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:50*t/10^q;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Multiplier par $50$, c'est multiplier par $100$, puis prendre la moitié.",
+					"$${{eval:t/10^q;d}}\\times 100=\\textcolor{{{color:primary.0}}}{{{eval:100*t/10^q;d}}}$$",
+					"Moitié de ${{eval:100*t/10^q;d}}$ : $\\textcolor{{{color:primary.1}}}{{{solution}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$$50\\times {{eval:t/10^q;d}}=?$$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2"
+				},
+				{
+					"name": "t",
+					"expression": "12..998"
+				}
+			],
+			"conditions": ["mod(t,2)==0", "mod(t,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:50*t/10^q;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Multiplier par $50$, c'est multiplier par $100$, puis prendre la moitié.",
+					"$${{eval:t/10^q;d}}\\times 100=\\textcolor{{{color:primary.0}}}{{{eval:100*t/10^q;d}}}$$",
+					"Moitié de ${{eval:100*t/10^q;d}}$ : $\\textcolor{{{color:primary.1}}}{{{solution}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "50 × 12,4 = 620",
+			"variationIndex": 0,
+			"variables": {
+				"q": "1",
+				"t": "124"
+			},
+			"answers": ["620"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 50 × 12,4 → 1 240 (× 100 sans la moitié)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "1",
+				"t": "124"
+			},
+			"answers": ["1 240"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 50 × 12,4 → 62 (× 10 au lieu de × 100)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "1",
+				"t": "124"
+			},
+			"answers": ["62"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 50 × 19,8 = 990",
+			"variationIndex": 0,
+			"variables": {
+				"q": "1",
+				"t": "198"
+			},
+			"answers": ["990"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "50 × 1,24 = 62",
+			"variationIndex": 1,
+			"variables": {
+				"q": "2",
+				"t": "124"
+			},
+			"answers": ["62"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 50 × 1,24 → 6,2",
+			"variationIndex": 1,
+			"variables": {
+				"q": "2",
+				"t": "124"
+			},
+			"answers": ["6,2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "50 × 0,86 = 43",
+			"variationIndex": 1,
+			"variables": {
+				"q": "2",
+				"t": "86"
+			},
+			"answers": ["43"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "50 × 0,12 = 6",
+			"variationIndex": 1,
+			"variables": {
+				"q": "2",
+				"t": "12"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

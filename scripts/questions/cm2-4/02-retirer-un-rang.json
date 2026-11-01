@@ -1,0 +1,257 @@
+{
+	"title": "Retirer des unités d'un seul rang",
+	"description": "Sans retenue : des unités (8,694 − 6) ; des dizaines, centaines, milliers (5 846,3 − 400)",
+	"grades": ["CM2"],
+	"theme": "Décimaux",
+	"domain": "Soustraire",
+	"subdomain": "Différence",
+	"level": 6,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$${{eval:N/1000;d}}-{{eval:k*10^j/1000;d}}=?$$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..49"
+				},
+				{
+					"name": "d1",
+					"expression": "0..9"
+				},
+				{
+					"name": "d2",
+					"expression": "0..9"
+				},
+				{
+					"name": "d3",
+					"expression": "0..9"
+				},
+				{
+					"name": "N",
+					"expression": "eval:1000*w+100*d1+10*d2+d3"
+				},
+				{
+					"name": "j",
+					"expression": "3"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "eval:mod(floor(N/10^j),10)"
+				},
+				{
+					"name": "c2",
+					"expression": "eval:mod(floor(N/10^(j+1)),10)"
+				},
+				{
+					"name": "R",
+					"expression": "eval:N-k*10^j"
+				}
+			],
+			"conditions": ["c>=k", "j==3||N>=10^j", "mod(N,100)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:R/1000;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:j==3||${{eval:k*10^j/1000;d}}$, c'est $\\textcolor{{{color:primary.0}}}{{{k}}}$ {{if:j==0|millième|{{if:j==1|centième|{{if:j==2|dixième|{{if:j==3|unité|{{if:j==4|dizaine|{{if:j==5|centaine|{{if:j==6|millier|dizaine de mille}}}}}}}}}}}}}}{{if:k>1|s|}}. }}On regarde le chiffre des {{if:j==0|millièmes|{{if:j==1|centièmes|{{if:j==2|dixièmes|{{if:j==3|unités|{{if:j==4|dizaines|{{if:j==5|centaines|{{if:j==6|milliers|dizaines de mille}}}}}}}}}}}}}} de ${{eval:N/1000;d}}$ : c'est ${{c}}$.",
+					"${{c}}-\\textcolor{{{color:primary.0}}}{{{k}}}={{eval:c-k}}$, sans emprunt ; les autres chiffres ne changent pas.",
+					"$${{eval:N/1000;d}}-{{eval:k*10^j/1000;d}}=\\textcolor{{{color:primary.1}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$${{eval:N/1000;d}}-{{eval:k*10^j/1000;d}}=?$$",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "3..4"
+				},
+				{
+					"name": "w",
+					"expression": "{{eval:10^(h-1)}}..{{eval:10^h-1}}"
+				},
+				{
+					"name": "d1",
+					"expression": "1..9"
+				},
+				{
+					"name": "N",
+					"expression": "eval:1000*w+100*d1"
+				},
+				{
+					"name": "j",
+					"expression": "4..6"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "eval:mod(floor(N/10^j),10)"
+				},
+				{
+					"name": "c2",
+					"expression": "eval:mod(floor(N/10^(j+1)),10)"
+				},
+				{
+					"name": "R",
+					"expression": "eval:N-k*10^j"
+				}
+			],
+			"conditions": ["c>=k", "j==3||N>=10^j"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:R/1000;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:j==3||${{eval:k*10^j/1000;d}}$, c'est $\\textcolor{{{color:primary.0}}}{{{k}}}$ {{if:j==0|millième|{{if:j==1|centième|{{if:j==2|dixième|{{if:j==3|unité|{{if:j==4|dizaine|{{if:j==5|centaine|{{if:j==6|millier|dizaine de mille}}}}}}}}}}}}}}{{if:k>1|s|}}. }}On regarde le chiffre des {{if:j==0|millièmes|{{if:j==1|centièmes|{{if:j==2|dixièmes|{{if:j==3|unités|{{if:j==4|dizaines|{{if:j==5|centaines|{{if:j==6|milliers|dizaines de mille}}}}}}}}}}}}}} de ${{eval:N/1000;d}}$ : c'est ${{c}}$.",
+					"${{c}}-\\textcolor{{{color:primary.0}}}{{{k}}}={{eval:c-k}}$, sans emprunt ; les autres chiffres ne changent pas.",
+					"$${{eval:N/1000;d}}-{{eval:k*10^j/1000;d}}=\\textcolor{{{color:primary.1}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "8,694 − 6 = 2,694",
+			"variationIndex": 0,
+			"variables": {
+				"w": "8",
+				"d1": "6",
+				"d2": "9",
+				"d3": "4",
+				"j": "3",
+				"k": "6"
+			},
+			"answers": ["2,694"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8,694 − 6 → 8,094 (retiré aux dixièmes)",
+			"variationIndex": 0,
+			"variables": {
+				"w": "8",
+				"d1": "6",
+				"d2": "9",
+				"d3": "4",
+				"j": "3",
+				"k": "6"
+			},
+			"answers": ["8,094"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 8,694 − 6 → 8,688 (retiré aux millièmes)",
+			"variationIndex": 0,
+			"variables": {
+				"w": "8",
+				"d1": "6",
+				"d2": "9",
+				"d3": "4",
+				"j": "3",
+				"k": "6"
+			},
+			"answers": ["8,688"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 9,05 − 9 = 0,05",
+			"variationIndex": 0,
+			"variables": {
+				"w": "9",
+				"d1": "0",
+				"d2": "5",
+				"d3": "0",
+				"j": "3",
+				"k": "9"
+			},
+			"answers": ["0,05"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "47,35 − 3 = 44,35",
+			"variationIndex": 0,
+			"variables": {
+				"w": "47",
+				"d1": "3",
+				"d2": "5",
+				"d3": "0",
+				"j": "3",
+				"k": "3"
+			},
+			"answers": ["44,35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "5 846,3 − 400 = 5 446,3",
+			"variationIndex": 1,
+			"variables": {
+				"h": "4",
+				"w": "5846",
+				"d1": "3",
+				"j": "5",
+				"k": "4"
+			},
+			"answers": ["5 446,3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 846,3 − 400 → 5 842,3 (mauvais rang)",
+			"variationIndex": 1,
+			"variables": {
+				"h": "4",
+				"w": "5846",
+				"d1": "3",
+				"j": "5",
+				"k": "4"
+			},
+			"answers": ["5 842,3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 9 999,9 − 9 000 = 999,9",
+			"variationIndex": 1,
+			"variables": {
+				"h": "4",
+				"w": "9999",
+				"d1": "9",
+				"j": "6",
+				"k": "9"
+			},
+			"answers": ["999,9"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

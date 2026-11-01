@@ -1,0 +1,201 @@
+{
+	"title": "Décomposer en facteurs premiers",
+	"description": "Décomposer un entier en produit de facteurs premiers : 60 = 2² × 3 × 5 ; 306 = 2 × 3² × 17 ; reconnaître la décomposition parmi 4 × 15, 2 × 30, 2² × 15",
+	"grades": ["3"],
+	"theme": "Entiers",
+	"domain": "Nombres premiers",
+	"subdomain": "Décomposition",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Décompose ce nombre en produit de facteurs premiers.\n\n$${{eval:2^a*3^b*5^c}} = 2^{?} \\times 3^{?} \\times 5^{?}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "1..2"
+				},
+				{
+					"name": "c",
+					"expression": "1..2"
+				}
+			],
+			"conditions": ["2^a*3^b*5^c<=1000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				},
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Facteurs premiers.** On divise par $2$ tant que c'est possible, puis par $3$, par $5$, $7$… : à la fin, il ne reste que des nombres premiers.",
+					"On divise ${{a}}$ fois par $2$ : ${{eval:2^a*3^b*5^c}} = 2^{{{a}}} \\times {{eval:3^b*5^c}}$ ; puis ${{b}}$ fois par $3$ : ${{eval:3^b*5^c}} = 3^{{{b}}} \\times {{eval:5^c}}$ ; il reste ${{eval:5^c}} = 5^{{{c}}}$.",
+					"$${{eval:2^a*3^b*5^c}} = \\textcolor{{{color:primary.0}}}{2^{{{a}}} \\times 3^{{{b}}} \\times 5^{{{c}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Décompose ce nombre en produit de facteurs premiers.\n\n$${{eval:2^a*3^b*p}} = 2^{?} \\times 3^{?} \\times ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "1..2"
+				},
+				{
+					"name": "p",
+					"expression": "7|11|13|17|19|23|29|31|37"
+				}
+			],
+			"conditions": ["2^a*3^b*p<=3000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				},
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Facteurs premiers.** On divise par $2$ tant que c'est possible, puis par $3$, par $5$, $7$… : à la fin, il ne reste que des nombres premiers.",
+					"On divise ${{a}}$ fois par $2$ : ${{eval:2^a*3^b*p}} = 2^{{{a}}} \\times {{eval:3^b*p}}$ ; puis ${{b}}$ fois par $3$ : ${{eval:3^b*p}} = 3^{{{b}}} \\times {{p}}$.",
+					"${{p}}$ n'est divisible par aucun nombre premier plus petit que lui : il est premier.",
+					"$${{eval:2^a*3^b*p}} = \\textcolor{{{color:primary.0}}}{2^{{{a}}} \\times 3^{{{b}}} \\times {{p}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Quelle est la décomposition de ${{eval:2^a*3*q}}$ en produit de facteurs premiers ?\n\n```choix\n- $2^{{{a}}} \\times 3 \\times {{q}}$\n- $2^{{{a}}} \\times {{eval:3*q}}$\n- ${{eval:2^a}} \\times {{eval:3*q}}$\n- $2 \\times {{eval:2^a*3*q/2}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..3"
+				},
+				{
+					"name": "q",
+					"expression": "5|7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Facteurs premiers.** On divise par $2$ tant que c'est possible, puis par $3$, par $5$, $7$… : à la fin, il ne reste que des nombres premiers.",
+					"${{eval:3*q}} = 3 \\times {{q}}$ et ${{eval:2^a}} = 2^{{{a}}}$ ne sont pas premiers ; $2$, $3$ et ${{q}}$ le sont.",
+					"$${{eval:2^a*3*q}} = \\textcolor{{{color:primary.0}}}{2^{{{a}}} \\times 3 \\times {{q}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "60 = 2² × 3 × 5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "1"
+			},
+			"answers": ["2", "1", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2³ (60 ÷ 2 ÷ 2 ÷ 2 tenté)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "1"
+			},
+			"answers": ["3", "1", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "306 = 2 × 3² × 17",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"p": "17"
+			},
+			"answers": ["1", "2", "17"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 51 au lieu de 17 (3 oublié)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"p": "17"
+			},
+			"answers": ["1", "1", "51"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "60 : 2² × 3 × 5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"q": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2² × 15",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"q": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4 × 15",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"q": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

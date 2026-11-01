@@ -39,7 +39,6 @@ describe('toTemplatePutBody', () => {
 			exerciseInstruction: null,
 			options: null,
 			subdomain: null,
-			multipleAnswers: null,
 			testSpecs: null
 		});
 	});

@@ -13,9 +13,9 @@ import {
 	isKnownForSrs,
 	pointsOfStatus,
 	roundToHalfPoint,
-	statusFromBlankStatuses,
-	statusFromChoices
+	statusFromBlankStatuses
 } from '../grading';
+import { statusFromChoices } from '../choices';
 import type { SubmittedAnswer } from '../grading';
 import type { InstanceBlank, QuestionInstance } from '../types';
 import type { ResolvedMarkdown } from '$lib/ubumark';
@@ -38,27 +38,19 @@ function blanksInstance(
 	};
 }
 
-function choicesInstance(correct: boolean[], order: number[], multipleAnswers = true) {
-	return {
-		templateId: 'grading-qcm',
-		statement: 'Choisis' as ResolvedMarkdown,
-		choices: correct.map((isCorrect, i) => ({
-			content: `c${i}` as ResolvedMarkdown,
-			isCorrect
-		})),
-		// Ordre AFFICHÉ : position → indice d'origine
-		shuffledChoices: order.map((originalIndex) => ({
-			content: `c${originalIndex}` as ResolvedMarkdown,
-			originalIndex
-		})),
-		correctChoiceIndex: correct.flatMap((c, i) => (c ? [String(i)] : [])),
-		multipleAnswers,
-		grades: ['6'],
-		theme: 'Test',
-		domain: 'Test',
-		level: 1,
-		generatedAt: new Date().toISOString()
-	} satisfies QuestionInstance;
+/** Case choix (bloc ```choix) : bonne(s) réponse(s) en indices d'origine */
+function choiceInstance(expectedAnswer: string, count: number, multiple = true): QuestionInstance {
+	return blanksInstance([
+		{
+			expectedAnswer,
+			type: 'choice',
+			choice: {
+				choices: Array.from({ length: count }, (_, i) => `c${i}`),
+				order: Array.from({ length: count }, (_, i) => i),
+				multiple
+			}
+		}
+	]);
 }
 
 const math = (expectedAnswer: string): InstanceBlank => ({ expectedAnswer, type: 'math' });
@@ -108,7 +100,7 @@ describe('A1-A3 : statut d’une question à cases, depuis le statut de chaque c
 	});
 });
 
-describe('A4 : QCM', () => {
+describe('A4 : case choix (barème de l’ancien QCM)', () => {
 	it('exactement les bonnes → 1', () => {
 		expect(statusFromChoices([0, 2], [2, 0])).toBe('correct');
 	});
@@ -258,32 +250,24 @@ describe('gradeQuestion : corrige une vraie instance', () => {
 		expect(gradeQuestion(instance, { values: ['9', '7'] }).points).toBe(0);
 	});
 
-	it('QCM : les positions AFFICHÉES sont ramenées aux indices d’origine', () => {
-		// Affichage : [c2, c0, c1] ; bonnes : c0 et c2 → positions 0 et 1
-		const instance = choicesInstance([true, false, true], [2, 0, 1]);
-		expect(gradeQuestion(instance, { choices: [0, 1] })).toMatchObject({
+	it('case choix seule : juste 1, partielle ½, un mauvais choix 0', () => {
+		const instance = choiceInstance('0;2', 3);
+		expect(gradeQuestion(instance, { values: ['0;2'] })).toMatchObject({
 			status: 'correct',
 			points: 1
 		});
-		expect(gradeQuestion(instance, { choices: [1] })).toMatchObject({
+		expect(gradeQuestion(instance, { values: ['0'] })).toMatchObject({
 			status: 'unoptimal_form',
 			points: 0.5
 		});
-		expect(gradeQuestion(instance, { choices: [1, 2] })).toMatchObject({
+		expect(gradeQuestion(instance, { values: ['0;1'] })).toMatchObject({
 			status: 'incorrect',
 			points: 0
 		});
 	});
 
-	it('QCM : la réponse rendue est en indices d’ORIGINE (ceux que lit la copie)', () => {
-		const instance = choicesInstance([true, false, true], [2, 0, 1]);
-		expect(gradeQuestion(instance, { choices: [0, 1] }).choiceIndexes).toEqual([2, 0]);
-		expect(gradeQuestion(instance, { choices: [2] }).choiceIndexes).toEqual([1]);
-	});
-
-	it('QCM : position hors bornes → 0', () => {
-		const instance = choicesInstance([true, false], [0, 1], false);
-		expect(gradeQuestion(instance, { choices: [5] }).points).toBe(0);
+	it('case choix : indice hors bornes → 0', () => {
+		expect(gradeQuestion(choiceInstance('0', 2, false), { values: ['5'] }).points).toBe(0);
 	});
 });
 
@@ -305,10 +289,8 @@ describe('Q40 (choix a de David) : le ½ point ne vaut « Bien » pour le SRS qu
 		expect(isKnownForSrs(verdict)).toBe(false);
 	});
 
-	it('QCM coché partiellement, sans erreur : ½ point, « À revoir »', () => {
-		const verdict = gradeQuestion(choicesInstance([true, false, true], [2, 0, 1]), {
-			choices: [1]
-		});
+	it('case choix cochée partiellement, sans erreur : ½ point, « À revoir »', () => {
+		const verdict = gradeQuestion(choiceInstance('0;2', 3), { values: ['2'] });
 		expect(verdict).toMatchObject({ points: 0.5, partial: true });
 		expect(isKnownForSrs(verdict)).toBe(false);
 	});

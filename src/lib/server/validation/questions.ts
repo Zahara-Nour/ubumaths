@@ -2,7 +2,7 @@
  * Questions validation schemas
  *
  * Building block schemas (displayOptionsSchema, variableSchema, correctionSchema,
- * choiceSchema, blankSchema, etc.) are imported from the single source of truth:
+ * blankSchema, etc.) are imported from the single source of truth:
  * $lib/questions/template-schema.ts
  */
 
@@ -14,22 +14,22 @@ import {
 	correctionSchema,
 	displayOptionsSchema,
 	variableSchema,
-	choiceSchema,
 	blankSchema,
 	blankDefaultsSchema,
 	optionsSchema,
-	testSpecSchema
+	testSpecSchema,
+	QCM_RETIRED_MESSAGE,
+	retiredQcmFieldSchema
 } from '$lib/questions/template-schema';
 import { refineAssumptionCollisions } from '$lib/questions/answer-assumptions';
 import { genericFunctionNamesSchema } from '$lib/questions/generic-functions';
 import { capitalPairsSchema } from '$lib/questions/capital-pairs';
 
-// Re-export building blocks for downstream consumers (migration-review.ts, index.ts)
+// Re-export building blocks for downstream consumers (index.ts)
 export {
 	displayOptionsSchema,
 	variableSchema,
 	correctionSchema,
-	choiceSchema,
 	blankSchema,
 	blankDefaultsSchema,
 	optionsSchema,
@@ -39,9 +39,11 @@ export {
 } from '$lib/questions/template-schema';
 
 /**
- * Question types
+ * Question types (le QCM est une case choix depuis l'ADR 0033 : plus de `multiple_choice`)
  */
-export const questionTypeSchema = z.enum(['multiple_choice', 'fill_in_blanks', 'course_card']);
+export const questionTypeSchema = z.enum(['fill_in_blanks', 'course_card'], {
+	error: `type inconnu (« À trous » ou « Carte de cours ») ; ${QCM_RETIRED_MESSAGE}`
+});
 
 /**
  * Variation schema for question templates
@@ -49,11 +51,11 @@ export const questionTypeSchema = z.enum(['multiple_choice', 'fill_in_blanks', '
 const variationSchema = z.object({
 	statement: z.string().min(1, "L'énoncé est requis"),
 	variables: z.array(variableSchema).optional(),
-	correctChoiceIndex: z.union([z.string(), z.array(z.string())]).optional(),
+	correctChoiceIndex: retiredQcmFieldSchema,
 	correction: correctionSchema.optional().nullable(),
 	blanks: z.array(blankSchema).optional(),
 	blankDefaults: blankDefaultsSchema.optional(),
-	choices: z.array(choiceSchema).optional(),
+	choices: retiredQcmFieldSchema,
 	requiredForm: requiredFormSchema.optional(),
 	validationRules: z.array(validationRuleSchema).optional(),
 	answerFormats: z.record(z.string(), z.string()).optional(),
@@ -83,7 +85,7 @@ const questionTemplateFieldsSchema = z.object({
 	level: z.number().int().nonnegative('Le niveau doit être >= 0'),
 	status: z.enum(['draft', 'published']).default('published'),
 	delay: z.number().int().nonnegative().optional().nullable(),
-	multipleAnswers: z.boolean().optional().nullable(),
+	multipleAnswers: retiredQcmFieldSchema,
 	testSpecs: z.array(testSpecSchema).optional().nullable()
 });
 
@@ -133,6 +135,16 @@ function refineSharedCapitalPairs(data: { shared?: unknown }, ctx: z.RefinementC
 	});
 }
 
+/** `shared.choices` / `shared.correctChoiceIndex` : champs du QCM retirés (ADR 0033) */
+function refineSharedRetiredQcm(data: { shared?: unknown }, ctx: z.RefinementCtx): void {
+	const shared = data.shared;
+	if (typeof shared !== 'object' || shared === null) return;
+	for (const key of ['choices', 'correctChoiceIndex']) {
+		if (key in shared)
+			ctx.addIssue({ code: 'custom', message: QCM_RETIRED_MESSAGE, path: ['shared', key] });
+	}
+}
+
 /** Contrôles croisés communs à la création et à la mise à jour */
 function refineTemplate(
 	data: Parameters<typeof refineAssumptionCollisions>[0] & { shared?: unknown },
@@ -142,6 +154,7 @@ function refineTemplate(
 	refineSharedGenericFunctions(data, ctx);
 	refineSharedCleanCoefficients(data, ctx);
 	refineSharedCapitalPairs(data, ctx);
+	refineSharedRetiredQcm(data, ctx);
 }
 
 /**
@@ -236,7 +249,6 @@ export const questionTemplateResponseSchema = z.object({
 	level: z.number().int().nonnegative(),
 	status: z.enum(['draft', 'published']),
 	delay: z.number().int().nonnegative().nullable().optional(),
-	multiple_answers: z.boolean().nullable().optional(),
 	created_by: z.string().uuid(),
 	created_at: z.string(),
 	updated_at: z.string()

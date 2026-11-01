@@ -1,0 +1,179 @@
+{
+	"title": "Aire d'un disque : valeur exacte",
+	"description": "Donner l'aire exacte d'un disque en fonction de π, à partir du rayon (3 cm : 9π cm²) ou du diamètre",
+	"grades": ["5"],
+	"theme": "Grandeurs",
+	"domain": "Aires",
+	"subdomain": "Aire d'un disque",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"products": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Donne la valeur **exacte** de l'aire d'un disque de rayon ${{r}}~\\unit{cm}$ (en fonction de $\\pi$).\n\n$?~\\unit{cm^2}$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r^2}}\\pi"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Aire d'un disque.** $\\text{Aire} = \\pi \\times \\text{rayon} \\times \\text{rayon} = \\pi r^2$. Le rayon est la moitié du diamètre.",
+					"$\\pi \\times {{r}} \\times {{r}} = \\textcolor{{{color:primary.0}}}{{{eval:r^2}}\\pi~\\unit{cm^2}}$."
+				]
+			}
+		},
+		{
+			"statement": "Donne la valeur **exacte** de l'aire d'un disque de diamètre ${{d}}~\\unit{cm}$ (en fonction de $\\pi$).\n\n$?~\\unit{cm^2}$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..10"
+				},
+				{
+					"name": "d",
+					"expression": "eval:2*r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r^2}}\\pi"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Aire d'un disque.** $\\text{Aire} = \\pi \\times \\text{rayon} \\times \\text{rayon} = \\pi r^2$. Le rayon est la moitié du diamètre.",
+					"Le rayon est ${{d}}~\\unit{cm} \\div 2 = {{r}}~\\unit{cm}$.",
+					"$\\pi \\times {{r}} \\times {{r}} = \\textcolor{{{color:primary.0}}}{{{eval:r^2}}\\pi~\\unit{cm^2}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Rayon 3 : 9π",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3"
+			},
+			"answers": ["9\\pi"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6π (périmètre)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3"
+			},
+			"answers": ["6\\pi"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 9 (π oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "9 × π accepté",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3"
+			},
+			"answers": ["9\\times\\pi"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "π × 9 accepté",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3"
+			},
+			"answers": ["\\pi\\times9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Valeur approchée 28,26 refusée",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3"
+			},
+			"answers": ["28,26"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3²π : calcul pas fini",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3"
+			},
+			"answers": ["3^2\\pi"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Diamètre 10 : 25π",
+			"variationIndex": 1,
+			"variables": {
+				"r": "5",
+				"d": "10"
+			},
+			"answers": ["25\\pi"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 100π (diamètre au carré)",
+			"variationIndex": 1,
+			"variables": {
+				"r": "5",
+				"d": "10"
+			},
+			"answers": ["100\\pi"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 10π",
+			"variationIndex": 1,
+			"variables": {
+				"r": "5",
+				"d": "10"
+			},
+			"answers": ["10\\pi"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

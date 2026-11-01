@@ -1,0 +1,284 @@
+{
+	"title": "Intercaler un nombre décimal",
+	"description": "Écrire un décimal strictement compris entre deux décimaux (dixièmes consécutifs, centièmes consécutifs, 5,3 et 5,31) ; toute réponse comprise est juste",
+	"grades": ["6"],
+	"theme": "Décimaux",
+	"domain": "Apprivoiser",
+	"subdomain": "Encadrer",
+	"level": 5,
+	"delay": 20,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris un nombre décimal compris entre ${{lo}}$ et ${{hi}}$.\n\n$${{lo}} < ? < {{hi}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..20"
+				},
+				{
+					"name": "b",
+					"expression": "0..9"
+				},
+				{
+					"name": "lo",
+					"expression": "eval:a+b/10;d"
+				},
+				{
+					"name": "hi",
+					"expression": "eval:a+(b+1)/10;d"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b/10+0.05;d}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "range",
+							"min": "{{lo}}",
+							"max": "{{hi}}",
+							"inclusive": false
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Intercaler.** On écrit les deux nombres avec un chiffre de plus après la virgule : il apparaît de la place entre eux.",
+					"${{lo}} = {{a}}.{{b}}0$ et ${{hi}} = {{if:b==9|{{eval:a+1}}.00|{{a}}.{{eval:b+1}}0}}$ : tout nombre de centièmes entre ${{b}}0$ et ${{eval:10*(b+1)}}$ convient, par exemple $\\textcolor{{{color:primary.0}}}{{{solution}}}$ (mais aussi ${{eval:a+b/10+0.01;d}}$, ${{eval:a+b/10+0.08;d}}$…)."
+				]
+			}
+		},
+		{
+			"statement": "Écris un nombre décimal compris entre ${{lo}}$ et ${{hi}}$.\n\n$${{lo}} < ? < {{hi}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..20"
+				},
+				{
+					"name": "B",
+					"expression": "1..98"
+				},
+				{
+					"name": "lo",
+					"expression": "eval:a+B/100;d"
+				},
+				{
+					"name": "hi",
+					"expression": "eval:a+(B+1)/100;d"
+				}
+			],
+			"conditions": ["mod(B,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+B/100+0.005;d}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "range",
+							"min": "{{lo}}",
+							"max": "{{hi}}",
+							"inclusive": false
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Intercaler.** On écrit les deux nombres avec un chiffre de plus après la virgule : il apparaît de la place entre eux.",
+					"${{lo}} = {{a}}.{{if:B<10|0|}}{{B}}0$ et ${{hi}} = {{a}}.{{if:B<9|0|}}{{eval:B+1}}0$ : par exemple $\\textcolor{{{color:primary.0}}}{{{solution}}}$ (mais aussi ${{eval:a+B/100+0.001;d}}$, ${{eval:a+B/100+0.009;d}}$…)."
+				]
+			}
+		},
+		{
+			"statement": "Écris un nombre décimal compris entre ${{lo}}$ et ${{hi}}$.\n\n$${{lo}} < ? < {{hi}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..20"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "lo",
+					"expression": "eval:a+b/10;d"
+				},
+				{
+					"name": "hi",
+					"expression": "eval:a+b/10+0.01;d"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b/10+0.005;d}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "range",
+							"min": "{{lo}}",
+							"max": "{{hi}}",
+							"inclusive": false
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Intercaler.** On écrit les deux nombres avec autant de chiffres après la virgule, plus un : il apparaît de la place entre eux.",
+					"${{lo}} = {{a}}.{{b}}00$ et ${{hi}} = {{a}}.{{b}}10$ : par exemple $\\textcolor{{{color:primary.0}}}{{{solution}}}$ (mais aussi ${{eval:a+b/10+0.001;d}}$, ${{eval:a+b/10+0.009;d}}$…)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3,45",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"lo": "3.4",
+				"hi": "3.5"
+			},
+			"answers": ["3,45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3,41",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"lo": "3.4",
+				"hi": "3.5"
+			},
+			"answers": ["3,41"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3,499",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"lo": "3.4",
+				"hi": "3.5"
+			},
+			"answers": ["3,499"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3,04",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"lo": "3.4",
+				"hi": "3.5"
+			},
+			"answers": ["3,04"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la borne 3,5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"lo": "3.4",
+				"hi": "3.5"
+			},
+			"answers": ["3,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3,6",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"lo": "3.4",
+				"hi": "3.5"
+			},
+			"answers": ["3,6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2,315 entre 2,31 et 2,32",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"B": "31",
+				"lo": "2.31",
+				"hi": "2.32"
+			},
+			"answers": ["2,315"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2,4 entre 2,31 et 2,32",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"B": "31",
+				"lo": "2.31",
+				"hi": "2.32"
+			},
+			"answers": ["2,4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5,305 entre 5,3 et 5,31",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "3",
+				"lo": "5.3",
+				"hi": "5.31"
+			},
+			"answers": ["5,305"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5,4",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "3",
+				"lo": "5.3",
+				"hi": "5.31"
+			},
+			"answers": ["5,4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

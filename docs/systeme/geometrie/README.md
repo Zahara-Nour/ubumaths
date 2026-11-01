@@ -356,7 +356,8 @@ l'en-tête qui garde cet affichage (`withBareScriptHeader` : `fenetre: -6.5 ; 6.
 `taille: grande`, `axes: oui`, `grille: 1 ; 1`, `deplacable: oui`), puis écrit le champ. Avec un en-tête, `parseFigureContent(texte,
 { interactive: true })` (le parseur du bloc, sans doublon) lit `fenetre:` (facultative ici : sans
 elle, origine au centre et 40 px par unité), `taille:`, `axes:`, `grille:`, `graduations:`,
-`description:`, et deux clés **réservées aux figures interactives** : `deplacable: oui|non`
+`description:`, et les deux clés des figures interactives (admises aussi dans un bloc ```figure
+d'un texte depuis le 2026-10-29, cf. [ubumark](../ubumark.md)) : `deplacable: oui|non`
 (défaut non : points, vecteurs, textes et étiquettes figés, double-clic coupé ; les curseurs, le
 zoom et le déplacement de la vue restent actifs — prop `objectsMovable` de `GeometryCanvas` ; la
 prop `pointDrag` (`components/geometry/point-drag.ts`, vue Géométrie de l'atelier) passe avant :
@@ -487,7 +488,5 @@ RBush, `validation/` branché sur des exercices.
   l'atelier, lui, la dessine (marching squares).
 - `GeometryCanvas` écrit l'étiquette d'une courbe implicite avec `svg.label`, que
   `implicitCurveToSVG` ne rend pas : le nom ne s'affiche pas (et le `<text>` n'a pas de `y`).
-- Messages d'erreur périmés : la forme `point(s.value, 0)` (seuls `.x` / `.y` existent) et
-  l'exemple `style(P, couleur="red", taille=4)` (`taille` n'est pas un argument de style).
 
 Historique (audits de mai 2026, journaux de chantier) : `docs/archive/` — ne décrit pas le code actuel.

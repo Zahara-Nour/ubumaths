@@ -1,0 +1,208 @@
+{
+	"title": "Colorier une fraction d'une figure",
+	"description": "Colorier les parts d'une figure partagée en parts égales pour représenter une fraction : 3/8 sur 8 parts, 3/4 sur 8 parts, 7/4 sur deux bandes de 4",
+	"grades": ["CM1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Partage",
+	"level": 2,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Colorie $\\frac{{{n}}}{{{d}}}$ de la figure.\n\n```partage\nforme: {{if:k==0|bande|disque}} {{d}}\ncolorier: {{n}}/{{d}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				},
+				{
+					"name": "d",
+					"expression": "2..12"
+				},
+				{
+					"name": "n",
+					"expression": "1..{{eval:d-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La figure est partagée en ${{d}}$ parts égales** : une part, c'est $\\frac{1}{{{d}}}$ de la figure.",
+					"On colorie $\\textcolor{{{color:primary.0}}}{{{n}}}$ part{{if:n>1|s|}}, n'importe lesquelles."
+				]
+			}
+		},
+		{
+			"statement": "Colorie $\\frac{{{n}}}{{{d}}}$ de la figure.\n\n```partage\nforme: {{if:k==0|bande|disque}} {{N}}\ncolorier: {{n}}/{{d}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				},
+				{
+					"name": "d",
+					"expression": "2..6"
+				},
+				{
+					"name": "m",
+					"expression": "2..3"
+				},
+				{
+					"name": "N",
+					"expression": "eval:m*d"
+				},
+				{
+					"name": "n",
+					"expression": "1..{{eval:d-1}}"
+				}
+			],
+			"conditions": ["N<=12"],
+			"correction": {
+				"steps": [
+					"**La figure a ${{N}}$ parts, pas ${{d}}$** : on les regroupe par ${{m}}$. $${{N}} = {{d}} \\times {{m}}$$",
+					"Un {{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|sixième}}}}}}}} de la figure, c'est ${{m}}$ parts : $\\frac{{{n}}}{{{d}}} = \\frac{{{eval:n*m}}}{{{N}}}$.",
+					"On colorie $\\textcolor{{{color:primary.0}}}{{{eval:n*m}}}$ parts, n'importe lesquelles."
+				]
+			}
+		},
+		{
+			"statement": "Chaque bande est une unité. Colorie $\\frac{{{n}}}{{{d}}}$ de l'unité.\n\n```partage\nforme: bande {{d}}\nunites: {{u}}\ncolorier: {{n}}/{{d}}\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..6"
+				},
+				{
+					"name": "n",
+					"expression": "{{eval:d+1}}..{{eval:3*d-1}}"
+				},
+				{
+					"name": "u",
+					"expression": "eval:(n-mod(n,d))/d+1"
+				}
+			],
+			"conditions": ["mod(n,d)!=0"],
+			"correction": {
+				"steps": [
+					"**Chaque bande est partagée en ${{d}}$ parts égales** : une part, c'est $\\frac{1}{{{d}}}$ de l'unité.",
+					"$\\frac{{{n}}}{{{d}}}$, c'est ${{n}}$ parts : plus d'une bande. On colorie $\\textcolor{{{color:primary.0}}}{{{n}}}$ parts, sur les bandes qu'il faut."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 parts sur 8",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"d": "8",
+				"n": "3"
+			},
+			"answers": ["1, 2, 3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3 parts quelconques",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"d": "8",
+				"n": "3"
+			},
+			"answers": ["2, 5, 8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 parts (les non coloriées)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"d": "8",
+				"n": "3"
+			},
+			"answers": ["1, 2, 3, 4, 5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3/4 sur 8 parts : 6 parts",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0",
+				"d": "4",
+				"m": "2",
+				"N": "8",
+				"n": "3"
+			},
+			"answers": ["1, 2, 3, 4, 5, 6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 parts (dénominateur lu comme le nombre de parts)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0",
+				"d": "4",
+				"m": "2",
+				"N": "8",
+				"n": "3"
+			},
+			"answers": ["1, 2, 3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7/4 : 7 parts sur deux bandes",
+			"variationIndex": 2,
+			"variables": {
+				"d": "4",
+				"n": "7",
+				"u": "2"
+			},
+			"answers": ["1, 2, 3, 4, 5, 6, 7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 parts (1 + 3/4 lu 3/4)",
+			"variationIndex": 2,
+			"variables": {
+				"d": "4",
+				"n": "7",
+				"u": "2"
+			},
+			"answers": ["1, 2, 3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rien colorié : case vide",
+			"variationIndex": 2,
+			"variables": {
+				"d": "4",
+				"n": "7",
+				"u": "2"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		}
+	]
+}

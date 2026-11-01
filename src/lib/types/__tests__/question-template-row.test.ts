@@ -25,7 +25,6 @@ const row = (overrides: Partial<QuestionTemplateRow> = {}): QuestionTemplateRow 
 	options: null,
 	default_display_options: null,
 	test_specs: null,
-	multiple_answers: null,
 	exercise_instruction: null,
 	created_at: null,
 	updated_at: null,
@@ -70,13 +69,11 @@ describe('toQuestionTemplate', () => {
 		const modele = toQuestionTemplate(
 			row({
 				exercise_instruction: 'Calculer',
-				multiple_answers: true,
 				default_display_options: { shuffleTerms: true }
 			})
 		);
 
 		expect(modele.exerciseInstruction).toBe('Calculer');
-		expect(modele.multipleAnswers).toBe(true);
 		expect(modele.defaultDisplayOptions).toEqual({ shuffleTerms: true });
 	});
 });

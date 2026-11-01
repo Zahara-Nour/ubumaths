@@ -10,7 +10,7 @@
 	"delay": 60,
 	"variations": [
 		{
-			"statement": "Un mot de passe est formé de ${{k}}$ caractères choisis parmi ${{n}}$ symboles ; un symbole peut être utilisé plusieurs fois.\n\nQuel est le nombre de mots de passe possibles ?",
+			"statement": "Un mot de passe est formé de ${{k}}$ caractères choisis parmi ${{n}}$ symboles ; un symbole peut être utilisé plusieurs fois.\n\nQuel est le nombre de mots de passe possibles ?\n\n```choix\n- ${{n}}^{ {{k}} }$\n- $\\dfrac{ {{n}}! }{ {{eval:n-k}}! }$\n- $\\binom{ {{n}} }{ {{k}} }$\n- ${{k}}^{ {{n}} }$\n```",
 			"variables": [
 				{
 					"name": "n",
@@ -21,30 +21,20 @@
 					"expression": "4..6"
 				}
 			],
-			"choices": [
-				{
-					"content": "${{n}}^{ {{k}} }$"
-				},
-				{
-					"content": "$\\dfrac{ {{n}}! }{ {{eval:n-k}}! }$"
-				},
-				{
-					"content": "$\\binom{ {{n}} }{ {{k}} }$"
-				},
-				{
-					"content": "${{k}}^{ {{n}} }$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"L'ordre des caractères compte (« ab » ≠ « ba ») et la **répétition est permise** : ce sont des ${{k}}$-uplets d'un ensemble à ${{n}}$ éléments.",
 					"Il y en a $\\textcolor{{{color:primary.0}}}{{{n}}^{ {{k}} }}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "${{n}}$ chevaux prennent le départ d'une course. Un parieur doit donner les ${{k}}$ premiers chevaux **dans l'ordre d'arrivée**.\n\nQuel est le nombre de pronostics possibles ?",
+			"statement": "${{n}}$ chevaux prennent le départ d'une course. Un parieur doit donner les ${{k}}$ premiers chevaux **dans l'ordre d'arrivée**.\n\nQuel est le nombre de pronostics possibles ?\n\n```choix\n- $\\dfrac{ {{n}}! }{ {{eval:n-k}}! }$\n- $\\binom{ {{n}} }{ {{k}} }$\n- ${{n}}^{ {{k}} }$\n- ${{k}}^{ {{n}} }$\n```",
 			"variables": [
 				{
 					"name": "n",
@@ -55,30 +45,20 @@
 					"expression": "3..4"
 				}
 			],
-			"choices": [
-				{
-					"content": "$\\dfrac{ {{n}}! }{ {{eval:n-k}}! }$"
-				},
-				{
-					"content": "$\\binom{ {{n}} }{ {{k}} }$"
-				},
-				{
-					"content": "${{n}}^{ {{k}} }$"
-				},
-				{
-					"content": "${{k}}^{ {{n}} }$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"L'ordre compte et un cheval ne peut pas occuper deux places : ce sont des ${{k}}$-uplets d'éléments **distincts**.",
 					"Il y en a $\\textcolor{{{color:primary.0}}}{\\dfrac{ {{n}}! }{ {{eval:n-k}}! }}$ (la combinaison ne tient pas compte de l'ordre)."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Un professeur tire au sort ${{k}}$ copies parmi ${{n}}$ pour les faire relire par un collègue.\n\nQuel est le nombre de tirages possibles ?",
+			"statement": "Un professeur tire au sort ${{k}}$ copies parmi ${{n}}$ pour les faire relire par un collègue.\n\nQuel est le nombre de tirages possibles ?\n\n```choix\n- $\\binom{ {{n}} }{ {{k}} }$\n- $\\dfrac{ {{n}}! }{ {{eval:n-k}}! }$\n- ${{n}}^{ {{k}} }$\n- ${{k}}^{ {{n}} }$\n```",
 			"variables": [
 				{
 					"name": "n",
@@ -89,30 +69,20 @@
 					"expression": "3..5"
 				}
 			],
-			"choices": [
-				{
-					"content": "$\\binom{ {{n}} }{ {{k}} }$"
-				},
-				{
-					"content": "$\\dfrac{ {{n}}! }{ {{eval:n-k}}! }$"
-				},
-				{
-					"content": "${{n}}^{ {{k}} }$"
-				},
-				{
-					"content": "${{k}}^{ {{n}} }$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Seul compte **l'ensemble** des copies choisies (pas d'ordre), et une copie n'est pas tirée deux fois : ce sont des parties à ${{k}}$ éléments.",
 					"Il y en a $\\textcolor{{{color:primary.0}}}{\\binom{ {{n}} }{ {{k}} }}$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Chaque jour d'une période de ${{k}}$ jours, la cantine sert un dessert choisi parmi ${{n}}$ desserts ; le même dessert peut revenir plusieurs jours.\n\nQuel est le nombre de programmes de desserts possibles ?",
+			"statement": "Chaque jour d'une période de ${{k}}$ jours, la cantine sert un dessert choisi parmi ${{n}}$ desserts ; le même dessert peut revenir plusieurs jours.\n\nQuel est le nombre de programmes de desserts possibles ?\n\n```choix\n- ${{n}}^{ {{k}} }$\n- $\\dfrac{ {{n}}! }{ {{eval:n-k}}! }$\n- $\\binom{ {{n}} }{ {{k}} }$\n- ${{k}}^{ {{n}} }$\n```",
 			"variables": [
 				{
 					"name": "n",
@@ -123,29 +93,24 @@
 					"expression": "3..5"
 				}
 			],
-			"choices": [
-				{
-					"content": "${{n}}^{ {{k}} }$"
-				},
-				{
-					"content": "$\\dfrac{ {{n}}! }{ {{eval:n-k}}! }$"
-				},
-				{
-					"content": "$\\binom{ {{n}} }{ {{k}} }$"
-				},
-				{
-					"content": "${{k}}^{ {{n}} }$"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Un programme associe un dessert à chaque jour : l'ordre des jours compte et un dessert peut revenir, ce sont des ${{k}}$-uplets.",
 					"Il y en a $\\textcolor{{{color:primary.0}}}{{{n}}^{ {{k}} }}$ (et non ${{k}}^{ {{n}} }$)."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
 	"testSpecs": [
 		{
 			"description": "v0 : nᵏ",
@@ -154,10 +119,10 @@
 				"n": "26",
 				"k": "5"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v0 : arrangement (répétition oubliée)",
@@ -166,10 +131,10 @@
 				"n": "26",
 				"k": "5"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 : kⁿ",
@@ -178,10 +143,10 @@
 				"n": "26",
 				"k": "5"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["3"]
 		},
 		{
 			"description": "v1 : arrangement",
@@ -190,10 +155,10 @@
 				"n": "12",
 				"k": "3"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 : combinaison (ordre oublié)",
@@ -202,10 +167,10 @@
 				"n": "12",
 				"k": "3"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v1 : nᵏ (répétitions)",
@@ -214,10 +179,10 @@
 				"n": "12",
 				"k": "3"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v2 : combinaison",
@@ -226,10 +191,10 @@
 				"n": "30",
 				"k": "4"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v2 : arrangement (ordre à tort)",
@@ -238,10 +203,10 @@
 				"n": "30",
 				"k": "4"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v3 : nᵏ",
@@ -250,10 +215,10 @@
 				"n": "6",
 				"k": "5"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v3 : kⁿ",
@@ -262,10 +227,10 @@
 				"n": "6",
 				"k": "5"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["3"]
 		},
 		{
 			"description": "v3 : arrangement (desserts distincts à tort)",
@@ -274,16 +239,10 @@
 				"n": "6",
 				"k": "5"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		}
-	],
-	"options": {
-		"constraints": {
-			"spaces": "off"
-		},
-		"shuffleChoices": true
-	}
+	]
 }

@@ -61,8 +61,13 @@ import { generateTrigCircleTypst } from './trig-circle-typst';
 import { generateNumberLineTypst } from './number-line-typst';
 import { generateCourbeTypst } from './courbe-typst';
 import { generateStatChartTypst } from './stat-chart-typst';
+import type { RangerNode } from '../types/ranger';
+import { displayedLabels } from '../utils/ranger';
 import { generateQrTypst } from './qr-typst';
+import { generateScratchTypst } from './scratch-typst';
 import { generateHorlogeTypst } from './horloge-typst';
+import { generatePartageTypst } from './partage-typst';
+import { generateEspaceTypst } from './espace-typst';
 import { generateOperationTypst } from './operation-typst';
 import { generateCollectionTypst } from './collection-typst';
 import { generateMonnaieTypst } from './monnaie-typst';
@@ -411,7 +416,9 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 			return generateTrigCircleTypst(node as unknown as TrigCircleNode);
 
 		case 'number-line':
-			return generateNumberLineTypst(node as unknown as NumberLineNode);
+			return generateNumberLineTypst(node as unknown as NumberLineNode, {
+				language: options.language
+			});
 
 		case 'courbe':
 			return generateCourbeTypst(node, { language: options.language });
@@ -424,8 +431,14 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 
 		case 'qr':
 			return generateQrTypst(node);
+		case 'scratch':
+			return generateScratchTypst(node);
 		case 'horloge':
 			return generateHorlogeTypst(node);
+		case 'partage':
+			return generatePartageTypst(node);
+		case 'espace':
+			return generateEspaceTypst(node);
 		case 'operation':
 			return generateOperationTypst(node);
 		case 'collection':
@@ -442,6 +455,9 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 					return `*${String.fromCharCode(65 + index)})* ${body}`;
 				})
 				.join('\n\n');
+
+		case 'ranger':
+			return generateRangerTypst(node, options);
 
 		default:
 			return '';
@@ -487,10 +503,11 @@ function generateInline(node: InlineNode, options: ResolvedTypstTranspilerOption
 			// qu'un `]` d'intervalle (`]2 ; 3[`) fermerait trop tôt
 			let text = escapeTypstBrackets(unescapedContent);
 			if (node.bold) text = `*${text}*`;
+			// `;` final : sans lui, un `(`, `[` ou `.lettre` collé après serait lu comme la suite de l'appel
 			// Use #emph[] instead of _..._ for italic - more reliable in content blocks
-			if (node.italic) text = `#emph[${text}]`;
-			if (node.strikethrough) text = `#strike[${text}]`;
-			if (node.highlight) text = `#highlight[${text}]`;
+			if (node.italic) text = `#emph[${text}];`;
+			if (node.strikethrough) text = `#strike[${text}];`;
+			if (node.highlight) text = `#highlight[${text}];`;
 			return wrapInlineDetail(text, node.detail);
 		}
 
@@ -3686,4 +3703,32 @@ export async function markdownToTypst(
 	await import('./figure-typst-setup');
 	const ast = parseMarkdown(markdown);
 	return generateTypst(ast, options);
+}
+
+/**
+ * Bloc ```ranger : les étiquettes encadrées, dans l'ordre où l'élève les voit,
+ * puis une place vide (pointillés) par étiquette, séparées du signe ; l'enfant
+ * écrit. Signe en mode math : `<` seul ouvrirait une étiquette Typst.
+ */
+function generateRangerTypst(node: RangerNode, options: ResolvedTypstTranspilerOptions): string {
+	if (node.errors.length > 0) return '';
+	const labels = displayedLabels(node).map((label) => {
+		const paragraph = parseMarkdown(label).children[0];
+		const body =
+			paragraph?.type === 'paragraph'
+				? paragraph.children.map((child) => generateInline(child, options)).join('')
+				: '';
+		return `ranger-etiquette[${body}]`;
+	});
+	const sign = node.sign === '>' ? ', $>$, ' : ', $<$, ';
+	// Grilles centrées en hauteur : signes au milieu des places, étiquettes alignées
+	return [
+		'#[',
+		'#let ranger-etiquette(body) = box(stroke: 0.6pt, inset: (x: 6pt, y: 4pt), radius: 3pt, body)',
+		'#let ranger-place = box(width: 1.8cm, height: 0.9cm, stroke: (paint: luma(120), dash: "dashed"), radius: 3pt)',
+		`#align(center, grid(columns: ${labels.length}, column-gutter: 0.8em, align: horizon, ${labels.join(', ')}))`,
+		'',
+		`#align(center, grid(columns: ${2 * labels.length - 1}, column-gutter: 0.4em, align: horizon, ${labels.map(() => 'ranger-place').join(sign)}))`,
+		']'
+	].join('\n');
 }

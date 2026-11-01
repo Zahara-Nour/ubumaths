@@ -47,7 +47,7 @@ import { findNodes, mapNode } from '../transforms';
 import { getVariables } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { computeNumericValue, computeNumericValueOrInfinity } from '../eval/numeric-value';
-import { normalize, denormalize } from '../normal';
+import { canonicalForm } from '../normal';
 import { nodesEqual } from '../normal/hash';
 import { isPolynomialIn } from './classify';
 import { createStepRecorder } from './step-recorder';
@@ -162,7 +162,7 @@ function exponentInBaseE(atom: AtomFamily): MathNode {
 function integerMultiple(argument: MathNode, base: MathNode): number | null {
 	if (nodesEqual(argument, base)) return 1;
 	try {
-		const ratio = denormalize(normalize(divide(argument, base, 'fraction')));
+		const ratio = canonicalForm(divide(argument, base, 'fraction'));
 		if (getVariables(ratio).size !== 0) return null;
 		const value = evaluateNodeToApproximatedNumber(ratio);
 		const n = Math.round(value);
@@ -289,7 +289,7 @@ function affineAtomInX(
 	const product = factors.reduce((acc, f) => multiply(acc, f, 'implicit'));
 	// `normalize` laisse 3·3^(−1·1) tel quel : la constante (> 0) est écrite en
 	// fraction quand elle en est une — 3^(x+1) = 3·X, 2^(x−1) = X/2
-	const constant = smallFraction(product) ?? denormalize(normalize(product));
+	const constant = smallFraction(product) ?? canonicalForm(product);
 	return multiply(constant, inX, 'implicit');
 }
 

@@ -4,6 +4,8 @@ couvre:
   - scripts/questions/page-a-cocher.ts
   - scripts/questions/page-a-cocher.html
   - scripts/questions/publier-lot.ts
+  - scripts/questions/sonde-courbes.ts
+  - scripts/questions/sonde-figures.ts
   - scripts/lib/page-a-cocher.ts
   - scripts/lib/lot-questions.ts
 ---
@@ -117,7 +119,8 @@ coûte un chantier. Détail de chaque bloc : [ubumark.md § Blocs spéciaux](../
 - **opération posée à compléter** (saisie chiffre par chiffre du bloc `operation`) ;
 - **construire** : `construire:` dans ` ```collection ` ou ` ```monnaie ` (la valeur posée est la réponse) ;
 - **figure à compléter** (` ```figure-a-completer `, case « figure » : objets de l'élève retrouvés
-  sur les nœuds) et **figure de travail** (` ```figure-de-travail `, jamais notée), `deplacable:`.
+  sur les nœuds) et **figure de travail** (` ```figure-de-travail `, jamais notée) ; figure d'énoncé
+  à manipuler (` ```figure ` + `deplacable: oui`, rien de noté).
 
 **Hors questions, réutilisables comme briques** : le grapheur (`/grapheur`), l'Atelier,
 les constructions animées (`constructions-v2` : règle, compas, équerre, rapporteur), le champ
@@ -129,7 +132,8 @@ venir comme vraie fonctionnalité).
 « Reprendre ici » (`docs/wip/`) avant de proposer un modèle ou un outil de géométrie.
 
 **Manquent encore** (connus au CP) : réponses à placer (point sur une droite graduée, étiquettes
-à ranger, hauteur de barres), aiguilles à placer sur l'horloge.
+à ranger, hauteur de barres), aiguilles à placer sur l'horloge ; demi-droite ou intervalle sur une
+droite graduée, avec crochet (3e, 3-014 ; 2de, intervalles) : ` ```line ` ne la trace pas.
 
 ## 3 ter. Créer l'outil qui manque (classe C)
 
@@ -184,6 +188,14 @@ Dans un worktree (`git worktree add -b feat/questions-<lot> ../ubumaths-wt-quest
    l'élève en `incorrect`.
 3. `pnpm tsx scripts/create-questions.ts --dir scripts/questions/<niveau>-<lot>` (simulation :
    `checkTemplate` sur chaque fichier, specs comprises) → tout vert.
+   Lot qui dessine des courbes : `pnpm tsx scripts/questions/sonde-courbes.ts --dir …` tire
+   chaque modèle 300 fois et passe chaque bloc ``courbe (énoncé et corrigé) au parseur →
+**0 problème** avant la page à cocher ; `--montre <fichier.json> <graine>` affiche la variation
+fautive.
+Lot qui dessine des figures : `pnpm tsx scripts/questions/sonde-figures.ts --dir …`, même
+principe, chaque bloc ``figure passé au moteur de l'appli (`parseFigure` puis
+   `buildFigureScene`) → **0 problème** avant la page à cocher (erreurs de construction et textes
+   refusés, `mtexte()` par exemple, qu'aucune spec ne voit).
 4. Base **locale** : `set -a; . ./.env.local; set +a` puis `create-questions … --publier`
    (sans cela, le script vise `.env` = la PROD). Jouer chaque modèle dans l'aperçu admin
    (`/dashboard/admin/questions/<id>/preview`, `admin@local.test`), une réponse juste, une fausse,
@@ -229,14 +241,27 @@ niveau chacune (`idx_question_templates_unique_category`).
    ```
    Une fiche par fichier du lot, **un exemple par variation tiré par le vrai générateur**
    (`generateInstance`, graine fixe : page reproductible). Les blocs `figure`, `monnaie`,
-   `collection` et `horloge` sont dessinés par les scènes de l'appli (à construire : réserve,
-   plan vide, et la construction juste à part) ; un autre bloc (`operation`…) est montré par sa
-   source et signalé. L'id, le statut, le nœud et le point sont **lus en base** (lecture seule,
-   `.env` = prod), avec les bornes du point (`docs/systeme/programmes/bornes/`). Alertes en tête
-   de fiche : sans point, plusieurs points, sans nœud, niveau en base différent du fichier, point
-   absent des bornes, bloc non dessiné. Le niveau n'entre pas dans la clé de la page : les anciens
+   `collection`, `horloge` et `courbe` sont dessinés par les scènes de l'appli (à construire :
+   réserve, plan vide, et la construction juste à part) ; un bloc `python` est montré tel quel ;
+   un autre bloc (`operation`…) est montré par sa source et signalé. Les formules restent en texte quand elles n'ont que des nombres et des signes (CP) ; au-delà
+   (fractions, `\left`, exposants), KaTeX les rend en MathML (cdnjs, sans feuille de style), y compris
+   la réponse attendue, le libellé du point, ses bornes et les réponses des specs ; un bloc `$$…$$` est
+   rendu en mode bloc (`align`), ℝ, ℕ, ℤ, ℚ, ℂ en caractères Unicode (le MathML de Chrome ignore
+   `double-struck`) ; une formule que KaTeX refuse revient au rendu texte. L'id, le statut, le nœud et
+   les points sont **lus en base** (lecture seule, `.env` = prod), avec les bornes de chaque
+   point (`docs/systeme/programmes/bornes/`). Alertes en tête de fiche : sans point, deux points
+   d'un même programme (1SPE-224 avec 1TECHNO-037 est permis, ADR 0020), sans nœud, niveau en base
+   différent du fichier, point absent des bornes, bloc non dessiné. Le niveau n'entre pas dans la clé de la page : les anciens
    lots ont été renumérotés en base après coup (CP B1, B3, H) ; un sous-domaine changé après coup
-   (CP B2) fait refuser le lot, et le message dit ce qui diffère.
+   (CP B2) fait refuser le lot, et le message dit ce qui diffère. Deux modèles de même clé (un
+   homonyme d'un autre niveau, « Comparer deux nombres décimaux » en CM1 et en 6e) sont départagés
+   par le niveau du fichier, s'il en désigne exactement un ; la fiche le signale (« homonyme …
+   écarté »), car un ancien lot renuméroté prendrait ainsi l'homonyme au lieu de son modèle.
+   **Brouillons déjà en base** (lots d'avant ce chantier, dont les fichiers ne concordent plus) :
+   partir d'un instantané, `pnpm tsx scripts/export-question-templates.ts --dir
+scripts/questions/<niveau>-0-<thème> --ids <id8>,…` ; chaque fichier porte son `id`, qui
+   l'apparie à sa ligne sans homonyme (la clé doit encore concorder). Le même dossier sert aux
+   corrections (§ 7, `--mettre-a-jour`) et à la publication.
    Gabarit : `scripts/questions/page-a-cocher.html` (collection `verdicts`, « OK / À revoir » +
    commentaire, filtre « Ce qui reste » par défaut, file d'écriture unique, nouvel essai
    automatique, bandeau tant qu'une réponse attend). Publier la page en artefact avec la capacité
@@ -263,7 +288,10 @@ niveau chacune (`idx_question_templates_unique_category`).
 - Jamais de variable `e` (Euler) ; lettres parlantes, jamais P / E / V.
 - Prénoms écrits dans le texte ; montants en `$n~\unit{€}$`, jamais « : » juste après un montant
   ([notation-unites.md](notation-unites.md)).
-- **Niveaux numérotés dès l'écriture** (pas de migration de niveaux après coup).
+- **Niveaux numérotés dès l'écriture** (pas de migration de niveaux après coup), **après relevé
+  des niveaux publiés de la catégorie** (`theme`, `domain`, `subdomain`) : un niveau pris bloque
+  la publication, et `create-questions` cherche un modèle par son niveau (`--mettre-a-jour` ne le
+  change pas) ; corriger après coup = migration + fichiers (CE1 lot 1, 2026-10-27).
 - Migration qui change l'arbre ou les points : `LATER` + copies figées dans le test.
 - `gh pr checks --watch` peut rendre la main avant le job d'intégration : suivre le **run**.
 - Écriture en prod (`create-questions --publier`, publication) : **David** la lance (`!`), je

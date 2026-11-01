@@ -1,0 +1,178 @@
+{
+	"title": "Le nombre de dizaines, de centièmes…",
+	"description": "Distinguer le chiffre et le nombre de dizaines, centaines, milliers (entiers) ou de dixièmes, centièmes, millièmes (décimaux)",
+	"grades": ["6"],
+	"theme": "Décimaux",
+	"domain": "Apprivoiser",
+	"subdomain": "Décomposition",
+	"level": 6,
+	"delay": 20,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quel est le nombre de {{if:k==1|dizaines|{{if:k==2|centaines|milliers}}}} dans ${{n}}$ ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "4..7"
+				},
+				{
+					"name": "n",
+					"expression": "digits:c"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "reste",
+					"expression": "eval:mod(n,10^k)"
+				}
+			],
+			"conditions": ["c-k>=2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor(n/10^k)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Chiffre ou nombre ?** Le chiffre des {{if:k==1|dizaines|{{if:k==2|centaines|milliers}}}} est un seul chiffre ; le nombre de {{if:k==1|dizaines|{{if:k==2|centaines|milliers}}}} les compte toutes : on garde tous les chiffres jusqu'à ce rang.",
+					"$${{n}} = \\textcolor{{{color:primary.0}}}{{{solution}}} \\times {{eval:10^k}}{{if:reste>0| + {{reste}}|}}$$",
+					"Il y a $\\textcolor{{{color:primary.0}}}{{{solution}}}$ {{if:k==1|dizaines|{{if:k==2|centaines|milliers}}}} dans ${{n}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel est le nombre de {{if:k==1|dixièmes|{{if:k==2|centièmes|millièmes}}}} dans ${{x}}$ ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3..5"
+				},
+				{
+					"name": "N",
+					"expression": "digits:d"
+				},
+				{
+					"name": "m",
+					"expression": "2..3"
+				},
+				{
+					"name": "x",
+					"expression": "eval:N/10^m;d"
+				},
+				{
+					"name": "k",
+					"expression": "1..{{m}}"
+				}
+			],
+			"conditions": ["mod(N,10)!=0", "N>=10^m"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor(N/10^(m-k))}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Chiffre ou nombre ?** Le chiffre des {{if:k==1|dixièmes|{{if:k==2|centièmes|millièmes}}}} est un seul chiffre ; le nombre de {{if:k==1|dixièmes|{{if:k==2|centièmes|millièmes}}}} les compte tous. Une unité vaut ${{eval:10^k}}$ {{if:k==1|dixièmes|{{if:k==2|centièmes|millièmes}}}}.",
+					"On lit le nombre sans la virgule, jusqu'au rang des {{if:k==1|dixièmes|{{if:k==2|centièmes|millièmes}}}} : ${{x}}$ contient $\\textcolor{{{color:primary.0}}}{{{solution}}}$ {{if:k==1|dixièmes|{{if:k==2|centièmes|millièmes}}}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "45 273, centaines : 452",
+			"variationIndex": 0,
+			"variables": {
+				"c": "5",
+				"n": "45273",
+				"k": "2",
+				"reste": "73"
+			},
+			"answers": ["452"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le chiffre des centaines (2)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "5",
+				"n": "45273",
+				"k": "2",
+				"reste": "73"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : arrondi (453)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "5",
+				"n": "45273",
+				"k": "2",
+				"reste": "73"
+			},
+			"answers": ["453"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1,27, centièmes : 127",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3",
+				"N": "127",
+				"m": "2",
+				"x": "1.27",
+				"k": "2"
+			},
+			"answers": ["127"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le chiffre des centièmes (7)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3",
+				"N": "127",
+				"m": "2",
+				"x": "1.27",
+				"k": "2"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la partie décimale seule (27)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3",
+				"N": "127",
+				"m": "2",
+				"x": "1.27",
+				"k": "2"
+			},
+			"answers": ["27"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

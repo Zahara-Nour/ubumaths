@@ -393,6 +393,27 @@ export interface StatChartSpec {
 	} | null;
 	/** Bloc ```nuage (manche 15) : les deux séries et les options, sinon null */
 	scatter: ScatterData | null;
+	/**
+	 * Barres : axe vertical écrit par le prof (`axe: 0 à 20, de 2 en 2`), depuis 0 ;
+	 * absent ou null : calculé sur les données
+	 */
+	axis?: StatChartAxis | null;
+	/**
+	 * Barres à construire par l'élève (`placer:`) : leurs rangs dans `data`, dans
+	 * l'ordre des données ; absent ou null : diagramme à lire
+	 */
+	toPlace?: number[] | null;
+	/**
+	 * Barres : `axe: à choisir`, l'élève choisit ce que vaut une graduation
+	 * (`axis` reste null : l'axe a 10 graduations sans nombres)
+	 */
+	chooseScale?: boolean;
+}
+
+/** Axe vertical d'un diagramme en barres, de 0 à `max`, gradué de `step` en `step` */
+export interface StatChartAxis {
+	max: number;
+	step: number;
 }
 
 // ============================================================================
@@ -426,6 +447,11 @@ export interface StatChartNode extends BaseNode {
 	spec: StatChartSpec | null;
 	errors: StatChartIssue[];
 	warnings: StatChartIssue[];
+	/**
+	 * Diagramme en barres à construire, dans une question : numéro de la case de
+	 * la première barre (`case: N`, posé par le générateur) ; une case par barre
+	 */
+	caseIndex?: number;
 }
 
 export interface StatChartBlockRange {
@@ -475,6 +501,13 @@ export const STAT_CHART_LIMITS = {
 	scatterPredictions: 20,
 	/** Valeurs d'une série brute (`données:`, Q101) */
 	rawValues: 500,
+	/** Graduations de l'axe vertical écrit (`axe:`) */
+	axisTicks: 40,
+	/**
+	 * Haut de l'axe d'un diagramme à construire (`placer:`) : au-delà, l'unité ne se
+	 * vise plus au doigt (Q19 du chantier « réponses à placer »)
+	 */
+	placeAxisMax: 100,
 	/** Caractères d'un nom de catégorie */
 	labelLength: 40,
 	/** Caractères d'un titre ou d'une description */

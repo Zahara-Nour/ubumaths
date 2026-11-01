@@ -37,7 +37,10 @@
 	import FigureBlock from './FigureBlock.svelte';
 	import StatChart from './StatChart.svelte';
 	import QrBlock from './QrBlock.svelte';
+	import ScratchBlock from './ScratchBlock.svelte';
 	import Horloge from './Horloge.svelte';
+	import Partage from './Partage.svelte';
+	import Espace from './Espace.svelte';
 	import Operation from './Operation.svelte';
 	import Collection from './Collection.svelte';
 	import Monnaie from './Monnaie.svelte';
@@ -50,7 +53,10 @@
 	import type { FigureNode } from '$lib/ubumark/types/figure';
 	import type { StatChartNode } from '$lib/ubumark/types/stat-chart';
 	import type { QrNode } from '$lib/ubumark/types/qr';
+	import type { ScratchNode } from '$lib/ubumark/types/scratch';
 	import type { HorlogeNode } from '$lib/ubumark/types/horloge';
+	import type { PartageNode } from '$lib/ubumark/types/partage';
+	import type { EspaceNode } from '$lib/ubumark/types/espace';
 	import type { OperationNode } from '$lib/ubumark/types/operation';
 	import type { CollectionNode } from '$lib/ubumark/types/collection';
 	import type { MonnaieNode } from '$lib/ubumark/types/monnaie';
@@ -256,6 +262,13 @@
 	}
 
 	/**
+	 * Bloc ```scratch en retrait dans un item de liste
+	 */
+	function isScratchNode(node: ASTNode): node is ScratchNode {
+		return node.type === 'scratch';
+	}
+
+	/**
 	 * Bloc ```horloge en retrait dans un item de liste
 	 */
 	function isHorlogeNode(node: ASTNode): node is HorlogeNode {
@@ -284,6 +297,20 @@
 	}
 
 	/**
+	 * Bloc ```partage en retrait dans un item de liste
+	 */
+	function isPartageNode(node: ASTNode): node is PartageNode {
+		return node.type === 'partage';
+	}
+
+	/**
+	 * Bloc d'espace (```cubes) en retrait dans un item de liste
+	 */
+	function isEspaceNode(node: ASTNode): node is EspaceNode {
+		return node.type === 'espace';
+	}
+
+	/**
 	 * Check if node is a block-level element (for hardbreak removal)
 	 */
 	function isBlockNode(node: ASTNode): boolean {
@@ -301,7 +328,10 @@
 			'figure',
 			'stat-chart',
 			'qr',
+			'scratch',
 			'horloge',
+			'partage',
+			'espace',
 			'operation',
 			'collection',
 			'monnaie'
@@ -431,8 +461,14 @@
 						<StatChart node={child} />
 					{:else if isQrNode(child)}
 						<QrBlock node={child} />
+					{:else if isScratchNode(child)}
+						<ScratchBlock node={child} />
 					{:else if isHorlogeNode(child)}
 						<Horloge node={child} />
+					{:else if isPartageNode(child)}
+						<Partage node={child} />
+					{:else if isEspaceNode(child)}
+						<Espace node={child} />
 					{:else if isOperationNode(child)}
 						<Operation node={child} />
 					{:else if isCollectionNode(child)}
@@ -523,8 +559,14 @@
 						<StatChart node={child} />
 					{:else if isQrNode(child)}
 						<QrBlock node={child} />
+					{:else if isScratchNode(child)}
+						<ScratchBlock node={child} />
 					{:else if isHorlogeNode(child)}
 						<Horloge node={child} />
+					{:else if isPartageNode(child)}
+						<Partage node={child} />
+					{:else if isEspaceNode(child)}
+						<Espace node={child} />
 					{:else if isOperationNode(child)}
 						<Operation node={child} />
 					{:else if isCollectionNode(child)}

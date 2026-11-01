@@ -8,31 +8,9 @@
 	"level": 2,
 	"delay": 30,
 	"status": "draft",
-	"shared": {
-		"choices": [
-			{
-				"content": "$(u_n)$ semble croissante et converger"
-			},
-			{
-				"content": "$(u_n)$ semble décroissante et converger"
-			},
-			{
-				"content": "$(u_n)$ semble croissante et tendre vers $+\\infty$"
-			},
-			{
-				"content": "$(u_n)$ semble décroissante et tendre vers $-\\infty$"
-			},
-			{
-				"content": "$(u_n)$ ne semble ni croissante ni décroissante"
-			}
-		]
-	},
-	"options": {
-		"shuffleChoices": false
-	},
 	"variations": [
 		{
-			"statement": "La suite $(u_n)$ est définie par son premier terme $u_0$ et la relation $u_{n+1}=f(u_n)$. On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de $f$, la droite d'équation $y=x$ et l'escalier qui part de $u_0$.\n\n```courbe\nx: -1 ; {{eval:2*b+2}}\ny: -1 ; {{eval:2*b+2}}\nu(0) = {{u0}} ; u(n+1) = 0.5*u(n)+{{b}} pour n de 0 à 5   rouge   escalier   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```\n\nQue semble-t-il se passer pour la suite $(u_n)$ ?",
+			"statement": "La suite $(u_n)$ est définie par son premier terme $u_0$ et la relation $u_{n+1}=f(u_n)$. On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de $f$, la droite d'équation $y=x$ et l'escalier qui part de $u_0$.\n\n```courbe\nx: -1 ; {{eval:2*b+2}}\ny: -1 ; {{eval:2*b+2}}\nu(0) = {{u0}} ; u(n+1) = 0.5*u(n)+{{b}} pour n de 0 à 5   rouge   escalier   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```\n\nQue semble-t-il se passer pour la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- $(u_n)$ semble croissante et converger\n- $(u_n)$ semble décroissante et converger\n- $(u_n)$ semble croissante et tendre vers $+\\infty$\n- $(u_n)$ semble décroissante et tendre vers $-\\infty$\n- $(u_n)$ ne semble ni croissante ni décroissante\n```",
 			"variables": [
 				{
 					"name": "b",
@@ -47,7 +25,6 @@
 					"expression": "eval:2*b"
 				}
 			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"On lit les termes sur l'axe des abscisses : chaque marche de l'escalier fait passer de $u_n$ à $u_{n+1}$. Les marches vont **vers la droite** : $u_0<u_1<u_2<\\dots$, la suite semble **croissante**.",
@@ -55,10 +32,15 @@
 					"```courbe\nx: -1 ; {{eval:2*b+2}}\ny: -1 ; {{eval:2*b+2}}\nu(0) = {{u0}} ; u(n+1) = 0.5*u(n)+{{b}} pour n de 0 à 5   rouge   escalier termes   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```",
 					"Conclusion : $(u_n)$ semble croissante et converger."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "La suite $(u_n)$ est définie par son premier terme $u_0$ et la relation $u_{n+1}=f(u_n)$. On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de $f$, la droite d'équation $y=x$ et l'escalier qui part de $u_0$.\n\n```courbe\nx: -1 ; {{eval:2*b+5}}\ny: -1 ; {{eval:2*b+5}}\nu(0) = {{eval:2*b+d}} ; u(n+1) = 0.5*u(n)+{{b}} pour n de 0 à 5   rouge   escalier   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```\n\nQue semble-t-il se passer pour la suite $(u_n)$ ?",
+			"statement": "La suite $(u_n)$ est définie par son premier terme $u_0$ et la relation $u_{n+1}=f(u_n)$. On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de $f$, la droite d'équation $y=x$ et l'escalier qui part de $u_0$.\n\n```courbe\nx: -1 ; {{eval:2*b+5}}\ny: -1 ; {{eval:2*b+5}}\nu(0) = {{eval:2*b+d}} ; u(n+1) = 0.5*u(n)+{{b}} pour n de 0 à 5   rouge   escalier   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```\n\nQue semble-t-il se passer pour la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- $(u_n)$ semble croissante et converger\n- $(u_n)$ semble décroissante et converger\n- $(u_n)$ semble croissante et tendre vers $+\\infty$\n- $(u_n)$ semble décroissante et tendre vers $-\\infty$\n- $(u_n)$ ne semble ni croissante ni décroissante\n```",
 			"variables": [
 				{
 					"name": "b",
@@ -73,7 +55,6 @@
 					"expression": "eval:2*b"
 				}
 			],
-			"correctChoiceIndex": ["1"],
 			"correction": {
 				"steps": [
 					"On lit les termes sur l'axe des abscisses : chaque marche de l'escalier fait passer de $u_n$ à $u_{n+1}$. Les marches vont **vers la gauche** : $u_0>u_1>u_2>\\dots$, la suite semble **décroissante**.",
@@ -81,10 +62,15 @@
 					"```courbe\nx: -1 ; {{eval:2*b+5}}\ny: -1 ; {{eval:2*b+5}}\nu(0) = {{eval:2*b+d}} ; u(n+1) = 0.5*u(n)+{{b}} pour n de 0 à 5   rouge   escalier termes   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```",
 					"Conclusion : $(u_n)$ semble décroissante et converger."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
 		},
 		{
-			"statement": "La suite $(u_n)$ est définie par son premier terme $u_0$ et la relation $u_{n+1}=f(u_n)$. On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de $f$, la droite d'équation $y=x$ et l'escalier qui part de $u_0$.\n\n```courbe\nx: -1 ; {{eval:c+8*d+1}}\ny: -1 ; {{eval:c+8*d+1}}\nu(0) = {{eval:c+d}} ; u(n+1) = 2*u(n)-{{c}} pour n de 0 à 3   rouge   escalier   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```\n\nQue semble-t-il se passer pour la suite $(u_n)$ ?",
+			"statement": "La suite $(u_n)$ est définie par son premier terme $u_0$ et la relation $u_{n+1}=f(u_n)$. On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de $f$, la droite d'équation $y=x$ et l'escalier qui part de $u_0$.\n\n```courbe\nx: -1 ; {{eval:c+8*d+1}}\ny: -1 ; {{eval:c+8*d+1}}\nu(0) = {{eval:c+d}} ; u(n+1) = 2*u(n)-{{c}} pour n de 0 à 3   rouge   escalier   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```\n\nQue semble-t-il se passer pour la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- $(u_n)$ semble croissante et converger\n- $(u_n)$ semble décroissante et converger\n- $(u_n)$ semble croissante et tendre vers $+\\infty$\n- $(u_n)$ semble décroissante et tendre vers $-\\infty$\n- $(u_n)$ ne semble ni croissante ni décroissante\n```",
 			"variables": [
 				{
 					"name": "c",
@@ -95,7 +81,6 @@
 					"expression": "0.5|1"
 				}
 			],
-			"correctChoiceIndex": ["2"],
 			"correction": {
 				"steps": [
 					"On lit les termes sur l'axe des abscisses : chaque marche de l'escalier fait passer de $u_n$ à $u_{n+1}$. Les marches vont **vers la droite** : la suite semble **croissante**.",
@@ -103,17 +88,21 @@
 					"```courbe\nx: -1 ; {{eval:c+8*d+1}}\ny: -1 ; {{eval:c+8*d+1}}\nu(0) = {{eval:c+d}} ; u(n+1) = 2*u(n)-{{c}} pour n de 0 à 3   rouge   escalier termes   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```",
 					"Conclusion : $(u_n)$ semble croissante et tendre vers $+\\infty$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			]
 		},
 		{
-			"statement": "La suite $(u_n)$ est définie par son premier terme $u_0$ et la relation $u_{n+1}=f(u_n)$. On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de $f$, la droite d'équation $y=x$ et l'escalier qui part de $u_0$.\n\n```courbe\nx: {{eval:c-9}} ; {{eval:c+2}}\ny: {{eval:c-9}} ; {{eval:c+2}}\nu(0) = {{eval:c-1}} ; u(n+1) = 2*u(n)-{{c}} pour n de 0 à 3   rouge   escalier   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```\n\nQue semble-t-il se passer pour la suite $(u_n)$ ?",
+			"statement": "La suite $(u_n)$ est définie par son premier terme $u_0$ et la relation $u_{n+1}=f(u_n)$. On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de $f$, la droite d'équation $y=x$ et l'escalier qui part de $u_0$.\n\n```courbe\nx: {{eval:c-9}} ; {{eval:c+2}}\ny: {{eval:c-9}} ; {{eval:c+2}}\nu(0) = {{eval:c-1}} ; u(n+1) = 2*u(n)-{{c}} pour n de 0 à 3   rouge   escalier   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```\n\nQue semble-t-il se passer pour la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- $(u_n)$ semble croissante et converger\n- $(u_n)$ semble décroissante et converger\n- $(u_n)$ semble croissante et tendre vers $+\\infty$\n- $(u_n)$ semble décroissante et tendre vers $-\\infty$\n- $(u_n)$ ne semble ni croissante ni décroissante\n```",
 			"variables": [
 				{
 					"name": "c",
 					"expression": "4..6"
 				}
 			],
-			"correctChoiceIndex": ["3"],
 			"correction": {
 				"steps": [
 					"On lit les termes sur l'axe des abscisses : chaque marche de l'escalier fait passer de $u_n$ à $u_{n+1}$. Les marches vont **vers la gauche** : la suite semble **décroissante**.",
@@ -121,10 +110,15 @@
 					"```courbe\nx: {{eval:c-9}} ; {{eval:c+2}}\ny: {{eval:c-9}} ; {{eval:c+2}}\nu(0) = {{eval:c-1}} ; u(n+1) = 2*u(n)-{{c}} pour n de 0 à 3   rouge   escalier   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```",
 					"Conclusion : $(u_n)$ semble décroissante et tendre vers $-\\infty$."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "3"
+				}
+			]
 		},
 		{
-			"statement": "La suite $(u_n)$ est définie par son premier terme $u_0$ et la relation $u_{n+1}=f(u_n)$. On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de $f$, la droite d'équation $y=x$ et l'escalier qui part de $u_0$.\n\n```courbe\nx: -1 ; {{eval:2*b/3+5}}\ny: -1 ; {{eval:2*b/3+5}}\nu(0) = {{eval:2*b/3+d}} ; u(n+1) = -0.5*u(n)+{{b}} pour n de 0 à 5   rouge   escalier   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```\n\nQue semble-t-il se passer pour la suite $(u_n)$ ?",
+			"statement": "La suite $(u_n)$ est définie par son premier terme $u_0$ et la relation $u_{n+1}=f(u_n)$. On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de $f$, la droite d'équation $y=x$ et l'escalier qui part de $u_0$.\n\n```courbe\nx: -1 ; {{eval:2*b/3+5}}\ny: -1 ; {{eval:2*b/3+5}}\nu(0) = {{eval:2*b/3+d}} ; u(n+1) = -0.5*u(n)+{{b}} pour n de 0 à 5   rouge   escalier   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```\n\nQue semble-t-il se passer pour la suite $(u_n)$ ?\n\n```choix\nmelanger: non\n- $(u_n)$ semble croissante et converger\n- $(u_n)$ semble décroissante et converger\n- $(u_n)$ semble croissante et tendre vers $+\\infty$\n- $(u_n)$ semble décroissante et tendre vers $-\\infty$\n- $(u_n)$ ne semble ni croissante ni décroissante\n```",
 			"variables": [
 				{
 					"name": "b",
@@ -135,7 +129,6 @@
 					"expression": "3|4|-2"
 				}
 			],
-			"correctChoiceIndex": ["4"],
 			"correction": {
 				"steps": [
 					"On lit les termes sur l'axe des abscisses : chaque marche de l'escalier fait passer de $u_n$ à $u_{n+1}$. L'escalier tourne **en spirale** autour du point d'intersection de $\\mathcal{C}_f$ et de la droite $y=x$ : les termes sont alternativement d'un côté puis de l'autre de ce point. On a $u_0{{if:d>0|>|<}}u_1$ mais $u_1{{if:d>0|<|>}}u_2$.",
@@ -143,7 +136,12 @@
 					"```courbe\nx: -1 ; {{eval:2*b/3+5}}\ny: -1 ; {{eval:2*b/3+5}}\nu(0) = {{eval:2*b/3+d}} ; u(n+1) = -0.5*u(n)+{{b}} pour n de 0 à 5   rouge   escalier termes   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```",
 					"Conclusion : $(u_n)$ ne semble ni croissante ni décroissante."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "4"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -155,10 +153,10 @@
 				"u0": "1",
 				"L": "6"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "variation 0 {'b': 3, 'u0': 1, 'L': 6} : choix 1 refusé",
@@ -168,10 +166,10 @@
 				"u0": "1",
 				"L": "6"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "variation 0 {'b': 3, 'u0': 1, 'L': 6} : choix 2 refusé",
@@ -181,10 +179,10 @@
 				"u0": "1",
 				"L": "6"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "variation 1 {'b': 2, 'd': 4, 'L': 4} : bon choix",
@@ -194,10 +192,10 @@
 				"d": "4",
 				"L": "4"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "variation 1 {'b': 2, 'd': 4, 'L': 4} : choix 0 refusé",
@@ -207,10 +205,10 @@
 				"d": "4",
 				"L": "4"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "variation 1 {'b': 2, 'd': 4, 'L': 4} : choix 3 refusé",
@@ -220,10 +218,10 @@
 				"d": "4",
 				"L": "4"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["3"]
 		},
 		{
 			"description": "variation 2 {'c': 2, 'd': 1} : bon choix",
@@ -232,10 +230,10 @@
 				"c": "2",
 				"d": "1"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "variation 2 {'c': 2, 'd': 1} : choix 0 refusé",
@@ -244,10 +242,10 @@
 				"c": "2",
 				"d": "1"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "variation 2 {'c': 2, 'd': 1} : choix 3 refusé",
@@ -256,10 +254,10 @@
 				"c": "2",
 				"d": "1"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["3"]
 		},
 		{
 			"description": "variation 3 {'c': 5} : bon choix",
@@ -267,10 +265,10 @@
 			"variables": {
 				"c": "5"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["3"]
 		},
 		{
 			"description": "variation 3 {'c': 5} : choix 1 refusé",
@@ -278,10 +276,10 @@
 			"variables": {
 				"c": "5"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "variation 3 {'c': 5} : choix 2 refusé",
@@ -289,10 +287,10 @@
 			"variables": {
 				"c": "5"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "variation 4 {'b': 6, 'd': -2} : bon choix",
@@ -301,10 +299,10 @@
 				"b": "6",
 				"d": "-2"
 			},
-			"selectedChoices": [4],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["4"]
 		},
 		{
 			"description": "variation 4 {'b': 6, 'd': -2} : choix 0 refusé",
@@ -313,10 +311,10 @@
 				"b": "6",
 				"d": "-2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "variation 4 {'b': 6, 'd': -2} : choix 1 refusé",
@@ -325,10 +323,10 @@
 				"b": "6",
 				"d": "-2"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		}
 	]
 }

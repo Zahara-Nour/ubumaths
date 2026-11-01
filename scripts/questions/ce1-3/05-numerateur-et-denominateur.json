@@ -1,0 +1,216 @@
+{
+	"title": "Numérateur et dénominateur",
+	"description": "Le numérateur, le dénominateur de 3/8 ; d'une bande partagée en 5 parts dont 2 coloriées",
+	"grades": ["CE1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Ecriture",
+	"level": 5,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans la fraction $\\frac{{{n}}}{{{d}}}$, quel est le **numérateur** ?\n\nLe numérateur est $?$.",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2|3|4|5|6|8|10"
+				},
+				{
+					"name": "n",
+					"expression": "1..{{eval:d-1}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le **dénominateur** (en bas) dit en combien de parts égales on partage le tout ; le **numérateur** (en haut) dit combien de parts on prend.",
+					"Dans $\\frac{{{n}}}{{{d}}}$, le numérateur est $\\textcolor{{{color:primary.0}}}{{{n}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans la fraction $\\frac{{{n}}}{{{d}}}$, quel est le **dénominateur** ?\n\nLe dénominateur est $?$.",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2|3|4|5|6|8|10"
+				},
+				{
+					"name": "n",
+					"expression": "1..{{eval:d-1}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le **dénominateur** (en bas) dit en combien de parts égales on partage le tout ; le **numérateur** (en haut) dit combien de parts on prend.",
+					"Dans $\\frac{{{n}}}{{{d}}}$, le dénominateur est $\\textcolor{{{color:primary.0}}}{{{d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On partage une bande de papier en ${{d}}$ parts égales et on en colorie ${{n}}$.\n\nQuel est le **{{if:t==0|numérateur|dénominateur}}** de la fraction coloriée ?\n\nC'est $?$.",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2|3|4|5|6|8|10"
+				},
+				{
+					"name": "n",
+					"expression": "1..{{eval:d-1}}"
+				},
+				{
+					"name": "t",
+					"expression": "0..1"
+				},
+				{
+					"name": "r",
+					"expression": "eval:(1-t)*n+t*d"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le **dénominateur** (en bas) dit en combien de parts égales on partage le tout ; le **numérateur** (en haut) dit combien de parts on prend.",
+					"La partie coloriée est $\\frac{{{n}}}{{{d}}}$ de la bande : son {{if:t==0|numérateur|dénominateur}} est $\\textcolor{{{color:primary.0}}}{{{r}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3/8 : numérateur 3",
+			"variationIndex": 0,
+			"variables": {
+				"d": "8",
+				"n": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : numérateur de 3/8, 8",
+			"variationIndex": 0,
+			"variables": {
+				"d": "8",
+				"n": "3"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 1/2, numérateur 1",
+			"variationIndex": 0,
+			"variables": {
+				"d": "2",
+				"n": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3/8 : dénominateur 8",
+			"variationIndex": 1,
+			"variables": {
+				"d": "8",
+				"n": "3"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dénominateur de 3/8, 3",
+			"variationIndex": 1,
+			"variables": {
+				"d": "8",
+				"n": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 2 parts sur 5, numérateur 2",
+			"variationIndex": 2,
+			"variables": {
+				"d": "5",
+				"n": "2",
+				"t": "0",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : numérateur, 5 (le nombre de parts)",
+			"variationIndex": 2,
+			"variables": {
+				"d": "5",
+				"n": "2",
+				"t": "0",
+				"r": "2"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 parts sur 5, dénominateur 5",
+			"variationIndex": 2,
+			"variables": {
+				"d": "5",
+				"n": "2",
+				"t": "1",
+				"r": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dénominateur, 2 (les parts coloriées)",
+			"variationIndex": 2,
+			"variables": {
+				"d": "5",
+				"n": "2",
+				"t": "1",
+				"r": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

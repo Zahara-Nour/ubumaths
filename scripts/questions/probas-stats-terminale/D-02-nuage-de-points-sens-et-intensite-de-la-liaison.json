@@ -10,7 +10,7 @@
 	"delay": 60,
 	"variations": [
 		{
-			"statement": "On a représenté le nuage de points d'une série statistique à deux variables.\n\n```nuage\nx: 1 ; 2 ; 3 ; 4 ; 5 ; 6 ; 7 ; 8\ny: {{eval:b+1*a+(1)}} ; {{eval:b+2*a+(-2)}} ; {{eval:b+3*a+(2)}} ; {{eval:b+4*a+(0)}} ; {{eval:b+5*a+(-1)}} ; {{eval:b+6*a+(2)}} ; {{eval:b+7*a+(-2)}} ; {{eval:b+8*a+(1)}}\n```\n\nQue peut-on dire du coefficient de corrélation $r$ ?",
+			"statement": "On a représenté le nuage de points d'une série statistique à deux variables.\n\n```nuage\nx: 1 ; 2 ; 3 ; 4 ; 5 ; 6 ; 7 ; 8\ny: {{eval:b+1*a+(1)}} ; {{eval:b+2*a+(-2)}} ; {{eval:b+3*a+(2)}} ; {{eval:b+4*a+(0)}} ; {{eval:b+5*a+(-1)}} ; {{eval:b+6*a+(2)}} ; {{eval:b+7*a+(-2)}} ; {{eval:b+8*a+(1)}}\n```\n\nQue peut-on dire du coefficient de corrélation $r$ ?\n\n```choix\n- Liaison forte et positive : $r$ est proche de $1$\n- Liaison forte et négative : $r$ est proche de $-1$\n- Pas de liaison affine : $r$ est proche de $0$\n- $r$ est supérieur à $1$ : l'ajustement est parfait\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -21,30 +21,20 @@
 					"expression": "5..20"
 				}
 			],
-			"choices": [
-				{
-					"content": "Liaison forte et positive : $r$ est proche de $1$"
-				},
-				{
-					"content": "Liaison forte et négative : $r$ est proche de $-1$"
-				},
-				{
-					"content": "Pas de liaison affine : $r$ est proche de $0$"
-				},
-				{
-					"content": "$r$ est supérieur à $1$ : l'ajustement est parfait"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Les points sont presque alignés sur une droite **croissante** : la liaison est forte et positive.",
 					"Donc **$r$ est proche de $1$** (on a toujours $-1\\leqslant r\\leqslant 1$)."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "On a représenté le nuage de points d'une série statistique à deux variables.\n\n```nuage\nx: 1 ; 2 ; 3 ; 4 ; 5 ; 6 ; 7 ; 8\ny: {{eval:b-1*a+(1)}} ; {{eval:b-2*a+(-2)}} ; {{eval:b-3*a+(2)}} ; {{eval:b-4*a+(0)}} ; {{eval:b-5*a+(-1)}} ; {{eval:b-6*a+(2)}} ; {{eval:b-7*a+(-2)}} ; {{eval:b-8*a+(1)}}\n```\n\nQue peut-on dire du coefficient de corrélation $r$ ?",
+			"statement": "On a représenté le nuage de points d'une série statistique à deux variables.\n\n```nuage\nx: 1 ; 2 ; 3 ; 4 ; 5 ; 6 ; 7 ; 8\ny: {{eval:b-1*a+(1)}} ; {{eval:b-2*a+(-2)}} ; {{eval:b-3*a+(2)}} ; {{eval:b-4*a+(0)}} ; {{eval:b-5*a+(-1)}} ; {{eval:b-6*a+(2)}} ; {{eval:b-7*a+(-2)}} ; {{eval:b-8*a+(1)}}\n```\n\nQue peut-on dire du coefficient de corrélation $r$ ?\n\n```choix\n- Liaison forte et négative : $r$ est proche de $-1$\n- Liaison forte et positive : $r$ est proche de $1$\n- Pas de liaison affine : $r$ est proche de $0$\n- $r$ est supérieur à $1$ : l'ajustement est parfait\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -55,59 +45,44 @@
 					"expression": "50..70"
 				}
 			],
-			"choices": [
-				{
-					"content": "Liaison forte et négative : $r$ est proche de $-1$"
-				},
-				{
-					"content": "Liaison forte et positive : $r$ est proche de $1$"
-				},
-				{
-					"content": "Pas de liaison affine : $r$ est proche de $0$"
-				},
-				{
-					"content": "$r$ est supérieur à $1$ : l'ajustement est parfait"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Les points sont presque alignés sur une droite **décroissante** : la liaison est forte et négative.",
 					"Donc **$r$ est proche de $-1$**."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "On a représenté le nuage de points d'une série statistique à deux variables.\n\n```nuage\nx: 1 ; 2 ; 3 ; 4 ; 5 ; 6 ; 7 ; 8\ny: {{eval:b+(-3)}} ; {{eval:b+(6)}} ; {{eval:b+(-5)}} ; {{eval:b+(2)}} ; {{eval:b+(5)}} ; {{eval:b+(-6)}} ; {{eval:b+(4)}} ; {{eval:b+(-2)}}\n```\n\nQue peut-on dire du coefficient de corrélation $r$ ?",
+			"statement": "On a représenté le nuage de points d'une série statistique à deux variables.\n\n```nuage\nx: 1 ; 2 ; 3 ; 4 ; 5 ; 6 ; 7 ; 8\ny: {{eval:b+(-3)}} ; {{eval:b+(6)}} ; {{eval:b+(-5)}} ; {{eval:b+(2)}} ; {{eval:b+(5)}} ; {{eval:b+(-6)}} ; {{eval:b+(4)}} ; {{eval:b+(-2)}}\n```\n\nQue peut-on dire du coefficient de corrélation $r$ ?\n\n```choix\n- Pas de liaison affine : $r$ est proche de $0$\n- Liaison forte et positive : $r$ est proche de $1$\n- Liaison forte et négative : $r$ est proche de $-1$\n- $r$ est supérieur à $1$ : l'ajustement est parfait\n```",
 			"variables": [
 				{
 					"name": "b",
 					"expression": "15..30"
 				}
 			],
-			"choices": [
-				{
-					"content": "Pas de liaison affine : $r$ est proche de $0$"
-				},
-				{
-					"content": "Liaison forte et positive : $r$ est proche de $1$"
-				},
-				{
-					"content": "Liaison forte et négative : $r$ est proche de $-1$"
-				},
-				{
-					"content": "$r$ est supérieur à $1$ : l'ajustement est parfait"
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Les points sont dispersés sans direction privilégiée : aucune droite ne les approche bien.",
 					"Donc **$r$ est proche de $0$** : un ajustement affine n'est pas pertinent."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
 	"testSpecs": [
 		{
 			"description": "v0 : positive",
@@ -116,10 +91,10 @@
 				"a": "4",
 				"b": "10"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v0 : négative",
@@ -128,10 +103,10 @@
 				"a": "4",
 				"b": "10"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 : r > 1",
@@ -140,10 +115,10 @@
 				"a": "4",
 				"b": "10"
 			},
-			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["3"]
 		},
 		{
 			"description": "v1 : négative",
@@ -152,10 +127,10 @@
 				"a": "4",
 				"b": "60"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 : positive",
@@ -164,10 +139,10 @@
 				"a": "4",
 				"b": "60"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v2 : nulle",
@@ -175,10 +150,10 @@
 			"variables": {
 				"b": "20"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v2 : positive",
@@ -186,16 +161,10 @@
 			"variables": {
 				"b": "20"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		}
-	],
-	"options": {
-		"constraints": {
-			"spaces": "off"
-		},
-		"shuffleChoices": true
-	}
+	]
 }

@@ -23,8 +23,12 @@ export type CatalogNodeType =
 	| 'figure'
 	| 'stat-chart'
 	| 'qr'
+	| 'scratch'
 	| 'horloge'
-	| 'operation';
+	| 'partage'
+	| 'espace'
+	| 'operation'
+	| 'ranger';
 
 /** Une ligne du tableau des réglages */
 export interface BlockSetting {
@@ -83,6 +87,11 @@ export interface BlockCatalogEntry {
 	/** Paragraphe d'introduction de la page */
 	intro: string;
 	settingGroups: BlockSettingGroup[];
+	/**
+	 * `instructions` : le bloc est un programme, pas des lignes `clé: valeur`
+	 * (```scratch) ; la page montre « Instructions » sans colonne « Par défaut ».
+	 */
+	settingsKind?: 'keys' | 'instructions';
 	examples: BlockExample[];
 	mistakes: BlockMistake[];
 	/** Texte prérempli de la zone « Essayer » */

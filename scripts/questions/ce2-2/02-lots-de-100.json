@@ -1,0 +1,156 @@
+{
+	"title": "Ranger par lots de $100$ ou de $10$",
+	"description": "1 235 filtres par lots de 100 : 13 lots (le dernier n'est pas plein)",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Décomposition",
+	"level": 20,
+	"delay": 40,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Un magasin reçoit ${{n}}$ filtres. Il les range par lots de $100$.\n\nCombien de lots faut-il pour ranger tous les filtres ?\n\nIl faut $?$ lots.",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "10..98"
+				},
+				{
+					"name": "r",
+					"expression": "1..99"
+				},
+				{
+					"name": "n",
+					"expression": "eval:100*q+r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{n}}$, c'est ${{q}}$ centaines et ${{r}}$ {{if:r<=1|unité|unités}}.",
+					"${{q}}$ lots de $100$ rangent ${{eval:100*q}}$ filtres : il en reste ${{r}}$.",
+					"Pour ranger les ${{r}}$ derniers, il faut un lot de plus : ${{q}}+1={{solution}}$ lots."
+				]
+			}
+		},
+		{
+			"statement": "Une maîtresse a ${{n}}$ crayons. Elle les range dans des boîtes de $10$.\n\nCombien de boîtes faut-il pour ranger tous les crayons ?\n\nIl faut $?$ boîtes.",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "10..98"
+				},
+				{
+					"name": "r",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:10*q+r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{n}}$, c'est ${{q}}$ dizaines et ${{r}}$ {{if:r<=1|unité|unités}}.",
+					"${{q}}$ boîtes de $10$ rangent ${{eval:10*q}}$ crayons : il en reste ${{r}}$.",
+					"Pour ranger les ${{r}}$ derniers, il faut une boîte de plus : ${{q}}+1={{solution}}$ boîtes."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1 235 filtres : 13 lots",
+			"variationIndex": 0,
+			"variables": {
+				"q": "12",
+				"r": "35",
+				"n": "1235"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : lots pleins seulement (12)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "12",
+				"r": "35",
+				"n": "1235"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 12,35",
+			"variationIndex": 0,
+			"variables": {
+				"q": "12",
+				"r": "35",
+				"n": "1235"
+			},
+			"answers": ["12,35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 9 899 filtres : 99 lots",
+			"variationIndex": 0,
+			"variables": {
+				"q": "98",
+				"r": "99",
+				"n": "9899"
+			},
+			"answers": ["99"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "347 crayons : 35 boîtes",
+			"variationIndex": 1,
+			"variables": {
+				"q": "34",
+				"r": "7",
+				"n": "347"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : boîtes pleines seulement (34)",
+			"variationIndex": 1,
+			"variables": {
+				"q": "34",
+				"r": "7",
+				"n": "347"
+			},
+			"answers": ["34"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

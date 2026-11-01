@@ -6,8 +6,34 @@
 	"template": {
 		"title": "Comparer deux fractions",
 		"description": "En comparant à $1$",
+		"variations": [
+			{
+				"statement": "Quelle est la plus petite de ces $2$ fractions ?\n\n```choix\n- $$\\dfrac{{{b}}}{{{a}}}$$\n- $$\\dfrac{{{d}}}{{{c}}}$$\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "{{if:f<g|0|1}}"
+					}
+				]
+			},
+			{
+				"statement": "Quelle est la plus petite de ces $2$ fractions ?\n\n```choix\n- $$\\dfrac{{{d}}}{{{c}}}$$\n- $$\\dfrac{{{b}}}{{{a}}}$$\n```",
+				"blanks": [
+					{
+						"expectedAnswer": "{{if:g<f|0|1}}"
+					}
+				]
+			}
+		],
+		"grades": [
+			"5"
+		],
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"subdomain": "Comparer",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
 		"shared": {
-			"statement": "Quelle est la plus petite de ces $2$ fractions ?",
 			"variables": [
 				{
 					"name": "a",
@@ -40,39 +66,6 @@
 				]
 			}
 		},
-		"variations": [
-			{
-				"statement": "Quelle est la plus petite de ces $2$ fractions ?",
-				"correctChoiceIndex": ["{{if:f<g|0|1}}"],
-				"choices": [
-					{
-						"content": "$$\\dfrac{{{b}}}{{{a}}}$$"
-					},
-					{
-						"content": "$$\\dfrac{{{d}}}{{{c}}}$$"
-					}
-				]
-			},
-			{
-				"statement": "Quelle est la plus petite de ces $2$ fractions ?",
-				"correctChoiceIndex": ["{{if:g<f|0|1}}"],
-				"choices": [
-					{
-						"content": "$$\\dfrac{{{d}}}{{{c}}}$$"
-					},
-					{
-						"content": "$$\\dfrac{{{b}}}{{{a}}}$$"
-					}
-				]
-			}
-		],
-		"grades": ["5"],
-		"theme": "Fractions",
-		"domain": "Apprivoiser",
-		"subdomain": "Comparer",
-		"level": 3,
-		"status": "draft",
-		"delay": 20,
 		"testSpecs": [
 			{
 				"description": "15/16 vs 31/19 (choix 0)",
@@ -83,10 +76,12 @@
 					"c": "19",
 					"d": "31"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "mauvais choix",
@@ -97,10 +92,12 @@
 					"c": "19",
 					"d": "31"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "bornes : 1/8 vs 9/8... c=8,d=9",
@@ -111,10 +108,12 @@
 					"c": "8",
 					"d": "9"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			},
 			{
 				"description": "ordre inversé (choix 1)",
@@ -125,10 +124,12 @@
 					"c": "19",
 					"d": "31"
 				},
-				"selectedChoices": [1],
 				"expected": {
 					"status": "correct"
-				}
+				},
+				"answers": [
+					"1"
+				]
 			},
 			{
 				"description": "ordre inversé : mauvais choix",
@@ -139,10 +140,12 @@
 					"c": "19",
 					"d": "31"
 				},
-				"selectedChoices": [0],
 				"expected": {
 					"status": "incorrect"
-				}
+				},
+				"answers": [
+					"0"
+				]
 			}
 		]
 	}

@@ -1,0 +1,111 @@
+{
+	"title": "Centimètre, mètre ou kilomètre ?",
+	"description": "Choisir l'unité qui convient : un crayon de 15 cm, un bus de 12 m, un trajet de 3 km",
+	"grades": ["CE1"],
+	"theme": "Grandeurs",
+	"domain": "Longueurs",
+	"subdomain": "Unités",
+	"level": 6,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:k==1|Un crayon mesure $15$|{{if:k==2|Une gomme mesure $4$|{{if:k==3|Un cahier mesure $30$|{{if:k==4|Une règle d'écolier mesure $20$|{{if:k==5|La porte de la classe mesure $2$|{{if:k==6|Un bus mesure $12$|{{if:k==7|Une piscine mesure $25$|{{if:k==8|La cour de l'école mesure $40$|{{if:k==9|Le trajet de la maison à la piscine fait $3$|{{if:k==10|Une course à pied fait $10$|{{if:k==11|La route entre deux villes voisines fait $15$|Une randonnée d'une journée fait $20$}}}}}}}}}}}}}}}}}}}}}} …\n\nQuelle unité convient ?\n\n```choix\nmelanger: non\n- cm\n- m\n- km\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..12"
+				},
+				{
+					"name": "r",
+					"expression": "eval:floor((k-1)/4)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:r==0|C'est un petit objet, qu'on tient dans la main : on mesure en centimètres.|{{if:r==1|C'est grand comme une pièce ou un véhicule : on mesure en mètres.|C'est une longue distance, qu'on parcourt à pied ou en voiture : on mesure en kilomètres.}}}}",
+					"{{if:k==1|Un crayon mesure $15$|{{if:k==2|Une gomme mesure $4$|{{if:k==3|Un cahier mesure $30$|{{if:k==4|Une règle d'écolier mesure $20$|{{if:k==5|La porte de la classe mesure $2$|{{if:k==6|Un bus mesure $12$|{{if:k==7|Une piscine mesure $25$|{{if:k==8|La cour de l'école mesure $40$|{{if:k==9|Le trajet de la maison à la piscine fait $3$|{{if:k==10|Une course à pied fait $10$|{{if:k==11|La route entre deux villes voisines fait $15$|Une randonnée d'une journée fait $20$}}}}}}}}}}}}}}}}}}}}}} {{if:r==0|centimètres|{{if:r==1|mètres|kilomètres}}}} (**{{if:r==0|cm|{{if:r==1|m|km}}}}**)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "crayon : cm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : crayon de 15 m",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "bus : m",
+			"variationIndex": 0,
+			"variables": {
+				"k": "6",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : bus de 12 cm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "6",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "trajet : km",
+			"variationIndex": 0,
+			"variables": {
+				"k": "9",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : trajet de 3 m",
+			"variationIndex": 0,
+			"variables": {
+				"k": "9",
+				"r": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

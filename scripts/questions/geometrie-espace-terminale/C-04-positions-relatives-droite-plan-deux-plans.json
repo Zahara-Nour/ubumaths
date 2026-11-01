@@ -8,12 +8,9 @@
 	"level": 2,
 	"status": "draft",
 	"delay": 120,
-	"shared": {
-		"cleanCoefficients": true
-	},
 	"variations": [
 		{
-			"statement": "Dans l'espace muni d'un repère orthonormé, on considère le plan $\\mathcal{P}$ d'équation ${{a}}x+({{b}})y+({{c}})z+({{d}})=0$ et la droite $\\Delta$ de représentation paramétrique $$\\begin{cases}x={{if:x0!=0|{{x0}}}}{{if:u1==1|{{if:x0!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:x0!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:x0==0|0}}}}\\\\y={{if:y0!=0|{{y0}}}}{{if:u2==1|{{if:y0!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:y0!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:y0==0|0}}}}\\\\z={{if:z0!=0|{{z0}}}}{{if:u3==1|{{if:z0!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:z0!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:z0==0|0}}}}\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nQuelle est la position relative de $\\Delta$ et $\\mathcal{P}$ ?",
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère le plan $\\mathcal{P}$ d'équation ${{a}}x+({{b}})y+({{c}})z+({{d}})=0$ et la droite $\\Delta$ de représentation paramétrique $$\\begin{cases}x={{if:x0!=0|{{x0}}}}{{if:u1==1|{{if:x0!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:x0!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:x0==0|0}}}}\\\\y={{if:y0!=0|{{y0}}}}{{if:u2==1|{{if:y0!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:y0!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:y0==0|0}}}}\\\\z={{if:z0!=0|{{z0}}}}{{if:u3==1|{{if:z0!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:z0!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:z0==0|0}}}}\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nQuelle est la position relative de $\\Delta$ et $\\mathcal{P}$ ?\n\n```choix\n- $\\Delta$ et $\\mathcal{P}$ sont sécants en un point.\n- $\\Delta$ est strictement parallèle à $\\mathcal{P}$.\n- $\\Delta$ est incluse dans $\\mathcal{P}$.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -88,28 +85,21 @@
 					"expression": "{{eval:hz+off*m*c}}"
 				}
 			],
-			"choices": [
-				{
-					"content": "$\\Delta$ et $\\mathcal{P}$ sont sécants en un point."
-				},
-				{
-					"content": "$\\Delta$ est strictement parallèle à $\\mathcal{P}$."
-				},
-				{
-					"content": "$\\Delta$ est incluse dans $\\mathcal{P}$."
-				}
-			],
-			"correctChoiceIndex": ["{{sel}}"],
 			"correction": {
 				"steps": [
 					"On compare le vecteur directeur $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\\\{{u3}}\\end{pmatrix}$ de $\\Delta$ au vecteur normal $\\vec{n}\\begin{pmatrix}{{a}}\\\\{{b}}\\\\{{c}}\\end{pmatrix}$ : $\\vec{u}\\cdot\\vec{n}={{u1}}\\times{{a;()}}+{{u2;()}}\\times{{b;()}}+{{u3;()}}\\times{{c;()}}={{eval:a*u1+b*u2+c*u3}}$.",
 					"{{if:sel==0|$\\vec{u}\\cdot\\vec{n}\\neq0$ : $\\Delta$ n'est pas parallèle à $\\mathcal{P}$, elle le **coupe en un point**.}}{{if:sel>0|$\\vec{u}\\cdot\\vec{n}=0$ : $\\Delta$ est parallèle à $\\mathcal{P}$. On teste le point $A({{eval:x0}}\\,;\\,{{y0}}\\,;\\,{{z0}})$ de $\\Delta$ : ${{a}}\\times{{x0;()}}+{{b;()}}\\times{{y0;()}}+{{c;()}}\\times{{z0;()}}+({{d}})={{eval:a*x0+b*y0+c*z0+d}}$.}}",
 					"{{if:sel==1|$A\\notin\\mathcal{P}$ : $\\Delta$ est **strictement parallèle** à $\\mathcal{P}$.}}{{if:sel==2|$A\\in\\mathcal{P}$ : $\\Delta$ est **incluse** dans $\\mathcal{P}$.}}{{if:sel==0|(Le point d'intersection s'obtient en reportant la représentation dans l'équation.)}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{sel}}"
+				}
+			]
 		},
 		{
-			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les plans $\\mathcal{P}$ et $\\mathcal{Q}$ d'équations respectives ${{a}}x+({{b}})y+({{c}})z+({{d}})=0$ et ${{p1}}x+({{p2}})y+({{p3}})z+({{q}})=0$.\n\nQuelle est la position relative de $\\mathcal{P}$ et $\\mathcal{Q}$ ?",
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les plans $\\mathcal{P}$ et $\\mathcal{Q}$ d'équations respectives ${{a}}x+({{b}})y+({{c}})z+({{d}})=0$ et ${{p1}}x+({{p2}})y+({{p3}})z+({{q}})=0$.\n\nQuelle est la position relative de $\\mathcal{P}$ et $\\mathcal{Q}$ ?\n\n```choix\n- $\\mathcal{P}$ et $\\mathcal{Q}$ sont sécants selon une droite.\n- $\\mathcal{P}$ et $\\mathcal{Q}$ sont strictement parallèles.\n- $\\mathcal{P}$ et $\\mathcal{Q}$ sont confondus.\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -164,27 +154,23 @@
 					"expression": "{{eval:k*d+off*m}}"
 				}
 			],
-			"choices": [
-				{
-					"content": "$\\mathcal{P}$ et $\\mathcal{Q}$ sont sécants selon une droite."
-				},
-				{
-					"content": "$\\mathcal{P}$ et $\\mathcal{Q}$ sont strictement parallèles."
-				},
-				{
-					"content": "$\\mathcal{P}$ et $\\mathcal{Q}$ sont confondus."
-				}
-			],
-			"correctChoiceIndex": ["{{sel}}"],
 			"correction": {
 				"steps": [
 					"On compare les vecteurs normaux $\\vec{n}\\begin{pmatrix}{{a}}\\\\{{b}}\\\\{{c}}\\end{pmatrix}$ et $\\vec{n}'\\begin{pmatrix}{{p1}}\\\\{{p2}}\\\\{{p3}}\\end{pmatrix}$.",
 					"{{if:sel==0|${{a}}\\times{{p2;()}}-{{b;()}}\\times{{p1;()}}={{eval:a*p2-b*p1}}\\neq0$ : les vecteurs normaux ne sont pas colinéaires.}}{{if:sel>0|$\\vec{n}'={{k}}\\,\\vec{n}$ : les plans sont parallèles. Multiplions l'équation de $\\mathcal{P}$ par ${{k}}$ : le terme constant devient ${{eval:k*d}}$, celui de $\\mathcal{Q}$ vaut ${{q}}$.}}",
 					"{{if:sel==0|Les plans ne sont donc pas parallèles : ils sont **sécants selon une droite**.}}{{if:sel==1|Les termes constants diffèrent : les plans sont **strictement parallèles**.}}{{if:sel==2|Les équations sont proportionnelles : les plans sont **confondus**.}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "{{sel}}"
+				}
+			]
 		}
 	],
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"testSpecs": [
 		{
 			"description": "v0 : sécants",
@@ -200,10 +186,10 @@
 				"m": "1",
 				"sel": "0"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v0 : sécants, parallèle coché",
@@ -219,10 +205,10 @@
 				"m": "1",
 				"sel": "0"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 : strictement parallèle",
@@ -238,10 +224,10 @@
 				"m": "1",
 				"sel": "1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v0 : strictement parallèle, incluse cochée",
@@ -257,10 +243,10 @@
 				"m": "1",
 				"sel": "1"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v0 : incluse",
@@ -276,10 +262,10 @@
 				"m": "1",
 				"sel": "2"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v0 : incluse, sécants coché",
@@ -295,10 +281,10 @@
 				"m": "1",
 				"sel": "2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 : sécants",
@@ -312,10 +298,10 @@
 				"m": "1",
 				"sel": "0"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v1 : sécants, parallèles coché",
@@ -329,10 +315,10 @@
 				"m": "1",
 				"sel": "0"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v1 : strictement parallèles",
@@ -346,10 +332,10 @@
 				"m": "1",
 				"sel": "1"
 			},
-			"selectedChoices": [1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["1"]
 		},
 		{
 			"description": "v1 : strictement parallèles, confondus coché",
@@ -363,10 +349,10 @@
 				"m": "1",
 				"sel": "1"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v1 : confondus",
@@ -380,10 +366,10 @@
 				"m": "1",
 				"sel": "2"
 			},
-			"selectedChoices": [2],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["2"]
 		},
 		{
 			"description": "v1 : confondus, sécants coché",
@@ -397,10 +383,10 @@
 				"m": "1",
 				"sel": "2"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0"]
 		}
 	]
 }

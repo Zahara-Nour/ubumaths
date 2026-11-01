@@ -6,7 +6,9 @@
 		"domain": "Apprivoiser",
 		"level": 9,
 		"status": "draft",
-		"grades": ["CM2"],
+		"grades": [
+			"CM2"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -48,7 +50,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["0.5"],
+				"answers": [
+					"0.5"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -59,7 +63,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["3{,}5"],
+				"answers": [
+					"3{,}5"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -70,7 +76,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["4.5"],
+				"answers": [
+					"4.5"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -81,7 +89,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["0.25"],
+				"answers": [
+					"0.25"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -92,7 +102,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["1.2"],
+				"answers": [
+					"1.2"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -103,7 +115,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["0.4"],
+				"answers": [
+					"0.4"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -114,10 +128,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["\\frac{1}{4}"],
+				"answers": [
+					"\\frac{1}{4}"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "1/4"
@@ -126,7 +144,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["0.003"],
+				"answers": [
+					"0.003"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -137,7 +157,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["0.75"],
+				"answers": [
+					"0.75"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -148,7 +170,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["0.2"],
+				"answers": [
+					"0.2"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -159,7 +183,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["0.5"],
+				"answers": [
+					"0.5"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -178,7 +204,9 @@
 		"domain": "Diviser",
 		"level": 3,
 		"status": "published",
-		"grades": ["CE2"],
+		"grades": [
+			"CE2"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -236,7 +264,10 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["10", "6"],
+				"answers": [
+					"10",
+					"6"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -249,7 +280,10 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["6", "10"],
+				"answers": [
+					"6",
+					"10"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -262,7 +296,10 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["9", "13"],
+				"answers": [
+					"9",
+					"13"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -275,7 +312,10 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["2", "1"],
+				"answers": [
+					"2",
+					"1"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -296,7 +336,9 @@
 		"domain": "Apprivoiser",
 		"level": 9,
 		"status": "published",
-		"grades": ["CM1"],
+		"grades": [
+			"CM1"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -358,7 +400,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["12\\,345"],
+				"answers": [
+					"12\\,345"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -373,7 +417,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": [""],
+				"answers": [
+					""
+				],
 				"expected": {
 					"status": "empty"
 				},
@@ -388,7 +434,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["12\\,346"],
+				"answers": [
+					"12\\,346"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -411,7 +459,9 @@
 		"domain": "Soustraire",
 		"level": 3,
 		"status": "draft",
-		"grades": ["CM1"],
+		"grades": [
+			"CM1"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -477,7 +527,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["5{,}29"],
+				"answers": [
+					"5{,}29"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -492,7 +544,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["5.29"],
+				"answers": [
+					"5.29"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -507,7 +561,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["7{,}72"],
+				"answers": [
+					"7{,}72"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -530,7 +586,9 @@
 		"domain": "Soustraire",
 		"level": 4,
 		"status": "draft",
-		"grades": ["CM1"],
+		"grades": [
+			"CM1"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -592,7 +650,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["2{,}9"],
+				"answers": [
+					"2{,}9"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -606,7 +666,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["2.9"],
+				"answers": [
+					"2.9"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -620,7 +682,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["3{,}1"],
+				"answers": [
+					"3{,}1"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -642,7 +706,9 @@
 		"domain": "Soustraire",
 		"level": 1,
 		"status": "draft",
-		"grades": ["CM1"],
+		"grades": [
+			"CM1"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -704,7 +770,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["2{,}6"],
+				"answers": [
+					"2{,}6"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -718,7 +786,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["2.6"],
+				"answers": [
+					"2.6"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -732,7 +802,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["11"],
+				"answers": [
+					"11"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -754,7 +826,9 @@
 		"domain": "Transformation",
 		"level": 2,
 		"status": "draft",
-		"grades": ["5"],
+		"grades": [
+			"5"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -924,7 +998,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["a(y+a)"],
+				"answers": [
+					"a(y+a)"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -939,10 +1015,15 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["a*(y+a)"],
+				"answers": [
+					"a*(y+a)"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["products", "form"]
+					"constraintViolations": [
+						"products",
+						"form"
+					]
 				},
 				"variables": {
 					"p": "y|y",
@@ -955,7 +1036,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["a(y+6)"],
+				"answers": [
+					"a(y+6)"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -970,10 +1053,15 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["a*(y+6)"],
+				"answers": [
+					"a*(y+6)"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["products", "form"]
+					"constraintViolations": [
+						"products",
+						"form"
+					]
 				},
 				"variables": {
 					"p": "y|y",
@@ -986,7 +1074,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["7(y+a)"],
+				"answers": [
+					"7(y+a)"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1001,10 +1091,15 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["7*(y+a)"],
+				"answers": [
+					"7*(y+a)"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["products", "form"]
+					"constraintViolations": [
+						"products",
+						"form"
+					]
 				},
 				"variables": {
 					"p": "y|y",
@@ -1017,7 +1112,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["7(y+6)"],
+				"answers": [
+					"7(y+6)"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1032,10 +1129,15 @@
 				"variationIndex": 3
 			},
 			{
-				"answers": ["7*(y+6)"],
+				"answers": [
+					"7*(y+6)"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["products", "form"]
+					"constraintViolations": [
+						"products",
+						"form"
+					]
 				},
 				"variables": {
 					"p": "y|y",
@@ -1048,7 +1150,9 @@
 				"variationIndex": 3
 			},
 			{
-				"answers": ["7(y+a)"],
+				"answers": [
+					"7(y+a)"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1063,10 +1167,15 @@
 				"variationIndex": 4
 			},
 			{
-				"answers": ["(y+a)*7"],
+				"answers": [
+					"(y+a)*7"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["products", "form"]
+					"constraintViolations": [
+						"products",
+						"form"
+					]
 				},
 				"variables": {
 					"p": "y|y",
@@ -1079,7 +1188,9 @@
 				"variationIndex": 4
 			},
 			{
-				"answers": ["7(y+6)"],
+				"answers": [
+					"7(y+6)"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1094,10 +1205,15 @@
 				"variationIndex": 5
 			},
 			{
-				"answers": ["(y+6)*7"],
+				"answers": [
+					"(y+6)*7"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["products", "form"]
+					"constraintViolations": [
+						"products",
+						"form"
+					]
 				},
 				"variables": {
 					"p": "y|y",
@@ -1118,7 +1234,9 @@
 		"domain": "Additionner",
 		"level": 2,
 		"status": "draft",
-		"grades": ["CM1"],
+		"grades": [
+			"CM1"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -1208,7 +1326,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["9{,}75"],
+				"answers": [
+					"9{,}75"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1223,7 +1343,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["9.75"],
+				"answers": [
+					"9.75"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1238,7 +1360,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["9{,}75"],
+				"answers": [
+					"9{,}75"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1253,7 +1377,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["1{,}57"],
+				"answers": [
+					"1{,}57"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1276,7 +1402,9 @@
 		"domain": "Additionner",
 		"level": 1,
 		"status": "draft",
-		"grades": ["CM1"],
+		"grades": [
+			"CM1"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -1338,7 +1466,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["8{,}9"],
+				"answers": [
+					"8{,}9"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1352,7 +1482,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["8.9"],
+				"answers": [
+					"8.9"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1366,7 +1498,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["8{,}8"],
+				"answers": [
+					"8{,}8"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1380,7 +1514,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["89"],
+				"answers": [
+					"89"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1402,7 +1538,9 @@
 		"domain": "Additionner",
 		"level": 3,
 		"status": "draft",
-		"grades": ["CM1"],
+		"grades": [
+			"CM1"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -1464,7 +1602,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["8{,}2"],
+				"answers": [
+					"8{,}2"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1478,7 +1618,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["8.2"],
+				"answers": [
+					"8.2"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1492,7 +1634,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["7{,}12"],
+				"answers": [
+					"7{,}12"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1506,7 +1650,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["7{,}2"],
+				"answers": [
+					"7{,}2"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1528,7 +1674,9 @@
 		"domain": "Soustraire",
 		"level": 2,
 		"status": "draft",
-		"grades": ["CM1"],
+		"grades": [
+			"CM1"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -1590,7 +1738,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["8{,}7"],
+				"answers": [
+					"8{,}7"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1604,7 +1754,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["8.7"],
+				"answers": [
+					"8.7"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1618,7 +1770,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["18{,}7"],
+				"answers": [
+					"18{,}7"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1632,10 +1786,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["\\frac{87}{10}"],
+				"answers": [
+					"\\frac{87}{10}"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "6",
@@ -1647,10 +1805,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["8{,}70"],
+				"answers": [
+					"8{,}70"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["zeros"]
+					"constraintViolations": [
+						"zeros"
+					]
 				},
 				"variables": {
 					"a": "6",
@@ -1670,7 +1832,9 @@
 		"domain": "Apprivoiser",
 		"level": 2,
 		"status": "draft",
-		"grades": ["CM1"],
+		"grades": [
+			"CM1"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -1805,7 +1969,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["5+\\frac{8}{10}+\\frac{1}{100}"],
+				"answers": [
+					"5+\\frac{8}{10}+\\frac{1}{100}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1818,10 +1984,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["5{,}81"],
+				"answers": [
+					"5{,}81"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "5",
@@ -1832,10 +2002,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["5+0{,}8+0{,}01"],
+				"answers": [
+					"5+0{,}8+0{,}01"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "5",
@@ -1846,7 +2020,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["5+\\frac{1}{100}"],
+				"answers": [
+					"5+\\frac{1}{100}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1859,7 +2035,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["5+\\frac{0}{10}+\\frac{1}{100}"],
+				"answers": [
+					"5+\\frac{0}{10}+\\frac{1}{100}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1872,7 +2050,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["5+\\frac{1}{10}"],
+				"answers": [
+					"5+\\frac{1}{10}"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -1885,7 +2065,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["5+\\frac{8}{10}"],
+				"answers": [
+					"5+\\frac{8}{10}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1898,7 +2080,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["\\frac{1}{100}+5+\\frac{8}{10}"],
+				"answers": [
+					"\\frac{1}{100}+5+\\frac{8}{10}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -1911,10 +2095,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["5+\\frac{4}{5}+\\frac{1}{100}"],
+				"answers": [
+					"5+\\frac{4}{5}+\\frac{1}{100}"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "5",
@@ -1925,10 +2113,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["5+\\frac{4}{5}"],
+				"answers": [
+					"5+\\frac{4}{5}"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "5",
@@ -1947,7 +2139,9 @@
 		"domain": "Apprivoiser",
 		"level": 4,
 		"status": "draft",
-		"grades": ["CM2"],
+		"grades": [
+			"CM2"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -2094,7 +2288,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["5+\\frac{8}{10}+\\frac{1}{100}+\\frac{4}{1\\,000}"],
+				"answers": [
+					"5+\\frac{8}{10}+\\frac{1}{100}+\\frac{4}{1\\,000}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2108,10 +2304,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["5{,}814"],
+				"answers": [
+					"5{,}814"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "5",
@@ -2123,10 +2323,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["5+\\frac{814}{1\\,000}"],
+				"answers": [
+					"5+\\frac{814}{1\\,000}"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "5",
@@ -2138,7 +2342,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["5+\\frac{1}{100}+\\frac{4}{1\\,000}"],
+				"answers": [
+					"5+\\frac{1}{100}+\\frac{4}{1\\,000}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2152,7 +2358,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["5+\\frac{8}{10}+\\frac{4}{1\\,000}"],
+				"answers": [
+					"5+\\frac{8}{10}+\\frac{4}{1\\,000}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2166,7 +2374,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["5+\\frac{8}{10}+\\frac{4}{100}"],
+				"answers": [
+					"5+\\frac{8}{10}+\\frac{4}{100}"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -2180,10 +2390,14 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["5+\\frac{8}{10}+\\frac{1}{100}+\\frac{4}{1000}"],
+				"answers": [
+					"5+\\frac{8}{10}+\\frac{1}{100}+\\frac{4}{1000}"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["spaces"]
+					"constraintViolations": [
+						"spaces"
+					]
 				},
 				"variables": {
 					"a": "5",
@@ -2195,7 +2409,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["\\frac{4}{1\\,000}+5+\\frac{1}{100}+\\frac{8}{10}"],
+				"answers": [
+					"\\frac{4}{1\\,000}+5+\\frac{1}{100}+\\frac{8}{10}"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2209,10 +2425,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["5+\\frac{4}{5}+\\frac{1}{100}+\\frac{4}{1\\,000}"],
+				"answers": [
+					"5+\\frac{4}{5}+\\frac{1}{100}+\\frac{4}{1\\,000}"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "5",
@@ -2232,7 +2452,9 @@
 		"domain": "Transformation",
 		"level": 3,
 		"status": "draft",
-		"grades": ["3"],
+		"grades": [
+			"3"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -2306,7 +2528,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["(7+z)(7-z)"],
+				"answers": [
+					"(7+z)(7-z)"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2319,7 +2543,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["(z+7)(z-7)"],
+				"answers": [
+					"(z+7)(z-7)"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2332,7 +2558,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["(7-z)(7+z)"],
+				"answers": [
+					"(7-z)(7+z)"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -2345,7 +2573,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["(7-z)^2"],
+				"answers": [
+					"(7-z)^2"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -2358,10 +2588,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["49-z^2"],
+				"answers": [
+					"49-z^2"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "7",
@@ -2380,10 +2614,12 @@
 		"domain": "Limites",
 		"level": 2,
 		"status": "draft",
-		"grades": ["T_SPE"],
+		"grades": [
+			"T_SPE"
+		],
 		"variations": [
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{+\\infty}$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{+\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Quotient de deux limites infinies.** $\\dfrac{\\infty}{\\infty}$ est une forme indéterminée : on ne peut pas conclure sans transformer l’expression.",
@@ -2391,10 +2627,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["3"]
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{-\\infty}$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{-\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Quotient de deux limites infinies.** $\\dfrac{\\infty}{\\infty}$ est une forme indéterminée : on ne peut pas conclure sans transformer l’expression.",
@@ -2402,10 +2642,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["3"]
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{-\\infty}$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{-\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Quotient de deux limites infinies.** $\\dfrac{\\infty}{\\infty}$ est une forme indéterminée : on ne peut pas conclure sans transformer l’expression.",
@@ -2413,10 +2657,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["3"]
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{+\\infty}$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{+\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Quotient de deux limites infinies.** $\\dfrac{\\infty}{\\infty}$ est une forme indéterminée : on ne peut pas conclure sans transformer l’expression.",
@@ -2424,10 +2672,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["3"]
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{0}{+\\infty}$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{0}{+\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Nombre (ou $0$) divisé par une limite infinie.** Diviser un nombre fixe par une quantité infiniment grande donne une quantité qui tend vers $0$.",
@@ -2435,10 +2687,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["2"]
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{0}{-\\infty}$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{0}{-\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Nombre (ou $0$) divisé par une limite infinie.** Diviser un nombre fixe par une quantité infiniment grande donne une quantité qui tend vers $0$.",
@@ -2446,10 +2702,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["2"]
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{0^+}$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{0^+}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Division par une limite nulle.** Diviser par une quantité qui tend vers $0$ en gardant un signe ($0^+$ : positive, $0^-$ : négative) donne une limite infinie ; son signe suit la règle des signes.",
@@ -2457,10 +2717,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{0^+}$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{0^+}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Division par une limite nulle.** Diviser par une quantité qui tend vers $0$ en gardant un signe ($0^+$ : positive, $0^-$ : négative) donne une limite infinie ; son signe suit la règle des signes.",
@@ -2468,10 +2732,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["1"]
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{0^-}$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{0^-}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Division par une limite nulle.** Diviser par une quantité qui tend vers $0$ en gardant un signe ($0^+$ : positive, $0^-$ : négative) donne une limite infinie ; son signe suit la règle des signes.",
@@ -2479,10 +2747,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["1"]
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{0^-}$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{0^-}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Division par une limite nulle.** Diviser par une quantité qui tend vers $0$ en gardant un signe ($0^+$ : positive, $0^-$ : négative) donne une limite infinie ; son signe suit la règle des signes.",
@@ -2490,10 +2762,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{+\\infty}$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{+\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Nombre (ou $0$) divisé par une limite infinie.** Diviser un nombre fixe par une quantité infiniment grande donne une quantité qui tend vers $0$.",
@@ -2501,10 +2777,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["2"]
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{+\\infty}$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{+\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Nombre (ou $0$) divisé par une limite infinie.** Diviser un nombre fixe par une quantité infiniment grande donne une quantité qui tend vers $0$.",
@@ -2512,10 +2792,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["2"]
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{-\\infty}$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{-\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Nombre (ou $0$) divisé par une limite infinie.** Diviser un nombre fixe par une quantité infiniment grande donne une quantité qui tend vers $0$.",
@@ -2523,10 +2807,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["2"]
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{-\\infty}$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{-\\infty}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Nombre (ou $0$) divisé par une limite infinie.** Diviser un nombre fixe par une quantité infiniment grande donne une quantité qui tend vers $0$.",
@@ -2534,10 +2822,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["2"]
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{{{a}}}$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{{{a}}}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Produit (ou quotient) avec une limite infinie.** Le résultat est infini (sauf avec $0$) ; son signe suit la règle des signes.",
@@ -2545,10 +2837,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{-{{a}}}$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{-{{a}}}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Produit (ou quotient) avec une limite infinie.** Le résultat est infini (sauf avec $0$) ; son signe suit la règle des signes.",
@@ -2556,10 +2852,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["1"]
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{{{a}}}$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{{{a}}}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Produit (ou quotient) avec une limite infinie.** Le résultat est infini (sauf avec $0$) ; son signe suit la règle des signes.",
@@ -2567,10 +2867,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["1"]
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{-{{a}}}$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{-{{a}}}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Produit (ou quotient) avec une limite infinie.** Le résultat est infini (sauf avec $0$) ; son signe suit la règle des signes.",
@@ -2578,10 +2882,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times 0$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times 0$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Produit d’une limite infinie par une limite nulle.** $\\infty \\times 0$ est une forme indéterminée.",
@@ -2589,10 +2897,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["3"]
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times 0$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times 0$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Produit d’une limite infinie par une limite nulle.** $\\infty \\times 0$ est une forme indéterminée.",
@@ -2600,10 +2912,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["3"]
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times(+\\infty)$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times(+\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Produit (ou quotient) avec une limite infinie.** Le résultat est infini (sauf avec $0$) ; son signe suit la règle des signes.",
@@ -2611,10 +2927,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times(-\\infty)$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times(-\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Produit (ou quotient) avec une limite infinie.** Le résultat est infini (sauf avec $0$) ; son signe suit la règle des signes.",
@@ -2622,10 +2942,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["1"]
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times(-\\infty)$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times(-\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Produit (ou quotient) avec une limite infinie.** Le résultat est infini (sauf avec $0$) ; son signe suit la règle des signes.",
@@ -2633,10 +2957,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times(+\\infty)$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times(+\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Produit (ou quotient) avec une limite infinie.** Le résultat est infini (sauf avec $0$) ; son signe suit la règle des signes.",
@@ -2644,10 +2972,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["1"]
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$${{a}}\\times(+\\infty)$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$${{a}}\\times(+\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Produit (ou quotient) avec une limite infinie.** Le résultat est infini (sauf avec $0$) ; son signe suit la règle des signes.",
@@ -2655,10 +2987,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$-{{a}}\\times(+\\infty)$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$-{{a}}\\times(+\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Produit (ou quotient) avec une limite infinie.** Le résultat est infini (sauf avec $0$) ; son signe suit la règle des signes.",
@@ -2666,10 +3002,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["1"]
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$${{a}}\\times(-\\infty)$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$${{a}}\\times(-\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Produit (ou quotient) avec une limite infinie.** Le résultat est infini (sauf avec $0$) ; son signe suit la règle des signes.",
@@ -2677,10 +3017,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["1"]
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$-{{a}}\\times(-\\infty)$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$-{{a}}\\times(-\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Produit (ou quotient) avec une limite infinie.** Le résultat est infini (sauf avec $0$) ; son signe suit la règle des signes.",
@@ -2688,10 +3032,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)+(+\\infty)$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)+(+\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Somme de deux limites infinies.** Deux infinis de MÊME signe s’ajoutent (le résultat est cet infini) ; $(+\\infty) + (-\\infty)$ est une forme indéterminée. Une différence est la somme avec l’opposé : $(+\\infty) - (-\\infty) = (+\\infty) + (+\\infty)$.",
@@ -2699,10 +3047,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)+(-\\infty)$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)+(-\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Somme de deux limites infinies.** Deux infinis de MÊME signe s’ajoutent (le résultat est cet infini) ; $(+\\infty) + (-\\infty)$ est une forme indéterminée. Une différence est la somme avec l’opposé : $(+\\infty) - (-\\infty) = (+\\infty) + (+\\infty)$.",
@@ -2710,10 +3062,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["3"]
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)+(-\\infty)$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)+(-\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Somme de deux limites infinies.** Deux infinis de MÊME signe s’ajoutent (le résultat est cet infini) ; $(+\\infty) + (-\\infty)$ est une forme indéterminée. Une différence est la somme avec l’opposé : $(+\\infty) - (-\\infty) = (+\\infty) + (+\\infty)$.",
@@ -2721,10 +3077,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["1"]
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)+(+\\infty)$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)+(+\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Somme de deux limites infinies.** Deux infinis de MÊME signe s’ajoutent (le résultat est cet infini) ; $(+\\infty) + (-\\infty)$ est une forme indéterminée. Une différence est la somme avec l’opposé : $(+\\infty) - (-\\infty) = (+\\infty) + (+\\infty)$.",
@@ -2732,10 +3092,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["3"]
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)-(+\\infty)$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)-(+\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Somme de deux limites infinies.** Deux infinis de MÊME signe s’ajoutent (le résultat est cet infini) ; $(+\\infty) + (-\\infty)$ est une forme indéterminée. Une différence est la somme avec l’opposé : $(+\\infty) - (-\\infty) = (+\\infty) + (+\\infty)$.",
@@ -2743,10 +3107,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["3"]
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)-(-\\infty)$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)-(-\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Somme de deux limites infinies.** Deux infinis de MÊME signe s’ajoutent (le résultat est cet infini) ; $(+\\infty) + (-\\infty)$ est une forme indéterminée. Une différence est la somme avec l’opposé : $(+\\infty) - (-\\infty) = (+\\infty) + (+\\infty)$.",
@@ -2754,10 +3122,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)-(-\\infty)$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)-(-\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Somme de deux limites infinies.** Deux infinis de MÊME signe s’ajoutent (le résultat est cet infini) ; $(+\\infty) + (-\\infty)$ est une forme indéterminée. Une différence est la somme avec l’opposé : $(+\\infty) - (-\\infty) = (+\\infty) + (+\\infty)$.",
@@ -2765,10 +3137,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["3"]
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)-(+\\infty)$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)-(+\\infty)$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Somme de deux limites infinies.** Deux infinis de MÊME signe s’ajoutent (le résultat est cet infini) ; $(+\\infty) + (-\\infty)$ est une forme indéterminée. Une différence est la somme avec l’opposé : $(+\\infty) - (-\\infty) = (+\\infty) + (+\\infty)$.",
@@ -2776,10 +3152,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["1"]
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$+\\infty+{{a}}$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$+\\infty+{{a}}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Somme d’une limite infinie et d’un nombre.** Ajouter un nombre fixe à une quantité infiniment grande ne change pas sa limite infinie.",
@@ -2787,10 +3167,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$-\\infty+{{a}}$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$-\\infty+{{a}}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Somme d’une limite infinie et d’un nombre.** Ajouter un nombre fixe à une quantité infiniment grande ne change pas sa limite infinie.",
@@ -2798,10 +3182,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["1"]
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{0^+}$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{0^+}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Division par une limite nulle.** Diviser par une quantité qui tend vers $0$ en gardant un signe ($0^+$ : positive, $0^-$ : négative) donne une limite infinie ; son signe suit la règle des signes.",
@@ -2809,10 +3197,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{0^+}$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{0^+}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Division par une limite nulle.** Diviser par une quantité qui tend vers $0$ en gardant un signe ($0^+$ : positive, $0^-$ : négative) donne une limite infinie ; son signe suit la règle des signes.",
@@ -2820,10 +3212,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["1"]
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{0^-}$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{0^-}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Division par une limite nulle.** Diviser par une quantité qui tend vers $0$ en gardant un signe ($0^+$ : positive, $0^-$ : négative) donne une limite infinie ; son signe suit la règle des signes.",
@@ -2831,10 +3227,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["1"]
+				"blanks": [
+					{
+						"expectedAnswer": "1"
+					}
+				]
 			},
 			{
-				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{0^-}$$",
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{0^-}$$\n\n```choix\nmelanger: non\n- $$+\\infty$$\n- $$-\\infty$$\n- $$0$$\n- Forme indéterminée\n```",
 				"correction": {
 					"steps": [
 						"**Division par une limite nulle.** Diviser par une quantité qui tend vers $0$ en gardant un signe ($0^+$ : positive, $0^-$ : négative) donne une limite infinie ; son signe suit la règle des signes.",
@@ -2842,13 +3242,14 @@
 						"Réponse : {{solution}}"
 					]
 				},
-				"correctChoiceIndex": ["0"]
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
 			}
 		],
-		"type": "multiple_choice",
-		"options": {
-			"shuffleChoices": false
-		},
+		"type": "fill_in_blanks",
 		"precision": null,
 		"delay": 30,
 		"multiple_answers": null,
@@ -2857,21 +3258,686 @@
 		"subdomain": "Determiner une limite",
 		"exercise_instruction": null,
 		"description": "En utilisant les règles de calcul sur les limites",
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"3"
+				],
+				"description": "v0 \\dfrac{+\\infty}{+\\infty} → forme indéterminée",
+				"variationIndex": 0
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"3"
+				],
+				"description": "v1 \\dfrac{+\\infty}{-\\infty} → forme indéterminée",
+				"variationIndex": 1
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"3"
+				],
+				"description": "v2 \\dfrac{-\\infty}{-\\infty} → forme indéterminée",
+				"variationIndex": 2
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"3"
+				],
+				"description": "v3 \\dfrac{-\\infty}{+\\infty} → forme indéterminée",
+				"variationIndex": 3
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"2"
+				],
+				"description": "v4 \\dfrac{0}{+\\infty} → 0",
+				"variationIndex": 4
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"2"
+				],
+				"description": "v5 \\dfrac{0}{-\\infty} → 0",
+				"variationIndex": 5
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"0"
+				],
+				"description": "v6 \\dfrac{+\\infty}{0^+} → +∞",
+				"variationIndex": 6
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"1"
+				],
+				"description": "v7 \\dfrac{-\\infty}{0^+} → −∞",
+				"variationIndex": 7
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"1"
+				],
+				"description": "v8 \\dfrac{+\\infty}{0^-} → −∞",
+				"variationIndex": 8
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"0"
+				],
+				"description": "v9 \\dfrac{-\\infty}{0^-} → +∞",
+				"variationIndex": 9
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"2"
+				],
+				"description": "v10 \\dfrac{{{a}}}{+\\infty} → 0",
+				"variationIndex": 10
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"2"
+				],
+				"description": "v11 \\dfrac{-{{a}}}{+\\infty} → 0",
+				"variationIndex": 11
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"2"
+				],
+				"description": "v12 \\dfrac{{{a}}}{-\\infty} → 0",
+				"variationIndex": 12
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"2"
+				],
+				"description": "v13 \\dfrac{-{{a}}}{-\\infty} → 0",
+				"variationIndex": 13
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"0"
+				],
+				"description": "v14 \\dfrac{+\\infty}{{{a}}} → +∞",
+				"variationIndex": 14
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"1"
+				],
+				"description": "v15 \\dfrac{+\\infty}{-{{a}}} → −∞",
+				"variationIndex": 15
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"1"
+				],
+				"description": "v16 \\dfrac{-\\infty}{{{a}}} → −∞",
+				"variationIndex": 16
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"0"
+				],
+				"description": "v17 \\dfrac{-\\infty}{-{{a}}} → +∞",
+				"variationIndex": 17
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"3"
+				],
+				"description": "v18 (+\\infty)\\times 0 → forme indéterminée",
+				"variationIndex": 18
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"3"
+				],
+				"description": "v19 (-\\infty)\\times 0 → forme indéterminée",
+				"variationIndex": 19
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"0"
+				],
+				"description": "v20 (+\\infty)\\times(+\\infty) → +∞",
+				"variationIndex": 20
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"1"
+				],
+				"description": "v21 (+\\infty)\\times(-\\infty) → −∞",
+				"variationIndex": 21
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"0"
+				],
+				"description": "v22 (-\\infty)\\times(-\\infty) → +∞",
+				"variationIndex": 22
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"1"
+				],
+				"description": "v23 (-\\infty)\\times(+\\infty) → −∞",
+				"variationIndex": 23
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"0"
+				],
+				"description": "v24 {{a}}\\times(+\\infty) → +∞",
+				"variationIndex": 24
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"1"
+				],
+				"description": "v25 -{{a}}\\times(+\\infty) → −∞",
+				"variationIndex": 25
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"1"
+				],
+				"description": "v26 {{a}}\\times(-\\infty) → −∞",
+				"variationIndex": 26
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"0"
+				],
+				"description": "v27 -{{a}}\\times(-\\infty) → +∞",
+				"variationIndex": 27
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"0"
+				],
+				"description": "v28 (+\\infty)+(+\\infty) → +∞",
+				"variationIndex": 28
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"3"
+				],
+				"description": "v29 (+\\infty)+(-\\infty) → forme indéterminée",
+				"variationIndex": 29
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"1"
+				],
+				"description": "v30 (-\\infty)+(-\\infty) → −∞",
+				"variationIndex": 30
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"3"
+				],
+				"description": "v31 (-\\infty)+(+\\infty) → forme indéterminée",
+				"variationIndex": 31
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"3"
+				],
+				"description": "v32 (+\\infty)-(+\\infty) → forme indéterminée",
+				"variationIndex": 32
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"0"
+				],
+				"description": "v33 (+\\infty)-(-\\infty) → +∞",
+				"variationIndex": 33
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"3"
+				],
+				"description": "v34 (-\\infty)-(-\\infty) → forme indéterminée",
+				"variationIndex": 34
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"1"
+				],
+				"description": "v35 (-\\infty)-(+\\infty) → −∞",
+				"variationIndex": 35
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"0"
+				],
+				"description": "v36 +\\infty+{{a}} → +∞",
+				"variationIndex": 36
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"1"
+				],
+				"description": "v37 -\\infty+{{a}} → −∞",
+				"variationIndex": 37
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"0"
+				],
+				"description": "v38 \\dfrac{{{a}}}{0^+} → +∞",
+				"variationIndex": 38
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"1"
+				],
+				"description": "v39 \\dfrac{-{{a}}}{0^+} → −∞",
+				"variationIndex": 39
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"1"
+				],
+				"description": "v40 \\dfrac{{{a}}}{0^-} → −∞",
+				"variationIndex": 40
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"0"
+				],
+				"description": "v41 \\dfrac{-{{a}}}{0^-} → +∞",
+				"variationIndex": 41
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"0"
+				],
+				"description": "v0 erreur : ∞/∞ ≠ +∞ (FI)",
+				"variationIndex": 0
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"1"
+				],
+				"description": "v1 erreur : ∞/(-∞) : FI, pas -∞",
+				"variationIndex": 1
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"2"
+				],
+				"description": "v18 erreur : ∞×0 : FI, pas 0",
+				"variationIndex": 18
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"2"
+				],
+				"description": "v29 erreur : ∞-∞ : FI, pas 0",
+				"variationIndex": 29
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"2"
+				],
+				"description": "v32 erreur : +∞-(+∞) : FI, pas 0",
+				"variationIndex": 32
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"3"
+				],
+				"description": "v33 erreur : +∞-(-∞) = +∞, pas FI",
+				"variationIndex": 33
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"1"
+				],
+				"description": "v9 erreur : -∞/0- : règle des signes",
+				"variationIndex": 9
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"1"
+				],
+				"description": "v41 erreur : -a/0- : règle des signes",
+				"variationIndex": 41
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"3"
+				],
+				"description": "v4 erreur : 0/∞ = 0, pas FI",
+				"variationIndex": 4
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"answers": [
+					"3"
+				],
+				"description": "v38 erreur : a/0+ = +∞, pas FI",
+				"variationIndex": 38
+			}
+		],
 		"shared": {
-			"choices": [
-				{
-					"content": "$$+\\infty$$"
-				},
-				{
-					"content": "$$-\\infty$$"
-				},
-				{
-					"content": "$$0$$"
-				},
-				{
-					"content": "Forme indéterminée"
-				}
-			],
 			"variables": [
 				{
 					"name": "a",
@@ -2882,582 +3948,7 @@
 					"expression": "2..9"
 				}
 			]
-		},
-		"default_display_options": null,
-		"test_specs": [
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v0 \\dfrac{+\\infty}{+\\infty} → forme indéterminée",
-				"variationIndex": 0,
-				"selectedChoices": [3]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v1 \\dfrac{+\\infty}{-\\infty} → forme indéterminée",
-				"variationIndex": 1,
-				"selectedChoices": [3]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v2 \\dfrac{-\\infty}{-\\infty} → forme indéterminée",
-				"variationIndex": 2,
-				"selectedChoices": [3]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v3 \\dfrac{-\\infty}{+\\infty} → forme indéterminée",
-				"variationIndex": 3,
-				"selectedChoices": [3]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v4 \\dfrac{0}{+\\infty} → 0",
-				"variationIndex": 4,
-				"selectedChoices": [2]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v5 \\dfrac{0}{-\\infty} → 0",
-				"variationIndex": 5,
-				"selectedChoices": [2]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v6 \\dfrac{+\\infty}{0^+} → +∞",
-				"variationIndex": 6,
-				"selectedChoices": [0]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v7 \\dfrac{-\\infty}{0^+} → −∞",
-				"variationIndex": 7,
-				"selectedChoices": [1]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v8 \\dfrac{+\\infty}{0^-} → −∞",
-				"variationIndex": 8,
-				"selectedChoices": [1]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v9 \\dfrac{-\\infty}{0^-} → +∞",
-				"variationIndex": 9,
-				"selectedChoices": [0]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v10 \\dfrac{{{a}}}{+\\infty} → 0",
-				"variationIndex": 10,
-				"selectedChoices": [2]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v11 \\dfrac{-{{a}}}{+\\infty} → 0",
-				"variationIndex": 11,
-				"selectedChoices": [2]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v12 \\dfrac{{{a}}}{-\\infty} → 0",
-				"variationIndex": 12,
-				"selectedChoices": [2]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v13 \\dfrac{-{{a}}}{-\\infty} → 0",
-				"variationIndex": 13,
-				"selectedChoices": [2]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v14 \\dfrac{+\\infty}{{{a}}} → +∞",
-				"variationIndex": 14,
-				"selectedChoices": [0]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v15 \\dfrac{+\\infty}{-{{a}}} → −∞",
-				"variationIndex": 15,
-				"selectedChoices": [1]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v16 \\dfrac{-\\infty}{{{a}}} → −∞",
-				"variationIndex": 16,
-				"selectedChoices": [1]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v17 \\dfrac{-\\infty}{-{{a}}} → +∞",
-				"variationIndex": 17,
-				"selectedChoices": [0]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v18 (+\\infty)\\times 0 → forme indéterminée",
-				"variationIndex": 18,
-				"selectedChoices": [3]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v19 (-\\infty)\\times 0 → forme indéterminée",
-				"variationIndex": 19,
-				"selectedChoices": [3]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v20 (+\\infty)\\times(+\\infty) → +∞",
-				"variationIndex": 20,
-				"selectedChoices": [0]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v21 (+\\infty)\\times(-\\infty) → −∞",
-				"variationIndex": 21,
-				"selectedChoices": [1]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v22 (-\\infty)\\times(-\\infty) → +∞",
-				"variationIndex": 22,
-				"selectedChoices": [0]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v23 (-\\infty)\\times(+\\infty) → −∞",
-				"variationIndex": 23,
-				"selectedChoices": [1]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v24 {{a}}\\times(+\\infty) → +∞",
-				"variationIndex": 24,
-				"selectedChoices": [0]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v25 -{{a}}\\times(+\\infty) → −∞",
-				"variationIndex": 25,
-				"selectedChoices": [1]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v26 {{a}}\\times(-\\infty) → −∞",
-				"variationIndex": 26,
-				"selectedChoices": [1]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v27 -{{a}}\\times(-\\infty) → +∞",
-				"variationIndex": 27,
-				"selectedChoices": [0]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v28 (+\\infty)+(+\\infty) → +∞",
-				"variationIndex": 28,
-				"selectedChoices": [0]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v29 (+\\infty)+(-\\infty) → forme indéterminée",
-				"variationIndex": 29,
-				"selectedChoices": [3]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v30 (-\\infty)+(-\\infty) → −∞",
-				"variationIndex": 30,
-				"selectedChoices": [1]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v31 (-\\infty)+(+\\infty) → forme indéterminée",
-				"variationIndex": 31,
-				"selectedChoices": [3]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v32 (+\\infty)-(+\\infty) → forme indéterminée",
-				"variationIndex": 32,
-				"selectedChoices": [3]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v33 (+\\infty)-(-\\infty) → +∞",
-				"variationIndex": 33,
-				"selectedChoices": [0]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v34 (-\\infty)-(-\\infty) → forme indéterminée",
-				"variationIndex": 34,
-				"selectedChoices": [3]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v35 (-\\infty)-(+\\infty) → −∞",
-				"variationIndex": 35,
-				"selectedChoices": [1]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v36 +\\infty+{{a}} → +∞",
-				"variationIndex": 36,
-				"selectedChoices": [0]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v37 -\\infty+{{a}} → −∞",
-				"variationIndex": 37,
-				"selectedChoices": [1]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v38 \\dfrac{{{a}}}{0^+} → +∞",
-				"variationIndex": 38,
-				"selectedChoices": [0]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v39 \\dfrac{-{{a}}}{0^+} → −∞",
-				"variationIndex": 39,
-				"selectedChoices": [1]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v40 \\dfrac{{{a}}}{0^-} → −∞",
-				"variationIndex": 40,
-				"selectedChoices": [1]
-			},
-			{
-				"expected": {
-					"status": "correct"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v41 \\dfrac{-{{a}}}{0^-} → +∞",
-				"variationIndex": 41,
-				"selectedChoices": [0]
-			},
-			{
-				"expected": {
-					"status": "incorrect"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v0 erreur : ∞/∞ ≠ +∞ (FI)",
-				"variationIndex": 0,
-				"selectedChoices": [0]
-			},
-			{
-				"expected": {
-					"status": "incorrect"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v1 erreur : ∞/(-∞) : FI, pas -∞",
-				"variationIndex": 1,
-				"selectedChoices": [1]
-			},
-			{
-				"expected": {
-					"status": "incorrect"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v18 erreur : ∞×0 : FI, pas 0",
-				"variationIndex": 18,
-				"selectedChoices": [2]
-			},
-			{
-				"expected": {
-					"status": "incorrect"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v29 erreur : ∞-∞ : FI, pas 0",
-				"variationIndex": 29,
-				"selectedChoices": [2]
-			},
-			{
-				"expected": {
-					"status": "incorrect"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v32 erreur : +∞-(+∞) : FI, pas 0",
-				"variationIndex": 32,
-				"selectedChoices": [2]
-			},
-			{
-				"expected": {
-					"status": "incorrect"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v33 erreur : +∞-(-∞) = +∞, pas FI",
-				"variationIndex": 33,
-				"selectedChoices": [3]
-			},
-			{
-				"expected": {
-					"status": "incorrect"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v9 erreur : -∞/0- : règle des signes",
-				"variationIndex": 9,
-				"selectedChoices": [1]
-			},
-			{
-				"expected": {
-					"status": "incorrect"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v41 erreur : -a/0- : règle des signes",
-				"variationIndex": 41,
-				"selectedChoices": [1]
-			},
-			{
-				"expected": {
-					"status": "incorrect"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v4 erreur : 0/∞ = 0, pas FI",
-				"variationIndex": 4,
-				"selectedChoices": [3]
-			},
-			{
-				"expected": {
-					"status": "incorrect"
-				},
-				"variables": {
-					"a": "3"
-				},
-				"description": "v38 erreur : a/0+ = +∞, pas FI",
-				"variationIndex": 38,
-				"selectedChoices": [3]
-			}
-		]
+		}
 	},
 	{
 		"id": "bd21a9d7-142a-47a0-be18-7719b58934ea",
@@ -3466,7 +3957,9 @@
 		"domain": "Diviser",
 		"level": 1,
 		"status": "published",
-		"grades": ["CE2"],
+		"grades": [
+			"CE2"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -3525,7 +4018,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["6"],
+				"answers": [
+					"6"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -3537,7 +4032,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["4"],
+				"answers": [
+					"4"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -3549,7 +4046,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["8"],
+				"answers": [
+					"8"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -3561,7 +4060,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["1"],
+				"answers": [
+					"1"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -3573,7 +4074,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["24"],
+				"answers": [
+					"24"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -3585,7 +4088,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["5"],
+				"answers": [
+					"5"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -3605,7 +4110,9 @@
 		"domain": "Apprivoiser",
 		"level": 4,
 		"status": "published",
-		"grades": ["CE2"],
+		"grades": [
+			"CE2"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -3705,7 +4212,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["5"],
+				"answers": [
+					"5"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -3719,7 +4228,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["2"],
+				"answers": [
+					"2"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -3733,7 +4244,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["0"],
+				"answers": [
+					"0"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -3747,7 +4260,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["5"],
+				"answers": [
+					"5"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -3761,7 +4276,9 @@
 				"variationIndex": 1
 			},
 			{
-				"answers": ["7"],
+				"answers": [
+					"7"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -3775,7 +4292,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["0"],
+				"answers": [
+					"0"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -3789,7 +4308,9 @@
 				"variationIndex": 2
 			},
 			{
-				"answers": ["2"],
+				"answers": [
+					"2"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -3803,7 +4324,9 @@
 				"variationIndex": 3
 			},
 			{
-				"answers": ["7"],
+				"answers": [
+					"7"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -3825,7 +4348,9 @@
 		"domain": "Apprivoiser",
 		"level": 8,
 		"status": "published",
-		"grades": ["CM1"],
+		"grades": [
+			"CM1"
+		],
 		"variations": [
 			{
 				"blanks": [
@@ -3886,7 +4411,9 @@
 		"default_display_options": null,
 		"test_specs": [
 			{
-				"answers": ["12\\,345"],
+				"answers": [
+					"12\\,345"
+				],
 				"expected": {
 					"status": "correct"
 				},
@@ -3901,10 +4428,15 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["12345,0"],
+				"answers": [
+					"12345,0"
+				],
 				"expected": {
 					"status": "unoptimal_form",
-					"constraintViolations": ["spaces", "zeros"]
+					"constraintViolations": [
+						"spaces",
+						"zeros"
+					]
 				},
 				"variables": {
 					"a": "1",
@@ -3917,7 +4449,9 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["12\\,346"],
+				"answers": [
+					"12\\,346"
+				],
 				"expected": {
 					"status": "incorrect"
 				},
@@ -3932,10 +4466,14 @@
 				"variationIndex": 0
 			},
 			{
-				"answers": ["12\\,\\,000+345"],
+				"answers": [
+					"12\\,\\,000+345"
+				],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": [
+						"form"
+					]
 				},
 				"variables": {
 					"a": "1",

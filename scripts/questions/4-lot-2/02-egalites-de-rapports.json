@@ -1,0 +1,248 @@
+{
+	"title": "Égalités de rapports",
+	"description": "Exprimer la proportionnalité par des égalités de rapports ou un ratio : x/2 = y/3 ; a/2 = b/3 = c/7 ; 6, 9 et 21 sont-ils dans le ratio 2 : 3 : 7 ?",
+	"grades": ["4"],
+	"theme": "Proportionnalité",
+	"domain": "Ratios",
+	"subdomain": "Égalités de rapports",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Les nombres $x$ et $y$ vérifient $\\frac{x}{{{p}}} = \\frac{y}{{{q}}}$.\n\nOn sait que $x = {{x}}$. Que vaut $y$ ?\n\n$$y = ?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..5"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "x",
+					"expression": "eval:p*k"
+				}
+			],
+			"conditions": ["p!=q"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q*k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Proportionnalité.** Des nombres sont proportionnels à d'autres quand leurs rapports sont égaux : chaque quotient vaut le même nombre.",
+					"$\\frac{{{x}}}{{{p}}} = {{k}}$, donc $\\frac{y}{{{q}}} = {{k}}$.",
+					"$$y = {{q}} \\times {{k}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Les nombres $a$, $b$ et $c$ vérifient $\\frac{a}{{{p}}} = \\frac{b}{{{q}}} = \\frac{c}{{{r}}}$ : ils sont dans le ratio ${{p}} : {{q}} : {{r}}$.\n\nOn sait que $a = {{a}}$. Que vaut $c$ ?\n\n$$c = ?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..5"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "r",
+					"expression": "2..9"
+				},
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "eval:p*k"
+				}
+			],
+			"conditions": ["p!=q", "q!=r", "p!=r", "gcd(gcd(p,q),r)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r*k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Proportionnalité.** Des nombres sont proportionnels à d'autres quand leurs rapports sont égaux : chaque quotient vaut le même nombre.",
+					"$\\frac{{{a}}}{{{p}}} = {{k}}$ : chaque rapport vaut ${{k}}$, donc $\\frac{c}{{{r}}} = {{k}}$.",
+					"$$c = {{r}} \\times {{k}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Les nombres ${{A}}$, ${{B}}$ et ${{C}}$ sont-ils dans le ratio ${{p}} : {{q}} : {{r}}$ ?\n\n```choix\nmelanger: non\n- oui\n- non\n```",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "p",
+					"expression": "2..5"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "r",
+					"expression": "2..9"
+				},
+				{
+					"name": "k",
+					"expression": "2..6"
+				},
+				{
+					"name": "A",
+					"expression": "eval:(1-o)*p*k+o*(p+k)"
+				},
+				{
+					"name": "B",
+					"expression": "eval:(1-o)*q*k+o*(q+k)"
+				},
+				{
+					"name": "C",
+					"expression": "eval:(1-o)*r*k+o*(r+k)"
+				}
+			],
+			"conditions": ["p<q", "q<r", "gcd(gcd(p,q),r)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{o}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Proportionnalité.** Des nombres sont proportionnels à d'autres quand leurs rapports sont égaux : chaque quotient vaut le même nombre.",
+					"{{if:o==0|$\\frac{{{A}}}{{{p}}} = \\frac{{{B}}}{{{q}}} = \\frac{{{C}}}{{{r}}} = {{k}}$ : les trois rapports sont égaux, $\\textcolor{{{color:primary.0}}}{\\text{oui}}$.|On compare $\\frac{{{A}}}{{{p}}}$ et $\\frac{{{B}}}{{{q}}}$ par les produits en croix : ${{A}} \\times {{q}} = {{eval:A*q}}$ et ${{B}} \\times {{p}} = {{eval:B*p}}$. Les rapports ne sont pas égaux : $\\textcolor{{{color:primary.0}}}{\\text{non}}$. Ajouter le même nombre à chacun ne conserve pas les rapports.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x/2 = y/3, x = 10 : y = 15",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"k": "5",
+				"x": "10"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : additif 10 + 1 = 11",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"k": "5",
+				"x": "10"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a/2 = b/3 = c/7, a = 8 : c = 28",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"r": "7",
+				"k": "4",
+				"a": "8"
+			},
+			"answers": ["28"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : additif 8 + 5 = 13",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"r": "7",
+				"k": "4",
+				"a": "8"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "6, 9, 21 dans le ratio 2 : 3 : 7 : oui",
+			"variationIndex": 2,
+			"variables": {
+				"o": "0",
+				"p": "2",
+				"q": "3",
+				"r": "7",
+				"k": "3",
+				"A": "6",
+				"B": "9",
+				"C": "21"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "5, 6, 10 (même écart) : non",
+			"variationIndex": 2,
+			"variables": {
+				"o": "1",
+				"p": "2",
+				"q": "3",
+				"r": "7",
+				"k": "3",
+				"A": "5",
+				"B": "6",
+				"C": "10"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5, 6, 10 « oui »",
+			"variationIndex": 2,
+			"variables": {
+				"o": "1",
+				"p": "2",
+				"q": "3",
+				"r": "7",
+				"k": "3",
+				"A": "5",
+				"B": "6",
+				"C": "10"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

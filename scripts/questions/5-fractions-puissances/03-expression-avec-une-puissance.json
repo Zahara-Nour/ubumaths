@@ -1,0 +1,237 @@
+{
+	"title": "Calculer une expression avec un carré ou un cube",
+	"description": "Calculer la valeur d'une expression littérale avec un carré ou un cube pour une valeur entière de x : 3x² − 7 et (3x)² − 7 pour x = 4 ; x³ + 5 pour x = 3",
+	"grades": ["5"],
+	"theme": "Calcul littéral",
+	"domain": "Calculs",
+	"subdomain": "Avec des puissances",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule $A$ pour $x = {{x}}$.\n\n$$A = {{a}}x^2$$\n\n$$A = ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "x",
+					"expression": "2..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*x*x}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Remplacer.** On remplace $x$ par sa valeur, puis on calcule en respectant les priorités : d'abord les puissances, puis les multiplications, enfin les additions et les soustractions.",
+					"${{a}}x^2$ signifie ${{a}} \\times x^2$ : le carré porte seulement sur $x$.",
+					"$$A = {{a}} \\times \\textcolor{{{color:primary.1}}}{{{x}}^2} = {{a}} \\times {{eval:x*x}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule $A$ pour $x = {{x}}$.\n\n$$A = {{a}}x^2 - {{b}}$$\n\n$$A = ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "x",
+					"expression": "2..10"
+				},
+				{
+					"name": "b",
+					"expression": "1..20"
+				}
+			],
+			"conditions": ["b<a*x*x"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*x*x-b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Remplacer.** On remplace $x$ par sa valeur, puis on calcule en respectant les priorités : d'abord les puissances, puis les multiplications, enfin les additions et les soustractions.",
+					"${{a}}x^2$ signifie ${{a}} \\times x^2$ : le carré porte seulement sur $x$.",
+					"$$A = {{a}} \\times \\textcolor{{{color:primary.1}}}{{{x}}^2} - {{b}} = {{a}} \\times {{eval:x*x}} - {{b}} = {{eval:a*x*x}} - {{b}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule $A$ pour $x = {{x}}$.\n\n$$A = ({{a}}x)^2 - {{b}}$$\n\n$$A = ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "x",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..20"
+				}
+			],
+			"conditions": ["a*x<=12", "b<a*a*x*x"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*a*x*x-b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Remplacer.** On remplace $x$ par sa valeur, puis on calcule en respectant les priorités : d'abord les puissances, puis les multiplications, enfin les additions et les soustractions.",
+					"Les parenthèses : le carré porte sur tout le produit ${{a}}x$.",
+					"$$A = ({{a}} \\times \\textcolor{{{color:primary.1}}}{{{x}}})^2 - {{b}} = {{eval:a*x}}^2 - {{b}} = {{eval:a*a*x*x}} - {{b}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule $A$ pour $x = {{x}}$.\n\n$$A = x^3 + {{b}}$$\n\n$$A = ?$$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:x*x*x+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Remplacer.** On remplace $x$ par sa valeur, puis on calcule en respectant les priorités : d'abord les puissances, puis les multiplications, enfin les additions et les soustractions.",
+					"$x^3 = x \\times x \\times x$.",
+					"$$A = \\textcolor{{{color:primary.1}}}{{{x}}^3} + {{b}} = {{x}} \\times {{x}} \\times {{x}} + {{b}} = {{eval:x*x*x}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3x² pour x = 4 : 48",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"x": "4"
+			},
+			"answers": ["48"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 144 (lu (3x)²)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"x": "4"
+			},
+			"answers": ["144"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 24 (x² lu 2x)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"x": "4"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3x² − 7 pour x = 4 : 41",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"x": "4",
+				"b": "7"
+			},
+			"answers": ["41"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 137 (lu (3x)² − 7)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"x": "4",
+				"b": "7"
+			},
+			"answers": ["137"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(3x)² − 7 pour x = 2 : 29",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"x": "2",
+				"b": "7"
+			},
+			"answers": ["29"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 (lu 3x² − 7)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"x": "2",
+				"b": "7"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x³ + 5 pour x = 3 : 32",
+			"variationIndex": 3,
+			"variables": {
+				"x": "3",
+				"b": "5"
+			},
+			"answers": ["32"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 14 (x³ lu 3x)",
+			"variationIndex": 3,
+			"variables": {
+				"x": "3",
+				"b": "5"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

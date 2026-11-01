@@ -123,6 +123,9 @@ function nodeLines(node: ASTNode): number {
 			return answerLines(node.children);
 		case 'code-block':
 			return node.code.split('\n').length;
+		case 'scratch':
+			// Programme Scratch : une ligne par instruction (dessiné ou en texte)
+			return node.source.split('\n').length;
 		case 'image':
 		case 'video':
 		case 'variation-table':
@@ -134,6 +137,8 @@ function nodeLines(node: ASTNode): number {
 		case 'stat-chart':
 		case 'qr':
 		case 'horloge':
+		case 'partage':
+		case 'espace':
 		case 'operation':
 		case 'collection':
 		case 'monnaie':
@@ -141,6 +146,9 @@ function nodeLines(node: ASTNode): number {
 		case 'choice':
 			// Bloc ```choix : une ligne par choix
 			return node.choices.length;
+		case 'ranger':
+			// Bloc ```ranger : la ligne des étiquettes, puis celle des places
+			return 2;
 		default:
 			// Nœud en ligne isolé : une ligne de texte
 			return inlineLines([node]);

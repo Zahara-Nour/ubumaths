@@ -132,7 +132,7 @@ défilement automatique. ≠ le **Deck** de révision SRS (voir CONTEXT.md).
   montée par `QuestionPreviewTabs.svelte` et `/automaths/test`.
 - `/dev/diaporama` (`src/routes/(protected)/dev/diaporama/`, admin seul, ex-`/slides/demo`,
   `/slides/demo-embedded` et `/slides/test-transitions`) — `DemoDeck.svelte` démontre tout le
-  moteur (transitions, fragments, arrière-plans, code, UbuMark, QCM en `FlashCard`, annotation,
+  moteur (transitions, fragments, arrière-plans, code, UbuMark, case choix en `FlashCard`, annotation,
   tableau blanc), affiché en plein écran (conteneur fixe) ou dans un cadre de 4 tailles
   (`fullscreen: false`, `minScale: 0.5`) ; `TransitionsDeck.svelte`, une diapositive par
   transition. Pas de `+layout@` : il sauterait le `+layout.server.ts` de `/dev`, donc la garde en
@@ -388,7 +388,6 @@ Aucun ADR propre à ces outils. Google Classroom : drapeau décrit dans
    décider par David. Le drapeau, lui, est testé par toutes les routes `/api/google/**` (B8,
    `src/routes/api/google/__tests__/interrupteur-google.test.ts` : 403 pour chaque méthode, sauf
    `auth/disconnect` et `auth/status`).
-5. **Kanban** : l'en-tête de `src/lib/server/kanban.ts` cite une migration d'avant le baseline.
-6. **Diaporamas** : l'annotation (`AnnotatableSlide`, `WhiteboardSlide`, `slideAnnotationStore`)
+5. **Diaporamas** : l'annotation (`AnnotatableSlide`, `WhiteboardSlide`, `slideAnnotationStore`)
    n'est montée que par la démo `/dev/diaporama` (remise en place le 2026-10-11) ;
    la brancher dans les carnets ou les séries en classe serait un choix de produit.

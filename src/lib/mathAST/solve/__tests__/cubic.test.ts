@@ -271,3 +271,22 @@ describe('Cubic Solver (Cardano)', () => {
 		});
 	});
 });
+
+/**
+ * L27 : trois racines réelles irrationnelles (forme trigonométrique) sont
+ * calculées en flottants et arrondies à 10 décimales. Elles ne sont pas
+ * exactes : `exact: false`. Les racines entières ou rationnelles restent
+ * exactes.
+ */
+describe('Cubique à trois racines réelles : racine arrondie non exacte (L27)', () => {
+	it.each(['x^3-3x+1=0', '2x^3-6x+1=0'])('%s : trois racines, aucune exacte', (latex) => {
+		const result = solve(parseEquation(latex), { variable: 'x' });
+		expect(result.solutions).toHaveLength(3);
+		for (const s of result.solutions) expect(s.exact).toBe(false);
+	});
+
+	it.each(['x^3-7x+6=0', '4x^3-3x-1=0'])('%s : racines rationnelles, exactes', (latex) => {
+		const result = solve(parseEquation(latex), { variable: 'x' });
+		for (const s of result.solutions) expect(s.exact).toBe(true);
+	});
+});

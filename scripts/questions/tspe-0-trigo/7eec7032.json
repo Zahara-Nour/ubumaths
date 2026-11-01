@@ -1,0 +1,387 @@
+{
+	"id": "7eec7032-a49c-4662-a2af-73c9ef8f2f98",
+	"title": "Parité des fonctions cosinus et sinus",
+	"description": "Reconnaître une fonction paire, impaire ou ni l'une ni l'autre (cos, sin, sin(kx), x sin x…)",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Fonctions cosinus et sinus",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos x$.\n\nLa fonction $f$ est :\n\n```choix\nmelanger: non\n- paire\n- impaire\n- ni paire ni impaire\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"$\\mathbb{R}$ est symétrique par rapport à $0$ et, pour tout réel $x$, $f(-x)=\\cos(-x)=\\cos x=f(x)$.",
+					"La fonction cosinus est donc **paire** : sa courbe est symétrique par rapport à l'axe des ordonnées."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sin x$.\n\nLa fonction $f$ est :\n\n```choix\nmelanger: non\n- paire\n- impaire\n- ni paire ni impaire\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"$\\mathbb{R}$ est symétrique par rapport à $0$ et, pour tout réel $x$, $f(-x)=\\sin(-x)=-\\sin x=-f(x)$.",
+					"La fonction sinus est donc **impaire** : sa courbe est symétrique par rapport à l'origine."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sin({{k}}x)$.\n\nLa fonction $f$ est :\n\n```choix\nmelanger: non\n- paire\n- impaire\n- ni paire ni impaire\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout réel $x$, $f(-x)=\\sin(-{{k}}x)=-\\sin({{k}}x)=-f(x)$ car la fonction sinus est impaire.",
+					"La fonction $f$ est donc **impaire**."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos x{{k;+}}$.\n\nLa fonction $f$ est :\n\n```choix\nmelanger: non\n- paire\n- impaire\n- ni paire ni impaire\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout réel $x$, $f(-x)=\\cos(-x){{k;+}}=\\cos x{{k;+}}=f(x)$ car la fonction cosinus est paire.",
+					"La fonction $f$ est donc **paire**."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x\\sin x$.\n\nLa fonction $f$ est :\n\n```choix\nmelanger: non\n- paire\n- impaire\n- ni paire ni impaire\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"Pour tout réel $x$, $f(-x)=(-x)\\sin(-x)=(-x)\\times(-\\sin x)=x\\sin x=f(x)$.",
+					"La fonction $f$ est donc **paire** (produit de deux fonctions impaires)."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x\\cos x$.\n\nLa fonction $f$ est :\n\n```choix\nmelanger: non\n- paire\n- impaire\n- ni paire ni impaire\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"Pour tout réel $x$, $f(-x)=(-x)\\cos(-x)=-x\\cos x=-f(x)$.",
+					"La fonction $f$ est donc **impaire** (produit d'une fonction impaire et d'une fonction paire)."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sin x{{k;+}}$.\n\nLa fonction $f$ est :\n\n```choix\nmelanger: non\n- paire\n- impaire\n- ni paire ni impaire\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(0)={{k}}\\neq0$ : une fonction impaire définie en $0$ y vaut $0$, donc $f$ n'est pas impaire.",
+					"$f\\left(\\dfrac{\\pi}{2}\\right)={{eval:1+k}}$ et $f\\left(-\\dfrac{\\pi}{2}\\right)={{eval:k-1}}$ : ces valeurs sont différentes, donc $f$ n'est pas paire.",
+					"La fonction $f$ n'est **ni paire ni impaire**."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x+\\cos x$.\n\nLa fonction $f$ est :\n\n```choix\nmelanger: non\n- paire\n- impaire\n- ni paire ni impaire\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"$f(0)=1\\neq0$, donc $f$ n'est pas impaire.",
+					"$f(\\pi)=\\pi-1$ et $f(-\\pi)=-\\pi-1$ : ces valeurs sont différentes, donc $f$ n'est pas paire.",
+					"La fonction $f$ n'est **ni paire ni impaire**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "variation 0 : f(x)=\\cos x, « paire » accepté",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 0 : f(x)=\\cos x, « impaire » refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 0 : f(x)=\\cos x, « ni paire ni impaire » refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 1 : f(x)=\\sin x, « paire » refusé",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "variation 1 : f(x)=\\sin x, « impaire » accepté",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 1 : f(x)=\\sin x, « ni paire ni impaire » refusé",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2"
+			},
+			"description": "variation 2 : f(x)=\\sin(kx), « paire » refusé",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "2"
+			},
+			"description": "variation 2 : f(x)=\\sin(kx), « impaire » accepté",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2"
+			},
+			"description": "variation 2 : f(x)=\\sin(kx), « ni paire ni impaire » refusé",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "2"
+			},
+			"description": "variation 3 : f(x)=\\cos x+k, « paire » accepté",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2"
+			},
+			"description": "variation 3 : f(x)=\\cos x+k, « impaire » refusé",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2"
+			},
+			"description": "variation 3 : f(x)=\\cos x+k, « ni paire ni impaire » refusé",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "variation 4 : f(x)=x\\sin x, « paire » accepté",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 4 : f(x)=x\\sin x, « impaire » refusé",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 4 : f(x)=x\\sin x, « ni paire ni impaire » refusé",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 5 : f(x)=x\\cos x, « paire » refusé",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "variation 5 : f(x)=x\\cos x, « impaire » accepté",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 5 : f(x)=x\\cos x, « ni paire ni impaire » refusé",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "-1"
+			},
+			"description": "variation 6 : f(x)=\\sin x+k, « paire » refusé",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "-1"
+			},
+			"description": "variation 6 : f(x)=\\sin x+k, « impaire » refusé",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "-1"
+			},
+			"description": "variation 6 : f(x)=\\sin x+k, « ni paire ni impaire » accepté",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 7 : f(x)=x+\\cos x, « paire » refusé",
+			"variationIndex": 7
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 7 : f(x)=x+\\cos x, « impaire » refusé",
+			"variationIndex": 7
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "variation 7 : f(x)=x+\\cos x, « ni paire ni impaire » accepté",
+			"variationIndex": 7
+		}
+	]
+}

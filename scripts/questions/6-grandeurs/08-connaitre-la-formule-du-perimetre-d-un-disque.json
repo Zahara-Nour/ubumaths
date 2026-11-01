@@ -1,0 +1,121 @@
+{
+	"title": "Connaître la formule du périmètre d'un disque",
+	"description": "Choisir la formule du périmètre : P = π × D avec le diamètre, P = 2 × π × R avec le rayon",
+	"grades": ["6"],
+	"theme": "Grandeurs",
+	"domain": "Périmètres",
+	"subdomain": "Périmètre d'un disque",
+	"level": 2,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On note $D$ le diamètre {{if:c==0|d'une roue|{{if:c==1|d'une assiette|d'un disque}}}}.\n\nQuelle formule donne son périmètre $P$ ?\n\n```choix\n- $P = \\pi \\times D$\n- $P = \\pi \\times R$\n- $P = 2 \\times \\pi \\times D$\n- $P = \\pi \\times D \\times D$\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Périmètre d'un disque.** Avec le diamètre $D$ : $P = \\pi \\times D$. Avec le rayon $R$ (la moitié du diamètre) : $P = 2 \\times \\pi \\times R$.",
+					"Avec le diamètre : $\\textcolor{{{color:primary.0}}}{P = \\pi \\times D}$."
+				]
+			}
+		},
+		{
+			"statement": "On note $R$ le rayon {{if:c==0|d'une roue|{{if:c==1|d'une assiette|d'un disque}}}}.\n\nQuelle formule donne son périmètre $P$ ?\n\n```choix\n- $P = 2 \\times \\pi \\times R$\n- $P = \\pi \\times R$\n- $P = 2 \\times \\pi \\times D$\n- $P = \\pi \\times R \\times R$\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Périmètre d'un disque.** Avec le diamètre $D$ : $P = \\pi \\times D$. Avec le rayon $R$ (la moitié du diamètre) : $P = 2 \\times \\pi \\times R$.",
+					"Avec le rayon : $\\textcolor{{{color:primary.0}}}{P = 2 \\times \\pi \\times R}$ (le diamètre vaut $2 \\times R$)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Diamètre : π × D",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : π × R",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2 × π × D",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rayon : 2 × π × R",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : π × R",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : π × R × R",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

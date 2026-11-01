@@ -10,7 +10,8 @@
 	  de la grille des corrections, `startFlipped`)
 
 	Contexte AUTEUR posé pour tout le sous-arbre : un bloc mal écrit affiche son
-	message détaillé (Q48). Les composants élèves gardent leur défaut.
+	message détaillé (Q48). Les conseils d'auteur (graduations trop serrées…) n'y
+	sont pas : ils restent dans l'éditeur. Les composants élèves gardent leur défaut.
 -->
 
 <script lang="ts" module>
@@ -27,7 +28,10 @@
 	import QuestionCard from '$lib/components/questions/QuestionCard.svelte';
 	import CorrectionCard from '$lib/components/questions/CorrectionCard.svelte';
 	import { TILE_CARD_HEIGHT } from '$lib/components/questions/tile-card';
-	import { provideAuthoringErrors } from '$lib/components/markdown/authoring-errors';
+	import {
+		provideAuthoringAdvice,
+		provideAuthoringErrors
+	} from '$lib/components/markdown/authoring-errors';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Button } from '$lib/components/ui/button';
 	import { RotateCcw } from '@lucide/svelte';
@@ -43,6 +47,8 @@
 
 	// Page de prof : messages d'erreur d'auteur détaillés pour tous les rendus imbriqués
 	provideAuthoringErrors(() => true);
+	// …mais pas les conseils (graduations serrées…) : les onglets imitent l'écran de l'élève
+	provideAuthoringAdvice(() => false);
 
 	// Variables
 	// Carte de cours : rien à saisir, la flash-card est son rendu naturel

@@ -1,0 +1,222 @@
+{
+	"title": "Fréquences et probabilités",
+	"description": "Comparer les fréquences observées lors de la répétition d'une expérience aléatoire aux probabilités : fréquence d'une face sur 500 lancers, dé truqué, simulation de 1 000 lancers",
+	"grades": ["4"],
+	"theme": "Probabilités",
+	"domain": "Simulation",
+	"subdomain": "Fréquences",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On a lancé $500$ fois un dé à six faces. Voici les résultats.\n\n| Face | $1$ | $2$ | $3$ | $4$ | $5$ | $6$ |\n|---|---|---|---|---|---|---|\n| Effectif | ${{n1}}$ | ${{n2}}$ | ${{n3}}$ | ${{n4}}$ | ${{n5}}$ | ${{n6}}$ |\n\nCalcule la fréquence observée de la face $6$.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "n1",
+					"expression": "72..95"
+				},
+				{
+					"name": "n2",
+					"expression": "72..95"
+				},
+				{
+					"name": "n3",
+					"expression": "72..95"
+				},
+				{
+					"name": "n4",
+					"expression": "72..95"
+				},
+				{
+					"name": "n5",
+					"expression": "72..95"
+				},
+				{
+					"name": "n6",
+					"expression": "eval:500-n1-n2-n3-n4-n5"
+				}
+			],
+			"conditions": ["n6>=72", "n6<=95"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n6/500}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fréquence et probabilité.** La fréquence observée d'une issue est son effectif divisé par le nombre de répétitions. Quand on répète beaucoup l'expérience, les fréquences observées se rapprochent des probabilités, sans leur être égales en général.",
+					"$$\\frac{{{n6}}}{500} = \\textcolor{{{color:primary.0}}}{{{solution}}} = {{eval:n6/500;d}}$$",
+					"La probabilité d'obtenir $6$ avec un dé équilibré est $\\dfrac{1}{6} \\approx 0{,}167$ : la fréquence observée en est proche."
+				]
+			}
+		},
+		{
+			"statement": "On a lancé $300$ fois chacun de deux dés à six faces, le dé A et le dé B. Les diagrammes donnent les effectifs de chaque face.\n\n{{if:k==0|```barres\ntitre: Dé A\naxes: Face ; Effectif\naxe: 0 à 120, de 10 en 10\n1 = 38\n2 = 41\n3 = 36\n4 = 40\n5 = 35\n6 = 110\n```\n\n```barres\ntitre: Dé B\naxes: Face ; Effectif\naxe: 0 à 120, de 10 en 10\n1 = 48\n2 = 53\n3 = 51\n4 = 46\n5 = 52\n6 = 50\n```|```barres\ntitre: Dé A\naxes: Face ; Effectif\naxe: 0 à 120, de 10 en 10\n1 = 48\n2 = 53\n3 = 51\n4 = 46\n5 = 52\n6 = 50\n```\n\n```barres\ntitre: Dé B\naxes: Face ; Effectif\naxe: 0 à 120, de 10 en 10\n1 = 38\n2 = 41\n3 = 36\n4 = 40\n5 = 35\n6 = 110\n```}}\n\nQuel dé semble truqué ?\n\n```choix\nmelanger: non\n- Le dé A.\n- Le dé B.\n- Aucun des deux.\n- Les deux.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fréquence et probabilité.** La fréquence observée d'une issue est son effectif divisé par le nombre de répétitions. Quand on répète beaucoup l'expérience, les fréquences observées se rapprochent des probabilités, sans leur être égales en général.",
+					"Pour un dé équilibré, chaque face sort environ $300 \\div 6 = 50$ fois.",
+					"Le dé {{if:k==0|A|B}} donne la face $6$ $110$ fois, plus du double : $\\textcolor{{{color:primary.0}}}{\\text{le dé {{if:k==0|A|B}} semble truqué}}$. Les effectifs de l'autre dé restent proches de $50$ : ils fluctuent seulement."
+				]
+			}
+		},
+		{
+			"statement": "On a simulé $1\\,000$ lancers d'un dé équilibré à six faces. Le tableau donne l'effectif, la fréquence observée et la probabilité de chaque face.\n\n```simulation\nF = 1 ; 2 ; 3 ; 4 ; 5 ; 6\nP = 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6\ntirages: 1000\ngraine: {{g}}\n```\n\nQue peut-on dire des fréquences observées ?\n\n```choix\n- Elles sont proches des probabilités, sans leur être égales.\n- Elles sont égales aux probabilités.\n- Elles n'ont aucun rapport avec les probabilités.\n- Elles sont toutes égales entre elles.\n```",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "1..999"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fréquence et probabilité.** La fréquence observée d'une issue est son effectif divisé par le nombre de répétitions. Quand on répète beaucoup l'expérience, les fréquences observées se rapprochent des probabilités, sans leur être égales en général.",
+					"Les fréquences observées sont toutes voisines de $\\dfrac{1}{6} \\approx 0{,}167$, mais aucune ne vaut exactement $\\dfrac{1}{6}$ : $\\textcolor{{{color:primary.0}}}{\\text{elles en sont proches}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "84 sur 500 : 0,168",
+			"variationIndex": 0,
+			"variables": {
+				"n1": "80",
+				"n2": "85",
+				"n3": "90",
+				"n4": "78",
+				"n5": "83",
+				"n6": "84"
+			},
+			"answers": ["0,168"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "84/500 accepté",
+			"variationIndex": 0,
+			"variables": {
+				"n1": "80",
+				"n2": "85",
+				"n3": "90",
+				"n4": "78",
+				"n5": "83",
+				"n6": "84"
+			},
+			"answers": ["\\frac{21}{125}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'effectif 84",
+			"variationIndex": 0,
+			"variables": {
+				"n1": "80",
+				"n2": "85",
+				"n3": "90",
+				"n4": "78",
+				"n5": "83",
+				"n6": "84"
+			},
+			"answers": ["84"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/6",
+			"variationIndex": 0,
+			"variables": {
+				"n1": "80",
+				"n2": "85",
+				"n3": "90",
+				"n4": "78",
+				"n5": "83",
+				"n6": "84"
+			},
+			"answers": ["\\frac{1}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Dé A truqué",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dé B",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Dé B truqué",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Proches sans être égales",
+			"variationIndex": 2,
+			"variables": {
+				"g": "42"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : égales",
+			"variationIndex": 2,
+			"variables": {
+				"g": "42"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

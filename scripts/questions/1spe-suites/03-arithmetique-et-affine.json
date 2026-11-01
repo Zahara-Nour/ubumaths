@@ -1,0 +1,182 @@
+{
+	"title": "Suite arithmétique et fonction affine",
+	"description": "uₙ = f(n) avec f affine : premier terme et raison ; nuage aligné : équation de la droite par u₀ et r, ou par deux termes",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Suites arithmétiques",
+	"subdomain": "Fonction affine",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction affine définie sur $\\mathbb{R}$ par $f(x)={{eval:a}}x{{eval:b;+}}$. Pour tout entier naturel $n$, on pose $u_n=f(n)$.\n\nLa suite $(u_n)$ est arithmétique. Donne son premier terme et sa raison.\n\n$u_0=?$ et $r=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..12;±"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_0=f(0)={{eval:b}}$.",
+					"$u_{n+1}-u_n=f(n+1)-f(n)={{eval:a}}(n+1){{eval:b;+}}-({{eval:a}}n{{eval:b;+}})={{eval:a}}$ : la raison est le coefficient directeur de $f$.",
+					"$u_0=\\textcolor{{{color:primary.0}}}{{{eval:b}}}$ et $r=\\textcolor{{{color:primary.1}}}{{{eval:a}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est arithmétique, de premier terme $u_0={{eval:b}}$ et de raison $r={{eval:a}}$. Dans un repère, les points de coordonnées $(n\\,;u_n)$ sont alignés.\n\nDonne une équation de la droite qui les porte.\n\n$y=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..10;±"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a}}x{{eval:b;+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout $n$, $u_n=u_0+nr={{eval:b}}{{eval:a;+}}n$ : le point $(n\\,;u_n)$ est sur la droite d'équation $y={{eval:a}}x{{eval:b;+}}$.",
+					"Le coefficient directeur est la raison, l'ordonnée à l'origine est $u_0$ : $y=\\textcolor{{{color:primary.0}}}{{{eval:a}}x{{eval:b;+}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est arithmétique, avec $u_2={{eval:b+2*a}}$ et $u_6={{eval:b+6*a}}$. Dans un repère, les points de coordonnées $(n\\,;u_n)$ sont alignés.\n\nDonne une équation de la droite qui les porte.\n\n$y=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..10;±"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a}}x{{eval:b;+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La droite passe par $(2\\,;{{eval:b+2*a}})$ et $(6\\,;{{eval:b+6*a}})$ : son coefficient directeur est $\\dfrac{{{eval:b+6*a}}-({{eval:b+2*a}})}{6-2}={{eval:a}}$, c'est la raison de la suite.",
+					"Ordonnée à l'origine : $u_0=u_2-2r={{eval:b+2*a}}-({{eval:2*a}})={{eval:b}}$.",
+					"$$y=\\textcolor{{{color:primary.0}}}{{{eval:a}}x{{eval:b;+}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "f(x) = 3x − 5 : u₀ = −5, r = 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "-5"
+			},
+			"answers": ["-5", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : inversés",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "-5"
+			},
+			"answers": ["3", "-5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u₀ = 4, r = −2 : y = −2x + 4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"b": "4"
+			},
+			"answers": ["-2x+4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture 4 − 2x",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"b": "4"
+			},
+			"answers": ["4-2x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : y = 4x − 2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"b": "4"
+			},
+			"answers": ["4x-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u₂ = 7, u₆ = 19 : y = 3x + 1",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "1"
+			},
+			"answers": ["3x+1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 12/6 = 2 pour la pente",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "1"
+			},
+			"answers": ["2x+3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

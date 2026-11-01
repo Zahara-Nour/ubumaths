@@ -1,0 +1,321 @@
+{
+	"id": "8c5c7d70-ce4c-410c-9b8c-f0a041ffd67f",
+	"title": "Ranger cinq nombres (jusqu'à $10\\,000$)",
+	"description": "Nombres proches : 6 234, 6 243, 6 239, 6 300, 5 229",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Comparer",
+	"level": 10,
+	"delay": 40,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{s1}}"
+				},
+				{
+					"expectedAnswer": "{{s2}}"
+				},
+				{
+					"expectedAnswer": "{{s3}}"
+				},
+				{
+					"expectedAnswer": "{{s4}}"
+				},
+				{
+					"expectedAnswer": "{{s5}}"
+				}
+			],
+			"statement": "Range ces nombres du plus petit au plus grand.\n\n${{x1}} \\quad ; \\quad {{x2}} \\quad ; \\quad {{x3}} \\quad ; \\quad {{x4}} \\quad ; \\quad {{x5}}$\n\n$$?<?<?<?<?$$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..8"
+				},
+				{
+					"name": "t",
+					"expression": "1..7"
+				},
+				{
+					"name": "u",
+					"expression": "{{eval:t+1}}..8"
+				},
+				{
+					"name": "s1",
+					"expression": "eval:1000*(m-1)+100*c+10*(t-1)+9"
+				},
+				{
+					"name": "s2",
+					"expression": "eval:1000*m+100*c+10*t+u"
+				},
+				{
+					"name": "s3",
+					"expression": "eval:1000*m+100*c+10*t+9"
+				},
+				{
+					"name": "s4",
+					"expression": "eval:1000*m+100*c+10*u+t"
+				},
+				{
+					"name": "s5",
+					"expression": "eval:1000*m+100*(c+1)"
+				},
+				{
+					"name": "o",
+					"expression": "1..4"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:{{if:o==1|s3|{{if:o==2|s2|{{if:o==3|s4|s5}}}}}}"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:{{if:o==1|s1|{{if:o==2|s5|{{if:o==3|s2|s3}}}}}}"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:{{if:o==1|s5|{{if:o==2|s4|{{if:o==3|s1|s2}}}}}}"
+				},
+				{
+					"name": "x4",
+					"expression": "eval:{{if:o==1|s2|{{if:o==2|s1|{{if:o==3|s5|s4}}}}}}"
+				},
+				{
+					"name": "x5",
+					"expression": "eval:{{if:o==1|s4|{{if:o==2|s3|{{if:o==3|s3|s1}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compare d'abord les milliers : ${{s1}}$ a ${{eval:m-1}}$ {{if:m<=2|millier|milliers}}, les autres en ont ${{m}}$.",
+					"Parmi les nombres de ${{m}}$ milliers, ${{s5}}$ a le plus grand chiffre des centaines : ${{eval:c+1}}$, les trois autres ont ${{c}}$.",
+					"Pour les nombres de la même centaine, on compare les dizaines, puis les unités.",
+					"$${{s1}} < {{s2}} < {{s3}} < {{s4}} < {{s5}}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{s5}}"
+				},
+				{
+					"expectedAnswer": "{{s4}}"
+				},
+				{
+					"expectedAnswer": "{{s3}}"
+				},
+				{
+					"expectedAnswer": "{{s2}}"
+				},
+				{
+					"expectedAnswer": "{{s1}}"
+				}
+			],
+			"statement": "Range ces nombres du plus grand au plus petit.\n\n${{x1}} \\quad ; \\quad {{x2}} \\quad ; \\quad {{x3}} \\quad ; \\quad {{x4}} \\quad ; \\quad {{x5}}$\n\n$$?>?>?>?>?$$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..8"
+				},
+				{
+					"name": "t",
+					"expression": "1..7"
+				},
+				{
+					"name": "u",
+					"expression": "{{eval:t+1}}..8"
+				},
+				{
+					"name": "s1",
+					"expression": "eval:1000*(m-1)+100*c+10*(t-1)+9"
+				},
+				{
+					"name": "s2",
+					"expression": "eval:1000*m+100*c+10*t+u"
+				},
+				{
+					"name": "s3",
+					"expression": "eval:1000*m+100*c+10*t+9"
+				},
+				{
+					"name": "s4",
+					"expression": "eval:1000*m+100*c+10*u+t"
+				},
+				{
+					"name": "s5",
+					"expression": "eval:1000*m+100*(c+1)"
+				},
+				{
+					"name": "o",
+					"expression": "1..4"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:{{if:o==1|s3|{{if:o==2|s2|{{if:o==3|s4|s5}}}}}}"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:{{if:o==1|s1|{{if:o==2|s5|{{if:o==3|s2|s3}}}}}}"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:{{if:o==1|s5|{{if:o==2|s4|{{if:o==3|s1|s2}}}}}}"
+				},
+				{
+					"name": "x4",
+					"expression": "eval:{{if:o==1|s2|{{if:o==2|s1|{{if:o==3|s5|s4}}}}}}"
+				},
+				{
+					"name": "x5",
+					"expression": "eval:{{if:o==1|s4|{{if:o==2|s3|{{if:o==3|s3|s1}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compare d'abord les milliers : ${{s1}}$ a ${{eval:m-1}}$ {{if:m<=2|millier|milliers}}, les autres en ont ${{m}}$.",
+					"Parmi les nombres de ${{m}}$ milliers, ${{s5}}$ a le plus grand chiffre des centaines : ${{eval:c+1}}$, les trois autres ont ${{c}}$.",
+					"Pour les nombres de la même centaine, on compare les dizaines, puis les unités.",
+					"$${{s5}} > {{s4}} > {{s3}} > {{s2}} > {{s1}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["5\\,229", "6\\,234", "6\\,239", "6\\,243", "6\\,300"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "2",
+				"m": "6",
+				"o": "1",
+				"t": "3",
+				"u": "4",
+				"s1": "5229",
+				"s2": "6234",
+				"s3": "6239",
+				"s4": "6243",
+				"s5": "6300"
+			},
+			"description": "croissant : 5 229 < 6 234 < 6 239 < 6 243 < 6 300",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5\\,229", "6\\,234", "6\\,243", "6\\,239", "6\\,300"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "2",
+				"m": "6",
+				"o": "1",
+				"t": "3",
+				"u": "4",
+				"s1": "5229",
+				"s2": "6234",
+				"s3": "6239",
+				"s4": "6243",
+				"s5": "6300"
+			},
+			"description": "Erreur : 6 243 avant 6 239 (unités lues d'abord)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["6\\,234", "5\\,229", "6\\,239", "6\\,243", "6\\,300"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "2",
+				"m": "6",
+				"o": "1",
+				"t": "3",
+				"u": "4",
+				"s1": "5229",
+				"s2": "6234",
+				"s3": "6239",
+				"s4": "6243",
+				"s5": "6300"
+			},
+			"description": "Erreur : 5 229 après 6 234 (centaines lues d'abord)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["6\\,300", "6\\,243", "6\\,239", "6\\,234", "5\\,229"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "2",
+				"m": "6",
+				"o": "1",
+				"t": "3",
+				"u": "4",
+				"s1": "5229",
+				"s2": "6234",
+				"s3": "6239",
+				"s4": "6243",
+				"s5": "6300"
+			},
+			"description": "Erreur : ordre décroissant",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["6\\,300", "6\\,243", "6\\,239", "6\\,234", "5\\,229"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "2",
+				"m": "6",
+				"o": "1",
+				"t": "3",
+				"u": "4",
+				"s1": "5229",
+				"s2": "6234",
+				"s3": "6239",
+				"s4": "6243",
+				"s5": "6300"
+			},
+			"description": "décroissant : 6 300 > 6 243 > 6 239 > 6 234 > 5 229",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["8\\,809", "9\\,812", "9\\,819", "9\\,821", "9\\,900"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "8",
+				"m": "9",
+				"o": "4",
+				"t": "1",
+				"u": "2",
+				"s1": "8809",
+				"s2": "9812",
+				"s3": "9819",
+				"s4": "9821",
+				"s5": "9900"
+			},
+			"description": "borne : 8 809 < 9 812 < 9 819 < 9 821 < 9 900",
+			"variationIndex": 0
+		}
+	]
+}

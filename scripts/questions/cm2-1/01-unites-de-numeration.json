@@ -1,0 +1,250 @@
+{
+	"title": "Unités de numération",
+	"description": "Relations entre les unités de numération, des unités aux centaines de millions (7 millions = 7 000 milliers ; 35 centaines de mille = 3 millions et 5 centaines de mille)",
+	"grades": ["CM2"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Décomposition",
+	"level": 15,
+	"delay": 20,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "${{k}}$ {{if:u==0|unités|{{if:u==1|dizaines|{{if:u==2|centaines|{{if:u==3|milliers|{{if:u==4|dizaines de mille|{{if:u==5|centaines de mille|{{if:u==6|millions|{{if:u==7|dizaines de millions|centaines de millions}}}}}}}}}}}}}}}}, c'est $?$ {{if:w==0|unités|{{if:w==1|dizaines|{{if:w==2|centaines|{{if:w==3|milliers|{{if:w==4|dizaines de mille|{{if:w==5|centaines de mille|{{if:w==6|millions|{{if:w==7|dizaines de millions|centaines de millions}}}}}}}}}}}}}}}}.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "u",
+					"expression": "3..8"
+				},
+				{
+					"name": "w",
+					"expression": "0..7"
+				},
+				{
+					"name": "p",
+					"expression": "eval:u-w"
+				}
+			],
+			"conditions": ["p>=1", "p<=6"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*10^p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Unités de numération.** D'un rang au rang juste à sa droite, on multiplie par $10$ : $1$ million, c'est $10$ centaines de mille, $1$ centaine de mille, c'est $10$ dizaines de mille…",
+					"Des {{if:u==0|unités|{{if:u==1|dizaines|{{if:u==2|centaines|{{if:u==3|milliers|{{if:u==4|dizaines de mille|{{if:u==5|centaines de mille|{{if:u==6|millions|{{if:u==7|dizaines de millions|centaines de millions}}}}}}}}}}}}}}}} aux {{if:w==0|unités|{{if:w==1|dizaines|{{if:w==2|centaines|{{if:w==3|milliers|{{if:w==4|dizaines de mille|{{if:w==5|centaines de mille|{{if:w==6|millions|{{if:w==7|dizaines de millions|centaines de millions}}}}}}}}}}}}}}}}, on descend de ${{p}}$ rang{{if:p>1|s|}} : $1$ {{if:u==0|unité|{{if:u==1|dizaine|{{if:u==2|centaine|{{if:u==3|millier|{{if:u==4|dizaine de mille|{{if:u==5|centaine de mille|{{if:u==6|million|{{if:u==7|dizaine de millions|centaine de millions}}}}}}}}}}}}}}}}, c'est ${{eval:10^p}}$ {{if:w==0|unités|{{if:w==1|dizaines|{{if:w==2|centaines|{{if:w==3|milliers|{{if:w==4|dizaines de mille|{{if:w==5|centaines de mille|{{if:w==6|millions|{{if:w==7|dizaines de millions|centaines de millions}}}}}}}}}}}}}}}}.",
+					"${{k}}$ {{if:u==0|unités|{{if:u==1|dizaines|{{if:u==2|centaines|{{if:u==3|milliers|{{if:u==4|dizaines de mille|{{if:u==5|centaines de mille|{{if:u==6|millions|{{if:u==7|dizaines de millions|centaines de millions}}}}}}}}}}}}}}}}, c'est ${{k}} \\times {{eval:10^p}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$ {{if:w==0|unités|{{if:w==1|dizaines|{{if:w==2|centaines|{{if:w==3|milliers|{{if:w==4|dizaines de mille|{{if:w==5|centaines de mille|{{if:w==6|millions|{{if:w==7|dizaines de millions|centaines de millions}}}}}}}}}}}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "${{eval:k*10^p}}$ {{if:w==0|unités|{{if:w==1|dizaines|{{if:w==2|centaines|{{if:w==3|milliers|{{if:w==4|dizaines de mille|{{if:w==5|centaines de mille|{{if:w==6|millions|{{if:w==7|dizaines de millions|centaines de millions}}}}}}}}}}}}}}}}, c'est $?$ {{if:u==0|unités|{{if:u==1|dizaines|{{if:u==2|centaines|{{if:u==3|milliers|{{if:u==4|dizaines de mille|{{if:u==5|centaines de mille|{{if:u==6|millions|{{if:u==7|dizaines de millions|centaines de millions}}}}}}}}}}}}}}}}.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..99"
+				},
+				{
+					"name": "u",
+					"expression": "3..8"
+				},
+				{
+					"name": "w",
+					"expression": "0..7"
+				},
+				{
+					"name": "p",
+					"expression": "eval:u-w"
+				}
+			],
+			"conditions": ["p>=1", "p<=5", "k*10^u<=999999999", "mod(k,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Unités de numération.** Il faut ${{eval:10^p}}$ {{if:w==0|unités|{{if:w==1|dizaines|{{if:w==2|centaines|{{if:w==3|milliers|{{if:w==4|dizaines de mille|{{if:w==5|centaines de mille|{{if:w==6|millions|{{if:w==7|dizaines de millions|centaines de millions}}}}}}}}}}}}}}}} pour faire $1$ {{if:u==0|unité|{{if:u==1|dizaine|{{if:u==2|centaine|{{if:u==3|millier|{{if:u==4|dizaine de mille|{{if:u==5|centaine de mille|{{if:u==6|million|{{if:u==7|dizaine de millions|centaine de millions}}}}}}}}}}}}}}}}.",
+					"On cherche combien de fois ${{eval:10^p}}$ dans ${{eval:k*10^p}}$ : ${{eval:k*10^p}} = \\textcolor{{{color:primary.0}}}{{{solution}}} \\times {{eval:10^p}}$."
+				]
+			}
+		},
+		{
+			"statement": "${{k}}$ {{if:w==0|unités|{{if:w==1|dizaines|{{if:w==2|centaines|{{if:w==3|milliers|{{if:w==4|dizaines de mille|{{if:w==5|centaines de mille|{{if:w==6|millions|{{if:w==7|dizaines de millions|centaines de millions}}}}}}}}}}}}}}}}, c'est $?$ {{if:w==0|dizaines|{{if:w==1|centaines|{{if:w==2|milliers|{{if:w==3|dizaines de mille|{{if:w==4|centaines de mille|{{if:w==5|millions|{{if:w==6|dizaines de millions|centaines de millions}}}}}}}}}}}}}} et $?$ {{if:w==0|unités|{{if:w==1|dizaines|{{if:w==2|centaines|{{if:w==3|milliers|{{if:w==4|dizaines de mille|{{if:w==5|centaines de mille|{{if:w==6|millions|{{if:w==7|dizaines de millions|centaines de millions}}}}}}}}}}}}}}}}.",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..7"
+				},
+				{
+					"name": "k",
+					"expression": "21..99"
+				}
+			],
+			"conditions": ["mod(k,10)>=2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor(k/10)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:mod(k,10)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$10$ {{if:w==0|unités|{{if:w==1|dizaines|{{if:w==2|centaines|{{if:w==3|milliers|{{if:w==4|dizaines de mille|{{if:w==5|centaines de mille|{{if:w==6|millions|{{if:w==7|dizaines de millions|centaines de millions}}}}}}}}}}}}}}}}, c'est $1$ {{if:w==0|dizaine|{{if:w==1|centaine|{{if:w==2|millier|{{if:w==3|dizaine de mille|{{if:w==4|centaine de mille|{{if:w==5|million|{{if:w==6|dizaine de millions|centaine de millions}}}}}}}}}}}}}}.",
+					"Dans ${{k}}$ {{if:w==0|unités|{{if:w==1|dizaines|{{if:w==2|centaines|{{if:w==3|milliers|{{if:w==4|dizaines de mille|{{if:w==5|centaines de mille|{{if:w==6|millions|{{if:w==7|dizaines de millions|centaines de millions}}}}}}}}}}}}}}}}, il y a ${{eval:floor(k/10)}}$ paquets de $10$, et il en reste ${{eval:mod(k,10)}}$ : ${{k}}$ {{if:w==0|unités|{{if:w==1|dizaines|{{if:w==2|centaines|{{if:w==3|milliers|{{if:w==4|dizaines de mille|{{if:w==5|centaines de mille|{{if:w==6|millions|{{if:w==7|dizaines de millions|centaines de millions}}}}}}}}}}}}}}}}, c'est $\\textcolor{{{color:primary.0}}}{{{eval:floor(k/10)}}}$ {{if:w==0|dizaines|{{if:w==1|centaines|{{if:w==2|milliers|{{if:w==3|dizaines de mille|{{if:w==4|centaines de mille|{{if:w==5|millions|{{if:w==6|dizaines de millions|centaines de millions}}}}}}}}}}}}}} et $\\textcolor{{{color:primary.0}}}{{{eval:mod(k,10)}}}$ {{if:w==0|unités|{{if:w==1|dizaines|{{if:w==2|centaines|{{if:w==3|milliers|{{if:w==4|dizaines de mille|{{if:w==5|centaines de mille|{{if:w==6|millions|{{if:w==7|dizaines de millions|centaines de millions}}}}}}}}}}}}}}}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "7 millions = 7 000 milliers",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7",
+				"u": "6",
+				"w": "3",
+				"p": "3"
+			},
+			"answers": ["7\\,000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rapport inversé (7)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7",
+				"u": "6",
+				"w": "3",
+				"p": "3"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : un zéro de trop (70 000)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7",
+				"u": "6",
+				"w": "3",
+				"p": "3"
+			},
+			"answers": ["70\\,000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sans espaces : forme à améliorer",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7",
+				"u": "6",
+				"w": "3",
+				"p": "3"
+			},
+			"answers": ["7000"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			}
+		},
+		{
+			"description": "4 000 dizaines de mille = 40 millions",
+			"variationIndex": 1,
+			"variables": {
+				"k": "40",
+				"u": "6",
+				"w": "4",
+				"p": "2"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4",
+			"variationIndex": 1,
+			"variables": {
+				"k": "40",
+				"u": "6",
+				"w": "4",
+				"p": "2"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 400 000",
+			"variationIndex": 1,
+			"variables": {
+				"k": "40",
+				"u": "6",
+				"w": "4",
+				"p": "2"
+			},
+			"answers": ["400\\,000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "35 centaines de mille = 3 millions et 5 centaines de mille",
+			"variationIndex": 2,
+			"variables": {
+				"w": "5",
+				"k": "35"
+			},
+			"answers": ["3", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : chiffres inversés",
+			"variationIndex": 2,
+			"variables": {
+				"w": "5",
+				"k": "35"
+			},
+			"answers": ["5", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 35 et 0",
+			"variationIndex": 2,
+			"variables": {
+				"w": "5",
+				"k": "35"
+			},
+			"answers": ["35", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -14,7 +14,6 @@
  * @module questions/generator/content-resolver
  */
 
-import { evaluateConditionStrict } from './condition-evaluator';
 import { resolveVariableConditionals } from './variable-conditionals';
 import type { ResolvedVariable } from '../types';
 import type { TemplateMarkdown, ResolvedMarkdown } from '$lib/ubumark';
@@ -443,55 +442,4 @@ export function convertToLatex(
 		customToLatex(expression.trim(), genericFunctions, cleanCoefficients, capitalPairs) ??
 		expression
 	);
-}
-
-/**
- * Bon choix d'un QCM donné par une condition : `{{if:condition|A|B}}` → A si la
- * condition est vraie pour les variables tirées, B sinon (forme produite depuis
- * le ternaire TinyMath `condition ?? A :: B`). Toute autre valeur est rendue
- * telle quelle.
- */
-export function resolveConditionalChoice(
-	value: string,
-	resolvedVariables: ResolvedVariable[]
-): string {
-	const match = value.trim().match(/^\{\{if:(.+)\|([^|{}]*)\|([^|{}]*)\}\}$/);
-	if (!match) return value;
-	const [, condition, whenTrue, whenFalse] = match;
-	// L'évaluateur de conditions note l'égalité « = » (comme TinyMath).
-	// Condition illisible → erreur (la génération échoue) plutôt qu'un choix B
-	// désigné en silence comme bon.
-	return evaluateConditionStrict(condition, resolvedVariables) ? whenTrue.trim() : whenFalse.trim();
-}
-
-/**
- * Resolve correctChoiceIndex (can be string, array of strings, or undefined for fill_in_blanks)
- *
- * @param solution - correctChoiceIndex from template (expected answer index)
- * @param resolvedVariables - Already resolved variables
- * @param random - Source de hasard de l'instance (consommée), Math.random par défaut
- * @returns Resolved correctChoiceIndex, or undefined if input is undefined
- */
-export function resolveSolution(
-	solution: string | string[],
-	resolvedVariables: ResolvedVariable[],
-	random?: RandomSource
-): string | string[];
-export function resolveSolution(
-	solution: string | string[] | undefined,
-	resolvedVariables: ResolvedVariable[],
-	random?: RandomSource
-): string | string[] | undefined;
-export function resolveSolution(
-	solution: string | string[] | undefined,
-	resolvedVariables: ResolvedVariable[],
-	random: RandomSource = Math.random
-): string | string[] | undefined {
-	if (solution === undefined) return undefined;
-
-	if (Array.isArray(solution)) {
-		return solution.map((sol) => resolveExpression(sol, resolvedVariables, random));
-	}
-
-	return resolveExpression(solution, resolvedVariables, random);
 }

@@ -1,0 +1,337 @@
+{
+	"title": "Le nombre qui suit, le nombre qui précède (jusqu'à $10\\,000$)",
+	"description": "Avec passage de la dizaine, de la centaine, du millier, et 9 999 → 10 000",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Ecriture",
+	"level": 17,
+	"delay": 20,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le nombre qui suit ${{n}}$ est $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1000..9998"
+				}
+			],
+			"conditions": ["mod(n,10) <= 8"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre qui suit, c'est celui qu'on dit juste après en comptant : on avance de $1$.",
+					"$${{n}} \\rightarrow {{solution}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Le nombre qui suit ${{n}}$ est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..9"
+				},
+				{
+					"name": "c",
+					"expression": "0..8"
+				},
+				{
+					"name": "n",
+					"expression": "eval:1000*a+100*b+10*c+9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre qui suit, c'est celui qu'on dit juste après en comptant : on avance de $1$.",
+					"${{n}}$ se termine par $9$ : on passe à la dizaine suivante, le chiffre des unités revient à $0$.",
+					"$${{n}} \\rightarrow {{solution}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Le nombre qui suit ${{n}}$ est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:1000*a+100*b+99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre qui suit, c'est celui qu'on dit juste après en comptant : on avance de $1$.",
+					"{{if:b==9|${{n}}$ se termine par $999$ : on passe au millier suivant, les centaines, les dizaines et les unités reviennent à $0$.|${{n}}$ se termine par $99$ : on passe à la centaine suivante, les dizaines et les unités reviennent à $0$.}}",
+					"$${{n}} \\rightarrow {{solution}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Le nombre qui précède ${{n}}$ est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..10"
+				},
+				{
+					"name": "b",
+					"expression": "0..9"
+				},
+				{
+					"name": "c",
+					"expression": "0..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:1000*a+100*b+10*c"
+				}
+			],
+			"conditions": ["1000*a + 100*b + 10*c <= 10000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre qui précède, c'est celui qu'on dit juste avant en comptant : on recule de $1$.",
+					"{{if:c>0|${{n}}$ se termine par $0$ : on revient à la dizaine précédente, le chiffre des unités devient $9$.|{{if:b>0|${{n}}$ se termine par $00$ : on revient à la centaine précédente, les dizaines et les unités deviennent $9$.|${{n}}$ se termine par $000$ : on revient au millier précédent, les centaines, les dizaines et les unités deviennent $9$.}}}}",
+					"$${{solution}} \\rightarrow {{n}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "suit 4 526 : 4 527",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4526"
+			},
+			"answers": ["4\\,527"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme : 4527 sans espace",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4526"
+			},
+			"answers": ["4527"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			}
+		},
+		{
+			"description": "suit 3 459 : 3 460",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "5",
+				"n": "3459"
+			},
+			"answers": ["3\\,460"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 34 510",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "5",
+				"n": "3459"
+			},
+			"answers": ["34\\,510"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "suit 2 399 : 2 400",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"n": "2399"
+			},
+			"answers": ["2\\,400"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 23 100",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"n": "2399"
+			},
+			"answers": ["23\\,100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2 310 (dizaine seule)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"n": "2399"
+			},
+			"answers": ["2\\,310"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "suit 5 999 : 6 000",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "9",
+				"n": "5999"
+			},
+			"answers": ["6\\,000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : suit 9 999 : 10 000",
+			"variationIndex": 2,
+			"variables": {
+				"a": "9",
+				"b": "9",
+				"n": "9999"
+			},
+			"answers": ["10\\,000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "précède 4 520 : 4 519",
+			"variationIndex": 3,
+			"variables": {
+				"a": "4",
+				"b": "5",
+				"c": "2",
+				"n": "4520"
+			},
+			"answers": ["4\\,519"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "précède 3 400 : 3 399",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "0",
+				"n": "3400"
+			},
+			"answers": ["3\\,399"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : précède 3 400 : 3 309",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "0",
+				"n": "3400"
+			},
+			"answers": ["3\\,309"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "précède 7 000 : 6 999",
+			"variationIndex": 3,
+			"variables": {
+				"a": "7",
+				"b": "0",
+				"c": "0",
+				"n": "7000"
+			},
+			"answers": ["6\\,999"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : précède 7 000 : 6 099",
+			"variationIndex": 3,
+			"variables": {
+				"a": "7",
+				"b": "0",
+				"c": "0",
+				"n": "7000"
+			},
+			"answers": ["6\\,099"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : précède 10 000 : 9 999",
+			"variationIndex": 3,
+			"variables": {
+				"a": "10",
+				"b": "0",
+				"c": "0",
+				"n": "10000"
+			},
+			"answers": ["9\\,999"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

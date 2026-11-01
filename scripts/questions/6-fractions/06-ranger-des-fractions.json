@@ -1,0 +1,183 @@
+{
+	"title": "Ranger des fractions",
+	"description": "Ranger trois fractions dans l'ordre croissant : même dénominateur, dénominateurs multiples (1/2 ; 5/8 ; 3/4), autour de 1 (99/100 ; 1 ; 7/6)",
+	"grades": ["6"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Ordonner",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Range ces nombres dans l'ordre croissant.\n\n```ranger\nsigne: <\n- $\\frac{{{x}}}{{{b}}}$\n- $\\frac{{{y}}}{{{b}}}$\n- $\\frac{{{z}}}{{{b}}}$\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "3..12"
+				},
+				{
+					"name": "x",
+					"expression": "1..9"
+				},
+				{
+					"name": "y",
+					"expression": "{{eval:x+1}}..{{eval:x+5}}"
+				},
+				{
+					"name": "z",
+					"expression": "{{eval:y+1}}..{{eval:y+5}}"
+				}
+			],
+			"conditions": ["mod(x,b)!=0", "mod(y,b)!=0", "mod(z,b)!=0"],
+			"correction": {
+				"steps": [
+					"**Même dénominateur.** Toutes les parts ont la même taille, $\\frac{1}{{{b}}}$ : on range les numérateurs, ${{x}} < {{y}} < {{z}}$.",
+					"$$\\textcolor{{{color:primary.0}}}{\\frac{{{x}}}{{{b}}} < \\frac{{{y}}}{{{b}}} < \\frac{{{z}}}{{{b}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Range ces nombres dans l'ordre croissant.\n\n```ranger\nsigne: <\n- $\\frac{{{eval:(x)/gcd(x,D)}}}{{{eval:(D)/gcd(x,D)}}}$\n- $\\frac{{{eval:(y)/gcd(y,D)}}}{{{eval:(D)/gcd(y,D)}}}$\n- $\\frac{{{eval:(z)/gcd(z,D)}}}{{{eval:(D)/gcd(z,D)}}}$\n```",
+			"variables": [
+				{
+					"name": "D",
+					"expression": "6|8|10|12"
+				},
+				{
+					"name": "x",
+					"expression": "1..{{eval:D-3}}"
+				},
+				{
+					"name": "y",
+					"expression": "{{eval:x+1}}..{{eval:D-2}}"
+				},
+				{
+					"name": "z",
+					"expression": "{{eval:y+1}}..{{eval:D-1}}"
+				}
+			],
+			"conditions": ["gcd(x,D)>1", "gcd(z,D)>1", "gcd(x,D)!=gcd(z,D)"],
+			"correction": {
+				"steps": [
+					"**Même dénominateur.** On écrit les trois fractions avec le dénominateur ${{D}}$ : $\\frac{{{eval:(x)/gcd(x,D)}}}{{{eval:(D)/gcd(x,D)}}} = \\frac{{{x}}}{{{D}}}$, {{if:gcd(y,D)>1|$\\frac{{{eval:(y)/gcd(y,D)}}}{{{eval:(D)/gcd(y,D)}}} = \\frac{{{y}}}{{{D}}}$|$\\frac{{{y}}}{{{D}}}$}}, $\\frac{{{eval:(z)/gcd(z,D)}}}{{{eval:(D)/gcd(z,D)}}} = \\frac{{{z}}}{{{D}}}$. On range les numérateurs : ${{x}} < {{y}} < {{z}}$.",
+					"$$\\textcolor{{{color:primary.0}}}{\\frac{{{eval:(x)/gcd(x,D)}}}{{{eval:(D)/gcd(x,D)}}} < \\frac{{{eval:(y)/gcd(y,D)}}}{{{eval:(D)/gcd(y,D)}}} < \\frac{{{eval:(z)/gcd(z,D)}}}{{{eval:(D)/gcd(z,D)}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Range ces nombres dans l'ordre croissant.\n\n```ranger\nsigne: <\n- $\\frac{{{a}}}{{{b}}}$\n- $1$\n- $\\frac{{{c}}}{{{d}}}$\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "3|4|5|6|8|10|100"
+				},
+				{
+					"name": "a",
+					"expression": "{{if:b==100|90|1}}..{{eval:b-1}}"
+				},
+				{
+					"name": "d",
+					"expression": "2..12"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:d+1}}..{{eval:2*d-1}}"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "gcd(c,d)==1"],
+			"correction": {
+				"steps": [
+					"**Comparer à 1.** $\\frac{{{a}}}{{{b}}} < 1$ car ${{a}} < {{b}}$, et $\\frac{{{c}}}{{{d}}} > 1$ car ${{c}} > {{d}}$.",
+					"$$\\textcolor{{{color:primary.0}}}{\\frac{{{a}}}{{{b}}} < 1 < \\frac{{{c}}}{{{d}}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2/7 < 3/7 < 6/7",
+			"variationIndex": 0,
+			"variables": {
+				"b": "7",
+				"x": "2",
+				"y": "3",
+				"z": "6"
+			},
+			"answers": ["2", "0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ordre décroissant",
+			"variationIndex": 0,
+			"variables": {
+				"b": "7",
+				"x": "2",
+				"y": "3",
+				"z": "6"
+			},
+			"answers": ["1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/2 < 5/8 < 3/4",
+			"variationIndex": 1,
+			"variables": {
+				"D": "8",
+				"x": "4",
+				"y": "5",
+				"z": "6"
+			},
+			"answers": ["2", "0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rangées par numérateurs (1/2 ; 3/4 ; 5/8)",
+			"variationIndex": 1,
+			"variables": {
+				"D": "8",
+				"x": "4",
+				"y": "5",
+				"z": "6"
+			},
+			"answers": ["2", "1", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "99/100 < 1 < 7/6",
+			"variationIndex": 2,
+			"variables": {
+				"b": "100",
+				"a": "99",
+				"d": "6",
+				"c": "7"
+			},
+			"answers": ["2", "0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 < 99/100 < 7/6",
+			"variationIndex": 2,
+			"variables": {
+				"b": "100",
+				"a": "99",
+				"d": "6",
+				"c": "7"
+			},
+			"answers": ["0", "2", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

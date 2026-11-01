@@ -1,0 +1,120 @@
+{
+	"title": "Encadrer un nombre (jusqu'à $999\\,999$)",
+	"description": "Encadrer un entier de 5 à 6 chiffres à la dizaine, à la centaine, au millier ou à la dizaine de mille près",
+	"grades": ["CM1"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Encadrer",
+	"level": 13,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Encadre ${{n}}$ {{if:k==1|à la dizaine près|{{if:k==2|à la centaine près|{{if:k==3|au millier près|à la dizaine de mille près}}}}}}.\n\n$$?<{{n}}<?$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "5..6"
+				},
+				{
+					"name": "n",
+					"expression": "digits:c"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "lo",
+					"expression": "eval:n-mod(n,10^k)"
+				},
+				{
+					"name": "hi",
+					"expression": "eval:lo+10^k"
+				}
+			],
+			"conditions": ["mod(n,10^k)!=0", "hi<=999999"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{lo}}"
+				},
+				{
+					"expectedAnswer": "{{hi}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Encadrer {{if:k==1|à la dizaine près|{{if:k==2|à la centaine près|{{if:k==3|au millier près|à la dizaine de mille près}}}}}}.** On garde les chiffres jusqu'au rang des {{if:k==1|dizaines|{{if:k==2|centaines|{{if:k==3|unités de mille|dizaines de mille}}}}}} et on remplace les suivants par des zéros : ${{lo}}$. On ajoute {{if:k==1|$1$ dizaine|{{if:k==2|$1$ centaine|{{if:k==3|$1$ millier|$1$ dizaine de mille}}}}}} : ${{hi}}$.",
+					"$$\\textcolor{{{color:primary.0}}}{{{lo}}} < {{n}} < \\textcolor{{{color:primary.0}}}{{{hi}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "45 300 < 45 307 < 45 400",
+			"variationIndex": 0,
+			"variables": {
+				"c": "5",
+				"n": "45307",
+				"k": "2",
+				"lo": "45300",
+				"hi": "45400"
+			},
+			"answers": ["45\\,300", "45\\,400"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : nombres juste avant et juste après",
+			"variationIndex": 0,
+			"variables": {
+				"c": "5",
+				"n": "45307",
+				"k": "2",
+				"lo": "45300",
+				"hi": "45400"
+			},
+			"answers": ["45\\,306", "45\\,308"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : à la dizaine près",
+			"variationIndex": 0,
+			"variables": {
+				"c": "5",
+				"n": "45307",
+				"k": "2",
+				"lo": "45300",
+				"hi": "45400"
+			},
+			"answers": ["45\\,300", "45\\,310"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : au-dessus mal arrondi (46 000)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "5",
+				"n": "45307",
+				"k": "2",
+				"lo": "45300",
+				"hi": "45400"
+			},
+			"answers": ["45\\,300", "46\\,000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,168 @@
+{
+	"title": "Multiplier un nombre décimal par $5$",
+	"description": "Multiplier par 10, puis prendre la moitié : 3,4 × 5 ; 1,46 × 5 ; 24,8 × 5",
+	"grades": ["CM2"],
+	"theme": "Décimaux",
+	"domain": "Multiplier",
+	"subdomain": "Produit particulier",
+	"level": 6,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$${{eval:t/10^q;d}}\\times 5=?$$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1"
+				},
+				{
+					"name": "t",
+					"expression": "11..99"
+				}
+			],
+			"conditions": ["mod(t,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:5*t/10^q;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Multiplier par $5$, c'est multiplier par $10$, puis prendre la moitié.",
+					"$${{eval:t/10^q;d}}\\times 10=\\textcolor{{{color:primary.0}}}{{{eval:10*t/10^q;d}}}$$",
+					"Moitié de ${{eval:10*t/10^q;d}}$ : $\\textcolor{{{color:primary.1}}}{{{solution}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$${{eval:t/10^q;d}}\\times 5=?$$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1..2"
+				},
+				{
+					"name": "t",
+					"expression": "101..999"
+				}
+			],
+			"conditions": ["mod(t,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:5*t/10^q;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Multiplier par $5$, c'est multiplier par $10$, puis prendre la moitié.",
+					"$${{eval:t/10^q;d}}\\times 10=\\textcolor{{{color:primary.0}}}{{{eval:10*t/10^q;d}}}$$",
+					"Moitié de ${{eval:10*t/10^q;d}}$ : $\\textcolor{{{color:primary.1}}}{{{solution}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3,4 × 5 = 17",
+			"variationIndex": 0,
+			"variables": {
+				"q": "1",
+				"t": "34"
+			},
+			"answers": ["17"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3,4 × 5 → 34 (× 10 sans la moitié)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "1",
+				"t": "34"
+			},
+			"answers": ["34"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3,4 × 5 → 15,20 (3 × 5 et 4 × 5 juxtaposés)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "1",
+				"t": "34"
+			},
+			"answers": ["15,20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1,46 × 5 = 7,3",
+			"variationIndex": 1,
+			"variables": {
+				"q": "2",
+				"t": "146"
+			},
+			"answers": ["7,3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1,46 × 5 → 73 (virgule oubliée)",
+			"variationIndex": 1,
+			"variables": {
+				"q": "2",
+				"t": "146"
+			},
+			"answers": ["73"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1,46 × 5 → 14,6 (× 10 sans la moitié)",
+			"variationIndex": 1,
+			"variables": {
+				"q": "2",
+				"t": "146"
+			},
+			"answers": ["14,6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "24,8 × 5 = 124",
+			"variationIndex": 1,
+			"variables": {
+				"q": "1",
+				"t": "248"
+			},
+			"answers": ["124"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 99,9 × 5 = 499,5",
+			"variationIndex": 1,
+			"variables": {
+				"q": "1",
+				"t": "999"
+			},
+			"answers": ["499,5"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

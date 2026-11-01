@@ -1,0 +1,214 @@
+{
+	"title": "Des diviseurs d'un nombre",
+	"description": "Trouver des diviseurs d'un entier de 24 à 100 : les cocher parmi 1 à 10, en proposer un dans un problème de partage en équipes",
+	"grades": ["CM2"],
+	"theme": "Entiers",
+	"domain": "Diviser",
+	"subdomain": "Multiples et diviseurs",
+	"level": 5,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Coche tous les diviseurs de ${{N}}$.\n\n```choix\nplusieurs: oui\nmelanger: non\n- $1$\n- $2$\n- $3$\n- $4$\n- $5$\n- $6$\n- $7$\n- $8$\n- $9$\n- $10$\n```",
+			"variables": [
+				{
+					"name": "N",
+					"expression": "24..100"
+				}
+			],
+			"conditions": [
+				"floor((2-mod(N,2))/2) + floor((3-mod(N,3))/3) + floor((4-mod(N,4))/4) + floor((5-mod(N,5))/5) + floor((6-mod(N,6))/6) + floor((7-mod(N,7))/7) + floor((8-mod(N,8))/8) + floor((9-mod(N,9))/9) + floor((10-mod(N,10))/10)>=3"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0;{{eval:1*floor((2-mod(N,2))/2)}};{{eval:2*floor((3-mod(N,3))/3)}};{{eval:3*floor((4-mod(N,4))/4)}};{{eval:4*floor((5-mod(N,5))/5)}};{{eval:5*floor((6-mod(N,6))/6)}};{{eval:6*floor((7-mod(N,7))/7)}};{{eval:7*floor((8-mod(N,8))/8)}};{{eval:8*floor((9-mod(N,9))/9)}};{{eval:9*floor((10-mod(N,10))/10)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Diviseur.** Un nombre est un diviseur de ${{N}}$ si la division de ${{N}}$ par ce nombre tombe juste : ${{N}}$ est dans sa table.",
+					"${{N}} = 1 \\times {{N}}${{if:mod(N,2)==0 && 4<=N| ; ${{N}} = 2 \\times {{eval:N/2}}$|}}{{if:mod(N,3)==0 && 9<=N| ; ${{N}} = 3 \\times {{eval:N/3}}$|}}{{if:mod(N,4)==0 && 16<=N| ; ${{N}} = 4 \\times {{eval:N/4}}$|}}{{if:mod(N,5)==0 && 25<=N| ; ${{N}} = 5 \\times {{eval:N/5}}$|}}{{if:mod(N,6)==0 && 36<=N| ; ${{N}} = 6 \\times {{eval:N/6}}$|}}{{if:mod(N,7)==0 && 49<=N| ; ${{N}} = 7 \\times {{eval:N/7}}$|}}{{if:mod(N,8)==0 && 64<=N| ; ${{N}} = 8 \\times {{eval:N/8}}$|}}{{if:mod(N,9)==0 && 81<=N| ; ${{N}} = 9 \\times {{eval:N/9}}$|}}{{if:mod(N,10)==0 && 100<=N| ; ${{N}} = 10 \\times {{eval:N/10}}$|}}.",
+					"Pour les autres nombres de la liste, la division ne tombe pas juste.",
+					"Les diviseurs de ${{N}}$ de la liste : $\\textcolor{{{color:primary.0}}}{1}${{if:mod(N,2)==0| ; $\\textcolor{{{color:primary.0}}}{2}$|}}{{if:mod(N,3)==0| ; $\\textcolor{{{color:primary.0}}}{3}$|}}{{if:mod(N,4)==0| ; $\\textcolor{{{color:primary.0}}}{4}$|}}{{if:mod(N,5)==0| ; $\\textcolor{{{color:primary.0}}}{5}$|}}{{if:mod(N,6)==0| ; $\\textcolor{{{color:primary.0}}}{6}$|}}{{if:mod(N,7)==0| ; $\\textcolor{{{color:primary.0}}}{7}$|}}{{if:mod(N,8)==0| ; $\\textcolor{{{color:primary.0}}}{8}$|}}{{if:mod(N,9)==0| ; $\\textcolor{{{color:primary.0}}}{9}$|}}{{if:mod(N,10)==0| ; $\\textcolor{{{color:primary.0}}}{10}$|}}."
+				]
+			}
+		},
+		{
+			"statement": "Les ${{N}}$ élèves d'une école forment des équipes qui ont toutes le même nombre d'élèves, sans qu'il reste personne. Il y a au moins $2$ équipes et au moins $2$ élèves par équipe.\n\nPropose un nombre d'équipes possible.\n\nIl peut y avoir $?$ équipes.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "3..20"
+				},
+				{
+					"name": "N",
+					"expression": "eval:a*b"
+				}
+			],
+			"conditions": ["N>=24", "N<=100"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "divisor",
+							"dividend": "{{N}}"
+						},
+						{
+							"type": "range",
+							"min": "1",
+							"max": "{{N}}",
+							"inclusive": false
+						},
+						{
+							"type": "predicate",
+							"predicate": "isInteger"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les ${{N}}$ élèves se répartissent sans reste : le nombre d'équipes est un diviseur de ${{N}}$.",
+					"Par exemple, ${{N}} = \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}}$ : $\\textcolor{{{color:primary.0}}}{{{a}}}$ équipes de ${{b}}$ élèves.",
+					"Tout diviseur de ${{N}}$ autre que $1$ et ${{N}}$ est juste."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Diviseurs de 72 parmi 1 à 10 : 1, 2, 3, 4, 6, 8, 9",
+			"variationIndex": 0,
+			"variables": {
+				"N": "72"
+			},
+			"answers": ["0;1;2;3;5;7;8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1 oublié : la moitié des points",
+			"variationIndex": 0,
+			"variables": {
+				"N": "72"
+			},
+			"answers": ["1;2;3;5;7;8"],
+			"expected": {
+				"status": "unoptimal_form"
+			}
+		},
+		{
+			"description": "Erreur : 7 coché",
+			"variationIndex": 0,
+			"variables": {
+				"N": "72"
+			},
+			"answers": ["0;1;2;3;5;6;7;8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "9 oublié : la moitié des points",
+			"variationIndex": 0,
+			"variables": {
+				"N": "72"
+			},
+			"answers": ["0;1;2;3;5;7"],
+			"expected": {
+				"status": "unoptimal_form"
+			}
+		},
+		{
+			"description": "72 élèves : 8 équipes",
+			"variationIndex": 1,
+			"variables": {
+				"a": "8",
+				"b": "9",
+				"N": "72"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "72 élèves : 6 équipes",
+			"variationIndex": 1,
+			"variables": {
+				"a": "8",
+				"b": "9",
+				"N": "72"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "72 élèves : 36 équipes",
+			"variationIndex": 1,
+			"variables": {
+				"a": "8",
+				"b": "9",
+				"N": "72"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 équipes",
+			"variationIndex": 1,
+			"variables": {
+				"a": "8",
+				"b": "9",
+				"N": "72"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 72 équipes (une personne par équipe)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "8",
+				"b": "9",
+				"N": "72"
+			},
+			"answers": ["72"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1 équipe",
+			"variationIndex": 1,
+			"variables": {
+				"a": "8",
+				"b": "9",
+				"N": "72"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

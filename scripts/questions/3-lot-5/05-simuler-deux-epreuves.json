@@ -1,0 +1,177 @@
+{
+	"title": "Simuler deux épreuves indépendantes",
+	"description": "Simuler deux épreuves indépendantes (deux dés, deux pièces) et confronter les fréquences simulées à la probabilité donnée par un arbre ou un tableau",
+	"grades": ["3"],
+	"theme": "Probabilités",
+	"domain": "Simulation",
+	"subdomain": "Deux épreuves",
+	"level": 1,
+	"delay": 75,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:k==0|On veut simuler sur ordinateur le lancer de **deux dés** équilibrés à six faces et noter la **somme** obtenue.|On veut simuler sur ordinateur le lancer de **deux pièces** équilibrées et noter le **nombre de Pile** obtenu.}}\n\nQuelle instruction convient ?\n\n```choix\n- {{if:k==0|Tirer un entier au hasard entre $1$ et $6$, puis un autre entre $1$ et $6$, et les additionner.|Tirer au hasard $0$ ou $1$, puis encore $0$ ou $1$, et les additionner.}}\n- {{if:k==0|Tirer un entier au hasard entre $2$ et $12$.|Tirer un entier au hasard entre $0$ et $2$.}}\n- {{if:k==0|Tirer un entier au hasard entre $1$ et $6$, et le multiplier par $2$.|Tirer au hasard $0$ ou $1$, et le multiplier par $2$.}}\n- {{if:k==0|Tirer un entier au hasard entre $1$ et $12$.|Tirer un entier au hasard entre $1$ et $2$.}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Deux épreuves **indépendantes** : on simule {{if:k==0|chaque dé|chaque pièce}} séparément, puis on combine les résultats.",
+					"{{if:k==0|Un seul tirage entre $2$ et $12$ rendrait les onze sommes équiprobables : or la somme $7$ s'obtient de six façons et la somme $2$ d'une seule.|Un seul tirage entre $0$ et $2$ rendrait les trois résultats équiprobables : or « un Pile » s'obtient de deux façons (PF et FP).}}",
+					"Multiplier un seul tirage par $2$ revient à lancer {{if:k==0|un seul dé|une seule pièce}} : {{if:k==0|la somme serait toujours paire|on n'aurait jamais exactement un Pile}}."
+				]
+			}
+		},
+		{
+			"statement": "Lina lance deux pièces équilibrées. Elle pense que la probabilité d'obtenir **deux Pile** est $\\dfrac{1}{3}$, car il y a trois résultats : deux Pile, deux Face, un Pile et un Face.\n\nElle simule $1\\,000$ lancers des deux pièces et obtient ${{n}}$ fois deux Pile.\n\nQuelle probabilité les résultats de la simulation confirment-ils ?\n\n```choix\n- $\\dfrac{1}{4}$\n- $\\dfrac{1}{3}$\n- $\\dfrac{1}{2}$\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "232..268"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Fréquence observée de « deux Pile » : $\\dfrac{ {{n}} }{1\\,000} = 0{,}{{n}}$, proche de $0{,}25$.",
+					"L'arbre donne **quatre** issues équiprobables :",
+					"```probtree\noutcomes: true\n\nPile:1/2\n  Pile:1/2, PP\n  Face:1/2, PF\nFace:1/2\n  Pile:1/2, FP\n  Face:1/2, FF\n```",
+					"« Un Pile et un Face » regroupe deux issues (PF et FP) : $P(\\text{deux Pile}) = \\textcolor{{{color:primary.0}}}{\\dfrac{1}{4}}$, pas $\\dfrac{1}{3}$."
+				]
+			}
+		},
+		{
+			"statement": "On simule $3\\,600$ lancers de deux dés équilibrés à six faces, en notant la somme des deux dés. La somme ${{s}}$ est sortie ${{n}}$ fois.\n\nDe quelle probabilité la fréquence de la somme ${{s}}$ est-elle proche ?\n\n```choix\n- $\\dfrac{ {{m}} }{36}$\n- $\\dfrac{1}{11}$\n- $\\dfrac{1}{6}$\n- $\\dfrac{1}{12}$\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "5|6|8|9"
+				},
+				{
+					"name": "m",
+					"expression": "eval:6-abs(s-7)"
+				},
+				{
+					"name": "n",
+					"expression": "{{eval:100*m-20}}..{{eval:100*m+20}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les $6 \\times 6 = 36$ couples de résultats sont équiprobables ; la somme ${{s}}$ en réunit ${{m}}$ : $P = \\textcolor{{{color:primary.0}}}{\\dfrac{ {{m}} }{36}}$.",
+					"Sur $3\\,600$ lancers, on attend donc environ $3\\,600 \\times \\dfrac{ {{m}} }{36} = {{eval:100*m}}$ fois la somme ${{s}}$ : la simulation en donne ${{n}}$, c'est cohérent.",
+					"Les onze sommes ne sont **pas** équiprobables : $\\dfrac{1}{11}$ ne convient pas (on attendrait environ $327$ fois chaque somme)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Deux dés : deux tirages additionnés",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un tirage entre 2 et 12",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Deux pièces : deux tirages additionnés",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un tirage entre 0 et 2",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Deux Pile : 1/4",
+			"variationIndex": 1,
+			"variables": {
+				"n": "251"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/3 (trois résultats)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "251"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Somme 8 : 5/36",
+			"variationIndex": 2,
+			"variables": {
+				"s": "8",
+				"n": "507"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/11 (sommes équiprobables)",
+			"variationIndex": 2,
+			"variables": {
+				"s": "8",
+				"n": "507"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

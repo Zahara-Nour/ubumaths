@@ -1,0 +1,129 @@
+{
+	"title": "Écrire en chiffres une fraction",
+	"description": "Trois huitièmes → 3/8",
+	"grades": ["CE1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Ecriture",
+	"level": 3,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris en chiffres la fraction « **{{if:n==1|un|{{if:n==2|deux|{{if:n==3|trois|{{if:n==4|quatre|{{if:n==5|cinq|{{if:n==6|six|{{if:n==7|sept|{{if:n==8|huit|{{if:n==9|neuf|dix}}}}}}}}}}}}}}}}}} {{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==8|huitièmes|dixièmes}}}}}}}}}}}}** ».\n\n$$?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3|4|5|6|8|10"
+				},
+				{
+					"name": "n",
+					"expression": "2..{{eval:d-1}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{n}}}{{{d}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« {{if:n==1|un|{{if:n==2|deux|{{if:n==3|trois|{{if:n==4|quatre|{{if:n==5|cinq|{{if:n==6|six|{{if:n==7|sept|{{if:n==8|huit|{{if:n==9|neuf|dix}}}}}}}}}}}}}}}}}} {{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==8|huitièmes|dixièmes}}}}}}}}}}}} » : on partage le tout en ${{d}}$ parts égales et on en prend ${{n}}$.",
+					"Le **dénominateur** (en bas) dit en combien de parts égales on partage le tout ; le **numérateur** (en haut) dit combien de parts on prend.",
+					"$$\\textcolor{{{color:primary.0}}}{\\frac{{{n}}}{{{d}}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "trois huitièmes : 3/8",
+			"variationIndex": 0,
+			"variables": {
+				"d": "8",
+				"n": "3"
+			},
+			"answers": ["\\frac{3}{8}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : trois huitièmes, 8/3",
+			"variationIndex": 0,
+			"variables": {
+				"d": "8",
+				"n": "3"
+			},
+			"answers": ["\\frac{8}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : trois huitièmes, 38",
+			"variationIndex": 0,
+			"variables": {
+				"d": "8",
+				"n": "3"
+			},
+			"answers": ["38"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "deux quarts : 2/4",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"n": "2"
+			},
+			"answers": ["\\frac{2}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "deux quarts : 1/2, même valeur",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"n": "2"
+			},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : neuf dixièmes, 9/10",
+			"variationIndex": 0,
+			"variables": {
+				"d": "10",
+				"n": "9"
+			},
+			"answers": ["\\frac{9}{10}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : deux tiers, 2/3",
+			"variationIndex": 0,
+			"variables": {
+				"d": "3",
+				"n": "2"
+			},
+			"answers": ["\\frac{2}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

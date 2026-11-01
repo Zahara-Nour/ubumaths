@@ -31,7 +31,6 @@ import {
 	createQuestionTemplateSchema,
 	updateQuestionTemplateSchema
 } from '$lib/server/validation/questions';
-import { editedQuestionTemplateSchema } from '$lib/server/validation/migration-review';
 import { templateMarkdown } from '$lib/ubumark';
 
 // ============================================================================
@@ -246,23 +245,6 @@ describe('API : createQuestionTemplateSchema / updateQuestionTemplateSchema', ()
 	});
 });
 
-describe('Relecture de migration : editedQuestionTemplateSchema', () => {
-	const edited = (answerAssumptions: unknown) => ({
-		variations: baseTemplate.variations,
-		options: { answerAssumptions }
-	});
-
-	it('garde des hypothèses valides', () => {
-		const parsed = editedQuestionTemplateSchema.parse(edited({ x: 'positive' }));
-		expect(parsed.options?.answerAssumptions).toEqual({ x: 'positive' });
-	});
-
-	it('refuse des hypothèses invalides au lieu de les laisser passer (passthrough)', () => {
-		expect(editedQuestionTemplateSchema.safeParse(edited({ e: 'positive' })).success).toBe(false);
-		expect(editedQuestionTemplateSchema.safeParse(edited({ a: 'positive' })).success).toBe(false);
-	});
-});
-
 // ============================================================================
 // Affichage et lignes de l'éditeur
 // ============================================================================
@@ -375,7 +357,6 @@ describe('aller-retour éditeur ↔ base', () => {
 			...baseTemplate,
 			exercise_instruction: null,
 			default_display_options: null,
-			multiple_answers: null,
 			test_specs: null,
 			options: { answerAssumptions: { x: 'positive', n: 'natural' } }
 		};

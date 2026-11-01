@@ -1,0 +1,247 @@
+{
+	"title": "Formule, tableau de valeurs, courbe",
+	"description": "Passer d'une représentation d'une fonction à une autre : formule → tableau (affine, x² + c en un nombre négatif), courbe → tableau, tableau → formule",
+	"grades": ["3"],
+	"theme": "Fonctions",
+	"domain": "Généralités",
+	"subdomain": "Représentations",
+	"level": 1,
+	"delay": 75,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On considère la fonction $f$ définie par $f(x)={{a}}x{{if:b<0|{{b}}|+{{b}}}}$.\n\nComplète le tableau de valeurs de $f$ :\n\n$\\begin{array}{|l|c|c|c|} x & 0 & 1 & {{n}} \\\\ f(x) & {{eval:b}} & {{eval:(a)+(b)}} & ? \\end{array}$\n\n",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "-5..-2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a)*(n)+(b)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $x$ par ${{n}}$ dans la formule.",
+					"$$f({{n}}) = {{a}} \\times ({{n}}) {{if:b<0|{{b}}|+{{b}}}} = \\textcolor{{{color:primary.0}}}{{{eval:(a)*(n)+(b)}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie par $f(x)=x^2{{if:c<0|{{c}}|+{{c}}}}$.\n\nComplète le tableau de valeurs de $f$ :\n\n$\\begin{array}{|l|c|c|c|} x & 0 & 1 & {{n}} \\\\ f(x) & {{eval:c}} & {{eval:1+(c)}} & ? \\end{array}$\n\n",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "-5..-2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n)^2+(c)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $x$ par ${{n}}$ dans la formule, **parenthèses comprises** : le carré d'un nombre négatif est positif.",
+					"$$f({{n}}) = ({{n}})^2 {{if:c<0|{{c}}|+{{c}}}} = {{eval:(n)^2}} {{if:c<0|{{c}}|+{{c}}}} = \\textcolor{{{color:primary.0}}}{{{eval:(n)^2+(c)}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$.\n\n```courbe\nx: {{eval:min(-1,p-3)}} ; {{eval:max(1,p+3)}}\ny: {{eval:min(-1,q-1,q+5*(c))}} ; {{eval:max(1,q+1,q+5*(c))}}\ngrille: 1 ; 1\nf(x) = ({{c}})*(x-({{p}}))^2+({{q}}) sur [{{eval:p-2.2;d}} ; {{eval:p+2.2;d}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe en forme de parabole d'une fonction f.\n```\n\nComplète le tableau de valeurs de $f$ :\n\n$\\begin{array}{|l|c|} x & {{n}} \\\\ f(x) & ? \\end{array}$\n\n",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1|-1"
+				},
+				{
+					"name": "p",
+					"expression": "-1..1"
+				},
+				{
+					"name": "q",
+					"expression": "-2..2"
+				},
+				{
+					"name": "d",
+					"expression": "-2..2"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(p)+(d)"
+				}
+			],
+			"conditions": ["d != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(q)+(c)*(d)^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche le point de $\\mathcal{C}_f$ d'**abscisse** ${{n}}$ ; $f({{n}})$ est son **ordonnée**.",
+					"```courbe\nx: {{eval:min(-1,p-3)}} ; {{eval:max(1,p+3)}}\ny: {{eval:min(-1,q-1,q+5*(c))}} ; {{eval:max(1,q+1,q+5*(c))}}\ngrille: 1 ; 1\nf(x) = ({{c}})*(x-({{p}}))^2+({{q}}) sur [{{eval:p-2.2;d}} ; {{eval:p+2.2;d}}]   bleu   nom=C_f\npoints: A({{n}} ; {{eval:(q)+(c)*(d)^2}})\ntaille: moyenne\ndescription: Courbe de f et son point A d'abscisse {{n}}.\n```",
+					"$A({{n}}\\,;{{eval:(q)+(c)*(d)^2}})$ : $f({{n}})=\\textcolor{{{color:primary.0}}}{{{eval:(q)+(c)*(d)^2}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici un tableau de valeurs d'une fonction $f$ :\n\n$\\begin{array}{|l|c|c|c|c|} x & 0 & 1 & 2 & 3 \\\\ f(x) & {{eval:b}} & {{eval:(a)+(b)}} & {{eval:2*(a)+(b)}} & {{eval:3*(a)+(b)}} \\end{array}$\n\nQuelle formule peut définir $f$ ?\n\n```choix\n- $f(x)={{a}}x+{{b}}$\n- $f(x)={{b}}x+{{a}}$\n- $f(x)={{eval:(a)+(b)}}x$\n- $f(x)=x+{{b}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On vérifie chaque formule sur **toutes** les colonnes du tableau.",
+					"Avec $\\textcolor{{{color:primary.0}}}{f(x)={{a}}x+{{b}}}$ : $f(0)={{b}}$, $f(1)={{eval:(a)+(b)}}$, $f(2)={{eval:2*(a)+(b)}}$, $f(3)={{eval:3*(a)+(b)}}$ : tout correspond.",
+					"$f(x)={{eval:(a)+(b)}}x$ donne $f(0)=0$, et non ${{b}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "f(x) = 3x + 2, f(−4) = −10",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"n": "-4"
+			},
+			"answers": ["-10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe oublié, 3 × 4 + 2 = 14",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"n": "-4"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f(x) = x² + 1, f(−3) = 10",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1",
+				"n": "-3"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −3² = −9, −8",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1",
+				"n": "-3"
+			},
+			"answers": ["-8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2 × (−3) + 1 = −5",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1",
+				"n": "-3"
+			},
+			"answers": ["-5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Courbe : f(2) = 3 (sommet (0 ; −1), haut)",
+			"variationIndex": 2,
+			"variables": {
+				"c": "1",
+				"p": "0",
+				"q": "-1",
+				"d": "2",
+				"n": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'abscisse 2",
+			"variationIndex": 2,
+			"variables": {
+				"c": "1",
+				"p": "0",
+				"q": "-1",
+				"d": "2",
+				"n": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Tableau : 3x + 5",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8x (seulement f(1))",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

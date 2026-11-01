@@ -100,7 +100,6 @@ export function describeValidationSettings(options: unknown): string[] {
 		settings.push('Espaces dès 4 chiffres (7 900, numération)');
 	}
 	if (opts.orderIndependent === true) settings.push('Trous dans n’importe quel ordre');
-	if (opts.shuffleChoices === false) settings.push('Choix non mélangés');
 
 	return settings;
 }

@@ -1,0 +1,188 @@
+{
+	"title": "Équation d'une droite par un point et sa pente",
+	"description": "Droite de pente m passant par A : y = mx + p, p tiré de A, pente entière puis fractionnaire ; forme libre (pièges : p = y_A, p = y_A + m x_A, x et y échangés)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Droites du plan",
+	"subdomain": "Équations de droites",
+	"level": 3,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans un repère du plan, la droite $d$ passe par le point $A({{xa}}\\,;\\,{{ya}})$ et a pour pente ${{m}}$.\n\nDonne une équation de la droite $d$.\n\n$?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "xa",
+					"expression": "-5..5!0"
+				},
+				{
+					"name": "ya",
+					"expression": "-6..6"
+				},
+				{
+					"name": "p0",
+					"expression": "eval:(ya)-(m)*(xa)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "y={{m}}x{{eval:(ya)-(m)*(xa);+}}",
+					"answerKind": "equation"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La droite a une équation de la forme $y={{m}}x+p$. Elle passe par $A$, donc :",
+					"$${{ya}}={{m}}\\times{{xa;()}}+p\\quad\\text{soit}\\quad p={{ya}}-{{eval:(m)*(xa);()}}={{eval:(ya)-(m)*(xa)}}$$",
+					"Une équation de $d$ est $\\textcolor{{{color:primary.0}}}{y={{if:m==1|x}}{{if:m==-1|-x}}{{if:m>1|{{m}}x}}{{if:m< -1|{{m}}x}}{{if:p0>0|+{{p0}}}}{{if:p0< 0|{{p0}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère du plan, la droite $d$ passe par le point $A({{eval:(q)*(t)}}\\,;\\,{{ya}})$ et a pour pente ${{if:n<0|-}}\\dfrac{ {{eval:abs(n)}} }{ {{q}} }$.\n\nDonne une équation de la droite $d$.\n\n$?$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2|3"
+				},
+				{
+					"name": "n",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "t",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "ya",
+					"expression": "-5..5"
+				},
+				{
+					"name": "p0",
+					"expression": "eval:(ya)-(n)*(t)"
+				}
+			],
+			"conditions": ["mod(n, q) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "y={{eval:(n)/(q)}}x{{eval:(ya)-(n)*(t);+}}",
+					"answerKind": "equation"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La droite a une équation de la forme $y={{if:n<0|-}}\\dfrac{ {{eval:abs(n)}} }{ {{q}} }x+p$. Elle passe par $A$, donc :",
+					"$${{ya}}={{if:n<0|-}}\\dfrac{ {{eval:abs(n)}} }{ {{q}} }\\times{{eval:(q)*(t);()}}+p\\quad\\text{soit}\\quad p={{ya}}-{{eval:(n)*(t);()}}={{eval:(ya)-(n)*(t)}}$$",
+					"Une équation de $d$ est $\\textcolor{{{color:primary.0}}}{y={{if:n<0|-}}\\dfrac{ {{eval:abs(n)}} }{ {{q}} }x{{if:p0>0|+{{p0}}}}{{if:p0< 0|{{p0}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A(3 ; 1), m = −2 → y = −2x + 7",
+			"variationIndex": 0,
+			"variables": {
+				"m": "-2",
+				"xa": "3",
+				"ya": "1"
+			},
+			"answers": ["y=-2x+7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cartésienne 2x + y − 7 = 0",
+			"variationIndex": 0,
+			"variables": {
+				"m": "-2",
+				"xa": "3",
+				"ya": "1"
+			},
+			"answers": ["2x+y-7=0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : p = y_A (y = −2x + 1)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "-2",
+				"xa": "3",
+				"ya": "1"
+			},
+			"answers": ["y=-2x+1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : p = y_A + m x_A (y = −2x − 5)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "-2",
+				"xa": "3",
+				"ya": "1"
+			},
+			"answers": ["y=-2x-5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A(−3 ; 4), m = 2/3 → y = 2/3 x + 6",
+			"variationIndex": 1,
+			"variables": {
+				"q": "3",
+				"n": "2",
+				"t": "-1",
+				"ya": "4"
+			},
+			"answers": ["y=\\frac{2}{3}x+6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cartésienne 2x − 3y + 18 = 0",
+			"variationIndex": 1,
+			"variables": {
+				"q": "3",
+				"n": "2",
+				"t": "-1",
+				"ya": "4"
+			},
+			"answers": ["2x-3y+18=0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : y = 2/3 x + 2",
+			"variationIndex": 1,
+			"variables": {
+				"q": "3",
+				"n": "2",
+				"t": "-1",
+				"ya": "4"
+			},
+			"answers": ["y=\\frac{2}{3}x+2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

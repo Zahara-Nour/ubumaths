@@ -1,0 +1,279 @@
+{
+	"title": "Calculer une longueur ou un angle (trigonométrie)",
+	"description": "Calculer une longueur ou un angle dans un triangle rectangle avec cos, sin ou tan : longueur au numérateur, au dénominateur, avec la tangente, puis un angle ; arrondis",
+	"grades": ["3"],
+	"theme": "Géométrie",
+	"domain": "Trigonométrie",
+	"subdomain": "Calculer",
+	"level": 1,
+	"delay": 150,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$. On donne $\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} = {{b}}^{\\circ}$ et ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{bc}}~\\unit{cm}$. Calcule ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}$, arrondie au dixième.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 8.8\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} rectangle en {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, angle en {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} marqué.\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point({{if:o==0|1|9}}, 1, etiquette=\"{{if:o==0|bas-gauche|bas-droite}}\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point({{if:o==0|{{eval:round(100*(1+7*cos((b)*\\pi/180)))/100;d}}|10 - ({{eval:round(100*(1+7*cos((b)*\\pi/180)))/100;d}})}}, 1, etiquette=\"{{if:o==0|bas-droite|bas-gauche}}\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point({{if:o==0|1|9}}, {{eval:round(100*(1+7*sin((b)*\\pi/180)))/100;d}}, etiquette=\"{{if:o==0|haut-gauche|haut-droite}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\nangle({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, marque=\"carre\")\nangle({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\n```\n\n${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} \\approx ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "b",
+					"expression": "20..70"
+				},
+				{
+					"name": "bc",
+					"expression": "3..15"
+				}
+			],
+			"conditions": ["abs(10*(bc*cos(b*\\pi/180)) - round(10*(bc*cos(b*\\pi/180)))) < 0.4"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(10*(bc*cos(b*\\pi/180)))/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$ : $$\\cos\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} = \\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} \\quad\\text{donc}\\quad \\cos({{b}}^{\\circ}) = \\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}}{{{bc}}}$$",
+					"$${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = {{bc}} \\times \\cos({{b}}^{\\circ})$$",
+					"$${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(10*(bc*cos(b*\\pi/180)))/10;d}}~\\unit{cm}}$$ (à la calculatrice, en degrés, arrondi au dixième)."
+				]
+			}
+		},
+		{
+			"statement": "Le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$. On donne $\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} = {{b}}^{\\circ}$ et ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{ac}}~\\unit{cm}$. Calcule ${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$, arrondie au dixième.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 8.8\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} rectangle en {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, angle en {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} marqué.\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point({{if:o==0|1|9}}, 1, etiquette=\"{{if:o==0|bas-gauche|bas-droite}}\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point({{if:o==0|{{eval:round(100*(1+7*cos((b)*\\pi/180)))/100;d}}|10 - ({{eval:round(100*(1+7*cos((b)*\\pi/180)))/100;d}})}}, 1, etiquette=\"{{if:o==0|bas-droite|bas-gauche}}\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point({{if:o==0|1|9}}, {{eval:round(100*(1+7*sin((b)*\\pi/180)))/100;d}}, etiquette=\"{{if:o==0|haut-gauche|haut-droite}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\nangle({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, marque=\"carre\")\nangle({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\n```\n\n${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} \\approx ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "b",
+					"expression": "20..70"
+				},
+				{
+					"name": "ac",
+					"expression": "3..15"
+				}
+			],
+			"conditions": ["abs(10*(ac/sin(b*\\pi/180)) - round(10*(ac/sin(b*\\pi/180)))) < 0.4"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(10*(ac/sin(b*\\pi/180)))/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$ : $$\\sin\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} = \\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} \\quad\\text{donc}\\quad \\sin({{b}}^{\\circ}) = \\dfrac{{{ac}}}{{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$$",
+					"La longueur cherchée est **au dénominateur** : $${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = \\dfrac{{{ac}}}{\\sin({{b}}^{\\circ})}$$",
+					"$${{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(10*(ac/sin(b*\\pi/180)))/10;d}}~\\unit{cm}}$$ (à la calculatrice, en degrés, arrondi au dixième)."
+				]
+			}
+		},
+		{
+			"statement": "Le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$. On donne $\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} = {{b}}^{\\circ}$ et ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = {{ab}}~\\unit{cm}$. Calcule ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$, arrondie au dixième.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 8.8\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} rectangle en {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, angle en {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} marqué.\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point({{if:o==0|1|9}}, 1, etiquette=\"{{if:o==0|bas-gauche|bas-droite}}\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point({{if:o==0|{{eval:round(100*(1+7*cos((b)*\\pi/180)))/100;d}}|10 - ({{eval:round(100*(1+7*cos((b)*\\pi/180)))/100;d}})}}, 1, etiquette=\"{{if:o==0|bas-droite|bas-gauche}}\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point({{if:o==0|1|9}}, {{eval:round(100*(1+7*sin((b)*\\pi/180)))/100;d}}, etiquette=\"{{if:o==0|haut-gauche|haut-droite}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\nangle({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, marque=\"carre\")\nangle({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\n```\n\n${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} \\approx ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "b",
+					"expression": "20..70"
+				},
+				{
+					"name": "ab",
+					"expression": "3..15"
+				}
+			],
+			"conditions": ["abs(10*(ab*tan(b*\\pi/180)) - round(10*(ab*tan(b*\\pi/180)))) < 0.4"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(10*(ab*tan(b*\\pi/180)))/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$ : $$\\tan\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} = \\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}} \\quad\\text{donc}\\quad \\tan({{b}}^{\\circ}) = \\dfrac{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}{{{ab}}}$$",
+					"$${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = {{ab}} \\times \\tan({{b}}^{\\circ})$$",
+					"$${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(10*(ab*tan(b*\\pi/180)))/10;d}}~\\unit{cm}}$$ (à la calculatrice, en degrés, arrondi au dixième)."
+				]
+			}
+		},
+		{
+			"statement": "Le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$. On donne ${{if:f==0|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|}}{{if:f==1|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}|}}{{if:f==2|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}|}} = {{u}}~\\unit{cm}$ et ${{if:f==0|{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}|}}{{if:f==1|{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}|}}{{if:f==2|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|}} = {{v}}~\\unit{cm}$. Calcule $\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}}$, arrondi au degré.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 8.8\ndescription: Triangle {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} rectangle en {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, angle en {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} marqué.\n---\n{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}} = point({{if:o==0|1|9}}, 1, etiquette=\"{{if:o==0|bas-gauche|bas-droite}}\")\n{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}} = point({{if:o==0|{{eval:round(100*(1+7*cos((ang)*\\pi/180)))/100;d}}|10 - ({{eval:round(100*(1+7*cos((ang)*\\pi/180)))/100;d}})}}, 1, etiquette=\"{{if:o==0|bas-droite|bas-gauche}}\")\n{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}} = point({{if:o==0|1|9}}, {{eval:round(100*(1+7*sin((ang)*\\pi/180)))/100;d}}, etiquette=\"{{if:o==0|haut-gauche|haut-droite}}\")\nsegment({{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}})\nsegment({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})\nsegment({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\nangle({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}, {{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, marque=\"carre\")\nangle({{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}, {{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}, {{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}})\n```\n\n$\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} \\approx ?^{\\circ}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "f",
+					"expression": "0..2"
+				},
+				{
+					"name": "v",
+					"expression": "4..15"
+				},
+				{
+					"name": "u",
+					"expression": "2..14"
+				},
+				{
+					"name": "ang",
+					"expression": "{{if:f==0|{{eval:round(1000*acos(u/v)*180/\\pi)/1000;d}}|}}{{if:f==1|{{eval:round(1000*asin(u/v)*180/\\pi)/1000;d}}|}}{{if:f==2|{{eval:round(1000*atan(u/v)*180/\\pi)/1000;d}}|}}"
+				}
+			],
+			"conditions": [
+				"u < v",
+				"round(ang) >= 15",
+				"round(ang) <= 75",
+				"abs(1*(ang) - round(1*(ang))) < 0.4"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(ang)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$ : $${{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}}\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} = \\dfrac{{{if:f==0|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|}}{{if:f==1|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}|}}{{if:f==2|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}|}}}{{{if:f==0|{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}|}}{{if:f==1|{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}|}}{{if:f==2|{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}|}}} = \\dfrac{{{u}}}{{{v}}}$$",
+					"À la calculatrice (touche ${{if:f==0|\\cos|}}{{if:f==1|\\sin|}}{{if:f==2|\\tan|}}^{-1}$, en degrés) : $$\\widehat{{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}} \\approx \\textcolor{{{color:primary.0}}}{{{eval:round(ang)}}^{\\circ}}$$ (arrondi au degré)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BC = 6, B = 40° : AB ≈ 4,6",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"b": "40",
+				"bc": "6"
+			},
+			"answers": ["4{,}6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sin au lieu de cos, 3,9",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"b": "40",
+				"bc": "6"
+			},
+			"answers": ["3{,}9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Valeur non arrondie 4,596",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"b": "40",
+				"bc": "6"
+			},
+			"answers": ["4{,}596"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "AC = 5, B = 40° : BC ≈ 7,8",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"b": "40",
+				"ac": "5"
+			},
+			"answers": ["7{,}8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : produit au lieu du quotient, 3,2",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"b": "40",
+				"ac": "5"
+			},
+			"answers": ["3{,}2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "AB = 7, B = 40° : AC ≈ 5,9",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"b": "40",
+				"ab": "7"
+			},
+			"answers": ["5{,}9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "AB = 3, BC = 5 : B ≈ 53°",
+			"variationIndex": 3,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"f": "0",
+				"u": "3",
+				"v": "5",
+				"ang": "53.13"
+			},
+			"answers": ["53"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : arcsin au lieu de arccos, 37°",
+			"variationIndex": 3,
+			"variables": {
+				"s": "0",
+				"o": "0",
+				"f": "0",
+				"u": "3",
+				"v": "5",
+				"ang": "53.13"
+			},
+			"answers": ["37"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

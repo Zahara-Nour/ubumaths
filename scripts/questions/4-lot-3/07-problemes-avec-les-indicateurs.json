@@ -1,0 +1,196 @@
+{
+	"title": "Problèmes avec les indicateurs",
+	"description": "Résoudre des problèmes avec la moyenne : la note qui manque pour atteindre une moyenne, la somme des notes, la moyenne de deux groupes réunis",
+	"grades": ["4"],
+	"theme": "Statistiques",
+	"domain": "Problèmes",
+	"subdomain": "Indicateurs",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Après quatre contrôles, Sami a une moyenne de ${{m}}$. Quelle note doit-il obtenir au cinquième contrôle pour que sa moyenne passe à ${{q}}$ ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "9..14"
+				},
+				{
+					"name": "w",
+					"expression": "1..2"
+				},
+				{
+					"name": "q",
+					"expression": "eval:m+w"
+				}
+			],
+			"conditions": ["5*q-4*m<=20"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:5*q-4*m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Moyenne.** Moyenne × nombre de notes = somme des notes.",
+					"Somme des quatre premières notes : $4 \\times {{m}} = {{eval:4*m}}$.",
+					"Pour une moyenne de ${{q}}$ sur cinq notes, il faut une somme de $5 \\times {{q}} = {{eval:5*q}}$.",
+					"$${{eval:5*q}} - {{eval:4*m}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Dans une classe de ${{N}}$ élèves, la moyenne d'un contrôle est ${{eval:h/2;d}}$.\n\nQuelle est la somme des notes de tous les élèves ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "N",
+					"expression": "20..30"
+				},
+				{
+					"name": "h",
+					"expression": "19..29"
+				}
+			],
+			"conditions": ["mod(N*h,2)==0", "mod(h,2)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:N*h/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Moyenne.** La moyenne est la somme des notes divisée par l'effectif : la somme vaut donc moyenne × effectif.",
+					"$${{eval:h/2;d}} \\times {{N}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Une classe compte deux groupes : ${{p}}$ élèves ont une moyenne de ${{a}}$, et ${{q}}$ élèves ont une moyenne de ${{b}}$.\n\nQuelle est la moyenne de toute la classe ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "6..15"
+				},
+				{
+					"name": "q",
+					"expression": "6..18"
+				},
+				{
+					"name": "a",
+					"expression": "9..16"
+				},
+				{
+					"name": "b",
+					"expression": "9..16"
+				}
+			],
+			"conditions": ["p!=q", "a!=b", "mod(100*(p*a+q*b),p+q)==0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(p*a+q*b)/(p+q);d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Moyenne pondérée.** Chaque groupe pèse selon son effectif : on retrouve la somme de chaque groupe (moyenne × effectif).",
+					"Somme du premier groupe : ${{p}} \\times {{a}} = {{eval:p*a}}$ ; du second : ${{q}} \\times {{b}} = {{eval:q*b}}$.",
+					"$$\\frac{{{eval:p*a}} + {{eval:q*b}}}{{{p}} + {{q}}} = \\frac{{{eval:p*a+q*b}}}{{{eval:p+q}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Moyenne 12 → 13 : 17",
+			"variationIndex": 0,
+			"variables": {
+				"m": "12",
+				"w": "1",
+				"q": "13"
+			},
+			"answers": ["17"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 14 (13 + 1)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "12",
+				"w": "1",
+				"q": "13"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 13",
+			"variationIndex": 0,
+			"variables": {
+				"m": "12",
+				"w": "1",
+				"q": "13"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "24 élèves, moyenne 11,5 : 276",
+			"variationIndex": 1,
+			"variables": {
+				"N": "24",
+				"h": "23"
+			},
+			"answers": ["276"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 24 ÷ 11,5 arrondi",
+			"variationIndex": 1,
+			"variables": {
+				"N": "24",
+				"h": "23"
+			},
+			"answers": ["2,09"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "10 élèves à 12, 20 à 15 : 14",
+			"variationIndex": 2,
+			"variables": {
+				"p": "10",
+				"q": "20",
+				"a": "12",
+				"b": "15"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 13,5 (moyenne des deux moyennes)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "10",
+				"q": "20",
+				"a": "12",
+				"b": "15"
+			},
+			"answers": ["13,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

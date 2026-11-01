@@ -1,0 +1,187 @@
+{
+	"title": "Quelle heure est-il ? (quarts et demies)",
+	"description": "Lire 8 h 30, 3 h 15, 8 h 45 sur une horloge à aiguilles ; l'après-midi, 14 h 15",
+	"grades": ["CE1"],
+	"theme": "Grandeurs",
+	"domain": "Durées",
+	"subdomain": "Lire l'heure",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quelle heure est-il ?\n\n```horloge\nheure: {{h}} h {{eval:15*q}}\nchiffres: tous\n```\n\nIl est $?~\\text{h}~?$.",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "1..12"
+				},
+				{
+					"name": "q",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{h}}"
+				},
+				{
+					"expectedAnswer": "{{eval:15*q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La grande aiguille montre les minutes : sur le {{if:q==1|$3$, c'est $15$|{{if:q==2|$6$, c'est $30$|$9$, c'est $45$}}}} minutes.",
+					"La petite aiguille montre l'heure : elle a quitté le ${{h}}${{if:q==3| et elle est presque sur le ${{eval:mod(h,12)+1}}$, mais l'heure n'est pas encore passée|}}.",
+					"Il est $\\textcolor{{{color:primary.0}}}{{{h}}~\\text{h}~{{eval:15*q}}}$."
+				]
+			}
+		},
+		{
+			"statement": "C'est l'après-midi. Quelle heure est-il ?\n\n```horloge\nheure: {{h}} h {{eval:15*q}}\nchiffres: tous\n```\n\nIl est $?~\\text{h}~?$.",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "1..5"
+				},
+				{
+					"name": "q",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:h+12}}",
+					"validationRules": [
+						{
+							"type": "custom",
+							"expression": "answer != {{h}}",
+							"description": "L'après-midi, on compte après midi : {{h}} heures de l'après-midi, c'est {{eval:h+12}} h."
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:15*q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La grande aiguille montre les minutes : sur le {{if:q==1|$3$, c'est $15$|{{if:q==2|$6$, c'est $30$|$9$, c'est $45$}}}} minutes.",
+					"La petite aiguille montre l'heure : elle a quitté le ${{h}}${{if:q==3| et elle est presque sur le ${{eval:mod(h,12)+1}}$, mais l'heure n'est pas encore passée|}}.",
+					"Le cadran montre ${{h}}~\\text{h}~{{eval:15*q}}$. L'après-midi, on ajoute $12$ : ${{h}} + 12 = {{eval:h+12}}$.",
+					"Il est $\\textcolor{{{color:primary.0}}}{{{eval:h+12}}~\\text{h}~{{eval:15*q}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 8 h 30",
+			"variationIndex": 0,
+			"variables": {
+				"h": "8",
+				"q": "2"
+			},
+			"answers": ["8", "30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3 h 15",
+			"variationIndex": 0,
+			"variables": {
+				"h": "3",
+				"q": "1"
+			},
+			"answers": ["3", "15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : aiguilles inversées, 3 h 15 lu 3 h 3",
+			"variationIndex": 0,
+			"variables": {
+				"h": "3",
+				"q": "1"
+			},
+			"answers": ["3", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "8 h 45",
+			"variationIndex": 0,
+			"variables": {
+				"h": "8",
+				"q": "3"
+			},
+			"answers": ["8", "45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8 h 45 lu 9 h 45 (petite aiguille presque sur le 9)",
+			"variationIndex": 0,
+			"variables": {
+				"h": "8",
+				"q": "3"
+			},
+			"answers": ["9", "45"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 8 h 45 lu 8 h 9 (le chiffre sous la grande aiguille)",
+			"variationIndex": 0,
+			"variables": {
+				"h": "8",
+				"q": "3"
+			},
+			"answers": ["8", "9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : deux heures et quart l'après-midi = 14 h 15",
+			"variationIndex": 1,
+			"variables": {
+				"h": "2",
+				"q": "1"
+			},
+			"answers": ["14", "15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 h 15 l'après-midi",
+			"variationIndex": 1,
+			"variables": {
+				"h": "2",
+				"q": "1"
+			},
+			"answers": ["2", "15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "16 h 30",
+			"variationIndex": 1,
+			"variables": {
+				"h": "4",
+				"q": "2"
+			},
+			"answers": ["16", "30"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

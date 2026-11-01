@@ -1,0 +1,127 @@
+{
+	"title": "Exprimer une proportion en pourcentage (tout multiple de 100)",
+	"description": "Écrire la partie sur le tout, puis la simplifier en une fraction sur 100 : 120 élèves sur 400, c'est 30/100, soit 30 % (le tout vaut 200, 300, 400 ou 500)",
+	"grades": ["6"],
+	"theme": "Proportionnalité",
+	"domain": "Pourcentages",
+	"subdomain": "Proportion",
+	"level": 2,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:c==0|Un collège compte ${{d}}$ élèves ; ${{a}}$ d'entre eux viennent en bus.|Un festival a accueilli ${{d}}$ spectateurs ; ${{a}}$ d'entre eux avaient moins de $18$ ans.}}\n\n{{if:c==0|Quel pourcentage des élèves viennent en bus ?|Quel pourcentage des spectateurs avaient moins de $18$ ans ?}}\n\n$$?\\,\\%$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..1"
+				},
+				{
+					"name": "d",
+					"expression": "200|300|400|500"
+				},
+				{
+					"name": "m",
+					"expression": "eval:d/100"
+				},
+				{
+					"name": "p",
+					"expression": "1..99"
+				},
+				{
+					"name": "a",
+					"expression": "eval:p*m"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Proportion en pourcentage.** On écrit la proportion (la partie sur le tout) sous forme d'une fraction, puis on cherche la fraction égale de dénominateur $100$.",
+					"$$\\frac{{{a}}}{{{d}}} = \\frac{{{a}} \\div {{m}}}{{{d}} \\div {{m}}} = \\frac{{{p}}}{100}$$",
+					"$\\textcolor{{{color:primary.0}}}{{{solution}}\\,\\%}$ {{if:c==0|des élèves viennent en bus|des spectateurs avaient moins de $18$ ans}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "120 sur 400 : 30 %",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"d": "400",
+				"m": "4",
+				"p": "30",
+				"a": "120"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 120 (la partie)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"d": "400",
+				"m": "4",
+				"p": "30",
+				"a": "120"
+			},
+			"answers": ["120"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0,3",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"d": "400",
+				"m": "4",
+				"p": "30",
+				"a": "120"
+			},
+			"answers": ["0,3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 (400 ÷ 120 arrondi)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"d": "400",
+				"m": "4",
+				"p": "30",
+				"a": "120"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "111 sur 300 : 37 %",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"d": "300",
+				"m": "3",
+				"p": "37",
+				"a": "111"
+			},
+			"answers": ["37"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

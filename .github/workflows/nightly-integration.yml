@@ -53,7 +53,6 @@ on:
       - 'src/lib/math/**'
       - 'src/lib/mathAST/**'
       - 'src/lib/mathoux/**'
-      - 'src/lib/migration/**'
       - 'src/lib/programmes/**'
       - 'src/lib/questions/**'
       - 'src/lib/resources/**'
@@ -71,6 +70,8 @@ on:
       - 'src/lib/seo/site.ts'
       - 'src/lib/utils/**'
       # src/lib : fichiers atteints ponctuellement
+      # Pages du glossaire : la lecture du dictionnaire importe findPrincipal
+      - 'src/lib/lexicon/card.ts'
       - 'src/lib/components/markdown/utils/math-utils.ts'
       - 'src/lib/constants/deadlines.ts'
       - 'src/lib/exercises/services/image-dimensions.ts'

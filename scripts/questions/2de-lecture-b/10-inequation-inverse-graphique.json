@@ -1,0 +1,208 @@
+{
+	"title": "Résoudre graphiquement une inéquation 1/x < k",
+	"description": "Inéquation 1/x < k lue sur l'hyperbole de la fonction inverse : k > 0 ou k < 0, les quatre sens ; 0 jamais solution",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Fonction inverse",
+	"subdomain": "Lecture graphique",
+	"level": 2,
+	"delay": 75,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de la fonction inverse $f : x\\mapsto \\dfrac{1}{x}$.\n\n```courbe\nx: -4 ; 4\ny: -4 ; 4\ngrille: 0.5 ; 0.5\nf(x) = 1/x   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction inverse.\n```\n\nRésous graphiquement l'inéquation $\\dfrac{1}{x}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "0.5|1|2"
+				},
+				{
+					"name": "k",
+					"expression": "eval:1/(r)"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|]-\\infty;0[\\cup]{{r}};+\\infty[|{{if:s==1|]-\\infty;0[\\cup[{{r}};+\\infty[|{{if:s==2|]0;{{r}}[|]0;{{r}}]}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{k}}$ ; elle coupe la courbe en $A$, d'abscisse ${{r}}$. On cherche les abscisses des points de la courbe situés {{if:s==0|**strictement sous**|{{if:s==1|**sous ou sur**|{{if:s==2|**strictement au-dessus de**|**au-dessus ou sur**}}}}}} cette droite ; {{if:s==0|l'abscisse de $A$ est **exclue**|{{if:s==1|l'abscisse de $A$ est **comprise**|{{if:s==2|l'abscisse de $A$ est **exclue**|l'abscisse de $A$ est **comprise**}}}}}}. **Attention** : $0$ n'a pas d'image par la fonction inverse, il n'est jamais solution.",
+					"```courbe\nx: -4 ; 4\ny: -4 ; 4\ngrille: 0.5 ; 0.5\nf(x) = 1/x   bleu   nom=C_f\ng(x) = 1/({{r}})   rouge   pointillé\n{{if:s==0|h(x) = 1/x sur ]-10 ; 0[   vert|{{if:s==1|h(x) = 1/x sur ]-10 ; 0[   vert|{{if:s==2|h(x) = 1/x sur ]0 ; {{r}}[   vert|h(x) = 1/x sur ]0 ; {{r}}]   vert}}}}}}\n{{if:s==0|t(x) = 0 sur ]-10 ; 0[   vert|{{if:s==1|t(x) = 0 sur ]-10 ; 0[   vert|{{if:s==2|t(x) = 0 sur ]0 ; {{r}}[   vert|t(x) = 0 sur ]0 ; {{r}}]   vert}}}}}}\n{{if:s==0|j(x) = 1/x sur ]{{r}} ; 10]   vert|{{if:s==1|j(x) = 1/x sur [{{r}} ; 10]   vert|{{if:s==2| | }}}}}}\n{{if:s==0|u(x) = 0 sur ]{{r}} ; 10]   vert|{{if:s==1|u(x) = 0 sur [{{r}} ; 10]   vert|{{if:s==2| | }}}}}}\npoints: A({{r}} ; 1/({{r}}))\ntaille: moyenne\ndescription: Courbe de la fonction inverse, droite horizontale en pointillé, partie cherchée en vert. L'ensemble des solutions est repassé en vert sur l'axe des abscisses.\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]-\\infty\\,;0\\right[\\cup\\left]{{r}}\\,;+\\infty\\right[|{{if:s==1|\\left]-\\infty\\,;0\\right[\\cup\\left[{{r}}\\,;+\\infty\\right[|{{if:s==2|\\left]0\\,;{{r}}\\right[|\\left]0\\,;{{r}}\\right]}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de la fonction inverse $f : x\\mapsto \\dfrac{1}{x}$.\n\n```courbe\nx: -4 ; 4\ny: -4 ; 4\ngrille: 0.5 ; 0.5\nf(x) = 1/x   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction inverse.\n```\n\nRésous graphiquement l'inéquation $\\dfrac{1}{x}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "-2|-1|-0.5"
+				},
+				{
+					"name": "k",
+					"expression": "eval:1/(r)"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|]{{r}};0[|{{if:s==1|[{{r}};0[|{{if:s==2|]-\\infty;{{r}}[\\cup]0;+\\infty[|]-\\infty;{{r}}]\\cup]0;+\\infty[}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{k}}$ ; elle coupe la courbe en $A$, d'abscisse ${{r}}$. On cherche les abscisses des points de la courbe situés {{if:s==0|**strictement sous**|{{if:s==1|**sous ou sur**|{{if:s==2|**strictement au-dessus de**|**au-dessus ou sur**}}}}}} cette droite ; {{if:s==0|l'abscisse de $A$ est **exclue**|{{if:s==1|l'abscisse de $A$ est **comprise**|{{if:s==2|l'abscisse de $A$ est **exclue**|l'abscisse de $A$ est **comprise**}}}}}}. **Attention** : $0$ n'a pas d'image par la fonction inverse, il n'est jamais solution.",
+					"```courbe\nx: -4 ; 4\ny: -4 ; 4\ngrille: 0.5 ; 0.5\nf(x) = 1/x   bleu   nom=C_f\ng(x) = 1/({{r}})   rouge   pointillé\n{{if:s==0|h(x) = 1/x sur ]{{r}} ; 0[   vert|{{if:s==1|h(x) = 1/x sur [{{r}} ; 0[   vert|{{if:s==2|h(x) = 1/x sur [-10 ; {{r}}[   vert|h(x) = 1/x sur [-10 ; {{r}}]   vert}}}}}}\n{{if:s==0|t(x) = 0 sur ]{{r}} ; 0[   vert|{{if:s==1|t(x) = 0 sur [{{r}} ; 0[   vert|{{if:s==2|t(x) = 0 sur [-10 ; {{r}}[   vert|t(x) = 0 sur [-10 ; {{r}}]   vert}}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2|j(x) = 1/x sur ]0 ; 10]   vert|j(x) = 1/x sur ]0 ; 10]   vert}}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2|u(x) = 0 sur ]0 ; 10]   vert|u(x) = 0 sur ]0 ; 10]   vert}}}}}}\npoints: A({{r}} ; 1/({{r}}))\ntaille: moyenne\ndescription: Courbe de la fonction inverse, droite horizontale en pointillé, partie cherchée en vert. L'ensemble des solutions est repassé en vert sur l'axe des abscisses.\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]{{r}}\\,;0\\right[|{{if:s==1|\\left[{{r}}\\,;0\\right[|{{if:s==2|\\left]-\\infty\\,;{{r}}\\right[\\cup\\left]0\\,;+\\infty\\right[|\\left]-\\infty\\,;{{r}}\\right]\\cup\\left]0\\,;+\\infty\\right[}}}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1/x < 1 : S = ]−∞ ; 0[ ∪ ]1 ; +∞[",
+			"variationIndex": 0,
+			"variables": {
+				"r": "1",
+				"k": "1",
+				"s": "0"
+			},
+			"answers": ["]-\\infty;0[\\cup]1;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : branche négative oubliée",
+			"variationIndex": 0,
+			"variables": {
+				"r": "1",
+				"k": "1",
+				"s": "0"
+			},
+			"answers": ["]1;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0 inclus",
+			"variationIndex": 0,
+			"variables": {
+				"r": "1",
+				"k": "1",
+				"s": "0"
+			},
+			"answers": ["]-\\infty;0]\\cup]1;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/x ⩾ 2 : S = ]0 ; 0,5]",
+			"variationIndex": 0,
+			"variables": {
+				"r": "0.5",
+				"k": "2",
+				"s": "3"
+			},
+			"answers": ["]0;0{,}5]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0 inclus ([0 ; 0,5])",
+			"variationIndex": 0,
+			"variables": {
+				"r": "0.5",
+				"k": "2",
+				"s": "3"
+			},
+			"answers": ["[0;0{,}5]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ]−∞ ; 0,5]",
+			"variationIndex": 0,
+			"variables": {
+				"r": "0.5",
+				"k": "2",
+				"s": "3"
+			},
+			"answers": ["]-\\infty;0{,}5]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/x ⩽ −0,5 : S = [−2 ; 0[",
+			"variationIndex": 1,
+			"variables": {
+				"r": "-2",
+				"k": "-0.5",
+				"s": "1"
+			},
+			"answers": ["[-2;0["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ]−∞ ; −2]",
+			"variationIndex": 1,
+			"variables": {
+				"r": "-2",
+				"k": "-0.5",
+				"s": "1"
+			},
+			"answers": ["]-\\infty;-2]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/x > −1 : S = ]−∞ ; −1[ ∪ ]0 ; +∞[",
+			"variationIndex": 1,
+			"variables": {
+				"r": "-1",
+				"k": "-1",
+				"s": "2"
+			},
+			"answers": ["]-\\infty;-1[\\cup]0;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ]−1 ; +∞[",
+			"variationIndex": 1,
+			"variables": {
+				"r": "-1",
+				"k": "-1",
+				"s": "2"
+			},
+			"answers": ["]-1;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

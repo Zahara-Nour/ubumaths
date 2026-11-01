@@ -1,0 +1,223 @@
+{
+	"title": "Soustraire des fractions",
+	"description": "Différence de deux fractions de même dénominateur (8/10 − 5/10), ou dont un dénominateur est multiple de l'autre (5/6 − 1/12) ; dénominateurs au plus 20, toute fraction égale juste",
+	"grades": ["CM1"],
+	"theme": "Fractions",
+	"domain": "Calculer",
+	"subdomain": "Addition et Soustraction",
+	"level": 18,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$$\\frac{{{a}}}{{{d}}} - \\frac{{{c}}}{{{d}}} = ?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..12"
+				},
+				{
+					"name": "am",
+					"expression": "eval:2*d"
+				},
+				{
+					"name": "a",
+					"expression": "2..{{am}}"
+				},
+				{
+					"name": "cm",
+					"expression": "eval:a-1"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{cm}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:a-c}}}{{{d}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Même dénominateur.** On enlève des parts de même taille : ${{a}}$ {{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|{{if:d==8|huitièmes|{{if:d==9|neuvièmes|{{if:d==10|dixièmes|{{if:d==11|onzièmes|{{if:d==12|douzièmes|{{if:d==13|treizièmes|{{if:d==14|quatorzièmes|{{if:d==15|quinzièmes|{{if:d==16|seizièmes|{{if:d==17|dix-septièmes|{{if:d==18|dix-huitièmes|{{if:d==19|dix-neuvièmes|vingtièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} moins ${{c}}$ {{if:c==1|{{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==7|septième|{{if:d==8|huitième|{{if:d==9|neuvième|{{if:d==10|dixième|{{if:d==11|onzième|{{if:d==12|douzième|{{if:d==13|treizième|{{if:d==14|quatorzième|{{if:d==15|quinzième|{{if:d==16|seizième|{{if:d==17|dix-septième|{{if:d==18|dix-huitième|{{if:d==19|dix-neuvième|vingtième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}|{{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|{{if:d==8|huitièmes|{{if:d==9|neuvièmes|{{if:d==10|dixièmes|{{if:d==11|onzièmes|{{if:d==12|douzièmes|{{if:d==13|treizièmes|{{if:d==14|quatorzièmes|{{if:d==15|quinzièmes|{{if:d==16|seizièmes|{{if:d==17|dix-septièmes|{{if:d==18|dix-huitièmes|{{if:d==19|dix-neuvièmes|vingtièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}. **Le dénominateur ne change pas.**",
+					"$$\\frac{{{a}}}{{{d}}} - \\frac{{{c}}}{{{d}}} = \\frac{{{a}} - {{c}}}{{{d}}} = \\textcolor{{{color:primary.0}}}{\\frac{{{eval:a-c}}}{{{d}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule.\n\n$$\\frac{{{a}}}{{{b}}} - \\frac{{{c}}}{{{d}}} = ?$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "k",
+					"expression": "2..5"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b*k"
+				},
+				{
+					"name": "am",
+					"expression": "eval:3*b"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{am}}"
+				},
+				{
+					"name": "ak",
+					"expression": "eval:a*k"
+				},
+				{
+					"name": "cm",
+					"expression": "eval:ak-1"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{cm}}"
+				}
+			],
+			"conditions": ["d<=20", "mod(a,b)!=0", "mod(c,k)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:ak-c}}}{{{d}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Même dénominateur d'abord.** ${{d}} = {{b}} \\times {{k}}$ : on écrit $\\frac{{{a}}}{{{b}}}$ en {{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|{{if:d==8|huitièmes|{{if:d==9|neuvièmes|{{if:d==10|dixièmes|{{if:d==11|onzièmes|{{if:d==12|douzièmes|{{if:d==13|treizièmes|{{if:d==14|quatorzièmes|{{if:d==15|quinzièmes|{{if:d==16|seizièmes|{{if:d==17|dix-septièmes|{{if:d==18|dix-huitièmes|{{if:d==19|dix-neuvièmes|vingtièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}, en multipliant le numérateur et le dénominateur par ${{k}}$.",
+					"$$\\frac{{{a}}}{{{b}}} = \\frac{{{a}} \\times {{k}}}{{{b}} \\times {{k}}} = \\frac{{{ak}}}{{{d}}}$$",
+					"$$\\frac{{{a}}}{{{b}}} - \\frac{{{c}}}{{{d}}} = \\frac{{{ak}}}{{{d}}} - \\frac{{{c}}}{{{d}}} = \\textcolor{{{color:primary.0}}}{\\frac{{{eval:ak-c}}}{{{d}}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "8/10 − 5/10 = 3/10",
+			"variationIndex": 0,
+			"variables": {
+				"d": "10",
+				"am": "20",
+				"a": "8",
+				"cm": "7",
+				"c": "5"
+			},
+			"answers": ["\\frac{3}{10}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 (dénominateur oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "10",
+				"am": "20",
+				"a": "8",
+				"cm": "7",
+				"c": "5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 13/10 (numérateurs ajoutés)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "10",
+				"am": "20",
+				"a": "8",
+				"cm": "7",
+				"c": "5"
+			},
+			"answers": ["\\frac{13}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5/6 − 1/12 = 9/12",
+			"variationIndex": 1,
+			"variables": {
+				"b": "6",
+				"k": "2",
+				"d": "12",
+				"am": "18",
+				"a": "5",
+				"ak": "10",
+				"cm": "9",
+				"c": "1"
+			},
+			"answers": ["\\frac{9}{12}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "5/6 − 1/12 = 3/4, même valeur",
+			"variationIndex": 1,
+			"variables": {
+				"b": "6",
+				"k": "2",
+				"d": "12",
+				"am": "18",
+				"a": "5",
+				"ak": "10",
+				"cm": "9",
+				"c": "1"
+			},
+			"answers": ["\\frac{3}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4/6 (numérateurs ôtés, premier dénominateur)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "6",
+				"k": "2",
+				"d": "12",
+				"am": "18",
+				"a": "5",
+				"ak": "10",
+				"cm": "9",
+				"c": "1"
+			},
+			"answers": ["\\frac{4}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4/12 (5/6 pas converti)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "6",
+				"k": "2",
+				"d": "12",
+				"am": "18",
+				"a": "5",
+				"ak": "10",
+				"cm": "9",
+				"c": "1"
+			},
+			"answers": ["\\frac{4}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

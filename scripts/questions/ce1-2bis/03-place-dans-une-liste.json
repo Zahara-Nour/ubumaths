@@ -1,0 +1,238 @@
+{
+	"title": "La place d'un nombre ou d'une lettre dans une liste",
+	"description": "Listes de 5 en 5, de 2 en 2, de 10 en 10, l'alphabet : à quelle place est 60 ? P ?",
+	"grades": ["CE1"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Ordinaux",
+	"level": 9,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici des nombres rangés **dans l'ordre**, de 5 en 5 :\n\n$5$, $10$, $15$, $20$, $25$, $30$, $35$, $40$, $45$, $50$, $55$, $60$, $65$, $70$, $75$, $80$, $85$, $90$, $95$, $100$\n\nÀ quelle place est le nombre ${{eval:5+(k-1)*5}}$ ?\n\nIl est à la place numéro $?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "4..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte les nombres un par un à partir du premier : $5$ est le $1^{\\text{er}}$, $10$ le $2^{\\text{e}}$, $15$ le $3^{\\text{e}}$…",
+					"De $5$ jusqu'à ${{eval:5+(k-1)*5}}$ compris, on compte ${{k}}$ nombres : ${{eval:5+(k-1)*5}}$ est à la place numéro ${{k}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici des nombres rangés **dans l'ordre**, de 2 en 2 :\n\n$2$, $4$, $6$, $8$, $10$, $12$, $14$, $16$, $18$, $20$, $22$, $24$, $26$, $28$, $30$, $32$, $34$, $36$, $38$, $40$, $42$, $44$, $46$, $48$, $50$, $52$, $54$, $56$, $58$, $60$\n\nÀ quelle place est le nombre ${{eval:2+(k-1)*2}}$ ?\n\nIl est à la place numéro $?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "8..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte les nombres un par un à partir du premier : $2$ est le $1^{\\text{er}}$, $4$ le $2^{\\text{e}}$, $6$ le $3^{\\text{e}}$…",
+					"De $2$ jusqu'à ${{eval:2+(k-1)*2}}$ compris, on compte ${{k}}$ nombres : ${{eval:2+(k-1)*2}}$ est à la place numéro ${{k}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici des nombres rangés **dans l'ordre**, de 10 en 10 :\n\n$100$, $110$, $120$, $130$, $140$, $150$, $160$, $170$, $180$, $190$, $200$, $210$, $220$, $230$, $240$, $250$, $260$, $270$, $280$, $290$, $300$, $310$, $320$, $330$, $340$\n\nÀ quelle place est le nombre ${{eval:100+(k-1)*10}}$ ?\n\nIl est à la place numéro $?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "4..25"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte les nombres un par un à partir du premier : $100$ est le $1^{\\text{er}}$, $110$ le $2^{\\text{e}}$, $120$ le $3^{\\text{e}}$…",
+					"De $100$ jusqu'à ${{eval:100+(k-1)*10}}$ compris, on compte ${{k}}$ nombres : ${{eval:100+(k-1)*10}}$ est à la place numéro ${{k}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici l'alphabet :\n\nA B C D E F G H I J K L M N O P Q R S T U V W X Y Z\n\nÀ quelle place est la lettre **{{if:k==1|A|{{if:k==2|B|{{if:k==3|C|{{if:k==4|D|{{if:k==5|E|{{if:k==6|F|{{if:k==7|G|{{if:k==8|H|{{if:k==9|I|{{if:k==10|J|{{if:k==11|K|{{if:k==12|L|{{if:k==13|M|{{if:k==14|N|{{if:k==15|O|{{if:k==16|P|{{if:k==17|Q|{{if:k==18|R|{{if:k==19|S|{{if:k==20|T|{{if:k==21|U|{{if:k==22|V|{{if:k==23|W|{{if:k==24|X|{{if:k==25|Y|Z}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}** ?\n\nElle est à la place numéro $?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "5..26"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte les lettres à partir de A, la $1^{\\text{re}}$ : B est la $2^{\\text{e}}$, C la $3^{\\text{e}}$…",
+					"La lettre {{if:k==1|A|{{if:k==2|B|{{if:k==3|C|{{if:k==4|D|{{if:k==5|E|{{if:k==6|F|{{if:k==7|G|{{if:k==8|H|{{if:k==9|I|{{if:k==10|J|{{if:k==11|K|{{if:k==12|L|{{if:k==13|M|{{if:k==14|N|{{if:k==15|O|{{if:k==16|P|{{if:k==17|Q|{{if:k==18|R|{{if:k==19|S|{{if:k==20|T|{{if:k==21|U|{{if:k==22|V|{{if:k==23|W|{{if:k==24|X|{{if:k==25|Y|Z}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} est la ${{if:k==1|1^{\\text{er}}|{{if:k==2|2^{\\text{e}}|{{if:k==3|3^{\\text{e}}|{{if:k==4|4^{\\text{e}}|{{if:k==5|5^{\\text{e}}|{{if:k==6|6^{\\text{e}}|{{if:k==7|7^{\\text{e}}|{{if:k==8|8^{\\text{e}}|{{if:k==9|9^{\\text{e}}|{{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|{{if:k==20|20^{\\text{e}}|{{if:k==21|21^{\\text{e}}|{{if:k==22|22^{\\text{e}}|{{if:k==23|23^{\\text{e}}|{{if:k==24|24^{\\text{e}}|{{if:k==25|25^{\\text{e}}|26^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ lettre de l'alphabet."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "5 en 5 : 60 est 12e",
+			"variationIndex": 0,
+			"variables": {
+				"k": "12"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le nombre lui-même (60)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "12"
+			},
+			"answers": ["60"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 60 / 10 (6)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "12"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 100 est 20e",
+			"variationIndex": 0,
+			"variables": {
+				"k": "20"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2 en 2 : 30 est 15e",
+			"variationIndex": 1,
+			"variables": {
+				"k": "15"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 en 2, le nombre (30)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "15"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 60 est 30e",
+			"variationIndex": 1,
+			"variables": {
+				"k": "30"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "10 en 10 depuis 100 : 270 est 18e",
+			"variationIndex": 2,
+			"variables": {
+				"k": "18"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10 en 10, 27 (dizaines de 270)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "18"
+			},
+			"answers": ["27"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 10 en 10, 17 (une de moins)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "18"
+			},
+			"answers": ["17"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "P est 16e",
+			"variationIndex": 3,
+			"variables": {
+				"k": "16"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : P, 15",
+			"variationIndex": 3,
+			"variables": {
+				"k": "16"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : Z est 26e",
+			"variationIndex": 3,
+			"variables": {
+				"k": "26"
+			},
+			"answers": ["26"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

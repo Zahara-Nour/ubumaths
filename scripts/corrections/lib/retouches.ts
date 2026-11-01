@@ -135,8 +135,7 @@ function variationStrings(variation: Partial<QuestionVariation>): {
 		texts: [
 			variation.statement ?? '',
 			...(variation.blanks ?? []).map((b) => String(b.expectedAnswer ?? '')),
-			...(variation.correction?.steps ?? []).map(String),
-			...(variation.choices ?? []).map((c) => String(c.content))
+			...(variation.correction?.steps ?? []).map(String)
 		]
 	};
 }

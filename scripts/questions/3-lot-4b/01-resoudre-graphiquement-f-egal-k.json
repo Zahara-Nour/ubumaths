@@ -1,0 +1,125 @@
+{
+	"title": "Résoudre f(x) = k sur un graphique",
+	"description": "Résoudre graphiquement une équation f(x) = k, f linéaire tracée (droite par l'origine) : a positif, a négatif ; solution entière",
+	"grades": ["3"],
+	"theme": "Fonctions",
+	"domain": "Fonctions linéaires",
+	"subdomain": "Résolution graphique",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "La droite $\\mathcal{D}$ ci-dessous représente une fonction linéaire $f$.\n\n```courbe\nx: -5 ; 5\ny: {{eval:-4*abs(m)-1}} ; {{eval:4*abs(m)+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x   bleu   nom=\\mathcal{D}\ntaille: moyenne\ndescription: Droite D passant par l'origine, représentant une fonction linéaire f.\n```\n\nRésous graphiquement l'équation $f(x)={{eval:(m)*(z)}}$.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1|2|3"
+				},
+				{
+					"name": "z",
+					"expression": "1..3;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{z}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{eval:(m)*(z)}}$ : la solution est l'**abscisse** du point où elle coupe $\\mathcal{D}$.",
+					"```courbe\nx: -5 ; 5\ny: {{eval:-4*abs(m)-1}} ; {{eval:4*abs(m)+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x   bleu   nom=\\mathcal{D}\ng(x) = {{eval:(m)*(z)}}   rouge   pointillé\npoints: A({{z}} ; {{eval:(m)*(z)}}), A'({{z}} ; 0)\ntaille: moyenne\ndescription: Droite D et droite horizontale y = {{eval:(m)*(z)}}, qui la coupe en A ; A' est sur l'axe des abscisses.\n```",
+					"La droite coupe $\\mathcal{D}$ en $A({{z}}\\,;{{eval:(m)*(z)}})$ : $x=\\textcolor{{{color:primary.0}}}{{{z}}}$. On vérifie : $f({{z}})={{eval:(m)*(z)}}$."
+				]
+			}
+		},
+		{
+			"statement": "La droite $\\mathcal{D}$ ci-dessous représente une fonction linéaire $f$.\n\n```courbe\nx: -5 ; 5\ny: {{eval:-4*abs(m)-1}} ; {{eval:4*abs(m)+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x   bleu   nom=\\mathcal{D}\ntaille: moyenne\ndescription: Droite D passant par l'origine, représentant une fonction linéaire f.\n```\n\nRésous graphiquement l'équation $f(x)={{eval:(m)*(z)}}$.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "-1|-2|-3"
+				},
+				{
+					"name": "z",
+					"expression": "1..3;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{z}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{eval:(m)*(z)}}$ : la solution est l'**abscisse** du point où elle coupe $\\mathcal{D}$.",
+					"```courbe\nx: -5 ; 5\ny: {{eval:-4*abs(m)-1}} ; {{eval:4*abs(m)+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x   bleu   nom=\\mathcal{D}\ng(x) = {{eval:(m)*(z)}}   rouge   pointillé\npoints: A({{z}} ; {{eval:(m)*(z)}}), A'({{z}} ; 0)\ntaille: moyenne\ndescription: Droite D et droite horizontale y = {{eval:(m)*(z)}}, qui la coupe en A ; A' est sur l'axe des abscisses.\n```",
+					"La droite coupe $\\mathcal{D}$ en $A({{z}}\\,;{{eval:(m)*(z)}})$ : $x=\\textcolor{{{color:primary.0}}}{{{z}}}$. On vérifie : $f({{z}})={{eval:(m)*(z)}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "f(x) = 2x, f(x) = 6 : x = 3",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"z": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : k lui-même, 6",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"z": "3"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : l'image f(6) = 12",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"z": "3"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f(x) = −3x, f(x) = 6 : x = −2",
+			"variationIndex": 1,
+			"variables": {
+				"m": "-3",
+				"z": "-2"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur de signe : 2",
+			"variationIndex": 1,
+			"variables": {
+				"m": "-3",
+				"z": "-2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

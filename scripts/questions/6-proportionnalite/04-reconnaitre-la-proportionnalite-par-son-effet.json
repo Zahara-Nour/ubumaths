@@ -1,0 +1,123 @@
+{
+	"title": "Reconnaître la proportionnalité par son effet",
+	"description": "Deux grandeurs proportionnelles : quand l'une est multipliée (ou divisée) par un nombre, l'autre l'est aussi par le même nombre (et non augmentée de ce nombre)",
+	"grades": ["6"],
+	"theme": "Proportionnalité",
+	"domain": "Situations de proportionnalité",
+	"subdomain": "Définition",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:g==0|Au marché, le prix des pommes est proportionnel à leur masse.|{{if:g==1|Un cycliste roule toujours à la même vitesse : la distance parcourue est proportionnelle à la durée du trajet.|À la papeterie, le prix à payer est proportionnel au nombre de cahiers achetés.}}}}\n\nQuand {{if:g==0|la masse|{{if:g==1|la durée|le nombre de cahiers}}}} est multiplié{{if:g==0|e|{{if:g==1|e|}}}} par ${{k}}$, {{if:g==0|le prix|{{if:g==1|la distance|le prix}}}} est :\n\n```choix\n- multiplié{{if:g==0||{{if:g==1|e|}}}} par ${{k}}$\n- augmenté{{if:g==0||{{if:g==1|e|}}}} de ${{k}}$\n- divisé{{if:g==0||{{if:g==1|e|}}}} par ${{k}}$\n- le même\n```",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "0..2"
+				},
+				{
+					"name": "k",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Proportionnalité.** Deux grandeurs sont proportionnelles quand on obtient l'une en multipliant l'autre par un même nombre : si l'une est multipliée (ou divisée) par un nombre, l'autre est multipliée (ou divisée) par le même nombre.",
+					"Quand {{if:g==0|la masse|{{if:g==1|la durée|le nombre de cahiers}}}} est multiplié{{if:g==0|e|{{if:g==1|e|}}}} par ${{k}}$, {{if:g==0|le prix|{{if:g==1|la distance|le prix}}}} est $\\textcolor{{{color:primary.0}}}{\\text{multiplié{{if:g==0||{{if:g==1|e|}}}} par } {{k}}}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:g==0|Au marché, le prix des pommes est proportionnel à leur masse.|{{if:g==1|Un cycliste roule toujours à la même vitesse : la distance parcourue est proportionnelle à la durée du trajet.|À la papeterie, le prix à payer est proportionnel au nombre de cahiers achetés.}}}}\n\nQuand {{if:g==0|la masse|{{if:g==1|la durée|le nombre de cahiers}}}} est divisé{{if:g==0|e|{{if:g==1|e|}}}} par ${{k}}$, {{if:g==0|le prix|{{if:g==1|la distance|le prix}}}} est :\n\n```choix\n- divisé{{if:g==0||{{if:g==1|e|}}}} par ${{k}}$\n- diminué{{if:g==0||{{if:g==1|e|}}}} de ${{k}}$\n- multiplié{{if:g==0||{{if:g==1|e|}}}} par ${{k}}$\n- le même\n```",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "0..2"
+				},
+				{
+					"name": "k",
+					"expression": "2..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Proportionnalité.** Deux grandeurs sont proportionnelles quand on obtient l'une en multipliant l'autre par un même nombre : si l'une est multipliée (ou divisée) par un nombre, l'autre est multipliée (ou divisée) par le même nombre.",
+					"Quand {{if:g==0|la masse|{{if:g==1|la durée|le nombre de cahiers}}}} est divisé{{if:g==0|e|{{if:g==1|e|}}}} par ${{k}}$, {{if:g==0|le prix|{{if:g==1|la distance|le prix}}}} est $\\textcolor{{{color:primary.0}}}{\\text{divisé{{if:g==0||{{if:g==1|e|}}}} par } {{k}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Masse × 3 : prix × 3",
+			"variationIndex": 0,
+			"variables": {
+				"g": "0",
+				"k": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : augmenté de 3",
+			"variationIndex": 0,
+			"variables": {
+				"g": "0",
+				"k": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le même",
+			"variationIndex": 0,
+			"variables": {
+				"g": "1",
+				"k": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Durée ÷ 2 : distance ÷ 2",
+			"variationIndex": 1,
+			"variables": {
+				"g": "1",
+				"k": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : diminuée de 2",
+			"variationIndex": 1,
+			"variables": {
+				"g": "1",
+				"k": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

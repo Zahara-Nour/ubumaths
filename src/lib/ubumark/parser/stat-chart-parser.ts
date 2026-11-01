@@ -35,6 +35,7 @@
  * @module ubumark/parser/stat-chart-parser
  */
 
+import { unnestedLine } from './nested-line';
 import { bodyOpensParagraph } from './block-closure';
 import { groupNumberText } from '$lib/mathAST/digit-grouping';
 import {
@@ -67,6 +68,7 @@ import {
 	type StatChartDatum,
 	type StatChartDirection,
 	type StatChartIndicator,
+	type StatChartAxis,
 	type StatChartIssue,
 	type StatChartKind,
 	type StatChartLabels,
@@ -94,6 +96,8 @@ import { BINOMIAL_MAX_N } from '$lib/statistics/binomial';
 import { GEOMETRIC_MAX_K } from '$lib/statistics/geometric';
 import { UNIFORM_MAX_VALUES } from '$lib/statistics/uniform';
 import { carreauGrid, usesCarreaux } from '../utils/stat-chart-carreaux';
+import { SCALE_STEPS, scaleAxis } from '../utils/barres-placer';
+import { isMaskedValue } from '../utils/masked-value';
 
 // ============================================================================
 // TYPES
@@ -149,6 +153,14 @@ interface Options {
 	areaQuery: string | null;
 	/** `classes: N` d'une simulation de loi à densité (manche 14) */
 	simulationClasses: number | null;
+	/** Barres : `axe: 0 à 20, de 2 en 2` */
+	axis: StatChartAxis | null;
+	/** Barres : `axe: à choisir` (l'élève choisit l'échelle) */
+	chooseScale: boolean;
+	/** Barres à construire (`placer:`) : noms tels qu'écrits, ou `toutes` ; vérifiés une fois tout lu */
+	placer: string[] | 'toutes' | null;
+	/** Numéro de la première case (`case: N`, posé par le générateur) */
+	caseIndex: number | undefined;
 }
 
 /** Une série nommée (`données Garçons: …`), lue ligne par ligne */
@@ -201,6 +213,12 @@ const PLAIN_NUMBER_REGEX = new RegExp(`^${PLAIN_NUMBER}$`);
 /** `[0 ; 10[`, `[0;10[`, `[-2,5 ; 0[` */
 const CLASS_REGEX = new RegExp(`^\\[\\s*(${PLAIN_NUMBER})\\s*;\\s*(${PLAIN_NUMBER})\\s*\\[$`);
 
+/** `0 à 20`, `0 à 20, de 2 en 2` (axe vertical d'un diagramme en barres) */
+const AXIS_REGEX = new RegExp(
+	`^(${PLAIN_NUMBER})\\s*à\\s*(${PLAIN_NUMBER})\\s*(?:,\\s*de\\s*(${PLAIN_NUMBER})\\s*en\\s*(${PLAIN_NUMBER}))?$`,
+	'i'
+);
+
 /** `1 carreau = 2 élèves`, `1 carreau = 2,5` */
 const AREA_LEGEND_REGEX = /^1\s*carreaux?\s*=\s*(\d+(?:[.,]\d+)?)\s*(.*)$/i;
 
@@ -237,7 +255,10 @@ const OPTION_KEYS = [
 	'seuil',
 	'jusqua',
 	'repartition',
-	'aire'
+	'aire',
+	'axe',
+	'placer',
+	'case'
 ] as const;
 type OptionKey = (typeof OPTION_KEYS)[number];
 
@@ -284,7 +305,11 @@ const OPTION_KINDS: Partial<Record<OptionKey, readonly StatChartKind[]>> = {
 	jusqua: ['loi', 'simulation'],
 	repartition: ['loi'],
 	aire: ['loi'],
-	serie: ['barres', 'circulaire', 'histogramme', 'frequences-cumulees']
+	serie: ['barres', 'circulaire', 'histogramme', 'frequences-cumulees'],
+	// Diagramme en barres à construire (chantier « réponses à placer », § 17-18)
+	axe: ['barres'],
+	placer: ['barres'],
+	case: ['barres']
 };
 
 /** Options dont l'auteur écrit l'accent */
@@ -482,6 +507,45 @@ export function findStatChartBlocks(lines: string[]): StatChartBlockRange[] {
 		i = end + 1;
 	}
 	return blocks;
+}
+
+/** `axe: à choisir` : l'élève choisit l'échelle */
+const CHOOSE_SCALE = 'à choisir';
+
+/** Ligne `placer:` d'un diagramme en barres à construire */
+const PLACER_LINE_REGEX = /^placer\s*:/i;
+
+/**
+ * Les diagrammes en barres à construire (`placer:`) d'un énoncé, délimités comme
+ * le parseur : corps sans clôtures, fermeture, et `nested` pour un bloc en retrait
+ * ou cité (l'élève ne pourrait pas y répondre : ses cases ne sont pas créées)
+ */
+export function findBarsToPlace(markdown: string): {
+	startIndex: number;
+	body: string[];
+	closed: boolean;
+	nested: boolean;
+}[] {
+	const lines = markdown.split('\n');
+	const plain = lines.map(unnestedLine);
+	return findStatChartBlocks(plain)
+		.filter((block) => block.kind === 'barres')
+		.map((block) => {
+			const closed = block.closed !== false;
+			const body = plain.slice(block.startIndex + 1, closed ? block.endIndex : block.endIndex + 1);
+			return {
+				startIndex: block.startIndex,
+				body,
+				closed,
+				nested: lines[block.startIndex] !== plain[block.startIndex]
+			};
+		})
+		.filter((block) => block.body.some((line) => PLACER_LINE_REGEX.test(line.trim())));
+}
+
+/** L'énoncé a-t-il un diagramme en barres à construire ? */
+export function hasBarsToPlace(markdown: string): boolean {
+	return findBarsToPlace(markdown).length > 0;
 }
 
 // ============================================================================
@@ -783,6 +847,23 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 				'graine : un entier entre 0 et 999 999 999'
 			);
 			return;
+		case 'axe':
+			if (normalizeKey(value.trim()) === normalizeKey(CHOOSE_SCALE)) options.chooseScale = true;
+			else options.axis = parseAxis(value);
+			return;
+		case 'placer': {
+			const written = value.trim();
+			if (written === '') throw new LineError('placer : nommer les barres à construire, ou toutes');
+			options.placer =
+				normalizeKey(written) === 'toutes' ? 'toutes' : written.split(';').map((n) => n.trim());
+			return;
+		}
+		case 'case':
+			if (!/^\d+$/.test(value.trim())) {
+				throw new LineError(`case « ${value.trim()} » : numéro de case entier`);
+			}
+			options.caseIndex = Number(value.trim());
+			return;
 		case 'masquer':
 			// Tableau d'effectifs (Q130) : résolu une fois les valeurs connues
 			if (kind === 'effectifs') {
@@ -813,6 +894,133 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 				});
 			return;
 	}
+}
+
+/** `axe: 0 à 20, de 2 en 2` : depuis 0, entiers, le haut multiple du pas */
+function parseAxis(raw: string): StatChartAxis {
+	const match = AXIS_REGEX.exec(raw.trim());
+	if (!match || (match[3] !== undefined && match[3] !== match[4])) {
+		throw new LineError('axe : écrire « axe: 0 à 20, de 2 en 2 »');
+	}
+	const [low, max] = [toNumber(match[1]), toNumber(match[2])];
+	const step = match[3] === undefined ? 1 : toNumber(match[3]);
+	if (low !== 0) {
+		throw new LineError(
+			`axe : un diagramme en barres part de 0 (écrire axe: 0 à ${formatForMessage(max)})`
+		);
+	}
+	if (max <= 0) throw new LineError('axe : le haut de l’axe doit dépasser 0');
+	if (!Number.isInteger(max) || !Number.isInteger(step) || step <= 0) {
+		throw new LineError('axe : des nombres entiers (des effectifs)');
+	}
+	if (max % step !== 0) {
+		throw new LineError(`axe : ${max} n’est pas un multiple du pas ${step}`);
+	}
+	if (max / step > STAT_CHART_LIMITS.axisTicks) {
+		throw new LineError(
+			`axe : au plus ${STAT_CHART_LIMITS.axisTicks} graduations (agrandir le pas)`
+		);
+	}
+	return { max, step };
+}
+
+/**
+ * Diagramme en barres à construire (`placer:`) et axe écrit (`axe:`), une fois
+ * les données connues : le premier problème, situé ; sinon les rangs des barres
+ * à construire (null sans `placer:`)
+ */
+function checkBarsToPlace(
+	data: readonly StatChartDatum[],
+	unit: StatChartUnit,
+	options: Options,
+	optionLines: Partial<Record<OptionKey, number>>,
+	twoSeries: boolean
+): { toPlace: number[] | null } | { error: StatChartIssue } {
+	const fail = (line: number, message: string) => ({
+		error: { message: `Ligne ${line} : ${message}`, line }
+	});
+	let toPlace: number[] | null = null;
+	if (options.placer !== null) {
+		const line = optionLines.placer ?? 0;
+		if (options.axis === null && !options.chooseScale) {
+			return fail(
+				line,
+				'placer : écrire aussi l’axe vertical (axe: 0 à 20, de 2 en 2, ou axe: à choisir) : calculé, il trahirait la plus grande barre'
+			);
+		}
+		if (options.axis !== null && options.axis.max > STAT_CHART_LIMITS.placeAxisMax) {
+			return fail(
+				line,
+				`placer : axe jusqu’à ${STAT_CHART_LIMITS.placeAxisMax} au plus (au-delà, l’élève ne viserait plus l’unité)`
+			);
+		}
+		if (options.showValues) {
+			return fail(line, 'placer : impossible avec valeurs: oui (l’effectif attendu serait écrit)');
+		}
+		// Effectif total, moyenne… : la barre manquante se déduirait (revue de la PR barres)
+		if (options.indicators.length > 0) {
+			return fail(line, 'placer : impossible avec indicateurs: (l’effectif attendu se déduirait)');
+		}
+		if (twoSeries) return fail(line, 'placer : une seule série');
+		if (unit === 'pourcentages') return fail(line, 'placer : des effectifs, pas des pourcentages');
+		const lower = (text: string) => text.toLocaleLowerCase('fr');
+		if (options.placer === 'toutes') toPlace = data.map((_, i) => i);
+		else {
+			const ranks: number[] = [];
+			for (const name of options.placer) {
+				// Le nom exact d'abord : `Lundi` et `lundi` peuvent être deux catégories
+				const exact = data.findIndex((d) => d.label === name);
+				const loose = data.flatMap((d, i) => (lower(d.label) === lower(name) ? [i] : []));
+				if (exact === -1 && loose.length > 1) {
+					return fail(
+						line,
+						`placer : « ${name} » désigne plusieurs catégories (écrire le nom exact)`
+					);
+				}
+				const rank = exact !== -1 ? exact : (loose[0] ?? -1);
+				if (rank === -1) {
+					return fail(line, `placer : « ${name} » n’est pas une catégorie du diagramme`);
+				}
+				if (ranks.includes(rank)) return fail(line, `placer : « ${name} » nommée deux fois`);
+				ranks.push(rank);
+			}
+			toPlace = ranks.sort((a, b) => a - b);
+		}
+		// Effectif décimal : déjà refusé à sa ligne (un effectif est entier)
+	}
+	if (options.chooseScale) {
+		const axeLine = optionLines.axe ?? 0;
+		// Sans échelle, une barre dessinée n'aurait pas de hauteur (§ 24)
+		if (options.placer !== 'toutes') {
+			return fail(
+				axeLine,
+				'axe : à choisir seulement avec placer: toutes (l’élève construit tout le diagramme)'
+			);
+		}
+		const highest = scaleAxis(SCALE_STEPS[SCALE_STEPS.length - 1]).max;
+		const over = data.find((d) => d.value > highest);
+		if (over) {
+			return fail(
+				over.line,
+				`la barre ${over.label} (${formatForMessage(over.value)}) dépasse ${highest} : aucune échelle à choisir ne rentre`
+			);
+		}
+	}
+	if (options.caseIndex !== undefined && options.placer === null) {
+		return fail(optionLines.case ?? 0, 'case: sans objet sans placer:');
+	}
+	if (options.axis !== null) {
+		const axis = options.axis;
+		if (twoSeries) return fail(optionLines.axe ?? 0, 'axe : seulement avec une seule série');
+		const over = data.find((d) => d.value > axis.max);
+		if (over) {
+			return fail(
+				over.line,
+				`la barre ${over.label} (${formatForMessage(over.value)}) dépasse l’axe (0 à ${axis.max})`
+			);
+		}
+	}
+	return { toPlace };
 }
 
 /** Un entier de `min` à `max` ; `10 000` s'écrit avec ses espaces */
@@ -2828,7 +3036,11 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		upTo: null,
 		cdf: false,
 		areaQuery: null,
-		simulationClasses: null
+		simulationClasses: null,
+		axis: null,
+		chooseScale: false,
+		placer: null,
+		caseIndex: undefined
 	};
 	let lawVariable = null as ({ name: string } & LawLine) | null;
 	// `X ~ B(n ; p)` (manche 11) : la loi binomiale remplace `X =` / `P =`
@@ -3101,6 +3313,12 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 				throw new LineError(`au plus ${limit} ${what} dans les ${KIND_NAME[kind]}`);
 			}
 
+			// Barre à construire d'un énoncé d'évaluation notée : effectif de remplacement
+			// (`masked-value.ts`), la barre se dessine en pointillés comme avant
+			if (kind === 'barres' && isMaskedValue(content.slice(separator + 1))) {
+				data.push({ label, value: 0, interval, line });
+				return;
+			}
 			const parsed = parseValue(content.slice(separator + 1));
 			if (unit !== null && unit.value !== parsed.unit) {
 				throw new LineError(
@@ -3406,6 +3624,13 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		}
 	}
 
+	let toPlace: number[] | null = null;
+	if (errors.length === 0 && kind === 'barres') {
+		const checked = checkBarsToPlace(data, dataUnit, options, optionLines, twoSeries !== null);
+		if ('error' in checked) errors.push(checked.error);
+		else toPlace = checked.toPlace;
+	}
+
 	const spec: StatChartSpec | null =
 		errors.length === 0
 			? {
@@ -3430,11 +3655,15 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 					frequencyTable,
 					series,
 					twoSeries,
-					scatter: null
+					scatter: null,
+					axis: options.axis,
+					toPlace,
+					chooseScale: options.chooseScale
 				}
 			: null;
 
-	return { type: 'stat-chart', kind, source, spec, errors, warnings };
+	const withCase = options.caseIndex === undefined ? {} : { caseIndex: options.caseIndex };
+	return { type: 'stat-chart', kind, source, spec, errors, warnings, ...withCase };
 }
 
 /**

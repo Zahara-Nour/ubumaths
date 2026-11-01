@@ -1,0 +1,85 @@
+{
+	"id": "e3e19d28-b41b-48f3-9aaa-bc8bfeeacea7",
+	"title": "Convexité : lecture sur la courbe de f′",
+	"description": "Lire l'intervalle où f est convexe sur la courbe de f′ (f′ croissante)",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Fonctions convexes",
+	"domain": "Convexité",
+	"subdomain": "Lecture graphique",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "On a représenté ci-dessous la courbe de la fonction **dérivée** $f'$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:h-4}} ; {{eval:h+4}}\ny: -5 ; 5\ngrille: 1 ; 1\ng(x) = {{s}}*(0.5*(x-{{h}})^2-2)   rouge\ntaille: moyenne\ndescription: Courbe de la dérivée f′ : une parabole qui coupe l'axe des abscisses en deux points.\n```\n\nSur quel intervalle la fonction $f$ est-elle **convexe** ?\n\n```choix\n- {{if:s>0|$\\left[{{h}}\\,;+\\infty\\right[$|$\\left]-\\infty\\,;{{h}}\\right]$}}\n- {{if:s>0|$\\left]-\\infty\\,;{{h}}\\right]$|$\\left[{{h}}\\,;+\\infty\\right[$}}\n- $\\left[{{eval:h-2}}\\,;{{eval:h+2}}\\right]$\n- $\\mathbb{R}$\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "-1|1"
+				},
+				{
+					"name": "h",
+					"expression": "-2..2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est convexe là où $f'$ est **croissante** (on ne regarde pas le signe de $f'$, qui donne les variations de $f$).",
+					"Sur le graphique, $f'$ est {{if:s>0|décroissante puis croissante|croissante puis décroissante}}, avec un changement en $x={{h}}$.",
+					"$f$ est convexe sur $\\textcolor{{{color:primary.0}}}{{{if:s>0|\\left[{{h}}\\,;+\\infty\\right[|\\left]-\\infty\\,;{{h}}\\right]}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"h": "0",
+				"s": "1"
+			},
+			"description": "v0 : f′ décroissante puis croissante",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"h": "0",
+				"s": "1"
+			},
+			"description": "v0 : là où f′ ≤ 0 (variations de f)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"h": "1",
+				"s": "-1"
+			},
+			"description": "v0 : s=−1, opposé",
+			"variationIndex": 0
+		}
+	]
+}

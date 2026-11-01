@@ -1,0 +1,111 @@
+{
+	"title": "Estimer une masse",
+	"description": "Une pomme pèse plutôt 15 g, 150 g ou 15 kg ?",
+	"grades": ["CE1"],
+	"theme": "Grandeurs",
+	"domain": "Masses",
+	"subdomain": "Ordres de grandeur",
+	"level": 2,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:k==1|Une gomme|{{if:k==2|Un crayon|{{if:k==3|Une lettre|{{if:k==4|Une pomme|{{if:k==5|Un livre|{{if:k==6|Une baguette de pain|{{if:k==7|Un chat|{{if:k==8|Un vélo d'enfant|Un enfant de CE1}}}}}}}}}}}}}}}} pèse plutôt…\n\n```choix\nmelanger: non\n- {{if:k==1|$20~\\unit{g}$|{{if:k==2|$5~\\unit{g}$|{{if:k==3|$20~\\unit{g}$|{{if:k==4|$15~\\unit{g}$|{{if:k==5|$30~\\unit{g}$|{{if:k==6|$25~\\unit{g}$|{{if:k==7|$4~\\unit{g}$|{{if:k==8|$10~\\unit{g}$|$25~\\unit{g}$}}}}}}}}}}}}}}}}\n- {{if:k==1|$200~\\unit{g}$|{{if:k==2|$50~\\unit{g}$|{{if:k==3|$200~\\unit{g}$|{{if:k==4|$150~\\unit{g}$|{{if:k==5|$300~\\unit{g}$|{{if:k==6|$250~\\unit{g}$|{{if:k==7|$40~\\unit{g}$|{{if:k==8|$100~\\unit{g}$|$250~\\unit{g}$}}}}}}}}}}}}}}}}\n- {{if:k==1|$20~\\unit{kg}$|{{if:k==2|$5~\\unit{kg}$|{{if:k==3|$20~\\unit{kg}$|{{if:k==4|$15~\\unit{kg}$|{{if:k==5|$30~\\unit{kg}$|{{if:k==6|$25~\\unit{kg}$|{{if:k==7|$4~\\unit{kg}$|{{if:k==8|$10~\\unit{kg}$|$25~\\unit{kg}$}}}}}}}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "r",
+					"expression": "eval:floor((k-1)/3)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compare avec des masses connues : un sachet de levure pèse environ $10~\\unit{g}$, un paquet de sucre $1~\\unit{kg}$.",
+					"{{if:k==1|Une gomme|{{if:k==2|Un crayon|{{if:k==3|Une lettre|{{if:k==4|Une pomme|{{if:k==5|Un livre|{{if:k==6|Une baguette de pain|{{if:k==7|Un chat|{{if:k==8|Un vélo d'enfant|Un enfant de CE1}}}}}}}}}}}}}}}} pèse plutôt {{if:k==1|$20~\\unit{g}$|{{if:k==2|$5~\\unit{g}$|{{if:k==3|$20~\\unit{g}$|{{if:k==4|$150~\\unit{g}$|{{if:k==5|$300~\\unit{g}$|{{if:k==6|$250~\\unit{g}$|{{if:k==7|$4~\\unit{kg}$|{{if:k==8|$10~\\unit{kg}$|$25~\\unit{kg}$}}}}}}}}}}}}}}}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : pomme, 150 g",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pomme de 15 g",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : pomme de 15 kg",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"r": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "crayon : 5 g",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "enfant : 25 kg",
+			"variationIndex": 0,
+			"variables": {
+				"k": "9",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : enfant de 250 g",
+			"variationIndex": 0,
+			"variables": {
+				"k": "9",
+				"r": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

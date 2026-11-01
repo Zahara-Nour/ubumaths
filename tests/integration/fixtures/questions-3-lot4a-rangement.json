@@ -1,0 +1,90 @@
+[
+	{
+		"id": "0612be84-01ce-42a3-aa33-2e2051502450",
+		"noeudAvant": null,
+		"noeudApres": "Fonctions > Fonctions affines > fonction linéaire",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-041"]
+	},
+	{
+		"id": "0d0e88f5-3825-418f-b12b-d6e541fbecba",
+		"noeudAvant": null,
+		"noeudApres": "Fonctions > Fonctions affines > coefficient directeur et ordonnée à l'origine",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-067"]
+	},
+	{
+		"id": "45247528-23f3-44cc-860e-afe643abaf2b",
+		"noeudAvant": null,
+		"noeudApres": "Fonctions > Fonctions affines > fonction linéaire",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-043"]
+	},
+	{
+		"id": "6ad254b4-69c3-49db-9541-fa921964cefc",
+		"noeudAvant": null,
+		"noeudApres": "Fonctions > Généralités sur les fonctions",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-039"]
+	},
+	{
+		"id": "81dda1bd-cd4f-4055-9427-072d8f7f513c",
+		"noeudAvant": null,
+		"noeudApres": "Fonctions > Fonctions affines > fonction linéaire",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-064"]
+	},
+	{
+		"id": "b9771108-fe6a-4f37-8b49-671b5627f5d3",
+		"noeudAvant": null,
+		"noeudApres": "Fonctions > Fonctions affines > coefficient directeur et ordonnée à l'origine",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-067"]
+	},
+	{
+		"id": "c64028b0-2001-4320-a02b-5d0692089d1a",
+		"noeudAvant": null,
+		"noeudApres": "Fonctions > Fonctions affines > coefficient directeur et ordonnée à l'origine",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-045"]
+	},
+	{
+		"id": "d820232a-62a0-422f-9c08-33b279258af1",
+		"noeudAvant": null,
+		"noeudApres": "Fonctions > Généralités sur les fonctions > images et antécédents",
+		"gradesAvant": ["3"],
+		"gradesApres": ["3"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["3§3-040"]
+	}
+]

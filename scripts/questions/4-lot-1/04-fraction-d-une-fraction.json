@@ -1,0 +1,244 @@
+{
+	"title": "Fraction d'une fraction",
+	"description": "Calculer une fraction d'une fraction par un produit : 2/3 de 4/5 = 8/15 ; 3/4 de 8/9 = 2/3 ; les 2/3 des 3/5 des élèves",
+	"grades": ["4"],
+	"theme": "Fractions",
+	"domain": "Calculer",
+	"subdomain": "Fraction d'une quantité",
+	"level": 7,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$$\\frac{{{a}}}{{{b}}} \\text{ de } \\frac{{{c}}}{{{d}}} = ?$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..10"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:b-1}}"
+				},
+				{
+					"name": "d",
+					"expression": "2..10"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:d-1}}"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "gcd(c,d)==1", "gcd(a*c,b*d)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:a*c}}}{{{eval:b*d}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fraction d'une fraction.** Prendre $\\frac{{{a}}}{{{b}}}$ d'un nombre, c'est le multiplier par $\\frac{{{a}}}{{{b}}}$ : « de » se traduit par « $\\times$ ».",
+					"$$\\frac{{{a}}}{{{b}}} \\times \\frac{{{c}}}{{{d}}} = \\frac{{{a}} \\times {{c}}}{{{b}} \\times {{d}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule. Simplifie le résultat.\n\n$$\\frac{{{a}}}{{{b}}} \\text{ de } \\frac{{{c}}}{{{d}}} = ?$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..10"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:b-1}}"
+				},
+				{
+					"name": "d",
+					"expression": "2..10"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:d-1}}"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "gcd(c,d)==1", "gcd(a*c,b*d)>1", "mod(a*c,b*d)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:((a*c)/gcd(abs(a*c),b*d))<0|-|}}\\frac{{{eval:abs((a*c)/gcd(abs(a*c),b*d))}}}{{{eval:(b*d)/gcd(abs(a*c),b*d)}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fraction d'une fraction.** Prendre $\\frac{{{a}}}{{{b}}}$ d'un nombre, c'est le multiplier par $\\frac{{{a}}}{{{b}}}$ : « de » se traduit par « $\\times$ ».",
+					"$$\\frac{{{a}}}{{{b}}} \\times \\frac{{{c}}}{{{d}}} = \\frac{{{a}} \\times {{c}}}{{{b}} \\times {{d}}} = \\frac{{{eval:a*c}}}{{{eval:b*d}}} = \\textcolor{{{color:primary.0}}}{{{solution}}}$$",
+					"On simplifie par ${{eval:gcd(a*c,b*d)}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un collège, les $\\frac{{{a}}}{{{b}}}$ des élèves sont demi-pensionnaires. Parmi les demi-pensionnaires, les $\\frac{{{c}}}{{{d}}}$ sont en 4e.\n\nQuelle fraction des élèves du collège sont des demi-pensionnaires de 4e ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "3..6"
+				},
+				{
+					"name": "a",
+					"expression": "2..{{eval:b-1}}"
+				},
+				{
+					"name": "d",
+					"expression": "3..6"
+				},
+				{
+					"name": "c",
+					"expression": "2..{{eval:d-1}}"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "gcd(c,d)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:((a*c)/gcd(abs(a*c),b*d))<0|-|}}\\frac{{{eval:abs((a*c)/gcd(abs(a*c),b*d))}}}{{{eval:(b*d)/gcd(abs(a*c),b*d)}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On prend les $\\frac{{{c}}}{{{d}}}$ **des** $\\frac{{{a}}}{{{b}}}$ des élèves : c'est une fraction d'une fraction, donc un produit.",
+					"$$\\frac{{{c}}}{{{d}}} \\times \\frac{{{a}}}{{{b}}} = \\frac{{{eval:a*c}}}{{{eval:b*d}}}{{if:gcd(a*c,b*d)>1| = {{if:((a*c)/gcd(abs(a*c),b*d))<0|-|}}\\frac{{{eval:abs((a*c)/gcd(abs(a*c),b*d))}}}{{{eval:(b*d)/gcd(abs(a*c),b*d)}}}|}}$$",
+					"Les demi-pensionnaires de 4e sont $\\textcolor{{{color:primary.0}}}{{{solution}}}$ des élèves du collège."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2/3 de 4/5 = 8/15",
+			"variationIndex": 0,
+			"variables": {
+				"b": "3",
+				"a": "2",
+				"d": "5",
+				"c": "4"
+			},
+			"answers": ["\\frac{8}{15}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme 2/3 + 4/5 = 22/15",
+			"variationIndex": 0,
+			"variables": {
+				"b": "3",
+				"a": "2",
+				"d": "5",
+				"c": "4"
+			},
+			"answers": ["\\frac{22}{15}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : produit en croix 10/12",
+			"variationIndex": 0,
+			"variables": {
+				"b": "3",
+				"a": "2",
+				"d": "5",
+				"c": "4"
+			},
+			"answers": ["\\frac{10}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3/4 de 8/9 = 2/3",
+			"variationIndex": 1,
+			"variables": {
+				"b": "4",
+				"a": "3",
+				"d": "9",
+				"c": "8"
+			},
+			"answers": ["\\frac{2}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "24/36 non simplifié : ambre",
+			"variationIndex": 1,
+			"variables": {
+				"b": "4",
+				"a": "3",
+				"d": "9",
+				"c": "8"
+			},
+			"answers": ["\\frac{24}{36}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "Erreur : somme 59/36",
+			"variationIndex": 1,
+			"variables": {
+				"b": "4",
+				"a": "3",
+				"d": "9",
+				"c": "8"
+			},
+			"answers": ["\\frac{59}{36}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "les 2/3 des 3/5 = 2/5",
+			"variationIndex": 2,
+			"variables": {
+				"b": "5",
+				"a": "3",
+				"d": "3",
+				"c": "2"
+			},
+			"answers": ["\\frac{2}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "6/15 non simplifié : ambre",
+			"variationIndex": 2,
+			"variables": {
+				"b": "5",
+				"a": "3",
+				"d": "3",
+				"c": "2"
+			},
+			"answers": ["\\frac{6}{15}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "Erreur : 3/5 + 2/3 = 19/15",
+			"variationIndex": 2,
+			"variables": {
+				"b": "5",
+				"a": "3",
+				"d": "3",
+				"c": "2"
+			},
+			"answers": ["\\frac{19}{15}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,201 @@
+{
+	"title": "Intercaler un nombre (jusqu'à $1\\,000$)",
+	"description": "391 < … < 396 ; suite à trous 387 ; 388 ; … ; … ; 391",
+	"grades": ["CE1"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Encadrer",
+	"level": 8,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète avec un nombre.\n\n$${{a}}<?<{{b}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "100..990"
+				},
+				{
+					"name": "k",
+					"expression": "2..10"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+1}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "range",
+							"min": "{{a}}",
+							"max": "{{b}}",
+							"inclusive": false
+						},
+						{
+							"type": "predicate",
+							"predicate": "isInteger"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre cherché est plus grand que ${{a}}$ et plus petit que ${{b}}$.",
+					"{{if:k==2|Il n'y en a qu'un : ${{eval:a+1}}$.|Ce sont les nombres de ${{eval:a+1}}$ à ${{eval:b-1}}$ : n'importe lequel convient.}}"
+				]
+			}
+		},
+		{
+			"statement": "Complète la suite des nombres.\n\n$${{s}} \\quad ; \\quad {{eval:s+1}} \\quad ; \\quad ? \\quad ; \\quad ? \\quad ; \\quad {{eval:s+4}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..9"
+				},
+				{
+					"name": "u",
+					"expression": "7..8"
+				},
+				{
+					"name": "s",
+					"expression": "eval:100*a+10*b+u"
+				}
+			],
+			"conditions": ["100*a + 10*b + u <= 996"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:s+2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:s+3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans la suite des nombres, on avance de $1$ à chaque fois.",
+					"{{if:b==9|On passe à la centaine suivante.|On passe à la dizaine suivante.}}",
+					"$${{s}} \\quad ; \\quad {{eval:s+1}} \\quad ; \\quad {{eval:s+2}} \\quad ; \\quad {{eval:s+3}} \\quad ; \\quad {{eval:s+4}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "391 < 393 < 396",
+			"variationIndex": 0,
+			"variables": {
+				"a": "391",
+				"k": "5",
+				"b": "396"
+			},
+			"answers": ["393"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "bornes : 391 < 395 < 396",
+			"variationIndex": 0,
+			"variables": {
+				"a": "391",
+				"k": "5",
+				"b": "396"
+			},
+			"answers": ["395"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : borne 396",
+			"variationIndex": 0,
+			"variables": {
+				"a": "391",
+				"k": "5",
+				"b": "396"
+			},
+			"answers": ["396"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : borne 391",
+			"variationIndex": 0,
+			"variables": {
+				"a": "391",
+				"k": "5",
+				"b": "396"
+			},
+			"answers": ["391"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "passage : 387 ; 388 ; 389 ; 390 ; 391",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "8",
+				"u": "7",
+				"s": "387"
+			},
+			"answers": ["389", "390"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 389 ; 3810",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "8",
+				"u": "7",
+				"s": "387"
+			},
+			"answers": ["389", "3810"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "centaine : 498 ; 499 ; 500 ; 501 ; 502",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "9",
+				"u": "8",
+				"s": "498"
+			},
+			"answers": ["500", "501"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4100",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "9",
+				"u": "8",
+				"s": "498"
+			},
+			"answers": ["4100", "4101"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

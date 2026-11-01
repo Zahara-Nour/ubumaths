@@ -1,0 +1,206 @@
+{
+	"title": "Évolution exponentielle et suite géométrique",
+	"description": "Temps continu f(t) = Ce^{kt}, temps discret uₙ = f(n) : raison e^{−k} arrondie, taux annuel e^k − 1 en %, facteur d'une demi-année e^{k/2}",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction exponentielle",
+	"subdomain": "Suites et modélisation",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "La masse (en grammes) d'un produit radioactif au bout de $t$ années est $m(t)={{eval:m0}}e^{-{{eval:k;d}}t}$. On relève la masse chaque année : on pose $m_n=m(n)$ pour tout entier naturel $n$.\n\nLa suite $(m_n)$ est géométrique. Donne sa raison, arrondie au millième.\n\n$q\\approx ?$",
+			"variables": [
+				{
+					"name": "m0",
+					"expression": "20..90"
+				},
+				{
+					"name": "k",
+					"expression": "0.1|0.2|0.05|0.3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(e^(-k)*1000)/1000;d}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 3
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"$m_{n+1}={{eval:m0}}e^{-{{eval:k;d}}(n+1)}={{eval:m0}}e^{-{{eval:k;d}}n}\\times e^{-{{eval:k;d}}}=m_n\\times e^{-{{eval:k;d}}}$.",
+					"La suite est géométrique de raison $q=e^{-{{eval:k;d}}}\\approx\\textcolor{{{color:primary.0}}}{{{eval:round(e^(-k)*1000)/1000;d}}}$ : à temps discret, chaque année multiplie la masse par le même nombre."
+				]
+			}
+		},
+		{
+			"statement": "Une population compte $P(t)={{eval:p0}}e^{{{eval:k;d}}t}$ individus au bout de $t$ années. On pose $u_n=P(n)$ pour tout entier naturel $n$.\n\nDe quel pourcentage la population augmente-t-elle chaque année ? Arrondis au dixième.\n\nElle augmente d'environ $?\\,\\%$ par an.",
+			"variables": [
+				{
+					"name": "p0",
+					"expression": "1000..5000"
+				},
+				{
+					"name": "k",
+					"expression": "0.04|0.05|0.06|0.08|0.1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round((e^k-1)*1000)/10;d}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 1
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_{n+1}=u_n\\times e^{{{eval:k;d}}}$ : la suite $(u_n)$ est géométrique de raison $e^{{{eval:k;d}}}\\approx{{eval:round(e^k*10000)/10000;d}}$.",
+					"Multiplier par ${{eval:round(e^k*10000)/10000;d}}$, c'est augmenter d'environ $\\textcolor{{{color:primary.0}}}{{{eval:round((e^k-1)*1000)/10;d}}\\,\\%}$ (et non de ${{eval:100*k;d}}\\,\\%$)."
+				]
+			}
+		},
+		{
+			"statement": "Une quantité vaut $Q(t)={{eval:q0}}e^{{{eval:k;d}}t}$ au bout de $t$ années, $t$ réel positif. Chaque année, elle est multipliée par $e^{{{eval:k;d}}}$.\n\nPar quel nombre est-elle multipliée en une demi-année ? Donne la valeur exacte.\n\n$\\dfrac{Q(t+0{,}5)}{Q(t)}=?$",
+			"variables": [
+				{
+					"name": "q0",
+					"expression": "100..900"
+				},
+				{
+					"name": "k",
+					"expression": "0.1|0.2|0.3|0.4|0.6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "e^{{{eval:k/2;d}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$Q(t+0{,}5)={{eval:q0}}e^{{{eval:k;d}}(t+0{,}5)}={{eval:q0}}e^{{{eval:k;d}}t}\\times e^{{{eval:k/2;d}}}$.",
+					"Le temps est continu : entre deux relevés annuels, la quantité est multipliée par $\\textcolor{{{color:primary.0}}}{e^{{{eval:k/2;d}}}}$ en une demi-année, et deux demi-années donnent bien $e^{{{eval:k/2;d}}}\\times e^{{{eval:k/2;d}}}=e^{{{eval:k;d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "e^{−0,1} ≈ 0,905",
+			"variationIndex": 0,
+			"variables": {
+				"m0": "80",
+				"k": "0.1"
+			},
+			"answers": ["0,905"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,9 (1 − k)",
+			"variationIndex": 0,
+			"variables": {
+				"m0": "80",
+				"k": "0.1"
+			},
+			"answers": ["0,9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −0,1",
+			"variationIndex": 0,
+			"variables": {
+				"m0": "80",
+				"k": "0.1"
+			},
+			"answers": ["-0,1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "e^{0,05} − 1 ≈ 5,1 %",
+			"variationIndex": 1,
+			"variables": {
+				"p0": "2000",
+				"k": "0.05"
+			},
+			"answers": ["5,1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 % (k × 100)",
+			"variationIndex": 1,
+			"variables": {
+				"p0": "2000",
+				"k": "0.05"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "e^{0,1} − 1 ≈ 10,5 %",
+			"variationIndex": 1,
+			"variables": {
+				"p0": "2000",
+				"k": "0.1"
+			},
+			"answers": ["10,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Demi-année : e^{0,1}",
+			"variationIndex": 2,
+			"variables": {
+				"q0": "300",
+				"k": "0.2"
+			},
+			"answers": ["e^{0,1}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : e^{0,2}/2",
+			"variationIndex": 2,
+			"variables": {
+				"q0": "300",
+				"k": "0.2"
+			},
+			"answers": ["\\frac{e^{0,2}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : e^{0,2}",
+			"variationIndex": 2,
+			"variables": {
+				"q0": "300",
+				"k": "0.2"
+			},
+			"answers": ["e^{0,2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

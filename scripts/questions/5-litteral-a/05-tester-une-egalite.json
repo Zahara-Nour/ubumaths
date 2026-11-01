@@ -1,0 +1,292 @@
+{
+	"title": "L'égalité est-elle vraie pour cette valeur ?",
+	"description": "Tester une égalité à une variable pour une valeur donnée en calculant chaque membre : 5x + 3 = 2x + 15 est vraie pour x = 4 ; 4(x + 1) = 2x + 11 est fausse pour x = 3",
+	"grades": ["5"],
+	"theme": "Calcul littéral",
+	"domain": "Calculs",
+	"subdomain": "Tester une égalité",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "L'égalité ${{a}}x + {{b}} = {{c}}x + {{d}}$ est-elle vraie pour $x = {{k}}$ ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "eval:(a*k+b)-c*k"
+				}
+			],
+			"conditions": ["c<a"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Tester une égalité.** On remplace $x$ par la valeur dans **chaque membre**, on calcule séparément, puis on compare les deux résultats.",
+					"Pour $x = {{k}}$ :",
+					"$${{a}} \\times {{k}} + {{b}} = \\textcolor{{{color:primary.1}}}{{{eval:a*k+b}}}$$",
+					"$${{c}} \\times {{k}} + {{d}} = \\textcolor{{{color:primary.1}}}{{{eval:c*k+d}}}$$",
+					"Les deux membres sont égaux : l'égalité est $\\textcolor{{{color:primary.0}}}{\\text{vraie}}$ pour $x = {{k}}$. Réponse : $\\textcolor{{{color:primary.0}}}{\\text{Oui}}$."
+				]
+			}
+		},
+		{
+			"statement": "L'égalité ${{a}}x + {{b}} = {{c}}x + {{d}}$ est-elle vraie pour $x = {{k}}$ ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "h",
+					"expression": "1..5"
+				},
+				{
+					"name": "d",
+					"expression": "eval:(a*k+b)-c*k+h"
+				}
+			],
+			"conditions": ["c<a"],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Tester une égalité.** On remplace $x$ par la valeur dans **chaque membre**, on calcule séparément, puis on compare les deux résultats.",
+					"Pour $x = {{k}}$ :",
+					"$${{a}} \\times {{k}} + {{b}} = \\textcolor{{{color:primary.1}}}{{{eval:a*k+b}}}$$",
+					"$${{c}} \\times {{k}} + {{d}} = \\textcolor{{{color:primary.1}}}{{{eval:c*k+d}}}$$",
+					"Les deux membres sont différents : l'égalité est $\\textcolor{{{color:primary.0}}}{\\text{fausse}}$ pour $x = {{k}}$. Réponse : $\\textcolor{{{color:primary.0}}}{\\text{Non}}$."
+				]
+			}
+		},
+		{
+			"statement": "L'égalité ${{a}}(x + {{b}}) = {{c}}x + {{d}}$ est-elle vraie pour $x = {{k}}$ ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "eval:(a*(k+b))-c*k"
+				}
+			],
+			"conditions": ["c<a"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Tester une égalité.** On remplace $x$ par la valeur dans **chaque membre**, on calcule séparément, puis on compare les deux résultats.",
+					"Pour $x = {{k}}$ :",
+					"$${{a}} \\times ({{k}} + {{b}}) = {{a}} \\times {{eval:k+b}} = \\textcolor{{{color:primary.1}}}{{{eval:a*(k+b)}}}$$",
+					"$${{c}} \\times {{k}} + {{d}} = \\textcolor{{{color:primary.1}}}{{{eval:c*k+d}}}$$",
+					"Les deux membres sont égaux : l'égalité est $\\textcolor{{{color:primary.0}}}{\\text{vraie}}$ pour $x = {{k}}$. Réponse : $\\textcolor{{{color:primary.0}}}{\\text{Oui}}$."
+				]
+			}
+		},
+		{
+			"statement": "L'égalité ${{a}}(x + {{b}}) = {{c}}x + {{d}}$ est-elle vraie pour $x = {{k}}$ ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "h",
+					"expression": "1..5"
+				},
+				{
+					"name": "d",
+					"expression": "eval:(a*(k+b))-c*k+h"
+				}
+			],
+			"conditions": ["c<a"],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Tester une égalité.** On remplace $x$ par la valeur dans **chaque membre**, on calcule séparément, puis on compare les deux résultats.",
+					"Pour $x = {{k}}$ :",
+					"$${{a}} \\times ({{k}} + {{b}}) = {{a}} \\times {{eval:k+b}} = \\textcolor{{{color:primary.1}}}{{{eval:a*(k+b)}}}$$",
+					"$${{c}} \\times {{k}} + {{d}} = \\textcolor{{{color:primary.1}}}{{{eval:c*k+d}}}$$",
+					"Les deux membres sont différents : l'égalité est $\\textcolor{{{color:primary.0}}}{\\text{fausse}}$ pour $x = {{k}}$. Réponse : $\\textcolor{{{color:primary.0}}}{\\text{Non}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "5x + 3 = 2x + 15 en x = 4 : oui",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"a": "5",
+				"c": "2",
+				"b": "3",
+				"d": "15"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : non",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"a": "5",
+				"c": "2",
+				"b": "3",
+				"d": "15"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5x + 3 = 2x + 17 en x = 4 : non",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"a": "5",
+				"c": "2",
+				"b": "3",
+				"h": "2",
+				"d": "17"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : oui",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"a": "5",
+				"c": "2",
+				"b": "3",
+				"h": "2",
+				"d": "17"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4(x + 1) = 2x + 10 en x = 3 : oui",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"a": "4",
+				"c": "2",
+				"b": "1",
+				"d": "10"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "4(x + 1) = 2x + 11 en x = 3 : non",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3",
+				"a": "4",
+				"c": "2",
+				"b": "1",
+				"h": "1",
+				"d": "11"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : oui",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3",
+				"a": "4",
+				"c": "2",
+				"b": "1",
+				"h": "1",
+				"d": "11"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

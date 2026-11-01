@@ -1,0 +1,246 @@
+{
+	"title": "Résoudre f(x) < k (fonction affine)",
+	"description": "Fonction affine donnée par son expression : résoudre f(x) < k, coefficient directeur positif puis négatif (le sens change), les quatre sens (pièges : sens non changé, crochet, signe en changeant de membre)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Fonctions affines",
+	"subdomain": "Résolution algébrique",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère la fonction affine $f$ définie sur $\\mathbb{R}$ par $f(x)={{eval:(m)*x+(p)}}$.\n\nRésous dans $\\mathbb{R}$ l'inéquation $f(x){{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "m",
+					"expression": "2..3"
+				},
+				{
+					"name": "r",
+					"expression": "-4..4"
+				},
+				{
+					"name": "k",
+					"expression": "-4..4"
+				},
+				{
+					"name": "p",
+					"expression": "eval:(k)-(m)*(r)"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"conditions": ["(k)-(m)*(r) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|]-\\infty;{{r}}[|{{if:s==1|]-\\infty;{{r}}]|{{if:s==2|]{{r}};+\\infty[|[{{r}};+\\infty[}}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$${{eval:(m)*x+(p)}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}\\iff {{eval:(m)*x}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(k)-(p)}}$$",
+					"On divise les deux membres par ${{m}}$, un nombre **positif** : le sens **ne change pas**. $x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{r}}$.",
+					"Sur le graphique : $f$ est **croissante**, sa droite coupe la droite d'équation $y={{k}}$ en $A$, d'abscisse ${{r}}$ ; on garde les abscisses des points de la droite de $f$ situés {{if:s==0|**strictement sous**|{{if:s==1|**sous ou sur**|{{if:s==2|**strictement au-dessus de**|**au-dessus ou sur**}}}}}} la droite $y={{k}}$ ; {{if:s==0|l'abscisse de $A$ est **exclue**|{{if:s==1|l'abscisse de $A$ est **comprise**|{{if:s==2|l'abscisse de $A$ est **exclue**|l'abscisse de $A$ est **comprise**}}}}}}.",
+					"```courbe\nx: -6 ; 6\ny: -6 ; 6\ngrille: 1 ; 1\nf(x) = {{m}}*x+({{p}})   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\n{{if:s==0|h(x) = {{m}}*x+({{p}}) sur [-20 ; {{r}}[   vert|{{if:s==1|h(x) = {{m}}*x+({{p}}) sur [-20 ; {{r}}]   vert|{{if:s==2|h(x) = {{m}}*x+({{p}}) sur ]{{r}} ; 20]   vert|h(x) = {{m}}*x+({{p}}) sur [{{r}} ; 20]   vert}}}}}}\n{{if:s==0|t(x) = 0 sur [-20 ; {{r}}[   vert|{{if:s==1|t(x) = 0 sur [-20 ; {{r}}]   vert|{{if:s==2|t(x) = 0 sur ]{{r}} ; 20]   vert|t(x) = 0 sur [{{r}} ; 20]   vert}}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2| | }}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2| | }}}}}}\npoints: A({{r}} ; {{k}})\ntaille: moyenne\ndescription: Droite représentant la fonction affine f, droite horizontale y = {{k}} en pointillé, partie cherchée en vert. L'ensemble des solutions est repassé en vert sur l'axe des abscisses.\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]-\\infty\\,;{{r}}\\right[|{{if:s==1|\\left]-\\infty\\,;{{r}}\\right]|{{if:s==2|\\left]{{r}}\\,;+\\infty\\right[|\\left[{{r}}\\,;+\\infty\\right[}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction affine $f$ définie sur $\\mathbb{R}$ par $f(x)={{eval:(m)*x+(p)}}$.\n\nRésous dans $\\mathbb{R}$ l'inéquation $f(x){{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "m",
+					"expression": "-3..-2"
+				},
+				{
+					"name": "r",
+					"expression": "-4..4"
+				},
+				{
+					"name": "k",
+					"expression": "-4..4"
+				},
+				{
+					"name": "p",
+					"expression": "eval:(k)-(m)*(r)"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"conditions": ["(k)-(m)*(r) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|]{{r}};+\\infty[|{{if:s==1|[{{r}};+\\infty[|{{if:s==2|]-\\infty;{{r}}[|]-\\infty;{{r}}]}}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$${{eval:(m)*x+(p)}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}\\iff {{eval:(m)*x}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(k)-(p)}}$$",
+					"On divise les deux membres par ${{m}}$, un nombre **négatif** : le sens **change**. $x{{if:s==0|>|{{if:s==1|\\geqslant |{{if:s==2|<|\\leqslant }}}}}}{{r}}$.",
+					"Sur le graphique : $f$ est **décroissante**, sa droite coupe la droite d'équation $y={{k}}$ en $A$, d'abscisse ${{r}}$ ; on garde les abscisses des points de la droite de $f$ situés {{if:s==0|**strictement sous**|{{if:s==1|**sous ou sur**|{{if:s==2|**strictement au-dessus de**|**au-dessus ou sur**}}}}}} la droite $y={{k}}$ ; {{if:s==0|l'abscisse de $A$ est **exclue**|{{if:s==1|l'abscisse de $A$ est **comprise**|{{if:s==2|l'abscisse de $A$ est **exclue**|l'abscisse de $A$ est **comprise**}}}}}}.",
+					"```courbe\nx: -6 ; 6\ny: -6 ; 6\ngrille: 1 ; 1\nf(x) = {{m}}*x+({{p}})   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\n{{if:s==0|h(x) = {{m}}*x+({{p}}) sur ]{{r}} ; 20]   vert|{{if:s==1|h(x) = {{m}}*x+({{p}}) sur [{{r}} ; 20]   vert|{{if:s==2|h(x) = {{m}}*x+({{p}}) sur [-20 ; {{r}}[   vert|h(x) = {{m}}*x+({{p}}) sur [-20 ; {{r}}]   vert}}}}}}\n{{if:s==0|t(x) = 0 sur ]{{r}} ; 20]   vert|{{if:s==1|t(x) = 0 sur [{{r}} ; 20]   vert|{{if:s==2|t(x) = 0 sur [-20 ; {{r}}[   vert|t(x) = 0 sur [-20 ; {{r}}]   vert}}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2| | }}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2| | }}}}}}\npoints: A({{r}} ; {{k}})\ntaille: moyenne\ndescription: Droite représentant la fonction affine f, droite horizontale y = {{k}} en pointillé, partie cherchée en vert. L'ensemble des solutions est repassé en vert sur l'axe des abscisses.\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]{{r}}\\,;+\\infty\\right[|{{if:s==1|\\left[{{r}}\\,;+\\infty\\right[|{{if:s==2|\\left]-\\infty\\,;{{r}}\\right[|\\left]-\\infty\\,;{{r}}\\right]}}}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2x − 5 < 1 : S = ]−∞ ; 3[",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"r": "3",
+				"k": "1",
+				"p": "-5",
+				"s": "0"
+			},
+			"answers": ["]-\\infty;3["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : crochet fermé",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"r": "3",
+				"k": "1",
+				"p": "-5",
+				"s": "0"
+			},
+			"answers": ["]-\\infty;3]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signe en changeant de membre ]−∞ ; −2[",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"r": "3",
+				"k": "1",
+				"p": "-5",
+				"s": "0"
+			},
+			"answers": ["]-\\infty;-2["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : mauvais côté ]3 ; +∞[",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"r": "3",
+				"k": "1",
+				"p": "-5",
+				"s": "0"
+			},
+			"answers": ["]3;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−3x − 1 ⩾ 2 : S = ]−∞ ; −1]",
+			"variationIndex": 1,
+			"variables": {
+				"m": "-3",
+				"r": "-1",
+				"k": "2",
+				"p": "-1",
+				"s": "3"
+			},
+			"answers": ["]-\\infty;-1]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sens non changé [−1 ; +∞[",
+			"variationIndex": 1,
+			"variables": {
+				"m": "-3",
+				"r": "-1",
+				"k": "2",
+				"p": "-1",
+				"s": "3"
+			},
+			"answers": ["[-1;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : crochet ouvert",
+			"variationIndex": 1,
+			"variables": {
+				"m": "-3",
+				"r": "-1",
+				"k": "2",
+				"p": "-1",
+				"s": "3"
+			},
+			"answers": ["]-\\infty;-1["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−2x + 3 < −1 : S = ]2 ; +∞[",
+			"variationIndex": 1,
+			"variables": {
+				"m": "-2",
+				"r": "2",
+				"k": "-1",
+				"p": "3",
+				"s": "0"
+			},
+			"answers": ["]2;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sens non changé ]−∞ ; 2[",
+			"variationIndex": 1,
+			"variables": {
+				"m": "-2",
+				"r": "2",
+				"k": "-1",
+				"p": "3",
+				"s": "0"
+			},
+			"answers": ["]-\\infty;2["],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -38,7 +38,7 @@ import { P } from '../pattern/builder';
 import { tryMatch } from '../pattern/match';
 import { getBindingNode, isProductSequenceBinding } from '../pattern/types';
 import { exactConstantRational } from './generalized-degree';
-import { normalize, denormalize } from '../normal';
+import { canonicalForm } from '../normal';
 import { nodesEqual } from '../pattern/match';
 import { findNodes } from '../transforms';
 import { findConjugate } from './algebraic';
@@ -61,7 +61,7 @@ export interface SumRewrite {
 /** Forme normale développée, réduite au même dénominateur, ou null si inchangée. */
 function reduceToSingleFraction(expr: MathNode): MathNode | null {
 	try {
-		const reduced = denormalize(normalize(expr));
+		const reduced = canonicalForm(expr);
 		return nodesEqual(reduced, expr) ? null : reduced;
 	} catch {
 		return null;

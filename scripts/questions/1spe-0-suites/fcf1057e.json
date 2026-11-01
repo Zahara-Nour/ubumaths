@@ -1,0 +1,402 @@
+{
+	"id": "fcf1057e-da6f-40ce-b40d-5a66830d44b9",
+	"title": "Reconnaître une suite géométrique à partir de ses premiers termes",
+	"description": "Quotients constants ou non (suites arithmétiques, ni arithmétiques ni géométriques)",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Reconnaître une suite",
+	"subdomain": "Arithmétique ou géométrique",
+	"level": 5,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle semble géométrique.\n- Non, elle ne semble pas géométrique.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..9"
+				},
+				{
+					"name": "r",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:a"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:a+(r)"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:a+2*(r)"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:a+3*(r)"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:a+4*(r)"
+				}
+			],
+			"conditions": ["a != 0", "a+r != 0"],
+			"correction": {
+				"steps": [
+					"On calcule le quotient de deux termes consécutifs : $\\dfrac{u_1}{u_0}={{eval:(t1)/(t0)}}$ mais $\\dfrac{u_2}{u_1}={{eval:(t2)/(t1)}}$.",
+					"Le quotient n'est pas toujours le même : la suite ne semble **pas géométrique**."
+				]
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
+		},
+		{
+			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle semble géométrique.\n- Non, elle ne semble pas géométrique.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "q",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:a"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:a*(q)"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:a*(q)^2"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:a*(q)^3"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:a*(q)^4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule le quotient de deux termes consécutifs : il est toujours le même, $\\dfrac{u_1}{u_0}=\\dfrac{u_2}{u_1}=\\dfrac{u_3}{u_2}=\\dfrac{u_4}{u_3}=\\textcolor{{{color:primary.0}}}{{{q}}}$.",
+					"On passe d'un terme au suivant en multipliant toujours par ${{q}}$ : la suite semble **géométrique**, de raison $q={{q}}$."
+				]
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
+		},
+		{
+			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle semble géométrique.\n- Non, elle ne semble pas géométrique.\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:16*m"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:8*m"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:4*m"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:2*m"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:m"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque terme est la moitié du précédent : $\\dfrac{u_1}{u_0}=\\dfrac{u_2}{u_1}=\\dfrac{u_3}{u_2}=\\dfrac{u_4}{u_3}=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{2}}$.",
+					"Diviser par $2$, c'est multiplier par $\\dfrac{1}{2}$ : la suite semble **géométrique**, de raison $q=\\dfrac{1}{2}$."
+				]
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
+		},
+		{
+			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle semble géométrique.\n- Non, elle ne semble pas géométrique.\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:c"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:1+c"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:4+c"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:9+c"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:16+c"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule le quotient de deux termes consécutifs : $\\dfrac{u_1}{u_0}={{eval:(t1)/(t0)}}$ mais $\\dfrac{u_2}{u_1}={{eval:(t2)/(t1)}}$.",
+					"Le quotient n'est pas toujours le même : la suite ne semble **pas géométrique**."
+				]
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
+		},
+		{
+			"statement": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle géométrique ?\n\n```choix\nmelanger: non\n- Oui, elle semble géométrique.\n- Non, elle ne semble pas géométrique.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "r",
+					"expression": "2..6;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "t0",
+					"expression": "eval:a"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:a+(r)"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:a+2*(r)"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:a+3*(r)+(k)"
+				},
+				{
+					"name": "t4",
+					"expression": "eval:a+4*(r)+(k)"
+				}
+			],
+			"conditions": ["a+r != 0", "a+2*r != 0"],
+			"correction": {
+				"steps": [
+					"On calcule le quotient de deux termes consécutifs : $\\dfrac{u_1}{u_0}={{eval:(t1)/(t0)}}$ mais $\\dfrac{u_2}{u_1}={{eval:(t2)/(t1)}}$.",
+					"Le quotient n'est pas toujours le même : la suite ne semble **pas géométrique**."
+				]
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			]
+		}
+	],
+	"testSpecs": [
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-4",
+				"r": "3",
+				"t0": "-4",
+				"t1": "-1",
+				"t2": "2",
+				"t3": "5",
+				"t4": "8"
+			},
+			"description": "v0 : « non » accepté",
+			"variationIndex": 0,
+			"answers": ["1"]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-4",
+				"r": "3",
+				"t0": "-4",
+				"t1": "-1",
+				"t2": "2",
+				"t3": "5",
+				"t4": "8"
+			},
+			"description": "v0 : « oui » refusé",
+			"variationIndex": 0,
+			"answers": ["0"]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"q": "-2",
+				"t0": "3",
+				"t1": "-6",
+				"t2": "12",
+				"t3": "-24",
+				"t4": "48"
+			},
+			"description": "v1 : « oui » accepté",
+			"variationIndex": 1,
+			"answers": ["0"]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"q": "-2",
+				"t0": "3",
+				"t1": "-6",
+				"t2": "12",
+				"t3": "-24",
+				"t4": "48"
+			},
+			"description": "v1 : « non » refusé",
+			"variationIndex": 1,
+			"answers": ["1"]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"m": "3",
+				"t0": "48",
+				"t1": "24",
+				"t2": "12",
+				"t3": "6",
+				"t4": "3"
+			},
+			"description": "v2 : « oui » accepté",
+			"variationIndex": 2,
+			"answers": ["0"]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "3",
+				"t0": "48",
+				"t1": "24",
+				"t2": "12",
+				"t3": "6",
+				"t4": "3"
+			},
+			"description": "v2 : « non » refusé",
+			"variationIndex": 2,
+			"answers": ["1"]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "2",
+				"t0": "2",
+				"t1": "3",
+				"t2": "6",
+				"t3": "11",
+				"t4": "18"
+			},
+			"description": "v3 : « non » accepté",
+			"variationIndex": 3,
+			"answers": ["1"]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "2",
+				"t0": "2",
+				"t1": "3",
+				"t2": "6",
+				"t3": "11",
+				"t4": "18"
+			},
+			"description": "v3 : « oui » refusé",
+			"variationIndex": 3,
+			"answers": ["0"]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"k": "1",
+				"r": "-2",
+				"t0": "5",
+				"t1": "3",
+				"t2": "1",
+				"t3": "0",
+				"t4": "-2"
+			},
+			"description": "v4 : « non » accepté",
+			"variationIndex": 4,
+			"answers": ["1"]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"k": "1",
+				"r": "-2",
+				"t0": "5",
+				"t1": "3",
+				"t2": "1",
+				"t3": "0",
+				"t4": "-2"
+			},
+			"description": "v4 : « oui » refusé",
+			"variationIndex": 4,
+			"answers": ["0"]
+		}
+	]
+}

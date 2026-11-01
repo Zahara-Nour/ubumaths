@@ -1,0 +1,316 @@
+{
+	"title": "Soustraire $8$, $9$, $18$, $19$, $28$, $29$, $38$ ou $39$",
+	"description": "Soustraire la dizaine au-dessus, puis rajouter 1 ou 2 : 53 − 9, 57 − 29, 305 − 18",
+	"grades": ["CM1"],
+	"theme": "Entiers",
+	"domain": "Soustraire",
+	"subdomain": "Différence astucieuse",
+	"level": 4,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "8|9"
+				},
+				{
+					"name": "d",
+					"expression": "2..9"
+				},
+				{
+					"name": "u",
+					"expression": "0..7"
+				},
+				{
+					"name": "n",
+					"expression": "eval:10*d+u"
+				},
+				{
+					"name": "m",
+					"expression": "eval:b+10-mod(b,10)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:10-mod(b,10)"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{n}}-{{b}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n-b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Soustraire ${{b}}$, c'est soustraire ${{m}}$, puis rajouter ${{r}}$.",
+					"**Étape 1.** ${{n}}-{{m}}=\\textcolor{{{color:primary.0}}}{{{eval:n-m}}}$.",
+					"**Étape 2.** ${{eval:n-m}}+{{r}}=\\textcolor{{{color:primary.1}}}{{{solution}}}$.",
+					"Donc ${{n}}-{{b}}={{solution}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "18|19|28|29|38|39"
+				},
+				{
+					"name": "d",
+					"expression": "5..9"
+				},
+				{
+					"name": "u",
+					"expression": "0..7"
+				},
+				{
+					"name": "n",
+					"expression": "eval:10*d+u"
+				},
+				{
+					"name": "m",
+					"expression": "eval:b+10-mod(b,10)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:10-mod(b,10)"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{n}}-{{b}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n-b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Soustraire ${{b}}$, c'est soustraire ${{m}}$, puis rajouter ${{r}}$.",
+					"**Étape 1.** ${{n}}-{{m}}=\\textcolor{{{color:primary.0}}}{{{eval:n-m}}}$.",
+					"**Étape 2.** ${{eval:n-m}}+{{r}}=\\textcolor{{{color:primary.1}}}{{{solution}}}$.",
+					"Donc ${{n}}-{{b}}={{solution}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "8|9|18|19|28|29|38|39"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "0..9"
+				},
+				{
+					"name": "u",
+					"expression": "0..7"
+				},
+				{
+					"name": "n",
+					"expression": "eval:100*c+10*d+u"
+				},
+				{
+					"name": "m",
+					"expression": "eval:b+10-mod(b,10)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:10-mod(b,10)"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{n}}-{{b}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n-b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Soustraire ${{b}}$, c'est soustraire ${{m}}$, puis rajouter ${{r}}$.",
+					"**Étape 1.** ${{n}}-{{m}}=\\textcolor{{{color:primary.0}}}{{{eval:n-m}}}$.",
+					"**Étape 2.** ${{eval:n-m}}+{{r}}=\\textcolor{{{color:primary.1}}}{{{solution}}}$.",
+					"Donc ${{n}}-{{b}}={{solution}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "53 − 9 = 44",
+			"variationIndex": 0,
+			"variables": {
+				"b": "9",
+				"d": "5",
+				"u": "3"
+			},
+			"answers": ["44"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 53 − 9 → 43 (− 10 sans compenser)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "9",
+				"d": "5",
+				"u": "3"
+			},
+			"answers": ["43"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 53 − 9 → 42 (compensation à l'envers)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "9",
+				"d": "5",
+				"u": "3"
+			},
+			"answers": ["42"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 20 − 8 = 12",
+			"variationIndex": 0,
+			"variables": {
+				"b": "8",
+				"d": "2",
+				"u": "0"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "57 − 29 = 28",
+			"variationIndex": 1,
+			"variables": {
+				"b": "29",
+				"d": "5",
+				"u": "7"
+			},
+			"answers": ["28"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 57 − 29 → 27 (− 30 sans compenser)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "29",
+				"d": "5",
+				"u": "7"
+			},
+			"answers": ["27"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 57 − 29 → 32 (écart des chiffres : 9 − 7)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "29",
+				"d": "5",
+				"u": "7"
+			},
+			"answers": ["32"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 50 − 39 = 11",
+			"variationIndex": 1,
+			"variables": {
+				"b": "39",
+				"d": "5",
+				"u": "0"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 64 − 38 → 25 (− 1 au lieu de + 2)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "38",
+				"d": "6",
+				"u": "4"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "305 − 18 = 287",
+			"variationIndex": 2,
+			"variables": {
+				"b": "18",
+				"c": "3",
+				"d": "0",
+				"u": "5"
+			},
+			"answers": ["287"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 100 − 39 = 61",
+			"variationIndex": 2,
+			"variables": {
+				"b": "39",
+				"c": "1",
+				"d": "0",
+				"u": "0"
+			},
+			"answers": ["61"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 305 − 18 → 297 (emprunt oublié)",
+			"variationIndex": 2,
+			"variables": {
+				"b": "18",
+				"c": "3",
+				"d": "0",
+				"u": "5"
+			},
+			"answers": ["297"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

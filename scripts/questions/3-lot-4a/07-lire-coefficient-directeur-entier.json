@@ -1,0 +1,125 @@
+{
+	"title": "Lire un coefficient directeur entier",
+	"description": "Lire graphiquement le coefficient directeur entier d'une fonction affine : droite montante, descendante",
+	"grades": ["3"],
+	"theme": "Fonctions",
+	"domain": "Fonctions affines",
+	"subdomain": "Lecture graphique",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "La droite $\\mathcal{D}$ ci-dessous représente une fonction affine $f$.\n\n```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-4*abs(m))-1}} ; {{eval:max(1,(p)+4*abs(m))+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=\\mathcal{D}\ntaille: moyenne\ndescription: Droite D représentant une fonction affine f.\n```\n\nQuel est le coefficient directeur de $f$ ?\n\n$a=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..3"
+				},
+				{
+					"name": "p",
+					"expression": "-2..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le coefficient directeur $a$ se lit entre deux points de la droite : quand on avance de $1$ vers la droite, $f(x)$ change de $a$ ; plus généralement $a=\\dfrac{\\text{déplacement vertical}}{\\text{déplacement horizontal}}$.",
+					"```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-4*abs(m))-1}} ; {{eval:max(1,(p)+4*abs(m))+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=\\mathcal{D}\npoints: A(0 ; {{p}}), B(1 ; {{eval:(p)+(m)}})\ntaille: moyenne\ndescription: Droite D et deux de ses points, A et B, d'abscisses 0 et 1.\n```",
+					"De $A(0\\,;{{p}})$ à $B(1\\,;{{eval:(p)+(m)}})$ : on avance de $1$, on {{if:m>0|monte|descend}} de ${{eval:abs(m)}}$, donc $a=\\textcolor{{{color:primary.0}}}{{{m}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La droite $\\mathcal{D}$ ci-dessous représente une fonction affine $f$.\n\n```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-4*abs(m))-1}} ; {{eval:max(1,(p)+4*abs(m))+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=\\mathcal{D}\ntaille: moyenne\ndescription: Droite D représentant une fonction affine f.\n```\n\nQuel est le coefficient directeur de $f$ ?\n\n$a=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "-3..-1"
+				},
+				{
+					"name": "p",
+					"expression": "-2..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le coefficient directeur $a$ se lit entre deux points de la droite : quand on avance de $1$ vers la droite, $f(x)$ change de $a$ ; plus généralement $a=\\dfrac{\\text{déplacement vertical}}{\\text{déplacement horizontal}}$.",
+					"```courbe\nx: -5 ; 5\ny: {{eval:min(-1,(p)-4*abs(m))-1}} ; {{eval:max(1,(p)+4*abs(m))+1}}\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=\\mathcal{D}\npoints: A(0 ; {{p}}), B(1 ; {{eval:(p)+(m)}})\ntaille: moyenne\ndescription: Droite D et deux de ses points, A et B, d'abscisses 0 et 1.\n```",
+					"De $A(0\\,;{{p}})$ à $B(1\\,;{{eval:(p)+(m)}})$ : on avance de $1$, on {{if:m>0|monte|descend}} de ${{eval:abs(m)}}$, donc $a=\\textcolor{{{color:primary.0}}}{{{m}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Montante, a = 2",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"p": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'ordonnée à l'origine 1",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"p": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/2 (horizontal sur vertical)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"p": "1"
+			},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Descendante, a = −3",
+			"variationIndex": 1,
+			"variables": {
+				"m": "-3",
+				"p": "2"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe oublié, 3",
+			"variationIndex": 1,
+			"variables": {
+				"m": "-3",
+				"p": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

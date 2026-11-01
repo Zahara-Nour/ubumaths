@@ -1,0 +1,183 @@
+{
+	"title": "Évolution à accroissement constant",
+	"description": "Évolutions successives à accroissement constant = suite arithmétique : prévoir une valeur, retrouver l'accroissement entre deux années éloignées, rangs de sièges (premier terme u₁)",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Modélisation",
+	"subdomain": "Évolutions successives",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Le tableau donne le nombre d'adhérents d'un club de sport.\n\n| Année | 2021 | 2022 | 2023 | 2024 |\n| --- | --- | --- | --- | --- |\n| Adhérents | ${{eval:a}}$ | ${{eval:a+r}}$ | ${{eval:a+2*r}}$ | ${{eval:a+3*r}}$ |\n\nOn suppose que le nombre d'adhérents continue d'évoluer de la même façon.\n\nCombien le club comptera-t-il d'adhérents en 2030 ?\n\n$?$ adhérents",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "300..900"
+				},
+				{
+					"name": "r",
+					"expression": "12..48"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+9*r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"D'une année à l'autre, le nombre d'adhérents augmente toujours de ${{eval:r}}$ : l'accroissement est **constant**. Le nombre d'adhérents $n$ années après 2021 est le terme $u_n$ d'une suite arithmétique de premier terme $u_0={{eval:a}}$ et de raison $r={{eval:r}}$.",
+					"2030 correspond à $n=2030-2021=9$ : $u_9=u_0+9r={{eval:a}}+9\\times{{eval:r}}$.",
+					"$$u_9=\\textcolor{{{color:primary.0}}}{{{eval:a+9*r}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Une usine produisait ${{eval:a}}$ tonnes de papier en 2022 et ${{eval:a+5*r}}$ tonnes en 2027. Sa production a varié chaque année de la même quantité.\n\nDe combien de tonnes a-t-elle varié chaque année (nombre négatif pour une baisse) ?\n\n$?$ tonnes par an",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "800..1500"
+				},
+				{
+					"name": "r",
+					"expression": "5..40;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La production varie chaque année de la même quantité $r$ : c'est une suite arithmétique de raison $r$.",
+					"De 2022 à 2027, il y a $5$ ans : ${{eval:a+5*r}}={{eval:a}}+5r$, donc $5r={{eval:5*r}}$.",
+					"$$r=\\textcolor{{{color:primary.0}}}{{{eval:r}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Dans une salle de spectacle, le premier rang compte ${{eval:a}}$ sièges et chaque rang compte ${{eval:r}}$ sièges de plus que le précédent.\n\nCombien de sièges compte le rang numéro ${{eval:k}}$ ?\n\n$?$ sièges",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "10..18"
+				},
+				{
+					"name": "r",
+					"expression": "2..4"
+				},
+				{
+					"name": "k",
+					"expression": "10..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+(k-1)*r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre de sièges du rang $n$ est le terme $u_n$ d'une suite arithmétique de premier terme $u_1={{eval:a}}$ et de raison ${{eval:r}}$.",
+					"Du rang $1$ au rang ${{eval:k}}$, on ajoute ${{eval:k-1}}$ fois la raison : $u_{{{eval:k}}}=u_1+{{eval:k-1}}\\times{{eval:r}}$.",
+					"$$u_{{{eval:k}}}=\\textcolor{{{color:primary.0}}}{{{eval:a+(k-1)*r}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2030 : a + 9r",
+			"variationIndex": 0,
+			"variables": {
+				"a": "500",
+				"r": "20"
+			},
+			"answers": ["680"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a + 8r",
+			"variationIndex": 0,
+			"variables": {
+				"a": "500",
+				"r": "20"
+			},
+			"answers": ["660"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Baisse : r = −12",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1000",
+				"r": "-12"
+			},
+			"answers": ["-12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe oublié",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1000",
+				"r": "-12"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : écart total",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1000",
+				"r": "-12"
+			},
+			"answers": ["-60"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rang 15 : 12 + 14 × 3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12",
+				"r": "3",
+				"k": "15"
+			},
+			"answers": ["54"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 12 + 15 × 3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12",
+				"r": "3",
+				"k": "15"
+			},
+			"answers": ["57"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

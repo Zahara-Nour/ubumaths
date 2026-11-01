@@ -1,0 +1,358 @@
+{
+	"title": "Factoriser ax + bx",
+	"description": "Factoriser par x puis réduire une somme ax + bx, a et b entiers ou décimaux, avec le cas du coefficient 1 : 2,5x + x = (2,5 + 1)x = 3,5x",
+	"grades": ["5"],
+	"theme": "Calcul littéral",
+	"domain": "Transformation",
+	"subdomain": "Factorisation",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Factorise par $x$, puis réduis.\n\n$${{a}}x + {{b}}x = (\\,?\\,+\\,?\\,)\\,x = ?\\,x$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Factoriser.** $x$ est un facteur commun aux deux termes : $a \\times x + b \\times x = (a + b) \\times x$.",
+					"$${{a}}x + {{b}}x = ({{a}} + {{b}})\\,x = \\textcolor{{{color:primary.0}}}{{{eval:a+b}}x}$$"
+				]
+			}
+		},
+		{
+			"statement": "Factorise par $x$, puis réduis.\n\n$${{a}}x + {{b}}x = (\\,?\\,+\\,?\\,)\\,x = ?\\,x$$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "11..49"
+				},
+				{
+					"name": "B",
+					"expression": "11..49"
+				},
+				{
+					"name": "a",
+					"expression": "eval:A/10;d"
+				},
+				{
+					"name": "b",
+					"expression": "eval:B/10;d"
+				}
+			],
+			"conditions": ["A%10!=0", "B%10!=0", "A!=B"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(A+B)/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Factoriser.** $x$ est un facteur commun aux deux termes : $a \\times x + b \\times x = (a + b) \\times x$.",
+					"$${{a}}x + {{b}}x = ({{a}} + {{b}})\\,x = \\textcolor{{{color:primary.0}}}{{{eval:(A+B)/10;d}}x}$$"
+				]
+			}
+		},
+		{
+			"statement": "Factorise par $x$, puis réduis.\n\n$${{a}}x + x = (\\,?\\,+\\,?\\,)\\,x = ?\\,x$$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "11..49"
+				},
+				{
+					"name": "a",
+					"expression": "eval:A/10;d"
+				}
+			],
+			"conditions": ["A%10!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "{{eval:(A+10)/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Factoriser.** $x$ est un facteur commun aux deux termes : $a \\times x + b \\times x = (a + b) \\times x$.",
+					"**Attention :** $x$ seul, c'est $1 \\times x$ : son coefficient est $1$.",
+					"$${{a}}x + x = ({{a}} + 1)\\,x = \\textcolor{{{color:primary.0}}}{{{eval:(A+10)/10;d}}x}$$"
+				]
+			}
+		},
+		{
+			"statement": "Factorise par $x$, puis réduis.\n\n$$x + {{a}}x = (\\,?\\,+\\,?\\,)\\,x = ?\\,x$$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "11..49"
+				},
+				{
+					"name": "a",
+					"expression": "eval:A/10;d"
+				}
+			],
+			"conditions": ["A%10!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(A+10)/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Factoriser.** $x$ est un facteur commun aux deux termes : $a \\times x + b \\times x = (a + b) \\times x$.",
+					"**Attention :** $x$ seul, c'est $1 \\times x$ : son coefficient est $1$.",
+					"$$x + {{a}}x = (1 + {{a}})\\,x = \\textcolor{{{color:primary.0}}}{{{eval:(A+10)/10;d}}x}$$"
+				]
+			}
+		},
+		{
+			"statement": "Factorise par $x$, puis réduis.\n\n$${{a}}x - {{b}}x = (\\,?\\,-\\,?\\,)\\,x = ?\\,x$$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "11..49"
+				},
+				{
+					"name": "B",
+					"expression": "11..49"
+				},
+				{
+					"name": "a",
+					"expression": "eval:A/10;d"
+				},
+				{
+					"name": "b",
+					"expression": "eval:B/10;d"
+				}
+			],
+			"conditions": ["A%10!=0", "B%10!=0", "A>B"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(A-B)/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Factoriser.** $x$ est un facteur commun aux deux termes : $a \\times x + b \\times x = (a + b) \\times x$.",
+					"$${{a}}x - {{b}}x = ({{a}} - {{b}})\\,x = \\textcolor{{{color:primary.0}}}{{{eval:(A-B)/10;d}}x}$$"
+				]
+			}
+		},
+		{
+			"statement": "Factorise par $x$, puis réduis.\n\n$${{a}}x - x = (\\,?\\,-\\,?\\,)\\,x = ?\\,x$$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "11..49"
+				},
+				{
+					"name": "a",
+					"expression": "eval:A/10;d"
+				}
+			],
+			"conditions": ["A%10!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "{{eval:(A-10)/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Factoriser.** $x$ est un facteur commun aux deux termes : $a \\times x + b \\times x = (a + b) \\times x$.",
+					"**Attention :** $x$ seul, c'est $1 \\times x$ : son coefficient est $1$.",
+					"$${{a}}x - x = ({{a}} - 1)\\,x = \\textcolor{{{color:primary.0}}}{{{eval:(A-10)/10;d}}x}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3x + 5x = (3 + 5)x = 8x",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["3", "5", "8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 15x (coefficients multipliés)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["3", "5", "15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2,5x + 1,3x = (2,5 + 1,3)x = 3,8x",
+			"variationIndex": 1,
+			"variables": {
+				"A": "25",
+				"B": "13",
+				"a": "2.5",
+				"b": "1.3"
+			},
+			"answers": ["2,5", "1,3", "3,8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2,5x + x = (2,5 + 1)x = 3,5x",
+			"variationIndex": 2,
+			"variables": {
+				"A": "25",
+				"a": "2.5"
+			},
+			"answers": ["2,5", "1", "3,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : coefficient 0 pour x",
+			"variationIndex": 2,
+			"variables": {
+				"A": "25",
+				"a": "2.5"
+			},
+			"answers": ["2,5", "0", "2,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2,5x + x = 2,5x",
+			"variationIndex": 2,
+			"variables": {
+				"A": "25",
+				"a": "2.5"
+			},
+			"answers": ["2,5", "1", "2,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x + 2,5x = (1 + 2,5)x = 3,5x",
+			"variationIndex": 3,
+			"variables": {
+				"A": "25",
+				"a": "2.5"
+			},
+			"answers": ["1", "2,5", "3,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2,5x − 1,3x = (2,5 − 1,3)x = 1,2x",
+			"variationIndex": 4,
+			"variables": {
+				"A": "25",
+				"B": "13",
+				"a": "2.5",
+				"b": "1.3"
+			},
+			"answers": ["2,5", "1,3", "1,2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3,8 (somme au lieu de différence)",
+			"variationIndex": 4,
+			"variables": {
+				"A": "25",
+				"B": "13",
+				"a": "2.5",
+				"b": "1.3"
+			},
+			"answers": ["2,5", "1,3", "3,8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2,5x − x = (2,5 − 1)x = 1,5x",
+			"variationIndex": 5,
+			"variables": {
+				"A": "25",
+				"a": "2.5"
+			},
+			"answers": ["2,5", "1", "1,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2,5x − x = 2,5x",
+			"variationIndex": 5,
+			"variables": {
+				"A": "25",
+				"a": "2.5"
+			},
+			"answers": ["2,5", "0", "2,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

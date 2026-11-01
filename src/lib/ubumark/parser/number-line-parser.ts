@@ -22,16 +22,19 @@
  * ```
  *
  * Droite à placer (une question) : `placer: 7` — la graduation où l'élève pose
- * son point ; `case: N` est posée par le générateur.
+ * son point ; plusieurs points nommés : `placer: A=3 ; B=7` (6 au plus) ;
+ * `case: N` est posée par le générateur.
  *
  * @module ubumark/parser/number-line-parser
  */
 
+import { unnestedLine } from './nested-line';
 import type {
 	NumberLineNode,
 	NumberLineConfig,
 	NumberLineValue,
 	NumberLinePoint,
+	NumberLineTarget,
 	NumberLineSegment,
 	NumberLineScale,
 	NumberLineParseError,
@@ -42,6 +45,7 @@ import type {
 import { parseCustom } from '$lib/mathAST/parser/custom';
 import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
 import { specialBlockEnd } from './unclosed-block';
+import { isMaskedValue } from '../utils/masked-value';
 
 /** Les clés du bloc : une ligne qui commence par l'une d'elles n'est jamais du texte (Q66) */
 const BLOCK_KEYS = [
@@ -280,21 +284,75 @@ function frenchNumber(value: number): string {
 	return String(Math.round(value * 1e9) / 1e9).replace('.', ',');
 }
 
-/** Ce qui rend `placer:` impossible : hors de la droite, entre deux graduations… */
+/** Points d'une droite à placer, au plus */
+const MAX_TARGETS = 6;
+
+/** `A=3` : un nom, une valeur */
+const NAMED_TARGET = /^([^=\s]+)\s*=\s*(.+)$/;
+
+/**
+ * Les points de `placer:` (`7`, ou `A=3 ; B=7`) ; null si l'écriture est refusée
+ * (messages ajoutés à `errors`). Valeur masquée (`A=?`, énoncé d'une évaluation
+ * notée) : `masked`, la valeur de remplacement, même objet pour tous (`masked-value.ts`)
+ */
+function parseTargets(
+	expr: string,
+	errors: NumberLineParseError[],
+	masked: NumberLineValue
+): NumberLineTarget[] | null {
+	const parts = expr.split(';').map((part) => part.trim());
+	if (parts.some((part) => part === '')) {
+		errors.push({ message: `placer : ${expr} — point vide (un « ; » en trop ?)` });
+		return null;
+	}
+	if (parts.length > MAX_TARGETS) {
+		errors.push({ message: `placer : ${MAX_TARGETS} points au plus sur une droite` });
+		return null;
+	}
+	const targets: NumberLineTarget[] = [];
+	for (const part of parts) {
+		const named = NAMED_TARGET.exec(part);
+		const name = named ? named[1] : '';
+		if (named && !/^[A-Z]$/.test(name)) {
+			errors.push({ message: `placer : nom « ${name} » — une lettre majuscule (A, B, C…)` });
+			return null;
+		}
+		if (!named && parts.length > 1) {
+			errors.push({ message: `placer : ${part} — chaque point porte un nom (A=3 ; B=7)` });
+			return null;
+		}
+		if (targets.some((t) => t.name === name && name !== '')) {
+			errors.push({ message: `placer : le point ${name} est nommé deux fois` });
+			return null;
+		}
+		const written = named ? named[2] : part;
+		if (isMaskedValue(written)) {
+			targets.push({ name, value: masked });
+			continue;
+		}
+		const value = resolveExpression(written, errors);
+		if (!value) return null;
+		targets.push({ name, value });
+	}
+	return targets;
+}
+
+/** Ce qui rend un point de `placer:` impossible : hors de la droite, entre deux graduations… */
 function placerErrors(
-	placer: NumberLineValue,
+	target: NumberLineTarget,
 	startNum: number,
 	endNum: number,
 	stepNum: number,
 	scale: NumberLineScale,
 	hasPoints: boolean
 ): NumberLineParseError[] {
-	const shown = `placer : ${placer.expression}`;
+	const placer = target.value;
+	const shown = `placer : ${target.name === '' ? '' : `${target.name}=`}${placer.expression}`;
 	if (scale === 'log') return [{ message: `${shown} — impossible sur une échelle log` }];
 	if (hasPoints) {
 		return [
 			{
-				message: `${shown} — sans points: (un seul point sur la droite, celui de l’élève)`
+				message: `${shown} — sans points: (sur la droite, seuls les points de l’élève)`
 			}
 		];
 	}
@@ -535,10 +593,14 @@ export function parseNumberLineContent(content: string | string[]): NumberLinePa
 		}
 	}
 
-	// Droite à placer : une graduation de la droite, le seul point
-	const placer = placerExpr ? resolveExpression(placerExpr, errors) : undefined;
-	if (placerExpr !== undefined && placer) {
-		errors.push(...placerErrors(placer, startNum, endNum, stepNum, scale, points.length > 0));
+	// Droite à placer : chaque point sur une graduation de la droite, seuls points dessinés
+	const placer = placerExpr !== undefined ? parseTargets(placerExpr, errors, startVal) : null;
+	for (const target of placer ?? []) {
+		// Valeur masquée : rien à vérifier, le modèle d'origine l'a été au générateur
+		if (target.value === startVal) continue;
+		const targetErrors = placerErrors(target, startNum, endNum, stepNum, scale, points.length > 0);
+		errors.push(...targetErrors);
+		if (targetErrors.length > 0) break;
 	}
 	if (caseIndex !== undefined && placerExpr === undefined) {
 		errors.push({ message: 'case: sans objet sans placer:' });
@@ -585,9 +647,6 @@ export function parseNumberLineContent(content: string | string[]): NumberLinePa
 // DROITES À PLACER D'UN ÉNONCÉ
 // ============================================================================
 
-/** Ligne vue sans retrait ni marque de citation */
-const unquoted = (line: string) => line.replace(/^[\s>]*/, '');
-
 /**
  * Les droites à placer (`placer:`) d'un énoncé, délimitées comme le parseur :
  * corps sans clôtures, fermeture, et `nested` pour un bloc en retrait ou cité
@@ -600,7 +659,7 @@ export function findLinesToPlace(markdown: string): {
 	nested: boolean;
 }[] {
 	const lines = markdown.split('\n');
-	const plain = lines.map(unquoted);
+	const plain = lines.map(unnestedLine);
 	const found: { startIndex: number; body: string[]; closed: boolean; nested: boolean }[] = [];
 	let i = 0;
 	while (i < plain.length) {

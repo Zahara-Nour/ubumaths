@@ -1,0 +1,108 @@
+{
+	"title": "Multiplier par $8$",
+	"description": "Le double, puis le double, puis encore le double : 8 × 35",
+	"grades": ["CM1"],
+	"theme": "Entiers",
+	"domain": "Multiplier",
+	"subdomain": "Produits astucieux",
+	"level": 4,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "21..29|31..39"
+				},
+				{
+					"name": "expression1",
+					"expression": "8*{{n}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:8*n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Multiplier par $8$, c'est prendre le double, puis le double, puis encore le double.",
+					"**Étape 1.** Le double de ${{n}}$ : $2\\times {{n}}=\\textcolor{{{color:primary.0}}}{{{eval:2*n}}}$.",
+					"**Étape 2.** Le double de ${{eval:2*n}}$ : $2\\times {{eval:2*n}}=\\textcolor{{{color:primary.1}}}{{{eval:4*n}}}$.",
+					"**Étape 3.** Le double de ${{eval:4*n}}$ : $2\\times {{eval:4*n}}=\\textcolor{{{color:primary.2}}}{{{solution}}}$.",
+					"Donc $8\\times {{n}}={{solution}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "8 × 35 = 280",
+			"variationIndex": 0,
+			"variables": {
+				"n": "35"
+			},
+			"answers": ["280"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : double du double seulement (140)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "35"
+			},
+			"answers": ["140"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 8 × 3 et 8 × 5 accolés (2 440)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "35"
+			},
+			"answers": ["2440"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : un double de trop (560)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "35"
+			},
+			"answers": ["560"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 8 × 21 = 168",
+			"variationIndex": 0,
+			"variables": {
+				"n": "21"
+			},
+			"answers": ["168"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 8 × 39 = 312",
+			"variationIndex": 0,
+			"variables": {
+				"n": "39"
+			},
+			"answers": ["312"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

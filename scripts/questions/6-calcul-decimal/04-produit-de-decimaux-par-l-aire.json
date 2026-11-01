@@ -1,0 +1,145 @@
+{
+	"title": "Un produit de décimaux par l'aire",
+	"description": "Sens du produit de deux décimaux par l'aire d'un rectangle et la conversion des unités (3,7 dm × 2,9 dm ; 0,4 m × 0,3 m)",
+	"grades": ["6"],
+	"theme": "Décimaux",
+	"domain": "Multiplier",
+	"subdomain": "Produit",
+	"level": 6,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Un rectangle mesure ${{x}}~\\unit{dm}$ sur ${{y}}~\\unit{dm}$. En centimètres, il mesure ${{A}}~\\unit{cm}$ sur ${{B}}~\\unit{cm}$.\n\nSon aire en centimètres carrés (pose la multiplication sur ton brouillon si besoin) :\n\n$${{A}} \\times {{B}} = ?~\\text{cm}^2$$\n\nOr $100~\\unit{cm^2} = 1~\\unit{dm^2}$. Son aire en décimètres carrés :\n\n$${{x}} \\times {{y}} = ?~\\text{dm}^2$$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "11..99"
+				},
+				{
+					"name": "B",
+					"expression": "11..99"
+				},
+				{
+					"name": "x",
+					"expression": "eval:A/10;d"
+				},
+				{
+					"name": "y",
+					"expression": "eval:B/10;d"
+				}
+			],
+			"conditions": ["mod(A,10)!=0", "mod(B,10)!=0", "A>B"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:A*B}}"
+				},
+				{
+					"expectedAnswer": "{{eval:A*B/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Aire d'un rectangle.** Aire $=$ longueur $\\times$ largeur, les deux dans la même unité.",
+					"En centimètres : ${{A}} \\times {{B}} = \\textcolor{{{color:primary.0}}}{{{eval:A*B}}}$ cm².",
+					"$1~\\unit{dm^2} = 100~\\unit{cm^2}$ : on divise par $100$. Donc ${{x}} \\times {{y}} = \\textcolor{{{color:primary.1}}}{{{eval:A*B/100;d}}}$ dm². Chaque facteur a $1$ chiffre après la virgule, le produit en a $2$."
+				]
+			}
+		},
+		{
+			"statement": "Un rectangle mesure $0.{{a}}~\\unit{m}$ sur $0.{{b}}~\\unit{m}$. En centimètres, il mesure ${{eval:10*a}}~\\unit{cm}$ sur ${{eval:10*b}}~\\unit{cm}$.\n\nSon aire en centimètres carrés :\n\n$${{eval:10*a}} \\times {{eval:10*b}} = ?~\\text{cm}^2$$\n\nOr $10~000~\\unit{cm^2} = 1~\\unit{m^2}$. Son aire en mètres carrés :\n\n$$0.{{a}} \\times 0.{{b}} = ?~\\text{m}^2$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["a>b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*a*b}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a*b/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Aire d'un rectangle.** Aire $=$ longueur $\\times$ largeur, les deux dans la même unité.",
+					"En centimètres : ${{eval:10*a}} \\times {{eval:10*b}} = \\textcolor{{{color:primary.0}}}{{{eval:100*a*b}}}$ cm².",
+					"$1~\\unit{m^2} = 10~000~\\unit{cm^2}$ : on divise par $10~000$. Donc $0.{{a}} \\times 0.{{b}} = \\textcolor{{{color:primary.1}}}{{{eval:a*b/100;d}}}$ m² : le produit de deux nombres plus petits que $1$ est plus petit que chacun d'eux."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3,7 × 2,9 : 1 073 cm², 10,73 dm²",
+			"variationIndex": 0,
+			"variables": {
+				"A": "37",
+				"B": "29",
+				"x": "3.7",
+				"y": "2.9"
+			},
+			"answers": ["1\\,073", "10,73"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : virgule « comme dans l'addition » (107,3)",
+			"variationIndex": 0,
+			"variables": {
+				"A": "37",
+				"B": "29",
+				"x": "3.7",
+				"y": "2.9"
+			},
+			"answers": ["1\\,073", "107,3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,4 × 0,3 : 1 200 cm², 0,12 m²",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "3"
+			},
+			"answers": ["1\\,200", "0,12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,4 × 0,3 = 1,2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "3"
+			},
+			"answers": ["1\\,200", "1,2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 120 cm²",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "3"
+			},
+			"answers": ["120", "0,12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

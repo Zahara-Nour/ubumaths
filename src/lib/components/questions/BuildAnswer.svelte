@@ -8,7 +8,15 @@
 	construction, verrouillée, sans réserve (juste : cadre vert ; faux : sa valeur
 	et une construction juste à côté) ; sans réponse (R9), la construction juste
 	seule. Lecture seule : jamais de réserve active. Droite à placer (```line,
-	`placer:`) : la droite verrouillée avec le point de l'élève, ou le point juste.
+	`placer:`) : la droite verrouillée avec les points de l'élève (`answers`, un par
+	point, quand il y en a plusieurs), ou les points justes. Horloge à placer
+	(```horloge, `placer:`) : le cadran verrouillé avec les aiguilles de l'élève,
+	ou le cadran à l'heure juste. Figure à colorier (```partage, `colorier:`) : la
+	figure verrouillée avec les parts de l'élève, ou la figure juste. Diagramme en barres à construire (```barres,
+	`placer:`) : le diagramme verrouillé avec les barres de l'élève (`answers`, une
+	par barre), ou le diagramme juste. Étiquettes à ranger (```ranger) : les places
+	verrouillées avec les étiquettes de l'élève (`answers`, une par place) et, faux,
+	le rangement juste (`expected`) ; ou le rangement juste seul.
 
 	@module components/questions/BuildAnswer
 -->
@@ -19,6 +27,24 @@
 	import MonnaieConstruire from '$lib/components/markdown/nodes/MonnaieConstruire.svelte';
 	import NumberLine from '$lib/components/markdown/nodes/NumberLine.svelte';
 	import NumberLinePlacer from '$lib/components/markdown/nodes/NumberLinePlacer.svelte';
+	import Courbe from '$lib/components/markdown/nodes/Courbe.svelte';
+	import { parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
+	import Horloge from '$lib/components/markdown/nodes/Horloge.svelte';
+	import HorlogePlacer from '$lib/components/markdown/nodes/HorlogePlacer.svelte';
+	import { parseHorlogeContent } from '$lib/ubumark/parser/horloge-parser';
+	import BarresPlacer from '$lib/components/markdown/nodes/BarresPlacer.svelte';
+	import RangerPlacer from '$lib/components/markdown/nodes/RangerPlacer.svelte';
+	import { parseRangerContent } from '$lib/ubumark/parser/ranger-parser';
+	import Partage from '$lib/components/markdown/nodes/Partage.svelte';
+	import PartageColorier from '$lib/components/markdown/nodes/PartageColorier.svelte';
+	import { parsePartageContent } from '$lib/ubumark/parser/partage-parser';
+	import CubesGeste from '$lib/components/markdown/nodes/CubesGeste.svelte';
+	import PatronGeste from '$lib/components/markdown/nodes/PatronGeste.svelte';
+	import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
+	import StatChart from '$lib/components/markdown/nodes/StatChart.svelte';
+	import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
+	import { solvedSpec } from '$lib/ubumark/utils/barres-placer';
+	import { HORLOGE_SIZE_CM } from '$lib/ubumark/types/horloge';
 	import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
 	import { parseCollectionContent } from '$lib/ubumark/parser/collection-parser';
 	import { parseMonnaieContent } from '$lib/ubumark/parser/monnaie-parser';
@@ -37,17 +63,40 @@
 		/** Valeur posée par l'élève ; null : la construction juste seule */
 		answer: string | null;
 		status: ExpectedStatus;
+		/**
+		 * Droite à plusieurs points, diagramme à plusieurs barres : la réponse et le
+		 * statut de chaque point (barre), prime sur `answer`
+		 */
+		answers?: { answer: string; status: ExpectedStatus }[];
+		/** Étiquettes à ranger : la bonne réponse de chaque place (le bloc ne la dit pas) */
+		expected?: readonly string[];
 	}
 
-	let { kind, source, answer, status }: Props = $props();
+	let { kind, source, answer, status, answers, expected }: Props = $props();
 
-	let isCorrect = $derived(status === 'correct' || status === 'unoptimal');
-	let locked = $derived(
-		answer === null ? undefined : { value: answer, isCorrect, disabled: true, onChange: () => {} }
+	const accepted = (s: ExpectedStatus) => s === 'correct' || s === 'unoptimal';
+	const lockedCase = (value: string, s: ExpectedStatus) => ({
+		value,
+		isCorrect: accepted(s),
+		disabled: true,
+		onChange: () => {}
+	});
+
+	let locked = $derived(answer === null ? undefined : lockedCase(answer, status));
+	/** Cases de la droite (du diagramme), une par point (barre) ; undefined : la figure juste seule */
+	let lineCases = $derived(
+		answers ? answers.map((a) => lockedCase(a.answer, a.status)) : locked ? [locked] : undefined
 	);
 	let collection = $derived(kind === 'collection' ? parseCollectionContent(source) : null);
 	let monnaie = $derived(kind === 'monnaie' ? parseMonnaieContent(source) : null);
 	let line = $derived(kind === 'line' ? parseNumberLineContent(source).node : null);
+	let courbe = $derived(kind === 'courbe' ? parseCourbeContent(source) : null);
+	let horloge = $derived(kind === 'horloge' ? parseHorlogeContent(source) : null);
+	let barres = $derived(kind === 'barres' ? parseStatChartContent('barres', source) : null);
+	let ranger = $derived(kind === 'ranger' ? parseRangerContent(source) : null);
+	let partage = $derived(kind === 'partage' ? parsePartageContent(source) : null);
+	let cubes = $derived(kind === 'cubes' ? parseEspaceContent(source) : null);
+	let patron = $derived(kind === 'patron' ? parseEspaceContent(source, 'patron') : null);
 </script>
 
 {#if collection?.spec?.build !== undefined}
@@ -63,17 +112,101 @@
 		/>
 	{/if}
 {:else if line?.placer !== undefined}
-	{#if locked}
-		<NumberLinePlacer node={line} answer={locked} showControls={false} />
+	{#if lineCases}
+		<NumberLinePlacer node={line} answers={lineCases} showControls={false} />
 	{:else}
-		<!-- La droite avec le point juste, sans `placer:` : dessinée seule -->
+		<!-- La droite avec les points justes, sans `placer:` : dessinée seule -->
 		<NumberLine
 			node={{
 				...line,
 				placer: undefined,
-				points: [{ label: '', value: line.placer, color: 'vert' }]
+				points: line.placer.map((t) => ({ label: t.name, value: t.value, color: 'vert' }))
 			}}
 			pointsOnLine
+		/>
+	{/if}
+{:else if courbe?.spec?.placer !== undefined}
+	{@const spec = courbe.spec}
+	{#if lineCases}
+		<Courbe node={courbe} answers={lineCases} showControls={false} />
+	{:else}
+		<!-- Le repère avec les points justes, sans `placer:` : dessiné seul -->
+		<Courbe
+			node={{ ...courbe, spec: { ...spec, placer: undefined } }}
+			marks={spec.placer!.map((t) => ({ name: t.name, x: t.x, y: t.y, color: 'vert' }))}
+		/>
+	{/if}
+{:else if barres?.spec?.toPlace}
+	{#if lineCases}
+		<BarresPlacer node={barres} answers={lineCases} showControls={false} />
+	{:else}
+		<!-- Le diagramme juste, sans `placer:` : toutes les barres dessinées -->
+		<StatChart node={{ ...barres, spec: solvedSpec(barres.spec) }} />
+	{/if}
+{:else if ranger && ranger.errors.length === 0}
+	{@const node = { ...ranger, caseIndex: 0 }}
+	{#if lineCases}
+		<RangerPlacer {node} answers={lineCases} {expected} showControls={false} />
+	{:else if expected}
+		<!-- Le rangement juste : chaque place a sa bonne étiquette -->
+		<RangerPlacer
+			{node}
+			answers={expected.map((value) => ({
+				value,
+				isCorrect: null,
+				disabled: true,
+				onChange: () => {}
+			}))}
+			showControls={false}
+		/>
+	{/if}
+{:else if partage?.spec?.colorier !== undefined}
+	{@const spec = partage.spec}
+	{#if locked}
+		<PartageColorier node={partage} answer={locked} showControls={false} />
+	{:else}
+		<!-- La figure juste, sans `colorier:` : les premières parts coloriées, dessinées seules -->
+		<Partage
+			node={{
+				...partage,
+				spec: {
+					...spec,
+					colorier: undefined,
+					gray: Array.from({ length: spec.colorier!.parts }, (_, i) => i + 1)
+				}
+			}}
+		/>
+	{/if}
+{:else if cubes?.spec?.task !== undefined && cubes.errors.length === 0}
+	{#if locked}
+		<CubesGeste node={cubes} answer={locked} showControls={false} />
+	{:else}
+		<!-- La réponse juste, sans geste : la vue coloriée, ou les hauteurs du bloc -->
+		<CubesGeste node={cubes} solution />
+	{/if}
+{:else if patron?.spec?.task !== undefined && patron.errors.length === 0}
+	{#if locked}
+		<PatronGeste node={patron} answer={locked} showControls={false} />
+	{:else}
+		<!-- La réponse juste, sans geste : les faces attendues, ou le patron du prof -->
+		<PatronGeste node={patron} solution />
+	{/if}
+{:else if horloge?.spec?.placer !== undefined}
+	{@const spec = horloge.spec}
+	{#if locked}
+		<HorlogePlacer node={horloge} answer={locked} showControls={false} />
+	{:else}
+		<!-- Le cadran à l'heure juste, sans `placer:` : dessiné seul -->
+		<Horloge
+			node={{
+				...horloge,
+				spec: {
+					...spec,
+					placer: undefined,
+					times: [spec.placer!],
+					sizeCm: spec.sizeCm ?? HORLOGE_SIZE_CM.placer
+				}
+			}}
 		/>
 	{/if}
 {:else if monnaie?.spec?.build !== undefined && monnaie.spec.reserve !== undefined}

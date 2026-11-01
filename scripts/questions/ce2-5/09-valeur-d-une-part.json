@@ -1,0 +1,206 @@
+{
+	"title": "Problèmes de partage : la valeur d'une part",
+	"description": "Combien chacun : 72 € pour 6 dictionnaires ; 357 roses en 7 bouquets ; 79,60 € pour 4 chemises",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Problèmes",
+	"subdomain": "Multiplicatifs",
+	"level": 11,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "La maîtresse de CE2 a acheté ${{g}}$ dictionnaires pour la classe. Elle a payé ${{eval:g*n}}~\\unit{€}$.\n\nQuel est le prix d'un dictionnaire ?\n\nUn dictionnaire coûte $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "3..9"
+				},
+				{
+					"name": "n",
+					"expression": "6..40"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les ${{g}}$ dictionnaires coûtent le même prix. On cherche le nombre qui, ${{g}}$ fois, fait ${{eval:g*n}}$ : c'est dans la table de ${{g}}$.",
+					"$${{g}} \\times \\textcolor{{{color:primary.0}}}{{{n}}} = {{eval:g*n}}$$",
+					"Un dictionnaire coûte ${{n}}~\\unit{€}$."
+				]
+			}
+		},
+		{
+			"statement": "Une fleuriste répartit ${{eval:g*n}}$ roses dans ${{g}}$ bouquets. Tous les bouquets ont le même nombre de roses.\n\nCombien de roses y a-t-il dans chaque bouquet ?\n\nIl y a $?$ roses dans chaque bouquet.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "3..9"
+				},
+				{
+					"name": "n",
+					"expression": "11..99"
+				}
+			],
+			"conditions": ["g * n <= 900"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On répartit les roses dans les ${{g}}$ bouquets. On cherche le nombre qui, ${{g}}$ fois, fait ${{eval:g*n}}$.",
+					"$${{g}} \\times \\textcolor{{{color:primary.0}}}{{{n}}} = {{eval:g*n}}$$",
+					"Il y a ${{n}}$ roses dans chaque bouquet."
+				]
+			}
+		},
+		{
+			"statement": "On achète ${{g}}$ chemises identiques. Elles coûtent ${{eval:floor((g*u)/100)}}.{{eval:floor(mod(g*u,100)/10)}}{{eval:mod(g*u,10)}}~\\unit{€}$ en tout.\n\nCombien coûte une chemise ?\n\nUne chemise coûte $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "2..9"
+				},
+				{
+					"name": "x",
+					"expression": "5..30"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "eval:100*x+10*k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(u)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les ${{g}}$ chemises coûtent le même prix. On cherche le prix qui, ${{g}}$ fois, fait ${{eval:floor((g*u)/100)}}.{{eval:floor(mod(g*u,100)/10)}}{{eval:mod(g*u,10)}}~\\unit{€}$.",
+					"$${{g}} \\times \\textcolor{{{color:primary.0}}}{{{eval:floor((u)/100)}}.{{eval:floor(mod(u,100)/10)}}{{eval:mod(u,10)}}~\\unit{€}} = {{eval:floor((g*u)/100)}}.{{eval:floor(mod(g*u,100)/10)}}{{eval:mod(g*u,10)}}~\\unit{€}$$",
+					"Une chemise coûte ${{eval:floor((u)/100)}}.{{eval:floor(mod(u,100)/10)}}{{eval:mod(u,10)}}~\\unit{€}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 72 € pour 6 dictionnaires = 12 €",
+			"variationIndex": 0,
+			"variables": {
+				"g": "6",
+				"n": "12"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 72 − 6 (66)",
+			"variationIndex": 0,
+			"variables": {
+				"g": "6",
+				"n": "12"
+			},
+			"answers": ["66"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 72 ÷ 8 (9)",
+			"variationIndex": 0,
+			"variables": {
+				"g": "6",
+				"n": "12"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "bouquets : 7 bouquets, 357 roses → 51",
+			"variationIndex": 1,
+			"variables": {
+				"g": "7",
+				"n": "51"
+			},
+			"answers": ["51"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : bouquets, 357 − 7 (350)",
+			"variationIndex": 1,
+			"variables": {
+				"g": "7",
+				"n": "51"
+			},
+			"answers": ["350"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "chemises : 4 pour 79,60 € → 19,90 €",
+			"variationIndex": 2,
+			"variables": {
+				"g": "4",
+				"x": "19",
+				"k": "9",
+				"u": "1990"
+			},
+			"answers": ["19{,}9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Zéro final accepté : 19,90 €",
+			"variationIndex": 2,
+			"variables": {
+				"g": "4",
+				"x": "19",
+				"k": "9",
+				"u": "1990"
+			},
+			"answers": ["19{,}90"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : chemises, le total (79,60 €)",
+			"variationIndex": 2,
+			"variables": {
+				"g": "4",
+				"x": "19",
+				"k": "9",
+				"u": "1990"
+			},
+			"answers": ["79{,}6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -716,7 +716,6 @@
 	"options": {
 		"constraints": {
 			"spaces": "off"
-		},
-		"shuffleChoices": false
+		}
 	}
 }

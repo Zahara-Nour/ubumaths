@@ -1,0 +1,644 @@
+{
+	"title": "Vecteurs égaux, opposés, nul",
+	"description": "Reconnaître sur un quadrillage un vecteur égal ou opposé à un vecteur donné ; égalités de vecteurs dans un parallélogramme ; vecteur nul",
+	"grades": ["3"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs",
+	"subdomain": "Égalité",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Lequel de ces vecteurs est égal au vecteur $\\vec{u}$ ?\n\n```figure\nfenetre: 0 ; 22 ; 0 ; 15\ngrille: 1\ndescription: Quadrillage : le vecteur u et quatre vecteurs CD, EF, GH et KL, de même longueur.\n---\nvecteur({{eval:ux}}, {{eval:uy}}, ancre=(4, 11))\ntexte({{eval:round(100*(4+(ux)/2-0.7*(uy)/sqrt((ux)^2+(uy)^2)))/100;d}}, {{eval:round(100*(11+(uy)/2+0.7*(ux)/sqrt((ux)^2+(uy)^2)))/100;d}}, \"u⃗\")\nC = point(11, 11, etiquette=\"{{if:d0y>0|bas|haut}}\")\nD = point({{eval:11+d0x}}, {{eval:11+d0y}}, etiquette=\"{{if:d0y>0|haut|bas}}\")\nvecteur(C, D)\nE = point(18, 11, etiquette=\"{{if:d1y>0|bas|haut}}\")\nF = point({{eval:18+d1x}}, {{eval:11+d1y}}, etiquette=\"{{if:d1y>0|haut|bas}}\")\nvecteur(E, F)\nG = point(11, 4, etiquette=\"{{if:d2y>0|bas|haut}}\")\nH = point({{eval:11+d2x}}, {{eval:4+d2y}}, etiquette=\"{{if:d2y>0|haut|bas}}\")\nvecteur(G, H)\nK = point(18, 4, etiquette=\"{{if:d3y>0|bas|haut}}\")\nL = point({{eval:18+d3x}}, {{eval:4+d3y}}, etiquette=\"{{if:d3y>0|haut|bas}}\")\nvecteur(K, L)\n```\n\n```choix\n- ${{if:p==0|\\overrightarrow{CD}|}}{{if:p==1|\\overrightarrow{EF}|}}{{if:p==2|\\overrightarrow{GH}|}}{{if:p==3|\\overrightarrow{KL}|}}$\n- ${{if:p==0|\\overrightarrow{EF}|}}{{if:p==1|\\overrightarrow{GH}|}}{{if:p==2|\\overrightarrow{KL}|}}{{if:p==3|\\overrightarrow{CD}|}}$\n- ${{if:p==0|\\overrightarrow{GH}|}}{{if:p==1|\\overrightarrow{KL}|}}{{if:p==2|\\overrightarrow{CD}|}}{{if:p==3|\\overrightarrow{EF}|}}$\n- ${{if:p==0|\\overrightarrow{KL}|}}{{if:p==1|\\overrightarrow{CD}|}}{{if:p==2|\\overrightarrow{EF}|}}{{if:p==3|\\overrightarrow{GH}|}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "sg",
+					"expression": "0..1"
+				},
+				{
+					"name": "ux",
+					"expression": "eval:(2*sg-1)*a"
+				},
+				{
+					"name": "uy",
+					"expression": "-3..3"
+				},
+				{
+					"name": "vx",
+					"expression": "0"
+				},
+				{
+					"name": "vy",
+					"expression": "0"
+				},
+				{
+					"name": "p",
+					"expression": "0..3"
+				},
+				{
+					"name": "k0",
+					"expression": "{{if:p==0|0|}}{{if:p==1|3|}}{{if:p==2|2|}}{{if:p==3|1|}}"
+				},
+				{
+					"name": "ax0",
+					"expression": "{{if:k0==0|1|}}{{if:k0==1|-1|}}{{if:k0==2|1|}}{{if:k0==3|-1|}}"
+				},
+				{
+					"name": "bx0",
+					"expression": "{{if:k0==0|0|}}{{if:k0==1|0|}}{{if:k0==2|0|}}{{if:k0==3|0|}}"
+				},
+				{
+					"name": "ay0",
+					"expression": "{{if:k0==0|1|}}{{if:k0==1|-1|}}{{if:k0==2|-1|}}{{if:k0==3|1|}}"
+				},
+				{
+					"name": "by0",
+					"expression": "{{if:k0==0|0|}}{{if:k0==1|0|}}{{if:k0==2|0|}}{{if:k0==3|0|}}"
+				},
+				{
+					"name": "d0x",
+					"expression": "eval:ax0*ux+bx0*vx"
+				},
+				{
+					"name": "d0y",
+					"expression": "eval:ay0*uy+by0*vy"
+				},
+				{
+					"name": "k1",
+					"expression": "{{if:p==0|1|}}{{if:p==1|0|}}{{if:p==2|3|}}{{if:p==3|2|}}"
+				},
+				{
+					"name": "ax1",
+					"expression": "{{if:k1==0|1|}}{{if:k1==1|-1|}}{{if:k1==2|1|}}{{if:k1==3|-1|}}"
+				},
+				{
+					"name": "bx1",
+					"expression": "{{if:k1==0|0|}}{{if:k1==1|0|}}{{if:k1==2|0|}}{{if:k1==3|0|}}"
+				},
+				{
+					"name": "ay1",
+					"expression": "{{if:k1==0|1|}}{{if:k1==1|-1|}}{{if:k1==2|-1|}}{{if:k1==3|1|}}"
+				},
+				{
+					"name": "by1",
+					"expression": "{{if:k1==0|0|}}{{if:k1==1|0|}}{{if:k1==2|0|}}{{if:k1==3|0|}}"
+				},
+				{
+					"name": "d1x",
+					"expression": "eval:ax1*ux+bx1*vx"
+				},
+				{
+					"name": "d1y",
+					"expression": "eval:ay1*uy+by1*vy"
+				},
+				{
+					"name": "k2",
+					"expression": "{{if:p==0|2|}}{{if:p==1|1|}}{{if:p==2|0|}}{{if:p==3|3|}}"
+				},
+				{
+					"name": "ax2",
+					"expression": "{{if:k2==0|1|}}{{if:k2==1|-1|}}{{if:k2==2|1|}}{{if:k2==3|-1|}}"
+				},
+				{
+					"name": "bx2",
+					"expression": "{{if:k2==0|0|}}{{if:k2==1|0|}}{{if:k2==2|0|}}{{if:k2==3|0|}}"
+				},
+				{
+					"name": "ay2",
+					"expression": "{{if:k2==0|1|}}{{if:k2==1|-1|}}{{if:k2==2|-1|}}{{if:k2==3|1|}}"
+				},
+				{
+					"name": "by2",
+					"expression": "{{if:k2==0|0|}}{{if:k2==1|0|}}{{if:k2==2|0|}}{{if:k2==3|0|}}"
+				},
+				{
+					"name": "d2x",
+					"expression": "eval:ax2*ux+bx2*vx"
+				},
+				{
+					"name": "d2y",
+					"expression": "eval:ay2*uy+by2*vy"
+				},
+				{
+					"name": "k3",
+					"expression": "{{if:p==0|3|}}{{if:p==1|2|}}{{if:p==2|1|}}{{if:p==3|0|}}"
+				},
+				{
+					"name": "ax3",
+					"expression": "{{if:k3==0|1|}}{{if:k3==1|-1|}}{{if:k3==2|1|}}{{if:k3==3|-1|}}"
+				},
+				{
+					"name": "bx3",
+					"expression": "{{if:k3==0|0|}}{{if:k3==1|0|}}{{if:k3==2|0|}}{{if:k3==3|0|}}"
+				},
+				{
+					"name": "ay3",
+					"expression": "{{if:k3==0|1|}}{{if:k3==1|-1|}}{{if:k3==2|-1|}}{{if:k3==3|1|}}"
+				},
+				{
+					"name": "by3",
+					"expression": "{{if:k3==0|0|}}{{if:k3==1|0|}}{{if:k3==2|0|}}{{if:k3==3|0|}}"
+				},
+				{
+					"name": "d3x",
+					"expression": "eval:ax3*ux+bx3*vx"
+				},
+				{
+					"name": "d3y",
+					"expression": "eval:ay3*uy+by3*vy"
+				}
+			],
+			"conditions": ["uy!=0", "abs(ux)!=abs(uy)"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Deux vecteurs sont **égaux** quand ils ont la même direction, le même sens et la même longueur : ils font le même déplacement sur le quadrillage.",
+					"$\\vec{u}$ fait {{eval:abs(ux)}} carreau(x) vers la {{if:ux>0|droite|gauche}} et {{eval:abs(uy)}} vers le {{if:uy>0|haut|bas}}.",
+					"Seul ${{if:p==0|\\overrightarrow{CD}|}}{{if:p==1|\\overrightarrow{EF}|}}{{if:p==2|\\overrightarrow{GH}|}}{{if:p==3|\\overrightarrow{KL}|}}$ fait le même déplacement : $\\vec{u} = \\textcolor{{{color:primary.0}}}{{{if:p==0|\\overrightarrow{CD}|}}{{if:p==1|\\overrightarrow{EF}|}}{{if:p==2|\\overrightarrow{GH}|}}{{if:p==3|\\overrightarrow{KL}|}}}$.",
+					"${{if:p==0|\\overrightarrow{EF}|}}{{if:p==1|\\overrightarrow{GH}|}}{{if:p==2|\\overrightarrow{KL}|}}{{if:p==3|\\overrightarrow{CD}|}}$ a la même direction et la même longueur, mais pas le même sens : c'est l'**opposé** de $\\vec{u}$."
+				]
+			}
+		},
+		{
+			"statement": "Lequel de ces vecteurs est l'opposé du vecteur $\\vec{u}$ ?\n\n```figure\nfenetre: 0 ; 22 ; 0 ; 15\ngrille: 1\ndescription: Quadrillage : le vecteur u et quatre vecteurs CD, EF, GH et KL, de même longueur.\n---\nvecteur({{eval:ux}}, {{eval:uy}}, ancre=(4, 11))\ntexte({{eval:round(100*(4+(ux)/2-0.7*(uy)/sqrt((ux)^2+(uy)^2)))/100;d}}, {{eval:round(100*(11+(uy)/2+0.7*(ux)/sqrt((ux)^2+(uy)^2)))/100;d}}, \"u⃗\")\nC = point(11, 11, etiquette=\"{{if:d0y>0|bas|haut}}\")\nD = point({{eval:11+d0x}}, {{eval:11+d0y}}, etiquette=\"{{if:d0y>0|haut|bas}}\")\nvecteur(C, D)\nE = point(18, 11, etiquette=\"{{if:d1y>0|bas|haut}}\")\nF = point({{eval:18+d1x}}, {{eval:11+d1y}}, etiquette=\"{{if:d1y>0|haut|bas}}\")\nvecteur(E, F)\nG = point(11, 4, etiquette=\"{{if:d2y>0|bas|haut}}\")\nH = point({{eval:11+d2x}}, {{eval:4+d2y}}, etiquette=\"{{if:d2y>0|haut|bas}}\")\nvecteur(G, H)\nK = point(18, 4, etiquette=\"{{if:d3y>0|bas|haut}}\")\nL = point({{eval:18+d3x}}, {{eval:4+d3y}}, etiquette=\"{{if:d3y>0|haut|bas}}\")\nvecteur(K, L)\n```\n\n```choix\n- ${{if:p==0|\\overrightarrow{EF}|}}{{if:p==1|\\overrightarrow{GH}|}}{{if:p==2|\\overrightarrow{KL}|}}{{if:p==3|\\overrightarrow{CD}|}}$\n- ${{if:p==0|\\overrightarrow{CD}|}}{{if:p==1|\\overrightarrow{EF}|}}{{if:p==2|\\overrightarrow{GH}|}}{{if:p==3|\\overrightarrow{KL}|}}$\n- ${{if:p==0|\\overrightarrow{GH}|}}{{if:p==1|\\overrightarrow{KL}|}}{{if:p==2|\\overrightarrow{CD}|}}{{if:p==3|\\overrightarrow{EF}|}}$\n- ${{if:p==0|\\overrightarrow{KL}|}}{{if:p==1|\\overrightarrow{CD}|}}{{if:p==2|\\overrightarrow{EF}|}}{{if:p==3|\\overrightarrow{GH}|}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "sg",
+					"expression": "0..1"
+				},
+				{
+					"name": "ux",
+					"expression": "eval:(2*sg-1)*a"
+				},
+				{
+					"name": "uy",
+					"expression": "-3..3"
+				},
+				{
+					"name": "vx",
+					"expression": "0"
+				},
+				{
+					"name": "vy",
+					"expression": "0"
+				},
+				{
+					"name": "p",
+					"expression": "0..3"
+				},
+				{
+					"name": "k0",
+					"expression": "{{if:p==0|0|}}{{if:p==1|3|}}{{if:p==2|2|}}{{if:p==3|1|}}"
+				},
+				{
+					"name": "ax0",
+					"expression": "{{if:k0==0|1|}}{{if:k0==1|-1|}}{{if:k0==2|1|}}{{if:k0==3|-1|}}"
+				},
+				{
+					"name": "bx0",
+					"expression": "{{if:k0==0|0|}}{{if:k0==1|0|}}{{if:k0==2|0|}}{{if:k0==3|0|}}"
+				},
+				{
+					"name": "ay0",
+					"expression": "{{if:k0==0|1|}}{{if:k0==1|-1|}}{{if:k0==2|-1|}}{{if:k0==3|1|}}"
+				},
+				{
+					"name": "by0",
+					"expression": "{{if:k0==0|0|}}{{if:k0==1|0|}}{{if:k0==2|0|}}{{if:k0==3|0|}}"
+				},
+				{
+					"name": "d0x",
+					"expression": "eval:ax0*ux+bx0*vx"
+				},
+				{
+					"name": "d0y",
+					"expression": "eval:ay0*uy+by0*vy"
+				},
+				{
+					"name": "k1",
+					"expression": "{{if:p==0|1|}}{{if:p==1|0|}}{{if:p==2|3|}}{{if:p==3|2|}}"
+				},
+				{
+					"name": "ax1",
+					"expression": "{{if:k1==0|1|}}{{if:k1==1|-1|}}{{if:k1==2|1|}}{{if:k1==3|-1|}}"
+				},
+				{
+					"name": "bx1",
+					"expression": "{{if:k1==0|0|}}{{if:k1==1|0|}}{{if:k1==2|0|}}{{if:k1==3|0|}}"
+				},
+				{
+					"name": "ay1",
+					"expression": "{{if:k1==0|1|}}{{if:k1==1|-1|}}{{if:k1==2|-1|}}{{if:k1==3|1|}}"
+				},
+				{
+					"name": "by1",
+					"expression": "{{if:k1==0|0|}}{{if:k1==1|0|}}{{if:k1==2|0|}}{{if:k1==3|0|}}"
+				},
+				{
+					"name": "d1x",
+					"expression": "eval:ax1*ux+bx1*vx"
+				},
+				{
+					"name": "d1y",
+					"expression": "eval:ay1*uy+by1*vy"
+				},
+				{
+					"name": "k2",
+					"expression": "{{if:p==0|2|}}{{if:p==1|1|}}{{if:p==2|0|}}{{if:p==3|3|}}"
+				},
+				{
+					"name": "ax2",
+					"expression": "{{if:k2==0|1|}}{{if:k2==1|-1|}}{{if:k2==2|1|}}{{if:k2==3|-1|}}"
+				},
+				{
+					"name": "bx2",
+					"expression": "{{if:k2==0|0|}}{{if:k2==1|0|}}{{if:k2==2|0|}}{{if:k2==3|0|}}"
+				},
+				{
+					"name": "ay2",
+					"expression": "{{if:k2==0|1|}}{{if:k2==1|-1|}}{{if:k2==2|-1|}}{{if:k2==3|1|}}"
+				},
+				{
+					"name": "by2",
+					"expression": "{{if:k2==0|0|}}{{if:k2==1|0|}}{{if:k2==2|0|}}{{if:k2==3|0|}}"
+				},
+				{
+					"name": "d2x",
+					"expression": "eval:ax2*ux+bx2*vx"
+				},
+				{
+					"name": "d2y",
+					"expression": "eval:ay2*uy+by2*vy"
+				},
+				{
+					"name": "k3",
+					"expression": "{{if:p==0|3|}}{{if:p==1|2|}}{{if:p==2|1|}}{{if:p==3|0|}}"
+				},
+				{
+					"name": "ax3",
+					"expression": "{{if:k3==0|1|}}{{if:k3==1|-1|}}{{if:k3==2|1|}}{{if:k3==3|-1|}}"
+				},
+				{
+					"name": "bx3",
+					"expression": "{{if:k3==0|0|}}{{if:k3==1|0|}}{{if:k3==2|0|}}{{if:k3==3|0|}}"
+				},
+				{
+					"name": "ay3",
+					"expression": "{{if:k3==0|1|}}{{if:k3==1|-1|}}{{if:k3==2|-1|}}{{if:k3==3|1|}}"
+				},
+				{
+					"name": "by3",
+					"expression": "{{if:k3==0|0|}}{{if:k3==1|0|}}{{if:k3==2|0|}}{{if:k3==3|0|}}"
+				},
+				{
+					"name": "d3x",
+					"expression": "eval:ax3*ux+bx3*vx"
+				},
+				{
+					"name": "d3y",
+					"expression": "eval:ay3*uy+by3*vy"
+				}
+			],
+			"conditions": ["uy!=0", "abs(ux)!=abs(uy)"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'**opposé** de $\\vec{u}$, noté $-\\vec{u}$, a la même direction et la même longueur que $\\vec{u}$, mais le sens contraire.",
+					"$\\vec{u}$ fait {{eval:abs(ux)}} carreau(x) vers la {{if:ux>0|droite|gauche}} et {{eval:abs(uy)}} vers le {{if:uy>0|haut|bas}} : son opposé fait le déplacement inverse.",
+					"$-\\vec{u} = \\textcolor{{{color:primary.0}}}{{{if:p==0|\\overrightarrow{EF}|}}{{if:p==1|\\overrightarrow{GH}|}}{{if:p==2|\\overrightarrow{KL}|}}{{if:p==3|\\overrightarrow{CD}|}}}$."
+				]
+			}
+		},
+		{
+			"statement": "$ABCD$ est un parallélogramme. Quel vecteur est égal au vecteur $\\overrightarrow{{{if:q==0|AB|}}{{if:q==1|AD|}}{{if:q==2|BA|}}{{if:q==3|CB|}}}$ ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6\ndescription: Parallélogramme ABCD.\n---\nA = point(1, 1, etiquette=\"bas-gauche\")\nB = point(6, 1, etiquette=\"bas-droite\")\nC = point(8.5, 5, etiquette=\"haut-droite\")\nD = point(3.5, 5, etiquette=\"haut-gauche\")\npolygone(A, B, C, D)\n```\n\n```choix\n- $\\overrightarrow{{{if:q==0|DC|}}{{if:q==1|BC|}}{{if:q==2|CD|}}{{if:q==3|DA|}}}$\n- $\\overrightarrow{{{if:q==0|CD|}}{{if:q==1|CB|}}{{if:q==2|DC|}}{{if:q==3|AD|}}}$\n- $\\overrightarrow{{{if:q==0|AD|}}{{if:q==1|AB|}}{{if:q==2|BC|}}{{if:q==3|AB|}}}$\n- $\\overrightarrow{{{if:q==0|BC|}}{{if:q==1|DC|}}{{if:q==2|AD|}}{{if:q==3|DC|}}}$\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$ABCD$ est un parallélogramme : $\\overrightarrow{AB} = \\overrightarrow{DC}$ et $\\overrightarrow{AD} = \\overrightarrow{BC}$ (côtés opposés parallèles, de même longueur, parcourus dans le même sens).",
+					"$\\overrightarrow{{{if:q==0|AB|}}{{if:q==1|AD|}}{{if:q==2|BA|}}{{if:q==3|CB|}}} = \\textcolor{{{color:primary.0}}}{\\overrightarrow{{{if:q==0|DC|}}{{if:q==1|BC|}}{{if:q==2|CD|}}{{if:q==3|DA|}}}}$.",
+					"Attention à l'ordre des lettres : $\\overrightarrow{{{if:q==0|CD|}}{{if:q==1|CB|}}{{if:q==2|DC|}}{{if:q==3|AD|}}}$ est l'opposé."
+				]
+			}
+		},
+		{
+			"statement": "On sait que $\\overrightarrow{AB} = \\vec{0}$. Que peut-on dire des points $A$ et $B$ ?\n\n```choix\n- $A$ et $B$ sont confondus.\n- $A$ et $B$ sont à $1$ unité l'un de l'autre.\n- La droite $(AB)$ est horizontale.\n- On ne peut rien dire.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le **vecteur nul** $\\vec{0}$ est le vecteur de longueur $0$ : il ne déplace aucun point.",
+					"$\\overrightarrow{AB} = \\vec{0}$ signifie que $AB = 0$ : \\textcolor{{{color:primary.0}}}{\\text{A et B sont confondus}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Égal : bonne case",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"ux": "2",
+				"uy": "-3",
+				"vx": "0",
+				"vy": "0",
+				"k0": "2",
+				"ax0": "1",
+				"bx0": "0",
+				"ay0": "-1",
+				"by0": "0",
+				"d0x": "2",
+				"d0y": "3",
+				"k1": "3",
+				"ax1": "-1",
+				"bx1": "0",
+				"ay1": "1",
+				"by1": "0",
+				"d1x": "-2",
+				"d1y": "-3",
+				"k2": "0",
+				"ax2": "1",
+				"bx2": "0",
+				"ay2": "1",
+				"by2": "0",
+				"d2x": "2",
+				"d2y": "-3",
+				"k3": "1",
+				"ax3": "-1",
+				"bx3": "0",
+				"ay3": "-1",
+				"by3": "0",
+				"d3x": "-2",
+				"d3y": "3",
+				"a": "2",
+				"sg": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'opposé",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"ux": "2",
+				"uy": "-3",
+				"vx": "0",
+				"vy": "0",
+				"k0": "2",
+				"ax0": "1",
+				"bx0": "0",
+				"ay0": "-1",
+				"by0": "0",
+				"d0x": "2",
+				"d0y": "3",
+				"k1": "3",
+				"ax1": "-1",
+				"bx1": "0",
+				"ay1": "1",
+				"by1": "0",
+				"d1x": "-2",
+				"d1y": "-3",
+				"k2": "0",
+				"ax2": "1",
+				"bx2": "0",
+				"ay2": "1",
+				"by2": "0",
+				"d2x": "2",
+				"d2y": "-3",
+				"k3": "1",
+				"ax3": "-1",
+				"bx3": "0",
+				"ay3": "-1",
+				"by3": "0",
+				"d3x": "-2",
+				"d3y": "3",
+				"a": "2",
+				"sg": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : même longueur, autre direction",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"ux": "2",
+				"uy": "-3",
+				"vx": "0",
+				"vy": "0",
+				"k0": "2",
+				"ax0": "1",
+				"bx0": "0",
+				"ay0": "-1",
+				"by0": "0",
+				"d0x": "2",
+				"d0y": "3",
+				"k1": "3",
+				"ax1": "-1",
+				"bx1": "0",
+				"ay1": "1",
+				"by1": "0",
+				"d1x": "-2",
+				"d1y": "-3",
+				"k2": "0",
+				"ax2": "1",
+				"bx2": "0",
+				"ay2": "1",
+				"by2": "0",
+				"d2x": "2",
+				"d2y": "-3",
+				"k3": "1",
+				"ax3": "-1",
+				"bx3": "0",
+				"ay3": "-1",
+				"by3": "0",
+				"d3x": "-2",
+				"d3y": "3",
+				"a": "2",
+				"sg": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Opposé : bonne case",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1",
+				"ux": "-3",
+				"uy": "1",
+				"vx": "0",
+				"vy": "0",
+				"k0": "3",
+				"ax0": "-1",
+				"bx0": "0",
+				"ay0": "1",
+				"by0": "0",
+				"d0x": "3",
+				"d0y": "1",
+				"k1": "0",
+				"ax1": "1",
+				"bx1": "0",
+				"ay1": "1",
+				"by1": "0",
+				"d1x": "-3",
+				"d1y": "1",
+				"k2": "1",
+				"ax2": "-1",
+				"bx2": "0",
+				"ay2": "-1",
+				"by2": "0",
+				"d2x": "3",
+				"d2y": "-1",
+				"k3": "2",
+				"ax3": "1",
+				"bx3": "0",
+				"ay3": "-1",
+				"by3": "0",
+				"d3x": "-3",
+				"d3y": "-1",
+				"a": "3",
+				"sg": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le vecteur égal",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1",
+				"ux": "-3",
+				"uy": "1",
+				"vx": "0",
+				"vy": "0",
+				"k0": "3",
+				"ax0": "-1",
+				"bx0": "0",
+				"ay0": "1",
+				"by0": "0",
+				"d0x": "3",
+				"d0y": "1",
+				"k1": "0",
+				"ax1": "1",
+				"bx1": "0",
+				"ay1": "1",
+				"by1": "0",
+				"d1x": "-3",
+				"d1y": "1",
+				"k2": "1",
+				"ax2": "-1",
+				"bx2": "0",
+				"ay2": "-1",
+				"by2": "0",
+				"d2x": "3",
+				"d2y": "-1",
+				"k3": "2",
+				"ax3": "1",
+				"bx3": "0",
+				"ay3": "-1",
+				"by3": "0",
+				"d3x": "-3",
+				"d3y": "-1",
+				"a": "3",
+				"sg": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "AB = DC",
+			"variationIndex": 2,
+			"variables": {
+				"q": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : CD (lettres inversées)",
+			"variationIndex": 2,
+			"variables": {
+				"q": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "CB = DA",
+			"variationIndex": 2,
+			"variables": {
+				"q": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Vecteur nul : A et B confondus",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : on ne peut rien dire",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

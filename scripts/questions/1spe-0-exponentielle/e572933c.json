@@ -1,0 +1,94 @@
+{
+	"id": "e572933c-bf5c-42fb-a3e5-412f53531acf",
+	"title": "Résoudre e^(ax+b) = 1",
+	"description": "e^u = 1 équivaut à u = 0",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction exponentielle",
+	"subdomain": "Équations et inéquations",
+	"level": 6,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"acceptDecimal": true,
+					"expectedAnswer": "{{eval:-b/a}}"
+				}
+			],
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $e^{ {{eval:a*x+b}} }=1$.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..6;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit $1=e^0$ : $e^{ {{eval:a*x+b}} }=e^0\\iff {{eval:a*x+b}}=0$.",
+					"${{eval:a*x}}={{eval:-b}}$, donc $x={{if:gcd(-b,a)!=1|{{if:a<0|\\dfrac{ {{eval:-(-b)}} }{ {{eval:-(a)}} }|\\dfrac{ {{eval:-b}} }{ {{eval:a}} }}}=|}}\\textcolor{{{color:primary.0}}}{{{eval:-b/a}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["-2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "6"
+			},
+			"description": "e^{3x+6}=1 : x = -2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\frac{5}{3}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "6"
+			},
+			"description": "1 confondu avec e¹ : x = -5/3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "6"
+			},
+			"description": "erreur de signe : x = 2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{-6}{3}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variables": {
+				"a": "3",
+				"b": "6"
+			},
+			"description": "fraction -6/3 non simplifiée",
+			"variationIndex": 0
+		}
+	]
+}

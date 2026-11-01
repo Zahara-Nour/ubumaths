@@ -4,13 +4,13 @@
 	"grades": ["CE1"],
 	"theme": "Entiers",
 	"domain": "Soustraire",
-	"subdomain": "Différence astucieuse",
-	"level": 8,
+	"subdomain": "Différence",
+	"level": 15,
 	"delay": 20,
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+			"statement": "Calcule.\n\n$${{expression1}}$$",
 			"variables": [
 				{
 					"name": "a",

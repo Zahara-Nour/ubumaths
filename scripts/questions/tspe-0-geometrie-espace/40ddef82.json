@@ -1,0 +1,164 @@
+{
+	"id": "40ddef82-52e9-4e2a-8073-e87c7b8918ed",
+	"title": "Espace : trois points alignés ?",
+	"description": "Décider (QCM) si trois points sont alignés (colinéarité de deux vecteurs)",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs, droites et plans de l'espace",
+	"subdomain": "Colinéarité et coplanarité",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{o}}"
+				}
+			],
+			"statement": "Dans l'espace muni d'un repère, on considère les points $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$, $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$ et $C({{cx}}\\,;\\,{{cy}}\\,;\\,{{cz}})$.\n\nLes points $A$, $B$ et $C$ sont-ils alignés ?\n\n```choix\n- Oui, les points $A$, $B$ et $C$ sont alignés.\n- Non, les points $A$, $B$ et $C$ ne sont pas alignés.\n```",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-4..4"
+				},
+				{
+					"name": "ay",
+					"expression": "-4..4"
+				},
+				{
+					"name": "az",
+					"expression": "-4..4"
+				},
+				{
+					"name": "w1",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "w2",
+					"expression": "-3..3"
+				},
+				{
+					"name": "w3",
+					"expression": "-3..3"
+				},
+				{
+					"name": "k",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "bx",
+					"expression": "{{eval:ax+w1}}"
+				},
+				{
+					"name": "by",
+					"expression": "{{eval:ay+w2}}"
+				},
+				{
+					"name": "bz",
+					"expression": "{{eval:az+w3}}"
+				},
+				{
+					"name": "cx",
+					"expression": "{{eval:ax+k*w1}}"
+				},
+				{
+					"name": "cy",
+					"expression": "{{eval:ay+k*w2+o}}"
+				},
+				{
+					"name": "cz",
+					"expression": "{{eval:az+k*w3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A$, $B$, $C$ sont alignés si et seulement si $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont colinéaires. $\\overrightarrow{AB}\\begin{pmatrix}{{w1}}\\\\{{w2}}\\\\{{w3}}\\end{pmatrix}$ et $\\overrightarrow{AC}\\begin{pmatrix}{{eval:k*w1}}\\\\{{eval:k*w2+o}}\\\\{{eval:k*w3}}\\end{pmatrix}$.",
+					"Les abscisses imposent $\\overrightarrow{AC}={{k}}\\,\\overrightarrow{AB}$ si les vecteurs sont colinéaires. {{if:o==0|On vérifie les deux autres coordonnées : ${{k}}\\times{{w2;()}}={{eval:k*w2}}$ et ${{k}}\\times{{w3;()}}={{eval:k*w3}}$.}}{{if:o==1|Or ${{k}}\\times{{w2;()}}={{eval:k*w2}}\\neq{{eval:k*w2+o}}$.}}",
+					"{{if:o==0|On a bien $\\overrightarrow{AC}={{k}}\\,\\overrightarrow{AB}$ : les points **sont alignés**.}}{{if:o==1|Les vecteurs ne sont pas colinéaires : les points **ne sont pas alignés**.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "3",
+				"o": "0",
+				"ax": "1",
+				"ay": "0",
+				"az": "2",
+				"w1": "2",
+				"w2": "-1",
+				"w3": "1"
+			},
+			"description": "v0 : alignés → Oui",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"o": "0",
+				"ax": "1",
+				"ay": "0",
+				"az": "2",
+				"w1": "2",
+				"w2": "-1",
+				"w3": "1"
+			},
+			"description": "v0 : alignés, Non coché",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "3",
+				"o": "1",
+				"ax": "1",
+				"ay": "0",
+				"az": "2",
+				"w1": "2",
+				"w2": "-1",
+				"w3": "1"
+			},
+			"description": "v0 : non alignés → Non",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"o": "1",
+				"ax": "1",
+				"ay": "0",
+				"az": "2",
+				"w1": "2",
+				"w2": "-1",
+				"w3": "1"
+			},
+			"description": "v0 : non alignés, Oui coché",
+			"variationIndex": 0
+		}
+	]
+}

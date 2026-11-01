@@ -10,7 +10,7 @@ couvre:
 > Parseurs de chaînes : `src/lib/mathAST/parser/custom/pattern-parser.ts`, `constraint-parser.ts`,
 > `rule-parser.ts`. Vue d'ensemble du moteur : [README.md](README.md).
 > Fusion de `pattern/README.md` (janvier) et de l'ancien `pattern-matching.md` (juin).
-> **Vérifié contre le code le 2026-10-10** (racines n-ièmes des règles `sqrt-*`, 2026-10-23).
+> **Vérifié contre le code le 2026-10-10** (racines n-ièmes des règles `sqrt-*`, 2026-10-23 ; valeurs remarquables en deux temps, `trigRemarkableStepRules`, 2026-10-27).
 
 ## À quoi ça sert
 
@@ -221,7 +221,7 @@ ne le lit **pas**, il assemble ses jeux dans `buildSimplifyRules` (voir plus bas
 | `absRules`, `absSimplifyRules`, `absReduceRules` | `abs.ts`                   | `abs-negation`, `abs-idempotent`, `abs-product`, `abs-quotient`, `abs-even-pow`, `abs-pow-even`, `abs-positive`, `abs-negative`                                                                                                                                                                                                                                                                                                    |
 | `logExpRules`, `expFunctionRules`                | `log-exp.ts`               | `ln-exp`, `exp-ln`, `exp-n-ln` (`e^{n ln x} = xⁿ`, n entier lu dans un produit : `2·(2ln x)`, `−ln x`), `exp-ln` et `exp-n-ln` refusés pour un nombre ≤ 0 sous le ln, `ln-one`, `ln-e`, `ln-pow`, `ln-product`, `ln-quotient` ; `ln-exp-inverse`, `exp-ln-inverse`, `exp-product` (la fonction écrite `exp(…)`)                                                                                                                    |
 | `sqrtRules`                                      | `sqrt.ts`                  | `sqrt-zero`, `sqrt-one`, `sqrt`, `sqrt-product`, `sqrt-quotient`                                                                                                                                                                                                                                                                                                                                                                   |
-| `trigRules`                                      | `trig.ts`                  | `sin-remarkable`, `cos-remarkable`, `tan-remarkable`                                                                                                                                                                                                                                                                                                                                                                               |
+| `trigRules`, `trigRemarkableStepRules`           | `trig.ts`                  | `sin-remarkable`, `cos-remarkable`, `tan-remarkable` ; en deux temps, pour les étapes : `*-remarkable-period` puis `*-remarkable-value` (`TRIG_VALUE_RULE_NAMES`), degrés lus (`cos(60°)`)                                                                                                                                                                                                                                         |
 | `functionParityRules`                            | `function-parity.ts`       | `<fonction>-even` / `<fonction>-odd` (`f(-x)`)                                                                                                                                                                                                                                                                                                                                                                                     |
 | `commonFactorRules`, `commonContentFactorRules`  | `common-factor.ts`         | `common-factor-products`, `common-factor-bare-term` ; contenu (numérique, monôme, non polynomial comme `eˣ` ou `(x+1)`, sommes maximales seulement) : `common-factor-content-add`, `common-factor-content-sub`                                                                                                                                                                                                                     |
 | `algebraicFactoringRules`                        | `algebraic-identities.ts`  | `diff-squares-*`, `perfect-square-trinomial`, `sum-cubes-*`, `diff-cubes-*`                                                                                                                                                                                                                                                                                                                                                        |
@@ -234,7 +234,8 @@ Les formules somme → produit (`sin a + sin b`, `cosh a − cosh b`…, `trigFa
 `hypFactorizationRules`) et les agrégats `allTrigRules` / `allHyperbolicRules` ont été supprimés
 avec `transform/`, leur seul lecteur (ADR 0024, lot 3b). Seuls `trigSimplifyRules` et
 `hypSimplifyRules` (et, par eux, les familles pythagoriciennes et quotients), et depuis le
-2026-10-23 `trigNegativeAngleRules` et `trigPeriodicRules` (`reduire` et `auto`), ont un
+2026-10-23 `trigNegativeAngleRules` et `trigPeriodicRules` (`reduire` et `auto`), et depuis le
+2026-10-27 `trigRemarkableStepRules` (les trois dans `TRIG_REDUCTION_RULES`, `intent-rules.ts`), ont un
 appelant ; les autres familles trigonométriques et hyperboliques n'en ont plus aucun hors de
 leur fichier (seul un test lit `trigPythagoreanRules`).
 

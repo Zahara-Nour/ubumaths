@@ -1,0 +1,210 @@
+{
+	"title": "Calculer 1 % d'une quantité",
+	"description": "Calculer 1 % d'une quantité en la divisant par 100 (1 % de 350 = 3,5), puis s'en servir pour un autre pourcentage (7 % de 300 = 7 × 3 = 21)",
+	"grades": ["5"],
+	"theme": "Proportionnalité",
+	"domain": "Pourcentages",
+	"subdomain": "Calculer",
+	"level": 8,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Calcule $1~\\%$ de ${{q}}$.\n\n$?$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "100..3000"
+				}
+			],
+			"conditions": ["q%10==0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**1 %.** Prendre $1~\\%$ d'une quantité, c'est en prendre $1$ sur $100$ : on la divise par $100$.",
+					"$1~\\%$ de ${{q}}$, c'est ${{q}} \\div 100 = \\textcolor{{{color:primary.0}}}{{{eval:q/100;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un vélo coûte ${{q}}~\\unit{€}$.\n\nCombien représente $1~\\%$ de son prix ?\n\n$?~\\unit{€}$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "150..990"
+				}
+			],
+			"conditions": ["q%10==0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**1 %.** Prendre $1~\\%$ d'une quantité, c'est en prendre $1$ sur $100$ : on la divise par $100$.",
+					"${{q}} \\div 100 = \\textcolor{{{color:primary.0}}}{{{eval:q/100;d}}}$ : $1~\\%$ du prix, c'est $\\textcolor{{{color:primary.0}}}{{{eval:q/100;d}}}~\\unit{€}$."
+				]
+			}
+		},
+		{
+			"statement": "On veut calculer ${{p}}~\\%$ de ${{q}}$ en passant par $1~\\%$.\n\n$1~\\%$ de ${{q}}$ $= ?$\n\n${{p}}~\\%$ de ${{q}}$ $= ?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2|3|4|6|7|8|9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "q",
+					"expression": "eval:100*c"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q/100}}"
+				},
+				{
+					"expectedAnswer": "{{eval:p*q/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**1 %.** Prendre $1~\\%$ d'une quantité, c'est en prendre $1$ sur $100$ : on la divise par $100$.",
+					"$1~\\%$ de ${{q}}$ : ${{q}} \\div 100 = \\textcolor{{{color:primary.0}}}{{{eval:q/100}}}$.",
+					"${{p}}~\\%$, c'est ${{p}}$ fois $1~\\%$ : ${{p}} \\times {{eval:q/100}} = \\textcolor{{{color:primary.1}}}{{{eval:p*q/100}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1 % de 350 : 3,5",
+			"variationIndex": 0,
+			"variables": {
+				"q": "350"
+			},
+			"answers": ["3,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 35 (divisé par 10)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "350"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0,35 (divisé par 1 000)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "350"
+			},
+			"answers": ["0,35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 % de 2 400 : 24",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2400"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Vélo 480 € : 4,8",
+			"variationIndex": 1,
+			"variables": {
+				"q": "480"
+			},
+			"answers": ["4,8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Vélo 480 € : 4,80",
+			"variationIndex": 1,
+			"variables": {
+				"q": "480"
+			},
+			"answers": ["4,80"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 479 (moins 1)",
+			"variationIndex": 1,
+			"variables": {
+				"q": "480"
+			},
+			"answers": ["479"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 % de 300 : 3 puis 21",
+			"variationIndex": 2,
+			"variables": {
+				"p": "7",
+				"c": "3",
+				"q": "300"
+			},
+			"answers": ["3", "21"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 % de 300 = 7 + 3",
+			"variationIndex": 2,
+			"variables": {
+				"p": "7",
+				"c": "3",
+				"q": "300"
+			},
+			"answers": ["3", "10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 7 % de 300 = 300 − 7",
+			"variationIndex": 2,
+			"variables": {
+				"p": "7",
+				"c": "3",
+				"q": "300"
+			},
+			"answers": ["3", "293"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

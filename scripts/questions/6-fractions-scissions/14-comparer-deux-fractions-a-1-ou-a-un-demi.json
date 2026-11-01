@@ -1,0 +1,209 @@
+{
+	"title": "Comparer deux fractions à 1 ou à 1/2",
+	"description": "Comparer deux fractions de part et d'autre de 1 (7/8 et 10/9) ou de 1/2 (5/12 et 6/11)",
+	"grades": ["6"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Comparer",
+	"level": 6,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète avec le signe qui convient.\n\n$$\\frac{{{gn}}}{{{gd}}} \\ldots \\frac{{{dn}}}{{{dd}}}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "3..12"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:b-1}}"
+				},
+				{
+					"name": "d",
+					"expression": "2..12"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:d+1}}..{{eval:2*d-1}}"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "gn",
+					"expression": "eval:(1-s)*a+s*c"
+				},
+				{
+					"name": "gd",
+					"expression": "eval:(1-s)*b+s*d"
+				},
+				{
+					"name": "dn",
+					"expression": "eval:(1-s)*c+s*a"
+				},
+				{
+					"name": "dd",
+					"expression": "eval:(1-s)*d+s*b"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(gn*dd-dn*gd)+1"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "gcd(c,d)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Comparer à 1.** $\\frac{{{a}}}{{{b}}} < 1$ car ${{a}} < {{b}}$, et $\\frac{{{c}}}{{{d}}} > 1$ car ${{c}} > {{d}}$ : donc $\\frac{{{a}}}{{{b}}} < \\frac{{{c}}}{{{d}}}$.",
+					"$$\\frac{{{gn}}}{{{gd}}} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} \\frac{{{dn}}}{{{dd}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète avec le signe qui convient.\n\n$$\\frac{{{gn}}}{{{gd}}} \\ldots \\frac{{{dn}}}{{{dd}}}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "4..12"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:floor((b-1)/2)}}"
+				},
+				{
+					"name": "d",
+					"expression": "4..12"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:floor(d/2)+1}}..{{eval:d-1}}"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "gn",
+					"expression": "eval:(1-s)*a+s*c"
+				},
+				{
+					"name": "gd",
+					"expression": "eval:(1-s)*b+s*d"
+				},
+				{
+					"name": "dn",
+					"expression": "eval:(1-s)*c+s*a"
+				},
+				{
+					"name": "dd",
+					"expression": "eval:(1-s)*d+s*b"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(gn*dd-dn*gd)+1"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "gcd(c,d)==1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Comparer à $\\frac{1}{2}$.** La moitié de ${{b}}$ est ${{eval:b/2;d}}$ : ${{a}}$ est plus petit, donc $\\frac{{{a}}}{{{b}}} < \\frac{1}{2}$. La moitié de ${{d}}$ est ${{eval:d/2;d}}$ : ${{c}}$ est plus grand, donc $\\frac{{{c}}}{{{d}}} > \\frac{1}{2}$.",
+					"$$\\frac{{{gn}}}{{{gd}}} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} \\frac{{{dn}}}{{{dd}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "7/8 < 10/9",
+			"variationIndex": 0,
+			"variables": {
+				"b": "8",
+				"a": "7",
+				"d": "9",
+				"c": "10",
+				"s": "0",
+				"gn": "7",
+				"gd": "8",
+				"dn": "10",
+				"dd": "9",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7/8 > 10/9",
+			"variationIndex": 0,
+			"variables": {
+				"b": "8",
+				"a": "7",
+				"d": "9",
+				"c": "10",
+				"s": "0",
+				"gn": "7",
+				"gd": "8",
+				"dn": "10",
+				"dd": "9",
+				"r": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "6/11 > 5/12",
+			"variationIndex": 1,
+			"variables": {
+				"b": "12",
+				"a": "5",
+				"d": "11",
+				"c": "6",
+				"s": "1",
+				"gn": "6",
+				"gd": "11",
+				"dn": "5",
+				"dd": "12",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6/11 < 5/12 (« 12 > 11 »)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "12",
+				"a": "5",
+				"d": "11",
+				"c": "6",
+				"s": "1",
+				"gn": "6",
+				"gd": "11",
+				"dn": "5",
+				"dd": "12",
+				"r": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

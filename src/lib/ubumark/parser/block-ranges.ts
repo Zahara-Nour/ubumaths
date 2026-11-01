@@ -15,7 +15,10 @@ import { findProbTreeBlocks } from './probability-tree-parser';
 import { findTrigCircleBlocks } from './trig-circle-parser';
 import { findNumberLineBlocks } from './number-line-parser';
 import { findQrBlocks } from './qr-parser';
+import { findScratchBlocks } from './scratch-parser';
 import { findHorlogeBlocks } from './horloge-parser';
+import { findPartageBlocks } from './partage-parser';
+import { findEspaceBlocks } from './espace-parser';
 import { findOperationBlocks } from './operation-parser';
 import { findCollectionBlocks } from './collection-parser';
 import { findMonnaieBlocks } from './monnaie-parser';
@@ -23,6 +26,7 @@ import { findCourbeBlocks } from './courbe-parser';
 import { findFigureBlocks } from './figure-parser';
 import { findStatChartBlocks } from './stat-chart-parser';
 import { findChoiceBlocks } from './choix-parser';
+import { findRangerBlocks } from './ranger-parser';
 
 /**
  * La fin d'un bloc spécial : ``` seul, à la marge — la même règle que les
@@ -43,14 +47,18 @@ export function blockLineRanges(lines: string[]): [number, number][] {
 		...findTrigCircleBlocks(lines),
 		...findNumberLineBlocks(lines),
 		...findQrBlocks(lines),
+		...findScratchBlocks(lines),
 		...findHorlogeBlocks(lines),
+		...findPartageBlocks(lines),
+		...findEspaceBlocks(lines),
 		...findOperationBlocks(lines),
 		...findCollectionBlocks(lines),
 		...findMonnaieBlocks(lines),
 		...findCourbeBlocks(lines),
 		...findFigureBlocks(lines),
 		...findStatChartBlocks(lines),
-		...findChoiceBlocks(lines)
+		...findChoiceBlocks(lines),
+		...findRangerBlocks(lines)
 	].map((r): [number, number] => [r.startIndex, r.endIndex]);
 	// Les blocs de code, une fois les blocs spéciaux masqués (comme parseBlocks)
 	const masked = lines.map((line, index) =>

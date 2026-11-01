@@ -1,0 +1,398 @@
+{
+	"id": "f3addbe3-7254-483f-a640-0ea75e23dc69",
+	"title": "Compléter une loi : deux probabilités manquantes liées",
+	"description": "Deux probabilités de la loi manquent, une information les relie (rapport, égalité ou probabilité cumulée) : utiliser aussi que la somme vaut 1",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Variables aléatoires",
+	"subdomain": "Compléter une loi",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q/20}}"
+				},
+				{
+					"expectedAnswer": "{{eval:k*q/20}}"
+				}
+			],
+			"statement": "Le tableau ci-dessous donne la loi de probabilité d'une variable aléatoire $X$, dont deux probabilités sont effacées.\n\n| $x_k$ | ${{u}}$ | ${{eval:u+s}}$ | ${{eval:u+s+t}}$ | ${{eval:u+s+t+w}}$ |\n|---|---|---|---|---|\n| $P(X=x_k)$ | ${{eval:a/20;d}}$ | ${{eval:b/20;d}}$ | $\\dots$ | $\\dots$ |\n\nOn sait de plus que $P(X={{eval:u+s+t}})={{k}}\\times P(X={{eval:u+s+t+w}})$.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X={{eval:u+s+t+w}})=?$\n\n$P(X={{eval:u+s+t}})=?$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "-4..1"
+				},
+				{
+					"name": "s",
+					"expression": "1..3"
+				},
+				{
+					"name": "t",
+					"expression": "1..3"
+				},
+				{
+					"name": "w",
+					"expression": "1..3"
+				},
+				{
+					"name": "k",
+					"expression": "2..4"
+				},
+				{
+					"name": "q",
+					"expression": "1..4"
+				},
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "eval:20-a-(k+1)*q"
+				}
+			],
+			"conditions": ["b >= 1", "b != a"],
+			"correction": {
+				"steps": [
+					"Notons $q=P(X={{eval:u+s+t+w}})$. Alors $P(X={{eval:u+s+t}})={{k}}q$.",
+					"La somme des probabilités vaut $1$ : ${{eval:a/20;d}}+{{eval:b/20;d}}+{{k}}q+q=1$, soit ${{eval:k+1}}q=1-{{eval:(a+b)/20;d}}={{eval:(k+1)*q/20;d}}$.",
+					"Donc $q=P(X={{eval:u+s+t+w}})=\\textcolor{{{color:primary.0}}}{ {{eval:q/20;d}} }$ et $P(X={{eval:u+s+t}})={{k}}\\times{{eval:q/20;d}}=\\textcolor{{{color:primary.0}}}{ {{eval:k*q/20;d}} }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q/m}}"
+				}
+			],
+			"statement": "Le tableau ci-dessous donne la loi de probabilité d'une variable aléatoire $X$. Les valeurs extrêmes ${{u}}$ et ${{eval:u+s+t+w}}$ ont la même probabilité, notée $p$.\n\n| $x_k$ | ${{u}}$ | ${{eval:u+s}}$ | ${{eval:u+s+t}}$ | ${{eval:u+s+t+w}}$ |\n|---|---|---|---|---|\n| $P(X=x_k)$ | $p$ | ${{eval:b/m}}$ | ${{eval:c/m}}$ | $p$ |\n\nRéponds par une fraction irréductible.\n\n$p=?$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "-4..1"
+				},
+				{
+					"name": "s",
+					"expression": "1..3"
+				},
+				{
+					"name": "t",
+					"expression": "1..3"
+				},
+				{
+					"name": "w",
+					"expression": "1..3"
+				},
+				{
+					"name": "m",
+					"expression": "20|24|30"
+				},
+				{
+					"name": "q",
+					"expression": "1..{{eval:floor(m/4)+1}}"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{eval:m/2}}"
+				},
+				{
+					"name": "c",
+					"expression": "eval:m-2*q-b"
+				}
+			],
+			"conditions": ["c >= 1", "b != c"],
+			"correction": {
+				"steps": [
+					"La somme des probabilités vaut $1$ : $p+{{eval:b/m}}+{{eval:c/m}}+p=1$, soit $2p=1-{{eval:(b+c)/m}}={{eval:2*q/m}}$.",
+					"Donc $p=\\textcolor{{{color:primary.0}}}{ {{eval:q/m}} }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:y/20}}"
+				},
+				{
+					"expectedAnswer": "{{eval:z/20}}"
+				}
+			],
+			"statement": "Le tableau ci-dessous donne la loi de probabilité d'une variable aléatoire $X$, dont deux probabilités sont effacées.\n\n| $x_k$ | ${{u}}$ | ${{eval:u+s}}$ | ${{eval:u+s+t}}$ | ${{eval:u+s+t+w}}$ |\n|---|---|---|---|---|\n| $P(X=x_k)$ | ${{eval:a/20;d}}$ | $\\dots$ | ${{eval:c/20;d}}$ | $\\dots$ |\n\nOn sait de plus que $P(X\\leqslant {{eval:u+s}})={{eval:(a+y)/20;d}}$.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X={{eval:u+s}})=?$\n\n$P(X={{eval:u+s+t+w}})=?$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "-4..1"
+				},
+				{
+					"name": "s",
+					"expression": "1..3"
+				},
+				{
+					"name": "t",
+					"expression": "1..3"
+				},
+				{
+					"name": "w",
+					"expression": "1..3"
+				},
+				{
+					"name": "a",
+					"expression": "1..6"
+				},
+				{
+					"name": "y",
+					"expression": "1..6"
+				},
+				{
+					"name": "c",
+					"expression": "1..8"
+				},
+				{
+					"name": "z",
+					"expression": "eval:20-a-y-c"
+				}
+			],
+			"conditions": ["z >= 1", "y != z"],
+			"correction": {
+				"steps": [
+					"$\\{X\\leqslant {{eval:u+s}}\\}$ est réalisé quand $X$ vaut ${{u}}$ ou ${{eval:u+s}}$ : $P(X={{u}})+P(X={{eval:u+s}})={{eval:(a+y)/20;d}}$.",
+					"Donc $P(X={{eval:u+s}})={{eval:(a+y)/20;d}}-{{eval:a/20;d}}=\\textcolor{{{color:primary.0}}}{ {{eval:y/20;d}} }$.",
+					"La somme des probabilités vaut $1$ : $P(X={{eval:u+s+t+w}})=1-{{eval:(a+y)/20;d}}-{{eval:c/20;d}}=\\textcolor{{{color:primary.0}}}{ {{eval:z/20;d}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{3}{20}", "\\frac{9}{20}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "6",
+				"b": "2",
+				"k": "3",
+				"q": "3",
+				"s": "1",
+				"t": "2",
+				"u": "-1",
+				"w": "1"
+			},
+			"description": "v0 : 0,3 + 0,1 + 3q + q = 1 → q = 0,15 = 3/20 et 3q = 9/20",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0,15", "0,45"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "6",
+				"b": "2",
+				"k": "3",
+				"q": "3",
+				"s": "1",
+				"t": "2",
+				"u": "-1",
+				"w": "1"
+			},
+			"description": "v0 : décimaux 0,15 et 0,45",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0,45", "0,15"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "6",
+				"b": "2",
+				"k": "3",
+				"q": "3",
+				"s": "1",
+				"t": "2",
+				"u": "-1",
+				"w": "1"
+			},
+			"description": "v0 : rapport inversé (0,45 et 0,15)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0,3", "0,3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "6",
+				"b": "2",
+				"k": "3",
+				"q": "3",
+				"s": "1",
+				"t": "2",
+				"u": "-1",
+				"w": "1"
+			},
+			"description": "v0 : reste partagé en deux moitiés (0,3 et 0,3)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{6}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "6",
+				"c": "10",
+				"m": "24",
+				"q": "4",
+				"s": "1",
+				"t": "1",
+				"u": "0",
+				"w": "1"
+			},
+			"description": "v1 : 2p = 1 - 1/4 - 5/12 = 1/3 → p = 1/6",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{4}{24}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variables": {
+				"b": "6",
+				"c": "10",
+				"m": "24",
+				"q": "4",
+				"s": "1",
+				"t": "1",
+				"u": "0",
+				"w": "1"
+			},
+			"description": "v1 : 4/24 non simplifiée",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{1}{3}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "6",
+				"c": "10",
+				"m": "24",
+				"q": "4",
+				"s": "1",
+				"t": "1",
+				"u": "0",
+				"w": "1"
+			},
+			"description": "v1 : division par 2 oubliée (1/3)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{1}{4}", "\\frac{7}{20}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"c": "6",
+				"s": "2",
+				"t": "1",
+				"u": "-2",
+				"w": "3",
+				"y": "5",
+				"z": "7"
+			},
+			"description": "v2 : P(X≤x2) = 0,35, a = 0,1 → 0,25 ; reste 1 - 0,35 - 0,3 = 0,35",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0,25", "0,35"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"c": "6",
+				"s": "2",
+				"t": "1",
+				"u": "-2",
+				"w": "3",
+				"y": "5",
+				"z": "7"
+			},
+			"description": "v2 : décimaux 0,25 et 0,35",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0,35", "0,25"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"c": "6",
+				"s": "2",
+				"t": "1",
+				"u": "-2",
+				"w": "3",
+				"y": "5",
+				"z": "7"
+			},
+			"description": "v2 : P(X≤x2) pris pour P(X=x2) (0,35 et 0,25)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{7}{30}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "6",
+				"c": "10",
+				"m": "30",
+				"q": "7",
+				"s": "1",
+				"t": "2",
+				"u": "-2",
+				"w": "1"
+			},
+			"description": "v1 : 2p = 1 − 1/5 − 1/3 = 7/15 → p = 7/30",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{7}{15}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "6",
+				"c": "10",
+				"m": "30",
+				"q": "7",
+				"s": "1",
+				"t": "2",
+				"u": "-2",
+				"w": "1"
+			},
+			"description": "v1 : division par 2 oubliée (7/15)",
+			"variationIndex": 1
+		}
+	]
+}

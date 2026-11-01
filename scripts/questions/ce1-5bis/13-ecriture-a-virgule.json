@@ -1,0 +1,298 @@
+{
+	"title": "L'écriture à virgule des prix",
+	"description": "2 € et 17 centimes = 2,17 € ; 2,05 € et 2,50 € ; 0,85 € ; 1 € et 120 centimes = 2,20 € ; 3,45 € = 3 € et 45 centimes",
+	"grades": ["CE1"],
+	"theme": "Grandeurs",
+	"domain": "Monnaie",
+	"subdomain": "Euros et centimes",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{€}~\\text{et}~{{b}}~\\text{{{if:b==1|centime|centimes}}} = ?~\\text{€}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "10..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(100*a+b)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La virgule sépare les euros des centimes ; après la virgule, il y a toujours deux chiffres.",
+					"$${{a}}~\\unit{€}~\\text{et}~{{b}}~\\text{centimes} = \\textcolor{{{color:primary.0}}}{{{eval:floor((100*a+b)/100)}}.{{eval:floor(mod(100*a+b,100)/10)}}{{eval:mod(100*a+b,10)}}}~\\unit{€}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{€}~\\text{et}~{{b}}~\\text{{{if:b==1|centime|centimes}}} = ?~\\text{€}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(100*a+b)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La virgule sépare les euros des centimes ; après la virgule, il y a toujours deux chiffres.",
+					"Avec ${{b}}$ {{if:b==1|centime|centimes}}, on écrit $0{{b}}$ après la virgule : ${{eval:floor((100*a+10*b)/100)}}.{{eval:floor(mod(100*a+10*b,100)/10)}}{{eval:mod(100*a+10*b,10)}}~\\unit{€}$, ce serait ${{a}}~\\unit{€}$ et ${{eval:10*b}}$ centimes.",
+					"$${{a}}~\\unit{€}~\\text{et}~{{b}}~\\text{{{if:b==1|centime|centimes}}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((100*a+b)/100)}}.{{eval:floor(mod(100*a+b,100)/10)}}{{eval:mod(100*a+b,10)}}}~\\unit{€}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{b}}~\\text{centimes} = ?~\\text{€}$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "11..99"
+				}
+			],
+			"conditions": ["mod(b,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(b)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La virgule sépare les euros des centimes ; après la virgule, il y a toujours deux chiffres.",
+					"Il n'y a pas d'euro : on écrit $0$ avant la virgule.",
+					"$${{b}}~\\text{centimes} = \\textcolor{{{color:primary.0}}}{{{eval:floor((b)/100)}}.{{eval:floor(mod(b,100)/10)}}{{eval:mod(b,10)}}}~\\unit{€}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{€}~\\text{et}~{{eval:100+b}}~\\text{centimes} = ?~\\text{€}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(100*a+100+b)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:100+b}}$ centimes, c'est $1~\\unit{€}$ et ${{b}}$ {{if:b==1|centime|centimes}}.",
+					"$${{a}}~\\unit{€} + 1~\\unit{€} + {{b}}~\\text{{{if:b==1|centime|centimes}}} = {{eval:a+1}}~\\unit{€}~\\text{et}~{{b}}~\\text{{{if:b==1|centime|centimes}}}$$",
+					"La virgule sépare les euros des centimes ; après la virgule, il y a toujours deux chiffres.",
+					"$${{a}}~\\unit{€}~\\text{et}~{{eval:100+b}}~\\text{centimes} = \\textcolor{{{color:primary.0}}}{{{eval:floor((100*a+100+b)/100)}}.{{eval:floor(mod(100*a+100+b,100)/10)}}{{eval:mod(100*a+100+b,10)}}}~\\unit{€}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:floor((100*a+b)/100)}}.{{eval:floor(mod(100*a+b,100)/10)}}{{eval:mod(100*a+b,10)}}~\\unit{€} = ?~\\text{€}~\\text{et}~?~\\text{{{if:b==1|centime|centimes}}}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avant la virgule, les euros ; après la virgule, les centimes.",
+					"$${{eval:floor((100*a+b)/100)}}.{{eval:floor(mod(100*a+b,100)/10)}}{{eval:mod(100*a+b,10)}}~\\unit{€} = \\textcolor{{{color:primary.0}}}{{{a}}}~\\unit{€}~\\text{et}~\\textcolor{{{color:primary.0}}}{{{b}}}~\\text{{{if:b==1|centime|centimes}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 2 € et 17 centimes = 2,17 €",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "17"
+			},
+			"answers": ["2{,}17"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BO : 2 € et 50 centimes = 2,50 €",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "50"
+			},
+			"answers": ["2{,}50"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2,5 € accepté (zeros: off)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "50"
+			},
+			"answers": ["2{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 € et 17 centimes = 217 €",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "17"
+			},
+			"answers": ["217"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 2 € et 5 centimes = 2,05 €",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"answers": ["2{,}05"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 € et 5 centimes = 2,5 €",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"answers": ["2{,}5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 85 centimes = 0,85 €",
+			"variationIndex": 2,
+			"variables": {
+				"b": "85"
+			},
+			"answers": ["0{,}85"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 85 centimes = 85 €",
+			"variationIndex": 2,
+			"variables": {
+				"b": "85"
+			},
+			"answers": ["85"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 1 € et 120 centimes = 2,20 €",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"b": "20"
+			},
+			"answers": ["2{,}20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BO : 2,2 € accepté (zeros: off)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"b": "20"
+			},
+			"answers": ["2{,}2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 € et 120 centimes = 1,20 €",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"b": "20"
+			},
+			"answers": ["1{,}2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 3,45 € = 3 € et 45 centimes",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"b": "45"
+			},
+			"answers": ["3", "45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3,45 € = 345 € et 0 centime",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"b": "45"
+			},
+			"answers": ["345", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

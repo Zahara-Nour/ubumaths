@@ -10,140 +10,75 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "Comment s'appelle ce solide ?\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 4.7\ndescription: Un cube.\n---\np1 = point(2.24, 0.3, visible=faux)\np2 = point(4.84, 0.3, visible=faux)\np3 = point(4.84, 2.9, visible=faux)\np4 = point(2.24, 2.9, visible=faux)\np5 = point(3.16, 1.219, visible=faux)\np6 = point(5.76, 1.219, visible=faux)\np7 = point(5.76, 3.819, visible=faux)\np8 = point(3.16, 3.819, visible=faux)\nsegment(p1, p2)\nsegment(p2, p3)\nsegment(p3, p4)\nsegment(p4, p1)\nsegment(p2, p6)\nsegment(p6, p7)\nsegment(p3, p7)\nsegment(p4, p8)\nsegment(p8, p7)\nsegment(p1, p5, trait=\"tirets\")\nsegment(p5, p6, trait=\"tirets\")\nsegment(p5, p8, trait=\"tirets\")\n```",
+			"statement": "Comment s'appelle ce solide ?\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 4.7\ndescription: Un cube.\n---\np1 = point(2.24, 0.3, visible=faux)\np2 = point(4.84, 0.3, visible=faux)\np3 = point(4.84, 2.9, visible=faux)\np4 = point(2.24, 2.9, visible=faux)\np5 = point(3.16, 1.219, visible=faux)\np6 = point(5.76, 1.219, visible=faux)\np7 = point(5.76, 3.819, visible=faux)\np8 = point(3.16, 3.819, visible=faux)\nsegment(p1, p2)\nsegment(p2, p3)\nsegment(p3, p4)\nsegment(p4, p1)\nsegment(p2, p6)\nsegment(p6, p7)\nsegment(p3, p7)\nsegment(p4, p8)\nsegment(p8, p7)\nsegment(p1, p5, trait=\"tirets\")\nsegment(p5, p6, trait=\"tirets\")\nsegment(p5, p8, trait=\"tirets\")\n```\n\n```choix\n- C'est un cube.\n- C'est une boule.\n- C'est un cône.\n- C'est un cylindre.\n- C'est un pavé.\n```",
 			"variables": [],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "C'est un cube."
-				},
-				{
-					"content": "C'est une boule."
-				},
-				{
-					"content": "C'est un cône."
-				},
-				{
-					"content": "C'est un cylindre."
-				},
-				{
-					"content": "C'est un pavé."
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": ["C'est un cube : ses 6 faces sont des carrés, toutes pareilles."]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Comment s'appelle ce solide ?\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 4.7\ndescription: Un petit cube.\n---\np1 = point(2.646, 0.3, visible=faux)\np2 = point(4.646, 0.3, visible=faux)\np3 = point(4.646, 2.3, visible=faux)\np4 = point(2.646, 2.3, visible=faux)\np5 = point(3.354, 1.007, visible=faux)\np6 = point(5.354, 1.007, visible=faux)\np7 = point(5.354, 3.007, visible=faux)\np8 = point(3.354, 3.007, visible=faux)\nsegment(p1, p2)\nsegment(p2, p3)\nsegment(p3, p4)\nsegment(p4, p1)\nsegment(p2, p6)\nsegment(p6, p7)\nsegment(p3, p7)\nsegment(p4, p8)\nsegment(p8, p7)\nsegment(p1, p5, trait=\"tirets\")\nsegment(p5, p6, trait=\"tirets\")\nsegment(p5, p8, trait=\"tirets\")\n```",
+			"statement": "Comment s'appelle ce solide ?\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 4.7\ndescription: Un petit cube.\n---\np1 = point(2.646, 0.3, visible=faux)\np2 = point(4.646, 0.3, visible=faux)\np3 = point(4.646, 2.3, visible=faux)\np4 = point(2.646, 2.3, visible=faux)\np5 = point(3.354, 1.007, visible=faux)\np6 = point(5.354, 1.007, visible=faux)\np7 = point(5.354, 3.007, visible=faux)\np8 = point(3.354, 3.007, visible=faux)\nsegment(p1, p2)\nsegment(p2, p3)\nsegment(p3, p4)\nsegment(p4, p1)\nsegment(p2, p6)\nsegment(p6, p7)\nsegment(p3, p7)\nsegment(p4, p8)\nsegment(p8, p7)\nsegment(p1, p5, trait=\"tirets\")\nsegment(p5, p6, trait=\"tirets\")\nsegment(p5, p8, trait=\"tirets\")\n```\n\n```choix\n- C'est un cube.\n- C'est une boule.\n- C'est un cône.\n- C'est un cylindre.\n- C'est un pavé.\n```",
 			"variables": [],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "C'est un cube."
-				},
-				{
-					"content": "C'est une boule."
-				},
-				{
-					"content": "C'est un cône."
-				},
-				{
-					"content": "C'est un cylindre."
-				},
-				{
-					"content": "C'est un pavé."
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"C'est un cube : ses 6 faces sont des carrés, toutes pareilles. Petit ou grand, c'est toujours un cube."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Comment s'appelle ce solide ?\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 4.7\ndescription: Un pavé couché.\n---\np1 = point(2.046, 0.3, visible=faux)\np2 = point(5.246, 0.3, visible=faux)\np3 = point(5.246, 2, visible=faux)\np4 = point(2.046, 2, visible=faux)\np5 = point(2.754, 1.007, visible=faux)\np6 = point(5.954, 1.007, visible=faux)\np7 = point(5.954, 2.707, visible=faux)\np8 = point(2.754, 2.707, visible=faux)\nsegment(p1, p2)\nsegment(p2, p3)\nsegment(p3, p4)\nsegment(p4, p1)\nsegment(p2, p6)\nsegment(p6, p7)\nsegment(p3, p7)\nsegment(p4, p8)\nsegment(p8, p7)\nsegment(p1, p5, trait=\"tirets\")\nsegment(p5, p6, trait=\"tirets\")\nsegment(p5, p8, trait=\"tirets\")\n```",
+			"statement": "Comment s'appelle ce solide ?\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 4.7\ndescription: Un pavé couché.\n---\np1 = point(2.046, 0.3, visible=faux)\np2 = point(5.246, 0.3, visible=faux)\np3 = point(5.246, 2, visible=faux)\np4 = point(2.046, 2, visible=faux)\np5 = point(2.754, 1.007, visible=faux)\np6 = point(5.954, 1.007, visible=faux)\np7 = point(5.954, 2.707, visible=faux)\np8 = point(2.754, 2.707, visible=faux)\nsegment(p1, p2)\nsegment(p2, p3)\nsegment(p3, p4)\nsegment(p4, p1)\nsegment(p2, p6)\nsegment(p6, p7)\nsegment(p3, p7)\nsegment(p4, p8)\nsegment(p8, p7)\nsegment(p1, p5, trait=\"tirets\")\nsegment(p5, p6, trait=\"tirets\")\nsegment(p5, p8, trait=\"tirets\")\n```\n\n```choix\n- C'est un pavé.\n- C'est un cube.\n- C'est une boule.\n- C'est un cône.\n- C'est un cylindre.\n```",
 			"variables": [],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "C'est un pavé."
-				},
-				{
-					"content": "C'est un cube."
-				},
-				{
-					"content": "C'est une boule."
-				},
-				{
-					"content": "C'est un cône."
-				},
-				{
-					"content": "C'est un cylindre."
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"C'est un pavé : ses faces sont des rectangles. Ce n'est pas un cube : ses faces ne sont pas toutes des carrés."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Comment s'appelle ce solide ?\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 4.7\ndescription: Un pavé debout.\n---\np1 = point(2.853, 0.3, visible=faux)\np2 = point(4.653, 0.3, visible=faux)\np3 = point(4.653, 3.7, visible=faux)\np4 = point(2.853, 3.7, visible=faux)\np5 = point(3.347, 0.795, visible=faux)\np6 = point(5.147, 0.795, visible=faux)\np7 = point(5.147, 4.195, visible=faux)\np8 = point(3.347, 4.195, visible=faux)\nsegment(p1, p2)\nsegment(p2, p3)\nsegment(p3, p4)\nsegment(p4, p1)\nsegment(p2, p6)\nsegment(p6, p7)\nsegment(p3, p7)\nsegment(p4, p8)\nsegment(p8, p7)\nsegment(p1, p5, trait=\"tirets\")\nsegment(p5, p6, trait=\"tirets\")\nsegment(p5, p8, trait=\"tirets\")\n```",
+			"statement": "Comment s'appelle ce solide ?\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 4.7\ndescription: Un pavé debout.\n---\np1 = point(2.853, 0.3, visible=faux)\np2 = point(4.653, 0.3, visible=faux)\np3 = point(4.653, 3.7, visible=faux)\np4 = point(2.853, 3.7, visible=faux)\np5 = point(3.347, 0.795, visible=faux)\np6 = point(5.147, 0.795, visible=faux)\np7 = point(5.147, 4.195, visible=faux)\np8 = point(3.347, 4.195, visible=faux)\nsegment(p1, p2)\nsegment(p2, p3)\nsegment(p3, p4)\nsegment(p4, p1)\nsegment(p2, p6)\nsegment(p6, p7)\nsegment(p3, p7)\nsegment(p4, p8)\nsegment(p8, p7)\nsegment(p1, p5, trait=\"tirets\")\nsegment(p5, p6, trait=\"tirets\")\nsegment(p5, p8, trait=\"tirets\")\n```\n\n```choix\n- C'est un pavé.\n- C'est un cube.\n- C'est une boule.\n- C'est un cône.\n- C'est un cylindre.\n```",
 			"variables": [],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "C'est un pavé."
-				},
-				{
-					"content": "C'est un cube."
-				},
-				{
-					"content": "C'est une boule."
-				},
-				{
-					"content": "C'est un cône."
-				},
-				{
-					"content": "C'est un cylindre."
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"C'est un pavé, posé debout : ses faces sont des rectangles. Ce n'est pas un cube : ses faces ne sont pas toutes des carrés."
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		},
 		{
-			"statement": "Comment s'appelle ce solide ?\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 4.7\ndescription: Une boule.\n---\np1 = point(4, 2.3, visible=faux)\ncercle(p1, rayon=2)\np2 = point(6, 2.3, visible=faux)\np3 = point(5.962, 2.191, visible=faux)\np4 = point(5.848, 2.086, visible=faux)\np5 = point(5.663, 1.989, visible=faux)\np6 = point(5.414, 1.904, visible=faux)\np7 = point(5.111, 1.834, visible=faux)\np8 = point(4.765, 1.783, visible=faux)\np9 = point(4.39, 1.751, visible=faux)\np10 = point(4, 1.74, visible=faux)\np11 = point(3.61, 1.751, visible=faux)\np12 = point(3.235, 1.783, visible=faux)\np13 = point(2.889, 1.834, visible=faux)\np14 = point(2.586, 1.904, visible=faux)\np15 = point(2.337, 1.989, visible=faux)\np16 = point(2.152, 2.086, visible=faux)\np17 = point(2.038, 2.191, visible=faux)\np18 = point(2, 2.3, visible=faux)\nsegment(p2, p3)\nsegment(p3, p4)\nsegment(p4, p5)\nsegment(p5, p6)\nsegment(p6, p7)\nsegment(p7, p8)\nsegment(p8, p9)\nsegment(p9, p10)\nsegment(p10, p11)\nsegment(p11, p12)\nsegment(p12, p13)\nsegment(p13, p14)\nsegment(p14, p15)\nsegment(p15, p16)\nsegment(p16, p17)\nsegment(p17, p18)\np19 = point(6, 2.3, visible=faux)\np20 = point(5.98, 2.38, visible=faux)\np21 = point(5.919, 2.458, visible=faux)\nsegment(p19, p20)\nsegment(p20, p21)\np22 = point(5.683, 2.603, visible=faux)\np23 = point(5.511, 2.667, visible=faux)\np24 = point(5.31, 2.723, visible=faux)\nsegment(p22, p23)\nsegment(p23, p24)\np25 = point(4.831, 2.809, visible=faux)\np26 = point(4.563, 2.837, visible=faux)\np27 = point(4.285, 2.854, visible=faux)\nsegment(p25, p26)\nsegment(p26, p27)\np28 = point(3.715, 2.854, visible=faux)\np29 = point(3.437, 2.837, visible=faux)\np30 = point(3.169, 2.809, visible=faux)\nsegment(p28, p29)\nsegment(p29, p30)\np31 = point(2.69, 2.723, visible=faux)\np32 = point(2.489, 2.667, visible=faux)\np33 = point(2.317, 2.603, visible=faux)\nsegment(p31, p32)\nsegment(p32, p33)\np34 = point(2.081, 2.458, visible=faux)\np35 = point(2.02, 2.38, visible=faux)\np36 = point(2, 2.3, visible=faux)\nsegment(p34, p35)\nsegment(p35, p36)\n```",
+			"statement": "Comment s'appelle ce solide ?\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 4.7\ndescription: Une boule.\n---\np1 = point(4, 2.3, visible=faux)\ncercle(p1, rayon=2)\np2 = point(6, 2.3, visible=faux)\np3 = point(5.962, 2.191, visible=faux)\np4 = point(5.848, 2.086, visible=faux)\np5 = point(5.663, 1.989, visible=faux)\np6 = point(5.414, 1.904, visible=faux)\np7 = point(5.111, 1.834, visible=faux)\np8 = point(4.765, 1.783, visible=faux)\np9 = point(4.39, 1.751, visible=faux)\np10 = point(4, 1.74, visible=faux)\np11 = point(3.61, 1.751, visible=faux)\np12 = point(3.235, 1.783, visible=faux)\np13 = point(2.889, 1.834, visible=faux)\np14 = point(2.586, 1.904, visible=faux)\np15 = point(2.337, 1.989, visible=faux)\np16 = point(2.152, 2.086, visible=faux)\np17 = point(2.038, 2.191, visible=faux)\np18 = point(2, 2.3, visible=faux)\nsegment(p2, p3)\nsegment(p3, p4)\nsegment(p4, p5)\nsegment(p5, p6)\nsegment(p6, p7)\nsegment(p7, p8)\nsegment(p8, p9)\nsegment(p9, p10)\nsegment(p10, p11)\nsegment(p11, p12)\nsegment(p12, p13)\nsegment(p13, p14)\nsegment(p14, p15)\nsegment(p15, p16)\nsegment(p16, p17)\nsegment(p17, p18)\np19 = point(6, 2.3, visible=faux)\np20 = point(5.98, 2.38, visible=faux)\np21 = point(5.919, 2.458, visible=faux)\nsegment(p19, p20)\nsegment(p20, p21)\np22 = point(5.683, 2.603, visible=faux)\np23 = point(5.511, 2.667, visible=faux)\np24 = point(5.31, 2.723, visible=faux)\nsegment(p22, p23)\nsegment(p23, p24)\np25 = point(4.831, 2.809, visible=faux)\np26 = point(4.563, 2.837, visible=faux)\np27 = point(4.285, 2.854, visible=faux)\nsegment(p25, p26)\nsegment(p26, p27)\np28 = point(3.715, 2.854, visible=faux)\np29 = point(3.437, 2.837, visible=faux)\np30 = point(3.169, 2.809, visible=faux)\nsegment(p28, p29)\nsegment(p29, p30)\np31 = point(2.69, 2.723, visible=faux)\np32 = point(2.489, 2.667, visible=faux)\np33 = point(2.317, 2.603, visible=faux)\nsegment(p31, p32)\nsegment(p32, p33)\np34 = point(2.081, 2.458, visible=faux)\np35 = point(2.02, 2.38, visible=faux)\np36 = point(2, 2.3, visible=faux)\nsegment(p34, p35)\nsegment(p35, p36)\n```\n\n```choix\n- C'est une boule.\n- C'est un cube.\n- C'est un cône.\n- C'est un cylindre.\n- C'est un pavé.\n```",
 			"variables": [],
 			"conditions": [],
-			"choices": [
-				{
-					"content": "C'est une boule."
-				},
-				{
-					"content": "C'est un cube."
-				},
-				{
-					"content": "C'est un cône."
-				},
-				{
-					"content": "C'est un cylindre."
-				},
-				{
-					"content": "C'est un pavé."
-				}
-			],
-			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": ["C'est une boule : elle est toute ronde, elle n'a aucune face plate."]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			]
 		}
 	],
 	"testSpecs": [
@@ -154,7 +89,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Cube pris pour un pavé",
@@ -163,7 +98,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Petit cube : bon nom",
@@ -172,7 +107,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Petit cube pris pour un pavé",
@@ -181,7 +116,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Pavé couché : bon nom",
@@ -190,7 +125,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Pavé couché pris pour un cube",
@@ -199,7 +134,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Pavé debout : bon nom",
@@ -208,7 +143,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Pavé debout pris pour un cube",
@@ -217,7 +152,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		},
 		{
 			"description": "Boule : bon nom",
@@ -226,7 +161,7 @@
 			"expected": {
 				"status": "correct"
 			},
-			"selectedChoices": [0]
+			"answers": ["0"]
 		},
 		{
 			"description": "Boule pris pour un cylindre",
@@ -235,7 +170,7 @@
 			"expected": {
 				"status": "incorrect"
 			},
-			"selectedChoices": [1]
+			"answers": ["1"]
 		}
 	]
 }

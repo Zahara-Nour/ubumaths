@@ -1,0 +1,202 @@
+{
+	"title": "La somme de deux ou trois nombres",
+	"description": "« La somme de 12 et de 25 est 37 » ; terme manquant d'une somme donnée",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Additionner",
+	"subdomain": "Sens",
+	"level": 6,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quelle est la somme de ${{a}}$ et de ${{b}}$ ?\n\nLa somme est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "11..89"
+				},
+				{
+					"name": "b",
+					"expression": "11..89"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La **somme** de deux nombres, c'est le résultat de leur addition.",
+					"La somme de ${{a}}$ et de ${{b}}$, c'est ${{a}}+{{b}}={{solution}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quelle est la somme de ${{a}}$, de ${{b}}$ et de ${{c}}$ ?\n\nLa somme est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "11..49"
+				},
+				{
+					"name": "b",
+					"expression": "11..49"
+				},
+				{
+					"name": "c",
+					"expression": "11..49"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b+c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La **somme** de plusieurs nombres, c'est le résultat de leur addition.",
+					"La somme, c'est ${{a}}+{{b}}+{{c}}={{solution}}$."
+				]
+			}
+		},
+		{
+			"statement": "La somme de ${{a}}$ et d'un autre nombre est ${{eval:a+b}}$.\n\nQuel est cet autre nombre ?\n\nL'autre nombre est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "11..49"
+				},
+				{
+					"name": "b",
+					"expression": "11..49"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La **somme** de deux nombres, c'est le résultat de leur addition.",
+					"On cherche le nombre qui complète ${{a}}$ jusqu'à ${{eval:a+b}}$ : ${{a}}+?={{eval:a+b}}$.",
+					"${{eval:a+b}}-{{a}}={{solution}}$, donc l'autre nombre est ${{solution}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "somme de 12 et de 25 : 37",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "25"
+			},
+			"answers": ["37"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : différence (13)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "25"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : produit (300)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "25"
+			},
+			"answers": ["300"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 89 + 89 = 178",
+			"variationIndex": 0,
+			"variables": {
+				"a": "89",
+				"b": "89"
+			},
+			"answers": ["178"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "somme de 15, de 23 et de 31 : 69",
+			"variationIndex": 1,
+			"variables": {
+				"a": "15",
+				"b": "23",
+				"c": "31"
+			},
+			"answers": ["69"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deux nombres seulement (38)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "15",
+				"b": "23",
+				"c": "31"
+			},
+			"answers": ["38"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "12 et ? font 37 : 25",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12",
+				"b": "25"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la somme elle-même (37)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12",
+				"b": "25"
+			},
+			"answers": ["37"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 12 + 37 (49)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12",
+				"b": "25"
+			},
+			"answers": ["49"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

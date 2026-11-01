@@ -49,7 +49,7 @@ import {
 	multiply,
 	opposite
 } from '../../factory';
-import { denormalize, normalize } from '../../normal';
+import { canonicalForm } from '../../normal';
 import { getVariables } from '../../eval/substitute';
 import { isDivision, isFunction, isOpposite } from '../../guards';
 import { findNodes } from '../../transforms';
@@ -311,9 +311,7 @@ export function extractTranscendentalEquation(
 				constantNode:
 					bNode === null
 						? number('0')
-						: signOutOfFraction(
-								denormalize(normalize(divide(opposite(bNode), signedCoeff, 'fraction')))
-							),
+						: signOutOfFraction(canonicalForm(divide(opposite(bNode), signedCoeff, 'fraction'))),
 				constantNumeric: bNode === null ? 0 : null,
 				...(matched.logBase && { logBase: matched.logBase })
 			};
@@ -335,14 +333,14 @@ export function extractTranscendentalEquation(
 			// Build symbolic constant: -b/a
 			if (Math.abs(aNumeric - 1) < 1e-15 && sign === '+') {
 				// a = 1, sign = '+': c = -b
-				constantNode = denormalize(normalize(opposite(bNode)));
+				constantNode = canonicalForm(opposite(bNode));
 			} else if (Math.abs(aNumeric + 1) < 1e-15 && sign === '-') {
 				// a = -1 (sign flipped): c = -b/(-1) = b
-				constantNode = denormalize(normalize(bNode));
+				constantNode = canonicalForm(bNode);
 			} else {
 				// General case: c = -b/a
-				const signedCoeff = sign === '-' ? denormalize(normalize(opposite(coeffNode))) : coeffNode;
-				constantNode = denormalize(normalize(divide(opposite(bNode), signedCoeff, 'fraction')));
+				const signedCoeff = sign === '-' ? canonicalForm(opposite(coeffNode)) : coeffNode;
+				constantNode = canonicalForm(divide(opposite(bNode), signedCoeff, 'fraction'));
 			}
 		}
 
@@ -376,7 +374,7 @@ export function extractTrigEquation(
  */
 export function simplifyInverseTrig(inverseFuncName: string, constantNode: MathNode): MathNode {
 	const arcNode = func(inverseFuncName, [constantNode]);
-	return denormalize(normalize(arcNode));
+	return canonicalForm(arcNode);
 }
 
 /**
@@ -419,7 +417,7 @@ export function computeUSolutions(
 
 		// Second solution: π - arcsin(c)
 		const sol2Numeric = Math.PI - arcsinVal;
-		const sol2Node = denormalize(normalize(subtract(PI, arcsinNode)));
+		const sol2Node = canonicalForm(subtract(PI, arcsinNode));
 
 		// Only add if distinct modulo 2π
 		if (
@@ -437,7 +435,7 @@ export function computeUSolutions(
 
 		// Second solution: -arccos(c)
 		const sol2Numeric = -arccosVal;
-		const sol2Node = denormalize(normalize(opposite(arccosNode)));
+		const sol2Node = canonicalForm(opposite(arccosNode));
 
 		// Only add if distinct modulo 2π
 		if (
@@ -547,13 +545,14 @@ function solveExponential(
 		try {
 			bNumeric = evaluateNodeToApproximatedNumber(offsetNode);
 		} catch {
-			bNumeric = 0;
+			// Décalage paramétré : pas de valeur approchée (V42)
+			bNumeric = NaN;
 		}
 		solution = divide(subtract(lnC, offsetNode), coeffNode, 'fraction');
 		approximate = (lnCNumeric - bNumeric) / aNumeric;
 	}
 
-	const solutionSimplified = denormalize(normalize(solution));
+	const solutionSimplified = canonicalForm(solution);
 
 	recorder.recordStep(
 		'apply-logarithm',
@@ -563,9 +562,13 @@ function solveExponential(
 		'detailed'
 	);
 
+	const parametric = Number.isNaN(approximate);
+
 	recorder.recordStep(
 		'isolate-variable',
-		`Solution: ${variable} = ${approximate.toPrecision(options.precision)}`,
+		parametric
+			? `Solution exprimée avec le paramètre`
+			: `Solution: ${variable} = ${approximate.toPrecision(options.precision)}`,
 		equals(varNode(variable), solution),
 		equals(varNode(variable), solutionSimplified),
 		'summarized'
@@ -578,7 +581,7 @@ function solveExponential(
 			{
 				value: solutionSimplified,
 				exact: true,
-				approximate
+				...(!parametric && { approximate })
 			}
 		],
 		equationType: 'exponential',
@@ -662,13 +665,14 @@ function solveLogarithmic(
 		try {
 			bNumeric = evaluateNodeToApproximatedNumber(offsetNode);
 		} catch {
-			bNumeric = 0;
+			// Décalage paramétré : pas de valeur approchée (V42)
+			bNumeric = NaN;
 		}
 		solution = divide(subtract(inverseNode, offsetNode), coeffNode, 'fraction');
 		approximate = (inverseNumeric - bNumeric) / aNumeric;
 	}
 
-	const solutionSimplified = denormalize(normalize(solution));
+	const solutionSimplified = canonicalForm(solution);
 
 	const applyRule = funcName === 'ln' ? 'apply-exponential' : 'apply-exponential';
 	const applyDesc =
@@ -803,13 +807,14 @@ function solveTrigonometric(
 			try {
 				bNumeric = evaluateNodeToApproximatedNumber(offsetNode);
 			} catch {
-				bNumeric = 0;
+				// Décalage paramétré : pas de valeur approchée (V42)
+				bNumeric = NaN;
 			}
 			xNumeric = (uSol.numeric - bNumeric) / aNumeric;
 			xSymbolic = divide(subtract(uSol.symbolic, offsetNode), coeffNode, 'fraction');
 		}
 
-		const simplified = denormalize(normalize(xSymbolic));
+		const simplified = canonicalForm(xSymbolic);
 
 		return {
 			value: simplified,
@@ -829,7 +834,7 @@ function solveTrigonometric(
 		// 20000000000000000/3333333333333333·π, que l'affichage refusait — et la
 		// réponse perdait son « + 6kπ » (2026-10-09).
 		const absCoeff = aNumeric < 0 ? opposite(coeffNode) : coeffNode;
-		xPeriodNode = denormalize(normalize(divide(basePeriodNode, absCoeff, 'fraction')));
+		xPeriodNode = canonicalForm(divide(basePeriodNode, absCoeff, 'fraction'));
 	}
 
 	// Build periodic solution family

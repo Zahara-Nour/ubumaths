@@ -1,0 +1,171 @@
+{
+	"title": "Rendre une fraction irréductible",
+	"description": "Simplifier par décomposition en facteurs premiers : diviseur commun 2ᵘ × 3ᵛ (60/84), puis diviseur commun caché, produit de deux premiers ⩾ 7 (154/231)",
+	"grades": ["2"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Simplification",
+	"level": 7,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris cette fraction sous forme irréductible.\n\n$$\\dfrac{ {{eval:2^(u)*3^(v)*(p)}} }{ {{eval:2^(u)*3^(v)*(q)}} }=?$$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..2"
+				},
+				{
+					"name": "v",
+					"expression": "1..2"
+				},
+				{
+					"name": "p",
+					"expression": "5|7|11|13"
+				},
+				{
+					"name": "q",
+					"expression": "5|7|11|13!p"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{p}} }{ {{q}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On décompose le numérateur et le dénominateur en **produits de facteurs premiers**.",
+					"$${{eval:2^(u)*3^(v)*(p)}}=\\textcolor{{{color:primary.0}}}{{{if:u==1|2|2^{ {{eval:u}} }}}\\times{{if:v==1|3|3^{ {{eval:v}} }}}}\\times{{p}}\\qquad{{eval:2^(u)*3^(v)*(q)}}=\\textcolor{{{color:primary.0}}}{{{if:u==1|2|2^{ {{eval:u}} }}}\\times{{if:v==1|3|3^{ {{eval:v}} }}}}\\times{{q}}$$",
+					"Le plus grand diviseur commun est $\\textcolor{{{color:primary.0}}}{{{eval:2^(u)*3^(v)}}}$ ; on simplifie par lui :",
+					"$$\\dfrac{ {{eval:2^(u)*3^(v)*(p)}} }{ {{eval:2^(u)*3^(v)*(q)}} }=\\dfrac{\\textcolor{{{color:primary.0}}}{{{eval:2^(u)*3^(v)}}}\\times{{p}} }{\\textcolor{{{color:primary.0}}}{{{eval:2^(u)*3^(v)}}}\\times{{q}} }=\\textcolor{{{color:primary.1}}}{\\dfrac{ {{p}} }{ {{q}} }}$$",
+					"${{p}}$ et ${{q}}$ sont premiers et différents : la fraction est irréductible."
+				]
+			}
+		},
+		{
+			"statement": "Écris cette fraction sous forme irréductible.\n\n$$\\dfrac{ {{eval:(p)*(r)*(s)}} }{ {{eval:(q)*(r)*(s)}} }=?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2|3|5"
+				},
+				{
+					"name": "q",
+					"expression": "2|3|5!p"
+				},
+				{
+					"name": "r",
+					"expression": "7|11|13"
+				},
+				{
+					"name": "s",
+					"expression": "7|11|13!r"
+				}
+			],
+			"conditions": ["r < s"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{p}} }{ {{q}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Aucun petit diviseur commun n'apparaît : on décompose en **produits de facteurs premiers**.",
+					"$${{eval:(p)*(r)*(s)}}={{p}}\\times\\textcolor{{{color:primary.0}}}{{{r}}\\times{{s}}}\\qquad{{eval:(q)*(r)*(s)}}={{q}}\\times\\textcolor{{{color:primary.0}}}{{{r}}\\times{{s}}}$$",
+					"Le diviseur commun est $\\textcolor{{{color:primary.0}}}{{{r}}\\times{{s}}={{eval:(r)*(s)}}}$ :",
+					"$$\\dfrac{ {{eval:(p)*(r)*(s)}} }{ {{eval:(q)*(r)*(s)}} }=\\textcolor{{{color:primary.1}}}{\\dfrac{ {{p}} }{ {{q}} }}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "60/84 = 5/7",
+			"variationIndex": 0,
+			"variables": {
+				"u": "2",
+				"v": "1",
+				"p": "5",
+				"q": "7"
+			},
+			"answers": ["\\frac{5}{7}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Simplification incomplète (30/42)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "2",
+				"v": "1",
+				"p": "5",
+				"q": "7"
+			},
+			"answers": ["\\frac{30}{42}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "Erreur : 7/5 (fraction renversée)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "2",
+				"v": "1",
+				"p": "5",
+				"q": "7"
+			},
+			"answers": ["\\frac{7}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "154/231 = 2/3",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"r": "7",
+				"s": "11"
+			},
+			"answers": ["\\frac{2}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Simplification par 7 seulement (22/33)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"r": "7",
+				"s": "11"
+			},
+			"answers": ["\\frac{22}{33}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "Erreur : 3/2",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"r": "7",
+				"s": "11"
+			},
+			"answers": ["\\frac{3}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

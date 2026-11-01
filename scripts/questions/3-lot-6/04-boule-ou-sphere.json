@@ -1,0 +1,167 @@
+{
+	"title": "Boule ou sphère ?",
+	"description": "Connaître la définition de la sphère (OM = r) et de la boule (OM ⩽ r) ; situer un point par rapport à une sphère",
+	"grades": ["3"],
+	"theme": "Géométrie",
+	"domain": "Solides",
+	"subdomain": "Sphère et boule",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Une sphère a pour centre $O$ et pour rayon ${{r}}~\\unit{cm}$. Un point $M$ de l'espace est tel que $OM = {{d}}~\\unit{cm}$. Où se trouve le point $M$ ?\n\n```choix\n- {{if:t==0|à l'intérieur de la boule, mais pas sur la sphère|}}{{if:t==1|sur la sphère|}}{{if:t==2|à l'extérieur de la boule|}}\n- {{if:t==0|sur la sphère|}}{{if:t==1|à l'intérieur de la boule, mais pas sur la sphère|}}{{if:t==2|à l'intérieur de la boule, mais pas sur la sphère|}}\n- {{if:t==0|à l'extérieur de la boule|}}{{if:t==1|à l'extérieur de la boule|}}{{if:t==2|sur la sphère|}}\n```",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "3..9"
+				},
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "d",
+					"expression": "eval:r+(t-1)*k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La **sphère** de centre $O$ et de rayon $r$ est formée des points $M$ de l'espace tels que $OM = r$ ; la **boule** de centre $O$ et de rayon $r$, des points tels que $OM \\leqslant r$ (la sphère et son intérieur).",
+					"Ici $OM = {{d}}~\\unit{cm}$ et $r = {{r}}~\\unit{cm}$ : $OM {{if:t==0|<|}}{{if:t==1|=|}}{{if:t==2|>|}} r$, donc $M$ est \\textcolor{{{color:primary.0}}}{\\text{{{if:t==0|à l'intérieur de la boule|}}{{if:t==1|sur la sphère|}}{{if:t==2|à l'extérieur de la boule|}}}}."
+				]
+			}
+		},
+		{
+			"statement": "$O$ est un point de l'espace et $r$ un nombre positif. L'ensemble des points $M$ de l'espace tels que $OM {{if:w==0|=|}}{{if:w==1|\\leqslant|}} r$ est :\n\n```choix\n- {{if:w==0|la sphère de centre $O$ et de rayon $r$|}}{{if:w==1|la boule de centre $O$ et de rayon $r$|}}\n- {{if:w==0|la boule de centre $O$ et de rayon $r$|}}{{if:w==1|la sphère de centre $O$ et de rayon $r$|}}\n- le cercle de centre $O$ et de rayon $r$\n- le disque de centre $O$ et de rayon $r$\n```",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La **sphère** de centre $O$ et de rayon $r$ est formée des points $M$ de l'espace tels que $OM = r$ ; la **boule** de centre $O$ et de rayon $r$, des points tels que $OM \\leqslant r$ (la sphère et son intérieur).",
+					"Dans l'espace, $OM {{if:w==0|=|}}{{if:w==1|\\leqslant|}} r$ décrit \\textcolor{{{color:primary.0}}}{\\text{{{if:w==0|la sphère|}}{{if:w==1|la boule|}}}} ; le cercle et le disque sont des figures **planes**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "OM = 3 < 5 : à l'intérieur",
+			"variationIndex": 0,
+			"variables": {
+				"r": "5",
+				"k": "2",
+				"t": "0",
+				"d": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sur la sphère",
+			"variationIndex": 0,
+			"variables": {
+				"r": "5",
+				"k": "2",
+				"t": "0",
+				"d": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "OM = r : sur la sphère",
+			"variationIndex": 0,
+			"variables": {
+				"r": "7",
+				"k": "1",
+				"t": "1",
+				"d": "7"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "OM > r : à l'extérieur",
+			"variationIndex": 0,
+			"variables": {
+				"r": "4",
+				"k": "1",
+				"t": "2",
+				"d": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "OM = r : la sphère",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la boule",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le cercle",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "OM ⩽ r : la boule",
+			"variationIndex": 1,
+			"variables": {
+				"w": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

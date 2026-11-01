@@ -1,0 +1,224 @@
+{
+	"title": "Antécédents par la fonction carré",
+	"description": "Antécédents de k par x ↦ x² : k fraction (9/4), décimal (1,44), puis f(x) = x² + c = k ; deux antécédents opposés, symétrie de la parabole (pièges : l'antécédent négatif oublié, k/2, c oublié, 1,2² = 1,44 pris pour 0,12)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Fonction carré",
+	"subdomain": "Résolution algébrique",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On note $f$ la fonction carré : $f(x)=x^2$.\n\nDétermine les antécédents de $\\dfrac{ {{eval:(p)^2}} }{ {{eval:(q)^2}} }$ par $f$, c'est-à-dire résous dans $\\mathbb{R}$ l'équation $x^2=\\dfrac{ {{eval:(p)^2}} }{ {{eval:(q)^2}} }$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..5"
+				},
+				{
+					"name": "q",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["gcd(p, q) == 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:-(p)/(q)}} ; {{eval:(p)/(q)}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La parabole de la fonction carré est **symétrique** par rapport à l'axe des ordonnées : $(-a)^2=a^2$, donc si $a$ est un antécédent, $-a$ aussi. La droite $y=k$ (avec $k>0$) coupe la parabole en **deux** points symétriques.",
+					"$\\left(\\dfrac{ {{p}} }{ {{q}} }\\right)^2=\\dfrac{ {{eval:(p)^2}} }{ {{eval:(q)^2}} }$ : $\\dfrac{ {{p}} }{ {{q}} }$ est un antécédent, et son opposé $-\\dfrac{ {{p}} }{ {{q}} }$ aussi.",
+					"```courbe\nx: -3 ; 3\ny: -1 ; 7\nf(x) = x^2   bleu   nom=C_f\ng(x) = {{eval:(p)^2}}/{{eval:(q)^2}}   rouge   pointillé\npoints: A(-({{p}}/{{q}}) ; {{eval:(p)^2}}/{{eval:(q)^2}}), B({{p}}/{{q}} ; {{eval:(p)^2}}/{{eval:(q)^2}})\ntaille: moyenne\ndescription: Parabole de la fonction carré et droite horizontale en pointillé, qui la coupe en deux points A et B symétriques par rapport à l'axe des ordonnées.\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{ -\\dfrac{ {{p}} }{ {{q}} }\\,;\\dfrac{ {{p}} }{ {{q}} } \\right\\}}$."
+				]
+			}
+		},
+		{
+			"statement": "On note $f$ la fonction carré : $f(x)=x^2$.\n\nDétermine les antécédents de ${{eval:(n)^2/100;d}}$ par $f$, c'est-à-dire résous dans $\\mathbb{R}$ l'équation $x^2={{eval:(n)^2/100;d}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..15!10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:-(n)/10;d}} ; {{eval:(n)/10;d}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La parabole de la fonction carré est **symétrique** par rapport à l'axe des ordonnées : $(-a)^2=a^2$, donc si $a$ est un antécédent, $-a$ aussi. La droite $y=k$ (avec $k>0$) coupe la parabole en **deux** points symétriques.",
+					"${{eval:(n)/10;d}}^2={{eval:(n)^2/100;d}}$ : ${{eval:(n)/10;d}}$ est un antécédent, et son opposé ${{eval:-(n)/10;d}}$ aussi. (Le carré a deux fois plus de chiffres après la virgule.)",
+					"```courbe\nx: -2 ; 2\ny: -0.5 ; 2.5\nf(x) = x^2   bleu   nom=C_f\ng(x) = ({{n}}/10)^2   rouge   pointillé\npoints: A(-({{n}}/10) ; ({{n}}/10)^2), B({{n}}/10 ; ({{n}}/10)^2)\ntaille: moyenne\ndescription: Parabole de la fonction carré et droite horizontale en pointillé, qui la coupe en deux points A et B symétriques par rapport à l'axe des ordonnées.\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\{ {{eval:-(n)/10;d}}\\,;{{eval:(n)/10;d}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)=x^2{{c;+}}$.\n\nDétermine les antécédents de ${{k}}$ par $f$, c'est-à-dire résous dans $\\mathbb{R}$ l'équation $f(x)={{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..3"
+				},
+				{
+					"name": "k",
+					"expression": "eval:(r)^2+(c)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:-(r)}} ; {{r}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On se ramène à la fonction carré :",
+					"$$x^2{{c;+}}={{k}}\\iff x^2={{eval:(r)^2}}$$",
+					"Les antécédents de ${{eval:(r)^2}}$ par la fonction carré sont ${{r}}$ et $-{{r}}$ (la parabole est symétrique par rapport à l'axe des ordonnées).",
+					"```courbe\nx: -4 ; 4\ny: {{eval:min(0,(c))-2}} ; {{eval:(k)+2}}\nf(x) = x^2+({{c}})   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\npoints: A({{eval:-(r)}} ; {{k}}), B({{r}} ; {{k}})\ntaille: moyenne\ndescription: Parabole de f et droite horizontale y = {{k}} en pointillé, qui la coupe en deux points A et B symétriques par rapport à l'axe des ordonnées.\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\{ -{{r}}\\,;{{r}} \\}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x² = 9/4 : S = {−3/2 ; 3/2}",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "2"
+			},
+			"answers": ["\\{-\\frac{3}{2};\\frac{3}{2}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En décimal {−1,5 ; 1,5}",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "2"
+			},
+			"answers": ["\\{-1{,}5;1{,}5\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'antécédent négatif oublié",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "2"
+			},
+			"answers": ["\\{\\frac{3}{2}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : k/2 {−9/8 ; 9/8}",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "2"
+			},
+			"answers": ["\\{-\\frac{9}{8};\\frac{9}{8}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x² = 1,44 : S = {−1,2 ; 1,2}",
+			"variationIndex": 1,
+			"variables": {
+				"n": "12"
+			},
+			"answers": ["\\{-1{,}2;1{,}2\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : {1,2}",
+			"variationIndex": 1,
+			"variables": {
+				"n": "12"
+			},
+			"answers": ["\\{1{,}2\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : virgule {−0,12 ; 0,12}",
+			"variationIndex": 1,
+			"variables": {
+				"n": "12"
+			},
+			"answers": ["\\{-0{,}12;0{,}12\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x² − 3 = 1 : S = {−2 ; 2}",
+			"variationIndex": 2,
+			"variables": {
+				"c": "-3",
+				"r": "2",
+				"k": "1"
+			},
+			"answers": ["\\{-2;2\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : c oublié {−1 ; 1}",
+			"variationIndex": 2,
+			"variables": {
+				"c": "-3",
+				"r": "2",
+				"k": "1"
+			},
+			"answers": ["\\{-1;1\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : {2}",
+			"variationIndex": 2,
+			"variables": {
+				"c": "-3",
+				"r": "2",
+				"k": "1"
+			},
+			"answers": ["\\{2\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

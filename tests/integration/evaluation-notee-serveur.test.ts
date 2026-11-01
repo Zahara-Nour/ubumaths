@@ -4,7 +4,7 @@
  *
  * `$lib/server/evaluation-attempts` face à la VRAIE base : lectures de droits
  * sous RLS (client de l'élève), écritures en service_role (Q38), avec de VRAIS
- * modèles publiés (TinyMath #314, QCM, et #142, question à case), posés dans
+ * modèles publiés (TinyMath #314, QCM migré en case choix, et #142, question à case), posés dans
  * des catégories propres au test.
  *
  * Ce que la spécification validée par David exige ici (D) : démarrer →
@@ -43,7 +43,8 @@ import {
 import { EvaluationError } from '$lib/server/evaluations';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import { toQuestionTemplate, type QuestionTemplateRow } from '$lib/types/question-template';
-import { getQuestionType, type QuestionInstance } from '$lib/questions/types';
+import type { QuestionInstance } from '$lib/questions/types';
+import { parseChoiceAnswer } from '$lib/questions/choice-case';
 import {
 	gradeQuestion,
 	statusFromBlankStatuses,
@@ -71,15 +72,21 @@ const SERVICE_KEY =
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
 const QCM_ID = '0a11f0e0-0000-4000-8000-00000000e601';
 const FILL_ID = '0a11f0e0-0000-4000-8000-00000000e602';
-/** QCM à plusieurs réponses (chantier 2, V5) : bonnes réponses 0 et 2 sur 4 */
+/** Case choix à plusieurs réponses (chantier 2, V5, repris du QCM) : bonnes réponses 0 et 2 sur 4 */
 const MULTI_ID = '0a11f0e0-0000-4000-8000-00000000e603';
 /** Question à case « choix » (bloc ```choix, plusieurs réponses, mélangée) : bonnes 0 et 2 */
 const CHOICE_ID = '0a11f0e0-0000-4000-8000-00000000e604';
+/** Droite à placer (chantier `fuite-enonce`) : l'énoncé envoyé ne dit pas où vont A et B */
+const GESTE_ID = '0a11f0e0-0000-4000-8000-00000000e605';
+/** Assemblage à retrouver (`fuite-enonce`, lot 2) : l'énoncé envoyé ne dit pas les hauteurs */
+const CUBES_ID = '0a11f0e0-0000-4000-8000-00000000e606';
 const THEME = 'ZZ Éval serveur';
 const FILL_CATEGORY = { theme: THEME, domain: 'Moitié', subdomain: 'Entiers', level: 1 };
 const QCM_CATEGORY = { theme: THEME, domain: 'Comparer', subdomain: 'Relatifs', level: 1 };
 const MULTI_CATEGORY = { theme: THEME, domain: 'Plusieurs', subdomain: 'Pairs', level: 1 };
 const CHOICE_CATEGORY = { theme: THEME, domain: 'Case choix', subdomain: 'Pairs', level: 1 };
+const GESTE_CATEGORY = { theme: THEME, domain: 'Droite', subdomain: 'Placer', level: 1 };
+const CUBES_CATEGORY = { theme: THEME, domain: 'Cubes', subdomain: 'Retrouver', level: 1 };
 const CATEGORIES = [
 	{ category: FILL_CATEGORY, quantity: 2, delay: 20 },
 	{ category: QCM_CATEGORY, quantity: 1, delay: 15 }
@@ -101,6 +108,7 @@ const FORBIDDEN_KEYS = [
 	'template',
 	'instance',
 	'shuffledChoices',
+	'order',
 	'validationRules'
 ];
 
@@ -214,7 +222,7 @@ async function oracle(attemptId: string): Promise<QuestionInstance[]> {
 	const { data: templates } = await service
 		.from('question_templates')
 		.select('*')
-		.in('id', [QCM_ID, FILL_ID, MULTI_ID, CHOICE_ID]);
+		.in('id', [QCM_ID, FILL_ID, MULTI_ID, CHOICE_ID, GESTE_ID, CUBES_ID]);
 	const byId = new Map(
 		(templates as QuestionTemplateRow[]).map((t) => [t.id, toQuestionTemplate(t)])
 	);
@@ -227,25 +235,30 @@ async function oracle(attemptId: string): Promise<QuestionInstance[]> {
 	});
 }
 
+/**
+ * Réponse juste, telle que l'élève l'envoie : une valeur par case ; case choix =
+ * positions AFFICHÉES des bons choix (le serveur les ramène aux indices d'origine)
+ */
 function rightAnswer(instance: QuestionInstance): SubmittedAnswer {
-	if (getQuestionType(instance) === 'multiple_choice') {
-		const choices = (instance.shuffledChoices ?? []).flatMap((c, position) =>
-			instance.choices![c.originalIndex].isCorrect ? [position] : []
-		);
-		return { choices };
-	}
-	const values = (instance.blanks ?? []).map((b) => b.expectedAnswer);
+	const values = (instance.blanks ?? []).map((b) => {
+		if (!b.choice) return b.expectedAnswer;
+		const correct = parseChoiceAnswer(b.expectedAnswer, b.choice.choices.length) ?? [];
+		const order = b.choice.order;
+		return correct
+			.map((index) => order.indexOf(index))
+			.sort((x, y) => x - y)
+			.join(';');
+	});
 	return { values };
 }
 
+/** Réponse fausse : case math absurde ; case choix, un mauvais choix affiché */
 function wrongAnswer(instance: QuestionInstance): SubmittedAnswer {
-	if (getQuestionType(instance) === 'multiple_choice') {
-		const position = (instance.shuffledChoices ?? []).findIndex(
-			(c) => !instance.choices![c.originalIndex].isCorrect
-		);
-		return { choices: [position] };
-	}
-	const values = (instance.blanks ?? []).map(() => '987654');
+	const values = (instance.blanks ?? []).map((b) => {
+		if (!b.choice) return '987654';
+		const correct = parseChoiceAnswer(b.expectedAnswer, b.choice.choices.length) ?? [];
+		return String(b.choice.order.findIndex((index) => !correct.includes(index)));
+	});
 	return { values };
 }
 
@@ -317,7 +330,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 		const { error: templatesError } = await service.from('question_templates').insert([
 			{
 				id: QCM_ID,
-				type: 'multiple_choice',
+				type: 'fill_in_blanks',
 				title: 'QCM ZZ éval serveur',
 				...QCM_CATEGORY,
 				grades: ['5'],
@@ -343,7 +356,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 		await service
 			.from('question_templates')
 			.delete()
-			.in('id', [QCM_ID, FILL_ID, MULTI_ID, CHOICE_ID]);
+			.in('id', [QCM_ID, FILL_ID, MULTI_ID, CHOICE_ID, GESTE_ID, CUBES_ID]);
 	});
 
 	describe('Entraînement : démarrer → reprendre → envoyer (×2)', () => {
@@ -363,8 +376,9 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			expect(first.questions.map((q) => q.type)).toEqual([
 				'fill_in_blanks',
 				'fill_in_blanks',
-				'multiple_choice'
+				'fill_in_blanks'
 			]);
+			expect(first.questions[2].blanks?.[0].type).toBe('choice');
 			expect(first.questions.map((q) => q.delaySeconds)).toEqual([20, 20, 15]);
 
 			const session = await sessionRow(first.attemptId);
@@ -513,14 +527,12 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 					[1, 'correct', true]
 				].sort((a, b) => String(a).localeCompare(String(b)))
 			);
-			// QCM : rangé et renvoyé en indices d'ORIGINE (ce que lit CorrectionCard), pas
-			// en positions affichées
-			const qcmOriginals = rightAnswer(instances[2]).choices!.map(
-				(p) => instances[2].shuffledChoices![p].originalIndex
-			);
-			expect(result.questions[2].answer).toEqual({ choiceIndexes: qcmOriginals });
+			// Case choix : rangée et renvoyée en indices d'ORIGINE (ce que lit CorrectionCard),
+			// pas en positions affichées
+			const qcmOriginals = [instances[2].blanks![0].expectedAnswer];
+			expect(result.questions[2].answer).toEqual({ values: qcmOriginals });
 			const qcmRow = answers.find((a) => a.template_id === QCM_ID);
-			expect((qcmRow!.user_answer as { value: number[] }).value).toEqual(qcmOriginals);
+			expect((qcmRow!.user_answer as { value: string[] }).value).toEqual(qcmOriginals);
 			// Position rangée avec l'instance : la copie reconstruite s'y apparie
 			expect(
 				answers
@@ -569,12 +581,10 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				[1, 'incorrect', 0],
 				[2, 'correct', 1]
 			]);
-			// Même réponse que la copie d'origine (QCM en indices d'origine), message compris
+			// Même réponse que la copie d'origine (case choix en indices d'origine), message compris
 			const original = await oracle(first.attemptId);
 			expect(copy!.questions[2].answer).toEqual({
-				choiceIndexes: rightAnswer(original[2]).choices!.map(
-					(p) => original[2].shuffledChoices![p].originalIndex
-				)
+				values: [original[2].blanks![0].expectedAnswer]
 			});
 			expect(copy!.questions[0].answer).toEqual({ values: rightAnswer(original[0]).values });
 			expect(allKeys(JSON.parse(JSON.stringify(copy))).has('seed')).toBe(false);
@@ -598,8 +608,8 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				if ((q.instance.blanks?.length ?? 0) === 0) return;
 				expect(statusFromBlankStatuses(details[i].blanks.map((b) => b.status))).toBe(q.status);
 			});
-			// QCM : les choix cochés (indices d'origine) avec leur issue
-			expect(details[2].choices?.filter((c) => c.checked).length).toBeGreaterThan(0);
+			// Case choix : son statut de case recalculé (juste)
+			expect(details[2].blanks[0].status).toBe('correct');
 			expect(allKeys(JSON.parse(JSON.stringify(copy))).has('seed')).toBe(false);
 		});
 
@@ -924,15 +934,14 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 		await service.from('question_templates').delete().eq('id', template!.id);
 	});
 
-	describe('QCM à plusieurs réponses (chantier 2, V5) : barème de bout en bout', () => {
+	describe('case choix à plusieurs réponses (chantier 2, V5) : barème de bout en bout', () => {
 		let multiStudent: Person;
 		let assignmentId: string;
 
-		/** Positions AFFICHÉES de ces indices d'origine */
-		function positionsOf(instance: QuestionInstance, originals: number[]): number[] {
-			return originals.map((o) =>
-				(instance.shuffledChoices ?? []).findIndex((c) => c.originalIndex === o)
-			);
+		/** Positions AFFICHÉES de ces indices d'origine, au format de la case (« 1;3 ») */
+		function positionsOf(instance: QuestionInstance, originals: number[]): string {
+			const order = instance.blanks?.[0].choice?.order ?? [];
+			return originals.map((o) => order.indexOf(o)).join(';');
 		}
 
 		beforeAll(async () => {
@@ -945,22 +954,16 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			await service.from('question_templates').delete().eq('id', MULTI_ID);
 			const { error } = await service.from('question_templates').insert({
 				id: MULTI_ID,
-				type: 'multiple_choice',
+				type: 'fill_in_blanks',
 				title: 'Pairs ZZ éval serveur',
 				...MULTI_CATEGORY,
 				grades: ['6'],
 				status: 'published',
-				multiple_answers: true,
 				variations: [
 					{
-						statement: 'Quels nombres sont pairs ?',
-						choices: [
-							{ content: '$4$', isCorrect: true },
-							{ content: '$7$', isCorrect: false },
-							{ content: '$10$', isCorrect: true },
-							{ content: '$13$', isCorrect: false }
-						],
-						correctChoiceIndex: ['0', '2']
+						statement:
+							'Quels nombres sont pairs ?\n\n```choix\nplusieurs: oui\n- $4$\n- $7$\n- $10$\n- $13$\n```',
+						blanks: [{ expectedAnswer: '0;2' }]
 					}
 				]
 			});
@@ -974,14 +977,14 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 
 		async function submitChoices(originals: number[]) {
 			const attempt = await start(multiStudent, assignmentId);
-			expect(attempt.questions[0]).toMatchObject({
-				type: 'multiple_choice',
-				multipleAnswers: true
+			expect(attempt.questions[0].blanks?.[0]).toMatchObject({
+				type: 'choice',
+				choice: { multiple: true }
 			});
 			const [instance] = await oracle(attempt.attemptId);
 			// Corps de l'envoi passé par le schéma Zod de la route : plusieurs choix acceptés
 			const body = submitAttemptSchema.parse({
-				answers: [{ position: 0, choices: positionsOf(instance, originals) }]
+				answers: [{ position: 0, values: [positionsOf(instance, originals)] }]
 			});
 			const result = await submitEvaluationAttempt(actors(multiStudent), attempt.attemptId, body);
 			const [row] = await answersOf(attempt.attemptId);
@@ -1013,7 +1016,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			expect([Number(row.points), row.status, row.is_correct]).toEqual([0, 'incorrect', false]);
 		});
 
-		it('SRS : seul le QCM complet est « su » (le ½ partiel est à revoir, Q40)', async () => {
+		it('SRS : seule la case choix complète est « sue » (le ½ partiel est à revoir, Q40)', async () => {
 			const { data: traces } = await service
 				.from('skill_attempts')
 				.select('success')
@@ -1084,6 +1087,126 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			expect(result.questions[0]).toMatchObject({ status: 'correct', points: 1 });
 			const [row] = await answersOf(attempt.attemptId);
 			expect((row.user_answer as { value: unknown }).value).toEqual(['0;2']);
+		});
+	});
+
+	describe('fuite-enonce : l’énoncé d’un bloc à geste part sans la réponse', () => {
+		let gestureStudent: Person;
+		let assignmentId: string;
+
+		beforeAll(async () => {
+			gestureStudent = await person('student');
+			const { error: memberError } = await service
+				.from('class_members')
+				.insert({ class_id: classId, student_id: gestureStudent.id, status: 'active' });
+			expect(memberError, 'décor : inscription').toBeNull();
+
+			await service.from('question_templates').delete().eq('id', GESTE_ID);
+			const { error } = await service.from('question_templates').insert({
+				id: GESTE_ID,
+				type: 'fill_in_blanks',
+				title: 'Droite à placer ZZ éval serveur',
+				...GESTE_CATEGORY,
+				grades: ['6'],
+				status: 'published',
+				variations: [
+					{
+						statement:
+							'Place le point A, double de 6, et le point B, triple de 5.\n\n```line\nstart: 0\nend: 20\nstep: 1\nlabels: 0, 10, 20\nplacer: A=12 ; B=15\n```'
+					}
+				]
+			});
+			expect(error, 'décor : modèle à droite à placer').toBeNull();
+
+			({ assignmentId } = await createEvaluation({
+				max_attempts: 2,
+				categories: [{ category: GESTE_CATEGORY, quantity: 1, delay: 20 }]
+			}));
+		}, 60_000);
+
+		it('démarrer : ni A=12 ni B=15 dans ce que reçoit l’élève, les noms restent', async () => {
+			const attempt = await start(gestureStudent, assignmentId);
+			const sent = JSON.stringify(attempt.questions);
+			expect(sent).not.toContain('A=12');
+			expect(sent).not.toContain('B=15');
+			expect(attempt.questions[0].statement).toContain('placer: A=? ; B=?');
+			// L'instance enregistrée, elle, garde la réponse (la correction en a besoin)
+			const [instance] = await oracle(attempt.attemptId);
+			expect(instance.statement).toContain('placer: A=12 ; B=15');
+		});
+
+		it('reprendre : le même énoncé masqué', async () => {
+			const attempt = await start(gestureStudent, assignmentId);
+			expect(attempt.questions[0].statement).toContain('placer: A=? ; B=?');
+			expect(JSON.stringify(attempt.questions)).not.toContain('A=12');
+		});
+
+		it('la correction ne change pas : les deux points justes → 1 point', async () => {
+			const attempt = await start(gestureStudent, assignmentId);
+			const [instance] = await oracle(attempt.attemptId);
+			const body = submitAttemptSchema.parse({
+				answers: [{ position: 0, ...rightAnswer(instance) }]
+			});
+			const result = await submitEvaluationAttempt(actors(gestureStudent), attempt.attemptId, body);
+			expect(result.questions[0]).toMatchObject({ status: 'correct', points: 1 });
+			// Copie rendue après l'envoi : l'instance complète, réponse comprise
+			expect(result.questions[0].instance.statement).toContain('placer: A=12 ; B=15');
+		});
+	});
+
+	describe('fuite-enonce, lot 2 : un assemblage à retrouver part sans ses hauteurs', () => {
+		let cubesStudent: Person;
+		let assignmentId: string;
+
+		beforeAll(async () => {
+			cubesStudent = await person('student');
+			const { error: memberError } = await service
+				.from('class_members')
+				.insert({ class_id: classId, student_id: cubesStudent.id, status: 'active' });
+			expect(memberError, 'décor : inscription').toBeNull();
+
+			await service.from('question_templates').delete().eq('id', CUBES_ID);
+			const { error } = await service.from('question_templates').insert({
+				id: CUBES_ID,
+				type: 'fill_in_blanks',
+				title: 'Assemblage à retrouver ZZ éval serveur',
+				...CUBES_CATEGORY,
+				grades: ['6'],
+				status: 'published',
+				variations: [
+					{
+						statement:
+							'Retrouve l’assemblage d’après ses vues.\n\n```cubes\nhauteurs: 1 1 2 / 3 0 2\nretrouver: face, droite\n```'
+					}
+				]
+			});
+			expect(error, 'décor : modèle à assemblage à retrouver').toBeNull();
+
+			({ assignmentId } = await createEvaluation({
+				max_attempts: 2,
+				categories: [{ category: CUBES_CATEGORY, quantity: 1, delay: 20 }]
+			}));
+		}, 60_000);
+
+		it('démarrer : pas les hauteurs, mais l’empreinte et les vues données', async () => {
+			const attempt = await start(cubesStudent, assignmentId);
+			const sent = JSON.stringify(attempt.questions);
+			expect(sent).not.toContain('1 1 2 / 3 0 2');
+			expect(sent).not.toMatch(/hauteurs: [^\\]*[1-9]/);
+			expect(attempt.questions[0].statement).toContain('hauteurs: ? ? ? / ? 0 ?');
+			expect(attempt.questions[0].statement).toContain('vues: face 3 1 2 ; droite 3 2');
+			const [instance] = await oracle(attempt.attemptId);
+			expect(instance.statement).toContain('hauteurs: 1 1 2 / 3 0 2');
+		});
+
+		it('la correction ne change pas : l’assemblage juste → 1 point', async () => {
+			const attempt = await start(cubesStudent, assignmentId);
+			// La saisie de l'élève : une hauteur par carreau de la vue de dessus
+			const body = submitAttemptSchema.parse({
+				answers: [{ position: 0, values: ['1 1 2 / 3 0 2'] }]
+			});
+			const result = await submitEvaluationAttempt(actors(cubesStudent), attempt.attemptId, body);
+			expect(result.questions[0]).toMatchObject({ status: 'correct', points: 1 });
 		});
 	});
 });

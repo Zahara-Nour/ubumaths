@@ -1,0 +1,180 @@
+{
+	"title": "Trois points alignés ?",
+	"description": "A, B, C alignés ? par det(AB, AC) (case choix), puis l'abscisse de C qui les aligne (pièges : déterminant de A, B, C au lieu de AB, AC ; x = coordonnée de AC sans ajouter x_A)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs du plan",
+	"subdomain": "Colinéarité",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans un repère orthonormé $(O\\,;\\vec{i},\\vec{j})$, on considère les points $A({{ax}}\\,;\\,{{ay}})$, $B({{eval:(ax)+(r1)}}\\,;\\,{{eval:(ay)+(r2)}})$ et $C({{eval:(ax)+(k)*(r1)}}\\,;\\,{{eval:(ay)+(k)*(r2)+(w)}})$.\n\nLes points $A$, $B$ et $C$ sont-ils alignés ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-5..5"
+				},
+				{
+					"name": "ay",
+					"expression": "-5..5"
+				},
+				{
+					"name": "r1",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "r2",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "k",
+					"expression": "2|3|-1|-2"
+				},
+				{
+					"name": "w",
+					"expression": "0|1"
+				}
+			],
+			"conditions": ["abs(ay+(k)*(r2)+w) <= 12", "abs(ax+(k)*(r1)) <= 12"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A$, $B$, $C$ sont alignés si et seulement si $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont colinéaires, c'est-à-dire $\\det(\\overrightarrow{AB},\\overrightarrow{AC})=0$.",
+					"$\\overrightarrow{AB}\\begin{pmatrix}{{r1}}\\\\{{r2}}\\end{pmatrix}$ et $\\overrightarrow{AC}\\begin{pmatrix}{{eval:(k)*(r1)}}\\\\{{eval:(k)*(r2)+(w)}}\\end{pmatrix}$.",
+					"$$\\det(\\overrightarrow{AB},\\overrightarrow{AC})={{r1;()}}\\times{{eval:(k)*(r2)+(w);()}}-{{r2;()}}\\times{{eval:(k)*(r1);()}}=\\textcolor{{{color:primary.0}}}{{{eval:(r1)*(w)}}}$$",
+					"{{if:w==0|Le déterminant est nul : **les points sont alignés**.|Le déterminant n'est pas nul : **les points ne sont pas alignés**.}}"
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère orthonormé $(O\\,;\\vec{i},\\vec{j})$, on considère les points $A({{ax}}\\,;\\,{{ay}})$, $B({{eval:(ax)+(r1)}}\\,;\\,{{eval:(ay)+(r2)}})$ et $C(x\\,;\\,{{eval:(ay)+(k)*(r2)}})$, où $x$ est un réel.\n\nDétermine $x$ pour que les points $A$, $B$ et $C$ soient alignés.\n\n$$x=?$$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-5..5"
+				},
+				{
+					"name": "ay",
+					"expression": "-5..5"
+				},
+				{
+					"name": "r1",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "r2",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "k",
+					"expression": "2|3|-1|-2"
+				}
+			],
+			"conditions": ["ax != 0", "abs(r2) != 1", "abs(ax+(k)*(r1)) <= 12", "abs(ay+(k)*(r2)) <= 12"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(ax)+(k)*(r1)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A$, $B$, $C$ sont alignés si et seulement si $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont colinéaires, c'est-à-dire $\\det(\\overrightarrow{AB},\\overrightarrow{AC})=0$.",
+					"$\\overrightarrow{AB}\\begin{pmatrix}{{r1}}\\\\{{r2}}\\end{pmatrix}$ et $\\overrightarrow{AC}\\begin{pmatrix}x-{{ax;()}}\\\\{{eval:(k)*(r2)}}\\end{pmatrix}$.",
+					"$$\\det(\\overrightarrow{AB},\\overrightarrow{AC})={{r1;()}}\\times{{eval:(k)*(r2);()}}-{{r2;()}}\\times\\left(x-{{ax;()}}\\right)$$",
+					"Il est nul si et seulement si ${{r2;()}}\\left(x-{{ax;()}}\\right)={{eval:(r1)*(k)*(r2)}}$, soit $x-{{ax;()}}={{eval:(k)*(r1)}}$ et $x=\\textcolor{{{color:primary.0}}}{{{eval:(ax)+(k)*(r1)}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A(1 ; −2), B(3 ; −1), C(7 ; 1) : alignés",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "-2",
+				"r1": "2",
+				"r2": "1",
+				"k": "3",
+				"w": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Alignés : « non » faux",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "-2",
+				"r1": "2",
+				"r2": "1",
+				"k": "3",
+				"w": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "C(7 ; 2) : non alignés",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "-2",
+				"r1": "2",
+				"r2": "1",
+				"k": "3",
+				"w": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "B(3 ; 0), C(x ; 4) → x = 7",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "1",
+				"ay": "-2",
+				"r1": "2",
+				"r2": "2",
+				"k": "3"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x_A non ajouté (6)",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "1",
+				"ay": "-2",
+				"r1": "2",
+				"r2": "2",
+				"k": "3"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

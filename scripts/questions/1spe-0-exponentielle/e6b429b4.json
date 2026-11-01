@@ -1,0 +1,239 @@
+{
+	"id": "e6b429b4-e6b4-41a1-b25b-57b66c989ce4",
+	"title": "Produit d'exponentielles",
+	"description": "eᵃ × eᵇ = eᵃ⁺ᵇ, exposants entiers puis affines en x",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction exponentielle",
+	"subdomain": "Propriétés algébriques",
+	"level": 2,
+	"delay": 40,
+	"status": "draft",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "e^{ {{eval:p+q}} }"
+				}
+			],
+			"statement": "Simplifie $A$ en réduisant l'exposant.\n\n$A={{if:p==1|e|e^{ {{p}} }}}\\times {{if:q==1|e|e^{ {{q}} }}}$\n\n$A=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..7;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..7;±"
+				}
+			],
+			"conditions": ["p+q != 0", "p+q != 1"],
+			"correction": {
+				"steps": [
+					"On utilise $e^a\\times e^b=e^{a+b}$ : pour un produit, on **additionne** les exposants.",
+					"$A=e^{ {{p}}+{{eval:q;()}} }=\\textcolor{{{color:primary.0}}}{e^{ {{eval:p+q}} } }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "e^{ {{eval:(a+c)*x+d}} }"
+				}
+			],
+			"statement": "Simplifie $A$ en réduisant l'exposant.\n\n$A=e^{ {{eval:a*x}} }\\times e^{ {{eval:c*x+d}} }$\n\n$A=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..6;±"
+				}
+			],
+			"conditions": ["a+c != 0"],
+			"correction": {
+				"steps": [
+					"On utilise $e^a\\times e^b=e^{a+b}$ : pour un produit, on **additionne** les exposants.",
+					"$A=e^{ {{eval:a*x}}+({{eval:c*x+d}}) }=\\textcolor{{{color:primary.0}}}{e^{ {{eval:(a+c)*x+d}} } }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["e^{-3}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "2",
+				"q": "-5"
+			},
+			"description": "e²×e⁻⁵ = e⁻³",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["e^{-10}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"p": "2",
+				"q": "-5"
+			},
+			"description": "exposants multipliés : e⁻¹⁰",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["e^{2-5}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"p": "2",
+				"q": "-5"
+			},
+			"description": "exposant non calculé e^{2-5}",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{e^3}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "2",
+				"q": "-5"
+			},
+			"description": "1/e³ : même forme que e⁻³, juste",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["e^{3x-3}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"c": "1",
+				"d": "-3"
+			},
+			"description": "e^{2x}×e^{x-3} = e^{3x-3}",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["e^{-3+3x}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"c": "1",
+				"d": "-3"
+			},
+			"description": "ordre des termes : e^{-3+3x}",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["e^{2x^2-6x}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"c": "1",
+				"d": "-3"
+			},
+			"description": "exposants multipliés : e^{2x²-6x}",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["e^{3x+3}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"c": "1",
+				"d": "-3"
+			},
+			"description": "e^{3x-3} recopié en e^{3x+3}",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["e^{2x+x-3}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "2",
+				"c": "1",
+				"d": "-3"
+			},
+			"description": "exposant non réduit e^{2x+x-3}",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["e^{2x}\\times e^{x-3}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["products", "form"]
+			},
+			"variables": {
+				"a": "2",
+				"c": "1",
+				"d": "-3"
+			},
+			"description": "produit recopié",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\exp(-3)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "2",
+				"q": "-5"
+			},
+			"description": "notation \\exp acceptée (décision du 2026-10-02)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\exponentialE^{-3}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "2",
+				"q": "-5"
+			},
+			"description": "notation \\exponentialE acceptée (décision du 2026-10-02)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\mathrm{e}^{-3}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "2",
+				"q": "-5"
+			},
+			"description": "notation \\mathrm{e} acceptée (décision du 2026-10-02)",
+			"variationIndex": 0
+		}
+	]
+}

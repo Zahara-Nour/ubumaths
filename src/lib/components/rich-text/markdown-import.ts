@@ -247,8 +247,14 @@ function convertBlock(block: BlockNode): JSONContent | null {
 			return convertCodeBlock({ type: 'code-block', language: block.kind, code: block.source });
 		case 'qr':
 			return convertCodeBlock({ type: 'code-block', language: 'qr', code: block.source });
+		case 'scratch':
+			return convertCodeBlock({ type: 'code-block', language: 'scratch', code: block.source });
 		case 'horloge':
 			return convertCodeBlock({ type: 'code-block', language: 'horloge', code: block.source });
+		case 'partage':
+			return convertCodeBlock({ type: 'code-block', language: 'partage', code: block.source });
+		case 'espace':
+			return convertCodeBlock({ type: 'code-block', language: block.genre, code: block.source });
 		case 'operation':
 			return convertCodeBlock({ type: 'code-block', language: 'operation', code: block.source });
 		case 'collection':
@@ -257,6 +263,8 @@ function convertBlock(block: BlockNode): JSONContent | null {
 			return convertCodeBlock({ type: 'code-block', language: 'monnaie', code: block.source });
 		case 'choice':
 			return convertCodeBlock({ type: 'code-block', language: 'choix', code: block.source });
+		case 'ranger':
+			return convertCodeBlock({ type: 'code-block', language: 'ranger', code: block.source });
 
 		default:
 			return null;
@@ -398,6 +406,10 @@ function convertListItem(item: ListItemNode): JSONContent {
 			);
 		} else if (child.type === 'qr') {
 			content.push(convertCodeBlock({ type: 'code-block', language: 'qr', code: child.source }));
+		} else if (child.type === 'scratch') {
+			content.push(
+				convertCodeBlock({ type: 'code-block', language: 'scratch', code: child.source })
+			);
 		} else if (child.type === 'horloge') {
 			content.push(
 				convertCodeBlock({ type: 'code-block', language: 'horloge', code: child.source })
@@ -413,6 +425,18 @@ function convertListItem(item: ListItemNode): JSONContent {
 		} else if (child.type === 'monnaie') {
 			content.push(
 				convertCodeBlock({ type: 'code-block', language: 'monnaie', code: child.source })
+			);
+		} else if (child.type === 'ranger') {
+			content.push(
+				convertCodeBlock({ type: 'code-block', language: 'ranger', code: child.source })
+			);
+		} else if (child.type === 'partage') {
+			content.push(
+				convertCodeBlock({ type: 'code-block', language: 'partage', code: child.source })
+			);
+		} else if (child.type === 'espace') {
+			content.push(
+				convertCodeBlock({ type: 'code-block', language: child.genre, code: child.source })
 			);
 		} else if (child.type === 'image') {
 			content.push(convertImage(child as ImageNode));

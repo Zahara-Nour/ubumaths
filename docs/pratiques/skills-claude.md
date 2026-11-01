@@ -127,6 +127,16 @@ Le but est d'économiser des tokens : une session qui s'étire sur plusieurs PR 
 historique à chaque message. Après chaque merge, la session met le bloc à jour et te propose
 `/clear` + `/reprendre <sujet>` (règle de `CLAUDE.md` § Worktrees, 2026-10-19).
 
+## `relancer` — préparer le `/clear`
+
+`/relancer` (ou « prépare le /clear ») : avant de vider la session, elle vérifie que tout ce qui
+compte survit au `/clear` : travail du chantier commité et poussé (worktree et dépôt principal,
+sans pousser les commits d'une autre session), PR et CI notées, serveurs de la session arrêtés,
+bloc « Reprendre ici » relu et réécrit s'il ment (un seul titre, numéros de PR vérifiés), journal
+commité. Puis elle te donne les deux lignes à taper, `/clear` et `/reprendre <sujet>` : Claude ne
+peut pas lancer lui-même ces commandes de l'interface. En **Sonnet**, comme `reprendre`.
+Créée le 2026-10-29.
+
 ---
 
 ## Les commandes du projet : retirées le 2026-10-10

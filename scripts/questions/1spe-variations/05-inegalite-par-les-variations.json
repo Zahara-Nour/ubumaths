@@ -1,0 +1,165 @@
+{
+	"title": "Établir une inégalité par les variations",
+	"description": "Inégalité démontrée par le minimum de g = différence des deux membres : x³ + 2a³ ≥ 3a²x sur [0 ; +∞[, eˣ ≥ 1 + x, x + a²/x ≥ 2a sur ]0 ; +∞[",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "Variations",
+	"level": 8,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On veut démontrer que, pour tout réel $x\\geqslant0$, $x^3+{{eval:2*a^3}}\\geqslant {{eval:3*a^2*x}}$. Pour cela, on étudie la fonction $g$ définie sur $[0\\,;+\\infty[$ par $g(x)={{eval:x^3-3*a^2*x+2*a^3}}$.\n\nSur $[0\\,;+\\infty[$, $g$ atteint son minimum en $x_0=?$\n\nCe minimum vaut $g(x_0)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$g'(x)={{eval:3*x^2-3*a^2}}=3(x-{{a}})(x+{{a}})$ ; sur $[0\\,;+\\infty[$, $x+{{a}}>0$, donc $g'(x)$ a le signe de $x-{{a}}$.",
+					"```variation\nvariable: x\ndomain: 0, {{a}}, +inf\n\nsign: g'(x)\n  0,{{a}}: -\n  {{a}}: z\n  {{a}},+inf: +\n\nvariation: g(x)\n  0: {{eval:2*a^3}}, top\n  {{a}}: 0, bottom\n```",
+					"Le minimum est atteint en $x_0=\\textcolor{{{color:primary.0}}}{{{a}}}$ et vaut $g({{a}})={{eval:a^3}}-{{eval:3*a^3}}+{{eval:2*a^3}}=\\textcolor{{{color:primary.0}}}{0}$.",
+					"$g(x)\\geqslant g(x_0)=0$ sur tout l'intervalle : l'inégalité est démontrée."
+				]
+			}
+		},
+		{
+			"statement": "On veut démontrer que, pour tout réel $x$, $\\mathrm{e}^x\\geqslant 1+x$. Pour cela, on étudie la fonction $g$ définie sur $\\mathbb{R}$ par $g(x)=\\mathrm{e}^x-x-1$.\n\n$g$ atteint son minimum en $x_0=?$\n\nCe minimum vaut $g(x_0)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$g'(x)=\\mathrm{e}^x-1$ : négatif pour $x<0$ (car $\\mathrm{e}^x<1$), positif pour $x>0$.",
+					"```variation\nvariable: x\ndomain: -inf, 0, +inf\n\nsign: g'(x)\n  -inf,0: -\n  0: z\n  0,+inf: +\n\nvariation: g(x)\n  0: 0, bottom\n```",
+					"Le minimum est atteint en $x_0=\\textcolor{{{color:primary.0}}}{0}$ et vaut $g(0)=\\mathrm{e}^0-0-1=\\textcolor{{{color:primary.0}}}{0}$.",
+					"$g(x)\\geqslant g(x_0)=0$ sur tout l'intervalle : l'inégalité est démontrée."
+				]
+			}
+		},
+		{
+			"statement": "On veut démontrer que, pour tout réel $x>0$, $x+\\dfrac{{{eval:a^2}}}{x}\\geqslant {{eval:2*a}}$. Pour cela, on étudie la fonction $g$ définie sur $]0\\,;+\\infty[$ par $g(x)=x+\\dfrac{{{eval:a^2}}}{x}-{{eval:2*a}}$.\n\n$g$ atteint son minimum en $x_0=?$\n\nCe minimum vaut $g(x_0)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$g'(x)=1-\\dfrac{{{eval:a^2}}}{x^2}=\\dfrac{(x-{{a}})(x+{{a}})}{x^2}$ ; sur $]0\\,;+\\infty[$, $g'(x)$ a le signe de $x-{{a}}$.",
+					"```variation\nvariable: x\ndomain: ]0, [{{a}}, [+inf[\n\nsign: g'(x)\n  0,{{a}}: -\n  {{a}}: z\n  {{a}},+inf: +\n\nvariation: g(x)\n  {{a}}: 0, bottom\n```",
+					"Le minimum est atteint en $x_0=\\textcolor{{{color:primary.0}}}{{{a}}}$ et vaut $g({{a}})={{a}}+\\dfrac{{{eval:a^2}}}{ {{a}} }-{{eval:2*a}}=\\textcolor{{{color:primary.0}}}{0}$.",
+					"$g(x)\\geqslant g(x_0)=0$ sur tout l'intervalle : l'inégalité est démontrée."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a = 2 : minimum 0 en 2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["2", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : racine négative de g′, −2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["-2", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : minimum = g(0) = 16",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["2", "16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "eˣ : minimum 0 en 0",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : minimum 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a = 3 : minimum 0 en 3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["3", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : minimum en 9",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["9", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

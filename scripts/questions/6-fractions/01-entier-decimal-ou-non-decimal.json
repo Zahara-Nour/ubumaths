@@ -1,0 +1,202 @@
+{
+	"title": "Entier, décimal ou non décimal ?",
+	"description": "Dire si une fraction représente un nombre entier (35/7, entier donc aussi décimal), un nombre décimal (3/4, 7/5) ou un nombre non décimal (2/3, 7/6), par la division posée du numérateur par le dénominateur ; non décimal quand un reste revient (dénominateurs 3, 6, 9, 11, 12, où il revient vite)",
+	"grades": ["6"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Forme décimale",
+	"level": 13,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Pose la division sur ton brouillon.\n\nLe nombre $\\frac{{{a}}}{{{b}}}$ est :\n\n```choix\nplusieurs: oui\nmelanger: non\n- un nombre entier\n- un nombre décimal\n- un nombre non décimal\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "eval:b*q"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0;1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fraction et division.** $\\frac{{{a}}}{{{b}}}$ est le quotient de ${{a}}$ par ${{b}}$ : c'est le résultat de la division ${{a}} \\div {{b}}$.",
+					"${{a}} \\div {{b}} = {{q}}$ : la division tombe juste, $\\frac{{{a}}}{{{b}}} = {{q}}$ est **un nombre entier**.",
+					"Un nombre entier est aussi **un nombre décimal** : ${{q}} = {{q}},0$. Il faut cocher les deux."
+				]
+			}
+		},
+		{
+			"statement": "Pose la division sur ton brouillon.\n\nLe nombre $\\frac{{{a}}}{{{b}}}$ est :\n\n```choix\nplusieurs: oui\nmelanger: non\n- un nombre entier\n- un nombre décimal\n- un nombre non décimal\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2|4|5|8|10|20|25"
+				},
+				{
+					"name": "a",
+					"expression": "1..99"
+				}
+			],
+			"conditions": ["mod(a,b)!=0", "a<10*b"],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fraction et division.** $\\frac{{{a}}}{{{b}}}$ est le quotient de ${{a}}$ par ${{b}}$ : c'est le résultat de la division ${{a}} \\div {{b}}$.",
+					"${{a}} \\div {{b}} = {{eval:a/b;d}}$ : la division s'arrête, avec des chiffres après la virgule. $\\frac{{{a}}}{{{b}}}$ est **un nombre décimal**, mais pas un nombre entier."
+				]
+			}
+		},
+		{
+			"statement": "Pose la division sur ton brouillon.\n\nLe nombre $\\frac{{{a}}}{{{b}}}$ est :\n\n```choix\nplusieurs: oui\nmelanger: non\n- un nombre entier\n- un nombre décimal\n- un nombre non décimal\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "3|6|9|11|12"
+				},
+				{
+					"name": "a",
+					"expression": "1..60"
+				},
+				{
+					"name": "p",
+					"expression": "{{if:b==6|10|{{if:b==12|100|1}}}}"
+				},
+				{
+					"name": "r",
+					"expression": "eval:mod(a*p,b)"
+				}
+			],
+			"conditions": ["gcd(a,b)==1", "a<5*b"],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Fraction et division.** $\\frac{{{a}}}{{{b}}}$ est le quotient de ${{a}}$ par ${{b}}$ : c'est le résultat de la division ${{a}} \\div {{b}}$.",
+					"${{a}} \\div {{b}} = {{eval:floor(10000*a/b)/10000;d}}\\ldots$ : dans la division posée, le reste ${{r}}$ revient, et la division recommence pareil : elle ne s'arrêtera jamais.",
+					"$\\frac{{{a}}}{{{b}}}$ ne peut pas s'écrire avec un nombre fini de chiffres après la virgule : c'est **un nombre non décimal**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "35/7 : entier et décimal",
+			"variationIndex": 0,
+			"variables": {
+				"b": "7",
+				"q": "5",
+				"a": "35"
+			},
+			"answers": ["0;1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "35/7 : entier seul, il manque décimal",
+			"variationIndex": 0,
+			"variables": {
+				"b": "7",
+				"q": "5",
+				"a": "35"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "unoptimal_form"
+			}
+		},
+		{
+			"description": "Erreur : 35/7 non décimal",
+			"variationIndex": 0,
+			"variables": {
+				"b": "7",
+				"q": "5",
+				"a": "35"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3/4 : décimal",
+			"variationIndex": 1,
+			"variables": {
+				"b": "4",
+				"a": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/4 non décimal",
+			"variationIndex": 1,
+			"variables": {
+				"b": "4",
+				"a": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3/4 entier et décimal",
+			"variationIndex": 1,
+			"variables": {
+				"b": "4",
+				"a": "3"
+			},
+			"answers": ["0;1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7/6 : non décimal",
+			"variationIndex": 2,
+			"variables": {
+				"b": "6",
+				"a": "7"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7/6 décimal",
+			"variationIndex": 2,
+			"variables": {
+				"b": "6",
+				"a": "7"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

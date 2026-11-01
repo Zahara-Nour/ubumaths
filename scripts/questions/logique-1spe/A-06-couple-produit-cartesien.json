@@ -8,10 +8,9 @@
 	"level": 1,
 	"status": "draft",
 	"delay": 60,
-	"multipleAnswers": true,
 	"variations": [
 		{
-			"statement": "On lance une pièce, puis un dé à six faces. Une issue est notée par un couple : par exemple $(\\text{P}\\,;\\,4)$ signifie « pile, puis 4 ». L'ensemble des issues est $A\\times B$, avec $A=\\{\\text{P};\\text{F}\\}$ et $B=\\{1;2;3;4;5;6\\}$.\n\nQuels couples appartiennent à $A\\times B$ ?",
+			"statement": "On lance une pièce, puis un dé à six faces. Une issue est notée par un couple : par exemple $(\\text{P}\\,;\\,4)$ signifie « pile, puis 4 ». L'ensemble des issues est $A\\times B$, avec $A=\\{\\text{P};\\text{F}\\}$ et $B=\\{1;2;3;4;5;6\\}$.\n\nQuels couples appartiennent à $A\\times B$ ?\n\n```choix\nplusieurs: oui\n- $(\\text{P}\\,;\\,{{d1}})$\n- {{if:f1=1|$(\\text{F}\\,;\\,{{d2}})$}}{{if:f1=0|$({{d2}}\\,;\\,\\text{F})$}}\n- {{if:f2=1|$(\\text{P}\\,;\\,{{d3}})$}}{{if:f2=0|$(\\text{P}\\,;\\,{{g}})$}}\n- {{if:f3=1|$(\\text{F}\\,;\\,{{d4}})$}}{{if:f3=0|$(\\text{F}\\,;\\,\\text{P})$}}\n```",
 			"variables": [
 				{
 					"name": "d1",
@@ -47,30 +46,20 @@
 				}
 			],
 			"conditions": ["d1 != d3", "d2 != d4"],
-			"choices": [
-				{
-					"content": "$(\\text{P}\\,;\\,{{d1}})$"
-				},
-				{
-					"content": "{{if:f1=1|$(\\text{F}\\,;\\,{{d2}})$}}{{if:f1=0|$({{d2}}\\,;\\,\\text{F})$}}"
-				},
-				{
-					"content": "{{if:f2=1|$(\\text{P}\\,;\\,{{d3}})$}}{{if:f2=0|$(\\text{P}\\,;\\,{{g}})$}}"
-				},
-				{
-					"content": "{{if:f3=1|$(\\text{F}\\,;\\,{{d4}})$}}{{if:f3=0|$(\\text{F}\\,;\\,\\text{P})$}}"
-				}
-			],
-			"correctChoiceIndex": ["0", "{{f1}}", "{{eval:2*f2}}", "{{eval:3*f3}}"],
 			"correction": {
 				"steps": [
 					"Un couple $(x\\,;\\,y)$ appartient à $A\\times B$ lorsque $x\\in A$ (le côté de la pièce) **et** $y\\in B$ (le résultat du dé), dans cet ordre.",
 					"$(\\text{P}\\,;\\,{{d1}})$ convient. {{if:f1=1|$(\\text{F}\\,;\\,{{d2}})$ convient.}}{{if:f1=0|$({{d2}}\\,;\\,\\text{F})$ ne convient pas : l'ordre compte, la première composante doit être dans $A$.}} {{if:f2=1|$(\\text{P}\\,;\\,{{d3}})$ convient.}}{{if:f2=0|$(\\text{P}\\,;\\,{{g}})$ ne convient pas : ${{g}}\\notin B$.}} {{if:f3=1|$(\\text{F}\\,;\\,{{d4}})$ convient.}}{{if:f3=0|$(\\text{F}\\,;\\,\\text{P})$ ne convient pas : $\\text{P}\\notin B$.}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0;{{f1}};{{eval:2*f2}};{{eval:3*f3}}"
+				}
+			]
 		},
 		{
-			"statement": "On considère les ensembles $A=\\{ {{a1}};{{a2}};{{a3}} \\}$ et $B=\\{ {{b1}};{{b2}} \\}$.\n\nQuels couples appartiennent à $A\\times B$ ?",
+			"statement": "On considère les ensembles $A=\\{ {{a1}};{{a2}};{{a3}} \\}$ et $B=\\{ {{b1}};{{b2}} \\}$.\n\nQuels couples appartiennent à $A\\times B$ ?\n\n```choix\nplusieurs: oui\n- $({{a1}}\\,;\\,{{b2}})$\n- {{if:f1=1|$({{a3}}\\,;\\,{{b1}})$}}{{if:f1=0|$({{b1}}\\,;\\,{{a3}})$}}\n- {{if:f2=1|$({{a2}}\\,;\\,{{b2}})$}}{{if:f2=0|$({{a2}}\\,;\\,{{a3}})$}}\n- {{if:f3=1|$({{a2}}\\,;\\,{{b1}})$}}{{if:f3=0|$({{b2}}\\,;\\,{{b1}})$}}\n```",
 			"variables": [
 				{
 					"name": "a1",
@@ -121,29 +110,24 @@
 					"expression": "0..1"
 				}
 			],
-			"choices": [
-				{
-					"content": "$({{a1}}\\,;\\,{{b2}})$"
-				},
-				{
-					"content": "{{if:f1=1|$({{a3}}\\,;\\,{{b1}})$}}{{if:f1=0|$({{b1}}\\,;\\,{{a3}})$}}"
-				},
-				{
-					"content": "{{if:f2=1|$({{a2}}\\,;\\,{{b2}})$}}{{if:f2=0|$({{a2}}\\,;\\,{{a3}})$}}"
-				},
-				{
-					"content": "{{if:f3=1|$({{a2}}\\,;\\,{{b1}})$}}{{if:f3=0|$({{b2}}\\,;\\,{{b1}})$}}"
-				}
-			],
-			"correctChoiceIndex": ["0", "{{f1}}", "{{eval:2*f2}}", "{{eval:3*f3}}"],
 			"correction": {
 				"steps": [
 					"Un couple $(x\\,;\\,y)$ appartient à $A\\times B$ lorsque $x\\in A$ **et** $y\\in B$ : la première composante dans $A$, la seconde dans $B$.",
 					"$({{a1}}\\,;\\,{{b2}})$ convient. {{if:f1=1|$({{a3}}\\,;\\,{{b1}})$ convient.}}{{if:f1=0|$({{b1}}\\,;\\,{{a3}})$ ne convient pas : ${{b1}}\\notin A$ (l'ordre compte).}} {{if:f2=1|$({{a2}}\\,;\\,{{b2}})$ convient.}}{{if:f2=0|$({{a2}}\\,;\\,{{a3}})$ ne convient pas : ${{a3}}\\notin B$.}} {{if:f3=1|$({{a2}}\\,;\\,{{b1}})$ convient.}}{{if:f3=0|$({{b2}}\\,;\\,{{b1}})$ ne convient pas : ${{b2}}\\notin A$.}}"
 				]
-			}
+			},
+			"blanks": [
+				{
+					"expectedAnswer": "0;{{f1}};{{eval:2*f2}};{{eval:3*f3}}"
+				}
+			]
 		}
 	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
 	"testSpecs": [
 		{
 			"description": "v0 tous bons : les quatre",
@@ -158,10 +142,10 @@
 				"f2": "1",
 				"f3": "1"
 			},
-			"selectedChoices": [0, 1, 2, 3],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0;1;2;3"]
 		},
 		{
 			"description": "v0 tous bons : un oublié (½)",
@@ -176,10 +160,10 @@
 				"f2": "1",
 				"f3": "1"
 			},
-			"selectedChoices": [0, 1, 2],
 			"expected": {
 				"status": "unoptimal_form"
-			}
+			},
+			"answers": ["0;1;2"]
 		},
 		{
 			"description": "v0 un seul bon : (P;4)",
@@ -194,10 +178,10 @@
 				"f2": "0",
 				"f3": "0"
 			},
-			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0"]
 		},
 		{
 			"description": "v0 : couple inversé (2;F) coché",
@@ -212,10 +196,10 @@
 				"f2": "0",
 				"f3": "0"
 			},
-			"selectedChoices": [0, 1],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0;1"]
 		},
 		{
 			"description": "v0 : (P;7) coché",
@@ -230,10 +214,10 @@
 				"f2": "0",
 				"f3": "0"
 			},
-			"selectedChoices": [0, 2],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0;2"]
 		},
 		{
 			"description": "v1 deux bons",
@@ -248,10 +232,10 @@
 				"f2": "0",
 				"f3": "0"
 			},
-			"selectedChoices": [0, 1],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0;1"]
 		},
 		{
 			"description": "v1 deux bons, ordre de coche inversé",
@@ -266,10 +250,10 @@
 				"f2": "0",
 				"f3": "0"
 			},
-			"selectedChoices": [1, 0],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0;1"]
 		},
 		{
 			"description": "v1 : (7;5) inversé coché",
@@ -284,10 +268,10 @@
 				"f2": "1",
 				"f3": "1"
 			},
-			"selectedChoices": [0, 1, 2, 3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0;1;2;3"]
 		},
 		{
 			"description": "v1 : (3;5) coché (5 ∉ B)",
@@ -302,10 +286,10 @@
 				"f2": "0",
 				"f3": "1"
 			},
-			"selectedChoices": [0, 1, 2, 3],
 			"expected": {
 				"status": "incorrect"
-			}
+			},
+			"answers": ["0;1;2;3"]
 		},
 		{
 			"description": "v1 trois bons",
@@ -320,15 +304,10 @@
 				"f2": "1",
 				"f3": "1"
 			},
-			"selectedChoices": [0, 2, 3],
 			"expected": {
 				"status": "correct"
-			}
+			},
+			"answers": ["0;2;3"]
 		}
-	],
-	"options": {
-		"constraints": {
-			"spaces": "off"
-		}
-	}
+	]
 }

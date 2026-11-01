@@ -22,8 +22,8 @@ import {
 	isCourseCard
 } from '../course-card';
 import { questionTypeSchema } from '$lib/server/validation/questions';
-import { checkTemplate } from '$lib/migration/review/check-template';
-import { toTemplateInsertRow } from '$lib/migration/review/template-insert-row';
+import { checkTemplate } from '$lib/questions/review/check-template';
+import { toTemplateInsertRow } from '$lib/questions/review/template-insert-row';
 import { templateMarkdown } from '$lib/ubumark';
 
 // ============================================================================
@@ -87,11 +87,6 @@ describe('type course_card', () => {
 		expect(getQuestionType({ options: { courseCard: false } })).toBe('fill_in_blanks');
 		expect(getQuestionType({ options: {} })).toBe('fill_in_blanks');
 		expect(getQuestionType({ options: null })).toBe('fill_in_blanks');
-	});
-
-	it('laisse inchangée l’inférence QCM', () => {
-		expect(getQuestionType({ choices: [{}, {}] })).toBe('multiple_choice');
-		expect(getQuestionType({ shared: { choices: [{}] } })).toBe('multiple_choice');
 	});
 
 	it('isCourseCard ne répond vrai qu’au booléen true', () => {
@@ -164,7 +159,6 @@ describe('validation d’une carte', () => {
 		const { instance } = result;
 		expect(getQuestionType(instance)).toBe('course_card');
 		expect(instance.blanks).toBeUndefined();
-		expect(instance.choices).toBeUndefined();
 		// La forme LaTeX exacte appartient au moteur ; la variable est résolue
 		expect(courseCardFront(instance)).toMatch(/^Que fait-on en premier/);
 		expect(courseCardFront(instance)).not.toContain('{{');

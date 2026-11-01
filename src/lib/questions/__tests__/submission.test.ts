@@ -1,6 +1,6 @@
 /**
  * Copie d'une évaluation telle que la page l'envoie (chantier 5, relecture) :
- * une case trop longue, trop de cases ou un choix hors bornes ne doivent pas
+ * une case trop longue ou trop de cases ne doivent pas
  * faire refuser TOUTE la copie par Zod. La page tronque ou limite.
  */
 import { describe, it, expect } from 'vitest';
@@ -20,7 +20,7 @@ function answer(
 	};
 }
 
-function data(value: string | string[] | number | number[]) {
+function data(value: string | string[]) {
 	return answer({ value, isCorrect: false, timeSpent: 12.6, attempts: 1, submittedAt: '' });
 }
 
@@ -34,18 +34,6 @@ describe('toSubmission', () => {
 	it('trop de cases : limitées à 50', () => {
 		const submission = toSubmission([0], [data(Array(60).fill('1'))]);
 		expect(submission.answers[0].values).toHaveLength(50);
-		expect(submitAttemptSchema.safeParse(submission).success).toBe(true);
-	});
-
-	it('choix hors bornes ou non entiers : écartés', () => {
-		const submission = toSubmission([0], [data([0.5, 1, 99, -1])]);
-		expect(submission.answers[0].choices).toEqual([1]);
-		expect(submitAttemptSchema.safeParse(submission).success).toBe(true);
-	});
-
-	it('QCM à plusieurs réponses (V5) : tous les choix cochés, sans doublon', () => {
-		const submission = toSubmission([0], [data([2, 0, 2, 3])]);
-		expect(submission.answers[0].choices).toEqual([2, 0, 3]);
 		expect(submitAttemptSchema.safeParse(submission).success).toBe(true);
 	});
 
@@ -64,10 +52,10 @@ describe('toSubmission', () => {
 		expect(submission.answers).toEqual([{ position: 0 }, { position: 1 }]);
 	});
 
-	it('QCM à choix unique : un nombre → une liste ; temps arrondi', () => {
-		expect(toSubmission([3], [data(2)]).answers[0]).toEqual({
+	it('case choix : sa valeur (indices « 0;2 ») part telle quelle ; temps arrondi', () => {
+		expect(toSubmission([3], [data(['0;2'])]).answers[0]).toEqual({
 			position: 3,
-			choices: [2],
+			values: ['0;2'],
 			timeSpent: 13
 		});
 	});

@@ -1,0 +1,309 @@
+{
+	"title": "Combien de temps a-t-il duré ?",
+	"description": "Durée entre deux horloges : 8 h 30 → 8 h 45 ; 15 h 45 → 16 h 15 ; heures justes ; 9 h 15 → 11 h 45",
+	"grades": ["CE1"],
+	"theme": "Grandeurs",
+	"domain": "Durées",
+	"subdomain": "Durée écoulée",
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:k==1|La récréation|{{if:k==2|La séance de piscine|{{if:k==3|La séance de cinéma|La promenade}}}}}} commence et finit aux heures montrées. Combien de temps a-t-elle duré ?\n\n```horloge\nheure: {{if:15*p==0|{{h}} h|{{h}} h {{eval:15*p}}}} ; {{if:15*q==0|{{h}} h|{{h}} h {{eval:15*q}}}}\nchiffres: tous\nlégendes: Début ; Fin\n```\n\nElle a duré $?~\\text{min}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "h",
+					"expression": "1..12"
+				},
+				{
+					"name": "p",
+					"expression": "0..2"
+				},
+				{
+					"name": "q",
+					"expression": "1..3"
+				}
+			],
+			"conditions": ["q > p"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:15*(q-p)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Début : {{if:15*p==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{eval:15*p}}$}}. Fin : {{if:15*q==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{eval:15*q}}$}}.",
+					"La grande aiguille a avancé de {{eval:q-p}} {{if:q-p==1|quart|quarts}} de tour : ${{eval:15*(q-p)}}$ minutes.",
+					"Elle a duré $\\textcolor{{{color:primary.0}}}{{{eval:15*(q-p)}}}~\\text{min}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:k==1|La récréation|{{if:k==2|La séance de piscine|{{if:k==3|La séance de cinéma|La promenade}}}}}} commence et finit aux heures montrées. Combien de temps a-t-elle duré ?\n\n```horloge\nheure: {{if:15*p==0|{{h}} h|{{h}} h {{eval:15*p}}}} ; {{if:15*q==0|{{eval:mod(h,12)+1}} h|{{eval:mod(h,12)+1}} h {{eval:15*q}}}}\nchiffres: tous\nlégendes: Début ; Fin\n```\n\nElle a duré $?~\\text{min}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "h",
+					"expression": "1..12"
+				},
+				{
+					"name": "p",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "0..2"
+				}
+			],
+			"conditions": ["q < p"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:60-15*p+15*q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Début : {{if:15*p==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{eval:15*p}}$}}. Fin : {{if:15*q==0|${{eval:mod(h,12)+1}}~\\text{h}$|${{eval:mod(h,12)+1}}~\\text{h}~{{eval:15*q}}$}}.",
+					"De {{if:15*p==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{eval:15*p}}$}} à ${{eval:mod(h,12)+1}}~\\text{h}$ : ${{eval:60-15*p}}$ minutes.{{if:q>0| Puis de ${{eval:mod(h,12)+1}}~\\text{h}$ à {{if:15*q==0|${{eval:mod(h,12)+1}}~\\text{h}$|${{eval:mod(h,12)+1}}~\\text{h}~{{eval:15*q}}$}} : ${{eval:15*q}}$ minutes.|}}",
+					"{{if:q>0|${{eval:60-15*p}} + {{eval:15*q}} = {{eval:60-15*p+15*q}}$. |}}Elle a duré $\\textcolor{{{color:primary.0}}}{{{eval:60-15*p+15*q}}}~\\text{min}$."
+				]
+			}
+		},
+		{
+			"statement": "La fête a eu lieu {{if:s==0|ce matin|cet après-midi}}. Combien de temps a-t-elle duré ?\n\n```horloge\nheure: {{if:0==0|{{h}} h|{{h}} h 0}} ; {{if:0==0|{{eval:h+d}} h|{{eval:h+d}} h 0}}\nchiffres: tous\nlégendes: Début ; Fin\n```\n\nElle a duré $?~\\text{h}$.",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "t",
+					"expression": "1..3"
+				},
+				{
+					"name": "h",
+					"expression": "eval:t+6*(1-s)"
+				},
+				{
+					"name": "d",
+					"expression": "2..4"
+				}
+			],
+			"conditions": ["h + d <= 12"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les deux grandes aiguilles sont sur le $12$ : ce sont des heures justes.",
+					"De ${{h}}~\\text{h}$ à ${{eval:h+d}}~\\text{h}$ : ${{eval:h+d}} - {{h}} = {{d}}$.",
+					"Elle a duré $\\textcolor{{{color:primary.0}}}{{{d}}}~\\text{h}$."
+				]
+			}
+		},
+		{
+			"statement": "Le voyage a duré de l'heure du début à l'heure de la fin. Combien de temps ?\n\n```horloge\nheure: {{if:15*p==0|{{h}} h|{{h}} h {{eval:15*p}}}} ; {{if:15*q==0|{{eval:h+d}} h|{{eval:h+d}} h {{eval:15*q}}}}\nchiffres: tous\nlégendes: Début ; Fin\n```\n\nIl a duré $?~\\text{h}~?~\\text{min}$.",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "6..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..2"
+				},
+				{
+					"name": "p",
+					"expression": "0..2"
+				},
+				{
+					"name": "q",
+					"expression": "1..3"
+				}
+			],
+			"conditions": ["q > p"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}"
+				},
+				{
+					"expectedAnswer": "{{eval:15*(q-p)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Début : {{if:15*p==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{eval:15*p}}$}}. Fin : {{if:15*q==0|${{eval:h+d}}~\\text{h}$|${{eval:h+d}}~\\text{h}~{{eval:15*q}}$}}.",
+					"De {{if:15*p==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{eval:15*p}}$}} à {{if:15*p==0|${{eval:h+d}}~\\text{h}$|${{eval:h+d}}~\\text{h}~{{eval:15*p}}$}} : ${{d}}$ {{if:d==1|heure|heures}}.",
+					"Puis de {{if:15*p==0|${{eval:h+d}}~\\text{h}$|${{eval:h+d}}~\\text{h}~{{eval:15*p}}$}} à {{if:15*q==0|${{eval:h+d}}~\\text{h}$|${{eval:h+d}}~\\text{h}~{{eval:15*q}}$}} : ${{eval:15*(q-p)}}$ minutes.",
+					"Il a duré $\\textcolor{{{color:primary.0}}}{{{d}}~\\text{h}~{{eval:15*(q-p)}}~\\text{min}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 8 h 30 → 8 h 45 = 15 min",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"h": "8",
+				"p": "2",
+				"q": "3"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8 h 30 → 8 h 45 = 45",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"h": "8",
+				"p": "2",
+				"q": "3"
+			},
+			"answers": ["45"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 15 h 45 → 16 h 15 = 30 min (cadran : 3 h 45 → 4 h 15)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"h": "3",
+				"p": "3",
+				"q": "1"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : soustraction décimale, 1615 − 1545 = 70",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"h": "3",
+				"p": "3",
+				"q": "1"
+			},
+			"answers": ["70"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "9 h 30 → 10 h = 30 min",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"h": "9",
+				"p": "2",
+				"q": "0"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Après-midi : 1 h → 4 h = 3 h",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"t": "1",
+				"h": "1",
+				"d": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "8 h → 11 h = 3 h",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"t": "2",
+				"h": "8",
+				"d": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8 h → 11 h = 19",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"t": "2",
+				"h": "8",
+				"d": "3"
+			},
+			"answers": ["19"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 9 h 15 → 11 h 45 = 2 h 30 min",
+			"variationIndex": 3,
+			"variables": {
+				"h": "9",
+				"d": "2",
+				"p": "1",
+				"q": "3"
+			},
+			"answers": ["2", "30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 9 h 15 → 11 h 45 = 2 h 3",
+			"variationIndex": 3,
+			"variables": {
+				"h": "9",
+				"d": "2",
+				"p": "1",
+				"q": "3"
+			},
+			"answers": ["2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 9 h 15 → 11 h 45 = 3 h 30",
+			"variationIndex": 3,
+			"variables": {
+				"h": "9",
+				"d": "2",
+				"p": "1",
+				"q": "3"
+			},
+			"answers": ["3", "30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

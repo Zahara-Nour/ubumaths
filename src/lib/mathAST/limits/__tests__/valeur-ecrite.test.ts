@@ -38,10 +38,10 @@ describe('valeur d’une limite — un décimal reste décimal', () => {
 		expect(valueOf(latex)).toBe(expected);
 	});
 
-	// Défaut connu V33 (docs/wip/ecarts-a-trier.md) : énoncé exact, valeur en
-	// flottant (`0.5`, `0.333…`, `1.414…`) par la composée √ du suivi de signe.
-	// Rien n'est verrouillé ici : l'attendu est `\\dfrac{1}{2}`, pas `0.5`.
-	it.todo('V33 : \\lim_{x\\to -\\infty}\\sqrt{\\frac{x^2+1}{4x^2}} → \\dfrac{1}{2} (rend 0.5)');
+	// V33 (corrigé) : énoncé exact, valeur exacte (et non le flottant `0.5`).
+	it('V33 : \\lim_{x\\to -\\infty}\\sqrt{\\frac{x^2+1}{4x^2}} → \\dfrac{1}{2}', () => {
+		expect(valueOf('\\lim_{x\\to -\\infty}\\sqrt{\\frac{x^2+1}{4x^2}}')).toBe('\\dfrac{1}{2}');
+	});
 });
 
 describe('discontinuité — limite et valeur au point comparées sous la même écriture', () => {

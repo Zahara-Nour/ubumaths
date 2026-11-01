@@ -1,0 +1,333 @@
+{
+	"title": "Effectifs cumulés croissants",
+	"description": "Calculer un effectif cumulé croissant à partir d'un tableau d'effectifs ; « au moins » par le total moins un cumulé",
+	"grades": ["3"],
+	"theme": "Statistiques",
+	"domain": "Effectifs cumulés",
+	"subdomain": "Calculer",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On a demandé aux élèves d'une classe combien ils ont de frères et sœurs.\n\n```effectifs\ntitre: Nombre de frères et sœurs\n0 = {{n0}}\n1 = {{n1}}\n2 = {{n2}}\n3 = {{n3}}\n4 = {{n4}}\n5 = {{n5}}\nlignes: effectifs ; effectifs cumulés\nmasquer: 2/effectifs cumulés\n```\n\nQuel est l'effectif cumulé croissant de la valeur $2$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n0",
+					"expression": "1..9"
+				},
+				{
+					"name": "n1",
+					"expression": "1..9"
+				},
+				{
+					"name": "n2",
+					"expression": "1..9"
+				},
+				{
+					"name": "n3",
+					"expression": "1..9"
+				},
+				{
+					"name": "n4",
+					"expression": "1..9"
+				},
+				{
+					"name": "n5",
+					"expression": "1..9"
+				},
+				{
+					"name": "C0",
+					"expression": "eval:n0"
+				},
+				{
+					"name": "C1",
+					"expression": "eval:n0+n1"
+				},
+				{
+					"name": "C2",
+					"expression": "eval:n0+n1+n2"
+				},
+				{
+					"name": "C3",
+					"expression": "eval:n0+n1+n2+n3"
+				},
+				{
+					"name": "C4",
+					"expression": "eval:n0+n1+n2+n3+n4"
+				},
+				{
+					"name": "C5",
+					"expression": "eval:n0+n1+n2+n3+n4+n5"
+				},
+				{
+					"name": "N",
+					"expression": "eval:C5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{C2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'effectif cumulé croissant de $2$ compte les élèves qui ont **au plus** $2$ frères et sœurs : $0$, $1$ ou $2$.",
+					"${{n0}} + {{n1}} + {{n2}} = \\textcolor{{{color:primary.0}}}{{{C2}}}$.",
+					"Autre chemin : l'effectif cumulé de $1$ plus l'effectif de $2$, ${{C1}} + {{n2}} = {{C2}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici les pointures des élèves d'un club de sport.\n\n```effectifs\ntitre: Pointure\n36 = {{n0}}\n37 = {{n1}}\n38 = {{n2}}\n39 = {{n3}}\n40 = {{n4}}\n41 = {{n5}}\nlignes: effectifs\n```\n\nQuel est l'effectif cumulé croissant de la pointure $39$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n0",
+					"expression": "1..9"
+				},
+				{
+					"name": "n1",
+					"expression": "1..9"
+				},
+				{
+					"name": "n2",
+					"expression": "1..9"
+				},
+				{
+					"name": "n3",
+					"expression": "1..9"
+				},
+				{
+					"name": "n4",
+					"expression": "1..9"
+				},
+				{
+					"name": "n5",
+					"expression": "1..9"
+				},
+				{
+					"name": "C0",
+					"expression": "eval:n0"
+				},
+				{
+					"name": "C1",
+					"expression": "eval:n0+n1"
+				},
+				{
+					"name": "C2",
+					"expression": "eval:n0+n1+n2"
+				},
+				{
+					"name": "C3",
+					"expression": "eval:n0+n1+n2+n3"
+				},
+				{
+					"name": "C4",
+					"expression": "eval:n0+n1+n2+n3+n4"
+				},
+				{
+					"name": "C5",
+					"expression": "eval:n0+n1+n2+n3+n4+n5"
+				},
+				{
+					"name": "N",
+					"expression": "eval:C5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{C3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'effectif cumulé croissant de $39$ compte les élèves qui chaussent du $39$ **ou moins**.",
+					"${{n0}} + {{n1}} + {{n2}} + {{n3}} = \\textcolor{{{color:primary.0}}}{{{C3}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On a demandé aux élèves d'un collège combien de livres ils ont lus pendant les vacances.\n\n```effectifs\ntitre: Nombre de livres lus\n0 = {{n0}}\n1 = {{n1}}\n2 = {{n2}}\n3 = {{n3}}\n4 = {{n4}}\n5 = {{n5}}\nlignes: effectifs ; effectifs cumulés\n```\n\nCombien d'élèves ont lu **au moins** $3$ livres ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n0",
+					"expression": "2..12"
+				},
+				{
+					"name": "n1",
+					"expression": "2..12"
+				},
+				{
+					"name": "n2",
+					"expression": "2..12"
+				},
+				{
+					"name": "n3",
+					"expression": "2..12"
+				},
+				{
+					"name": "n4",
+					"expression": "2..12"
+				},
+				{
+					"name": "n5",
+					"expression": "2..12"
+				},
+				{
+					"name": "C0",
+					"expression": "eval:n0"
+				},
+				{
+					"name": "C1",
+					"expression": "eval:n0+n1"
+				},
+				{
+					"name": "C2",
+					"expression": "eval:n0+n1+n2"
+				},
+				{
+					"name": "C3",
+					"expression": "eval:n0+n1+n2+n3"
+				},
+				{
+					"name": "C4",
+					"expression": "eval:n0+n1+n2+n3+n4"
+				},
+				{
+					"name": "C5",
+					"expression": "eval:n0+n1+n2+n3+n4+n5"
+				},
+				{
+					"name": "N",
+					"expression": "eval:C5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:N-C2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« Au moins $3$ » : $3$, $4$ ou $5$ livres. Les autres en ont lu **au plus** $2$ : l'effectif cumulé de $2$, ${{C2}}$.",
+					"L'effectif total est ${{N}}$ : ${{N}} - {{C2}} = \\textcolor{{{color:primary.0}}}{{{eval:N-C2}}}$.",
+					"On vérifie : ${{n3}} + {{n4}} + {{n5}} = {{eval:N-C2}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Cumulé de 2 : 15",
+			"variationIndex": 0,
+			"variables": {
+				"n0": "3",
+				"n1": "5",
+				"n2": "7",
+				"n3": "4",
+				"n4": "2",
+				"n5": "1"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'effectif de 2, 7",
+			"variationIndex": 0,
+			"variables": {
+				"n0": "3",
+				"n1": "5",
+				"n2": "7",
+				"n3": "4",
+				"n4": "2",
+				"n5": "1"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Cumulé de 39 : 19",
+			"variationIndex": 1,
+			"variables": {
+				"n0": "3",
+				"n1": "5",
+				"n2": "7",
+				"n3": "4",
+				"n4": "2",
+				"n5": "1"
+			},
+			"answers": ["19"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans la pointure 39, 15",
+			"variationIndex": 1,
+			"variables": {
+				"n0": "3",
+				"n1": "5",
+				"n2": "7",
+				"n3": "4",
+				"n4": "2",
+				"n5": "1"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Au moins 3 : 22 − 15 = 7",
+			"variationIndex": 2,
+			"variables": {
+				"n0": "3",
+				"n1": "5",
+				"n2": "7",
+				"n3": "4",
+				"n4": "2",
+				"n5": "1"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cumulé de 3, 19",
+			"variationIndex": 2,
+			"variables": {
+				"n0": "3",
+				"n1": "5",
+				"n2": "7",
+				"n3": "4",
+				"n4": "2",
+				"n5": "1"
+			},
+			"answers": ["19"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 22 − 19 = 3 (sans les 3 livres)",
+			"variationIndex": 2,
+			"variables": {
+				"n0": "3",
+				"n1": "5",
+				"n2": "7",
+				"n3": "4",
+				"n4": "2",
+				"n5": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,116 @@
+{
+	"id": "2cef3442-e79c-4be5-b139-dce2d32a9fb0",
+	"title": "Croissances comparées : logarithme et puissances",
+	"description": "Limites de ln x / xⁿ en +∞ et de xⁿ ln x en 0 (pièges : ∞ × 0 = 1, limite d'un seul facteur)",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions",
+	"domain": "Limites de fonctions",
+	"subdomain": "Croissances comparées",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=\\dfrac{ {{if:k==1||{{k}}}}\\ln x}{{{if:n==1|x|x^{ {{n}} }}}}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "1..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Forme indéterminée « $\\dfrac{\\infty}{\\infty}$ ».",
+					"Par croissances comparées, $\\displaystyle\\lim_{x\\to+\\infty}\\dfrac{\\ln x}{{{if:n==1|x|x^{ {{n}} }}}}=0$ : la puissance l'emporte sur le logarithme.",
+					"$\\displaystyle\\lim_{x\\to+\\infty}f(x)=\\textcolor{{{color:primary.0}}}{0}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)={{if:k==1||{{k}}}}{{if:n==1|x|x^{ {{n}} }}}\\ln x$.\n\nDétermine la limite de $f$ en $0$ (on a $x>0$).\n\n$\\displaystyle\\lim_{x\\to0}f(x)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "1..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"En $0$, ${{if:n==1|x|x^{ {{n}} }}}$ tend vers $0$ et $\\ln x$ vers $-\\infty$ : forme indéterminée « $0\\times\\infty$ ».",
+					"Par croissances comparées, $\\displaystyle\\lim_{x\\to0}{{if:n==1|x|x^{ {{n}} }}}\\ln x=0$, donc $\\displaystyle\\lim_{x\\to0}f(x)=\\textcolor{{{color:primary.0}}}{0}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "4",
+				"n": "2"
+			},
+			"description": "v0 : 4 ln x / x² → 0",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "4",
+				"n": "2"
+			},
+			"description": "v0 : +∞",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "3",
+				"n": "1"
+			},
+			"description": "v1 : 3x ln x en 0 → 0",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"n": "1"
+			},
+			"description": "v1 : −∞ (limite de ln seule)",
+			"variationIndex": 1
+		}
+	]
+}

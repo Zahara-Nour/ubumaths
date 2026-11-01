@@ -1,0 +1,191 @@
+{
+	"title": "Volume d'un cube ou d'un pavé droit",
+	"description": "Calculer le volume d'un cube (arête 4 cm : 64 cm³) ou d'un pavé droit (5 cm, 3 cm, 2 cm : 30 cm³)",
+	"grades": ["5"],
+	"theme": "Grandeurs",
+	"domain": "Volumes",
+	"subdomain": "Volume d'un pavé droit",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quel est le volume d'un **cube** d'arête ${{a}}~\\unit{cm}$ ?\n\n$?~\\unit{cm^3}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a^3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Volume d'un pavé droit.** $\\text{Volume} = \\text{longueur} \\times \\text{largeur} \\times \\text{hauteur}$. Pour un cube d'arête $a$ : $\\text{Volume} = a \\times a \\times a = a^3$.",
+					"${{a}}~\\unit{cm} \\times {{a}}~\\unit{cm} \\times {{a}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{eval:a^3}}~\\unit{cm^3}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel est le volume d'un **pavé droit** de longueur ${{L}}~\\unit{cm}$, de largeur ${{l}}~\\unit{cm}$ et de hauteur ${{h}}~\\unit{cm}$ ?\n\n$?~\\unit{cm^3}$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "4..15"
+				},
+				{
+					"name": "l",
+					"expression": "2..10"
+				},
+				{
+					"name": "h",
+					"expression": "2..12"
+				}
+			],
+			"conditions": ["l<L"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:L*l*h}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Volume d'un pavé droit.** $\\text{Volume} = \\text{longueur} \\times \\text{largeur} \\times \\text{hauteur}$. Pour un cube d'arête $a$ : $\\text{Volume} = a \\times a \\times a = a^3$.",
+					"${{L}}~\\unit{cm} \\times {{l}}~\\unit{cm} \\times {{h}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{eval:L*l*h}}~\\unit{cm^3}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une piscine a la forme d'un **pavé droit** : ${{L}}~\\unit{m}$ de long, ${{l}}~\\unit{m}$ de large et ${{h}}~\\unit{m}$ de profondeur.\n\nQuel est son volume ?\n\n$?~\\unit{m^3}$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "6..25"
+				},
+				{
+					"name": "l",
+					"expression": "3..12"
+				},
+				{
+					"name": "h",
+					"expression": "1..3"
+				}
+			],
+			"conditions": ["l<L"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:L*l*h}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Volume d'un pavé droit.** $\\text{Volume} = \\text{longueur} \\times \\text{largeur} \\times \\text{hauteur}$. Pour un cube d'arête $a$ : $\\text{Volume} = a \\times a \\times a = a^3$.",
+					"${{L}}~\\unit{m} \\times {{l}}~\\unit{m} \\times {{h}}~\\unit{m} = \\textcolor{{{color:primary.0}}}{{{eval:L*l*h}}~\\unit{m^3}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Cube d'arête 4 : 64",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["64"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 12 (4 × 3)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 16 (une face)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pavé 5 × 3 × 2 : 30",
+			"variationIndex": 1,
+			"variables": {
+				"L": "5",
+				"l": "3",
+				"h": "2"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10 (5 + 3 + 2)",
+			"variationIndex": 1,
+			"variables": {
+				"L": "5",
+				"l": "3",
+				"h": "2"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 15 (aire de la base)",
+			"variationIndex": 1,
+			"variables": {
+				"L": "5",
+				"l": "3",
+				"h": "2"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Piscine 10 × 4 × 2 : 80",
+			"variationIndex": 2,
+			"variables": {
+				"L": "10",
+				"l": "4",
+				"h": "2"
+			},
+			"answers": ["80"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 16",
+			"variationIndex": 2,
+			"variables": {
+				"L": "10",
+				"l": "4",
+				"h": "2"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

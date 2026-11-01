@@ -27,7 +27,9 @@ src/lib/shared/python/                   # Code partagé worker ↔ main
   └── worker/                            # Schemas Zod des messages
 ```
 
-Le worker importe **`$lib/shared/python`** (pas d'`$app/...`), ce qui le rend testable hors navigateur via Vitest avec mocks.
+Le worker importe `$lib/shared/python` (pas d'`$app/...`), ce qui le rend testable hors navigateur via Vitest avec mocks.
+
+⚠️ **Valeurs : module par module, jamais par le barrel.** Le worker est empaqueté sans le plugin Svelte ; or le barrel `$lib/shared/python` ré-exporte les exécuteurs `.svelte.ts`, qui tirent le store `pythonDebug.svelte.ts` (runes `$state` non compilées). Depuis Vite 8 (Rolldown), ce store reste dans le paquet du worker, qui meurt au chargement (« $state is not defined »). Les valeurs viennent donc de `config.ts`, `types.ts` et `worker/messages.ts` ; seuls les `import type` passent par le barrel (ils disparaissent à la compilation). Garde : `src/lib/workers/__tests__/workers-sans-runes.test.ts` (aucun import de valeur d'un worker ne mène à un fichier Svelte).
 
 ---
 

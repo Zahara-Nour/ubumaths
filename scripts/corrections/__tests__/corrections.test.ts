@@ -5,7 +5,7 @@
  * Le vérificateur doit ROUGIR sur chaque classe de défaut qu'il prétend voir
  * (un vérificateur qui ne dit jamais non ne prouve rien) : calcul qui ne finit
  * pas sur la réponse, égalité fausse, marqueur non résolu, LaTeX déséquilibré,
- * « + 0 », mauvais choix de QCM. Le lot pilote, relu depuis son instantané
+ * « + 0 », mauvais choix d'une case choix. Le lot pilote, relu depuis son instantané
  * commité, doit passer en entier.
  */
 
@@ -74,8 +74,12 @@ function sumTemplate(): QuestionTemplate {
 	};
 }
 
-/** QCM de signe, calqué sur 4bee24f9 */
-function signChoiceTemplate(): QuestionTemplate {
+/** Case choix de signe, calquée sur 4bee24f9 (QCM migré, choix non mélangés) */
+function signChoiceTemplate(
+	choices = ['positif', 'négatif'],
+	expectedAnswer = '{{eval:(1-a*b/abs(a*b))/2}}'
+): QuestionTemplate {
+	const block = ['```choix', 'melanger: non', ...choices.map((c) => `- ${c}`), '```'].join('\n');
 	return {
 		id: ID,
 		title: 'Signe d’un produit',
@@ -84,20 +88,15 @@ function signChoiceTemplate(): QuestionTemplate {
 		level: 1,
 		status: 'draft',
 		grades: ['4'],
-		options: { shuffleChoices: false },
 		variations: [
 			{
-				statement: templateMarkdown('Quel est le signe ?\n\n$${{expression1}}$$'),
+				statement: templateMarkdown('Quel est le signe ?\n\n$${{expr1}}$$\n\n' + block),
 				variables: [
 					{ name: 'a', expression: '30..99;±' },
 					{ name: 'b', expression: '30..99;±' },
-					{ name: 'expression1', expression: '(a)*(b)' }
+					{ name: 'expr1', expression: '(a)*(b)' }
 				],
-				choices: [
-					{ content: templateMarkdown('positif') },
-					{ content: templateMarkdown('négatif') }
-				],
-				correctChoiceIndex: ['{{eval:(1-a*b/abs(a*b))/2}}']
+				blanks: [{ expectedAnswer }]
 			}
 		]
 	};
@@ -202,28 +201,34 @@ describe('R-PASS', () => {
 		expect(report.passed).toBe(true);
 	});
 
-	it('voit un cas rare (1 combinaison sur 10 000) que 300 graines manqueraient', () => {
-		// c = 9 seulement pour a = 100 et b = 100
-		const template: QuestionTemplate = {
-			...sumTemplate(),
-			variations: [
-				{
-					statement: templateMarkdown('Calcule.\n\n$${{expression1}}$$'),
-					variables: [
-						{ name: 'a', expression: '1..100' },
-						{ name: 'b', expression: '1..100' },
-						{ name: 'c', expression: '{{eval:8+floor(a/100)*floor(b/100)}}' },
-						{ name: 'expression1', expression: '{{eval:a*10 + 1}} + {{c}}' }
-					],
-					blanks: [{ expectedAnswer: '{{eval:{{expression1}}}}' }]
-				}
-			]
-		};
-		const op = splitBinaryOperation('{{eval:a*10 + 1}} + {{c}}')!;
-		const cases = detectRPassCases(template, 0, op);
-		expect(cases.sampling).toEqual({ mode: 'exhaustive', size: 10000 });
-		expect(cases.nine).toBe(true);
-	});
+	// Balayage exhaustif de 10 000 combinaisons : ~3 s en local, mais frôle le
+	// délai par défaut de 5 s sous la charge du shard CI. Marge explicite.
+	it(
+		'voit un cas rare (1 combinaison sur 10 000) que 300 graines manqueraient',
+		{ timeout: 20_000 },
+		() => {
+			// c = 9 seulement pour a = 100 et b = 100
+			const template: QuestionTemplate = {
+				...sumTemplate(),
+				variations: [
+					{
+						statement: templateMarkdown('Calcule.\n\n$${{expression1}}$$'),
+						variables: [
+							{ name: 'a', expression: '1..100' },
+							{ name: 'b', expression: '1..100' },
+							{ name: 'c', expression: '{{eval:8+floor(a/100)*floor(b/100)}}' },
+							{ name: 'expression1', expression: '{{eval:a*10 + 1}} + {{c}}' }
+						],
+						blanks: [{ expectedAnswer: '{{eval:{{expression1}}}}' }]
+					}
+				]
+			};
+			const op = splitBinaryOperation('{{eval:a*10 + 1}} + {{c}}')!;
+			const cases = detectRPassCases(template, 0, op);
+			expect(cases.sampling).toEqual({ mode: 'exhaustive', size: 10000 });
+			expect(cases.nine).toBe(true);
+		}
+	);
 
 	it('différence à diminuende rond (30 − 6) : passage par la dizaine, pas « sans passage »', () => {
 		const template: QuestionTemplate = {
@@ -414,7 +419,7 @@ describe('verifyProposal', () => {
 		expect(awkwardWritings('\\left( -3 \\right) \\times 2')).toEqual([]);
 	});
 
-	it('rougit quand la conclusion d’un QCM nomme le mauvais choix', () => {
+	it('rougit quand la conclusion d’une case choix nomme le mauvais choix', () => {
 		const wrong = '{{if:a*b>0|Le produit est négatif.|Le produit est positif.}}';
 		const reasons = failureReasons(signChoiceTemplate(), [wrong]);
 		expect(reasons.some((r) => r.includes('mauvais choix'))).toBe(true);
@@ -484,13 +489,9 @@ describe('verifyProposal : chaînes strictes', () => {
 		).toBe(true);
 	});
 
-	it('QCM : un choix aux caractères spéciaux est cherché littéralement', () => {
+	it('case choix : un choix aux caractères spéciaux est cherché littéralement', () => {
 		expect(escapeRegExp('(+) a.b')).toBe('\\(\\+\\) a\\.b');
-		const template = signChoiceTemplate();
-		template.variations[0].choices = [
-			{ content: templateMarkdown('positif (+)') },
-			{ content: templateMarkdown('négatif (−)') }
-		];
+		const template = signChoiceTemplate(['positif (+)', 'négatif (−)']);
 		expect(failureReasons(template, ['Le produit est donc {{solution}}.'])).toEqual([]);
 		const wrong = failureReasons(template, [
 			'{{if:a*b>0|Le produit est négatif (−).|Le produit est positif (+).}}'
@@ -527,16 +528,10 @@ describe('verifyProposal : trou relié à l’égalité posée (a)', () => {
 	});
 });
 
-describe('verifyProposal : choix de QCM nommé comme un nombre entier (b)', () => {
-	/** QCM à choix fixes « 3 » et « 13 » ; `correct` = indice du bon choix */
+describe('verifyProposal : choix d’une case choix nommé comme un nombre entier (b)', () => {
+	/** Case choix à choix fixes « 3 » et « 13 » ; `correct` = indice du bon choix */
 	function numberChoiceTemplate(correct: number): QuestionTemplate {
-		const template = signChoiceTemplate();
-		template.variations[0].choices = [
-			{ content: templateMarkdown('3') },
-			{ content: templateMarkdown('13') }
-		];
-		template.variations[0].correctChoiceIndex = [String(correct)];
-		return template;
+		return signChoiceTemplate(['3', '13'], String(correct));
 	}
 
 	it('« 3 » n’est nommé ni dans « 13 », ni dans « 3,5 », ni dans « 0.3 »', () => {

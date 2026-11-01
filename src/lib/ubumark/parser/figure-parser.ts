@@ -19,8 +19,10 @@
  * pas de la grille, sinon 1). Sans ces clés, ni axes ni grille.
  *
  * Réglages INTERACTIFS (`deplacable: oui|non`, `rendu: normal|croquis|mixte`) :
- * acceptés seulement avec l'option `interactive` (figures stockées, ADR 0027),
- * où la fenêtre devient facultative ; un bloc d'exercice les refuse.
+ * acceptés par tout bloc ```figure d'un texte (lot 6 du chantier figure-et-choix,
+ * 2026-10-29 : la figure s'affiche alors dans la toile) et par une figure
+ * stockée (option `interactive`, ADR 0027, où la fenêtre devient facultative) ;
+ * refusés dans une figure à compléter ou de travail, qui ne se déplacent jamais.
  *
  * Volontairement LÉGER : aucun import de geometry-core (le parseur Markdown est
  * dans le chunk de toutes les pages). Le script est interprété par
@@ -78,20 +80,31 @@ const KNOWN_KEYS = [
 	'graduations'
 ] as const;
 
-/** Clés des seules figures interactives (figures stockées) */
+/** Réglages interactifs : la figure s'affiche dans la toile */
 const INTERACTIVE_KEYS = ['deplacable', 'déplaçable', 'rendu'] as const;
 
 /** Clés citées dans les messages (sans la variante accentuée) */
-const KEYS_HINT = 'fenetre, taille, description, axes, grille, graduations';
-const INTERACTIVE_KEYS_HINT = `${KEYS_HINT}, deplacable, rendu`;
+const CONSTRUCTION_KEYS_HINT = 'fenetre, taille, description, axes, grille, graduations';
+const KEYS_HINT = `${CONSTRUCTION_KEYS_HINT}, deplacable, rendu`;
+
+/** Nom de la figure dans les refus de `deplacable:` / `rendu:` */
+const CONSTRUCTION_NAMES = {
+	'a-completer': 'une figure à compléter',
+	travail: 'une figure de travail'
+} as const;
 
 export interface FigureParseOptions {
 	/**
 	 * Figure INTERACTIVE (figure stockée) : accepte `deplacable:` et `rendu:`, et
 	 * la fenêtre devient facultative (sans elle, la vue par défaut de la toile).
-	 * Défaut false : bloc d'exercice, qui refuse ces deux clés.
+	 * Défaut false : bloc d'un texte, fenêtre obligatoire.
 	 */
 	interactive?: boolean;
+	/**
+	 * Figure de départ d'un bloc ```figure-a-completer ou ```figure-de-travail :
+	 * `deplacable:` et `rendu:` y sont refusés (elle ne se déplace jamais).
+	 */
+	construction?: keyof typeof CONSTRUCTION_NAMES;
 }
 
 // ============================================================================
@@ -262,8 +275,11 @@ function tooManyLines(step: FigureStep, w: FigureWindow): boolean {
  */
 export function parseFigureContent(source: string, options: FigureParseOptions = {}): FigureNode {
 	const interactiveMode = options.interactive === true;
-	const keysHint = interactiveMode ? INTERACTIVE_KEYS_HINT : KEYS_HINT;
+	const construction = options.construction;
+	const keysHint = construction ? CONSTRUCTION_KEYS_HINT : KEYS_HINT;
 	const interactive: FigureInteractiveSettings = { draggable: false, renderMode: 'normal' };
+	/** Bloc d'un texte : réglages portés par le nœud seulement s'ils sont écrits */
+	let interactiveSeen = false;
 	const lines = source.split('\n');
 	const errors: FigureIssue[] = [];
 	const header: FigureHeader = {
@@ -299,11 +315,15 @@ export function parseFigureContent(source: string, options: FigureParseOptions =
 				if (separator === -1) return;
 				throw new LineError(`« ${trimmed} » : en-tête attendu (${keysHint}), puis ---`);
 			}
-			if (isInteractiveKey && !interactiveMode) {
+			if (isInteractiveKey && construction) {
+				const name = CONSTRUCTION_NAMES[construction];
 				throw new LineError(
-					`« ${kv[1]} » : réglage réservé aux figures interactives (figures enregistrées), pas au bloc d’exercice`
+					key === 'rendu'
+						? `« ${kv[1]} » : ${name} garde le rendu normal`
+						: `« ${kv[1]} » : ${name} ne se déplace pas`
 				);
 			}
+			if (isInteractiveKey) interactiveSeen = true;
 			const value = kv[2].trim();
 			if (key === 'deplacable' || key === 'déplaçable') {
 				const on = yesNo(value);
@@ -383,7 +403,7 @@ export function parseFigureContent(source: string, options: FigureParseOptions =
 		script,
 		scriptStartLine: separator + 2,
 		errors,
-		...(interactiveMode ? { interactive } : {})
+		...(interactiveMode || interactiveSeen ? { interactive } : {})
 	};
 }
 
@@ -393,7 +413,7 @@ export function parseFigureContent(source: string, options: FigureParseOptions =
  */
 function parseConstructionBody(source: string, work: boolean): FigureNode {
 	const { figureSource, spec, errors } = readConstructionHeader(source, { work });
-	const node = parseFigureContent(figureSource);
+	const node = parseFigureContent(figureSource, { construction: work ? 'travail' : 'a-completer' });
 	return {
 		...node,
 		source,

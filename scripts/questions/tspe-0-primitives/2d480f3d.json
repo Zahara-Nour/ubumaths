@@ -1,0 +1,281 @@
+{
+	"id": "2d480f3d-2092-4f25-91b5-b92887f7b71b",
+	"title": "Primitive de la forme u′eᵘ",
+	"description": "Reconnaître u′eᵘ (à un facteur constant près), primitive quelconque ou fixée par F(x₀) = y₀",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Primitives et équations différentielles",
+	"domain": "Primitives",
+	"subdomain": "Formes u′eᵘ, 2uu′, u′/u",
+	"level": 3,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"form": "off",
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:h==1|e^{x^2}}}{{if:h==-1|-e^{x^2}}}{{if:h!=1 && h!=-1|{{eval:h}}e^{x^2}}}{{if:y0-h>0|+{{eval:y0-h}}}}{{if:y0-h<0|{{eval:y0-h}}}}"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:2*h==1|x}}{{if:2*h==-1|-x}}{{if:2*h!=1 && 2*h!=-1|{{eval:2*h}}x}}e^{x^2}$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F(0)={{eval:y0}}$.\n\n$F(x)=?$",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "y0",
+					"expression": "-5..5"
+				}
+			],
+			"conditions": ["y0 != h"],
+			"correction": {
+				"steps": [
+					"Avec $u(x)=x^2$, $u'(x)=2x$ : $f(x)={{if:h==1|u'(x)e^{u(x)}}}{{if:h==-1|-u'(x)e^{u(x)}}}{{if:h!=1 && h!=-1|{{eval:h}}u'(x)e^{u(x)}}}$, de primitive ${{if:h==1|e^{x^2}}}{{if:h==-1|-e^{x^2}}}{{if:h!=1 && h!=-1|{{eval:h}}e^{x^2}}}$.",
+					"$F(x)={{if:h==1|e^{x^2}}}{{if:h==-1|-e^{x^2}}}{{if:h!=1 && h!=-1|{{eval:h}}e^{x^2}}}+k$ et $F(0)={{eval:h}}+k={{eval:y0}}$, donc $k={{eval:y0-h}}$.",
+					"$F(x)=\\textcolor{{{color:primary.0}}}{{{if:h==1|e^{x^2}}}{{if:h==-1|-e^{x^2}}}{{if:h!=1 && h!=-1|{{eval:h}}e^{x^2}}}{{if:y0-h>0|+{{eval:y0-h}}}}{{if:y0-h<0|{{eval:y0-h}}}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:h==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:h==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:h!=1 && h!=-1|{{eval:h}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:y0-h>0|+{{eval:y0-h}}}}{{if:y0-h<0|{{eval:y0-h}}}}"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:a*h==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:a*h==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:a*h!=1 && a*h!=-1|{{eval:a*h}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F(0)={{eval:y0}}$.\n\n$F(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "h",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "y0",
+					"expression": "-5..5"
+				}
+			],
+			"conditions": ["y0 != h"],
+			"correction": {
+				"steps": [
+					"Avec $u(x)={{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}$, $u'(x)={{eval:a}}$ : $f(x)={{if:h==1|u'(x)e^{u(x)}}}{{if:h==-1|-u'(x)e^{u(x)}}}{{if:h!=1 && h!=-1|{{eval:h}}u'(x)e^{u(x)}}}$, de primitive ${{if:h==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:h==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:h!=1 && h!=-1|{{eval:h}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}$.",
+					"$F(x)={{if:h==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:h==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:h!=1 && h!=-1|{{eval:h}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}+k$ et $F(0)={{eval:h}}+k={{eval:y0}}$, donc $k={{eval:y0-h}}$.",
+					"$F(x)=\\textcolor{{{color:primary.0}}}{{{if:h==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:h==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:h!=1 && h!=-1|{{eval:h}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:y0-h>0|+{{eval:y0-h}}}}{{if:y0-h<0|{{eval:y0-h}}}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"integrand": "{{if:2*h==1|x}}{{if:2*h==-1|-x}}{{if:2*h!=1 && 2*h!=-1|{{eval:2*h}}x}}e^{x^2}",
+					"answerKind": "primitive",
+					"expectedAnswer": "{{if:h==1|e^{x^2}}}{{if:h==-1|-e^{x^2}}}{{if:h!=1 && h!=-1|{{eval:h}}e^{x^2}}}"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:2*h==1|x}}{{if:2*h==-1|-x}}{{if:2*h!=1 && 2*h!=-1|{{eval:2*h}}x}}e^{x^2}$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F(x)=?$",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "1..3;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u(x)=x^2$, $u'(x)=2x$ : $f(x)={{if:h==1|u'(x)e^{u(x)}}}{{if:h==-1|-u'(x)e^{u(x)}}}{{if:h!=1 && h!=-1|{{eval:h}}u'(x)e^{u(x)}}}$, et une primitive de $u'e^{u}$ est $e^{u}$.",
+					"Une primitive de $f$ est $F(x)=\\textcolor{{{color:primary.0}}}{{{if:h==1|e^{x^2}}}{{if:h==-1|-e^{x^2}}}{{if:h!=1 && h!=-1|{{eval:h}}e^{x^2}}}}$ (à une constante près)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["2e^{x^2}+3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"h": "2",
+				"y0": "5"
+			},
+			"description": "v0 : 4x e^{x²}, F(0)=5 → 2e^{x²}+3",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["4e^{x^2}+1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"h": "2",
+				"y0": "5"
+			},
+			"description": "v0 : coefficient non divisé par 2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2e^{x^2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"h": "2",
+				"y0": "5"
+			},
+			"description": "v0 : condition oubliée",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2e^{x^2}+5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"h": "2",
+				"y0": "5"
+			},
+			"description": "v0 : e⁰ pris égal à 0",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1-e^{x^2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"h": "-1",
+				"y0": "0"
+			},
+			"description": "v0 : h=-1, F(0)=0 → −e^{x²}+1",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2e^{3x}-1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"h": "2",
+				"y0": "1"
+			},
+			"description": "v1 : 6e^{3x}, F(0)=1 → 2e^{3x}−1",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["18e^{3x}-17"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"h": "2",
+				"y0": "1"
+			},
+			"description": "v1 : multiplié par u′",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["6e^{3x}-5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"h": "2",
+				"y0": "1"
+			},
+			"description": "v1 : coefficient recopié",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["e^{-2x}+2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-2",
+				"h": "1",
+				"y0": "3"
+			},
+			"description": "v1 : a<0 : −2e^{−x}... (a=-2,h=1,y0=3) → e^{−2x}+2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3e^{x^2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"h": "3"
+			},
+			"description": "v2 (ouverte) f=6xe^{x²} : primitive modèle",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3e^{x^2}+1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"h": "3"
+			},
+			"description": "v2 (ouverte) f=6xe^{x²} : autre constante",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3e^{x^2}+C"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"h": "3"
+			},
+			"description": "v2 (ouverte) f=6xe^{x²} : avec +C",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["6e^{x^2}+12x^2e^{x^2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"h": "3"
+			},
+			"description": "v2 (ouverte) f=6xe^{x²} : dérivée au lieu de primitive (message)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["6e^{x^2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"h": "3"
+			},
+			"description": "v2 (ouverte) f=6xe^{x²} : coefficient non divisé par 2",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["6xe^{x^2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"h": "3"
+			},
+			"description": "v2 (ouverte) f=6xe^{x²} : non-primitive : f recopiée",
+			"variationIndex": 2
+		}
+	]
+}

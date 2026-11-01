@@ -30,10 +30,10 @@ import { parseChoiceAnswer } from '../choice-case';
 
 /**
  * Context for correction placeholder resolution.
- * Built from resolved blanks, choices, and variables.
+ * Built from resolved blanks and variables.
  */
 export interface CorrectionContext {
-	/** Resolved solution values (from blanks or correct choices) */
+	/** Resolved solution values (from blanks ; une case choix donne le texte de ses bons choix) */
 	solutions: string[];
 	/** Value of the expression variable (if any) */
 	expression?: string;
@@ -183,15 +183,11 @@ function buildEnrichedVariables(
  * Build a CorrectionContext from resolved instance data.
  *
  * @param resolvedBlanks - Resolved blanks (fill-in-blanks questions)
- * @param resolvedChoices - Resolved choices (QCM questions)
- * @param correctChoiceIndex - Index/indices of correct choice(s)
  * @param resolvedVariables - All resolved variables
  * @returns CorrectionContext with solutions and expression
  */
 export function buildCorrectionContext(
 	resolvedBlanks: InstanceBlank[] | undefined,
-	resolvedChoices: { content: ResolvedMarkdown; isCorrect: boolean }[] | undefined,
-	correctChoiceIndex: string | string[] | undefined,
 	resolvedVariables: ResolvedVariable[]
 ): CorrectionContext {
 	let solutions: string[] = [];
@@ -206,18 +202,6 @@ export function buildCorrectionContext(
 						.join(' ; ')
 				: b.expectedAnswer
 		);
-	}
-	// Build solutions from choices (QCM)
-	else if (resolvedChoices && correctChoiceIndex !== undefined) {
-		const indices = Array.isArray(correctChoiceIndex) ? correctChoiceIndex : [correctChoiceIndex];
-		solutions = indices
-			.map((idx) => {
-				const choiceIndex = parseInt(idx.trim(), 10);
-				if (isNaN(choiceIndex)) return '';
-				const choice = resolvedChoices[choiceIndex];
-				return choice ? String(choice.content) : '';
-			})
-			.filter((s) => s !== '');
 	}
 
 	// Find expression variable

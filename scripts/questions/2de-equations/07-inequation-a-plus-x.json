@@ -1,0 +1,198 @@
+{
+	"title": "Résoudre une inéquation a + x ⩾ b",
+	"description": "Ensemble des solutions de x + a ⩾ b (entiers relatifs) et de a + x ⩾ b (décimaux), les quatre sens",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Inéquations",
+	"subdomain": "Premier degré",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation $x{{eval:a;+}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{b}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..20;±"
+				},
+				{
+					"name": "b",
+					"expression": "-20..20"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"conditions": ["b != a"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|]-\\infty;{{eval:(b)-(a)}}[|{{if:s==1|]-\\infty;{{eval:(b)-(a)}}]|{{if:s==2|]{{eval:(b)-(a)}};+\\infty[|[{{eval:(b)-(a)}};+\\infty[}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On isole $x$ : on {{if:a>0|soustrait ${{a}}$|ajoute ${{eval:-(a)}}$}} aux deux membres. Ajouter ou soustraire un nombre **ne change pas** le sens de l'inégalité.",
+					"$$x{{eval:a;+}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{b}}\\iff x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(b)-(a)}}$$",
+					"{{if:s==0|L'inégalité est **stricte** : ${{eval:(b)-(a)}}$ n'est pas solution, le crochet est **ouvert** de son côté.|{{if:s==1|L'inégalité est **large** : ${{eval:(b)-(a)}}$ est solution, le crochet est **fermé** de son côté.|{{if:s==2|L'inégalité est **stricte** : ${{eval:(b)-(a)}}$ n'est pas solution, le crochet est **ouvert** de son côté.|L'inégalité est **large** : ${{eval:(b)-(a)}}$ est solution, le crochet est **fermé** de son côté.}}}}}}",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]-\\infty\\,;{{eval:(b)-(a)}}\\right[|{{if:s==1|\\left]-\\infty\\,;{{eval:(b)-(a)}}\\right]|{{if:s==2|\\left]{{eval:(b)-(a)}}\\,;+\\infty\\right[|\\left[{{eval:(b)-(a)}}\\,;+\\infty\\right[}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation ${{a}}+x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{b}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "1..99;±"
+				},
+				{
+					"name": "B",
+					"expression": "-99..99"
+				},
+				{
+					"name": "a",
+					"expression": "eval:(A)/10;d"
+				},
+				{
+					"name": "b",
+					"expression": "eval:(B)/10;d"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"conditions": ["mod(A,10) != 0", "B != A"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|]-\\infty;{{eval:((B)-(A))/10;d}}[|{{if:s==1|]-\\infty;{{eval:((B)-(A))/10;d}}]|{{if:s==2|]{{eval:((B)-(A))/10;d}};+\\infty[|[{{eval:((B)-(A))/10;d}};+\\infty[}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On isole $x$ : on {{if:a>0|soustrait ${{a}}$|ajoute ${{eval:-(a)}}$}} aux deux membres. Ajouter ou soustraire un nombre **ne change pas** le sens de l'inégalité.",
+					"$${{a}}+x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{b}}\\iff x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:((B)-(A))/10;d}}$$",
+					"{{if:s==0|L'inégalité est **stricte** : ${{eval:((B)-(A))/10;d}}$ n'est pas solution, le crochet est **ouvert** de son côté.|{{if:s==1|L'inégalité est **large** : ${{eval:((B)-(A))/10;d}}$ est solution, le crochet est **fermé** de son côté.|{{if:s==2|L'inégalité est **stricte** : ${{eval:((B)-(A))/10;d}}$ n'est pas solution, le crochet est **ouvert** de son côté.|L'inégalité est **large** : ${{eval:((B)-(A))/10;d}}$ est solution, le crochet est **fermé** de son côté.}}}}}}",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]-\\infty\\,;{{eval:((B)-(A))/10;d}}\\right[|{{if:s==1|\\left]-\\infty\\,;{{eval:((B)-(A))/10;d}}\\right]|{{if:s==2|\\left]{{eval:((B)-(A))/10;d}}\\,;+\\infty\\right[|\\left[{{eval:((B)-(A))/10;d}}\\,;+\\infty\\right[}}}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x + 4 ⩾ −2 : S = [−6 ; +∞[",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "-2",
+				"s": "3"
+			},
+			"answers": ["[-6;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : crochet ouvert ]−6 ; +∞[",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "-2",
+				"s": "3"
+			},
+			"answers": ["]-6;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : mauvais côté ]−∞ ; −6]",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "-2",
+				"s": "3"
+			},
+			"answers": ["]-\\infty;-6]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4 ajouté [2 ; +∞[",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "-2",
+				"s": "3"
+			},
+			"answers": ["[2;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : inégalité au lieu d'un ensemble",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "-2",
+				"s": "3"
+			},
+			"answers": ["x\\geqslant -6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x + 4 < −2 : S = ]−∞ ; −6[",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "-2",
+				"s": "0"
+			},
+			"answers": ["]-\\infty;-6["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "−1,5 + x ⩽ 2,2 : S = ]−∞ ; 3,7]",
+			"variationIndex": 1,
+			"variables": {
+				"A": "-15",
+				"B": "22",
+				"a": "-1.5",
+				"b": "2.2",
+				"s": "1"
+			},
+			"answers": ["]-\\infty;3{,}7]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ]−∞ ; 0,7]",
+			"variationIndex": 1,
+			"variables": {
+				"A": "-15",
+				"B": "22",
+				"a": "-1.5",
+				"b": "2.2",
+				"s": "1"
+			},
+			"answers": ["]-\\infty;0{,}7]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

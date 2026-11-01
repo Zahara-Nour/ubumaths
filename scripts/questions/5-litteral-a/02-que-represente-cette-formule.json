@@ -1,0 +1,204 @@
+{
+	"title": "Que représente cette formule ?",
+	"description": "Reconnaître ce que représente une formule en n : 2n est le double, n² le carré, n + 1 le successeur… (choix parmi quatre, dont la confusion 2n / n²)",
+	"grades": ["5"],
+	"theme": "Calcul littéral",
+	"domain": "Écrire",
+	"subdomain": "Formules",
+	"level": 2,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Pour un nombre $n$, que représente $2n$ ?\n\n```choix\n- le double de $n$\n- le carré de $n$\n- le successeur de $n$\n- la moitié de $n$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$2n = 2 \\times n$ : c'est $n$ multiplié par $2$.",
+					"$2n$ représente **le double** de $n$."
+				]
+			}
+		},
+		{
+			"statement": "Pour un nombre $n$, que représente $3n$ ?\n\n```choix\n- le triple de $n$\n- le double de $n$\n- le carré de $n$\n- le successeur de $n$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$3n = 3 \\times n$ : c'est $n$ multiplié par $3$.",
+					"$3n$ représente **le triple** de $n$."
+				]
+			}
+		},
+		{
+			"statement": "Pour un nombre $n$, que représente $\\dfrac{n}{2}$ ?\n\n```choix\n- la moitié de $n$\n- le double de $n$\n- le prédécesseur de $n$\n- le carré de $n$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{n}{2} = n \\div 2$ : c'est $n$ divisé par $2$.",
+					"$\\dfrac{n}{2}$ représente **la moitié** de $n$."
+				]
+			}
+		},
+		{
+			"statement": "Pour un nombre $n$, que représente $n^2$ ?\n\n```choix\n- le carré de $n$\n- le double de $n$\n- le triple de $n$\n- le successeur de $n$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$n^2 = n \\times n$ : c'est $n$ multiplié par lui-même (et pas par $2$).",
+					"$n^2$ représente **le carré** de $n$."
+				]
+			}
+		},
+		{
+			"statement": "Pour un nombre $n$, que représente $n + 1$ ?\n\n```choix\n- le successeur de $n$\n- le prédécesseur de $n$\n- le double de $n$\n- le carré de $n$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$n + 1$ : on ajoute $1$ à $n$, on obtient le nombre qui le suit.",
+					"$n + 1$ représente **le successeur** de $n$."
+				]
+			}
+		},
+		{
+			"statement": "Pour un nombre $n$, que représente $n - 1$ ?\n\n```choix\n- le prédécesseur de $n$\n- le successeur de $n$\n- la moitié de $n$\n- le double de $n$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$n - 1$ : on retire $1$ à $n$, on obtient le nombre qui le précède.",
+					"$n - 1$ représente **le prédécesseur** de $n$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2n : le double",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2n, le carré",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3n : le triple",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "n/2 : la moitié",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n/2, le double",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n² : le carré",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n², le double",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n + 1 : le successeur",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n + 1, le prédécesseur",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n − 1 : le prédécesseur",
+			"variationIndex": 5,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n − 1, le successeur",
+			"variationIndex": 5,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

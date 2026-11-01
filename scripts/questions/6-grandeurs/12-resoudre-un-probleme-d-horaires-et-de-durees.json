@@ -1,0 +1,293 @@
+{
+	"title": "Résoudre un problème d'horaires et de durées",
+	"description": "Problèmes à deux étapes : durée totale de plusieurs séances, horaire d'arrivée avec un arrêt, durée d'un film précédé de publicités",
+	"grades": ["6"],
+	"theme": "Grandeurs",
+	"domain": "Durées",
+	"subdomain": "Problèmes",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Cette semaine, {{if:p==0|Inès|{{if:p==1|Hugo|Malik}}}} a ${{n}}$ {{if:a==0|séances de natation|{{if:a==1|cours de musique|entraînements de foot}}}} de ${{d}}~\\unit{min}$ chacun{{if:a==0|e|{{if:a==1||}}}}.\n\nQuelle est la durée totale ?\n\n$$?~\\text{h}~?~\\text{min}$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0..2"
+				},
+				{
+					"name": "a",
+					"expression": "0..2"
+				},
+				{
+					"name": "n",
+					"expression": "2..4"
+				},
+				{
+					"name": "d",
+					"expression": "30|40|45|50"
+				},
+				{
+					"name": "t",
+					"expression": "eval:n*d"
+				},
+				{
+					"name": "q",
+					"expression": "eval:floor(t/60)"
+				},
+				{
+					"name": "m",
+					"expression": "eval:t-60*q"
+				}
+			],
+			"conditions": ["t>60", "m>0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Horaires et durées.** On calcule étape par étape, en minutes si besoin, puis on convertit : $60~\\unit{min} = 1~\\unit{h}$.",
+					"$${{n}} \\times {{d}}~\\unit{min} = {{t}}~\\unit{min}$$",
+					"$${{t}}~\\unit{min} = {{q}} \\times 60~\\unit{min} + {{m}}~\\unit{min} = \\textcolor{{{color:primary.0}}}{{{q}}~\\unit{h}~{{m}}~\\unit{min}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Un car part à ${{h}}~\\text{h}~{{if:m<10|0{{m}}|{{m}}}}$. Le trajet dure ${{a}}~\\unit{h}~{{b}}~\\unit{min}$, plus un arrêt de ${{s}}~\\unit{min}$ en route.\n\nÀ quelle heure arrive-t-il ?\n\n$$?~\\text{h}~?~\\text{min}$$",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "6..9"
+				},
+				{
+					"name": "m",
+					"expression": "5|10|15|20|25|30|35|40|45|50|55"
+				},
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "5|10|15|20|25|30|35|40|45|50|55"
+				},
+				{
+					"name": "s",
+					"expression": "10|15|20|30"
+				},
+				{
+					"name": "t",
+					"expression": "eval:60*h+m+60*a+b+s"
+				},
+				{
+					"name": "H",
+					"expression": "eval:floor(t/60)"
+				},
+				{
+					"name": "M",
+					"expression": "eval:t-60*H"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{H}}"
+				},
+				{
+					"expectedAnswer": "{{M}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Horaires et durées.** On calcule étape par étape, en minutes si besoin, puis on convertit : $60~\\unit{min} = 1~\\unit{h}$.",
+					"Durée en route : ${{a}}~\\unit{h}~{{b}}~\\unit{min} + {{s}}~\\unit{min} = {{eval:floor((60*a+b+s)/60)}}~\\unit{h}~{{eval:60*a+b+s-60*floor((60*a+b+s)/60)}}~\\unit{min}$.",
+					"$${{h}}~\\text{h}~{{if:m<10|0{{m}}|{{m}}}} + {{eval:floor((60*a+b+s)/60)}}~\\unit{h}~{{eval:60*a+b+s-60*floor((60*a+b+s)/60)}}~\\unit{min} = \\textcolor{{{color:primary.0}}}{{{H}}~\\text{h}~{{if:M<10|0{{M}}|{{M}}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "La séance de cinéma commence à ${{h}}~\\text{h}~{{if:m<10|0{{m}}|{{m}}}}$ par ${{p}}~\\unit{min}$ de publicités, puis le film. Elle se termine à ${{H}}~\\text{h}~{{if:M<10|0{{M}}|{{M}}}}$.\n\nCombien de temps dure le film ?\n\n$$?~\\text{h}~?~\\text{min}$$",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "14..19"
+				},
+				{
+					"name": "m",
+					"expression": "5|10|15|20|25|30|35|40|45|50|55"
+				},
+				{
+					"name": "p",
+					"expression": "10|15|20"
+				},
+				{
+					"name": "a",
+					"expression": "1..2"
+				},
+				{
+					"name": "b",
+					"expression": "5|10|15|20|25|30|35|40|45|50|55"
+				},
+				{
+					"name": "t",
+					"expression": "eval:60*h+m+p+60*a+b"
+				},
+				{
+					"name": "H",
+					"expression": "eval:floor(t/60)"
+				},
+				{
+					"name": "M",
+					"expression": "eval:t-60*H"
+				},
+				{
+					"name": "X",
+					"expression": "eval:floor((60*h+m+p)/60)"
+				},
+				{
+					"name": "Y",
+					"expression": "eval:60*h+m+p-60*X"
+				},
+				{
+					"name": "Z",
+					"expression": "eval:X+a"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Horaires et durées.** On calcule étape par étape, en minutes si besoin, puis on convertit : $60~\\unit{min} = 1~\\unit{h}$.",
+					"Le film commence après les publicités : ${{h}}~\\text{h}~{{if:m<10|0{{m}}|{{m}}}} + {{p}}~\\unit{min} = {{X}}~\\text{h}~{{if:Y<10|0{{Y}}|{{Y}}}}$.",
+					"De ${{X}}~\\text{h}~{{if:Y<10|0{{Y}}|{{Y}}}}$ à ${{Z}}~\\text{h}~{{if:Y<10|0{{Y}}|{{Y}}}}$ : ${{a}}~\\unit{h}$ ; de ${{Z}}~\\text{h}~{{if:Y<10|0{{Y}}|{{Y}}}}$ à ${{H}}~\\text{h}~{{if:M<10|0{{M}}|{{M}}}}$ : ${{b}}~\\unit{min}$.",
+					"Le film dure $\\textcolor{{{color:primary.0}}}{{{a}}~\\unit{h}~{{b}}~\\unit{min}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 × 45 min : 2 h 15",
+			"variationIndex": 0,
+			"variables": {
+				"p": "0",
+				"a": "0",
+				"n": "3",
+				"d": "45",
+				"t": "135",
+				"q": "2",
+				"m": "15"
+			},
+			"answers": ["2", "15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 h 35 (135 lu en h)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "0",
+				"a": "0",
+				"n": "3",
+				"d": "45",
+				"t": "135",
+				"q": "2",
+				"m": "15"
+			},
+			"answers": ["1", "35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 h 50 + 2 h 25 + 15 min : 10 h 30",
+			"variationIndex": 1,
+			"variables": {
+				"h": "7",
+				"m": "50",
+				"a": "2",
+				"b": "25",
+				"s": "15",
+				"t": "630",
+				"H": "10",
+				"M": "30"
+			},
+			"answers": ["10", "30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10 h 15 (arrêt oublié)",
+			"variationIndex": 1,
+			"variables": {
+				"h": "7",
+				"m": "50",
+				"a": "2",
+				"b": "25",
+				"s": "15",
+				"t": "630",
+				"H": "10",
+				"M": "30"
+			},
+			"answers": ["10", "15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "20 h 45 → 22 h 35, 10 min de pub : 1 h 40",
+			"variationIndex": 2,
+			"variables": {
+				"h": "20",
+				"m": "45",
+				"p": "10",
+				"a": "1",
+				"b": "40",
+				"t": "1355",
+				"H": "22",
+				"M": "35",
+				"X": "20",
+				"Y": "55",
+				"Z": "21"
+			},
+			"answers": ["1", "40"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 h 50 (publicités oubliées)",
+			"variationIndex": 2,
+			"variables": {
+				"h": "20",
+				"m": "45",
+				"p": "10",
+				"a": "1",
+				"b": "40",
+				"t": "1355",
+				"H": "22",
+				"M": "35",
+				"X": "20",
+				"Y": "55",
+				"Z": "21"
+			},
+			"answers": ["1", "50"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

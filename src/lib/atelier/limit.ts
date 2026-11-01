@@ -59,6 +59,7 @@ import {
 	type CitedInterval
 } from './interval';
 import { INTERNAL_LETTER, typedLetterOf } from './letter';
+import { lettersText } from './types';
 import { limitSteps, type LimitQuestion as StepsQuestion, type LimitSteps } from './limit-steps';
 import type { LimitAnswer } from './limit-steps-check';
 
@@ -215,7 +216,7 @@ export function limitCommand(context: LimitContext, input: string, typed: string
 	const direction: LimitDirection = side ?? 'both';
 	const approach = point.kind === 'infinite' ? infinity(point.sign) : point.node;
 	const result = safeLimit(ast, variable, approach, direction);
-	if (result === null) return { kind: 'commande', input, output: UNKNOWN_LIMIT };
+	if (result === null) return { kind: 'commande', input, output: unknownLimit(ast, variable) };
 
 	// « Comment ? » : les étapes portent sur l'expression, dans la lettre de
 	// l'élève ; une fonction ou une suite citée seule garde son nom
@@ -237,7 +238,7 @@ export function limitCommand(context: LimitContext, input: string, typed: string
 		return noLimit(input, result, subject, limitQuestion, point, side, typedSide, explain);
 	}
 	const value = knownValue(result);
-	if (value === null) return { kind: 'commande', input, output: UNKNOWN_LIMIT };
+	if (value === null) return { kind: 'commande', input, output: unknownLimit(ast, variable) };
 	// R1 : sans côté tapé, une fonction définie d'un seul côté (ln x en 0) l'écrit : x → 0⁺
 	const impliedSide = side === null ? (result.definedSide ?? null) : null;
 	if (impliedSide !== null) side = impliedSide;
@@ -543,6 +544,17 @@ function guessedLetter(
 		ok: false,
 		message: `Plusieurs lettres (${listed}) : écris la variable après « en », par exemple « .limite … en ${last}=${pointText} ».`
 	};
+}
+
+/**
+ * « Je ne sais pas » : une lettre autre que la variable (k, λ) peut en être
+ * la cause — le moteur ne devine plus son signe (e^{−kx} en +∞ rendait +∞,
+ * chantier limites-parametres) ; on la nomme.
+ */
+function unknownLimit(ast: MathNode, variable: string): string {
+	const parameters = [...getVariables(ast)].filter((name) => name !== variable).sort();
+	if (parameters.length === 0) return UNKNOWN_LIMIT;
+	return `Je ne sais pas calculer cette limite : elle peut dépendre du signe de ${lettersText(parameters)}.`;
 }
 
 /** `evaluateLimit` sans exception : `null` quand le moteur renonce. */

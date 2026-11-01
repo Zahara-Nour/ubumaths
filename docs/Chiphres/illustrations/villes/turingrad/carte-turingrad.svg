@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" font-family="Georgia, 'Times New Roman', serif">
+<style>text{fill:#1B2232;paint-order:stroke;stroke:#F1EDE4;stroke-linejoin:round}.lieu{font-weight:bold;font-style:italic;stroke-width:6px;stroke-opacity:.9}</style>
+<image href="carte-ville.png" width="1024" height="1024"/>
+<g id="lieux">
+<g id="lieu-place-du-reset"><title>Place du Reset (Machine de Turing, Cloche de Reset)</title><ellipse cx="480" cy="505" rx="115" ry="105" fill="#fff" fill-opacity="0"/><text x="480" y="640" font-size="24" text-anchor="middle" class="lieu">La Place du Reset</text></g>
+<g id="lieu-quartier-babbage"><title>Quartier Babbage</title><ellipse cx="215" cy="230" rx="135" ry="115" fill="#fff" fill-opacity="0"/><text x="250" y="368" font-size="24" text-anchor="middle" class="lieu">Quartier Babbage</text></g>
+<g id="lieu-quartier-lovelace"><title>Quartier Lovelace</title><ellipse cx="772" cy="530" rx="80" ry="85" fill="#fff" fill-opacity="0"/><text x="772" y="446" font-size="24" text-anchor="middle" class="lieu">Quartier Lovelace</text></g>
+<g id="lieu-quartier-des-tubes"><title>Quartier des Tubes</title><ellipse cx="470" cy="205" rx="85" ry="60" fill="#fff" fill-opacity="0"/><text x="470" y="128" font-size="24" text-anchor="middle" class="lieu">Quartier des Tubes</text></g>
+<g id="lieu-gare"><title>La Gare</title><ellipse cx="358" cy="800" rx="62" ry="70" fill="#fff" fill-opacity="0"/><text x="358" y="898" font-size="24" text-anchor="middle" class="lieu">La Gare</text></g>
+<g id="lieu-ecluses"><title>Les Écluses (Pile de Charbon)</title><ellipse cx="515" cy="770" rx="95" ry="135" fill="#fff" fill-opacity="0"/><text x="628" y="905" font-size="24" text-anchor="middle" class="lieu">Les Écluses</text></g>
+</g>
+</svg>

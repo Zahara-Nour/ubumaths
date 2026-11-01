@@ -106,9 +106,24 @@ export function indexOfAnswer(config: NumberLineConfig, answer: string): number 
 	return indexOfValue(config, Number(text));
 }
 
-/** La graduation k écrite pour l'élève : `7`, `0,3`, `4/3` */
+/**
+ * La graduation k écrite pour l'élève : `7`, `0,3`, `4/3`. Sur une droite au pas
+ * écrit en fraction (`step: 1/5`), la graduation se lit en fraction du pas,
+ * même quand elle s'écrirait en décimal : `4/5`, `5/10`, jamais `0,8`.
+ */
 export function placerText(config: NumberLineConfig, k: number): string {
 	const value = graduationValue(config, k);
+	const stepFraction = config.step.expression.includes('/')
+		? asFraction(numVal(config.step))
+		: null;
+	if (stepFraction !== null) {
+		const numerator = Math.round(value * stepFraction.q);
+		// Départ hors des multiples du pas (`start: 0.5`, `step: 1/5`) : écriture ordinaire
+		if (Math.abs(numerator - value * stepFraction.q) < 1e-9) {
+			if (numerator % stepFraction.q === 0) return String(numerator / stepFraction.q);
+			return `${numerator}/${stepFraction.q}`;
+		}
+	}
 	const fraction = asFraction(value);
 	if (fraction === null || isDecimalDenominator(fraction.q)) {
 		return decimalString(value).replace('.', ',');
