@@ -1,0 +1,336 @@
+{
+	"title": "Résoudre f(x) = k en se ramenant à une fonction de référence",
+	"description": "f(x) = k avec f donnée par son expression (2x² + 1, 3/x − 1, 2√x + 1, 2x³ + 3) : isoler la fonction de référence, puis la résoudre (pièges : solution négative oubliée, √ au lieu du carré, (k − c)/a au lieu de a/(k − c), signe du cube)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Généralités",
+	"subdomain": "Résolution algébrique",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère la fonction $f$ définie par $f(x)={{a}}x^2{{c;+}}$.\n\nRésous dans $\\mathbb{R}$ l'équation $f(x)={{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "eval:(a)*(r)^2+(c)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:-(r)}} ; {{r}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On **isole** la fonction de référence :",
+					"$${{a}}x^2{{c;+}}={{k}}\\iff {{a}}x^2={{eval:(k)-(c)}}\\iff x^2={{eval:(r)^2}}$$",
+					"On est ramené à une équation $x^2=k$ (**fonction carré**) avec $k>0$ : **deux** solutions opposées, ${{r}}$ et $-{{r}}$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\{ -{{r}}\\,;{{r}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie par $f(x)=\\dfrac{ {{a}} }{x}{{c;+}}$.\n\nRésous dans $\\mathbb{R}$ l'équation $f(x)={{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "k",
+					"expression": "-6..6"
+				}
+			],
+			"conditions": ["k != c"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:(a)/((k)-(c))}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est définie pour $x\\neq 0$. On **isole** la fonction de référence :",
+					"$$\\dfrac{ {{a}} }{x}{{c;+}}={{k}}\\iff \\dfrac{ {{a}} }{x}={{eval:(k)-(c)}}\\iff x=\\dfrac{ {{a}} }{ {{eval:(k)-(c)}} }$$",
+					"On est ramené à une équation $\\dfrac{1}{x}=k$ (**fonction inverse**) avec $k\\neq 0$ : **une seule** solution, l'inverse.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{ {{eval:(a)/((k)-(c))}} \\right\\}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie par $f(x)={{a}}\\sqrt{x}{{c;+}}$.\n\nRésous dans $\\mathbb{R}$ l'équation $f(x)={{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "m",
+					"expression": "1..6"
+				},
+				{
+					"name": "k",
+					"expression": "eval:(a)*(m)+(c)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:(m)^2}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est définie pour $x\\geqslant 0$. On **isole** la fonction de référence :",
+					"$${{a}}\\sqrt{x}{{c;+}}={{k}}\\iff {{a}}\\sqrt{x}={{eval:(k)-(c)}}\\iff \\sqrt{x}={{m}}$$",
+					"On est ramené à une équation $\\sqrt{x}=k$ (**fonction racine carrée**) avec $k\\geqslant 0$ : **une seule** solution, $x={{m}}^2={{eval:(m)^2}}$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\{ {{eval:(m)^2}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie par $f(x)={{a}}x^3{{c;+}}$.\n\nRésous dans $\\mathbb{R}$ l'équation $f(x)={{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "r",
+					"expression": "-3..3!0"
+				},
+				{
+					"name": "k",
+					"expression": "eval:(a)*(r)^3+(c)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{r}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On **isole** la fonction de référence :",
+					"$${{a}}x^3{{c;+}}={{k}}\\iff {{a}}x^3={{eval:(k)-(c)}}\\iff x^3={{eval:(r)^3}}$$",
+					"On est ramené à une équation $x^3=k$ (**fonction cube**) : **une seule** solution, ${{r}}$, car $({{r}})^3={{eval:(r)^3}}$.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\{ {{r}} \\}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2x² + 1 = 19 : S = {−3 ; 3}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"c": "1",
+				"r": "3",
+				"k": "19"
+			},
+			"answers": ["\\{-3;3\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : {3}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"c": "1",
+				"r": "3",
+				"k": "19"
+			},
+			"answers": ["\\{3\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : {−9 ; 9}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"c": "1",
+				"r": "3",
+				"k": "19"
+			},
+			"answers": ["\\{-9;9\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3/x − 1 = 5 : S = {1/2}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"c": "-1",
+				"k": "5"
+			},
+			"answers": ["\\{\\frac{1}{2}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En décimal {0,5}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"c": "-1",
+				"k": "5"
+			},
+			"answers": ["\\{0{,}5\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : {2} (k − c)/a",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"c": "-1",
+				"k": "5"
+			},
+			"answers": ["\\{2\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : {3/4} (c ajouté)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"c": "-1",
+				"k": "5"
+			},
+			"answers": ["\\{\\frac{3}{4}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2√x + 1 = 7 : S = {9}",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"c": "1",
+				"m": "3",
+				"k": "7"
+			},
+			"answers": ["\\{9\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : {3}",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"c": "1",
+				"m": "3",
+				"k": "7"
+			},
+			"answers": ["\\{3\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : {√3}",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"c": "1",
+				"m": "3",
+				"k": "7"
+			},
+			"answers": ["\\{\\sqrt{3}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2x³ + 3 = −13 : S = {−2}",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"c": "3",
+				"r": "-2",
+				"k": "-13"
+			},
+			"answers": ["\\{-2\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ∅",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"c": "3",
+				"r": "-2",
+				"k": "-13"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : {2}",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"c": "3",
+				"r": "-2",
+				"k": "-13"
+			},
+			"answers": ["\\{2\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

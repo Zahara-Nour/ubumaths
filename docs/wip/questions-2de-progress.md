@@ -6,17 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2113 (6 B, mergée)._
+_Mis à jour le 2026-11-01, PR 6 C ouverte (§ 40)._
 
-- **État** : lots 1 à 5 publiés ; lot 6 : 6 A (#2106) et 6 B (#2113) mergés (§ 39) ; rien du lot 6 en prod.
-- **Prochaine action** : écrire 6 C (racine, cube, méthode adaptée : 6 modèles, § 37) dans un worktree neuf ;
-  puis brouillons, migration et page à cocher pour les 20.
+- **État** : lots 1 à 5 publiés ; lot 6 : 6 A (#2106) et 6 B (#2113) mergés, 6 C en PR (§ 40) ; rien du lot 6
+  en prod.
+- **Prochaine action** : merger 6 C ; puis brouillons en prod (David : `create-questions --publier` sur
+  `2de-fonctions-a`, `-b`, `-c`), migration nœud + tag et page à cocher pour les 20.
 - **En attente de David** : rien.
-- **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main` ET des worktrees (collision
-  5e/6e du 2026-11-01, réparée par #2114) ; `page-a-cocher.ts` ne prend qu'un `--dir` (préfixes `a-`/`b-`/`c-`
-  dans une copie, trois dossiers) ; `db:migrate` et `--publier` → David les lance avec `!` ; worktree neuf →
-  `pnpm exec svelte-kit sync` avant les scripts `tsx` (`$lib` introuvable sinon).
-- **Worktree / branche** : aucun (retiré après #2113).
+- **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main` ET des worktrees ;
+  `page-a-cocher.ts` ne prend qu'un `--dir` (préfixes `a-`/`b-`/`c-` dans une copie) ; `db:migrate` et
+  `--publier` → David les lance avec `!` ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts `tsx`.
+- **Worktree / branche** : `ubumaths-wt-questions-2de`, `feat/questions-2de-lot6c` (serveur 5178).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -991,3 +991,22 @@ une page à cocher.
 - #2113 : CI rouge sans lien avec le lot — `migration-versions` (collision `20261101190200` sur `main`, 5e lot 6 et
   6e lot 7), `wrapDynamicImport` (client, connu, vert à la relance), « Garde SECURITY DEFINER » (à relire après la
   réparation de `main`).
+
+## 40. Lot 6 C, PR des fichiers (2026-11-01)
+
+- Script `questions-2de/lot-fonctions-c-2de.py` → `scripts/questions/2de-fonctions-c/` (6 modèles, 20 variations,
+  81 specs). Catégories (relevé prod : « Fonction racine carrée » et « Fonction cube » n'ont que « Lecture
+  graphique ») : « Résolution algébrique » de Fonction racine carrée (niv. 1 2-467, niv. 2 2-469), Fonction cube
+  (niv. 1 2-470, niv. 2 2-472), Généralités (niv. 1 2-336, niv. 2 2-448).
+- L6-c : cubes parfaits (entiers ±1 à ±5, fractions p/q avec q ⩽ 4, décimaux ±0,001 à ±0,125), sans ∛. L6-d :
+  a·x² + c, a/x + c, a·√x + c, a·x³ + c pour l'équation ; carré, racine, cube pour l'inéquation (a > 0 : le sens
+  ne change pas ; 1/x laissé de côté, son signe est déjà travaillé au 6 B).
+- Écarts au § 37 : √x < k et √x = k ont aussi k = 0 (√x ⩽ 0 → {0}, √x > 0 → ]0 ; +∞[) ; l'équation adaptée
+  n'a pas de courbe (méthode algébrique seule).
+- `question:specs` 81/81, tirages tous réussis ; `sonde-courbes` 0 problème (1 800 tirages) ; `create-questions`
+  en simulation contre la prod : « 6 à créer ».
+- Relecture des tirages : redite « on divise par un nombre positif » dans le corrigé de la méthode adaptée →
+  une phrase ; fenêtre des cubes en fraction (±1,5) trop petite pour 27/8 → [−2 ; 2] × [−4 ; 4].
+- Base locale : 6 brouillons ; aperçu joué : 04 (x³ ⩽ −8 : [−2 ; +∞[ « Faux », corrigé : courbe, y = −8,
+  partie verte) ; 02 (√x > 1,9 : ]3,61 ; +∞[ « Juste », borne en disque vide) ; 06 (3x² + 2 ⩽ 5 : [−1 ; 1]
+  « Juste », parabole de f, A et B, partie verte).
