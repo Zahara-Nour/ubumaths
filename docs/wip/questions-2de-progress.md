@@ -6,11 +6,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2164 et #2170 ; #2172 ouverte._
+_Mis à jour le 2026-11-01, après #2172._
 
-- **État** : lots 1 à 6 publiés ; lot 7 (21 modèles) : 7 A #2164 et 7 B #2170 mergées, 7 C #2172 ouverte.
-- **Prochaine action** : merger #2172 (CI verte) ; puis brouillons du lot 7 en prod (David, `!`), migration
-  nœud + tag, page à cocher. **Décidé par David (2026-11-01)** : avant la relecture du lot 7, faire dessiner
+- **État** : lots 1 à 6 publiés ; lot 7 (21 modèles) : fichiers sur `main` (7 A #2164, 7 B #2170, 7 C #2172).
+- **Prochaine action** : brouillons du lot 7 en prod (David, `!`), migration nœud + tag, page à cocher. **Décidé par David (2026-11-01)** : avant la relecture du lot 7, faire dessiner
   les tableaux ` ```variation ` par `page-a-cocher.ts` (15 fiches sur 21 en ont ; alerte « bloc variation non
   dessiné » aujourd'hui) — PR de code à part.
 - **En attente de David** : rien.
@@ -18,8 +17,8 @@ _Mis à jour le 2026-11-01, après #2164 et #2170 ; #2172 ouverte._
 <n>` avant le merge ; `page-a-cocher.ts` voit des défauts de fenêtre que `sonde-courbes` ne voit pas : la
   lancer avant la PR ; `db push`, `--publier` → David avec `!` ; worktree neuf → `pnpm exec svelte-kit sync` ;
   CI allégée pour les PR de contenu (« skipped » voulu, CI Summary fait foi).
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `feat/questions-2de-lot7c` (#2172) ; 21 brouillons
-  en base LOCALE seulement.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, HEAD détachée sur `origin/main` (aucune branche
+  ouverte) ; 21 brouillons en base LOCALE seulement.
 
 ## 1. Relevé (prod, 2026-10-27)
 
