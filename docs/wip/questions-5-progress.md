@@ -5,22 +5,24 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2088._
+_Mis à jour le 2026-11-01, après #2099._
 
-- **État** : lots 1 à 5 publiés ; **lot 6 « Données et probabilités »** (8 modèles, § 17) écrit, simulation prod
-  verte (64 specs), joué en base locale ; fichiers mergés (#2088).
-- **Prochaine action** : David : `create-questions --dir scripts/questions/5-donnees-probabilites
---publier` ; relever les `id`, migration nœud + tag (sous-notion neuve « choisir une représentation »), page à
-  cocher. Puis lot 7 « Proportionnalité, fonctions » (085, 086, 140, 087, 092, 098 ; recoupe 6-140 / 6-141), lot 8
+- **État** : lots 1 à 5 publiés ; **lot 6 « Données et probabilités »** (8 modèles, § 17) en prod en brouillons,
+  rangés et tagués (migration 20261101190200 jouée, #2099 mergée, vérifié MCP), sous-notion « choisir une
+  représentation » créée (5-079 dessus).
+- **Prochaine action** : relecture de David sur la page à cocher https://claude.ai/artifact/J4PrvTefAAb8WifVcgQMNt
+  (collection `verdicts`, 0 verdict au départ) ; compter les verdicts, corriger les « à revoir » ; puis
+  `publier-lot.ts --dir scripts/questions/5-donnees-probabilites` (simulation par moi, `--publier` par David).
+  Ensuite lot 7 « Proportionnalité, fonctions » (085, 086, 140, 087, 092, 098 ; recoupe 6-140 / 6-141), lot 8
   « Opérations » (001, 002, 005, 116, 117).
-- **En attente de David** : `create-questions --publier` du lot 6 ; le `! pnpm db:migrate` de 23:26:56 UTC (2026-10-31) visait-il une autre session (3e,
-  lot 5) ? (résultat juste, audit sans bloquant).
-- **Pièges en cours** : horodatage `max + 1 min` au moment du merge (`--include-all`) ; `publier-lot.ts` en
-  simulation passe pour moi, `--publier` et `create-questions --publier` = David avec `!` ; gras contenant une
-  formule ; jamais `e` ni `i` ; degrés en `^{\circ}` ; `plusieurs: oui` ajoute déjà « Coche la ou les bonnes
-  réponses » (ne pas écrire « Coche toutes… ») ; cases manquées d'un choix multiple = `unoptimal_form` (½).
-- **Worktree / branche** : `ubumaths-wt-questions-5` (HEAD détaché sur `main`, branche du lot 6 supprimée) ; `supabase/.temp` retiré le
-  2026-11-01 (accord de David), copie dans le scratchpad de la session.
+- **En attente de David** : la relecture du lot 6 ; le `! pnpm db:migrate` de 23:26:56 UTC (2026-10-31) visait-il
+  une autre session (3e, lot 5) ? (résultat juste, audit sans bloquant).
+- **Pièges en cours** : horodatage de migration = `max + 1 min` de `origin/main` JUSTE AVANT le merge (deux
+  collisions au lot 6) ; une migration qui crée un nœud → `later-migrations.ts` + fixtures `arbre-notions-seed` /
+  `seed-cycle4-points` (la CI applique toutes les migrations) ; `plusieurs: oui` ajoute « Coche la ou les bonnes
+  réponses » ; case oubliée d'un choix multiple = ½ ; `--publier` = David avec `!` ; jamais `e` ni `i`.
+- **Worktree / branche** : `ubumaths-wt-questions-5` (HEAD détaché sur `main`, branches mergées supprimées) ;
+  `supabase/.temp` retiré (copie dans le scratchpad de la session du 2026-11-01).
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -473,3 +475,10 @@ Relevé : aucun modèle sur les 6 points ; 6e « Fréquence » (fraction seule),
   du CP), fixtures `arbre-notions-seed.json` (+ la sous-notion, 474) et `seed-cycle4-points.json` (5-079) mises à
   jour. Vérifié en appliquant la migration à la base locale (`docker exec supabase_db_ubumaths psql`), 7 fichiers
   / 99 tests verts, puis défaite par son rollback. Renommée `20261101190200` (après `180000` arrivée sur main).
+
+### 17.3 Lot 6 rangé (2026-11-01, #2099)
+
+- Migration `20261101190200` (renommée deux fois : collisions avec ce2 et l'ordre de main) mergée, CI verte (un job
+  navigateur relancé : erreur `wrapDynamicImport` de vitest, sans lien) ; `db:migrate` depuis le dépôt principal
+  (seule migration en attente) ; vérifié au MCP : 8 brouillons sur leur nœud, 8 tags, 5-079 sur la sous-notion.
+- Page à cocher https://claude.ai/artifact/J4PrvTefAAb8WifVcgQMNt (8 fiches, aucune alerte), capacité `db`.
