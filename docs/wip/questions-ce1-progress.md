@@ -7,11 +7,10 @@
 
 _Mis à jour le 2026-11-01, après #2141._
 
-- **État** : lots 0 à 7 publiés ; lot 8 (monnaie, § 15) : fichiers #2135 et migration #2141 mergés, 6 brouillons en prod.
-- **Prochaine action** : `db:migrate` de `20261101215100` dès que `20261101213600` (questions-2de, plus ancienne) est jouée
-  en prod, puis vérifier au MCP ; page à cocher et publication **après le `deploy:prod`** qui livre #2127 (centimes) ;
-  puis lots 9 et 10 (ex-8 et 9 du § 12).
-- **En attente de David** : `db:migrate` (après la 2de) ; `deploy:prod` pour les centimes.
+- **État** : lots 0 à 7 publiés ; lot 8 (monnaie, § 15) : 6 brouillons en prod, rangés et tagués (#2135, #2141).
+- **Prochaine action** : après le `deploy:prod` qui livre #2127 (centimes) : catégories relevées, page à cocher, puis
+  `publier-lot` (simulation, puis David) ; ensuite lots 9 et 10 (ex-8 et 9 du § 12).
+- **En attente de David** : `deploy:prod` pour les centimes.
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
@@ -677,3 +676,5 @@ Réponse de David (« tes recos ? » puis « go », 2026-11-01) : les cinq recom
 - 2026-11-01 : `security-auditor` sans finding (SQL identique au lot 7) ; #2141 mergée (CI verte 16/16). `db:migrate` NON
   lancé : `20261101213600_questions_2de_fonctions_rangement_tags` (#2134), plus ancienne, pas jouée en prod ; `db push`
   la jouerait aussi (`--include-all`). Attendre qu'elle le soit, puis `db:migrate`.
+- 2026-11-01 : `20261101215100` jouée en prod avec la migration 2de (`db push --include-all` par David, session
+  questions-2de) ; vérifié au MCP : 6/6 brouillons, sur le nœud de leur point, un tag chacun, `updated_at` intact.
