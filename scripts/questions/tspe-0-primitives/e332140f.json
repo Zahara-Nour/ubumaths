@@ -1,0 +1,296 @@
+{
+	"id": "e332140f-28aa-4069-bbc2-88ee18c81ea0",
+	"title": "Coefficient d'une primitive de la forme (v′∘u)×u′",
+	"description": "Trouver k pour que k·uⁿ⁺¹, k·sin(u) ou k/u soit une primitive de u′uⁿ, u′cos u ou u′/u² à un facteur près (spécialité seulement)",
+	"grades": ["T_SPE"],
+	"theme": "Primitives et équations différentielles",
+	"domain": "Primitives",
+	"subdomain": "Forme (v′∘u)×u′",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"form": "off",
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1/(a*(n+1))}}"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=({{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}})^{{{eval:n}}}$.\n\nDétermine le réel $k$ tel que la fonction $F$ définie par $F(x)=k({{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}})^{{{eval:n+1}}}$ soit une primitive de $f$ sur $\\mathbb{R}$.\n\n$k=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..3"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "n",
+					"expression": "2..4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u(x)={{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}}$, $(u^{{{eval:n+1}}})'={{eval:n+1}}u'u^{{{eval:n}}}={{eval:n+1}}\\times{{eval:a}}\\,u^{{{eval:n}}}$.",
+					"$F'(x)={{eval:a*(n+1)}}k({{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}})^{{{eval:n}}}$ : il faut ${{eval:a*(n+1)}}k=1$, soit $k=\\textcolor{{{color:primary.0}}}{{{eval:1/(a*(n+1))}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c/(2*(n+1))}}"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:c==1|x}}{{if:c==-1|-x}}{{if:c!=1 && c!=-1|{{eval:c}}x}}(x^2{{if:m>0|+{{eval:m}}}}{{if:m<0|{{eval:m}}}})^{{{eval:n}}}$.\n\nDétermine le réel $k$ tel que la fonction $F$ définie par $F(x)=k(x^2{{if:m>0|+{{eval:m}}}}{{if:m<0|{{eval:m}}}})^{{{eval:n+1}}}$ soit une primitive de $f$ sur $\\mathbb{R}$.\n\n$k=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "m",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "n",
+					"expression": "2..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u(x)=x^2{{if:m>0|+{{eval:m}}}}{{if:m<0|{{eval:m}}}}$, $u'(x)=2x$ et $(u^{{{eval:n+1}}})'={{eval:n+1}}u'u^{{{eval:n}}}$ : $F'(x)={{eval:2*(n+1)}}k\\,x(x^2{{if:m>0|+{{eval:m}}}}{{if:m<0|{{eval:m}}}})^{{{eval:n}}}$.",
+					"Il faut ${{eval:2*(n+1)}}k={{eval:c}}$, soit $k=\\textcolor{{{color:primary.0}}}{{{eval:c/(2*(n+1))}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c/2}}"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:c==1|x}}{{if:c==-1|-x}}{{if:c!=1 && c!=-1|{{eval:c}}x}}\\cos(x^2)$.\n\nDétermine le réel $k$ tel que la fonction $F$ définie par $F(x)=k\\sin(x^2)$ soit une primitive de $f$ sur $\\mathbb{R}$.\n\n$k=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..6;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u(x)=x^2$, $u'(x)=2x$ et $(\\sin u)'=u'\\cos u$ : $F'(x)=2k\\,x\\cos(x^2)$.",
+					"Il faut $2k={{eval:c}}$, soit $k=\\textcolor{{{color:primary.0}}}{{{eval:c/2}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-c/a}}"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\left]{{eval:-b/a}}\\,;+\\infty\\right[$ par $f(x)={{if:c<0|-}}\\dfrac{{{eval:abs(c)}}}{({{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}})^2}$.\n\nDétermine le réel $k$ tel que la fonction $F$ définie par $F(x)=\\dfrac{k}{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}}}$ soit une primitive de $f$ sur $\\left]{{eval:-b/a}}\\,;+\\infty\\right[$.\n\n$k=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..6;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u(x)={{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}}$, $\\left(\\dfrac{1}{u}\\right)'=-\\dfrac{u'}{u^2}$ : $F'(x)=-\\dfrac{{{eval:a}}k}{({{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}})^2}$.",
+					"Il faut $-{{eval:a}}k={{eval:c}}$, soit $k=\\textcolor{{{color:primary.0}}}{{{eval:-c/a}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{1}{8}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"n": "3"
+			},
+			"description": "v0 : (2x+1)³ → 1/8",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"n": "3"
+			},
+			"description": "v0 : oubli de u′ : 1/4",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0.125"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"n": "3"
+			},
+			"description": "v0 : décimal 0.125",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"n": "3"
+			},
+			"description": "v0 : multiplié par u′ : 2/4",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{2}{3}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "4",
+				"m": "1",
+				"n": "2"
+			},
+			"description": "v1 : 4x(x²+1)² → 2/3",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{4}{3}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "4",
+				"m": "1",
+				"n": "2"
+			},
+			"description": "v1 : oubli du 2x : 4/3",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{4}{6}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variables": {
+				"c": "4",
+				"m": "1",
+				"n": "2"
+			},
+			"description": "v1 : fraction non simplifiée (½)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "6"
+			},
+			"description": "v2 : 6x cos(x²) → 3",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "6"
+			},
+			"description": "v2 : multiplié par 2",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "6"
+			},
+			"description": "v2 : signe de (−cos)′ confondu",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "6"
+			},
+			"description": "v3 : 6/(2x+1)² → −3",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "6"
+			},
+			"description": "v3 : signe oublié",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["-12"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "6"
+			},
+			"description": "v3 : u′ multiplié",
+			"variationIndex": 3
+		}
+	]
+}
