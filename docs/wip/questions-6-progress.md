@@ -5,17 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 8 écrit (PR des fichiers)._
+_Mis à jour le 2026-11-01, après #2150 (lot 8 écrit, mergé)._
 
-- **État** : lots 1 à 7 publiés ; lot 8 « Assemblages de cubes » (154, 155, 181, 208, 209) écrit et joué en
-  local (§ 20.1), PR des fichiers ouverte.
-- **Prochaine action** : merge de la PR ; puis David lance `create-questions --publier` (brouillons en prod),
-  migration nœud + tag, page à cocher. **Publication après le `deploy:prod` qui livre #2130.**
-- **En attente de David** : rien pour l'instant.
+- **État** : lots 1 à 7 publiés ; lot 8 « Assemblages de cubes » (154, 155, 181, 208, 209) écrit, joué en local,
+  fichiers mergés (#2150) ; rien en prod pour ce lot.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-assemblages-cubes
+  --publier` (brouillons en prod) ; puis relever les 5 `id`, migration nœud + tag (nœuds = notions « Géométrie >
+  Solides », « Grandeurs et mesures > Volumes »), page à cocher. **Publication après le `deploy:prod` qui livre
+  #2130.**
+- **En attente de David** : le `create-questions --publier` du lot 8.
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs --file`. Jamais de variable
   `e`. `Doc-inchangée:` va dans un message de COMMIT. PR en conflit = pas de CI : vérifier `mergeable`. Horodatage
   de migration = dernière de `main` + 1 min.
-- **Worktree / branche** : `../ubumaths-wt-questions-6` · `content/questions-6-lot8`.
+- **Worktree / branche** : aucun (retiré après #2150).
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1238,3 +1240,4 @@ toutes distinctes, chaque leurre du 3 v1 a une vue différente des vues données
 - Base locale : 5 brouillons ; aperçu admin à 390 px (Playwright hors dépôt) : chaque variation tirée et vue ;
   justes jugées justes (compte, volume, comparaison, `dessiner:` face / dessus / droite, `retrouver:` face et
   face + droite), fausses jugées fausses ; rendu des perspectives, des vues en options et des corrections lu.
+- PR #2150 : CI verte, mergée ; worktree retiré.
