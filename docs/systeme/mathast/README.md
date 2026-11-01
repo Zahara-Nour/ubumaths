@@ -520,6 +520,27 @@ du moteur, statut `no-solution` + `error`, pour un ∅). Les modèles de questio
 de `generatedSteps.kind` pour la valeur absolue (PR suivante). Tests :
 `pedagogical-solve/__tests__/valeur-absolue.test.ts`, `atelier/__tests__/resoudre-valeur-absolue.test.ts`.
 
+Écarts d'écriture vue par l'élève (2026-11-01, chantier `ecarts-ecriture`) :
+
+- **V39** : `toLatex` parenthèse la base `ln` ou `log` d'une puissance, (ln 5)² s'écrit
+  `\left( \ln\left( 5 \right) \right)^2` et non plus `\ln\left( 5 \right)^2`, lisible ln(5²)
+  (`wrapsAsLatexPowerBase`, `latex-generator.ts`). LaTeX seul : `toCustom` ne change pas, ni la lecture
+  de `\ln 5^2` par le parseur ((ln 5)², décision en attente). Les autres fonctions
+  (`\sin\left( x \right)^2`) restent telles quelles. Tests : `__tests__/latex-puissance-logarithme.test.ts`.
+- **V51** : le transfert du lycée (`transpose-terms`) n'écrit plus `0` devant le terme déplacé :
+  `5=2x+1` donne `\textcolor{blue}{-2x} = 1 \textcolor{blue}{- 5}` (`transposedMember`,
+  `linear-renderer.ts`, LaTeX et console). Tests : `pedagogical-solve/__tests__/transfert-membre-vide.test.ts`.
+- **V52** : premier degré, les termes en x que `canonicalForm` laisse séparés (coefficient
+  irrationnel, `-\pi x + 9x`) sont regroupés en `\left( 9 - \pi \right) x` (`groupVariableTerms`,
+  `addToBothSides` avec la variable, `pedagogical-solve/_helpers.ts`) ; la division du collège se fait
+  par `9 - \pi` (`groupedCoefficient`). La solution reste écrite par `canonicalForm`
+  (`x \leqslant \dfrac{-6}{\pi - 9}`). Tests : `pedagogical-solve/__tests__/coefficient-irrationnel-reduit.test.ts`.
+- **V44, V46** : console, « Mismatched environments… », « Expected ')' after \right, got ] »,
+  « Expected delimiter after \left, got … » et « Cannot compute derivative » (`.variations` d'une
+  expression bien lue que le moteur ne sait pas dériver, `\frac{1}{|x|-2}`) sont traduits
+  (`cli/web/french-errors.ts`) ; la garde `ENGLISH` de `cli/web/__tests__/messages-francais.test.ts`
+  couvre « Mismatched » et « got ».
+
 Écart V43 (2026-10-13) : **une identité résolue « dans » un intervalle** rendait tout
 l'intervalle, valeurs interdites comprises (`.résoudre \frac{|x|-2}{|x|-2}=1 dans [-5;5]` →
 `[-5 ; 5]`, `\frac{3x}{3x}=1 dans [-1;1]` → `[-1 ; 1]`). Le domaine de `solve` était exact
