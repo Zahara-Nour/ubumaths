@@ -5,21 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 6 écrit, en PR._
+_Mis à jour le 2026-11-01, après #2052 et #2054 (lot 6 rangé en prod)._
 
 - **État** : lots 1 à 5 en prod (lot 1 en brouillon, lots 2 à 5 publiés) ; lot 5 « Pythagore et triangles » (033, 034,
   035, 036, 037, 072, 075) : 7/7 « OK » à la relecture, publiés par David, vérifié au MCP (§ 27).
-- **Prochaine action** : lot 6 (translations et volumes) écrit (§ 29), PR des fichiers à merger ; ensuite David lance
-  `create-questions --publier` (brouillons), puis migration nœud + tag. Les 2 modèles de volume attendent un `deploy:prod`
-  (bloc ` ```solide `) pour être publiés.
+- **Prochaine action** : lot 6 en brouillons en prod, rangé (§ 30) ; page à cocher des 5 modèles, puis publication des
+  3 modèles de translation ; les 2 de volume attendent le `deploy:prod` qui livre ` ```solide `.
 - **En attente de David** : garder la sonde des figures comme outil (`sonde-figures.ts`, petite PR à
   part) ou la supprimer (`scripts/questions/.sonde-figures-tmp.ts`, non suivie, dans le worktree) ; publication des 7
   brouillons du lot 1 ; revoir ou non les 14 bornes du cycle 4 qui ne reposent que sur un document 2019/2016 (§ 27).
 - **Pièges en cours** : `mtexte()` refusé dans une figure de question, invisible pour `question:specs` (§ 26) ;
   90dca27a et acbd2280 (4-005) partiront en 3e ; `db:migrate` peut exiger `--include-all` : **réservé à David** (oublié
-  au lot 5, § 27) ; exemption de doc d'une migration de données = ligne `Doc-inchangée:` dans un COMMIT, pas dans la PR ;
+  au lot 5, § 27, et au lot 6, § 30 : migration d'une autre session horodatée après la mienne) ; exemption de doc d'une migration de données = ligne `Doc-inchangée:` dans un COMMIT, pas dans la PR ;
   horodatages de migration : vérifier les PR ouvertes des autres sessions ; QCM = case choix.
-- **Worktree / branche** : `../ubumaths-wt-questions-4`, branche `feat/questions-4-lot-6`.
+- **Worktree / branche** : `../ubumaths-wt-questions-4` (HEAD détachée sur `origin/main`), aucune branche en cours.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
 
@@ -787,3 +786,15 @@ des modèles de volume déjà en base ; aucun niveau pris dans ces catégories, 
   points (sommets masqués) ; figures du 030 placées par le script (quadrillage 18 × 11, cas vérifiés : dans la fenêtre,
   disjoints, flèche à part) ; flèche A → D retirée du 032 (elle traversait le triangle) ; « π × 12 » rendu
   `unoptimal_form` (contrainte `products`), spec ajustée ; π s'écrit `\pi` dans un eval.
+
+## 30. Lot 6 : en prod, rangé (2026-11-01)
+
+- #2052 mergée (fichiers) ; David a lancé `create-questions --publier` depuis le worktree : 5 brouillons en [4], niveaux
+  et catégories justes. Identifiants : 6a770d04 (4-029), 35002b15 (4-076), 0150ef82 (4-030), c8306505 (4-031),
+  e7ef2835 (4-032).
+- #2054 mergée (migration `20261101120000_questions_4_lot6_rangement_tags` + test d'intégration : rouge sans elle 5/9,
+  vert avec 9/9 ; `security-auditor` : aucun finding bloquant). `db push` refusé (DbPushMissingRemoteError) : la session
+  5e avait joué `20261101120100` entre-temps. **David** a lancé `db push --include-all` (jouées : la mienne et
+  `20261101141500` de la session cm2, à sa demande). Vérifié au MCP : 5 modèles sur le nœud de leur point, un tag
+  chacun, `updated_at` inchangé, toujours en brouillon.
+- CI : deux jobs de tests navigateur tombés sans lien avec le lot (navigateur fermé, job annulé), relancés, verts.
