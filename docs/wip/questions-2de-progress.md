@@ -6,17 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2087 (§ 34, § 35)._
+_Mis à jour le 2026-11-01, lot 5 publié (§ 36)._
 
-- **État** : lots 1 à 4 publiés ; lot 5 (16 modèles) en prod en BROUILLON, rangés et tagués (#2087, migration
-  jouée et vérifiée au MCP) ; page à cocher publiée (§ 35).
-- **Prochaine action** : relecture de David sur la page à cocher ; lire les verdicts (`ArtifactData list
-verdicts`), corriger les « À revoir », puis `publier-lot.ts` sur `2de-droites-a` puis `2de-droites-b`.
-- **En attente de David** : verdicts sur https://claude.ai/artifact/YYe7XgNAqZa9ZmStmPGcci
-- **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main` ET des worktrees (collision
-  141600 CE1/CM1 vue le 2026-11-01) ; `page-a-cocher.ts` ne prend qu'un `--dir` (préfixes `a-`/`b-` dans une
-  copie : les noms 01… se recouvrent) ; `db:migrate` refusé par le classifieur → David le lance.
-- **Worktree / branche** : aucun (retiré après #2087).
+- **État** : lots 1 à 5 publiés (lot 5 « Droites » : 16 modèles, validés en bloc par David, publiés le 2026-11-01).
+- **Prochaine action** : lot 6 « Fonctions de référence, résolutions » (§ 4) : relevé MCP des points sans modèle,
+  puis phase 0 à faire valider par David (skill `couvrir-niveau`).
+- **En attente de David** : rien.
+- **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main` ET des worktrees ; `page-a-cocher.ts`
+  ne prend qu'un `--dir` (préfixes `a-`/`b-` dans une copie) ; `db:migrate` et `--publier` refusés par le
+  classifieur → David les lance avec `!`.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -852,3 +851,8 @@ David a lancé `create-questions --publier` sur `2de-droites-a` puis `2de-droite
   les 16 ids du § 33 retrouvés, `draft`, aucune alerte. Page (capacité `db`, collection `verdicts` vide au
   départ) : https://claude.ai/artifact/YYe7XgNAqZa9ZmStmPGcci
 - Publication : `publier-lot.ts` une fois par dossier (`2de-droites-a`, puis `2de-droites-b`).
+
+## 36. Lot 5 publié (2026-11-01)
+
+- David valide le lot en bloc (aucun verdict sur la page). `publier-lot.ts` en simulation : 6/6 et 10/10 passent ;
+  `--publier` lancé par David sur `2de-droites-a` puis `2de-droites-b` : 16/16 publiés. MCP : 16 `published`.
