@@ -5,23 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2058._
+_Mis à jour le 2026-11-01, après la publication du lot 5._
 
-- **État** : lots 1 à 4b publiés (4a publié le 2026-11-01) ; **lot 5 « Grandeurs »** (9 modèles, § 16) en prod en
-  brouillons, rangés (migration 20261101120100 jouée, #2058 mergée), **relecture validée par David en chat**
-  (page https://claude.ai/artifact/Bm4W9szc5wb9PGpJ3zmxDC, 0 verdict en base).
-- **Prochaine action** : David lance `publier-lot.ts --dir scripts/questions/5-grandeurs` (simulation puis
-  `--publier`), je vérifie les 9 `published` ; puis lot 6 « Données et probabilités » (134, 080, 139, 082, 083,
-  079), lot 7 « Proportionnalité, fonctions » (085, 086, 140, 087, 092, 098 ; recoupe 6-140 / 6-141), lot 8
+- **État** : lots 1 à 5 publiés ; **lot 5 « Grandeurs »** : 9/9 `published` (vérifié au MCP le 2026-11-01).
+- **Prochaine action** : phase 0 du lot 6 « Données et probabilités » (134, 080, 139, 082, 083, 079) ; puis
+  lot 7 « Proportionnalité, fonctions » (085, 086, 140, 087, 092, 098 ; recoupe 6-140 / 6-141), lot 8
   « Opérations » (001, 002, 005, 116, 117).
-- **En attente de David** : la publication du lot 5 ; accord pour retirer `supabase/.temp` du worktree ; le
-  `! pnpm db:migrate` de 23:26:56 UTC (2026-10-31) visait-il une autre session (3e, lot 5) ? Il a joué la
-  migration du lot 5 de la 5e depuis ce worktree, avant sa PR (résultat juste, audit sans bloquant).
+- **En attente de David** : accord pour retirer `supabase/.temp` du worktree ; le `! pnpm db:migrate` de
+  23:26:56 UTC (2026-10-31) visait-il une autre session (3e, lot 5) ? Il a joué la migration du lot 5 de la 5e
+  depuis ce worktree, avant sa PR (résultat juste, audit sans bloquant).
 - **Pièges en cours** : un worktree relié à la prod (`supabase/.temp` copié) fait partir un `db:migrate` lancé
-  par erreur dedans ; horodatage `max + 1 min` au moment du merge (180500 passé derrière 193500, `--include-all`) ;
-  le classifieur refuse `create-questions --publier` et `publier-lot.ts` (David avec `!`) ; gras contenant une
+  par erreur dedans ; horodatage `max + 1 min` au moment du merge (`--include-all`) ; `publier-lot.ts` en
+  simulation passe pour moi, `--publier` et `create-questions --publier` = David avec `!` ; gras contenant une
   formule ; jamais `e` ni `i` ; degrés en `^{\circ}`.
-- **Worktree / branche** : `ubumaths-wt-questions-5` (branches mergées, à nettoyer).
+- **Worktree / branche** : `ubumaths-wt-questions-5` (HEAD détaché, branches mergées, à nettoyer).
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -418,3 +415,8 @@ des angles ; conversions de volume déjà couvertes (5-051, 5-129).
   `security-auditor` après coup : aucun bloquant ; #2058 mergée, CI verte.
 - Page à cocher https://claude.ai/artifact/Bm4W9szc5wb9PGpJ3zmxDC ; David : « je valide toute la relecture »
   (en chat, 0 verdict en base).
+
+### Lot 5 : publication (2026-11-01)
+
+- Relecture validée par David en chat. Simulation `publier-lot.ts` (par moi) : 9 brouillons passent ; David :
+  `--publier` → 9/9 publiés ; vérifié au MCP (`status = published` pour les 9).
