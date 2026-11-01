@@ -2,7 +2,7 @@
  * « Trois points alignés ? Vérifie à la règle » passe au CP ET au CE1 (Supabase local requis)
  * ==========================================================================================
  *
- * Migration `20261101224702_questions_cp_ce1_alignes_rangement_tags` : le brouillon a7dfe502,
+ * Migration `20261101224704_questions_cp_ce1_alignes_rangement_tags` : le brouillon a7dfe502,
  * écrit pour CP-058 et resté sans nœud ni tag, prend les niveaux {CP, CE1}, va sur « Géométrie >
  * Figures planes > propriétés » (nœud de CP-058 et de CE1-073) et porte ces deux points (ADR
  * 0020 : un point par programme). Décision de David (journal docs/wip/questions-ce1-progress.md
@@ -40,7 +40,7 @@ interface Etat {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261101224702_questions_cp_ce1_alignes_rangement_tags.sql';
+const MIGRATION = 'supabase/migrations/20261101224704_questions_cp_ce1_alignes_rangement_tags.sql';
 const ID = 'a7dfe502-4af3-4130-8f88-3d8ab14bf91b';
 const PROPRIETES = 'Géométrie > Figures planes > propriétés';
 /** Date de modification fabriquée : elle ne doit pas bouger. */
