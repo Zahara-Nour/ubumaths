@@ -33,7 +33,7 @@ import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
 import { findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
 import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
 import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
-import { findBarsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
+import { findBarsToPlace, findBoxPlotsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
 import { findRangersToPlace } from '$lib/ubumark/parser/ranger-parser';
 import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
 import { findCubesToBuild, findPatronsToBuild } from '$lib/ubumark/parser/espace-parser';
@@ -345,6 +345,7 @@ const NESTED_BLOCK_NAMES: Record<BuildKind, string> = {
 	line: 'Une droite à placer',
 	horloge: 'Une horloge à placer',
 	barres: 'Un diagramme en barres à construire',
+	'boite-a-moustaches': 'Une boîte à moustaches à construire',
 	ranger: 'Des étiquettes à ranger',
 	partage: 'Une figure à colorier',
 	cubes: 'Un assemblage de cubes à geste',
@@ -463,6 +464,10 @@ function markBuildBlocks(statement: string): {
 		...findLinesToPlace(statement).map((b) => ({ ...b, kind: 'line' as const })),
 		...findHorlogesToPlace(statement).map((b) => ({ ...b, kind: 'horloge' as const })),
 		...findBarsToPlace(statement).map((b) => ({ ...b, kind: 'barres' as const })),
+		...findBoxPlotsToPlace(statement).map((b) => ({
+			...b,
+			kind: 'boite-a-moustaches' as const
+		})),
 		...findRangersToPlace(statement).map((b) => ({ ...b, kind: 'ranger' as const })),
 		...findPartagesToColorier(statement).map((b) => ({ ...b, kind: 'partage' as const })),
 		...findCubesToBuild(statement).map((b) => ({ ...b, kind: 'cubes' as const })),
@@ -646,6 +651,7 @@ export function assignBlankIndices(
 							source: build.source,
 							...((build.kind === 'line' ||
 								build.kind === 'barres' ||
+								build.kind === 'boite-a-moustaches' ||
 								build.kind === 'ranger' ||
 								build.kind === 'courbe') && {
 								point

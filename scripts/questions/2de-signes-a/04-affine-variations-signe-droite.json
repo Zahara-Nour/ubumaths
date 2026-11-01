@@ -1,0 +1,256 @@
+{
+	"title": "Fonction affine : variations, signe et droite",
+	"description": "Sens de variation, valeur qui annule et signe d'une fonction affine, par la formule, sur la droite, depuis le tableau de signes (pièges : signe de p au lieu de m, zéro −p/m écrit p/m, signe inversé pour m < 0)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Fonctions affines",
+	"subdomain": "Variations-Signe",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{m}}x{{p;+}}$.\n\nQuel est le sens de variation de $f$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n```\n\nPour quelle valeur de $x$ a-t-on $f(x)=0$ ?\n\n$x=?$\n\nSur $\\left]-\\infty\\,;{{r}}\\right[$, $f(x)$ est :\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "r",
+					"expression": "-5..5!0"
+				},
+				{
+					"name": "p",
+					"expression": "eval:-(m)*(r)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:m>0|0|1}}"
+				},
+				{
+					"expectedAnswer": "{{r}}"
+				},
+				{
+					"expectedAnswer": "{{if:m>0|1|0}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est affine de coefficient directeur $m={{m}}$, {{if:m>0|positif : $f$ est **croissante**|négatif : $f$ est **décroissante**}}.",
+					"$f(x)=0\\iff {{m}}x{{p;+}}=0\\iff x=\\textcolor{{{color:primary.1}}}{{{r}}}$.",
+					"{{if:m>0|$f$ croît et s'annule en ${{r}}$ : elle est **négative avant**, positive après.|$f$ décroît et s'annule en ${{r}}$ : elle est **positive avant**, négative après.}}",
+					"```variation\nvariable: x\ndomain: -inf, {{r}}, +inf\n\nsign: f(x)\n  -inf,{{r}}: {{if:m>0|-|+}}\n  {{r}}: z\n  {{r}},+inf: {{if:m>0|+|-}}\n```"
+				]
+			}
+		},
+		{
+			"statement": "La droite ci-dessous représente une fonction affine $f$.\n\n```courbe\nx: -6 ; 6\ny: -7 ; 7\ngrille: 1 ; 1\nf(x) = {{m}}*x+({{p}})   bleu\ntaille: moyenne\ndescription: Droite {{if:m>0|montante|descendante}} qui coupe l'axe des abscisses au point d'abscisse {{r}}.\n```\n\nQuel est le sens de variation de $f$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n```\n\nPour quelle valeur de $x$ a-t-on $f(x)=0$ ?\n\n$x=?$\n\nSur $\\left]{{r}}\\,;+\\infty\\right[$, $f(x)$ est :\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "r",
+					"expression": "-3..3!0"
+				},
+				{
+					"name": "p",
+					"expression": "eval:-(m)*(r)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:m>0|0|1}}"
+				},
+				{
+					"expectedAnswer": "{{r}}"
+				},
+				{
+					"expectedAnswer": "{{if:m>0|0|1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La droite {{if:m>0|monte : $f$ est **croissante**|descend : $f$ est **décroissante**}}.",
+					"Elle coupe l'axe des abscisses en $x=\\textcolor{{{color:primary.1}}}{{{r}}}$ : c'est là que $f$ s'annule.",
+					"Pour $x>{{r}}$, la droite est {{if:m>0|**au-dessus** de l'axe des abscisses : $f(x)>0$|**en dessous** de l'axe des abscisses : $f(x)<0$}}.",
+					"```variation\nvariable: x\ndomain: -inf, {{r}}, +inf\n\nsign: f(x)\n  -inf,{{r}}: {{if:m>0|-|+}}\n  {{r}}: z\n  {{r}},+inf: {{if:m>0|+|-}}\n```"
+				]
+			}
+		},
+		{
+			"statement": "Une fonction affine $f$ a le tableau de signes suivant.\n\n```variation\nvariable: x\ndomain: -inf, {{r}}, +inf\n\nsign: f(x)\n  -inf,{{r}}: {{if:s>0|-|+}}\n  {{r}}: z\n  {{r}},+inf: {{if:s>0|+|-}}\n```\n\nQuel est le sens de variation de $f$ ?\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n```",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "-5..5"
+				},
+				{
+					"name": "s",
+					"expression": "-1|1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s>0|0|1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une fonction affine non constante qui passe {{if:s>0|du négatif au positif|du positif au négatif}} est \\textcolor{{{color:primary.0}}}{\\text{{{if:s>0|croissante|décroissante}}}} : son coefficient directeur est {{if:s>0|positif|négatif}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2x − 6 : croissante, 3, négative avant",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"r": "3",
+				"p": "-6"
+			},
+			"answers": ["0", "3", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : zéro −3",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"r": "3",
+				"p": "-6"
+			},
+			"answers": ["0", "-3", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : positive avant",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"r": "3",
+				"p": "-6"
+			},
+			"answers": ["0", "3", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−3x − 6 : décroissante, −2, positive avant",
+			"variationIndex": 0,
+			"variables": {
+				"m": "-3",
+				"r": "-2",
+				"p": "-6"
+			},
+			"answers": ["1", "-2", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : croissante (signe de p)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "-3",
+				"r": "-2",
+				"p": "-6"
+			},
+			"answers": ["0", "-2", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Droite 2x + 2 : croissante, −1, positive après",
+			"variationIndex": 1,
+			"variables": {
+				"m": "2",
+				"r": "-1",
+				"p": "2"
+			},
+			"answers": ["0", "-1", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Droite −x + 2 : décroissante, 2, négative après",
+			"variationIndex": 1,
+			"variables": {
+				"m": "-1",
+				"r": "2",
+				"p": "2"
+			},
+			"answers": ["1", "2", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : positive après",
+			"variationIndex": 1,
+			"variables": {
+				"m": "-1",
+				"r": "2",
+				"p": "2"
+			},
+			"answers": ["1", "2", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "− 0 + : croissante",
+			"variationIndex": 2,
+			"variables": {
+				"r": "1",
+				"s": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "+ 0 − : décroissante",
+			"variationIndex": 2,
+			"variables": {
+				"r": "1",
+				"s": "-1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : croissante pour + 0 −",
+			"variationIndex": 2,
+			"variables": {
+				"r": "1",
+				"s": "-1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

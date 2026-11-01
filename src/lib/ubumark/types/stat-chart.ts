@@ -296,6 +296,11 @@ export interface BoxPlotBox {
 	values: [number, number, number, number, number];
 	/** Ligne du bloc où la boîte est écrite */
 	line: number;
+	/**
+	 * Valeurs `?` (énoncé d'évaluation masqué, palier 2) : `values` ne valent rien
+	 * (le bas de l'axe), la boîte est à construire et jamais dessinée juste
+	 */
+	masked?: true;
 }
 
 /** Bloc ```boite-a-moustaches : boîtes horizontales empilées, un seul axe en bas */
@@ -310,6 +315,11 @@ export interface BoxPlotData {
 	showValues: boolean;
 	/** `données:` : une boîte calculée par `describe.ts` */
 	fromData: boolean;
+	/**
+	 * Boîtes à construire par l'élève (`placer:`, palier 2) : leurs rangs dans
+	 * `boxes`, dans l'ordre des boîtes du bloc ; absent ou null : boîtes à lire
+	 */
+	toPlace?: number[] | null;
 }
 
 /** Indicateurs affichables sous la figure (Q28) */

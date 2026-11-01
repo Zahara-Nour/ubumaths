@@ -1,0 +1,183 @@
+{
+	"title": "Résoudre B(x) = 0 avec un tableau de signes (quotient)",
+	"description": "Lire la solution de B(x) = 0 sur le tableau de signes d'un quotient (pièges : valeur interdite comptée comme solution, valeur interdite seule)",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Inéquations",
+	"subdomain": "Produit et quotient",
+	"level": 6,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Voici le tableau de signes de $B(x)=\\dfrac{ {{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}x{{b;+}} }{ {{if:c==-1|-|}}{{if:c*c>1|{{c}}|}}x{{d;+}} }$.\n\n```variation\nvariable: x\ndomain: -inf, {{ra}}, {{rb}}, +inf\n\nsign: {{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}x{{b;+}}\n  -inf,{{ra}}: {{if:a>0|-|+}}\n  {{ra}}: z\n  {{ra}},{{rb}}: {{if:a>0|+|-}}\n  {{rb}},+inf: {{if:a>0|+|-}}\n\nsign: {{if:c==-1|-|}}{{if:c*c>1|{{c}}|}}x{{d;+}}\n  -inf,{{ra}}: {{if:c>0|-|+}}\n  {{ra}},{{rb}}: {{if:c>0|-|+}}\n  {{rb}}: z\n  {{rb}},+inf: {{if:c>0|+|-}}\n\nsign: B(x)\n  -inf,{{ra}}: {{if:ac>0|+|-}}\n  {{ra}}: z\n  {{ra}},{{rb}}: {{if:ac>0|-|+}}\n  {{rb}}: ||\n  {{rb}},+inf: {{if:ac>0|+|-}}\n```\n\nRésous l'équation $B(x)=0$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "ra",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-(a)*(ra)"
+				},
+				{
+					"name": "c",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "rb",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "d",
+					"expression": "eval:-(c)*(rb)"
+				},
+				{
+					"name": "ac",
+					"expression": "eval:(a)*(c)"
+				}
+			],
+			"conditions": ["ra < rb"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{ra}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$B(x)=0$ là où la ligne de $B(x)$ porte un $0$ : là où le **numérateur** s'annule.",
+					"En ${{rb}}$ la double barre marque la valeur interdite : $B({{rb}})$ n'existe pas, ce n'est pas une solution.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{{{ra}}\\right\\}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici le tableau de signes de $B(x)=\\dfrac{ {{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}x{{b;+}} }{ {{if:c==-1|-|}}{{if:c*c>1|{{c}}|}}x{{d;+}} }$.\n\n```variation\nvariable: x\ndomain: -inf, {{rb}}, {{ra}}, +inf\n\nsign: {{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}x{{b;+}}\n  -inf,{{rb}}: {{if:a>0|-|+}}\n  {{rb}},{{ra}}: {{if:a>0|-|+}}\n  {{ra}}: z\n  {{ra}},+inf: {{if:a>0|+|-}}\n\nsign: {{if:c==-1|-|}}{{if:c*c>1|{{c}}|}}x{{d;+}}\n  -inf,{{rb}}: {{if:c>0|-|+}}\n  {{rb}}: z\n  {{rb}},{{ra}}: {{if:c>0|+|-}}\n  {{ra}},+inf: {{if:c>0|+|-}}\n\nsign: B(x)\n  -inf,{{rb}}: {{if:ac>0|+|-}}\n  {{rb}}: ||\n  {{rb}},{{ra}}: {{if:ac>0|-|+}}\n  {{ra}}: z\n  {{ra}},+inf: {{if:ac>0|+|-}}\n```\n\nRésous l'équation $B(x)=0$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "ra",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-(a)*(ra)"
+				},
+				{
+					"name": "c",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "rb",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "d",
+					"expression": "eval:-(c)*(rb)"
+				},
+				{
+					"name": "ac",
+					"expression": "eval:(a)*(c)"
+				}
+			],
+			"conditions": ["ra > rb"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{ra}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$B(x)=0$ là où la ligne de $B(x)$ porte un $0$ : là où le **numérateur** s'annule.",
+					"En ${{rb}}$ la double barre marque la valeur interdite : $B({{rb}})$ n'existe pas, ce n'est pas une solution.",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{{{ra}}\\right\\}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "{−1}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"ra": "-1",
+				"b": "2",
+				"c": "-1",
+				"rb": "3",
+				"d": "3",
+				"ac": "-2"
+			},
+			"answers": ["\\{-1\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : valeur interdite comptée {−1 ; 3}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"ra": "-1",
+				"b": "2",
+				"c": "-1",
+				"rb": "3",
+				"d": "3",
+				"ac": "-2"
+			},
+			"answers": ["\\{-1;3\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : valeur interdite seule {3}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"ra": "-1",
+				"b": "2",
+				"c": "-1",
+				"rb": "3",
+				"d": "3",
+				"ac": "-2"
+			},
+			"answers": ["\\{3\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "{4}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"ra": "4",
+				"b": "-4",
+				"c": "3",
+				"rb": "-2",
+				"d": "6",
+				"ac": "3"
+			},
+			"answers": ["\\{4\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

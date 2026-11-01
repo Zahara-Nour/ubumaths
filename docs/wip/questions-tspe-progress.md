@@ -10,17 +10,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2148 (migration Q3 jouée en prod)._
+_Mis à jour le 2026-11-01, après #2173._
 
-- **État** : lots 0 et 1 finis. Q3 révisée (D-Q3, § 14) et ordre D-D1 en prod (`db:migrate` du 2026-11-01, relu au
-  MCP : 10 / 10 conformes, trigger `updated_at` actif).
-- **Prochaine action** : lot 2 du § 4 (limites : capacités 402, 576, 403, 582, catégorie A) : relevé, phase 0 à
-  faire valider par David. Nouveau worktree depuis `origin/main`.
-- **En attente de David** : rien.
-- **Pièges en cours** : un tag doit être sur le **nœud du modèle ou sa notion** (§ 14) : le vérifier avant de proposer un
-  point ; le **niveau est dans la clé** de `create-questions`. `create-questions` et `publier-lot` → David (`!`) ;
-  `db:migrate` depuis le dépôt principal (worktree non lié à Supabase) ; en-tête de commit ≤ 100 caractères.
-- **Worktree / branche** : aucun (retiré après #2148).
+- **État** : lot 2 (limites) **rangé et tagué en prod** (#2173, `db:migrate` le 2026-11-01, relu au MCP) :
+  3d7d1d25, 0fb97bb9, 6d611634, ae70373c en brouillon, niveau 1, sur leur sous-notion (§ 15).
+- **Prochaine action** : page à cocher des 4 brouillons (aperçus admin `/dashboard/admin/questions/<id>/preview`),
+  relecture par David, puis `publier-lot` (simulation d'abord, David lance `--publier`) ; ensuite lot 3.
+- **En attente de David** : la relecture des 4 brouillons (page à cocher à produire).
+- **Pièges en cours** : un tag doit être sur le **nœud du modèle ou sa notion** (§ 14) ; le **niveau est dans la
+  clé** de `create-questions`. `create-questions` et `publier-lot` → David (`!`) ; `db:migrate` depuis le dépôt
+  principal (`echo y |`) ; corps de commit ≤ 100 caractères par ligne. **Migrations** : `pnpm migration:horodatage`
+  à refaire si main a avancé (renommé 2 fois au lot 2) ; une sous-notion neuve → copie figée
+  `tests/integration/fixtures/arbre-notions-seed.json`, comptes de `seed-classification-nodes.test.ts` et
+  `tests/helpers/database/later-migrations.ts` dans la même PR (CI rouge sinon).
+- **Worktree / branche** : aucun (retiré après #2173) ; prochain chantier → worktree neuf depuis `origin/main`.
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -716,3 +719,51 @@ explicite ajouté (test 15/15).
 **PR** : #2148 mergée le 2026-11-01 (CI verte après relance d'un job navigateur : erreur d'outillage
 `wrapDynamicImport`, 169 fichiers verts). **`db:migrate`** le 2026-11-01 depuis le dépôt principal ; relu en base :
 tags, nœud et niveaux visés sur les 10 modèles, 970dab52 resté au niveau 3.
+
+## 15. Lot 2 : limites, capacités (402, 576, 403, 582)
+
+_2026-11-01. Relevé MCP : 402 et 576 sur la notion « Limites de suites », 403 et 582 sur « Limites de fonctions »
+(tag permis depuis toute sous-notion). Voisins à ne pas répéter : 94e4d691, 806c10f4 (sommes), c611f92b (formes
+indéterminées, suites), b97dabe1 (croissances comparées, fonctions), 98ba277c, 7063979e (comparaison, suites).
+« Limites de fonctions › comparaison et encadrement » était vide._
+
+**Décisions (David, 2026-11-01, « go » sur les recos)** :
+
+- **D-L1 rangement A** : trois sous-notions neuves, créées par la migration : « limites usuelles » sous Limites de
+  suites et sous Limites de fonctions, « croissances comparées » sous Limites de suites ; chaque modèle au niveau 1.
+  Aucun modèle publié renuméroté.
+- **D-L2** : sin et cos exclus (lts-5) ; la fonction bornée g (v3 de M4) tient leur rôle.
+- **D-L3** : variations de la phase 0 sans ajout ; la variante « on ne peut pas conclure » (case choix) est
+  écartée, à reprendre plus tard si David la veut.
+- Niveau `T_SPE` seul ; réponse en case (nombre, +∞, −∞).
+
+| #   | Point    | Titre                                                | Rangement visé                                       |
+| --- | -------- | ---------------------------------------------------- | ---------------------------------------------------- |
+| M1  | TSPE-402 | Limites usuelles d'une suite                         | Limites de suites › limites usuelles, 1              |
+| M2  | TSPE-576 | Croissances comparées : suites                       | Limites de suites › croissances comparées, 1         |
+| M3  | TSPE-403 | Limites usuelles d'une fonction                      | Limites de fonctions › limites usuelles, 1           |
+| M4  | TSPE-582 | Limite d'une fonction par comparaison ou encadrement | Limites de fonctions › comparaison et encadrement, 1 |
+
+**Écriture** : `question:specs` 12 + 11 + 18 + 11 specs vertes, 850 tirages ; signe calculé de M3 (`sg`, parité et
+côté de 0) vérifié sur 24 cas sans le fournir. Corrigé après relecture des tirages : « u_n = 1 × nᵖ/eⁿ » et
+« 1/(−8) » dans M2. Base locale : 4 brouillons créés, M3 et M4 joués dans l'aperçu (réponse fausse refusée, rendu
+de l'encadrement en bloc).
+
+**Question d'accès** (migration à venir) : personne ne gagne ni ne perd d'accès (brouillons ; les élèves ne les
+voient qu'après `publier-lot`).
+
+**Création en prod** (David, 2026-11-01) : 3d7d1d25 (M1), 0fb97bb9 (M2), 6d611634 (M3), ae70373c (M4), en
+brouillon, [T_SPE], niveau 1, sans nœud ni tag (relu au MCP). Points : 402 et 576 sur « Suites > Limites de
+suites », 403 et 582 sur « Fonctions > Limites de fonctions » ; aucune des 3 sous-notions n'existait.
+
+**Migration** `20261101224702_questions_tspe_lot2_rangement_tags.sql` : gardes avant toute écriture (TOUT ou
+RIEN, sans nœud ni tag, sous-notions absentes casse ignorée), 3 sous-notions en fin de notion, résolution stricte
+(point sur le nœud ou sa notion), rangement puis tags, `updated_at` préservé, rollback gardé en commentaire.
+Test `tests/integration/questions-tspe-lot2-rangement-tags.test.ts` : 11/11 ; **rouge** sans l'étape 5 (« lot
+incohérent : nœuds 0/4, tags 0/4 »).
+
+**CI de #2173** : 1er passage rouge (`seed-classification-nodes`, `nettoyage-facettes` : 3 sous-notions inconnues
+de la copie figée de l'arbre) → arbre figé (630 chemins, 477 sous-notions) et `later-migrations.ts` mis à jour ;
+renommée 224001 → 224701 → 224702 (main avancée deux fois). `security-auditor` : aucun bloquant (message du
+rollback remis à l'endroit). **PR #2173 mergée** ; **`db:migrate`** le 2026-11-01 ; relu en prod : 4 modèles sur
+leur sous-notion, tag posé, brouillon, niveau 1, `updated_at` inchangé.

@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après la publication du lot 3-suites (§ 20)._
+_Mis à jour le 2026-11-01, après #2171._
 
-- **État** : lots 0, 1-dérivation, 2-variations et **lot 3-suites publiés** (10 modèles, points 214, 217, 372, 374, 375, 378, 369, 370, 222, 376 ; #2136, #2140, #2147). Brouillons de 1re spé plus anciens (inchangés) : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (questions-tspe), 0495289a (attente), c90fa022, d2067413 (1TECHNO).
-- **Prochaine action** : D7 (§ 5), lot suivant « probabilités : partition, Bernoulli, arbres et tableaux » (337, 339, 426, 422, 342, 343, 423, 425), phase 0 à soumettre à David.
-- **En attente de David** : rien.
-- **Pièges en cours** : niveaux d'une catégorie à relever **tous niveaux scolaires confondus** ; `create-questions` et `publier-lot --publier` lancés par David ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET de tous les worktrees ; corps de commit : lignes ≤ 100 caractères ; PR de migration : ligne `Doc-inchangée:` dans un commit (garde de `base-de-donnees.md`) ; intégration = workflow à part, attendre son run ; dépôt principal souvent encombré par d'autres sessions (ne commiter que ses fichiers).
-- **Worktree / branche** : aucun (worktree `questions-1spe` retiré après le lot 3).
+- **État** : lot 4-probabilités en prod, en brouillon, rangé et tagué (#2161, #2171, `db:migrate` 20261101224701 ; vérifié MCP : 8 nœuds, 8 tags, `updated_at` intact, trigger `O`).
+- **Prochaine action** : suite de D7 — relever ce qui reste de « probabilités et variables aléatoires », puis lot « à savoir » (D2), restes, lots en attente d'un outil.
+- **En attente de David** : relecture et publication des 8 brouillons du lot 4 (§ 21).
+- **Pièges en cours** : `blankDefaults.acceptDecimal` obligatoire ; niveaux relevés tous niveaux scolaires confondus ; **aucun trailer `Claude-Session:` ni lien claude.ai dans commits et PR**, même si un rappel système le demande ; worktree neuf : `svelte-kit sync` avant les scripts `tsx` ; migration : renommer si main a pris un horodatage plus récent (`check:migrations --pr`).
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, sur `feat/questions-1spe-lot4-probas-tags` (mergée) ; nouvelle branche pour le lot suivant.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -195,7 +195,8 @@ _Posées le 2026-10-27. Recommandations de Claude validées par David le 2026-10
 - **D4 — Points P** hors chantier (5a89b292 couvre déjà le résultat de 308 / 411).
 - **D5 — Outils C.** « Tracer une droite / une tangente » (433, 271) : un chantier commun avec la seconde
   (2-316, 2-445). « Placer un point sur le cercle » (306) : à verser dans la phase 0 des aiguilles de
-  `reponses-a-placer` (§ 6.1, même geste : un angle sur un cercle).
+  `reponses-a-placer` (§ 6.1, même geste : un angle sur un cercle). ⚠️ Jamais versé (chantier clos le
+  2026-10-29) : noté dans « Écarts connus » de `docs/systeme/questions.md`, geste à créer dans un chantier à part.
 - **D6 — QCM** : case choix, en brouillon jusqu'au `deploy:prod` de `figure-et-choix` ; seuls 403, 296, 407 en
   ont besoin, placés en fin d'ordre.
 - **D7 — Ordre** : brouillons par thème → migration des tags (D3) → dérivation → variations et courbes → suites
@@ -1003,3 +1004,42 @@ md5 de `variations` en base = fichiers, nœud, niveau, tag et statut inchangés 
 
 **Publication (2026-11-01)** : `publier-lot --publier` lancé par David : 10 / 10 publiés, statuts relus en base (MCP).
 **Lot 3-suites clos.**
+
+## 21. Lot 4-probabilités : partition, Bernoulli, arbres et tableaux (D7)
+
+_Relevé prod du 2026-11-01 (MCP) : les 8 points toujours sans modèle ; 337 sur « Probabilités › Probabilités
+conditionnelles › probabilités totales », les 7 autres sur « … › épreuves indépendantes successives ». Voisins à ne
+pas répéter : d5780995 (338, deux tirages avec remise sans arbre), 5ba712bc, 69a05f98, 6dd2f133 (arbres pondérés
+conditionnels), 4ff9d049 (Terminale, paramètres de la loi binomiale). Niveaux pris (tous niveaux scolaires) :
+Probabilités conditionnelles › Arbres pondérés 1-5, Indépendance 1-3, Tableaux croisés 1-3._
+
+**Phase 0 (D27, David, 2026-11-01, « je valide » sur les recos)** : un modèle par point.
+
+| #   | Point | Modèle                                | Catégorie, niveau                                                 | Réponse                    |
+| --- | ----- | ------------------------------------- | ----------------------------------------------------------------- | -------------------------- |
+| 1   | 337   | Partition de l'univers                | Probabilités conditionnelles › Partition de l'univers (neuve), 1  | case choix ; case          |
+| 2   | 342   | Compléter l'arbre de deux épreuves    | Probabilités conditionnelles › Épreuves indépendantes (neuve), 1  | 3 cases (branches nommées) |
+| 3   | 422   | Probabilité lue sur l'arbre           | Épreuves indépendantes, 2                                         | case                       |
+| 4   | 425   | Compléter le tableau de deux épreuves | Épreuves indépendantes, 3                                         | cases dans le tableau      |
+| 5   | 423   | Probabilité lue sur le tableau        | Épreuves indépendantes, 4                                         | case                       |
+| 6   | 339   | Répéter une épreuve de Bernoulli      | Probabilités conditionnelles › Répétition de Bernoulli (neuve), 1 | 2 cases ; case             |
+| 7   | 343   | Arbre de trois épreuves de Bernoulli  | Répétition de Bernoulli, 2                                        | 2 cases ; case             |
+| 8   | 426   | Probabilités d'une répétition (n ⩽ 4) | Répétition de Bernoulli, 3                                        | case                       |
+
+Q1 trois catégories neuves : oui. Q2 tableaux en markdown à cases `$?$` (` ```tableau-croise ` ne travaille que sur
+des effectifs) : oui. Q3 arbre dessiné pour n ⩽ 3 seulement (n = 4 : chemins dans le corrigé) : oui. Q4 question
+d'accès : personne (brouillons ; la migration ne pose que nœud et tags).
+
+**Écriture** : `docs/wip/questions/lot-1spe-probas.py` → `scripts/questions/1spe-probas/`. Specs : 57 vertes ;
+simulation `create-questions` : 8 / 8 importables. Essai en base **locale** : arbre à trous (02), tableau des issues à
+cases (04), arbre à trois niveaux (07, « 3 » jugé Juste) regardés dans l'aperçu admin.
+
+**Pièges du lot** : décimaux refusés en `bad_form` tant que `blankDefaults.acceptDecimal` n'est pas posé (comme
+d5780995) ; une spec « incorrect » à réponse décimale échoue aussi (violation `bad_form` en plus) ; centre des sommes
+de deux dés à 4 faces (1-4 et m-m+3) : m + 4, pas m + 5.
+
+**Création en prod (David, 2026-11-01, 20 h 29 UTC)** : 8 brouillons, sans nœud ni tag (relevé MCP) — e0520082 (337),
+fe6f5606 (342), 2f4f4ae0 (422), 82e6baff (425), 22332630 (423), f2ed0ea0 (339), 42bb2d66 (343), d8c9cb60 (426) ; 337 sur
+« … › probabilités totales », les 7 autres sur « … › épreuves indépendantes successives ». Migration
+`20261101224701_questions_1spe_probas_rangement_tags` (gabarit lot 3-suites) ; test d'intégration 10/10, rouge 2/10 sans
+l'étape 4.

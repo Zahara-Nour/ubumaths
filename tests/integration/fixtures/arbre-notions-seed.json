@@ -511,7 +511,8 @@
 						"formes indéterminées",
 						"comparaison et encadrement",
 						"croissances comparées",
-						"asymptotes"
+						"asymptotes",
+						"limites usuelles"
 					],
 					"note": null
 				},
@@ -669,7 +670,9 @@
 						"comparaison et encadrement",
 						"suites géométriques",
 						"convergence monotone",
-						"suites majorées, minorées"
+						"suites majorées, minorées",
+						"limites usuelles",
+						"croissances comparées"
 					],
 					"note": null
 				},

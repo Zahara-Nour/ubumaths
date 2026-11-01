@@ -1,0 +1,152 @@
+{
+	"title": "Signe de la fonction carré",
+	"description": "Tableau de signes de x² ; signe de −kx² ; signe de (x − a)² et valeur qui l'annule (pièges : x² négatif pour x < 0, −x² « positif car c'est un carré », (x − a)² nul en −a)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Fonction carré",
+	"subdomain": "Signe",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quel est le tableau de signes de la fonction carré $x\\mapsto x^2$ ?\n\n````choix\n- ```variation\n  variable: x\n  domain: -inf, 0, +inf\n\n  sign: x^2\n    -inf,0: +\n    0: z\n    0,+inf: +\n  ```\n- ```variation\n  variable: x\n  domain: -inf, 0, +inf\n\n  sign: x^2\n    -inf,0: -\n    0: z\n    0,+inf: +\n  ```\n- ```variation\n  variable: x\n  domain: -inf, 0, +inf\n\n  sign: x^2\n    -inf,0: +\n    0: z\n    0,+inf: -\n  ```\n- ```variation\n  variable: x\n  domain: -inf, 0, +inf\n\n  sign: x^2\n    -inf,0: -\n    0: z\n    0,+inf: -\n  ```\n````",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un carré est positif, et nul seulement pour $x=0$ : $(-3)^2=9>0$ comme $3^2=9$.",
+					"```variation\nvariable: x\ndomain: -inf, 0, +inf\n\nsign: x^2\n  -inf,0: +\n  0: z\n  0,+inf: +\n```"
+				]
+			}
+		},
+		{
+			"statement": "Pour tout réel $x$, le nombre $-{{k}}x^2$ est :\n\n```choix\nmelanger: non\n- strictement positif\n- positif ou nul\n- strictement négatif\n- négatif ou nul\n- de signe variable : il dépend de $x$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$x^2\\geqslant 0$ ; multiplié par $-{{k}}$, négatif, il change de signe.",
+					"$-{{k}}x^2\\leqslant 0$, nul pour $x=0$ : il est \\textcolor{{{color:primary.0}}}{\\text{négatif ou nul}}."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout réel $x$, le nombre $(x{{eval:-(a);+}})^2$ est :\n\n```choix\nmelanger: non\n- strictement positif\n- positif ou nul\n- strictement négatif\n- négatif ou nul\n- de signe variable : il dépend de $x$\n```\n\nPour quelle valeur de $x$ est-il nul ?\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un carré est positif ou nul, et nul seulement quand le nombre élevé au carré est nul.",
+					"$(x{{eval:-(a);+}})^2$ est \\textcolor{{{color:primary.0}}}{\\text{positif ou nul}}, nul pour $x{{eval:-(a);+}}=0$, soit $x=\\textcolor{{{color:primary.1}}}{{{a}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "+ 0 +",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : − 0 +",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−2x² négatif ou nul",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : positif ou nul « c'est un carré »",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(x − 3)² positif ou nul, nul en 3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["1", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : nul en −3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["1", "-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : strictement positif",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["0", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

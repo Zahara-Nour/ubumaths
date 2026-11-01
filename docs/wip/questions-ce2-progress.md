@@ -6,23 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR #2158 ouverte (pas encore mergée)._
+_Mis à jour le 2026-11-01, après #2178 (lot 6b mergé), PR de rangement en cours._
 
-- **État** : lot 6a (9 modèles longueurs + masses) créé en BROUILLON en prod par David (2026-11-01, ids dans la
-  migration). PR #2158 `feat/questions-ce2-lot6a-rangement` = migration nœud + tag
-  `20261101223100_questions_ce2_lot6a_rangement_tags.sql` + test d'intégration (rouge sans, 9/9 vert avec),
-  `security-auditor` sans finding. Branche à jour de `main` (doublon 215000 réglé par #2154), CI relancée.
-- **Prochaine action** : lire la CI de #2158 (`gh pr checks 2158`) ; `git merge origin/main` si besoin (jamais
-  rebase) ; si `pnpm check:migrations` existe (PR #2165), `pnpm check:migrations --pr 2158` avant `gh pr merge
---merge` ; puis `pnpm db:migrate` depuis le dépôt principal (4 conditions réunies : accès « personne » tranché,
-  test rouge prouvé, audit OK, additive + rollback) ; vérifier en prod au MCP (9 nœuds + 9 tags) ; page à cocher ;
-  `publier-lot.ts --dir scripts/questions/ce2-6a` (David `--publier`). Ensuite lot 6b (contenances + durées, § 10).
-- **En attente de David** : rien pour l'instant (son `--publier` du lot, plus tard).
-- **Pièges en cours** : nouvelle règle (PR #2165) : horodatage d'une migration neuve = `pnpm migration:horodatage`,
-  jamais « max + 1 » à la main ; le pre-push vérifie les migrations et le formatage de tout le dépôt ;
-  `db:migrate`, `--publier` refusés par le classifieur (David, `!`) ; niveaux relevés juste avant la publication ;
-  commitlint : sujet sans majuscule ; pas de mention Claude dans commits/PR.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, `feat/questions-ce2-lot6a-rangement`.
+- **État** : lots 1 à 6a en prod et publiés. Lot 6b : 4 brouillons créés en prod par David (2026-11-01), sans nœud ni
+  tag ; migration de rangement + test d'intégration écrits (rouge sans la migration, 9 verts avec), PR ouverte.
+- **Prochaine action** : PR de rangement verte → merge → `db:migrate` (David, `!`) → page à cocher → publication
+  (`publier-lot`, niveaux relevés juste avant).
+- **En attente de David** : `db:migrate` après le merge (`!`).
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente ; `--publier` refusé par le classifieur
+  (`!`) ; commitlint : sujet sans majuscule ; pas de mention Claude.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2-6b` · `feat/questions-ce2-lot6b-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -494,3 +487,14 @@ conversion, puis le mélange, puis l'unité à déduire).
   léger » (case choix, bonne réponse en premier). Positions affichées du `ranger` lues par essai des permutations
   (stables d'une valeur à l'autre).
 - Choix d'unité : 04 en 5 unités (mm, cm, dm, m, km), 07 en 3 (g, kg, t) ; réponses numériques en case.
+
+### Lot 6b — écriture (2026-11-01)
+
+- Script `docs/wip/questions/lot-ce2-6b.py` → `scripts/questions/ce2-6b/` : 4 modèles, 74 specs, simulation verte.
+  Niveaux posés d'après le relevé MCP du jour (à relire avant la publication) : Contenances / Unités 1 (10) et 2 (11) ;
+  Durées / Durée écoulée 3 (12) et 4 (13), après les 1-2 du CE1.
+- 10 : symbole, sens, plus grande / plus petite, choix de l'unité (L, dL, cL). 11 : relations, 780 cL = 7 L + 80 cL.
+- 12-13 : l'axe chronologique n'est pas un bloc (énoncé en texte, repères dans le corrigé). Réponses en deux cases
+  (h, min) ; 13 pose `u = t - 6 floor(t/6)` pour éviter `mod` en condition.
+- Brouillons créés le 2026-11-01 : 10 `186f05a4`, 11 `cda9c7de`, 12 `ea1a0929`, 13 `ba8f2f75` (préfixes). Rangement :
+  10 → CE2-052 et 11 → CE2-053 sur Contenances / unités et conversions ; 12 et 13 → CE2-060 sur Durées / calcul de durées.

@@ -1,0 +1,228 @@
+{
+	"title": "Lire et écrire une fraction décimale",
+	"description": "Deux-cent-sept millièmes ↔ 207/1 000 : écrire en chiffres une fraction décimale donnée en lettres, la lire parmi quatre écritures ; dénominateur 10, 100 ou 1 000",
+	"grades": ["CM2"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Ecriture",
+	"level": 9,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off",
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris en chiffres la fraction « **{{if:c==10003|trois dixièmes|{{if:c==10009|neuf dixièmes|{{if:c==10023|vingt-trois dixièmes|{{if:c==10047|quarante-sept dixièmes|{{if:c==10071|soixante-et-onze dixièmes|{{if:c==10085|quatre-vingt-cinq dixièmes|{{if:c==10099|quatre-vingt-dix-neuf dixièmes|{{if:c==10125|cent-vingt-cinq dixièmes|{{if:c==20007|sept centièmes|{{if:c==20023|vingt-trois centièmes|{{if:c==20081|quatre-vingt-un centièmes|{{if:c==20099|quatre-vingt-dix-neuf centièmes|{{if:c==20105|cent-cinq centièmes|{{if:c==20237|deux-cent-trente-sept centièmes|{{if:c==20308|trois-cent-huit centièmes|{{if:c==20671|six-cent-soixante-et-onze centièmes|{{if:c==21003|mille-trois centièmes|{{if:c==22375|deux-mille-trois-cent-soixante-quinze centièmes|{{if:c==30007|sept millièmes|{{if:c==30023|vingt-trois millièmes|{{if:c==30065|soixante-cinq millièmes|{{if:c==30207|deux-cent-sept millièmes|{{if:c==30451|quatre-cent-cinquante-et-un millièmes|{{if:c==30607|six-cent-sept millièmes|{{if:c==30999|neuf-cent-quatre-vingt-dix-neuf millièmes|{{if:c==31003|mille-trois millièmes|{{if:c==32375|deux-mille-trois-cent-soixante-quinze millièmes|{{if:c==34107|quatre-mille-cent-sept millièmes|{{if:c==37103|sept-mille-cent-trois millièmes|neuf-mille-quatre-vingt-un millièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}** ».\n\n$$?$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "10003|10009|10023|10047|10071|10085|10099|10125|20007|20023|20081|20099|20105|20237|20308|20671|21003|22375|30007|30023|30065|30207|30451|30607|30999|31003|32375|34107|37103|39081"
+				},
+				{
+					"name": "p",
+					"expression": "{{if:c>30000|3|{{if:c>20000|2|1}}}}"
+				},
+				{
+					"name": "d",
+					"expression": "eval:10^p"
+				},
+				{
+					"name": "n",
+					"expression": "eval:mod(c,10000)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{n}}}{{{d}}}",
+					"requiredForm": "fraction"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un **dixième**, c'est l'unité partagée en $10$ parts égales ; un **centième**, en $100$ ; un **millième**, en $1\\,000$.",
+					"« {{if:c==10003|trois dixièmes|{{if:c==10009|neuf dixièmes|{{if:c==10023|vingt-trois dixièmes|{{if:c==10047|quarante-sept dixièmes|{{if:c==10071|soixante-et-onze dixièmes|{{if:c==10085|quatre-vingt-cinq dixièmes|{{if:c==10099|quatre-vingt-dix-neuf dixièmes|{{if:c==10125|cent-vingt-cinq dixièmes|{{if:c==20007|sept centièmes|{{if:c==20023|vingt-trois centièmes|{{if:c==20081|quatre-vingt-un centièmes|{{if:c==20099|quatre-vingt-dix-neuf centièmes|{{if:c==20105|cent-cinq centièmes|{{if:c==20237|deux-cent-trente-sept centièmes|{{if:c==20308|trois-cent-huit centièmes|{{if:c==20671|six-cent-soixante-et-onze centièmes|{{if:c==21003|mille-trois centièmes|{{if:c==22375|deux-mille-trois-cent-soixante-quinze centièmes|{{if:c==30007|sept millièmes|{{if:c==30023|vingt-trois millièmes|{{if:c==30065|soixante-cinq millièmes|{{if:c==30207|deux-cent-sept millièmes|{{if:c==30451|quatre-cent-cinquante-et-un millièmes|{{if:c==30607|six-cent-sept millièmes|{{if:c==30999|neuf-cent-quatre-vingt-dix-neuf millièmes|{{if:c==31003|mille-trois millièmes|{{if:c==32375|deux-mille-trois-cent-soixante-quinze millièmes|{{if:c==34107|quatre-mille-cent-sept millièmes|{{if:c==37103|sept-mille-cent-trois millièmes|neuf-mille-quatre-vingt-un millièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} » : le dénominateur est ${{d}}$, le numérateur ${{n}}$.",
+					"$$\\textcolor{{{color:primary.0}}}{\\frac{{{n}}}{{{d}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Comment lit-on la fraction $\\frac{{{n}}}{{{d}}}$ ?\n\n```choix\n- {{if:c==10003|trois dixièmes|{{if:c==10009|neuf dixièmes|{{if:c==10023|vingt-trois dixièmes|{{if:c==10047|quarante-sept dixièmes|{{if:c==10071|soixante-et-onze dixièmes|{{if:c==10085|quatre-vingt-cinq dixièmes|{{if:c==10099|quatre-vingt-dix-neuf dixièmes|{{if:c==10125|cent-vingt-cinq dixièmes|{{if:c==20007|sept centièmes|{{if:c==20023|vingt-trois centièmes|{{if:c==20081|quatre-vingt-un centièmes|{{if:c==20099|quatre-vingt-dix-neuf centièmes|{{if:c==20105|cent-cinq centièmes|{{if:c==20237|deux-cent-trente-sept centièmes|{{if:c==20308|trois-cent-huit centièmes|{{if:c==20671|six-cent-soixante-et-onze centièmes|{{if:c==21003|mille-trois centièmes|{{if:c==22375|deux-mille-trois-cent-soixante-quinze centièmes|{{if:c==30007|sept millièmes|{{if:c==30023|vingt-trois millièmes|{{if:c==30065|soixante-cinq millièmes|{{if:c==30207|deux-cent-sept millièmes|{{if:c==30451|quatre-cent-cinquante-et-un millièmes|{{if:c==30607|six-cent-sept millièmes|{{if:c==30999|neuf-cent-quatre-vingt-dix-neuf millièmes|{{if:c==31003|mille-trois millièmes|{{if:c==32375|deux-mille-trois-cent-soixante-quinze millièmes|{{if:c==34107|quatre-mille-cent-sept millièmes|{{if:c==37103|sept-mille-cent-trois millièmes|neuf-mille-quatre-vingt-un millièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:c==10003|trois centièmes|{{if:c==10009|neuf centièmes|{{if:c==10023|vingt-trois centièmes|{{if:c==10047|quarante-sept centièmes|{{if:c==10071|soixante-et-onze centièmes|{{if:c==10085|quatre-vingt-cinq centièmes|{{if:c==10099|quatre-vingt-dix-neuf centièmes|{{if:c==10125|cent-vingt-cinq centièmes|{{if:c==20007|sept millièmes|{{if:c==20023|vingt-trois millièmes|{{if:c==20081|quatre-vingt-un millièmes|{{if:c==20099|quatre-vingt-dix-neuf millièmes|{{if:c==20105|cent-cinq millièmes|{{if:c==20237|deux-cent-trente-sept millièmes|{{if:c==20308|trois-cent-huit millièmes|{{if:c==20671|six-cent-soixante-et-onze millièmes|{{if:c==21003|mille-trois millièmes|{{if:c==22375|deux-mille-trois-cent-soixante-quinze millièmes|{{if:c==30007|sept dixièmes|{{if:c==30023|vingt-trois dixièmes|{{if:c==30065|soixante-cinq dixièmes|{{if:c==30207|deux-cent-sept dixièmes|{{if:c==30451|quatre-cent-cinquante-et-un dixièmes|{{if:c==30607|six-cent-sept dixièmes|{{if:c==30999|neuf-cent-quatre-vingt-dix-neuf dixièmes|{{if:c==31003|mille-trois dixièmes|{{if:c==32375|deux-mille-trois-cent-soixante-quinze dixièmes|{{if:c==34107|quatre-mille-cent-sept dixièmes|{{if:c==37103|sept-mille-cent-trois dixièmes|neuf-mille-quatre-vingt-un dixièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:c==10003|trois millièmes|{{if:c==10009|neuf millièmes|{{if:c==10023|vingt-trois millièmes|{{if:c==10047|quarante-sept millièmes|{{if:c==10071|soixante-et-onze millièmes|{{if:c==10085|quatre-vingt-cinq millièmes|{{if:c==10099|quatre-vingt-dix-neuf millièmes|{{if:c==10125|cent-vingt-cinq millièmes|{{if:c==20007|sept dixièmes|{{if:c==20023|vingt-trois dixièmes|{{if:c==20081|quatre-vingt-un dixièmes|{{if:c==20099|quatre-vingt-dix-neuf dixièmes|{{if:c==20105|cent-cinq dixièmes|{{if:c==20237|deux-cent-trente-sept dixièmes|{{if:c==20308|trois-cent-huit dixièmes|{{if:c==20671|six-cent-soixante-et-onze dixièmes|{{if:c==21003|mille-trois dixièmes|{{if:c==22375|deux-mille-trois-cent-soixante-quinze dixièmes|{{if:c==30007|sept centièmes|{{if:c==30023|vingt-trois centièmes|{{if:c==30065|soixante-cinq centièmes|{{if:c==30207|deux-cent-sept centièmes|{{if:c==30451|quatre-cent-cinquante-et-un centièmes|{{if:c==30607|six-cent-sept centièmes|{{if:c==30999|neuf-cent-quatre-vingt-dix-neuf centièmes|{{if:c==31003|mille-trois centièmes|{{if:c==32375|deux-mille-trois-cent-soixante-quinze centièmes|{{if:c==34107|quatre-mille-cent-sept centièmes|{{if:c==37103|sept-mille-cent-trois centièmes|neuf-mille-quatre-vingt-un centièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:c==10003|trois dizaines|{{if:c==10009|neuf dizaines|{{if:c==10023|vingt-trois dizaines|{{if:c==10047|quarante-sept dizaines|{{if:c==10071|soixante-et-onze dizaines|{{if:c==10085|quatre-vingt-cinq dizaines|{{if:c==10099|quatre-vingt-dix-neuf dizaines|{{if:c==10125|cent-vingt-cinq dizaines|{{if:c==20007|sept centaines|{{if:c==20023|vingt-trois centaines|{{if:c==20081|quatre-vingt-un centaines|{{if:c==20099|quatre-vingt-dix-neuf centaines|{{if:c==20105|cent-cinq centaines|{{if:c==20237|deux-cent-trente-sept centaines|{{if:c==20308|trois-cent-huit centaines|{{if:c==20671|six-cent-soixante-et-onze centaines|{{if:c==21003|mille-trois centaines|{{if:c==22375|deux-mille-trois-cent-soixante-quinze centaines|{{if:c==30007|sept milliers|{{if:c==30023|vingt-trois milliers|{{if:c==30065|soixante-cinq milliers|{{if:c==30207|deux-cent-sept milliers|{{if:c==30451|quatre-cent-cinquante-et-un milliers|{{if:c==30607|six-cent-sept milliers|{{if:c==30999|neuf-cent-quatre-vingt-dix-neuf milliers|{{if:c==31003|mille-trois milliers|{{if:c==32375|deux-mille-trois-cent-soixante-quinze milliers|{{if:c==34107|quatre-mille-cent-sept milliers|{{if:c==37103|sept-mille-cent-trois milliers|neuf-mille-quatre-vingt-un milliers}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "10003|10009|10023|10047|10071|10085|10099|10125|20007|20023|20081|20099|20105|20237|20308|20671|21003|22375|30007|30023|30065|30207|30451|30607|30999|31003|32375|34107|37103|39081"
+				},
+				{
+					"name": "p",
+					"expression": "{{if:c>30000|3|{{if:c>20000|2|1}}}}"
+				},
+				{
+					"name": "d",
+					"expression": "eval:10^p"
+				},
+				{
+					"name": "n",
+					"expression": "eval:mod(c,10000)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un **dixième**, c'est l'unité partagée en $10$ parts égales ; un **centième**, en $100$ ; un **millième**, en $1\\,000$.",
+					"Ici, le dénominateur est ${{d}}$ : on compte des {{if:p==1|dixièmes|{{if:p==2|centièmes|millièmes}}}}. $\\frac{{{n}}}{{{d}}}$ se lit **« {{if:c==10003|trois dixièmes|{{if:c==10009|neuf dixièmes|{{if:c==10023|vingt-trois dixièmes|{{if:c==10047|quarante-sept dixièmes|{{if:c==10071|soixante-et-onze dixièmes|{{if:c==10085|quatre-vingt-cinq dixièmes|{{if:c==10099|quatre-vingt-dix-neuf dixièmes|{{if:c==10125|cent-vingt-cinq dixièmes|{{if:c==20007|sept centièmes|{{if:c==20023|vingt-trois centièmes|{{if:c==20081|quatre-vingt-un centièmes|{{if:c==20099|quatre-vingt-dix-neuf centièmes|{{if:c==20105|cent-cinq centièmes|{{if:c==20237|deux-cent-trente-sept centièmes|{{if:c==20308|trois-cent-huit centièmes|{{if:c==20671|six-cent-soixante-et-onze centièmes|{{if:c==21003|mille-trois centièmes|{{if:c==22375|deux-mille-trois-cent-soixante-quinze centièmes|{{if:c==30007|sept millièmes|{{if:c==30023|vingt-trois millièmes|{{if:c==30065|soixante-cinq millièmes|{{if:c==30207|deux-cent-sept millièmes|{{if:c==30451|quatre-cent-cinquante-et-un millièmes|{{if:c==30607|six-cent-sept millièmes|{{if:c==30999|neuf-cent-quatre-vingt-dix-neuf millièmes|{{if:c==31003|mille-trois millièmes|{{if:c==32375|deux-mille-trois-cent-soixante-quinze millièmes|{{if:c==34107|quatre-mille-cent-sept millièmes|{{if:c==37103|sept-mille-cent-trois millièmes|neuf-mille-quatre-vingt-un millièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} »**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "deux-cent-sept millièmes : 207/1000",
+			"variationIndex": 0,
+			"variables": {
+				"c": "30207",
+				"p": "3",
+				"d": "1000",
+				"n": "207"
+			},
+			"answers": ["\\frac{207}{1\\,000}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "quatre-mille-cent-sept millièmes : 4107/1000",
+			"variationIndex": 0,
+			"variables": {
+				"c": "34107",
+				"p": "3",
+				"d": "1000",
+				"n": "4107"
+			},
+			"answers": ["\\frac{4\\,107}{1\\,000}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "vingt-trois centièmes : 23/100",
+			"variationIndex": 0,
+			"variables": {
+				"c": "20023",
+				"p": "2",
+				"d": "100",
+				"n": "23"
+			},
+			"answers": ["\\frac{23}{100}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 207/100 (centièmes)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "30207",
+				"p": "3",
+				"d": "1000",
+				"n": "207"
+			},
+			"answers": ["\\frac{207}{100}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 417/1000 (zéro oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "34107",
+				"p": "3",
+				"d": "1000",
+				"n": "4107"
+			},
+			"answers": ["\\frac{417}{1\\,000}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1000/207 (inversée)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "30207",
+				"p": "3",
+				"d": "1000",
+				"n": "207"
+			},
+			"answers": ["\\frac{1\\,000}{207}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : 0,207 (écriture à virgule)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "30207",
+				"p": "3",
+				"d": "1000",
+				"n": "207"
+			},
+			"answers": ["0.207"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "207/1000 : deux-cent-sept millièmes",
+			"variationIndex": 1,
+			"variables": {
+				"c": "30207",
+				"p": "3",
+				"d": "1000",
+				"n": "207"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deux-cent-sept dixièmes",
+			"variationIndex": 1,
+			"variables": {
+				"c": "30207",
+				"p": "3",
+				"d": "1000",
+				"n": "207"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : deux-cent-sept milliers",
+			"variationIndex": 1,
+			"variables": {
+				"c": "30207",
+				"p": "3",
+				"d": "1000",
+				"n": "207"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

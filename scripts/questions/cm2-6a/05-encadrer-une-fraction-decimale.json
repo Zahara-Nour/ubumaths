@@ -1,0 +1,176 @@
+{
+	"title": "Encadrer une fraction décimale entre deux entiers consécutifs",
+	"description": "Encadrer une fraction décimale par deux entiers consécutifs (2 < 237/100 < 3 ; 7 < 7 103/1 000 < 8) ; dénominateur 100 ou 1 000",
+	"grades": ["CM2"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Encadrer",
+	"level": 6,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off",
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Encadre cette fraction par deux nombres entiers qui se suivent.\n\n$$? < \\frac{{{a}}}{100} < ?$$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1..30"
+				},
+				{
+					"name": "r",
+					"expression": "1..99"
+				},
+				{
+					"name": "a",
+					"expression": "eval:100*q+r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{eval:q+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Combien d'unités ?** Une unité, c'est $\\frac{100}{100}$ : ${{a}} = {{q}} \\times 100 + {{r}}$.",
+					"$$\\frac{{{a}}}{100} = {{q}} + \\frac{{{r}}}{100}$$",
+					"$\\frac{{{r}}}{100}$ est entre $0$ et $1$, donc $\\textcolor{{{color:primary.0}}}{{{q}}} < \\frac{{{a}}}{100} < \\textcolor{{{color:primary.0}}}{{{eval:q+1}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Encadre cette fraction par deux nombres entiers qui se suivent.\n\n$$? < \\frac{{{a}}}{1000} < ?$$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "0..9"
+				},
+				{
+					"name": "r",
+					"expression": "1..999"
+				},
+				{
+					"name": "a",
+					"expression": "eval:1000*q+r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{eval:q+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Combien d'unités ?** Une unité, c'est $\\frac{1000}{1000}$ : ${{a}} = {{q}} \\times 1000 + {{r}}$.",
+					"$$\\frac{{{a}}}{1000} = {{q}} + \\frac{{{r}}}{1000}$$",
+					"$\\frac{{{r}}}{1000}$ est entre $0$ et $1$, donc $\\textcolor{{{color:primary.0}}}{{{q}}} < \\frac{{{a}}}{1000} < \\textcolor{{{color:primary.0}}}{{{eval:q+1}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2 < 237/100 < 3",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2",
+				"r": "37",
+				"a": "237"
+			},
+			"answers": ["2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 23 et 24 (dixièmes lus)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2",
+				"r": "37",
+				"a": "237"
+			},
+			"answers": ["23", "24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 < 7103/1000 < 8",
+			"variationIndex": 1,
+			"variables": {
+				"q": "7",
+				"r": "103",
+				"a": "7103"
+			},
+			"answers": ["7", "8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 71 et 72",
+			"variationIndex": 1,
+			"variables": {
+				"q": "7",
+				"r": "103",
+				"a": "7103"
+			},
+			"answers": ["71", "72"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 710 et 711",
+			"variationIndex": 1,
+			"variables": {
+				"q": "7",
+				"r": "103",
+				"a": "7103"
+			},
+			"answers": ["710", "711"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 6 et 7",
+			"variationIndex": 1,
+			"variables": {
+				"q": "7",
+				"r": "103",
+				"a": "7103"
+			},
+			"answers": ["6", "7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0 < 45/1000 < 1",
+			"variationIndex": 1,
+			"variables": {
+				"q": "0",
+				"r": "45",
+				"a": "45"
+			},
+			"answers": ["0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

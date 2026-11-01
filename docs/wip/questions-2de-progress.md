@@ -6,17 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après la publication du lot 6 (§ 43)._
+_Mis à jour le 2026-11-01, après #2172 ; lot 7 en brouillons en prod._
 
-- **État** : lots 1 à 6 publiés (lot 6 : 20 modèles, #2106, #2113, #2134, migration #2139, correctif #2152).
-- **Prochaine action** : lot 7 « Signes et variations » (§ 4 ; § 3.9, plus 2-329 déplacé du lot 6, L6-b) :
-  relevé MCP, puis phase 0 à faire valider par David.
+- **État** : lots 1 à 6 publiés ; lot 7 (21 modèles) en brouillons en prod (§ 48), migration nœud + tag en PR.
+- **Prochaine action** : PR de la migration du lot 7 (CI, `security-auditor`, `check:migrations --pr`, merge,
+  `db:migrate` ou `db push` par David) ; puis PR de code : `page-a-cocher.ts` dessine les ` ```variation `
+  (décidé par David le 2026-11-01, avant la relecture) ; puis page à cocher du lot 7.
 - **En attente de David** : rien.
-- **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main`, des worktrees ET de la prod
-  (sinon `db push --include-all`, qui emporte aussi les migrations mergées par d'autres sessions) ;
-  `page-a-cocher.ts` voit des défauts de fenêtre que `sonde-courbes` ne voit pas : la lancer avant la PR ;
-  `db push`, `--publier` → David avec `!` ; worktree neuf → `pnpm exec svelte-kit sync`.
-- **Worktree / branche** : aucun.
+- **Pièges en cours** : horodatage → `pnpm migration:horodatage` et `pnpm check:migrations --pr <n>` avant le
+  merge ; `db push`, `--publier` → David avec `!` ; worktree neuf → `pnpm exec svelte-kit sync` ; CI allégée
+  pour les PR de contenu (CI Summary fait foi).
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `feat/questions-2de-lot7-rangement`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1140,3 +1140,73 @@ Lot 7 C « Variations et extrémums » (9) :
   → Je recommande **aucun modèle neuf** pour l'un comme pour l'autre.
 - **L7-d — Découpage** : 7 A (6), 7 B (6), 7 C (9) : trois PR de fichiers, une migration, une page à cocher.
   → Je recommande **oui** (comme le lot 6).
+
+**Décisions de David (2026-11-01)** : phase 0 validée avec mes quatre recommandations — L7-a 268, 426 sans
+tableau / 330, 446 le tableau ; L7-b case choix « + / − » par intervalle ; L7-c aucun modèle neuf pour 2-357
+ni 2-348 ; L7-d trois PR de fichiers (7 A = 6, 7 B = 6, 7 C = 9), une migration, une page à cocher.
+
+## 45. Lot 7 A, PR des fichiers (2026-11-01)
+
+- Script `questions-2de/lot-signes-a-2de.py` → `scripts/questions/2de-signes-a/` (6 modèles, 23 variations,
+  61 specs). Catégories : Fonctions › Généralités › « Signe » (niv. 1, 2-329) ; Valeur absolue › « Signe »
+  (niv. 1, 2-475) ; Fonction carré › « Signe » (niv. 1, 2-476) ; Fonctions affines › « Variations-Signe »
+  (niv. 4, 2-352 ; 1 à 3 pris) ; Calcul littéral › Inéquations › « Produit et quotient » (niv. 1 2-268, niv. 2
+  2-426 ; le lot 7 B y prendra 3 et plus).
+- `question:specs` : 61/61, tirages tous réussis ; `sonde-courbes` : 0 problème ; `create-questions` en
+  simulation contre la prod : « 6 à créer ».
+- **Piège** : `cleanCoefficients` ne nettoie que la notation maison, pas un `\dfrac` écrit en LaTeX (« 1x »,
+  « 2x+0 » restaient) ; et la notation maison `(ax+b)/(cx+d)` garde ses parenthèses dans la fraction. Le
+  quotient est donc écrit à la main : coefficient par des `{{if:…}}` à la suite (1 → rien, −1 → −), terme
+  constant jamais nul (conditions). Corrigés : « le facteur $2x-6$ vaut … » (formule maison, nettoyée) au lieu
+  de « 1×(−1)+0 ».
+- Base locale : 6 brouillons ; aperçu joué : 03 (quatre tableaux de signes dessinés dans la case choix,
+  mélangés ; réponse fausse « Faux », bonne réponse marquée, corrigé avec le tableau) ; 04 droite (trois cases,
+  « Juste », corrigé avec le tableau). Étiquette 𝒞_f retirée de la droite (posée sur la graduation −4).
+- Hors lot : un tableau de signes est annoncé « Tableau de variations de la fonction x » aux lecteurs d'écran
+  (composant `VariationTable`).
+
+## 46. Lot 7 B, PR des fichiers (2026-11-01)
+
+- Script `questions-2de/lot-signes-b-2de.py` → `scripts/questions/2de-signes-b/` (6 modèles, 26 variations,
+  50 specs). Catégorie : Calcul littéral › Inéquations › « Produit et quotient », niveaux 3 à 8 (2-330, 446,
+  337, 449, 450, 451).
+- Formes : tableau à construire (valeurs qui annulent, puis signe pour $x<x_1$, $x_1<x<x_2$, $x>x_2$ :
+  les intervalles ne trahissent pas les valeurs demandées) ; tableau des facteurs donné, signe du produit à
+  lire ; k(ax + b), x(cx + d) ; quotient : zéro, valeur interdite, « sous la valeur interdite on écrit : 0 /
+  une double barre » ; résolutions sur le tableau complet, quatre sens, deux ordres zéro / valeur interdite.
+- L'ordre des deux valeurs est fixé par variation (`ra < rb` / `ra > rb`) : chaque ligne est découpée aux
+  deux valeurs (convention des tests du parseur) ; racines non nulles (pas de « +0 » dans une étiquette).
+- `question:specs` : tout vert, tirages réussis ; simulation contre la prod : « 6 à créer ». Base locale :
+  6 brouillons ; aperçu : tableau à trois lignes du quotient dessiné juste (0 sur la ligne du dénominateur,
+  double barre sur celle de B(x), cases vides là où un facteur ne s'annule pas).
+- Branche `feat/questions-2de-lot7b`, empilée sur 7 A (à rebaser après son merge).
+
+## 47. Lot 7 C, PR des fichiers (2026-11-01)
+
+- Script `questions-2de/lot-variations-c-2de.py` → `scripts/questions/2de-variations-c/` (9 modèles, 28
+  variations, 59 specs). Catégories : Fonctions › Généralités › « Variations » (2-345 niv. 1, 2-473 niv. 2,
+  2-349 niv. 3, 2-356 niv. 4, 2-477 niv. 5) ; Généralités › « Extremums » (2-346 niv. 1, 2-350 niv. 2) ;
+  Valeur absolue › « Variations » (2-354 niv. 1) ; Fonction carré › « Variations » (2-355 niv. 1).
+- Parabole tracée s·0,5(x − h)² + k (valeurs entières aux points lus) ; intervalle de monotonie demandé
+  « le plus grand, bornes comprises » ; tableau sur ℝ sans valeur en ±∞ ; comparaisons : égalité f(−u) = f(u)
+  dans sa propre variation.
+- Sonde : les points de l'hyperbole sortaient en `\dfrac{1}{4}` (illisible pour le bloc) → ordonnées en
+  `;d` et u, v ∈ {±1, ±2, ±4} ; 0 problème ensuite. `question:specs` tout vert ; simulation prod : « 9 à
+  créer ». Base locale : 9 brouillons ; aperçu : 04 (quatre tableaux de variations dans la case choix, courbe
+  au-dessus), 08 (décimaux rendus avec la virgule).
+- Branche `feat/questions-2de-lot7c`, empilée sur 7 B.
+
+## 48. Lot 7, brouillons en prod et migration nœud + tag (2026-11-01)
+
+- Brouillons créés par David (`create-questions --publier`, trois dossiers) ; relevé MCP : les 21 en `draft`,
+  `['2']`, sans nœud, sans tag ; chaque point sur le nœud prévu au § 44 (2-475 sur sa notion).
+  - 7 A : 0cecc7f2 (2-329), 23908ef7 (2-475), 71c7933f (2-476), 6670b161 (2-352), 6bb5ff09 (2-268),
+    80826238 (2-426) ;
+  - 7 B : f0163416 (2-330), 9c7ab1c7 (2-446), d80a7d42 (2-337), 284bc012 (2-449), 71174c9c (2-450),
+    118c4696 (2-451) ;
+  - 7 C : 93bc8b5e (2-345), 9e35f8ba (2-473), e372112e (2-346), 3810a06c (2-349), 39154ac5 (2-350),
+    752c6c5e (2-354), a1cd5403 (2-355), 4f887f53 (2-356), 275cb665 (2-477).
+- Migration `20261101224703_questions_2de_signes_variations_rangement_tags` (`pnpm migration:horodatage`) et
+  `tests/integration/questions-2de-signes-variations-rangement-tags.test.ts`, générés depuis ceux du lot 6
+  (seul le lot change). Rouge sans la migration (fichier réduit au rollback : 5 échecs, 5 verts) ; vert avec :
+  10/10. Horodatage 20261101224702 pris par la T_SPE entre-temps → 224703.

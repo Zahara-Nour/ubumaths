@@ -5,19 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2150 (lot 8 écrit, mergé)._
+_Mis à jour le 2026-11-01, relecture du lot 8 : 5/5 OK._
 
-- **État** : lots 1 à 7 publiés ; lot 8 « Assemblages de cubes » (154, 155, 181, 208, 209) écrit, joué en local,
-  fichiers mergés (#2150) ; rien en prod pour ce lot.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-assemblages-cubes
---publier` (brouillons en prod) ; puis relever les 5 `id`, migration nœud + tag (nœuds = notions « Géométrie >
-  Solides », « Grandeurs et mesures > Volumes »), page à cocher. **Publication après le `deploy:prod` qui livre
-  #2130.**
-- **En attente de David** : le `create-questions --publier` du lot 8.
+- **État** : lot 8 « Assemblages de cubes » : 5 brouillons en prod, rangés et tagués (migration `20261101224700`,
+  #2153, jouée par David le 2026-11-01 ; MCP vérifié). Page à cocher publiée (`db`, 0 verdict) :
+  https://claude.ai/artifact/UciEqZSoxGS9QjeRATbGf1 (bloc `cubes` non dessiné : le jouer dans l'aperçu).
+- **Prochaine action** : quand #2130 est en prod (`git merge-base --is-ancestor 0769b0845 origin/production`),
+  David lance `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/6-assemblages-cubes --publier` ;
+  relire `published` au MCP ; puis relevé des points de 6e sans modèle et choix du lot 9.
+- **En attente de David** : le `deploy:prod` qui livre #2130 (pas en prod au 2026-11-01, prod = 0.59.0).
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs --file`. Jamais de variable
   `e`. `Doc-inchangée:` va dans un message de COMMIT. PR en conflit = pas de CI : vérifier `mergeable`. Horodatage
-  de migration = dernière de `main` + 1 min.
-- **Worktree / branche** : aucun (retiré après #2150).
+  de migration : `pnpm migration:horodatage` (règle #2165), jamais un nombre rond choisi à la main.
+- **Worktree / branche** : aucun (retiré après #2153) ; prochain lot → nouveau worktree.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1241,3 +1241,30 @@ toutes distinctes, chaque leurre du 3 v1 a une vue différente des vues données
   justes jugées justes (compte, volume, comparaison, `dessiner:` face / dessus / droite, `retrouver:` face et
   face + droite), fausses jugées fausses ; rendu des perspectives, des vues en options et des corrections lu.
 - PR #2150 : CI verte, mergée ; worktree retiré.
+
+### 20.2 Brouillons en prod et rangement (2026-11-01)
+
+- David lance `create-questions --publier` : 01 ce3c4e11, 02 763d1183, 03 37c6852c, 04 650dcfc6, 05 0464c3f6, en
+  brouillon. MCP : 5 brouillons, `['6']`, niveaux 1, 2, 3, 1, 2, sans nœud ni tag ; points actifs sur des
+  **notions** (6-181, 6-208, 6-209 → « Géométrie > Solides » ; 6-154, 6-155 → « Grandeurs et mesures > Volumes »).
+- Migration `20261101220100_questions_6_lot8_rangement_tags` (patron du lot 7, résolution du chemin jusqu'à la
+  notion ; horodatage 215200 d’abord, pris de vitesse par 220000 (questions-tspe) : renommée 220100, dernière jouée en prod + 1 min, relevée juste avant le push) ; test `questions-6-lot8-rangement-tags` : 8 rouges
+  contre une migration vidée, 14 verts avec.
+- Revue `security-auditor` : aucun bloquant ; un Important corrigé (horodatage antérieur à 220000, déjà jouée :
+  renommée 220100) ; un Faible laissé (branches « point sur un autre nœud » et « chemin introuvable » de la
+  résolution non testées, déjà le cas au lot 7 ; le code les refuse).
+- Reprise (2026-11-01, après `/clear`) : relevé MCP, `20261101223000_questions_4_lot8_rangement_tags` déjà jouée
+  en prod, après 220100 (`db push` l'aurait refusée, migration intercalée). 223100, 224000 et 224100 pris sur
+  d'autres branches (ce2, questions-5, cm1) → renommée **224700** (`pnpm migration:horodatage` pas encore sur
+  `main`, #2165 ouverte) ; `origin/main` fusionnée ; test d'intégration 14 verts avec le nouveau nom.
+- #2153 : CI verte, garde `check:migrations` verte, mergée ; worktree retiré. `db:migrate` refusé par le
+  classifieur du mode auto (il jouait aussi 223100 ce2 lot 6a et 224000 questions-5 lot 7) ; David l'a lancé avec
+  `!` : les 3 jouées. MCP : les 5 sur leur notion (Géométrie > Solides ×3, Grandeurs et mesures > Volumes ×2), un
+  tag chacun (6-209, 6-181, 6-208, 6-155, 6-154), `updated_at` = `created_at`, trigger `O`. Sessions questions-ce2
+  et questions-5 prévenues.
+- Page à cocher générée depuis `main` (72e213038), publiée (`db`, 0 verdict) :
+  https://claude.ai/artifact/UciEqZSoxGS9QjeRATbGf1. Alerte sur les 5 : bloc `cubes` non dessiné (le jouer dans
+  l'aperçu).
+- Relecture de David : 5/5 « OK », aucun commentaire (base de la page lue, 5 verdicts comptés). `publier-lot` en
+  simulation : 5 brouillons passent le contrôle. #2130 pas encore en prod (production = 0.59.0) : publication en
+  attente du `deploy:prod`.

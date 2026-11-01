@@ -1,0 +1,265 @@
+{
+	"title": "Limites usuelles d'une suite",
+	"description": "Limite de k·nᵖ, k/nᵖ, k√n, k/√n, k·eⁿ, k·e⁻ⁿ (pièges : signe de k, k/nᵖ → +∞, e⁻ⁿ → +∞)",
+	"grades": ["T_SPE"],
+	"theme": "Suites",
+	"domain": "Limites de suites",
+	"subdomain": "Limites usuelles",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Pour tout entier naturel $n$, on pose $u_n={{k}}{{if:p==1|n|n^{ {{p}} }}}$.\n\nDétermine la limite de la suite $(u_n)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}u_n=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k>0|+\\infty|-\\infty}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\lim_{n\\to+\\infty}{{if:p==1|n|n^{ {{p}} }}}=+\\infty$ (limite usuelle).",
+					"On multiplie par ${{k}}$, {{if:k>0|un nombre positif : le signe ne change pas.|un nombre négatif : le signe change.}}",
+					"$$\\displaystyle\\lim_{n\\to+\\infty}u_n=\\textcolor{{{color:primary.0}}}{{{if:k>0|+\\infty|-\\infty}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pour tout entier $n\\geqslant1$, on pose $u_n=\\dfrac{ {{k}} }{{{if:p==1|n|n^{ {{p}} }}}}$.\n\nDétermine la limite de la suite $(u_n)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}u_n=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\lim_{n\\to+\\infty}{{if:p==1|n|n^{ {{p}} }}}=+\\infty$, donc $\\displaystyle\\lim_{n\\to+\\infty}\\dfrac{1}{{{if:p==1|n|n^{ {{p}} }}}}=0$ (limite usuelle).",
+					"Multiplier par ${{k}}$ ne change pas une limite nulle.",
+					"$$\\displaystyle\\lim_{n\\to+\\infty}u_n=\\textcolor{{{color:primary.0}}}{0}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pour tout entier $n\\geqslant1$, on pose $u_n={{if:s==0|{{if:k==1||{{if:k==-1|-|{{k}}}}}}\\sqrt{n}|\\dfrac{ {{k}} }{\\sqrt{n}}}}$.\n\nDétermine la limite de la suite $(u_n)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}u_n=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|{{if:k>0|+\\infty|-\\infty}}|0}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\lim_{n\\to+\\infty}\\sqrt{n}=+\\infty$ (limite usuelle){{if:s==0|.|, donc $\\displaystyle\\lim_{n\\to+\\infty}\\dfrac{1}{\\sqrt{n}}=0$.}}",
+					"{{if:s==0|On multiplie par ${{k}}$ : {{if:k>0|le signe ne change pas.|le signe change.}}|Multiplier par ${{k}}$ ne change pas une limite nulle.}}",
+					"$$\\displaystyle\\lim_{n\\to+\\infty}u_n=\\textcolor{{{color:primary.0}}}{{{if:s==0|{{if:k>0|+\\infty|-\\infty}}|0}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pour tout entier naturel $n$, on pose $u_n={{if:k==1||{{if:k==-1|-|{{k}}}}}}{{if:s==0|e^{n}|e^{-n}}}$.\n\nDétermine la limite de la suite $(u_n)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}u_n=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|{{if:k>0|+\\infty|-\\infty}}|0}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:s==0|$\\displaystyle\\lim_{n\\to+\\infty}e^{n}=+\\infty$ (limite usuelle).|$e^{-n}=\\dfrac{1}{e^{n}}$ et $\\displaystyle\\lim_{n\\to+\\infty}e^{n}=+\\infty$, donc $\\displaystyle\\lim_{n\\to+\\infty}e^{-n}=0$.}}",
+					"{{if:s==0|On multiplie par ${{k}}$ : {{if:k>0|le signe ne change pas.|le signe change.}}|Multiplier par ${{k}}$ ne change pas une limite nulle.}}",
+					"$$\\displaystyle\\lim_{n\\to+\\infty}u_n=\\textcolor{{{color:primary.0}}}{{{if:s==0|{{if:k>0|+\\infty|-\\infty}}|0}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 3n² → +∞",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"p": "2"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : −4n³ → −∞",
+			"variationIndex": 0,
+			"variables": {
+				"k": "-4",
+				"p": "3"
+			},
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : signe oublié",
+			"variationIndex": 0,
+			"variables": {
+				"k": "-4",
+				"p": "3"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 5/n² → 0",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"p": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : +∞",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"p": "2"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : k",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"p": "2"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : −3√n → −∞",
+			"variationIndex": 2,
+			"variables": {
+				"k": "-3",
+				"s": "0"
+			},
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 7/√n → 0",
+			"variationIndex": 2,
+			"variables": {
+				"k": "7",
+				"s": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 7/√n, +∞",
+			"variationIndex": 2,
+			"variables": {
+				"k": "7",
+				"s": "1"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : 2eⁿ → +∞",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2",
+				"s": "0"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : −5e⁻ⁿ → 0",
+			"variationIndex": 3,
+			"variables": {
+				"k": "-5",
+				"s": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : e⁻ⁿ pris pour +∞",
+			"variationIndex": 3,
+			"variables": {
+				"k": "-5",
+				"s": "1"
+			},
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

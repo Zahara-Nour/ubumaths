@@ -5,14 +5,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2141 ; phase 0 du lot 9 posée._
+_Mis à jour le 2026-11-01, après #2168._
 
-- **État** : lots 0 à 7 publiés ; lot 8 (monnaie, § 15) : 6 brouillons en prod, rangés et tagués (#2135, #2141) ;
-  lot 9 (fractions dessinées et géométrie) : phase 0 écrite (§ 16), **6 questions à David**.
-- **Prochaine action** : réponses au § 16 → écrire le lot 9 (worktree neuf). Après le `deploy:prod` qui livre #2127
-  (centimes) : lot 8, catégories relevées, page à cocher, `publier-lot` (simulation, puis David) ; puis lot 10.
-- **En attente de David** : les 6 questions du § 16 ; `deploy:prod` pour les centimes (`main` verte le 2026-11-01 au
-  soir ; #2165, autre session, encore en CI).
+- **État** : lots 0 à 7 publiés ; lot 8 (monnaie) : 6 brouillons en prod, rangés et tagués ; lot 9 (fractions
+  dessinées et géométrie, § 16) : fichiers mergés (#2168), brouillons pas encore en prod.
+- **Prochaine action** : David crée les 9 brouillons du lot 9 en prod ; relever les `id` ; migration nœud + tag
+  (+ `a7dfe502` passé au CE1, « Tracés · Droites · 2 », instantané d'abord) ; page à cocher (ajouter le dessin de
+  ` ```partage ` au script) ; lot 8 après le `deploy:prod` des centimes.
+- **En attente de David** : `create-questions --publier` du lot 9 ; `deploy:prod` pour les centimes (lot 8).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
@@ -732,3 +732,15 @@ tag ne change aucune règle ; `a7dfe502` reste un brouillon, seuls son niveau et
    prolongent).
 
 Réponse de David (« je suis tes recos », 2026-11-01) : les six recommandations.
+
+- 2026-11-01 : lot 9 écrit (`lot-ce1-9.py`, `scripts/questions/ce1-9/`) : 9 modèles, 81 specs, simulation 9/9,
+  `question:specs` 6 600 tirages verts ; 9 brouillons en base locale. Figures : positions précalculées (gardes en
+  Python : dans la fenêtre, angles à 20° au moins de 90°, un seul angle droit au bon sommet), toutes dessinées sur une
+  planche (rendu `dessinerBlocs`) et relues ; blocs ` ```partage ` parsés sur 200 tirages par variation, sans erreur ;
+  coloriage 2/6 joué dans l'aperçu : juste. **Pièges trouvés** : un point nommé `e` (5e sommet) cassait la figure
+  sans que la simulation ni les specs ne le voient (seul le rendu le dit) → noms `abcdfghj` ; filtre de doublons
+  inversé (angles droits répétés). La page à cocher ne dessine pas ` ```partage ` (« non dessiné ») : à ajouter au
+  script avant de la publier, ou fractions jouées dans l'aperçu.
+- 2026-11-01 : PAUSE CI demandée par David (session migrations-collision, relayée par questions-1spe) : rien poussé ;
+  au « go » : `git merge origin/main`, push, PR.
+- 2026-11-01 : fin de la pause CI ; #2168 mergée (CI verte, Type Check / Build sautés : PR de contenu) ; brouillons en prod à créer par David.
