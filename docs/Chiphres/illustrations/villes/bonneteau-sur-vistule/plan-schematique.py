@@ -138,33 +138,116 @@ def track(x, y, m=0):
     return ((x - cx) / (rx + 22 + m)) ** 2 + ((y - cy) / (ry + 22 + m)) ** 2 < 1
 
 
-# la plaine : champs en damier, blé, prairies, labours, bordés de haies
+def shade(c, t):
+    # assombrit (t < 0) ou éclaircit (t > 0) une couleur
+    return mix(c, 1 + t, INK) if t < 0 else mix(c, 1 - t, '#FFFFFF')
+
+
+def house(cx, cy, w, h, roof, ang=0, wall='#E9DCC0', sw=1.1):
+    # maison vue de trois quarts : ombre portée, toit à deux pans (pan éclairé, pan à l'ombre), façade à fenêtres
+    g = f'transform="translate({cx:.1f},{cy:.1f}) rotate({ang:.1f})"'
+    fh = max(4, h * 0.3)
+    add(f'<rect x="{-w / 2 + 3:.1f}" y="{-h / 2 + 3:.1f}" width="{w:.1f}" height="{h:.1f}" fill="{INK}" opacity="0.22" {g}/>')
+    add(f'<rect x="{-w / 2:.1f}" y="{h / 2 - fh:.1f}" width="{w:.1f}" height="{fh:.1f}" fill="{wall}" stroke="{INK}" '
+        f'stroke-width="{sw}" {g}/>')
+    for k in range(max(1, int(w // 8))):
+        wx = -w / 2 + (k + 0.5) * w / max(1, int(w // 8))
+        add(f'<rect x="{wx - 1.3:.1f}" y="{h / 2 - fh * 0.7:.1f}" width="2.6" height="{fh * 0.45:.1f}" fill="{INK}" {g}/>')
+    rh = h - fh
+    add(f'<rect x="{-w / 2:.1f}" y="{-h / 2:.1f}" width="{w:.1f}" height="{rh / 2:.1f}" fill="{shade(roof, 0.25)}" '
+        f'stroke="{INK}" stroke-width="{sw}" {g}/>')
+    add(f'<rect x="{-w / 2:.1f}" y="{-h / 2 + rh / 2:.1f}" width="{w:.1f}" height="{rh / 2:.1f}" fill="{shade(roof, -0.2)}" '
+        f'stroke="{INK}" stroke-width="{sw}" {g}/>')
+
+
+def tree(x, y, r, c=None):
+    add(f'<circle cx="{x + 2.5:.1f}" cy="{y + 2.5:.1f}" r="{r:.1f}" fill="{INK}" opacity="0.2"/>')
+    add(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{r:.1f}" fill="{c or mix(TREE, 0.75)}" stroke="{INK}" stroke-width="0.7"/>')
+    add(f'<circle cx="{x - r * 0.3:.1f}" cy="{y - r * 0.3:.1f}" r="{r * 0.4:.1f}" fill="#FFFFFF" opacity="0.18"/>')
+
+
+# la plaine : grand patchwork irrégulier de champs (blé, prairies, labours, champs en lanières), bordés de haies
 rng = random.Random(11)
-fields = []
-for gx in range(-40, W + 40, 92):
-    for gy in range(-40, H + 40, 76):
-        x0, y0 = gx + rng.uniform(-10, 10), gy + rng.uniform(-8, 8)
-        w, h = rng.uniform(80, 104), rng.uniform(64, 84)
-        fields.append((x0, y0, w, h))
-for x0, y0, w, h in fields:
-    cx, cy = x0 + w / 2, y0 + h / 2
-    if town(cx, cy, 30) or track(cx, cy, 10):
-        continue
-    c = rng.choice((mix(GOLD, 0.55), mix(GOLD, 0.4), mix(GREEN, 0.45), mix(GREEN, 0.35), mix(BROWN, 0.3)))
-    add(f'<rect x="{x0:.1f}" y="{y0:.1f}" width="{w:.1f}" height="{h:.1f}" fill="{c}" stroke="{mix(TREE, 0.7)}" '
-        f'stroke-width="3" stroke-dasharray="5 3"/>')
-    if rng.random() < 0.5:  # sillons
-        for k in range(1, 6):
-            yy = y0 + h * k / 6
-            add(f'<line x1="{x0 + 5:.1f}" y1="{yy:.1f}" x2="{x0 + w - 5:.1f}" y2="{yy:.1f}" stroke="{INK}" '
-                f'stroke-width="0.5" opacity="0.3"/>')
-# arbres de haie isolés
-for x0, y0, w, h in fields:
-    if rng.random() < 0.45:
-        x, y = x0 + rng.choice((0, w)), y0 + rng.uniform(0, h)
+ROT = math.radians(9)
+cols = [-120]
+while cols[-1] < W + 120:
+    cols.append(cols[-1] + rng.uniform(60, 125))
+rows = [-120]
+while rows[-1] < H + 120:
+    rows.append(rows[-1] + rng.uniform(55, 100))
+V = {}
+for i, u in enumerate(cols):
+    for j, v in enumerate(rows):
+        u2, v2 = u + rng.uniform(-14, 14), v + rng.uniform(-12, 12)
+        V[i, j] = (500 + (u2 - 500) * math.cos(ROT) - (v2 - 500) * math.sin(ROT),
+                   500 + (u2 - 500) * math.sin(ROT) + (v2 - 500) * math.cos(ROT))
+FIELD_COLORS = (mix(GOLD, 0.6), mix(GOLD, 0.45), mix('#C9A227', 0.5), mix(GREEN, 0.5), mix(GREEN, 0.38),
+                mix('#7FA650', 0.55), mix(BROWN, 0.38), mix(BROWN, 0.28))
+hedges = []
+for i in range(len(cols) - 1):
+    for j in range(len(rows) - 1):
+        q = [V[i, j], V[i + 1, j], V[i + 1, j + 1], V[i, j + 1]]
+        cx, cy = sum(p[0] for p in q) / 4, sum(p[1] for p in q) / 4
+        if not (-80 < cx < W + 80 and -80 < cy < H + 80):
+            continue
+        if rng.random() < 0.3:  # champ en lanières : trois bandes de cultures différentes
+            for k in range(3):
+                t0, t1 = k / 3, (k + 1) / 3
+                strip = [(q[0][0] + (q[1][0] - q[0][0]) * t0, q[0][1] + (q[1][1] - q[0][1]) * t0),
+                         (q[0][0] + (q[1][0] - q[0][0]) * t1, q[0][1] + (q[1][1] - q[0][1]) * t1),
+                         (q[3][0] + (q[2][0] - q[3][0]) * t1, q[3][1] + (q[2][1] - q[3][1]) * t1),
+                         (q[3][0] + (q[2][0] - q[3][0]) * t0, q[3][1] + (q[2][1] - q[3][1]) * t0)]
+                add(f'<path d="{path(strip, True)}" fill="{rng.choice(FIELD_COLORS)}" stroke="{mix(BROWN, 0.5)}" stroke-width="0.8"/>')
+        else:
+            c = rng.choice(FIELD_COLORS)
+            add(f'<path d="{path(q, True)}" fill="{c}"/>')
+            if rng.random() < 0.55:  # sillons
+                for k in range(1, 7):
+                    t = k / 7
+                    p0 = (q[0][0] + (q[3][0] - q[0][0]) * t, q[0][1] + (q[3][1] - q[0][1]) * t)
+                    p1 = (q[1][0] + (q[2][0] - q[1][0]) * t, q[1][1] + (q[2][1] - q[1][1]) * t)
+                    add(f'<line x1="{p0[0]:.1f}" y1="{p0[1]:.1f}" x2="{p1[0]:.1f}" y2="{p1[1]:.1f}" stroke="{INK}" '
+                        f'stroke-width="0.5" opacity="0.3"/>')
+        hedges += [(q[0], q[1]), (q[0], q[3])]
+for a_, b_ in hedges:
+    add(f'<line x1="{a_[0]:.1f}" y1="{a_[1]:.1f}" x2="{b_[0]:.1f}" y2="{b_[1]:.1f}" stroke="{mix(TREE, 0.8)}" '
+        f'stroke-width="4" stroke-linecap="round"/>')
+# arbres de haie
+for a_, b_ in hedges:
+    if rng.random() < 0.35:
+        t = rng.uniform(0.2, 0.8)
+        x, y = a_[0] + (b_[0] - a_[0]) * t, a_[1] + (b_[1] - a_[1]) * t
         if not town(x, y, 30) and not track(x, y) and dist_to(RIVER, x, y) > RIVER_W / 2 + 10:
-            add(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{rng.uniform(6, 9):.1f}" fill="{mix(TREE, 0.75)}" '
-                f'stroke="{INK}" stroke-width="0.7"/>')
+            tree(x, y, rng.uniform(6, 9))
+# bosquets
+for bx_, by_ in ((70, 120), (930, 230), (120, 760), (930, 900), (420, 900)):
+    for k in range(12):
+        tree(bx_ + rng.gauss(0, 22), by_ + rng.gauss(0, 16), rng.uniform(7, 11), mix(TREE, rng.uniform(0.7, 0.9)))
+# fermes : cour, trois bâtiments en U, meules de foin, mare
+for fx, fy in ((120, 660), (880, 150), (280, 120), (560, 860), (920, 820)):
+    add(f'<rect x="{fx - 34}" y="{fy - 28}" width="68" height="56" fill="{mix(BROWN, 0.22)}" stroke="{mix(TREE, 0.8)}" stroke-width="3"/>')
+    house(fx, fy - 15, 46, 18, TILE)
+    house(fx - 22, fy + 6, 14, 22, BROWN)
+    house(fx + 22, fy + 6, 14, 22, mix(BROWN, 0.8))
+    for k in range(3):
+        hx, hy = fx + 46 + 10 * (k % 2), fy - 14 + 14 * k
+        add(f'<circle cx="{hx + 2}" cy="{hy + 2}" r="6" fill="{INK}" opacity="0.2"/>')
+        add(f'<circle cx="{hx}" cy="{hy}" r="6" fill="{GOLD}" stroke="{INK}" stroke-width="0.8"/>')
+        add(f'<circle cx="{hx}" cy="{hy}" r="2" fill="{mix(BROWN, 0.6)}"/>')
+    add(f'<ellipse cx="{fx - 46}" cy="{fy + 18}" rx="9" ry="6" fill="{mix(SEA, 0.45)}" stroke="{INK}" stroke-width="0.8"/>')
+# moulins à vent dans la plaine : tour ronde, quatre ailes en X
+for mx, my in ((80, 420), (900, 560), (230, 900)):
+    add(f'<circle cx="{mx + 3}" cy="{my + 3}" r="11" fill="{INK}" opacity="0.22"/>')
+    add(f'<circle cx="{mx}" cy="{my}" r="11" fill="#E9DCC0" stroke="{INK}" stroke-width="1.3"/>')
+    add(f'<circle cx="{mx}" cy="{my}" r="6" fill="{TILE}" stroke="{INK}" stroke-width="1"/>')
+    for k in range(4):
+        a = math.radians(30 + 90 * k)
+        ex_, ey_ = mx + 30 * math.cos(a), my + 30 * math.sin(a)
+        add(f'<line x1="{mx}" y1="{my}" x2="{ex_:.1f}" y2="{ey_:.1f}" stroke="{INK}" stroke-width="1.6"/>')
+        px_, py_ = -math.sin(a) * 5, math.cos(a) * 5
+        add(f'<path d="M{mx + 10 * math.cos(a):.1f},{my + 10 * math.sin(a):.1f} L{ex_:.1f},{ey_:.1f} '
+            f'L{ex_ + px_:.1f},{ey_ + py_:.1f} L{mx + 10 * math.cos(a) + px_:.1f},{my + 10 * math.sin(a) + py_:.1f} Z" '
+            f'fill="{PAPER}" stroke="{INK}" stroke-width="0.8"/>')
 
 # le sol de la ville
 add(f'<path d="{path(smooth([(335, 200), (520, 190), (720, 230), (760, 400), (760, 560), (720, 700), (600, 740), (500, 690), (400, 600), (360, 450), (335, 200)]), True)}" '
@@ -183,17 +266,38 @@ for k in range(3):
     add(f'<path d="M{sx - 20 + 14 * k},{sy - 3} q4,-3 8,0" fill="none" stroke="{mix(BROWN, 0.6)}" stroke-width="1" '
         f'transform="rotate({sa} {sx} {sy})"/>')
 
+# saules et roseaux le long des berges, hors ville
+for i in range(0, len(RIVER), 3):
+    (x, y), _, (nx, ny) = frame(RIVER, i)
+    for side in (-1, 1):
+        d = RIVER_W / 2 + 12
+        wx, wy = x + side * nx * d, y + side * ny * d
+        if town(wx, wy, 25) or not (0 < wx < W and 0 < wy < H) or dist_to(RIVER, wx, wy) < RIVER_W / 2 + 6:
+            continue
+        if rng.random() < 0.6:
+            tree(wx, wy, rng.uniform(7, 10), mix('#6E9B4A', 0.85))
+
 # rues
 for pts in STREETS:
     add(f'<path d="{path(pts)}" fill="none" stroke="{street}" stroke-width="12" stroke-linejoin="round"/>')
 
-# le pont de bois (route de la plaine)
-bx, by = BRIDGE
-add(f'<rect x="-{RIVER_W / 2 + 14}" y="-11" width="{RIVER_W + 28}" height="22" fill="{mix(BROWN, 0.7)}" stroke="{INK}" '
-    f'stroke-width="1.3" transform="translate({bx:.1f},{by:.1f}) rotate(-75)"/>')
-for k in range(-4, 5):
-    add(f'<line x1="{k * 10}" y1="-11" x2="{k * 10}" y2="11" stroke="{INK}" stroke-width="0.6" '
-        f'transform="translate({bx:.1f},{by:.1f}) rotate(-75)"/>')
+# le pont de bois (route de la plaine), dans l'axe de la route
+span = [p for p in ROADS[3] if dist_to(RIVER, *p) < RIVER_W / 2 + 14]
+span = [ROADS[3][max(ROADS[3].index(span[0]) - 1, 0)]] + span + [ROADS[3][min(ROADS[3].index(span[-1]) + 1, len(ROADS[3]) - 1)]]
+add(f'<path d="{path([(x + 3, y + 4) for x, y in span])}" fill="none" stroke="{INK}" stroke-width="24" opacity="0.25"/>')
+add(f'<path d="{path(span)}" fill="none" stroke="{INK}" stroke-width="24"/>')
+add(f'<path d="{path(span)}" fill="none" stroke="{mix(BROWN, 0.7)}" stroke-width="20"/>')
+acc = 0.0
+for (x1, y1), (x2, y2) in zip(span, span[1:]):
+    seg = math.dist((x1, y1), (x2, y2))
+    ux, uy = (x2 - x1) / (seg or 1), (y2 - y1) / (seg or 1)
+    t = (6 - acc % 6) % 6
+    while t < seg:
+        px_, py_ = x1 + ux * t, y1 + uy * t
+        add(f'<line x1="{px_ - uy * 10:.1f}" y1="{py_ + ux * 10:.1f}" x2="{px_ + uy * 10:.1f}" y2="{py_ - ux * 10:.1f}" '
+            f'stroke="{INK}" stroke-width="0.6"/>')
+        t += 6
+    acc += seg
 
 # le Quai des Tripots : quai de planches le long de l'eau, tables à tapis vert dehors au bord de l'eau
 add(f'<path d="{path(QUAI)}" fill="none" stroke="{mix(BROWN, 0.5)}" stroke-width="22" stroke-linecap="round"/>')
@@ -213,9 +317,8 @@ for k, i in enumerate(QUAI_I):
         d = RIVER_W / 2 + 44
         tripots.append((x + nx * d, y + ny * d, ang))
 for x, y, ang in tripots:
-    rot_rect(x, y, 30, 34, ang, BROWN, 1.3)
-    add(f'<line x1="0" y1="-15" x2="0" y2="15" stroke="{PAPER}" stroke-width="0.7" opacity="0.6" '
-        f'transform="translate({x:.1f},{y:.1f}) rotate({ang:.1f})"/>')
+    # maison de jeu : façade tournée vers l'eau, toit à deux pans
+    house(x, y, 34, 30, BROWN, ang - 90, wall=mix(BROWN, 0.55), sw=1.3)
 
 # le Casino flottant : bateau à aubes amarré au quai, au sommet de la boucle
 ci = min(QUAI_I, key=lambda i: abs(RIVER[i][1] - 505))
@@ -327,35 +430,29 @@ def occupied(x, y, m=0):
         return True
     if any(math.hypot(x - tx, y - ty) < 30 + m for tx, ty, _ in tripots):
         return True
-    return any(dist_to(pts, x, y) < 13 + m for pts in STREETS)
+    return any(dist_to(pts, x, y) < 10 + m for pts in STREETS)
 
 
 def free_box(x, y, w, h):
     if occupied(x + w / 2, y + h / 2) or any(occupied(px, py, -5) for px, py in ((x, y), (x + w, y), (x, y + h), (x + w, y + h))):
         return False
-    if any(x < bx + bw + 3 and bx < x + w + 3 and y < by + bh + 3 and by < y + h + 3 for bx, by, bw, bh in PLACED):
+    if any(x < bx + bw + 2 and bx < x + w + 2 and y < by + bh + 2 and by < y + h + 2 for bx, by, bw, bh in PLACED):
         return False
     PLACED.append((x, y, w, h))
     return True
 
 
 rng = random.Random(3)
-for gx_ in range(110, 780, 22):
-    for gy_ in range(190, 760, 20):
+for gx_ in range(110, 780, 13):
+    for gy_ in range(190, 760, 12):
         x, y = gx_ + rng.uniform(-4, 4), gy_ + rng.uniform(-3, 3)
-        if not town(x, y) or occupied(x, y) or rng.random() < 0.15:
+        if not town(x, y) or occupied(x, y) or rng.random() < 0.04:
             continue
-        roof = rng.choice((BROWN, mix(BROWN, 0.75), SLATE, TILE))
-        w, h = rng.choice([(20, 14), (14, 20), (24, 13), (16, 16), (13, 18)])
+        roof = rng.choice((BROWN, mix(BROWN, 0.8), SLATE, TILE, TILE))
+        wall = rng.choice(('#E9DCC0', '#E9DCC0', mix(BROWN, 0.45), '#F3E7CF'))
+        w, h = rng.choice([(22, 17), (16, 19), (26, 16), (18, 18), (14, 17), (30, 18)])
         if free_box(x - w / 2, y - h / 2, w, h):
-            add(f'<rect x="{x - w / 2:.1f}" y="{y - h / 2:.1f}" width="{w}" height="{h}" fill="{roof}" stroke="{INK}" '
-                f'stroke-width="1.1"/>')
-            if w >= h:
-                add(f'<line x1="{x - w / 2:.1f}" y1="{y:.1f}" x2="{x + w / 2:.1f}" y2="{y:.1f}" stroke="{PAPER}" '
-                    f'stroke-width="0.6" opacity="0.5"/>')
-            else:
-                add(f'<line x1="{x:.1f}" y1="{y - h / 2:.1f}" x2="{x:.1f}" y2="{y + h / 2:.1f}" stroke="{PAPER}" '
-                    f'stroke-width="0.6" opacity="0.5"/>')
+            house(x, y, w, h, roof, wall=wall)
 
 if not IA:
     font = 'font-family="Georgia, serif"'
