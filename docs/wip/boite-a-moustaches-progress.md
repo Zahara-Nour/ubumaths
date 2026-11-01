@@ -2,13 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, palier 2 écrit (PR à ouvrir)._
+_Mis à jour le 2026-11-01, PR #2162 ouverte, revue faite._
 
-- **État** : palier 2 (construire) écrit sur `feat/boite-a-moustaches-construire` (§ 11) ; tests verts.
-- **Prochaine action** : vérifier dans Chrome, revue `code-reviewer` (Opus : correction des réponses), PR, merge.
-- **En attente de David** : vérification manuelle #2151 (téléphone), dans `verifications-manuelles.md`.
-- **Pièges en cours** : quartiles = ceux de `describe.ts`, jamais un second calcul ; énoncé masqué = pas
-  de boîte juste en correction côté élève.
+- **État** : palier 2 (construire) en PR #2162 ; revue Opus sans bloquant, mineurs corrigés (§ 12) ; tests verts.
+- **Prochaine action** : CI de #2162 annulée à la demande de David (main cassée, migration en double) ;
+  après le merge de #2154 : `git rebase origin/main`, push, CI verte → merge.
+- **En attente de David** : vérification manuelle #2151 (téléphone) ; décisions du § 11 « Décidé en écrivant ».
+- **Pièges en cours** : quartiles = ceux de `describe.ts` ; série tirée au hasard de taille paire → médiane
+  au demi, refusée sur un axe de 1 en 1 (aucune nouvelle graine tentée : dit dans la fiche).
 - **Worktree / branche** : `../ubumaths-wt-boite-a-moustaches` · `feat/boite-a-moustaches-construire`.
 
 ---
@@ -193,3 +194,11 @@ Notes = 4 ; 8 ; 11 ; 14 ; 19
 - Tests : `boite-a-moustaches-construire.test.ts` 22, `generation-boite-a-moustaches-placer.test.ts` 13,
   `BoxPlotPlacer.svelte.test.ts` 11 ; suites questions + stat-chart 6 464 verts, composants voisins 98.
   `check:incremental` 0, `types:cliquet` 0.
+
+## 12. Revue (2026-11-01, #2162)
+
+- `code-reviewer` (Opus) : aucun bloquant ni important prouvé. Corrigés : boîte sans nom parmi plusieurs
+  à construire (bouton et phrase « sans nom ») ; commentaires « ordre de l'auteur » → ordre des boîtes du
+  bloc ; test de bout en bout décimal négatif (-3,5 au clavier → `'-3.5'` → jugé juste).
+- Risque laissé, dit dans la fiche : `données:` aléatoire de taille paire → médiane au demi, refusée sur
+  un axe de 1 en 1 pour ce tirage (le générateur ne retente pas une autre graine).
