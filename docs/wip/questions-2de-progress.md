@@ -6,17 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2139 (migration du lot 6, mergée)._
+_Mis à jour le 2026-11-01, après la publication du lot 6 (§ 43)._
 
-- **État** : lot 6 : les 20 modèles en prod en brouillon (§ 41) ; migration nœud + tag mergée (#2139), audit
-  sans finding bloquant, PAS ENCORE jouée en prod.
-- **Prochaine action** : après le `db push` de David, vérifier par MCP (20 `draft`, bon nœud, un seul tag,
-  `updated_at` préservé), puis page à cocher des 20 (trois dossiers, préfixes `a-`/`b-`/`c-`).
-- **En attente de David** : `! pnpm exec supabase db push --include-all` (la prod a déjà 20261101215000, venue
-  d'une autre session ; à blanc : seule 20261101213600 part).
-- **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main`, des worktrees ET de la prod ;
-  `page-a-cocher.ts` ne prend qu'un `--dir` ; `db push` et `--publier` → David avec `!`.
-- **Worktree / branche** : aucun (retiré après #2139).
+- **État** : lots 1 à 6 publiés (lot 6 : 20 modèles, #2106, #2113, #2134, migration #2139, correctif #2152).
+- **Prochaine action** : lot 7 « Signes et variations » (§ 4 ; § 3.9, plus 2-329 déplacé du lot 6, L6-b) :
+  relevé MCP, puis phase 0 à faire valider par David.
+- **En attente de David** : rien.
+- **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main`, des worktrees ET de la prod
+  (sinon `db push --include-all`, qui emporte aussi les migrations mergées par d'autres sessions) ;
+  `page-a-cocher.ts` voit des défauts de fenêtre que `sonde-courbes` ne voit pas : la lancer avant la PR ;
+  `db push`, `--publier` → David avec `!` ; worktree neuf → `pnpm exec svelte-kit sync`.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1038,3 +1038,13 @@ une page à cocher.
   adaptée) — l'axe des abscisses, où l'ensemble est repassé en vert, sort de la fenêtre quand k et c sont loin de
   0 (`sonde-courbes` ne le voit pas). Fenêtre y élargie pour contenir 0 ; specs 11/11, sonde 0 problème, page
   sans alerte. Fichier corrigé à remettre en prod : `create-questions --mettre-a-jour` (David).
+- Page à cocher (20 fiches, sans alerte après le correctif) : https://claude.ai/artifact/H73An65fF3K7fkeZRMpYU5
+- #2152 mergée (CI : `wrapDynamicImport`, vert à la relance) ; 06 remis en prod par David
+  (`create-questions --mettre-a-jour`) ; MCP : fenêtre corrigée en base, toujours rangé et tagué.
+
+## 43. Lot 6 publié (2026-11-01)
+
+- David valide le lot sur la page. Simulation `publier-lot` des trois dossiers : 8 + 6 + 6 passent le contrôle.
+- Publication par David (`publier-lot --publier`, trois dossiers) : 8/8, 6/6, 6/6 ; MCP : les 20 `published`.
+- Leçon : lancer `page-a-cocher.ts` en local AVANT la PR des fichiers (alerte de fenêtre vue trop tard ici,
+  d'où un correctif et un `--mettre-a-jour`).
