@@ -5,25 +5,23 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2071._
+_Mis à jour le 2026-11-01, migration du lot 6 écrite._
 
-- **État** : lots 0 à 5 bis publiés. Lot 6 (calcul posé et heure, 7 modèles, § 13) écrit : `lot-ce1-6.py` →
-  `scripts/questions/ce1-6/`, simulation 7/7 (66 specs), 7 brouillons en base locale ; **#2071 mergée** (CI verte après deux relances du
-  shard navigateur 2/2, instable aussi sur `main`).
-- **Prochaine action** : brouillons en prod par David (`create-questions --publier`), vérification
-  au MCP, migration nœud + tag, page à cocher, publication. Ensuite lot 7 (données : 082, 106, 088, 089, 107, 081), puis
-  chantier `monnaie-centimes` (à part) et lot monnaie, puis lots 8 et 9 (§ 12).
-- **En attente de David** : `create-questions --dir scripts/questions/ce1-6 --publier` en prod ; confirmer que 2 h 15 l'après-midi est **faux avec message** (pas d'ambre possible sans code,
-  § 13).
+- **État** : lots 0 à 5 bis publiés. Lot 6 (calcul posé et heure, 7 modèles, § 13) : #2071 mergée, 7 brouillons en
+  prod ; migration nœud + tag `20261101141600` écrite, test rouge sans / vert avec ; PR sur
+  `chore/questions-ce1-lot6-rangement`.
+- **Prochaine action** : `security-auditor`, CI verte → merge → `db:migrate` (4 conditions) → vérif MCP → page à cocher
+  → `publier-lot`. Ensuite lot 7 (données : 082, 106, 088, 089, 107, 081), puis chantier `monnaie-centimes` (à part)
+  et lot monnaie, puis lots 8 et 9 (§ 12).
+- **En attente de David** : rien.
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
   posée dans Chrome : une case à la fois ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage
   de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule ; aucun lien
   de session dans une PR ; migration de données → ligne `Doc-inchangée:` dans un commit (garde du pre-push).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (sur `feat/questions-ce1-lot6`, mergée : partir d'une
-  branche neuve sur `origin/main` pour le rangement, puis `branch -d feat/questions-ce1-lot6`). `!` de David : toujours
-  préfixer `cd /Users/david/Coding/js/ubumaths &&` (un dossier courant supprimé fait échouer node en `uv_cwd`).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branche `chore/questions-ce1-lot6-rangement`). `!` de David :
+  toujours préfixer `cd /Users/david/Coding/js/ubumaths &&` (un dossier courant supprimé fait échouer node en `uv_cwd`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -546,3 +544,10 @@ David ; un vrai ambre demanderait du code.
   quatre cadrans du film et du match lisibles.
 - 2026-11-01 : #2071 mergée (CI verte après deux relances du shard navigateur 2/2 : installation de Chromium
   bloquée, puis `page-demo-lexique` en échec, sans lien avec le lot) ; brouillons en prod à créer par David.
+- 2026-11-01 : `create-questions --publier` par David : 7 brouillons vérifiés au MCP (`c26cc664`, `1e66bb1f`,
+  `92caa903`, `e3d11972`, `d478935f`, `24a86a39`, `739d58e3`), sans nœud ni tag, `updated_at` intact.
+- 2026-11-01 : migration `20261101141600_questions_ce1_lot6_rangement_tags` (max des worktrees + 1 min) et test :
+  rouge sans (5 échecs sur 9), vert 9/9.
+- 2026-11-01 : David valide « 2 h 15 l'après-midi = **faux avec message** » (pas d'ambre : toucherait au juge commun,
+  chantier à part si un jour on veut l'ambre pour les erreurs typiques). Remarque non bloquante de `security-auditor`
+  (le rollback retirerait un même tag posé à la main entre-temps) acceptée, comme au lot 5 bis.
