@@ -789,11 +789,9 @@ Aucun test ne compile un vrai PDF dans la CI : la compilation se vérifie par `p
    (toute URL jsDelivr ou unpkg de `src/` nomme une version).
 6. ~~Ré-exports dépréciés encore importés~~ : **corrigé** (K11) : `$lib/worksheets/typst-compiler`,
    `typst-generator` et `default-templates` retirés, les appelants importent `$lib/typst`.
-7. **`available_from` nul refusé par la réponse de l'API élève** :
-   `studentWorksheetDetailResponseSchema` déclare `available_from` non nullable, alors que la
-   colonne l'est (« disponible tout de suite ») ; une telle affectation ferait répondre
-   `GET /api/student/worksheets/[assignmentId]` en 500. Mesuré le 2026-10-11 : 0 affectation
-   concernée sur 11.
+7. ~~`available_from` nul refusé par la réponse de l'API élève~~ : **corrigé** (L17, 2026-11-01) :
+   `studentWorksheetDetailResponseSchema` et `studentWorksheetListItemSchema` acceptent `null`
+   (« disponible tout de suite »). Test : `src/lib/server/validation/__tests__/worksheet-type.test.ts`.
 8. **Polices** : le rendu dépend des polices embarquées par le bundle typst.ts, non listées dans le
    dépôt ; `compile-prod.mjs` ajoute STIX Two Math depuis un chemin macOS — témoin local et
    production peuvent donc différer sur un glyphe.

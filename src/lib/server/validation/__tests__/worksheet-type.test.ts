@@ -5,7 +5,8 @@ import { describe, it, expect } from 'vitest';
 import {
 	createWorksheetSchema,
 	updateWorksheetSchema,
-	studentWorksheetDetailResponseSchema
+	studentWorksheetDetailResponseSchema,
+	studentWorksheetListItemSchema
 } from '../worksheets';
 
 const base = { title: 'Équations' };
@@ -151,5 +152,42 @@ describe('cadres de réponse : `answer_frames`', () => {
 				studentWorksheetDetailResponseSchema.safeParse({ ...view, exercises: [bad] }).success
 			).toBe(false);
 		}
+	});
+});
+
+describe('affectation sans date de début (« disponible tout de suite »)', () => {
+	it('la vue détail accepte available_from nul', () => {
+		const r = studentWorksheetDetailResponseSchema.safeParse({
+			assignment_id: '00000000-0000-4000-8000-000000000001',
+			worksheet_id: '00000000-0000-4000-8000-000000000002',
+			title: 'Équations',
+			description: null,
+			type: 'worksheet',
+			instructions: null,
+			available_from: null,
+			closes_at: null,
+			show_corrections: false,
+			class_name: null,
+			read_only: false,
+			exercises: [],
+			sections: []
+		});
+		expect(r.success).toBe(true);
+	});
+
+	it('la ligne de la liste accepte available_from nul', () => {
+		const r = studentWorksheetListItemSchema.safeParse({
+			assignment_id: '00000000-0000-4000-8000-000000000001',
+			worksheet_id: '00000000-0000-4000-8000-000000000002',
+			title: 'Équations',
+			type: 'worksheet',
+			class_id: null,
+			class_name: null,
+			available_from: null,
+			closes_at: null,
+			show_corrections: false,
+			exercise_count: 3
+		});
+		expect(r.success).toBe(true);
 	});
 });
