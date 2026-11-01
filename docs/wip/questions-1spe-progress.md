@@ -829,3 +829,13 @@ modèle 06 (les fausses valeurs restent fausses : `1 + 2h + h²`, `1 + h`).
 
 **Suite** : PR des fichiers → David lance `create-questions --dir scripts/questions/1spe-derivation --publier` →
 migration de rangement (nœuds + tags, ids relus en base) → page à cocher → `publier-lot`.
+
+**Création en prod (2026-11-01)** : `create-questions --publier` lancé par David après #2092 : 10 brouillons
+(de73e71d 259, 286a68a8 268, 9f072622 397, 8a384698 388, be57bd36 262, 5be4ac71 390, 2067f7a4 273, d2bca2d8 263,
+b359cd25 267, e9fe1a28 269), relus en base (MCP) : `draft`, `1_SPE`, niveaux écrits, sans nœud ni tag.
+
+**Rangement** : migration `20261101180000_questions_1spe_derivation_rangement_tags.sql` (gabarit : 2de, droites) +
+`tests/integration/questions-1spe-derivation-rangement-tags.test.ts` : 10 / 10 verts ; rouge sans le corps de la
+migration (5 / 10, restauré d'une copie, identique). Nœuds relus en prod : Fonctions › Dérivation › taux de variation
+(259, 268, 397, 388), approximation affine (262, 390, 273), fonctions dérivées (263), dérivabilité en un point (267),
+nombre dérivé (269).
