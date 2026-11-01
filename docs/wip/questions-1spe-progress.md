@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2119 (fichiers du lot 2-variations, § 19)._
+_Mis à jour le 2026-11-01, PR de la migration de rangement du lot 2-variations ouverte (§ 19)._
 
 - **État** : lots 0 et lot 1-dérivation publiés ; **lot 2-variations écrit** (7 modèles, points 399, 280, 400, 282, 285, 286, 403 ; D25), simulation verte, essai en base locale fait, fichiers mergés (#2119). Brouillons de 1re spé plus anciens (inchangés) : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (questions-tspe), 0495289a (attente), c90fa022, d2067413 (1TECHNO).
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-variations --publier` (dépôt principal) → migration de rangement (nœuds + tags) → page à cocher → `publier-lot`.
-- **En attente de David** : le `create-questions --publier` après le merge.
+- **Prochaine action** : CI verte de la PR de rangement → merge → `db:migrate` depuis le dépôt principal → relecture en prod → page à cocher → `publier-lot`.
+- **En attente de David** : rien (brouillons créés par David le 2026-11-01).
 - **Pièges en cours** : niveaux d'une catégorie à relever **tous niveaux scolaires confondus** (l'index d'unicité ignore `grades`) ; `create-questions` et `publier-lot --publier` refusés au mode auto (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET worktrees ; corps de commit : lignes ≤ 100 caractères ; deux sous-catégories neuves (Généralités › Parité, Dérivation › Position relative) : nœuds des points = parité, position relative de deux courbes.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `feat/questions-1spe-variations`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `feat/questions-1spe-variations-rangement`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -909,3 +909,12 @@ avant `tsx` (sinon `$lib` introuvable).
 
 PR #2119 mergée (CI verte après deux relances du shard navigateur 1/2 : « Browser connection was closed », sans
 lien ; une première CI rouge venait d'une collision d'horodatage de migrations d'autres sessions, réglée sur `main`).
+
+**Création en prod (2026-11-01)** : `create-questions --publier` lancé par David après #2119 : 7 brouillons (707aa89d
+399, 655d06ff 280, 75b2aa08 400, 47843e39 282, 3fa3af6c 285, 1e097d3d 286, 8a7e39b7 403), relus en base (MCP) :
+`draft`, `1_SPE`, niveaux écrits, sans nœud ni tag.
+
+**Rangement** : migration `20261101212000_questions_1spe_variations_rangement_tags.sql` (gabarit : lot 1-dérivation) +
+`tests/integration/questions-1spe-variations-rangement-tags.test.ts` : 10 / 10 verts ; rouge sans le corps de la
+migration (3 échecs, 5 sautés), restauré d'une copie, identique. `security-auditor` (Opus) : aucun finding (écart au
+gabarit limité aux données ; 7 identifiants, chemins et points relus en prod, MCP).
