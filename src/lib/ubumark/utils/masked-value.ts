@@ -22,8 +22,11 @@ export const MASKED_VALUE = '?';
 /** Ligne de la réponse d'un bloc à geste : `placer:`, `construire:`, `colorier:` */
 const ANSWER_KEY_LINE = /^(?:placer|construire|colorier)\s*:(.*)$/i;
 
-/** Donnée d'un diagramme en barres masquée : `Natation = ?` */
-const MASKED_DATUM_LINE = /=\s*\?\s*$/;
+/**
+ * Donnée masquée : une barre (`Natation = ?`) ou une boîte à moustaches
+ * (`Notes = ? ; ? ; ? ; ? ; ?`)
+ */
+const MASKED_DATUM_LINE = /=\s*\?(?:\s*;\s*\?)*\s*;?\s*$/;
 
 /** La valeur écrite est-elle masquée ? */
 export function isMaskedValue(value: string): boolean {
@@ -33,7 +36,7 @@ export function isMaskedValue(value: string): boolean {
 /**
  * Une valeur masquée dans le texte d'un bloc à geste, sur la ligne de sa réponse
  * (`placer: A=? ; B=7`, `construire: ?`, `colorier: ?`) ou une donnée de barre
- * (`Foot = ?`). Les autres lignes ne comptent pas (`légendes: ?`, `axes: Sport ; ?`).
+ * (`Foot = ?`) ou de boîte à moustaches (`Notes = ? ; ? ; ? ; ? ; ?`). Les autres lignes ne comptent pas (`légendes: ?`, `axes: Sport ; ?`).
  * À ne demander qu'aux blocs qui la lisent : ailleurs, `?` a d'autres sens
  * (`sommets: ?` d'un patron).
  */

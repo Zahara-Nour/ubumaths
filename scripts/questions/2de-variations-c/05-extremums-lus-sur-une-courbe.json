@@ -1,0 +1,135 @@
+{
+	"title": "Extremums lus sur une courbe",
+	"description": "Maximum et minimum d'une fonction sur un intervalle et leurs abscisses, lus sur la courbe (pièges : abscisse donnée pour la valeur, maximum cherché au sommet seulement, extrémité oubliée)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Généralités",
+	"subdomain": "Extremums",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La courbe ci-dessous représente une fonction $f$ définie sur $\\left[{{eval:(h)-2}}\\,;{{eval:(h)+4}}\\right]$.\n\n```courbe\nx: {{eval:(h)-3}} ; {{eval:(h)+5}}\ny: {{eval:(k)-1}} ; {{eval:(k)+9}}\ngrille: 1 ; 1\nf(x) = 0.5*(x-({{h}}))^2+({{k}}) sur [{{eval:(h)-2}} ; {{eval:(h)+4}}]   bleu\ntaille: moyenne\ndescription: Parabole tournée vers le haut, de sommet ({{h}} ; {{k}}), tracée de {{eval:(h)-2}} à {{eval:(h)+4}}.\n```\n\nQuel est le maximum de $f$ ?\n\n$M=?$\n\nEn quelle valeur est-il atteint ?\n\n$x=?$\n\nQuel est le minimum de $f$ ?\n\n$m=?$\n\nEn quelle valeur est-il atteint ?\n\n$x=?$",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "-3..3"
+				},
+				{
+					"name": "k",
+					"expression": "-3..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(k)+8}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(h)+4}}"
+				},
+				{
+					"expectedAnswer": "{{k}}"
+				},
+				{
+					"expectedAnswer": "{{h}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le maximum est l'ordonnée du point **le plus haut** de la courbe, le minimum celle du point **le plus bas** ; on donne aussi leur abscisse.",
+					"Point le plus bas : le sommet $({{h}}\\,;{{k}})$, donc $m=\\textcolor{{{color:primary.0}}}{{{k}}}$ en $x={{h}}$. Point le plus haut : l'extrémité droite, donc $M=\\textcolor{{{color:primary.0}}}{{{eval:(k)+8}}}$ en $x={{eval:(h)+4}}$."
+				]
+			}
+		},
+		{
+			"statement": "La courbe ci-dessous représente une fonction $f$ définie sur $\\left[{{eval:(h)-2}}\\,;{{eval:(h)+4}}\\right]$.\n\n```courbe\nx: {{eval:(h)-3}} ; {{eval:(h)+5}}\ny: {{eval:(k)-9}} ; {{eval:(k)+1}}\ngrille: 1 ; 1\nf(x) = -0.5*(x-({{h}}))^2+({{k}}) sur [{{eval:(h)-2}} ; {{eval:(h)+4}}]   bleu\ntaille: moyenne\ndescription: Parabole tournée vers le bas, de sommet ({{h}} ; {{k}}), tracée de {{eval:(h)-2}} à {{eval:(h)+4}}.\n```\n\nQuel est le maximum de $f$ ?\n\n$M=?$\n\nEn quelle valeur est-il atteint ?\n\n$x=?$\n\nQuel est le minimum de $f$ ?\n\n$m=?$\n\nEn quelle valeur est-il atteint ?\n\n$x=?$",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "-3..3"
+				},
+				{
+					"name": "k",
+					"expression": "-3..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				},
+				{
+					"expectedAnswer": "{{h}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(k)-8}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(h)+4}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le maximum est l'ordonnée du point **le plus haut** de la courbe, le minimum celle du point **le plus bas** ; on donne aussi leur abscisse.",
+					"Point le plus haut : le sommet $({{h}}\\,;{{k}})$, donc $M=\\textcolor{{{color:primary.0}}}{{{k}}}$ en $x={{h}}$. Point le plus bas : l'extrémité droite, donc $m=\\textcolor{{{color:primary.0}}}{{{eval:(k)-8}}}$ en $x={{eval:(h)+4}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Vers le haut : M = 6 en 5, m = −2 en 1",
+			"variationIndex": 0,
+			"variables": {
+				"h": "1",
+				"k": "-2"
+			},
+			"answers": ["6", "5", "-2", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : abscisse et valeur échangées",
+			"variationIndex": 0,
+			"variables": {
+				"h": "1",
+				"k": "-2"
+			},
+			"answers": ["5", "6", "1", "-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : M lu à gauche (0 en −1)",
+			"variationIndex": 0,
+			"variables": {
+				"h": "1",
+				"k": "-2"
+			},
+			"answers": ["0", "-1", "-2", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Vers le bas : M = −2 en 1, m = −10 en 5",
+			"variationIndex": 1,
+			"variables": {
+				"h": "1",
+				"k": "-2"
+			},
+			"answers": ["-2", "1", "-10", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

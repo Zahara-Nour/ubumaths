@@ -32,6 +32,7 @@
 	import StatChart from './StatChart.svelte';
 	import BarresPlacer from './BarresPlacer.svelte';
 	import BoxPlotChart from './BoxPlotChart.svelte';
+	import BoxPlotPlacer from './BoxPlotPlacer.svelte';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import { OVER_BUDGET_MESSAGE, readRenderBudget, withinBudget } from '../render-budget';
 
@@ -226,6 +227,9 @@
 {#if node?.spec?.toPlace && scene}
 	<!-- Diagramme à construire hors question (aperçu, cours) : le geste, rien de jugé -->
 	<BarresPlacer {node} class={className} />
+{:else if node?.spec?.boxPlot?.toPlace && scene}
+	<!-- Boîte à moustaches à construire hors question : le geste, rien de jugé -->
+	<BoxPlotPlacer {node} class={className} />
 {:else if scene}
 	<figure class="stat-figure {className}">
 		<!-- Un tableau porte son titre dans <caption> : pas de figcaption en plus -->

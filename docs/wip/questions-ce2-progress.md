@@ -6,23 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR #2158 ouverte (pas encore mergée)._
+_Mis à jour le 2026-11-01, après #2158._
 
-- **État** : lot 6a (9 modèles longueurs + masses) créé en BROUILLON en prod par David (2026-11-01, ids dans la
-  migration). PR #2158 `feat/questions-ce2-lot6a-rangement` = migration nœud + tag
-  `20261101223100_questions_ce2_lot6a_rangement_tags.sql` + test d'intégration (rouge sans, 9/9 vert avec),
-  `security-auditor` sans finding. Branche à jour de `main` (doublon 215000 réglé par #2154), CI relancée.
-- **Prochaine action** : lire la CI de #2158 (`gh pr checks 2158`) ; `git merge origin/main` si besoin (jamais
-  rebase) ; si `pnpm check:migrations` existe (PR #2165), `pnpm check:migrations --pr 2158` avant `gh pr merge
---merge` ; puis `pnpm db:migrate` depuis le dépôt principal (4 conditions réunies : accès « personne » tranché,
-  test rouge prouvé, audit OK, additive + rollback) ; vérifier en prod au MCP (9 nœuds + 9 tags) ; page à cocher ;
-  `publier-lot.ts --dir scripts/questions/ce2-6a` (David `--publier`). Ensuite lot 6b (contenances + durées, § 10).
-- **En attente de David** : rien pour l'instant (son `--publier` du lot, plus tard).
-- **Pièges en cours** : nouvelle règle (PR #2165) : horodatage d'une migration neuve = `pnpm migration:horodatage`,
-  jamais « max + 1 » à la main ; le pre-push vérifie les migrations et le formatage de tout le dépôt ;
-  `db:migrate`, `--publier` refusés par le classifieur (David, `!`) ; niveaux relevés juste avant la publication ;
-  commitlint : sujet sans majuscule ; pas de mention Claude dans commits/PR.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, `feat/questions-ce2-lot6a-rangement`.
+- **État** : lot 6a (9 modèles longueurs + masses) rangé en prod : #2158 mergée, migration `20261101223100` jouée
+  par David (avec 224000 et 224700). Relevé MCP : 9 nœuds, 9 tags (CE2-035 à 048), `updated_at` préservé, 9 `draft`.
+  Page à cocher publiée : https://claude.ai/artifact/5SdrTimyvdNdj1U7h5K9qH (9 fiches, 2 alertes attendues :
+  bloc `ranger` non dessiné → à jouer dans l'aperçu admin ; homonymes d'autres niveaux écartés, ids vérifiés).
+- **Prochaine action** : David relit la page (rendu à 390 px non vérifié) ; compter les verdicts (`ArtifactData list
+verdicts`) avant de dire « tout est relu » ; un « À revoir » → corriger (§ 7). Puis `publier-lot.ts --dir
+scripts/questions/ce2-6a` (simulation), David lance `--publier`. Ensuite lot 6b (contenances + durées, § 10).
+- **En attente de David** : la relecture de la page ; plus tard son `--publier`.
+- **Pièges en cours** : horodatage d'une migration neuve = `pnpm migration:horodatage` ; `db:migrate`, `--publier`
+  refusés par le classifieur (David, `!`) ; `db:migrate` pousse TOUTES les migrations en attente ; niveaux relevés
+  juste avant la publication ; commitlint : sujet sans majuscule ; pas de mention Claude dans commits/PR.
+- **Worktree / branche** : aucun (à recréer pour le lot 6b).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 

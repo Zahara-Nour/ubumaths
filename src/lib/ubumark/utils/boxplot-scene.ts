@@ -6,6 +6,8 @@
  * (`stat-chart-typst.ts`) : mêmes bornes, mêmes graduations, mêmes rangées
  * d'étiquettes. Les cinq valeurs viennent du parseur (écrites par l'auteur, ou
  * calculées par `describe.ts` pour `données:`) : rien n'est recalculé ici.
+ * Une boîte à construire (`placer:`, palier 2) est marquée `toPlace` : chaque
+ * support n'en dessine que le nom.
  *
  * Coordonnées : x dans l'unité des données, de `xMin` à `xMax` ; chaque
  * support place lui-même ses boîtes en hauteur.
@@ -102,7 +104,8 @@ export function buildBoxPlotScene(spec: StatChartSpec, locale: ContentLocale): B
 				);
 	const pixelsPerUnit = width / (axis.max - axis.min || 1);
 
-	const boxes: BoxPlotSceneBox[] = plot.boxes.map((box) => {
+	const toPlace = new Set(plot.toPlace ?? []);
+	const boxes: BoxPlotSceneBox[] = plot.boxes.map((box, i) => {
 		const labels = box.values.map((value) => scatterTick(value, locale).label);
 		return {
 			name: box.name,
@@ -111,7 +114,8 @@ export function buildBoxPlotScene(spec: StatChartSpec, locale: ContentLocale): B
 			valueRows: valueRows(
 				box.values.map((value) => (value - axis.min) * pixelsPerUnit),
 				labels
-			)
+			),
+			...(toPlace.has(i) && { toPlace: true as const })
 		};
 	});
 
@@ -130,7 +134,10 @@ export function buildBoxPlotScene(spec: StatChartSpec, locale: ContentLocale): B
 		return { nameY, top, bottom, valueY };
 	});
 
-	const spoken = boxes.map((box) => text.sentence(box.name, box.labels));
+	// Boîte à construire : ses valeurs sont l'attendu, jamais dites avant la correction
+	const spoken = boxes.map((box) =>
+		box.toPlace ? text.toBuild(box.name) : text.sentence(box.name, box.labels)
+	);
 	return {
 		kind: 'boite-a-moustaches',
 		title: spec.title,

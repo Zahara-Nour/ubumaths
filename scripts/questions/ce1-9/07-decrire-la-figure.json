@@ -1,0 +1,204 @@
+{
+	"title": "Décrire une figure : côtés et angles droits",
+	"description": "Combien d'angles droits a un carré, un rectangle, un triangle rectangle, un triangle ; qui suis-je ?",
+	"grades": ["CE1"],
+	"theme": "Géométrie",
+	"domain": "Figures planes",
+	"subdomain": "Propriétés",
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Combien d'angles droits a ce {{if:k<=3|carré|rectangle}} ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Un carré ou un rectangle.\n---\na = point({{if:k==1|5.0|{{if:k==2|3.73|{{if:k==3|5.66|{{if:k==4|3.08|{{if:k==5|3.61|7.9}}}}}}}}}}, {{if:k==1|0.95|{{if:k==2|1.3|{{if:k==3|1.04|{{if:k==4|1.47|{{if:k==5|0.69|3.33}}}}}}}}}}, visible=faux)\nb = point({{if:k==1|7.55|{{if:k==2|7.2|{{if:k==3|7.46|{{if:k==4|7.78|{{if:k==5|8.11|3.4}}}}}}}}}}, {{if:k==1|3.5|{{if:k==2|2.23|{{if:k==3|4.16|{{if:k==4|3.18|{{if:k==5|3.85|5.93}}}}}}}}}}, visible=faux)\nc = point({{if:k==1|5.0|{{if:k==2|6.27|{{if:k==3|4.34|{{if:k==4|6.92|{{if:k==5|6.39|2.1}}}}}}}}}}, {{if:k==1|6.05|{{if:k==2|5.7|{{if:k==3|5.96|{{if:k==4|5.53|{{if:k==5|6.31|3.67}}}}}}}}}}, visible=faux)\nd = point({{if:k==1|2.45|{{if:k==2|2.8|{{if:k==3|2.54|{{if:k==4|2.22|{{if:k==5|1.89|6.6}}}}}}}}}}, {{if:k==1|3.5|{{if:k==2|4.77|{{if:k==3|2.84|{{if:k==4|3.82|{{if:k==5|3.15|1.07}}}}}}}}}}, visible=faux)\nq = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\n```\n\n$?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un {{if:k<=3|carré|rectangle}} a $4$ sommets, et en chacun un angle droit : $\\textcolor{{{color:primary.0}}}{4}$ angles droits."
+				]
+			}
+		},
+		{
+			"statement": "Combien d'angles droits a ce {{if:k<=3|triangle rectangle|triangle}} ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Un triangle.\n---\na = point({{if:k==1|2.75|{{if:k==2|3.98|{{if:k==3|6.4|{{if:k==4|2.7|{{if:k==5|2.92|7.07}}}}}}}}}}, {{if:k==1|2.0|{{if:k==2|2.11|{{if:k==3|1.25|{{if:k==4|1.51|{{if:k==5|1.53|4.59}}}}}}}}}}, visible=faux)\nb = point({{if:k==1|7.25|{{if:k==2|7.62|{{if:k==3|6.4|{{if:k==4|7.3|{{if:k==5|7.08|2.93}}}}}}}}}}, {{if:k==1|2.0|{{if:k==2|4.21|{{if:k==3|5.75|{{if:k==4|1.51|{{if:k==5|3.47|6.09}}}}}}}}}}, visible=faux)\nc = point({{if:k==1|2.75|{{if:k==2|2.38|{{if:k==3|3.6|{{if:k==4|5.0|{{if:k==5|3.61|3.39}}}}}}}}}}, {{if:k==1|5.0|{{if:k==2|4.89|{{if:k==3|1.25|{{if:k==4|5.49|{{if:k==5|5.47|0.91}}}}}}}}}}, visible=faux)\nq = polygone(a, b, c, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\n```\n\n$?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "a",
+					"expression": "{{if:k<=3|1|0}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k<=3|Un triangle rectangle a un seul angle droit : $\\textcolor{{{color:primary.0}}}{1}$.|Ce triangle n'a aucun angle droit : $\\textcolor{{{color:primary.0}}}{0}$. Ce n'est pas un triangle rectangle.}}"
+				]
+			}
+		},
+		{
+			"statement": "Qui suis-je ?\n\n_{{if:q==1|J'ai $4$ côtés et $4$ angles droits. Mes côtés ne sont pas tous de la même longueur.|{{if:q==2|J'ai $3$ côtés et un angle droit.|{{if:q==3|J'ai $4$ côtés de la même longueur et $4$ angles droits.|Je n'ai ni côté ni sommet. Tous mes points sont à la même distance de mon centre.}}}}}}_\n\n```choix\n- Je suis un rectangle.\n- Je suis un triangle rectangle.\n- Je suis un carré.\n- Je suis un cercle.\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1..4"
+				},
+				{
+					"name": "w",
+					"expression": "eval:q-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:q==1|C'est un \\textcolor{{{color:primary.0}}}{rectangle} : $4$ angles droits, deux grands côtés et deux petits.|{{if:q==2|C'est un \\textcolor{{{color:primary.0}}}{triangle rectangle} : $3$ côtés, un angle droit.|{{if:q==3|C'est un \\textcolor{{{color:primary.0}}}{carré} : $4$ côtés de la même longueur, $4$ angles droits.|C'est un \\textcolor{{{color:primary.0}}}{cercle}.}}}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Carré : 4 angles droits",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"k": "2"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rectangle : 4 angles droits",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"k": "5"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 (les grands côtés)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"k": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Triangle rectangle : 1",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"k": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 (les sommets comptés)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"k": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Triangle : 0",
+			"variationIndex": 1,
+			"variables": {
+				"c": "4",
+				"k": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rectangle",
+			"variationIndex": 2,
+			"variables": {
+				"q": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rectangle pris pour un carré",
+			"variationIndex": 2,
+			"variables": {
+				"q": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Triangle rectangle",
+			"variationIndex": 2,
+			"variables": {
+				"q": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cercle",
+			"variationIndex": 2,
+			"variables": {
+				"q": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

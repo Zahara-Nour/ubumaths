@@ -679,7 +679,7 @@ export type ResolvedVariable = SharedResolvedVariable;
 /**
  * Genre d'un bloc qui porte sa case et dont la réponse est sa valeur : à construire
  * (```collection, ```monnaie, `construire:`) ou à placer (```line, ```horloge,
- * ```barres, `placer:`), des étiquettes à ranger (```ranger), ou une figure à colorier
+ * ```barres, ```boite-a-moustaches, `placer:`), des étiquettes à ranger (```ranger), ou une figure à colorier
  * (```partage, `colorier:`), ou un assemblage de cubes à geste (```cubes, `dessiner:` / `retrouver:`),
  * ou un patron à geste (```patron, `designer:` / `completer:`), ou des points à placer
  * dans un repère (```courbe, `placer:`)
@@ -690,6 +690,7 @@ export type BuildKind =
 	| 'line'
 	| 'horloge'
 	| 'barres'
+	| 'boite-a-moustaches'
 	| 'ranger'
 	| 'partage'
 	| 'cubes'
@@ -700,6 +701,7 @@ export type BuildKind =
 export function buildKindName(kind: BuildKind): string {
 	if (kind === 'line') return 'droite graduée';
 	if (kind === 'barres') return 'diagramme en barres';
+	if (kind === 'boite-a-moustaches') return 'boîte à moustaches';
 	if (kind === 'ranger') return 'étiquettes à ranger';
 	if (kind === 'partage') return 'figure à colorier';
 	if (kind === 'cubes') return 'assemblage de cubes';
