@@ -2,6 +2,9 @@ import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { compileLatexSchema } from '$lib/server/validation/latex';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/latex/compile/+server');
 
 /**
  * Server-side proxy for LaTeX compilation via TeXLive.net
@@ -68,7 +71,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			}
 		});
 	} catch (err) {
-		console.error('LaTeX compilation error:', err);
+		logger.error('LaTeX compilation error:', err);
 		throw error(500, `Compilation failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
 	}
 };
