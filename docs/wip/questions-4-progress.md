@@ -7,13 +7,14 @@
 
 _Mis à jour le 2026-11-01, lot 9 écrit (§ 45), PR à ouvrir._
 
-- **État** : lots 1 à 7 en prod et publiés. Lot 8 : relu (6 « ok »), en attente du `--publier` de David (§ 43).
+- **État** : lots 1 à 7 en prod et publiés. Lot 8 publié (§ 43).
   Lot 9 « pensée informatique » : 3 modèles écrits, specs vertes, joués en local (§ 45), branche `feat/questions-4-lot-9`.
 - **Prochaine action** : PR du lot 9 (revue : aucune, contenu ; `Doc-inchangée: contenu`), CI verte, merge ; puis
   David `create-questions --dir scripts/questions/4-lot-9 --publier` ; relever les 3 `id`, migration nœud + tag
   (065, 066 → nœud 195147df ; 067 → 151ff8c9), page à cocher. Le lot 9 est le dernier de l'ordre validé (§ 5 bis) :
   restent les outils C (§ 3) et la fin de chantier (versement).
-- **En attente de David** : `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/4-lot-8 --publier`.
+- **En attente de David** : rien. **Pause CI** demandée le 2026-11-01 (session migrations-collision) : run de #2166
+  annulé, ni push ni merge avant son « go » ; au « go » : `git merge origin/main`, push, CI, merge.
 - **Pièges en cours** : migrations, dès #2165 mergée (règle de David, 2026-11-01) : horodatage par `pnpm
 migration:horodatage` (jamais un nombre rond choisi à la main), `pnpm check:migrations --pr <n>` avant `gh pr merge`,
   premier job de CI = porte des horodatages (`git merge origin/main` dans le worktree d'abord) ; `mtexte()` refusé dans une figure de question (§ 26) ; `db push --include-all` : **réservé à
@@ -1046,7 +1047,7 @@ scripts/questions/4-lot-6` en simulation (prod) : 6a770d04 et 35002b15 passent ;
 - Verdicts lus (`ArtifactData list verdicts`) : **6 sur 6, tous « ok »**, aucun commentaire ; ce sont bien les 6 `id`
   du § 42.
 - `publier-lot --dir scripts/questions/4-lot-8` (simulation, prod) : 6 brouillons passent le contrôle.
-- Reste : David lance `--publier` ; je vérifie ensuite au MCP (`status = published`).
+- David a lancé `publier-lot --publier` le 2026-11-01 : **6/6 publiés**, vérifié au MCP (`status = published`).
 
 ## 44. Lot 9 (pensée informatique) : phase 0 (proposée le 2026-11-01)
 
@@ -1123,3 +1124,7 @@ Algorithmique / Variables / Accumulation 1 (067) ; variante « au moins 18 ans �
   - couleur `\textcolor` posée hors de `$…$` dans 3 corrigés (vu dans l'aperçu `question:specs`) → corrigé.
 - « deux si à la suite » : contrainte `q != r` (le second test sur le nombre de DÉPART donnerait un autre résultat),
   sinon la variante ne tombait presque jamais sur le piège.
+
+- 3 brouillons créés en prod par David (depuis le worktree, avant le merge) : 6c9c9649 (4-065), 8b6f9e98 (4-066),
+  20cb9b55 (4-067), en [4], catégories justes, sans nœud ni tag (MCP). Nœuds : 065, 066 → Algorithmique > Variables
+  et instructions > instructions conditionnelles ; 067 → … > variables et affectation.
