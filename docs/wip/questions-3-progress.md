@@ -5,15 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après la relecture du lot 5 (§ 12.11)._
+_Mis à jour le 2026-11-01, lot 5 publié (§ 12.12)._
 
-- **État** : lot 5 rangé en prod (#2059) ; page à cocher relue : **6/6 « ok »**, aucun « À revoir » ;
-  corrigé de 3-035 v2 corrigé dans le fichier (#2069) mais **pas encore en prod** (MCP, 2026-11-01).
-- **Prochaine action** : après la mise à jour de 3-035 en prod, vérifier au MCP le nouveau corrigé, puis
-  simulation `publier-lot.ts --dir scripts/questions/3-lot-5` et `--publier`, tous deux par David.
-  Ensuite : lot 6 du § 4 (translation, vecteurs, sphère).
-- **En attente de David** : `create-questions --dir scripts/questions/3-lot-5 --publier --mettre-a-jour`
-  (dépôt principal à jour), puis `publier-lot.ts` (simulation, puis `--publier`).
+- **État** : **lot 5 CLOS** : 6/6 relus « ok », 3-035 mis à jour, 6/6 `published` (relu au MCP).
+- **Prochaine action** : lot 6 du § 4 (translation, vecteurs, sphère) — relevé de l'existant puis
+  phase 0 à faire valider.
+- **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; horodatage `20261030162200` déjà pris par ce1 lot 5 bis ;
   dans `points:` d'un ` ```courbe `, ni `{{eval}}` fractionnaire (écrit `\dfrac`) ni virgule ; aperçu admin
@@ -802,3 +799,9 @@ publiés de plus, et 2 de 4e (§ 12.1) ; la 4e ne perd rien. Aucune règle ne ch
   ccb51039 / 76f5f143 hors page).
 - MCP : 302655b9 (3-035) a encore l'ancien corrigé (`updated_at` 2026-10-31 23:26) → la mise à jour
   `--mettre-a-jour` reste à lancer avant la publication.
+
+### 12.12 Lot 5 : publié (2026-11-01)
+
+- David : `create-questions --publier --mettre-a-jour` → 302655b9 mis à jour (MCP : nouveau corrigé,
+  `updated_at` 11:34) ; `publier-lot.ts` simulation (6 passent) puis `--publier` → 6/6.
+- MCP : cd2ffd9b, 6acde723, 96992ea8, acaa7317, c7928fc7, 302655b9 `published`, grades `['3']`.
