@@ -77,7 +77,6 @@
 	 * Navigate to create deck page
 	 */
 	function createDeck() {
-		// TODO: Navigate to deck creation page
 		goto('/dashboard/revisions/create').then(() => {});
 	}
 </script>
