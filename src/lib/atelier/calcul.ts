@@ -3254,29 +3254,46 @@ function signConditionOf(argument: MathNode, strict: boolean): Condition | null 
 
 /**
  * Q2 (David, 2026-11-01) : « a ⩾ v » et « a ≠ v » ensemble → « a > v » ; une
- * condition « a > v » rend « a ⩾ v » et « a ≠ v » inutiles.
+ * condition « a > v » rend « a ⩾ v » et « a ≠ v » inutiles. De même de l'autre
+ * côté (revue de #2118) : « a ⩽ v » et « a ≠ v » → « a < v ». Les deux côtés
+ * ensemble (`a ⩾ 1`, `a ⩽ 1`) restent écrits tels quels.
  */
 function mergedConditions(conditions: readonly Condition[]): Condition[] {
-	const same = (c: Condition, letter: string, value: string) =>
-		c.bound !== undefined && c.bound.letter === letter && c.bound.value === value;
 	const merged: Condition[] = [];
 	for (const condition of conditions) {
 		const { bound } = condition;
-		if (bound === undefined || !['≠', '⩾', '>'].includes(bound.relation)) {
-			merged.push(condition);
-			continue;
-		}
-		const index = merged.findIndex((c) => same(c, bound.letter, bound.value));
+		const index =
+			bound === undefined
+				? -1
+				: merged.findIndex(
+						(c) => c.bound?.letter === bound.letter && c.bound.value === bound.value
+					);
 		const previous = index === -1 ? undefined : merged[index].bound;
-		if (previous === undefined || !['≠', '⩾', '>'].includes(previous.relation)) {
+		const relation =
+			bound === undefined || previous === undefined
+				? null
+				: combinedRelation(previous.relation, bound.relation);
+		if (bound === undefined || relation === null) {
 			merged.push(condition);
 			continue;
 		}
-		if (previous.relation !== bound.relation) {
-			merged[index] = boundCondition(bound.letter, '>', bound.value);
-		}
+		merged[index] = boundCondition(bound.letter, relation, bound.value);
 	}
 	return merged;
+}
+
+/** La relation qui dit les deux à la fois, `null` si on garde les deux écrites. */
+function combinedRelation(
+	first: ConditionRelation,
+	second: ConditionRelation
+): ConditionRelation | null {
+	const both = new Set([first, second]);
+	if (both.size === 1) return first;
+	const above = [...both].every((r) => r === '≠' || r === '⩾' || r === '>');
+	if (above) return '>';
+	const below = [...both].every((r) => r === '≠' || r === '⩽' || r === '<');
+	if (below) return '<';
+	return null;
 }
 
 /**

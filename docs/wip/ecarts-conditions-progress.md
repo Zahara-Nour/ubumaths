@@ -8,7 +8,7 @@ status: lot 3 codé, PR ouverte
 
 _Mis à jour le 2026-11-01, PR ouverte._
 
-- **État** : Q1-Q4 validées (mes recos) ; `argumentConditions` / `signConditionOf` / `mergedConditions` dans `src/lib/atelier/calcul.ts`, 28 tests (`conditions-racine-ln.test.ts`, 20 rouges sans le correctif), suite atelier verte, `check:incremental` 0 · **Prochaine action** : revue `code-reviewer`, CI verte → merge · **En attente de David** : accord pour supprimer les 2 sondes non suivies (`__tests__/sonde-ast.test.ts`, `sonde-conditions.test.ts`) · **Pièges en cours** : ne pas toucher `pedagogical-simplify/`, `simplify`, `tidy` · **Worktree / branche** : `ubumaths-wt-ecarts-conditions` / `fix/ecarts-conditions`
+- **État** : Q1-Q4 validées (mes recos) ; `argumentConditions` / `signConditionOf` / `mergedConditions` dans `src/lib/atelier/calcul.ts`, 28 tests (`conditions-racine-ln.test.ts`, 20 rouges sans le correctif), suite atelier verte, `check:incremental` 0 · **Prochaine action** : revue faite (finding 2 corrigé), CI verte → merge · **En attente de David** : accord pour supprimer les 2 sondes non suivies (`__tests__/sonde-ast.test.ts`, `sonde-conditions.test.ts`) · **Pièges en cours** : ne pas toucher `pedagogical-simplify/`, `simplify`, `tidy` · **Worktree / branche** : `ubumaths-wt-ecarts-conditions` / `fix/ecarts-conditions`
 
 ---
 
@@ -71,3 +71,7 @@ Q1 oui (bornée seulement), Q2 oui (fusion → a > v), Q3 oui (`\log`, `\log_b`)
 
 - `.intégrer e^{\sqrt{a} x} de 0 à 1` : valeur non réduite, `{-sqrt(a)e^{sqrt(a)*0}+sqrt(a)e^{sqrt(a)*1}}/a` (réduction `tidy` → `fusion-moteurs`) ; condition juste (a > 0).
 - `1/\ln(a)` : « ln(a) ≠ 0 » brut (Q4) — « a ≠ 1 » possible plus tard.
+
+## Revue de #2118 (code-reviewer)
+
+Aucune condition fausse (≈ 38 saisies sondées, décimaux et signes compris). Corrigé : « a ⩽ v » + « a ≠ v » → « a < v » (`\dfrac{x}{\sqrt{1-a}}`, miroir de Q2, `combinedRelation`). Notés sans correction (vrais mais bruyants, exotiques) : doublons saisie / réponse d'écritures différentes (`\sqrt{a-1.5}` → « a-3/2 ⩾ 0, a ⩾ 1,5 », `\sqrt{a+(-2)}`, `\ln(a^3)`, `1/\sqrt{a^2}`) ; « a > -0 » ; « a^{1:/2} » (`toCustom`) ; contradictions affichées telles quelles (`\ln(a-3)\ln(3-a)` → « a < 3, a > 3 ») ; « 2a-2 ≠ 0 » antérieur.

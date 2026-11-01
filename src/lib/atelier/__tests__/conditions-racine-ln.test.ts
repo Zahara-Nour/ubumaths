@@ -115,6 +115,11 @@ describe('limites', () => {
 		expect(conditions('.intégrer \\dfrac{x}{\\sqrt{a}} de 0 à 1')).toBe('a > 0');
 	});
 
+	it('Q2, miroir : √(1−a) au dénominateur → (a < 1)', () => {
+		expect(conditions('.intégrer \\dfrac{x}{\\sqrt{1-a}} de 0 à 1')).not.toMatch(/a ⩽ 1|a ≠ 1/);
+		expect(conditions('.intégrer \\dfrac{x}{\\sqrt{1-a}} de 0 à 1')).toContain('a < 1');
+	});
+
 	it('Q2 : e^{√a x} de 0 à 1 → (a > 0)', () => {
 		expect(conditions('.intégrer e^{\\sqrt{a} x} de 0 à 1')).toBe('a > 0');
 	});
