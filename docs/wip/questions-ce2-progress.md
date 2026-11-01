@@ -6,19 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2051 : lot 4 (fractions) publié en prod._
+_Mis à jour le 2026-11-01, phase 0 du lot 5 validée._
 
-- **État** : lots 1 à 4 publiés en prod (lot 4 : 10 modèles, niveaux 08-10 décalés en 19-21 par #2051).
-  Aucun worktree en cours.
-- **Prochaine action** : lot 5 — problèmes (029, 079, 030, 031, 032, 033, 034), phase 0 à écrire et faire
-  valider (§ 4 bis, 7). En parallèle, dans des sessions à part : `choix-correction` (`$$…$$` brut sur la
-  carte de correction, § 8), puis outils neufs `centaines:` + milliers de `collection` et barres à monter.
+- **État** : lots 1 à 4 publiés en prod ; lot 5 (problèmes, 12 modèles) : phase 0 validée (§ 9), écriture à faire.
+- **Prochaine action** : worktree `../ubumaths-wt-questions-ce2`, script `docs/wip/questions/lot-ce2-5.py` →
+  `scripts/questions/ce2-5/`, tests d'abord, brouillons en base locale, PR. En parallèle, dans des sessions à
+  part : `choix-correction` (`$$…$$` brut, § 8), puis `centaines:` + milliers de `collection` et barres à monter.
 - **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate`, `--publier` et `--mettre-a-jour` refusés par le classifieur (David les
   lance avec `!`) ; `db:migrate` pousse TOUTES les migrations en attente : `--dry-run` d'abord ; horodatage =
   max de la PROD ET du dépôt + 1 min ; niveaux relevés dans la catégorie JUSTE avant la publication (un lot
   d'un autre niveau peut les prendre entre-temps) ; commitlint : sujet sans majuscule, corps ≤ 100 car.
-- **Worktree / branche** : aucun (prochain : `../ubumaths-wt-questions-ce2`, branche du lot 5).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, `feat/questions-ce2-lot5`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -383,3 +382,34 @@ de plus (brouillons neufs ; la migration nœud + tag ne change aucune règle).
   `20261101090000` jouée (avec `20261101120100` d'une session questions-5). Relevé MCP : 08/09/10 en 19/20/21,
   draft, `updated_at` inchangé. `publier-lot` simulation : 10/10 ; `--publier` (David) : **10 modèles
   `published`** relus au MCP. Worktree retiré.
+
+## 9. Lot 5 — problèmes (phase 0 validée le 2026-11-01)
+
+Points CE2-029, 079, 030, 031, 032, 033, 034, sans modèle au relevé MCP du 2026-11-01. Nœuds existants sous
+« Problèmes arithmétiques » (parties-tout, comparaison, en deux étapes ou plus, multiplicatifs, produits
+cartésiens) : aucun à créer. Niveaux libres relevés : Parties-tout 7+, Deux étapes 7+, Multiplicatifs 9+,
+Comparaison 2+, Produits cartésiens neuve. Nombres jusqu'à 10 000 ; plus de deux étapes : < 100 ; quantité
+totale ≤ 1 000 pour le nombre de parts. Question d'accès : personne ne lit rien de plus (brouillons neufs).
+
+**Décisions (David, « tes recos ? » puis « je te suis », 2026-11-01)** :
+
+1. Produit cartésien : on demande le nombre de façons ; tableau ou arbre montré dans la correction.
+2. « Fois plus / fois moins » rangé dans « comparaison » (niveau 3) ; le modèle mêle « de plus » et « fois plus ».
+3. Un seul modèle en fractions de même dénominateur (029), `reducedFractions` coupé.
+4. Un seul lot de 12 modèles.
+5. Régulation (« ce résultat est-il possible ? ») en case choix dans quelques variations de 01 et 05.
+
+| Fichier                      | Point | Catégorie · niveau      | Variations                                                          |
+| ---------------------------- | ----- | ----------------------- | ------------------------------------------------------------------- |
+| `01-parties-tout`            | 029   | Parties-tout · 7        | tout, partie ou départ inconnu, 1 000 à 10 000 ; régulation         |
+| `02-parties-tout-prix`       | 029   | Parties-tout · 8        | prix à virgule : achats, prix manquant, monnaie                     |
+| `03-parties-tout-fractions`  | 029   | Parties-tout · 9        | fraction qui reste, même dénominateur                               |
+| `04-comparaison`             | 079   | Comparaison · 2         | plus grand, plus petit, écart ; entiers ≤ 10 000 et prix            |
+| `05-deux-etapes`             | 030   | Deux étapes · 7         | ajouts et retraits enchaînés ≤ 10 000 ; achats ; régulation         |
+| `06-comparaison-deux-etapes` | 030   | Deux étapes · 8         | Léo 188 billes, Lucie 75 de plus, en tout                           |
+| `07-multiplicatifs-tout`     | 031   | Multiplicatifs · 9      | valeur du tout, champ étendu (8 paquets de 125, 6 × 1,50 €)         |
+| `08-nombre-de-parts`         | 031   | Multiplicatifs · 10     | total ≤ 1 000 ; reste → arrondi au-dessus ou en dessous             |
+| `09-valeur-d-une-part`       | 031   | Multiplicatifs · 11     | 72 € pour 6 dictionnaires (tables)                                  |
+| `10-fois-plus-fois-moins`    | 033   | Comparaison · 3         | trottinette 4 fois plus chère que le casque à 32 € ; « fois moins » |
+| `11-problemes-mixtes`        | 032   | Deux étapes · 9         | 4 tables de 6 + 7 tables de 4 ; plus de deux étapes : nombres < 100 |
+| `12-produit-cartesien`       | 034   | Produits cartésiens · 1 | tableau (3 × 7) ; arbre à trois ensembles (2 × 3 × 2)               |
