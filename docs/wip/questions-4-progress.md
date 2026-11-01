@@ -5,20 +5,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2089 et #2098 (lot 7 en prod, rangé, page à cocher publiée)._
+_Mis à jour le 2026-11-01, après #2089 et #2098 (lot 7 relu et publié)._
 
-- **État** : lots 1 à 6 en prod (lot 1 en brouillon, 2 volumes du lot 6 en brouillon) ; lot 7 (017, 018, 020, 021, 023, 071) : 6 brouillons en prod, rangés et tagués (§ 34), page à cocher https://claude.ai/artifact/4RgNcVwHUsdXQAjFSWMSEs.
-- **Prochaine action** : lire et **compter** les verdicts (collection `verdicts`) ; si 6 « OK » : `publier-lot`
-  en simulation sur `scripts/questions/4-lot-7`, puis **David** `--publier`. Volumes du lot 6 : après le `deploy:prod`
-  qui livre ` ```solide `. Ensuite, choisir le lot 8 (programmes de calcul et fonctions : 060, 081, 061, 062, 063, 064).
-- **En attente de David** : la relecture du lot 7 ; garder ou supprimer la sonde des figures
-  (`scripts/questions/.sonde-figures-tmp.ts`, non suivie, dans le worktree) ; publication des 7 brouillons du lot 1 ;
-  revoir ou non les 14 bornes du cycle 4 sur un document 2019/2016 (§ 27).
+- **État** : lots 1 à 7 en prod ; publiés : lots 2 à 5, les 3 translations du lot 6, le lot 7 (6/6, § 35) ; en
+  brouillon : les 7 du lot 1, les 2 volumes du lot 6.
+- **Prochaine action** : phase 0 du lot 8 « programmes de calcul et fonctions » (060, 081, 061, 062, 063, 064 ; ordre
+  du § 5 bis), puis lot 9 « pensée informatique » (065-067). Volumes du lot 6 : après le `deploy:prod` qui livre
+  ` ```solide `, `publier-lot` sur un dossier qui ne contient que 01 et 02 du lot 6.
+- **En attente de David** : garder ou supprimer la sonde des figures (`scripts/questions/.sonde-figures-tmp.ts`, non
+  suivie, dans le worktree) ; publication des 7 brouillons du lot 1 ; revoir ou non les 14 bornes du cycle 4 sur un
+  document 2019/2016 (§ 27).
 - **Pièges en cours** : `mtexte()` refusé dans une figure de question (§ 26) ; `db push --include-all` : **réservé à
   David** (§ 27, § 30, § 34), même quand une autre session dit le contraire ; horodatage de migration : rebaser sur
-  `origin/main` avant la CI (doublon d'une autre session, § 34) ; exemption de doc d'une migration de données = ligne
-  `Doc-inchangée:` dans un COMMIT ; QCM = case choix ; un grand nombre s'écrit `10\,000` dans une spec ; tests
-  navigateur de la CI parfois tombés (`wrapDynamicImport`) : relancer le job.
+  `origin/main` avant la CI (§ 34) ; exemption de doc d'une migration de données = ligne `Doc-inchangée:` dans un
+  COMMIT ; QCM = case choix ; un grand nombre s'écrit `10\,000` dans une spec ; tests navigateur de la CI parfois
+  tombés (`wrapDynamicImport`) : relancer le job.
 - **Worktree / branche** : `../ubumaths-wt-questions-4` (HEAD détachée sur `origin/main`), aucune branche en cours.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
@@ -895,3 +896,8 @@ Equations / Mettre en équation 3 ; 017 : forme puissance exigée quand la consi
 - Page à cocher : https://claude.ai/artifact/4RgNcVwHUsdXQAjFSWMSEs (6 fiches, 27 exemples ; capacité `db`, base
   `verdicts` vide à la publication). Alerte : homonyme « Puissance d'un produit » de 2de (04b1cc7f, niveau 1) écarté,
   c'est voulu (le nôtre est le niveau 2).
+
+## 35. Lot 7 : relecture et publication (2026-11-01)
+
+- Verdicts lus en base : 6 documents, 6 « OK », aucun commentaire.
+- `publier-lot` en simulation (6 passent), lancé par David avec `--publier` : 6/6 publiés ; vérifié au MCP.
