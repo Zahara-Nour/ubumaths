@@ -2,7 +2,7 @@
  * Chantier « questions-1spe », lot 4-probabilités : nœud et tag de 8 modèles neufs (Supabase local requis)
  * =======================================================================================
  *
- * Migration `20261101224001_questions_1spe_probas_rangement_tags` : les 8 brouillons
+ * Migration `20261101224701_questions_1spe_probas_rangement_tags` : les 8 brouillons
  * « probabilités : partition, Bernoulli, arbres, tableaux » créés le 2026-11-01 par scripts/create-questions.ts
  * (sans nœud ni tag) vont sur le nœud de leur point et reçoivent ce point, un seul (ADR 0020).
  * Phase 0 : journal docs/wip/questions-1spe-progress.md § 21.
@@ -40,7 +40,7 @@ interface Etat {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261101224001_questions_1spe_probas_rangement_tags.sql';
+const MIGRATION = 'supabase/migrations/20261101224701_questions_1spe_probas_rangement_tags.sql';
 const LONGUEURS = 'Grandeurs et mesures > Longueurs';
 /** Le lot : identifiant créé en prod le 2026-11-01, nœud et points attendus. */
 const LOT = [

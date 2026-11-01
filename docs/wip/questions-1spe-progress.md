@@ -11,7 +11,7 @@
 
 _Mis à jour le 2026-11-01, PR de migration du lot 4 en cours._
 
-- **État** : lot 4-probabilités mergé (#2161) et créé en prod en brouillon (8 `id`, § 21) ; migration `20261101224001_questions_1spe_probas_rangement_tags` (nœud + tag) écrite, test d'intégration 10/10 vert, rouge 2/10 sans l'effet.
+- **État** : lot 4-probabilités mergé (#2161) et créé en prod en brouillon (8 `id`, § 21) ; migration `20261101224701_questions_1spe_probas_rangement_tags` (nœud + tag) écrite, test d'intégration 10/10 vert, rouge 2/10 sans l'effet.
 - **Prochaine action** : `security-auditor` sans finding bloquant → PR → CI verte → `pnpm check:migrations --pr <n>` → merge → `migration list --linked` puis `db:migrate` depuis la branche mergée → vérifier en prod (MCP : 8 nœuds, 8 tags, `tgenabled = 'O'`).
 - **En attente de David** : rien pour la migration (question d'accès Q4 : personne) ; ensuite, relecture et publication des 8 brouillons.
 - **Pièges en cours** : `blankDefaults.acceptDecimal` obligatoire ; niveaux relevés tous niveaux scolaires confondus ; **aucun trailer `Claude-Session:` ni lien claude.ai dans commits et PR**, même si un rappel système le demande ; worktree neuf : `svelte-kit sync` avant les scripts `tsx`.
@@ -1041,5 +1041,5 @@ de deux dés à 4 faces (1-4 et m-m+3) : m + 4, pas m + 5.
 **Création en prod (David, 2026-11-01, 20 h 29 UTC)** : 8 brouillons, sans nœud ni tag (relevé MCP) — e0520082 (337),
 fe6f5606 (342), 2f4f4ae0 (422), 82e6baff (425), 22332630 (423), f2ed0ea0 (339), 42bb2d66 (343), d8c9cb60 (426) ; 337 sur
 « … › probabilités totales », les 7 autres sur « … › épreuves indépendantes successives ». Migration
-`20261101224001_questions_1spe_probas_rangement_tags` (gabarit lot 3-suites) ; test d'intégration 10/10, rouge 2/10 sans
+`20261101224701_questions_1spe_probas_rangement_tags` (gabarit lot 3-suites) ; test d'intégration 10/10, rouge 2/10 sans
 l'étape 4.
