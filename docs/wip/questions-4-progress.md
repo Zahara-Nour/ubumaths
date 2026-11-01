@@ -9,10 +9,10 @@ _Mis à jour le 2026-11-01, lot 9 écrit (§ 45), PR à ouvrir._
 
 - **État** : lots 1 à 7 en prod et publiés. Lot 8 publié (§ 43).
   Lot 9 « pensée informatique » : 3 modèles écrits, specs vertes, joués en local (§ 45), branche `feat/questions-4-lot-9`.
-- **Prochaine action** : PR du lot 9 (revue : aucune, contenu ; `Doc-inchangée: contenu`), CI verte, merge ; puis
-  David `create-questions --dir scripts/questions/4-lot-9 --publier` ; relever les 3 `id`, migration nœud + tag
-  (065, 066 → nœud 195147df ; 067 → 151ff8c9), page à cocher. Le lot 9 est le dernier de l'ordre validé (§ 5 bis) :
-  restent les outils C (§ 3) et la fin de chantier (versement).
+- **Prochaine action** : au « go » de la pause CI, `git merge origin/main` + push + merge de #2166 ; puis la
+  migration de rangement du lot 9, prête et auditée sur la branche locale `feat/questions-4-lot9-rangement` (§ 46) :
+  horodatage par `pnpm migration:horodatage`, PR, merge, `db:migrate`, MCP, page à cocher. Le lot 9 est le dernier de
+  l'ordre validé (§ 5 bis) : restent les outils C (§ 3) et la fin de chantier (versement).
 - **En attente de David** : rien. **Pause CI** demandée le 2026-11-01 (session migrations-collision) : run de #2166
   annulé, ni push ni merge avant son « go » ; au « go » : `git merge origin/main`, push, CI, merge.
 - **Pièges en cours** : migrations, dès #2165 mergée (règle de David, 2026-11-01) : horodatage par `pnpm
@@ -1128,3 +1128,15 @@ Algorithmique / Variables / Accumulation 1 (067) ; variante « au moins 18 ans �
 - 3 brouillons créés en prod par David (depuis le worktree, avant le merge) : 6c9c9649 (4-065), 8b6f9e98 (4-066),
   20cb9b55 (4-067), en [4], catégories justes, sans nœud ni tag (MCP). Nœuds : 065, 066 → Algorithmique > Variables
   et instructions > instructions conditionnelles ; 067 → … > variables et affectation.
+
+## 46. Lot 9 : nœud et tags, prêts (branche locale `feat/questions-4-lot9-rangement`, pas encore poussée)
+
+- Migration `20261101990000_questions_4_lot9_rangement_tags.sql` (**horodatage provisoire** : à refaire par
+  `pnpm migration:horodatage` dès #2165 mergée), copie adaptée de celle du lot 8 ; 1re résolution par
+  **sous-notion** (065, 066 → instructions conditionnelles ; 067 → variables et affectation).
+- Test d'intégration `questions-4-lot9-rangement-tags.test.ts` : rouge sans la migration (5 échecs sur 9), vert avec
+  (9/9). `check:incremental` 0 erreur ; `types:cliquet` tenu.
+- `security-auditor` : aucun finding (diff lot 8 / lot 9 = données seules ; branche sous-notion vérifiée contre la prod,
+  index uniques ; rollback complet). Question d'accès tranchée au § 44.3 : personne ne gagne d'accès.
+- Au « go » de la pause CI : merger #2166 ; puis renommer la migration (horodatage), pousser la branche, PR, CI verte,
+  merge, `db:migrate` (sans `--include-all`), vérifier au MCP ; page à cocher.
