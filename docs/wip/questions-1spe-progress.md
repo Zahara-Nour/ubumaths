@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2092 (lot 1-dérivation, § 18)._
+_Mis à jour le 2026-11-01, après #2101 et le `db:migrate` du rangement._
 
-- **État** : lots 0 publiés, D3 joué. **Lot 1-dérivation** (10 modèles neufs, points 259 à 397 du § 3.5) mergé (#2092), fichiers dans `scripts/questions/1spe-derivation/`, pas encore en base. Brouillons de 1re spé restants (inchangés) : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (questions-tspe), 0495289a (attente), c90fa022, d2067413 (1TECHNO).
-- **Prochaine action** : David lance, depuis le dépôt principal, `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-derivation --publier` ; puis relire les ids en base, migration de rangement (nœuds + tags, worktree neuf), page à cocher, `publier-lot`.
-- **En attente de David** : le `--publier` du lot.
+- **État** : lot 1-dérivation (10 brouillons, § 18) créé en prod, rangé et tagué (#2101, migration jouée et relue). Page à cocher publiée : https://claude.ai/artifact/Q4kLqL6qnRz5DA18ivqkJP. Brouillons de 1re spé plus anciens (inchangés) : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (questions-tspe), 0495289a (attente), c90fa022, d2067413 (1TECHNO).
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 10) ; « À revoir » → corriger (`--mettre-a-jour`) ; puis simulation `publier-lot --dir scripts/questions/1spe-derivation`. Lot suivant de D7 : variations et courbes (§ 3.6).
+- **En attente de David** : relecture de la page, puis `publier-lot --publier`.
 - **Pièges en cours** : `create-questions` et `publier-lot --publier` refusés au mode auto (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET worktrees ; corps de commit : lignes ≤ 100 caractères (commitlint).
-- **Worktree / branche** : aucun (retiré après #2092).
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -843,3 +843,9 @@ nombre dérivé (269).
 `security-auditor` (Opus) : aucun finding bloquant (écart au gabarit limité aux données, `1_SPE` et au compte ; gardes
 mesurées en prod, MCP) ; un faible hérité du gabarit (trigger `updated_at` à relire, `tgenabled = 'O'`, après
 application).
+
+#2101 mergée (CI verte). `db:migrate` le 2026-11-01 : seule cette migration en attente (dry-run), jouée ; relu en base
+(MCP) : 10 modèles sur leur nœud, un point chacun, `draft`, `updated_at` inchangé, trigger actif (`O`).
+
+Page à cocher : https://claude.ai/artifact/Q4kLqL6qnRz5DA18ivqkJP (10 fiches, aucune alerte ; collection `verdicts` vide
+à la publication).
