@@ -6,18 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2158 et la publication du lot 6a._
+_Mis à jour le 2026-11-01, lot 6b écrit (PR en cours)._
 
-- **État** : lots 1 à 6a en prod ET publiés. Lot 6a : 9 verdicts « OK » (page à cocher), simulation passée, `--publier`
-  lancé par David, relevé MCP : 9 `published`. Aucun worktree en cours.
-- **Prochaine action** : lot 6b (contenances + durées, phase 0 déjà validée, § 10) : worktree
-  `ubumaths-wt-questions-ce2-6b`, tests d'abord, specs, création en brouillon par David, migration nœud + tag.
-- **En attente de David** : rien.
-- **Pièges en cours** : horodatage d'une migration neuve = `pnpm migration:horodatage` ; `db:migrate`, `--publier`
-  refusés par le classifieur (David, `!`) ; `db:migrate` pousse TOUTES les migrations en attente ; niveaux relevés
-  juste avant la publication ; commitlint : sujet sans majuscule ; pas de mention Claude dans commits/PR ; verdicts
-  du 6a posés en 6 s (bloc ranger CE2-038/048 : jeu dans l'aperçu admin non confirmé).
-- **Worktree / branche** : aucun (à créer pour le lot 6b).
+- **État** : lots 1 à 6a en prod et publiés. Lot 6b écrit : 4 modèles (10-13), 74 specs, simulation verte.
+- **Prochaine action** : merger la PR 6b ; **David** crée les brouillons en prod (`create-questions --dir
+scripts/questions/ce2-6b --publier`, via `!`) ; migration nœud + tag (contenances : nœud « unités et conversions »
+  vide ; durées : nœud « calcul de durées »), test d'intégration rouge sans elle ; page à cocher ; publication.
+- **En attente de David** : création des brouillons (`!`).
+- **Pièges en cours** : horodatage via `pnpm migration:horodatage` ; `db:migrate`, `--publier` refusés par le
+  classifieur (`!`) ; niveaux relevés juste avant la publication ; commitlint : sujet sans majuscule ; pas de
+  mention Claude ; `mod()` refuse les variables non entières en condition (passer par une variable dérivée).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2-6b` · `feat/questions-ce2-lot6b`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -489,3 +488,12 @@ conversion, puis le mélange, puis l'unité à déduire).
   léger » (case choix, bonne réponse en premier). Positions affichées du `ranger` lues par essai des permutations
   (stables d'une valeur à l'autre).
 - Choix d'unité : 04 en 5 unités (mm, cm, dm, m, km), 07 en 3 (g, kg, t) ; réponses numériques en case.
+
+### Lot 6b — écriture (2026-11-01)
+
+- Script `docs/wip/questions/lot-ce2-6b.py` → `scripts/questions/ce2-6b/` : 4 modèles, 74 specs, simulation verte.
+  Niveaux posés d'après le relevé MCP du jour (à relire avant la publication) : Contenances / Unités 1 (10) et 2 (11) ;
+  Durées / Durée écoulée 3 (12) et 4 (13), après les 1-2 du CE1.
+- 10 : symbole, sens, plus grande / plus petite, choix de l'unité (L, dL, cL). 11 : relations, 780 cL = 7 L + 80 cL.
+- 12-13 : l'axe chronologique n'est pas un bloc (énoncé en texte, repères dans le corrigé). Réponses en deux cases
+  (h, min) ; 13 pose `u = t - 6 floor(t/6)` pour éviter `mod` en condition.
