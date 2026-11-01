@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, phase 0 écrite, en attente de validation._
+_Mis à jour le 2026-11-01, PR ouverte, textes en relecture chez David._
 
-- **État** : chantier ouvert. Les cartes viennent du chantier `illustrations` (`docs/Chiphres/illustrations/`). Trois choix de David (2026-11-01) : grande carte **dans `/royaume`, à la place de la spirale** ; **une page par ville** ; clic sur un lieu → **courte description tirée du Compendium** (relue par David sur une page à cocher).
-- **Prochaine action** : faire valider la phase 0 (ci-dessous), puis écrire les tests.
-- **En attente de David** : la phase 0 (questions Q1 à Q3).
-- **Pièges en cours** : grande carte de 2,4 Mo (4356 px) → versions réduites ; texte des lieux = Compendium (`docs/Chiphres/lore-pataphysique.md`), qui fait foi.
-- **Worktree / branche** : `../ubumaths-wt-cartes-site` · `feat/cartes-site`.
+- **État** : tout est codé et testé. La grande carte remplace la spirale sur `/royaume`. Les sept pages `/royaume/<ville>` sont faites, ajoutées au sitemap, et la doc est à jour. La relecture `code-reviewer` (Sonnet) a eu lieu ; son point important est corrigé (le lieu choisi survivait au changement de ville).
+- **Prochaine action** : lire les verdicts de la page à cocher (https://claude.ai/artifact/4Ps5U829D9Nj37hynxuXG5, collection `verdicts`, clé `<ville>--<lieu>` ou `<ville>--intro`), appliquer les corrections dans `src/lib/kingdom-tour/cities.ts`, puis merger quand la CI est verte.
+- **En attente de David** : la relecture des 46 textes. Le merge attend cette relecture.
+- **Pièges en cours** : les noms de la grande carte sont agrandis par rapport à la surcouche validée (taille par CSS, plus encore sous 640 px), YOYOLANDE et BEDONSTAN sont décalés ; dans le test, la teinte de la Province lue se teste sur `KingdomMap`, l'IntersectionObserver ne se déclenche pas dans le navigateur de test.
+- **Worktree / branche** : `../ubumaths-wt-cartes-site` · `feat/cartes-site` · serveur de test sur le port 5176.
 
 ## Phase 0 — comportements
 
@@ -34,3 +34,7 @@ _Mis à jour le 2026-11-01, phase 0 écrite, en attente de validation._
 - **Q3** : la spirale (code et tests) est-elle **supprimée** une fois la carte en place ? (Proposition : oui.)
 
 ## Historique
+
+- 2026-11-01 — Phase 0 validée par David, avec mes recommandations : clic sur un lieu → défilement jusqu'à sa fiche ; la page d'une ville reprend les outils de sa Province (Sandomir n'en a pas) ; la spirale de la carte est retirée (`buildSpiral` reste, pour la gidouille des portes de la fin).
+- Contour du Royaume : celui du plan schématique (`plan-schematique.py`), mis à l'échelle du fond (×4,5375), tombe sur le dessin ; surfaces des Provinces = secteurs issus de Sandomir (2580, 1865), bornés par les frontières relevées (`carte-royaume.py`), découpés par ce contour. Tampon de neige de la surcouche cuit dans le fond web.
+- Textes : intros et descriptions tirées du Compendium ; deux ajouts sans source retirés avant la relecture (cris d'Ubu à l'Arène, presses « jour et nuit »).
