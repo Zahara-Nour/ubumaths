@@ -1,0 +1,180 @@
+{
+	"id": "91db0034-86d4-49bf-b190-0884db19e9b7",
+	"title": "Inégalité de concentration : taille d'échantillon",
+	"description": "P(|Mₙ − μ| ⩾ δ) ⩽ V/(nδ²) : plus petit n pour un risque donné (pièges : V/(nδ), arrondi par défaut)",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Concentration et loi des grands nombres",
+	"subdomain": "Inégalité de concentration",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-floor(-x)}}"
+				}
+			],
+			"statement": "$M_n$ est la moyenne d'un échantillon de taille $n$ d'une loi d'espérance $\\mu$ et de variance $V={{v}}$.\n\nÀ l'aide de l'inégalité de concentration, détermine le plus petit entier $n$ qui garantit $P\\left(\\left|M_n-\\mu\\right|\\geqslant {{eval:1/d;d}}\\right)\\leqslant {{eval:a/100;d}}$.\n\n$n=?$",
+			"variables": [
+				{
+					"name": "v",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "2|4|5|10"
+				},
+				{
+					"name": "a",
+					"expression": "3|4|5|10"
+				},
+				{
+					"name": "x",
+					"expression": "{{eval:v*d^2*100/a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Il suffit que $\\dfrac{V}{n\\delta^{2}}\\leqslant\\alpha$, soit $n\\geqslant\\dfrac{V}{\\alpha\\delta^{2}}$.",
+					"$\\dfrac{ {{v}} }{ {{eval:a/100;d}}\\times{{eval:1/d;d}}^{2} }{{if:floor(x)==x|=|\\approx}} {{eval:round(100*x)/100;d}}$, donc le plus petit entier est $n=\\textcolor{{{color:primary.0}}}{{{eval:-floor(-x)}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-floor(-x)}}"
+				}
+			],
+			"statement": "On lance $n$ fois une pièce qui tombe sur pile avec la probabilité ${{eval:t/10;d}}$, et on note $F_n$ la fréquence de pile : c'est la moyenne d'un échantillon de la loi de Bernoulli de paramètre $p={{eval:t/10;d}}$.\n\nÀ l'aide de l'inégalité de concentration, détermine le plus petit entier $n$ qui garantit $P\\left(\\left|F_n-{{eval:t/10;d}}\\right|\\geqslant 0.1\\right)\\leqslant 0.05$.\n\n$n=?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "1..9"
+				},
+				{
+					"name": "x",
+					"expression": "{{eval:t*(10-t)*20}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La variance de la loi de Bernoulli est $V=p(1-p)={{eval:t/10;d}}\\times{{eval:1-t/10;d}}={{eval:t*(10-t)/100;d}}$.",
+					"Il faut $\\dfrac{V}{n\\times 0.1^{2}}\\leqslant 0.05$, soit $n\\geqslant\\dfrac{ {{eval:t*(10-t)/100;d}} }{0.05\\times 0.01}={{eval:x}}$ : $n=\\textcolor{{{color:primary.0}}}{{{eval:x}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["240"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"d": "2",
+				"v": "3"
+			},
+			"description": "v0 : V = 3, δ = 0,5, α = 0,05 → 240",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["480"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "10",
+				"d": "4",
+				"v": "3"
+			},
+			"description": "v0 : V = 3, δ = 0,25, α = 0,1 → 480",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["134"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"d": "2",
+				"v": "1"
+			},
+			"description": "v0 : V = 1, δ = 0,5, α = 0,03 → 133,3… → 134",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["133"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"d": "2",
+				"v": "1"
+			},
+			"description": "v0 : arrondi par défaut 133",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["120"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"d": "2",
+				"v": "3"
+			},
+			"description": "v0 : δ au lieu de δ² : 120",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["420"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"t": "3"
+			},
+			"description": "v1 : p = 0,3 → 420",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["500"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"t": "5"
+			},
+			"description": "v1 : p = 0,5 → 500",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["600"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"t": "3"
+			},
+			"description": "v1 : V = p au lieu de p(1 − p) : 600",
+			"variationIndex": 1
+		}
+	]
+}

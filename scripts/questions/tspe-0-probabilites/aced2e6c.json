@@ -1,0 +1,194 @@
+{
+	"id": "aced2e6c-0f00-49ac-bcde-821d2bc91e9b",
+	"title": "Échantillon de taille n : variance et écart type de Sₙ et Mₙ",
+	"description": "V(Sₙ) = nV, V(Mₙ) = V/n, σ(Mₙ) = σ/√n (pièges : V/n² ou n²V, σ/n)",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Sommes de variables aléatoires",
+	"subdomain": "Échantillons",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*v}}"
+				}
+			],
+			"statement": "$(X_1, \\ldots, X_{ {{n}} })$ est un échantillon de taille ${{n}}$ d'une loi de variance $V={{v}}$. On pose $S=X_1+\\cdots+X_{ {{n}} }$.\n\nCalcule $V(S)$.\n\n$V(S)=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..30"
+				},
+				{
+					"name": "v",
+					"expression": "2..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les $X_i$ sont **indépendantes** : les variances s'ajoutent, $V(S)=nV$.",
+					"$V(S)={{n}}\\times{{v}}=\\textcolor{{{color:primary.0}}}{{{eval:n*v}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:v/n}}"
+				}
+			],
+			"statement": "$(X_1, \\ldots, X_{ {{n}} })$ est un échantillon de taille ${{n}}$ d'une loi de variance $V={{v}}$. On note $M=\\dfrac{X_1+\\cdots+X_{ {{n}} }}{ {{n}} }$ la moyenne de l'échantillon.\n\nCalcule $V(M)$.\n\n$V(M)=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "10|20|25|40|50|100"
+				},
+				{
+					"name": "v",
+					"expression": "2..12"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$V(M)=V\\left(\\dfrac{S}{n}\\right)=\\dfrac{1}{n^{2}}V(S)=\\dfrac{nV}{n^{2}}=\\dfrac{V}{n}$.",
+					"$V(M)=\\dfrac{ {{v}} }{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{eval:v/n}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:s/sqrt(n)}}"
+				}
+			],
+			"statement": "$(X_1, \\ldots, X_{ {{n}} })$ est un échantillon de taille ${{n}}$ d'une loi d'écart type $\\sigma={{s}}$. On note $M$ la moyenne de l'échantillon.\n\nCalcule l'écart type $\\sigma(M)$.\n\n$\\sigma(M)=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "4|9|16|25|36|49|64|100"
+				},
+				{
+					"name": "s",
+					"expression": "1..12"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$V(M)=\\dfrac{\\sigma^{2}}{n}$, donc $\\sigma(M)=\\dfrac{\\sigma}{\\sqrt{n}}$.",
+					"$\\sigma(M)=\\dfrac{ {{s}} }{\\sqrt{ {{n}} }}=\\dfrac{ {{s}} }{ {{eval:sqrt(n)}} }=\\textcolor{{{color:primary.0}}}{{{eval:s/sqrt(n)}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["40"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "10",
+				"v": "4"
+			},
+			"description": "v0 : n = 10, V = 4 → 40",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["400"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "10",
+				"v": "4"
+			},
+			"description": "v0 : n²V = 400",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{3}{10}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "20",
+				"v": "6"
+			},
+			"description": "v1 : V = 6, n = 20 → 3/10",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0,3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "20",
+				"v": "6"
+			},
+			"description": "v1 : 0,3 accepté",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0,015"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "20",
+				"v": "6"
+			},
+			"description": "v1 : V/n² = 0,015",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{3}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "16",
+				"s": "6"
+			},
+			"description": "v2 : σ = 6, n = 16 → 3/2",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{3}{8}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "16",
+				"s": "6"
+			},
+			"description": "v2 : σ/n = 3/8",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{9}{4}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "16",
+				"s": "6"
+			},
+			"description": "v2 : variance 9/4",
+			"variationIndex": 2
+		}
+	]
+}

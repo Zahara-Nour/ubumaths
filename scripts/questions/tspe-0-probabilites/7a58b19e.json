@@ -1,0 +1,86 @@
+{
+	"id": "7a58b19e-e3bf-4803-884c-0e0918b8cb6a",
+	"title": "Loi binomiale : P(a ⩽ X ⩽ b) avec une table",
+	"description": "Extrait de table des probabilités cumulées fourni : P(a ⩽ X ⩽ b) = P(X ⩽ b) − P(X ⩽ a − 1) (piège : P(X ⩽ b) − P(X ⩽ a))",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Probabilités",
+	"domain": "Loi binomiale",
+	"subdomain": "Calcul de probabilités",
+	"level": 5,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"statement": "$X$ suit la loi binomiale $\\mathcal{B}(25\\,;0.5)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n|---|---|\n| $8$ | $0.0539$ |\n| $9$ | $0.1148$ |\n| $10$ | $0.2122$ |\n| $11$ | $0.345$ |\n| $12$ | $0.5$ |\n| $13$ | $0.655$ |\n| $14$ | $0.7878$ |\n| $15$ | $0.8852$ |\n| $16$ | $0.9461$ |\n\nEn utilisant uniquement cette table, calcule $P({{a}}\\leqslant X\\leqslant {{b}})$.\n\n$P({{a}}\\leqslant X\\leqslant {{b}})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "9..12"
+				},
+				{
+					"name": "b",
+					"expression": "14..16"
+				},
+				{
+					"name": "fb",
+					"expression": "{{if:b==14|0.7878|{{if:b==15|0.8852|0.9461}}}}"
+				},
+				{
+					"name": "fa",
+					"expression": "{{if:a==9|0.0539|{{if:a==10|0.1148|{{if:a==11|0.2122|0.345}}}}}}"
+				},
+				{
+					"name": "r",
+					"expression": "{{eval:fb-fa;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$P({{a}}\\leqslant X\\leqslant {{b}})=P(X\\leqslant {{b}})-P(X\\leqslant {{eval:a-1}})$ : on retire les valeurs **strictement inférieures** à ${{a}}$.",
+					"$P({{a}}\\leqslant X\\leqslant {{b}})={{fb}}-{{fa}}=\\textcolor{{{color:primary.0}}}{{{r}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0,7704"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "10",
+				"b": "15"
+			},
+			"description": "v0 : P(10 ⩽ X ⩽ 15) = 0,7704",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0,673"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "10",
+				"b": "15"
+			},
+			"description": "v0 : F(b) − F(a) = 0,673",
+			"variationIndex": 0
+		}
+	]
+}

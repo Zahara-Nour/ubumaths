@@ -10,21 +10,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après la publication du lot 0-géométrie dans l'espace (§ 12)._
+_Mis à jour le 2026-11-01, lot 0-probabilités en cours (§ 13)._
 
-- **État** : lots 0-suites, 0-limites et fonctions, 0-intégration, 0-primitives, 0-trigo, 0-dénombrement,
-  0-géométrie dans l'espace **publiés** (161 modèles). Q-D1 : voie A — ordre de « Loi binomiale / Coefficients
-  binomiaux » à échanger dans la migration Q3 (07ebdcbe 1, 4dcbae71 2, 970dab52 3, ef3c495c 4).
-- **Prochaine action** : lot 0-probabilités (nouveau worktree depuis `origin/main`), dernier thème des brouillons.
-  Puis migration Q3 (tags + échange de niveaux D-D1, niveaux provisoires à cause de l'index unique).
-- **En attente de David** : rien.
+- **État** : lots 0-suites → 0-géométrie dans l'espace **publiés** (161 modèles). Lot 0-probabilités (22 brouillons,
+  dernier thème) : instantané, 4 retouches (C1-C4), PR des fichiers ouverte. 1cfc575d sort du lot (modèle de seconde).
+- **Prochaine action** : CI verte → merge ; page à cocher ; David relit, puis `create-questions --publier
+--mettre-a-jour` et `publier-lot` (lui). Ensuite migration Q3 (tags + échange de niveaux D-D1, niveaux provisoires
+  à cause de l'index unique).
+- **En attente de David** : la relecture du lot 0-probabilités.
 - **Pièges en cours** : le **niveau est dans la clé** de `create-questions` : changer `level` dans un fichier = doublon
   créé ; index unique de niveau par catégorie sur les **publiés** seulement. `create-questions` et `publier-lot`, même
   en simulation → David (avec `!`) ; simulation `publier-lot` AVANT tout ; worktree neuf : `pnpm exec svelte-kit sync`,
   et `pnpm exec tsx --env-file=../ubumaths/.env …` (pas de `.env` dans le worktree) ; l'aperçu mélange les options d'une
   case choix : recouper avec la SOURCE ; `!=` dans une formule s'affiche ≠, `i` seul devient l'unité imaginaire ;
   en-tête de commit ≤ 100 caractères (refus de commitlint).
-- **Worktree / branche** : aucun (retiré après #2121) ; prochain lot : nouveau worktree depuis `origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe`, `content/questions-tspe-lot0-probas`.
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -621,3 +621,44 @@ vide à la publication. Les 6 retouches ne sont pas encore en base : la page mon
 62e446cb, 40ddef82, 3bace561, 34b03dee ; 23 identiques), relu en base (MCP) : C1-C6 présentes, ancienne formule de
 distance absente de 34b03dee. `publier-lot` en simulation : 28 passent,
 puis `--publier` (David) : 28 / 28. Relu en base (MCP) : 28 / 28 `published`.
+
+## 13. Lot 0-probabilités : vérification des brouillons
+
+_2026-11-01. Dernier thème des brouillons. Relevé MCP : tout modèle tagué d'un point TSPE 501-539 ou 612-624, de
+TCOMP-367 ou TCOMP-301, et tout modèle `T_SPE` du thème « Probabilités » : il ne reste en prod **aucun autre brouillon
+`T_SPE`** (23 au total). **22 au lot** : 0943e867 (530), 91db0034 (533), 95f73515 (531), a95a9c0d (510), 6c80b4ec
+(511), f0c8c1fc (619), 4943ca05 (510), 7a58b19e (620), dbee4649 (522), 38001c3f (621), 1043c29e (502), 30b597c3 (618),
+ea8d7ae6 (516), 77498f1b (502), 4ff9d049 (TCOMP-367 seul, Q3 → 508), 13e2d419, 76b4061b (516), 7d3632bb (TCOMP-301
+seul, Q3 → 516), aced2e6c (622), de8fa591 (524), 71cb8ab7 (527), 7974722d (526). Les 18 premiers de « Loi binomiale » et
+« Loi géométrique » sont aussi en `T_COMP`. **1cfc575d** (arbre pondéré, niveau `2`, tagué 2-399 + TCOMP-302 + TSPE-616)
+**sort du lot** : c'est un modèle de seconde, vérifié par `questions-2de` (§ 2.1 « OK », Q7 : niveau `['2']` seul) ;
+Q3 le concernant est donc close : niveau `2` gardé, publication par `questions-2de`. Instantané
+`scripts/questions/tspe-0-probabilites/` (prod), une copie par variation (43 variations, 2 tirages lus chacune), tables
+de la loi binomiale recalculées, branches de 6c80b4ec (j = 1..3 et 1..2) et de 38001c3f v1 (w = 1..8) vérifiées une à
+une ; sorties dans le scratchpad._
+
+**Mécanique** : 22 / 22 verts, 0 avertissement (avant et après les retouches).
+
+**Bornes** : TSPE : P(X = k) à la main pour n ⩽ 5, tables de P(X ⩽ k) pour le reste (510, 619, 620) ; intervalle à
+2,5 % ou 5 % par queue (511) ; Bienaymé-Tchebychev et concentration avec un majorant < 1 (conditions `v < d²`,
+`v·d² < n`). Loi géométrique : « approfondissement possible » en TSPE (516), gardée (D4) ; au programme en TCOMP.
+TCOMP (D7) : calcul à la main seulement pour n ⩽ 5 (ltc-2, a95a9c0d) ; tables à la place de la calculatrice (297, 299) ; rien d'autre hors bornes.
+
+**Cases choix** : 30b597c3, ea8d7ae6, 77498f1b : la bonne option est la première de la source (`case: 0`).
+
+**Constats (corrigés dans les fichiers, specs vertes, tirages forcés relus)** :
+
+- **C1** 30b597c3 v0 (n lancers, nombre de 6) : n = 6 donnait deux options identiques, ℬ(6 ; 1/6) (la bonne) et
+  « ℬ(6 ; 1/n) » (le piège) → condition `n != 6`.
+- **C2** 30b597c3 v1 (sans remise) : options « ℬ(3 ; 4/8) », « 𝒢(4/8) » non simplifiées → `{{eval:r/(r+b)}}` (1/2).
+- **C3** 4ff9d049 v1 : « 1 boules rouges », « 1 boules blanches » → r et b tirés dans 2..9 (au lieu de 1..9).
+- **C4** 91db0034 v0 : « ≈ 250 » quand le quotient est exact → « = 250 » (« ≈ 133,33 » gardé sinon).
+
+**Vus, laissés** : 1043c29e et 38001c3f v0 demandent la variance, rangée sous un point TCOMP d'écart type (359, 363) :
+σ² = V, rien à changer ; 6c80b4ec v0 ne tire que trois tables, v1 deux (des valeurs de B(50 ; 0,2) et B(40 ; 0,25)
+justes) ; corrections de 1cfc575d sans couleur de résultat (hors lot).
+
+**Niveaux** : aucune collision dans les 10 catégories du lot (relevé MCP, 2026-11-01) ; « Loi binomiale / Coefficients
+binomiaux » (publiés, D-D1) n'est pas touchée.
+
+**Pour la migration Q3** : 4ff9d049 → 508, 7d3632bb → 516 (D3, inchangé) ; 1cfc575d retiré de Q3 (reste en `2`).
