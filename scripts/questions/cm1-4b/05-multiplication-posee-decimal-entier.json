@@ -1,0 +1,169 @@
+{
+	"title": "Poser la multiplication d'un nombre décimal par un entier",
+	"description": "Multiplication posée d'un décimal par un entier de 2 à 9 : 8 × 17,3 ; 7 × 46,55 ; 4 × 12,35 = 49,4",
+	"grades": ["CM1"],
+	"theme": "Décimaux",
+	"domain": "Multiplier",
+	"subdomain": "Calcul posé",
+	"level": 1,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{n}} × {{eval:T/10;d}}\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "T",
+					"expression": "11..999"
+				}
+			],
+			"conditions": ["mod(T,10) != 0", "mod(T*n,10) != 0"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On pose la multiplication comme avec des nombres entiers, sans s'occuper de la virgule.",
+					"${{T}} \\times {{n}} = {{eval:T*n}}$.",
+					"${{eval:T/10;d}}$ a un chiffre après la virgule : le produit en a un aussi.",
+					"$${{n}} \\times {{eval:T/10;d}} = \\textcolor{{{color:primary.0}}}{{{eval:T*n/10;d}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{n}} × {{eval:C/100;d}}\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "C",
+					"expression": "101..9999"
+				}
+			],
+			"conditions": ["mod(C,10) != 0", "mod(C*n,10) != 0"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On pose la multiplication comme avec des nombres entiers, sans s'occuper de la virgule.",
+					"${{C}} \\times {{n}} = {{eval:C*n}}$.",
+					"${{eval:C/100;d}}$ a deux chiffres après la virgule : le produit en a deux aussi.",
+					"$${{n}} \\times {{eval:C/100;d}} = \\textcolor{{{color:primary.0}}}{{{eval:C*n/100;d}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{n}} × {{eval:C/100;d}}\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "C",
+					"expression": "101..9999"
+				}
+			],
+			"conditions": ["mod(C,10) != 0", "mod(C*n,10) == 0", "mod(C*n,100) != 0"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On pose la multiplication comme avec des nombres entiers, sans s'occuper de la virgule.",
+					"${{C}} \\times {{n}} = {{eval:C*n}}$.",
+					"${{eval:C/100;d}}$ a deux chiffres après la virgule : le produit en a deux aussi, ${{eval:floor(C*n/100)}}{,}{{eval:floor(mod(C*n,100)/10)}}0$.",
+					"Le $0$ à la fin de la partie décimale peut s'enlever.",
+					"$${{n}} \\times {{eval:C/100;d}} = \\textcolor{{{color:primary.0}}}{{{eval:C*n/100;d}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 8 × 17,3 = 138,4",
+			"variationIndex": 0,
+			"variables": {
+				"n": "8",
+				"T": "173"
+			},
+			"answers": ["138,4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : virgule oubliée, 1 384",
+			"variationIndex": 0,
+			"variables": {
+				"n": "8",
+				"T": "173"
+			},
+			"answers": ["1 384"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 7 × 46,55 = 325,85",
+			"variationIndex": 1,
+			"variables": {
+				"n": "7",
+				"C": "4655"
+			},
+			"answers": ["325,85"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : virgule oubliée, 32 585",
+			"variationIndex": 1,
+			"variables": {
+				"n": "7",
+				"C": "4655"
+			},
+			"answers": ["32 585"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une seule décimale, 3 258,5",
+			"variationIndex": 1,
+			"variables": {
+				"n": "7",
+				"C": "4655"
+			},
+			"answers": ["3 258,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 × 12,35 = 49,4",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4",
+				"C": "1235"
+			},
+			"answers": ["49,4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : virgule une case trop à gauche, 4,94",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4",
+				"C": "1235"
+			},
+			"answers": ["4,94"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
