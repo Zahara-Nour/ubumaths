@@ -5,24 +5,24 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2099._
+_Mis à jour le 2026-11-01, #2116 ouverte (CI en cours)._
 
-- **État** : lots 1 à 5 publiés ; **lot 6 « Données et probabilités »** (8 modèles, § 17) en prod en brouillons,
-  rangés et tagués (migration 20261101190200 jouée, #2099 mergée, vérifié MCP), sous-notion « choisir une
-  représentation » créée (5-079 dessus).
-- **Prochaine action** : relecture de David sur la page à cocher https://claude.ai/artifact/J4PrvTefAAb8WifVcgQMNt
-  (collection `verdicts`, 0 verdict au départ) ; compter les verdicts, corriger les « à revoir » ; puis
-  `publier-lot.ts --dir scripts/questions/5-donnees-probabilites` (simulation par moi, `--publier` par David).
-  Ensuite lot 7 « Proportionnalité, fonctions » (085, 086, 140, 087, 092, 098 ; recoupe 6-140 / 6-141), lot 8
-  « Opérations » (001, 002, 005, 116, 117).
-- **En attente de David** : la relecture du lot 6 ; le `! pnpm db:migrate` de 23:26:56 UTC (2026-10-31) visait-il
-  une autre session (3e, lot 5) ? (résultat juste, audit sans bloquant).
-- **Pièges en cours** : horodatage de migration = `max + 1 min` de `origin/main` JUSTE AVANT le merge (deux
-  collisions au lot 6) ; une migration qui crée un nœud → `later-migrations.ts` + fixtures `arbre-notions-seed` /
-  `seed-cycle4-points` (la CI applique toutes les migrations) ; `plusieurs: oui` ajoute « Coche la ou les bonnes
-  réponses » ; case oubliée d'un choix multiple = ½ ; `--publier` = David avec `!` ; jamais `e` ni `i`.
-- **Worktree / branche** : `ubumaths-wt-questions-5` (HEAD détaché sur `main`, branches mergées supprimées) ;
-  `supabase/.temp` retiré (copie dans le scratchpad de la session du 2026-11-01).
+- **État** : lots 1 à 5 publiés ; **lot 6** (8 modèles, § 17) en prod en brouillons, rangés, tagués, **relus 8/8
+  ok** ; collision de niveau (02 et 04 au niveau 1) → 04 au niveau 3 : PR **#2116** (migration
+  `20261101200800_questions_5_lot6_niveau` + JSON, test rouge sans / 6/6 vert, `security-auditor` sans bloquant).
+  **Phase 0 du lot 7 validée** (§ 18, 6 modèles).
+- **Prochaine action** : #2116 : CI → horodatage refait juste avant le merge (`max + 1 min` de `origin/main` ; la
+  6e prend `20261101200700`, #2114) → merge → `pnpm db:migrate` depuis le dépôt principal → vérif MCP (8190200a
+  au niveau 3) → `publier-lot.ts --dir scripts/questions/5-donnees-probabilites` (simulation) → David `--publier`.
+  Puis **écrire le lot 7** (§ 18) : worktree, `docs/wip/questions/lot-5-proportionnalite.py`, simulation
+  `create-questions` + `publier-lot`. Ensuite lot 8 « Opérations » (001, 002, 005, 116, 117).
+- **En attente de David** : le `--publier` du lot 6 (après la migration) ; le `! pnpm db:migrate` de 23:26:56 UTC
+  (2026-10-31) visait-il une autre session ? (résultat juste).
+- **Pièges en cours** : horodatage de migration = `max + 1 min` de `origin/main` JUSTE AVANT le merge (doublon
+  `20261101190200` 5e/6e : la seconde n'est jamais jouée) ; deux modèles d'un lot dans une même catégorie →
+  niveaux distincts ; nœud neuf → `later-migrations.ts` + fixtures ; `plusieurs: oui` ajoute « Coche la ou les
+  bonnes réponses » ; case oubliée d'un choix multiple = ½ ; `--publier` = David avec `!` ; jamais `e`.
+- **Worktree / branche** : `ubumaths-wt-questions-5`, branche `fix/questions-5-lot6-niveau` (#2116).
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -482,3 +482,35 @@ Relevé : aucun modèle sur les 6 points ; 6e « Fréquence » (fraction seule),
   navigateur relancé : erreur `wrapDynamicImport` de vitest, sans lien) ; `db:migrate` depuis le dépôt principal
   (seule migration en attente) ; vérifié au MCP : 8 brouillons sur leur nœud, 8 tags, 5-079 sur la sous-notion.
 - Page à cocher https://claude.ai/artifact/J4PrvTefAAb8WifVcgQMNt (8 fiches, aucune alerte), capacité `db`.
+
+### 17.4 Lot 6 : relu, niveau en collision (2026-11-01)
+
+- Page à cocher : **8 verdicts sur 8 « ok »** (comptés en base de l'artefact).
+- Simulation `publier-lot.ts` : refus, 02 « Calculer une moyenne » et 04 « Interpréter une moyenne » tous deux au
+  niveau 1 de Statistiques › Indicateurs › moyenne (le 2 est pris par 03). David (« je te suis ») : 04 → **niveau
+  3**. Question d'accès : personne. Script de lot + JSON 04 au niveau 3 ; migration
+  `20261101200800_questions_5_lot6_niveau` (gabarit du correctif 1re spé) + test d'intégration (rouge sans, 6/6 vert).
+- Collision trouvée en passant : `20261101190200` portée par la 5e (lot 6) ET la 6e (lot 7, #2107) ; la session
+  `questions-6` renomme la sienne en `20261101200700` (#2114).
+
+## 18. Lot 7 « Proportionnalité, fonctions » : décisions (David, 2026-11-01, « je te suis » sur les recos)
+
+Relevé prod : 6e « Calculer le pourcentage d'une quantité » (6-141 ; 50, 10, 20-40, 25, 75 %, niveaux 1-6 ; 7 = 4e),
+6e « Exprimer une proportion en pourcentage » (6-140 ; tout diviseur / multiple de 100, niveaux 1-2), 6e
+« Reconnaître la proportionnalité par son effet » / « … un tableau » ; 5e « Écrire une formule » (5-034, 5-124,
+Calcul littéral › Écrire › Formules 1-3, nœud = notion Algèbre › Calcul littéral).
+
+| #   | Point | Modèle                                                                                                                          | Réponse                 | Catégorie, niveau                                                 | Nœud                                                                |
+| --- | ----- | ------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------- |
+| 01  | 5-140 | Calculer 1 % d'une quantité                                                                                                     | case                    | Proportionnalité › Pourcentages › Calculer, 8                     | Proportionnalité › Pourcentages › calculs de pourcentages           |
+| 02  | 5-085 | Utiliser un pourcentage : réduction 10/25/50 %, prix payé (2 cases)                                                             | case                    | Proportionnalité › Pourcentages › Problèmes, 1                    | idem                                                                |
+| 03  | 5-086 | Exprimer une proportion en pourcentage (tout quelconque : 6/24, 22/40)                                                          | case                    | Proportionnalité › Pourcentages › Proportion, 3                   | idem                                                                |
+| 04  | 5-087 | Reconnaître des situations de proportionnalité (prix au kg, recette, vitesse constante, échelle / âge-taille, taxi, abonnement) | choix, `plusieurs: oui` | Proportionnalité › Situations de proportionnalité › Définition, 3 | Proportionnalité › Situations de proportionnalité › caractérisation |
+| 05  | 5-092 | Employer « en fonction de »                                                                                                     | choix                   | Calcul littéral › Écrire › Formules, 4                            | Algèbre › Calcul littéral (notion)                                  |
+| 06  | 5-098 | Écrire une formule reliant deux grandeurs (3n, 5 + 2n, 60t)                                                                     | case (expression)       | idem, 5                                                           | idem                                                                |
+
+- Les modèles de 6e ne sont PAS retagués 5e (aucun changement d'accès). Pas de géométrie dans 06 (5-124), pas de π.
+- Sans coefficient multiplicateur (4e) dans 02. Pas de sous-notion neuve.
+- Avant 06 : vérifier que le juge exige l'écriture (« 3n », « n × 3 » acceptés, pas une valeur).
+- Niveaux : simulation `publier-lot` dès l'écriture (collision du lot 6).
+- Accès : rien de neuf (brouillons, aucun nœud créé, tags lisibles par tout compte connecté).
