@@ -20,6 +20,9 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { uuidSchema } from '$lib/server/validation';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/categories/[classId]/+server');
 
 /**
  * Fetch categories for a specific class
@@ -52,7 +55,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			if (classError?.code === 'PGRST116') {
 				throw error(404, 'Class not found');
 			}
-			console.error('[Categories] Class verification error:', classError);
+			logger.error('Class verification error:', classError);
 			throw error(500, 'Failed to verify class');
 		}
 
@@ -64,7 +67,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			.order('display_order');
 
 		if (categoriesError) {
-			console.error('[Categories] Fetch error:', categoriesError);
+			logger.error('Fetch error:', categoriesError);
 			throw error(500, 'Failed to fetch categories');
 		}
 
@@ -86,7 +89,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		}
 
 		// Handle other errors
-		console.error('[Categories] Error fetching categories:', err);
+		logger.error('Error fetching categories:', err);
 		throw error(500, 'An error occurred while fetching categories');
 	}
 };

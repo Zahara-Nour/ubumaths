@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2136 (fichiers du lot 3-suites mergés)._
+_Mis à jour le 2026-11-01, migration de rangement du lot 3-suites écrite (§ 20)._
 
 - **État** : lots 0, 1-dérivation, 2-variations publiés. **Lot 3-suites** (10 modèles, points 214, 217, 372, 374, 375, 378, 369, 370, 222, 376) écrit : simulation 10 / 10 (90 specs), `sonde-figures` 0 problème, joué en base locale.
-- **Prochaine action** : relire en base (MCP) les 10 brouillons créés par David, puis migration nœud + tags (gabarit : lot 2-variations) → page à cocher → publication.
-- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-suites --publier` (brouillons en prod).
+- **Prochaine action** : PR de la migration de rangement (branche `feat/questions-1spe-suites-tags`) → CI verte (intégration comprise) → merge → `db:migrate` depuis le dépôt principal → relecture MCP → page à cocher → publication.
+- **En attente de David** : rien (brouillons créés en prod ; ensuite : verdicts de la page à cocher, puis `publier-lot --publier`).
 - **Pièges en cours** : niveaux d'une catégorie à relever **tous niveaux scolaires confondus** ; `create-questions` et `publier-lot --publier` lancés par David ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET de tous les worktrees ; corps de commit : lignes ≤ 100 caractères ; PR de migration : ligne `Doc-inchangée:` dans un commit (garde de `base-de-donnees.md`) ; intégration = workflow à part, attendre son run ; dépôt principal souvent encombré par d'autres sessions (ne commiter que ses fichiers).
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe` (branche `feat/questions-1spe-suites` mergée ; la migration partira d'une branche neuve).
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe` branche `feat/questions-1spe-suites-tags`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -972,3 +972,13 @@ naturel en entiers, décimaux en Python) ; points du DSL de taille fixe, minuscu
 (marge ajoutée) ; serveur de dev d'un worktree : `localhost`, pas `127.0.0.1`.
 
 PR #2136 mergée (CI verte du premier coup).
+
+**Création en prod (2026-11-01)** : `create-questions --publier` lancé par David après #2136 : 10 brouillons (98c3f740 214,
+b6753dff 217, bd27e002 372, 22141fa4 374, 45da9678 375, 4a51f887 378, 81322162 369, 89594aa7 370, 05edc72b 222,
+41100a51 376), relus en base (MCP) : `draft`, `1_SPE`, niveaux écrits, sans nœud ni tag.
+
+**Rangement** : migration `20261101215000_questions_1spe_suites_rangement_tags.sql` (gabarit : lot 2-variations ;
+5 modèles rangés sur une **notion**, première fois que le gabarit sert sans sous-notion) +
+`tests/integration/questions-1spe-suites-rangement-tags.test.ts` : 10 / 10 verts ; rouge sans le corps de la migration
+(5 échecs), restauré d'une copie, identique (`cmp`). Chemins et points résolus en prod (MCP, 10 / 10).
+`security-auditor` (Opus) : aucun finding.

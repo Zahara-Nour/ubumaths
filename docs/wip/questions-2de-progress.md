@@ -6,17 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2134 (6 C, mergée)._
+_Mis à jour le 2026-11-01, après #2139 (migration du lot 6, mergée)._
 
-- **État** : lots 1 à 5 publiés ; lot 6 : 6 A (#2106), 6 B (#2113), 6 C (#2134) mergés (§ 38-40) : les 20 modèles
-  sont en fichiers, rien en prod.
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/2de-fonctions-{a,b,c} --publier`
-  (trois commandes, `!`) ; puis relever les 20 `id`, migration nœud + tag (un seul fichier), page à cocher.
-- **En attente de David** : les trois `--publier`.
-- **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main` ET des worktrees ;
-  `page-a-cocher.ts` ne prend qu'un `--dir` (préfixes `a-`/`b-`/`c-` dans une copie) ; `db:migrate` et
-  `--publier` → David les lance avec `!` ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts `tsx`.
-- **Worktree / branche** : aucun (retiré après #2134).
+- **État** : lot 6 : les 20 modèles en prod en brouillon (§ 41) ; migration nœud + tag mergée (#2139), audit
+  sans finding bloquant, PAS ENCORE jouée en prod.
+- **Prochaine action** : après le `db push` de David, vérifier par MCP (20 `draft`, bon nœud, un seul tag,
+  `updated_at` préservé), puis page à cocher des 20 (trois dossiers, préfixes `a-`/`b-`/`c-`).
+- **En attente de David** : `! pnpm exec supabase db push --include-all` (la prod a déjà 20261101215000, venue
+  d'une autre session ; à blanc : seule 20261101213600 part).
+- **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main`, des worktrees ET de la prod ;
+  `page-a-cocher.ts` ne prend qu'un `--dir` ; `db push` et `--publier` → David avec `!`.
+- **Worktree / branche** : aucun (retiré après #2139).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1010,3 +1010,22 @@ une page à cocher.
 - Base locale : 6 brouillons ; aperçu joué : 04 (x³ ⩽ −8 : [−2 ; +∞[ « Faux », corrigé : courbe, y = −8,
   partie verte) ; 02 (√x > 1,9 : ]3,61 ; +∞[ « Juste », borne en disque vide) ; 06 (3x² + 2 ⩽ 5 : [−1 ; 1]
   « Juste », parabole de f, A et B, partie verte).
+
+## 41. Lot 6, brouillons en prod et migration nœud + tag (2026-11-01)
+
+- Brouillons créés par David (`create-questions --publier`, trois dossiers) ; relevé MCP : les 20 en `draft`,
+  sans nœud, sans tag, catégorie et niveau attendus.
+  - 6 A : 345beb60 (2-325), 42c19a19 (2-327), bcfbf5f8 (2-331), ddc60d24 (2-447), 9723b1e4 (2-326),
+    b44e582b (2-333), 602bd8d7 (2-334), 1048e462 (2-335) ;
+  - 6 B : d49de3f3 (2-455), aeaff491 (2-457), 80a87e34 (2-460), 37f39db3 (2-461), 8bc8159f (2-463),
+    214f91c0 (2-466) ;
+  - 6 C : 05e8453d (2-467), cd8f96ba (2-469), e7b37987 (2-470), 811f6004 (2-472), 2a249385 (2-336),
+    d86c9577 (2-448).
+- Nœuds relevés par MCP, conformes au § 37 ; 2-325 et 2-333 sont sur une notion (pas de sous-notion).
+- Migration `20261101213600_questions_2de_fonctions_rangement_tags` et
+  `tests/integration/questions-2de-fonctions-rangement-tags.test.ts`, générés depuis ceux du lot 5 (seul le lot
+  change). Rouge sans la migration (fichier réduit au rollback : 5 échecs, 5 verts) ; vert avec : 10/10.
+- Horodatage : max relevé sur `origin/main`, les worktrees et les branches distantes = 20261101213500 → 213600.
+- #2139 : CI verte, `security-auditor` sans finding bloquant (code identique au lot 5, état prod relu), mergée.
+  `db:migrate` refusé : la prod a déjà 20261101215000 (1re spé, autre session) → `--include-all` ; à blanc :
+  seule 20261101213600 part ; le `db push` réel est refusé par le classifieur, à lancer par David.

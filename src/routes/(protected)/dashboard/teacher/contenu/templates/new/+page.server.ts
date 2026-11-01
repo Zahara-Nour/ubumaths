@@ -10,6 +10,9 @@ import { fail, redirect } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { createChapterTemplate } from '$lib/server/chapter-templates';
 import { createChapterTemplateSchema } from '$lib/server/validation/chapter-templates';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('dashboard/teacher/contenu/templates/new/+page.server');
 
 export const actions: Actions = {
 	/**
@@ -49,7 +52,7 @@ export const actions: Actions = {
 		);
 
 		if (error) {
-			console.error('[Create Template] Error:', error);
+			logger.error('Error:', error);
 			return fail(500, {
 				error: 'Erreur lors de la création du template',
 				action: 'create'
