@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2117 (rangement du 5a) et la PR des fichiers du 5b._
+_Mis à jour le 2026-11-01, après #2117 (rangement du 5a) et #2123 (fichiers du 5b)._
 
-- **État** : lots 0 à 4 publiés ; 5a rangé en prod (#2117, `db push --include-all`, vérifié MCP), page à cocher publiée : https://claude.ai/artifact/R6LqP4SYrAFf1Keor4Xdxo (5 fiches, `verdicts` vide au départ) ; 5b (calculs, 6 modèles) écrit, specs vertes, simulation prod « 6 à créer », essayé en local (§ 10.4), PR des fichiers ouverte.
-- **Prochaine action** : merger la PR du 5b ; lire et compter les verdicts du 5a ; puis rangement du 5b après son `--publier`.
-- **En attente de David** : relecture du 5a (page à cocher) ; `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-5b --publier` (brouillons en prod) une fois la PR du 5b mergée.
+- **État** : lots 0 à 4 publiés ; 5a rangé en prod (#2117, `db push --include-all`, vérifié MCP), page à cocher publiée : https://claude.ai/artifact/R6LqP4SYrAFf1Keor4Xdxo (5 fiches, `verdicts` vide au départ) ; 5b (calculs, 6 modèles) écrit, specs vertes, simulation prod « 6 à créer », essayé en local (§ 10.4), fichiers mergés (#2123).
+- **Prochaine action** : lire et compter les verdicts du 5a (puis `publier-lot` en simulation) ; après le `--publier` du 5b : relever ses ids (MCP), worktree neuf, migration de rangement, page à cocher.
+- **En attente de David** : relecture du 5a (page à cocher) ; `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-5b --publier` (brouillons en prod).
 - **Pièges en cours** : `create-questions` retrouve un modèle par titre + catégorie + niveau (homonymes du CM1 signalés par la page à cocher, ids vérifiés) ; `reducedFractions: off` accepte toute fraction égale ; jamais `}}` collé dans un `{{if:}}` (accolade de `\underbrace`) ; `db:migrate` refusé quand la prod a des migrations plus récentes → `--dry-run` puis `--include-all` si seule la nôtre manque ; commit dans le dépôt principal : `git commit -m … -- <fichiers>` ; `Doc-inchangée:` dans un message de commit ; ne jamais enchaîner `gh pr merge` sur la lecture de la CI.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, `feat/questions-cm2-lot5b`.
+- **Worktree / branche** : aucun (retiré après #2123) ; en recréer un pour le rangement du 5b.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
