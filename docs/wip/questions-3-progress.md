@@ -5,14 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2128._
+_Mis à jour le 2026-11-01, après #2128 et la décision sur 3-050._
 
 - **État** : lots 0 à 6 publiés en prod ; lot 7 (algorithmique, 3-047 à 3-050, 4 modèles en blocs
   ` ```scratch `) écrit et mergé (#2128, § 14.8-14.9) ; pas encore en base de prod.
-- **Prochaine action** : attendre le `deploy:prod` qui livre ` ```scratch ` ; puis David lance
-  `create-questions --dir scripts/questions/3-lot-7 --publier` ; rangement (migration) ; page à cocher.
-  En attendant : lot 8 (boîte à moustaches), phase 0.
-- **En attente de David** : nœud de 3-050 (bloc personnalisé) — aucun nœud de l'arbre ne convient (§ 14.8).
+- **Prochaine action** : phase 0 du lot 8 = chantier à part `boite-a-moustaches` (bloc d'affichage,
+  puis geste « construire » ; 3-062 lire, 3-030 construire ; sert aussi en 2de). Relevé du 2026-11-01 :
+  **rien n'existe** (aucun bloc, aucun `stat-chart` ; `statistiques.md` la dit hors périmètre). Lot 7 :
+  attendre le `deploy:prod` de ` ```scratch `, puis `create-questions --dir scripts/questions/3-lot-7
+--publier` (David), rangement (avec la sous-notion neuve, § 14.10), page à cocher.
+- **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; aperçu admin : serveur lancé avec `--host 127.0.0.1` ;
   worktree neuf : `svelte-kit sync` avant `tsx` ; commits de doc depuis le worktree (`git push origin
@@ -1032,3 +1034,8 @@ modèles publiés de plus. Aucune règle ne change.
 
 - #2128 mergée (CI verte au 1er passage). ` ```scratch ` pas en prod : `create-questions --publier` après le
   `deploy:prod` qui le livre (David), depuis le dépôt principal à jour.
+
+### 14.10 Décision : nœud de 3-050 (David, 2026-11-01, « je valide »)
+
+- Sous-notion **neuve** « Algorithmique › Variables et instructions › blocs personnalisés », créée par la
+  migration de rangement du lot 7 (même migration, même garde). Elle servira aussi à 4-068 / 4-069.
