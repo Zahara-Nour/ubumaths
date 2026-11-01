@@ -2,16 +2,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR #2162 ouverte, en pause CI._
+_Mis à jour le 2026-11-01, après #2162._
 
-- **État** : palier 2 (construire) en PR #2162 ; revue Opus sans bloquant, mineurs corrigés (§ 12) ; tests verts.
-- **Prochaine action** : CI de #2162 (commit 29f018d) toute verte sauf Client Tests 1/2 : navigateur
-  déconnecté sur `fonctions-declarees.svelte.test.ts` (0 test en échec, vert en local) = flake. PAUSE CI
-  (session migrations-collision) : au « go », `git merge origin/main`, push, CI verte → merge, nettoyage.
-- **En attente de David** : vérification manuelle #2151 (téléphone) ; décisions du § 11 « Décidé en écrivant ».
+- **État** : paliers 1 (affichage, #2151) et 2 (construire, #2162) mergés, pas encore en prod (`deploy:prod`
+  sur demande de David). Le palier 3 = lot 8 de `questions-3` (modèles), mené dans le chantier `questions-3`.
+- **Prochaine action** : versement (fin de chantier) : le durable dans `docs/systeme/`, journal archivé.
+- **En attente de David** : vérifications manuelles #2151 et #2162 (`verifications-manuelles.md`) ;
+  décisions du § 11 « Décidé en écrivant » (trait suivant, bande par boîte, phrases).
 - **Pièges en cours** : quartiles = ceux de `describe.ts` ; série tirée au hasard de taille paire → médiane
   au demi, refusée sur un axe de 1 en 1 (aucune nouvelle graine tentée : dit dans la fiche).
-- **Worktree / branche** : `../ubumaths-wt-boite-a-moustaches` · `feat/boite-a-moustaches-construire`.
+- **Worktree / branche** : aucun (worktree retiré après #2162).
 
 ---
 
@@ -203,3 +203,8 @@ Notes = 4 ; 8 ; 11 ; 14 ; 19
   bloc ; test de bout en bout décimal négatif (-3,5 au clavier → `'-3.5'` → jugé juste).
 - Risque laissé, dit dans la fiche : `données:` aléatoire de taille paire → médiane au demi, refusée sur
   un axe de 1 en 1 pour ce tirage (le générateur ne retente pas une autre graine).
+
+## 13. Merge (2026-11-01, #2162)
+
+- CI : deux ratés « Browser connection was closed » (Client Tests, un shard à chaque run, 0 test en échec) ;
+  pause CI demandée par la session migrations-collision, puis `origin/main` fusionnée, job relancé, vert, mergé.
