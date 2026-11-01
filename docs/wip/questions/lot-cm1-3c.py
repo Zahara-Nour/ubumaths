@@ -314,8 +314,10 @@ MODELES.append(modele(
     4, COLORIER_DECIMAL,
     [spec('7 parts sur 10', 0, {'n': 7}, rangs(7), 'correct'),
      spec('Erreur : 3 parts', 0, {'n': 7}, rangs(3), 'incorrect'),
-     spec('37 cases', 1, {'n': 37}, rangs(37), 'correct'),
-     spec('Erreur : 73 cases', 1, {'n': 37}, rangs(73), 'incorrect'),
+     # Specs courtes : le test du corpus (answer-complexity-corpus) mesure aussi les réponses de
+     # coloriage, au plus 133 caractères (400 / 3), soit 34 rangs
+     spec('23 cases', 1, {'n': 23}, rangs(23), 'correct'),
+     spec('Erreur : 32 cases (chiffres échangés)', 1, {'n': 23}, rangs(32), 'incorrect'),
      spec('3/10 de la grille : 30 cases', 2, {'n': 3}, rangs(30), 'correct'),
      spec('Erreur : 3 cases (dixièmes lus comme des centièmes)', 2, {'n': 3}, rangs(3),
           'incorrect')],

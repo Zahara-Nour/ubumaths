@@ -580,3 +580,6 @@ sans outil neuf ; « 1 + 3/4 » refusé (`requiredForm: 'fraction'`).
   grille 3×4 (11/12) ; 144 « 6/5 » colorié en glissant sur deux bandes → juste ; 149 « 26/100 »,
   une ligne coloriée → « Tu as colorié 10 parts sur 100 ; il fallait en colorier 26 (26/100). »,
   figure juste dessinée.
+- **CI rouge, corrigée** : le test `answer-complexity-corpus` mesure aussi les réponses des specs de
+  coloriage (« 1, 2, …, 73 » : 281 caractères, marge ×3 sur 400 dépassée), alors que la garde Q58 ne
+  s'applique pas aux figures à colorier. Specs de grille ramenées à 23 et 32 cases (≤ 34 rangs).
