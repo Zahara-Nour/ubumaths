@@ -1010,3 +1010,19 @@ une page à cocher.
 - Base locale : 6 brouillons ; aperçu joué : 04 (x³ ⩽ −8 : [−2 ; +∞[ « Faux », corrigé : courbe, y = −8,
   partie verte) ; 02 (√x > 1,9 : ]3,61 ; +∞[ « Juste », borne en disque vide) ; 06 (3x² + 2 ⩽ 5 : [−1 ; 1]
   « Juste », parabole de f, A et B, partie verte).
+
+## 41. Lot 6, brouillons en prod et migration nœud + tag (2026-11-01)
+
+- Brouillons créés par David (`create-questions --publier`, trois dossiers) ; relevé MCP : les 20 en `draft`,
+  sans nœud, sans tag, catégorie et niveau attendus.
+  - 6 A : 345beb60 (2-325), 42c19a19 (2-327), bcfbf5f8 (2-331), ddc60d24 (2-447), 9723b1e4 (2-326),
+    b44e582b (2-333), 602bd8d7 (2-334), 1048e462 (2-335) ;
+  - 6 B : d49de3f3 (2-455), aeaff491 (2-457), 80a87e34 (2-460), 37f39db3 (2-461), 8bc8159f (2-463),
+    214f91c0 (2-466) ;
+  - 6 C : 05e8453d (2-467), cd8f96ba (2-469), e7b37987 (2-470), 811f6004 (2-472), 2a249385 (2-336),
+    d86c9577 (2-448).
+- Nœuds relevés par MCP, conformes au § 37 ; 2-325 et 2-333 sont sur une notion (pas de sous-notion).
+- Migration `20261101213600_questions_2de_fonctions_rangement_tags` et
+  `tests/integration/questions-2de-fonctions-rangement-tags.test.ts`, générés depuis ceux du lot 5 (seul le lot
+  change). Rouge sans la migration (fichier réduit au rollback : 5 échecs, 5 verts) ; vert avec : 10/10.
+- Horodatage : max relevé sur `origin/main`, les worktrees et les branches distantes = 20261101213500 → 213600.
