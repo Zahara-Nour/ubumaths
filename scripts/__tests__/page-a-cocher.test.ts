@@ -119,6 +119,56 @@ describe('dessinerBlocs', () => {
 		expect(surUneLigne(escalier.markdown)).toBe(true);
 	});
 
+	it('variation, tableau de signes : valeurs en formules, signes, zéro et double barre, sans alerte', () => {
+		const r = dessinerBlocs(
+			'```variation\nvariable: x\ndomain: -inf, -2, 3, +inf\n\nsign: B(x)\n  -inf,-2: +\n  -2: z\n  -2,3: -\n  3: ||\n  3,+inf: +\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.avertissements).toEqual([]);
+		expect(surUneLigne(r.markdown)).toBe(true);
+		const t = r.markdown.slice(HTML.length);
+		expect(t).toMatch(/^<table class="vt"/);
+		// En-tête : la variable puis les valeurs, en formules que le gabarit rend
+		for (const tex of ['x', '-\\infty', '-2', '3', '+\\infty', 'B(x)'])
+			expect(t).toContain(`data-tex="${tex}"`);
+		// Une case par valeur et une par intervalle : 4 + 3, après l'étiquette
+		expect(t.match(/<td class="vt-[a-z-]+"/g)).toHaveLength(7);
+		expect(t.match(/class="vt-signe">[+−]</g)?.map((s) => s.slice(-2, -1))).toEqual([
+			'+',
+			'−',
+			'+'
+		]);
+		expect(t).toContain('<span class="vt-zero">0</span>');
+		expect(t).toContain('<span class="vt-barre"></span>');
+	});
+
+	it('variation, tableau de variations : valeurs en haut ou en bas, flèches qui montent ou descendent', () => {
+		const r = dessinerBlocs(
+			'```variation\nvariable: x\ndomain: -4, 1, 5\n\nvariation: f(x)\n  -4: 2, bottom\n  1: 7, top\n  5: -3, bottom\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		const t = r.markdown.slice(HTML.length);
+		expect(t).toContain('<div class="vt-val vt-bas"><span class="tex" data-tex="2"></span></div>');
+		expect(t).toContain('<div class="vt-val vt-haut"><span class="tex" data-tex="7"></span></div>');
+		expect(t.match(/aria-label="(croissante|décroissante)"/g)).toEqual([
+			'aria-label="croissante"',
+			'aria-label="décroissante"'
+		]);
+	});
+
+	it('variation : une formule échappée pour l’attribut (\\dfrac)', () => {
+		const r = dessinerBlocs(
+			'```variation\nvariable: x\ndomain: -inf, \\dfrac{1}{2}, +inf\n\nsign: f(x)\n  -inf,\\dfrac{1}{2}: -\n  \\dfrac{1}{2}: z\n  \\dfrac{1}{2},+inf: +\n```'
+		);
+		expect(r.markdown).toContain('data-tex="\\dfrac{1}{2}"');
+	});
+
+	it('variation en erreur : la page s’arrête', () => {
+		expect(() => dessinerBlocs('```variation\ndomain: -inf, +inf\n```')).toThrow(
+			/bloc variation en erreur/
+		);
+	});
+
 	it('python : le programme tel quel, échappé, sans alerte', () => {
 		const r = dessinerBlocs('```python\ndef f(n):\n    return n < 3\n```');
 		expect(r.nonDessines).toEqual([]);
