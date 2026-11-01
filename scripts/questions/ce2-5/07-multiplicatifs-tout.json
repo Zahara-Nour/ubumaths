@@ -1,0 +1,292 @@
+{
+	"title": "Problèmes multiplicatifs : le tout",
+	"description": "n paquets de p : 6 paquets de 145 feuilles, 7 stylos à 1,50 €, 10 paquets de 125, 100 cartons de 37, 7 paquets de 80",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Problèmes",
+	"subdomain": "Multiplicatifs",
+	"level": 9,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Paul achète ${{g}}$ paquets de feuilles. Il y a ${{n}}$ feuilles dans chaque paquet.\n\nCombien Paul a-t-il de feuilles en tout ?\n\nPaul a $?$ feuilles.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "3..9"
+				},
+				{
+					"name": "n",
+					"expression": "110..999"
+				}
+			],
+			"conditions": ["g * n <= 9000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:g*n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Il y a ${{g}}$ paquets de ${{n}}$ feuilles : c'est ${{g}}$ fois ${{n}}$ feuilles. On peut décomposer ${{n}}$ (centaines, dizaines, unités).",
+					"$${{g}} \\times {{n}} \\text{ feuilles} = \\textcolor{{{color:primary.0}}}{{{eval:g*n}}} \\text{ feuilles}$$",
+					"Paul a ${{eval:g*n}}$ feuilles."
+				]
+			}
+		},
+		{
+			"statement": "Un stylo coûte ${{eval:floor((u)/100)}}.{{eval:floor(mod(u,100)/10)}}{{eval:mod(u,10)}}~\\unit{€}$. Maëlle en achète ${{g}}$.\n\nCombien Maëlle va-t-elle payer ?\n\nElle va payer $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "3..9"
+				},
+				{
+					"name": "k",
+					"expression": "3..19"
+				},
+				{
+					"name": "u",
+					"expression": "eval:50*k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(g*u)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Maëlle achète ${{g}}$ stylos à ${{eval:floor((u)/100)}}.{{eval:floor(mod(u,100)/10)}}{{eval:mod(u,10)}}~\\unit{€}$ : c'est ${{g}}$ fois ${{eval:floor((u)/100)}}.{{eval:floor(mod(u,100)/10)}}{{eval:mod(u,10)}}~\\unit{€}$.",
+					"$${{g}} \\times {{eval:floor((u)/100)}}.{{eval:floor(mod(u,100)/10)}}{{eval:mod(u,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((g*u)/100)}}.{{eval:floor(mod(g*u,100)/10)}}{{eval:mod(g*u,10)}}}$$",
+					"Maëlle va payer ${{eval:floor((g*u)/100)}}.{{eval:floor(mod(g*u,100)/10)}}{{eval:mod(g*u,10)}}~\\unit{€}$."
+				]
+			}
+		},
+		{
+			"statement": "Un client achète $10$ paquets de ${{n}}$ gâteaux.\n\nCombien a-t-il acheté de gâteaux ?\n\nIl a acheté $?$ gâteaux.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "110..999"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"C'est $10$ fois ${{n}}$ gâteaux : ${{n}}$ dizaines de gâteaux.",
+					"$$10 \\times {{n}} \\text{ gâteaux} = \\textcolor{{{color:primary.0}}}{{{eval:10*n}}} \\text{ gâteaux}$$",
+					"Il a acheté ${{eval:10*n}}$ gâteaux."
+				]
+			}
+		},
+		{
+			"statement": "Une usine remplit $100$ cartons de ${{n}}$ boîtes.\n\nCombien de boîtes y a-t-il en tout ?\n\nIl y a $?$ boîtes.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "11..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"C'est $100$ fois ${{n}}$ boîtes : ${{n}}$ centaines de boîtes.",
+					"$$100 \\times {{n}} \\text{ boîtes} = \\textcolor{{{color:primary.0}}}{{{eval:100*n}}} \\text{ boîtes}$$",
+					"Il y a ${{eval:100*n}}$ boîtes en tout."
+				]
+			}
+		},
+		{
+			"statement": "Jan a ${{g}}$ paquets de biscuits. Chaque paquet contient ${{d}}$ biscuits.\n\nCombien Jan a-t-il de biscuits ?\n\nJan a $?$ biscuits.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "3..9"
+				},
+				{
+					"name": "D",
+					"expression": "2..9"
+				},
+				{
+					"name": "d",
+					"expression": "eval:10*D"
+				}
+			],
+			"conditions": ["g * d >= 100"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:g*d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Jan a ${{g}}$ fois ${{d}}$ biscuits. ${{d}}$, c'est ${{D}}$ dizaines : ${{g}}$ fois ${{D}}$ dizaines, c'est ${{eval:g*D}}$ dizaines.",
+					"$${{g}} \\times {{d}} \\text{ biscuits} = \\textcolor{{{color:primary.0}}}{{{eval:g*d}}} \\text{ biscuits}$$",
+					"Jan a ${{eval:g*d}}$ biscuits."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "paquets : 6 paquets de 145 = 870",
+			"variationIndex": 0,
+			"variables": {
+				"g": "6",
+				"n": "145"
+			},
+			"answers": ["870"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : paquets, 6 + 145 (151)",
+			"variationIndex": 0,
+			"variables": {
+				"g": "6",
+				"n": "145"
+			},
+			"answers": ["151"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : paquets, retenue des dizaines oubliée (830)",
+			"variationIndex": 0,
+			"variables": {
+				"g": "6",
+				"n": "145"
+			},
+			"answers": ["830"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "prix : 6 stylos à 2,50 € = 15 €",
+			"variationIndex": 1,
+			"variables": {
+				"g": "6",
+				"k": "5",
+				"u": "250"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "prix : 7 stylos à 1,50 € = 10,50 €",
+			"variationIndex": 1,
+			"variables": {
+				"g": "7",
+				"k": "3",
+				"u": "150"
+			},
+			"answers": ["10{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : prix, 7 + 1,50 (8,50 €)",
+			"variationIndex": 1,
+			"variables": {
+				"g": "7",
+				"k": "3",
+				"u": "150"
+			},
+			"answers": ["8{,}5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "10 paquets de 125 = 1 250",
+			"variationIndex": 2,
+			"variables": {
+				"n": "125"
+			},
+			"answers": ["1250"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10 paquets de 125, 135",
+			"variationIndex": 2,
+			"variables": {
+				"n": "125"
+			},
+			"answers": ["135"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "100 cartons de 37 = 3 700",
+			"variationIndex": 3,
+			"variables": {
+				"n": "37"
+			},
+			"answers": ["3700"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 100 cartons, un zéro oublié (370)",
+			"variationIndex": 3,
+			"variables": {
+				"n": "37"
+			},
+			"answers": ["370"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "dizaines : 7 paquets de 80 = 560",
+			"variationIndex": 4,
+			"variables": {
+				"g": "7",
+				"D": "8",
+				"d": "80"
+			},
+			"answers": ["560"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 × 8 sans la dizaine (56)",
+			"variationIndex": 4,
+			"variables": {
+				"g": "7",
+				"D": "8",
+				"d": "80"
+			},
+			"answers": ["56"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

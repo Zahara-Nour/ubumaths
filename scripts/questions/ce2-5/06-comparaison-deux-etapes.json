@@ -1,0 +1,211 @@
+{
+	"title": "Problèmes de comparaison en deux étapes",
+	"description": "Trouver l'autre valeur, puis le tout : Léo 188 billes, Lucie 75 de plus, combien en tout ? ; Tom a moins de cartes que Sara ; un pull et un pantalon plus cher",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Problèmes",
+	"subdomain": "Deux étapes",
+	"level": 8,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Léo a ${{a}}$ billes. Lucie en a ${{d}}$ de plus que Léo.\n\nCombien les deux enfants ont-ils de billes en tout ?\n\nIls ont $?$ billes en tout.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "100..4000"
+				},
+				{
+					"name": "d",
+					"expression": "20..1500"
+				}
+			],
+			"conditions": ["2 * a + d < 10000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*a+d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule en deux étapes. D'abord le nombre de billes de Lucie : elle en a plus que Léo, on ajoute l'écart.",
+					"$${{a}} + {{d}} = {{eval:a+d}}$$",
+					"Puis le nombre de billes **en tout** : on ajoute celles de Léo et celles de Lucie.",
+					"$${{a}} + {{eval:a+d}} = \\textcolor{{{color:primary.0}}}{{{eval:2*a+d}}}$$",
+					"Léo et Lucie ont ${{eval:2*a+d}}$ billes en tout."
+				]
+			}
+		},
+		{
+			"statement": "Sara a ${{s}}$ cartes. Tom en a ${{d}}$ de moins que Sara.\n\nCombien les deux enfants ont-ils de cartes en tout ?\n\nIls ont $?$ cartes en tout.",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1000..5000"
+				},
+				{
+					"name": "d",
+					"expression": "200..900"
+				}
+			],
+			"conditions": ["2 * s - d < 10000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*s-d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule en deux étapes. D'abord le nombre de cartes de Tom : il en a moins que Sara, on enlève l'écart.",
+					"$${{s}} - {{d}} = {{eval:s-d}}$$",
+					"Puis le nombre de cartes **en tout** : on ajoute celles de Sara et celles de Tom.",
+					"$${{s}} + {{eval:s-d}} = \\textcolor{{{color:primary.0}}}{{{eval:2*s-d}}}$$",
+					"Sara et Tom ont ${{eval:2*s-d}}$ cartes en tout."
+				]
+			}
+		},
+		{
+			"statement": "Un pull coûte ${{eval:floor((a)/100)}}.{{eval:floor(mod(a,100)/10)}}{{eval:mod(a,10)}}~\\unit{€}$. Un pantalon coûte ${{d}}~\\unit{€}$ de plus que le pull.\n\nCombien coûtent le pull et le pantalon ensemble ?\n\nIls coûtent $?~\\text{€}$ ensemble.",
+			"variables": [
+				{
+					"name": "aE",
+					"expression": "10..45"
+				},
+				{
+					"name": "aC",
+					"expression": "1..99"
+				},
+				{
+					"name": "a",
+					"expression": "eval:100*aE+aC"
+				},
+				{
+					"name": "d",
+					"expression": "5..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(2*a+100*d)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule en deux étapes. D'abord le prix du pantalon : il coûte plus cher que le pull, on ajoute l'écart (${{eval:d}}$ euros, les centimes ne changent pas).",
+					"$${{eval:floor((a)/100)}}.{{eval:floor(mod(a,100)/10)}}{{eval:mod(a,10)}} + {{d}} = {{eval:floor((a+100*d)/100)}}.{{eval:floor(mod(a+100*d,100)/10)}}{{eval:mod(a+100*d,10)}}$$",
+					"Puis le prix **des deux ensemble** : on ajoute le prix du pull et celui du pantalon.",
+					"$${{eval:floor((a)/100)}}.{{eval:floor(mod(a,100)/10)}}{{eval:mod(a,10)}} + {{eval:floor((a+100*d)/100)}}.{{eval:floor(mod(a+100*d,100)/10)}}{{eval:mod(a+100*d,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((2*a+100*d)/100)}}.{{eval:floor(mod(2*a+100*d,100)/10)}}{{eval:mod(2*a+100*d,10)}}}$$",
+					"Le pull et le pantalon coûtent ${{eval:floor((2*a+100*d)/100)}}.{{eval:floor(mod(2*a+100*d,100)/10)}}{{eval:mod(2*a+100*d,10)}}~\\unit{€}$ ensemble."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 188 + 75 = 263, puis 188 + 263 = 451",
+			"variationIndex": 0,
+			"variables": {
+				"a": "188",
+				"d": "75"
+			},
+			"answers": ["451"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : BO, seulement Lucie (263)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "188",
+				"d": "75"
+			},
+			"answers": ["263"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : BO, Léo + l'écart (263 + 75 = 338)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "188",
+				"d": "75"
+			},
+			"answers": ["338"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "moins : Sara 3 200, Tom −400 = 2 800, total 6 000",
+			"variationIndex": 1,
+			"variables": {
+				"s": "3200",
+				"d": "400"
+			},
+			"answers": ["6000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Tom oublié (3 200)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "3200",
+				"d": "400"
+			},
+			"answers": ["3200"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : « de moins » lu addition (6 800)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "3200",
+				"d": "400"
+			},
+			"answers": ["6800"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "prix : 24,50 + (24,50 + 12) = 61 €",
+			"variationIndex": 2,
+			"variables": {
+				"aE": "24",
+				"aC": "50",
+				"a": "2450",
+				"d": "12"
+			},
+			"answers": ["61"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : prix, le pantalon seul (36,50 €)",
+			"variationIndex": 2,
+			"variables": {
+				"aE": "24",
+				"aC": "50",
+				"a": "2450",
+				"d": "12"
+			},
+			"answers": ["36{,}5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

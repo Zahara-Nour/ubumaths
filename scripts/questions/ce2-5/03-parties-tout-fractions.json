@@ -1,0 +1,218 @@
+{
+	"title": "Problèmes parties-tout avec des fractions",
+	"description": "Des parts de même taille : 3/8 d'une tablette mangés, quelle fraction reste ? ; 3/10 + 4/10 d'un livre lu ; 9/12 en deux jours dont 4/12 le premier",
+	"grades": ["CE2"],
+	"theme": "Fractions",
+	"domain": "Calculer",
+	"subdomain": "Addition et Soustraction",
+	"level": 22,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off",
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Léa a mangé $\\frac{{{a}}}{{{d}}}$ d'une tablette de chocolat.\n\nQuelle fraction de la tablette reste-t-il ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3..12"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:d-1}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:d-a}}}{{{d}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La tablette entière, c'est **le tout** : ce qui reste est ce qui manque à la partie mangée pour faire le tout.",
+					"Le tout, c'est $1 = \\frac{{{d}}}{{{d}}}$.",
+					"$$1 - \\frac{{{a}}}{{{d}}} = \\frac{{{d}}}{{{d}}} - \\frac{{{a}}}{{{d}}} = \\textcolor{{{color:primary.0}}}{\\frac{{{eval:d-a}}}{{{d}}}}$$",
+					"Il reste $\\frac{{{eval:d-a}}}{{{d}}}$ de la tablette."
+				]
+			}
+		},
+		{
+			"statement": "Samedi, Paul a lu $\\frac{{{a}}}{{{d}}}$ d'un livre. Dimanche, il en a lu $\\frac{{{b}}}{{{d}}}$.\n\nQuelle fraction du livre Paul a-t-il lue en tout ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "4..12"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:d-2}}"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{eval:d-a}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:a+b}}}{{{d}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Ce que Paul a lu samedi et dimanche, ce sont **deux parties** ; on cherche **le tout** lu : on ajoute. Les parts sont de même taille : on ajoute les numérateurs et le dénominateur ${{d}}$ ne change pas.",
+					"$$\\frac{{{a}}}{{{d}}} + \\frac{{{b}}}{{{d}}} = \\textcolor{{{color:primary.0}}}{\\frac{{{eval:a+b}}}{{{d}}}}$$",
+					"Paul a lu $\\frac{{{eval:a+b}}}{{{d}}}$ du livre."
+				]
+			}
+		},
+		{
+			"statement": "Paul a lu $\\frac{{{t}}}{{{d}}}$ d'un livre en deux jours. Le premier jour, il en a lu $\\frac{{{a}}}{{{d}}}$.\n\nQuelle fraction du livre a-t-il lue le deuxième jour ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "4..12"
+				},
+				{
+					"name": "t",
+					"expression": "3..{{eval:d}}"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:t-1}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:t-a}}}{{{d}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Ce que Paul a lu en deux jours, c'est **le tout** ; le premier jour est une partie. On cherche l'autre partie : on enlève. Les parts sont de même taille : on enlève les numérateurs et le dénominateur ${{d}}$ ne change pas.",
+					"$$\\frac{{{t}}}{{{d}}} - \\frac{{{a}}}{{{d}}} = \\textcolor{{{color:primary.0}}}{\\frac{{{eval:t-a}}}{{{d}}}}$$",
+					"Paul a lu $\\frac{{{eval:t-a}}}{{{d}}}$ du livre le deuxième jour."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "tablette : 3/8 mangés, 5/8 restent",
+			"variationIndex": 0,
+			"variables": {
+				"d": "8",
+				"a": "3"
+			},
+			"answers": ["\\frac{5}{8}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : tablette, la partie mangée (3/8)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "8",
+				"a": "3"
+			},
+			"answers": ["\\frac{3}{8}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : tablette, 5 (dénominateur oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "8",
+				"a": "3"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "tablette : 6/8 non simplifiée juste",
+			"variationIndex": 0,
+			"variables": {
+				"d": "8",
+				"a": "2"
+			},
+			"answers": ["\\frac{6}{8}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "livre : 3/10 + 4/10 = 7/10",
+			"variationIndex": 1,
+			"variables": {
+				"d": "10",
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["\\frac{7}{10}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : livre, dénominateurs ajoutés (7/20)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "10",
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["\\frac{7}{20}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "livre : somme égale au tout, 8/8",
+			"variationIndex": 1,
+			"variables": {
+				"d": "8",
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["\\frac{8}{8}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "livre manquant : 9/12 − 4/12 = 5/12",
+			"variationIndex": 2,
+			"variables": {
+				"d": "12",
+				"t": "9",
+				"a": "4"
+			},
+			"answers": ["\\frac{5}{12}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : livre manquant, les deux ajoutés (13/12)",
+			"variationIndex": 2,
+			"variables": {
+				"d": "12",
+				"t": "9",
+				"a": "4"
+			},
+			"answers": ["\\frac{13}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

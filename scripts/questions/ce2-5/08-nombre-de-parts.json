@@ -1,0 +1,204 @@
+{
+	"title": "Problèmes de partage : le nombre de parts",
+	"description": "Combien d'équipes, de pages, de boîtes : 360 élèves par 8 ; 191 photos à 6 par page (32 pages) ; 229 œufs par 9 (25 boîtes pleines)",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Problèmes",
+	"subdomain": "Multiplicatifs",
+	"level": 10,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Il y a ${{eval:g*n}}$ élèves de CE2 dans la ville. Pour un tournoi, on fait des équipes de ${{n}}$ élèves.\n\nCombien y aura-t-il d'équipes ?\n\nIl y aura $?$ équipes.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "g",
+					"expression": "11..100"
+				}
+			],
+			"conditions": ["g * n <= 1000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:g}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche combien de fois il y a ${{n}}$ élèves dans ${{eval:g*n}}$ élèves : chaque groupe de ${{n}}$ est une équipe.",
+					"$$\\textcolor{{{color:primary.0}}}{{{g}}} \\times {{n}} = {{eval:g*n}}$$",
+					"Il y aura ${{g}}$ équipes."
+				]
+			}
+		},
+		{
+			"statement": "Je veux ranger mes ${{eval:p*q+r}}$ photos dans un album. Je peux ranger ${{p}}$ photos par page.\n\nCombien de pages me faut-il pour ranger **toutes** mes photos ?\n\nIl me faut $?$ pages.",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "4|6|8|10"
+				},
+				{
+					"name": "q",
+					"expression": "10..100"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{eval:p-1}}"
+				}
+			],
+			"conditions": ["p * q + r <= 1000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:p*q+r}}$ photos par ${{p}}$ : ${{q}}$ pages pleines de ${{p}}$ photos, et il reste ${{r}}$ {{if:r==1|photo|photos}}.",
+					"Le reste doit aussi être rangé : il faut une page de plus.",
+					"$${{q}} + 1 = \\textcolor{{{color:primary.0}}}{{{eval:q+1}}}$$",
+					"Il me faut ${{eval:q+1}}$ pages."
+				]
+			}
+		},
+		{
+			"statement": "Un fermier a ${{eval:n*q+r}}$ œufs à vendre au marché. Il les vend par boîtes de ${{n}}$ œufs.\n\nCombien de boîtes pleines va-t-il pouvoir vendre ?\n\nIl va vendre $?$ boîtes.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "6|8|9|12"
+				},
+				{
+					"name": "q",
+					"expression": "10..80"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{eval:n-1}}"
+				}
+			],
+			"conditions": ["n * q + r <= 1000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplit des boîtes de ${{n}}$ œufs : ${{q}}$ boîtes, c'est ${{eval:n*q}}$ œufs.",
+					"$${{q}} \\times {{n}} = {{eval:n*q}}$$",
+					"Il reste ${{eval:n*q+r}} - {{eval:n*q}} = {{r}}$ {{if:r==1|œuf|œufs}} : pas assez pour remplir une boîte de plus.",
+					"Il va vendre $\\textcolor{{{color:primary.0}}}{{{q}}}$ boîtes."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "équipes : 360 élèves par 8 = 45",
+			"variationIndex": 0,
+			"variables": {
+				"n": "8",
+				"g": "45"
+			},
+			"answers": ["45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 360 − 8 (352)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "8",
+				"g": "45"
+			},
+			"answers": ["352"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la taille d'une équipe (8)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "8",
+				"g": "45"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "pages : 6 × 31 + 5 = 191 photos → 32 pages",
+			"variationIndex": 1,
+			"variables": {
+				"p": "6",
+				"q": "31",
+				"r": "5"
+			},
+			"answers": ["32"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pages, le reste oublié (31)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "6",
+				"q": "31",
+				"r": "5"
+			},
+			"answers": ["31"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "boîtes : 9 × 25 + 4 = 229 œufs → 25 boîtes",
+			"variationIndex": 2,
+			"variables": {
+				"n": "9",
+				"q": "25",
+				"r": "4"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : boîtes, une de trop (26)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "9",
+				"q": "25",
+				"r": "4"
+			},
+			"answers": ["26"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 10 × 99 + 9... pages, 10 par page (p = 10, q = 99, r = 9 : 999 photos)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "10",
+				"q": "99",
+				"r": "9"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

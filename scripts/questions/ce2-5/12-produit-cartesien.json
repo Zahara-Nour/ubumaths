@@ -1,0 +1,237 @@
+{
+	"title": "Produits cartésiens : combien de façons ?",
+	"description": "Deux ensembles : 3 pantalons × 7 tee-shirts = 21 ; trois ensembles : 2 chapeaux × 3 tee-shirts × 2 pantalons = 12",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Problèmes",
+	"subdomain": "Produits cartésiens",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Une poupée est livrée avec ${{p}}$ pantalons et ${{t}}$ tee-shirts.\n\nDe combien de façons est-il possible d'habiller la poupée avec un pantalon et un tee-shirt ?\n\nIl y a $?$ façons de l'habiller.",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..6"
+				},
+				{
+					"name": "t",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["p != t"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p*t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec **un** pantalon, on peut mettre n'importe lequel des ${{t}}$ tee-shirts. Dans un tableau, il y aurait ${{p}}$ lignes (les pantalons) et ${{t}}$ colonnes (les tee-shirts) : chaque case est une façon de l'habiller.",
+					"On compte les cases : ${{p}} \\times {{t}} = \\textcolor{{{color:primary.0}}}{{{eval:p*t}}}$.",
+					"Il y a ${{eval:p*t}}$ façons d'habiller la poupée."
+				]
+			}
+		},
+		{
+			"statement": "Un glacier propose ${{p}}$ parfums de glace et ${{t}}$ sortes de cornets.\n\nCombien de glaces différentes (un parfum, un cornet) peut-on composer ?\n\nOn peut composer $?$ glaces différentes.",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "3..9"
+				},
+				{
+					"name": "t",
+					"expression": "2..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p*t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque parfum peut être mis dans chacun des ${{t}}$ cornets. Dans un tableau, les parfums seraient les lignes et les cornets les colonnes.",
+					"$${{p}} \\times {{t}} = \\textcolor{{{color:primary.0}}}{{{eval:p*t}}}$$",
+					"On peut composer ${{eval:p*t}}$ glaces différentes."
+				]
+			}
+		},
+		{
+			"statement": "Pour se déguiser, un clown dispose de ${{a}}$ chapeaux, de ${{b}}$ tee-shirts et de ${{c}}$ pantalons.\n\nCombien de costumes complets différents (un chapeau, un tee-shirt, un pantalon) le clown peut-il faire ?\n\nIl peut faire $?$ costumes.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..3"
+				},
+				{
+					"name": "b",
+					"expression": "2..4"
+				},
+				{
+					"name": "c",
+					"expression": "2..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*b*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On construit un arbre. On part des chapeaux : ${{a}}$ branches. Au bout de chaque branche, on met les tee-shirts : ${{b}}$ branches de plus. Puis les pantalons : ${{c}}$ branches au bout de chacune.",
+					"Le nombre de costumes est le nombre de bouts de branches : ${{a}} \\times {{b}} \\times {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:a*b*c}}}$.",
+					"Le clown peut faire ${{eval:a*b*c}}$ costumes."
+				]
+			}
+		},
+		{
+			"statement": "Un restaurant propose un menu : ${{a}}$ entrées, ${{b}}$ plats et ${{c}}$ desserts. On choisit une entrée, un plat et un dessert.\n\nCombien de menus différents peut-on composer ?\n\nOn peut composer $?$ menus différents.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "b",
+					"expression": "2..4"
+				},
+				{
+					"name": "c",
+					"expression": "2..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*b*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On construit un arbre : ${{a}}$ branches pour les entrées ; au bout de chacune, ${{b}}$ branches pour les plats ; au bout de chacune, ${{c}}$ branches pour les desserts.",
+					"Chaque chemin de l'arbre est un menu : ${{a}} \\times {{b}} \\times {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:a*b*c}}}$.",
+					"On peut composer ${{eval:a*b*c}}$ menus différents."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 3 pantalons, 7 tee-shirts = 21",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"t": "7"
+			},
+			"answers": ["21"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : poupée, 3 + 7 (10)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"t": "7"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "glaces : 8 parfums, 3 cornets = 24",
+			"variationIndex": 1,
+			"variables": {
+				"p": "8",
+				"t": "3"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : glaces, 8 + 3 (11)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "8",
+				"t": "3"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 2 chapeaux, 3 tee-shirts, 2 pantalons = 12",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "2"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : clown, 2 + 3 + 2 (7)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "2"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : clown, deux ensembles seulement (6)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "2"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "menu : 3 entrées, 4 plats, 3 desserts = 36",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "3"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : menu, 3 × 4 (12)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "3"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
