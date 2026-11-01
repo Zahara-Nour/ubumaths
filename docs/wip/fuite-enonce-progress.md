@@ -6,11 +6,12 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, phase 0 validée._
+_Mis à jour le 2026-11-01, après l'audit Q3 (§ 4)._
 
-- **État** : phase 0 validée par David (Q1-Q4 : les quatre recos, § 3) ; rien de codé.
-- **Prochaine action** : Q3, auditer les autres chemins (devoirs `api/student/worksheets/…`, séances, défis) ;
-  puis lot 1 (masques simples), tests rouges d'abord : démarrer une évaluation, aucune cible dans le JSON.
+- **État** : phase 0 validée (§ 3) ; audit Q3 fait (§ 4) : seule l'évaluation notée est concernée, le lot 1
+  ne touche que `toPublicQuestion`. Rien de codé.
+- **Prochaine action** : lot 1 (masques simples), tests rouges d'abord : démarrer une évaluation, aucune cible
+  dans le JSON ; chaque bloc masqué se dessine encore avec son geste.
 - **En attente de David** : rien.
 - **Pièges en cours** : ne pas casser le dessin du geste (l'écran doit garder noms et nombre de points / barres) ;
   la correction reste au serveur sur l'instance complète. Revue `code-reviewer` + `security-auditor` (Opus).
@@ -62,3 +63,25 @@ Comportement : avant l'envoi, le serveur remplace dans chaque bloc à geste ce q
 neutre ; l'élève voit le même écran ; la correction ne change pas (serveur, instance complète). Tests : de bout
 en bout, démarrer une évaluation et vérifier qu'aucune cible n'apparaît dans le JSON ; et que chaque bloc
 masqué se dessine encore avec son geste.
+
+## 4. Audit Q3 — les autres chemins (2026-11-01)
+
+Question : un autre chemin sert-il des questions **notées** avec l'instance complète ? **Non.** Seule
+l'évaluation est corrigée par le serveur (ADR 0015) ; partout ailleurs, l'instance complète part au
+navigateur **par décision** (ADR 0001) et c'est le navigateur qui rend le verdict : masquer l'énoncé n'y
+servirait à rien, `expectedAnswer` est dans le même JSON.
+
+| Chemin                                                                  | Ce qui part                                                                         | Noté ?                                                     | Verdict                 |
+| ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------- | ----------------------- |
+| Évaluation (`api/evaluations/assignments/[id]/start`)                   | `toPublicQuestion` (liste blanche)                                                  | oui                                                        | **lot 1 ici**           |
+| Copie rendue (`readSubmittedCopy`, `test_answers`)                      | instance complète, **après** l'envoi                                                | —                                                          | sans objet              |
+| Instance stockée (`evaluation_attempt_questions`)                       | `revoke all` sauf `service_role` (migr. 20260930)                                   | —                                                          | pas lisible par l'élève |
+| Devoirs / fiches (`api/student/worksheets/[assignmentId]`)              | exercices (`student-copy.ts`), pas de modèles ; corrigé masqué tant que non visible | non (papier, prof)                                         | hors chantier           |
+| SRS (`api/srs/review/due`, `srs/chapters/[id]/due`)                     | instance complète (`generateSRSInstance`)                                           | non : grade envoyé par le client (+ gidouilles du Palotin) | ADR 0001                |
+| Quiz interactif (`api/skill-attempts`), Automaths, `questions/generate` | instance complète                                                                   | non : `success` envoyé par le client                       | ADR 0001                |
+| Course aux nombres hors évaluation (`api/tests/save`)                   | résultat corrigé par le client                                                      | non ; `assignmentId` refusé (400)                          | ADR 0001                |
+| « Séances » : cahier de texte, classroom (`shared_coursework`)          | aucune question                                                                     | —                                                          | sans objet              |
+| « Défis » : Navadra (`game_challenges`), énigmes (`riddles`)            | tables à part, pas de modèles ni de blocs à geste                                   | non                                                        | hors chantier           |
+
+Hors chantier, à signaler : le combat Navadra reçoit `correct_answer` **du client** (`submitAnswer`,
+`navadra/combat/[combatId]/+page.server.ts`) : jeu, pas de note, même logique que l'ADR 0001.
