@@ -17,6 +17,7 @@ _Mis à jour le 2026-11-01 vers 23 h, tout arrêté sur ordre de David._
 - **Prochaine action** : au feu vert de questions-cm2 : `git merge origin/main`, relancer les 2 tests d'intégration,
   `pnpm check:migrations --pr 2176`, push, CI, merge, `db:migrate`, vérifier au MCP ; puis page à cocher du lot 9
   (dessin de ` ```partage ` à ajouter au script) ; lot 8 après un `deploy:prod` réussi (centimes).
+- **Consignes de questions-cm2** (#2181) : au « go », `git merge origin/main` ; horodatages 224820 / 224900 gardés si la garde du pre-push ne dit rien (plus besoin d'être après main) ; `db:migrate` qui refuse « inserted before the last migration » → `pnpm db:migrate --dry-run --include-all`, relire la liste (migrations mergées seulement), puis `--include-all`.
 - **En attente de David** : la fin du chantier migrations (questions-cm2). Chantier `verrou-deploy` à ouvrir (mémoire).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
