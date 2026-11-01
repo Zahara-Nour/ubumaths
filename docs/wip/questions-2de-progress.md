@@ -6,17 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR 6 C ouverte (§ 40)._
+_Mis à jour le 2026-11-01, après #2134 (6 C, mergée)._
 
-- **État** : lots 1 à 5 publiés ; lot 6 : 6 A (#2106) et 6 B (#2113) mergés, 6 C en PR (§ 40) ; rien du lot 6
-  en prod.
-- **Prochaine action** : merger 6 C ; puis brouillons en prod (David : `create-questions --publier` sur
-  `2de-fonctions-a`, `-b`, `-c`), migration nœud + tag et page à cocher pour les 20.
-- **En attente de David** : rien.
+- **État** : lots 1 à 5 publiés ; lot 6 : 6 A (#2106), 6 B (#2113), 6 C (#2134) mergés (§ 38-40) : les 20 modèles
+  sont en fichiers, rien en prod.
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/2de-fonctions-{a,b,c} --publier`
+  (trois commandes, `!`) ; puis relever les 20 `id`, migration nœud + tag (un seul fichier), page à cocher.
+- **En attente de David** : les trois `--publier`.
 - **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main` ET des worktrees ;
   `page-a-cocher.ts` ne prend qu'un `--dir` (préfixes `a-`/`b-`/`c-` dans une copie) ; `db:migrate` et
   `--publier` → David les lance avec `!` ; worktree neuf → `pnpm exec svelte-kit sync` avant les scripts `tsx`.
-- **Worktree / branche** : `ubumaths-wt-questions-2de`, `feat/questions-2de-lot6c` (serveur 5178).
+- **Worktree / branche** : aucun (retiré après #2134).
 
 ## 1. Relevé (prod, 2026-10-27)
 
