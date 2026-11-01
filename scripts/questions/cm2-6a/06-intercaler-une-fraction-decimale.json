@@ -1,0 +1,184 @@
+{
+	"title": "Intercaler une fraction décimale",
+	"description": "Écrire une fraction décimale comprise entre deux autres (3/10 < 35/100 < 4/10 ; 43/100 < 435/1 000 < 44/100) ; toute fraction strictement entre les deux est juste",
+	"grades": ["CM2"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Encadrer",
+	"level": 7,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off",
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris une fraction décimale comprise entre ces deux fractions.\n\n$$\\frac{{{a}}}{10} < ? < \\frac{{{eval:a+1}}}{10}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..49"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:10*a+5}}}{100}",
+					"requiredForm": "fraction",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "range",
+							"min": "{{eval:a/10;d}}",
+							"max": "{{eval:(a+1)/10;d}}",
+							"inclusive": false
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Un rang plus loin.** $\\frac{{{a}}}{10} = \\frac{{{eval:10*a}}}{100}$ et $\\frac{{{eval:a+1}}}{10} = \\frac{{{eval:10*a+10}}}{100}$.",
+					"Entre les deux, il y a $\\frac{{{eval:10*a+1}}}{100}$, $\\frac{{{eval:10*a+2}}}{100}$… jusqu'à $\\frac{{{eval:10*a+9}}}{100}$. Par exemple :",
+					"$$\\frac{{{a}}}{10} < \\textcolor{{{color:primary.0}}}{\\frac{{{eval:10*a+5}}}{100}} < \\frac{{{eval:a+1}}}{10}$$"
+				]
+			}
+		},
+		{
+			"statement": "Écris une fraction décimale comprise entre ces deux fractions.\n\n$$\\frac{{{a}}}{100} < ? < \\frac{{{eval:a+1}}}{100}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..299"
+				}
+			],
+			"conditions": ["mod(a,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:10*a+5}}}{1000}",
+					"requiredForm": "fraction",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "range",
+							"min": "{{eval:a/100;d}}",
+							"max": "{{eval:(a+1)/100;d}}",
+							"inclusive": false
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Un rang plus loin.** $\\frac{{{a}}}{100} = \\frac{{{eval:10*a}}}{1000}$ et $\\frac{{{eval:a+1}}}{100} = \\frac{{{eval:10*a+10}}}{1000}$.",
+					"Entre les deux, il y a $\\frac{{{eval:10*a+1}}}{1000}$, $\\frac{{{eval:10*a+2}}}{1000}$… jusqu'à $\\frac{{{eval:10*a+9}}}{1000}$. Par exemple :",
+					"$$\\frac{{{a}}}{100} < \\textcolor{{{color:primary.0}}}{\\frac{{{eval:10*a+5}}}{1000}} < \\frac{{{eval:a+1}}}{100}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3/10 < 35/100 < 4/10",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["\\frac{35}{100}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3/10 < 301/1000 < 4/10",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["\\frac{301}{1\\,000}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4/10 (borne)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["\\frac{4}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 35/10",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["\\frac{35}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "43/100 < 435/1000 < 44/100",
+			"variationIndex": 1,
+			"variables": {
+				"a": "43"
+			},
+			"answers": ["\\frac{435}{1\\,000}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "43/100 < 431/1000 < 44/100",
+			"variationIndex": 1,
+			"variables": {
+				"a": "43"
+			},
+			"answers": ["\\frac{431}{1\\,000}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 435/100",
+			"variationIndex": 1,
+			"variables": {
+				"a": "43"
+			},
+			"answers": ["\\frac{435}{100}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 44/100 (borne)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "43"
+			},
+			"answers": ["\\frac{44}{100}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : 0,435 (écriture à virgule)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "43"
+			},
+			"answers": ["0.435"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	]
+}

@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après la publication du 5b : lot 5 (fractions) clos._
+_Mis à jour le 2026-11-01, PR #2156 ouverte (CI en cours)._
 
-- **État** : lots 0 à 5 publiés (5a : 5 modèles, 5b : 6 modèles, rangés et tagués, vérifiés MCP).
-- **Prochaine action** : lot suivant — relire le § 3 (points sans modèle restants), proposer la phase 0 du lot 6 à David.
-- **En attente de David** : rien.
-- **Pièges en cours** : niveau relevé puis pris par une autre session avant la publication → relever les niveaux de la catégorie juste avant `--publier` ; homonymes du CM1 / de 6e signalés par la page à cocher (même titre, autre niveau : ids vérifiés) ; `reducedFractions: off` accepte toute fraction égale ; jamais `}}` collé dans un `{{if:}}` ; `db:migrate` refusé quand la prod a des migrations plus récentes → `--dry-run` puis `--include-all` si seule la nôtre manque ; worktree sans `supabase/.temp` → copier celui du dépôt principal pour `db push` ; dépôt principal à l'index occupé par une autre session → jouer depuis le worktree ; `git commit -m … -- <fichiers>` ; `Doc-inchangée:` dans un message de commit.
-- **Worktree / branche** : aucun (retiré après #2125).
+- **État** : lots 0 à 5 publiés. Lot 6a (fractions décimales, 7 modèles) : jeu local fini pour les 7 (§ 11.2), **PR #2156 ouverte** ; 1re CI rouge à cause de `main` (migration `20261101215000` en double, réglée par #2154), `origin/main` fusionné dans la branche (93f7b80d2), 2e CI en cours.
+- **Prochaine action** : `gh pr checks 2156` ; vert → `gh pr merge 2156 --merge` ; puis David lance `create-questions --dir scripts/questions/cm2-6a --publier` (simulation d'abord, niveaux relevés juste avant) ; puis migration de rangement (nœud + tag), page à cocher, publication ; ensuite écriture du 6b (décimaux).
+- **En attente de David** : le `--publier` du 6a, après le merge.
+- **Pièges en cours** : **migrations (règle du 2026-11-01, #2165)** : horodatage par `pnpm migration:horodatage`, jamais « max + 1 » à la main ; `pnpm check:migrations --pr <n>` avant le merge ; si le 1er job CI « Commit de version ? » échoue, tout est sauté → le lire ; `git merge origin/main` avant d'écrire la migration. `spacesFromFourDigits` → specs en `1\,000` ; homonymes du CM1 sur la page à cocher ; `db:migrate` : `--dry-run` puis `--include-all` ; `git commit -m … -- <fichiers>` ; jeu local : `jouer.mjs` (scratchpad, perdu au `/clear`) — case dans un champ = `setPromptValue`, même avec un seul champ.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2` · `feat/questions-cm2-lot6a`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -611,3 +611,10 @@ Recommandations suivies (« tes recos ? » puis « je valide ») : (a) deux lots
 décimales, modèles 1-7) puis **6b** (décimaux, modèles 8-13) ; (b) #12 garde une fraction décimale
 parmi les cinq nombres ; (c) #13 accepte aussi l'écriture fractionnaire, #6 exige une fraction
 décimale (0,435 → message de forme, à vérifier en local). Tableau du § 11 gardé.
+
+### 11.2 Lot 6a : écriture (2026-11-01)
+
+- Script `lot-cm2-6a.py` → `scripts/questions/cm2-6a/` (7 fichiers), jumeau de `lot-cm1-3b.py` (millièmes en plus, nombres en lettres jusqu'à 9 999, « mille » invariable). `question:specs` : 1 000 tirages par variation, 54 specs, tout vert ; `create-questions` en simulation (prod) : 7 à créer.
+- Pièges mesurés : `spacesFromFourDigits` → réponses des specs écrites `1\,000`, `\frac{207}{1\,000}` (sinon `unoptimal_form`) ; l'affichage met les espaces seul. Comparer : numérateur tiré entre 70 % et 130 % de a × m (au-delà, 53/10 contre 785/100 ne piège plus). Ranger : positions affichées retrouvées en essayant les 24 permutations.
+- Local (port 5183, `admin@local.test`, 390 px) : ranger lisible (1 381/1 000 espacé) ; intercaler, 0,985 → « Faux » + « La réponse doit être écrite sous forme de fraction » (décision c) ; lire en case « choix » : une seule option juste sur 6 tirages.
+- Jeu local, suite (2026-11-01, après le `/clear`) : **02** V4 (regrouper, deux cases) : la ligne « 21 millièmes = ? centièmes et ? millièmes » débordait du champ à 390 px (le « 21 » coupé) → le nombre passe dans la phrase (« Complète : 21 millièmes, c'est… »), le champ garde « ? centièmes et ? millièmes » (340 px) ; (2, 1) juste, (1, 2) faux ; V1 à V3 entre 269 et 304 px. **03** : V1 (quatre cases, 358 px) juste / chiffres échangés faux / 0 + 19/10 faux ; V2 : « 1\,509 » juste, « 1509 » → ½ point « Les chiffres sont mal espacés » (le « 1501 → Juste » d'avant le `/clear` venait du script : `setValue` au lieu de `setPromptValue`). « 1\ 509 » → faux « forme demandée », mais l'élève ne peut pas le taper (la barre d'espace donne `\,`). À noter pour plus tard : dans « Ta réponse », 1509 s'affiche espacé « 1 509 », donc l'élève ne voit pas ce qui a coûté le demi-point. **05** : V1 (297/100) 2 et 3 juste, 29 et 30 faux ; V2 3 et 4 juste, 32 et 33 / 4 et 3 / 2 et 3 faux, 0 < 527/1 000 < 1 juste.
