@@ -468,3 +468,8 @@ Relevé : aucun modèle sur les 6 points ; 6e « Fréquence » (fraction seule),
 - Test 23/23, rouge sans la migration (16 échecs).
 - `security-auditor` (Opus) : aucun bloquant ; remarque appliquée : `select into strict` aussi dans le rollback
   (notion). Atomicité : `db push` = une transaction implicite par fichier (comme le lot 5).
+- CI rouge (intégration) : la base de la CI porte la migration → test du lot qui la défait d'abord s'il la trouve
+  (`defaireSiAppliquee`), migration ajoutée à `tests/helpers/database/later-migrations.ts` (comme celle des formes
+  du CP), fixtures `arbre-notions-seed.json` (+ la sous-notion, 474) et `seed-cycle4-points.json` (5-079) mises à
+  jour. Vérifié en appliquant la migration à la base locale (`docker exec supabase_db_ubumaths psql`), 7 fichiers
+  / 99 tests verts, puis défaite par son rollback. Renommée `20261101180100` (après `180000` arrivée sur main).

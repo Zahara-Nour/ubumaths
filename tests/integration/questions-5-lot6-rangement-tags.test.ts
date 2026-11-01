@@ -83,8 +83,21 @@ function cles(cote: 'tagsAvant' | 'tagsApres'): string[] {
 	return LOT.flatMap((m) => m[cote].map((t) => `${m.id}§${t}`)).sort();
 }
 
+/**
+ * La base de la CI (et une base locale à jour) porte déjà cette migration : la sous-notion existe et
+ * 5-079 y est. On retrouve l'état d'avant par son rollback (sans les modèles, il ne touche qu'eux).
+ */
+async function defaireSiAppliquee(pg: Client): Promise<void> {
+	const r = await pg.query(
+		`select 1 from public.classification_nodes
+		  where kind = 'subnotion' and archived_at is null and name = 'choisir une représentation'`
+	);
+	if (r.rowCount) await pg.query(extractRollback(MIGRATION));
+}
+
 /** Pose l'état de la prod : les copies des modèles, à leur nœud (ou sans), niveaux et statut d'avant, avec leurs tags d'avant. */
 async function poserEtatProd(pg: Client, auteur: string): Promise<void> {
+	await defaireSiAppliquee(pg);
 	await insertProdCopies(pg, {
 		templateIds: ids,
 		exerciseIds: [],
@@ -270,6 +283,7 @@ describe('Questions 5e, lot 6 : les branches d’échec de la migration', () => 
 	async function enTransaction(corps: () => Promise<void>): Promise<void> {
 		await pg.query('begin');
 		try {
+			await defaireSiAppliquee(pg);
 			await corps();
 		} finally {
 			await pg.query('rollback');
