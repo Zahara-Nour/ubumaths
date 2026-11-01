@@ -653,5 +653,5 @@ for nom, m in MODELES:
         f.write('\n')
 # Mis en forme comme le pre-commit, pour que le script redonne les fichiers commités
 subprocess.run(['pnpm', 'exec', 'prettier', '--write', DOSSIER], check=True,
-               stdout=subprocess.DEVNULL)
+               stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
 print(f'{len(MODELES)} modèles écrits dans {DOSSIER}')
