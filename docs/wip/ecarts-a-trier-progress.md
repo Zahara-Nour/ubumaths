@@ -8,13 +8,13 @@ status: écarts revérifiés le 2026-10-18 ; tri A (seul) / B (David) fait ; V62
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2144._
+_Mis à jour le 2026-11-01, après #2155._
 
-- **État** : liste A finie, hors restes décidés : lots A, 2b, 3, 4, 5 mergés (#2062→#2068, #2097, #2118, #2131, #2144 = L8 clos) ; ménage #2142 (7 tests « deux profs » retirés, agent `mathast-expert` corrigé) ; #2061 (deps) et #1850 (SIGPIPE) mergés, #1802 fermée. Rien en prod.
-- **Prochaine action** : la liste A est vide (M19 en passant seulement, L12 sur demande, L15/L25/V34/V17 → `fusion-moteurs`). Reste la **liste B** d'[ecarts-a-trier.md](ecarts-a-trier.md) (décisions de David) ; proposer de la trier par lots, ou clore le chantier (versement des restes dans les Points ouverts).
-- **En attente de David** : trigger `log_achievements_to_events` qui lit `NEW.metadata` (colonne absente de `student_achievements`) : tout INSERT y échoue (42703) — migration à décider (test sauté `mono-teacher-rpc-param-cleanup.test.ts:61`).
-- **Pièges en cours** : `charger-repartir-annuler.svelte.test.ts` (client, shard 2/2) instable : rouge puis vert à la relance (#2061) ; « Code Quality » parfois non déclenchée → `gh workflow run quality.yml --ref <branche>`.
-- **Worktree / branche** : aucun.
+- **État** : liste A finie — lots A, 2b, 3, 4, 5 mergés (#2062→#2068, #2097, #2118, #2131, #2144 = L8 clos) ; ménage #2142 ; #2061, #1850, #2155 (test `award_achievement_manual` réactivé) mergés, #1802 fermée. Rien en prod. Aucun worktree ouvert pour ce chantier.
+- **Prochaine action** : lire les réponses de la **page à cocher du lot RGPD** (liste B, T1-T15) : https://claude.ai/artifact/2qkUgP9ygUJ3J9ocggY6fe (`ArtifactData list`, collection `reponses`, une fiche par id `T1`…`T15`) ; puis lots : doc seule (T9, T12, T13, T14 si infos données), technique (T2 d'abord, puis T1, T6, T7, T8, T15), ensuite les lots B « destructif » et « spécification ».
+- **En attente de David** : cocher la page RGPD (collection `reponses` vide au 2026-11-01) ; T14 = infos des mentions légales dans le commentaire.
+- **Pièges en cours** : nouvelles règles de migration (#2165, encore OUVERTE : `pnpm migration:horodatage` et `pnpm check:migrations --pr <n>` n'existent qu'une fois mergée) ; `charger-repartir-annuler.svelte.test.ts` (client) instable ; file de runners saturée.
+- **Worktree / branche** : aucun (journal sur `main`).
 
 ---
 

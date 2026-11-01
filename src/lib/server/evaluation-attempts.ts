@@ -39,7 +39,11 @@ import type {
 import { getAttemptsRemaining } from '$lib/types/evaluation';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import { drawSeriesQuestions, MAX_QUESTION_SEED } from '$lib/questions/series-items';
-import { toPublicQuestion, type PublicQuestion } from '$lib/questions/public-question';
+import {
+	gestureAnswerLeaks,
+	toPublicQuestion,
+	type PublicQuestion
+} from '$lib/questions/public-question';
 import {
 	gradeOutOf20,
 	isKnownForSrs,
@@ -417,6 +421,16 @@ export async function startEvaluationAttempt(
 				'[evaluation-attempts] Génération impossible :',
 				draw.template.id,
 				result.errors
+			);
+			continue;
+		}
+		// Énoncé masqué qui dirait encore la réponse (masque cassé) : écarté, jamais envoyé
+		const leaks = gestureAnswerLeaks(result.instance);
+		if (leaks.length > 0) {
+			logger.error(
+				'[evaluation-attempts] Énoncé masqué qui dirait la réponse :',
+				draw.template.id,
+				leaks
 			);
 			continue;
 		}
