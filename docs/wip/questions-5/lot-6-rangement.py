@@ -310,7 +310,7 @@ w(f"""-- select pg_advisory_xact_lock(hashtextextended('question_template_points
 -- do $retour_sous_notion$
 -- declare v_notion uuid; v_sn uuid; v_point integer;
 -- begin
--- 	select n.id into v_notion from public.classification_nodes n
+-- 	select n.id into strict v_notion from public.classification_nodes n
 -- 	  join public.classification_nodes b on b.id = n.parent_id and b.kind = 'branch' and b.parent_id is null and b.archived_at is null and b.name = 'Statistiques'
 -- 	 where n.kind = 'notion' and n.archived_at is null and n.name = 'Représenter des données';
 -- 	select s.id into v_sn from public.classification_nodes s

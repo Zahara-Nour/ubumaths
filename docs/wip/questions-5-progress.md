@@ -466,3 +466,5 @@ Relevé : aucun modèle sur les 6 points ; 6e « Fréquence » (fraction seule),
   la notion qui en relève ; 5-075 « recueillir et organiser » reste sur la notion) ; rollback : point remis,
   sous-notion supprimée (refus si elle porte autre chose).
 - Test 23/23, rouge sans la migration (16 échecs).
+- `security-auditor` (Opus) : aucun bloquant ; remarque appliquée : `select into strict` aussi dans le rollback
+  (notion). Atomicité : `db push` = une transaction implicite par fichier (comme le lot 5).
