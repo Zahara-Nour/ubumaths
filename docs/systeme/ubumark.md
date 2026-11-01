@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; graduations décimales en virgule le 2026-11-01 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30 ; sections du bloc solide (`section:`) le 2026-10-31 ; repère à placer (` ```courbe ` + `placer:`) et titres d'axes (`axes:`) le 2026-11-01 ; valeur masquée `?` (énoncé d'évaluation) le 2026-11-01 ; centimes et billets de 200 / 500 € du bloc monnaie le 2026-11-01 (réponse de la case et messages après revue, le même jour) ; boîte à moustaches (affichage) le 2026-11-01, à construire (`placer:`) le 2026-11-01.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; graduations décimales en virgule le 2026-11-01 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30 ; sections du bloc solide (`section:`) le 2026-10-31 ; repère à placer (` ```courbe ` + `placer:`) et titres d'axes (`axes:`) le 2026-11-01 ; valeur masquée `?` (énoncé d'évaluation) le 2026-11-01 ; trotteuse du bloc horloge (lire, placer) le 2026-11-01 ; centimes et billets de 200 / 500 € du bloc monnaie le 2026-11-01 (réponse de la case et messages après revue, le même jour) ; boîte à moustaches (affichage) le 2026-11-01, à construire (`placer:`) le 2026-11-01.
 
 ## À quoi ça sert
 
@@ -577,8 +577,11 @@ chiffres: quarts
 ```
 ````
 
-`heure:` (obligatoire) : 1 à 4 heures `9 h`, `9 h 30`, `9h5` (heures 0 à 23, minutes 0 à 59 ;
-`9:30` refusé), une horloge par heure. Facultatives : `légendes:` (une par horloge, 40 caractères, sans `;`),
+`heure:` (obligatoire) : 1 à 4 heures `9 h`, `9 h 30`, `9h5`, `9 h 30 min`, `9 h 30 min 15 s`
+(heures 0 à 23, minutes et secondes 0 à 59 ; `9:30`, `9 h 40 s` et `9 h 25 40 s` refusés : les secondes demandent `min`), une horloge par heure.
+**Des secondes écrites dessinent la trotteuse** (fine, à contrepoids, sans couleur de plus ; chantier
+[cercle-trotteuse](../wip/cercle-trotteuse-progress.md)) ; la grande aiguille reste alors pile sur sa minute.
+Des secondes avec `minutes: cachées` : refus. Facultatives : `légendes:` (une par horloge, 40 caractères, sans `;`),
 `chiffres: tous | quarts | aucun`, `graduations: minutes | heures | aucune`,
 `minutes: visibles | cachées` (cachées : heure entière exigée), `cadran: 12 | 24` (couronne
 intérieure 13 à 24), `taille:` (2 à 8 cm ; 4 cm par défaut). La petite aiguille avance avec les
@@ -596,14 +599,18 @@ légende ; `case:` sans `placer:`. Cadran de 6 cm par défaut (`HORLOGE_SIZE_CM.
 `HorlogePlacer.svelte` : deux aiguilles **indépendantes** (pas de remontoir), en attente sur le 12
 (grisées, pointillés) tant qu'elles ne sont pas posées ; étiquettes « petite aiguille » / « grande
 aiguille » (la grande active au départ), toucher le cadran tourne l'aiguille active (60 crans),
-toucher une aiguille posée la reprend, ◀ ▶ et flèches d'un cran ; `role="slider"`, nom accessible
+toucher une aiguille posée la reprend (une autre que l'active : choisie sans bouger, seul le glisser la déplace), ◀ ▶ et flèches d'un cran ; `role="slider"`, nom accessible
 sans l'heure attendue. Calcul pur `utils/horloge-placer.ts` : réponse `handsAnswer` (`'47 25'`),
 lecture `readHands` (petite pile sur l'heure si minutes = 0, strictement entre deux heures sinon),
 `isPlacedTimeCorrect` (accepte aussi le cran de la vraie place de la petite aiguille, `trueHourTick` :
 9 h 05 sur le 9, 9 h 55 sur le 10), phrases `handsMistakes` (rien placé, aiguille pas posée, aiguilles inversées,
 « Tu as placé les aiguilles sur 5 h 45. », petite pile sur l'heure ou entre deux heures à tort).
 Hors question (cours, aperçu) : le même geste, rien de jugé. PDF : le cadran sans aiguilles,
-l'enfant les dessine. Secondes (CM2-083) : hors chantier (pas de trotteuse).
+l'enfant les dessine. **Trotteuse** (CM2-083, chantier [cercle-trotteuse](../wip/cercle-trotteuse-progress.md)) :
+`placer: 9 h 25 min 40 s` ajoute une troisième aiguille et l'étiquette « trotteuse » (ordre de pose : grande,
+petite, trotteuse ; ◀ ▶ d'une seconde) ; réponse `'47 25 40'`, attendue `'9 h 25 min 40 s'` (`timeText`), la
+trotteuse jugée à la seconde exacte ; phrases en plus : trotteuse pas posée, grande aiguille et trotteuse
+inversées. Masquée : `placer: ? s` (`maskedPlacerValue`), pour que la trotteuse reste à poser.
 
 **Figure partagée en parts égales** (chantier [fractions-a-colorier](../archive/wip/fractions-a-colorier-progress.md),
 PR 1 : affichage ; PR 2 : `colorier:` ; PR 3 : `unites:`) — `src/lib/ubumark/__tests__/partage/` :
@@ -1164,7 +1171,7 @@ Points à retenir :
     aussi la conclusion ; recalculer les ferait diverger.
 12. **Valeur masquée `?` d'un bloc à geste** (chantier [fuite-enonce](../archive/wip/fuite-enonce-progress.md)) :
     l'énoncé envoyé pendant une évaluation notée remplace la valeur à trouver par `?`
-    (`placer: A=? ; B=?` en ` ```line ` / ` ```courbe `, `placer: ?` en ` ```horloge `,
+    (`placer: A=? ; B=?` en ` ```line ` / ` ```courbe `, `placer: ?` en ` ```horloge ` — `? s` pour une heure à secondes —,
     `construire: ?`, `colorier: ?`, `Natation = ?` pour une barre de `placer:`, `Notes = ? ; ? ; ? ;
 ? ; ?` pour une boîte à moustaches de `placer:`, `données:` compris). Les parseurs la
     lisent comme une valeur de remplacement (`utils/masked-value.ts`) : mêmes noms, même nombre de

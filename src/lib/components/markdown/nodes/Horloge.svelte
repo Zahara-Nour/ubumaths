@@ -7,7 +7,8 @@
 	scène que le PDF. Horloge à placer (`placer:`) : `HorlogePlacer.svelte`.
 
 	- Une seule couleur d'accent (la petite aiguille) ; les aiguilles se
-	  distinguent aussi par leur forme. Couleurs du thème uniquement.
+	  distinguent aussi par leur forme (trotteuse fine à contrepoids, dessinée
+	  seulement quand des secondes sont écrites). Couleurs du thème uniquement.
 	- Nom accessible « Horloge à aiguilles » : JAMAIS l'heure (ni texte, ni
 	  attribut), sinon un lecteur d'écran donnerait la réponse.
 	- Largeur : `taille:` du bloc, sinon `--horloge-taille` (3 cm dans un choix
@@ -135,6 +136,17 @@
 							stroke-width={HORLOGE_STROKE.hourHand}
 						/>
 					{/if}
+					{#if clock.scene.secondHand && clock.scene.secondTail}
+						<!-- Trotteuse (secondes écrites) : fine, avec son contrepoids -->
+						<line
+							class="horloge-aiguille horloge-aiguille-secondes"
+							x1={clock.scene.secondTail.x}
+							y1={clock.scene.secondTail.y}
+							x2={clock.scene.secondHand.x}
+							y2={clock.scene.secondHand.y}
+							stroke-width={HORLOGE_STROKE.secondHand}
+						/>
+					{/if}
 					<circle class="horloge-axe" r={HORLOGE_STROKE.center} />
 				</svg>
 				{#if clock.caption}
@@ -188,6 +200,11 @@
 	/* La seule couleur d'accent : la petite aiguille */
 	.horloge-aiguille-heures {
 		stroke: var(--color-primary);
+	}
+
+	/* Trotteuse : reconnue à sa forme, pas à une couleur de plus */
+	.horloge-aiguille-secondes {
+		stroke: var(--color-foreground);
 	}
 
 	.horloge-axe {

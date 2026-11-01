@@ -34,7 +34,11 @@
 
 import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
 import { findCourbesToPlace } from '$lib/ubumark/parser/courbe-parser';
-import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
+import {
+	findHorlogesToPlace,
+	isMaskedPlacerValue,
+	maskedPlacerValue
+} from '$lib/ubumark/parser/horloge-parser';
 import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
 import { defaultReserve, findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
 import { fromCents, isCents, readAmount, toCents } from '$lib/ubumark/utils/monnaie-valeurs';
@@ -370,7 +374,9 @@ export function findUnmaskedAnswers(statement: string): string[] {
 	return [
 		...leaks('line', findLinesToPlace(statement), keyMasked(['placer'])),
 		...leaks('courbe', findCourbesToPlace(statement), keyMasked(['placer'])),
-		...leaks('horloge', findHorlogesToPlace(statement), keyMasked(['placer'])),
+		...leaks('horloge', findHorlogesToPlace(statement), (block) =>
+			valuesOf(block.body, ['placer']).every(isMaskedPlacerValue)
+		),
 		...leaks('collection', findBuildCollections(statement), keyMasked(['construire'])),
 		...leaks('monnaie', findBuildMonnaies(statement), keyMasked(['construire'])),
 		...leaks('partage', findPartagesToColorier(statement), keyMasked(['colorier'])),
@@ -403,7 +409,7 @@ export function maskGestureAnswers(statement: string): string {
 	const placer = keyLine(PLACER_LINE, maskLineTargets);
 	maskBlocks(findLinesToPlace(statement), () => placer);
 	maskBlocks(findCourbesToPlace(statement), () => keyLine(PLACER_LINE, maskCourbeTargets));
-	maskBlocks(findHorlogesToPlace(statement), () => keyLine(PLACER_LINE, () => MASKED_VALUE));
+	maskBlocks(findHorlogesToPlace(statement), () => keyLine(PLACER_LINE, maskedPlacerValue));
 	const build = keyLine(BUILD_LINE, () => MASKED_VALUE);
 	maskBlocks(findBuildCollections(statement), () => build);
 	maskBlocks(findBuildMonnaies(statement), maskMonnaie);

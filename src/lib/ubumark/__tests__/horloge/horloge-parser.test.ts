@@ -145,7 +145,7 @@ describe('bloc ```horloge — erreurs (le nœud reste, avec son message)', () =>
 		expect(messages(node)).toEqual([expect.stringContaining('de 0 à 59')]);
 	});
 
-	it.each(['9,5 h', 'neuf heures', '9:30', '9 h 30 min', '9', '{{h}} h', ''])(
+	it.each(['9,5 h', 'neuf heures', '9:30', '9 h 40 s', '9', '{{h}} h', ''])(
 		'heure illisible : « %s » (comportements 20, 21)',
 		(text) => {
 			const node = parse(`heure: ${text}`);
