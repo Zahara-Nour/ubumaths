@@ -537,3 +537,8 @@ modèles 6-11). Tableau du § 10 gardé.
 ### 10.6 Lot 5a : publication (2026-11-01)
 
 - David lance `publier-lot --publier` : 5/5 publiés. MCP : 5 `published`, 5 rangés, 5 tagués.
+
+### 10.7 Lot 5b : rangement (2026-11-01)
+
+- David : `create-questions --dir scripts/questions/cm2-5b --publier` ; relevé MCP : 6 brouillons [CM2] sans nœud ni tag — `13ccf7b1` (020, même dén.), `1170d061` (020, multiples), `a14767bc` (135, même dén.), `edb7fca8` (135, multiples), `c257a672` (021), `cf85bd1b` (022).
+- Migration `20261101210500_questions_cm2_lot5b_rangement_tags.sql`, copie du 5a ; nœuds « Nombres et calculs > Fractions : calculs > addition et soustraction / multiplication / fraction d'une quantité ». Test `questions-cm2-lot5b-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges.
