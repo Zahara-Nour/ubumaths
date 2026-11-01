@@ -9,7 +9,7 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR de migration du lot 4 en cours._
+_Mis à jour le 2026-11-01, PR de migration du lot 4 ouverte (#2171)._
 
 - **État** : lot 4-probabilités mergé (#2161) et créé en prod en brouillon (8 `id`, § 21) ; migration `20261101224701_questions_1spe_probas_rangement_tags` (nœud + tag) écrite, test d'intégration 10/10 vert, rouge 2/10 sans l'effet.
 - **Prochaine action** : `security-auditor` sans finding bloquant → PR → CI verte → `pnpm check:migrations --pr <n>` → merge → `migration list --linked` puis `db:migrate` depuis la branche mergée → vérifier en prod (MCP : 8 nœuds, 8 tags, `tgenabled = 'O'`).
