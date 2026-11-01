@@ -2,7 +2,7 @@
  * Chantier « questions-tspe », lot 2 (limites) : sous-notions, nœud et tags (Supabase local requis)
  * ==================================================================================================
  *
- * Migration `20261101224001_questions_tspe_lot2_rangement_tags` : trois sous-notions neuves
+ * Migration `20261101224701_questions_tspe_lot2_rangement_tags` : trois sous-notions neuves
  * (« limites usuelles » sous Limites de suites et sous Limites de fonctions, « croissances
  * comparées » sous Limites de suites) ; les 4 brouillons du lot 2, créés le 2026-11-01 par
  * scripts/create-questions.ts (sans nœud ni tag), vont sur leur sous-notion et reçoivent leur point
@@ -42,7 +42,7 @@ interface Etat {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261101224001_questions_tspe_lot2_rangement_tags.sql';
+const MIGRATION = 'supabase/migrations/20261101224701_questions_tspe_lot2_rangement_tags.sql';
 const NEUVES = [
 	'Suites > Limites de suites > limites usuelles',
 	'Suites > Limites de suites > croissances comparées',
