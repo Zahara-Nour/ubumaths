@@ -5,17 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2107, #2114 et leur `db:migrate`._
+_Mis à jour le 2026-11-01, après #2107, #2114 et #2112._
 
 - **État** : lots 1 à 6b publiés ; 06-07 en ```ranger en prod (#2078) ; v0.59.0 en prod. Lot 7 : 4 brouillons en prod
   (8adac6d1, 0ce253ea, 5f9ba34d, 92db5823), rangés et tagués (migration `20261101200700_…`, MCP vérifié, § 18).
 - **Prochaine action** : page à cocher du lot 7 (démarche `couvrir-un-niveau.md`) → relecture de David →
   `publier-lot` en simulation → publication.
-- **En attente de David** : PR #2112 (verrou de `deploy:prod` : attendre la CI sous le verrou), CI en cours —
-  merge autonome si verte.
+- **En attente de David** : rien.
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs --file`. Jamais de variable
   `e`. `Doc-inchangée:` va dans un message de COMMIT. PR en conflit = pas de CI : vérifier `mergeable`.
-- **Worktree / branche** : aucun (retiré après #2114) ; `../ubumaths-wt-deploy-verrou` pour #2112.
+- **Worktree / branche** : aucun (retirés après #2114 et #2112).
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1147,3 +1146,6 @@ visibles de l'admin et de l'auteur seuls jusqu'à leur publication ; la migratio
   20261101200700 (#2114, CI verte, mergée) ; `db:migrate` : jouée, avec au passage
   `20261101193000_questions_4_lot1_niveau` (mergée, pas encore jouée : session questions-4 prévenue). MCP : les 4
   sur leur nœud, un tag chacun (6-108, 6-107, 6-128, 6-110), `updated_at` préservé, trigger `O`.
+- Hors chantier, demandé par David : #2112 (`deploy:prod` attend la CI de `main` sous le verrou, au plus 25 min ;
+  commits en cause nommés si `main` local diffère). 1re CI rouge à cause du doublon 190200 alors sur `main` ;
+  `origin/main` fusionnée, CI verte, mergée.
