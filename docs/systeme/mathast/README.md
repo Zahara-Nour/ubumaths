@@ -1922,6 +1922,17 @@ ln(2x) − ln(2x)` garde `ln x − ln x` sur la ligne ;
     (`x^2+kx`, `x+kx^2`, `x\ln x+kx` en 0⁺ → 0, `\frac{k^2+1}{x}` en 0⁺ → +∞). Piste : un « zéro
     de côté inconnu » absorbant dans l'addition (pas le 0 exact, neutre : cause des valeurs
     fausses de la revue 1) ;
+- Conditions de √ et ln à paramètre (Atelier), laissés par le chantier ecarts-conditions
+  (2026-11-01, #2118, journal archivé `docs/archive/wip/ecarts-conditions-progress.md`), aucune
+  condition fausse :
+  - doublons d'écritures différentes entre la saisie et la réponse (`\sqrt{a-1.5}` →
+    « a-3/2 ⩾ 0, a ⩾ 1,5 », `\sqrt{a+(-2)}`, `\ln(a^3)`, `1/\sqrt{a^2}`) ; « a > -0 » ;
+    « a^{1:/2} » (`toCustom`) ; « 2a-2 ≠ 0 » non réduit (antérieur) ;
+  - contradictions affichées telles quelles (`\ln(a-3)\ln(3-a)` → « a < 3, a > 3 ») ;
+  - `1/\ln(a)` garde « ln(a) ≠ 0 » brut (Q4 de David, laissé) : « a > 0, a ≠ 1 » possible ;
+  - `.intégrer e^{\sqrt{a} x} de 0 à 1` : valeur non réduite
+    (`{-sqrt(a)e^{sqrt(a)*0}+sqrt(a)e^{sqrt(a)*1}}/a`, réduction `tidy` → `fusion-moteurs`),
+    condition juste (a > 0).
 
 ## Décisions
 
