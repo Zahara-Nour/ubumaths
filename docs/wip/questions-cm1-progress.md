@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01 : le bloc ```partage est EN PROD depuis v0.58.0 (2026-10-30)._
+_Mis à jour le 2026-11-01, après la publication du lot 3c._
 
-- **État** : lot 3c (4 partages) rangé et tagué en prod (migration `20261101160400` jouée, vérifiée au MCP), toujours en brouillon ; page à cocher publiée : https://claude.ai/artifact/DzyRsxgghCRtKQBQcgNZ5w (`verdicts` vide au 2026-11-01).
-- **Prochaine action** : David relit la page ; les figures ```partage se jouent dans l'aperçu de la PROD (`/dashboard/admin/questions/<id>/preview`), le bloc y est ; lire et compter les `verdicts` ; publication (`publier-lot` en simulation, puis `--publier` par David). Plus aucun `deploy:prod` à attendre.
-- **En attente de David** : la relecture de la page.
+- **État** : lot 3 (fractions) FINI — 3a, 3b, 3c publiés en prod (3c : 4/4 « ok » sur la page à cocher, 4 `published` relus au MCP).
+- **Prochaine action** : phase 0 du **lot 4 — décimaux** (ordre validé au § 4 bis : 4 décimaux → 5 grandeurs → 6 problèmes → 7 données → 8 géométrie dessinée → probabilités, proportionnalité → outils neufs) ; relever les points « décimaux » du § 3 et les écrire en tableau à valider.
+- **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main`, des worktrees ET des branches distantes + 1 min, **revérifié juste avant le merge** (#2017, #2093) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (`$lib`) ; specs de coloriage ≤ 34 rangs (test `answer-complexity-corpus`) ; port 5177 pris par questions-4.
 - **Worktree / branche** : aucun (retiré après #2093).
 
@@ -613,3 +613,10 @@ sans outil neuf ; « 1 + 3/4 » refusé (`requiredForm: 'fraction'`).
   dessiné, à jouer dans l'aperçu) ; `verdicts` vide à la publication.
 - Sessions prévenues : questions-2de (collision levée, sa migration jouée) ; questions-ce2 (sa
   `20261101160300`, pas mergée, passera sous `160400` : à renuméroter).
+
+### 11 sexies. Lot 3c — publication (2026-11-01)
+
+- Le bloc ```partage était déjà en prod (v0.58.0, 2026-10-30) : relecture faite dans l'aperçu de la prod.
+- Page à cocher : 4 verdicts « ok », sans commentaire (comptés dans `verdicts`). Simulation
+  `publier-lot --dir scripts/questions/cm1-3c` : 4 brouillons passent ; `--publier` lancé par David ;
+  4 `published` relus au MCP (`092b310c`, `14a2d26f`, `60ce79bb`, `fe91cbd9`). Lot 3 fini.
