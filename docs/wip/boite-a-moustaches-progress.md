@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, phase 0 écrite._
+_Mis à jour le 2026-11-01, phase 0 validée._
 
-- **État** : phase 0 écrite (§ 3 à 6), rien de codé.
-- **Prochaine action** : réponses de David aux questions du § 7, puis palier 1 (affichage).
-- **En attente de David** : les 6 questions du § 7.
+- **État** : phase 0 validée (§ 8), palier 1 (affichage) en cours.
+- **Prochaine action** : palier 1 — tests rouges, puis genre `boite-a-moustaches` de `stat-chart`.
+- **En attente de David** : rien.
 - **Pièges en cours** : quartiles = ceux du programme (`src/lib/statistics/describe.ts`), jamais ceux des
   calculatrices ; ne pas écrire de second calcul.
 - **Worktree / branche** : `../ubumaths-wt-boite-a-moustaches`, `feat/boite-a-moustaches`.
@@ -135,3 +135,13 @@ Notes = 4 ; 8 ; 11 ; 14 ; 19
    (recommandé) ; ou traits qui ne peuvent pas se croiser ?
 6. **Moustaches** : toujours jusqu'au minimum et au maximum (programme de 3e) — les déciles (certains manuels
    de 2de) hors périmètre (recommandé) ?
+
+## 8. Décisions (David, 2026-11-01, « je valide » les six recommandations)
+
+1. Nom : ` ```boite-a-moustaches `, nouveau genre de `stat-chart`.
+2. Deux formes : cinq valeurs par boîte, **et** `données:` (une boîte calculée par `describe.ts`).
+3. Valeurs non écrites par défaut ; `valeurs: oui` les écrit.
+4. Quadrillage léger aux graduations.
+5. Construire : ordre libre, traits dans le désordre jugés faux (la correction le dit).
+6. Moustaches au minimum et au maximum ; déciles hors périmètre (option `moustaches: déciles` possible plus
+   tard).
