@@ -8,6 +8,8 @@
  *
  * L'élève pose des coupures de la réserve sur un plan vide. Seule la SOMME
  * posée est jugée (Q5) : 20 + 10 + 5 € ou 3 × 10 + 2 + 2 + 1 € valent 35 €.
+ * Toute somme se compte en centimes entiers (`monnaie-valeurs.ts`, chantier
+ * `docs/wip/monnaie-centimes-progress.md`) : 20 c + 20 c + 5 c = 45 c.
  * Plan vide → réponse vide (Q6). Les coupures se rangent d'office (Q2) :
  * billets en haut, pièces dessous, la plus grande d'abord — la scène de la
  * monnaie, en `rangé`.
@@ -22,12 +24,13 @@ import {
 	type MonnaieSet
 } from '../types/monnaie';
 import { buildMonnaieScene, type MonnaieScene } from './monnaie-scene';
+import { amountAnswer, fromCents, readAmount, toCents } from './monnaie-valeurs';
 
 // ============================================================================
 // CONSTANTES
 // ============================================================================
 
-/** Plafonds du plan (ceux d'un ensemble du bloc) : au-delà, le bouton « Ajouter » se grise */
+/** Plafonds du plan (ceux d'un ensemble du bloc, 1 000 €) : au-delà, le bouton « Ajouter » se grise */
 export const BUILD_LIMITS = MONNAIE_LIMITS;
 
 /** Coupures permises sans `réserve:` */
@@ -44,21 +47,26 @@ const isNote = (value: number) => (MONNAIE_NOTES as readonly number[]).includes(
 
 const descending = (values: number[]) => [...values].sort((a, b) => b - a);
 
-/** Somme posée, en euros */
+/** Somme posée, en centimes */
+export function buildCents(build: MonnaieSet): number {
+	return [...build.notes, ...build.coins].reduce((sum, value) => sum + toCents(value), 0);
+}
+
+/** Somme posée, en euros (`3.45`) */
 export function buildValue(build: MonnaieSet): number {
-	return [...build.notes, ...build.coins].reduce((sum, value) => sum + value, 0);
+	return fromCents(buildCents(build));
 }
 
-/** Réponse de la case : la somme en chiffres, '' si le plan est vide */
+/** Réponse de la case : la somme en chiffres (`35`, `3,45`), '' si le plan est vide */
 export function buildAnswer(build: MonnaieSet): string {
-	const value = buildValue(build);
-	return value === 0 ? '' : String(value);
+	const cents = buildCents(build);
+	return cents === 0 ? '' : amountAnswer(cents);
 }
 
-/** Une coupure de plus tient-elle dans les plafonds (100 €, 30 objets) ? */
+/** Une coupure de plus tient-elle dans les plafonds (1 000 €, 30 objets) ? */
 export function canAdd(build: MonnaieSet, value: number): boolean {
 	return (
-		buildValue(build) + value <= BUILD_LIMITS.total &&
+		buildCents(build) + toCents(value) <= BUILD_LIMITS.total * 100 &&
 		build.notes.length + build.coins.length < BUILD_LIMITS.objects
 	);
 }
@@ -79,28 +87,40 @@ export function removeFromBuild(build: MonnaieSet, value: number): MonnaieSet {
 	return { ...build, [key]: build[key].filter((_, i) => i !== index) };
 }
 
+function gcd(a: number, b: number): number {
+	return b === 0 ? a : gcd(b, a % b);
+}
+
 /**
- * Le moins d'objets pour faire `value` avec les coupures de la réserve, chacune
- * autant de fois qu'on veut ; Infinity si c'est impossible. Programmation
- * dynamique, pas l'algorithme glouton : avec 2 et 5 €, 6 € = 3 × 2 €.
+ * Le moins d'objets pour faire `value` (en euros) avec les coupures de la réserve,
+ * chacune autant de fois qu'on veut ; [] si c'est impossible. Programmation
+ * dynamique, pas l'algorithme glouton : avec 2 et 5 €, 6 € = 3 × 2 €. Compté en
+ * centimes, par pas du plus grand diviseur commun (1 € sans centimes : 1 000 cases
+ * au plus pour 1 000 €, pas 100 000).
  */
 function fewestCoupures(value: number, reserve: readonly number[]): number[] {
-	// last[s] : la dernière coupure prise pour faire s au mieux (0 : impossible)
+	const target = toCents(value);
+	const cents = reserve.map(toCents);
+	const step = cents.reduce(gcd, target);
+	if (step === 0) return [];
+	const size = target / step;
+	const units = cents.map((c) => c / step);
+	// last[s] : rang dans la réserve de la dernière coupure prise pour faire s au mieux (-1 : impossible)
 	const fewest: number[] = [0];
-	const last: number[] = [0];
-	for (let s = 1; s <= value; s++) {
+	const last: number[] = [-1];
+	for (let s = 1; s <= size; s++) {
 		fewest[s] = Infinity;
-		last[s] = 0;
-		for (const coupure of reserve) {
-			if (coupure <= s && fewest[s - coupure] + 1 < fewest[s]) {
-				fewest[s] = fewest[s - coupure] + 1;
-				last[s] = coupure;
+		last[s] = -1;
+		units.forEach((u, i) => {
+			if (u <= s && fewest[s - u] + 1 < fewest[s]) {
+				fewest[s] = fewest[s - u] + 1;
+				last[s] = i;
 			}
-		}
+		});
 	}
-	if (fewest[value] === Infinity) return [];
+	if (fewest[size] === Infinity) return [];
 	const values: number[] = [];
-	for (let s = value; s > 0; s -= last[s]) values.push(last[s]);
+	for (let s = size; s > 0; s -= units[last[s]]) values.push(reserve[last[s]]);
 	return values;
 }
 
@@ -129,9 +149,9 @@ export function solutionBuild(value: number, reserve: readonly number[]): Monnai
  * moins d'objets avec la réserve ; réponse vide, illisible ou infaisable → plan vide
  */
 export function buildFromAnswer(answer: string, reserve: readonly number[]): MonnaieSet {
-	const text = answer.trim();
-	if (!/^\d+$/.test(text) || Number(text) > BUILD_LIMITS.total) return EMPTY_BUILD;
-	return solutionBuild(Number(text), reserve) ?? EMPTY_BUILD;
+	const cents = readAmount(answer);
+	if (cents === null || cents > BUILD_LIMITS.total * 100) return EMPTY_BUILD;
+	return solutionBuild(fromCents(cents), reserve) ?? EMPTY_BUILD;
 }
 
 /** La scène du plan : les coupures posées, rangées */

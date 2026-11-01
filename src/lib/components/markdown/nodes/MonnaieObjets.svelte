@@ -8,7 +8,9 @@
 
 	- Rendu stylisé (décision 1) : une seule couleur d'accent (pièces pleines,
 	  billets en teinte claire), traits et valeurs dans une teinte foncée de
-	  l'accent. Couleurs du thème uniquement.
+	  l'accent. Couleurs du thème uniquement. Pièces de centimes : cuivre (1, 2,
+	  5 c) et doré (10, 20, 50 c), teintes claires des couleurs de figure
+	  (chantier `docs/wip/monnaie-centimes-progress.md`, décision 1).
 	- `isMarked` : coupure barrée (marquage au doigt de `Monnaie.svelte`).
 
 	@module components/markdown/nodes/MonnaieObjets
@@ -17,6 +19,7 @@
 
 <script lang="ts">
 	import { MONNAIE_LABEL, type MonnaieItem } from '$lib/ubumark/utils/monnaie-scene';
+	import { coinFamily, denominationLabel } from '$lib/ubumark/utils/monnaie-valeurs';
 
 	interface Props {
 		items: MonnaieItem[];
@@ -57,7 +60,7 @@
 				rx={NOTE.radius}
 			/>
 			<text class="monnaie-valeur" x={item.cx} y={item.cy} font-size={NOTE.size}
-				>{item.value} €</text
+				>{denominationLabel(item.value)}</text
 			>
 			<text
 				class="monnaie-valeur"
@@ -73,7 +76,9 @@
 			>
 		{:else}
 			<circle
-				class={item.value === 2 ? 'monnaie-anneau' : 'monnaie-piece-fond'}
+				class={item.value === 2
+					? 'monnaie-anneau'
+					: `monnaie-piece-fond monnaie-piece-${coinFamily(item.value)}`}
 				cx={item.cx}
 				cy={item.cy}
 				r={item.width / 2}
@@ -87,7 +92,7 @@
 				/>
 			{/if}
 			<text class="monnaie-valeur" x={item.cx} y={item.cy} font-size={MONNAIE_LABEL.coin.size}
-				>{item.value} €</text
+				>{denominationLabel(item.value)}</text
 			>
 		{/if}
 	</g>
@@ -106,6 +111,17 @@
 		fill: var(--color-primary);
 		stroke: color-mix(in oklab, var(--color-primary) 45%, black);
 		stroke-width: 0.8;
+	}
+
+	/* Centimes : teintes claires, la valeur foncée reste lisible dessus */
+	.monnaie-piece-cuivre {
+		fill: color-mix(in oklab, var(--color-fig-marron) 55%, white);
+		stroke: color-mix(in oklab, var(--color-fig-marron) 60%, black);
+	}
+
+	.monnaie-piece-dore {
+		fill: color-mix(in oklab, var(--color-fig-jaune) 60%, white);
+		stroke: color-mix(in oklab, var(--color-fig-jaune) 45%, black);
 	}
 
 	.monnaie-anneau {

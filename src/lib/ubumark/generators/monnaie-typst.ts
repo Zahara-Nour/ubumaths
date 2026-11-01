@@ -22,6 +22,7 @@
  * @module ubumark/generators/monnaie-typst
  */
 
+import { coinFamily, denominationLabel } from '../utils/monnaie-valeurs';
 import {
 	buildMonnaieScene,
 	MONNAIE_LABEL,
@@ -54,6 +55,9 @@ const CAPTION_MIN_CM = 3;
 const NOTE_FILL = 'luma(240)';
 const COIN_FILL = 'luma(215)';
 const RING_FILL = 'luma(165)';
+/** Pièces de centimes : cuivre (1, 2, 5 c) plus foncé, doré (10, 20, 50 c) plus clair, en gris */
+const COPPER_FILL = 'luma(190)';
+const GOLD_FILL = 'luma(235)';
 
 /** Bloc à construire : hauteur du cadre vide (part de sa largeur), échelle de la réserve */
 const BUILD_FRAME_RATIO = 0.6;
@@ -97,7 +101,7 @@ function itemsTypst(items: MonnaieItem[], k: number): string[] {
 					it.y,
 					`rect(width: ${cm(it.width * k)}, height: ${cm(it.height * k)}, radius: ${cm(l.radius * k)}, fill: ${NOTE_FILL}, stroke: ${stroke})`
 				),
-				label(it.x, it.y, it.width, it.height, `${it.value} €`, l.size),
+				label(it.x, it.y, it.width, it.height, denominationLabel(it.value), l.size),
 				// La valeur répétée en petit, coin haut gauche et coin bas droit
 				label(
 					it.x + l.cornerInset,
@@ -119,12 +123,16 @@ function itemsTypst(items: MonnaieItem[], k: number): string[] {
 		} else {
 			const r = it.width / 2;
 			const ring = it.value === 2;
+			const family = coinFamily(it.value);
+			const fill = ring
+				? RING_FILL
+				: family === 'cuivre'
+					? COPPER_FILL
+					: family === 'dore'
+						? GOLD_FILL
+						: COIN_FILL;
 			parts.push(
-				place(
-					it.x,
-					it.y,
-					`circle(radius: ${cm(r * k)}, fill: ${ring ? RING_FILL : COIN_FILL}, stroke: ${stroke})`
-				)
+				place(it.x, it.y, `circle(radius: ${cm(r * k)}, fill: ${fill}, stroke: ${stroke})`)
 			);
 			if (ring) {
 				const inner = r * MONNAIE_LABEL.coin.innerRatio;
@@ -136,7 +144,9 @@ function itemsTypst(items: MonnaieItem[], k: number): string[] {
 					)
 				);
 			}
-			parts.push(label(it.x, it.y, it.width, it.height, `${it.value} €`, MONNAIE_LABEL.coin.size));
+			parts.push(
+				label(it.x, it.y, it.width, it.height, denominationLabel(it.value), MONNAIE_LABEL.coin.size)
+			);
 		}
 	}
 	return parts;

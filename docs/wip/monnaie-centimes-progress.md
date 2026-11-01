@@ -1,5 +1,5 @@
 ---
-status: phase 0
+status: en cours
 ---
 
 # Chantier « monnaie-centimes » : des centimes et les billets de 200 / 500 € dans ` ```monnaie `
@@ -12,9 +12,9 @@ status: phase 0
 
 _Mis à jour le 2026-11-01, à l'ouverture._
 
-- **État** : phase 0 écrite (§ 2, § 3), rien n'est codé.
-- **Prochaine action** : David valide la phase 0 → tests rouges → code → PR.
-- **En attente de David** : les questions du § 3.
+- **État** : phase 0 validée (« je te suis » : les six recommandations du § 3), rien n'est codé.
+- **Prochaine action** : tests rouges → code → PR.
+- **En attente de David** : rien.
 - **Pièges en cours** : les modèles du CP (`construire: 35`, `montant: 48`) ne doivent pas bouger, ni leur réponse
   `35` ; la scène est commune avec ` ```collection ` (ses tests doivent rester verts).
 - **Worktree / branche** : `../ubumaths-wt-monnaie-centimes` (`feat/monnaie-centimes`).
@@ -84,6 +84,8 @@ Ce que demandent les points (bornes `cycle2.json`) : « valeur en euros et centi
 6. **Hors chantier** : « rendre la monnaie » (086) se fait avec ce qui existe — l'énoncé dit ce qu'on paie et avec
    quoi, l'élève construit la monnaie rendue. Les ajouts successifs du CE2 (080) viendront plus tard. D'accord ?
 
+**Décisions (David, 2026-11-01, « je te suis »)** : les six recommandations ci-dessus.
+
 **Question d'accès** : aucune — ni base, ni règle ; le bloc est rendu côté client.
 
 **Revue prévue** : `code-reviewer` en `model: opus` (correction des réponses : la somme posée est jugée).
@@ -91,3 +93,4 @@ Ce que demandent les points (bornes `cycle2.json`) : « valeur en euros et centi
 ## Journal
 
 - 2026-11-01 : chantier ouvert (worktree, branche), relevé du code, phase 0 écrite.
+- 2026-11-01 : phase 0 validée par David (« je te suis »).
