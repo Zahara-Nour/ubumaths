@@ -31,6 +31,7 @@
 
 import { unnestedLine } from './nested-line';
 import { specialBlockEnd } from './unclosed-block';
+import { isMaskedValue } from '../utils/masked-value';
 import {
 	PARTAGE_GRID,
 	PARTAGE_KEYS,
@@ -360,7 +361,8 @@ export function parsePartageContent(source: string): PartageNode {
 		try {
 			if (key === 'forme') shape = parseShape(value);
 			else if (key === 'colorier') {
-				fraction = parseFraction(value);
+				// Énoncé d'une évaluation notée : fraction de remplacement (`masked-value.ts`)
+				fraction = isMaskedValue(value) ? { num: 1, den: 1 } : parseFraction(value);
 				colorierLine = lineNo;
 			} else if (key === 'unites') {
 				unitsFailed = true;

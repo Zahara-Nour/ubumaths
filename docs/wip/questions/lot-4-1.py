@@ -7,7 +7,7 @@ point par modèle :
 | 1 | 4-082 | Somme de deux opposés               | Relatifs › Additionner et soustraire › Sommes, 8   |
 | 2 | 4-004 | Nommer un enchaînement d'opérations | Entiers › Priorités opératoires › Vocabulaire, 3   |
 | 3 | 4-006 | Nombre rationnel                    | Fractions › Apprivoiser › Définition, 3            |
-| 4 | 4-009 | Fraction d'une fraction             | Fractions › Calculer › Fraction d'une quantité, 5  |
+| 4 | 4-009 | Fraction d'une fraction             | Fractions › Calculer › Fraction d'une quantité, 7  |
 | 5 | 4-010 | L'inverse d'un nombre               | Fractions › Calculer › Inverse, 3                  |
 | 6 | 4-013 | Enchaîner des calculs de fractions  | Fractions › Calculer › Enchaînements, 1            |
 | 7 | 4-014 | Problèmes avec des fractions        | Fractions › Problèmes › Parts et restes, 2         |
@@ -360,7 +360,7 @@ MODELES.append(modele(
     '04-fraction-d-une-fraction', 'Fraction d\'une fraction',
     'Calculer une fraction d\'une fraction par un produit : 2/3 de 4/5 = 8/15 ; 3/4 de 8/9 = 2/3 ;'
     ' les 2/3 des 3/5 des élèves',
-    'Fractions', 'Calculer', 'Fraction d\'une quantité', 5,
+    'Fractions', 'Calculer', 'Fraction d\'une quantité', 7,
     [FF_SANS_SIMPLIFIER, FF_SIMPLIFIER, FF_PROBLEME],
     [spec('2/3 de 4/5 = 8/15', 0, F2345, '\\frac{8}{15}', 'correct'),
      spec('Erreur : somme 2/3 + 4/5 = 22/15', 0, F2345, '\\frac{22}{15}', 'incorrect'),

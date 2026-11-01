@@ -38,9 +38,22 @@ import { indexOfValue, placerAnswer } from '$lib/ubumark/utils/number-line-place
 import { numVal } from '$lib/ubumark/utils/number-line-render';
 import { parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
 import { pointAnswer } from '$lib/ubumark/utils/courbe-placer';
+import { hasMaskedValue } from '$lib/ubumark/utils/masked-value';
 
 // Constantes
 
+/** Blocs dont l'énoncé d'évaluation masque la valeur (`masked-statement.ts`) */
+const MASKABLE_KINDS = new Set<BuildKind>([
+	'line',
+	'courbe',
+	'horloge',
+	'collection',
+	'monnaie',
+	'partage',
+	'barres'
+]);
+const MASKED_IN_TEMPLATE =
+	'« ? » à la place d’une valeur : écris la valeur attendue (le « ? » est réservé à l’énoncé envoyé pendant une évaluation)';
 const CASE_IS_AUTOMATIC = 'case: est posée automatiquement, retirer cette ligne du bloc';
 
 // Functions
@@ -71,6 +84,8 @@ export function buildAnswerOf(
 	source: string,
 	point = 0
 ): { answer: string } | { errors: string[] } {
+	// `?` : forme réservée à l'énoncé envoyé pendant une évaluation (rien à attendre)
+	if (MASKABLE_KINDS.has(kind) && hasMaskedValue(source)) return { errors: [MASKED_IN_TEMPLATE] };
 	if (kind === 'line') {
 		const { node, errors } = parseNumberLineContent(source);
 		if (node === null) return { errors: errors.map((e) => e.message) };

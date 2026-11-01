@@ -4,7 +4,8 @@
  * `~…~` et `$…$` au rendu écran et signale : erreur rouge, lettres découpées (un
  * nom de fonction non déclaré, `CM` lu comme `C·M`), nom grec sans antislash,
  * `\unit` résiduel. Signale aussi les blocs ```courbe et ```figure en erreur ou hors fenêtre,
- * et les blocs ```horloge, ```operation, ```collection, ```monnaie, ```partage, ```cubes, ```solide et ```patron en erreur.
+ * et les blocs ```horloge, ```operation, ```collection, ```monnaie, ```partage, ```cubes, ```solide, ```patron
+ * et ```scratch en erreur (instructions non reconnues comprises), dans les choix d'un ```choix aussi.
  *
  * Les lettres de fonctions sont celles de `generic_functions` de l'exercice ; sans
  * elles, `C'(x)` s'affiche comme un produit.
@@ -27,6 +28,8 @@ import type { CollectionNode } from '$lib/ubumark/types/collection';
 import type { MonnaieNode } from '$lib/ubumark/types/monnaie';
 import type { PartageNode } from '$lib/ubumark/types/partage';
 import type { EspaceNode } from '$lib/ubumark/types/espace';
+import type { ScratchNode } from '$lib/ubumark/types/scratch';
+import { checkScratchProgram } from '$lib/ubumark/utils/scratch-check';
 
 type BlocNode =
 	| CourbeNode
@@ -36,9 +39,10 @@ type BlocNode =
 	| CollectionNode
 	| MonnaieNode
 	| PartageNode
-	| EspaceNode;
+	| EspaceNode
+	| ScratchNode;
 
-/** Blocs ```courbe, ```figure, ```horloge, ```operation, ```collection, ```monnaie, ```partage, ```cubes, ```solide et ```patron d'un arbre ubumark, listes comprises. */
+/** Blocs ```courbe, ```figure, ```horloge, ```operation, ```collection, ```monnaie, ```partage, ```cubes, ```solide, ```patron et ```scratch d'un arbre ubumark, listes et choix compris. */
 function blocs(node: unknown, found: BlocNode[] = []): BlocNode[] {
 	if (Array.isArray(node)) {
 		for (const child of node) blocs(child, found);
@@ -52,7 +56,13 @@ function blocs(node: unknown, found: BlocNode[] = []): BlocNode[] {
 		else if (record.type === 'monnaie') found.push(node as MonnaieNode);
 		else if (record.type === 'partage') found.push(node as PartageNode);
 		else if (record.type === 'espace') found.push(node as EspaceNode);
-		else {
+		else if (record.type === 'scratch') found.push(node as ScratchNode);
+		else if (record.type === 'choice' && Array.isArray(record.choices)) {
+			// Chaque choix est du markdown : ses blocs sont lus à part
+			for (const choice of record.choices) {
+				if (typeof choice === 'string') blocs(parseMarkdown(choice).children, found);
+			}
+		} else {
 			blocs(record.children, found);
 			blocs(record.items, found);
 		}
@@ -65,6 +75,10 @@ function blocMessages(bloc: BlocNode): string[] {
 	if (bloc.type === 'figure') {
 		const { errors, warnings } = buildFigureScene(bloc);
 		return [...errors, ...warnings].map((m) => m.message);
+	}
+	// ```scratch : erreurs du parseur, puis instructions vérifiées par `scratchblocks`
+	if (bloc.type === 'scratch') {
+		return [...bloc.errors, ...checkScratchProgram(bloc.source)].map((m) => m.message);
 	}
 	// Les phrases du bloc ```partage sont déjà des textes
 	if (bloc.type === 'partage' || bloc.type === 'espace') return bloc.errors;

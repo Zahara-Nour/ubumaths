@@ -225,14 +225,17 @@ Précisions :
   (variations, arbre, droite graduée — avec `placer:` d'une question, un ou plusieurs points —, courbe, figure — en-tête seulement, renvoi vers
   `/aide-ecriture/geometrie` —, figure à compléter — case « figure » d'une question, rendue ici en
   figure de départ —, figure de travail — même rendu, jamais notée —, statistiques — 9 genres sur une page, avec `axe:` et `placer:` d’une question, le diagramme en barres que l’élève construit, `axe: à choisir` où il choisit d’abord l’échelle —, QR code, horloge — avec `placer:` d’une question, le cadran où l’élève pose les aiguilles —, étiquettes à ranger — le geste de l’élève, glisser ou toucher —, figure partagée en parts égales (``partage, `gris:` — avec `colorier:` d’une question, la figure où l’élève colorie les parts, en touchant ou en glissant ; avec `unites:`, plusieurs figures pour une fraction plus grande que 1 —), assemblage de cubes (``cubes — avec `dessiner:` d’une question, le quadrillage où l’élève colorie une vue ; avec `retrouver:`, la vue de dessus où il écrit les hauteurs d’après les vues —), solide en perspective cavalière (``solide : arêtes cachées en tirets, sommets nommés, `marquer:`, `cotes:`, `section:` — pavé, cylindre ou boule coupé par un plan, section teintée —), patron d’un solide (``patron : les 11 patrons et 8 faux patrons du cube dessinés, grille pliée, noms du solide répétés — avec `designer:` d’une question, les faces que l’élève touche ; avec `completer:`, les emplacements où il pose la face manquante —), opération posée,
-  cercle trigo). Contenu écrit une fois dans `src/lib/block-catalog/<bloc>.ts`
-  (`BlockCatalogEntry` : réglages avec clé, valeurs, défaut ; exemples ; erreurs fréquentes ; texte
-  de la zone « Essayer »), liste ordonnée `BLOCK_CATALOG`. Page commune
-  `src/lib/components/block-catalog/BlockHelpPage.svelte`, rendus avec `showAuthoringErrors` (le prof
-  voit les messages situés). La route `/aide-ecriture/blocs/[bloc]` sert chaque fiche ; le cercle
-  trigo garde son adresse (`href` de la fiche) et n'a pas de double sous `/blocs` (404). Garde :
-  `src/lib/block-catalog/__tests__/catalogue.test.ts` passe chaque exemple par `parseMarkdown`
-  (aucune erreur, bon type de nœud) et vérifie le message de chaque erreur fréquente. Les blocs
+  cercle trigo, programme Scratch — ``scratch, page « Instructions » au lieu de « Réglages » —). Contenu écrit une fois dans `src/lib/block-catalog/<bloc>.ts`
+(`BlockCatalogEntry` : réglages avec clé, valeurs, défaut ; exemples ; erreurs fréquentes ; texte
+de la zone « Essayer »), liste ordonnée `BLOCK_CATALOG`. Page commune
+`src/lib/components/block-catalog/BlockHelpPage.svelte`, rendus avec `showAuthoringErrors` (le prof
+voit les messages situés). La route `/aide-ecriture/blocs/[bloc]` sert chaque fiche ; le cercle
+trigo garde son adresse (`href` de la fiche) et n'a pas de double sous `/blocs` (404). Garde :
+`src/lib/block-catalog/__tests__/catalogue.test.ts` passe chaque exemple par `parseMarkdown`
+(aucune erreur, bon type de nœud) et vérifie le message de chaque erreur fréquente ; pour ``scratch,
+  il y ajoute la vérification des instructions (`checkScratchProgram`), faite hors du parseur.
+  `settingsKind: 'instructions'` (``scratch) : colonnes « Instruction », « Ce qu’on y écrit »,
+  « Effet », sans « Par défaut ». Les blocs
   variation, arbre et droite graduée n'ont pas de message : un bloc invalide s'y affiche en texte
   brut, ce que dit l'explication de l'erreur.
 - **`/demo/cercle-trigo`** (vitrine, PR 6b) : 4 exemples du bloc `trig` rendus par

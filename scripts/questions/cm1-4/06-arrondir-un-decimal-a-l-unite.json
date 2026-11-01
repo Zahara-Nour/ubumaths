@@ -1,0 +1,221 @@
+{
+	"title": "Arrondir un nombre décimal à l'unité",
+	"description": "Donner l'arrondi à l'unité d'un nombre décimal à une ou deux décimales (3,7 → 4 ; 3,5 → 4 ; 5,49 → 5)",
+	"grades": ["CM1"],
+	"theme": "Décimaux",
+	"domain": "Apprivoiser",
+	"subdomain": "Arrondir",
+	"level": 5,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Donne l'arrondi à l'unité de ${{x}}$.\n\n$${{x}} \\approx ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..99"
+				},
+				{
+					"name": "t",
+					"expression": "1..9"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a+t/10;d"
+				},
+				{
+					"name": "v",
+					"expression": "eval:a+floor(t/5)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Arrondir à l'unité**, c'est donner l'entier le plus proche. On regarde le chiffre des dixièmes : $5$ ou plus, on prend l'entier du dessus ; moins de $5$, on garde la partie entière.",
+					"Le chiffre des dixièmes est $\\textcolor{{{color:primary.1}}}{{{t}}}$ : {{if:t>=5|$5$ ou plus, on prend l'entier du dessus|moins de $5$, on garde la partie entière}}.",
+					"$${{x}} \\approx \\textcolor{{{color:primary.0}}}{{{v}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Donne l'arrondi à l'unité de ${{x}}$.\n\n$${{x}} \\approx ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..99"
+				},
+				{
+					"name": "D",
+					"expression": "1..99"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a+D/100;d"
+				},
+				{
+					"name": "h",
+					"expression": "eval:floor(D/10)"
+				},
+				{
+					"name": "v",
+					"expression": "eval:a+floor(D/50)"
+				}
+			],
+			"conditions": ["mod(D,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Arrondir à l'unité**, c'est donner l'entier le plus proche. On regarde le chiffre des dixièmes : $5$ ou plus, on prend l'entier du dessus ; moins de $5$, on garde la partie entière.",
+					"Le chiffre des dixièmes est $\\textcolor{{{color:primary.1}}}{{{h}}}$ (les centièmes ne comptent pas) : {{if:h>=5|$5$ ou plus, on prend l'entier du dessus|moins de $5$, on garde la partie entière}}.",
+					"$${{x}} \\approx \\textcolor{{{color:primary.0}}}{{{v}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3,7 → 4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"t": "7",
+				"x": "3.7",
+				"v": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 (partie entière)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"t": "7",
+				"x": "3.7",
+				"v": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3,5 → 4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"t": "5",
+				"x": "3.5",
+				"v": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 pour 3,5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"t": "5",
+				"x": "3.5",
+				"v": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3,2 → 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"t": "2",
+				"x": "3.2",
+				"v": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "5,78 → 6",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"D": "78",
+				"x": "5.78",
+				"h": "7",
+				"v": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5,8 (arrondi au dixième)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"D": "78",
+				"x": "5.78",
+				"h": "7",
+				"v": "6"
+			},
+			"answers": ["5,8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5,49 → 5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"D": "49",
+				"x": "5.49",
+				"h": "4",
+				"v": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6 pour 5,49 (centièmes regardés)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"D": "49",
+				"x": "5.49",
+				"h": "4",
+				"v": "5"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

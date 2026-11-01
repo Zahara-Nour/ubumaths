@@ -2,7 +2,7 @@
  * Chantier « questions-6 », lot 7 « Droite graduée et ordre » : nœud et tag de 4 brouillons (Supabase local requis)
  * ======================================================================================
  *
- * Migration `20261101190200_questions_6_lot7_rangement_tags` : les 4 brouillons de 6e créés
+ * Migration `20261101200700_questions_6_lot7_rangement_tags` : les 4 brouillons de 6e créés
  * le 2026-11-01 par scripts/create-questions.ts (scripts/questions/6-droite-ordre/, sans
  * nœud ni tag) vont sur le nœud de leur point, un seul point chacun (ADR 0020). Décisions de
  * David (journal docs/wip/questions-6-progress.md § 15).
@@ -39,7 +39,7 @@ interface Etat {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261101190200_questions_6_lot7_rangement_tags.sql';
+const MIGRATION = 'supabase/migrations/20261101200700_questions_6_lot7_rangement_tags.sql';
 const DECIMAUX = 'Nombres et calculs > Décimaux : numération';
 const LONGUEURS = 'Grandeurs et mesures > Longueurs';
 /** Le lot : identifiant en prod, nœud et point attendus (01 à 04 de la phase 0). */

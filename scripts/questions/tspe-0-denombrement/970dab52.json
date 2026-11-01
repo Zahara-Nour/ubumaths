@@ -1,0 +1,73 @@
+{
+	"id": "970dab52-4ded-45f7-988f-0ddf6e68c554",
+	"title": "Symétrie des coefficients binomiaux",
+	"description": "C(n, n − k) = C(n, k), sans calcul",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Probabilités",
+	"domain": "Loi binomiale",
+	"subdomain": "Coefficients binomiaux",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"statement": "On donne $\\binom{ {{n}} }{ {{k}} }={{c}}$.\n\nSans calcul, donne $\\binom{ {{n}} }{ {{eval:n-k}} }$.\n\n$\\binom{ {{n}} }{ {{eval:n-k}} }=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "8..20"
+				},
+				{
+					"name": "k",
+					"expression": "2..4"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:binom(n,k)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Symétrie : $\\binom{n}{n-k}=\\binom{n}{k}$ (choisir les ${{k}}$ succès revient à choisir les ${{eval:n-k}}$ échecs).",
+					"$\\binom{ {{n}} }{ {{eval:n-k}} }=\\binom{ {{n}} }{ {{k}} }=\\textcolor{{{color:primary.0}}}{{{c}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["220"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "3",
+				"n": "12"
+			},
+			"description": "v0 : C(12, 3) = 220 → C(12, 9)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"n": "12"
+			},
+			"description": "v0 : 9",
+			"variationIndex": 0
+		}
+	]
+}

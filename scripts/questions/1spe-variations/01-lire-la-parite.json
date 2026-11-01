@@ -1,0 +1,286 @@
+{
+	"title": "Lire la parité sur une courbe",
+	"description": "Symétrie par rapport à l'axe des ordonnées (paire) ou à l'origine (impaire) lue sur la courbe ; pièges : axe x = h, centre (0 ; c) ; puis f(−a) déduit de la parité",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Généralités",
+	"subdomain": "Parité",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $[-2{,}5\\,;2{,}5]$.\n\n```courbe\nx: -4 ; 4\ny: -5 ; 5\ngrille: 1 ; 1\nf(x) = {{s}}*(x^4-5*x^2)/4+({{c}}) sur [-2.5 ; 2.5]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f tracée pour x de −2,5 à 2,5, symétrique par rapport à l'axe des ordonnées.\n```\n\nD'après le graphique, la fonction $f$ semble :\n\n```choix\nmelanger: non\n- paire\n- impaire\n- ni paire ni impaire\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "c",
+					"expression": "-1..1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La courbe est symétrique par rapport à l'**axe des ordonnées** : les points d'abscisses $x$ et $-x$ ont la même ordonnée, $f(-x)=f(x)$.",
+					"$f$ semble $\\textcolor{{{color:primary.0}}}{\\text{paire}}$."
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $[-2{,}6\\,;2{,}6]$.\n\n```courbe\nx: -4 ; 4\ny: -5 ; 5\ngrille: 1 ; 1\nf(x) = {{s}}*(x^3-4*x)/2 sur [-2.6 ; 2.6]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f tracée pour x de −2,6 à 2,6, symétrique par rapport à l'origine du repère.\n```\n\nD'après le graphique, la fonction $f$ semble :\n\n```choix\nmelanger: non\n- paire\n- impaire\n- ni paire ni impaire\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1|-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La courbe est symétrique par rapport à l'**origine** $O$ du repère : les points d'abscisses $x$ et $-x$ ont des ordonnées opposées, $f(-x)=-f(x)$.",
+					"$f$ semble $\\textcolor{{{color:primary.0}}}{\\text{impaire}}$."
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur ${{if:h>0|[-1{,}5\\,;3{,}5]|[-3{,}5\\,;1{,}5]}}$.\n\n```courbe\nx: -4 ; 4\ny: -5 ; 5\ngrille: 1 ; 1\nf(x) = {{s}}*((x-({{h}}))^4-5*(x-({{h}}))^2)/4 sur [{{h}}-2.5 ; {{h}}+2.5]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, symétrique par rapport à la droite verticale d'équation x = {{h}}, pas par rapport à l'axe des ordonnées.\n```\n\nD'après le graphique, la fonction $f$ semble :\n\n```choix\nmelanger: non\n- paire\n- impaire\n- ni paire ni impaire\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "h",
+					"expression": "1|-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La courbe est symétrique par rapport à la droite d'équation $x={{h}}$, **pas** par rapport à l'axe des ordonnées, ni par rapport à l'origine.",
+					"D'ailleurs, l'ensemble de définition n'est pas symétrique par rapport à $0$.",
+					"$f$ semble $\\textcolor{{{color:primary.0}}}{\\text{ni paire ni impaire}}$."
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $[-2{,}6\\,;2{,}6]$.\n\n```courbe\nx: -4 ; 4\ny: -6 ; 6\ngrille: 1 ; 1\nf(x) = {{s}}*(x^3-4*x)/2+({{c}}) sur [-2.6 ; 2.6]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f tracée pour x de −2,6 à 2,6, symétrique par rapport au point de coordonnées (0 ; {{c}}), pas par rapport à l'origine.\n```\n\nD'après le graphique, la fonction $f$ semble :\n\n```choix\nmelanger: non\n- paire\n- impaire\n- ni paire ni impaire\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "c",
+					"expression": "1..2;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La courbe est symétrique par rapport au point $(0\\,;{{c}})$, **pas** par rapport à l'origine : $f(0)={{c}}\\neq0$, alors qu'une fonction impaire définie en $0$ vérifie $f(0)=0$.",
+					"Elle n'est pas non plus symétrique par rapport à l'axe des ordonnées.",
+					"$f$ semble $\\textcolor{{{color:primary.0}}}{\\text{ni paire ni impaire}}$."
+				]
+			}
+		},
+		{
+			"statement": "$f$ est une fonction {{if:p==0|paire|impaire}} définie sur $\\mathbb{R}$, et le point $A({{a}}\\,;{{b}})$ appartient à sa courbe $\\mathcal{C}_f$.\n\nQuelle est l'ordonnée du point de $\\mathcal{C}_f$ d'abscisse ${{eval:-a}}$ ?\n\n$f({{eval:-a}})=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0|1"
+				},
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..6;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b*(1-2*p)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:p==0|$f$ est paire : $f(-x)=f(x)$, sa courbe est symétrique par rapport à l'axe des ordonnées.|$f$ est impaire : $f(-x)=-f(x)$, sa courbe est symétrique par rapport à l'origine.}}",
+					"$$f({{eval:-a}})=\\textcolor{{{color:primary.0}}}{{{eval:b*(1-2*p)}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Paire",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"c": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : impaire",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"c": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Impaire",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : paire",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Axe x = 1 : ni l'une ni l'autre",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"h": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : paire",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"h": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Centre (0 ; 2) : ni l'une ni l'autre",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1",
+				"c": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : impaire",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1",
+				"c": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Paire, A(3 ; −4) : −4",
+			"variationIndex": 4,
+			"variables": {
+				"p": "0",
+				"a": "3",
+				"b": "-4"
+			},
+			"answers": ["-4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Paire, erreur : 4",
+			"variationIndex": 4,
+			"variables": {
+				"p": "0",
+				"a": "3",
+				"b": "-4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Impaire, A(3 ; −4) : 4",
+			"variationIndex": 4,
+			"variables": {
+				"p": "1",
+				"a": "3",
+				"b": "-4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Impaire, erreur : −4",
+			"variationIndex": 4,
+			"variables": {
+				"p": "1",
+				"a": "3",
+				"b": "-4"
+			},
+			"answers": ["-4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

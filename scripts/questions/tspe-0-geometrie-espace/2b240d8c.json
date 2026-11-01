@@ -1,0 +1,339 @@
+{
+	"id": "2b240d8c-bdc2-4a55-a8db-a028f02ec889",
+	"title": "Espace : trouver un vecteur directeur ou un vecteur normal",
+	"description": "Vecteur normal au plan (ABC), vecteur directeur de l'intersection de deux plans — tout vecteur colinéaire non nul est juste (piège : vecteur directeur pris pour normal)",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Représentations paramétriques et équations cartésiennes",
+	"subdomain": "Vecteurs directeurs et normaux",
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "vecteur",
+			"vectorMode": "colineaire"
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "({{n1}};{{n2}};{{n3}})"
+				}
+			],
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les points $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$, $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$ et $C({{cx}}\\,;\\,{{cy}}\\,;\\,{{cz}})$, non alignés.\n\nDonne un vecteur normal au plan $(ABC)$ : $?$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-3..3"
+				},
+				{
+					"name": "ay",
+					"expression": "-3..3"
+				},
+				{
+					"name": "az",
+					"expression": "-3..3"
+				},
+				{
+					"name": "p1",
+					"expression": "-3..3"
+				},
+				{
+					"name": "p2",
+					"expression": "-3..3"
+				},
+				{
+					"name": "p3",
+					"expression": "-3..3"
+				},
+				{
+					"name": "q1",
+					"expression": "-3..3"
+				},
+				{
+					"name": "q2",
+					"expression": "-3..3"
+				},
+				{
+					"name": "q3",
+					"expression": "-3..3"
+				},
+				{
+					"name": "bx",
+					"expression": "{{eval:ax+p1}}"
+				},
+				{
+					"name": "by",
+					"expression": "{{eval:ay+p2}}"
+				},
+				{
+					"name": "bz",
+					"expression": "{{eval:az+p3}}"
+				},
+				{
+					"name": "cx",
+					"expression": "{{eval:ax+q1}}"
+				},
+				{
+					"name": "cy",
+					"expression": "{{eval:ay+q2}}"
+				},
+				{
+					"name": "cz",
+					"expression": "{{eval:az+q3}}"
+				},
+				{
+					"name": "c1",
+					"expression": "{{eval:p2*q3-p3*q2}}"
+				},
+				{
+					"name": "c2",
+					"expression": "{{eval:p3*q1-p1*q3}}"
+				},
+				{
+					"name": "c3",
+					"expression": "{{eval:p1*q2-p2*q1}}"
+				},
+				{
+					"name": "g",
+					"expression": "{{eval:gcd(gcd(abs(c1),abs(c2)),abs(c3))}}"
+				},
+				{
+					"name": "n1",
+					"expression": "{{eval:c1/g}}"
+				},
+				{
+					"name": "n2",
+					"expression": "{{eval:c2/g}}"
+				},
+				{
+					"name": "n3",
+					"expression": "{{eval:c3/g}}"
+				}
+			],
+			"conditions": ["abs(p2*q3-p3*q2)+abs(p3*q1-p1*q3)+abs(p1*q2-p2*q1) > 0"],
+			"correction": {
+				"steps": [
+					"$\\vec{n}$ est normal à $(ABC)$ si et seulement si $\\vec{n}\\cdot\\overrightarrow{AB}=0$ et $\\vec{n}\\cdot\\overrightarrow{AC}=0$, avec $\\overrightarrow{AB}\\begin{pmatrix}{{p1}}\\\\{{p2}}\\\\{{p3}}\\end{pmatrix}$ et $\\overrightarrow{AC}\\begin{pmatrix}{{q1}}\\\\{{q2}}\\\\{{q3}}\\end{pmatrix}$.",
+					"En résolvant ce système (on fixe une coordonnée), on trouve par exemple $\\textcolor{{{color:primary.0}}}{ \\vec{n}\\begin{pmatrix}{{n1}}\\\\{{n2}}\\\\{{n3}}\\end{pmatrix} }$. Vérification : $\\vec{n}\\cdot\\overrightarrow{AB}={{n1}}\\times{{p1;()}}+{{n2;()}}\\times{{p2;()}}+{{n3;()}}\\times{{p3;()}}=0$, de même $\\vec{n}\\cdot\\overrightarrow{AC}=0$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "({{n1}};{{n2}};{{n3}})"
+				}
+			],
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les plans sécants $\\mathcal{P}$ et $\\mathcal{Q}$ d'équations respectives ${{a1}}x+({{a2}})y+({{a3}})z+({{d}})=0$ et ${{b1}}x+({{b2}})y+({{b3}})z+({{q}})=0$.\n\nDonne un vecteur directeur de leur droite d'intersection : $?$",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "-3..3"
+				},
+				{
+					"name": "a2",
+					"expression": "-3..3"
+				},
+				{
+					"name": "a3",
+					"expression": "-3..3"
+				},
+				{
+					"name": "b1",
+					"expression": "-3..3"
+				},
+				{
+					"name": "b2",
+					"expression": "-3..3"
+				},
+				{
+					"name": "b3",
+					"expression": "-3..3"
+				},
+				{
+					"name": "d",
+					"expression": "-6..6"
+				},
+				{
+					"name": "q",
+					"expression": "-6..6"
+				},
+				{
+					"name": "c1",
+					"expression": "{{eval:a2*b3-a3*b2}}"
+				},
+				{
+					"name": "c2",
+					"expression": "{{eval:a3*b1-a1*b3}}"
+				},
+				{
+					"name": "c3",
+					"expression": "{{eval:a1*b2-a2*b1}}"
+				},
+				{
+					"name": "g",
+					"expression": "{{eval:gcd(gcd(abs(c1),abs(c2)),abs(c3))}}"
+				},
+				{
+					"name": "n1",
+					"expression": "{{eval:c1/g}}"
+				},
+				{
+					"name": "n2",
+					"expression": "{{eval:c2/g}}"
+				},
+				{
+					"name": "n3",
+					"expression": "{{eval:c3/g}}"
+				}
+			],
+			"conditions": [
+				"abs(a2*b3-a3*b2)+abs(a3*b1-a1*b3)+abs(a1*b2-a2*b1) > 0",
+				"abs(a1)+abs(a2)+abs(a3) > 1",
+				"abs(b1)+abs(b2)+abs(b3) > 1"
+			],
+			"correction": {
+				"steps": [
+					"La droite d'intersection est contenue dans les deux plans : son vecteur directeur $\\vec{u}$ est orthogonal aux deux vecteurs normaux $\\vec{n}_1\\begin{pmatrix}{{a1}}\\\\{{a2}}\\\\{{a3}}\\end{pmatrix}$ et $\\vec{n}_2\\begin{pmatrix}{{b1}}\\\\{{b2}}\\\\{{b3}}\\end{pmatrix}$.",
+					"En résolvant $\\vec{u}\\cdot\\vec{n}_1=0$, $\\vec{u}\\cdot\\vec{n}_2=0$, on trouve par exemple $\\textcolor{{{color:primary.0}}}{ \\vec{u}\\begin{pmatrix}{{n1}}\\\\{{n2}}\\\\{{n3}}\\end{pmatrix} }$ (vérification : ${{a1}}\\times{{n1;()}}+{{a2;()}}\\times{{n2;()}}+{{a3;()}}\\times{{n3;()}}=0$, de même avec $\\vec{n}_2$)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["(-2;1;1)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"ax": "0",
+				"ay": "0",
+				"az": "0",
+				"p1": "1",
+				"p2": "2",
+				"p3": "0",
+				"q1": "0",
+				"q2": "1",
+				"q3": "-1"
+			},
+			"description": "v0 : (-2 ; 1 ; 1)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["(4;-2;-2)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"ax": "0",
+				"ay": "0",
+				"az": "0",
+				"p1": "1",
+				"p2": "2",
+				"p3": "0",
+				"q1": "0",
+				"q2": "1",
+				"q3": "-1"
+			},
+			"description": "v0 : multiple",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["(1;2;0)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"ax": "0",
+				"ay": "0",
+				"az": "0",
+				"p1": "1",
+				"p2": "2",
+				"p3": "0",
+				"q1": "0",
+				"q2": "1",
+				"q3": "-1"
+			},
+			"description": "v0 : AB donné (vecteur du plan)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["(2;-1;0)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"ax": "0",
+				"ay": "0",
+				"az": "0",
+				"p1": "1",
+				"p2": "2",
+				"p3": "0",
+				"q1": "0",
+				"q2": "1",
+				"q3": "-1"
+			},
+			"description": "v0 : orthogonal à AB seulement",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["(1;-1;1)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"d": "1",
+				"q": "-2",
+				"a1": "1",
+				"a2": "1",
+				"a3": "0",
+				"b1": "0",
+				"b2": "1",
+				"b3": "1"
+			},
+			"description": "v1 : (1 ; -1 ; 1)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["(-2;2;-2)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"d": "1",
+				"q": "-2",
+				"a1": "1",
+				"a2": "1",
+				"a3": "0",
+				"b1": "0",
+				"b2": "1",
+				"b3": "1"
+			},
+			"description": "v1 : multiple",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["(1;1;0)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "1",
+				"q": "-2",
+				"a1": "1",
+				"a2": "1",
+				"a3": "0",
+				"b1": "0",
+				"b2": "1",
+				"b3": "1"
+			},
+			"description": "v1 : vecteur normal de P (piège)",
+			"variationIndex": 1
+		}
+	]
+}

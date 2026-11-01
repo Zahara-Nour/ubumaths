@@ -1,0 +1,82 @@
+{
+	"id": "74604a26-fd67-45ae-bff7-1d095bea3e0c",
+	"title": "Mots à deux lettres : combinaisons",
+	"description": "Mots formés de k lettres A et n − k lettres B, comptés par C(n, k) (pièges : 2ⁿ, n!)",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Dénombrement",
+	"subdomain": "Combinaisons",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:binom(n,k)}}",
+					"acceptCombinatorialNotation": true
+				}
+			],
+			"statement": "Combien de mots de ${{n}}$ lettres peut-on écrire avec exactement ${{k}}$ lettres $\\mathrm{A}$ et ${{eval:n-k}}$ lettres $\\mathrm{B}$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "6..12"
+				},
+				{
+					"name": "k",
+					"expression": "2..{{eval:n-2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un tel mot est déterminé par les positions des ${{k}}$ lettres $\\mathrm{A}$ parmi les ${{n}}$ places : une partie à ${{k}}$ éléments.",
+					"$\\binom{ {{n}} }{ {{k}} }=\\textcolor{{{color:primary.0}}}{{{eval:binom(n,k)}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["56"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "3",
+				"n": "8"
+			},
+			"description": "v0 : 8 lettres, 3 A → 56",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["256"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"n": "8"
+			},
+			"description": "v0 : 2⁸ = 256",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["336"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"n": "8"
+			},
+			"description": "v0 : 8!/(5!) = 336",
+			"variationIndex": 0
+		}
+	]
+}
