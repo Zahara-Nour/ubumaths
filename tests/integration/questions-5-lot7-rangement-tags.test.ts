@@ -2,7 +2,7 @@
  * Chantier « questions-5 », lot 7 (proportionnalité, fonctions) : nœuds et tags (Supabase local requis)
  * ===============================================================================================
  *
- * Migration `20261101215200_questions_5_lot7_rangement_tags` : les 6 brouillons du lot 7 (créés
+ * Migration `20261101220100_questions_5_lot7_rangement_tags` : les 6 brouillons du lot 7 (créés
  * sans nœud ni tag) vont sur le nœud de leur point, tag posé (5-140, 5-085, 5-086, 5-087, 5-092,
  * 5-098). Aucun niveau ni statut ne change. Décisions de David du 2026-11-01 (journal
  * docs/wip/questions-5-progress.md § 18 ; 05 et 06 sur le nœud de leur point, choix A du § 18.3).
@@ -55,7 +55,7 @@ interface Etat {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261101215200_questions_5_lot7_rangement_tags.sql';
+const MIGRATION = 'supabase/migrations/20261101220100_questions_5_lot7_rangement_tags.sql';
 /** Le lot, tel que relevé en prod le 2026-11-01 (tags en « programme§code »). */
 const LOT: Modele[] = JSON.parse(
 	readFileSync('tests/integration/fixtures/questions-5-lot7-rangement.json', 'utf-8')

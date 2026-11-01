@@ -1,4 +1,4 @@
-"""Lot 7 (proportionnalité, fonctions) de la 5e, rangement : migration 20261101215200_questions_5_lot7_rangement_tags + fixture du test.
+"""Lot 7 (proportionnalité, fonctions) de la 5e, rangement : migration 20261101220100_questions_5_lot7_rangement_tags + fixture du test.
 
 Lit l'instantané `etat-prod-2026-11-01-lot7/` (releve-prod.ts) et applique les décisions de
 David du 2026-11-01 (journal `docs/wip/questions-5-progress.md` § 18, nœud de 05 et 06 : choix A du
@@ -21,7 +21,7 @@ from pathlib import Path
 ICI = Path(__file__).parent
 RACINE = ICI.parents[2]
 ETAT = ICI / 'etat-prod-2026-11-01-lot7'
-MIGRATION = RACINE / 'supabase/migrations/20261101215200_questions_5_lot7_rangement_tags.sql'
+MIGRATION = RACINE / 'supabase/migrations/20261101220100_questions_5_lot7_rangement_tags.sql'
 FIXTURE = RACINE / 'tests/integration/fixtures/questions-5-lot7-rangement.json'
 
 modeles = {t['id'][:8]: t for t in json.loads((ETAT / 'templates.json').read_text())}
