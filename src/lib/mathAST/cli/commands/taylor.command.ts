@@ -240,7 +240,8 @@ export class TaylorCommand extends BaseCommand {
 			return {
 				success: true,
 				output,
-				ast: taylor
+				ast: taylor,
+				answer: taylorLatex
 			};
 		} catch (err) {
 			if (err instanceof TaylorError) {

@@ -1144,7 +1144,7 @@ Points à retenir :
     `\np` à l'import LaTeX (`importers/latex/converters/`).
 11. **`builders/` ne calcule rien** : le tableau affiché vient de la grille de `mathAST` qui écrit
     aussi la conclusion ; recalculer les ferait diverger.
-12. **Valeur masquée `?` d'un bloc à geste** (chantier [fuite-enonce](../wip/fuite-enonce-progress.md)) :
+12. **Valeur masquée `?` d'un bloc à geste** (chantier [fuite-enonce](../archive/wip/fuite-enonce-progress.md)) :
     l'énoncé envoyé pendant une évaluation notée remplace la valeur à trouver par `?`
     (`placer: A=? ; B=?` en ` ```line ` / ` ```courbe `, `placer: ?` en ` ```horloge `,
     `construire: ?`, `colorier: ?`, `Natation = ?` pour une barre de `placer:`). Les parseurs la

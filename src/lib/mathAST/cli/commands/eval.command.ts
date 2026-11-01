@@ -183,7 +183,8 @@ export class EvalCommand extends BaseCommand {
 					success: true,
 					output: chalk.bold('Result:') + ' ' + colorFn.bold(String(boolValue)),
 					ast: result.node,
-					latex: boolValue ? '\\text{vrai}' : '\\text{faux}'
+					latex: boolValue ? '\\text{vrai}' : '\\text{faux}',
+					answer: boolValue ? '\\text{vrai}' : '\\text{faux}'
 				};
 			}
 
@@ -204,10 +205,12 @@ export class EvalCommand extends BaseCommand {
 				chalk.dim('Mode:') + '   ' + modeStr
 			];
 
+			const shown = displayedValue(substituted, result.node, ctx.evalState.mode === 'decimal');
 			return {
 				success: true,
 				output: lines.join('\n'),
-				...displayedValue(substituted, result.node, ctx.evalState.mode === 'decimal')
+				...shown,
+				answer: shown.latex ?? toLatex(shown.ast)
 			};
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'Unknown error during evaluation';

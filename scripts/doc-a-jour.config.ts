@@ -40,7 +40,6 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 		'scripts/lint-fast.sh',
 		'scripts/lint-fast-fichiers.sh',
 		'scripts/with-db-lock.sh',
-		'scripts/ci-version-seule.sh',
 		'scripts/vercel-ignore-build.sh',
 		'scripts/releve-web-vitals.ts',
 		'scripts/check-production-health.ts'

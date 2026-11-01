@@ -29,6 +29,7 @@ import {
 import { computeDomain } from '../../domain/compute';
 import { formatDomainInterval, formatDomainCondition } from '../../domain/format';
 import { toCustom } from '../../custom-generator';
+import { domainToLatex } from '../../pedagogical-domain/renderer';
 
 // =============================================================================
 // Domain Command
@@ -179,7 +180,8 @@ export class DomainCommand extends BaseCommand {
 			return {
 				success: true,
 				output: lines.join('\n'),
-				ast: parseResult.ast
+				ast: parseResult.ast,
+				answer: `D = ${domainToLatex(result.domain)}`
 			};
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'Erreur lors du calcul du domaine';

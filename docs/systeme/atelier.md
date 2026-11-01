@@ -1269,6 +1269,13 @@ moteur, alors que les noms se créent dans le panneau. Hors du catalogue, tapée
 répondent comme toute commande inconnue. `.auto` (bascule du mode de saisie de l'ancienne `/cas`,
 retirée du moteur le 2026-10-13) n'est pas au catalogue non plus.
 
+**La réponse du registre fait foi** (chantier `registre-reference`, 2026-11-01) : chaque commande
+du registre déclare sa **réponse brute** dans le champ `answer` de `WebReplEngine.execute` (LaTeX
+de la réponse seule) ; l'Atelier l'habille, il ne la remplace pas. Le contrat est le corpus
+`tests/fixtures/mathast/registre-corpus.ts`, joué contre le registre et contre la ligne affichée
+par l'Atelier (`src/lib/mathAST/cli/__tests__/registre-corpus/`, `src/lib/atelier/__tests__/registre-corpus.test.ts`) ;
+les écarts d'aujourd'hui sont listés dans `connues-fausses.ts` et se retirent au fil du chantier.
+
 Chemin d'une commande dans `runCommand` (`calcul.ts`), dans cet ordre :
 
 1. `resolveCommand` + recherche dans le catalogue ; inconnue → refus avec au plus deux

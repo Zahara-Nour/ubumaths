@@ -1,18 +1,17 @@
 ---
-status: en cours
+status: clos
 ---
 
 # Chantier `fuite-enonce` — l'énoncé public d'une évaluation notée ne dit plus la réponse
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR #2145 ouverte (garde)._
+_Mis à jour le 2026-11-01, après #2145. Chantier CLOS, journal archivé._
 
-- **État** : lots 1 (#2120) et 2 (#2130) mergés, pas en prod. PR #2145 (garde contre un masque cassé + `Compléter:` accentué repéré) : revues faites (aucun bloquant restant), CI relancée sur `7e295c6bd` après le correctif de main (#2154).
-- **Prochaine action** : lire la CI de #2145 (`gh pr checks 2145`) ; verte → `gh pr merge 2145 --merge`, branche supprimée, worktree retiré ; puis clôture du chantier (archivage du journal).
+- **État** : lots 1 (#2120), 2 (#2130) et garde (#2145) mergés, pas encore en prod (au prochain `deploy:prod`). Durable versé dans `docs/systeme/questions.md` (§ masquage) et `docs/systeme/ubumark.md` (valeur masquée `?`).
+- **Prochaine action** : aucune. Vérification à l'œil notée dans `docs/wip/verifications-manuelles.md`.
 - **En attente de David** : rien.
-- **Pièges en cours** : nouvelles règles CI du 2026-11-01 (si CI rouge : lire d'abord le job « Commit de version ? ») ; la garde lit le texte : un nouveau bloc à geste doit y être ajouté ; reprise bloquée si un masque casse après coup (§ 9).
-- **Worktree / branche** : `../ubumaths-wt-fuite-enonce` · `fix/fuite-enonce-garde`.
+- **À reprendre si ça arrive** : une reprise dont le masque casserait après coup rend 500 (§ 9, a) ; un point invisible posé sur la réponse d'une figure à compléter fuirait (limite documentée).
 
 ---
 
