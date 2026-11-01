@@ -186,6 +186,10 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
   `pnpm deploy:prod` (`scripts/deploy-prod.sh`) : dernier commit de main vert → `pnpm release`
   (numéro, CHANGELOG, tag, via `commit-and-tag-version`) → CI de la version → avance rapide de
   `production`. Jamais de mise en prod automatique (ADR 0021). `--essai` montre ce qui partirait.
+- CI en cours sur main : `deploy:prod` l'attend sous le verrou « deploy » (au plus 25 min), au lieu
+  de s'arrêter ; les sessions Claude ne mergent plus, la CI ne repart donc pas de zéro. `--essai`
+  n'attend pas. `main` local qui diffère d'`origin/main` : arrêt, en nommant les commits en cause
+  (le commit local d'une autre session ne peut plus être poussé sous le verrou).
 - `scripts/vercel-ignore-build.sh` (`ignoreCommand`) saute la doc seule et les commits dépassés par
   la pointe ; un redéploiement se construit toujours (`pnpm maintenance:on|off`).
 - Quotas qui ont dicté ces choix : 100 déploiements par jour (un déploiement annulé **compte**),
