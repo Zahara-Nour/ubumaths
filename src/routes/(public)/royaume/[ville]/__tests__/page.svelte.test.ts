@@ -90,6 +90,19 @@ describe('/royaume/[ville]', () => {
 		);
 	});
 
+	it('changer de ville oublie le lieu choisi (la Gare existe à Sandomir et à Turingrad)', async () => {
+		const screen = await renderCity('sandomir');
+		await userEvent.click(
+			screen.container.querySelector('ellipse[data-place="gare"]') as SVGElement
+		);
+		expect(screen.container.querySelector('li[aria-current="true"]')?.id).toBe('lieu-gare');
+		await screen.rerender({
+			data: { city: cityOf('turingrad'), description: 'Une ville du Royaume.' }
+		} as never);
+		expect(screen.container.querySelector('h1')?.textContent).toBe('Turingrad');
+		expect(screen.container.querySelector('li[aria-current="true"]')).toBeNull();
+	});
+
 	it('la carte est un décor : rien d’atteignable au clavier, le contenu est dans la liste', async () => {
 		const screen = await renderCity('cracovenn');
 		const svg = screen.container.querySelector('svg[data-testid="city-map"]');

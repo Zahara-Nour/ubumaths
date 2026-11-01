@@ -97,8 +97,14 @@ Props :
 			fill-opacity 0.3s,
 			stroke-opacity 0.3s;
 	}
-	.place:hover .target {
-		fill-opacity: 0.18;
+	/* Survol : souris seulement (sur un écran tactile, il resterait collé au dernier lieu touché) */
+	@media (hover: hover) {
+		.place:hover .target {
+			fill-opacity: 0.18;
+		}
+		.place:hover text {
+			fill: var(--color-primary);
+		}
 	}
 	.place.selected .target {
 		fill-opacity: 0.22;
@@ -125,7 +131,6 @@ Props :
 			stroke-width: 8px;
 		}
 	}
-	.place:hover text,
 	.place.selected text {
 		fill: var(--color-primary);
 	}

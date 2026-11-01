@@ -14,14 +14,18 @@
 	const city = $derived(data.city);
 	const province = $derived(PROVINCES.find((p) => p.id === city.province) ?? null);
 
-	/** Le lieu choisi sur la carte ; `null` : aucun */
-	let selected = $state<string | null>(null);
+	/**
+	 * Le lieu choisi, avec sa ville : SvelteKit garde la page d'une ville à l'autre, et un
+	 * même identifiant peut exister dans deux villes (la Gare)
+	 */
+	let choice = $state<{ slug: string; placeId: string } | null>(null);
+	const selected = $derived(choice?.slug === city.slug ? choice.placeId : null);
 
 	// Functions
 
 	/** Choisir un lieu sur la carte : sa fiche est mise en évidence et amenée à l'écran */
 	async function select(placeId: string) {
-		selected = placeId;
+		choice = { slug: city.slug, placeId };
 		await tick();
 		const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 		document
