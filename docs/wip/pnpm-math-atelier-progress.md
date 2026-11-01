@@ -1,97 +1,120 @@
 ---
-title: pnpm math branchée sur l'Atelier — journal
+title: Le registre des commandes, référence commune (pnpm math, Atelier, calculatrice) — journal
 date: 2026-11-01
-status: phase 0, en attente de David
+status: phase 0, en attente de David (Q1-Q5)
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, ouverture du chantier._
+_Mis à jour le 2026-11-01, après l'inventaire du registre._
 
-- **État** : phase 0 écrite (comportements + questions Q1-Q6), rien de codé.
-- **Prochaine action** : réponses de David à Q1-Q6, puis tests rouges de la PR 1.
-- **En attente de David** : Q1-Q6.
-- **Pièges en cours** : `tsx` ne lance pas l'Atelier (`$state is not defined`, `atelier.svelte.ts`) ;
-  passer par le runner de Vite (mesuré, voir § Mesures).
+- **État** : direction tranchée (D1-D3) ; inventaire registre / Atelier fait (30 lignes) ; phase 0
+  réécrite, rien de codé.
+- **Prochaine action** : réponses de David à Q1-Q5, puis découpage des PR.
+- **En attente de David** : Q1-Q5.
+- **Pièges en cours** : `tsx` lance `WebReplEngine` seul (< 1 s), pas l'Atelier (`$state is not
+defined`) ; une sonde de l'Atelier passe par le runner de Vite (~9 s).
 - **Worktree / branche** : `../ubumaths-wt-pnpm-math-atelier` · `refactor/pnpm-math-atelier`.
 
 ---
 
+## Décisions de David (2026-11-01)
+
+- **D1** Le **registre des commandes** (`src/lib/mathAST/cli/commands/`, servi par
+  `WebReplEngine`) est **la référence commune** de trois outils : l'Atelier, `pnpm math`, et la
+  **calculatrice** d'un futur chantier. Il rend la **réponse brute**, la même pour tous. Un outil
+  habille la réponse, il ne la remplace jamais.
+- **D2** La forme de la réponse = **la forme propre** du travail `tidy` / `simplify` :
+  [ADR 0032](../adr/0032-la-forme-affichee-se-choisit-par-le-but.md) (forme cible selon le but de la
+  commande, puis `tidy`). Table : `docs/systeme/mathast/README.md` § Quelle fonction pour quel besoin.
+- **D3** **Les étapes restent dans l'Atelier** seulement. Elles doivent aboutir à la réponse du
+  registre.
+
+Remplace la direction du 2026-10-24 (« `pnpm math` branchée sur l'Atelier », via `runInput`) :
+c'est le registre qui fait foi, pas la couche de l'Atelier.
+
 ## Pourquoi
 
-Décision de David du 2026-10-24 : `pnpm math` sera branchée sur l'Atelier. Aujourd'hui la console
-(`src/lib/mathAST/cli/repl.ts`, `cli.ts`) appelle le registre des commandes directement, sans
-`WebReplEngine` ni la couche de l'Atelier (`src/lib/atelier/calcul.ts`) : ses réponses divergent de
-ce que voit l'élève (2026-10-23 : `.diff` → `eˣ + xeˣ`, `.dériver` de l'Atelier → `(x+1)eˣ`). Depuis,
-on sonde par des tests jetables sur `calcul.ts`.
+Aujourd'hui l'Atelier appelle le registre, puis **jette sa réponse et la remplace** par un autre
+calcul (exemple : `calcul.ts`, `if (name === 'diff')` → `deriveSteps`). Deux calculs de la même
+chose, qui ne s'accordent pas ; `pnpm math` (`repl.ts`, sur le registre) montre l'autre réponse.
 
-But : **une console = la vue Calcul de l'Atelier dans le terminal**, mêmes entrées, mêmes réponses,
-plus ce qu'un développeur veut voir (l'arbre). Outil de développement, jamais montré aux élèves.
+## Inventaire (2026-11-01, sonde jetable, runner de Vite)
 
-## Mesures (2026-11-01)
+Même ligne envoyée au registre (`WebReplEngine.execute`, nom anglais) et à l'Atelier (`runInput`).
 
-- **Point d'entrée** : `runInput(session, ligne)` de `calcul.ts`, avec
-  `session = { atelier: new Atelier(), engine: new WebReplEngine() }` — ce que font déjà les tests
-  (`atelier/__tests__/solve-command.test.ts`). Rend un `CalcResult` (`kind` : `calcul`, `commande`,
-  `definition`, `refus`…), réponse en LaTeX, étapes en LaTeX (`RenderedStep[]`).
-- **`tsx`** : échoue, `ReferenceError: $state is not defined` (`atelier.svelte.ts:587`). Les runes
-  demandent le compilateur Svelte.
-- **Runner de Vite** (`createServerModuleRunner` + plugin Svelte, sonde jetable) : marche.
-  `2+3*4` → `14` avec ses étapes ; `.dériver x*e^x` → LaTeX `(x+1)eˣ` ; `f(x)=x^2-3x` puis `f(2)` →
-  `-2`. **Chargement : ~9,4 s à froid**, puis chaque ligne est immédiate.
-- ⚠️ Dans le résultat de `.dériver`, le champ `output` (texte du moteur) dit encore
-  `e^x+xe^x` ; seul `latex` (et l'arbre) porte la réponse de l'Atelier. La console ne doit **jamais
-  afficher `output`** pour une commande : elle écrit la réponse depuis l'arbre ou le LaTeX.
-- Sous-commandes actuelles de `cli.ts` : `parse`, `tree`, `latex`, `custom`, `simplify`, `normal`,
-  `hash`, `equiv`, `repl`. Citée par 4 docs (`pratiques/commandes.md`, `systeme/atelier.md`,
-  `systeme/statistiques.md`, `systeme/mathast/README.md`).
+**Même réponse** (habillage seul) : `.dériver x^2`, `ln(x²+1)`, `sin(x)²` ; `.résoudre`
+d'équations (`x²−3x+1=0`, `eˣ=3`) ; `.évaluer` ; `.taylor` ; `.intégrer x^2 de 0 à 1` (`1/3`) ;
+`.domaine` (`ℝ \ {0}`, `]2;+∞[`, écrit autrement) ; `.équivalent` (texte du moteur repris tel quel) ;
+calculs sans lettre (`2+3*4`, `1/2+1/3`, `√8`).
 
-## Phase 0 — comportements
+**Réponses différentes** :
+
+| Ligne                      | Registre                   | Atelier                              |
+| -------------------------- | -------------------------- | ------------------------------------ |
+| `.dériver x*e^x`           | `eˣ + xeˣ`                 | `(x+1)eˣ`                            |
+| `.dériver (2x+1)/(x-3)`    | `(2(x−3) − (2x+1))/(x−3)²` | `−7/(x−3)²`                          |
+| `.simplifier (x²−1)/(x+1)` | `x − 1` (perd x ≠ −1)      | inchangée (+ bouton « pour x ≠ −1 ») |
+| `.résoudre 2x+1<7`         | `S = ]−∞ ; 3[`             | `x < 3`                              |
+| `.intégrer x*e^x`          | `(x−1)eˣ`                  | `(x−1)eˣ + C`                        |
+
+Les deux premières et `.simplifier` : le registre ne suit pas l'ADR 0032 (dérivée réduite ; pas de
+simplification qui perd le domaine sans hypothèse, S3).
+
+**Absentes du registre** (n'existent que dans l'Atelier) : `factoriser`, `développer`, `limite`,
+`réciproque` ; statistiques et probabilités (`simuler`, `binomiale`, `géométrique`, `uniforme`,
+`exponentielle`, `normale`, `comparer`, `croiser`, `filtrer`, `fréquence`, `échantillons`, `stats`,
+`ajustement`) ; `tabuler`, `relever` (géométrie) ; la définition `f(x) = …` (le registre veut
+`.def`).
+
+**Absentes de l'Atelier** (registre seul, outils de développement ou retirées le 2026-10-13) :
+`parse`, `tree`, `latex`, `custom`, `normal`, `hash`, `let`, `def`, `def'`, `inv`, `clear`,
+`unset`, `undef`.
+
+## Phase 0 — comportements visés
 
 **Nominal**
 
-- **M1** `pnpm math` ouvre une console : chaque ligne tapée passe par `runInput`, dans **une seule
-  session** (une fonction posée reste posée : `f(x)=x^2` puis `f(3)` → `9`).
-- **M2** `pnpm math "f(x)=x^2" "f(3)"` : chaque argument est une ligne de la même session, rejouée
-  dans l'ordre, puis la commande rend la main (pour les sondes et les agents).
-- **M3** Toutes les entrées de l'Atelier en mode texte marchent : calculs, définitions, commandes à
-  point en français, sans accents ou en anglais (`.dériver`, `.deriver`, `.diff`).
-- **M4** La réponse est **celle de l'Atelier** : `.dériver x*e^x` → `(x+1)eˣ`, jamais
-  `eˣ + xeˣ`. Un refus s'affiche avec le message de l'Atelier.
+- **R1** Pour toute commande du registre, l'Atelier affiche **la réponse du registre** (même forme),
+  plus ses étapes. Le tableau « Réponses différentes » devient vide.
+- **R2** `pnpm math` est un terminal sur `WebReplEngine` : mêmes entrées que le registre, mêmes
+  réponses ; une seule session par console ; `pnpm math "ligne1" "ligne2"` rejoue puis rend la main.
+- **R3** La forme de chaque commande suit l'ADR 0032 : `.dériver` réduite (`(x+1)eˣ`, `−7/(x−3)²`) ;
+  `.simplifier` ne perd pas de domaine sans hypothèse.
 
 **Limites**
 
-- **M5** Une ligne qui produit un graphique, une figure ou un tableau statistique : la console dit ce
-  qui a été créé (nom, nature) sans dessiner.
-- **M6** Ligne vide → rien ; `Ctrl+D` / `.quitter` → sortie.
+- **R4** Quand l'Atelier n'a pas d'étapes (`sec(3x)`), il affiche la réponse du registre telle
+  quelle (déjà le cas pour `.dériver`).
+- **R5** Les étapes de l'Atelier qui n'aboutissent pas à la réponse du registre : on les corrige
+  (pas la réponse) ; un test par commande le garde.
 
 **Erreurs**
 
-- **M7** Une exception du moteur n'arrête pas la console : message d'erreur, la session continue.
-  En mode M2, code de sortie ≠ 0 si une ligne a levé une exception (pas pour un refus normal).
+- **R6** Une commande refusée par le registre l'est avec le même message dans l'Atelier et le
+  terminal.
 
 ## Questions pour David
 
-- **Q1 — Écriture de la réponse.** Le terminal ne rend pas le LaTeX. Proposé : la réponse en
-  écriture texte tirée de l'arbre (`(x+1)*e^x`), le LaTeX sur demande (`--latex`).
-- **Q2 — Les étapes (« Comment ? »).** Proposé : cachées par défaut, montrées avec `--etapes` (ou
-  `.etapes` dans la console), en texte converti depuis le LaTeX, couleurs retirées.
-- **Q3 — L'arbre.** Proposé : sur demande (`--arbre`), comme `pnpm math tree` aujourd'hui.
-- **Q4 — Les anciennes sous-commandes** (`parse`, `tree`, `latex`, `custom`, `simplify`, `normal`,
-  `hash`, `equiv`) parlent au moteur brut, pas à l'Atelier. Proposé : **les retirer** (c'est la
-  divergence qu'on supprime), sauf `hash` et `tree` s'ils te servent ; `repl.ts` et `cli.ts`
-  remplacés, `cli/commands/` gardé (c'est le moteur de l'Atelier).
-- **Q5 — Les 9 s de chargement.** (a) les accepter ; (b) un paquet précompilé par Vite, refait
-  automatiquement quand le code change (démarrage visé ~1 s, plus de mécanique). Proposé : (a) en
-  PR 1, (b) en PR 2 si la lenteur gêne.
-- **Q6 — Réglages de l'Atelier** (mode décimal, angles, domaine). Proposé : options de la commande
-  (`--decimal`, `--degres`), défaut = défaut de l'Atelier.
+- **Q1 — Commandes de l'Atelier absentes du registre.** D1 veut qu'elles y descendent (sinon la
+  calculatrice ne les a pas). Proposé : `factoriser`, `développer`, `limite`, `réciproque` et
+  `f(x) = …` dans ce chantier ; statistiques, probabilités, `tabuler`, `relever` plus tard (elles
+  lisent les listes et les figures de l'Atelier).
+- **Q2 — Une inéquation** : la réponse brute est-elle `S = ]−∞ ; 3[` (registre) ou `x < 3`
+  (Atelier) ?
+- **Q3 — Une primitive** : `+ C` dans la réponse brute ?
+- **Q4 — Commandes du registre seul** (`parse`, `tree`, `latex`, `custom`, `normal`, `hash`, `let`,
+  `def`, `def'`, `inv`, `clear`, `unset`, `undef`). Proposé : garder les outils de développement
+  pour `pnpm math` (`tree`, `hash`, `normal`, `latex`, `custom`), retirer `inv` et `def'` (réponses
+  données à la main, que `.réciproque` et `.dériver` remplacent), garder les commandes de noms
+  (la calculatrice en aura besoin).
+- **Q5 — Le nom du chantier.** `pnpm-math-atelier` ne dit plus ce qu'il fait. Proposé :
+  `registre-reference` (nouveau journal, worktree et branche renommés).
 
-Hors chantier : l'alignement des formes de commande entre « Écriture mathématique » et le mode
-texte (conjugaisons / noms anglais), question laissée en suspens le 2026-11-01.
+## Découpage proposé (après Q1-Q5)
 
-## Découpage proposé
-
-- **PR 1** : la console sur `runInput` (M1-M7, Q1-Q4, Q6), anciennes sous-commandes retirées, docs
-  et mémoire « ne plus sonder avec `pnpm math` » levée.
-- **PR 2** (si Q5 b) : démarrage rapide.
+1. `.dériver` : forme réduite dans le registre, l'Atelier cesse de remplacer (pilote de la méthode).
+2. `.simplifier`, `.résoudre`, `.intégrer` (même méthode).
+3. Commandes de Q1 descendues dans le registre, une PR par famille.
+4. `pnpm math` sur `WebReplEngine` (`repl.ts`, `cli.ts` réécrits) ; règle « ne plus sonder avec
+   `pnpm math` » levée.
