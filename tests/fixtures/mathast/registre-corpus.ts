@@ -127,7 +127,7 @@ export const REGISTRE_CORPUS: Readonly<Record<string, readonly RegistreCase[]>> 
 			id: 'resoudre-10',
 			ligne: '.résoudre (x-1)(x+2)=0',
 			attendu: 'S = \\{-2 ; 1\\}',
-			note: 'Solutions rangées dans l’ordre croissant.'
+			note: 'Solutions dans l’ordre croissant de leur valeur ; sans valeur (paramètre), ordre du calcul (David, 2026-11-01).'
 		},
 		{
 			id: 'resoudre-11',

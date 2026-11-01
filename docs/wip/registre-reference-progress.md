@@ -176,3 +176,8 @@ refus?, note? }`). Juge : `src/lib/mathAST/cli/__tests__/registre-corpus/compare
   gauche est négatif ; mon attendu la contredisait). `deriver-03`, `deriver-11` : question d'ordre
   (`(x+1)eˣ`, `ln(x)+1`), répondue par Q13 et S2 du chantier simplify-carte ; `checkForm` ignore
   l'ordre de toute façon.
+- **Règle R-ordre (David, 2026-11-01)** : les solutions d'un ensemble fini se rangent dans
+  l'ordre croissant de leur valeur ; une solution sans valeur (paramètre de signe inconnu) garde
+  l'ordre du calcul — déjà la règle de `solve-latex.ts`, `absolute-value.ts`,
+  `quadratic-renderer.ts`. Exception à corriger en PR 2 : le chemin « produit nul » de l'Atelier
+  (`(x−1)(x+2)=0 → {1 ; −2}`). À verser dans la doc système avec cette PR.

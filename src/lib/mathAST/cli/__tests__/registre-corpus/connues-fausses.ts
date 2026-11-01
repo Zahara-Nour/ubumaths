@@ -47,6 +47,7 @@ export const ATELIER_CONNUES_FAUSSES: Readonly<Record<string, string>> = {
 	'resoudre-06': 'structure : x = \\ln\\left( 3 \\right) \\approx 1{,}10',
 	'resoudre-07': 'structure : x = \\exponentialE^2 \\approx 7{,}39',
 	'resoudre-09': 'structure : x \\geqslant 5',
+	// Produit nul : ordre des facteurs, pas l'ordre croissant (règle de David, 2026-11-01)
 	'resoudre-10': 'forme : S = \\left\\{ 1 \\,;\\, -2 \\right\\}',
 	// L'Atelier affiche la sortie texte du moteur (empreintes comprises)
 	'equivalent-01': 'sans-reponse : Equivalent: true',
