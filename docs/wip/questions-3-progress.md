@@ -5,21 +5,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2151 (boîte à moustaches, palier 1)._
+_Mis à jour le 2026-11-01, après la clôture du chantier boite-a-moustaches._
 
-- **État** : lots 0 à 6 publiés en prod ; lot 7 (algorithmique, 3-047 à 3-050, 4 modèles en blocs
-  ` ```scratch `) écrit et mergé (#2128, § 14.8-14.9) ; pas encore en base de prod.
-- **Prochaine action** : lot 8 = chantier à part `boite-a-moustaches` : phase 0 validée, palier 1
-  (affichage) mergé (#2151) ; reste le palier 2 (construire, 3-030), puis la phase 0 du lot 8 (3-062, 3-030).
-  Lot 7 : attendre le `deploy:prod` de ` ```scratch `, puis `create-questions --dir scripts/questions/3-lot-7
---publier` (David), rangement (avec la sous-notion neuve, § 14.10), page à cocher.
-- **En attente de David** : rien.
+- **État** : lots 0 à 6 publiés en prod ; lot 7 (algorithmique, 4 modèles ` ```scratch `) mergé (#2128),
+  pas en base ; chantier `boite-a-moustaches` clos (#2151, #2162). Lot 8 : phase 0 proposée (§ 15).
+- **Prochaine action** : réponses de David au § 15.3, puis écrire le lot 8 (`lot-3-8.py` →
+  `scripts/questions/3-lot-8/`). Lots 7 et 8 : attendre le `deploy:prod` de v0.60.0 (scratch + boîte ;
+  `deploy:prod` arrêté le 2026-11-01, `production` = v0.59.0), puis `create-questions --publier` (David), rangement (lot 7 :
+  sous-notion neuve, § 14.10 ; lot 8 : f2167091, § 15.2), page à cocher.
+- **En attente de David** : § 15.3 (modèles du lot 8).
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; aperçu admin : serveur lancé avec `--host 127.0.0.1` ;
   worktree neuf : `svelte-kit sync` avant `tsx` ; commits de doc depuis le worktree (`git push origin
 HEAD:main`) ; `db:migrate` depuis un worktree À JOUR d'`origin/main` ; `Doc-inchangée:` dans un COMMIT ;
   `%` refusé dans l'`eval` d'une variable ; `audit-question-draws` : faux positifs « nombres juxtaposés »
-  (blocs statistiques) et « gabarit non résolu » sur `<<` (Scratch).
+  (blocs statistiques) et « gabarit non résolu » sur `<<` (Scratch). `db:migrate` refuse « inserted before the last
+  migration » → `--dry-run --include-all`, relire, puis `--include-all` (#2181).
 - **Worktree / branche** : `../ubumaths-wt-questions-3`, HEAD détachée sur `origin/main`.
 
 ## 1. Relevé (prod, 2026-10-28)
@@ -1038,3 +1039,44 @@ modèles publiés de plus. Aucune règle ne change.
 
 - Sous-notion **neuve** « Algorithmique › Variables et instructions › blocs personnalisés », créée par la
   migration de rangement du lot 7 (même migration, même garde). Elle servira aussi à 4-068 / 4-069.
+
+## 15. Lot 8 (boîte à moustaches) : phase 0 proposée (2026-11-01)
+
+Chantier `boite-a-moustaches` clos (#2151 affichage, #2162 construire ; journal archivé). Bloc
+` ```boite-a-moustaches ` : boîtes `Nom = min ; Q1 ; médiane ; Q3 ; max`, ou `données:` (boîte calculée par
+`describeList`, quartiles du programme) ; à construire : `placer: toutes` / `placer: Nom`, `axe:` obligatoire,
+chaque valeur attendue sur une graduation. Livré dans le tag v0.60.0 ; la branche `production` était encore à
+0.59.0 au relevé → **lot en brouillon jusqu'au `deploy:prod` qui le livre** (comme le lot 7).
+
+Relevé MCP du jour : 3-030 et 3-062 à 0 modèle ; nœud prêt **Statistiques > Indicateurs > boîte à moustaches**
+(f2167091, celui des deux points) ; aucun modèle en prod n'écrit de boîte. Voisins déjà couverts : 3-028
+(6acde723), 3-029 quartiles (acaa7317), 3-056 médiane (96992ea8).
+
+### 15.1 Modèles neufs (2, un par point)
+
+| Point | Modèle                                  | Variations                                                                                                                                                                                                                                                                                                                                                                                           | Réponse              |
+| ----- | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- |
+| 3-062 | Lire une boîte à moustaches (1-2)       | 1) une boîte (notes, tailles, temps…), axe de 1 en 1 ou de 2 en 2, sans valeurs écrites : la médiane ; 2) Q1 et Q3 (deux cases) ; 3) l'étendue ; 4) interpréter : « au moins la moitié… », « au moins 25 % … », « environ la moitié des valeurs entre Q1 et Q3 » — quelle phrase est juste ; 5) deux boîtes (deux classes, deux saisons) : laquelle a la plus grande médiane, la plus grande étendue | case nombre ; choix  |
+| 3-030 | Construire une boîte à moustaches (2-3) | 1) les cinq indicateurs donnés en texte → placer ; 2) une série brute de 9 à 15 entiers (taille impaire : médiane entière) → `données:` + `placer: toutes`, l'élève range, calcule, place ; 3) série en tableau d'effectifs (` ```effectifs `), effectif total impair → placer                                                                                                                       | geste « construire » |
+
+Axe toujours écrit (`axe:`), au plus 40 graduations ; toutes les valeurs entières (attendu sur une graduation).
+Quartiles : convention du programme (décision c4-2, celle de `describeList`), jamais la demi-série.
+Erreurs typiques (`testSpecs`) : 3-062 → Q1 lu pour la médiane, étendue = maximum, graduation de 2 lue de 1 ;
+« 75 % au-dessus de Q3 » ; 3-030 → série non rangée (médiane = valeur du milieu de l'énoncé), Q1 par la
+demi-série, Q1 et Q3 inversés, min/max oubliés.
+
+### 15.2 Rangement
+
+Les deux sur « boîte à moustaches » (f2167091), un tag chacun (3-062, 3-030). Niveau 3e seul ; la 2de (écart
+interquartile, comparaison) le décidera dans sa session.
+
+### 15.3 Questions à David
+
+1. § 15.1 : modèles, variations, formes de réponse à valider (5 variations pour lire, 3 pour construire).
+2. 3-062 v4-v5 (interpréter, comparer) : dans ce modèle, ou un 3e modèle « interpréter / comparer des boîtes »
+   tagué 3-062 ? Recommandé : **un seul modèle** (un point, un modèle, comme les lots précédents).
+
+### 15.4 Question d'accès
+
+Brouillons : personne ne lit rien de neuf. Rangement puis publication : élèves et prof de 3e voient 2 modèles
+publiés de plus. Aucune règle ne change.
