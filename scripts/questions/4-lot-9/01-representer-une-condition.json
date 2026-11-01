@@ -1,0 +1,235 @@
+{
+	"title": "Représenter une condition",
+	"description": "Dire si une condition simple est vraie, traduire une phrase en condition avec <, > ou =, traduire « au moins » sans le signe ≥",
+	"grades": ["4"],
+	"theme": "Algorithmique",
+	"domain": "Conditions",
+	"subdomain": "Condition simple",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Dans un programme, on trouve la condition :\n\n```\nnombre > {{a}}\n```\n\nLe nombre vaut ${{n}}$. Cette condition est-elle vraie ?\n\n```choix\n- {{if:n>a|Elle est vraie.|Elle est fausse.}}\n- {{if:n>a|Elle est fausse.|Elle est vraie.}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "5..20"
+				},
+				{
+					"name": "o",
+					"expression": "-3..3"
+				},
+				{
+					"name": "n",
+					"expression": "eval:a+o"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Condition.** Une condition est **vraie** ou **fausse**. Avec `>`, le nombre doit être **strictement** plus grand : s'il est égal, la condition est fausse.",
+					"{{if:n>a|${{n}} \\gt {{a}}$ : la condition est $\\textcolor{{{color:primary.0}}}{\\text{vraie}}$.|{{if:n==a|${{n}} = {{a}}$ : le nombre n'est pas **plus grand** que ${{a}}$, la condition est $\\textcolor{{{color:primary.0}}}{\\text{fausse}}$.|${{n}} \\lt {{a}}$ : la condition est $\\textcolor{{{color:primary.0}}}{\\text{fausse}}$.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "On veut tester si le nombre est **{{if:s==1|plus petit|plus grand}} que {{a}}**. Quelle condition faut-il écrire ?\n\n```choix\n- `{{if:s==1|nombre < {{a}}|nombre > {{a}}}}`\n- `{{if:s==1|nombre > {{a}}|nombre < {{a}}}}`\n- `nombre = {{a}}`\n- `{{if:s==1|{{a}} < nombre|{{a}} > nombre}}`\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1|2"
+				},
+				{
+					"name": "a",
+					"expression": "3..15"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Condition.** La pointe du signe `<` ou `>` est tournée vers le **plus petit** des deux.",
+					"Le nombre est {{if:s==1|plus petit|plus grand}} que ${{a}}$ : la condition est **`{{if:s==1|nombre < {{a}}|nombre > {{a}}}}`**.",
+					"`{{if:s==1|{{a}} < nombre|{{a}} > nombre}}` dit le contraire : c'est ${{a}}$ qui est {{if:s==1|plus petit|plus grand}}."
+				]
+			}
+		},
+		{
+			"statement": "Dans un programme, on trouve la condition :\n\n```\nnombre < {{a}}\n```\n\nPour quelle valeur du nombre cette condition est-elle vraie ?\n\n```choix\n- ${{b}}$\n- ${{a}}$\n- ${{eval:a+1}}$\n- ${{eval:a+k+2}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "5..12"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a-k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Condition.** Une condition est **vraie** ou **fausse**. Avec `<`, le nombre doit être **strictement** plus petit : s'il est égal, la condition est fausse.",
+					"Seul $\\textcolor{{{color:primary.0}}}{{{b}}}$ est plus petit que ${{a}}$. Pour ${{a}}$ lui-même, la condition est fausse."
+				]
+			}
+		},
+		{
+			"statement": "Un jeu est réservé aux joueurs qui ont **au moins {{t}} ans**. L'âge est un nombre entier d'années, et le programme ne connaît que `<`, `>` et `=`.\n\nQuelle condition teste si le joueur peut jouer ?\n\n```choix\n- `âge > {{eval:t-1}}`\n- `âge > {{t}}`\n- `âge < {{t}}`\n- `âge = {{t}}`\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "12|14|16|18"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Au moins {{t}} ans**, c'est {{t}} ans **ou plus** : un joueur de {{t}} ans peut jouer.",
+					"`âge > {{t}}` refuserait le joueur de {{t}} ans exactement ; `âge = {{t}}` refuserait les plus âgés.",
+					"L'âge est entier : avoir plus de {{eval:t-1}} ans, c'est avoir {{t}} ans ou plus. La condition est **`âge > {{eval:t-1}}`**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "12 > 10 : vraie",
+			"variationIndex": 0,
+			"variables": {
+				"a": "10",
+				"o": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "10 > 10 : fausse",
+			"variationIndex": 0,
+			"variables": {
+				"a": "10",
+				"o": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10 > 10 vraie",
+			"variationIndex": 0,
+			"variables": {
+				"a": "10",
+				"o": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Plus petit que 7 : nombre < 7",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"a": "7"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe inversé",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"a": "7"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 7 < nombre",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"a": "7"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "8 < 10",
+			"variationIndex": 2,
+			"variables": {
+				"a": "10",
+				"k": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10 < 10",
+			"variationIndex": 2,
+			"variables": {
+				"a": "10",
+				"k": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Au moins 18 : âge > 17",
+			"variationIndex": 3,
+			"variables": {
+				"t": "18"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : âge > 18",
+			"variationIndex": 3,
+			"variables": {
+				"t": "18"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

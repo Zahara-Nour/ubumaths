@@ -1,0 +1,148 @@
+{
+	"title": "Signe de la fonction valeur absolue",
+	"description": "Tableau de signes de |x| ; ensemble où |x| > 0 ; signe de −k|x| (pièges : |x| négatif pour x < 0, 0 compris dans |x| > 0)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Valeur absolue",
+	"subdomain": "Signe",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quel est le tableau de signes de la fonction valeur absolue $x\\mapsto\\lvert x\\rvert$ ?\n\n````choix\n- ```variation\n  variable: x\n  domain: -inf, 0, +inf\n\n  sign: \\lvert x\\rvert\n    -inf,0: +\n    0: z\n    0,+inf: +\n  ```\n- ```variation\n  variable: x\n  domain: -inf, 0, +inf\n\n  sign: \\lvert x\\rvert\n    -inf,0: -\n    0: z\n    0,+inf: +\n  ```\n- ```variation\n  variable: x\n  domain: -inf, 0, +inf\n\n  sign: \\lvert x\\rvert\n    -inf,0: +\n    0: z\n    0,+inf: -\n  ```\n- ```variation\n  variable: x\n  domain: -inf, 0, +inf\n\n  sign: \\lvert x\\rvert\n    -inf,0: -\n    0: z\n    0,+inf: -\n  ```\n````",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\lvert x\\rvert$ est une distance : elle est positive, et nulle seulement pour $x=0$.",
+					"```variation\nvariable: x\ndomain: -inf, 0, +inf\n\nsign: \\lvert x\\rvert\n  -inf,0: +\n  0: z\n  0,+inf: +\n```"
+				]
+			}
+		},
+		{
+			"statement": "Pour quels réels $x$ a-t-on $\\lvert x\\rvert>0$ ?\n\nDonne l'ensemble de ces réels.\n\n$S=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\mathbb{R}\\setminus\\{0\\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\lvert x\\rvert\\geqslant 0$ pour tout réel $x$, et $\\lvert x\\rvert=0$ seulement pour $x=0$.",
+					"Donc $\\lvert x\\rvert>0$ pour tout $x\\neq 0$ : $S=\\textcolor{{{color:primary.0}}}{\\mathbb{R}\\setminus\\{0\\}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout réel $x$, le nombre $-{{k}}\\lvert x\\rvert$ est :\n\n```choix\nmelanger: non\n- strictement positif\n- positif ou nul\n- strictement négatif\n- négatif ou nul\n- de signe variable : il dépend de $x$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\lvert x\\rvert\\geqslant 0$ ; multiplié par $-{{k}}$, négatif, il change de signe.",
+					"$-{{k}}\\lvert x\\rvert\\leqslant 0$, nul pour $x=0$ : il est \\textcolor{{{color:primary.0}}}{\\text{négatif ou nul}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "+ 0 +",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : − 0 + (comme x)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "ℝ \\ {0}",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\mathbb{R}\\setminus\\{0\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Réunion ]−∞ ; 0[ ∪ ]0 ; +∞[",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["]-\\infty;0[\\cup]0;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ℝ",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\mathbb{R}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ]0 ; +∞[",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["]0;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−3|x| négatif ou nul",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : strictement négatif",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

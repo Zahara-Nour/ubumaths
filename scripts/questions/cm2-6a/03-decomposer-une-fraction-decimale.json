@@ -1,0 +1,200 @@
+{
+	"title": "Décomposer une fraction décimale",
+	"description": "Écrire une fraction décimale comme un entier plus des fractions décimales de numérateur inférieur à 10, et l'inverse (4 107/1 000 = 4 + 1/10 + 0/100 + 7/1 000)",
+	"grades": ["CM2"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Décomposition",
+	"level": 8,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off",
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris cette fraction comme la somme d'un nombre entier et de fractions dont le numérateur est inférieur à $10$.\n\n$$\\frac{{{a}}}{1000} = ? + \\frac{?}{10} + \\frac{?}{100} + \\frac{?}{1000}$$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1..9"
+				},
+				{
+					"name": "t",
+					"expression": "0..9"
+				},
+				{
+					"name": "u",
+					"expression": "0..9"
+				},
+				{
+					"name": "v",
+					"expression": "1..9"
+				},
+				{
+					"name": "a",
+					"expression": "eval:1000*q+100*t+10*u+v"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{t}}"
+				},
+				{
+					"expectedAnswer": "{{u}}"
+				},
+				{
+					"expectedAnswer": "{{v}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Une unité, c'est $\\frac{1000}{1000}$ ; un dixième, $\\frac{100}{1000}$ ; un centième, $\\frac{10}{1000}$.**",
+					"$$\\frac{{{a}}}{1000} = \\frac{{{eval:1000*q}}}{1000} + \\frac{{{eval:100*t}}}{1000} + \\frac{{{eval:10*u}}}{1000} + \\frac{{{v}}}{1000}$$",
+					"$$\\frac{{{a}}}{1000} = \\textcolor{{{color:primary.0}}}{{{q}}} + \\frac{\\textcolor{{{color:primary.0}}}{{{t}}}}{10} + \\frac{\\textcolor{{{color:primary.0}}}{{{u}}}}{100} + \\frac{\\textcolor{{{color:primary.0}}}{{{v}}}}{1000}$$"
+				]
+			}
+		},
+		{
+			"statement": "Écris cette somme sous la forme d'une seule fraction décimale.\n\n$${{q}} + \\frac{{{t}}}{10} + \\frac{{{v}}}{1000} = \\frac{?}{1000}$$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1..9"
+				},
+				{
+					"name": "t",
+					"expression": "1..9"
+				},
+				{
+					"name": "v",
+					"expression": "1..9"
+				},
+				{
+					"name": "a",
+					"expression": "eval:1000*q+100*t+v"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Tout en millièmes.** ${{q}} = \\frac{{{eval:1000*q}}}{1000}$ et $\\frac{{{t}}}{10} = \\frac{{{eval:100*t}}}{1000}$ ; il n'y a aucun centième.",
+					"$${{q}} + \\frac{{{t}}}{10} + \\frac{{{v}}}{1000} = \\frac{{{eval:1000*q}}}{1000} + \\frac{{{eval:100*t}}}{1000} + \\frac{{{v}}}{1000} = \\textcolor{{{color:primary.0}}}{\\frac{{{a}}}{1000}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4107/1000 = 4 + 1/10 + 0/100 + 7/1000",
+			"variationIndex": 0,
+			"variables": {
+				"q": "4",
+				"t": "1",
+				"u": "0",
+				"v": "7",
+				"a": "4107"
+			},
+			"answers": ["4", "1", "0", "7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 + 1/10 + 7/100 + 0/1000 (zéro mal placé)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "4",
+				"t": "1",
+				"u": "0",
+				"v": "7",
+				"a": "4107"
+			},
+			"answers": ["4", "1", "7", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 41 + 0/10 + 0/100 + 7/1000",
+			"variationIndex": 0,
+			"variables": {
+				"q": "4",
+				"t": "1",
+				"u": "0",
+				"v": "7",
+				"a": "4107"
+			},
+			"answers": ["41", "0", "0", "7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 + 1/10 + 7/1000 = 4107/1000",
+			"variationIndex": 1,
+			"variables": {
+				"q": "4",
+				"t": "1",
+				"v": "7",
+				"a": "4107"
+			},
+			"answers": ["4\\,107"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 417 (zéro oublié)",
+			"variationIndex": 1,
+			"variables": {
+				"q": "4",
+				"t": "1",
+				"v": "7",
+				"a": "4107"
+			},
+			"answers": ["417"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4170",
+			"variationIndex": 1,
+			"variables": {
+				"q": "4",
+				"t": "1",
+				"v": "7",
+				"a": "4107"
+			},
+			"answers": ["4\\,170"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 12 (4 + 1 + 7)",
+			"variationIndex": 1,
+			"variables": {
+				"q": "4",
+				"t": "1",
+				"v": "7",
+				"a": "4107"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

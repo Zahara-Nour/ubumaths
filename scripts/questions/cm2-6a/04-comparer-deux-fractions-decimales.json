@@ -1,0 +1,239 @@
+{
+	"title": "Comparer deux fractions décimales",
+	"description": "Comparer deux fractions décimales de dénominateurs différents avec <, = ou > (7/10 … 65/100 ; 67/100 … 607/1 000 ; 3/10 = 300/1 000)",
+	"grades": ["CM2"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Comparer",
+	"level": 17,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off",
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète avec le symbole qui convient.\n\n$$\\frac{{{gn}}}{{{gd}}} \\ldots \\frac{{{dn}}}{{{dd}}}$$\n\n```choix\nmelanger: non\n- $$<$$\n- $$=$$\n- $$>$$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "D1",
+					"expression": "{{if:k==1|100|10}}"
+				},
+				{
+					"name": "D2",
+					"expression": "{{if:k==0|100|1000}}"
+				},
+				{
+					"name": "m",
+					"expression": "eval:D2/D1"
+				},
+				{
+					"name": "a",
+					"expression": "1..99"
+				},
+				{
+					"name": "w",
+					"expression": "{{eval:7*a*m/10}}..{{eval:13*a*m/10}}"
+				},
+				{
+					"name": "s",
+					"expression": "0..4"
+				},
+				{
+					"name": "h",
+					"expression": "eval:{{if:s==0|a*m|w}}"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "gn",
+					"expression": "eval:{{if:o==0|a|h}}"
+				},
+				{
+					"name": "gd",
+					"expression": "eval:{{if:o==0|D1|D2}}"
+				},
+				{
+					"name": "dn",
+					"expression": "eval:{{if:o==0|h|a}}"
+				},
+				{
+					"name": "dd",
+					"expression": "eval:{{if:o==0|D2|D1}}"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(gn*1000/gd-dn*1000/dd)+1"
+				}
+			],
+			"conditions": ["s==0 or mod(w,m)!=0", "mod(a,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Même dénominateur d'abord.** $\\frac{1}{{{D1}}} = \\frac{{{m}}}{{{D2}}}$, donc $\\frac{{{a}}}{{{D1}}} = \\frac{{{eval:a*m}}}{{{D2}}}$.",
+					"On compare ${{eval:a*m}}$ et ${{h}}$ : le plus grand numérateur n'était pas forcément le plus grand nombre.",
+					"$$\\frac{{{gn}}}{{{gd}}} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} \\frac{{{dn}}}{{{dd}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "67/100 > 607/1000",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"D1": "100",
+				"D2": "1000",
+				"m": "10",
+				"a": "67",
+				"w": "607",
+				"s": "1",
+				"h": "607",
+				"o": "0",
+				"gn": "67",
+				"gd": "100",
+				"dn": "607",
+				"dd": "1000",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 67/100 < 607/1000 (numérateurs comparés)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"D1": "100",
+				"D2": "1000",
+				"m": "10",
+				"a": "67",
+				"w": "607",
+				"s": "1",
+				"h": "607",
+				"o": "0",
+				"gn": "67",
+				"gd": "100",
+				"dn": "607",
+				"dd": "1000",
+				"r": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7/10 > 65/100",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"D1": "10",
+				"D2": "100",
+				"m": "10",
+				"a": "7",
+				"w": "65",
+				"s": "2",
+				"h": "65",
+				"o": "0",
+				"gn": "7",
+				"gd": "10",
+				"dn": "65",
+				"dd": "100",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "7/10 < 83/100",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"D1": "10",
+				"D2": "100",
+				"m": "10",
+				"a": "7",
+				"w": "83",
+				"s": "3",
+				"h": "83",
+				"o": "0",
+				"gn": "7",
+				"gd": "10",
+				"dn": "83",
+				"dd": "100",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "300/1000 = 3/10",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"D1": "10",
+				"D2": "1000",
+				"m": "100",
+				"a": "3",
+				"w": "250",
+				"s": "0",
+				"h": "300",
+				"o": "1",
+				"gn": "300",
+				"gd": "1000",
+				"dn": "3",
+				"dd": "10",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 300/1000 > 3/10",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"D1": "10",
+				"D2": "1000",
+				"m": "100",
+				"a": "3",
+				"w": "250",
+				"s": "0",
+				"h": "300",
+				"o": "1",
+				"gn": "300",
+				"gd": "1000",
+				"dn": "3",
+				"dd": "10",
+				"r": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
