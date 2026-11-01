@@ -447,7 +447,7 @@ function simplifiedPrimitive(
 	// Somme de ln regroupée puis rangée : chaque ln garde son coefficient devant
 	if (developed) {
 		return {
-			result: lnCoefficientForm(developed.result) ?? developed.result,
+			result: coefficientFirstForm(developed.result) ?? developed.result,
 			bindings: developed.bindings
 		};
 	}
@@ -456,7 +456,7 @@ function simplifiedPrimitive(
 	// primitive est acquis (celui de l'intégrande) : `ln|x| − ln|x| → 0` (S3)
 	if (single) return { result: withRationalCoefficient(single.k, single.fn) };
 	const tidiedSum = tidyTerms(raw, { domain: [raw] });
-	return { result: lnCoefficientForm(tidiedSum) ?? tidiedSum };
+	return { result: coefficientFirstForm(tidiedSum) ?? tidiedSum };
 }
 
 /**
@@ -1197,39 +1197,50 @@ interface SingleCoefficientTerm {
 
 /**
  * La somme RANGÉE par `tidy` (ln semblables regroupés, terme positif en tête)
- * dont chaque terme est « coefficient rationnel × ln », réécrite coefficient
- * DEVANT (`withRationalCoefficient`), dans le même ordre et avec les mêmes
- * signes : `\dfrac{1}{3}\ln|3x+1| - 2\ln|x|`, comme le moteur et
- * `\dfrac{1}{2}e^{2x}` (décision de David du 2026-10-11), et non
- * `\dfrac{\ln|3x+1|}{3}` qu'écrit `tidy`. null si un terme n'est pas de
- * cette forme ou s'il y a moins de deux termes.
+ * dont chaque terme « coefficient rationnel × fonction » est réécrit
+ * coefficient DEVANT (`withRationalCoefficient`), dans le même ordre et avec
+ * les mêmes signes : `\dfrac{1}{3}\ln|3x+1| - 2\ln|x|`,
+ * `\dfrac{1}{2}e^{2x} + \ln|x|`, comme un terme seul (décision de David du
+ * 2026-10-11), et non `\dfrac{e^{2x}}{2}` qu'écrit `tidy` (V27). « Fonction »
+ * = un appel (`\ln`, `\sin`, `\cos`…) ou une exponentielle `e^{u}` ; les
+ * autres termes (`\dfrac{x^3}{3}`, `\dfrac{(2x+1)^4}{8}`) restent écrits
+ * comme un terme seul les écrit. null s'il y a moins de deux termes ou
+ * qu'aucun terme ne change.
  */
-function lnCoefficientForm(tidied: MathNode): MathNode | null {
+function coefficientFirstForm(tidied: MathNode): MathNode | null {
 	const terms = flattenSum(tidied);
 	if (terms.length < 2) return null;
-	const parts: SignedTerm[] = [];
-	for (const { term, sign } of terms) {
-		const ln = lnTerm(term);
-		if (ln === null) return null;
-		const k = sign === 1 ? ln.k : negRational(ln.k);
-		parts.push({
-			term: withRationalCoefficient(absRational(k), ln.fn),
+	let changed = false;
+	const parts: SignedTerm[] = terms.map(({ term, sign }) => {
+		const found = functionTerm(term);
+		if (found === null) return { term, sign };
+		changed = true;
+		const k = sign === 1 ? found.k : negRational(found.k);
+		return {
+			term: withRationalCoefficient(absRational(k), found.fn),
 			sign: isNegativeRational(k) ? -1 : 1
-		});
-	}
-	return signedSum(parts);
+		};
+	});
+	return changed ? signedSum(parts) : null;
 }
 
-/** `k·\ln u`, `\ln u`, `\dfrac{\ln u}{m}` ou `\dfrac{n\ln u}{m}` (n, m entiers écrits) : k et le ln */
-function lnTerm(term: MathNode): { readonly k: Rational; readonly fn: MathNode } | null {
-	const isLn = (n: MathNode): boolean => n.type === 'function' && n.name === 'ln';
+/**
+ * `k·f`, `f`, `\dfrac{f}{m}` ou `\dfrac{n f}{m}` (n, m entiers écrits ; f un
+ * appel ou `e^{u}`) : k et f.
+ */
+function functionTerm(term: MathNode): { readonly k: Rational; readonly fn: MathNode } | null {
+	const isFunction = (n: MathNode): boolean =>
+		n.type === 'function' || (n.type === 'superscript' && isEulerConstant(n.base));
 	const single = singleCoefficientTerm(term);
-	if (single) return isLn(single.fn) ? { k: single.k, fn: single.fn } : null;
-	if (term.type !== 'division' || !isIntegerLiteral(term.denominator)) return null;
-	const top = singleCoefficientTerm(term.numerator);
-	const m = extractExactRational(term.denominator);
-	if (!top || !isLn(top.fn) || m === null || m.n === 0n) return null;
-	return { k: divRational(top.k, m), fn: top.fn };
+	if (single) return isFunction(single.fn) ? { k: single.k, fn: single.fn } : null;
+	const negative = term.type === 'opposite';
+	const inner = term.type === 'opposite' ? term.operand : term;
+	if (inner.type !== 'division' || !isIntegerLiteral(inner.denominator)) return null;
+	const top = singleCoefficientTerm(inner.numerator);
+	const m = extractExactRational(inner.denominator);
+	if (!top || !isFunction(top.fn) || m === null || m.n === 0n) return null;
+	const k = divRational(top.k, m);
+	return { k: negative ? negRational(k) : k, fn: top.fn };
 }
 
 function isIntegerLiteral(n: MathNode): boolean {
