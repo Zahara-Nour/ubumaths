@@ -5,14 +5,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2141 ; phase 0 du lot 9 posée._
+_Mis à jour le 2026-11-01, lot 9 écrit (pas encore de PR)._
 
-- **État** : lots 0 à 7 publiés ; lot 8 (monnaie, § 15) : 6 brouillons en prod, rangés et tagués (#2135, #2141) ;
-  lot 9 (fractions dessinées et géométrie) : phase 0 écrite (§ 16), **6 questions à David**.
-- **Prochaine action** : réponses au § 16 → écrire le lot 9 (worktree neuf). Après le `deploy:prod` qui livre #2127
-  (centimes) : lot 8, catégories relevées, page à cocher, `publier-lot` (simulation, puis David) ; puis lot 10.
-- **En attente de David** : les 6 questions du § 16 ; `deploy:prod` pour les centimes (`main` verte le 2026-11-01 au
-  soir ; #2165, autre session, encore en CI).
+- **État** : lots 0 à 7 publiés ; lot 8 (monnaie) : 6 brouillons en prod, rangés et tagués ; lot 9 (fractions
+  dessinées et géométrie, § 16) : 9 modèles écrits et vérifiés, 2 commits sur `feat/questions-ce1-lot9`, **non poussés**.
+- **Prochaine action** : au « go » de la pause CI : `git merge origin/main`, push, PR des fichiers (revue : aucune,
+  contenu), merge ; puis David crée les brouillons en prod ; migration nœud + tag (+ `a7dfe502` passé au CE1, niveau 2,
+  instantané d'abord) ; page à cocher (ajouter le dessin de ` ```partage ` au script).
+- **En attente de David** : `deploy:prod` pour les centimes (lot 8) ; « go » de la pause CI (session migrations-collision).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
