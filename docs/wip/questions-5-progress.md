@@ -5,19 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 7 en prod en brouillons._
+_Mis à jour le 2026-11-01, migration de rangement du lot 7 écrite (PR à ouvrir)._
 
-- **État** : lots 1 à 6 publiés. **Lot 7** (§ 18, 6 modèles) : fichiers mergés (#2137) ; **6 brouillons en prod**
-  (§ 18.2), sans nœud ni tag ; simulation `publier-lot` : 6/6 passent (aucune collision de niveau).
-- **Prochaine action** : migration nœud + tag du lot 7 (gabarit : celle du lot 6,
-  `20261101190200_questions_5_lot6_rangement_tags` + son test ; relevé `etat-prod` d'abord) ; aucun nœud neuf
-  prévu (§ 18). Puis page à cocher, puis `publier-lot`. Ensuite lot 8 « Opérations » (001, 002, 005, 116, 117).
+- **État** : lots 1 à 6 publiés. **Lot 7** : 6 brouillons en prod (§ 18.2) ; migration nœud + tag
+  `20261101213600_questions_5_lot7_rangement_tags` écrite, test vert, preuve rouge faite (§ 18.3).
+- **Prochaine action** : PR → CI → merge → `db:migrate` (dry-run d'abord) → vérifier au MCP ; puis page à cocher,
+  puis `publier-lot`. Ensuite lot 8 « Opérations » (001, 002, 005, 116, 117).
 - **En attente de David** : 02 (deux cases sur deux lignes) à essayer à la main dans l'aperçu : au pilotage
   Chrome, la frappe dans la 2e case arrivait aussi dans la 1re — extension ou appli ?
 - **Pièges en cours** : horodatage = `max + 1 min` de `origin/main` JUSTE AVANT le merge, `db:migrate
 --include-all --dry-run` d'abord ; `--publier` = David ; prix en euros → `zeros: off` ; jamais `e`.
-- **Worktree / branche** : `ubumaths-wt-questions-5` (HEAD détaché sur `main`) ; nouvelle branche pour la
-  migration.
+- **Worktree / branche** : `ubumaths-wt-questions-5`, branche `content/questions-5-lot7-rangement`.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -537,3 +535,12 @@ Calcul littéral › Écrire › Formules 1-3, nœud = notion Algèbre › Calcu
 - David `create-questions --publier` → 950cfa36 (01), ef08a256 (02), ade95ae4 (03), 06df72fd (04), fa0c8afd (05),
   2cc9db57 (06), brouillons sans nœud ni tag ; vérifié au MCP (statut, niveau, catégorie).
 - Simulation `publier-lot` : 6 brouillons passent le contrôle.
+
+### 18.3 Lot 7 : rangement (2026-11-01)
+
+- Relevé `etat-prod-2026-11-01-lot7/` (`releve-prod.ts`, colonne `multiple_answers` retirée du relevé : supprimée
+  en #2009). 6 brouillons sans nœud ni tag, niveaux 8, 1, 3, 3, 4, 5.
+- Écart avec le tableau du § 18 : 5-092 et 5-098 sont sur la notion **Fonctions › Généralités sur les fonctions**,
+  pas Algèbre › Calcul littéral. **David : choix A** — 05 et 06 sur le nœud de leur point ; aucun point déplacé.
+- `lot-7-rangement.py` (gabarit lot 5) → migration `20261101213600_questions_5_lot7_rangement_tags` + fixture ;
+  test `questions-5-lot7-rangement-tags.test.ts` : 19 verts ; preuve rouge (migration vidée) : 12 échecs.
