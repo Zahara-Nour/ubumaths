@@ -6,16 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2106._
+_Mis à jour le 2026-11-01, #2113 (6 B) ouverte, CI rouge à cause de `main` (§ 39)._
 
-- **État** : lots 1 à 5 publiés ; lot 6 : phase 0 validée (§ 37), fichiers du 6 A mergés (#2106, § 38), pas encore en prod.
-- **Prochaine action** : écrire 6 B (affine, |x|, carré, inverse : 6 modèles, § 37) dans un worktree neuf ; puis 6 C ;
-  brouillons, migration et page à cocher pour les 20 ensuite.
-- **En attente de David** : rien.
+- **État** : lots 1 à 5 publiés ; lot 6 : 6 A mergé (#2106), 6 B en PR (§ 39) ; rien du lot 6 en prod.
+- **Prochaine action** : relancer la CI de #2113 quand `main` est réparée, merger ; écrire 6 C (racine, cube, méthode adaptée : 6 modèles, § 37) dans
+  un worktree neuf ; puis brouillons, migration et page à cocher pour les 20.
+- **En attente de David** : collision sur `main` : `20261101190200` porté par deux migrations (5e lot 6, 6e lot 7,
+  #2107) → `migration-versions.test.ts` rouge pour toutes les PR ; à réparer par la session 5e ou 6e.
 - **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main` ET des worktrees ; `page-a-cocher.ts`
-  ne prend qu'un `--dir` (préfixes `a-`/`b-` dans une copie) ; `db:migrate` et `--publier` refusés par le
-  classifieur → David les lance avec `!`.
-- **Worktree / branche** : aucun (6 A retiré).
+  ne prend qu'un `--dir` (préfixes `a-`/`b-` dans une copie, désormais trois dossiers) ; `db:migrate` et
+  `--publier` refusés par le classifieur → David les lance avec `!` ; worktree neuf → `pnpm exec svelte-kit sync`
+  avant les scripts `tsx` (`$lib` introuvable sinon).
+- **Worktree / branche** : `ubumaths-wt-questions-2de` · `feat/questions-2de-fonctions-b`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -969,3 +971,24 @@ une page à cocher.
   dessinées et mélangées, hyperbole cochée « Juste », corrigé avec la courbe). **Défaut vu à l'aperçu** :
   l'étiquette 𝒞_f se pose près d'une extrémité et ressemble à un disque vide → retirée des courbes de 01.
 - #2106 mergée (CI : `/demo/lexique` en échec sur le runner, `wrapDynamicImport`, vert à la relance).
+
+## 39. Lot 6 B, PR des fichiers (2026-11-01)
+
+- Script `questions-2de/lot-fonctions-b-2de.py` → `scripts/questions/2de-fonctions-b/` (6 modèles, 17 variations,
+  75 specs). Catégories (relevé prod : aucune n'existait) : « Résolution algébrique » de Fonctions affines (niv. 1
+  2-455, niv. 2 2-457), Valeur absolue (niv. 1 2-460), Fonction carré (niv. 1 2-461, niv. 2 2-463), Fonction
+  inverse (niv. 1 2-466). |x| et 1/x n'ont que l'inéquation, d'où le niveau 1 (|x| = k = 2-458 et 1/x = k = 2-464
+  sont déjà couverts ailleurs).
+- Relevé avant d'écrire : « Fonctions affines › Equations » niv. 2 (75fe996a) est 2-339 (graphique), « Valeur
+  absolue › Equations » 1 et 2 sont 2-458 et 2-420 : pas de doublon.
+- Écart au § 37 : le corrigé de |x| < k dit la distance à 0 mais dessine le V (` ```courbe `, ensemble repassé
+  sur l'axe des abscisses) : ` ```line ` ne trace pas d'intervalle.
+- `question:specs` 75/75, tirages tous réussis ; `sonde-courbes` 0 problème (1 800 tirages) ; `create-questions`
+  en simulation contre la prod : « 6 à créer ».
+- Relecture des tirages : « aucun les réels négatifs sont solutions » → phrases entières selon le sens.
+- Base locale : 6 brouillons ; aperçu joué : 06 (k = 0,5 rendu « 0,5 » ; [0 ; 2] « Faux » avec « Tu as inclus une
+  borne qui devrait être exclue », ]0 ; 2] « Juste » ; corrigé : hyperbole, disque vide en 0) ; corrigés de 02
+  (m < 0), 03 (|x| ⩽ 3), 04 (1,69), 05 (√14 dans le bloc) dessinés comme prévu.
+- #2113 : CI rouge sans lien avec le lot — `migration-versions` (collision `20261101190200` sur `main`, 5e lot 6 et
+  6e lot 7), `wrapDynamicImport` (client, connu, vert à la relance), « Garde SECURITY DEFINER » (à relire après la
+  réparation de `main`).

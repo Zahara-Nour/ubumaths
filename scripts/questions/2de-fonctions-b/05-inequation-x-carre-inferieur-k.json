@@ -1,0 +1,320 @@
+{
+	"title": "Résoudre x² < k",
+	"description": "Inéquation x² < k par la parabole : k carré parfait, k non carré (√5), les quatre sens ; k < 0 (∅ ou ℝ), k = 0 (pièges : ]−∞ ; 3[ pour x² < 9, la partie négative oubliée, crochets)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Fonction carré",
+	"subdomain": "Résolution algébrique",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation $x^2{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..6"
+				},
+				{
+					"name": "k",
+					"expression": "eval:(n)^2"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|]-{{n}};{{n}}[|{{if:s==1|[-{{n}};{{n}}]|{{if:s==2|]-\\infty;-{{n}}[\\cup]{{n}};+\\infty[|]-\\infty;-{{n}}]\\cup[{{n}};+\\infty[}}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les solutions de $x^2={{k}}$ sont $-{{n}}$ et ${{n}}$ : sur la parabole de la fonction carré, la droite $y={{k}}$ coupe la courbe en $A$ et $B$, d'abscisses $-{{n}}$ et ${{n}}$.",
+					"On cherche les abscisses des points de la parabole situés {{if:s==0|**strictement sous**|{{if:s==1|**sous ou sur**|{{if:s==2|**strictement au-dessus de**|**au-dessus ou sur**}}}}}} la droite ; {{if:s==0|les abscisses des points d'intersection sont **exclues**|{{if:s==1|les abscisses des points d'intersection sont **comprises**|{{if:s==2|les abscisses des points d'intersection sont **exclues**|les abscisses des points d'intersection sont **comprises**}}}}}}.",
+					"```courbe\nx: {{eval:-(n)-2}} ; {{eval:(n)+2}}\ny: {{eval:-floor((n)^2/8)-1}} ; {{eval:(k)+floor((n)^2/4)+2}}\nf(x) = x^2   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\n{{if:s==0|h(x) = x^2 sur ]-{{n}} ; {{n}}[   vert|{{if:s==1|h(x) = x^2 sur [-{{n}} ; {{n}}]   vert|{{if:s==2|h(x) = x^2 sur [-20 ; -{{n}}[   vert|h(x) = x^2 sur [-20 ; -{{n}}]   vert}}}}}}\n{{if:s==0|t(x) = 0 sur ]-{{n}} ; {{n}}[   vert|{{if:s==1|t(x) = 0 sur [-{{n}} ; {{n}}]   vert|{{if:s==2|t(x) = 0 sur [-20 ; -{{n}}[   vert|t(x) = 0 sur [-20 ; -{{n}}]   vert}}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2|j(x) = x^2 sur ]{{n}} ; 20]   vert|j(x) = x^2 sur [{{n}} ; 20]   vert}}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2|u(x) = 0 sur ]{{n}} ; 20]   vert|u(x) = 0 sur [{{n}} ; 20]   vert}}}}}}\npoints: A(-{{n}} ; {{k}}), B({{n}} ; {{k}})\ntaille: moyenne\ndescription: Parabole de la fonction carré, droite y = {{k}} en pointillé, partie cherchée en vert. L'ensemble des solutions est repassé en vert sur l'axe des abscisses.\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]-{{n}}\\,;{{n}}\\right[|{{if:s==1|\\left[-{{n}}\\,;{{n}}\\right]|{{if:s==2|\\left]-\\infty\\,;-{{n}}\\right[\\cup\\left]{{n}}\\,;+\\infty\\right[|\\left]-\\infty\\,;-{{n}}\\right]\\cup\\left[{{n}}\\,;+\\infty\\right[}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation $x^2{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..23"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"conditions": ["mod(k,4) != 0", "mod(k,9) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|]-\\sqrt{ {{k}} };\\sqrt{ {{k}} }[|{{if:s==1|[-\\sqrt{ {{k}} };\\sqrt{ {{k}} }]|{{if:s==2|]-\\infty;-\\sqrt{ {{k}} }[\\cup]\\sqrt{ {{k}} };+\\infty[|]-\\infty;-\\sqrt{ {{k}} }]\\cup[\\sqrt{ {{k}} };+\\infty[}}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les solutions de $x^2={{k}}$ sont $-\\sqrt{ {{k}} }$ et $\\sqrt{ {{k}} }$ : sur la parabole de la fonction carré, la droite $y={{k}}$ coupe la courbe en $A$ et $B$, d'abscisses $-\\sqrt{ {{k}} }$ et $\\sqrt{ {{k}} }$.",
+					"On cherche les abscisses des points de la parabole situés {{if:s==0|**strictement sous**|{{if:s==1|**sous ou sur**|{{if:s==2|**strictement au-dessus de**|**au-dessus ou sur**}}}}}} la droite ; {{if:s==0|les abscisses des points d'intersection sont **exclues**|{{if:s==1|les abscisses des points d'intersection sont **comprises**|{{if:s==2|les abscisses des points d'intersection sont **exclues**|les abscisses des points d'intersection sont **comprises**}}}}}}.",
+					"```courbe\nx: -6 ; 6\ny: -3 ; 27\nf(x) = x^2   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\n{{if:s==0|h(x) = x^2 sur ]-sqrt({{k}}) ; sqrt({{k}})[   vert|{{if:s==1|h(x) = x^2 sur [-sqrt({{k}}) ; sqrt({{k}})]   vert|{{if:s==2|h(x) = x^2 sur [-20 ; -sqrt({{k}})[   vert|h(x) = x^2 sur [-20 ; -sqrt({{k}})]   vert}}}}}}\n{{if:s==0|t(x) = 0 sur ]-sqrt({{k}}) ; sqrt({{k}})[   vert|{{if:s==1|t(x) = 0 sur [-sqrt({{k}}) ; sqrt({{k}})]   vert|{{if:s==2|t(x) = 0 sur [-20 ; -sqrt({{k}})[   vert|t(x) = 0 sur [-20 ; -sqrt({{k}})]   vert}}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2|j(x) = x^2 sur ]sqrt({{k}}) ; 20]   vert|j(x) = x^2 sur [sqrt({{k}}) ; 20]   vert}}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2|u(x) = 0 sur ]sqrt({{k}}) ; 20]   vert|u(x) = 0 sur [sqrt({{k}}) ; 20]   vert}}}}}}\npoints: A(-sqrt({{k}}) ; {{k}}), B(sqrt({{k}}) ; {{k}})\ntaille: moyenne\ndescription: Parabole de la fonction carré, droite y = {{k}} en pointillé, partie cherchée en vert. L'ensemble des solutions est repassé en vert sur l'axe des abscisses.\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]-\\sqrt{ {{k}} }\\,;\\sqrt{ {{k}} }\\right[|{{if:s==1|\\left[-\\sqrt{ {{k}} }\\,;\\sqrt{ {{k}} }\\right]|{{if:s==2|\\left]-\\infty\\,;-\\sqrt{ {{k}} }\\right[\\cup\\left]\\sqrt{ {{k}} }\\,;+\\infty\\right[|\\left]-\\infty\\,;-\\sqrt{ {{k}} }\\right]\\cup\\left[\\sqrt{ {{k}} }\\,;+\\infty\\right[}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation $x^2{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "-9..-1"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|\\varnothing|{{if:s==1|\\varnothing|{{if:s==2|\\mathbb{R}|\\mathbb{R}}}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un carré n'est **jamais négatif** : pour tout réel $x$, $x^2\\geqslant 0>{{k}}$ (la parabole est entièrement au-dessus de la droite $y={{k}}$).",
+					"{{if:s==0|Aucun réel n'est solution. $S=\\textcolor{{{color:primary.0}}}{\\varnothing}$.|{{if:s==1|Aucun réel n'est solution. $S=\\textcolor{{{color:primary.0}}}{\\varnothing}$.|{{if:s==2|Tous les réels sont solutions. $S=\\textcolor{{{color:primary.0}}}{\\mathbb{R}}$.|Tous les réels sont solutions. $S=\\textcolor{{{color:primary.0}}}{\\mathbb{R}}$.}}}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation $x^2{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|\\varnothing|{{if:s==1|\\{0\\}|{{if:s==2|\\mathbb{R}\\setminus\\{0\\}|\\mathbb{R}}}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un carré n'est jamais négatif, et $x^2=0$ seulement pour $x=0$.",
+					"{{if:s==0|Aucun carré n'est strictement négatif : $S=\\textcolor{{{color:primary.0}}}{\\varnothing}$.|{{if:s==1|Un carré négatif ou nul est nul : seul $0$ est solution. $S=\\textcolor{{{color:primary.0}}}{\\{0\\}}$.|{{if:s==2|Le carré est strictement positif pour tout $x$ sauf $0$. $S=\\textcolor{{{color:primary.0}}}{\\mathbb{R}\\setminus\\{0\\}}$.|Un carré est toujours positif ou nul : $S=\\textcolor{{{color:primary.0}}}{\\mathbb{R}}$.}}}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x² < 9 : S = ]−3 ; 3[",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"k": "9",
+				"s": "0"
+			},
+			"answers": ["]-3;3["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ]−∞ ; 3[",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"k": "9",
+				"s": "0"
+			},
+			"answers": ["]-\\infty;3["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ]−9 ; 9[",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"k": "9",
+				"s": "0"
+			},
+			"answers": ["]-9;9["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : crochets fermés",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"k": "9",
+				"s": "0"
+			},
+			"answers": ["[-3;3]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x² ⩾ 4 : S = ]−∞ ; −2] ∪ [2 ; +∞[",
+			"variationIndex": 0,
+			"variables": {
+				"n": "2",
+				"k": "4",
+				"s": "3"
+			},
+			"answers": ["]-\\infty;-2]\\cup[2;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : [2 ; +∞[ seulement",
+			"variationIndex": 0,
+			"variables": {
+				"n": "2",
+				"k": "4",
+				"s": "3"
+			},
+			"answers": ["[2;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x² ⩽ 5 : S = [−√5 ; √5]",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"s": "1"
+			},
+			"answers": ["[-\\sqrt{5};\\sqrt{5}]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : [0 ; √5]",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"s": "1"
+			},
+			"answers": ["[0;\\sqrt{5}]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x² > 7 : S = ]−∞ ; −√7[ ∪ ]√7 ; +∞[",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7",
+				"s": "2"
+			},
+			"answers": ["]-\\infty;-\\sqrt{7}[\\cup]\\sqrt{7};+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ]√7 ; +∞[",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7",
+				"s": "2"
+			},
+			"answers": ["]\\sqrt{7};+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x² > −4 : S = ℝ",
+			"variationIndex": 2,
+			"variables": {
+				"k": "-4",
+				"s": "2"
+			},
+			"answers": ["\\mathbb{R}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ∅",
+			"variationIndex": 2,
+			"variables": {
+				"k": "-4",
+				"s": "2"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x² ⩽ 0 : S = {0}",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1"
+			},
+			"answers": ["\\{0\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ∅",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x² > 0 : S = ℝ \\ {0}",
+			"variationIndex": 3,
+			"variables": {
+				"s": "2"
+			},
+			"answers": ["\\mathbb{R}\\setminus\\{0\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ℝ",
+			"variationIndex": 3,
+			"variables": {
+				"s": "2"
+			},
+			"answers": ["\\mathbb{R}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
