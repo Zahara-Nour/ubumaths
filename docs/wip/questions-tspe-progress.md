@@ -10,15 +10,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2121 et la relecture du lot 0-géométrie dans l'espace (§ 12)._
+_Mis à jour le 2026-11-01, lot 0-géométrie dans l'espace en cours de publication (§ 12)._
 
 - **État** : lots 0-suites, 0-limites et fonctions, 0-intégration, 0-primitives, 0-trigo, 0-dénombrement
-  **publiés** (133 modèles). Lot 0-géométrie dans l'espace : 28 brouillons vérifiés, 6 retouches (C1-C6) dans les
-  fichiers, page à cocher publiée, PR des fichiers #2121 mergée.
-- **Prochaine action** : lot validé par David (C6 comprise) ; David lance depuis le dépôt principal
-  `create-questions --publier --mettre-a-jour` et `publier-lot` (simulation, puis `--publier`) ; je relis en base ; ensuite lot 0-probabilités. Plus tard : migration Q3 (tags +
-  échange de niveaux D-D1 : 07ebdcbe 1, 4dcbae71 2, 970dab52 3, ef3c495c 4).
-- **En attente de David** : les trois commandes de publication du lot (§ 12).
+  **publiés** (133 modèles). Lot 0-géométrie dans l'espace : #2121 mergée, relu et validé par David,
+  `create-questions --publier --mettre-a-jour` fait (5 mis à jour, C1-C6 relues en base), simulation `publier-lot` :
+  28 passent. **`publier-lot --publier` PAS encore lancé** (28 brouillons en base).
+- **Prochaine action** : David lance
+  `! pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/tspe-0-geometrie-espace --publier` ; je relis
+  les 28 `published` en base (MCP) et je complète le § 12. Puis lot 0-probabilités (nouveau worktree). Plus tard :
+  migration Q3 (tags + échange de niveaux D-D1 : 07ebdcbe 1, 4dcbae71 2, 970dab52 3, ef3c495c 4).
+- **En attente de David** : la commande `--publier` ci-dessus (à taper avec `!`).
 - **Pièges en cours** : le **niveau est dans la clé** de `create-questions` : changer `level` dans un fichier = doublon
   créé ; index unique de niveau par catégorie sur les **publiés** seulement. `create-questions` et `publier-lot`, même
   en simulation → David ; simulation `publier-lot` AVANT tout ; worktree neuf : `pnpm exec svelte-kit sync`, et
@@ -616,3 +618,7 @@ vide à la publication. Les 6 retouches ne sont pas encore en base : la page mon
 **PR** : #2121 mergée le 2026-11-01 (CI verte).
 
 **Relecture** : David valide les 28 fiches en bloc (2026-11-01, « je valide le lot »), C6 comprise.
+
+**Publication** (2026-11-01, David) : `create-questions --publier --mettre-a-jour` (0 créé, 5 mis à jour : 7c8bd127,
+62e446cb, 40ddef82, 3bace561, 34b03dee ; 23 identiques), relu en base (MCP) : C1-C6 présentes, ancienne formule de
+distance absente de 34b03dee. `publier-lot` en simulation : 28 passent. `--publier` : à lancer.
