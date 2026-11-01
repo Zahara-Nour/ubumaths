@@ -5,16 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2107, #2114 et #2112._
+_Mis à jour le 2026-11-01, lot 7 publié._
 
-- **État** : lots 1 à 6b publiés ; 06-07 en ```ranger en prod (#2078) ; v0.59.0 en prod. Lot 7 : 4 brouillons en prod
-  (8adac6d1, 0ce253ea, 5f9ba34d, 92db5823), rangés et tagués (migration `20261101200700_…`, MCP vérifié, § 18).
-- **Prochaine action** : lire les verdicts de la page à cocher (`ArtifactData list verdicts`, compter 4/4) → « À revoir »
-  = corriger (§ 7) → `publier-lot` en simulation → publication.
-- **En attente de David** : relecture du lot 7 sur https://claude.ai/artifact/Rm831MzHvVCQFwVH6GBGq9 (blocs droite et
-  ```ranger non dessinés : les jouer dans l'aperçu admin).
-
-  ```
+- **État** : lots 1 à 7 publiés (lot 7 « Droite graduée et ordre » : 8adac6d1, 0ce253ea, 5f9ba34d, 92db5823, relus 4/4
+  OK et publiés le 2026-11-01) ; 06-07 en ```ranger en prod (#2078) ; v0.59.0 en prod.
+- **Prochaine action** : relever les points de 6e encore sans modèle (skill `couvrir-niveau`) et proposer la phase 0
+  du lot suivant.
+- **En attente de David** : rien.
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs --file`. Jamais de variable
   `e`. `Doc-inchangée:` va dans un message de COMMIT. PR en conflit = pas de CI : vérifier `mergeable`.
 - **Worktree / branche** : aucun (retirés après #2114 et #2112).
@@ -1155,3 +1152,6 @@ visibles de l'admin et de l'auteur seuls jusqu'à leur publication ; la migratio
 - Page à cocher générée depuis `main` (8b5d227c7), publiée (`db`, 0 verdict) :
   https://claude.ai/artifact/Rm831MzHvVCQFwVH6GBGq9. Alertes : bloc line (01-03) et ```ranger (04) non dessinés ;
   homonyme 2af5f9fe (« Ranger des nombres décimaux », CM1, brouillon de questions-cm1, niveau 5) écarté à raison.
+- Relecture de David : 4/4 « OK », aucun commentaire (base de la page lue, 4 verdicts comptés). `publier-lot` en
+  simulation : 4 brouillons passent ; David a lancé `--publier` : « 4/4 modèles du lot publiés ». MCP : `published`,
+  niveaux 1, 2, 7, 4, nœuds et tags inchangés. **Lot 7 clos.**
