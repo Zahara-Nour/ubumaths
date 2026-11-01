@@ -14,7 +14,8 @@
  * 63 nœuds renommés, 74 archivés → 19 + 134 + 472 nœuds ACTIFS. Un nœud
  * archivé reste en base (ADR 0019) : la copie figée les liste à part
  * (« archives »), et le test les compare aussi. Depuis, 20261026170000 a créé la sous-notion
- * « Figures planes > reconnaître et nommer des formes » → 473 sous-notions actives.
+ * « Figures planes > reconnaître et nommer des formes » → 473 sous-notions actives ; puis
+ * 20261101190200 « Représenter des données > choisir une représentation » → 474.
  *
  * La preuve est INTÉGRALE, pas un échantillon : l'ensemble exact des chemins
  * « branche > notion > sous-notion » du JSON source
@@ -117,7 +118,7 @@ describe("Seed de l'arbre des notions (classification_nodes)", () => {
 		expect(arbre.archives).toHaveLength(74);
 	});
 
-	it("l'arbre ACTIF correspond EXACTEMENT au JSON (626 chemins), les archivés à sa liste (74)", () => {
+	it("l'arbre ACTIF correspond EXACTEMENT au JSON (627 chemins), les archivés à sa liste (74)", () => {
 		const byId = new Map(rows.map((r) => [r.id, r]));
 		const branchNames = new Set(arbre.branches.map((b) => b.nom));
 
@@ -144,7 +145,7 @@ describe("Seed de l'arbre des notions (classification_nodes)", () => {
 		const extra = [...actual].filter((p) => !expected.has(p));
 		expect(missing, `chemins du JSON absents de la base`).toEqual([]);
 		expect(extra, `chemins en base absents du JSON`).toEqual([]);
-		expect(actual.size).toBe(19 + 134 + 473);
+		expect(actual.size).toBe(19 + 134 + 474);
 		expect([...archived].sort()).toEqual(arbre.archives.map((a) => `${a.kind}|${a.chemin}`).sort());
 	});
 
