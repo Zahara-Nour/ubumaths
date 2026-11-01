@@ -46,6 +46,12 @@ export interface PublicBlank {
 	/** Figure de travail : jamais notée, peut rester vide (rien d'attendu à cacher) */
 	workFigure?: true;
 	/**
+	 * Figure à compléter (notée) : le fait seul, que l'énoncé montre déjà ; jamais
+	 * `construction` (son texte et ses vérifications disent la réponse). Sans lui,
+	 * l'écran la compterait comme une case écrite (aide, numéros des cases)
+	 */
+	figure?: true;
+	/**
 	 * Case d'un bloc à geste : le genre du bloc seul (`line`, `horloge`…), que l'énoncé
 	 * montre déjà ; sans lui, l'écran afficherait l'aide des cases écrites
 	 */
@@ -89,6 +95,7 @@ function publicBlank(blank: InstanceBlank): PublicBlank {
 	if (blank.graphicalConfig) result.graphicalConfig = blank.graphicalConfig;
 	if (blank.answerKind) result.answerKind = blank.answerKind;
 	if (isWorkFigureBlank(blank)) result.workFigure = true;
+	else if (blank.construction) result.figure = true;
 	if (blank.construire) result.construire = blank.construire;
 	if (blank.choice) {
 		const { choices, order, multiple } = blank.choice;
@@ -160,6 +167,8 @@ export function toDisplayInstance(question: PublicQuestion): QuestionInstance {
 		...(blank.workFigure && {
 			construction: { source: '', checks: [], work: true as const }
 		}),
+		// Figure à compléter : la figure vient de l'énoncé, jugée par le serveur
+		...(blank.figure && { construction: { source: '', checks: [] } }),
 		// Ordre affiché = ordre d'origine du navigateur : les positions cochées partent telles quelles
 		...(blank.choice && {
 			choice: {

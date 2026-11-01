@@ -38,10 +38,10 @@
 		completerHasOtherSolutions,
 		completerMistakes,
 		completerSpots,
+		completerStart,
 		designerMistakes,
 		expectedPatronAnswer,
 		facesAnswer,
-		givenFrame,
 		readCompleterAnswer,
 		readFacesAnswer,
 		type CompleterCell
@@ -116,7 +116,9 @@
 	let wantedFrame = $derived(
 		task.kind === 'completer' ? (readCompleterAnswer(expected) ?? []) : []
 	);
-	let toPlace = $derived(wantedFrame.flat().filter((c) => c === 2).length);
+	/** Avant tout geste : faces données et nombre à poser (aussi pour l'énoncé masqué) */
+	let start = $derived(completerStart(spec));
+	let toPlace = $derived(start.toPlace);
 
 	/**
 	 * Quadrillage : relu quand la valeur de la case change, réassigné à chaque
@@ -128,9 +130,9 @@
 		const read = readCompleterAnswer(value);
 		const fits =
 			read !== null &&
-			read.length === wantedFrame.length &&
-			read[0].length === wantedFrame[0]?.length;
-		return fits ? read : givenFrame(wantedFrame);
+			read.length === start.frame.length &&
+			read[0].length === start.frame[0]?.length;
+		return fits ? read : start.frame.map((row) => [...row]);
 	});
 	let placed = $derived(frame.flat().filter((c) => c === 2).length);
 	let spots = $derived(locked || placed >= toPlace ? [] : completerSpots(frame));
@@ -155,7 +157,7 @@
 
 	function clearAll() {
 		if (task.kind === 'designer') touched = [];
-		else frame = givenFrame(wantedFrame);
+		else frame = start.frame.map((row) => [...row]);
 		answer?.onChange('');
 	}
 

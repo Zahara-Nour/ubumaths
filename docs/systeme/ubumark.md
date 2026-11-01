@@ -1128,8 +1128,17 @@ Points à retenir :
     de la solution, jamais montré avant la correction du serveur. Écrite par un auteur, elle est
     refusée par le générateur (`buildAnswerOf`). Monnaie à construire sans `réserve:` : l'énoncé masqué
     écrit la réserve par défaut de la somme (`defaultReserve`, pièces de centimes comprises si elle en a),
-    sinon l'élève ne pourrait plus poser `3,45` (`maskMonnaie`, `masked-statement.ts`). Gardes : `questions/__tests__/masked-statement.test.ts`,
-    `FillBlanksInput-enonce-masque.svelte.test.ts` (même HTML avec l'instance complète).
+    sinon l'élève ne pourrait plus poser `3,45` (`maskMonnaie`, `masked-statement.ts`). Lot 2, des
+    lignes réécrites : ` ```cubes ` `retrouver:` → `hauteurs: ? ? / 0 ?` (l'empreinte, vue de dessus
+    donnée) et `vues: face 2 1 ; droite 1 2` (une hauteur par colonne de chaque vue donnée,
+    `givenViews` ; `CubesGeste` les dessine telles quelles) : tout assemblage qui a ces vues étant
+    juste, les hauteurs ne pouvaient pas partir ; ` ```patron ` `completer:` → le patron amputé en
+    grille, déjà tourné et retourné, et `completer: ? ?` (`task.masked` faces à poser,
+    `completerStart`) ; ` ```figure-a-completer ` → `verifier: ?` (`spec.masked`, l'outil écrit en
+    `outils:`). Pas masqués : `dessiner:` des cubes (la perspective est la figure), `designer:` du
+    patron (la tâche, dans la consigne). Gardes : `questions/__tests__/masked-statement.test.ts` et
+    `masked-statement-lot2.test.ts`, `FillBlanksInput-enonce-masque.svelte.test.ts` (même HTML
+    avec l'instance complète), `tests/integration/evaluation-notee-serveur.test.ts`.
 
 ## Comment étendre — nouveau bloc spécial
 

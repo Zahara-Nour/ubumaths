@@ -8,8 +8,8 @@ status: en cours
 
 _Mis à jour le 2026-11-01, lot 2 en cours (après #2120)._
 
-- **État** : recos du lot 2 validées par David (§ 7) ; code à écrire.
-- **Prochaine action** : tests rouges puis masques : patron `completer:` (grille amputée + `completer: ? ?`), cubes `retrouver:` (`hauteurs: ?` + `vues:`), figure à compléter (`verifier: ?`).
+- **État** : lot 2 codé (§ 8), tests verts ; PR à ouvrir, revues code-reviewer + security-auditor.
+- **Prochaine action** : PR, revues, CI, merge ; puis clôture du chantier (versement, archivage du journal).
 - **En attente de David** : rien.
 - **Pièges en cours** : `construire` (genre du bloc) passe dans la version publique ; un bloc dans une option de ```choix n'est pas masqué (voulu) ; la valeur de remplacement ne doit jamais servir avant un verdict.
 - **Worktree / branche** : `../ubumaths-wt-fuite-enonce` · `fix/fuite-enonce-lot2`.
@@ -152,3 +152,24 @@ invisibles), sans point invisible posé sur la réponse.
    (les invisibles servent, ex. carré sans lettres). Limite à noter dans la doc : un point invisible posé sur
    la réponse fuirait.
 4. **Garde-fou de l'auditeur** : non (tout est masqué dans ce lot).
+
+## 8. Lot 2 — codé (2026-11-01)
+
+- **Cubes `retrouver:`** : `maskCubes` écrit `hauteurs: ? ? / 0 ?` (rangées en retrait retirées) et
+  `vues: face … ; droite …` (`sideColumns`). Le parseur lit `?` (1, empreinte seule) et `vues:` (`givenViews`),
+  qui vont ensemble et avec les vues de `retrouver:` ; `CubesGeste` dessine chaque vue donnée d'un
+  assemblage d'une rangée qui a cette vue. Pas de leurre possible : tout assemblage qui a les vues est juste.
+- **Patron `completer:`** : `maskPatron` écrit le patron amputé (`transformGrid` puis `trimGrid`) en grille,
+  retire `tourner:` / `retourner:` / `dessous:` / `faux:`, et `completer: ? ?`. Le parseur saute le pliage
+  pour cette forme (`task.masked`, `removed` vide) ; `completerStart` donne le même quadrillage de départ et le
+  même nombre de faces à poser pour les deux formes (`PatronGeste` s'en sert).
+- **Figure à compléter** : `maskFigure` écrit `verifier: ?` (avec `outils:` si l'outil venait de la
+  vérification), retire les autres `verifier:` ; `spec.masked` dans `readConstructionHeader`.
+- **Refus dans un modèle** : `buildAnswerOf` (cubes `givenViews`, patron `masked`), générateur
+  (figure `masked`), message `MASKED_IN_TEMPLATE`.
+- **Trouvé en route** : la case figure perdait `construction` dans la version publique (elle porte le texte et
+  les vérifications : à juste titre), et l'écran la comptait comme une case écrite (« Remplissez les blancs »,
+  numéros des cases). Nouveau drapeau public `figure` → `construction` vide à l'affichage.
+- **Tests** : `masked-statement-lot2.test.ts` (13 ; 8 rouges sans le masque), `FillBlanksInput-enonce-masque`
+  (+3 blocs même HTML, + geste du patron masqué), `evaluation-notee-serveur` (+2 : démarrer sans les hauteurs,
+  correction juste ; rouge sans le masque).

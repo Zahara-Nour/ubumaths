@@ -53,9 +53,10 @@ export type CubesSideView = (typeof CUBES_SIDE_VIEWS)[number];
 
 /**
  * Les clés du bloc ```cubes (`dessiner:`, `retrouver:` : gestes de l'élève ;
- * `case:` posée par le générateur de questions)
+ * `case:` posée par le générateur de questions ; `vues:` écrite par le serveur dans
+ * l'énoncé masqué d'une évaluation, jamais par un auteur — chantier `fuite-enonce`)
  */
-export const CUBES_KEYS = ['hauteurs', 'vue', 'dessiner', 'retrouver', 'case'] as const;
+export const CUBES_KEYS = ['hauteurs', 'vue', 'dessiner', 'retrouver', 'case', 'vues'] as const;
 
 /** Les clés du bloc ```solide */
 export const SOLIDE_KEYS = ['forme', 'sommets', 'marquer', 'cotes', 'cachees', 'section'] as const;
@@ -156,6 +157,13 @@ export interface CubesSpec {
 	view: CubesView;
 	/** Geste de l'élève (lot 2) ; absent : affichage seul */
 	task?: CubesTask;
+	/**
+	 * Énoncé masqué d'une évaluation (`hauteurs: ? 0 ?` + `vues:`, chantier
+	 * `fuite-enonce`) : les vues données, une hauteur par colonne de la vue
+	 * (`sideColumns`) ; `heights` ne vaut alors que par son empreinte (1 sur un
+	 * carreau occupé), jamais montrée comme une réponse avant le verdict
+	 */
+	givenViews?: Partial<Record<CubesSideView, number[]>>;
 }
 
 /**
@@ -239,11 +247,21 @@ export type PatronTarget =
  * - `designer` : l'élève touche des faces ; `faces` = les faces attendues (ordre
  *   de lecture, de 0), calculées par le pliage ;
  * - `completer` : les cases `removed` (ordre de lecture, de 0) sont retirées du
- *   patron du cube, l'élève pose autant de faces ; juste si tout se plie en cube.
+ *   patron du cube, l'élève pose autant de faces ; juste si tout se plie en cube
+ *   (énoncé masqué d'une évaluation : `masked` faces, `removed` vide).
  */
 export type PatronTask =
 	| { kind: 'designer'; target: PatronTarget; faces: number[] }
-	| { kind: 'completer'; removed: number[] };
+	| {
+			kind: 'completer';
+			removed: number[];
+			/**
+			 * Énoncé masqué d'une évaluation (`completer: ? ?`, chantier `fuite-enonce`) :
+			 * le nombre de faces à poser ; `cells` est alors le patron amputé (déjà
+			 * tourné, retourné) et `removed` est vide
+			 */
+			masked?: number;
+	  };
 
 /** Ce que `marquer:` désigne sur un patron : des faces du dessin (de 0), ou un sommet du solide */
 export type PatronMark =
