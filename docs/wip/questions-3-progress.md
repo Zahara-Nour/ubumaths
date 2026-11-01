@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, rangement du lot 6 écrit._
+_Mis à jour le 2026-11-01, après #2100 et `db:migrate`._
 
-- **État** : lot 6 : 7 brouillons en prod ; migration de rangement écrite, auditée (§ 13.9), PR ouverte.
-- **Prochaine action** : CI verte → merge → David lance `db:migrate` → vérifier au MCP (nœuds, tags,
-  c8306505 en `['4', '3']`) → page à cocher (7 fiches ; 3-019 v2 et 3-020 : ` ```solide `, brouillon jusqu'au
-  `deploy:prod`).
-- **En attente de David** : `db:migrate` après le merge (depuis le worktree à jour d'`origin/main`).
+- **État** : lot 6 : 7 brouillons rangés et tagués en prod, c8306505 partagé (migration jouée, § 13.10).
+- **Prochaine action** : page à cocher des 7 brouillons (`page-a-cocher.ts`, artefact avec capacité `db`), relecture
+  par David, puis `publier-lot.ts`. 3-019 et 3-020 (` ```solide `) : publiables seulement après le `deploy:prod`
+  qui livre le bloc (à demander à David) ; sinon publier les 5 autres d'abord.
+- **En attente de David** : rien pour l'instant (la page à cocher vient d'abord).
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; ` ```solide ` pas en prod (modèles qui s'en servent : brouillon
   jusqu'au `deploy:prod`) ; étiquette d'un vecteur libre (`vecteur(dx, dy, ancre=…)`) : vérifier qu'un
@@ -913,3 +913,10 @@ modèles publiés de plus, et c8306505 de 4e ; la 4e ne perd rien. Aucune règle
 - CI #2100, 1er passage : 6 rouges, tous dus à main (`20261101141600` en double, corrigé par #2093) →
   `origin/main` fusionnée, migration renommée `183000`. Vu en passant : les PR ouvertes 4e lot 7 et 5e lot 6
   prennent toutes deux `20261101170000` (signalé à David).
+
+### 13.10 Lot 6 : migration jouée (2026-11-01)
+
+- #2100 mergée (2e passage de CI vert). `db push --include-all` lancé par David depuis la session questions-ce1
+  (170000 questions-4, 183000 la nôtre, 190000 1re spé, 190100 ce1, jouées ensemble).
+- MCP : `20261101183000` inscrite ; les 7 brouillons à leur nœud (§ 13), un tag chacun ; c8306505 en grades
+  `['4', '3']`, tags 3-024,4-031, `published` ; `updated_at` inchangé partout.
