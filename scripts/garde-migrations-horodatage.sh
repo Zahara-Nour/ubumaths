@@ -94,9 +94,14 @@ if [ -n "$prochain" ]; then
 	# Horodatages déjà pris : main et la branche (ses migrations neuves comprises).
 	pris="$( (printf '%s\n' "$sur_main"; liste HEAD) | cut -d_ -f1 | grep -E '^[0-9]{14}$' | sort -u)"
 	v="$(date -u +%Y%m%d%H%M%S)"
-	while printf '%s\n' "$pris" | grep -qx "$v"; do
+	while [[ "$v" =~ ^[0-9]{14}$ ]] && printf '%s\n' "$pris" | grep -qx "$v"; do
 		v="$(ajouter_secondes "$v" 1)"
 	done
+	# Une date illisible ne doit jamais devenir un nom de migration.
+	if ! [[ "$v" =~ ^[0-9]{14}$ ]]; then
+		echo "⛔ horodatage illisible (« $v ») : commande date inattendue." >&2
+		exit 2
+	fi
 	echo "$v"
 	exit 0
 fi

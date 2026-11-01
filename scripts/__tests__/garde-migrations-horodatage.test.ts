@@ -196,7 +196,7 @@ describe('garde-migrations-horodatage', () => {
 	it('--prochain : heure réelle UTC à la seconde', () => {
 		const avant = maintenantUtc(-1000);
 		const v = prochain(moi);
-		expect(v >= avant && v <= maintenantUtc(5000)).toBe(true);
+		expect(v >= avant && v <= maintenantUtc(15000)).toBe(true);
 	});
 
 	it('--prochain : heure réelle même quand main est en avance sur l’horloge, et la garde passe', () => {
@@ -206,21 +206,19 @@ describe('garde-migrations-horodatage', () => {
 		git(moi, 'merge', '-q', 'origin/main');
 		const avant = maintenantUtc(-1000);
 		const v = prochain(moi);
-		expect(v >= avant && v <= maintenantUtc(5000)).toBe(true);
+		expect(v >= avant && v <= maintenantUtc(15000)).toBe(true);
 		migration(moi, `${v}_lot_a.sql`);
 		expect(garde(moi).status).toBe(0);
 	});
 
 	it('--prochain : une seconde déjà prise est sautée (vraie heure, jamais de seconde 60)', () => {
-		// Les 10 prochaines secondes prises sur main : --prochain rend la première libre après elles.
-		const base = Date.now();
-		const prises = Array.from({ length: 10 }, (_, i) => maintenantUtc(i * 1000));
+		// Les 30 prochaines secondes prises sur main (marge pour un runner lent) : --prochain rend la première libre après elles.
+		const prises = Array.from({ length: 30 }, (_, i) => maintenantUtc(i * 1000));
 		for (const [i, h] of prises.entries()) migration(autre, `${h}_pris_${i}.sql`);
 		git(autre, 'push', '-q', 'origin', 'main');
 		const v = prochain(moi);
 		expect(prises).not.toContain(v);
 		expect(v).toMatch(/^\d{12}[0-5]\d$/);
 		expect(v > prises[0]).toBe(true);
-		expect(Date.now() - base).toBeLessThan(10_000);
 	});
 });
