@@ -7,6 +7,7 @@ import { render } from 'vitest-browser-svelte';
 import Page from '../+page.svelte';
 import { caesarEncrypt } from '$lib/ciphers/caesar';
 import { PROVINCES } from '$lib/kingdom-tour/tour';
+import { CITIES, capitalOf } from '$lib/kingdom-tour/cities';
 
 // Constantes
 
@@ -50,6 +51,51 @@ describe('/royaume', () => {
 			expect(map.querySelector(`#province-${province.id} h3`)?.textContent).toBe(province.name);
 			expect(map.textContent).toContain(province.motto);
 		}
+	});
+
+	it('la carte du Royaume : chaque Province mène à sa fiche, chaque ville à sa page', async () => {
+		const screen = await renderTour();
+		const map = screen.container.querySelector('svg[data-testid="kingdom-map"]');
+		expect(map).not.toBeNull();
+		for (const province of PROVINCES) {
+			expect(map?.querySelector(`a[href="#province-${province.id}"]`), province.id).not.toBeNull();
+		}
+		for (const city of CITIES) {
+			expect(map?.querySelector(`a[href$="/royaume/${city.slug}"]`), city.slug).not.toBeNull();
+		}
+	});
+
+	it('la carte est un décor : ses liens ne sont pas au clavier, les fiches les portent', async () => {
+		const screen = await renderTour();
+		const map = screen.container.querySelector('svg[data-testid="kingdom-map"]');
+		expect(map?.getAttribute('aria-hidden')).toBe('true');
+		for (const link of map?.querySelectorAll('a') ?? []) {
+			expect(link.getAttribute('tabindex')).toBe('-1');
+		}
+		for (const province of PROVINCES) {
+			const capital = capitalOf(province.id);
+			const card = screen.container.querySelector(`#province-${province.id}`);
+			expect(
+				card?.querySelector(`a[href$="/royaume/${capital.slug}"]`),
+				province.id
+			).not.toBeNull();
+		}
+		// Sandomir n'a pas de fiche : son lien est hors de la carte
+		const sandomir = [...screen.container.querySelectorAll('a[href$="/royaume/sandomir"]')];
+		expect(sandomir.some((a) => !map?.contains(a))).toBe(true);
+	});
+
+	it('la Province lue est teintée sur la carte', async () => {
+		await page.viewport(1280, 900);
+		const screen = await renderTour(BASE_DATA, 1280);
+		screen.container.querySelector('#province-patatovie')?.scrollIntoView({ block: 'center' });
+		await expect
+			.poll(() =>
+				[...screen.container.querySelectorAll('[data-province-area].current')].map((el) =>
+					el.getAttribute('data-province-area')
+				)
+			)
+			.toEqual(['patatovie']);
 	});
 
 	it('chaque lien reste dans le site, et chaque ancre a sa cible', async () => {
