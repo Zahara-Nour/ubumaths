@@ -217,7 +217,10 @@ principe, chaque bloc ``figure passé au moteur de l'appli (`parseFigure` puis
    tout ou rien, `updated_at` préservé, rollback en commentaire) et son test
    `tests/integration/questions-cp-c-rangement-tags.test.ts` (copies des vrais identifiants, la
    migration rejouée depuis son fichier). Test **rouge sans la migration**, puis vert.
-4. `security-auditor` (sans finding bloquant), CI verte, merge, `pnpm db:migrate` depuis le dépôt
+   Nom du fichier : l'heure réelle, `pnpm migration:horodatage` (jamais « max + 1 », collision du
+   2026-11-01).
+4. `security-auditor` (sans finding bloquant), CI verte, `pnpm check:migrations --pr <n>`, merge,
+   `pnpm db:migrate` depuis le dépôt
    principal (les 4 conditions de `CLAUDE.md`), puis vérifier en prod : nœud, un tag, brouillon.
 
 ## 7. Corriger un modèle déjà en prod

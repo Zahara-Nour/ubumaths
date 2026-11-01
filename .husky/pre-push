@@ -18,6 +18,13 @@ fi
 # `--push` : seulement les fichiers des commits qui partent, jamais un non
 # suivi — même raison que le formatage ci-dessus (dépôt principal partagé ;
 # le brouillon `.ts` d'une autre session a bloqué tous les push le 2026-10-18).
+# Horodatages des migrations neuves contre origin/main relu à l'instant : la CI
+# d'une PR peut tourner sur un main périmé (2026-11-01, `20261101215000` pris deux fois).
+echo "pre-push : horodatages des migrations…"
+if ! pnpm check:migrations; then
+	exit 1
+fi
+
 echo "pre-push : lint rapide…"
 if ! pnpm lint:fast --push; then
 	exit 1

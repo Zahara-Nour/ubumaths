@@ -2,7 +2,7 @@
  * Chantier « questions-4 », lot 8 : nœud et tags de 6 modèles neufs (Supabase local requis)
  * ======================================================================================
  *
- * Migration `20261101215000_questions_4_lot8_rangement_tags` : les 6 brouillons du lot
+ * Migration `20261101223000_questions_4_lot8_rangement_tags` : les 6 brouillons du lot
  * « programmes de calcul et fonctions » créés le 2026-11-01 par scripts/create-questions.ts (sans nœud ni tag) vont sur
  * le nœud de leur point (la notion « Fonctions > Généralités sur les fonctions ») et reçoivent ce point. Phase 0 validée par David
  * (journal docs/wip/questions-4-progress.md § 39).
@@ -39,7 +39,7 @@ interface Etat {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261101215000_questions_4_lot8_rangement_tags.sql';
+const MIGRATION = 'supabase/migrations/20261101223000_questions_4_lot8_rangement_tags.sql';
 const LONGUEURS = 'Grandeurs et mesures > Longueurs';
 /** Le lot : identifiant créé en prod le 2026-11-01, niveaux, nœud et points attendus (« niveau§code »). */
 const LOT: { id: string; grades: string[]; noeud: string; points: string[] }[] = [
