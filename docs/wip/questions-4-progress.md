@@ -859,3 +859,8 @@ les élèves de 4e voient 6 modèles de plus.
    formule / Pairs et impairs 1, Calcul littéral / Raisonner / Démontrer 1 ; Calcul littéral / Equations / Mettre en
    équation **3** (après les 1-2 de 5e) ?
 3. 017 : exiger la forme puissance quand la consigne la demande (reco : oui, la valeur seule va au corrigé) ?
+
+**Décisions de David (2026-11-01, « je suis tes recos »)** : les 6 modèles du § 32.2 ; catégories Puissances / Calculer
+/ Puissance d'un produit 2, Puissances / Problèmes / Situations 1, Racines carrées / Apprivoiser / Encadrer 1, Calcul
+littéral / Produire une formule / Pairs et impairs 1, Calcul littéral / Raisonner / Démontrer 1, Calcul littéral /
+Equations / Mettre en équation 3 ; 017 : forme puissance exigée quand la consigne la demande.
