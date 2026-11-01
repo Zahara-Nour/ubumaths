@@ -379,7 +379,7 @@
 					{@const k = rankOfBox.get(i)}
 					<!-- Boîte à lire : ses valeurs ; à construire : les traits posés par l'élève -->
 					{@const shown = k === undefined ? box.values : values[k]}
-					{@const [min, q1, median, q3, max] = shown}
+					{@const [min, q1, , q3, max] = shown}
 					{@const active = k !== undefined && k === activeBox && showControls && !locked}
 					<g aria-hidden="true" style:stroke={color}>
 						{#if active}
