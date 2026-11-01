@@ -10,22 +10,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2132 (§ 13)._
+_Mis à jour le 2026-11-01, après la publication du lot 0-probabilités (§ 13)._
 
-- **État** : lots 0-suites → 0-géométrie dans l'espace **publiés** (161 modèles). Lot 0-probabilités (22 brouillons,
-  dernier thème) : 4 retouches (C1-C4), PR #2132 mergée, **validé par David** ; 1cfc575d sort du lot (seconde).
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/tspe-0-probabilites --publier
---mettre-a-jour` (attendu : 3 mis à jour, 19 identiques), puis `publier-lot` en simulation et `--publier` ; je relis
-  en base (22 `published`, C1-C4 présentes). Ensuite migration Q3 (tags + échange de niveaux D-D1, niveaux provisoires
-  à cause de l'index unique).
-- **En attente de David** : les deux commandes de publication.
+- **État** : **lot 0 fini** : les 8 thèmes de brouillons publiés (183 modèles), plus aucun brouillon `T_SPE` en prod.
+  Q-D1 : voie A, ordre de « Loi binomiale / Coefficients binomiaux » à échanger dans la migration Q3 (07ebdcbe 1,
+  4dcbae71 2, 970dab52 3, ef3c495c 4).
+- **Prochaine action** : migration Q3 (lot 1 du § 4) : tags et niveaux du § 5 Q3 mis à jour par les lots 0 (1cfc575d
+  retiré, reste en `2`), échange de niveaux D-D1 (niveaux provisoires à cause de l'index unique) ; question d'accès à
+  poser à David avant le SQL. Nouveau worktree depuis `origin/main`.
+- **En attente de David** : rien.
 - **Pièges en cours** : le **niveau est dans la clé** de `create-questions` : changer `level` dans un fichier = doublon
   créé ; index unique de niveau par catégorie sur les **publiés** seulement. `create-questions` et `publier-lot`, même
-  en simulation → David (avec `!`) ; simulation `publier-lot` AVANT tout ; worktree neuf : `pnpm exec svelte-kit sync`,
-  et `pnpm exec tsx --env-file=../ubumaths/.env …` ; l'aperçu mélange les options d'une case choix : recouper avec la
-  SOURCE ; `!=` dans une formule s'affiche ≠, `i` seul devient l'unité imaginaire ; en-tête de commit ≤ 100 caractères.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe` gardé jusqu'à la publication (les commandes y pointent),
-  puis retiré.
+  en simulation → David (avec `!`) ; worktree neuf : `pnpm exec svelte-kit sync`, et `pnpm exec tsx
+--env-file=../ubumaths/.env …` ; en-tête de commit ≤ 100 caractères.
+- **Worktree / branche** : aucun (retiré après #2132).
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -670,3 +668,8 @@ vide à la publication.
 **PR** : #2132 mergée le 2026-11-01 (CI verte).
 
 **Relecture** : David valide les 22 fiches en bloc (2026-11-01, « je valide tout le lot », C1-C4 comprises).
+
+**Publication** (2026-11-01, David) : `create-questions --publier --mettre-a-jour` (0 créé, 3 mis à jour : 30b597c3,
+4ff9d049, 91db0034 ; 19 identiques), relu en base (MCP) : C1-C4 présentes. `publier-lot` en simulation : 22 passent,
+puis `--publier` (David) : 22 / 22. Relu en base (MCP) : 22 / 22 `published` ; **plus aucun brouillon `T_SPE`** en
+prod : le lot 0 (Q1) est fini.
