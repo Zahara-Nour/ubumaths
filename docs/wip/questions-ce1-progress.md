@@ -5,22 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2083 (rangement du lot 6 joué en prod)._
+_Mis à jour le 2026-11-01, lot 6 publié._
 
-- **État** : lots 0 à 5 bis publiés. Lot 6 (calcul posé et heure, 7 modèles, § 13) : 7 brouillons en prod, rangés et
-  tagués (#2083, `db:migrate` fait, vérifié au MCP) ; page à cocher publiée
-  (https://claude.ai/artifact/NtdykbdR6MZfDfChmD2woM).
-- **Prochaine action** : relecture de David → compter les verdicts (`ArtifactData list verdicts`) → `publier-lot` en
-  simulation → `--publier` par David → statut relu au MCP. Ensuite lot 7 (données : 082, 106, 088, 089, 107, 081),
-  puis chantier `monnaie-centimes` (à part) et lot monnaie, puis lots 8 et 9 (§ 12).
-- **En attente de David** : relecture de la page à cocher (les 3 opérations posées se jouent dans l'aperçu admin).
+- **État** : lots 0 à 6 publiés (lot 6 : calcul posé et heure, 7 modèles, § 13, clos le 2026-11-01).
+- **Prochaine action** : lot 7 (données : 082, 106, 088, 089, 107, 081) — phase 0 à écrire (relevé MCP, tableau,
+  questions à David) ; puis chantier `monnaie-centimes` (à part) et lot monnaie, puis lots 8 et 9 (§ 12).
+- **En attente de David** : rien.
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
   posée dans Chrome : une case à la fois ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage
   de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule ; aucun lien
   de session dans une PR ; migration de données → ligne `Doc-inchangée:` dans un commit (garde du pre-push).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branche `docs/questions-ce1-lot6-relecture`, vide, sur `origin/main`). `!` de David :
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branche `docs/questions-ce1-lot6-relecture`, vide : en partir une neuve sur `origin/main` pour le lot 7). `!` de David :
   toujours préfixer `cd /Users/david/Coding/js/ubumaths &&` (un dossier courant supprimé fait échouer node en `uv_cwd`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
@@ -555,3 +552,5 @@ David ; un vrai ambre demanderait du code.
   récente déjà jouée, la nôtre seule appliquée) ; vérifié au MCP : 7/7 sur le nœud de leur point, un tag chacun,
   `updated_at` = `created_at`. Page à cocher publiée (https://claude.ai/artifact/NtdykbdR6MZfDfChmD2woM) ; alertes :
   les 3 opérations posées non dessinées (à jouer dans l'aperçu), homonyme CP `0f7381e6` écarté pour l'addition (juste).
+- 2026-11-01 : relecture 7/7 OK (verdicts comptés en base, aucun commentaire) ; `publier-lot` simulé (7 passent), puis
+  `--publier` par David : 7/7 publiés, vérifié au MCP (publiés, rangés, tagués). Lot 6 clos.
