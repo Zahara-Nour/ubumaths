@@ -24,7 +24,9 @@ _Mis à jour le 2026-11-01, lot 2 écrit (§ 15), PR #2160 ouverte, CI annulée.
 - **Pièges en cours** : un tag doit être sur le **nœud du modèle ou sa notion** (§ 14) ; le **niveau est dans la
   clé** de `create-questions`. `create-questions` et `publier-lot` → David (`!`) ; `db:migrate` depuis le dépôt
   principal ; en-tête de commit ≤ 100 caractères ; worktree neuf : `pnpm exec svelte-kit sync` avant
-  `question:specs` (sinon `$lib` introuvable).
+  `question:specs` (sinon `$lib` introuvable). **Migrations (règles du 2026-11-01, #2165)** : nom par
+  `pnpm migration:horodatage` (jamais « max + 1 » à la main) ; `pnpm check:migrations --pr <n>` avant le merge ;
+  CI rouge sans jobs → lire le 1er job (« Commit de version ? ») ; après #2165, `git merge origin/main` ici.
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe`, `feat/questions-tspe-lot2`.
 
 ## 1. Relevé (prod, 2026-10-29)
