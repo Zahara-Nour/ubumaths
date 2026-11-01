@@ -5,18 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2135._
+_Mis à jour le 2026-11-01, après #2141._
 
-- **État** : lots 0 à 7 publiés (lot 7 : données, 6 modèles, § 14, clos le 2026-11-01).
-- **Prochaine action** : lot 8 monnaie (054, 055, 056, 057, 086, § 15) écrit et mergé (#2135) ; brouillons en prod à créer par David (`create-questions --publier`), puis migration nœud + tag ; page à cocher et publication **après le `deploy:prod`** qui livre #2127 ; puis lots 9 et 10 (ex-8 et 9 du § 12).
-- **En attente de David** : rien (phase 0 validée).
+- **État** : lots 0 à 7 publiés ; lot 8 (monnaie, § 15) : fichiers #2135 et migration #2141 mergés, 6 brouillons en prod.
+- **Prochaine action** : `db:migrate` de `20261101215100` dès que `20261101213600` (questions-2de, plus ancienne) est jouée
+  en prod, puis vérifier au MCP ; page à cocher et publication **après le `deploy:prod`** qui livre #2127 (centimes) ;
+  puis lots 9 et 10 (ex-8 et 9 du § 12).
+- **En attente de David** : `db:migrate` (après la 2de) ; `deploy:prod` pour les centimes.
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
   posée dans Chrome : une case à la fois ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage
   de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule ; aucun lien
   de session dans une PR ; migration de données → ligne `Doc-inchangée:` dans un commit (garde du pre-push).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branche `chore/questions-ce1-lot8-monnaie`). `!` de David :
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (retiré ; le prochain lot en repart un neuf sur `origin/main`). `!` de David :
   toujours préfixer `cd /Users/david/Coding/js/ubumaths &&` (un dossier courant supprimé fait échouer node en `uv_cwd`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
@@ -672,3 +674,6 @@ Réponse de David (« tes recos ? » puis « go », 2026-11-01) : les cinq recom
   `4cd0d93f`, `3c9711f9`, `19d80fc9`), catégories attendues (Pièces et billets 8 à 11, Rendre la monnaie 3, 4), sans nœud
   ni tag, `updated_at` intact. Migration `20261101215100_questions_ce1_lot8_rangement_tags` (max des worktrees + 1 min)
   et test : rouge sans (5 échecs sur 9), vert 9/9.
+- 2026-11-01 : `security-auditor` sans finding (SQL identique au lot 7) ; #2141 mergée (CI verte 16/16). `db:migrate` NON
+  lancé : `20261101213600_questions_2de_fonctions_rangement_tags` (#2134), plus ancienne, pas jouée en prod ; `db push`
+  la jouerait aussi (`--include-all`). Attendre qu'elle le soit, puis `db:migrate`.
