@@ -10,16 +10,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2121 (lot 0-géométrie dans l'espace, § 12)._
+_Mis à jour le 2026-11-01, après #2121 et la relecture du lot 0-géométrie dans l'espace (§ 12)._
 
 - **État** : lots 0-suites, 0-limites et fonctions, 0-intégration, 0-primitives, 0-trigo, 0-dénombrement
   **publiés** (133 modèles). Lot 0-géométrie dans l'espace : 28 brouillons vérifiés, 6 retouches (C1-C6) dans les
   fichiers, page à cocher publiée, PR des fichiers #2121 mergée.
-- **Prochaine action** : relecture de David, puis David lance depuis le dépôt principal
+- **Prochaine action** : lot validé par David (C6 comprise) ; David lance depuis le dépôt principal
   `create-questions --publier --mettre-a-jour` et `publier-lot` (simulation, puis `--publier`) ; je relis en base ; ensuite lot 0-probabilités. Plus tard : migration Q3 (tags +
   échange de niveaux D-D1 : 07ebdcbe 1, 4dcbae71 2, 970dab52 3, ef3c495c 4).
-- **En attente de David** : relecture des 28 fiches (page du § 12), dont C6 (34b03dee v1 réécrite sans la formule de
-  distance point-plan).
+- **En attente de David** : les trois commandes de publication du lot (§ 12).
 - **Pièges en cours** : le **niveau est dans la clé** de `create-questions` : changer `level` dans un fichier = doublon
   créé ; index unique de niveau par catégorie sur les **publiés** seulement. `create-questions` et `publier-lot`, même
   en simulation → David ; simulation `publier-lot` AVANT tout ; worktree neuf : `pnpm exec svelte-kit sync`, et
@@ -615,3 +614,5 @@ modèles des trois domaines).
 vide à la publication. Les 6 retouches ne sont pas encore en base : la page montre déjà les fichiers corrigés.
 
 **PR** : #2121 mergée le 2026-11-01 (CI verte).
+
+**Relecture** : David valide les 28 fiches en bloc (2026-11-01, « je valide le lot »), C6 comprise.
