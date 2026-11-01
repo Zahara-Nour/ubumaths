@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après la publication du lot 3c._
+_Mis à jour le 2026-11-01, phase 0 du lot 4 écrite._
 
-- **État** : lot 3 (fractions) FINI — 3a, 3b, 3c publiés en prod (3c : 4/4 « ok » sur la page à cocher, 4 `published` relus au MCP).
-- **Prochaine action** : phase 0 du **lot 4 — décimaux** (ordre validé au § 4 bis : 4 décimaux → 5 grandeurs → 6 problèmes → 7 données → 8 géométrie dessinée → probabilités, proportionnalité → outils neufs) ; relever les points « décimaux » du § 3 et les écrire en tableau à valider.
-- **En attente de David** : rien.
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main`, des worktrees ET des branches distantes + 1 min, **revérifié juste avant le merge** (#2017, #2093) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (`$lib`) ; specs de coloriage ≤ 34 rangs (test `answer-complexity-corpus`) ; port 5177 pris par questions-4.
-- **Worktree / branche** : aucun (retiré après #2093).
+- **État** : lot 3 (fractions) FINI et publié ; **phase 0 du lot 4 — décimaux** écrite au § 12 (8 modèles : 031, 156, 157, 032, 033, 158, 159, 160).
+- **Prochaine action** : réponses de David aux 5 questions du § 12, puis worktree `ubumaths-wt-questions-cm1`, script `docs/wip/questions/lot-cm1-4.py` → `scripts/questions/cm1-4/`.
+- **En attente de David** : les 5 questions du § 12 (virgule exigée en 031, 156 colorier seul, droites CM1 propres, 160 toute réponse entre, lot 4b « calcul posé »).
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main`, des worktrees ET des branches distantes + 1 min, **revérifié juste avant le merge** (#2017, #2093) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (`$lib`) ; specs de coloriage ≤ 34 rangs (test `answer-complexity-corpus`, 156 V2-V3) ; niveaux Décimaux / Apprivoiser : la 6e attend `6-droite-ordre` (Repérage 1-2, Comparer 4) ; port 5177 pris par questions-4.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -620,3 +620,51 @@ sans outil neuf ; « 1 + 3/4 » refusé (`requiredForm: 'fraction'`).
 - Page à cocher : 4 verdicts « ok », sans commentaire (comptés dans `verdicts`). Simulation
   `publier-lot --dir scripts/questions/cm1-3c` : 4 brouillons passent ; `--publier` lancé par David ;
   4 `published` relus au MCP (`092b310c`, `14a2d26f`, `60ce79bb`, `fe91cbd9`). Lot 3 fini.
+
+## 12. Lot 4 — décimaux : phase 0 (à valider)
+
+Relevé MCP du 2026-11-01 : les 8 points ci-dessous ont 0 modèle ; tous sous « Nombres et calculs >
+Décimaux : numération » (sous-notion de chaque ligne). Points voisins déjà couverts : 030 (7), 154,
+155 (3), 034, 132 (2). Bornes `cycle3.json`, CM1 : **au plus deux décimales** partout ; 032 :
+dixièmes, ou zooms pour les centièmes (2,8 ; 339,16) ; 158 : 3,5 s'arrondit à 4 ; 159 : jusqu'à
+**trois** nombres, l'un éventuellement en fraction décimale (2,12 ; 209/100 ; 2,6) ; 160 : 1,9 < … < 2,
+2,9 < … < 3.
+
+Outils : tous en prod (case, `choix, `ranger, ``line avec `placer:`, ``partage avec
+`colorier:` et `unites:`). Patrons : `6-droite-ordre` (repérer, placer, ranger des décimaux, 6e),
+lots 3b et 3c.
+
+Niveaux : ajoutés après ceux qui existent ou qui sont écrits (la 6e attend la création de
+`6-droite-ordre` : Repérage 1-2, Comparer 4 ; aucun autre lot en cours n'écrit dans Décimaux /
+Apprivoiser).
+
+| #   | Point   | Sous-notion                    | Modèle                                 | Variations, plages                                                                                                                                                                                                                                                                                                                                                     | Catégorie, niveau                     |
+| --- | ------- | ------------------------------ | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| 1   | CM1-031 | écritures                      | Lire et écrire un nombre décimal       | V1 lettres → case : « trois unités et vingt-cinq centièmes », « quatre et dix-sept centièmes », « quatre unités, un dixième et sept centièmes » → 3,25 ; V2 3,25 → ```choix (trois unités et vingt-cinq centièmes ; trois unités et vingt-cinq dixièmes ; trois-cent-vingt-cinq ; vingt-cinq unités et trois centièmes) ; partie entière 1 à 99, une ou deux décimales | Décimaux / Apprivoiser / Ecriture, 12 |
+| 2   | CM1-156 | écritures                      | Colorier un nombre décimal             | ```partage `colorier:` ; V1 bande de 10, 0,n (n 1 à 9) ; V2 grille 10×10, 0,nn (11 à 99, non multiple de 10) ; V3 > 1 : `unites: 2`, deux grilles, 1,nn (1,37 du BO). Juge : le nombre de parts coloriées                                                                                                                                                              | Décimaux / Apprivoiser / Partage, 1   |
+| 3   | CM1-157 | droite graduée                 | Repérer un point par un nombre décimal | V1 ```line de n à n + 1 en dixièmes (n 0 à 99, étiquettes n et n + 1), A → n,k ; V2 morceau agrandi de a,b à a,(b+1) en centièmes (a 1 à 999), A → a,bk                                                                                                                                                                                                                | Décimaux / Apprivoiser / Repérage, 3  |
+| 4   | CM1-032 | droite graduée                 | Placer un nombre décimal               | `placer:` sur les mêmes droites : V1 dixièmes (2,8) ; V2 morceau agrandi en centièmes (339,16)                                                                                                                                                                                                                                                                         | Décimaux / Apprivoiser / Repérage, 4  |
+| 5   | CM1-033 | arrondis et ordres de grandeur | Donner la partie entière               | case ; V1 une décimale (3,7), V2 deux décimales (135,78) ; partie entière 0 à 999 ; erreur typique en spec : l'arrondi (4 pour 3,7)                                                                                                                                                                                                                                    | Décimaux / Apprivoiser / Arrondir, 4  |
+| 6   | CM1-158 | arrondis et ordres de grandeur | Arrondir à l'unité                     | case ; V1 une décimale (3,2 → 3 ; 3,7 → 4 ; 3,5 → 4) ; V2 deux décimales (5,78 → 6 ; 5,49 → 5) ; erreurs typiques en spec : la partie entière, l'arrondi au dixième                                                                                                                                                                                                    | Décimaux / Apprivoiser / Arrondir, 5  |
+| 7   | CM1-159 | ordre                          | Ranger des nombres décimaux            | ```ranger de 3 étiquettes, même partie entière, nombres de décimales différents (2,12 ; 2,6 ; 2,09 : piège « plus de chiffres, plus grand ») ; V1 croissant, V2 décroissant, V3 une étiquette en fraction décimale (209/100)                                                                                                                                           | Décimaux / Apprivoiser / Comparer, 5  |
+| 8   | CM1-160 | encadrement                    | Intercaler un nombre décimal           | 3,4 < ? < 3,5 (une case) ; règle `range` stricte (comme `2e982062`, 6e) ; V1 deux dixièmes consécutifs (corrigé en centièmes : 3,45) ; V2 un dixième et l'entier suivant (1,9 < ? < 2) ; partie entière 0 à 20                                                                                                                                                         | Décimaux / Apprivoiser / Encadrer, 6  |
+
+Droites : 10 intervalles au plus (règle des lots 3a, 3b), d'où le morceau agrandi pour les centièmes.
+
+Questions :
+
+1. **031 V1 : 325/100 ou « 3 + 25/100 »** dans la case : refusés (« Écris-le avec une virgule ») ou
+   acceptés ? Reco : refusés, l'écriture à virgule est le point. Il n'existe pas de forme exigée
+   « décimal » toute faite : je l'écris par un motif, vérifié à l'écriture, et je le signale si le
+   motif ne suffit pas.
+2. **156 : un seul modèle, « colorier »** (représenter), sans « quel nombre la figure montre-t-elle ? »
+   (aucun point du CM1 ne le demande, le 150 le fait en fraction) ? Reco : oui.
+3. **Droites (157, 032) : modèles CM1 propres** (10 intervalles, bornes CM1) plutôt que d'ajouter le
+   CM1 aux modèles 6e de `6-droite-ordre` (15 intervalles, pas encore créés en prod) ? Reco : propres.
+4. **160 : toute réponse strictement entre les bornes est juste**, 3,456 compris (trois décimales,
+   au-delà des bornes du CM1) ? Reco : oui, la règle `range` existante, comme au 3b.
+5. **Calcul posé des décimaux** (165, 052), avec 050, 051, 053 (entiers, division euclidienne), tous
+   au bloc ```operation : ils ne sont dans aucun lot de l'ordre du § 4 bis. Reco : un **lot 4b
+   « calcul posé »** juste après celui-ci.
+
+**Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
