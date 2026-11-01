@@ -820,9 +820,9 @@ CE1 ; 3. 050 et 165 rangés sous « Décimaux : calculs › addition » et « �
   (addition), `613817ea-58af-4c94-b82a-a2dba19e687a` (soustraction, compensation), `1ed5202f-d031-4964-8f4b-a8dc0ade21c5`
   (soustraction, cassage), `e8086f21-13e4-4adf-8691-347c65f88258` (multiplication d'entiers),
   `c3246792-8dbf-4afb-8ad5-33c6f37feeb0` (décimal × entier), `4b666c28-0357-41b6-ae08-daae13ac0642` (division).
-- Migration `20261101223100_questions_cm1_lot4b_rangement_tags` et son test, générés du gabarit du lot 4
+- Migration `20261101224100_questions_cm1_lot4b_rangement_tags` et son test, générés du gabarit du lot 4
   (remplacements vérifiés au `diff`). **Seul écart de logique** : le point est cherché sur le nœud du
   modèle OU sur sa notion (050 et 165 sont posés sur la notion « Décimaux : calculs », leurs modèles sous
   « addition » / « soustraction »), comme la règle des tags l'admet ; test ajouté : un point posé ailleurs
-  fait échouer la migration. Horodatage : max `20261101223000` (4e, lot 8) + 1 min.
+  fait échouer la migration. Horodatage : d’abord `20261101223100`, pris aussi par `questions_ce2_lot6a` (#2158, plus ancienne) → renuméroté `20261101224100` (max des PR ouvertes `20261101224000`, 5e lot 7, + 1 min).
 - Test d'intégration : rouge sans le corps de la migration (6 échecs), 10/10 vert avec.
