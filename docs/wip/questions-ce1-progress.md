@@ -13,8 +13,7 @@ _Mis à jour le 2026-11-01, migration du lot 6 écrite._
 - **Prochaine action** : `security-auditor`, CI verte → merge → `db:migrate` (4 conditions) → vérif MCP → page à cocher
   → `publier-lot`. Ensuite lot 7 (données : 082, 106, 088, 089, 107, 081), puis chantier `monnaie-centimes` (à part)
   et lot monnaie, puis lots 8 et 9 (§ 12).
-- **En attente de David** : confirmer que 2 h 15 l'après-midi est **faux avec message** (pas d'ambre possible sans code,
-  § 13).
+- **En attente de David** : rien.
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
@@ -549,3 +548,6 @@ David ; un vrai ambre demanderait du code.
   `92caa903`, `e3d11972`, `d478935f`, `24a86a39`, `739d58e3`), sans nœud ni tag, `updated_at` intact.
 - 2026-11-01 : migration `20261101141600_questions_ce1_lot6_rangement_tags` (max des worktrees + 1 min) et test :
   rouge sans (5 échecs sur 9), vert 9/9.
+- 2026-11-01 : David valide « 2 h 15 l'après-midi = **faux avec message** » (pas d'ambre : toucherait au juge commun,
+  chantier à part si un jour on veut l'ambre pour les erreurs typiques). Remarque non bloquante de `security-auditor`
+  (le rollback retirerait un même tag posé à la main entre-temps) acceptée, comme au lot 5 bis.
