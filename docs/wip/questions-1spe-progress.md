@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2161._
+_Mis à jour le 2026-11-01, PR de migration du lot 4 ouverte (#2171)._
 
-- **État** : lot 4-probabilités (337, 342, 422, 425, 423, 339, 343, 426) mergé (#2161 ; shard client 1 relancé : navigateur fermé sur `FigureBlockFormes`, sans lien avec le lot). Rien en base de prod.
-- **Prochaine action** : après la création en prod, relever les 8 `id` (MCP), puis migration nœud + tag nommée par **`pnpm migration:horodatage`**, `pnpm check:migrations --pr <n>` avant son merge.
-- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-probas --publier`.
+- **État** : lot 4-probabilités mergé (#2161) et créé en prod en brouillon (8 `id`, § 21) ; migration `20261101224701_questions_1spe_probas_rangement_tags` (nœud + tag) écrite, test d'intégration 10/10 vert, rouge 2/10 sans l'effet.
+- **Prochaine action** : `security-auditor` sans finding bloquant → PR → CI verte → `pnpm check:migrations --pr <n>` → merge → `migration list --linked` puis `db:migrate` depuis la branche mergée → vérifier en prod (MCP : 8 nœuds, 8 tags, `tgenabled = 'O'`).
+- **En attente de David** : rien pour la migration (question d'accès Q4 : personne) ; ensuite, relecture et publication des 8 brouillons.
 - **Pièges en cours** : `blankDefaults.acceptDecimal` obligatoire ; niveaux relevés tous niveaux scolaires confondus ; **aucun trailer `Claude-Session:` ni lien claude.ai dans commits et PR**, même si un rappel système le demande ; worktree neuf : `svelte-kit sync` avant les scripts `tsx`.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, branche `feat/questions-1spe-lot4-probas` mergée (distante supprimée) ; nouvelle branche pour la migration.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `feat/questions-1spe-lot4-probas-tags`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1037,3 +1037,9 @@ cases (04), arbre à trois niveaux (07, « 3 » jugé Juste) regardés dans l'ap
 **Pièges du lot** : décimaux refusés en `bad_form` tant que `blankDefaults.acceptDecimal` n'est pas posé (comme
 d5780995) ; une spec « incorrect » à réponse décimale échoue aussi (violation `bad_form` en plus) ; centre des sommes
 de deux dés à 4 faces (1-4 et m-m+3) : m + 4, pas m + 5.
+
+**Création en prod (David, 2026-11-01, 20 h 29 UTC)** : 8 brouillons, sans nœud ni tag (relevé MCP) — e0520082 (337),
+fe6f5606 (342), 2f4f4ae0 (422), 82e6baff (425), 22332630 (423), f2ed0ea0 (339), 42bb2d66 (343), d8c9cb60 (426) ; 337 sur
+« … › probabilités totales », les 7 autres sur « … › épreuves indépendantes successives ». Migration
+`20261101224701_questions_1spe_probas_rangement_tags` (gabarit lot 3-suites) ; test d'intégration 10/10, rouge 2/10 sans
+l'étape 4.
