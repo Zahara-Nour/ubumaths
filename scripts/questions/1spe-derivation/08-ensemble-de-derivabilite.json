@@ -1,0 +1,150 @@
+{
+	"title": "Ensemble de dérivabilité",
+	"description": "Ensemble sur lequel une fonction de référence est dérivable (1/x, √x, x³, 1/x²), case choix",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "Fonctions dérivées",
+	"level": 6,
+	"delay": 30,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Sur quel ensemble la fonction $f$ définie par $f(x)=\\dfrac{1}{x}$ est-elle dérivable ?\n\n```choix\n- $]-\\infty\\,;0[\\,\\cup\\,]0\\,;+\\infty[$\n- $\\mathbb{R}$\n- $]0\\,;+\\infty[$\n- $[0\\,;+\\infty[$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La fonction inverse n'est pas définie en $0$ ; elle est dérivable sur chacun des intervalles $]-\\infty\\,;0[$ et $]0\\,;+\\infty[$, de dérivée $-\\dfrac{1}{x^2}$.",
+					"Conclusion : $f$ est dérivable sur $]-\\infty\\,;0[\\,\\cup\\,]0\\,;+\\infty[$."
+				]
+			}
+		},
+		{
+			"statement": "Sur quel ensemble la fonction $f$ définie par $f(x)=\\sqrt{x}$ est-elle dérivable ?\n\n```choix\n- $]0\\,;+\\infty[$\n- $\\mathbb{R}$\n- $[0\\,;+\\infty[$\n- $]-\\infty\\,;0[\\,\\cup\\,]0\\,;+\\infty[$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La racine carrée est définie sur $[0\\,;+\\infty[$, mais pas dérivable en $0$ : sa dérivée $\\dfrac{1}{2\\sqrt{x}}$ n'existe pas en $0$.",
+					"Conclusion : $f$ est dérivable sur $]0\\,;+\\infty[$."
+				]
+			}
+		},
+		{
+			"statement": "Sur quel ensemble la fonction $f$ définie par $f(x)=x^3$ est-elle dérivable ?\n\n```choix\n- $\\mathbb{R}$\n- $]0\\,;+\\infty[$\n- $[0\\,;+\\infty[$\n- $]-\\infty\\,;0[\\,\\cup\\,]0\\,;+\\infty[$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une fonction polynôme est dérivable sur $\\mathbb{R}$ : ici $f'(x)=3x^2$.",
+					"Conclusion : $f$ est dérivable sur $\\mathbb{R}$."
+				]
+			}
+		},
+		{
+			"statement": "Sur quel ensemble la fonction $f$ définie par $f(x)=\\dfrac{1}{x^2}$ est-elle dérivable ?\n\n```choix\n- $]-\\infty\\,;0[\\,\\cup\\,]0\\,;+\\infty[$\n- $\\mathbb{R}$\n- $]0\\,;+\\infty[$\n- $[0\\,;+\\infty[$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(x)=x^{-2}$ n'est pas définie en $0$ ; elle est dérivable sur $]-\\infty\\,;0[$ et sur $]0\\,;+\\infty[$, de dérivée $-\\dfrac{2}{x^3}$.",
+					"Conclusion : $f$ est dérivable sur $]-\\infty\\,;0[\\,\\cup\\,]0\\,;+\\infty[$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Inverse : ℝ*",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ℝ",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Racine : ]0 ; +∞[",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : [0 ; +∞[",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Cube : ℝ",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ]0 ; +∞[",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/x² : ℝ*",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ]0 ; +∞[",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

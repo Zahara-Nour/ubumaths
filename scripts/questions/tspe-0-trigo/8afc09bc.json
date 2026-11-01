@@ -1,0 +1,68 @@
+{
+	"id": "8afc09bc-8271-4e40-96a5-78351c893ae9",
+	"title": "Période de la fonction sinus",
+	"description": "La plus petite période strictement positive de sin : 2π",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Fonctions cosinus et sinus",
+	"level": 5,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Complète : pour tout réel $x$, $\\sin(x+\\ldots)=\\sin x$, et c'est la plus petite valeur strictement positive qui convient.\n\n```choix\nmelanger: non\n- $2\\pi$\n- $\\pi$\n- $\\dfrac{\\pi}{2}$\n- $1$\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"La fonction sinus est périodique de période $2\\pi$ : $\\sin(x+2\\pi)=\\sin x$.",
+					"Attention : $\\sin(x+\\pi)=-\\sin x$, ce n'est pas $\\sin x$.",
+					"Réponse : $\\textcolor{{{color:primary.0}}}{2\\pi }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "variation 0 : « 2π » accepté",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 0 : « π » refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 0 : « π/2 » refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 0 : « 1 » refusé",
+			"variationIndex": 0
+		}
+	]
+}

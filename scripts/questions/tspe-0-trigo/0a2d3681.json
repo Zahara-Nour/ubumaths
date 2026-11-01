@@ -1,0 +1,276 @@
+{
+	"id": "0a2d3681-eb19-43db-89e9-762c406d9db4",
+	"title": "Dériver une fonction construite avec cos et sin",
+	"description": "a sin x + b cos x, ax + b cos x, ax sin x, x² cos x (pièges : cos′ = sin, sin′ = −cos, produit des dérivées)",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Dérivées et variations",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"form": "warn"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}\\cos x{{eval:-b;+}}\\sin x"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{a}}\\sin x{{b;+}}\\cos x$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "2..6;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\sin'=\\cos$ et $\\cos'=-\\sin$.",
+					"$f'(x)={{a}}\\cos x{{b;+}}\\times(-\\sin x)=\\textcolor{{{color:primary.0}}}{{{a}}\\cos x{{eval:-b;+}}\\sin x}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}{{eval:-b;+}}\\sin x"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{a}}x{{b;+}}\\cos x$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "2..6;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(\\cos x)'=-\\sin x$.",
+					"$f'(x)=\\textcolor{{{color:primary.0}}}{{{a}}{{eval:-b;+}}\\sin x}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}\\sin x+{{a}}x\\cos x"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{a}}x\\sin x$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Produit $uv$ avec $u(x)={{a}}x$, $u'(x)={{a}}$, $v(x)=\\sin x$, $v'(x)=\\cos x$.",
+					"$f'(x)=u'v+uv'=\\textcolor{{{color:primary.0}}}{{{a}}\\sin x+{{a}}x\\cos x}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "2x\\cos x-x^{2}\\sin x"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x^{2}\\cos x$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"Produit $uv$ avec $u(x)=x^{2}$, $u'(x)=2x$, $v(x)=\\cos x$, $v'(x)=-\\sin x$.",
+					"$f'(x)=\\textcolor{{{color:primary.0}}}{2x\\cos x-x^{2}\\sin x}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["3\\cos x+4\\sin x"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-4"
+			},
+			"description": "v0 3sin x − 4cos x → 3cos x + 4sin x",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["4\\sin x+3\\cos x"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-4"
+			},
+			"description": "v0 ordre des termes échangé → juste",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3\\cos\\left(x\\right)+4\\sin\\left(x\\right)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-4"
+			},
+			"description": "v0 avec parenthèses MathLive → juste",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3\\cos x-4\\sin x"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-4"
+			},
+			"description": "v0 cos′ = sin (signe) → faux",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-3\\cos x+4\\sin x"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-4"
+			},
+			"description": "v0 sin′ = −cos → faux",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3\\cos x-2\\sin x"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"description": "v0 3sin x + 2cos x → 3cos x − 2sin x",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5-3\\sin x"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"b": "3"
+			},
+			"description": "v1 5x + 3cos x → 5 − 3sin x",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["5+3\\sin x"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"b": "3"
+			},
+			"description": "v1 signe de cos′ oublié → faux",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["5+2\\sin x"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"b": "-2"
+			},
+			"description": "v1 5x − 2cos x → 5 + 2sin x",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3\\sin x+3x\\cos x"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "v2 3x sin x → 3sin x + 3x cos x",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3(\\sin x+x\\cos x)"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "v2 factorisé → forme perfectible (forme warn)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3\\cos x"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3"
+			},
+			"description": "v2 produit des dérivées → faux",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2x\\cos x-x^2\\sin x"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v3 x²cos x → 2x cos x − x² sin x",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2x\\cos x+x^2\\sin x"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "v3 signe faux → faux",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["-2x\\sin x"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "v3 produit des dérivées → faux",
+			"variationIndex": 3
+		}
+	]
+}

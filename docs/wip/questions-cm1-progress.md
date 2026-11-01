@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2070 (brouillons du 3c en prod)._
+_Mis à jour le 2026-11-01, après la publication du lot 3c._
 
-- **État** : lot 3c (4 partages) en brouillon en prod (`--publier` du 2026-11-01) ; migration de rangement `20261101141600_questions_cm1_lot3c_rangement_tags` écrite et prouvée (§ 11 quater), PR en cours.
-- **Prochaine action** : CI verte → merge ; David lance `pnpm db:migrate` depuis le dépôt principal ; relevé MCP (nœud + point, `updated_at` inchangé) ; page à cocher ; publication seulement après le `deploy:prod` du bloc ```partage.
-- **En attente de David** : le `db:migrate` après le merge.
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main` ET des worktrees + 1 min (#2017) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (`$lib`) ; specs de coloriage ≤ 34 rangs (test `answer-complexity-corpus`) ; port 5177 pris par questions-4.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `chore/questions-cm1-lot3c-rangement`.
+- **État** : lot 3 (fractions) FINI — 3a, 3b, 3c publiés en prod (3c : 4/4 « ok » sur la page à cocher, 4 `published` relus au MCP).
+- **Prochaine action** : phase 0 du **lot 4 — décimaux** (ordre validé au § 4 bis : 4 décimaux → 5 grandeurs → 6 problèmes → 7 données → 8 géométrie dessinée → probabilités, proportionnalité → outils neufs) ; relever les points « décimaux » du § 3 et les écrire en tableau à valider.
+- **En attente de David** : rien.
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main`, des worktrees ET des branches distantes + 1 min, **revérifié juste avant le merge** (#2017, #2093) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (`$lib`) ; specs de coloriage ≤ 34 rangs (test `answer-complexity-corpus`) ; port 5177 pris par questions-4.
+- **Worktree / branche** : aucun (retiré après #2093).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -589,11 +589,34 @@ sans outil neuf ; « 1 + 3/4 » refusé (`requiredForm: 'fraction'`).
 - `--publier` lancé par David : 4 brouillons créés — `092b310c` (CM1-145), `14a2d26f` (CM1-144),
   `60ce79bb` (CM1-150), `fe91cbd9` (CM1-149). Relevé MCP : `draft`, [CM1], sans nœud ni point ;
   les 4 points sur le nœud de CM1-023 (« définition »), sans aucun modèle.
-- Migration `20261101141600_questions_cm1_lot3c_rangement_tags` et son test générés du gabarit du
-  lot 3b (script en scratchpad, remplacements comptés) ; horodatage = max (`20261101141500`,
-  cm2 lot 4) + 1 min.
+- Migration (d'abord `20261101141600_…`) et son test générés du gabarit du lot 3b (script en
+  scratchpad, remplacements comptés) ; horodatage = max (`20261101141500`, cm2 lot 4) + 1 min.
 - Test d'intégration : rouge sans le corps de la migration (5 échecs), 9/9 vert avec.
 - `security-auditor` : aucun finding bloquant (diff au gabarit 3b : seuls ids, codes, sous-notions, comptes
   et commentaires changent) ; l'en-tête du test qui disait « 8 modèles » est corrigé.
 - #2082, CI 1 : garde de doc rouge (`Doc-inchangée:` mise dans la PR au lieu d'un commit, corrigé) ;
   tests navigateur en échec sur `wrapDynamicImport` (comme au 3b, sans lien), relancés.
+- #2082 mergée (CI verte au 2e passage). **Collision d'horodatage vue juste après** :
+  `20261101141600` pris aussi par `questions_ce1_lot6_rangement_tags`, mergée et déjà jouée en
+  prod pendant que #2082 tournait → `db:migrate` aurait tenu la mienne pour jouée. Renommée
+  `20261101160400` (max de `main`, des worktrees et des branches distantes : `160300`, ce2 lot 5,
+  - 1 min) dans une PR de correction, AVANT tout `db:migrate`. Leçon : refaire le relevé des
+    horodatages juste avant de merger, pas seulement à l'écriture.
+- #2093 mergée (CI verte) : plus aucun doublon de version sur `main`.
+
+### 11 quinquies. Lot 3c — rangement vérifié, page à cocher (2026-11-01)
+
+- `db:migrate` lancé par David (joue aussi `20261101160100`, 2de droites). MCP : les 4 modèles sur
+  « Fractions : sens et écritures > définition », un point CM1 chacun (145, 144, 150, 149),
+  toujours brouillons, `updated_at` inchangé (création, 11:25).
+- Page : https://claude.ai/artifact/DzyRsxgghCRtKQBQcgNZ5w (4 alertes attendues : ```partage non
+  dessiné, à jouer dans l'aperçu) ; `verdicts` vide à la publication.
+- Sessions prévenues : questions-2de (collision levée, sa migration jouée) ; questions-ce2 (sa
+  `20261101160300`, pas mergée, passera sous `160400` : à renuméroter).
+
+### 11 sexies. Lot 3c — publication (2026-11-01)
+
+- Le bloc ```partage était déjà en prod (v0.58.0, 2026-10-30) : relecture faite dans l'aperçu de la prod.
+- Page à cocher : 4 verdicts « ok », sans commentaire (comptés dans `verdicts`). Simulation
+  `publier-lot --dir scripts/questions/cm1-3c` : 4 brouillons passent ; `--publier` lancé par David ;
+  4 `published` relus au MCP (`092b310c`, `14a2d26f`, `60ce79bb`, `fe91cbd9`). Lot 3 fini.
