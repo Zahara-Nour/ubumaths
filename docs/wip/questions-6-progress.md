@@ -5,15 +5,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 7 publié._
+_Mis à jour le 2026-11-01, phase 0 du lot 8 proposée._
 
-- **État** : lots 1 à 7 publiés (lot 7 « Droite graduée et ordre » : 8adac6d1, 0ce253ea, 5f9ba34d, 92db5823, relus 4/4
-  OK et publiés le 2026-11-01) ; 06-07 en ```ranger en prod (#2078) ; v0.59.0 en prod.
-- **Prochaine action** : relever les points de 6e encore sans modèle (skill `couvrir-niveau`) et proposer la phase 0
-  du lot suivant.
-- **En attente de David** : rien.
+- **État** : lots 1 à 7 publiés ; relevé : 42 points sans modèle publié (§ 19) ; v0.59.0 en prod.
+- **Prochaine action** : lot 8 « Assemblages de cubes » (154, 155, 181, 208, 209), phase 0 au § 20.
+- **En attente de David** : les 3 questions du § 20 (lot 8 ?, fuite des hauteurs en évaluation, validation).
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs --file`. Jamais de variable
-  `e`. `Doc-inchangée:` va dans un message de COMMIT. PR en conflit = pas de CI : vérifier `mergeable`.
+  `e`. `Doc-inchangée:` va dans un message de COMMIT. PR en conflit = pas de CI : vérifier `mergeable`. Horodatage
+  de migration = dernière de `main` + 1 min.
 - **Worktree / branche** : aucun (retirés après #2114 et #2112).
 
 ## 1. Relevé (prod, 2026-10-26)
@@ -1155,3 +1154,60 @@ visibles de l'admin et de l'auteur seuls jusqu'à leur publication ; la migratio
 - Relecture de David : 4/4 « OK », aucun commentaire (base de la page lue, 4 verdicts comptés). `publier-lot` en
   simulation : 4 brouillons passent ; David a lancé `--publier` : « 4/4 modèles du lot publiés ». MCP : `published`,
   niveaux 1, 2, 7, 4, nœuds et tags inchangés. **Lot 7 clos.**
+
+## 19. Relevé après le lot 7 (2026-11-01)
+
+Relevé MCP prod : **42 points de 6e sans modèle publié** (46 au § 14, moins 107, 108, 110, 128). Classement du § 14
+inchangé. Lots restants : **8** assemblages de cubes (154, 155, 181, 208, 209) · **9** tableaux et programmes (184,
+185, 192, 143, 194-196) · **10, 11** géométrie dessinée · restent C (169, 142), figure à compléter (170, 172, 173,
+180, 207) et D.
+
+## 20. Lot 8 « Assemblages de cubes » : phase 0 (proposée le 2026-11-01, à valider)
+
+Outil : ` ```cubes ` (chantier `solides`, en prod depuis v0.59.0) — affichage (`vue: perspective | dessus | face |
+droite | gauche`), gestes `dessiner:` et `retrouver:`, perspective comme option d'un choix (`--espace-taille`).
+**Aucun modèle ```cubes en prod, à aucun niveau** : ce lot est le premier (patrons pour CM1-119, CM2-105).
+Bornes : 154 « assemblages de cubes identiques », 155 « cubes d'arête 1 cm », 181 « vues de dessus, de face, de
+gauche, de droite » ; exemples de réussite 6e p. 17 : tracer les vues sur papier quadrillé ; quatre vues données,
+**choisir parmi plusieurs assemblages** celui qui correspond ; dénombrer un empilement. Nœuds : les points sont
+rangés sur les notions mêmes (« Géométrie > Solides », « Grandeurs et mesures > Volumes »), sans modèle direct.
+
+| #   | Point | Nœud (notion)                  | Modèle                                   | Niveau |
+| --- | ----- | ------------------------------ | ---------------------------------------- | ------ |
+| 1   | 209   | Géométrie > Solides            | Compter les cubes d'un assemblage        | 1      |
+| 2   | 181   | Géométrie > Solides            | Dessiner une vue d'un assemblage         | 2      |
+| 3   | 208   | Géométrie > Solides            | Retrouver un assemblage d'après ses vues | 3      |
+| 4   | 155   | Grandeurs et mesures > Volumes | Volume d'un assemblage de cubes          | 1      |
+| 5   | 154   | Grandeurs et mesures > Volumes | Comparer les volumes de deux assemblages | 2      |
+
+Assemblages : au plus 4 × 4 au sol, hauteurs 0 à 3 (téléphone : 1 cm par arête), jamais de cube en l'air
+(le bloc ne le permet pas).
+
+1. **Compter les cubes** (case) — v1 un seul étage ou une seule rangée (tous les cubes se voient) ; v2 piles de 1
+   à 3 sur 2 × 3 (cubes cachés sous d'autres) ; v3 empilement en escalier ou en pyramide 3 × 3 (l'exemple du BO).
+   Corrigé : le compte pile par pile, rangée par rangée (« au fond : 2 + 1 + 1 ; devant : 1 + 0 + 1 »).
+2. **Dessiner une vue** (`dessiner:`) — v1 face, v2 dessus, v3 droite ou gauche ; v4 sens inverse en choix :
+   « Laquelle est la vue de face ? », quatre ` ```cubes ` `vue:` en options (la bonne, la vue de dessus, la vue
+   de droite, la vue de face d'un assemblage voisin), options distinctes vérifiées par le script.
+3. **Retrouver l'assemblage** — v1 la forme du BO : vues de face, de dessus, de droite données (` ```cubes `
+   `vue:`), choisir parmi trois perspectives ; leurres = un cube déplacé ou retiré, dont une vue au moins diffère
+   (vérifié par le script) ; v2 `retrouver: face` (vue de dessus = grille) ; v3 `retrouver: face, droite`.
+   Plusieurs réponses justes acceptées par le juge, « Il y a d'autres réponses justes. » dans la correction.
+4. **Volume d'un assemblage** (case + « cm³ » écrit après) — « Chaque cube a une arête de 1 cm. » ; v1 le compte
+   (comme 1, v2) ; v2 pavé plein 2 à 4 × 2 à 3 × 1 à 3 (le compte par étage : « 3 × 2 = 6 cubes par étage,
+   2 étages ») ; v3 pavé à une marche ou un trou. Corrigé : le compte, puis 1 cube = 1 cm³.
+5. **Comparer deux volumes** (choix : « A », « B », « le même volume ») — « Les cubes sont identiques. » ; v1 des
+   comptes différents ; v2 le même volume, formes différentes (l'un plus haut, l'autre plus étalé : le piège
+   « le plus haut est le plus gros ») ; v3 « Combien de cubes faut-il ajouter à A pour avoir le volume de B ? »
+   (case). Corrigé : les deux comptes.
+
+**Question d'accès** (migration nœud + tag des 5) : personne ne lit rien de plus. Brouillons visibles de l'admin et
+de l'auteur seuls jusqu'à la publication ; la migration ne fait que ranger et taguer.
+
+**Questions** :
+
+1. Lot 8 = assemblages de cubes (recommandé, ordre du § 14) ?
+2. **Fuite en évaluation** : les hauteurs d'un ` ```cubes ` partent encore au navigateur (`maskGestureAnswers`
+   ne les masque pas, lot 2 de `fuite-enonce`, en cours). Pour `retrouver:` (3, v2-v3), c'est la réponse.
+   Publier quand même (hors évaluation, rien ne change) ou garder 3 en brouillon jusqu'au lot 2 ?
+3. Valider la phase 0 (5 modèles, niveaux, variations) ?
