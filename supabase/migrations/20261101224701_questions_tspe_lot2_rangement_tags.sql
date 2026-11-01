@@ -81,7 +81,7 @@
 -- 		raise exception 'rollback : identifiants partiellement présents : % modèle(s) sur 4', v_presents;
 -- 	end if;
 -- 	if v_intacts <> v_presents then
--- 		raise exception 'rollback : % modèle(s) sur % encore sur le nœud de la migration', v_intacts, v_presents;
+-- 		raise exception 'rollback : % modèle(s) sur % ne sont plus sur le nœud de la migration', v_presents - v_intacts, v_presents;
 -- 	end if;
 -- 	select count(*), count(*) filter (where p.grade = r.grade and p.code = r.code)
 -- 	  into v_total, v_tags
