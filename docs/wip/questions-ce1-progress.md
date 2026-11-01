@@ -5,10 +5,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 8 écrit (PR des fichiers à ouvrir)._
+_Mis à jour le 2026-11-01, après #2135._
 
 - **État** : lots 0 à 7 publiés (lot 7 : données, 6 modèles, § 14, clos le 2026-11-01).
-- **Prochaine action** : lot 8 monnaie (054, 055, 056, 057, 086, § 15) écrit, PR des fichiers à merger, puis brouillons en prod (David), migration nœud + tag ; page à cocher et publication **après le `deploy:prod`** qui livre #2127 ; puis lots 9 et 10 (ex-8 et 9 du § 12).
+- **Prochaine action** : lot 8 monnaie (054, 055, 056, 057, 086, § 15) écrit et mergé (#2135) ; brouillons en prod à créer par David (`create-questions --publier`), puis migration nœud + tag ; page à cocher et publication **après le `deploy:prod`** qui livre #2127 ; puis lots 9 et 10 (ex-8 et 9 du § 12).
 - **En attente de David** : rien (phase 0 validée).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
@@ -667,3 +667,4 @@ Réponse de David (« tes recos ? » puis « go », 2026-11-01) : les cinq recom
   porte-monnaie de centimes lisibles, mais petits quand l'un a 11 pièces (même échelle que CP-042). `construire: {{p}}c`
   (le bloc lit `345c`). Corrigé du rendu en une seule étape (une étape `{{if:}}` vide restait affichée) ; objets à la
   mesure du billet (sucette pour 1 €, cahier pour 5 €).
+- 2026-11-01 : #2135 mergée (CI verte 14/14, revue : aucune, contenu) ; brouillons en prod à créer par David.
