@@ -10,20 +10,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, migration du lot 2 en PR._
+_Mis à jour le 2026-11-01, après #2173._
 
-- **État** : 4 brouillons du lot 2 créés en prod (3d7d1d25, 0fb97bb9, 6d611634, ae70373c) ; migration
-  `20261101224702_questions_tspe_lot2_rangement_tags.sql` (3 sous-notions, rangement, tags) + test 11/11, rouge
-  sans l'étape 5 ; branche `feat/questions-tspe-lot2-migration`.
-- **Prochaine action** : `security-auditor` sans bloquant → `pnpm check:migrations --pr <n>` → CI verte → merge →
-  `db:migrate` depuis le dépôt principal → relire en base (MCP) → page à cocher, puis `publier-lot` (David).
-- **En attente de David** : rien avant la publication.
+- **État** : lot 2 (limites) **rangé et tagué en prod** (#2173, `db:migrate` le 2026-11-01, relu au MCP) :
+  3d7d1d25, 0fb97bb9, 6d611634, ae70373c en brouillon, niveau 1, sur leur sous-notion (§ 15).
+- **Prochaine action** : page à cocher des 4 brouillons (aperçus admin `/dashboard/admin/questions/<id>/preview`),
+  relecture par David, puis `publier-lot` (simulation d'abord, David lance `--publier`) ; ensuite lot 3.
+- **En attente de David** : la relecture des 4 brouillons (page à cocher à produire).
 - **Pièges en cours** : un tag doit être sur le **nœud du modèle ou sa notion** (§ 14) ; le **niveau est dans la
   clé** de `create-questions`. `create-questions` et `publier-lot` → David (`!`) ; `db:migrate` depuis le dépôt
-  principal ; en-tête ET corps de commit ≤ 100 caractères par ligne. **Migrations** : nom par
-  `pnpm migration:horodatage`, à refaire si main a pris un horodatage plus récent entre-temps (renommé une fois,
-  224001 → 224701 → 224702) ; `pnpm check:migrations` lit les commits ; CI Summary fait foi.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe`, `feat/questions-tspe-lot2-migration`.
+  principal (`echo y |`) ; corps de commit ≤ 100 caractères par ligne. **Migrations** : `pnpm migration:horodatage`
+  à refaire si main a avancé (renommé 2 fois au lot 2) ; une sous-notion neuve → copie figée
+  `tests/integration/fixtures/arbre-notions-seed.json`, comptes de `seed-classification-nodes.test.ts` et
+  `tests/helpers/database/later-migrations.ts` dans la même PR (CI rouge sinon).
+- **Worktree / branche** : aucun (retiré après #2173) ; prochain chantier → worktree neuf depuis `origin/main`.
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -761,3 +761,9 @@ RIEN, sans nœud ni tag, sous-notions absentes casse ignorée), 3 sous-notions e
 (point sur le nœud ou sa notion), rangement puis tags, `updated_at` préservé, rollback gardé en commentaire.
 Test `tests/integration/questions-tspe-lot2-rangement-tags.test.ts` : 11/11 ; **rouge** sans l'étape 5 (« lot
 incohérent : nœuds 0/4, tags 0/4 »).
+
+**CI de #2173** : 1er passage rouge (`seed-classification-nodes`, `nettoyage-facettes` : 3 sous-notions inconnues
+de la copie figée de l'arbre) → arbre figé (630 chemins, 477 sous-notions) et `later-migrations.ts` mis à jour ;
+renommée 224001 → 224701 → 224702 (main avancée deux fois). `security-auditor` : aucun bloquant (message du
+rollback remis à l'endroit). **PR #2173 mergée** ; **`db:migrate`** le 2026-11-01 ; relu en prod : 4 modèles sur
+leur sous-notion, tag posé, brouillon, niveau 1, `updated_at` inchangé.
