@@ -10,15 +10,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2095._
+_Mis à jour le 2026-11-01, après la publication du lot 0-trigo._
 
-- **État** : lots 0-suites, 0-limites et fonctions, 0-intégration, 0-primitives **publiés** (84 modèles). Lot 0-trigo
-  (23 brouillons, § 10) validé par David, instantané mergé (#2095), **pas encore en base** (C1 + niveaux).
-- **Prochaine action** : David lance `create-questions --publier --mettre-a-jour` puis `publier-lot` (simulation, puis
-  `--publier`) sur `scripts/questions/tspe-0-trigo/` ; relire le statut en base (23 `published`, C1 présente,
-  fece187e et afd9b3ff en `T_SPE`). Ensuite : lot 0-dénombrement. Plus tard : migration Q3.
-- **En attente de David** : ces deux commandes du lot 0-trigo.
-- **Pièges en cours** : `create-questions` et `publier-lot`, même en simulation → David (le mode auto les refuse) ;
+- **État** : lots 0-suites, 0-limites et fonctions, 0-intégration, 0-primitives, 0-trigo **publiés** (107 modèles).
+  Rien en cours.
+- **Prochaine action** : lot 0-dénombrement (branche `feat/questions-tspe-lot0-denombrement`, déjà créée dans le
+  worktree) : relevé des brouillons T_SPE du dénombrement en base, instantané, vérification. Plus tard : migration Q3
+  (§ 1, § 7, § 8, § 9).
+- **En attente de David** : rien.
+- **Pièges en cours** : `create-questions --publier` passe en mode auto, `publier-lot --publier` reste à David ;
   partir des id, pas des vieux dossiers `<thème>-terminale/` ; simulation `publier-lot` AVANT tout ;
   worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; l'aperçu de `question:specs` mélange les
   options d'une case choix : recouper l'indice avec la SOURCE ; branche poussée : `git merge origin/main`, pas de rebase.
@@ -484,3 +484,7 @@ quels, donc gardés.
 gardé (périodes autres que 2π, 7df468d6 et 5072030d).
 
 **PR** : #2095 mergée le 2026-11-01 (CI rouge d'abord sur une collision d'horodatage de `main`, réglée par #2093).
+
+**Publication** (2026-11-01, #2095 mergée) : `create-questions --publier --mettre-a-jour` (3 mis à jour : 4c4d43dc,
+afd9b3ff et fece187e passés en `T_SPE` ; 20 identiques), `publier-lot` (simulation : 23 passent) puis `--publier`
+(David). Relu en base (MCP) : 23 / 23 `published`, C1 présente, ancien texte absent.
