@@ -2575,6 +2575,15 @@ recevait le symbole f, une constante, et `.dériver f` répondait 0, `.intégrer
   intégrale bornée est aussi réduite quand l'intégrande tapée contient un paramètre
   (`.intégrer e^{a x} de 0 à 1` → $\dfrac{e^a - 1}{a}$), et `1^{a+1}` vaut 1 (`x^a de 1 à 2` →
   $\dfrac{2^{a+1} - 1}{a+1} \quad (a \neq -1)$, réduit par `integrateDefinite`).
+  Les conditions se lisent aussi dans les **arguments** faits de paramètres seuls (lot 3
+  `ecarts-conditions`, `argumentConditions` / `signConditionOf`) : racine d'indice pair →
+  « u ⩾ 0 », `\ln` / `\log` / `\log_b` → « u > 0 » ; `\sqrt{a} x de 0 à 1` → ½√a (a ⩾ 0),
+  `\ln(a+2) x de 0 à 1` → (a > −2), `\sqrt{3-a}` → (a ⩽ 3), `\ln(a^2)` → (a ≠ 0), forme
+  brute sinon (a³ − a ⩾ 0) ; rien pour une condition toujours vraie (`\sqrt{a^2+1}`, `\sqrt[3]{a}`).
+  Même règle que pour les dénominateurs : une primitive ne redit pas `\sqrt{a}` visible dans la
+  saisie. « a ⩾ v » et « a ≠ v » ensemble → « a > v » (`mergedConditions`, décision Q2 de David,
+  2026-11-01) : `\sqrt{a}\ln(a)`, `x/\sqrt{a}` de 0 à 1 → (a > 0). `1/\ln(a)` garde
+  « ln(a) ≠ 0 » brut (Q4, laissé).
 - **`.résoudre` tapé avec une lettre non posée** (V57, Q5 — `parameterSolveRefusal`, après le
   moteur, ses refus d'abord) : refus « Le résultat dépend de a… » quand la résolution DIVISE par
   le paramètre — polynôme dont le coefficient dominant en contient un (`a x = 0`, `a x + b = 0`,
