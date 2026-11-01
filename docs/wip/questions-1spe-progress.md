@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2053 et la publication du lot 0-logique._
+_Mis à jour le 2026-11-01, migration des tags D3 en cours (§ 17)._
 
-- **État** : lots 0-suites à 0-logique publiés (logique : 5 modèles, 5 « ok », `published` le 2026-11-01). Brouillons de 1re spé restants : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (terminale, D3), 0495289a (attente), c90fa022, d2067413 (points 1TECHNO), et les 5 de logique tagués de seconde (chantier questions-2de).
-- **Prochaine action** : migration des tags D3 (174e202b, dc4b8d08 → 1SPE-307 ; eae2ff6a → 1SPE-386 ; 318ea542 → 1SPE-283 ; f1440b52 : 1SPE-274 → 1SPE-396 ; 8b599a53, fece187e, afd9b3ff : retirer `1_SPE` ; f8ccc8b6 à lire) — relire D3 (§ 5) et la prod d'abord, question d'accès à poser.
+- **État** : lots 0-suites à 0-logique publiés. Migration D3 réduite à 2 tags (D22, § 17) : f1440b52 1SPE-274 → 396, 318ea542 → 283 ; écrite, 11 / 11 verts, rouge vérifié ; `security-auditor` en cours. Brouillons de 1re spé restants : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (niveau `T_SPE` laissé à questions-tspe), 0495289a (attente), c90fa022, d2067413 (points 1TECHNO).
+- **Prochaine action** : PR, CI verte, merge, `db:migrate` depuis la branche mergée, relire les 2 tags en base (MCP). Puis D7 : lot dérivation.
 - **En attente de David** : rien.
-- **Pièges en cours** : `create-questions` et `publier-lot --publier` refusés au mode auto (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : `migration list --linked` ET worktrees ; instantané jamais dans le dépôt principal ; index du dépôt principal parfois tenu par une autre session (attendre).
-- **Worktree / branche** : aucun ; nouveau worktree pour la migration D3.
+- **Pièges en cours** : `create-questions` et `publier-lot --publier` refusés au mode auto (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET worktrees ; instantané jamais dans le dépôt principal.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-tags` · `feat/questions-1spe-tags`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -768,3 +768,23 @@ https://claude.ai/artifact/5FCW8NuvR1gZZ6UhbYr2XX (5 fiches ; 1 alerte attendue 
 
 **Verdicts** : 5 « ok » sur 5, aucun commentaire. `publier-lot --publier` lancé par David le 2026-11-01 : les 5 modèles sont
 `published` en base (MCP). **Lot 0-logique clos.**
+
+## 17. Migration des tags D3 (relevé de la prod du 2026-11-01)
+
+D3 (§ 5, 2026-10-27) relu contre la prod (MCP) et contre les décisions d'avant et d'après :
+
+| Modèle                            | D3              | Constat                                                                                                             | Suite                                                  |
+| --------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| 174e202b, dc4b8d08                | → 1SPE-307      | annulé par D17 (l1s-3), brouillons en attente                                                                       | rien                                                   |
+| 8b599a53                          | retirer `1_SPE` | déjà `[T_SPE]` (questions-tspe, par fichier)                                                                        | rien                                                   |
+| fece187e, afd9b3ff                | retirer `1_SPE` | brouillons `[1_SPE]`, TSPE-457 ; Q3 de questions-tspe prévoit `[T_SPE]`                                             | **laissés à questions-tspe**, lot 0-trigo, par fichier |
+| f1440b52 (publié)                 | 274 → 396       | 396 sur son nœud, sans modèle ; 274 garde cffdd283, 496f958d                                                        | **migration**                                          |
+| 318ea542 (publié, carte de cours) | → 283           | sans tag par décision du 2026-10-23 ; sœurs 03b3d9b3, bb554c62 en 283, même nœud                                    | **migration**                                          |
+| eae2ff6a (publié)                 | → 386           | contredit l'option A du 2026-10-24 (racines LUES sur une parabole, hors programme ; 386 = discriminant, autre nœud) | **sans point**                                         |
+| f8ccc8b6 (publié)                 | à lire          | 12 vrai/faux sur 6 points ou plus (courbe, racines, formes, axe, signe, extremum)                                   | **sans tag**                                           |
+
+**D22 (David, 2026-11-01, « je valide » sur ces recommandations)**. Question d'accès : personne ne gagne ni ne perd
+d'accès. Données d'élèves sur f1440b52 et 318ea542 : aucune (0 carte SRS, tentative, évaluation, journal, test, série).
+
+Migration `20261101160000_questions_1spe_tags_d3.sql` + `tests/integration/questions-1spe-tags-d3.test.ts` : rouge sans le
+corps de la migration (suite principale tombée au `beforeAll`, 5 branches d'échec), 11 / 11 verts avec.
