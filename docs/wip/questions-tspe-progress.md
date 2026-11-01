@@ -10,11 +10,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 2 écrit (§ 15), PR des fichiers à merger._
+_Mis à jour le 2026-11-01, lot 2 écrit (§ 15), PR #2160 ouverte, CI annulée._
 
 - **État** : lot 2 (limites : 402, 576, 403, 582) écrit dans `scripts/questions/tspe-2-limites/` (script
-  `docs/wip/questions/lot-tspe-limites.py`), 52 specs vertes, essai en base locale joué dans l'aperçu.
-- **Prochaine action** : PR des fichiers mergée → **David** lance `set -a; . ./.env; set +a` puis
+  `docs/wip/questions/lot-tspe-limites.py`), 52 specs vertes, essai en base locale joué dans l'aperçu. PR #2160 :
+  CI **annulée** à la demande de la session `questions-1spe` (main cassée, migration en double 20261101215000).
+- **D'abord** : attendre le merge de **#2154** (correctif de main), puis `git pull --rebase origin main`, `git push`
+  (ce commit de journal compris, resté local), surveiller la CI de #2160, merger si verte.
+- **Prochaine action** : #2160 mergée → **David** lance `set -a; . ./.env; set +a` puis
   `pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-2-limites --publier` → relever les `id` →
   migration : 3 sous-notions neuves + rangement + tags (§ 15).
 - **En attente de David** : la création des 4 brouillons en prod (après le merge).
