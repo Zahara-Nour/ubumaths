@@ -849,3 +849,13 @@ application).
 
 Page à cocher : https://claude.ai/artifact/Q4kLqL6qnRz5DA18ivqkJP (10 fiches, aucune alerte ; collection `verdicts` vide
 à la publication).
+
+**Verdicts (2026-11-01)** : 10 « ok » sur 10, aucun commentaire (lus en base de la page, comptés).
+
+**Simulation `publier-lot`** : 1 refus, d2bca2d8 (Ensemble de dérivabilité) : Fonctions / Dérivation / Fonctions
+dérivées, niveau 6, déjà occupé par 8b599a53 « Dériver g(ax + b) » (publié, `T_SPE` : mon relevé des niveaux ne
+regardait que `1_SPE`). **D24 (David, 2026-11-01, « oui »)** : niveau 6 → 7 (premier libre) ; question d'accès :
+personne. Migration `20261101190000_questions_1spe_derivation_niveau.sql` + `tests/integration/
+questions-1spe-derivation-niveau.test.ts` : 6 / 6 verts, rouge sans le corps (2 échecs, 3 sautés), restauré d'une copie.
+Fichier du lot au niveau 7 (clé de `publier-lot`). **Piège** : relever les niveaux de la catégorie **tous niveaux
+scolaires confondus** (l'index d'unicité ignore `grades`).
