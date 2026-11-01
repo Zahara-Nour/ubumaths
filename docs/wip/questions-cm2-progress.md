@@ -6,11 +6,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2060 et la page à cocher du lot 4._
+_Mis à jour le 2026-11-01, premiers commentaires de David sur la page à cocher du lot 4._
 
 - **État** : lots 1, 2 et 3 publiés. Lot 4 (calcul mental sur les décimaux, 7 modèles, § 9) : 7 brouillons en prod, rangés et tagués (#2060, migration jouée), page à cocher publiée : https://claude.ai/artifact/GbuqmaxXKnTHhZSdy3ppbL (§ 9.3).
-- **Prochaine action** : lire `verdicts` de la page (compter 7 réponses) ; « À revoir » → corriger (§ 7 de la démarche) ; puis simulation `publier-lot --dir scripts/questions/cm2-4`, `--publier` par David, statut relu au MCP. Ensuite lot 5 (fractions, § 4.6).
-- **En attente de David** : relecture des 7 fiches sur la page à cocher.
+- **Prochaine action** : selon la réponse de David (§ 9.4), corriger 040, 118, 041 (fichiers, `--mettre-a-jour` par David, verdicts remis à zéro) ; relire `verdicts` (compter 7) ; puis `publier-lot`.
+- **En attente de David** : choix 1, 2 ou 3 du § 9.4 (V1 « dixièmes, centièmes, millièmes » de 040 / 118 / 041 : « pas de nombre entier ») ; relecture des autres fiches.
 - **Pièges en cours** : `curriculum_points` n'a pas de colonne `label` ; relever la prod avant toute écriture ; horodatages de migration partagés → vérifier `origin/main` ; `db:migrate` pousse TOUTES les migrations en attente ; énoncé sans `?` = « Blank count mismatch » ; quotient décimal : `{{eval:…;d}}` ; specs ≥ 4 chiffres avec espaces ; variable `e` = Euler ; `Doc-inchangée:` dans un MESSAGE DE COMMIT (pas la description de la PR) ; ne jamais enchaîner `gh pr merge` sur la lecture de la CI ; `wrapDynamicImport` en CI = `gh run rerun --failed`.
 - **Worktree / branche** : aucun (retiré après #2060).
 
@@ -423,3 +423,9 @@ Recommandations suivies (« tes recos ? » puis « je te suis ») : tableau du �
 - #2060 mergée **avec la garde « doc à jour » rouge** (ma faute : `gh pr view … && gh pr merge` enchaînés ; `Doc-inchangée:` mis dans la description de la PR au lieu d'un message de commit). Seule cette garde était rouge ; la migration n'est pas en cause. Signalé à David.
 - `db:migrate` : `DbPushMissingRemoteError` (20261101120000 de `questions-4` mergée, pas jouée) ; David a lancé `db push --include-all` (120000 + 141500). Vérifié au MCP : 7 brouillons, chacun sur sa sous-notion avec son point, `updated_at` inchangé, trigger `updated_at` actif (`O`).
 - Page à cocher publiée (7 fiches, aucune alerte), rendu vérifié à 390 px : https://claude.ai/artifact/GbuqmaxXKnTHhZSdy3ppbL ; `verdicts` vide au départ.
+
+### 9.4 Lot 4 : premiers commentaires (David, 2026-11-01)
+
+- `f73f7bba` (040) À revoir : « il n'y a pas de nombre entier dans la variation 1 » ; `eca617ae` (118) : « même remarque » (sans verdict). `8f2aff1d` (041) a la même V1.
+- Origine : bornes c3-2 (décision de David du 2026-10-18) — « nombre entier » lu comme k unités de numération, d'après les exemples de réussite CM2 2025 p. 8 (4,452 + 0,03 ; 0,457 − 3/1 000 ; 4,45 + 0,8).
+- Question posée, **sans réponse** : 1. garder cette lecture et la rendre visible (titre « Ajouter un nombre entier d'unités, de dixièmes, de centièmes… », corrigé « 0,03, c'est un nombre entier de centièmes : 3 ») — **ma recommandation** ; 2. lecture littérale : V1 retirée des trois modèles (seulement unités à milliers) ; 3. séparer : 040 / 118 / 041 sur les entiers seuls, un modèle à part pour dixièmes / centièmes / millièmes.
