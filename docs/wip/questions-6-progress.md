@@ -5,20 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR #2153 (migration du lot 8) en CI après renommage en 224700._
+_Mis à jour le 2026-11-01, après #2153 (mergée)._
 
 - **État** : lot 8 « Assemblages de cubes » : fichiers mergés (#2150) ; 5 brouillons en prod (ce3c4e11, 763d1183,
-  37c6852c, 650dcfc6, 0464c3f6) ; migration nœud + tag `20261101224700` en PR #2153 (test 8 rouges / 14 verts,
-  `security-auditor` sans bloquant ; 220100 doublée en prod par 223000 → renommée 224700, test 14 verts).
-- **Prochaine action** : CI de #2153 (suivre le run « Code Quality », pas `gh pr checks`) ; relire juste avant
-  `db:migrate` que 224700 est postérieure à la dernière jouée en prod ; merge ; `db:migrate` depuis le dépôt principal (4 conditions réunies) ;
-  MCP : 5 modèles sur leur notion, un tag chacun, `updated_at` préservé, trigger `O` ; puis page à cocher.
-  **Publication après le `deploy:prod` qui livre #2130.**
-- **En attente de David** : rien.
+  37c6852c, 650dcfc6, 0464c3f6) ; migration nœud + tag `20261101224700` mergée (#2153, CI verte, garde
+  `check:migrations` verte) mais **pas jouée** : `db:migrate` refusé par le classifieur du mode auto (le push joue
+  aussi 223100 ce2 lot 6a et 224000 questions-5 lot 7, mergées, 4 conditions réunies selon leurs journaux).
+- **Prochaine action** : après le `db:migrate` de David, MCP : 5 modèles sur leur notion, un tag chacun,
+  `updated_at` préservé, trigger `O` ; prévenir les sessions questions-ce2 et questions-5 si leurs migrations sont
+  passées avec ; puis page à cocher. **Publication après le `deploy:prod` qui livre #2130.**
+- **En attente de David** : `! pnpm db:migrate` depuis le dépôt principal.
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs --file`. Jamais de variable
   `e`. `Doc-inchangée:` va dans un message de COMMIT. PR en conflit = pas de CI : vérifier `mergeable`. Horodatage
   de migration : `pnpm migration:horodatage` (règle #2165), jamais un nombre rond choisi à la main.
-- **Worktree / branche** : `../ubumaths-wt-questions-6` · `feat/questions-6-lot8-rangement` (PR #2153).
+- **Worktree / branche** : `../ubumaths-wt-questions-6` · `feat/questions-6-lot8-rangement` (mergée, à retirer).
 
 ## 1. Relevé (prod, 2026-10-26)
 
