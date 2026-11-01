@@ -13,7 +13,10 @@ _Mis à jour le 2026-11-01, PR 0 codée, pas encore ouverte._
   cocher publiée : https://claude.ai/artifact/RSWgLdsubFwGayPgQgCETo (base `verdicts`).
 - **Prochaine action** : lire la base `verdicts` (ArtifactData), appliquer les corrections de
   David au corpus et aux listes, relancer les tests, puis ouvrir la PR 0 et merger (CI verte).
-- **En attente de David** : la validation des 85 attendus (14 fiches posent une question).
+- **En attente de David** : la validation des attendus (11/85 relus le 2026-11-01 ; 14 fiches
+  posent une question).
+- **Règle de David (2026-11-01)** : a priori la réponse de l'Atelier fait foi (temps passé
+  dessus) ; un écart se cite (règle écrite) et se tranche ensemble. `deriver-10` corrigé ainsi.
 - **Pièges en cours** : `tsx` lance `WebReplEngine` seul (< 1 s), pas l'Atelier (`$state is not
 defined`) ; une sonde de l'Atelier passe par vitest (fichier jetable sous `src/`, ~2 s).
 - **Worktree / branche** : `../ubumaths-wt-registre-reference` · `refactor/registre-reference`.
@@ -168,3 +171,8 @@ refus?, note? }`). Juge : `src/lib/mathAST/cli/__tests__/registre-corpus/compare
   registre refuse la virgule décimale (`0,1+0,2`) ; messages de refus différents (R6).
 - **Hors corpus pour l'instant** : `.variations` (tableau, pas une réponse en LaTeX) et les
   commandes de Q1 (elles entreront avec leur PR de descente).
+- **Relecture, 1er passage (2026-11-01)** : `deriver-01…10` OK ; `deriver-10` corrigé en
+  `−(x²−2x+1)e^{−x}` (règle de tidy-spec du 2026-10-20 : signe sorti d'un facteur dont le terme de
+  gauche est négatif ; mon attendu la contredisait). `deriver-03`, `deriver-11` : question d'ordre
+  (`(x+1)eˣ`, `ln(x)+1`), répondue par Q13 et S2 du chantier simplify-carte ; `checkForm` ignore
+  l'ordre de toute façon.
