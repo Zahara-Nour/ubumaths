@@ -624,5 +624,6 @@ décimale (0,435 → message de forme, à vérifier en local). Tableau du § 11 
 ### 11.3 Lot 6a : brouillons, rangement (2026-11-01)
 
 - David : `create-questions --dir scripts/questions/cm2-6a --publier` → 7 brouillons [CM2] sans nœud ni tag (MCP) : `bd735bc4` (023), `25b269de` (024), `f316dfa7` (027), `d74e675a` (028), `99bcc284` (139), `dd558ada` (140), `169b9eaf` (029) ; niveaux 9, 8, 8, 17, 6, 7, 4.
-- Migration `20261101224701_questions_cm2_lot6a_rangement_tags.sql` (horodatage `pnpm migration:horodatage`), copie du lot 5b. Test `questions-cm2-lot6a-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges. `check:migrations --pr 2174` : sortie 0.
+- Migration `20261101224702_questions_cm2_lot6a_rangement_tags.sql` (horodatage `pnpm migration:horodatage`), copie du lot 5b. Test `questions-cm2-lot6a-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges. `check:migrations --pr 2174` : sortie 0.
 - `security-auditor` : aucun bloquant (2 mineurs hérités du gabarit). PR #2174 ; 1re CI rouge sur la garde de doc : la ligne `Doc-inchangée:` doit être dans un **commit**, pas dans la description de la PR.
+- Push refusé par le `pre-push` : `20261101224701` pris entre-temps sur `main` par `questions_1spe_probas_rangement_tags` (même seconde donnée par `migration:horodatage` à deux sessions). `git merge origin/main`, renommée en `20261101224702`, test rejoué.
