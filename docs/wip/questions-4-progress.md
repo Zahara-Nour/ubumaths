@@ -9,12 +9,12 @@ _Mis à jour le 2026-11-01, après #2089 et #2098 (lot 7 publié ; décisions du
 
 - **État** : lots 1 à 7 en prod ; publiés : lots 2 à 5, les 3 translations du lot 6, le lot 7 ; en brouillon : les 7
   du lot 1 (jamais relus sur une page), les 2 volumes du lot 6.
-- **Prochaine action** (ordre validé, § 36) : 1) page à cocher du lot 1 (`page-a-cocher.ts --dir
-scripts/questions/4-lot-1`), verdicts comptés, `publier-lot` en simulation, **David** `--publier` ; 2) petite PR
+- **Prochaine action** (ordre validé, § 36) : 1) page à cocher du lot 1 **publiée** (§ 37,
+  https://claude.ai/artifact/5HUE7dJZTSixHHZgC85tAN) : **David** relit ; puis verdicts comptés, `publier-lot` en simulation, **David** `--publier` ; 2) petite PR
   « sonde des figures » : `.sonde-figures-tmp.ts` (non suivi, dans le worktree) → `scripts/questions/sonde-figures.ts`
   (`--dir`, `--montre`) + une ligne dans `docs/pratiques/couvrir-un-niveau.md` § 5, sans revue ; 3) phase 0 du lot 8
   « programmes de calcul et fonctions » (060, 081, 061, 062, 063, 064).
-- **En attente de David** : rien. Volumes du lot 6 : après le `deploy:prod` qui livre ` ```solide `.
+- **En attente de David** : la relecture du lot 1 (page du § 37). Volumes du lot 6 : après le `deploy:prod` qui livre ` ```solide `.
 - **Pièges en cours** : `mtexte()` refusé dans une figure de question (§ 26) ; `db push --include-all` : **réservé à
   David** (§ 27, § 30, § 34), même quand une autre session dit le contraire ; horodatage de migration : rebaser sur
   `origin/main` avant la CI (§ 34) ; exemption de doc d'une migration de données = ligne `Doc-inchangée:` dans un
@@ -913,3 +913,11 @@ Equations / Mettre en équation 3 ; 017 : forme puissance exigée quand la consi
 3. **14 bornes 2019/2016 seules** : pas de revue en bloc ; chacune est signalée dans la phase 0 du lot qui s'en sert,
    David tranche alors. Question retirée de « En attente ».
 4. Ordre : page à cocher du lot 1, PR de la sonde, phase 0 du lot 8.
+
+## 37. Lot 1 : page à cocher (2026-11-01)
+
+- `page-a-cocher.ts --dir scripts/questions/4-lot-1` (base prod, lecture seule) : 7 fiches, toutes `draft`, toutes
+  appariées. Une alerte : homonyme 93998734 (niveau 3) écarté pour « Problèmes avec des fractions » ; la fiche garde
+  05818fa0 (4-014, brouillon de 4e) : c'est le bon modèle.
+- Publiée en artefact (capacité `db`) : https://claude.ai/artifact/5HUE7dJZTSixHHZgC85tAN ; collection `verdicts`
+  vide à la publication.
