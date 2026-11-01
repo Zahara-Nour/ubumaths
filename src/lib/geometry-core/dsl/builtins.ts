@@ -555,7 +555,7 @@ const HANDLERS = new Map<string, BuiltinHandler>();
 const POINT_FORMS = [
 	{ syntax: 'point(x, y)', description: 'point libre aux coordonnées `(x, y)`' },
 	{
-		syntax: 'point(s.value, 0)',
+		syntax: 'point(s, 0)',
 		description: 'point dont l’abscisse suit la valeur du slider `s`'
 	},
 	{
@@ -4699,7 +4699,7 @@ function handleStyle(ctx: BuiltinCtx): null {
 				summary: '`style()` attend au moins 1 argument (l’élément à styler).',
 				forms: [
 					{
-						syntax: 'style(P, couleur="red", taille=4)',
+						syntax: 'style(P, couleur="red", epaisseur=4)',
 						description: 'modifie le style visuel d’un élément existant'
 					}
 				]

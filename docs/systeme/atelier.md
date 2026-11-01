@@ -3113,10 +3113,6 @@ lois (`.binomiale`, `.géométrique`, `.uniforme`, `.exponentielle`, `.normale`)
   même coût que chaque cran du curseur, ou chaque mouvement d'un point glissé, sur cette figure
   (mesuré le 2026-10-19). Pas d'optimisation sûre et évidente côté `.relever` ;
 
-⚠️ La section « Ce qui reste pour clore la v1 » de `atelier-progress.md` (2026-10-04) dit encore
-les garanties `/grapheur` non faites : elles le sont (lots 2 à 6, #779 → #809,
-[atelier-grapheur-progress.md](../archive/wip/atelier-grapheur-progress.md)).
-
 ---
 
 Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3).

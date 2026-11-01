@@ -1,7 +1,7 @@
 /**
  * Shared number line rendering utilities.
  *
- * Used by both the static NumberLine.svelte and interactive NumberLineInput.svelte
+ * Used by both the static NumberLine.svelte
  * to avoid duplicating layout constants, coordinate mapping, and graduation logic.
  *
  * @module ubumark/utils/number-line-render

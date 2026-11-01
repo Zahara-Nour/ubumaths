@@ -298,7 +298,7 @@ conteneur (`bind:clientWidth`, plancher `NL_MIN_WIDTH` = 160 ; 600 avant le mont
 réduite : marges, chiffres, points et traits gardent leur taille, seul l'écart entre graduations se
 resserre ; pas de défilement horizontal (il se battrait avec le glisser). `valueToX`, `xToValue`,
 `computeGraduations`, `computeLineExtents` prennent la largeur (défaut 600 : PDF et
-`NumberLineInput` inchangés) ; `NumberLinePlacer` lit le doigt en px (`xToValue(…, rect.width)`).
+inchangés) ; `NumberLinePlacer` lit le doigt en px (`xToValue(…, rect.width)`).
 Droite à placer : le prof (aperçu, éditeur) est averti quand, sur un téléphone (conteneur de référence
 `NL_PHONE_WIDTH` = 320 px), deux graduations voisines seraient à moins de 20 px
 (`phoneGapWarning`, plus petit écart, échelle log comprise) : une droite de 0 à 20 au pas de 1 en
@@ -1133,5 +1133,3 @@ problème. À lancer **avant** d'écrire des énoncés ou corrigés en base.
   (L19, 2026-11-01), pour qu'un `(`, `[` ou `.lettre` collé après ne soit pas lu comme leur suite.
 - `latex-generator.ts` (export `.tex`) et ses générateurs `*-latex.ts` n'ont pas d'appelant hors
   du module ni de leurs tests (grep du 2026-10-10) : export en sommeil ou mort, à trancher.
-- `src/lib/components/markdown/nodes/MathInlineOld.svelte` et `MathBlockOld.svelte` ne sont
-  importés nulle part (grep du 2026-10-10) : candidats au ménage, à confirmer par David.
