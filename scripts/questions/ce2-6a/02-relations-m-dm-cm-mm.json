@@ -1,0 +1,408 @@
+{
+	"title": "Mètres, décimètres, centimètres et millimètres",
+	"description": "1 m = 10 dm = 100 cm = 1 000 mm ; 16 m = 1 600 cm = 160 dm ; 1 600 cm = 16 m ; 25 cm = 250 mm",
+	"grades": ["CE2"],
+	"theme": "Grandeurs",
+	"domain": "Longueurs",
+	"subdomain": "Unités",
+	"level": 10,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète.\n\n$1~\\unit{{{if:x==1|m|{{if:x==2|dm|{{if:x==3|cm|mm}}}}}}} = ?~\\text{{{if:y==1|m|{{if:y==2|dm|{{if:y==3|cm|mm}}}}}}}$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "1..3"
+				},
+				{
+					"name": "y",
+					"expression": "2..4"
+				}
+			],
+			"conditions": ["x < y"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10^(y-x)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Entre ces deux unités, il faut multiplier par {{if:y-x==1|10|{{if:y-x==2|100|1\\,000}}}} : un {{if:x==1|m|{{if:x==2|dm|{{if:x==3|cm|mm}}}}}} vaut {{if:y-x==1|10|{{if:y-x==2|100|1\\,000}}}} {{if:y==1|m|{{if:y==2|dm|{{if:y==3|cm|mm}}}}}}.",
+					"$$1~\\unit{{{if:x==1|m|{{if:x==2|dm|{{if:x==3|cm|mm}}}}}}} = \\textcolor{{{color:primary.0}}}{{{if:y-x==1|10|{{if:y-x==2|100|1\\,000}}}}}~\\unit{{{if:y==1|m|{{if:y==2|dm|{{if:y==3|cm|mm}}}}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{m} = ?~\\text{cm}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un mètre, c'est $100~\\unit{cm}$ : ${{a}}~\\unit{m}$, c'est ${{a}}$ fois $100~\\unit{cm}$.",
+					"$${{a}}~\\unit{m} = \\textcolor{{{color:primary.0}}}{{{eval:100*a}}}~\\unit{cm}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{m} = ?~\\text{dm}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un mètre, c'est $10~\\unit{dm}$ : ${{a}}~\\unit{m}$, c'est ${{a}}$ fois $10~\\unit{dm}$.",
+					"$${{a}}~\\unit{m} = \\textcolor{{{color:primary.0}}}{{{eval:10*a}}}~\\unit{dm}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{cm} = ?~\\text{mm}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un centimètre, c'est $10~\\unit{mm}$ : ${{a}}~\\unit{cm}$, c'est ${{a}}$ fois $10~\\unit{mm}$.",
+					"$${{a}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{eval:10*a}}}~\\unit{mm}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{m} = ?~\\text{cm} = ?~\\text{dm}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*a}}"
+				},
+				{
+					"expectedAnswer": "{{eval:10*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un mètre, c'est $100~\\unit{cm}$ et c'est $10~\\unit{dm}$.",
+					"$${{a}}~\\unit{m} = \\textcolor{{{color:primary.0}}}{{{eval:100*a}}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{eval:10*a}}}~\\unit{dm}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:100*a}}~\\unit{cm} = ?~\\text{m}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Cent centimètres font un mètre : dans ${{eval:100*a}}~\\unit{cm}$, il y a ${{a}}$ fois cent centimètres.",
+					"$${{eval:100*a}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{a}}}~\\unit{m}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:10*a}}~\\unit{cm} = ?~\\text{dm}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dix centimètres font un décimètre : dans ${{eval:10*a}}~\\unit{cm}$, il y a ${{a}}$ fois dix centimètres.",
+					"$${{eval:10*a}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{a}}}~\\unit{dm}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:10*a}}~\\unit{mm} = ?~\\text{cm}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dix millimètres font un centimètre : dans ${{eval:10*a}}~\\unit{mm}$, il y a ${{a}}$ fois dix millimètres.",
+					"$${{eval:10*a}}~\\unit{mm} = \\textcolor{{{color:primary.0}}}{{{a}}}~\\unit{cm}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1 m = 10 dm",
+			"variationIndex": 0,
+			"variables": {
+				"x": "1",
+				"y": "2"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1 m = 1 000 mm",
+			"variationIndex": 0,
+			"variables": {
+				"x": "1",
+				"y": "4"
+			},
+			"answers": ["1000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 m = 100 mm",
+			"variationIndex": 0,
+			"variables": {
+				"x": "1",
+				"y": "4"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 dm = 100 mm",
+			"variationIndex": 0,
+			"variables": {
+				"x": "2",
+				"y": "4"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1 cm = 10 mm",
+			"variationIndex": 0,
+			"variables": {
+				"x": "3",
+				"y": "4"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "16 m = 1 600 cm",
+			"variationIndex": 1,
+			"variables": {
+				"a": "16"
+			},
+			"answers": ["1600"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 16 m = 160 cm",
+			"variationIndex": 1,
+			"variables": {
+				"a": "16"
+			},
+			"answers": ["160"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 16 m = 116 cm",
+			"variationIndex": 1,
+			"variables": {
+				"a": "16"
+			},
+			"answers": ["116"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "16 m = 160 dm",
+			"variationIndex": 2,
+			"variables": {
+				"a": "16"
+			},
+			"answers": ["160"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 16 m = 1 600 dm",
+			"variationIndex": 2,
+			"variables": {
+				"a": "16"
+			},
+			"answers": ["1600"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "25 cm = 250 mm",
+			"variationIndex": 3,
+			"variables": {
+				"a": "25"
+			},
+			"answers": ["250"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 25 cm = 25 mm",
+			"variationIndex": 3,
+			"variables": {
+				"a": "25"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "16 m = 1 600 cm = 160 dm",
+			"variationIndex": 4,
+			"variables": {
+				"a": "16"
+			},
+			"answers": ["1600", "160"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cm et dm échangés",
+			"variationIndex": 4,
+			"variables": {
+				"a": "16"
+			},
+			"answers": ["160", "1600"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 600 cm = 16 m",
+			"variationIndex": 5,
+			"variables": {
+				"a": "16"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 600 cm = 160 m",
+			"variationIndex": 5,
+			"variables": {
+				"a": "16"
+			},
+			"answers": ["160"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "250 cm = 25 dm",
+			"variationIndex": 6,
+			"variables": {
+				"a": "25"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 250 cm = 2 500 dm",
+			"variationIndex": 6,
+			"variables": {
+				"a": "25"
+			},
+			"answers": ["2500"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "250 mm = 25 cm",
+			"variationIndex": 7,
+			"variables": {
+				"a": "25"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 250 mm = 2 500 cm",
+			"variationIndex": 7,
+			"variables": {
+				"a": "25"
+			},
+			"answers": ["2500"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -554,3 +554,60 @@ modèles 6-11). Tableau du § 10 gardé.
 ### 10.9 Lot 5b : publication (2026-11-01)
 
 - David lance `publier-lot --publier` : 6/6 publiés. MCP : 6 `published` (niveaux 23, 24, 25, 26, 10, 8), 6 rangés, 6 tagués. **Lot 5 clos.**
+
+## 11. Lot 6 — fractions décimales et décimaux : phase 0 (proposée le 2026-11-01)
+
+Relevé MCP du 2026-11-01 : les 13 points prévus (§ 3) n'ont **aucun** modèle CM2 : 023, 024, 027,
+028, 139, 140, 029 (fractions décimales) ; 031, 033, 145, 034, 146, 147 (décimaux). 026, 030, 141, 142
+et 117 en ont déjà (1 à 6), écartés. Jumeaux du CM1 publiés (`cm1-3b`, `cm1-4`, même titre, nombres
+du CM1 : dixièmes et centièmes) : `36507fc9`, `6faa64d0`, `53031438`, `34c58018`, `7ed61c5f`,
+`85e4d251`, `2cff4ef5`, `10aae729`, `ca08432a`, `9c0c47ef`, `2af5f9fe`, `2cb242e0` ; de 6e :
+`2c5bae8f` (liens entre unités), `a1b46489`, `92db5823`, `2e982062`. Décision du § 4 bis : modèles
+CM2 propres. Bornes CM2 (`cycle3.json`) : dénominateurs 10, 100, 1 000 ; **millièmes** ; au plus
+trois décimales ; ranger jusqu'à 4 fractions décimales, jusqu'à 5 décimaux.
+
+Niveaux relevés (tous statuts) : Fractions/Ecriture 8, Décomposition 7, Comparer 16, Encadrer 5,
+Ordonner 3 ; Décimaux/Décomposition 7, Ecriture 12, Arrondir 5, Comparer 5, Encadrer 6 → la suite.
+
+**6a — fractions décimales** (thème Fractions, sauf #2)
+
+| #   | Point   | Modèle                                                                                                                                                                                                    | Sous-notion — catégorie, niveau                                 |
+| --- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| 1   | CM2-023 | Lire et écrire une fraction décimale : V1 écrire en chiffres « deux cent sept millièmes » (d 10, 100, 1 000 ; n ≤ 9 999) ; V2 lire en case « choix » (dixièmes / centièmes / millièmes échangés)          | définition — Apprivoiser/Ecriture 9                             |
+| 2   | CM2-024 | Unités, dixièmes, centièmes, millièmes : V1 « 1 unité = ? millièmes » ; V2 « 4 dixièmes = ? centièmes » ; V3 l'inverse (« 300 millièmes = ? dixièmes ») ; V4 « 35 centièmes = ? dixièmes et ? centièmes » | décomposition (Décimaux) — Décimaux/Apprivoiser/Décomposition 8 |
+| 3   | CM2-027 | Décomposer une fraction décimale : V1 4 107/1 000 = ? + ?/10 + ?/100 + ?/1 000 (un chiffre 0 possible) ; V2 l'inverse, 4 + 1/10 + 7/1 000 = ?/1 000 (rang manquant)                                       | décomposition — Apprivoiser/Décomposition 8                     |
+| 4   | CM2-028 | Comparer deux fractions décimales de dénominateurs différents : 7/10 … 65/100 ; 67/100 … 607/1 000 ; « = » possible (70/100 = 7/10) ; signe en case « choix »                                             | ordre — Apprivoiser/Comparer 17                                 |
+| 5   | CM2-139 | Encadrer une fraction décimale entre deux entiers consécutifs : d 100 ou 1 000, jusqu'à 7 103/1 000                                                                                                       | ordre — Apprivoiser/Encadrer 6                                  |
+| 6   | CM2-140 | Intercaler une fraction décimale : V1 3/10 < ? < 4/10 ; V2 43/100 < ? < 44/100 (réponse en millièmes) ; toute fraction strictement entre est juste                                                        | ordre — Apprivoiser/Encadrer 7                                  |
+| 7   | CM2-029 | Ranger quatre nombres (2 ; 140/100 ; 1 200/1 000 ; 9/10) : V1 croissant, V2 décroissant (bloc ` ```ranger `)                                                                                              | ordre — Apprivoiser/Ordonner 4                                  |
+
+**6b — décimaux** (thème Décimaux, Apprivoiser)
+
+| #   | Point   | Modèle                                                                                                                                                                      | Sous-notion — catégorie, niveau             |
+| --- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| 8   | CM2-031 | Lire et écrire un nombre décimal : V1 « quatre unités et cent sept millièmes » → 4,107 ; V2 « 3 unités, 2 dixièmes et 5 millièmes » (rang vide) ; V3 lire en case « choix » | écritures — Ecriture 13                     |
+| 9   | CM2-033 | Partie entière : 105,78 ; 3,7 ; au plus trois décimales, partie entière jusqu'à 999                                                                                         | arrondis et ordres de grandeur — Arrondir 6 |
+| 10  | CM2-145 | Arrondi à l'unité : V1 cas francs ; V2 cas pièges (3,5 → 4 ; 3,49 → 3 ; 9,7 → 10)                                                                                           | arrondis et ordres de grandeur — Arrondir 7 |
+| 11  | CM2-034 | Comparer deux nombres décimaux : 4,592 … 4,71 (plus de chiffres ≠ plus grand) ; 3,7 … 3,70 (« = ») ; signe en case « choix »                                                | ordre — Comparer 6                          |
+| 12  | CM2-146 | Ranger cinq nombres (12,082 ; 12 324/1 000 ; 14 ; 12,09 ; 12,6) : V1 croissant, V2 décroissant                                                                              | ordre — Comparer 7                          |
+| 13  | CM2-147 | Intercaler un nombre décimal : V1 3,4 < ? < 3,5 ; V2 1,99 < ? < 2 ; toute réponse strictement entre, au plus trois décimales                                                | encadrement — Encadrer 7                    |
+
+Corrigés : rang par rang (1 dixième = 10 centièmes = 100 millièmes) ; comparer → même dénominateur
+(7/10 = 70/100) ou même nombre de décimales (4,71 = 4,710) ; arrondi → chiffre des dixièmes.
+Erreurs typiques en `testSpecs` : rang voisin (dixièmes ↔ centièmes), « plus de chiffres donc plus
+grand » (4,592 > 4,71), zéro oublié (4 + 1/10 + 7/1 000 = 417/1 000), arrondi tronqué (3,7 → 3),
+borne recopiée à l'intercalation.
+
+**Question d'accès** : brouillons neufs, puis nœud + tag → personne ne lit rien de plus avant la
+publication.
+
+**À trancher** : (a) découpage 6a puis 6b (comme 5a / 5b) ? (b) #12 : garder une fraction décimale
+parmi les cinq décimaux, comme l'exemple du BO ? (c) #6 et #13 : accepter aussi l'autre écriture
+(0,435 pour 435/1 000 ; 3 456/1 000 pour 3,456) ?
+
+### 11.1 Lot 6 : décisions (David, 2026-11-01)
+
+Recommandations suivies (« tes recos ? » puis « je valide ») : (a) deux lots, **6a** (fractions
+décimales, modèles 1-7) puis **6b** (décimaux, modèles 8-13) ; (b) #12 garde une fraction décimale
+parmi les cinq nombres ; (c) #13 accepte aussi l'écriture fractionnaire, #6 exige une fraction
+décimale (0,435 → message de forme, à vérifier en local). Tableau du § 11 gardé.

@@ -34,7 +34,8 @@ export const STAT_CHART_KINDS = [
 	'loi',
 	'simulation',
 	'effectifs',
-	'nuage'
+	'nuage',
+	'boite-a-moustaches'
 ] as const;
 export type StatChartKind = (typeof STAT_CHART_KINDS)[number];
 
@@ -285,6 +286,32 @@ export interface ScatterData {
 	transformedCloud: boolean;
 }
 
+/**
+ * Une boîte à moustaches (```boite-a-moustaches, palier 1) : ses cinq valeurs dans
+ * l'ordre minimum, Q1, médiane, Q3, maximum (déjà vérifié : croissant)
+ */
+export interface BoxPlotBox {
+	/** null : boîte sans nom (`= 28 ; 30 ; …`, ou `données:`) */
+	name: string | null;
+	values: [number, number, number, number, number];
+	/** Ligne du bloc où la boîte est écrite */
+	line: number;
+}
+
+/** Bloc ```boite-a-moustaches : boîtes horizontales empilées, un seul axe en bas */
+export interface BoxPlotData {
+	/** Dans l'ordre de l'auteur, de haut en bas */
+	boxes: BoxPlotBox[];
+	/** `axe: 25 à 60, de 5 en 5` ; null : calculé sur les valeurs */
+	axis: { min: number; max: number; step: number } | null;
+	/** `titre:` : le titre de l'axe (« temps (en s) ») */
+	axisTitle: string | null;
+	/** `valeurs: oui` : les cinq valeurs écrites sous chaque boîte */
+	showValues: boolean;
+	/** `données:` : une boîte calculée par `describe.ts` */
+	fromData: boolean;
+}
+
 /** Indicateurs affichables sous la figure (Q28) */
 export const STAT_CHART_INDICATORS = [
 	'effectif',
@@ -393,6 +420,8 @@ export interface StatChartSpec {
 	} | null;
 	/** Bloc ```nuage (manche 15) : les deux séries et les options, sinon null */
 	scatter: ScatterData | null;
+	/** Bloc ```boite-a-moustaches : les boîtes et l'axe ; absent ou null ailleurs */
+	boxPlot?: BoxPlotData | null;
 	/**
 	 * Barres : axe vertical écrit par le prof (`axe: 0 à 20, de 2 en 2`), depuis 0 ;
 	 * absent ou null : calculé sur les données
@@ -495,6 +524,8 @@ export const STAT_CHART_LIMITS = {
 	twoSeriesCategories: 15,
 	/** Valeurs affichées d'une loi binomiale : au-delà, pas de tableau (Q138) */
 	binomialTableValues: 30,
+	/** Boîtes d'un bloc ```boite-a-moustaches (lisibles sur un téléphone) */
+	boxPlots: 4,
 	/** Points d'un nuage (Q167) */
 	scatterPoints: { min: 2, max: 100 },
 	/** Prévisions d'un nuage (`prévoir:`) */

@@ -10,6 +10,9 @@ import type { PageServerLoad } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { listChapterTemplates } from '$lib/server/chapter-templates';
 import { listTemplatesQuerySchema } from '$lib/server/validation/chapter-templates';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('dashboard/teacher/contenu/templates/+page.server');
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	// Only teachers can access templates
@@ -29,7 +32,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	// Validate query parameters
 	const validation = listTemplatesQuerySchema.safeParse(queryParams);
 	if (!validation.success) {
-		console.error('[Templates Gallery] Invalid query:', validation.error);
+		logger.error('Invalid query:', validation.error);
 		// Use defaults if validation fails
 	}
 
@@ -43,7 +46,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	} = await listChapterTemplates(query, user.id, locals.supabase);
 
 	if (error) {
-		console.error('[Templates Gallery] Error loading templates:', error);
+		logger.error('Error loading templates:', error);
 		return {
 			templates: [],
 			total: 0,

@@ -6,6 +6,7 @@ couvre:
   - scripts/questions/publier-lot.ts
   - scripts/questions/sonde-courbes.ts
   - scripts/questions/sonde-figures.ts
+  - scripts/questions/sonde-cubes.ts
   - scripts/lib/page-a-cocher.ts
   - scripts/lib/lot-questions.ts
 ---
@@ -196,6 +197,9 @@ Lot qui dessine des figures : `pnpm tsx scripts/questions/sonde-figures.ts --dir
 principe, chaque bloc ``figure passé au moteur de l'appli (`parseFigure` puis
    `buildFigureScene`) → **0 problème** avant la page à cocher (erreurs de construction et textes
    refusés, `mtexte()` par exemple, qu'aucune spec ne voit).
+   Lot d'assemblages de cubes : `pnpm tsx scripts/questions/sonde-cubes.ts --dir …`, même principe,
+   chaque bloc ``cubes (énoncé, options d'un choix, corrigé) passé à `parseEspaceContent` → **0
+   problème** (un bloc d'affichage en erreur, « Solide indisponible », échappe aux specs).
 4. Base **locale** : `set -a; . ./.env.local; set +a` puis `create-questions … --publier`
    (sans cela, le script vise `.env` = la PROD). Jouer chaque modèle dans l'aperçu admin
    (`/dashboard/admin/questions/<id>/preview`, `admin@local.test`), une réponse juste, une fausse,

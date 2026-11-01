@@ -1,0 +1,423 @@
+{
+	"title": "Comparer des longueurs",
+	"description": "Deux longueurs dans deux unités : 2 m et 150 cm ; 1 km et 900 m ; 12 dm et 125 cm ; ranger trois ou quatre longueurs",
+	"grades": ["CE2"],
+	"theme": "Grandeurs",
+	"domain": "Longueurs",
+	"subdomain": "Comparaison et mesure",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Compare ces deux longueurs.\n\n$${{a}}~\\unit{m} \\quad \\ldots \\quad {{b}}~\\unit{cm}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "k",
+					"expression": "0..18"
+				},
+				{
+					"name": "b",
+					"expression": "eval:100*a+10*(k-9)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(100*a-b)+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit les deux longueurs dans la même unité : ${{a}}~\\unit{m} = {{eval:100*a}}~\\unit{cm}$.",
+					"$${{eval:100*a}}~\\unit{cm} {{if:r==0|<|{{if:r==1|=|>}}}} {{b}}~\\unit{cm}$$",
+					"$${{a}}~\\unit{m} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} {{b}}~\\unit{cm}$$"
+				]
+			}
+		},
+		{
+			"statement": "Compare ces deux longueurs.\n\n$${{a}}~\\unit{km} \\quad \\ldots \\quad {{b}}~\\unit{m}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "k",
+					"expression": "0..18"
+				},
+				{
+					"name": "b",
+					"expression": "eval:1000*a+50*(k-9)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(1000*a-b)+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit les deux longueurs dans la même unité : ${{a}}~\\unit{km} = {{eval:1000*a}}~\\unit{m}$.",
+					"$${{eval:1000*a}}~\\unit{m} {{if:r==0|<|{{if:r==1|=|>}}}} {{b}}~\\unit{m}$$",
+					"$${{a}}~\\unit{km} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} {{b}}~\\unit{m}$$"
+				]
+			}
+		},
+		{
+			"statement": "Compare ces deux longueurs.\n\n$${{a}}~\\unit{dm} \\quad \\ldots \\quad {{b}}~\\unit{cm}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..30"
+				},
+				{
+					"name": "k",
+					"expression": "0..10"
+				},
+				{
+					"name": "b",
+					"expression": "eval:10*a+2*(k-5)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(10*a-b)+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit les deux longueurs dans la même unité : ${{a}}~\\unit{dm} = {{eval:10*a}}~\\unit{cm}$.",
+					"$${{eval:10*a}}~\\unit{cm} {{if:r==0|<|{{if:r==1|=|>}}}} {{b}}~\\unit{cm}$$",
+					"$${{a}}~\\unit{dm} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} {{b}}~\\unit{cm}$$"
+				]
+			}
+		},
+		{
+			"statement": "Compare ces deux longueurs.\n\n$${{a}}~\\unit{cm} \\quad \\ldots \\quad {{b}}~\\unit{mm}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..40"
+				},
+				{
+					"name": "k",
+					"expression": "0..10"
+				},
+				{
+					"name": "b",
+					"expression": "eval:10*a+4*(k-5)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(10*a-b)+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit les deux longueurs dans la même unité : ${{a}}~\\unit{cm} = {{eval:10*a}}~\\unit{mm}$.",
+					"$${{eval:10*a}}~\\unit{mm} {{if:r==0|<|{{if:r==1|=|>}}}} {{b}}~\\unit{mm}$$",
+					"$${{a}}~\\unit{cm} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} {{b}}~\\unit{mm}$$"
+				]
+			}
+		},
+		{
+			"statement": "Range ces longueurs du plus petit au plus grand.\n\n```ranger\nsigne: <\n- ${{eval:100*b-30}}~\\unit{cm}$\n- ${{eval:10*b-1}}~\\unit{dm}$\n- ${{b}}~\\unit{m}$\n- ${{eval:10*b+1}}~\\unit{dm}$\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit toutes les longueurs en centimètres : ${{eval:10*b-1}}~\\unit{dm} = {{eval:100*b-10}}~\\unit{cm}$, ${{b}}~\\unit{m} = {{eval:100*b}}~\\unit{cm}$ et ${{eval:10*b+1}}~\\unit{dm} = {{eval:100*b+10}}~\\unit{cm}$.",
+					"$${{eval:100*b-30}}~\\unit{cm} < {{eval:100*b-10}}~\\unit{cm} < {{eval:100*b}}~\\unit{cm} < {{eval:100*b+10}}~\\unit{cm}$$"
+				]
+			}
+		},
+		{
+			"statement": "Range ces longueurs du plus grand au plus petit.\n\n```ranger\nsigne: >\n- ${{eval:10*b+1}}~\\unit{dm}$\n- ${{b}}~\\unit{m}$\n- ${{eval:10*b-1}}~\\unit{dm}$\n- ${{eval:100*b-30}}~\\unit{cm}$\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit toutes les longueurs en centimètres : ${{eval:10*b-1}}~\\unit{dm} = {{eval:100*b-10}}~\\unit{cm}$, ${{b}}~\\unit{m} = {{eval:100*b}}~\\unit{cm}$ et ${{eval:10*b+1}}~\\unit{dm} = {{eval:100*b+10}}~\\unit{cm}$.",
+					"$${{eval:100*b+10}}~\\unit{cm} > {{eval:100*b}}~\\unit{cm} > {{eval:100*b-10}}~\\unit{cm} > {{eval:100*b-30}}~\\unit{cm}$$"
+				]
+			}
+		},
+		{
+			"statement": "Range ces longueurs du plus petit au plus grand.\n\n```ranger\nsigne: <\n- ${{eval:1000*b-100}}~\\unit{m}$\n- ${{b}}~\\unit{km}$\n- ${{eval:1000*b+100}}~\\unit{m}$\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{b}}~\\unit{km} = {{eval:1000*b}}~\\unit{m}$ : on compare les trois longueurs en mètres.",
+					"$${{eval:1000*b-100}}~\\unit{m} < {{eval:1000*b}}~\\unit{m} < {{eval:1000*b+100}}~\\unit{m}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2 m > 150 cm",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"k": "4",
+				"b": "150",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 m < 150 cm (nombres seuls)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"k": "4",
+				"b": "150",
+				"r": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 m = 300 cm",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"k": "9",
+				"b": "300",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1 km > 600 m",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"k": "1",
+				"b": "600",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 km < 600 m",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"k": "1",
+				"b": "600",
+				"r": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 km = 2 000 m",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"k": "9",
+				"b": "2000",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "12 dm = 120 cm",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12",
+				"k": "5",
+				"b": "120",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "12 dm < 122 cm",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12",
+				"k": "6",
+				"b": "122",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 12 dm > 122 cm",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12",
+				"k": "6",
+				"b": "122",
+				"r": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "30 cm > 280 mm",
+			"variationIndex": 3,
+			"variables": {
+				"a": "30",
+				"k": "0",
+				"b": "280",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 30 cm < 280 mm",
+			"variationIndex": 3,
+			"variables": {
+				"a": "30",
+				"k": "0",
+				"b": "280",
+				"r": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "croissant : 270 cm < 29 dm < 3 m < 31 dm",
+			"variationIndex": 4,
+			"variables": {
+				"b": "3"
+			},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : les nombres seuls (3 m < 29 dm < 31 dm < 270 cm)",
+			"variationIndex": 4,
+			"variables": {
+				"b": "3"
+			},
+			"answers": ["1", "0", "2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ordre décroissant",
+			"variationIndex": 4,
+			"variables": {
+				"b": "3"
+			},
+			"answers": ["2", "1", "0", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "décroissant : 31 dm > 3 m > 29 dm > 270 cm",
+			"variationIndex": 5,
+			"variables": {
+				"b": "3"
+			},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ordre croissant",
+			"variationIndex": 5,
+			"variables": {
+				"b": "3"
+			},
+			"answers": ["2", "1", "0", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "croissant : 2 900 m < 3 km < 3 100 m",
+			"variationIndex": 6,
+			"variables": {
+				"b": "3"
+			},
+			"answers": ["2", "0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : les nombres seuls (3 km < 2 900 m < 3 100 m)",
+			"variationIndex": 6,
+			"variables": {
+				"b": "3"
+			},
+			"answers": ["0", "2", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

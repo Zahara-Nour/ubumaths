@@ -20,7 +20,7 @@ import { probtreeEntry } from './probtree';
 import { qrEntry } from './qr';
 import { scratchEntry } from './scratch';
 import { rangerEntry } from './ranger';
-import { statChartEntry } from './stat-chart';
+import { boxPlotEntry, statChartEntry } from './stat-chart';
 import { trigEntry } from './trig';
 import { variationEntry } from './variation';
 import type { BlockCatalogEntry } from './types';
@@ -36,6 +36,7 @@ export const BLOCK_CATALOG: BlockCatalogEntry[] = [
 	figureACompleterEntry,
 	figureDeTravailEntry,
 	statChartEntry,
+	boxPlotEntry,
 	qrEntry,
 	horlogeEntry,
 	partageEntry,

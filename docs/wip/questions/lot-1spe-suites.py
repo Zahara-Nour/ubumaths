@@ -603,7 +603,8 @@ def croix(f, m, x0):
 def triangle(f, m, x0):
     for ligne in range(m):
         for j in range(ligne + 1):
-            f.point(x0 + ligne * 0.5 + j, (m - 1 - ligne) * 0.85)
+            # Ligne « ligne » (0 = sommet, en haut) : ligne + 1 points, centrée sous le sommet
+            f.point(x0 + (m - 1 - ligne) * 0.5 + j, (m - 1 - ligne) * 0.85)
 
 
 def carre(f, m, x0):
