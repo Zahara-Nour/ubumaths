@@ -6,11 +6,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2117 (rangement du 5a) et #2123 (fichiers du 5b)._
+_Mis à jour le 2026-11-01, après la publication du 5a et #2123 (fichiers du 5b)._
 
-- **État** : lots 0 à 4 publiés ; 5a rangé en prod (#2117, `db push --include-all`, vérifié MCP), page à cocher publiée : https://claude.ai/artifact/R6LqP4SYrAFf1Keor4Xdxo (5 fiches, `verdicts` vide au départ) ; 5b (calculs, 6 modèles) écrit, specs vertes, simulation prod « 6 à créer », essayé en local (§ 10.4), fichiers mergés (#2123).
-- **Prochaine action** : après le `--publier` du 5a, vérifier `published` (MCP) ; après le `--publier` du 5b : relever ses ids (MCP), worktree neuf, migration de rangement, page à cocher.
-- **En attente de David** : `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/cm2-5a --publier` (5a relu : 5 OK sur 5, simulation : 5 passent) ; `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-5b --publier` (brouillons en prod).
+- **État** : lots 0 à 4 et **5a publiés** ; 5a rangé en prod (#2117, `db push --include-all`, vérifié MCP), page à cocher publiée : https://claude.ai/artifact/R6LqP4SYrAFf1Keor4Xdxo (5 fiches, `verdicts` vide au départ) ; 5b (calculs, 6 modèles) écrit, specs vertes, simulation prod « 6 à créer », essayé en local (§ 10.4), fichiers mergés (#2123).
+- **Prochaine action** : après le `--publier` du 5b : relever ses ids (MCP), worktree neuf, migration de rangement, page à cocher.
+- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-5b --publier` (brouillons en prod).
 - **Pièges en cours** : `create-questions` retrouve un modèle par titre + catégorie + niveau (homonymes du CM1 signalés par la page à cocher, ids vérifiés) ; `reducedFractions: off` accepte toute fraction égale ; jamais `}}` collé dans un `{{if:}}` (accolade de `\underbrace`) ; `db:migrate` refusé quand la prod a des migrations plus récentes → `--dry-run` puis `--include-all` si seule la nôtre manque ; commit dans le dépôt principal : `git commit -m … -- <fichiers>` ; `Doc-inchangée:` dans un message de commit ; ne jamais enchaîner `gh pr merge` sur la lecture de la CI.
 - **Worktree / branche** : aucun (retiré après #2123) ; en recréer un pour le rangement du 5b.
 
@@ -533,3 +533,7 @@ modèles 6-11). Tableau du § 10 gardé.
 ### 10.5 Lot 5a : relecture (David, 2026-11-01)
 
 - 5 OK sur 5, sans commentaire (`verdicts` lu et compté). `publier-lot` en simulation : 5 brouillons passent le contrôle.
+
+### 10.6 Lot 5a : publication (2026-11-01)
+
+- David lance `publier-lot --publier` : 5/5 publiés. MCP : 5 `published`, 5 rangés, 5 tagués.
