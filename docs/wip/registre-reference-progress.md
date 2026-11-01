@@ -303,4 +303,11 @@ Sonde jetable (vitest sous `src/`, `produceRegistre` / `produceAtelier`), 25 lig
 - **Relecture en cours (2026-11-01)** : 20/108 fiches (`decimal-01…14`, `grands-01…06`), 17 OK.
   Questions de David répondues sur la page (champ `reponse`) : `decimal-07` (0,5(x+1) non
   distribué : tidy ne développe pas, comme 3(x+1)) → OK ; `decimal-10` (0,5/x : Q9 de
-  simplify-carte) et `grands-06` (2,5×10⁻³ gardé : Q24) → en attente de sa relecture de la réponse.
+  simplify-carte) et `grands-06` (2,5×10⁻³ gardé : Q24 posée avec 3×10²⁰ seulement, l'exposant
+  négatif n'a jamais été montré à part) → en attente.
+- **Relecture, 2e passage** : 82/108. Tranché : `plafond-02` → **1000** (règle « calcul puis
+  mesure » contre l'Atelier) ; `plafond-04` écriture gardée avec `/` OK ; `comparer-13` refus OK ;
+  familles 4, 5, 7 entières OK. Répondu, en attente : `signes-06` (pas de réduction par 2 qui fait
+  apparaître x+1 en haut et en bas, revue 2026-10-20 + Q9) ; `grandeurs-01` (mon avis : garder
+  12000 m, unité choisie seulement par un calcul, `.convertir` sinon ; tidy-units:24 = écart de
+  tidy à signaler). Reste : `grands-09`, `grandeurs-02…11`, `approche-01…15`.
