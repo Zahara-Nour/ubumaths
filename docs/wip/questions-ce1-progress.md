@@ -5,12 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 7 écrit, PR #2102._
+_Mis à jour le 2026-11-01, après #2102._
 
 - **État** : lots 0 à 6 publiés (lot 6 : calcul posé et heure, 7 modèles, § 13, clos le 2026-11-01).
-- **Prochaine action** : lot 7 (données : 082, 106, 088, 089, 107, 081) — écrit (§ 14), PR #2102 : CI verte → merge →
-  David lance `create-questions --dir scripts/questions/ce1-7 --publier` → migration nœud + tag ; puis chantier `monnaie-centimes` (à part) et lot monnaie, puis lots 8 et 9 (§ 12).
-- **En attente de David** : rien (après le merge : les brouillons en prod).
+- **Prochaine action** : lot 7 (données : 082, 106, 088, 089, 107, 081) — écrit (§ 14), #2102 mergée → David lance `create-questions --dir scripts/questions/ce1-7 --publier` → migration nœud + tag ; puis chantier `monnaie-centimes` (à part) et lot monnaie, puis lots 8 et 9 (§ 12).
+- **En attente de David** : `create-questions --dir scripts/questions/ce1-7 --publier` (6 brouillons en prod).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
@@ -602,3 +601,4 @@ Réponse de David (« tes recos ? » puis « go », 2026-11-01) : les quatre rec
   une barre **non construite** parmi d'autres est jugée « forme non optimale », pas « faux » (juge commun) — spec
   remplacée par une barre fausse ; à signaler, pas corrigé ici. `totaux: oui` ajoute la ligne ET la colonne Total.
   PR #2102 ouverte.
+- 2026-11-01 : #2102 mergée (CI verte 15/15) ; brouillons en prod à créer par David.
