@@ -6,12 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR du 6 B ouverte (§ 39)._
+_Mis à jour le 2026-11-01, #2113 (6 B) ouverte, CI rouge à cause de `main` (§ 39)._
 
 - **État** : lots 1 à 5 publiés ; lot 6 : 6 A mergé (#2106), 6 B en PR (§ 39) ; rien du lot 6 en prod.
-- **Prochaine action** : merger la PR du 6 B ; écrire 6 C (racine, cube, méthode adaptée : 6 modèles, § 37) dans
+- **Prochaine action** : relancer la CI de #2113 quand `main` est réparée, merger ; écrire 6 C (racine, cube, méthode adaptée : 6 modèles, § 37) dans
   un worktree neuf ; puis brouillons, migration et page à cocher pour les 20.
-- **En attente de David** : rien.
+- **En attente de David** : collision sur `main` : `20261101190200` porté par deux migrations (5e lot 6, 6e lot 7,
+  #2107) → `migration-versions.test.ts` rouge pour toutes les PR ; à réparer par la session 5e ou 6e.
 - **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main` ET des worktrees ; `page-a-cocher.ts`
   ne prend qu'un `--dir` (préfixes `a-`/`b-` dans une copie, désormais trois dossiers) ; `db:migrate` et
   `--publier` refusés par le classifieur → David les lance avec `!` ; worktree neuf → `pnpm exec svelte-kit sync`
@@ -988,3 +989,6 @@ une page à cocher.
 - Base locale : 6 brouillons ; aperçu joué : 06 (k = 0,5 rendu « 0,5 » ; [0 ; 2] « Faux » avec « Tu as inclus une
   borne qui devrait être exclue », ]0 ; 2] « Juste » ; corrigé : hyperbole, disque vide en 0) ; corrigés de 02
   (m < 0), 03 (|x| ⩽ 3), 04 (1,69), 05 (√14 dans le bloc) dessinés comme prévu.
+- #2113 : CI rouge sans lien avec le lot — `migration-versions` (collision `20261101190200` sur `main`, 5e lot 6 et
+  6e lot 7), `wrapDynamicImport` (client, connu, vert à la relance), « Garde SECURITY DEFINER » (à relire après la
+  réparation de `main`).
