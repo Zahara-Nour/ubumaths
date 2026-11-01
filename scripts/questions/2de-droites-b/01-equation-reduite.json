@@ -1,0 +1,325 @@
+{
+	"title": "Équation réduite d'une droite",
+	"description": "Point sur une droite y = mx + p ? ; ordonnée du point d'abscisse donnée ; équation réduite tirée d'une cartésienne ; droite x = c (pièges : y = mx + p pris pour m, signe de p, isoler y sans diviser)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Droites du plan",
+	"subdomain": "Équations de droites",
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans un repère du plan, la droite $d$ a pour équation $y={{m}}x{{p;+}}$.\n\nLe point $A({{xa}}\\,;\\,{{ya}})$ appartient-il à la droite $d$ ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..4;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "xa",
+					"expression": "-4..4!0"
+				},
+				{
+					"name": "w",
+					"expression": "0|1"
+				},
+				{
+					"name": "s",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "ya",
+					"expression": "eval:(m)*(xa)+(p)+(1-(w))*(s)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-(w)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A$ appartient à $d$ si et seulement si ses coordonnées vérifient l'équation : on remplace $x$ par ${{xa}}$.",
+					"$${{m}}\\times{{xa;()}}{{p;+}}={{eval:(m)*(xa)+(p)}}$$",
+					"{{if:w==1|On trouve l'ordonnée de $A$ : **$A$ appartient à $d$**.|${{eval:(m)*(xa)+(p)}}\\neq{{ya}}$ : **$A$ n'appartient pas à $d$**.}}"
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère du plan, la droite $d$ a pour équation $y={{m}}x{{p;+}}$.\n\nLe point $A$ de la droite $d$ a pour abscisse ${{xa}}$. Calcule son ordonnée.\n\n$y_A=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "xa",
+					"expression": "-5..5!0"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(m)*(xa)+(p)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A$ est sur $d$ : ses coordonnées vérifient l'équation, on remplace $x$ par ${{xa}}$.",
+					"$$y_A={{m}}\\times{{xa;()}}{{p;+}}=\\textcolor{{{color:primary.0}}}{{{eval:(m)*(xa)+(p)}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère du plan, la droite $d$ a pour équation ${{eval:-(m)*(b)}}x{{b;+}}y{{eval:-(p)*(b);+}}=0$.\n\nDonne l'**équation réduite** de la droite $d$.\n\n$?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..3;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "y={{m}}x{{p;+}}",
+					"answerKind": "equation",
+					"requiredForm": "reduite"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'équation réduite s'écrit $y=mx+p$ : on isole $y$.",
+					"$${{b}}y={{eval:(m)*(b)}}x{{eval:(p)*(b);+}}$$",
+					"{{if:b!=1|On divise par ${{b}}$ : }}$\\textcolor{{{color:primary.0}}}{y={{if:m==1|x}}{{if:m==-1|-x}}{{if:m>1|{{m}}x}}{{if:m< -1|{{m}}x}}{{if:p>0|+{{p}}}}{{if:p< 0|{{p}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère du plan, la droite $d$ passe par le point $A({{xa}}\\,;\\,{{ya}})$ et est parallèle à l'axe des ordonnées.\n\nDonne l'**équation réduite** de la droite $d$.\n\n$?$",
+			"variables": [
+				{
+					"name": "xa",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "ya",
+					"expression": "-6..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "x={{xa}}",
+					"answerKind": "equation",
+					"requiredForm": "reduite"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une droite parallèle à l'axe des ordonnées n'a pas de pente : tous ses points ont la même abscisse.",
+					"Son équation réduite est $x=c$, ici $\\textcolor{{{color:primary.0}}}{x={{xa}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A(4 ; 5) sur y = 2x − 3 : « Oui »",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"p": "-3",
+				"xa": "4",
+				"w": "1",
+				"s": "1",
+				"ya": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "A(4 ; 6) : « Non »",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"p": "-3",
+				"xa": "4",
+				"w": "0",
+				"s": "1",
+				"ya": "6"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "A(4 ; 6) : « Oui » faux",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"p": "-3",
+				"xa": "4",
+				"w": "0",
+				"s": "1",
+				"ya": "6"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "y = −3x + 2, x = −2 → 8",
+			"variationIndex": 1,
+			"variables": {
+				"m": "-3",
+				"p": "2",
+				"xa": "-2"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe (−4)",
+			"variationIndex": 1,
+			"variables": {
+				"m": "-3",
+				"p": "2",
+				"xa": "-2"
+			},
+			"answers": ["-4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2x + y − 3 = 0 → y = −2x + 3",
+			"variationIndex": 2,
+			"variables": {
+				"m": "-2",
+				"p": "3",
+				"b": "1"
+			},
+			"answers": ["y=-2x+3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écrite y = 3 − 2x",
+			"variationIndex": 2,
+			"variables": {
+				"m": "-2",
+				"p": "3",
+				"b": "1"
+			},
+			"answers": ["y=3-2x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme cartésienne refusée",
+			"variationIndex": 2,
+			"variables": {
+				"m": "-2",
+				"p": "3",
+				"b": "1"
+			},
+			"answers": ["2x+y-3=0"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur : signe (y = 2x + 3)",
+			"variationIndex": 2,
+			"variables": {
+				"m": "-2",
+				"p": "3",
+				"b": "1"
+			},
+			"answers": ["y=2x+3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "6x − 3y − 3 = 0 → y = 2x − 1",
+			"variationIndex": 2,
+			"variables": {
+				"m": "2",
+				"p": "-1",
+				"b": "-3"
+			},
+			"answers": ["y=2x-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pas divisé (−3y = −6x + 3)",
+			"variationIndex": 2,
+			"variables": {
+				"m": "2",
+				"p": "-1",
+				"b": "-3"
+			},
+			"answers": ["-3y=-6x+3"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "x = 3",
+			"variationIndex": 3,
+			"variables": {
+				"xa": "3",
+				"ya": "-1"
+			},
+			"answers": ["x=3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : y = −1",
+			"variationIndex": 3,
+			"variables": {
+				"xa": "3",
+				"ya": "-1"
+			},
+			"answers": ["y=-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

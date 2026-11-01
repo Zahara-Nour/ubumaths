@@ -1,0 +1,127 @@
+{
+	"title": "Tracer une droite donnée par son équation réduite",
+	"description": "Choisir la droite tracée qui représente y = mx + p, pente entière puis fractionnaire (pièges : signe de la pente, m et p échangés, pente inversée, signe de p)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Droites du plan",
+	"subdomain": "Équations de droites",
+	"level": 6,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans un repère du plan, on considère la droite $d$ d'équation $y={{m}}x{{p;+}}$.\n\nQuelle figure représente la droite $d$ ?\n\n````choix\n- ```courbe\n  x: -6 ; 6\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = ({{m}})*x+({{p}})   bleu   nom=d\n  taille: petite\n  description: Droite passant par les points (0 ; {{eval:(p)}}) et (1 ; {{eval:(p)+(m)}}).\n  ```\n- ```courbe\n  x: -6 ; 6\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = ({{eval:-(m)}})*x+({{p}})   bleu   nom=d\n  taille: petite\n  description: Droite passant par les points (0 ; {{eval:(p)}}) et (1 ; {{eval:(p)+-(m)}}).\n  ```\n- ```courbe\n  x: -6 ; 6\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = ({{p}})*x+({{m}})   bleu   nom=d\n  taille: petite\n  description: Droite passant par les points (0 ; {{eval:(m)}}) et (1 ; {{eval:(m)+(p)}}).\n  ```\n- ```courbe\n  x: -6 ; 6\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = ({{m}})*x+({{eval:-(p)}})   bleu   nom=d\n  taille: petite\n  description: Droite passant par les points (0 ; {{eval:-(p)}}) et (1 ; {{eval:-(p)+(m)}}).\n  ```\n````",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..4;±"
+				}
+			],
+			"conditions": ["m != p", "abs((p)+(m)) <= 6", "abs((m)-(p)) <= 6"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tracer $y=mx+p$ : on place le point $(0\\,;\\,p)$ sur l'axe des ordonnées, puis, en avançant de $1$, on monte de $m$ (on descend si $m<0$).",
+					"```courbe\nx: -6 ; 6\ny: -6 ; 6\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=d\npoints: A(0 ; {{p}}), B(1 ; {{eval:(p)+(m)}})\ntaille: moyenne\ndescription: Droite d et deux de ses points, A et B, d'abscisses 0 et 1.\n```",
+					"Ici $d$ passe par $A(0\\,;{{p}})$ et, en avançant de $1$, on {{if:m>0|monte|descend}} de ${{eval:abs(m)}}$ jusqu'à $B(1\\,;{{eval:(p)+(m)}})$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère du plan, on considère la droite $d$ d'équation $y={{if:n<0|-}}\\dfrac{ {{eval:abs(n)}} }{ {{q}} }x{{p;+}}$.\n\nQuelle figure représente la droite $d$ ?\n\n````choix\n- ```courbe\n  x: -6 ; 6\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = ({{n}})/({{q}})*x+({{p}})   bleu   nom=d\n  taille: petite\n  description: Droite passant par les points (0 ; {{p}}) et ({{q}} ; {{eval:(p)+(n)}}).\n  ```\n- ```courbe\n  x: -6 ; 6\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = ({{eval:-(n)}})/({{q}})*x+({{p}})   bleu   nom=d\n  taille: petite\n  description: Droite passant par les points (0 ; {{p}}) et ({{q}} ; {{eval:(p)-(n)}}).\n  ```\n- ```courbe\n  x: -6 ; 6\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = ({{q}})/({{n}})*x+({{p}})   bleu   nom=d\n  taille: petite\n  description: Droite passant par les points (0 ; {{p}}) et ({{eval:abs(n)}} ; {{eval:(p)+(q)*abs(n)/(n)}}).\n  ```\n- ```courbe\n  x: -6 ; 6\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = ({{n}})/({{q}})*x+({{eval:-(p)}})   bleu   nom=d\n  taille: petite\n  description: Droite passant par les points (0 ; {{eval:-(p)}}) et ({{q}} ; {{eval:(n)-(p)}}).\n  ```\n````",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2|3"
+				},
+				{
+					"name": "n",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..3;±"
+				}
+			],
+			"conditions": ["mod(n, q) != 0", "abs((p)+(n)) <= 5", "abs((p)-(n)) <= 5"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tracer $y=mx+p$ : on place le point $(0\\,;\\,p)$ sur l'axe des ordonnées, puis, en avançant de $1$, on monte de $m$ (on descend si $m<0$).",
+					"```courbe\nx: -6 ; 6\ny: -6 ; 6\ngrille: 1 ; 1\nf(x) = ({{n}})/({{q}})*x+({{p}})   bleu   nom=d\npoints: A(0 ; {{p}}), B({{q}} ; {{eval:(p)+(n)}})\ntaille: moyenne\ndescription: Droite d et deux de ses points, A et B, d'abscisses 0 et {{q}}.\n```",
+					"La pente est ${{if:n<0|-}}\\dfrac{ {{eval:abs(n)}} }{ {{q}} }$ : en avançant de ${{q}}$, on {{if:n>0|monte|descend}} de ${{eval:abs(n)}}$, de $A(0\\,;{{p}})$ à $B({{q}}\\,;{{eval:(p)+(n)}})$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "y = 2x − 1 : la bonne",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"p": "-1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : m et p échangés",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"p": "-1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "y = 2/3 x + 1 : la bonne",
+			"variationIndex": 1,
+			"variables": {
+				"q": "3",
+				"n": "2",
+				"p": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pente inversée",
+			"variationIndex": 1,
+			"variables": {
+				"q": "3",
+				"n": "2",
+				"p": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

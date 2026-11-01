@@ -6,16 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2077._
+_Mis à jour le 2026-11-01, PR des fichiers du lot 5 B (§ 32)._
 
-- **État** : lots 1 à 4 publiés ; lot 5 « Droites » validé (§ 30) ; fichiers 5 A (6 modèles) mergés sur `main` (#2077), pas encore en prod.
-- **Prochaine action** : David lance `create-questions --publier` sur `scripts/questions/2de-droites-a` ; je vérifie
-  en prod ; ensuite écrire le lot 5 B (10 modèles, § 30) sur une nouvelle branche `feat/questions-2de-lot-5b`.
-- **En attente de David** : le `--publier` du lot 5 A.
-- **Pièges en cours** : horodatage = max + 1 min de `origin/main` ET des worktrees ; `migration list
---linked` avant `db:migrate` ; `page-a-cocher.ts` ne prend qu'un `--dir` ; `svelte-kit sync` dans un worktree
-  neuf avant `pnpm tsx` (`$lib` introuvable sinon).
-- **Worktree / branche** : `ubumaths-wt-questions-2de` · `feat/questions-2de-lot-5a` (mergée, à remplacer par `lot-5b`).
+- **État** : lots 1 à 4 publiés ; 5 A mergé (#2077), PAS encore en prod (MCP : aucun des 6 titres) ; 5 B
+  (10 modèles) écrit, joué en local, commité sur `feat/questions-2de-lot-5b`.
+- **Prochaine action** : PR des fichiers 5 B (revue : aucune, contenu ; `Doc-inchangée: contenu`), CI verte,
+  merge ; puis David lance `create-questions --publier` sur `2de-droites-a` ET `2de-droites-b` ; ensuite
+  migration nœud + tag des 16 brouillons du lot 5, puis page à cocher.
+- **En attente de David** : les deux `--publier` (5 A, puis 5 B après le merge).
+- **Pièges en cours** : `\textcolor` bloque `cleanCoefficients` → coefficients colorés par `{{if:…}}`
+  (`tete`/`suite`/`cst` du script 5 B) ; `\iff` suivi d'une lettre casse le LaTeX ; spec `bad_form` →
+  `constraintViolations: ["form"]` ; horodatage de migration = max + 1 min de `origin/main` ET des worktrees.
+- **Worktree / branche** : `ubumaths-wt-questions-2de` · `feat/questions-2de-lot-5b`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -788,3 +790,21 @@ L5-c lots 5 A (6) puis 5 B (10) ; L5-d 09f0c9ec laissé tel quel.
 - Relecture des tirages : « m = 5/1 » (01) et « y = 3/−4 x » (03) corrigés en valeurs calculées.
 - Base locale : 6 brouillons ; aperçu joué : 02 (−1/2 lu sur la droite, « Juste »), 05 (y = 5x + 1, réponse
   (−2 ; −10) colinéaire « Juste »), 04 (choix mélangés, les trois vecteurs directeurs « coché, juste »).
+
+## 32. Lot 5 B, PR des fichiers (2026-11-01)
+
+- Script `questions-2de/lot-droites-b-2de.py` → `scripts/questions/2de-droites-b/` (10 modèles, 27 variations,
+  77 specs). Catégories neuves Géométrie › Droites du plan › Équations de droites (01 à 07, niveaux 1 à 7 :
+  2-439, 312, 441, 314, 440, 316, 445) et › Positions relatives (08 à 10, niveaux 1 à 3 : 2-317, 318, 319).
+  Cases `equation` posées case par case (`answerKind` dans la case, pas en `blankDefaults` : les modèles
+  mêlent choix et calcul) ; `requiredForm` réduite (01) et cartésienne (02) seulement.
+- `question-specs` : 77/77, tirages tous réussis ; `sonde-courbes` : 0 problème ; `create-questions` en
+  simulation contre la prod : « 10 à créer ».
+- Relecture des tirages (`apercu-fichiers.ts`, nouveau : aperçu par variation des fichiers d'un lot) :
+  `y=1x-2` dans `\textcolor` (le nettoyage ne passe pas la couleur) → coefficients par `{{if:…}}` ;
+  `15--3` et `-4\times(-8)--4` → `{{k;()}}` ; `\iffx` → espace, étape `1x = …` sautée si m1 − m2 = 1 ;
+  `y+0` → coordonnées non nulles.
+- MCP (prod) : aucun modèle du lot 5 A en base, le `--publier` de David reste à faire.
+- Base locale : 10 brouillons ; aperçu joué : 06 (y = −2x + 4, quatre droites dessinées, A « coché, juste ») ;
+  01 v3 (12x − 3y − 18 = 0 : `y=6+4x` « Juste », `4x-y+6=0` « Faux » avec le message de forme réduite) ;
+  10 v3 (x = −4 et y = −4x − 2 : I(−4 ; 14) en deux cases « Juste »).
