@@ -12,7 +12,7 @@
 _Mis à jour le 2026-11-01, migration des tags D3 en cours (§ 17)._
 
 - **État** : lots 0-suites à 0-logique publiés. Migration D3 réduite à 2 tags (D22, § 17) : f1440b52 1SPE-274 → 396, 318ea542 → 283 ; écrite, 11 / 11 verts, rouge vérifié ; `security-auditor` : aucun finding bloquant. Brouillons de 1re spé restants : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (niveau `T_SPE` laissé à questions-tspe), 0495289a (attente), c90fa022, d2067413 (points 1TECHNO).
-- **Prochaine action** : PR, CI verte, merge, `db:migrate` depuis la branche mergée, relire les 2 tags en base (MCP). Puis D7 : lot dérivation.
+- **Prochaine action** : PR ouverte (`feat/questions-1spe-tags`), CI verte, merge, `db:migrate` depuis la branche mergée, relire les 2 tags en base (MCP). Puis D7 : lot dérivation.
 - **En attente de David** : rien.
 - **Pièges en cours** : `create-questions` et `publier-lot --publier` refusés au mode auto (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET worktrees ; instantané jamais dans le dépôt principal.
 - **Worktree / branche** : `../ubumaths-wt-questions-1spe-tags` · `feat/questions-1spe-tags`.
