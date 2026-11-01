@@ -10,7 +10,7 @@ _Mis à jour le 2026-11-01, après #2150 (lot 8 écrit, mergé)._
 - **État** : lots 1 à 7 publiés ; lot 8 « Assemblages de cubes » (154, 155, 181, 208, 209) écrit, joué en local,
   fichiers mergés (#2150) ; rien en prod pour ce lot.
 - **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-assemblages-cubes
-  --publier` (brouillons en prod) ; puis relever les 5 `id`, migration nœud + tag (nœuds = notions « Géométrie >
+--publier` (brouillons en prod) ; puis relever les 5 `id`, migration nœud + tag (nœuds = notions « Géométrie >
   Solides », « Grandeurs et mesures > Volumes »), page à cocher. **Publication après le `deploy:prod` qui livre
   #2130.**
 - **En attente de David** : le `create-questions --publier` du lot 8.

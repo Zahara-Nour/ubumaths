@@ -1,0 +1,361 @@
+{
+	"title": "Comparer des masses",
+	"description": "Deux masses dans deux unités : 2 kg et 1 750 g ; 1 t et 1 200 kg ; trois ou quatre objets : le plus lourd, le plus léger, ranger",
+	"grades": ["CE2"],
+	"theme": "Grandeurs",
+	"domain": "Masses",
+	"subdomain": "Comparaison",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Compare ces deux masses.\n\n$${{a}}~\\unit{kg} \\quad \\ldots \\quad {{b}}~\\unit{g}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "k",
+					"expression": "0..18"
+				},
+				{
+					"name": "b",
+					"expression": "eval:1000*a+50*(k-9)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(1000*a-b)+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit les deux masses dans la même unité : ${{a}}~\\unit{kg} = {{eval:1000*a}}~\\unit{g}$.",
+					"$${{eval:1000*a}}~\\unit{g} {{if:r==0|<|{{if:r==1|=|>}}}} {{b}}~\\unit{g}$$",
+					"$${{a}}~\\unit{kg} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} {{b}}~\\unit{g}$$"
+				]
+			}
+		},
+		{
+			"statement": "Compare ces deux masses.\n\n$${{a}}~\\unit{t} \\quad \\ldots \\quad {{b}}~\\unit{kg}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "k",
+					"expression": "0..18"
+				},
+				{
+					"name": "b",
+					"expression": "eval:1000*a+50*(k-9)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(1000*a-b)+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit les deux masses dans la même unité : ${{a}}~\\unit{t} = {{eval:1000*a}}~\\unit{kg}$.",
+					"$${{eval:1000*a}}~\\unit{kg} {{if:r==0|<|{{if:r==1|=|>}}}} {{b}}~\\unit{kg}$$",
+					"$${{a}}~\\unit{t} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} {{b}}~\\unit{kg}$$"
+				]
+			}
+		},
+		{
+			"statement": "Compare ces deux masses.\n\n$${{a}}~\\unit{kg}~{{b}}~\\unit{g} \\quad \\ldots \\quad {{c}}~\\unit{g}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..999"
+				},
+				{
+					"name": "k",
+					"expression": "0..40"
+				},
+				{
+					"name": "c",
+					"expression": "eval:1000*a+b+k-20"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(1000*a+b-c)+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit les deux masses dans la même unité : ${{a}}~\\unit{kg}~{{b}}~\\unit{g} = {{eval:1000*a}}~\\unit{g} + {{b}}~\\unit{g} = {{eval:1000*a+b}}~\\unit{g}$.",
+					"$${{eval:1000*a+b}}~\\unit{g} {{if:r==0|<|{{if:r==1|=|>}}}} {{c}}~\\unit{g}$$",
+					"$${{a}}~\\unit{kg}~{{b}}~\\unit{g} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} {{c}}~\\unit{g}$$"
+				]
+			}
+		},
+		{
+			"statement": "Range ces masses du plus léger au plus lourd.\n\n```ranger\nsigne: <\n- ${{eval:1000*b-300}}~\\unit{g}$\n- ${{b}}~\\unit{kg}$\n- ${{eval:1000*b+300}}~\\unit{g}$\n- ${{b}}~\\unit{t}$\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit les masses du même type dans la même unité : ${{b}}~\\unit{kg} = {{eval:1000*b}}~\\unit{g}$. Une tonne pèse $1\\,000$ fois plus qu'un kilogramme : ${{b}}~\\unit{t} = {{eval:1000*b}}~\\unit{kg}$, bien plus que ${{b}}~\\unit{kg}$.",
+					"$${{eval:1000*b-300}}~\\unit{g} < {{b}}~\\unit{kg} < {{eval:1000*b+300}}~\\unit{g} < {{b}}~\\unit{t}$$"
+				]
+			}
+		},
+		{
+			"statement": "Quel objet est le plus lourd ?\n\n```choix\n- {{if:k==1|un colis de $2~\\unit{kg}$|{{if:k==2|un sac de $3\\,200~\\unit{g}$|{{if:k==3|un camion de $5~\\unit{t}$|un taureau de $1~\\unit{t}$}}}}}}\n- {{if:k==1|un sac de $1\\,800~\\unit{g}$|{{if:k==2|un paquet de $3~\\unit{kg}$|{{if:k==3|un tracteur de $4\\,800~\\unit{kg}$|un cheval de $600~\\unit{kg}$}}}}}}\n- {{if:k==1|une valise de $950~\\unit{g}$|{{if:k==2|un colis de $2\\,900~\\unit{g}$|{{if:k==3|une voiture de $1\\,200~\\unit{kg}$|un veau de $120~\\unit{kg}$}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==1|$2~\\unit{kg} = 2\\,000~\\unit{g}$ : $2\\,000~\\unit{g} > 1\\,800~\\unit{g} > 950~\\unit{g}$.|{{if:k==2|$3~\\unit{kg} = 3\\,000~\\unit{g}$ : $3\\,200~\\unit{g} > 3\\,000~\\unit{g} > 2\\,900~\\unit{g}$.|{{if:k==3|$5~\\unit{t} = 5\\,000~\\unit{kg}$ : $5\\,000~\\unit{kg} > 4\\,800~\\unit{kg} > 1\\,200~\\unit{kg}$.|$1~\\unit{t} = 1\\,000~\\unit{kg}$ : $1\\,000~\\unit{kg} > 600~\\unit{kg} > 120~\\unit{kg}$.}}}}}}",
+					"Le plus lourd est **{{if:k==1|le colis de 2 kg|{{if:k==2|le sac de 3 200 g|{{if:k==3|le camion de 5 t|le taureau de 1 t}}}}}}**."
+				]
+			}
+		},
+		{
+			"statement": "Quel objet est le plus léger ?\n\n```choix\n- {{if:k==1|une valise de $950~\\unit{g}$|{{if:k==2|un colis de $2\\,900~\\unit{g}$|{{if:k==3|une voiture de $1\\,200~\\unit{kg}$|un veau de $120~\\unit{kg}$}}}}}}\n- {{if:k==1|un sac de $1\\,800~\\unit{g}$|{{if:k==2|un paquet de $3~\\unit{kg}$|{{if:k==3|un tracteur de $4\\,800~\\unit{kg}$|un cheval de $600~\\unit{kg}$}}}}}}\n- {{if:k==1|un colis de $2~\\unit{kg}$|{{if:k==2|un sac de $3\\,200~\\unit{g}$|{{if:k==3|un camion de $5~\\unit{t}$|un taureau de $1~\\unit{t}$}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==1|$2~\\unit{kg} = 2\\,000~\\unit{g}$ : $2\\,000~\\unit{g} > 1\\,800~\\unit{g} > 950~\\unit{g}$.|{{if:k==2|$3~\\unit{kg} = 3\\,000~\\unit{g}$ : $3\\,200~\\unit{g} > 3\\,000~\\unit{g} > 2\\,900~\\unit{g}$.|{{if:k==3|$5~\\unit{t} = 5\\,000~\\unit{kg}$ : $5\\,000~\\unit{kg} > 4\\,800~\\unit{kg} > 1\\,200~\\unit{kg}$.|$1~\\unit{t} = 1\\,000~\\unit{kg}$ : $1\\,000~\\unit{kg} > 600~\\unit{kg} > 120~\\unit{kg}$.}}}}}}",
+					"Le plus léger est **{{if:k==1|la valise de 950 g|{{if:k==2|le colis de 2 900 g|{{if:k==3|la voiture de 1 200 kg|le veau de 120 kg}}}}}}**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2 kg > 1 750 g",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"k": "4",
+				"b": "1750",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 kg < 1 750 g (nombres seuls)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"k": "4",
+				"b": "1750",
+				"r": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 kg = 3 000 g",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"k": "9",
+				"b": "3000",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1 t < 1 200 kg",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"k": "13",
+				"b": "1200",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 t > 1 200 kg",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"k": "13",
+				"b": "1200",
+				"r": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 kg 250 g < 1 300 g",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "250",
+				"k": "30",
+				"c": "1260",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 kg 250 g > 1 260 g",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "250",
+				"k": "30",
+				"c": "1260",
+				"r": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "le plus lourd : le colis de 2 kg",
+			"variationIndex": 4,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le sac de 1 800 g",
+			"variationIndex": 4,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "le plus lourd : le camion de 5 t",
+			"variationIndex": 4,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "le plus léger : le veau de 120 kg",
+			"variationIndex": 5,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le cheval de 600 kg",
+			"variationIndex": 5,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "croissant : 2 700 g < 3 kg < 3 300 g < 3 t",
+			"variationIndex": 3,
+			"variables": {
+				"b": "3"
+			},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ordre décroissant",
+			"variationIndex": 3,
+			"variables": {
+				"b": "3"
+			},
+			"answers": ["2", "1", "0", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 t placée avant les grammes",
+			"variationIndex": 3,
+			"variables": {
+				"b": "3"
+			},
+			"answers": ["0", "1", "2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
