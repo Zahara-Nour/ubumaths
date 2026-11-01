@@ -1,0 +1,282 @@
+{
+	"title": "Remonter un programme de calcul",
+	"description": "Retrouver le nombre de départ d'un programme de calcul simple en le remontant : opérations inverses, de la dernière étape à la première",
+	"grades": ["4"],
+	"theme": "Fonctions",
+	"domain": "Programmes de calcul",
+	"subdomain": "Remonter",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici un programme de calcul :\n\n- choisir un nombre ;\n- le multiplier par ${{a}}$ ;\n- ajouter ${{b}}$.\n\nOn obtient ${{r}}$. Quel nombre a-t-on choisi au départ ?\n\nLe nombre choisi est $?$.",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "-9..9"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..20"
+				},
+				{
+					"name": "r",
+					"expression": "eval:a*s+b"
+				},
+				{
+					"name": "t",
+					"expression": "eval:a*s"
+				}
+			],
+			"conditions": ["s!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Remonter un programme.** On part du résultat et on fait les étapes **à l'envers**, en partant de la dernière, chacune remplacée par l'opération inverse.",
+					"La dernière étape ajoute ${{b}}$ : on **soustrait** ${{b}}$. $${{r}} - {{b}} = {{t}}$$",
+					"L'étape d'avant multiplie par ${{a}}$ : on **divise** par ${{a}}$. $${{t}} \\div {{a}} = \\textcolor{{{color:primary.0}}}{{{s}}}$$",
+					"Vérification : ${{if:s<0|({{s}})|{{s}}}} \\times {{a}} + {{b}} = {{r}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici un programme de calcul :\n\n- choisir un nombre ;\n- ajouter ${{a}}$ ;\n- multiplier le résultat par ${{b}}$ ;\n- soustraire ${{c}}$.\n\nOn obtient ${{r}}$. Quel nombre a-t-on choisi au départ ?\n\nLe nombre choisi est $?$.",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "-9..9"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..20"
+				},
+				{
+					"name": "u",
+					"expression": "eval:s+a"
+				},
+				{
+					"name": "v",
+					"expression": "eval:b*(s+a)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:b*(s+a)-c"
+				}
+			],
+			"conditions": ["s!=0", "u!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Remonter un programme.** On part du résultat et on fait les étapes **à l'envers**, en partant de la dernière, chacune remplacée par l'opération inverse.",
+					"On annule « soustraire ${{c}}$ » : $${{r}} + {{c}} = {{v}}$$",
+					"On annule « multiplier par ${{b}}$ » : $${{v}} \\div {{b}} = {{u}}$$",
+					"On annule « ajouter ${{a}}$ » : $${{u}} - {{a}} = \\textcolor{{{color:primary.0}}}{{{s}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Voici un programme de calcul :\n\n- choisir un nombre ;\n- le multiplier par ${{a}}$ ;\n- ajouter ${{b}}$.\n\nOn connaît le résultat et on cherche le nombre de départ. Pour remonter le programme, que faut-il faire **en premier** ?\n\n```choix\n- Soustraire ${{b}}$ au résultat.\n- Diviser le résultat par ${{a}}$.\n- Ajouter ${{b}}$ au résultat.\n- Multiplier le résultat par ${{a}}$.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..20"
+				}
+			],
+			"conditions": ["a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Remonter un programme.** On part du résultat et on fait les étapes **à l'envers**, en partant de la dernière, chacune remplacée par l'opération inverse.",
+					"La **dernière** étape est « ajouter ${{b}}$ » : on l'annule en premier, en \\textcolor{{{color:primary.0}}}{\\text{soustrayant } {{b}}}.",
+					"Ensuite seulement, on divise par ${{a}}$."
+				]
+			}
+		},
+		{
+			"statement": "Léa choisit un nombre, le **divise** par ${{a}}$, puis soustrait ${{b}}$ au résultat. Elle trouve ${{r}}$.\n\nQuel nombre Léa a-t-elle choisi ?\n\nLe nombre choisi est $?$.",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "-9..9"
+				},
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..12"
+				},
+				{
+					"name": "s",
+					"expression": "eval:a*t"
+				},
+				{
+					"name": "r",
+					"expression": "eval:t-b"
+				}
+			],
+			"conditions": ["t!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Remonter un programme.** On part du résultat et on fait les étapes **à l'envers**, en partant de la dernière, chacune remplacée par l'opération inverse.",
+					"On annule « soustraire ${{b}}$ » : $${{r}} + {{b}} = {{t}}$$",
+					"On annule « diviser par ${{a}}$ » en **multipliant** par ${{a}}$ : $${{if:t<0|({{t}})|{{t}}}} \\times {{a}} = \\textcolor{{{color:primary.0}}}{{{s}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 × s + 5 = 17 → 4",
+			"variationIndex": 0,
+			"variables": {
+				"s": "4",
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 17 ÷ 3 − 5",
+			"variationIndex": 0,
+			"variables": {
+				"s": "4",
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["\\frac{2}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 17 × 3 + 5 (sans inverser)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "4",
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["56"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2(s + 3) − 4 = 6 → 2",
+			"variationIndex": 1,
+			"variables": {
+				"s": "2",
+				"a": "3",
+				"b": "2",
+				"c": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ordre direct",
+			"variationIndex": 1,
+			"variables": {
+				"s": "2",
+				"a": "3",
+				"b": "2",
+				"c": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Soustraire b",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : diviser d'abord",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "s ÷ 4 − 3 = −1 → 8",
+			"variationIndex": 3,
+			"variables": {
+				"t": "2",
+				"a": "4",
+				"b": "3"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : divisé au lieu de multiplié",
+			"variationIndex": 3,
+			"variables": {
+				"t": "2",
+				"a": "4",
+				"b": "3"
+			},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

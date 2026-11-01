@@ -1,0 +1,202 @@
+{
+	"title": "Représenter une grandeur par un graphique",
+	"description": "Représenter une grandeur en fonction d'une autre par un graphique : placer les points donnés par une formule ou un tableau de valeurs, choisir le bon graphique",
+	"grades": ["4"],
+	"theme": "Fonctions",
+	"domain": "Dépendance",
+	"subdomain": "Graphique",
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le prix, en euros, de $n$ places de bowling est $P(n) = {{a}}n + {{b}}$.\n\nPlace les points A, B, C et D du graphique qui représente le prix en fonction du nombre de places, pour $n = 0$, $1$, $2$ et $3$.\n\n```courbe\nx: -1 ; 5\ny: -1 ; {{eval:3*a+b+2}}\ngrille: 1 ; 1\naxes: x = Nombre de places ; y = Prix (€)\nplacer: A=(0 ; {{b}}) ; B=(1 ; {{eval:a+b}}) ; C=(2 ; {{eval:2*a+b}}) ; D=(3 ; {{eval:3*a+b}})\ntaille: moyenne\ndescription: Repère gradué de 1 en 1 : nombre de places en abscisse, prix en ordonnée.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "1..4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Représenter une grandeur.** Chaque couple de valeurs (grandeur de départ ; grandeur obtenue) donne un point : la première se lit sur l'axe horizontal, la seconde sur l'axe vertical.",
+					"$\\begin{array}{|l|c|c|c|c|} n & 0 & 1 & 2 & 3 \\\\ P(n) & {{b}} & {{eval:a+b}} & {{eval:2*a+b}} & {{eval:3*a+b}} \\end{array}$",
+					"Points : $\\textcolor{{{color:primary.0}}}{A(0 ; {{b}})}$, $\\textcolor{{{color:primary.0}}}{B(1 ; {{eval:a+b}})}$, $\\textcolor{{{color:primary.0}}}{C(2 ; {{eval:2*a+b}})}$, $\\textcolor{{{color:primary.0}}}{D(3 ; {{eval:3*a+b}})}$.",
+					"Les quatre points sont **alignés** : le prix augmente de ${{a}}~\\unit{€}$ à chaque place."
+				]
+			}
+		},
+		{
+			"statement": "Un cycliste roule à vitesse constante. Le tableau donne la distance $d(t)$ parcourue, en kilomètres, au bout de $t$ heures.\n\n$\\begin{array}{|l|c|c|c|c|} t & 1 & 2 & 3 & 4 \\\\ d(t) & {{v}} & {{eval:2*v}} & {{eval:3*v}} & {{eval:4*v}} \\end{array}$\n\nPlace les points A, B, C et D qui représentent ce tableau.\n\n```courbe\nx: -1 ; 5\ny: -5 ; {{eval:4*v+10}}\ngrille: 1 ; 5\naxes: x = Durée (h) ; y = Distance (km)\nplacer: A=(1 ; {{v}}) ; B=(2 ; {{eval:2*v}}) ; C=(3 ; {{eval:3*v}}) ; D=(4 ; {{eval:4*v}})\ntaille: moyenne\ndescription: Repère : durée en abscisse, de 1 en 1 ; distance en ordonnée, de 5 en 5.\n```",
+			"variables": [
+				{
+					"name": "v",
+					"expression": "10|15|20"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Représenter une grandeur.** Chaque couple de valeurs (grandeur de départ ; grandeur obtenue) donne un point : la première se lit sur l'axe horizontal, la seconde sur l'axe vertical.",
+					"Chaque colonne du tableau donne un point : $\\textcolor{{{color:primary.0}}}{A(1 ; {{v}})}$, $\\textcolor{{{color:primary.0}}}{B(2 ; {{eval:2*v}})}$, $\\textcolor{{{color:primary.0}}}{C(3 ; {{eval:3*v}})}$, $\\textcolor{{{color:primary.0}}}{D(4 ; {{eval:4*v}})}$.",
+					"L'ordonnée se lit avec le pas de l'axe vertical : un carreau vaut $5~\\unit{km}$."
+				]
+			}
+		},
+		{
+			"statement": "L'aire d'un carré de côté $c$ centimètres est $A(c) = c^2$, en $\\unit{cm^2}$.\n\nPlace les points A, B, C et D qui représentent l'aire en fonction du côté, pour $c = 0$, $1$, $2$ et $3$.\n\n```courbe\nx: -1 ; 5\ny: -1 ; 11\ngrille: 1 ; 1\naxes: x = Côté (cm) ; y = Aire (cm²)\nplacer: A=(0 ; 0) ; B=(1 ; 1) ; C=(2 ; 4) ; D=(3 ; 9)\ntaille: moyenne\ndescription: Repère gradué de 1 en 1 : côté en abscisse, aire en ordonnée.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"**Représenter une grandeur.** Chaque couple de valeurs (grandeur de départ ; grandeur obtenue) donne un point : la première se lit sur l'axe horizontal, la seconde sur l'axe vertical.",
+					"$\\begin{array}{|l|c|c|c|c|} c & 0 & 1 & 2 & 3 \\\\ A(c) & 0 & 1 & 4 & 9 \\end{array}$",
+					"Points : $\\textcolor{{{color:primary.0}}}{A(0 ; 0)}$, $\\textcolor{{{color:primary.0}}}{B(1 ; 1)}$, $\\textcolor{{{color:primary.0}}}{C(2 ; 4)}$, $\\textcolor{{{color:primary.0}}}{D(3 ; 9)}$.",
+					"Ces points ne sont **pas alignés** : l'aire n'augmente pas de la même quantité à chaque centimètre ($1$, puis $3$, puis $5$)."
+				]
+			}
+		},
+		{
+			"statement": "Le prix, en euros, de $n$ places de bowling est $P(n) = {{a}}n + {{b}}$.\n\nQuel graphique représente le prix en fonction du nombre de places ?\n\n````choix\n- ```courbe\n  x: -1 ; 6\n  y: -1 ; {{eval:max(5*a+b,5*b+a)+2}}\n  grille: 1 ; 2\n  axes: x = Nombre de places ; y = Prix (€)\n  f(x) = {{a}}*x+{{b}} sur [0 ; 5]   bleu\n  taille: petite\n  description: Droite qui part de 0 ; {{b}} et monte de {{a}} par place.\n  ```\n- ```courbe\n  x: -1 ; 6\n  y: -1 ; {{eval:max(5*a+b,5*b+a)+2}}\n  grille: 1 ; 2\n  axes: x = Nombre de places ; y = Prix (€)\n  f(x) = {{b}}*x+{{a}} sur [0 ; 5]   bleu\n  taille: petite\n  description: Droite qui part de 0 ; {{a}} et monte de {{b}} par place.\n  ```\n- ```courbe\n  x: -1 ; 6\n  y: -1 ; {{eval:max(5*a+b,5*b+a)+2}}\n  grille: 1 ; 2\n  axes: x = Nombre de places ; y = Prix (€)\n  f(x) = {{a}}*x sur [0 ; 5]   bleu\n  taille: petite\n  description: Droite qui part de l'origine et monte de {{a}} par place.\n  ```\n- ```courbe\n  x: -1 ; 6\n  y: -1 ; {{eval:max(5*a+b,5*b+a)+2}}\n  grille: 1 ; 2\n  axes: x = Nombre de places ; y = Prix (€)\n  f(x) = {{eval:5*a+b}}-{{a}}*x sur [0 ; 5]   bleu\n  taille: petite\n  description: Droite qui part de 0 ; {{eval:5*a+b}} et descend de {{a}} par place.\n  ```\n````",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..4"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				}
+			],
+			"conditions": ["a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Représenter une grandeur.** Chaque couple de valeurs (grandeur de départ ; grandeur obtenue) donne un point : la première se lit sur l'axe horizontal, la seconde sur l'axe vertical.",
+					"Pour $n = 0$, $P(0) = {{b}}$ : le graphique passe par le point $\\textcolor{{{color:primary.0}}}{(0 ; {{b}})}$.",
+					"À chaque place de plus, le prix augmente de ${{a}}~\\unit{€}$ : la droite **monte** de ${{a}}$ par place. Par exemple $P(1) = {{eval:a+b}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Les 4 points",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["0;3", "1;5", "2;7", "3;9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : abscisse et ordonnée échangées pour B",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["0;3", "5;1", "2;7", "3;9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans les frais (P = 2n)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["0;0", "1;2", "2;4", "3;6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Les 4 points",
+			"variationIndex": 1,
+			"variables": {
+				"v": "15"
+			},
+			"answers": ["1;15", "2;30", "3;45", "4;60"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un carreau lu pour 1 km",
+			"variationIndex": 1,
+			"variables": {
+				"v": "15"
+			},
+			"answers": ["1;3", "2;6", "3;9", "4;12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Les 4 points",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0;0", "1;1", "2;4", "3;9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2c au lieu de c²",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0;0", "1;2", "2;4", "3;6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "La bonne droite",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pente et départ échangés",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : par l'origine",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
