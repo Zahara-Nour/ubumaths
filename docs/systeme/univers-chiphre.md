@@ -97,7 +97,9 @@ Autres lecteurs : l'accueil (`pickRandomArticle` : un lien vers un article paru)
 exercices cochés « Afficher sur Google » (`is_public AND search_indexed`, lus par un client anonyme
 via `src/lib/server/sitemap-exercises.ts`, `lastmod` = `updated_at`) et les pages du glossaire
 (`/glossaire/<slug>`, sauf renvois nus, via `src/lib/server/sitemap-glossary.ts`, détail dans
-[dictionnaire.md](dictionnaire.md)) ; une panne de la base le sert sans eux, jamais en 500.
+[dictionnaire.md](dictionnaire.md)) ; une panne de la base le sert sans eux, jamais en 500. Il
+liste enfin les sept pages des villes du Royaume (`/royaume/<ville>`, liste fixe `CITIES`, voir
+[carte-des-fonctionnalites.md](carte-des-fonctionnalites.md)).
 
 ### Lore de l'interface
 
@@ -197,15 +199,15 @@ pour la Patatovie, les seuils de l'Ordre de la Grande Passoire, « Madame la Fin
 
 ## Tests
 
-| Test                                              | Prouve                                                                                |
-| ------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| `src/lib/ciphers/__tests__/` (17 fichiers)        | Chaque chiffre (aller-retours), attaques, dépêches, progression, lien d'outil         |
-| `src/routes/(public)/chiffrement/__tests__/`      | Pages rendues, campagne des dépêches, ouverture de l'établi depuis une dépêche        |
-| `src/lib/almanach/__tests__/`                     | Conversion dans les deux sens, palettes, contraste du héros                           |
-| `src/routes/(public)/almanach/__tests__/`         | Chargement serveur, page, convertisseur                                               |
-| `src/lib/server/shtam/__tests__/articles.test.ts` | En-tête, Vrai du faux obligatoire, filtrage brouillon / futur, vrais articles valides |
-| `src/routes/(public)/shtam/__tests__/`            | Une, pages intérieures, 404 indiscernable, rendu                                      |
-| `src/routes/sitemap.xml/__tests__/server.test.ts` | Ni brouillon ni article futur ; exercices cochés Google seulement ; panne → sans eux  |
+| Test                                              | Prouve                                                                                                   |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `src/lib/ciphers/__tests__/` (17 fichiers)        | Chaque chiffre (aller-retours), attaques, dépêches, progression, lien d'outil                            |
+| `src/routes/(public)/chiffrement/__tests__/`      | Pages rendues, campagne des dépêches, ouverture de l'établi depuis une dépêche                           |
+| `src/lib/almanach/__tests__/`                     | Conversion dans les deux sens, palettes, contraste du héros                                              |
+| `src/routes/(public)/almanach/__tests__/`         | Chargement serveur, page, convertisseur                                                                  |
+| `src/lib/server/shtam/__tests__/articles.test.ts` | En-tête, Vrai du faux obligatoire, filtrage brouillon / futur, vrais articles valides                    |
+| `src/routes/(public)/shtam/__tests__/`            | Une, pages intérieures, 404 indiscernable, rendu                                                         |
+| `src/routes/sitemap.xml/__tests__/server.test.ts` | Ni brouillon ni article futur ; exercices cochés Google seulement ; panne → sans eux ; villes du Royaume |
 
 ## Décisions et journaux
 
@@ -223,7 +225,5 @@ spec archivée [sprint1-lexique-spec.md](../archive/wip/sprint1-lexique-spec.md)
   comme ceux de l'Almanach et du Shtam (à confirmer par David : récits des dépêches à relire).
 - Shtam : 54 articles dans le dépôt, dont 6 parus au 2026-10-10 et 48 datés du futur (parution
   programmée jusqu'au 2027-03-29).
-- `SEE_ALSO_PATHS` (liens du glossaire vers le Cabinet Noir) ne couvre pas `atbash`, `polybe`,
-  `scytale` : aucune entrée du dictionnaire ne les vise aujourd'hui.
 - « lexique » : le mot désigne le lore (`lore.ts`, `docs/Chiphres/lexique-pataphysique.md`), mais
   le module des mots cliquables s'appelle `src/lib/lexicon/` (voir [dictionnaire.md](dictionnaire.md)).

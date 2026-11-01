@@ -1159,39 +1159,6 @@ describe('RLS — scope prof', () => {
 		expect((data as Array<unknown>).length).toBeGreaterThanOrEqual(1);
 	});
 
-	// Obsolete under single-teacher + Option B: the sole teacher reads ALL students'
-	// attempts (is_my_student), and there is no second teacher to isolate against.
-	it.skip('teacher cannot SELECT attempts for students in another class (0 rows)', async () => {
-		// Arrange
-		const teacherA = await TestData.profile().withRole('teacher').create();
-		const teacherB = await TestData.profile().withRole('teacher').create();
-		const student = await TestData.profile().withRole('student').create();
-
-		// student is only in teacherA's class
-		const klassA = await TestData.class(teacherA.id).create();
-		await service.from('class_members').insert({ class_id: klassA.id, student_id: student.id });
-
-		const skill = await getKnowledgeSkill(service, 'Fractions', 2);
-		const tpl = await createFakeTemplate(service, student.id);
-		await insertKnowledgeAttempt(service, {
-			studentId: student.id,
-			skillId: skill.id,
-			templateId: tpl,
-			success: true
-		});
-
-		const teacherBClient = await createAuthenticatedClient(teacherB.email);
-
-		// Act
-		const { data } = await teacherBClient
-			.from('skill_attempts' as never)
-			.select('id')
-			.eq('student_id', student.id);
-
-		// Assert: teacherB has no class membership with this student
-		expect((data as Array<unknown>).length).toBe(0);
-	});
-
 	it('teacher can INSERT a teacher-source attempt for a student in their class', async () => {
 		// Arrange
 		const teacher = await TestData.profile().withRole('teacher').create();
@@ -1218,36 +1185,6 @@ describe('RLS — scope prof', () => {
 
 		// Assert
 		expect(error).toBeNull();
-	});
-
-	// Obsolete under the single-teacher model: no second teacher exists to test
-	// cross-teacher write isolation against (enforce_single_teacher trigger).
-	it.skip('teacher cannot INSERT a teacher-source attempt for a student outside their class', async () => {
-		// Arrange
-		const teacherA = await TestData.profile().withRole('teacher').create();
-		const teacherB = await TestData.profile().withRole('teacher').create();
-		const student = await TestData.profile().withRole('student').create();
-
-		// student is only in teacherA's class
-		const klassA = await TestData.class(teacherA.id).create();
-		await service.from('class_members').insert({ class_id: klassA.id, student_id: student.id });
-
-		const obsA1 = await getObservableSkill(service, 'chercher', 'A1');
-		const taskId = await createEvaluationTask(service, { teacherId: teacherA.id });
-
-		const teacherBClient = await createAuthenticatedClient(teacherB.email);
-
-		// Act: teacherB tries to insert for a student not in their class
-		const { error } = await teacherBClient.from('skill_attempts').insert({
-			student_id: student.id,
-			observable_id: obsA1.id,
-			task_id: taskId,
-			code: 'plus',
-			source: 'teacher'
-		});
-
-		// Assert: RLS WITH CHECK fails
-		expect(error).not.toBeNull();
 	});
 });
 
@@ -1437,129 +1374,6 @@ describe('RLS — scope élève (caches + VIEW)', () => {
 			.eq('student_id', studentB.id);
 
 		// Assert: RLS policy "student_competence_level_select_own" filters out other students
-		expect(error).toBeNull();
-		expect((data as Array<unknown>).length).toBe(0);
-	});
-});
-
-// ============================================================================
-// RLS — scope prof (caches)                                             [D2]
-// ============================================================================
-
-describe('RLS — scope prof (caches)', () => {
-	// Obsolete under single-teacher + Option B: the sole teacher reads ALL students'
-	// cache rows (is_my_student) ; no second teacher to isolate against.
-	it.skip("teacher B cannot SELECT student_point_state for a student in teacher A's class (0 rows)", async () => {
-		// Arrange: student is only in teacherA's class
-		const teacherA = await TestData.profile().withRole('teacher').create();
-		const teacherB = await TestData.profile().withRole('teacher').create();
-		const student = await TestData.profile().withRole('student').create();
-		const klassA = await TestData.class(teacherA.id).create();
-		await service.from('class_members').insert({ class_id: klassA.id, student_id: student.id });
-
-		const skill = await getKnowledgeSkill(service, 'Nombres entiers', 1);
-		const tpl = await createFakeTemplate(service, student.id);
-		await insertKnowledgeAttempt(service, {
-			studentId: student.id,
-			skillId: skill.id,
-			templateId: tpl,
-			success: true
-		});
-		await pollSkillStateA(student.id, skill.id);
-
-		const teacherBClient = await createAuthenticatedClient(teacherB.email);
-
-		// Act
-		const { data, error } = await teacherBClient
-			.from('student_point_state' as never)
-			.select('student_id')
-			.eq('student_id', student.id);
-
-		// Assert: teacherB has no class membership with this student
-		expect(error).toBeNull();
-		expect((data as Array<unknown>).length).toBe(0);
-	});
-
-	// Obsolete under single-teacher + Option B (see note above): sole teacher reads all.
-	it.skip("teacher B cannot SELECT student_observable_state for a student in teacher A's class (0 rows)", async () => {
-		// Arrange
-		const teacherA = await TestData.profile().withRole('teacher').create();
-		const teacherB = await TestData.profile().withRole('teacher').create();
-		const student = await TestData.profile().withRole('student').create();
-		const klassA = await TestData.class(teacherA.id).create();
-		await service.from('class_members').insert({ class_id: klassA.id, student_id: student.id });
-
-		const task1 = await createEvaluationTask(service, { teacherId: teacherA.id });
-		const task2 = await createEvaluationTask(service, { teacherId: teacherA.id });
-		const observable = await getObservableSkill(service, 'calculer', 'A1');
-
-		await insertCompetenceAttempt(service, {
-			studentId: student.id,
-			skillId: observable.id,
-			taskId: task1,
-			code: 'plus'
-		});
-		await insertCompetenceAttempt(service, {
-			studentId: student.id,
-			skillId: observable.id,
-			taskId: task2,
-			code: 'plus'
-		});
-		await pollObservableState(student.id, observable.id);
-
-		const teacherBClient = await createAuthenticatedClient(teacherB.email);
-
-		// Act
-		const { data, error } = await teacherBClient
-			.from('student_observable_state' as never)
-			.select('student_id')
-			.eq('student_id', student.id);
-
-		// Assert: teacherB has no class membership with this student
-		expect(error).toBeNull();
-		expect((data as Array<unknown>).length).toBe(0);
-	});
-
-	// Obsolete under single-teacher + Option B (see note above): sole teacher reads all.
-	it.skip("teacher B cannot SELECT student_competence_level for a student in teacher A's class (0 rows)", async () => {
-		// Arrange
-		const teacherA = await TestData.profile().withRole('teacher').create();
-		const teacherB = await TestData.profile().withRole('teacher').create();
-		const student = await TestData.profile().withRole('student').create();
-		const klassA = await TestData.class(teacherA.id).create();
-		await service.from('class_members').insert({ class_id: klassA.id, student_id: student.id });
-
-		const chercherCompId = await getMathCompetenceId(service, 'chercher');
-		const obsA1 = await getObservableSkill(service, 'chercher', 'A1');
-		const obsB1 = await getObservableSkill(service, 'chercher', 'B1');
-		const task1 = await createEvaluationTask(service, { teacherId: teacherA.id });
-		const task2 = await createEvaluationTask(service, { teacherId: teacherA.id });
-
-		for (const obs of [obsA1, obsB1]) {
-			await insertCompetenceAttempt(service, {
-				studentId: student.id,
-				skillId: obs.id,
-				taskId: task1,
-				code: 'plus'
-			});
-			await insertCompetenceAttempt(service, {
-				studentId: student.id,
-				skillId: obs.id,
-				taskId: task2,
-				code: 'plus'
-			});
-		}
-		await pollCompetenceLevel(student.id, chercherCompId);
-
-		const teacherBClient = await createAuthenticatedClient(teacherB.email);
-
-		// Act
-		const { data, error } = await teacherBClient
-			.from('student_competence_level' as never)
-			.select('student_id')
-			.eq('student_id', student.id);
-
-		// Assert: teacherB has no class membership with this student
 		expect(error).toBeNull();
 		expect((data as Array<unknown>).length).toBe(0);
 	});

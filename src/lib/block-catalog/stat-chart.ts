@@ -1,5 +1,6 @@
 /**
- * Catalogue — blocs statistiques (```barres, ```circulaire, ```histogramme…)
+ * Catalogue — blocs statistiques (```barres, ```circulaire, ```histogramme…) et
+ * ```boite-a-moustaches (sa fiche à part, page de démo du chantier)
  *
  * Réglages : `src/lib/ubumark/parser/stat-chart-parser.ts`, types dans
  * `src/lib/ubumark/types/stat-chart.ts`.
@@ -13,7 +14,8 @@ import type { BlockCatalogEntry } from './types';
 export const statChartEntry: BlockCatalogEntry = {
 	slug: 'statistiques',
 	title: 'Graphiques statistiques',
-	fences: [...STAT_CHART_KINDS],
+	// La boîte à moustaches a sa fiche à elle (`boxPlotEntry`, plus bas)
+	fences: STAT_CHART_KINDS.filter((kind) => kind !== 'boite-a-moustaches'),
 	nodeType: 'stat-chart',
 	summary:
 		'Diagrammes en barres, circulaires, histogrammes, tableaux, lois de probabilité, simulations et nuages de points ; dans une question, un diagramme en barres que l’élève construit.',
@@ -587,5 +589,126 @@ export const statChartEntry: BlockCatalogEntry = {
 		'Danse = 7',
 		'Basket = 9',
 		'valeurs: oui'
+	)
+};
+
+/** Fiche de la boîte à moustaches : `/aide-ecriture/blocs/boite-a-moustaches` */
+export const boxPlotEntry: BlockCatalogEntry = {
+	slug: 'boite-a-moustaches',
+	title: 'Boîte à moustaches',
+	fences: ['boite-a-moustaches'],
+	nodeType: 'stat-chart',
+	summary:
+		'Une à quatre boîtes à moustaches horizontales sur un même axe gradué, pour lire ou comparer des séries.',
+	intro:
+		'Une ligne par boîte : son nom, puis ses cinq valeurs dans l’ordre minimum ; Q1 ; médiane ; Q3 ; maximum. Les boîtes s’empilent dans l’ordre écrit, sur un seul axe en bas. Avec « données: », le bloc calcule lui-même la boîte d’une série brute (quartiles du programme). Les réglages s’écrivent « clé: valeur ». Un bloc mal écrit reste dans le texte avec ses messages situés.',
+	settingGroups: [
+		{
+			settings: [
+				{
+					key: 'Nom = min ; Q1 ; médiane ; Q3 ; max',
+					values: 'cinq nombres dans l’ordre croissant, séparés par ; (virgule décimale)',
+					defaultValue: null,
+					description:
+						'Une ligne par boîte, 4 au plus. Le nom peut contenir des espaces ; « = 28 ; 30 ; … » seul donne une boîte sans nom.'
+				},
+				{
+					key: 'données',
+					values: 'une série brute : 3 ; 5 ; 7 ; 8 ; 12',
+					defaultValue: 'aucune',
+					description:
+						'Une seule boîte, sans nom, calculée sur la série (500 valeurs au plus). Impossible avec des lignes « Nom = … ».'
+				},
+				{
+					key: 'axe',
+					values: 'a à b, de p en p',
+					defaultValue: 'calculé',
+					description:
+						'L’axe gradué, qui peut partir d’un autre nombre que 0 (40 graduations au plus). Toutes les valeurs doivent y tenir.'
+				},
+				{
+					key: 'titre',
+					values: 'un texte',
+					defaultValue: 'aucun',
+					description: 'Titre de l’axe, écrit dessous (« temps (en s) »).'
+				},
+				{
+					key: 'valeurs',
+					values: 'oui | non',
+					defaultValue: 'non',
+					description: 'Écrit les cinq valeurs sous chaque boîte. Sans elles, l’élève les lit.'
+				},
+				{
+					key: 'description, taille',
+					values: 'un texte ; petite | moyenne | grande',
+					defaultValue: 'automatique ; moyenne',
+					description:
+						'Texte lu par les lecteurs d’écran (sinon les cinq valeurs de chaque boîte), taille de la figure.'
+				}
+			]
+		}
+	],
+	examples: [
+		{
+			title: 'Comparer deux classes',
+			source: fence(
+				'boite-a-moustaches',
+				'axe: 25 à 60, de 5 en 5',
+				'titre: temps (en s)',
+				'Nautic = 28 ; 30 ; 37 ; 45 ; 58',
+				'Neptune = 36 ; 37 ; 39 ; 42 ; 46'
+			),
+			explanation:
+				'Deux boîtes sur le même axe : médianes, quartiles et étendues se comparent d’un coup d’œil.'
+		},
+		{
+			title: 'Boîte d’une série brute',
+			source: fence('boite-a-moustaches', 'données: 3 ; 5 ; 7 ; 8 ; 12 ; 13 ; 14 ; 18 ; 21'),
+			explanation:
+				'Le bloc calcule minimum, quartiles, médiane et maximum (ici Q1 = 7 et Q3 = 14, les quartiles du programme) ; l’axe est choisi tout seul.'
+		},
+		{
+			title: 'Valeurs écrites',
+			source: fence(
+				'boite-a-moustaches',
+				'axe: 0 à 20, de 2 en 2',
+				'titre: note sur 20',
+				'valeurs: oui',
+				'Notes = 4 ; 8 ; 11 ; 14 ; 19'
+			),
+			explanation: 'Les cinq valeurs sont écrites sous la boîte.'
+		}
+	],
+	mistakes: [
+		{
+			title: 'Valeurs dans le désordre',
+			source: fence('boite-a-moustaches', 'Nautic = 28 ; 37 ; 30 ; 45 ; 58'),
+			message: 'Ligne 1 : valeurs dans le désordre',
+			explanation:
+				'Les cinq valeurs vont dans l’ordre minimum ; Q1 ; médiane ; Q3 ; maximum, chacune au moins égale à la précédente.'
+		},
+		{
+			title: 'Quatre valeurs au lieu de cinq',
+			source: fence('boite-a-moustaches', 'Nautic = 28 ; 30 ; 45 ; 58'),
+			message: 'Ligne 1 : 4 valeurs : en écrire 5',
+			explanation: 'Il faut les cinq valeurs, médiane comprise.'
+		},
+		{
+			title: 'Valeur hors de l’axe',
+			source: fence(
+				'boite-a-moustaches',
+				'axe: 25 à 50, de 5 en 5',
+				'Nautic = 28 ; 30 ; 37 ; 45 ; 58'
+			),
+			message: 'Ligne 2 : 58 est hors de l’axe',
+			explanation:
+				'Agrandir l’axe (ici jusqu’à 60) ou l’enlever : calculé, il contient toutes les valeurs.'
+		}
+	],
+	tryIt: fence(
+		'boite-a-moustaches',
+		'titre: temps (en s)',
+		'Nautic = 28 ; 30 ; 37 ; 45 ; 58',
+		'Neptune = 36 ; 37 ; 39 ; 42 ; 46'
 	)
 };

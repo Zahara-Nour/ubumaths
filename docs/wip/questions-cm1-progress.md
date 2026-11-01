@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2115._
+_Mis à jour le 2026-11-01, après #2149._
 
-- **État** : lot 4 (décimaux, 8 modèles) mergé (#2115), fichiers dans `scripts/questions/cm1-4/` ; rien en prod encore.
-- **Prochaine action** : David lance `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm1-4 --publier` (brouillons en prod) → relever les 8 `id` au MCP → migration nœud + tag (gabarit `20261101160400_questions_cm1_lot3c_rangement_tags.sql`, sous-notions du § 12) → page à cocher → `publier-lot`. Ensuite : phase 0 du lot 4b « calcul posé » (165, 052, 050, 051, 053).
-- **En attente de David** : le `create-questions --publier` du lot 4.
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main`, des worktrees ET des branches distantes + 1 min, **revérifié juste avant le merge** (collision `20261101190200` sur `main` le 2026-11-01, réparée par #2114) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; dépôt partagé : relire `git diff --cached --name-only` avant CHAQUE commit (journal ce2 emporté le 2026-11-01) ; coloriage : specs non mesurées par le test du corpus, sauf si un modèle active `orderIndependent` (la prod le mesurerait alors) ; extension Chrome muette → Playwright à 390 px.
-- **Worktree / branche** : aucun (retiré après #2115).
+- **État** : lot 4 publié ; lot 4b (calcul posé, 6 modèles, `scripts/questions/cm1-4b/`) écrit et mergé (#2149), pas encore en prod.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm1-4b --publier` ; relever les 6 ids au MCP ; migration nœud + tag (050 → « Décimaux : calculs › addition », 165 ×2 → « › soustraction », 052 → « › multiplication », 051 et 053 → « calcul posé » de leur notion) ; page à cocher ; publication. Puis lot 5 grandeurs.
+- **En attente de David** : le `create-questions --publier` du lot 4b.
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main`, des worktrees ET des branches distantes + 1 min, **revérifié juste avant le merge** (collision `20261101190200` sur `main` le 2026-11-01, réparée par #2114) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») et le type `content` (prendre `feat`) ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; dépôt partagé : relire `git diff --cached --name-only` avant CHAQUE commit (journal ce2 emporté le 2026-11-01) ; coloriage : specs non mesurées par le test du corpus, sauf si un modèle active `orderIndependent` (la prod le mesurerait alors) ; extension Chrome muette → Playwright à 390 px.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1` (branche `content/questions-cm1-lot4b` mergée ; repartir d'`origin/main` sur une branche neuve pour la migration).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -703,3 +703,112 @@ juste après le lot 4.
 - Revue du test du corpus (code-reviewer, Sonnet) : aucun finding bloquant. Limite notée : un
   modèle à colorier qui activerait `orderIndependent` passerait par la garde de complexité avant le
   jugement (`validateBlanksOrderIndependent`) ; aucun ne le fait.
+
+### 12 quinquies. Lot 4 — brouillons en prod, rangement et tags (2026-11-01)
+
+- `create-questions --publier` lancé par David. MCP : 8 brouillons [CM1], sans nœud ni tag, créés à
+  15:40 UTC ; les 8 points sous « Nombres et calculs > Décimaux : numération », sans modèle.
+  Ids : `2cff4ef5-a463-4bce-85ff-b0fec81dce08` (lire et écrire), `b832dfdf-f1eb-4f4c-8469-66d89a9db899`
+  (colorier), `06f246e4-eda1-44f5-a65f-9f55c360833d` (repérer), `3560dded-0565-4f15-a6e0-44e7e2adc834`
+  (placer), `10aae729-4a29-4dac-9578-21ef655d60d1` (partie entière), `ca08432a-cfcc-4372-809e-f5d0d9895eff`
+  (arrondir), `2af5f9fe-de36-4b1c-adf9-dec60f759910` (ranger), `2cb242e0-fa40-458b-abb0-819e4720c731`
+  (intercaler).
+- Migration `20261101212100_questions_cm1_lot4_rangement_tags` et son test générés du gabarit du lot
+  3c (script, remplacements vérifiés au `diff`) ; horodatage d'abord `20261101200800`, pris aussi par
+  `questions_5_lot6_niveau` (branche `fix/questions-5-lot6-niveau`), vu au contrôle d'avant merge :
+  renuméroté `20261101212100` (max `20261101212000`, 1spe, + 1 min).
+- Test d'intégration : rouge sans le corps de la migration (5 échecs), 9/9 vert avec.
+- `security-auditor` : aucun finding. #2124 mergée (CI verte, horodatage revérifié juste avant).
+- `db:migrate` refusé : `20261101200800_questions_5_lot6_niveau` (#2116), mergée APRÈS que la prod
+  eut joué `20261101212000`, tombait « avant la dernière ». David a lancé
+  `supabase db push --include-all` : les deux migrations jouées (5e puis CM1).
+- MCP : les 8 modèles sur la sous-notion de leur point, un point CM1 chacun, toujours brouillons,
+  `updated_at` = création (15:40).
+
+### 12 sexies. Lot 4 — page à cocher (2026-11-01)
+
+- Page : https://claude.ai/artifact/PQr3Cp4yAANDfJxAyTBFuN (capacité `db`), rendu vu à 390 px
+  (8 fiches, pas de défilement horizontal) ; `verdicts` vide à la publication. Alertes attendues :
+  `partage, `line et ```ranger non dessinés (à jouer dans l'aperçu) ; homonymes 6e
+  `92db5823` (ranger) et `2e982062` (intercaler) écartés, les ids retenus sont bien ceux du lot.
+
+### 12 septies. Lot 4 — publication (2026-11-01)
+
+- Page à cocher : 8 verdicts « OK », sans commentaire (comptés dans `verdicts`). Simulation
+  `publier-lot --dir scripts/questions/cm1-4` : 8 brouillons passent ; `--publier` lancé par David ;
+  8 `published` relus au MCP, toujours rangés et tagués. Lot 4 fini.
+
+## 13. Lot 4b — calcul posé : phase 0 (à valider)
+
+Relevé MCP du 2026-11-01 : les 5 points ont 0 modèle. Nœuds des points : 050 et 165 sur la **notion**
+« Nombres et calculs > Décimaux : calculs » ; 052 sur « Décimaux : calculs › multiplication » (26 modèles,
+niveaux 1 à 9) ; 051 sur « Entiers : multiplication › calcul posé » (vide) ; 053 sur « Entiers : division ›
+calcul posé » (vide ; la division posée de 6e `3c9284c5` est rangée sous « division euclidienne »). Modèles
+posés en prod : CP-016, CE1-022, CE1-100 (deux méthodes), 6-123 ; aucune multiplication posée nulle part.
+Le CE2 (019, multiplication posée) n'est pas encore écrit.
+
+Bornes `cycle3.json`, CM1 : 050 décimaux à deux décimales au plus, entiers mêlés, trois termes au plus
+(56,75 + 234 + 0,8) ; 165 deux décimales au plus (34,5 − 2,58) ; 051 trois chiffres × trois chiffres
+(876 × 208), produit ≤ 999 999 ; 052 facteur entier 2 à 9, décimal à deux décimales au plus (7 × 46,55 ;
+8 × 17,3) ; 053 diviseur 2 à 9, dividende entier de cinq chiffres au plus (9 456 ÷ 7).
+
+Outil : ` ```operation ` (en prod), tout ce qu'il faut y est : trois termes et virgules alignées
+(addition), `méthode: compensation | cassage` (soustraction), virgule du produit posée par l'élève et
+« virgule oubliée » signalée (multiplication), potence à deux cases quotient + reste (division
+euclidienne). Retenues à remplir par défaut (aide, jamais jugée). Réponse = cases du résultat seules ;
+énoncé « Pose et calcule. » (CE1) ou « Pose et effectue la division euclidienne. » (6e).
+
+| #   | Point   | Nœud (sous-notion)                     | Modèle                                                | Variations, plages                                                                                                                                                                                                                                                                                    | Niveau |
+| --- | ------- | -------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 1   | CM1-050 | Décimaux : calculs › addition          | Poser une addition de nombres décimaux                | V1 deux termes à deux décimales, retenues (45,78 + 26,57) ; V2 décimales en nombre différent (34,5 + 2,58) ; V3 entier + décimal (234 + 5,68) ; V4 trois termes, entier mêlé (56,75 + 234 + 0,8) ; parties entières ≤ 999. Specs : retenue oubliée, chiffres alignés à droite (6,03 pour 34,5 + 2,58) | 8      |
+| 2   | CM1-165 | Décimaux : calculs › soustraction      | Poser une soustraction de décimaux (par compensation) | V1 mêmes décimales, une ou deux retenues (52,34 − 17,58) ; V2 le premier a moins de décimales (34,5 − 2,58) ; V3 entier − décimal (25 − 3,46) ; premier ≤ 999,99. Specs : plus petit chiffre ôté du plus grand (32,08 pour 34,5 − 2,58)                                                               | 7      |
+| 3   | CM1-165 | Décimaux : calculs › soustraction      | Poser une soustraction de décimaux (par cassage)      | mêmes variations, `méthode: cassage`                                                                                                                                                                                                                                                                  | 8      |
+| 4   | CM1-051 | Entiers : multiplication › calcul posé | Poser une multiplication de deux entiers              | V1 2 chiffres × 2 chiffres (48 × 37) ; V2 3 × 2 (347 × 26) ; V3 3 × 3 avec un 0 au milieu du multiplicateur (876 × 208 : ligne du 0 sautée). Specs : décalage oublié (2 776 pour 347 × 26), retenue oubliée                                                                                           | 1      |
+| 5   | CM1-052 | Décimaux : calculs › multiplication    | Poser la multiplication d'un décimal par un entier    | V1 une décimale (8 × 17,3) ; V2 deux décimales (7 × 46,55) ; V3 produit terminé par 0 (4 × 12,35 = 49,40, « 49,4 » juste) ; entier 2 à 9, partie entière 1 à 99. Specs : virgule oubliée (32 585), virgule mal placée (3 258,5)                                                                       | 10     |
+| 6   | CM1-053 | Entiers : division › calcul posé       | Poser une division euclidienne                        | V1 3 chiffres, quotient à 2 chiffres (157 ÷ 6) ; V2 4 chiffres (9 456 ÷ 7) ; V3 un 0 au quotient (2 418 ÷ 4 = 604 reste 2) ; V4 5 chiffres (23 875 ÷ 6) ; diviseur 2 à 9. Specs : reste ≥ diviseur, 0 oublié au quotient (64)                                                                         | 1      |
+
+Corrigés : étapes colonne par colonne (retenues, compensation ou cassage), produits partiels écrits pour
+la multiplication, « on compte les décimales » pour 052, égalité `N = (d × q) + r` pour 053.
+
+Questions :
+
+1. **« Poser »** : le bloc pose l'opération lui-même (virgules alignées) ; l'élève effectue. Aligner les
+   virgules, la vraie difficulté de 050 et 165, n'est donc pas évalué (même limite qu'au CE1 et en 6e).
+   Reco : l'accepter, le corrigé commence par « on aligne les virgules ». Un geste « poser soi-même »
+   serait un outil neuf (classe C, chantier à part).
+2. **Soustraction : un modèle par méthode** (compensation, cassage), comme au CE1, le prof choisit celle de
+   sa classe ? Ou un seul (compensation, défaut du bloc) ? Reco : deux, comme au CE1.
+3. **050 et 165 rangés sous « addition » / « soustraction »** de « Décimaux : calculs » plutôt que sur la
+   notion nue : leur point est sur la notion, la règle des tags l'admet (point sur le nœud du modèle ou sa
+   notion, vérifié dans `question_template_points_check_rules` en prod). Reco : sous-notions.
+
+À noter : « Entiers : multiplication › calcul posé » est vide ; le CM1 y prend le niveau 1, la
+multiplication posée du CE2 (019) devra s'insérer avant (renumérotation par sa propre migration).
+
+**Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
+
+### 13 bis. Lot 4b : réponse de David (2026-11-01)
+
+« tes recos ? », puis « go » après mes trois recommandations : 1. le bloc pose l'opération, limite acceptée
+(corrigé « on aligne les virgules ») ; 2. soustraction : deux modèles, compensation et cassage, comme au
+CE1 ; 3. 050 et 165 rangés sous « Décimaux : calculs › addition » et « › soustraction ».
+
+### 13 ter. Lot 4b — écriture (2026-11-01)
+
+- Script `docs/wip/questions/lot-cm1-4b.py` → `scripts/questions/cm1-4b/` (6 JSON), patrons `lot-ce1-6.py`
+  (posées, une soustraction par méthode) et `lot-6-calcul-decimal.py` (division euclidienne posée).
+- **Écart à la phase 0, les niveaux** : la phase 0 les comptait dans le nœud, à tort ; le niveau se compte
+  dans la catégorie (thème, domaine, sous-domaine). Catégories neuves « Décimaux / Additionner | Soustraire |
+  Multiplier / Calcul posé », « Entiers / Multiplier | Diviser / Calcul posé » (aucun modèle en prod ni dans
+  les lots écrits) → niveau 1 partout, 2 pour la soustraction par cassage.
+- Décimaux tirés en entiers (centièmes, dixièmes), affichés par `{{eval:…;d}}` (virgule `{,}` au rendu) ;
+  virgules écrites à la main dans les formules du corrigé remplacées par `{,}` (sinon « 0, 4 »).
+- Specs : réponses telles que la grille les lit (espaces de milliers : « 182 208 », sinon `unoptimal_form`) ;
+  pas de spec « 49,40 » ni « reste vide » : la lecture des cases retire le 0 de fin et rend vide un reste
+  vide, le juge ne reçoit jamais ces textes.
+- `question:specs` 300 tirages par variation : tout réussi ; `create-questions` en simulation (prod) : 6/6
+  verts, 42 specs.
+- Base locale : 6 brouillons, joués dans l'aperçu à 390 px (Playwright, port 5178), réponse fausse et
+  corrigé : virgules alignées et carreaux vides (34,5 ; 13 − 4,43), produits partiels en cases d'aide
+  (605 × 303), potence à 4 chiffres qui défile dans son cadre (page sans défilement horizontal), corrigés à
+  virgule.

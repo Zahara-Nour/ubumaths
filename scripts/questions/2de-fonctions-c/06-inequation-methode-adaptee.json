@@ -1,0 +1,306 @@
+{
+	"title": "Résoudre f(x) < k en se ramenant à une fonction de référence",
+	"description": "f(x) < k avec f donnée par son expression (2x² + 1, 2√x + 1, 2x³ + 3) : isoler la fonction de référence, puis résoudre par sa courbe ou sa croissance, les quatre sens (pièges : partie négative oubliée, x ⩾ 0 oublié, m au lieu de m², crochets)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Généralités",
+	"subdomain": "Résolution algébrique",
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère la fonction $f$ définie par $f(x)={{a}}x^2{{c;+}}$.\n\nRésous dans $\\mathbb{R}$ l'inéquation $f(x){{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..3"
+				},
+				{
+					"name": "k",
+					"expression": "eval:(a)*(r)^2+(c)"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|]-{{r}};{{r}}[|{{if:s==1|[-{{r}};{{r}}]|{{if:s==2|]-\\infty;-{{r}}[\\cup]{{r}};+\\infty[|]-\\infty;-{{r}}]\\cup[{{r}};+\\infty[}}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On **isole** la fonction de référence ; quand on divise par ${{a}}$, un nombre **positif**, le sens **ne change pas**.",
+					"$${{a}}x^2{{c;+}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}\\iff {{a}}x^2{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(k)-(c)}}\\iff x^2{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(r)^2}}$$",
+					"On est ramené à une inéquation $x^2<k$ (**fonction carré**) : les solutions de $x^2={{eval:(r)^2}}$ sont $-{{r}}$ et ${{r}}$ ; sur la courbe de $f$, on garde les points situés {{if:s==0|**strictement sous**|{{if:s==1|**sous ou sur**|{{if:s==2|**strictement au-dessus de**|**au-dessus ou sur**}}}}}} la droite $y={{k}}$ ; {{if:s==0|les abscisses des points d'intersection sont **exclues**|{{if:s==1|les abscisses des points d'intersection sont **comprises**|{{if:s==2|les abscisses des points d'intersection sont **exclues**|les abscisses des points d'intersection sont **comprises**}}}}}}.",
+					"```courbe\nx: {{eval:-(r)-2}} ; {{eval:(r)+2}}\ny: {{eval:min(0,min((k),(c)))-3}} ; {{eval:max(0,max((k),(c)))+3}}\nf(x) = {{a}}*x^2+({{c}})   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\n{{if:s==0|h(x) = {{a}}*x^2+({{c}}) sur ]-{{r}} ; {{r}}[   vert|{{if:s==1|h(x) = {{a}}*x^2+({{c}}) sur [-{{r}} ; {{r}}]   vert|{{if:s==2|h(x) = {{a}}*x^2+({{c}}) sur [-100 ; -{{r}}[   vert|h(x) = {{a}}*x^2+({{c}}) sur [-100 ; -{{r}}]   vert}}}}}}\n{{if:s==0|t(x) = 0 sur ]-{{r}} ; {{r}}[   vert|{{if:s==1|t(x) = 0 sur [-{{r}} ; {{r}}]   vert|{{if:s==2|t(x) = 0 sur [-100 ; -{{r}}[   vert|t(x) = 0 sur [-100 ; -{{r}}]   vert}}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2|j(x) = {{a}}*x^2+({{c}}) sur ]{{r}} ; 100]   vert|j(x) = {{a}}*x^2+({{c}}) sur [{{r}} ; 100]   vert}}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2|u(x) = 0 sur ]{{r}} ; 100]   vert|u(x) = 0 sur [{{r}} ; 100]   vert}}}}}}\npoints: A(-{{r}} ; {{k}}), B({{r}} ; {{k}})\ntaille: moyenne\ndescription: Parabole de f, droite y = {{k}} en pointillé, partie cherchée en vert. L'ensemble des solutions est repassé en vert sur l'axe des abscisses.\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]-{{r}}\\,;{{r}}\\right[|{{if:s==1|\\left[-{{r}}\\,;{{r}}\\right]|{{if:s==2|\\left]-\\infty\\,;-{{r}}\\right[\\cup\\left]{{r}}\\,;+\\infty\\right[|\\left]-\\infty\\,;-{{r}}\\right]\\cup\\left[{{r}}\\,;+\\infty\\right[}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie par $f(x)={{a}}\\sqrt{x}{{c;+}}$.\n\nRésous dans $\\mathbb{R}$ l'inéquation $f(x){{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "m",
+					"expression": "1..3"
+				},
+				{
+					"name": "k",
+					"expression": "eval:(a)*(m)+(c)"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|[0;{{eval:(m)^2}}[|{{if:s==1|[0;{{eval:(m)^2}}]|{{if:s==2|]{{eval:(m)^2}};+\\infty[|[{{eval:(m)^2}};+\\infty[}}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est définie pour $x\\geqslant 0$ : les solutions sont **positives ou nulles**. On **isole** la fonction de référence ; quand on divise par ${{a}}$, un nombre **positif**, le sens **ne change pas**.",
+					"$${{a}}\\sqrt{x}{{c;+}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}\\iff {{a}}\\sqrt{x}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(k)-(c)}}\\iff \\sqrt{x}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{m}}$$",
+					"On est ramené à une inéquation $\\sqrt{x}<k$ (**fonction racine carrée**, croissante : le sens est conservé) : $\\sqrt{x}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{m}}\\iff x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(m)^2}}$, avec $x\\geqslant 0$.",
+					"```courbe\nx: -1 ; {{eval:(m)^2+3}}\ny: {{eval:min(0,min((k),(c)))-3}} ; {{eval:max(0,max((k),(c)))+3}}\nf(x) = {{a}}*sqrt(x)+({{c}})   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\n{{if:s==0|h(x) = {{a}}*sqrt(x)+({{c}}) sur [0 ; {{m}}^2[   vert|{{if:s==1|h(x) = {{a}}*sqrt(x)+({{c}}) sur [0 ; {{m}}^2]   vert|{{if:s==2|h(x) = {{a}}*sqrt(x)+({{c}}) sur ]{{m}}^2 ; 100]   vert|h(x) = {{a}}*sqrt(x)+({{c}}) sur [{{m}}^2 ; 100]   vert}}}}}}\n{{if:s==0|t(x) = 0 sur [0 ; {{m}}^2[   vert|{{if:s==1|t(x) = 0 sur [0 ; {{m}}^2]   vert|{{if:s==2|t(x) = 0 sur ]{{m}}^2 ; 100]   vert|t(x) = 0 sur [{{m}}^2 ; 100]   vert}}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2| | }}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2| | }}}}}}\npoints: A({{m}}^2 ; {{k}})\ntaille: moyenne\ndescription: Courbe de f, droite y = {{k}} en pointillé, partie cherchée en vert. L'ensemble des solutions est repassé en vert sur l'axe des abscisses.\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left[0\\,;{{eval:(m)^2}}\\right[|{{if:s==1|\\left[0\\,;{{eval:(m)^2}}\\right]|{{if:s==2|\\left]{{eval:(m)^2}}\\,;+\\infty\\right[|\\left[{{eval:(m)^2}}\\,;+\\infty\\right[}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie par $f(x)={{a}}x^3{{c;+}}$.\n\nRésous dans $\\mathbb{R}$ l'inéquation $f(x){{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "r",
+					"expression": "-2..2!0"
+				},
+				{
+					"name": "k",
+					"expression": "eval:(a)*(r)^3+(c)"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|]-\\infty;{{r}}[|{{if:s==1|]-\\infty;{{r}}]|{{if:s==2|]{{r}};+\\infty[|[{{r}};+\\infty[}}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On **isole** la fonction de référence ; quand on divise par ${{a}}$, un nombre **positif**, le sens **ne change pas**.",
+					"$${{a}}x^3{{c;+}}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}\\iff {{a}}x^3{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(k)-(c)}}\\iff x^3{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(r)^3}}$$",
+					"On est ramené à une inéquation $x^3<k$ (**fonction cube**, croissante : le sens est conservé) : comme $({{r}})^3={{eval:(r)^3}}$, $x^3{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(r)^3}}\\iff x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{r}}$.",
+					"```courbe\nx: -4 ; 4\ny: {{eval:min(0,min((k),(c)))-3}} ; {{eval:max(0,max((k),(c)))+3}}\nf(x) = {{a}}*x^3+({{c}})   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\n{{if:s==0|h(x) = {{a}}*x^3+({{c}}) sur [-100 ; {{r}}[   vert|{{if:s==1|h(x) = {{a}}*x^3+({{c}}) sur [-100 ; {{r}}]   vert|{{if:s==2|h(x) = {{a}}*x^3+({{c}}) sur ]{{r}} ; 100]   vert|h(x) = {{a}}*x^3+({{c}}) sur [{{r}} ; 100]   vert}}}}}}\n{{if:s==0|t(x) = 0 sur [-100 ; {{r}}[   vert|{{if:s==1|t(x) = 0 sur [-100 ; {{r}}]   vert|{{if:s==2|t(x) = 0 sur ]{{r}} ; 100]   vert|t(x) = 0 sur [{{r}} ; 100]   vert}}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2| | }}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2| | }}}}}}\npoints: A({{r}} ; {{k}})\ntaille: moyenne\ndescription: Courbe de f, droite y = {{k}} en pointillé, partie cherchée en vert. L'ensemble des solutions est repassé en vert sur l'axe des abscisses.\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left]-\\infty\\,;{{r}}\\right[|{{if:s==1|\\left]-\\infty\\,;{{r}}\\right]|{{if:s==2|\\left]{{r}}\\,;+\\infty\\right[|\\left[{{r}}\\,;+\\infty\\right[}}}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2x² + 1 < 19 : S = ]−3 ; 3[",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"c": "1",
+				"r": "3",
+				"k": "19",
+				"s": "0"
+			},
+			"answers": ["]-3;3["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ]−∞ ; 3[",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"c": "1",
+				"r": "3",
+				"k": "19",
+				"s": "0"
+			},
+			"answers": ["]-\\infty;3["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ]−9 ; 9[",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"c": "1",
+				"r": "3",
+				"k": "19",
+				"s": "0"
+			},
+			"answers": ["]-9;9["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3x² − 2 ⩾ 10 : S = ]−∞ ; −2] ∪ [2 ; +∞[",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"c": "-2",
+				"r": "2",
+				"k": "10",
+				"s": "3"
+			},
+			"answers": ["]-\\infty;-2]\\cup[2;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : [2 ; +∞[",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"c": "-2",
+				"r": "2",
+				"k": "10",
+				"s": "3"
+			},
+			"answers": ["[2;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2√x + 1 ⩽ 7 : S = [0 ; 9]",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"c": "1",
+				"m": "3",
+				"k": "7",
+				"s": "1"
+			},
+			"answers": ["[0;9]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ]−∞ ; 9]",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"c": "1",
+				"m": "3",
+				"k": "7",
+				"s": "1"
+			},
+			"answers": ["]-\\infty;9]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : [0 ; 3]",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"c": "1",
+				"m": "3",
+				"k": "7",
+				"s": "1"
+			},
+			"answers": ["[0;3]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2x³ + 3 > −13 : S = ]−2 ; +∞[",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"c": "3",
+				"r": "-2",
+				"k": "-13",
+				"s": "2"
+			},
+			"answers": ["]-2;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sens changé ]−∞ ; −2[",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"c": "3",
+				"r": "-2",
+				"k": "-13",
+				"s": "2"
+			},
+			"answers": ["]-\\infty;-2["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ]−8 ; +∞[",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"c": "3",
+				"r": "-2",
+				"k": "-13",
+				"s": "2"
+			},
+			"answers": ["]-8;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

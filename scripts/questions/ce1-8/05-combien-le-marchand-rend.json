@@ -1,0 +1,244 @@
+{
+	"title": "Combien le marchand rend-il ? Euros et centimes",
+	"description": "Rendu sur 1 €, 5 €, 10 € et 20 €, par complément, réponse en centimes ou à virgule",
+	"grades": ["CE1"],
+	"theme": "Grandeurs",
+	"domain": "Monnaie",
+	"subdomain": "Rendre la monnaie",
+	"level": 3,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "{{if:o==1|La sucette|{{if:o==2|La gomme|{{if:o==3|Le crayon|{{if:o==4|Le bonbon|{{if:o==5|La carte postale|Le sachet de billes}}}}}}}}}} coûte ${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$. Léo paie avec cette pièce :\n\n```monnaie\npièces: 1×1\n```\n\nCombien le marchand lui rend-il ?\n\n$?~\\text{centimes}$",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..6"
+				},
+				{
+					"name": "k",
+					"expression": "1..19"
+				},
+				{
+					"name": "p",
+					"expression": "eval:5*k"
+				}
+			],
+			"conditions": ["mod(p,100) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100-p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"De ${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$ à ${{eval:(p + 100 - mod(p,100))/100}}~\\unit{€}$, il faut ${{eval:100 - mod(p,100)}}$ centimes.",
+					"Le marchand rend $\\textcolor{{{color:primary.0}}}{{{eval:100-p}}}$ centimes."
+				]
+			}
+		},
+		{
+			"statement": "{{if:o==1|Le cahier|{{if:o==2|La trousse|{{if:o==3|Le stylo|{{if:o==4|Le magazine|{{if:o==5|La balle|La règle}}}}}}}}}} coûte ${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$. Léo paie avec ce billet :\n\n```monnaie\nbillets: 1×5\n```\n\nCombien le marchand lui rend-il ?\n\n$?~\\text{€}$",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..6"
+				},
+				{
+					"name": "k",
+					"expression": "21..99"
+				},
+				{
+					"name": "p",
+					"expression": "eval:5*k"
+				}
+			],
+			"conditions": ["mod(p,100) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(500-p)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"De ${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$ à ${{eval:(p + 100 - mod(p,100))/100}}~\\unit{€}$, il faut ${{eval:100 - mod(p,100)}}$ centimes.{{if:500 - (p + 100 - mod(p,100)) > 0| Puis de ${{eval:(p + 100 - mod(p,100))/100}}~\\unit{€}$ à $5~\\unit{€}$, il faut ${{eval:(500 - (p + 100 - mod(p,100)))/100}}~\\unit{€}$.|}}",
+					"Le marchand rend $\\textcolor{{{color:primary.0}}}{{{eval:floor((500-p)/100)}}.{{eval:floor(mod(500-p,100)/10)}}{{eval:mod(500-p,10)}}}~\\unit{€}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:o==1|Le livre|{{if:o==2|Le ballon|{{if:o==3|Le jeu|{{if:o==4|La trousse|{{if:o==5|Le cahier|La gourde}}}}}}}}}} coûte ${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$. Léo paie avec ce billet :\n\n```monnaie\nbillets: 1×10\n```\n\nCombien le marchand lui rend-il ?\n\n$?~\\text{€}$",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..6"
+				},
+				{
+					"name": "k",
+					"expression": "110..190"
+				},
+				{
+					"name": "p",
+					"expression": "eval:5*k"
+				}
+			],
+			"conditions": ["mod(p,100) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(1000-p)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"De ${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$ à ${{eval:(p + 100 - mod(p,100))/100}}~\\unit{€}$, il faut ${{eval:100 - mod(p,100)}}$ centimes.{{if:1000 - (p + 100 - mod(p,100)) > 0| Puis de ${{eval:(p + 100 - mod(p,100))/100}}~\\unit{€}$ à $10~\\unit{€}$, il faut ${{eval:(1000 - (p + 100 - mod(p,100)))/100}}~\\unit{€}$.|}}",
+					"Le marchand rend $\\textcolor{{{color:primary.0}}}{{{eval:floor((1000-p)/100)}}.{{eval:floor(mod(1000-p,100)/10)}}{{eval:mod(1000-p,10)}}}~\\unit{€}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:o==1|Le livre|{{if:o==2|Le ballon|{{if:o==3|Le jeu|{{if:o==4|La trousse|{{if:o==5|Le cahier|La gourde}}}}}}}}}} coûte ${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$. Léo paie avec ce billet :\n\n```monnaie\nbillets: 1×20\n```\n\nCombien le marchand lui rend-il ?\n\n$?~\\text{€}$",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..6"
+				},
+				{
+					"name": "k",
+					"expression": "246..394"
+				},
+				{
+					"name": "p",
+					"expression": "eval:5*k"
+				}
+			],
+			"conditions": ["mod(p,100) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(2000-p)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"De ${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$ à ${{eval:(p + 100 - mod(p,100))/100}}~\\unit{€}$, il faut ${{eval:100 - mod(p,100)}}$ centimes.{{if:2000 - (p + 100 - mod(p,100)) > 0| Puis de ${{eval:(p + 100 - mod(p,100))/100}}~\\unit{€}$ à $20~\\unit{€}$, il faut ${{eval:(2000 - (p + 100 - mod(p,100)))/100}}~\\unit{€}$.|}}",
+					"Le marchand rend $\\textcolor{{{color:primary.0}}}{{{eval:floor((2000-p)/100)}}.{{eval:floor(mod(2000-p,100)/10)}}{{eval:mod(2000-p,10)}}}~\\unit{€}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "0,35 € payé avec 1 € : 65 c",
+			"variationIndex": 0,
+			"variables": {
+				"o": "1",
+				"k": "7"
+			},
+			"answers": ["65"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rend le prix (35)",
+			"variationIndex": 0,
+			"variables": {
+				"o": "1",
+				"k": "7"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3,45 € payé avec 5 € : 1,55 €",
+			"variationIndex": 1,
+			"variables": {
+				"o": "2",
+				"k": "69"
+			},
+			"answers": ["1{,}55"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2,65 (5 − 3,45 sans retenue)",
+			"variationIndex": 1,
+			"variables": {
+				"o": "2",
+				"k": "69"
+			},
+			"answers": ["2{,}65"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1,55 lu 155 €",
+			"variationIndex": 1,
+			"variables": {
+				"o": "2",
+				"k": "69"
+			},
+			"answers": ["155"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7,50 € payé avec 10 € : 2,5 accepté",
+			"variationIndex": 2,
+			"variables": {
+				"o": "3",
+				"k": "150"
+			},
+			"answers": ["2{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : prix et billet additionnés (17,50)",
+			"variationIndex": 2,
+			"variables": {
+				"o": "3",
+				"k": "150"
+			},
+			"answers": ["17{,}5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "15,35 € payé avec 20 € : 4,65 €",
+			"variationIndex": 3,
+			"variables": {
+				"o": "4",
+				"k": "307"
+			},
+			"answers": ["4{,}65"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5,65 € (euro de trop)",
+			"variationIndex": 3,
+			"variables": {
+				"o": "4",
+				"k": "307"
+			},
+			"answers": ["5{,}65"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

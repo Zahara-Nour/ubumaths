@@ -2075,12 +2075,27 @@ Pour les **citations rotatives sur splash screen** (voix Tristan Bernard, voir S
 
 ### Illustrations 🟡
 
-Décisions de David (2026-10-25 et 2026-10-26), journal : `docs/wip/illustrations-progress.md`.
+Décisions de David (2026-10-25 au 2026-11-01). Journal archivé, avec tous les prompts et les essais ville par ville : `docs/archive/wip/illustrations-progress.md`.
 
 - **Style** : affiche lithographiée de Montmartre (1896), à la manière de Steinlen ; même famille que les Mathoux. Pas de halo systématique.
 - **Deux nuanciers** (`docs/Chiphres/illustrations/nuancier/`) : _numérique_ (la palette canonique ci-dessus) pour tout ce qui vit dans l'interface (personnages qui parlent à l'élève, icônes, bannières) ; _encre d'imprimerie_ (la même, désaturée, sur papier crème) pour les objets imprimés du Royaume (grande carte, Shtam, Almanach, Édits Royaux, diplômes, affiches d'événements). Les Mathoux et les Palotins gardent leurs couleurs.
 - **Dans un prompt**, nommer les couleurs en anglais courant (navy ink, cream parchment, emerald green, marigold yellow, deep crimson…), jamais par leur nom du Royaume, et joindre le nuancier de référence sans texte.
 - **Images de référence** (`docs/Chiphres/illustrations/personnages/`, une par prompt ci-dessous, nommée d'après le personnage : `pere-ubu.jpg`, `flegmatique.jpg`, `quatrezoneilles.jpg`…) : à joindre au prompt d'un nouveau personnage (Père Ubu toujours, et les personnages de même rang pour l'âge et l'échelle). Captures des SVG des Palotins dans l'appli : `personnages/palotins-appli/`.
+
+#### Cartes du Royaume et des capitales 🟡
+
+Grande carte et sept cartes de capitales validées par David (2026-10-29 au 2026-11-01), sur le site depuis #2138 (`/royaume`, `/royaume/<ville>`).
+
+- **Style des cartes** : carte de conte à l'ancienne, façon vieille carte marine (référence : Bernard Sleigh, _An Anciente Mappe of Fairyland_, 1918, domaine public), et non l'affiche Steinlen des personnages. Encre fine, lavis d'aquarelle sur parchemin crème. Paysage naturel aux transitions douces, sans couleur par province. Outil : Nano Banana.
+- **Fichiers** : `docs/Chiphres/illustrations/carte/` (fond FIGÉ `fond-carte-hd.webp`, PNG maître chez David ; vignettes des villes recollées par `vignettes/recoller.sh` ; surcouche `carte-royaume.svg`) et `docs/Chiphres/illustrations/villes/<ville>/` (`plan-schematique.py`, `carte-ville.png`, `carte-<ville>.py` → `carte-<ville>.svg` + `.webp` 1024×1024).
+- **Méthode d'une carte** : plan schématique SVG validé par David → référence sans texte (`plan-schematique.py --reference-ia`) → Nano Banana, nouvelle conversation, la référence **seule** en pièce jointe → retouches sur de petits carrés découpés (`villes/bonneteau-sur-vistule/decouper-retouches.sh` et `coller-retouches.sh`, zones dans `zones-retouches.txt`) → `carte-ville.png` → surcouche SVG : noms en vrai texte (Georgia, pas de police web), noms courts sur la carte et nom complet du Compendium en `<title>`, un `id` par lieu (`lieu-…`, `province-…`, `ville-…`) avec une cible de clic invisible.
+- **Pièges de Nano Banana** :
+  - Ce qui doit se voir doit être dans la **forme** de la référence : un symbole est recopié comme un logo, le texte du prompt seul est ignoré (le relief aussi : crête, teinte d'altitude). Tout ce que dessine le plan est recopié fidèlement, erreurs comprises.
+  - Une retouche = un petit carré et **une seule** demande, sinon les ajouts sont pris au pied de la lettre. Une retouche qui déplace un élément peut en laisser un bout isolé : 2e passe sur la 1re.
+  - Une retouche redessine parfois toute l'image : vérifier par différence avec l'original, ne coller que la zone.
+  - Une image de style en 2e pièce jointe est copiée telle quelle : ne pas la joindre.
+  - Nano Banana compte mal (tours de spirale, tours d'enceinte) et ne suit pas les proportions demandées.
+- **Contenu** : pas de formes géométriques plaquées sur le paysage ; la discipline de chaque province ne se montre que dans sa ville. Références sans texte ; jamais de personne réelle nommée ; fichiers pour l'IA copiés dans `~/Downloads`.
 
 #### Prompt de référence — Père Ubu 🟡
 

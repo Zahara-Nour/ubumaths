@@ -13,13 +13,20 @@
  * Masqué : ```line et ```courbe (`placer:`), ```horloge (`placer:`), ```collection et
  * ```monnaie (`construire:`, avec sa réserve par défaut écrite : `maskMonnaie`), ```partage (`colorier:`), ```barres (effectifs des
  * barres de `placer:`, `axe: à choisir` compris : l'échelle ne se déduit plus).
- * Pas encore (lot 2 du chantier) : ```cubes, ```patron `completer:`,
- * ```figure-a-completer.
+ * Lot 2, des lignes réécrites (David, journal § 7) :
+ * - ```cubes `retrouver:` : `hauteurs: ? ? / 0 ?` (l'empreinte est la vue de dessus,
+ *   donnée) et `vues: face 2 1 ; droite 1 2` (tout assemblage qui a ces vues est juste :
+ *   les hauteurs du bloc en sont un) ;
+ * - ```patron `completer:` : le patron amputé en grille, déjà tourné et retourné, et
+ *   `completer: ? ?` (une face à poser par `?`) ;
+ * - ```figure-a-completer : `verifier: ?`, l'outil écrit (`outils:`). Les points
+ *   restent : un point invisible posé sur la réponse fuirait (aucun modèle).
  * Un bloc dans une option d'un ```choix n'est pas un geste (le générateur met le
  * choix à l'abri avant de repérer les gestes) : il reste tel quel, sinon les options
  * deviendraient identiques.
  * Sans objet : ```ranger (déjà mélangé), ```patron `designer:` (la tâche, que la
- * consigne dit ; les faces se trouvent par le pliage), opération posée.
+ * consigne dit ; les faces se trouvent par le pliage), ```cubes `dessiner:` (la
+ * perspective est la figure), opération posée.
  *
  * @module questions/masked-statement
  */
@@ -33,7 +40,17 @@ import { fromCents, isCents, readAmount, toCents } from '$lib/ubumark/utils/monn
 import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
 import { findBarsToPlace, parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
 import { findChoiceBlocks } from '$lib/ubumark/parser/choix-parser';
+import {
+	findCubesToBuild,
+	findPatronsToBuild,
+	parseEspaceContent
+} from '$lib/ubumark/parser/espace-parser';
+import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
+import { unnestedLine } from '$lib/ubumark/parser/nested-line';
 import { MASKED_VALUE } from '$lib/ubumark/utils/masked-value';
+import { sideColumns } from '$lib/ubumark/utils/espace-scene';
+import { transformGrid, trimGrid } from '$lib/ubumark/utils/espace-patrons';
+import { CHECK_TOOL } from '$lib/ubumark/types/construction';
 
 // Types
 interface FoundBlock {
@@ -41,8 +58,11 @@ interface FoundBlock {
 	body: string[];
 }
 
-/** Ligne du corps (sans ce qui l'imbrique) → ligne masquée ; null : inchangée */
-type MaskLine = (line: string, rank: number) => string | null;
+/**
+ * Ligne du corps (sans ce qui l'imbrique) → ligne masquée ; plusieurs lignes, ou
+ * aucune (`[]` : retirée) ; null : inchangée
+ */
+type MaskLine = (line: string, rank: number) => string | string[] | null;
 
 // Constantes
 const PLACER_LINE = /^(placer\s*:)(.*)$/i;
@@ -67,6 +87,16 @@ function maskLineTargets(value: string): string {
 		})
 		.join(' ; ');
 }
+
+/** Ligne retirée d'un bloc réécrit (filtrée à la fin) */
+const REMOVED_LINE = '\u0000';
+/** `clé: valeur` d'un bloc d'espace ou d'une figure */
+const ESPACE_KEY_LINE = /^([A-Za-zÀ-ÿ]+)\s*:\s*(.*)$/;
+const FIGURE_A_COMPLETER_START = /^```figure-a-completer\s*$/;
+const FENCE_END = /^```\s*$/;
+const FIGURE_SEPARATOR = /^---\s*$/;
+/** Lignes d'un patron qui diraient où va la face retirée, ou qui s'appliquent déjà */
+const PATRON_DROPPED_KEYS = new Set(['tourner', 'retourner', 'dessous', 'faux']);
 
 /** `A=(2 ; 3) ; B=(-1 ; 2)` → `A=? ; B=?` ; `(2 ; 3)` → `?` */
 function maskCourbeTargets(value: string): string {
@@ -98,8 +128,11 @@ function maskLines(
 			const index = block.startIndex + 1 + rank;
 			const original = lines[index];
 			const trimmed = plain.trim();
-			const at = original.lastIndexOf(trimmed);
-			lines[index] = at === -1 ? masked : original.slice(0, at) + masked;
+			const at = trimmed === '' ? -1 : original.lastIndexOf(trimmed);
+			const prefix = at === -1 ? '' : original.slice(0, at);
+			const written = typeof masked === 'string' ? [masked] : masked;
+			lines[index] =
+				written.length === 0 ? REMOVED_LINE : written.map((line) => prefix + line).join('\n');
 		});
 	}
 }
@@ -140,6 +173,112 @@ function maskBars(block: FoundBlock): MaskLine {
 	};
 }
 
+/** Clé d'une ligne `clé: valeur`, sans accent ni majuscule ; null sinon */
+function keyOf(line: string): string | null {
+	const match = ESPACE_KEY_LINE.exec(line.trim());
+	return match
+		? match[1]
+				.normalize('NFD')
+				.replace(/[\u0300-\u036f]/g, '')
+				.toLowerCase()
+		: null;
+}
+
+/**
+ * Assemblage à retrouver : `hauteurs:` (et ses rangées en retrait) devient
+ * `hauteurs: ? ? / 0 ?`, suivie de `vues:` (une hauteur par colonne de chaque vue
+ * donnée). `dessiner:` et un bloc illisible restent tels quels.
+ */
+function maskCubes(block: FoundBlock): MaskLine {
+	const spec = parseEspaceContent(block.body.join('\n'), 'cubes').spec;
+	if (spec?.kind !== 'cubes' || spec.task?.kind !== 'retrouver' || spec.givenViews) {
+		return () => null;
+	}
+	const { heights, task } = spec;
+	const footprint = heights
+		.map((row) => row.map((h) => (h > 0 ? MASKED_VALUE : '0')).join(' '))
+		.join(' / ');
+	const views = task.views
+		.map((view) => `${view} ${sideColumns(heights, view).join(' ')}`)
+		.join(' ; ');
+	let inHeights = false;
+	return (line) => {
+		const key = keyOf(line);
+		if (key === null) return inHeights && line.trim() !== '' ? [] : null;
+		inHeights = key === 'hauteurs';
+		return inHeights ? [`hauteurs: ${footprint}`, `vues: ${views}`] : null;
+	};
+}
+
+/**
+ * Patron à compléter : `forme:` (et sa grille) devient le patron amputé en grille,
+ * déjà tourné et retourné ; `completer: 4` devient `completer: ?`.
+ */
+function maskPatron(block: FoundBlock): MaskLine {
+	const spec = parseEspaceContent(block.body.join('\n'), 'patron').spec;
+	const task = spec?.kind === 'patron' ? spec.task : undefined;
+	if (spec?.kind !== 'patron' || task?.kind !== 'completer' || task.masked !== undefined) {
+		return () => null;
+	}
+	let rank = 0;
+	const left = (spec.cells ?? []).map((row) =>
+		row.map((on) => on && !task.removed.includes(rank++))
+	);
+	const grid = trimGrid(transformGrid(left, spec.turn, spec.mirror));
+	const rows = grid.map((row) => '  ' + row.map((on) => (on ? 'X' : '.')).join(''));
+	const toPlace = task.removed.map(() => MASKED_VALUE).join(' ');
+	// Sans `forme:` (patron par défaut), la grille s'écrit devant `completer:`
+	const hasForm = block.body.some((line) => keyOf(line) === 'forme');
+	let inForm = false;
+	return (line) => {
+		const key = keyOf(line);
+		if (key === null) return inForm && line.trim() !== '' ? [] : null;
+		inForm = key === 'forme';
+		if (inForm) return ['forme:', ...rows];
+		if (PATRON_DROPPED_KEYS.has(key)) return [];
+		if (key !== 'completer') return null;
+		const completer = `completer: ${toPlace}`;
+		return hasForm ? completer : ['forme:', ...rows, completer];
+	};
+}
+
+/** Les blocs ```figure-a-completer d'un énoncé (corps sans clôtures) */
+function findFiguresACompleter(lines: string[]): FoundBlock[] {
+	const plainLines = lines.map(unnestedLine);
+	const found: FoundBlock[] = [];
+	for (let i = 0; i < plainLines.length; i++) {
+		if (!FIGURE_A_COMPLETER_START.test(plainLines[i].trim())) continue;
+		let end = i + 1;
+		while (end < plainLines.length && !FENCE_END.test(plainLines[end].trim())) end++;
+		found.push({ startIndex: i, body: plainLines.slice(i + 1, end) });
+		i = end;
+	}
+	return found;
+}
+
+/**
+ * Figure à compléter : la première ligne `verifier:` devient `verifier: ?` (précédée
+ * de `outils:` si l'outil venait de la vérification), les autres sont retirées.
+ * Les lignes de la figure (après `---`) restent.
+ */
+function maskFigure(block: FoundBlock): MaskLine {
+	const header = readConstructionHeader(block.body.join('\n'));
+	if (header.spec.masked || header.spec.checks.length === 0) return () => null;
+	const separator = block.body.findIndex((line) => FIGURE_SEPARATOR.test(line.trim()));
+	const headerEnd = separator === -1 ? block.body.length : separator;
+	const toolsWritten = block.body.slice(0, headerEnd).some((line) => keyOf(line) === 'outils');
+	const tool = CHECK_TOOL[header.spec.checks[0].kind];
+	let first = true;
+	return (line, rank) => {
+		if (rank >= headerEnd || !/^(verifier|vérifier)$/.test(keyOf(line) ?? '')) return null;
+		if (!first) return [];
+		first = false;
+		return toolsWritten
+			? `verifier: ${MASKED_VALUE}`
+			: [`outils: ${tool}`, `verifier: ${MASKED_VALUE}`];
+	};
+}
+
 /**
  * L'énoncé sans les valeurs que l'élève doit trouver dans ses blocs à geste.
  * Un énoncé sans bloc à geste revient tel quel.
@@ -164,5 +303,11 @@ export function maskGestureAnswers(statement: string): string {
 	maskBlocks(findBuildMonnaies(statement), maskMonnaie);
 	maskBlocks(findPartagesToColorier(statement), () => keyLine(COLORIER_LINE, () => MASKED_VALUE));
 	maskBlocks(findBarsToPlace(statement), maskBars);
-	return lines.join('\n');
+	// Bloc cité ou en retrait : pas de case, pas de geste (rien à masquer)
+	const ownBlocks = <T extends FoundBlock & { nested: boolean }>(found: T[]) =>
+		found.filter((block) => !block.nested);
+	maskBlocks(ownBlocks(findCubesToBuild(statement)), maskCubes);
+	maskBlocks(ownBlocks(findPatronsToBuild(statement)), maskPatron);
+	maskBlocks(findFiguresACompleter(statement.split('\n')), maskFigure);
+	return lines.filter((line) => line !== REMOVED_LINE).join('\n');
 }

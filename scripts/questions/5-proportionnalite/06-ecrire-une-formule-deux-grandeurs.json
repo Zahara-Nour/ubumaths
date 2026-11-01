@@ -1,0 +1,286 @@
+{
+	"title": "Écrire une formule reliant deux grandeurs",
+	"description": "Écrire la formule qui relie deux grandeurs dans un contexte concret : prix de n cahiers (3n), inscription et films (5 + 2n), distance à vitesse constante (60t)",
+	"grades": ["5"],
+	"theme": "Calcul littéral",
+	"domain": "Écrire",
+	"subdomain": "Formules",
+	"level": 5,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"products": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Un cahier coûte ${{k}}~\\unit{€}$. Écris le prix $p$ à payer, en euros, pour $n$ cahiers.\n\n$p = ?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}n"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Écrire une formule.** On fait le calcul avec un exemple (pour $2$, pour $3$…), puis on remplace le nombre par la lettre. On peut supprimer le signe $\\times$ devant une lettre : $3 \\times n$ s'écrit $3n$.",
+					"Pour $2$ cahiers : ${{k}} \\times 2$ ; pour $n$ cahiers : ${{k}} \\times n$, donc $p = \\textcolor{{{color:primary.0}}}{{{k}}n}$."
+				]
+			}
+		},
+		{
+			"statement": "À la médiathèque, l'inscription coûte ${{a}}~\\unit{€}$, puis chaque film emprunté coûte ${{b}}~\\unit{€}$. Écris le prix $p$ à payer, en euros, pour $n$ films.\n\n$p = ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..10"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}+{{b}}n"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Écrire une formule.** On fait le calcul avec un exemple (pour $2$, pour $3$…), puis on remplace le nombre par la lettre. On peut supprimer le signe $\\times$ devant une lettre : $3 \\times n$ s'écrit $3n$.",
+					"Pour $3$ films : ${{a}} + {{b}} \\times 3$ ; pour $n$ films : ${{a}} + {{b}} \\times n$, donc $p = \\textcolor{{{color:primary.0}}}{{{a}} + {{b}}n}$."
+				]
+			}
+		},
+		{
+			"statement": "Une voiture roule toujours à ${{v}}~\\unit{km/h}$. Écris la distance $d$ parcourue, en kilomètres, en $t$ heures.\n\n$d = ?$",
+			"variables": [
+				{
+					"name": "v",
+					"expression": "50|60|70|80|90|110|130"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}t"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Écrire une formule.** On fait le calcul avec un exemple (pour $2$, pour $3$…), puis on remplace le nombre par la lettre. On peut supprimer le signe $\\times$ devant une lettre : $3 \\times n$ s'écrit $3n$.",
+					"En $1$ h, elle parcourt ${{v}}$ km ; en $2$ h, ${{v}} \\times 2$ km ; en $t$ heures, ${{v}} \\times t$ km, donc $d = \\textcolor{{{color:primary.0}}}{{{v}}t}$."
+				]
+			}
+		},
+		{
+			"statement": "Une recette de crêpes demande ${{g}}~\\unit{g}$ de farine par personne. Écris la masse $m$ de farine, en grammes, pour $n$ personnes.\n\n$m = ?$",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "40|50|60|75|80|100"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{g}}n"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Écrire une formule.** On fait le calcul avec un exemple (pour $2$, pour $3$…), puis on remplace le nombre par la lettre. On peut supprimer le signe $\\times$ devant une lettre : $3 \\times n$ s'écrit $3n$.",
+					"Pour $4$ personnes : ${{g}} \\times 4$ ; pour $n$ personnes : ${{g}} \\times n$, donc $m = \\textcolor{{{color:primary.0}}}{{{g}}n}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Cahiers à 3 € : 3n",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["3n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cahiers à 3 € : 3 × n",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["3\\times n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cahiers à 3 € : n × 3",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["n\\times3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n + 3",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["n+3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 (une valeur)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3n² ",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["3n^2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Médiathèque : 5 + 2n",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "2"
+			},
+			"answers": ["5+2n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Médiathèque : 2n + 5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "2"
+			},
+			"answers": ["2n+5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7n",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "2"
+			},
+			"answers": ["7n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 5n + 2 (inversé)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "2"
+			},
+			"answers": ["5n+2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2n (oubli de l'inscription)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "2"
+			},
+			"answers": ["2n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Voiture à 60 km/h : 60t",
+			"variationIndex": 2,
+			"variables": {
+				"v": "60"
+			},
+			"answers": ["60t"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 60 + t",
+			"variationIndex": 2,
+			"variables": {
+				"v": "60"
+			},
+			"answers": ["60+t"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : t/60",
+			"variationIndex": 2,
+			"variables": {
+				"v": "60"
+			},
+			"answers": ["\\frac{t}{60}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Recette 50 g : 50n",
+			"variationIndex": 3,
+			"variables": {
+				"g": "50"
+			},
+			"answers": ["50n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 50 + n",
+			"variationIndex": 3,
+			"variables": {
+				"g": "50"
+			},
+			"answers": ["50+n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

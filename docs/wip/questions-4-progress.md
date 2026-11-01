@@ -5,13 +5,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, phase 0 du lot 8 proposée (§ 39)._
+_Mis à jour le 2026-11-01, après #2133 (lot 8 écrit, mergé)._
 
-- **État** : lots 1 à 7 en prod ; tous publiés sauf les 2 volumes du lot 6 (brouillons), débloqués : la prod v0.59.0
-  livre ` ```solide ` (et le repère à placer). Phase 0 du lot 8 écrite (§ 39).
-- **Prochaine action** : réponses de David au § 39.4, puis volumes du lot 6 (`publier-lot` sur un dossier avec 01 et
-  02 seulement) et écriture du lot 8 ; ensuite lot 9 « pensée informatique » (065-067).
-- **En attente de David** : les 4 questions du § 39.4 (modèles, catégories, repère à placer pour 063, volumes du lot 6).
+- **État** : lots 1 à 7 en prod et tous publiés (volumes du lot 6 publiés le 2026-11-01, § 40). Lot 8 « programmes de calcul et fonctions » : fichiers mergés (#2133, § 41), pas encore en prod.
+- **Prochaine action** : après le `--publier` de David, relever les 6 `id` (MCP), migration nœud + tag du lot 8
+  (+ test d'intégration rouge sans elle, `security-auditor`), page à cocher (`page-a-cocher.ts --dir
+scripts/questions/4-lot-8` ; 063 et 064 dessinent des ` ```courbe `) . Puis
+  lot 9 « pensée informatique » (065-067).
+- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/4-lot-8 --publier` (6 brouillons du lot 8).
 - **Pièges en cours** : `mtexte()` refusé dans une figure de question (§ 26) ; `db push --include-all` : **réservé à
   David** (§ 27, § 30, § 34), même quand une autre session dit le contraire ; horodatage de migration : rebaser sur
   `origin/main` avant la CI (§ 34) ; exemption de doc d'une migration de données = ligne `Doc-inchangée:` dans un
@@ -992,3 +993,28 @@ publication, les élèves de 4e voient 6 modèles de plus.
    c'est « représenter » pour de vrai) ?
 4. Lot 6 : publier les 2 volumes maintenant que ` ```solide ` est en prod (`publier-lot` sur un dossier avec 01 et 02
    seulement), avant d'écrire le lot 8 (reco : oui) ?
+
+**Décisions de David (2026-11-01, « je te suis »)** : les 6 modèles du § 39.2 ; catégories Fonctions / Programmes de
+calcul / Appliquer 1 (060) et 2 (081), Remonter 1 (061), Fonctions / Dépendance / Formule 1 (062), Graphique 1 (063),
+Formule, tableau et graphique 1 (064) ; 063 au repère à placer (+ une variante à choix de graphiques) ; volumes du lot
+6 publiés avant d'écrire le lot 8.
+
+## 40. Lot 6 : publication des volumes (2026-11-01)
+
+- ` ```solide ` en prod (v0.59.0, `solide-parser.ts` sur `origin/production`). `publier-lot --dir
+scripts/questions/4-lot-6` en simulation (prod) : 6a770d04 et 35002b15 passent ; les 3 translations, déjà
+  publiées, laissées telles quelles (le script les saute : plus besoin de dossier à part).
+- `publier-lot --publier` lancé par David : 5/5 publiés ; vérifié au MCP : 6a770d04 (niveau 1) et 35002b15 (niveau 2)
+  `published`. **Lot 6 clos.**
+
+## 41. Lot 8 : écrit (worktree `ubumaths-wt-questions-4`, branche `feat/questions-4-lot-8`, #2133)
+
+- Script `docs/wip/questions/lot-4-8.py` → `scripts/questions/4-lot-8/` (6 fichiers). `question:specs` : 64 specs
+  vertes, 1 300 tirages réussis ; `sonde-courbes` : 0 problème (344 blocs) ; `create-questions` (simulation, prod) :
+  6 « à créer ».
+- Base locale : 6 brouillons créés ; aperçu admin du repère à placer joué (`admin@local.test`) : rendu juste, titres
+  d'axes, un point faux → « Faux », « Tu as placé D en (3 ; 8). ».
+- Piège : `pnpm exec prettier` lancé par `subprocess.run` attendait sur l'entrée standard (script bloqué, sans
+  sortie) → `stdin=subprocess.DEVNULL`.
+- Écriture : 081 « développée et réduite » = `requiredForm: sum` (`3(2x+5)` → `bad_form`) ; 060 et 064 : le bon
+  choix calculé par `{{if:…}}` quand il dépend du tirage (programme A ou B, température qui monte ou descend).

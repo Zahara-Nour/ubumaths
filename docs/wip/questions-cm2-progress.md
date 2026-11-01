@@ -6,12 +6,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2125 (rangement du 5b)._
+_Mis à jour le 2026-11-01, après la publication du 5b : lot 5 (fractions) clos._
 
-- **État** : lots 0 à 4 et 5a publiés ; 5b (calculs, 6 modèles) en brouillon en prod, rangé et tagué (#2125, vérifié MCP) ; page à cocher du 5b publiée : https://claude.ai/artifact/EBRtiBKNCcbaQynwCYUXKx (6 fiches, `verdicts` vide au départ).
-- **Prochaine action** : migration de niveau de `cf85bd1b` (022) 7 → 8 + fichier `06-…json` (une PR), après la question d'accès ; puis `publier-lot` en simulation ; puis lot suivant (§ 3 du journal : prochains points sans modèle).
-- **En attente de David** : question d'accès de la migration de niveau (« personne », proposé) ; ensuite `publier-lot --dir scripts/questions/cm2-5b --publier`.
-- **Pièges en cours** : homonymes du CM1 / de 6e signalés par la page à cocher (même titre, autre niveau : ids vérifiés) ; `reducedFractions: off` accepte toute fraction égale ; jamais `}}` collé dans un `{{if:}}` ; `db:migrate` refusé quand la prod a des migrations plus récentes → `--dry-run` puis `--include-all` si seule la nôtre manque ; worktree sans `supabase/.temp` → copier celui du dépôt principal pour `db push` ; dépôt principal à l'index occupé par une autre session → jouer depuis le worktree ; `git commit -m … -- <fichiers>` ; `Doc-inchangée:` dans un message de commit.
+- **État** : lots 0 à 5 publiés (5a : 5 modèles, 5b : 6 modèles, rangés et tagués, vérifiés MCP).
+- **Prochaine action** : lot suivant — relire le § 3 (points sans modèle restants), proposer la phase 0 du lot 6 à David.
+- **En attente de David** : rien.
+- **Pièges en cours** : niveau relevé puis pris par une autre session avant la publication → relever les niveaux de la catégorie juste avant `--publier` ; homonymes du CM1 / de 6e signalés par la page à cocher (même titre, autre niveau : ids vérifiés) ; `reducedFractions: off` accepte toute fraction égale ; jamais `}}` collé dans un `{{if:}}` ; `db:migrate` refusé quand la prod a des migrations plus récentes → `--dry-run` puis `--include-all` si seule la nôtre manque ; worktree sans `supabase/.temp` → copier celui du dépôt principal pour `db push` ; dépôt principal à l'index occupé par une autre session → jouer depuis le worktree ; `git commit -m … -- <fichiers>` ; `Doc-inchangée:` dans un message de commit.
 - **Worktree / branche** : aucun (retiré après #2125).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
@@ -548,3 +548,66 @@ modèles 6-11). Tableau du § 10 gardé.
 ### 10.8 Lot 5b : relecture (David, 2026-11-01)
 
 - 6 OK sur 6, sans commentaire (`verdicts` lu et compté). `publier-lot` en simulation : **refus** de `cf85bd1b` — niveau 7 de Fractions / Calculer / Fraction d'une quantité pris par `a635df43` « Fraction d'une fraction » (4e, passé de 5 à 7 puis publié le 2026-11-01 par `questions-4`, migration `20261101193000`, après mon relevé). Rien publié. Correction : niveau 8 (libre), migration + fichier.
+- Question d'accès posée avant le SQL ; David : « je te suis » (personne). Migration `20261101213500_questions_cm2_lot5b_niveau.sql` (copie de `20261101193000_questions_4_lot1_niveau`) : `cf85bd1b` 7 → 8 ; fichier `06-…json` et script à 8. Test `questions-cm2-lot5b-niveau` : 6 verts ; corps remplacé par `select 1;` → suite rouge (2 échecs, bloc principal arrêté par la garde du rollback).
+- `security-auditor` : aucun bloquant (2 mineurs hérités de la migration de référence). CI verte, #2129 mergée ; `db push --include-all` (dry-run : la nôtre seule). MCP : `cf85bd1b` niveau 8, brouillon, `updated_at` inchangé. `publier-lot` en simulation : 6 brouillons passent.
+
+### 10.9 Lot 5b : publication (2026-11-01)
+
+- David lance `publier-lot --publier` : 6/6 publiés. MCP : 6 `published` (niveaux 23, 24, 25, 26, 10, 8), 6 rangés, 6 tagués. **Lot 5 clos.**
+
+## 11. Lot 6 — fractions décimales et décimaux : phase 0 (proposée le 2026-11-01)
+
+Relevé MCP du 2026-11-01 : les 13 points prévus (§ 3) n'ont **aucun** modèle CM2 : 023, 024, 027,
+028, 139, 140, 029 (fractions décimales) ; 031, 033, 145, 034, 146, 147 (décimaux). 026, 030, 141, 142
+et 117 en ont déjà (1 à 6), écartés. Jumeaux du CM1 publiés (`cm1-3b`, `cm1-4`, même titre, nombres
+du CM1 : dixièmes et centièmes) : `36507fc9`, `6faa64d0`, `53031438`, `34c58018`, `7ed61c5f`,
+`85e4d251`, `2cff4ef5`, `10aae729`, `ca08432a`, `9c0c47ef`, `2af5f9fe`, `2cb242e0` ; de 6e :
+`2c5bae8f` (liens entre unités), `a1b46489`, `92db5823`, `2e982062`. Décision du § 4 bis : modèles
+CM2 propres. Bornes CM2 (`cycle3.json`) : dénominateurs 10, 100, 1 000 ; **millièmes** ; au plus
+trois décimales ; ranger jusqu'à 4 fractions décimales, jusqu'à 5 décimaux.
+
+Niveaux relevés (tous statuts) : Fractions/Ecriture 8, Décomposition 7, Comparer 16, Encadrer 5,
+Ordonner 3 ; Décimaux/Décomposition 7, Ecriture 12, Arrondir 5, Comparer 5, Encadrer 6 → la suite.
+
+**6a — fractions décimales** (thème Fractions, sauf #2)
+
+| #   | Point   | Modèle                                                                                                                                                                                                    | Sous-notion — catégorie, niveau                                 |
+| --- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| 1   | CM2-023 | Lire et écrire une fraction décimale : V1 écrire en chiffres « deux cent sept millièmes » (d 10, 100, 1 000 ; n ≤ 9 999) ; V2 lire en case « choix » (dixièmes / centièmes / millièmes échangés)          | définition — Apprivoiser/Ecriture 9                             |
+| 2   | CM2-024 | Unités, dixièmes, centièmes, millièmes : V1 « 1 unité = ? millièmes » ; V2 « 4 dixièmes = ? centièmes » ; V3 l'inverse (« 300 millièmes = ? dixièmes ») ; V4 « 35 centièmes = ? dixièmes et ? centièmes » | décomposition (Décimaux) — Décimaux/Apprivoiser/Décomposition 8 |
+| 3   | CM2-027 | Décomposer une fraction décimale : V1 4 107/1 000 = ? + ?/10 + ?/100 + ?/1 000 (un chiffre 0 possible) ; V2 l'inverse, 4 + 1/10 + 7/1 000 = ?/1 000 (rang manquant)                                       | décomposition — Apprivoiser/Décomposition 8                     |
+| 4   | CM2-028 | Comparer deux fractions décimales de dénominateurs différents : 7/10 … 65/100 ; 67/100 … 607/1 000 ; « = » possible (70/100 = 7/10) ; signe en case « choix »                                             | ordre — Apprivoiser/Comparer 17                                 |
+| 5   | CM2-139 | Encadrer une fraction décimale entre deux entiers consécutifs : d 100 ou 1 000, jusqu'à 7 103/1 000                                                                                                       | ordre — Apprivoiser/Encadrer 6                                  |
+| 6   | CM2-140 | Intercaler une fraction décimale : V1 3/10 < ? < 4/10 ; V2 43/100 < ? < 44/100 (réponse en millièmes) ; toute fraction strictement entre est juste                                                        | ordre — Apprivoiser/Encadrer 7                                  |
+| 7   | CM2-029 | Ranger quatre nombres (2 ; 140/100 ; 1 200/1 000 ; 9/10) : V1 croissant, V2 décroissant (bloc ` ```ranger `)                                                                                              | ordre — Apprivoiser/Ordonner 4                                  |
+
+**6b — décimaux** (thème Décimaux, Apprivoiser)
+
+| #   | Point   | Modèle                                                                                                                                                                      | Sous-notion — catégorie, niveau             |
+| --- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| 8   | CM2-031 | Lire et écrire un nombre décimal : V1 « quatre unités et cent sept millièmes » → 4,107 ; V2 « 3 unités, 2 dixièmes et 5 millièmes » (rang vide) ; V3 lire en case « choix » | écritures — Ecriture 13                     |
+| 9   | CM2-033 | Partie entière : 105,78 ; 3,7 ; au plus trois décimales, partie entière jusqu'à 999                                                                                         | arrondis et ordres de grandeur — Arrondir 6 |
+| 10  | CM2-145 | Arrondi à l'unité : V1 cas francs ; V2 cas pièges (3,5 → 4 ; 3,49 → 3 ; 9,7 → 10)                                                                                           | arrondis et ordres de grandeur — Arrondir 7 |
+| 11  | CM2-034 | Comparer deux nombres décimaux : 4,592 … 4,71 (plus de chiffres ≠ plus grand) ; 3,7 … 3,70 (« = ») ; signe en case « choix »                                                | ordre — Comparer 6                          |
+| 12  | CM2-146 | Ranger cinq nombres (12,082 ; 12 324/1 000 ; 14 ; 12,09 ; 12,6) : V1 croissant, V2 décroissant                                                                              | ordre — Comparer 7                          |
+| 13  | CM2-147 | Intercaler un nombre décimal : V1 3,4 < ? < 3,5 ; V2 1,99 < ? < 2 ; toute réponse strictement entre, au plus trois décimales                                                | encadrement — Encadrer 7                    |
+
+Corrigés : rang par rang (1 dixième = 10 centièmes = 100 millièmes) ; comparer → même dénominateur
+(7/10 = 70/100) ou même nombre de décimales (4,71 = 4,710) ; arrondi → chiffre des dixièmes.
+Erreurs typiques en `testSpecs` : rang voisin (dixièmes ↔ centièmes), « plus de chiffres donc plus
+grand » (4,592 > 4,71), zéro oublié (4 + 1/10 + 7/1 000 = 417/1 000), arrondi tronqué (3,7 → 3),
+borne recopiée à l'intercalation.
+
+**Question d'accès** : brouillons neufs, puis nœud + tag → personne ne lit rien de plus avant la
+publication.
+
+**À trancher** : (a) découpage 6a puis 6b (comme 5a / 5b) ? (b) #12 : garder une fraction décimale
+parmi les cinq décimaux, comme l'exemple du BO ? (c) #6 et #13 : accepter aussi l'autre écriture
+(0,435 pour 435/1 000 ; 3 456/1 000 pour 3,456) ?
+
+### 11.1 Lot 6 : décisions (David, 2026-11-01)
+
+Recommandations suivies (« tes recos ? » puis « je valide ») : (a) deux lots, **6a** (fractions
+décimales, modèles 1-7) puis **6b** (décimaux, modèles 8-13) ; (b) #12 garde une fraction décimale
+parmi les cinq nombres ; (c) #13 accepte aussi l'écriture fractionnaire, #6 exige une fraction
+décimale (0,435 → message de forme, à vérifier en local). Tableau du § 11 gardé.

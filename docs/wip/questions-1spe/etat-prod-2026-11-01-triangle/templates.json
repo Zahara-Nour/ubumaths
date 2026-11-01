@@ -1,0 +1,646 @@
+[
+	{
+		"id": "05edc72b-5253-454c-91d6-b001fa50e12c",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["1_SPE"],
+		"delay": 60,
+		"theme": "Suites",
+		"domain": "Apprivoiser",
+		"subdomain": "Motifs",
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"requiredForm": {
+							"pattern": "u"
+						},
+						"expectedAnswer": "3n{{eval:4-3*p;+}}"
+					}
+				],
+				"statement": "Des carrés d'allumettes sont accolés en rangée. Voici les trois premières étapes.\n\n```figure\nfenetre: -0.5 ; 13.5 ; -2 ; 2\ntaille: grande\ndescription: Trois étapes d'un motif d'allumettes : une rangée de 1, 2 puis 3 carrés accolés, qui comptent 4, 7 puis 10 allumettes.\n---\nQ1 = point(0.5, 1, visible=faux)\nQ2 = point(1.5, 1, visible=faux)\nQ3 = point(0.5, 0, visible=faux)\nQ4 = point(1.5, 0, visible=faux)\nsegment(Q1, Q2, couleur=\"marron\", epaisseur=3)\nsegment(Q3, Q4, couleur=\"marron\", epaisseur=3)\nsegment(Q3, Q1, couleur=\"marron\", epaisseur=3)\nsegment(Q4, Q2, couleur=\"marron\", epaisseur=3)\ntexte(1, -0.9, \"Étape {{p}}\")\nQ5 = point(4, 1, visible=faux)\nQ6 = point(5, 1, visible=faux)\nQ7 = point(6, 1, visible=faux)\nQ8 = point(4, 0, visible=faux)\nQ9 = point(5, 0, visible=faux)\nQ10 = point(6, 0, visible=faux)\nsegment(Q5, Q6, couleur=\"marron\", epaisseur=3)\nsegment(Q8, Q9, couleur=\"marron\", epaisseur=3)\nsegment(Q6, Q7, couleur=\"marron\", epaisseur=3)\nsegment(Q9, Q10, couleur=\"marron\", epaisseur=3)\nsegment(Q8, Q5, couleur=\"marron\", epaisseur=3)\nsegment(Q9, Q6, couleur=\"marron\", epaisseur=3)\nsegment(Q10, Q7, couleur=\"marron\", epaisseur=3)\ntexte(5, -0.9, \"Étape {{eval:p+1}}\")\nQ11 = point(8.5, 1, visible=faux)\nQ12 = point(9.5, 1, visible=faux)\nQ13 = point(10.5, 1, visible=faux)\nQ14 = point(11.5, 1, visible=faux)\nQ15 = point(8.5, 0, visible=faux)\nQ16 = point(9.5, 0, visible=faux)\nQ17 = point(10.5, 0, visible=faux)\nQ18 = point(11.5, 0, visible=faux)\nsegment(Q11, Q12, couleur=\"marron\", epaisseur=3)\nsegment(Q15, Q16, couleur=\"marron\", epaisseur=3)\nsegment(Q12, Q13, couleur=\"marron\", epaisseur=3)\nsegment(Q16, Q17, couleur=\"marron\", epaisseur=3)\nsegment(Q13, Q14, couleur=\"marron\", epaisseur=3)\nsegment(Q17, Q18, couleur=\"marron\", epaisseur=3)\nsegment(Q15, Q11, couleur=\"marron\", epaisseur=3)\nsegment(Q16, Q12, couleur=\"marron\", epaisseur=3)\nsegment(Q17, Q13, couleur=\"marron\", epaisseur=3)\nsegment(Q18, Q14, couleur=\"marron\", epaisseur=3)\ntexte(10, -0.9, \"Étape {{eval:p+2}}\")\n```\n\nOn note $u_n$ le nombre de allumettes de l'étape $n$ (la première étape dessinée est l'étape ${{eval:p}}$).\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n=?$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "0|1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Chaque nouveau carré ajoute $3$ allumettes : deux horizontales et une verticale.",
+						"Les étapes dessinées donnent $u_{{{eval:p}}}={{eval:3*(p+1-p)+1}}$, $u_{{{eval:p+1}}}={{eval:3*(p+1+1-p)+1}}$, $u_{{{eval:p+2}}}={{eval:3*(p+2+1-p)+1}}$ : la formule doit les retrouver.",
+						"$$u_n=\\textcolor{{{color:primary.0}}}{3n{{eval:4-3*p;+}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"requiredForm": {
+							"pattern": "u"
+						},
+						"expectedAnswer": "4n{{eval:5-4*p;+}}"
+					}
+				],
+				"statement": "Des points sont disposés en croix. Voici les trois premières étapes.\n\n```figure\nfenetre: -0.5 ; 19.5 ; -1.6 ; 6.6\ntaille: grande\ndescription: Trois étapes d'un motif de points en croix : un point central et des branches de 1, 2 puis 3 points, soit 5, 9 puis 13 points.\n---\nQ1 = point(1.5, 1, visible=faux)\nJ1 = cercle(Q1, 0.3)\nstyle(J1, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ2 = point(0.5, 1, visible=faux)\nJ2 = cercle(Q2, 0.3)\nstyle(J2, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ3 = point(2.5, 1, visible=faux)\nJ3 = cercle(Q3, 0.3)\nstyle(J3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ4 = point(1.5, 0, visible=faux)\nJ4 = cercle(Q4, 0.3)\nstyle(J4, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ5 = point(1.5, 2, visible=faux)\nJ5 = cercle(Q5, 0.3)\nstyle(J5, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\ntexte(1.5, -0.9, \"Étape {{p}}\")\nQ6 = point(7, 2, visible=faux)\nJ6 = cercle(Q6, 0.3)\nstyle(J6, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ7 = point(6, 2, visible=faux)\nJ7 = cercle(Q7, 0.3)\nstyle(J7, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ8 = point(8, 2, visible=faux)\nJ8 = cercle(Q8, 0.3)\nstyle(J8, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ9 = point(7, 1, visible=faux)\nJ9 = cercle(Q9, 0.3)\nstyle(J9, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ10 = point(7, 3, visible=faux)\nJ10 = cercle(Q10, 0.3)\nstyle(J10, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ11 = point(5, 2, visible=faux)\nJ11 = cercle(Q11, 0.3)\nstyle(J11, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ12 = point(9, 2, visible=faux)\nJ12 = cercle(Q12, 0.3)\nstyle(J12, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ13 = point(7, 0, visible=faux)\nJ13 = cercle(Q13, 0.3)\nstyle(J13, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ14 = point(7, 4, visible=faux)\nJ14 = cercle(Q14, 0.3)\nstyle(J14, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\ntexte(7, -0.9, \"Étape {{eval:p+1}}\")\nQ15 = point(14.5, 3, visible=faux)\nJ15 = cercle(Q15, 0.3)\nstyle(J15, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ16 = point(13.5, 3, visible=faux)\nJ16 = cercle(Q16, 0.3)\nstyle(J16, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ17 = point(15.5, 3, visible=faux)\nJ17 = cercle(Q17, 0.3)\nstyle(J17, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ18 = point(14.5, 2, visible=faux)\nJ18 = cercle(Q18, 0.3)\nstyle(J18, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ19 = point(14.5, 4, visible=faux)\nJ19 = cercle(Q19, 0.3)\nstyle(J19, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ20 = point(12.5, 3, visible=faux)\nJ20 = cercle(Q20, 0.3)\nstyle(J20, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ21 = point(16.5, 3, visible=faux)\nJ21 = cercle(Q21, 0.3)\nstyle(J21, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ22 = point(14.5, 1, visible=faux)\nJ22 = cercle(Q22, 0.3)\nstyle(J22, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ23 = point(14.5, 5, visible=faux)\nJ23 = cercle(Q23, 0.3)\nstyle(J23, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ24 = point(11.5, 3, visible=faux)\nJ24 = cercle(Q24, 0.3)\nstyle(J24, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ25 = point(17.5, 3, visible=faux)\nJ25 = cercle(Q25, 0.3)\nstyle(J25, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ26 = point(14.5, 0, visible=faux)\nJ26 = cercle(Q26, 0.3)\nstyle(J26, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ27 = point(14.5, 6, visible=faux)\nJ27 = cercle(Q27, 0.3)\nstyle(J27, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\ntexte(14.5, -0.9, \"Étape {{eval:p+2}}\")\n```\n\nOn note $u_n$ le nombre de points de l'étape $n$ (la première étape dessinée est l'étape ${{eval:p}}$).\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n=?$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "0|1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Chaque étape ajoute un point au bout de chacune des $4$ branches.",
+						"Les étapes dessinées donnent $u_{{{eval:p}}}={{eval:4*(p+1-p)+1}}$, $u_{{{eval:p+1}}}={{eval:4*(p+1+1-p)+1}}$, $u_{{{eval:p+2}}}={{eval:4*(p+2+1-p)+1}}$ : la formule doit les retrouver.",
+						"$$u_n=\\textcolor{{{color:primary.0}}}{4n{{eval:5-4*p;+}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"requiredForm": {
+							"pattern": "u"
+						},
+						"expectedAnswer": "{{if:p==1|\\dfrac{n(n+1)}{2}|\\dfrac{(n+1)(n+2)}{2}}}"
+					}
+				],
+				"statement": "Des points sont disposés en triangle. Voici les trois premières étapes.\n\n```figure\nfenetre: -0.5 ; 10.5 ; -1.6 ; 2.3\ntaille: grande\ndescription: Trois étapes d'un motif de points en triangle : 1, 3 puis 6 points, en lignes de 1, 2, 3 points.\n---\nQ1 = point(0.5, 0, visible=faux)\nJ1 = cercle(Q1, 0.3)\nstyle(J1, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\ntexte(0.5, -0.9, \"Étape {{p}}\")\nQ2 = point(3, 0.85, visible=faux)\nJ2 = cercle(Q2, 0.3)\nstyle(J2, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ3 = point(3.5, 0, visible=faux)\nJ3 = cercle(Q3, 0.3)\nstyle(J3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ4 = point(4.5, 0, visible=faux)\nJ4 = cercle(Q4, 0.3)\nstyle(J4, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\ntexte(3.5, -0.9, \"Étape {{eval:p+1}}\")\nQ5 = point(6.5, 1.7, visible=faux)\nJ5 = cercle(Q5, 0.3)\nstyle(J5, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ6 = point(7, 0.85, visible=faux)\nJ6 = cercle(Q6, 0.3)\nstyle(J6, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ7 = point(8, 0.85, visible=faux)\nJ7 = cercle(Q7, 0.3)\nstyle(J7, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ8 = point(7.5, 0, visible=faux)\nJ8 = cercle(Q8, 0.3)\nstyle(J8, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ9 = point(8.5, 0, visible=faux)\nJ9 = cercle(Q9, 0.3)\nstyle(J9, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ10 = point(9.5, 0, visible=faux)\nJ10 = cercle(Q10, 0.3)\nstyle(J10, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\ntexte(7.5, -0.9, \"Étape {{eval:p+2}}\")\n```\n\nOn note $u_n$ le nombre de points de l'étape $n$ (la première étape dessinée est l'étape ${{eval:p}}$).\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n=?$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "0|1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Chaque étape ajoute une ligne qui a un point de plus que la précédente.",
+						"Les étapes dessinées donnent $u_{{{eval:p}}}={{eval:(p+1-p)*((p+1-p)+1)/2}}$, $u_{{{eval:p+1}}}={{eval:(p+1+1-p)*((p+1+1-p)+1)/2}}$, $u_{{{eval:p+2}}}={{eval:(p+2+1-p)*((p+2+1-p)+1)/2}}$ : la formule doit les retrouver.",
+						"$$u_n=\\textcolor{{{color:primary.0}}}{{{if:p==1|\\dfrac{n(n+1)}{2}|\\dfrac{(n+1)(n+2)}{2}}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"requiredForm": {
+							"pattern": "u"
+						},
+						"expectedAnswer": "{{if:p==1|n^2|(n+1)^2}}"
+					}
+				],
+				"statement": "Des points sont disposés en carré. Voici les trois premières étapes.\n\n```figure\nfenetre: -0.5 ; 10.5 ; -1.6 ; 2.6\ntaille: grande\ndescription: Trois étapes d'un motif de points en carré : 1, 4 puis 9 points.\n---\nQ1 = point(0.5, 0, visible=faux)\nJ1 = cercle(Q1, 0.3)\nstyle(J1, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\ntexte(0.5, -0.9, \"Étape {{p}}\")\nQ2 = point(3, 0, visible=faux)\nJ2 = cercle(Q2, 0.3)\nstyle(J2, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ3 = point(3, 1, visible=faux)\nJ3 = cercle(Q3, 0.3)\nstyle(J3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ4 = point(4, 0, visible=faux)\nJ4 = cercle(Q4, 0.3)\nstyle(J4, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ5 = point(4, 1, visible=faux)\nJ5 = cercle(Q5, 0.3)\nstyle(J5, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\ntexte(3.5, -0.9, \"Étape {{eval:p+1}}\")\nQ6 = point(6.5, 0, visible=faux)\nJ6 = cercle(Q6, 0.3)\nstyle(J6, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ7 = point(6.5, 1, visible=faux)\nJ7 = cercle(Q7, 0.3)\nstyle(J7, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ8 = point(6.5, 2, visible=faux)\nJ8 = cercle(Q8, 0.3)\nstyle(J8, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ9 = point(7.5, 0, visible=faux)\nJ9 = cercle(Q9, 0.3)\nstyle(J9, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ10 = point(7.5, 1, visible=faux)\nJ10 = cercle(Q10, 0.3)\nstyle(J10, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ11 = point(7.5, 2, visible=faux)\nJ11 = cercle(Q11, 0.3)\nstyle(J11, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ12 = point(8.5, 0, visible=faux)\nJ12 = cercle(Q12, 0.3)\nstyle(J12, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ13 = point(8.5, 1, visible=faux)\nJ13 = cercle(Q13, 0.3)\nstyle(J13, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ14 = point(8.5, 2, visible=faux)\nJ14 = cercle(Q14, 0.3)\nstyle(J14, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\ntexte(7.5, -0.9, \"Étape {{eval:p+2}}\")\n```\n\nOn note $u_n$ le nombre de points de l'étape $n$ (la première étape dessinée est l'étape ${{eval:p}}$).\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n=?$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "0|1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Pour passer d'un carré de côté $m$ à un carré de côté $m+1$, on ajoute une ligne et une colonne : $2m+1$ points.",
+						"Les étapes dessinées donnent $u_{{{eval:p}}}={{eval:(p+1-p)^2}}$, $u_{{{eval:p+1}}}={{eval:(p+1+1-p)^2}}$, $u_{{{eval:p+2}}}={{eval:(p+2+1-p)^2}}$ : la formule doit les retrouver.",
+						"$$u_n=\\textcolor{{{color:primary.0}}}{{{if:p==1|n^2|(n+1)^2}}}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Motif : relation explicite",
+		"description": "Suite définie par un motif géométrique dessiné (allumettes, croix, triangle, carré de points), étapes numérotées à partir de 0 ou de 1 : uₙ en fonction de n",
+		"shared": {
+			"cleanCoefficients": true
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["3n+1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "1"
+				},
+				"description": "Allumettes, dès 1 : 3n + 1",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3n+4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "0"
+				},
+				"description": "Allumettes, dès 0 : 3n + 4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3n+1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "0"
+				},
+				"description": "Allumettes, dès 0, erreur : 3n + 1",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4n"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "1"
+				},
+				"description": "Erreur : 4n",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4n+1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "1"
+				},
+				"description": "Croix, dès 1 : 4n + 1",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["4n+5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "0"
+				},
+				"description": "Croix, dès 0 : 4n + 5",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{n(n+1)}{2}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "1"
+				},
+				"description": "Triangle, dès 1 : n(n + 1)/2",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{n^2+n}{2}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "1"
+				},
+				"description": "Triangle, développé",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{(n+1)(n+2)}{2}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "0"
+				},
+				"description": "Triangle, dès 0 : (n + 1)(n + 2)/2",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{n^2}{2}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "1"
+				},
+				"description": "Erreur : n²/2",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["n^2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "1"
+				},
+				"description": "Carré, dès 1 : n²",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["(n+1)^2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "0"
+				},
+				"description": "Carré, dès 0 : (n + 1)²",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["2n"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "1"
+				},
+				"description": "Erreur : 2n",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": "449e0fb8-72d2-4db3-a686-341c2282e011"
+	},
+	{
+		"id": "41100a51-0ca9-436e-9d90-13ff62f01331",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["1_SPE"],
+		"delay": 60,
+		"theme": "Suites",
+		"domain": "Apprivoiser",
+		"subdomain": "Motifs",
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "3"
+					}
+				],
+				"statement": "Des carrés d'allumettes sont accolés en rangée. Voici les trois premières étapes.\n\n```figure\nfenetre: -0.5 ; 13.5 ; -2 ; 2\ntaille: grande\ndescription: Trois étapes d'un motif d'allumettes : une rangée de 1, 2 puis 3 carrés accolés, qui comptent 4, 7 puis 10 allumettes.\n---\nQ1 = point(0.5, 1, visible=faux)\nQ2 = point(1.5, 1, visible=faux)\nQ3 = point(0.5, 0, visible=faux)\nQ4 = point(1.5, 0, visible=faux)\nsegment(Q1, Q2, couleur=\"marron\", epaisseur=3)\nsegment(Q3, Q4, couleur=\"marron\", epaisseur=3)\nsegment(Q3, Q1, couleur=\"marron\", epaisseur=3)\nsegment(Q4, Q2, couleur=\"marron\", epaisseur=3)\ntexte(1, -0.9, \"Étape {{p}}\")\nQ5 = point(4, 1, visible=faux)\nQ6 = point(5, 1, visible=faux)\nQ7 = point(6, 1, visible=faux)\nQ8 = point(4, 0, visible=faux)\nQ9 = point(5, 0, visible=faux)\nQ10 = point(6, 0, visible=faux)\nsegment(Q5, Q6, couleur=\"marron\", epaisseur=3)\nsegment(Q8, Q9, couleur=\"marron\", epaisseur=3)\nsegment(Q6, Q7, couleur=\"marron\", epaisseur=3)\nsegment(Q9, Q10, couleur=\"marron\", epaisseur=3)\nsegment(Q8, Q5, couleur=\"marron\", epaisseur=3)\nsegment(Q9, Q6, couleur=\"marron\", epaisseur=3)\nsegment(Q10, Q7, couleur=\"marron\", epaisseur=3)\ntexte(5, -0.9, \"Étape {{eval:p+1}}\")\nQ11 = point(8.5, 1, visible=faux)\nQ12 = point(9.5, 1, visible=faux)\nQ13 = point(10.5, 1, visible=faux)\nQ14 = point(11.5, 1, visible=faux)\nQ15 = point(8.5, 0, visible=faux)\nQ16 = point(9.5, 0, visible=faux)\nQ17 = point(10.5, 0, visible=faux)\nQ18 = point(11.5, 0, visible=faux)\nsegment(Q11, Q12, couleur=\"marron\", epaisseur=3)\nsegment(Q15, Q16, couleur=\"marron\", epaisseur=3)\nsegment(Q12, Q13, couleur=\"marron\", epaisseur=3)\nsegment(Q16, Q17, couleur=\"marron\", epaisseur=3)\nsegment(Q13, Q14, couleur=\"marron\", epaisseur=3)\nsegment(Q17, Q18, couleur=\"marron\", epaisseur=3)\nsegment(Q15, Q11, couleur=\"marron\", epaisseur=3)\nsegment(Q16, Q12, couleur=\"marron\", epaisseur=3)\nsegment(Q17, Q13, couleur=\"marron\", epaisseur=3)\nsegment(Q18, Q14, couleur=\"marron\", epaisseur=3)\ntexte(10, -0.9, \"Étape {{eval:p+2}}\")\n```\n\nOn note $u_n$ le nombre de allumettes de l'étape $n$ (la première étape dessinée est l'étape ${{eval:p}}$).\n\nComplète la relation de récurrence.\n\n$u_{n+1}=u_n+?$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "0|1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Chaque nouveau carré ajoute $3$ allumettes : deux horizontales et une verticale.",
+						"On passe de l'étape $n$ à l'étape $n+1$ en ajoutant $3$ allumettes (on le vérifie : $u_{{{eval:p+1}}}-u_{{{eval:p}}}={{eval:3*(p+1+1-p)+1-(3*(p+1-p)+1)}}$).",
+						"$$u_{n+1}=u_n+\\textcolor{{{color:primary.0}}}{3}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "4"
+					}
+				],
+				"statement": "Des points sont disposés en croix. Voici les trois premières étapes.\n\n```figure\nfenetre: -0.5 ; 19.5 ; -1.6 ; 6.6\ntaille: grande\ndescription: Trois étapes d'un motif de points en croix : un point central et des branches de 1, 2 puis 3 points, soit 5, 9 puis 13 points.\n---\nQ1 = point(1.5, 1, visible=faux)\nJ1 = cercle(Q1, 0.3)\nstyle(J1, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ2 = point(0.5, 1, visible=faux)\nJ2 = cercle(Q2, 0.3)\nstyle(J2, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ3 = point(2.5, 1, visible=faux)\nJ3 = cercle(Q3, 0.3)\nstyle(J3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ4 = point(1.5, 0, visible=faux)\nJ4 = cercle(Q4, 0.3)\nstyle(J4, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ5 = point(1.5, 2, visible=faux)\nJ5 = cercle(Q5, 0.3)\nstyle(J5, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\ntexte(1.5, -0.9, \"Étape {{p}}\")\nQ6 = point(7, 2, visible=faux)\nJ6 = cercle(Q6, 0.3)\nstyle(J6, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ7 = point(6, 2, visible=faux)\nJ7 = cercle(Q7, 0.3)\nstyle(J7, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ8 = point(8, 2, visible=faux)\nJ8 = cercle(Q8, 0.3)\nstyle(J8, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ9 = point(7, 1, visible=faux)\nJ9 = cercle(Q9, 0.3)\nstyle(J9, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ10 = point(7, 3, visible=faux)\nJ10 = cercle(Q10, 0.3)\nstyle(J10, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ11 = point(5, 2, visible=faux)\nJ11 = cercle(Q11, 0.3)\nstyle(J11, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ12 = point(9, 2, visible=faux)\nJ12 = cercle(Q12, 0.3)\nstyle(J12, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ13 = point(7, 0, visible=faux)\nJ13 = cercle(Q13, 0.3)\nstyle(J13, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ14 = point(7, 4, visible=faux)\nJ14 = cercle(Q14, 0.3)\nstyle(J14, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\ntexte(7, -0.9, \"Étape {{eval:p+1}}\")\nQ15 = point(14.5, 3, visible=faux)\nJ15 = cercle(Q15, 0.3)\nstyle(J15, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ16 = point(13.5, 3, visible=faux)\nJ16 = cercle(Q16, 0.3)\nstyle(J16, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ17 = point(15.5, 3, visible=faux)\nJ17 = cercle(Q17, 0.3)\nstyle(J17, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ18 = point(14.5, 2, visible=faux)\nJ18 = cercle(Q18, 0.3)\nstyle(J18, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ19 = point(14.5, 4, visible=faux)\nJ19 = cercle(Q19, 0.3)\nstyle(J19, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ20 = point(12.5, 3, visible=faux)\nJ20 = cercle(Q20, 0.3)\nstyle(J20, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ21 = point(16.5, 3, visible=faux)\nJ21 = cercle(Q21, 0.3)\nstyle(J21, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ22 = point(14.5, 1, visible=faux)\nJ22 = cercle(Q22, 0.3)\nstyle(J22, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ23 = point(14.5, 5, visible=faux)\nJ23 = cercle(Q23, 0.3)\nstyle(J23, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ24 = point(11.5, 3, visible=faux)\nJ24 = cercle(Q24, 0.3)\nstyle(J24, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ25 = point(17.5, 3, visible=faux)\nJ25 = cercle(Q25, 0.3)\nstyle(J25, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ26 = point(14.5, 0, visible=faux)\nJ26 = cercle(Q26, 0.3)\nstyle(J26, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ27 = point(14.5, 6, visible=faux)\nJ27 = cercle(Q27, 0.3)\nstyle(J27, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\ntexte(14.5, -0.9, \"Étape {{eval:p+2}}\")\n```\n\nOn note $u_n$ le nombre de points de l'étape $n$ (la première étape dessinée est l'étape ${{eval:p}}$).\n\nComplète la relation de récurrence.\n\n$u_{n+1}=u_n+?$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "0|1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Chaque étape ajoute un point au bout de chacune des $4$ branches.",
+						"On passe de l'étape $n$ à l'étape $n+1$ en ajoutant $4$ points (on le vérifie : $u_{{{eval:p+1}}}-u_{{{eval:p}}}={{eval:4*(p+1+1-p)+1-(4*(p+1-p)+1)}}$).",
+						"$$u_{n+1}=u_n+\\textcolor{{{color:primary.0}}}{4}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "n{{eval:2-p;+}}"
+					}
+				],
+				"statement": "Des points sont disposés en triangle. Voici les trois premières étapes.\n\n```figure\nfenetre: -0.5 ; 10.5 ; -1.6 ; 2.3\ntaille: grande\ndescription: Trois étapes d'un motif de points en triangle : 1, 3 puis 6 points, en lignes de 1, 2, 3 points.\n---\nQ1 = point(0.5, 0, visible=faux)\nJ1 = cercle(Q1, 0.3)\nstyle(J1, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\ntexte(0.5, -0.9, \"Étape {{p}}\")\nQ2 = point(3, 0.85, visible=faux)\nJ2 = cercle(Q2, 0.3)\nstyle(J2, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ3 = point(3.5, 0, visible=faux)\nJ3 = cercle(Q3, 0.3)\nstyle(J3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ4 = point(4.5, 0, visible=faux)\nJ4 = cercle(Q4, 0.3)\nstyle(J4, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\ntexte(3.5, -0.9, \"Étape {{eval:p+1}}\")\nQ5 = point(6.5, 1.7, visible=faux)\nJ5 = cercle(Q5, 0.3)\nstyle(J5, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ6 = point(7, 0.85, visible=faux)\nJ6 = cercle(Q6, 0.3)\nstyle(J6, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ7 = point(8, 0.85, visible=faux)\nJ7 = cercle(Q7, 0.3)\nstyle(J7, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ8 = point(7.5, 0, visible=faux)\nJ8 = cercle(Q8, 0.3)\nstyle(J8, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ9 = point(8.5, 0, visible=faux)\nJ9 = cercle(Q9, 0.3)\nstyle(J9, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ10 = point(9.5, 0, visible=faux)\nJ10 = cercle(Q10, 0.3)\nstyle(J10, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\ntexte(7.5, -0.9, \"Étape {{eval:p+2}}\")\n```\n\nOn note $u_n$ le nombre de points de l'étape $n$ (la première étape dessinée est l'étape ${{eval:p}}$).\n\nComplète la relation de récurrence.\n\n$u_{n+1}=u_n+?$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "0|1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Chaque étape ajoute une ligne qui a un point de plus que la précédente.",
+						"On passe de l'étape $n$ à l'étape $n+1$ en ajoutant $n{{eval:2-p;+}}$ points (on le vérifie : $u_{{{eval:p+1}}}-u_{{{eval:p}}}={{eval:(p+1+1-p)*((p+1+1-p)+1)/2-((p+1-p)*((p+1-p)+1)/2)}}$).",
+						"$$u_{n+1}=u_n+\\textcolor{{{color:primary.0}}}{n{{eval:2-p;+}}}$$"
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "2n{{eval:3-2*p;+}}"
+					}
+				],
+				"statement": "Des points sont disposés en carré. Voici les trois premières étapes.\n\n```figure\nfenetre: -0.5 ; 10.5 ; -1.6 ; 2.6\ntaille: grande\ndescription: Trois étapes d'un motif de points en carré : 1, 4 puis 9 points.\n---\nQ1 = point(0.5, 0, visible=faux)\nJ1 = cercle(Q1, 0.3)\nstyle(J1, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\ntexte(0.5, -0.9, \"Étape {{p}}\")\nQ2 = point(3, 0, visible=faux)\nJ2 = cercle(Q2, 0.3)\nstyle(J2, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ3 = point(3, 1, visible=faux)\nJ3 = cercle(Q3, 0.3)\nstyle(J3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ4 = point(4, 0, visible=faux)\nJ4 = cercle(Q4, 0.3)\nstyle(J4, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ5 = point(4, 1, visible=faux)\nJ5 = cercle(Q5, 0.3)\nstyle(J5, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\ntexte(3.5, -0.9, \"Étape {{eval:p+1}}\")\nQ6 = point(6.5, 0, visible=faux)\nJ6 = cercle(Q6, 0.3)\nstyle(J6, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ7 = point(6.5, 1, visible=faux)\nJ7 = cercle(Q7, 0.3)\nstyle(J7, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ8 = point(6.5, 2, visible=faux)\nJ8 = cercle(Q8, 0.3)\nstyle(J8, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ9 = point(7.5, 0, visible=faux)\nJ9 = cercle(Q9, 0.3)\nstyle(J9, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ10 = point(7.5, 1, visible=faux)\nJ10 = cercle(Q10, 0.3)\nstyle(J10, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ11 = point(7.5, 2, visible=faux)\nJ11 = cercle(Q11, 0.3)\nstyle(J11, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ12 = point(8.5, 0, visible=faux)\nJ12 = cercle(Q12, 0.3)\nstyle(J12, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ13 = point(8.5, 1, visible=faux)\nJ13 = cercle(Q13, 0.3)\nstyle(J13, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ14 = point(8.5, 2, visible=faux)\nJ14 = cercle(Q14, 0.3)\nstyle(J14, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\ntexte(7.5, -0.9, \"Étape {{eval:p+2}}\")\n```\n\nOn note $u_n$ le nombre de points de l'étape $n$ (la première étape dessinée est l'étape ${{eval:p}}$).\n\nComplète la relation de récurrence.\n\n$u_{n+1}=u_n+?$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "0|1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Pour passer d'un carré de côté $m$ à un carré de côté $m+1$, on ajoute une ligne et une colonne : $2m+1$ points.",
+						"On passe de l'étape $n$ à l'étape $n+1$ en ajoutant $2n{{eval:3-2*p;+}}$ points (on le vérifie : $u_{{{eval:p+1}}}-u_{{{eval:p}}}={{eval:(p+1+1-p)^2-((p+1-p)^2)}}$).",
+						"$$u_{n+1}=u_n+\\textcolor{{{color:primary.0}}}{2n{{eval:3-2*p;+}}}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Motif : relation de récurrence",
+		"description": "Suite définie par un motif géométrique dessiné (allumettes, croix, triangle, carré de points), étapes numérotées à partir de 0 ou de 1 : uₙ₊₁ = uₙ + ?",
+		"shared": {
+			"cleanCoefficients": true
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "1"
+				},
+				"description": "Allumettes : + 3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "1"
+				},
+				"description": "Erreur : + 4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "0"
+				},
+				"description": "Croix : + 4",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["n+1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "1"
+				},
+				"description": "Triangle, dès 1 : + (n + 1)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["n+2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "0"
+				},
+				"description": "Triangle, dès 0 : + (n + 2)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["n"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "1"
+				},
+				"description": "Triangle, dès 1, erreur : + n",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2n+1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "1"
+				},
+				"description": "Carré, dès 1 : + (2n + 1)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["2n+3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "0"
+				},
+				"description": "Carré, dès 0 : + (2n + 3)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["n^2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "1"
+				},
+				"description": "Erreur : + n²",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": "449e0fb8-72d2-4db3-a686-341c2282e011"
+	},
+	{
+		"id": "89594aa7-17b2-45cb-9991-0483d311796f",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["1_SPE"],
+		"delay": 60,
+		"theme": "Suites",
+		"domain": "Apprivoiser",
+		"subdomain": "Motifs",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:3*(k+1-p)+1}}"
+					}
+				],
+				"statement": "Des carrés d'allumettes sont accolés en rangée. Voici les trois premières étapes.\n\n```figure\nfenetre: -0.5 ; 13.5 ; -2 ; 2\ntaille: grande\ndescription: Trois étapes d'un motif d'allumettes : une rangée de 1, 2 puis 3 carrés accolés, qui comptent 4, 7 puis 10 allumettes.\n---\nQ1 = point(0.5, 1, visible=faux)\nQ2 = point(1.5, 1, visible=faux)\nQ3 = point(0.5, 0, visible=faux)\nQ4 = point(1.5, 0, visible=faux)\nsegment(Q1, Q2, couleur=\"marron\", epaisseur=3)\nsegment(Q3, Q4, couleur=\"marron\", epaisseur=3)\nsegment(Q3, Q1, couleur=\"marron\", epaisseur=3)\nsegment(Q4, Q2, couleur=\"marron\", epaisseur=3)\ntexte(1, -0.9, \"Étape {{p}}\")\nQ5 = point(4, 1, visible=faux)\nQ6 = point(5, 1, visible=faux)\nQ7 = point(6, 1, visible=faux)\nQ8 = point(4, 0, visible=faux)\nQ9 = point(5, 0, visible=faux)\nQ10 = point(6, 0, visible=faux)\nsegment(Q5, Q6, couleur=\"marron\", epaisseur=3)\nsegment(Q8, Q9, couleur=\"marron\", epaisseur=3)\nsegment(Q6, Q7, couleur=\"marron\", epaisseur=3)\nsegment(Q9, Q10, couleur=\"marron\", epaisseur=3)\nsegment(Q8, Q5, couleur=\"marron\", epaisseur=3)\nsegment(Q9, Q6, couleur=\"marron\", epaisseur=3)\nsegment(Q10, Q7, couleur=\"marron\", epaisseur=3)\ntexte(5, -0.9, \"Étape {{eval:p+1}}\")\nQ11 = point(8.5, 1, visible=faux)\nQ12 = point(9.5, 1, visible=faux)\nQ13 = point(10.5, 1, visible=faux)\nQ14 = point(11.5, 1, visible=faux)\nQ15 = point(8.5, 0, visible=faux)\nQ16 = point(9.5, 0, visible=faux)\nQ17 = point(10.5, 0, visible=faux)\nQ18 = point(11.5, 0, visible=faux)\nsegment(Q11, Q12, couleur=\"marron\", epaisseur=3)\nsegment(Q15, Q16, couleur=\"marron\", epaisseur=3)\nsegment(Q12, Q13, couleur=\"marron\", epaisseur=3)\nsegment(Q16, Q17, couleur=\"marron\", epaisseur=3)\nsegment(Q13, Q14, couleur=\"marron\", epaisseur=3)\nsegment(Q17, Q18, couleur=\"marron\", epaisseur=3)\nsegment(Q15, Q11, couleur=\"marron\", epaisseur=3)\nsegment(Q16, Q12, couleur=\"marron\", epaisseur=3)\nsegment(Q17, Q13, couleur=\"marron\", epaisseur=3)\nsegment(Q18, Q14, couleur=\"marron\", epaisseur=3)\ntexte(10, -0.9, \"Étape {{eval:p+2}}\")\n```\n\nCombien de allumettes compte l'étape {{eval:k}} ?\n\n$?$ allumettes",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "1"
+					},
+					{
+						"name": "k",
+						"expression": "4..8"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Chaque nouveau carré ajoute $3$ allumettes : deux horizontales et une verticale.",
+						"On poursuit le motif : étape $4$ : ${{eval:3*(4+1-p)+1}}$, étape $5$ : ${{eval:3*(5+1-p)+1}}$…",
+						"L'étape ${{eval:k}}$ compte $\\textcolor{{{color:primary.0}}}{{{eval:3*(k+1-p)+1}}}$ allumettes."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:4*(k+1-p)+1}}"
+					}
+				],
+				"statement": "Des points sont disposés en croix. Voici les trois premières étapes.\n\n```figure\nfenetre: -0.5 ; 19.5 ; -1.6 ; 6.6\ntaille: grande\ndescription: Trois étapes d'un motif de points en croix : un point central et des branches de 1, 2 puis 3 points, soit 5, 9 puis 13 points.\n---\nQ1 = point(1.5, 1, visible=faux)\nJ1 = cercle(Q1, 0.3)\nstyle(J1, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ2 = point(0.5, 1, visible=faux)\nJ2 = cercle(Q2, 0.3)\nstyle(J2, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ3 = point(2.5, 1, visible=faux)\nJ3 = cercle(Q3, 0.3)\nstyle(J3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ4 = point(1.5, 0, visible=faux)\nJ4 = cercle(Q4, 0.3)\nstyle(J4, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ5 = point(1.5, 2, visible=faux)\nJ5 = cercle(Q5, 0.3)\nstyle(J5, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\ntexte(1.5, -0.9, \"Étape {{p}}\")\nQ6 = point(7, 2, visible=faux)\nJ6 = cercle(Q6, 0.3)\nstyle(J6, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ7 = point(6, 2, visible=faux)\nJ7 = cercle(Q7, 0.3)\nstyle(J7, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ8 = point(8, 2, visible=faux)\nJ8 = cercle(Q8, 0.3)\nstyle(J8, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ9 = point(7, 1, visible=faux)\nJ9 = cercle(Q9, 0.3)\nstyle(J9, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ10 = point(7, 3, visible=faux)\nJ10 = cercle(Q10, 0.3)\nstyle(J10, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ11 = point(5, 2, visible=faux)\nJ11 = cercle(Q11, 0.3)\nstyle(J11, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ12 = point(9, 2, visible=faux)\nJ12 = cercle(Q12, 0.3)\nstyle(J12, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ13 = point(7, 0, visible=faux)\nJ13 = cercle(Q13, 0.3)\nstyle(J13, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ14 = point(7, 4, visible=faux)\nJ14 = cercle(Q14, 0.3)\nstyle(J14, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\ntexte(7, -0.9, \"Étape {{eval:p+1}}\")\nQ15 = point(14.5, 3, visible=faux)\nJ15 = cercle(Q15, 0.3)\nstyle(J15, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ16 = point(13.5, 3, visible=faux)\nJ16 = cercle(Q16, 0.3)\nstyle(J16, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ17 = point(15.5, 3, visible=faux)\nJ17 = cercle(Q17, 0.3)\nstyle(J17, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ18 = point(14.5, 2, visible=faux)\nJ18 = cercle(Q18, 0.3)\nstyle(J18, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ19 = point(14.5, 4, visible=faux)\nJ19 = cercle(Q19, 0.3)\nstyle(J19, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ20 = point(12.5, 3, visible=faux)\nJ20 = cercle(Q20, 0.3)\nstyle(J20, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ21 = point(16.5, 3, visible=faux)\nJ21 = cercle(Q21, 0.3)\nstyle(J21, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ22 = point(14.5, 1, visible=faux)\nJ22 = cercle(Q22, 0.3)\nstyle(J22, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ23 = point(14.5, 5, visible=faux)\nJ23 = cercle(Q23, 0.3)\nstyle(J23, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ24 = point(11.5, 3, visible=faux)\nJ24 = cercle(Q24, 0.3)\nstyle(J24, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ25 = point(17.5, 3, visible=faux)\nJ25 = cercle(Q25, 0.3)\nstyle(J25, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ26 = point(14.5, 0, visible=faux)\nJ26 = cercle(Q26, 0.3)\nstyle(J26, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ27 = point(14.5, 6, visible=faux)\nJ27 = cercle(Q27, 0.3)\nstyle(J27, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\ntexte(14.5, -0.9, \"Étape {{eval:p+2}}\")\n```\n\nCombien de points compte l'étape {{eval:k}} ?\n\n$?$ points",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "1"
+					},
+					{
+						"name": "k",
+						"expression": "4..8"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Chaque étape ajoute un point au bout de chacune des $4$ branches.",
+						"On poursuit le motif : étape $4$ : ${{eval:4*(4+1-p)+1}}$, étape $5$ : ${{eval:4*(5+1-p)+1}}$…",
+						"L'étape ${{eval:k}}$ compte $\\textcolor{{{color:primary.0}}}{{{eval:4*(k+1-p)+1}}}$ points."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(k+1-p)*((k+1-p)+1)/2}}"
+					}
+				],
+				"statement": "Des points sont disposés en triangle. Voici les trois premières étapes.\n\n```figure\nfenetre: -0.5 ; 10.5 ; -1.6 ; 2.3\ntaille: grande\ndescription: Trois étapes d'un motif de points en triangle : 1, 3 puis 6 points, en lignes de 1, 2, 3 points.\n---\nQ1 = point(0.5, 0, visible=faux)\nJ1 = cercle(Q1, 0.3)\nstyle(J1, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\ntexte(0.5, -0.9, \"Étape {{p}}\")\nQ2 = point(3, 0.85, visible=faux)\nJ2 = cercle(Q2, 0.3)\nstyle(J2, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ3 = point(3.5, 0, visible=faux)\nJ3 = cercle(Q3, 0.3)\nstyle(J3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ4 = point(4.5, 0, visible=faux)\nJ4 = cercle(Q4, 0.3)\nstyle(J4, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\ntexte(3.5, -0.9, \"Étape {{eval:p+1}}\")\nQ5 = point(6.5, 1.7, visible=faux)\nJ5 = cercle(Q5, 0.3)\nstyle(J5, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ6 = point(7, 0.85, visible=faux)\nJ6 = cercle(Q6, 0.3)\nstyle(J6, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ7 = point(8, 0.85, visible=faux)\nJ7 = cercle(Q7, 0.3)\nstyle(J7, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ8 = point(7.5, 0, visible=faux)\nJ8 = cercle(Q8, 0.3)\nstyle(J8, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ9 = point(8.5, 0, visible=faux)\nJ9 = cercle(Q9, 0.3)\nstyle(J9, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\nQ10 = point(9.5, 0, visible=faux)\nJ10 = cercle(Q10, 0.3)\nstyle(J10, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=0.85)\ntexte(7.5, -0.9, \"Étape {{eval:p+2}}\")\n```\n\nCombien de points compte l'étape {{eval:k}} ?\n\n$?$ points",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "1"
+					},
+					{
+						"name": "k",
+						"expression": "4..8"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Chaque étape ajoute une ligne qui a un point de plus que la précédente.",
+						"On poursuit le motif : étape $4$ : ${{eval:(4+1-p)*((4+1-p)+1)/2}}$, étape $5$ : ${{eval:(5+1-p)*((5+1-p)+1)/2}}$…",
+						"L'étape ${{eval:k}}$ compte $\\textcolor{{{color:primary.0}}}{{{eval:(k+1-p)*((k+1-p)+1)/2}}}$ points."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Motif : nombre d'éléments à une étape",
+		"description": "Suite définie par un motif géométrique dessiné (allumettes, croix, triangle de points) : compter les éléments d'une étape non dessinée",
+		"shared": {
+			"cleanCoefficients": true
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["19"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "6",
+					"p": "1"
+				},
+				"description": "Allumettes, étape 6 : 19",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["24"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "6",
+					"p": "1"
+				},
+				"description": "Erreur : 4 × 6",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["21"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "5",
+					"p": "1"
+				},
+				"description": "Croix, étape 5 : 21",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["20"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "5",
+					"p": "1"
+				},
+				"description": "Erreur : 4 × 5",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["28"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "7",
+					"p": "1"
+				},
+				"description": "Triangle, étape 7 : 28",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["56"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "7",
+					"p": "1"
+				},
+				"description": "Erreur : 7 × 8",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": "4c4951c2-b67d-433e-980e-cba64674d5df"
+	}
+]

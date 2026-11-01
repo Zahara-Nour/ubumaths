@@ -53,7 +53,7 @@ const MASKABLE_KINDS = new Set<BuildKind>([
 	'partage',
 	'barres'
 ]);
-const MASKED_IN_TEMPLATE =
+export const MASKED_IN_TEMPLATE =
 	'« ? » à la place d’une valeur : écris la valeur attendue (le « ? » est réservé à l’énoncé envoyé pendant une évaluation)';
 const CASE_IS_AUTOMATIC = 'case: est posée automatiquement, retirer cette ligne du bloc';
 
@@ -150,6 +150,7 @@ export function buildAnswerOf(
 		if (node.spec?.kind !== 'cubes' || node.spec.task === undefined) {
 			return { errors: ['dessiner: ou retrouver: absent'] };
 		}
+		if (node.spec.givenViews !== undefined) return { errors: [MASKED_IN_TEMPLATE] };
 		return { answer: expectedCubesAnswer(node.spec) };
 	}
 	if (kind === 'patron') {
@@ -158,6 +159,9 @@ export function buildAnswerOf(
 		if (node.errors.length > 0) return { errors: node.errors };
 		if (node.spec?.kind !== 'patron' || node.spec.task === undefined) {
 			return { errors: ['designer: ou completer: absent'] };
+		}
+		if (node.spec.task.kind === 'completer' && node.spec.task.masked !== undefined) {
+			return { errors: [MASKED_IN_TEMPLATE] };
 		}
 		return { answer: expectedPatronAnswer(node.spec) };
 	}

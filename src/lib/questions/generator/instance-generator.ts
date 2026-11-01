@@ -64,7 +64,7 @@ import { rangerOrder } from '$lib/ubumark/utils/ranger';
 import { hasPartageToColorier } from '$lib/ubumark/parser/partage-parser';
 import { hasCubesToBuild, hasPatronsToBuild } from '$lib/ubumark/parser/espace-parser';
 import type { RangerSign } from '$lib/ubumark/types/ranger';
-import { buildAnswerOf } from './build-answer';
+import { buildAnswerOf, MASKED_IN_TEMPLATE } from './build-answer';
 import { parseMarkdown } from '$lib/ubumark/parser/markdown-parser';
 import { operationExpectedAnswer } from '$lib/ubumark/utils/operation-answer';
 import { divisionExpectedAnswers } from '$lib/ubumark/utils/operation-division-answer';
@@ -620,6 +620,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				const index = Number(key);
 				const header = readConstructionHeader(source);
 				const errors = [...header.errors, ...parseFigureContent(header.figureSource).errors];
+				// `verifier: ?` : forme réservée à l'énoncé envoyé pendant une évaluation
+				if (header.spec.masked) errors.unshift({ message: MASKED_IN_TEMPLATE });
 				if (header.spec.caseIndex !== undefined) {
 					errors.unshift({
 						message: 'case: est posée automatiquement, retirer cette ligne du bloc'

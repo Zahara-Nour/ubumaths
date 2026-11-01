@@ -1,3 +1,4 @@
+import { CITIES } from '$lib/kingdom-tour/cities';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Articles du test : un paru, un futur, un brouillon
@@ -94,6 +95,13 @@ describe('sitemap.xml', () => {
 		expect(xml).toMatch(
 			/<loc>https:\/\/www\.chiph\.re\/glossaire\/base-puissance<\/loc>\s*<lastmod>2026-10-11<\/lastmod>/
 		);
+	});
+
+	it('liste la page de chaque ville du Royaume', async () => {
+		const xml = await sitemapAt('2026-11-01T08:00:00Z');
+		for (const city of CITIES) {
+			expect(xml).toContain(`<loc>https://www.chiph.re/royaume/${city.slug}</loc>`);
+		}
 	});
 
 	it('ne date pas les pages fixes du jour de la requête', async () => {

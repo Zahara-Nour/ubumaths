@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2126 et `db:migrate` (lot 2-variations rangé, page à cocher publiée, § 19)._
+_Mis à jour le 2026-11-01, après la publication du lot 3-suites (§ 20)._
 
-- **État** : lots 0 et lot 1-dérivation publiés ; **lot 2-variations écrit** (7 modèles, points 399, 280, 400, 282, 285, 286, 403 ; D25), simulation verte, essai en base locale fait, fichiers mergés (#2119). Brouillons de 1re spé plus anciens (inchangés) : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (questions-tspe), 0495289a (attente), c90fa022, d2067413 (1TECHNO).
-- **Prochaine action** : lire et compter les verdicts de la page à cocher (https://claude.ai/artifact/8NHxAarnojjKMkiodNmioo), corriger s'il y a lieu → simulation `publier-lot --dir scripts/questions/1spe-variations` → David lance `--publier`.
-- **En attente de David** : la relecture des 7 fiches sur la page à cocher.
-- **Pièges en cours** : niveaux d'une catégorie à relever **tous niveaux scolaires confondus** (l'index d'unicité ignore `grades`) ; `create-questions` et `publier-lot --publier` refusés au mode auto (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET worktrees ; corps de commit : lignes ≤ 100 caractères ; deux sous-catégories neuves (Généralités › Parité, Dérivation › Position relative) : nœuds des points = parité, position relative de deux courbes.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe` (branches mergées, à retirer en fin de lot).
+- **État** : lots 0, 1-dérivation, 2-variations et **lot 3-suites publiés** (10 modèles, points 214, 217, 372, 374, 375, 378, 369, 370, 222, 376 ; #2136, #2140, #2147). Brouillons de 1re spé plus anciens (inchangés) : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (questions-tspe), 0495289a (attente), c90fa022, d2067413 (1TECHNO).
+- **Prochaine action** : D7 (§ 5), lot suivant « probabilités : partition, Bernoulli, arbres et tableaux » (337, 339, 426, 422, 342, 343, 423, 425), phase 0 à soumettre à David.
+- **En attente de David** : rien.
+- **Pièges en cours** : niveaux d'une catégorie à relever **tous niveaux scolaires confondus** ; `create-questions` et `publier-lot --publier` lancés par David ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET de tous les worktrees ; corps de commit : lignes ≤ 100 caractères ; PR de migration : ligne `Doc-inchangée:` dans un commit (garde de `base-de-donnees.md`) ; intégration = workflow à part, attendre son run ; dépôt principal souvent encombré par d'autres sessions (ne commiter que ses fichiers).
+- **Worktree / branche** : aucun (worktree `questions-1spe` retiré après le lot 3).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -925,3 +925,81 @@ trigger actif (`O`), version 20261101212000 enregistrée.
 
 Page à cocher : https://claude.ai/artifact/8NHxAarnojjKMkiodNmioo (7 fiches ; alerte : bloc `variation` non dessiné
 sur 3fa3af6c, à jouer dans l'aperçu ; collection `verdicts` vide à la publication).
+
+**Verdicts (2026-11-01)** : 7 « ok » sur 7, aucun commentaire (lus en base de la page, comptés). Simulation
+`publier-lot` : **7 brouillons passent le contrôle**.
+
+**Publication (2026-11-01)** : `publier-lot --publier` lancé par David : 7 / 7 publiés, statuts relus en base (MCP).
+**Lot 2-variations clos.**
+
+## 20. Lot 3-suites : modélisation, algorithmes, motifs (D7)
+
+_Relevé prod du 2026-11-01 (MCP) : les 10 points toujours sans modèle. Voisins à ne pas répéter : aeb1389d
+(pourcentage → raison, uₙ ; 379), 31a77ba9 (`terme(n)` Python, u ← au + b ; 236), ca8f40c2 (f(x + 1)/f(x) pour
+e^{ax} ; 293). Niveaux pris (tous niveaux scolaires) : Suites › Seuil et algorithmes › Algorithmes 1 et 2 ;
+Fonctions › Fonction exponentielle › Suites et modélisation 1 et 2. **Aucun modèle de la prod n'attend uₙ dans
+une réponse.**_
+
+**Phase 0 (D26, David, 2026-11-01, « je valide » sur les recos)** : un modèle par point.
+
+| #   | Point | Modèle                                        | Catégorie, niveau                                              | Réponse                       |
+| --- | ----- | --------------------------------------------- | -------------------------------------------------------------- | ----------------------------- |
+| 1   | 214   | Évolution à accroissement constant            | Suites › Modélisation › Évolutions successives (neuve), 1      | case                          |
+| 2   | 217   | Évolution à taux constant                     | Suites › Modélisation › Évolutions successives, 2              | case « ? % »                  |
+| 3   | 372   | Suite arithmétique et fonction affine         | Suites › Suites arithmétiques › Fonction affine (neuve), 1     | 2 cases ; case y =            |
+| 4   | 374   | Évolution exponentielle et suite géométrique  | Fonctions › Fonction exponentielle › Suites et modélisation, 3 | case arrondie ; case exacte   |
+| 5   | 375   | De l'énoncé à l'expression de la suite        | Suites › Modélisation › De l'énoncé à la suite (neuve), 1      | case uₙ ; 2 cases récurrence  |
+| 6   | 378   | Termes d'une suite donnée par un algorithme   | Suites › Seuil et algorithmes › Algorithmes, 3                 | case                          |
+| 7   | 369   | Reconnaître la suite que génère un algorithme | Suites › Seuil et algorithmes › Algorithmes, 4                 | case ; 2 cases ; choix + case |
+| 8   | 370   | Motif : nombre d'éléments à une étape         | Suites › Apprivoiser › Motifs (neuve), 1                       | case                          |
+| 9   | 222   | Motif : relation explicite                    | Suites › Apprivoiser › Motifs, 2                               | case en n (toute écriture)    |
+| 10  | 376   | Motif : relation de récurrence                | Suites › Apprivoiser › Motifs, 3                               | case « uₙ + ? »               |
+
+Q1 (récurrence en réponse) : deux cases « uₙ₊₁ = ? × uₙ + ? » ; le 10 garde « uₙ + ? » (une case en n). Q2 (motifs) :
+` ```figure `, étapes 1 à 3 dessinées fixes, seules l'étape demandée et la numérotation (dès 0 ou dès 1) varient. Q3
+(quatre catégories neuves) : oui. Question d'accès : personne ne lit rien de neuf (brouillons ; la migration ne pose
+que nœud et tags).
+
+**Écriture** : `docs/wip/questions/lot-1spe-suites.py` → `scripts/questions/1spe-suites/`. Simulation
+`create-questions` : 10 / 10 importables (90 specs) ; `sonde-figures` : 0 problème ; aperçus relus (scratchpad). Essai
+en base **locale** : 09 (carré dès 0, « (n+1)^2 » : Juste) et 07 (langage naturel, choix + raison : Juste) joués ;
+08 (allumettes, croix), 04 (virgule dans l'exposant) regardés.
+
+**Pièges du lot** : forme « u₁ + (n − 1)r » et « (n² + n)/2 » refusées en `bad_form` → `requiredForm: {pattern: 'u'}`
+(toute écriture) sur ces cases ; décimaux : les formules passent en virgule au rendu, **pas un bloc de code** (langage
+naturel en entiers, décimaux en Python) ; points du DSL de taille fixe, minuscules dans une grande fenêtre → jetons
+`cercle(Q, 0.3)` + `style(…)` (`cercle(O, r)` refuse les arguments de style) ; fenêtre de figure : rapport ≤ 4
+(marge ajoutée) ; serveur de dev d'un worktree : `localhost`, pas `127.0.0.1`.
+
+PR #2136 mergée (CI verte du premier coup).
+
+**Création en prod (2026-11-01)** : `create-questions --publier` lancé par David après #2136 : 10 brouillons (98c3f740 214,
+b6753dff 217, bd27e002 372, 22141fa4 374, 45da9678 375, 4a51f887 378, 81322162 369, 89594aa7 370, 05edc72b 222,
+41100a51 376), relus en base (MCP) : `draft`, `1_SPE`, niveaux écrits, sans nœud ni tag.
+
+**Rangement** : migration `20261101215000_questions_1spe_suites_rangement_tags.sql` (gabarit : lot 2-variations ;
+5 modèles rangés sur une **notion**, première fois que le gabarit sert sans sous-notion) +
+`tests/integration/questions-1spe-suites-rangement-tags.test.ts` : 10 / 10 verts ; rouge sans le corps de la migration
+(5 échecs), restauré d'une copie, identique (`cmp`). Chemins et points résolus en prod (MCP, 10 / 10).
+`security-auditor` (Opus) : aucun finding.
+
+#2140 mergée (CI verte, intégration comprise). `db:migrate` le 2026-11-01 : seule cette migration en attente (dry-run),
+jouée ; relu en base (MCP) : 10 modèles sur le nœud de leur point, un tag chacun, `draft`, `updated_at` inchangé,
+trigger actif (`O`), version 20261101215000 enregistrée.
+
+Page à cocher : https://claude.ai/artifact/CtFnS8fnNFwzB8waeyax8D (10 fiches, aucune alerte ; collection `verdicts`
+vide à la publication). **Défaut vu sur la page** : le triangle de points (08, 09, 10) penchait à droite (lignes
+décalées au lieu d'être centrées, introduit en retournant la pointe vers le haut). Corrigé dans le script ;
+instantané `questions-1spe/etat-prod-2026-11-01-triangle/` (relevé par `questions-6/releve-prod.ts`, md5 de
+`variations` et `test_specs` = prod, passés par `jsonb` dans le Postgres local) ; David relance
+`create-questions --publier --mettre-a-jour` (brouillons). Limites de la **page** seule (l'appli rend bien) : bloc de
+code sans langage (langage naturel) et code en ligne `` `L[4]` `` affichés bruts.
+
+#2147 mergée (triangle centré) ; `create-questions --publier --mettre-a-jour` lancé par David : 08, 09, 10 mis à jour,
+md5 de `variations` en base = fichiers, nœud, niveau, tag et statut inchangés (MCP).
+
+**Verdicts (2026-11-01)** : 10 « ok » sur 10, aucun commentaire (lus en base de la page, comptés). Simulation
+`publier-lot` : 10 brouillons passent le contrôle.
+
+**Publication (2026-11-01)** : `publier-lot --publier` lancé par David : 10 / 10 publiés, statuts relus en base (MCP).
+**Lot 3-suites clos.**

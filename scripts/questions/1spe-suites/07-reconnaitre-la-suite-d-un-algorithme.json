@@ -1,0 +1,237 @@
+{
+	"title": "Reconnaître la suite que génère un algorithme",
+	"description": "Suite générée par un algorithme (Python ou langage naturel) : forme explicite, relation de récurrence (deux cases), nature et raison",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Seuil et algorithmes",
+	"subdomain": "Algorithmes",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "La fonction Python suivante renvoie le terme $u_n$ d'une suite.\n\n```python\ndef u(n):\n    v = {{eval:a}}\n    for i in range(n):\n        v = v {{if:r>0|+|-}} {{eval:abs(r)}}\n    return v\n```\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..20"
+				},
+				{
+					"name": "r",
+					"expression": "2..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a}}{{eval:r;+}}n"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_0={{eval:a}}$, et chaque tour de boucle ajoute ${{eval:r}}$ : la suite est arithmétique de raison ${{eval:r}}$.",
+					"Après $n$ tours : $u_n=u_0+nr=\\textcolor{{{color:primary.0}}}{{{eval:a}}{{eval:r;+}}n}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction Python suivante renvoie le terme $u_n$ d'une suite.\n\n```python\ndef u(n):\n    v = {{eval:a}}\n    for i in range(n):\n        v = {{eval:k;d}} * v + {{eval:c}}\n    return v\n```\n\nComplète la relation de récurrence de la suite $(u_n)$.\n\n$u_{n+1}=?\\times u_n+?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "k",
+					"expression": "0.5|0.8|1.5|2|3"
+				},
+				{
+					"name": "c",
+					"expression": "1..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k;d}}"
+				},
+				{
+					"expectedAnswer": "{{eval:c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un tour de boucle fait passer de $u_n$ à $u_{n+1}$ : la nouvelle valeur de `v` est ${{eval:k;d}}$ fois l'ancienne, plus ${{eval:c}}$.",
+					"$$u_{n+1}=\\textcolor{{{color:primary.0}}}{{{eval:k;d}}}\\times u_n+\\textcolor{{{color:primary.1}}}{{{eval:c}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef terme(N):\n    u = {{eval:a}}\n    for i in range(N):\n        u = {{eval:q;d}} * u\n    return u\n```\n\nLa valeur renvoyée par `terme(N)` est le terme $u_N$ d'une suite $(u_n)$. Cette suite est :\n\n```choix\nmelanger: non\n- arithmétique\n- géométrique\n- ni arithmétique ni géométrique\n```\n\nSa raison vaut $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..50"
+				},
+				{
+					"name": "q",
+					"expression": "0.5|0.9|1.2|1.5|2|3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "{{eval:q;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque passage multiplie $u$ par ${{eval:q;d}}$ : $u_{n+1}={{eval:q;d}}\\times u_n$.",
+					"La suite est $\\textcolor{{{color:primary.0}}}{\\text{géométrique}}$, de raison $\\textcolor{{{color:primary.1}}}{{{eval:q;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère l'algorithme suivant, écrit en langage naturel.\n\n```\nu ← {{eval:a}}\nPour i allant de 1 à N :\n    u ← u − {{eval:r}}\nFin Pour\n```\n\nLa valeur de $u$ à la fin est le terme $u_N$ d'une suite $(u_n)$. Cette suite est :\n\n```choix\nmelanger: non\n- arithmétique\n- géométrique\n- ni arithmétique ni géométrique\n```\n\nSa raison vaut $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "20..90"
+				},
+				{
+					"name": "r",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "{{eval:-r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque passage retranche ${{eval:r}}$ : $u_{n+1}=u_n-{{eval:r}}$.",
+					"La suite est $\\textcolor{{{color:primary.0}}}{\\text{arithmétique}}$, de raison $\\textcolor{{{color:primary.1}}}{{{eval:-r}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v = 5, +3 : 5 + 3n",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"r": "3"
+			},
+			"answers": ["5+3n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 + 5n",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"r": "3"
+			},
+			"answers": ["3+5n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v = 12, −4 : 12 − 4n",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"r": "-4"
+			},
+			"answers": ["12-4n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1,5 v + 4 : 1,5 et 4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"k": "1.5",
+				"c": "4"
+			},
+			"answers": ["1,5", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : inversés",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"k": "1.5",
+				"c": "4"
+			},
+			"answers": ["4", "1,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "× 1,2 : géométrique, 1,2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "10",
+				"q": "1.2"
+			},
+			"answers": ["1", "1,2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : arithmétique",
+			"variationIndex": 2,
+			"variables": {
+				"a": "10",
+				"q": "1.2"
+			},
+			"answers": ["0", "1,2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "− 7 : arithmétique, −7",
+			"variationIndex": 3,
+			"variables": {
+				"a": "50",
+				"r": "7"
+			},
+			"answers": ["0", "-7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : raison 7",
+			"variationIndex": 3,
+			"variables": {
+				"a": "50",
+				"r": "7"
+			},
+			"answers": ["0", "7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
