@@ -103,7 +103,7 @@ begin
 	if not v_present then
 		return;  -- base locale : rien à faire
 	end if;
-	select status = 'draft' and grades = array['CP'] and classification_node_id is null into v_ok
+	select coalesce(status = 'draft' and grades = array['CP'] and classification_node_id is null, false) into v_ok
 	  from public.question_templates where id = 'a7dfe502-4af3-4130-8f88-3d8ab14bf91b';
 	if not v_ok then
 		raise exception 'modèle changé depuis le relevé (statut, niveaux ou nœud)';
