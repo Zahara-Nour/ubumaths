@@ -575,7 +575,7 @@ V_MEILLEURE = variation(
     VARS_F, ['0'],
     ['Plus on répète l\'expérience, plus la fréquence observée se rapproche de la probabilité.',
      'La meilleure estimation est donc la fréquence sur le plus grand nombre de lancers : '
-     + col('$0{,}{{K}}$') + ', pour $10\\,000$ lancers.'],
+     + '$' + col('0{,}{{K}}') + '$, pour $10\\,000$ lancers.'],
     CONDS_F)
 
 V_ESTIMER = variation(

@@ -781,3 +781,14 @@ publiés de plus, et 2 de 4e (§ 12.1) ; la 4e ne perd rien. Aucune règle ne ch
 - PR #2059. Premier passage de la CI : Lint rouge (garde « doc à jour » : `base-de-donnees.md` couvre les
   migrations ; la ligne `Doc-inchangée:` doit être dans un **commit**, pas dans la description de la PR) ;
   Client Tests shard 1 rouge (`wrapDynamicImport` indéfini, aucun fichier client dans la PR).
+
+### 12.10 Lot 5 : migration jouée, page à cocher (2026-11-01)
+
+- #2059 mergée ; `pnpm db:migrate --include-all` lancé par David. MCP : `20261101130000` inscrite ; les 6
+  brouillons à leur nœud (§ 12), un tag chacun ; ccb51039 et 76f5f143 en grades `['4', '3']`, tags
+  3-036,4-057 et 3-063,4-080, `published` ; `updated_at` inchangé partout.
+- Page à cocher : https://claude.ai/artifact/CJ17SXoC5SjnCQQhdM4MYn (capacité `db`, collection `verdicts`
+  vide au départ). Les blocs ` ```effectifs `, ` ```barres `, ` ```probtree ` n'y sont pas dessinés (source
+  montrée, alerte sur 4 fiches). ccb51039 / 76f5f143 hors page (déjà publiés et relus en 4e).
+- Trouvé en relisant la page : corrigé de 3-035 v2, `\textcolor` posé autour de `$…$` (hors formule) →
+  corrigé dans le fichier (#2069) ; la prod attend `create-questions --publier --mettre-a-jour`.
