@@ -25,7 +25,7 @@ import { unitKeysFor } from '$lib/questions/units/keyboard-units';
 import type { CapitalPairs } from '$lib/mathAST/parser/types';
 import type { ConstraintMode, GradeLevel, InstanceBlank, QuestionInstance } from './types';
 import { isWorkFigureBlank } from './graded-part';
-import { maskGestureAnswers } from './masked-statement';
+import { findUnmaskedAnswers, maskGestureAnswers } from './masked-statement';
 
 // Types
 export interface PublicBlank {
@@ -104,6 +104,15 @@ function publicBlank(blank: InstanceBlank): PublicBlank {
 	return result;
 }
 
+/**
+ * Les blocs à geste dont l'énoncé masqué dirait encore la réponse (vide : la question
+ * peut partir). Le tirage d'une évaluation écarte ces questions avant de les
+ * enregistrer : la tentative ne se perd pas (chantier `fuite-enonce`).
+ */
+export function gestureAnswerLeaks(instance: QuestionInstance): string[] {
+	return findUnmaskedAnswers(maskGestureAnswers(instance.statement));
+}
+
 /** Version publique d'une instance générée par le serveur (liste blanche) */
 export function toPublicQuestion(
 	instance: QuestionInstance,
@@ -116,6 +125,14 @@ export function toPublicQuestion(
 		// Les blocs à geste sans la valeur à trouver (`placer: A=?`) : chantier `fuite-enonce`
 		statement: maskGestureAnswers(instance.statement)
 	};
+	// Dernier filet (le tirage écarte déjà ces questions, `gestureAnswerLeaks`) : un masque
+	// qui n'a pas lu son bloc l'aurait laissé tel quel → ne rien envoyer
+	const leaks = findUnmaskedAnswers(question.statement);
+	if (leaks.length > 0) {
+		throw new Error(
+			`fuite-enonce : l’énoncé envoyé dirait la réponse (bloc ${leaks.join(', ')}) : question non envoyée`
+		);
+	}
 	if (instance.exerciseInstruction) question.exerciseInstruction = instance.exerciseInstruction;
 	const spaces = instance.options?.constraints?.spaces;
 	if (spaces) question.spaces = spaces;
