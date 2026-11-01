@@ -1,14 +1,14 @@
 ---
 title: Écarts, lot 3 — conditions de √ et ln à paramètre dans l'Atelier — journal
 date: 2026-11-01
-status: phase 0 en attente de David
+status: lot 3 codé, PR ouverte
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, phase 0 soumise._
+_Mis à jour le 2026-11-01, PR ouverte._
 
-- **État** : phase 0 écrite (comportements + 4 questions Q1-Q4), rien codé · **Prochaine action** : réponses de David, puis tests rouges (`src/lib/atelier/__tests__/`), puis `introducedConditions` (`src/lib/atelier/calcul.ts`) · **En attente de David** : Q1-Q4 ci-dessous · **Pièges en cours** : ne pas toucher `pedagogical-simplify/`, `simplify`, `tidy` (`fusion-moteurs`) ; sonde non suivie `src/lib/atelier/__tests__/sonde-conditions.test.ts`, à transformer en vrai test · **Worktree / branche** : `ubumaths-wt-ecarts-conditions` / `fix/ecarts-conditions`
+- **État** : Q1-Q4 validées (mes recos) ; `argumentConditions` / `signConditionOf` / `mergedConditions` dans `src/lib/atelier/calcul.ts`, 28 tests (`conditions-racine-ln.test.ts`, 20 rouges sans le correctif), suite atelier verte, `check:incremental` 0 · **Prochaine action** : revue `code-reviewer`, CI verte → merge · **En attente de David** : accord pour supprimer les 2 sondes non suivies (`__tests__/sonde-ast.test.ts`, `sonde-conditions.test.ts`) · **Pièges en cours** : ne pas toucher `pedagogical-simplify/`, `simplify`, `tidy` · **Worktree / branche** : `ubumaths-wt-ecarts-conditions` / `fix/ecarts-conditions`
 
 ---
 
@@ -55,3 +55,19 @@ Règle (celle de V61, étendue) : une intégrale **bornée** dit toutes les cond
 - **Q2** — `\sqrt{a}` **au dénominateur** (`\dfrac{x}{\sqrt{a}} de 0 à 1`, `e^{\sqrt a x}` → divisé par √a ou a) : fusionner « a ⩾ 0 » et « a ≠ 0 » en **a > 0** ? _Reco : oui._
 - **Q3** — `\log` (base 10) et `\log_b` traités comme `\ln` (argument > 0) ? _Reco : oui, même règle._
 - **Q4** — `\dfrac{1}{\ln(a)}` donne aujourd'hui « ln(a) ≠ 0 » brut : l'écrire **a > 0, a ≠ 1** dans ce lot, ou laisser ? _Reco : laisser (hors du point demandé, cas rare), noté._
+
+## Décisions de David (2026-11-01) : mes 4 recos
+
+Q1 oui (bornée seulement), Q2 oui (fusion → a > v), Q3 oui (`\log`, `\log_b`), Q4 laissé.
+
+## Fait
+
+- Conditions des arguments : racine d'indice pair (u ⩾ 0), ln / log (u > 0), lettre ± nombre lisible (`a ⩾ 1`, `a > −2`, `a ⩽ 3`, `a < 1`), u² ou |u| sous ln → u ≠ 0, toujours vraie → rien, sinon brute.
+- `conditionOf` : `√u` ou `|u|` au dénominateur → u ≠ 0 (pour fusionner avec u ⩾ 0).
+- Ordre : conditions des arguments avant celles des dénominateurs (`(a > 0, ln(a) ≠ 0)`).
+- Doc : `docs/systeme/atelier.md`, § Condition d'une primitive.
+
+## Restes, vus en passant (pas touchés)
+
+- `.intégrer e^{\sqrt{a} x} de 0 à 1` : valeur non réduite, `{-sqrt(a)e^{sqrt(a)*0}+sqrt(a)e^{sqrt(a)*1}}/a` (réduction `tidy` → `fusion-moteurs`) ; condition juste (a > 0).
+- `1/\ln(a)` : « ln(a) ≠ 0 » brut (Q4) — « a ≠ 1 » possible plus tard.

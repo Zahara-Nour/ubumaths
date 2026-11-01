@@ -3027,10 +3027,54 @@ function citedParameters(ast: MathNode, parameters: readonly string[]): string[]
 	return parameters.filter((p) => letters.has(p));
 }
 
-/** Une condition « a ≠ 0 », écrite pour la ligne (LaTeX) et pour le texte. */
+/** Une relation d'une condition sur une lettre : `a ≠ 1`, `a ⩾ 0`, `a > -2`. */
+type ConditionRelation = '≠' | '⩾' | '>' | '⩽' | '<';
+
+/**
+ * Une condition « a ≠ 0 », écrite pour la ligne (LaTeX) et pour le texte.
+ * `bound` : la lettre, la relation et la valeur quand la condition porte sur
+ * une lettre seule — ce qui permet de fusionner « a ⩾ 0 » et « a ≠ 0 ».
+ */
 interface Condition {
 	readonly latex: string;
 	readonly text: string;
+	readonly bound?: {
+		readonly letter: string;
+		readonly relation: ConditionRelation;
+		readonly value: string;
+	};
+}
+
+const RELATION_LATEX: Record<ConditionRelation, string> = {
+	'≠': '\\neq',
+	'⩾': '\\geqslant',
+	'>': '>',
+	'⩽': '\\leqslant',
+	'<': '<'
+};
+
+/** La condition « lettre relation valeur », écrite pour la ligne et le texte. */
+function boundCondition(letter: string, relation: ConditionRelation, value: string): Condition {
+	return {
+		latex: `${letter} ${RELATION_LATEX[relation]} ${value}`,
+		text: `${letter} ${relation} ${value}`,
+		bound: { letter, relation, value }
+	};
+}
+
+/** `a ± n` ou `n ± a` : la lettre et le nombre, et le côté de la lettre. */
+function letterAndNumber(
+	node: MathNode
+): { letter: string; number: string; letterFirst: boolean } | null {
+	if (node.type !== 'addition' && node.type !== 'subtraction') return null;
+	const { left, right } = node;
+	if (left.type === 'variable' && isNumber(right)) {
+		return { letter: left.name, number: right.value, letterFirst: true };
+	}
+	if (right.type === 'variable' && isNumber(left)) {
+		return { letter: right.name, number: left.value, letterFirst: false };
+	}
+	return null;
 }
 
 /**
@@ -3065,22 +3109,19 @@ function conditionOf(factor: MathNode): Condition | null {
 	const node = factor.type === 'delimiter' ? factor.content : factor;
 	// Toujours vraie (`a^2 + 1 ≠ 0`) : rien à dire
 	if (isPositive(node)) return null;
-	const excluded = (letter: string, value: string): Condition => ({
-		latex: `${letter} \\neq ${value}`,
-		text: `${letter} ≠ ${value}`
-	});
-	if (node.type === 'variable') return excluded(node.name, '0');
-	if (node.type === 'addition' || node.type === 'subtraction') {
-		const { left, right } = node;
-		const pair =
-			left.type === 'variable' && isNumber(right)
-				? { letter: left.name, number: right.value }
-				: right.type === 'variable' && isNumber(left)
-					? { letter: right.name, number: left.value }
-					: null;
-		if (pair !== null) {
-			return excluded(pair.letter, node.type === 'addition' ? `-${pair.number}` : pair.number);
-		}
+	// √u ≠ 0, |u| ≠ 0 : u ≠ 0 (lot 3 : √a au dénominateur, fusionné avec a ⩾ 0)
+	if (isEvenRoot(node) || (node.type === 'function' && node.name === 'abs')) {
+		return node.args.length === 1 ? conditionOf(node.args[0]) : null;
+	}
+	if (node.type === 'variable') return boundCondition(node.name, '≠', '0');
+	const pair = letterAndNumber(node);
+	if (pair !== null) {
+		// a − n, n − a → a ≠ n ; a + n, n + a → a ≠ −n
+		return boundCondition(
+			pair.letter,
+			'≠',
+			node.type === 'addition' ? `-${pair.number}` : pair.number
+		);
 	}
 	return { latex: `${toLatex(node)} \\neq 0`, text: `${toCustom(node)} ≠ 0` };
 }
@@ -3125,10 +3166,117 @@ function introducedConditions(
 ): Condition[] {
 	if (parameters.length === 0) return [];
 	const input = parseCommandExpression(typed).ast;
-	const already = input === undefined ? [] : denominatorConditions(input, variable, parameters);
-	const answered = denominatorConditions(answer, variable, parameters);
-	if (!bounded) return answered.filter((c) => !already.some((a) => a.latex === c.latex));
-	return [...answered, ...already.filter((a) => !answered.some((c) => c.latex === a.latex))];
+	const conditionsIn = (ast: MathNode): Condition[] =>
+		unique([
+			...argumentConditions(ast, variable, parameters),
+			...denominatorConditions(ast, variable, parameters)
+		]);
+	const already = input === undefined ? [] : conditionsIn(input);
+	const answered = conditionsIn(answer);
+	if (!bounded) {
+		return mergedConditions(answered.filter((c) => !already.some((a) => a.latex === c.latex)));
+	}
+	return mergedConditions(unique([...answered, ...already]));
+}
+
+/** Une condition par écriture, dans l'ordre de la première rencontre. */
+function unique(conditions: readonly Condition[]): Condition[] {
+	return conditions.filter((c, i) => conditions.findIndex((d) => d.latex === c.latex) === i);
+}
+
+/** `\sqrt{u}`, `\sqrt[4]{u}` : une racine d'indice pair (u ⩾ 0) ; `\sqrt[3]{u}` non. */
+function isEvenRoot(node: MathNode): node is MathNode & { type: 'function' } {
+	if (node.type !== 'function' || node.name !== 'sqrt') return false;
+	if (node.base === undefined) return true;
+	if (!isNumber(node.base)) return false;
+	const index = Number(node.base.value);
+	return Number.isInteger(index) && index % 2 === 0;
+}
+
+/**
+ * Lot 3 (`ecarts-conditions`, 2026-11-01) : les conditions « u ⩾ 0 » des
+ * racines d'indice pair et « u > 0 » des `\ln` / `\log` dont l'argument u
+ * est fait de paramètres seulement — `\sqrt{a}` → a ⩾ 0, `\ln(a+2)` → a > −2.
+ * Un argument qui contient la variable porte une condition sur x : pas ici.
+ */
+function argumentConditions(
+	ast: MathNode,
+	variable: string,
+	parameters: readonly string[]
+): Condition[] {
+	const found: Condition[] = [];
+	mapNode(ast, (node) => {
+		if (node.type !== 'function' || node.args.length !== 1) return node;
+		const strict = node.name === 'ln' || node.name === 'log';
+		if (!strict && !isEvenRoot(node)) return node;
+		const argument = node.args[0];
+		if (
+			getVariables(argument).has(variable) ||
+			citedParameters(argument, parameters).length === 0
+		) {
+			return node;
+		}
+		const condition = signConditionOf(argument, strict);
+		if (condition !== null) found.push(condition);
+		return node;
+	});
+	return found;
+}
+
+/**
+ * La forme la plus lisible de « u ⩾ 0 » (`strict` : « u > 0 ») : `a` → a ⩾ 0,
+ * `a − 1` → a ⩾ 1, `3 − a` → a ⩽ 3, `a²` → a ≠ 0 (strict) ; toujours vraie
+ * (`a² + 1`) → rien ; sinon l'argument entier, `a³ − a ⩾ 0`.
+ */
+function signConditionOf(argument: MathNode, strict: boolean): Condition | null {
+	const node = argument.type === 'delimiter' ? argument.content : argument;
+	if (isPositive(node)) return null;
+	if (!strict && isNonNegative(node)) return null;
+	const isAbs = node.type === 'function' && node.name === 'abs';
+	if (!strict && isAbs) return null;
+	// u² > 0, |u| > 0 : u ≠ 0
+	if (strict && isNonNegative(node) && node.type === 'superscript') return conditionOf(node.base);
+	if (strict && isAbs) return node.args.length === 1 ? conditionOf(node.args[0]) : null;
+	if (node.type === 'variable') return boundCondition(node.name, strict ? '>' : '⩾', '0');
+	const pair = letterAndNumber(node);
+	if (pair !== null) {
+		// n − a ⩾ 0 : a ⩽ n ; a − n : a ⩾ n ; a + n, n + a : a ⩾ −n
+		const below = !pair.letterFirst && node.type === 'subtraction';
+		const relation: ConditionRelation = below ? (strict ? '<' : '⩽') : strict ? '>' : '⩾';
+		const value = node.type === 'subtraction' ? pair.number : `-${pair.number}`;
+		return boundCondition(pair.letter, relation, value);
+	}
+	return {
+		latex: `${toLatex(node)} ${strict ? '>' : '\\geqslant'} 0`,
+		text: `${toCustom(node)} ${strict ? '>' : '⩾'} 0`
+	};
+}
+
+/**
+ * Q2 (David, 2026-11-01) : « a ⩾ v » et « a ≠ v » ensemble → « a > v » ; une
+ * condition « a > v » rend « a ⩾ v » et « a ≠ v » inutiles.
+ */
+function mergedConditions(conditions: readonly Condition[]): Condition[] {
+	const same = (c: Condition, letter: string, value: string) =>
+		c.bound !== undefined && c.bound.letter === letter && c.bound.value === value;
+	const merged: Condition[] = [];
+	for (const condition of conditions) {
+		const { bound } = condition;
+		if (bound === undefined || !['≠', '⩾', '>'].includes(bound.relation)) {
+			merged.push(condition);
+			continue;
+		}
+		const index = merged.findIndex((c) => same(c, bound.letter, bound.value));
+		const previous = index === -1 ? undefined : merged[index].bound;
+		if (previous === undefined || !['≠', '⩾', '>'].includes(previous.relation)) {
+			merged.push(condition);
+			continue;
+		}
+		if (previous.relation !== bound.relation) {
+			merged[index] = boundCondition(bound.letter, '>', bound.value);
+		}
+	}
+	return merged;
 }
 
 /**
