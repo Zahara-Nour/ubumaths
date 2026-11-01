@@ -1,0 +1,315 @@
+{
+	"title": "Lire et écrire un nombre décimal",
+	"description": "Trois unités et vingt-cinq centièmes ↔ 3,25 : écrire avec une virgule un nombre donné en lettres, le lire parmi quatre écritures ; au plus deux décimales",
+	"grades": ["CM1"],
+	"theme": "Décimaux",
+	"domain": "Apprivoiser",
+	"subdomain": "Ecriture",
+	"level": 12,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris en chiffres le nombre « **{{if:k==1|{{if:a==1|un|{{if:a==2|deux|{{if:a==3|trois|{{if:a==4|quatre|{{if:a==7|sept|{{if:a==8|huit|{{if:a==12|douze|{{if:a==15|quinze|{{if:a==23|vingt-trois|{{if:a==36|trente-six|{{if:a==48|quarante-huit|{{if:a==57|cinquante-sept|{{if:a==64|soixante-quatre|{{if:a==75|soixante-quinze|quatre-vingt-dix}}}}}}}}}}}}}}}}}}}}}}}}}}}}|{{if:a==1|une unité|{{if:a==2|deux unités|{{if:a==3|trois unités|{{if:a==4|quatre unités|{{if:a==7|sept unités|{{if:a==8|huit unités|{{if:a==12|douze unités|{{if:a==15|quinze unités|{{if:a==23|vingt-trois unités|{{if:a==36|trente-six unités|{{if:a==48|quarante-huit unités|{{if:a==57|cinquante-sept unités|{{if:a==64|soixante-quatre unités|{{if:a==75|soixante-quinze unités|quatre-vingt-dix unités}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} et {{if:c==3|trois centièmes|{{if:c==5|cinq centièmes|{{if:c==8|huit centièmes|{{if:c==12|douze centièmes|{{if:c==17|dix-sept centièmes|{{if:c==25|vingt-cinq centièmes|{{if:c==36|trente-six centièmes|{{if:c==44|quarante-quatre centièmes|{{if:c==59|cinquante-neuf centièmes|{{if:c==63|soixante-trois centièmes|{{if:c==71|soixante-et-onze centièmes|{{if:c==82|quatre-vingt-deux centièmes|quatre-vingt-seize centièmes}}}}}}}}}}}}}}}}}}}}}}}}** ».\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1|2|3|4|7|8|12|15|23|36|48|57|64|75|90"
+				},
+				{
+					"name": "c",
+					"expression": "3|5|8|12|17|25|36|44|59|63|71|82|96"
+				},
+				{
+					"name": "k",
+					"expression": "0..1"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a+c/100;d"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les rangs après la virgule.** Le premier chiffre après la virgule compte les **dixièmes**, le deuxième les **centièmes** : $1 = 10$ dixièmes $= 100$ centièmes.",
+					"${{c}}$ centièmes, c'est {{if:c<10|$0$ dixième et ${{c}}$ centièmes|${{eval:floor(c/10)}}$ dixièmes et ${{eval:mod(c,10)}}$ centièmes}} : on écrit ${{if:c<10|0{{c}}|{{c}}}}$ après la virgule.",
+					"$$\\textcolor{{{color:primary.0}}}{{{x}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Écris en chiffres le nombre « **{{if:a==1|une unité|{{if:a==2|deux unités|{{if:a==3|trois unités|{{if:a==4|quatre unités|{{if:a==7|sept unités|{{if:a==8|huit unités|{{if:a==12|douze unités|{{if:a==15|quinze unités|{{if:a==23|vingt-trois unités|{{if:a==36|trente-six unités|{{if:a==48|quarante-huit unités|{{if:a==57|cinquante-sept unités|{{if:a==64|soixante-quatre unités|{{if:a==75|soixante-quinze unités|quatre-vingt-dix unités}}}}}}}}}}}}}}}}}}}}}}}}}}}}{{if:u==0| et |, }}{{if:t==1|un dixième|{{if:t==2|deux dixièmes|{{if:t==3|trois dixièmes|{{if:t==4|quatre dixièmes|{{if:t==5|cinq dixièmes|{{if:t==6|six dixièmes|{{if:t==7|sept dixièmes|{{if:t==8|huit dixièmes|neuf dixièmes}}}}}}}}}}}}}}}}{{if:u==0|| et {{if:u==1|un centième|{{if:u==2|deux centièmes|{{if:u==3|trois centièmes|{{if:u==4|quatre centièmes|{{if:u==5|cinq centièmes|{{if:u==6|six centièmes|{{if:u==7|sept centièmes|{{if:u==8|huit centièmes|neuf centièmes}}}}}}}}}}}}}}}}}}** ».\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1|2|3|4|7|8|12|15|23|36|48|57|64|75|90"
+				},
+				{
+					"name": "t",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "0..9"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a+t/10+u/100;d"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les rangs après la virgule.** Le premier chiffre après la virgule compte les **dixièmes**, le deuxième les **centièmes** : $1 = 10$ dixièmes $= 100$ centièmes.",
+					"Les unités avant la virgule, puis ${{t}}$ au rang des dixièmes{{if:u==0||, ${{u}}$ au rang des centièmes}}.",
+					"$$\\textcolor{{{color:primary.0}}}{{{x}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Comment lit-on le nombre ${{x}}$ ?\n\n```choix\n- {{if:a==1|une unité|{{if:a==2|deux unités|{{if:a==3|trois unités|{{if:a==4|quatre unités|{{if:a==5|cinq unités|{{if:a==6|six unités|{{if:a==7|sept unités|{{if:a==8|huit unités|neuf unités}}}}}}}}}}}}}}}} et {{if:c==3|trois centièmes|{{if:c==5|cinq centièmes|{{if:c==8|huit centièmes|{{if:c==12|douze centièmes|{{if:c==17|dix-sept centièmes|{{if:c==25|vingt-cinq centièmes|{{if:c==36|trente-six centièmes|{{if:c==44|quarante-quatre centièmes|{{if:c==59|cinquante-neuf centièmes|{{if:c==63|soixante-trois centièmes|{{if:c==71|soixante-et-onze centièmes|{{if:c==82|quatre-vingt-deux centièmes|quatre-vingt-seize centièmes}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:a==1|une unité|{{if:a==2|deux unités|{{if:a==3|trois unités|{{if:a==4|quatre unités|{{if:a==5|cinq unités|{{if:a==6|six unités|{{if:a==7|sept unités|{{if:a==8|huit unités|neuf unités}}}}}}}}}}}}}}}} et {{if:c==3|trois dixièmes|{{if:c==5|cinq dixièmes|{{if:c==8|huit dixièmes|{{if:c==12|douze dixièmes|{{if:c==17|dix-sept dixièmes|{{if:c==25|vingt-cinq dixièmes|{{if:c==36|trente-six dixièmes|{{if:c==44|quarante-quatre dixièmes|{{if:c==59|cinquante-neuf dixièmes|{{if:c==63|soixante-trois dixièmes|{{if:c==71|soixante-et-onze dixièmes|{{if:c==82|quatre-vingt-deux dixièmes|quatre-vingt-seize dixièmes}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:a==1|cent|{{if:a==2|deux-cent|{{if:a==3|trois-cent|{{if:a==4|quatre-cent|{{if:a==5|cinq-cent|{{if:a==6|six-cent|{{if:a==7|sept-cent|{{if:a==8|huit-cent|neuf-cent}}}}}}}}}}}}}}}}-{{if:c==3|trois|{{if:c==5|cinq|{{if:c==8|huit|{{if:c==12|douze|{{if:c==17|dix-sept|{{if:c==25|vingt-cinq|{{if:c==36|trente-six|{{if:c==44|quarante-quatre|{{if:c==59|cinquante-neuf|{{if:c==63|soixante-trois|{{if:c==71|soixante-et-onze|{{if:c==82|quatre-vingt-deux|quatre-vingt-seize}}}}}}}}}}}}}}}}}}}}}}}}\n- {{if:c==3|trois unités|{{if:c==5|cinq unités|{{if:c==8|huit unités|{{if:c==12|douze unités|{{if:c==17|dix-sept unités|{{if:c==25|vingt-cinq unités|{{if:c==36|trente-six unités|{{if:c==44|quarante-quatre unités|{{if:c==59|cinquante-neuf unités|{{if:c==63|soixante-trois unités|{{if:c==71|soixante-et-onze unités|{{if:c==82|quatre-vingt-deux unités|quatre-vingt-seize unités}}}}}}}}}}}}}}}}}}}}}}}} et {{if:a==1|un centième|{{if:a==2|deux centièmes|{{if:a==3|trois centièmes|{{if:a==4|quatre centièmes|{{if:a==5|cinq centièmes|{{if:a==6|six centièmes|{{if:a==7|sept centièmes|{{if:a==8|huit centièmes|neuf centièmes}}}}}}}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "3|5|8|12|17|25|36|44|59|63|71|82|96"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a+c/100;d"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les rangs après la virgule.** Le premier chiffre après la virgule compte les **dixièmes**, le deuxième les **centièmes** : $1 = 10$ dixièmes $= 100$ centièmes.",
+					"${{x}}$ : ${{a}}$ avant la virgule, ${{if:c<10|0{{c}}|{{c}}}}$ après, sur deux rangs : des centièmes. On lit **« {{if:a==1|une unité|{{if:a==2|deux unités|{{if:a==3|trois unités|{{if:a==4|quatre unités|{{if:a==5|cinq unités|{{if:a==6|six unités|{{if:a==7|sept unités|{{if:a==8|huit unités|neuf unités}}}}}}}}}}}}}}}} et {{if:c==3|trois centièmes|{{if:c==5|cinq centièmes|{{if:c==8|huit centièmes|{{if:c==12|douze centièmes|{{if:c==17|dix-sept centièmes|{{if:c==25|vingt-cinq centièmes|{{if:c==36|trente-six centièmes|{{if:c==44|quarante-quatre centièmes|{{if:c==59|cinquante-neuf centièmes|{{if:c==63|soixante-trois centièmes|{{if:c==71|soixante-et-onze centièmes|{{if:c==82|quatre-vingt-deux centièmes|quatre-vingt-seize centièmes}}}}}}}}}}}}}}}}}}}}}}}} »**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "trois unités et vingt-cinq centièmes : 3,25",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"c": "25",
+				"k": "0",
+				"x": "3.25"
+			},
+			"answers": ["3,25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3,025",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"c": "25",
+				"k": "0",
+				"x": "3.25"
+			},
+			"answers": ["3,025"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 325",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"c": "25",
+				"k": "0",
+				"x": "3.25"
+			},
+			"answers": ["325"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : 325/100 (fraction)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"c": "25",
+				"k": "0",
+				"x": "3.25"
+			},
+			"answers": ["\\frac{325}{100}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Forme : 3 + 25/100",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"c": "25",
+				"k": "0",
+				"x": "3.25"
+			},
+			"answers": ["3+\\frac{25}{100}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "quatre et cinq centièmes : 4,05",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"c": "5",
+				"k": "1",
+				"x": "4.05"
+			},
+			"answers": ["4,05"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4,5 (cinq dixièmes)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"c": "5",
+				"k": "1",
+				"x": "4.05"
+			},
+			"answers": ["4,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "quatre unités, un dixième et sept centièmes : 4,17",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"t": "1",
+				"u": "7",
+				"x": "4.17"
+			},
+			"answers": ["4,17"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4,71 (rangs échangés)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"t": "1",
+				"u": "7",
+				"x": "4.17"
+			},
+			"answers": ["4,71"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "deux unités et sept dixièmes : 2,7",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"t": "7",
+				"u": "0",
+				"x": "2.7"
+			},
+			"answers": ["2,7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2,07",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"t": "7",
+				"u": "0",
+				"x": "2.7"
+			},
+			"answers": ["2,07"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3,25 : trois unités et vingt-cinq centièmes",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"c": "25",
+				"x": "3.25"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : vingt-cinq dixièmes",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"c": "25",
+				"x": "3.25"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : trois-cent-vingt-cinq",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"c": "25",
+				"x": "3.25"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

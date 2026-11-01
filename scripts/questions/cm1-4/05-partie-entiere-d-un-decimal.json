@@ -1,0 +1,168 @@
+{
+	"title": "Donner la partie entière d'un nombre décimal",
+	"description": "Donner la partie entière d'un nombre décimal à une ou deux décimales (3,7 → 3 ; 135,78 → 135)",
+	"grades": ["CM1"],
+	"theme": "Décimaux",
+	"domain": "Apprivoiser",
+	"subdomain": "Arrondir",
+	"level": 4,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quelle est la partie entière de ${{x}}$ ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..99"
+				},
+				{
+					"name": "t",
+					"expression": "1..9"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a+t/10;d"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La partie entière**, c'est le nombre d'unités entières : ce qui est écrit avant la virgule.",
+					"${{x}} = \\textcolor{{{color:primary.0}}}{{{a}}} + 0.{{t}}$"
+				]
+			}
+		},
+		{
+			"statement": "Quelle est la partie entière de ${{x}}$ ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "100..999"
+				},
+				{
+					"name": "D",
+					"expression": "1..99"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a+D/100;d"
+				}
+			],
+			"conditions": ["mod(D,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La partie entière**, c'est le nombre d'unités entières : ce qui est écrit avant la virgule.",
+					"${{x}} = \\textcolor{{{color:primary.0}}}{{{a}}} + {{eval:D/100;d}}$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3,7 → 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"t": "7",
+				"x": "3.7"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 (arrondi)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"t": "7",
+				"x": "3.7"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 7 (chiffre des dixièmes)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"t": "7",
+				"x": "3.7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,4 → 0",
+			"variationIndex": 0,
+			"variables": {
+				"a": "0",
+				"t": "4",
+				"x": "0.4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "135,78 → 135",
+			"variationIndex": 1,
+			"variables": {
+				"a": "135",
+				"D": "78",
+				"x": "135.78"
+			},
+			"answers": ["135"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 136 (arrondi)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "135",
+				"D": "78",
+				"x": "135.78"
+			},
+			"answers": ["136"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 78",
+			"variationIndex": 1,
+			"variables": {
+				"a": "135",
+				"D": "78",
+				"x": "135.78"
+			},
+			"answers": ["78"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
