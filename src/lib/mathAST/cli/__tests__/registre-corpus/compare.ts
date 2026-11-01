@@ -5,9 +5,10 @@
  * registre, le `latex` affiché par l'Atelier) à l'attendu, écrit à l'avance.
  *
  * - **Expression** : `checkForm`, le comparateur de forme des réponses
- *   d'élèves (espaces, zéros, signes, parenthèses superflues, signe ×, ORDRE
- *   des termes et des facteurs). Ce n'est pas l'équivalence : `e^x+xe^x` n'a
- *   pas la forme de `(x+1)e^x`.
+ *   d'élèves (règle E1). Il TOLÈRE les espaces, le signe ×, l'ordre des
+ *   termes et des facteurs (`1+x` passe pour `x+1`) : le corpus ne voit donc
+ *   pas un ordre différent. Ce n'est pas l'équivalence : `e^x+xe^x` n'a pas
+ *   la forme de `(x+1)e^x`.
  * - **Contrôle numérique** (Q6) : une forme refusée est recalculée en
  *   quelques points. Même valeur → `forme` (autre écriture) ; autre valeur →
  *   `valeur`. Une faute de frappe dans un attendu se voit ainsi comme un

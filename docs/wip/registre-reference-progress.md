@@ -6,13 +6,19 @@ status: phase 0 tranchée, PR 0 à faire
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR 0 codée et poussée, pas encore ouverte (aucune PR) ; étape H ajoutée._
+_Mis à jour le 2026-11-01, corpus validé (85/85), PR 0 en cours d'ouverture._
 
-- **État** : branche à jour sur origin, tests verts (178), doc à jour. Page à cocher (v10) :
-  https://claude.ai/artifact/RSWgLdsubFwGayPgQgCETo, base `verdicts` (lire avec ArtifactData).
-  « Juste » : 58/85 (`deriver`, `simplifier`, `resoudre`, `integrer`, `evaluer`, `taylor`,
-  `domaine-02`). `domaine-01` « à revoir » : ℝ \ {0}, ℝ* ou réunion ? ma reco (ℝ \ {0}) sur la
-  fiche ; `domaine-04` suivra la même forme.
+- **État** : 85/85 « juste » sur la page (v11, https://claude.ai/artifact/RSWgLdsubFwGayPgQgCETo,
+  base `verdicts`) ; `domaine-01` tranché ℝ \ {0}. `main` intégré, check:incremental 0, cliquet,
+  1732 tests, doc à jour ; revue (Sonnet) sans bloquant — points 1-3 (`answer` en mode décimal,
+  égalité seule `2=2` sans champ, expression recopiée) documentés dans `types.ts`, renvoyés au
+  lot 2 ; en-tête de `compare.ts` précisé (le juge TOLÈRE l'ordre).
+- **Décision (David, « je suis tes recos »)** : merger la PR 0 maintenant ; puis **PR « corpus,
+  lot 2 »** AVANT la PR 1 : relevé systématique des cas déjà tranchés sur la forme des nombres
+  (décimal/fraction S1, grands entiers 15 chiffres, plafond 1000, règle des 1 000 caractères,
+  scientifique/≈ = affichage, valeurs remarquables, degrés, comparaisons) + points 1-3 de la
+  revue ; rendu par famille avec nombre de lignes à David AVANT la page à cocher. Relevé lancé
+  (agent Explore) le 2026-11-01.
 - **Règle R-point (David, 2026-11-01)** : le registre est la référence, au plus près de mathAST →
   **point décimal** en entrée ET en sortie (`0.1+0.2` → `0.3`). La virgule française est traduite
   par chaque outil (Atelier, calculatrice, `pnpm math`), jamais par le registre. Appliqué :
@@ -22,9 +28,9 @@ _Mis à jour le 2026-11-01, PR 0 codée et poussée, pas encore ouverte (aucune 
   corpus — les hypothèses viennent avec l'étape H.
 - **Ajouté** : étape H, hypothèses `avec`/`dans` dans le registre (section dédiée) ; étude en
   profondeur de ce qu'il faut transférer AVANT tout code, à rendre à David.
-- **Prochaine action** : relire `verdicts`, appliquer les corrections au corpus et aux listes
-  `connues-fausses.ts`, relancer les tests ; quand les 85 sont « juste », ouvrir la PR 0, merger.
-- **En attente de David** : 9 fiches (`calcul-06` → `calcul-10`, `refus-01` → `refus-04`) ; 76/85 « juste ».
+- **Prochaine action** : PR 0 ouverte → CI verte → merger ; puis présenter le relevé du lot 2
+  par famille.
+- **En attente de David** : rien avant le relevé.
 - **Règles du jour** : l'Atelier fait foi a priori (écart = règle citée + question) ; solutions
   en ordre croissant ; juge du corpus = E1 (`checkForm` sans remarque), pas de juge strict.
 - **Pièges en cours** : sonde de l'Atelier = fichier vitest jetable sous `src/` (~2 s) ; la page
