@@ -6,24 +6,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 6a écrit (simulation verte), essai en base locale à faire._
+_Mis à jour le 2026-11-01, après #2111._
 
-- **État** : lots 1 à 5 publiés en prod (lot 5 : 12 modèles de problèmes, relus 12/12 « OK » par David, `published`
-  relus au MCP, nœuds et points intacts). Aucun worktree en cours.
-- **Prochaine action** : lot 6a (9 modèles, `scripts/questions/ce2-6a/`, simulation verte) — essai en base locale
-  et aperçu admin, PR des fichiers (`Doc-inchangée: contenu`), merge, puis David lance `create-questions --publier` ;
-  migration nœud + tag, page à cocher, publication. Ensuite lot 6b (contenances + durées). En parallèle, dans des
-  sessions à part : `choix-correction` (§ 8), puis `centaines:` + milliers de `collection` et barres à monter.
-- **En attente de David** : rien. (Question restée ouverte : le tableau / l'arbre du produit cartésien n'est
-  expliqué qu'en phrases ; un vrai dessin = outil neuf, seulement s'il le demande.)
+- **État** : lots 1 à 5 en prod. Lot 6a (9 modèles longueurs + masses, 122 specs, `scripts/questions/ce2-6a/`)
+  MERGÉ (#2111), pas encore en prod. Aucun worktree en cours.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce2-6a --publier`
+  (depuis le dépôt principal, avec `!`) ; je relève les ids et les niveaux, puis migration nœud + tag, page à
+  cocher, publication. Ensuite lot 6b (contenances + durées, phase 0 déjà validée, § 10).
+- **En attente de David** : le `--publier` du lot 6a.
 - **Pièges en cours** : `db:migrate`, `--publier` et `--mettre-a-jour` refusés par le classifieur (David les
   lance avec `!`, collé au début de la ligne) ; `db:migrate` pousse TOUTES les migrations en attente ; horodatage =
-  max de la PROD, de `main`, des worktrees ET des branches distantes + 1 min ; niveaux relevés dans la catégorie
-  JUSTE avant la publication ; commitlint : sujet sans majuscule (même « CE2 »), corps ≤ 100 car. ;
-  `Doc-inchangée:` va dans un COMMIT, pas dans la PR ; après un rebase, pas de `--force` ; la page à cocher se
-  publie en artefact avec `capabilities: {db: {}}` (fichier local = « Base indisponible »).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, `feat/questions-ce2-lot6a`.
-  `feat/questions-ce2-lot5-rangement` (`-d` refuse, sans intérêt) : à supprimer par David si besoin.
+  max de la PROD, de `main`, des worktrees ET des branches distantes + 1 min (collision 190200 entre sessions
+  réglée par #2114) ; niveaux relevés dans la catégorie JUSTE avant la publication ; commitlint : sujet sans
+  majuscule (même « CE2 »), corps ≤ 100 car. ; le pre-push vérifie le formatage de TOUT le dépôt ; la page à
+  cocher se publie en artefact avec `capabilities: {db: {}}`.
+- **Worktree / branche** : aucun (à recréer pour le lot 6b). `feat/questions-ce2-lot5-rangement` : à supprimer par
+  David si besoin.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
