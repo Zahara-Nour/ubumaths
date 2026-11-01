@@ -6,15 +6,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, phase 0 du lot 6 (§ 37)._
+_Mis à jour le 2026-11-01, lot 6 A écrit (§ 38)._
 
-- **État** : lots 1 à 5 publiés ; lot 6 : phase 0 validée (§ 37).
-- **Prochaine action** : écrire le lot 6 A (7 modèles, § 37), worktree `ubumaths-wt-questions-2de`.
+- **État** : lots 1 à 5 publiés ; lot 6 : phase 0 validée (§ 37), 6 A écrit, PR des fichiers ouverte (§ 38).
+- **Prochaine action** : merger la PR 6 A, puis écrire 6 B (affine, |x|, carré, inverse : 6 modèles).
 - **En attente de David** : rien.
 - **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main` ET des worktrees ; `page-a-cocher.ts`
   ne prend qu'un `--dir` (préfixes `a-`/`b-` dans une copie) ; `db:migrate` et `--publier` refusés par le
   classifieur → David les lance avec `!`.
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `ubumaths-wt-questions-2de`, `feat/questions-2de-lot6a`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -949,6 +949,21 @@ Lot 6 C « Résolutions : racine, cube, méthode au choix » (6) :
   page à cocher pour les 20 ? → Je recommande **oui** (comme le lot 5).
 
 **Décisions de David (2026-11-01)** : phase 0 validée avec mes cinq recommandations — L6-a 2-461 modèle
-distinct côté fonction ; L6-b 2-329 déplacé au lot 7 (lot 6 = 20 modèles, 6 A = 7) ; L6-c cubes parfaits
+distinct côté fonction ; L6-b 2-329 déplacé au lot 7 (lot 6 = 20 modèles : 6 A = 8, 6 B = 6, 6 C = 6) ; L6-c cubes parfaits
 seulement ; L6-d expressions qui se ramènent à un type du programme ; L6-e trois PR de fichiers, une migration,
 une page à cocher.
+
+## 38. Lot 6 A, PR des fichiers (2026-11-01)
+
+- Script `questions-2de/lot-fonctions-a-2de.py` → `scripts/questions/2de-fonctions-a/` (8 modèles, 23 variations,
+  64 specs). Catégories : Fonctions › Généralités › « Définition et courbe » (01 à 05, niveaux 1 à 5 : 2-325, 327,
+  331, 447, 326) ; « Courbe » de Valeur absolue (niv. 1, 2-333), Fonction carré (niv. 2, 2-334 ; le niv. 1 est le
+  modèle de 3e 7407f328), Fonction inverse (niv. 1, 2-335). Cases posées case par case (nombre, choix, ensemble).
+- `question:specs` : 64/64, tirages tous réussis ; `sonde-courbes` : 0 problème (300 tirages) ; `create-questions`
+  en simulation contre la prod : « 8 à créer ».
+- Relecture des tirages : centre de la parabole rendu en `\dfrac` dans le bloc (illisible) → milieu laissé dans
+  l'expression ; « −4×(−4) » → « (−4)×(−4) ».
+- Base locale : 8 brouillons ; aperçu joué : 01 (réunion, réponse fausse « Faux » avec « La valeur de la borne est
+  incorrecte », puis [−3 ; 2[ « Juste ») ; 05 (ℝ\{−5} tapé avec `\backslash`, « Juste ») ; 08 (quatre courbes
+  dessinées et mélangées, hyperbole cochée « Juste », corrigé avec la courbe). **Défaut vu à l'aperçu** :
+  l'étiquette 𝒞_f se pose près d'une extrémité et ressemble à un disque vide → retirée des courbes de 01.

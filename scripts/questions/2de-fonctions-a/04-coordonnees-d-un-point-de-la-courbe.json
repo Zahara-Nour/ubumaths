@@ -1,0 +1,231 @@
+{
+	"title": "Coordonnées d'un point de la courbe",
+	"description": "Ordonnée du point de C_f d'abscisse donnée (f(a)) ; abscisse du point d'ordonnée donnée, f affine ; abscisses des deux points d'ordonnée donnée, f(x) = x² + c (pièges : f(b) au lieu de résoudre, une seule des deux abscisses)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Généralités",
+	"subdomain": "Définition et courbe",
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{a}}x^2{{b;+}}x{{c;+}}$, et sa courbe représentative $\\mathcal{C}_f$.\n\nLe point $A$ de $\\mathcal{C}_f$ a pour abscisse ${{xa}}$. Calcule son ordonnée.\n\n$y_A=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "xa",
+					"expression": "-3..3!0"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a)*(xa)^2+(b)*(xa)+(c)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A$ est sur $\\mathcal{C}_f$ : son ordonnée est l'image de son abscisse, $y_A=f({{xa}})$.",
+					"$$y_A={{a}}\\times{{xa;()}}^2{{b;+}}\\times{{xa;()}}{{c;+}}=\\textcolor{{{color:primary.0}}}{{{eval:(a)*(xa)^2+(b)*(xa)+(c)}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{m}}x{{p;+}}$, et sa courbe représentative $\\mathcal{C}_f$.\n\nLe point $A$ de $\\mathcal{C}_f$ a pour ordonnée ${{yb}}$. Calcule son abscisse.\n\n$x_A=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "yb",
+					"expression": "-9..9"
+				}
+			],
+			"conditions": ["yb != p"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((yb)-(p))/(m)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A$ est sur $\\mathcal{C}_f$ : son abscisse $x$ vérifie $f(x)={{yb}}$, une équation du premier degré.",
+					"$${{m}}x{{p;+}}={{yb}}\\iff{{m}}x={{eval:(yb)-(p)}}\\iff x=\\textcolor{{{color:primary.0}}}{{{eval:((yb)-(p))/(m)}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)=x^2{{c;+}}$, et sa courbe représentative $\\mathcal{C}_f$.\n\nDétermine les abscisses des points de $\\mathcal{C}_f$ d'ordonnée ${{yb}}$.\n\nL'ensemble de ces abscisses est $?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..5"
+				},
+				{
+					"name": "yb",
+					"expression": "eval:(r)^2+(c)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:-(r)}} ; {{r}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les abscisses cherchées sont les solutions de $f(x)={{yb}}$ :",
+					"$$x^2{{c;+}}={{yb}}\\iff x^2={{eval:(r)^2}}\\iff x={{r}}\\ \\text{ou}\\ x=-{{r}}$$",
+					"Deux points de $\\mathcal{C}_f$ ont pour ordonnée ${{yb}}$ : leurs abscisses forment l'ensemble $\\textcolor{{{color:primary.0}}}{\\{-{{r}}\\,;{{r}}\\}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "−2x² + 3x + 5, x = −1 → 0",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"b": "3",
+				"c": "5",
+				"xa": "-1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (−1)² = −1 → 4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"b": "3",
+				"c": "5",
+				"xa": "-1"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3x − 2 = 7 → 3",
+			"variationIndex": 1,
+			"variables": {
+				"m": "3",
+				"p": "-2",
+				"yb": "7"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f(7) = 19",
+			"variationIndex": 1,
+			"variables": {
+				"m": "3",
+				"p": "-2",
+				"yb": "7"
+			},
+			"answers": ["19"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−4x + 1 = 7 → −3/2",
+			"variationIndex": 1,
+			"variables": {
+				"m": "-4",
+				"p": "1",
+				"yb": "7"
+			},
+			"answers": ["-\\frac{3}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En décimal −1,5",
+			"variationIndex": 1,
+			"variables": {
+				"m": "-4",
+				"p": "1",
+				"yb": "7"
+			},
+			"answers": ["-1.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x² − 3 = 1 → {−2 ; 2}",
+			"variationIndex": 2,
+			"variables": {
+				"c": "-3",
+				"r": "2",
+				"yb": "1"
+			},
+			"answers": ["\\{-2;2\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une seule abscisse",
+			"variationIndex": 2,
+			"variables": {
+				"c": "-3",
+				"r": "2",
+				"yb": "1"
+			},
+			"answers": ["\\{2\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans accolades",
+			"variationIndex": 2,
+			"variables": {
+				"c": "-3",
+				"r": "2",
+				"yb": "1"
+			},
+			"answers": ["-2;2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

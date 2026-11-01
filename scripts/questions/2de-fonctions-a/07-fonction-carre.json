@@ -1,0 +1,172 @@
+{
+	"title": "La fonction carré",
+	"description": "Reconnaître la parabole de x ↦ x² ; image d'un négatif, d'un décimal (pièges : −3² = −9, parabole renversée, V de la valeur absolue, 0,3² = 0,9)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Fonction carré",
+	"subdomain": "Courbe",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quelle figure représente la fonction carré $x\\mapsto x^2$ ?\n\n````choix\n- ```courbe\n  x: -3 ; 3\n  y: -4 ; 5\n  grille: 1 ; 1\n  f(x) = x^2   bleu\n  taille: petite\n  description: Parabole tournée vers le haut, sommet à l'origine, passant par (−1 ; 1), (1 ; 1) et (2 ; 4).\n  ```\n- ```courbe\n  x: -3 ; 3\n  y: -4 ; 5\n  grille: 1 ; 1\n  f(x) = -x^2   bleu\n  taille: petite\n  description: Parabole tournée vers le bas, sommet à l'origine, passant par (1 ; −1) et (2 ; −4).\n  ```\n- ```courbe\n  x: -3 ; 3\n  y: -4 ; 5\n  grille: 1 ; 1\n  f(x) = abs(x)   bleu\n  taille: petite\n  description: Courbe en V, pointe à l'origine, passant par (2 ; 2).\n  ```\n- ```courbe\n  x: -3 ; 3\n  y: -4 ; 5\n  grille: 1 ; 1\n  f(x) = 2*x   bleu\n  taille: petite\n  description: Droite passant par l'origine et par (2 ; 4).\n  ```\n````",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La courbe de $x\\mapsto x^2$ est une **parabole** de sommet l'origine, tournée vers le haut (un carré est positif), symétrique par rapport à l'axe des ordonnées ($(-x)^2=x^2$).",
+					"```courbe\nx: -3 ; 3\ny: -1 ; 5\ngrille: 1 ; 1\nf(x) = x^2   bleu   nom=C_f\npoints: A(-2 ; 4), B(-1 ; 1), C(1 ; 1), D(2 ; 4)\ntaille: moyenne\ndescription: Parabole de la fonction carré, passant par (−2 ; 4), (−1 ; 1), (0 ; 0), (1 ; 1) et (2 ; 4).\n```",
+					"Elle passe par $(1\\,;1)$ et $(2\\,;4)$ : ce n'est pas le V de la valeur absolue, qui passe par $(2\\,;2)$."
+				]
+			}
+		},
+		{
+			"statement": "On note $f$ la fonction carré : $f(x)=x^2$.\n\nCalcule l'image de ${{eval:-(a)}}$ par $f$.\n\n$f({{eval:-(a)}})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a)^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On élève au carré **tout** le nombre, signe compris : on écrit les parenthèses.",
+					"$$f({{eval:-(a)}})=({{eval:-(a)}})^2=({{eval:-(a)}})\\times({{eval:-(a)}})=\\textcolor{{{color:primary.0}}}{{{eval:(a)^2}}}$$",
+					"Un carré n'est jamais négatif."
+				]
+			}
+		},
+		{
+			"statement": "On note $f$ la fonction carré : $f(x)=x^2$.\n\nCalcule l'image de ${{x0;d}}$ par $f$.\n\n$f({{x0;d}})=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "10|100"
+				},
+				{
+					"name": "sg",
+					"expression": "1|-1"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:(sg)*(n)/(d)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n)^2/(d)^2;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$f({{x0;d}})=({{x0;d}})^2=\\textcolor{{{color:primary.0}}}{{{eval:(n)^2/(d)^2;d}}}$$",
+					"Il y a deux fois plus de chiffres après la virgule dans le carré que dans le nombre."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "La parabole",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le V",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(−3)² = 9",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −9",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["-9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(−0,3)² = 0,09",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3",
+				"d": "10",
+				"sg": "-1",
+				"x0": "-0.3"
+			},
+			"answers": ["0.09"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,9",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3",
+				"d": "10",
+				"sg": "-1",
+				"x0": "-0.3"
+			},
+			"answers": ["0.9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −0,09",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3",
+				"d": "10",
+				"sg": "-1",
+				"x0": "-0.3"
+			},
+			"answers": ["-0.09"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
