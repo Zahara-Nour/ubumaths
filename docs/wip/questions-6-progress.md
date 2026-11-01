@@ -5,20 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR #2153 (migration du lot 8) en CI après renommage en 224700._
+_Mis à jour le 2026-11-01, relecture du lot 8 : 5/5 OK._
 
-- **État** : lot 8 « Assemblages de cubes » : fichiers mergés (#2150) ; 5 brouillons en prod (ce3c4e11, 763d1183,
-  37c6852c, 650dcfc6, 0464c3f6) ; migration nœud + tag `20261101224700` en PR #2153 (test 8 rouges / 14 verts,
-  `security-auditor` sans bloquant ; 220100 doublée en prod par 223000 → renommée 224700, test 14 verts).
-- **Prochaine action** : CI de #2153 (suivre le run « Code Quality », pas `gh pr checks`) ; relire juste avant
-  `db:migrate` que 224700 est postérieure à la dernière jouée en prod ; merge ; `db:migrate` depuis le dépôt principal (4 conditions réunies) ;
-  MCP : 5 modèles sur leur notion, un tag chacun, `updated_at` préservé, trigger `O` ; puis page à cocher.
-  **Publication après le `deploy:prod` qui livre #2130.**
-- **En attente de David** : rien.
+- **État** : lot 8 « Assemblages de cubes » : 5 brouillons en prod, rangés et tagués (migration `20261101224700`,
+  #2153, jouée par David le 2026-11-01 ; MCP vérifié). Page à cocher publiée (`db`, 0 verdict) :
+  https://claude.ai/artifact/UciEqZSoxGS9QjeRATbGf1 (bloc `cubes` non dessiné : le jouer dans l'aperçu).
+- **Prochaine action** : quand #2130 est en prod (`git merge-base --is-ancestor 0769b0845 origin/production`),
+  David lance `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/6-assemblages-cubes --publier` ;
+  relire `published` au MCP ; puis relevé des points de 6e sans modèle et choix du lot 9.
+- **En attente de David** : le `deploy:prod` qui livre #2130 (pas en prod au 2026-11-01, prod = 0.59.0).
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs --file`. Jamais de variable
   `e`. `Doc-inchangée:` va dans un message de COMMIT. PR en conflit = pas de CI : vérifier `mergeable`. Horodatage
   de migration : `pnpm migration:horodatage` (règle #2165), jamais un nombre rond choisi à la main.
-- **Worktree / branche** : `../ubumaths-wt-questions-6` · `feat/questions-6-lot8-rangement` (PR #2153).
+- **Worktree / branche** : aucun (retiré après #2153) ; prochain lot → nouveau worktree.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1258,3 +1257,14 @@ toutes distinctes, chaque leurre du 3 v1 a une vue différente des vues données
   en prod, après 220100 (`db push` l'aurait refusée, migration intercalée). 223100, 224000 et 224100 pris sur
   d'autres branches (ce2, questions-5, cm1) → renommée **224700** (`pnpm migration:horodatage` pas encore sur
   `main`, #2165 ouverte) ; `origin/main` fusionnée ; test d'intégration 14 verts avec le nouveau nom.
+- #2153 : CI verte, garde `check:migrations` verte, mergée ; worktree retiré. `db:migrate` refusé par le
+  classifieur du mode auto (il jouait aussi 223100 ce2 lot 6a et 224000 questions-5 lot 7) ; David l'a lancé avec
+  `!` : les 3 jouées. MCP : les 5 sur leur notion (Géométrie > Solides ×3, Grandeurs et mesures > Volumes ×2), un
+  tag chacun (6-209, 6-181, 6-208, 6-155, 6-154), `updated_at` = `created_at`, trigger `O`. Sessions questions-ce2
+  et questions-5 prévenues.
+- Page à cocher générée depuis `main` (72e213038), publiée (`db`, 0 verdict) :
+  https://claude.ai/artifact/UciEqZSoxGS9QjeRATbGf1. Alerte sur les 5 : bloc `cubes` non dessiné (le jouer dans
+  l'aperçu).
+- Relecture de David : 5/5 « OK », aucun commentaire (base de la page lue, 5 verdicts comptés). `publier-lot` en
+  simulation : 5 brouillons passent le contrôle. #2130 pas encore en prod (production = 0.59.0) : publication en
+  attente du `deploy:prod`.

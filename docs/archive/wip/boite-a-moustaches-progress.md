@@ -1,16 +1,9 @@
 # Chantier « boite-a-moustaches » — bloc ubumark de la boîte à moustaches
 
-## Reprendre ici
-
-_Mis à jour le 2026-11-01, après #2151._
-
-- **État** : palier 1 (affichage) MERGÉ (#2151, sur `main`, pas en prod) ; débloque 3-062 et la 2de.
-- **Prochaine action** : palier 2 (construire, § 5 ; débloque 3-030) — nouveau worktree et nouvelle branche,
-  à lancer quand David le dit.
-- **En attente de David** : vérification manuelle #2151 (téléphone), dans `verifications-manuelles.md`.
-- **Pièges en cours** : quartiles = ceux de `describe.ts`, jamais un second calcul ; mineurs de revue
-  laissés (§ 10).
-- **Worktree / branche** : supprimés.
+> **Archivé le 2026-11-01** (versement) : chantier clos après #2151 et #2162. Le durable est dans
+> [ubumark.md](../../systeme/ubumark.md) (genres de `stat-chart`, « Doutes et écarts connus ») et
+> [statistiques.md](../../systeme/statistiques.md). Vérifications manuelles : `docs/wip/verifications-manuelles.md`.
+> Palier 3 (modèles) : lot 8 du chantier `questions-3`. Historique : ne décrit pas forcément le code actuel.
 
 ---
 
@@ -171,3 +164,39 @@ Notes = 4 ; 8 ; 11 ; 14 ; 19
   `données:` ; (3) à 40 graduations (le plafond), les étiquettes de l'axe se chevauchent — n'en écrire
   qu'une sur deux au-delà d'un seuil, si un modèle en a besoin.
 - CI verte, mergée le 2026-11-01.
+
+## 11. Palier 2 : écrit (2026-11-01)
+
+- `placer: Notes` / `placer: toutes` et `case:` dans `parseBoxPlotContent` (`checkBoxesToPlace`) ;
+  `spec.boxPlot.toPlace`. Refus du § 5, plus : nom vide, `case:` sans `placer:`, « ? » ailleurs que
+  sur une boîte à construire ou sur une partie des cinq valeurs.
+- **Cinq cases par boîte** (minimum, Q1, médiane, Q3, maximum), comme une case par barre : note
+  partielle, juge ordinaire (`'11'`, `'2.5'`, `boxValueAnswer` = `decimalString`). Genre de case
+  `boite-a-moustaches` (`BuildKind`), branché comme `barres` : `build-answer.ts`,
+  `assign-blank-indices.ts`, `expected-result.ts`, `instance-generator.ts`, `template-validator.ts`
+  (`hasStatChartToPlace`, ex-`hasBarsToPlace`).
+- Énoncé d'évaluation masqué (`maskBoxPlot`) : `Notes = ? ; ? ; ? ; ? ; ?` ; avec `données:`, la ligne
+  devient une boîte sans nom masquée (la consigne donne la série). Pas de boîte juste en correction
+  quand le bloc est masqué (l'attendu n'y est pas).
+- Écran `BoxPlotPlacer.svelte` ; calcul pur `utils/boxplot-placer.ts` ; PDF : nom et axe seuls ;
+  `BoxPlotChart` ne dessine pas une boîte à construire. Fiche : deux exemples à construire, deux erreurs.
+- **Décidé en écrivant** : un trait posé pour la première fois passe au suivant pas posé (le
+  re-poser ne change pas de trait) ; une seule boîte à construire : toute la hauteur du dessin la
+  vise ; plusieurs : sa bande, et des boutons de boîte. Phrases : « Ta médiane est à 12. », « Tu n’as
+  pas placé le maximum. », « (boîte Nautic) » quand il y a plusieurs boîtes à construire.
+- Tests : `boite-a-moustaches-construire.test.ts` 22, `generation-boite-a-moustaches-placer.test.ts` 13,
+  `BoxPlotPlacer.svelte.test.ts` 11 ; suites questions + stat-chart 6 464 verts, composants voisins 98.
+  `check:incremental` 0, `types:cliquet` 0.
+
+## 12. Revue (2026-11-01, #2162)
+
+- `code-reviewer` (Opus) : aucun bloquant ni important prouvé. Corrigés : boîte sans nom parmi plusieurs
+  à construire (bouton et phrase « sans nom ») ; commentaires « ordre de l'auteur » → ordre des boîtes du
+  bloc ; test de bout en bout décimal négatif (-3,5 au clavier → `'-3.5'` → jugé juste).
+- Risque laissé, dit dans la fiche : `données:` aléatoire de taille paire → médiane au demi, refusée sur
+  un axe de 1 en 1 pour ce tirage (le générateur ne retente pas une autre graine).
+
+## 13. Merge (2026-11-01, #2162)
+
+- CI : deux ratés « Browser connection was closed » (Client Tests, un shard à chaque run, 0 test en échec) ;
+  pause CI demandée par la session migrations-collision, puis `origin/main` fusionnée, job relancé, vert, mergé.

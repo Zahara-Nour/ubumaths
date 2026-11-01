@@ -5,21 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR #2146 ouverte ; **CI annulée : PAUSE CI** demandée par la session `migrations-collision` (runners saturés). Ni push ni merge avant son « go » ; au go : `git merge origin/main` + push → CI relancée (run annulé ≠ rouge)._
+_Mis à jour le 2026-11-01, après #2146 et la publication du lot 7._
 
-- **État** : lots 1 à 6 publiés. **Lot 7** : 6 brouillons en prod (§ 18.2) ; migration nœud + tag
-  `20261101224000_questions_5_lot7_rangement_tags` dans **#2146** (§ 18.3). Les 4 conditions du `db:migrate`
-  autonome sont réunies (choix A, preuve rouge, `security-auditor` sans bloquant, additive + rollback).
-- **Prochaine action** : (après le « go ») CI de #2146 verte → `git merge origin/main` → `pnpm check:migrations --pr 2146` (règle
-  de #2165 ; renommer si refus par `pnpm migration:horodatage`, jamais à la main) → merge → `db:migrate` depuis
-  la branche mergée (`--include-all --dry-run` d'abord) → vérifier au MCP. Puis page à cocher, `publier-lot`,
-  lot 8 « Opérations » (001, 002, 005, 116, 117).
-- **En attente de David** : 02 (deux cases sur deux lignes) à essayer à la main dans l'aperçu : au pilotage
-  Chrome, la frappe dans la 2e case arrivait aussi dans la 1re — extension ou appli ?
-- **Pièges en cours** : collisions d'horodatage entre sessions (3 renommages aujourd'hui) → nouvelles règles
-  #2165 (`migration:horodatage`, `check:migrations`, porte « Commit de version ? » en tête de CI) ;
-  `--publier` = David ; prix en euros → `zeros: off` ; jamais `e`.
-- **Worktree / branche** : `ubumaths-wt-questions-5`, branche `content/questions-5-lot7-rangement`.
+- **État** : lots 1 à 7 publiés (lot 7 : 6/6 « ok » sur la page à cocher, publié par David, vérifié au MCP).
+- **Prochaine action** : lot 8 « Opérations » (001, 002, 005, 116, 117) : relevé prod, décisions (phase 0) à
+  faire valider, nouveau worktree `ubumaths-wt-questions-5`.
+- **En attente de David** : 02 du lot 7 (deux cases sur deux lignes, désormais publié) à essayer à la main : au
+  pilotage Chrome, la frappe dans la 2e case arrivait aussi dans la 1re — extension ou appli ?
+- **Pièges en cours** : `db:migrate` en prod refusé par le classifieur du mode auto → David le lance ; il pousse
+  toutes les migrations en attente (se coordonner avec les autres sessions) ; `pnpm check:migrations --pr <n>`
+  avant merge (#2165) ; worktree non lié à Supabase → `db:migrate` depuis le dépôt principal ; jamais `e`.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -548,3 +544,18 @@ Calcul littéral › Écrire › Formules 1-3, nœud = notion Algèbre › Calcu
   pas Algèbre › Calcul littéral. **David : choix A** — 05 et 06 sur le nœud de leur point ; aucun point déplacé.
 - `lot-7-rangement.py` (gabarit lot 5) → migration `20261101224000_questions_5_lot7_rangement_tags` + fixture ;
   test `questions-5-lot7-rangement-tags.test.ts` : 19 verts ; preuve rouge (migration vidée) : 12 échecs.
+
+### 18.4 Lot 7 rangé (2026-11-01, #2146)
+
+- CI annulée puis relancée (pause CI de la session `migrations-collision`) ; `origin/main` mergé, `check:migrations
+--pr 2146` vert, CI verte, mergée. `db:migrate` : refusé par le classifieur du mode auto ; David l'a lancé depuis
+  la session `questions-6` (avec 223100 ce2 et 224700 6e).
+- Vérifié au MCP : 6 brouillons sur leur nœud (05, 06 sur Fonctions › Généralités), 6 tags, `grades` = 5e, `updated_at`
+  intact (16:59), trigger réactivé.
+- Page à cocher https://claude.ai/artifact/LQmx5GndH3VQeuQR2xgYGU (6 fiches, aucune alerte). Simulation
+  `publier-lot` : 6/6 passent.
+
+### Lot 7 : publication (2026-11-01)
+
+- Page à cocher : **6 verdicts sur 6 « ok »**, sans commentaire (comptés en base de l'artefact). David :
+  `publier-lot.ts --publier` → 6/6 publiés ; vérifié au MCP (`status = published` pour les 6).

@@ -101,6 +101,7 @@ import { UNIFORM_MAX_VALUES } from '$lib/statistics/uniform';
 import { carreauGrid, usesCarreaux } from '../utils/stat-chart-carreaux';
 import { SCALE_STEPS, scaleAxis } from '../utils/barres-placer';
 import { isMaskedValue } from '../utils/masked-value';
+import { isOnGraduation } from '../utils/boxplot-placer';
 
 // ============================================================================
 // TYPES
@@ -439,7 +440,7 @@ const SCATTER_INDICATOR_NAME: Record<ScatterIndicator, string> = {
 	r: 'r'
 };
 
-/** Options d'une boîte à moustaches, sans accent ; `placer:` = palier 2, refusé */
+/** Options d'une boîte à moustaches, sans accent ; `placer:` et `case:` : palier 2 */
 const BOX_PLOT_OPTIONS = [
 	'axe',
 	'titre',
@@ -447,7 +448,8 @@ const BOX_PLOT_OPTIONS = [
 	'donnees',
 	'description',
 	'taille',
-	'placer'
+	'placer',
+	'case'
 ] as const;
 type BoxPlotOptionKey = (typeof BOX_PLOT_OPTIONS)[number];
 
@@ -542,16 +544,28 @@ const PLACER_LINE_REGEX = /^placer\s*:/i;
  * le parseur : corps sans clôtures, fermeture, et `nested` pour un bloc en retrait
  * ou cité (l'élève ne pourrait pas y répondre : ses cases ne sont pas créées)
  */
-export function findBarsToPlace(markdown: string): {
+export function findBarsToPlace(markdown: string): StatChartToPlace[] {
+	return findStatChartsToPlace(markdown, 'barres');
+}
+
+/** Les boîtes à moustaches à construire (`placer:`, palier 2) d'un énoncé, comme les barres */
+export function findBoxPlotsToPlace(markdown: string): StatChartToPlace[] {
+	return findStatChartsToPlace(markdown, 'boite-a-moustaches');
+}
+
+/** Bloc statistique à construire repéré dans un énoncé */
+interface StatChartToPlace {
 	startIndex: number;
 	body: string[];
 	closed: boolean;
 	nested: boolean;
-}[] {
+}
+
+function findStatChartsToPlace(markdown: string, kind: StatChartKind): StatChartToPlace[] {
 	const lines = markdown.split('\n');
 	const plain = lines.map(unnestedLine);
 	return findStatChartBlocks(plain)
-		.filter((block) => block.kind === 'barres')
+		.filter((block) => block.kind === kind)
 		.map((block) => {
 			const closed = block.closed !== false;
 			const body = plain.slice(block.startIndex + 1, closed ? block.endIndex : block.endIndex + 1);
@@ -565,9 +579,9 @@ export function findBarsToPlace(markdown: string): {
 		.filter((block) => block.body.some((line) => PLACER_LINE_REGEX.test(line.trim())));
 }
 
-/** L'énoncé a-t-il un diagramme en barres à construire ? */
-export function hasBarsToPlace(markdown: string): boolean {
-	return findBarsToPlace(markdown).length > 0;
+/** L'énoncé a-t-il un diagramme à construire (barres, boîte à moustaches) ? */
+export function hasStatChartToPlace(markdown: string): boolean {
+	return findBarsToPlace(markdown).length > 0 || findBoxPlotsToPlace(markdown).length > 0;
 }
 
 // ============================================================================
@@ -2995,7 +3009,7 @@ function parseScatterContent(source: string): StatChartNode {
 }
 
 // ============================================================================
-// BOÎTE À MOUSTACHES (palier 1 : affichage)
+// BOÎTE À MOUSTACHES (palier 1 : affichage ; palier 2 : construire)
 // ============================================================================
 
 /** Un nombre d'une boîte ou d'un axe : `28`, `12,5`, `-3`, `−3` */
@@ -3036,8 +3050,11 @@ function parseBoxAxis(raw: string): NonNullable<BoxPlotData['axis']> {
 	return { min, max, step };
 }
 
-/** Les cinq valeurs d'une ligne de boîte, vérifiées une à une puis dans l'ordre */
-function parseBoxValues(raw: string): BoxPlotBox['values'] {
+/**
+ * Les cinq valeurs d'une ligne de boîte, vérifiées une à une puis dans l'ordre ;
+ * null : cinq `?` (énoncé d'évaluation masqué, boîte à construire)
+ */
+function parseBoxValues(raw: string): BoxPlotBox['values'] | null {
 	const texts = raw.split(';');
 	// Un point-virgule final ne compte pas, comme dans `données:`
 	if (texts.length > 1 && texts.at(-1)!.trim() === '') texts.pop();
@@ -3046,6 +3063,9 @@ function parseBoxValues(raw: string): BoxPlotBox['values'] {
 			`${texts.length} valeur${texts.length > 1 ? 's' : ''} : en écrire 5 (minimum ; Q1 ; médiane ; Q3 ; maximum)`
 		);
 	}
+	const masked = texts.filter(isMaskedValue).length;
+	if (masked === 5) return null;
+	if (masked > 0) throw new LineError('« ? » : les cinq valeurs, ou aucune');
 	const values = texts.map(boxNumber) as BoxPlotBox['values'];
 	for (let i = 0; i < 4; i++) {
 		if (values[i] > values[i + 1]) {
@@ -3073,6 +3093,9 @@ function parseBoxPlotContent(source: string): StatChartNode {
 	let size: CourbeSize = 'moyenne';
 	let showValues = false;
 	let rawValues = null as number[] | null;
+	/** `placer:` : les noms écrits, ou toutes ; null : boîtes à lire */
+	let placer = null as string[] | 'toutes' | null;
+	let caseIndex: number | undefined;
 
 	source.split('\n').forEach((rawLine, index) => {
 		const line = index + 1;
@@ -3100,14 +3123,20 @@ function parseBoxPlotContent(source: string): StatChartNode {
 							: `deux boîtes s’appellent « ${name} »`
 					);
 				}
-				boxes.push({ name: name === '' ? null : name, values, line });
+				boxes.push({
+					name: name === '' ? null : name,
+					// `?` : rien à dessiner, le bas de l'axe une fois l'axe lu
+					values: values ?? [0, 0, 0, 0, 0],
+					line,
+					...(values === null && { masked: true as const })
+				});
 				return;
 			}
 			if (kv === null) {
 				throw new LineError('écrire « Nom = min ; Q1 ; médiane ; Q3 ; max » ou « option: valeur »');
 			}
 			if (!isOption) {
-				const choices = BOX_PLOT_OPTIONS.filter((k) => k !== 'placer')
+				const choices = BOX_PLOT_OPTIONS.filter((k) => k !== 'case')
 					.map((k) => (k === 'donnees' ? 'données' : k))
 					.join(', ');
 				throw new LineError(`option « ${kv[1]} » inconnue (options : ${choices})`);
@@ -3134,10 +3163,21 @@ function parseBoxPlotContent(source: string): StatChartNode {
 				case 'valeurs':
 					showValues = yesNo(value, 'valeurs');
 					return;
-				case 'placer':
-					throw new LineError(
-						'placer : construire une boîte à moustaches n’est pas encore disponible'
-					);
+				case 'placer': {
+					const written = value.trim();
+					if (written === '') {
+						throw new LineError('placer : nommer les boîtes à construire, ou toutes');
+					}
+					placer =
+						normalizeKey(written) === 'toutes' ? 'toutes' : written.split(';').map((n) => n.trim());
+					return;
+				}
+				case 'case':
+					if (!/^\d+$/.test(value.trim())) {
+						throw new LineError(`case « ${value.trim()} » : numéro de case entier`);
+					}
+					caseIndex = Number(value.trim());
+					return;
 				case 'donnees': {
 					const entries = parseRawEntries(value);
 					if (entries.length > STAT_CHART_LIMITS.rawValues) {
@@ -3185,9 +3225,22 @@ function parseBoxPlotContent(source: string): StatChartNode {
 			fail(boxes[STAT_CHART_LIMITS.boxPlots].line, `au plus ${STAT_CHART_LIMITS.boxPlots} boîtes`);
 		}
 	}
+	let toPlace: number[] | null = null;
+	if (errors.length === 0) {
+		const checked = checkBoxesToPlace(boxes, placer, axis, showValues, optionLines);
+		if ('error' in checked) errors.push(checked.error);
+		else toPlace = checked.toPlace;
+	}
+	if (errors.length === 0 && caseIndex !== undefined && toPlace === null) {
+		fail(optionLines.case ?? 1, 'case : seulement avec placer:');
+	}
 	if (errors.length === 0 && axis !== null) {
 		const { min, max } = axis;
 		for (const box of boxes) {
+			if (box.masked) {
+				box.values = [min, min, min, min, min];
+				continue;
+			}
 			const outside = box.values.find((value) => value < min || value > max);
 			if (outside !== undefined) {
 				fail(
@@ -3224,10 +3277,106 @@ function parseBoxPlotContent(source: string): StatChartNode {
 					series: null,
 					twoSeries: null,
 					scatter: null,
-					boxPlot: { boxes, axis, axisTitle, showValues, fromData: dataLine !== undefined }
+					boxPlot: {
+						boxes,
+						axis,
+						axisTitle,
+						showValues,
+						fromData: dataLine !== undefined,
+						toPlace
+					}
 				}
 			: null;
-	return { type: 'stat-chart', kind: 'boite-a-moustaches', source, spec, errors, warnings: [] };
+	const withCase = caseIndex === undefined ? {} : { caseIndex };
+	return {
+		type: 'stat-chart',
+		kind: 'boite-a-moustaches',
+		source,
+		spec,
+		errors,
+		warnings: [],
+		...withCase
+	};
+}
+
+/**
+ * `placer:` d'une boîte à moustaches (palier 2) : les rangs des boîtes nommées,
+ * ou de toutes ; les refus du journal § 5. Une boîte `?` (énoncé masqué) doit
+ * être à construire.
+ */
+function checkBoxesToPlace(
+	boxes: readonly BoxPlotBox[],
+	placer: string[] | 'toutes' | null,
+	axis: BoxPlotData['axis'],
+	showValues: boolean,
+	optionLines: Partial<Record<BoxPlotOptionKey, number>>
+): { toPlace: number[] | null } | { error: StatChartIssue } {
+	const fail = (line: number, message: string) => ({
+		error: { message: `Ligne ${line} : ${message}`, line }
+	});
+	if (placer === null) {
+		const masked = boxes.find((box) => box.masked);
+		return masked
+			? fail(
+					masked.line,
+					'« ? » à la place des valeurs : seulement pour une boîte à construire (placer:)'
+				)
+			: { toPlace: null };
+	}
+	const line = optionLines.placer ?? 1;
+	if (axis === null) {
+		return fail(
+			line,
+			'placer : écrire aussi l’axe (axe: 0 à 20, de 1 en 1) : calculé, il trahirait le minimum et le maximum'
+		);
+	}
+	if (showValues) {
+		return fail(
+			line,
+			'placer : impossible avec valeurs: oui (les valeurs attendues seraient écrites)'
+		);
+	}
+	let toPlace: number[];
+	if (placer === 'toutes') toPlace = boxes.map((_, i) => i);
+	else {
+		const lower = (text: string) => text.toLocaleLowerCase('fr');
+		toPlace = [];
+		for (const name of placer) {
+			// Noms comparés sans la casse : deux boîtes ne diffèrent jamais que par elle
+			const rank = boxes.findIndex((box) => box.name !== null && lower(box.name) === lower(name));
+			if (rank === -1) {
+				return fail(
+					line,
+					name === ''
+						? 'placer : nom vide (un « ; » de trop ?)'
+						: `placer : « ${name} » n’est pas une boîte du bloc`
+				);
+			}
+			if (toPlace.includes(rank)) return fail(line, `placer : « ${name} » nommée deux fois`);
+			toPlace.push(rank);
+		}
+		toPlace.sort((a, b) => a - b);
+	}
+	const masked = boxes.findIndex((box, i) => box.masked && !toPlace.includes(i));
+	if (masked !== -1) {
+		return fail(
+			boxes[masked].line,
+			'« ? » à la place des valeurs : seulement pour une boîte à construire (placer:)'
+		);
+	}
+	for (const rank of toPlace) {
+		const box = boxes[rank];
+		if (box.masked) continue;
+		const off = box.values.find((value) => !isOnGraduation(axis, value));
+		// Hors de l'axe : dit ensuite, avec le message des boîtes à lire
+		if (off !== undefined && off >= axis.min && off <= axis.max) {
+			return fail(
+				box.line,
+				`${formatForMessage(off)} n’est pas sur une graduation de l’axe (de ${formatForMessage(axis.step)} en ${formatForMessage(axis.step)}) : l’élève ne pourrait pas le placer`
+			);
+		}
+	}
+	return { toPlace };
 }
 
 /** Valeurs écrites toutes égales (exactement : `2` et `2,0` aussi) */

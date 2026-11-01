@@ -1,0 +1,237 @@
+{
+	"title": "Comparer des images sur la courbe",
+	"description": "Comparer f(u) et f(v) en lisant les hauteurs des points de la courbe d'une fonction de référence (pièges : comparer les abscisses, oubli de l'égalité f(−u) = f(u))",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Généralités",
+	"subdomain": "Variations",
+	"level": 5,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La courbe ci-dessous représente la fonction carré $f$. Les points $A$ et $B$ de la courbe ont pour abscisses $u={{u}}$ et $v={{v}}$.\n\n```courbe\nx: -5 ; 5\ny: -1 ; 17\ngrille: 1 ; 1\nf(x) = x^2   bleu\npoints: A({{u}} ; {{fu;d}}), B({{v}} ; {{fv;d}})\ntaille: moyenne\ndescription: Parabole de la fonction carré, sommet à l'origine.\n```\n\nCompare $f(u)$ et $f(v)$.\n\n```choix\nmelanger: non\n- $f(u)<f(v)$\n- $f(u)=f(v)$\n- $f(u)>f(v)$\n```",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "-4..4!0"
+				},
+				{
+					"name": "v",
+					"expression": "-4..4!0"
+				},
+				{
+					"name": "fu",
+					"expression": "eval:(u)^2"
+				},
+				{
+					"name": "fv",
+					"expression": "eval:(v)^2"
+				}
+			],
+			"conditions": ["u != v", "fu != fv"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:fu<fv|0|2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(u)$ et $f(v)$ sont les **ordonnées** de $A$ et de $B$ : on compare leurs hauteurs.",
+					"{{if:fu<fv|$A$ est plus bas que $B$ : \\textcolor{{{color:primary.0}}}{f(u)<f(v)}.|$A$ est plus haut que $B$ : \\textcolor{{{color:primary.0}}}{f(u)>f(v)}.}}"
+				]
+			}
+		},
+		{
+			"statement": "La courbe ci-dessous représente la fonction valeur absolue $f$. Les points $A$ et $B$ de la courbe ont pour abscisses $u={{u}}$ et $v={{v}}$.\n\n```courbe\nx: -5 ; 5\ny: -1 ; 5\ngrille: 1 ; 1\nf(x) = abs(x)   bleu\npoints: A({{u}} ; {{fu;d}}), B({{v}} ; {{fv;d}})\ntaille: moyenne\ndescription: Courbe en V de la valeur absolue, pointe à l'origine.\n```\n\nCompare $f(u)$ et $f(v)$.\n\n```choix\nmelanger: non\n- $f(u)<f(v)$\n- $f(u)=f(v)$\n- $f(u)>f(v)$\n```",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "-4..4!0"
+				},
+				{
+					"name": "v",
+					"expression": "-4..4!0"
+				},
+				{
+					"name": "fu",
+					"expression": "eval:abs((u))"
+				},
+				{
+					"name": "fv",
+					"expression": "eval:abs((v))"
+				}
+			],
+			"conditions": ["u != v", "fu != fv"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:fu<fv|0|2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(u)$ et $f(v)$ sont les **ordonnées** de $A$ et de $B$ : on compare leurs hauteurs.",
+					"{{if:fu<fv|$A$ est plus bas que $B$ : \\textcolor{{{color:primary.0}}}{f(u)<f(v)}.|$A$ est plus haut que $B$ : \\textcolor{{{color:primary.0}}}{f(u)>f(v)}.}}"
+				]
+			}
+		},
+		{
+			"statement": "La courbe ci-dessous représente la fonction inverse $f$. Les points $A$ et $B$ de la courbe ont pour abscisses $u={{u}}$ et $v={{v}}$.\n\n```courbe\nx: -5 ; 5\ny: -2 ; 2\ngrille: 1 ; 1\nf(x) = 1/x   bleu\npoints: A({{u}} ; {{fu;d}}), B({{v}} ; {{fv;d}})\ntaille: moyenne\ndescription: Hyperbole de la fonction inverse, deux branches.\n```\n\nCompare $f(u)$ et $f(v)$.\n\n```choix\nmelanger: non\n- $f(u)<f(v)$\n- $f(u)=f(v)$\n- $f(u)>f(v)$\n```",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "-4|-2|-1|1|2|4"
+				},
+				{
+					"name": "v",
+					"expression": "-4|-2|-1|1|2|4"
+				},
+				{
+					"name": "fu",
+					"expression": "eval:1/(u)"
+				},
+				{
+					"name": "fv",
+					"expression": "eval:1/(v)"
+				}
+			],
+			"conditions": ["u != v", "fu != fv"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:fu<fv|0|2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(u)$ et $f(v)$ sont les **ordonnées** de $A$ et de $B$ : on compare leurs hauteurs.",
+					"{{if:fu<fv|$A$ est plus bas que $B$ : \\textcolor{{{color:primary.0}}}{f(u)<f(v)}.|$A$ est plus haut que $B$ : \\textcolor{{{color:primary.0}}}{f(u)>f(v)}.}}"
+				]
+			}
+		},
+		{
+			"statement": "La courbe ci-dessous représente la fonction carré $f$. Les points $A$ et $B$ de la courbe ont pour abscisses $u={{u}}$ et $v={{v}}$.\n\n```courbe\nx: -5 ; 5\ny: -1 ; 17\ngrille: 1 ; 1\nf(x) = x^2   bleu\npoints: A({{u}} ; {{fu;d}}), B({{v}} ; {{fv;d}})\ntaille: moyenne\ndescription: Parabole de la fonction carré, sommet à l'origine.\n```\n\nCompare $f(u)$ et $f(v)$.\n\n```choix\nmelanger: non\n- $f(u)<f(v)$\n- $f(u)=f(v)$\n- $f(u)>f(v)$\n```",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "-4..4!0"
+				},
+				{
+					"name": "v",
+					"expression": "eval:-(u)"
+				},
+				{
+					"name": "fu",
+					"expression": "eval:(u)^2"
+				},
+				{
+					"name": "fv",
+					"expression": "eval:(v)^2"
+				}
+			],
+			"conditions": ["u != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(u)$ et $f(v)$ sont les **ordonnées** de $A$ et de $B$ : on compare leurs hauteurs.",
+					"$A$ et $B$ sont à la même hauteur : \\textcolor{{{color:primary.0}}}{f(u)=f(v)}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x² : f(1) < f(−3)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "1",
+				"v": "-3",
+				"fu": "1",
+				"fv": "9"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : comparer les abscisses",
+			"variationIndex": 0,
+			"variables": {
+				"u": "1",
+				"v": "-3",
+				"fu": "1",
+				"fv": "9"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "|x| : f(−4) > f(2)",
+			"variationIndex": 1,
+			"variables": {
+				"u": "-4",
+				"v": "2",
+				"fu": "4",
+				"fv": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1/x : f(−1) < f(2)",
+			"variationIndex": 2,
+			"variables": {
+				"u": "-1",
+				"v": "2",
+				"fu": "-1",
+				"fv": "0.5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x² : f(2) = f(−2)",
+			"variationIndex": 3,
+			"variables": {
+				"u": "2",
+				"v": "-2",
+				"fu": "4",
+				"fv": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f(2) > f(−2)",
+			"variationIndex": 3,
+			"variables": {
+				"u": "2",
+				"v": "-2",
+				"fu": "4",
+				"fv": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

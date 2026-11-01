@@ -10,7 +10,7 @@
 import { describe, it, expect } from 'vitest';
 import {
 	findBarsToPlace,
-	hasBarsToPlace,
+	hasStatChartToPlace,
 	parseStatChartContent
 } from '../../parser/stat-chart-parser';
 import { buildStatChartScene, type BarScene } from '../../utils/stat-chart-scene';
@@ -222,11 +222,11 @@ describe('findBarsToPlace', () => {
 		expect(found).toEqual([
 			{ startIndex: 2, body: block.slice(1, -1), closed: true, nested: false }
 		]);
-		expect(hasBarsToPlace(block.join('\n'))).toBe(true);
+		expect(hasStatChartToPlace(block.join('\n'))).toBe(true);
 	});
 
 	it('diagramme à lire : rien', () => {
-		expect(hasBarsToPlace(['```barres', ...SPORTS, '```'].join('\n'))).toBe(false);
+		expect(hasStatChartToPlace(['```barres', ...SPORTS, '```'].join('\n'))).toBe(false);
 	});
 
 	it('bloc cité : nested', () => {

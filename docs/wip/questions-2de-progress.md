@@ -6,17 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, phase 0 du lot 7 validée (§ 44), 7 A écrit (§ 45)._
+_Mis à jour le 2026-11-01, après #2172._
 
-- **État** : lots 1 à 6 publiés ; lot 7 (21 modèles) validé ; 7 A (§ 45) et 7 B (§ 46) écrits, PR à ouvrir.
-- **Prochaine action** : PR 7 A (CI : attendre le merge de #2154, main cassée), puis PR 7 B (branche empilée,
-  à rebaser), puis 7 C (variations, 9) ; ensuite brouillons en prod (David), migration, page à cocher.
+- **État** : lots 1 à 6 publiés ; lot 7 (21 modèles) : fichiers sur `main` (7 A #2164, 7 B #2170, 7 C #2172).
+- **Prochaine action** : brouillons du lot 7 en prod (David, `!`), migration nœud + tag, page à cocher. **Décidé par David (2026-11-01)** : avant la relecture du lot 7, faire dessiner
+  les tableaux ` ```variation ` par `page-a-cocher.ts` (15 fiches sur 21 en ont ; alerte « bloc variation non
+  dessiné » aujourd'hui) — PR de code à part.
 - **En attente de David** : rien.
-- **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main`, des worktrees ET de la prod
-  (sinon `db push --include-all`, qui emporte aussi les migrations mergées par d'autres sessions) ;
-  `page-a-cocher.ts` voit des défauts de fenêtre que `sonde-courbes` ne voit pas : la lancer avant la PR ;
-  `db push`, `--publier` → David avec `!` ; worktree neuf → `pnpm exec svelte-kit sync`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `feat/questions-2de-lot7a` puis `…-lot7b`.
+- **Pièges en cours** : horodatage de migration → `pnpm migration:horodatage` et `pnpm check:migrations --pr
+<n>` avant le merge ; `page-a-cocher.ts` voit des défauts de fenêtre que `sonde-courbes` ne voit pas : la
+  lancer avant la PR ; `db push`, `--publier` → David avec `!` ; worktree neuf → `pnpm exec svelte-kit sync` ;
+  CI allégée pour les PR de contenu (« skipped » voulu, CI Summary fait foi).
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, HEAD détachée sur `origin/main` (aucune branche
+  ouverte) ; 21 brouillons en base LOCALE seulement.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1180,3 +1182,18 @@ ni 2-348 ; L7-d trois PR de fichiers (7 A = 6, 7 B = 6, 7 C = 9), une migration,
   6 brouillons ; aperçu : tableau à trois lignes du quotient dessiné juste (0 sur la ligne du dénominateur,
   double barre sur celle de B(x), cases vides là où un facteur ne s'annule pas).
 - Branche `feat/questions-2de-lot7b`, empilée sur 7 A (à rebaser après son merge).
+
+## 47. Lot 7 C, PR des fichiers (2026-11-01)
+
+- Script `questions-2de/lot-variations-c-2de.py` → `scripts/questions/2de-variations-c/` (9 modèles, 28
+  variations, 59 specs). Catégories : Fonctions › Généralités › « Variations » (2-345 niv. 1, 2-473 niv. 2,
+  2-349 niv. 3, 2-356 niv. 4, 2-477 niv. 5) ; Généralités › « Extremums » (2-346 niv. 1, 2-350 niv. 2) ;
+  Valeur absolue › « Variations » (2-354 niv. 1) ; Fonction carré › « Variations » (2-355 niv. 1).
+- Parabole tracée s·0,5(x − h)² + k (valeurs entières aux points lus) ; intervalle de monotonie demandé
+  « le plus grand, bornes comprises » ; tableau sur ℝ sans valeur en ±∞ ; comparaisons : égalité f(−u) = f(u)
+  dans sa propre variation.
+- Sonde : les points de l'hyperbole sortaient en `\dfrac{1}{4}` (illisible pour le bloc) → ordonnées en
+  `;d` et u, v ∈ {±1, ±2, ±4} ; 0 problème ensuite. `question:specs` tout vert ; simulation prod : « 9 à
+  créer ». Base locale : 9 brouillons ; aperçu : 04 (quatre tableaux de variations dans la case choix, courbe
+  au-dessus), 08 (décimaux rendus avec la virgule).
+- Branche `feat/questions-2de-lot7c`, empilée sur 7 B.

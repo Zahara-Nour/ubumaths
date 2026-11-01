@@ -6,23 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR #2158 ouverte (pas encore mergée)._
+_Mis à jour le 2026-11-01, après #2158 et la publication du lot 6a._
 
-- **État** : lot 6a (9 modèles longueurs + masses) créé en BROUILLON en prod par David (2026-11-01, ids dans la
-  migration). PR #2158 `feat/questions-ce2-lot6a-rangement` = migration nœud + tag
-  `20261101223100_questions_ce2_lot6a_rangement_tags.sql` + test d'intégration (rouge sans, 9/9 vert avec),
-  `security-auditor` sans finding. Branche à jour de `main` (doublon 215000 réglé par #2154), CI relancée.
-- **Prochaine action** : lire la CI de #2158 (`gh pr checks 2158`) ; `git merge origin/main` si besoin (jamais
-  rebase) ; si `pnpm check:migrations` existe (PR #2165), `pnpm check:migrations --pr 2158` avant `gh pr merge
---merge` ; puis `pnpm db:migrate` depuis le dépôt principal (4 conditions réunies : accès « personne » tranché,
-  test rouge prouvé, audit OK, additive + rollback) ; vérifier en prod au MCP (9 nœuds + 9 tags) ; page à cocher ;
-  `publier-lot.ts --dir scripts/questions/ce2-6a` (David `--publier`). Ensuite lot 6b (contenances + durées, § 10).
-- **En attente de David** : rien pour l'instant (son `--publier` du lot, plus tard).
-- **Pièges en cours** : nouvelle règle (PR #2165) : horodatage d'une migration neuve = `pnpm migration:horodatage`,
-  jamais « max + 1 » à la main ; le pre-push vérifie les migrations et le formatage de tout le dépôt ;
-  `db:migrate`, `--publier` refusés par le classifieur (David, `!`) ; niveaux relevés juste avant la publication ;
-  commitlint : sujet sans majuscule ; pas de mention Claude dans commits/PR.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, `feat/questions-ce2-lot6a-rangement`.
+- **État** : lots 1 à 6a en prod ET publiés. Lot 6a : 9 verdicts « OK » (page à cocher), simulation passée, `--publier`
+  lancé par David, relevé MCP : 9 `published`. Aucun worktree en cours.
+- **Prochaine action** : lot 6b (contenances + durées, phase 0 déjà validée, § 10) : worktree
+  `ubumaths-wt-questions-ce2-6b`, tests d'abord, specs, création en brouillon par David, migration nœud + tag.
+- **En attente de David** : rien.
+- **Pièges en cours** : horodatage d'une migration neuve = `pnpm migration:horodatage` ; `db:migrate`, `--publier`
+  refusés par le classifieur (David, `!`) ; `db:migrate` pousse TOUTES les migrations en attente ; niveaux relevés
+  juste avant la publication ; commitlint : sujet sans majuscule ; pas de mention Claude dans commits/PR ; verdicts
+  du 6a posés en 6 s (bloc ranger CE2-038/048 : jeu dans l'aperçu admin non confirmé).
+- **Worktree / branche** : aucun (à créer pour le lot 6b).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
