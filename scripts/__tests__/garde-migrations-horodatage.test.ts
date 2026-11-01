@@ -14,7 +14,9 @@
  * - doublon déjà sur main, sans rapport avec la branche → passe ;
  * - `--pr <n>` : lit la tête de la PR sur origin (refs/pull/<n>/head) ;
  * - sans origin → passe, avec un avertissement ;
- * - `--prochain` : heure réelle UTC, ou dernière migration + 1 s si main est en avance.
+ * - `--prochain` : heure réelle UTC, ou dernière migration + 1 à 59 s tirées au hasard si main est
+ *   en avance (deux sessions lancées ensemble ne reçoivent plus le même nombre), en vraie heure :
+ *   jamais de seconde 60, passage à la minute, au jour, à l'année.
  *
  * Dépôts jetables (un dépôt nu tient lieu de GitHub) : git ne tourne jamais
  * hors du dossier temporaire.
@@ -66,6 +68,19 @@ function migration(cwd: string, nom: string): void {
 	writeFileSync(join(cwd, 'supabase/migrations', nom), 'select 1;\n');
 	git(cwd, 'add', `supabase/migrations/${nom}`);
 	git(cwd, 'commit', '-q', '-m', nom);
+}
+
+/** `--prochain` : l'horodatage à donner, vérifié au format AAAAMMJJHHMMSS. */
+function prochain(cwd: string): string {
+	const r = spawnSync('bash', [SCRIPT, '--prochain'], {
+		cwd: dansLeBac(cwd),
+		env: env(),
+		encoding: 'utf8'
+	});
+	if (r.status !== 0) throw new Error(`--prochain → ${r.status}\n${r.stderr}`);
+	const v = r.stdout.trim();
+	if (!/^\d{14}$/.test(v)) throw new Error(`--prochain : « ${v} » n'est pas AAAAMMJJHHMMSS`);
+	return v;
 }
 
 function garde(cwd: string, ...args: string[]) {
@@ -184,12 +199,29 @@ describe('garde-migrations-horodatage', () => {
 		expect(v > '20261101100000').toBe(true);
 	});
 
-	it('--prochain : dernière migration + 1 s quand main est en avance sur l’horloge', () => {
-		migration(autre, '29991231235900_futur.sql');
+	it('--prochain : dernière migration + 1 à 59 s quand main est en avance sur l’horloge', () => {
+		migration(autre, '29991231230000_futur.sql');
 		git(autre, 'push', '-q', 'origin', 'main');
-		const r = spawnSync('bash', [SCRIPT, '--prochain'], { cwd: moi, env: env(), encoding: 'utf8' });
-		expect(r.stdout.trim()).toBe('29991231235901');
-		migration(moi, '29991231235901_lot_a.sql');
+		const v = prochain(moi);
+		expect(v > '29991231230000' && v <= '29991231230059').toBe(true);
+		migration(moi, `${v}_lot_a.sql`);
 		expect(garde(moi).status).toBe(0);
+	});
+
+	it('--prochain en avance : tiré au hasard, deux sessions ne reçoivent pas toujours le même nombre', () => {
+		migration(autre, '29991231230000_futur.sql');
+		git(autre, 'push', '-q', 'origin', 'main');
+		const tirages = new Set(Array.from({ length: 12 }, () => prochain(moi)));
+		expect(tirages.size).toBeGreaterThan(1);
+	});
+
+	it('--prochain en avance : vraie heure, jamais de seconde 60 (passage à l’année)', () => {
+		migration(autre, '29991231235959_futur.sql');
+		git(autre, 'push', '-q', 'origin', 'main');
+		for (let i = 0; i < 8; i++) {
+			const v = prochain(moi);
+			expect(v).toMatch(/^300001010000[0-5]\d$/);
+			expect(v <= '30000101000058').toBe(true);
+		}
 	});
 });
