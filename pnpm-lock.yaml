@@ -384,6 +384,9 @@ importers:
       roughjs:
         specifier: ^4.6.6
         version: 4.6.6
+      scratchblocks:
+        specifier: 3.7.1
+        version: 3.7.1
       svelte-dnd-action:
         specifier: ^0.9.80
         version: 0.9.80(svelte@5.57.2(@typescript-eslint/types@8.58.2))
@@ -4853,6 +4856,9 @@ packages:
   saxes@6.0.0:
     resolution: {integrity: sha512-xAg7SOnEhrm5zI3puOOKyy1OMcMlIJZYNJY7xLBwSze0UjhPLnWfj2GF2EpT0jmzaJKIWKHLsaSSajf35bcYnA==}
     engines: {node: '>=v12.22.7'}
+
+  scratchblocks@3.7.1:
+    resolution: {integrity: sha512-e78d7V1QhW+u/dmjsPYKeWebsEBQOQonVeZiIPQYBqg/GhbBD5AQts0M6B6VaGzb5j636mW/gXyLUVWWIWVTlg==}
 
   seedrandom@3.0.5:
     resolution: {integrity: sha512-8OwmbklUNzwezjGInmZ+2clQmExQPvomqjL7LFqOYqtmuxRgQYqOD3mHaU+MvZn5FLUeVxVfQjwLZW/n/JFuqg==}
@@ -9523,6 +9529,8 @@ snapshots:
   saxes@6.0.0:
     dependencies:
       xmlchars: 2.2.0
+
+  scratchblocks@3.7.1: {}
 
   seedrandom@3.0.5: {}
 
