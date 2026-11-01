@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 4 écrit._
+_Mis à jour le 2026-11-01, après #2115._
 
-- **État** : lot 4 (décimaux, 8 modèles) écrit et essayé en local (§ 12 ter) ; PR des fichiers ouverte.
-- **Prochaine action** : CI verte → merge ; puis David lance `create-questions --dir scripts/questions/cm1-4 --publier` (brouillons en prod) ; puis migration nœud + tag. Ensuite : phase 0 du lot 4b « calcul posé » (165, 052, 050, 051, 053).
-- **En attente de David** : rien.
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main`, des worktrees ET des branches distantes + 1 min, **revérifié juste avant le merge** (#2017, #2093) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (`$lib`) ; niveaux Décimaux / Apprivoiser : la 6e attend `6-droite-ordre` (Repérage 1-2, Comparer 4) ; port 5177 pris par questions-4.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `chore/questions-cm1-lot4` ; serveur local 5178.
+- **État** : lot 4 (décimaux, 8 modèles) mergé (#2115), fichiers dans `scripts/questions/cm1-4/` ; rien en prod encore.
+- **Prochaine action** : David lance `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm1-4 --publier` (brouillons en prod) → relever les 8 `id` au MCP → migration nœud + tag (gabarit `20261101160400_questions_cm1_lot3c_rangement_tags.sql`, sous-notions du § 12) → page à cocher → `publier-lot`. Ensuite : phase 0 du lot 4b « calcul posé » (165, 052, 050, 051, 053).
+- **En attente de David** : le `create-questions --publier` du lot 4.
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main`, des worktrees ET des branches distantes + 1 min, **revérifié juste avant le merge** (collision `20261101190200` sur `main` le 2026-11-01, réparée par #2114) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; dépôt partagé : relire `git diff --cached --name-only` avant CHAQUE commit (journal ce2 emporté le 2026-11-01) ; coloriage : specs non mesurées par le test du corpus, sauf si un modèle active `orderIndependent` (la prod le mesurerait alors) ; extension Chrome muette → Playwright à 390 px.
+- **Worktree / branche** : aucun (retiré après #2115).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -695,3 +695,11 @@ juste après le lot 4.
 - Base locale : 8 brouillons, aperçus vus à 390 px (Playwright, port 5178) : énoncés à virgule,
   droites de 10 intervalles aux étiquettes à virgule (532,5 à 532,6 ; 804,9 à 805), `ranger` de
   trois étiquettes, deux grilles 10 × 10 l'une sous l'autre.
+
+### 12 quater. Lot 4 — PR (2026-11-01)
+
+- #2115 mergée. Premier passage de la CI rouge sans lien avec le lot : collision d'horodatage
+  `20261101190200` sur `main`, réparée par #2114 ; `origin/main` fusionnée, CI 100 % verte.
+- Revue du test du corpus (code-reviewer, Sonnet) : aucun finding bloquant. Limite notée : un
+  modèle à colorier qui activerait `orderIndependent` passerait par la garde de complexité avant le
+  jugement (`validateBlanksOrderIndependent`) ; aucun ne le fait.
