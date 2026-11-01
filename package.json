@@ -210,7 +210,7 @@
 		"@vercel/analytics": "^2.0.1",
 		"@vercel/functions": "^3.10.1",
 		"@vercel/speed-insights": "^2.0.0",
-		"blockly": "^12.5.1",
+		"blockly": "^13.4.0",
 		"canvas-confetti": "^1.9.4",
 		"codemirror": "^6.0.2",
 		"date-fns": "^4.4.0",
