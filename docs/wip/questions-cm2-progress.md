@@ -548,3 +548,4 @@ modèles 6-11). Tableau du § 10 gardé.
 ### 10.8 Lot 5b : relecture (David, 2026-11-01)
 
 - 6 OK sur 6, sans commentaire (`verdicts` lu et compté). `publier-lot` en simulation : **refus** de `cf85bd1b` — niveau 7 de Fractions / Calculer / Fraction d'une quantité pris par `a635df43` « Fraction d'une fraction » (4e, passé de 5 à 7 puis publié le 2026-11-01 par `questions-4`, migration `20261101193000`, après mon relevé). Rien publié. Correction : niveau 8 (libre), migration + fichier.
+- Question d'accès posée avant le SQL ; David : « je te suis » (personne). Migration `20261101213500_questions_cm2_lot5b_niveau.sql` (copie de `20261101193000_questions_4_lot1_niveau`) : `cf85bd1b` 7 → 8 ; fichier `06-…json` et script à 8. Test `questions-cm2-lot5b-niveau` : 6 verts ; corps remplacé par `select 1;` → suite rouge (2 échecs, bloc principal arrêté par la garde du rollback).

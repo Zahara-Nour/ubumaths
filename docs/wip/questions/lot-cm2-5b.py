@@ -13,7 +13,8 @@ soustraction, fraction unitaire d'une quantité).
 
 Décisions et pièges :
 - niveaux : suite des niveaux de chaque catégorie, relevés en prod le 2026-11-01 (Addition et
-  Soustraction 22, Multiplication 9, Fraction d'une quantité 6) ;
+  Soustraction 22, Multiplication 9, Fraction d'une quantité 6) ; fraction d'une quantité passée
+  au niveau 8 (le 7 pris par `a635df43`, 4e, le même jour : migration 20261101213500) ;
 - différences toujours positives ; un dénominateur multiple de l'autre, multiple au plus 60.
 
     python3 docs/wip/questions/lot-cm2-5b.py scripts/questions/cm2-5b
@@ -386,7 +387,7 @@ MODELES.append(modele(
     '06-fraction-d-une-quantite', 'Calculer une fraction d\'une quantité',
     'Deux tiers de 12 œufs, trois dixièmes de 500 g : fraction de numérateur au moins 2 d\'une'
     ' quantité ou d\'une grandeur, résultat entier',
-    'Fraction d\'une quantité', 7, [QUANTITE, GRANDEUR],
+    'Fraction d\'une quantité', 8, [QUANTITE, GRANDEUR],
     [spec('2/3 de 12 œufs : 8', 0, EX_Q, '8', 'correct'),
      spec('Erreur : 4 (une part seulement)', 0, EX_Q, '4', 'incorrect'),
      spec('Erreur : 6 (12 ÷ 2)', 0, EX_Q, '6', 'incorrect'),
