@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR ouverte._
+_Mis à jour le 2026-11-01, PR ouverte après le merge de #2154._
 
-- **État** : A + B + C écrits : `pnpm check:migrations` (pre-push, `--pr <n>` avant merge), `pnpm migration:horodatage`, porte de la CI et PR de contenu allégée dans `quality.yml`. · **Prochaine action** : CI verte, merge, archiver ce journal. · **En attente de David** : rien. · **Pièges en cours** : main cassée par `20261101215000` en double tant que #2154 n'est pas mergée. · **Worktree / branche** : `../ubumaths-wt-migrations-collision`, `fix/migrations-collision`.
+- **État** : A + B + C écrits, revus deux fois (`code-reviewer`, findings corrigés), `git-workflow.md` mis à jour et relu. · **Prochaine action** : CI verte → merge → archiver ce journal. · **En attente de David** : les commits f665090cd, 3712d9c3e, 408449ab2 portent un trailer `Claude-Session:` interdit par `CLAUDE.md` : réécrire (push forcé, liste `ask`) ou laisser. · **Pièges en cours** : la porte de la CI est dans le job « Commit de version ? » ; une PR de contenu seul saute 5 jobs. · **Worktree / branche** : `../ubumaths-wt-migrations-collision`, `fix/migrations-collision`.
 
 ## Pourquoi
 
