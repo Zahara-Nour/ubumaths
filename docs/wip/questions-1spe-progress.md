@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2053._
+_Mis à jour le 2026-11-01, après #2053 et la publication du lot 0-logique._
 
-- **État** : lot 0-logique (5 brouillons) corrigé (#2053) et mis à jour en prod ; page à cocher publiée (https://claude.ai/artifact/5FCW8NuvR1gZZ6UhbYr2XX), verdicts de David attendus.
-- **Prochaine action** : compter les verdicts (`ArtifactData list verdicts`), puis `publier-lot --publier` par David (`--dir scripts/questions/1spe-0-logique`) ; ensuite la migration des tags D3 (sans 174e202b ni dc4b8d08 ; 93f9ecdf sans tag).
-- **En attente de David** : relecture de la page à cocher (5 fiches).
-- **Pièges en cours** : `create-questions` et `publier-lot --publier` refusés au mode auto (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : `migration list --linked` ET worktrees ; la page à cocher ne dessine ni `probtree`, ni `variation`, ni `trig` ; `export-question-templates` exige `svelte-kit sync` dans un worktree neuf ; instantané jamais dans le dépôt principal ; les 5 brouillons de logique tagués de seconde restent à questions-2de.
-- **Worktree / branche** : aucun (worktree du lot logique retiré).
+- **État** : lots 0-suites à 0-logique publiés (logique : 5 modèles, 5 « ok », `published` le 2026-11-01). Brouillons de 1re spé restants : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (terminale, D3), 0495289a (attente), c90fa022, d2067413 (points 1TECHNO), et les 5 de logique tagués de seconde (chantier questions-2de).
+- **Prochaine action** : migration des tags D3 (174e202b, dc4b8d08 → 1SPE-307 ; eae2ff6a → 1SPE-386 ; 318ea542 → 1SPE-283 ; f1440b52 : 1SPE-274 → 1SPE-396 ; 8b599a53, fece187e, afd9b3ff : retirer `1_SPE` ; f8ccc8b6 à lire) — relire D3 (§ 5) et la prod d'abord, question d'accès à poser.
+- **En attente de David** : rien.
+- **Pièges en cours** : `create-questions` et `publier-lot --publier` refusés au mode auto (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : `migration list --linked` ET worktrees ; instantané jamais dans le dépôt principal ; index du dépôt principal parfois tenu par une autre session (attendre).
+- **Worktree / branche** : aucun ; nouveau worktree pour la migration D3.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -723,7 +723,7 @@ le 2026-10-31 : 17 modèles, un par (sous-notion, niveau), trigger `updated_at` 
 **Verdicts** : 17 « ok » sur 17, aucun commentaire. `publier-lot --publier` lancé par David le 2026-10-31 : les 17 modèles du
 domaine sont `published` en base. **Lot 0-variables aléatoires clos.**
 
-## 16. Lot 0-logique : vérification des brouillons
+## 16. Lot 0-logique : vérification des brouillons (CLOS : 5 publiés le 2026-11-01, #2053)
 
 _2026-11-01. 5 brouillons de 1re spé du thème « Logique » (e5205176 → 1SPE-201, 536c01bb → 1SPE-202, 0ab3faa5 → 1SPE-204,
 fb3b536c → 1SPE-366, 93f9ecdf sans point, D3) ; instantané `scripts/questions/1spe-0-logique/`, `question:specs --apercu 60
@@ -765,3 +765,6 @@ tous les cas relus (les 7 cas de e5205176 v1, les 4 de v2, les 3 issues de v0, l
 #2053 mergée (CI verte). Mise à jour en prod par David le 2026-11-01 (C1 et C2 relus en base : `{{eval:b/a}}` dans fb3b536c,
 « avec $k$ entier » 2 fois dans e5205176 et 4 fois dans 93f9ecdf). **Page à cocher** :
 https://claude.ai/artifact/5FCW8NuvR1gZZ6UhbYr2XX (5 fiches ; 1 alerte attendue : 93f9ecdf sans point).
+
+**Verdicts** : 5 « ok » sur 5, aucun commentaire. `publier-lot --publier` lancé par David le 2026-11-01 : les 5 modèles sont
+`published` en base (MCP). **Lot 0-logique clos.**
