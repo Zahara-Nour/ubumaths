@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 4b écrit._
+_Mis à jour le 2026-11-01, après #2149._
 
-- **État** : lot 4 (décimaux) FINI — 8 modèles publiés en prod (8/8 « OK » sur la page à cocher, 8 `published` relus au MCP, rangés et tagués).
-- **Prochaine action** : PR des fichiers du lot 4b (6 modèles, `scripts/questions/cm1-4b/`, § 13 ter), merge ; puis David lance `create-questions --publier` ; migration nœud + tag, page à cocher, publication.
-- **En attente de David** : rien.
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main`, des worktrees ET des branches distantes + 1 min, **revérifié juste avant le merge** (collision `20261101190200` sur `main` le 2026-11-01, réparée par #2114) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; dépôt partagé : relire `git diff --cached --name-only` avant CHAQUE commit (journal ce2 emporté le 2026-11-01) ; coloriage : specs non mesurées par le test du corpus, sauf si un modèle active `orderIndependent` (la prod le mesurerait alors) ; extension Chrome muette → Playwright à 390 px.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `content/questions-cm1-lot4b`.
+- **État** : lot 4 publié ; lot 4b (calcul posé, 6 modèles, `scripts/questions/cm1-4b/`) écrit et mergé (#2149), pas encore en prod.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm1-4b --publier` ; relever les 6 ids au MCP ; migration nœud + tag (050 → « Décimaux : calculs › addition », 165 ×2 → « › soustraction », 052 → « › multiplication », 051 et 053 → « calcul posé » de leur notion) ; page à cocher ; publication. Puis lot 5 grandeurs.
+- **En attente de David** : le `create-questions --publier` du lot 4b.
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main`, des worktrees ET des branches distantes + 1 min, **revérifié juste avant le merge** (collision `20261101190200` sur `main` le 2026-11-01, réparée par #2114) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») et le type `content` (prendre `feat`) ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; dépôt partagé : relire `git diff --cached --name-only` avant CHAQUE commit (journal ce2 emporté le 2026-11-01) ; coloriage : specs non mesurées par le test du corpus, sauf si un modèle active `orderIndependent` (la prod le mesurerait alors) ; extension Chrome muette → Playwright à 390 px.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1` (branche `content/questions-cm1-lot4b` mergée ; repartir d'`origin/main` sur une branche neuve pour la migration).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
