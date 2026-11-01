@@ -5,10 +5,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, phase 0 du lot 4b validée._
+_Mis à jour le 2026-11-01, lot 4b écrit._
 
 - **État** : lot 4 (décimaux) FINI — 8 modèles publiés en prod (8/8 « OK » sur la page à cocher, 8 `published` relus au MCP, rangés et tagués).
-- **Prochaine action** : écrire le lot 4b — calcul posé (6 modèles, § 13 et 13 bis), worktree `ubumaths-wt-questions-cm1`, branche `content/questions-cm1-lot4b`.
+- **Prochaine action** : PR des fichiers du lot 4b (6 modèles, `scripts/questions/cm1-4b/`, § 13 ter), merge ; puis David lance `create-questions --publier` ; migration nœud + tag, page à cocher, publication.
 - **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main`, des worktrees ET des branches distantes + 1 min, **revérifié juste avant le merge** (collision `20261101190200` sur `main` le 2026-11-01, réparée par #2114) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; dépôt partagé : relire `git diff --cached --name-only` avant CHAQUE commit (journal ce2 emporté le 2026-11-01) ; coloriage : specs non mesurées par le test du corpus, sauf si un modèle active `orderIndependent` (la prod le mesurerait alors) ; extension Chrome muette → Playwright à 390 px.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `content/questions-cm1-lot4b`.
@@ -792,3 +792,23 @@ multiplication posée du CE2 (019) devra s'insérer avant (renumérotation par s
 « tes recos ? », puis « go » après mes trois recommandations : 1. le bloc pose l'opération, limite acceptée
 (corrigé « on aligne les virgules ») ; 2. soustraction : deux modèles, compensation et cassage, comme au
 CE1 ; 3. 050 et 165 rangés sous « Décimaux : calculs › addition » et « › soustraction ».
+
+### 13 ter. Lot 4b — écriture (2026-11-01)
+
+- Script `docs/wip/questions/lot-cm1-4b.py` → `scripts/questions/cm1-4b/` (6 JSON), patrons `lot-ce1-6.py`
+  (posées, une soustraction par méthode) et `lot-6-calcul-decimal.py` (division euclidienne posée).
+- **Écart à la phase 0, les niveaux** : la phase 0 les comptait dans le nœud, à tort ; le niveau se compte
+  dans la catégorie (thème, domaine, sous-domaine). Catégories neuves « Décimaux / Additionner | Soustraire |
+  Multiplier / Calcul posé », « Entiers / Multiplier | Diviser / Calcul posé » (aucun modèle en prod ni dans
+  les lots écrits) → niveau 1 partout, 2 pour la soustraction par cassage.
+- Décimaux tirés en entiers (centièmes, dixièmes), affichés par `{{eval:…;d}}` (virgule `{,}` au rendu) ;
+  virgules écrites à la main dans les formules du corrigé remplacées par `{,}` (sinon « 0, 4 »).
+- Specs : réponses telles que la grille les lit (espaces de milliers : « 182 208 », sinon `unoptimal_form`) ;
+  pas de spec « 49,40 » ni « reste vide » : la lecture des cases retire le 0 de fin et rend vide un reste
+  vide, le juge ne reçoit jamais ces textes.
+- `question:specs` 300 tirages par variation : tout réussi ; `create-questions` en simulation (prod) : 6/6
+  verts, 42 specs.
+- Base locale : 6 brouillons, joués dans l'aperçu à 390 px (Playwright, port 5178), réponse fausse et
+  corrigé : virgules alignées et carreaux vides (34,5 ; 13 − 4,43), produits partiels en cases d'aide
+  (605 × 303), potence à 4 chiffres qui défile dans son cadre (page sans défilement horizontal), corrigés à
+  virgule.
