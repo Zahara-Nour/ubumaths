@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2093._
+_Mis à jour le 2026-11-01, après #2093 et le `db:migrate`._
 
-- **État** : lot 3c (4 partages) en brouillon en prod ; migration de rangement `20261101160400_questions_cm1_lot3c_rangement_tags` sur `main` (#2082, renommée par #2093 après une collision d'horodatage avec le lot 6 du CE1, § 11 quater), pas encore jouée.
-- **Prochaine action** : David lance `pnpm db:migrate` depuis le dépôt principal (jouera aussi `20261101160100`, 2de droites, d'une autre session) ; puis relevé MCP (4 modèles sur « définition », un point chacun, `updated_at` inchangé) ; page à cocher ; publication seulement après le `deploy:prod` du bloc ```partage.
-- **En attente de David** : le `db:migrate`.
+- **État** : lot 3c (4 partages) rangé et tagué en prod (migration `20261101160400` jouée, vérifiée au MCP), toujours en brouillon ; page à cocher publiée : https://claude.ai/artifact/DzyRsxgghCRtKQBQcgNZ5w (`verdicts` vide).
+- **Prochaine action** : David relit la page (figures ``partage non dessinées : jouer les modèles dans l'aperçu, en local tant que le bloc n'est pas en prod) ; lire et compter les `verdicts` ; publication (`publier-lot` en simulation, puis `--publier` par David) seulement après le `deploy:prod` du bloc ``partage.
+- **En attente de David** : la relecture de la page ; le `deploy:prod` qui livre ```partage.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main`, des worktrees ET des branches distantes + 1 min, **revérifié juste avant le merge** (#2017, #2093) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (`$lib`) ; specs de coloriage ≤ 34 rangs (test `answer-complexity-corpus`) ; port 5177 pris par questions-4.
 - **Worktree / branche** : aucun (retiré après #2093).
 
@@ -603,3 +603,13 @@ sans outil neuf ; « 1 + 3/4 » refusé (`requiredForm: 'fraction'`).
   - 1 min) dans une PR de correction, AVANT tout `db:migrate`. Leçon : refaire le relevé des
     horodatages juste avant de merger, pas seulement à l'écriture.
 - #2093 mergée (CI verte) : plus aucun doublon de version sur `main`.
+
+### 11 quinquies. Lot 3c — rangement vérifié, page à cocher (2026-11-01)
+
+- `db:migrate` lancé par David (joue aussi `20261101160100`, 2de droites). MCP : les 4 modèles sur
+  « Fractions : sens et écritures > définition », un point CM1 chacun (145, 144, 150, 149),
+  toujours brouillons, `updated_at` inchangé (création, 11:25).
+- Page : https://claude.ai/artifact/DzyRsxgghCRtKQBQcgNZ5w (4 alertes attendues : ```partage non
+  dessiné, à jouer dans l'aperçu) ; `verdicts` vide à la publication.
+- Sessions prévenues : questions-2de (collision levée, sa migration jouée) ; questions-ce2 (sa
+  `20261101160300`, pas mergée, passera sous `160400` : à renuméroter).
