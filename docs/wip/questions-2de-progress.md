@@ -6,16 +6,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après la publication du lot 4 (§ 29)._
+_Mis à jour le 2026-11-01, phase 0 du lot 5 proposée (§ 30)._
 
-- **État** : lots 1, 2, 2 bis A et B, 3 et 4 (A et B, 11 modèles) publiés.
-- **Prochaine action** : lot 5 « Droites » (§ 4 : 311 à 319 en A, 315 et 444 en B) : relevé et phase 0,
-  à faire valider par David avant d'écrire.
-- **En attente de David** : rien.
+- **État** : lots 1 à 4 publiés ; lot 5 « Droites » : relevé et phase 0 écrits (§ 30).
+- **Prochaine action** : après validation, worktree `ubumaths-wt-questions-2de`, écrire le lot 5 A (6 modèles).
+- **En attente de David** : L5-a à L5-d (§ 30).
 - **Pièges en cours** : horodatage = max + 1 min de `origin/main` ET des worktrees ; `migration list
 --linked` avant `db:migrate` (migrations d'autres sessions en file → David tranche qui le lance) ;
   `page-a-cocher.ts` ne prend qu'un `--dir` (réunir les dossiers d'un lot dans le scratchpad).
-- **Worktree / branche** : aucun (worktree retiré).
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -696,3 +695,81 @@ doublée d'une variation à calcul.
 - `publier-lot.ts` simulé vert sur `2de-vecteurs-a` (7) et `2de-vecteurs-b` (4), puis lancé par David avec
   `--publier` : MCP, les 11 `published`.
 - Worktree `ubumaths-wt-questions-2de` retiré.
+
+## 30. Lot 5 « Droites » : relevé et phase 0 (proposée le 2026-11-01, à valider)
+
+**Relevé MCP (prod, 2026-11-01)** : 16 points de « Droites du plan ». 15 sans modèle (311, 312, 439, 313, 314,
+440, 441, 315, 442, 443, 444, 316, 445, 317, 319) ; 2-318 a un modèle (336451af, f et g affines, « parallèles ? »
+en case choix, sans variation à calcul) ; 2-320 = P (démonstration, Q2). Nœuds : Géométrie › Géométrie repérée ›
+vecteur directeur (311, 315, 442, 443, 444) / équations de droites (312, 439, 314, 440, 441, 316, 445) /
+intersection de deux droites (318, 319) ; 2-313 → Fonctions › Fonctions affines › coefficient directeur et
+ordonnée à l'origine ; 2-317 → Géométrie › Vecteurs › colinéarité.
+
+**Voisins en prod** : 2-303 « Trois points alignés ? » et 2-437 « Deux droites parallèles ? » (lot 4 B, par le
+déterminant) ; 09f0c9ec « Déterminer le coefficient directeur » (2de, images PNG, tagué 2-347) ; 3e : lecture
+du coefficient directeur sur un ` ```courbe ` (0d0e88f5, b9771108 : patron de 2-315).
+
+**Outils (tous en prod)** : case `answerKind: "equation"` (droite jugée sur ses points : y = 2x + 1 et
+4x − 2y + 2 = 0 tous deux justes ; `requiredForm` `reduite` / `cartesienne` possible ; patron
+`geometrie-reperee-1spe/A-02`) ; ` ```courbe ` (droites, points, grille) ; case choix, dessins de ` ```courbe `
+dans les choix (patron `fonctions-terminale/C-06`) ; case `vecteur` en mode `colineaire` (une seule case :
+tout vecteur colinéaire juste). **Classe** : tout en A ou B ; 2-316 et 2-445 (tracer) en case choix entre
+courbes (Q5).
+
+**Phase 0 proposée** : 16 modèles neufs, un par point, niveau `['2']`, brouillons. Catégorie neuve
+Géométrie › Droites du plan › Pente et vecteur directeur / Équations de droites / Positions relatives.
+Coordonnées entières de −9 à 9 d'abord, puis pentes fractionnaires.
+
+Lot 5 A « pente et vecteur directeur » (6) :
+
+1. **2-313 · Pente par deux points** : A, B → m = (y_B − y_A)/(x_B − x_A) ; entière, puis fractionnaire ;
+   puis « la droite (AB) a-t-elle une pente ? » quand x_A = x_B (case choix, corrigé : parallèle à l'axe des
+   ordonnées).
+2. **2-315 · Pente lue sur un graphique** : ` ```courbe ` d'une droite, pente entière puis fractionnaire
+   (deux points à coordonnées entières marqués), négative ; corrigé : deux points, déplacements.
+3. **2-442 · Pente lue sur une équation** : y = mx + p (m ≠ coefficient de tête : y = 3 − 2x) ; puis
+   cartésienne ax + by + c = 0 → −a/b.
+4. **2-311 · Vecteur directeur (connaissance)** : A, B donnés, « lesquels sont des vecteurs directeurs de
+   (AB) ? » (case choix, `plusieurs: oui` : AB⃗, BA⃗, 2AB⃗, et des leurres (x_B + x_A ; …), (Δy ; Δx)).
+5. **2-443 · Vecteur directeur lu sur une équation** : cartésienne → (−b ; a) ; réduite → (1 ; m).
+6. **2-444 · Vecteur directeur lu sur un graphique** : ` ```courbe `, deux points de la droite.
+
+Lot 5 B « équations, tracés, positions relatives » (10) :
+
+7. **2-439 · Équation réduite** : « le point A est-il sur d : y = 2x − 1 ? » (case choix + calcul de
+   l'ordonnée du point d'abscisse donnée) ; réduite d'une cartésienne (2x + y − 3 = 0 → y = −2x + 3),
+   `requiredForm: reduite` ; droite verticale x = c.
+8. **2-312 · Équation cartésienne** : « M appartient-il à d : 2x − 3y + 6 = 0 ? » ; écrire une cartésienne
+   d'une réduite, `requiredForm: cartesienne`.
+9. **2-441 · Point et pente** → équation (case `equation`, forme libre).
+10. **2-314 · Deux points** → équation (forme libre) ; variation x_A = x_B → x = c.
+11. **2-440 · Point et vecteur directeur** → équation (forme libre), corrigé par det(AM⃗, u⃗) = 0.
+12. **2-316 · Tracer depuis l'équation réduite** : case choix entre 4 ` ```courbe ` (bonne, pente au signe
+    changé, p et m échangés, p au signe changé).
+13. **2-445 · Tracer depuis l'équation cartésienne** : même forme, b ≠ 0 (le bloc ne trace pas de verticale).
+14. **2-317 · Alignement par une équation** : équation de (AB) écrite, C dessus ou non (case choix) ; puis
+    ordonnée de C pour qu'il soit sur (AB). Le corrigé passe par l'équation, pour se distinguer de 2-303.
+15. **2-318 · Parallèles ou sécantes** (2e modèle) : droites par équations cartésiennes ou réduite + cartésienne
+    (case choix) ; puis m pour que d : mx + 2y − 1 = 0 soit parallèle à d′.
+16. **2-319 · Point d'intersection** : deux réduites → (x ; y) en deux trous ; entier puis fractionnaire ;
+    une droite verticale x = c.
+
+- **Corrigé** : formule écrite puis appliquée, résultat coloré ; oui/non justifié par le calcul ; chaque
+  modèle à case choix oui/non a une variation à calcul (L4-d).
+- **Erreurs typiques en specs** : Δx/Δy au lieu de Δy/Δx ; y_B − y_A sur x_A − x_B ; pente a/b au lieu de
+  −a/b ; vecteur (b ; a) ou (a ; −b) au lieu de (−b ; a) ; p de signe faux ; point d'intersection donné par
+  x seul ; équation passant par un seul des deux points.
+- **Question d'accès** : personne (brouillons neufs, aucune policy).
+
+**Questions à David** :
+
+- **L5-a — Un vecteur directeur n'est pas unique** (2-443, 2-444). Deux trous dans la colonne (§ 28) ne
+  savent juger qu'une réponse ; tout vecteur colinéaire est juste. → Je recommande la **case `vecteur` en mode
+  `colineaire`** (une case, (2 ; 6) et (1 ; 3) justes), le seul jugement qui accepte toutes les bonnes
+  réponses ; autre voie : deux trous avec l'abscisse imposée (u⃗(1 ; ?)), juste mais qui souffle la méthode.
+- **L5-b — Forme de l'équation** (2-314, 440, 441) : → Je recommande **forme libre** (réduite ou cartésienne,
+  le BO ne fixe pas la forme), la forme imposée seulement dans 2-439 et 2-312 où elle est l'objet du point.
+- **L5-c — Deux lots** : 5 A (6 modèles), puis 5 B (10) ? → Je recommande **oui**.
+- **L5-d — 09f0c9ec** (lecture de pente sur image, tagué 2-347 « m taux d'accroissement ») : le laisser tel
+  quel ? → Je recommande **oui** : il lit une fonction affine (branche Fonctions), le nouveau 2-315 lit une
+  droite.
