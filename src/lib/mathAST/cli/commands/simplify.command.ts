@@ -71,7 +71,8 @@ export class SimplifyCommand extends BaseCommand {
 			return {
 				success: true,
 				output: lines.join('\n'),
-				ast: result
+				ast: result,
+				answer: latex
 			};
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'Unknown error during simplification';
