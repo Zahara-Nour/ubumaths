@@ -6,15 +6,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, phase 0 du lot 6a validée._
+_Mis à jour le 2026-11-01, lot 6a écrit (simulation verte), essai en base locale à faire._
 
 - **État** : lots 1 à 5 publiés en prod (lot 5 : 12 modèles de problèmes, relus 12/12 « OK » par David, `published`
   relus au MCP, nœuds et points intacts). Aucun worktree en cours.
-- **Prochaine action** : lot 6a — longueurs et masses (9 modèles, § 10) : phase 0 validée, créer le worktree
-  `../ubumaths-wt-questions-ce2`, écrire `docs/wip/questions/lot-6a.py` → `scripts/questions/ce2-6a/`, tests rouges
-  puis verts, simulation. Puis lot 6b (contenances + durées). En parallèle, dans des sessions à
-  part : `choix-correction` (`$$…$$` brut sur la carte de correction, § 8), puis `centaines:` + milliers de
-  `collection` et barres à monter.
+- **Prochaine action** : lot 6a (9 modèles, `scripts/questions/ce2-6a/`, simulation verte) — essai en base locale
+  et aperçu admin, PR des fichiers (`Doc-inchangée: contenu`), merge, puis David lance `create-questions --publier` ;
+  migration nœud + tag, page à cocher, publication. Ensuite lot 6b (contenances + durées). En parallèle, dans des
+  sessions à part : `choix-correction` (§ 8), puis `centaines:` + milliers de `collection` et barres à monter.
 - **En attente de David** : rien. (Question restée ouverte : le tableau / l'arbre du produit cartésien n'est
   expliqué qu'en phrases ; un vrai dessin = outil neuf, seulement s'il le demande.)
 - **Pièges en cours** : `db:migrate`, `--publier` et `--mettre-a-jour` refusés par le classifieur (David les
@@ -23,7 +22,7 @@ _Mis à jour le 2026-11-01, phase 0 du lot 6a validée._
   JUSTE avant la publication ; commitlint : sujet sans majuscule (même « CE2 »), corps ≤ 100 car. ;
   `Doc-inchangée:` va dans un COMMIT, pas dans la PR ; après un rebase, pas de `--force` ; la page à cocher se
   publie en artefact avec `capabilities: {db: {}}` (fichier local = « Base indisponible »).
-- **Worktree / branche** : aucun (prochain : `../ubumaths-wt-questions-ce2`).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, `feat/questions-ce2-lot6a`.
   `feat/questions-ce2-lot5-rangement` (`-d` refuse, sans intérêt) : à supprimer par David si besoin.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
@@ -486,3 +485,13 @@ Niveaux libres relevés juste avant la publication. Question d'accès : personne
 
 Réponses en case de saisie, sauf 04 et 07 (case choix, en prod). Le niveau monte avec la difficulté (un type de
 conversion, puis le mélange, puis l'unité à déduire).
+
+### Lot 6a — écriture (2026-11-01)
+
+- Script `docs/wip/questions/lot-ce2-6a.py` → `scripts/questions/ce2-6a/` : 9 modèles (01-05 longueurs, 06-09 masses),
+  122 specs, simulation verte. Niveaux posés d'après le relevé MCP du jour (à relire avant la publication) :
+  Longueurs Unités 8 (01), 9 (04), 10 (02), 11 (03) ; Comparaison et mesure 4 ; Masses Unités 3, 4, 5 ; Comparaison 3.
+- « Comparer » : signe à deux valeurs + bloc `ranger` (3 ou 4 longueurs / masses), plus « le plus lourd / le plus
+  léger » (case choix, bonne réponse en premier). Positions affichées du `ranger` lues par essai des permutations
+  (stables d'une valeur à l'autre).
+- Choix d'unité : 04 en 5 unités (mm, cm, dm, m, km), 07 en 3 (g, kg, t) ; réponses numériques en case.

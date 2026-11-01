@@ -1,0 +1,408 @@
+{
+	"title": "Grammes, kilogrammes et tonnes",
+	"description": "1 kg = 1 000 g, 1 t = 1 000 kg ; 5 462 g = 5 kg 462 g ; 5 350 kg = 5 t 350 kg",
+	"grades": ["CE2"],
+	"theme": "Grandeurs",
+	"domain": "Masses",
+	"subdomain": "Unités",
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète.\n\n$1~\\unit{{{if:s==1|kg|t}}} = ?~\\text{{{if:s==1|g|kg}}}$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1000"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:s==1|Dans un kilogramme, il y a mille grammes.|Dans une tonne, il y a mille kilogrammes.}}",
+					"$$1~\\unit{{{if:s==1|kg|t}}} = \\textcolor{{{color:primary.0}}}{1\\,000}~\\unit{{{if:s==1|g|kg}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{kg} = ?~\\text{g}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1000*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un kilogramme, c'est $1\\,000~\\unit{g}$ : ${{a}}~\\unit{kg}$, c'est ${{a}}$ fois $1\\,000~\\unit{g}$.",
+					"$${{a}}~\\unit{kg} = \\textcolor{{{color:primary.0}}}{{{eval:1000*a}}}~\\unit{g}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{t} = ?~\\text{kg}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1000*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une tonne, c'est $1\\,000~\\unit{kg}$ : ${{a}}~\\unit{t}$, c'est ${{a}}$ fois $1\\,000~\\unit{kg}$.",
+					"$${{a}}~\\unit{t} = \\textcolor{{{color:primary.0}}}{{{eval:1000*a}}}~\\unit{kg}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:1000*a}}~\\unit{g} = ?~\\text{kg}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Mille grammes font un kilogramme : dans ${{eval:1000*a}}~\\unit{g}$, il y a ${{a}}$ fois mille grammes.",
+					"$${{eval:1000*a}}~\\unit{g} = \\textcolor{{{color:primary.0}}}{{{a}}}~\\unit{kg}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:1000*a+b}}~\\unit{g} = ?~\\text{kg}~?~\\text{g}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..30"
+				},
+				{
+					"name": "b",
+					"expression": "1..999"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans ${{eval:1000*a+b}}~\\unit{g}$, il y a ${{a}}$ {{if:a==1|millier|milliers}} de grammes, c'est-à-dire ${{a}}~\\unit{kg}$, et il reste ${{b}}~\\unit{g}$.",
+					"$${{eval:1000*a+b}}~\\unit{g} = \\textcolor{{{color:primary.0}}}{{{a}}}~\\unit{kg}~\\textcolor{{{color:primary.0}}}{{{b}}}~\\unit{g}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{kg} + {{b}}~\\unit{g} = ?~\\text{g}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..30"
+				},
+				{
+					"name": "b",
+					"expression": "1..999"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1000*a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit d'abord les kilogrammes en grammes : ${{a}}~\\unit{kg} = {{eval:1000*a}}~\\unit{g}$.",
+					"Puis on ajoute les grammes :",
+					"$${{eval:1000*a}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:1000*a+b}}}$$",
+					"${{a}}~\\unit{kg} + {{b}}~\\unit{g} = {{eval:1000*a+b}}~\\unit{g}$."
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:1000*a+b}}~\\unit{kg} = ?~\\text{t}~?~\\text{kg}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..30"
+				},
+				{
+					"name": "b",
+					"expression": "1..999"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans ${{eval:1000*a+b}}~\\unit{kg}$, il y a ${{a}}$ {{if:a==1|millier|milliers}} de kilogrammes, c'est-à-dire ${{a}}~\\unit{t}$, et il reste ${{b}}~\\unit{kg}$.",
+					"$${{eval:1000*a+b}}~\\unit{kg} = \\textcolor{{{color:primary.0}}}{{{a}}}~\\unit{t}~\\textcolor{{{color:primary.0}}}{{{b}}}~\\unit{kg}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{t} + {{b}}~\\unit{kg} = ?~\\text{kg}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..30"
+				},
+				{
+					"name": "b",
+					"expression": "1..999"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1000*a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit d'abord les tonnes en kilogrammes : ${{a}}~\\unit{t} = {{eval:1000*a}}~\\unit{kg}$.",
+					"Puis on ajoute les kilogrammes :",
+					"$${{eval:1000*a}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:1000*a+b}}}$$",
+					"${{a}}~\\unit{t} + {{b}}~\\unit{kg} = {{eval:1000*a+b}}~\\unit{kg}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1 kg = 1 000 g",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1"
+			},
+			"answers": ["1000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 kg = 100 g",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 t = 1 000 kg",
+			"variationIndex": 0,
+			"variables": {
+				"s": "2"
+			},
+			"answers": ["1000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "5 kg = 5 000 g",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["5000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 kg = 500 g",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["500"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 t = 3 000 kg",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["3000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 t = 300 kg",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["300"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 000 g = 7 kg",
+			"variationIndex": 3,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 000 g = 700 kg",
+			"variationIndex": 3,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["700"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 5 462 g = 5 kg 462 g",
+			"variationIndex": 4,
+			"variables": {
+				"a": "5",
+				"b": "462"
+			},
+			"answers": ["5", "462"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 462 g = 54 kg 62 g",
+			"variationIndex": 4,
+			"variables": {
+				"a": "5",
+				"b": "462"
+			},
+			"answers": ["54", "62"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 040 g = 2 kg 40 g",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"b": "40"
+			},
+			"answers": ["2", "40"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "5 kg + 462 g = 5 462 g",
+			"variationIndex": 5,
+			"variables": {
+				"a": "5",
+				"b": "462"
+			},
+			"answers": ["5462"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 kg + 40 g = 5 400 g (zéro oublié)",
+			"variationIndex": 5,
+			"variables": {
+				"a": "5",
+				"b": "40"
+			},
+			"answers": ["5400"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 5 350 kg = 5 t 350 kg",
+			"variationIndex": 6,
+			"variables": {
+				"a": "5",
+				"b": "350"
+			},
+			"answers": ["5", "350"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 350 kg = 53 t 50 kg",
+			"variationIndex": 6,
+			"variables": {
+				"a": "5",
+				"b": "350"
+			},
+			"answers": ["53", "50"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5 t + 350 kg = 5 350 kg",
+			"variationIndex": 7,
+			"variables": {
+				"a": "5",
+				"b": "350"
+			},
+			"answers": ["5350"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 t + 350 kg = 355 kg",
+			"variationIndex": 7,
+			"variables": {
+				"a": "5",
+				"b": "350"
+			},
+			"answers": ["355"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
