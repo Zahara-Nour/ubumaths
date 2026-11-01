@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2115._
+_Mis à jour le 2026-11-01, migration du lot 4 écrite._
 
-- **État** : lot 4 (décimaux, 8 modèles) mergé (#2115), fichiers dans `scripts/questions/cm1-4/` ; rien en prod encore.
-- **Prochaine action** : David lance `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm1-4 --publier` (brouillons en prod) → relever les 8 `id` au MCP → migration nœud + tag (gabarit `20261101160400_questions_cm1_lot3c_rangement_tags.sql`, sous-notions du § 12) → page à cocher → `publier-lot`. Ensuite : phase 0 du lot 4b « calcul posé » (165, 052, 050, 051, 053).
-- **En attente de David** : le `create-questions --publier` du lot 4.
+- **État** : lot 4 : 8 brouillons en prod (§ 12 quinquies) ; migration nœud + tag écrite, PR ouverte.
+- **Prochaine action** : `security-auditor` + CI verte → merge (horodatage revérifié juste avant) → David lance `db:migrate` depuis le dépôt principal → vérification MCP → page à cocher → `publier-lot`. Ensuite : phase 0 du lot 4b « calcul posé » (165, 052, 050, 051, 053).
+- **En attente de David** : le `db:migrate` après le merge.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main`, des worktrees ET des branches distantes + 1 min, **revérifié juste avant le merge** (collision `20261101190200` sur `main` le 2026-11-01, réparée par #2114) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; dépôt partagé : relire `git diff --cached --name-only` avant CHAQUE commit (journal ce2 emporté le 2026-11-01) ; coloriage : specs non mesurées par le test du corpus, sauf si un modèle active `orderIndependent` (la prod le mesurerait alors) ; extension Chrome muette → Playwright à 390 px.
-- **Worktree / branche** : aucun (retiré après #2115).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot4-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -703,3 +703,17 @@ juste après le lot 4.
 - Revue du test du corpus (code-reviewer, Sonnet) : aucun finding bloquant. Limite notée : un
   modèle à colorier qui activerait `orderIndependent` passerait par la garde de complexité avant le
   jugement (`validateBlanksOrderIndependent`) ; aucun ne le fait.
+
+### 12 quinquies. Lot 4 — brouillons en prod, rangement et tags (2026-11-01)
+
+- `create-questions --publier` lancé par David. MCP : 8 brouillons [CM1], sans nœud ni tag, créés à
+  15:40 UTC ; les 8 points sous « Nombres et calculs > Décimaux : numération », sans modèle.
+  Ids : `2cff4ef5-a463-4bce-85ff-b0fec81dce08` (lire et écrire), `b832dfdf-f1eb-4f4c-8469-66d89a9db899`
+  (colorier), `06f246e4-eda1-44f5-a65f-9f55c360833d` (repérer), `3560dded-0565-4f15-a6e0-44e7e2adc834`
+  (placer), `10aae729-4a29-4dac-9578-21ef655d60d1` (partie entière), `ca08432a-cfcc-4372-809e-f5d0d9895eff`
+  (arrondir), `2af5f9fe-de36-4b1c-adf9-dec60f759910` (ranger), `2cb242e0-fa40-458b-abb0-819e4720c731`
+  (intercaler).
+- Migration `20261101200800_questions_cm1_lot4_rangement_tags` et son test générés du gabarit du lot
+  3c (script, remplacements vérifiés au `diff`) ; horodatage = max des worktrees et branches
+  distantes (`20261101200700`) + 1 min.
+- Test d'intégration : rouge sans le corps de la migration (5 échecs), 9/9 vert avec.
