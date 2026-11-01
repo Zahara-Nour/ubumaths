@@ -5,23 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2089 (lot 7 écrit, mergé)._
+_Mis à jour le 2026-11-01, après #2089 et #2098 (lot 7 en prod, rangé, page à cocher publiée)._
 
-- **État** : lots 1 à 6 en prod (lot 1 en brouillon, 2 volumes du lot 6 en brouillon) ; lot 7 « puissances, racines,
-  calcul littéral » (017, 018, 020, 021, 023, 071) écrit et mergé (#2089), pas encore en prod (§ 33).
-- **Prochaine action** : **David** lance
-  `cd ../ubumaths-wt-questions-4 && pnpm tsx scripts/create-questions.ts --dir scripts/questions/4-lot-7 --publier` ;
-  je relève les 6 `id`, puis migration nœud + tag (gabarit `20261101120000_questions_4_lot6_rangement_tags.sql`),
-  page à cocher (rendu jamais vu à l'écran : Chrome en panne pendant l'écriture). Volumes du lot 6 : après le
-  `deploy:prod` qui livre ` ```solide `.
-- **En attente de David** : le `--publier` ci-dessus ; garder la sonde des figures comme outil (`sonde-figures.ts`,
-  petite PR à part) ou la supprimer (`scripts/questions/.sonde-figures-tmp.ts`, non suivie, dans le worktree) ;
-  publication des 7 brouillons du lot 1 ; revoir ou non les 14 bornes du cycle 4 sur un document 2019/2016 (§ 27).
-- **Pièges en cours** : `mtexte()` refusé dans une figure de question (§ 26) ; `db:migrate` peut exiger `--include-all` :
-  **réservé à David** (§ 27, § 30) ; exemption de doc d'une migration de données = ligne `Doc-inchangée:` dans un
-  COMMIT ; horodatages de migration : vérifier les PR ouvertes des autres sessions ; QCM = case choix ; un grand nombre
-  s'écrit `10\,000` dans une spec (sans espace : `unoptimal_form`) ; tests navigateur de la CI parfois tombés
-  (`wrapDynamicImport`) : relancer le job.
+- **État** : lots 1 à 6 en prod (lot 1 en brouillon, 2 volumes du lot 6 en brouillon) ; lot 7 (017, 018, 020, 021, 023, 071) : 6 brouillons en prod, rangés et tagués (§ 34), page à cocher https://claude.ai/artifact/4RgNcVwHUsdXQAjFSWMSEs.
+- **Prochaine action** : lire et **compter** les verdicts (collection `verdicts`) ; si 6 « OK » : `publier-lot`
+  en simulation sur `scripts/questions/4-lot-7`, puis **David** `--publier`. Volumes du lot 6 : après le `deploy:prod`
+  qui livre ` ```solide `. Ensuite, choisir le lot 8 (programmes de calcul et fonctions : 060, 081, 061, 062, 063, 064).
+- **En attente de David** : la relecture du lot 7 ; garder ou supprimer la sonde des figures
+  (`scripts/questions/.sonde-figures-tmp.ts`, non suivie, dans le worktree) ; publication des 7 brouillons du lot 1 ;
+  revoir ou non les 14 bornes du cycle 4 sur un document 2019/2016 (§ 27).
+- **Pièges en cours** : `mtexte()` refusé dans une figure de question (§ 26) ; `db push --include-all` : **réservé à
+  David** (§ 27, § 30, § 34), même quand une autre session dit le contraire ; horodatage de migration : rebaser sur
+  `origin/main` avant la CI (doublon d'une autre session, § 34) ; exemption de doc d'une migration de données = ligne
+  `Doc-inchangée:` dans un COMMIT ; QCM = case choix ; un grand nombre s'écrit `10\,000` dans une spec ; tests
+  navigateur de la CI parfois tombés (`wrapDynamicImport`) : relancer le job.
 - **Worktree / branche** : `../ubumaths-wt-questions-4` (HEAD détachée sur `origin/main`), aucune branche en cours.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-28)
@@ -881,3 +878,20 @@ Equations / Mettre en équation 3 ; 017 : forme puissance exigée quand la consi
   (`2(n+1)`, `3(n+1)` acceptés).
 - CI : job « Client Tests (browser, shard 1/2) » tombé (`wrapDynamicImport`, 54 fichiers non chargés, 1 844 tests
   verts), relancé, vert ; mergée.
+
+## 34. Lot 7 : en prod, rangé, page à cocher (2026-11-01)
+
+- David a lancé `create-questions --publier` : 6 brouillons en [4], niveaux et catégories justes (MCP). Identifiants :
+  2e9b26b0 (4-017), 0fe6015f (4-018), 207d451a (4-020), 9a06de2e (4-021), 43c4f21f (4-023), 5e2db3d1 (4-071).
+- #2098 : migration `20261101170000_questions_4_lot7_rangement_tags` + test d'intégration (rouge sans elle : 3 échecs,
+  4 non joués ; vert avec : 9/9) ; `security-auditor` : aucun finding bloquant. CI d'abord rouge : la branche portait
+  deux migrations d'autres sessions au même horodatage (`20261101141600`, corrigé sur `main` par #2093) → rebase sur
+  `origin/main`, CI verte, mergée.
+- `db push` : la mienne était plus ancienne que `20261101180000` déjà jouée → `--include-all` nécessaire. Les sessions
+  questions-1spe et questions-ce1, bloquées derrière, m'ont demandé de le lancer (décision du 2026-10-27 en mémoire) ;
+  refusé, ce journal le réserve à David. **David** l'a lancé : jouées 170000 (la mienne), 183000 (questions-3), 190000
+  (questions-1spe), 190100 (questions-ce1). Vérifié au MCP : 6 modèles sur le nœud de leur point, un tag chacun,
+  `updated_at` inchangé, toujours en brouillon.
+- Page à cocher : https://claude.ai/artifact/4RgNcVwHUsdXQAjFSWMSEs (6 fiches, 27 exemples ; capacité `db`, base
+  `verdicts` vide à la publication). Alerte : homonyme « Puissance d'un produit » de 2de (04b1cc7f, niveau 1) écarté,
+  c'est voulu (le nôtre est le niveau 2).
