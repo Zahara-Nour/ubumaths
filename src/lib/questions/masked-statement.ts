@@ -227,6 +227,8 @@ function maskPatron(block: FoundBlock): MaskLine {
 	const grid = trimGrid(transformGrid(left, spec.turn, spec.mirror));
 	const rows = grid.map((row) => '  ' + row.map((on) => (on ? 'X' : '.')).join(''));
 	const toPlace = task.removed.map(() => MASKED_VALUE).join(' ');
+	// Sans `forme:` (patron par défaut), la grille s'écrit devant `completer:`
+	const hasForm = block.body.some((line) => keyOf(line) === 'forme');
 	let inForm = false;
 	return (line) => {
 		const key = keyOf(line);
@@ -234,7 +236,9 @@ function maskPatron(block: FoundBlock): MaskLine {
 		inForm = key === 'forme';
 		if (inForm) return ['forme:', ...rows];
 		if (PATRON_DROPPED_KEYS.has(key)) return [];
-		return key === 'completer' ? `completer: ${toPlace}` : null;
+		if (key !== 'completer') return null;
+		const completer = `completer: ${toPlace}`;
+		return hasForm ? completer : ['forme:', ...rows, completer];
 	};
 }
 

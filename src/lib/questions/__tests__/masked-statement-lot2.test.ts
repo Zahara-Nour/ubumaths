@@ -132,6 +132,9 @@ describe('assemblage à retrouver (```cubes retrouver:)', () => {
 describe('patron à compléter (```patron completer:)', () => {
 	it.each([
 		['catalogue', ['solide: cube', 'forme: 1', 'completer: 5']],
+		// Sans forme: : le patron par défaut (revue de #2130)
+		['patron par défaut, sans forme:', ['solide: cube', 'completer: 5']],
+		['patron par défaut tourné, sans forme:', ['solide: cube', 'tourner: 90', 'completer: 2']],
 		[
 			'tourné et retourné, deux faces',
 			['solide: cube', 'forme: 3', 'tourner: 90', 'retourner: oui', 'completer: 1 5']

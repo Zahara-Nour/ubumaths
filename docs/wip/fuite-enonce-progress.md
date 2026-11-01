@@ -173,3 +173,11 @@ invisibles), sans point invisible posé sur la réponse.
 - **Tests** : `masked-statement-lot2.test.ts` (13 ; 8 rouges sans le masque), `FillBlanksInput-enonce-masque`
   (+3 blocs même HTML, + geste du patron masqué), `evaluation-notee-serveur` (+2 : démarrer sans les hauteurs,
   correction juste ; rouge sans le masque).
+
+**Revues de #2130 (2026-11-01).** security-auditor (Opus) : aucun bloquant ; cubes : une solution se déduit
+des vues et de l'empreinte, mais c'est la tâche (l'écran les montre). code-reviewer (Opus) : 1 bloquant
+corrigé — patron sans `forme:` (patron par défaut) : la grille amputée s'écrit devant `completer:` (2 tests de
+plus). Non bloquants, laissés : (a) point invisible posé sur la réponse (limite acceptée ; l'auditeur propose
+une garde au générateur — **à poser à David**) ; (b) un masque qui ne lit pas son bloc le laisse tel quel
+(pas provoqué) ; (c) forme masquée dans une option de ```choix non refusée (rendu seul, exotique) ;
+(d) `ownBlocks` : un bloc en retrait est déjà refusé par le générateur, filtre gardé en défense.
