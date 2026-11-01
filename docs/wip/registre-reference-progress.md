@@ -1,7 +1,7 @@
 ---
 title: Le registre des commandes, référence commune (pnpm math, Atelier, calculatrice) — journal
 date: 2026-11-01
-status: PR 0 mergée (#2163), lot 2 en attente des réponses A-D
+status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 ---
 
 ## Reprendre ici
@@ -10,9 +10,9 @@ _Mis à jour le 2026-11-01, après #2163 (PR 0 mergée)._
 
 - **État** : PR 0 **#2163 mergée** (corpus 85/85, champ `answer`). Branche distante supprimée,
   `origin/main` intégré dans la branche locale (règles migrations #2165, CI allégée #2167).
-- **Prochaine action** : lot 2 du corpus (section « Lot 2 — relevé ») dès que A-D sont tranchés ;
+- **Prochaine action** : lot 2 du corpus (section « Lot 2 — relevé »), A-D tranchées ;
   même branche `refactor/registre-reference`, repoussée avec le lot 2.
-- **En attente de David** : A-D du lot 2, reformulées en séance (recos : oui ×4) —
+- **Tranché** (2026-11-01) : A-D du lot 2, oui ×4 (section « Lot 2 — relevé ») —
   A le registre rend l'écriture décimale `decimal` + `decimalExact` (exacte `0.25` / arrondie
   `0.7071`, le signe `=`/`≈` posé par l'outil ; nom `approx` rejeté par David) ; B mode décimal =
   affichage de l'outil ; C égalité tapée seule (`2=2`) → `\text{vrai}`/`\text{faux}` ; D expression
@@ -251,6 +251,14 @@ décidées, au point (`8.7700*10^9`), `answer` reste exact ; l'outil traduit vir
 B : le registre rend toujours `answer` + `approx`, le mode décimal est un choix d'affichage de
 l'outil (règle le point 1 de la revue). C : `2=2` → `\text{vrai}` (point 2). D : expression sans
 commande → sa forme rangée ; seul `f` tapé seul n'a pas de réponse (point 3).
+
+**Tranché (David, 2026-11-01, « ok pour les 4, decimal + decimalExact »)** — A : le registre rend
+`decimal` (écriture décimale au point, arrondie selon Q3 : 4 décimales, scientifique au-delà) et
+`decimalExact` (`true` si l'écriture est exacte) ; `answer` reste exact ; l'outil pose `=`/`≈`, la
+virgule, le `×`. Le nom `approx` est rejeté (l'écriture peut être exacte). B : le registre rend
+toujours `answer` + `decimal` + `decimalExact` ; le mode décimal est un choix d'affichage de l'outil.
+C : égalité / comparaison tapée seule → `\text{vrai}` / `\text{faux}` dans `answer`. D : expression
+nue → sa forme rangée (celle de l'Atelier) ; `f` seul sans réponse.
 
 ## Expressions nues : registre contre Atelier (sonde du 2026-11-01)
 
