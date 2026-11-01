@@ -148,6 +148,25 @@ export const courbeEntry: BlockCatalogEntry = {
 					defaultValue: 'aucune',
 					description:
 						'Colore l’aire sous la courbe de f entre a et b. La ligne peut se répéter, 10 au plus.'
+				},
+				{
+					key: 'axes',
+					values: 'x = titre ; y = titre (un axe ou les deux)',
+					defaultValue: 'aucun titre',
+					description:
+						'Titre de chaque axe, pour représenter des données : axes: x = Durée (min) ; y = Température (°C). 60 caractères au plus par titre.'
+				}
+			]
+		},
+		{
+			title: 'Dans une question : placer des points',
+			settings: [
+				{
+					key: 'placer',
+					values: 'A=(2 ; 3) ; B=(-1 ; 2) (6 points au plus), ou un point seul sans nom : (2 ; 3)',
+					defaultValue: 'aucun',
+					description:
+						'L’élève touche le repère pour y poser chaque point (il se pose sur le nœud de grille le plus proche) : chaque point compte pour une case, juste s’il est sur ses coordonnées. Chaque point doit être sur un nœud de la grille (régler grille:) et dans la fenêtre. Jamais écrit à l’écran. Sur le PDF, le repère sans les points : l’enfant fait ses croix.'
 				}
 			]
 		}
@@ -157,6 +176,30 @@ export const courbeEntry: BlockCatalogEntry = {
 			title: 'Une parabole',
 			source: fence('courbe', 'x: -4 ; 6', 'y: -8 ; 12', 'f(x) = -(x+2)*(x-4)'),
 			explanation: 'La fenêtre, puis une fonction : bleue, en trait plein par défaut.'
+		},
+		{
+			title: 'Placer des points (question)',
+			source: fence(
+				'courbe',
+				'x: -5 ; 5',
+				'y: -4 ; 4',
+				'grille: 1',
+				'placer: A=(2 ; 3) ; B=(-1 ; 2) ; C=(0 ; -3)'
+			),
+			explanation:
+				'Dans une question, l’élève choisit l’étiquette A, B ou C sous le repère, puis touche le repère ; chaque point compte pour une case. La consigne (« Place les points A(2 ; 3)… ») va dans l’énoncé, au-dessus.'
+		},
+		{
+			title: 'Des données dans un repère',
+			source: fence(
+				'courbe',
+				'x: 0 ; 10',
+				'y: 0 ; 30',
+				'grille: 1 ; 5',
+				'axes: x = Durée (min) ; y = Température (°C)',
+				'points: A(0 ; 5), B(2 ; 10), C(4 ; 15)'
+			),
+			explanation: 'axes: écrit le titre de chaque axe, utile pour un graphique de données.'
 		},
 		{
 			title: 'Deux fonctions et une grille',
