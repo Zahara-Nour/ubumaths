@@ -129,6 +129,8 @@ interface StatText {
 		 * minimum 28, premier quartile 30, … » ; sans nom, « Boîte à moustaches : … »
 		 */
 		sentence: (name: string | null, values: readonly string[]) => string;
+		/** Boîte à construire (`placer:`) : « Boîte Notes : à construire. » */
+		toBuild: (name: string | null) => string;
 	};
 	/** Nuage de points (```nuage, manche 15) ; nombres déjà écrits selon la langue */
 	scatter: {
@@ -262,7 +264,8 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 		boxPlot: {
 			title: 'Boîte à moustaches',
 			sentence: (name, [min, q1, median, q3, max]) =>
-				`${name === null ? 'Boîte à moustaches' : `Boîte ${name}`} : minimum ${min}, premier quartile ${q1}, médiane ${median}, troisième quartile ${q3}, maximum ${max}.`
+				`${name === null ? 'Boîte à moustaches' : `Boîte ${name}`} : minimum ${min}, premier quartile ${q1}, médiane ${median}, troisième quartile ${q3}, maximum ${max}.`,
+			toBuild: (name) => `${name === null ? 'Boîte à moustaches' : `Boîte ${name}`} : à construire.`
 		},
 		scatter: {
 			title: 'Nuage de points',
@@ -383,7 +386,8 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 		boxPlot: {
 			title: 'Box plot',
 			sentence: (name, [min, q1, median, q3, max]) =>
-				`${name === null ? 'Box plot' : `Box ${name}`}: minimum ${min}, lower quartile ${q1}, median ${median}, upper quartile ${q3}, maximum ${max}.`
+				`${name === null ? 'Box plot' : `Box ${name}`}: minimum ${min}, lower quartile ${q1}, median ${median}, upper quartile ${q3}, maximum ${max}.`,
+			toBuild: (name) => `${name === null ? 'Box plot' : `Box ${name}`}: to be drawn.`
 		},
 		scatter: {
 			title: 'Scatter plot',

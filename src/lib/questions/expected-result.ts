@@ -33,7 +33,7 @@ import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
 import { findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
 import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
 import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
-import { findBarsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
+import { findBarsToPlace, findBoxPlotsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
 import { findCourbesToPlace } from '$lib/ubumark/parser/courbe-parser';
 import { findRangersToPlace } from '$lib/ubumark/parser/ranger-parser';
 import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
@@ -303,6 +303,10 @@ function buildCaseBlocks(statement: string): Map<number, BuildCaseBlock> {
 		...findLinesToPlace(statement).map((b) => ({ ...b, kind: 'line' as const })),
 		...findHorlogesToPlace(statement).map((b) => ({ ...b, kind: 'horloge' as const })),
 		...findBarsToPlace(statement).map((b) => ({ ...b, kind: 'barres' as const })),
+		...findBoxPlotsToPlace(statement).map((b) => ({
+			...b,
+			kind: 'boite-a-moustaches' as const
+		})),
 		...findRangersToPlace(statement).map((b) => ({ ...b, kind: 'ranger' as const })),
 		...findPartagesToColorier(statement).map((b) => ({ ...b, kind: 'partage' as const })),
 		...findCubesToBuild(statement).map((b) => ({ ...b, kind: 'cubes' as const })),
