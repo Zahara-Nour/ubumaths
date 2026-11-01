@@ -1,0 +1,159 @@
+{
+	"title": "Colorie une fraction de la figure, jusqu'à 1",
+	"description": "Colorier n/d (n ≤ d) d'une bande, d'un disque ou d'une grille",
+	"grades": ["CE1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Partage",
+	"level": 8,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Colorie $\\frac{{{n}}}{{{d}}}$ de la figure.\n\n```partage\nforme: {{if:k==0|bande|disque}} {{d}}\ncolorier: {{n}}/{{d}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				},
+				{
+					"name": "j",
+					"expression": "1..7"
+				},
+				{
+					"name": "d",
+					"expression": "{{if:j==1|2|{{if:j==2|3|{{if:j==3|4|{{if:j==4|5|{{if:j==5|6|{{if:j==6|8|10}}}}}}}}}}}}"
+				},
+				{
+					"name": "n",
+					"expression": "2..{{d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La figure est partagée en ${{d}}$ parts égales** : une part, c'est $\\frac{1}{{{d}}}$ de la figure, un {{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==8|huitième|dixième}}}}}}}}}}}}.",
+					"$\\frac{{{n}}}{{{d}}}$, c'est ${{n}}$ fois $\\frac{1}{{{d}}}$ : on colorie $\\textcolor{{{color:primary.0}}}{{{n}}}$ parts, n'importe lesquelles."
+				]
+			}
+		},
+		{
+			"statement": "Colorie $\\frac{{{n}}}{{{d}}}$ de la figure.\n\n```partage\nforme: grille 2×{{c}}\ncolorier: {{n}}/{{d}}\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..5"
+				},
+				{
+					"name": "d",
+					"expression": "eval:2*c"
+				},
+				{
+					"name": "n",
+					"expression": "2..{{eval:d-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La figure est partagée en $2 \\times {{c}} = {{d}}$ parts égales** : une part, c'est $\\frac{1}{{{d}}}$ de la figure, un {{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==8|huitième|dixième}}}}}}}}}}}}.",
+					"$\\frac{{{n}}}{{{d}}}$, c'est ${{n}}$ fois $\\frac{1}{{{d}}}$ : on colorie $\\textcolor{{{color:primary.0}}}{{{n}}}$ parts, n'importe lesquelles."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3/8 : 3 parts",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"j": "6",
+				"n": "3"
+			},
+			"answers": ["1, 2, 3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3/8 : 3 parts quelconques",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"j": "6",
+				"n": "3"
+			},
+			"answers": ["2, 5, 8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 parts (les blanches)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"j": "6",
+				"n": "3"
+			},
+			"answers": ["1, 2, 3, 4, 5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 8 parts (le dénominateur)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"j": "6",
+				"n": "3"
+			},
+			"answers": ["1, 2, 3, 4, 5, 6, 7, 8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3/3 : toute la figure",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"j": "2",
+				"n": "3"
+			},
+			"answers": ["1, 2, 3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "7/10 sur une grille 2×5 : 7 parts",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5",
+				"n": "7"
+			},
+			"answers": ["1, 2, 3, 4, 6, 8, 10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 parts (les blanches)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5",
+				"n": "7"
+			},
+			"answers": ["5, 7, 9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

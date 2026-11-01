@@ -1,0 +1,229 @@
+{
+	"title": "Le code de l'angle droit",
+	"description": "Ce que veut dire le petit carré ; à quel sommet ; combien d'angles droits codés",
+	"grades": ["CE1"],
+	"theme": "Géométrie",
+	"domain": "Figures planes",
+	"subdomain": "Angles",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Que veut dire le petit carré dessiné dans un coin de ce triangle ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Un triangle, un coin codé.\n---\na = point({{if:k==1|2.75|{{if:k==2|3.98|{{if:k==3|6.4|{{if:k==4|6.41|{{if:k==5|6.55|3.53}}}}}}}}}}, {{if:k==1|2.0|{{if:k==2|2.11|{{if:k==3|1.25|{{if:k==4|3.15|{{if:k==5|4.91|4.47}}}}}}}}}}, visible=faux)\nb = point({{if:k==1|7.25|{{if:k==2|7.62|{{if:k==3|6.4|{{if:k==4|3.59|{{if:k==5|2.42|5.63}}}}}}}}}}, {{if:k==1|2.0|{{if:k==2|4.21|{{if:k==3|5.75|{{if:k==4|5.97|{{if:k==5|3.4|0.83}}}}}}}}}}, visible=faux)\nc = point({{if:k==1|2.75|{{if:k==2|2.38|{{if:k==3|3.6|{{if:k==4|4.29|{{if:k==5|7.58|6.47}}}}}}}}}}, {{if:k==1|5.0|{{if:k==2|4.89|{{if:k==3|1.25|{{if:k==4|1.03|{{if:k==5|2.09|6.17}}}}}}}}}}, visible=faux)\nq = polygone(a, b, c, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\ng = angle(b, a, c, marque=\"carre\", couleur=\"noir\")\n```\n\n```choix\n- L'angle est droit.\n- Les deux côtés ont la même longueur.\n- L'angle est aigu.\n- Le coin est le milieu du triangle.\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le petit carré est le \\textcolor{{{color:primary.0}}}{code de l'angle droit} : il dit que l'angle est droit, sans avoir à le vérifier avec l'équerre."
+				]
+			}
+		},
+		{
+			"statement": "Sur cette figure, un angle droit est codé. À quel sommet ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Un quadrilatère ABCD, un angle codé.\n---\na = point({{if:k==1|2.75|{{if:k==2|5.87|{{if:k==3|7.11|4.13}}}}}}, {{if:k==1|1.75|{{if:k==2|1.39|{{if:k==3|4.37|5.61}}}}}}, couleur=\"noir\", etiquette=\"aucune\")\nb = point({{if:k==1|7.25|{{if:k==2|7.41|{{if:k==3|2.89|2.59}}}}}}, {{if:k==1|1.75|{{if:k==2|5.61|{{if:k==3|5.91|1.39}}}}}}, couleur=\"noir\", etiquette=\"aucune\")\nc = point({{if:k==1|5.75|{{if:k==2|4.83|{{if:k==3|3.54|5.17}}}}}}, {{if:k==1|3.95|{{if:k==2|4.96|{{if:k==3|3.33|2.04}}}}}}, couleur=\"noir\", etiquette=\"aucune\")\nd = point({{if:k==1|2.75|{{if:k==2|2.59|{{if:k==3|5.92|7.41}}}}}}, {{if:k==1|5.25|{{if:k==2|2.58|{{if:k==3|1.09|4.42}}}}}}, couleur=\"noir\", etiquette=\"aucune\")\nq = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\ng = angle(d, a, b, marque=\"carre\", couleur=\"noir\")\ntexte({{if:k==1|2.35|{{if:k==2|6.02|{{if:k==3|7.59|3.98}}}}}}, {{if:k==1|1.3|{{if:k==2|0.76|{{if:k==3|4.37|5.94}}}}}}, \"{{if:k==1|A|{{if:k==2|D|{{if:k==3|C|B}}}}}}\")\ntexte({{if:k==1|7.69|{{if:k==2|7.78|{{if:k==3|2.56|2.22}}}}}}, {{if:k==1|1.36|{{if:k==2|5.79|{{if:k==3|6.13|0.91}}}}}}, \"{{if:k==1|B|{{if:k==2|A|{{if:k==3|D|C}}}}}}\")\ntexte({{if:k==1|6.16|{{if:k==2|4.7|{{if:k==3|3.06|5.3}}}}}}, {{if:k==1|4.08|{{if:k==2|5.29|{{if:k==3|3.05|1.41}}}}}}, \"{{if:k==1|C|{{if:k==2|B|{{if:k==3|A|D}}}}}}\")\ntexte({{if:k==1|2.41|{{if:k==2|2.13|{{if:k==3|6.11|7.87}}}}}}, {{if:k==1|5.47|{{if:k==2|2.24|{{if:k==3|0.48|4.46}}}}}}, \"{{if:k==1|D|{{if:k==2|C|{{if:k==3|B|A}}}}}}\")\n```\n\n```choix\nmelanger: non\n- Au sommet $A$.\n- Au sommet $B$.\n- Au sommet $C$.\n- Au sommet $D$.\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "w",
+					"expression": "eval:mod(4-(k-1),4)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le petit carré est dans le coin du sommet $\\textcolor{{{color:primary.0}}}{{{if:k==1|A|{{if:k==2|D|{{if:k==3|C|B}}}}}}}$ : c'est là que l'angle est droit."
+				]
+			}
+		},
+		{
+			"statement": "Combien d'angles droits sont codés sur cette figure ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Une figure à quatre côtés, des angles codés.\n---\na = point({{if:k==1|2.5|{{if:k==2|4.05|{{if:k==3|7.5|2.9}}}}}}, {{if:k==1|2.0|{{if:k==2|1.32|{{if:k==3|5.0|4.92}}}}}}, visible=faux)\nb = point({{if:k==1|7.5|{{if:k==2|7.88|{{if:k==3|2.5|5.4}}}}}}, {{if:k==1|2.0|{{if:k==2|4.54|{{if:k==3|5.0|0.58}}}}}}, visible=faux)\nc = point({{if:k==1|5.7|{{if:k==2|4.57|{{if:k==3|4.3|7.1}}}}}}, {{if:k==1|5.0|{{if:k==2|5.68|{{if:k==3|2.0|3.64}}}}}}, visible=faux)\nd = point({{if:k==1|2.5|{{if:k==2|2.12|{{if:k==3|7.5|5.5}}}}}}, {{if:k==1|5.0|{{if:k==2|3.62|{{if:k==3|2.0|6.42}}}}}}, visible=faux)\nq = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\ng0 = angle(d, a, b, marque=\"carre\", couleur=\"noir\")\ng3 = angle(c, d, a, marque=\"carre\", couleur=\"noir\")\n```\n\n$?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte les petits carrés : il y en a $\\textcolor{{{color:primary.0}}}{2}$. Les deux autres angles ne sont pas codés : ils ne sont pas droits."
+				]
+			}
+		},
+		{
+			"statement": "Combien d'angles droits sont codés sur cette figure ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Une figure à cinq côtés, des angles codés.\n---\na = point({{if:k==1|2.5|{{if:k==2|3.71|{{if:k==3|6.75|7.69}}}}}}, {{if:k==1|1.75|{{if:k==2|1.18|{{if:k==3|5.69|4.29}}}}}}, visible=faux)\nb = point({{if:k==1|7.5|{{if:k==2|8.04|{{if:k==3|2.05|2.99}}}}}}, {{if:k==1|1.75|{{if:k==2|3.68|{{if:k==3|3.98|6.0}}}}}}, visible=faux)\nc = point({{if:k==1|7.5|{{if:k==2|7.04|{{if:k==3|2.74|2.31}}}}}}, {{if:k==1|3.75|{{if:k==2|5.42|{{if:k==3|2.1|4.12}}}}}}, visible=faux)\nd = point({{if:k==1|5.7|{{if:k==2|4.73|{{if:k==3|4.94|3.49}}}}}}, {{if:k==1|5.25|{{if:k==2|5.82|{{if:k==3|1.31|2.09}}}}}}, visible=faux)\ne = point({{if:k==1|2.5|{{if:k==2|1.96|{{if:k==3|7.95|6.49}}}}}}, {{if:k==1|5.25|{{if:k==2|4.22|{{if:k==3|2.4|1.0}}}}}}, visible=faux)\nq = polygone(a, b, c, d, f, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\ng0 = angle(f, a, b, marque=\"carre\", couleur=\"noir\")\ng1 = angle(a, b, c, marque=\"carre\", couleur=\"noir\")\ng4 = angle(d, f, a, marque=\"carre\", couleur=\"noir\")\n```\n\n$?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "3"
+				}
+			],
+			"correction": {
+				"steps": ["On compte les petits carrés : il y en a $\\textcolor{{{color:primary.0}}}{3}$."]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Angle droit",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"k": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : côtés de même longueur",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"k": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Code au sommet A (k = 1)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"k": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Code au sommet D (k = 2)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"k": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sommet voisin",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"k": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Code au sommet B (k = 4)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"k": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Trapèze : 2 codés",
+			"variationIndex": 2,
+			"variables": {
+				"c": "3",
+				"k": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 (tous les coins)",
+			"variationIndex": 2,
+			"variables": {
+				"c": "3",
+				"k": "2"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rectangle coupé : 3 codés",
+			"variationIndex": 3,
+			"variables": {
+				"c": "4",
+				"k": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 (tous les coins)",
+			"variationIndex": 3,
+			"variables": {
+				"c": "4",
+				"k": "1"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

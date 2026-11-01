@@ -1,0 +1,156 @@
+{
+	"title": "Angle droit, aigu ou obtus ?",
+	"description": "Un angle sur quadrillage, droit (aussi tourné), aigu ou obtus, loin de l'angle droit",
+	"grades": ["CE1"],
+	"theme": "Géométrie",
+	"domain": "Figures planes",
+	"subdomain": "Angles",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Cet angle est-il droit, aigu ou obtus ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ngrille: oui\ndescription: Un angle tracé sur un quadrillage.\n---\nv = point({{if:k==1|3|{{if:k==2|3|{{if:k==3|5|{{if:k==4|4|{{if:k==5|6|{{if:k==6|4|{{if:k==7|4|4}}}}}}}}}}}}}}, {{if:k==1|2|{{if:k==2|2|{{if:k==3|2|{{if:k==4|2|{{if:k==5|2|{{if:k==6|2|{{if:k==7|2|2}}}}}}}}}}}}}}, visible=faux)\np = point({{if:k==1|7|{{if:k==2|3|{{if:k==3|8|{{if:k==4|8|{{if:k==5|7|{{if:k==6|3|{{if:k==7|8|2}}}}}}}}}}}}}}, {{if:k==1|2|{{if:k==2|6|{{if:k==3|5|{{if:k==4|3|{{if:k==5|6|{{if:k==6|6|{{if:k==7|4|6}}}}}}}}}}}}}}, visible=faux)\nq = point({{if:k==1|3|{{if:k==2|7|{{if:k==3|2|{{if:k==4|3|{{if:k==5|2|{{if:k==6|8|{{if:k==7|2|8}}}}}}}}}}}}}}, {{if:k==1|6|{{if:k==2|2|{{if:k==3|5|{{if:k==4|6|{{if:k==5|3|{{if:k==6|3|{{if:k==7|6|4}}}}}}}}}}}}}}, visible=faux)\ns1 = segment(v, p, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\ns2 = segment(v, q, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\ng = angle(p, v, q, couleur=\"noir\")\n```\n\n```choix\nmelanger: non\n- L'angle est droit.\n- L'angle est aigu.\n- L'angle est obtus.\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'angle est \\textcolor{{{color:primary.0}}}{droit} : le coin de l'équerre s'y pose juste (les côtés suivent les carreaux, ou leurs diagonales)."
+				]
+			}
+		},
+		{
+			"statement": "Cet angle est-il droit, aigu ou obtus ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ngrille: oui\ndescription: Un angle tracé sur un quadrillage.\n---\nv = point({{if:k==1|3|{{if:k==2|3|{{if:k==3|3|{{if:k==4|6|{{if:k==5|3|{{if:k==6|6|{{if:k==7|3|3}}}}}}}}}}}}}}, {{if:k==1|2|{{if:k==2|2|{{if:k==3|2|{{if:k==4|2|{{if:k==5|2|{{if:k==6|2|{{if:k==7|4|5}}}}}}}}}}}}}}, visible=faux)\np = point({{if:k==1|7|{{if:k==2|6|{{if:k==3|7|{{if:k==4|7|{{if:k==5|7|{{if:k==6|4|{{if:k==7|7|6}}}}}}}}}}}}}}, {{if:k==1|2|{{if:k==2|5|{{if:k==3|3|{{if:k==4|6|{{if:k==5|4|{{if:k==6|6|{{if:k==7|3|2}}}}}}}}}}}}}}, visible=faux)\nq = point({{if:k==1|6|{{if:k==2|7|{{if:k==3|6|{{if:k==4|4|{{if:k==5|3|{{if:k==6|6|{{if:k==7|7|7}}}}}}}}}}}}}}, {{if:k==1|5|{{if:k==2|2|{{if:k==3|5|{{if:k==4|6|{{if:k==5|6|{{if:k==6|6|{{if:k==7|5|4}}}}}}}}}}}}}}, visible=faux)\ns1 = segment(v, p, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\ns2 = segment(v, q, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\ng = angle(p, v, q, couleur=\"noir\")\n```\n\n```choix\nmelanger: non\n- L'angle est droit.\n- L'angle est aigu.\n- L'angle est obtus.\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'angle est \\textcolor{{{color:primary.0}}}{aigu} : il est plus fermé que le coin de l'équerre."
+				]
+			}
+		},
+		{
+			"statement": "Cet angle est-il droit, aigu ou obtus ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ngrille: oui\ndescription: Un angle tracé sur un quadrillage.\n---\nv = point({{if:k==1|4|{{if:k==2|6|{{if:k==3|4|{{if:k==4|6|{{if:k==5|6|{{if:k==6|6|{{if:k==7|5|4}}}}}}}}}}}}}}, {{if:k==1|2|{{if:k==2|2|{{if:k==3|2|{{if:k==4|2|{{if:k==5|5|{{if:k==6|2|{{if:k==7|2|2}}}}}}}}}}}}}}, visible=faux)\np = point({{if:k==1|8|{{if:k==2|9|{{if:k==3|8|{{if:k==4|2|{{if:k==5|2|{{if:k==6|8|{{if:k==7|1|8}}}}}}}}}}}}}}, {{if:k==1|2|{{if:k==2|5|{{if:k==3|3|{{if:k==4|3|{{if:k==5|6|{{if:k==6|6|{{if:k==7|4|1}}}}}}}}}}}}}}, visible=faux)\nq = point({{if:k==1|1|{{if:k==2|2|{{if:k==3|1|{{if:k==4|9|{{if:k==5|7|{{if:k==6|2|{{if:k==7|9|2}}}}}}}}}}}}}}, {{if:k==1|5|{{if:k==2|2|{{if:k==3|5|{{if:k==4|5|{{if:k==5|1|{{if:k==6|2|{{if:k==7|3|6}}}}}}}}}}}}}}, visible=faux)\ns1 = segment(v, p, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\ns2 = segment(v, q, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\ng = angle(p, v, q, couleur=\"noir\")\n```\n\n```choix\nmelanger: non\n- L'angle est droit.\n- L'angle est aigu.\n- L'angle est obtus.\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'angle est \\textcolor{{{color:primary.0}}}{obtus} : il est plus ouvert que le coin de l'équerre."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Droit",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"k": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : droit pris pour aigu",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"k": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Aigu",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"k": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : aigu pris pour obtus",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"k": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Obtus",
+			"variationIndex": 2,
+			"variables": {
+				"c": "3",
+				"k": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : obtus pris pour droit",
+			"variationIndex": 2,
+			"variables": {
+				"c": "3",
+				"k": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
