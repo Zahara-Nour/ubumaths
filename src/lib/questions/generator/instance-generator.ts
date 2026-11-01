@@ -50,9 +50,10 @@ import { hasCollectionToBuild } from '$lib/ubumark/parser/collection-parser';
 import { hasMonnaieToBuild } from '$lib/ubumark/parser/monnaie-parser';
 import { hasLineToPlace } from '$lib/ubumark/parser/number-line-parser';
 import { hasHorlogeToPlace } from '$lib/ubumark/parser/horloge-parser';
-import { hasBarsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
+import { hasStatChartToPlace } from '$lib/ubumark/parser/stat-chart-parser';
 import { hasCourbeToPlace } from '$lib/ubumark/parser/courbe-parser';
 import { barsCaseCount } from '$lib/ubumark/utils/barres-placer';
+import { boxPlotCaseCount } from '$lib/ubumark/utils/boxplot-placer';
 import {
 	findRangersToPlace,
 	hasRangerToPlace,
@@ -139,6 +140,7 @@ function blockAnswerName(kind: BuildKind): string {
 	if (kind === 'line') return 'la graduation de la droite graduée (placer:)';
 	if (kind === 'horloge') return 'l’heure de l’horloge (placer:)';
 	if (kind === 'barres') return 'l’effectif de la barre (placer:)';
+	if (kind === 'boite-a-moustaches') return 'les valeurs de la boîte (placer:)';
 	if (kind === 'ranger') return 'l’étiquette à sa place (bloc ranger)';
 	if (kind === 'partage') return 'la fraction du bloc partage (colorier:)';
 	if (kind === 'cubes') return 'la vue ou les vues du bloc cubes (dessiner:, retrouver:)';
@@ -542,7 +544,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				hasMonnaieToBuild(String(resolvedStatement)) ||
 				hasLineToPlace(String(resolvedStatement)) ||
 				hasHorlogeToPlace(String(resolvedStatement)) ||
-				hasBarsToPlace(String(resolvedStatement)) ||
+				hasStatChartToPlace(String(resolvedStatement)) ||
 				hasCourbeToPlace(String(resolvedStatement)) ||
 				hasRangerToPlace(String(resolvedStatement)) ||
 				hasPartageToColorier(String(resolvedStatement)) ||
@@ -794,8 +796,13 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						}
 						if (child.type === 'stat-chart') {
 							const first = child.caseIndex;
-							if (!child.spec?.toPlace || first === undefined) return [];
-							return Array.from({ length: barsCaseCount(child.spec) }, (_, k) => first + k);
+							if (first === undefined || !child.spec) return [];
+							const cases = child.spec.boxPlot?.toPlace
+								? boxPlotCaseCount(child.spec)
+								: child.spec.toPlace
+									? barsCaseCount(child.spec)
+									: 0;
+							return Array.from({ length: cases }, (_, k) => first + k);
 						}
 						return (child.type === 'collection' || child.type === 'monnaie') &&
 							child.spec !== null &&

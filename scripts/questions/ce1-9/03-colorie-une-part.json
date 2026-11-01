@@ -1,0 +1,132 @@
+{
+	"title": "Colorie une fraction unitaire de la figure",
+	"description": "Colorier 1/2 à 1/10 d'une bande, d'un disque ou d'une grille",
+	"grades": ["CE1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Partage",
+	"level": 7,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Colorie $\\frac{1}{{{d}}}$ de la figure.\n\n```partage\nforme: {{if:k==0|bande|disque}} {{d}}\ncolorier: 1/{{d}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				},
+				{
+					"name": "j",
+					"expression": "1..7"
+				},
+				{
+					"name": "d",
+					"expression": "{{if:j==1|2|{{if:j==2|3|{{if:j==3|4|{{if:j==4|5|{{if:j==5|6|{{if:j==6|8|10}}}}}}}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La figure est partagée en ${{d}}$ parts égales** : une part, c'est $\\frac{1}{{{d}}}$ de la figure, un {{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==8|huitième|dixième}}}}}}}}}}}}.",
+					"On colorie $\\textcolor{{{color:primary.0}}}{1}$ part, n'importe laquelle."
+				]
+			}
+		},
+		{
+			"statement": "Colorie $\\frac{1}{{{d}}}$ de la figure.\n\n```partage\nforme: grille 2×{{c}}\ncolorier: 1/{{d}}\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..5"
+				},
+				{
+					"name": "d",
+					"expression": "eval:2*c"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La figure est partagée en $2 \\times {{c}} = {{d}}$ parts égales** : une part, c'est $\\frac{1}{{{d}}}$ de la figure, un {{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==8|huitième|dixième}}}}}}}}}}}}.",
+					"On colorie $\\textcolor{{{color:primary.0}}}{1}$ part, n'importe laquelle."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1/5 : une part",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"j": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 parts (les autres)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"j": "4"
+			},
+			"answers": ["1, 2, 3, 4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 5 parts (toute la figure)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"j": "4"
+			},
+			"answers": ["1, 2, 3, 4, 5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rien colorié : case vide",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"j": "4"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		},
+		{
+			"description": "1/8 sur une grille 2×4 : une part",
+			"variationIndex": 1,
+			"variables": {
+				"c": "4"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 parts (une par ligne)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "4"
+			},
+			"answers": ["1, 5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

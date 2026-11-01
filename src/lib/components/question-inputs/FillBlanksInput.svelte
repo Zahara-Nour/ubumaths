@@ -50,6 +50,7 @@
 	import { toFrenchDecimal } from '$lib/utils/french-math';
 	import { operationCaseCount } from '$lib/ubumark/utils/operation-division-answer';
 	import { barsCaseCount } from '$lib/ubumark/utils/barres-placer';
+	import { boxPlotCaseCount } from '$lib/ubumark/utils/boxplot-placer';
 	import { buildUnitsKeyboardLayout, unitKeysFor } from '$lib/questions/units/keyboard-units';
 	import { buildIntervalsKeyboardLayout } from '$lib/questions/intervals/keyboard-intervals';
 	import { buildVectorsKeyboardLayout } from '$lib/questions/vectors/keyboard-vectors';
@@ -77,6 +78,7 @@
 	import Courbe from '$lib/components/markdown/nodes/Courbe.svelte';
 	import HorlogePlacer from '$lib/components/markdown/nodes/HorlogePlacer.svelte';
 	import BarresPlacer from '$lib/components/markdown/nodes/BarresPlacer.svelte';
+	import BoxPlotPlacer from '$lib/components/markdown/nodes/BoxPlotPlacer.svelte';
 	import RangerPlacer from '$lib/components/markdown/nodes/RangerPlacer.svelte';
 	import PartageColorier from '$lib/components/markdown/nodes/PartageColorier.svelte';
 	import CubesGeste from '$lib/components/markdown/nodes/CubesGeste.svelte';
@@ -934,6 +936,32 @@
 				{:else}
 					<div data-construire-case={firstCase} data-construire-cases={caseCount}>
 						<BarresPlacer
+							{node}
+							answers={Array.from({ length: caseCount }, (_, k) => ({
+								value: inputStates[firstCase + k]?.value ?? '',
+								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value: string) => handleInputChange(firstCase + k, value)
+							}))}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'stat-chart' && node.caseIndex !== undefined && node.spec?.boxPlot?.toPlace}
+				<!-- Boîte à moustaches à construire : cinq cases par boîte (minimum, Q1, médiane,
+				     Q3, maximum), la valeur posée de chaque trait est sa réponse -->
+				{@const firstCase = node.caseIndex}
+				{@const caseCount = boxPlotCaseCount(node.spec)}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : la boîte juste -->
+					<BuildAnswer
+						kind="boite-a-moustaches"
+						source={node.source}
+						answer={null}
+						status="solution"
+					/>
+				{:else}
+					<div data-construire-case={firstCase} data-construire-cases={caseCount}>
+						<BoxPlotPlacer
 							{node}
 							answers={Array.from({ length: caseCount }, (_, k) => ({
 								value: inputStates[firstCase + k]?.value ?? '',

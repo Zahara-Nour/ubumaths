@@ -10,23 +10,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2160._
+_Mis à jour le 2026-11-01, après #2173._
 
-- **État** : lot 2 (limites : 402, 576, 403, 582) **mergé** (#2160) dans `scripts/questions/tspe-2-limites/`
-  (script `docs/wip/questions/lot-tspe-limites.py`), 52 specs vertes ; rien encore en prod.
-- **Prochaine action** : **David** lance, depuis le dépôt principal, `set -a; . ./.env; set +a` puis
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-2-limites --publier` → relever les `id` →
-  migration : 3 sous-notions neuves + rangement + tags (§ 15), sur une branche neuve depuis `origin/main`.
-- **En attente de David** : la création des 4 brouillons en prod.
+- **État** : lot 2 (limites) **rangé et tagué en prod** (#2173, `db:migrate` le 2026-11-01, relu au MCP) :
+  3d7d1d25, 0fb97bb9, 6d611634, ae70373c en brouillon, niveau 1, sur leur sous-notion (§ 15).
+- **Prochaine action** : page à cocher des 4 brouillons (aperçus admin `/dashboard/admin/questions/<id>/preview`),
+  relecture par David, puis `publier-lot` (simulation d'abord, David lance `--publier`) ; ensuite lot 3.
+- **En attente de David** : la relecture des 4 brouillons (page à cocher à produire).
 - **Pièges en cours** : un tag doit être sur le **nœud du modèle ou sa notion** (§ 14) ; le **niveau est dans la
   clé** de `create-questions`. `create-questions` et `publier-lot` → David (`!`) ; `db:migrate` depuis le dépôt
-  principal ; en-tête de commit ≤ 100 caractères ; worktree neuf : `pnpm exec svelte-kit sync` avant
-  `question:specs` (sinon `$lib` introuvable). **Migrations (règles du 2026-11-01, #2165)** : nom par
-  `pnpm migration:horodatage` (jamais « max + 1 » à la main) ; `pnpm check:migrations --pr <n>` avant le merge ;
-  CI rouge sans jobs → lire le 1er job (« Porte de la CI ») ; PR de contenu : CI allégée, « skipped » voulu,
-  CI Summary fait foi.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe` gardé pour la branche de migration ;
-  `feat/questions-tspe-lot2` mergée.
+  principal (`echo y |`) ; corps de commit ≤ 100 caractères par ligne. **Migrations** : `pnpm migration:horodatage`
+  à refaire si main a avancé (renommé 2 fois au lot 2) ; une sous-notion neuve → copie figée
+  `tests/integration/fixtures/arbre-notions-seed.json`, comptes de `seed-classification-nodes.test.ts` et
+  `tests/helpers/database/later-migrations.ts` dans la même PR (CI rouge sinon).
+- **Worktree / branche** : aucun (retiré après #2173) ; prochain chantier → worktree neuf depuis `origin/main`.
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -754,3 +751,19 @@ de l'encadrement en bloc).
 
 **Question d'accès** (migration à venir) : personne ne gagne ni ne perd d'accès (brouillons ; les élèves ne les
 voient qu'après `publier-lot`).
+
+**Création en prod** (David, 2026-11-01) : 3d7d1d25 (M1), 0fb97bb9 (M2), 6d611634 (M3), ae70373c (M4), en
+brouillon, [T_SPE], niveau 1, sans nœud ni tag (relu au MCP). Points : 402 et 576 sur « Suites > Limites de
+suites », 403 et 582 sur « Fonctions > Limites de fonctions » ; aucune des 3 sous-notions n'existait.
+
+**Migration** `20261101224702_questions_tspe_lot2_rangement_tags.sql` : gardes avant toute écriture (TOUT ou
+RIEN, sans nœud ni tag, sous-notions absentes casse ignorée), 3 sous-notions en fin de notion, résolution stricte
+(point sur le nœud ou sa notion), rangement puis tags, `updated_at` préservé, rollback gardé en commentaire.
+Test `tests/integration/questions-tspe-lot2-rangement-tags.test.ts` : 11/11 ; **rouge** sans l'étape 5 (« lot
+incohérent : nœuds 0/4, tags 0/4 »).
+
+**CI de #2173** : 1er passage rouge (`seed-classification-nodes`, `nettoyage-facettes` : 3 sous-notions inconnues
+de la copie figée de l'arbre) → arbre figé (630 chemins, 477 sous-notions) et `later-migrations.ts` mis à jour ;
+renommée 224001 → 224701 → 224702 (main avancée deux fois). `security-auditor` : aucun bloquant (message du
+rollback remis à l'endroit). **PR #2173 mergée** ; **`db:migrate`** le 2026-11-01 ; relu en prod : 4 modèles sur
+leur sous-notion, tag posé, brouillon, niveau 1, `updated_at` inchangé.

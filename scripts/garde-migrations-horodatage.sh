@@ -14,8 +14,10 @@
 #   bash scripts/garde-migrations-horodatage.sh --prochain  # l'horodatage à donner à une migration neuve
 #
 # `--prochain` (`pnpm migration:horodatage`) : l'heure réelle UTC, ou la dernière migration
-# connue + 1 s si main est « en avance » sur l'horloge (horodatages ronds posés à la main
-# avant la règle du 2026-11-01). Jamais un nombre rond « max + 1 » choisi à la main.
+# connue + 1 à 59 s tirées au hasard si main est « en avance » sur l'horloge (horodatages
+# ronds posés à la main avant la règle du 2026-11-01). Le hasard : deux sessions lancées
+# ensemble recevaient le même « + 1 s » (2026-11-01, 20261101224701 pris deux fois). L'addition
+# se fait en vraie heure (jamais de seconde 60). Jamais un nombre rond choisi à la main.
 #
 # Refuse (exit 1) :
 #   - une migration neuve dont l'horodatage est déjà pris sur origin/main ;
@@ -68,6 +70,19 @@ if [ -n "$pr" ]; then
 	cible="$(git rev-parse FETCH_HEAD)"
 fi
 
+# AAAAMMJJHHMMSS + n secondes, en vraie heure UTC (date BSD de macOS, sinon GNU).
+# Horodatage ancien qui n'est pas une vraie heure (« …240000 ») : addition simple.
+ajouter_secondes() {
+	local e
+	if e="$(date -u -j -f %Y%m%d%H%M%S "$1" +%s 2>/dev/null)"; then
+		date -u -j -r "$((e + $2))" +%Y%m%d%H%M%S
+	elif e="$(date -u -d "${1:0:8} ${1:8:2}:${1:10:2}:${1:12:2}" +%s 2>/dev/null)"; then
+		date -u -d "@$((e + $2))" +%Y%m%d%H%M%S
+	else
+		echo $((10#$1 + $2))
+	fi
+}
+
 liste() {
 	git ls-tree --name-only "$1" -- "$DOSSIER/" 2>/dev/null | sed -n "s#^$DOSSIER/##p" | grep '\.sql$' | sort
 }
@@ -81,7 +96,8 @@ if [ -n "$prochain" ]; then
 	if [ -z "$dernier" ] || [[ "$maintenant" > "$dernier" ]]; then
 		echo "$maintenant"
 	else
-		echo $((10#$dernier + 1))
+		decalage=$((RANDOM % 59 + 1))
+		ajouter_secondes "$dernier" "$decalage"
 	fi
 	exit 0
 fi

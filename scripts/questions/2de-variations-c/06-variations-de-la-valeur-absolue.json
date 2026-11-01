@@ -1,0 +1,169 @@
+{
+	"title": "Variations de la fonction valeur absolue",
+	"description": "Intervalles où |x| décroît et croît, minimum 0 en 0, tableau de variations à choisir (pièges : |x| croissante comme x, sens inversés)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Valeur absolue",
+	"subdomain": "Variations",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On note $f$ la fonction valeur absolue : $f(x)=\\lvert x\\rvert$.\n\nSur quel intervalle $f$ est-elle décroissante ? Donne le plus grand intervalle, bornes comprises.\n\n$I=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "]-\\infty;0]",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ décroît jusqu'en $0$ puis croît : elle est décroissante sur $\\textcolor{{{color:primary.0}}}{\\left]-\\infty\\,;0\\right]}$.",
+					"```variation\nvariable: x\ndomain: -inf, 0, +inf\n\nvariation: \\lvert x\\rvert\n  0: 0, bottom\n```"
+				]
+			}
+		},
+		{
+			"statement": "On note $f$ la fonction valeur absolue : $f(x)=\\lvert x\\rvert$.\n\nSur quel intervalle $f$ est-elle croissante ? Donne le plus grand intervalle, bornes comprises.\n\n$I=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "[0;+\\infty[",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ décroît jusqu'en $0$ puis croît : elle est croissante sur $\\textcolor{{{color:primary.0}}}{\\left[0\\,;+\\infty\\right[}$.",
+					"```variation\nvariable: x\ndomain: -inf, 0, +inf\n\nvariation: \\lvert x\\rvert\n  0: 0, bottom\n```"
+				]
+			}
+		},
+		{
+			"statement": "On note $f$ la fonction valeur absolue : $f(x)=\\lvert x\\rvert$.\n\nQuel est le minimum de $f$ sur $\\mathbb{R}$ ?\n\n$m=?$\n\nEn quelle valeur est-il atteint ?\n\n$x=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\lvert x\\rvert\\geqslant 0$ pour tout réel $x$, et $f(0)=0$ : le minimum est $\\textcolor{{{color:primary.0}}}{0}$, atteint en $x=\\textcolor{{{color:primary.1}}}{0}$.",
+					"```variation\nvariable: x\ndomain: -inf, 0, +inf\n\nvariation: \\lvert x\\rvert\n  0: 0, bottom\n```"
+				]
+			}
+		},
+		{
+			"statement": "On note $f$ la fonction valeur absolue, étudiée sur $\\left[-{{a}}\\,;{{a}}\\right]$.\n\nQuel est son tableau de variations ?\n\n````choix\n- ```variation\n  variable: x\n  domain: {{eval:-(a)}}, 0, {{a}}\n\n  variation: \\lvert x\\rvert\n    {{eval:-(a)}}: {{a}}, top\n    0: 0, bottom\n    {{a}}: {{a}}, top\n  ```\n- ```variation\n  variable: x\n  domain: {{eval:-(a)}}, 0, {{a}}\n\n  variation: \\lvert x\\rvert\n    {{eval:-(a)}}: -{{a}}, bottom\n    0: 0, top\n    {{a}}: -{{a}}, bottom\n  ```\n- ```variation\n  variable: x\n  domain: {{eval:-(a)}}, 0, {{a}}\n\n  variation: \\lvert x\\rvert\n    {{eval:-(a)}}: -{{a}}, bottom\n    0: 0, center\n    {{a}}: {{a}}, top\n  ```\n- ```variation\n  variable: x\n  domain: {{eval:-(a)}}, 0, {{a}}\n\n  variation: \\lvert x\\rvert\n    {{eval:-(a)}}: {{a}}, top\n    0: 0, center\n    {{a}}: -{{a}}, bottom\n  ```\n````",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(-{{a}})=f({{a}})={{a}}$ et $f(0)=0$ : $f$ décroît de ${{a}}$ à $0$, puis croît de $0$ à ${{a}}$.",
+					"```courbe\nx: -6 ; 6\ny: -1 ; 7\ngrille: 1 ; 1\nf(x) = abs(x) sur [-{{a}} ; {{a}}]   bleu\ntaille: moyenne\ndescription: Courbe en V, pointe à l'origine.\n```"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "]−∞ ; 0]",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["]-\\infty;0]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : [0 ; +∞[",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["[0;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "[0 ; +∞[",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["[0;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ℝ",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\mathbb{R}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Minimum 0 en 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Le bon tableau",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ↗ ↘",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : croissante (comme x)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
