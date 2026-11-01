@@ -6,17 +6,17 @@ status: phase 0 tranchée, PR 0 à faire
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après les réponses de David à Q1-Q6._
+_Mis à jour le 2026-11-01, PR 0 codée, pas encore ouverte._
 
-- **État** : phase 0 tranchée (D1-D4, Q1-Q6 validées) ; chantier renommé `registre-reference` ;
-  rien de codé.
-- **Prochaine action** : PR 0, le corpus (`tests/fixtures/mathast/`) et ses deux tests, puis la page
-  à cocher pour que David valide les attendus.
-- **En attente de David** : rien.
+- **État** : PR 0 commitée et poussée sur la branche : champ `answer` du registre, corpus de
+  85 lignes, deux tests (registre, Atelier) avec listes « connues fausses », doc à jour. Page à
+  cocher publiée : https://claude.ai/artifact/RSWgLdsubFwGayPgQgCETo (base `verdicts`).
+- **Prochaine action** : lire la base `verdicts` (ArtifactData), appliquer les corrections de
+  David au corpus et aux listes, relancer les tests, puis ouvrir la PR 0 et merger (CI verte).
+- **En attente de David** : la validation des 85 attendus (14 fiches posent une question).
 - **Pièges en cours** : `tsx` lance `WebReplEngine` seul (< 1 s), pas l'Atelier (`$state is not
-defined`) ; une sonde ou un test de l'Atelier passe par vitest ou le runner de Vite (~9 s).
-- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `refactor/registre-reference`
-  (ex-`pnpm-math-atelier`).
+defined`) ; une sonde de l'Atelier passe par vitest (fichier jetable sous `src/`, ~2 s).
+- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `refactor/registre-reference`.
 
 ---
 
@@ -146,3 +146,25 @@ Réponses retenues, en gras sous chaque question.
 3. Commandes de Q1 descendues dans le registre, une PR par famille.
 4. `pnpm math` sur `WebReplEngine` (`repl.ts`, `cli.ts` réécrits) ; règle « ne plus sonder avec
    `pnpm math` » levée.
+
+## PR 0 — le corpus (2026-11-01)
+
+- **Décision de David** (question posée en séance) : le registre déclare sa réponse brute dans un
+  **champ `answer`** (LaTeX de la réponse seule) de `CommandResult` / `ReplExecutionResult`,
+  rempli par `.diff`, `.simplify`, `.solve`, `.integrate` (`+ C`, Q3), `.eval`, `.taylor`,
+  `.domain` (`D = …`, `domainToLatex`), `.equiv` (`\text{vrai}` / `\text{faux}`) et les calculs
+  tapés seuls. Aucune réponse affichée ne change.
+- **Corpus** : `tests/fixtures/mathast/registre-corpus.ts` (85 entrées `{ id, ligne, attendu,
+refus?, note? }`). Juge : `src/lib/mathAST/cli/__tests__/registre-corpus/compare.ts`
+  (`checkForm`, puis contrôle numérique : `forme` = même valeur ; ensembles découpés à la main,
+  `checkForm` ne lit pas `S = …`). Tests : `registre.test.ts` et
+  `src/lib/atelier/__tests__/registre-corpus.test.ts` ; écarts figés dans `connues-fausses.ts`
+  (registre 15, Atelier 14). Preuve rouge : un attendu faussé fait échouer les deux outils.
+- **Écarts trouvés en plus de l'inventaire** : `.dériver (3x-1)^2` (registre `6(3x−1)`),
+  `(x²+1)e^(−x)` (registre non réduit, Atelier `−(x²−2x+1)e^{−x}`), `1/x` (registre
+  `(−1)/x²`) ; `.simplifier x/x` → 1 (registre, S3) ; `.résoudre` des équations répond `x = …`
+  (et `≈` pour eˣ = 3, ln x = 2) ; l'Atelier range `{1 ; −2}` ; `.équivalent` : l'Atelier affiche
+  la sortie brute du moteur, et le registre dit sin² + cos² ≠ 1 (`normalFormsEquivalent`) ; le
+  registre refuse la virgule décimale (`0,1+0,2`) ; messages de refus différents (R6).
+- **Hors corpus pour l'instant** : `.variations` (tableau, pas une réponse en LaTeX) et les
+  commandes de Q1 (elles entreront avec leur PR de descente).
