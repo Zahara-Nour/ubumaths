@@ -60,6 +60,13 @@ describe('écriture des secondes', () => {
 		expect(messages('heure: 9 h 40 s').join(' ')).toMatch(/non comprise/);
 	});
 
+	it('refus : des secondes sans `min` (`9 h 25 40 s` se lit mal)', () => {
+		expect(messages('heure: 9 h 25 40 s').join(' ')).toMatch(/non comprise/);
+		expect(parse('heure: 9h25min40s').spec?.times).toEqual([
+			{ hours: 9, minutes: 25, seconds: 40 }
+		]);
+	});
+
 	it('refus : des secondes avec l’aiguille des minutes cachée', () => {
 		expect(messages('heure: 9 h 0 min 40 s', 'minutes: cachées').join(' ')).toMatch(
 			/minutes cachée/
@@ -96,14 +103,18 @@ describe('réponse et juge : trois aiguilles', () => {
 	it('réponse `47 25 40` ; aller-retour', () => {
 		const hands = { hour: 47, minute: 25, second: 40 };
 		expect(handsAnswer(hands)).toBe('47 25 40');
-		expect(handsOfAnswer('47 25 40')).toEqual(hands);
-		expect(handsOfAnswer('47 25 -')).toEqual({ hour: 47, minute: 25, second: null });
+		expect(handsOfAnswer('47 25 40', true)).toEqual(hands);
+		expect(handsOfAnswer('47 25 -', true)).toEqual({ hour: 47, minute: 25, second: null });
 		expect(handsAnswer({ hour: null, minute: null, second: null })).toBe('');
 	});
 
 	it('deux aiguilles : la réponse ne change pas (`47 25`)', () => {
 		expect(handsAnswer({ hour: 47, minute: 25 })).toBe('47 25');
 		expect(handsOfAnswer('47 25')).toEqual({ hour: 47, minute: 25 });
+	});
+
+	it('horloge sans trotteuse : une réponse à trois parties perd sa seconde', () => {
+		expect(handsOfAnswer('47 25 40')).toEqual({ hour: 47, minute: 25 });
 	});
 
 	it('timeText : `9 h 25 min 40 s`, `2 h 5 min 7 s` (cadran de 12), aller-retour', () => {
@@ -167,6 +178,11 @@ describe('énoncé masqué (évaluation notée)', () => {
 		expect(findUnmaskedAnswers(masked)).toEqual([]);
 		const spec = parseHorlogeContent('placer: ? s').spec;
 		expect(spec?.placer?.seconds).toBe(0);
+	});
+
+	it('masquer deux fois ne retire pas la trotteuse', () => {
+		const once = maskGestureAnswers(statement);
+		expect(maskGestureAnswers(once)).toContain('placer: ? s');
 	});
 
 	it('sans secondes : `placer: ?` comme avant', () => {

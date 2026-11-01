@@ -560,7 +560,7 @@ chiffres: quarts
 ````
 
 `heure:` (obligatoire) : 1 à 4 heures `9 h`, `9 h 30`, `9h5`, `9 h 30 min`, `9 h 30 min 15 s`
-(heures 0 à 23, minutes et secondes 0 à 59 ; `9:30` et `9 h 40 s` refusés), une horloge par heure.
+(heures 0 à 23, minutes et secondes 0 à 59 ; `9:30`, `9 h 40 s` et `9 h 25 40 s` refusés : les secondes demandent `min`), une horloge par heure.
 **Des secondes écrites dessinent la trotteuse** (fine, à contrepoids, sans couleur de plus ; chantier
 [cercle-trotteuse](../wip/cercle-trotteuse-progress.md)) ; la grande aiguille reste alors pile sur sa minute.
 Des secondes avec `minutes: cachées` : refus. Facultatives : `légendes:` (une par horloge, 40 caractères, sans `;`),
@@ -581,7 +581,7 @@ légende ; `case:` sans `placer:`. Cadran de 6 cm par défaut (`HORLOGE_SIZE_CM.
 `HorlogePlacer.svelte` : deux aiguilles **indépendantes** (pas de remontoir), en attente sur le 12
 (grisées, pointillés) tant qu'elles ne sont pas posées ; étiquettes « petite aiguille » / « grande
 aiguille » (la grande active au départ), toucher le cadran tourne l'aiguille active (60 crans),
-toucher une aiguille posée la reprend, ◀ ▶ et flèches d'un cran ; `role="slider"`, nom accessible
+toucher une aiguille posée la reprend (une autre que l'active : choisie sans bouger, seul le glisser la déplace), ◀ ▶ et flèches d'un cran ; `role="slider"`, nom accessible
 sans l'heure attendue. Calcul pur `utils/horloge-placer.ts` : réponse `handsAnswer` (`'47 25'`),
 lecture `readHands` (petite pile sur l'heure si minutes = 0, strictement entre deux heures sinon),
 `isPlacedTimeCorrect` (accepte aussi le cran de la vraie place de la petite aiguille, `trueHourTick` :

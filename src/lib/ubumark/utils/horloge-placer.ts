@@ -83,7 +83,8 @@ function tickOf(text: string): number | null {
 
 /**
  * Aiguilles d'une réponse ; illisible : aucune aiguille posée. `withSecond` :
- * horloge à trotteuse — une réponse vide ou illisible rend aussi `second: null`
+ * horloge à trotteuse — une réponse vide ou illisible rend aussi `second: null` ;
+ * sans trotteuse, jamais de `second`
  */
 export function handsOfAnswer(answer: string, withSecond = false): HorlogeHands {
 	const none: HorlogeHands = withSecond
@@ -95,9 +96,8 @@ export function handsOfAnswer(answer: string, withSecond = false): HorlogeHands 
 	const ticks = parts.map(tickOf);
 	if (parts.some((part, i) => part !== '-' && ticks[i] === null)) return none;
 	const [hour, minute, second] = ticks;
-	return match[3] === undefined && !withSecond
-		? { hour, minute }
-		: { hour, minute, second: second ?? null };
+	// Horloge sans trotteuse : une seconde lue (réponse périmée) est ignorée
+	return withSecond ? { hour, minute, second: second ?? null } : { hour, minute };
 }
 
 /** Heure du cadran de 12 : 0 h et 12 h → 12, 14 h → 2 */

@@ -64,9 +64,10 @@ const KEY_LINE_REGEX = /^([A-Za-zÀ-ÿ]+)\s*:\s*(.*)$/;
 /**
  * `9 h`, `9 h 30`, `9h5`, `9 h 25 min`, `9 h 25 min 40 s` ; le signe est lu pour
  * dire « de 0 à 23 » plutôt que « illisible ». Les secondes demandent les minutes
- * (`9 h 40 s` est refusé, jamais lu `9 h 4 min 0 s`).
+ * (`9 h 40 s` est refusé, jamais lu `9 h 4 min 0 s`) et un `min` écrit (`9 h 25 40 s`
+ * est refusé : il se lit mal).
  */
-const TIME_REGEX = /^(-?\d+)\s*h(?:\s*(\d+)(?:\s*min)?(?:(?:\s*min\s*|\s+)(\d+)\s*s)?)?$/;
+const TIME_REGEX = /^(-?\d+)\s*h(?:\s*(\d+)(?:\s*min(?:\s*(\d+)\s*s)?)?)?$/;
 
 /** `3cm`, `2,5 cm` */
 const SIZE_REGEX = /^(\d+(?:[.,]\d+)?)\s*cm$/i;
@@ -233,6 +234,8 @@ function parseTime(raw: string): HorlogeTime {
  * heure à secondes — l'élève doit encore voir la trotteuse à poser —, `?` sinon
  */
 export function maskedPlacerValue(value: string): string {
+	// Déjà masquée : inchangée (un second masquage garde la trotteuse)
+	if (value.trim() === HORLOGE_MASKED_WITH_SECONDS) return HORLOGE_MASKED_WITH_SECONDS;
 	return TIME_REGEX.exec(value.trim())?.[3] === undefined ? '?' : HORLOGE_MASKED_WITH_SECONDS;
 }
 

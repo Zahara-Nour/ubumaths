@@ -105,9 +105,30 @@ describe('Horloge à placer — le geste', () => {
 			props: { node: node('placer: 9 h 25'), answer: answer() }
 		});
 		const root = screen.container;
-		// Grande aiguille active ; le doigt près de la petite (cran 46) la reprend
+		// Grande aiguille active ; le doigt près de la petite (cran 46) la reprend,
+		// sans la déplacer : seul le glisser la bouge
 		tapAt(root, 46);
-		await expect.poll(() => probe.value).toBe('46 25');
+		await expect
+			.poll(() => dial(root).getAttribute('aria-valuetext'))
+			.toBe('petite aiguille entre le 9 et le 10');
+		expect(probe.changes).toEqual([]);
+		tapAt(root, 50);
+		await expect.poll(() => probe.value).toBe('50 25');
+	});
+
+	it('trotteuse active près de la grande : toucher reprend la grande sans perdre sa minute', async () => {
+		const { probe, answer } = answerProbe('47 25 40');
+		const screen = await render(HorlogePlacer, {
+			target: mainElement(),
+			props: { node: node('placer: 9 h 25 min 40 s'), answer: answer() }
+		});
+		const root = screen.container;
+		await userEvent.click(button(root, 'trotteuse'));
+		tapAt(root, 26);
+		await expect
+			.poll(() => dial(root).getAttribute('aria-valuetext'))
+			.toBe('grande aiguille sur la minute 25');
+		expect(probe.changes).toEqual([]);
 	});
 
 	it('étiquettes et ◀ ▶ : un cran de l’aiguille choisie', async () => {

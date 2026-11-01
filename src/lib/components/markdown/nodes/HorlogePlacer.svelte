@@ -186,13 +186,12 @@
 		if (angle === null) return;
 		const tick = tickOfAngle(angle);
 		const grabbed = grabbedAt(tick);
-		if (grabbed !== null) {
-			active = grabbed;
-			placingNew = false;
-		} else {
-			placingNew = tickOfHand(active) === null;
-		}
-		place(active, tick);
+		// Une autre aiguille reprise : choisie sans bouger, seul le glisser la déplace
+		// (le doigt qui visait la trotteuse près de la grande ne perd pas la minute)
+		const switched = grabbed !== null && grabbed !== active;
+		if (grabbed !== null) active = grabbed;
+		placingNew = grabbed === null && tickOfHand(active) === null;
+		if (!switched) place(active, tick);
 		dragging = true;
 		svg?.setPointerCapture?.(event.pointerId);
 	}
