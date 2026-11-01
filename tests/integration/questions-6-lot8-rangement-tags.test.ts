@@ -2,7 +2,7 @@
  * Chantier « questions-6 », lot 8 « Assemblages de cubes » : nœud et tag de 5 brouillons (Supabase local requis)
  * ======================================================================================
  *
- * Migration `20261101220100_questions_6_lot8_rangement_tags` : les 5 brouillons de 6e créés
+ * Migration `20261101224700_questions_6_lot8_rangement_tags` : les 5 brouillons de 6e créés
  * le 2026-11-01 par scripts/create-questions.ts (scripts/questions/6-assemblages-cubes/, sans
  * nœud ni tag) vont sur le nœud de leur point, un seul point chacun (ADR 0020). Décisions de
  * David (journal docs/wip/questions-6-progress.md § 20).
@@ -39,7 +39,7 @@ interface Etat {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261101220100_questions_6_lot8_rangement_tags.sql';
+const MIGRATION = 'supabase/migrations/20261101224700_questions_6_lot8_rangement_tags.sql';
 const SOLIDES = 'Géométrie > Solides';
 const VOLUMES = 'Grandeurs et mesures > Volumes';
 const LONGUEURS = 'Grandeurs et mesures > Longueurs';
