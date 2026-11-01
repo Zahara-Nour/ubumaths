@@ -8,9 +8,9 @@
 
 _Mis à jour le 2026-11-01, phase 0 du lot 6 (§ 37)._
 
-- **État** : lots 1 à 5 publiés ; lot 6 : relevé fait, phase 0 proposée (§ 37).
-- **Prochaine action** : réponses de David à L6-a à L6-e, puis écrire le lot 6 A.
-- **En attente de David** : phase 0 du lot 6 (§ 37, questions L6-a à L6-e).
+- **État** : lots 1 à 5 publiés ; lot 6 : phase 0 validée (§ 37).
+- **Prochaine action** : écrire le lot 6 A (7 modèles, § 37), worktree `ubumaths-wt-questions-2de`.
+- **En attente de David** : rien.
 - **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main` ET des worktrees ; `page-a-cocher.ts`
   ne prend qu'un `--dir` (préfixes `a-`/`b-` dans une copie) ; `db:migrate` et `--publier` refusés par le
   classifieur → David les lance avec `!`.
@@ -856,7 +856,7 @@ David a lancé `create-questions --publier` sur `2de-droites-a` puis `2de-droite
 - David valide le lot en bloc (aucun verdict sur la page). `publier-lot.ts` en simulation : 6/6 et 10/10 passent ;
   `--publier` lancé par David sur `2de-droites-a` puis `2de-droites-b` : 16/16 publiés. MCP : 16 `published`.
 
-## 37. Lot 6 « Fonctions de référence, résolutions » : relevé et phase 0 (proposée le 2026-11-01, à valider)
+## 37. Lot 6 « Fonctions de référence, résolutions » : relevé et phase 0 (validée le 2026-11-01)
 
 **Relevé MCP (prod, 2026-11-01)** : sur les points du § 3.8 hors lecture graphique, **21 sans modèle** :
 325, 326, 327, 331, 447, 329, 333, 334, 335, 336, 448, 455, 457, 460, 461, 463, 466, 467, 469, 470, 472. Déjà couverts : 2-328 (bba95c2d), 2-339 (75fe996a), 2-458 (62b99aa7), **2-464** (419887ff et
@@ -947,3 +947,8 @@ Lot 6 C « Résolutions : racine, cube, méthode au choix » (6) :
   3/x − 1 = 5, 2√x + 1 = 7 (et < k) ; pas de |x| décalé (l2-1). Le corrigé nomme le type.
 - **L6-e — Découpage** : 6 A (8), 6 B (6), 6 C (6) : trois PR de fichiers, puis une migration nœud + tag et une
   page à cocher pour les 20 ? → Je recommande **oui** (comme le lot 5).
+
+**Décisions de David (2026-11-01)** : phase 0 validée avec mes cinq recommandations — L6-a 2-461 modèle
+distinct côté fonction ; L6-b 2-329 déplacé au lot 7 (lot 6 = 20 modèles, 6 A = 7) ; L6-c cubes parfaits
+seulement ; L6-d expressions qui se ramènent à un type du programme ; L6-e trois PR de fichiers, une migration,
+une page à cocher.
