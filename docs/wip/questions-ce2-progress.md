@@ -9,7 +9,7 @@
 _Mis à jour le 2026-11-01, migration du lot 5 en PR._
 
 - **État** : lots 1 à 4 publiés en prod ; lot 5 (problèmes, 12 modèles) : brouillons créés en prod (2026-11-01),
-  migration nœud + tag `20261101160300` en PR (test rouge sans, vert avec).
+  migration nœud + tag `20261101180100` en PR (test rouge sans, vert avec).
 - **Prochaine action** : CI verte → merger → `db:migrate` (`--dry-run` d'abord ; condition 3 : `security-auditor`
   sans finding bloquant) → relevé MCP → page à cocher → `publier-lot` en simulation puis `--publier` (David, `!`).
   En parallèle, dans des sessions à part : `choix-correction` (§ 8), puis `centaines:` + milliers de `collection`
@@ -438,7 +438,7 @@ totale ≤ 1 000 pour le nombre de parts. Question d'accès : personne ne lit ri
 - 12 brouillons créés en prod par David (`08cac7de`, `a2bee082`, `4f47f8d6`, `10f05004`, `28988062`, `4948acaf`,
   `fe26e846`, `37a715c4`, `059b8bba`, `0f5d9ad8`, `43b40fc7`, `837d027b`), relus au MCP : `draft`, niveaux voulus,
   sans nœud ni tag, 117 specs enregistrées.
-- Migration `20261101160300_questions_ce2_lot5_rangement_tags` (max des worktrees `160100` + 2 min) et son test :
+- Migration `20261101180100_questions_ce2_lot5_rangement_tags` (max de la prod, de `main`, des worktrees et des branches distantes `180000` + 1 min ; renumérotée depuis `160300`, qui passait avant la `160400` de `main`) et son test :
   rouge sans (5 échecs sur 9), vert 9/9. Nœuds relevés : 029 → parties-tout (y compris le modèle des fractions,
   `4f47f8d6`), 079 et 033 → comparaison, 030 et 032 → en deux étapes ou plus, 031 → multiplicatifs, 034 → produits
   cartésiens. `check:incremental` 0 erreur, cliquet tenu.

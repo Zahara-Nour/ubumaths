@@ -3,7 +3,7 @@
  * (Supabase local requis)
  * ===============================================================================================
  *
- * Migration `20261101160300_questions_ce2_lot5_rangement_tags` : les 12 brouillons créés le
+ * Migration `20261101180100_questions_ce2_lot5_rangement_tags` : les 12 brouillons créés le
  * 2026-11-01 (scripts/questions/ce2-5/) vont chacun sur le nœud de leur point, une sous-notion de
  * « Problèmes arithmétiques » (parties-tout, comparaison, en deux étapes ou plus, multiplicatifs, produits cartésiens), et reçoivent
  * ce point, un seul (ADR 0020). Journal docs/wip/questions-ce2-progress.md, § 9.
@@ -40,7 +40,7 @@ interface Etat {
 // ============================================================================
 
 const LONGUEURS = 'Grandeurs et mesures > Longueurs';
-const MIGRATION = 'supabase/migrations/20261101160300_questions_ce2_lot5_rangement_tags.sql';
+const MIGRATION = 'supabase/migrations/20261101180100_questions_ce2_lot5_rangement_tags.sql';
 const PARTIES_TOUT = 'Nombres et calculs > Problèmes arithmétiques > parties-tout';
 const COMPARAISON = 'Nombres et calculs > Problèmes arithmétiques > comparaison';
 const ETAPES = 'Nombres et calculs > Problèmes arithmétiques > en deux étapes ou plus';
