@@ -12,9 +12,10 @@ status: en cours
 
 _Mis à jour le 2026-11-01, à l'ouverture._
 
-- **État** : codé, tests verts (serveur 134 monnaie, écran 21), doc à jour ; revue `code-reviewer` (Opus) lancée le 2026-11-01, résultat perdu au `/clear` → **la relancer** (même brief : flottants, `fewestCoupures`, juge `3,45` / `35`, `readAmount`).
-- **Prochaine action** : relancer et corriger la revue → PR → CI → merge ; puis lot monnaie du CE1 (session `questions-ce1`).
-- **En attente de David** : avis sur les captures (doré un peu kaki en clair ; « 500 » du coin d'un billet au ras du bord).
+- **État** : codé, tests verts, doc à jour, branche poussée ; revue Opus rendue (§ 4) : 1 bloquant, 3 à corriger.
+- **Prochaine action** : David tranche B1 → corriger B1, C1, C2, C3 (+ M1, M2) avec tests → PR → CI → merge.
+- **En attente de David** : B1, réponse `2,2` ou `2,20` (§ 4) ; avis sur les captures (doré kaki en clair ; « 500 » du
+  coin au ras du bord).
 - **Pièges en cours** : les modèles du CP (`construire: 35`, `montant: 48`) ne doivent pas bouger, ni leur réponse
   `35` ; la scène est commune avec ` ```collection ` (ses tests doivent rester verts).
 - **Worktree / branche** : `../ubumaths-wt-monnaie-centimes` (`feat/monnaie-centimes`).
@@ -90,6 +91,25 @@ Ce que demandent les points (bornes `cycle2.json`) : « valeur en euros et centi
 
 **Revue prévue** : `code-reviewer` en `model: opus` (correction des réponses : la somme posée est jugée).
 
+## 4. Revue `code-reviewer` (Opus, 2026-11-01)
+
+- **B1 (bloquant)** : `amountAnswer` donne `2,20`, `0,50`, `1,10` des DEUX côtés ; le juge ordinaire
+  (`cosmeticViolations`, `removeZeros`) les rend « zéros inutiles » (`unoptimal_form`), et **faux** avec
+  `zeros: 'strict'`. `3,45`, `0,05`, `35` : `correct`. Choix à David : (a) la case porte `2,2` / `0,5` (invisible à
+  l'écran, la correction dit toujours « 2 € et 20 c » ; écart à la décision 3) — recommandé ; (b) garder `2,20` et
+  couper `zeros` pour les cases `construire: 'monnaie'` (exception par case, plus intrusive). Dans les deux cas : test
+  de bout en bout `generateInstance` → `validateAnswer` (`2,20`, `0,50`, `3,45`, avec et sans `zeros: 'strict'`), sur
+  le patron de `generation-construire.test.ts`.
+- **C1** : `1000` jugé « mal espacé » si le modèle active `spacesFromFourDigits` → réponse sans espace et `spaces`
+  ignoré pour une case à construire, ou `amountAnswer` qui groupe ; test du juge.
+- **C2** : `construire: 1 000` / `montant: 1 000` refusés alors que le message montre `1 000 €` → accepter les espaces de
+  milliers dans `readAmount`.
+- **C3** : les messages listent `5, 10, 20, 50 c` ; recopié en `réserve: 5 10 20 50 c` → 5, 10, 20 € et 50 c sans
+  erreur → `denominationList` écrit l'unité sur chaque valeur (`5 c, 10 c, …, 1 €, 2 €`) ; test.
+- **M1** : `{{eval:345/100}}` résolu en `\dfrac{69}{20}` : message à compléter. **M2** : `pièces: 5` → ajouter « ou
+  `5c` pour 5 centimes ». **M3** : DP juste, pire cas ~5 ms (999,99 €), acceptable. **M4, M5** : flottants et
+  `readAmount` sans problème ; `35` reste `correct` (CP intact).
+
 ## Journal
 
 - 2026-11-01 : chantier ouvert (worktree, branche), relevé du code, phase 0 écrite.
@@ -101,3 +121,4 @@ Ce que demandent les points (bornes `cycle2.json`) : « valeur en euros et centi
   « pas encore disponible » et 100 €). `check:incremental` 0, cliquet tenu. Doc : `ubumark.md`, `questions.md`.
 - 2026-11-01 : captures 390 px clair / sombre (test navigateur temporaire, retiré) : valeurs lisibles sur toutes les
   pièces ; doré kaki en clair, coin « 500 » au ras du bord → à montrer à David.
+- 2026-11-01 : revue Opus rendue (§ 4) ; B1 à trancher par David.
