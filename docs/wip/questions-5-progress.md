@@ -5,20 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2146._
+_Mis à jour le 2026-11-01, après #2146 et la publication du lot 7._
 
-- **État** : lots 1 à 6 publiés. **Lot 7** : 6 brouillons rangés et tagués en prod (§ 18.4) ; page à cocher
-  https://claude.ai/artifact/LQmx5GndH3VQeuQR2xgYGU (capacité `db`, collection `verdicts`, 0 alerte) ;
-  simulation `publier-lot` : 6/6 passent.
-- **Prochaine action** : lire `verdicts` (ArtifactData) et **compter** ; « À revoir » → corriger ; 6/6 OK → David
-  `publier-lot.ts --dir scripts/questions/5-proportionnalite --publier`, puis vérifier au MCP. Ensuite lot 8
-  « Opérations » (001, 002, 005, 116, 117).
-- **En attente de David** : relecture de la page ; 02 (deux cases sur deux lignes) à essayer à la main dans
-  l'aperçu (au pilotage Chrome, la frappe dans la 2e case arrivait aussi dans la 1re — extension ou appli ?).
+- **État** : lots 1 à 7 publiés (lot 7 : 6/6 « ok » sur la page à cocher, publié par David, vérifié au MCP).
+- **Prochaine action** : lot 8 « Opérations » (001, 002, 005, 116, 117) : relevé prod, décisions (phase 0) à
+  faire valider, nouveau worktree `ubumaths-wt-questions-5`.
+- **En attente de David** : 02 du lot 7 (deux cases sur deux lignes, désormais publié) à essayer à la main : au
+  pilotage Chrome, la frappe dans la 2e case arrivait aussi dans la 1re — extension ou appli ?
 - **Pièges en cours** : `db:migrate` en prod refusé par le classifieur du mode auto → David le lance ; il pousse
   toutes les migrations en attente (se coordonner avec les autres sessions) ; `pnpm check:migrations --pr <n>`
   avant merge (#2165) ; worktree non lié à Supabase → `db:migrate` depuis le dépôt principal ; jamais `e`.
-- **Worktree / branche** : aucun (lot 8 : nouveau worktree `ubumaths-wt-questions-5`, branche à créer).
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -557,3 +554,8 @@ Calcul littéral › Écrire › Formules 1-3, nœud = notion Algèbre › Calcu
   intact (16:59), trigger réactivé.
 - Page à cocher https://claude.ai/artifact/LQmx5GndH3VQeuQR2xgYGU (6 fiches, aucune alerte). Simulation
   `publier-lot` : 6/6 passent.
+
+### Lot 7 : publication (2026-11-01)
+
+- Page à cocher : **6 verdicts sur 6 « ok »**, sans commentaire (comptés en base de l'artefact). David :
+  `publier-lot.ts --publier` → 6/6 publiés ; vérifié au MCP (`status = published` pour les 6).

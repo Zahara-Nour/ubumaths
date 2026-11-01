@@ -6,20 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2158._
+_Mis à jour le 2026-11-01, après #2158 et la publication du lot 6a._
 
-- **État** : lot 6a (9 modèles longueurs + masses) rangé en prod : #2158 mergée, migration `20261101223100` jouée
-  par David (avec 224000 et 224700). Relevé MCP : 9 nœuds, 9 tags (CE2-035 à 048), `updated_at` préservé, 9 `draft`.
-  Page à cocher publiée : https://claude.ai/artifact/5SdrTimyvdNdj1U7h5K9qH (9 fiches, 2 alertes attendues :
-  bloc `ranger` non dessiné → à jouer dans l'aperçu admin ; homonymes d'autres niveaux écartés, ids vérifiés).
-- **Prochaine action** : David relit la page (rendu à 390 px non vérifié) ; compter les verdicts (`ArtifactData list
-verdicts`) avant de dire « tout est relu » ; un « À revoir » → corriger (§ 7). Puis `publier-lot.ts --dir
-scripts/questions/ce2-6a` (simulation), David lance `--publier`. Ensuite lot 6b (contenances + durées, § 10).
-- **En attente de David** : la relecture de la page ; plus tard son `--publier`.
+- **État** : lots 1 à 6a en prod ET publiés. Lot 6a : 9 verdicts « OK » (page à cocher), simulation passée, `--publier`
+  lancé par David, relevé MCP : 9 `published`. Aucun worktree en cours.
+- **Prochaine action** : lot 6b (contenances + durées, phase 0 déjà validée, § 10) : worktree
+  `ubumaths-wt-questions-ce2-6b`, tests d'abord, specs, création en brouillon par David, migration nœud + tag.
+- **En attente de David** : rien.
 - **Pièges en cours** : horodatage d'une migration neuve = `pnpm migration:horodatage` ; `db:migrate`, `--publier`
   refusés par le classifieur (David, `!`) ; `db:migrate` pousse TOUTES les migrations en attente ; niveaux relevés
-  juste avant la publication ; commitlint : sujet sans majuscule ; pas de mention Claude dans commits/PR.
-- **Worktree / branche** : aucun (à recréer pour le lot 6b).
+  juste avant la publication ; commitlint : sujet sans majuscule ; pas de mention Claude dans commits/PR ; verdicts
+  du 6a posés en 6 s (bloc ranger CE2-038/048 : jeu dans l'aperçu admin non confirmé).
+- **Worktree / branche** : aucun (à créer pour le lot 6b).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 

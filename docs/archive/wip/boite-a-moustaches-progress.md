@@ -1,17 +1,9 @@
 # Chantier « boite-a-moustaches » — bloc ubumark de la boîte à moustaches
 
-## Reprendre ici
-
-_Mis à jour le 2026-11-01, après #2162._
-
-- **État** : paliers 1 (affichage, #2151) et 2 (construire, #2162) mergés, pas encore en prod (`deploy:prod`
-  sur demande de David). Le palier 3 = lot 8 de `questions-3` (modèles), mené dans le chantier `questions-3`.
-- **Prochaine action** : versement (fin de chantier) : le durable dans `docs/systeme/`, journal archivé.
-- **En attente de David** : vérifications manuelles #2151 et #2162 (`verifications-manuelles.md`) ;
-  décisions du § 11 « Décidé en écrivant » (trait suivant, bande par boîte, phrases).
-- **Pièges en cours** : quartiles = ceux de `describe.ts` ; série tirée au hasard de taille paire → médiane
-  au demi, refusée sur un axe de 1 en 1 (aucune nouvelle graine tentée : dit dans la fiche).
-- **Worktree / branche** : aucun (worktree retiré après #2162).
+> **Archivé le 2026-11-01** (versement) : chantier clos après #2151 et #2162. Le durable est dans
+> [ubumark.md](../../systeme/ubumark.md) (genres de `stat-chart`, « Doutes et écarts connus ») et
+> [statistiques.md](../../systeme/statistiques.md). Vérifications manuelles : `docs/wip/verifications-manuelles.md`.
+> Palier 3 (modèles) : lot 8 du chantier `questions-3`. Historique : ne décrit pas forcément le code actuel.
 
 ---
 
