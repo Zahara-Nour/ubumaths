@@ -220,7 +220,9 @@ continue après 1000) rend `beyond: true` au lieu d'annoncer un faux « plus gra
   construire (`placer:`, `axe:` jusqu'à 100 au plus, `STAT_CHART_LIMITS.placeAxisMax`, ou
   `axe: à choisir` : l'élève choisit l'échelle, case en plus — [ubumark.md](ubumark.md)) aussi : le
   générateur lit ses barres par `parseStatChartContent` (`generator/build-answer.ts`), l'effectif
-  attendu est celui que le parseur a compté.
+  attendu est celui que le parseur a compté. Au premier niveau de l'énoncé seulement : en retrait,
+  cité ou ouvert sur la ligne d'un item (`- ```barres`), `findBarsToPlace` le marque imbriqué et le
+  générateur le refuse (règle commune, `ubumark/parser/nested-line.ts`).
 
 ## Invariants
 
