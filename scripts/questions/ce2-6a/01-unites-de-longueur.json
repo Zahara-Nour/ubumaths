@@ -1,0 +1,255 @@
+{
+	"title": "Les unités de longueur : km, m, dm, cm, mm",
+	"description": "Symbole et sens de km, m, dm, cm, mm ; la plus grande et la plus petite des unités ; laquelle est la plus grande de deux unités",
+	"grades": ["CE2"],
+	"theme": "Grandeurs",
+	"domain": "Longueurs",
+	"subdomain": "Unités",
+	"level": 8,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quel est le symbole du {{if:k==1|kilomètre|{{if:k==2|mètre|{{if:k==3|décimètre|{{if:k==4|centimètre|millimètre}}}}}}}} ?\n\n```choix\n- km\n- m\n- dm\n- cm\n- mm\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				},
+				{
+					"name": "r",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"km pour le kilomètre, m pour le mètre, dm pour le décimètre, cm pour le centimètre et mm pour le millimètre.",
+					"Le {{if:k==1|kilomètre|{{if:k==2|mètre|{{if:k==3|décimètre|{{if:k==4|centimètre|millimètre}}}}}}}} s'écrit **{{if:k==1|km|{{if:k==2|m|{{if:k==3|dm|{{if:k==4|cm|mm}}}}}}}}**."
+				]
+			}
+		},
+		{
+			"statement": "Que veut dire le symbole **{{if:k==1|km|{{if:k==2|m|{{if:k==3|dm|{{if:k==4|cm|mm}}}}}}}}** ?\n\n```choix\n- kilomètre\n- mètre\n- décimètre\n- centimètre\n- millimètre\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				},
+				{
+					"name": "r",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"km veut dire kilomètre, m mètre, dm décimètre, cm centimètre et mm millimètre.",
+					"**{{if:k==1|km|{{if:k==2|m|{{if:k==3|dm|{{if:k==4|cm|mm}}}}}}}}** veut dire **{{if:k==1|kilomètre|{{if:k==2|mètre|{{if:k==3|décimètre|{{if:k==4|centimètre|millimètre}}}}}}}}**."
+				]
+			}
+		},
+		{
+			"statement": "Quelle est la plus {{if:s==1|grande|petite}} de ces unités de longueur ?\n\n```choix\nmelanger: non\n- le kilomètre (km)\n- le mètre (m)\n- le décimètre (dm)\n- le centimètre (cm)\n- le millimètre (mm)\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..2"
+				},
+				{
+					"name": "r",
+					"expression": "eval:4*(s-1)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{km} = 1\\,000~\\unit{m}$, $1~\\unit{m} = 10~\\unit{dm}$, $1~\\unit{dm} = 10~\\unit{cm}$ et $1~\\unit{cm} = 10~\\unit{mm}$.",
+					"Du plus grand au plus petit : km, m, dm, cm, mm. La plus {{if:s==1|grande est le **kilomètre**|petite est le **millimètre**}}."
+				]
+			}
+		},
+		{
+			"statement": "Quelle est la plus grande de ces deux unités de longueur ?\n\n```choix\nmelanger: non\n- {{if:s==1|{{if:k==1|le mètre|{{if:k==2|le décimètre|{{if:k==3|le centimètre|{{if:k==4|le kilomètre|{{if:k==5|le mètre|le décimètre}}}}}}}}}}|{{if:k==1|le décimètre|{{if:k==2|le centimètre|{{if:k==3|le millimètre|{{if:k==4|le mètre|{{if:k==5|le centimètre|le millimètre}}}}}}}}}}}}\n- {{if:s==1|{{if:k==1|le décimètre|{{if:k==2|le centimètre|{{if:k==3|le millimètre|{{if:k==4|le mètre|{{if:k==5|le centimètre|le millimètre}}}}}}}}}}|{{if:k==1|le mètre|{{if:k==2|le décimètre|{{if:k==3|le centimètre|{{if:k==4|le kilomètre|{{if:k==5|le mètre|le décimètre}}}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "s",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:s-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Il faut plusieurs petites unités pour faire une grande : {{if:k==1|$1~\\unit{m} = 10~\\unit{dm}$|{{if:k==2|$1~\\unit{dm} = 10~\\unit{cm}$|{{if:k==3|$1~\\unit{cm} = 10~\\unit{mm}$|{{if:k==4|$1~\\unit{km} = 1\\,000~\\unit{m}$|{{if:k==5|$1~\\unit{m} = 100~\\unit{cm}$|$1~\\unit{dm} = 100~\\unit{mm}$}}}}}}}}}}.",
+					"La plus grande est **{{if:k==1|le mètre|{{if:k==2|le décimètre|{{if:k==3|le centimètre|{{if:k==4|le kilomètre|{{if:k==5|le mètre|le décimètre}}}}}}}}}}**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "symbole du décimètre : dm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : décimètre → cm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"r": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "symbole du millimètre : mm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5",
+				"r": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "dm veut dire décimètre",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dm lu centimètre",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"r": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "la plus grande : km",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "la plus petite : mm",
+			"variationIndex": 2,
+			"variables": {
+				"s": "2",
+				"r": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la plus petite → cm",
+			"variationIndex": 2,
+			"variables": {
+				"s": "2",
+				"r": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "m plus grand que dm (m en 1er)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"s": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dm plus grand que m",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"s": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "cm plus grand que mm (cm en 2e)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3",
+				"s": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : mm plus grand que cm",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3",
+				"s": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
