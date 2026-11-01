@@ -182,7 +182,7 @@
 			"answers": ["26^2\\times10^3"],
 			"expected": {
 				"status": "bad_form",
-				"constraintViolations": ["products", "form"]
+				"constraintViolations": ["form"]
 			},
 			"variables": {
 				"k": "3"

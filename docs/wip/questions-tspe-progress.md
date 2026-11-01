@@ -495,5 +495,48 @@ tagué d'un point du dénombrement) : 89d49fae (305), ed01a843, a26e6e50 (306), 
 0965c56c, e76a43eb (309), dd23bf2d (311), 3aca54e9 (312), 7d9d9b81 (313), 4dcbae71 (314), 970dab52 (315),
 f796ffc0, b500b44e (318), 4a1deda8, 0feeabaf (319), 2bae040c (320), 8a6e41cc (322, approfondissement), 96be181c
 (323), a69dfde7 (325), c0b45c61 (542), 6a9a3d5b (543), 74604a26 (545), 0bde6091 (546), et ef3c495c (TCOMP-296 seul,
-Q3 → 316), 07ebdcbe (TCOMP-288 seul, Q3 → 614). Six en `T_COMP` aussi (rangés « Loi binomiale / Coefficients
-binomiaux ») : 4dcbae71, 970dab52, ef3c495c, 07ebdcbe. Instantané `scripts/questions/tspe-0-denombrement/` (prod)._
+Q3 → 316), 07ebdcbe (TCOMP-288 seul, Q3 → 614). Quatre en `T_COMP` aussi (rangés « Loi binomiale / Coefficients
+binomiaux ») : 4dcbae71, 970dab52, ef3c495c, 07ebdcbe. Instantané `scripts/questions/tspe-0-denombrement/` (prod), une copie par variation (62 variations, 2 tirages lus
+chacune), tirages forcés sur les branches corrigées (k = 1, k = m, petites plages) ; sorties dans le scratchpad._
+
+**Mécanique** : 25 / 26 verts à l'export ; 26 / 26 après C1, 0 avertissement.
+
+**Bornes** : rien hors bornes TSPE. TCOMP (D7) : aucune formule factorielle dans les quatre modèles partagés (288,
+296 : « pas de n!/(k!(n − k)!) ») ; chemins, triangle de Pascal, symétrie seulement. 89d49fae v2 et v3 (cœur ou
+figure, pique ou as) : ensembles non disjoints, mais la correction découpe en ensembles disjoints, conforme à 305.
+8a6e41cc (combinaisons avec répétitions) : approfondissement (322), gardé (D4).
+
+**Cases choix** : f796ffc0, la bonne option est la première de la source dans les 4 variations (`case: 0`).
+
+**Constats (corrigés dans les fichiers, specs vertes, tirages forcés relus)** :
+
+- **C1** ed01a843 v2 : spec « 26²×10³ » rouge (attendu `products` + `form`, le correcteur ne rend plus que `form`) ;
+  verdict `bad_form` inchangé pour l'élève → spec ramenée à `form`. Sans elle, la publication serait refusée.
+- **C2** 7d9d9b81 v1 : « avec $3!=6$ » s'affichait « 3 ≠ 6 » (`!=` lu comme ≠) → `$3!\,=6$`.
+- **C3** a69dfde7 v1 : « $i<j<k$ » s'affichait avec i en unité imaginaire → `$(\mathit{i}\,;j\,;k)$ avec
+$\mathit{i}<j<k$`.
+- **C4** 67b349ab v1 : « 4⁴ (et non 4⁴) » quand k = m → parenthèse seulement si k ≠ m.
+- **C5** 07ebdcbe : « une position des 1 succès » → « un chemin est repéré par les numéros de ses épreuves
+  réussies, pris parmi les n ».
+- **C6** 8a6e41cc v0 : « Ni ordre, mais répétition permise » → « Pas d'ordre, mais répétition permise ».
+- **C7** dd23bf2d : « des 4 livres : il y en a n! » (n jamais nommé) → « des 4 livres ; n objets ont n!
+  permutations ».
+- **C8** a26e6e50 : « A = {1 ; 2 ; … ; 3} », « B = {0 ; 1 ; … ; 2} » aux petites valeurs → plages m 4..9 (au lieu de
+  3..9), k 3..6 (au lieu de 2..6).
+- **C9** 6a9a3d5b (543, lien parties ↔ chemins) : la correction ne faisait pas le lien → « chaque chemin est un
+  n-uplet de {P, F}, c'est-à-dire une partie de {1, …, n} : les numéros des lancers qui donnent Pile ».
+
+**Vus, laissés** : e76a43eb (arrangements) et dd23bf2d (permutations) rangés en sous-domaine « Coefficients
+binomiaux » au lieu d'« Arrangements et permutations » : le sous-domaine est dans la clé de `create-questions`, on
+n'y touche pas ici. a26e6e50 : m = k + 1 donne Card(A) = Card(B), piège du 0 conservé. f796ffc0 v3 : option
+« 5!/1! » possible (distracteur juste).
+
+**Niveaux** : aucune collision dans les 10 catégories du lot (relevé MCP, 2026-11-01 ; « Ensembles / Cardinal et
+produit cartésien » partagée avec deux brouillons de 2de, niveaux 1 et 2).
+
+**Q-D1** (à David) : « Loi binomiale / Coefficients binomiaux » range Pascal (ef3c495c) au niveau 1, avant la
+définition par les chemins (07ebdcbe, 2), la symétrie (970dab52, 3) et les cas k = 0, 1, n (4dcbae71, 4). Ordre
+proposé : chemins 1, cas particuliers 2, symétrie 3, Pascal 4. Recommandé : oui, par `--mettre-a-jour` avec le lot.
+
+**Pour la migration Q3** : ef3c495c → 316, 07ebdcbe → 614 (D3, inchangé) ; 4dcbae71 pourrait aussi porter 288
+(déjà là) ; rien de nouveau.

@@ -35,7 +35,7 @@
 			],
 			"correction": {
 				"steps": [
-					"Un rangement est une permutation des ${{n}}$ livres : il y en a $n!$.",
+					"Un rangement est une permutation des ${{n}}$ livres ; $n$ objets ont $n!$ permutations.",
 					"${{n}}!=\\textcolor{{{color:primary.0}}}{{{f}}}$."
 				]
 			}

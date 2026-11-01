@@ -58,7 +58,7 @@
 			],
 			"correction": {
 				"steps": [
-					"La liste contient les triplets $i<j<k$ : chaque partie à $3$ éléments de $\\{0,\\dots,{{eval:n-1}}\\}$ y figure une fois.",
+					"La liste contient les triplets $(\\mathit{i}\\,;j\\,;k)$ avec $\\mathit{i}<j<k$ : chaque partie à $3$ éléments de $\\{0,\\dots,{{eval:n-1}}\\}$ y figure une fois.",
 					"$\\binom{ {{n}} }{ 3 }=\\textcolor{{{color:primary.0}}}{{{eval:binom(n,k)}}}$."
 				]
 			}

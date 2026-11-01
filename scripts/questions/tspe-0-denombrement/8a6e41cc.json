@@ -35,7 +35,7 @@
 			],
 			"correction": {
 				"steps": [
-					"Ni ordre, mais répétition permise : on code un cornet par ${{k}}$ étoiles (les boules) et ${{eval:n-1}}$ barres (séparations entre parfums), soit ${{eval:n+k-1}}$ symboles.",
+					"Pas d'ordre, mais répétition permise : on code un cornet par ${{k}}$ étoiles (les boules) et ${{eval:n-1}}$ barres (séparations entre parfums), soit ${{eval:n+k-1}}$ symboles.",
 					"Un cornet = la position des ${{k}}$ étoiles : $\\binom{ {{eval:n+k-1}} }{ {{k}} }=\\textcolor{{{color:primary.0}}}{{{eval:binom(n+k-1,k)}}}$."
 				]
 			}

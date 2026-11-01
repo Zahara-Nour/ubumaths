@@ -55,7 +55,7 @@
 			"correction": {
 				"steps": [
 					"Une grille est un ${{k}}$-uplet de réponses (une par question), chacune choisie parmi ${{m}}$, avec répétition possible.",
-					"${{m}}^{ {{k}} }=\\textcolor{{{color:primary.0}}}{{{eval:m^k}}}$ (et non ${{k}}^{ {{m}} }$)."
+					"${{m}}^{ {{k}} }=\\textcolor{{{color:primary.0}}}{{{eval:m^k}}}${{if:k!=m| (et non ${{k}}^{ {{m}} }$)|}}."
 				]
 			}
 		},

@@ -40,7 +40,7 @@
 			"correction": {
 				"steps": [
 					"Le nombre de chemins à ${{k}}$ succès parmi ${{n}}$ épreuves est, par définition, le coefficient binomial $\\binom{ {{n}} }{ {{k}} }$.",
-					"On peut les lister (un chemin = une position des ${{k}}$ succès parmi les ${{n}}$ épreuves) : $\\binom{ {{n}} }{ {{k}} }=\\textcolor{{{color:primary.0}}}{{{c}}}$."
+					"On peut les lister (un chemin est repéré par les numéros de ses épreuves réussies, pris parmi les ${{n}}$) : $\\binom{ {{n}} }{ {{k}} }=\\textcolor{{{color:primary.0}}}{{{c}}}$."
 				]
 			}
 		}

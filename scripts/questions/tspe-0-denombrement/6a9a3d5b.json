@@ -30,7 +30,7 @@
 			],
 			"correction": {
 				"steps": [
-					"Chaque lancer double le nombre de branches : chaque chemin est un ${{n}}$-uplet de $\\{P,F\\}$.",
+					"Chaque lancer double le nombre de branches : chaque chemin est un ${{n}}$-uplet de $\\{P,F\\}$, c'est-à-dire une partie de $\\{1,\\dots,{{n}}\\}$ : les numéros des lancers qui donnent Pile.",
 					"$2^{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{eval:2^n}}}$ chemins."
 				]
 			}

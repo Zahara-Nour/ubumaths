@@ -28,11 +28,11 @@
 			"variables": [
 				{
 					"name": "m",
-					"expression": "3..9"
+					"expression": "4..9"
 				},
 				{
 					"name": "k",
-					"expression": "2..6"
+					"expression": "3..6"
 				}
 			],
 			"correction": {
