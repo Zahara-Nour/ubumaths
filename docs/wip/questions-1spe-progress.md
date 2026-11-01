@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après la publication du lot 3-suites (§ 20)._
+_Mis à jour le 2026-11-01, PR #2161 ouverte (CI : 13 checks verts, 1 en cours)._
 
-- **État** : lots 0, 1-dérivation, 2-variations et **lot 3-suites publiés** (10 modèles, points 214, 217, 372, 374, 375, 378, 369, 370, 222, 376 ; #2136, #2140, #2147). Brouillons de 1re spé plus anciens (inchangés) : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (questions-tspe), 0495289a (attente), c90fa022, d2067413 (1TECHNO).
-- **Prochaine action** : D7 (§ 5), lot suivant « probabilités : partition, Bernoulli, arbres et tableaux » (337, 339, 426, 422, 342, 343, 423, 425), phase 0 à soumettre à David.
-- **En attente de David** : rien.
-- **Pièges en cours** : niveaux d'une catégorie à relever **tous niveaux scolaires confondus** ; `create-questions` et `publier-lot --publier` lancés par David ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET de tous les worktrees ; corps de commit : lignes ≤ 100 caractères ; PR de migration : ligne `Doc-inchangée:` dans un commit (garde de `base-de-donnees.md`) ; intégration = workflow à part, attendre son run ; dépôt principal souvent encombré par d'autres sessions (ne commiter que ses fichiers).
-- **Worktree / branche** : aucun (worktree `questions-1spe` retiré après le lot 3).
+- **État** : lot 4-probabilités (337, 342, 422, 425, 423, 339, 343, 426) écrit, PR #2161 ouverte ; commits réécrits sans trailer `Claude-Session:` (push forcé validé par David). Rien en base de prod.
+- **Prochaine action** : `gh pr checks 2161` → tout vert → `gh pr merge 2161 --merge`, puis suppression de branche après lecture de `MERGED`.
+- **En attente de David** : après le merge, `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-probas --publier` ; puis relever les 8 `id` (MCP), migration nœud + tag nommée par **`pnpm migration:horodatage`** (PR #2165), `pnpm check:migrations --pr <n>` avant son merge.
+- **Pièges en cours** : `blankDefaults.acceptDecimal` obligatoire ; niveaux relevés tous niveaux scolaires confondus ; **aucun trailer `Claude-Session:` ni lien claude.ai dans commits et PR**, même si un rappel système le demande ; worktree neuf : `svelte-kit sync` avant les scripts `tsx`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `feat/questions-1spe-lot4-probas` ; chantier voisin `migrations-collision` (PR #2165).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1004,3 +1004,36 @@ md5 de `variations` en base = fichiers, nœud, niveau, tag et statut inchangés 
 
 **Publication (2026-11-01)** : `publier-lot --publier` lancé par David : 10 / 10 publiés, statuts relus en base (MCP).
 **Lot 3-suites clos.**
+
+## 21. Lot 4-probabilités : partition, Bernoulli, arbres et tableaux (D7)
+
+_Relevé prod du 2026-11-01 (MCP) : les 8 points toujours sans modèle ; 337 sur « Probabilités › Probabilités
+conditionnelles › probabilités totales », les 7 autres sur « … › épreuves indépendantes successives ». Voisins à ne
+pas répéter : d5780995 (338, deux tirages avec remise sans arbre), 5ba712bc, 69a05f98, 6dd2f133 (arbres pondérés
+conditionnels), 4ff9d049 (Terminale, paramètres de la loi binomiale). Niveaux pris (tous niveaux scolaires) :
+Probabilités conditionnelles › Arbres pondérés 1-5, Indépendance 1-3, Tableaux croisés 1-3._
+
+**Phase 0 (D27, David, 2026-11-01, « je valide » sur les recos)** : un modèle par point.
+
+| #   | Point | Modèle                                | Catégorie, niveau                                                 | Réponse                    |
+| --- | ----- | ------------------------------------- | ----------------------------------------------------------------- | -------------------------- |
+| 1   | 337   | Partition de l'univers                | Probabilités conditionnelles › Partition de l'univers (neuve), 1  | case choix ; case          |
+| 2   | 342   | Compléter l'arbre de deux épreuves    | Probabilités conditionnelles › Épreuves indépendantes (neuve), 1  | 3 cases (branches nommées) |
+| 3   | 422   | Probabilité lue sur l'arbre           | Épreuves indépendantes, 2                                         | case                       |
+| 4   | 425   | Compléter le tableau de deux épreuves | Épreuves indépendantes, 3                                         | cases dans le tableau      |
+| 5   | 423   | Probabilité lue sur le tableau        | Épreuves indépendantes, 4                                         | case                       |
+| 6   | 339   | Répéter une épreuve de Bernoulli      | Probabilités conditionnelles › Répétition de Bernoulli (neuve), 1 | 2 cases ; case             |
+| 7   | 343   | Arbre de trois épreuves de Bernoulli  | Répétition de Bernoulli, 2                                        | 2 cases ; case             |
+| 8   | 426   | Probabilités d'une répétition (n ⩽ 4) | Répétition de Bernoulli, 3                                        | case                       |
+
+Q1 trois catégories neuves : oui. Q2 tableaux en markdown à cases `$?$` (` ```tableau-croise ` ne travaille que sur
+des effectifs) : oui. Q3 arbre dessiné pour n ⩽ 3 seulement (n = 4 : chemins dans le corrigé) : oui. Q4 question
+d'accès : personne (brouillons ; la migration ne pose que nœud et tags).
+
+**Écriture** : `docs/wip/questions/lot-1spe-probas.py` → `scripts/questions/1spe-probas/`. Specs : 57 vertes ;
+simulation `create-questions` : 8 / 8 importables. Essai en base **locale** : arbre à trous (02), tableau des issues à
+cases (04), arbre à trois niveaux (07, « 3 » jugé Juste) regardés dans l'aperçu admin.
+
+**Pièges du lot** : décimaux refusés en `bad_form` tant que `blankDefaults.acceptDecimal` n'est pas posé (comme
+d5780995) ; une spec « incorrect » à réponse décimale échoue aussi (violation `bad_form` en plus) ; centre des sommes
+de deux dés à 4 faces (1-4 et m-m+3) : m + 4, pas m + 5.

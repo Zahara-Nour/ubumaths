@@ -1,0 +1,152 @@
+{
+	"title": "Compléter le tableau de deux épreuves",
+	"description": "Deux épreuves indépendantes représentées par un tableau : tableau des issues (somme de deux dés à quatre faces), tableau des probabilités (produits des marges)",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Probabilités conditionnelles",
+	"subdomain": "Épreuves indépendantes",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On lance un dé rouge et un dé bleu, tous deux équilibrés, à quatre faces. Les faces du dé rouge portent les nombres $1$, $2$, $3$ et $4$ ; celles du dé bleu, les nombres ${{eval:m}}$, ${{eval:m+1}}$, ${{eval:m+2}}$ et ${{eval:m+3}}$. On note la somme des deux nombres obtenus.\n\nComplète le tableau des issues (ligne : dé rouge ; colonne : dé bleu).\n\n| $+$ | ${{eval:m+0}}$ | ${{eval:m+1}}$ | ${{eval:m+2}}$ | ${{eval:m+3}}$ |\n| --- | --- | --- | --- | --- |\n| $1$ | ${{eval:1+m+0}}$ | ${{eval:1+m+1}}$ | ${{eval:1+m+2}}$ | ${{eval:1+m+3}}$ |\n| $2$ | ${{eval:2+m+0}}$ | ${{eval:2+m+1}}$ | $?$ | ${{eval:2+m+3}}$ |\n| $3$ | $?$ | ${{eval:3+m+1}}$ | ${{eval:3+m+2}}$ | ${{eval:3+m+3}}$ |\n| $4$ | ${{eval:4+m+0}}$ | ${{eval:4+m+1}}$ | ${{eval:4+m+2}}$ | $?$ |",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2+m+2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:3+m+0}}"
+				},
+				{
+					"expectedAnswer": "{{eval:4+m+3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque case contient la somme du nombre de sa ligne (dé rouge) et du nombre de sa colonne (dé bleu).",
+					"Ligne $2$, colonne ${{eval:m+2}}$ : $\\textcolor{{{color:primary.0}}}{{{eval:2+m+2}}}$ ; ligne $3$, colonne ${{eval:m}}$ : $\\textcolor{{{color:primary.0}}}{{{eval:3+m}}}$ ; ligne $4$, colonne ${{eval:m+3}}$ : $\\textcolor{{{color:primary.0}}}{{{eval:4+m+3}}}$.\n\n| $+$ | ${{eval:m+0}}$ | ${{eval:m+1}}$ | ${{eval:m+2}}$ | ${{eval:m+3}}$ |\n| --- | --- | --- | --- | --- |\n| $1$ | ${{eval:1+m+0}}$ | ${{eval:1+m+1}}$ | ${{eval:1+m+2}}$ | ${{eval:1+m+3}}$ |\n| $2$ | ${{eval:2+m+0}}$ | ${{eval:2+m+1}}$ | ${{eval:2+m+2}}$ | ${{eval:2+m+3}}$ |\n| $3$ | ${{eval:3+m+0}}$ | ${{eval:3+m+1}}$ | ${{eval:3+m+2}}$ | ${{eval:3+m+3}}$ |\n| $4$ | ${{eval:4+m+0}}$ | ${{eval:4+m+1}}$ | ${{eval:4+m+2}}$ | ${{eval:4+m+3}}$ |"
+				]
+			}
+		},
+		{
+			"statement": "$A$ et $B$ sont deux événements **indépendants** tels que $P(A)={{eval:a/10;d}}$ et $P(B)={{eval:c/10;d}}$. Complète le tableau des probabilités.\n\n| | $B$ | $\\overline{B}$ | Total |\n| --- | --- | --- | --- |\n| $A$ | $?$ | $?$ | ${{eval:a/10;d}}$ |\n| $\\overline{A}$ | $?$ | $?$ | ${{eval:1-a/10;d}}$ |\n| Total | ${{eval:c/10;d}}$ | ${{eval:1-c/10;d}}$ | $1$ |\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "c",
+					"expression": "2..8"
+				}
+			],
+			"conditions": ["a != c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*c/100}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a*(10-c)/100}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(10-a)*c/100}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(10-a)*(10-c)/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A$ et $B$ sont indépendants, donc $P(A\\cap B)=P(A)\\times P(B)$ ; c'est vrai aussi pour $A$ et $\\overline{B}$, $\\overline{A}$ et $B$, $\\overline{A}$ et $\\overline{B}$.",
+					"$P(A\\cap B)={{eval:a/10;d}}\\times{{eval:c/10;d}}=\\textcolor{{{color:primary.0}}}{{{eval:a*c/100;d}}}$, $P(A\\cap\\overline{B})={{eval:a/10;d}}\\times{{eval:1-c/10;d}}=\\textcolor{{{color:primary.0}}}{{{eval:a*(10-c)/100;d}}}$,",
+					"$P(\\overline{A}\\cap B)={{eval:1-a/10;d}}\\times{{eval:c/10;d}}=\\textcolor{{{color:primary.0}}}{{{eval:(10-a)*c/100;d}}}$, $P(\\overline{A}\\cap\\overline{B})={{eval:1-a/10;d}}\\times{{eval:1-c/10;d}}=\\textcolor{{{color:primary.0}}}{{{eval:(10-a)*(10-c)/100;d}}}$.",
+					"Vérification : chaque ligne et chaque colonne redonne son total.\n\n| | $B$ | $\\overline{B}$ | Total |\n| --- | --- | --- | --- |\n| $A$ | ${{eval:a*c/100;d}}$ | ${{eval:a*(10-c)/100;d}}$ | ${{eval:a/10;d}}$ |\n| $\\overline{A}$ | ${{eval:(10-a)*c/100;d}}$ | ${{eval:(10-a)*(10-c)/100;d}}$ | ${{eval:1-a/10;d}}$ |\n| Total | ${{eval:c/10;d}}$ | ${{eval:1-c/10;d}}$ | $1$ |"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Dé bleu 1 à 4",
+			"variationIndex": 0,
+			"variables": {
+				"m": "1"
+			},
+			"answers": ["5", "4", "8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Dé bleu 0 à 3",
+			"variationIndex": 0,
+			"variables": {
+				"m": "0"
+			},
+			"answers": ["4", "3", "7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : produit au lieu de la somme",
+			"variationIndex": 0,
+			"variables": {
+				"m": "1"
+			},
+			"answers": ["6", "3", "16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,3 et 0,6",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"c": "6"
+			},
+			"answers": ["0{,}18", "0{,}12", "0{,}42", "0{,}28"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme des marges",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"c": "6"
+			},
+			"answers": ["0{,}9", "0{,}7", "1{,}3", "1{,}1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : B et B̄ inversés",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"c": "6"
+			},
+			"answers": ["0{,}12", "0{,}18", "0{,}28", "0{,}42"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
