@@ -12,8 +12,12 @@
  *
  * Masqué : ```line et ```courbe (`placer:`), ```horloge (`placer:`), ```collection et
  * ```monnaie (`construire:`), ```partage (`colorier:`), ```barres (effectifs des
- * barres de `placer:`). Pas encore (lot 2 du chantier) : ```cubes, ```patron
- * `completer:`, ```barres avec `axe: à choisir`, ```figure-a-completer.
+ * barres de `placer:`, `axe: à choisir` compris : l'échelle ne se déduit plus).
+ * Pas encore (lot 2 du chantier) : ```cubes, ```patron `completer:`,
+ * ```figure-a-completer.
+ * Un bloc dans une option d'un ```choix n'est pas un geste (le générateur met le
+ * choix à l'abri avant de repérer les gestes) : il reste tel quel, sinon les options
+ * deviendraient identiques.
  * Sans objet : ```ranger (déjà mélangé), ```patron `designer:` (la tâche, que la
  * consigne dit ; les faces se trouvent par le pliage), opération posée.
  *
@@ -27,6 +31,7 @@ import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
 import { findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
 import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
 import { findBarsToPlace, parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
+import { findChoiceBlocks } from '$lib/ubumark/parser/choix-parser';
 import { MASKED_VALUE } from '$lib/ubumark/utils/masked-value';
 
 // Types
@@ -44,6 +49,8 @@ const BUILD_LINE = /^(construire\s*:)(.*)$/i;
 const COLORIER_LINE = /^(colorier\s*:)(.*)$/i;
 /** `A=3` sur une droite : le nom avant `=` */
 const NAMED_TARGET = /^([^=\s]+)\s*=/;
+/** Donnée d'un diagramme (`Natation = 8`) : un `=` sans `:` avant (pas une option) */
+const DATUM_LINE = /^[^:=]+=/;
 /** `A=(2 ; 3)` dans un repère : les noms */
 const COURBE_NAMES = /([A-Z])\s*=\s*\(/g;
 
@@ -76,7 +83,7 @@ function keyLine(pattern: RegExp, mask: (value: string) => string): MaskLine {
 }
 
 /** Réécrire les lignes du corps de chaque bloc, en gardant ce qui les imbrique */
-function maskBlocks(
+function maskLines(
 	lines: string[],
 	blocks: FoundBlock[],
 	maskFor: (block: FoundBlock) => MaskLine
@@ -103,7 +110,9 @@ function maskBars(block: FoundBlock): MaskLine {
 	const spec = parseStatChartContent('barres', block.body.join('\n')).spec;
 	const lines = new Set((spec?.toPlace ?? []).map((rank) => spec!.data[rank].line - 1));
 	return (line, rank) => {
-		if (!lines.has(rank)) return null;
+		// Bloc illisible (jamais pour une instance générée) : toute donnée `x = y` masquée
+		const datum = spec === null ? DATUM_LINE.test(line.trim()) : lines.has(rank);
+		if (!datum) return null;
 		const trimmed = line.trim();
 		return `${trimmed.slice(0, trimmed.lastIndexOf('=')).trimEnd()} = ${MASKED_VALUE}`;
 	};
@@ -115,16 +124,23 @@ function maskBars(block: FoundBlock): MaskLine {
  */
 export function maskGestureAnswers(statement: string): string {
 	const lines = statement.split('\n');
+	const choices = findChoiceBlocks(lines);
+	const inChoice = (block: FoundBlock) =>
+		choices.some((c) => block.startIndex > c.startIndex && block.startIndex <= c.endIndex);
+	const maskBlocks = (found: FoundBlock[], maskFor: (block: FoundBlock) => MaskLine) =>
+		maskLines(
+			lines,
+			found.filter((block) => !inChoice(block)),
+			maskFor
+		);
 	const placer = keyLine(PLACER_LINE, maskLineTargets);
-	maskBlocks(lines, findLinesToPlace(statement), () => placer);
-	maskBlocks(lines, findCourbesToPlace(statement), () => keyLine(PLACER_LINE, maskCourbeTargets));
-	maskBlocks(lines, findHorlogesToPlace(statement), () => keyLine(PLACER_LINE, () => MASKED_VALUE));
+	maskBlocks(findLinesToPlace(statement), () => placer);
+	maskBlocks(findCourbesToPlace(statement), () => keyLine(PLACER_LINE, maskCourbeTargets));
+	maskBlocks(findHorlogesToPlace(statement), () => keyLine(PLACER_LINE, () => MASKED_VALUE));
 	const build = keyLine(BUILD_LINE, () => MASKED_VALUE);
-	maskBlocks(lines, findBuildCollections(statement), () => build);
-	maskBlocks(lines, findBuildMonnaies(statement), () => build);
-	maskBlocks(lines, findPartagesToColorier(statement), () =>
-		keyLine(COLORIER_LINE, () => MASKED_VALUE)
-	);
-	maskBlocks(lines, findBarsToPlace(statement), maskBars);
+	maskBlocks(findBuildCollections(statement), () => build);
+	maskBlocks(findBuildMonnaies(statement), () => build);
+	maskBlocks(findPartagesToColorier(statement), () => keyLine(COLORIER_LINE, () => MASKED_VALUE));
+	maskBlocks(findBarsToPlace(statement), maskBars);
 	return lines.join('\n');
 }

@@ -19,8 +19,11 @@
 /** La valeur masquée, telle qu'écrite dans le bloc */
 export const MASKED_VALUE = '?';
 
-/** `?` seul après `:`, `=` ou `;`, suivi de `;` ou de la fin de ligne */
-const MASKED_IN_SOURCE = /[:=;]\s*\?\s*(?:;|$)/m;
+/** Ligne de la réponse d'un bloc à geste : `placer:`, `construire:`, `colorier:` */
+const ANSWER_KEY_LINE = /^(?:placer|construire|colorier)\s*:(.*)$/i;
+
+/** Donnée d'un diagramme en barres masquée : `Natation = ?` */
+const MASKED_DATUM_LINE = /=\s*\?\s*$/;
 
 /** La valeur écrite est-elle masquée ? */
 export function isMaskedValue(value: string): boolean {
@@ -28,10 +31,23 @@ export function isMaskedValue(value: string): boolean {
 }
 
 /**
- * Une valeur masquée dans le texte d'un bloc à geste (`placer: A=? ; B=7`,
- * `construire: ?`, `Foot = ?`). À ne demander qu'aux blocs qui la lisent :
- * ailleurs, `?` a d'autres sens (`sommets: ?` d'un patron).
+ * Une valeur masquée dans le texte d'un bloc à geste, sur la ligne de sa réponse
+ * (`placer: A=? ; B=7`, `construire: ?`, `colorier: ?`) ou une donnée de barre
+ * (`Foot = ?`). Les autres lignes ne comptent pas (`légendes: ?`, `axes: Sport ; ?`).
+ * À ne demander qu'aux blocs qui la lisent : ailleurs, `?` a d'autres sens
+ * (`sommets: ?` d'un patron).
  */
 export function hasMaskedValue(source: string): boolean {
-	return MASKED_IN_SOURCE.test(source);
+	return source.split('\n').some((raw) => {
+		const line = raw.trim();
+		const answer = ANSWER_KEY_LINE.exec(line);
+		if (answer) {
+			return answer[1]
+				.split(';')
+				.some((part) =>
+					isMaskedValue(part.includes('=') ? part.slice(part.indexOf('=') + 1) : part)
+				);
+		}
+		return MASKED_DATUM_LINE.test(line);
+	});
 }

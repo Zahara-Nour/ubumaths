@@ -14,6 +14,7 @@ import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../generator/instance-generator';
 import { toPublicQuestion } from '../public-question';
 import { maskGestureAnswers } from '../masked-statement';
+import { hasMaskedValue } from '$lib/ubumark/utils/masked-value';
 import type { QuestionInstance, QuestionTemplate } from '../types';
 import { templateMarkdown } from '$lib/ubumark';
 import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
@@ -227,6 +228,34 @@ describe('ce qui ne change pas', () => {
 		expect(maskGestureAnswers(text)).toBe(text);
 	});
 
+	it('un bloc dans une option de ```choix reste tel quel (ce n’est pas un geste)', () => {
+		const text = [
+			'```choix',
+			'- Cette horloge :',
+			'',
+			'  ```horloge',
+			'  placer: 9 h 25',
+			'  ```',
+			'- Aucune',
+			'```'
+		].join('\n');
+		expect(maskGestureAnswers(text)).toBe(text);
+	});
+
+	it('barres illisibles (placer: d’une catégorie absente) : toutes les données masquées', () => {
+		const text = block(
+			'barres',
+			'axe: 0 à 20, de 2 en 2',
+			'Foot = 12',
+			'Danse = 7',
+			'placer: Judo'
+		);
+		const masked = maskGestureAnswers(text);
+		expect(masked).toContain('Foot = ?');
+		expect(masked).toContain('Danse = ?');
+		expect(masked).toContain('axe: 0 à 20, de 2 en 2');
+	});
+
 	it('un bloc cité garde ce qui l’imbrique', () => {
 		const text = ['> ```horloge', '> placer: 9 h 25', '> ```'].join('\n');
 		expect(maskGestureAnswers(text)).toBe(['> ```horloge', '> placer: ?', '> ```'].join('\n'));
@@ -238,11 +267,48 @@ describe('« ? » écrit par un auteur : refusé par le générateur', () => {
 		['line', block('line', 'start: 0', 'end: 20', 'step: 1', 'placer: A=? ; B=7')],
 		['horloge', block('horloge', 'placer: ?')],
 		['collection', block('collection', 'construire: ?')],
-		['partage', block('partage', 'forme: bande 8', 'colorier: ?')]
+		['partage', block('partage', 'forme: bande 8', 'colorier: ?')],
+		['courbe', block('courbe', 'x: -5 ; 5', 'y: -4 ; 4', 'grille: 1', 'placer: A=? ; B=(1 ; 2)')],
+		['monnaie', block('monnaie', 'construire: ?')],
+		['barres', block('barres', 'axe: 0 à 20, de 2 en 2', 'Foot = 12', 'Danse = ?', 'placer: Danse')]
 	])('%s', (_kind, source) => {
 		const result = generateInstance(template(`Question.\n\n${source}`), 42);
 		expect(result.success).toBe(false);
 		if (result.success) return;
 		expect(result.errors.join(' ')).toContain('« ? »');
+	});
+});
+
+describe('« ? » ailleurs que sur la ligne de la réponse : permis', () => {
+	it.each([
+		['légende d’horloge', ['placer: 9 h 25', 'légendes: ?']],
+		[
+			'titre d’axe des barres',
+			['axes: Sport ; ?', 'axe: 0 à 20, de 2 en 2', 'Foot = 12', 'placer: Foot']
+		]
+	])('%s', (_name, lines) => {
+		expect(hasMaskedValue(lines.join('\n'))).toBe(false);
+	});
+
+	it('mais la valeur masquée, oui', () => {
+		expect(hasMaskedValue('placer: A=3 ; B=?')).toBe(true);
+		expect(hasMaskedValue('Danse = ?')).toBe(true);
+	});
+});
+
+describe('plusieurs blocs à geste dans un énoncé', () => {
+	it('chacun est masqué', () => {
+		const { statement } = sent(
+			[
+				'Place, puis construis.',
+				'',
+				block('line', 'start: 0', 'end: 20', 'step: 1', 'placer: A=3'),
+				'',
+				block('collection', 'construire: 34')
+			].join('\n')
+		);
+		expect(statement).toContain('placer: A=?');
+		expect(statement).toContain('construire: ?');
+		expect(statement).not.toContain('34');
 	});
 });
