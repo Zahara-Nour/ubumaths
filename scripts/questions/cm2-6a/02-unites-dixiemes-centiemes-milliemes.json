@@ -111,7 +111,7 @@
 			}
 		},
 		{
-			"statement": "Complète.\n\n$${{n}}~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}}} = ?~\\text{{{if:h==0|millièmes|{{if:h==1|centièmes|{{if:h==2|dixièmes|unités}}}}}}}\\text{ et } ?~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}}}$$",
+			"statement": "Complète : ${{n}}$ {{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}}, c'est…\n\n$$?~\\text{{{if:h==0|millièmes|{{if:h==1|centièmes|{{if:h==2|dixièmes|unités}}}}}}}\\text{ et } ?~\\text{{{if:w==0|millièmes|{{if:w==1|centièmes|{{if:w==2|dixièmes|unités}}}}}}}$$",
 			"variables": [
 				{
 					"name": "w",

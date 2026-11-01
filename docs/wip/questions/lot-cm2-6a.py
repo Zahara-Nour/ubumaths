@@ -270,7 +270,8 @@ INVERSE = variation(
 
 # « 35 centièmes = 3 dixièmes et 5 centièmes » : w rang du bas, w + 1 rang du haut
 REGROUPER = variation(
-    'Complète.\n\n$${{n}}' + texte(rang('w', True)) + ' = ?' + texte(rang('h', True))
+    # « {{n}} … » hors du champ : à 390 px, la ligne entière déborde du champ (jeu local)
+    'Complète : ${{n}}$ ' + rang('w', True) + ', c\'est…\n\n$$?' + texte(rang('h', True))
     + '\\text{ et } ?' + texte(rang('w', True)) + '$$',
     [var('w', '0..2'), var('h', 'eval:w+1'), var('t', '1..9'), var('r', '1..9'),
      var('n', 'eval:10*t+r')],
