@@ -1,40 +1,28 @@
 ---
 title: Le registre des commandes, référence commune (pnpm math, Atelier, calculatrice) — journal
 date: 2026-11-01
-status: phase 0 tranchée, PR 0 à faire
+status: PR 0 ouverte (#2163), lot 2 en préparation
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, corpus validé (85/85), PR 0 en cours d'ouverture._
+_Mis à jour le 2026-11-01, PR #2163 (PR 0) ouverte, CI en cours._
 
-- **État** : 85/85 « juste » sur la page (v11, https://claude.ai/artifact/RSWgLdsubFwGayPgQgCETo,
-  base `verdicts`) ; `domaine-01` tranché ℝ \ {0}. `main` intégré, check:incremental 0, cliquet,
-  1732 tests, doc à jour ; revue (Sonnet) sans bloquant — points 1-3 (`answer` en mode décimal,
-  égalité seule `2=2` sans champ, expression recopiée) documentés dans `types.ts`, renvoyés au
-  lot 2 ; en-tête de `compare.ts` précisé (le juge TOLÈRE l'ordre).
-- **Décision (David, « je suis tes recos »)** : merger la PR 0 maintenant ; puis **PR « corpus,
-  lot 2 »** AVANT la PR 1 : relevé systématique des cas déjà tranchés sur la forme des nombres
-  (décimal/fraction S1, grands entiers 15 chiffres, plafond 1000, règle des 1 000 caractères,
-  scientifique/≈ = affichage, valeurs remarquables, degrés, comparaisons) + points 1-3 de la
-  revue ; rendu par famille avec nombre de lignes à David AVANT la page à cocher. Relevé lancé
-  (agent Explore) le 2026-11-01.
-- **Règle R-point (David, 2026-11-01)** : le registre est la référence, au plus près de mathAST →
-  **point décimal** en entrée ET en sortie (`0.1+0.2` → `0.3`). La virgule française est traduite
-  par chaque outil (Atelier, calculatrice, `pnpm math`), jamais par le registre. Appliqué :
-  `calcul-06`, `evaluer-08` passés au point, écart `calcul-06` retiré, tests verts (178), page v11.
-- ⚠️ **Déjà tranché, NE PAS reposer** : ordre des termes (juge E1, il ignore l'ordre ; `1 + 1/x`
-  non ajouté) ; pas de simplification qui change le domaine (S3), donc pas de `e^(ln x)` au
-  corpus — les hypothèses viennent avec l'étape H.
-- **Ajouté** : étape H, hypothèses `avec`/`dans` dans le registre (section dédiée) ; étude en
-  profondeur de ce qu'il faut transférer AVANT tout code, à rendre à David.
-- **Prochaine action** : PR 0 ouverte → CI verte → merger ; puis présenter le relevé du lot 2
-  par famille.
-- **En attente de David** : rien avant le relevé.
-- **Règles du jour** : l'Atelier fait foi a priori (écart = règle citée + question) ; solutions
-  en ordre croissant ; juge du corpus = E1 (`checkForm` sans remarque), pas de juge strict.
-- **Pièges en cours** : sonde de l'Atelier = fichier vitest jetable sous `src/` (~2 s) ; la page
-  rend les formules avec MathJax SVG (`fontCache: 'local'`, sans MathML caché).
+- **État** : corpus 85/85 « juste » (page v11, https://claude.ai/artifact/RSWgLdsubFwGayPgQgCETo).
+  PR 0 = **#2163** ouverte, `main` intégré (correctif #2154 compris), revue faite, CI lancée.
+- **Prochaine action** : `gh pr checks 2163` → verte : `gh pr merge 2163 --merge`, puis branche
+  supprimée APRÈS lecture de `MERGED` ; le worktree reste (lot 2 sur une nouvelle branche ou
+  la même, à voir). Puis `git merge origin/main` (règles migrations de #2165).
+- **En attente de David** : questions **A-D du lot 2** (section « Lot 2 — relevé » plus bas) :
+  A `approx` arrondi au point dans le registre ? B mode décimal = choix d'affichage de l'outil ?
+  C `2=2` → `\text{vrai}` ? D expression sans commande → sa forme rangée ? (mes recos : oui ×4)
+- ⚠️ **Déjà tranché, NE PAS reposer** : ordre des termes (juge E1 le tolère) ; S3 (pas de
+  simplification qui change le domaine, hypothèses = étape H) ; R-point (le registre travaille au
+  point, chaque outil traduit la virgule) ; `domaine` = ℝ \ {0}.
+- **Étape H** (hypothèses `avec`/`dans` dans le registre) : étude en profondeur AVANT tout code.
+- **Pièges** : greper TOUT le journal avant de poser une question ; nouvelles règles migrations
+  (`pnpm migration:horodatage`, `pnpm check:migrations --pr <n>`, #2165) ; sonde de l'Atelier =
+  vitest jetable sous `src/` ; la page rend en MathJax SVG.
 - **Worktree / branche** : `../ubumaths-wt-registre-reference` · `refactor/registre-reference`.
 
 ---
@@ -233,3 +221,34 @@ refus?, note? }`). Juge : `src/lib/mathAST/cli/__tests__/registre-corpus/compare
   § 4. `ln(|x|)` et `0.75` du registre passent le juge : acceptés ; la virgule se pose à
   l'affichage (`toFrenchDecimal`) — à retenir pour la calculatrice. Dérivées `1 + 1/x`,
   `1/x + 2x` (ordre de la règle) non ajoutées : le juge ignore l'ordre.
+
+## Lot 2 — relevé (2026-11-01, agent Explore sur la doc, les journaux et les tests)
+
+Décision (David, « je suis tes recos ») : PR « corpus, lot 2 » après la PR 0 et AVANT la PR 1.
+Sources principales : `docs/systeme/mathast/tidy-spec.md`, `docs/adr/0032-*.md`,
+`docs/systeme/atelier.md`, `docs/wip/mode-decimal-progress.md`, `docs/wip/grandes-fractions-progress.md`,
+`docs/archive/wip/valeurs-remarquables-progress.md` ; tests `cli/__tests__/approximation.test.ts`,
+`cli/web/__tests__/{exact-trop-long,mode-decimal,comparaisons-console,logique-console}.test.ts`,
+`atelier/__tests__/degres-saisie.test.ts`, `tidy/__tests__/{tidy-decimaux,tidy}.test.ts`,
+`eval/__tests__/exact-value.test.ts`. Relancer le relevé pour les `fichier:ligne` exacts.
+
+| #   | Famille                                  | Lignes | Exemples                                                                |
+| --- | ---------------------------------------- | ------ | ----------------------------------------------------------------------- |
+| 1   | Décimal / fraction (S1, Q3, Q8, Q9, Q22) | ~14    | `1/3+0.5` → 5/6 · `0.5/2` → 1/4 · `0.5(x+1)` gardé · `√0.5` → √2/2      |
+| 2   | Grands entiers, ×10ⁿ tapé (15 chiffres)  | ~6     | `2^40` → 1099511627776 · `3×10^20` gardé · `12×10^2` → 1200             |
+| 3   | Plafond 1000, règle des 1 000 caractères | ~9     | `2^1000` calculé · `(1+1/1000)^1000` gardé · `1000!/999!` → 1000        |
+| 4   | Valeurs remarquables, degrés (S4)        | ~10    | `.simplifier x cos(π/3)` → x/2 · `sin(30°)+1` → 3/2 · `cos(60)` radians |
+| 5   | π, e, racines                            | ~12    | `√12+√3` → 3√3 · `2^{3/2}` → 2√2 · `1/(√3−1)` → (1+√3)/2                |
+| 6   | Signes, fractions de sommes              | ~8     | `(6x−3)/(−9)` → (1−2x)/3 · `3(−x−1)` → −3(x+1)                          |
+| 7   | Comparaisons, logique                    | ~12    | `1<2<3` → vrai · `1/2 != 0.5` → faux · `≈` dans une relation → refus    |
+| 8   | Grandeurs                                | ~6     | `12000[m]` → 12 km · `1/3 km` garde la fraction                         |
+| 9   | Scientifique, ≈                          | —      | question A                                                              |
+
+Ordre des termes exclu (le juge le tolère). Plafond en vigueur : 1000 (la décision « d » à 10 000
+a été annulée le jour même). Grille : règle distincte (10 chiffres significatifs).
+
+**Questions ouvertes (recos : oui ×4)** — A : le registre rend `approx`, arrondi selon les règles
+décidées, au point (`8.7700*10^9`), `answer` reste exact ; l'outil traduit virgule et « × ».
+B : le registre rend toujours `answer` + `approx`, le mode décimal est un choix d'affichage de
+l'outil (règle le point 1 de la revue). C : `2=2` → `\text{vrai}` (point 2). D : expression sans
+commande → sa forme rangée ; seul `f` tapé seul n'a pas de réponse (point 3).
