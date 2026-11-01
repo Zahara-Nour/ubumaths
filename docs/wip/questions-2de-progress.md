@@ -6,18 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 5 en brouillons en prod (§ 33)._
+_Mis à jour le 2026-11-01, migration nœud + tag du lot 5 écrite (§ 34)._
 
-- **État** : lots 1 à 4 publiés ; lot 5 (16 modèles, #2077 + #2079) en prod en BROUILLON (§ 33), non
-  rangés, non tagués.
-- **Prochaine action** : migration nœud + tag des 16 brouillons (ids et points au § 33, nœuds au § 30), sur
-  la branche `feat/questions-2de-rangement-droites` ; puis page à cocher.
+- **État** : lots 1 à 4 publiés ; lot 5 (16 modèles) en prod en BROUILLON ; migration
+  `20261101160100_questions_2de_droites_rangement_tags` + test d'intégration (rouge sans, 10/10 avec) en PR.
+- **Prochaine action** : merge de la PR, puis `db:migrate` depuis la branche mergée (4 conditions), vérif MCP ;
+  puis page à cocher (`page-a-cocher.ts` sur les 16, deux dossiers réunis).
 - **En attente de David** : rien.
-- **Pièges en cours** : `\textcolor` bloque `cleanCoefficients` → coefficients colorés par `{{if:…}}`
-  (`tete`/`suite`/`cst` du script 5 B) ; spec `bad_form` → `constraintViolations: ["form"]` ; horodatage de
-  migration = max + 1 min de `origin/main` ET des worktrees ; `migration list --linked` avant `db:migrate` ;
-  `page-a-cocher.ts` ne prend qu'un `--dir`.
-- **Worktree / branche** : aucun (worktree retiré après #2079) ; prochaine branche `feat/questions-2de-rangement-droites`.
+- **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main` ET des worktrees ;
+  `migration list --linked` avant `db:migrate` ; `page-a-cocher.ts` ne prend qu'un `--dir`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `feat/questions-2de-rangement-droites`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -832,3 +830,11 @@ David a lancé `create-questions --publier` sur `2de-droites-a` puis `2de-droite
 | B-08 alignement par une équation        | 2-317 | 7a3b209d-05b1-400d-98ba-e57d85639d05 |
 | B-09 parallèles ou sécantes             | 2-318 | c23f5a94-269d-4f2d-915a-ca234cec67a6 |
 | B-10 point d'intersection               | 2-319 | 718b7183-415b-4a86-bbf1-70a3c1eb0c6c |
+
+## 34. Lot 5, migration nœud + tag (2026-11-01)
+
+- Relevé MCP avant le SQL : les 16 en `draft`, sans nœud, sans tag ; chaque point sur le nœud du § 30.
+  Question d'accès : tranchée en phase 0 (§ 30, personne).
+- Migration `20261101160100_questions_2de_droites_rangement_tags` et
+  `tests/integration/questions-2de-droites-rangement-tags.test.ts`, générés depuis ceux du lot 4 (seul le lot
+  change). Rouge sans la migration (fichier vidé : 3 échecs, 5 sautés) ; vert avec : 10/10.
