@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-11-01, PR ouverte._
 
-- **État** : garde `pnpm check:migrations` (`scripts/garde-migrations-horodatage.sh`) au pre-push et en `--pr <n>` avant `gh pr merge` ; règle « horodatage = heure réelle » dans `CLAUDE.md` et la doc. · **Prochaine action** : CI verte, merge, archiver ce journal. · **En attente de David** : rien. · **Pièges en cours** : main cassée par `20261101215000` en double tant que #2154 n'est pas mergée. · **Worktree / branche** : `../ubumaths-wt-migrations-collision`, `fix/migrations-collision`.
+- **État** : A + B + C écrits : `pnpm check:migrations` (pre-push, `--pr <n>` avant merge), `pnpm migration:horodatage`, porte de la CI et PR de contenu allégée dans `quality.yml`. · **Prochaine action** : CI verte, merge, archiver ce journal. · **En attente de David** : rien. · **Pièges en cours** : main cassée par `20261101215000` en double tant que #2154 n'est pas mergée. · **Worktree / branche** : `../ubumaths-wt-migrations-collision`, `fix/migrations-collision`.
 
 ## Pourquoi
 
@@ -12,4 +12,9 @@ Le 2026-11-01, `20261101215000` a été pris par les lots 1re spé suites (#2140
 tourné sur un main qui n'avait pas encore l'autre migration (protection de `main` sans « branche à jour »),
 la PR a été mergée verte, et la garde SECURITY DEFINER a échoué sur toutes les PR (correctif #2154).
 Décision de David (2026-11-01) : A (horodatage = heure réelle) + B (garde au push et avant le merge) ;
-C (CI allégée, garde des migrations en premier) reste à décider.
+C demandé ensuite par David (2026-11-01) : porte de la CI dans le job « Commit de version ? »
+(horodatages d'abord, jobs lourds sautés s'ils échouent) et PR de contenu seul allégée
+(`scripts/ci-nature-changement.sh`).
+
+Revue (`code-reviewer`) : conflit « heure réelle » / garde quand main porte des horodatages ronds dans
+le futur → `pnpm migration:horodatage` (heure UTC ou dernière + 1 s) ; exception du pre-push documentée.

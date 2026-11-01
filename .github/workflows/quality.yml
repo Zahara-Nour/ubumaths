@@ -44,17 +44,41 @@ jobs:
   # passe au vert. Dans tous les autres cas (PR comprises), CI complète.
   # Le script sort toujours en 0 : un échec du verdict ne bloque pas la CI,
   # il la laisse simplement complète (`!cancelled()` sur chaque job).
+  #
+  # Ce job est aussi la PORTE de la CI (2026-11-01) : si les horodatages des
+  # migrations sont en double, ou qu'une migration de la PR prend un horodatage déjà
+  # pris sur main (scripts/garde-migrations-horodatage.sh), il échoue en ~20 s et
+  # tous les jobs lourds sont sautés (`needs.version.result == 'success'`), au lieu
+  # de tourner 15 jobs pour un rouge certain : le 2026-11-01, main cassée par
+  # `20261101215000` en double a saturé la file des runners et bloqué le correctif.
+  # Il dit aussi si la PR n'est que du contenu (scripts/ci-nature-changement.sh) :
+  # typecheck, types des tests, build, audit et garde SECURITY DEFINER sont alors
+  # sautés ; Lint et tests (qui lisent scripts/questions) tournent toujours.
   version:
     name: Commit de version ?
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
       seule: ${{ steps.verdict.outputs.seule }}
+      contenu: ${{ steps.nature.outputs.contenu }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
         with:
           fetch-depth: 60
+
+      - name: Horodatages des migrations (porte de la CI)
+        run: |
+          doublons="$(ls supabase/migrations/*.sql | xargs -n1 basename | cut -d_ -f1 | sort | uniq -d)"
+          if [ -n "$doublons" ]; then
+            echo "::error::Horodatage de migration pris deux fois : $doublons (renommer avec pnpm migration:horodatage)"
+            exit 1
+          fi
+          bash scripts/garde-migrations-horodatage.sh
+
+      - name: Nature du changement
+        id: nature
+        run: bash scripts/ci-nature-changement.sh >> "$GITHUB_OUTPUT" || echo "contenu=false" >> "$GITHUB_OUTPUT"
 
       - name: Verdict
         id: verdict
@@ -65,7 +89,7 @@ jobs:
   lint:
     name: Lint
     needs: version
-    if: ${{ !cancelled() && needs.version.outputs.seule != 'true' }}
+    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.seule != 'true' }}
     runs-on: ubuntu-latest
     # Un changement de eslint.config.* invalide tout le cache ESLint : relecture
     # à froid ~18 min (#1871), plus ~2 min d'installation.
@@ -174,7 +198,7 @@ jobs:
   typecheck:
     name: Type Check
     needs: version
-    if: ${{ !cancelled() && needs.version.outputs.seule != 'true' }}
+    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.seule != 'true' && needs.version.outputs.contenu != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -208,7 +232,7 @@ jobs:
   types-tests:
     name: Types des tests (cliquet)
     needs: version
-    if: ${{ !cancelled() && needs.version.outputs.seule != 'true' }}
+    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.seule != 'true' && needs.version.outputs.contenu != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -238,7 +262,7 @@ jobs:
   build:
     name: Build
     needs: version
-    if: ${{ !cancelled() && needs.version.outputs.seule != 'true' }}
+    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.seule != 'true' && needs.version.outputs.contenu != 'true' }}
     runs-on: ubuntu-latest
     # 15 min like the rest of this workflow. The build takes 2-4 min normally;
     # 10 left no room for a slow runner and cancelled the job mid-build.
@@ -312,7 +336,7 @@ jobs:
   test-server:
     name: Server Tests (shard ${{ matrix.shard }}/4)
     needs: version
-    if: ${{ !cancelled() && needs.version.outputs.seule != 'true' }}
+    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.seule != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
@@ -355,7 +379,7 @@ jobs:
   test-client:
     name: Client Tests (browser, shard ${{ matrix.shard }}/2)
     needs: version
-    if: ${{ !cancelled() && needs.version.outputs.seule != 'true' }}
+    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.seule != 'true' }}
     strategy:
       fail-fast: false
       matrix:
@@ -411,7 +435,7 @@ jobs:
   audit:
     name: Security Audit
     needs: version
-    if: ${{ !cancelled() && needs.version.outputs.seule != 'true' }}
+    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.seule != 'true' && needs.version.outputs.contenu != 'true' }}
     runs-on: ubuntu-latest
     # 15 min like the rest of this workflow. The audit itself runs in under a
     # minute, but it waits on the npm advisory endpoint, which can hang: a
@@ -458,7 +482,7 @@ jobs:
   definer-guard:
     name: Garde SECURITY DEFINER
     needs: version
-    if: ${{ !cancelled() && needs.version.outputs.seule != 'true' }}
+    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.seule != 'true' && needs.version.outputs.contenu != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -538,10 +562,16 @@ jobs:
     steps:
       - name: Check results
         run: |
+          if [ "${{ needs.version.result }}" != "success" ]; then
+            echo "::error::Porte de la CI fermée (job « Commit de version ? ») : horodatages des migrations, voir ce job."
+            exit 1
+          fi
           if [ "${{ needs.version.outputs.seule }}" = "true" ]; then
             echo "Commit de version sur un état vérifié : jobs lourds sautés (ADR 0021)."
             exit 0
           fi
+          # PR de contenu seul : ces cinq jobs sont sautés, « skipped » vaut alors succès.
+          ok() { [ "$1" = "success" ] || { [ "${{ needs.version.outputs.contenu }}" = "true" ] && [ "$1" = "skipped" ]; }; }
           echo "Lint: ${{ needs.lint.result }}"
           echo "Type Check: ${{ needs.typecheck.result }}"
           echo "Types des tests (cliquet): ${{ needs.types-tests.result }}"
@@ -552,13 +582,13 @@ jobs:
           echo "Garde SECURITY DEFINER: ${{ needs.definer-guard.result }}"
 
           if [ "${{ needs.lint.result }}" != "success" ] || \
-             [ "${{ needs.typecheck.result }}" != "success" ] || \
-             [ "${{ needs.types-tests.result }}" != "success" ] || \
-             [ "${{ needs.build.result }}" != "success" ] || \
+             ! ok "${{ needs.typecheck.result }}" || \
+             ! ok "${{ needs.types-tests.result }}" || \
+             ! ok "${{ needs.build.result }}" || \
              [ "${{ needs.test-server.result }}" != "success" ] || \
              [ "${{ needs.test-client.result }}" != "success" ] || \
-             [ "${{ needs.audit.result }}" != "success" ] || \
-             [ "${{ needs.definer-guard.result }}" != "success" ]; then
+             ! ok "${{ needs.audit.result }}" || \
+             ! ok "${{ needs.definer-guard.result }}"; then
             echo "::error::Some checks failed"
             exit 1
           else

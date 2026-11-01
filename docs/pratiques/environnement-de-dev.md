@@ -19,6 +19,8 @@ couvre:
   - scripts/lint-fast-fichiers.sh
   - scripts/with-db-lock.sh
   - scripts/ci-version-seule.sh
+  - scripts/ci-nature-changement.sh
+  - scripts/garde-migrations-horodatage.sh
   - scripts/vercel-ignore-build.sh
   - scripts/releve-web-vitals.ts
   - scripts/check-production-health.ts
@@ -146,6 +148,14 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
 
 - **Raccourci du commit de version** : sur un `chore(release): …` qui ne change que la version et
   le CHANGELOG, posé sur un état vert, `scripts/ci-version-seule.sh` fait sauter les jobs lourds.
+- **Porte de la CI** (2026-11-01) : le job « Commit de version ? » vérifie d'abord les horodatages des
+  migrations (aucun doublon ; `scripts/garde-migrations-horodatage.sh` contre `origin/main`). S'il
+  échoue, tous les jobs lourds sont sautés et « CI Summary » rougit en ~20 s, au lieu de 15 jobs
+  pour un rouge certain (main cassée par `20261101215000` en double avait saturé la file des runners).
+- **PR de contenu seul** : modèles de questions (`scripts/questions/**/*.json`), doc, `.md` hors
+  `src/`, `static/`, `data/` (`scripts/ci-nature-changement.sh`) → typecheck, types des tests, build,
+  audit et garde SECURITY DEFINER sautés (« skipped » compte comme réussi pour les checks exigés).
+  Lint et tests serveur et client tournent toujours : deux tests lisent `scripts/questions`.
 - **CI de main jamais annulée** (chaque commit de main doit avoir son verdict) ; sur une branche, un
   run périmé est annulé par le suivant.
 - **Règle de merge** : CI 100 % verte (« CI Summary » et les checks exigés par la protection de
