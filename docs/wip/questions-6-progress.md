@@ -5,20 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2057._
+_Mis à jour le 2026-11-01, PR de contenu 06-07 en ```ranger ouverte._
 
-- **État** : lots 1 à 6b publiés. Lot 7 « Droite graduée et ordre » mergé (#2057, § 16) : 4 modèles dans
-  `scripts/questions/6-droite-ordre/` + correctif de la virgule des graduations du bloc ```line (pas encore en prod).
-- **Prochaine action** : `deploy:prod` (David) → David lance `create-questions --dir scripts/questions/6-droite-ordre
---publier` → relever les `id` → migration nœud + tag → page à cocher → publication.
-  En parallèle : PR de contenu de 06 et 07 en ```ranger (migration, patron § 12.5) ; changement du script et des JSON
-  prêt dans `docs/wip/questions-6/reprise-06-07-ranger.patch` (`git apply`, specs vertes au 2026-11-01).
-- **En attente de David** : `deploy:prod` (demandé le 2026-11-01, bloqué : `main` portait les fichiers non
-  commités d'une autre session, `docs/Chiphres/illustrations/villes/lobatchevsk/plan-schematique.*`) ; verdicts de 02, 03, 04 en « validé » sur `/dev/modeles`.
-- **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs`. Jamais de variable
-  `e`. Aperçu piloté : `math-field.math-prompt-block` + `setPromptValue`, boutons par rôle (copies cachées).
-  `Doc-inchangée:` va dans un message de COMMIT. PR en conflit = pas de CI : vérifier `mergeable`.
-- **Worktree / branche** : aucun (retiré après #2057).
+- **État** : lots 1 à 6b publiés ; lot 7 « Droite graduée et ordre » mergé (#2057), pas en prod. Reprise de 06 et 07
+  en ```ranger : migration de contenu `20261101121300_questions_6_ranger_contenu` (§ 17), PR ouverte.
+- **Prochaine action** : CI verte + `security-auditor` → merge → `db:migrate` depuis le dépôt principal → MCP
+  (contenu « après », statut, tags). Puis `deploy:prod` (David) → David lance `create-questions --dir
+scripts/questions/6-droite-ordre --publier` → relever les `id` → migration nœud + tag → page à cocher → publication.
+- **En attente de David** : `deploy:prod` (refusé par le classifieur du mode auto le 2026-11-01 : à lancer avec
+  `! pnpm deploy:prod`) ; verdicts de 02, 03, 04 en « validé » sur `/dev/modeles`.
+- **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs --file`. Jamais de variable
+  `e`. `releve-prod.ts` : `multiple_answers` retirée (colonne supprimée, #2009). `Doc-inchangée:` va dans un message
+  de COMMIT. PR en conflit = pas de CI : vérifier `mergeable`.
+- **Worktree / branche** : `../ubumaths-wt-questions-6` · `content/questions-6-ranger-06-07`.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1110,3 +1109,15 @@ visibles de l'admin et de l'auteur seuls jusqu'à leur publication ; la migratio
   rendue hors `MarkdownRenderer` retombe sur la virgule (repli français de `readContentLocale`).
 - PR en conflit (`ubumark.md`, ligne d'en-tête) : la CI ne partait pas ; `origin/main` fusionnée, CI verte, #2057
   mergée.
+
+## 17. Reprise de 06 et 07 en ```ranger (2026-11-01)
+
+- Patch `reprise-06-07-ranger.patch` appliqué (script `lot-6-fractions.py` et les deux JSON), puis retiré.
+- Relevé prod (`releve-prod.ts`, base `cnevnzsvixxpnurautls`) → `etat-prod-2026-11-01-ranger/` ; md5 MCP des
+  variations : 83c835bb `ec65e0e3…`, c360d588 `c729d962…`. Tags relevés 6-134, 6-204.
+- `lot-contenu-6-ranger.py` → `20261101121300_questions_6_ranger_contenu` : 2 MODIFIER, variations et specs remplacées
+  par la source ; le script exige que la prod soit EXACTEMENT l'ancienne source (`origin/main`), titre et description
+  inchangés. Horodatage postérieur à la dernière migration de `main` (collisions entre sessions).
+- Test `questions-6-ranger-contenu` (`decrireLotModifier`, taille 2) : rouge contre une migration vide (6 échecs),
+  12 verts avec (16 sautés : propres aux neufs). `question:specs --file` : 150/150 tirages, « importable », 06 et 07.
+- Question d'accès : personne ne gagne d'accès ; aucun exercice perdu (mêmes variations, autre geste de réponse).
