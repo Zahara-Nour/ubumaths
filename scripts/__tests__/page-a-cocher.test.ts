@@ -163,6 +163,38 @@ describe('dessinerBlocs', () => {
 		expect(r.markdown).toContain('data-tex="\\dfrac{1}{2}"');
 	});
 
+	it('variation : asymptote à deux limites, on arrive à la GAUCHE et on repart de la DROITE', () => {
+		const r = dessinerBlocs(
+			'```variation\nvariable: x\ndomain: -inf, 2, +inf\n\nvariation: f(x)\n  -inf: 0, bottom\n  2: ||, +inf, top, -inf, bottom\n  +inf: 0, top\n```'
+		);
+		const t = r.markdown.slice(HTML.length);
+		expect(t).toContain('<div class="vt-asy">');
+		expect(t.match(/aria-label="(croissante|décroissante)"/g)).toEqual([
+			'aria-label="croissante"',
+			'aria-label="croissante"'
+		]);
+	});
+
+	it('variation sans valeur aux bornes (tableau de 1re) : bornes déduites, deux flèches', () => {
+		const r = dessinerBlocs(
+			'```variation\nvariable: x\ndomain: -inf, 0, +inf\n\nvariation: f(x)\n  0: 3, top\n```'
+		);
+		expect(r.markdown.match(/aria-label="(croissante|décroissante)"/g)).toEqual([
+			'aria-label="croissante"',
+			'aria-label="décroissante"'
+		]);
+	});
+
+	it('variation : une case d’intervalle ne montre que le signe ou la hachure, comme l’écran', () => {
+		const r = dessinerBlocs(
+			'```variation\nvariable: x\ndomain: -inf, 2, +inf\n\nsign: f(x)\n  -inf,2: z\n  2: z\n  2,+inf: |h|\n```'
+		);
+		const t = r.markdown.slice(HTML.length);
+		// Le seul 0 est celui de la valeur 2
+		expect(t.match(/vt-zero/g)).toHaveLength(1);
+		expect(t).toContain('<td class="vt-intervalle"><span class="vt-hachure vt-large"></span></td>');
+	});
+
 	it('variation en erreur : la page s’arrête', () => {
 		expect(() => dessinerBlocs('```variation\ndomain: -inf, +inf\n```')).toThrow(
 			/bloc variation en erreur/

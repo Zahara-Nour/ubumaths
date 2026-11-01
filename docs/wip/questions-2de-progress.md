@@ -1226,3 +1226,7 @@ ni 2-348 ; L7-d trois PR de fichiers (7 A = 6, 7 B = 6, 7 C = 9), une migration,
 - Tests : 4 nouveaux (rouges avant, 40/40 verts après). Page du lot 7 générée : 21 fiches, **aucune alerte**,
   67 tableaux ; vus dans Chrome (quotient : 0 et double barre justes ; flèches lisibles dans les choix).
 - Pause des merges (deploy:prod relancé par questions-cm2) : branche poussée, PR à ouvrir au « go ».
+- Revue `code-reviewer` (Sonnet) : aucun bloquant. Corrigés : case d'intervalle = signe ou hachure seulement
+  (comme l'écran), hachure pleine largeur, ligne et contenu fautifs dans le message d'erreur ; tests ajoutés
+  (asymptote à deux limites, bornes implicites, case d'intervalle) : 43/43. Une zone interdite SANS limite
+  n'est pas écrivable dans une ligne de variation (le parseur exige des limites).

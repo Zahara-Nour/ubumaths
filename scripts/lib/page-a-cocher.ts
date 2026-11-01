@@ -529,11 +529,20 @@ const MARQUE: Record<VariationMarker, string> = {
 	forbidden: '<span class="vt-hachure"></span>',
 	discontinuity: '<span class="vt-zero">d</span>'
 };
+/** Hachure sur toute la case d'intervalle (`vt-hatch-wide` de l'écran) */
+const MARQUE_LARGE = '<span class="vt-hachure vt-large"></span>';
 
 function signe(v: SignValue | undefined): string {
 	if (!v) return '';
 	if (v.type === 'marker') return MARQUE[v.marker];
 	return `<span class="vt-signe">${v.value === '-' ? '−' : '+'}</span>`;
+}
+
+/** Case d'intervalle : l'écran n'y montre que le signe ou la hachure, jamais 0, barre ni `d` */
+function signeDIntervalle(v: SignValue | undefined): string {
+	if (!v) return '';
+	if (v.type === 'marker') return v.marker === 'forbidden' ? MARQUE_LARGE : '';
+	return signe(v);
 }
 
 /** Zone interdite : ni flèche ni valeur (valeur interdite, asymptote sans limite) */
@@ -582,7 +591,13 @@ function variation(source: string): Bloc {
 	const { node, errors } = parseVariationTableContent(source.split('\n'));
 	if (!node || errors.length > 0)
 		throw new Error(
-			'bloc variation en erreur : ' + (errors.map((e) => e.message).join(' ; ') || 'illisible')
+			'bloc variation en erreur : ' +
+				(errors
+					.map(
+						(e) =>
+							`${e.message}${e.line ? ` (ligne ${e.line})` : ''}${e.content ? ` : ${e.content}` : ''}`
+					)
+					.join(' ; ') || 'illisible')
 		);
 	const d = node.domain;
 	const derniere = d.length - 1;
@@ -609,7 +624,7 @@ function variation(source: string): Bloc {
 				'vt-ligne-signe',
 				row.label,
 				(i) => signe(row.values.get(d[i].expression)),
-				(i) => signe(row.values.get(`${d[i].expression},${d[i + 1].expression}`))
+				(i) => signeDIntervalle(row.values.get(`${d[i].expression},${d[i + 1].expression}`))
 			);
 		const r = withImplicitEndpoints(row, d);
 		const v = (i: number) => r.values.get(d[i].expression);
@@ -618,7 +633,7 @@ function variation(source: string): Bloc {
 			r.label,
 			(i) => valeurDeVariation(v(i)),
 			(i) => {
-				if (interdite(v(i)) || interdite(v(i + 1))) return MARQUE.forbidden;
+				if (interdite(v(i)) || interdite(v(i + 1))) return MARQUE_LARGE;
 				const s = sens(v(i), v(i + 1));
 				return s === 0 ? '' : fleche(s);
 			}
