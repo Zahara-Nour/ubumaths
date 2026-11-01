@@ -12,8 +12,7 @@ _Mis à jour le 2026-11-01, après #2108, #2109 et la publication du lot 1._
 - **Prochaine action** : phase 0 du lot 8 « programmes de calcul et fonctions » (060, 081, 061, 062, 063, 064 ; ordre
   du § 5 bis), puis lot 9 « pensée informatique » (065-067). Volumes du lot 6 : après le `deploy:prod` qui livre
   ` ```solide `, `publier-lot` sur un dossier qui ne contient que 01 et 02 du lot 6.
-- **En attente de David** : supprimer `scripts/questions/.sonde-figures-tmp.ts` (worktree ; `rm` refusé au
-  classifieur).
+- **En attente de David** : rien.
 - **Pièges en cours** : `mtexte()` refusé dans une figure de question (§ 26) ; `db push --include-all` : **réservé à
   David** (§ 27, § 30, § 34), même quand une autre session dit le contraire ; horodatage de migration : rebaser sur
   `origin/main` avant la CI (§ 34) ; exemption de doc d'une migration de données = ligne `Doc-inchangée:` dans un
