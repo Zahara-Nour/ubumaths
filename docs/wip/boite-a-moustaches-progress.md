@@ -2,14 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, palier 1 écrit._
+_Mis à jour le 2026-11-01, après #2151._
 
-- **État** : palier 1 (affichage) écrit sur la branche (§ 9), vu dans Chrome (sombre, clair) ; revue en cours.
-- **Prochaine action** : corriger la revue, PR, merge ; puis palier 2 (construire, § 5).
-- **En attente de David** : rien.
-- **Pièges en cours** : quartiles = ceux du programme (`src/lib/statistics/describe.ts`), jamais ceux des
-  calculatrices ; ne pas écrire de second calcul.
-- **Worktree / branche** : `../ubumaths-wt-boite-a-moustaches`, `feat/boite-a-moustaches`.
+- **État** : palier 1 (affichage) MERGÉ (#2151, sur `main`, pas en prod) ; débloque 3-062 et la 2de.
+- **Prochaine action** : palier 2 (construire, § 5 ; débloque 3-030) — nouveau worktree et nouvelle branche,
+  à lancer quand David le dit.
+- **En attente de David** : vérification manuelle #2151 (téléphone), dans `verifications-manuelles.md`.
+- **Pièges en cours** : quartiles = ceux de `describe.ts`, jamais un second calcul ; mineurs de revue
+  laissés (§ 10).
+- **Worktree / branche** : supprimés.
 
 ---
 
@@ -162,3 +163,11 @@ Notes = 4 ; 8 ; 11 ; 14 ; 19
   (palier 2).
 - Vu dans Chrome (prof local, port 5177) : les trois exemples justes, refus situés lisibles, thèmes sombre et
   clair. Téléphone non vu (la fenêtre ne se réduit pas) : à la vérification manuelle.
+
+## 10. Revue et merge (2026-11-01, #2151)
+
+- `code-reviewer` : aucun bloquant ni important. Mineur 1 corrigé (point-virgule final compté comme une
+  6e valeur ; test rouge puis vert). Laissés : (2) fractions refusées sur une ligne de boîte, acceptées dans
+  `données:` ; (3) à 40 graduations (le plafond), les étiquettes de l'axe se chevauchent — n'en écrire
+  qu'une sur deux au-delà d'un seuil, si un modèle en a besoin.
+- CI verte, mergée le 2026-11-01.
