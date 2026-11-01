@@ -8,10 +8,10 @@
 _Mis à jour le 2026-11-01, après #2127 (monnaie-centimes)._
 
 - **État** : lots 0 à 7 publiés (lot 7 : données, 6 modèles, § 14, clos le 2026-11-01).
-- **Prochaine action** : lot monnaie (054, 055, 056, 057, 086) — phase 0 à écrire ; le bloc ` ```monnaie ` a ses
+- **Prochaine action** : lot 8 monnaie (054, 055, 056, 057, 086) — phase 0 écrite (§ 15), réponses de David attendues ; le bloc ` ```monnaie ` a ses
   centimes et ses billets de 200 / 500 € (#2127, pas en prod : `construire: 3,45`, réponse `3,45` / `2,2`) ; puis lots
   8 et 9 (§ 12).
-- **En attente de David** : rien.
+- **En attente de David** : les 5 questions du § 15.
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
@@ -619,3 +619,45 @@ Réponse de David (« tes recos ? » puis « go », 2026-11-01) : les quatre rec
 - 2026-11-01 : relecture 6/6 OK (verdicts comptés en base, aucun commentaire) ; catégories relevées avant publication,
   sans collision ; `publier-lot` simulé (6 passent), puis `--publier` par David : 6/6 publiés, vérifié au MCP (publiés,
   rangés, tagués). Lot 7 clos. Reste signalé : une barre non construite parmi d'autres jugée « forme non optimale ».
+
+## 15. Lot 8 : monnaie — phase 0 (2026-11-01)
+
+Relevé MCP du 2026-11-01 : aucun modèle sur 054, 055, 056, 057, 086. Catégories du CP à continuer :
+« Monnaie · Pièces et billets · 1 à 7 » (CP-042 à 045, `construire:` aux niveaux 6 et 7) et « Monnaie · Rendre la
+monnaie · 1, 2 » (CP-071 : en case, puis `construire:`). « Monnaie · Euros et centimes · 1, 2 » = 053, 058 (lot 5 bis).
+Outil : ` ```monnaie ` avec centimes (`pièces: 2×50c 1×20c`), billets de 200 / 500 €, `montant: 3,45`,
+`construire: 3,45` + `réserve:` (#2127, **pas en prod** : les modèles restent en brouillon jusqu'au `deploy:prod` qui
+la livre). Construction jugée sur la somme : toute construction juste est « juste », pas seulement le moins d'objets.
+Bornes (BO c2 p.28) : euros et centimes, centimes < 100, ou écriture à virgule ; 054 : ordonner quatre prix quelles
+que soient leurs écritures (12 € > 60 centimes) ; 056 : contrainte possible « pas de pièce de 1 € » (10, 20, 50 c).
+
+| Fichier                       | Point   | Catégorie · niveau               | Variations                                                                                                                                                                                                                |
+| ----------------------------- | ------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `01-combien-d-argent`         | CE1-055 | Monnaie · Pièces et billets · 8  | pièces de centimes seules (< 1 €) → [_] c ; euros et centimes (< 10 €) → [_] € [_] c ; billets, pièces et centimes (< 100 €) → [_] € à virgule ; une variation avec 1, 2, 5 c                                             |
+| `02-qui-a-le-plus`            | CE1-054 | Monnaie · Pièces et billets · 9  | Léa / Tom, euros et centimes, écart ≤ 50 c, case choix (Léa, Tom, autant) ; beaucoup de petites pièces contre peu de grosses ; quatre prix écrits (2,50 € ; 250 c ; 2 € 5 c ; 60 c ; 12 €…) : le plus cher, le moins cher |
+| `03-pose-la-somme`            | CE1-056 | Monnaie · Pièces et billets · 10 | `construire:` 0,35 à 0,95 € ; 1,05 à 9,95 € (somme écrite « 3,45 € » ou « 3 € et 45 c ») ; sans pièce de 1 € (réserve 10, 20, 50 c, somme 0,60 à 1,90 €)                                                                  |
+| `04-paie-tes-achats`          | CE1-057 | Monnaie · Pièces et billets · 11 | un article à 1,20 à 9,80 € → `construire:` ; deux articles (2,30 € + 1,45 €) → `construire:` de la somme ; « Léa a ceci, peut-elle acheter … à 4,80 € ? » (oui / non, écart ≤ 50 c)                                       |
+| `05-combien-le-marchand-rend` | CE1-086 | Monnaie · Rendre la monnaie · 3  | prix 0,10 à 0,90 € payé avec 1 € → [_] c ; prix 1,10 à 4,90 € payé avec 5 € → [_] € à virgule ; 5,50 à 9,50 € payé avec 10 € ; billet de 20 € (prix 12,30 à 19,70 €)                                                      |
+| `06-rends-la-monnaie`         | CE1-086 | Monnaie · Rendre la monnaie · 4  | mêmes situations, l'élève pose le rendu (`construire:`, réserve 1, 2, 5, 10 € et 10, 20, 50 c)                                                                                                                            |
+
+Prix au multiple de 10 c dans les gestes (`construire:`) et dans le rendu ; multiples de 5 c dans les cases ; 1, 2,
+5 c seulement dans `01` (compter). Corrigé : rendu par complément (« de 3,45 € à 4 €, puis à 5 € »), comme au lot 4.
+
+Erreurs typiques dans les `testSpecs` : nombre d'objets compté au lieu des valeurs ; 2 € et 5 c = 2,5 € ; centimes
+comptés en euros (50 c lus 50 €) ; 345 c écrit 345 € ; rendu = prix ; rendu calculé sur le mauvais billet ; « le plus
+de pièces » choisi au lieu du plus d'argent ; 60 c > 12 € (le plus grand nombre écrit).
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud +
+tag ne change aucune règle.
+
+### Questions à David
+
+1. **Deux modèles pour 086** (en case, puis le geste), comme au CP (CP-071, niveaux 1 et 2) ? Recommandation : oui.
+2. **Prix au multiple de 10 c dans les gestes** : poser 3,47 € demande des pièces de 2 c et 5 c (jusqu'à 8 objets de
+   plus), le geste devient long sans rien apprendre de plus ; les cases gardent le multiple de 5 c. Recommandation : oui.
+3. **Réponse à virgule** : « 2,2 » juste pour 2,20 € (règle du lot 5 bis), corrigé « 2,20 € » ? Recommandation : oui.
+4. **Publication** : les brouillons peuvent être créés tout de suite, mais la page à cocher et la publication attendent
+   le `deploy:prod` qui livre #2127 (sans lui, les centimes affichent une erreur chez l'élève). Recommandation : écrire
+   et ranger le lot maintenant, publier après ton prochain `deploy:prod`.
+5. **Numéro du lot** : « lot 8 » pour la monnaie, les lots « 8 » et « 9 » du § 12 deviennent 9 et 10. Recommandation :
+   oui (les fichiers suivent : `lot-ce1-8.py`, `scripts/questions/ce1-8/`).
