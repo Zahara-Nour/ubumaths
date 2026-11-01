@@ -1,0 +1,210 @@
+{
+	"title": "Valeur approchée de f(a + h)",
+	"description": "Valeur décimale approchée de f(a + h) par f(a) + f′(a)h : f(a) et f′(a) donnés, puis √, 1/x et x² à reconnaître",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "Approximation affine",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "$f$ est une fonction dérivable sur $\\mathbb{R}$, avec $f({{a}})={{y}}$ et $f'({{a}})={{k}}$.\n\nÀ l'aide de l'approximation affine de $f$ en ${{a}}$, donne une valeur approchée de $f({{eval:a+hh/10;d}})$.\n\n$f({{eval:a+hh/10;d}})\\approx ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "y",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "hh",
+					"expression": "1..3;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:y+k*hh/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(a+h)\\approx f(a)+f'(a)h$, avec $a={{a}}$ et $h={{eval:hh/10;d}}$.",
+					"$$f({{eval:a+hh/10;d}})\\approx {{y}}{{eval:k;+}}\\times({{eval:hh/10;d}})=\\textcolor{{{color:primary.0}}}{{{eval:y+k*hh/10;d}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "À l'aide d'une approximation affine, donne une valeur approchée de $\\sqrt{{{eval:r^2+hh/100;d}}}$.\n\n$\\sqrt{{{eval:r^2+hh/100;d}}}\\approx ?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2|4|5"
+				},
+				{
+					"name": "hh",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r+hh/(200*r);d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On prend $f(x)=\\sqrt{x}$, $a={{eval:r^2}}$ et $h={{eval:hh/100;d}}$ : $f(a)={{r}}$ et $f'(a)=\\dfrac{1}{2\\sqrt{a}}=\\dfrac{1}{{{eval:2*r}}}$.",
+					"$$\\sqrt{{{eval:r^2+hh/100;d}}}\\approx {{r}}+\\dfrac{{{eval:hh/100;d}}}{{{eval:2*r}}}=\\textcolor{{{color:primary.0}}}{{{eval:r+hh/(200*r);d}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "À l'aide d'une approximation affine, donne une valeur approchée de $\\dfrac{1}{{{eval:1+hh/100;d}}}$.\n\n$\\dfrac{1}{{{eval:1+hh/100;d}}}\\approx ?$",
+			"variables": [
+				{
+					"name": "hh",
+					"expression": "1..5;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-hh/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On prend $f(x)=\\dfrac{1}{x}$, $a=1$ et $h={{eval:hh/100;d}}$ : $f(1)=1$ et $f'(1)=-1$.",
+					"$$\\dfrac{1}{{{eval:1+hh/100;d}}}\\approx 1-({{eval:hh/100;d}})=\\textcolor{{{color:primary.0}}}{{{eval:1-hh/100;d}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "À l'aide d'une approximation affine, donne une valeur approchée de ${{eval:1+hh/1000;d}}^2$.\n\n${{eval:1+hh/1000;d}}^2\\approx ?$",
+			"variables": [
+				{
+					"name": "hh",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1+hh/500;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On prend $f(x)=x^2$, $a=1$ et $h={{eval:hh/1000;d}}$ : $f(1)=1$ et $f'(1)=2$.",
+					"$${{eval:1+hh/1000;d}}^2\\approx 1+2\\times({{eval:hh/1000;d}})=\\textcolor{{{color:primary.0}}}{{{eval:1+hh/500;d}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "f(2) = 5, f′(2) = −3, f(2,1) ≈ 4,7",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"y": "5",
+				"k": "-3",
+				"hh": "1"
+			},
+			"answers": ["4{,}7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur de signe : 5,3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"y": "5",
+				"k": "-3",
+				"hh": "1"
+			},
+			"answers": ["5{,}3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "√4,02 ≈ 2,005",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2",
+				"hh": "2"
+			},
+			"answers": ["2{,}005"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f′(a) = 1/√a, 2,01",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2",
+				"hh": "2"
+			},
+			"answers": ["2{,}01"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/0,98 ≈ 1,02",
+			"variationIndex": 2,
+			"variables": {
+				"hh": "-2"
+			},
+			"answers": ["1{,}02"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur de signe : 0,98",
+			"variationIndex": 2,
+			"variables": {
+				"hh": "-2"
+			},
+			"answers": ["0{,}98"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1,003² ≈ 1,006",
+			"variationIndex": 3,
+			"variables": {
+				"hh": "3"
+			},
+			"answers": ["1{,}006"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1,003",
+			"variationIndex": 3,
+			"variables": {
+				"hh": "3"
+			},
+			"answers": ["1{,}003"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
