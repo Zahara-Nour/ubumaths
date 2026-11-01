@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR #2153 (migration du lot 8) en CI._
+_Mis à jour le 2026-11-01, PR #2153 (migration du lot 8) en CI après renommage en 224700._
 
 - **État** : lot 8 « Assemblages de cubes » : fichiers mergés (#2150) ; 5 brouillons en prod (ce3c4e11, 763d1183,
-  37c6852c, 650dcfc6, 0464c3f6) ; migration nœud + tag `20261101220100` en PR #2153 (test 8 rouges / 14 verts,
-  `security-auditor` sans bloquant, `main` fusionné après #2154, `Doc-inchangée:` dans le commit de fusion).
-- **Prochaine action** : CI de #2153 (`gh pr checks 2153`) ; si #2165 est mergée, `git merge origin/main` puis
-  `pnpm check:migrations --pr 2153` ; merge ; `db:migrate` depuis le dépôt principal (4 conditions réunies) ;
+  37c6852c, 650dcfc6, 0464c3f6) ; migration nœud + tag `20261101224700` en PR #2153 (test 8 rouges / 14 verts,
+  `security-auditor` sans bloquant ; 220100 doublée en prod par 223000 → renommée 224700, test 14 verts).
+- **Prochaine action** : CI de #2153 (suivre le run « Code Quality », pas `gh pr checks`) ; relire juste avant
+  `db:migrate` que 224700 est postérieure à la dernière jouée en prod ; merge ; `db:migrate` depuis le dépôt principal (4 conditions réunies) ;
   MCP : 5 modèles sur leur notion, un tag chacun, `updated_at` préservé, trigger `O` ; puis page à cocher.
   **Publication après le `deploy:prod` qui livre #2130.**
 - **En attente de David** : rien.
@@ -1254,3 +1254,7 @@ toutes distinctes, chaque leurre du 3 v1 a une vue différente des vues données
 - Revue `security-auditor` : aucun bloquant ; un Important corrigé (horodatage antérieur à 220000, déjà jouée :
   renommée 220100) ; un Faible laissé (branches « point sur un autre nœud » et « chemin introuvable » de la
   résolution non testées, déjà le cas au lot 7 ; le code les refuse).
+- Reprise (2026-11-01, après `/clear`) : relevé MCP, `20261101223000_questions_4_lot8_rangement_tags` déjà jouée
+  en prod, après 220100 (`db push` l'aurait refusée, migration intercalée). 223100, 224000 et 224100 pris sur
+  d'autres branches (ce2, questions-5, cm1) → renommée **224700** (`pnpm migration:horodatage` pas encore sur
+  `main`, #2165 ouverte) ; `origin/main` fusionnée ; test d'intégration 14 verts avec le nouveau nom.
