@@ -14,7 +14,7 @@ _Mis à jour le 2026-11-01, migration Q3 écrite (§ 14), PR à ouvrir._
 
 - **État** : migration `20261101220000_questions_tspe_tags_niveaux_q3.sql` + test d'intégration (15/15, rouge sans
   l'étape 4) ; Q3 révisée par la règle du nœud (D-Q3, § 14) ; fichiers `tspe-0-denombrement/` aux niveaux D-D1.
-- **Prochaine action** : `security-auditor`, PR, CI verte, merge, puis `db:migrate` depuis la branche mergée et
+- **Prochaine action** : PR, CI verte, merge, puis `db:migrate` depuis la branche mergée et
   relecture en base (MCP) ; ensuite lot 2 du § 4 (limites : capacités).
 - **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` **aussitôt** après le merge : d'ici là, les 3 fichiers de dénombrement portent
@@ -708,3 +708,7 @@ d'élèves** (MCP) : aucune sur les 10 modèles.
 niveau et tags du relevé, niveau visé libre hors lot ; `updated_at` préservé ; rollback en commentaire). Test
 `tests/integration/questions-tspe-tags-niveaux-q3.test.ts` : 15/15 ; **rouge** sans l'étape 4 (« lot incohérent »,
 suite principale et deux tests du rollback).
+
+**`security-auditor`** (2026-11-01, recoupé en prod) : **aucun finding bloquant**. Non bloquants : `set local
+lock_timeout` sans effet sous `db push` (comme les jumeaux, laissé) ; rollback sans contrôle du nœud de retour → `raise`
+explicite ajouté (test 15/15).

@@ -96,7 +96,7 @@
 -- select pg_advisory_xact_lock(hashtextextended('question_template_points:' || id::text, 0)) from _qt3r_modeles order by id;
 -- select 1 from public.question_templates where id in (select id from _qt3r_modeles) order by id for update;
 -- do $rollback$
--- declare v_presents integer; v_conformes integer; v_total integer; v_present integer; v_attendus integer;
+-- declare v_presents integer; v_conformes integer; v_total integer; v_present integer; v_attendus integer; v_noeud uuid;
 -- begin
 -- 	select count(*) into v_presents from _qt3r_modeles r join public.question_templates q on q.id = r.id;
 -- 	if v_presents = 0 then
@@ -128,13 +128,17 @@
 -- 	if v_total <> v_attendus or v_present <> v_attendus then
 -- 		raise exception 'rollback : tags changés depuis la migration (% du lot sur %, attendus %)', v_present, v_total, v_attendus;
 -- 	end if;
+-- 	select n3.id into v_noeud from public.classification_nodes n1
+-- 	  join public.classification_nodes n2 on n2.parent_id = n1.id and n2.archived_at is null
+-- 	  join public.classification_nodes n3 on n3.parent_id = n2.id and n3.archived_at is null
+-- 	 where n1.parent_id is null and n1.archived_at is null
+-- 	   and n1.name || ' > ' || n2.name || ' > ' || n3.name = 'Dénombrement > Combinaisons > coefficients binomiaux';
+-- 	if v_noeud is null then
+-- 		raise exception 'rollback : nœud de retour introuvable (Dénombrement > Combinaisons > coefficients binomiaux)';
+-- 	end if;
 -- 	delete from public.question_template_points q using _qt3r_modeles r where q.template_id = r.id;
 -- 	alter table public.question_templates disable trigger update_question_templates_updated_at;
--- 	update public.question_templates q set classification_node_id = (
--- 	         select n3.id from public.classification_nodes n1
--- 	           join public.classification_nodes n2 on n2.parent_id = n1.id
--- 	           join public.classification_nodes n3 on n3.parent_id = n2.id
--- 	          where n1.parent_id is null and n1.name || ' > ' || n2.name || ' > ' || n3.name = r.chemin_retour)
+-- 	update public.question_templates q set classification_node_id = v_noeud
 -- 	  from _qt3r_modeles r where q.id = r.id and r.chemin <> r.chemin_retour;
 -- 	update public.question_templates q set level = r.niveau_retour + 1000
 -- 	  from _qt3r_modeles r where q.id = r.id and r.niveau <> r.niveau_retour;
