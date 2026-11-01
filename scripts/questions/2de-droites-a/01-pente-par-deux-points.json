@@ -1,0 +1,272 @@
+{
+	"title": "Pente d'une droite passant par deux points",
+	"description": "m = (y_B − y_A)/(x_B − x_A) : pente entière, puis fractionnaire ; (AB) a-t-elle une pente ? (pas si x_A = x_B) (pièges : Δx/Δy, différences dans des ordres différents)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Droites du plan",
+	"subdomain": "Pente et vecteur directeur",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans un repère du plan, on considère les points $A({{ax}}\\,;\\,{{ay}})$ et $B({{eval:(ax)+(dx)}}\\,;\\,{{eval:(ay)+(dy)}})$.\n\nDétermine la pente $m$ de la droite $(AB)$.\n\n$m=?$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-5..5"
+				},
+				{
+					"name": "ay",
+					"expression": "-5..5"
+				},
+				{
+					"name": "dx",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "dy",
+					"expression": "eval:(k)*(dx)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La pente de la droite $(AB)$, quand $x_A\\neq x_B$, est $m=\\dfrac{y_B-y_A}{x_B-x_A}$ : déplacement vertical sur déplacement horizontal.",
+					"$$m=\\dfrac{ {{eval:(ay)+(dy)}}-{{ay;()}} }{ {{eval:(ax)+(dx)}}-{{ax;()}} }=\\dfrac{ {{dy}} }{ {{dx}} }=\\textcolor{{{color:primary.0}}}{{{k}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère du plan, on considère les points $A({{ax}}\\,;\\,{{ay}})$ et $B({{eval:(ax)+(dx)}}\\,;\\,{{eval:(ay)+(dy)}})$.\n\nDétermine la pente $m$ de la droite $(AB)$.\n\n$m=?$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-5..5"
+				},
+				{
+					"name": "ay",
+					"expression": "-5..5"
+				},
+				{
+					"name": "dx",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "dy",
+					"expression": "1..7;±"
+				}
+			],
+			"conditions": ["mod(dy, dx) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(dy)/(dx)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La pente de la droite $(AB)$, quand $x_A\\neq x_B$, est $m=\\dfrac{y_B-y_A}{x_B-x_A}$ : déplacement vertical sur déplacement horizontal.",
+					"$$m=\\dfrac{ {{eval:(ay)+(dy)}}-{{ay;()}} }{ {{eval:(ax)+(dx)}}-{{ax;()}} }=\\dfrac{ {{dy}} }{ {{dx}} }=\\textcolor{{{color:primary.0}}}{{{eval:(dy)/(dx)}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère du plan, on considère les points $A({{ax}}\\,;\\,{{ay}})$ et $B({{eval:(ax)+(w)*(dx)}}\\,;\\,{{eval:(ay)+(dy)}})$.\n\nLa droite $(AB)$ a-t-elle une pente ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-5..5"
+				},
+				{
+					"name": "ay",
+					"expression": "-5..5"
+				},
+				{
+					"name": "dx",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "dy",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "w",
+					"expression": "0|1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-(w)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:w==0|$A$ et $B$ ont la même abscisse ${{ax}}$ : la droite $(AB)$ est parallèle à l'axe des ordonnées, d'équation $x={{ax}}$. **Elle n'a pas de pente** (on diviserait par $x_B-x_A=0$).|$x_A\\neq x_B$ : la droite $(AB)$ n'est pas parallèle à l'axe des ordonnées, **elle a une pente**, $m={{eval:(dy)/(dx)}}$.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A(1 ; 2), B(3 ; 8) → 3",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"dx": "2",
+				"k": "3",
+				"dy": "6"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Δx/Δy (1/3)",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"dx": "2",
+				"k": "3",
+				"dy": "6"
+			},
+			"answers": ["\\frac{1}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signe, différences croisées (−3)",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"dx": "2",
+				"k": "3",
+				"dy": "6"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A(−1 ; 3), B(3 ; −3) → −3/2",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "-1",
+				"ay": "3",
+				"dx": "4",
+				"dy": "-6"
+			},
+			"answers": ["-\\frac{3}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En décimal −1,5",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "-1",
+				"ay": "3",
+				"dx": "4",
+				"dy": "-6"
+			},
+			"answers": ["-1.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Fraction non simplifiée −6/4",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "-1",
+				"ay": "3",
+				"dx": "4",
+				"dy": "-6"
+			},
+			"answers": ["-\\frac{6}{4}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "Erreur : Δx/Δy (−2/3)",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "-1",
+				"ay": "3",
+				"dx": "4",
+				"dy": "-6"
+			},
+			"answers": ["-\\frac{2}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x_A = x_B : « Non »",
+			"variationIndex": 2,
+			"variables": {
+				"ax": "2",
+				"ay": "1",
+				"dx": "3",
+				"dy": "4",
+				"w": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x_A = x_B : « Oui » faux",
+			"variationIndex": 2,
+			"variables": {
+				"ax": "2",
+				"ay": "1",
+				"dx": "3",
+				"dy": "4",
+				"w": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x_A ≠ x_B : « Oui »",
+			"variationIndex": 2,
+			"variables": {
+				"ax": "2",
+				"ay": "1",
+				"dx": "3",
+				"dy": "4",
+				"w": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
