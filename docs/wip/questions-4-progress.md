@@ -5,14 +5,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après la relecture du lot 8 (§ 43) et la phase 0 du lot 9 (§ 44)._
+_Mis à jour le 2026-11-01, lot 9 écrit (§ 45), PR à ouvrir._
 
-- **État** : lots 1 à 7 en prod et publiés. Lot 8 : 6 verdicts « ok », `publier-lot` en simulation vert (§ 43).
-  Lot 9 « pensée informatique » (065-067) : phase 0 écrite (§ 44), 3 modèles, pseudo-code sans outil neuf.
-- **Prochaine action** : après le `--publier` de David, vérifier au MCP les 6 `published` ; après ses réponses au
-  § 44.4, écrire le lot 9 (`scripts/questions/4-lot-9/`, branche `feat/questions-4-lot-9`).
-- **En attente de David** : `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/4-lot-8 --publier` ;
-  réponses aux 4 questions du § 44.4.
+- **État** : lots 1 à 7 en prod et publiés. Lot 8 : relu (6 « ok »), en attente du `--publier` de David (§ 43).
+  Lot 9 « pensée informatique » : 3 modèles écrits, specs vertes, joués en local (§ 45), branche `feat/questions-4-lot-9`.
+- **Prochaine action** : PR du lot 9 (revue : aucune, contenu ; `Doc-inchangée: contenu`), CI verte, merge ; puis
+  David `create-questions --dir scripts/questions/4-lot-9 --publier` ; relever les 3 `id`, migration nœud + tag
+  (065, 066 → nœud 195147df ; 067 → 151ff8c9), page à cocher. Le lot 9 est le dernier de l'ordre validé (§ 5 bis) :
+  restent les outils C (§ 3) et la fin de chantier (versement).
+- **En attente de David** : `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/4-lot-8 --publier`.
 - **Pièges en cours** : migrations, dès #2165 mergée (règle de David, 2026-11-01) : horodatage par `pnpm
 migration:horodatage` (jamais un nombre rond choisi à la main), `pnpm check:migrations --pr <n>` avant `gh pr merge`,
   premier job de CI = porte des horodatages (`git merge origin/main` dans le worktree d'abord) ; `mtexte()` refusé dans une figure de question (§ 26) ; `db push --include-all` : **réservé à
@@ -1102,3 +1103,23 @@ publication, les élèves de 4e voient 3 modèles de plus.
    Algorithmique / Variables / Accumulation 1 (067) ?
 4. 065, variation 4 (« au moins 18 ans » → `âge > 17`) : la garder (reco : oui, c'est le piège classique de
    Scratch, qui n'a pas `≥`) ?
+
+**Décisions de David (2026-11-01, « go » après mes recos)** : les 3 modèles du § 44.2 ; mots de Scratch (`mettre … à`,
+`ajouter … à`, `dire`) ; thème Algorithmique / Conditions / Condition simple 1 (065), Si alors sinon 1 (066),
+Algorithmique / Variables / Accumulation 1 (067) ; variante « au moins 18 ans → `âge > 17` » gardée.
+
+## 45. Lot 9 : écrit (worktree `ubumaths-wt-questions-4`, branche `feat/questions-4-lot-9`)
+
+- Script `docs/wip/questions/lot-4-9.py` → `scripts/questions/4-lot-9/` (3 fichiers). `question:specs` : 33 specs
+  vertes, 1 400 tirages réussis ; `create-questions` (simulation, prod) : 3 « à créer ».
+- Base locale : 3 brouillons créés ; aperçu admin (`admin@local.test`, port 5178) : bloc de code sans langage rendu en
+  monospace, indentation gardée ; code en ligne dans les choix rendu en `<code>` ; bon choix « Juste », mauvais
+  « Faux » avec la bonne réponse montrée.
+- **Pièges trouvés à l'aperçu** :
+  - `\text{nombre} < 7` dans une formule du corrigé sort collé (`nombre< 7`), même avec `\lt` : conditions du
+    corrigé écrites en code en ligne (`` `nombre < 7` ``), comme dans l'énoncé ;
+  - lancers de dé en formule séparés par des virgules (`1, 5, 2`) : lisibles comme des décimaux (`1,5`) → séparés
+    par `;` ;
+  - couleur `\textcolor` posée hors de `$…$` dans 3 corrigés (vu dans l'aperçu `question:specs`) → corrigé.
+- « deux si à la suite » : contrainte `q != r` (le second test sur le nombre de DÉPART donnerait un autre résultat),
+  sinon la variante ne tombait presque jamais sur le piège.

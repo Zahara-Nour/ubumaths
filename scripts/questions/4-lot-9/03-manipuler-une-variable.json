@@ -1,0 +1,312 @@
+{
+	"title": "Manipuler une variable",
+	"description": "Suivre la valeur d'une variable modifiée dans une boucle : score, doublement, compteur de 6 sur des lancers donnés ; dire ce que contient la variable, choisir l'instruction qui accumule",
+	"grades": ["4"],
+	"theme": "Algorithmique",
+	"domain": "Variables",
+	"subdomain": "Accumulation",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici un programme :\n\n```\nmettre score à {{s0}}\nrépéter {{k}} fois\n    ajouter {{a}} à score\nfin répéter\ndire score\n```\n\nQuel nombre dit le lutin ?\n\n$?$",
+			"variables": [
+				{
+					"name": "s0",
+					"expression": "1..10"
+				},
+				{
+					"name": "k",
+					"expression": "3..8"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:s0+k*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Variable.** Une variable porte un nom et contient une valeur ; chaque instruction qui la modifie **remplace** sa valeur, en partant de la précédente.",
+					"Au départ, score vaut ${{s0}}$. La boucle ajoute ${{a}}$ **{{k}} fois** : ${{eval:k*a}}$ de plus.",
+					"$${{s0}} + {{k}} \\times {{a}} = \\textcolor{{{color:primary.0}}}{{{eval:s0+k*a}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Voici un programme :\n\n```\nmettre x à {{a}}\nrépéter {{k}} fois\n    mettre x à x × 2\nfin répéter\ndire x\n```\n\nQuel nombre dit le lutin ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "k",
+					"expression": "2..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*2^k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Variable.** Une variable porte un nom et contient une valeur ; chaque instruction qui la modifie **remplace** sa valeur, en partant de la précédente.",
+					"Chaque tour **double** la valeur de x : ${{a}}$, puis ${{eval:a*2}}$, puis ${{eval:a*4}}${{if:k>2|, puis ${{eval:a*8}}$|}}{{if:k>3|, puis ${{eval:a*16}}$|}}.",
+					"Après {{k}} tours, x vaut $\\textcolor{{{color:primary.0}}}{{{eval:a*2^k}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici un programme :\n\n```\nmettre compteur à 0\nrépéter 8 fois\n    lancer le dé\n    si dé = 6 alors\n        ajouter 1 à compteur\n    fin si\nfin répéter\ndire compteur\n```\n\nLes 8 lancers donnent, dans l'ordre : ${{d1}} ; {{d2}} ; {{d3}} ; {{d4}} ; {{d5}} ; {{d6}} ; {{d7}} ; {{d8}}$.\n\nQuel nombre dit le lutin ?\n\n$?$",
+			"variables": [
+				{
+					"name": "d1",
+					"expression": "1..6"
+				},
+				{
+					"name": "d2",
+					"expression": "1..6"
+				},
+				{
+					"name": "d3",
+					"expression": "1..6"
+				},
+				{
+					"name": "d4",
+					"expression": "1..6"
+				},
+				{
+					"name": "d5",
+					"expression": "1..6"
+				},
+				{
+					"name": "d6",
+					"expression": "1..6"
+				},
+				{
+					"name": "d7",
+					"expression": "1..6"
+				},
+				{
+					"name": "d8",
+					"expression": "1..6"
+				},
+				{
+					"name": "c",
+					"expression": "eval:{{if:d1==6|1|0}}+{{if:d2==6|1|0}}+{{if:d3==6|1|0}}+{{if:d4==6|1|0}}+{{if:d5==6|1|0}}+{{if:d6==6|1|0}}+{{if:d7==6|1|0}}+{{if:d8==6|1|0}}"
+				}
+			],
+			"conditions": ["c>0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Variable.** Une variable porte un nom et contient une valeur ; chaque instruction qui la modifie **remplace** sa valeur, en partant de la précédente.",
+					"compteur part de $0$ et gagne $1$ **seulement** quand le dé donne $6$.",
+					"Les lancers : ${{if:d1==6|\\textcolor{{{color:primary.0}}}{6}|{{d1}}}} ; {{if:d2==6|\\textcolor{{{color:primary.0}}}{6}|{{d2}}}} ; {{if:d3==6|\\textcolor{{{color:primary.0}}}{6}|{{d3}}}} ; {{if:d4==6|\\textcolor{{{color:primary.0}}}{6}|{{d4}}}} ; {{if:d5==6|\\textcolor{{{color:primary.0}}}{6}|{{d5}}}} ; {{if:d6==6|\\textcolor{{{color:primary.0}}}{6}|{{d6}}}} ; {{if:d7==6|\\textcolor{{{color:primary.0}}}{6}|{{d7}}}} ; {{if:d8==6|\\textcolor{{{color:primary.0}}}{6}|{{d8}}}}$. Il y a $\\textcolor{{{color:primary.0}}}{{{c}}}$ six."
+				]
+			}
+		},
+		{
+			"statement": "Voici un programme :\n\n```\nmettre compteur à 0\nrépéter 8 fois\n    lancer le dé\n    si dé = 6 alors\n        ajouter 1 à compteur\n    fin si\nfin répéter\ndire compteur\n```\n\nQue contient la variable compteur à la fin ?\n\n```choix\n- Le nombre de 6 obtenus.\n- La valeur du dernier lancer.\n- La somme des 8 lancers.\n- Le nombre 6.\n```",
+			"variables": [
+				{
+					"name": "z",
+					"expression": "1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Variable.** Une variable porte un nom et contient une valeur ; chaque instruction qui la modifie **remplace** sa valeur, en partant de la précédente.",
+					"compteur part de $0$ et gagne $1$ à chaque lancer qui donne $6$ : à la fin, il contient $\\textcolor{{{color:primary.0}}}{\\text{le nombre de 6 obtenus}}$."
+				]
+			}
+		},
+		{
+			"statement": "On veut que le lutin dise le **total des points** obtenus en {{k}} lancers de dé :\n\n```\nmettre total à 0\nrépéter {{k}} fois\n    lancer le dé\n    ???\nfin répéter\ndire total\n```\n\nQuelle instruction faut-il écrire à la place de `???` ?\n\n```choix\n- `ajouter dé à total`\n- `mettre total à dé`\n- `ajouter 1 à total`\n- `mettre total à 0`\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Variable.** Une variable porte un nom et contient une valeur ; chaque instruction qui la modifie **remplace** sa valeur, en partant de la précédente.",
+					"À chaque tour, il faut **ajouter** les points du dé à ce que total contient déjà : $\\textcolor{{{color:primary.0}}}{\\text{ajouter dé à total}}$.",
+					"`mettre total à dé` remplacerait le total par le dernier lancer ; `ajouter 1 à total` compterait les lancers."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "5 + 4 × 3 = 17",
+			"variationIndex": 0,
+			"variables": {
+				"s0": "5",
+				"k": "4",
+				"a": "3"
+			},
+			"answers": ["17"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : valeur de départ oubliée",
+			"variationIndex": 0,
+			"variables": {
+				"s0": "5",
+				"k": "4",
+				"a": "3"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 × 2³ = 24",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"k": "3"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 × 2 × 3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"k": "3"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Deux 6",
+			"variationIndex": 2,
+			"variables": {
+				"d1": "6",
+				"d2": "2",
+				"d3": "3",
+				"d4": "6",
+				"d5": "1",
+				"d6": "4",
+				"d7": "5",
+				"d8": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dernier lancer",
+			"variationIndex": 2,
+			"variables": {
+				"d1": "6",
+				"d2": "2",
+				"d3": "3",
+				"d4": "6",
+				"d5": "1",
+				"d6": "4",
+				"d7": "2",
+				"d8": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 6",
+			"variationIndex": 2,
+			"variables": {
+				"d1": "6",
+				"d2": "2",
+				"d3": "3",
+				"d4": "6",
+				"d5": "1",
+				"d6": "4",
+				"d7": "5",
+				"d8": "3"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le nombre de 6",
+			"variationIndex": 3,
+			"variables": {
+				"z": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le dernier lancer",
+			"variationIndex": 3,
+			"variables": {
+				"z": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "ajouter dé à total",
+			"variationIndex": 4,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : mettre total à dé",
+			"variationIndex": 4,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
