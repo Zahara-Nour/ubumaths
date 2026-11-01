@@ -5,18 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01 vers 23 h, pendant un `deploy:prod` (lancé à la demande de David)._
+_Mis à jour le 2026-11-01 vers 23 h, tout arrêté sur ordre de David._
 
-- **⚠️ D'abord** : `git log -1 origin/production`. Si le déploiement est fait (version > 0.59.0) ou abandonné :
-  **envoyer « go » (fin de la PAUSE MERGES) aux sessions** (`ListAgents`, toutes les interactives) — c'est cette
-  session qui l'a demandée. Échecs de la soirée : CI de version instable (« Browser connection was closed », rejouer
-  le job : `gh run rerun <id> --failed`) et merges qui annulaient la CI de version (d'où la pause).
-- **État** : lot 9 : 9 brouillons en prod (#2168) ; **#2176** (migrations nœud + tag du lot 9, et `a7dfe502` au CP
-  ET au CE1, tags CP-058 + CE1-073 — décision de David) : CI verte, `security-auditor` sans finding bloquant (×2),
-  **à merger après le déploiement**, puis `db:migrate` depuis le dépôt principal (4 conditions réunies), vérifier au MCP.
-- **Prochaine action** : après `db:migrate` : page à cocher du lot 9 (ajouter le dessin de ` ```partage ` au script) ;
-  lot 8 (centimes en prod si le déploiement passe) : catégories, page à cocher, `publier-lot`.
-- **En attente de David** : rien (le déploiement a été demandé). Chantier `verrou-deploy` à ouvrir à part (mémoire).
+- **⚠️ Arrêt** : David a fait arrêter le `deploy:prod` (rien créé ; production = v0.59.0 ; v0.61.0 sur main non
+  déployée) : **la session questions-cm2 règle d'abord le problème des migrations en base**. La PAUSE MERGES envoyée
+  par cette session vers 22 h 53 court encore : son « go » est laissé à questions-cm2 (prévenue). Ne rien pousser ni
+  merger avant son feu vert.
+- **État** : lot 9 : 9 brouillons en prod (#2168). **#2176** (migrations nœud + tag du lot 9, et `a7dfe502` au CP ET au
+  CE1, tags CP-058 + CE1-073) : migrations renommées `20261101224820` et `20261101224900` (collision avec 2de),
+  **commits locaux non poussés** dans `../ubumaths-wt-questions-ce1` ; `security-auditor` sans finding bloquant (×2).
+- **Prochaine action** : au feu vert de questions-cm2 : `git merge origin/main`, relancer les 2 tests d'intégration,
+  `pnpm check:migrations --pr 2176`, push, CI, merge, `db:migrate`, vérifier au MCP ; puis page à cocher du lot 9
+  (dessin de ` ```partage ` à ajouter au script) ; lot 8 après un `deploy:prod` réussi (centimes).
+- **En attente de David** : la fin du chantier migrations (questions-cm2). Chantier `verrou-deploy` à ouvrir (mémoire).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
