@@ -135,6 +135,15 @@ export const COURBE_PIXEL_WIDTH: Record<CourbeSize, number> = {
 
 const ASPECT_RATIO = 3 / 4;
 
+/** Marge autour du cadre à l'écran, en px, pour les graduations et les titres d'axes */
+export const COURBE_PAD = 26;
+
+/** Cadre de la figure à l'écran, en px (la fenêtre de l'auteur le remplit) */
+export function courbeFrame(size: CourbeSize): { width: number; height: number } {
+	const width = COURBE_PIXEL_WIDTH[size] ?? COURBE_PIXEL_WIDTH.moyenne;
+	return { width, height: width * ASPECT_RATIO };
+}
+
 /** Écart visé entre deux lignes de grille automatiques, en px */
 const AUTO_GRID_TARGET_PX = 40;
 
