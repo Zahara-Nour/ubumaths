@@ -5,20 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2116._
+_Mis à jour le 2026-11-01, lot 7 écrit (PR des fichiers ouverte)._
 
-- **État** : lots 1 à **6 publiés** (lot 6 : 8/8, vérifié MCP le 2026-11-01, après #2116 qui a réglé la collision
-  de niveau). **Phase 0 du lot 7 validée** (§ 18, 6 modèles).
-- **Prochaine action** : **écrire le lot 7**
-  (§ 18) : branche `content/questions-5-lot7` depuis le worktree, `docs/wip/questions/lot-5-proportionnalite.py`,
-  simulation `create-questions` + `publier-lot`. Ensuite lot 8 « Opérations » (001, 002, 005, 116, 117).
-- **En attente de David** : le `! pnpm db:migrate` de 23:26:56 UTC (2026-10-31)
-  visait-il une autre session ? (résultat juste).
-- **Pièges en cours** : horodatage = `max + 1 min` de `origin/main` JUSTE AVANT le merge, et `main` avance pendant
-  la CI → `db:migrate --include-all --dry-run` d'abord (une autre session peut l'avoir jouée) ; deux modèles d'un
-  lot dans une même catégorie → niveaux distincts ; nœud neuf → `later-migrations.ts` + fixtures ; `plusieurs:
-oui` ajoute « Coche la ou les bonnes réponses » ; case oubliée d'un choix multiple = ½ ; `--publier` = David.
-- **Worktree / branche** : `ubumaths-wt-questions-5` (HEAD détaché sur `main`, branche #2116 supprimée).
+- **État** : lots 1 à 6 publiés. **Lot 7** (§ 18, 6 modèles) écrit : `docs/wip/questions/lot-5-proportionnalite.py`
+  → `scripts/questions/5-proportionnalite/`, simulation prod 6 à créer / 58 specs vertes, essai en base locale
+  fait (§ 18.1).
+- **Prochaine action** : PR des fichiers → CI → merge ; puis **David** `create-questions --dir
+scripts/questions/5-proportionnalite --publier` ; relever les `id` ; migration nœud + tag ; page à cocher.
+  Ensuite lot 8 « Opérations » (001, 002, 005, 116, 117).
+- **En attente de David** : le `--publier` du lot 7 ; deux cases sur deux lignes (02) : au pilotage Chrome, la
+  frappe dans la 2e case arrivait aussi dans la 1re — extension ou appli ? à essayer à la main.
+- **Pièges en cours** : horodatage = `max + 1 min` de `origin/main` JUSTE AVANT le merge, `db:migrate
+--include-all --dry-run` d'abord ; nœud neuf → `later-migrations.ts` + fixtures ; `--publier` = David ;
+  prix en euros → `zeros: off` (4,80) ; jamais `e`.
+- **Worktree / branche** : `ubumaths-wt-questions-5`, branche `content/questions-5-lot7`.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -517,3 +517,17 @@ Calcul littéral › Écrire › Formules 1-3, nœud = notion Algèbre › Calcu
 ### Lot 6 : publication (2026-11-01)
 
 - David : `publier-lot.ts --publier` → 8/8 publiés ; vérifié au MCP (`status = published` pour les 8).
+
+### 18.1 Lot 7 écrit (2026-11-01)
+
+- Script `docs/wip/questions/lot-5-proportionnalite.py`, fichiers `scripts/questions/5-proportionnalite/` ;
+  simulation prod : 6 à créer, 58 specs vertes ; 150 à 200 tirages par modèle réussis.
+- Niveaux relevés au MCP (tous statuts) : Calculer 8, Problèmes 1 (sous-catégorie neuve), Proportion 3,
+  Situations › Définition 3, Écrire › Formules 4 et 5 — tous libres. `publier-lot` ne peut simuler qu'après les
+  brouillons (« absent de la base »).
+- Mesuré : « 4,80 » pour un prix = `unoptimal_form` → `zeros: off` sur 01 et 02 (précédent : problèmes de prix
+  CE1, CE2, 6e). 06 : le juge exige l'écriture (« 3 » refusé, « n + 3 » refusé), « n × 3 » accepté avec
+  `products: off` ; « 5n + 2 » (inversé) refusé.
+- Base locale : 6 créés ; aperçu admin : 02 (deux cases sur deux lignes), 04 (choix multiple, « Coche la ou les
+  bonnes réponses »), 05 rendus justes. Saisie : au pilotage Chrome, la frappe dans la 2e case de 02 arrivait
+  aussi dans la 1re — non tranché (extension ou appli), à essayer à la main.

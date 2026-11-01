@@ -1,0 +1,206 @@
+{
+	"title": "Exprimer une proportion en pourcentage",
+	"description": "Exprimer une part en pourcentage quand le tout n'est ni un diviseur ni un multiple de 100 (6 voix sur 24 = 25 % ; 22 sur 40 = 55 %)",
+	"grades": ["5"],
+	"theme": "Proportionnalité",
+	"domain": "Pourcentages",
+	"subdomain": "Proportion",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Lors de l'élection des délégués, Malik a obtenu ${{n}}$ voix sur ${{t}}$.\n\nQuel pourcentage des voix a-t-il obtenu ?\n\n$?~\\%$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "24|30|36|40|48|60|80"
+				},
+				{
+					"name": "p",
+					"expression": "10|20|25|30|40|60|70|75|80|90"
+				},
+				{
+					"name": "n",
+					"expression": "eval:p*t/100"
+				}
+			],
+			"conditions": ["(p*t)%100==0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Proportion en pourcentage.** On écrit la proportion sous forme de fraction, on la calcule en nombre décimal, puis on lit le nombre de centièmes : $0{,}25 = \\dfrac{25}{100} = 25~\\%$.",
+					"$\\dfrac{{{n}}}{{{t}}} = {{n}} \\div {{t}} = {{eval:n/t;d}} = \\dfrac{{{p}}}{100}$, soit $\\textcolor{{{color:primary.0}}}{{{p}}~\\%}$."
+				]
+			}
+		},
+		{
+			"statement": "À un questionnaire de ${{t}}$ questions, Jade a donné ${{n}}$ bonnes réponses.\n\nQuel pourcentage de bonnes réponses a-t-elle obtenu ?\n\n$?~\\%$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "24|30|36|40|48|60|80"
+				},
+				{
+					"name": "p",
+					"expression": "10|20|25|30|40|60|70|75|80|90"
+				},
+				{
+					"name": "n",
+					"expression": "eval:p*t/100"
+				}
+			],
+			"conditions": ["(p*t)%100==0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Proportion en pourcentage.** On écrit la proportion sous forme de fraction, on la calcule en nombre décimal, puis on lit le nombre de centièmes : $0{,}25 = \\dfrac{25}{100} = 25~\\%$.",
+					"$\\dfrac{{{n}}}{{{t}}} = {{n}} \\div {{t}} = {{eval:n/t;d}} = \\dfrac{{{p}}}{100}$, soit $\\textcolor{{{color:primary.0}}}{{{p}}~\\%}$."
+				]
+			}
+		},
+		{
+			"statement": "Un club de sport compte ${{t}}$ adhérents, dont ${{n}}$ font de la natation.\n\nQuel pourcentage des adhérents fait de la natation ?\n\n$?~\\%$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "24|30|36|40|48|60|80"
+				},
+				{
+					"name": "p",
+					"expression": "10|20|25|30|40|60|70|75|80|90"
+				},
+				{
+					"name": "n",
+					"expression": "eval:p*t/100"
+				}
+			],
+			"conditions": ["(p*t)%100==0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Proportion en pourcentage.** On écrit la proportion sous forme de fraction, on la calcule en nombre décimal, puis on lit le nombre de centièmes : $0{,}25 = \\dfrac{25}{100} = 25~\\%$.",
+					"$\\dfrac{{{n}}}{{{t}}} = {{n}} \\div {{t}} = {{eval:n/t;d}} = \\dfrac{{{p}}}{100}$, soit $\\textcolor{{{color:primary.0}}}{{{p}}~\\%}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "6 sur 24 : 25 %",
+			"variationIndex": 0,
+			"variables": {
+				"t": "24",
+				"p": "25",
+				"n": "6"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6 (l'effectif)",
+			"variationIndex": 0,
+			"variables": {
+				"t": "24",
+				"p": "25",
+				"n": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0,25 (la proportion)",
+			"variationIndex": 0,
+			"variables": {
+				"t": "24",
+				"p": "25",
+				"n": "6"
+			},
+			"answers": ["0,25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 18 (les autres voix)",
+			"variationIndex": 0,
+			"variables": {
+				"t": "24",
+				"p": "25",
+				"n": "6"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "18 sur 30 : 60 %",
+			"variationIndex": 1,
+			"variables": {
+				"t": "30",
+				"p": "60",
+				"n": "18"
+			},
+			"answers": ["60"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 12 (30 − 18)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "30",
+				"p": "60",
+				"n": "18"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "28 sur 40 : 70 %",
+			"variationIndex": 2,
+			"variables": {
+				"t": "40",
+				"p": "70",
+				"n": "28"
+			},
+			"answers": ["70"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 28",
+			"variationIndex": 2,
+			"variables": {
+				"t": "40",
+				"p": "70",
+				"n": "28"
+			},
+			"answers": ["28"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
