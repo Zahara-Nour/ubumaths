@@ -10,8 +10,9 @@ _Mis à jour le 2026-11-01, après #2163 (PR 0 mergée)._
 
 - **État** : PR 0 **#2163 mergée** (corpus 85/85, champ `answer`). Branche distante supprimée,
   `origin/main` intégré dans la branche locale (règles migrations #2165, CI allégée #2167).
-- **Prochaine action** : lot 2 du corpus (section « Lot 2 — relevé »), A-D tranchées ;
-  même branche `refactor/registre-reference`, repoussée avec le lot 2.
+- **Prochaine action** : David relit la page du lot 2 (https://claude.ai/artifact/GZgw832zPgg2Eqqs9dpZF2,
+  108 fiches, 6 questions) ; puis lire `verdicts` (ArtifactData), écrire le corpus + juge, PR.
+  Même branche `refactor/registre-reference`, repoussée avec le lot 2.
 - **Tranché** (2026-11-01) : A-D du lot 2, oui ×4 (section « Lot 2 — relevé ») —
   A le registre rend l'écriture décimale `decimal` + `decimalExact` (exacte `0.25` / arrondie
   `0.7071`, le signe `=`/`≈` posé par l'outil ; nom `approx` rejeté par David) ; B mode décimal =
@@ -275,3 +276,27 @@ Sonde jetable (vitest sous `src/`, `produceRegistre` / `produceAtelier`), 25 lig
   avec \pi ou le symbole π. »). Pour le lot 2, famille 4.
 - **Conséquence pour D** : ces lignes entrent au lot 2, attendu = la réponse de l'Atelier, registre
   en « connue fausse » jusqu'à la PR qui le corrige.
+
+## Lot 2 — candidats et page à cocher (2026-11-01)
+
+- **Page** : https://claude.ai/artifact/GZgw832zPgg2Eqqs9dpZF2 (« Corpus du registre, lot 2 », db
+  `verdicts/<id>`), 108 lignes, familles 1-9, ids `decimal-`, `grands-`, `plafond-`,
+  `remarquables-`, `racines-`, `signes-`, `comparer-`, `grandeurs-`, `approche-`. Source des
+  données : relevé (agent Explore, tests cités `fichier:ligne`) + sonde des deux outils + `judge`
+  réel ; scratchpad de la session (`build_candidates.py`, `juges-lot2.json`) — régénérable.
+- **Attendus** : réponse de l'Atelier (`{,}` → point) ; écarts posés en question seulement ;
+  C appliquée (`2=2`, `3! = 6`, `1/3+1/6=1/2`, `x+x=2x` → `\text{vrai}`). `decimal` tiré du bouton
+  ≈ de l'Atelier, sinon du mode décimal du moteur ; absent pour les expressions à lettres, les
+  comparaisons, les grandeurs (sauf `1/3[km]`, question), les angles.
+- **Mesure** (juge actuel) : Atelier 96/108 juste, registre 57/108.
+- **Écarts du registre trouvés** : degrés non lus (`cos(60°)` gardé ; l'Atelier traduit) ;
+  `π` tapé lu comme une lettre dans `5π/6`, `π`, `π^20` (pas dans `cos(π/3)`) ; `pi` lu p·i ;
+  expressions à lettres recopiées (famille 6) ; écriture gardée (> 1 000 car.) sans `answer` ;
+  égalités `=` sans `answer` (« true »). Atelier : égalités `=` sans réponse lisible, `2 \approx 2`
+  sans refus.
+- **Juge à compléter dans la PR** : il ne lit pas `1000!`, `90{}^{\circ}`, `\mathrm{km}`
+  composés/puissances, et compte `\unit{m}` contre `\mathrm{m}` comme « autre valeur ».
+- **Questions sur la page (6)** : `plafond-02` 1000!/999! → 1000 ? · `plafond-04` écriture gardée
+  avec `/` ou `\frac` ? · `grandeurs-01` 12000 m gardé ou → 12 km (tidy-units:24) ? ·
+  `grandeurs-11` décimale d'une grandeur avec unité ? · `comparer-13` `2 \approx 2` → refus du
+  registre ? · `approche-09` `decimal` en texte (`8.7700*10^9`) ou LaTeX (`8.7700 \times 10^{9}`) ?
