@@ -6,17 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 6b écrit (PR en cours)._
+_Mis à jour le 2026-11-01, après #2178 (lot 6b mergé), PR de rangement en cours._
 
-- **État** : lots 1 à 6a en prod et publiés. Lot 6b écrit : 4 modèles (10-13), 74 specs, simulation verte.
-- **Prochaine action** : merger la PR 6b ; **David** crée les brouillons en prod (`create-questions --dir
-scripts/questions/ce2-6b --publier`, via `!`) ; migration nœud + tag (contenances : nœud « unités et conversions »
-  vide ; durées : nœud « calcul de durées »), test d'intégration rouge sans elle ; page à cocher ; publication.
-- **En attente de David** : création des brouillons (`!`).
-- **Pièges en cours** : horodatage via `pnpm migration:horodatage` ; `db:migrate`, `--publier` refusés par le
-  classifieur (`!`) ; niveaux relevés juste avant la publication ; commitlint : sujet sans majuscule ; pas de
-  mention Claude ; `mod()` refuse les variables non entières en condition (passer par une variable dérivée).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2-6b` · `feat/questions-ce2-lot6b`.
+- **État** : lots 1 à 6a en prod et publiés. Lot 6b : 4 brouillons créés en prod par David (2026-11-01), sans nœud ni
+  tag ; migration de rangement + test d'intégration écrits (rouge sans la migration, 9 verts avec), PR ouverte.
+- **Prochaine action** : PR de rangement verte → merge → `db:migrate` (David, `!`) → page à cocher → publication
+  (`publier-lot`, niveaux relevés juste avant).
+- **En attente de David** : `db:migrate` après le merge (`!`).
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente ; `--publier` refusé par le classifieur
+  (`!`) ; commitlint : sujet sans majuscule ; pas de mention Claude.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2-6b` · `feat/questions-ce2-lot6b-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -497,3 +496,5 @@ conversion, puis le mélange, puis l'unité à déduire).
 - 10 : symbole, sens, plus grande / plus petite, choix de l'unité (L, dL, cL). 11 : relations, 780 cL = 7 L + 80 cL.
 - 12-13 : l'axe chronologique n'est pas un bloc (énoncé en texte, repères dans le corrigé). Réponses en deux cases
   (h, min) ; 13 pose `u = t - 6 floor(t/6)` pour éviter `mod` en condition.
+- Brouillons créés le 2026-11-01 : 10 `186f05a4`, 11 `cda9c7de`, 12 `ea1a0929`, 13 `ba8f2f75` (préfixes). Rangement :
+  10 → CE2-052 et 11 → CE2-053 sur Contenances / unités et conversions ; 12 et 13 → CE2-060 sur Durées / calcul de durées.
