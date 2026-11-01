@@ -1,14 +1,14 @@
 ---
 title: Écarts, lot 3 — conditions de √ et ln à paramètre dans l'Atelier — journal
 date: 2026-11-01
-status: lot 3 codé, PR ouverte
+status: lot 3 mergé (#2118)
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR ouverte._
+_Mis à jour le 2026-11-01, après #2118._
 
-- **État** : Q1-Q4 validées (mes recos) ; `argumentConditions` / `signConditionOf` / `mergedConditions` dans `src/lib/atelier/calcul.ts`, 28 tests (`conditions-racine-ln.test.ts`, 20 rouges sans le correctif), suite atelier verte, `check:incremental` 0 · **Prochaine action** : revue faite (finding 2 corrigé), CI verte → merge · **En attente de David** : accord pour supprimer les 2 sondes non suivies (`__tests__/sonde-ast.test.ts`, `sonde-conditions.test.ts`) · **Pièges en cours** : ne pas toucher `pedagogical-simplify/`, `simplify`, `tidy` · **Worktree / branche** : `ubumaths-wt-ecarts-conditions` / `fix/ecarts-conditions`
+- **État** : lot 3 mergé (#2118, pas en prod) : conditions de √ (u ⩾ 0) et ln / log (u > 0) à paramètre dans les intégrales bornées, fusion ⩾/⩽ + ≠ → > / < ; revue faite · **Prochaine action** : aucune dans ce lot ; restes exotiques notés plus bas (doublons d'écriture, « -0 ») · **En attente de David** : vérification à l'œil (`docs/wip/verifications-manuelles.md`, #2118) · **Pièges en cours** : collision d'horodatage de migration sur `main` → fusionner `origin/main` (arrivé sur #2118) · **Worktree / branche** : retirés
 
 ---
 
