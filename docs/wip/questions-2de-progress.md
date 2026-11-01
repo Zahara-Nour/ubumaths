@@ -6,18 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, #2113 (6 B) ouverte, CI rouge à cause de `main` (§ 39)._
+_Mis à jour le 2026-11-01, après #2113 (6 B, mergée)._
 
-- **État** : lots 1 à 5 publiés ; lot 6 : 6 A mergé (#2106), 6 B en PR (§ 39) ; rien du lot 6 en prod.
-- **Prochaine action** : relancer la CI de #2113 quand `main` est réparée, merger ; écrire 6 C (racine, cube, méthode adaptée : 6 modèles, § 37) dans
-  un worktree neuf ; puis brouillons, migration et page à cocher pour les 20.
-- **En attente de David** : collision sur `main` : `20261101190200` porté par deux migrations (5e lot 6, 6e lot 7,
-  #2107) → `migration-versions.test.ts` rouge pour toutes les PR ; à réparer par la session 5e ou 6e.
-- **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main` ET des worktrees ; `page-a-cocher.ts`
-  ne prend qu'un `--dir` (préfixes `a-`/`b-` dans une copie, désormais trois dossiers) ; `db:migrate` et
-  `--publier` refusés par le classifieur → David les lance avec `!` ; worktree neuf → `pnpm exec svelte-kit sync`
-  avant les scripts `tsx` (`$lib` introuvable sinon).
-- **Worktree / branche** : `ubumaths-wt-questions-2de` · `feat/questions-2de-fonctions-b`.
+- **État** : lots 1 à 5 publiés ; lot 6 : 6 A (#2106) et 6 B (#2113) mergés (§ 39) ; rien du lot 6 en prod.
+- **Prochaine action** : écrire 6 C (racine, cube, méthode adaptée : 6 modèles, § 37) dans un worktree neuf ;
+  puis brouillons, migration et page à cocher pour les 20.
+- **En attente de David** : rien.
+- **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main` ET des worktrees (collision
+  5e/6e du 2026-11-01, réparée par #2114) ; `page-a-cocher.ts` ne prend qu'un `--dir` (préfixes `a-`/`b-`/`c-`
+  dans une copie, trois dossiers) ; `db:migrate` et `--publier` → David les lance avec `!` ; worktree neuf →
+  `pnpm exec svelte-kit sync` avant les scripts `tsx` (`$lib` introuvable sinon).
+- **Worktree / branche** : aucun (retiré après #2113).
 
 ## 1. Relevé (prod, 2026-10-27)
 
