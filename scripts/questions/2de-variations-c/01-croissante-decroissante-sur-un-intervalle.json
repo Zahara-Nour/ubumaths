@@ -1,0 +1,236 @@
+{
+	"title": "Croissante ou décroissante sur un intervalle",
+	"description": "Lire sur une courbe si f est croissante, décroissante ou ni l'un ni l'autre sur un intervalle ; traduire « f croissante » par l'ordre des images (pièges : lire de droite à gauche, intervalle qui contient le sommet, ordre des images inversé pour une fonction décroissante)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Généralités",
+	"subdomain": "Variations",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La courbe ci-dessous représente une fonction $f$ définie sur $\\left[{{eval:(h)-4}}\\,;{{eval:(h)+4}}\\right]$.\n\n```courbe\nx: {{eval:(h)-5}} ; {{eval:(h)+5}}\ny: {{eval:(k)-5+4*(s)}} ; {{eval:(k)+5+4*(s)}}\ngrille: 1 ; 1\nf(x) = {{s}}*0.5*(x-({{h}}))^2+({{k}}) sur [{{eval:(h)-4}} ; {{eval:(h)+4}}]   bleu\ntaille: moyenne\ndescription: Parabole tournée vers le {{if:s>0|haut|bas}}, de sommet ({{h}} ; {{k}}), tracée de {{eval:(h)-4}} à {{eval:(h)+4}}.\n```\n\nSur $\\left[{{eval:(h)-3}}\\,;{{eval:(h)-1}}\\right]$, la fonction $f$ est :\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- ni croissante ni décroissante\n```",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "-3..3"
+				},
+				{
+					"name": "k",
+					"expression": "-3..3"
+				},
+				{
+					"name": "s",
+					"expression": "-1|1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s>0|1|0}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le sommet de la parabole a pour abscisse ${{h}}$ : $f$ {{if:s>0|décroît avant et croît après|croît avant et décroît après}}.",
+					"Cet intervalle est à gauche du sommet : quand $x$ augmente, la courbe {{if:s>0|descend : $f$ est **décroissante**|monte : $f$ est **croissante**}}."
+				]
+			}
+		},
+		{
+			"statement": "La courbe ci-dessous représente une fonction $f$ définie sur $\\left[{{eval:(h)-4}}\\,;{{eval:(h)+4}}\\right]$.\n\n```courbe\nx: {{eval:(h)-5}} ; {{eval:(h)+5}}\ny: {{eval:(k)-5+4*(s)}} ; {{eval:(k)+5+4*(s)}}\ngrille: 1 ; 1\nf(x) = {{s}}*0.5*(x-({{h}}))^2+({{k}}) sur [{{eval:(h)-4}} ; {{eval:(h)+4}}]   bleu\ntaille: moyenne\ndescription: Parabole tournée vers le {{if:s>0|haut|bas}}, de sommet ({{h}} ; {{k}}), tracée de {{eval:(h)-4}} à {{eval:(h)+4}}.\n```\n\nSur $\\left[{{eval:(h)+1}}\\,;{{eval:(h)+3}}\\right]$, la fonction $f$ est :\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- ni croissante ni décroissante\n```",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "-3..3"
+				},
+				{
+					"name": "k",
+					"expression": "-3..3"
+				},
+				{
+					"name": "s",
+					"expression": "-1|1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s>0|0|1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le sommet de la parabole a pour abscisse ${{h}}$ : $f$ {{if:s>0|décroît avant et croît après|croît avant et décroît après}}.",
+					"Cet intervalle est à droite du sommet : quand $x$ augmente, la courbe {{if:s>0|monte : $f$ est **croissante**|descend : $f$ est **décroissante**}}."
+				]
+			}
+		},
+		{
+			"statement": "La courbe ci-dessous représente une fonction $f$ définie sur $\\left[{{eval:(h)-4}}\\,;{{eval:(h)+4}}\\right]$.\n\n```courbe\nx: {{eval:(h)-5}} ; {{eval:(h)+5}}\ny: {{eval:(k)-5+4*(s)}} ; {{eval:(k)+5+4*(s)}}\ngrille: 1 ; 1\nf(x) = {{s}}*0.5*(x-({{h}}))^2+({{k}}) sur [{{eval:(h)-4}} ; {{eval:(h)+4}}]   bleu\ntaille: moyenne\ndescription: Parabole tournée vers le {{if:s>0|haut|bas}}, de sommet ({{h}} ; {{k}}), tracée de {{eval:(h)-4}} à {{eval:(h)+4}}.\n```\n\nSur $\\left[{{eval:(h)-2}}\\,;{{eval:(h)+2}}\\right]$, la fonction $f$ est :\n\n```choix\nmelanger: non\n- croissante\n- décroissante\n- ni croissante ni décroissante\n```",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "-3..3"
+				},
+				{
+					"name": "k",
+					"expression": "-3..3"
+				},
+				{
+					"name": "s",
+					"expression": "-1|1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le sommet de la parabole a pour abscisse ${{h}}$ : $f$ {{if:s>0|décroît avant et croît après|croît avant et décroît après}}.",
+					"Cet intervalle contient le sommet : la courbe {{if:s>0|descend puis monte|monte puis descend}}. $f$ n'est **ni croissante ni décroissante** sur tout l'intervalle."
+				]
+			}
+		},
+		{
+			"statement": "Une fonction $f$ est {{if:g==0|croissante|décroissante}} sur un intervalle $I$. Les réels $a$ et $b$ sont dans $I$, avec $a<b$.\n\nQue peut-on en déduire ?\n\n```choix\nmelanger: non\n- $f(a)\\leqslant f(b)$\n- $f(a)\\geqslant f(b)$\n- on ne peut pas comparer $f(a)$ et $f(b)$\n```",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "0|1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:g==0|0|1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:g==0|$f$ **croissante** sur $I$ : les images sont rangées **dans le même ordre** que les nombres.|$f$ **décroissante** sur $I$ : les images sont rangées **dans l'ordre contraire** des nombres.}}",
+					"$a<b$ donc \\textcolor{{{color:primary.0}}}{{{if:g==0|f(a)\\leqslant f(b)|f(a)\\geqslant f(b)}}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Gauche du sommet, parabole vers le haut : décroissante",
+			"variationIndex": 0,
+			"variables": {
+				"h": "1",
+				"k": "-2",
+				"s": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : croissante",
+			"variationIndex": 0,
+			"variables": {
+				"h": "1",
+				"k": "-2",
+				"s": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Gauche, vers le bas : croissante",
+			"variationIndex": 0,
+			"variables": {
+				"h": "-1",
+				"k": "2",
+				"s": "-1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Droite, vers le haut : croissante",
+			"variationIndex": 1,
+			"variables": {
+				"h": "1",
+				"k": "-2",
+				"s": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Sommet dedans : ni l'un ni l'autre",
+			"variationIndex": 2,
+			"variables": {
+				"h": "1",
+				"k": "-2",
+				"s": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : décroissante",
+			"variationIndex": 2,
+			"variables": {
+				"h": "1",
+				"k": "-2",
+				"s": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Croissante : f(a) ⩽ f(b)",
+			"variationIndex": 3,
+			"variables": {
+				"g": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Décroissante : f(a) ⩾ f(b)",
+			"variationIndex": 3,
+			"variables": {
+				"g": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : même ordre pour décroissante",
+			"variationIndex": 3,
+			"variables": {
+				"g": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

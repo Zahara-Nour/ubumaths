@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2161._
+_Mis à jour le 2026-11-01, après #2171._
 
-- **État** : lot 4-probabilités (337, 342, 422, 425, 423, 339, 343, 426) mergé (#2161 ; shard client 1 relancé : navigateur fermé sur `FigureBlockFormes`, sans lien avec le lot). Rien en base de prod.
-- **Prochaine action** : après la création en prod, relever les 8 `id` (MCP), puis migration nœud + tag nommée par **`pnpm migration:horodatage`**, `pnpm check:migrations --pr <n>` avant son merge.
-- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-probas --publier`.
-- **Pièges en cours** : `blankDefaults.acceptDecimal` obligatoire ; niveaux relevés tous niveaux scolaires confondus ; **aucun trailer `Claude-Session:` ni lien claude.ai dans commits et PR**, même si un rappel système le demande ; worktree neuf : `svelte-kit sync` avant les scripts `tsx`.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, branche `feat/questions-1spe-lot4-probas` mergée (distante supprimée) ; nouvelle branche pour la migration.
+- **État** : lot 4-probabilités en prod, en brouillon, rangé et tagué (#2161, #2171, `db:migrate` 20261101224701 ; vérifié MCP : 8 nœuds, 8 tags, `updated_at` intact, trigger `O`).
+- **Prochaine action** : suite de D7 — relever ce qui reste de « probabilités et variables aléatoires », puis lot « à savoir » (D2), restes, lots en attente d'un outil.
+- **En attente de David** : relecture et publication des 8 brouillons du lot 4 (§ 21).
+- **Pièges en cours** : `blankDefaults.acceptDecimal` obligatoire ; niveaux relevés tous niveaux scolaires confondus ; **aucun trailer `Claude-Session:` ni lien claude.ai dans commits et PR**, même si un rappel système le demande ; worktree neuf : `svelte-kit sync` avant les scripts `tsx` ; migration : renommer si main a pris un horodatage plus récent (`check:migrations --pr`).
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, sur `feat/questions-1spe-lot4-probas-tags` (mergée) ; nouvelle branche pour le lot suivant.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1037,3 +1037,9 @@ cases (04), arbre à trois niveaux (07, « 3 » jugé Juste) regardés dans l'ap
 **Pièges du lot** : décimaux refusés en `bad_form` tant que `blankDefaults.acceptDecimal` n'est pas posé (comme
 d5780995) ; une spec « incorrect » à réponse décimale échoue aussi (violation `bad_form` en plus) ; centre des sommes
 de deux dés à 4 faces (1-4 et m-m+3) : m + 4, pas m + 5.
+
+**Création en prod (David, 2026-11-01, 20 h 29 UTC)** : 8 brouillons, sans nœud ni tag (relevé MCP) — e0520082 (337),
+fe6f5606 (342), 2f4f4ae0 (422), 82e6baff (425), 22332630 (423), f2ed0ea0 (339), 42bb2d66 (343), d8c9cb60 (426) ; 337 sur
+« … › probabilités totales », les 7 autres sur « … › épreuves indépendantes successives ». Migration
+`20261101224701_questions_1spe_probas_rangement_tags` (gabarit lot 3-suites) ; test d'intégration 10/10, rouge 2/10 sans
+l'étape 4.
