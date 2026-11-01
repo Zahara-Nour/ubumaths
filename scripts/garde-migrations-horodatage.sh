@@ -13,17 +13,20 @@
 #   bash scripts/garde-migrations-horodatage.sh --pr 12  # la PR 12, juste avant `gh pr merge`
 #   bash scripts/garde-migrations-horodatage.sh --prochain  # l'horodatage à donner à une migration neuve
 #
-# `--prochain` (`pnpm migration:horodatage`) : l'heure réelle UTC, ou la dernière migration
-# connue + 1 à 59 s tirées au hasard si main est « en avance » sur l'horloge (horodatages
-# ronds posés à la main avant la règle du 2026-11-01). Le hasard : deux sessions lancées
-# ensemble recevaient le même « + 1 s » (2026-11-01, 20261101224701 pris deux fois). L'addition
-# se fait en vraie heure (jamais de seconde 60). Jamais un nombre rond choisi à la main.
+# `--prochain` (`pnpm migration:horodatage`) : l'heure réelle UTC à la seconde, toujours (une
+# seconde de plus seulement si elle est déjà prise). Plus de « dernière migration + n » : quand
+# main était en avance sur l'horloge (horodatages ronds posés à la main), toutes les sessions se
+# serraient sur les mêmes secondes (2026-11-01 : 20261101224701 puis 224702 pris deux fois).
+# Jamais un nombre rond choisi à la main.
 #
 # Refuse (exit 1) :
 #   - une migration neuve dont l'horodatage est déjà pris sur origin/main ;
-#   - deux migrations de la branche au même horodatage ;
-#   - une migration neuve plus ancienne que la dernière de main : `supabase db push`
-#     (`pnpm db:migrate`) la refuserait (« inserted before the last migration »).
+#   - deux migrations de la branche au même horodatage.
+# Une migration plus ancienne que la dernière de main PASSE : `pnpm db:migrate` joue
+# `supabase db push --include-all`, qui l'accepte (sans cette option, db push la refuse,
+# « inserted before the last migration »). Les migrations de lots, chacune sur ses propres
+# lignes, ne dépendent pas de leur ordre ; une migration qui dépend d'une autre le dit dans son
+# en-tête et attend son merge.
 # Hors ligne, ou sans origin : passe, avec un avertissement (le garde-fou
 # n'empêche pas de travailler ; la CI reste le filet). En CI (CI=true) : refuse,
 # car la garde y est la porte de la CI (quality.yml, job `version`).
@@ -70,16 +73,14 @@ if [ -n "$pr" ]; then
 	cible="$(git rev-parse FETCH_HEAD)"
 fi
 
-# AAAAMMJJHHMMSS + n secondes, en vraie heure UTC (date BSD de macOS, sinon GNU).
-# Horodatage ancien qui n'est pas une vraie heure (« …240000 ») : addition simple.
+# AAAAMMJJHHMMSS + n secondes, en vraie heure UTC (date BSD de macOS, sinon GNU) : jamais de
+# seconde 60.
 ajouter_secondes() {
 	local e
 	if e="$(date -u -j -f %Y%m%d%H%M%S "$1" +%s 2>/dev/null)"; then
 		date -u -j -r "$((e + $2))" +%Y%m%d%H%M%S
 	elif e="$(date -u -d "${1:0:8} ${1:8:2}:${1:10:2}:${1:12:2}" +%s 2>/dev/null)"; then
 		date -u -d "@$((e + $2))" +%Y%m%d%H%M%S
-	else
-		echo $((10#$1 + $2))
 	fi
 }
 
@@ -90,22 +91,19 @@ liste() {
 sur_main="$(liste origin/main)"
 
 if [ -n "$prochain" ]; then
-	# Dernière migration connue : main ou la branche (ses migrations neuves comprises).
-	dernier="$( (printf '%s\n' "$sur_main"; liste HEAD) | cut -d_ -f1 | grep -E '^[0-9]{14}$' | sort | tail -1)"
-	maintenant="$(date -u +%Y%m%d%H%M%S)"
-	if [ -z "$dernier" ] || [[ "$maintenant" > "$dernier" ]]; then
-		echo "$maintenant"
-	else
-		decalage=$((RANDOM % 59 + 1))
-		ajouter_secondes "$dernier" "$decalage"
-	fi
+	# Horodatages déjà pris : main et la branche (ses migrations neuves comprises).
+	pris="$( (printf '%s\n' "$sur_main"; liste HEAD) | cut -d_ -f1 | grep -E '^[0-9]{14}$' | sort -u)"
+	v="$(date -u +%Y%m%d%H%M%S)"
+	while printf '%s\n' "$pris" | grep -qx "$v"; do
+		v="$(ajouter_secondes "$v" 1)"
+	done
+	echo "$v"
 	exit 0
 fi
 sur_cible="$(liste "$cible")"
 neuves="$(comm -13 <(printf '%s\n' "$sur_main") <(printf '%s\n' "$sur_cible") | sed '/^$/d')"
 
 erreurs=0
-dernier_main="$(printf '%s\n' "$sur_main" | cut -d_ -f1 | sed '/^$/d' | sort | tail -1)"
 
 while IFS= read -r f; do
 	[ -n "$f" ] || continue
@@ -113,10 +111,6 @@ while IFS= read -r f; do
 	pris="$(printf '%s\n' "$sur_main" | grep "^${v}_" || true)"
 	if [ -n "$pris" ]; then
 		echo "⛔ $f : l'horodatage $v est déjà pris sur origin/main par $pris." >&2
-		erreurs=1
-	elif [ -n "$dernier_main" ] && [[ "$v" < "$dernier_main" ]]; then
-		echo "⛔ $f : $v est plus ancien que la dernière migration de main ($dernier_main) ;" >&2
-		echo "   pnpm db:migrate la refuserait." >&2
 		erreurs=1
 	fi
 done <<<"$neuves"

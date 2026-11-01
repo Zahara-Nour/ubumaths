@@ -190,7 +190,7 @@ Rencontré trois fois dans la même session. Un test peut contourner
 (`supabase db push`) les pousse toutes. Les déplacer temporairement hors de `supabase/migrations/`
 fonctionne, mais **compter les fichiers avant et après** : un oubli de
 restauration ne serait signalé par rien. Et les migrations suivantes hériteront
-d'un ordre non chronologique, ce qui exige `--include-all`.
+d'un ordre non chronologique, ce qui exige `--include-all` (passé par `pnpm db:migrate` depuis le 2026-11-01).
 
 ## Ce qui a réellement empêché la récidive
 
