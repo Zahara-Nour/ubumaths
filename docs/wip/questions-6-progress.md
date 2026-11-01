@@ -8,7 +8,7 @@
 _Mis à jour le 2026-11-01, lot 7 en brouillons en prod, PR de rangement ouverte._
 
 - **État** : lots 1 à 6b publiés ; 06-07 en ```ranger en prod (#2078) ; v0.59.0 en prod. Lot 7 : 4 brouillons créés
-  par David (8adac6d1, 0ce253ea, 5f9ba34d, 92db5823) ; migration `20261101190200_questions_6_lot7_rangement_tags` (§ 18).
+  par David (8adac6d1, 0ce253ea, 5f9ba34d, 92db5823) ; migration `20261101200700_questions_6_lot7_rangement_tags` (§ 18).
 - **Prochaine action** : CI verte + `security-auditor` → merge → `db:migrate` depuis le dépôt principal → MCP (nœuds,
   tags, `updated_at`) → page à cocher → relecture de David → `publier-lot` en simulation → publication.
 - **En attente de David** : décision sur le verrou de `deploy:prod` (attendre la CI sous verrou) — hors chantier.
@@ -1139,5 +1139,5 @@ visibles de l'admin et de l'auteur seuls jusqu'à leur publication ; la migratio
 - MCP : 4 brouillons, `['6']`, niveaux 1, 2, 7, 4 ; sans nœud ni tag. Points : 6-108, 6-107 → « Nombres et calculs >
   Décimaux : numération > droite graduée » ; 6-128 → « … > Fractions : sens et écritures > droite graduée » ; 6-110
   → « … > Décimaux : numération > ordre ».
-- Migration `20261101190200_questions_6_lot7_rangement_tags` (patron du lot 6b, horodatage = dernière de `main` +
+- Migration `20261101200700_questions_6_lot7_rangement_tags` (patron du lot 6b ; 1re version en 190200, prise en prod par questions-5 → renommée 200700 ; horodatage = dernière de `main` +
   1 min) ; test `questions-6-lot7-rangement-tags` : 8 rouges contre une migration vide, 14 verts avec.
