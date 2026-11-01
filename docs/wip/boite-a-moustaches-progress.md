@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, phase 0 validée._
+_Mis à jour le 2026-11-01, palier 1 écrit._
 
-- **État** : phase 0 validée (§ 8), palier 1 (affichage) en cours.
-- **Prochaine action** : palier 1 — tests rouges, puis genre `boite-a-moustaches` de `stat-chart`.
+- **État** : palier 1 (affichage) écrit sur la branche (§ 9), vu dans Chrome (sombre, clair) ; revue en cours.
+- **Prochaine action** : corriger la revue, PR, merge ; puis palier 2 (construire, § 5).
 - **En attente de David** : rien.
 - **Pièges en cours** : quartiles = ceux du programme (`src/lib/statistics/describe.ts`), jamais ceux des
   calculatrices ; ne pas écrire de second calcul.
@@ -145,3 +145,20 @@ Notes = 4 ; 8 ; 11 ; 14 ; 19
 5. Construire : ordre libre, traits dans le désordre jugés faux (la correction le dit).
 6. Moustaches au minimum et au maximum ; déciles hors périmètre (option `moustaches: déciles` possible plus
    tard).
+
+## 9. Palier 1 : écrit (2026-11-01)
+
+- Genre `boite-a-moustaches` de `stat-chart` : grammaire à part `parseBoxPlotContent`
+  (`stat-chart-parser.ts`), scène `utils/boxplot-scene.ts`, écran `BoxPlotChart.svelte` (pris par
+  `StatChart.svelte`), Typst (`stat-chart-typst.ts`, compilé avec le compilateur de prod), description
+  accessible (`stat-chart-text.ts`). Liste, case choix, éditeur riche : génériques (aller-retour testé).
+- Fiche à part `/aide-ecriture/blocs/boite-a-moustaches` (`boxPlotEntry`), qui sert de page de démo.
+- Tests : `boite-a-moustaches.test.ts` 36 (32 rouges avant), composant 7 (7 rouges avant) ; suites
+  stat-chart + catalogue 1 079 verts. `check:incremental` 0, `types:cliquet` 0, `lint:fast`, garde de doc OK.
+- **Écarts au § 3-4, décidés en écrivant** : valeurs écrites **sous** la boîte (le nom est au-dessus) ; deux
+  valeurs trop proches passent sur une rangée plus bas ; axe calculé « rond » (`scatterAxis` du nuage) ;
+  `description:` et `taille:` acceptées, `couleur:` refusée ; deux boîtes sans nom refusées ; noms en double
+  comparés sans la casse ; négatifs et virgule permis, fractions seulement dans `données:` ; `?` non géré
+  (palier 2).
+- Vu dans Chrome (prof local, port 5177) : les trois exemples justes, refus situés lisibles, thèmes sombre et
+  clair. Téléphone non vu (la fenêtre ne se réduit pas) : à la vérification manuelle.
