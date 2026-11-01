@@ -10,23 +10,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2160._
+_Mis à jour le 2026-11-01, migration du lot 2 en PR._
 
-- **État** : lot 2 (limites : 402, 576, 403, 582) **mergé** (#2160) dans `scripts/questions/tspe-2-limites/`
-  (script `docs/wip/questions/lot-tspe-limites.py`), 52 specs vertes ; rien encore en prod.
-- **Prochaine action** : **David** lance, depuis le dépôt principal, `set -a; . ./.env; set +a` puis
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-2-limites --publier` → relever les `id` →
-  migration : 3 sous-notions neuves + rangement + tags (§ 15), sur une branche neuve depuis `origin/main`.
-- **En attente de David** : la création des 4 brouillons en prod.
+- **État** : 4 brouillons du lot 2 créés en prod (3d7d1d25, 0fb97bb9, 6d611634, ae70373c) ; migration
+  `20261101224702_questions_tspe_lot2_rangement_tags.sql` (3 sous-notions, rangement, tags) + test 11/11, rouge
+  sans l'étape 5 ; branche `feat/questions-tspe-lot2-migration`.
+- **Prochaine action** : `security-auditor` sans bloquant → `pnpm check:migrations --pr <n>` → CI verte → merge →
+  `db:migrate` depuis le dépôt principal → relire en base (MCP) → page à cocher, puis `publier-lot` (David).
+- **En attente de David** : rien avant la publication.
 - **Pièges en cours** : un tag doit être sur le **nœud du modèle ou sa notion** (§ 14) ; le **niveau est dans la
   clé** de `create-questions`. `create-questions` et `publier-lot` → David (`!`) ; `db:migrate` depuis le dépôt
-  principal ; en-tête de commit ≤ 100 caractères ; worktree neuf : `pnpm exec svelte-kit sync` avant
-  `question:specs` (sinon `$lib` introuvable). **Migrations (règles du 2026-11-01, #2165)** : nom par
-  `pnpm migration:horodatage` (jamais « max + 1 » à la main) ; `pnpm check:migrations --pr <n>` avant le merge ;
-  CI rouge sans jobs → lire le 1er job (« Porte de la CI ») ; PR de contenu : CI allégée, « skipped » voulu,
-  CI Summary fait foi.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe` gardé pour la branche de migration ;
-  `feat/questions-tspe-lot2` mergée.
+  principal ; en-tête ET corps de commit ≤ 100 caractères par ligne. **Migrations** : nom par
+  `pnpm migration:horodatage`, à refaire si main a pris un horodatage plus récent entre-temps (renommé une fois,
+  224001 → 224701 → 224702) ; `pnpm check:migrations` lit les commits ; CI Summary fait foi.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe`, `feat/questions-tspe-lot2-migration`.
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -754,3 +751,13 @@ de l'encadrement en bloc).
 
 **Question d'accès** (migration à venir) : personne ne gagne ni ne perd d'accès (brouillons ; les élèves ne les
 voient qu'après `publier-lot`).
+
+**Création en prod** (David, 2026-11-01) : 3d7d1d25 (M1), 0fb97bb9 (M2), 6d611634 (M3), ae70373c (M4), en
+brouillon, [T_SPE], niveau 1, sans nœud ni tag (relu au MCP). Points : 402 et 576 sur « Suites > Limites de
+suites », 403 et 582 sur « Fonctions > Limites de fonctions » ; aucune des 3 sous-notions n'existait.
+
+**Migration** `20261101224702_questions_tspe_lot2_rangement_tags.sql` : gardes avant toute écriture (TOUT ou
+RIEN, sans nœud ni tag, sous-notions absentes casse ignorée), 3 sous-notions en fin de notion, résolution stricte
+(point sur le nœud ou sa notion), rangement puis tags, `updated_at` préservé, rollback gardé en commentaire.
+Test `tests/integration/questions-tspe-lot2-rangement-tags.test.ts` : 11/11 ; **rouge** sans l'étape 5 (« lot
+incohérent : nœuds 0/4, tags 0/4 »).
