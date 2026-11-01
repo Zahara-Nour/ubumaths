@@ -10,17 +10,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, migration Q3 écrite (§ 14), PR à ouvrir._
+_Mis à jour le 2026-11-01, après #2148 (migration Q3 jouée en prod)._
 
-- **État** : migration `20261101220000_questions_tspe_tags_niveaux_q3.sql` + test d'intégration (15/15, rouge sans
-  l'étape 4) ; Q3 révisée par la règle du nœud (D-Q3, § 14) ; fichiers `tspe-0-denombrement/` aux niveaux D-D1.
-- **Prochaine action** : PR, CI verte, merge, puis `db:migrate` depuis la branche mergée et
-  relecture en base (MCP) ; ensuite lot 2 du § 4 (limites : capacités).
+- **État** : lots 0 et 1 finis. Q3 révisée (D-Q3, § 14) et ordre D-D1 en prod (`db:migrate` du 2026-11-01, relu au
+  MCP : 10 / 10 conformes, trigger `updated_at` actif).
+- **Prochaine action** : lot 2 du § 4 (limites : capacités 402, 576, 403, 582, catégorie A) : relevé, phase 0 à
+  faire valider par David. Nouveau worktree depuis `origin/main`.
 - **En attente de David** : rien.
-- **Pièges en cours** : `db:migrate` **aussitôt** après le merge : d'ici là, les 3 fichiers de dénombrement portent
-  des niveaux que la prod n'a pas encore (niveau dans la clé de `create-questions` → doublon). `create-questions` et
-  `publier-lot` → David (`!`) ; en-tête de commit ≤ 100 caractères.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe` · `content/questions-tspe-q3`.
+- **Pièges en cours** : un tag doit être sur le **nœud du modèle ou sa notion** (§ 14) : le vérifier avant de proposer un
+  point ; le **niveau est dans la clé** de `create-questions`. `create-questions` et `publier-lot` → David (`!`) ;
+  `db:migrate` depuis le dépôt principal (worktree non lié à Supabase) ; en-tête de commit ≤ 100 caractères.
+- **Worktree / branche** : aucun (retiré après #2148).
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -712,3 +712,7 @@ suite principale et deux tests du rollback).
 **`security-auditor`** (2026-11-01, recoupé en prod) : **aucun finding bloquant**. Non bloquants : `set local
 lock_timeout` sans effet sous `db push` (comme les jumeaux, laissé) ; rollback sans contrôle du nœud de retour → `raise`
 explicite ajouté (test 15/15).
+
+**PR** : #2148 mergée le 2026-11-01 (CI verte après relance d'un job navigateur : erreur d'outillage
+`wrapDynamicImport`, 169 fichiers verts). **`db:migrate`** le 2026-11-01 depuis le dépôt principal ; relu en base :
+tags, nœud et niveaux visés sur les 10 modèles, 970dab52 resté au niveau 3.

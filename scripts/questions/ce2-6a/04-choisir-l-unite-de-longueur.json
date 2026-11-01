@@ -1,0 +1,147 @@
+{
+	"title": "Quelle unité pour mesurer ?",
+	"description": "Choisir parmi mm, cm, dm, m et km : une pièce de 2 mm, un crayon de 15 cm, un bus de 12 m, un trajet de 3 km",
+	"grades": ["CE2"],
+	"theme": "Grandeurs",
+	"domain": "Longueurs",
+	"subdomain": "Unités",
+	"level": 9,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:k==1|L'épaisseur d'une pièce de monnaie mesure $2$|{{if:k==2|La longueur d'une fourmi mesure $5$|{{if:k==3|L'épaisseur d'une vitre mesure $4$|{{if:k==4|Un crayon mesure $15$|{{if:k==5|Un cahier mesure $30$|{{if:k==6|Une gomme mesure $4$|{{if:k==7|La hauteur d'une table d'écolier mesure $7$|{{if:k==8|La largeur d'un bureau mesure $12$|{{if:k==9|La hauteur d'un cartable mesure $4$|{{if:k==10|La porte de la classe mesure $2$|{{if:k==11|Un bus mesure $12$|{{if:k==12|Une piscine mesure $25$|{{if:k==13|Le trajet de la maison à la piscine fait $3$|{{if:k==14|Une course à pied fait $10$|La route entre deux villes voisines fait $15$}}}}}}}}}}}}}}}}}}}}}}}}}}}} …\n\nQuelle unité convient ?\n\n```choix\nmelanger: non\n- mm\n- cm\n- dm\n- m\n- km\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..15"
+				},
+				{
+					"name": "r",
+					"expression": "eval:floor((k-1)/3)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:r==0|C'est très petit, plus fin qu'un doigt : on mesure en millimètres.|{{if:r==1|C'est un petit objet, qu'on tient dans la main : on mesure en centimètres.|{{if:r==2|C'est un peu plus grand qu'une main, moins qu'une porte : on mesure en décimètres.|{{if:r==3|C'est grand comme une pièce ou un véhicule : on mesure en mètres.|C'est une longue distance, qu'on parcourt à pied ou en voiture : on mesure en kilomètres.}}}}}}}}",
+					"{{if:k==1|L'épaisseur d'une pièce de monnaie mesure $2$|{{if:k==2|La longueur d'une fourmi mesure $5$|{{if:k==3|L'épaisseur d'une vitre mesure $4$|{{if:k==4|Un crayon mesure $15$|{{if:k==5|Un cahier mesure $30$|{{if:k==6|Une gomme mesure $4$|{{if:k==7|La hauteur d'une table d'écolier mesure $7$|{{if:k==8|La largeur d'un bureau mesure $12$|{{if:k==9|La hauteur d'un cartable mesure $4$|{{if:k==10|La porte de la classe mesure $2$|{{if:k==11|Un bus mesure $12$|{{if:k==12|Une piscine mesure $25$|{{if:k==13|Le trajet de la maison à la piscine fait $3$|{{if:k==14|Une course à pied fait $10$|La route entre deux villes voisines fait $15$}}}}}}}}}}}}}}}}}}}}}}}}}}}} {{if:r==0|millimètres|{{if:r==1|centimètres|{{if:r==2|décimètres|{{if:r==3|mètres|kilomètres}}}}}}}} (**{{if:r==0|mm|{{if:r==1|cm|{{if:r==2|dm|{{if:r==3|m|km}}}}}}}}**)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "pièce de monnaie : mm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pièce de 2 cm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "crayon : cm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "table d'écolier : dm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : table de 7 m",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7",
+				"r": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "bus : m",
+			"variationIndex": 0,
+			"variables": {
+				"k": "11",
+				"r": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : bus de 12 cm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "11",
+				"r": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "trajet : km",
+			"variationIndex": 0,
+			"variables": {
+				"k": "13",
+				"r": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : trajet de 3 m",
+			"variationIndex": 0,
+			"variables": {
+				"k": "13",
+				"r": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

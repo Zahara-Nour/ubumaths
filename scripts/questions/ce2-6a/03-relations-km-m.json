@@ -1,0 +1,236 @@
+{
+	"title": "Kilomètres et mètres",
+	"description": "5 km = 5 000 m ; 5 km + 750 m = 5 750 m ; 5 750 m = 5 km 750 m ; 5 km 40 m = 5 040 m",
+	"grades": ["CE2"],
+	"theme": "Grandeurs",
+	"domain": "Longueurs",
+	"subdomain": "Unités",
+	"level": 11,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{km} = ?~\\text{m}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1000*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un kilomètre, c'est $1\\,000~\\unit{m}$ : ${{a}}~\\unit{km}$, c'est ${{a}}$ fois $1\\,000~\\unit{m}$.",
+					"$${{a}}~\\unit{km} = \\textcolor{{{color:primary.0}}}{{{eval:1000*a}}}~\\unit{m}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:1000*a}}~\\unit{m} = ?~\\text{km}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Mille mètres font un kilomètre : dans ${{eval:1000*a}}~\\unit{m}$, il y a ${{a}}$ fois mille mètres.",
+					"$${{eval:1000*a}}~\\unit{m} = \\textcolor{{{color:primary.0}}}{{{a}}}~\\unit{km}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{km} + {{b}}~\\unit{m} = ?~\\text{m}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..30"
+				},
+				{
+					"name": "b",
+					"expression": "1..999"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1000*a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit d'abord les kilomètres en mètres : ${{a}}~\\unit{km} = {{eval:1000*a}}~\\unit{m}$.",
+					"Puis on ajoute les mètres :",
+					"$${{eval:1000*a}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:1000*a+b}}}$$",
+					"${{a}}~\\unit{km} + {{b}}~\\unit{m} = {{eval:1000*a+b}}~\\unit{m}$."
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:1000*a+b}}~\\unit{m} = ?~\\text{km}~?~\\text{m}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..30"
+				},
+				{
+					"name": "b",
+					"expression": "1..999"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans ${{eval:1000*a+b}}~\\unit{m}$, il y a ${{a}}$ {{if:a==1|millier|milliers}} de mètres, c'est-à-dire ${{a}}~\\unit{km}$, et il reste ${{b}}~\\unit{m}$.",
+					"$${{eval:1000*a+b}}~\\unit{m} = \\textcolor{{{color:primary.0}}}{{{a}}}~\\unit{km}~\\textcolor{{{color:primary.0}}}{{{b}}}~\\unit{m}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "5 km = 5 000 m",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["5000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 km = 500 m",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["500"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 000 m = 7 km",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 000 m = 700 km",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["700"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 5 km + 750 m = 5 750 m",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "750"
+			},
+			"answers": ["5750"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 km + 750 m = 5 + 750",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "750"
+			},
+			"answers": ["755"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5 km + 40 m = 5 040 m",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "40"
+			},
+			"answers": ["5040"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 km + 40 m = 5 400 m (zéro oublié)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "40"
+			},
+			"answers": ["5400"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5 750 m = 5 km 750 m",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"b": "750"
+			},
+			"answers": ["5", "750"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 750 m = 57 km 50 m",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"b": "750"
+			},
+			"answers": ["57", "50"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 040 m = 2 km 40 m",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "40"
+			},
+			"answers": ["2", "40"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

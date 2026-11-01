@@ -1,14 +1,14 @@
 ---
 title: Écarts, lot 5 (L8, fin de la journalisation serveur) — journal
 date: 2026-11-01
-status: en cours
+status: lot 5 mergé (#2144)
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, avant la PR._
+_Mis à jour le 2026-11-01, après #2144._
 
-- **État** : 19 `console.error` des 8 derniers fichiers passés à `createServerLogger` ; cliquet vide (`{}`) ; typecheck 0 ; garde doc : aucun trou (zones documentées depuis le lot 3) · **Prochaine action** : PR, CI, merge · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-ecarts-l8` (`fix/ecarts-l8`)
+- **État** : L8 clos, mergé (#2144, pas en prod) : plus aucun `console.*` serveur, cliquet vide ; revue + audit sans bloquant · **Prochaine action** : aucune (lot fini) · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : retirés
 
 ---
 
