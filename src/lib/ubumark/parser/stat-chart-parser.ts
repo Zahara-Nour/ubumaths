@@ -544,16 +544,28 @@ const PLACER_LINE_REGEX = /^placer\s*:/i;
  * le parseur : corps sans clôtures, fermeture, et `nested` pour un bloc en retrait
  * ou cité (l'élève ne pourrait pas y répondre : ses cases ne sont pas créées)
  */
-export function findBarsToPlace(markdown: string): {
+export function findBarsToPlace(markdown: string): StatChartToPlace[] {
+	return findStatChartsToPlace(markdown, 'barres');
+}
+
+/** Les boîtes à moustaches à construire (`placer:`, palier 2) d'un énoncé, comme les barres */
+export function findBoxPlotsToPlace(markdown: string): StatChartToPlace[] {
+	return findStatChartsToPlace(markdown, 'boite-a-moustaches');
+}
+
+/** Bloc statistique à construire repéré dans un énoncé */
+interface StatChartToPlace {
 	startIndex: number;
 	body: string[];
 	closed: boolean;
 	nested: boolean;
-}[] {
+}
+
+function findStatChartsToPlace(markdown: string, kind: StatChartKind): StatChartToPlace[] {
 	const lines = markdown.split('\n');
 	const plain = lines.map(unnestedLine);
 	return findStatChartBlocks(plain)
-		.filter((block) => block.kind === 'barres')
+		.filter((block) => block.kind === kind)
 		.map((block) => {
 			const closed = block.closed !== false;
 			const body = plain.slice(block.startIndex + 1, closed ? block.endIndex : block.endIndex + 1);
@@ -567,9 +579,9 @@ export function findBarsToPlace(markdown: string): {
 		.filter((block) => block.body.some((line) => PLACER_LINE_REGEX.test(line.trim())));
 }
 
-/** L'énoncé a-t-il un diagramme en barres à construire ? */
-export function hasBarsToPlace(markdown: string): boolean {
-	return findBarsToPlace(markdown).length > 0;
+/** L'énoncé a-t-il un diagramme à construire (barres, boîte à moustaches) ? */
+export function hasStatChartToPlace(markdown: string): boolean {
+	return findBarsToPlace(markdown).length > 0 || findBoxPlotsToPlace(markdown).length > 0;
 }
 
 // ============================================================================

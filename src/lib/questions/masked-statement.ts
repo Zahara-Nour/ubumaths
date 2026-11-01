@@ -12,7 +12,8 @@
  *
  * Masqué : ```line et ```courbe (`placer:`), ```horloge (`placer:`), ```collection et
  * ```monnaie (`construire:`, avec sa réserve par défaut écrite : `maskMonnaie`), ```partage (`colorier:`), ```barres (effectifs des
- * barres de `placer:`, `axe: à choisir` compris : l'échelle ne se déduit plus).
+ * barres de `placer:`, `axe: à choisir` compris : l'échelle ne se déduit plus),
+ * ```boite-a-moustaches (les cinq valeurs des boîtes de `placer:`, ou `données:`).
  * Lot 2, des lignes réécrites (David, journal § 7) :
  * - ```cubes `retrouver:` : `hauteurs: ? ? / 0 ?` (l'empreinte est la vue de dessus,
  *   donnée) et `vues: face 2 1 ; droite 1 2` (tout assemblage qui a ces vues est juste :
@@ -38,7 +39,11 @@ import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
 import { defaultReserve, findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
 import { fromCents, isCents, readAmount, toCents } from '$lib/ubumark/utils/monnaie-valeurs';
 import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
-import { findBarsToPlace, parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
+import {
+	findBarsToPlace,
+	findBoxPlotsToPlace,
+	parseStatChartContent
+} from '$lib/ubumark/parser/stat-chart-parser';
 import { findChoiceBlocks } from '$lib/ubumark/parser/choix-parser';
 import {
 	findCubesToBuild,
@@ -173,6 +178,33 @@ function maskBars(block: FoundBlock): MaskLine {
 	};
 }
 
+/**
+ * Boîte à moustaches à construire : la ligne `Nom = 4 ; 8 ; 11 ; 14 ; 19` de chaque
+ * boîte de `placer:` devient `Nom = ? ; ? ; ? ; ? ; ?` ; `données:` (la série d'où
+ * l'attendu est calculé) devient une boîte sans nom masquée — la consigne donne la
+ * série, le bloc ne la répète pas
+ */
+function maskBoxPlot(block: FoundBlock): MaskLine {
+	const plot = parseStatChartContent('boite-a-moustaches', block.body.join('\n')).spec?.boxPlot;
+	const masked = ['?', '?', '?', '?', '?'].join(' ; ');
+	if (!plot?.toPlace) {
+		// Bloc illisible (jamais pour une instance générée) : toute boîte et toute série masquées
+		return (line) => {
+			const trimmed = line.trim();
+			if (/^donn[ée]es\s*:/i.test(trimmed)) return `= ${masked}`;
+			if (!DATUM_LINE.test(trimmed) && !trimmed.startsWith('=')) return null;
+			return `${trimmed.slice(0, trimmed.indexOf('=')).trimEnd()} = ${masked}`;
+		};
+	}
+	const lines = new Set(plot.toPlace.map((rank) => plot.boxes[rank].line - 1));
+	return (line, rank) => {
+		if (!lines.has(rank)) return null;
+		const trimmed = line.trim();
+		if (plot.fromData) return `= ${masked}`;
+		return `${trimmed.slice(0, trimmed.indexOf('=')).trimEnd()} = ${masked}`;
+	};
+}
+
 /** Clé d'une ligne `clé: valeur`, sans accent ni majuscule ; null sinon */
 function keyOf(line: string): string | null {
 	const match = ESPACE_KEY_LINE.exec(line.trim());
@@ -303,6 +335,7 @@ export function maskGestureAnswers(statement: string): string {
 	maskBlocks(findBuildMonnaies(statement), maskMonnaie);
 	maskBlocks(findPartagesToColorier(statement), () => keyLine(COLORIER_LINE, () => MASKED_VALUE));
 	maskBlocks(findBarsToPlace(statement), maskBars);
+	maskBlocks(findBoxPlotsToPlace(statement), maskBoxPlot);
 	// Bloc cité ou en retrait : pas de case, pas de geste (rien à masquer)
 	const ownBlocks = <T extends FoundBlock & { nested: boolean }>(found: T[]) =>
 		found.filter((block) => !block.nested);
