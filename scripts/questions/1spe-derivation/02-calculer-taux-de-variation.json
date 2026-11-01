@@ -1,0 +1,222 @@
+{
+	"title": "Calculer un taux de variation",
+	"description": "Taux de variation (f(b) − f(a))/(b − a) d'un polynôme du second degré, de la fonction inverse, de la racine carrée entre deux carrés",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "Taux de variation",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:m*x^2+n*x+c}}$.\n\nCalcule le taux de variation de $f$ entre ${{a}}$ et ${{b}}$.\n\n$\\dfrac{f({{b}})-f({{a}})}{{{b}}{{eval:-a;+}}}=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "m",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "n",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "a",
+					"expression": "-3..2"
+				},
+				{
+					"name": "d",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+d"
+				},
+				{
+					"name": "fa",
+					"expression": "eval:m*a^2+n*a+c"
+				},
+				{
+					"name": "fb",
+					"expression": "eval:m*b^2+n*b+c"
+				}
+			],
+			"conditions": ["a != 0", "fa != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m*(a+b)+n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule les deux images : $f({{a}})={{fa}}$ et $f({{b}})={{fb}}$.",
+					"$$\\dfrac{f({{b}})-f({{a}})}{{{b}}{{eval:-a;+}}}=\\dfrac{{{fb}}{{eval:-fa;+}}}{{{d}}}=\\dfrac{{{eval:fb-fa}}}{{{d}}}=\\textcolor{{{color:primary.0}}}{{{eval:m*(a+b)+n}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction inverse, définie sur $]0\\,;+\\infty[$ par $f(x)=\\dfrac{1}{x}$.\n\nCalcule le taux de variation de $f$ entre ${{a}}$ et ${{b}}$.\n\n$\\dfrac{f({{b}})-f({{a}})}{{{b}}-{{a}}}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "3..7"
+				}
+			],
+			"conditions": ["a < b"],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\dfrac{1}{{{eval:a*b}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f({{b}})-f({{a}})=\\dfrac{1}{ {{b}} }-\\dfrac{1}{ {{a}} }=\\dfrac{{{a}}-{{b}}}{{{eval:a*b}}}=\\dfrac{{{eval:a-b}}}{{{eval:a*b}}}$.",
+					"On divise par ${{b}}-{{a}}={{eval:b-a}}$ : $$\\dfrac{f({{b}})-f({{a}})}{{{b}}-{{a}}}=\\dfrac{{{eval:a-b}}}{{{eval:a*b}}\\times{{eval:b-a}}}=\\textcolor{{{color:primary.0}}}{-\\dfrac{1}{{{eval:a*b}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction racine carrée, définie sur $[0\\,;+\\infty[$ par $f(x)=\\sqrt{x}$.\n\nCalcule le taux de variation de $f$ entre ${{a}}$ et ${{b}}$.\n\n$\\dfrac{f({{b}})-f({{a}})}{{{b}}-{{a}}}=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "1..4"
+				},
+				{
+					"name": "d",
+					"expression": "1..3"
+				},
+				{
+					"name": "s",
+					"expression": "eval:r+d"
+				},
+				{
+					"name": "a",
+					"expression": "eval:r^2"
+				},
+				{
+					"name": "b",
+					"expression": "eval:s^2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{1}{{{eval:r+s}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f({{a}})=\\sqrt{ {{a}} }={{r}}$ et $f({{b}})=\\sqrt{ {{b}} }={{s}}$.",
+					"$$\\dfrac{f({{b}})-f({{a}})}{{{b}}-{{a}}}=\\dfrac{{{s}}-{{r}}}{{{eval:b-a}}}{{if:d==1||=\\dfrac{ {{d}} }{{{eval:b-a}}}}}=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{{{eval:r+s}}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "f(x) = x² + 2x + 3, entre 1 et 3 : 6",
+			"variationIndex": 0,
+			"variables": {
+				"m": "1",
+				"n": "2",
+				"c": "3",
+				"a": "1",
+				"d": "2",
+				"b": "3",
+				"fa": "6",
+				"fb": "18"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f(b) − f(a) sans diviser : 12",
+			"variationIndex": 0,
+			"variables": {
+				"m": "1",
+				"n": "2",
+				"c": "3",
+				"a": "1",
+				"d": "2",
+				"b": "3",
+				"fa": "6",
+				"fb": "18"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Inverse entre 2 et 3 : −1/6",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["-\\frac{1}{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur de signe : 1/6",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["\\frac{1}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Racine entre 1 et 4 : 1/3",
+			"variationIndex": 2,
+			"variables": {
+				"r": "1",
+				"d": "1",
+				"s": "2",
+				"a": "1",
+				"b": "4"
+			},
+			"answers": ["\\frac{1}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : √4 − √1 sans diviser : 1",
+			"variationIndex": 2,
+			"variables": {
+				"r": "1",
+				"d": "1",
+				"s": "2",
+				"a": "1",
+				"b": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
