@@ -6,12 +6,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après le `--mettre-a-jour` de 040 / 118 / 041._
+_Mis à jour le 2026-11-01, lot 4 publié._
 
-- **État** : lots 1-3 publiés. Lot 4 : 7 brouillons rangés et tagués ; 040, 118, 041 corrigés en prod (#2086 + `--mettre-a-jour` de David, vérifié au MCP), leurs verdicts remis à zéro ; page à cocher republiée (version 2) : https://claude.ai/artifact/GbuqmaxXKnTHhZSdy3ppbL
-- **Prochaine action** : quand David a tout relu, lire `verdicts` (compter 7 OK) ; puis `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/cm2-4` (simulation) et David lance `--publier`.
-- **En attente de David** : relecture des 7 fiches du lot 4.
-- **Pièges en cours** : `create-questions` retrouve un modèle par son TITRE (titre changé = doublon) ; `curriculum_points` sans colonne `label` ; tags dans `question_template_points` ; relever la prod avant toute écriture ; horodatages de migration partagés ; énoncé sans `?` = « Blank count mismatch » ; quotient décimal `{{eval:…;d}}` ; variable `e` = Euler ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; ne jamais enchaîner `gh pr merge` sur la lecture de la CI ; worktree neuf → `svelte-kit sync` avant `question:specs`.
+- **État** : lots 0 à 4 publiés (lot 4 : 7 modèles, publiés, rangés, tagués, relevé MCP du 2026-11-01 ; 040 / 118 / 041 corrigés par #2086, § 9.5).
+- **Prochaine action** : phase 0 du lot 5, fractions (points 013, 015, 016, 019, 020, 135, 021, 022, § 3) — relevé MCP d'abord, puis proposition à David ; prévenir la session `questions-cm1` (son lot 3a touche aussi les fractions).
+- **En attente de David** : rien.
+- **Pièges en cours** : `create-questions` retrouve un modèle par son TITRE (titre changé = doublon) ; libellé du point = consigne : le BO de CM2 se lit au pied de la lettre (§ 9.5) ; `curriculum_points` sans colonne `label` ; tags dans `question_template_points` ; relever la prod avant toute écriture ; horodatages de migration partagés ; énoncé sans `?` = « Blank count mismatch » ; quotient décimal `{{eval:…;d}}` ; variable `e` = Euler ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; ne jamais enchaîner `gh pr merge` sur la lecture de la CI ; worktree neuf → `svelte-kit sync` avant `question:specs`.
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
@@ -437,3 +437,7 @@ Recommandations suivies (« tes recos ? » puis « je te suis ») : tableau du �
 - Titres gardés (« Ajouter / Retirer des unités d'un seul rang », justes) : `create-questions` retrouve le modèle par son titre, un nouveau titre aurait créé un doublon sur un niveau pris.
 - Bornes CM2-040 / 041 / 118 de `cycle3.json` corrigées. `question:specs` : 1 000 tirages par variation, 8 specs par modèle, tout vert ; simulation prod : 3 à mettre à jour, 4 inchangés.
 - David : `create-questions --publier --mettre-a-jour` → 3 mis à jour, 4 inchangés ; simulation suivante : 7 identiques. MCP : contenu neuf (conditions `j==3||N>=10^j`, `mod(N,100)!=0`), statut brouillon, nœud et point inchangés. Verdicts de `f73f7bba` et `eca617ae` supprimés (aucun pour `8f2aff1d`) ; page régénérée (7 fiches, aucune alerte) et republiée à la même adresse.
+
+### 9.6 Lot 4 : publication (2026-11-01)
+
+- Relecture de David : 7 OK sur 7, sans commentaire (`verdicts` lu et compté). `publier-lot` en simulation : 7 passent ; David lance `--publier` : 7/7 publiés. MCP : 7 `published`, 7 rangés, 7 tagués.
