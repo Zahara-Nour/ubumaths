@@ -9,7 +9,7 @@
 _Mis à jour le 2026-11-01, pendant l'écriture du 6a._
 
 - **État** : lots 0 à 5 publiés. Lot 6 validé (§ 11, 11.1) : 6a (fractions décimales, 7 modèles) écrit, specs vertes, simulation prod « 7 à créer », brouillons en base **locale** ; jeu local fait pour 01, 04, 06 (0,985 → message de forme), 07 (rendu 390 px), 02 en partie (§ 11.2).
-- **Prochaine action** : finir le jeu local de 02 (V4, deux cases), 03, 05 ; script Playwright `jouer.mjs` dans le scratchpad, perdu au `/clear` : setPromptValue sur le `math-field`, réponse lue sous « Réponse attendue » (une case) ou « Trou n : » ; puis PR des fichiers (revue : aucune), merge, David lance `create-questions --dir scripts/questions/cm2-6a --publier`.
+- **Prochaine action** : finir le jeu local de 02 (V4, deux cases), 03, 05 ; script Playwright `jouer.mjs` dans le scratchpad, perdu au `/clear` : setPromptValue sur le `math-field`, réponse lue sous « Réponse attendue » (une case) ou « Trou n : » ; à éclaircir : 03 V2, « 1509 » sans espace a donné un verdict ni « Juste » ni « Faux » (sans doute « mal espacé », à regarder), « 1501 » → « Juste » ; puis PR des fichiers (revue : aucune), merge, David lance `create-questions --dir scripts/questions/cm2-6a --publier`.
 - **En attente de David** : rien.
 - **Pièges en cours** : `spacesFromFourDigits` → réponses des specs en `1\,000` ; relever les niveaux de la catégorie juste avant `--publier` ; homonymes du CM1 sur la page à cocher (mêmes titres) ; `db:migrate` : `--dry-run` puis `--include-all` ; `git commit -m … -- <fichiers>`.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm2` · `feat/questions-cm2-lot6a` (serveur local 5183 à arrêter).
