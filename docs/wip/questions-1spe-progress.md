@@ -11,7 +11,7 @@
 
 _Mis à jour le 2026-11-01, migration des tags D3 en cours (§ 17)._
 
-- **État** : lots 0-suites à 0-logique publiés. Migration D3 réduite à 2 tags (D22, § 17) : f1440b52 1SPE-274 → 396, 318ea542 → 283 ; écrite, 11 / 11 verts, rouge vérifié ; `security-auditor` en cours. Brouillons de 1re spé restants : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (niveau `T_SPE` laissé à questions-tspe), 0495289a (attente), c90fa022, d2067413 (points 1TECHNO).
+- **État** : lots 0-suites à 0-logique publiés. Migration D3 réduite à 2 tags (D22, § 17) : f1440b52 1SPE-274 → 396, 318ea542 → 283 ; écrite, 11 / 11 verts, rouge vérifié ; `security-auditor` : aucun finding bloquant. Brouillons de 1re spé restants : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (niveau `T_SPE` laissé à questions-tspe), 0495289a (attente), c90fa022, d2067413 (points 1TECHNO).
 - **Prochaine action** : PR, CI verte, merge, `db:migrate` depuis la branche mergée, relire les 2 tags en base (MCP). Puis D7 : lot dérivation.
 - **En attente de David** : rien.
 - **Pièges en cours** : `create-questions` et `publier-lot --publier` refusés au mode auto (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET worktrees ; instantané jamais dans le dépôt principal.
@@ -788,3 +788,6 @@ d'accès. Données d'élèves sur f1440b52 et 318ea542 : aucune (0 carte SRS, te
 
 Migration `20261101160000_questions_1spe_tags_d3.sql` + `tests/integration/questions-1spe-tags-d3.test.ts` : rouge sans le
 corps de la migration (suite principale tombée au `beforeAll`, 5 branches d'échec), 11 / 11 verts avec.
+
+`security-auditor` (Opus) : aucun finding bloquant ; deux faibles, hérités du gabarit cm2 lot 4 (comportement sous
+`db push` non prouvé par le test ; un retrait de tag concurrent ne prend pas le verrou, effet nul).
