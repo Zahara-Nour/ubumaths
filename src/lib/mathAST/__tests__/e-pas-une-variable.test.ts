@@ -107,9 +107,12 @@ describe('calcul par rapport à e : refus explicite', () => {
  * aucune variable `e` (seule une base indicée en produit).
  */
 describe('e indicé (e_1) : pas de refus, comportement d’avant', () => {
-	it('solve(e_1 + 2 = 5) sans inconnue imposée : pas d’exception', () => {
+	// V13 : `e_1` est une inconnue indicée, résolue (« no-solution » avant)
+	it('solve(e_1 + 2 = 5) sans inconnue imposée : e_1 = 3', () => {
 		expect(() => solve(relation('e_1+2=5'))).not.toThrow();
-		expect(solve(relation('e_1+2=5')).status).toBe('no-solution');
+		const result = solve(relation('e_1+2=5'));
+		expect(result.status).toBe('unique');
+		expect(result.variable).toBe('e_1');
 	});
 
 	it('integrate(e_1) : pas de refus « constante d’Euler »', () => {

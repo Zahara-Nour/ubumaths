@@ -3,7 +3,8 @@
  * ==========================================================
  *
  * Une réponse est une expression en une variable (`x` par défaut) ; toute autre
- * lettre (`C`, `K`, `k`, `\lambda`…) est une CONSTANTE, sauf `e`, `i` et `π`.
+ * lettre (`C`, `K`, `k`, `\lambda`…) est une CONSTANTE, sauf `e`, `i` et `π`,
+ * que le parseur lit déjà en constantes (pas en variables).
  * Rien n'est calculé ici : la lecture est celle de mathAST (`parseLatexSafe`),
  * la comparaison son décideur (`areEquivalent`), sous budget.
  *
@@ -35,9 +36,6 @@ export type ExpectedCheck = { ok: true } | { ok: false; error: string };
 
 /** Variable par défaut */
 export const DEFAULT_VARIABLE = 'x';
-
-/** Lettres qui ne sont jamais des constantes d'intégration : Euler, imaginaire, π */
-const RESERVED_NAMES = new Set(['e', 'i', 'pi']);
 
 /** Budget d'UNE comparaison (la garde Q58 a déjà filtré l'écriture) */
 const EQUIVALENCE_BUDGET_MS = 300;
@@ -82,7 +80,7 @@ export function readExpression(text: string): MathNode | null {
 
 /** Lettres libres d'une expression autres que la variable : ses constantes */
 export function constantNames(node: MathNode, variable: string): string[] {
-	return [...getVariables(node)].filter((name) => name !== variable && !RESERVED_NAMES.has(name));
+	return [...getVariables(node)].filter((name) => name !== variable);
 }
 
 /** Équivalence sous budget ; une réduction qui échoue vaut « non » */
