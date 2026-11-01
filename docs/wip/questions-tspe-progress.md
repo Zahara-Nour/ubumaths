@@ -10,20 +10,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après la publication du lot 0-probabilités (§ 13)._
+_Mis à jour le 2026-11-01, migration Q3 écrite (§ 14), PR à ouvrir._
 
-- **État** : **lot 0 fini** : les 8 thèmes de brouillons publiés (183 modèles), plus aucun brouillon `T_SPE` en prod.
-  Q-D1 : voie A, ordre de « Loi binomiale / Coefficients binomiaux » à échanger dans la migration Q3 (07ebdcbe 1,
-  4dcbae71 2, 970dab52 3, ef3c495c 4).
-- **Prochaine action** : migration Q3 (lot 1 du § 4) : tags et niveaux du § 5 Q3 mis à jour par les lots 0 (1cfc575d
-  retiré, reste en `2`), échange de niveaux D-D1 (niveaux provisoires à cause de l'index unique) ; question d'accès à
-  poser à David avant le SQL. Nouveau worktree depuis `origin/main`.
+- **État** : migration `20261101220000_questions_tspe_tags_niveaux_q3.sql` + test d'intégration (15/15, rouge sans
+  l'étape 4) ; Q3 révisée par la règle du nœud (D-Q3, § 14) ; fichiers `tspe-0-denombrement/` aux niveaux D-D1.
+- **Prochaine action** : `security-auditor`, PR, CI verte, merge, puis `db:migrate` depuis la branche mergée et
+  relecture en base (MCP) ; ensuite lot 2 du § 4 (limites : capacités).
 - **En attente de David** : rien.
-- **Pièges en cours** : le **niveau est dans la clé** de `create-questions` : changer `level` dans un fichier = doublon
-  créé ; index unique de niveau par catégorie sur les **publiés** seulement. `create-questions` et `publier-lot`, même
-  en simulation → David (avec `!`) ; worktree neuf : `pnpm exec svelte-kit sync`, et `pnpm exec tsx
---env-file=../ubumaths/.env …` ; en-tête de commit ≤ 100 caractères.
-- **Worktree / branche** : aucun (retiré après #2132).
+- **Pièges en cours** : `db:migrate` **aussitôt** après le merge : d'ici là, les 3 fichiers de dénombrement portent
+  des niveaux que la prod n'a pas encore (niveau dans la clé de `create-questions` → doublon). `create-questions` et
+  `publier-lot` → David (`!`) ; en-tête de commit ≤ 100 caractères.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe` · `content/questions-tspe-q3`.
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -673,3 +670,41 @@ vide à la publication.
 4ff9d049, 91db0034 ; 19 identiques), relu en base (MCP) : C1-C4 présentes. `publier-lot` en simulation : 22 passent,
 puis `--publier` (David) : 22 / 22. Relu en base (MCP) : 22 / 22 `published` ; **plus aucun brouillon `T_SPE`** en
 prod : le lot 0 (Q1) est fini.
+
+## 14. Lot 1 : migration des tags et des niveaux (Q3, D-D1)
+
+_2026-11-01. Relevé MCP des 13 modèles de Q3 encore à traiter (8b599a53, fece187e, afd9b3ff déjà en `T_SPE` par les
+lots 0 ; 1cfc575d retiré, § 13), de leurs nœuds et des nœuds des points visés._
+
+**Règle du nœud** (`question_template_points_check_rules`) : un modèle se tague avec un point de **son nœud ou de sa
+notion**, au plus un point par programme. Q3 (2026-10-29) avait été écrite sans elle : **8 tags sur 13 refusés**
+(316, 614, 608, 466 ×2, 447, 387 ×2, 516 posés sur d'autres nœuds).
+
+**D-Q3 (David, 2026-11-01, « je suis tes recos »)** :
+
+| Modèle   | Avant                  | Après                                                                        |
+| -------- | ---------------------- | ---------------------------------------------------------------------------- |
+| a80a780f | —                      | TSPE-586                                                                     |
+| 4ff9d049 | TCOMP-367, TTECHNO-089 | + TSPE-508                                                                   |
+| 7a0b795c | TCOMP-269              | + TSPE-609                                                                   |
+| 5e702745 | TCOMP-272              | + TSPE-476 (479 sur un autre nœud : la question du § 8 est close)            |
+| dd0ee69a | TSPE-481               | TSPE-489 (majorer, minorer une intégrale ; 481 n'a plus de modèle)           |
+| 624bf511 | TCOMP-249              | + TSPE-465 (allure de y′ = ay)                                               |
+| f1963ef2 | TCOMP-239              | + TSPE-392 (recherche de seuils)                                             |
+| ef3c495c | TCOMP-296              | déplacé sous « triangle de Pascal » : TCOMP-361 + TSPE-316 (296 sans modèle) |
+
+Sans point TSPE (aucun point compatible sur leur nœud ou leur notion) : 9f14d672, 81ff485d (arithmético-géométriques),
+7d3632bb (absence de mémoire : 516 est sur « loi géométrique »), efb12f4b (notion de solution), 07ebdcbe (614 en
+Probabilités, 313 = formule factorielle).
+
+**Niveaux D-D1** dans « Probabilités / Loi binomiale / Coefficients binomiaux » : 07ebdcbe 2 → 1, 4dcbae71 4 → 2,
+ef3c495c 1 → 4, 970dab52 reste à 3 ; niveaux provisoires (+ 1000) dans la migration. Fichiers
+`scripts/questions/tspe-0-denombrement/` mis aux mêmes niveaux.
+
+**Accès** (posée avant le SQL, David : « je suis tes recos ») : personne ne gagne ni ne perd d'accès. **Données
+d'élèves** (MCP) : aucune sur les 10 modèles.
+
+**Migration** `20261101220000_questions_tspe_tags_niveaux_q3.sql` (TOUT ou RIEN, 10 modèles ; gardes : publié, nœud,
+niveau et tags du relevé, niveau visé libre hors lot ; `updated_at` préservé ; rollback en commentaire). Test
+`tests/integration/questions-tspe-tags-niveaux-q3.test.ts` : 15/15 ; **rouge** sans l'étape 4 (« lot incohérent »,
+suite principale et deux tests du rollback).
