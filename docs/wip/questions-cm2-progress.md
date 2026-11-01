@@ -6,11 +6,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2103._
+_Mis à jour le 2026-11-01, après #2103 et le `--publier` du 5a._
 
 - **État** : lots 0 à 4 publiés ; lot 5 découpé (§ 10.1) ; 5a (sens : 013, 015, 016, 019 ×2) écrit, specs vertes, essayé en local ; fichiers mergés (**#2103**, CI verte après relance d'un job navigateur instable).
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/cm2-5a --publier` ; relevé MCP des `id` ; migration de rangement ; page à cocher ; puis phase d'écriture du 5b (calculs : 020 ×2, 135 ×2, 021, 022, tableau du § 10).
-- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-5a --publier` (brouillons en prod).
+- **Prochaine action** : migration de rangement ; page à cocher ; puis phase d'écriture du 5b (calculs : 020 ×2, 135 ×2, 021, 022, tableau du § 10).
+- **Brouillons 5a en prod** (vérifiés MCP, sans nœud ni tag) : 01 `702af2f7-e1d9-4fe6-99a8-887377fe9a70` (013) · 02 `74128182-6188-4a81-97d3-b197003dd7b5` (015) · 03 `544b98ec-a39f-4547-aa32-63d28f2059c5` (016) · 04 `6de641bd-a13d-477b-9eb5-2ac4fd5b5292` (019) · 05 `1c977b76-1bdc-4d6b-ba1d-222743866b11` (019).
+- **En attente de David** : rien.
 - **Pièges en cours** : `create-questions` retrouve un modèle par titre + catégorie + niveau ; `reducedFractions: off` accepte toute fraction égale (9/2 pour « cinquante-quatre douzièmes » : fractions à écrire irréductibles) ; spec `bad_form` = `constraintViolations: ['form']` ; libellé du point = consigne ; relever la prod avant toute écriture ; horodatages de migration partagés ; **commit dans le dépôt principal : toujours `git commit -m … -- <fichiers>`** (01ef189d9) ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; ne jamais enchaîner `gh pr merge` sur la lecture de la CI.
 - **Worktree / branche** : aucun (retiré après #2103) ; en recréer un pour la migration de rangement.
 
