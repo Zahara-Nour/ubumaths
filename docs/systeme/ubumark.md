@@ -158,15 +158,16 @@ plus (déjà vrai avant, selon la place du crochet).
 
 ### Marques en ligne propres à ubumark
 
-| Écriture                                 | Nœud / effet                                  | Test                                                                              |
-| ---------------------------------------- | --------------------------------------------- | --------------------------------------------------------------------------------- |
-| `Texte {{blank:1}} suite`                | `BlankNode` (case texte, `BlankInput.svelte`) | `src/lib/ubumark/__tests__/parser/markdown-parser.test.ts`                        |
-| `$3+5=\placeholder[0]{}$`                | case dans une formule (`MathPrompt.svelte`)   | `src/lib/components/questions/__tests__/QuestionCard-champ-stable.svelte.test.ts` |
-| `$<<expr:expression1>>10^2$`             | relie la formule à une expression du modèle   | `src/lib/ubumark/__tests__/parser/blank-and-expression.test.ts`                   |
-| `{{hint:myHintId}}`                      | `HintReferenceNode`                           | `src/lib/ubumark/__tests__/parser/hint-parser.test.ts`                            |
-| `[[chapter:<uuid>\|Chapitre Fractions]]` | `InternalLinkNode`                            | `src/lib/ubumark/__tests__/parser/internal-link-parser.test.ts`                   |
-| `Le [nombre]{.def} est pair.`            | mot cliquable forcé (lexique)                 | `src/lib/ubumark/__tests__/parser/lexicon-marks.test.ts`                          |
-| `[x]{.rappel}`                           | détail en ligne typé                          | `src/lib/ubumark/__tests__/parser/detail-callouts.test.ts`                        |
+| Écriture                                 | Nœud / effet                                   | Test                                                                              |
+| ---------------------------------------- | ---------------------------------------------- | --------------------------------------------------------------------------------- |
+| `Texte {{blank:1}} suite`                | `BlankNode` (case texte, `BlankInput.svelte`)  | `src/lib/ubumark/__tests__/parser/markdown-parser.test.ts`                        |
+| `$3+5=\placeholder[0]{}$`                | case dans une formule (`MathPrompt.svelte`)    | `src/lib/components/questions/__tests__/QuestionCard-champ-stable.svelte.test.ts` |
+| `$<<expr:expression1>>10^2$`             | relie la formule à une expression du modèle    | `src/lib/ubumark/__tests__/parser/blank-and-expression.test.ts`                   |
+| `{{hint:myHintId}}`                      | `HintReferenceNode`                            | `src/lib/ubumark/__tests__/parser/hint-parser.test.ts`                            |
+| `[[chapter:<uuid>\|Chapitre Fractions]]` | `InternalLinkNode`                             | `src/lib/ubumark/__tests__/parser/internal-link-parser.test.ts`                   |
+| `Le [nombre]{.def} est pair.`            | mot cliquable forcé (lexique)                  | `src/lib/ubumark/__tests__/parser/lexicon-marks.test.ts`                          |
+| `[x]{.rappel}`                           | détail en ligne typé                           | `src/lib/ubumark/__tests__/parser/detail-callouts.test.ts`                        |
+| `**un [mot]{.def} pair**`                | marquage dans une mise en forme (tout en gras) | `src/lib/ubumark/__tests__/parser/lexicon-marks.test.ts`                          |
 
 Le marqueur `<<expr:…>>` est posé par le générateur de questions, pas par l'auteur.
 

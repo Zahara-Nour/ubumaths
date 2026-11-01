@@ -223,7 +223,5 @@ spec archivée [sprint1-lexique-spec.md](../archive/wip/sprint1-lexique-spec.md)
   comme ceux de l'Almanach et du Shtam (à confirmer par David : récits des dépêches à relire).
 - Shtam : 54 articles dans le dépôt, dont 6 parus au 2026-10-10 et 48 datés du futur (parution
   programmée jusqu'au 2027-03-29).
-- `SEE_ALSO_PATHS` (liens du glossaire vers le Cabinet Noir) ne couvre pas `atbash`, `polybe`,
-  `scytale` : aucune entrée du dictionnaire ne les vise aujourd'hui.
 - « lexique » : le mot désigne le lore (`lore.ts`, `docs/Chiphres/lexique-pataphysique.md`), mais
   le module des mots cliquables s'appelle `src/lib/lexicon/` (voir [dictionnaire.md](dictionnaire.md)).
