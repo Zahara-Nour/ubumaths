@@ -10,14 +10,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 0-trigo en relecture (§ 10)._
+_Mis à jour le 2026-11-01, lot 0-trigo validé par David (§ 10)._
 
 - **État** : lots 0-suites, 0-limites et fonctions, 0-intégration, 0-primitives **publiés** (84 modèles). Lot 0-trigo
-  (23 brouillons, § 10) vérifié, une correction (C1) et deux niveaux changés dans les fichiers ; page à cocher publiée.
-- **Prochaine action** : lire `verdicts` de la page (§ 10) et les réponses à Q-T1, Q-T2 ; corriger les « À revoir » ;
-  PR de l'instantané, merge ; puis David lance `create-questions --publier --mettre-a-jour` et `publier-lot`
-  (simulation puis `--publier`) ; relire le statut en base. Lot suivant : dénombrement. Plus tard : migration Q3.
-- **En attente de David** : relecture de la page à cocher ; Q-T1 (cos(2x) = a), Q-T2 (périodes autres que 2π).
+  (23 brouillons, § 10) **validé en bloc par David** ; une correction (C1) et deux niveaux changés dans les fichiers.
+- **Prochaine action** : merger la PR de l'instantané ; puis David lance `create-questions --publier --mettre-a-jour`
+  (C1 + niveaux de fece187e, afd9b3ff) et `publier-lot` (simulation puis `--publier`) ; relire le statut en base. Lot
+  suivant : dénombrement. Plus tard : migration Q3.
+- **En attente de David** : `create-questions --mettre-a-jour` puis `publier-lot` du lot 0-trigo.
 - **Pièges en cours** : `create-questions` et `publier-lot`, même en simulation → David (le mode auto les refuse) ;
   partir des id, pas des vieux dossiers `<thème>-terminale/` ; simulation `publier-lot` AVANT tout ;
   worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (sinon `$lib` introuvable) ;
@@ -474,3 +474,7 @@ sous-domaines de 1re).
 **Page à cocher** : https://claude.ai/artifact/H1UCsA6bvtH2LM65P7mYjw (23 fiches, 12 alertes « bloc trig non dessiné »,
 voulu), collection `verdicts` vide à la publication. Les retouches ne sont pas encore en base : la page montre déjà les
 fichiers corrigés.
+
+**Relecture** : David valide les 23 fiches en bloc (2026-11-01, « je valide toute la relecture », sans passer par la
+page : `verdicts` restée vide). Q-T1 et Q-T2 : les modèles concernés (42f091c1, 7df468d6, 5072030d) sont validés tels
+quels, donc gardés (recommandation suivie).
