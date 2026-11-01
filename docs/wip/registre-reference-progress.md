@@ -251,3 +251,19 @@ décidées, au point (`8.7700*10^9`), `answer` reste exact ; l'outil traduit vir
 B : le registre rend toujours `answer` + `approx`, le mode décimal est un choix d'affichage de
 l'outil (règle le point 1 de la revue). C : `2=2` → `\text{vrai}` (point 2). D : expression sans
 commande → sa forme rangée ; seul `f` tapé seul n'a pas de réponse (point 3).
+
+## Expressions nues : registre contre Atelier (sonde du 2026-11-01)
+
+Sonde jetable (vitest sous `src/`, `produceRegistre` / `produceAtelier`), 25 lignes, supprimée après.
+
+- **Pareil** : calculs sans lettre (`1/3+0.5` → 5/6, `√12+√3` → 3√3, `1/(√3−1)` → (1+√3)/2,
+  `2^(3/2)` → 2√2, `calcul-01…10` du corpus) ; écritures déjà rangées (`x+1`, `3(x+1)`, `(x+1)²`,
+  `x²−1`, `√(x²)`) ; `ln(eˣ)`, `sin²x+cos²x` réduits par aucun des deux.
+- **Différent** : avec une lettre, le registre RECOPIE la ligne, en texte linéaire (`answer` =
+  `x * x`, `2 x / 4`), l'Atelier la range : `2x+3x` → 5x · `x*x` → x² · `x+2+3` → x+5 ·
+  `a+b-a` → b · `2x/4` → x/2 · `1/x+1/x` → 2/x · `(6x-3)/(-9)` → (1−2x)/3 · `3(-x-1)` →
+  −3(x+1) · `e^x*e^2` → e²eˣ · `x/x` gardé par l'Atelier (S3) · `0.5x` → `0{,}5 x` (R-point).
+- **Bug du registre** : `cos(pi/3)` lu `cos(p·i/3)` (i imaginaire) ; l'Atelier refuse (« Écris π
+  avec \pi ou le symbole π. »). Pour le lot 2, famille 4.
+- **Conséquence pour D** : ces lignes entrent au lot 2, attendu = la réponse de l'Atelier, registre
+  en « connue fausse » jusqu'à la PR qui le corrige.
