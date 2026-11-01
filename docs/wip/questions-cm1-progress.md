@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 3c écrit (§ 11 ter)._
+_Mis à jour le 2026-11-01, après #2070._
 
-- **État** : lots 0 à 3b publiés ; lot 3c (partages, 4 modèles) écrit, PR ouverte (branche `content/questions-cm1-lot3c`).
-- **Prochaine action** : PR mergée → David lance `create-questions --publier` (`scripts/questions/cm1-3c`) ; puis migration de rangement (sous-notion « définition », points 145, 144, 150, 149), sur le gabarit du lot 3b ; publication seulement après le `deploy:prod` du bloc ```partage.
-- **En attente de David** : le `--publier` des 4 brouillons, une fois la PR mergée.
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main` ET des worktrees + 1 min (#2017) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (`$lib`) ; port 5177 pris par questions-4 ; ```partage pas en prod.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1` · `content/questions-cm1-lot3c`.
+- **État** : lots 0 à 3b publiés ; lot 3c (partages, 4 modèles, § 11 à 11 ter) mergé (#2070), pas encore en base de prod.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm1-3c --publier` (depuis le dépôt principal) ; puis relevé MCP des 4 ids, migration de rangement (sous-notion « définition », points 145, 144, 150, 149) sur le gabarit du lot 3b, dans un worktree neuf ; publication seulement après le `deploy:prod` du bloc ```partage.
+- **En attente de David** : le `--publier` des 4 brouillons.
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main` ET des worktrees + 1 min (#2017) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (`$lib`) ; specs de coloriage ≤ 34 rangs (test `answer-complexity-corpus`) ; port 5177 pris par questions-4.
+- **Worktree / branche** : aucun (retiré après #2070).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
