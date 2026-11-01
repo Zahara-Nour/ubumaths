@@ -1,0 +1,250 @@
+{
+	"id": "f796ffc0-d9cc-496b-97a8-9e10f07e6fc8",
+	"title": "Quel modèle ? k-uplet, k-uplet d'éléments distincts ou combinaison",
+	"description": "Reconnaître l'objet à dénombrer selon que l'ordre compte et que la répétition est permise : mot de passe, tiercé, copies tirées au sort, desserts de la semaine (pièges : kⁿ au lieu de nᵏ, combinaison quand l'ordre compte)",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Dénombrement",
+	"subdomain": "Reconnaître le modèle",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Un mot de passe est formé de ${{k}}$ caractères choisis parmi ${{n}}$ symboles ; un symbole peut être utilisé plusieurs fois.\n\nQuel est le nombre de mots de passe possibles ?\n\n```choix\n- ${{n}}^{ {{k}} }$\n- $\\dfrac{ {{n}}! }{ {{eval:n-k}}! }$\n- $\\binom{ {{n}} }{ {{k}} }$\n- ${{k}}^{ {{n}} }$\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "20..40"
+				},
+				{
+					"name": "k",
+					"expression": "4..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'ordre des caractères compte (« ab » ≠ « ba ») et la **répétition est permise** : ce sont des ${{k}}$-uplets d'un ensemble à ${{n}}$ éléments.",
+					"Il y en a $\\textcolor{{{color:primary.0}}}{{{n}}^{ {{k}} }}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "${{n}}$ chevaux prennent le départ d'une course. Un parieur doit donner les ${{k}}$ premiers chevaux **dans l'ordre d'arrivée**.\n\nQuel est le nombre de pronostics possibles ?\n\n```choix\n- $\\dfrac{ {{n}}! }{ {{eval:n-k}}! }$\n- $\\binom{ {{n}} }{ {{k}} }$\n- ${{n}}^{ {{k}} }$\n- ${{k}}^{ {{n}} }$\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "10..18"
+				},
+				{
+					"name": "k",
+					"expression": "3..4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'ordre compte et un cheval ne peut pas occuper deux places : ce sont des ${{k}}$-uplets d'éléments **distincts**.",
+					"Il y en a $\\textcolor{{{color:primary.0}}}{\\dfrac{ {{n}}! }{ {{eval:n-k}}! }}$ (la combinaison ne tient pas compte de l'ordre)."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Un professeur tire au sort ${{k}}$ copies parmi ${{n}}$ pour les faire relire par un collègue.\n\nQuel est le nombre de tirages possibles ?\n\n```choix\n- $\\binom{ {{n}} }{ {{k}} }$\n- $\\dfrac{ {{n}}! }{ {{eval:n-k}}! }$\n- ${{n}}^{ {{k}} }$\n- ${{k}}^{ {{n}} }$\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "20..35"
+				},
+				{
+					"name": "k",
+					"expression": "3..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Seul compte **l'ensemble** des copies choisies (pas d'ordre), et une copie n'est pas tirée deux fois : ce sont des parties à ${{k}}$ éléments.",
+					"Il y en a $\\textcolor{{{color:primary.0}}}{\\binom{ {{n}} }{ {{k}} }}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Chaque jour d'une période de ${{k}}$ jours, la cantine sert un dessert choisi parmi ${{n}}$ desserts ; le même dessert peut revenir plusieurs jours.\n\nQuel est le nombre de programmes de desserts possibles ?\n\n```choix\n- ${{n}}^{ {{k}} }$\n- $\\dfrac{ {{n}}! }{ {{eval:n-k}}! }$\n- $\\binom{ {{n}} }{ {{k}} }$\n- ${{k}}^{ {{n}} }$\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..9"
+				},
+				{
+					"name": "k",
+					"expression": "3..5"
+				}
+			],
+			"conditions": ["n > k"],
+			"correction": {
+				"steps": [
+					"Un programme associe un dessert à chaque jour : l'ordre des jours compte et un dessert peut revenir, ce sont des ${{k}}$-uplets.",
+					"Il y en a $\\textcolor{{{color:primary.0}}}{{{n}}^{ {{k}} }}$ (et non ${{k}}^{ {{n}} }$)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "5",
+				"n": "26"
+			},
+			"description": "v0 : nᵏ",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "5",
+				"n": "26"
+			},
+			"description": "v0 : arrangement (répétition oubliée)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "5",
+				"n": "26"
+			},
+			"description": "v0 : kⁿ",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "3",
+				"n": "12"
+			},
+			"description": "v1 : arrangement",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"n": "12"
+			},
+			"description": "v1 : combinaison (ordre oublié)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"n": "12"
+			},
+			"description": "v1 : nᵏ (répétitions)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "4",
+				"n": "30"
+			},
+			"description": "v2 : combinaison",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "4",
+				"n": "30"
+			},
+			"description": "v2 : arrangement (ordre à tort)",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "5",
+				"n": "6"
+			},
+			"description": "v3 : nᵏ",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "5",
+				"n": "6"
+			},
+			"description": "v3 : kⁿ",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "5",
+				"n": "6"
+			},
+			"description": "v3 : arrangement (desserts distincts à tort)",
+			"variationIndex": 3
+		}
+	]
+}
