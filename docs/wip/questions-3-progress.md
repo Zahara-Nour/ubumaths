@@ -5,16 +5,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2069._
+_Mis à jour le 2026-11-01, après la relecture du lot 5 (§ 12.11)._
 
-- **État** : lot 5 rangé en prod (#2059, migration jouée, § 12.10) ; corrigé de 3-035 v2 corrigé dans le
-  fichier (#2069) ; page à cocher https://claude.ai/artifact/CJ17SXoC5SjnCQQhdM4MYn publiée, 0 verdict.
-- **Prochaine action** : après la mise à jour de la prod et la relecture de David, compter les verdicts
-  (`ArtifactData list verdicts`), corriger les « À revoir », puis `publier-lot.ts --dir
-scripts/questions/3-lot-5` (simulation) et `--publier` par David. Ensuite : lot 6 du § 4 (translation,
-  vecteurs, sphère).
+- **État** : lot 5 rangé en prod (#2059) ; page à cocher relue : **6/6 « ok »**, aucun « À revoir » ;
+  corrigé de 3-035 v2 corrigé dans le fichier (#2069) mais **pas encore en prod** (MCP, 2026-11-01).
+- **Prochaine action** : après la mise à jour de 3-035 en prod, vérifier au MCP le nouveau corrigé, puis
+  simulation `publier-lot.ts --dir scripts/questions/3-lot-5` et `--publier`, tous deux par David.
+  Ensuite : lot 6 du § 4 (translation, vecteurs, sphère).
 - **En attente de David** : `create-questions --dir scripts/questions/3-lot-5 --publier --mettre-a-jour`
-  (dépôt principal à jour), puis la relecture de la page.
+  (dépôt principal à jour), puis `publier-lot.ts` (simulation, puis `--publier`).
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; horodatage `20261030162200` déjà pris par ce1 lot 5 bis ;
   dans `points:` d'un ` ```courbe `, ni `{{eval}}` fractionnaire (écrit `\dfrac`) ni virgule ; aperçu admin
@@ -796,3 +795,10 @@ publiés de plus, et 2 de 4e (§ 12.1) ; la 4e ne perd rien. Aucune règle ne ch
   montrée, alerte sur 4 fiches). ccb51039 / 76f5f143 hors page (déjà publiés et relus en 4e).
 - Trouvé en relisant la page : corrigé de 3-035 v2, `\textcolor` posé autour de `$…$` (hors formule) →
   corrigé dans le fichier (#2069) ; la prod attend `create-questions --publier --mettre-a-jour`.
+
+### 12.11 Lot 5 : relu (2026-11-01)
+
+- `ArtifactData list verdicts` : 6 documents, tous `ok`, sans commentaire (les 6 fiches de la page ;
+  ccb51039 / 76f5f143 hors page).
+- MCP : 302655b9 (3-035) a encore l'ancien corrigé (`updated_at` 2026-10-31 23:26) → la mise à jour
+  `--mettre-a-jour` reste à lancer avant la publication.
