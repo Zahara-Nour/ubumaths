@@ -1,0 +1,180 @@
+{
+	"title": "Grands cercles et diamètre d'une sphère",
+	"description": "Relier rayon et diamètre d'une sphère ; reconnaître un grand cercle (section par un plan passant par le centre, équateur et méridiens)",
+	"grades": ["3"],
+	"theme": "Géométrie",
+	"domain": "Solides",
+	"subdomain": "Grands cercles",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Une sphère a pour {{if:w==0|rayon|}}{{if:w==1|diamètre|}} ${{if:w==0|{{r}}|}}{{if:w==1|{{d}}|}}~\\unit{cm}$. Quel est son {{if:w==0|diamètre|}}{{if:w==1|rayon|}} ?\n\n$?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..15"
+				},
+				{
+					"name": "d",
+					"expression": "eval:2*r"
+				},
+				{
+					"name": "w",
+					"expression": "0..1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:w==0|{{d}}|}}{{if:w==1|{{r}}|}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un **diamètre** de la sphère est un segment qui joint deux de ses points en passant par le centre : sa longueur est le double du rayon.",
+					"{{if:w==0|Diamètre : $2 \\times {{r}} = \\textcolor{{{color:primary.0}}}{{{d}}~\\unit{cm}}$.|}}{{if:w==1|Rayon : ${{d}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{r}}~\\unit{cm}}$.|}}"
+				]
+			}
+		},
+		{
+			"statement": "Une boule de centre $O$ et de rayon ${{r}}~\\unit{cm}$ est coupée par un plan qui passe par son centre. Quel est le rayon du cercle obtenu ?\n\n```solide\nforme: boule 3\nsommets: O\nsection: 0\n```\n\n$?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un plan qui passe par le centre de la sphère la coupe suivant un **grand cercle** : même centre et même rayon que la sphère.",
+					"Son rayon est donc \\textcolor{{{color:primary.0}}}{{{r}}~\\unit{cm}}."
+				]
+			}
+		},
+		{
+			"statement": "On assimile la Terre à une sphère. Parmi ces cercles tracés sur sa surface, lesquels sont des **grands cercles** ? Coche toutes les bonnes réponses.\n\n```choix\nplusieurs: oui\n- l'équateur\n- un cercle qui passe par les deux pôles\n- le parallèle de latitude $45^{\\circ}$ Nord\n- le cercle polaire arctique\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0;1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un **grand cercle** est un cercle de la sphère dont le centre est celui de la sphère : son plan passe par le centre de la Terre.",
+					"C'est le cas de \\textcolor{{{color:primary.0}}}{\\text{l'équateur}} et d'\\textcolor{{{color:primary.0}}}{\\text{un cercle qui passe par les deux pôles}} (deux méridiens opposés).",
+					"Les autres parallèles (le $45^{\\circ}$ Nord, le cercle polaire) ont leur centre sur l'axe des pôles, hors du centre : leur rayon est plus petit."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Rayon 7 : diamètre 14",
+			"variationIndex": 0,
+			"variables": {
+				"r": "7",
+				"d": "14",
+				"w": "0"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3,5 (divisé)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "7",
+				"d": "14",
+				"w": "0"
+			},
+			"answers": ["3{,}5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Diamètre 18 : rayon 9",
+			"variationIndex": 0,
+			"variables": {
+				"r": "9",
+				"d": "18",
+				"w": "1"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 36 (doublé)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "9",
+				"d": "18",
+				"w": "1"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Grand cercle : rayon 5",
+			"variationIndex": 1,
+			"variables": {
+				"r": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10 (le diamètre)",
+			"variationIndex": 1,
+			"variables": {
+				"r": "5"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Équateur et méridiens",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0;1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le parallèle en plus",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0;1;2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Incomplet : l'équateur seul",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "unoptimal_form"
+			}
+		}
+	]
+}
