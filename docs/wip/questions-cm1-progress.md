@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, migration du lot 4 écrite._
+_Mis à jour le 2026-11-01, après #2124 et son `db push`._
 
-- **État** : lot 4 : 8 brouillons en prod (§ 12 quinquies) ; migration nœud + tag écrite, PR ouverte.
-- **Prochaine action** : `security-auditor` + CI verte → merge (horodatage revérifié juste avant) → David lance `db:migrate` depuis le dépôt principal → vérification MCP → page à cocher → `publier-lot`. Ensuite : phase 0 du lot 4b « calcul posé » (165, 052, 050, 051, 053).
-- **En attente de David** : le `db:migrate` après le merge.
+- **État** : lot 4 : 8 brouillons en prod, rangés et tagués (migration `20261101212100` jouée, vérifiée au MCP, § 12 quinquies).
+- **Prochaine action** : page à cocher du lot 4 (`scripts/questions/page-a-cocher.ts --dir scripts/questions/cm1-4`), publiée en artefact (capacité `db`) → verdicts de David → `publier-lot` en simulation → `--publier` (David). Ensuite : phase 0 du lot 4b « calcul posé » (165, 052, 050, 051, 053).
+- **En attente de David** : rien (la page à cocher vient ensuite).
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main`, des worktrees ET des branches distantes + 1 min, **revérifié juste avant le merge** (collision `20261101190200` sur `main` le 2026-11-01, réparée par #2114) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; dépôt partagé : relire `git diff --cached --name-only` avant CHAQUE commit (journal ce2 emporté le 2026-11-01) ; coloriage : specs non mesurées par le test du corpus, sauf si un modèle active `orderIndependent` (la prod le mesurerait alors) ; extension Chrome muette → Playwright à 390 px.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot4-rangement`.
+- **Worktree / branche** : aucun (retiré après #2124).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -718,3 +718,9 @@ juste après le lot 4.
   `questions_5_lot6_niveau` (branche `fix/questions-5-lot6-niveau`), vu au contrôle d'avant merge :
   renuméroté `20261101212100` (max `20261101212000`, 1spe, + 1 min).
 - Test d'intégration : rouge sans le corps de la migration (5 échecs), 9/9 vert avec.
+- `security-auditor` : aucun finding. #2124 mergée (CI verte, horodatage revérifié juste avant).
+- `db:migrate` refusé : `20261101200800_questions_5_lot6_niveau` (#2116), mergée APRÈS que la prod
+  eut joué `20261101212000`, tombait « avant la dernière ». David a lancé
+  `supabase db push --include-all` : les deux migrations jouées (5e puis CM1).
+- MCP : les 8 modèles sur la sous-notion de leur point, un point CM1 chacun, toujours brouillons,
+  `updated_at` = création (15:40).
