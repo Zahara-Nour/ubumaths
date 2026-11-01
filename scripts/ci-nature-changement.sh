@@ -10,7 +10,7 @@
 #
 # Seulement sur `pull_request` : le checkout est alors le commit de merge, dont le
 # premier parent est la base ; `git diff HEAD^1 HEAD` = ce que la PR change.
-# Sur main (push) : CI complète, toujours.
+# Sur main (push) : pas de verdict de contenu (quality.yml y allège déjà la CI).
 #
 # Écrit `contenu=true` ou `contenu=false` sur la sortie standard (pour $GITHUB_OUTPUT),
 # la raison sur l'erreur standard. Dans le doute : false.
