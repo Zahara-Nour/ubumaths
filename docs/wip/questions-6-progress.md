@@ -10,7 +10,7 @@ _Mis à jour le 2026-11-01, après #2150 (lot 8 écrit, mergé)._
 - **État** : lots 1 à 7 publiés ; lot 8 « Assemblages de cubes » (154, 155, 181, 208, 209) écrit, joué en local,
   fichiers mergés (#2150) ; rien en prod pour ce lot.
 - **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-assemblages-cubes
-  --publier` (brouillons en prod) ; puis relever les 5 `id`, migration nœud + tag (nœuds = notions « Géométrie >
+--publier` (brouillons en prod) ; puis relever les 5 `id`, migration nœud + tag (nœuds = notions « Géométrie >
   Solides », « Grandeurs et mesures > Volumes »), page à cocher. **Publication après le `deploy:prod` qui livre
   #2130.**
 - **En attente de David** : le `create-questions --publier` du lot 8.
@@ -1241,3 +1241,12 @@ toutes distinctes, chaque leurre du 3 v1 a une vue différente des vues données
   justes jugées justes (compte, volume, comparaison, `dessiner:` face / dessus / droite, `retrouver:` face et
   face + droite), fausses jugées fausses ; rendu des perspectives, des vues en options et des corrections lu.
 - PR #2150 : CI verte, mergée ; worktree retiré.
+
+### 20.2 Brouillons en prod et rangement (2026-11-01)
+
+- David lance `create-questions --publier` : 01 ce3c4e11, 02 763d1183, 03 37c6852c, 04 650dcfc6, 05 0464c3f6, en
+  brouillon. MCP : 5 brouillons, `['6']`, niveaux 1, 2, 3, 1, 2, sans nœud ni tag ; points actifs sur des
+  **notions** (6-181, 6-208, 6-209 → « Géométrie > Solides » ; 6-154, 6-155 → « Grandeurs et mesures > Volumes »).
+- Migration `20261101215200_questions_6_lot8_rangement_tags` (patron du lot 7, résolution du chemin jusqu'à la
+  notion ; horodatage = dernière jouée en prod 215100 + 1 min) ; test `questions-6-lot8-rangement-tags` : 8 rouges
+  contre une migration vidée, 14 verts avec.
