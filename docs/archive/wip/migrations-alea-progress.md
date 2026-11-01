@@ -2,13 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR à ouvrir._
+_Mis à jour le 2026-11-01, après #2177. Chantier clos, journal archivé._
 
-- **État** : `--prochain` (`pnpm migration:horodatage`) : en avance, dernière migration + 1 à 59 s tirées au hasard, addition en vraie heure (plus de seconde 60). Tests 12/12.
-- **Prochaine action** : PR → CI verte → merge → mémoire `reference_horodatage-migration-collision.md` à compléter → archiver ce journal.
-- **En attente de David** : rien (recommandation suivie le 2026-11-01).
-- **Pièges en cours** : `date` BSD (macOS) et GNU (CI) : les deux chemins dans `ajouter_secondes`.
-- **Worktree / branche** : `../ubumaths-wt-migrations-alea`, `fix/migrations-alea`.
+- **État** : #2177 mergée — `pnpm migration:horodatage` en avance : dernière + 1 à 59 s au hasard, en vraie heure. CI verte (chemin GNU prouvé par les tests serveur), revue `code-reviewer` sans finding.
+- **Mémoire** : `reference_horodatage-migration-collision.md` complétée.
 
 ## Pourquoi
 
