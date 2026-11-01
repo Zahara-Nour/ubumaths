@@ -11,8 +11,8 @@ status: écarts revérifiés le 2026-10-18 ; tri A (seul) / B (David) fait ; V62
 _Mis à jour le 2026-11-01, après #2144._
 
 - **État** : liste A finie, hors restes décidés : lots A, 2b, 3, 4, 5 mergés (#2062→#2068, #2097, #2118, #2131, #2144 = L8 clos) ; ménage #2142 (7 tests « deux profs » retirés, agent `mathast-expert` corrigé) ; #2061 (deps) et #1850 (SIGPIPE) mergés, #1802 fermée. Rien en prod.
-- **Prochaine action** : la liste A est vide (M19 en passant seulement, L12 sur demande, L15/L25/V34/V17 → `fusion-moteurs`). Reste la **liste B** d'[ecarts-a-trier.md](ecarts-a-trier.md) (décisions de David) ; proposer de la trier par lots, ou clore le chantier (versement des restes dans les Points ouverts).
-- **En attente de David** : trigger `log_achievements_to_events` qui lit `NEW.metadata` (colonne absente de `student_achievements`) : tout INSERT y échoue (42703) — migration à décider (test sauté `mono-teacher-rpc-param-cleanup.test.ts:61`).
+- **Prochaine action** : page à cocher du lot RGPD de la liste B (T1-T15), puis destructif, puis spécification ; ensuite clore le chantier. La liste A est vide (M19 en passant seulement, L12 sur demande, L15/L25/V34/V17 → `fusion-moteurs`). Reste la **liste B** d'[ecarts-a-trier.md](ecarts-a-trier.md) (décisions de David) ; proposer de la trier par lots, ou clore le chantier (versement des restes dans les Points ouverts).
+- **En attente de David** : rien. (Le trigger `log_achievements_to_events` était déjà corrigé en prod depuis le 2026-06-20, migration `20260620130000` ; seul le `it.skip` était périmé → réactivé, `test/reactive-award-achievement`.)
 - **Pièges en cours** : `charger-repartir-annuler.svelte.test.ts` (client, shard 2/2) instable : rouge puis vert à la relance (#2061) ; « Code Quality » parfois non déclenchée → `gh workflow run quality.yml --ref <branche>`.
 - **Worktree / branche** : aucun.
 
