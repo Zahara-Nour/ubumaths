@@ -10,15 +10,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2110 (lot 0-dénombrement, § 11)._
+_Mis à jour le 2026-11-01, après la publication du lot 0-dénombrement (§ 11)._
 
-- **État** : lots 0-suites, 0-limites et fonctions, 0-intégration, 0-primitives, 0-trigo **publiés** (107 modèles).
-  Lot 0-dénombrement : 26 brouillons, C1-C9 dans les fichiers (#2110 mergée), **validé en bloc par David**.
-- **Prochaine action** : selon le choix A/B de Q-D1 (§ 11) ; avec A : David lance `create-questions --publier
---mettre-a-jour` puis `publier-lot` (simulation, puis `--publier`) sur `scripts/questions/tspe-0-denombrement`,
-  je relis en base. Lot suivant : géométrie dans l'espace, puis probabilités. Plus tard : migration Q3.
-- **En attente de David** : Q-D1, voie A (publier, ordre changé par la migration Q3) ou B (niveaux changés dans
-  l'admin avant `--mettre-a-jour`, fichiers mis d'accord) ; puis les deux commandes de publication.
+- **État** : lots 0-suites, 0-limites et fonctions, 0-intégration, 0-primitives, 0-trigo, 0-dénombrement
+  **publiés** (133 modèles). Q-D1 : voie A (David) — ordre de « Loi binomiale / Coefficients binomiaux » à échanger
+  dans la migration Q3 (07ebdcbe 1, 4dcbae71 2, 970dab52 3, ef3c495c 4).
+- **Prochaine action** : lot 0-géométrie dans l'espace (nouveau worktree depuis `origin/main`), puis probabilités.
+  Plus tard : migration Q3 (tags + échange de niveaux D-D1, niveaux provisoires à cause de l'index unique).
+- **En attente de David** : rien.
 - **Pièges en cours** : le **niveau est dans la clé** de `create-questions` : changer `level` dans un fichier = doublon
   créé ; index unique de niveau par catégorie sur les **publiés** seulement. `create-questions` et `publier-lot`, même
   en simulation → David ; simulation `publier-lot` AVANT tout ; worktree neuf : `pnpm exec svelte-kit sync`, et
@@ -560,3 +559,8 @@ l'échange dans la migration Q3 ; **B** niveaux changés dans l'admin sur les br
 `--mettre-a-jour`.
 
 **PR** : #2110 mergée le 2026-11-01 (CI verte).
+
+**Publication** (2026-11-01, voie A, David) : `create-questions --publier --mettre-a-jour` (0 créé, 9 mis à jour :
+les C1-C9, 17 identiques), `publier-lot` (simulation : 26 passent) puis `--publier` (26 / 26). Relu en base (MCP) :
+26 / 26 `published` ; C2, C3, C5, C6, C7, C9 présentes en base (anciens textes absents) ; C1, C4, C8 (spec, condition,
+plages) portées par le « mis à jour » du script.
