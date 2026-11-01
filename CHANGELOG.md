@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.62.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.61.0...v0.62.0) (2026-11-01)
+
+### ✨ Features
+
+- **questions:** 2de lot 7, nœud et tag des 21 brouillons (migration) ([8e2e75d](https://github.com/Zahara-Nour/ubumaths/commit/8e2e75d1a8d248e8caa3a93919e2cd464e5ddf00))
+- **questions:** nœud et tag des 4 modèles du lot 6b du ce2 ([1fb278a](https://github.com/Zahara-Nour/ubumaths/commit/1fb278a6ebb3ca27574cbffa36b8a2b4d615ff92))
+
+### 🐛 Bug Fixes
+
+- **migrations:** db:migrate sans --include-all par défaut, option à la demande ([028034c](https://github.com/Zahara-Nour/ubumaths/commit/028034ce925692c81de6a7c6b119b9dafd16b449))
+- **migrations:** horodatage à l'heure réelle toujours, db:migrate avec --include-all ([61f027d](https://github.com/Zahara-Nour/ubumaths/commit/61f027dbb5867dd88c4c055b09dbed864ca46a82))
+- **migrations:** horodatage illisible refusé, doc de db:migrate --include-all ([5047643](https://github.com/Zahara-Nour/ubumaths/commit/5047643825911833ec35b1c259ed4cc74823ed64))
+- **questions:** 2de lot 7, horodatage de migration 20261101224703 ([7dfa562](https://github.com/Zahara-Nour/ubumaths/commit/7dfa5629834e88e1ad989df07579d2700c87db64))
+
+### 📚 Documentation
+
+- **wip:** questions-1spe, piège des horodatages à jour après [#2181](https://github.com/Zahara-Nour/ubumaths/issues/2181) ([e77fc1c](https://github.com/Zahara-Nour/ubumaths/commit/e77fc1c8dfce19855008fbd57613bc48df193408))
+- **wip:** questions-ce2, lot 6b rangé ([#2180](https://github.com/Zahara-Nour/ubumaths/issues/2180)), reprise au db:migrate ([26e1884](https://github.com/Zahara-Nour/ubumaths/commit/26e18843e13f0ad7a6a99ed79602af0e5d98fbda))
+- **wip:** questions-cm1, [#2159](https://github.com/Zahara-Nour/ubumaths/issues/2159) mergée, db:migrate en attente ([005f97a](https://github.com/Zahara-Nour/ubumaths/commit/005f97a807d8dd1a2e3022f69d095c87435a10e1))
+- **wip:** questions-cm1, lot 4b rangé en prod, page à cocher ([5ab7076](https://github.com/Zahara-Nour/ubumaths/commit/5ab70760bb5ae759965bb9fde7901583f713e6b4))
+
 ## [0.61.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.60.0...v0.61.0) (2026-11-01)
 
 ### ✨ Features
