@@ -6,15 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, phase 0 du lot 5 proposée (§ 30)._
+_Mis à jour le 2026-11-01, PR des fichiers du lot 5 A (§ 31)._
 
-- **État** : lots 1 à 4 publiés ; lot 5 « Droites » : relevé et phase 0 écrits (§ 30).
-- **Prochaine action** : après validation, worktree `ubumaths-wt-questions-2de`, écrire le lot 5 A (6 modèles).
-- **En attente de David** : rien (phase 0 validée).
+- **État** : lots 1 à 4 publiés ; lot 5 « Droites » validé (§ 30) ; 5 A écrit, joué en local, commité et poussé (branche).
+- **Prochaine action** : ouvrir la PR des fichiers 5 A (revue : aucune, contenu ; `Doc-inchangée: contenu`), CI
+  verte, merge ; puis David lance `create-questions --publier` sur
+  `scripts/questions/2de-droites-a` ; ensuite écrire le lot 5 B (10 modèles, § 30).
+- **En attente de David** : le `--publier` du lot 5 A, après le merge.
 - **Pièges en cours** : horodatage = max + 1 min de `origin/main` ET des worktrees ; `migration list
---linked` avant `db:migrate` (migrations d'autres sessions en file → David tranche qui le lance) ;
-  `page-a-cocher.ts` ne prend qu'un `--dir` (réunir les dossiers d'un lot dans le scratchpad).
-- **Worktree / branche** : aucun.
+--linked` avant `db:migrate` ; `page-a-cocher.ts` ne prend qu'un `--dir` ; `svelte-kit sync` dans un worktree
+  neuf avant `pnpm tsx` (`$lib` introuvable sinon).
+- **Worktree / branche** : `ubumaths-wt-questions-2de` · `feat/questions-2de-lot-5a`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -777,3 +779,13 @@ Lot 5 B « équations, tracés, positions relatives » (10) :
 **Décisions de David (2026-11-01)** : phase 0 validée avec mes quatre recommandations — L5-a case `vecteur`
 en mode `colineaire` (2-443, 2-444) ; L5-b forme libre (2-314, 440, 441), forme imposée en 2-439 et 2-312 ;
 L5-c lots 5 A (6) puis 5 B (10) ; L5-d 09f0c9ec laissé tel quel.
+
+## 31. Lot 5 A, PR des fichiers (2026-11-01)
+
+- Script `questions-2de/lot-droites-a-2de.py` → `scripts/questions/2de-droites-a/` (6 modèles, 14 variations,
+  43 specs). Catégorie neuve Géométrie › Droites du plan › Pente et vecteur directeur (niveaux 1 à 6, libres
+  en prod). `cleanCoefficients` pour les équations tirées.
+- `create-questions` en simulation : tout vert ; `sonde-courbes` : 0 problème (902 blocs sur 300 tirages).
+- Relecture des tirages : « m = 5/1 » (01) et « y = 3/−4 x » (03) corrigés en valeurs calculées.
+- Base locale : 6 brouillons ; aperçu joué : 02 (−1/2 lu sur la droite, « Juste »), 05 (y = 5x + 1, réponse
+  (−2 ; −10) colinéaire « Juste »), 04 (choix mélangés, les trois vecteurs directeurs « coché, juste »).
