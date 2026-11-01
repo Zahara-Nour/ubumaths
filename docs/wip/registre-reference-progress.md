@@ -1,20 +1,22 @@
 ---
 title: Le registre des commandes, référence commune (pnpm math, Atelier, calculatrice) — journal
 date: 2026-11-01
-status: phase 0, en attente de David (Q1-Q6)
+status: phase 0 tranchée, PR 0 à faire
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après l'inventaire du registre._
+_Mis à jour le 2026-11-01, après les réponses de David à Q1-Q6._
 
-- **État** : direction tranchée (D1-D3) ; inventaire registre / Atelier fait (30 lignes) ; phase 0
-  réécrite, rien de codé.
-- **Prochaine action** : réponses de David à Q1-Q6, puis PR 0 (le corpus, D4).
-- **En attente de David** : Q1-Q6.
+- **État** : phase 0 tranchée (D1-D4, Q1-Q6 validées) ; chantier renommé `registre-reference` ;
+  rien de codé.
+- **Prochaine action** : PR 0, le corpus (`tests/fixtures/mathast/`) et ses deux tests, puis la page
+  à cocher pour que David valide les attendus.
+- **En attente de David** : rien.
 - **Pièges en cours** : `tsx` lance `WebReplEngine` seul (< 1 s), pas l'Atelier (`$state is not
-defined`) ; une sonde de l'Atelier passe par le runner de Vite (~9 s).
-- **Worktree / branche** : `../ubumaths-wt-pnpm-math-atelier` · `refactor/pnpm-math-atelier`.
+defined`) ; une sonde ou un test de l'Atelier passe par vitest ou le runner de Vite (~9 s).
+- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `refactor/registre-reference`
+  (ex-`pnpm-math-atelier`).
 
 ---
 
@@ -99,22 +101,27 @@ simplification qui perd le domaine sans hypothèse, S3).
 - **R6** Une commande refusée par le registre l'est avec le même message dans l'Atelier et le
   terminal.
 
-## Questions pour David
+## Questions — tranchées par David le 2026-11-01 (« je valide tes recos »)
+
+Réponses retenues, en gras sous chaque question.
 
 - **Q1 — Commandes de l'Atelier absentes du registre.** D1 veut qu'elles y descendent (sinon la
   calculatrice ne les a pas). Proposé : `factoriser`, `développer`, `limite`, `réciproque` et
   `f(x) = …` dans ce chantier ; statistiques, probabilités, `tabuler`, `relever` plus tard (elles
-  lisent les listes et les figures de l'Atelier).
+  lisent les listes et les figures de l'Atelier). **→ validé.**
 - **Q2 — Une inéquation** : la réponse brute est-elle `S = ]−∞ ; 3[` (registre) ou `x < 3`
-  (Atelier) ?
-- **Q3 — Une primitive** : `+ C` dans la réponse brute ?
+  (Atelier) ? **→ `S = ]−∞ ; 3[`**, comme les équations ; les étapes de l'Atelier peuvent passer
+  par `x < 3` et conclure sur S.
+- **Q3 — Une primitive** : `+ C` dans la réponse brute ? **→ oui**, ajouté par la commande du
+  registre (le moteur calcule toujours F seul ; l'oracle des primitives ôte déjà le `+ C`).
 - **Q4 — Commandes du registre seul** (`parse`, `tree`, `latex`, `custom`, `normal`, `hash`, `let`,
   `def`, `def'`, `inv`, `clear`, `unset`, `undef`). Proposé : garder les outils de développement
   pour `pnpm math` (`tree`, `hash`, `normal`, `latex`, `custom`), retirer `inv` et `def'` (réponses
   données à la main, que `.réciproque` et `.dériver` remplacent), garder les commandes de noms
-  (la calculatrice en aura besoin).
+  (la calculatrice en aura besoin). **→ validé.**
 - **Q5 — Le nom du chantier.** `pnpm-math-atelier` ne dit plus ce qu'il fait. Proposé :
-  `registre-reference` (nouveau journal, worktree et branche renommés).
+  `registre-reference` (nouveau journal, worktree et branche renommés). **→ validé, fait le
+  2026-11-01.**
 
 - **Q6 — Le corpus** (D4).
   - **Où** : un fichier de données sous `tests/fixtures/mathast/` (aucun test ne lit `docs/`), une
@@ -129,8 +136,9 @@ simplification qui perd le domaine sans hypothèse, S3).
   - **Deux tests** : registre contre corpus ; Atelier contre corpus (sa réponse affichée = l'attendu).
     Les lignes qui divergent aujourd'hui sont marquées « connues fausses » (comme `known-wrong.ts`
     des limites) et se retirent de la liste au fil des PR.
+  - **→ validé** (les quatre points).
 
-## Découpage proposé (après Q1-Q6)
+## Découpage (validé avec Q1-Q6)
 
 0. Le corpus (D4, Q6) et ses deux tests, lignes divergentes marquées « connues fausses ».
 1. `.dériver` : forme réduite dans le registre, l'Atelier cesse de remplacer (pilote de la méthode).
