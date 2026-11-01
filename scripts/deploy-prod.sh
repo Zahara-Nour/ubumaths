@@ -7,7 +7,9 @@
 #      sous le verrou « deploy » (au plus DEPLOY_PROD_ATTENTE_MAX s) ;
 #   2. crée la version (`pnpm release` : numéro, CHANGELOG, tag) et la pousse
 #      sur main, sauf si ce commit est déjà une version ;
-#   3. attend que la CI de ce commit de version soit verte ;
+#   3. attend que la CI de ce commit de version soit verte : c'est la seule CI
+#      COMPLÈTE de main (un push de main ordinaire n'a que typecheck et build,
+#      quality.yml) ; rien n'entre en prod sans elle ;
 #   4. avance `production` jusqu'à lui, en avance rapide seulement.
 # Lancé par David, ou par Claude à sa demande explicite : jamais de mise en
 # prod — ni de version — à l'initiative de Claude.

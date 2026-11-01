@@ -26,24 +26,24 @@ on:
     # "expected" required checks that never run → it could never be merged.
   workflow_dispatch: # Allow manual trigger
 
-# Sur une branche, un run périmé est annulé par le suivant. Sur main, JAMAIS :
-# chaque commit de main part en prod, son run doit aller au bout. Annulé, il
-# laissait passer en prod un commit jamais testé, et un rouge ne se rattachait
-# plus au bon merge (5 runs de main annulés du 8 au 9/10). Dépôt public : les
-# minutes Actions sont gratuites, l'économie ne valait rien.
+# Sur une branche, un run périmé est annulé par le suivant. Sur main, jamais :
+# chaque commit de main garde son verdict, pour qu'un rouge se rattache au bon
+# merge (5 runs de main annulés du 8 au 9/10) et que `pnpm deploy:prod` trouve le
+# dernier commit vert.
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
-  # Raccourci du commit de version (ADR 0021). `pnpm deploy:prod` crée un commit
-  # `chore(release): …` qui ne change que le numéro de version et le CHANGELOG,
-  # sur un état déjà vérifié : refaire typecheck, build et tests coûtait ~5 min à
-  # chaque mise en prod, pour rien. Si scripts/ci-version-seule.sh le confirme
-  # (conditions strictes, testées), les jobs lourds sont sautés et `summary`
-  # passe au vert. Dans tous les autres cas (PR comprises), CI complète.
-  # Le script sort toujours en 0 : un échec du verdict ne bloque pas la CI,
-  # il la laisse simplement complète (`!cancelled()` sur chaque job).
+  # CI allégée sur main (2026-11-01). Après un merge, le code a déjà passé la CI
+  # complète sur sa PR, et main ne part plus en prod toute seule (ADR 0021) : sur un
+  # push de main, seuls typecheck et build tournent (ils attrapent l'essentiel de
+  # deux PR vertes chacune mais incompatibles). Le passage complet a lieu sur le
+  # commit de version `chore(release): …` de `pnpm deploy:prod`, qui le pousse sur
+  # main et l'attend avant d'avancer `production` : rien n'entre en prod sans lui.
+  # Le 2026-11-01, 89 merges ont relancé chacun ~15 jobs sur main ; avec 20 jobs
+  # simultanés au plus pour le dépôt, main occupait les trois quarts des runners.
+  # PR et workflow_dispatch : CI complète (sauf PR de contenu, voir plus bas).
   #
   # Ce job est aussi la PORTE de la CI (2026-11-01) : si les horodatages des
   # migrations sont en double, ou qu'une migration de la PR prend un horodatage déjà
@@ -55,11 +55,11 @@ jobs:
   # typecheck, types des tests, build, audit et garde SECURITY DEFINER sont alors
   # sautés ; Lint et tests (qui lisent scripts/questions) tournent toujours.
   version:
-    name: Commit de version ?
+    name: Porte de la CI
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
-      seule: ${{ steps.verdict.outputs.seule }}
+      allegee: ${{ steps.allegee.outputs.allegee }}
       contenu: ${{ steps.nature.outputs.contenu }}
     steps:
       - name: Checkout code
@@ -80,16 +80,21 @@ jobs:
         id: nature
         run: bash scripts/ci-nature-changement.sh >> "$GITHUB_OUTPUT" || echo "contenu=false" >> "$GITHUB_OUTPUT"
 
-      - name: Verdict
-        id: verdict
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: bash scripts/ci-version-seule.sh "${{ github.sha }}" >> "$GITHUB_OUTPUT" || echo "seule=false" >> "$GITHUB_OUTPUT"
+      - name: CI allégée ? (push de main hors commit de version)
+        id: allegee
+        run: |
+          if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ] &&
+             ! git log -1 --format=%s HEAD | grep -q '^chore(release): '; then
+            echo "Push de main : typecheck et build seulement (le reste a tourné sur la PR)."
+            echo "allegee=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "allegee=false" >> "$GITHUB_OUTPUT"
+          fi
 
   lint:
     name: Lint
     needs: version
-    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.seule != 'true' }}
+    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.allegee != 'true' }}
     runs-on: ubuntu-latest
     # Un changement de eslint.config.* invalide tout le cache ESLint : relecture
     # à froid ~18 min (#1871), plus ~2 min d'installation.
@@ -198,7 +203,7 @@ jobs:
   typecheck:
     name: Type Check
     needs: version
-    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.seule != 'true' && needs.version.outputs.contenu != 'true' }}
+    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.contenu != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -232,7 +237,7 @@ jobs:
   types-tests:
     name: Types des tests (cliquet)
     needs: version
-    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.seule != 'true' && needs.version.outputs.contenu != 'true' }}
+    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.allegee != 'true' && needs.version.outputs.contenu != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -262,7 +267,7 @@ jobs:
   build:
     name: Build
     needs: version
-    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.seule != 'true' && needs.version.outputs.contenu != 'true' }}
+    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.contenu != 'true' }}
     runs-on: ubuntu-latest
     # 15 min like the rest of this workflow. The build takes 2-4 min normally;
     # 10 left no room for a slow runner and cancelled the job mid-build.
@@ -336,7 +341,7 @@ jobs:
   test-server:
     name: Server Tests (shard ${{ matrix.shard }}/4)
     needs: version
-    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.seule != 'true' }}
+    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.allegee != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
@@ -379,7 +384,7 @@ jobs:
   test-client:
     name: Client Tests (browser, shard ${{ matrix.shard }}/2)
     needs: version
-    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.seule != 'true' }}
+    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.allegee != 'true' }}
     strategy:
       fail-fast: false
       matrix:
@@ -435,7 +440,7 @@ jobs:
   audit:
     name: Security Audit
     needs: version
-    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.seule != 'true' && needs.version.outputs.contenu != 'true' }}
+    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.allegee != 'true' && needs.version.outputs.contenu != 'true' }}
     runs-on: ubuntu-latest
     # 15 min like the rest of this workflow. The audit itself runs in under a
     # minute, but it waits on the npm advisory endpoint, which can hang: a
@@ -482,7 +487,7 @@ jobs:
   definer-guard:
     name: Garde SECURITY DEFINER
     needs: version
-    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.seule != 'true' && needs.version.outputs.contenu != 'true' }}
+    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.allegee != 'true' && needs.version.outputs.contenu != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -563,15 +568,15 @@ jobs:
       - name: Check results
         run: |
           if [ "${{ needs.version.result }}" != "success" ]; then
-            echo "::error::Porte de la CI fermée (job « Commit de version ? ») : horodatages des migrations, voir ce job."
+            echo "::error::Porte de la CI fermée (job « Porte de la CI ») : horodatages des migrations, voir ce job."
             exit 1
           fi
-          if [ "${{ needs.version.outputs.seule }}" = "true" ]; then
-            echo "Commit de version sur un état vérifié : jobs lourds sautés (ADR 0021)."
-            exit 0
-          fi
-          # PR de contenu seul : ces cinq jobs sont sautés, « skipped » vaut alors succès.
-          ok() { [ "$1" = "success" ] || { [ "${{ needs.version.outputs.contenu }}" = "true" ] && [ "$1" = "skipped" ]; }; }
+          # Un job sauté vaut succès quand c'est voulu : sur main allégée (tout sauf
+          # typecheck et build), sur une PR de contenu (types, build, audit, garde).
+          allegee="${{ needs.version.outputs.allegee }}"
+          contenu="${{ needs.version.outputs.contenu }}"
+          [ "$allegee" = true ] || [ "$contenu" = true ] && allegee_ou_contenu=true || allegee_ou_contenu=false
+          ok() { [ "$1" = "success" ] || { [ "$1" = "skipped" ] && [ "$2" = "true" ]; }; }
           echo "Lint: ${{ needs.lint.result }}"
           echo "Type Check: ${{ needs.typecheck.result }}"
           echo "Types des tests (cliquet): ${{ needs.types-tests.result }}"
@@ -581,14 +586,14 @@ jobs:
           echo "Security Audit (critical): ${{ needs.audit.result }}"
           echo "Garde SECURITY DEFINER: ${{ needs.definer-guard.result }}"
 
-          if [ "${{ needs.lint.result }}" != "success" ] || \
-             ! ok "${{ needs.typecheck.result }}" || \
-             ! ok "${{ needs.types-tests.result }}" || \
-             ! ok "${{ needs.build.result }}" || \
-             [ "${{ needs.test-server.result }}" != "success" ] || \
-             [ "${{ needs.test-client.result }}" != "success" ] || \
-             ! ok "${{ needs.audit.result }}" || \
-             ! ok "${{ needs.definer-guard.result }}"; then
+          if ! ok "${{ needs.lint.result }}" "$allegee" || \
+             ! ok "${{ needs.typecheck.result }}" "$contenu" || \
+             ! ok "${{ needs.types-tests.result }}" "$allegee_ou_contenu" || \
+             ! ok "${{ needs.build.result }}" "$contenu" || \
+             ! ok "${{ needs.test-server.result }}" "$allegee" || \
+             ! ok "${{ needs.test-client.result }}" "$allegee" || \
+             ! ok "${{ needs.audit.result }}" "$allegee_ou_contenu" || \
+             ! ok "${{ needs.definer-guard.result }}" "$allegee_ou_contenu"; then
             echo "::error::Some checks failed"
             exit 1
           else
