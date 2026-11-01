@@ -19,6 +19,8 @@ couvre:
   - scripts/lint-fast-fichiers.sh
   - scripts/with-db-lock.sh
   - scripts/ci-version-seule.sh
+  - scripts/ci-nature-changement.sh
+  - scripts/garde-migrations-horodatage.sh
   - scripts/vercel-ignore-build.sh
   - scripts/releve-web-vitals.ts
   - scripts/check-production-health.ts
@@ -88,7 +90,7 @@ brouillon `.ts` non suivi d'une session y bloquait le push de doc de toutes les 
 | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `pre-commit` | `scripts/garde-main-a-jour.sh` : sur `main`, refuse le commit si `origin/main` a des commits que le `main` local n'a pas (`git fetch` d'abord, laisse passer hors ligne). Puis `pnpm lint-staged` (`.lintstagedrc.js`) : oxlint (`--fix` sur JS/TS, sans `--fix` sur `.svelte`) + prettier ; prettier seul sur json/md/css/html. Bloque sur une _erreur_ oxlint seulement. |
 | `commit-msg` | commitlint, sur **toutes** les branches (les commits de branche arrivent tels quels sur main).                                                                                                                                                                                                                                                                             |
-| `pre-push`   | `pnpm format:check` (fichiers suivis seulement) → `lint:fast --push` (fichiers des commits poussés seulement) → `docs:check-links` → `docs:check-refs --strict` → `docs:check-a-jour --couverture` (bloquants), puis `docs:check-a-jour --depuis origin/main` (avertissement).                                                                                             |
+| `pre-push`   | `pnpm check:migrations` (horodatages des migrations neuves contre `origin/main`) → `pnpm format:check` (fichiers suivis seulement) → `lint:fast --push` (fichiers des commits poussés seulement) → `docs:check-links` → `docs:check-refs --strict` → `docs:check-a-jour --couverture` (bloquants), puis `docs:check-a-jour --depuis origin/main` (avertissement).          |
 
 Le pre-push est le seul filet des commits de doc poussés directement sur `main`, que la CI de push
 ignore. « Code modifié ⇒ doc modifiée » n'y fait qu'avertir ; c'est la CI de la PR qui bloque
@@ -146,6 +148,14 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
 
 - **Raccourci du commit de version** : sur un `chore(release): …` qui ne change que la version et
   le CHANGELOG, posé sur un état vert, `scripts/ci-version-seule.sh` fait sauter les jobs lourds.
+- **Porte de la CI** (2026-11-01) : le job « Commit de version ? » vérifie d'abord les horodatages des
+  migrations (aucun doublon ; `scripts/garde-migrations-horodatage.sh` contre `origin/main`). S'il
+  échoue, tous les jobs lourds sont sautés et « CI Summary » rougit en ~20 s, au lieu de 15 jobs
+  pour un rouge certain (main cassée par `20261101215000` en double avait saturé la file des runners).
+- **PR de contenu seul** : modèles de questions (`scripts/questions/**/*.json`), doc, `.md` hors
+  `src/`, `static/`, `data/` (`scripts/ci-nature-changement.sh`) → typecheck, types des tests, build,
+  audit et garde SECURITY DEFINER sautés (« skipped » compte comme réussi pour les checks exigés).
+  Lint et tests serveur et client tournent toujours : deux tests lisent `scripts/questions`.
 - **CI de main jamais annulée** (chaque commit de main doit avoir son verdict) ; sur une branche, un
   run périmé est annulé par le suivant.
 - **Règle de merge** : CI 100 % verte (« CI Summary » et les checks exigés par la protection de

@@ -103,6 +103,7 @@ cp ../ubumaths/.env ../ubumaths/.env.local . && pnpm install --prefer-offline
 > [pratiques/base-de-donnees.md](docs/pratiques/base-de-donnees.md) · schéma : [systeme/base-de-donnees.md](docs/systeme/base-de-donnees.md)
 
 - Migrations dans `supabase/migrations/<timestamp>_<description>.sql`. **Jamais** de schéma modifié via le Dashboard.
+- **Horodatage = `pnpm migration:horodatage`**, jamais un nombre rond. Avant `gh pr merge` d'une PR de migration : `pnpm check:migrations --pr <n>`.
 - CLI Supabase = devDependency : `pnpm exec supabase …` (jamais `supabase …` ni `npx supabase`).
 - **Tests d'intégration locaux OBLIGATOIRES** pour RLS / `SECURITY DEFINER` / trigger / policy. **Jamais** de smoke-test `auth.uid()` NULL (faux positif).
 - Prod : MCP Supabase **read-only**. `db:types` génère **depuis la prod** → fonction SQL + code qui l'appelle = **deux PR** (migration, `db:migrate`, `db:types`, puis le code).
