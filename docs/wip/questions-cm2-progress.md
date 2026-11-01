@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2086._
+_Mis à jour le 2026-11-01, après le `--mettre-a-jour` de 040 / 118 / 041._
 
-- **État** : lots 1-3 publiés. Lot 4 : 7 brouillons rangés et tagués (#2060) ; 040, 118, 041 corrigés (variation 1 = un nombre ENTIER d'unités, § 9.5), #2086 mergée. Page à cocher : https://claude.ai/artifact/GbuqmaxXKnTHhZSdy3ppbL
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-4 --publier --mettre-a-jour` (simulation : 3 ↻, 4 =) ; vérifier au MCP ; remettre à zéro les verdicts de 040 / 118 / 041 et republier la page ; relire `verdicts` (compter 7) ; puis `publier-lot`.
-- **En attente de David** : le `--mettre-a-jour` ; relecture des autres fiches du lot 4.
-- **Pièges en cours** : `create-questions` retrouve un modèle par son TITRE (titre changé = doublon) ; `curriculum_points` sans colonne `label` ; relever la prod avant toute écriture ; horodatages de migration partagés ; énoncé sans `?` = « Blank count mismatch » ; quotient décimal `{{eval:…;d}}` ; variable `e` = Euler ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; ne jamais enchaîner `gh pr merge` sur la lecture de la CI ; worktree neuf → `svelte-kit sync` avant `question:specs`.
-- **Worktree / branche** : aucun (retiré après #2086).
+- **État** : lots 1-3 publiés. Lot 4 : 7 brouillons rangés et tagués ; 040, 118, 041 corrigés en prod (#2086 + `--mettre-a-jour` de David, vérifié au MCP), leurs verdicts remis à zéro ; page à cocher republiée (version 2) : https://claude.ai/artifact/GbuqmaxXKnTHhZSdy3ppbL
+- **Prochaine action** : quand David a tout relu, lire `verdicts` (compter 7 OK) ; puis `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/cm2-4` (simulation) et David lance `--publier`.
+- **En attente de David** : relecture des 7 fiches du lot 4.
+- **Pièges en cours** : `create-questions` retrouve un modèle par son TITRE (titre changé = doublon) ; `curriculum_points` sans colonne `label` ; tags dans `question_template_points` ; relever la prod avant toute écriture ; horodatages de migration partagés ; énoncé sans `?` = « Blank count mismatch » ; quotient décimal `{{eval:…;d}}` ; variable `e` = Euler ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; ne jamais enchaîner `gh pr merge` sur la lecture de la CI ; worktree neuf → `svelte-kit sync` avant `question:specs`.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -436,3 +436,4 @@ Recommandations suivies (« tes recos ? » puis « je te suis ») : tableau du �
 - Variation 1 refaite : k unités (k de 1 à 9) ajoutées à / retirées d'un décimal à 2 ou 3 décimales (4,452 + 3 ; 0,45 + 2 ; 8,694 − 6 ; retenue : 8,45 + 3 = 11,45). Variation 2 : dizaines à milliers seulement (les unités sont en V1). Aux unités, 0 est un vrai chiffre (condition `j==3||N>=10^j`).
 - Titres gardés (« Ajouter / Retirer des unités d'un seul rang », justes) : `create-questions` retrouve le modèle par son titre, un nouveau titre aurait créé un doublon sur un niveau pris.
 - Bornes CM2-040 / 041 / 118 de `cycle3.json` corrigées. `question:specs` : 1 000 tirages par variation, 8 specs par modèle, tout vert ; simulation prod : 3 à mettre à jour, 4 inchangés.
+- David : `create-questions --publier --mettre-a-jour` → 3 mis à jour, 4 inchangés ; simulation suivante : 7 identiques. MCP : contenu neuf (conditions `j==3||N>=10^j`, `mod(N,100)!=0`), statut brouillon, nœud et point inchangés. Verdicts de `f73f7bba` et `eca617ae` supprimés (aucun pour `8f2aff1d`) ; page régénérée (7 fiches, aucune alerte) et republiée à la même adresse.
