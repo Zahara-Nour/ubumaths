@@ -8,9 +8,9 @@
 
 _Mis à jour le 2026-11-01, phase 0 du lot 5 validée._
 
-- **État** : lots 1 à 4 publiés en prod ; lot 5 (problèmes, 12 modèles) : phase 0 validée (§ 9), écriture à faire.
-- **Prochaine action** : worktree `../ubumaths-wt-questions-ce2`, script `docs/wip/questions/lot-ce2-5.py` →
-  `scripts/questions/ce2-5/`, tests d'abord, brouillons en base locale, PR. En parallèle, dans des sessions à
+- **État** : lots 1 à 4 publiés en prod ; lot 5 (problèmes, 12 modèles) écrit, PR ouverte (§ 9).
+- **Prochaine action** : CI verte → merger ; David crée les 12 brouillons en prod (`create-questions --publier`) ;
+  puis migration nœud + tag (calquée sur le lot 4) ; page à cocher ; `--publier`. En parallèle, dans des sessions à
   part : `choix-correction` (`$$…$$` brut, § 8), puis `centaines:` + milliers de `collection` et barres à monter.
 - **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate`, `--publier` et `--mettre-a-jour` refusés par le classifieur (David les
@@ -399,17 +399,33 @@ totale ≤ 1 000 pour le nombre de parts. Question d'accès : personne ne lit ri
 4. Un seul lot de 12 modèles.
 5. Régulation (« ce résultat est-il possible ? ») en case choix dans quelques variations de 01 et 05.
 
-| Fichier                      | Point | Catégorie · niveau      | Variations                                                          |
-| ---------------------------- | ----- | ----------------------- | ------------------------------------------------------------------- |
-| `01-parties-tout`            | 029   | Parties-tout · 7        | tout, partie ou départ inconnu, 1 000 à 10 000 ; régulation         |
-| `02-parties-tout-prix`       | 029   | Parties-tout · 8        | prix à virgule : achats, prix manquant, monnaie                     |
-| `03-parties-tout-fractions`  | 029   | Parties-tout · 9        | fraction qui reste, même dénominateur                               |
-| `04-comparaison`             | 079   | Comparaison · 2         | plus grand, plus petit, écart ; entiers ≤ 10 000 et prix            |
-| `05-deux-etapes`             | 030   | Deux étapes · 7         | ajouts et retraits enchaînés ≤ 10 000 ; achats ; régulation         |
-| `06-comparaison-deux-etapes` | 030   | Deux étapes · 8         | Léo 188 billes, Lucie 75 de plus, en tout                           |
-| `07-multiplicatifs-tout`     | 031   | Multiplicatifs · 9      | valeur du tout, champ étendu (8 paquets de 125, 6 × 1,50 €)         |
-| `08-nombre-de-parts`         | 031   | Multiplicatifs · 10     | total ≤ 1 000 ; reste → arrondi au-dessus ou en dessous             |
-| `09-valeur-d-une-part`       | 031   | Multiplicatifs · 11     | 72 € pour 6 dictionnaires (tables)                                  |
-| `10-fois-plus-fois-moins`    | 033   | Comparaison · 3         | trottinette 4 fois plus chère que le casque à 32 € ; « fois moins » |
-| `11-problemes-mixtes`        | 032   | Deux étapes · 9         | 4 tables de 6 + 7 tables de 4 ; plus de deux étapes : nombres < 100 |
-| `12-produit-cartesien`       | 034   | Produits cartésiens · 1 | tableau (3 × 7) ; arbre à trois ensembles (2 × 3 × 2)               |
+| Fichier                      | Point | Catégorie · niveau                                   | Variations                                                          |
+| ---------------------------- | ----- | ---------------------------------------------------- | ------------------------------------------------------------------- |
+| `01-parties-tout`            | 029   | Parties-tout · 7                                     | tout, partie ou départ inconnu, 1 000 à 10 000 ; régulation         |
+| `02-parties-tout-prix`       | 029   | Parties-tout · 8                                     | prix à virgule : achats, prix manquant, monnaie                     |
+| `03-parties-tout-fractions`  | 029   | Addition et Soustraction · 22 (Fractions · Calculer) | fraction qui reste, même dénominateur                               |
+| `04-comparaison`             | 079   | Comparaison · 2                                      | plus grand, plus petit, écart ; entiers ≤ 10 000 et prix            |
+| `05-deux-etapes`             | 030   | Deux étapes · 7                                      | ajouts et retraits enchaînés ≤ 10 000 ; achats ; régulation         |
+| `06-comparaison-deux-etapes` | 030   | Deux étapes · 8                                      | Léo 188 billes, Lucie 75 de plus, en tout                           |
+| `07-multiplicatifs-tout`     | 031   | Multiplicatifs · 9                                   | valeur du tout, champ étendu (8 paquets de 125, 6 × 1,50 €)         |
+| `08-nombre-de-parts`         | 031   | Multiplicatifs · 10                                  | total ≤ 1 000 ; reste → arrondi au-dessus ou en dessous             |
+| `09-valeur-d-une-part`       | 031   | Multiplicatifs · 11                                  | 72 € pour 6 dictionnaires (tables)                                  |
+| `10-fois-plus-fois-moins`    | 033   | Comparaison · 3                                      | trottinette 4 fois plus chère que le casque à 32 € ; « fois moins » |
+| `11-problemes-mixtes`        | 032   | Deux étapes · 9                                      | 4 tables de 6 + 7 tables de 4 ; plus de deux étapes : nombres < 100 |
+| `12-produit-cartesien`       | 034   | Produits cartésiens · 1                              | tableau (3 × 7) ; arbre à trois ensembles (2 × 3 × 2)               |
+
+### Lot 5 — écriture (2026-11-01)
+
+- Script `docs/wip/questions/lot-ce2-5.py` → `scripts/questions/ce2-5/` (12 JSON, 117 specs : justes, erreurs
+  typiques — « de plus » lu addition, « fois moins » lu soustraction, dénominateurs ajoutés, reste oublié, une
+  partie plus grande que le tout acceptée). `question:specs --instances 300` : 117/117 specs, 13 500 tirages
+  réussis. `create-questions` en simulation (prod) : 12 « à créer ».
+- **Écart à la phase 0** : le modèle 03 (fractions) est rangé en `Fractions · Calculer · Addition et Soustraction · 22`
+  (comme « Lucie », CE1), non en `Parties-tout · 9` : c'est une catégorie `Entiers`. Niveaux relevés au MCP le
+  2026-11-01 : Fractions › Addition et Soustraction jusqu'à 21.
+- **Réponses sous 10 000** : « 10000 » sans espace est jugé non optimal (comme en numération) ; toutes les sommes
+  sont donc tirées < 10 000.
+- **Défauts trouvés à la relecture des tirages** (invisibles aux specs) : billet de 10 € pour 11,26 d'achats (monnaie
+  négative, condition ajoutée) ; « il reste 1 œufs » ; phrase commençant par une espace.
+- **Produit cartésien** : le tableau / l'arbre n'est dessiné que par des phrases (sa taille change à chaque tirage) ;
+  si David veut un vrai dessin, c'est un outil neuf.

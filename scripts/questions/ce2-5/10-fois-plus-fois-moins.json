@@ -1,0 +1,286 @@
+{
+	"title": "Comparaison multiplicative : fois plus, fois moins",
+	"description": "Une trottinette 4 fois plus chère qu'un casque à 32 € ; 4 fois moins cher ; « fois plus » et « de plus » dans le même énoncé",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Problèmes",
+	"subdomain": "Comparaison",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Une trottinette coûte ${{k}}$ fois plus cher qu'un casque. Le casque coûte ${{eval:c}}~\\unit{€}$.\n\nCombien coûte la trottinette ?\n\nLa trottinette coûte $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "12..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« ${{k}}$ fois plus cher » : la trottinette coûte ${{k}}$ fois le prix du casque. On multiplie (ce n'est pas « de plus », qui voudrait dire qu'on ajoute un écart).",
+					"$${{k}} \\times {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:k*c}}}$$",
+					"La trottinette coûte ${{eval:k*c}}~\\unit{€}$."
+				]
+			}
+		},
+		{
+			"statement": "Un casque coûte ${{k}}$ fois moins cher qu'une trottinette. La trottinette coûte ${{eval:k*c}}~\\unit{€}$.\n\nCombien coûte le casque ?\n\nLe casque coûte $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "12..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« ${{k}}$ fois moins cher » : la trottinette coûte ${{k}}$ fois le prix du casque. On cherche le nombre qui, ${{k}}$ fois, fait ${{eval:k*c}}$. On divise (ce n'est pas « de moins », qui voudrait dire qu'on enlève un écart).",
+					"$${{k}} \\times \\textcolor{{{color:primary.0}}}{{{c}}} = {{eval:k*c}}$$",
+					"Le casque coûte ${{c}}~\\unit{€}$."
+				]
+			}
+		},
+		{
+			"statement": "Un stylo coûte ${{c}}~\\unit{€}$. Un cahier coûte ${{k}}$ fois plus cher que le stylo. Un classeur coûte ${{d}}~\\unit{€}$ de plus que le stylo.\n\nCombien coûte le cahier ?\n\nLe cahier coûte $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "3..25"
+				},
+				{
+					"name": "d",
+					"expression": "2..20"
+				}
+			],
+			"conditions": ["d != k * c - c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« ${{k}}$ fois plus cher » : le cahier coûte ${{k}}$ fois le prix du stylo. On multiplie. (L'autre phrase, « de plus », parle du classeur.)",
+					"$${{k}} \\times {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:k*c}}}$$",
+					"Le cahier coûte ${{eval:k*c}}~\\unit{€}$."
+				]
+			}
+		},
+		{
+			"statement": "Un stylo coûte ${{c}}~\\unit{€}$. Un cahier coûte ${{k}}$ fois plus cher que le stylo. Un classeur coûte ${{d}}~\\unit{€}$ de plus que le stylo.\n\nCombien coûte le classeur ?\n\nLe classeur coûte $?~\\text{€}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "3..25"
+				},
+				{
+					"name": "d",
+					"expression": "2..20"
+				}
+			],
+			"conditions": ["d != k * c - c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c+d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« ${{d}}~\\unit{€}$ **de plus** » : le classeur coûte le prix du stylo et encore ${{d}}$ euros. On ajoute l'écart. (L'autre phrase, « fois plus », parle du cahier.)",
+					"$${{c}} + {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:c+d}}}$$",
+					"Le classeur coûte ${{eval:c+d}}~\\unit{€}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans une école, il y a ${{k}}$ fois plus de filles que de garçons. Il y a ${{g}}$ garçons.\n\nCombien y a-t-il de filles ?\n\nIl y a $?$ filles.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "g",
+					"expression": "20..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*g}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« ${{k}}$ fois plus de filles » : on multiplie le nombre de garçons par ${{k}}$.",
+					"$${{k}} \\times {{g}} = \\textcolor{{{color:primary.0}}}{{{eval:k*g}}}$$",
+					"Il y a ${{eval:k*g}}$ filles."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : trottinette 4 fois plus chère que 32 € = 128 €",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"c": "32"
+			},
+			"answers": ["128"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « fois plus » lu addition (36)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"c": "32"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "casque : 4 fois moins, 128 € → 32 €",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"c": "32"
+			},
+			"answers": ["32"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « fois moins » lu multiplication (512)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"c": "32"
+			},
+			"answers": ["512"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : « fois moins » lu soustraction (124)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"c": "32"
+			},
+			"answers": ["124"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "cahier : 5 × 6 = 30 €",
+			"variationIndex": 2,
+			"variables": {
+				"k": "5",
+				"c": "6",
+				"d": "4"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cahier, « de plus » pris pour l'opération (10)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "5",
+				"c": "6",
+				"d": "4"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "classeur : 6 + 4 = 10 €",
+			"variationIndex": 3,
+			"variables": {
+				"k": "5",
+				"c": "6",
+				"d": "4"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : classeur, « fois plus » pris pour l'opération (30)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "5",
+				"c": "6",
+				"d": "4"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "filles : 6 fois plus que 45 = 270",
+			"variationIndex": 4,
+			"variables": {
+				"k": "6",
+				"g": "45"
+			},
+			"answers": ["270"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : filles, 6 + 45 (51)",
+			"variationIndex": 4,
+			"variables": {
+				"k": "6",
+				"g": "45"
+			},
+			"answers": ["51"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,293 @@
+{
+	"title": "Problèmes de comparaison (jusqu'à 10 000)",
+	"description": "Le plus grand, le plus petit ou l'écart : Léo 1 188 billes, Lucie 2 075 de plus ; un vélo à 249,90 € et un casque à 35,40 €",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Problèmes",
+	"subdomain": "Comparaison",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Léo a ${{a}}$ billes. Lucie en a ${{d}}$ de plus que Léo.\n\nCombien Lucie a-t-elle de billes ?\n\nLucie a $?$ billes.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1000..8000"
+				},
+				{
+					"name": "d",
+					"expression": "200..2000"
+				}
+			],
+			"conditions": ["a + d < 10000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Lucie a autant de billes que Léo, et encore ${{d}}$ de plus : elle en a plus que Léo, on ajoute l'écart.",
+					"$${{a}} + {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:a+d}}}$$",
+					"Lucie a ${{eval:a+d}}$ billes."
+				]
+			}
+		},
+		{
+			"statement": "Dans la ville, il y a ${{g}}$ garçons et ${{f}}$ filles qui vont à l'école.\n\nCombien de filles y a-t-il de plus que de garçons ?\n\nIl y a $?$ filles de plus que de garçons.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "1000..4000"
+				},
+				{
+					"name": "f",
+					"expression": "1200..6000"
+				}
+			],
+			"conditions": ["f - g >= 200"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:f-g}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche **l'écart** entre les filles et les garçons : ce qu'il faut ajouter à ${{g}}$ pour arriver à ${{f}}$. C'est une soustraction, même si l'énoncé dit « de plus ».",
+					"$${{f}} - {{g}} = \\textcolor{{{color:primary.0}}}{{{eval:f-g}}}$$",
+					"Il y a ${{eval:f-g}}$ filles de plus que de garçons."
+				]
+			}
+		},
+		{
+			"statement": "Le chêne a ${{a}}$ ans. Il a ${{d}}$ ans de plus que le tilleul.\n\nQuel âge a le tilleul ?\n\nLe tilleul a $?$ ans.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1000..4000"
+				},
+				{
+					"name": "d",
+					"expression": "200..900"
+				}
+			],
+			"conditions": ["a - d >= 200"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a-d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le chêne est plus vieux que le tilleul : le tilleul a ${{d}}$ ans de moins que le chêne. On enlève l'écart, même si l'énoncé dit « de plus ».",
+					"$${{a}} - {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:a-d}}}$$",
+					"Le tilleul a ${{eval:a-d}}$ ans."
+				]
+			}
+		},
+		{
+			"statement": "Tom a ${{a}}$ cartes. Il en a ${{d}}$ de moins que Sara.\n\nCombien Sara a-t-elle de cartes ?\n\nSara a $?$ cartes.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1000..8000"
+				},
+				{
+					"name": "d",
+					"expression": "200..1500"
+				}
+			],
+			"conditions": ["a + d < 10000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Tom en a moins que Sara : Sara en a ${{d}}$ de plus que Tom. On ajoute l'écart, même si l'énoncé dit « de moins ».",
+					"$${{a}} + {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:a+d}}}$$",
+					"Sara a ${{eval:a+d}}$ cartes."
+				]
+			}
+		},
+		{
+			"statement": "Un vélo coûte ${{eval:floor((a)/100)}}.{{eval:floor(mod(a,100)/10)}}{{eval:mod(a,10)}}~\\unit{€}$. Un casque coûte ${{eval:floor((b)/100)}}.{{eval:floor(mod(b,100)/10)}}{{eval:mod(b,10)}}~\\unit{€}$.\n\nCombien le vélo coûte-t-il de plus que le casque ?\n\nLe vélo coûte $?~\\text{€}$ de plus.",
+			"variables": [
+				{
+					"name": "aE",
+					"expression": "150..400"
+				},
+				{
+					"name": "aC",
+					"expression": "1..99"
+				},
+				{
+					"name": "a",
+					"expression": "eval:100*aE+aC"
+				},
+				{
+					"name": "bE",
+					"expression": "20..99"
+				},
+				{
+					"name": "bC",
+					"expression": "1..99"
+				},
+				{
+					"name": "b",
+					"expression": "eval:100*bE+bC"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a-b)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche **l'écart** entre le prix du vélo et celui du casque : on enlève le plus petit prix au plus grand.",
+					"$${{eval:floor((a)/100)}}.{{eval:floor(mod(a,100)/10)}}{{eval:mod(a,10)}} - {{eval:floor((b)/100)}}.{{eval:floor(mod(b,100)/10)}}{{eval:mod(b,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((a-b)/100)}}.{{eval:floor(mod(a-b,100)/10)}}{{eval:mod(a-b,10)}}}$$",
+					"Le vélo coûte ${{eval:floor((a-b)/100)}}.{{eval:floor(mod(a-b,100)/10)}}{{eval:mod(a-b,10)}}~\\unit{€}$ de plus que le casque."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 188 + 2 075 = 5 263",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3188",
+				"d": "2075"
+			},
+			"answers": ["5263"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : plus grand, l'écart enlevé (1 113)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3188",
+				"d": "2075"
+			},
+			"answers": ["1113"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "écart : 5 257 − 2 111 = 3 146",
+			"variationIndex": 1,
+			"variables": {
+				"g": "2111",
+				"f": "5257"
+			},
+			"answers": ["3146"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : écart, « de plus » lu addition (7 368)",
+			"variationIndex": 1,
+			"variables": {
+				"g": "2111",
+				"f": "5257"
+			},
+			"answers": ["7368"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "plus petit : 3 500 − 1 250 = 2 250",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3500",
+				"d": "1250"
+			},
+			"answers": ["2250"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : plus petit, « de plus » lu addition (4 750)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3500",
+				"d": "1250"
+			},
+			"answers": ["4750"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "« de moins » : 2 450 + 600 = 3 050",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2450",
+				"d": "600"
+			},
+			"answers": ["3050"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « de moins » lu soustraction (1 850)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2450",
+				"d": "600"
+			},
+			"answers": ["1850"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "prix : 249,90 − 35,40 = 214,50 €",
+			"variationIndex": 4,
+			"variables": {
+				"aE": "249",
+				"aC": "90",
+				"a": "24990",
+				"bE": "35",
+				"bC": "40",
+				"b": "3540"
+			},
+			"answers": ["214{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : prix, les deux ajoutés (285,30 €)",
+			"variationIndex": 4,
+			"variables": {
+				"aE": "249",
+				"aC": "90",
+				"a": "24990",
+				"bE": "35",
+				"bC": "40",
+				"b": "3540"
+			},
+			"answers": ["285{,}3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
