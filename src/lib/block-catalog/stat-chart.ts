@@ -599,7 +599,7 @@ export const boxPlotEntry: BlockCatalogEntry = {
 	fences: ['boite-a-moustaches'],
 	nodeType: 'stat-chart',
 	summary:
-		'Une à quatre boîtes à moustaches horizontales sur un même axe gradué, pour lire ou comparer des séries.',
+		'Une à quatre boîtes à moustaches horizontales sur un même axe gradué, pour lire ou comparer des séries ; dans une question, une boîte que l’élève construit.',
 	intro:
 		'Une ligne par boîte : son nom, puis ses cinq valeurs dans l’ordre minimum ; Q1 ; médiane ; Q3 ; maximum. Les boîtes s’empilent dans l’ordre écrit, sur un seul axe en bas. Avec « données: », le bloc calcule lui-même la boîte d’une série brute (quartiles du programme). Les réglages s’écrivent « clé: valeur ». Un bloc mal écrit reste dans le texte avec ses messages situés.',
 	settingGroups: [
@@ -646,6 +646,18 @@ export const boxPlotEntry: BlockCatalogEntry = {
 						'Texte lu par les lecteurs d’écran (sinon les cinq valeurs de chaque boîte), taille de la figure.'
 				}
 			]
+		},
+		{
+			title: 'Dans une question : construire la boîte',
+			settings: [
+				{
+					key: 'placer',
+					values: 'les boîtes à construire : Notes ; Neptune, ou toutes',
+					defaultValue: 'aucune',
+					description:
+						'L’élève voit l’axe et le nom de la boîte ; il choisit un trait (Min, Q1, Médiane, Q3, Max) puis touche l’axe pour le poser, aimanté aux graduations. Les valeurs écrites sont l’attendu, jamais affichées avant la correction. Cinq cases par boîte (note partielle) ; des traits dans le désordre sont faux. Exige axe: (calculé, il trahirait le minimum et le maximum), et chaque valeur sur une graduation ; refusé avec valeurs: oui. Avec données:, l’élève calcule les quartiles de la série (écrite dans la consigne) puis construit. Sur le PDF, l’axe et le nom seuls : l’enfant dessine.'
+				}
+			]
 		}
 	],
 	examples: [
@@ -677,6 +689,29 @@ export const boxPlotEntry: BlockCatalogEntry = {
 				'Notes = 4 ; 8 ; 11 ; 14 ; 19'
 			),
 			explanation: 'Les cinq valeurs sont écrites sous la boîte.'
+		},
+		{
+			title: 'Construire la boîte (question)',
+			source: fence(
+				'boite-a-moustaches',
+				'axe: 0 à 20, de 1 en 1',
+				'titre: note sur 20',
+				'placer: Notes',
+				'Notes = 4 ; 8 ; 11 ; 14 ; 19'
+			),
+			explanation:
+				'Dans une question, l’élève pose les cinq traits de la boîte Notes : une case chacun. La consigne (la série, ou ses cinq valeurs) va dans l’énoncé, au-dessus.'
+		},
+		{
+			title: 'Calculer puis construire (question)',
+			source: fence(
+				'boite-a-moustaches',
+				'axe: 0 à 25, de 1 en 1',
+				'placer: toutes',
+				'données: 3 ; 5 ; 7 ; 8 ; 12 ; 13 ; 14 ; 18 ; 21'
+			),
+			explanation:
+				'L’attendu est calculé sur la série (quartiles du programme) : l’élève la lit dans la consigne, calcule, construit.'
 		}
 	],
 	mistakes: [
@@ -703,6 +738,25 @@ export const boxPlotEntry: BlockCatalogEntry = {
 			message: 'Ligne 2 : 58 est hors de l’axe',
 			explanation:
 				'Agrandir l’axe (ici jusqu’à 60) ou l’enlever : calculé, il contient toutes les valeurs.'
+		},
+		{
+			title: 'Construire sans axe écrit',
+			source: fence('boite-a-moustaches', 'placer: Notes', 'Notes = 4 ; 8 ; 11 ; 14 ; 19'),
+			message:
+				'Ligne 1 : placer : écrire aussi l’axe (axe: 0 à 20, de 1 en 1) : calculé, il trahirait le minimum et le maximum',
+			explanation: 'Pour construire, l’axe est donné par le prof.'
+		},
+		{
+			title: 'Valeur entre deux graduations',
+			source: fence(
+				'boite-a-moustaches',
+				'axe: 0 à 20, de 2 en 2',
+				'placer: Notes',
+				'Notes = 4 ; 8 ; 11 ; 14 ; 18'
+			),
+			message: 'Ligne 3 : 11 n’est pas sur une graduation de l’axe',
+			explanation:
+				'Le trait s’aimante aux graduations : l’élève ne pourrait pas poser 11. Graduer de 1 en 1, ou choisir des valeurs paires.'
 		}
 	],
 	tryIt: fence(
