@@ -6,14 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2079._
+_Mis à jour le 2026-11-01, lot 5 en brouillons en prod (§ 33)._
 
-- **État** : lots 1 à 4 publiés ; fichiers 5 A (#2077, 6 modèles) et 5 B (#2079, 10 modèles) mergés sur
-  `main`, AUCUN encore en prod (MCP : aucun titre du 5 A en base).
-- **Prochaine action** : David lance `create-questions --publier` sur `scripts/questions/2de-droites-a` puis
-  `scripts/questions/2de-droites-b` ; je vérifie en prod (MCP) ; ensuite migration nœud + tag des 16 brouillons
-  du lot 5 (nœuds au § 30), sur une nouvelle branche, puis page à cocher.
-- **En attente de David** : les deux `--publier`.
+- **État** : lots 1 à 4 publiés ; lot 5 (16 modèles, #2077 + #2079) en prod en BROUILLON (§ 33), non
+  rangés, non tagués.
+- **Prochaine action** : migration nœud + tag des 16 brouillons (ids et points au § 33, nœuds au § 30), sur
+  la branche `feat/questions-2de-rangement-droites` ; puis page à cocher.
+- **En attente de David** : rien.
 - **Pièges en cours** : `\textcolor` bloque `cleanCoefficients` → coefficients colorés par `{{if:…}}`
   (`tete`/`suite`/`cst` du script 5 B) ; spec `bad_form` → `constraintViolations: ["form"]` ; horodatage de
   migration = max + 1 min de `origin/main` ET des worktrees ; `migration list --linked` avant `db:migrate` ;
@@ -809,3 +808,27 @@ L5-c lots 5 A (6) puis 5 B (10) ; L5-d 09f0c9ec laissé tel quel.
 - Base locale : 10 brouillons ; aperçu joué : 06 (y = −2x + 4, quatre droites dessinées, A « coché, juste ») ;
   01 v3 (12x − 3y − 18 = 0 : `y=6+4x` « Juste », `4x-y+6=0` « Faux » avec le message de forme réduite) ;
   10 v3 (x = −4 et y = −4x − 2 : I(−4 ; 14) en deux cases « Juste »).
+
+## 33. Lot 5, brouillons en prod (2026-11-01)
+
+David a lancé `create-questions --publier` sur `2de-droites-a` puis `2de-droites-b` : 16 créés. MCP : 16
+`draft`, niveau `['2']`, niveaux 1 à 6 / 1 à 7 / 1 à 3 dans leurs trois catégories.
+
+| Fichier                                 | Point | id                                   |
+| --------------------------------------- | ----- | ------------------------------------ |
+| A-01 pente par deux points              | 2-313 | 7d6cf480-b062-4e45-a593-2e85fbeb28b3 |
+| A-02 pente lue sur un graphique         | 2-315 | f381c646-80fa-4cd2-86c0-0c3d9ad934be |
+| A-03 pente lue sur une équation         | 2-442 | 49df6491-f424-4560-8fba-a9c302449e3d |
+| A-04 vecteurs directeurs                | 2-311 | 7d605742-cf00-4282-b56c-c99aee16ad14 |
+| A-05 vecteur directeur sur une équation | 2-443 | 36c21f21-fee5-4d2e-a191-364b42039cd1 |
+| A-06 vecteur directeur sur un graphique | 2-444 | 2540ca82-26ca-443e-a5f7-5f87a49629e3 |
+| B-01 équation réduite                   | 2-439 | 7f308eb4-40f9-408e-9c71-012464d0f79d |
+| B-02 équation cartésienne               | 2-312 | 7c0f1c1a-e415-499c-97ac-cb6060f99105 |
+| B-03 point et pente                     | 2-441 | e6552232-b549-4966-8863-1cba6f945fcc |
+| B-04 deux points                        | 2-314 | 6e074f0e-0c3a-41b8-b70a-82cb402494b3 |
+| B-05 point et vecteur directeur         | 2-440 | d8a958ba-c6f2-4e6b-b4c9-ee7b370cc03e |
+| B-06 tracer, équation réduite           | 2-316 | 8d4bd94d-73f7-4589-8b3f-67c84edcf778 |
+| B-07 tracer, équation cartésienne       | 2-445 | 2cfae58d-7fdb-45f7-8ea1-777a4a307b5a |
+| B-08 alignement par une équation        | 2-317 | 7a3b209d-05b1-400d-98ba-e57d85639d05 |
+| B-09 parallèles ou sécantes             | 2-318 | c23f5a94-269d-4f2d-915a-ca234cec67a6 |
+| B-10 point d'intersection               | 2-319 | 718b7183-415b-4a86-bbf1-70a3c1eb0c6c |
