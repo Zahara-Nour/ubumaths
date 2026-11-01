@@ -1,12 +1,13 @@
-import { createServerLogger } from '$lib/utils/logger';
-
-const logger = createServerLogger('server/documents/pdf-extractor');
 /**
  * PDF Text Extraction Service
  *
  * Extracts text content from PDF files for RAG indexing.
  * Uses pdf-parse for extraction (server-side only).
  */
+
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/documents/pdf-extractor');
 
 // Dynamic import to avoid issues with SSR
 type PdfParseFunction = (

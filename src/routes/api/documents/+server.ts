@@ -171,7 +171,7 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 			// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 			// panne doit se distinguer d'un refus mérité.
 			if (docError && docError.code !== 'PGRST116') {
-				logger.error('Contrôle d’accès impossible :', docError);
+				logger.error('Suppression : contrôle d’accès impossible :', docError);
 				throw error(500, 'Impossible de vérifier l’accès');
 			}
 
@@ -232,7 +232,7 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 			// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 			// panne doit se distinguer d'un refus mérité.
 			if (docError && docError.code !== 'PGRST116') {
-				logger.error('Contrôle d’accès impossible :', docError);
+				logger.error('Modification : contrôle d’accès impossible :', docError);
 				throw error(500, 'Impossible de vérifier l’accès');
 			}
 
