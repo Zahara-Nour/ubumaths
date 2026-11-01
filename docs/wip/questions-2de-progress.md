@@ -6,17 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après la publication du lot 6 (§ 43)._
+_Mis à jour le 2026-11-01, phase 0 du lot 7 validée (§ 44), 7 A écrit (§ 45)._
 
-- **État** : lots 1 à 6 publiés (lot 6 : 20 modèles, #2106, #2113, #2134, migration #2139, correctif #2152).
-- **Prochaine action** : lot 7 « Signes et variations » (§ 4 ; § 3.9, plus 2-329 déplacé du lot 6, L6-b) :
-  relevé MCP, puis phase 0 à faire valider par David.
+- **État** : lots 1 à 6 publiés ; lot 7 (21 modèles) validé, 7 A (6 modèles) écrit, PR à ouvrir.
+- **Prochaine action** : PR 7 A (CI : attendre le merge de #2154, main cassée), puis 7 B (tableaux de signes,
+  6), puis 7 C (variations, 9) ; ensuite brouillons en prod (David), migration, page à cocher.
 - **En attente de David** : rien.
 - **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main`, des worktrees ET de la prod
   (sinon `db push --include-all`, qui emporte aussi les migrations mergées par d'autres sessions) ;
   `page-a-cocher.ts` voit des défauts de fenêtre que `sonde-courbes` ne voit pas : la lancer avant la PR ;
   `db push`, `--publier` → David avec `!` ; worktree neuf → `pnpm exec svelte-kit sync`.
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `feat/questions-2de-lot7a`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1140,3 +1140,27 @@ Lot 7 C « Variations et extrémums » (9) :
   → Je recommande **aucun modèle neuf** pour l'un comme pour l'autre.
 - **L7-d — Découpage** : 7 A (6), 7 B (6), 7 C (9) : trois PR de fichiers, une migration, une page à cocher.
   → Je recommande **oui** (comme le lot 6).
+
+**Décisions de David (2026-11-01)** : phase 0 validée avec mes quatre recommandations — L7-a 268, 426 sans
+tableau / 330, 446 le tableau ; L7-b case choix « + / − » par intervalle ; L7-c aucun modèle neuf pour 2-357
+ni 2-348 ; L7-d trois PR de fichiers (7 A = 6, 7 B = 6, 7 C = 9), une migration, une page à cocher.
+
+## 45. Lot 7 A, PR des fichiers (2026-11-01)
+
+- Script `questions-2de/lot-signes-a-2de.py` → `scripts/questions/2de-signes-a/` (6 modèles, 23 variations,
+  61 specs). Catégories : Fonctions › Généralités › « Signe » (niv. 1, 2-329) ; Valeur absolue › « Signe »
+  (niv. 1, 2-475) ; Fonction carré › « Signe » (niv. 1, 2-476) ; Fonctions affines › « Variations-Signe »
+  (niv. 4, 2-352 ; 1 à 3 pris) ; Calcul littéral › Inéquations › « Produit et quotient » (niv. 1 2-268, niv. 2
+  2-426 ; le lot 7 B y prendra 3 et plus).
+- `question:specs` : 61/61, tirages tous réussis ; `sonde-courbes` : 0 problème ; `create-questions` en
+  simulation contre la prod : « 6 à créer ».
+- **Piège** : `cleanCoefficients` ne nettoie que la notation maison, pas un `\dfrac` écrit en LaTeX (« 1x »,
+  « 2x+0 » restaient) ; et la notation maison `(ax+b)/(cx+d)` garde ses parenthèses dans la fraction. Le
+  quotient est donc écrit à la main : coefficient par des `{{if:…}}` à la suite (1 → rien, −1 → −), terme
+  constant jamais nul (conditions). Corrigés : « le facteur $2x-6$ vaut … » (formule maison, nettoyée) au lieu
+  de « 1×(−1)+0 ».
+- Base locale : 6 brouillons ; aperçu joué : 03 (quatre tableaux de signes dessinés dans la case choix,
+  mélangés ; réponse fausse « Faux », bonne réponse marquée, corrigé avec le tableau) ; 04 droite (trois cases,
+  « Juste », corrigé avec le tableau). Étiquette 𝒞_f retirée de la droite (posée sur la graduation −4).
+- Hors lot : un tableau de signes est annoncé « Tableau de variations de la fonction x » aux lecteurs d'écran
+  (composant `VariationTable`).
