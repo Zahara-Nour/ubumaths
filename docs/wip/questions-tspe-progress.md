@@ -662,3 +662,10 @@ justes) ; corrections de 1cfc575d sans couleur de résultat (hors lot).
 binomiaux » (publiés, D-D1) n'est pas touchée.
 
 **Pour la migration Q3** : 4ff9d049 → 508, 7d3632bb → 516 (D3, inchangé) ; 1cfc575d retiré de Q3 (reste en `2`).
+
+**Page à cocher** : https://claude.ai/artifact/MTvXa1SvG8zJrsmihMawSz (22 fiches, aucune alerte), collection `verdicts`
+vide à la publication.
+
+**PR** : #2132.
+
+**Relecture** : David valide les 22 fiches en bloc (2026-11-01, « je valide tout le lot », C1-C4 comprises).
