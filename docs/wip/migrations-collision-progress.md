@@ -2,9 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR ouverte après le merge de #2154._
+_Mis à jour le 2026-11-01, PR #2165 ouverte (CI relancée après le merge de origin/main, en attente de runner)._
 
-- **État** : A + B + C écrits, revus deux fois (`code-reviewer`, findings corrigés), `git-workflow.md` mis à jour et relu. · **Prochaine action** : CI verte → merge → archiver ce journal. · **En attente de David** : les commits f665090cd, 3712d9c3e, 408449ab2 portent un trailer `Claude-Session:` interdit par `CLAUDE.md` : réécrire (push forcé, liste `ask`) ou laisser. · **Pièges en cours** : la porte de la CI est dans le job « Commit de version ? » ; une PR de contenu seul saute 5 jobs. · **Worktree / branche** : `../ubumaths-wt-migrations-collision`, `fix/migrations-collision`.
+- **État** : A + B + C écrits (garde `pnpm check:migrations`, `pnpm migration:horodatage`, porte de la CI et PR de contenu allégée dans `quality.yml`), deux revues `code-reviewer` corrigées, `git-workflow.md` relu. Règle d'horodatage en une ligne dans `CLAUDE.md`, pourquoi dans `claude-md-pourquoi.md`. Commits réécrits sans trailer. Les 17 sessions actives prévenues des nouvelles règles.
+- **Prochaine action** : `gh pr checks 2165` ; c'est le premier run du nouveau workflow : vérifier que « Commit de version ? » passe, puis que tous les jobs tournent (PR non « contenu ») → merge → `git merge origin/main` dans les worktrees qui en ont besoin.
+- **En attente de David** : rien.
+- **Après le merge** : réécrire la mémoire `reference_horodatage-migration-collision.md` (elle conseille encore « max + 1 min » : proposition 9 du ménage validée), puis archiver ce journal.
+- **Pièges en cours** : un check exigé « skipped » vaut réussi, seul CI Summary porte la porte ; en CI, la garde refuse si `origin/main` est injoignable.
+- **Worktree / branche** : `../ubumaths-wt-migrations-collision`, `fix/migrations-collision`.
 
 ## Pourquoi
 
