@@ -2,15 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, palier 1 écrit (§ 7)._
+_Mis à jour le 2026-11-01, après #2122._
 
-- **État** : palier 1 écrit et vert en local ; PR à ouvrir / en CI.
-- **Prochaine action** : CI verte → revue `code-reviewer` → merge ; puis palier 2 (PDF en image SVG si Typst
-  le lit ; bouton « Insérer » de l'éditeur riche) ou retour au lot 7 de `questions-3` (au choix de David).
-- **En attente de David** : rien.
-- **Pièges en cours** : le dessin mesure le texte avec un canvas → navigateur seulement (pas de rendu
-  serveur, pas de jsdom) ; le parseur ne doit jamais importer `scratchblocks` (chunk de toutes les pages).
-- **Worktree / branche** : `../ubumaths-wt-bloc-scratch`, `feat/bloc-scratch`.
+- **État** : palier 1 MERGÉ (#2122, sur `main`, pas en prod) : bloc à l'écran, en liste, en case choix ;
+  PDF en texte ; éditeur riche en aller-retour ; fiche `/aide-ecriture/blocs/scratch`.
+- **Prochaine action** : palier 2 (dessin au PDF en image SVG si Typst le lit ; bouton « Insérer » de
+  l'éditeur riche) — à lancer quand David le dit ; le lot 7 de `questions-3` passe avant (recommandé).
+- **En attente de David** : vérification manuelle #2122 (thème clair, téléphone), dans
+  `verifications-manuelles.md`.
+- **Pièges en cours** : dessin dans le navigateur seulement (canvas) ; le parseur ne doit jamais importer
+  `scratchblocks` ; deux scripts s'affichent l'un sous l'autre (pas côte à côte).
+- **Worktree / branche** : supprimés.
 
 ---
 
@@ -153,3 +155,7 @@ riche (une PR).
 2. (Mineur) Une exception de la bibliothèque cassait le rendu → repli sur le programme en texte.
 3. (Mineur) Des ``` au milieu d'une ligne fermaient le texte brut du PDF → clôture plus longue que la plus
    longue suite d'accents graves ; test rouge puis vert.
+
+## 9. Palier 1 mergé (2026-11-01)
+
+- #2122 mergée (CI verte sur `8690bfefb` ; 1er passage rouge : garde de doc, `fiches-et-pdf.md` complétée).

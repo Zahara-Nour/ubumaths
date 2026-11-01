@@ -5,12 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, phase 0 du lot 7 validée._
+_Mis à jour le 2026-11-01, après #2122 (bloc ```scratch mergé)._
 
-- **État** : lots 0 à 6 publiés en prod ; lot 7 (algorithmique, 3-047 à 3-050) : phase 0 validée (§ 14.6),
-  **suspendu au chantier `bloc-scratch`** (programmes en blocs Scratch).
-- **Prochaine action** : quand ` ```scratch ` est mergé, écrire le lot 7 (4 modèles, § 14.2 + 14.6) ; puis
-  lot 8 (boîte à moustaches).
+- **État** : lots 0 à 6 publiés en prod ; lot 7 (algorithmique, 3-047 à 3-050) : phase 0 validée (§ 14.6) ;
+  le bloc ` ```scratch ` est mergé (#2122, sur `main`, **pas en prod**).
+- **Prochaine action** : écrire le lot 7 (4 modèles, § 14.2 + 14.6) avec ` ```scratch ` ; brouillons
+  jusqu'au `deploy:prod` qui livre le bloc ; puis lot 8 (boîte à moustaches).
 - **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; dans `points:` d'un ` ```courbe `, ni `{{eval}}` fractionnaire
@@ -1001,3 +1001,8 @@ modèles publiés de plus. Aucune règle ne change.
 - § 14.4.3 : **3-050 entre dans le lot** (lire un programme qui appelle `dessine carré (côté)` : longueur du
   plus grand carré, nombre de carrés) → 4 modèles.
 - Ordre : `bloc-scratch`, lot 7, lot 8 (boîte à moustaches).
+
+### 14.7 Bloc ```scratch mergé (2026-11-01)
+
+- Chantier `bloc-scratch`, palier 1 : #2122 mergée (journal `bloc-scratch-progress.md`). Le lot 7 peut s'écrire ;
+  `check:ubumark` vérifie les programmes (instructions non reconnues), choix compris.
