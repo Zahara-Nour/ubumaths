@@ -63,7 +63,7 @@ couvre (ce niveau et les suivants) et sa place dans l'ordre des lots. David déc
    `create-questions --publier` (brouillons) ; relever les `id`.
 4. **Migration nœud + tag** (gabarit `20261026210000_questions_cp_c_rangement_tags.sql` + son
    test d'intégration) : test rouge sans la migration puis vert, `security-auditor`, CI verte,
-   merge, `db:migrate` depuis le dépôt principal, vérification en prod.
+   `pnpm check:migrations --pr <n>`, merge, `db:migrate` depuis le dépôt principal, vérification en prod.
 5. **Page à cocher** : `pnpm tsx scripts/questions/page-a-cocher.ts --dir … --titre … --intro …
    --sortie <scratchpad>/….html` (lit la base ; alertes : sans point, sans nœud, niveau, bloc non
    dessiné), publiée en artefact avec la capacité `db`, rendu vérifié à 390 px, ouverte dans

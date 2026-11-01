@@ -20,6 +20,9 @@ describe('supabase/migrations', () => {
 			byVersion.set(version, [...(byVersion.get(version) ?? []), file]);
 		}
 		const duplicates = [...byVersion.values()].filter((files) => files.length > 1);
-		expect(duplicates, 'renommer la plus récente : horodatage max + 1 min').toEqual([]);
+		expect(
+			duplicates,
+			'renommer la plus récente avec l’heure réelle : date -u +%Y%m%d%H%M%S'
+		).toEqual([]);
 	});
 });

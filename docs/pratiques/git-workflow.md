@@ -6,6 +6,7 @@ couvre:
   - .husky/pre-commit
   - .husky/pre-push
   - scripts/garde-main-a-jour.sh
+  - scripts/garde-migrations-horodatage.sh
   - scripts/vercel-ignore-build.sh
 ---
 
@@ -79,7 +80,7 @@ Branches : `fix/<slug>` · `feat/<slug>` · `refactor/<slug>` · `perf/<slug>` �
 5. `gh pr checks <n> --watch` dès l'ouverture → **tout vert** (Lint, Type Check, Types des tests, Build + garde TDZ Safari, Server/Client Tests, Security Audit, Garde SECURITY DEFINER → CI Summary ; CodeQL à part). **Jamais merger en rouge.**
    - ⛔ **Branche déjà poussée : jamais `git pull --rebase origin main` dessus.** Le rebase réécrit les commits poussés → push refusé, et le seul push qui passe est `--force` (liste `ask`). Pour la remettre à jour : `git merge origin/main`, ou rien (GitHub merge quand même). Rattrapage si c'est fait : `git merge origin/<branche>` (le commit en double est identique, sans conflit), puis push normal (#1603, 2026-10-22).
 6. **Revue proportionnée au risque** : CLAUDE.md § Planning, point 4.
-7. `gh pr merge --merge` — **toujours un merge commit**, jamais de squash. `Base branch was modified` : relancer une fois ; `BLOCKED` : attendre la fin des contrôles, jamais `--admin`.
+7. PR qui touche `supabase/migrations/` : d'abord `pnpm check:migrations --pr <n>` (horodatages contre `origin/main` relu à l'instant ; la CI a pu tourner sur un main périmé). Puis `gh pr merge --merge` — **toujours un merge commit**, jamais de squash. `Base branch was modified` : relancer une fois ; `BLOCKED` : attendre la fin des contrôles, jamais `--admin`.
 8. **Supprimer la branche** (`git branch -d <b>` + `git push origin --delete <b>`) **seulement après avoir lu `MERGED`** (`gh pr view <n> --json state -q .state`), dans une commande **séparée** du merge : si `gh pr merge` échoue, la suite tourne quand même, et **supprimer la branche distante d'une PR ouverte la FERME** sans merge (#1601, 2026-10-22).
    - Rattrapage : les commits restent dans le dépôt local → `git branch <b> <sha>` + `git push origin <b>` + `gh pr reopen <n>` ; la réouverture **relance toute la CI**, à re-surveiller avant de merger.
 9. `git worktree remove` + `git worktree list` ; « Reprendre ici » du journal à jour (CLAUDE.md § Worktrees).
