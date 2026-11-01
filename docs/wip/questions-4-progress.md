@@ -5,13 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, phase 0 du lot 8 proposée (§ 39)._
+_Mis à jour le 2026-11-01, après #2133 (lot 8 écrit, mergé)._
 
-- **État** : lots 1 à 7 en prod ; tous publiés sauf les 2 volumes du lot 6 (brouillons), débloqués : la prod v0.59.0
-  livre ` ```solide ` (et le repère à placer). Phase 0 du lot 8 écrite (§ 39).
-- **Prochaine action** : écrire le lot 8 (§ 39.2, décisions sous le § 39.4) dans le worktree, branche
-  `feat/questions-4-lot-8` ; ensuite lot 9 « pensée informatique » (065-067).
-- **En attente de David** : `publier-lot --dir scripts/questions/4-lot-6 --publier` (volumes, simulation verte, § 40).
+- **État** : lots 1 à 7 en prod et publiés, sauf les 2 volumes du lot 6 (brouillons, `publier-lot` en simulation
+  vert, § 40). Lot 8 « programmes de calcul et fonctions » : fichiers mergés (#2133, § 41), pas encore en prod.
+- **Prochaine action** : après le `--publier` de David, relever les 6 `id` (MCP), migration nœud + tag du lot 8
+  (+ test d'intégration rouge sans elle, `security-auditor`), page à cocher (`page-a-cocher.ts --dir
+scripts/questions/4-lot-8` ; 063 et 064 dessinent des ` ```courbe `) ; vérifier au MCP les volumes du lot 6. Puis
+  lot 9 « pensée informatique » (065-067).
+- **En attente de David** : `publier-lot --dir scripts/questions/4-lot-6 --publier` (volumes) ;
+  `create-questions --dir scripts/questions/4-lot-8 --publier` (6 brouillons du lot 8).
 - **Pièges en cours** : `mtexte()` refusé dans une figure de question (§ 26) ; `db push --include-all` : **réservé à
   David** (§ 27, § 30, § 34), même quand une autre session dit le contraire ; horodatage de migration : rebaser sur
   `origin/main` avant la CI (§ 34) ; exemption de doc d'une migration de données = ligne `Doc-inchangée:` dans un
