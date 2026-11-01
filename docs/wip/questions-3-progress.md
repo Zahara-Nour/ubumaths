@@ -5,12 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 7 écrit (PR à ouvrir)._
+_Mis à jour le 2026-11-01, après #2128._
 
 - **État** : lots 0 à 6 publiés en prod ; lot 7 (algorithmique, 3-047 à 3-050, 4 modèles en blocs
-  ` ```scratch `) écrit (§ 14.8), branche `content/questions-3-lot7`.
-- **Prochaine action** : PR des fichiers, merge ; puis attendre le `deploy:prod` qui livre ` ```scratch `
-  (pas en prod) avant le `--publier` de David ; rangement ; page à cocher. Puis lot 8 (boîte à moustaches).
+  ` ```scratch `) écrit et mergé (#2128, § 14.8-14.9) ; pas encore en base de prod.
+- **Prochaine action** : attendre le `deploy:prod` qui livre ` ```scratch ` ; puis David lance
+  `create-questions --dir scripts/questions/3-lot-7 --publier` ; rangement (migration) ; page à cocher.
+  En attendant : lot 8 (boîte à moustaches), phase 0.
 - **En attente de David** : nœud de 3-050 (bloc personnalisé) — aucun nœud de l'arbre ne convient (§ 14.8).
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; aperçu admin : serveur lancé avec `--host 127.0.0.1` ;
@@ -18,7 +19,7 @@ _Mis à jour le 2026-11-01, lot 7 écrit (PR à ouvrir)._
 HEAD:main`) ; `db:migrate` depuis un worktree À JOUR d'`origin/main` ; `Doc-inchangée:` dans un COMMIT ;
   `%` refusé dans l'`eval` d'une variable ; `audit-question-draws` : faux positifs « nombres juxtaposés »
   (blocs statistiques) et « gabarit non résolu » sur `<<` (Scratch).
-- **Worktree / branche** : `../ubumaths-wt-questions-3`, `content/questions-3-lot7`.
+- **Worktree / branche** : `../ubumaths-wt-questions-3`, HEAD détachée sur `origin/main`.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -1026,3 +1027,8 @@ modèles publiés de plus. Aucune règle ne change.
   Variables et instructions, Fonctions Python, Listes, Préalgorithmique ; « Fonctions Python › définir une
   fonction » est propre à Python. Recommandé : sous-notion neuve « Variables et instructions › blocs
   personnalisés » (la même migration que le rangement) ; autre choix : « Boucles › boucle bornée ».
+
+### 14.9 Lot 7 : fichiers mergés (2026-11-01)
+
+- #2128 mergée (CI verte au 1er passage). ` ```scratch ` pas en prod : `create-questions --publier` après le
+  `deploy:prod` qui le livre (David), depuis le dépôt principal à jour.
