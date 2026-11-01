@@ -12,7 +12,9 @@
  * affichée après le mélange), ou les parts à colorier d'une figure (```partage,
  * `colorier: 3/8` : `3/8`, parts à colorier sur parts de la figure), ou la vue ou
  * les vues d'un assemblage de cubes (```cubes, `dessiner: face` : `100/111` ;
- * `retrouver: face` : `face : 2 1 / 1 2`).
+ * `retrouver: face` : `face : 2 1 / 1 2`), ou les coordonnées d'un point à placer
+ * dans un repère (```courbe, `placer: A=(2 ; 3)` : `2;3`, écrites par `pointAnswer`,
+ * comme la réponse de l'élève).
  *
  * @module questions/generator/build-answer
  */
@@ -34,6 +36,8 @@ import { expectedPatronAnswer } from '$lib/ubumark/utils/patron-gestes';
 import { timeText } from '$lib/ubumark/utils/horloge-placer';
 import { indexOfValue, placerAnswer } from '$lib/ubumark/utils/number-line-placer';
 import { numVal } from '$lib/ubumark/utils/number-line-render';
+import { parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
+import { pointAnswer } from '$lib/ubumark/utils/courbe-placer';
 
 // Constantes
 
@@ -43,12 +47,13 @@ const CASE_IS_AUTOMATIC = 'case: est posée automatiquement, retirer cette ligne
 
 /**
  * Nombre de cases du bloc : une par point d'une droite à placer, une par barre d'un
- * diagramme à construire, une par étiquette à ranger, sinon une ; un bloc illisible
- * compte une case (refusé au générateur avec ses messages)
+ * diagramme à construire, une par étiquette à ranger, une par point d'un repère, sinon
+ * une ; un bloc illisible compte une case (refusé au générateur avec ses messages)
  */
 export function buildCaseCount(kind: BuildKind, source: string): number {
 	if (kind === 'line') return Math.max(1, parseNumberLineContent(source).node?.placer?.length ?? 1);
 	if (kind === 'ranger') return Math.max(1, parseRangerContent(source).labels.length);
+	if (kind === 'courbe') return Math.max(1, parseCourbeContent(source).spec?.placer?.length ?? 1);
 	if (kind === 'barres') {
 		const spec = parseStatChartContent('barres', source).spec;
 		return Math.max(1, spec ? barsCaseCount(spec) : 1);
@@ -74,6 +79,14 @@ export function buildAnswerOf(
 		const k = target ? indexOfValue(node.config, numVal(target.value)) : null;
 		if (k === null) return { errors: ['placer: absent ou hors graduation'] };
 		return { answer: placerAnswer(node.config, k) };
+	}
+	if (kind === 'courbe') {
+		const node = parseCourbeContent(source);
+		if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
+		if (node.spec === null) return { errors: node.errors.map((e) => e.message) };
+		const target = node.spec.placer?.[point];
+		if (target === undefined) return { errors: ['placer: absent'] };
+		return { answer: pointAnswer(target.x, target.y) };
 	}
 	if (kind === 'barres') {
 		const node = parseStatChartContent('barres', source);

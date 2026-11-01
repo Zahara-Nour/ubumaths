@@ -34,6 +34,7 @@ import { findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
 import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
 import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
 import { findBarsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
+import { findCourbesToPlace } from '$lib/ubumark/parser/courbe-parser';
 import { findRangersToPlace } from '$lib/ubumark/parser/ranger-parser';
 import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
 import { NOTHING_COLORED } from '$lib/ubumark/utils/partage-colorier';
@@ -144,7 +145,8 @@ export type ExpectedLine =
 	| { kind: 'work-figure'; index: number; source: string; answer: string | null }
 	/**
 	 * Case à construire (bloc ```collection ou ```monnaie, `construire:`), droite ou
-	 * horloge à placer (```line, ```horloge, `placer:`) : le plan
+	 * horloge à placer, repère à points à placer (```line, ```horloge, ```courbe,
+	 * `placer:`) : le plan
 	 * lui-même, verrouillé, avec la construction de l'élève (`answer`, la valeur
 	 * posée) ; `null` sans réponse (R9) ou réponse vide : la construction juste seule
 	 */
@@ -304,7 +306,8 @@ function buildCaseBlocks(statement: string): Map<number, BuildCaseBlock> {
 		...findRangersToPlace(statement).map((b) => ({ ...b, kind: 'ranger' as const })),
 		...findPartagesToColorier(statement).map((b) => ({ ...b, kind: 'partage' as const })),
 		...findCubesToBuild(statement).map((b) => ({ ...b, kind: 'cubes' as const })),
-		...findPatronsToBuild(statement).map((b) => ({ ...b, kind: 'patron' as const }))
+		...findPatronsToBuild(statement).map((b) => ({ ...b, kind: 'patron' as const })),
+		...findCourbesToPlace(statement).map((b) => ({ ...b, kind: 'courbe' as const }))
 	];
 	const blocks = new Map<number, BuildCaseBlock>();
 	for (const block of found) {

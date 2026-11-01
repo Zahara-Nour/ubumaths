@@ -78,6 +78,7 @@ import { expectsValue, withoutVariablePrefix } from '$lib/questions/answer-varia
 import { expectsUnitlessValue, withoutDegreeSuffix } from '$lib/questions/answer-degree-suffix';
 import { judgeConstruction } from '$lib/questions/construction/judge';
 import { isPlacedTimeCorrect } from '$lib/ubumark/utils/horloge-placer';
+import { isPlacedPointCorrect } from '$lib/ubumark/utils/courbe-placer';
 import { isColoringCorrect } from '$lib/ubumark/utils/partage-colorier';
 import { isCubesAnswerCorrect } from '$lib/ubumark/utils/cubes-gestes';
 import { isPatronAnswerCorrect } from '$lib/ubumark/utils/patron-gestes';
@@ -810,6 +811,8 @@ function validateBlankValue(
 ): boolean {
 	// Horloge à placer : la même lecture des aiguilles que la correction
 	if (blank.construire === 'horloge') return isPlacedTimeCorrect(userAnswer, blank.expectedAnswer);
+	// Point d'un repère à placer : les coordonnées exactes du nœud posé
+	if (blank.construire === 'courbe') return isPlacedPointCorrect(userAnswer, blank.expectedAnswer);
 	// Figure à colorier : le nombre de parts coloriées, quelles qu'elles soient
 	if (blank.construire === 'partage') return isColoringCorrect(userAnswer, blank.expectedAnswer);
 	// Assemblage de cubes : la vue à une translation près, ou les mêmes vues
@@ -1294,6 +1297,13 @@ function validateSingleBlank(
 	// Horloge à placer : les deux aiguilles de l'élève, petite aiguille jugée sur son secteur
 	if (blank.construire === 'horloge') {
 		return isPlacedTimeCorrect(userAnswer, blank.expectedAnswer)
+			? { isCorrect: true, status: 'correct' }
+			: { isCorrect: false };
+	}
+
+	// Point d'un repère à placer : les coordonnées exactes du nœud posé
+	if (blank.construire === 'courbe') {
+		return isPlacedPointCorrect(userAnswer, blank.expectedAnswer)
 			? { isCorrect: true, status: 'correct' }
 			: { isCorrect: false };
 	}

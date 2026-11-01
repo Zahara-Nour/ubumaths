@@ -20,6 +20,11 @@
  * description: Parabole tournée vers le bas.
  * ```
  *
+ * Repère à points à placer (une question) : `placer: A=(2 ; 3) ; B=(-1 ; 2)`
+ * (1 à 6 points nommés d'une majuscule, ou un point seul sans nom), chaque
+ * point sur un nœud de la grille et dans la fenêtre ; `case: N` est posée par
+ * le générateur. Titres des axes : `axes: x = Durée (min) ; y = Température (°C)`.
+ *
  * Les variables de template (`{{a}}`) sont remplacées AVANT l'analyse : une
  * valeur négative produit donc `x--2` ou `+-3`, normalisés ici.
  *
@@ -30,9 +35,11 @@
  */
 
 import { bodyOpensParagraph } from './block-closure';
+import { unnestedLine } from './nested-line';
 import type {
 	CourbeArea,
 	CourbeAsymptote,
+	CourbeAxisTitles,
 	CourbeBlockRange,
 	CourbeColor,
 	CourbeDomain,
@@ -47,6 +54,7 @@ import type {
 	CourbeSize,
 	CourbeSpec,
 	CourbeTangent,
+	CourbeTarget,
 	CourbeWindow
 } from '../types/courbe';
 import { COURBE_LIMITS, COURBE_SIZES, courbeRangeProblem } from '../types/courbe';
@@ -58,6 +66,7 @@ import { transformAST } from '$lib/mathAST/visitor';
 import { variable } from '$lib/mathAST/factory';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { computeSequenceTerms, PREV_TERM_VARIABLE } from '$lib/grapheur/sequence';
+import { isGridNode, isInWindow, courbeGridSteps } from '../utils/courbe-placer';
 
 // ============================================================================
 // CONSTANTES
@@ -101,8 +110,17 @@ const KNOWN_KEYS = [
 	'aire',
 	'tangente',
 	'taille',
-	'description'
+	'description',
+	'placer',
+	'axes',
+	'case'
 ] as const;
+
+/** `A=(2 ; 3)`, ou `(2 ; 3)` pour un point seul : nom éventuel, coordonnées */
+const TARGET_REGEX = /^(?:([^=\s()]+)\s*=\s*)?\((.*)\)$/;
+
+/** `x = Durée (min)` : axe, titre */
+const AXIS_TITLE_REGEX = /^([^=\s]+)\s*=\s*(.*)$/;
 
 const DASHED_WORDS = new Set(['pointillé', 'pointille', 'pointillés', 'pointilles']);
 
@@ -168,6 +186,42 @@ export function findCourbeBlocks(lines: string[]): CourbeBlockRange[] {
 		i++;
 	}
 	return blocks;
+}
+
+/** Ligne `placer:` d'un bloc */
+const PLACER_LINE_REGEX = /^\s*placer\s*:/i;
+
+/**
+ * Les repères à points à placer (`placer:`) d'un énoncé, délimités comme le
+ * parseur : corps sans clôtures, fermeture, et `nested` pour un bloc en
+ * retrait, cité ou ouvert sur la ligne d'un item (l'élève ne pourrait pas y
+ * répondre : sa case n'est pas créée)
+ */
+export function findCourbesToPlace(markdown: string): {
+	startIndex: number;
+	body: string[];
+	closed: boolean;
+	nested: boolean;
+}[] {
+	const lines = markdown.split('\n');
+	const plain = lines.map(unnestedLine);
+	return findCourbeBlocks(plain)
+		.map((block) => {
+			const closed = block.closed !== false;
+			const body = plain.slice(block.startIndex + 1, closed ? block.endIndex : block.endIndex + 1);
+			return {
+				startIndex: block.startIndex,
+				body,
+				closed,
+				nested: lines[block.startIndex] !== plain[block.startIndex]
+			};
+		})
+		.filter((block) => block.body.some((line) => PLACER_LINE_REGEX.test(line)));
+}
+
+/** L'énoncé a-t-il un repère à points à placer ? */
+export function hasCourbeToPlace(markdown: string): boolean {
+	return findCourbesToPlace(markdown).length > 0;
 }
 
 // ============================================================================
@@ -338,6 +392,11 @@ function parsePair(value: string, what: string): [number, number] {
 		throw new LineError(`${what} attend deux valeurs séparées par « ; » (ex. -4 ; 6)`);
 	}
 	return [evaluateConstant(parts[0]), evaluateConstant(parts[1])];
+}
+
+/** Virgule décimale (`1,5`) lue comme un point (`1.5`) : `grille:` et `placer:` */
+function decimalPoint(raw: string): string {
+	return raw.replace(/(\d),(\d)/g, '$1.$2');
 }
 
 // ============================================================================
@@ -797,6 +856,105 @@ function parseSequenceLine(
 }
 
 // ============================================================================
+// POINTS À PLACER, TITRES D'AXES
+// ============================================================================
+
+/**
+ * Les points de `placer:` (`A=(2 ; 3) ; B=(-1 ; 2)`, ou `(2 ; 3)` pour un point
+ * seul) : noms, coordonnées. Le nœud et la fenêtre se vérifient une fois la
+ * figure lue (`targetProblem`).
+ */
+function parseTargets(value: string, functions: FunctionTable, line: number): CourbeTarget[] {
+	if (value === '') throw new LineError('placer: attend au moins un point (ex. A=(2 ; 3))');
+	const parts = splitTopLevel(value, ';');
+	if (parts.some((part) => part === '')) {
+		throw new LineError(`placer : ${value} — point vide (un « ; » en trop ?)`);
+	}
+	if (parts.length > COURBE_LIMITS.targets) {
+		throw new LineError(`placer : ${COURBE_LIMITS.targets} points au plus dans un repère`);
+	}
+	const targets: CourbeTarget[] = [];
+	for (const part of parts) {
+		const match = TARGET_REGEX.exec(part);
+		if (!match) throw new LineError(`placer : « ${part} » mal écrit (ex. A=(2 ; 3))`);
+		const name = match[1] ?? '';
+		if (match[1] !== undefined && !/^[A-Z]$/.test(name)) {
+			throw new LineError(`placer : nom « ${name} » — une lettre majuscule (A, B, C…)`);
+		}
+		if (name === '' && parts.length > 1) {
+			throw new LineError(`placer : ${part} — chaque point porte un nom (A=(2 ; 3) ; B=(-1 ; 2))`);
+		}
+		if (name !== '' && targets.some((t) => t.name === name)) {
+			throw new LineError(`placer : le point ${name} est nommé deux fois`);
+		}
+		const coords = splitTopLevel(decimalPoint(match[2]), ';');
+		if (coords.length !== 2 || coords.some((c) => c === '')) {
+			throw new LineError(
+				`placer : ${name || 'le point'} — deux coordonnées séparées par « ; » attendues`
+			);
+		}
+		const coordinate = (raw: string): number => {
+			try {
+				return evaluateConstant(raw, functions);
+			} catch (error) {
+				const message = error instanceof Error ? error.message : String(error);
+				throw new LineError(`placer : ${name || 'le point'} — ${message}`);
+			}
+		};
+		targets.push({ name, x: coordinate(coords[0]), y: coordinate(coords[1]), line });
+	}
+	return targets;
+}
+
+/** Ce qui empêche l'élève de placer ce point : nom pris, hors de la fenêtre, hors d'un nœud */
+function targetProblem(
+	target: CourbeTarget,
+	points: CourbePoint[],
+	spec: Pick<CourbeSpec, 'window' | 'grid' | 'size'>
+): string | null {
+	const french = (value: number) => formatPlain(value).replace('.', ',');
+	const label = target.name === '' ? 'le point' : target.name;
+	const shown = `${label} (${french(target.x)} ; ${french(target.y)})`;
+	if (target.name !== '' && points.some((p) => p.name === target.name)) {
+		return `${target.name} est déjà un point donné (points:) ; choisis un autre nom`;
+	}
+	const w = spec.window;
+	if (!isInWindow(spec, target.x, target.y)) {
+		return `${shown} est hors de la fenêtre (x de ${french(w.xMin)} à ${french(w.xMax)}, y de ${french(w.yMin)} à ${french(w.yMax)})`;
+	}
+	if (!isGridNode(spec, target.x, target.y)) {
+		const steps = courbeGridSteps(spec);
+		return `${label} n'est pas sur un nœud de la grille : (${french(target.x)} ; ${french(target.y)}) avec un pas de ${french(steps.x)} en x et ${french(steps.y)} en y (régler grille:)`;
+	}
+	return null;
+}
+
+/** `axes: x = Durée (min) ; y = Température (°C)` : un titre par axe, un ou deux axes */
+function parseAxisTitles(value: string): CourbeAxisTitles {
+	const example = 'ex. axes: x = Durée (min) ; y = Température (°C)';
+	const titles: CourbeAxisTitles = { x: null, y: null };
+	const parts = splitTopLevel(value, ';');
+	if (value === '' || parts.length > 2) throw new LineError(`axes : un titre par axe (${example})`);
+	for (const part of parts) {
+		const match = AXIS_TITLE_REGEX.exec(part);
+		const axis = match?.[1].toLowerCase();
+		if (!match || (axis !== 'x' && axis !== 'y')) {
+			throw new LineError(`axes : « ${part} » mal écrit (${example})`);
+		}
+		const title = match[2].trim();
+		if (title === '') throw new LineError(`axes : titre de l'axe ${axis} vide`);
+		if (title.length > COURBE_LIMITS.axisTitle) {
+			throw new LineError(
+				`axes : titre de l'axe ${axis} trop long (${COURBE_LIMITS.axisTitle} caractères au plus)`
+			);
+		}
+		if (titles[axis] !== null) throw new LineError(`axes : axe ${axis} nommé deux fois`);
+		titles[axis] = title;
+	}
+	return titles;
+}
+
+// ============================================================================
 // BLOC
 // ============================================================================
 
@@ -821,12 +979,15 @@ export function parseCourbeContent(source: string): CourbeNode {
 	const sequences: CourbeSequence[] = [];
 	let sequenceTermsLeft: number = COURBE_LIMITS.totalSequenceTerms;
 	const deferred: {
-		key: 'points' | 'aire' | 'asymptotes' | 'tangente';
+		key: 'points' | 'aire' | 'asymptotes' | 'tangente' | 'placer';
 		value: string;
 		line: number;
 		content: string;
 	}[] = [];
 	const seenKeys = new Set<string>();
+	let axisTitles: CourbeAxisTitles | undefined;
+	let caseIndex: number | undefined;
+	let caseLine = 0;
 
 	const fail = (line: number, content: string, error: unknown) => {
 		const message = error instanceof Error ? error.message : String(error);
@@ -912,7 +1073,7 @@ export function parseCourbeContent(source: string): CourbeNode {
 					break;
 				}
 				case 'grille': {
-					const parts = splitTopLevel(value, ';');
+					const parts = splitTopLevel(decimalPoint(value), ';');
 					if (parts.length > 2 || parts.some((p) => p === '')) {
 						throw new LineError('grille attend un pas, ou deux pas « x ; y » (ex. 1 ; 2)');
 					}
@@ -933,6 +1094,17 @@ export function parseCourbeContent(source: string): CourbeNode {
 				case 'description':
 					description = value === '' ? null : value;
 					break;
+				case 'axes':
+					axisTitles = parseAxisTitles(value);
+					break;
+				case 'case':
+					if (!/^\d+$/.test(value)) {
+						throw new LineError(`case « ${value} » : numéro de case entier`);
+					}
+					caseIndex = Number(value);
+					caseLine = line;
+					break;
+				case 'placer':
 				case 'points':
 				case 'asymptotes':
 				case 'aire':
@@ -960,10 +1132,13 @@ export function parseCourbeContent(source: string): CourbeNode {
 	const asymptotes: CourbeAsymptote[] = [];
 	const areas: CourbeArea[] = [];
 	const tangents: CourbeTangent[] = [];
+	let placer: CourbeTarget[] | undefined;
 	const names = new Set(functions.map((f) => f.name));
 	for (const item of deferred) {
 		try {
-			if (item.key === 'points') points.push(...parsePoints(item.value, functionTable, item.line));
+			if (item.key === 'placer') placer = parseTargets(item.value, functionTable, item.line);
+			else if (item.key === 'points')
+				points.push(...parsePoints(item.value, functionTable, item.line));
 			else if (item.key === 'asymptotes')
 				asymptotes.push(...parseAsymptotes(item.value, item.line));
 			else if (item.key === 'tangente') {
@@ -1008,6 +1183,28 @@ export function parseCourbeContent(source: string): CourbeNode {
 		}
 	}
 
+	if (caseIndex !== undefined && !seenKeys.has('placer')) {
+		errors.push({
+			message: `Ligne ${caseLine} : case: sans objet sans placer:`,
+			line: caseLine,
+			content: lines[caseLine - 1].trim()
+		});
+	}
+	// Points à placer : noms libres, sur un nœud de la grille, dans la fenêtre
+	if (errors.length === 0 && placer !== undefined) {
+		const gridSpec = { window: window as CourbeWindow, grid, size };
+		for (const target of placer) {
+			const problem = targetProblem(target, points, gridSpec);
+			if (problem === null) continue;
+			errors.push({
+				message: `Ligne ${target.line} : placer : ${problem}`,
+				line: target.line,
+				content: lines[target.line - 1].trim()
+			});
+			break;
+		}
+	}
+
 	const spec: CourbeSpec | null =
 		errors.length === 0
 			? {
@@ -1020,11 +1217,20 @@ export function parseCourbeContent(source: string): CourbeNode {
 					areas,
 					tangents,
 					size,
-					description
+					description,
+					...(placer !== undefined && { placer }),
+					...(axisTitles !== undefined && { axisTitles })
 				}
 			: null;
 
-	return { type: 'courbe', source, spec, errors, warnings };
+	return {
+		type: 'courbe',
+		source,
+		spec,
+		errors,
+		warnings,
+		...(caseIndex !== undefined && { caseIndex })
+	};
 }
 
 /**
