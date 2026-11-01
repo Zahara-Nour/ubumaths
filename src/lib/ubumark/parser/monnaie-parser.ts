@@ -135,6 +135,12 @@ const DENOMINATIONS = [...MONNAIE_NOTES, ...MONNAIE_COINS];
 
 const EXISTING = `pièces : ${denominationList(MONNAIE_COINS)} ; billets : ${denominationList(MONNAIE_NOTES)}`;
 
+/** Un montant calculé resté en fraction : `{{eval:345/100}}` donne `\dfrac{69}{20}` (revue M1) */
+const FRACTION_REGEX = /\\[dt]?frac\b/;
+
+const FRACTION_HINT =
+	'une fraction n’est pas un montant ; écris {{eval:…;d}} pour un résultat décimal, ex. {{eval:p/100;d}}';
+
 /** Plafond d'un ensemble, en centimes */
 const MAX_CENTS = MONNAIE_LIMITS.total * 100;
 
@@ -243,8 +249,11 @@ function readDenomination(raw: string, kind: 'billets' | 'pièces' | 'réserve')
 		);
 	}
 	if (kind === 'pièces' && isNote) {
+		// `pièces: 5` : l'auteur voulait peut-être 5 centimes (revue M2)
+		const centsCoin = (MONNAIE_COINS as readonly number[]).includes(fromCents(value));
 		throw new LineError(
-			`${label} est un billet : écris-le dans billets: (forme comptée : quantité d'abord, ex. 2×10)`
+			`${label} est un billet : écris-le dans billets: (forme comptée : quantité d'abord, ex. 2×10)` +
+				(centsCoin ? ` ; pour ${value} centimes, écris ${value}c` : '')
 		);
 	}
 	if (!isNote && !isCoin) throw new LineError(`${label} n'existe pas (${EXISTING})`);
@@ -283,6 +292,9 @@ function parseDenominations(value: string, kind: 'billets' | 'pièces'): number[
 function parseAmounts(value: string): number[] {
 	return splitSets(value).map((part) => {
 		const cents = readAmount(part);
+		if (cents === null && FRACTION_REGEX.test(part)) {
+			throw new LineError(`montant « ${part} » : ${FRACTION_HINT}`);
+		}
 		if (cents === null) {
 			throw new LineError(
 				`montant « ${part} » : écris un montant en euros et centimes, ex. 3,45 ou 3 € 45 c (2 chiffres après la virgule au plus)`
@@ -317,6 +329,9 @@ function parseReserve(value: string): number[] {
 /** Somme à construire, de 1 c à 1 000 €, en euros */
 function parseBuild(value: string): number {
 	const cents = readAmount(value);
+	if (cents === null && FRACTION_REGEX.test(value)) {
+		throw new LineError(`construire « ${value} » : ${FRACTION_HINT}`);
+	}
 	const { min, max } = MONNAIE_BUILD_RANGE;
 	if (cents === null || cents < toCents(min) || cents > toCents(max)) {
 		throw new LineError(

@@ -53,7 +53,7 @@ describe('construire: — analyse', () => {
 
 	it('réserve : coupures existantes, une fois chacune', () => {
 		expect(messages(parse('construire: 35', 'réserve: 3'))).toEqual([
-			"Ligne 2 : 3 € n'existe pas (pièces : 1, 2, 5, 10, 20, 50 c, 1, 2 € ; billets : 5, 10, 20, 50, 100, 200, 500 €)"
+			"Ligne 2 : 3 € n'existe pas (pièces : 1 c, 2 c, 5 c, 10 c, 20 c, 50 c, 1 €, 2 € ; billets : 5 €, 10 €, 20 €, 50 €, 100 €, 200 €, 500 €)"
 		]);
 		expect(parse('construire: 35', 'réserve: 200 20 10 5').errors).toEqual([]);
 		expect(messages(parse('construire: 35', 'réserve: 5 5'))).toEqual([
@@ -70,7 +70,7 @@ describe('construire: — analyse', () => {
 
 	it('somme impossible avec la réserve, ou en plus de 30 objets : refusée', () => {
 		expect(messages(parse('construire: 1', 'réserve: 2 5'))).toEqual([
-			'Ligne 1 : 1 € ne se fait pas avec la réserve (2, 5 €)'
+			'Ligne 1 : 1 € ne se fait pas avec la réserve (2 €, 5 €)'
 		]);
 		expect(messages(parse('construire: 35', 'réserve: 1'))).toEqual([
 			'Ligne 1 : 35 € demande plus de 30 objets avec la réserve (1 €)'

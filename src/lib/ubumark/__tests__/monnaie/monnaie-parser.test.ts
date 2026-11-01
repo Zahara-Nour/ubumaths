@@ -134,7 +134,7 @@ describe('bloc ```monnaie — erreurs (le nœud reste, avec son message)', () =>
 		const node = parse('pièces: 3');
 		expect(node.spec).toBeNull();
 		expect(messages(node)).toEqual([
-			"Ligne 1 : 3 € n'existe pas (pièces : 1, 2, 5, 10, 20, 50 c, 1, 2 € ; billets : 5, 10, 20, 50, 100, 200, 500 €)"
+			"Ligne 1 : 3 € n'existe pas (pièces : 1 c, 2 c, 5 c, 10 c, 20 c, 50 c, 1 €, 2 € ; billets : 5 €, 10 €, 20 €, 50 €, 100 €, 200 €, 500 €)"
 		]);
 	});
 

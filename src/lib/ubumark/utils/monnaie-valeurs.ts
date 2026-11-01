@@ -18,11 +18,17 @@ import { MONNAIE_NOTES } from '../types/monnaie';
 // CONSTANTES
 // ============================================================================
 
-/** `3,45`, `3.45`, `3,5`, `35`, `35 €` */
-const DECIMAL_REGEX = /^(\d+)(?:[.,](\d{1,2}))?\s*€?$/;
+/** Euros entiers, l'espace des milliers par groupes de trois : `35`, `1000`, `1 000` */
+const EUROS = String.raw`(\d{1,3}(?: \d{3})+|\d+)`;
+
+/** `3,45`, `3.45`, `3,5`, `35`, `35 €`, `1 000` */
+const DECIMAL_REGEX = new RegExp(String.raw`^${EUROS}(?:[.,](\d{1,2}))?\s*€?$`);
 
 /** `3 € 45 c`, `3€45c`, `3 € et 45 c` */
-const EUROS_AND_CENTS_REGEX = /^(\d+)\s*€\s*(?:et\s+)?(\d{1,2})\s*c$/i;
+const EUROS_AND_CENTS_REGEX = new RegExp(String.raw`^${EUROS}\s*€\s*(?:et\s+)?(\d{1,2})\s*c$`, 'i');
+
+/** Espaces insécables (fine ou non) : une espace ordinaire */
+const NARROW_SPACES_REGEX = /[\u00a0\u202f]/g;
 
 /** `345c`, `85 c` */
 const CENTS_REGEX = /^(\d+)\s*c$/i;
@@ -57,24 +63,28 @@ function grouped(n: number): string {
  * null s'il est illisible ou a plus de 2 chiffres après la virgule
  */
 export function readAmount(text: string): number | null {
-	const t = text.trim();
+	const t = text.replace(NARROW_SPACES_REGEX, ' ').trim();
+	const euros = (digits: string) => Number(digits.replaceAll(' ', '')) * 100;
 	const decimal = DECIMAL_REGEX.exec(t);
-	if (decimal) return Number(decimal[1]) * 100 + Number((decimal[2] ?? '0').padEnd(2, '0'));
+	if (decimal) return euros(decimal[1]) + Number((decimal[2] ?? '0').padEnd(2, '0'));
 	const mixed = EUROS_AND_CENTS_REGEX.exec(t);
-	if (mixed) return Number(mixed[1]) * 100 + Number(mixed[2]);
+	if (mixed) return euros(mixed[1]) + Number(mixed[2]);
 	const cents = CENTS_REGEX.exec(t);
 	if (cents) return Number(cents[1]);
 	return null;
 }
 
 /**
- * Réponse d'une case à construire : virgule et deux chiffres (`3,45`, `0,85`,
- * `2,20`) ; une somme entière reste sans virgule (`35`, celle du CP)
+ * Réponse d'une case à construire, écrite comme le juge ordinaire l'attend
+ * (revue B1, C1) : virgule sans zéro final (`3,45`, `0,85`, `2,2`), milliers
+ * séparés (`1 000`) ; une somme entière reste sans virgule (`35`, celle du CP).
+ * L'élève ne la lit jamais : la correction dit « 2 € et 20 c » (`amountWords`).
  */
 export function amountAnswer(cents: number): string {
-	const euros = Math.floor(cents / 100);
+	const euros = grouped(Math.floor(cents / 100));
 	const rest = cents % 100;
-	return rest === 0 ? String(euros) : `${euros},${String(rest).padStart(2, '0')}`;
+	if (rest === 0) return euros;
+	return `${euros},${String(rest).padStart(2, '0').replace(/0$/, '')}`;
 }
 
 /** Un montant pour l'élève ou l'auteur : `3 € et 45 c`, `32 €`, `85 c`, `1 000 €` */
@@ -99,15 +109,16 @@ export function denominationName(value: number): string {
 	return `une pièce de ${cents} centime${cents > 1 ? 's' : ''}`;
 }
 
-/** Des coupures en liste, centimes puis euros : `5, 10, 20, 50 c, 1, 2 €` */
+/**
+ * Des coupures en liste croissante, l'unité sur chacune : `5 c, 10 c, 1 €, 2 €`.
+ * Jamais `5, 10 c` : recopié en `réserve: 5 10 c`, il donnerait un billet de 5 €
+ * sans erreur (revue C3).
+ */
 export function denominationList(values: readonly number[]): string {
-	const ascending = [...values].sort((a, b) => a - b);
-	const cents = ascending.filter(isCents).map(toCents);
-	const euros = ascending.filter((v) => !isCents(v));
-	return [
-		...(cents.length > 0 ? [`${cents.join(', ')} c`] : []),
-		...(euros.length > 0 ? [`${euros.join(', ')} €`] : [])
-	].join(', ');
+	return [...values]
+		.sort((a, b) => a - b)
+		.map(denominationLabel)
+		.join(', ');
 }
 
 /**

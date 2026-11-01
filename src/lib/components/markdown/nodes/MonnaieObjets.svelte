@@ -119,8 +119,17 @@
 		stroke: color-mix(in oklab, var(--color-fig-marron) 60%, black);
 	}
 
+	/* Doré : réchauffé d'ambre en clair (sinon kaki) ; vieil or en sombre, loin du
+	   jaune des pièces en euros (--color-primary) */
 	.monnaie-piece-dore {
-		fill: color-mix(in oklab, var(--color-fig-jaune) 60%, white);
+		fill: light-dark(
+			color-mix(
+				in oklab,
+				color-mix(in oklab, var(--color-fig-jaune) 65%, var(--color-accent)) 70%,
+				white
+			),
+			color-mix(in oklab, var(--color-fig-jaune) 70%, var(--color-fig-marron))
+		);
 		stroke: color-mix(in oklab, var(--color-fig-jaune) 45%, black);
 	}
 

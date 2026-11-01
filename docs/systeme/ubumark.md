@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; graduations décimales en virgule le 2026-11-01 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30 ; sections du bloc solide (`section:`) le 2026-10-31 ; repère à placer (` ```courbe ` + `placer:`) et titres d'axes (`axes:`) le 2026-11-01 ; centimes et billets de 200 / 500 € du bloc monnaie le 2026-11-01.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; graduations décimales en virgule le 2026-11-01 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30 ; sections du bloc solide (`section:`) le 2026-10-31 ; repère à placer (` ```courbe ` + `placer:`) et titres d'axes (`axes:`) le 2026-11-01 ; centimes et billets de 200 / 500 € du bloc monnaie le 2026-11-01 (réponse de la case et messages après revue, le même jour).
 
 ## À quoi ça sert
 
@@ -907,14 +907,16 @@ légendes: Léa ; Tom
 `billets:` (5, 10, 20, 50, 100, 200, 500 €) et `pièces:` (1, 2 € ; 1, 2, 5, 10, 20, 50 c, écrites
 `50c`, `50 c` ou `0,50`) : au moins l'une des deux, en liste
 (`20 10 10`) ou comptée (`2×10`, `x` et `*` valent `×`, `0×10` admis), triées du plus grand au plus
-petit ; ou `montant:` (0 à 1 000 €, écrit `3,45`, `3 € 45 c`, `3 € et 45 c` ou `345c`, jamais mêlé aux
+petit ; ou `montant:` (0 à 1 000 €, écrit `3,45`, `3 € 45 c`, `3 € et 45 c` ou `345c`, milliers séparés ou non : `1 000`, jamais mêlé aux
 deux autres) : le bloc choisit les coupures, « le moins d'objets » (`decomposeAmount`, glouton, exact
 pour l'euro). Un ensemble par valeur séparée par `;` (1 à 3, vide admis, ligne absente = aucun) ;
 1 000 € et 30 objets au plus par ensemble. Les valeurs du nœud sont en euros (`0.5` = 50 c) ; tout
 calcul se fait en **centimes entiers** (`utils/monnaie-valeurs.ts` : `toCents`, `readAmount`,
 `amountAnswer`, `amountWords`, `denominationLabel`, `denominationName`), jamais 0,449999 €. Messages
-situés : coupure inconnue (avec la liste de ce qui existe), pièce écrite en billet ou l'inverse, plus
-de deux chiffres après la virgule.
+situés : coupure inconnue (avec la liste de ce qui existe, l'unité écrite sur **chaque** valeur — `5 c, 10 c, 1 €` —
+car `5, 10 c` recopié en `réserve: 5 10 c` donnerait un billet de 5 € sans erreur), pièce écrite en billet ou
+l'inverse (`pièces: 5` ajoute « pour 5 centimes, écris 5c »), plus de deux chiffres après la virgule, montant
+resté en fraction (`{{eval:345/100}}` donne `\dfrac{69}{20}` : le message dit d'écrire `{{eval:…;d}}`).
 Facultatives : `disposition: rangé | mélangé` (défaut `rangé` ; `mélangé` : billets dans un ordre
 tiré, pièces en vrac), `légendes:`, `taille:` (comme la collection : 8 cm pleine largeur, même
 échelle d'un ensemble à l'autre). Les ensembles se placent côte à côte s'ils tiennent, sinon l'un
@@ -922,8 +924,10 @@ sous l'autre. Pas de `prix:` : le prix va dans l'énoncé. **Rendu stylisé**
 (aucun élément des vrais billets ni pièces, règles BCE : [journal § 6](../archive/wip/monnaie-progress.md)) :
 plus la valeur est grande, plus la coupure est grande, centimes compris (toutes les pièces de centimes
 plus petites que 1 €, contrairement aux vraies) ; valeur écrite au centre (`50 c`, `2 €`), répétée en
-petit dans deux coins d'un billet ; la pièce de 2 € a un anneau ; pièces de centimes cuivre (1, 2, 5 c)
-et dorées (10, 20, 50 c) — teintes claires de `--color-fig-marron` / `--color-fig-jaune`, au PDF deux
+petit dans deux coins d'un billet (écarté du bord : `cornerInset`, pour `500`) ; la pièce de 2 € a un anneau ; pièces de centimes cuivre (1, 2, 5 c)
+et dorées (10, 20, 50 c) — teinte claire de `--color-fig-marron` ; doré = `--color-fig-jaune` réchauffé
+d'`--color-accent` en clair (sinon kaki), vieil or mêlé de `--color-fig-marron` en sombre (loin du jaune des
+euros, `--color-primary`) ; au PDF deux
 gris (`coinFamily`). Billets en haut, pièces dessous ; scène
 `utils/monnaie-scene.ts` (hasard, vrac et toucher de `scene-commune.ts`, graine = ce qui se dessine),
 marquage au doigt `SceneMarks`. Dessin en `overflow: visible`, comme la collection : sinon Chrome rogne au pixel le bord droit du cadre. Nom accessible « Pièces et billets » : les valeurs sont écrites
@@ -942,7 +946,7 @@ pas avec la réserve en 30 objets au plus est une erreur située. L'élève touc
 un billet de 10 € », « Ajouter une pièce de 2 € », « Ajouter une pièce de 50 centimes ») pour poser une coupure, touche une coupure posée
 pour l'enlever ; « Enlever » à côté de chaque bouton, « Tout enlever » ; bouton grisé si l'ajout passe
 1 000 € ou 30 objets. La somme n'est jamais affichée ni dite (nom accessible « Ton argent »). Calcul pur
-`utils/monnaie-construire.ts` (somme en centimes, réponse `35` ou `3,45` — virgule et deux chiffres, `''` si vide —, plafonds, construction juste « le moins
+`utils/monnaie-construire.ts` (somme en centimes, réponse `35`, `3,45`, `2,2` ou `1 000` — écrite comme le juge ordinaire l'attend : ni zéro final (« zéros inutiles », faux en `zeros: 'strict'`) ni millier collé (« mal espacé » avec `spacesFromFourDigits`), test de bout en bout `generation-construire.test.ts` ; l'élève ne la lit pas, la correction dit « 2 € et 20 c » ; `''` si vide —, plafonds, construction juste « le moins
 d'objets » **avec la réserve**, par programmation dynamique en centimes, par pas du plus grand diviseur commun : avec 2 et 5 €, 6 € = 3 × 2 €) ; dessin
 des coupures partagé `MonnaieObjets.svelte`. Case, correction (« Tu as posé 32 €. », « Tu as posé 3 € et 45 c. », « Tu n'as rien
 posé. ») et PDF (réserve en petit, cadre vide en pointillés) : ceux de la collection à construire. Copie corrigée et verso de la flash-card : `BuildAnswer.svelte` (`components/questions/`) montre le plan verrouillé **sans réserve** (`showReserve={false}`, sur les deux composants à construire) — la construction de l'élève, ou la construction juste seule ([questions.md](questions.md)).

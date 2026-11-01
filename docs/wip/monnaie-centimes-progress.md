@@ -12,10 +12,9 @@ status: en cours
 
 _Mis à jour le 2026-11-01, à l'ouverture._
 
-- **État** : codé, tests verts, doc à jour, branche poussée ; revue Opus rendue (§ 4) : 1 bloquant, 3 à corriger.
-- **Prochaine action** : David tranche B1 → corriger B1, C1, C2, C3 (+ M1, M2) avec tests → PR → CI → merge.
-- **En attente de David** : B1, réponse `2,2` ou `2,20` (§ 4) ; avis sur les captures (doré kaki en clair ; « 500 » du
-  coin au ras du bord).
+- **État** : revue corrigée (B1, C1, C2, C3, M1, M2 ; doré et coin des billets), tests verts, doc à jour ; PR ouverte.
+- **Prochaine action** : CI verte → merge → « Reprendre ici » → retour à questions-ce1 (lot monnaie 054-057, 086).
+- **En attente de David** : son œil sur les nouvelles captures (doré, coin « 500 »).
 - **Pièges en cours** : les modèles du CP (`construire: 35`, `montant: 48`) ne doivent pas bouger, ni leur réponse
   `35` ; la scène est commune avec ` ```collection ` (ses tests doivent rester verts).
 - **Worktree / branche** : `../ubumaths-wt-monnaie-centimes` (`feat/monnaie-centimes`).
@@ -110,6 +109,11 @@ Ce que demandent les points (bornes `cycle2.json`) : « valeur en euros et centi
   `5c` pour 5 centimes ». **M3** : DP juste, pire cas ~5 ms (999,99 €), acceptable. **M4, M5** : flottants et
   `readAmount` sans problème ; `35` reste `correct` (CP intact).
 
+**Décisions sur la revue (David, 2026-11-01, « je suis »)** : B1 (a), la case porte `2,2` / `0,5` (la correction dit
+toujours « 2 € et 20 c ») ; C1 : `1 000` avec espace ; C2 : espace des milliers lu par groupes de trois ; C3 : unité sur
+chaque valeur des listes ; M1, M2 : indices ajoutés aux messages ; doré réchauffé en clair, vieil or en sombre ; coin des
+billets écarté du bord.
+
 ## Journal
 
 - 2026-11-01 : chantier ouvert (worktree, branche), relevé du code, phase 0 écrite.
@@ -122,3 +126,7 @@ Ce que demandent les points (bornes `cycle2.json`) : « valeur en euros et centi
 - 2026-11-01 : captures 390 px clair / sombre (test navigateur temporaire, retiré) : valeurs lisibles sur toutes les
   pièces ; doré kaki en clair, coin « 500 » au ras du bord → à montrer à David.
 - 2026-11-01 : revue Opus rendue (§ 4) ; B1 à trancher par David.
+- 2026-11-01 : revue corrigée, tests d'abord (6 bout en bout `generation-construire.test.ts`, rouges pour `2,20`, `0,50`,
+  `1,10`, `1000`) : `amountAnswer` sans zéro final et groupé, `readAmount` lit `1 000` (et les espaces insécables),
+  `denominationList` unité par valeur, indices fraction (`{{eval:…;d}}`) et `pièces: 5` (`5c`) ; doré
+  `light-dark()` ; `cornerInset` 1 → 2,5. Serveur 11 716 verts, client 35, `check:incremental` 0. Captures v2.

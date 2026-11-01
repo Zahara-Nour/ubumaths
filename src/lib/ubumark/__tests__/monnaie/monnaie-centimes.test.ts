@@ -52,6 +52,16 @@ describe('valeurs : centimes exacts', () => {
 		expect(readAmount('35 €')).toBe(3500);
 	});
 
+	it('espace des milliers, par groupes de trois chiffres (revue C2)', () => {
+		expect(readAmount('1 000')).toBe(100000);
+		expect(readAmount('1 000 €')).toBe(100000);
+		expect(readAmount('1\u00a0000')).toBe(100000);
+		expect(readAmount('1\u202f000,50')).toBe(100050);
+		expect(readAmount('1 000 € 50 c')).toBe(100050);
+		expect(readAmount('10 00')).toBeNull();
+		expect(readAmount('1 0000')).toBeNull();
+	});
+
 	it('montant illisible : null', () => {
 		expect(readAmount('3,456')).toBeNull();
 		expect(readAmount('3 € 145 c')).toBeNull();
@@ -69,8 +79,14 @@ describe('valeurs : centimes exacts', () => {
 		expect(amountAnswer(345)).toBe('3,45');
 		expect(amountAnswer(305)).toBe('3,05');
 		expect(amountAnswer(85)).toBe('0,85');
-		expect(amountAnswer(220)).toBe('2,20');
 		expect(amountAnswer(3500)).toBe('35');
+	});
+
+	it('réponse de la case : sans zéro final ni millier collé (revue B1, C1)', () => {
+		expect(amountAnswer(220)).toBe('2,2');
+		expect(amountAnswer(50)).toBe('0,5');
+		expect(amountAnswer(110)).toBe('1,1');
+		expect(amountAnswer(100000)).toBe('1 000');
 	});
 
 	it('correction en euros et centimes (décision 4)', () => {
@@ -169,10 +185,25 @@ describe('bloc ```monnaie — erreurs des centimes (13 à 16)', () => {
 
 	it('pièce qui n’existe pas, pièce écrite en billet', () => {
 		expect(messages(parse('pièces: 3c'))).toEqual([
-			"Ligne 1 : 3 c n'existe pas (pièces : 1, 2, 5, 10, 20, 50 c, 1, 2 € ; billets : 5, 10, 20, 50, 100, 200, 500 €)"
+			"Ligne 1 : 3 c n'existe pas (pièces : 1 c, 2 c, 5 c, 10 c, 20 c, 50 c, 1 €, 2 € ; billets : 5 €, 10 €, 20 €, 50 €, 100 €, 200 €, 500 €)"
 		]);
 		expect(messages(parse('billets: 50c'))).toEqual([
 			"Ligne 1 : 50 c est une pièce : écris-la dans pièces: (forme comptée : quantité d'abord, ex. 3×2)"
+		]);
+	});
+
+	it('pièces: 5 → billet de 5 €, ou 5c pour 5 centimes (revue M2)', () => {
+		expect(messages(parse('pièces: 5'))).toEqual([
+			"Ligne 1 : 5 € est un billet : écris-le dans billets: (forme comptée : quantité d'abord, ex. 2×10) ; pour 5 centimes, écris 5c"
+		]);
+	});
+
+	it('montant en fraction (eval sans ;d) : la manière de l’écrire en décimal (revue M1)', () => {
+		expect(messages(parse('montant: \\dfrac{69}{20}'))).toEqual([
+			'Ligne 1 : montant « \\dfrac{69}{20} » : une fraction n’est pas un montant ; écris {{eval:…;d}} pour un résultat décimal, ex. {{eval:p/100;d}}'
+		]);
+		expect(messages(parse('construire: \\frac{69}{20}'))).toEqual([
+			'Ligne 1 : construire « \\frac{69}{20} » : une fraction n’est pas un montant ; écris {{eval:…;d}} pour un résultat décimal, ex. {{eval:p/100;d}}'
 		]);
 	});
 
@@ -214,7 +245,7 @@ describe('construire: avec des centimes (nominal 3 à 6)', () => {
 
 	it('somme infaisable avec la réserve (15) ; hors bornes', () => {
 		expect(messages(parse('construire: 3,45', 'réserve: 2 1'))).toEqual([
-			'Ligne 1 : 3 € et 45 c ne se fait pas avec la réserve (1, 2 €)'
+			'Ligne 1 : 3 € et 45 c ne se fait pas avec la réserve (1 €, 2 €)'
 		]);
 		expect(messages(parse('construire: 0'))).toEqual([
 			'Ligne 1 : construire « 0 » : écris une somme de 1 c à 1 000 €, ex. 35 ou 3,45'
@@ -229,7 +260,7 @@ describe('construire: avec des centimes (nominal 3 à 6)', () => {
 		for (const value of [2, 1, 0.2, 0.2, 0.05]) build = addToBuild(build, value);
 		expect(buildValue(build)).toBe(3.45);
 		expect(buildAnswer(build)).toBe('3,45');
-		expect(buildAnswer(addToBuild(EMPTY_BUILD, 0.5))).toBe('0,50');
+		expect(buildAnswer(addToBuild(EMPTY_BUILD, 0.5))).toBe('0,5');
 		expect(buildAnswer({ notes: [20, 10], coins: [2] })).toBe('32');
 	});
 
@@ -250,7 +281,7 @@ describe('construire: avec des centimes (nominal 3 à 6)', () => {
 
 	it('réponse attendue d’une question : 3,45 ; 35 inchangé (modèles du CP)', () => {
 		expect(buildAnswerOf('monnaie', 'construire: 3,45')).toEqual({ answer: '3,45' });
-		expect(buildAnswerOf('monnaie', 'construire: 2,20')).toEqual({ answer: '2,20' });
+		expect(buildAnswerOf('monnaie', 'construire: 2,20')).toEqual({ answer: '2,2' });
 		expect(buildAnswerOf('monnaie', 'construire: 35')).toEqual({ answer: '35' });
 	});
 });
