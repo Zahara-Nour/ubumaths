@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR de la migration de rangement du lot 2-variations ouverte (§ 19)._
+_Mis à jour le 2026-11-01, après #2126 et `db:migrate` (lot 2-variations rangé, page à cocher publiée, § 19)._
 
 - **État** : lots 0 et lot 1-dérivation publiés ; **lot 2-variations écrit** (7 modèles, points 399, 280, 400, 282, 285, 286, 403 ; D25), simulation verte, essai en base locale fait, fichiers mergés (#2119). Brouillons de 1re spé plus anciens (inchangés) : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (questions-tspe), 0495289a (attente), c90fa022, d2067413 (1TECHNO).
-- **Prochaine action** : CI verte de la PR de rangement → merge → `db:migrate` depuis le dépôt principal → relecture en prod → page à cocher → `publier-lot`.
-- **En attente de David** : rien (brouillons créés par David le 2026-11-01).
+- **Prochaine action** : lire et compter les verdicts de la page à cocher (https://claude.ai/artifact/8NHxAarnojjKMkiodNmioo), corriger s'il y a lieu → simulation `publier-lot --dir scripts/questions/1spe-variations` → David lance `--publier`.
+- **En attente de David** : la relecture des 7 fiches sur la page à cocher.
 - **Pièges en cours** : niveaux d'une catégorie à relever **tous niveaux scolaires confondus** (l'index d'unicité ignore `grades`) ; `create-questions` et `publier-lot --publier` refusés au mode auto (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET worktrees ; corps de commit : lignes ≤ 100 caractères ; deux sous-catégories neuves (Généralités › Parité, Dérivation › Position relative) : nœuds des points = parité, position relative de deux courbes.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `feat/questions-1spe-variations-rangement`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe` (branches mergées, à retirer en fin de lot).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -918,3 +918,10 @@ lien ; une première CI rouge venait d'une collision d'horodatage de migrations 
 `tests/integration/questions-1spe-variations-rangement-tags.test.ts` : 10 / 10 verts ; rouge sans le corps de la
 migration (3 échecs, 5 sautés), restauré d'une copie, identique. `security-auditor` (Opus) : aucun finding (écart au
 gabarit limité aux données ; 7 identifiants, chemins et points relus en prod, MCP).
+
+#2126 mergée (CI verte, intégration comprise). `db:migrate` le 2026-11-01 : seule cette migration en attente (dry-run),
+jouée ; relu en base (MCP) : 7 modèles sur le nœud de leur point, un point chacun, `draft`, `updated_at` inchangé,
+trigger actif (`O`), version 20261101212000 enregistrée.
+
+Page à cocher : https://claude.ai/artifact/8NHxAarnojjKMkiodNmioo (7 fiches ; alerte : bloc `variation` non dessiné
+sur 3fa3af6c, à jouer dans l'aperçu ; collection `verdicts` vide à la publication).
