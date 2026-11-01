@@ -6,18 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2175 (migration du lot 7 jouée en prod)._
+_Mis à jour le 2026-11-01, après #2175 et #2182._
 
-- **État** : lots 1 à 6 publiés ; lot 7 (21 modèles) en brouillons en prod, rangés et tagués (§ 48). Page à
-  cocher : tableaux ` ```variation ` dessinés, branche `feat/page-a-cocher-variation` poussée, PR pas ouverte (§ 49).
-- **Prochaine action** : au « go » de questions-cm2 (pause des merges, deploy:prod) : PR de
-  `feat/page-a-cocher-variation` (revue `code-reviewer` Sonnet), CI, merge ; puis page à cocher du lot 7
-  (dossiers copiés avec préfixes a-/b-/c-), publiée en artefact `db`, à relire par David.
-- **En attente de David** : rien.
-- **Pièges en cours** : horodatage → `pnpm migration:horodatage` (heure UTC réelle depuis #2181) ;
-  `Doc-inchangée:` dans un commit, jamais dans le corps de PR ; `db push`, `--publier` → David avec `!` ;
-  page locale servie sans charset → caractères cassés (artefact OK).
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `feat/page-a-cocher-variation`.
+- **État** : lots 1 à 6 publiés ; lot 7 (21 modèles) en brouillons en prod, rangés et tagués (§ 48) ; page à
+  cocher publiée (tableaux ` ```variation ` dessinés, #2182, § 49) : https://claude.ai/artifact/JvwcMAT212utBRQL1AQ6Mp
+- **Prochaine action** : David relit la page ; lire `verdicts` (ArtifactData list) et COMPTER ; « À revoir » →
+  corriger (`--mettre-a-jour` par David) ; puis `publier-lot` en simulation (trois dossiers), `--publier` par David.
+- **En attente de David** : relecture du lot 7 sur la page.
+- **Pièges en cours** : page générée depuis une copie des trois dossiers (préfixes a-/b-/c-, scratchpad) ;
+  `Doc-inchangée:` dans un commit, jamais dans le corps de PR ; horodatage → `pnpm migration:horodatage` ;
+  `db push`, `--publier` → David avec `!`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, HEAD détachée sur `origin/main` (aucune branche ouverte).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1230,3 +1229,4 @@ ni 2-348 ; L7-d trois PR de fichiers (7 A = 6, 7 B = 6, 7 C = 9), une migration,
   (comme l'écran), hachure pleine largeur, ligne et contenu fautifs dans le message d'erreur ; tests ajoutés
   (asymptote à deux limites, bornes implicites, case d'intervalle) : 43/43. Une zone interdite SANS limite
   n'est pas écrivable dans une ligne de variation (le parseur exige des limites).
+- #2182 mergée (CI verte). Page du lot 7 publiée (artefact, capacité `db`), `verdicts` vide au départ.
