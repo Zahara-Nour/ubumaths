@@ -6,12 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 5 publié en prod._
+_Mis à jour le 2026-11-01, phase 0 du lot 6a validée._
 
 - **État** : lots 1 à 5 publiés en prod (lot 5 : 12 modèles de problèmes, relus 12/12 « OK » par David, `published`
   relus au MCP, nœuds et points intacts). Aucun worktree en cours.
-- **Prochaine action** : lot 6 — grandeurs (longueurs 035-038, masses 045-048, contenances 052-053, durées 060),
-  phase 0 à écrire et faire valider (§ 4 bis, 7 ; démarche `couvrir-niveau`). En parallèle, dans des sessions à
+- **Prochaine action** : lot 6a — longueurs et masses (9 modèles, § 10) : phase 0 validée, créer le worktree
+  `../ubumaths-wt-questions-ce2`, écrire `docs/wip/questions/lot-6a.py` → `scripts/questions/ce2-6a/`, tests rouges
+  puis verts, simulation. Puis lot 6b (contenances + durées). En parallèle, dans des sessions à
   part : `choix-correction` (`$$…$$` brut sur la carte de correction, § 8), puis `centaines:` + milliers de
   `collection` et barres à monter.
 - **En attente de David** : rien. (Question restée ouverte : le tableau / l'arbre du produit cartésien n'est
@@ -452,3 +453,36 @@ totale ≤ 1 000 pour le nombre de parts. Question d'accès : personne ne lit ri
 - 2026-11-01 : page à cocher publiée en artefact (`claude.ai/artifact/L87bEJ4MzgAjWAQfbmaRZ1`, capacité `db`), 12
   verdicts « OK » lus en base et comptés. `publier-lot` simulation : 12/12, sans collision de niveau ; `--publier`
   (David) : **12 modèles `published`** relus au MCP (nœuds et points intacts). **Lot 5 clos.**
+
+## 10. Lot 6 — grandeurs (phase 0 validée le 2026-11-01)
+
+Points CE2-035, 036, 037, 038 (longueurs), 045, 046, 047, 048 (masses), 052, 053 (contenances), 060 (durées), sans
+modèle au relevé MCP du 2026-11-01 (la base n'a que du CP, du CE1 et de la 6e sur les grandeurs). Nœuds existants,
+aucun à créer : Longueurs et Masses « unités et conversions » (occupés par CP/CE1, niveaux 2, 4-7 et 1-2),
+Contenances « unités et conversions » (vide), Durées « calcul de durées » (11 modèles de 6e, niveaux 1 à 8).
+Niveaux libres relevés juste avant la publication. Question d'accès : personne ne lit rien de plus (brouillons neufs).
+
+**Décisions (David, « tes recos ? » puis « ok », 2026-11-01)** :
+
+1. Deux lots : **6a** longueurs et masses (modèles 01-09), **6b** contenances et durées (modèles 10-13).
+2. Durées CE2 rangées dans le nœud existant « calcul de durées », aux niveaux libres (pas de nœud neuf).
+3. Références / estimations (040, 041, 049, 050) et périmètre (042) hors lot, dans le lot des QCM.
+
+| #   | Point | Modèle                                 | Variations                                                                 |
+| --- | ----- | -------------------------------------- | -------------------------------------------------------------------------- |
+| 01  | 035   | Unités de longueur : m, dm, cm, mm, km | symbole ↔ unité, ranger de la plus grande à la plus petite                 |
+| 02  | 036   | Relations m · dm · cm · mm             | 16 m = ? cm = ? dm ; 1 600 cm = ? dm ; 1 cm = ? mm ; entiers, sans tableau |
+| 03  | 036   | Relations km · m                       | 5 km + 750 m = ? m ; 5 750 m = ? km + ? m                                  |
+| 04  | 037   | Quelle unité pour mesurer… ?           | choix parmi m, dm, cm, mm, km (case choix)                                 |
+| 05  | 038   | Comparer des longueurs                 | unités différentes (2 m / 185 cm), ranger 3 ou 4 longueurs                 |
+| 06  | 045   | Unités de masse : g, kg, t             | symbole ↔ unité, ordre                                                     |
+| 07  | 046   | Quelle unité pour peser… ?             | choix parmi g, kg, t (case choix)                                          |
+| 08  | 047   | Relations g · kg · t                   | 5 462 g = 5 kg + 462 g ; 5 350 kg = 5 t + 350 kg ; pas de g–t              |
+| 09  | 048   | Comparer des masses                    | 3 ou 4 objets, en g, kg ou t                                               |
+| 10  | 052   | Unités de contenance : L, dL, cL       | (lot 6b)                                                                   |
+| 11  | 053   | 1 L = 10 dL = 100 cL                   | (lot 6b) 780 cL = 7 L + 80 cL                                              |
+| 12  | 060   | Durées à une étape                     | (lot 6b) axe chronologique                                                 |
+| 13  | 060   | Durées à deux étapes                   | (lot 6b) 7 h 10 + 1 h 30 + 40 min                                          |
+
+Réponses en case de saisie, sauf 04 et 07 (case choix, en prod). Le niveau monte avec la difficulté (un type de
+conversion, puis le mélange, puis l'unité à déduire).
