@@ -5,11 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 7 publié._
+_Mis à jour le 2026-11-01, après #2127 (monnaie-centimes)._
 
 - **État** : lots 0 à 7 publiés (lot 7 : données, 6 modèles, § 14, clos le 2026-11-01).
-- **Prochaine action** : chantier `monnaie-centimes` (à part : ` ```monnaie ` sans centimes ni billets de 200 / 500 €,
-  § 12), puis lot monnaie (054, 055, 056, 057, 086), puis lots 8 et 9 (§ 12) — phase 0 à écrire.
+- **Prochaine action** : lot monnaie (054, 055, 056, 057, 086) — phase 0 à écrire ; le bloc ` ```monnaie ` a ses
+  centimes et ses billets de 200 / 500 € (#2127, pas en prod : `construire: 3,45`, réponse `3,45` / `2,2`) ; puis lots
+  8 et 9 (§ 12).
 - **En attente de David** : rien.
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`

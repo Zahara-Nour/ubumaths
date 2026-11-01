@@ -1,5 +1,5 @@
 ---
-status: en cours
+status: clos
 ---
 
 # Chantier « monnaie-centimes » : des centimes et les billets de 200 / 500 € dans ` ```monnaie `
@@ -10,14 +10,15 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, à l'ouverture._
+_Mis à jour le 2026-11-01, après #2127._
 
-- **État** : revue corrigée (B1, C1, C2, C3, M1, M2 ; doré et coin des billets), tests verts, doc à jour ; PR ouverte.
-- **Prochaine action** : CI verte → merge → « Reprendre ici » → retour à questions-ce1 (lot monnaie 054-057, 086).
-- **En attente de David** : son œil sur les nouvelles captures (doré, coin « 500 »).
-- **Pièges en cours** : les modèles du CP (`construire: 35`, `montant: 48`) ne doivent pas bouger, ni leur réponse
-  `35` ; la scène est commune avec ` ```collection ` (ses tests doivent rester verts).
-- **Worktree / branche** : `../ubumaths-wt-monnaie-centimes` (`feat/monnaie-centimes`).
+- **État** : **CLOS** — #2127 mergée (centimes, billets de 200 / 500 €, réponse `2,2` / `1 000`, revue corrigée, réserve
+  écrite dans l'énoncé masqué d'une évaluation notée). Doc durable : `ubumark.md` (« Pièces et billets », « Monnaie à
+  construire », valeur masquée), `questions.md`. Pas en prod.
+- **Prochaine action** : archiver ce journal (`docs/archive/wip/`) dans la prochaine PR de code qui touche la monnaie : 8
+  commentaires du code renvoient ici. Suite du travail : session questions-ce1, lot monnaie (054-057, 086).
+- **En attente de David** : rien (plan suivi le 2026-11-01).
+- **Worktree / branche** : retirés.
 
 ## 1. Ce qui manque (relevé du code le 2026-11-01)
 
@@ -130,3 +131,6 @@ billets écarté du bord.
   `1,10`, `1000`) : `amountAnswer` sans zéro final et groupé, `readAmount` lit `1 000` (et les espaces insécables),
   `denominationList` unité par valeur, indices fraction (`{{eval:…;d}}`) et `pièces: 5` (`5c`) ; doré
   `light-dark()` ; `cornerInset` 1 → 2,5. Serveur 11 716 verts, client 35, `check:incremental` 0. Captures v2.
+- 2026-11-01 : fusion de `main` (chantier fuite-enonce : `construire: ?` en évaluation notée) : la réserve par défaut
+  dépend de la somme → `defaultReserve` partagée, `maskMonnaie` écrit la réserve dans l'énoncé masqué (test rouge puis
+  vert). CI verte, #2127 mergée ; chantier clos.
