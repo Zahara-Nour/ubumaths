@@ -223,7 +223,13 @@ describe('étiquettes à ranger : les cases et leurs réponses', () => {
 		const sent = toPublicQuestion(instance, { position: 0, delaySeconds: 30 });
 		const json = JSON.stringify(sent);
 		expect(json).not.toContain('expectedAnswer');
-		expect(json).not.toContain('construire');
+		// La case ne porte que le genre du bloc (fuite-enonce : même écran qu'hors évaluation)
+		expect(sent.blanks?.map((blank) => Object.keys(blank).sort())).toEqual([
+			['construire', 'type'],
+			['construire', 'type'],
+			['construire', 'type']
+		]);
+		expect(sent.blanks?.every((blank) => blank.construire === 'ranger')).toBe(true);
 		expect(sent.statement.match(/```ranger/g)).toHaveLength(1);
 		const published = parseMarkdown(sent.statement).children.find((c) => c.type === 'ranger');
 		expect(published && published.type === 'ranger' && published.labels).toEqual(shown);

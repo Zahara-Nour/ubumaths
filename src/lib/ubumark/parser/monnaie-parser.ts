@@ -37,6 +37,7 @@
 
 import { unnestedLine } from './nested-line';
 import { specialBlockEnd } from './unclosed-block';
+import { isMaskedValue } from '../utils/masked-value';
 import { DEFAULT_RESERVE, fewestObjects } from '../utils/monnaie-construire';
 import {
 	MONNAIE_BUILD_RANGE,
@@ -373,6 +374,7 @@ export function parseMonnaieContent(source: string): MonnaieNode {
 	let layout: MonnaieLayout = 'rangé';
 	let sizeCm: number | null = null;
 	let build: number | undefined;
+	let masked = false;
 	let reserve: number[] | undefined;
 	let caseIndex: number | undefined;
 	const seen = new Map<Key, number>();
@@ -425,7 +427,9 @@ export function parseMonnaieContent(source: string): MonnaieNode {
 					sizeCm = parseSize(value);
 					break;
 				case 'construire':
-					build = parseBuild(value);
+					// Énoncé d'une évaluation notée : remplacée par la plus petite coupure (`masked-value.ts`)
+					masked = isMaskedValue(value);
+					build = masked ? 0 : parseBuild(value);
 					break;
 				case 'réserve':
 					reserve = parseReserve(value);
@@ -445,8 +449,8 @@ export function parseMonnaieContent(source: string): MonnaieNode {
 
 	// Bloc à construire : plan vide, aucun ensemble dessiné (lues dans le forEach :
 	// TS les croit encore à leur valeur initiale)
-	const readBuild = build as number | undefined;
 	const readReserve = (reserve as number[] | undefined) ?? [...DEFAULT_RESERVE];
+	const readBuild = masked ? Math.min(...readReserve) : (build as number | undefined);
 	const readCase = caseIndex as number | undefined;
 	const buildLine = seen.get('construire');
 	if (buildLine !== undefined) {
@@ -454,7 +458,7 @@ export function parseMonnaieContent(source: string): MonnaieNode {
 			const line = seen.get(key);
 			if (line !== undefined) fail(line, `${key} : sans objet avec construire:${why}`);
 		}
-		if (errors.length === 0 && readBuild !== undefined) {
+		if (errors.length === 0 && readBuild !== undefined && !masked) {
 			const objects = fewestObjects(readBuild, readReserve);
 			const listed = `(${[...readReserve].reverse().join(', ')} €)`;
 			if (objects === Infinity) {
