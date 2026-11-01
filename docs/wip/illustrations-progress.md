@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, carte de Bonneteau-sur-Vistule validée : les sept capitales sont faites ; pas de PR : chantier 100 % doc._
+_Mis à jour le 2026-11-01, cartes mises sur le site (#2138) ; pas de PR ici : chantier 100 % doc._
 
 - **État** : casting, gouverneurs et Palotins versés au Compendium (§ XI) ; plans des sept capitales au Compendium. **Grande carte terminée**, fond FIGÉ `carte/fond-carte-hd.webp` (PNG maître chez David, `~/Downloads/fond-carte-hd-2026-10-29.png`). **Les sept cartes de capitales VALIDÉES** (Sandomir, Turingrad, Sinusborg, Cracovenn, Lobatchevsk, Empoche-les-Bains, Bonneteau-sur-Vistule), chacune `villes/<ville>/carte-<ville>.svg` + `.webp`, lieux cliquables par `id`. Méthode d'une carte : plan schématique → référence sans texte → Nano Banana → retouches sur carrés découpés (`villes/bonneteau-sur-vistule/coller-retouches.sh`, zones dans un fichier) → `carte-ville.png` → surcouche `carte-<ville>.py` → WebP.
-- **Prochaine action** : **à décider par David** — pistes connues : trait anatomique de la Patatovie (TODO du Compendium) ; mise des cartes sur le site (code : branche + PR, autre chantier) ; autres illustrations du lore.
+- **Prochaine action** : **à décider par David** — pistes connues : trait anatomique de la Patatovie (TODO du Compendium) ; autres illustrations du lore. Les cartes sont sur le site depuis le chantier `cartes-site` (#2138, 2026-11-01, journal archivé).
 - **En attente de David** : la suite du chantier (ci-dessus).
 - **Pièges en cours** : **ce qui doit se voir doit être dans la FORME de la référence** (un symbole est recopié comme un logo, le texte seul est ignoré ; le relief aussi : crête, teinte d'altitude) ; **retouche = un petit carré et UNE seule demande** (sinon ajouts pris au pied de la lettre) ; **fichiers pour l'IA copiés dans `~/Downloads`** ; une retouche Nano Banana redessine parfois toute l'image : vérifier par différence avec l'original, coller la seule zone ; image de style en 2e pièce jointe = copiée telle quelle, ne pas la joindre. **Pas de formes géométriques plaquées sur le paysage** : la discipline de chaque province ne se montre que dans sa ville. Ubu sans chapeau pointu ni longue robe blanche ; noms de couleurs en anglais courant ; références sans texte ; jamais de personne réelle nommée. Le Lexique décrit encore Turingrad « brutaliste soviétique » : ne pas y toucher sans demande.
 - **Worktree / branche** : aucun, commits doc directs sur `main`.

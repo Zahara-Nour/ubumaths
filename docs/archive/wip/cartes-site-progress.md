@@ -2,13 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR ouverte, textes en relecture chez David._
+_Mis à jour le 2026-11-01, après #2138 : chantier CLOS, journal archivé._
 
-- **État** : tout est codé et testé. La grande carte remplace la spirale sur `/royaume`. Les sept pages `/royaume/<ville>` sont faites, ajoutées au sitemap, et la doc est à jour. La relecture `code-reviewer` (Sonnet) a eu lieu ; son point important est corrigé (le lieu choisi survivait au changement de ville).
-- **Prochaine action** : lire les verdicts de la page à cocher (https://claude.ai/artifact/4Ps5U829D9Nj37hynxuXG5, collection `verdicts`, clé `<ville>--<lieu>` ou `<ville>--intro`), appliquer les corrections dans `src/lib/kingdom-tour/cities.ts`, puis merger quand la CI est verte.
-- **En attente de David** : la relecture des 46 textes. Le merge attend cette relecture.
-- **Pièges en cours** : les noms de la grande carte sont agrandis par rapport à la surcouche validée (taille par CSS, plus encore sous 640 px), YOYOLANDE et BEDONSTAN sont décalés ; dans le test, la teinte de la Province lue se teste sur `KingdomMap`, l'IntersectionObserver ne se déclenche pas dans le navigateur de test.
-- **Worktree / branche** : `../ubumaths-wt-cartes-site` · `feat/cartes-site` · serveur de test sur le port 5176.
+- **État** : livré (#2138, mergée le 2026-11-01, pas encore en prod). La grande carte remplace la spirale sur `/royaume`, les sept pages `/royaume/<ville>` existent et sont dans le sitemap. Le durable est versé dans `docs/systeme/carte-des-fonctionnalites.md` (Tour du Royaume). Les 46 textes ont été validés par David sans correction (page à cocher https://claude.ai/artifact/4Ps5U829D9Nj37hynxuXG5).
+- **Prochaine action** : aucune. La vérification sur un vrai téléphone est notée dans `docs/wip/verifications-manuelles.md`.
+- **Worktree / branche** : retirés.
 
 ## Phase 0 — comportements
 
