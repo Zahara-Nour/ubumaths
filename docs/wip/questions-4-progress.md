@@ -5,15 +5,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2133, #2143 et #2154 (lot 8 en prod, rangé)._
+_Mis à jour le 2026-11-01, après la relecture du lot 8 (§ 43) et la phase 0 du lot 9 (§ 44)._
 
-- **État** : lots 1 à 7 en prod et tous publiés. Lot 8 « programmes de calcul et fonctions » : 6 brouillons en prod,
-  rangés et tagués (migration `20261101223000` jouée, § 42), page à cocher publiée.
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts` sur
-  https://claude.ai/artifact/1PCiWE8CmMGYPAZrBhdELD), les COMPTER ; « À revoir » → corriger (§ 7 de la démarche) ;
-  sinon `publier-lot --dir scripts/questions/4-lot-8` en simulation, puis David `--publier`. Ensuite lot 9 « pensée
-  informatique » (065-067), phase 0.
-- **En attente de David** : relecture de la page à cocher du lot 8.
+- **État** : lots 1 à 7 en prod et publiés. Lot 8 : 6 verdicts « ok », `publier-lot` en simulation vert (§ 43).
+  Lot 9 « pensée informatique » (065-067) : phase 0 écrite (§ 44), 3 modèles, pseudo-code sans outil neuf.
+- **Prochaine action** : après le `--publier` de David, vérifier au MCP les 6 `published` ; après ses réponses au
+  § 44.4, écrire le lot 9 (`scripts/questions/4-lot-9/`, branche `feat/questions-4-lot-9`).
+- **En attente de David** : `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/4-lot-8 --publier` ;
+  réponses aux 4 questions du § 44.4.
 - **Pièges en cours** : migrations, dès #2165 mergée (règle de David, 2026-11-01) : horodatage par `pnpm
 migration:horodatage` (jamais un nombre rond choisi à la main), `pnpm check:migrations --pr <n>` avant `gh pr merge`,
   premier job de CI = porte des horodatages (`git merge origin/main` dans le worktree d'abord) ; `mtexte()` refusé dans une figure de question (§ 26) ; `db push --include-all` : **réservé à
@@ -1040,3 +1039,66 @@ scripts/questions/4-lot-6` en simulation (prod) : 6a770d04 et 35002b15 passent ;
   dans l'appli (aperçu admin local), la liste est bien rendue (`<ul>`). Ports : 5176 pris par une autre session → 5178.
 - **Leçon** : relever la dernière version jouée en prod **et** les migrations de `origin/main` juste avant de
   pousser une migration (une autre session peut merger la même version entre-temps).
+
+## 43. Lot 8 : relecture, publication (2026-11-01)
+
+- Verdicts lus (`ArtifactData list verdicts`) : **6 sur 6, tous « ok »**, aucun commentaire ; ce sont bien les 6 `id`
+  du § 42.
+- `publier-lot --dir scripts/questions/4-lot-8` (simulation, prod) : 6 brouillons passent le contrôle.
+- Reste : David lance `--publier` ; je vérifie ensuite au MCP (`status = published`).
+
+## 44. Lot 9 (pensée informatique) : phase 0 (proposée le 2026-11-01)
+
+Dernier lot de l'ordre validé au § 5 bis (8 « pensée informatique »). Décision du § 5 bis, point 6 : pseudo-code en
+français proche de Scratch, **bloc de code sans langage** (rendu en texte brut, sans coloration :
+`code-highlight.ts`), pas de Python.
+
+### 44.1 Relevé (MCP, 2026-11-01)
+
+- Points du lot, tous sans modèle : 065 et 066 sur le nœud de « instruction conditionnelle » (195147df), 067 sur
+  celui de « affectation » (151ff8c9). Aucun nœud à créer.
+- **Aucun modèle de pensée informatique au collège**, à aucun niveau (6-194 à 6-210, 5-100 à 5-106, 3-047 à 3-051 :
+  0 modèle chacun). Lycée : aucun non plus sur ces deux nœuds.
+- Précédent technique : `scripts/questions/1spe-suites/06-termes-par-un-algorithme.json` (bloc ` ``` ` sans
+  langage, `u ← …`, `{{eval:…}}` remplacés dans le bloc, réponse en case). **Aucun outil neuf.**
+- Aucun thème « Algorithmique » dans les catégories (les modèles de lycée sont rangés sous leur thème mathématique :
+  Suites / Seuil et algorithmes, Probabilités / Dénombrement / Algorithmique).
+- Bornes (cycle4.json, source « Exemples 2026 p. 48 », force accompagnement — **pas de 2019/2016**) : 065, 066 →
+  conditions simples avec `<`, `>`, `=` seulement ; 067 → **une seule variable** (ex. accumulation dans une boucle,
+  « compter le nombre de 6 obtenus dans 1000 lancers d'un dé »). Boucle « répéter n fois » vue en 5e (5-106) : permise.
+  Hors lot : 068, 069 (écrire / modifier un programme : Blockly, catégorie D), boucle conditionnelle et conditions
+  composées (3e : 3-048, 3-049).
+
+### 44.2 Modèles proposés (3, un par point)
+
+Pseudo-code commun (mots de Scratch) : `demander un nombre`, `mettre score à 0`, `ajouter 3 à score`,
+`mettre x à x × 2`, `répéter 5 fois … fin répéter`, `si … alors … sinon … fin si`, `dire « Bravo »`. Indentation de
+4 espaces dans les blocs.
+
+| Point | Modèle (catégorie, niveau)                                                   | Variations                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Réponse           |
+| ----- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
+| 065   | Représenter une condition (Algorithmique / Conditions / Condition simple, 1) | 1) « la condition `nombre > a` est-elle vraie quand nombre vaut n ? » (n tiré dont n = a) : vraie / fausse ; 2) phrase → condition : « le nombre est plus petit que a » : `nombre < a` / `nombre > a` / `nombre = a` / `a < nombre` ; 3) parmi 4 valeurs, laquelle rend `nombre < a` vraie ; 4) « avoir au moins 18 ans » avec `<`, `>`, `=` seulement : `âge > 17` / `âge > 18` / `âge < 18` / `âge = 18`                                                                                                                                                                               | case choix        |
+| 066   | Instruction conditionnelle (Algorithmique / Conditions / Si alors sinon, 1)  | 1) `si nombre > a alors dire « Grand » sinon dire « Petit »`, nombre saisi n : que dit le lutin ? ; 2) `si nombre < a alors mettre nombre à nombre × 2 sinon mettre nombre à nombre − b`, puis `dire nombre` : quel nombre ? ; 3) deux `si` à la suite, sans `sinon` : quel nombre ? ; 4) quel nombre saisi fait dire « Gagné » (4 choix) ; 5) compléter le programme « dire “Six !” quand le dé donne 6 » : `dé = 6` / `dé > 6` / `dé < 6` / `6`                                                                                                                                        | case choix · case |
+| 067   | Manipuler une variable (Algorithmique / Variables / Accumulation, 1)         | 1) `mettre score à s0`, `répéter k fois : ajouter a à score`, `dire score` : quelle valeur ? ; 2) `mettre x à a`, `répéter k fois : mettre x à x × 2` (k ≤ 4) ; 3) compteur de 6 : 8 à 10 lancers de dé **donnés** (tableau), `si dé = 6 alors ajouter 1 à compteur` : valeur finale ; 4) « que contient compteur à la fin ? » : le nombre de 6 obtenus / le dernier lancer / la somme des lancers / 6 ; 5) lequel de 4 programmes calcule le total des points de k lancers : bon (`ajouter dé à total`) / `mettre total à dé` / `mettre total à 0` dans la boucle / `ajouter 1 à total` | case · case choix |
+
+- `testSpecs` d'erreurs typiques : 065 → `>` et `<` inversés, `nombre > 18` pour « au moins 18 » ; 066 → branche
+  `sinon` exécutée quand nombre = a avec `>` (le cas n = a est tiré exprès), les deux branches appliquées ; 067 →
+  valeur initiale oubliée (`k × a` au lieu de `s0 + k × a`), `a × 2k` au lieu de `a × 2^k`, compteur égal au dernier
+  lancer.
+- Le 1000 lancers de l'exemple du BO est remplacé par des lancers donnés (l'élève ne peut pas exécuter le hasard) ;
+  la question « que contient compteur » garde le sens.
+
+### 44.3 Question d'accès
+
+Comme les lots précédents : brouillons, puis migration nœud + tag ; **personne** ne gagne d'accès. À la
+publication, les élèves de 4e voient 3 modèles de plus.
+
+### 44.4 Questions à David
+
+1. Valider les 3 modèles du § 44.2 ?
+2. Mots du pseudo-code : ceux de Scratch (`mettre score à 0`, `ajouter 3 à score`, `dire`) — **reco** : c'est ce que
+   les élèves de 4e manipulent — ou la flèche `score ← 0` du lycée (précédent 1re spé) ?
+3. Catégories neuves : thème **Algorithmique** / Conditions / Condition simple 1 (065), Si alors sinon 1 (066) ;
+   Algorithmique / Variables / Accumulation 1 (067) ?
+4. 065, variation 4 (« au moins 18 ans » → `âge > 17`) : la garder (reco : oui, c'est le piège classique de
+   Scratch, qui n'a pas `≥`) ?

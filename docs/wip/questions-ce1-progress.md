@@ -5,13 +5,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2141._
+_Mis à jour le 2026-11-01, après #2141 ; phase 0 du lot 9 posée._
 
-- **État** : lots 0 à 7 publiés ; lot 8 (monnaie, § 15) : 6 brouillons en prod, rangés et tagués (#2135, #2141).
-- **Prochaine action** : après le `deploy:prod` qui livre #2127 (centimes) : catégories relevées, page à cocher, puis
-  `publier-lot` (simulation, puis David) ; ensuite lots 9 et 10 (ex-8 et 9 du § 12).
-- **En attente de David** : `deploy:prod` pour les centimes — tenté le 2026-11-01 soir, pas lancé (CI de `main` toujours
-  en cours ou rouge : migration en double, #2154 ; attendre #2165 et une `main` verte, sessions priées de ne pas merger).
+- **État** : lots 0 à 7 publiés ; lot 8 (monnaie, § 15) : 6 brouillons en prod, rangés et tagués (#2135, #2141) ;
+  lot 9 (fractions dessinées et géométrie) : phase 0 écrite (§ 16), **6 questions à David**.
+- **Prochaine action** : réponses au § 16 → écrire le lot 9 (worktree neuf). Après le `deploy:prod` qui livre #2127
+  (centimes) : lot 8, catégories relevées, page à cocher, `publier-lot` (simulation, puis David) ; puis lot 10.
+- **En attente de David** : les 6 questions du § 16 ; `deploy:prod` pour les centimes (`main` verte le 2026-11-01 au
+  soir ; #2165, autre session, encore en CI).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
@@ -678,3 +679,56 @@ Réponse de David (« tes recos ? » puis « go », 2026-11-01) : les cinq recom
   la jouerait aussi (`--include-all`). Attendre qu'elle le soit, puis `db:migrate`.
 - 2026-11-01 : `20261101215100` jouée en prod avec la migration 2de (`db push --include-all` par David, session
   questions-2de) ; vérifié au MCP : 6/6 brouillons, sur le nœud de leur point, un tag chacun, `updated_at` intact.
+
+## 16. Lot 9 : fractions dessinées et géométrie — phase 0 (2026-11-01)
+
+Relevé MCP du 2026-11-01 : aucun modèle sur les 10 points (096, 098, 095, 097 ; 069, 070, 105 ; 075, 087 ; 073).
+Outils : ` ```partage ` (`bande N`, `disque N`, `grille L×C`, `carre-diagonales` ; `gris:` ; `colorier: n/d`) — **pas
+d'hexagone** (BO : disques, hexagones, carrés, bandes ; § 9 : disques, bandes, carrés d'abord) ; ` ```figure ` avec
+`grille:`, `angle(A, V, B, marque="carre")` (code de l'angle droit), `milieu`, `marque_segment`, `cercle` ;
+` ```figure-de-travail ` (l'élève trace à la règle, rien n'est noté) ; case « choix ». **Pas d'équerre** à l'écran.
+
+Existant voisin : « Fractions · Apprivoiser · Partage » 1 à 4 = CM1 (`092b310c`, `14a2d26f`, `60ce79bb`, `fe91cbd9`),
+dénominateurs 2 à 12 et fractions > 1 : hors bornes du CE1, pas réutilisables. « Géométrie · Figures planes » :
+Propriétés 1 à 3 et Reconnaître et nommer des formes 1, 2 (CP). Brouillon CP **`a7dfe502` « Trois points alignés ?
+Vérifie à la règle »** (non tagué, chantier `figure-et-choix`) : figure de travail, un point décalé de 0,25 (l'œil ne
+tranche pas), Oui / Non — c'est exactement CE1-073.
+
+| Fichier                       | Point   | Catégorie · niveau                              | Variations                                                                                                                                                             |
+| ----------------------------- | ------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `01-quelle-part-unitaire`     | CE1-096 | Fractions · Apprivoiser · Partage · 5           | bande ou disque de d parts (d ∈ 2, 3, 4, 5, 6, 8, 10), une part coloriée, pas toujours la première ; grille 2×2, 2×3, 2×4, 2×5 ; carré en 4 triangles → [_] (fraction) |
+| `02-quelle-part`              | CE1-098 | Fractions · Apprivoiser · Partage · 6           | n/d, 2 ≤ n ≤ d − 1, parts dispersées une fois sur deux ; toute la figure coloriée (d/d, « 1 » juste aussi)                                                             |
+| `03-colorie-une-part`         | CE1-095 | Fractions · Apprivoiser · Partage · 7           | `colorier: 1/d` sur bande, disque, grille de d parts (autant de parts que le dénominateur)                                                                             |
+| `04-colorie-la-fraction`      | CE1-097 | Fractions · Apprivoiser · Partage · 8           | `colorier: n/d`, 2 ≤ n ≤ d, mêmes figures                                                                                                                              |
+| `05-quelle-est-cette-figure`  | CE1-070 | Figures planes · Reconnaître et nommer · 3      | cercle, carré, rectangle, triangle, triangle rectangle (choix) ; carré posé sur la pointe, rectangle presque carré, triangle rectangle tourné ; cercle tracé ≠ disque  |
+| `06-le-bon-mot`               | CE1-069 | Figures planes · Propriétés · 4                 | figure nommée, un élément montré : sommet, côté, centre, milieu (codé), droite ou segment (la droite dépasse), angle droit (choix)                                     |
+| `07-decrire-la-figure`        | CE1-105 | Figures planes · Propriétés · 5                 | combien de côtés, de sommets, d'angles droits (carré 4, rectangle 4, triangle rectangle 1, triangle 0) → [_] ; « qui suis-je ? » avec angles droits (choix)            |
+| `08-le-code-de-l-angle-droit` | CE1-075 | Figures planes · Angles · 1 (sous-notion neuve) | que veut dire le petit carré ? (choix) ; quel sommet a un angle droit codé ? (choix des sommets) ; combien d'angles droits codés ? → [_]                               |
+| `09-droit-aigu-obtus`         | CE1-087 | Figures planes · Angles · 2                     | un angle sur quadrillage : droit (côtés sur les lignes, ou tourné), aigu (30° à 70°), obtus (110° à 150°) → choix droit / aigu / obtus ; jamais à moins de 20° de 90°  |
+| `a7dfe502` (repris)           | CE1-073 | Tracés · Droites · 2                            | tel quel (figure de travail, Oui / Non), passé du CP au CE1                                                                                                            |
+
+Erreurs typiques dans les `testSpecs` : parts blanches comptées ((d − n)/d) ; coloriées sur blanches (n/(d − n)) ;
+d/n renversé ; 1/(d − 1) ; carré sur la pointe pris pour un autre nom (« losange » n'est pas au CE1 : absent des
+choix) ; triangle rectangle → « rectangle » (le mot lu dans le nom) ; angle droit
+tourné pris pour aigu ; côté / sommet confondus ; droite / segment confondus.
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud +
+tag ne change aucune règle ; `a7dfe502` reste un brouillon, seuls son niveau et son rangement changent.
+
+### Questions à David
+
+1. **Niveaux des fractions** : « Partage » 1 à 4 sont pris par le CM1 (publiés). Recommandation : le CE1 en 5 à 8, aucun
+   publié touché (comme « Comparer » 9, 10 au lot 3).
+2. **Hexagones** : absents du bloc ` ```partage `. Recommandation : lot sans hexagone (décision du § 9 : disques, bandes,
+   carrés d'abord) ; l'hexagone noté comme petit prolongement du bloc, pour plus tard.
+3. **Équerre** : aucune à l'écran ; 087 se fait à l'œil sur quadrillage, angles loin de 90° (≥ 20°), l'angle droit
+   tourné compris. Recommandation : oui, et une **équerre à poser** notée comme outil futur (C), pas dans ce lot.
+4. **Triangle rectangle** (070) : « triangle » est vrai aussi. Recommandation : jamais « triangle » et « triangle
+   rectangle » ensemble dans les choix quand la figure est un triangle rectangle (pas de piège sur le mot le plus précis) ;
+   la variation « triangle rectangle » propose rectangle, triangle rectangle, carré, cercle.
+5. **CE1-073** : reprendre le brouillon CP `a7dfe502` (passé au CE1, tagué 073, rangé « Tracés · Droites · 2 ») plutôt
+   que d'en écrire un double. Recommandation : oui ; instantané d'abord, mise à jour par `--mettre-a-jour` (David).
+6. **Angles, sous-notion neuve** « Figures planes · Angles » (075, 087). Recommandation : oui (le CE2 et le cycle 3 la
+   prolongent).
+
+Réponse de David (« je suis tes recos », 2026-11-01) : les six recommandations.

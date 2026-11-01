@@ -33,7 +33,9 @@ l'inverse.
   1. il part du dernier commit de `main` dont « CI Summary » est vert, en enjambant les commits de
      doc sans CI qui le suivent ;
   2. il crée la version (`pnpm release` : numéro, CHANGELOG, tag) et la pousse sur `main` ;
-  3. il attend que la CI de ce commit de version soit verte ;
+  3. il attend que la CI de ce commit de version soit verte (depuis le 2026-11-01, c'est la seule CI
+     complète de `main` : un push ordinaire de `main` n'a que typecheck et build, le reste a tourné
+     sur la PR) ;
   4. il avance `production` jusqu'à lui, en avance rapide seulement.
 
   Il refuse : main local pas à jour, CI en cours ou rouge, code sans CI, production divergente.
