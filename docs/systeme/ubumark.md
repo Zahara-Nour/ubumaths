@@ -197,6 +197,7 @@ fermé »). Test : `__tests__/blocs-speciaux-listes.test.ts`.
 | `figure`, `figure-a-completer`, `figure-de-travail`                                                                       | `figure`                    | `figure-parser.ts`                                            | `FigureBlock.svelte`                                                                                              | `figure-typst.ts` (via registre)             |
 | `barres`, `circulaire`, `histogramme`, `frequences-cumulees`, `tableau-croise`, `loi`, `simulation`, `effectifs`, `nuage` | `stat-chart` (champ `kind`) | `stat-chart-parser.ts`                                        | `StatChart.svelte`                                                                                                | `stat-chart-typst.ts`                        |
 | `qr`                                                                                                                      | `qr`                        | `qr-parser.ts`                                                | `QrBlock.svelte`                                                                                                  | `qr-typst.ts`                                |
+| `scratch`                                                                                                                 | `scratch`                   | `scratch-parser.ts`                                           | `ScratchBlock.svelte` (dessin : `utils/scratch-render.ts`)                                                        | `scratch-typst.ts` (texte)                   |
 | `horloge`                                                                                                                 | `horloge`                   | `horloge-parser.ts`                                           | `Horloge.svelte`                                                                                                  | `horloge-typst.ts`                           |
 | `operation`                                                                                                               | `operation`                 | `operation-parser.ts`                                         | `Operation.svelte`                                                                                                | `operation-typst.ts`                         |
 | `collection`                                                                                                              | `collection`                | `collection-parser.ts`                                        | `Collection.svelte`                                                                                               | `collection-typst.ts`                        |
@@ -496,6 +497,33 @@ l'élève et au PDF. La matrice est calculée au rendu, pas au parseur (`uqr` ho
 PDF, le SVG du QR stylé ([QR codes](qr-codes.md#le-style-imposé)) est posé en image vectorielle
 (`#image(bytes(…), format: "svg")`), sans fichier ni paquet réseau ; compilation réelle testée (`qr-typst-compilation.test.ts`). Dans l'éditeur riche :
 bloc de code `qr`, bouton « Insérer un QR code ». Chat élève (rendu restreint) : jamais rendu.
+
+**Programme Scratch** (chantier `bloc-scratch`, palier 1, 2026-11-01) — `src/lib/ubumark/__tests__/scratch/` :
+
+```scratch
+quand le drapeau vert pressé
+mettre [a v] à (5)
+répéter jusqu'à ce que <(a) > [20]>
+mettre [a v] à ((a) * (2))
+fin
+dire (a)
+```
+
+Le corps du bloc **est** le programme, dans la syntaxe des `scratchblocks` (paquet `scratchblocks`,
+MIT, version épinglée), **en français seulement** : une instruction par ligne, `fin` ferme une
+boucle ou un `si`, une ligne vide sépare deux scripts (un `définir …` à côté du script qui
+l'appelle). Le parseur est léger : il garde le texte tel quel (`source`), signale seulement le bloc
+vide et le bloc non fermé ; fermé par le premier `` seul (texte libre : pas de règle Q66), une
+autre clôture rencontrée avant le rend non fermé (Q63). La vérification des instructions
+(`utils/scratch-check.ts` : instruction non reconnue, anglais compris, « fin » en trop, « sinon »
+sans « si », messages situés par ligne) et le dessin (`utils/scratch-render.ts`, style Scratch 3,
+échelle 0,675) sont chargés **à la demande, dans le navigateur seulement** : le dessin mesure le
+texte avec un canvas. Avant, et au rendu serveur : le programme en texte monospace. Erreur : messages
+pour le prof, « Programme indisponible » pour l'élève. Nom accessible : le programme en une ligne.
+Le dessin se réduit à la largeur de sa colonne (case choix comprise). Au PDF (palier 1) : le
+programme en texte brut ; le dessin en image SVG est l'objet du palier 2. `check:ubumark` vérifie
+les instructions, choix d'un ```` ``choix ```` compris. Éditeur riche : bloc de code `scratch`
+(aller-retour). Chat élève (rendu restreint) : jamais rendu. Aide : `/aide-ecriture/blocs/scratch`.
 
 **Horloge à aiguilles** (chantier [horloge](../wip/horloge-progress.md)) — `src/lib/ubumark/__tests__/horloge/` :
 

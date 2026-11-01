@@ -560,6 +560,7 @@ export type { CourbeNode } from './courbe';
 export type { FigureNode } from './figure';
 export type { StatChartNode } from './stat-chart';
 export type { QrNode } from './qr';
+export type { ScratchNode } from './scratch';
 export type { HorlogeNode } from './horloge';
 export type { PartageNode } from './partage';
 export type { EspaceNode } from './espace';
@@ -578,6 +579,7 @@ import type { CourbeNode } from './courbe';
 import type { FigureNode } from './figure';
 import type { StatChartNode } from './stat-chart';
 import type { QrNode } from './qr';
+import type { ScratchNode } from './scratch';
 import type { HorlogeNode } from './horloge';
 import type { PartageNode } from './partage';
 import type { EspaceNode } from './espace';
@@ -609,6 +611,7 @@ export type BlockNode =
 	| FigureNode
 	| StatChartNode
 	| QrNode
+	| ScratchNode
 	| HorlogeNode
 	| PartageNode
 	| EspaceNode

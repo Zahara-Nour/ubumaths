@@ -2,13 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, phase 0 proposée._
+_Mis à jour le 2026-11-01, palier 1 écrit (§ 7)._
 
-- **État** : phase 0 proposée (§ 4) ; bibliothèque `scratchblocks` évaluée (§ 2), aucun code.
-- **Prochaine action** : selon les réponses du § 5, tests rouges du palier 1 (parseur, puis rendu écran).
-- **En attente de David** : questions du § 5.
+- **État** : palier 1 écrit et vert en local ; PR à ouvrir / en CI.
+- **Prochaine action** : CI verte → revue `code-reviewer` → merge ; puis palier 2 (PDF en image SVG si Typst
+  le lit ; bouton « Insérer » de l'éditeur riche) ou retour au lot 7 de `questions-3` (au choix de David).
+- **En attente de David** : rien.
 - **Pièges en cours** : le dessin mesure le texte avec un canvas → navigateur seulement (pas de rendu
-  serveur, pas de jsdom).
+  serveur, pas de jsdom) ; le parseur ne doit jamais importer `scratchblocks` (chunk de toutes les pages).
 - **Worktree / branche** : `../ubumaths-wt-bloc-scratch`, `feat/bloc-scratch`.
 
 ---
@@ -118,3 +119,29 @@ riche (une PR).
 5. **Nom du bloc** : ` ```scratch ` (le nom que connaissent élèves et profs) ou ` ```programme ` ?
 
 **Question d'accès** : aucune (ni table, ni règle d'accès, ni donnée d'élève).
+
+## 6. Décisions (David, 2026-11-01, « je te suis » sur les recommandations)
+
+1. Syntaxe des `scratchblocks`, **français seulement** (l'anglais refusé, erreur prof).
+2. Dépendance `scratchblocks@3.7.1` épinglée, chargée à la demande.
+3. Palier 1 = parseur + écran + case choix + page de démo ; palier 2 = PDF + éditeur riche.
+4. PDF : SVG en image si Typst le lit, sinon texte monospace.
+5. Nom : ` ```scratch `.
+
+## 7. Palier 1 : écrit (2026-11-01)
+
+- Parseur léger `scratch-parser.ts` (programme gardé tel quel ; bloc vide, non fermé) ; vérification
+  `utils/scratch-check.ts` (instruction non reconnue, anglais compris, « fin » en trop, « sinon » sans « si »,
+  ligne retrouvée en suivant la structure) ; dessin `utils/scratch-render.ts` (Scratch 3, échelle 0,675) ;
+  `ScratchBlock.svelte` (texte avant le chargement, erreurs prof / « Programme indisponible » élève, nom
+  accessible) ; branché au premier niveau, en liste, dans la case choix.
+- Faits en plus, petits : repli texte au PDF (sinon le bloc disparaissait), aller-retour de l'éditeur riche
+  (sinon le bloc était **perdu** : `default: return null`), `check:ubumark` vérifie les programmes (et lit
+  désormais les choix d'un ```choix, pour tous les blocs), fiche du catalogue `/aide-ecriture/blocs/scratch`
+  avec une section « Instructions » (`settingsKind`).
+- Tests : parseur 8, vérification 10, PDF 2, éditeur riche 4, rendu restreint 2, composant (navigateur) 7 ;
+  suites ubumark / markdown / rich-text / catalogue / worksheets : 6 824 verts.
+- Vu dans Chrome (prof local, port 5176) : les 4 exemples dessinés juste, erreurs situées ; un dessin se
+  réduit à sa colonne (300 px : pas de débordement). **Écart au § 4.8** : deux scripts l'un sous l'autre
+  (la bibliothèque ne les met pas côte à côte). Thème clair non vu (bascule non trouvée) : à regarder.
+- Hors palier : la vitrine `/demo/blocs` (sélection validée, pas touchée).
