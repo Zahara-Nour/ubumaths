@@ -1585,6 +1585,8 @@ function parseWithSpanMarks(
 	markOf: (match: RegExpExecArray) => ((node: TextNode) => TextNode) | null
 ): InlineNode[] {
 	if (!text) return [];
+	// Un caractère de la plage déjà présent dans la source serait pris pour une borne
+	text = text.replace(boundsRegex(bounds), '');
 
 	const marks: Array<(node: TextNode) => TextNode> = [];
 	const masked = maskSpans(text, [INLINE_CODE_REGEX]);
@@ -1638,12 +1640,16 @@ function parseWithSpanMarks(
 	return nodes;
 }
 
+/** Les caractères de la plage de bornes d'une passe. */
+function boundsRegex(bounds: number): RegExp {
+	const first = bounds.toString(16);
+	const last = (bounds + BOUNDS_SIZE - 1).toString(16);
+	return new RegExp(`[\\u{${first}}-\\u{${last}}]`, 'gu');
+}
+
 /** Efface les bornes d'une passe des chaînes d'un nœud non textuel. */
 function stripSpanBounds(node: InlineNode, bounds: number): InlineNode {
-	const own = new RegExp(
-		`[\\u{${bounds.toString(16)}}-\\u{${(bounds + BOUNDS_SIZE - 1).toString(16)}}]`,
-		'gu'
-	);
+	const own = boundsRegex(bounds);
 	if (!own.test(JSON.stringify(node))) return node;
 	const cleaned: Record<string, unknown> = {};
 	for (const [key, value] of Object.entries(node)) {

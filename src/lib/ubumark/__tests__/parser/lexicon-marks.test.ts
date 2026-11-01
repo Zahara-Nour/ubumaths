@@ -93,4 +93,9 @@ describe('marquage au milieu d’une mise en forme (L16)', () => {
 		const all = JSON.stringify(children);
 		expect(all).not.toMatch(/[\uE000-\uF8FF]/u);
 	});
+
+	it('un caractère de la zone privée tapé dans le texte n’ouvre pas de marquage', () => {
+		const nodes = textNodes('[a]{.def} et \uE801 x');
+		expect(nodes.find((n) => n.content.includes('x'))?.lexicon).toBeUndefined();
+	});
 });

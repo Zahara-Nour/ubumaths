@@ -23,3 +23,12 @@ _Mis à jour le 2026-11-01, avant la PR._
 ## V65 reste : `|x^2-1|=3` — non fait, à David
 
 `solve/absolute-value.ts` borne VOLONTAIREMENT le périmètre aux arguments affines (V40, « cas des élèves » ; `|x² − 1| = 3` y est cité comme refus voulu), et `pedagogical-solve/absolute-value` lit la même analyse (`analyzeAbsoluteValue`). Élargir au second degré = rouvrir ce choix : à trancher par David (reco : laisser le refus, sauf demande d'exercices de 1re qui en ont besoin).
+
+## Revue de #2131 (code-reviewer, sonnet)
+
+Aucun bloquant. Corrigé : un caractère de la zone privée (U+E000–U+EFFF) tapé dans la source était pris pour une borne → retiré avant de poser les bornes (test ajouté, rouge sans). Relevés, **déjà sur main**, pour un futur chantier (aucun contenu en prod n'emploie ces formes) :
+
+1. `[x $2+3$ y]{.def}` : le texte autour d'une formule ne reçoit pas la marque.
+2. `[a ![i](u.png)]{.def} c` : le texte voisin de l'image disparaît.
+3. `[a [b]{.rappel} c]{.def}` : un détail DANS un mot marqué reste littéral (l'inverse marche).
+4. `a [[lien [m]{.def}](url)]{.def} b` : restes littéraux `]{.def} b` (sur main : tout littéral).
