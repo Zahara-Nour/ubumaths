@@ -10,7 +10,7 @@ _Mis à jour le 2026-11-01, phase 0 du lot 5 proposée (§ 30)._
 
 - **État** : lots 1 à 4 publiés ; lot 5 « Droites » : relevé et phase 0 écrits (§ 30).
 - **Prochaine action** : après validation, worktree `ubumaths-wt-questions-2de`, écrire le lot 5 A (6 modèles).
-- **En attente de David** : L5-a à L5-d (§ 30).
+- **En attente de David** : rien (phase 0 validée).
 - **Pièges en cours** : horodatage = max + 1 min de `origin/main` ET des worktrees ; `migration list
 --linked` avant `db:migrate` (migrations d'autres sessions en file → David tranche qui le lance) ;
   `page-a-cocher.ts` ne prend qu'un `--dir` (réunir les dossiers d'un lot dans le scratchpad).
@@ -773,3 +773,7 @@ Lot 5 B « équations, tracés, positions relatives » (10) :
 - **L5-d — 09f0c9ec** (lecture de pente sur image, tagué 2-347 « m taux d'accroissement ») : le laisser tel
   quel ? → Je recommande **oui** : il lit une fonction affine (branche Fonctions), le nouveau 2-315 lit une
   droite.
+
+**Décisions de David (2026-11-01)** : phase 0 validée avec mes quatre recommandations — L5-a case `vecteur`
+en mode `colineaire` (2-443, 2-444) ; L5-b forme libre (2-314, 440, 441), forme imposée en 2-439 et 2-312 ;
+L5-c lots 5 A (6) puis 5 B (10) ; L5-d 09f0c9ec laissé tel quel.
