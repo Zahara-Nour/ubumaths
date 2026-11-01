@@ -6,12 +6,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 5 publié (§ 36)._
+_Mis à jour le 2026-11-01, phase 0 du lot 6 (§ 37)._
 
-- **État** : lots 1 à 5 publiés (lot 5 « Droites » : 16 modèles, validés en bloc par David, publiés le 2026-11-01).
-- **Prochaine action** : lot 6 « Fonctions de référence, résolutions » (§ 4) : relevé MCP des points sans modèle,
-  puis phase 0 à faire valider par David (skill `couvrir-niveau`).
-- **En attente de David** : rien.
+- **État** : lots 1 à 5 publiés ; lot 6 : relevé fait, phase 0 proposée (§ 37).
+- **Prochaine action** : réponses de David à L6-a à L6-e, puis écrire le lot 6 A.
+- **En attente de David** : phase 0 du lot 6 (§ 37, questions L6-a à L6-e).
 - **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main` ET des worktrees ; `page-a-cocher.ts`
   ne prend qu'un `--dir` (préfixes `a-`/`b-` dans une copie) ; `db:migrate` et `--publier` refusés par le
   classifieur → David les lance avec `!`.
@@ -856,3 +855,95 @@ David a lancé `create-questions --publier` sur `2de-droites-a` puis `2de-droite
 
 - David valide le lot en bloc (aucun verdict sur la page). `publier-lot.ts` en simulation : 6/6 et 10/10 passent ;
   `--publier` lancé par David sur `2de-droites-a` puis `2de-droites-b` : 16/16 publiés. MCP : 16 `published`.
+
+## 37. Lot 6 « Fonctions de référence, résolutions » : relevé et phase 0 (proposée le 2026-11-01, à valider)
+
+**Relevé MCP (prod, 2026-11-01)** : sur les points du § 3.8 hors lecture graphique, **21 sans modèle** :
+325, 326, 327, 331, 447, 329, 333, 334, 335, 336, 448, 455, 457, 460, 461, 463, 466, 467, 469, 470, 472. Déjà couverts : 2-328 (bba95c2d), 2-339 (75fe996a), 2-458 (62b99aa7), **2-464** (419887ff et
+b0ef6947, « Division (2) », b/x = k, publiés, rangés « 1/x = k, 1/x < k » : pas de modèle neuf). 2-452, 2-454
+hors appli (Q6) ; 2-495 = P (Q2).
+
+Nœuds des points : Généralités › (notion) 325 · ensemble de définition 326 · appartenance à une courbe 327,
+331, 447 · signe 329 · équations et inéquations f(x) = k 336, 448 ; Fonctions affines › équations 455, 457 ;
+Fonction valeur absolue (notion) 333 · › équations et inéquations 460 ; Fonction carré › définition et courbe
+334 · › x² = k, x² < k 461, 463 ; Fonction inverse › définition et courbe 335 · › 1/x = k, 1/x < k 466 ;
+racine carrée › √x = k, √x < k 467, 469 ; cube › x³ = k, x³ < k 470, 472.
+
+**Voisins** : 2-281 x² = a (lot 2, Calcul littéral) ; 2-265/266/431 premier degré (lot 2) ; lecture graphique
+des mêmes fonctions (lot 2 bis, catégories « Lecture graphique ») ; 3e : 7407f328 « La courbe de la fonction
+carré » (3-046, case choix de courbes, patron de 2-334).
+
+**Bornes** : l2-1 (|x| = k, |x| < k seulement, pas |2x − 1| < 3) ; l2-2 (√x et x³ seulement en résolution ;
+domaine de √(x − 2) hors 2de ; 2-326 = dénominateur non nul) ; l2-3 (quatre sens) ; 2-447 : une abscisse
+seulement si f(x) = b est d'un type du programme.
+
+**Outils** (tous en prod) : case `intervalles` (S = ?, `{…}`, ∅, ℝ, réunion, ℝ \ {a}) ; ` ```courbe ` ; case
+choix avec dessins de ` ```courbe ` dans les choix (lot 5, B-06).
+
+**Phase 0 proposée** : un modèle par point, niveau `['2']`, brouillons, réponse `S = ?` en case `intervalles`
+sauf mention.
+
+Lot 6 A « Généralités et courbes de référence » (8) — Fonctions › Généralités › « Définition et courbe »
+(1 à 5) ; « Courbe » de chaque fonction :
+
+1. **2-325 · Ensemble de définition lu** : ` ```courbe ` tracée sur [a ; b], puis sur une réunion de deux
+   intervalles (bornes ouvertes / fermées marquées) → « f est définie sur ? ».
+2. **2-327 · Traduire « A(a ; b) ∈ C_f »** : case choix `plusieurs: oui` (f(a) = b ✔, « b est l'image de
+   a » ✔, « a est un antécédent de b » ✔ ; f(b) = a, « a est l'image de b »… ✘).
+3. **2-331 · Appartenance par le calcul** : f polynôme (2x² − 3x + 1, affine, (x − 1)(x + 2)), A donné ;
+   deux cases : f(x_A) = ? puis « A ∈ C_f ? » (case choix) ; variation 1/x et quotient a/(x − c).
+4. **2-447 · Coordonnées d'un point de la courbe** : ordonnée du point d'abscisse a ; abscisse(s) des points
+   d'ordonnée b quand f(x) = b est du programme (affine → `{…}` à un élément ; f(x) = x² + c → deux points).
+5. **2-326 · Ensemble de définition d'un quotient** : (2x + 1)/(x − 3) → ℝ \ {3} ; dénominateur ax + b
+   (valeur fractionnaire) ; produit (x − p)(x − q) au dénominateur → ℝ \ {p ; q}.
+6. **2-333 · Fonction valeur absolue** : case choix entre 4 courbes (|x|, −|x|, x², y = x) ; puis « pour
+   x < 0, |x| = ? » (case choix : −x ✔, x, 1/x, 0).
+7. **2-334 · Fonction carré** : case choix entre 4 courbes (x², −x², |x|, 1/x) ; puis image d'un négatif
+   (−3)² et piège −3².
+8. **2-335 · Fonction inverse** : case choix entre 4 courbes (1/x, −1/x, x², |x|) ; puis ensemble de
+   définition ℝ \ {0} ; image d'une fraction (1/(2/3)).
+
+Lot 6 B « Résolutions : affine, |x|, carré, inverse » (6) — sous-catégorie « Résolution algébrique » de chaque
+fonction, niveaux 1 (équation) et 2 (inéquation) :
+
+9. **2-455 · f affine, f(x) = k** : f(x) = mx + p donnée, « résoudre f(x) = k » ; solution entière, puis
+   fractionnaire ; « antécédent de k par f ».
+10. **2-457 · f affine, f(x) < k** : quatre sens tirés, m < 0 (sens qui change).
+11. **2-460 · |x| < k** : k > 0, quatre sens (]−k ; k[, ]−∞ ; −k] ∪ [k ; +∞[…) ; k < 0 (∅ ou ℝ) ; k = 0
+    ({0}, ℝ \ {0}, ∅, ℝ). Corrigé : distance à 0 sur la droite graduée.
+12. **2-461 · x² = k (fonction carré)** : voir L6-a.
+13. **2-463 · x² < k** : k carré parfait, quatre sens ; k non carré (√5) ; k < 0, k = 0.
+14. **2-466 · 1/x < k** : k ∈ {±½, ±1, ±2, ±3, ±4}, quatre sens : 1/x < 2 → ]−∞ ; 0[ ∪ ]½ ; +∞[ ; 1/x > −2 →
+    ]−∞ ; −½[ ∪ ]0 ; +∞[… Corrigé : signe de x, puis décroissance sur chaque intervalle, courbe et droite y = k.
+
+Lot 6 C « Résolutions : racine, cube, méthode au choix » (6) :
+
+15. **2-467 · √x = k** : k entier, décimal (√x = 1,2 → {1,44}), fraction ; k < 0 → ∅.
+16. **2-469 · √x < k** : [0 ; k²[, [k² ; +∞[… ; k < 0 (∅, [0 ; +∞[). Piège : oublier x ⩾ 0.
+17. **2-470 · x³ = k** : voir L6-c.
+18. **2-472 · x³ < k** : par la croissance de x ↦ x³, quatre sens.
+19. **2-336 · f(x) = k, méthode adaptée** : voir L6-d.
+20. **2-448 · f(x) < k, méthode adaptée** : voir L6-d.
+
+- **Corrigé** : méthode écrite (propriété de la fonction : croissance, décroissance, signe), résultat coloré ;
+  pour les inéquations, courbe + droite y = k en pointillé, partie solution repassée (comme le lot 2 bis).
+- **Erreurs typiques en specs** : oubli de la solution négative (x² = 9 → {3}) ; x² < 9 → ]−∞ ; 3[ ; √x < 2 →
+  ]−∞ ; 4[ ; 1/x < 2 → ]½ ; +∞[ seul (oubli des négatifs) ; 0 inclus pour 1/x ; |x| > 3 → ]3 ; +∞[ ; crochet
+  du mauvais côté ; sens non changé pour m < 0 ; « 3 » sans accolades ; ℝ \ {3} écrit {3}.
+- **Question d'accès** : personne (brouillons neufs, aucune policy).
+
+**Questions à David** :
+
+- **L6-a — 2-461 x² = k contre 2-281 x² = a** (lot 2, déjà écrit : carré parfait, √a, a ⩽ 0). → Je recommande
+  un modèle **distinct, du côté fonction** : « antécédents de k par la fonction carré », k fraction (9/4) et
+  décimal (0,49), puis f(x) = x² + c = k ; corrigé par la symétrie de la parabole. (Réutiliser le modèle de 2-281 est exclu : un
+  modèle porte un seul point par programme, ADR 0020.)
+- **L6-b — 2-329 « signe des fonctions de référence »** : 2-475 (signe de |x|) et 2-476 (signe de x²) sont
+  au lot 7. → Je recommande de **déplacer 2-329 au lot 7** (tous les signes ensemble) ; le lot 6 passe à 20.
+- **L6-c — 2-470, 2-472 cube** : la racine cubique ∛ n'est pas au BO de 2de. → Je recommande **cubes
+  parfaits seulement** (entiers −125 à 125, fractions 8/27, décimaux 0,008), sans ∛.
+- **L6-d — 2-336, 2-448 « méthode adaptée »** : le graphique est déjà fait (2-338, 2-453, lot 2 bis). → Je
+  recommande des **f données par leur expression, qui se ramènent à un type du programme** : 2x² + 1 = 19,
+  3/x − 1 = 5, 2√x + 1 = 7 (et < k) ; pas de |x| décalé (l2-1). Le corrigé nomme le type.
+- **L6-e — Découpage** : 6 A (8), 6 B (6), 6 C (6) : trois PR de fichiers, puis une migration nœud + tag et une
+  page à cocher pour les 20 ? → Je recommande **oui** (comme le lot 5).
