@@ -577,7 +577,7 @@ function scatterTypst(scene: ScatterScene, size: CourbeSize): string {
  * Boîtes à moustaches : le dessin de l'écran (bandes de la scène, en px), mis à
  * l'échelle de la largeur du PDF. Quadrillage léger à chaque graduation, boîte de
  * Q1 à Q3, médiane épaisse, moustaches terminées par un petit trait ; noms au-dessus
- * à gauche, un seul axe en bas.
+ * à gauche, un seul axe en bas (boîte à construire : son nom seul, l'élève dessine).
  */
 function boxPlotTypst(scene: BoxPlotScene, size: CourbeSize): string {
 	const W = WIDTH_CM[size];
@@ -612,6 +612,8 @@ function boxPlotTypst(scene: BoxPlotScene, size: CourbeSize): string {
 				`  content((0, ${Y(band.nameY)}), anchor: "south-west", text(size: 7pt, weight: "bold")${textContent(box.name)})`
 			);
 		}
+		// Boîte à construire (`placer:`) : l'axe et le nom seuls, l'élève dessine
+		if (box.toPlace) return;
 		lines.push(
 			'  // moustache',
 			`  line((${min}, ${middle}), (${q1}, ${middle}), ${whisker})`,

@@ -1,0 +1,199 @@
+{
+	"title": "Probabilités d'une répétition (n ⩽ 4)",
+	"description": "Répétition de n ⩽ 4 épreuves de Bernoulli : exactement j succès sur 3, au moins un succès (événement contraire), exactement un succès sur 4 — par les chemins, sans loi binomiale",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Probabilités conditionnelles",
+	"subdomain": "Répétition de Bernoulli",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "À un jeu, Malo gagne chaque partie avec la probabilité ${{eval:a/10;d}}$, et les parties sont indépendantes. Il joue trois parties.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité qu'il gagne exactement ${{eval:j}}$ partie(s) : $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "j",
+					"expression": "1..2"
+				}
+			],
+			"conditions": ["a != 5"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:3*(a/10)^j*(1-a/10)^(3-j)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque partie est une épreuve de Bernoulli (succès : gagner, $p={{eval:a/10;d}}$) ; on la répète trois fois de façon indépendante.",
+					"Un chemin à exactement ${{eval:j}}$ victoire(s) et ${{eval:3-j}}$ défaite(s) a pour probabilité ${{eval:a/10;d}}^{{{eval:j}}}\\times{{eval:1-a/10;d}}^{{{eval:3-j}}}={{eval:(a/10)^j*(1-a/10)^(3-j);d}}$.",
+					"Il y a $3$ tels chemins : on choisit la partie qui diffère des deux autres (la seule gagnée, ou la seule perdue).",
+					"Probabilité : $3\\times{{eval:(a/10)^j*(1-a/10)^(3-j);d}}=\\textcolor{{{color:primary.0}}}{{{eval:3*(a/10)^j*(1-a/10)^(3-j);d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "À un jeu, Malo gagne chaque partie avec la probabilité ${{eval:a/10;d}}$, et les parties sont indépendantes. Il joue ${{eval:n}}$ parties.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité qu'il gagne au moins une partie : $?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..4"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-(1-a/10)^n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'événement contraire de « gagner au moins une partie » est « perdre toutes les parties » : un seul chemin, $\\overline{S}\\cdots\\overline{S}$.",
+					"Les parties sont indépendantes : $P(\\text{perdre les } {{eval:n}} \\text{ parties})={{eval:1-a/10;d}}^{{{eval:n}}}={{eval:(1-a/10)^n;d}}$.",
+					"Probabilité de gagner au moins une partie : $1-{{eval:(1-a/10)^n;d}}=\\textcolor{{{color:primary.0}}}{{{eval:1-(1-a/10)^n;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "À un jeu, Malo gagne chaque partie avec la probabilité ${{eval:a/10;d}}$, et les parties sont indépendantes. Il joue quatre parties.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité qu'il gagne exactement une partie : $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:4*(a/10)*(1-a/10)^3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Gagner exactement une partie sur quatre : quatre chemins, selon la partie gagnée, $S\\overline{S}\\,\\overline{S}\\,\\overline{S}$, $\\overline{S}S\\overline{S}\\,\\overline{S}$, $\\overline{S}\\,\\overline{S}S\\overline{S}$, $\\overline{S}\\,\\overline{S}\\,\\overline{S}S$.",
+					"Chacun a pour probabilité ${{eval:a/10;d}}\\times{{eval:1-a/10;d}}^3={{eval:(a/10)*(1-a/10)^3;d}}$ (parties indépendantes).",
+					"Probabilité : $4\\times{{eval:(a/10)*(1-a/10)^3;d}}=\\textcolor{{{color:primary.0}}}{{{eval:4*(a/10)*(1-a/10)^3;d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "p = 0,4, 1 sur 3 : 3 × 0,4 × 0,36",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"j": "1"
+			},
+			"answers": ["0{,}432"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "p = 0,4, 2 sur 3 : 3 × 0,16 × 0,6",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"j": "2"
+			},
+			"answers": ["0{,}288"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un seul chemin",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"j": "1"
+			},
+			"answers": ["0{,}144"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Au moins une sur 3, p = 0,4 : 1 − 0,216",
+			"variationIndex": 1,
+			"variables": {
+				"n": "3",
+				"a": "4"
+			},
+			"answers": ["0{,}784"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 − 0,4³",
+			"variationIndex": 1,
+			"variables": {
+				"n": "3",
+				"a": "4"
+			},
+			"answers": ["0{,}936"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0,6³",
+			"variationIndex": 1,
+			"variables": {
+				"n": "3",
+				"a": "4"
+			},
+			"answers": ["0{,}216"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Une sur 4, p = 0,2 : 4 × 0,2 × 0,512",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["0{,}4096"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En fraction",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["\\frac{256}{625}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un seul chemin",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["0{,}1024"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

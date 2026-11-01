@@ -539,6 +539,8 @@ export interface BoxPlotSceneBox {
 	 * proches ne s'écrivent pas l'une sur l'autre
 	 */
 	valueRows: number[];
+	/** Boîte à construire par l'élève (`placer:`) : jamais dessinée, son nom seul */
+	toPlace?: true;
 }
 
 /**

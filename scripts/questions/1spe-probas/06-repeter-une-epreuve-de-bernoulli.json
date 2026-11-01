@@ -1,0 +1,163 @@
+{
+	"title": "Répéter une épreuve de Bernoulli",
+	"description": "Répétition de n ⩽ 4 épreuves de Bernoulli indépendantes et identiques : nombre de chemins, probabilité d'un chemin donné (cas général, archer)",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Probabilités conditionnelles",
+	"subdomain": "Répétition de Bernoulli",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On répète ${{eval:n}}$ fois, de façon indépendante, une même épreuve de Bernoulli dont la probabilité de succès est $p={{eval:a/10;d}}$.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nNombre de chemins de l'arbre qui représente cette expérience : $?$\n\nProbabilité d'obtenir un échec à chacune des ${{eval:n-1}}$ premières épreuves, puis un succès à la dernière : $?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..4"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2^n}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(1-a/10)^(n-1)*a/10}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque épreuve a deux issues (succès $S$, échec $\\overline{S}$) : chaque nouvelle épreuve double le nombre de chemins. Il y en a $2^{{{eval:n}}}=\\textcolor{{{color:primary.0}}}{{{eval:2^n}}}$.",
+					"Les épreuves sont indépendantes : la probabilité d'un chemin est le produit des probabilités de ses branches, avec $P(\\overline{S})=1-{{eval:a/10;d}}={{eval:1-a/10;d}}$.",
+					"Ici ${{eval:n-1}}$ échecs puis un succès : ${{eval:1-a/10;d}}^{{{eval:n-1}}}\\times{{eval:a/10;d}}=\\textcolor{{{color:primary.0}}}{{{eval:(1-a/10)^(n-1)*a/10;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un archer atteint la cible avec la probabilité ${{eval:a/10;d}}$ à chaque tir, et ses tirs sont indépendants. Il tire trois flèches.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité qu'il atteigne la cible au premier et au troisième tir, mais pas au deuxième : $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a/10)^2*(1-a/10)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque tir est une épreuve de Bernoulli de succès « atteindre la cible », de probabilité $p={{eval:a/10;d}}$ ; on la répète trois fois de façon indépendante.",
+					"L'événement demandé est le chemin $S\\,\\overline{S}\\,S$ : sa probabilité est le produit des probabilités de ses branches.",
+					"${{eval:a/10;d}}\\times{{eval:1-a/10;d}}\\times{{eval:a/10;d}}=\\textcolor{{{color:primary.0}}}{{{eval:(a/10)^2*(1-a/10);d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "n = 3, p = 0,4 : 8 et 0,6² × 0,4",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"a": "4"
+			},
+			"answers": ["8", "0{,}144"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "n = 3, fraction",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"a": "4"
+			},
+			"answers": ["8", "\\frac{18}{125}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2n chemins",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"a": "4"
+			},
+			"answers": ["6", "0{,}144"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0,4² × 0,6",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"a": "4"
+			},
+			"answers": ["8", "0{,}096"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n = 4, p = 0,5",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"a": "5"
+			},
+			"answers": ["16", "0{,}0625"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Archer 0,8 : 0,8 × 0,2 × 0,8",
+			"variationIndex": 1,
+			"variables": {
+				"a": "8"
+			},
+			"answers": ["0{,}128"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,8 × 0,8",
+			"variationIndex": 1,
+			"variables": {
+				"a": "8"
+			},
+			"answers": ["0{,}64"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 chemins comptés",
+			"variationIndex": 1,
+			"variables": {
+				"a": "8"
+			},
+			"answers": ["0{,}384"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

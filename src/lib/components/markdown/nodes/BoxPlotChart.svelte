@@ -90,40 +90,43 @@
 			{#if box.name !== null && band.nameY !== null}
 				<text class="stat-nom-boite" x={padLeft} y={PAD_TOP + band.nameY}>{box.name}</text>
 			{/if}
-			<line class="stat-moustache" x1={sx(min)} y1={middle} x2={sx(q1)} y2={middle} />
-			<line class="stat-moustache" x1={sx(q3)} y1={middle} x2={sx(max)} y2={middle} />
-			<line
-				class="stat-moustache-bout"
-				x1={sx(min)}
-				y1={top + cap}
-				x2={sx(min)}
-				y2={bottom - cap}
-			/>
-			<line
-				class="stat-moustache-bout"
-				x1={sx(max)}
-				y1={top + cap}
-				x2={sx(max)}
-				y2={bottom - cap}
-			/>
-			<rect
-				class="stat-boite"
-				x={sx(q1)}
-				y={top}
-				width={sx(q3) - sx(q1)}
-				height={bottom - top}
-				style:fill="color-mix(in oklab, {color} 22%, var(--color-background))"
-			/>
-			<line class="stat-mediane" x1={sx(median)} y1={top} x2={sx(median)} y2={bottom} />
-			{#if scene.showValues}
-				{#each box.values as value, j (j)}
-					<text
-						class="stat-valeur"
-						x={sx(value)}
-						y={PAD_TOP + band.valueY[box.valueRows[j]]}
-						text-anchor="middle">{box.labels[j]}</text
-					>
-				{/each}
+			<!-- Boîte à construire (`placer:`), dessinée hors geste : son nom seul -->
+			{#if !box.toPlace}
+				<line class="stat-moustache" x1={sx(min)} y1={middle} x2={sx(q1)} y2={middle} />
+				<line class="stat-moustache" x1={sx(q3)} y1={middle} x2={sx(max)} y2={middle} />
+				<line
+					class="stat-moustache-bout"
+					x1={sx(min)}
+					y1={top + cap}
+					x2={sx(min)}
+					y2={bottom - cap}
+				/>
+				<line
+					class="stat-moustache-bout"
+					x1={sx(max)}
+					y1={top + cap}
+					x2={sx(max)}
+					y2={bottom - cap}
+				/>
+				<rect
+					class="stat-boite"
+					x={sx(q1)}
+					y={top}
+					width={sx(q3) - sx(q1)}
+					height={bottom - top}
+					style:fill="color-mix(in oklab, {color} 22%, var(--color-background))"
+				/>
+				<line class="stat-mediane" x1={sx(median)} y1={top} x2={sx(median)} y2={bottom} />
+				{#if scene.showValues}
+					{#each box.values as value, j (j)}
+						<text
+							class="stat-valeur"
+							x={sx(value)}
+							y={PAD_TOP + band.valueY[box.valueRows[j]]}
+							text-anchor="middle">{box.labels[j]}</text
+						>
+					{/each}
+				{/if}
 			{/if}
 		</g>
 	{/each}

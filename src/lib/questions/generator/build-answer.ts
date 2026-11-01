@@ -7,7 +7,9 @@
  * `placer:` (```line, écrite par `placerAnswer`, comme la réponse de l'élève),
  * ou l'heure de `placer:` (```horloge, sur le cadran de 12 : `9 h 25`), ou
  * l'effectif d'une barre de `placer:` (```barres, `12` ; avec `axe: à choisir`,
- * la première case est l'échelle, `5`), ou le rang ÉCRIT de
+ * la première case est l'échelle, `5`), ou une des cinq valeurs d'une boîte de
+ * `placer:` (```boite-a-moustaches, `11` : minimum, Q1, médiane, Q3, maximum,
+ * boîte après boîte), ou le rang ÉCRIT de
  * l'étiquette d'une place (```ranger, `2` ; le générateur le change en position
  * affichée après le mélange), ou les parts à colorier d'une figure (```partage,
  * `colorier: 3/8` : `3/8`, parts à colorier sur parts de la figure), ou la vue ou
@@ -28,6 +30,12 @@ import { parseHorlogeContent } from '$lib/ubumark/parser/horloge-parser';
 import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
 import { parseRangerContent } from '$lib/ubumark/parser/ranger-parser';
 import { adaptedScale, barsCaseCount } from '$lib/ubumark/utils/barres-placer';
+import {
+	boxesToPlace,
+	boxPlotCaseCount,
+	boxValueAnswer,
+	CASES_PER_BOX
+} from '$lib/ubumark/utils/boxplot-placer';
 import { RANGER_MIN_LABELS_IN_QUESTION } from '$lib/ubumark/utils/ranger';
 import { parsePartageContent } from '$lib/ubumark/parser/partage-parser';
 import { expectedColoringAnswer } from '$lib/ubumark/utils/partage-colorier';
@@ -51,7 +59,8 @@ const MASKABLE_KINDS = new Set<BuildKind>([
 	'collection',
 	'monnaie',
 	'partage',
-	'barres'
+	'barres',
+	'boite-a-moustaches'
 ]);
 export const MASKED_IN_TEMPLATE =
 	'« ? » à la place d’une valeur : écris la valeur attendue (le « ? » est réservé à l’énoncé envoyé pendant une évaluation)';
@@ -71,6 +80,10 @@ export function buildCaseCount(kind: BuildKind, source: string): number {
 	if (kind === 'barres') {
 		const spec = parseStatChartContent('barres', source).spec;
 		return Math.max(1, spec ? barsCaseCount(spec) : 1);
+	}
+	if (kind === 'boite-a-moustaches') {
+		const spec = parseStatChartContent('boite-a-moustaches', source).spec;
+		return Math.max(1, spec ? boxPlotCaseCount(spec) : 1);
 	}
 	return 1;
 }
@@ -121,6 +134,15 @@ export function buildAnswerOf(
 		const rank = node.spec.toPlace?.[point];
 		if (rank === undefined) return { errors: ['placer: absent'] };
 		return { answer: String(node.spec.data[rank].value) };
+	}
+	if (kind === 'boite-a-moustaches') {
+		const node = parseStatChartContent('boite-a-moustaches', source);
+		if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
+		if (node.spec === null) return { errors: node.errors.map((e) => e.message) };
+		// Cinq cases par boîte : minimum, Q1, médiane, Q3, maximum
+		const box = boxesToPlace(node.spec)[Math.floor(point / CASES_PER_BOX)];
+		if (box === undefined) return { errors: ['placer: absent'] };
+		return { answer: boxValueAnswer(box.expected[point % CASES_PER_BOX]) };
 	}
 	if (kind === 'ranger') {
 		const node = parseRangerContent(source);

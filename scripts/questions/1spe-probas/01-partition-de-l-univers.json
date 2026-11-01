@@ -1,0 +1,250 @@
+{
+	"title": "Partition de l'univers",
+	"description": "Reconnaître une partition de l'univers (jetons numérotés : oui, issue commune, issue oubliée) ; probabilité du dernier événement d'une partition",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Probabilités conditionnelles",
+	"subdomain": "Partition de l'univers",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Un sac contient ${{eval:n}}$ jetons numérotés de $1$ à ${{eval:n}}$. On tire un jeton au hasard et on considère les événements :\n\n- $A$ : « le numéro est inférieur ou égal à ${{eval:a}}$ » ;\n- $B$ : « le numéro est compris entre ${{eval:a+1}}$ et ${{eval:b}}$, bornes comprises » ;\n- $C$ : « le numéro est supérieur ou égal à ${{eval:b+1}}$ ».\n\nLes événements $A$, $B$ et $C$ forment-ils une partition de l'univers ?\n\n```choix\n- Oui.\n- Non : deux de ces événements ont au moins une issue en commun.\n- Non : au moins une issue n'appartient à aucun de ces événements.\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "12..20"
+				},
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "6..15"
+				}
+			],
+			"conditions": ["b >= a+3", "n >= b+3"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'univers est $\\Omega=\\{1\\,;2\\,;\\ldots\\,;{{eval:n}}\\}$. Des événements forment une partition de $\\Omega$ lorsqu'ils sont deux à deux disjoints (aucune issue commune) et que leur réunion est $\\Omega$ (chaque issue est dans l'un d'eux).",
+					"$A=\\{1\\,;\\ldots\\,;{{eval:a}}\\}$, $B=\\{{{eval:a+1}}\\,;\\ldots\\,;{{eval:b}}\\}$ et $C=\\{{{eval:b+1}}\\,;\\ldots\\,;{{eval:n}}\\}$.",
+					"Ces trois ensembles se suivent sans se chevaucher ni laisser de trou : ils sont deux à deux disjoints et leur réunion est $\\Omega$. \\textcolor{{{color:primary.0}}}{\\text{Oui}}, c'est une partition."
+				]
+			}
+		},
+		{
+			"statement": "Un sac contient ${{eval:n}}$ jetons numérotés de $1$ à ${{eval:n}}$. On tire un jeton au hasard et on considère les événements :\n\n- $A$ : « le numéro est inférieur ou égal à ${{eval:a}}$ » ;\n- $B$ : « le numéro est compris entre ${{eval:a}}$ et ${{eval:b}}$, bornes comprises » ;\n- $C$ : « le numéro est supérieur ou égal à ${{eval:b+1}}$ ».\n\nLes événements $A$, $B$ et $C$ forment-ils une partition de l'univers ?\n\n```choix\n- Oui.\n- Non : deux de ces événements ont au moins une issue en commun.\n- Non : au moins une issue n'appartient à aucun de ces événements.\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "12..20"
+				},
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "6..15"
+				}
+			],
+			"conditions": ["b >= a+3", "n >= b+3"],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'univers est $\\Omega=\\{1\\,;2\\,;\\ldots\\,;{{eval:n}}\\}$. Des événements forment une partition de $\\Omega$ lorsqu'ils sont deux à deux disjoints (aucune issue commune) et que leur réunion est $\\Omega$ (chaque issue est dans l'un d'eux).",
+					"$A=\\{1\\,;\\ldots\\,;{{eval:a}}\\}$, $B=\\{{{eval:a}}\\,;\\ldots\\,;{{eval:b}}\\}$ et $C=\\{{{eval:b+1}}\\,;\\ldots\\,;{{eval:n}}\\}$.",
+					"L'issue ${{eval:a}}$ appartient à la fois à $A$ et à $B$ : $A\\cap B\\neq\\varnothing$. \\textcolor{{{color:primary.0}}}{\\text{Non}}, ce n'est pas une partition."
+				]
+			}
+		},
+		{
+			"statement": "Un sac contient ${{eval:n}}$ jetons numérotés de $1$ à ${{eval:n}}$. On tire un jeton au hasard et on considère les événements :\n\n- $A$ : « le numéro est inférieur ou égal à ${{eval:a}}$ » ;\n- $B$ : « le numéro est compris entre ${{eval:a+2}}$ et ${{eval:b}}$, bornes comprises » ;\n- $C$ : « le numéro est supérieur ou égal à ${{eval:b+1}}$ ».\n\nLes événements $A$, $B$ et $C$ forment-ils une partition de l'univers ?\n\n```choix\n- Oui.\n- Non : deux de ces événements ont au moins une issue en commun.\n- Non : au moins une issue n'appartient à aucun de ces événements.\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "12..20"
+				},
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "6..15"
+				}
+			],
+			"conditions": ["b >= a+3", "n >= b+3"],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'univers est $\\Omega=\\{1\\,;2\\,;\\ldots\\,;{{eval:n}}\\}$. Des événements forment une partition de $\\Omega$ lorsqu'ils sont deux à deux disjoints (aucune issue commune) et que leur réunion est $\\Omega$ (chaque issue est dans l'un d'eux).",
+					"$A=\\{1\\,;\\ldots\\,;{{eval:a}}\\}$, $B=\\{{{eval:a+2}}\\,;\\ldots\\,;{{eval:b}}\\}$ et $C=\\{{{eval:b+1}}\\,;\\ldots\\,;{{eval:n}}\\}$.",
+					"L'issue ${{eval:a+1}}$ n'appartient ni à $A$, ni à $B$, ni à $C$ : la réunion n'est pas $\\Omega$. \\textcolor{{{color:primary.0}}}{\\text{Non}}, ce n'est pas une partition."
+				]
+			}
+		},
+		{
+			"statement": "Les événements $A$, $B$ et $C$ forment une partition de l'univers. On sait que $P(A)={{eval:a/100;d}}$ et $P(B)={{eval:b/100;d}}$.\n\n$P(C)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "10..55"
+				},
+				{
+					"name": "b",
+					"expression": "10..45"
+				}
+			],
+			"conditions": ["a+b <= 90", "mod(a+b,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-(a+b)/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A$, $B$ et $C$ forment une partition de l'univers : ils sont deux à deux disjoints et leur réunion est l'univers, donc $P(A)+P(B)+P(C)=1$.",
+					"$P(C)=1-{{eval:a/100;d}}-{{eval:b/100;d}}=\\textcolor{{{color:primary.0}}}{{{eval:1-(a+b)/100;d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Partition : oui",
+			"variationIndex": 0,
+			"variables": {
+				"n": "15",
+				"a": "4",
+				"b": "10"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Partition : « issue commune » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"n": "15",
+				"a": "4",
+				"b": "10"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Issue commune",
+			"variationIndex": 1,
+			"variables": {
+				"n": "15",
+				"a": "4",
+				"b": "10"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Issue commune : « oui » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"n": "15",
+				"a": "4",
+				"b": "10"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Issue oubliée",
+			"variationIndex": 2,
+			"variables": {
+				"n": "15",
+				"a": "4",
+				"b": "10"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Issue oubliée : « issue commune » refusé",
+			"variationIndex": 2,
+			"variables": {
+				"n": "15",
+				"a": "4",
+				"b": "10"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "P(C) = 1 − 0,35 − 0,22",
+			"variationIndex": 3,
+			"variables": {
+				"a": "35",
+				"b": "22"
+			},
+			"answers": ["0{,}43"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "P(C) en fraction",
+			"variationIndex": 3,
+			"variables": {
+				"a": "35",
+				"b": "22"
+			},
+			"answers": ["\\frac{43}{100}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : P(A) + P(B)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "35",
+				"b": "22"
+			},
+			"answers": ["0{,}57"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

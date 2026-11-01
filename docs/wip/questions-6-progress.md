@@ -5,19 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2150 (lot 8 écrit, mergé)._
+_Mis à jour le 2026-11-01, après #2153 (mergée)._
 
-- **État** : lots 1 à 7 publiés ; lot 8 « Assemblages de cubes » (154, 155, 181, 208, 209) écrit, joué en local,
-  fichiers mergés (#2150) ; rien en prod pour ce lot.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-assemblages-cubes
---publier` (brouillons en prod) ; puis relever les 5 `id`, migration nœud + tag (nœuds = notions « Géométrie >
-  Solides », « Grandeurs et mesures > Volumes »), page à cocher. **Publication après le `deploy:prod` qui livre
-  #2130.**
-- **En attente de David** : le `create-questions --publier` du lot 8.
+- **État** : lot 8 « Assemblages de cubes » : fichiers mergés (#2150) ; 5 brouillons en prod (ce3c4e11, 763d1183,
+  37c6852c, 650dcfc6, 0464c3f6) ; migration nœud + tag `20261101224700` mergée (#2153, CI verte, garde
+  `check:migrations` verte) mais **pas jouée** : `db:migrate` refusé par le classifieur du mode auto (le push joue
+  aussi 223100 ce2 lot 6a et 224000 questions-5 lot 7, mergées, 4 conditions réunies selon leurs journaux).
+- **Prochaine action** : après le `db:migrate` de David, MCP : 5 modèles sur leur notion, un tag chacun,
+  `updated_at` préservé, trigger `O` ; prévenir les sessions questions-ce2 et questions-5 si leurs migrations sont
+  passées avec ; puis page à cocher. **Publication après le `deploy:prod` qui livre #2130.**
+- **En attente de David** : `! pnpm db:migrate` depuis le dépôt principal.
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs --file`. Jamais de variable
   `e`. `Doc-inchangée:` va dans un message de COMMIT. PR en conflit = pas de CI : vérifier `mergeable`. Horodatage
-  de migration = dernière de `main` + 1 min.
-- **Worktree / branche** : aucun (retiré après #2150).
+  de migration : `pnpm migration:horodatage` (règle #2165), jamais un nombre rond choisi à la main.
+- **Worktree / branche** : `../ubumaths-wt-questions-6` · `feat/questions-6-lot8-rangement` (mergée, à retirer).
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1241,3 +1242,19 @@ toutes distinctes, chaque leurre du 3 v1 a une vue différente des vues données
   justes jugées justes (compte, volume, comparaison, `dessiner:` face / dessus / droite, `retrouver:` face et
   face + droite), fausses jugées fausses ; rendu des perspectives, des vues en options et des corrections lu.
 - PR #2150 : CI verte, mergée ; worktree retiré.
+
+### 20.2 Brouillons en prod et rangement (2026-11-01)
+
+- David lance `create-questions --publier` : 01 ce3c4e11, 02 763d1183, 03 37c6852c, 04 650dcfc6, 05 0464c3f6, en
+  brouillon. MCP : 5 brouillons, `['6']`, niveaux 1, 2, 3, 1, 2, sans nœud ni tag ; points actifs sur des
+  **notions** (6-181, 6-208, 6-209 → « Géométrie > Solides » ; 6-154, 6-155 → « Grandeurs et mesures > Volumes »).
+- Migration `20261101220100_questions_6_lot8_rangement_tags` (patron du lot 7, résolution du chemin jusqu'à la
+  notion ; horodatage 215200 d’abord, pris de vitesse par 220000 (questions-tspe) : renommée 220100, dernière jouée en prod + 1 min, relevée juste avant le push) ; test `questions-6-lot8-rangement-tags` : 8 rouges
+  contre une migration vidée, 14 verts avec.
+- Revue `security-auditor` : aucun bloquant ; un Important corrigé (horodatage antérieur à 220000, déjà jouée :
+  renommée 220100) ; un Faible laissé (branches « point sur un autre nœud » et « chemin introuvable » de la
+  résolution non testées, déjà le cas au lot 7 ; le code les refuse).
+- Reprise (2026-11-01, après `/clear`) : relevé MCP, `20261101223000_questions_4_lot8_rangement_tags` déjà jouée
+  en prod, après 220100 (`db push` l'aurait refusée, migration intercalée). 223100, 224000 et 224100 pris sur
+  d'autres branches (ce2, questions-5, cm1) → renommée **224700** (`pnpm migration:horodatage` pas encore sur
+  `main`, #2165 ouverte) ; `origin/main` fusionnée ; test d'intégration 14 verts avec le nouveau nom.

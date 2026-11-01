@@ -1,0 +1,263 @@
+{
+	"title": "Quelle fraction de la figure est coloriée ? Jusqu'à 1",
+	"description": "Plusieurs parts coloriées, à la suite ou éparpillées ; toute la figure (d/d ou 1)",
+	"grades": ["CE1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Partage",
+	"level": 6,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quelle fraction de la figure est coloriée ?\n\n```partage\nforme: {{if:k==0|bande|disque}} {{d}}\ngris: {{n}}\n```\n\n$$?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				},
+				{
+					"name": "j",
+					"expression": "1..7"
+				},
+				{
+					"name": "d",
+					"expression": "{{if:j==1|2|{{if:j==2|3|{{if:j==3|4|{{if:j==4|5|{{if:j==5|6|{{if:j==6|8|10}}}}}}}}}}}}"
+				},
+				{
+					"name": "n",
+					"expression": "2..{{eval:d-1}}"
+				}
+			],
+			"conditions": ["d >= 3"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{n}}}{{{d}}}",
+					"requiredForm": "fraction"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La figure est partagée en ${{d}}$ parts égales** : une part, c'est $\\frac{1}{{{d}}}$ de la figure, un {{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==8|huitième|dixième}}}}}}}}}}}}.",
+					"${{n}}$ parts sont coloriées : $\\textcolor{{{color:primary.0}}}{\\frac{{{n}}}{{{d}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quelle fraction de la figure est coloriée ?\n\n```partage\nforme: {{if:f==1|bande 5|{{if:f==2|bande 6|{{if:f==3|bande 8|{{if:f==4|bande 10|{{if:f==5|grille 2×3|{{if:f==6|grille 2×4|{{if:f==7|grille 2×5|disque 8}}}}}}}}}}}}}}\ngris: {{if:n==2|{{eval:mod(s+0*p,d)+1}}, {{eval:mod(s+1*p,d)+1}}|{{if:n==3|{{eval:mod(s+0*p,d)+1}}, {{eval:mod(s+1*p,d)+1}}, {{eval:mod(s+2*p,d)+1}}|{{if:n==4|{{eval:mod(s+0*p,d)+1}}, {{eval:mod(s+1*p,d)+1}}, {{eval:mod(s+2*p,d)+1}}, {{eval:mod(s+3*p,d)+1}}|{{if:n==5|{{eval:mod(s+0*p,d)+1}}, {{eval:mod(s+1*p,d)+1}}, {{eval:mod(s+2*p,d)+1}}, {{eval:mod(s+3*p,d)+1}}, {{eval:mod(s+4*p,d)+1}}|{{if:n==6|{{eval:mod(s+0*p,d)+1}}, {{eval:mod(s+1*p,d)+1}}, {{eval:mod(s+2*p,d)+1}}, {{eval:mod(s+3*p,d)+1}}, {{eval:mod(s+4*p,d)+1}}, {{eval:mod(s+5*p,d)+1}}|{{if:n==7|{{eval:mod(s+0*p,d)+1}}, {{eval:mod(s+1*p,d)+1}}, {{eval:mod(s+2*p,d)+1}}, {{eval:mod(s+3*p,d)+1}}, {{eval:mod(s+4*p,d)+1}}, {{eval:mod(s+5*p,d)+1}}, {{eval:mod(s+6*p,d)+1}}|{{if:n==8|{{eval:mod(s+0*p,d)+1}}, {{eval:mod(s+1*p,d)+1}}, {{eval:mod(s+2*p,d)+1}}, {{eval:mod(s+3*p,d)+1}}, {{eval:mod(s+4*p,d)+1}}, {{eval:mod(s+5*p,d)+1}}, {{eval:mod(s+6*p,d)+1}}, {{eval:mod(s+7*p,d)+1}}|{{eval:mod(s+0*p,d)+1}}, {{eval:mod(s+1*p,d)+1}}, {{eval:mod(s+2*p,d)+1}}, {{eval:mod(s+3*p,d)+1}}, {{eval:mod(s+4*p,d)+1}}, {{eval:mod(s+5*p,d)+1}}, {{eval:mod(s+6*p,d)+1}}, {{eval:mod(s+7*p,d)+1}}, {{eval:mod(s+8*p,d)+1}}}}}}}}}}}}}}}}\n```\n\n$$?$$",
+			"variables": [
+				{
+					"name": "f",
+					"expression": "1..8"
+				},
+				{
+					"name": "d",
+					"expression": "{{if:f==1|5|{{if:f==2|6|{{if:f==3|8|{{if:f==4|10|{{if:f==5|6|{{if:f==6|8|{{if:f==7|10|8}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "n",
+					"expression": "2..{{eval:d-1}}"
+				},
+				{
+					"name": "p",
+					"expression": "2..{{eval:d-2}}"
+				},
+				{
+					"name": "s",
+					"expression": "0..{{eval:d-1}}"
+				}
+			],
+			"conditions": ["gcd(p,d) == 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{n}}}{{{d}}}",
+					"requiredForm": "fraction"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La figure est partagée en ${{d}}$ parts égales** : une part, c'est $\\frac{1}{{{d}}}$ de la figure.",
+					"Les parts coloriées ne se suivent pas : on les compte une par une. Il y en a ${{n}}$ : $\\textcolor{{{color:primary.0}}}{\\frac{{{n}}}{{{d}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quelle fraction de la figure est coloriée ?\n\n```partage\nforme: {{if:k==0|bande|disque}} {{d}}\ngris: {{d}}\n```\n\n$$?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				},
+				{
+					"name": "j",
+					"expression": "1..7"
+				},
+				{
+					"name": "d",
+					"expression": "{{if:j==1|2|{{if:j==2|3|{{if:j==3|4|{{if:j==4|5|{{if:j==5|6|{{if:j==6|8|10}}}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{d}}}{{{d}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La figure est partagée en ${{d}}$ parts égales** : une part, c'est $\\frac{1}{{{d}}}$ de la figure, un {{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==8|huitième|dixième}}}}}}}}}}}}.",
+					"Les ${{d}}$ parts sont coloriées : $\\textcolor{{{color:primary.0}}}{\\frac{{{d}}}{{{d}}}}$.",
+					"Toute la figure est coloriée : $\\frac{{{d}}}{{{d}}} = 1$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Bande de 8, 3 parts : 3/8",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"j": "6",
+				"n": "3"
+			},
+			"answers": ["\\frac{3}{8}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5/8 (les blanches)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"j": "6",
+				"n": "3"
+			},
+			"answers": ["\\frac{5}{8}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3/5 (coloriées sur blanches)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"j": "6",
+				"n": "3"
+			},
+			"answers": ["\\frac{3}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 8/3 (renversée)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"j": "6",
+				"n": "3"
+			},
+			"answers": ["\\frac{8}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Disque de 6, 2 parts : 2/6",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"j": "5",
+				"n": "2"
+			},
+			"answers": ["\\frac{2}{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2/6 = 1/3, même valeur : juste",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"j": "5",
+				"n": "2"
+			},
+			"answers": ["\\frac{1}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Éparpillées, bande de 10, 3 parts : 3/10",
+			"variationIndex": 1,
+			"variables": {
+				"f": "4",
+				"n": "3",
+				"p": "3",
+				"s": "0"
+			},
+			"answers": ["\\frac{3}{10}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/10 (un seul bloc compté)",
+			"variationIndex": 1,
+			"variables": {
+				"f": "4",
+				"n": "3",
+				"p": "3",
+				"s": "0"
+			},
+			"answers": ["\\frac{1}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Toute la bande de 5 : 5/5",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0",
+				"j": "4"
+			},
+			"answers": ["\\frac{5}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Toute la bande de 5 : 1 accepté",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0",
+				"j": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0/5",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0",
+				"j": "4"
+			},
+			"answers": ["\\frac{0}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

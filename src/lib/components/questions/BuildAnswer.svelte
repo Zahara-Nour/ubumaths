@@ -14,7 +14,9 @@
 	ou le cadran à l'heure juste. Figure à colorier (```partage, `colorier:`) : la
 	figure verrouillée avec les parts de l'élève, ou la figure juste. Diagramme en barres à construire (```barres,
 	`placer:`) : le diagramme verrouillé avec les barres de l'élève (`answers`, une
-	par barre), ou le diagramme juste. Étiquettes à ranger (```ranger) : les places
+	par barre), ou le diagramme juste. Boîte à moustaches à construire
+	(```boite-a-moustaches, `placer:`) : les traits de l'élève (cinq cases par boîte),
+	ou la boîte juste. Étiquettes à ranger (```ranger) : les places
 	verrouillées avec les étiquettes de l'élève (`answers`, une par place) et, faux,
 	le rangement juste (`expected`) ; ou le rangement juste seul.
 
@@ -44,6 +46,8 @@
 	import StatChart from '$lib/components/markdown/nodes/StatChart.svelte';
 	import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
 	import { solvedSpec } from '$lib/ubumark/utils/barres-placer';
+	import { solvedBoxPlotSpec } from '$lib/ubumark/utils/boxplot-placer';
+	import BoxPlotPlacer from '$lib/components/markdown/nodes/BoxPlotPlacer.svelte';
 	import { HORLOGE_SIZE_CM } from '$lib/ubumark/types/horloge';
 	import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
 	import { parseCollectionContent } from '$lib/ubumark/parser/collection-parser';
@@ -93,6 +97,9 @@
 	let courbe = $derived(kind === 'courbe' ? parseCourbeContent(source) : null);
 	let horloge = $derived(kind === 'horloge' ? parseHorlogeContent(source) : null);
 	let barres = $derived(kind === 'barres' ? parseStatChartContent('barres', source) : null);
+	let boite = $derived(
+		kind === 'boite-a-moustaches' ? parseStatChartContent('boite-a-moustaches', source) : null
+	);
 	let ranger = $derived(kind === 'ranger' ? parseRangerContent(source) : null);
 	let partage = $derived(kind === 'partage' ? parsePartageContent(source) : null);
 	let cubes = $derived(kind === 'cubes' ? parseEspaceContent(source) : null);
@@ -142,6 +149,13 @@
 	{:else}
 		<!-- Le diagramme juste, sans `placer:` : toutes les barres dessinées -->
 		<StatChart node={{ ...barres, spec: solvedSpec(barres.spec) }} />
+	{/if}
+{:else if boite?.spec?.boxPlot?.toPlace}
+	{#if lineCases}
+		<BoxPlotPlacer node={boite} answers={lineCases} showControls={false} />
+	{:else}
+		<!-- La boîte juste, sans `placer:` : toutes les boîtes dessinées -->
+		<StatChart node={{ ...boite, spec: solvedBoxPlotSpec(boite.spec) }} />
 	{/if}
 {:else if ranger && ranger.errors.length === 0}
 	{@const node = { ...ranger, caseIndex: 0 }}

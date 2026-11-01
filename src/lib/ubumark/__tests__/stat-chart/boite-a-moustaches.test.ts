@@ -82,7 +82,8 @@ describe('```boite-a-moustaches — analyse', () => {
 			axis: { min: 25, max: 60, step: 5 },
 			axisTitle: 'temps (en s)',
 			showValues: false,
-			fromData: false
+			fromData: false,
+			toPlace: null
 		});
 	});
 
@@ -210,12 +211,6 @@ describe('```boite-a-moustaches — refus situés', () => {
 			'option « couleur » inconnue'
 		);
 		expect(errorsOf('titre: a\ntitre: b\nA = 1 ; 2 ; 3 ; 4 ; 5')[0]).toContain('déjà donnée');
-	});
-
-	it('`placer:` (construire, palier 2) : pas encore disponible', () => {
-		const [message] = errorsOf('axe: 0 à 20\nplacer: A\nA = 4 ; 8 ; 11 ; 14 ; 19');
-		expect(message).toContain('Ligne 2');
-		expect(message).toContain('pas encore disponible');
 	});
 
 	it('une ligne qui n’est ni une boîte ni une option', () => {

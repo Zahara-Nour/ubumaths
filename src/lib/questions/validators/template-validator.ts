@@ -18,7 +18,7 @@ import { hasCollectionToBuild } from '$lib/ubumark/parser/collection-parser';
 import { hasMonnaieToBuild } from '$lib/ubumark/parser/monnaie-parser';
 import { hasLineToPlace } from '$lib/ubumark/parser/number-line-parser';
 import { hasHorlogeToPlace } from '$lib/ubumark/parser/horloge-parser';
-import { hasBarsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
+import { hasStatChartToPlace } from '$lib/ubumark/parser/stat-chart-parser';
 import { hasCourbeToPlace } from '$lib/ubumark/parser/courbe-parser';
 import { hasRangerToPlace } from '$lib/ubumark/parser/ranger-parser';
 import { hasPartageToColorier } from '$lib/ubumark/parser/partage-parser';
@@ -191,7 +191,7 @@ function validateVariation(
 				!hasMonnaieToBuild(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasLineToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasHorlogeToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
-				!hasBarsToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasStatChartToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasCourbeToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasRangerToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasPartageToColorier(String(variation.statement ?? shared?.statement ?? '')) &&
