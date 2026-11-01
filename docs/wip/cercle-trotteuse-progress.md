@@ -6,16 +6,18 @@ status: phase 0
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR 1 (trotteuse) codée, pas encore de PR ouverte._
+_Mis à jour le 2026-11-01, PR 1 = #2179 ouverte, pas encore mergée._
 
-- **État** : PR 1 codée et commitée sur la branche (§ 7) : tests verts (serveur 13 383, client 861),
-  `check:incremental` 0, `types:cliquet` tenu, `docs:check-a-jour` OK. **Pas encore vu dans l'appli** (port
-  5176 pris par une autre session).
-- **Prochaine action** : voir la trotteuse en vrai (port libre ≥ 5177, `/aide-ecriture/blocs/horloge`, lire +
-  placer), puis `code-reviewer` (Sonnet), ouvrir la PR, CI, merge. Ensuite PR 2 (cercle trigo, § 4, § 6).
+- **État** : PR 1 (trotteuse) = **#2179**, vue dans l'appli (lire + placer, OK), revue `code-reviewer` faite et
+  suivie (§ 7 bis), conflits de doc avec `main` résolus. **PAUSE DES MERGES** (deploy:prod en cours, consigne de
+  David relayée par la session questions-cm2) : ne pas merger avant son « go ».
+- **Prochaine action** : après le « go » : `git merge origin/main`, push, CI verte → `gh pr merge 2179 --merge`,
+  mettre ce bloc à jour sur main, retirer le worktree. Puis PR 2 (cercle trigo, § 4, § 6), nouveau worktree.
 - **En attente de David** : rien.
-- **Pièges en cours** : un geste ne doit jamais donner la réponse (énoncé masqué : `placer: ? s` pour une heure à
-  secondes) ; client vitest : « Orchestrator not found » = bug de Vitest, relancer par dossier.
+- **Pièges en cours** : un geste ne doit jamais donner la réponse (`placer: ? s`) ; client vitest « Orchestrator
+  not found » = relancer par dossier ; page d'aide réservée au **prof** : tester sur `http://[::1]:<port>` avec
+  `teacher@local.test` (cookies séparés de la session admin de David sur `localhost`) ; aucune ligne
+  `Claude-Session` dans les commits (branche réécrite le 2026-11-01 pour l'enlever).
 - **Worktree / branche** : `../ubumaths-wt-cercle-trotteuse` · `feat/cercle-trotteuse`.
 
 ---
@@ -174,3 +176,12 @@ bloc (`pi/3`, `-5*pi/4`, `13*pi/6`, `90°`).
 - Page d'aide (`block-catalog/horloge.ts`) : réglages + exemple « Avec la trotteuse ». Doc : `ubumark.md`,
   `questions.md`.
 - Tests : `horloge-trotteuse.test.ts` (21, rouges d'abord : 19/21), générateur (+1), `HorlogePlacer.svelte.test.ts` (+5).
+
+## 7 bis. Suites de la revue (2026-11-01)
+
+- Toucher une autre aiguille posée la **choisit sans la déplacer** (seul le glisser la bouge) : le doigt qui
+  visait la trotteuse près de la grande ne perd plus la minute.
+- `handsOfAnswer` sans trotteuse : jamais de `second` (réponse périmée à 3 parties).
+- `maskedPlacerValue('? s')` → `? s` (masquage idempotent).
+- `9 h 25 40 s` refusé : les secondes demandent `min`.
+- Non retenu : refus de `graduations: heures` avec secondes (les minutes se lisent déjà sans graduations).
