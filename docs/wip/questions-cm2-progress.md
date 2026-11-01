@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2056 ; migration de rangement du lot 4 en PR._
+_Mis à jour le 2026-11-01, après #2060 et la page à cocher du lot 4._
 
-- **État** : lots 1, 2 et 3 publiés. Lot 4 (calcul mental sur les décimaux, 7 modèles, § 9) : fichiers mergés (#2056), 7 brouillons créés en prod par David le 2026-11-01 ; migration de rangement `20261101141500` en PR (§ 9.3).
-- **Prochaine action** : merger la PR de rangement, `db:migrate` depuis le dépôt principal (vérifier d'abord les migrations en attente), vérifier au MCP ; puis page à cocher du lot 4 (`scripts/questions/cm2-4`).
-- **En attente de David** : rien (la relecture viendra avec la page à cocher).
-- **Pièges en cours** : `curriculum_points` n'a pas de colonne `label` ; relever la prod avant toute écriture ; horodatages de migration partagés → vérifier `origin/main` ; `db:migrate` pousse TOUTES les migrations en attente ; énoncé sans `?` = « Blank count mismatch » ; quotient décimal : `{{eval:…;d}}` ; specs ≥ 4 chiffres avec espaces ; variable `e` = Euler ; `wrapDynamicImport` en CI = `gh run rerun --failed`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, `feat/questions-cm2-lot4-rangement`.
+- **État** : lots 1, 2 et 3 publiés. Lot 4 (calcul mental sur les décimaux, 7 modèles, § 9) : 7 brouillons en prod, rangés et tagués (#2060, migration jouée), page à cocher publiée : https://claude.ai/artifact/GbuqmaxXKnTHhZSdy3ppbL (§ 9.3).
+- **Prochaine action** : lire `verdicts` de la page (compter 7 réponses) ; « À revoir » → corriger (§ 7 de la démarche) ; puis simulation `publier-lot --dir scripts/questions/cm2-4`, `--publier` par David, statut relu au MCP. Ensuite lot 5 (fractions, § 4.6).
+- **En attente de David** : relecture des 7 fiches sur la page à cocher.
+- **Pièges en cours** : `curriculum_points` n'a pas de colonne `label` ; relever la prod avant toute écriture ; horodatages de migration partagés → vérifier `origin/main` ; `db:migrate` pousse TOUTES les migrations en attente ; énoncé sans `?` = « Blank count mismatch » ; quotient décimal : `{{eval:…;d}}` ; specs ≥ 4 chiffres avec espaces ; variable `e` = Euler ; `Doc-inchangée:` dans un MESSAGE DE COMMIT (pas la description de la PR) ; ne jamais enchaîner `gh pr merge` sur la lecture de la CI ; `wrapDynamicImport` en CI = `gh run rerun --failed`.
+- **Worktree / branche** : aucun (retiré après #2060).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -420,3 +420,6 @@ Recommandations suivies (« tes recos ? » puis « je te suis ») : tableau du �
 
 - David : `create-questions --dir scripts/questions/cm2-4 --publier` ; relevé MCP : 7 brouillons [CM2] sans nœud ni tag — `f73f7bba` (040), `eca617ae` (118), `8f2aff1d` (041), `7b0b17fd` (048), `3437286f` (049), `0fad085e` (051), `6721b7cc` (052).
 - Migration `20261101141500_questions_cm2_lot4_rangement_tags.sql` (12:00, 12:01 et 13:00 pris par d'autres sessions), copie du lot 3b du CM1 (brouillons neufs seuls) ; nœuds « Nombres et calculs > Décimaux : calculs > addition / soustraction / multiplication / division ». Test `questions-cm2-lot4-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges.
+- #2060 mergée **avec la garde « doc à jour » rouge** (ma faute : `gh pr view … && gh pr merge` enchaînés ; `Doc-inchangée:` mis dans la description de la PR au lieu d'un message de commit). Seule cette garde était rouge ; la migration n'est pas en cause. Signalé à David.
+- `db:migrate` : `DbPushMissingRemoteError` (20261101120000 de `questions-4` mergée, pas jouée) ; David a lancé `db push --include-all` (120000 + 141500). Vérifié au MCP : 7 brouillons, chacun sur sa sous-notion avec son point, `updated_at` inchangé, trigger `updated_at` actif (`O`).
+- Page à cocher publiée (7 fiches, aucune alerte), rendu vérifié à 390 px : https://claude.ai/artifact/GbuqmaxXKnTHhZSdy3ppbL ; `verdicts` vide au départ.
