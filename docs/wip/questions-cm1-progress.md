@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, phase 0 du lot 4b proposée._
+_Mis à jour le 2026-11-01, phase 0 du lot 4b validée._
 
 - **État** : lot 4 (décimaux) FINI — 8 modèles publiés en prod (8/8 « OK » sur la page à cocher, 8 `published` relus au MCP, rangés et tagués).
-- **Prochaine action** : après la réponse de David, écrire le lot 4b — calcul posé (6 modèles, § 13 : 050, 165 ×2, 051, 052, 053 ; bloc ```operation) ; puis 5 grandeurs (ordre du § 4 bis).
-- **En attente de David** : les 3 questions du § 13 (poser fait par le bloc ; deux méthodes de soustraction ; 050 / 165 sous les sous-notions).
+- **Prochaine action** : écrire le lot 4b — calcul posé (6 modèles, § 13 et 13 bis), worktree `ubumaths-wt-questions-cm1`, branche `content/questions-cm1-lot4b`.
+- **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main`, des worktrees ET des branches distantes + 1 min, **revérifié juste avant le merge** (collision `20261101190200` sur `main` le 2026-11-01, réparée par #2114) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; dépôt partagé : relire `git diff --cached --name-only` avant CHAQUE commit (journal ce2 emporté le 2026-11-01) ; coloriage : specs non mesurées par le test du corpus, sauf si un modèle active `orderIndependent` (la prod le mesurerait alors) ; extension Chrome muette → Playwright à 390 px.
-- **Worktree / branche** : aucun (retiré après #2124).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `content/questions-cm1-lot4b`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -786,3 +786,9 @@ Questions :
 multiplication posée du CE2 (019) devra s'insérer avant (renumérotation par sa propre migration).
 
 **Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
+
+### 13 bis. Lot 4b : réponse de David (2026-11-01)
+
+« tes recos ? », puis « go » après mes trois recommandations : 1. le bloc pose l'opération, limite acceptée
+(corrigé « on aligne les virgules ») ; 2. soustraction : deux modèles, compensation et cassage, comme au
+CE1 ; 3. 050 et 165 rangés sous « Décimaux : calculs › addition » et « › soustraction ».
