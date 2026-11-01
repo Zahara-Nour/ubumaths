@@ -10,13 +10,17 @@ _Mis à jour le 2026-11-01, PR 0 codée et poussée, pas encore ouverte (aucune 
 
 - **État** : branche à jour sur origin, tests verts (178), doc à jour. Page à cocher (v10) :
   https://claude.ai/artifact/RSWgLdsubFwGayPgQgCETo, base `verdicts` (lire avec ArtifactData).
-  Relu et « juste » : `deriver-01…12` (`03`, `11` repassés, attendus gardés). Question sans
-  réponse (`deriver-11`) : ajouter `.dériver x+ln x` (rend `1 + 1/x`) au corpus ?
+  « Juste » : 58/85 (`deriver`, `simplifier`, `resoudre`, `integrer`, `evaluer`, `taylor`,
+  `domaine-02`). `domaine-01` « à revoir » : ℝ \ {0}, ℝ* ou réunion ? ma reco (ℝ \ {0}) sur la
+  fiche ; `domaine-04` suivra la même forme.
+- ⚠️ **Déjà tranché, NE PAS reposer** : ordre des termes (juge E1, il ignore l'ordre ; `1 + 1/x`
+  non ajouté) ; pas de simplification qui change le domaine (S3), donc pas de `e^(ln x)` au
+  corpus — les hypothèses viennent avec l'étape H.
 - **Ajouté** : étape H, hypothèses `avec`/`dans` dans le registre (section dédiée) ; étude en
   profondeur de ce qu'il faut transférer AVANT tout code, à rendre à David.
 - **Prochaine action** : relire `verdicts`, appliquer les corrections au corpus et aux listes
   `connues-fausses.ts`, relancer les tests ; quand les 85 sont « juste », ouvrir la PR 0, merger.
-- **En attente de David** : la relecture des fiches restantes (`deriver-13` → `refus-04`).
+- **En attente de David** : `domaine-01`, puis les 26 fiches restantes (`domaine-03` → `refus-04`).
 - **Règles du jour** : l'Atelier fait foi a priori (écart = règle citée + question) ; solutions
   en ordre croissant ; juge du corpus = E1 (`checkForm` sans remarque), pas de juge strict.
 - **Pièges en cours** : sonde de l'Atelier = fichier vitest jetable sous `src/` (~2 s) ; la page
