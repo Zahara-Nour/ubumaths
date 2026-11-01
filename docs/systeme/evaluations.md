@@ -170,7 +170,10 @@ dupliquer (`duplicateSeries`). Même verrou sur le `series_id` d'un contrôle co
    abandonnée comprise (Q33).
 5. Tirage par `drawSeriesQuestions` avec `excludeCourseCards`, hasard `crypto`. Chaque instance
    **complète** est figée dans `evaluation_attempt_questions` (Q42) : un modèle modifié ensuite ne
-   change ni la reprise ni la correction.
+   change ni la reprise ni la correction. Une question impossible à générer, ou dont l'énoncé masqué
+   dirait encore la réponse d'un bloc à geste (`gestureAnswerLeaks`, chantier `fuite-enonce`), est
+   écartée et journalisée AVANT d'enregistrer la tentative ; toutes écartées → 409, aucune tentative
+   comptée.
 6. Le navigateur ne reçoit que `toPublicQuestion` : ni attendu, ni correction, ni graine
    ([questions.md](questions.md), invariant 8). Course : `remainingSeconds` calculé par le serveur.
 7. Double démarrage (deux onglets) : la tentative la plus ancienne gagne, la nouvelle est supprimée.

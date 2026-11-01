@@ -274,7 +274,14 @@ export class IntegrateCommand extends BaseCommand {
 				}
 			}
 
-			return { success: true, output: lines.join('\n'), ast: result.antiderivative };
+			// La constante est dans la réponse brute (Q3 du chantier
+			// `registre-reference`) ; le moteur, lui, rend F seule
+			return {
+				success: true,
+				output: lines.join('\n'),
+				ast: result.antiderivative,
+				answer: `${resultLatex} + C`
+			};
 		} else {
 			lines.push(chalk.yellow(`∫ ${exprCustom} d${variable}`) + ' : ' + chalk.red('Non résolu'));
 			lines.push(chalk.dim(`Technique tentée : ${TECHNIQUE_LABELS[result.technique]}`));
@@ -338,7 +345,12 @@ export class IntegrateCommand extends BaseCommand {
 			const valueAst =
 				result.value ??
 				(result.approximate !== undefined ? numericNode(result.approximate) : undefined);
-			return { success: true, output: lines.join('\n'), ast: valueAst };
+			return {
+				success: true,
+				output: lines.join('\n'),
+				ast: valueAst,
+				...(valueAst !== undefined && { answer: toLatex(valueAst) })
+			};
 		} else {
 			lines.push(
 				chalk.yellow(`∫[${boundStr}] ${exprCustom} d${variable}`) + ' : ' + chalk.red('Non résolu')

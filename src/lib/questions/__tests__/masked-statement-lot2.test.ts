@@ -153,6 +153,15 @@ describe('patron à compléter (```patron completer:)', () => {
 		);
 	});
 
+	it('Compléter: accentué : repéré comme un geste, masqué (revue de #2145)', () => {
+		const { full, statement } = sent(
+			`Complète le patron.\n\n${block('patron', 'solide: cube', 'forme: 1', 'Compléter: 5')}`
+		);
+		expect(parseEspaceContent(body(full.statement, 'patron'), 'patron').caseIndex).toBe(0);
+		expect(body(statement, 'patron')).toMatch(/^completer: \?$/m);
+		expect(statement).not.toMatch(/ompl[eé]ter: *5/);
+	});
+
 	it('designer: reste tel quel', () => {
 		const statement = `Touche la face opposée.\n\n${block('patron', 'solide: cube', 'forme: 1', 'marquer: face 1', 'designer: opposee')}`;
 		const { full, statement: masked } = sent(statement);

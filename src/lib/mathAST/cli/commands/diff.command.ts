@@ -172,7 +172,8 @@ export class DiffCommand extends BaseCommand {
 			return {
 				success: true,
 				output,
-				ast: derivative
+				ast: derivative,
+				answer: derivLatex
 			};
 		} catch (err) {
 			if (err instanceof DifferentiationError && err.studentMessage !== undefined) {

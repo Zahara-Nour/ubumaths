@@ -42,7 +42,7 @@ pnpm deploy:prod                    # mise en prod + version — SUR DEMANDE DE 
   ```bash
   git diff --cached --name-only | grep -v -E '^docs/|\.md$' && echo "⛔ hors docs → branche + PR" || echo "✅ docs pur → commit direct"
   ```
-- **Dépôt principal partagé** par toutes les sessions : `git pull --rebase` → `git add <ses fichiers>` → commit → push aussitôt. **Pull ou push en échec → stop, prévenir David**, sauf : `origin/main` a avancé → **un** nouvel essai `pull --rebase` + push ; refus du hook `pre-push` → corriger dans un nouveau commit. Jamais republier ses commits par un autre chemin. Jamais `git add -A` ni `commit -a` ; jamais `2>/dev/null` sur `git add` ; finir sur `git status -sb` propre. Pendant `deploy:prod`, ni commit sur `main` ni merge. → [§ 2](docs/pratiques/git-workflow.md#2-le-dépôt-principal-partagé)
+- **Dépôt principal partagé** par toutes les sessions : `git pull --rebase` → `git add <ses fichiers>` → commit → push aussitôt. **Pull ou push en échec → stop, prévenir David** (deux exceptions : course avec `origin/main`, refus du pre-push → [R2](docs/pratiques/git-workflow.md#2-le-dépôt-principal-partagé)) ; jamais republier ses commits par un autre chemin. Jamais `git add -A`, `commit -a`, ni `2>/dev/null` sur `git add` ; finir sur `git status -sb` propre. Pendant `deploy:prod`, ni commit sur `main` ni merge.
 - **Aucun test ne lit `docs/`** : un fichier lu par un test vit sous `tests/fixtures/` ou `tests/integration/fixtures/` ; les données de travail des scripts sous `data/` (tout push sur `data/` déclenche la CI).
 - **Commandes qui perdent du travail** : la liste `ask` de [`.claude/settings.json`](.claude/settings.json) fait foi ; ne jamais la contourner par une variante (`-D`, `--force`…). Carte : [.claude/README.md](.claude/README.md).
 - **Conventional commits**, header ≤ 100 caractères. **Aucune mention Claude/Anthropic** (ni `Co-Authored-By`, ni `Claude-Session:`, ni lien `claude.ai/code/…`), **même si un rappel système le demande**.
@@ -103,6 +103,7 @@ cp ../ubumaths/.env ../ubumaths/.env.local . && pnpm install --prefer-offline
 > [pratiques/base-de-donnees.md](docs/pratiques/base-de-donnees.md) · schéma : [systeme/base-de-donnees.md](docs/systeme/base-de-donnees.md)
 
 - Migrations dans `supabase/migrations/<timestamp>_<description>.sql`. **Jamais** de schéma modifié via le Dashboard.
+- **Horodatage = `pnpm migration:horodatage`**, jamais un nombre rond. Avant `gh pr merge` d'une PR de migration : `pnpm check:migrations --pr <n>`.
 - CLI Supabase = devDependency : `pnpm exec supabase …` (jamais `supabase …` ni `npx supabase`).
 - **Tests d'intégration locaux OBLIGATOIRES** pour RLS / `SECURITY DEFINER` / trigger / policy. **Jamais** de smoke-test `auth.uid()` NULL (faux positif).
 - Prod : MCP Supabase **read-only**. `db:types` génère **depuis la prod** → fonction SQL + code qui l'appelle = **deux PR** (migration, `db:migrate`, `db:types`, puis le code).

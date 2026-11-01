@@ -838,7 +838,18 @@ export class SolveCommand extends BaseCommand {
 		];
 	}
 
+	/**
+	 * La réponse brute de `.solve` est son LaTeX (`S = …`, `x = …`), écrit par
+	 * chaque chemin du solveur depuis ses données structurées.
+	 */
 	execute(ctx: CommandContext): CommandResult {
+		const result = this.solveInput(ctx);
+		return result.success && result.latex !== undefined
+			? { ...result, answer: result.latex }
+			: result;
+	}
+
+	private solveInput(ctx: CommandContext): CommandResult {
 		const { input, verbosity } = this.parseOptions(ctx);
 
 		if (!input) {
