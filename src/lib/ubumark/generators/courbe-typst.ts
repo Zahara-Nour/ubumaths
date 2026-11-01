@@ -140,8 +140,10 @@ export function generateCourbeTypst(node: CourbeNode, options: CourbeTypstOption
 	}
 	if (titles?.y) {
 		lines.push('  // titre axe y');
+		// Axe y dans la moitié droite (fenêtre toute négative) : titre à sa gauche, sinon il sort du cadre
+		const right = Number(ay) > W / 2;
 		lines.push(
-			`  content((${fmt(Number(ay) + 0.1)}, ${fmt(H + 0.3)}), anchor: "south-west", text(size: 7.5pt, ${typstString(titles.y)}))`
+			`  content((${fmt(Number(ay) + (right ? -0.1 : 0.1))}, ${fmt(H + 0.3)}), anchor: "${right ? 'south-east' : 'south-west'}", text(size: 7.5pt, ${typstString(titles.y)}))`
 		);
 	}
 

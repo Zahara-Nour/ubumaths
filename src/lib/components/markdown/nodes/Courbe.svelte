@@ -195,11 +195,13 @@
 				>
 			{/if}
 			{#if axisTitles?.y}
+				<!-- Axe y dans la moitié droite (fenêtre toute négative) : titre à sa gauche, sinon il sort du cadre -->
+				{@const yAxisRight = sx(scene.axes.yAxisX) > PAD + width / 2}
 				<text
 					class="courbe-titre-axe"
-					x={sx(scene.axes.yAxisX) + 8}
+					x={sx(scene.axes.yAxisX) + (yAxisRight ? -8 : 8)}
 					y={PAD - 13}
-					text-anchor="start">{axisTitles.y}</text
+					text-anchor={yAxisRight ? 'end' : 'start'}>{axisTitles.y}</text
 				>
 			{/if}
 

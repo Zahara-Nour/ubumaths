@@ -101,6 +101,13 @@ describe('courbe → Typst : titres d’axes et points à placer', () => {
 		expect(out).toContain('"Temp. #1 [°C]"');
 	});
 
+	it('titre de l’axe y : à gauche de l’axe quand il est au bord droit (fenêtre toute négative)', () => {
+		const out = generateCourbeTypst(
+			parseCourbeContent('x: -10 ; -2\ny: 0 ; 4\naxes: y = Température (°C)')
+		);
+		expect(out).toMatch(/anchor: "south-east", text\(size: 7\.5pt, "Température \(°C\)"\)/);
+	});
+
 	it('sans axes: aucun titre', () => {
 		const out = generateCourbeTypst(parseCourbeContent('x: 0 ; 10\ny: 0 ; 40'));
 		expect(out).not.toContain('titre axe');

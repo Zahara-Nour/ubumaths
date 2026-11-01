@@ -217,6 +217,20 @@ describe('Repère à placer — le geste', () => {
 		expect(root.innerHTML).not.toContain('courbe-pose-nom">B');
 	});
 
+	it('jamais la cible dans le dessin : avant tout geste, le même SVG que sans placer:', async () => {
+		const withTargets = await render(Courbe, {
+			target: mainElement(),
+			props: { node: node(...WINDOW, 'grille: 1', 'placer: A=(2 ; 3) ; B=(-1 ; 2)') }
+		});
+		const without = await render(Courbe, {
+			target: mainElement(),
+			props: { node: node(...WINDOW, 'grille: 1') }
+		});
+		// Positions (cx, cy, x, y…) et noms compris : rien du dessin ne dépend des cibles
+		const svgOf = (root: Element) => root.querySelector('svg')!.innerHTML;
+		expect(svgOf(withTargets.container)).toBe(svgOf(without.container));
+	});
+
 	it('verrouillé : le toucher ne bouge rien, étiquettes grisées', async () => {
 		const changes: string[] = [];
 		const screen = await render(Courbe, {
@@ -347,6 +361,17 @@ describe('Repère à placer — hors question et titres d’axes', () => {
 			(t) => t.textContent
 		);
 		expect(titles).toEqual(['Durée (min)', 'Température (°C)']);
+	});
+
+	it('titre de l’axe y : à gauche de l’axe quand il est au bord droit (fenêtre toute négative)', async () => {
+		const screen = await render(Courbe, {
+			target: mainElement(),
+			props: { node: node('x: -10 ; -2', 'y: 0 ; 4', 'axes: y = Température (°C)') }
+		});
+		const title = screen.container.querySelector('.courbe-titre-axe')!;
+		expect(title.getAttribute('text-anchor')).toBe('end');
+		const svg = screen.container.querySelector('svg')!;
+		expect(Number(title.getAttribute('x'))).toBeLessThanOrEqual(svg.viewBox.baseVal.width);
 	});
 });
 

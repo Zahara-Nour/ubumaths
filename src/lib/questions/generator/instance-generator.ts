@@ -722,7 +722,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				// Le juge apparierait une construction avec une autre case (34 tapé ailleurs)
 				if (template.options?.orderIndependent) {
 					errors.push(
-						`${kind === 'cubes' || kind === 'patron' ? 'un' : 'une'} ${kind === 'partage' || kind === 'cubes' || kind === 'patron' ? buildKindName(kind) : isPlaceKind(kind) ? `${buildKindName(kind)} à placer` : 'case à construire'} ne se combine pas avec « ordre indifférent »`
+						`${kind === 'cubes' || kind === 'patron' || kind === 'courbe' ? 'un' : 'une'} ${kind === 'partage' || kind === 'cubes' || kind === 'patron' ? buildKindName(kind) : isPlaceKind(kind) ? `${buildKindName(kind)} à placer` : 'case à construire'} ne se combine pas avec « ordre indifférent »`
 					);
 				}
 				if (errors.length > 0 || !('answer' in read)) {
