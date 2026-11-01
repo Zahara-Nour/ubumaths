@@ -6,12 +6,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2125 (rangement du 5b)._
+_Mis à jour le 2026-11-01, après #2129 (niveau 8 de `cf85bd1b`)._
 
 - **État** : lots 0 à 4 et 5a publiés ; 5b (calculs, 6 modèles) en brouillon en prod, rangé et tagué (#2125, vérifié MCP) ; page à cocher du 5b publiée : https://claude.ai/artifact/EBRtiBKNCcbaQynwCYUXKx (6 fiches, `verdicts` vide au départ).
-- **Prochaine action** : migration de niveau de `cf85bd1b` (022) 7 → 8 + fichier `06-…json` (une PR), après la question d'accès ; puis `publier-lot` en simulation ; puis lot suivant (§ 3 du journal : prochains points sans modèle).
-- **En attente de David** : question d'accès de la migration de niveau (« personne », proposé) ; ensuite `publier-lot --dir scripts/questions/cm2-5b --publier`.
-- **Pièges en cours** : homonymes du CM1 / de 6e signalés par la page à cocher (même titre, autre niveau : ids vérifiés) ; `reducedFractions: off` accepte toute fraction égale ; jamais `}}` collé dans un `{{if:}}` ; `db:migrate` refusé quand la prod a des migrations plus récentes → `--dry-run` puis `--include-all` si seule la nôtre manque ; worktree sans `supabase/.temp` → copier celui du dépôt principal pour `db push` ; dépôt principal à l'index occupé par une autre session → jouer depuis le worktree ; `git commit -m … -- <fichiers>` ; `Doc-inchangée:` dans un message de commit.
+- **Prochaine action** : après le `--publier` du 5b, vérifier `published` (MCP) ; puis lot suivant (§ 3 du journal : prochains points sans modèle).
+- **En attente de David** : `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/cm2-5b --publier` (5b relu 6/6 OK ; simulation : 6 passent, après #2129).
+- **Pièges en cours** : niveau relevé puis pris par une autre session avant la publication → relever les niveaux de la catégorie juste avant `--publier` ; homonymes du CM1 / de 6e signalés par la page à cocher (même titre, autre niveau : ids vérifiés) ; `reducedFractions: off` accepte toute fraction égale ; jamais `}}` collé dans un `{{if:}}` ; `db:migrate` refusé quand la prod a des migrations plus récentes → `--dry-run` puis `--include-all` si seule la nôtre manque ; worktree sans `supabase/.temp` → copier celui du dépôt principal pour `db push` ; dépôt principal à l'index occupé par une autre session → jouer depuis le worktree ; `git commit -m … -- <fichiers>` ; `Doc-inchangée:` dans un message de commit.
 - **Worktree / branche** : aucun (retiré après #2125).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
@@ -549,3 +549,4 @@ modèles 6-11). Tableau du § 10 gardé.
 
 - 6 OK sur 6, sans commentaire (`verdicts` lu et compté). `publier-lot` en simulation : **refus** de `cf85bd1b` — niveau 7 de Fractions / Calculer / Fraction d'une quantité pris par `a635df43` « Fraction d'une fraction » (4e, passé de 5 à 7 puis publié le 2026-11-01 par `questions-4`, migration `20261101193000`, après mon relevé). Rien publié. Correction : niveau 8 (libre), migration + fichier.
 - Question d'accès posée avant le SQL ; David : « je te suis » (personne). Migration `20261101213500_questions_cm2_lot5b_niveau.sql` (copie de `20261101193000_questions_4_lot1_niveau`) : `cf85bd1b` 7 → 8 ; fichier `06-…json` et script à 8. Test `questions-cm2-lot5b-niveau` : 6 verts ; corps remplacé par `select 1;` → suite rouge (2 échecs, bloc principal arrêté par la garde du rollback).
+- `security-auditor` : aucun bloquant (2 mineurs hérités de la migration de référence). CI verte, #2129 mergée ; `db push --include-all` (dry-run : la nôtre seule). MCP : `cf85bd1b` niveau 8, brouillon, `updated_at` inchangé. `publier-lot` en simulation : 6 brouillons passent.
