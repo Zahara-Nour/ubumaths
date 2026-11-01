@@ -70,4 +70,9 @@ export interface ConstructionSpec {
 	caseIndex?: number;
 	/** Bloc ```figure-de-travail : tracés possibles, jamais notés (`checks` vide) */
 	work?: true;
+	/**
+	 * `verifier: ?` : énoncé masqué d'une évaluation (chantier `fuite-enonce`),
+	 * `checks` vide ; refusé dans un modèle
+	 */
+	masked?: true;
 }

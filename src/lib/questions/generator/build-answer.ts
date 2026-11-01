@@ -22,6 +22,7 @@
 import type { BuildKind } from '../types';
 import { parseCollectionContent } from '$lib/ubumark/parser/collection-parser';
 import { parseMonnaieContent } from '$lib/ubumark/parser/monnaie-parser';
+import { amountAnswer, toCents } from '$lib/ubumark/utils/monnaie-valeurs';
 import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
 import { parseHorlogeContent } from '$lib/ubumark/parser/horloge-parser';
 import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
@@ -38,9 +39,22 @@ import { indexOfValue, placerAnswer } from '$lib/ubumark/utils/number-line-place
 import { numVal } from '$lib/ubumark/utils/number-line-render';
 import { parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
 import { pointAnswer } from '$lib/ubumark/utils/courbe-placer';
+import { hasMaskedValue } from '$lib/ubumark/utils/masked-value';
 
 // Constantes
 
+/** Blocs dont l'énoncé d'évaluation masque la valeur (`masked-statement.ts`) */
+const MASKABLE_KINDS = new Set<BuildKind>([
+	'line',
+	'courbe',
+	'horloge',
+	'collection',
+	'monnaie',
+	'partage',
+	'barres'
+]);
+export const MASKED_IN_TEMPLATE =
+	'« ? » à la place d’une valeur : écris la valeur attendue (le « ? » est réservé à l’énoncé envoyé pendant une évaluation)';
 const CASE_IS_AUTOMATIC = 'case: est posée automatiquement, retirer cette ligne du bloc';
 
 // Functions
@@ -71,6 +85,8 @@ export function buildAnswerOf(
 	source: string,
 	point = 0
 ): { answer: string } | { errors: string[] } {
+	// `?` : forme réservée à l'énoncé envoyé pendant une évaluation (rien à attendre)
+	if (MASKABLE_KINDS.has(kind) && hasMaskedValue(source)) return { errors: [MASKED_IN_TEMPLATE] };
 	if (kind === 'line') {
 		const { node, errors } = parseNumberLineContent(source);
 		if (node === null) return { errors: errors.map((e) => e.message) };
@@ -134,6 +150,7 @@ export function buildAnswerOf(
 		if (node.spec?.kind !== 'cubes' || node.spec.task === undefined) {
 			return { errors: ['dessiner: ou retrouver: absent'] };
 		}
+		if (node.spec.givenViews !== undefined) return { errors: [MASKED_IN_TEMPLATE] };
 		return { answer: expectedCubesAnswer(node.spec) };
 	}
 	if (kind === 'patron') {
@@ -142,6 +159,9 @@ export function buildAnswerOf(
 		if (node.errors.length > 0) return { errors: node.errors };
 		if (node.spec?.kind !== 'patron' || node.spec.task === undefined) {
 			return { errors: ['designer: ou completer: absent'] };
+		}
+		if (node.spec.task.kind === 'completer' && node.spec.task.masked !== undefined) {
+			return { errors: [MASKED_IN_TEMPLATE] };
 		}
 		return { answer: expectedPatronAnswer(node.spec) };
 	}
@@ -156,5 +176,8 @@ export function buildAnswerOf(
 	if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
 	if (node.errors.length > 0) return { errors: node.errors.map((e) => e.message) };
 	if (node.spec?.build === undefined) return { errors: [] };
-	return { answer: String(node.spec.build) };
+	// Monnaie : `3,45` (virgule, deux chiffres), une somme entière reste `35`
+	return {
+		answer: kind === 'monnaie' ? amountAnswer(toCents(node.spec.build)) : String(node.spec.build)
+	};
 }

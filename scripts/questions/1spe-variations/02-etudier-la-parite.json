@@ -1,0 +1,292 @@
+{
+	"title": "Étudier la parité d'une fonction",
+	"description": "Calcul de f(−x) puis parité (case choix) : polynôme pair, impair, ni l'un ni l'autre, x/(x² + k) ; piège : domaine non symétrique",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Généralités",
+	"subdomain": "Parité",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:x^4-k*x^2+c}}$.\n\nCalcule $f(-x)$, sous forme réduite, puis conclus.\n\n$f(-x)=?$\n\nLa fonction $f$ est :\n\n```choix\nmelanger: non\n- paire\n- impaire\n- ni paire ni impaire\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "k",
+					"expression": "1..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:x^4-k*x^2+c}}"
+				},
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\mathbb{R}$ est symétrique par rapport à $0$ : on peut comparer $f(-x)$ et $f(x)$.",
+					"$f(-x)=(-x)^4-{{k}}(-x)^2{{eval:c;+}}={{eval:x^4-k*x^2+c}}$.",
+					"$f(-x)=f(x)$ pour tout réel $x$ : $f$ est $\\textcolor{{{color:primary.0}}}{\\text{paire}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:x^3+k*x}}$.\n\nCalcule $f(-x)$, sous forme réduite, puis conclus.\n\n$f(-x)=?$\n\nLa fonction $f$ est :\n\n```choix\nmelanger: non\n- paire\n- impaire\n- ni paire ni impaire\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "k",
+					"expression": "1..5;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-x^3-k*x}}"
+				},
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\mathbb{R}$ est symétrique par rapport à $0$ : on peut comparer $f(-x)$ et $f(x)$.",
+					"$f(-x)=(-x)^3{{eval:k;+}}\\times(-x)={{eval:-x^3-k*x}}$.",
+					"$f(-x)=-({{eval:x^3+k*x}})=-f(x)$ pour tout réel $x$ : $f$ est $\\textcolor{{{color:primary.0}}}{\\text{impaire}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:x^2+k*x}}$.\n\nCalcule $f(-x)$, sous forme réduite, puis conclus.\n\n$f(-x)=?$\n\nLa fonction $f$ est :\n\n```choix\nmelanger: non\n- paire\n- impaire\n- ni paire ni impaire\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "k",
+					"expression": "1..5;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:x^2-k*x}}"
+				},
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\mathbb{R}$ est symétrique par rapport à $0$ : on peut comparer $f(-x)$ et $f(x)$.",
+					"$f(-x)=(-x)^2{{eval:k;+}}\\times(-x)={{eval:x^2-k*x}}$.",
+					"Pour $x=1$ : $f(-1)={{eval:1-k}}$ et $f(1)={{eval:1+k}}$. On n'a ni $f(-1)=f(1)$, ni $f(-1)=-f(1)$ : $f$ n'est $\\textcolor{{{color:primary.0}}}{\\text{ni paire ni impaire}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\dfrac{x}{x^2+{{k}}}$.\n\nCalcule $f(-x)$, sous forme réduite, puis conclus.\n\n$f(-x)=?$\n\nLa fonction $f$ est :\n\n```choix\nmelanger: non\n- paire\n- impaire\n- ni paire ni impaire\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "k",
+					"expression": "1..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\dfrac{x}{x^2+{{k}}}"
+				},
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\mathbb{R}$ est symétrique par rapport à $0$ : on peut comparer $f(-x)$ et $f(x)$.",
+					"$f(-x)=\\dfrac{-x}{(-x)^2+{{k}}}=-\\dfrac{x}{x^2+{{k}}}$.",
+					"$f(-x)=-f(x)$ pour tout réel $x$ : $f$ est $\\textcolor{{{color:primary.0}}}{\\text{impaire}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $[{{eval:-a}}\\,;{{b}}]$ par $f(x)=x^2{{eval:c;+}}$.\n\nLa fonction $f$ est :\n\n```choix\nmelanger: non\n- paire\n- impaire\n- ni paire ni impaire\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				}
+			],
+			"conditions": ["b > a"],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour qu'une fonction soit paire ou impaire, son ensemble de définition doit être symétrique par rapport à $0$ : si $x$ en fait partie, $-x$ aussi.",
+					"Ici ${{b}}$ est dans $[{{eval:-a}}\\,;{{b}}]$, mais pas ${{eval:-b}}$ : $f({{eval:-b}})$ n'existe pas.",
+					"$f$ n'est $\\textcolor{{{color:primary.0}}}{\\text{ni paire ni impaire}}$, même si $x^2{{eval:c;+}}$ est une expression paire."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x⁴ − 3x² + 2 : paire",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"c": "2"
+			},
+			"answers": ["x^4-3x^2+2", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : impaire",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"c": "2"
+			},
+			"answers": ["x^4-3x^2+2", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x³ − 2x : f(−x) = −x³ + 2x, impaire",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-2"
+			},
+			"answers": ["-x^3+2x", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe de x³ oublié, −x³ − 2x",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-2"
+			},
+			"answers": ["-x^3-2x", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x² + 3x : ni l'une ni l'autre",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["x^2-3x", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : paire",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["x^2-3x", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x/(x² + 2) : impaire",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["-\\frac{x}{x^2+2}", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x/(x² + 2) : (−x)/(x² + 2), forme à améliorer",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["\\frac{-x}{x^2+2}", "1"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["signs"]
+			}
+		},
+		{
+			"description": "Erreur : paire",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["-\\frac{x}{x^2+2}", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x² + 1 sur [−2 ; 3] : ni l'une ni l'autre",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : paire",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

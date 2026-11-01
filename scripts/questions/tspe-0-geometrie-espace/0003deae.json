@@ -1,0 +1,140 @@
+{
+	"id": "0003deae-9017-4d16-b22c-19f08129e9d7",
+	"title": "Espace : vecteur directeur de la droite (AB)",
+	"description": "Vecteur directeur de (AB) à partir de deux points — tout vecteur colinéaire non nul est juste (piège : point pris pour vecteur)",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Représentations paramétriques et équations cartésiennes",
+	"subdomain": "Vecteurs directeurs et normaux",
+	"level": 3,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "vecteur",
+			"vectorMode": "colineaire"
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "({{eval:bx-ax}};{{eval:by-ay}};{{eval:bz-az}})"
+				}
+			],
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les points $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$.\n\nUne représentation paramétrique de la droite $(AB)$ est $x=x_A+at$, $y=y_A+bt$, $z=z_A+ct$ ($t\\in\\mathbb{R}$), où $\\vec{u}\\begin{pmatrix}a\\\\b\\\\c\\end{pmatrix}$ est un vecteur directeur de $(AB)$. Donne un tel vecteur $\\vec{u}$ : $?$",
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-5..5"
+				},
+				{
+					"name": "ay",
+					"expression": "-5..5"
+				},
+				{
+					"name": "az",
+					"expression": "-5..5"
+				},
+				{
+					"name": "bx",
+					"expression": "-5..5"
+				},
+				{
+					"name": "by",
+					"expression": "-5..5"
+				},
+				{
+					"name": "bz",
+					"expression": "-5..5"
+				},
+				{
+					"name": "w1",
+					"expression": "{{eval:bx-ax}}"
+				},
+				{
+					"name": "w2",
+					"expression": "{{eval:by-ay}}"
+				},
+				{
+					"name": "w3",
+					"expression": "{{eval:bz-az}}"
+				}
+			],
+			"conditions": ["bx != ax", "abs(by-ay)+abs(bz-az) > 0"],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AB}$ dirige la droite $(AB)$ : $\\textcolor{{{color:primary.0}}}{ \\overrightarrow{AB}\\begin{pmatrix}{{eval:bx-ax}}\\\\{{eval:by-ay}}\\\\{{eval:bz-az}}\\end{pmatrix} }$.",
+					"D'où la représentation $x={{if:ax!=0|{{ax}}}}{{if:w1==1|{{if:ax!=0|+}}t}}{{if:w1==-1|-t}}{{if:w1>1|{{if:ax!=0|+}}{{w1}}t}}{{if:w1< -1|{{w1}}t}}{{if:w1==0|{{if:ax==0|0}}}}$, $y={{if:ay!=0|{{ay}}}}{{if:w2==1|{{if:ay!=0|+}}t}}{{if:w2==-1|-t}}{{if:w2>1|{{if:ay!=0|+}}{{w2}}t}}{{if:w2< -1|{{w2}}t}}{{if:w2==0|{{if:ay==0|0}}}}$, $z={{if:az!=0|{{az}}}}{{if:w3==1|{{if:az!=0|+}}t}}{{if:w3==-1|-t}}{{if:w3>1|{{if:az!=0|+}}{{w3}}t}}{{if:w3< -1|{{w3}}t}}{{if:w3==0|{{if:az==0|0}}}}$ ($t\\in\\mathbb{R}$) ; tout vecteur colinéaire non nul convient."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["(2;-3;1)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"az": "-1",
+				"bx": "3",
+				"by": "-1",
+				"bz": "0"
+			},
+			"description": "v0 : AB(2 ; -3 ; 1)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["(-2;3;-1)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"az": "-1",
+				"bx": "3",
+				"by": "-1",
+				"bz": "0"
+			},
+			"description": "v0 : BA",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["(1;2;-1)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"az": "-1",
+				"bx": "3",
+				"by": "-1",
+				"bz": "0"
+			},
+			"description": "v0 : point A donné",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["(4;1;-1)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"az": "-1",
+				"bx": "3",
+				"by": "-1",
+				"bz": "0"
+			},
+			"description": "v0 : A + B",
+			"variationIndex": 0
+		}
+	]
+}

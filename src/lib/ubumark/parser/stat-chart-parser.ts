@@ -48,6 +48,8 @@ import {
 	type LawIndicator,
 	type LawThreshold,
 	SCATTER_INDICATORS,
+	type BoxPlotBox,
+	type BoxPlotData,
 	type ScatterData,
 	type ScatterIndicator,
 	SERIES_MODES,
@@ -81,6 +83,7 @@ import {
 import { COURBE_COLORS, COURBE_SIZES, type CourbeColor, type CourbeSize } from '../types/courbe';
 import { resolveNamedColor } from '$lib/theme/named-colors';
 import { summarizeClasses } from '$lib/statistics/classes';
+import { describeList } from '$lib/statistics/describe';
 import { crossTable } from '$lib/statistics/cross-table';
 import { Fraction } from '$lib/statistics/fraction';
 import { randomVariable } from '$lib/statistics/random-variable';
@@ -97,6 +100,7 @@ import { GEOMETRIC_MAX_K } from '$lib/statistics/geometric';
 import { UNIFORM_MAX_VALUES } from '$lib/statistics/uniform';
 import { carreauGrid, usesCarreaux } from '../utils/stat-chart-carreaux';
 import { SCALE_STEPS, scaleAxis } from '../utils/barres-placer';
+import { isMaskedValue } from '../utils/masked-value';
 
 // ============================================================================
 // TYPES
@@ -195,7 +199,7 @@ interface TableRow {
 // ============================================================================
 
 const BLOCK_START_REGEX =
-	/^```(barres|circulaire|histogramme|frequences-cumulees|tableau-croise|loi|simulation|effectifs|nuage)\s*$/;
+	/^```(barres|circulaire|histogramme|frequences-cumulees|tableau-croise|loi|simulation|effectifs|nuage|boite-a-moustaches)\s*$/;
 const BLOCK_END_REGEX = /^```\s*$/;
 
 /** `titre: …` — clé en lettres (accents compris), puis deux-points */
@@ -332,7 +336,8 @@ const KIND_NAME: Record<StatChartKind, string> = {
 	loi: 'lois de variables aléatoires',
 	simulation: 'simulations',
 	effectifs: 'tableaux d’effectifs',
-	nuage: 'nuages de points'
+	nuage: 'nuages de points',
+	'boite-a-moustaches': 'boîtes à moustaches'
 };
 
 /** Indicateurs d'une loi, tels que l'auteur les écrit */
@@ -434,6 +439,21 @@ const SCATTER_INDICATOR_NAME: Record<ScatterIndicator, string> = {
 	r: 'r'
 };
 
+/** Options d'une boîte à moustaches, sans accent ; `placer:` = palier 2, refusé */
+const BOX_PLOT_OPTIONS = [
+	'axe',
+	'titre',
+	'valeurs',
+	'donnees',
+	'description',
+	'taille',
+	'placer'
+] as const;
+type BoxPlotOptionKey = (typeof BOX_PLOT_OPTIONS)[number];
+
+/** Les cinq valeurs d'une boîte, dans l'ordre, telles que les messages les nomment */
+const BOX_PLOT_VALUE_NAMES = ['minimum', 'Q1', 'médiane', 'Q3', 'maximum'] as const;
+
 /** `x = 4,5` ou `y = 25` dans `prévoir:` */
 const PREDICTION_REGEX = /^([xy])\s*=\s*(.+)$/i;
 
@@ -461,6 +481,9 @@ function looksLikeStatChartLine(kind: StatChartKind, line: string): boolean {
 	const trimmed = line.trim();
 	if (trimmed.includes('=')) return true;
 	const kv = KEY_LINE_REGEX.exec(trimmed);
+	if (kind === 'boite-a-moustaches') {
+		return kv !== null && (BOX_PLOT_OPTIONS as readonly string[]).includes(optionKeyOf(kv[1]));
+	}
 	if (kind === 'nuage') {
 		if (SCATTER_DATA_REGEX.test(trimmed)) return true;
 		return kv !== null && (SCATTER_OPTIONS as readonly string[]).includes(optionKeyOf(kv[1]));
@@ -2971,6 +2994,242 @@ function parseScatterContent(source: string): StatChartNode {
 	return { type: 'stat-chart', kind: 'nuage', source, spec, errors, warnings: [] };
 }
 
+// ============================================================================
+// BOÎTE À MOUSTACHES (palier 1 : affichage)
+// ============================================================================
+
+/** Un nombre d'une boîte ou d'un axe : `28`, `12,5`, `-3`, `−3` */
+function boxNumber(raw: string): number {
+	const text = raw.trim().replaceAll('−', '-');
+	if (text === '') throw new LineError('valeur vide (un « ; » de trop ?)');
+	if (!PLAIN_NUMBER_REGEX.test(text)) {
+		throw new LineError(`« ${raw.trim()} » n’est pas un nombre (écrire par exemple 12 ou 12,5)`);
+	}
+	const value = toNumber(text);
+	if (Math.abs(value) > STAT_CHART_LIMITS.maxValue) {
+		throw new LineError('nombre trop grand (au plus 10^9 en valeur absolue)');
+	}
+	return value;
+}
+
+/** `axe: 25 à 60, de 5 en 5` : départ quelconque, décimaux permis, au plus 40 graduations */
+function parseBoxAxis(raw: string): NonNullable<BoxPlotData['axis']> {
+	const match = AXIS_REGEX.exec(raw.trim());
+	if (!match || (match[3] !== undefined && match[3] !== match[4])) {
+		throw new LineError('axe : écrire « axe: 25 à 60, de 5 en 5 »');
+	}
+	const [min, max] = [boxNumber(match[1]), boxNumber(match[2])];
+	const step = match[3] === undefined ? 1 : boxNumber(match[3]);
+	if (!(max > min)) throw new LineError('axe : le haut de l’axe doit dépasser le bas');
+	if (!(step > 0)) throw new LineError('axe : le pas doit être positif');
+	const ticks = (max - min) / step;
+	if (Math.abs(ticks - Math.round(ticks)) > 1e-9) {
+		throw new LineError(
+			`axe : de ${formatForMessage(min)} à ${formatForMessage(max)}, le pas ${formatForMessage(step)} ne tombe pas juste`
+		);
+	}
+	if (Math.round(ticks) > STAT_CHART_LIMITS.axisTicks) {
+		throw new LineError(
+			`axe : au plus ${STAT_CHART_LIMITS.axisTicks} graduations (agrandir le pas)`
+		);
+	}
+	return { min, max, step };
+}
+
+/** Les cinq valeurs d'une ligne de boîte, vérifiées une à une puis dans l'ordre */
+function parseBoxValues(raw: string): BoxPlotBox['values'] {
+	const texts = raw.split(';');
+	// Un point-virgule final ne compte pas, comme dans `données:`
+	if (texts.length > 1 && texts.at(-1)!.trim() === '') texts.pop();
+	if (texts.length !== 5) {
+		throw new LineError(
+			`${texts.length} valeur${texts.length > 1 ? 's' : ''} : en écrire 5 (minimum ; Q1 ; médiane ; Q3 ; maximum)`
+		);
+	}
+	const values = texts.map(boxNumber) as BoxPlotBox['values'];
+	for (let i = 0; i < 4; i++) {
+		if (values[i] > values[i + 1]) {
+			const [a, b] = [BOX_PLOT_VALUE_NAMES[i], BOX_PLOT_VALUE_NAMES[i + 1]];
+			throw new LineError(
+				`valeurs dans le désordre : ${a === 'médiane' ? 'la médiane' : a} (${formatForMessage(values[i])}) dépasse ${b === 'médiane' ? 'la médiane' : b} (${formatForMessage(values[i + 1])}) ; il faut minimum ⩽ Q1 ⩽ médiane ⩽ Q3 ⩽ maximum`
+			);
+		}
+	}
+	return values;
+}
+
+/**
+ * Bloc ```boite-a-moustaches : une ligne par boîte (`Nom = min ; Q1 ; médiane ;
+ * Q3 ; max`, nom facultatif), ou `données:` — une boîte calculée par
+ * `describe.ts`, jamais un second calcul de quartile.
+ */
+function parseBoxPlotContent(source: string): StatChartNode {
+	const errors: StatChartIssue[] = [];
+	const boxes: BoxPlotBox[] = [];
+	const optionLines: Partial<Record<BoxPlotOptionKey, number>> = {};
+	let axis = null as BoxPlotData['axis'];
+	let axisTitle: string | null = null;
+	let description: string | null = null;
+	let size: CourbeSize = 'moyenne';
+	let showValues = false;
+	let rawValues = null as number[] | null;
+
+	source.split('\n').forEach((rawLine, index) => {
+		const line = index + 1;
+		const content = rawLine.trim();
+		if (content === '') return;
+		try {
+			const kv = KEY_LINE_REGEX.exec(content);
+			const key = kv === null ? null : optionKeyOf(kv[1]);
+			const isOption = kv !== null && (BOX_PLOT_OPTIONS as readonly string[]).includes(key ?? '');
+			// Une option CONNUE l'emporte ; sinon une ligne à « = » est une boîte (Q8)
+			if (!isOption && content.includes('=')) {
+				const separator = content.indexOf('=');
+				const name = content.slice(0, separator).trim();
+				if (name.length > STAT_CHART_LIMITS.labelLength) {
+					throw new LineError(
+						`nom trop long (au plus ${STAT_CHART_LIMITS.labelLength} caractères)`
+					);
+				}
+				const values = parseBoxValues(content.slice(separator + 1));
+				const wanted = name.toLowerCase();
+				if (boxes.some((box) => (box.name ?? '').toLowerCase() === wanted)) {
+					throw new LineError(
+						name === ''
+							? 'deux boîtes sans nom : donner un nom à chacune'
+							: `deux boîtes s’appellent « ${name} »`
+					);
+				}
+				boxes.push({ name: name === '' ? null : name, values, line });
+				return;
+			}
+			if (kv === null) {
+				throw new LineError('écrire « Nom = min ; Q1 ; médiane ; Q3 ; max » ou « option: valeur »');
+			}
+			if (!isOption) {
+				const choices = BOX_PLOT_OPTIONS.filter((k) => k !== 'placer')
+					.map((k) => (k === 'donnees' ? 'données' : k))
+					.join(', ');
+				throw new LineError(`option « ${kv[1]} » inconnue (options : ${choices})`);
+			}
+			const option = key as BoxPlotOptionKey;
+			if (optionLines[option] !== undefined) {
+				throw new LineError(`option « ${kv[1]} » déjà donnée`);
+			}
+			optionLines[option] = line;
+			const value = kv[2];
+			switch (option) {
+				case 'axe':
+					axis = parseBoxAxis(value);
+					return;
+				case 'titre':
+					axisTitle = parseText(value, 'titre');
+					return;
+				case 'description':
+					description = parseText(value, 'description');
+					return;
+				case 'taille':
+					size = oneOf(value, COURBE_SIZES, 'taille');
+					return;
+				case 'valeurs':
+					showValues = yesNo(value, 'valeurs');
+					return;
+				case 'placer':
+					throw new LineError(
+						'placer : construire une boîte à moustaches n’est pas encore disponible'
+					);
+				case 'donnees': {
+					const entries = parseRawEntries(value);
+					if (entries.length > STAT_CHART_LIMITS.rawValues) {
+						throw new LineError(`données : au plus ${STAT_CHART_LIMITS.rawValues} valeurs`);
+					}
+					rawValues = entries.map((entry) => {
+						const number = rawNumber(entry);
+						if (number === null || !Number.isFinite(number)) {
+							throw new LineError(`données : « ${entry} » n’est pas un nombre`);
+						}
+						return number;
+					});
+					return;
+				}
+			}
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
+			errors.push({ message: `Ligne ${line} : ${message}`, line, content });
+		}
+	});
+
+	const fail = (line: number, message: string) =>
+		errors.push({ message: `Ligne ${line} : ${message}`, line });
+	const dataLine = optionLines.donnees;
+	if (errors.length === 0) {
+		if (dataLine !== undefined && boxes.length > 0) {
+			fail(
+				boxes[0].line,
+				'soit « données: … », soit des lignes « Nom = min ; Q1 ; médiane ; Q3 ; max », pas les deux'
+			);
+		} else if (dataLine !== undefined && rawValues !== null) {
+			// La seule source des quartiles du programme (2de) : describe.ts
+			const summary = describeList(rawValues);
+			if (summary === null) fail(dataLine, 'données : aucune valeur');
+			else {
+				boxes.push({
+					name: null,
+					values: [summary.min, summary.q1, summary.median, summary.q3, summary.max],
+					line: dataLine
+				});
+			}
+		} else if (boxes.length === 0) {
+			fail(1, 'aucune boîte : écrire « Nom = min ; Q1 ; médiane ; Q3 ; max » ou « données: … »');
+		} else if (boxes.length > STAT_CHART_LIMITS.boxPlots) {
+			fail(boxes[STAT_CHART_LIMITS.boxPlots].line, `au plus ${STAT_CHART_LIMITS.boxPlots} boîtes`);
+		}
+	}
+	if (errors.length === 0 && axis !== null) {
+		const { min, max } = axis;
+		for (const box of boxes) {
+			const outside = box.values.find((value) => value < min || value > max);
+			if (outside !== undefined) {
+				fail(
+					box.line,
+					`${formatForMessage(outside)} est hors de l’axe (${formatForMessage(min)} à ${formatForMessage(max)})`
+				);
+				break;
+			}
+		}
+	}
+
+	const spec: StatChartSpec | null =
+		errors.length === 0
+			? {
+					kind: 'boite-a-moustaches',
+					data: [],
+					unit: 'effectifs',
+					title: null,
+					axes: { x: axisTitle, y: null },
+					description,
+					size,
+					showValues,
+					color: 'bleu',
+					labels: 'pourcentages',
+					areaLegend: null,
+					direction: 'croissantes',
+					reading: 'aucune',
+					indicators: [],
+					table: null,
+					law: null,
+					simulation: null,
+					rawValues: null,
+					frequencyTable: null,
+					series: null,
+					twoSeries: null,
+					scatter: null,
+					boxPlot: { boxes, axis, axisTitle, showValues, fromData: dataLine !== undefined }
+				}
+			: null;
+	return { type: 'stat-chart', kind: 'boite-a-moustaches', source, spec, errors, warnings: [] };
+}
+
 /** Valeurs écrites toutes égales (exactement : `2` et `2,0` aussi) */
 function allEqual(texts: readonly string[]): boolean {
 	const first = readExactValue(texts[0]);
@@ -2988,6 +3247,8 @@ function allEqual(texts: readonly string[]): boolean {
 export function parseStatChartContent(kind: StatChartKind, source: string): StatChartNode {
 	// Deux séries x / y, pas de catégories : une grammaire à part (manche 15)
 	if (kind === 'nuage') return parseScatterContent(source);
+	// Cinq valeurs par boîte, ou une série brute : une grammaire à part
+	if (kind === 'boite-a-moustaches') return parseBoxPlotContent(source);
 	const errors: StatChartIssue[] = [];
 	const data: StatChartDatum[] = [];
 	// `as` : affectée dans le rappel de `forEach`, que TypeScript ne suit pas
@@ -3312,6 +3573,12 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 				throw new LineError(`au plus ${limit} ${what} dans les ${KIND_NAME[kind]}`);
 			}
 
+			// Barre à construire d'un énoncé d'évaluation notée : effectif de remplacement
+			// (`masked-value.ts`), la barre se dessine en pointillés comme avant
+			if (kind === 'barres' && isMaskedValue(content.slice(separator + 1))) {
+				data.push({ label, value: 0, interval, line });
+				return;
+			}
 			const parsed = parseValue(content.slice(separator + 1));
 			if (unit !== null && unit.value !== parsed.unit) {
 				throw new LineError(

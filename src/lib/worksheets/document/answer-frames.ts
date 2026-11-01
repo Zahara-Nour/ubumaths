@@ -123,6 +123,9 @@ function nodeLines(node: ASTNode): number {
 			return answerLines(node.children);
 		case 'code-block':
 			return node.code.split('\n').length;
+		case 'scratch':
+			// Programme Scratch : une ligne par instruction (dessiné ou en texte)
+			return node.source.split('\n').length;
 		case 'image':
 		case 'video':
 		case 'variation-table':

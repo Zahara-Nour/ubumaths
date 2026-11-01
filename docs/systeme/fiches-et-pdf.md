@@ -630,6 +630,10 @@ retenue non dessinées : l'élève écrit sur papier libre), une **collection** 
 des **pièces et billets** (` ```monnaie `) une **figure partagée en parts égales** (` ```partage `, parts coloriées grisées) et un **assemblage de cubes** (` ```cubes `, faces en trois gris) sont aussi du Typst natif et comptent chacune pour une figure dans ces cadres → [ubumark.md](ubumark.md).
 Des **étiquettes à ranger** (` ```ranger `) : étiquettes encadrées puis places en pointillés, Typst
 natif, deux lignes dans les cadres de réponse.
+Un **programme Scratch** (` ```scratch `, palier 1) sort en texte brut monospace, clôture plus
+longue que toute suite d'accents graves du programme (le dessin en blocs n'existe qu'à l'écran),
+et compte une ligne par ligne du programme dans les cadres de réponse ; en erreur, « Programme
+indisponible ».
 
 **Version anglaise** ([journal](../archive/wip/worksheet-english-progress.md)) : la langue est
 `worksheets.config.language` (`fr` par défaut), lue par `worksheetLocale`. Elle pilote **tout** le

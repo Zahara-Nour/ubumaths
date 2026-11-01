@@ -120,7 +120,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 			// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 			// panne doit se distinguer d'un refus mérité.
 			if (enrollmentError && enrollmentError.code !== 'PGRST116') {
-				console.error('Contrôle d’accès impossible :', enrollmentError);
+				logger.error('Contrôle d’accès impossible :', enrollmentError);
 				throw error(500, 'Impossible de vérifier l’accès');
 			}
 
@@ -160,7 +160,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 			.download(storagePath);
 
 		if (storageError || !fileData) {
-			console.error('[Document API] Storage error:', storageError);
+			logger.error('Storage error:', storageError);
 			throw error(500, 'Erreur lors du chargement du document');
 		}
 
@@ -200,7 +200,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 			throw err;
 		}
 
-		console.error('[Document API] Error:', err);
+		logger.error('Error:', err);
 		throw error(500, 'Erreur serveur');
 	}
 };

@@ -119,6 +119,15 @@ const KNOWN_KEYS = [
 /** `A=(2 ; 3)`, ou `(2 ; 3)` pour un point seul : nom éventuel, coordonnées */
 const TARGET_REGEX = /^(?:([^=\s()]+)\s*=\s*)?\((.*)\)$/;
 
+/** Point à placer masqué (`A=?`, ou `?` pour un point seul) : énoncé d'une évaluation notée */
+const MASKED_TARGET_REGEX = /^(?:([A-Z])\s*=\s*)?\?$/;
+
+/**
+ * Points masqués (`masked-value.ts`) : leurs coordonnées sont de remplacement,
+ * ni nœud ni fenêtre à vérifier. Un objet par point, jamais réutilisé.
+ */
+const maskedTargets = new WeakSet<CourbeTarget>();
+
 /** `x = Durée (min)` : axe, titre */
 const AXIS_TITLE_REGEX = /^([^=\s]+)\s*=\s*(.*)$/;
 
@@ -875,6 +884,18 @@ function parseTargets(value: string, functions: FunctionTable, line: number): Co
 	}
 	const targets: CourbeTarget[] = [];
 	for (const part of parts) {
+		const hidden = MASKED_TARGET_REGEX.exec(part);
+		if (hidden) {
+			// Énoncé d'une évaluation notée : le nom seul, coordonnées de remplacement
+			const name = hidden[1] ?? '';
+			if (name === '' && parts.length > 1) {
+				throw new LineError(`placer : ${part} — chaque point porte un nom (A=? ; B=?)`);
+			}
+			const target = { name, x: 0, y: 0, line };
+			maskedTargets.add(target);
+			targets.push(target);
+			continue;
+		}
 		const match = TARGET_REGEX.exec(part);
 		if (!match) throw new LineError(`placer : « ${part} » mal écrit (ex. A=(2 ; 3))`);
 		const name = match[1] ?? '';
@@ -1194,6 +1215,7 @@ export function parseCourbeContent(source: string): CourbeNode {
 	if (errors.length === 0 && placer !== undefined) {
 		const gridSpec = { window: window as CourbeWindow, grid, size };
 		for (const target of placer) {
+			if (maskedTargets.has(target)) continue;
 			const problem = targetProblem(target, points, gridSpec);
 			if (problem === null) continue;
 			errors.push({

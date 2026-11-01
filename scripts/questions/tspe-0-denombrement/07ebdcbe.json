@@ -1,0 +1,98 @@
+{
+	"id": "07ebdcbe-dc7c-45cf-ad81-df70231719a2",
+	"title": "Coefficients binomiaux : chemins à k succès",
+	"description": "Nombre de chemins à k succès dans l'arbre d'un schéma de Bernoulli de n épreuves : C(n, k)",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Probabilités",
+	"domain": "Loi binomiale",
+	"subdomain": "Coefficients binomiaux",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}",
+					"acceptCombinatorialNotation": true
+				}
+			],
+			"statement": "On représente par un arbre un schéma de Bernoulli de ${{n}}$ épreuves (succès $S$, échec $\\overline{S}$).\n\nCombien de chemins de cet arbre comportent exactement ${{k}}$ succès ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..5"
+				},
+				{
+					"name": "k",
+					"expression": "1..{{eval:n-1}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:binom(n,k)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre de chemins à ${{k}}$ succès parmi ${{n}}$ épreuves est, par définition, le coefficient binomial $\\binom{ {{n}} }{ {{k}} }$.",
+					"On peut les lister (un chemin est repéré par les numéros de ses épreuves réussies, pris parmi les ${{n}}$) : $\\binom{ {{n}} }{ {{k}} }=\\textcolor{{{color:primary.0}}}{{{c}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "2",
+				"n": "4"
+			},
+			"description": "v0 : n = 4, k = 2 → 6",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2",
+				"n": "4"
+			},
+			"description": "v0 : n × k = 8",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["16"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2",
+				"n": "4"
+			},
+			"description": "v0 : 2ⁿ = 16 (tous les chemins)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\binom{4}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "2",
+				"n": "4"
+			},
+			"description": "v0 : \\binom{4}{2} (notation acceptée)",
+			"variationIndex": 0
+		}
+	]
+}

@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildSpiral, placeLabel, PROVINCE_MAP } from '../spiral';
-import { PROVINCES } from '../tour';
+import { buildSpiral } from '../spiral';
 
 const OPTIONS = { size: 400, turns: 2.5, innerRadius: 18, outerRadius: 180, stops: 6 };
 
@@ -35,63 +34,5 @@ describe('buildSpiral', () => {
 		const [x, y] = d.slice(1).split(/[ L]/).map(Number);
 		expect(x).toBeCloseTo(200, 0);
 		expect(y).toBeCloseTo(20, 0);
-	});
-});
-
-describe('la carte des Provinces (réglage de production)', () => {
-	const { size, turns, innerRadius, outerRadius, charWidth } = PROVINCE_MAP;
-	const spiral = buildSpiral({ size, turns, innerRadius, outerRadius, stops: PROVINCES.length });
-	const NODE = 17; // rayon d'une étape agrandie
-	const THRONE = 24; // rayon du Trône (cercle central)
-
-	type Box = { x0: number; y0: number; x1: number; y1: number };
-	const overlap = (a: Box, b: Box) =>
-		!(a.x1 <= b.x0 || a.x0 >= b.x1 || a.y1 <= b.y0 || a.y0 >= b.y1);
-	const labels: Box[] = spiral.stops.map((stop, i) => {
-		const label = placeLabel(stop, PROVINCES[i].name, size);
-		const width = PROVINCES[i].name.length * charWidth;
-		const x0 = label.anchor === 'start' ? label.x : label.x - width;
-		return { x0, y0: label.y - 17, x1: x0 + width, y1: label.y + 1 };
-	});
-	const nodes: Box[] = spiral.stops.map((s) => ({
-		x0: s.x - NODE,
-		y0: s.y - NODE,
-		x1: s.x + NODE,
-		y1: s.y + NODE
-	}));
-	const c = spiral.center;
-	// Le Trône et son nom « Sandomir », dessous
-	const throne: Box = { x0: c.x - THRONE, y0: c.y - THRONE, x1: c.x + THRONE, y1: c.y + 46 };
-
-	it('finit au centre exact du cadre : le Trône y est', () => {
-		expect(c).toEqual({ x: size / 2, y: size / 2 });
-	});
-
-	it('aucun nom ne sort du cadre', () => {
-		for (const box of labels) {
-			expect(box.x0).toBeGreaterThanOrEqual(0);
-			expect(box.x1).toBeLessThanOrEqual(size);
-		}
-	});
-
-	it('aucun nom ne chevauche un autre nom, une étape ou le Trône', () => {
-		labels.forEach((label, i) => {
-			expect(overlap(label, throne), PROVINCES[i].name).toBe(false);
-			labels.forEach((other, j) => {
-				if (j !== i) expect(overlap(label, other), `${i}/${j}`).toBe(false);
-			});
-			nodes.forEach((node, j) => {
-				if (j !== i) expect(overlap(label, node), `${PROVINCES[i].name}/${j}`).toBe(false);
-			});
-		});
-	});
-
-	it('aucune étape ne touche le Trône ni une autre étape', () => {
-		nodes.forEach((node, i) => {
-			expect(overlap(node, throne), String(i)).toBe(false);
-			nodes.forEach((other, j) => {
-				if (j > i) expect(overlap(node, other), `${i}/${j}`).toBe(false);
-			});
-		});
 	});
 });

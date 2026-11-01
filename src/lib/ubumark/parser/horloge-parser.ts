@@ -32,6 +32,7 @@
 
 import { unnestedLine } from './nested-line';
 import { specialBlockEnd } from './unclosed-block';
+import { isMaskedValue } from '../utils/masked-value';
 import {
 	HORLOGE_CAPTION_MAX,
 	HORLOGE_MAX_CLOCKS,
@@ -324,7 +325,8 @@ export function parseHorlogeContent(source: string): HorlogeNode {
 					if (value.includes(';')) {
 						throw new LineError('une seule heure à placer par horloge (un bloc par horloge)');
 					}
-					placer = parseTime(value);
+					// Énoncé d'une évaluation notée : heure de remplacement (`masked-value.ts`)
+					placer = isMaskedValue(value) ? { hours: 12, minutes: 0 } : parseTime(value);
 					placerLine = lineNo;
 					break;
 				case 'case':

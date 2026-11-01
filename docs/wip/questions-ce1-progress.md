@@ -5,19 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 7 publié._
+_Mis à jour le 2026-11-01, après #2141._
 
-- **État** : lots 0 à 7 publiés (lot 7 : données, 6 modèles, § 14, clos le 2026-11-01).
-- **Prochaine action** : chantier `monnaie-centimes` (à part : ` ```monnaie ` sans centimes ni billets de 200 / 500 €,
-  § 12), puis lot monnaie (054, 055, 056, 057, 086), puis lots 8 et 9 (§ 12) — phase 0 à écrire.
-- **En attente de David** : rien.
+- **État** : lots 0 à 7 publiés ; lot 8 (monnaie, § 15) : 6 brouillons en prod, rangés et tagués (#2135, #2141).
+- **Prochaine action** : après le `deploy:prod` qui livre #2127 (centimes) : catégories relevées, page à cocher, puis
+  `publier-lot` (simulation, puis David) ; ensuite lots 9 et 10 (ex-8 et 9 du § 12).
+- **En attente de David** : `deploy:prod` pour les centimes.
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
   posée dans Chrome : une case à la fois ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage
   de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule ; aucun lien
   de session dans une PR ; migration de données → ligne `Doc-inchangée:` dans un commit (garde du pre-push).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branche `chore/questions-ce1-lot7-rangement`, mergée : en partir une neuve sur `origin/main`). `!` de David :
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (retiré ; le prochain lot en repart un neuf sur `origin/main`). `!` de David :
   toujours préfixer `cd /Users/david/Coding/js/ubumaths &&` (un dossier courant supprimé fait échouer node en `uv_cwd`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
@@ -618,3 +618,63 @@ Réponse de David (« tes recos ? » puis « go », 2026-11-01) : les quatre rec
 - 2026-11-01 : relecture 6/6 OK (verdicts comptés en base, aucun commentaire) ; catégories relevées avant publication,
   sans collision ; `publier-lot` simulé (6 passent), puis `--publier` par David : 6/6 publiés, vérifié au MCP (publiés,
   rangés, tagués). Lot 7 clos. Reste signalé : une barre non construite parmi d'autres jugée « forme non optimale ».
+
+## 15. Lot 8 : monnaie — phase 0 (2026-11-01)
+
+Relevé MCP du 2026-11-01 : aucun modèle sur 054, 055, 056, 057, 086. Catégories du CP à continuer :
+« Monnaie · Pièces et billets · 1 à 7 » (CP-042 à 045, `construire:` aux niveaux 6 et 7) et « Monnaie · Rendre la
+monnaie · 1, 2 » (CP-071 : en case, puis `construire:`). « Monnaie · Euros et centimes · 1, 2 » = 053, 058 (lot 5 bis).
+Outil : ` ```monnaie ` avec centimes (`pièces: 2×50c 1×20c`), billets de 200 / 500 €, `montant: 3,45`,
+`construire: 3,45` + `réserve:` (#2127, **pas en prod** : les modèles restent en brouillon jusqu'au `deploy:prod` qui
+la livre). Construction jugée sur la somme : toute construction juste est « juste », pas seulement le moins d'objets.
+Bornes (BO c2 p.28) : euros et centimes, centimes < 100, ou écriture à virgule ; 054 : ordonner quatre prix quelles
+que soient leurs écritures (12 € > 60 centimes) ; 056 : contrainte possible « pas de pièce de 1 € » (10, 20, 50 c).
+
+| Fichier                       | Point   | Catégorie · niveau               | Variations                                                                                                                                                                                                                |
+| ----------------------------- | ------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `01-combien-d-argent`         | CE1-055 | Monnaie · Pièces et billets · 8  | pièces de centimes seules (< 1 €) → [_] c ; euros et centimes (< 10 €) → [_] € [_] c ; billets, pièces et centimes (< 100 €) → [_] € à virgule ; une variation avec 1, 2, 5 c                                             |
+| `02-qui-a-le-plus`            | CE1-054 | Monnaie · Pièces et billets · 9  | Léa / Tom, euros et centimes, écart ≤ 50 c, case choix (Léa, Tom, autant) ; beaucoup de petites pièces contre peu de grosses ; quatre prix écrits (2,50 € ; 250 c ; 2 € 5 c ; 60 c ; 12 €…) : le plus cher, le moins cher |
+| `03-pose-la-somme`            | CE1-056 | Monnaie · Pièces et billets · 10 | `construire:` 0,35 à 0,95 € ; 1,05 à 9,95 € (somme écrite « 3,45 € » ou « 3 € et 45 c ») ; sans pièce de 1 € (réserve 10, 20, 50 c, somme 0,60 à 1,90 €)                                                                  |
+| `04-paie-tes-achats`          | CE1-057 | Monnaie · Pièces et billets · 11 | un article à 1,20 à 9,80 € → `construire:` ; deux articles (2,30 € + 1,45 €) → `construire:` de la somme ; « Léa a ceci, peut-elle acheter … à 4,80 € ? » (oui / non, écart ≤ 50 c)                                       |
+| `05-combien-le-marchand-rend` | CE1-086 | Monnaie · Rendre la monnaie · 3  | prix 0,10 à 0,90 € payé avec 1 € → [_] c ; prix 1,10 à 4,90 € payé avec 5 € → [_] € à virgule ; 5,50 à 9,50 € payé avec 10 € ; billet de 20 € (prix 12,30 à 19,70 €)                                                      |
+| `06-rends-la-monnaie`         | CE1-086 | Monnaie · Rendre la monnaie · 4  | mêmes situations, l'élève pose le rendu (`construire:`, réserve 1, 2, 5, 10 € et 10, 20, 50 c)                                                                                                                            |
+
+Prix au multiple de 10 c dans les gestes (`construire:`) et dans le rendu ; multiples de 5 c dans les cases ; 1, 2,
+5 c seulement dans `01` (compter). Corrigé : rendu par complément (« de 3,45 € à 4 €, puis à 5 € »), comme au lot 4.
+
+Erreurs typiques dans les `testSpecs` : nombre d'objets compté au lieu des valeurs ; 2 € et 5 c = 2,5 € ; centimes
+comptés en euros (50 c lus 50 €) ; 345 c écrit 345 € ; rendu = prix ; rendu calculé sur le mauvais billet ; « le plus
+de pièces » choisi au lieu du plus d'argent ; 60 c > 12 € (le plus grand nombre écrit).
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud +
+tag ne change aucune règle.
+
+### Questions à David
+
+1. **Deux modèles pour 086** (en case, puis le geste), comme au CP (CP-071, niveaux 1 et 2) ? Recommandation : oui.
+2. **Prix au multiple de 10 c dans les gestes** : poser 3,47 € demande des pièces de 2 c et 5 c (jusqu'à 8 objets de
+   plus), le geste devient long sans rien apprendre de plus ; les cases gardent le multiple de 5 c. Recommandation : oui.
+3. **Réponse à virgule** : « 2,2 » juste pour 2,20 € (règle du lot 5 bis), corrigé « 2,20 € » ? Recommandation : oui.
+4. **Publication** : les brouillons peuvent être créés tout de suite, mais la page à cocher et la publication attendent
+   le `deploy:prod` qui livre #2127 (sans lui, les centimes affichent une erreur chez l'élève). Recommandation : écrire
+   et ranger le lot maintenant, publier après ton prochain `deploy:prod`.
+5. **Numéro du lot** : « lot 8 » pour la monnaie, les lots « 8 » et « 9 » du § 12 deviennent 9 et 10. Recommandation :
+   oui (les fichiers suivent : `lot-ce1-8.py`, `scripts/questions/ce1-8/`).
+
+Réponse de David (« tes recos ? » puis « go », 2026-11-01) : les cinq recommandations.
+
+- 2026-11-01 : lot 8 écrit (`lot-ce1-8.py`, `scripts/questions/ce1-8/`), `question:specs` 51/51 (4 400 tirages),
+  simulation 6/6 ; 6 brouillons en base locale. Aperçu admin : rendu de 2,20 € posé (2 € + 20 c) jugé juste ; deux
+  porte-monnaie de centimes lisibles, mais petits quand l'un a 11 pièces (même échelle que CP-042). `construire: {{p}}c`
+  (le bloc lit `345c`). Corrigé du rendu en une seule étape (une étape `{{if:}}` vide restait affichée) ; objets à la
+  mesure du billet (sucette pour 1 €, cahier pour 5 €).
+- 2026-11-01 : #2135 mergée (CI verte 14/14, revue : aucune, contenu) ; brouillons en prod à créer par David.
+- 2026-11-01 : `create-questions --publier` par David : 6 brouillons vérifiés au MCP (`3fa7e2b5`, `0942f96a`, `463d8266`,
+  `4cd0d93f`, `3c9711f9`, `19d80fc9`), catégories attendues (Pièces et billets 8 à 11, Rendre la monnaie 3, 4), sans nœud
+  ni tag, `updated_at` intact. Migration `20261101215100_questions_ce1_lot8_rangement_tags` (max des worktrees + 1 min)
+  et test : rouge sans (5 échecs sur 9), vert 9/9.
+- 2026-11-01 : `security-auditor` sans finding (SQL identique au lot 7) ; #2141 mergée (CI verte 16/16). `db:migrate` NON
+  lancé : `20261101213600_questions_2de_fonctions_rangement_tags` (#2134), plus ancienne, pas jouée en prod ; `db push`
+  la jouerait aussi (`--include-all`). Attendre qu'elle le soit, puis `db:migrate`.
+- 2026-11-01 : `20261101215100` jouée en prod avec la migration 2de (`db push --include-all` par David, session
+  questions-2de) ; vérifié au MCP : 6/6 brouillons, sur le nœud de leur point, un tag chacun, `updated_at` intact.

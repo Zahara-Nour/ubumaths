@@ -5,17 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2078 et la v0.59.0._
+_Mis à jour le 2026-11-01, après #2150 (lot 8 écrit, mergé)._
 
-- **État** : lots 1 à 6b publiés ; 06 et 07 en ```ranger en prod (#2078, migration jouée) ; verdicts 02-04 validés.
-  Lot 7 « Droite graduée et ordre » (#2057) livré en prod avec la v0.59.0 (`deploy:prod` du 2026-11-01).
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/6-droite-ordre --publier` → relever
-  les `id` → migration nœud + tag → page à cocher → publication.
-- **En attente de David** : le `--publier` ci-dessus ; décision sur le verrou de `deploy:prod` (attendre la CI sous
-  verrou au lieu de s'arrêter, cf. § 17) — hors chantier.
+- **État** : lots 1 à 7 publiés ; lot 8 « Assemblages de cubes » (154, 155, 181, 208, 209) écrit, joué en local,
+  fichiers mergés (#2150) ; rien en prod pour ce lot.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-assemblages-cubes
+  --publier` (brouillons en prod) ; puis relever les 5 `id`, migration nœud + tag (nœuds = notions « Géométrie >
+  Solides », « Grandeurs et mesures > Volumes »), page à cocher. **Publication après le `deploy:prod` qui livre
+  #2130.**
+- **En attente de David** : le `create-questions --publier` du lot 8.
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs --file`. Jamais de variable
-  `e`. `Doc-inchangée:` va dans un message de COMMIT. PR en conflit = pas de CI : vérifier `mergeable`.
-- **Worktree / branche** : aucun (retiré après #2078).
+  `e`. `Doc-inchangée:` va dans un message de COMMIT. PR en conflit = pas de CI : vérifier `mergeable`. Horodatage
+  de migration = dernière de `main` + 1 min.
+- **Worktree / branche** : aucun (retiré après #2150).
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1131,3 +1133,111 @@ visibles de l'admin et de l'auteur seuls jusqu'à leur publication ; la migratio
 
 - `deploy:prod` → v0.59.0 (8a0d772e8). Une heure d'attente : chaque merge d'une autre session relançait la CI de
   `main`, et le script s'arrête (verrou rendu) au lieu d'attendre. Proposé à David : attendre la CI sous le verrou.
+
+## 18. Lot 7 : brouillons en prod et rangement (2026-11-01)
+
+- Simulation `pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-droite-ordre` : 4 « à créer » ; David
+  lance `--publier` : 01 8adac6d1, 02 0ce253ea, 03 5f9ba34d, 04 92db5823, en brouillon. (Le script n'est pas dans
+  `package.json` : `pnpm create-questions` échoue.)
+- MCP : 4 brouillons, `['6']`, niveaux 1, 2, 7, 4 ; sans nœud ni tag. Points : 6-108, 6-107 → « Nombres et calculs >
+  Décimaux : numération > droite graduée » ; 6-128 → « … > Fractions : sens et écritures > droite graduée » ; 6-110
+  → « … > Décimaux : numération > ordre ».
+- Migration `20261101200700_questions_6_lot7_rangement_tags` (patron du lot 6b ; 1re version en 190200, prise en prod par questions-5 → renommée 200700 ; horodatage = dernière de `main` +
+  1 min) ; test `questions-6-lot7-rangement-tags` : 8 rouges contre une migration vide, 14 verts avec.
+- Revue `security-auditor` : aucun bloquant. CI verte, #2107 mergée. `db:migrate` REFUSÉ : 20261101190200 déjà pris
+  en prod par `questions_5_lot6_rangement_tags` (transaction annulée, rien d'appliqué, vérifié au MCP). Renommée
+  20261101200700 (#2114, CI verte, mergée) ; `db:migrate` : jouée, avec au passage
+  `20261101193000_questions_4_lot1_niveau` (mergée, pas encore jouée : session questions-4 prévenue). MCP : les 4
+  sur leur nœud, un tag chacun (6-108, 6-107, 6-128, 6-110), `updated_at` préservé, trigger `O`.
+- Hors chantier, demandé par David : #2112 (`deploy:prod` attend la CI de `main` sous le verrou, au plus 25 min ;
+  commits en cause nommés si `main` local diffère). 1re CI rouge à cause du doublon 190200 alors sur `main` ;
+  `origin/main` fusionnée, CI verte, mergée.
+- Page à cocher générée depuis `main` (8b5d227c7), publiée (`db`, 0 verdict) :
+  https://claude.ai/artifact/Rm831MzHvVCQFwVH6GBGq9. Alertes : bloc line (01-03) et ```ranger (04) non dessinés ;
+  homonyme 2af5f9fe (« Ranger des nombres décimaux », CM1, brouillon de questions-cm1, niveau 5) écarté à raison.
+- Relecture de David : 4/4 « OK », aucun commentaire (base de la page lue, 4 verdicts comptés). `publier-lot` en
+  simulation : 4 brouillons passent ; David a lancé `--publier` : « 4/4 modèles du lot publiés ». MCP : `published`,
+  niveaux 1, 2, 7, 4, nœuds et tags inchangés. **Lot 7 clos.**
+
+## 19. Relevé après le lot 7 (2026-11-01)
+
+Relevé MCP prod : **42 points de 6e sans modèle publié** (46 au § 14, moins 107, 108, 110, 128). Classement du § 14
+inchangé. Lots restants : **8** assemblages de cubes (154, 155, 181, 208, 209) · **9** tableaux et programmes (184,
+185, 192, 143, 194-196) · **10, 11** géométrie dessinée · restent C (169, 142), figure à compléter (170, 172, 173,
+180, 207) et D.
+
+## 20. Lot 8 « Assemblages de cubes » : phase 0 (proposée le 2026-11-01, à valider)
+
+Outil : ` ```cubes ` (chantier `solides`, en prod depuis v0.59.0) — affichage (`vue: perspective | dessus | face |
+droite | gauche`), gestes `dessiner:` et `retrouver:`, perspective comme option d'un choix (`--espace-taille`).
+**Aucun modèle ```cubes en prod, à aucun niveau** : ce lot est le premier (patrons pour CM1-119, CM2-105).
+Bornes : 154 « assemblages de cubes identiques », 155 « cubes d'arête 1 cm », 181 « vues de dessus, de face, de
+gauche, de droite » ; exemples de réussite 6e p. 17 : tracer les vues sur papier quadrillé ; quatre vues données,
+**choisir parmi plusieurs assemblages** celui qui correspond ; dénombrer un empilement. Nœuds : les points sont
+rangés sur les notions mêmes (« Géométrie > Solides », « Grandeurs et mesures > Volumes »), sans modèle direct.
+
+| #   | Point | Nœud (notion)                  | Modèle                                   | Niveau |
+| --- | ----- | ------------------------------ | ---------------------------------------- | ------ |
+| 1   | 209   | Géométrie > Solides            | Compter les cubes d'un assemblage        | 1      |
+| 2   | 181   | Géométrie > Solides            | Dessiner une vue d'un assemblage         | 2      |
+| 3   | 208   | Géométrie > Solides            | Retrouver un assemblage d'après ses vues | 3      |
+| 4   | 155   | Grandeurs et mesures > Volumes | Volume d'un assemblage de cubes          | 1      |
+| 5   | 154   | Grandeurs et mesures > Volumes | Comparer les volumes de deux assemblages | 2      |
+
+Assemblages : au plus 4 × 4 au sol, hauteurs 0 à 3 (téléphone : 1 cm par arête), jamais de cube en l'air
+(le bloc ne le permet pas).
+
+1. **Compter les cubes** (case) — v1 un seul étage ou une seule rangée (tous les cubes se voient) ; v2 piles de 1
+   à 3 sur 2 × 3 (cubes cachés sous d'autres) ; v3 empilement en escalier ou en pyramide 3 × 3 (l'exemple du BO).
+   Corrigé : le compte pile par pile, rangée par rangée (« au fond : 2 + 1 + 1 ; devant : 1 + 0 + 1 »).
+2. **Dessiner une vue** (`dessiner:`) — v1 face, v2 dessus, v3 droite ou gauche ; v4 sens inverse en choix :
+   « Laquelle est la vue de face ? », quatre ` ```cubes ` `vue:` en options (la bonne, la vue de dessus, la vue
+   de droite, la vue de face d'un assemblage voisin), options distinctes vérifiées par le script.
+3. **Retrouver l'assemblage** — v1 la forme du BO : vues de face, de dessus, de droite données (` ```cubes `
+   `vue:`), choisir parmi trois perspectives ; leurres = un cube déplacé ou retiré, dont une vue au moins diffère
+   (vérifié par le script) ; v2 `retrouver: face` (vue de dessus = grille) ; v3 `retrouver: face, droite`.
+   Plusieurs réponses justes acceptées par le juge, « Il y a d'autres réponses justes. » dans la correction.
+4. **Volume d'un assemblage** (case + « cm³ » écrit après) — « Chaque cube a une arête de 1 cm. » ; v1 le compte
+   (comme 1, v2) ; v2 pavé plein 2 à 4 × 2 à 3 × 1 à 3 (le compte par étage : « 3 × 2 = 6 cubes par étage,
+   2 étages ») ; v3 pavé à une marche ou un trou. Corrigé : le compte, puis 1 cube = 1 cm³.
+5. **Comparer deux volumes** (choix : « A », « B », « le même volume ») — « Les cubes sont identiques. » ; v1 des
+   comptes différents ; v2 le même volume, formes différentes (l'un plus haut, l'autre plus étalé : le piège
+   « le plus haut est le plus gros ») ; v3 « Combien de cubes faut-il ajouter à A pour avoir le volume de B ? »
+   (case). Corrigé : les deux comptes.
+
+**Question d'accès** (migration nœud + tag des 5) : personne ne lit rien de plus. Brouillons visibles de l'admin et
+de l'auteur seuls jusqu'à la publication ; la migration ne fait que ranger et taguer.
+
+**Questions** :
+
+1. Lot 8 = assemblages de cubes (recommandé, ordre du § 14) ?
+2. **Fuite en évaluation** : les hauteurs d'un ` ```cubes ` partent encore au navigateur (`maskGestureAnswers`
+   ne les masque pas, lot 2 de `fuite-enonce`, en cours). Pour `retrouver:` (3, v2-v3), c'est la réponse.
+   Publier quand même (hors évaluation, rien ne change) ou garder 3 en brouillon jusqu'au lot 2 ?
+3. Valider la phase 0 (5 modèles, niveaux, variations) ?
+
+**Réponses de David (2026-11-01)** : recommandations suivies, « je valide ». (1) Lot 8 = assemblages de cubes.
+(2) Publication du lot **après le `deploy:prod` qui livre #2130** (mergée le 2026-11-01 : `retrouver:` masqué en
+évaluation) ; reste accepté : les hauteurs des dessins en options d'un choix restent lisibles dans les données (même
+classe que les choix d'horloges). (3) Phase 0 validée telle quelle ; garde-fous du script : les quatre vues du 2 v4
+toutes distinctes, chaque leurre du 3 v1 a une vue différente des vues données.
+
+### 20.1 Écriture (2026-11-01)
+
+- `docs/wip/questions/lot-8-assemblages-cubes.py scripts/questions` → 5 modèles dans
+  `scripts/questions/6-assemblages-cubes/`. `question:specs` à 300 tirages par variation : 49 specs vertes,
+  4 800 tirages réussis ; `create-questions` en simulation contre la prod : 5 « à créer ».
+- Catégories neuves : Géométrie / Solides / Assemblages de cubes (niveaux 1-3), Grandeurs / Volumes / Assemblages
+  de cubes (1-2). Aucun modèle ```cubes en prod avant ce lot.
+- Assemblages montrés en perspective : piles de devant tirées **sous** celles du fond (`d` de 1 à `{{a}}`) : le
+  dessus de chaque pile se voit (compte et vues sans ambiguïté), aucun tirage rejeté. Choix entre dessins
+  (2 v4, 3 v1, 5 v2) : catalogues tirés par le script (graine fixe) et choisis par `k` (`{{if:k==1|…}}`
+  imbriqués) ; le script vérifie que les quatre vues du 2 v4 sont distinctes et que chaque leurre du 3 v1 a une
+  vue différente. Vues recalculées par le script (`vue`) ; les specs `dessiner:` / `retrouver:` vérifient
+  l'accord avec le juge (dont « une autre réponse juste » pour `retrouver:`).
+- **Nouvelle sonde** `scripts/questions/sonde-cubes.ts` : les specs ne voient pas un bloc ```cubes d'affichage
+  en erreur ; 300 tirages par modèle, 3 184 blocs lus, 0 problème.
+- Base locale : 5 brouillons ; aperçu admin à 390 px (Playwright hors dépôt) : chaque variation tirée et vue ;
+  justes jugées justes (compte, volume, comparaison, `dessiner:` face / dessus / droite, `retrouver:` face et
+  face + droite), fausses jugées fausses ; rendu des perspectives, des vues en options et des corrections lu.
+- PR #2150 : CI verte, mergée ; worktree retiré.

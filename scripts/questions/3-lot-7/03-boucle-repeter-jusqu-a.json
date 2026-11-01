@@ -1,0 +1,278 @@
+{
+	"title": "Boucle « répéter jusqu'à ce que »",
+	"description": "Exécuter à la main une boucle « répéter jusqu'à ce que » d'un programme Scratch : reste par soustractions successives, nombre de passages, compteur, doublement",
+	"grades": ["3"],
+	"theme": "Algorithmique",
+	"domain": "Boucles",
+	"subdomain": "Boucle non bornée",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici un programme (exemple du programme officiel).\n\n```scratch\nquand le drapeau vert pressé\ndemander [Quel est le nombre à diviser ?] et attendre\nmettre [reste v] à (réponse)\ndemander [Quel est le diviseur ?] et attendre\nrépéter jusqu'à ce que <(reste) < (réponse)>\nmettre [reste v] à ((reste) - (réponse))\nfin\ndire (reste)\n```\n\nOn saisit ${{n}}$ puis ${{d}}$. Que dit le programme à la fin ?\n\n$?$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3..9"
+				},
+				{
+					"name": "n",
+					"expression": "20..60"
+				}
+			],
+			"conditions": ["n>=3*d"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n-d*floor(n/d)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La variable *réponse* contient la dernière saisie : le diviseur ${{d}}$. *reste* part de ${{n}}$.",
+					"La condition est testée **avant** chaque passage : dès qu'elle est vraie, la boucle s'arrête. Tant que *reste* $\\geqslant {{d}}$, on lui retire ${{d}}$.",
+					"*reste* prend les valeurs ${{n}}$, ${{eval:n-d}}$, ${{eval:n-2*d}}$, … ; après ${{eval:floor(n/d)}}$ passages, *reste* $= {{n}} - {{eval:floor(n/d)}} \\times {{d}} = {{eval:n-d*floor(n/d)}}$, et ${{eval:n-d*floor(n/d)}} < {{d}}$ : la boucle s'arrête.",
+					"Le programme dit $\\textcolor{{{color:primary.0}}}{{{eval:n-d*floor(n/d)}}}$ : c'est le reste de la division euclidienne de ${{n}}$ par ${{d}}$."
+				]
+			}
+		},
+		{
+			"statement": "Combien de fois les instructions de la boucle sont-elles exécutées ?\n\n```scratch\nmettre [reste v] à ({{n}})\nrépéter jusqu'à ce que <(reste) < [{{d}}]>\nmettre [reste v] à ((reste) - ({{d}}))\nfin\ndire (reste)\n```\n\n$?$ fois",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3..9"
+				},
+				{
+					"name": "n",
+					"expression": "20..60"
+				},
+				{
+					"name": "r",
+					"expression": "eval:n-d*floor(n/d)"
+				}
+			],
+			"conditions": ["n>=3*d", "floor(n/d)<=12"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor(n/d)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La condition est testée **avant** chaque passage : dès qu'elle est vraie, la boucle s'arrête.",
+					"Chaque passage retire ${{d}}$ à *reste* ; la boucle s'arrête quand *reste* $< {{d}}$.",
+					"${{n}} = {{eval:floor(n/d)}} \\times {{d}}{{if:r>0| + {{r}}|}}$ : après ${{eval:floor(n/d)}}$ passages, *reste* $= {{r}} < {{d}}$.",
+					"La boucle est exécutée $\\textcolor{{{color:primary.0}}}{{{eval:floor(n/d)}}}$ fois."
+				]
+			}
+		},
+		{
+			"statement": "Que dit ce programme à la fin ?\n\n```scratch\nmettre [i v] à (0)\nrépéter jusqu'à ce que <(i) > [{{s}}]>\najouter ({{k}}) à [i v]\nfin\ndire (i)\n```\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "s",
+					"expression": "10..60"
+				}
+			],
+			"conditions": ["floor(s/k)+1<=12", "floor(s/k)>=3"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*(floor(s/k)+1)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La condition est testée **avant** chaque passage : dès qu'elle est vraie, la boucle s'arrête.",
+					"$i$ prend les valeurs $0$, ${{k}}$, ${{eval:2*k}}$, ${{eval:3*k}}$, … (les multiples de ${{k}}$).",
+					"Le plus grand multiple de ${{k}}$ inférieur ou égal à ${{s}}$ est ${{eval:k*floor(s/k)}}$ : « ${{eval:k*floor(s/k)}} > {{s}}$ » est fausse, la boucle continue.",
+					"Le multiple suivant, ${{eval:k*(floor(s/k)+1)}}$, est plus grand que ${{s}}$ : la boucle s'arrête. Le programme dit $\\textcolor{{{color:primary.0}}}{{{eval:k*(floor(s/k)+1)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Que dit ce programme à la fin ?\n\n```scratch\nmettre [x v] à (1)\nrépéter jusqu'à ce que <(x) > [{{s}}]>\nmettre [x v] à ((x) * (2))\nfin\ndire (x)\n```\n\n$?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "4..9"
+				},
+				{
+					"name": "u",
+					"expression": "0..9"
+				},
+				{
+					"name": "s",
+					"expression": "eval:2^(t-1)+floor(u*2^(t-1)/10)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2^t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La condition est testée **avant** chaque passage : dès qu'elle est vraie, la boucle s'arrête.",
+					"$x$ double à chaque passage : $1$, $2$, $4$, $8$, $16$, … (les puissances de $2$).",
+					"${{eval:2^(t-1)}} \\leqslant {{s}}$ : la boucle continue ; puis $x = {{eval:2^t}}$ et ${{eval:2^t}} > {{s}}$ : la boucle s'arrête.",
+					"Le programme dit $\\textcolor{{{color:primary.0}}}{{{eval:2^t}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "47 et 6 : reste 5",
+			"variationIndex": 0,
+			"variables": {
+				"n": "47",
+				"d": "6"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : arrêt un tour trop tôt (11)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "47",
+				"d": "6"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le nombre de départ (47)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "47",
+				"d": "6"
+			},
+			"answers": ["47"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le quotient (7)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "47",
+				"d": "6"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "47 et 6 : 7 passages",
+			"variationIndex": 1,
+			"variables": {
+				"n": "47",
+				"d": "6",
+				"r": "5"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un passage de trop (8)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "47",
+				"d": "6",
+				"r": "5"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "k = 5, s = 23 : 25",
+			"variationIndex": 2,
+			"variables": {
+				"k": "5",
+				"s": "23"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : arrêt un tour trop tôt (20)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "5",
+				"s": "23"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "k = 4, s = 20 : 24 (20 n'est pas > 20)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"s": "20"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : arrêt à i = s (20)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"s": "20"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "s = 40 : 64",
+			"variationIndex": 3,
+			"variables": {
+				"t": "6",
+				"u": "2",
+				"s": "40"
+			},
+			"answers": ["64"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : arrêt un tour trop tôt (32)",
+			"variationIndex": 3,
+			"variables": {
+				"t": "6",
+				"u": "2",
+				"s": "40"
+			},
+			"answers": ["32"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,360 @@
+{
+	"title": "Qui a le plus d'argent ? Euros et centimes",
+	"description": "Comparer deux porte-monnaie en euros et centimes ; une grosse coupure contre beaucoup de petites pièces ; le plus cher et le moins cher de quatre prix écrits autrement",
+	"grades": ["CE1"],
+	"theme": "Grandeurs",
+	"domain": "Monnaie",
+	"subdomain": "Pièces et billets",
+	"level": 9,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Qui a le plus d'argent ?\n\n```monnaie\npièces: {{a}}×2 {{b}}×1 {{c}}×50c {{d}}×20c {{f}}×10c ; {{g}}×2 {{h}}×1 {{k}}×50c {{m}}×20c {{n}}×10c\nlégendes: Léa ; Tom\n```\n\n```choix\nmelanger: non\n- Léa\n- Tom\n- Ils ont autant d'argent.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..2"
+				},
+				{
+					"name": "b",
+					"expression": "0..2"
+				},
+				{
+					"name": "c",
+					"expression": "0..2"
+				},
+				{
+					"name": "d",
+					"expression": "0..2"
+				},
+				{
+					"name": "f",
+					"expression": "0..2"
+				},
+				{
+					"name": "g",
+					"expression": "0..2"
+				},
+				{
+					"name": "h",
+					"expression": "0..2"
+				},
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "m",
+					"expression": "0..2"
+				},
+				{
+					"name": "n",
+					"expression": "0..2"
+				},
+				{
+					"name": "x",
+					"expression": "eval:200*a+100*b+50*c+20*d+10*f"
+				},
+				{
+					"name": "y",
+					"expression": "eval:200*g+100*h+50*k+20*m+10*n"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:x>y|0|{{if:x<y|1|2}}}}"
+				}
+			],
+			"conditions": [
+				"abs(x - y) <= 50",
+				"a + b + c + d + f >= 3",
+				"g + h + k + m + n >= 3",
+				"mod(x,100) != 0",
+				"mod(y,100) != 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Léa a ${{eval:floor((x)/100)}}.{{eval:floor(mod(x,100)/10)}}{{eval:mod(x,10)}}~\\unit{€}$. Tom a ${{eval:floor((y)/100)}}.{{eval:floor(mod(y,100)/10)}}{{eval:mod(y,10)}}~\\unit{€}$.",
+					"On compare d'abord les euros, puis les centimes.",
+					"{{if:r==0|Léa a le plus d'argent.|{{if:r==1|Tom a le plus d'argent.|Ils ont autant d'argent.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Qui a le plus d'argent ?\n\n```monnaie\nbillets: {{if:s==1|{{if:k==5|1×5|}}|}} ; {{if:s==1||{{if:k==5|1×5|}}}}\npièces: {{if:s==1|{{if:k==2|1×2|}}|{{n}}×50c {{m}}×20c {{q}}×10c}} ; {{if:s==1|{{n}}×50c {{m}}×20c {{q}}×10c|{{if:k==2|1×2|}}}}\nlégendes: Léa ; Tom\n```\n\n```choix\nmelanger: non\n- Léa\n- Tom\n- Ils ont autant d'argent.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2|5"
+				},
+				{
+					"name": "s",
+					"expression": "1..2"
+				},
+				{
+					"name": "n",
+					"expression": "0..10"
+				},
+				{
+					"name": "m",
+					"expression": "0..5"
+				},
+				{
+					"name": "q",
+					"expression": "0..5"
+				},
+				{
+					"name": "t",
+					"expression": "eval:50*n+20*m+10*q"
+				},
+				{
+					"name": "x",
+					"expression": "{{if:s==1|{{eval:100*k}}|{{t}}}}"
+				},
+				{
+					"name": "y",
+					"expression": "{{if:s==1|{{t}}|{{eval:100*k}}}}"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:x>y|0|{{if:x<y|1|2}}}}"
+				}
+			],
+			"conditions": ["abs(t - 100*k) <= 50", "n + m + q >= 5"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Léa a ${{eval:floor((x)/100)}}.{{eval:floor(mod(x,100)/10)}}{{eval:mod(x,10)}}~\\unit{€}$. Tom a ${{eval:floor((y)/100)}}.{{eval:floor(mod(y,100)/10)}}{{eval:mod(y,10)}}~\\unit{€}$.",
+					"{{if:r==0|Léa a le plus d'argent.|{{if:r==1|Tom a le plus d'argent.|Ils ont autant d'argent.}}}}",
+					"{{if:t<100*k|Ce n'est pas celui qui a le plus de pièces qui a le plus d'argent : on compte ce qui est écrit dessus.|On ne compte pas les pièces : on compte ce qui est écrit dessus.}}"
+				]
+			}
+		},
+		{
+			"statement": "Quel est le prix le {{if:k==1|plus cher|moins cher}} ?\n\n```choix\n- ${{a}}~\\unit{€}$\n- ${{c}}$ centimes\n- ${{f}}~\\unit{€}$ et ${{g}}$ centimes\n- ${{eval:floor((v)/100)}}.{{eval:floor(mod(v,100)/10)}}{{eval:mod(v,10)}}~\\unit{€}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "3..45"
+				},
+				{
+					"name": "c",
+					"expression": "eval:10*b"
+				},
+				{
+					"name": "f",
+					"expression": "1..9"
+				},
+				{
+					"name": "h",
+					"expression": "1..19"
+				},
+				{
+					"name": "g",
+					"expression": "eval:5*h"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "w",
+					"expression": "1..19"
+				},
+				{
+					"name": "v",
+					"expression": "eval:100*u+5*w"
+				},
+				{
+					"name": "p",
+					"expression": "eval:100*a"
+				},
+				{
+					"name": "q",
+					"expression": "eval:100*f+g"
+				},
+				{
+					"name": "z",
+					"expression": "{{if:k==1|{{eval:max(p,c,q,v)}}|{{eval:min(p,c,q,v)}}}}"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:p==z|0|{{if:c==z|1|{{if:q==z|2|3}}}}}}"
+				}
+			],
+			"conditions": ["p != c", "p != q", "p != v", "c != q", "c != v", "q != v"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit les quatre prix de la même façon, avec la virgule :",
+					"${{a}}~\\unit{€} = {{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$ ; ${{c}}$ centimes $= {{eval:floor((c)/100)}}.{{eval:floor(mod(c,100)/10)}}{{eval:mod(c,10)}}~\\unit{€}$ ; ${{f}}~\\unit{€}$ et ${{g}}$ centimes $= {{eval:floor((q)/100)}}.{{eval:floor(mod(q,100)/10)}}{{eval:mod(q,10)}}~\\unit{€}$ ; ${{eval:floor((v)/100)}}.{{eval:floor(mod(v,100)/10)}}{{eval:mod(v,10)}}~\\unit{€}$.",
+					"On compare d'abord les euros, puis les centimes. Le {{if:k==1|plus cher|moins cher}} : $\\textcolor{{{color:primary.0}}}{{{eval:floor((z)/100)}}.{{eval:floor(mod(z,100)/10)}}{{eval:mod(z,10)}}}~\\unit{€}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Léa 3,40 € contre Tom 3,20 € : Léa",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "1",
+				"c": "0",
+				"d": "2",
+				"f": "0",
+				"g": "1",
+				"h": "1",
+				"k": "0",
+				"m": "1",
+				"n": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Tom",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "1",
+				"c": "0",
+				"d": "2",
+				"f": "0",
+				"g": "1",
+				"h": "1",
+				"k": "0",
+				"m": "1",
+				"n": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Léa 5 € (billet), Tom 9 pièces pour 4,70 € : Léa",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"s": "1",
+				"n": "8",
+				"m": "3",
+				"q": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Tom, qui a le plus de pièces",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"s": "1",
+				"n": "8",
+				"m": "3",
+				"q": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Léa 2,10 € en pièces, Tom une pièce de 2 € : Léa",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"s": "2",
+				"n": "3",
+				"m": "3",
+				"q": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Le plus cher : 4 € contre 120 c, 3 € 45 c, 2,05 € → 4 €",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"a": "4",
+				"b": "12",
+				"f": "3",
+				"h": "9",
+				"u": "2",
+				"w": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 120 centimes (le plus grand nombre écrit)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"a": "4",
+				"b": "12",
+				"f": "3",
+				"h": "9",
+				"u": "2",
+				"w": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le moins cher : 120 centimes",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"a": "4",
+				"b": "12",
+				"f": "3",
+				"h": "9",
+				"u": "2",
+				"w": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

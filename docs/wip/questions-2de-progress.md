@@ -6,16 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2106._
+_Mis à jour le 2026-11-01, après #2139 (migration du lot 6, mergée)._
 
-- **État** : lots 1 à 5 publiés ; lot 6 : phase 0 validée (§ 37), fichiers du 6 A mergés (#2106, § 38), pas encore en prod.
-- **Prochaine action** : écrire 6 B (affine, |x|, carré, inverse : 6 modèles, § 37) dans un worktree neuf ; puis 6 C ;
-  brouillons, migration et page à cocher pour les 20 ensuite.
-- **En attente de David** : rien.
-- **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main` ET des worktrees ; `page-a-cocher.ts`
-  ne prend qu'un `--dir` (préfixes `a-`/`b-` dans une copie) ; `db:migrate` et `--publier` refusés par le
-  classifieur → David les lance avec `!`.
-- **Worktree / branche** : aucun (6 A retiré).
+- **État** : lot 6 : les 20 modèles en prod en brouillon (§ 41) ; migration nœud + tag mergée (#2139), audit
+  sans finding bloquant, PAS ENCORE jouée en prod.
+- **Prochaine action** : après le `db push` de David, vérifier par MCP (20 `draft`, bon nœud, un seul tag,
+  `updated_at` préservé), puis page à cocher des 20 (trois dossiers, préfixes `a-`/`b-`/`c-`).
+- **En attente de David** : `! pnpm exec supabase db push --include-all` (la prod a déjà 20261101215000, venue
+  d'une autre session ; à blanc : seule 20261101213600 part).
+- **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main`, des worktrees ET de la prod ;
+  `page-a-cocher.ts` ne prend qu'un `--dir` ; `db push` et `--publier` → David avec `!`.
+- **Worktree / branche** : aucun (retiré après #2139).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -969,3 +970,62 @@ une page à cocher.
   dessinées et mélangées, hyperbole cochée « Juste », corrigé avec la courbe). **Défaut vu à l'aperçu** :
   l'étiquette 𝒞_f se pose près d'une extrémité et ressemble à un disque vide → retirée des courbes de 01.
 - #2106 mergée (CI : `/demo/lexique` en échec sur le runner, `wrapDynamicImport`, vert à la relance).
+
+## 39. Lot 6 B, PR des fichiers (2026-11-01)
+
+- Script `questions-2de/lot-fonctions-b-2de.py` → `scripts/questions/2de-fonctions-b/` (6 modèles, 17 variations,
+  75 specs). Catégories (relevé prod : aucune n'existait) : « Résolution algébrique » de Fonctions affines (niv. 1
+  2-455, niv. 2 2-457), Valeur absolue (niv. 1 2-460), Fonction carré (niv. 1 2-461, niv. 2 2-463), Fonction
+  inverse (niv. 1 2-466). |x| et 1/x n'ont que l'inéquation, d'où le niveau 1 (|x| = k = 2-458 et 1/x = k = 2-464
+  sont déjà couverts ailleurs).
+- Relevé avant d'écrire : « Fonctions affines › Equations » niv. 2 (75fe996a) est 2-339 (graphique), « Valeur
+  absolue › Equations » 1 et 2 sont 2-458 et 2-420 : pas de doublon.
+- Écart au § 37 : le corrigé de |x| < k dit la distance à 0 mais dessine le V (` ```courbe `, ensemble repassé
+  sur l'axe des abscisses) : ` ```line ` ne trace pas d'intervalle.
+- `question:specs` 75/75, tirages tous réussis ; `sonde-courbes` 0 problème (1 800 tirages) ; `create-questions`
+  en simulation contre la prod : « 6 à créer ».
+- Relecture des tirages : « aucun les réels négatifs sont solutions » → phrases entières selon le sens.
+- Base locale : 6 brouillons ; aperçu joué : 06 (k = 0,5 rendu « 0,5 » ; [0 ; 2] « Faux » avec « Tu as inclus une
+  borne qui devrait être exclue », ]0 ; 2] « Juste » ; corrigé : hyperbole, disque vide en 0) ; corrigés de 02
+  (m < 0), 03 (|x| ⩽ 3), 04 (1,69), 05 (√14 dans le bloc) dessinés comme prévu.
+- #2113 : CI rouge sans lien avec le lot — `migration-versions` (collision `20261101190200` sur `main`, 5e lot 6 et
+  6e lot 7), `wrapDynamicImport` (client, connu, vert à la relance), « Garde SECURITY DEFINER » (à relire après la
+  réparation de `main`).
+
+## 40. Lot 6 C, PR des fichiers (2026-11-01)
+
+- Script `questions-2de/lot-fonctions-c-2de.py` → `scripts/questions/2de-fonctions-c/` (6 modèles, 20 variations,
+  81 specs). Catégories (relevé prod : « Fonction racine carrée » et « Fonction cube » n'ont que « Lecture
+  graphique ») : « Résolution algébrique » de Fonction racine carrée (niv. 1 2-467, niv. 2 2-469), Fonction cube
+  (niv. 1 2-470, niv. 2 2-472), Généralités (niv. 1 2-336, niv. 2 2-448).
+- L6-c : cubes parfaits (entiers ±1 à ±5, fractions p/q avec q ⩽ 4, décimaux ±0,001 à ±0,125), sans ∛. L6-d :
+  a·x² + c, a/x + c, a·√x + c, a·x³ + c pour l'équation ; carré, racine, cube pour l'inéquation (a > 0 : le sens
+  ne change pas ; 1/x laissé de côté, son signe est déjà travaillé au 6 B).
+- Écarts au § 37 : √x < k et √x = k ont aussi k = 0 (√x ⩽ 0 → {0}, √x > 0 → ]0 ; +∞[) ; l'équation adaptée
+  n'a pas de courbe (méthode algébrique seule).
+- `question:specs` 81/81, tirages tous réussis ; `sonde-courbes` 0 problème (1 800 tirages) ; `create-questions`
+  en simulation contre la prod : « 6 à créer ».
+- Relecture des tirages : redite « on divise par un nombre positif » dans le corrigé de la méthode adaptée →
+  une phrase ; fenêtre des cubes en fraction (±1,5) trop petite pour 27/8 → [−2 ; 2] × [−4 ; 4].
+- Base locale : 6 brouillons ; aperçu joué : 04 (x³ ⩽ −8 : [−2 ; +∞[ « Faux », corrigé : courbe, y = −8,
+  partie verte) ; 02 (√x > 1,9 : ]3,61 ; +∞[ « Juste », borne en disque vide) ; 06 (3x² + 2 ⩽ 5 : [−1 ; 1]
+  « Juste », parabole de f, A et B, partie verte).
+
+## 41. Lot 6, brouillons en prod et migration nœud + tag (2026-11-01)
+
+- Brouillons créés par David (`create-questions --publier`, trois dossiers) ; relevé MCP : les 20 en `draft`,
+  sans nœud, sans tag, catégorie et niveau attendus.
+  - 6 A : 345beb60 (2-325), 42c19a19 (2-327), bcfbf5f8 (2-331), ddc60d24 (2-447), 9723b1e4 (2-326),
+    b44e582b (2-333), 602bd8d7 (2-334), 1048e462 (2-335) ;
+  - 6 B : d49de3f3 (2-455), aeaff491 (2-457), 80a87e34 (2-460), 37f39db3 (2-461), 8bc8159f (2-463),
+    214f91c0 (2-466) ;
+  - 6 C : 05e8453d (2-467), cd8f96ba (2-469), e7b37987 (2-470), 811f6004 (2-472), 2a249385 (2-336),
+    d86c9577 (2-448).
+- Nœuds relevés par MCP, conformes au § 37 ; 2-325 et 2-333 sont sur une notion (pas de sous-notion).
+- Migration `20261101213600_questions_2de_fonctions_rangement_tags` et
+  `tests/integration/questions-2de-fonctions-rangement-tags.test.ts`, générés depuis ceux du lot 5 (seul le lot
+  change). Rouge sans la migration (fichier réduit au rollback : 5 échecs, 5 verts) ; vert avec : 10/10.
+- Horodatage : max relevé sur `origin/main`, les worktrees et les branches distantes = 20261101213500 → 213600.
+- #2139 : CI verte, `security-auditor` sans finding bloquant (code identique au lot 5, état prod relu), mergée.
+  `db:migrate` refusé : la prod a déjà 20261101215000 (1re spé, autre session) → `--include-all` ; à blanc :
+  seule 20261101213600 part ; le `db push` réel est refusé par le classifieur, à lancer par David.

@@ -1,0 +1,168 @@
+{
+	"id": "38001c3f-f4e9-46ec-beb7-0d2a373f54d4",
+	"title": "Loi binomiale : variance et écart type",
+	"description": "V(X) = np(1 − p), σ(X) = √(np(1 − p)) (pièges : np, variance et écart type confondus)",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Probabilités",
+	"domain": "Loi binomiale",
+	"subdomain": "Espérance et variance",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*t*(10-t)/100}}"
+				}
+			],
+			"statement": "La variable aléatoire $X$ suit la loi binomiale $\\mathcal{B}\\left({{n}}\\,;{{eval:t/10;d}}\\right)$.\n\nCalcule sa variance (nombre entier ou décimal).\n\n$V(X)=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "10|20|30|50|100"
+				},
+				{
+					"name": "t",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $X\\sim\\mathcal{B}(n\\,;p)$ : $V(X)=np(1-p)$.",
+					"$V(X)={{n}}\\times{{eval:t/10;d}}\\times{{eval:1-t/10;d}}=\\textcolor{{{color:primary.0}}}{{{eval:n*t*(10-t)/100;d}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"statement": "La variable aléatoire $X$ suit la loi binomiale $\\mathcal{B}\\left({{n}}\\,;{{p}}\\right)$.\n\nCalcule son écart type $\\sigma(X)$ (valeur exacte).\n\n$\\sigma(X)=?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "1..8"
+				},
+				{
+					"name": "n",
+					"expression": "{{if:w==1|16|{{if:w==2|36|{{if:w==3|64|{{if:w==4|100|{{if:w==5|25|{{if:w==6|100|{{if:w==7|100|400}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "pp",
+					"expression": "{{if:w==1|0.5|{{if:w==2|0.5|{{if:w==3|0.5|{{if:w==4|0.5|{{if:w==5|0.2|{{if:w==6|0.2|{{if:w==7|0.1|0.1}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "p",
+					"expression": "{{eval:pp;d}}"
+				},
+				{
+					"name": "s",
+					"expression": "{{if:w==1|2|{{if:w==2|3|{{if:w==3|4|{{if:w==4|5|{{if:w==5|2|{{if:w==6|4|{{if:w==7|3|6}}}}}}}}}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$V(X)=np(1-p)={{n}}\\times{{p}}\\times{{eval:1-pp;d}}={{eval:s^2}}$.",
+					"$\\sigma(X)=\\sqrt{V(X)}=\\sqrt{ {{eval:s^2}} }=\\textcolor{{{color:primary.0}}}{{{s}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "50",
+				"t": "2"
+			},
+			"description": "v0 : B(50 ; 0,2) → 8",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "50",
+				"t": "2"
+			},
+			"description": "v0 : np = 10 au lieu de np(1 − p)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\sqrt{8}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "50",
+				"t": "2"
+			},
+			"description": "v0 : écart type √8",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2,1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "10",
+				"t": "3"
+			},
+			"description": "v0 : B(10 ; 0,3) → 2,1",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"w": "6"
+			},
+			"description": "v1 : B(100 ; 0,2) → 4",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["16"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"w": "6"
+			},
+			"description": "v1 : variance 16",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\sqrt{16}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedRadicals"]
+			},
+			"variables": {
+				"w": "6"
+			},
+			"description": "v1 : √16 non calculé",
+			"variationIndex": 1
+		}
+	]
+}

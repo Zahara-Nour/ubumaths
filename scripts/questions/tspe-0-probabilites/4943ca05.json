@@ -1,0 +1,80 @@
+{
+	"id": "4943ca05-f96a-43cf-ab60-a89f56e88ea7",
+	"title": "Loi binomiale : P(X = k) avec une table",
+	"description": "Extrait de table des probabilités cumulées fourni : P(X = k) = P(X ⩽ k) − P(X ⩽ k − 1)",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Probabilités",
+	"domain": "Loi binomiale",
+	"subdomain": "Calcul de probabilités",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"statement": "$X$ suit la loi binomiale $\\mathcal{B}(30\\,;0.4)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n|---|---|\n| $7$ | $0.0435$ |\n| $8$ | $0.094$ |\n| $9$ | $0.1763$ |\n| $10$ | $0.2915$ |\n| $11$ | $0.4311$ |\n| $12$ | $0.5785$ |\n| $13$ | $0.7145$ |\n| $14$ | $0.8246$ |\n| $15$ | $0.9029$ |\n\nEn utilisant uniquement cette table, calcule $P(X={{k}})$.\n\n$P(X={{k}})=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "8..15"
+				},
+				{
+					"name": "f",
+					"expression": "{{if:k==8|0.094|{{if:k==9|0.1763|{{if:k==10|0.2915|{{if:k==11|0.4311|{{if:k==12|0.5785|{{if:k==13|0.7145|{{if:k==14|0.8246|0.9029}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "g",
+					"expression": "{{if:k==8|0.0435|{{if:k==9|0.094|{{if:k==10|0.1763|{{if:k==11|0.2915|{{if:k==12|0.4311|{{if:k==13|0.5785|{{if:k==14|0.7145|0.8246}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:k==8|0.0505|{{if:k==9|0.0823|{{if:k==10|0.1152|{{if:k==11|0.1396|{{if:k==12|0.1474|{{if:k==13|0.136|{{if:k==14|0.1101|0.0783}}}}}}}}}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$P(X\\leqslant {{k}})=P(X\\leqslant {{eval:k-1}})+P(X={{k}})$.",
+					"$P(X={{k}})=P(X\\leqslant {{k}})-P(X\\leqslant {{eval:k-1}})={{f}}-{{g}}=\\textcolor{{{color:primary.0}}}{{{r}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0,1474"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "12"
+			},
+			"description": "v0 : P(X = 12) = 0,1474",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0,5785"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "12"
+			},
+			"description": "v0 : P(X ⩽ 12) lu",
+			"variationIndex": 0
+		}
+	]
+}

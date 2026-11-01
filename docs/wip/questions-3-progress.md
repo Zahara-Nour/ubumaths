@@ -5,20 +5,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 6 publié._
+_Mis à jour le 2026-11-01, après #2128 et la décision sur 3-050._
 
-- **État** : lots 0 à 6 publiés en prod ; lot 6 : 7 modèles relus (7 OK) et publiés (§ 13.12).
-- **Prochaine action** : phase 0 du lot 7 (algorithmique, § 4 : 3-047, 3-048, 3-049) ; il restera ensuite le
-  lot 8 (outils C : boîte à moustaches, solides, chacun en chantier à part).
+- **État** : lots 0 à 6 publiés en prod ; lot 7 (algorithmique, 3-047 à 3-050, 4 modèles en blocs
+  ` ```scratch `) écrit et mergé (#2128, § 14.8-14.9) ; pas encore en base de prod.
+- **Prochaine action** : phase 0 du lot 8 = chantier à part `boite-a-moustaches` (bloc d'affichage,
+  puis geste « construire » ; 3-062 lire, 3-030 construire ; sert aussi en 2de). Relevé du 2026-11-01 :
+  **rien n'existe** (aucun bloc, aucun `stat-chart` ; `statistiques.md` la dit hors périmètre). Lot 7 :
+  attendre le `deploy:prod` de ` ```scratch `, puis `create-questions --dir scripts/questions/3-lot-7
+--publier` (David), rangement (avec la sous-notion neuve, § 14.10), page à cocher.
 - **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
-  du mode auto → David les lance avec `!` ; ` ```solide ` pas en prod (modèles qui s'en servent : brouillon
-  jusqu'au `deploy:prod`) ; étiquette d'un vecteur libre (`vecteur(dx, dy, ancre=…)`) : vérifier qu'un
-  `texte()` en LaTeX passe ; dans `points:` d'un ` ```courbe `, ni `{{eval}}` fractionnaire ni virgule ;
-  aperçu admin sur `127.0.0.1` ; worktree neuf : `svelte-kit sync` avant `tsx` ; commits de doc depuis le
-  worktree (`git push origin HEAD:main`) ; `db:migrate` depuis un worktree À JOUR d'`origin/main` ; réponse
-  décimale = fraction refusée (garder la fraction + `acceptDecimal`) ; `Doc-inchangée:` dans un COMMIT ;
-  `audit-question-draws` : faux positif « nombres juxtaposés » sur les blocs statistiques.
+  du mode auto → David les lance avec `!` ; aperçu admin : serveur lancé avec `--host 127.0.0.1` ;
+  worktree neuf : `svelte-kit sync` avant `tsx` ; commits de doc depuis le worktree (`git push origin
+HEAD:main`) ; `db:migrate` depuis un worktree À JOUR d'`origin/main` ; `Doc-inchangée:` dans un COMMIT ;
+  `%` refusé dans l'`eval` d'une variable ; `audit-question-draws` : faux positifs « nombres juxtaposés »
+  (blocs statistiques) et « gabarit non résolu » sur `<<` (Scratch).
 - **Worktree / branche** : `../ubumaths-wt-questions-3`, HEAD détachée sur `origin/main`.
 
 ## 1. Relevé (prod, 2026-10-28)
@@ -933,3 +935,107 @@ modèles publiés de plus, et c8306505 de 4e ; la 4e ne perd rien. Aucune règle
 - ` ```solide ` en prod depuis la v0.59.0 (`deploy:prod` du 2026-11-01, 14 h 44) : 3-019 et 3-020 publiés
   avec les autres. `publier-lot.ts` (simulation, puis `--publier`) lancé par David : 7/7 publiés ;
   relu au MCP : `published`, grades `['3']`.
+
+## 14. Lot 7 (algorithmique) : phase 0 proposée (2026-11-01)
+
+Relevé MCP du jour : **aucun modèle d'algorithmique en prod, à aucun niveau** — 3-047 à 3-051 à 0, et de
+même 4-065 à 4-069, 5-011, 5-101, 5-105, 5-106, 6-194 à 6-197, 6-210 (une quinzaine de points du cycle 4
+et de la 6e). Nœuds prêts (prod) : Algorithmique > Variables et instructions > variables et affectation
+(151ff8c9) ; > instructions conditionnelles (195147df) ; Algorithmique > Boucles > boucle non bornée (04da83a6).
+
+Source (exemples 2026, p. 49-50, PDF p. 48-49 du folio) : 3-047 « plusieurs variables au sein d'un même
+programme » ; 3-048 « un opérateur logique pour combiner deux conditions simples » ; 3-049 « répéter jusqu'à
+ce que », exemple du reste par soustractions successives ; 3-050 : bloc personnalisé (dessine carré).
+**Tous les programmes y sont en blocs Scratch.** L'appli ne rend un programme qu'en bloc de code ordinaire
+(texte monospace, coloré seulement pour python/js…) ; Blockly n'existe que sur `/dev/blockly` (éditeur, pas
+d'affichage dans une question).
+
+### 14.1 Le choix qui précède le lot : comment montrer le programme
+
+- **A. Texte** (classe A du § 3, telle que décidée) : bloc de code ordinaire, mots de Scratch en français et
+  retraits (`mettre reste à 17`, `répéter jusqu'à ce que reste < 5`, `dire reste`). Lot écrit tout de suite.
+  Écart : l'élève lit en classe des blocs colorés, ici du texte.
+- **B. Bloc neuf ` ```scratch `** (classe C, chantier à part) : programme écrit en texte dans l'énoncé
+  (syntaxe des `scratchblocks`, avec `{{variables}}`), dessiné en blocs Scratch (SVG). Bibliothèque
+  `scratchblocks` à évaluer (licence, langue française, taille, rendu serveur) — rien de vérifié encore.
+  Servirait aux ~15 points de la 6e à la 3e (et au CM2), et rendrait 3-050 évaluable (lire un programme à bloc
+  personnalisé). Lot 7 en brouillon jusqu'au `deploy:prod` du bloc.
+- **Recommandé : B**, chantier `bloc-scratch` d'abord (affichage seul, une PR et une page de démo), puis ce
+  lot. Écrire le lot en texte puis le réécrire coûterait deux fois.
+
+### 14.2 Modèles neufs (3, un par point) — le contenu ne dépend pas du choix 14.1
+
+| Point | Modèle (catégorie)                                                       | Variations                                                                                                                                                                                                                                                                                                                                      | Réponse             |
+| ----- | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| 3-047 | Plusieurs variables (Algorithmique / Variables / Affectation, 1-2)       | 1) a ← n, b ← m, a ← a + b, b ← a − b : valeurs finales de a et de b (deux cases) ; 2) prix et quantité saisis, total ← prix × quantité, total ← total + port : « qu'affiche le programme si on saisit … » ; 3) échanger a et b : lequel des trois programmes y parvient (avec une variable c / sans / à l'envers) ; entiers ⩽ 20               | case nombre ; choix |
+| 3-048 | Conditions composées (Algorithmique / Instructions conditionnelles, 1-2) | 1) « (x > p) et (x < q) » pour x tiré : vraie ou fausse ; 2) même chose avec « ou » ; 3) programme `si … et … alors dire A sinon dire B` (âge et taille d'un manège) : que dit-il pour les valeurs saisies ; 4) quelle condition traduit « x est entre p et q, exclus » (et / ou, bornes inversées)                                             | choix               |
+| 3-049 | Boucle « répéter jusqu'à ce que » (Algorithmique / Boucles, 1-2)         | 1) reste par soustractions successives (exemple officiel ; n ⩽ 60, d de 3 à 9) : que dit le programme ; 2) combien de passages dans la boucle (le quotient) ; 3) compteur : i ← 0, répéter jusqu'à ce que i > s, ajouter k à i : valeur finale de i ; 4) doublement : x ← 1, jusqu'à ce que x > s, x ← 2x : valeur finale ; au plus 12 passages | case nombre         |
+
+Une seule opération logique par condition (borne de 3-048) ; pas de « non » (il ne combine pas deux conditions).
+Erreurs typiques (`testSpecs`) : 3-047 → l'ancienne valeur de a reprise après sa modification, b = m inchangé ;
+programme d'échange sans variable c ; 3-048 → « et » lu « ou », borne incluse ; 3-049 → arrêt un tour trop tôt
+(i = s au lieu du premier i > s), le nombre de départ pris pour le reste, passages comptés un de trop.
+
+### 14.3 Rangement
+
+3-047 → variables et affectation ; 3-048 → instructions conditionnelles ; 3-049 → boucle non bornée ; un tag
+chacun.
+
+### 14.4 Questions à David
+
+1. **§ 14.1 : texte (A) ou bloc ` ```scratch ` en chantier à part d'abord (B, recommandé) ?**
+2. § 14.2 : points, variations, formes de réponse à valider.
+3. Si B : 3-050 (bloc personnalisé) quitte la classe D et entre dans ce lot (lire un programme qui appelle
+   `dessine carré (côté)` : longueur du plus grand carré, nombre de carrés) ?
+
+### 14.5 Question d'accès
+
+Brouillons : personne ne lit rien de neuf. Rangement puis publication : élèves et prof de 3e voient 3 (ou 4)
+modèles publiés de plus. Aucune règle ne change.
+
+### 14.6 Décisions (David, 2026-11-01, « je te suis » sur les recommandations)
+
+- § 14.1 : **B** — chantier à part `bloc-scratch` d'abord (affichage d'un programme en blocs Scratch, à
+  commencer par l'évaluation de `scratchblocks` ; si elle échoue, retour à A). Lot 7 ensuite, en brouillon
+  jusqu'au `deploy:prod` du bloc.
+- § 14.2 validé ; 3-049 : boucle testée **avant** chaque passage, arrêt dès que la condition est vraie
+  (sémantique Scratch) ; l'arrêt un tour trop tôt parmi les erreurs typiques.
+- § 14.4.3 : **3-050 entre dans le lot** (lire un programme qui appelle `dessine carré (côté)` : longueur du
+  plus grand carré, nombre de carrés) → 4 modèles.
+- Ordre : `bloc-scratch`, lot 7, lot 8 (boîte à moustaches).
+
+### 14.7 Bloc ```scratch mergé (2026-11-01)
+
+- Chantier `bloc-scratch`, palier 1 : #2122 mergée (journal `bloc-scratch-progress.md`). Le lot 7 peut s'écrire ;
+  `check:ubumark` vérifie les programmes (instructions non reconnues), choix compris.
+
+### 14.8 Lot 7 : écrit (2026-11-01)
+
+- `docs/wip/questions/lot-3-7.py` → `scripts/questions/3-lot-7/` (4 JSON, 14 variations, 40 specs) ;
+  `create-questions` en simulation vert. Branche `content/questions-3-lot7`.
+- Modèles : 3-047 (3 var. : a et b après affectations, programme de prix avec saisies, échange : 3
+  programmes en options), 3-048 (4 var. : et, ou, manège, traduire « strictement compris » : 4 conditions
+  en options), 3-049 (4 var. : reste officiel, nombre de passages, compteur, doublement), 3-050 (3 var. :
+  côté du plus grand carré, nombre de carrés, longueur tracée ; `définir dessine carré` dans le bloc).
+- Vérifs : sonde (scratchpad, supprimée) 300 tirages par modèle, chaque programme passé à
+  `checkScratchProgram`, choix compris (≈ 1 600 programmes) : **0 défaut** ; `check:ubumark` sur 320 tirages
+  (énoncé + corrigé) : 0 problème ; `audit-question-draws` 300 : 0 défaut hors faux positif `<<`.
+- **Pièges mesurés** : `$quantité$`, `$total$`, `$réponse$` lus en lettres découpées → noms de variables
+  en _italique_ hors des formules ; `col('\text{…}')` hors de `$…$` s'affichait en brut → réponses en
+  texte en **gras** ; « + 0 » quand la division tombe juste → `{{if:r>0|…|}}`.
+- Aperçu admin local (`127.0.0.1:5176`) : 3-049 v1 (programme officiel dessiné), 3-048 v4 (4 conditions
+  dessinées en options, D juste), 3-050 v1 (bloc `définir` au-dessus du script).
+- **À trancher (David)** : nœud de 3-050. L'arbre (prod) n'a, sous Algorithmique, que Boucles,
+  Variables et instructions, Fonctions Python, Listes, Préalgorithmique ; « Fonctions Python › définir une
+  fonction » est propre à Python. Recommandé : sous-notion neuve « Variables et instructions › blocs
+  personnalisés » (la même migration que le rangement) ; autre choix : « Boucles › boucle bornée ».
+
+### 14.9 Lot 7 : fichiers mergés (2026-11-01)
+
+- #2128 mergée (CI verte au 1er passage). ` ```scratch ` pas en prod : `create-questions --publier` après le
+  `deploy:prod` qui le livre (David), depuis le dépôt principal à jour.
+
+### 14.10 Décision : nœud de 3-050 (David, 2026-11-01, « je valide »)
+
+- Sous-notion **neuve** « Algorithmique › Variables et instructions › blocs personnalisés », créée par la
+  migration de rangement du lot 7 (même migration, même garde). Elle servira aussi à 4-068 / 4-069.

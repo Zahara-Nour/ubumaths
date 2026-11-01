@@ -12,7 +12,7 @@ couvre:
 
 # Carte des fonctionnalités : ce que Chiphre offre, à qui, par où
 
-> Vérifié contre le code le 2026-10-11 (branche `feat/sitemap-complet`). Inventaire **vu de l'utilisateur** :
+> Vérifié contre le code le 2026-10-11 (branche `feat/sitemap-complet`) ; Tour du Royaume revu le 2026-11-01 (cartes). Inventaire **vu de l'utilisateur** :
 > chaque fonctionnalité sous son libellé réel, sa route, son accès, et la preuve de ses points forts.
 > Le fonctionnement de chaque système est dans sa propre doc (carte : [docs/README.md](../README.md)) ;
 > le lore utilisable en vitrine est dans [univers-chiphre.md](univers-chiphre.md#le-lore-en-vitrine).
@@ -198,17 +198,23 @@ Une visite guidée par Père Ubu, qui ne promet que ce que cette carte prouve.
 
 **Carte du code**
 
-| Fichier                                                | Rôle                                                                                         |
-| ------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
-| `src/lib/kingdom-tour/tour.ts`                         | Le contenu : `PROVINCES`, `PLACES`, `STRENGTHS`, `FORM_DEMO`, `PARENT_FACTS`, liens d'entrée |
-| `src/lib/kingdom-tour/spiral.ts`                       | `buildSpiral` : la gidouille de Sandomir (tracé, étapes à intervalles réguliers, centre)     |
-| `src/lib/kingdom-tour/reveal.ts`                       | Action `use:reveal` : apparition au défilement                                               |
-| `src/lib/components/kingdom-tour/PereUbuFigure.svelte` | Père Ubu dans le halo du mois (partagé avec l’accueil ; taille : propriété `size`)           |
-| `src/lib/components/kingdom-tour/ProvinceMap.svelte`   | Spirale + fiches des Provinces ; la spirale se dessine jusqu'à la fiche lue (grand écran)    |
-| `src/lib/components/kingdom-tour/FormDemo.svelte`      | « La forme compte » : quatre réponses, quatre verdicts                                       |
-| `src/lib/components/kingdom-tour/CipherDemo.svelte`    | Le chiffre de César en direct (`caesarEncrypt`)                                              |
-| `src/routes/(public)/royaume/+page.server.ts`          | Date du jour (Almanach, Paris), ambiance du mois, dépêche du Shtam parue                     |
-| `src/routes/(public)/royaume/+page.svelte`             | La mise en scène : ouverture, Provinces, lieux, rigueur, dépêche, parents, entrée            |
+| Fichier                                                | Rôle                                                                                                  |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| `src/lib/kingdom-tour/tour.ts`                         | Le contenu : `PROVINCES`, `PLACES`, `STRENGTHS`, `FORM_DEMO`, `PARENT_FACTS`, liens d'entrée          |
+| `src/lib/kingdom-tour/spiral.ts`                       | `buildSpiral` : la gidouille de Sandomir, décor des portes de la fin (tracé, centre)                  |
+| `src/lib/kingdom-tour/kingdom-map.ts`                  | La grande carte : fonds, contour du Royaume, surface et nom de chaque Province, noms des villes       |
+| `src/lib/kingdom-tour/cities.ts`                       | `CITIES` : les sept villes, leurs lieux (nom, description, cibles et nom sur la carte)                |
+| `src/lib/kingdom-tour/reveal.ts`                       | Action `use:reveal` : apparition au défilement                                                        |
+| `src/lib/components/kingdom-tour/PereUbuFigure.svelte` | Père Ubu dans le halo du mois (partagé avec l’accueil ; taille : propriété `size`)                    |
+| `src/lib/components/kingdom-tour/ProvinceMap.svelte`   | Grande carte + fiches des Provinces ; la Province de la fiche lue est teintée (grand écran)           |
+| `src/lib/components/kingdom-tour/KingdomMap.svelte`    | La grande carte : fond peint, noms cliquables (Province → fiche, ville → sa page)                     |
+| `src/lib/components/kingdom-tour/CityMap.svelte`       | La carte d'une ville : fond peint, noms courts, cibles invisibles ; un clic choisit le lieu           |
+| `src/lib/components/kingdom-tour/FormDemo.svelte`      | « La forme compte » : quatre réponses, quatre verdicts                                                |
+| `src/lib/components/kingdom-tour/CipherDemo.svelte`    | Le chiffre de César en direct (`caesarEncrypt`)                                                       |
+| `src/routes/(public)/royaume/+page.server.ts`          | Date du jour (Almanach, Paris), ambiance du mois, dépêche du Shtam parue                              |
+| `src/routes/(public)/royaume/+page.svelte`             | La mise en scène : ouverture, Provinces, lieux, rigueur, dépêche, parents, entrée                     |
+| `src/routes/(public)/royaume/[ville]/+page.ts`         | Ville connue → ses données et sa description pour Google ; adresse inconnue → 404                     |
+| `src/routes/(public)/royaume/[ville]/+page.svelte`     | Page d'une ville : carte, liste des lieux (le lieu cliqué est mis en évidence), outils de sa Province |
 
 **Invariants**
 
@@ -219,7 +225,16 @@ Une visite guidée par Père Ubu, qui ne promet que ce que cette carte prouve.
   `REQUIRED_FORM_FEEDBACK` tirerait le moteur de calcul dans la page) ; le test vérifie qu'elles
   n'ont pas divergé.
 - **Lisible sans JavaScript** : seul `reveal` cache un bloc, et seulement s'il est sous l'écran,
-  hors « moins d'animations ». La spirale est un décor (`aria-hidden`) : tout est dans les fiches.
+  hors « moins d'animations ». Les cartes sont un décor (`aria-hidden`, liens à `tabindex="-1"`) :
+  tout ce qu'elles permettent passe aussi par les fiches des Provinces (lien vers la capitale), le
+  lien « Sandomir, capitale du Royaume » sous la grande carte, et la liste des lieux d'une ville.
+- **Les cartes viennent du chantier `illustrations`** (`docs/Chiphres/illustrations/`) : fonds sans
+  texte réduits en WebP sous `static/images/royaume/`, noms et cibles recopiés des surcouches SVG
+  validées. Les surfaces des Provinces sont des secteurs issus de Sandomir, bornés par les
+  frontières relevées et découpés par le contour du plan schématique (`clipPath`). Les noms sont
+  agrandis par rapport aux surcouches, et encore sur téléphone, pour rester lisibles.
+- **Textes des lieux tirés du Compendium**, qui fait foi ; Sandomir n'a pas de Province, donc pas
+  d'outils. Les sept pages des villes sont dans `sitemap.xml` (`CITIES`).
 - **Jamais prérendue** (`prerender = false`) : date et dépêche suivent le jour de la requête.
 - **Contrastes mesurés au pire pixel, sur les halos des 7 mois** (audit du 2026-10-11) : texte
   d'accent en orange brûlé `--accent-text` en clair (l'orange du thème est à 2,2:1), halo atténué
@@ -231,13 +246,16 @@ Une visite guidée par Père Ubu, qui ne promet que ce que cette carte prouve.
 - `app.css` impose sa taille à `main h1…h6, p, li` et à **tout ce que contient un `<header>`** :
   la page n'emploie pas `<header>`, et surcharge ses titres par classe, en gardant `--font-scale`.
 
-**Comment étendre** : un lieu → une entrée de `PLACES` (+ son icône dans la page) et une ligne dans
+**Comment étendre** : un lieu d'une ville → une entrée de `places` dans `cities.ts` (positions en
+pixels de l'image 1024 × 1024) ; un lieu du site → une entrée de `PLACES` (+ son icône dans la page) et une ligne dans
 « Sans compte » ci-dessus ; un point fort → `STRENGTHS`, avec `access: 'account'` s'il exige un compte.
 
 **Tests** : `src/lib/kingdom-tour/__tests__/` (Provinces fidèles au Compendium, liens vers des pages
 publiques existantes et non exclues par `robots.txt`, garde du lore, démo contre le correcteur,
-spirale, apparition) ; `src/routes/(public)/royaume/__tests__/` (chargement, rendu, démos, pas de
-débord) ; `src/routes/(public)/__tests__/page.svelte.test.ts` (Père Ubu mène à la visite).
+spirale, apparition, villes et lieux, noms de la carte dans leur Province) ;
+`src/lib/components/kingdom-tour/__tests__/KingdomMap.svelte.test.ts` (teinte de la Province lue) ;
+`src/routes/(public)/royaume/__tests__/` (chargement, rendu, démos, liens de la carte, pas de
+débord) ; `src/routes/(public)/royaume/[ville]/__tests__/` (404, clic sur un lieu, outils, débord) ; `src/routes/(public)/__tests__/page.svelte.test.ts` (Père Ubu mène à la visite).
 
 ## Écarts connus
 

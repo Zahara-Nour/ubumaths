@@ -94,7 +94,7 @@ Règles : CLAUDE.md § Migrations et § Base de données ; détail : [base-de-do
 
 ## 5. Déploiement
 
-- Merge sur `main` → **rien n'est déployé**. La prod ne bouge que par **`pnpm deploy:prod`**, lancé par David ou par Claude **sur sa demande explicite** (ADR 0021). Le script crée la version (numéro, CHANGELOG, tag — jamais `pnpm release` à part) sur le dernier état vérifié par la CI, attend la CI de ce commit de version, puis avance `production` jusqu'à lui ; `--essai` montre ce qui partirait.
+- Merge sur `main` → **rien n'est déployé**. La prod ne bouge que par **`pnpm deploy:prod`**, lancé par David ou par Claude **sur sa demande explicite** (ADR 0021). Le script crée la version (numéro, CHANGELOG, tag — jamais `pnpm release` à part) sur le dernier état vérifié par la CI, attend la CI de ce commit de version, puis avance `production` jusqu'à lui ; `--essai` montre ce qui partirait. Une CI en cours sur `main` est attendue **sous le verrou** (plus de merge, donc plus de CI relancée), au plus 25 min.
 - Il tient le verrou « deploy » de bout en bout ([§ 6](#6-qui-applique-quoi)). Un humain n'est pas arrêté par le hook : David, qui lance aussi des merges, attend la fin.
 - Ce qui attend la prod : `git log --first-parent origin/production..origin/main`.
 - **Previews OFF** : le job Build de la CI valide le build. Surveiller le déploiement (`get_deployment` → `READY`) et **vérifier en prod** tout changement visible des élèves.

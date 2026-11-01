@@ -1,0 +1,127 @@
+{
+	"title": "Reconnaître des situations de proportionnalité",
+	"description": "Dire si deux grandeurs sont proportionnelles dans des contextes concrets : prix au kilo, recette, vitesse constante, échelle (oui) ; âge et taille, taxi, abonnement (non)",
+	"grades": ["5"],
+	"theme": "Proportionnalité",
+	"domain": "Situations de proportionnalité",
+	"subdomain": "Définition",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Dans quelles situations les deux grandeurs sont-elles proportionnelles ?\n\n```choix\nplusieurs: oui\n- Le prix payé et la masse de pommes achetée, à $2~\\unit{€}$ le kilogramme.\n- La taille d'un enfant et son âge.\n- La quantité de farine et le nombre de crêpes, en suivant toujours la même recette.\n- Le prix d'une course en taxi et la distance parcourue, avec $3~\\unit{€}$ de prise en charge puis $2~\\unit{€}$ par kilomètre.\n- Sur une carte, la distance mesurée sur la carte et la distance réelle.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0;2;4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Situation de proportionnalité.** Deux grandeurs sont proportionnelles quand on obtient l'une en multipliant l'autre toujours par le même nombre : si l'une double, l'autre double aussi, et pour $0$ de l'une, on a $0$ de l'autre.",
+					"Pommes : $2$ kg coûtent $4~\\unit{€}$, $4$ kg coûtent $8~\\unit{€}$ : on multiplie toujours par $2$. $\\textcolor{{{color:primary.0}}}{\\text{Proportionnel}}$.",
+					"Crêpes : pour deux fois plus de crêpes, il faut deux fois plus de farine. $\\textcolor{{{color:primary.0}}}{\\text{Proportionnel}}$. Carte : l'échelle multiplie toutes les distances par le même nombre. $\\textcolor{{{color:primary.0}}}{\\text{Proportionnel}}$.",
+					"Taille et âge : un enfant de $10$ ans ne mesure pas deux fois la taille qu'il avait à $5$ ans. $\\textcolor{{{color:primary.1}}}{\\text{Pas proportionnel}}$. Taxi : pour $0$ km, on paie déjà $3~\\unit{€}$. $\\textcolor{{{color:primary.1}}}{\\text{Pas proportionnel}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans quelles situations les deux grandeurs sont-elles proportionnelles ?\n\n```choix\nplusieurs: oui\n- Le prix à la piscine et le nombre d'entrées, avec un abonnement de $20~\\unit{€}$ puis $4~\\unit{€}$ par entrée.\n- La distance parcourue et la durée du trajet, pour un train qui roule toujours à $120~\\unit{km/h}$.\n- La masse d'une personne et sa taille.\n- Le prix payé et le nombre de cahiers achetés, à $2~\\unit{€}$ le cahier.\n- La quantité de sucre et le nombre de gâteaux, en suivant toujours la même recette.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1;3;4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Situation de proportionnalité.** Deux grandeurs sont proportionnelles quand on obtient l'une en multipliant l'autre toujours par le même nombre : si l'une double, l'autre double aussi, et pour $0$ de l'une, on a $0$ de l'autre.",
+					"Train : en $2$ h, il parcourt $240$ km ; en $3$ h, $360$ km : on multiplie toujours par $120$. $\\textcolor{{{color:primary.0}}}{\\text{Proportionnel}}$. Cahiers et gâteaux : deux fois plus de cahiers coûtent deux fois plus cher, deux fois plus de gâteaux demandent deux fois plus de sucre. $\\textcolor{{{color:primary.0}}}{\\text{Proportionnel}}$.",
+					"Piscine : $1$ entrée coûte $24~\\unit{€}$, $2$ entrées $28~\\unit{€}$, pas le double. $\\textcolor{{{color:primary.1}}}{\\text{Pas proportionnel}}$. Masse et taille : deux personnes de même taille n'ont pas forcément la même masse. $\\textcolor{{{color:primary.1}}}{\\text{Pas proportionnel}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans quelles situations les deux grandeurs sont-elles proportionnelles ?\n\n```choix\nplusieurs: oui\n- Le prix d'un plein d'essence et le nombre de litres, à $1{,}80~\\unit{€}$ le litre.\n- La température extérieure et l'heure de la journée.\n- Sur un plan à l'échelle $\\dfrac{1}{100}$, la longueur d'une pièce sur le plan et sa longueur réelle.\n- La distance parcourue par une randonneuse et la durée de sa marche, avec des pauses, des montées et des descentes.\n- Le prix d'une location de vélo et le nombre d'heures, avec $5~\\unit{€}$ d'assurance puis $3~\\unit{€}$ par heure.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0;2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Situation de proportionnalité.** Deux grandeurs sont proportionnelles quand on obtient l'une en multipliant l'autre toujours par le même nombre : si l'une double, l'autre double aussi, et pour $0$ de l'une, on a $0$ de l'autre.",
+					"Essence : $10$ litres coûtent $18~\\unit{€}$, $20$ litres $36~\\unit{€}$. $\\textcolor{{{color:primary.0}}}{\\text{Proportionnel}}$. Plan : chaque longueur réelle vaut $100$ fois celle du plan. $\\textcolor{{{color:primary.0}}}{\\text{Proportionnel}}$.",
+					"Température : elle monte puis redescend dans la journée. $\\textcolor{{{color:primary.1}}}{\\text{Pas proportionnel}}$. Randonnée : la vitesse change (pauses, montées), la distance n'est pas la durée multipliée par un même nombre. $\\textcolor{{{color:primary.1}}}{\\text{Pas proportionnel}}$. Vélo : pour $0$ h, on paie déjà $5~\\unit{€}$. $\\textcolor{{{color:primary.1}}}{\\text{Pas proportionnel}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Série 1 : 0, 2, 4",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0;2;4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le taxi",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0;2;3;4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Oubli de la carte : partiel",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0;2"],
+			"expected": {
+				"status": "unoptimal_form"
+			}
+		},
+		{
+			"description": "Série 2 : 1, 3, 4",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1;3;4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'abonnement",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0;1;3;4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Série 3 : 0, 2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0;2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la randonnée",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0;2;3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

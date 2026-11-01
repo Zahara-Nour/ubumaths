@@ -1,6 +1,6 @@
 <!--
-	StatChart — blocs ```barres et ```circulaire
-	============================================
+	StatChart — blocs statistiques (```barres, ```circulaire… ```boite-a-moustaches)
+	=================================================================================
 
 	Diagramme statistique STATIQUE : SVG sans store ni interaction, dessiné
 	depuis la scène pure `buildStatChartScene` (la même que le PDF Typst).
@@ -31,6 +31,7 @@
 	import { STAT_TEXT } from '$lib/ubumark/utils/stat-chart-text';
 	import StatChart from './StatChart.svelte';
 	import BarresPlacer from './BarresPlacer.svelte';
+	import BoxPlotChart from './BoxPlotChart.svelte';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import { OVER_BUDGET_MESSAGE, readRenderBudget, withinBudget } from '../render-budget';
 
@@ -132,6 +133,7 @@
 	let mean = $derived(scene?.kind === 'moyenne-selon-n' ? scene : null);
 	let density = $derived(scene?.kind === 'densite' ? scene : null);
 	let scatter = $derived(scene?.kind === 'nuage' ? scene : null);
+	let boxPlot = $derived(scene?.kind === 'boite-a-moustaches' ? scene : null);
 	/** Histogramme, polygone, moyenne selon n, densité, nuage : abscisses continues, axe vertical gradué */
 	let classChart = $derived(histogram ?? cumulative ?? mean ?? density ?? scatter);
 	/** Haut de l'axe vertical : carreaux / effectif (histogramme), 100 % (polygone), moyenne, densité, nuage */
@@ -473,6 +475,9 @@
 					</tbody>
 				</table>
 			</div>
+		{:else if boxPlot}
+			<!-- Boîtes à moustaches : composant à part, mêmes title / desc reliés -->
+			<BoxPlotChart scene={boxPlot} {titleId} {descId} />
 		{:else if bars}
 			<svg
 				role="img"

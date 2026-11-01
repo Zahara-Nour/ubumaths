@@ -83,6 +83,9 @@ import {
 // `buildStatChartScene`) : sans risque, rien n'y est appelé au chargement
 import { buildRunningMeanScene, buildSampleMeansScene } from './simulation-scene';
 import { buildComparisonScene } from './comparison-scene';
+// ⚠️ Import circulaire (boxplot-scene reprend `scatterAxis`) : sans risque, rien
+// n'y est appelé au chargement
+import { buildBoxPlotScene } from './boxplot-scene';
 import { STAT_TEXT, type IndicatorRowId } from './stat-chart-text';
 import {
 	asWritten,
@@ -523,7 +526,55 @@ export interface ScatterScene extends SceneCommon {
 	curve: ScenePoint[][] | null;
 }
 
+/** Une boîte d'une boîte à moustaches, prête à dessiner */
+export interface BoxPlotSceneBox {
+	/** null : boîte sans nom (pas d'étiquette) */
+	name: string | null;
+	/** Minimum, Q1, médiane, Q3, maximum */
+	values: [number, number, number, number, number];
+	/** Les mêmes, écrits selon la langue (`valeurs: oui`) */
+	labels: string[];
+	/**
+	 * Rangée de chaque étiquette sous la boîte (0 = la plus proche) : deux valeurs
+	 * proches ne s'écrivent pas l'une sur l'autre
+	 */
+	valueRows: number[];
+}
+
+/**
+ * Boîtes à moustaches (```boite-a-moustaches) : horizontales, empilées dans
+ * l'ordre de l'auteur ; un seul axe en bas, de `xMin` à `xMax`.
+ */
+export interface BoxPlotScene extends SceneCommon {
+	kind: 'boite-a-moustaches';
+	xMin: number;
+	xMax: number;
+	xTicks: SceneTick[];
+	/** `titre:` du bloc, sous l'axe ; null sans titre */
+	axisTitle: string | null;
+	boxes: BoxPlotSceneBox[];
+	showValues: boolean;
+	/** Place de chaque boîte en hauteur, dans l'ordre de `boxes` */
+	bands: BoxPlotBand[];
+	color: CourbeColor;
+}
+
+/**
+ * Place d'une boîte en hauteur, en px depuis le haut du cadre (`pixelSize`) ; le
+ * PDF la met à l'échelle de sa largeur
+ */
+export interface BoxPlotBand {
+	/** Ligne de base du nom ; null quand aucune boîte n'a de nom */
+	nameY: number | null;
+	/** Haut et bas de la boîte */
+	top: number;
+	bottom: number;
+	/** Ligne de base de chaque rangée d'étiquettes de valeurs (`valueRows`) */
+	valueY: number[];
+}
+
 export type StatChartScene =
+	| BoxPlotScene
 	| ScatterScene
 	| DensityScene
 	| FrequencyTableScene
@@ -3055,7 +3106,7 @@ const SCATTER_MIN_SPACING = { x: TICK_TARGET_PX, y: 30 };
  * Largeur d'un caractère d'étiquette, en px : le plus large des deux rendus
  * (écran 11 px ; PDF 6,5 pt sur 6,5 cm pour 400 px ≈ 7 px)
  */
-const SCATTER_LABEL_CHAR_PX = 7;
+export const SCATTER_LABEL_CHAR_PX = 7;
 
 /** Air entre deux étiquettes voisines, en px */
 const SCATTER_LABEL_GAP_PX = 8;
@@ -3067,7 +3118,7 @@ const SCATTER_MAX_TICKS = 200;
 const SCATTER_LABEL_HEIGHT_PX = 14;
 
 /** Une graduation d'un nuage : arrondie au pas, milliers groupés à partir de 10 000 */
-function scatterTick(value: number, locale: ContentLocale): SceneTick {
+export function scatterTick(value: number, locale: ContentLocale): SceneTick {
 	return { value, label: groupThousands(formatTick(value, locale), locale) };
 }
 
@@ -3080,7 +3131,7 @@ function scatterTick(value: number, locale: ContentLocale): SceneTick {
  * étiquettes : leur largeur sur l'axe des x (« 2014,5 » ne tenait pas tous
  * les 0,5 sur 400 px), leur hauteur sur l'axe des y.
  */
-function scatterAxis(
+export function scatterAxis(
 	values: readonly number[],
 	pixels: number,
 	withZero: boolean,
@@ -3483,5 +3534,7 @@ function buildKindScene(spec: StatChartSpec, locale: ContentLocale): StatChartSc
 			return buildFrequencyTableScene(spec, locale);
 		case 'nuage':
 			return buildScatterScene(spec, locale);
+		case 'boite-a-moustaches':
+			return buildBoxPlotScene(spec, locale);
 	}
 }

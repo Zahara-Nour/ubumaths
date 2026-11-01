@@ -1,0 +1,359 @@
+{
+	"title": "Résoudre √x < k",
+	"description": "Inéquation √x < k par la croissance de la fonction racine carrée et x ⩾ 0 : k entier ou décimal, les quatre sens ; k < 0 (∅ ou [0 ; +∞[), k = 0 (pièges : x ⩾ 0 oublié, k au lieu de k², 0 exclu, crochets)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Fonction racine carrée",
+	"subdomain": "Résolution algébrique",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On note $f$ la fonction racine carrée : $f(x)=\\sqrt{x}$, définie sur $\\left[0\\,;+\\infty\\right[$.\n\nRésous dans $\\mathbb{R}$ l'inéquation $\\sqrt{x}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|[0;{{eval:(k)^2}}[|{{if:s==1|[0;{{eval:(k)^2}}]|{{if:s==2|]{{eval:(k)^2}};+\\infty[|[{{eval:(k)^2}};+\\infty[}}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\sqrt{x}$ n'existe que pour $x\\geqslant 0$ : les solutions sont **toutes positives ou nulles**.",
+					"La fonction racine carrée est **croissante** sur $\\left[0\\,;+\\infty\\right[$ : elle **conserve** le sens. Comme $\\sqrt{{{eval:(k)^2}}}={{k}}$, pour $x\\geqslant 0$ : $\\sqrt{x}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}\\iff x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(k)^2}}$.",
+					"Sur le graphique : on garde les abscisses des points de la courbe situés {{if:s==0|**strictement sous**|{{if:s==1|**sous ou sur**|{{if:s==2|**strictement au-dessus de**|**au-dessus ou sur**}}}}}} la droite $y={{k}}$ ; {{if:s==0|l'abscisse de $A$ est **exclue**|{{if:s==1|l'abscisse de $A$ est **comprise**|{{if:s==2|l'abscisse de $A$ est **exclue**|l'abscisse de $A$ est **comprise**}}}}}}.",
+					"```courbe\nx: -1 ; {{eval:(k)^2+3}}\ny: -1 ; {{eval:(k)+2}}\nf(x) = sqrt(x)   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\n{{if:s==0|h(x) = sqrt(x) sur [0 ; {{k}}^2[   vert|{{if:s==1|h(x) = sqrt(x) sur [0 ; {{k}}^2]   vert|{{if:s==2|h(x) = sqrt(x) sur ]{{k}}^2 ; 100]   vert|h(x) = sqrt(x) sur [{{k}}^2 ; 100]   vert}}}}}}\n{{if:s==0|t(x) = 0 sur [0 ; {{k}}^2[   vert|{{if:s==1|t(x) = 0 sur [0 ; {{k}}^2]   vert|{{if:s==2|t(x) = 0 sur ]{{k}}^2 ; 100]   vert|t(x) = 0 sur [{{k}}^2 ; 100]   vert}}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2| | }}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2| | }}}}}}\npoints: A({{k}}^2 ; {{k}})\ntaille: moyenne\ndescription: Courbe de la fonction racine carrée, droite y = k en pointillé, partie cherchée en vert. L'ensemble des solutions est repassé en vert sur l'axe des abscisses.\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left[0\\,;{{eval:(k)^2}}\\right[|{{if:s==1|\\left[0\\,;{{eval:(k)^2}}\\right]|{{if:s==2|\\left]{{eval:(k)^2}}\\,;+\\infty\\right[|\\left[{{eval:(k)^2}}\\,;+\\infty\\right[}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On note $f$ la fonction racine carrée : $f(x)=\\sqrt{x}$, définie sur $\\left[0\\,;+\\infty\\right[$.\n\nRésous dans $\\mathbb{R}$ l'inéquation $\\sqrt{x}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(n)/10;d}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..19!10"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|[0;{{eval:(n)^2/100;d}}[|{{if:s==1|[0;{{eval:(n)^2/100;d}}]|{{if:s==2|]{{eval:(n)^2/100;d}};+\\infty[|[{{eval:(n)^2/100;d}};+\\infty[}}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\sqrt{x}$ n'existe que pour $x\\geqslant 0$ : les solutions sont **toutes positives ou nulles**.",
+					"La fonction racine carrée est **croissante** sur $\\left[0\\,;+\\infty\\right[$ : elle **conserve** le sens. Comme $\\sqrt{{{eval:(n)^2/100;d}}}={{eval:(n)/10;d}}$, pour $x\\geqslant 0$ : $\\sqrt{x}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(n)/10;d}}\\iff x{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{eval:(n)^2/100;d}}$.",
+					"Sur le graphique : on garde les abscisses des points de la courbe situés {{if:s==0|**strictement sous**|{{if:s==1|**sous ou sur**|{{if:s==2|**strictement au-dessus de**|**au-dessus ou sur**}}}}}} la droite $y={{eval:(n)/10;d}}$ ; {{if:s==0|l'abscisse de $A$ est **exclue**|{{if:s==1|l'abscisse de $A$ est **comprise**|{{if:s==2|l'abscisse de $A$ est **exclue**|l'abscisse de $A$ est **comprise**}}}}}}.",
+					"```courbe\nx: -0.5 ; 4.5\ny: -0.5 ; 2.5\nf(x) = sqrt(x)   bleu   nom=C_f\ng(x) = {{n}}/10   rouge   pointillé\n{{if:s==0|h(x) = sqrt(x) sur [0 ; ({{n}}/10)^2[   vert|{{if:s==1|h(x) = sqrt(x) sur [0 ; ({{n}}/10)^2]   vert|{{if:s==2|h(x) = sqrt(x) sur ]({{n}}/10)^2 ; 100]   vert|h(x) = sqrt(x) sur [({{n}}/10)^2 ; 100]   vert}}}}}}\n{{if:s==0|t(x) = 0 sur [0 ; ({{n}}/10)^2[   vert|{{if:s==1|t(x) = 0 sur [0 ; ({{n}}/10)^2]   vert|{{if:s==2|t(x) = 0 sur ]({{n}}/10)^2 ; 100]   vert|t(x) = 0 sur [({{n}}/10)^2 ; 100]   vert}}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2| | }}}}}}\n{{if:s==0| |{{if:s==1| |{{if:s==2| | }}}}}}\npoints: A(({{n}}/10)^2 ; {{n}}/10)\ntaille: moyenne\ndescription: Courbe de la fonction racine carrée, droite y = k en pointillé, partie cherchée en vert. L'ensemble des solutions est repassé en vert sur l'axe des abscisses.\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:s==0|\\left[0\\,;{{eval:(n)^2/100\\,;d}}\\right[|{{if:s==1|\\left[0\\,;{{eval:(n)^2/100\\,;d}}\\right]|{{if:s==2|\\left]{{eval:(n)^2/100\\,;d}}\\,;+\\infty\\right[|\\left[{{eval:(n)^2/100\\,;d}}\\,;+\\infty\\right[}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On note $f$ la fonction racine carrée : $f(x)=\\sqrt{x}$, définie sur $\\left[0\\,;+\\infty\\right[$.\n\nRésous dans $\\mathbb{R}$ l'inéquation $\\sqrt{x}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}{{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "-9..-1"
+				},
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|\\varnothing|{{if:s==1|\\varnothing|{{if:s==2|[0;+\\infty[|[0;+\\infty[}}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\sqrt{x}$ n'existe que pour $x\\geqslant 0$ : les solutions sont **toutes positives ou nulles**. Une racine carrée n'est **jamais négative** : pour tout $x\\geqslant 0$, $\\sqrt{x}\\geqslant 0>{{k}}$.",
+					"{{if:s==0|Aucun réel n'est solution. $S=\\textcolor{{{color:primary.0}}}{\\varnothing}$.|{{if:s==1|Aucun réel n'est solution. $S=\\textcolor{{{color:primary.0}}}{\\varnothing}$.|{{if:s==2|Tous les réels positifs ou nuls sont solutions, et seulement eux. $S=\\textcolor{{{color:primary.0}}}{\\left[0\\,;+\\infty\\right[}$.|Tous les réels positifs ou nuls sont solutions, et seulement eux. $S=\\textcolor{{{color:primary.0}}}{\\left[0\\,;+\\infty\\right[}$.}}}}}}"
+				]
+			}
+		},
+		{
+			"statement": "On note $f$ la fonction racine carrée : $f(x)=\\sqrt{x}$, définie sur $\\left[0\\,;+\\infty\\right[$.\n\nRésous dans $\\mathbb{R}$ l'inéquation $\\sqrt{x}{{if:s==0|<|{{if:s==1|\\leqslant |{{if:s==2|>|\\geqslant }}}}}}0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|\\varnothing|{{if:s==1|\\{0\\}|{{if:s==2|]0;+\\infty[|[0;+\\infty[}}}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\sqrt{x}$ n'existe que pour $x\\geqslant 0$ : les solutions sont **toutes positives ou nulles**. Une racine carrée n'est jamais négative, et $\\sqrt{x}=0$ seulement pour $x=0$.",
+					"{{if:s==0|Aucune racine carrée n'est strictement négative : $S=\\textcolor{{{color:primary.0}}}{\\varnothing}$.|{{if:s==1|Une racine carrée négative ou nulle est nulle : seul $0$ est solution. $S=\\textcolor{{{color:primary.0}}}{\\{0\\}}$.|{{if:s==2|La racine carrée est strictement positive pour tout $x>0$. $S=\\textcolor{{{color:primary.0}}}{\\left]0\\,;+\\infty\\right[}$.|Une racine carrée est toujours positive ou nulle, là où elle existe : $S=\\textcolor{{{color:primary.0}}}{\\left[0\\,;+\\infty\\right[}$.}}}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "√x < 2 : S = [0 ; 4[",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"s": "0"
+			},
+			"answers": ["[0;4["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x ⩾ 0 oublié ]−∞ ; 4[",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"s": "0"
+			},
+			"answers": ["]-\\infty;4["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0 exclu ]0 ; 4[",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"s": "0"
+			},
+			"answers": ["]0;4["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : k au lieu de k² [0 ; 2[",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"s": "0"
+			},
+			"answers": ["[0;2["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : crochet fermé [0 ; 4]",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"s": "0"
+			},
+			"answers": ["[0;4]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "√x ⩾ 3 : S = [9 ; +∞[",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"s": "3"
+			},
+			"answers": ["[9;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : crochet ouvert ]9 ; +∞[",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"s": "3"
+			},
+			"answers": ["]9;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : [3 ; +∞[",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"s": "3"
+			},
+			"answers": ["[3;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "√x ⩽ 1,5 : S = [0 ; 2,25]",
+			"variationIndex": 1,
+			"variables": {
+				"n": "15",
+				"s": "1"
+			},
+			"answers": ["[0;2{,}25]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En fraction [0 ; 9/4]",
+			"variationIndex": 1,
+			"variables": {
+				"n": "15",
+				"s": "1"
+			},
+			"answers": ["[0;\\frac{9}{4}]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ]−∞ ; 2,25]",
+			"variationIndex": 1,
+			"variables": {
+				"n": "15",
+				"s": "1"
+			},
+			"answers": ["]-\\infty;2{,}25]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "√x > −2 : S = [0 ; +∞[",
+			"variationIndex": 2,
+			"variables": {
+				"k": "-2",
+				"s": "2"
+			},
+			"answers": ["[0;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ℝ",
+			"variationIndex": 2,
+			"variables": {
+				"k": "-2",
+				"s": "2"
+			},
+			"answers": ["\\mathbb{R}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ]4 ; +∞[",
+			"variationIndex": 2,
+			"variables": {
+				"k": "-2",
+				"s": "2"
+			},
+			"answers": ["]4;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "√x < −2 : S = ∅",
+			"variationIndex": 2,
+			"variables": {
+				"k": "-2",
+				"s": "0"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : [0 ; 4[",
+			"variationIndex": 2,
+			"variables": {
+				"k": "-2",
+				"s": "0"
+			},
+			"answers": ["[0;4["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "√x ⩽ 0 : S = {0}",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1"
+			},
+			"answers": ["\\{0\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ∅",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "√x > 0 : S = ]0 ; +∞[",
+			"variationIndex": 3,
+			"variables": {
+				"s": "2"
+			},
+			"answers": ["]0;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ℝ \\ {0}",
+			"variationIndex": 3,
+			"variables": {
+				"s": "2"
+			},
+			"answers": ["\\mathbb{R}\\setminus\\{0\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

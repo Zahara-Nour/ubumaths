@@ -5,6 +5,8 @@ couvre:
   - scripts/questions/page-a-cocher.html
   - scripts/questions/publier-lot.ts
   - scripts/questions/sonde-courbes.ts
+  - scripts/questions/sonde-figures.ts
+  - scripts/questions/sonde-cubes.ts
   - scripts/lib/page-a-cocher.ts
   - scripts/lib/lot-questions.ts
 ---
@@ -188,9 +190,16 @@ Dans un worktree (`git worktree add -b feat/questions-<lot> ../ubumaths-wt-quest
 3. `pnpm tsx scripts/create-questions.ts --dir scripts/questions/<niveau>-<lot>` (simulation :
    `checkTemplate` sur chaque fichier, specs comprises) → tout vert.
    Lot qui dessine des courbes : `pnpm tsx scripts/questions/sonde-courbes.ts --dir …` tire
-   chaque modèle 300 fois et passe chaque bloc ```courbe (énoncé et corrigé) au parseur →
-   **0 problème** avant la page à cocher ; `--montre <fichier.json> <graine>` affiche la variation
-   fautive.
+   chaque modèle 300 fois et passe chaque bloc ``courbe (énoncé et corrigé) au parseur →
+**0 problème** avant la page à cocher ; `--montre <fichier.json> <graine>` affiche la variation
+fautive.
+Lot qui dessine des figures : `pnpm tsx scripts/questions/sonde-figures.ts --dir …`, même
+principe, chaque bloc ``figure passé au moteur de l'appli (`parseFigure` puis
+   `buildFigureScene`) → **0 problème** avant la page à cocher (erreurs de construction et textes
+   refusés, `mtexte()` par exemple, qu'aucune spec ne voit).
+   Lot d'assemblages de cubes : `pnpm tsx scripts/questions/sonde-cubes.ts --dir …`, même principe,
+   chaque bloc ``cubes (énoncé, options d'un choix, corrigé) passé à `parseEspaceContent` → **0
+   problème** (un bloc d'affichage en erreur, « Solide indisponible », échappe aux specs).
 4. Base **locale** : `set -a; . ./.env.local; set +a` puis `create-questions … --publier`
    (sans cela, le script vise `.env` = la PROD). Jouer chaque modèle dans l'aperçu admin
    (`/dashboard/admin/questions/<id>/preview`, `admin@local.test`), une réponse juste, une fausse,

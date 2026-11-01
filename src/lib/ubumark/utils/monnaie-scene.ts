@@ -18,8 +18,10 @@
  * l'écran comme au PDF.
  *
  * Plus la valeur est grande, plus la coupure est grande (billet plus long,
- * pièce de 2 € plus large que celle de 1 €), comme les vraies, sans leurs
- * proportions (décision 1 : rendu stylisé).
+ * pièce de 2 € plus large que celle de 1 €), sans les proportions des vraies
+ * (décision 1 : rendu stylisé). Les pièces de centimes suivent la même règle,
+ * toutes plus petites que 1 € : la vraie pièce de 50 c, plus grosse que 1 €,
+ * ne l'est pas ici (chantier `docs/wip/monnaie-centimes-progress.md`, décision 1).
  *
  * @module ubumark/utils/monnaie-scene
  */
@@ -46,11 +48,25 @@ export const MONNAIE_VIEW = {
 	pad: 8,
 	/** Largeur d'un ensemble pleine largeur, marges comprises */
 	fullWidth: 268,
-	/** Diamètre des pièces, par valeur */
-	coin: { 1: 18, 2: 21 } as Readonly<Record<number, number>>,
+	/**
+	 * Diamètre des pièces, par valeur en euros : « 50 c » (taille 7) tient encore
+	 * dans la plus petite pièce à deux chiffres
+	 */
+	coin: {
+		0.01: 14,
+		0.02: 14.8,
+		0.05: 15.6,
+		0.1: 16.4,
+		0.2: 17,
+		0.5: 17.6,
+		1: 18,
+		2: 21
+	} as Readonly<Record<number, number>>,
 	/** Hauteur d'un billet, et sa longueur par valeur */
 	noteHeight: 24,
-	noteWidth: { 5: 44, 10: 48, 20: 52, 50: 58, 100: 64 } as Readonly<Record<number, number>>,
+	noteWidth: { 5: 44, 10: 48, 20: 52, 50: 58, 100: 64, 200: 70, 500: 76 } as Readonly<
+		Record<number, number>
+	>,
 	/** Écart entre deux coupures d'une même ligne, et entre deux lignes */
 	gap: 6,
 	/** Écart entre les billets et les pièces */
@@ -72,7 +88,7 @@ export const MONNAIE_VIEW = {
  * deux coins ; la pièce de 2 € a un cœur et un anneau
  */
 export const MONNAIE_LABEL = {
-	note: { size: 10, radius: 3, cornerSize: 5.5, cornerBox: 11, cornerInset: 1 },
+	note: { size: 10, radius: 3, cornerSize: 5.5, cornerBox: 11, cornerInset: 2.5 },
 	coin: { size: 7, innerRatio: 0.72 }
 } as const;
 
@@ -93,7 +109,7 @@ export type MonnaiePoint = ScenePoint;
 /** Boîte englobante et centre (cible du toucher, trait de la marque) : `SceneBox` */
 export interface MonnaieItem extends SceneBox {
 	kind: MonnaieItemKind;
-	/** Valeur en euros, écrite sur la coupure */
+	/** Valeur en euros (`0.5` = 50 c), écrite sur la coupure (`denominationLabel`) */
 	value: number;
 }
 

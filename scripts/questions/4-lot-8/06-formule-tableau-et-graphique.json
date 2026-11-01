@@ -1,0 +1,304 @@
+{
+	"title": "Formule, tableau et graphique",
+	"description": "Passer d'une formule à un tableau de valeurs, lire un graphique, retrouver la formule d'un tableau : trois façons de traduire la dépendance d'une grandeur à une autre",
+	"grades": ["4"],
+	"theme": "Fonctions",
+	"domain": "Dépendance",
+	"subdomain": "Formule, tableau et graphique",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "La location d'un vélo coûte $P(h) = {{a}}h + {{b}}$ euros pour $h$ heures.\n\nComplète le tableau de valeurs.\n\n$\\begin{array}{|l|c|c|c|} h & 1 & {{h1}} & {{h2}} \\\\ P(h) & {{eval:a+b}} & ? & ? \\end{array}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "h1",
+					"expression": "2..4"
+				},
+				{
+					"name": "h2",
+					"expression": "5..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*h1+b}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a*h2+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Trois façons de dire la même chose.** Une formule, un tableau de valeurs et un graphique traduisent tous comment une grandeur **dépend** d'une autre.",
+					"On remplace $h$ par chaque valeur dans la formule :",
+					"$$P({{h1}}) = {{a}} \\times {{h1}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a*h1+b}}}$$",
+					"$$P({{h2}}) = {{a}} \\times {{h2}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a*h2+b}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Le graphique représente le volume d'eau $V(t)$, en litres, contenu dans une cuve au bout de $t$ minutes.\n\n```courbe\nx: -1 ; 6\ny: -1 ; {{eval:5*a+b+2}}\ngrille: 1 ; 1\naxes: x = Temps (min) ; y = Volume (L)\nf(x) = {{a}}*x+{{b}} sur [0 ; 5]   bleu\ntaille: moyenne\ndescription: Droite qui monte : temps en abscisse, volume en ordonnée, repère gradué de 1 en 1.\n```\n\nQuel volume d'eau la cuve contient-elle au bout de ${{k}}$ minutes ?\n\n$V({{k}}) = ?~\\unit{L}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "1..5"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*k+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Trois façons de dire la même chose.** Une formule, un tableau de valeurs et un graphique traduisent tous comment une grandeur **dépend** d'une autre.",
+					"On part de ${{k}}$ sur l'axe horizontal (le temps), on monte jusqu'à la droite, puis on lit la valeur sur l'axe vertical (le volume).",
+					"$$V({{k}}) = \\textcolor{{{color:primary.0}}}{{{eval:a*k+b}}}~\\unit{L}$$"
+				]
+			}
+		},
+		{
+			"statement": "Le tableau donne le prix $P(n)$, en euros, d'une commande de $n$ cahiers, livraison comprise.\n\n$\\begin{array}{|l|c|c|c|c|} n & 1 & 2 & 3 & 4 \\\\ P(n) & {{eval:a+b}} & {{eval:2*a+b}} & {{eval:3*a+b}} & {{eval:4*a+b}} \\end{array}$\n\nQuelle formule donne ce prix ?\n\n```choix\n- $P(n) = {{a}}n + {{b}}$\n- $P(n) = {{b}}n + {{a}}$\n- $P(n) = {{eval:a+b}}n$\n- $P(n) = n + {{eval:a+b-1}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..6"
+				}
+			],
+			"conditions": ["a!=b", "a!=1"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Trois façons de dire la même chose.** Une formule, un tableau de valeurs et un graphique traduisent tous comment une grandeur **dépend** d'une autre.",
+					"Le prix augmente de ${{a}}~\\unit{€}$ par cahier : il y a ${{a}}n$ dans la formule.",
+					"Pour $n = 1$ : ${{a}} + {{b}} = {{eval:a+b}}$ ; on vérifie les autres colonnes.",
+					"$$\\textcolor{{{color:primary.0}}}{P(n) = {{a}}n + {{b}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Le prix, en euros, de $n$ entrées à la piscine est $P(n) = {{a}}n + {{b}}$.\n\nQuel tableau de valeurs correspond à cette formule ?\n\n```choix\n- $\\begin{array}{|l|c|c|c|} n & 1 & 2 & 3 \\\\ P(n) & {{eval:a+b}} & {{eval:2*a+b}} & {{eval:3*a+b}} \\end{array}$\n- $\\begin{array}{|l|c|c|c|} n & 1 & 2 & 3 \\\\ P(n) & {{eval:b+a}} & {{eval:2*b+a}} & {{eval:3*b+a}} \\end{array}$\n- $\\begin{array}{|l|c|c|c|} n & 1 & 2 & 3 \\\\ P(n) & {{a}} & {{eval:2*a}} & {{eval:3*a}} \\end{array}$\n- $\\begin{array}{|l|c|c|c|} n & 1 & 2 & 3 \\\\ P(n) & {{eval:a+b}} & {{eval:2*(a+b)}} & {{eval:3*(a+b)}} \\end{array}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..5"
+				}
+			],
+			"conditions": ["a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Trois façons de dire la même chose.** Une formule, un tableau de valeurs et un graphique traduisent tous comment une grandeur **dépend** d'une autre.",
+					"On calcule avec la formule : $P(1) = {{eval:a+b}}$, $P(2) = {{eval:2*a+b}}$, $P(3) = {{eval:3*a+b}}$.",
+					"$\\begin{array}{|l|c|c|c|} n & 1 & 2 & 3 \\\\ P(n) & \\textcolor{{{color:primary.0}}}{{{eval:a+b}}} & \\textcolor{{{color:primary.0}}}{{{eval:2*a+b}}} & \\textcolor{{{color:primary.0}}}{{{eval:3*a+b}}} \\end{array}$"
+				]
+			}
+		},
+		{
+			"statement": "Le graphique représente la température d'un liquide, en degrés, en fonction du temps, en minutes.\n\n```courbe\nx: -1 ; 6\ny: -1 ; 22\ngrille: 1 ; 2\naxes: x = Temps (min) ; y = Température (°C)\nf(x) = {{t0}}+({{s}})*{{a}}*x sur [0 ; 5]   bleu\ntaille: moyenne\ndescription: Droite : temps en abscisse, température en ordonnée.\n```\n\nQuand le temps augmente, que fait la température ?\n\n```choix\n- {{if:s>0|Elle augmente.|Elle diminue.}}\n- {{if:s>0|Elle diminue.|Elle augmente.}}\n- Elle ne change pas.\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "a",
+					"expression": "1..2"
+				},
+				{
+					"name": "t0",
+					"expression": "{{if:s>0|2..8|12..20}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Trois façons de dire la même chose.** Une formule, un tableau de valeurs et un graphique traduisent tous comment une grandeur **dépend** d'une autre.",
+					"On lit le graphique **de gauche à droite**, comme le temps qui passe.",
+					"{{if:s>0|La droite monte : la température \\textcolor{{{color:primary.0}}}{\\text{augmente}}.|La droite descend : la température \\textcolor{{{color:primary.0}}}{\\text{diminue}}.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "P(3) = 14, P(6) = 26",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "2",
+				"h1": "3",
+				"h2": "6"
+			},
+			"answers": ["14", "26"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (4 + 2) × 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "2",
+				"h1": "3",
+				"h2": "6"
+			},
+			"answers": ["18", "36"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "V(3) = 7",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"k": "3"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : lu sur le mauvais axe",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"k": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "an + b",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : bn + a",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le bon tableau",
+			"variationIndex": 3,
+			"variables": {
+				"a": "4",
+				"b": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans b",
+			"variationIndex": 3,
+			"variables": {
+				"a": "4",
+				"b": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Elle augmente",
+			"variationIndex": 4,
+			"variables": {
+				"s": "1",
+				"a": "2",
+				"t0": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : elle diminue",
+			"variationIndex": 4,
+			"variables": {
+				"s": "1",
+				"a": "2",
+				"t0": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Elle diminue",
+			"variationIndex": 4,
+			"variables": {
+				"s": "-1",
+				"a": "2",
+				"t0": "18"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

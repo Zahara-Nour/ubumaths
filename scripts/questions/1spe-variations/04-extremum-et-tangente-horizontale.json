@@ -1,0 +1,234 @@
+{
+	"title": "Extrémum et tangente horizontale",
+	"description": "En un extrémum, f′(a) = 0 et tangente horizontale : équation de la tangente, paramètre k, abscisses des tangentes horizontales ; réciproque fausse ((x − a)³)",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "Variations",
+	"level": 7,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "$f$ est une fonction dérivable sur $\\mathbb{R}$ qui admet un {{if:q==0|maximum|minimum}} en ${{a}}$, égal à ${{b}}$.\n\n$f'({{a}})=?$\n\nÉquation de la tangente à $\\mathcal{C}_f$ au point d'abscisse ${{a}}$ : $y=?$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "0|1"
+				},
+				{
+					"name": "a",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Si $f$, dérivable sur un intervalle ouvert, admet un extrémum en $a$, alors $f'(a)=0$ : la tangente en $a$ est **horizontale**.",
+					"Ici $f'({{a}})=\\textcolor{{{color:primary.0}}}{0}$.",
+					"La tangente $y=f'({{a}})(x{{eval:-a;+}})+f({{a}})$ devient $y=\\textcolor{{{color:primary.0}}}{{{b}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $k$ un réel et $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x^3+kx$. On sait que $f$ admet un extrémum en ${{m}}$.\n\nQue vaut $k$ ?\n\n$k=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-3*m^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Si $f$, dérivable sur un intervalle ouvert, admet un extrémum en $a$, alors $f'(a)=0$ : la tangente en $a$ est **horizontale**.",
+					"$f'(x)=3x^2+k$, donc $f'({{m}})={{eval:3*m^2}}+k$.",
+					"$f'({{m}})=0$ donne $$k=\\textcolor{{{color:primary.0}}}{{{eval:-3*m^2}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:2*x^3-3*(r+t)*x^2+6*r*t*x}}$.\n\nEn quels points la courbe $\\mathcal{C}_f$ a-t-elle une tangente horizontale ? Donne leurs abscisses, de la plus petite à la plus grande.\n\n$x_1=?$\n\n$x_2=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "r",
+					"expression": "-3..2"
+				},
+				{
+					"name": "d",
+					"expression": "1..3"
+				},
+				{
+					"name": "t",
+					"expression": "eval:r+d"
+				}
+			],
+			"conditions": ["r != 0", "t != 0", "r + t != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				},
+				{
+					"expectedAnswer": "{{t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La tangente au point d'abscisse $a$ est horizontale quand $f'(a)=0$.",
+					"$f'(x)={{eval:6*x^2-6*(r+t)*x+6*r*t}}=6(x{{eval:-r;+}})(x{{eval:-t;+}})$.",
+					"$f'(x)=0$ pour $x_1=\\textcolor{{{color:primary.0}}}{{{r}}}$ et $x_2=\\textcolor{{{color:primary.0}}}{{{t}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=(x{{eval:-a;+}})^3{{eval:c;+}}$.\n\n$f'({{a}})=?$\n\nLa fonction $f$ admet-elle un extrémum en ${{a}}$ ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)=3(x{{eval:-a;+}})^2$, donc $f'({{a}})=\\textcolor{{{color:primary.0}}}{0}$ : la tangente en ${{a}}$ est horizontale.",
+					"Mais $f'(x)=3(x{{eval:-a;+}})^2\\geqslant0$ : $f$ est croissante sur $\\mathbb{R}$. Elle prend des valeurs plus petites que $f({{a}})$ avant ${{a}}$, et plus grandes après.",
+					"$f$ $\\textcolor{{{color:primary.0}}}{\\text{n'admet pas d'extrémum}}$ en ${{a}}$ : $f'(a)=0$ ne suffit pas, il faut que $f'$ **change de signe** en $a$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Maximum en 2, égal à 5 : 0, y = 5",
+			"variationIndex": 0,
+			"variables": {
+				"q": "0",
+				"a": "2",
+				"b": "5"
+			},
+			"answers": ["0", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : y = 2",
+			"variationIndex": 0,
+			"variables": {
+				"q": "0",
+				"a": "2",
+				"b": "5"
+			},
+			"answers": ["0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Extrémum en 2 : k = −12",
+			"variationIndex": 1,
+			"variables": {
+				"m": "2"
+			},
+			"answers": ["-12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f(2) = 0, k = −4",
+			"variationIndex": 1,
+			"variables": {
+				"m": "2"
+			},
+			"answers": ["-4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Racines 1 et 3",
+			"variationIndex": 2,
+			"variables": {
+				"r": "1",
+				"d": "2",
+				"t": "3"
+			},
+			"answers": ["1", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : racines de f, pas de f′",
+			"variationIndex": 2,
+			"variables": {
+				"r": "1",
+				"d": "2",
+				"t": "3"
+			},
+			"answers": ["0", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(x − 2)³ + 1 : 0, non",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"c": "1"
+			},
+			"answers": ["0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « oui »",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"c": "1"
+			},
+			"answers": ["0", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
