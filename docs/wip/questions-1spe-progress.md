@@ -9,12 +9,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après le `--include-all` (niveau de d2bca2d8 joué)._
+_Mis à jour le 2026-11-01, après la publication du lot 1-dérivation (§ 18)._
 
-- **État** : lot 1-dérivation (10 brouillons, § 18) rangé, tagué, relu (10 « ok »), d2bca2d8 au niveau 7 en prod ; simulation `publier-lot` verte (10 / 10).
-- **Prochaine action** : David lance `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/1spe-derivation --publier` ; relire les 10 statuts `published` (MCP) ; clore le lot. Puis lot suivant de D7 : variations et courbes (§ 3.6), phase 0.
-- **En attente de David** : `publier-lot --publier`.
-- **Pièges en cours** : niveaux d'une catégorie à relever **tous niveaux scolaires confondus** ; `create-questions` et `publier-lot --publier` refusés au mode auto (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET worktrees ; corps de commit : lignes ≤ 100 caractères.
+- **État** : lots 0 publiés, D3 joué, **lot 1-dérivation publié** (10 modèles, points 259, 268, 397, 388, 262, 390, 273, 263, 267, 269). Brouillons de 1re spé plus anciens (inchangés) : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (questions-tspe), 0495289a (attente), c90fa022, d2067413 (1TECHNO).
+- **Prochaine action** : D7 (§ 5), lot neuf « variations et courbes » : points du § 3.6 (280, 399, 400, 282, 285, 286, 403), phase 0 à soumettre à David.
+- **En attente de David** : rien.
+- **Pièges en cours** : niveaux d'une catégorie à relever **tous niveaux scolaires confondus** (l'index d'unicité ignore `grades`) ; `create-questions` et `publier-lot --publier` refusés au mode auto (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET worktrees ; corps de commit : lignes ≤ 100 caractères.
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-27)
@@ -795,7 +795,7 @@ corps de la migration (suite principale tombée au `beforeAll`, 5 branches d'éc
 #2085 mergée (CI verte). `db:migrate` le 2026-11-01 : seule cette migration en attente (dry-run), jouée ; relu en base (MCP) :
 f1440b52 = 1SPE-396, 318ea542 = 1SPE-283, statut, niveaux et `updated_at` inchangés. **D3 clos.**
 
-## 18. Lot 1-dérivation : taux, sécantes, approximation (10 modèles neufs)
+## 18. Lot 1-dérivation : taux, sécantes, approximation (CLOS : 10 publiés le 2026-11-01, #2092, #2101, #2104)
 
 _Relevé prod du 2026-11-01 (MCP) : 396 déjà couvert (f1440b52, D3) ; 10 points sans modèle, aucun titre voisin dans
 les autres niveaux. Case choix en prod depuis v0.57.1 (#2019) : D6 levée pour ce lot._
@@ -868,3 +868,6 @@ la session propriétaire joue son `--include-all` ; questions-4 le réserve à D
 `db push --include-all` lancé par David le 2026-11-01 (170000, 183000, 190000, 190100). Relu en base (MCP) : d2bca2d8 au
 niveau 7, `draft`, `updated_at` inchangé, trigger actif, version 20261101190000 enregistrée. Simulation `publier-lot` :
 **10 brouillons passent le contrôle**.
+
+**Publication (2026-11-01)** : `publier-lot --publier` lancé par David : 10 / 10 publiés, statuts relus en base (MCP).
+**Lot 1-dérivation clos.**
