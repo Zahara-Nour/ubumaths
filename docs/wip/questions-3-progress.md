@@ -903,10 +903,13 @@ modèles publiés de plus, et c8306505 de 4e ; la 4e ne perd rien. Aucune règle
   cd756e21-af71-4922-8106-8387658a45e1 (3-019) · 87f79961-03c8-44af-98b5-438165d2f689 (3-021) ·
   7bb95104-9256-4bdb-a481-bdd2aae66a67 (3-020).
 - Relevé `etat-prod-2026-11-01-3e-lot6/` (8 modèles : les 7 + c8306505, publié, grades `['4']`, tag 4-031) ;
-  `lot-rangement-3-6.py` (copie du 3-5) écrit `20261101170000_questions_3_lot6_rangement_tags.sql` (après
-  `20261101160400`, la plus récente des PR ouvertes) et la fixture : 7 rangés, 1 niveau (3e ajoutée), 8 tags
+  `lot-rangement-3-6.py` (copie du 3-5) écrit `20261101183000_questions_3_lot6_rangement_tags.sql` (d'abord
+  `170000` ; renommée après l'arrivée sur main de `180000` (1re spé) et `180100` pris par la PR ce2 lot 5) et la fixture : 7 rangés, 1 niveau (3e ajoutée), 8 tags
   posés, 1 gardé. ff3bd841 sur la sous-notion « Vecteurs > égalité de vecteurs » (le point 3-025 vit sur la
   notion).
 - `questions-3-lot6-rangement-tags.test.ts` : 20 verts ; corps de la migration vidé : 9 rouges, 7 sautés.
 - `security-auditor` : aucun bloquant, rien à corriger (écart au gabarit : commentaires, données, compteurs ;
   prod relue au MCP = relevé). Remarque : pluriels figés du bilan généré (« 1 gardés »), cosmétique.
+- CI #2100, 1er passage : 6 rouges, tous dus à main (`20261101141600` en double, corrigé par #2093) →
+  `origin/main` fusionnée, migration renommée `183000`. Vu en passant : les PR ouvertes 4e lot 7 et 5e lot 6
+  prennent toutes deux `20261101170000` (signalé à David).

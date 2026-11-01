@@ -1,4 +1,4 @@
-"""Lot 6 (translation, vecteurs, sphère, sections) de la 3e, rangement : migration 20261101170000_questions_3_lot6_rangement_tags + fixture du test.
+"""Lot 6 (translation, vecteurs, sphère, sections) de la 3e, rangement : migration 20261101183000_questions_3_lot6_rangement_tags + fixture du test.
 
 Lit l'instantané `etat-prod-2026-11-01-3e-lot6/` (releve-prod-3.ts) et applique les décisions de
 David du 2026-11-01 (journal `docs/wip/questions-3-progress.md` § 13, 13.6) sur 8 modèles : les 7
@@ -22,7 +22,7 @@ from pathlib import Path
 ICI = Path(__file__).parent
 RACINE = ICI.parents[2]
 ETAT = ICI / 'etat-prod-2026-11-01-3e-lot6'
-MIGRATION = RACINE / 'supabase/migrations/20261101170000_questions_3_lot6_rangement_tags.sql'
+MIGRATION = RACINE / 'supabase/migrations/20261101183000_questions_3_lot6_rangement_tags.sql'
 FIXTURE = RACINE / 'tests/integration/fixtures/questions-3-lot6-rangement.json'
 
 modeles = {t['id'][:8]: t for t in json.loads((ETAT / 'templates.json').read_text())}

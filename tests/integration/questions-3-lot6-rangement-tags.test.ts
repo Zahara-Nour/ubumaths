@@ -2,7 +2,7 @@
  * Chantier « questions-3 », lot 6 (translation, vecteurs, sphère, sections) : nœuds, niveaux et tags (Supabase local requis)
  * ===================================================================================
  *
- * Migration `20261101170000_questions_3_lot6_rangement_tags` : les 7 brouillons du lot 6 (créés
+ * Migration `20261101183000_questions_3_lot6_rangement_tags` : les 7 brouillons du lot 6 (créés
  * sans nœud ni tag) vont sur le nœud de leur point, tag posé (3-025, 3-026, 3-027, 3-018, 3-019,
  * 3-021, 3-020) ; le modèle publié de 4e c8306505 passe en grades ['4', '3'], tag 4-031 gardé, 3-024
  * posé, nœud inchangé. Décisions de David du 2026-11-01 (journal docs/wip/questions-3-progress.md
@@ -56,7 +56,7 @@ interface Etat {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261101170000_questions_3_lot6_rangement_tags.sql';
+const MIGRATION = 'supabase/migrations/20261101183000_questions_3_lot6_rangement_tags.sql';
 /** Le lot, tel que relevé en prod le 2026-11-01 (tags en « programme§code »). */
 const LOT: Modele[] = JSON.parse(
 	readFileSync('tests/integration/fixtures/questions-3-lot6-rangement.json', 'utf-8')
