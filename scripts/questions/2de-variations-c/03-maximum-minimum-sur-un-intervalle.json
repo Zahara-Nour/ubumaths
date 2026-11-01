@@ -1,0 +1,216 @@
+{
+	"title": "Maximum et minimum sur un intervalle",
+	"description": "Maximum, minimum et où ils sont atteints, lus dans un tableau de variations, sur tout l'intervalle puis sur une partie (pièges : abscisse et valeur échangées, maximum de tout l'intervalle donné pour une partie)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Généralités",
+	"subdomain": "Extremums",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Voici le tableau de variations d'une fonction $f$ définie sur $\\left[{{x0}}\\,;{{x3}}\\right]$.\n\n```variation\nvariable: x\ndomain: {{x0}}, {{x1}}, {{x2}}, {{x3}}\n\nvariation: f(x)\n  {{x0}}: {{y0}}, bottom\n  {{x1}}: {{y1}}, top\n  {{x2}}: {{y2}}, bottom\n  {{x3}}: {{y3}}, top\n```\n\nQuel est le maximum de $f$ sur $\\left[{{x0}}\\,;{{x3}}\\right]$ ?\n\n$M=?$\n\nEn quelle valeur est-il atteint ?\n\n$x=?$\n\nQuel est le minimum de $f$ sur cet intervalle ?\n\n$m=?$",
+			"variables": [
+				{
+					"name": "x0",
+					"expression": "-6..-4"
+				},
+				{
+					"name": "x1",
+					"expression": "-3..-1"
+				},
+				{
+					"name": "x2",
+					"expression": "1..3"
+				},
+				{
+					"name": "x3",
+					"expression": "4..6"
+				},
+				{
+					"name": "y1",
+					"expression": "3..7"
+				},
+				{
+					"name": "y0",
+					"expression": "-1..2"
+				},
+				{
+					"name": "y2",
+					"expression": "-6..-3"
+				},
+				{
+					"name": "y3",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{y1}}"
+				},
+				{
+					"expectedAnswer": "{{x1}}"
+				},
+				{
+					"expectedAnswer": "{{y2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le maximum est la plus grande valeur lue au bout des flèches : ${{y1}}$ (en ${{x1}}$) ou ${{y3}}$ (en ${{x3}}$). Ici $M=\\textcolor{{{color:primary.0}}}{{{y1}}}$, atteint en $x=\\textcolor{{{color:primary.1}}}{{{x1}}}$.",
+					"Le minimum est la plus petite : ${{y0}}$ ou ${{y2}}$, soit $m=\\textcolor{{{color:primary.0}}}{{{y2}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici le tableau de variations d'une fonction $f$ définie sur $\\left[{{x0}}\\,;{{x3}}\\right]$.\n\n```variation\nvariable: x\ndomain: {{x0}}, {{x1}}, {{x2}}, {{x3}}\n\nvariation: f(x)\n  {{x0}}: {{y0}}, bottom\n  {{x1}}: {{y1}}, top\n  {{x2}}: {{y2}}, bottom\n  {{x3}}: {{y3}}, top\n```\n\nQuel est le maximum de $f$ sur $\\left[{{x2}}\\,;{{x3}}\\right]$ ?\n\n$M=?$\n\nEn quelle valeur est-il atteint ?\n\n$x=?$",
+			"variables": [
+				{
+					"name": "x0",
+					"expression": "-6..-4"
+				},
+				{
+					"name": "x1",
+					"expression": "-3..-1"
+				},
+				{
+					"name": "x2",
+					"expression": "1..3"
+				},
+				{
+					"name": "x3",
+					"expression": "4..6"
+				},
+				{
+					"name": "y1",
+					"expression": "3..7"
+				},
+				{
+					"name": "y0",
+					"expression": "-1..2"
+				},
+				{
+					"name": "y2",
+					"expression": "-6..-3"
+				},
+				{
+					"name": "y3",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{y3}}"
+				},
+				{
+					"expectedAnswer": "{{x3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur $\\left[{{x2}}\\,;{{x3}}\\right]$ seulement, $f$ est croissante : son maximum est au bout de la flèche, $M=\\textcolor{{{color:primary.0}}}{{{y3}}}$, atteint en $x=\\textcolor{{{color:primary.1}}}{{{x3}}}$.",
+					"Le maximum ${{y1}}$ de tout l'intervalle est atteint en ${{x1}}$, qui n'est pas dans $\\left[{{x2}}\\,;{{x3}}\\right]$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "M = 4 en −2, m = −3",
+			"variationIndex": 0,
+			"variables": {
+				"x0": "-5",
+				"x1": "-2",
+				"x2": "2",
+				"x3": "5",
+				"y1": "4",
+				"y0": "1",
+				"y2": "-3",
+				"y3": "2"
+			},
+			"answers": ["4", "-2", "-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : abscisse et valeur échangées",
+			"variationIndex": 0,
+			"variables": {
+				"x0": "-5",
+				"x1": "-2",
+				"x2": "2",
+				"x3": "5",
+				"y1": "4",
+				"y0": "1",
+				"y2": "-3",
+				"y3": "2"
+			},
+			"answers": ["-2", "4", "-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : minimum lu au bord (1)",
+			"variationIndex": 0,
+			"variables": {
+				"x0": "-5",
+				"x1": "-2",
+				"x2": "2",
+				"x3": "5",
+				"y1": "4",
+				"y0": "1",
+				"y2": "-3",
+				"y3": "2"
+			},
+			"answers": ["4", "-2", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sur [2 ; 5] : M = 2 en 5",
+			"variationIndex": 1,
+			"variables": {
+				"x0": "-5",
+				"x1": "-2",
+				"x2": "2",
+				"x3": "5",
+				"y1": "4",
+				"y0": "1",
+				"y2": "-3",
+				"y3": "2"
+			},
+			"answers": ["2", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : maximum global 4",
+			"variationIndex": 1,
+			"variables": {
+				"x0": "-5",
+				"x1": "-2",
+				"x2": "2",
+				"x3": "5",
+				"y1": "4",
+				"y0": "1",
+				"y2": "-3",
+				"y3": "2"
+			},
+			"answers": ["4", "-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

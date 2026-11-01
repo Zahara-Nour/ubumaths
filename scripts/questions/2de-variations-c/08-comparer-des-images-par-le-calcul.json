@@ -1,0 +1,279 @@
+{
+	"title": "Comparer des images par le sens de variation",
+	"description": "Comparer f(u) et f(v) sans calculer, pour f carré, inverse ou valeur absolue, par le sens de variation ou la distance à 0 (pièges : ordre conservé pour une fonction décroissante, (−0,7)² < (−0,3)² « car −0,7 < −0,3 », 1/u et 1/v rangés comme u et v)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Généralités",
+	"subdomain": "Variations",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On note $f$ la fonction carré : $f(x)=x^2$. On pose $u={{eval:(p)/10;d}}$ et $v={{eval:(q)/10;d}}$.\n\nSans calculer les images, compare $f(u)$ et $f(v)$.\n\n```choix\nmelanger: non\n- $f(u)<f(v)$\n- $f(u)=f(v)$\n- $f(u)>f(v)$\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..19!10"
+				},
+				{
+					"name": "q",
+					"expression": "1..19!10"
+				}
+			],
+			"conditions": ["p < q"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u$ et $v$ sont dans $\\left[0\\,;+\\infty\\right[$, où la fonction carré est **croissante** : les images sont dans le même ordre.",
+					"$u<v$ donc \\textcolor{{{color:primary.0}}}{f(u)<f(v)}."
+				]
+			}
+		},
+		{
+			"statement": "On note $f$ la fonction carré : $f(x)=x^2$. On pose $u={{eval:-(q)/10;d}}$ et $v={{eval:-(p)/10;d}}$.\n\nSans calculer les images, compare $f(u)$ et $f(v)$.\n\n```choix\nmelanger: non\n- $f(u)<f(v)$\n- $f(u)=f(v)$\n- $f(u)>f(v)$\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..19!10"
+				},
+				{
+					"name": "q",
+					"expression": "1..19!10"
+				}
+			],
+			"conditions": ["p < q"],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u$ et $v$ sont dans $\\left]-\\infty\\,;0\\right]$, où la fonction carré est **décroissante** : les images sont dans l'ordre contraire.",
+					"$u<v$ donc \\textcolor{{{color:primary.0}}}{f(u)>f(v)}."
+				]
+			}
+		},
+		{
+			"statement": "On note $f$ la fonction inverse : $f(x)=\\dfrac{1}{x}$. On pose $u={{eval:(p)/10;d}}$ et $v={{eval:(q)/10;d}}$.\n\nSans calculer les images, compare $f(u)$ et $f(v)$.\n\n```choix\nmelanger: non\n- $f(u)<f(v)$\n- $f(u)=f(v)$\n- $f(u)>f(v)$\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..19!10"
+				},
+				{
+					"name": "q",
+					"expression": "1..19!10"
+				}
+			],
+			"conditions": ["p < q"],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u$ et $v$ sont dans $\\left]0\\,;+\\infty\\right[$, où la fonction inverse est **décroissante** : les images sont dans l'ordre contraire.",
+					"$u<v$ donc \\textcolor{{{color:primary.0}}}{f(u)>f(v)}."
+				]
+			}
+		},
+		{
+			"statement": "On note $f$ la fonction inverse : $f(x)=\\dfrac{1}{x}$. On pose $u={{eval:-(q)/10;d}}$ et $v={{eval:-(p)/10;d}}$.\n\nSans calculer les images, compare $f(u)$ et $f(v)$.\n\n```choix\nmelanger: non\n- $f(u)<f(v)$\n- $f(u)=f(v)$\n- $f(u)>f(v)$\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..19!10"
+				},
+				{
+					"name": "q",
+					"expression": "1..19!10"
+				}
+			],
+			"conditions": ["p < q"],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u$ et $v$ sont dans $\\left]-\\infty\\,;0\\right[$, où la fonction inverse est **décroissante** : les images sont dans l'ordre contraire.",
+					"$u<v$ donc \\textcolor{{{color:primary.0}}}{f(u)>f(v)}."
+				]
+			}
+		},
+		{
+			"statement": "On note $f$ la fonction valeur absolue : $f(x)=\\lvert x\\rvert$. On pose $u={{eval:-(q)/10;d}}$ et $v={{eval:(p)/10;d}}$.\n\nSans calculer les images, compare $f(u)$ et $f(v)$.\n\n```choix\nmelanger: non\n- $f(u)<f(v)$\n- $f(u)=f(v)$\n- $f(u)>f(v)$\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..19!10"
+				},
+				{
+					"name": "q",
+					"expression": "1..19!10"
+				}
+			],
+			"conditions": ["p < q"],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u$ et $v$ ne sont pas du même côté de $0$ : on compare leurs **distances à $0$**.",
+					"$\\lvert u\\rvert={{eval:(q)/10;d}}$ et $\\lvert v\\rvert={{eval:(p)/10;d}}$, donc \\textcolor{{{color:primary.0}}}{f(u)>f(v)}."
+				]
+			}
+		},
+		{
+			"statement": "On note $f$ la fonction carré : $f(x)=x^2$. On pose $u={{eval:-(p)/10;d}}$ et $v={{eval:(q)/10;d}}$.\n\nSans calculer les images, compare $f(u)$ et $f(v)$.\n\n```choix\nmelanger: non\n- $f(u)<f(v)$\n- $f(u)=f(v)$\n- $f(u)>f(v)$\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..19!10"
+				},
+				{
+					"name": "q",
+					"expression": "1..19!10"
+				}
+			],
+			"conditions": ["p < q"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u$ et $v$ ne sont pas du même côté de $0$ : la fonction carré n'est pas monotone sur un intervalle qui les contient. On compare leurs **distances à $0$** : $(-a)^2=a^2$.",
+					"$f(u)=f({{eval:(p)/10;d}})$ et ${{eval:(p)/10;d}}<{{eval:(q)/10;d}}$ dans $\\left[0\\,;+\\infty\\right[$, donc \\textcolor{{{color:primary.0}}}{f(u)<f(v)}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "0,3² < 0,7²",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "7"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "(−0,7)² > (−0,3)²",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3",
+				"q": "7"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ordre conservé",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3",
+				"q": "7"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/0,3 > 1/0,7",
+			"variationIndex": 2,
+			"variables": {
+				"p": "3",
+				"q": "7"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/0,3 < 1/0,7",
+			"variationIndex": 2,
+			"variables": {
+				"p": "3",
+				"q": "7"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/(−0,7) > 1/(−0,3)",
+			"variationIndex": 3,
+			"variables": {
+				"p": "3",
+				"q": "7"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "|−0,7| > |0,3|",
+			"variationIndex": 4,
+			"variables": {
+				"p": "3",
+				"q": "7"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : |−0,7| < |0,3| « car négatif »",
+			"variationIndex": 4,
+			"variables": {
+				"p": "3",
+				"q": "7"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(−0,3)² < 0,7²",
+			"variationIndex": 5,
+			"variables": {
+				"p": "3",
+				"q": "7"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
