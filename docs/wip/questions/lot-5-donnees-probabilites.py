@@ -6,7 +6,7 @@ Phase 0 validée par David le 2026-11-01 (« je valide » sur les recos) ; un po
 | 01 | 5-134 | Calculer une fréquence | case | Statistiques › Représenter des données › effectifs et fréquences, 1 |
 | 02 | 5-080 | Calculer une moyenne | case | Statistiques › Indicateurs › moyenne, 1 |
 | 03 | 5-080 | Calculer une moyenne non entière | case | idem, 2 |
-| 04 | 5-139 | Interpréter une moyenne | choix (plusieurs) | Statistiques › Indicateurs › moyenne, 1 |
+| 04 | 5-139 | Interpréter une moyenne | choix (plusieurs) | Statistiques › Indicateurs › moyenne, 3 (1 pris par 02, 2 par 03) |
 | 05 | 5-079 | Choisir une représentation adaptée | choix | Statistiques › Représenter des données › choisir une représentation (neuve), 1 |
 | 06 | 5-082 | Expérience aléatoire, issue, évènement | choix | Probabilités › Expériences aléatoires › événements, 1 |
 | 07 | 5-083 | Probabilité : issues équiprobables | case (fraction) | Probabilités › Expériences aléatoires › équiprobabilité, 1 |
@@ -304,7 +304,7 @@ MODELES.append(modele(
     '04-interpreter-moyenne', 'Interpréter une moyenne',
     'Dire ce qu\'une moyenne apprend sur une série : une moyenne de 12 ne veut pas dire que'
     ' chacun a 12 ; somme = moyenne × effectif ; une valeur au moins atteint la moyenne',
-    S, 'Indicateurs', 'moyenne', 1,
+    S, 'Indicateurs', 'moyenne', 3,
     [INTERP_CLASSE, INTERP_TEMP, INTERP_COMPARER],
     [spec('Classe : 1, 2, 3', 0, {'n': 25, 'k': 12}, '1;2;3', 'correct'),
      spec('Erreur : tous ont eu 12', 0, {'n': 25, 'k': 12}, '0;1;2;3', 'incorrect'),

@@ -5,24 +5,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2099._
+_Mis à jour le 2026-11-01, PR du niveau de 04 en cours._
 
-- **État** : lots 1 à 5 publiés ; **lot 6 « Données et probabilités »** (8 modèles, § 17) en prod en brouillons,
-  rangés et tagués (migration 20261101190200 jouée, #2099 mergée, vérifié MCP), sous-notion « choisir une
-  représentation » créée (5-079 dessus).
-- **Prochaine action** : relecture de David sur la page à cocher https://claude.ai/artifact/J4PrvTefAAb8WifVcgQMNt
-  (collection `verdicts`, 0 verdict au départ) ; compter les verdicts, corriger les « à revoir » ; puis
-  `publier-lot.ts --dir scripts/questions/5-donnees-probabilites` (simulation par moi, `--publier` par David).
-  Ensuite lot 7 « Proportionnalité, fonctions » (085, 086, 140, 087, 092, 098 ; recoupe 6-140 / 6-141), lot 8
-  « Opérations » (001, 002, 005, 116, 117).
-- **En attente de David** : la relecture du lot 6 ; le `! pnpm db:migrate` de 23:26:56 UTC (2026-10-31) visait-il
-  une autre session (3e, lot 5) ? (résultat juste, audit sans bloquant).
-- **Pièges en cours** : horodatage de migration = `max + 1 min` de `origin/main` JUSTE AVANT le merge (deux
-  collisions au lot 6) ; une migration qui crée un nœud → `later-migrations.ts` + fixtures `arbre-notions-seed` /
-  `seed-cycle4-points` (la CI applique toutes les migrations) ; `plusieurs: oui` ajoute « Coche la ou les bonnes
-  réponses » ; case oubliée d'un choix multiple = ½ ; `--publier` = David avec `!` ; jamais `e` ni `i`.
-- **Worktree / branche** : `ubumaths-wt-questions-5` (HEAD détaché sur `main`, branches mergées supprimées) ;
-  `supabase/.temp` retiré (copie dans le scratchpad de la session du 2026-11-01).
+- **État** : lots 1 à 5 publiés ; **lot 6** (8 modèles, § 17) en prod en brouillons, rangés, tagués, **relus
+  8/8 ok** ; publication bloquée par une collision de niveau (02 et 04 au niveau 1) → 04 au niveau 3 (§ 17.4).
+- **Prochaine action** : PR `fix/questions-5-lot6-niveau` (migration `…_questions_5_lot6_niveau` + JSON) → CI,
+  horodatage refait (`max + 1 min`, la 6e prend 20261101200700) juste avant le merge, merge, `db:migrate`, vérif
+  MCP ; simulation `publier-lot.ts --dir scripts/questions/5-donnees-probabilites` ; David : `--publier`. Puis
+  **phase 0 du lot 7** « Proportionnalité, fonctions » (085, 086, 140, 087, 092, 098 ; recoupe 6-140 / 6-141),
+  lot 8 « Opérations » (001, 002, 005, 116, 117).
+- **En attente de David** : le `--publier` du lot 6 (après la migration) ; le `! pnpm db:migrate` de 23:26:56 UTC
+  (2026-10-31) visait-il une autre session ? (résultat juste).
+- **Pièges en cours** : horodatage de migration = `max + 1 min` de `origin/main` JUSTE AVANT le merge (trois
+  collisions) ; **niveaux de deux modèles d'un même lot dans une même sous-notion : distincts** (simulation
+  `publier-lot` dès l'écriture) ; nœud neuf → `later-migrations.ts` + fixtures ; `plusieurs: oui` ajoute « Coche
+  la ou les bonnes réponses » ; case oubliée d'un choix multiple = ½ ; `--publier` = David avec `!` ; jamais `e`.
+- **Worktree / branche** : `ubumaths-wt-questions-5`, branche `fix/questions-5-lot6-niveau`.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -482,3 +480,13 @@ Relevé : aucun modèle sur les 6 points ; 6e « Fréquence » (fraction seule),
   navigateur relancé : erreur `wrapDynamicImport` de vitest, sans lien) ; `db:migrate` depuis le dépôt principal
   (seule migration en attente) ; vérifié au MCP : 8 brouillons sur leur nœud, 8 tags, 5-079 sur la sous-notion.
 - Page à cocher https://claude.ai/artifact/J4PrvTefAAb8WifVcgQMNt (8 fiches, aucune alerte), capacité `db`.
+
+### 17.4 Lot 6 : relu, niveau en collision (2026-11-01)
+
+- Page à cocher : **8 verdicts sur 8 « ok »** (comptés en base de l'artefact).
+- Simulation `publier-lot.ts` : refus, 02 « Calculer une moyenne » et 04 « Interpréter une moyenne » tous deux au
+  niveau 1 de Statistiques › Indicateurs › moyenne (le 2 est pris par 03). David (« je te suis ») : 04 → **niveau
+  3**. Question d'accès : personne. Script de lot + JSON 04 au niveau 3 ; migration
+  `20261101190300_questions_5_lot6_niveau` (gabarit du correctif 1re spé) + test d'intégration (rouge sans, 6/6 vert).
+- Collision trouvée en passant : `20261101190200` portée par la 5e (lot 6) ET la 6e (lot 7, #2107) ; la session
+  `questions-6` renomme la sienne en `20261101200700` (#2114).
