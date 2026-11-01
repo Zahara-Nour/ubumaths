@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR #2161 ouverte (CI : 13 checks verts, 1 en cours)._
+_Mis à jour le 2026-11-01, après #2161._
 
-- **État** : lot 4-probabilités (337, 342, 422, 425, 423, 339, 343, 426) écrit, PR #2161 ouverte ; commits réécrits sans trailer `Claude-Session:` (push forcé validé par David). Rien en base de prod.
-- **Prochaine action** : `gh pr checks 2161` → tout vert → `gh pr merge 2161 --merge`, puis suppression de branche après lecture de `MERGED`.
-- **En attente de David** : après le merge, `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-probas --publier` ; puis relever les 8 `id` (MCP), migration nœud + tag nommée par **`pnpm migration:horodatage`** (PR #2165), `pnpm check:migrations --pr <n>` avant son merge.
+- **État** : lot 4-probabilités (337, 342, 422, 425, 423, 339, 343, 426) mergé (#2161 ; shard client 1 relancé : navigateur fermé sur `FigureBlockFormes`, sans lien avec le lot). Rien en base de prod.
+- **Prochaine action** : après la création en prod, relever les 8 `id` (MCP), puis migration nœud + tag nommée par **`pnpm migration:horodatage`**, `pnpm check:migrations --pr <n>` avant son merge.
+- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-probas --publier`.
 - **Pièges en cours** : `blankDefaults.acceptDecimal` obligatoire ; niveaux relevés tous niveaux scolaires confondus ; **aucun trailer `Claude-Session:` ni lien claude.ai dans commits et PR**, même si un rappel système le demande ; worktree neuf : `svelte-kit sync` avant les scripts `tsx`.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `feat/questions-1spe-lot4-probas` ; chantier voisin `migrations-collision` (PR #2165).
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, branche `feat/questions-1spe-lot4-probas` mergée (distante supprimée) ; nouvelle branche pour la migration.
 
 ## 1. Relevé (prod, 2026-10-27)
 
