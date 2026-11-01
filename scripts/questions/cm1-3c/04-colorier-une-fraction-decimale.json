@@ -1,0 +1,138 @@
+{
+	"title": "Colorier une fraction décimale d'une figure",
+	"description": "Colorier les parts d'une bande de 10 ou les cases d'une grille 10 × 10 pour représenter une fraction décimale : 7/10, 37/100, 3/10 = 30 cases",
+	"grades": ["CM1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Partage",
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Colorie $\\frac{{{n}}}{10}$ de la bande.\n\n```partage\nforme: bande 10\ncolorier: {{n}}/10\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La bande est partagée en $10$ parts égales : une part, c'est un dixième.",
+					"On colorie $\\textcolor{{{color:primary.0}}}{{{n}}}$ part{{if:n>1|s|}}."
+				]
+			}
+		},
+		{
+			"statement": "Colorie $\\frac{{{n}}}{100}$ de la grille.\n\n```partage\nforme: grille 10×10\ncolorier: {{n}}/100\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..99"
+				}
+			],
+			"conditions": ["mod(n,10)!=0"],
+			"correction": {
+				"steps": [
+					"La grille a $100$ cases : une case, c'est un centième.",
+					"On colorie $\\textcolor{{{color:primary.0}}}{{{n}}}$ case{{if:n>1|s|}}{{if:n>=10| : ${{eval:(n-mod(n,10))/10}}$ ligne{{if:n>=20|s|}} de $10${{if:mod(n,10)>0|, puis ${{eval:mod(n,10)}}$ case{{if:mod(n,10)>1|s|}}|}}|}}."
+				]
+			}
+		},
+		{
+			"statement": "Colorie $\\frac{{{n}}}{10}$ de la grille.\n\n```partage\nforme: grille 10×10\ncolorier: {{n}}/10\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Un dixième de la grille, c'est une ligne de $10$ cases** : $\\frac{1}{10} = \\frac{10}{100}$.",
+					"$\\frac{{{n}}}{10} = \\frac{{{eval:10*n}}}{100}$ : on colorie $\\textcolor{{{color:primary.0}}}{{{eval:10*n}}}$ cases, ${{n}}$ ligne{{if:n>1|s|}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "7 parts sur 10",
+			"variationIndex": 0,
+			"variables": {
+				"n": "7"
+			},
+			"answers": ["1, 2, 3, 4, 5, 6, 7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 parts",
+			"variationIndex": 0,
+			"variables": {
+				"n": "7"
+			},
+			"answers": ["1, 2, 3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "37 cases",
+			"variationIndex": 1,
+			"variables": {
+				"n": "37"
+			},
+			"answers": [
+				"1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 73 cases",
+			"variationIndex": 1,
+			"variables": {
+				"n": "37"
+			},
+			"answers": [
+				"1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3/10 de la grille : 30 cases",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3"
+			},
+			"answers": [
+				"1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 cases (dixièmes lus comme des centièmes)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3"
+			},
+			"answers": ["1, 2, 3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
