@@ -5,20 +5,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après la publication du lot 5._
+_Mis à jour le 2026-11-01, lot 6 écrit (PR des fichiers ouverte)._
 
-- **État** : lots 1 à 5 publiés ; **lot 5 « Grandeurs »** : 9/9 `published` (vérifié au MCP le 2026-11-01).
-- **Prochaine action** : phase 0 du lot 6 « Données et probabilités » (134, 080, 139, 082, 083, 079) ; puis
-  lot 7 « Proportionnalité, fonctions » (085, 086, 140, 087, 092, 098 ; recoupe 6-140 / 6-141), lot 8
+- **État** : lots 1 à 5 publiés ; **lot 6 « Données et probabilités »** (8 modèles, § 17) écrit, simulation prod
+  verte (64 specs), joué en base locale ; PR des fichiers `feat/questions-5-lot6`.
+- **Prochaine action** : merge de la PR, puis David : `create-questions --dir scripts/questions/5-donnees-probabilites
+--publier` ; relever les `id`, migration nœud + tag (sous-notion neuve « choisir une représentation »), page à
+  cocher. Puis lot 7 « Proportionnalité, fonctions » (085, 086, 140, 087, 092, 098 ; recoupe 6-140 / 6-141), lot 8
   « Opérations » (001, 002, 005, 116, 117).
-- **En attente de David** : accord pour retirer `supabase/.temp` du worktree ; le `! pnpm db:migrate` de
-  23:26:56 UTC (2026-10-31) visait-il une autre session (3e, lot 5) ? Il a joué la migration du lot 5 de la 5e
-  depuis ce worktree, avant sa PR (résultat juste, audit sans bloquant).
-- **Pièges en cours** : un worktree relié à la prod (`supabase/.temp` copié) fait partir un `db:migrate` lancé
-  par erreur dedans ; horodatage `max + 1 min` au moment du merge (`--include-all`) ; `publier-lot.ts` en
+- **En attente de David** : le `! pnpm db:migrate` de 23:26:56 UTC (2026-10-31) visait-il une autre session (3e,
+  lot 5) ? (résultat juste, audit sans bloquant).
+- **Pièges en cours** : horodatage `max + 1 min` au moment du merge (`--include-all`) ; `publier-lot.ts` en
   simulation passe pour moi, `--publier` et `create-questions --publier` = David avec `!` ; gras contenant une
-  formule ; jamais `e` ni `i` ; degrés en `^{\circ}`.
-- **Worktree / branche** : `ubumaths-wt-questions-5` (HEAD détaché, branches mergées, à nettoyer).
+  formule ; jamais `e` ni `i` ; degrés en `^{\circ}` ; `plusieurs: oui` ajoute déjà « Coche la ou les bonnes
+  réponses » (ne pas écrire « Coche toutes… ») ; cases manquées d'un choix multiple = `unoptimal_form` (½).
+- **Worktree / branche** : `ubumaths-wt-questions-5` · `feat/questions-5-lot6` ; `supabase/.temp` retiré le
+  2026-11-01 (accord de David), copie dans le scratchpad de la session.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -420,3 +422,35 @@ des angles ; conversions de volume déjà couvertes (5-051, 5-129).
 
 - Relecture validée par David en chat. Simulation `publier-lot.ts` (par moi) : 9 brouillons passent ; David :
   `--publier` → 9/9 publiés ; vérifié au MCP (`status = published` pour les 9).
+
+## 17. Lot 6 « Données et probabilités » : décisions (David, 2026-11-01, « je valide » sur les recos)
+
+Relevé : aucun modèle sur les 6 points ; 6e « Fréquence » (fraction seule), « Probabilité simple » (une issue) ;
+4e « Moyenne pondérée », « Probabilité d'un évènement » (urne) ; aucune moyenne simple, à aucun niveau.
+
+| #   | Point | Modèle                                   | Réponse           | Catégorie, niveau                                                                  |
+| --- | ----- | ---------------------------------------- | ----------------- | ---------------------------------------------------------------------------------- |
+| 01  | 5-134 | Calculer une fréquence                   | case              | Statistiques › Représenter des données › effectifs et fréquences, 1                |
+| 02  | 5-080 | Calculer une moyenne                     | case              | Statistiques › Indicateurs › moyenne, 1                                            |
+| 03  | 5-080 | Calculer une moyenne non entière         | case              | idem, 2                                                                            |
+| 04  | 5-139 | Interpréter une moyenne                  | choix (plusieurs) | Statistiques › Indicateurs › moyenne, 1                                            |
+| 05  | 5-079 | Choisir une représentation adaptée       | choix             | Statistiques › Représenter des données › **choisir une représentation** (neuve), 1 |
+| 06  | 5-082 | Expérience aléatoire, issue, évènement   | choix ; case      | Probabilités › Expériences aléatoires › événements, 1                              |
+| 07  | 5-083 | Probabilité : issues équiprobables       | case (fraction)   | Probabilités › Expériences aléatoires › équiprobabilité, 1                         |
+| 08  | 5-083 | Probabilité en décimal ou en pourcentage | case              | idem, 2                                                                            |
+
+- Fraction juste acceptée même non simplifiée (`reducedFractions: off`, 01 et 07) ; le corrigé simplifie quand
+  c'est possible. Représentations nommées en texte, sans dessin. Sous-notion neuve « choisir une représentation ».
+- Niveaux 1 / 2 de la phase 0 (moyenne entière / non entière ; fraction / décimal ou %) = deux modèles chacun,
+  comme au lot 5.
+- Accès : rien de neuf (brouillons jusqu'à la publication, tags lisibles par tout compte connecté).
+
+### 17.1 Lot 6 écrit (2026-11-01)
+
+- Script `docs/wip/questions/lot-5-donnees-probabilites.py`, fichiers `scripts/questions/5-donnees-probabilites/` ;
+  simulation prod : 8 à créer, 64 specs vertes.
+- Mesuré : une case oubliée dans un choix multiple = `unoptimal_form` (½) ; 0,5 au lieu d'une fraction demandée =
+  `bad_form` → énoncés de 07 « Donne-la sous forme de fraction ».
+- Base locale : 8 créés, aperçu admin joué (tableau d'effectifs, choix multiple). Corrigé en route : « Coche
+  toutes… » doublait la consigne de l'appli → questions (« Quelles phrases sont vraies ? ») ; corrigé « 7/25 =
+  7/25 » quand la fraction est irréductible → conditionnel au PGCD.

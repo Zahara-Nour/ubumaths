@@ -1,0 +1,162 @@
+{
+	"title": "Choisir une représentation adaptée",
+	"description": "Choisir entre diagramme circulaire (part d'un tout), diagramme en barres (comparer des effectifs) et graphique (évolution dans le temps) selon ce qu'on veut montrer",
+	"grades": ["5"],
+	"theme": "Statistiques",
+	"domain": "Représenter des données",
+	"subdomain": "choisir une représentation",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On veut montrer **quelle part du budget** d'une famille va au logement, à la nourriture, aux transports et aux loisirs.\n\nQuelle représentation choisir ?\n\n```choix\nmelanger: non\n- un diagramme circulaire\n- un diagramme en barres\n- un graphique (une courbe dans un repère)\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Choisir sa représentation.** Le **diagramme circulaire** montre la part de chaque catégorie dans un tout ; le **diagramme en barres** compare des effectifs ; le **graphique** montre comment une grandeur évolue dans le temps.",
+					"On veut voir la part de chaque poste dans le budget entier : $\\textcolor{{{color:primary.0}}}{\\text{un diagramme circulaire}}$."
+				]
+			}
+		},
+		{
+			"statement": "On veut **comparer le nombre** de livres empruntés au CDI par chacune des six classes de 5e.\n\nQuelle représentation choisir ?\n\n```choix\nmelanger: non\n- un diagramme circulaire\n- un diagramme en barres\n- un graphique (une courbe dans un repère)\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Choisir sa représentation.** Le **diagramme circulaire** montre la part de chaque catégorie dans un tout ; le **diagramme en barres** compare des effectifs ; le **graphique** montre comment une grandeur évolue dans le temps.",
+					"On compare six effectifs entre eux : $\\textcolor{{{color:primary.0}}}{\\text{un diagramme en barres}}$."
+				]
+			}
+		},
+		{
+			"statement": "On veut montrer **comment la taille** d'un enfant **a évolué** de sa naissance à ses dix ans.\n\nQuelle représentation choisir ?\n\n```choix\nmelanger: non\n- un diagramme circulaire\n- un diagramme en barres\n- un graphique (une courbe dans un repère)\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Choisir sa représentation.** Le **diagramme circulaire** montre la part de chaque catégorie dans un tout ; le **diagramme en barres** compare des effectifs ; le **graphique** montre comment une grandeur évolue dans le temps.",
+					"On suit une grandeur au fil du temps : $\\textcolor{{{color:primary.0}}}{\\text{un graphique}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un sondage demande aux élèves leur sport préféré. On veut montrer **quelle part des élèves** a choisi chaque sport.\n\nQuelle représentation choisir ?\n\n```choix\nmelanger: non\n- un diagramme circulaire\n- un diagramme en barres\n- un graphique (une courbe dans un repère)\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Choisir sa représentation.** Le **diagramme circulaire** montre la part de chaque catégorie dans un tout ; le **diagramme en barres** compare des effectifs ; le **graphique** montre comment une grandeur évolue dans le temps.",
+					"On veut la part de chaque sport parmi tous les élèves : $\\textcolor{{{color:primary.0}}}{\\text{un diagramme circulaire}}$."
+				]
+			}
+		},
+		{
+			"statement": "On a relevé la température chaque heure pendant une journée. On veut montrer **comment elle a varié** au cours de la journée.\n\nQuelle représentation choisir ?\n\n```choix\nmelanger: non\n- un diagramme circulaire\n- un diagramme en barres\n- un graphique (une courbe dans un repère)\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Choisir sa représentation.** Le **diagramme circulaire** montre la part de chaque catégorie dans un tout ; le **diagramme en barres** compare des effectifs ; le **graphique** montre comment une grandeur évolue dans le temps.",
+					"On suit la température heure après heure : $\\textcolor{{{color:primary.0}}}{\\text{un graphique}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Budget : circulaire",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : barres",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "CDI : barres",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : graphique",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Taille : graphique",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : circulaire",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sondage : circulaire",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Températures : graphique",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

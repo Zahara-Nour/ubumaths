@@ -1,0 +1,158 @@
+{
+	"title": "Calculer une moyenne non entière",
+	"description": "Calculer la moyenne simple d'une série d'entiers quand elle n'est pas entière (12, 15, 9, 14 → 12,5)",
+	"grades": ["5"],
+	"theme": "Statistiques",
+	"domain": "Indicateurs",
+	"subdomain": "moyenne",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Léa a compté ses messages pendant quatre jours : $\\text{{{a}} ; {{b}} ; {{c}} ; {{d}}}$.\n\nCombien de messages a-t-elle envoyés en moyenne par jour ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "5..40"
+				},
+				{
+					"name": "b",
+					"expression": "5..40"
+				},
+				{
+					"name": "c",
+					"expression": "5..40"
+				},
+				{
+					"name": "d",
+					"expression": "5..40"
+				}
+			],
+			"conditions": ["(a+b+c+d)%4!=0", "a!=b", "c!=d"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a+b+c+d)/4;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Moyenne.** On additionne toutes les valeurs, puis on divise par le nombre de valeurs.",
+					"$\\dfrac{{{a}} + {{b}} + {{c}} + {{d}}}{4} = \\dfrac{{{eval:a+b+c+d}}}{4} = \\textcolor{{{color:primary.0}}}{{{eval:(a+b+c+d)/4;d}}}$.",
+					"Une moyenne peut ne pas être un nombre entier, même si toutes les valeurs le sont."
+				]
+			}
+		},
+		{
+			"statement": "Voici les notes d'Inès sur 20 : $\\text{{{a}} ; {{b}} ; {{c}} ; {{d}} ; {{f}}}$.\n\nQuelle est la moyenne de ses notes ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "4..20"
+				},
+				{
+					"name": "b",
+					"expression": "4..20"
+				},
+				{
+					"name": "c",
+					"expression": "4..20"
+				},
+				{
+					"name": "d",
+					"expression": "4..20"
+				},
+				{
+					"name": "f",
+					"expression": "4..20"
+				}
+			],
+			"conditions": ["(a+b+c+d+f)%5!=0", "a!=b", "c!=d"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a+b+c+d+f)/5;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Moyenne.** On additionne toutes les valeurs, puis on divise par le nombre de valeurs.",
+					"$\\dfrac{{{a}} + {{b}} + {{c}} + {{d}} + {{f}}}{5} = \\dfrac{{{eval:a+b+c+d+f}}}{5} = \\textcolor{{{color:primary.0}}}{{{eval:(a+b+c+d+f)/5;d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "12, 15, 9, 14 → 12,5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "15",
+				"c": "9",
+				"d": "14"
+			},
+			"answers": ["12,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 12 (arrondi)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "15",
+				"c": "9",
+				"d": "14"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 50 (la somme)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "15",
+				"c": "9",
+				"d": "14"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Notes → 11,4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "8",
+				"b": "12",
+				"c": "15",
+				"d": "10",
+				"f": "12"
+			},
+			"answers": ["11,4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 14,25 (divisé par 4)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "8",
+				"b": "12",
+				"c": "15",
+				"d": "10",
+				"f": "12"
+			},
+			"answers": ["14,25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
