@@ -1,0 +1,118 @@
+{
+	"title": "Multiplier une fraction par un entier",
+	"description": "3 × 5/4 = 5/4 + 5/4 + 5/4 = 15/4 : produit d'un entier (2 à 9) par une fraction, vu comme une addition itérée ; dénominateur au plus 60, toute fraction égale juste",
+	"grades": ["CM2"],
+	"theme": "Fractions",
+	"domain": "Calculer",
+	"subdomain": "Multiplication",
+	"level": 10,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off",
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$${{n}} \\times \\frac{{{a}}}{{{d}}} = ?$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "d",
+					"expression": "2..60"
+				},
+				{
+					"name": "a",
+					"expression": "1..{{eval:2*d}}"
+				}
+			],
+			"conditions": ["mod(a,d)!=0", "n*a<=99"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{eval:n*a}}}{{{d}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Multiplier par ${{n}}$, c'est ajouter ${{n}}$ fois.**",
+					"$${{n}} \\times \\frac{{{a}}}{{{d}}} = {{if:n==2|\\frac{{{a}}}{{{d}}} + \\frac{{{a}}}{{{d}}}|{{if:n==3|\\frac{{{a}}}{{{d}}} + \\frac{{{a}}}{{{d}}} + \\frac{{{a}}}{{{d}}}|{{if:n==4|\\frac{{{a}}}{{{d}}} + \\frac{{{a}}}{{{d}}} + \\frac{{{a}}}{{{d}}} + \\frac{{{a}}}{{{d}}}|{{if:n==5|\\frac{{{a}}}{{{d}}} + \\frac{{{a}}}{{{d}}} + \\frac{{{a}}}{{{d}}} + \\frac{{{a}}}{{{d}}} + \\frac{{{a}}}{{{d}}}|{{if:n==6|\\underbrace{ \\frac{{{a}}}{{{d}}} + \\frac{{{a}}}{{{d}}} + \\cdots + \\frac{{{a}}}{{{d}}} }_{ 6 \\text{ fois} }|{{if:n==7|\\underbrace{ \\frac{{{a}}}{{{d}}} + \\frac{{{a}}}{{{d}}} + \\cdots + \\frac{{{a}}}{{{d}}} }_{ 7 \\text{ fois} }|{{if:n==8|\\underbrace{ \\frac{{{a}}}{{{d}}} + \\frac{{{a}}}{{{d}}} + \\cdots + \\frac{{{a}}}{{{d}}} }_{ 8 \\text{ fois} }|\\underbrace{ \\frac{{{a}}}{{{d}}} + \\frac{{{a}}}{{{d}}} + \\cdots + \\frac{{{a}}}{{{d}}} }_{ 9 \\text{ fois} }}}}}}}}}}}}}}}$$",
+					"${{a}}$ {{if:a==1|{{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==7|septième|{{if:d==8|huitième|{{if:d==9|neuvième|{{if:d==10|dixième|{{if:d==11|onzième|{{if:d==12|douzième|{{if:d==13|treizième|{{if:d==14|quatorzième|{{if:d==15|quinzième|{{if:d==16|seizième|{{if:d==17|dix-septième|{{if:d==18|dix-huitième|{{if:d==19|dix-neuvième|{{if:d==20|vingtième|{{if:d==21|vingt et unième|{{if:d==22|vingt-deuxième|{{if:d==23|vingt-troisième|{{if:d==24|vingt-quatrième|{{if:d==25|vingt-cinquième|{{if:d==26|vingt-sixième|{{if:d==27|vingt-septième|{{if:d==28|vingt-huitième|{{if:d==29|vingt-neuvième|{{if:d==30|trentième|{{if:d==31|trente et unième|{{if:d==32|trente-deuxième|{{if:d==33|trente-troisième|{{if:d==34|trente-quatrième|{{if:d==35|trente-cinquième|{{if:d==36|trente-sixième|{{if:d==37|trente-septième|{{if:d==38|trente-huitième|{{if:d==39|trente-neuvième|{{if:d==40|quarantième|{{if:d==41|quarante et unième|{{if:d==42|quarante-deuxième|{{if:d==43|quarante-troisième|{{if:d==44|quarante-quatrième|{{if:d==45|quarante-cinquième|{{if:d==46|quarante-sixième|{{if:d==47|quarante-septième|{{if:d==48|quarante-huitième|{{if:d==49|quarante-neuvième|{{if:d==50|cinquantième|{{if:d==51|cinquante et unième|{{if:d==52|cinquante-deuxième|{{if:d==53|cinquante-troisième|{{if:d==54|cinquante-quatrième|{{if:d==55|cinquante-cinquième|{{if:d==56|cinquante-sixième|{{if:d==57|cinquante-septième|{{if:d==58|cinquante-huitième|{{if:d==59|cinquante-neuvième|soixantième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}|{{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|{{if:d==8|huitièmes|{{if:d==9|neuvièmes|{{if:d==10|dixièmes|{{if:d==11|onzièmes|{{if:d==12|douzièmes|{{if:d==13|treizièmes|{{if:d==14|quatorzièmes|{{if:d==15|quinzièmes|{{if:d==16|seizièmes|{{if:d==17|dix-septièmes|{{if:d==18|dix-huitièmes|{{if:d==19|dix-neuvièmes|{{if:d==20|vingtièmes|{{if:d==21|vingt et unièmes|{{if:d==22|vingt-deuxièmes|{{if:d==23|vingt-troisièmes|{{if:d==24|vingt-quatrièmes|{{if:d==25|vingt-cinquièmes|{{if:d==26|vingt-sixièmes|{{if:d==27|vingt-septièmes|{{if:d==28|vingt-huitièmes|{{if:d==29|vingt-neuvièmes|{{if:d==30|trentièmes|{{if:d==31|trente et unièmes|{{if:d==32|trente-deuxièmes|{{if:d==33|trente-troisièmes|{{if:d==34|trente-quatrièmes|{{if:d==35|trente-cinquièmes|{{if:d==36|trente-sixièmes|{{if:d==37|trente-septièmes|{{if:d==38|trente-huitièmes|{{if:d==39|trente-neuvièmes|{{if:d==40|quarantièmes|{{if:d==41|quarante et unièmes|{{if:d==42|quarante-deuxièmes|{{if:d==43|quarante-troisièmes|{{if:d==44|quarante-quatrièmes|{{if:d==45|quarante-cinquièmes|{{if:d==46|quarante-sixièmes|{{if:d==47|quarante-septièmes|{{if:d==48|quarante-huitièmes|{{if:d==49|quarante-neuvièmes|{{if:d==50|cinquantièmes|{{if:d==51|cinquante et unièmes|{{if:d==52|cinquante-deuxièmes|{{if:d==53|cinquante-troisièmes|{{if:d==54|cinquante-quatrièmes|{{if:d==55|cinquante-cinquièmes|{{if:d==56|cinquante-sixièmes|{{if:d==57|cinquante-septièmes|{{if:d==58|cinquante-huitièmes|{{if:d==59|cinquante-neuvièmes|soixantièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}, ${{n}}$ fois, c'est ${{eval:n*a}}$ {{if:d==2|demis|{{if:d==3|tiers|{{if:d==4|quarts|{{if:d==5|cinquièmes|{{if:d==6|sixièmes|{{if:d==7|septièmes|{{if:d==8|huitièmes|{{if:d==9|neuvièmes|{{if:d==10|dixièmes|{{if:d==11|onzièmes|{{if:d==12|douzièmes|{{if:d==13|treizièmes|{{if:d==14|quatorzièmes|{{if:d==15|quinzièmes|{{if:d==16|seizièmes|{{if:d==17|dix-septièmes|{{if:d==18|dix-huitièmes|{{if:d==19|dix-neuvièmes|{{if:d==20|vingtièmes|{{if:d==21|vingt et unièmes|{{if:d==22|vingt-deuxièmes|{{if:d==23|vingt-troisièmes|{{if:d==24|vingt-quatrièmes|{{if:d==25|vingt-cinquièmes|{{if:d==26|vingt-sixièmes|{{if:d==27|vingt-septièmes|{{if:d==28|vingt-huitièmes|{{if:d==29|vingt-neuvièmes|{{if:d==30|trentièmes|{{if:d==31|trente et unièmes|{{if:d==32|trente-deuxièmes|{{if:d==33|trente-troisièmes|{{if:d==34|trente-quatrièmes|{{if:d==35|trente-cinquièmes|{{if:d==36|trente-sixièmes|{{if:d==37|trente-septièmes|{{if:d==38|trente-huitièmes|{{if:d==39|trente-neuvièmes|{{if:d==40|quarantièmes|{{if:d==41|quarante et unièmes|{{if:d==42|quarante-deuxièmes|{{if:d==43|quarante-troisièmes|{{if:d==44|quarante-quatrièmes|{{if:d==45|quarante-cinquièmes|{{if:d==46|quarante-sixièmes|{{if:d==47|quarante-septièmes|{{if:d==48|quarante-huitièmes|{{if:d==49|quarante-neuvièmes|{{if:d==50|cinquantièmes|{{if:d==51|cinquante et unièmes|{{if:d==52|cinquante-deuxièmes|{{if:d==53|cinquante-troisièmes|{{if:d==54|cinquante-quatrièmes|{{if:d==55|cinquante-cinquièmes|{{if:d==56|cinquante-sixièmes|{{if:d==57|cinquante-septièmes|{{if:d==58|cinquante-huitièmes|{{if:d==59|cinquante-neuvièmes|soixantièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} : **le dénominateur ne change pas.**",
+					"$${{n}} \\times \\frac{{{a}}}{{{d}}} = \\textcolor{{{color:primary.0}}}{\\frac{{{eval:n*a}}}{{{d}}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 × 5/4 = 15/4",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"d": "4",
+				"a": "5"
+			},
+			"answers": ["\\frac{15}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 15/12 (dénominateur aussi multiplié)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"d": "4",
+				"a": "5"
+			},
+			"answers": ["\\frac{15}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 8/4 (3 + 5)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"d": "4",
+				"a": "5"
+			},
+			"answers": ["\\frac{8}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 5/12 (seul le dénominateur multiplié)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"d": "4",
+				"a": "5"
+			},
+			"answers": ["\\frac{5}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3,75 (écriture décimale)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"d": "4",
+				"a": "5"
+			},
+			"answers": ["3,75"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	]
+}
