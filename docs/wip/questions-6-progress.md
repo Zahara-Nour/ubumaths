@@ -13,7 +13,8 @@ _Mis à jour le 2026-11-01, après #2057._
 --publier` → relever les `id` → migration nœud + tag → page à cocher → publication.
   En parallèle : PR de contenu de 06 et 07 en ```ranger (migration, patron § 12.5) ; changement du script et des JSON
   prêt dans `docs/wip/questions-6/reprise-06-07-ranger.patch` (`git apply`, specs vertes au 2026-11-01).
-- **En attente de David** : `deploy:prod` ; verdicts de 02, 03, 04 en « validé » sur `/dev/modeles`.
+- **En attente de David** : `deploy:prod` (demandé le 2026-11-01, bloqué : `main` portait les fichiers non
+  commités d'une autre session, `docs/Chiphres/illustrations/villes/lobatchevsk/plan-schematique.*`) ; verdicts de 02, 03, 04 en « validé » sur `/dev/modeles`.
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs`. Jamais de variable
   `e`. Aperçu piloté : `math-field.math-prompt-block` + `setPromptValue`, boutons par rôle (copies cachées).
   `Doc-inchangée:` va dans un message de COMMIT. PR en conflit = pas de CI : vérifier `mergeable`.
