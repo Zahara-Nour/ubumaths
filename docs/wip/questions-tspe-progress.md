@@ -10,20 +10,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après la publication du lot 0-trigo._
+_Mis à jour le 2026-11-01, après la publication du lot 0-dénombrement (§ 11)._
 
-- **État** : lots 0-suites, 0-limites et fonctions, 0-intégration, 0-primitives, 0-trigo **publiés** (107 modèles).
-  Rien en cours.
-- **Prochaine action** : lot 0-dénombrement (branche `feat/questions-tspe-lot0-denombrement`, déjà créée dans le
-  worktree) : relevé des brouillons T_SPE du dénombrement en base, instantané, vérification. Plus tard : migration Q3
-  (§ 1, § 7, § 8, § 9).
+- **État** : lots 0-suites, 0-limites et fonctions, 0-intégration, 0-primitives, 0-trigo, 0-dénombrement
+  **publiés** (133 modèles). Q-D1 : voie A (David) — ordre de « Loi binomiale / Coefficients binomiaux » à échanger
+  dans la migration Q3 (07ebdcbe 1, 4dcbae71 2, 970dab52 3, ef3c495c 4).
+- **Prochaine action** : lot 0-géométrie dans l'espace (nouveau worktree depuis `origin/main`), puis probabilités.
+  Plus tard : migration Q3 (tags + échange de niveaux D-D1, niveaux provisoires à cause de l'index unique).
 - **En attente de David** : rien.
-- **Pièges en cours** : `create-questions --publier` passe en mode auto, `publier-lot --publier` reste à David ;
-  partir des id, pas des vieux dossiers `<thème>-terminale/` ; simulation `publier-lot` AVANT tout ;
-  worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; l'aperçu de `question:specs` mélange les
-  options d'une case choix : recouper l'indice avec la SOURCE ; branche poussée : `git merge origin/main`, pas de rebase.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe` · `feat/questions-tspe-lot0-denombrement` (partie de `main`
-  après #2095).
+- **Pièges en cours** : le **niveau est dans la clé** de `create-questions` : changer `level` dans un fichier = doublon
+  créé ; index unique de niveau par catégorie sur les **publiés** seulement. `create-questions` et `publier-lot`, même
+  en simulation → David ; simulation `publier-lot` AVANT tout ; worktree neuf : `pnpm exec svelte-kit sync`, et
+  `pnpm exec tsx --env-file=../ubumaths/.env …` (pas de `.env` dans le worktree) ; l'aperçu mélange les options d'une
+  case choix : recouper avec la SOURCE ; `!=` dans une formule s'affiche ≠, `i` seul devient l'unité imaginaire.
+- **Worktree / branche** : aucun (retiré après #2110) ; prochain lot : nouveau worktree depuis `origin/main`.
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -488,3 +488,79 @@ gardé (périodes autres que 2π, 7df468d6 et 5072030d).
 **Publication** (2026-11-01, #2095 mergée) : `create-questions --publier --mettre-a-jour` (3 mis à jour : 4c4d43dc,
 afd9b3ff et fece187e passés en `T_SPE` ; 20 identiques), `publier-lot` (simulation : 23 passent) puis `--publier`
 (David). Relu en base (MCP) : 23 / 23 `published`, C1 présente, ancien texte absent.
+
+## 11. Lot 0-dénombrement : vérification des brouillons
+
+_2026-11-01. 26 brouillons (relevé MCP : domaine « Dénombrement » et « Ensembles » de niveau `T_SPE`, plus tout modèle
+tagué d'un point du dénombrement) : 89d49fae (305), ed01a843, a26e6e50 (306), 67b349ab (307), dfb727cd (308),
+0965c56c, e76a43eb (309), dd23bf2d (311), 3aca54e9 (312), 7d9d9b81 (313), 4dcbae71 (314), 970dab52 (315),
+f796ffc0, b500b44e (318), 4a1deda8, 0feeabaf (319), 2bae040c (320), 8a6e41cc (322, approfondissement), 96be181c
+(323), a69dfde7 (325), c0b45c61 (542), 6a9a3d5b (543), 74604a26 (545), 0bde6091 (546), et ef3c495c (TCOMP-296 seul,
+Q3 → 316), 07ebdcbe (TCOMP-288 seul, Q3 → 614). Quatre en `T_COMP` aussi (rangés « Loi binomiale / Coefficients
+binomiaux ») : 4dcbae71, 970dab52, ef3c495c, 07ebdcbe. Instantané `scripts/questions/tspe-0-denombrement/` (prod), une copie par variation (62 variations, 2 tirages lus
+chacune), tirages forcés sur les branches corrigées (k = 1, k = m, petites plages) ; sorties dans le scratchpad._
+
+**Mécanique** : 25 / 26 verts à l'export ; 26 / 26 après C1, 0 avertissement.
+
+**Bornes** : rien hors bornes TSPE. TCOMP (D7) : aucune formule factorielle dans les quatre modèles partagés (288,
+296 : « pas de n!/(k!(n − k)!) ») ; chemins, triangle de Pascal, symétrie seulement. 89d49fae v2 et v3 (cœur ou
+figure, pique ou as) : ensembles non disjoints, mais la correction découpe en ensembles disjoints, conforme à 305.
+8a6e41cc (combinaisons avec répétitions) : approfondissement (322), gardé (D4).
+
+**Cases choix** : f796ffc0, la bonne option est la première de la source dans les 4 variations (`case: 0`).
+
+**Constats (corrigés dans les fichiers, specs vertes, tirages forcés relus)** :
+
+- **C1** ed01a843 v2 : spec « 26²×10³ » rouge (attendu `products` + `form`, le correcteur ne rend plus que `form`) ;
+  verdict `bad_form` inchangé pour l'élève → spec ramenée à `form`. Sans elle, la publication serait refusée.
+- **C2** 7d9d9b81 v1 : « avec $3!=6$ » s'affichait « 3 ≠ 6 » (`!=` lu comme ≠) → `$3!\,=6$`.
+- **C3** a69dfde7 v1 : « $i<j<k$ » s'affichait avec i en unité imaginaire → `$(\mathit{i}\,;j\,;k)$ avec
+$\mathit{i}<j<k$`.
+- **C4** 67b349ab v1 : « 4⁴ (et non 4⁴) » quand k = m → parenthèse seulement si k ≠ m.
+- **C5** 07ebdcbe : « une position des 1 succès » → « un chemin est repéré par les numéros de ses épreuves
+  réussies, pris parmi les n ».
+- **C6** 8a6e41cc v0 : « Ni ordre, mais répétition permise » → « Pas d'ordre, mais répétition permise ».
+- **C7** dd23bf2d : « des 4 livres : il y en a n! » (n jamais nommé) → « des 4 livres ; n objets ont n!
+  permutations ».
+- **C8** a26e6e50 : « A = {1 ; 2 ; … ; 3} », « B = {0 ; 1 ; … ; 2} » aux petites valeurs → plages m 4..9 (au lieu de
+  3..9), k 3..6 (au lieu de 2..6).
+- **C9** 6a9a3d5b (543, lien parties ↔ chemins) : la correction ne faisait pas le lien → « chaque chemin est un
+  n-uplet de {P, F}, c'est-à-dire une partie de {1, …, n} : les numéros des lancers qui donnent Pile ».
+
+**Vus, laissés** : e76a43eb (arrangements) et dd23bf2d (permutations) rangés en sous-domaine « Coefficients
+binomiaux » au lieu d'« Arrangements et permutations » : le sous-domaine est dans la clé de `create-questions`, on
+n'y touche pas ici. a26e6e50 : m = k + 1 donne Card(A) = Card(B), piège du 0 conservé. f796ffc0 v3 : option
+« 5!/1! » possible (distracteur juste).
+
+**Niveaux** : aucune collision dans les 10 catégories du lot (relevé MCP, 2026-11-01 ; « Ensembles / Cardinal et
+produit cartésien » partagée avec deux brouillons de 2de, niveaux 1 et 2).
+
+**Q-D1** : « Loi binomiale / Coefficients binomiaux » range Pascal (ef3c495c) au niveau 1, avant la
+définition par les chemins (07ebdcbe, 2), la symétrie (970dab52, 3) et les cas k = 0, 1, n (4dcbae71, 4). Ordre
+proposé : chemins 1, cas particuliers 2, symétrie 3, Pascal 4. Recommandé : oui, par `--mettre-a-jour` avec le lot.
+
+**Pour la migration Q3** : ef3c495c → 316, 07ebdcbe → 614 (D3, inchangé) ; 4dcbae71 pourrait aussi porter 288
+(déjà là) ; rien de nouveau.
+
+**Page à cocher** : https://claude.ai/artifact/4t7Q3PGfNDJwymHikGujKh (26 fiches, aucune alerte), collection `verdicts`
+vide à la publication. Les 9 retouches ne sont pas encore en base : la page montre déjà les fichiers corrigés.
+
+**PR** : #2110.
+
+**Relecture** : David valide les 26 fiches en bloc (2026-11-01, « je valide tout le lot du dénombrement », sans passer
+par la page : `verdicts` restée vide).
+
+**D-D1 (David, 2026-11-01, « je te suis »)** : nouvel ordre de « Loi binomiale / Coefficients binomiaux » retenu
+(07ebdcbe 1, 4dcbae71 2, 970dab52 3, ef3c495c 4). Mais la voie proposée (`--mettre-a-jour`) est impossible : le niveau
+est dans la clé de `create-questions` (`scripts/create-questions.ts:105`), un niveau changé dans un fichier créerait un
+doublon ; une fois publiés, l'échange circulaire bute sur l'index unique `idx_question_templates_unique_category`
+(niveaux provisoires nécessaires). Voie à choisir par David : **A** (recommandée) publier dans l'ordre actuel et faire
+l'échange dans la migration Q3 ; **B** niveaux changés dans l'admin sur les brouillons, fichiers mis d'accord, puis
+`--mettre-a-jour`.
+
+**PR** : #2110 mergée le 2026-11-01 (CI verte).
+
+**Publication** (2026-11-01, voie A, David) : `create-questions --publier --mettre-a-jour` (0 créé, 9 mis à jour :
+les C1-C9, 17 identiques), `publier-lot` (simulation : 26 passent) puis `--publier` (26 / 26). Relu en base (MCP) :
+26 / 26 `published` ; C2, C3, C5, C6, C7, C9 présentes en base (anciens textes absents) ; C1, C4, C8 (spec, condition,
+plages) portées par le « mis à jour » du script.

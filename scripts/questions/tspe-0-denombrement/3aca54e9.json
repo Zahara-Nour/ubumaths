@@ -1,0 +1,281 @@
+{
+	"id": "3aca54e9-28c7-4ea4-930b-30be6979549b",
+	"title": "Combinaisons en situation : délégués, mains de cartes, loto, poignées de main",
+	"description": "Parties à k éléments d'un ensemble à n éléments comptées par la formule : délégués, mains de cartes, grille de loto, poignées de main (pièges : arrangement au lieu de combinaison, soit k! fois trop ; compter deux fois chaque poignée de main)",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Dénombrement",
+	"subdomain": "Combinaisons",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:binom(n,k)}}",
+					"acceptCombinatorialNotation": true
+				}
+			],
+			"statement": "Dans une classe de ${{n}}$ élèves, on désigne ${{k}}$ élèves pour représenter la classe au conseil, sans rôle particulier.\n\nCombien de groupes de représentants sont possibles ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "25..35"
+				},
+				{
+					"name": "k",
+					"expression": "2..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pas de rôle, pas de répétition : un groupe est une partie à ${{k}}$ éléments de la classe.",
+					"$\\binom{ {{n}} }{ {{k}} }=\\textcolor{{{color:primary.0}}}{{{eval:binom(n,k)}}}$ (un arrangement compterait chaque groupe ${{k}}!$ fois)."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:binom(n,k)}}",
+					"acceptCombinatorialNotation": true
+				}
+			],
+			"statement": "Une main est un ensemble de ${{k}}$ cartes tirées d'un jeu de $32$ cartes (l'ordre des cartes ne compte pas).\n\nCombien de mains différentes existe-t-il ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "32"
+				},
+				{
+					"name": "k",
+					"expression": "3..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une main est une partie à ${{k}}$ éléments du jeu de $32$ cartes.",
+					"$\\binom{ 32 }{ {{k}} }=\\textcolor{{{color:primary.0}}}{{{eval:binom(n,k)}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:binom(n,k)}}",
+					"acceptCombinatorialNotation": true
+				}
+			],
+			"statement": "Sur une grille de loterie, on coche ${{k}}$ numéros parmi ${{n}}$.\n\nCombien de grilles différentes peut-on remplir ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "20..49"
+				},
+				{
+					"name": "k",
+					"expression": "3..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'ordre dans lequel on coche ne compte pas et on ne coche pas deux fois un numéro : une grille est une partie à ${{k}}$ éléments.",
+					"$\\binom{ {{n}} }{ {{k}} }=\\textcolor{{{color:primary.0}}}{{{eval:binom(n,k)}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:binom(n,k)}}",
+					"acceptCombinatorialNotation": true
+				}
+			],
+			"statement": "À une réunion, ${{n}}$ personnes se serrent la main, chacune une fois avec chacune des autres.\n\nCombien de poignées de main sont échangées ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "6..30"
+				},
+				{
+					"name": "k",
+					"expression": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une poignée de main correspond à une paire de personnes (partie à $2$ éléments) : « A serre la main de B » et « B serre la main de A » sont la même.",
+					"$\\binom{ {{n}} }{ 2 }=\\dfrac{ {{n}}\\times{{eval:n-1}} }{2}=\\textcolor{{{color:primary.0}}}{{{eval:binom(n,k)}}}$ (et non ${{n}}\\times{{eval:n-1}}$, qui compte chaque poignée deux fois)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["4060"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "3",
+				"n": "30"
+			},
+			"description": "v0 : C(30, 3) = 4060",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["24360"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"n": "30"
+			},
+			"description": "v0 : arrangement 24 360",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["27000"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3",
+				"n": "30"
+			},
+			"description": "v0 : 30³",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["201376"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "5"
+			},
+			"description": "v1 : C(32, 5) = 201 376",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["201\\,376"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "5"
+			},
+			"description": "v1 : écrit avec espace",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["24165120"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "5"
+			},
+			"description": "v1 : arrangement 24 165 120",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1906884"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "5",
+				"n": "49"
+			},
+			"description": "v2 : C(49, 5) = 1 906 884",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1906884"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "5",
+				"n": "49"
+			},
+			"description": "v2 : C(49, 44) (symétrie) écrit en nombre",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["282475249"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "5",
+				"n": "49"
+			},
+			"description": "v2 : 49⁵",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["45"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "10"
+			},
+			"description": "v3 : 10 personnes → 45",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["90"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "10"
+			},
+			"description": "v3 : 90 (compté deux fois)",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "10"
+			},
+			"description": "v3 : 10² = 100",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["\\binom{32}{5}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "5"
+			},
+			"description": "v1 : \\binom{32}{5} (notation acceptée, bac)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\binom{32}{4}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "5"
+			},
+			"description": "v1 : \\binom{32}{4}, mauvaise valeur",
+			"variationIndex": 1
+		}
+	]
+}

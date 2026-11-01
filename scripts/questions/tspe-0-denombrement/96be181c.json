@@ -1,0 +1,81 @@
+{
+	"id": "96be181c-6cd4-43e9-9291-1cd526955408",
+	"title": "Python : ligne du triangle de Pascal",
+	"description": "Lire un programme qui construit les lignes du triangle de Pascal par la relation de Pascal, et y lire un coefficient binomial (pièges : décalage d'indice ou de ligne)",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Dénombrement",
+	"subdomain": "Algorithmique",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:binom(n,k)}}"
+				}
+			],
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef ligne(n):\n    L = [1]\n    for _ in range(n):\n        L = [1] + [L[i] + L[i + 1] for i in range(len(L) - 1)] + [1]\n    return L\n```\n\nQue renvoie `ligne({{n}})[{{k}}]` ?\n\nLa valeur renvoyée est $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..10"
+				},
+				{
+					"name": "k",
+					"expression": "2..{{eval:n-2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque passage construit la ligne suivante du triangle de Pascal (relation de Pascal) : `ligne(n)` est la liste des $\\binom{ n }{ i }$, et l'indice ${{k}}$ donne $\\binom{ {{n}} }{ {{k}} }$.",
+					"$\\binom{ {{n}} }{ {{k}} }=\\textcolor{{{color:primary.0}}}{{{eval:binom(n,k)}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "2",
+				"n": "6"
+			},
+			"description": "v0 : ligne(6)[2] → 15",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2",
+				"n": "6"
+			},
+			"description": "v0 : ligne(6)[3] lu à la place → 20",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["21"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "2",
+				"n": "6"
+			},
+			"description": "v0 : C(7, 2) = 21 (décalage d'une ligne)",
+			"variationIndex": 0
+		}
+	]
+}
