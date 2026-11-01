@@ -11,8 +11,7 @@ _Mis à jour le 2026-11-01, après #2078 et son `db:migrate`._
   en ```ranger mergée (#2078, § 17) et jouée en prod (MCP : contenu « après », `published`, tags inchangés).
 - **Prochaine action** : `deploy:prod` (David) → David lance `create-questions --dir scripts/questions/6-droite-ordre
 --publier` → relever les `id` → migration nœud + tag → page à cocher → publication.
-- **En attente de David** : `deploy:prod` (refusé par le classifieur du mode auto : `! pnpm deploy:prod`) ;
-  verdicts de 02, 03, 04 (« à revoir » → « validé ») sur `/dev/modeles?verdict=a_revoir`.
+- **En attente de David** : `deploy:prod` (refusé par le classifieur du mode auto : `! pnpm deploy:prod` ; `main` doit être propre).
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs --file`. Jamais de variable
   `e`. `Doc-inchangée:` va dans un message de COMMIT. PR en conflit = pas de CI : vérifier `mergeable`.
 - **Worktree / branche** : aucun (retiré après #2078).
@@ -1126,3 +1125,5 @@ visibles de l'admin et de l'auteur seuls jusqu'à leur publication ; la migratio
   migration déjà jouée, 141500, d'une autre session : prendre l'horodatage le plus récent de `main` + 1, pas l'heure)
   → David a lancé `pnpm db:migrate --include-all` (seul ce fichier). MCP : md5 a8867274…, 1758ed86… = « après »,
   `published`, niveaux 1 et 2, tags 6-134 et 6-204, ```ranger présent.
+- Verdicts de `revue-modeles` de 02, 03, 04 (c9c3a8a3, 378aa770, afebbb91) passés en « validé » sur demande de David
+  (commentaires gardés), depuis `/dev/modeles` dans son Chrome ; MCP : `valide`, 2026-11-01.

@@ -1,0 +1,925 @@
+{
+	"id": "463f483e-51e1-49f9-a347-2e33bdef954a",
+	"title": "Résoudre cos x ≥ a ou cos x < a sur un tour",
+	"description": "Inéquation en cosinus, a valeur remarquable, résolue dans [−π ; π] ; réponse : intervalle ou réunion",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Inéquations",
+	"level": 1,
+	"delay": 75,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "[-{{a}};{{a}}]"
+				}
+			],
+			"statement": "Résous dans $\\left[-\\pi\\,;\\pi\\right]$ l'inéquation $\\cos x\\geqslant {{eval:cos(n*\\pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*a/\\pi"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos {{a}}=\\cos\\left(-{{a}}\\right)={{eval:cos(n*\\pi/12)}}$. Sur le cercle, les points d'abscisse supérieure ou égale à ${{eval:cos(n*\\pi/12)}}$ forment l'arc qui va de $-{{a}}$ à ${{a}}$ en passant par $0$.",
+					"```trig\npreset: custom\nangles: -{{n}}*pi/12, {{n}}*pi/12\nequation: cos(x) >= cos({{n}}*pi/12)\nmode: arc\nmesures: principales\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left[-{{a}}\\,;{{a}}\\right] }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "[-{{a}};{{a}}]"
+				}
+			],
+			"statement": "Résous dans $\\left[-\\pi\\,;\\pi\\right]$ l'inéquation $\\cos x\\geqslant {{eval:cos(n*\\pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "\\frac{\\pi}{2}|\\frac{2\\pi}{3}|\\frac{3\\pi}{4}|\\frac{5\\pi}{6}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*a/\\pi"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos {{a}}=\\cos\\left(-{{a}}\\right)={{eval:cos(n*\\pi/12)}}$. Sur le cercle, les points d'abscisse supérieure ou égale à ${{eval:cos(n*\\pi/12)}}$ forment l'arc qui va de $-{{a}}$ à ${{a}}$ en passant par $0$.",
+					"```trig\npreset: custom\nangles: -{{n}}*pi/12, {{n}}*pi/12\nequation: cos(x) >= cos({{n}}*pi/12)\nmode: arc\nmesures: principales\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left[-{{a}}\\,;{{a}}\\right] }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "[-\\pi;-{{a}}[\\cup]{{a}};\\pi]"
+				}
+			],
+			"statement": "Résous dans $\\left[-\\pi\\,;\\pi\\right]$ l'inéquation $\\cos x<{{eval:cos(n*\\pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*a/\\pi"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos {{a}}=\\cos\\left(-{{a}}\\right)={{eval:cos(n*\\pi/12)}}$. Sur le cercle, les points d'abscisse strictement inférieure à ${{eval:cos(n*\\pi/12)}}$ forment l'arc qui va de ${{a}}$ à $-{{a}}$ en passant par $\\pi$ : dans $\\left[-\\pi\\,;\\pi\\right]$, il donne deux intervalles ($-\\pi$ et $\\pi$, qui repèrent le même point, sont solutions).",
+					"```trig\npreset: custom\nangles: -{{n}}*pi/12, {{n}}*pi/12\nequation: cos(x) < cos({{n}}*pi/12)\nmode: arc\nmesures: principales\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left[-\\pi\\,;-{{a}}\\right[\\cup\\left]{{a}}\\,;\\pi\\right] }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "[-\\pi;-{{a}}[\\cup]{{a}};\\pi]"
+				}
+			],
+			"statement": "Résous dans $\\left[-\\pi\\,;\\pi\\right]$ l'inéquation $\\cos x<{{eval:cos(n*\\pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "\\frac{\\pi}{2}|\\frac{2\\pi}{3}|\\frac{3\\pi}{4}|\\frac{5\\pi}{6}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*a/\\pi"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos {{a}}=\\cos\\left(-{{a}}\\right)={{eval:cos(n*\\pi/12)}}$. Sur le cercle, les points d'abscisse strictement inférieure à ${{eval:cos(n*\\pi/12)}}$ forment l'arc qui va de ${{a}}$ à $-{{a}}$ en passant par $\\pi$ : dans $\\left[-\\pi\\,;\\pi\\right]$, il donne deux intervalles ($-\\pi$ et $\\pi$, qui repèrent le même point, sont solutions).",
+					"```trig\npreset: custom\nangles: -{{n}}*pi/12, {{n}}*pi/12\nequation: cos(x) < cos({{n}}*pi/12)\nmode: arc\nmesures: principales\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left[-\\pi\\,;-{{a}}\\right[\\cup\\left]{{a}}\\,;\\pi\\right] }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["[-\\frac{\\pi}{3};\\frac{\\pi}{3}]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"description": "cos x >= 1/2 : juste",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]-\\frac{\\pi}{3};\\frac{\\pi}{3}["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"description": "bornes exclues à tort",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["[-\\pi;-\\frac{\\pi}{3}[\\cup]\\frac{\\pi}{3};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"description": "arc complémentaire",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["[0;\\frac{\\pi}{3}]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"description": "borne négative oubliée",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["[-\\frac{\\pi}{4};\\frac{\\pi}{4}]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"description": "cos x >= sqrt(2)/2 : juste",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]-\\frac{\\pi}{4};\\frac{\\pi}{4}["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"description": "bornes exclues à tort",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["[-\\pi;-\\frac{\\pi}{4}[\\cup]\\frac{\\pi}{4};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"description": "arc complémentaire",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["[0;\\frac{\\pi}{4}]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"description": "borne négative oubliée",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["[-\\frac{\\pi}{6};\\frac{\\pi}{6}]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
+			"description": "cos x >= sqrt(3)/2 : juste",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["]-\\frac{\\pi}{6};\\frac{\\pi}{6}["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
+			"description": "bornes exclues à tort",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["[-\\pi;-\\frac{\\pi}{6}[\\cup]\\frac{\\pi}{6};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
+			"description": "arc complémentaire",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["[0;\\frac{\\pi}{6}]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
+			"description": "borne négative oubliée",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["[-\\frac{2\\pi}{6};\\frac{2\\pi}{6}]"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["intervalForm"]
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"description": "borne non simplifiée",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["S=[-\\frac{\\pi}{3};\\frac{\\pi}{3}]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"description": "S = en tête",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\frac{\\pi}{3}\\leqslant x\\leqslant\\frac{\\pi}{3}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"description": "inégalité au lieu d'un ensemble",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["[-\\frac{2\\pi}{3};\\frac{2\\pi}{3}]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "\\frac{2\\pi}{3}"
+			},
+			"description": "cos x >= -1/2 : juste",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["]-\\frac{2\\pi}{3};\\frac{2\\pi}{3}["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{2\\pi}{3}"
+			},
+			"description": "bornes exclues à tort",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["[-\\pi;-\\frac{2\\pi}{3}[\\cup]\\frac{2\\pi}{3};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{2\\pi}{3}"
+			},
+			"description": "arc complémentaire",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["[0;\\frac{2\\pi}{3}]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{2\\pi}{3}"
+			},
+			"description": "borne négative oubliée",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["[-\\frac{3\\pi}{4};\\frac{3\\pi}{4}]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "\\frac{3\\pi}{4}"
+			},
+			"description": "cos x >= -sqrt(2)/2 : juste",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["]-\\frac{3\\pi}{4};\\frac{3\\pi}{4}["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{3\\pi}{4}"
+			},
+			"description": "bornes exclues à tort",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["[-\\pi;-\\frac{3\\pi}{4}[\\cup]\\frac{3\\pi}{4};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{3\\pi}{4}"
+			},
+			"description": "arc complémentaire",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["[0;\\frac{3\\pi}{4}]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{3\\pi}{4}"
+			},
+			"description": "borne négative oubliée",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["[-\\frac{5\\pi}{6};\\frac{5\\pi}{6}]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "\\frac{5\\pi}{6}"
+			},
+			"description": "cos x >= -sqrt(3)/2 : juste",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["]-\\frac{5\\pi}{6};\\frac{5\\pi}{6}["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{5\\pi}{6}"
+			},
+			"description": "bornes exclues à tort",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["[-\\pi;-\\frac{5\\pi}{6}[\\cup]\\frac{5\\pi}{6};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{5\\pi}{6}"
+			},
+			"description": "arc complémentaire",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["[0;\\frac{5\\pi}{6}]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{5\\pi}{6}"
+			},
+			"description": "borne négative oubliée",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["[-\\frac{\\pi}{2};\\frac{\\pi}{2}]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{2}"
+			},
+			"description": "cos x >= 0 : juste",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["]-\\frac{\\pi}{2};\\frac{\\pi}{2}["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{2}"
+			},
+			"description": "bornes exclues à tort",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["[-\\pi;-\\frac{\\pi}{2}[\\cup]\\frac{\\pi}{2};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{2}"
+			},
+			"description": "arc complémentaire",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["[0;\\frac{\\pi}{2}]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{2}"
+			},
+			"description": "borne négative oubliée",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["[-\\pi;-\\frac{\\pi}{3}[\\cup]\\frac{\\pi}{3};\\pi]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"description": "cos x < 1/2 : juste",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["]\\frac{\\pi}{3};\\pi]\\cup[-\\pi;-\\frac{\\pi}{3}["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"description": "réunion dans l'autre ordre : juste",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["[-\\pi;-\\frac{\\pi}{3}]\\cup[\\frac{\\pi}{3};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"description": "bornes incluses à tort",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["]\\frac{\\pi}{3};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"description": "un seul des deux intervalles",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["]\\frac{\\pi}{3};\\frac{5\\pi}{3}["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"description": "arc écrit hors intervalle",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["]-\\pi;-\\frac{\\pi}{3}[\\cup]\\frac{\\pi}{3};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"description": "−π exclu à tort",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["[-\\pi;-\\frac{\\pi}{4}[\\cup]\\frac{\\pi}{4};\\pi]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"description": "cos x < sqrt(2)/2 : juste",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["]\\frac{\\pi}{4};\\pi]\\cup[-\\pi;-\\frac{\\pi}{4}["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"description": "réunion dans l'autre ordre : juste",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["[-\\pi;-\\frac{\\pi}{4}]\\cup[\\frac{\\pi}{4};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"description": "bornes incluses à tort",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["]\\frac{\\pi}{4};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"description": "un seul des deux intervalles",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["]\\frac{\\pi}{4};\\frac{7\\pi}{4}["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"description": "arc écrit hors intervalle",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["]-\\pi;-\\frac{\\pi}{4}[\\cup]\\frac{\\pi}{4};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"description": "−π exclu à tort",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["[-\\pi;-\\frac{\\pi}{6}[\\cup]\\frac{\\pi}{6};\\pi]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
+			"description": "cos x < sqrt(3)/2 : juste",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["]\\frac{\\pi}{6};\\pi]\\cup[-\\pi;-\\frac{\\pi}{6}["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
+			"description": "réunion dans l'autre ordre : juste",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["[-\\pi;-\\frac{\\pi}{6}]\\cup[\\frac{\\pi}{6};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
+			"description": "bornes incluses à tort",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["]\\frac{\\pi}{6};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
+			"description": "un seul des deux intervalles",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["]\\frac{\\pi}{6};\\frac{11\\pi}{6}["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
+			"description": "arc écrit hors intervalle",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["]-\\pi;-\\frac{\\pi}{6}[\\cup]\\frac{\\pi}{6};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
+			"description": "−π exclu à tort",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["[-\\pi;-\\frac{2\\pi}{3}[\\cup]\\frac{2\\pi}{3};\\pi]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "\\frac{2\\pi}{3}"
+			},
+			"description": "cos x < -1/2 : juste",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["]\\frac{2\\pi}{3};\\pi]\\cup[-\\pi;-\\frac{2\\pi}{3}["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "\\frac{2\\pi}{3}"
+			},
+			"description": "réunion dans l'autre ordre : juste",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["[-\\pi;-\\frac{2\\pi}{3}]\\cup[\\frac{2\\pi}{3};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{2\\pi}{3}"
+			},
+			"description": "bornes incluses à tort",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["]\\frac{2\\pi}{3};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{2\\pi}{3}"
+			},
+			"description": "un seul des deux intervalles",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["]\\frac{2\\pi}{3};\\frac{4\\pi}{3}["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{2\\pi}{3}"
+			},
+			"description": "arc écrit hors intervalle",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["]-\\pi;-\\frac{2\\pi}{3}[\\cup]\\frac{2\\pi}{3};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{2\\pi}{3}"
+			},
+			"description": "−π exclu à tort",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["[-\\pi;-\\frac{3\\pi}{4}[\\cup]\\frac{3\\pi}{4};\\pi]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "\\frac{3\\pi}{4}"
+			},
+			"description": "cos x < -sqrt(2)/2 : juste",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["]\\frac{3\\pi}{4};\\pi]\\cup[-\\pi;-\\frac{3\\pi}{4}["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "\\frac{3\\pi}{4}"
+			},
+			"description": "réunion dans l'autre ordre : juste",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["[-\\pi;-\\frac{3\\pi}{4}]\\cup[\\frac{3\\pi}{4};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{3\\pi}{4}"
+			},
+			"description": "bornes incluses à tort",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["]\\frac{3\\pi}{4};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{3\\pi}{4}"
+			},
+			"description": "un seul des deux intervalles",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["]\\frac{3\\pi}{4};\\frac{5\\pi}{4}["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{3\\pi}{4}"
+			},
+			"description": "arc écrit hors intervalle",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["]-\\pi;-\\frac{3\\pi}{4}[\\cup]\\frac{3\\pi}{4};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{3\\pi}{4}"
+			},
+			"description": "−π exclu à tort",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["[-\\pi;-\\frac{5\\pi}{6}[\\cup]\\frac{5\\pi}{6};\\pi]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "\\frac{5\\pi}{6}"
+			},
+			"description": "cos x < -sqrt(3)/2 : juste",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["]\\frac{5\\pi}{6};\\pi]\\cup[-\\pi;-\\frac{5\\pi}{6}["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "\\frac{5\\pi}{6}"
+			},
+			"description": "réunion dans l'autre ordre : juste",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["[-\\pi;-\\frac{5\\pi}{6}]\\cup[\\frac{5\\pi}{6};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{5\\pi}{6}"
+			},
+			"description": "bornes incluses à tort",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["]\\frac{5\\pi}{6};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{5\\pi}{6}"
+			},
+			"description": "un seul des deux intervalles",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["]\\frac{5\\pi}{6};\\frac{7\\pi}{6}["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{5\\pi}{6}"
+			},
+			"description": "arc écrit hors intervalle",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["]-\\pi;-\\frac{5\\pi}{6}[\\cup]\\frac{5\\pi}{6};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{5\\pi}{6}"
+			},
+			"description": "−π exclu à tort",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["[-\\pi;-\\frac{\\pi}{2}[\\cup]\\frac{\\pi}{2};\\pi]"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{2}"
+			},
+			"description": "cos x < 0 : juste",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["]\\frac{\\pi}{2};\\pi]\\cup[-\\pi;-\\frac{\\pi}{2}["],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{2}"
+			},
+			"description": "réunion dans l'autre ordre : juste",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["[-\\pi;-\\frac{\\pi}{2}]\\cup[\\frac{\\pi}{2};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{2}"
+			},
+			"description": "bornes incluses à tort",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["]\\frac{\\pi}{2};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{2}"
+			},
+			"description": "un seul des deux intervalles",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["]\\frac{\\pi}{2};\\frac{3\\pi}{2}["],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{2}"
+			},
+			"description": "arc écrit hors intervalle",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["]-\\pi;-\\frac{\\pi}{2}[\\cup]\\frac{\\pi}{2};\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{2}"
+			},
+			"description": "−π exclu à tort",
+			"variationIndex": 3
+		}
+	]
+}

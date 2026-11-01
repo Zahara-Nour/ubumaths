@@ -1,0 +1,229 @@
+{
+	"id": "18855802-b8e9-4fff-bfa8-256cc4d50c31",
+	"title": "Lire la parité sur la courbe d'une fonction trigonométrique",
+	"description": "Symétrie par rapport à l'axe des ordonnées (paire) ou à l'origine (impaire), lue sur une courbe tracée sur [−2π ; 2π] (pièges : axe et origine confondus, symétrie seulement apparente)",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Parité et périodicité",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -2*pi ; 2*pi\ny: {{eval:-a-2}} ; {{eval:a+2}}\ngrille: pi/2 ; 1\nf(x) = {{a}}*cos(x)+cos(2*x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f tracée pour x de −2π à 2π.\n```\n\nD'après le graphique, la fonction $f$ semble :\n\n```choix\nmelanger: non\n- paire\n- impaire\n- ni paire ni impaire\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La courbe est symétrique par rapport à l'**axe des ordonnées** : les points d'abscisses $x$ et $-x$ ont la même ordonnée, $f(-x)=f(x)$.",
+					"$f$ semble $\\textcolor{{{color:primary.0}}}{\\text{paire}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -2*pi ; 2*pi\ny: {{eval:-a-2}} ; {{eval:a+2}}\ngrille: pi/2 ; 1\nf(x) = {{a}}*sin(x)+sin(2*x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f tracée pour x de −2π à 2π.\n```\n\nD'après le graphique, la fonction $f$ semble :\n\n```choix\nmelanger: non\n- paire\n- impaire\n- ni paire ni impaire\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La courbe est symétrique par rapport à l'**origine** du repère : les points d'abscisses $x$ et $-x$ ont des ordonnées opposées, $f(-x)=-f(x)$.",
+					"$f$ semble $\\textcolor{{{color:primary.0}}}{\\text{impaire}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -2*pi ; 2*pi\ny: {{eval:-a-2}} ; {{eval:a+2}}\ngrille: pi/2 ; 1\nf(x) = {{a}}*sin(x)+cos(2*x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f tracée pour x de −2π à 2π.\n```\n\nD'après le graphique, la fonction $f$ semble :\n\n```choix\nmelanger: non\n- paire\n- impaire\n- ni paire ni impaire\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pas de symétrie par rapport à l'axe des ordonnées : on lit $f\\left(\\frac{\\pi}{2}\\right)={{eval:a-1}}$ mais $f\\left(-\\frac{\\pi}{2}\\right)={{eval:-a-1}}$.",
+					"Pas de symétrie par rapport à l'origine : la courbe ne passe pas par $O$ ($f(0)=1$).",
+					"$f$ semble $\\textcolor{{{color:primary.0}}}{\\text{ni paire ni impaire}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -2*pi ; 2*pi\ny: -4 ; 4\ngrille: pi/2 ; 1\nf(x) = x*cos(x)/{{a}}   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f tracée pour x de −2π à 2π.\n```\n\nD'après le graphique, la fonction $f$ semble :\n\n```choix\nmelanger: non\n- paire\n- impaire\n- ni paire ni impaire\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La courbe passe par l'origine et elle est symétrique par rapport à l'**origine** (et non par rapport à l'axe des ordonnées).",
+					"$f$ semble $\\textcolor{{{color:primary.0}}}{\\text{impaire}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "v0 : choix « paire » → correct",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "v0 : choix « impaire » → incorrect",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "v0 : choix « ni paire ni impaire » → incorrect",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "v1 : choix « paire » → incorrect",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "v1 : choix « impaire » → correct",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "v1 : choix « ni paire ni impaire » → incorrect",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "v2 : choix « paire » → incorrect",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "v2 : choix « impaire » → incorrect",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "v2 : choix « ni paire ni impaire » → correct",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "v3 : choix « paire » → incorrect",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "v3 : choix « impaire » → correct",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "v3 : choix « ni paire ni impaire » → incorrect",
+			"variationIndex": 3
+		}
+	]
+}

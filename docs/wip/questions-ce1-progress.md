@@ -5,12 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, phase 0 du lot 7 écrite._
+_Mis à jour le 2026-11-01, lot 7 écrit, PR #2102._
 
 - **État** : lots 0 à 6 publiés (lot 6 : calcul posé et heure, 7 modèles, § 13, clos le 2026-11-01).
-- **Prochaine action** : lot 7 (données : 082, 106, 088, 089, 107, 081) — phase 0 écrite (§ 14), réponses de David
-  attendues, puis écrire `lot-ce1-7.py` → `scripts/questions/ce1-7/` ; puis chantier `monnaie-centimes` (à part) et lot monnaie, puis lots 8 et 9 (§ 12).
-- **En attente de David** : les 4 questions du § 14.
+- **Prochaine action** : lot 7 (données : 082, 106, 088, 089, 107, 081) — écrit (§ 14), PR #2102 : CI verte → merge →
+  David lance `create-questions --dir scripts/questions/ce1-7 --publier` → migration nœud + tag ; puis chantier `monnaie-centimes` (à part) et lot monnaie, puis lots 8 et 9 (§ 12).
+- **En attente de David** : rien (après le merge : les brouillons en prod).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
@@ -593,3 +593,12 @@ tag ne change aucune règle.
    Recommandation : oui, sommes à deux chiffres d'abord (cases ≤ 60), puis le tableau du BO (total ~ 300).
 4. **Catégories** : neuve « Représenter des données · Diagrammes en barres · 1 à 3 » ; les tableaux continuent le CP
    (« Tableaux · 2 », « Tableau à double entrée · 3, 4 »). Recommandation : oui (même règle qu'aux lots 5 bis et 6).
+
+Réponse de David (« tes recos ? » puis « go », 2026-11-01) : les quatre recommandations.
+
+- 2026-11-01 : lot 7 écrit (`lot-ce1-7.py`, `scripts/questions/ce1-7/`), `question:specs` 56/56 (800 tirages), simulation
+  6/6 ; 6 brouillons en base locale, joués dans l'aperçu admin (barres montées justes, case choix du tableau juste).
+  Valeur choisie par un indice : polynôme de Lagrange en `{{eval:}}` ; série brute : indicatrices (CP-068). Trouvé :
+  une barre **non construite** parmi d'autres est jugée « forme non optimale », pas « faux » (juge commun) — spec
+  remplacée par une barre fausse ; à signaler, pas corrigé ici. `totaux: oui` ajoute la ligne ET la colonne Total.
+  PR #2102 ouverte.
