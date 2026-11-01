@@ -1,0 +1,365 @@
+{
+	"title": "Combien d'argent ? Euros et centimes",
+	"description": "Compter des pièces de centimes, des euros et des centimes, des billets et des pièces ; réponse en centimes, en euros et centimes, ou à virgule",
+	"grades": ["CE1"],
+	"theme": "Grandeurs",
+	"domain": "Monnaie",
+	"subdomain": "Pièces et billets",
+	"level": 8,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Combien d'argent y a-t-il ?\n\n```monnaie\npièces: {{a}}×50c {{b}}×20c {{c}}×10c {{d}}×5c\ndisposition: mélangé\n```\n\n$?~\\text{centimes}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..1"
+				},
+				{
+					"name": "b",
+					"expression": "0..3"
+				},
+				{
+					"name": "c",
+					"expression": "0..3"
+				},
+				{
+					"name": "d",
+					"expression": "0..1"
+				},
+				{
+					"name": "t",
+					"expression": "eval:50*a+20*b+10*c+5*d"
+				}
+			],
+			"conditions": ["t < 100", "a + b + c + d >= 3"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte ce qui est écrit sur les pièces, en commençant par les plus grosses. {{if:a>0|${{a}} \\times 50 = {{eval:50*a}}$ centimes. |}}{{if:b>0|${{b}} \\times 20 = {{eval:20*b}}$ centimes. |}}{{if:c>0|${{c}} \\times 10 = {{eval:10*c}}$ centimes. |}}{{if:d>0|${{d}} \\times 5 = {{eval:5*d}}$ centimes. |}}",
+					"En tout : $\\textcolor{{{color:primary.0}}}{{{t}}}$ centimes."
+				]
+			}
+		},
+		{
+			"statement": "Combien d'argent y a-t-il ?\n\n```monnaie\npièces: {{g}}×2 {{h}}×1 {{a}}×50c {{b}}×20c {{c}}×10c\ndisposition: mélangé\n```\n\n$?~\\text{€}~\\text{et}~?~\\text{centimes}$",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "0..3"
+				},
+				{
+					"name": "h",
+					"expression": "0..2"
+				},
+				{
+					"name": "a",
+					"expression": "0..1"
+				},
+				{
+					"name": "b",
+					"expression": "0..2"
+				},
+				{
+					"name": "c",
+					"expression": "0..3"
+				},
+				{
+					"name": "u",
+					"expression": "eval:2*g+h"
+				},
+				{
+					"name": "t",
+					"expression": "eval:50*a+20*b+10*c"
+				}
+			],
+			"conditions": ["u >= 1", "t >= 10", "t < 100"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{u}}"
+				},
+				{
+					"expectedAnswer": "{{t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les euros : {{if:g>0|${{g}} \\times 2 = {{eval:2*g}}~\\unit{€}$. |}}{{if:h>0|${{h}} \\times 1 = {{eval:1*h}}~\\unit{€}$. |}}Cela fait ${{u}}~\\unit{€}$.",
+					"Les centimes : {{if:a>0|${{a}} \\times 50 = {{eval:50*a}}$ centimes. |}}{{if:b>0|${{b}} \\times 20 = {{eval:20*b}}$ centimes. |}}{{if:c>0|${{c}} \\times 10 = {{eval:10*c}}$ centimes. |}}Cela fait ${{t}}$ centimes.",
+					"En tout : $\\textcolor{{{color:primary.0}}}{{{u}}}~\\unit{€}$ et $\\textcolor{{{color:primary.0}}}{{{t}}}$ centimes."
+				]
+			}
+		},
+		{
+			"statement": "Combien d'argent y a-t-il ?\n\n```monnaie\nbillets: {{k}}×10 {{m}}×5\npièces: {{g}}×2 {{h}}×1 {{a}}×50c {{b}}×20c {{c}}×10c {{d}}×5c\ndisposition: mélangé\n```\n\n$?~\\text{€}$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "m",
+					"expression": "0..1"
+				},
+				{
+					"name": "g",
+					"expression": "0..2"
+				},
+				{
+					"name": "h",
+					"expression": "0..1"
+				},
+				{
+					"name": "a",
+					"expression": "0..1"
+				},
+				{
+					"name": "b",
+					"expression": "0..2"
+				},
+				{
+					"name": "c",
+					"expression": "0..2"
+				},
+				{
+					"name": "d",
+					"expression": "0..1"
+				},
+				{
+					"name": "u",
+					"expression": "eval:10*k+5*m+2*g+h"
+				},
+				{
+					"name": "t",
+					"expression": "eval:50*a+20*b+10*c+5*d"
+				}
+			],
+			"conditions": ["k + m >= 1", "u < 100", "t >= 5", "t < 100"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(100*u+t)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les billets et les pièces d'euro : {{if:k>0|${{k}} \\times 10 = {{eval:10*k}}~\\unit{€}$. |}}{{if:m>0|${{m}} \\times 5 = {{eval:5*m}}~\\unit{€}$. |}}{{if:g>0|${{g}} \\times 2 = {{eval:2*g}}~\\unit{€}$. |}}{{if:h>0|${{h}} \\times 1 = {{eval:1*h}}~\\unit{€}$. |}}Cela fait ${{u}}~\\unit{€}$.",
+					"Les centimes : {{if:a>0|${{a}} \\times 50 = {{eval:50*a}}$ centimes. |}}{{if:b>0|${{b}} \\times 20 = {{eval:20*b}}$ centimes. |}}{{if:c>0|${{c}} \\times 10 = {{eval:10*c}}$ centimes. |}}{{if:d>0|${{d}} \\times 5 = {{eval:5*d}}$ centimes. |}}Cela fait ${{t}}$ centimes.",
+					"${{u}}~\\unit{€}$ et ${{t}}$ centimes s'écrivent $\\textcolor{{{color:primary.0}}}{{{eval:floor((100*u+t)/100)}}.{{eval:floor(mod(100*u+t,100)/10)}}{{eval:mod(100*u+t,10)}}}~\\unit{€}$ : avant la virgule les euros, après la virgule les centimes, toujours deux chiffres."
+				]
+			}
+		},
+		{
+			"statement": "Combien d'argent y a-t-il ?\n\n```monnaie\npièces: {{a}}×20c {{b}}×10c {{c}}×5c {{d}}×2c {{f}}×1c\ndisposition: mélangé\n```\n\n$?~\\text{centimes}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..2"
+				},
+				{
+					"name": "b",
+					"expression": "0..2"
+				},
+				{
+					"name": "c",
+					"expression": "0..2"
+				},
+				{
+					"name": "d",
+					"expression": "0..3"
+				},
+				{
+					"name": "f",
+					"expression": "0..3"
+				},
+				{
+					"name": "t",
+					"expression": "eval:20*a+10*b+5*c+2*d+f"
+				}
+			],
+			"conditions": ["d + f >= 2", "a + b + c + d + f >= 5", "t < 100"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte ce qui est écrit sur les pièces, en commençant par les plus grosses. {{if:a>0|${{a}} \\times 20 = {{eval:20*a}}$ centimes. |}}{{if:b>0|${{b}} \\times 10 = {{eval:10*b}}$ centimes. |}}{{if:c>0|${{c}} \\times 5 = {{eval:5*c}}$ centimes. |}}{{if:d>0|${{d}} \\times 2 = {{eval:2*d}}$ centimes. |}}{{if:f>0|${{f}} \\times 1 = {{eval:1*f}}$ centimes. |}}",
+					"En tout : $\\textcolor{{{color:primary.0}}}{{{t}}}$ {{if:t==1|centime|centimes}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "50 + 20 + 20 + 5 = 95 c",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "0",
+				"d": "1"
+			},
+			"answers": ["95"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : nombre de pièces compté (4)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "0",
+				"d": "1"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 × 2 € + 1 € et 50 + 20 c : 5 € et 70 c",
+			"variationIndex": 1,
+			"variables": {
+				"g": "2",
+				"h": "1",
+				"a": "1",
+				"b": "1",
+				"c": "0"
+			},
+			"answers": ["5", "70"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : centimes comptés en euros (75)",
+			"variationIndex": 1,
+			"variables": {
+				"g": "2",
+				"h": "1",
+				"a": "1",
+				"b": "1",
+				"c": "0"
+			},
+			"answers": ["75", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 × 10 € + 5 € + 2 € et 50 + 5 c : 27,55 €",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"m": "1",
+				"g": "1",
+				"h": "0",
+				"a": "1",
+				"b": "0",
+				"c": "0",
+				"d": "1"
+			},
+			"answers": ["27{,}55"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "10 € + 1 € et 20 c : 11,2 accepté (zeros: off)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"m": "0",
+				"g": "0",
+				"h": "1",
+				"a": "0",
+				"b": "1",
+				"c": "0",
+				"d": "0"
+			},
+			"answers": ["11{,}2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10 € + 1 € et 5 c écrit 11,5",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"m": "0",
+				"g": "0",
+				"h": "1",
+				"a": "0",
+				"b": "0",
+				"c": "0",
+				"d": "1"
+			},
+			"answers": ["11{,}5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 27 € et 55 c écrit 2755",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"m": "1",
+				"g": "1",
+				"h": "0",
+				"a": "1",
+				"b": "0",
+				"c": "0",
+				"d": "1"
+			},
+			"answers": ["2755"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "20 + 10 + 5 + 2 + 2 + 1 = 40 c",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"b": "1",
+				"c": "1",
+				"d": "2",
+				"f": "1"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : nombre de pièces compté (6)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"b": "1",
+				"c": "1",
+				"d": "2",
+				"f": "1"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

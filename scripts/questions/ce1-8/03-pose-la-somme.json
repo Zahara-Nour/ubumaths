@@ -1,0 +1,200 @@
+{
+	"title": "Pose la somme en euros et centimes",
+	"description": "Poser des centimes, une somme à virgule, des euros et des centimes ; sans pièce de 1 €",
+	"grades": ["CE1"],
+	"theme": "Grandeurs",
+	"domain": "Monnaie",
+	"subdomain": "Pièces et billets",
+	"level": 10,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Pose ${{p}}$ centimes.\n\n```monnaie\nconstruire: {{p}}c\nréserve: 10 5 2 1 50c 20c 10c\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3..9"
+				},
+				{
+					"name": "p",
+					"expression": "eval:10*k"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Par exemple : {{if:p>=50|une pièce de $50$ centimes, |}}puis des pièces de $20$ et de $10$ centimes, jusqu'à ${{p}}$ centimes.",
+					"Il y a d'autres façons justes : ce qui compte, c'est la somme posée."
+				]
+			}
+		},
+		{
+			"statement": "Pose ${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$.\n\n```monnaie\nconstruire: {{p}}c\nréserve: 10 5 2 1 50c 20c 10c\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "11..99"
+				},
+				{
+					"name": "p",
+					"expression": "eval:10*k"
+				}
+			],
+			"conditions": ["mod(p,100) != 0"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$, c'est ${{eval:floor(p/100)}}~\\unit{€}$ et ${{eval:mod(p,100)}}$ centimes.",
+					"On pose d'abord les euros, puis les centimes."
+				]
+			}
+		},
+		{
+			"statement": "Pose ${{a}}~\\unit{€}$ et ${{b}}$ centimes.\n\n```monnaie\nconstruire: {{p}}c\nréserve: 10 5 2 1 50c 20c 10c\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "eval:10*k"
+				},
+				{
+					"name": "p",
+					"expression": "eval:100*a+b"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On pose d'abord ${{a}}~\\unit{€}$, puis ${{b}}$ centimes.",
+					"Il y a d'autres façons justes : ce qui compte, c'est la somme posée."
+				]
+			}
+		},
+		{
+			"statement": "Pose ${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$ sans pièce de $1~\\unit{€}$.\n\n```monnaie\nconstruire: {{p}}c\nréserve: 50c 20c 10c\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "6..19"
+				},
+				{
+					"name": "p",
+					"expression": "eval:10*k"
+				}
+			],
+			"conditions": ["mod(p,100) != 0"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"$1~\\unit{€}$, c'est $100$ centimes : deux pièces de $50$ centimes, ou cinq pièces de $20$ centimes.",
+					"${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$, c'est ${{p}}$ centimes : on les pose avec des pièces de $50$, $20$ et $10$ centimes."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "70 centimes posés",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7"
+			},
+			"answers": ["0{,}7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 € posés pour 70 centimes",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3,40 € posés",
+			"variationIndex": 1,
+			"variables": {
+				"k": "34"
+			},
+			"answers": ["3{,}4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3,04 € posés pour 3,40 €",
+			"variationIndex": 1,
+			"variables": {
+				"k": "34"
+			},
+			"answers": ["3{,}04"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 € et 30 centimes posés",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"k": "3"
+			},
+			"answers": ["2{,}3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2,03 € posés (30 c lus 3 c)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"k": "3"
+			},
+			"answers": ["2{,}03"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1,40 € sans pièce de 1 €",
+			"variationIndex": 3,
+			"variables": {
+				"k": "14"
+			},
+			"answers": ["1{,}4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1,20 € posés pour 1,40 €",
+			"variationIndex": 3,
+			"variables": {
+				"k": "14"
+			},
+			"answers": ["1{,}2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
