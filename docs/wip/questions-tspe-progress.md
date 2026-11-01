@@ -19,8 +19,9 @@ _Mis à jour le 2026-11-01, après #2173._
 - **En attente de David** : la relecture des 4 brouillons (page à cocher à produire).
 - **Pièges en cours** : un tag doit être sur le **nœud du modèle ou sa notion** (§ 14) ; le **niveau est dans la
   clé** de `create-questions`. `create-questions` et `publier-lot` → David (`!`) ; `db:migrate` depuis le dépôt
-  principal (`echo y |`) ; corps de commit ≤ 100 caractères par ligne. **Migrations** : `pnpm migration:horodatage`
-  à refaire si main a avancé (renommé 2 fois au lot 2) ; une sous-notion neuve → copie figée
+  principal (`echo y |`) ; corps de commit ≤ 100 caractères par ligne. **Migrations** (#2181) : `pnpm migration:horodatage`
+  = heure réelle UTC, plus de renommage si main a avancé ; `db:migrate` refuse « inserted before the last
+  migration » → `--dry-run --include-all`, relire, puis `--include-all` ; une sous-notion neuve → copie figée
   `tests/integration/fixtures/arbre-notions-seed.json`, comptes de `seed-classification-nodes.test.ts` et
   `tests/helpers/database/later-migrations.ts` dans la même PR (CI rouge sinon).
 - **Worktree / branche** : aucun (retiré après #2173) ; prochain chantier → worktree neuf depuis `origin/main`.
