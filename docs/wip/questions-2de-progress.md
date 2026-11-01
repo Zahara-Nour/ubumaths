@@ -6,17 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2172 ; lot 7 en brouillons en prod._
+_Mis à jour le 2026-11-01, après #2175 (migration du lot 7 jouée en prod)._
 
-- **État** : lots 1 à 6 publiés ; lot 7 (21 modèles) en brouillons en prod (§ 48), migration nœud + tag en PR.
-- **Prochaine action** : PR de la migration du lot 7 (CI, `security-auditor`, `check:migrations --pr`, merge,
-  `db:migrate` ou `db push` par David) ; puis PR de code : `page-a-cocher.ts` dessine les ` ```variation `
-  (décidé par David le 2026-11-01, avant la relecture) ; puis page à cocher du lot 7.
+- **État** : lots 1 à 6 publiés ; lot 7 (21 modèles) en brouillons en prod, rangés et tagués (§ 48). Page à
+  cocher : tableaux ` ```variation ` dessinés, branche `feat/page-a-cocher-variation` poussée, PR pas ouverte (§ 49).
+- **Prochaine action** : au « go » de questions-cm2 (pause des merges, deploy:prod) : PR de
+  `feat/page-a-cocher-variation` (revue `code-reviewer` Sonnet), CI, merge ; puis page à cocher du lot 7
+  (dossiers copiés avec préfixes a-/b-/c-), publiée en artefact `db`, à relire par David.
 - **En attente de David** : rien.
-- **Pièges en cours** : horodatage → `pnpm migration:horodatage` et `pnpm check:migrations --pr <n>` avant le
-  merge ; `db push`, `--publier` → David avec `!` ; worktree neuf → `pnpm exec svelte-kit sync` ; CI allégée
-  pour les PR de contenu (CI Summary fait foi).
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `feat/questions-2de-lot7-rangement`.
+- **Pièges en cours** : horodatage → `pnpm migration:horodatage` (heure UTC réelle depuis #2181) ;
+  `Doc-inchangée:` dans un commit, jamais dans le corps de PR ; `db push`, `--publier` → David avec `!` ;
+  page locale servie sans charset → caractères cassés (artefact OK).
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `feat/page-a-cocher-variation`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1210,3 +1211,22 @@ ni 2-348 ; L7-d trois PR de fichiers (7 A = 6, 7 B = 6, 7 C = 9), une migration,
   `tests/integration/questions-2de-signes-variations-rangement-tags.test.ts`, générés depuis ceux du lot 6
   (seul le lot change). Rouge sans la migration (fichier réduit au rollback : 5 échecs, 5 verts) ; vert avec :
   10/10. Horodatage 20261101224702 pris par la T_SPE entre-temps → 224703.
+- #2175 mergée (CI verte ; `Doc-inchangée` doit être dans un COMMIT, pas dans le corps de la PR ; horodatage
+  224702 pris entre-temps par la T_SPE → 224703). `security-auditor` : aucun finding. Migration jouée en prod
+  par une autre session (avec 224741 du CM1) ; MCP : les 21 en `draft`, bon nœud, un seul tag, le bon,
+  `updated_at` préservé.
+
+## 49. Page à cocher : tableaux de signes et de variations dessinés (2026-11-01)
+
+- Décidé par David (2026-11-01) avant la relecture du lot 7. Branche `feat/page-a-cocher-variation`.
+- `scripts/lib/page-a-cocher.ts` : bloc `variation` lu par `parseVariationTableContent` (+
+  `withImplicitEndpoints`), dessiné comme `VariationTable.svelte` (tableau, zéros, double barre, hachures,
+  valeurs en haut / au milieu / en bas, flèches SVG avec pointe dessinée, sens par les limites comme l'écran) ;
+  formules en `data-tex`, rendues en KaTeX par le gabarit (`formules()`). Bloc en erreur → la page s'arrête.
+- Tests : 4 nouveaux (rouges avant, 40/40 verts après). Page du lot 7 générée : 21 fiches, **aucune alerte**,
+  67 tableaux ; vus dans Chrome (quotient : 0 et double barre justes ; flèches lisibles dans les choix).
+- Pause des merges (deploy:prod relancé par questions-cm2) : branche poussée, PR à ouvrir au « go ».
+- Revue `code-reviewer` (Sonnet) : aucun bloquant. Corrigés : case d'intervalle = signe ou hachure seulement
+  (comme l'écran), hachure pleine largeur, ligne et contenu fautifs dans le message d'erreur ; tests ajoutés
+  (asymptote à deux limites, bornes implicites, case d'intervalle) : 43/43. Une zone interdite SANS limite
+  n'est pas écrivable dans une ligne de variation (le parseur exige des limites).
