@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2124 et son `db push`._
+_Mis à jour le 2026-11-01, page à cocher du lot 4 publiée._
 
 - **État** : lot 4 : 8 brouillons en prod, rangés et tagués (migration `20261101212100` jouée, vérifiée au MCP, § 12 quinquies).
-- **Prochaine action** : page à cocher du lot 4 (`scripts/questions/page-a-cocher.ts --dir scripts/questions/cm1-4`), publiée en artefact (capacité `db`) → verdicts de David → `publier-lot` en simulation → `--publier` (David). Ensuite : phase 0 du lot 4b « calcul posé » (165, 052, 050, 051, 053).
-- **En attente de David** : rien (la page à cocher vient ensuite).
+- **Prochaine action** : lire et COMPTER les verdicts (`ArtifactData list verdicts`, page https://claude.ai/artifact/PQr3Cp4yAANDfJxAyTBFuN) → corriger un « À revoir » (§ 7 de la doc) → `publier-lot --dir scripts/questions/cm1-4` en simulation → `--publier` (David). Ensuite : phase 0 du lot 4b « calcul posé » (165, 052, 050, 051, 053).
+- **En attente de David** : la relecture de la page à cocher du lot 4 (8 fiches).
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main`, des worktrees ET des branches distantes + 1 min, **revérifié juste avant le merge** (collision `20261101190200` sur `main` le 2026-11-01, réparée par #2114) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; dépôt partagé : relire `git diff --cached --name-only` avant CHAQUE commit (journal ce2 emporté le 2026-11-01) ; coloriage : specs non mesurées par le test du corpus, sauf si un modèle active `orderIndependent` (la prod le mesurerait alors) ; extension Chrome muette → Playwright à 390 px.
 - **Worktree / branche** : aucun (retiré après #2124).
 
@@ -724,3 +724,10 @@ juste après le lot 4.
   `supabase db push --include-all` : les deux migrations jouées (5e puis CM1).
 - MCP : les 8 modèles sur la sous-notion de leur point, un point CM1 chacun, toujours brouillons,
   `updated_at` = création (15:40).
+
+### 12 sexies. Lot 4 — page à cocher (2026-11-01)
+
+- Page : https://claude.ai/artifact/PQr3Cp4yAANDfJxAyTBFuN (capacité `db`), rendu vu à 390 px
+  (8 fiches, pas de défilement horizontal) ; `verdicts` vide à la publication. Alertes attendues :
+  `partage, `line et ```ranger non dessinés (à jouer dans l'aperçu) ; homonymes 6e
+  `92db5823` (ranger) et `2e982062` (intercaler) écartés, les ids retenus sont bien ceux du lot.

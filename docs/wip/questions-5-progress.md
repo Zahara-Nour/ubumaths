@@ -5,24 +5,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, #2116 ouverte (CI en cours)._
+_Mis à jour le 2026-11-01, après #2116._
 
-- **État** : lots 1 à 5 publiés ; **lot 6** (8 modèles, § 17) en prod en brouillons, rangés, tagués, **relus 8/8
-  ok** ; collision de niveau (02 et 04 au niveau 1) → 04 au niveau 3 : PR **#2116** (migration
-  `20261101200800_questions_5_lot6_niveau` + JSON, test rouge sans / 6/6 vert, `security-auditor` sans bloquant).
-  **Phase 0 du lot 7 validée** (§ 18, 6 modèles).
-- **Prochaine action** : #2116 : CI → horodatage refait juste avant le merge (`max + 1 min` de `origin/main` ; la
-  6e prend `20261101200700`, #2114) → merge → `pnpm db:migrate` depuis le dépôt principal → vérif MCP (8190200a
-  au niveau 3) → `publier-lot.ts --dir scripts/questions/5-donnees-probabilites` (simulation) → David `--publier`.
-  Puis **écrire le lot 7** (§ 18) : worktree, `docs/wip/questions/lot-5-proportionnalite.py`, simulation
-  `create-questions` + `publier-lot`. Ensuite lot 8 « Opérations » (001, 002, 005, 116, 117).
-- **En attente de David** : le `--publier` du lot 6 (après la migration) ; le `! pnpm db:migrate` de 23:26:56 UTC
-  (2026-10-31) visait-il une autre session ? (résultat juste).
-- **Pièges en cours** : horodatage de migration = `max + 1 min` de `origin/main` JUSTE AVANT le merge (doublon
-  `20261101190200` 5e/6e : la seconde n'est jamais jouée) ; deux modèles d'un lot dans une même catégorie →
-  niveaux distincts ; nœud neuf → `later-migrations.ts` + fixtures ; `plusieurs: oui` ajoute « Coche la ou les
-  bonnes réponses » ; case oubliée d'un choix multiple = ½ ; `--publier` = David avec `!` ; jamais `e`.
-- **Worktree / branche** : `ubumaths-wt-questions-5`, branche `fix/questions-5-lot6-niveau` (#2116).
+- **État** : lots 1 à 5 publiés ; **lot 6** (8 modèles, § 17) en prod en brouillons, rangés, tagués, relus 8/8 ok ;
+  collision de niveau réglée (#2116 mergée, migration `20261101200800` jouée, 8190200a au niveau 3, vérifié MCP) ;
+  simulation `publier-lot` : **8 brouillons passent**. **Phase 0 du lot 7 validée** (§ 18, 6 modèles).
+- **Prochaine action** : David : `! pnpm tsx scripts/questions/publier-lot.ts --dir
+scripts/questions/5-donnees-probabilites --publier` ; vérifier `published` au MCP. Puis **écrire le lot 7**
+  (§ 18) : branche `content/questions-5-lot7` depuis le worktree, `docs/wip/questions/lot-5-proportionnalite.py`,
+  simulation `create-questions` + `publier-lot`. Ensuite lot 8 « Opérations » (001, 002, 005, 116, 117).
+- **En attente de David** : le `--publier` du lot 6 ; le `! pnpm db:migrate` de 23:26:56 UTC (2026-10-31)
+  visait-il une autre session ? (résultat juste).
+- **Pièges en cours** : horodatage = `max + 1 min` de `origin/main` JUSTE AVANT le merge, et `main` avance pendant
+  la CI → `db:migrate --include-all --dry-run` d'abord (une autre session peut l'avoir jouée) ; deux modèles d'un
+  lot dans une même catégorie → niveaux distincts ; nœud neuf → `later-migrations.ts` + fixtures ; `plusieurs:
+oui` ajoute « Coche la ou les bonnes réponses » ; case oubliée d'un choix multiple = ½ ; `--publier` = David.
+- **Worktree / branche** : `ubumaths-wt-questions-5` (HEAD détaché sur `main`, branche #2116 supprimée).
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -514,3 +512,6 @@ Calcul littéral › Écrire › Formules 1-3, nœud = notion Algèbre › Calcu
 - Avant 06 : vérifier que le juge exige l'écriture (« 3n », « n × 3 » acceptés, pas une valeur).
 - Niveaux : simulation `publier-lot` dès l'écriture (collision du lot 6).
 - Accès : rien de neuf (brouillons, aucun nœud créé, tags lisibles par tout compte connecté).
+- #2116 mergée (CI verte après la mise à jour sur `main` : les échecs venaient du doublon 5e / 6e) ; migration
+  renommée `20261101200800` ; jouée en prod par le `db:migrate --include-all` d'une autre session (dry-run : à
+  jour) ; vérifié MCP : 8190200a niveau 3, `updated_at` intact. Simulation `publier-lot` : 8/8 passent.
