@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, migration des tags D3 en cours (§ 17)._
+_Mis à jour le 2026-11-01, après #2085 et le `db:migrate` des tags D3._
 
-- **État** : lots 0-suites à 0-logique publiés. Migration D3 réduite à 2 tags (D22, § 17) : f1440b52 1SPE-274 → 396, 318ea542 → 283 ; écrite, 11 / 11 verts, rouge vérifié ; `security-auditor` : aucun finding bloquant. Brouillons de 1re spé restants : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (niveau `T_SPE` laissé à questions-tspe), 0495289a (attente), c90fa022, d2067413 (points 1TECHNO).
-- **Prochaine action** : PR ouverte (`feat/questions-1spe-tags`), CI verte, merge, `db:migrate` depuis la branche mergée, relire les 2 tags en base (MCP). Puis D7 : lot dérivation.
+- **État** : lots 0-suites à 0-logique publiés ; migration des tags D3 jouée en prod (§ 17 : f1440b52 → 1SPE-396, 318ea542 → 1SPE-283, relus en base). Brouillons de 1re spé restants : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (niveau `T_SPE` laissé à questions-tspe), 0495289a (attente), c90fa022, d2067413 (points 1TECHNO).
+- **Prochaine action** : D7 (§ 5), lot neuf « dérivation » : points sans modèle du § 3.5, phase 0 à soumettre à David.
 - **En attente de David** : rien.
-- **Pièges en cours** : `create-questions` et `publier-lot --publier` refusés au mode auto (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET worktrees ; instantané jamais dans le dépôt principal.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-tags` · `feat/questions-1spe-tags`.
+- **Pièges en cours** : `create-questions` et `publier-lot --publier` refusés au mode auto (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET worktrees ; corps de commit : lignes ≤ 100 caractères (commitlint).
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -791,3 +791,6 @@ corps de la migration (suite principale tombée au `beforeAll`, 5 branches d'éc
 
 `security-auditor` (Opus) : aucun finding bloquant ; deux faibles, hérités du gabarit cm2 lot 4 (comportement sous
 `db push` non prouvé par le test ; un retrait de tag concurrent ne prend pas le verrou, effet nul).
+
+#2085 mergée (CI verte). `db:migrate` le 2026-11-01 : seule cette migration en attente (dry-run), jouée ; relu en base (MCP) :
+f1440b52 = 1SPE-396, 318ea542 = 1SPE-283, statut, niveaux et `updated_at` inchangés. **D3 clos.**
