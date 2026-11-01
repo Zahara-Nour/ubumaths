@@ -4,19 +4,18 @@
  *
  * `scripts/garde-migrations-horodatage.sh` (hook pre-push, et `--pr <n>` juste avant
  * `gh pr merge`) refuse une migration neuve dont l'horodatage est déjà pris sur
- * origin/main, ou plus ancien que la dernière migration de main (incident du
- * 2026-11-01 : `20261101215000` pris par deux lots, PR verte sur un main périmé,
- * main cassée pour toutes les PR). Gardé ici :
+ * origin/main (incident du 2026-11-01 : `20261101215000` pris par deux lots, PR verte
+ * sur un main périmé, main cassée pour toutes les PR). Gardé ici :
  * - aucune migration neuve, ou une plus récente que main → passe ;
  * - horodatage déjà pris sur origin/main (poussé par une autre session) → refusé ;
- * - plus ancienne que la dernière de main → refusé ;
+ * - plus ancienne que la dernière de main → passe (`db:migrate --include-all` l'acceptera) ;
  * - deux migrations neuves au même horodatage → refusé ;
  * - doublon déjà sur main, sans rapport avec la branche → passe ;
  * - `--pr <n>` : lit la tête de la PR sur origin (refs/pull/<n>/head) ;
  * - sans origin → passe, avec un avertissement ;
- * - `--prochain` : heure réelle UTC, ou dernière migration + 1 à 59 s tirées au hasard si main est
- *   en avance (deux sessions lancées ensemble ne reçoivent plus le même nombre), en vraie heure :
- *   jamais de seconde 60, passage à la minute, au jour, à l'année.
+ * - `--prochain` : heure réelle UTC à la seconde, toujours, même quand main est en avance sur
+ *   l'horloge (« dernière + n » serrait toutes les sessions sur les mêmes secondes : 224701 puis
+ *   224702 pris deux fois le 2026-11-01).
  *
  * Dépôts jetables (un dépôt nu tient lieu de GitHub) : git ne tourne jamais
  * hors du dossier temporaire.
@@ -133,13 +132,11 @@ describe('garde-migrations-horodatage', () => {
 		expect(r.stderr).toMatch(/pnpm migration:horodatage/);
 	});
 
-	it('plus ancienne que la dernière migration de main : refusé', () => {
+	it('plus ancienne que la dernière migration de main : passe (db:migrate --include-all l’acceptera)', () => {
 		migration(moi, '20261101120000_lot_a.sql');
 		migration(autre, '20261101130000_lot_b.sql');
 		git(autre, 'push', '-q', 'origin', 'main');
-		const r = garde(moi);
-		expect(r.status).toBe(1);
-		expect(r.stderr).toMatch(/plus ancien que la dernière migration de main \(20261101130000\)/);
+		expect(garde(moi).status).toBe(0);
 	});
 
 	it('deux migrations neuves au même horodatage : refusé', () => {
@@ -191,37 +188,37 @@ describe('garde-migrations-horodatage', () => {
 		expect(r.stderr).toMatch(/porte fermée/);
 	});
 
-	it('--prochain : heure réelle UTC quand main est dans le passé', () => {
-		const r = spawnSync('bash', [SCRIPT, '--prochain'], { cwd: moi, env: env(), encoding: 'utf8' });
-		expect(r.status).toBe(0);
-		const v = r.stdout.trim();
-		expect(v).toMatch(/^\d{14}$/);
-		expect(v > '20261101100000').toBe(true);
+	/** L'heure UTC courante, au format AAAAMMJJHHMMSS. */
+	function maintenantUtc(decalageMs = 0): string {
+		return new Date(Date.now() + decalageMs).toISOString().replace(/[-:T]/g, '').slice(0, 14);
+	}
+
+	it('--prochain : heure réelle UTC à la seconde', () => {
+		const avant = maintenantUtc(-1000);
+		const v = prochain(moi);
+		expect(v >= avant && v <= maintenantUtc(15000)).toBe(true);
 	});
 
-	it('--prochain : dernière migration + 1 à 59 s quand main est en avance sur l’horloge', () => {
+	it('--prochain : heure réelle même quand main est en avance sur l’horloge, et la garde passe', () => {
 		migration(autre, '29991231230000_futur.sql');
 		git(autre, 'push', '-q', 'origin', 'main');
+		git(moi, 'fetch', '-q', 'origin');
+		git(moi, 'merge', '-q', 'origin/main');
+		const avant = maintenantUtc(-1000);
 		const v = prochain(moi);
-		expect(v > '29991231230000' && v <= '29991231230059').toBe(true);
+		expect(v >= avant && v <= maintenantUtc(15000)).toBe(true);
 		migration(moi, `${v}_lot_a.sql`);
 		expect(garde(moi).status).toBe(0);
 	});
 
-	it('--prochain en avance : tiré au hasard, deux sessions ne reçoivent pas toujours le même nombre', () => {
-		migration(autre, '29991231230000_futur.sql');
+	it('--prochain : une seconde déjà prise est sautée (vraie heure, jamais de seconde 60)', () => {
+		// Les 30 prochaines secondes prises sur main (marge pour un runner lent) : --prochain rend la première libre après elles.
+		const prises = Array.from({ length: 30 }, (_, i) => maintenantUtc(i * 1000));
+		for (const [i, h] of prises.entries()) migration(autre, `${h}_pris_${i}.sql`);
 		git(autre, 'push', '-q', 'origin', 'main');
-		const tirages = new Set(Array.from({ length: 12 }, () => prochain(moi)));
-		expect(tirages.size).toBeGreaterThan(1);
-	});
-
-	it('--prochain en avance : vraie heure, jamais de seconde 60 (passage à l’année)', () => {
-		migration(autre, '29991231235959_futur.sql');
-		git(autre, 'push', '-q', 'origin', 'main');
-		for (let i = 0; i < 8; i++) {
-			const v = prochain(moi);
-			expect(v).toMatch(/^300001010000[0-5]\d$/);
-			expect(v <= '30000101000058').toBe(true);
-		}
+		const v = prochain(moi);
+		expect(prises).not.toContain(v);
+		expect(v).toMatch(/^\d{12}[0-5]\d$/);
+		expect(v > prises[0]).toBe(true);
 	});
 });
