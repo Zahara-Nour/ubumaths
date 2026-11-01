@@ -10,11 +10,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2084._
+_Mis à jour le 2026-11-01, après #2084 et la publication du lot 0-primitives._
 
-- **État** : lots 0-suites, 0-limites et fonctions, 0-intégration **publiés** (66 modèles). Lot 0-primitives (18 brouillons, § 9) validé par David, instantané mergé (#2084), **pas encore publié**.
-- **Prochaine action** : David lance `create-questions --mettre-a-jour` (retouches C1-C3) puis `publier-lot` (simulation, puis `--publier`) sur `scripts/questions/tspe-0-primitives/` ; relire le statut en base (18 publiés). Ensuite, lot trigonométrie (branche `feat/questions-tspe-lot0-trigo`, déjà créée). Plus tard : migration des tags Q3 (§ 1, § 7, § 8, § 9).
-- **En attente de David** : ces deux commandes pour le lot 0-primitives.
+- **État** : lots 0-suites, 0-limites et fonctions, 0-intégration, 0-primitives **publiés** (84 modèles). Rien en cours.
+- **Prochaine action** : lot trigonométrie (branche `feat/questions-tspe-lot0-trigo`, déjà créée dans le worktree) : relevé des brouillons de trigo T_SPE en base, instantané, vérification. Plus tard : migration des tags Q3 (§ 1, § 7, § 8, § 9).
+- **En attente de David** : rien.
 - **Pièges en cours** : `create-questions` et `publier-lot`, même en simulation → David (le mode auto les refuse) ;
   partir des id, pas des vieux dossiers `<thème>-terminale/` ; simulation `publier-lot` AVANT tout ;
   worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (sinon `$lib` introuvable) ;
@@ -428,3 +428,5 @@ ne peut égaler ±m (|a| ≥ 2) ; 624bf511 v1 garde `y0 != m` (sans elle, f cons
 publication. Les 3 retouches ne sont pas encore en base : la page montre déjà les fichiers corrigés.
 
 **Relecture** : David valide les 18 fiches en bloc (2026-11-01, sans passer par la page : `verdicts` restée vide).
+
+**Publication** (2026-11-01, #2084 mergée) : David a lancé `create-questions --publier --mettre-a-jour` (3 mis à jour : 968f4295, e02fb162, efb12f4b ; 15 identiques) puis `publier-lot` (simulation : 18 passent) et `--publier`. Relu en base (MCP) : 18 / 18 `published`, les 3 retouches présentes, anciens textes absents.
