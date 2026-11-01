@@ -1,0 +1,159 @@
+{
+	"id": "23644a9c-6900-4c27-9f9c-5e91379309e1",
+	"title": "Espace : droite orthogonale à un plan ?",
+	"description": "Décider (QCM) si une droite est orthogonale à un plan (vecteur directeur colinéaire au vecteur normal)",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Orthogonalité et distances dans l'espace",
+	"subdomain": "Orthogonalité droites et plans",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{o}}"
+				}
+			],
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère le plan $\\mathcal{P}$ d'équation ${{a}}x+({{b}})y+({{c}})z+({{d}})=0$ et la droite $\\Delta$ de représentation paramétrique $$\\begin{cases}x={{if:x0!=0|{{x0}}}}{{if:u1==1|{{if:x0!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:x0!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:x0==0|0}}}}\\\\y={{if:y0!=0|{{y0}}}}{{if:u2==1|{{if:y0!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:y0!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:y0==0|0}}}}\\\\z={{if:z0!=0|{{z0}}}}{{if:u3==1|{{if:z0!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:z0!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:z0==0|0}}}}\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLa droite $\\Delta$ est-elle orthogonale au plan $\\mathcal{P}$ ?\n\n```choix\n- Oui, $\\Delta$ est orthogonale à $\\mathcal{P}$.\n- Non, $\\Delta$ n'est pas orthogonale à $\\mathcal{P}$.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "c",
+					"expression": "-3..3"
+				},
+				{
+					"name": "d",
+					"expression": "-6..6"
+				},
+				{
+					"name": "k",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "x0",
+					"expression": "-4..4"
+				},
+				{
+					"name": "y0",
+					"expression": "-4..4"
+				},
+				{
+					"name": "z0",
+					"expression": "-4..4"
+				},
+				{
+					"name": "u1",
+					"expression": "{{eval:k*a+o*b}}"
+				},
+				{
+					"name": "u2",
+					"expression": "{{eval:k*b-o*a}}"
+				},
+				{
+					"name": "u3",
+					"expression": "{{eval:k*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\Delta$ est orthogonale à $\\mathcal{P}$ si et seulement si son vecteur directeur $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\\\{{u3}}\\end{pmatrix}$ est colinéaire au vecteur normal $\\vec{n}\\begin{pmatrix}{{a}}\\\\{{b}}\\\\{{c}}\\end{pmatrix}$.",
+					"{{if:o==0|$\\vec{u}=k\\,\\vec{n}$ avec $k={{k}}$ : les vecteurs sont colinéaires, $\\Delta$ **est orthogonale** à $\\mathcal{P}$.}}{{if:o==1|$x_{\\vec{n}}\\,y_{\\vec{u}}-y_{\\vec{n}}\\,x_{\\vec{u}}={{a}}\\times{{u2;()}}-{{b;()}}\\times{{u1;()}}={{eval:a*u2-b*u1}}\\neq0$ : les vecteurs ne sont pas colinéaires, $\\Delta$ **n'est pas orthogonale** à $\\mathcal{P}$.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-1",
+				"d": "3",
+				"k": "2",
+				"o": "0",
+				"x0": "1",
+				"y0": "0",
+				"z0": "2"
+			},
+			"description": "v0 : orthogonale → Oui",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-1",
+				"d": "3",
+				"k": "2",
+				"o": "0",
+				"x0": "1",
+				"y0": "0",
+				"z0": "2"
+			},
+			"description": "v0 : Non coché",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-1",
+				"d": "3",
+				"k": "2",
+				"o": "1",
+				"x0": "1",
+				"y0": "0",
+				"z0": "2"
+			},
+			"description": "v0 : non orthogonale → Non",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-1",
+				"d": "3",
+				"k": "2",
+				"o": "1",
+				"x0": "1",
+				"y0": "0",
+				"z0": "2"
+			},
+			"description": "v0 : non orthogonale, Oui coché",
+			"variationIndex": 0
+		}
+	]
+}
