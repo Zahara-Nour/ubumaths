@@ -515,3 +515,8 @@ modèles 6-11). Tableau du § 10 gardé.
 - Local (port 5183, `admin@local.test`, Playwright iPhone 13) : lecture en lettres sur deux lignes
   lisible (« cinquante-sept vingt-neuvièmes ») ; comparer : bon signe → « Juste », mauvais →
   « Faux » ; encadrer 137/25 : 4 et 5 → « Faux », corrigé 5 < 137/25 < 6.
+
+### 10.3 Lot 5a : rangement (2026-11-01)
+
+- Relevé MCP : 5 brouillons [CM2] sans nœud ni tag (ids du « Reprendre ici ») ; points 013 → définition, 015 → décomposition, 016 et 019 → ordre (notion « Fractions : sens et écritures »).
+- Migration `20261101191500_questions_cm2_lot5a_rangement_tags.sql` (190000-190200, 193000 et 200700 pris par d'autres sessions), copie du lot 4. Test `questions-cm2-lot5a-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges.
