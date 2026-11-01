@@ -1,0 +1,516 @@
+{
+	"title": "Tableau de signes d'un produit",
+	"description": "Dresser le tableau de signes de (ax + b)(cx + d), de k(ax + b), de x(cx + d) : valeurs qui annulent dans l'ordre, signe sur chaque intervalle (pièges : racine −b/a écrite b/a, ordre des valeurs, constante négative oubliée, règle des signes)",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Inéquations",
+	"subdomain": "Produit et quotient",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On veut dresser le tableau de signes de $A(x)=({{a}}x{{b;+}})({{c}}x{{d;+}})$.\n\nQuelles valeurs de $x$ annulent $A(x)$ ? Donne-les dans l'ordre croissant.\n\n$x_1=?$\n\n$x_2=?$\n\nOn range ces deux valeurs dans l'ordre croissant : $x_1<x_2$.\n\nPour $x<x_1$, $A(x)$ est :\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n```\n\nPour $x_1<x<x_2$, $A(x)$ est :\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n```\n\nPour $x>x_2$, $A(x)$ est :\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "ra",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-(a)*(ra)"
+				},
+				{
+					"name": "c",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "rb",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "d",
+					"expression": "eval:-(c)*(rb)"
+				},
+				{
+					"name": "ac",
+					"expression": "eval:(a)*(c)"
+				}
+			],
+			"conditions": ["ra < rb"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{ra}}"
+				},
+				{
+					"expectedAnswer": "{{rb}}"
+				},
+				{
+					"expectedAnswer": "{{if:ac>0|0|1}}"
+				},
+				{
+					"expectedAnswer": "{{if:ac>0|1|0}}"
+				},
+				{
+					"expectedAnswer": "{{if:ac>0|0|1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque facteur $mx+p$ s'annule en $-\\dfrac{p}{m}$ ; il est du signe de $m$ à droite de cette valeur, du signe contraire à gauche.",
+					"${{a}}x{{b;+}}=0\\iff x={{ra}}$ et ${{c}}x{{d;+}}=0\\iff x={{rb}}$ : $x_1=\\textcolor{{{color:primary.1}}}{{{ra}}}$, $x_2=\\textcolor{{{color:primary.1}}}{{{rb}}}$.",
+					"Dans chaque colonne, on applique la **règle des signes** : deux signes identiques donnent $+$, deux signes contraires donnent $-$.",
+					"```variation\nvariable: x\ndomain: -inf, {{ra}}, {{rb}}, +inf\n\nsign: {{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}x{{b;+}}\n  -inf,{{ra}}: {{if:a>0|-|+}}\n  {{ra}}: z\n  {{ra}},{{rb}}: {{if:a>0|+|-}}\n  {{rb}},+inf: {{if:a>0|+|-}}\n\nsign: {{if:c==-1|-|}}{{if:c*c>1|{{c}}|}}x{{d;+}}\n  -inf,{{ra}}: {{if:c>0|-|+}}\n  {{ra}},{{rb}}: {{if:c>0|-|+}}\n  {{rb}}: z\n  {{rb}},+inf: {{if:c>0|+|-}}\n\nsign: A(x)\n  -inf,{{ra}}: {{if:ac>0|+|-}}\n  {{ra}}: z\n  {{ra}},{{rb}}: {{if:ac>0|-|+}}\n  {{rb}}: z\n  {{rb}},+inf: {{if:ac>0|+|-}}\n```"
+				]
+			}
+		},
+		{
+			"statement": "On veut dresser le tableau de signes de $A(x)=({{a}}x{{b;+}})({{c}}x{{d;+}})$.\n\nQuelles valeurs de $x$ annulent $A(x)$ ? Donne-les dans l'ordre croissant.\n\n$x_1=?$\n\n$x_2=?$\n\nOn range ces deux valeurs dans l'ordre croissant : $x_1<x_2$.\n\nPour $x<x_1$, $A(x)$ est :\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n```\n\nPour $x_1<x<x_2$, $A(x)$ est :\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n```\n\nPour $x>x_2$, $A(x)$ est :\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "ra",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-(a)*(ra)"
+				},
+				{
+					"name": "c",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "rb",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "d",
+					"expression": "eval:-(c)*(rb)"
+				},
+				{
+					"name": "ac",
+					"expression": "eval:(a)*(c)"
+				}
+			],
+			"conditions": ["ra > rb"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rb}}"
+				},
+				{
+					"expectedAnswer": "{{ra}}"
+				},
+				{
+					"expectedAnswer": "{{if:ac>0|0|1}}"
+				},
+				{
+					"expectedAnswer": "{{if:ac>0|1|0}}"
+				},
+				{
+					"expectedAnswer": "{{if:ac>0|0|1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque facteur $mx+p$ s'annule en $-\\dfrac{p}{m}$ ; il est du signe de $m$ à droite de cette valeur, du signe contraire à gauche.",
+					"${{a}}x{{b;+}}=0\\iff x={{ra}}$ et ${{c}}x{{d;+}}=0\\iff x={{rb}}$ : $x_1=\\textcolor{{{color:primary.1}}}{{{rb}}}$, $x_2=\\textcolor{{{color:primary.1}}}{{{ra}}}$.",
+					"Dans chaque colonne, on applique la **règle des signes** : deux signes identiques donnent $+$, deux signes contraires donnent $-$.",
+					"```variation\nvariable: x\ndomain: -inf, {{rb}}, {{ra}}, +inf\n\nsign: {{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}x{{b;+}}\n  -inf,{{rb}}: {{if:a>0|-|+}}\n  {{rb}},{{ra}}: {{if:a>0|-|+}}\n  {{ra}}: z\n  {{ra}},+inf: {{if:a>0|+|-}}\n\nsign: {{if:c==-1|-|}}{{if:c*c>1|{{c}}|}}x{{d;+}}\n  -inf,{{rb}}: {{if:c>0|-|+}}\n  {{rb}}: z\n  {{rb}},{{ra}}: {{if:c>0|+|-}}\n  {{ra}},+inf: {{if:c>0|+|-}}\n\nsign: A(x)\n  -inf,{{rb}}: {{if:ac>0|+|-}}\n  {{rb}}: z\n  {{rb}},{{ra}}: {{if:ac>0|-|+}}\n  {{ra}}: z\n  {{ra}},+inf: {{if:ac>0|+|-}}\n```"
+				]
+			}
+		},
+		{
+			"statement": "Voici les signes des deux facteurs de $A(x)=({{a}}x{{b;+}})({{c}}x{{d;+}})$.\n\n```variation\nvariable: x\ndomain: -inf, {{ra}}, {{rb}}, +inf\n\nsign: {{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}x{{b;+}}\n  -inf,{{ra}}: {{if:a>0|-|+}}\n  {{ra}}: z\n  {{ra}},{{rb}}: {{if:a>0|+|-}}\n  {{rb}},+inf: {{if:a>0|+|-}}\n\nsign: {{if:c==-1|-|}}{{if:c*c>1|{{c}}|}}x{{d;+}}\n  -inf,{{ra}}: {{if:c>0|-|+}}\n  {{ra}},{{rb}}: {{if:c>0|-|+}}\n  {{rb}}: z\n  {{rb}},+inf: {{if:c>0|+|-}}\n```\n\nSur $\\left]-\\infty\\,;{{ra}}\\right[$, $A(x)$ est :\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n```\n\nSur $\\left]{{ra}}\\,;{{rb}}\\right[$, $A(x)$ est :\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n```\n\nSur $\\left]{{rb}}\\,;+\\infty\\right[$, $A(x)$ est :\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "ra",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-(a)*(ra)"
+				},
+				{
+					"name": "c",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "rb",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "d",
+					"expression": "eval:-(c)*(rb)"
+				},
+				{
+					"name": "ac",
+					"expression": "eval:(a)*(c)"
+				}
+			],
+			"conditions": ["ra < rb"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:ac>0|0|1}}"
+				},
+				{
+					"expectedAnswer": "{{if:ac>0|1|0}}"
+				},
+				{
+					"expectedAnswer": "{{if:ac>0|0|1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans chaque colonne, on applique la **règle des signes** : deux signes identiques donnent $+$, deux signes contraires donnent $-$.",
+					"```variation\nvariable: x\ndomain: -inf, {{ra}}, {{rb}}, +inf\n\nsign: {{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}x{{b;+}}\n  -inf,{{ra}}: {{if:a>0|-|+}}\n  {{ra}}: z\n  {{ra}},{{rb}}: {{if:a>0|+|-}}\n  {{rb}},+inf: {{if:a>0|+|-}}\n\nsign: {{if:c==-1|-|}}{{if:c*c>1|{{c}}|}}x{{d;+}}\n  -inf,{{ra}}: {{if:c>0|-|+}}\n  {{ra}},{{rb}}: {{if:c>0|-|+}}\n  {{rb}}: z\n  {{rb}},+inf: {{if:c>0|+|-}}\n\nsign: A(x)\n  -inf,{{ra}}: {{if:ac>0|+|-}}\n  {{ra}}: z\n  {{ra}},{{rb}}: {{if:ac>0|-|+}}\n  {{rb}}: z\n  {{rb}},+inf: {{if:ac>0|+|-}}\n```"
+				]
+			}
+		},
+		{
+			"statement": "On veut dresser le tableau de signes de $A(x)={{k}}({{a}}x{{b;+}})$.\n\nPour quelle valeur de $x$ a-t-on $A(x)=0$ ?\n\n$x=?$\n\nPour $x<{{ra}}$, $A(x)$ est :\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n```\n\nPour $x>{{ra}}$, $A(x)$ est :\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "ra",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-(a)*(ra)"
+				},
+				{
+					"name": "ka",
+					"expression": "eval:(k)*(a)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{ra}}"
+				},
+				{
+					"expectedAnswer": "{{if:ka>0|1|0}}"
+				},
+				{
+					"expectedAnswer": "{{if:ka>0|0|1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{k}}$ est une constante {{if:k>0|positive|négative}} : elle ne s'annule pas, mais elle compte dans la règle des signes.",
+					"${{a}}x{{b;+}}=0\\iff x=\\textcolor{{{color:primary.1}}}{{{ra}}}$.",
+					"```variation\nvariable: x\ndomain: -inf, {{ra}}, +inf\n\nsign: {{k}}\n  -inf,{{ra}}: {{if:k>0|+|-}}\n  {{ra}},+inf: {{if:k>0|+|-}}\n\nsign: {{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}x{{b;+}}\n  -inf,{{ra}}: {{if:a>0|-|+}}\n  {{ra}}: z\n  {{ra}},+inf: {{if:a>0|+|-}}\n\nsign: A(x)\n  -inf,{{ra}}: {{if:ka>0|-|+}}\n  {{ra}}: z\n  {{ra}},+inf: {{if:ka>0|+|-}}\n```"
+				]
+			}
+		},
+		{
+			"statement": "On veut dresser le tableau de signes de $A(x)=x({{c}}x{{d;+}})$.\n\nQuelles valeurs de $x$ annulent $A(x)$ ? Donne-les dans l'ordre croissant.\n\n$x_1=?$\n\n$x_2=?$\n\nOn range ces deux valeurs dans l'ordre croissant : $x_1<x_2$.\n\nPour $x<x_1$, $A(x)$ est :\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n```\n\nPour $x_1<x<x_2$, $A(x)$ est :\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n```\n\nPour $x>x_2$, $A(x)$ est :\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "rb",
+					"expression": "1..6"
+				},
+				{
+					"name": "d",
+					"expression": "eval:-(c)*(rb)"
+				},
+				{
+					"name": "ac",
+					"expression": "eval:(c)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "{{rb}}"
+				},
+				{
+					"expectedAnswer": "{{if:ac>0|0|1}}"
+				},
+				{
+					"expectedAnswer": "{{if:ac>0|1|0}}"
+				},
+				{
+					"expectedAnswer": "{{if:ac>0|0|1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque facteur $mx+p$ s'annule en $-\\dfrac{p}{m}$ ; il est du signe de $m$ à droite de cette valeur, du signe contraire à gauche.",
+					"Le facteur $x$ s'annule en $0$, le facteur ${{c}}x{{d;+}}$ en ${{rb}}$ : $x_1=\\textcolor{{{color:primary.1}}}{0}$, $x_2=\\textcolor{{{color:primary.1}}}{{{rb}}}$.",
+					"Dans chaque colonne, on applique la **règle des signes** : deux signes identiques donnent $+$, deux signes contraires donnent $-$.",
+					"```variation\nvariable: x\ndomain: -inf, 0, {{rb}}, +inf\n\nsign: x\n  -inf,0: {{if:1>0|-|+}}\n  0: z\n  0,{{rb}}: {{if:1>0|+|-}}\n  {{rb}},+inf: {{if:1>0|+|-}}\n\nsign: {{if:c==-1|-|}}{{if:c*c>1|{{c}}|}}x{{d;+}}\n  -inf,0: {{if:c>0|-|+}}\n  0,{{rb}}: {{if:c>0|-|+}}\n  {{rb}}: z\n  {{rb}},+inf: {{if:c>0|+|-}}\n\nsign: A(x)\n  -inf,0: {{if:ac>0|+|-}}\n  0: z\n  0,{{rb}}: {{if:ac>0|-|+}}\n  {{rb}}: z\n  {{rb}},+inf: {{if:ac>0|+|-}}\n```"
+				]
+			}
+		},
+		{
+			"statement": "On veut dresser le tableau de signes de $A(x)=x({{c}}x{{d;+}})$.\n\nQuelles valeurs de $x$ annulent $A(x)$ ? Donne-les dans l'ordre croissant.\n\n$x_1=?$\n\n$x_2=?$\n\nOn range ces deux valeurs dans l'ordre croissant : $x_1<x_2$.\n\nPour $x<x_1$, $A(x)$ est :\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n```\n\nPour $x_1<x<x_2$, $A(x)$ est :\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n```\n\nPour $x>x_2$, $A(x)$ est :\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "rb",
+					"expression": "-6..-1"
+				},
+				{
+					"name": "d",
+					"expression": "eval:-(c)*(rb)"
+				},
+				{
+					"name": "ac",
+					"expression": "eval:(c)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rb}}"
+				},
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "{{if:ac>0|0|1}}"
+				},
+				{
+					"expectedAnswer": "{{if:ac>0|1|0}}"
+				},
+				{
+					"expectedAnswer": "{{if:ac>0|0|1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque facteur $mx+p$ s'annule en $-\\dfrac{p}{m}$ ; il est du signe de $m$ à droite de cette valeur, du signe contraire à gauche.",
+					"Le facteur $x$ s'annule en $0$, le facteur ${{c}}x{{d;+}}$ en ${{rb}}$ : $x_1=\\textcolor{{{color:primary.1}}}{{{rb}}}$, $x_2=\\textcolor{{{color:primary.1}}}{0}$.",
+					"Dans chaque colonne, on applique la **règle des signes** : deux signes identiques donnent $+$, deux signes contraires donnent $-$.",
+					"```variation\nvariable: x\ndomain: -inf, {{rb}}, 0, +inf\n\nsign: x\n  -inf,{{rb}}: {{if:1>0|-|+}}\n  {{rb}},0: {{if:1>0|-|+}}\n  0: z\n  0,+inf: {{if:1>0|+|-}}\n\nsign: {{if:c==-1|-|}}{{if:c*c>1|{{c}}|}}x{{d;+}}\n  -inf,{{rb}}: {{if:c>0|-|+}}\n  {{rb}}: z\n  {{rb}},0: {{if:c>0|+|-}}\n  0,+inf: {{if:c>0|+|-}}\n\nsign: A(x)\n  -inf,{{rb}}: {{if:ac>0|+|-}}\n  {{rb}}: z\n  {{rb}},0: {{if:ac>0|-|+}}\n  0: z\n  0,+inf: {{if:ac>0|+|-}}\n```"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(2x+2)(−x+3) : −1, 3, −, +, −",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"ra": "-1",
+				"b": "2",
+				"c": "-1",
+				"rb": "3",
+				"d": "3",
+				"ac": "-2"
+			},
+			"answers": ["-1", "3", "1", "0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : valeurs 1 et −3 (signe de −b/a)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"ra": "-1",
+				"b": "2",
+				"c": "-1",
+				"rb": "3",
+				"d": "3",
+				"ac": "-2"
+			},
+			"answers": ["1", "-3", "1", "0", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : + − + (signe de a seul)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"ra": "-1",
+				"b": "2",
+				"c": "-1",
+				"rb": "3",
+				"d": "3",
+				"ac": "-2"
+			},
+			"answers": ["-1", "3", "0", "1", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(x−4)(3x+6) : −2, 4, +, −, +",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"ra": "4",
+				"b": "-4",
+				"c": "3",
+				"rb": "-2",
+				"d": "6",
+				"ac": "3"
+			},
+			"answers": ["-2", "4", "0", "1", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ordre 4, −2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"ra": "4",
+				"b": "-4",
+				"c": "3",
+				"rb": "-2",
+				"d": "6",
+				"ac": "3"
+			},
+			"answers": ["4", "-2", "0", "1", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Lire : −, +, −",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"ra": "-1",
+				"b": "2",
+				"c": "-1",
+				"rb": "3",
+				"d": "3",
+				"ac": "-2"
+			},
+			"answers": ["1", "0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : +, −, +",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"ra": "-1",
+				"b": "2",
+				"c": "-1",
+				"rb": "3",
+				"d": "3",
+				"ac": "-2"
+			},
+			"answers": ["0", "1", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−3(2x−2) : 1, +, −",
+			"variationIndex": 3,
+			"variables": {
+				"k": "-3",
+				"a": "2",
+				"ra": "1",
+				"b": "-2",
+				"ka": "-6"
+			},
+			"answers": ["1", "0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : constante oubliée (−, +)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "-3",
+				"a": "2",
+				"ra": "1",
+				"b": "-2",
+				"ka": "-6"
+			},
+			"answers": ["1", "1", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x(2x−6) : 0, 3, +, −, +",
+			"variationIndex": 4,
+			"variables": {
+				"c": "2",
+				"rb": "3",
+				"d": "-6",
+				"ac": "2"
+			},
+			"answers": ["0", "3", "0", "1", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : oubli du zéro 0",
+			"variationIndex": 4,
+			"variables": {
+				"c": "2",
+				"rb": "3",
+				"d": "-6",
+				"ac": "2"
+			},
+			"answers": ["3", "3", "0", "1", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x(−x−2) : −2, 0, −, +, −",
+			"variationIndex": 5,
+			"variables": {
+				"c": "-1",
+				"rb": "-2",
+				"d": "-2",
+				"ac": "-1"
+			},
+			"answers": ["-2", "0", "1", "0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

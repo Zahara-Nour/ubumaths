@@ -1,0 +1,215 @@
+{
+	"title": "Quelle part de la figure est coloriée ? Fractions unitaires",
+	"description": "Une part coloriée d'une bande, d'un disque, d'une grille ou d'un carré en quatre triangles ; dénominateurs 2, 3, 4, 5, 6, 8, 10",
+	"grades": ["CE1"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Partage",
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quelle fraction de la figure est coloriée ?\n\n```partage\nforme: {{if:k==0|bande|disque}} {{d}}\ngris: {{r}},\n```\n\n$$?$$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				},
+				{
+					"name": "j",
+					"expression": "1..7"
+				},
+				{
+					"name": "d",
+					"expression": "{{if:j==1|2|{{if:j==2|3|{{if:j==3|4|{{if:j==4|5|{{if:j==5|6|{{if:j==6|8|10}}}}}}}}}}}}"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{d}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{1}{{{d}}}",
+					"requiredForm": "fraction"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La figure est partagée en ${{d}}$ parts égales** : une part, c'est $\\frac{1}{{{d}}}$ de la figure, un {{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==8|huitième|dixième}}}}}}}}}}}}.",
+					"Une seule part est coloriée : $\\textcolor{{{color:primary.0}}}{\\frac{1}{{{d}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quelle fraction de la figure est coloriée ?\n\n```partage\nforme: grille 2×{{c}}\ngris: {{r}},\n```\n\n$$?$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..5"
+				},
+				{
+					"name": "d",
+					"expression": "eval:2*c"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{d}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{1}{{{d}}}",
+					"requiredForm": "fraction"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La figure est partagée en $2 \\times {{c}} = {{d}}$ parts égales** : une part, c'est $\\frac{1}{{{d}}}$ de la figure, un {{if:d==2|demi|{{if:d==3|tiers|{{if:d==4|quart|{{if:d==5|cinquième|{{if:d==6|sixième|{{if:d==8|huitième|dixième}}}}}}}}}}}}.",
+					"Une seule part est coloriée : $\\textcolor{{{color:primary.0}}}{\\frac{1}{{{d}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quelle fraction de la figure est coloriée ?\n\n```partage\nforme: carre-diagonales\ngris: {{r}},\n```\n\n$$?$$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{1}{4}",
+					"requiredForm": "fraction"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le carré est partagé en $4$ triangles égaux** : un triangle, c'est $\\frac{1}{4}$ du carré, un quart.",
+					"Un seul triangle est colorié : $\\textcolor{{{color:primary.0}}}{\\frac{1}{4}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Bande de 4, une part : 1/4",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"j": "3",
+				"r": "2"
+			},
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/3 (coloriée sur les blanches)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"j": "3",
+				"r": "2"
+			},
+			"answers": ["\\frac{1}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4/1 (renversée)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"j": "3",
+				"r": "2"
+			},
+			"answers": ["\\frac{4}{1}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3/4 (les blanches)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"j": "3",
+				"r": "2"
+			},
+			"answers": ["\\frac{3}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Disque de 10 : 1/10",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"j": "7",
+				"r": "6"
+			},
+			"answers": ["\\frac{1}{10}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Grille 2×3 : 1/6",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"r": "5"
+			},
+			"answers": ["\\frac{1}{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/5 (lignes plus colonnes)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"r": "5"
+			},
+			"answers": ["\\frac{1}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : 0,25 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"r": "3"
+			},
+			"answers": ["0.25"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Carré en 4 triangles : 1/4",
+			"variationIndex": 2,
+			"variables": {
+				"r": "3"
+			},
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
