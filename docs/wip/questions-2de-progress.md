@@ -1206,7 +1206,7 @@ ni 2-348 ; L7-d trois PR de fichiers (7 A = 6, 7 B = 6, 7 C = 9), une migration,
     118c4696 (2-451) ;
   - 7 C : 93bc8b5e (2-345), 9e35f8ba (2-473), e372112e (2-346), 3810a06c (2-349), 39154ac5 (2-350),
     752c6c5e (2-354), a1cd5403 (2-355), 4f887f53 (2-356), 275cb665 (2-477).
-- Migration `20261101224702_questions_2de_signes_variations_rangement_tags` (`pnpm migration:horodatage`) et
+- Migration `20261101224703_questions_2de_signes_variations_rangement_tags` (`pnpm migration:horodatage`) et
   `tests/integration/questions-2de-signes-variations-rangement-tags.test.ts`, générés depuis ceux du lot 6
   (seul le lot change). Rouge sans la migration (fichier réduit au rollback : 5 échecs, 5 verts) ; vert avec :
-  10/10.
+  10/10. Horodatage 20261101224702 pris par la T_SPE entre-temps → 224703.

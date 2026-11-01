@@ -2,7 +2,7 @@
  * Chantier « questions-2de », lot 7 : nœud et tag de 21 modèles neufs (Supabase local requis)
  * =======================================================================================
  *
- * Migration `20261101224702_questions_2de_signes_variations_rangement_tags` : les 21 brouillons
+ * Migration `20261101224703_questions_2de_signes_variations_rangement_tags` : les 21 brouillons
  * « signes et variations » (lots 7 A, 7 B et 7 C) créés le 2026-11-01 par scripts/create-questions.ts
  * (sans nœud ni tag) vont sur le nœud de leur point et reçoivent ce point, un seul (ADR 0020).
  * Phase 0 : journal docs/wip/questions-2de-progress.md § 44.
@@ -41,7 +41,7 @@ interface Etat {
 // ============================================================================
 
 const MIGRATION =
-	'supabase/migrations/20261101224702_questions_2de_signes_variations_rangement_tags.sql';
+	'supabase/migrations/20261101224703_questions_2de_signes_variations_rangement_tags.sql';
 const LONGUEURS = 'Grandeurs et mesures > Longueurs';
 /** Le lot : identifiant créé en prod le 2026-11-01, nœud et points attendus. */
 const LOT: { id: string; noeud: string; code: string }[] = [
