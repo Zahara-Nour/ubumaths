@@ -53,12 +53,7 @@ describe('Mono-teacher RPC param cleanup - Integration Tests', () => {
 		return cls;
 	}
 
-	// SKIP: blocked by a PRE-EXISTING, unrelated prod bug — the trigger
-	// `log_achievements_to_events` on student_achievements references `NEW.metadata`,
-	// a column student_achievements doesn't have (it should read the achievement's
-	// metadata from the `achievements` table). Every student_achievements INSERT
-	// therefore fails (42703). Un-skip once that trigger is fixed.
-	it.skip('award_achievement_manual stamps unlocked_by = the calling teacher (auth.uid())', async () => {
+	it('award_achievement_manual stamps unlocked_by = the calling teacher (auth.uid())', async () => {
 		const teacher = await TestData.profile().withRole('teacher').create();
 		const student = await TestData.profile().withRole('student').create();
 		await classWithMember(student.id);
