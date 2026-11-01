@@ -5,14 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2105._
+_Mis à jour le 2026-11-01, lot 7 rangé en prod, page à cocher publiée._
 
 - **État** : lots 0 à 6 publiés (lot 6 : calcul posé et heure, 7 modèles, § 13, clos le 2026-11-01).
-- **Prochaine action** : lot 7 (données : 082, 106, 088, 089, 107, 081) — écrit (§ 14), #2102 mergée, 6 brouillons en prod ; migration nœud + tag
-  #2105 mergée, 4 conditions réunies, **pas encore jouée** → `db:migrate` dès que 170000 (questions-4) et 183000
-  (questions-3) sont jouées par leurs sessions → vérif MCP → page à cocher → `publier-lot` ;
-  puis chantier `monnaie-centimes` (à part) et lot monnaie, puis lots 8 et 9 (§ 12).
-- **En attente de David** : rien ; en attente des sessions questions-4 et questions-3 (leurs migrations).
+- **Prochaine action** : lot 7 rangé en prod (#2105), page à cocher publiée
+  (https://claude.ai/artifact/C4GhFJ83yChjuhs9KCYu64) → compter les verdicts en base → `publier-lot` simulé → David
+  `--publier`. Ensuite chantier `monnaie-centimes` (à part) et lot monnaie, puis lots 8 et 9 (§ 12).
+- **En attente de David** : la relecture du lot 7 (page à cocher ; diagrammes et tableaux croisés à jouer par les liens de l'aperçu admin).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
@@ -612,3 +611,8 @@ Réponse de David (« tes recos ? » puis « go », 2026-11-01) : les quatre rec
 - 2026-11-01 : `security-auditor` sans finding (SQL exécuté identique au lot 6) ; #2105 mergée (CI verte 16/16).
   `db:migrate` NON lancé : `20261101170000_questions_4_lot7` et `20261101183000_questions_3_lot6`, plus anciennes, pas
   jouées en prod ; `db push` les jouerait aussi (`--include-all`). Attendre qu'elles le soient, puis `db:migrate`.
+- 2026-11-01 : accord des sessions questions-3 et questions-4 ; `db:migrate --include-all` par David depuis main : 170000,
+  183000, 190000 (1re spé, signalée à sa session) et la nôtre 190100 appliquées. Vérifié au MCP : 6/6 sur le nœud de leur
+  point, un tag chacun, brouillons, `updated_at` intact. Page à cocher publiée
+  (https://claude.ai/artifact/C4GhFJ83yChjuhs9KCYu64) ; alertes : 5 modèles à blocs `barres` / `tableau-croise` non
+  dessinés par le script → liens vers l'aperçu admin en prod dans l'intro.
