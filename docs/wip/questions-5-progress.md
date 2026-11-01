@@ -5,23 +5,23 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2047._
+_Mis à jour le 2026-11-01, après #2058._
 
-- **État** : lots 1 à 3 et 4b publiés ; **4a** en prod en brouillons, rangés (#2047, `db:migrate` joué), page à
-  cocher https://claude.ai/artifact/NcU7j2v72e8pVJV5ZoyRmz (0 verdict) ; **lot 5 « Grandeurs »** (9 modèles, § 16)
-  écrit, simulation prod verte, essai local relu, PR des fichiers à merger.
-- **Prochaine action** : merger la PR du lot 5 → David `create-questions --publier` (5-grandeurs) → migration de
-  rangement → page à cocher ; lire les verdicts du 4a puis `publier-lot.ts` (David). Ensuite lot 6 « Données et
-  probabilités » (134, 080, 139, 082, 083, 079), lot 7 « Proportionnalité, fonctions » (085, 086, 140, 087, 092,
-  098 ; recoupe 6-140 / 6-141), lot 8 « Opérations » (001, 002, 005, 116, 117, oubliés du bloc précédent).
-- **En attente de David** : verdicts du 4a ; le `--publier` du lot 5.
-- **Pièges en cours** : horodatages : prendre `max + 1 min` de la prod ET des worktrees **au moment du merge** —
-  180500 est passé derrière 193500 pendant la CI, joué par `db push --include-all` (seule migration manquante,
-  vérifiée à blanc) ; `db push` depuis le worktree (dépôt principal bloqué par l'index d'une autre session) :
-  copier `../ubumaths/supabase/.temp` ; le classifieur refuse `create-questions --mettre-a-jour` en prod et
-  `publier-lot.ts` (David avec `!`) ; **gras contenant une formule** affiché avec ses astérisques ; **jamais `e`
-  ni `i`** ; degrés en `^{\circ}` (pas `\unit{°}`, qui met une espace).
-- **Worktree / branche** : `ubumaths-wt-questions-5`, `feat/questions-5-lot5-grandeurs`.
+- **État** : lots 1 à 4b publiés (4a publié le 2026-11-01) ; **lot 5 « Grandeurs »** (9 modèles, § 16) en prod en
+  brouillons, rangés (migration 20261101120100 jouée, #2058 mergée), **relecture validée par David en chat**
+  (page https://claude.ai/artifact/Bm4W9szc5wb9PGpJ3zmxDC, 0 verdict en base).
+- **Prochaine action** : David lance `publier-lot.ts --dir scripts/questions/5-grandeurs` (simulation puis
+  `--publier`), je vérifie les 9 `published` ; puis lot 6 « Données et probabilités » (134, 080, 139, 082, 083,
+  079), lot 7 « Proportionnalité, fonctions » (085, 086, 140, 087, 092, 098 ; recoupe 6-140 / 6-141), lot 8
+  « Opérations » (001, 002, 005, 116, 117).
+- **En attente de David** : la publication du lot 5 ; accord pour retirer `supabase/.temp` du worktree ; le
+  `! pnpm db:migrate` de 23:26:56 UTC (2026-10-31) visait-il une autre session (3e, lot 5) ? Il a joué la
+  migration du lot 5 de la 5e depuis ce worktree, avant sa PR (résultat juste, audit sans bloquant).
+- **Pièges en cours** : un worktree relié à la prod (`supabase/.temp` copié) fait partir un `db:migrate` lancé
+  par erreur dedans ; horodatage `max + 1 min` au moment du merge (180500 passé derrière 193500, `--include-all`) ;
+  le classifieur refuse `create-questions --publier` et `publier-lot.ts` (David avec `!`) ; gras contenant une
+  formule ; jamais `e` ni `i` ; degrés en `^{\circ}`.
+- **Worktree / branche** : `ubumaths-wt-questions-5` (branches mergées, à nettoyer).
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -410,3 +410,11 @@ des angles ; conversions de volume déjà couvertes (5-051, 5-129).
   (05), 55b26d32 (06), ddf4a07c (07), 6bf0a792 (08), f628c809 (09), brouillons sans nœud ni tag.
 - Relevé `questions-5/etat-prod-2026-11-01-lot5/` ; générateur `questions-5/lot-5-rangement.py` → migration
   `20261101120100_questions_5_lot5_rangement_tags` + fixture ; test 19/19, rouge sans la migration (8 échecs).
+
+### 16.3 Lot 5 rangé, relu (2026-11-01, #2058)
+
+- Migration `20261101120100` jouée en prod par un `! pnpm db:migrate` de David lancé dans ce worktree (relié à la
+  prod par la copie de `supabase/.temp`), AVANT la PR : état vérifié juste (9 nœuds, 9 tags, brouillons) ;
+  `security-auditor` après coup : aucun bloquant ; #2058 mergée, CI verte.
+- Page à cocher https://claude.ai/artifact/Bm4W9szc5wb9PGpJ3zmxDC ; David : « je valide toute la relecture »
+  (en chat, 0 verdict en base).
