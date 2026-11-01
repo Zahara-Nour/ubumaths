@@ -1,0 +1,360 @@
+{
+	"id": "7b4b149a-5a82-4aca-8b7f-7ef48d0ffd48",
+	"title": "Reconnaître la courbe d'une fonction trigonométrique",
+	"description": "Associer une courbe à son expression : cos x, sin x, −sin x, cos x + 1, 2 sin x, sin(x − π/2)",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Fonctions cosinus et sinus",
+	"level": 3,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: -3 ; 3\ngrille: pi/2 ; 1\nf(x) = cos(x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nQuelle est l'expression de $f(x)$ ?\n\n```choix\n- $f(x)=\\cos x$\n- $f(x)=\\sin x$\n- $f(x)=-\\cos x$\n- $f(x)=\\cos x+1$\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"Sur la figure : la courbe passe par $A(0\\,;1)$ et $B(\\pi\\,;-1)$, elle oscille entre $-1$ et $1$ et elle est symétrique par rapport à l'axe des ordonnées.",
+					"```courbe\nx: -pi ; 2*pi\ny: -3 ; 3\ngrille: pi/2 ; 1\nf(x) = cos(x)   bleu   nom=C_f\npoints: A(0 ; f(0)), B(pi ; f(pi))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
+					"On écarte les autres : $\\sin 0=0$, $-\\cos 0=-1$, et $\\cos x+1$ oscille entre $0$ et $2$.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{f(x)=\\cos x }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: -3 ; 3\ngrille: pi/2 ; 1\nf(x) = sin(x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nQuelle est l'expression de $f(x)$ ?\n\n```choix\n- $f(x)=\\sin x$\n- $f(x)=\\cos x$\n- $f(x)=-\\sin x$\n- $f(x)=2\\sin x$\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"Sur la figure : la courbe passe par l'origine $O$ et par $A\\left(\\dfrac{\\pi}{2}\\,;1\\right)$, elle oscille entre $-1$ et $1$.",
+					"```courbe\nx: -pi ; 2*pi\ny: -3 ; 3\ngrille: pi/2 ; 1\nf(x) = sin(x)   bleu   nom=C_f\npoints: A(pi/2 ; f(pi/2))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
+					"On écarte les autres : $\\cos 0=1$, $-\\sin\\left(\\dfrac{\\pi}{2}\\right)=-1$, et $2\\sin x$ oscille entre $-2$ et $2$.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{f(x)=\\sin x }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: -3 ; 3\ngrille: pi/2 ; 1\nf(x) = -sin(x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nQuelle est l'expression de $f(x)$ ?\n\n```choix\n- $f(x)=-\\sin x$\n- $f(x)=\\sin x$\n- $f(x)=\\cos x$\n- $f(x)=-\\cos x$\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"Sur la figure : la courbe passe par l'origine $O$ et par $A\\left(\\dfrac{\\pi}{2}\\,;-1\\right)$, elle oscille entre $-1$ et $1$.",
+					"```courbe\nx: -pi ; 2*pi\ny: -3 ; 3\ngrille: pi/2 ; 1\nf(x) = -sin(x)   bleu   nom=C_f\npoints: A(pi/2 ; f(pi/2))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
+					"On écarte les autres : $\\sin\\left(\\dfrac{\\pi}{2}\\right)=1$, $\\cos 0=1$ et $-\\cos 0=-1$ : aucune de ces courbes ne passe à la fois par $O$ et par $A$.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{f(x)=-\\sin x }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: -{{eval:abs(k)+2}} ; {{eval:abs(k)+2}}\ngrille: pi/2 ; 1\nf(x) = cos(x){{k;+}}   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nQuelle est l'expression de $f(x)$ ?\n\n```choix\n- $f(x)=\\cos x{{k;+}}$\n- $f(x)=\\cos x$\n- $f(x)=\\cos x{{eval:-k;+}}$\n- $f(x)=\\sin x{{k;+}}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..2;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur la figure : la courbe passe par $A(0\\,;{{eval:k+1}})$ et $B(\\pi\\,;{{eval:k-1}})$, elle oscille entre ${{eval:k-1}}$ et ${{eval:k+1}}$.",
+					"```courbe\nx: -pi ; 2*pi\ny: -{{eval:abs(k)+2}} ; {{eval:abs(k)+2}}\ngrille: pi/2 ; 1\nf(x) = cos(x){{k;+}}   bleu   nom=C_f\npoints: A(0 ; f(0)), B(pi ; f(pi))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
+					"On écarte les autres : $\\cos x$ oscille entre $-1$ et $1$, $\\cos x{{eval:-k;+}}$ entre ${{eval:-k-1}}$ et ${{eval:1-k}}$, et $\\sin 0{{k;+}}={{k}}$.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{f(x)=\\cos x{{k;+}} }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: -{{eval:abs(a)+1}} ; {{eval:abs(a)+1}}\ngrille: pi/2 ; 1\nf(x) = {{a}}*sin(x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nQuelle est l'expression de $f(x)$ ?\n\n```choix\n- $f(x)={{a}}\\sin x$\n- $f(x)=\\sin x$\n- $f(x)={{a}}\\cos x$\n- $f(x)={{eval:-a}}\\sin x$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..3;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur la figure : la courbe passe par l'origine $O$ et par $A\\left(\\dfrac{\\pi}{2}\\,;{{a}}\\right)$, elle oscille entre $-{{eval:abs(a)}}$ et ${{eval:abs(a)}}$.",
+					"```courbe\nx: -pi ; 2*pi\ny: -{{eval:abs(a)+1}} ; {{eval:abs(a)+1}}\ngrille: pi/2 ; 1\nf(x) = {{a}}*sin(x)   bleu   nom=C_f\npoints: A(pi/2 ; f(pi/2))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
+					"On écarte les autres : $\\sin x$ oscille entre $-1$ et $1$, ${{a}}\\cos 0={{a}}$, et ${{eval:-a}}\\sin\\left(\\dfrac{\\pi}{2}\\right)={{eval:-a}}$.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{f(x)={{a}}\\sin x }$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: -3 ; 3\ngrille: pi/2 ; 1\nf(x) = sin(x-pi/2)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nQuelle est l'expression de $f(x)$ ?\n\n```choix\n- $f(x)=\\sin\\left(x-\\dfrac{\\pi}{2}\\right)$\n- $f(x)=\\sin\\left(x+\\dfrac{\\pi}{2}\\right)$\n- $f(x)=\\sin x$\n- $f(x)=-\\sin x$\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"Sur la figure : la courbe passe par $A(0\\,;-1)$ et $B(\\pi\\,;1)$, elle oscille entre $-1$ et $1$ : c'est la courbe de sinus décalée de $\\dfrac{\\pi}{2}$ vers la droite.",
+					"```courbe\nx: -pi ; 2*pi\ny: -3 ; 3\ngrille: pi/2 ; 1\nf(x) = sin(x-pi/2)   bleu   nom=C_f\npoints: A(0 ; f(0)), B(pi ; f(pi))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
+					"On écarte les autres : $\\sin\\left(\\dfrac{\\pi}{2}\\right)=1$, et $\\sin 0=-\\sin 0=0$ : ces trois courbes ne passent pas par $A$.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{f(x)=\\sin\\left(x-\\dfrac{\\pi}{2}\\right) }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "variation 0 : « \\cos x » accepté",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 0 : « \\sin x » refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 0 : « -\\cos x » refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 0 : « \\cos x+1 » refusé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "variation 1 : « \\sin x » accepté",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 1 : « \\cos x » refusé",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 1 : « -\\sin x » refusé",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 1 : « 2\\sin x » refusé",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "variation 2 : « -\\sin x » accepté",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 2 : « \\sin x » refusé",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 2 : « \\cos x » refusé",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 2 : « -\\cos x » refusé",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "1"
+			},
+			"description": "variation 3 : « \\cos x+1 » accepté",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "1"
+			},
+			"description": "variation 3 : « \\cos x » refusé",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "1"
+			},
+			"description": "variation 3 : « \\cos x-1 » refusé",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "1"
+			},
+			"description": "variation 3 : « \\sin x+1 » refusé",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "variation 4 : « 2\\sin x » accepté",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "variation 4 : « \\sin x » refusé",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "variation 4 : « 2\\cos x » refusé",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2"
+			},
+			"description": "variation 4 : « -2\\sin x » refusé",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "variation 5 : « \\sin\\left(x-\\dfrac{\\pi}{2}\\right) » accepté",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 5 : « \\sin\\left(x+\\dfrac{\\pi}{2}\\right) » refusé",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 5 : « \\sin x » refusé",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "variation 5 : « -\\sin x » refusé",
+			"variationIndex": 5
+		}
+	]
+}

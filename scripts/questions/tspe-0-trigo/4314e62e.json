@@ -1,0 +1,170 @@
+{
+	"id": "4314e62e-6357-4374-856d-69dd36883851",
+	"title": "Résoudre cos x = a ou sin x = a dans ℝ",
+	"description": "Solutions dans ℝ par périodicité : ±α + 2kπ pour cos, α + 2kπ et π − α + 2kπ pour sin (pièges : une seule famille, cos et sin confondus, kπ au lieu de 2kπ)",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Équations et inéquations",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $\\cos x={{eval:cos(n*\\pi/12)}}$.\n\nL'ensemble des solutions est formé des réels :\n\n```choix\n- $x={{a}}+2k\\pi$ ou $x=-{{a}}+2k\\pi,\\ k\\in\\mathbb{Z}$\n- $x={{a}}+2k\\pi,\\ k\\in\\mathbb{Z}$\n- $x={{a}}+2k\\pi$ ou $x={{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}+2k\\pi,\\ k\\in\\mathbb{Z}$\n- $x={{a}}+k\\pi$ ou $x=-{{a}}+k\\pi,\\ k\\in\\mathbb{Z}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}|\\frac{2\\pi}{3}|\\frac{3\\pi}{4}|\\frac{5\\pi}{6}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*a/\\pi"
+				},
+				{
+					"name": "u",
+					"expression": "eval:(12-n)/gcd(12-n,12)"
+				},
+				{
+					"name": "w",
+					"expression": "eval:12/gcd(12-n,12)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos{{a}}={{eval:cos(n*\\pi/12)}}$ et $\\cos(-x)=\\cos x$ : sur un tour, les solutions sont ${{a}}$ et $-{{a}}$ (points du cercle de même abscisse).",
+					"```trig\npreset: custom\nangles: -{{n}}*pi/12, {{n}}*pi/12\nequation: cos(x) = cos({{n}}*pi/12)\nmode: points\nmesures: principales\n```",
+					"$\\cos$ est $2\\pi$-périodique : $\\textcolor{{{color:primary.0}}}{x={{a}}+2k\\pi\\text{ ou }x=-{{a}}+2k\\pi}$, $k\\in\\mathbb{Z}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $\\sin x={{eval:sin(n*\\pi/12)}}$.\n\nL'ensemble des solutions est formé des réels :\n\n```choix\n- $x={{a}}+2k\\pi$ ou $x={{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}+2k\\pi,\\ k\\in\\mathbb{Z}$\n- $x={{a}}+2k\\pi$ ou $x=-{{a}}+2k\\pi,\\ k\\in\\mathbb{Z}$\n- $x={{a}}+2k\\pi,\\ k\\in\\mathbb{Z}$\n- $x={{a}}+k\\pi,\\ k\\in\\mathbb{Z}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*a/\\pi"
+				},
+				{
+					"name": "u",
+					"expression": "eval:(12-n)/gcd(12-n,12)"
+				},
+				{
+					"name": "w",
+					"expression": "eval:12/gcd(12-n,12)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\sin{{a}}={{eval:sin(n*\\pi/12)}}$ et $\\sin(\\pi-x)=\\sin x$ : sur un tour, les solutions sont ${{a}}$ et $\\pi-{{a}}={{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}$ (points du cercle de même ordonnée).",
+					"```trig\npreset: custom\nangles: {{n}}*pi/12, {{eval:12-n}}*pi/12\nequation: sin(x) = sin({{n}}*pi/12)\nmode: points\nmesures: principales\n```",
+					"$\\sin$ est $2\\pi$-périodique : $\\textcolor{{{color:primary.0}}}{x={{a}}+2k\\pi\\text{ ou }x={{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}+2k\\pi}$, $k\\in\\mathbb{Z}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"description": "v0 : les deux familles ±α + 2kπ → correct",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"description": "v0 : une seule famille → incorrect",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"description": "v0 : π − α (confusion avec sin) → incorrect",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"description": "v0 : période π au lieu de 2π → incorrect",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"description": "v1 : α et π − α → correct",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"description": "v1 : ±α (confusion avec cos) → incorrect",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"description": "v1 : une seule famille → incorrect",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"description": "v1 : période π → incorrect",
+			"variationIndex": 1
+		}
+	]
+}

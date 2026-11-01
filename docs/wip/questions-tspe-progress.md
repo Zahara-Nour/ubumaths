@@ -10,16 +10,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2084 et la publication du lot 0-primitives._
+_Mis à jour le 2026-11-01, lot 0-trigo validé par David (§ 10)._
 
-- **État** : lots 0-suites, 0-limites et fonctions, 0-intégration, 0-primitives **publiés** (84 modèles). Rien en cours.
-- **Prochaine action** : lot trigonométrie (branche `feat/questions-tspe-lot0-trigo`, déjà créée dans le worktree) : relevé des brouillons de trigo T_SPE en base, instantané, vérification. Plus tard : migration des tags Q3 (§ 1, § 7, § 8, § 9).
-- **En attente de David** : rien.
+- **État** : lots 0-suites, 0-limites et fonctions, 0-intégration, 0-primitives **publiés** (84 modèles). Lot 0-trigo
+  (23 brouillons, § 10) **validé en bloc par David** ; une correction (C1) et deux niveaux changés dans les fichiers.
+- **Prochaine action** : merger la PR de l'instantané ; puis David lance `create-questions --publier --mettre-a-jour`
+  (C1 + niveaux de fece187e, afd9b3ff) et `publier-lot` (simulation puis `--publier`) ; relire le statut en base. Lot
+  suivant : dénombrement. Plus tard : migration Q3.
+- **En attente de David** : `create-questions --mettre-a-jour` puis `publier-lot` du lot 0-trigo.
 - **Pièges en cours** : `create-questions` et `publier-lot`, même en simulation → David (le mode auto les refuse) ;
   partir des id, pas des vieux dossiers `<thème>-terminale/` ; simulation `publier-lot` AVANT tout ;
   worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (sinon `$lib` introuvable) ;
-  **horodatage de migration** : max + 1 min de la prod juste avant de créer le fichier.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe` · `feat/questions-tspe-lot0-trigo` (partie de `main` après #2084).
+  l'aperçu de `question:specs` mélange les options d'une case choix : recouper l'indice avec la SOURCE.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe` · `feat/questions-tspe-lot0-trigo`.
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -430,3 +433,48 @@ publication. Les 3 retouches ne sont pas encore en base : la page montre déjà 
 **Relecture** : David valide les 18 fiches en bloc (2026-11-01, sans passer par la page : `verdicts` restée vide).
 
 **Publication** (2026-11-01, #2084 mergée) : David a lancé `create-questions --publier --mettre-a-jour` (3 mis à jour : 968f4295, e02fb162, efb12f4b ; 15 identiques) puis `publier-lot` (simulation : 18 passent) et `--publier`. Relu en base (MCP) : 18 / 18 `published`, les 3 retouches présentes, anciens textes absents.
+
+## 10. Lot 0-trigo (fonctions sinus et cosinus) : vérification des brouillons
+
+_2026-11-01. 23 brouillons (relevé MCP par point et par domaine « Fonctions trigonométriques ») : 21 de niveau `T_SPE`
+— 77b5e06d (600), 0a2d3681 (454), 7026a36a, cac2d6ed (459), 99c772c0, 4314e62e, 42f091c1, 32696595 (457), 7d552757,
+9c7fb7cf, 463f483e, fccd570b (458), 7eec7032, 4c4d43dc (597), 8afc09bc, 7df468d6 (598), 68db64b0, 7b4b149a, f96d3e43
+(599), 18855802 (456), 5072030d (601) — et fece187e, afd9b3ff (457, niveau `1_SPE`, laissés ici par D22 de
+`questions-1spe`). 174e202b et dc4b8d08 restent hors lot (D17 de `questions-1spe`, sans point). Aucun en `T_COMP`.
+Instantané `scripts/questions/tspe-0-trigo/` (prod), une copie par variation (80 variations, 2 tirages lus chacune),
+puis 133 copies forcées sur chaque valeur de la première variable (π/6 … 5π/6, a et k aux bornes, signes) ;
+cases choix recoupées avec l'ordre de la source (l'aperçu mélange les options) ; sorties dans le scratchpad._
+
+**Mécanique** : 23 / 23 verts, 4 150 tirages réussis, 0 avertissement.
+
+**Bornes** : équations sur ℝ, ]−π ; π] ou [0 ; 2π[ (lts-2 libre), inéquations sur [−π ; π] seulement (lts-2), les
+quatre sens (lts-4), valeurs remarquables (lts-3), cos et sin (lts-1). Les titres « sur un tour » (463f483e, fccd570b,
+fece187e, afd9b3ff) couvrent des énoncés sur [−π ; π] ou ]−π ; π] : titre = clé, laissé. Deux questions :
+
+- **Q-T1** : 42f091c1 (3 variations) résout cos(2x) = a et sin(2x) = a (]−π ; π] et [0 ; 2π[) ; le BO dit « équation
+  du type cos(x) = a ». Recommandé : garder (on pose X = 2x, la méthode reste celle de cos X = a).
+- **Q-T2** : 7df468d6 (période de cos(ax + b), sin(πx)…) et 5072030d (périodes π, 2π/3, 4π, 2 lues sur la courbe)
+  vont au-delà de « périodicité (2π) » (598) et de sa traduction graphique (601). Recommandé : garder (application
+  directe de la 2π-périodicité, tirages bornés à a ≤ 6).
+
+**Constats (corrigés dans les fichiers, specs vertes)** :
+
+- **C1** 4c4d43dc v2 et v4 : « f est \textcolor{…}{\text{impaire}} » écrit hors des `$…$` (rendu brut) → mis entre
+  `$…$` ; seuls cas des 23 fichiers (recherche de toute commande LaTeX hors formule).
+- **Niveau** : fece187e et afd9b3ff passent de `1_SPE` à `T_SPE` dans leur fichier (Q3, D22 de `questions-1spe`) :
+  `--mettre-a-jour` écrit les niveaux.
+
+**Vus, laissés** : `\frac{ 11\pi}{ 12 }` (espaces, sans effet) ; 68db64b0, 7b4b149a, f96d3e43 rangés sur la notion
+« Fonctions trigonométriques », comme leur point TSPE-599 ; fenêtre des courbes adaptée à a et b
+(`y: ±(|a| + |b| + 1)`) ; `angles: 3pi/2` lu par le bloc `trig`.
+
+**Niveaux** : aucune collision dans les 9 catégories du domaine (relevé MCP, 2026-11-01 ; les 6 publiés sont des
+sous-domaines de 1re).
+
+**Page à cocher** : https://claude.ai/artifact/H1UCsA6bvtH2LM65P7mYjw (23 fiches, 12 alertes « bloc trig non dessiné »,
+voulu), collection `verdicts` vide à la publication. Les retouches ne sont pas encore en base : la page montre déjà les
+fichiers corrigés.
+
+**Relecture** : David valide les 23 fiches en bloc (2026-11-01, « je valide toute la relecture », sans passer par la
+page : `verdicts` restée vide). Q-T1 et Q-T2 : les modèles concernés (42f091c1, 7df468d6, 5072030d) sont validés tels
+quels, donc gardés (recommandation suivie).
