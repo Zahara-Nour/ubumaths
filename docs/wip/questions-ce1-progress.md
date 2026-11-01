@@ -5,22 +5,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, migration du lot 6 écrite._
+_Mis à jour le 2026-11-01, après #2083 (rangement du lot 6 joué en prod)._
 
-- **État** : lots 0 à 5 bis publiés. Lot 6 (calcul posé et heure, 7 modèles, § 13) : #2071 mergée, 7 brouillons en
-  prod ; migration nœud + tag `20261101141600` écrite, test rouge sans / vert avec ; PR sur
-  `chore/questions-ce1-lot6-rangement`.
-- **Prochaine action** : `security-auditor`, CI verte → merge → `db:migrate` (4 conditions) → vérif MCP → page à cocher
-  → `publier-lot`. Ensuite lot 7 (données : 082, 106, 088, 089, 107, 081), puis chantier `monnaie-centimes` (à part)
-  et lot monnaie, puis lots 8 et 9 (§ 12).
-- **En attente de David** : rien.
+- **État** : lots 0 à 5 bis publiés. Lot 6 (calcul posé et heure, 7 modèles, § 13) : 7 brouillons en prod, rangés et
+  tagués (#2083, `db:migrate` fait, vérifié au MCP) ; page à cocher publiée
+  (https://claude.ai/artifact/NtdykbdR6MZfDfChmD2woM).
+- **Prochaine action** : relecture de David → compter les verdicts (`ArtifactData list verdicts`) → `publier-lot` en
+  simulation → `--publier` par David → statut relu au MCP. Ensuite lot 7 (données : 082, 106, 088, 089, 107, 081),
+  puis chantier `monnaie-centimes` (à part) et lot monnaie, puis lots 8 et 9 (§ 12).
+- **En attente de David** : relecture de la page à cocher (les 3 opérations posées se jouent dans l'aperçu admin).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
   posée dans Chrome : une case à la fois ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage
   de migration : max de `origin/main` ET des autres worktrees + 1 min** ; commitlint : sujet sans majuscule ; aucun lien
   de session dans une PR ; migration de données → ligne `Doc-inchangée:` dans un commit (garde du pre-push).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branche `chore/questions-ce1-lot6-rangement`). `!` de David :
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (branche `docs/questions-ce1-lot6-relecture`, vide, sur `origin/main`). `!` de David :
   toujours préfixer `cd /Users/david/Coding/js/ubumaths &&` (un dossier courant supprimé fait échouer node en `uv_cwd`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
@@ -551,3 +551,7 @@ David ; un vrai ambre demanderait du code.
 - 2026-11-01 : David valide « 2 h 15 l'après-midi = **faux avec message** » (pas d'ambre : toucherait au juge commun,
   chantier à part si un jour on veut l'ambre pour les erreurs typiques). Remarque non bloquante de `security-auditor`
   (le rollback retirerait un même tag posé à la main entre-temps) acceptée, comme au lot 5 bis.
+- 2026-11-01 : #2083 mergée (CI verte 16/16) ; `db:migrate --include-all` par David (une migration 1re spé plus
+  récente déjà jouée, la nôtre seule appliquée) ; vérifié au MCP : 7/7 sur le nœud de leur point, un tag chacun,
+  `updated_at` = `created_at`. Page à cocher publiée (https://claude.ai/artifact/NtdykbdR6MZfDfChmD2woM) ; alertes :
+  les 3 opérations posées non dessinées (à jouer dans l'aperçu), homonyme CP `0f7381e6` écarté pour l'addition (juste).
