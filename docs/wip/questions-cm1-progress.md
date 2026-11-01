@@ -713,7 +713,8 @@ juste après le lot 4.
   (placer), `10aae729-4a29-4dac-9578-21ef655d60d1` (partie entière), `ca08432a-cfcc-4372-809e-f5d0d9895eff`
   (arrondir), `2af5f9fe-de36-4b1c-adf9-dec60f759910` (ranger), `2cb242e0-fa40-458b-abb0-819e4720c731`
   (intercaler).
-- Migration `20261101200800_questions_cm1_lot4_rangement_tags` et son test générés du gabarit du lot
-  3c (script, remplacements vérifiés au `diff`) ; horodatage = max des worktrees et branches
-  distantes (`20261101200700`) + 1 min.
+- Migration `20261101212100_questions_cm1_lot4_rangement_tags` et son test générés du gabarit du lot
+  3c (script, remplacements vérifiés au `diff`) ; horodatage d'abord `20261101200800`, pris aussi par
+  `questions_5_lot6_niveau` (branche `fix/questions-5-lot6-niveau`), vu au contrôle d'avant merge :
+  renuméroté `20261101212100` (max `20261101212000`, 1spe, + 1 min).
 - Test d'intégration : rouge sans le corps de la migration (5 échecs), 9/9 vert avec.
