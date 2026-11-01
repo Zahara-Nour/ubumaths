@@ -10,21 +10,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 0-dénombrement commencé (§ 11)._
+_Mis à jour le 2026-11-01, après #2110 (lot 0-dénombrement, § 11)._
 
 - **État** : lots 0-suites, 0-limites et fonctions, 0-intégration, 0-primitives, 0-trigo **publiés** (107 modèles).
-  Lot 0-dénombrement : 26 brouillons relevés, instantané `scripts/questions/tspe-0-denombrement/` (§ 11).
-- **Prochaine action** : #2110 (instantané + C1-C9) à merger ; relecture de David (page à cocher, § 11), Q-D1 ; puis
-  David lance `create-questions --publier --mettre-a-jour` et `publier-lot` (simulation puis `--publier`).
-  Lots suivants : géométrie dans l'espace, probabilités. Plus tard : migration Q3.
-- **En attente de David** : relecture des 26 fiches (page à cocher, § 11) et Q-D1 (ordre des niveaux, coefficients
-  binomiaux).
-- **Pièges en cours** : `create-questions` et `publier-lot`, même en simulation → David (le mode auto les refuse) ;
-  partir des id, pas des vieux dossiers `<thème>-terminale/` ; simulation `publier-lot` AVANT tout ;
-  worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (sinon `$lib` introuvable) ; le worktree n'a pas
-  de `.env` : `pnpm exec tsx --env-file=../ubumaths/.env …` (prod, lecture) ;
-  l'aperçu de `question:specs` mélange les options d'une case choix : recouper l'indice avec la SOURCE.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe` · `feat/questions-tspe-lot0-denombrement`.
+  Lot 0-dénombrement : 26 brouillons, C1-C9 dans les fichiers (#2110 mergée), **validé en bloc par David**.
+- **Prochaine action** : selon le choix A/B de Q-D1 (§ 11) ; avec A : David lance `create-questions --publier
+--mettre-a-jour` puis `publier-lot` (simulation, puis `--publier`) sur `scripts/questions/tspe-0-denombrement`,
+  je relis en base. Lot suivant : géométrie dans l'espace, puis probabilités. Plus tard : migration Q3.
+- **En attente de David** : Q-D1, voie A (publier, ordre changé par la migration Q3) ou B (niveaux changés dans
+  l'admin avant `--mettre-a-jour`, fichiers mis d'accord) ; puis les deux commandes de publication.
+- **Pièges en cours** : le **niveau est dans la clé** de `create-questions` : changer `level` dans un fichier = doublon
+  créé ; index unique de niveau par catégorie sur les **publiés** seulement. `create-questions` et `publier-lot`, même
+  en simulation → David ; simulation `publier-lot` AVANT tout ; worktree neuf : `pnpm exec svelte-kit sync`, et
+  `pnpm exec tsx --env-file=../ubumaths/.env …` (pas de `.env` dans le worktree) ; l'aperçu mélange les options d'une
+  case choix : recouper avec la SOURCE ; `!=` dans une formule s'affiche ≠, `i` seul devient l'unité imaginaire.
+- **Worktree / branche** : aucun (retiré après #2110) ; prochain lot : nouveau worktree depuis `origin/main`.
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -536,7 +536,7 @@ n'y touche pas ici. a26e6e50 : m = k + 1 donne Card(A) = Card(B), piège du 0 co
 **Niveaux** : aucune collision dans les 10 catégories du lot (relevé MCP, 2026-11-01 ; « Ensembles / Cardinal et
 produit cartésien » partagée avec deux brouillons de 2de, niveaux 1 et 2).
 
-**Q-D1** (à David) : « Loi binomiale / Coefficients binomiaux » range Pascal (ef3c495c) au niveau 1, avant la
+**Q-D1** : « Loi binomiale / Coefficients binomiaux » range Pascal (ef3c495c) au niveau 1, avant la
 définition par les chemins (07ebdcbe, 2), la symétrie (970dab52, 3) et les cas k = 0, 1, n (4dcbae71, 4). Ordre
 proposé : chemins 1, cas particuliers 2, symétrie 3, Pascal 4. Recommandé : oui, par `--mettre-a-jour` avec le lot.
 
@@ -547,3 +547,16 @@ proposé : chemins 1, cas particuliers 2, symétrie 3, Pascal 4. Recommandé : o
 vide à la publication. Les 9 retouches ne sont pas encore en base : la page montre déjà les fichiers corrigés.
 
 **PR** : #2110.
+
+**Relecture** : David valide les 26 fiches en bloc (2026-11-01, « je valide tout le lot du dénombrement », sans passer
+par la page : `verdicts` restée vide).
+
+**D-D1 (David, 2026-11-01, « je te suis »)** : nouvel ordre de « Loi binomiale / Coefficients binomiaux » retenu
+(07ebdcbe 1, 4dcbae71 2, 970dab52 3, ef3c495c 4). Mais la voie proposée (`--mettre-a-jour`) est impossible : le niveau
+est dans la clé de `create-questions` (`scripts/create-questions.ts:105`), un niveau changé dans un fichier créerait un
+doublon ; une fois publiés, l'échange circulaire bute sur l'index unique `idx_question_templates_unique_category`
+(niveaux provisoires nécessaires). Voie à choisir par David : **A** (recommandée) publier dans l'ordre actuel et faire
+l'échange dans la migration Q3 ; **B** niveaux changés dans l'admin sur les brouillons, fichiers mis d'accord, puis
+`--mettre-a-jour`.
+
+**PR** : #2110 mergée le 2026-11-01 (CI verte).
