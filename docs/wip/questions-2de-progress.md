@@ -6,16 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, migration nœud + tag du lot 5 écrite (§ 34)._
+_Mis à jour le 2026-11-01, après #2087 (§ 34, § 35)._
 
-- **État** : lots 1 à 4 publiés ; lot 5 (16 modèles) en prod en BROUILLON ; migration
-  `20261101160100_questions_2de_droites_rangement_tags` + test d'intégration (rouge sans, 10/10 avec) en PR.
-- **Prochaine action** : merge de la PR, puis `db:migrate` depuis la branche mergée (4 conditions), vérif MCP ;
-  puis page à cocher (`page-a-cocher.ts` sur les 16, deux dossiers réunis).
-- **En attente de David** : rien.
-- **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main` ET des worktrees ;
-  `migration list --linked` avant `db:migrate` ; `page-a-cocher.ts` ne prend qu'un `--dir`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `feat/questions-2de-rangement-droites`.
+- **État** : lots 1 à 4 publiés ; lot 5 (16 modèles) en prod en BROUILLON, rangés et tagués (#2087, migration
+  jouée et vérifiée au MCP) ; page à cocher publiée (§ 35).
+- **Prochaine action** : relecture de David sur la page à cocher ; lire les verdicts (`ArtifactData list
+verdicts`), corriger les « À revoir », puis `publier-lot.ts` sur `2de-droites-a` puis `2de-droites-b`.
+- **En attente de David** : verdicts sur https://claude.ai/artifact/YYe7XgNAqZa9ZmStmPGcci
+- **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main` ET des worktrees (collision
+  141600 CE1/CM1 vue le 2026-11-01) ; `page-a-cocher.ts` ne prend qu'un `--dir` (préfixes `a-`/`b-` dans une
+  copie : les noms 01… se recouvrent) ; `db:migrate` refusé par le classifieur → David le lance.
+- **Worktree / branche** : aucun (retiré après #2087).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -840,3 +841,14 @@ David a lancé `create-questions --publier` sur `2de-droites-a` puis `2de-droite
   change). Rouge sans la migration (fichier vidé : 3 échecs, 5 sautés) ; vert avec : 10/10.
 - `security-auditor` : aucun finding (même code exécutable que le lot 4, gardes et rollback vérifiés, état prod
   relu par MCP). PR #2087.
+- #2087 mergée (CI : `Doc-inchangée:` à mettre dans un commit, pas dans le corps de PR ; `/demo/editeur`
+  instable, vert à la relance). `db:migrate` : bloqué d'abord par une collision 20261101141600 (CE1 / CM1, levée
+  par #2093), puis refusé par le classifieur ; joué par David avec 160400 (CM1). MCP : 16 `draft`, bon nœud, un
+  seul tag, le bon, `updated_at` préservé.
+
+## 35. Lot 5, page à cocher (2026-11-01)
+
+- `page-a-cocher.ts` sur les 16 fichiers des deux dossiers réunis (copie dans le scratchpad, préfixes `a-`/`b-`) :
+  les 16 ids du § 33 retrouvés, `draft`, aucune alerte. Page (capacité `db`, collection `verdicts` vide au
+  départ) : https://claude.ai/artifact/YYe7XgNAqZa9ZmStmPGcci
+- Publication : `publier-lot.ts` une fois par dossier (`2de-droites-a`, puis `2de-droites-b`).
