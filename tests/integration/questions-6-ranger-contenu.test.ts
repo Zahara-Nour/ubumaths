@@ -1,12 +1,12 @@
 /**
- * Chantier « questions-6 » : contenu des 4 modèles d'origine du lot 5, scissions (Supabase local requis)
- * ==========================================================================================
+ * Chantier « questions-6 » : 06 et 07 du lot 4 passent en ranger (Supabase local requis)
+ * ======================================================================================
  *
- * Migration `20261101121300_questions_6_ranger_contenu` : 4 modèles MODIFIER, sans neuf ni tag posé.
- * c9c3a8a3 (02), 378aa770 (03), afebbb91 (04, titre resserré, spec ajoutée en v1), ddf5d292 (08) perdent
- * les variations déplacées dans les 7 modèles neufs publiés le 2026-10-29. Les tags relevés (6-131,
- * 6-136, 6-133, 6-205) sont exigés à l'identique. Décision de David du 2026-10-28, accord du 2026-10-29
- * (copie figée dans tests/integration/fixtures/questions-6-ranger-contenu.json).
+ * Migration `20261101121300_questions_6_ranger_contenu` : 2 modèles MODIFIER, sans neuf ni tag posé.
+ * 83c835bb (06, Ranger des fractions) et c360d588 (07, Ranger des nombres mixtes) passent de trois
+ * cases à un bloc ranger ; variations et specs remplacées par la source. Les tags relevés (6-134,
+ * 6-204) sont exigés à l'identique. Décision de David du 2026-10-31 (copie figée dans
+ * tests/integration/fixtures/questions-6-ranger-contenu.json).
  * Méthode (copies de la prod, rejeu du fichier, rollback) : tests/helpers/database/lot-2bis-migration.ts.
  *
  * @vitest-environment node
