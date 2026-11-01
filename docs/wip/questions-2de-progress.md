@@ -8,15 +8,15 @@
 
 _Mis à jour le 2026-11-01, phase 0 du lot 7 validée (§ 44), 7 A écrit (§ 45)._
 
-- **État** : lots 1 à 6 publiés ; lot 7 (21 modèles) validé, 7 A (6 modèles) écrit, PR à ouvrir.
-- **Prochaine action** : PR 7 A (CI : attendre le merge de #2154, main cassée), puis 7 B (tableaux de signes,
-  6), puis 7 C (variations, 9) ; ensuite brouillons en prod (David), migration, page à cocher.
+- **État** : lots 1 à 6 publiés ; lot 7 (21 modèles) validé ; 7 A (§ 45) et 7 B (§ 46) écrits, PR à ouvrir.
+- **Prochaine action** : PR 7 A (CI : attendre le merge de #2154, main cassée), puis PR 7 B (branche empilée,
+  à rebaser), puis 7 C (variations, 9) ; ensuite brouillons en prod (David), migration, page à cocher.
 - **En attente de David** : rien.
 - **Pièges en cours** : horodatage de migration = max + 1 min de `origin/main`, des worktrees ET de la prod
   (sinon `db push --include-all`, qui emporte aussi les migrations mergées par d'autres sessions) ;
   `page-a-cocher.ts` voit des défauts de fenêtre que `sonde-courbes` ne voit pas : la lancer avant la PR ;
   `db push`, `--publier` → David avec `!` ; worktree neuf → `pnpm exec svelte-kit sync`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `feat/questions-2de-lot7a`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `feat/questions-2de-lot7a` puis `…-lot7b`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1164,3 +1164,19 @@ ni 2-348 ; L7-d trois PR de fichiers (7 A = 6, 7 B = 6, 7 C = 9), une migration,
   « Juste », corrigé avec le tableau). Étiquette 𝒞_f retirée de la droite (posée sur la graduation −4).
 - Hors lot : un tableau de signes est annoncé « Tableau de variations de la fonction x » aux lecteurs d'écran
   (composant `VariationTable`).
+
+## 46. Lot 7 B, PR des fichiers (2026-11-01)
+
+- Script `questions-2de/lot-signes-b-2de.py` → `scripts/questions/2de-signes-b/` (6 modèles, 26 variations,
+  50 specs). Catégorie : Calcul littéral › Inéquations › « Produit et quotient », niveaux 3 à 8 (2-330, 446,
+  337, 449, 450, 451).
+- Formes : tableau à construire (valeurs qui annulent, puis signe pour $x<x_1$, $x_1<x<x_2$, $x>x_2$ :
+  les intervalles ne trahissent pas les valeurs demandées) ; tableau des facteurs donné, signe du produit à
+  lire ; k(ax + b), x(cx + d) ; quotient : zéro, valeur interdite, « sous la valeur interdite on écrit : 0 /
+  une double barre » ; résolutions sur le tableau complet, quatre sens, deux ordres zéro / valeur interdite.
+- L'ordre des deux valeurs est fixé par variation (`ra < rb` / `ra > rb`) : chaque ligne est découpée aux
+  deux valeurs (convention des tests du parseur) ; racines non nulles (pas de « +0 » dans une étiquette).
+- `question:specs` : tout vert, tirages réussis ; simulation contre la prod : « 6 à créer ». Base locale :
+  6 brouillons ; aperçu : tableau à trois lignes du quotient dessiné juste (0 sur la ligne du dénominateur,
+  double barre sur celle de B(x), cases vides là où un facteur ne s'annule pas).
+- Branche `feat/questions-2de-lot7b`, empilée sur 7 A (à rebaser après son merge).
