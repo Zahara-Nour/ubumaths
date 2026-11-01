@@ -5,15 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, page à cocher du lot 6 publiée._
+_Mis à jour le 2026-11-01, lot 6 publié._
 
-- **État** : lot 6 : 7 brouillons rangés et tagués en prod ; page à cocher publiée
-  (https://claude.ai/artifact/KtNscSpDBynm4Baw36Vftn, § 13.11), 0 verdict pour l'instant.
-- **Prochaine action** : relecture par David ; compter les verdicts (`ArtifactData list verdicts`), corriger
-  les « À revoir » (§ 7 de la démarche), puis `publier-lot.ts` (simulation, puis David avec `--publier`).
-  3-019 et 3-020 (` ```solide `) : publiables seulement après le `deploy:prod` qui livre le bloc (à demander
-  à David) ; sinon publier les 5 autres d'abord.
-- **En attente de David** : la relecture de la page à cocher.
+- **État** : lots 0 à 6 publiés en prod ; lot 6 : 7 modèles relus (7 OK) et publiés (§ 13.12).
+- **Prochaine action** : phase 0 du lot 7 (algorithmique, § 4 : 3-047, 3-048, 3-049) ; il restera ensuite le
+  lot 8 (outils C : boîte à moustaches, solides, chacun en chantier à part).
+- **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; ` ```solide ` pas en prod (modèles qui s'en servent : brouillon
   jusqu'au `deploy:prod`) ; étiquette d'un vecteur libre (`vecteur(dx, dy, ancre=…)`) : vérifier qu'un
@@ -929,3 +926,10 @@ modèles publiés de plus, et c8306505 de 4e ; la 4e ne perd rien. Aucune règle
   https://claude.ai/artifact/KtNscSpDBynm4Baw36Vftn (capacité `db`, collection `verdicts` vide au départ).
 - Alertes : 3-019 et 3-020, bloc ` ```solide ` non dessiné par la page (montré en source) → les jouer dans
   l'aperçu admin **local** (le bloc n'est pas en prod).
+
+### 13.12 Lot 6 : relu et publié (2026-11-01)
+
+- Page à cocher : 7 verdicts « OK » sur 7, sans commentaire (`ArtifactData list verdicts`).
+- ` ```solide ` en prod depuis la v0.59.0 (`deploy:prod` du 2026-11-01, 14 h 44) : 3-019 et 3-020 publiés
+  avec les autres. `publier-lot.ts` (simulation, puis `--publier`) lancé par David : 7/7 publiés ;
+  relu au MCP : `published`, grades `['3']`.
