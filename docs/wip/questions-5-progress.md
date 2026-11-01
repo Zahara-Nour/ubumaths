@@ -5,12 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 7 écrit (PR des fichiers ouverte)._
+_Mis à jour le 2026-11-01, après #2137._
 
 - **État** : lots 1 à 6 publiés. **Lot 7** (§ 18, 6 modèles) écrit : `docs/wip/questions/lot-5-proportionnalite.py`
   → `scripts/questions/5-proportionnalite/`, simulation prod 6 à créer / 58 specs vertes, essai en base locale
-  fait (§ 18.1).
-- **Prochaine action** : PR des fichiers → CI → merge ; puis **David** `create-questions --dir
+  fait (§ 18.1). Fichiers mergés (#2137, CI verte).
+- **Prochaine action** : **David** `create-questions --dir
 scripts/questions/5-proportionnalite --publier` ; relever les `id` ; migration nœud + tag ; page à cocher.
   Ensuite lot 8 « Opérations » (001, 002, 005, 116, 117).
 - **En attente de David** : le `--publier` du lot 7 ; deux cases sur deux lignes (02) : au pilotage Chrome, la
@@ -18,7 +18,7 @@ scripts/questions/5-proportionnalite --publier` ; relever les `id` ; migration n
 - **Pièges en cours** : horodatage = `max + 1 min` de `origin/main` JUSTE AVANT le merge, `db:migrate
 --include-all --dry-run` d'abord ; nœud neuf → `later-migrations.ts` + fixtures ; `--publier` = David ;
   prix en euros → `zeros: off` (4,80) ; jamais `e`.
-- **Worktree / branche** : `ubumaths-wt-questions-5`, branche `content/questions-5-lot7`.
+- **Worktree / branche** : `ubumaths-wt-questions-5` (HEAD détaché sur `main`, branche #2137 supprimée).
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -531,3 +531,4 @@ Calcul littéral › Écrire › Formules 1-3, nœud = notion Algèbre › Calcu
 - Base locale : 6 créés ; aperçu admin : 02 (deux cases sur deux lignes), 04 (choix multiple, « Coche la ou les
   bonnes réponses »), 05 rendus justes. Saisie : au pilotage Chrome, la frappe dans la 2e case de 02 arrivait
   aussi dans la 1re — non tranché (extension ou appli), à essayer à la main.
+- #2137 (fichiers) mergée, CI verte (2026-11-01).
