@@ -10,22 +10,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 0-géométrie dans l'espace en cours de publication (§ 12)._
+_Mis à jour le 2026-11-01, après la publication du lot 0-géométrie dans l'espace (§ 12)._
 
-- **État** : lots 0-suites, 0-limites et fonctions, 0-intégration, 0-primitives, 0-trigo, 0-dénombrement
-  **publiés** (133 modèles). Lot 0-géométrie dans l'espace : #2121 mergée, relu et validé par David,
-  `create-questions --publier --mettre-a-jour` fait (5 mis à jour, C1-C6 relues en base), simulation `publier-lot` :
-  28 passent. **`publier-lot --publier` PAS encore lancé** (28 brouillons en base).
-- **Prochaine action** : David lance
-  `! pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/tspe-0-geometrie-espace --publier` ; je relis
-  les 28 `published` en base (MCP) et je complète le § 12. Puis lot 0-probabilités (nouveau worktree). Plus tard :
-  migration Q3 (tags + échange de niveaux D-D1 : 07ebdcbe 1, 4dcbae71 2, 970dab52 3, ef3c495c 4).
-- **En attente de David** : la commande `--publier` ci-dessus (à taper avec `!`).
+- **État** : lots 0-suites, 0-limites et fonctions, 0-intégration, 0-primitives, 0-trigo, 0-dénombrement,
+  0-géométrie dans l'espace **publiés** (161 modèles). Q-D1 : voie A — ordre de « Loi binomiale / Coefficients
+  binomiaux » à échanger dans la migration Q3 (07ebdcbe 1, 4dcbae71 2, 970dab52 3, ef3c495c 4).
+- **Prochaine action** : lot 0-probabilités (nouveau worktree depuis `origin/main`), dernier thème des brouillons.
+  Puis migration Q3 (tags + échange de niveaux D-D1, niveaux provisoires à cause de l'index unique).
+- **En attente de David** : rien.
 - **Pièges en cours** : le **niveau est dans la clé** de `create-questions` : changer `level` dans un fichier = doublon
   créé ; index unique de niveau par catégorie sur les **publiés** seulement. `create-questions` et `publier-lot`, même
-  en simulation → David ; simulation `publier-lot` AVANT tout ; worktree neuf : `pnpm exec svelte-kit sync`, et
-  `pnpm exec tsx --env-file=../ubumaths/.env …` (pas de `.env` dans le worktree) ; l'aperçu mélange les options d'une
-  case choix : recouper avec la SOURCE ; `!=` dans une formule s'affiche ≠, `i` seul devient l'unité imaginaire.
+  en simulation → David (avec `!`) ; simulation `publier-lot` AVANT tout ; worktree neuf : `pnpm exec svelte-kit sync`,
+  et `pnpm exec tsx --env-file=../ubumaths/.env …` (pas de `.env` dans le worktree) ; l'aperçu mélange les options d'une
+  case choix : recouper avec la SOURCE ; `!=` dans une formule s'affiche ≠, `i` seul devient l'unité imaginaire ;
+  en-tête de commit ≤ 100 caractères (refus de commitlint).
 - **Worktree / branche** : aucun (retiré après #2121) ; prochain lot : nouveau worktree depuis `origin/main`.
 
 ## 1. Relevé (prod, 2026-10-29)
@@ -621,4 +619,5 @@ vide à la publication. Les 6 retouches ne sont pas encore en base : la page mon
 
 **Publication** (2026-11-01, David) : `create-questions --publier --mettre-a-jour` (0 créé, 5 mis à jour : 7c8bd127,
 62e446cb, 40ddef82, 3bace561, 34b03dee ; 23 identiques), relu en base (MCP) : C1-C6 présentes, ancienne formule de
-distance absente de 34b03dee. `publier-lot` en simulation : 28 passent. `--publier` : à lancer.
+distance absente de 34b03dee. `publier-lot` en simulation : 28 passent,
+puis `--publier` (David) : 28 / 28. Relu en base (MCP) : 28 / 28 `published`.
