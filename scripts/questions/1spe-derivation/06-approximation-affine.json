@@ -1,0 +1,195 @@
+{
+	"title": "Approximation affine de f(a + h)",
+	"description": "f(a + h) ≈ f(a) + f′(a)h, en fonction de h : carré, inverse, racine carrée en 1, carré en a",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "Approximation affine",
+	"level": 2,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Pour $h$ proche de $0$, donne l'approximation affine de $(1+h)^2$.\n\n$(1+h)^2\\approx ?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1+2h"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $f(x)=x^2$ et $a=1$ : $f(a+h)\\approx f(a)+f'(a)h$.",
+					"Ici $f(1)=1$ et $f'(1)=2$, donc $$(1+h)^2\\approx \\textcolor{{{color:primary.0}}}{1+2h}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pour $h$ proche de $0$, donne l'approximation affine de $\\dfrac{1}{1+h}$.\n\n$\\dfrac{1}{1+h}\\approx ?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1-h"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $f(x)=\\dfrac{1}{x}$ et $a=1$ : $f(a+h)\\approx f(a)+f'(a)h$.",
+					"Ici $f(1)=1$ et $f'(1)=-1$, donc $$\\dfrac{1}{1+h}\\approx \\textcolor{{{color:primary.0}}}{1-h}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pour $h$ proche de $0$, donne l'approximation affine de $\\sqrt{1+h}$.\n\n$\\sqrt{1+h}\\approx ?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1+\\dfrac{h}{2}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $f(x)=\\sqrt{x}$ et $a=1$ : $f(a+h)\\approx f(a)+f'(a)h$.",
+					"Ici $f(1)=1$ et $f'(1)=\\dfrac{1}{2}$, donc $$\\sqrt{1+h}\\approx \\textcolor{{{color:primary.0}}}{1+\\dfrac{h}{2}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pour $h$ proche de $0$, donne l'approximation affine de $({{a}}+h)^2$.\n\n$({{a}}+h)^2\\approx ?$",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "h|h"
+				},
+				{
+					"name": "a",
+					"expression": "2..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a^2+2*a*h}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $f(x)=x^2$ et $a={{a}}$ : $f(a+h)\\approx f(a)+f'(a)h$.",
+					"Ici $f({{a}})={{eval:a^2}}$ et $f'({{a}})={{eval:2*a}}$, donc $$({{a}}+h)^2\\approx \\textcolor{{{color:primary.0}}}{{{eval:a^2+2*a*h}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(1 + h)² ≈ 1 + 2h",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1+2h"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Autre ordre : 2h + 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2h+1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : valeur exacte développée",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1+2h+h^2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1 + h",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1+h"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/(1 + h) ≈ 1 − h",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1-h"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur de signe : 1 + h",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1+h"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "√(1 + h) ≈ 1 + h/2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1+\\frac{h}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Autre écriture : 1 + 0,5h",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1+0{,}5h"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 + h",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1+h"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(3 + h)² ≈ 9 + 6h",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["9+6h"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 9 + 3h",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["9+3h"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"form": "off"
+		}
+	}
+}

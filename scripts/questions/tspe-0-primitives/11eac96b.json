@@ -1,0 +1,88 @@
+{
+	"id": "11eac96b-ee1d-4a42-ac8f-1dfc48e0e7a6",
+	"title": "Coefficient d'une primitive de la forme u′/u",
+	"description": "Trouver k pour que k·ln(u) soit une primitive de f : diviser par le facteur manquant de u′ (piège : multiplier)",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Primitives et équations différentielles",
+	"domain": "Primitives",
+	"subdomain": "Formes u′eᵘ, 2uu′, u′/u",
+	"level": 7,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"form": "off",
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c/2}}"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:c<0|-}}\\dfrac{{{if:abs(c)==1|x}}{{if:abs(c)==-1|-x}}{{if:abs(c)!=1 && abs(c)!=-1|{{eval:abs(c)}}x}}}{x^2+{{eval:m}}}$.\n\nDétermine le réel $k$ tel que la fonction $F$ définie par $F(x)=k\\ln(x^2+{{eval:m}})$ soit une primitive de $f$ sur $\\mathbb{R}$.\n\n$k=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "m",
+					"expression": "1..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u(x)=x^2+{{eval:m}}$, strictement positive, $u'(x)=2x$ et $(\\ln u)'=\\dfrac{u'}{u}$ : $F'(x)=k\\times\\dfrac{2x}{x^2+{{eval:m}}}$.",
+					"Il faut $2k={{eval:c}}$, soit $k=\\textcolor{{{color:primary.0}}}{{{eval:c/2}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{3}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "3",
+				"m": "4"
+			},
+			"description": "v0 : 3x/(x²+4) → 3/2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "3",
+				"m": "4"
+			},
+			"description": "v0 : u′ multiplié",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "3",
+				"m": "4"
+			},
+			"description": "v0 : c recopié",
+			"variationIndex": 0
+		}
+	]
+}

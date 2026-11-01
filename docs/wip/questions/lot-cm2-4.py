@@ -1,8 +1,9 @@
 """Écrit les 7 modèles du lot 4 du CM2 (calcul mental sur les décimaux) dans scripts/questions/cm2-4/.
 
 Phase 0 validée par David le 2026-11-01 (§ 9 du journal `docs/wip/questions-cm2-progress.md`).
-Bornes : `cycle3.json`, CM2 (040, 118, 041 : k unités d'un seul rang, k de 1 à 9, des millièmes
-aux milliers, sans retenue ou avec une retenue ; 048 : une ou deux décimales ; 049 : résultat à
+Bornes : `cycle3.json`, CM2 (040, 118, 041 : nombre ENTIER ajouté ou retiré, k unités d'un seul
+rang, k de 1 à 9, des unités aux milliers, sans retenue ou avec une retenue — lecture littérale
+du programme, décision de David du 2026-11-01 : les dixièmes / centièmes sont au CM1 ; 048 : une ou deux décimales ; 049 : résultat à
 trois décimales au plus ; 051 : décimal d'au plus trois chiffres ; 052 : nombre < 20, d'au plus
 trois chiffres, dernier chiffre pair). Un point par modèle ; le nœud et le tag sont posés par la
 migration de rangement, après le `--publier` de David.
@@ -10,7 +11,11 @@ migration de rangement, après le `--publier` de David.
 Décisions et pièges :
 - les nombres sont tirés en entiers dans leur plus petite unité (millièmes, centièmes, dixièmes),
   puis affichés par `{{eval:…;d}}` : pas de calcul sur des décimaux déjà formatés ;
-- rang du nombre ajouté : j = 0 (millièmes) à 6 (milliers), nom du rang par `{{if:}}` imbriqués ;
+- rang du nombre ajouté : j = 3 (unités) à 6 (milliers), nom du rang par `{{if:}}` imbriqués
+  (RANGS garde les rangs décimaux : le chiffre retenu, lui, peut être au rang des dizaines) ;
+  V1 = k unités à un décimal à 2 ou 3 décimales (4,452 + 3), V2 = dizaines à milliers à un décimal
+  à une décimale (1 462,5 + 3 000) ; titres gardés (« des unités d'un seul rang » reste juste) :
+  `create-questions` retrouve le modèle en base par son titre ;
 - moitié : x = A + B, A multiple de 2 unités du rang au-dessus (moitié évidente), B petit reste
   (13,6 = 12 + 1,6 ; 1,22 = 1,2 + 0,02) ; V3 dernier chiffre impair, deux chiffres au plus
   (3,9 = 3,8 + 0,1 → 1,9 + 0,05), décision de David du 2026-11-01 ;
@@ -75,9 +80,10 @@ def rang(j, pluriel=False, decale=0):
 
 MODELES = []
 
-# Nombre à 3 décimales (V1) : w de 0 à 49, millièmes non nuls ; N en millièmes
-DECIMAL_3 = [var('w', '0..49'), var('d1', '0..9'), var('d2', '0..9'), var('d3', '1..9'),
-             var('N', 'eval:1000*w+100*d1+10*d2+d3')]
+# Nombre à 2 ou 3 décimales (V1) : w de 0 à 49 ; N en millièmes, mod(N,100)!=0 imposé
+# par la variation (au moins deux décimales : 4,45 ; 4,452)
+DECIMAL_23 = [var('w', '0..49'), var('d1', '0..9'), var('d2', '0..9'), var('d3', '0..9'),
+              var('N', 'eval:1000*w+100*d1+10*d2+d3')]
 
 
 def decimal_1(chiffres):
@@ -99,8 +105,11 @@ def un_rang(signe, nombre, rangs, retenue=False):
         conditions = ['c+k>=10', 'c2<=8']
     else:
         conditions = ['c+k<=9'] if plus else ['c>=k']
-    # le nombre a un chiffre au rang ajouté (pas « le chiffre des milliers de 12,3 est 0 »)
-    conditions.append('N>=10^j')
+    # le nombre a un chiffre au rang ajouté (pas « le chiffre des milliers de 12,3 est 0 ») ;
+    # aux unités, 0 est un vrai chiffre (0,457 + 2)
+    conditions.append('j==3||N>=10^j')
+    if nombre is DECIMAL_23:
+        conditions.append('mod(N,100)!=0')
     x, y = '{{eval:N/1000;d}}', '{{eval:k*10^j/1000;d}}'
     # « 2, c'est 2 unités » ne dit rien : la lecture du rang seulement à partir des dizaines
     # et après la virgule
@@ -124,37 +133,43 @@ def un_rang(signe, nombre, rangs, retenue=False):
 
 MODELES.append(modele(
     '01-ajouter-un-rang', 'Ajouter des unités d\'un seul rang',
-    'Sans retenue : dixièmes, centièmes, millièmes (4,452 + 0,03) ; unités à milliers'
+    'Sans retenue : des unités (4,452 + 3 ; 0,45 + 2) ; des dizaines, centaines, milliers'
     ' (1 462,5 + 3 000)',
     'Additionner', 'Somme', 6,
-    [un_rang('+', DECIMAL_3, '0..2'), un_rang('+', decimal_1('2..4'), '3..6')],
-    [spec('4,452 + 0,03 = 4,482', 0, {'w': 4, 'd1': 4, 'd2': 5, 'd3': 2, 'j': 1, 'k': 3},
-          '4,482', 'correct'),
-     spec('Erreur : 4,452 + 0,03 → 4,455 (mauvais rang)', 0,
-          {'w': 4, 'd1': 4, 'd2': 5, 'd3': 2, 'j': 1, 'k': 3}, '4,455', 'incorrect'),
-     spec('Erreur : 4,452 + 0,03 → 4,752 (mauvais rang)', 0,
-          {'w': 4, 'd1': 4, 'd2': 5, 'd3': 2, 'j': 1, 'k': 3}, '4,752', 'incorrect'),
-     spec('0,457 + 0,002 = 0,459', 0, {'w': 0, 'd1': 4, 'd2': 5, 'd3': 7, 'j': 0, 'k': 2},
-          '0,459', 'correct'),
+    [un_rang('+', DECIMAL_23, '3'), un_rang('+', decimal_1('2..4'), '4..6')],
+    [spec('4,452 + 3 = 7,452', 0, {'w': 4, 'd1': 4, 'd2': 5, 'd3': 2, 'j': 3, 'k': 3},
+          '7,452', 'correct'),
+     spec('Erreur : 4,452 + 3 → 4,455 (ajouté aux millièmes)', 0,
+          {'w': 4, 'd1': 4, 'd2': 5, 'd3': 2, 'j': 3, 'k': 3}, '4,455', 'incorrect'),
+     spec('Erreur : 4,452 + 3 → 4,482 (ajouté aux centièmes)', 0,
+          {'w': 4, 'd1': 4, 'd2': 5, 'd3': 2, 'j': 3, 'k': 3}, '4,482', 'incorrect'),
+     spec('0,45 + 2 = 2,45', 0, {'w': 0, 'd1': 4, 'd2': 5, 'd3': 0, 'j': 3, 'k': 2},
+          '2,45', 'correct'),
+     spec('borne : 12,34 + 7 = 19,34', 0, {'w': 12, 'd1': 3, 'd2': 4, 'd3': 0, 'j': 3, 'k': 7},
+          '19,34', 'correct'),
      spec('1 462,5 + 3 000 = 4 462,5', 1, {'h': 4, 'w': 1462, 'd1': 5, 'j': 6, 'k': 3},
           '4 462,5', 'correct'),
      spec('Erreur : 1 462,5 + 3 000 → 1 465,5', 1,
           {'h': 4, 'w': 1462, 'd1': 5, 'j': 6, 'k': 3}, '1 465,5', 'incorrect'),
-     spec('borne : 12,3 + 7 = 19,3', 1, {'h': 2, 'w': 12, 'd1': 3, 'j': 3, 'k': 7},
-          '19,3', 'correct')]))
+     spec('borne : 12,3 + 70 = 82,3', 1, {'h': 2, 'w': 12, 'd1': 3, 'j': 4, 'k': 7},
+          '82,3', 'correct')]))
 
 MODELES.append(modele(
     '02-retirer-un-rang', 'Retirer des unités d\'un seul rang',
-    'Sans retenue : dixièmes, centièmes, millièmes (0,457 − 0,003) ; unités à milliers'
+    'Sans retenue : des unités (8,694 − 6) ; des dizaines, centaines, milliers'
     ' (5 846,3 − 400)',
     'Soustraire', 'Différence', 6,
-    [un_rang('-', DECIMAL_3, '0..2'), un_rang('-', decimal_1('3..4'), '3..6')],
-    [spec('0,457 − 0,003 = 0,454', 0, {'w': 0, 'd1': 4, 'd2': 5, 'd3': 7, 'j': 0, 'k': 3},
-          '0,454', 'correct'),
-     spec('Erreur : 0,457 − 0,003 → 0,157 (mauvais rang)', 0,
-          {'w': 0, 'd1': 4, 'd2': 5, 'd3': 7, 'j': 0, 'k': 3}, '0,157', 'incorrect'),
-     spec('8,694 − 0,6 = 8,094', 0, {'w': 8, 'd1': 6, 'd2': 9, 'd3': 4, 'j': 2, 'k': 6},
-          '8,094', 'correct'),
+    [un_rang('-', DECIMAL_23, '3'), un_rang('-', decimal_1('3..4'), '4..6')],
+    [spec('8,694 − 6 = 2,694', 0, {'w': 8, 'd1': 6, 'd2': 9, 'd3': 4, 'j': 3, 'k': 6},
+          '2,694', 'correct'),
+     spec('Erreur : 8,694 − 6 → 8,094 (retiré aux dixièmes)', 0,
+          {'w': 8, 'd1': 6, 'd2': 9, 'd3': 4, 'j': 3, 'k': 6}, '8,094', 'incorrect'),
+     spec('Erreur : 8,694 − 6 → 8,688 (retiré aux millièmes)', 0,
+          {'w': 8, 'd1': 6, 'd2': 9, 'd3': 4, 'j': 3, 'k': 6}, '8,688', 'incorrect'),
+     spec('borne : 9,05 − 9 = 0,05', 0, {'w': 9, 'd1': 0, 'd2': 5, 'd3': 0, 'j': 3, 'k': 9},
+          '0,05', 'correct'),
+     spec('47,35 − 3 = 44,35', 0, {'w': 47, 'd1': 3, 'd2': 5, 'd3': 0, 'j': 3, 'k': 3},
+          '44,35', 'correct'),
      spec('5 846,3 − 400 = 5 446,3', 1, {'h': 4, 'w': 5846, 'd1': 3, 'j': 5, 'k': 4},
           '5 446,3', 'correct'),
      spec('Erreur : 5 846,3 − 400 → 5 842,3 (mauvais rang)', 1,
@@ -164,17 +179,19 @@ MODELES.append(modele(
 
 MODELES.append(modele(
     '03-ajouter-un-rang-retenue', 'Ajouter des unités d\'un seul rang, avec une retenue',
-    'Une retenue : 4,457 + 0,8 ; 0,457 + 0,007 ; 7 530,4 + 600',
+    'Une retenue : 8,45 + 3 ; 27,456 + 5 ; 7 530,4 + 600',
     'Additionner', 'Somme', 7,
-    [un_rang('+', DECIMAL_3, '0..2', True), un_rang('+', decimal_1('2..4'), '3..6', True)],
-    [spec('4,457 + 0,8 = 5,257', 0, {'w': 4, 'd1': 4, 'd2': 5, 'd3': 7, 'j': 2, 'k': 8},
-          '5,257', 'correct'),
-     spec('Erreur : 4,457 + 0,8 → 4,257 (retenue oubliée)', 0,
-          {'w': 4, 'd1': 4, 'd2': 5, 'd3': 7, 'j': 2, 'k': 8}, '4,257', 'incorrect'),
-     spec('Erreur : 4,457 + 0,8 → 4,1257 (12 dixièmes écrits)', 0,
-          {'w': 4, 'd1': 4, 'd2': 5, 'd3': 7, 'j': 2, 'k': 8}, '4,1257', 'incorrect'),
-     spec('0,457 + 0,007 = 0,464', 0, {'w': 0, 'd1': 4, 'd2': 5, 'd3': 7, 'j': 0, 'k': 7},
-          '0,464', 'correct'),
+    [un_rang('+', DECIMAL_23, '3', True), un_rang('+', decimal_1('2..4'), '4..6', True)],
+    [spec('8,45 + 3 = 11,45', 0, {'w': 8, 'd1': 4, 'd2': 5, 'd3': 0, 'j': 3, 'k': 3},
+          '11,45', 'correct'),
+     spec('Erreur : 8,45 + 3 → 1,45 (retenue oubliée)', 0,
+          {'w': 8, 'd1': 4, 'd2': 5, 'd3': 0, 'j': 3, 'k': 3}, '1,45', 'incorrect'),
+     spec('Erreur : 8,45 + 3 → 8,75 (ajouté aux dixièmes)', 0,
+          {'w': 8, 'd1': 4, 'd2': 5, 'd3': 0, 'j': 3, 'k': 3}, '8,75', 'incorrect'),
+     spec('27,456 + 5 = 32,456', 0, {'w': 27, 'd1': 4, 'd2': 5, 'd3': 6, 'j': 3, 'k': 5},
+          '32,456', 'correct'),
+     spec('borne : 49,99 + 9 = 58,99', 0, {'w': 49, 'd1': 9, 'd2': 9, 'd3': 0, 'j': 3, 'k': 9},
+          '58,99', 'correct'),
      spec('7 530,4 + 600 = 8 130,4', 1, {'h': 4, 'w': 7530, 'd1': 4, 'j': 5, 'k': 6},
           '8 130,4', 'correct'),
      spec('Erreur : 7 530,4 + 600 → 7 130,4 (retenue oubliée)', 1,

@@ -805,8 +805,9 @@ function replaceAbs(expr: MathNode, varName: string, testValue: number): MathNod
  * Evaluate an expression at a specific point using full substitution and evaluation.
  */
 function approximateValueAt(expr: MathNode, varName: string, value: number): number | null {
-	const valueNode: MathNode = { type: 'number', value: String(value) };
-	return computeNumericValue(substitute(expr, { [varName]: valueNode }));
+	// numericNode : un point d'essai négatif (a − 10⁻⁸ à gauche de 0) devient
+	// opposite(number(…)), jamais un littéral signé (L28)
+	return computeNumericValue(substitute(expr, { [varName]: numericNode(value) }));
 }
 
 // =============================================================================

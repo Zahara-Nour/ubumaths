@@ -1,0 +1,154 @@
+{
+	"title": "Utiliser la définition du taux de variation",
+	"description": "Le taux (f(b) − f(a))/(b − a) étant connu, retrouver f(b), ou b à partir d'un tableau de valeurs",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "Taux de variation",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Le taux de variation d'une fonction $f$ entre ${{a}}$ et ${{b}}$ vaut ${{t}}$, et $f({{a}})={{y}}$.\n\nQue vaut $f({{b}})$ ?\n\n$f({{b}})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-3..3"
+				},
+				{
+					"name": "d",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+d"
+				},
+				{
+					"name": "t",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "y",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["a != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:y+t*d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le taux de variation de $f$ entre $a$ et $b$ est $\\dfrac{f(b)-f(a)}{b-a}$.",
+					"Ici $\\dfrac{f({{b}})-f({{a}})}{{{b}}{{eval:-a;+}}}={{t}}$, donc $f({{b}})-f({{a}})={{t}}\\times{{d}}={{eval:t*d}}$.",
+					"$$f({{b}})={{y}}{{eval:t*d;+}}=\\textcolor{{{color:primary.0}}}{{{eval:y+t*d}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Une fonction $f$ prend les valeurs du tableau ci-dessous, et son taux de variation entre ${{a}}$ et $b$ vaut ${{t}}$.\n\n| $x$ | ${{a}}$ | $b$ |\n| --- | --- | --- |\n| $f(x)$ | ${{ya}}$ | ${{yb}}$ |\n\nQue vaut $b$ ?\n\n$b=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-3..3"
+				},
+				{
+					"name": "d",
+					"expression": "1..5"
+				},
+				{
+					"name": "t",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "ya",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "yb",
+					"expression": "eval:ya+t*d"
+				}
+			],
+			"conditions": ["a != 0", "abs(yb) <= 20"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le taux de variation de $f$ entre ${{a}}$ et $b$ est $\\dfrac{f(b)-f({{a}})}{b{{eval:-a;+}}}={{t}}$.",
+					"Or $f(b)-f({{a}})={{yb}}{{eval:-ya;+}}={{eval:yb-ya}}$, donc $b{{eval:-a;+}}=\\dfrac{{{eval:yb-ya}}}{{{t}}}={{d}}$.",
+					"$$b=\\textcolor{{{color:primary.0}}}{{{eval:a+d}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a = 1, b = 3, taux 3, f(1) = 4 : f(3) = 10",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"d": "2",
+				"b": "3",
+				"t": "3",
+				"y": "4"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f(a) + taux, sans (b − a) : 7",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"d": "2",
+				"b": "3",
+				"t": "3",
+				"y": "4"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a = 1, taux 2, f(1) = 5, f(b) = 11 : b = 4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"d": "3",
+				"t": "2",
+				"ya": "5",
+				"yb": "11"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : b − a au lieu de b : 3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"d": "3",
+				"t": "2",
+				"ya": "5",
+				"yb": "11"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

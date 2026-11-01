@@ -1,0 +1,262 @@
+{
+	"title": "Démontrer avec le calcul littéral",
+	"description": "Utiliser le calcul littéral pour démontrer : somme de trois entiers consécutifs multiple de 3, deux programmes de calcul équivalents, somme de deux pairs",
+	"grades": ["4"],
+	"theme": "Calcul littéral",
+	"domain": "Raisonner",
+	"subdomain": "Démontrer",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"form": "off",
+			"products": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "$n$ désigne un nombre entier. On ajoute trois entiers consécutifs : $n + (n + 1) + (n + 2)$.\n\nÉcris cette somme sous forme réduite.\n\n$$n + (n + 1) + (n + 2) = ?$$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "3n+3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Démontrer.** Des exemples ne prouvent pas qu'une propriété est toujours vraie : on écrit le calcul avec une lettre, valable pour tous les nombres.",
+					"On regroupe les $n$ d'un côté, les nombres de l'autre :",
+					"$$n + (n + 1) + (n + 2) = \\textcolor{{{color:primary.1}}}{n + n + n} + \\textcolor{{{color:primary.2}}}{1 + 2} = \\textcolor{{{color:primary.0}}}{3n + 3}$$"
+				]
+			}
+		},
+		{
+			"statement": "$n$ désigne un nombre entier. On a calculé : $n + (n + 1) + (n + 2) = 3n + 3$.\n\nQuelle égalité prouve que la somme de trois entiers consécutifs est toujours un multiple de $3$ ?\n\n```choix\n- $3n + 3 = 3(n + 1)$\n- $3n + 3 = 3(n + 3)$\n- $3n + 3 = 6$ pour $n = 1$\n- $3n + 3 = 3 + 3n$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Démontrer.** Des exemples ne prouvent pas qu'une propriété est toujours vraie : on écrit le calcul avec une lettre, valable pour tous les nombres.",
+					"Un multiple de $3$ s'écrit $3 \\times k$ avec $k$ entier : on factorise par $3$.",
+					"$$3n + 3 = \\textcolor{{{color:primary.0}}}{3(n + 1)}$$",
+					"$n + 1$ est un entier : la somme est bien un multiple de $3$, pour **tout** $n$. L'exemple $n = 1$ ne prouve rien pour les autres nombres."
+				]
+			}
+		},
+		{
+			"statement": "**Programme A** : choisir un nombre $x$ ; lui ajouter ${{a}}$ ; multiplier le résultat par ${{k}}$ ; soustraire ${{eval:k*a}}$.\n\nÉcris le résultat du programme A en fonction de $x$, sous forme réduite.\n\nRésultat : $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "k",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}x"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Programme de calcul.** On traduit chaque étape par une expression, puis on réduit.",
+					"$x$ → $x + {{a}}$ → ${{k}}(x + {{a}})$ → ${{k}}(x + {{a}}) - {{eval:k*a}}$",
+					"$${{k}}(x + {{a}}) - {{eval:k*a}} = {{k}}x + \\textcolor{{{color:primary.1}}}{{{eval:k*a}}} - \\textcolor{{{color:primary.1}}}{{{eval:k*a}}} = \\textcolor{{{color:primary.0}}}{{{k}}x}$$"
+				]
+			}
+		},
+		{
+			"statement": "**Programme A** : choisir un nombre $x$ ; lui ajouter ${{a}}$ ; multiplier le résultat par ${{k}}$ ; soustraire ${{eval:k*a}}$.\n\n**Programme B** : choisir un nombre $x$ ; le multiplier par ${{k}}$.\n\nOn a montré que, pour tout nombre $x$, le programme A donne ${{k}}(x + {{a}}) - {{eval:k*a}} = {{k}}x$.\n\nQue peut-on conclure ?\n\n```choix\n- Les deux programmes donnent toujours le même résultat.\n- Ils donnent le même résultat seulement pour $x = {{a}}$.\n- Ils ne donnent jamais le même résultat.\n- On ne peut pas savoir sans essayer tous les nombres.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "k",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Démontrer.** Des exemples ne prouvent pas qu'une propriété est toujours vraie : on écrit le calcul avec une lettre, valable pour tous les nombres.",
+					"Le programme B donne ${{k}}x$, et le programme A aussi, **pour tout** $x$.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{\\text{les deux programmes donnent toujours le même résultat}}$. Le calcul littéral remplace l'essai de tous les nombres."
+				]
+			}
+		},
+		{
+			"statement": "On veut prouver que la somme de deux nombres pairs est toujours paire.\n\nLequel de ces raisonnements est une démonstration ?\n\n```choix\n- On écrit les deux nombres $2n$ et $2m$ ($n$ et $m$ entiers) : $2n + 2m = 2(n + m)$, qui est pair.\n- $2 + 4 = 6$, $6 + 8 = 14$ et $10 + 12 = 22$ sont pairs.\n- On écrit les deux nombres $2n$ et $2n$ : $2n + 2n = 4n$, qui est pair.\n- C'est vrai, car la somme de deux nombres pairs est paire.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Démontrer.** Des exemples ne prouvent pas qu'une propriété est toujours vraie : on écrit le calcul avec une lettre, valable pour tous les nombres.",
+					"Deux nombres pairs quelconques s'écrivent $2n$ et $2m$ : deux lettres, car ils peuvent être différents ($2n$ et $2n$ désignent le même nombre).",
+					"$$2n + 2m = \\textcolor{{{color:primary.0}}}{2(n + m)}$$",
+					"$n + m$ est un entier : la somme est un multiple de $2$, donc paire. Trois exemples ne prouvent rien, et répéter la propriété non plus."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3n + 3",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3n+3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Autre écriture : 3(n + 1)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3(n+1)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3n + 2",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3n+2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n + 3",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["n+3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3(n + 1)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un exemple",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Programme A : 3x",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"k": "3"
+			},
+			"answers": ["3x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3x + 15 (soustraction oubliée)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"k": "3"
+			},
+			"answers": ["3x+15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x + 5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"k": "3"
+			},
+			"answers": ["x+5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Toujours le même résultat",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"k": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : il faut tout essayer",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"k": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2n + 2m = 2(n + m)",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : trois exemples",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2n + 2n",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

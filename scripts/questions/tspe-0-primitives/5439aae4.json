@@ -1,0 +1,89 @@
+{
+	"id": "5439aae4-4660-42ba-9ba8-7271c4ee4fcd",
+	"title": "Coefficient d'une primitive de la forme 2uu′",
+	"description": "Trouver k pour que k·u² soit une primitive de f : diviser par le facteur manquant de u′ (piège : multiplier)",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Primitives et équations différentielles",
+	"domain": "Primitives",
+	"subdomain": "Formes u′eᵘ, 2uu′, u′/u",
+	"level": 6,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"form": "off",
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c/4}}"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:c==1|x}}{{if:c==-1|-x}}{{if:c!=1 && c!=-1|{{eval:c}}x}}(x^2{{if:m>0|+{{eval:m}}}}{{if:m<0|{{eval:m}}}})$.\n\nDétermine le réel $k$ tel que la fonction $F$ définie par $F(x)=k(x^2{{if:m>0|+{{eval:m}}}}{{if:m<0|{{eval:m}}}})^2$ soit une primitive de $f$ sur $\\mathbb{R}$.\n\n$k=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "m",
+					"expression": "1..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u(x)=x^2{{if:m>0|+{{eval:m}}}}{{if:m<0|{{eval:m}}}}$, $u'(x)=2x$ et $(u^2)'=2u'u$ : $F'(x)=k\\times 2\\times 2x(x^2{{if:m>0|+{{eval:m}}}}{{if:m<0|{{eval:m}}}})=4k\\,x(x^2{{if:m>0|+{{eval:m}}}}{{if:m<0|{{eval:m}}}})$.",
+					"Il faut $4k={{eval:c}}$, soit $k=\\textcolor{{{color:primary.0}}}{{{eval:c/4}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "2",
+				"m": "1"
+			},
+			"description": "v0 : 2x(x²+1) → 1/2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "2",
+				"m": "1"
+			},
+			"description": "v0 : oubli du 2 de (u²)′",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{2}{4}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variables": {
+				"c": "2",
+				"m": "1"
+			},
+			"description": "v0 : fraction non simplifiée (½)",
+			"variationIndex": 0
+		}
+	]
+}

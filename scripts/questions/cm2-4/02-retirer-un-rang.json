@@ -1,6 +1,6 @@
 {
 	"title": "Retirer des unités d'un seul rang",
-	"description": "Sans retenue : dixièmes, centièmes, millièmes (0,457 − 0,003) ; unités à milliers (5 846,3 − 400)",
+	"description": "Sans retenue : des unités (8,694 − 6) ; des dizaines, centaines, milliers (5 846,3 − 400)",
 	"grades": ["CM2"],
 	"theme": "Décimaux",
 	"domain": "Soustraire",
@@ -31,7 +31,7 @@
 				},
 				{
 					"name": "d3",
-					"expression": "1..9"
+					"expression": "0..9"
 				},
 				{
 					"name": "N",
@@ -39,7 +39,7 @@
 				},
 				{
 					"name": "j",
-					"expression": "0..2"
+					"expression": "3"
 				},
 				{
 					"name": "k",
@@ -58,7 +58,7 @@
 					"expression": "eval:N-k*10^j"
 				}
 			],
-			"conditions": ["c>=k", "N>=10^j"],
+			"conditions": ["c>=k", "j==3||N>=10^j", "mod(N,100)!=0"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:R/1000;d}}"
@@ -93,7 +93,7 @@
 				},
 				{
 					"name": "j",
-					"expression": "3..6"
+					"expression": "4..6"
 				},
 				{
 					"name": "k",
@@ -112,7 +112,7 @@
 					"expression": "eval:N-k*10^j"
 				}
 			],
-			"conditions": ["c>=k", "N>=10^j"],
+			"conditions": ["c>=k", "j==3||N>=10^j"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:R/1000;d}}"
@@ -129,49 +129,81 @@
 	],
 	"testSpecs": [
 		{
-			"description": "0,457 − 0,003 = 0,454",
-			"variationIndex": 0,
-			"variables": {
-				"w": "0",
-				"d1": "4",
-				"d2": "5",
-				"d3": "7",
-				"j": "0",
-				"k": "3"
-			},
-			"answers": ["0,454"],
-			"expected": {
-				"status": "correct"
-			}
-		},
-		{
-			"description": "Erreur : 0,457 − 0,003 → 0,157 (mauvais rang)",
-			"variationIndex": 0,
-			"variables": {
-				"w": "0",
-				"d1": "4",
-				"d2": "5",
-				"d3": "7",
-				"j": "0",
-				"k": "3"
-			},
-			"answers": ["0,157"],
-			"expected": {
-				"status": "incorrect"
-			}
-		},
-		{
-			"description": "8,694 − 0,6 = 8,094",
+			"description": "8,694 − 6 = 2,694",
 			"variationIndex": 0,
 			"variables": {
 				"w": "8",
 				"d1": "6",
 				"d2": "9",
 				"d3": "4",
-				"j": "2",
+				"j": "3",
+				"k": "6"
+			},
+			"answers": ["2,694"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8,694 − 6 → 8,094 (retiré aux dixièmes)",
+			"variationIndex": 0,
+			"variables": {
+				"w": "8",
+				"d1": "6",
+				"d2": "9",
+				"d3": "4",
+				"j": "3",
 				"k": "6"
 			},
 			"answers": ["8,094"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 8,694 − 6 → 8,688 (retiré aux millièmes)",
+			"variationIndex": 0,
+			"variables": {
+				"w": "8",
+				"d1": "6",
+				"d2": "9",
+				"d3": "4",
+				"j": "3",
+				"k": "6"
+			},
+			"answers": ["8,688"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne : 9,05 − 9 = 0,05",
+			"variationIndex": 0,
+			"variables": {
+				"w": "9",
+				"d1": "0",
+				"d2": "5",
+				"d3": "0",
+				"j": "3",
+				"k": "9"
+			},
+			"answers": ["0,05"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "47,35 − 3 = 44,35",
+			"variationIndex": 0,
+			"variables": {
+				"w": "47",
+				"d1": "3",
+				"d2": "5",
+				"d3": "0",
+				"j": "3",
+				"k": "3"
+			},
+			"answers": ["44,35"],
 			"expected": {
 				"status": "correct"
 			}

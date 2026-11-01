@@ -1,0 +1,137 @@
+{
+	"title": "Probabilité en décimal ou en pourcentage",
+	"description": "Donner une probabilité sous forme décimale ou de pourcentage (7 billes rouges sur 20 : 0,35 ; 3 secteurs gagnants sur 5 : 60 %)",
+	"grades": ["5"],
+	"theme": "Probabilités",
+	"domain": "Expériences aléatoires",
+	"subdomain": "équiprobabilité",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Un sac contient ${{n}}$ billes indiscernables au toucher, dont ${{r}}$ rouges. On tire une bille au hasard.\n\nQuelle est la probabilité de tirer une bille rouge ? Donne-la sous forme de nombre décimal.\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "10|20|25|50"
+				},
+				{
+					"name": "r",
+					"expression": "1..n"
+				}
+			],
+			"conditions": ["r<n"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r/n;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Issues équiprobables.** Quand toutes les issues ont la même chance de sortir : $P = \\dfrac{\\text{nombre d'issues favorables}}{\\text{nombre total d'issues}}$.",
+					"$P = \\dfrac{{{r}}}{{{n}}} = {{r}} \\div {{n}} = \\textcolor{{{color:primary.0}}}{{{eval:r/n;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une roue est partagée en ${{n}}$ secteurs égaux, dont ${{g}}$ sont gagnants. On la fait tourner.\n\nQuelle est la probabilité de gagner, **en pourcentage** ?\n\n$?~\\%$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "4|5|10|20|25"
+				},
+				{
+					"name": "g",
+					"expression": "1..n"
+				}
+			],
+			"conditions": ["g<n"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*g/n;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Issues équiprobables.** Quand toutes les issues ont la même chance de sortir : $P = \\dfrac{\\text{nombre d'issues favorables}}{\\text{nombre total d'issues}}$.",
+					"$P = \\dfrac{{{g}}}{{{n}}} = {{eval:g/n;d}}$, soit $\\textcolor{{{color:primary.0}}}{{{eval:100*g/n;d}}~\\%}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "7 sur 20 : 0,35",
+			"variationIndex": 0,
+			"variables": {
+				"n": "20",
+				"r": "7"
+			},
+			"answers": ["0,35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 35 (pourcentage)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "20",
+				"r": "7"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0,7",
+			"variationIndex": 0,
+			"variables": {
+				"n": "20",
+				"r": "7"
+			},
+			"answers": ["0,7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 sur 5 : 60 %",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5",
+				"g": "3"
+			},
+			"answers": ["60"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,6 (la fréquence)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5",
+				"g": "3"
+			},
+			"answers": ["0,6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5",
+				"g": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

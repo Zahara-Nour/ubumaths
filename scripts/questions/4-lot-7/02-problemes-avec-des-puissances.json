@@ -1,0 +1,250 @@
+{
+	"title": "Problèmes avec des puissances",
+	"description": "Résoudre un problème avec des puissances : bactéries qui doublent, chaîne de messages, codes d'un cadenas, volume d'un cube d'arête 10ᵏ cm, pliages",
+	"grades": ["4"],
+	"theme": "Puissances",
+	"domain": "Problèmes",
+	"subdomain": "Situations",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Une bactérie se divise en deux toutes les heures : chaque heure, le nombre de bactéries double. Au départ, il y a une seule bactérie.\n\nCombien y a-t-il de bactéries au bout de ${{n}}$ heures ?\n\nIl y a $2^{ ? }$ bactéries, soit $?$ bactéries.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				},
+				{
+					"expectedAnswer": "{{eval:2^n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Multiplier plusieurs fois par le même nombre.** Multiplier $n$ fois par $2$, c'est multiplier par $2^n$.",
+					"Au bout de $1$ heure : $2$ bactéries ; au bout de $2$ heures : $2 \\times 2 = 2^2$ ; au bout de $3$ heures : $2^3$…",
+					"Au bout de ${{n}}$ heures : $\\textcolor{{{color:primary.0}}}{2^{ {{n}} }} = \\textcolor{{{color:primary.1}}}{{{eval:2^n}}}$ bactéries."
+				]
+			}
+		},
+		{
+			"statement": "Lina envoie un message à $3$ amis. Chacun d'eux le transfère à $3$ nouvelles personnes, et ainsi de suite. Au 1er envoi, $3$ personnes reçoivent le message ; au 2e envoi, $3 \\times 3 = 9$ personnes.\n\nCombien de personnes reçoivent le message au {{n}}e envoi ?\n\n$3^{ ? }$ personnes, soit $?$ personnes.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				},
+				{
+					"expectedAnswer": "{{eval:3^n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Multiplier plusieurs fois par le même nombre.** À chaque envoi, le nombre de personnes est multiplié par $3$.",
+					"1er envoi : $3$ ; 2e envoi : $3^2$ ; 3e envoi : $3^3$…",
+					"Au {{n}}e envoi : $\\textcolor{{{color:primary.0}}}{3^{ {{n}} }} = \\textcolor{{{color:primary.1}}}{{{eval:3^n}}}$ personnes."
+				]
+			}
+		},
+		{
+			"statement": "Un cadenas a ${{k}}$ molettes ; chacune porte les chiffres de $0$ à $9$.\n\nCombien de codes différents peut-on former ?\n\n$10^{ ? }$ codes, soit $?$ codes.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				},
+				{
+					"expectedAnswer": "{{eval:10^k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Compter les codes.** Chaque molette offre $10$ possibilités, quelles que soient les autres : on multiplie $10$ par lui-même autant de fois qu'il y a de molettes.",
+					"$10 \\times 10 \\times \\ldots$ (${{k}}$ facteurs) $= \\textcolor{{{color:primary.0}}}{10^{ {{k}} }} = \\textcolor{{{color:primary.1}}}{{{eval:10^k}}}$ codes."
+				]
+			}
+		},
+		{
+			"statement": "Un cube a une arête de $10^{ {{k}} }~\\unit{cm}$.\n\nQuel est son volume ?\n\n$V = 10^{ ? }~\\unit{cm^3}$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:3*k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Volume d'un cube.** Le volume d'un cube d'arête $c$ est $c \\times c \\times c = c^3$.",
+					"$$V = 10^{ {{k}} } \\times 10^{ {{k}} } \\times 10^{ {{k}} } = 10^{ {{k}} + {{k}} + {{k}} } = \\textcolor{{{color:primary.0}}}{10^{ {{eval:3*k}} }}~\\unit{cm^3}$$"
+				]
+			}
+		},
+		{
+			"statement": "On plie une feuille de papier en deux, puis encore en deux, et ainsi de suite. On note $n$ le nombre de pliages.\n\nQuelle expression donne le nombre d'épaisseurs de papier après $n$ pliages ?\n\n```choix\n- $2^n$\n- $2n$\n- $n^2$\n- $2 + n$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Doubler à chaque fois.** Chaque pliage double le nombre d'épaisseurs.",
+					"$1$ pliage : $2$ ; $2$ pliages : $2 \\times 2 = 4$ ; $3$ pliages : $2 \\times 2 \\times 2 = 8$.",
+					"Après $n$ pliages : $\\textcolor{{{color:primary.0}}}{2^n}$ épaisseurs ($2n$ donnerait $6$ pour $3$ pliages, et non $8$)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "7 heures : 2⁷ = 128",
+			"variationIndex": 0,
+			"variables": {
+				"n": "7"
+			},
+			"answers": ["7", "128"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 × 7 = 14",
+			"variationIndex": 0,
+			"variables": {
+				"n": "7"
+			},
+			"answers": ["7", "14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 7² = 49",
+			"variationIndex": 0,
+			"variables": {
+				"n": "7"
+			},
+			"answers": ["7", "49"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4e envoi : 3⁴ = 81",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["4", "81"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 × 4 = 12",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["4", "12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 molettes : 10⁴ = 10 000",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["4", "10\\,000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10 × 4 = 40",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["4", "40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Arête 10² cm : 10⁶ cm³",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10⁵ (2 + 3)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 10⁸ (2 au cube lu 2³)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2ⁿ",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2n",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

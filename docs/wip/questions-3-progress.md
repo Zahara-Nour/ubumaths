@@ -5,18 +5,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 5 publié (§ 12.12)._
+_Mis à jour le 2026-11-01, après #2091._
 
-- **État** : **lot 5 CLOS** : 6/6 relus « ok », 3-035 mis à jour, 6/6 `published` (relu au MCP).
-- **Prochaine action** : lot 6 du § 4 (translation, vecteurs, sphère) — relevé de l'existant puis
-  phase 0 à faire valider.
-- **En attente de David** : rien.
+- **État** : lot 6 (translation, vecteurs, sphère, sections) **mergé** (#2091, § 13.8), 7 modèles, pas encore en prod.
+- **Prochaine action** : après le `--publier` de David, relever les 7 `id` au MCP, relevé `etat-prod-…-3e-lot6`,
+  migration de rangement (7 nœuds + tags, c8306505 en grades `['4', '3']` + tag 3-024), page à cocher.
+- **En attente de David** : `git pull` dans le dépôt principal, puis
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/3-lot-6 --publier`.
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
-  du mode auto → David les lance avec `!` ; horodatage `20261030162200` déjà pris par ce1 lot 5 bis ;
-  dans `points:` d'un ` ```courbe `, ni `{{eval}}` fractionnaire (écrit `\dfrac`) ni virgule ; aperçu admin
-  sur `127.0.0.1` ; worktree neuf : `svelte-kit sync` avant `tsx` ; commits de doc depuis le worktree
-  (`git push origin HEAD:main`) ; le worktree n'avait pas `supabase/.temp` (lien du projet) : copié du dépôt
-  principal, et `db:migrate` se lance depuis un worktree À JOUR d'`origin/main` ; réponse attendue décimale = fraction refusée (garder la fraction + `acceptDecimal`) ; `Doc-inchangée:` dans un COMMIT ; `audit-question-draws` : faux positif « nombres juxtaposés » sur les blocs statistiques.
+  du mode auto → David les lance avec `!` ; ` ```solide ` pas en prod (modèles qui s'en servent : brouillon
+  jusqu'au `deploy:prod`) ; étiquette d'un vecteur libre (`vecteur(dx, dy, ancre=…)`) : vérifier qu'un
+  `texte()` en LaTeX passe ; dans `points:` d'un ` ```courbe `, ni `{{eval}}` fractionnaire ni virgule ;
+  aperçu admin sur `127.0.0.1` ; worktree neuf : `svelte-kit sync` avant `tsx` ; commits de doc depuis le
+  worktree (`git push origin HEAD:main`) ; `db:migrate` depuis un worktree À JOUR d'`origin/main` ; réponse
+  décimale = fraction refusée (garder la fraction + `acceptDecimal`) ; `Doc-inchangée:` dans un COMMIT ;
+  `audit-question-draws` : faux positif « nombres juxtaposés » sur les blocs statistiques.
 - **Worktree / branche** : `../ubumaths-wt-questions-3`, HEAD détachée sur `origin/main`.
 
 ## 1. Relevé (prod, 2026-10-28)
@@ -805,3 +808,89 @@ publiés de plus, et 2 de 4e (§ 12.1) ; la 4e ne perd rien. Aucune règle ne ch
 - David : `create-questions --publier --mettre-a-jour` → 302655b9 mis à jour (MCP : nouveau corrigé,
   `updated_at` 11:34) ; `publier-lot.ts` simulation (6 passent) puis `--publier` → 6/6.
 - MCP : cd2ffd9b, 6acde723, 96992ea8, acaa7317, c7928fc7, 302655b9 `published`, grades `['3']`.
+
+## 13. Lot 6 (translation, vecteurs, sphère, lot 6 du § 4) : phase 0 proposée (2026-11-01)
+
+Relevé MCP du jour : les 7 points du lot (3-018, 3-019, 3-021, 3-024 à 3-027) n'ont **aucun modèle**, ni 3-020.
+Proches, en 4e (publiés le 2026-10-31, session 4e) : c8306505 « Translation et parallélogramme » (4-031 :
+ABDC parallélogramme, image de C, frise ; ` ```figure ` `grille: 1` + `vecteur(A, B)` + ` ```choix `),
+0150ef82 « Effet d'une translation » (4-030), e7ef2835 « Ce que conserve une translation » (4-032).
+Volumes : 47971d3d / 55b26d32 cylindre (5-053, exact / π ≈ 3,14), 35002b15 cône (4-076, brouillon).
+
+Outils : ` ```figure ` sur quadrillage (`vecteur(A, B)`, `vecteur(dx, dy, ancre=…)`) + ` ```choix ` ;
+` ```solide ` `boule r` et `section:` (boule `d`, `0` = grand cercle ; pavé, cylindre) — **pas encore en prod**
+(chantier `solides`, 23 commits après v0.58.0) : les modèles qui s'en servent restent en brouillon jusqu'au
+`deploy:prod`. **Changement depuis le § 3** : 3-020 (sections) était classé C ; ` ```solide ` le couvre
+désormais (son nom accessible tait la nature de la section, « réponse de 3e-020 »).
+
+Nœuds (prod) : 3-025 → Vecteurs > égalité de vecteurs (5cc5fd1c) ; 3-026, 3-027 → Vecteurs > somme et
+relation de Chasles (145027b5) ; 3-021 → Volumes > boule (17e866a3) ; 3-018, 3-019 → Solides > propriétés
+(ae67e98f) ; 3-020 → Solides > sections planes (79a5ec75) ; c8306505 garde le sien.
+
+### 13.1 Translation : 3-024
+
+**Recommandé : aucun modèle neuf.** c8306505 passe en grades `['4', '3']` et reçoit le tag 3-024 en plus de
+4-031 (son contenu est la définition du point : « C a pour image l'unique D tel que ABDC soit un
+parallélogramme » ; précédents ccb51039 / 76f5f143, § 12.1).
+
+### 13.2 Modèles neufs (6, un par point ; 7 avec 3-020)
+
+| Point | Modèle (catégorie)                                                          | Variations                                                                                                                                                                                                                                                                                                                     | Réponse                   |
+| ----- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------- |
+| 3-025 | Vecteurs égaux, opposés, nul (Géométrie / Vecteurs / Égalité, 1)            | quadrillage, vecteur $\vec u$ et 4 vecteurs numérotés : 1) lequel est égal à $\vec u$ ; 2) lequel est l'opposé de $\vec u$ ; 3) parallélogramme ABCD : $\vec{AB} = ?$ parmi $\vec{DC}$, $\vec{CD}$, $\vec{AD}$, $\vec{BC}$ ; 4) « $\vec{AB} = \vec 0$ » : A = B, AB = 0 cm… (choix)                                            | choix                     |
+| 3-026 | Somme de deux vecteurs (Géométrie / Vecteurs / Somme, 1)                    | quadrillage, $\vec u$, $\vec v$, point A : 1) image de A par la translation de vecteur $\vec u$ puis celle de vecteur $\vec v$ (choix entre 4 points) ; 2) quel vecteur numéroté est $\vec u + \vec v$ ; 3) translation de vecteur $\vec{AB}$ puis $\vec{BC}$ = translation de vecteur ? ($\vec{AC}$, $\vec{CA}$, $\vec{BC}$…) | choix                     |
+| 3-027 | Relation de Chasles (Géométrie / Vecteurs / Chasles, 1-2)                   | 1) $\vec{AB} + \vec{BC}$ ; 2) trois termes $\vec{AB} + \vec{BC} + \vec{CD}$ ; 3) $\vec{AB} + \vec{BA}$ (= $\vec 0$) ; 4) termes dans le désordre $\vec{BC} + \vec{AB}$ ; lettres tirées                                                                                                                                        | choix (4 vecteurs)        |
+| 3-018 | Boule ou sphère ? (Géométrie / Solides / Sphère et boule, 1)                | sphère de centre O, rayon r : 1) OM = d, M est-il sur la sphère, à l'intérieur, à l'extérieur (d < r, = r, > r) ; 2) « l'ensemble des points M tels que OM = r » / « OM ⩽ r » : sphère, boule, cercle, disque ; texte seul (pas de ` ```solide `)                                                                              | choix                     |
+| 3-019 | Grands cercles et diamètre (Géométrie / Solides / Sphère et boule, 1)       | 1) rayon → diamètre, diamètre → rayon ; 2) ` ```solide boule ` coupée par le centre (`section: 0`) : rayon du grand cercle (= r) ; 3) la Terre : équateur, méridien, parallèle de latitude 45° — lesquels sont des grands cercles (`plusieurs: oui`)                                                                           | case nombre ; choix       |
+| 3-021 | Volume d'une boule (Grandeurs / Volumes / Boule, 1-2)                       | V = 4/3 π r³ : 1) valeur exacte en fonction de π (r multiple de 3 → coefficient entier) ; 2) arrondi au cm³ ; 3) diamètre donné ; 4) demi-boule                                                                                                                                                                                | case (exacte ou arrondie) |
+| 3-020 | Sections de solides (Géométrie / Solides / Sections, 1-2) — **si § 13.4.2** | ` ```solide ` coupé : 1) pavé ‖ à une face : nature (rectangle) et dimensions = celles de la face ; 2) cylindre ⊥ à l'axe : disque de même rayon ; 3) cylindre ‖ à l'axe : rectangle, une dimension = hauteur ; 4) boule à d du centre : cercle, rayon par Pythagore (R, d entiers d'un triplet)                               | choix ; case nombre       |
+
+Erreurs typiques (`testSpecs`) : 3-025 → le vecteur de même direction mais de sens contraire, $\vec{CD}$ au
+lieu de $\vec{DC}$ ; 3-026 → $\vec u - \vec v$, le seul $\vec v$ ; 3-027 → $\vec{CA}$, $\vec{BB}$ ; 3-018 →
+boule / sphère inversées ; 3-019 → le diamètre pris pour le rayon, le parallèle compté grand cercle ; 3-021 →
+4/3 π r² ou π r³, le diamètre mis à la place du rayon ; 3-020 → le rayon de la boule pour celui de la section.
+
+### 13.3 Rangement
+
+Chacun sur le nœud de son point (relevé ci-dessus), un tag par modèle ; c8306505 : grades et tag 3-024 dans
+la même migration.
+
+### 13.4 Questions à David
+
+1. § 13.1 : c8306505 partagé avec la 3e (grades 4 et 3, tags 4-031 et 3-024), plutôt qu'un modèle neuf ?
+2. **3-020 (sections) dans ce lot**, maintenant que ` ```solide ` sait couper ? Il resterait en brouillon,
+   comme 3-019 v2, jusqu'au `deploy:prod` qui livre le bloc.
+3. Valider le § 13.2 : points, variations, formes de réponse. Vecteurs en **choix** partout (pas de saisie
+   de $\vec{AC}$ dans une case).
+4. 3-021 : valeur exacte « en fonction de π » (36π, 32/3 π acceptés) et arrondi, comme le cylindre de 5e ?
+
+### 13.5 Question d'accès
+
+Brouillons : personne ne lit rien de neuf. Rangement puis publication : élèves et prof de 3e voient 6 (ou 7)
+modèles publiés de plus, et c8306505 de 4e ; la 4e ne perd rien. Aucune règle ne change.
+
+### 13.6 Décisions (David, 2026-11-01, « je te suis » sur les recommandations)
+
+- § 13.1 : c8306505 partagé (grades `['4', '3']`, tag 3-024 en plus de 4-031), dans la migration de rangement.
+- § 13.2 validé ; **3-020 ajouté au lot** (7 modèles) ; vecteurs toujours en choix.
+- 3-021 : exact (r multiple de 3 → coefficient entier ; une variation en fraction, 32/3 π) et arrondi au cm³.
+- Hors lot : la PR `fix` qui refuse une option à geste dans un ` ```choix ` (question restée ouverte du
+  chantier `solides`) — recommandée, à faire à part.
+
+### 13.7 Lot 6 : écrit (2026-11-01)
+
+- `docs/wip/questions/lot-3-6.py` → `scripts/questions/3-lot-6/` (7 JSON, 25 variations, 65 specs) ;
+  `create-questions` en simulation vert. Branche `content/questions-3-lot6`.
+- **Pièges mesurés** : `%` refusé dans l'`eval` d'une variable (« Unexpected token ») — admis dans les
+  conditions ; la case de chaque vecteur est donc choisie par `{{if}}` sur p. Choix à plusieurs réponses : une
+  partie seulement des bonnes = `unoptimal_form` (incomplet), pas `incorrect`.
+- Sonde (scratchpad, supprimée) : 300 tirages par variation, blocs ` ```figure ` (scène construite, ni erreur
+  ni avertissement), ` ```solide ` (parseur + scène), choix sans doublon, gabarits résolus : **0 défaut**.
+- Base locale : 7 brouillons. Aperçu admin (`127.0.0.1:5176`) : 3-025 v2 (quadrillage, GH = u, KL = −u),
+  3-026 v1 (points, R = A + u + v), 3-020 v2 (cylindre ⊥, disque teinté) et v4 (boule, R = 10, d = 6).
+  Retouche : choix « un disque de rayon r cm, comme la base » (la parenthèse coupait la ligne).
+
+### 13.8 Lot 6 : fichiers mergés (2026-11-01)
+
+- #2091 mergée (CI verte). Attendu : `create-questions --dir scripts/questions/3-lot-6 --publier` lancé par
+  David depuis le dépôt principal à jour (`git pull` d'abord).

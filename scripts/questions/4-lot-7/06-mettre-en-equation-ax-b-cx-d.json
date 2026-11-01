@@ -1,0 +1,357 @@
+{
+	"title": "Mettre en équation ax + b = cx + d",
+	"description": "Mettre en équation un problème du type ax + b = cx + d et le résoudre : deux tarifs, nombre mystère, deux cuves",
+	"grades": ["4"],
+	"theme": "Calcul littéral",
+	"domain": "Equations",
+	"subdomain": "Mettre en équation",
+	"level": 3,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "À la piscine, deux tarifs sont proposés :\n\n- tarif A : un abonnement de ${{b}}~\\unit{€}$, puis ${{a}}~\\unit{€}$ par séance ;\n- tarif B : ${{c}}~\\unit{€}$ par séance, sans abonnement.\n\nOn note $x$ le nombre de séances.\n\nQuelle équation permet de trouver le nombre de séances pour lequel les deux tarifs coûtent le même prix ?\n\n```choix\n- ${{b}} + {{a}}x = {{c}}x$\n- ${{a}}x = {{b}} + {{c}}x$\n- ${{b}}x + {{a}} = {{c}}x$\n- ${{b}} + {{a}} + x = {{c}}x$\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "4..15"
+				},
+				{
+					"name": "c",
+					"expression": "6..12"
+				},
+				{
+					"name": "a",
+					"expression": "2..{{eval:c-2}}"
+				},
+				{
+					"name": "b",
+					"expression": "eval:(c-a)*s"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Mettre en équation.** On choisit l'inconnue $x$, on écrit chaque quantité en fonction de $x$, puis on traduit « autant que » par le signe $=$.",
+					"Prix au tarif A : $\\textcolor{{{color:primary.1}}}{{{b}} + {{a}}x}$ ; prix au tarif B : $\\textcolor{{{color:primary.2}}}{{{c}}x}$.",
+					"Même prix : $\\textcolor{{{color:primary.0}}}{{{b}} + {{a}}x = {{c}}x}$."
+				]
+			}
+		},
+		{
+			"statement": "À la piscine, deux tarifs sont proposés :\n\n- tarif A : un abonnement de ${{b}}~\\unit{€}$, puis ${{a}}~\\unit{€}$ par séance ;\n- tarif B : ${{c}}~\\unit{€}$ par séance, sans abonnement.\n\nOn note $x$ le nombre de séances.\n\nPour combien de séances les deux tarifs coûtent-ils le même prix ?\n\nPour $?$ séances.",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "4..15"
+				},
+				{
+					"name": "c",
+					"expression": "6..12"
+				},
+				{
+					"name": "a",
+					"expression": "2..{{eval:c-2}}"
+				},
+				{
+					"name": "b",
+					"expression": "eval:(c-a)*s"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Mettre en équation.** On choisit l'inconnue $x$, on écrit chaque quantité en fonction de $x$, puis on traduit « autant que » par le signe $=$.",
+					"Prix au tarif A : $\\textcolor{{{color:primary.1}}}{{{b}} + {{a}}x}$ ; prix au tarif B : $\\textcolor{{{color:primary.2}}}{{{c}}x}$.",
+					"$$\\begin{aligned} {{b}} + {{a}}x &= {{c}}x \\\\ {{b}} &= {{c}}x - {{a}}x \\\\ {{b}} &= {{eval:c-a}}x \\\\ x &= \\frac{ {{b}} }{ {{eval:c-a}} } = \\textcolor{{{color:primary.0}}}{{{s}}} \\end{aligned}$$",
+					"Vérification : ${{b}} + {{a}} \\times {{s}} = {{eval:b+a*s}}$ et ${{c}} \\times {{s}} = {{eval:c*s}}$."
+				]
+			}
+		},
+		{
+			"statement": "Je pense à un nombre. Si je le multiplie par ${{a}}$ et que j'ajoute ${{b}}$, j'obtiens le même résultat que si je le multiplie par ${{c}}$ et que j'ajoute ${{d}}$.\n\nOn note $x$ ce nombre. Quelle équation traduit l'énoncé ?\n\n```choix\n- ${{a}}x + {{b}} = {{c}}x + {{d}}$\n- ${{a}} + {{b}}x = {{c}} + {{d}}x$\n- ${{a}}x + {{c}}x = {{b}} + {{d}}$\n- ${{eval:a+b}}x = {{eval:c+d}}x$\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "-9..9"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..20"
+				},
+				{
+					"name": "d",
+					"expression": "eval:(a-c)*s+b"
+				}
+			],
+			"conditions": ["s!=0", "a!=c", "d>0", "d!=b", "d<=60", "a+b!=c+d"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Mettre en équation.** On choisit l'inconnue $x$, on écrit chaque quantité en fonction de $x$, puis on traduit « autant que » par le signe $=$.",
+					"Premier calcul : $\\textcolor{{{color:primary.1}}}{{{a}}x + {{b}}}$ ; second calcul : $\\textcolor{{{color:primary.2}}}{{{c}}x + {{d}}}$.",
+					"Même résultat : $\\textcolor{{{color:primary.0}}}{{{a}}x + {{b}} = {{c}}x + {{d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Je pense à un nombre. Si je le multiplie par ${{a}}$ et que j'ajoute ${{b}}$, j'obtiens le même résultat que si je le multiplie par ${{c}}$ et que j'ajoute ${{d}}$.\n\nQuel est ce nombre ?\n\nLe nombre est $?$.",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "-9..9"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..20"
+				},
+				{
+					"name": "d",
+					"expression": "eval:(a-c)*s+b"
+				}
+			],
+			"conditions": ["s!=0", "a!=c", "d>0", "d!=b", "d<=60"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Mettre en équation.** On choisit l'inconnue $x$, on écrit chaque quantité en fonction de $x$, puis on traduit « autant que » par le signe $=$.",
+					"On note $x$ ce nombre : $\\textcolor{{{color:primary.1}}}{{{a}}x + {{b}} = {{c}}x + {{d}}}$.",
+					"$$\\begin{aligned} {{a}}x - {{c}}x &= {{d}} - {{b}} \\\\ {{eval:a-c}}x &= {{eval:d-b}} \\\\ x &= \\textcolor{{{color:primary.0}}}{{{s}}} \\end{aligned}$$",
+					"Vérification : ${{a}} \\times {{if:s<0|({{s}})|{{s}}}} + {{b}} = {{eval:a*s+b}}$ et ${{c}} \\times {{if:s<0|({{s}})|{{s}}}} + {{d}} = {{eval:c*s+d}}$."
+				]
+			}
+		},
+		{
+			"statement": "La cuve A contient ${{b}}~\\unit{L}$ d'eau et se remplit de ${{a}}~\\unit{L}$ par minute. La cuve B contient ${{d}}~\\unit{L}$ d'eau et se remplit de ${{c}}~\\unit{L}$ par minute.\n\nAu bout de combien de minutes les deux cuves contiendront-elles le même volume d'eau ?\n\nAu bout de $?$ minutes.",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "2..12"
+				},
+				{
+					"name": "a",
+					"expression": "4..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..{{eval:a-1}}"
+				},
+				{
+					"name": "b",
+					"expression": "5..40"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b+(a-c)*s"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Mettre en équation.** On choisit l'inconnue $x$, on écrit chaque quantité en fonction de $x$, puis on traduit « autant que » par le signe $=$.",
+					"Au bout de $x$ minutes : cuve A $\\textcolor{{{color:primary.1}}}{{{b}} + {{a}}x}$, cuve B $\\textcolor{{{color:primary.2}}}{{{d}} + {{c}}x}$.",
+					"$$\\begin{aligned} {{b}} + {{a}}x &= {{d}} + {{c}}x \\\\ {{a}}x - {{c}}x &= {{d}} - {{b}} \\\\ {{eval:a-c}}x &= {{eval:d-b}} \\\\ x &= \\textcolor{{{color:primary.0}}}{{{s}}} \\end{aligned}$$",
+					"Vérification : ${{b}} + {{a}} \\times {{s}} = {{eval:b+a*s}}$ et ${{d}} + {{c}} \\times {{s}} = {{eval:d+c*s}}$ litres."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "30 + 4x = 9x",
+			"variationIndex": 0,
+			"variables": {
+				"s": "6",
+				"c": "9",
+				"a": "4",
+				"b": "30"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4x = 30 + 9x",
+			"variationIndex": 0,
+			"variables": {
+				"s": "6",
+				"c": "9",
+				"a": "4",
+				"b": "30"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "30 + 4x = 9x : 6 séances",
+			"variationIndex": 1,
+			"variables": {
+				"s": "6",
+				"c": "9",
+				"a": "4",
+				"b": "30"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 30 ÷ 9",
+			"variationIndex": 1,
+			"variables": {
+				"s": "6",
+				"c": "9",
+				"a": "4",
+				"b": "30"
+			},
+			"answers": ["\\frac{10}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 30 ÷ 13",
+			"variationIndex": 1,
+			"variables": {
+				"s": "6",
+				"c": "9",
+				"a": "4",
+				"b": "30"
+			},
+			"answers": ["\\frac{30}{13}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5x + 20 = 2x + 11",
+			"variationIndex": 2,
+			"variables": {
+				"s": "-3",
+				"a": "5",
+				"c": "2",
+				"b": "20",
+				"d": "11"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 + 20x = 2 + 11x",
+			"variationIndex": 2,
+			"variables": {
+				"s": "-3",
+				"a": "5",
+				"c": "2",
+				"b": "20",
+				"d": "11"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5x + 20 = 2x + 11 : −3",
+			"variationIndex": 3,
+			"variables": {
+				"s": "-3",
+				"a": "5",
+				"c": "2",
+				"b": "20",
+				"d": "11"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 (signe)",
+			"variationIndex": 3,
+			"variables": {
+				"s": "-3",
+				"a": "5",
+				"c": "2",
+				"b": "20",
+				"d": "11"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Cuves : 6 minutes",
+			"variationIndex": 4,
+			"variables": {
+				"s": "6",
+				"a": "7",
+				"c": "3",
+				"b": "10",
+				"d": "34"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 24 (la différence des volumes)",
+			"variationIndex": 4,
+			"variables": {
+				"s": "6",
+				"a": "7",
+				"c": "3",
+				"b": "10",
+				"d": "34"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

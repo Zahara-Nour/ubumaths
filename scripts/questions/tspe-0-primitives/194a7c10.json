@@ -1,0 +1,265 @@
+{
+	"id": "194a7c10-455e-4b96-b7ae-684909392fb3",
+	"title": "Primitive de la forme u′/u",
+	"description": "Reconnaître u′/u (à un facteur constant près), primitive quelconque ou fixée par F(x₀) = y₀",
+	"grades": ["T_SPE", "T_COMP"],
+	"theme": "Primitives et équations différentielles",
+	"domain": "Primitives",
+	"subdomain": "Formes u′eᵘ, 2uu′, u′/u",
+	"level": 5,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"form": "off",
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:h==1|\\ln({{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}})}}{{if:h==-1|-\\ln({{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}})}}{{if:h!=1 && h!=-1|{{eval:h}}\\ln({{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}})}}{{if:y0>0|+{{eval:y0}}}}{{if:y0<0|{{eval:y0}}}}"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\left]{{eval:-b/a}}\\,;+\\infty\\right[$ par $f(x)={{if:h<0|-}}\\dfrac{{{eval:abs(h)*a}}}{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}}}$.\n\nDétermine la primitive $F$ de $f$ sur $\\left]{{eval:-b/a}}\\,;+\\infty\\right[$ telle que $F({{eval:x0}})={{eval:y0}}$.\n\n$F(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "x0",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:1-a*x0}}"
+				},
+				{
+					"name": "h",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "y0",
+					"expression": "-5..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u(x)={{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}}$, strictement positive sur cet intervalle, $u'(x)={{eval:a}}$ : $f(x)={{if:h==1|\\dfrac{u'(x)}{u(x)}}}{{if:h==-1|-\\dfrac{u'(x)}{u(x)}}}{{if:h!=1 && h!=-1|{{eval:h}}\\dfrac{u'(x)}{u(x)}}}$, de primitive ${{if:h==1|\\ln(u(x))}}{{if:h==-1|-\\ln(u(x))}}{{if:h!=1 && h!=-1|{{eval:h}}\\ln(u(x))}}$.",
+					"$F(x)={{if:h==1|\\ln({{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}})}}{{if:h==-1|-\\ln({{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}})}}{{if:h!=1 && h!=-1|{{eval:h}}\\ln({{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}})}}+k$ ; en $x={{eval:x0}}$, $u({{eval:x0}})=1$ et $\\ln(1)=0$, donc $k={{eval:y0}}$.",
+					"$F(x)=\\textcolor{{{color:primary.0}}}{{{if:h==1|\\ln({{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}})}}{{if:h==-1|-\\ln({{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}})}}{{if:h!=1 && h!=-1|{{eval:h}}\\ln({{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}})}}{{if:y0>0|+{{eval:y0}}}}{{if:y0<0|{{eval:y0}}}}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"interval": "]{{eval:-b/a}};+\\infty[",
+					"integrand": "{{if:h<0|-}}\\frac{{{eval:abs(h)*a}}}{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}}}",
+					"answerKind": "primitive",
+					"expectedAnswer": "{{if:h==1|\\ln({{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}})}}{{if:h==-1|-\\ln({{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}})}}{{if:h!=1 && h!=-1|{{eval:h}}\\ln({{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}})}}"
+				}
+			],
+			"statement": "Soit $f$ la fonction définie sur $\\left]{{eval:-b/a}}\\,;+\\infty\\right[$ par $f(x)={{if:h<0|-}}\\dfrac{{{eval:abs(h)*a}}}{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}}}$.\n\nDonne une primitive $F$ de $f$ sur $\\left]{{eval:-b/a}}\\,;+\\infty\\right[$.\n\n$F(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "x0",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:1-a*x0}}"
+				},
+				{
+					"name": "h",
+					"expression": "1..3;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u(x)={{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}}$, strictement positive sur cet intervalle, $u'(x)={{eval:a}}$ : $f(x)={{if:h==1|\\dfrac{u'(x)}{u(x)}}}{{if:h==-1|-\\dfrac{u'(x)}{u(x)}}}{{if:h!=1 && h!=-1|{{eval:h}}\\dfrac{u'(x)}{u(x)}}}$, et une primitive de $\\dfrac{u'}{u}$ est $\\ln(u)$.",
+					"Une primitive de $f$ est $F(x)=\\textcolor{{{color:primary.0}}}{{{if:h==1|\\ln({{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}})}}{{if:h==-1|-\\ln({{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}})}}{{if:h!=1 && h!=-1|{{eval:h}}\\ln({{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}})}}}$ (à une constante près)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["3\\ln(2x-1)+4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"h": "3",
+				"x0": "1",
+				"y0": "4"
+			},
+			"description": "v0 : 6/(2x−1), F(1)=4 → 3ln(2x−1)+4",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["6\\ln(2x-1)+4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"h": "3",
+				"x0": "1",
+				"y0": "4"
+			},
+			"description": "v0 : u′ non divisé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3\\ln(2x-1)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"h": "3",
+				"x0": "1",
+				"y0": "4"
+			},
+			"description": "v0 : condition oubliée",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\ln(3x-5)+2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"h": "-1",
+				"x0": "2",
+				"y0": "2"
+			},
+			"description": "v0 : h=-1 → −ln(3x−5)+2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3\\ln(2x-1)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"h": "3",
+				"x0": "1"
+			},
+			"description": "v1 (ouverte) f=6/(2x−1) sur ]1/2;+∞[ : primitive modèle",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3\\ln(2x-1)+4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"h": "3",
+				"x0": "1"
+			},
+			"description": "v1 (ouverte) f=6/(2x−1) sur ]1/2;+∞[ : autre constante",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3\\ln(2x-1)+C"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"h": "3",
+				"x0": "1"
+			},
+			"description": "v1 (ouverte) f=6/(2x−1) sur ]1/2;+∞[ : avec +C",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3\\ln|2x-1|"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"h": "3",
+				"x0": "1"
+			},
+			"description": "v1 (ouverte) f=6/(2x−1) sur ]1/2;+∞[ : valeur absolue",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3\\ln(1-2x)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"h": "3",
+				"x0": "1"
+			},
+			"description": "v1 (ouverte) f=6/(2x−1) sur ]1/2;+∞[ : hors intervalle : ln(1−2x)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-\\frac{12}{(2x-1)^2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"h": "3",
+				"x0": "1"
+			},
+			"description": "v1 (ouverte) f=6/(2x−1) sur ]1/2;+∞[ : dérivée au lieu de primitive (message)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["6\\ln(2x-1)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"h": "3",
+				"x0": "1"
+			},
+			"description": "v1 (ouverte) f=6/(2x−1) sur ]1/2;+∞[ : coefficient non divisé par u'",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\ln(2x-1)"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"h": "3",
+				"x0": "1"
+			},
+			"description": "v1 (ouverte) f=6/(2x−1) sur ]1/2;+∞[ : non-primitive",
+			"variationIndex": 1
+		}
+	]
+}

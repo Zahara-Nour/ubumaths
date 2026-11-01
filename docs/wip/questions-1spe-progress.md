@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2053 et la publication du lot 0-logique._
+_Mis à jour le 2026-11-01, après #2092 (lot 1-dérivation, § 18)._
 
-- **État** : lots 0-suites à 0-logique publiés (logique : 5 modèles, 5 « ok », `published` le 2026-11-01). Brouillons de 1re spé restants : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (terminale, D3), 0495289a (attente), c90fa022, d2067413 (points 1TECHNO), et les 5 de logique tagués de seconde (chantier questions-2de).
-- **Prochaine action** : migration des tags D3 (174e202b, dc4b8d08 → 1SPE-307 ; eae2ff6a → 1SPE-386 ; 318ea542 → 1SPE-283 ; f1440b52 : 1SPE-274 → 1SPE-396 ; 8b599a53, fece187e, afd9b3ff : retirer `1_SPE` ; f8ccc8b6 à lire) — relire D3 (§ 5) et la prod d'abord, question d'accès à poser.
-- **En attente de David** : rien.
-- **Pièges en cours** : `create-questions` et `publier-lot --publier` refusés au mode auto (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : `migration list --linked` ET worktrees ; instantané jamais dans le dépôt principal ; index du dépôt principal parfois tenu par une autre session (attendre).
-- **Worktree / branche** : aucun ; nouveau worktree pour la migration D3.
+- **État** : lots 0 publiés, D3 joué. **Lot 1-dérivation** (10 modèles neufs, points 259 à 397 du § 3.5) mergé (#2092), fichiers dans `scripts/questions/1spe-derivation/`, pas encore en base. Brouillons de 1re spé restants (inchangés) : 174e202b, dc4b8d08 (l1s-3), fece187e, afd9b3ff (questions-tspe), 0495289a (attente), c90fa022, d2067413 (1TECHNO).
+- **Prochaine action** : David lance, depuis le dépôt principal, `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-derivation --publier` ; puis relire les ids en base, migration de rangement (nœuds + tags, worktree neuf), page à cocher, `publier-lot`.
+- **En attente de David** : le `--publier` du lot.
+- **Pièges en cours** : `create-questions` et `publier-lot --publier` refusés au mode auto (David les lance) ; `publier-lot` = tout le dossier ou rien ; horodatage de migration : max de la prod ET worktrees ; corps de commit : lignes ≤ 100 caractères (commitlint).
+- **Worktree / branche** : aucun (retiré après #2092).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -768,3 +768,64 @@ https://claude.ai/artifact/5FCW8NuvR1gZZ6UhbYr2XX (5 fiches ; 1 alerte attendue 
 
 **Verdicts** : 5 « ok » sur 5, aucun commentaire. `publier-lot --publier` lancé par David le 2026-11-01 : les 5 modèles sont
 `published` en base (MCP). **Lot 0-logique clos.**
+
+## 17. Migration des tags D3 (relevé de la prod du 2026-11-01)
+
+D3 (§ 5, 2026-10-27) relu contre la prod (MCP) et contre les décisions d'avant et d'après :
+
+| Modèle                            | D3              | Constat                                                                                                             | Suite                                                  |
+| --------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| 174e202b, dc4b8d08                | → 1SPE-307      | annulé par D17 (l1s-3), brouillons en attente                                                                       | rien                                                   |
+| 8b599a53                          | retirer `1_SPE` | déjà `[T_SPE]` (questions-tspe, par fichier)                                                                        | rien                                                   |
+| fece187e, afd9b3ff                | retirer `1_SPE` | brouillons `[1_SPE]`, TSPE-457 ; Q3 de questions-tspe prévoit `[T_SPE]`                                             | **laissés à questions-tspe**, lot 0-trigo, par fichier |
+| f1440b52 (publié)                 | 274 → 396       | 396 sur son nœud, sans modèle ; 274 garde cffdd283, 496f958d                                                        | **migration**                                          |
+| 318ea542 (publié, carte de cours) | → 283           | sans tag par décision du 2026-10-23 ; sœurs 03b3d9b3, bb554c62 en 283, même nœud                                    | **migration**                                          |
+| eae2ff6a (publié)                 | → 386           | contredit l'option A du 2026-10-24 (racines LUES sur une parabole, hors programme ; 386 = discriminant, autre nœud) | **sans point**                                         |
+| f8ccc8b6 (publié)                 | à lire          | 12 vrai/faux sur 6 points ou plus (courbe, racines, formes, axe, signe, extremum)                                   | **sans tag**                                           |
+
+**D22 (David, 2026-11-01, « je valide » sur ces recommandations)**. Question d'accès : personne ne gagne ni ne perd
+d'accès. Données d'élèves sur f1440b52 et 318ea542 : aucune (0 carte SRS, tentative, évaluation, journal, test, série).
+
+Migration `20261101160000_questions_1spe_tags_d3.sql` + `tests/integration/questions-1spe-tags-d3.test.ts` : rouge sans le
+corps de la migration (suite principale tombée au `beforeAll`, 5 branches d'échec), 11 / 11 verts avec.
+
+`security-auditor` (Opus) : aucun finding bloquant ; deux faibles, hérités du gabarit cm2 lot 4 (comportement sous
+`db push` non prouvé par le test ; un retrait de tag concurrent ne prend pas le verrou, effet nul).
+
+#2085 mergée (CI verte). `db:migrate` le 2026-11-01 : seule cette migration en attente (dry-run), jouée ; relu en base (MCP) :
+f1440b52 = 1SPE-396, 318ea542 = 1SPE-283, statut, niveaux et `updated_at` inchangés. **D3 clos.**
+
+## 18. Lot 1-dérivation : taux, sécantes, approximation (10 modèles neufs)
+
+_Relevé prod du 2026-11-01 (MCP) : 396 déjà couvert (f1440b52, D3) ; 10 points sans modèle, aucun titre voisin dans
+les autres niveaux. Case choix en prod depuis v0.57.1 (#2019) : D6 levée pour ce lot._
+
+**Phase 0 (D23, David, 2026-11-01)** : un modèle par point, Fonctions › Dérivation :
+
+| #   | Point | Modèle                                       | Sous-notion, niveau         | Variations                                                        | Réponse                    |
+| --- | ----- | -------------------------------------------- | --------------------------- | ----------------------------------------------------------------- | -------------------------- |
+| 1   | 259   | Utiliser la définition du taux de variation  | Taux de variation, 1        | f(b) cherché ; b cherché (tableau de valeurs)                     | case                       |
+| 2   | 268   | Calculer un taux de variation                | Taux de variation, 2        | second degré ; 1/x ; √x entre deux carrés                         | case                       |
+| 3   | 397   | Calculer la pente d'une sécante              | Taux de variation, 3        | x³ + nx ; x² + nx + c puis équation réduite de (AB)               | case ; 2 cases             |
+| 4   | 388   | Lire la pente d'une sécante sur un graphique | Taux de variation, 4        | sécante tracée ; points seuls (` ```courbe `, nœuds de la grille) | case                       |
+| 5   | 262   | Fonction affine tangente                     | Approximation affine, 1     | carré ; cube ; inverse ; racine                                   | case                       |
+| 6   | 390   | Approximation affine de f(a + h)             | Approximation affine, 2     | (1+h)² ; 1/(1+h) ; √(1+h) ; (a+h)²                                | case (forme libre)         |
+| 7   | 273   | Valeur approchée de f(a + h)                 | Approximation affine, 3     | f(a), f′(a) donnés ; √4,02 ; 1/0,98 ; 1,003²                      | case décimale              |
+| 8   | 263   | Ensemble de dérivabilité                     | Fonctions dérivées, 6       | 1/x ; √x ; x³ ; 1/x²                                              | case choix                 |
+| 9   | 267   | Dérivabilité de la valeur absolue en 0       | Dérivabilité en un point, 1 | h numérique ; h en lettre                                         | 2 cases + Oui / Non (fixe) |
+| 10  | 269   | Interpréter le nombre dérivé en contexte     | Nombre dérivé, 4            | vitesse instantanée ; coût marginal ; sens de f′(a) (case choix)  | case ; case choix          |
+
+Q1 (262 voisin de 272) : modèle distinct, en langage de fonction. Q2 (269, variation 3) : case choix. Question
+d'accès : personne ne lit rien de neuf (modèles neufs en brouillon ; la migration ne pose que nœud et tags).
+
+**Écriture** : `docs/wip/questions/lot-1spe-derivation.py` → `scripts/questions/1spe-derivation/`. Simulation
+`create-questions` : 10 / 10 importables (66 specs) ; `sonde-courbes` : 0 problème ; aperçus relus (scratchpad).
+Retouches après aperçu : couleur de conclusion hors `$` (09, 10), Oui / Non non mélangé, « 1/5 = 1/5 » quand d = 1,
+1/1 évité (inverse à partir de 2), ligne de substitution au 262.
+
+**Pièges du lot** : `(−1)/6` = `unoptimal_form` (règle de superflu ordinaire, spec retirée) ; `1 + 0,5h` refusé
+(`bad_form`) tant que `form` est stricte, `acceptDecimal` ne vaut que pour un nombre seul → `form: off` sur le
+modèle 06 (les fausses valeurs restent fausses : `1 + 2h + h²`, `1 + h`).
+
+**Suite** : PR des fichiers → David lance `create-questions --dir scripts/questions/1spe-derivation --publier` →
+migration de rangement (nœuds + tags, ids relus en base) → page à cocher → `publier-lot`.

@@ -10,16 +10,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2055 et la publication du lot 0-intégration._
+_Mis à jour le 2026-11-01, après #2084 et la publication du lot 0-primitives._
 
-- **État** : lots 0-suites, 0-limites et fonctions, 0-intégration (convexité + calcul intégral, § 8) **publiés** en prod : 66 modèles. Relecture du lot 0-intégration validée en bloc par David ; statut (23 `published`) et 3 retouches relus en base.
-- **Prochaine action** : lot 0 « primitives et équations différentielles » dans un nouveau worktree : relevé des brouillons par id (MCP), export, relecture tirage par tirage, page à cocher. Plus tard : migration des tags Q3 (§ 1, § 7, § 8 : f1963ef2 → 447 ; a80a780f → 585/586/411/412 ; 5e702745 → 479 plutôt que 476 ?).
+- **État** : lots 0-suites, 0-limites et fonctions, 0-intégration, 0-primitives **publiés** (84 modèles). Rien en cours.
+- **Prochaine action** : lot trigonométrie (branche `feat/questions-tspe-lot0-trigo`, déjà créée dans le worktree) : relevé des brouillons de trigo T_SPE en base, instantané, vérification. Plus tard : migration des tags Q3 (§ 1, § 7, § 8, § 9).
 - **En attente de David** : rien.
 - **Pièges en cours** : `create-questions` et `publier-lot`, même en simulation → David (le mode auto les refuse) ;
   partir des id, pas des vieux dossiers `<thème>-terminale/` ; simulation `publier-lot` AVANT tout ;
   worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (sinon `$lib` introuvable) ;
   **horodatage de migration** : max + 1 min de la prod juste avant de créer le fichier.
-- **Worktree / branche** : aucun (worktree du lot 0-intégration retiré).
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe` · `feat/questions-tspe-lot0-trigo` (partie de `main` après #2084).
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -390,3 +390,43 @@ publication ; alertes : a80a780f sans point, 21840f6c bloc ```variation non dess
 **Publication** : PR #2055 mergée (CI : deux jobs relancés, échecs sans lien — test `vercel-maintenance` sorti en
 141, installation de Playwright coupée à 15 min) ; David a lancé `create-questions --publier --mettre-a-jour` et
 `publier-lot --publier`. Relu en base : 23 / 23 `published`, les 3 retouches présentes.
+
+## 9. Lot 0-primitives (primitives et équations différentielles) : vérification des brouillons
+
+_2026-11-01. Les 18 brouillons du thème « Primitives et équations différentielles » (relevé MCP par tag et par
+nœud, aucun brouillon non tagué sur ces nœuds) : primitives 3dbc5a7b (TSPE-602), fe25be0a, d0930e8c, 23402520
+(467), 264b9c11, e332140f, 0cbbbe91, 5439aae4, 194a7c10, 11eac96b, 2d480f3d, f01270c2 (468) ; équations
+différentielles 968f4295 (464), 32bb4b83 (469), 2a1413ff (607), e02fb162 (470), efb12f4b (TCOMP-250 seul),
+624bf511 (TCOMP-249 seul). Instantané `scripts/questions/tspe-0-primitives/` (prod), une copie par variation
+(59 variations, 2 tirages lus chacune), plages et `conditions` lues dans les fichiers pour les cas limites des
+cases choix, tirages forcés sur les branches corrigées._
+
+**Mécanique** : 18 / 18 verts, 0 avertissement.
+
+**Bornes** : rien hors bornes TSPE. TCOMP (D7) : uⁿu′ (e332140f) et sin / cos (23402520, 264b9c11) sont en
+`T_SPE` seul ; d0930e8c (1/x sur ]0 ; +∞[, 1/x² sur ]−∞ ; 0[) tient dans TCOMP-251 ; u′/u avec u > 0 sur
+l'intervalle (11eac96b, 194a7c10), TCOMP-351 tenue.
+
+**Cases choix** : efb12f4b v0 garde `k != a` (sans elle, deux bonnes réponses) ; v1 : la constante fausse b = −am
+ne peut égaler ±m (|a| ≥ 2) ; 624bf511 v1 garde `y0 != m` (sans elle, f constante et aucune option juste).
+
+**Constats (corrigés dans les fichiers, specs vertes, tirages forcés relus)** :
+
+- **C1** 968f4295 v3 (f(1) = ±1) : « C = 1e⁵ », « f(x) = 1e⁵e^(−5x) » → « C = e⁵ », « f(x) = e⁵e^(−5x) » (et « −e⁵ »).
+- **C2** efb12f4b v2 (k = 0) : « (la constante 0 disparaît en dérivant) » sous une primitive sans constante →
+  phrase retirée quand k = 0.
+- **C3** e02fb162 v0 (q = 0) : « h(0) = C = 4, donc C = 4 » → « h(0) = C = 4 ».
+
+**Vus, laissés** : les titres « … vérifiant une condition » couvrent aussi des variations sans condition
+(d0930e8c, fe25be0a, 23402520, 968f4295, 2a1413ff) — le titre est la clé de `create-questions`, on n'y touche pas.
+
+**Niveaux** : aucune collision dans les 18 catégories du lot (relevé MCP, 2026-11-01).
+
+**Pour la migration Q3** : 624bf511 et efb12f4b → 466 (D3, inchangé) ; rien de nouveau.
+
+**Page à cocher** : https://claude.ai/artifact/9mQPicqp2fSD5i32CrwaMp (18 fiches), collection `verdicts` vide à la
+publication. Les 3 retouches ne sont pas encore en base : la page montre déjà les fichiers corrigés.
+
+**Relecture** : David valide les 18 fiches en bloc (2026-11-01, sans passer par la page : `verdicts` restée vide).
+
+**Publication** (2026-11-01, #2084 mergée) : David a lancé `create-questions --publier --mettre-a-jour` (3 mis à jour : 968f4295, e02fb162, efb12f4b ; 15 identiques) puis `publier-lot` (simulation : 18 passent) et `--publier`. Relu en base (MCP) : 18 / 18 `published`, les 3 retouches présentes, anciens textes absents.
