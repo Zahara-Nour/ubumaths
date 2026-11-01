@@ -6,23 +6,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2081._
+_Mis à jour le 2026-11-01, migration du lot 5 en PR._
 
-- **État** : lots 1 à 4 publiés en prod ; lot 5 (problèmes, 12 modèles) mergé (#2081), brouillons pas encore
-  créés en prod. Aucun worktree en cours.
-- **Prochaine action** : David crée les 12 brouillons (`pnpm tsx scripts/create-questions.ts --dir
-scripts/questions/ce2-5 --publier`, avec `!`) ; puis migration nœud + tag (calquée sur le lot 4, niveaux relevés
-  au MCP juste avant ; 03 → Fractions · Calculer · Addition et Soustraction · 22) ; page à cocher ; `--publier`.
+- **État** : lots 1 à 4 publiés en prod ; lot 5 (problèmes, 12 modèles) : brouillons créés en prod (2026-11-01),
+  migration nœud + tag `20261101180100` en PR (test rouge sans, vert avec).
+- **Prochaine action** : CI verte → merger → `db:migrate` (`--dry-run` d'abord ; condition 3 : `security-auditor`
+  sans finding bloquant) → relevé MCP → page à cocher → `publier-lot` en simulation puis `--publier` (David, `!`).
   En parallèle, dans des sessions à part : `choix-correction` (§ 8), puis `centaines:` + milliers de `collection`
   et barres à monter.
-- **En attente de David** : lancer `create-questions --publier` ; dire si la correction du produit cartésien en
-  phrases suffit (sinon outil neuf) ; veut-il voir les 12 brouillons dans l'aperçu admin avant publication.
+- **En attente de David** : relecture de la page à cocher ; dire si la correction du produit cartésien en phrases
+  suffit (sinon outil neuf).
 - **Pièges en cours** : `db:migrate`, `--publier` et `--mettre-a-jour` refusés par le classifieur (David les
-  lance avec `!`) ; `db:migrate` pousse TOUTES les migrations en attente : `--dry-run` d'abord ; horodatage =
-  max de la PROD ET du dépôt + 1 min ; niveaux relevés dans la catégorie JUSTE avant la publication ; commitlint :
-  sujet sans majuscule (même « CE2 »), corps ≤ 100 car. ; worktree neuf : `pnpm exec svelte-kit sync` avant
-  `question:specs` ; pnpm 12 : pas de `-s`.
-- **Worktree / branche** : aucun (prochain : `../ubumaths-wt-questions-ce2`, branche de la migration du lot 5).
+  lance avec `!`) ; `db:migrate` pousse TOUTES les migrations en attente ; horodatage = max de la PROD ET des
+  worktrees + 1 min ; niveaux relevés dans la catégorie JUSTE avant la publication ; commitlint : sujet sans
+  majuscule (même « CE2 »), corps ≤ 100 car. ; worktree neuf : `pnpm exec svelte-kit sync` avant `question:specs`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, `feat/questions-ce2-lot5-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -434,3 +432,13 @@ totale ≤ 1 000 pour le nombre de parts. Question d'accès : personne ne lit ri
   négative, condition ajoutée) ; « il reste 1 œufs » ; phrase commençant par une espace.
 - **Produit cartésien** : le tableau / l'arbre n'est dessiné que par des phrases (sa taille change à chaque tirage) ;
   si David veut un vrai dessin, c'est un outil neuf.
+
+### Lot 5 — brouillons en prod et migration (2026-11-01)
+
+- 12 brouillons créés en prod par David (`08cac7de`, `a2bee082`, `4f47f8d6`, `10f05004`, `28988062`, `4948acaf`,
+  `fe26e846`, `37a715c4`, `059b8bba`, `0f5d9ad8`, `43b40fc7`, `837d027b`), relus au MCP : `draft`, niveaux voulus,
+  sans nœud ni tag, 117 specs enregistrées.
+- Migration `20261101180100_questions_ce2_lot5_rangement_tags` (max de la prod, de `main`, des worktrees et des branches distantes `180000` + 1 min ; renumérotée depuis `160300`, qui passait avant la `160400` de `main`) et son test :
+  rouge sans (5 échecs sur 9), vert 9/9. Nœuds relevés : 029 → parties-tout (y compris le modèle des fractions,
+  `4f47f8d6`), 079 et 033 → comparaison, 030 et 032 → en deux étapes ou plus, 031 → multiplicatifs, 034 → produits
+  cartésiens. `check:incremental` 0 erreur, cliquet tenu.
