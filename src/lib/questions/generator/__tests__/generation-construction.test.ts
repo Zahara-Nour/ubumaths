@@ -121,7 +121,10 @@ describe('bloc ```figure-a-completer : la case', () => {
 	it('évaluation notée : la case publique ne porte que sa nature (jugée au serveur)', () => {
 		const instance = generate(CP059);
 		const publicQuestion = toPublicQuestion(instance, { position: 0, delaySeconds: 60 });
-		expect(publicQuestion.blanks).toEqual([{ type: 'graphical' }]);
+		// `figure` : le fait seul (l'énoncé montre le bloc), pour que l'écran ne la compte pas
+		// comme une case écrite ; jamais `construction` (texte et vérifications) — fuite-enonce
+		expect(publicQuestion.blanks).toEqual([{ type: 'graphical', figure: true }]);
+		expect(JSON.stringify(publicQuestion.blanks)).not.toContain('construction');
 	});
 });
 
