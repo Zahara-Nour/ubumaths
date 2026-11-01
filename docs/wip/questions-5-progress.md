@@ -9,7 +9,7 @@ _Mis à jour le 2026-11-01, #2116 ouverte (CI en cours)._
 
 - **État** : lots 1 à 5 publiés ; **lot 6** (8 modèles, § 17) en prod en brouillons, rangés, tagués, **relus 8/8
   ok** ; collision de niveau (02 et 04 au niveau 1) → 04 au niveau 3 : PR **#2116** (migration
-  `20261101190300_questions_5_lot6_niveau` + JSON, test rouge sans / 6/6 vert, `security-auditor` sans bloquant).
+  `20261101200800_questions_5_lot6_niveau` + JSON, test rouge sans / 6/6 vert, `security-auditor` sans bloquant).
   **Phase 0 du lot 7 validée** (§ 18, 6 modèles).
 - **Prochaine action** : #2116 : CI → horodatage refait juste avant le merge (`max + 1 min` de `origin/main` ; la
   6e prend `20261101200700`, #2114) → merge → `pnpm db:migrate` depuis le dépôt principal → vérif MCP (8190200a
@@ -489,7 +489,7 @@ Relevé : aucun modèle sur les 6 points ; 6e « Fréquence » (fraction seule),
 - Simulation `publier-lot.ts` : refus, 02 « Calculer une moyenne » et 04 « Interpréter une moyenne » tous deux au
   niveau 1 de Statistiques › Indicateurs › moyenne (le 2 est pris par 03). David (« je te suis ») : 04 → **niveau
   3**. Question d'accès : personne. Script de lot + JSON 04 au niveau 3 ; migration
-  `20261101190300_questions_5_lot6_niveau` (gabarit du correctif 1re spé) + test d'intégration (rouge sans, 6/6 vert).
+  `20261101200800_questions_5_lot6_niveau` (gabarit du correctif 1re spé) + test d'intégration (rouge sans, 6/6 vert).
 - Collision trouvée en passant : `20261101190200` portée par la 5e (lot 6) ET la 6e (lot 7, #2107) ; la session
   `questions-6` renomme la sienne en `20261101200700` (#2114).
 

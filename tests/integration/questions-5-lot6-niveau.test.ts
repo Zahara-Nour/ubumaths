@@ -2,7 +2,7 @@
  * Chantier « questions-5 », lot 6 : niveau d'un brouillon dans sa catégorie (Supabase local requis)
  * ======================================================================================
  *
- * Migration `20261101190300_questions_5_lot6_niveau` : 8190200a (Interpréter une moyenne), refusé
+ * Migration `20261101200800_questions_5_lot6_niveau` : 8190200a (Interpréter une moyenne), refusé
  * à la publication parce que c73289f0 (brouillon du même lot) occupe aussi le niveau 1 de
  * Statistiques / Indicateurs / moyenne, passe au niveau 3 (le 2 est pris par 087c7c9c). Décision
  * de David du 2026-11-01 (journal docs/wip/questions-5-progress.md, § 17.4).
@@ -35,7 +35,7 @@ interface Etat {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261101190300_questions_5_lot6_niveau.sql';
+const MIGRATION = 'supabase/migrations/20261101200800_questions_5_lot6_niveau.sql';
 /** Le lot : identifiant de la prod, catégorie, niveau relevé le 2026-11-01 et niveau visé. */
 const LOT: { id: string; subdomain: string; avant: number; apres: number }[] = [
 	{
