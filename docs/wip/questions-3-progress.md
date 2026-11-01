@@ -10,8 +10,7 @@ _Mis à jour le 2026-11-01, après la clôture du chantier boite-a-moustaches._
 - **État** : lots 0 à 6 publiés en prod ; lot 7 (algorithmique, 4 modèles ` ```scratch `) mergé (#2128),
   pas en base ; chantier `boite-a-moustaches` clos (#2151, #2162). Lot 8 : phase 0 proposée (§ 15).
 - **Prochaine action** : réponses de David au § 15.3, puis écrire le lot 8 (`lot-3-8.py` →
-  `scripts/questions/3-lot-8/`). Lots 7 et 8 : attendre le `deploy:prod` de v0.60.0 (scratch + boîte ;
-  `deploy:prod` arrêté le 2026-11-01, `production` = v0.59.0), puis `create-questions --publier` (David), rangement (lot 7 :
+  `scripts/questions/3-lot-8/`). Lots 7 et 8 : scratch et boîte en prod (v0.62.0, 2026-11-01) → `create-questions --publier` (David), rangement (lot 7 :
   sous-notion neuve, § 14.10 ; lot 8 : f2167091, § 15.2), page à cocher.
 - **En attente de David** : § 15.3 (modèles du lot 8).
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
@@ -1045,8 +1044,7 @@ modèles publiés de plus. Aucune règle ne change.
 Chantier `boite-a-moustaches` clos (#2151 affichage, #2162 construire ; journal archivé). Bloc
 ` ```boite-a-moustaches ` : boîtes `Nom = min ; Q1 ; médiane ; Q3 ; max`, ou `données:` (boîte calculée par
 `describeList`, quartiles du programme) ; à construire : `placer: toutes` / `placer: Nom`, `axe:` obligatoire,
-chaque valeur attendue sur une graduation. Livré dans le tag v0.60.0 ; la branche `production` était encore à
-0.59.0 au relevé → **lot en brouillon jusqu'au `deploy:prod` qui le livre** (comme le lot 7).
+chaque valeur attendue sur une graduation. Livré en prod par v0.62.0 (2026-11-01).
 
 Relevé MCP du jour : 3-030 et 3-062 à 0 modèle ; nœud prêt **Statistiques > Indicateurs > boîte à moustaches**
 (f2167091, celui des deux points) ; aucun modèle en prod n'écrit de boîte. Voisins déjà couverts : 3-028
