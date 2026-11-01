@@ -5,8 +5,8 @@
 _Mis à jour le 2026-11-01, PR #2162 ouverte, revue faite._
 
 - **État** : palier 2 (construire) en PR #2162 ; revue Opus sans bloquant, mineurs corrigés (§ 12) ; tests verts.
-- **Prochaine action** : CI de #2162 annulée à la demande de David (main cassée, migration en double) ;
-  après le merge de #2154 : `git rebase origin/main`, push, CI verte → merge.
+- **Prochaine action** : #2154 mergée, branche rebasée sur origin/main et poussée : suivre la CI de
+  #2162 (`gh pr checks 2162 --watch`), verte → `gh pr merge --merge`, puis nettoyage du worktree.
 - **En attente de David** : vérification manuelle #2151 (téléphone) ; décisions du § 11 « Décidé en écrivant ».
 - **Pièges en cours** : quartiles = ceux de `describe.ts` ; série tirée au hasard de taille paire → médiane
   au demi, refusée sur un axe de 1 en 1 (aucune nouvelle graine tentée : dit dans la fiche).
