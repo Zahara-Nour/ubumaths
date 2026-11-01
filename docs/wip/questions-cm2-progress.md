@@ -604,3 +604,10 @@ publication.
 **À trancher** : (a) découpage 6a puis 6b (comme 5a / 5b) ? (b) #12 : garder une fraction décimale
 parmi les cinq décimaux, comme l'exemple du BO ? (c) #6 et #13 : accepter aussi l'autre écriture
 (0,435 pour 435/1 000 ; 3 456/1 000 pour 3,456) ?
+
+### 11.1 Lot 6 : décisions (David, 2026-11-01)
+
+Recommandations suivies (« tes recos ? » puis « je valide ») : (a) deux lots, **6a** (fractions
+décimales, modèles 1-7) puis **6b** (décimaux, modèles 8-13) ; (b) #12 garde une fraction décimale
+parmi les cinq nombres ; (c) #13 accepte aussi l'écriture fractionnaire, #6 exige une fraction
+décimale (0,435 → message de forme, à vérifier en local). Tableau du § 11 gardé.
