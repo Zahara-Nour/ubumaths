@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, premiers commentaires de David sur la page à cocher du lot 4._
+_Mis à jour le 2026-11-01, correction de 040 / 118 / 041 (§ 9.5) en PR._
 
-- **État** : lots 1, 2 et 3 publiés. Lot 4 (calcul mental sur les décimaux, 7 modèles, § 9) : 7 brouillons en prod, rangés et tagués (#2060, migration jouée), page à cocher publiée : https://claude.ai/artifact/GbuqmaxXKnTHhZSdy3ppbL (§ 9.3).
-- **Prochaine action** : selon la réponse de David (§ 9.4), corriger 040, 118, 041 (fichiers, `--mettre-a-jour` par David, verdicts remis à zéro) ; relire `verdicts` (compter 7) ; puis `publier-lot`.
-- **En attente de David** : choix 1, 2 ou 3 du § 9.4 (V1 « dixièmes, centièmes, millièmes » de 040 / 118 / 041 : « pas de nombre entier ») ; relecture des autres fiches.
-- **Pièges en cours** : `curriculum_points` n'a pas de colonne `label` ; relever la prod avant toute écriture ; horodatages de migration partagés → vérifier `origin/main` ; `db:migrate` pousse TOUTES les migrations en attente ; énoncé sans `?` = « Blank count mismatch » ; quotient décimal : `{{eval:…;d}}` ; specs ≥ 4 chiffres avec espaces ; variable `e` = Euler ; `Doc-inchangée:` dans un MESSAGE DE COMMIT (pas la description de la PR) ; ne jamais enchaîner `gh pr merge` sur la lecture de la CI ; `wrapDynamicImport` en CI = `gh run rerun --failed`.
-- **Worktree / branche** : aucun (retiré après #2060).
+- **État** : lots 1-3 publiés. Lot 4 : 7 brouillons rangés et tagués (#2060) ; 040, 118, 041 corrigés (variation 1 = un nombre ENTIER d'unités, § 9.5), PR ouverte sur `fix/questions-cm2-entier-decimal`. Page à cocher : https://claude.ai/artifact/GbuqmaxXKnTHhZSdy3ppbL
+- **Prochaine action** : PR mergée → David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-4 --publier --mettre-a-jour` (simulation : 3 ↻, 4 =) ; vérifier au MCP ; remettre à zéro les verdicts de 040 / 118 / 041 et republier la page ; relire `verdicts` (compter 7) ; puis `publier-lot`.
+- **En attente de David** : le `--mettre-a-jour` ; relecture des autres fiches du lot 4.
+- **Pièges en cours** : `create-questions` retrouve un modèle par son TITRE (titre changé = doublon) ; `curriculum_points` sans colonne `label` ; relever la prod avant toute écriture ; horodatages de migration partagés ; énoncé sans `?` = « Blank count mismatch » ; quotient décimal `{{eval:…;d}}` ; variable `e` = Euler ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; ne jamais enchaîner `gh pr merge` sur la lecture de la CI ; worktree neuf → `svelte-kit sync` avant `question:specs`.
+- **Worktree / branche** : `ubumaths-wt-questions-cm2` · `fix/questions-cm2-entier-decimal`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -429,3 +429,10 @@ Recommandations suivies (« tes recos ? » puis « je te suis ») : tableau du �
 - `f73f7bba` (040) À revoir : « il n'y a pas de nombre entier dans la variation 1 » ; `eca617ae` (118) : « même remarque » (sans verdict). `8f2aff1d` (041) a la même V1.
 - Origine : bornes c3-2 (décision de David du 2026-10-18) — « nombre entier » lu comme k unités de numération, d'après les exemples de réussite CM2 2025 p. 8 (4,452 + 0,03 ; 0,457 − 3/1 000 ; 4,45 + 0,8).
 - Question posée, **sans réponse** : 1. garder cette lecture et la rendre visible (titre « Ajouter un nombre entier d'unités, de dixièmes, de centièmes… », corrigé « 0,03, c'est un nombre entier de centièmes : 3 ») — **ma recommandation** ; 2. lecture littérale : V1 retirée des trois modèles (seulement unités à milliers) ; 3. séparer : 040 / 118 / 041 sur les entiers seuls, un modèle à part pour dixièmes / centièmes / millièmes.
+
+### 9.5 Lot 4 : 040 / 118 / 041, un nombre entier (David, 2026-11-01)
+
+- David : « que dit la consigne ? il faut qu'il y ait une cohérence entre la consigne et les questions ». Le BO de CM2 dit « ajouter ou soustraire **un nombre entier** à un nombre décimal » ; celui de CM1 écrit en toutes lettres « un nombre entier … d'unités, de dizaines, de centaines, **de dixièmes ou de centièmes** ». Lecture littérale retenue (« ok ») : la décision c3-2 du 2026-10-18 est remplacée.
+- Variation 1 refaite : k unités (k de 1 à 9) ajoutées à / retirées d'un décimal à 2 ou 3 décimales (4,452 + 3 ; 0,45 + 2 ; 8,694 − 6 ; retenue : 8,45 + 3 = 11,45). Variation 2 : dizaines à milliers seulement (les unités sont en V1). Aux unités, 0 est un vrai chiffre (condition `j==3||N>=10^j`).
+- Titres gardés (« Ajouter / Retirer des unités d'un seul rang », justes) : `create-questions` retrouve le modèle par son titre, un nouveau titre aurait créé un doublon sur un niveau pris.
+- Bornes CM2-040 / 041 / 118 de `cycle3.json` corrigées. `question:specs` : 1 000 tirages par variation, 8 specs par modèle, tout vert ; simulation prod : 3 à mettre à jour, 4 inchangés.

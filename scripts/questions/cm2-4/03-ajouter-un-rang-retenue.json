@@ -1,6 +1,6 @@
 {
 	"title": "Ajouter des unités d'un seul rang, avec une retenue",
-	"description": "Une retenue : 4,457 + 0,8 ; 0,457 + 0,007 ; 7 530,4 + 600",
+	"description": "Une retenue : 8,45 + 3 ; 27,456 + 5 ; 7 530,4 + 600",
 	"grades": ["CM2"],
 	"theme": "Décimaux",
 	"domain": "Additionner",
@@ -31,7 +31,7 @@
 				},
 				{
 					"name": "d3",
-					"expression": "1..9"
+					"expression": "0..9"
 				},
 				{
 					"name": "N",
@@ -39,7 +39,7 @@
 				},
 				{
 					"name": "j",
-					"expression": "0..2"
+					"expression": "3"
 				},
 				{
 					"name": "k",
@@ -58,7 +58,7 @@
 					"expression": "eval:N+k*10^j"
 				}
 			],
-			"conditions": ["c+k>=10", "c2<=8", "N>=10^j"],
+			"conditions": ["c+k>=10", "c2<=8", "j==3||N>=10^j", "mod(N,100)!=0"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:R/1000;d}}"
@@ -94,7 +94,7 @@
 				},
 				{
 					"name": "j",
-					"expression": "3..6"
+					"expression": "4..6"
 				},
 				{
 					"name": "k",
@@ -113,7 +113,7 @@
 					"expression": "eval:N+k*10^j"
 				}
 			],
-			"conditions": ["c+k>=10", "c2<=8", "N>=10^j"],
+			"conditions": ["c+k>=10", "c2<=8", "j==3||N>=10^j"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:R/1000;d}}"
@@ -131,65 +131,81 @@
 	],
 	"testSpecs": [
 		{
-			"description": "4,457 + 0,8 = 5,257",
+			"description": "8,45 + 3 = 11,45",
 			"variationIndex": 0,
 			"variables": {
-				"w": "4",
+				"w": "8",
 				"d1": "4",
 				"d2": "5",
-				"d3": "7",
-				"j": "2",
-				"k": "8"
+				"d3": "0",
+				"j": "3",
+				"k": "3"
 			},
-			"answers": ["5,257"],
+			"answers": ["11,45"],
 			"expected": {
 				"status": "correct"
 			}
 		},
 		{
-			"description": "Erreur : 4,457 + 0,8 → 4,257 (retenue oubliée)",
+			"description": "Erreur : 8,45 + 3 → 1,45 (retenue oubliée)",
 			"variationIndex": 0,
 			"variables": {
-				"w": "4",
+				"w": "8",
 				"d1": "4",
 				"d2": "5",
-				"d3": "7",
-				"j": "2",
-				"k": "8"
+				"d3": "0",
+				"j": "3",
+				"k": "3"
 			},
-			"answers": ["4,257"],
+			"answers": ["1,45"],
 			"expected": {
 				"status": "incorrect"
 			}
 		},
 		{
-			"description": "Erreur : 4,457 + 0,8 → 4,1257 (12 dixièmes écrits)",
+			"description": "Erreur : 8,45 + 3 → 8,75 (ajouté aux dixièmes)",
 			"variationIndex": 0,
 			"variables": {
-				"w": "4",
+				"w": "8",
 				"d1": "4",
 				"d2": "5",
-				"d3": "7",
-				"j": "2",
-				"k": "8"
+				"d3": "0",
+				"j": "3",
+				"k": "3"
 			},
-			"answers": ["4,1257"],
+			"answers": ["8,75"],
 			"expected": {
 				"status": "incorrect"
 			}
 		},
 		{
-			"description": "0,457 + 0,007 = 0,464",
+			"description": "27,456 + 5 = 32,456",
 			"variationIndex": 0,
 			"variables": {
-				"w": "0",
+				"w": "27",
 				"d1": "4",
 				"d2": "5",
-				"d3": "7",
-				"j": "0",
-				"k": "7"
+				"d3": "6",
+				"j": "3",
+				"k": "5"
 			},
-			"answers": ["0,464"],
+			"answers": ["32,456"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 49,99 + 9 = 58,99",
+			"variationIndex": 0,
+			"variables": {
+				"w": "49",
+				"d1": "9",
+				"d2": "9",
+				"d3": "0",
+				"j": "3",
+				"k": "9"
+			},
+			"answers": ["58,99"],
 			"expected": {
 				"status": "correct"
 			}
