@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; graduations décimales en virgule le 2026-11-01 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30 ; sections du bloc solide (`section:`) le 2026-10-31 ; repère à placer (` ```courbe ` + `placer:`) et titres d'axes (`axes:`) le 2026-11-01 ; valeur masquée `?` (énoncé d'évaluation) le 2026-11-01 ; centimes et billets de 200 / 500 € du bloc monnaie le 2026-11-01 (réponse de la case et messages après revue, le même jour) ; boîte à moustaches (affichage) le 2026-11-01.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; graduations décimales en virgule le 2026-11-01 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30 ; sections du bloc solide (`section:`) le 2026-10-31 ; repère à placer (` ```courbe ` + `placer:`) et titres d'axes (`axes:`) le 2026-11-01 ; valeur masquée `?` (énoncé d'évaluation) le 2026-11-01 ; centimes et billets de 200 / 500 € du bloc monnaie le 2026-11-01 (réponse de la case et messages après revue, le même jour) ; boîte à moustaches (affichage) le 2026-11-01, à construire (`placer:`) le 2026-11-01.
 
 ## À quoi ça sert
 
@@ -196,7 +196,7 @@ fermé »). Test : `__tests__/blocs-speciaux-listes.test.ts`.
 | `line`                                                                                                                                          | `number-line`               | `number-line-parser.ts`                                       | `NumberLine.svelte`                                                                                               | `number-line-typst.ts`                       |
 | `courbe`                                                                                                                                        | `courbe`                    | `courbe-parser.ts`                                            | `Courbe.svelte`                                                                                                   | `courbe-typst.ts`                            |
 | `figure`, `figure-a-completer`, `figure-de-travail`                                                                                             | `figure`                    | `figure-parser.ts`                                            | `FigureBlock.svelte`                                                                                              | `figure-typst.ts` (via registre)             |
-| `barres`, `circulaire`, `histogramme`, `frequences-cumulees`, `tableau-croise`, `loi`, `simulation`, `effectifs`, `nuage`, `boite-a-moustaches` | `stat-chart` (champ `kind`) | `stat-chart-parser.ts`                                        | `StatChart.svelte` (`BoxPlotChart.svelte` pour la boîte à moustaches)                                             | `stat-chart-typst.ts`                        |
+| `barres`, `circulaire`, `histogramme`, `frequences-cumulees`, `tableau-croise`, `loi`, `simulation`, `effectifs`, `nuage`, `boite-a-moustaches` | `stat-chart` (champ `kind`) | `stat-chart-parser.ts`                                        | `StatChart.svelte` (`BoxPlotChart.svelte` pour la boîte à moustaches, `BoxPlotPlacer.svelte` à construire)        | `stat-chart-typst.ts`                        |
 | `qr`                                                                                                                                            | `qr`                        | `qr-parser.ts`                                                | `QrBlock.svelte`                                                                                                  | `qr-typst.ts`                                |
 | `scratch`                                                                                                                                       | `scratch`                   | `scratch-parser.ts`                                           | `ScratchBlock.svelte` (dessin : `utils/scratch-render.ts`)                                                        | `scratch-typst.ts` (texte)                   |
 | `horloge`                                                                                                                                       | `horloge`                   | `horloge-parser.ts`                                           | `Horloge.svelte`                                                                                                  | `horloge-typst.ts`                           |
@@ -492,8 +492,7 @@ en 5` (départ quelconque, décimaux permis ; sans `de p en p` : de 1 en 1 ; sin
   qui n'est pas un nombre, désordre (la paire fautive nommée), valeur hors de l'axe écrit, deux boîtes
   du même nom (casse ignorée) ou deux sans nom, `données:` avec des lignes de boîtes, aucune boîte, plus
   de 4 boîtes (`STAT_CHART_LIMITS.boxPlots`), axe mal écrit / à l'envers / pas qui ne tombe pas juste /
-  plus de 40 graduations, `données:` de plus de 500 valeurs, option inconnue ou répétée, `placer:`
-  (« pas encore disponible » : construire = palier 2). Scène `utils/boxplot-scene.ts` (bornes,
+  plus de 40 graduations, `données:` de plus de 500 valeurs, option inconnue ou répétée. Scène `utils/boxplot-scene.ts` (bornes,
   graduations, rangées des étiquettes `valueRows`, bandes en px `bands`, partagées par l'écran et le
   PDF) ; description accessible « Boîte Nautic : minimum 28, premier quartile 30, médiane 37, troisième
   quartile 45, maximum 58. » (sans nom : « Boîte à moustaches : … »). Écran `BoxPlotChart.svelte` :
@@ -501,6 +500,25 @@ en 5` (départ quelconque, décimaux permis ; sans `de p en p` : de 1 en 1 ; sin
   petit trait, quadrillage léger aux graduations, une seule couleur d'accent. PDF : le même dessin
   (cetz). Liste, case choix, éditeur riche (bloc de code `boite-a-moustaches`) : génériques, comme
   les autres genres. Fiche `/aide-ecriture/blocs/boite-a-moustaches` (`boxPlotEntry`).
+  **À construire** (palier 2, pour 3-030) — `boite-a-moustaches-construire.test.ts`,
+  `BoxPlotPlacer.svelte.test.ts` : `placer: Notes` ou `placer: toutes` (`spec.boxPlot.toPlace`, rangs
+  dans `boxes`, dans l'ordre de l'auteur ; nom sans la casse ; une boîte sans nom : `toutes` seulement)
+  et `caseIndex` (`case: N`, posé par le générateur). Refus : sans `axe:` (calculé, il trahirait le
+  minimum et le maximum), avec `valeurs: oui`, nom absent, nommé deux fois ou vide, valeur attendue
+  entre deux graduations (l'élève ne pourrait pas la poser), `case:` sans `placer:`. `données:` permis
+  avec `placer: toutes` (l'attendu est la boîte de `describeList`). Valeur masquée : `Notes = ? ; ? ; ?
+; ? ; ?` (les cinq ou aucune ; boîte `masked`, seulement si elle est à construire). Scène : la boîte
+  à construire marquée `toPlace`, description « Boîte Notes : à construire. ». Écran
+  `BoxPlotPlacer.svelte` (`StatChart` le prend quand `spec.boxPlot.toPlace`) : nom et ligne en
+  pointillés à la hauteur de la boîte ; boutons Min, Q1, Médiane, Q3, Max ; toucher la bande d'une
+  boîte à construire (toute la hauteur s'il n'y en a qu'une) pose le trait choisi, glisser l'ajuste,
+  aimant à la graduation (`boxValueAt`) ; un trait posé pour la première fois passe au suivant pas
+  posé ; flèches (une graduation), Début, Fin ; `role="slider"`, nom accessible sans l'attendu. La
+  boîte se dessine dès Q1 et Q3 posés, chaque moustache dès ses deux bouts ; ordre libre, des traits
+  dans le désordre sont faux. Faux : une phrase par trait (`boxTraitMistake` : « Ta médiane est à 12. », « Tu n’as pas placé le maximum. », « (boîte Nautic) » quand il y en a plusieurs) et la boîte
+  juste (`solvedBoxPlotSpec`), sauf énoncé masqué. Calcul pur `utils/boxplot-placer.ts`. PDF : l'axe
+  et le nom seuls, l'enfant dessine. Repérage dans un énoncé : `findBoxPlotsToPlace` ;
+  `hasStatChartToPlace` (barres ou boîte, ex-`hasBarsToPlace`).
 
 **QR code** (lot 2 des QR codes, [qr-codes](qr-codes.md)) — `src/lib/ubumark/__tests__/qr/` :
 
@@ -1146,7 +1164,8 @@ Points à retenir :
 12. **Valeur masquée `?` d'un bloc à geste** (chantier [fuite-enonce](../wip/fuite-enonce-progress.md)) :
     l'énoncé envoyé pendant une évaluation notée remplace la valeur à trouver par `?`
     (`placer: A=? ; B=?` en ` ```line ` / ` ```courbe `, `placer: ?` en ` ```horloge `,
-    `construire: ?`, `colorier: ?`, `Natation = ?` pour une barre de `placer:`). Les parseurs la
+    `construire: ?`, `colorier: ?`, `Natation = ?` pour une barre de `placer:`, `Notes = ? ; ? ; ? ;
+? ; ?` pour une boîte à moustaches de `placer:`, `données:` compris). Les parseurs la
     lisent comme une valeur de remplacement (`utils/masked-value.ts`) : mêmes noms, même nombre de
     points ou de barres, même figure, aucune vérification de la valeur ; elle ne sert qu'au dessin
     de la solution, jamais montré avant la correction du serveur. Écrite par un auteur, elle est

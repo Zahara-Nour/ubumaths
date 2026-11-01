@@ -11,7 +11,7 @@ couvre:
 
 # Statistiques et probabilités (`src/lib/statistics/`)
 
-> Vérifié contre le code le 2026-10-10 ; espaces de groupement le 2026-10-23 ; barres à construire le 2026-10-28 ; échelle à choisir le 2026-10-29 ; boîte à moustaches le 2026-11-01. Usage dans l'atelier : [atelier.md](atelier.md)
+> Vérifié contre le code le 2026-10-10 ; espaces de groupement le 2026-10-23 ; barres à construire le 2026-10-28 ; échelle à choisir le 2026-10-29 ; boîte à moustaches le 2026-11-01, à construire le 2026-11-01. Usage dans l'atelier : [atelier.md](atelier.md)
 > (§ « Liens avec `mathAST` et `statistics` ») ; syntaxe des blocs statistiques :
 > [ubumark.md](ubumark.md) (genres de `stat-chart`). Cette doc ne décrit que le **calcul**.
 
@@ -65,7 +65,8 @@ Seul import hors du module : `RandomSource` de `src/lib/utils/random.ts` (chemin
 - `summarizeList(values)` → `Outcome<Summary> | null` : effectif, moyenne, médiane, min, max,
   étendue, variance, écart type, Q1, Q3, écart interquartile, D1, D9. `describeList` en est la
   version sans message (`Summary | null`) ; le bloc ` ```boite-a-moustaches ` l'appelle pour sa
-  boîte `données:` (min, `q1`, `median`, `q3`, max), sans autre calcul de quartile.
+  boîte `données:` (min, `q1`, `median`, `q3`, max), sans autre calcul de quartile — l'attendu
+  d'une boîte à construire avec `données:` aussi.
 - `summarizeTable(values, counts)` → `Outcome<FrequencyTable>` : lignes triées et **fusionnées**
   par valeur (fréquence, effectif cumulé, fréquences cumulées croissante et décroissante) + le
   `Summary`. Les effectifs peuvent être des pourcentages (seules les proportions comptent).
@@ -225,7 +226,9 @@ continue après 1000) rend `beyond: true` au lieu d'annoncer un faux « plus gra
   cité ou ouvert sur la ligne d'un item (`- ```barres`), `findBarsToPlace` le marque imbriqué et le
   générateur le refuse (règle commune, `ubumark/parser/nested-line.ts`). En évaluation notée,
   l'effectif d'une barre à construire part masqué (`Natation = ?`, lu comme 0 ; [ubumark.md](ubumark.md),
-  invariant 12).
+  invariant 12). Une boîte à moustaches à construire (` ```boite-a-moustaches ` + `placer:`) de même :
+  cinq cases par boîte, valeurs lues par `parseStatChartContent`, `findBoxPlotsToPlace`, énoncé
+  masqué `Notes = ? ; ? ; ? ; ? ; ?`.
 
 ## Invariants
 

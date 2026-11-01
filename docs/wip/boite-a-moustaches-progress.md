@@ -2,15 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2151._
+_Mis à jour le 2026-11-01, palier 2 écrit (PR à ouvrir)._
 
-- **État** : palier 1 (affichage) MERGÉ (#2151, sur `main`, pas en prod) ; débloque 3-062 et la 2de.
-- **Prochaine action** : palier 2 (construire, § 5 ; débloque 3-030) — nouveau worktree et nouvelle branche,
-  à lancer quand David le dit.
+- **État** : palier 2 (construire) écrit sur `feat/boite-a-moustaches-construire` (§ 11) ; tests verts.
+- **Prochaine action** : vérifier dans Chrome, revue `code-reviewer` (Opus : correction des réponses), PR, merge.
 - **En attente de David** : vérification manuelle #2151 (téléphone), dans `verifications-manuelles.md`.
-- **Pièges en cours** : quartiles = ceux de `describe.ts`, jamais un second calcul ; mineurs de revue
-  laissés (§ 10).
-- **Worktree / branche** : supprimés.
+- **Pièges en cours** : quartiles = ceux de `describe.ts`, jamais un second calcul ; énoncé masqué = pas
+  de boîte juste en correction côté élève.
+- **Worktree / branche** : `../ubumaths-wt-boite-a-moustaches` · `feat/boite-a-moustaches-construire`.
 
 ---
 
@@ -171,3 +170,26 @@ Notes = 4 ; 8 ; 11 ; 14 ; 19
   `données:` ; (3) à 40 graduations (le plafond), les étiquettes de l'axe se chevauchent — n'en écrire
   qu'une sur deux au-delà d'un seuil, si un modèle en a besoin.
 - CI verte, mergée le 2026-11-01.
+
+## 11. Palier 2 : écrit (2026-11-01)
+
+- `placer: Notes` / `placer: toutes` et `case:` dans `parseBoxPlotContent` (`checkBoxesToPlace`) ;
+  `spec.boxPlot.toPlace`. Refus du § 5, plus : nom vide, `case:` sans `placer:`, « ? » ailleurs que
+  sur une boîte à construire ou sur une partie des cinq valeurs.
+- **Cinq cases par boîte** (minimum, Q1, médiane, Q3, maximum), comme une case par barre : note
+  partielle, juge ordinaire (`'11'`, `'2.5'`, `boxValueAnswer` = `decimalString`). Genre de case
+  `boite-a-moustaches` (`BuildKind`), branché comme `barres` : `build-answer.ts`,
+  `assign-blank-indices.ts`, `expected-result.ts`, `instance-generator.ts`, `template-validator.ts`
+  (`hasStatChartToPlace`, ex-`hasBarsToPlace`).
+- Énoncé d'évaluation masqué (`maskBoxPlot`) : `Notes = ? ; ? ; ? ; ? ; ?` ; avec `données:`, la ligne
+  devient une boîte sans nom masquée (la consigne donne la série). Pas de boîte juste en correction
+  quand le bloc est masqué (l'attendu n'y est pas).
+- Écran `BoxPlotPlacer.svelte` ; calcul pur `utils/boxplot-placer.ts` ; PDF : nom et axe seuls ;
+  `BoxPlotChart` ne dessine pas une boîte à construire. Fiche : deux exemples à construire, deux erreurs.
+- **Décidé en écrivant** : un trait posé pour la première fois passe au suivant pas posé (le
+  re-poser ne change pas de trait) ; une seule boîte à construire : toute la hauteur du dessin la
+  vise ; plusieurs : sa bande, et des boutons de boîte. Phrases : « Ta médiane est à 12. », « Tu n’as
+  pas placé le maximum. », « (boîte Nautic) » quand il y a plusieurs boîtes à construire.
+- Tests : `boite-a-moustaches-construire.test.ts` 25, `generation-boite-a-moustaches-placer.test.ts` 13,
+  `BoxPlotPlacer.svelte.test.ts` 11 ; suites questions + stat-chart 6 464 verts, composants voisins 98.
+  `check:incremental` 0, `types:cliquet` 0.
