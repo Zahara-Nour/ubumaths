@@ -1,28 +1,27 @@
 ---
 title: Le registre des commandes, référence commune (pnpm math, Atelier, calculatrice) — journal
 date: 2026-11-01
-status: PR 0 ouverte (#2163), lot 2 en préparation
+status: PR 0 mergée (#2163), lot 2 en attente des réponses A-D
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR #2163 (PR 0) ouverte, CI en cours._
+_Mis à jour le 2026-11-01, après #2163 (PR 0 mergée)._
 
-- **État** : corpus 85/85 « juste » (page v11, https://claude.ai/artifact/RSWgLdsubFwGayPgQgCETo).
-  PR 0 = **#2163** ouverte, `main` intégré (correctif #2154 compris), revue faite, CI lancée.
-- **Prochaine action** : `gh pr checks 2163` → verte : `gh pr merge 2163 --merge`, puis branche
-  supprimée APRÈS lecture de `MERGED` ; le worktree reste (lot 2 sur une nouvelle branche ou
-  la même, à voir). Puis `git merge origin/main` (règles migrations de #2165).
-- **En attente de David** : questions **A-D du lot 2** (section « Lot 2 — relevé » plus bas) :
-  A `approx` arrondi au point dans le registre ? B mode décimal = choix d'affichage de l'outil ?
-  C `2=2` → `\text{vrai}` ? D expression sans commande → sa forme rangée ? (mes recos : oui ×4)
-- ⚠️ **Déjà tranché, NE PAS reposer** : ordre des termes (juge E1 le tolère) ; S3 (pas de
-  simplification qui change le domaine, hypothèses = étape H) ; R-point (le registre travaille au
-  point, chaque outil traduit la virgule) ; `domaine` = ℝ \ {0}.
-- **Étape H** (hypothèses `avec`/`dans` dans le registre) : étude en profondeur AVANT tout code.
-- **Pièges** : greper TOUT le journal avant de poser une question ; nouvelles règles migrations
-  (`pnpm migration:horodatage`, `pnpm check:migrations --pr <n>`, #2165) ; sonde de l'Atelier =
-  vitest jetable sous `src/` ; la page rend en MathJax SVG.
+- **État** : PR 0 **#2163 mergée** (corpus 85/85, champ `answer`). Branche distante supprimée,
+  `origin/main` intégré dans la branche locale (règles migrations #2165, CI allégée #2167).
+- **Prochaine action** : lot 2 du corpus (section « Lot 2 — relevé ») dès que A-D sont tranchés ;
+  même branche `refactor/registre-reference`, repoussée avec le lot 2.
+- **En attente de David** : A-D du lot 2, reformulées en séance (recos : oui ×4) —
+  A le registre rend l'écriture décimale `decimal` + `decimalExact` (exacte `0.25` / arrondie
+  `0.7071`, le signe `=`/`≈` posé par l'outil ; nom `approx` rejeté par David) ; B mode décimal =
+  affichage de l'outil ; C égalité tapée seule (`2=2`) → `\text{vrai}`/`\text{faux}` ; D expression
+  nue non numérique (`2x+3x`) → forme rangée. Entrées du registre expliquées : commande, `a :=`,
+  `f(x) :=`, égalité, expression nue (`web-repl-engine.ts:259-301`).
+- ⚠️ **Déjà tranché, NE PAS reposer** : ordre des termes (juge E1 le tolère) ; S3 ; R-point ;
+  `domaine` = ℝ \ {0}. **Étape H** : étude en profondeur AVANT tout code.
+- **Pièges** : greper TOUT le journal avant une question ; `pnpm migration:horodatage`,
+  `pnpm check:migrations --pr <n>` ; sonde de l'Atelier = vitest jetable sous `src/`.
 - **Worktree / branche** : `../ubumaths-wt-registre-reference` · `refactor/registre-reference`.
 
 ---
