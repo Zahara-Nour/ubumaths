@@ -6,13 +6,11 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, phase 0 validée._
+_Mis à jour le 2026-11-01, lot 1 en PR._
 
-- **État** : phase 0 validée par David (Q1-Q7 : les sept recos, § 5) ; rien de codé.
-- **Prochaine action** : lot 1 (`placer:` + `axes:` dans ` ```courbe `), tests rouges d'abord, en suivant la
-  carte des fichiers du § 6.
-- **En attente de David** : rien sur ce chantier (hors chantier : la PR `fix` « option à geste dans un choix »,
-  question toujours ouverte, voir `ubumark.md` § Doutes et écarts connus).
+- **État** : lot 1 (`placer:` + `axes:` dans ` ```courbe `) codé, revu (Opus), PR ouverte ; § 7.
+- **Prochaine action** : merger le lot 1 quand la CI est verte, puis lot 2 (`tracer:` une droite).
+- **En attente de David** : essai sur le serveur de test (5177) ; corrigé PDF des blocs à placer (§ 7).
 - **Pièges en cours** : un geste ne doit jamais donner la réponse (ni à l'écran, ni dans un attribut lu) ;
   la CI « Client Tests » peut tomber pour l'infra (`wrapDynamicImport`) : lire le log, puis relancer.
 - **Worktree / branche** : `ubumaths-wt-points-repere` · `feat/points-repere`.
@@ -190,3 +188,24 @@ geste sur un repère de ` ```stat-chart `.
 Agents conseillés : `pedagogy-expert` (Sonnet) pour le parseur, le calcul pur et le générateur ; l'écran
 `CourbePlacer.svelte` par la session ou `frontend-developer` (Sonnet). Revue : `code-reviewer` en Opus
 (correction des réponses).
+
+## 7. Lot 1 — fait (2026-11-01)
+
+Commits : moteur (parseur, `utils/courbe-placer.ts`, cases, juge `isPlacedPointCorrect`), écran
+(`CourbePlacer.svelte`, titres d'axes, `BuildAnswer`, `FillBlanksInput`, Typst), doc (ubumark, questions,
+grapheur, catalogue), correctifs de revue. Revue `code-reviewer` (Opus) : rien de bloquant, juge sondé sur
+28 739 nœuds (grilles 0,1 à π/2), 0 faux refus.
+
+Écarts et restes :
+
+- **Corrigé PDF** : `generateCourbeTypst(…, { solved: true })` dessine les points attendus, mais aucun
+  corrigé imprimé ne l'appelle (comme la droite, l'horloge et les barres à placer : les fiches n'ont pas de
+  corrigé de bloc à placer). À brancher quand un corrigé imprimé de question existera — à trancher par David.
+- **Virgule décimale** : acceptée dans `placer:` et `grille:`, pas dans `x:` / `y:` (`x: -3, 3` est l'erreur
+  type « virgule à la place du point-virgule » du catalogue : l'accepter la rendrait ambiguë).
+- **Tolérance de `isGridNode`** (1e-9 × pas) : un pas irrationnel avec de grandes valeurs (`grille: pi/2`,
+  `y: 1000 ; 1010`) peut refuser au prof une cible écrite en décimal ; le juge n'est pas touché. Marginal.
+- **Fuite de la réponse, hors chantier** : selon le moteur, `toPublicQuestion` enverrait l'énoncé brut
+  (ligne `placer:` comprise) au navigateur dans une évaluation notée — vrai aussi pour droite, horloge,
+  barres. Non vérifié ; signalé à David.
+- **Téléphone** : `touch-action: pan-y` comme la droite ; à essayer sur iPhone / tablette.
