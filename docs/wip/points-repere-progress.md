@@ -6,11 +6,13 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, phase 0 proposée._
+_Mis à jour le 2026-11-01, phase 0 validée._
 
-- **État** : relevé fait, phase 0 écrite (§ 3-5), rien de codé.
-- **Prochaine action** : réponses de David aux questions du § 5, puis lot 1 (tests rouges d'abord).
-- **En attente de David** : Q1 à Q7 (§ 5).
+- **État** : phase 0 validée par David (Q1-Q7 : les sept recos, § 5) ; rien de codé.
+- **Prochaine action** : lot 1 (`placer:` + `axes:` dans ` ```courbe `), tests rouges d'abord, en suivant la
+  carte des fichiers du § 6.
+- **En attente de David** : rien sur ce chantier (hors chantier : la PR `fix` « option à geste dans un choix »,
+  question toujours ouverte, voir `ubumark.md` § Doutes et écarts connus).
 - **Pièges en cours** : un geste ne doit jamais donner la réponse (ni à l'écran, ni dans un attribut lu) ;
   la CI « Client Tests » peut tomber pour l'infra (`wrapDynamicImport`) : lire le log, puis relancer.
 - **Worktree / branche** : `ubumaths-wt-points-repere` · `feat/points-repere`.
@@ -156,3 +158,35 @@ depuis A`, A point donné).
    `aria-valuetext` seulement pour le lecteur d'écran._
 7. **Titres d'axes** `axes: x = … ; y = …` sur ` ```courbe `, dans le lot 1 (CM1-136, CM2-122, 5-114, 4-063
    représentent des données) ? _Reco : oui._
+
+**Réponse de David (2026-11-01)** : « je valide » les sept recos : `placer:` dans ` ```courbe ` (Q1) ; aimant sur
+les nœuds de la grille, cible hors nœud refusée au prof (Q2) ; une case par point (Q3) ; phrase « tu as échangé
+l'abscisse et l'ordonnée » (Q4) ; droite (lot 2) et vecteur (lot 3) dans ce chantier (Q5) ; pas de pointillés de
+lecture (Q6) ; titres d'axes `axes:` dans le lot 1 (Q7). Spécification validée.
+
+## 6. Lot 1 — carte des fichiers (modèle : la droite à placer)
+
+Modèles de code : `2d67f6952` (droite à placer, un point : parseur, générateur) et `6188c4e9b` (plusieurs
+points, une case par point), puis l'écran `NumberLinePlacer.svelte` ; `e4f4b4bc2` (barres à placer) pour un
+geste sur un repère de ` ```stat-chart `.
+
+| Rôle                               | Droite à placer (modèle)                                                                                           | Repère (à faire)                                                                                            |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| Type du nœud                       | `ubumark/types/number-line.ts` (`placer`, `caseIndex`)                                                             | `ubumark/types/courbe.ts` (`placer`, `axisTitles`)                                                          |
+| Parseur                            | `parser/number-line-parser.ts`                                                                                     | `parser/courbe-parser.ts` (`KNOWN_KEYS`)                                                                    |
+| Calcul pur (aimant, réponse, juge) | `utils/number-line-placer.ts`                                                                                      | `utils/courbe-placer.ts`                                                                                    |
+| Cases du générateur                | `questions/generator/assign-blank-indices.ts`, `instance-generator.ts`                                             | idem                                                                                                        |
+| Réponse attendue                   | `questions/generator/build-answer.ts`                                                                              | idem                                                                                                        |
+| Validation du modèle               | `questions/validators/template-validator.ts`                                                                       | idem                                                                                                        |
+| Juge                               | `utils/answer-validator.ts`                                                                                        | idem                                                                                                        |
+| Écran                              | `NumberLine.svelte` → `NumberLinePlacer.svelte`                                                                    | `Courbe.svelte` → `CourbePlacer.svelte`                                                                     |
+| Saisie dans la question            | `question-inputs/FillBlanksInput.svelte`                                                                           | idem                                                                                                        |
+| Copie corrigée                     | `components/questions/BuildAnswer.svelte`                                                                          | idem                                                                                                        |
+| Types de questions                 | `questions/types.ts` (`construire`, commentaires)                                                                  | idem                                                                                                        |
+| PDF                                | générateur Typst de la droite                                                                                      | générateur Typst de ` ```courbe ` (+ titres d'axes)                                                         |
+| Tests                              | `__tests__/number-line/number-line-placer.test.ts`, `generation-placer.test.ts`, `NumberLinePlacer.svelte.test.ts` | `__tests__/courbe/courbe-placer.test.ts`, `generation-courbe-placer.test.ts`, `CourbePlacer.svelte.test.ts` |
+| Doc                                | `docs/systeme/ubumark.md` (Droite à placer), `questions.md`                                                        | idem (Courbe), catalogue de ` ```courbe `                                                                   |
+
+Agents conseillés : `pedagogy-expert` (Sonnet) pour le parseur, le calcul pur et le générateur ; l'écran
+`CourbePlacer.svelte` par la session ou `frontend-developer` (Sonnet). Revue : `code-reviewer` en Opus
+(correction des réponses).
