@@ -2,11 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR #2162 ouverte, revue faite._
+_Mis à jour le 2026-11-01, PR #2162 ouverte, en pause CI._
 
 - **État** : palier 2 (construire) en PR #2162 ; revue Opus sans bloquant, mineurs corrigés (§ 12) ; tests verts.
-- **Prochaine action** : #2154 mergée, branche rebasée sur origin/main et poussée : suivre la CI de
-  #2162 (`gh pr checks 2162 --watch`), verte → `gh pr merge --merge`, puis nettoyage du worktree.
+- **Prochaine action** : CI de #2162 (commit 29f018d) toute verte sauf Client Tests 1/2 : navigateur
+  déconnecté sur `fonctions-declarees.svelte.test.ts` (0 test en échec, vert en local) = flake. PAUSE CI
+  (session migrations-collision) : au « go », `git merge origin/main`, push, CI verte → merge, nettoyage.
 - **En attente de David** : vérification manuelle #2151 (téléphone) ; décisions du § 11 « Décidé en écrivant ».
 - **Pièges en cours** : quartiles = ceux de `describe.ts` ; série tirée au hasard de taille paire → médiane
   au demi, refusée sur un axe de 1 en 1 (aucune nouvelle graine tentée : dit dans la fiche).
