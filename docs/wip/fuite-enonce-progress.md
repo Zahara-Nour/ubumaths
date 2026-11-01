@@ -6,13 +6,13 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2120 (lot 1 mergé, pas encore en prod)._
+_Mis à jour le 2026-11-01, lot 2 en cours (après #2120)._
 
-- **État** : lot 1 mergé (#2120) : line, courbe, horloge, collection, monnaie, partage, barres (`axe: à choisir` compris) partent masqués (`?`). Pas en prod avant le prochain `deploy:prod`.
-- **Prochaine action** : lot 2 dans un nouveau worktree (`git worktree add -b fix/fuite-enonce-lot2 ../ubumaths-wt-fuite-enonce origin/main`) : lire le code de `cubes, `patron `completer:`, ```figure-a-completer, puis une question par cas à David.
-- **En attente de David** : valider les recos du lot 2 (§ 6) ; garde-fou d'ici là, ma reco : non (0 modèle publié de ces blocs).
+- **État** : recos du lot 2 validées par David (§ 7) ; code à écrire.
+- **Prochaine action** : tests rouges puis masques : patron `completer:` (grille amputée + `completer: ? ?`), cubes `retrouver:` (`hauteurs: ?` + `vues:`), figure à compléter (`verifier: ?`).
+- **En attente de David** : rien.
 - **Pièges en cours** : `construire` (genre du bloc) passe dans la version publique ; un bloc dans une option de ```choix n'est pas masqué (voulu) ; la valeur de remplacement ne doit jamais servir avant un verdict.
-- **Worktree / branche** : aucun (`ubumaths-wt-fuite-enonce` retiré après #2120).
+- **Worktree / branche** : `../ubumaths-wt-fuite-enonce` · `fix/fuite-enonce-lot2`.
 
 ---
 
@@ -134,3 +134,21 @@ illisibles (toutes les données masquées), refus du `?` limité à la ligne de 
    envoie les vues calculées sans les hauteurs. À confirmer en lisant le code.
 5. Figure à compléter : masquer `verifier:` ; vérifier si les positions de points trahissent la réponse.
 6. Garde-fou de l'auditeur d'ici là : à trancher.
+
+## 7. Lot 2 — décisions de David (2026-11-01)
+
+Prod (lecture seule, 2026-11-01) : 0 modèle publié avec `retrouver:`, `dessiner:`, `completer:` ou
+```figure-a-completer ; 2 brouillons de figure à compléter (`droite_par` choisi par `k`, `carre` sur points
+invisibles), sans point invisible posé sur la réponse.
+
+1. **Patron `completer:`** : masquer. Le serveur écrit le patron amputé en grille (`X` / `.`, déjà tourné et
+   retourné, sans `tourner:` / `retourner:` / `dessous:`) et `completer: ? ?` (un `?` par face à poser) ;
+   `?` refusé dans un modèle.
+2. **Cubes** : `retrouver:` seul. `hauteurs:` → `?` sur les carreaux occupés (`0` gardé : l'empreinte est la
+   vue de dessus), et une ligne `vues:` écrite par le serveur (hauteur max par colonne / par rangée, pour les
+   vues listées) que le rendu dessine telle quelle ; `vues:` et `?` refusés dans un modèle. `dessiner:` : rien
+   (la perspective est la figure).
+3. **Figure à compléter** : `verifier: ?` (ligne `outils:` écrite si elle manque) ; points laissés tels quels
+   (les invisibles servent, ex. carré sans lettres). Limite à noter dans la doc : un point invisible posé sur
+   la réponse fuirait.
+4. **Garde-fou de l'auditeur** : non (tout est masqué dans ce lot).
