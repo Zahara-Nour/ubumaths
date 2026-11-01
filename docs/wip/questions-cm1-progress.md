@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2093 et le `db:migrate`._
+_Mis à jour le 2026-11-01 : le bloc ```partage est EN PROD depuis v0.58.0 (2026-10-30)._
 
-- **État** : lot 3c (4 partages) rangé et tagué en prod (migration `20261101160400` jouée, vérifiée au MCP), toujours en brouillon ; page à cocher publiée : https://claude.ai/artifact/DzyRsxgghCRtKQBQcgNZ5w (`verdicts` vide).
-- **Prochaine action** : David relit la page (figures ``partage non dessinées : jouer les modèles dans l'aperçu, en local tant que le bloc n'est pas en prod) ; lire et compter les `verdicts` ; publication (`publier-lot` en simulation, puis `--publier` par David) seulement après le `deploy:prod` du bloc ``partage.
-- **En attente de David** : la relecture de la page ; le `deploy:prod` qui livre ```partage.
+- **État** : lot 3c (4 partages) rangé et tagué en prod (migration `20261101160400` jouée, vérifiée au MCP), toujours en brouillon ; page à cocher publiée : https://claude.ai/artifact/DzyRsxgghCRtKQBQcgNZ5w (`verdicts` vide au 2026-11-01).
+- **Prochaine action** : David relit la page ; les figures ```partage se jouent dans l'aperçu de la PROD (`/dashboard/admin/questions/<id>/preview`), le bloc y est ; lire et compter les `verdicts` ; publication (`publier-lot` en simulation, puis `--publier` par David). Plus aucun `deploy:prod` à attendre.
+- **En attente de David** : la relecture de la page.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main`, des worktrees ET des branches distantes + 1 min, **revérifié juste avant le merge** (#2017, #2093) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (`$lib`) ; specs de coloriage ≤ 34 rangs (test `answer-complexity-corpus`) ; port 5177 pris par questions-4.
 - **Worktree / branche** : aucun (retiré après #2093).
 
