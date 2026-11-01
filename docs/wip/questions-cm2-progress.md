@@ -628,3 +628,4 @@ décimale (0,435 → message de forme, à vérifier en local). Tableau du § 11 
 - `security-auditor` : aucun bloquant (2 mineurs hérités du gabarit). PR #2174 ; 1re CI rouge sur la garde de doc : la ligne `Doc-inchangée:` doit être dans un **commit**, pas dans la description de la PR.
 - Push refusé par le `pre-push` : `20261101224701` pris entre-temps sur `main` par `questions_1spe_probas_rangement_tags` (même seconde donnée par `migration:horodatage` à deux sessions). `git merge origin/main`, renommée en `20261101224702`, test rejoué.
 - 2e collision : `20261101224702` pris par `questions_tspe_lot2_rangement_tags` pendant la CI ; renommée en `20261101224703`. `migration:horodatage` = max de `main` + 1 s : deux sessions proches reçoivent le même numéro.
+- 3e collision : `20261101224703` pris par `questions_2de_signes_variations_rangement_tags` (ancien outil). Après #2181 : renommée en `20261101222238` (heure réelle).
