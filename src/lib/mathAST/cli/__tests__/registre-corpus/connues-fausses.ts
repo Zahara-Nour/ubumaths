@@ -41,8 +41,6 @@ export const REGISTRE_CONNUES_FAUSSES: Readonly<Record<string, string>> = {
 
 /** L'Atelier (`runInput`, champ `latex`) */
 export const ATELIER_CONNUES_FAUSSES: Readonly<Record<string, string>> = {
-	// Rien d'autre de factorisé que l'exponentielle (ADR 0032, D1)
-	'deriver-10': 'forme : -\\left( x^2 - 2 x + 1 \\right) \\exponentialE^{-x}',
 	// `.résoudre` répond par S (Q2), sans valeur approchée, solutions rangées
 	'resoudre-01': 'structure : x = 3',
 	'resoudre-02': 'structure : x < 3',

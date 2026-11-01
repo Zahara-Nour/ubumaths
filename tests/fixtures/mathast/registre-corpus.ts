@@ -64,8 +64,8 @@ export const REGISTRE_CORPUS: Readonly<Record<string, readonly RegistreCase[]>> 
 		{
 			id: 'deriver-10',
 			ligne: '.dériver (x^2+1)e^(-x)',
-			attendu: '(-x^2+2x-1)e^{-x}',
-			note: 'Exponentielle commune en facteur, rien d’autre de factorisé (pas de signe − sorti).'
+			attendu: '-(x^2-2x+1)e^{-x}',
+			note: 'Exponentielle commune en facteur ; le − du terme de gauche sort de la somme en facteur (tidy-spec, 2026-10-20). Validé par David le 2026-11-01.'
 		},
 		{ id: 'deriver-11', ligne: '.dériver x*ln(x)', attendu: '\\ln(x)+1' },
 		{
