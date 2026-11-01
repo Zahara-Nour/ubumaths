@@ -6,22 +6,23 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2111._
+_Mis à jour le 2026-11-01, PR #2158 ouverte (pas encore mergée)._
 
-- **État** : lots 1 à 5 en prod. Lot 6a (9 modèles longueurs + masses, 122 specs, `scripts/questions/ce2-6a/`)
-  MERGÉ (#2111), pas encore en prod. Aucun worktree en cours.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce2-6a --publier`
-  (depuis le dépôt principal, avec `!`) ; je relève les ids et les niveaux, puis migration nœud + tag, page à
-  cocher, publication. Ensuite lot 6b (contenances + durées, phase 0 déjà validée, § 10).
-- **En attente de David** : le `--publier` du lot 6a.
-- **Pièges en cours** : `db:migrate`, `--publier` et `--mettre-a-jour` refusés par le classifieur (David les
-  lance avec `!`, collé au début de la ligne) ; `db:migrate` pousse TOUTES les migrations en attente ; horodatage =
-  max de la PROD, de `main`, des worktrees ET des branches distantes + 1 min (collision 190200 entre sessions
-  réglée par #2114) ; niveaux relevés dans la catégorie JUSTE avant la publication ; commitlint : sujet sans
-  majuscule (même « CE2 »), corps ≤ 100 car. ; le pre-push vérifie le formatage de TOUT le dépôt ; la page à
-  cocher se publie en artefact avec `capabilities: {db: {}}`.
-- **Worktree / branche** : aucun (à recréer pour le lot 6b). `feat/questions-ce2-lot5-rangement` : à supprimer par
-  David si besoin.
+- **État** : lot 6a (9 modèles longueurs + masses) créé en BROUILLON en prod par David (2026-11-01, ids dans la
+  migration). PR #2158 `feat/questions-ce2-lot6a-rangement` = migration nœud + tag
+  `20261101223100_questions_ce2_lot6a_rangement_tags.sql` + test d'intégration (rouge sans, 9/9 vert avec),
+  `security-auditor` sans finding. Branche à jour de `main` (doublon 215000 réglé par #2154), CI relancée.
+- **Prochaine action** : lire la CI de #2158 (`gh pr checks 2158`) ; `git merge origin/main` si besoin (jamais
+  rebase) ; si `pnpm check:migrations` existe (PR #2165), `pnpm check:migrations --pr 2158` avant `gh pr merge
+--merge` ; puis `pnpm db:migrate` depuis le dépôt principal (4 conditions réunies : accès « personne » tranché,
+  test rouge prouvé, audit OK, additive + rollback) ; vérifier en prod au MCP (9 nœuds + 9 tags) ; page à cocher ;
+  `publier-lot.ts --dir scripts/questions/ce2-6a` (David `--publier`). Ensuite lot 6b (contenances + durées, § 10).
+- **En attente de David** : rien pour l'instant (son `--publier` du lot, plus tard).
+- **Pièges en cours** : nouvelle règle (PR #2165) : horodatage d'une migration neuve = `pnpm migration:horodatage`,
+  jamais « max + 1 » à la main ; le pre-push vérifie les migrations et le formatage de tout le dépôt ;
+  `db:migrate`, `--publier` refusés par le classifieur (David, `!`) ; niveaux relevés juste avant la publication ;
+  commitlint : sujet sans majuscule ; pas de mention Claude dans commits/PR.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2`, `feat/questions-ce2-lot6a-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
