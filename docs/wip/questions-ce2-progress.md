@@ -6,22 +6,23 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2090._
+_Mis à jour le 2026-11-01, lot 5 publié en prod._
 
-- **État** : lots 1 à 4 publiés en prod ; lot 5 (problèmes, 12 modèles) : brouillons créés, rangés et tagués en prod
-  (#2081, #2090 ; migration `20261101180100` jouée), toujours `draft`. Aucun worktree en cours.
-- **Prochaine action** : David relit la page à cocher (`~/Downloads/relecture-ce2-5.html`, 12 fiches) → je corrige
-  ce qu'il note → `publier-lot` en simulation (niveaux relevés dans la catégorie JUSTE avant) → `--publier` (David,
-  `!`). En parallèle, dans des sessions à part : `choix-correction` (§ 8), puis `centaines:` + milliers de
-  `collection` et barres à monter. Ensuite lot 6 : grandeurs (longueurs, masses, contenances, durées).
-- **En attente de David** : relecture de la page à cocher ; dire si la correction du produit cartésien en phrases
-  suffit (sinon outil neuf).
+- **État** : lots 1 à 5 publiés en prod (lot 5 : 12 modèles de problèmes, relus 12/12 « OK » par David, `published`
+  relus au MCP, nœuds et points intacts). Aucun worktree en cours.
+- **Prochaine action** : lot 6 — grandeurs (longueurs 035-038, masses 045-048, contenances 052-053, durées 060),
+  phase 0 à écrire et faire valider (§ 4 bis, 7 ; démarche `couvrir-niveau`). En parallèle, dans des sessions à
+  part : `choix-correction` (`$$…$$` brut sur la carte de correction, § 8), puis `centaines:` + milliers de
+  `collection` et barres à monter.
+- **En attente de David** : rien. (Question restée ouverte : le tableau / l'arbre du produit cartésien n'est
+  expliqué qu'en phrases ; un vrai dessin = outil neuf, seulement s'il le demande.)
 - **Pièges en cours** : `db:migrate`, `--publier` et `--mettre-a-jour` refusés par le classifieur (David les
-  lance avec `!`) ; `db:migrate` pousse TOUTES les migrations en attente ; horodatage = max de la PROD, de `main`,
-  des worktrees ET des branches distantes + 1 min (`git ls-tree` sur `git branch -r`) ; niveaux relevés dans la
-  catégorie JUSTE avant la publication ; commitlint : sujet sans majuscule (même « CE2 »), corps ≤ 100 car. ;
-  `Doc-inchangée:` va dans un COMMIT, pas dans la PR ; après un rebase, pas de `--force` : repartir de l'état distant.
-- **Worktree / branche** : aucun (prochain : `../ubumaths-wt-questions-ce2`). Reste en local une branche rebasée
+  lance avec `!`, collé au début de la ligne) ; `db:migrate` pousse TOUTES les migrations en attente ; horodatage =
+  max de la PROD, de `main`, des worktrees ET des branches distantes + 1 min ; niveaux relevés dans la catégorie
+  JUSTE avant la publication ; commitlint : sujet sans majuscule (même « CE2 »), corps ≤ 100 car. ;
+  `Doc-inchangée:` va dans un COMMIT, pas dans la PR ; après un rebase, pas de `--force` ; la page à cocher se
+  publie en artefact avec `capabilities: {db: {}}` (fichier local = « Base indisponible »).
+- **Worktree / branche** : aucun (prochain : `../ubumaths-wt-questions-ce2`).
   `feat/questions-ce2-lot5-rangement` (`-d` refuse, sans intérêt) : à supprimer par David si besoin.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
@@ -448,3 +449,6 @@ totale ≤ 1 000 pour le nombre de parts. Question d'accès : personne ne lit ri
   horodatage `160300` → `180100`, la `160400` de `main` passait avant). `db:migrate` (David) : `180100` seule jouée.
   Relevé MCP : 12 modèles `draft`, nœuds et points voulus, `updated_at` inchangé. Page à cocher générée (3 alertes
   « homonyme » = les modèles CE1 de même titre, écartés à raison).
+- 2026-11-01 : page à cocher publiée en artefact (`claude.ai/artifact/L87bEJ4MzgAjWAQfbmaRZ1`, capacité `db`), 12
+  verdicts « OK » lus en base et comptés. `publier-lot` simulation : 12/12, sans collision de niveau ; `--publier`
+  (David) : **12 modèles `published`** relus au MCP (nœuds et points intacts). **Lot 5 clos.**

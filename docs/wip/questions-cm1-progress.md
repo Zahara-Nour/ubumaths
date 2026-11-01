@@ -8,8 +8,8 @@
 _Mis à jour le 2026-11-01, phase 0 du lot 4 écrite._
 
 - **État** : lot 3 (fractions) FINI et publié ; **phase 0 du lot 4 — décimaux** écrite au § 12 (8 modèles : 031, 156, 157, 032, 033, 158, 159, 160).
-- **Prochaine action** : réponses de David aux 5 questions du § 12, puis worktree `ubumaths-wt-questions-cm1`, script `docs/wip/questions/lot-cm1-4.py` → `scripts/questions/cm1-4/`.
-- **En attente de David** : les 5 questions du § 12 (virgule exigée en 031, 156 colorier seul, droites CM1 propres, 160 toute réponse entre, lot 4b « calcul posé »).
+- **Prochaine action** : écriture du lot 4 (phase 0 validée, § 12 bis) : worktree `ubumaths-wt-questions-cm1`, script `docs/wip/questions/lot-cm1-4.py` → `scripts/questions/cm1-4/`.
+- **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main`, des worktrees ET des branches distantes + 1 min, **revérifié juste avant le merge** (#2017, #2093) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (`$lib`) ; specs de coloriage ≤ 34 rangs (test `answer-complexity-corpus`, 156 V2-V3) ; niveaux Décimaux / Apprivoiser : la 6e attend `6-droite-ordre` (Repérage 1-2, Comparer 4) ; port 5177 pris par questions-4.
 - **Worktree / branche** : aucun.
 
@@ -668,3 +668,11 @@ Questions :
    « calcul posé »** juste après celui-ci.
 
 **Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
+
+### 12 bis. Lot 4 : réponse de David (2026-11-01)
+
+« go », après mes recommandations sur les cinq questions du § 12 : 031, virgule exigée (325/100 et
+« 3 + 25/100 » refusés, par un motif, signalé s'il ne suffit pas) ; 156, un seul modèle
+« colorier » ; 157 et 032, modèles CM1 propres (10 intervalles) ; 160, toute réponse strictement
+entre les bornes est juste (règle `range`) ; **lot 4b « calcul posé »** (165, 052, 050, 051, 053)
+juste après le lot 4.
