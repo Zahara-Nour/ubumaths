@@ -6,13 +6,13 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2130 (lot 2 mergé, pas encore en prod)._
+_Mis à jour le 2026-11-01, garde en cours (après #2130)._
 
-- **État** : lots 1 (#2120) et 2 (#2130) mergés : tous les blocs à geste partent masqués en évaluation notée (cubes `retrouver:`, patron `completer:`, figure à compléter compris). Pas en prod avant le prochain `deploy:prod`.
-- **Prochaine action** : clôture du chantier : versement (le durable est déjà dans `docs/systeme/questions.md` et `ubumark.md`), archivage du journal.
-- **En attente de David** : garde au générateur proposée par l'auditeur : refuser un point invisible (`visible=faux`) posé sur la réponse d'une figure à compléter ? (ma reco : non, 0 modèle publié ; à faire quand un modèle en aura besoin).
-- **Pièges en cours** : un masque qui ne lit pas son bloc le laisse tel quel ; forme masquée dans une option de ```choix non refusée (§ 8).
-- **Worktree / branche** : aucun (`ubumaths-wt-fuite-enonce` retiré après #2130).
+- **État** : lots 1 (#2120) et 2 (#2130) mergés, pas en prod. Garde contre un masque cassé codée (§ 9), PR à ouvrir.
+- **Prochaine action** : PR de la garde, revues, CI, merge ; puis clôture du chantier (archivage du journal).
+- **En attente de David** : rien (garde point invisible : non, décidé le 2026-11-01).
+- **Pièges en cours** : forme masquée dans une option de ```choix non refusée (§ 8) ; la garde lit le texte, pas les parseurs : un nouveau bloc à geste doit y être ajouté.
+- **Worktree / branche** : `../ubumaths-wt-fuite-enonce` · `fix/fuite-enonce-garde`.
 
 ---
 
@@ -181,3 +181,20 @@ plus). Non bloquants, laissés : (a) point invisible posé sur la réponse (limi
 une garde au générateur — **à poser à David**) ; (b) un masque qui ne lit pas son bloc le laisse tel quel
 (pas provoqué) ; (c) forme masquée dans une option de ```choix non refusée (rendu seul, exotique) ;
 (d) `ownBlocks` : un bloc en retrait est déjà refusé par le générateur, filtre gardé en défense.
+
+## 9. Garde contre un masque cassé (2026-11-01, après #2130)
+
+Recos données à David après #2130, « go » : garde point invisible **non** (0 modèle) ; option de ```choix
+**non** ; garde contre un masque qui laisserait son bloc **oui** ; clôture ensuite.
+
+- `findUnmaskedAnswers` (`masked-statement.ts`) : relit l'énoncé à envoyer, texte seul (pas les parseurs, pour
+  voir un bloc illisible), et nomme chaque genre dont un bloc à geste dit encore sa réponse (ligne de réponse
+  pas toute en `?`, barres de `placer:` sans `= ?`, hauteurs chiffrées d'un `retrouver:`, `completer:`
+  numérique, `verifier:` autre que `?`). Blocs dans une option de ```choix ignorés ; cubes et patron en retrait
+  aussi (pas de case).
+- Tirage (`startEvaluationAttempt`) : `gestureAnswerLeaks` écarte la question, journalisée comme une génération
+  impossible, AVANT d'enregistrer la tentative (elle ne se perd pas) ; `toPublicQuestion` lève une erreur en
+  dernier filet (reprise d'une tentative déjà enregistrée).
+- Tests : `masked-statement-garde.test.ts` (11 genres nommés non masqués, rien une fois masqués, bloc
+  illisible nommé, choix et gestes sans réponse ignorés), `public-question-garde.test.ts` (masque remplacé par
+  l'identité : erreur qui nomme le bloc ; rouge sans la garde).
