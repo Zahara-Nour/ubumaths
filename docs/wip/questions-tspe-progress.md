@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, pendant le lot 0-géométrie dans l'espace (§ 12)._
+_Mis à jour le 2026-11-01, après #2121 (lot 0-géométrie dans l'espace, § 12)._
 
 - **État** : lots 0-suites, 0-limites et fonctions, 0-intégration, 0-primitives, 0-trigo, 0-dénombrement
   **publiés** (133 modèles). Lot 0-géométrie dans l'espace : 28 brouillons vérifiés, 6 retouches (C1-C6) dans les
-  fichiers, page à cocher publiée, PR des fichiers ouverte.
-- **Prochaine action** : relecture de David → merge → `create-questions --publier --mettre-a-jour` puis
-  `publier-lot` (simulation, puis `--publier`) par David ; ensuite lot 0-probabilités. Plus tard : migration Q3 (tags +
+  fichiers, page à cocher publiée, PR des fichiers #2121 mergée.
+- **Prochaine action** : relecture de David, puis David lance depuis le dépôt principal
+  `create-questions --publier --mettre-a-jour` et `publier-lot` (simulation, puis `--publier`) ; je relis en base ; ensuite lot 0-probabilités. Plus tard : migration Q3 (tags +
   échange de niveaux D-D1 : 07ebdcbe 1, 4dcbae71 2, 970dab52 3, ef3c495c 4).
 - **En attente de David** : relecture des 28 fiches (page du § 12), dont C6 (34b03dee v1 réécrite sans la formule de
   distance point-plan).
@@ -25,7 +25,7 @@ _Mis à jour le 2026-11-01, pendant le lot 0-géométrie dans l'espace (§ 12)._
   en simulation → David ; simulation `publier-lot` AVANT tout ; worktree neuf : `pnpm exec svelte-kit sync`, et
   `pnpm exec tsx --env-file=../ubumaths/.env …` (pas de `.env` dans le worktree) ; l'aperçu mélange les options d'une
   case choix : recouper avec la SOURCE ; `!=` dans une formule s'affiche ≠, `i` seul devient l'unité imaginaire.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe`, `content/questions-tspe-0-geometrie`.
+- **Worktree / branche** : aucun (retiré après #2121) ; prochain lot : nouveau worktree depuis `origin/main`.
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -613,3 +613,5 @@ modèles des trois domaines).
 
 **Page à cocher** : https://claude.ai/artifact/Q9aWgUEffiZJ6696ytMRA3 (28 fiches, aucune alerte), collection `verdicts`
 vide à la publication. Les 6 retouches ne sont pas encore en base : la page montre déjà les fichiers corrigés.
+
+**PR** : #2121 mergée le 2026-11-01 (CI verte).
