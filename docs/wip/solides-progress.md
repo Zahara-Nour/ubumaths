@@ -6,18 +6,18 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2046._
+_Mis à jour le 2026-11-01, après #2065._
 
-- **État** : les 6 lots sont mergés (#2003, #2023, #2027, #2037, #2042, #2046 : `section:` du ` ```solide `).
+- **État** : les 6 lots sont mergés (#2003→#2046), plus le correctif hors chantier #2065 (bloc ouvert sur la
+  ligne d'un item de liste lu en entier ; bloc à case sous cette forme refusé, règle `nested-line.ts`).
   Rien n'est en prod. Les vérifications manuelles sont notées dans `verifications-manuelles.md`.
-- **Prochaine action** : le correctif `fix` du parseur pour les blocs spéciaux ouverts sur la ligne d'un
-  élément de liste (`- ```cubes` lu vide), hors chantier ; puis clore le chantier par le versement (durable →
-  `docs/systeme/`, journal archivé).
-- **En attente de David** : rien.
-- **Pièges en cours** : lancer AUSSI `src/lib/theme` avant de pousser ; aperçu d'une scène sans serveur : un
-  script `tsx` qui écrit un SVG, puis une capture Playwright ; un geste ne doit jamais donner la réponse ;
-  la CI « Client Tests » peut tomber pour l'infra (navigateur fermé, `playwright install` bloqué) : relancer.
-- **Worktree / branche** : aucun (retiré après #2046).
+- **Prochaine action** : clore le chantier par le versement (durable → `docs/systeme/`, journal archivé).
+- **En attente de David** : faut-il une petite PR `fix` pour refuser une option à geste dans un ` ````choix `
+  (aujourd'hui acceptée sans case, la spec § 7 et § 10 dit « refusé ») ? Voir § 11.
+- **Pièges en cours** : lancer AUSSI `src/lib/theme` avant de pousser ; un geste ne doit jamais donner la
+  réponse ; la CI « Client Tests » peut tomber pour l'infra : relancer ; garde de doc : `statistiques.md`
+  couvre `stat-chart-parser.ts` (la garde locale ne voit que les commits).
+- **Worktree / branche** : aucun (`ubumaths-wt-blocs-dans-liste` retiré après #2065).
 
 ---
 
@@ -762,3 +762,17 @@ seulement (Q26) ; noms IJKL dans ce lot (Q27). Spécification validée.
   désormais refusée ; mineurs corrigés : distance à 3 décimales au plus, section de boule raccourcie de
   cos (vue inclinée) pour rester dans le cercle près du pôle, message de `section:` vide. Laissés : cote du
   cylindre ‖ posée sous la base (loin de son court trait quand d est petit).
+
+## 11. Correctif hors chantier : bloc ouvert sur la ligne d'un item (#2065, 2026-11-01)
+
+- `parseList` joint l'ouverture `- ```cubes` à son corps (tout bloc de code, ` ```python ` compris) ; tant
+  qu'un bloc est ouvert, une ligne `- …` au retrait de son corps reste dans le bloc (revue : ` ```ranger `,
+  ` ```choix `) ; à la marge de l'item, c'est un nouvel item (bloc non fermé).
+- Garde « premier niveau seulement » : `unnestedLine` (8 copies de `unquoted` remplacées) et `NESTED_PREFIX`
+  (opération, figures, choix) dans `ubumark/parser/nested-line.ts` — la forme sur la ligne d'un item est
+  refusée comme un bloc en retrait. 4 modèles publiés à options `- ```courbe/monnaie/horloge` dans un choix,
+  sans geste : inchangés (relevé en prod).
+- **Trous trouvés, antérieurs, non corrigés** : (1) option à geste dans un choix (`- ```horloge` +
+  `placer:`) : le générateur masque le choix avant de chercher les gestes → ni refus ni case (question à
+  David) ; (2) ` ```ranger ` dans une liste sort en bloc de code (absent de `SPECIAL_BLOCK_KINDS`) — cours
+  seulement, en question il est refusé de toute façon.
