@@ -1,0 +1,348 @@
+{
+	"title": "Pose et calcule une addition",
+	"description": "Addition posée en colonnes, deux ou trois termes, avec retenues, somme ≤ 1 000 (245 + 437 ; 218 + 48 ; 76 + 7 + 568)",
+	"grades": ["CE1"],
+	"theme": "Nombres",
+	"domain": "Addition",
+	"subdomain": "Calcul posé",
+	"level": 2,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{a}} + {{b}}\nretenues: oui\n```",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..5"
+				},
+				{
+					"name": "a2",
+					"expression": "0..9"
+				},
+				{
+					"name": "a3",
+					"expression": "1..9"
+				},
+				{
+					"name": "b1",
+					"expression": "1..4"
+				},
+				{
+					"name": "b2",
+					"expression": "0..9"
+				},
+				{
+					"name": "b3",
+					"expression": "1..9"
+				},
+				{
+					"name": "a",
+					"expression": "eval:100*a1+10*a2+a3"
+				},
+				{
+					"name": "b",
+					"expression": "eval:100*b1+10*b2+b3"
+				}
+			],
+			"conditions": ["a3 + b3 >= 10", "a + b <= 1000"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On aligne les chiffres : unités sous les unités, dizaines sous les dizaines.",
+					"Unités : ${{a3}} + {{b3}} = {{eval:a3+b3}}${{if:a3+b3>=10| : on écrit ${{eval:a3+b3-10}}$ et on retient $1$ aux dizaines.|.}}",
+					"Dizaines : ${{eval:floor((a3+b3)/10)}} + {{a2}} + {{b2}} = {{eval:a2+b2+floor((a3+b3)/10)}}${{if:a2+b2+floor((a3+b3)/10)>=10| : on écrit ${{eval:a2+b2+floor((a3+b3)/10)-10}}$ et on retient $1$ aux centaines.|.}}",
+					"Centaines : ${{eval:floor((a2+b2+floor((a3+b3)/10))/10)}} + {{a1}} + {{b1}} = {{eval:a1+b1+floor((a2+b2+floor((a3+b3)/10))/10)}}$.",
+					"$${{a}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a+b}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{a}} + {{b}}\nretenues: oui\n```",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..9"
+				},
+				{
+					"name": "a2",
+					"expression": "0..8"
+				},
+				{
+					"name": "a3",
+					"expression": "1..9"
+				},
+				{
+					"name": "b2",
+					"expression": "1..9"
+				},
+				{
+					"name": "b3",
+					"expression": "1..9"
+				},
+				{
+					"name": "a",
+					"expression": "eval:100*a1+10*a2+a3"
+				},
+				{
+					"name": "b",
+					"expression": "eval:10*b2+b3"
+				}
+			],
+			"conditions": ["a3 + b3 >= 10", "a + b <= 1000"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On aligne les chiffres : unités sous les unités, dizaines sous les dizaines. Le nombre de deux chiffres se pose sous les dizaines et les unités, pas sous les centaines.",
+					"Unités : ${{a3}} + {{b3}} = {{eval:a3+b3}}${{if:a3+b3>=10| : on écrit ${{eval:a3+b3-10}}$ et on retient $1$ aux dizaines.|.}}",
+					"Dizaines : ${{eval:floor((a3+b3)/10)}} + {{a2}} + {{b2}} = {{eval:a2+b2+floor((a3+b3)/10)}}${{if:a2+b2+floor((a3+b3)/10)>=10| : on écrit ${{eval:a2+b2+floor((a3+b3)/10)-10}}$ et on retient $1$ aux centaines.|.}}",
+					"Centaines : ${{eval:floor((a2+b2+floor((a3+b3)/10))/10)}} + {{a1}} = {{eval:a1+floor((a2+b2+floor((a3+b3)/10))/10)}}$.",
+					"$${{a}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a+b}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{a}} + {{b}} + {{c}}\nretenues: oui\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "11..99"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "101..899"
+				}
+			],
+			"conditions": ["mod(a,10) + b + mod(c,10) >= 10", "a + b + c <= 1000"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On aligne les chiffres : unités sous les unités, dizaines sous les dizaines. Avec trois nombres, on additionne les trois chiffres de chaque colonne.",
+					"Unités : ${{eval:mod(a,10)}} + {{b}} + {{eval:mod(c,10)}} = {{eval:mod(a,10)+b+mod(c,10)}}$ : on écrit ${{eval:mod(mod(a,10)+b+mod(c,10),10)}}${{if:mod(a,10)+b+mod(c,10)>=10| et on retient ${{eval:floor((mod(a,10)+b+mod(c,10))/10)}}$ aux dizaines|}}.",
+					"$${{a}} + {{b}} + {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:a+b+c}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{a}} + {{b}}\nretenues: oui\n```",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..6"
+				},
+				{
+					"name": "a2",
+					"expression": "1..9"
+				},
+				{
+					"name": "a3",
+					"expression": "1..9"
+				},
+				{
+					"name": "b1",
+					"expression": "1..3"
+				},
+				{
+					"name": "b2",
+					"expression": "1..9"
+				},
+				{
+					"name": "b3",
+					"expression": "1..9"
+				},
+				{
+					"name": "a",
+					"expression": "eval:100*a1+10*a2+a3"
+				},
+				{
+					"name": "b",
+					"expression": "eval:100*b1+10*b2+b3"
+				}
+			],
+			"conditions": ["a3 + b3 >= 10", "a2 + b2 + 1 >= 10", "a + b <= 1000"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On aligne les chiffres : unités sous les unités, dizaines sous les dizaines.",
+					"Unités : ${{a3}} + {{b3}} = {{eval:a3+b3}}$ : on écrit ${{eval:a3+b3-10}}$ et on retient $1$ aux dizaines.",
+					"Dizaines : $1 + {{a2}} + {{b2}} = {{eval:a2+b2+1}}$ : on écrit ${{eval:a2+b2+1-10}}$ et on retient $1$ aux centaines.",
+					"Centaines : $1 + {{a1}} + {{b1}} = {{eval:a1+b1+1}}$.",
+					"$${{a}} + {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a+b}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 245 + 437 = 682",
+			"variationIndex": 0,
+			"variables": {
+				"a1": "2",
+				"a2": "4",
+				"a3": "5",
+				"b1": "4",
+				"b2": "3",
+				"b3": "7",
+				"a": "245",
+				"b": "437"
+			},
+			"answers": ["682"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : retenue oubliée, 245 + 437 = 672",
+			"variationIndex": 0,
+			"variables": {
+				"a1": "2",
+				"a2": "4",
+				"a3": "5",
+				"b1": "4",
+				"b2": "3",
+				"b3": "7",
+				"a": "245",
+				"b": "437"
+			},
+			"answers": ["672"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 218 + 48 = 266",
+			"variationIndex": 1,
+			"variables": {
+				"a1": "2",
+				"a2": "1",
+				"a3": "8",
+				"b2": "4",
+				"b3": "8",
+				"a": "218",
+				"b": "48"
+			},
+			"answers": ["266"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 48 posé sous les centaines, 218 + 480 = 698",
+			"variationIndex": 1,
+			"variables": {
+				"a1": "2",
+				"a2": "1",
+				"a3": "8",
+				"b2": "4",
+				"b3": "8",
+				"a": "218",
+				"b": "48"
+			},
+			"answers": ["698"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : retenue oubliée, 218 + 48 = 256",
+			"variationIndex": 1,
+			"variables": {
+				"a1": "2",
+				"a2": "1",
+				"a3": "8",
+				"b2": "4",
+				"b3": "8",
+				"a": "218",
+				"b": "48"
+			},
+			"answers": ["256"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 76 + 7 + 568 = 651",
+			"variationIndex": 2,
+			"variables": {
+				"a": "76",
+				"b": "7",
+				"c": "568"
+			},
+			"answers": ["651"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : retenue oubliée, 76 + 7 + 568 = 531",
+			"variationIndex": 2,
+			"variables": {
+				"a": "76",
+				"b": "7",
+				"c": "568"
+			},
+			"answers": ["531"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Deux retenues : 367 + 285 = 652",
+			"variationIndex": 3,
+			"variables": {
+				"a1": "3",
+				"a2": "6",
+				"a3": "7",
+				"b1": "2",
+				"b2": "8",
+				"b3": "5",
+				"a": "367",
+				"b": "285"
+			},
+			"answers": ["652"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : retenues oubliées, 367 + 285 = 542",
+			"variationIndex": 3,
+			"variables": {
+				"a1": "3",
+				"a2": "6",
+				"a3": "7",
+				"b1": "2",
+				"b2": "8",
+				"b3": "5",
+				"a": "367",
+				"b": "285"
+			},
+			"answers": ["542"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Somme 1 000 : 625 + 375",
+			"variationIndex": 3,
+			"variables": {
+				"a1": "6",
+				"a2": "2",
+				"a3": "5",
+				"b1": "3",
+				"b2": "7",
+				"b3": "5",
+				"a": "625",
+				"b": "375"
+			},
+			"answers": ["1000"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
