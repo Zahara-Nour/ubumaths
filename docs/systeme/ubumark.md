@@ -478,7 +478,7 @@ Danse = 7            ```                                     ```
   `scaleMistake` (« Avec 2 par graduation, la barre Alphaville (42) ne rentre pas. », « … rentre, mais
   avec 5 il serait plus grand et plus lisible. ») ; diagramme juste à cette échelle (`solvedSpec`).
   PDF : axe muet et une ligne « Une graduation vaut : ____ » où l'enfant écrit l'échelle.
-- ` ```boite-a-moustaches ` (chantier [boite-a-moustaches](../wip/boite-a-moustaches-progress.md),
+- ` ```boite-a-moustaches ` (chantier [boite-a-moustaches](../archive/wip/boite-a-moustaches-progress.md),
   palier 1 : affichage, pour 3-062 et la 2de) — `src/lib/ubumark/__tests__/stat-chart/boite-a-moustaches.test.ts`,
   `StatChart-boite-a-moustaches.svelte.test.ts` : une ligne par boîte `Nautic = 28 ; 30 ; 37 ; 45 ; 58`
   (minimum ; Q1 ; médiane ; Q3 ; maximum, virgule décimale, nom avec espaces permis, `= …` seul : boîte
@@ -1257,7 +1257,8 @@ problème. À lancer **avant** d'écrire des énoncés ou corrigés en base.
   [effectifs](../archive/wip/bloc-effectifs-progress.md), [nuage](../archive/wip/bloc-nuage-progress.md),
   [simulation](../archive/wip/bloc-simulation-progress.md),
   [tableau de signes](../archive/wip/tableau-signes-affichable-progress.md),
-  [rendu des ensembles](../archive/wip/rendu-ensembles-progress.md). Historique : ils ne décrivent
+  [rendu des ensembles](../archive/wip/rendu-ensembles-progress.md),
+  [boîte à moustaches](../archive/wip/boite-a-moustaches-progress.md). Historique : ils ne décrivent
   pas forcément le code actuel.
 
 ## Doutes et écarts connus
@@ -1276,5 +1277,14 @@ problème. À lancer **avant** d'écrire des énoncés ou corrigés en base.
 - Blocs d'espace, laissés tels quels : la cote d'un cylindre coupé parallèlement à l'axe est posée sous
   la base, loin de son court trait quand la distance est petite. Restes hors chantier : voir l'en-tête
   du [journal archivé](../archive/wip/solides-progress.md).
+- **Boîte à moustaches**, laissés après revue (#2151, #2162) : fractions refusées sur une ligne de
+  boîte mais acceptées dans `données:` ; à 40 graduations (le plafond), les étiquettes de l'axe se
+  chevauchent (n'en écrire qu'une sur deux au-delà d'un seuil, si un modèle en a besoin) ; `données:`
+  tirées au hasard de taille paire → médiane au demi, refusée sur un axe de 1 en 1 pour ce tirage (le
+  générateur ne retente pas une autre graine ; dit dans la fiche). Décidés en écrivant le geste, à
+  confirmer par David : un trait posé pour la première fois passe au suivant pas posé ; une seule boîte
+  à construire → toute la hauteur du dessin la vise, plusieurs → sa bande et des boutons de boîte ;
+  phrases « Ta médiane est à 12. », « Tu n’as pas placé le maximum. ». Hors périmètre : boîte
+  verticale, moustaches aux déciles (option `moustaches: déciles` possible plus tard), séries en classes.
 - `latex-generator.ts` (export `.tex`) et ses générateurs `*-latex.ts` n'ont pas d'appelant hors
   du module ni de leurs tests (grep du 2026-10-10) : export en sommeil ou mort, à trancher.

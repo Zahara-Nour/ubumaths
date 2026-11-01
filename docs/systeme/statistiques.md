@@ -282,7 +282,7 @@ Aucune ADR. Décisions de David consignées dans les journaux archivés :
 [outils-statistiques](../archive/wip/outils-statistiques-progress.md) (quartiles du programme,
 médiane jamais « Q2 », arrondis d'affichage Q13, vocabulaire, boîte à moustaches hors
 périmètre — dessinée depuis par le bloc ` ```boite-a-moustaches `, chantier
-[boite-a-moustaches](../wip/boite-a-moustaches-progress.md), 2026-11-01), [v2](../archive/wip/outils-statistiques-v2-progress.md) (simulation à graine,
+[boite-a-moustaches](../archive/wip/boite-a-moustaches-progress.md), 2026-11-01), [v2](../archive/wip/outils-statistiques-v2-progress.md) (simulation à graine,
 fractions de liste), [loi binomiale](../archive/wip/loi-binomiale-progress.md) (calcul exact,
 intervalle Q140, pas de liste créée par une loi — Q142),
 [lois discrètes](../archive/wip/lois-discretes-progress.md),
