@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2052 et #2054 (lot 6 rangé en prod)._
+_Mis à jour le 2026-11-01, après #2052 et #2054 (lot 6 rangé en prod, page à cocher publiée)._
 
 - **État** : lots 1 à 5 en prod (lot 1 en brouillon, lots 2 à 5 publiés) ; lot 5 « Pythagore et triangles » (033, 034,
   035, 036, 037, 072, 075) : 7/7 « OK » à la relecture, publiés par David, vérifié au MCP (§ 27).
-- **Prochaine action** : lot 6 en brouillons en prod, rangé (§ 30) ; page à cocher des 5 modèles, puis publication des
+- **Prochaine action** : lot 6 en relecture sur la page à cocher (§ 31) ; lire les verdicts, puis publier les
   3 modèles de translation ; les 2 de volume attendent le `deploy:prod` qui livre ` ```solide `.
 - **En attente de David** : garder la sonde des figures comme outil (`sonde-figures.ts`, petite PR à
   part) ou la supprimer (`scripts/questions/.sonde-figures-tmp.ts`, non suivie, dans le worktree) ; publication des 7
@@ -798,3 +798,10 @@ des modèles de volume déjà en base ; aucun niveau pris dans ces catégories, 
   `20261101141500` de la session cm2, à sa demande). Vérifié au MCP : 5 modèles sur le nœud de leur point, un tag
   chacun, `updated_at` inchangé, toujours en brouillon.
 - CI : deux jobs de tests navigateur tombés sans lien avec le lot (navigateur fermé, job annulé), relancés, verts.
+
+## 31. Lot 6 : page à cocher (2026-11-01)
+
+- Page à cocher : https://claude.ai/artifact/7Sg6YAf4QPCNUnSoFzFLTT (5 fiches, 23 exemples ; capacité `db`, base
+  `verdicts` vide à la publication).
+- Alertes : 4-029 et 4-076, « bloc solide non dessiné » (la page ne sait pas dessiner ` ```solide `) ; le rendu des
+  pyramides et du cône a été vu en local à 390 px (§ 29), pas encore en prod (bloc non livré).
