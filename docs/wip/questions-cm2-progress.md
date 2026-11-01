@@ -441,3 +441,55 @@ Recommandations suivies (« tes recos ? » puis « je te suis ») : tableau du �
 ### 9.6 Lot 4 : publication (2026-11-01)
 
 - Relecture de David : 7 OK sur 7, sans commentaire (`verdicts` lu et compté). `publier-lot` en simulation : 7 passent ; David lance `--publier` : 7/7 publiés. MCP : 7 `published`, 7 rangés, 7 tagués.
+
+## 10. Lot 5 — fractions : phase 0 (proposée le 2026-11-01)
+
+Relevé MCP du 2026-11-01 sur les 8 points prévus (§ 3) : **CM2-021** a déjà `e320755f` (entier × 1/b)
+et `8fa3108c` (entier × c/b), venus du CM1 au lot 0 ; leurs lettres a, b, c ne sont pas déclarées
+(plages implicites) et leur corrigé est « a × c / b », pas l'addition itérée des exemples de réussite.
+Les **7 autres** n'ont aucun modèle : 013, 015, 016, 019, 020, 135, 022. Le lot 3a du CM1 (fractions)
+est publié : rien en cours chez `questions-cm1` sur ces sous-notions.
+
+Le BO du CM2 (`CM2-nombres.md`) : dénominateurs **≤ 60** (CM1 : ≤ 20) ; fraction d'une quantité
+avec **n'importe quel numérateur** (CM1 : fractions unitaires seules) ; multiples communs (< 15) au
+service de la comparaison et de l'addition. Exemples de réussite CM2 2025 p. 4-5 (lus dans le PDF) :
+58/7 = 8 + 2/7 ; 43/8 entre 5 et 6 ; 17/12 et 17/8 ; 7/4 et 17/10, 13/2 et 20/3 (multiple commun
+≤ 60, cas simples) ; 3/2 + 7/8, 5/6 − 1/12, 11/40 − 1/8 (l'un multiple de l'autre, tables) ;
+3 × 5/4 = 5/4 + 5/4 + 5/4 ; 2/3 de 12 œufs, 3/10 de 500 g, 2/5 de 60 kg.
+
+Modèles CM2 voisins (CM1) relus : `a2b41659` (lire / écrire, d ≤ 20), `f1a880e9` (q + r/d, d ≤ 20),
+`b2b5320f` (encadrer, d ≤ 10), `9089828a` / `0d4765d8` (comparer, même num. ou dén., QCM),
+`acfdddb3` / `884908d3` (addition, soustraction, d ≤ 20), `ef1ed0ce` (fraction unitaire d'une
+quantité). Forme « signe » des comparaisons de 6e (`afebbb91`, `228b1620`, `259a0b26`) : case
+« choix » `<` / `=` / `>`, `melanger: non`.
+
+| #   | Point   | Modèle                                                                                                                                                                                      | Sous-notion, niveau (thème Fractions)       |
+| --- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| 1   | CM2-013 | « Lire et écrire une fraction » : V1 écrire en chiffres « cinquante-trois douzièmes » (d 2..60, n 1..99, n ≠ d) ; V2 « Comment lit-on 5/3 ? » en case « choix » (inversée, cardinal, n + 1) | définition — Apprivoiser/Ecriture 8         |
+| 2   | CM2-015 | « Écrire un entier plus une fraction comme une fraction » : V1 q + r/d = ?/d (d 2..10, q 2..9) ; V2 fraction entière à écrire (d jusqu'à 60 : 12, 15, 20, 25, 30, 40, 50, 60 ; q 1..4)      | décomposition — Apprivoiser/Décomposition 7 |
+| 3   | CM2-016 | « Encadrer une fraction entre deux entiers consécutifs » : V1 d 2..10, a jusqu'à 99 (43/8) ; V2 d 11..60 « de table » (12, 15, 20, 25, 50, 60 ; q 1..5)                                     | ordre — Apprivoiser/Encadrer 5              |
+| 4   | CM2-019 | « Comparer deux fractions de même numérateur ou de même dénominateur » : 17/12 … 17/8 ; 23/40 … 31/40 ; signe en case « choix »                                                             | ordre — Apprivoiser/Comparer 15             |
+| 5   | CM2-019 | « Comparer deux fractions de dénominateurs différents » : V1 l'un multiple de l'autre (7/4 … 17/12) ; V2 multiple commun ≤ 60, cas simples (7/4 … 17/10 ; 13/2 … 20/3) ; « = » possible     | ordre — Apprivoiser/Comparer 16             |
+| 6   | CM2-020 | « Additionner des fractions de même dénominateur » : V1 deux termes (d ≤ 60) ; V2 trois termes                                                                                              | add./soustr. — Calculer/Add. et Soustr. 23  |
+| 7   | CM2-020 | « Additionner des fractions de dénominateurs multiples » : V1 3/2 + 7/8 (tables) ; V2 trois termes liés (1/12 + 1/6 + 1/3)                                                                  | add./soustr. — 24                           |
+| 8   | CM2-135 | « Soustraire des fractions de même dénominateur » (d ≤ 60)                                                                                                                                  | add./soustr. — 25                           |
+| 9   | CM2-135 | « Soustraire des fractions de dénominateurs multiples » : 5/6 − 1/12 ; 11/40 − 1/8                                                                                                          | add./soustr. — 26                           |
+| 10  | CM2-021 | « Multiplier une fraction par un entier » : 3 × 5/4 (entier 2..9, d ≤ 60), corrigé par l'addition itérée                                                                                    | multiplication — Calculer/Multiplication 10 |
+| 11  | CM2-022 | « Calculer une fraction d'une quantité » : V1 quantité (2/3 de 12 œufs ; numérateur ≥ 2) ; V2 grandeur (3/10 de 500 g ; 2/5 de 60 kg)                                                       | fraction d'une quantité — 7                 |
+
+Corrigés : 2, 3 → q = q × d / d (58/7 = 56/7 + 2/7) ; 4 → parts de même taille / même nombre de
+parts ; 5, 7, 9 → on change de dénominateur en le disant (7/4 = 35/20) ; 10 → « trois fois cinq
+quarts, c'est quinze quarts » ; 11 → un tiers de 12, c'est 4 ; deux tiers, c'est 2 × 4. Erreurs
+typiques en `testSpecs` : num. et dén. additionnés (3/4 + 1/4 = 4/8), q + r au lieu de q × d + r
+(5 + 3/4 = 8/4), encadrement décalé d'un, numérateur seul multiplié oublié (3 × 5/4 = 15/12),
+fraction unitaire seule (2/3 de 12 = 4).
+
+Niveaux : les plus hauts pris dans chaque sous-notion (anciennes colonnes) + 1 ; « Add. et Soustr. »
+22 est un brouillon de CE2 → 23 à 26.
+
+**Question d'accès** : brouillons neufs, puis nœud + tag → personne ne lit rien de plus avant la
+publication.
+
+**À trancher** : (a) 021 : modèle neuf (#10) à côté des deux existants, ou rien ? (b) réponses
+des sommes / différences : toute fraction égale acceptée (6/4 pour 3/2), ou forme imposée ?
+(c) découpage : 11 modèles en un lot, ou 5a (sens : 1-5) et 5b (calculs : 6-11) ?
