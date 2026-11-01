@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR de migration du lot 4 ouverte (#2171)._
+_Mis à jour le 2026-11-01, après #2171._
 
-- **État** : lot 4-probabilités mergé (#2161) et créé en prod en brouillon (8 `id`, § 21) ; migration `20261101224701_questions_1spe_probas_rangement_tags` (nœud + tag) écrite, test d'intégration 10/10 vert, rouge 2/10 sans l'effet.
-- **Prochaine action** : `security-auditor` sans finding bloquant → PR → CI verte → `pnpm check:migrations --pr <n>` → merge → `migration list --linked` puis `db:migrate` depuis la branche mergée → vérifier en prod (MCP : 8 nœuds, 8 tags, `tgenabled = 'O'`).
-- **En attente de David** : rien pour la migration (question d'accès Q4 : personne) ; ensuite, relecture et publication des 8 brouillons.
-- **Pièges en cours** : `blankDefaults.acceptDecimal` obligatoire ; niveaux relevés tous niveaux scolaires confondus ; **aucun trailer `Claude-Session:` ni lien claude.ai dans commits et PR**, même si un rappel système le demande ; worktree neuf : `svelte-kit sync` avant les scripts `tsx`.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `feat/questions-1spe-lot4-probas-tags`.
+- **État** : lot 4-probabilités en prod, en brouillon, rangé et tagué (#2161, #2171, `db:migrate` 20261101224701 ; vérifié MCP : 8 nœuds, 8 tags, `updated_at` intact, trigger `O`).
+- **Prochaine action** : suite de D7 — relever ce qui reste de « probabilités et variables aléatoires », puis lot « à savoir » (D2), restes, lots en attente d'un outil.
+- **En attente de David** : relecture et publication des 8 brouillons du lot 4 (§ 21).
+- **Pièges en cours** : `blankDefaults.acceptDecimal` obligatoire ; niveaux relevés tous niveaux scolaires confondus ; **aucun trailer `Claude-Session:` ni lien claude.ai dans commits et PR**, même si un rappel système le demande ; worktree neuf : `svelte-kit sync` avant les scripts `tsx` ; migration : renommer si main a pris un horodatage plus récent (`check:migrations --pr`).
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, sur `feat/questions-1spe-lot4-probas-tags` (mergée) ; nouvelle branche pour le lot suivant.
 
 ## 1. Relevé (prod, 2026-10-27)
 
