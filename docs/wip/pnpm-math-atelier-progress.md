@@ -1,7 +1,7 @@
 ---
 title: Le registre des commandes, référence commune (pnpm math, Atelier, calculatrice) — journal
 date: 2026-11-01
-status: phase 0, en attente de David (Q1-Q5)
+status: phase 0, en attente de David (Q1-Q6)
 ---
 
 ## Reprendre ici
@@ -10,8 +10,8 @@ _Mis à jour le 2026-11-01, après l'inventaire du registre._
 
 - **État** : direction tranchée (D1-D3) ; inventaire registre / Atelier fait (30 lignes) ; phase 0
   réécrite, rien de codé.
-- **Prochaine action** : réponses de David à Q1-Q5, puis découpage des PR.
-- **En attente de David** : Q1-Q5.
+- **Prochaine action** : réponses de David à Q1-Q6, puis PR 0 (le corpus, D4).
+- **En attente de David** : Q1-Q6.
 - **Pièges en cours** : `tsx` lance `WebReplEngine` seul (< 1 s), pas l'Atelier (`$state is not
 defined`) ; une sonde de l'Atelier passe par le runner de Vite (~9 s).
 - **Worktree / branche** : `../ubumaths-wt-pnpm-math-atelier` · `refactor/pnpm-math-atelier`.
@@ -29,6 +29,11 @@ defined`) ; une sonde de l'Atelier passe par le runner de Vite (~9 s).
   commande, puis `tidy`). Table : `docs/systeme/mathast/README.md` § Quelle fonction pour quel besoin.
 - **D3** **Les étapes restent dans l'Atelier** seulement. Elles doivent aboutir à la réponse du
   registre.
+- **D4** **Un corpus de réponses attendues** : des lignes, chacune avec la réponse brute écrite à
+  l'avance. Il est le contrat du registre, et chaque outil (Atelier, `pnpm math`, calculatrice) est
+  testé contre lui. Existants à reprendre, pas à recopier : les oracles des limites
+  (`mathAST/limits/__tests__/oracle/corpus.ts`) et des primitives
+  (`mathAST/integration/__tests__/oracle/primitives-corpus.ts`, avec son jugement de forme `checkForm`).
 
 Remplace la direction du 2026-10-24 (« `pnpm math` branchée sur l'Atelier », via `runInput`) :
 c'est le registre qui fait foi, pas la couche de l'Atelier.
@@ -111,8 +116,23 @@ simplification qui perd le domaine sans hypothèse, S3).
 - **Q5 — Le nom du chantier.** `pnpm-math-atelier` ne dit plus ce qu'il fait. Proposé :
   `registre-reference` (nouveau journal, worktree et branche renommés).
 
-## Découpage proposé (après Q1-Q5)
+- **Q6 — Le corpus** (D4).
+  - **Où** : un fichier de données sous `tests/fixtures/mathast/` (aucun test ne lit `docs/`), une
+    entrée = `{ id, ligne, attendu, note? }`, regroupées par commande.
+  - **Comparaison** : l'écriture exacte, à variations cosmétiques près (espaces, signe ×, ordre des
+    termes — le `checkForm` déjà utilisé par l'oracle des primitives), plus un contrôle numérique
+    quand c'est possible (une faute de frappe dans un attendu ne fabrique pas un faux « moteur
+    faux »).
+  - **Qui écrit les attendus** : je propose les lignes (cas réels des élèves, ~10 par commande) et
+    les attendus d'après l'ADR 0032 ; **tu les valides** sur une page à cocher avant qu'ils fassent
+    foi. Une ligne refusée par toi n'entre pas.
+  - **Deux tests** : registre contre corpus ; Atelier contre corpus (sa réponse affichée = l'attendu).
+    Les lignes qui divergent aujourd'hui sont marquées « connues fausses » (comme `known-wrong.ts`
+    des limites) et se retirent de la liste au fil des PR.
 
+## Découpage proposé (après Q1-Q6)
+
+0. Le corpus (D4, Q6) et ses deux tests, lignes divergentes marquées « connues fausses ».
 1. `.dériver` : forme réduite dans le registre, l'Atelier cesse de remplacer (pilote de la méthode).
 2. `.simplifier`, `.résoudre`, `.intégrer` (même méthode).
 3. Commandes de Q1 descendues dans le registre, une PR par famille.
