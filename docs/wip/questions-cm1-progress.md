@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2149._
+_Mis à jour le 2026-11-01, PR #2159 (migration de rangement du lot 4b) en attente de CI._
 
-- **État** : lot 4 publié ; lot 4b (calcul posé, 6 modèles, `scripts/questions/cm1-4b/`) écrit et mergé (#2149), pas encore en prod.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm1-4b --publier` ; relever les 6 ids au MCP ; migration nœud + tag (050 → « Décimaux : calculs › addition », 165 ×2 → « › soustraction », 052 → « › multiplication », 051 et 053 → « calcul posé » de leur notion) ; page à cocher ; publication. Puis lot 5 grandeurs.
-- **En attente de David** : le `create-questions --publier` du lot 4b.
+- **État** : lot 4b (calcul posé, 6 modèles) en brouillons en prod (§ 13 quater, ids notés) ; migration de rangement `20261101224100_questions_cm1_lot4b_rangement_tags` dans la PR #2159 : test 10/10 vert (6 rouges sans le corps), `security-auditor` sans finding bloquant. CI annulée pendant la panne de `main` (doublon `20261101215000`, réparé par #2154, mergée).
+- **Prochaine action** : la branche locale est REBASÉE sur `origin/main` mais PAS poussée (le push demande `--force-with-lease`, liste `ask` : demander à David, ou repartir de `origin/feat/questions-cm1-lot4b-rangement` et `git merge origin/main`). Nouveau workflow (#2165) : horodatage par `pnpm migration:horodatage` (224100 a été choisi à la main : le passer à la garde, renommer si elle refuse) ; avant le merge, `pnpm check:migrations --pr 2159`. Puis CI verte → merge → David lance `db:migrate` depuis le dépôt principal → vérif MCP (nœuds, tags) → page à cocher → publication. Puis lot 5 grandeurs.
+- **En attente de David** : accord pour le push forcé de la branche rebasée (ou merge à la place), puis `db:migrate` après le merge.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main`, des worktrees ET des branches distantes + 1 min, **revérifié juste avant le merge** (collision `20261101190200` sur `main` le 2026-11-01, réparée par #2114) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») et le type `content` (prendre `feat`) ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; dépôt partagé : relire `git diff --cached --name-only` avant CHAQUE commit (journal ce2 emporté le 2026-11-01) ; coloriage : specs non mesurées par le test du corpus, sauf si un modèle active `orderIndependent` (la prod le mesurerait alors) ; extension Chrome muette → Playwright à 390 px.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1` (branche `content/questions-cm1-lot4b` mergée ; repartir d'`origin/main` sur une branche neuve pour la migration).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot4b-rangement` (PR #2159).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
