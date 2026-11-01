@@ -10,24 +10,23 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 2 écrit (§ 15), PR #2160 ouverte, CI annulée._
+_Mis à jour le 2026-11-01, après #2160._
 
-- **État** : lot 2 (limites : 402, 576, 403, 582) écrit dans `scripts/questions/tspe-2-limites/` (script
-  `docs/wip/questions/lot-tspe-limites.py`), 52 specs vertes, essai en base locale joué dans l'aperçu. PR #2160 :
-  CI **annulée** à la demande de la session `questions-1spe` (main cassée, migration en double 20261101215000).
-- **D'abord** : #2154 mergée ; attendre le merge de **#2165** (`gh pr view 2165`), puis `git merge origin/main`,
-  `git push` (2 commits de journal restés locaux), surveiller la CI de #2160, merger si verte.
-- **Prochaine action** : #2160 mergée → **David** lance `set -a; . ./.env; set +a` puis
+- **État** : lot 2 (limites : 402, 576, 403, 582) **mergé** (#2160) dans `scripts/questions/tspe-2-limites/`
+  (script `docs/wip/questions/lot-tspe-limites.py`), 52 specs vertes ; rien encore en prod.
+- **Prochaine action** : **David** lance, depuis le dépôt principal, `set -a; . ./.env; set +a` puis
   `pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-2-limites --publier` → relever les `id` →
-  migration : 3 sous-notions neuves + rangement + tags (§ 15).
-- **En attente de David** : la création des 4 brouillons en prod (après le merge).
+  migration : 3 sous-notions neuves + rangement + tags (§ 15), sur une branche neuve depuis `origin/main`.
+- **En attente de David** : la création des 4 brouillons en prod.
 - **Pièges en cours** : un tag doit être sur le **nœud du modèle ou sa notion** (§ 14) ; le **niveau est dans la
   clé** de `create-questions`. `create-questions` et `publier-lot` → David (`!`) ; `db:migrate` depuis le dépôt
   principal ; en-tête de commit ≤ 100 caractères ; worktree neuf : `pnpm exec svelte-kit sync` avant
   `question:specs` (sinon `$lib` introuvable). **Migrations (règles du 2026-11-01, #2165)** : nom par
   `pnpm migration:horodatage` (jamais « max + 1 » à la main) ; `pnpm check:migrations --pr <n>` avant le merge ;
-  CI rouge sans jobs → lire le 1er job (« Commit de version ? ») ; après #2165, `git merge origin/main` ici.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe`, `feat/questions-tspe-lot2`.
+  CI rouge sans jobs → lire le 1er job (« Porte de la CI ») ; PR de contenu : CI allégée, « skipped » voulu,
+  CI Summary fait foi.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe` gardé pour la branche de migration ;
+  `feat/questions-tspe-lot2` mergée.
 
 ## 1. Relevé (prod, 2026-10-29)
 
