@@ -766,7 +766,12 @@ Concise / détaillée (ADR 0017) : `splitCorrectionDetail` retire ou garde `\det
    `incorrect`, jamais `empty` (une case vide minoritaire vaut ½).
 8. **Évaluation : rien de la réponse ne part au navigateur** — `toPublicQuestion` construit la
    question en liste blanche (ni attendu, ni correction, ni graine, ni identifiant de modèle), car
-   les modèles publiés sont lisibles par tous.
+   les modèles publiés sont lisibles par tous. L'énoncé lui-même part sans la valeur à trouver de
+   ses blocs à geste (`maskGestureAnswers`, `masked-statement.ts` : `placer: A=?`, `construire: ?`,
+   `colorier: ?`, effectifs des barres à construire) ; la case garde le genre de son bloc
+   (`construire`), pour le même écran qu'hors évaluation. Pas encore masqués (lot 2 du chantier
+   [fuite-enonce](../wip/fuite-enonce-progress.md)) : ` ```cubes `, ` ```patron ` `completer:`,
+   ` ```figure-a-completer `.
 9. **Carte de cours** : jamais dans une évaluation notée (`excludeCourseCards`), pas de spec ;
    `checkTemplate` vérifie seulement un recto et un verso non vides. Une carte de cours est
    toujours une question de cours.

@@ -6,15 +6,12 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après l'audit Q3 (§ 4)._
+_Mis à jour le 2026-11-01, lot 1 codé (§ 5), PR ouverte._
 
-- **État** : phase 0 validée (§ 3) ; audit Q3 fait (§ 4) : seule l'évaluation notée est concernée, le lot 1
-  ne touche que `toPublicQuestion`. Rien de codé.
-- **Prochaine action** : lot 1 (masques simples), tests rouges d'abord : démarrer une évaluation, aucune cible
-  dans le JSON ; chaque bloc masqué se dessine encore avec son geste.
-- **En attente de David** : rien.
-- **Pièges en cours** : ne pas casser le dessin du geste (l'écran doit garder noms et nombre de points / barres) ;
-  la correction reste au serveur sur l'instance complète. Revue `code-reviewer` + `security-auditor` (Opus).
+- **État** : lot 1 codé, tests verts (rouges prouvés sans le masque) ; PR en revue (`code-reviewer` + `security-auditor`, Opus).
+- **Prochaine action** : revues, CI, merge ; puis lot 2 (une question par cas à David).
+- **En attente de David** : patron `completer:` (forme écrite du patron amputé, § 5) ; les trois cas du lot 2.
+- **Pièges en cours** : `construire` (genre du bloc) passe désormais dans la version publique (garde de `generation-ranger.test.ts` précisée) ; branche fusionnée avec `origin/main` (103 commits, #2096 compris).
 - **Worktree / branche** : `ubumaths-wt-fuite-enonce` · `fix/fuite-enonce`.
 
 ---
@@ -85,3 +82,32 @@ servirait à rien, `expectedAnswer` est dans le même JSON.
 
 Hors chantier, à signaler : le combat Navadra reçoit `correct_answer` **du client** (`submitAnswer`,
 `navadra/combat/[combatId]/+page.server.ts`) : jeu, pas de note, même logique que l'ADR 0001.
+
+## 5. Lot 1 — codé (2026-11-01)
+
+**Forme neutre : `?`** à la place de la valeur (`placer: A=? ; B=?`, `placer: ?`, `construire: ?`,
+`colorier: ?`, `Natation = ?`). `maskGestureAnswers` (`src/lib/questions/masked-statement.ts`) réécrit
+l'énoncé dans `toPublicQuestion` ; l'instance complète (enregistrée, corrigée) ne change pas. Les parseurs
+lisent `?` comme une valeur de remplacement (`ubumark/utils/masked-value.ts`), sans vérification :
+droite → début de la droite, repère → (0 ; 0), horloge → 12 h 00, collection → 1, monnaie → plus petite
+coupure, partage → 1/1, barre → 0. Elle ne sert qu'au dessin de la solution (montré après verdict
+seulement). `buildAnswerOf` refuse `?` écrit par un auteur (aucun modèle en prod n'en a : 107 modèles à
+blocs vérifiés le 2026-11-01).
+
+Trouvé en route : la case d'un geste perdait `construire` (genre du bloc) dans la version publique →
+l'écran d'évaluation affichait « Remplissez les blancs avec vos réponses » sous un geste. Ajouté à la liste
+blanche (aucun secret : l'énoncé montre le bloc).
+
+`axe: à choisir` (barres) : masqué aussi — tous les effectifs deviennent `?`, l'échelle ne se déduit plus.
+
+**Patron, pas fait** :
+
+- `designer:` : sans objet — la valeur est la tâche (`opposee`, `face EFGH`), que la consigne dit ; les faces
+  se trouvent par le pliage.
+- `completer: 4` : fuite réelle (les cases retirées = une solution), mais le patron vient du catalogue
+  (`layout: 1`) ; le patron amputé n'a pas d'écriture. **Question à David** (avec le lot 2).
+
+Tests : `masked-statement.test.ts` (19 : masque, bloc relu, refus du `?` ; 10 rouges sans le masque),
+`FillBlanksInput-enonce-masque.svelte.test.ts` (8 : même HTML instance complète / version publique pour les
+7 blocs, geste de la droite), `evaluation-notee-serveur.test.ts` (3 de bout en bout : démarrer, reprendre,
+correction juste ; 2 rouges sans le masque).
