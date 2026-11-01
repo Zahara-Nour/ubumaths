@@ -164,6 +164,18 @@ describe('garde-migrations-horodatage', () => {
 		expect(r.stderr).toMatch(/injoignable/);
 	});
 
+	it('sans origin, en CI : refusé (la garde est la porte de la CI)', () => {
+		migration(moi, '20261101215000_lot_a.sql');
+		git(moi, 'remote', 'remove', 'origin');
+		const r = spawnSync('bash', [SCRIPT], {
+			cwd: moi,
+			env: { ...env(), CI: 'true' },
+			encoding: 'utf8'
+		});
+		expect(r.status).toBe(1);
+		expect(r.stderr).toMatch(/porte fermée/);
+	});
+
 	it('--prochain : heure réelle UTC quand main est dans le passé', () => {
 		const r = spawnSync('bash', [SCRIPT, '--prochain'], { cwd: moi, env: env(), encoding: 'utf8' });
 		expect(r.status).toBe(0);

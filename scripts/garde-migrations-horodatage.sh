@@ -23,7 +23,8 @@
 #   - une migration neuve plus ancienne que la dernière de main : `supabase db push`
 #     (`pnpm db:migrate`) la refuserait (« inserted before the last migration »).
 # Hors ligne, ou sans origin : passe, avec un avertissement (le garde-fou
-# n'empêche pas de travailler ; la CI et le test d'unicité restent le filet).
+# n'empêche pas de travailler ; la CI reste le filet). En CI (CI=true) : refuse,
+# car la garde y est la porte de la CI (quality.yml, job `version`).
 #
 # Tests : scripts/__tests__/garde-migrations-horodatage.test.ts.
 set -uo pipefail
@@ -46,6 +47,11 @@ fi
 # (remote en https : on abandonne si le débit reste nul 5 s).
 export GIT_SSH_COMMAND="${GIT_SSH_COMMAND:-ssh} -o ConnectTimeout=5"
 if ! git -c http.lowSpeedLimit=1 -c http.lowSpeedTime=5 fetch -q origin main 2>/dev/null || ! git rev-parse -q --verify origin/main >/dev/null; then
+	if [ -z "$prochain" ] && [ -n "${CI:-}" ]; then
+		# En CI, la garde est la porte : elle ne laisse pas passer à l'aveugle.
+		echo "⛔ garde des migrations : origin/main injoignable en CI, porte fermée (relancer le run)." >&2
+		exit 1
+	fi
 	if [ -z "$prochain" ]; then
 		echo "⚠️  garde des migrations : origin/main injoignable, horodatages non vérifiés." >&2
 		exit 0
