@@ -10,7 +10,8 @@ _Mis à jour le 2026-11-01, après #2141._
 - **État** : lots 0 à 7 publiés ; lot 8 (monnaie, § 15) : 6 brouillons en prod, rangés et tagués (#2135, #2141).
 - **Prochaine action** : après le `deploy:prod` qui livre #2127 (centimes) : catégories relevées, page à cocher, puis
   `publier-lot` (simulation, puis David) ; ensuite lots 9 et 10 (ex-8 et 9 du § 12).
-- **En attente de David** : `deploy:prod` pour les centimes.
+- **En attente de David** : `deploy:prod` pour les centimes — tenté le 2026-11-01 soir, pas lancé (CI de `main` toujours
+  en cours ou rouge : migration en double, #2154 ; attendre #2165 et une `main` verte, sessions priées de ne pas merger).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
