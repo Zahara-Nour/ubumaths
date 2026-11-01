@@ -284,7 +284,9 @@ export class EquivCommand extends BaseCommand {
 			return {
 				success: true,
 				output: lines.join('\n'),
-				ast: expr1 // Return the first AST
+				ast: expr1, // Return the first AST
+				// Le verdict, écrit comme celui d'un test d'égalité (`.évaluer`)
+				answer: isEquivalent ? '\\text{vrai}' : '\\text{faux}'
 			};
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'Unknown error checking equivalence';

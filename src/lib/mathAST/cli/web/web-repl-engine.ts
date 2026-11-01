@@ -192,6 +192,18 @@ function keptValue(
 }
 
 /**
+ * La réponse brute d'un calcul tapé seul (`1/2+1/3` → `\dfrac{5}{6}`) : l'arbre
+ * affiché, en LaTeX. Une réponse trop longue (`exactTooLong`) n'en a pas : son
+ * arbre est l'écriture tapée, pas un résultat.
+ */
+function withExpressionAnswer(result: ReplExecutionResult): ReplExecutionResult {
+	if (!result.success || result.ast === undefined || result.exactTooLong !== undefined) {
+		return result;
+	}
+	return { ...result, answer: toLatex(result.ast) };
+}
+
+/**
  * Browser-safe REPL execution engine.
  *
  * Handles:
@@ -285,7 +297,7 @@ export class WebReplEngine {
 		}
 
 		// Handle regular expression
-		return this.executeExpression(trimmedInput);
+		return withExpressionAnswer(this.executeExpression(trimmedInput));
 	}
 
 	/**
@@ -1197,6 +1209,7 @@ export class WebReplEngine {
 			error?: unknown;
 			ast?: MathNode;
 			latex?: string;
+			answer?: string;
 			approximateLatex?: string;
 		},
 		ast?: MathNode
@@ -1222,6 +1235,7 @@ export class WebReplEngine {
 			output: cmdResult.output,
 			ast: cmdResult.ast || ast,
 			...(cmdResult.latex !== undefined && { latex: cmdResult.latex }),
+			...(cmdResult.answer !== undefined && { answer: cmdResult.answer }),
 			...(cmdResult.approximateLatex !== undefined && {
 				approximateLatex: cmdResult.approximateLatex
 			})
