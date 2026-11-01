@@ -1,6 +1,6 @@
 /**
- * Énoncé masqué d'une évaluation notée : le même écran (chantier `fuite-enonce`, lot 1)
- * =====================================================================================
+ * Énoncé masqué d'une évaluation notée : le même écran (chantier `fuite-enonce`, lots 1 et 2)
+ * ============================================================================================
  *
  * Pendant une évaluation, le navigateur reçoit l'énoncé sans la valeur à trouver
  * (`placer: A=?`, `construire: ?`…) et le rhabille par `toDisplayInstance`. L'élève
@@ -98,6 +98,23 @@ const CASES: [string, string][] = [
 			'Danse = 7',
 			'placer: Natation ; Danse'
 		)
+	],
+	// Lot 2 (journal § 7)
+	['assemblage à retrouver', block('cubes', 'hauteurs: 3 1 2 / 1 0 2', 'retrouver: face, droite')],
+	[
+		'patron à compléter, tourné et retourné',
+		block('patron', 'solide: cube', 'forme: 3', 'tourner: 90', 'retourner: oui', 'completer: 1 5')
+	],
+	[
+		'figure à compléter',
+		block(
+			'figure-a-completer',
+			'fenetre: 0 ; 10 ; 0 ; 6',
+			'verifier: carre A ; B',
+			'---',
+			'A = point(1, 2)',
+			'B = point(4, 2)'
+		)
 	]
 ];
 
@@ -124,5 +141,17 @@ describe('énoncé masqué : le geste marche', () => {
 		expect(forward, 'bouton du geste').toBeDefined();
 		forward!.click();
 		await expect.poll(() => values[0] ?? '').not.toBe('');
+	});
+
+	it('patron à compléter : poser une face remplit la case', async () => {
+		const full = generated(CASES[8][1]);
+		const masked = toDisplayInstance(toPublicQuestion(full, { position: 0, delaySeconds: 20 }));
+		expect(masked.statement).toContain('completer: ? ?');
+		const values: string[] = [];
+		const root = await screenOf(masked, values);
+		const spot = root.querySelector<SVGElement>('[aria-label^="Emplacement rangée"]');
+		expect(spot, 'emplacement du geste').not.toBeNull();
+		spot!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+		await expect.poll(() => values[0] ?? '').toContain('2');
 	});
 });

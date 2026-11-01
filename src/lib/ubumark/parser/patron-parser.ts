@@ -60,10 +60,15 @@ import {
 } from '../utils/espace-patrons';
 import { targetFaces } from '../utils/patron-gestes';
 import { readForm } from './solide-parser';
+import { MASKED_VALUE } from '../utils/masked-value';
 
 // ============================================================================
 // CONSTANTES
 // ============================================================================
+
+/** `completer: ?` mal formé (le générateur refuse toute forme masquée) */
+export const MASKED_COMPLETER_MESSAGE =
+	'completer: « ? » est réservé à l’énoncé envoyé pendant une évaluation : écris les numéros des cases à retirer';
 
 /** `clé: valeur` */
 const KEY_LINE_REGEX = /^([A-Za-zÀ-ÿ]+)\s*:\s*(.*)$/;
@@ -404,10 +409,16 @@ export function parsePatronContent(source: string): {
 		cotes
 	};
 
-	// Le pliage : ce que la grille annonce, et des faces qui ne se chevauchent pas
+	// Le pliage : ce que la grille annonce, et des faces qui ne se chevauchent pas.
+	// Énoncé masqué d'une évaluation (`completer: ? ?`) : la grille est le patron
+	// amputé, qui ne se plie pas (il manque les faces à poser)
 	const net = patronNet(spec);
 	const formLine = formEntry?.line ?? solidEntry.line;
-	if (written && !faux && net.notFolding !== null) {
+	const completerValue = seen.get('completer')?.value;
+	const maskedCompleter = completerValue !== undefined && isMaskedCompleter(completerValue);
+	if (maskedCompleter && written && !faux) {
+		// Rien à plier : `readCompleter` vérifie la grille amputée
+	} else if (written && !faux && net.notFolding !== null) {
 		fail(
 			formLine,
 			`cette grille ne se plie pas en cube : ${net.notFolding} (faux: oui pour un faux patron)`
@@ -502,6 +513,12 @@ function readDesigner(
 	return { kind: 'designer', target, faces };
 }
 
+/** `completer: ? ?` : forme de l'énoncé masqué d'une évaluation (chantier `fuite-enonce`) */
+function isMaskedCompleter(value: string): boolean {
+	const items = value.split(/\s+/).filter((w) => w !== '');
+	return items.length > 0 && items.every((w) => w === MASKED_VALUE);
+}
+
 /** Les cases retirées de `completer:` ; une phrase d'erreur sinon */
 function readCompleter(
 	value: string,
@@ -510,6 +527,21 @@ function readCompleter(
 ): PatronTask | string {
 	if (spec.solid !== 'cube' || spec.faux || spec.cells === null) {
 		return 'completer: seulement pour un vrai patron du cube';
+	}
+	if (isMaskedCompleter(value)) {
+		// Énoncé masqué d'une évaluation : le patron amputé, sans tourner ni retourner
+		const toPlace = value.split(/\s+/).filter((w) => w !== '').length;
+		const given = spec.cells.flat().filter(Boolean).length;
+		const transformed = ['tourner', 'retourner', 'dessous'].some((key) => seen.has(key));
+		if (
+			!seen.has('forme') ||
+			transformed ||
+			toPlace > PATRON_COMPLETE_MAX ||
+			given + toPlace !== 6
+		) {
+			return MASKED_COMPLETER_MESSAGE;
+		}
+		return { kind: 'completer', removed: [], masked: toPlace };
 	}
 	// Noms, numéros, marque, cotes : diraient où va la face manquante (Q22)
 	for (const key of ['sommets', 'faces', 'marquer', 'cotes']) {

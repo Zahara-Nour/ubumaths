@@ -18,6 +18,9 @@
  * ```figure-de-travail : mêmes lignes, sans `verifier:` (refusé) — l'élève
  * trace pour vérifier, rien n'est noté.
  *
+ * `verifier: ?` : énoncé masqué d'une évaluation (chantier `fuite-enonce`), écrit
+ * par le serveur avec `outils:` ; refusé dans un modèle par le générateur.
+ *
  * `case: N` est posée par le générateur de questions, jamais écrite. Ces
  * lignes sont lues ici puis remplacées par des lignes vides : le reste passe
  * tel quel au parseur de ```figure (numéros de ligne inchangés). Aucun import
@@ -36,6 +39,7 @@ import {
 	type ConstructionTool
 } from '../types/construction';
 import type { FigureIssue } from '../types/figure';
+import { isMaskedValue } from '../utils/masked-value';
 
 const CONSTRUCTION_BLOCK_START_REGEX = /^```figure-(?:a-completer|de-travail)\s*$/;
 const WORK_FIGURE_BLOCK_START_REGEX = /^```figure-de-travail\s*$/;
@@ -171,6 +175,9 @@ export function readConstructionHeader(
 				spec.caseIndex = Number(value);
 			} else if (work) {
 				throw new LineError(WORK_FIGURE_CHECK_MESSAGE);
+			} else if (isMaskedValue(value)) {
+				// Énoncé masqué d'une évaluation (chantier `fuite-enonce`) : rien à vérifier ici
+				spec.masked = true;
 			} else {
 				try {
 					spec.checks.push(readCheck(value, line));
@@ -184,7 +191,7 @@ export function readConstructionHeader(
 			errors.push({ message: `Ligne ${line} : ${error.message}`, line });
 		}
 	}
-	if (!work && spec.checks.length === 0 && checkErrors === 0) {
+	if (!work && !spec.masked && spec.checks.length === 0 && checkErrors === 0) {
 		errors.push({ message: CONSTRUCTION_MISSING_CHECK_MESSAGE });
 	}
 	// `outils:` absent : l'outil de la première vérification (droite par défaut)

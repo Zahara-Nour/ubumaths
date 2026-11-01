@@ -78,12 +78,15 @@ const MULTI_ID = '0a11f0e0-0000-4000-8000-00000000e603';
 const CHOICE_ID = '0a11f0e0-0000-4000-8000-00000000e604';
 /** Droite à placer (chantier `fuite-enonce`) : l'énoncé envoyé ne dit pas où vont A et B */
 const GESTE_ID = '0a11f0e0-0000-4000-8000-00000000e605';
+/** Assemblage à retrouver (`fuite-enonce`, lot 2) : l'énoncé envoyé ne dit pas les hauteurs */
+const CUBES_ID = '0a11f0e0-0000-4000-8000-00000000e606';
 const THEME = 'ZZ Éval serveur';
 const FILL_CATEGORY = { theme: THEME, domain: 'Moitié', subdomain: 'Entiers', level: 1 };
 const QCM_CATEGORY = { theme: THEME, domain: 'Comparer', subdomain: 'Relatifs', level: 1 };
 const MULTI_CATEGORY = { theme: THEME, domain: 'Plusieurs', subdomain: 'Pairs', level: 1 };
 const CHOICE_CATEGORY = { theme: THEME, domain: 'Case choix', subdomain: 'Pairs', level: 1 };
 const GESTE_CATEGORY = { theme: THEME, domain: 'Droite', subdomain: 'Placer', level: 1 };
+const CUBES_CATEGORY = { theme: THEME, domain: 'Cubes', subdomain: 'Retrouver', level: 1 };
 const CATEGORIES = [
 	{ category: FILL_CATEGORY, quantity: 2, delay: 20 },
 	{ category: QCM_CATEGORY, quantity: 1, delay: 15 }
@@ -219,7 +222,7 @@ async function oracle(attemptId: string): Promise<QuestionInstance[]> {
 	const { data: templates } = await service
 		.from('question_templates')
 		.select('*')
-		.in('id', [QCM_ID, FILL_ID, MULTI_ID, CHOICE_ID, GESTE_ID]);
+		.in('id', [QCM_ID, FILL_ID, MULTI_ID, CHOICE_ID, GESTE_ID, CUBES_ID]);
 	const byId = new Map(
 		(templates as QuestionTemplateRow[]).map((t) => [t.id, toQuestionTemplate(t)])
 	);
@@ -353,7 +356,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 		await service
 			.from('question_templates')
 			.delete()
-			.in('id', [QCM_ID, FILL_ID, MULTI_ID, CHOICE_ID, GESTE_ID]);
+			.in('id', [QCM_ID, FILL_ID, MULTI_ID, CHOICE_ID, GESTE_ID, CUBES_ID]);
 	});
 
 	describe('Entraînement : démarrer → reprendre → envoyer (×2)', () => {
@@ -1148,6 +1151,62 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			expect(result.questions[0]).toMatchObject({ status: 'correct', points: 1 });
 			// Copie rendue après l'envoi : l'instance complète, réponse comprise
 			expect(result.questions[0].instance.statement).toContain('placer: A=12 ; B=15');
+		});
+	});
+
+	describe('fuite-enonce, lot 2 : un assemblage à retrouver part sans ses hauteurs', () => {
+		let cubesStudent: Person;
+		let assignmentId: string;
+
+		beforeAll(async () => {
+			cubesStudent = await person('student');
+			const { error: memberError } = await service
+				.from('class_members')
+				.insert({ class_id: classId, student_id: cubesStudent.id, status: 'active' });
+			expect(memberError, 'décor : inscription').toBeNull();
+
+			await service.from('question_templates').delete().eq('id', CUBES_ID);
+			const { error } = await service.from('question_templates').insert({
+				id: CUBES_ID,
+				type: 'fill_in_blanks',
+				title: 'Assemblage à retrouver ZZ éval serveur',
+				...CUBES_CATEGORY,
+				grades: ['6'],
+				status: 'published',
+				variations: [
+					{
+						statement:
+							'Retrouve l’assemblage d’après ses vues.\n\n```cubes\nhauteurs: 1 1 2 / 3 0 2\nretrouver: face, droite\n```'
+					}
+				]
+			});
+			expect(error, 'décor : modèle à assemblage à retrouver').toBeNull();
+
+			({ assignmentId } = await createEvaluation({
+				max_attempts: 2,
+				categories: [{ category: CUBES_CATEGORY, quantity: 1, delay: 20 }]
+			}));
+		}, 60_000);
+
+		it('démarrer : pas les hauteurs, mais l’empreinte et les vues données', async () => {
+			const attempt = await start(cubesStudent, assignmentId);
+			const sent = JSON.stringify(attempt.questions);
+			expect(sent).not.toContain('1 1 2 / 3 0 2');
+			expect(sent).not.toMatch(/hauteurs: [^\\]*[1-9]/);
+			expect(attempt.questions[0].statement).toContain('hauteurs: ? ? ? / ? 0 ?');
+			expect(attempt.questions[0].statement).toContain('vues: face 3 1 2 ; droite 3 2');
+			const [instance] = await oracle(attempt.attemptId);
+			expect(instance.statement).toContain('hauteurs: 1 1 2 / 3 0 2');
+		});
+
+		it('la correction ne change pas : l’assemblage juste → 1 point', async () => {
+			const attempt = await start(cubesStudent, assignmentId);
+			// La saisie de l'élève : une hauteur par carreau de la vue de dessus
+			const body = submitAttemptSchema.parse({
+				answers: [{ position: 0, values: ['1 1 2 / 3 0 2'] }]
+			});
+			const result = await submitEvaluationAttempt(actors(cubesStudent), attempt.attemptId, body);
+			expect(result.questions[0]).toMatchObject({ status: 'correct', points: 1 });
 		});
 	});
 });

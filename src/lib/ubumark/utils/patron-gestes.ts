@@ -202,7 +202,11 @@ export function designerMistakes(answer: string, target: PatronTarget): string[]
  * face posée y tient toujours). Jamais la boîte du patron entier : un vide d'un
  * seul côté montrerait où manque la face.
  */
-export function completerFrame(spec: PatronSpec, removed: readonly number[]): CompleterCell[][] {
+export function completerFrame(
+	spec: PatronSpec,
+	removed: readonly number[],
+	margin = removed.length
+): CompleterCell[][] {
 	const cells = spec.cells ?? [];
 	let rank = 0;
 	const marked = cells.map((row) =>
@@ -213,7 +217,6 @@ export function completerFrame(spec: PatronSpec, removed: readonly number[]): Co
 	const cols = turned[0].flatMap((_, c) => (turned.some((row) => row[c] === 1) ? [c] : []));
 	const [top, bottom] = [rows[0], rows[rows.length - 1]];
 	const [left, right] = [cols[0], cols[cols.length - 1]];
-	const margin = removed.length;
 	// Les faces retirées, à au plus `margin` cases des données, restent dans le cadre
 	return Array.from({ length: bottom - top + 1 + 2 * margin }, (_, r) =>
 		Array.from(
@@ -221,6 +224,23 @@ export function completerFrame(spec: PatronSpec, removed: readonly number[]): Co
 			(_, c): CompleterCell => turned[r + top - margin]?.[c + left - margin] ?? 0
 		)
 	);
+}
+
+/**
+ * Ce que l'élève voit avant tout geste : le quadrillage des faces données, et le
+ * nombre de faces à poser. Le même pour l'instance complète et pour l'énoncé
+ * masqué d'une évaluation (`completer: ? ?`, patron amputé : chantier `fuite-enonce`).
+ */
+export function completerStart(spec: PatronSpec): { frame: CompleterCell[][]; toPlace: number } {
+	const task = spec.task;
+	if (task?.kind !== 'completer') return { frame: [], toPlace: 0 };
+	if (task.masked !== undefined) {
+		return { frame: completerFrame(spec, [], task.masked), toPlace: task.masked };
+	}
+	return {
+		frame: givenFrame(completerFrame(spec, task.removed)),
+		toPlace: task.removed.length
+	};
 }
 
 /** Réponse de la case pour ce quadrillage ; '' quand aucune face n'est posée */
