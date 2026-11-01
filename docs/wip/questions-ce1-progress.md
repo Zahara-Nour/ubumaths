@@ -5,14 +5,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 9 écrit (pas encore de PR)._
+_Mis à jour le 2026-11-01, après #2168._
 
 - **État** : lots 0 à 7 publiés ; lot 8 (monnaie) : 6 brouillons en prod, rangés et tagués ; lot 9 (fractions
-  dessinées et géométrie, § 16) : 9 modèles écrits et vérifiés, 2 commits sur `feat/questions-ce1-lot9`, **non poussés**.
-- **Prochaine action** : au « go » de la pause CI : `git merge origin/main`, push, PR des fichiers (revue : aucune,
-  contenu), merge ; puis David crée les brouillons en prod ; migration nœud + tag (+ `a7dfe502` passé au CE1, niveau 2,
-  instantané d'abord) ; page à cocher (ajouter le dessin de ` ```partage ` au script).
-- **En attente de David** : `deploy:prod` pour les centimes (lot 8) ; « go » de la pause CI (session migrations-collision).
+  dessinées et géométrie, § 16) : fichiers mergés (#2168), brouillons pas encore en prod.
+- **Prochaine action** : David crée les 9 brouillons du lot 9 en prod ; relever les `id` ; migration nœud + tag
+  (+ `a7dfe502` passé au CE1, « Tracés · Droites · 2 », instantané d'abord) ; page à cocher (ajouter le dessin de
+  ` ```partage ` au script) ; lot 8 après le `deploy:prod` des centimes.
+- **En attente de David** : `create-questions --publier` du lot 9 ; `deploy:prod` pour les centimes (lot 8).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
@@ -743,3 +743,4 @@ Réponse de David (« je suis tes recos », 2026-11-01) : les six recommandation
   script avant de la publier, ou fractions jouées dans l'aperçu.
 - 2026-11-01 : PAUSE CI demandée par David (session migrations-collision, relayée par questions-1spe) : rien poussé ;
   au « go » : `git merge origin/main`, push, PR.
+- 2026-11-01 : fin de la pause CI ; #2168 mergée (CI verte, Type Check / Build sautés : PR de contenu) ; brouillons en prod à créer par David.
