@@ -5,9 +5,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR #2159 renumérotée, CI relancée._
+_Mis à jour le 2026-11-01, PR #2159 renumérotée (224702), CI relancée._
 
-- **État** : lot 4b (calcul posé, 6 modèles) en brouillons en prod (§ 13 quater, ids notés) ; migration de rangement renumérotée `20261101224701_questions_cm1_lot4b_rangement_tags` (la garde refusait `224100`, plus ancienne que `224700` de main) dans la PR #2159 : test 10/10 vert (6 rouges sans le corps), `security-auditor` sans finding bloquant.
+- **État** : lot 4b (calcul posé, 6 modèles) en brouillons en prod (§ 13 quater, ids notés) ; migration de rangement renumérotée `20261101224702_questions_cm1_lot4b_rangement_tags` (`224100` dépassée par `224700` de main, puis `224701` prise par la 1re spé probas) dans la PR #2159 : test 10/10 vert (6 rouges sans le corps), `security-auditor` sans finding bloquant.
 - **Prochaine action** : CI verte → `pnpm check:migrations --pr 2159` → merge → David lance `db:migrate` depuis le dépôt principal → vérif MCP (nœuds, tags) → page à cocher → publication. Puis lot 5 grandeurs.
 - **En attente de David** : `db:migrate` après le merge.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** (main avance vite : 224100 dépassé par 224700 pendant la CI de #2159) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») et le type `content` (prendre `feat`) ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; dépôt partagé : relire `git diff --cached --name-only` avant CHAQUE commit (journal ce2 emporté le 2026-11-01) ; coloriage : specs non mesurées par le test du corpus, sauf si un modèle active `orderIndependent` (la prod le mesurerait alors) ; extension Chrome muette → Playwright à 390 px.
@@ -820,9 +820,9 @@ CE1 ; 3. 050 et 165 rangés sous « Décimaux : calculs › addition » et « �
   (addition), `613817ea-58af-4c94-b82a-a2dba19e687a` (soustraction, compensation), `1ed5202f-d031-4964-8f4b-a8dc0ade21c5`
   (soustraction, cassage), `e8086f21-13e4-4adf-8691-347c65f88258` (multiplication d'entiers),
   `c3246792-8dbf-4afb-8ad5-33c6f37feeb0` (décimal × entier), `4b666c28-0357-41b6-ae08-daae13ac0642` (division).
-- Migration `20261101224701_questions_cm1_lot4b_rangement_tags` et son test, générés du gabarit du lot 4
+- Migration `20261101224702_questions_cm1_lot4b_rangement_tags` et son test, générés du gabarit du lot 4
   (remplacements vérifiés au `diff`). **Seul écart de logique** : le point est cherché sur le nœud du
   modèle OU sur sa notion (050 et 165 sont posés sur la notion « Décimaux : calculs », leurs modèles sous
   « addition » / « soustraction »), comme la règle des tags l'admet ; test ajouté : un point posé ailleurs
-  fait échouer la migration. Horodatage : d’abord `20261101223100`, pris aussi par `questions_ce2_lot6a` (#2158, plus ancienne) → renuméroté `20261101224100` (max des PR ouvertes `20261101224000`, 5e lot 7, + 1 min), puis `20261101224701` (`pnpm migration:horodatage`) : la garde `check:migrations --pr 2159` refusait 224100, devenue plus ancienne que `20261101224700` (6e lot 8) entrée sur main pendant la CI.
+  fait échouer la migration. Horodatage : d’abord `20261101223100`, pris aussi par `questions_ce2_lot6a` (#2158, plus ancienne) → renuméroté `20261101224100` (max des PR ouvertes `20261101224000`, 5e lot 7, + 1 min), puis `20261101224701`, puis `20261101224702` (`pnpm migration:horodatage` deux fois : 224701 a été donné au même moment à la 1re spé probas, mergée avant) : la garde `check:migrations --pr 2159` refusait 224100, devenue plus ancienne que `20261101224700` (6e lot 8) entrée sur main pendant la CI.
 - Test d'intégration : rouge sans le corps de la migration (6 échecs), 10/10 vert avec.
