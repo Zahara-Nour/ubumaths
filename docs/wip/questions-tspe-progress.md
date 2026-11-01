@@ -10,11 +10,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 0-primitives en relecture (§ 9)._
+_Mis à jour le 2026-11-01, lot 0-primitives validé par David (§ 9)._
 
-- **État** : lots 0-suites, 0-limites et fonctions, 0-intégration **publiés** (66 modèles). Lot 0-primitives (18 brouillons, § 9) vérifié : 18 / 18 verts, rien hors bornes, aucune collision, 3 retouches de correction dans les fichiers ; page à cocher publiée.
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 18), corriger les « À revoir », ouvrir la PR (instantané + journal), merger ; puis David lance `create-questions --mettre-a-jour` et `publier-lot` (simulation puis `--publier`) ; relire le statut en base. Lot suivant : trigonométrie. Plus tard : migration des tags Q3 (§ 1, § 7, § 8, § 9).
-- **En attente de David** : la relecture de https://claude.ai/artifact/9mQPicqp2fSD5i32CrwaMp (18 fiches).
+- **État** : lots 0-suites, 0-limites et fonctions, 0-intégration **publiés** (66 modèles). Lot 0-primitives (18 brouillons, § 9) **validé en bloc par David** le 2026-11-01 ; PR de l'instantané ouverte.
+- **Prochaine action** : merger la PR ; puis David lance `create-questions --mettre-a-jour` (3 retouches C1-C3) et `publier-lot` (simulation puis `--publier`) ; relire le statut en base. Lot suivant : trigonométrie. Plus tard : migration des tags Q3 (§ 1, § 7, § 8, § 9).
+- **En attente de David** : `create-questions --mettre-a-jour` puis `publier-lot` du lot 0-primitives.
 - **Pièges en cours** : `create-questions` et `publier-lot`, même en simulation → David (le mode auto les refuse) ;
   partir des id, pas des vieux dossiers `<thème>-terminale/` ; simulation `publier-lot` AVANT tout ;
   worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` (sinon `$lib` introuvable) ;
@@ -426,3 +426,5 @@ ne peut égaler ±m (|a| ≥ 2) ; 624bf511 v1 garde `y0 != m` (sans elle, f cons
 
 **Page à cocher** : https://claude.ai/artifact/9mQPicqp2fSD5i32CrwaMp (18 fiches), collection `verdicts` vide à la
 publication. Les 3 retouches ne sont pas encore en base : la page montre déjà les fichiers corrigés.
+
+**Relecture** : David valide les 18 fiches en bloc (2026-11-01, sans passer par la page : `verdicts` restée vide).
