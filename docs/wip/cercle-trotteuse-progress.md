@@ -6,19 +6,19 @@ status: phase 0
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR 1 = #2179 ouverte, pas encore mergée._
+_Mis à jour le 2026-11-01, après #2179._
 
-- **État** : PR 1 (trotteuse) = **#2179**, vue dans l'appli (lire + placer, OK), revue `code-reviewer` faite et
-  suivie (§ 7 bis), conflits de doc avec `main` résolus. **PAUSE DES MERGES** (deploy:prod en cours, consigne de
-  David relayée par la session questions-cm2) : ne pas merger avant son « go ».
-- **Prochaine action** : après le « go » : `git merge origin/main`, push, CI verte → `gh pr merge 2179 --merge`,
-  mettre ce bloc à jour sur main, retirer le worktree. Puis PR 2 (cercle trigo, § 4, § 6), nouveau worktree.
+- **État** : PR 1 (trotteuse, lire et placer) **mergée (#2179)**, pas encore en prod ; vérification manuelle
+  notée dans `verifications-manuelles.md`. Worktree de la PR 1 retiré.
+- **Prochaine action** : PR 2 — point à placer sur le cercle trigonométrique (phase 0 au § 4, décisions au § 6) :
+  nouveau worktree `git worktree add -b feat/cercle-trigo-placer ../ubumaths-wt-cercle-trotteuse origin/main`,
+  tests d'abord.
 - **En attente de David** : rien.
-- **Pièges en cours** : un geste ne doit jamais donner la réponse (`placer: ? s`) ; client vitest « Orchestrator
+- **Pièges en cours** : un geste ne doit jamais donner la réponse (énoncé masqué) ; client vitest « Orchestrator
   not found » = relancer par dossier ; page d'aide réservée au **prof** : tester sur `http://[::1]:<port>` avec
   `teacher@local.test` (cookies séparés de la session admin de David sur `localhost`) ; aucune ligne
-  `Claude-Session` dans les commits (branche réécrite le 2026-11-01 pour l'enlever).
-- **Worktree / branche** : `../ubumaths-wt-cercle-trotteuse` · `feat/cercle-trotteuse`.
+  `Claude-Session` dans les commits ni la PR.
+- **Worktree / branche** : aucun (à recréer pour la PR 2).
 
 ---
 
