@@ -71,7 +71,11 @@ describe('construction — lecture du bloc', () => {
 				'A = point(1, 2)'
 			)
 		);
-		expect(node.construction?.checks.map((c) => (c.kind === 'point' ? null : c.points))).toEqual([
+		expect(
+			node.construction?.checks.map((c) =>
+				c.kind === 'point' || c.kind === 'droite' ? null : c.points
+			)
+		).toEqual([
 			['A', 'B'],
 			['C', 'D']
 		]);
