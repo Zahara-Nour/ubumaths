@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 5b en brouillons, PR de la migration nœud + tag._
+_Mis à jour le 2026-11-02, après #2222 (lot 5b rangé, page à cocher)._
 
-- **État** : lots 0 à 5a publiés. **Lot 5b** (masses + contenances) : #2216 mergée, 10 brouillons en prod (§ 14 octies) ; migration `20261102083604_questions_cm1_lot5b_rangement_tags` + test (rouge 6 sans le corps, vert 10/10), PR ouverte.
-- **Prochaine action** : `security-auditor` → CI verte → `check:migrations --pr <n>` → merge ; David lance `pnpm db:migrate` ; vérifier au MCP (nœuds, tags, trigger `updated_at` actif) ; page à cocher (gabarit du 5a) ; publication. Ensuite lot 5d (périmètres 073-075).
-- **En attente de David** : rien (écarts du § 14 septies confirmés : fourmi, titres suffixés).
+- **État** : lots 0 à 5a publiés. **Lot 5b** (masses + contenances, 10 brouillons) rangé et tagué en prod (#2222, `db:migrate` fait, vérifié au MCP) ; page à cocher publiée (§ 14 nonies).
+- **Prochaine action** : David relit https://claude.ai/artifact/AbSGVphXpE4a34gWngHjmK ; lire `verdicts` et compter (10) ; « À revoir » → corriger ; puis `publier-lot --dir scripts/questions/cm1-5b` (simulation), David lance `--publier`. Ensuite lot 5d (périmètres 073-075).
+- **En attente de David** : la relecture de la page.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `create-questions` = `pnpm tsx scripts/create-questions.ts …` (pas de script pnpm de ce nom) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; positions du `ranger` lues par essai des permutations ; aperçu : corrigé derrière le bouton « Voir la correction » (Playwright à 390 px).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot5b-rangement`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot5b-rangement` (mergée ; prochaine branche : `feat/questions-cm1-lot5d`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -882,6 +882,18 @@ CE1 ; 3. 050 et 165 rangés sous « Décimaux : calculs › addition » et « �
   (script `gen5b.py` jetable). Test « rangé à la main » : sur « Longueurs » ; « point hors du nœud » : 076 posé
   sur la notion « Masses » ; « point archivé » : 085.
 - Test d'intégration : rouge sans le corps de la migration (6 échecs), 10/10 vert avec.
+
+### 14 nonies. Lot 5b — rangement vérifié, page à cocher (2026-11-02)
+
+- #2222 mergée (CI verte après une relance : job client en échec `wrapDynamicImport`, outillage Vitest ;
+  `check:migrations --pr 2222` passé). `security-auditor` : aucun finding. `pnpm db:migrate` lancé par David (avec
+  `tspe_lot4` d'une autre session).
+- MCP : les 10 modèles sur le bon nœud (Masses › unités et conversions : 076-078 ; › comparaison et mesure :
+  079-081 ; Contenances › unités et conversions : 082-084 ; › comparaison et mesure : 085), un tag chacun,
+  `updated_at` inchangé, toujours brouillons ; trigger `updated_at` actif (`O`).
+- Page : https://claude.ai/artifact/AbSGVphXpE4a34gWngHjmK (capacité `db`), rendu vu à 390 px (10 fiches, pas de
+  défilement horizontal) ; `verdicts` vide à la publication. Alertes attendues : bloc `ranger` non dessiné (04 et
+  10, à jouer dans l'aperçu).
 
 ### 13 sexies. Lot 4b — publication (2026-11-02)
 
