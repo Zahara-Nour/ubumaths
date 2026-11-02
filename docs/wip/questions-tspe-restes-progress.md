@@ -10,11 +10,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2259 (fichiers du lot 8a)._
+_Mis à jour le 2026-11-02, migration 8a écrite et testée._
 
 - **État** : lot 8 (D-L8 : 26 « à savoir » en 8a/8b/8c) ; fichiers de 8a mergés (#2259), 11 modèles, pas encore en prod.
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/tspe-8a-savoir --publier` depuis le dépôt principal ; puis migration nœud + tag (gabarit lot 7 ; les 11 points sont sur des sous-notions actives), page à cocher.
-- **En attente de David** : la création en prod des 11 brouillons de 8a.
+- **Prochaine action** : `security-auditor` sur la migration 8a, PR + `check:migrations --pr`, merge, `db:migrate`, page à cocher.
+- **En attente de David** : rien.
 - **Pièges en cours** : relevé de nœuds → filtrer `archived_at is null` ; `!=` dans `$…$` lu « ≠ » (écrire `!\,=`) ; garde « notion sans sous-notion » : liste `sous_notions_admises` (migration `20261102181059`).
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · `feat/questions-tspe-restes-8a-migration`.
 
@@ -218,3 +218,14 @@ actives — Suites › Limites de suites › comparaison et encadrement (381, 57
 comparaison et encadrement (400), opérations (401) ; Fonctions › Convexité › caractérisations (410, 411, 585) ;
 Fonctions › Continuité › valeurs intermédiaires (428, 429) ; Fonctions › Logarithmes › propriétés algébriques (439),
 dérivée (440).
+
+## Lot 8a : création en prod et migration nœud + tag (2026-11-02)
+
+**Création en prod** (David, 2026-11-02, 20 h 39 UTC, après #2259), relue au MCP : 11 brouillons [T_SPE], « À savoir »,
+sans nœud ni tag — 747d627a (381), 2b29942c (570), 5bf5b452 (400), f6415cb9 (401), 12ed13ec (410), eeb72d3a (411),
+cfd13223 (585), c10096eb (428), fe7f5218 (429), 7c8b341b (439), 9de80159 (440).
+
+Migration `20261102204034_questions_tspe_lot8a_rangement_tags.sql` (copie du lot 7, préfixe `_qtl8a_` ; diff avec le
+gabarit = les lignes du lot). Test `tests/integration/questions-tspe-lot8a-rangement-tags.test.ts` (copie du lot 7, sans
+les trois cas propres à M6) : 10/10 ; **rouge** sans l'étape 4 (suite principale « lot incohérent », 5 sautés, et le
+test du rollback).
