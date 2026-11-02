@@ -6,19 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2214 et #2220 (§ 56)._
+_Mis à jour le 2026-11-02, après #2227 (§ 57)._
 
-- **État** : lots 1 à 7 et vague 8 publiés ; vague 8 bis : fichiers 8 D (#2214) et 8 E (#2220) **mergés**,
-  pas encore en prod.
-- **Prochaine action** : David crée les 14 brouillons en prod (`create-questions --publier`, dossiers
-  `scripts/questions/2de-tableaux-d` puis `2de-probabilites-e`) ; ensuite migration nœud + tag
-  (`lot-8-rangement-2de.py` adapté, 14 neufs), page à cocher 14 + 6 anciens brouillons (L8-d), publication.
-- **En attente de David** : le `--publier` des deux dossiers ; décider du correctif des `\textcolor` hors
-  `$` dans les modèles déjà publiés (§ 56).
-- **Pièges en cours** : `--publier` et `publier-lot` → David avec `!` ; `page-a-cocher.ts` lit `.env` = prod
-  (`. ./.env.local` pour la locale) ; une valeur colorée `col()` se met DANS `$…$` (sinon LaTeX brut) ;
-  fraction en spec = `\\frac{a}{b}` ; `Doc-inchangée:` dans un commit ; horodatage →
-  `pnpm migration:horodatage`.
+- **État** : vague 8 bis en prod en brouillon (14 neufs), rangée (nœud + tag, migration jouée) ; page à
+  cocher publiée (14 neufs + 6 anciens brouillons) : https://claude.ai/artifact/AH7MKr1qcSeK2c7Du7EMYY
+- **Prochaine action** : quand David a relu, lire `verdicts` (20 attendus), corriger les « à revoir » ; puis
+  `publier-lot` (simulation, puis `--publier`) par David, sur les dossiers `2de-tableaux-d`,
+  `2de-probabilites-e` et les 6 anciens (ids au § 57).
+- **En attente de David** : la relecture de la page ; décider du correctif des `\textcolor` hors `$` dans
+  les 24 modèles déjà publiés (§ 56).
+- **Pièges en cours** : `--publier`, `publier-lot` et `db:migrate` → David avec `!` ; le dépôt principal peut
+  être bloqué par l'index d'une autre session (`git pull` refusé) : vérifier en prod par MCP
+  (`supabase_migrations.schema_migrations`) avant de redemander ; `col()` DANS `$…$` ; fraction en spec =
+  `\\frac{a}{b}` ; pendant `deploy:prod`, aucun merge (garde).
 - **Worktree / branche** : `../ubumaths-wt-questions-2de`, HEAD détachée sur `origin/main`.
 
 ## 1. Relevé (prod, 2026-10-27)
@@ -1464,3 +1464,23 @@ D, E) ; L8-f PR « page à cocher : blocs statistiques et arbres » avant la rel
   indicateurs B 5, évolutions A 4, classes C 4, variations C 3, fonctions A 1, signes B 1) — relevé :
   `python3 docs/wip/questions-2de/hors-maths.py scripts/questions/2de-*`. Correctif à décider avec David
   (corriger les générateurs, régénérer les JSON, mettre à jour les modèles en prod).
+
+## 57. Vague 8 bis : brouillons en prod, rangement, page à cocher (2026-11-02)
+
+- David a créé les 14 brouillons (`create-questions --publier`, deux dossiers) ; MCP : 14 `draft`, `['2']`,
+  sans nœud, 0 tag.
+  - 8 D : eb0dcd85 (2-383), d64946e4 (2-485), 62105594 (2-486), ba16b4f4 (2-384), ed96107e (2-385),
+    89e928a4 (2-386), b6ab5599 (2-487) ;
+  - 8 E : 7953dcfc (2-389), 38fe4cd5 (2-391), b28f4a68 (2-393), 23ceafb0 (2-394), 31096bae (2-395),
+    d7507e78 (2-397), 94b22887 (2-400).
+- Les 6 anciens brouillons (77d6fedc, f3e68e4b, 4016b05c, 9d7c4d98, 1cfc575d, cf548ea1) sont déjà rangés et
+  tagués (2-390, 2-396 ×2, 2-398, 2-399, 2-488, plus TCOMP-302 / TSPE-616) : hors migration. Exportés
+  (`export-question-templates.ts`) : specs toutes vertes, aucun `\textcolor` hors `$`.
+- Migration `20261102090330_questions_2de_tableaux_probabilites_rangement_tags` + test, générés par
+  `questions-2de/lot-8bis-rangement-2de.py` depuis ceux de la vague 8 (apostrophe d'un chemin échappée dans
+  le TS) ; rouge sans (3 échecs), vert avec (10/10) ; `security-auditor` : aucun finding ; **#2227 mergée**
+  (merge retardé d'environ 10 min par un `deploy:prod` en cours).
+- Migration jouée en prod par le `db:migrate` d'une autre session (avec 6 lot 10, 1spe savoir A, CE1 lot 10) ;
+  MCP : les 14 sur le nœud de leur point, un tag chacun, le bon code.
+- `page-a-cocher.ts` sur les 20 (scratchpad, préfixes `d-`/`e-`/`f-ancien-`) : 20 fiches, aucune alerte.
+  Page (capacité `db`, `verdicts` vide) : https://claude.ai/artifact/AH7MKr1qcSeK2c7Du7EMYY
