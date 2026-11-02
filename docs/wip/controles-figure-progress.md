@@ -6,17 +6,19 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, phase 0 du lot 3 validée._
+_Mis à jour le 2026-11-02, après #2264._
 
-- **État** : lots 1, 2a, 2b et « point construit exigé » mergés (#2226, #2233, #2257, #2261), pas encore en
-  prod. Lot 3 (médiatrice, § 9) : phase 0 validée, code en cours.
-- **Prochaine action** : lot 3 — vérification `droite m = mediatrice(A, B)`, `milieu(A, B)` sur papier uni.
-  Ensuite 3b cercle circonscrit, puis triangle (report de longueur, 4e sommet), angle, bissectrice.
+- **État** : lots 1, 2a, 2b, « point construit exigé » et 3 (médiatrice, milieu sur papier uni, #2264)
+  **mergés**, pas encore en prod (`deploy:prod` sur demande de David). Vérifications à l'œil dans
+  `verifications-manuelles.md` (#2257, #2264).
+- **Prochaine action** : phase 0 du lot **3b, cercle circonscrit** (vérification `cercle` neuve : centre
+  faux, rayon faux), puis triangle (report de longueur, 4e sommet du parallélogramme), angle, bissectrice.
 - **En attente de David** : rien.
-- **Pièges en cours** : pas de prime dans le langage des figures (§ 6) ; `symetrie(P, axe=d)` échoue si
-  P définit d ; l'« Essayer » de l'aide ne rend pas la case jouable (essai dans un modèle brouillon) ;
+- **Pièges en cours** : `perpendiculaire(A, s)` échoue quand A est un bout de s (geometry-core,
+  « createTranslatedPoint… must all be distinct ») ; pas de prime dans le langage des figures (§ 6) ;
+  `symetrie(P, axe=d)` échoue si P définit d ; l'« Essayer » de l'aide ne rend pas la case jouable ;
   au clavier, droites annoncées « Droite 1, 2… » ; plafond de 20 objets sans message.
-- **Worktree / branche** : `../ubumaths-wt-controles-figure`, `feat/controles-figure-mediatrice`.
+- **Worktree / branche** : aucun (retiré après #2264).
 
 ---
 
@@ -383,3 +385,23 @@ Nouvelle vérification `droite <nom> = <expression>` (comme `point A' = …`). P
 3. **Milieu construit** (`point I = milieu(A, B)`) **dans ce lot**.
 4. **Cercle circonscrit** au **lot 3b** (vérification `cercle` neuve).
 5. **4e sommet du parallélogramme** avec le **triangle** (report de longueur au compas).
+
+## 10. Lot 3 — ce qui est fait (2026-11-02, #2264)
+
+- Vérification `droite m = <expression>` (`LineCheck`, `construction/line.ts` : `judgeLines`, `assertLines`) ;
+  droites attendues calculées avec les points (`expectedPoints` → `lines`). Une des droites de l'élève
+  recouvre la droite attendue, le reste est de construction. Jamais mêlée à une autre vérification ;
+  palette limitée à règle, équerre, compas (parseur), avec ou sans quadrillage.
+- Papier uni : droite construite = deux extrémités construites, ou le tracé exact de l'équerre (départ
+  construit, second point `perpendicularThrough`) ; sinon « Ta droite est tracée à l'œil… ». Seulement
+  `mediatrice(A, B)` sans quadrillage ; A, B visibles ; les cercles de rayon AB se coupent dans la fenêtre
+  (`mediatriceSupportError`, aussi pour `milieu(A, B)`, désormais accepté sur papier uni).
+- Messages de la médiatrice : perpendiculaire hors du milieu, par le milieu pas perpendiculaire, ce n'est
+  pas la médiatrice ; (AB) repassée n'est pas prise pour l'essai.
+- Écran : sur quadrillage, la droite à construire va aux nœuds avec tous ses outils (l'équerre choisit
+  d'abord sa droite, au doigt ou au clavier) ; correction : la droite en pointillés, codage au milieu.
+- Aide à l'écriture : exemple « Construire la médiatrice d'un segment ».
+- Tests : `construction-line.test.ts` (40), écran `figure-a-completer-mediatrice.svelte.test.ts` (4).
+- Revue Opus : 8 findings, tous corrigés (règle et équerre hors des nœuds sur quadrillage, intersections
+  hors fenêtre — l'exemple de l'aide l'était —, palette avec point/segment, point de passage invisible,
+  règle prise pour l'équerre, (AB) repassée, même droite deux fois).
