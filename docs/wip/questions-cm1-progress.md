@@ -843,3 +843,63 @@ CE1 ; 3. 050 et 165 rangés sous « Décimaux : calculs › addition » et « �
 - Page à cocher : 6 verdicts « OK », sans commentaire (comptés dans `verdicts`). Simulation
   `publier-lot --dir scripts/questions/cm1-4b` : 6 brouillons passent ; `--publier` lancé par David ;
   6 `published` relus au MCP. Lot 4b fini.
+
+## 14. Lot 5 — grandeurs (unités, conversions, comparaisons) : phase 0 (à valider)
+
+Relevé MCP du 2026-11-02 : les 19 points 067 à 085 ont 0 modèle. Nœuds des points (existants, aucun à créer) :
+Longueurs, Masses, Contenances › « unités et conversions » (067-069, 076-078, 082-084) et › « comparaison et
+mesure » (070-072, 079-081, 085) ; 073-075 sur la notion « Périmètres ». Modèles voisins en prod (CP, CE1, CE2,
+tous publiés) : patrons `ce1-5` (références, estimer : case choix), `ce2-6a` (unités, relations, comparer :
+signe + `ranger`), `ce2-6b` (contenances).
+
+Bornes `cycle3.json`, CM1 : longueurs mm à km ; masses mg à kg et la tonne (pas de quintal) ; contenances mL à hL ;
+relations **sans tableau** (1 cm = 1/10 dm = 0,1 dm ; 215 cm = 2,15 m ; 1/2 km = 500 m ; 3/4 m = 75 cm ;
+3 g + 5 cg = 305 cg ; 6,2 t = 6 200 kg ; 1/4 kg = 250 g ; 23 dL en L ; 6,4 L en cL) ; ranger jusqu'à 4
+longueurs, 3 masses, 4 contenances ; somme ou différence de deux grandeurs d'unités différentes (8,2 kg + 840 g ;
+1 L − 25 cL). Décimaux : deux décimales au plus (lot 4).
+
+Niveaux : à la suite de ceux des catégories en prod (Longueurs / Unités ≤ 11, Comparaison et mesure ≤ 4, Ordres
+de grandeur ≤ 5 ; Masses / Unités ≤ 5, Comparaison ≤ 3, Ordres de grandeur ≤ 2 ; Contenances / Unités ≤ 2,
+Comparaison : vide), relevés à nouveau juste avant la création.
+
+Forme commune : réponse numérique en case, l'unité écrite après la case (« 215 cm = … m ») ; décimaux à virgule
+exigée (motif `a:number`, comme 031) ; choix en case « choix ». Corrigés par les relations entre unités
+successives (« 1 m = 100 cm, donc… »), jamais par le tableau de conversion.
+
+| #    | Point   | Sous-notion           | Modèle                                       | Variations, plages                                                                                                                                                                           |
+| ---- | ------- | --------------------- | -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 5a-1 | CM1-067 | unités et conversions | Les unités de longueur, du mm au km          | V1 symbole → nom (choix : hm → hectomètre…) ; V2 nom → symbole ; V3 la plus grande / la plus petite de 3 unités (choix) ; les 7 unités                                                       |
+| 5a-2 | CM1-068 | unités et conversions | Relations entre unités de longueur (entiers) | V1 unités successives (7 dam = … m ; 340 mm = … cm) ; V2 deux crans (5 hm = … m ; 4 m = … mm) ; V3 mélange (3 km 250 m = … m)                                                                |
+| 5a-3 | CM1-068 | unités et conversions | Longueurs : décimaux et fractions            | V1 vers le décimal (215 cm = … m ; 1 cm = … dm → 0,1) ; V2 depuis le décimal (2,15 m = … cm ; 3,7 km = … m) ; V3 fraction (1/2 km = … m ; 3/4 m = … cm ; 1/4 m, 1/10 m)                      |
+| 5a-4 | CM1-069 | unités et conversions | Quelle unité pour mesurer… ?                 | choix parmi mm, cm, m, km (+ dm, hm en distracteurs) ; objets et distances du quotidien (épaisseur d'une pièce, longueur d'une piscine, trajet Paris–Lyon)                                   |
+| 5a-5 | CM1-070 | comparaison et mesure | Comparer des longueurs                       | V1 signe <, =, > entre deux unités (3,5 m … 340 cm) ; V2 `ranger` 3 ou 4 longueurs d'unités différentes ; V3 somme ou différence de deux longueurs (2 m + 45 cm = … cm ; 1 km − 350 m = … m) |
+| 5a-6 | CM1-071 | comparaison et mesure | Des longueurs de référence                   | choix : « qu'est-ce qui mesure environ 1 mm / 1 cm / 1 dm / 1 m / 1 km ? » (épaisseur d'une carte, largeur d'un doigt, largeur d'une main, …)                                                |
+| 5a-7 | CM1-072 | comparaison et mesure | Estimer une longueur                         | choix d'ordre de grandeur, trois valeurs à unités différentes (une salle de classe : 8 m / 8 dm / 8 km ; un trajet en voiture d'une heure : 80 km / 80 m / 800 m)                            |
+| 5b-1 | CM1-076 | unités et conversions | Les unités de masse, du mg à la tonne        | comme 5a-1, 8 unités (mg à kg, t)                                                                                                                                                            |
+| 5b-2 | CM1-077 | unités et conversions | Relations entre unités de masse              | V1 unités successives (3 g + 5 cg = … cg ; 40 dg = … g) ; V2 tonne ↔ kg (6,2 t = … kg ; 3 500 kg = … t) ; V3 fraction (1/4 kg = … g ; 1/2 t = … kg) ; V4 décimal (1,25 kg = … g)             |
+| 5b-3 | CM1-078 | unités et conversions | Quelle unité pour peser… ?                   | choix parmi mg, g, kg, t (comprimé, pomme, enfant, camion)                                                                                                                                   |
+| 5b-4 | CM1-079 | comparaison et mesure | Comparer des masses                          | V1 signe (1,5 kg … 1 200 g) ; V2 `ranger` 3 masses d'unités différentes ; V3 somme ou différence (8,2 kg + 840 g = … g)                                                                      |
+| 5b-5 | CM1-080 | comparaison et mesure | Des masses de référence                      | choix : environ 1 g (un trombone), 1 kg (un litre d'eau), 1 t (une voiture), 1 mg (un grain de sel)…                                                                                         |
+| 5b-6 | CM1-081 | comparaison et mesure | Estimer une masse                            | choix d'ordre de grandeur (une pomme : 150 g / 150 kg / 15 mg ; un éléphant : 5 t / 5 kg / 500 g)                                                                                            |
+| 5c-1 | CM1-082 | unités et conversions | Les unités de contenance, du mL à l'hL       | comme 5a-1, 6 unités (mL, cL, dL, L, daL, hL)                                                                                                                                                |
+| 5c-2 | CM1-083 | unités et conversions | Relations entre unités de contenance         | V1 successives (1 cL = … mL ; 4 hL = … daL) ; V2 vers le décimal (23 dL = … L) ; V3 depuis le décimal (6,4 L = … cL ; 0,75 L = … cL) ; V4 deux crans (3 L = … mL ; 2 hL = … L)               |
+| 5c-3 | CM1-084 | unités et conversions | Quelle unité pour mesurer une contenance ?   | choix parmi mL, cL, L, hL (cuillère, verre, seau, citerne)                                                                                                                                   |
+| 5c-4 | CM1-085 | comparaison et mesure | Comparer des contenances                     | V1 signe (75 cL … 0,8 L) ; V2 `ranger` 3 ou 4 contenances ; V3 somme ou différence dans une seule unité (1 L − 25 cL = … cL)                                                                 |
+
+Specs d'erreurs typiques : facteur 10 au lieu de 100 (215 cm = 21,5 m), sens de la conversion inversé
+(2,15 m = 0,0215 cm), virgule déplacée d'un cran de trop, 3 g + 5 cg lu 35 cg, unité choisie trop petite ou
+trop grande d'un cran.
+
+Questions :
+
+1. **Découpage** : trois lots, 5a longueurs (7 modèles), 5b masses (6), 5c contenances (4), une PR de fichiers et
+   une migration chacun ; ou 5b + 5c en un seul lot (10) ? Reco : 5a, puis 5b + 5c ensemble (10 modèles).
+2. **Périmètres (073, 074, 075)** hors de ce lot : 073 et 074 demandent une figure (`figure`, classe B, longueurs
+   écrites sur les côtés puisque la règle graduée ne se manipule pas), 075 est un problème en texte. Reco : un
+   **lot 5d « périmètres »** juste après, les trois ensemble, au même nœud.
+3. **Réponses décimales** (2,15 m) : virgule exigée, 215/100 refusé (« Écris-le avec une virgule »), comme 031 ?
+   Reco : oui. Les fractions restent dans l'énoncé seulement (1/2 km = … m, réponse entière).
+4. **Références et estimations (071, 072, 080, 081)** : modèles CM1 propres (unités mm, dm, mg, t que le CE1 n'a
+   pas), case « choix », plutôt que d'ajouter le CM1 aux modèles CE1 ? Reco : propres.
+
+**Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
