@@ -6,20 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2235 (§ 59)._
+_Mis à jour le 2026-11-02, après #2235 et son `--publier` (§ 59)._
 
 - **État** : vague 8 bis en brouillon en prod, rangée ; page à cocher (20 fiches) :
-  https://claude.ai/artifact/AH7MKr1qcSeK2c7Du7EMYY. Correctif `\textcolor` des 24 publiés **mergé**
-  (#2235), pas encore écrit en prod.
-- **Prochaine action** : David lance
-  `! pnpm tsx scripts/update-published-questions.ts --lot textcolor-2de --publier` (simulation verte : 24 cibles, `variations` seules) ; puis garde contre `\textcolor` hors
-  `$` (où ? `checkTemplate` garde AUSSI la publication dans l'appli → question à David) ; puis les
-  35 fichiers hors 2de (§ 58), rien sans son accord.
-- **En attente de David** : le `--publier` ci-dessus ; la place de la garde ; la relecture de la page,
-  puis `verdicts`, corrections, `publier-lot` (ids § 57).
+  https://claude.ai/artifact/AH7MKr1qcSeK2c7Du7EMYY. Correctif `\textcolor` des 24 publiés **en prod**
+  (vérifié par export : variations = fichiers, 0 hors `$`, toujours publiés).
+- **Prochaine action** : garde contre `\textcolor` hors `$` — place à trancher par David : (a) bloquante dans
+  `checkTemplate` (garde AUSSI la publication dans l'appli), (b) avertissement, (c) `question:specs` seul ;
+  puis les 35 fichiers hors 2de (§ 58), rien sans son accord.
+- **En attente de David** : la place de la garde ; la relecture de la page, puis `verdicts`, corrections,
+  `publier-lot` (ids § 57).
 - **Pièges en cours** : `--publier`, `publier-lot`, `db:migrate` → David avec `!` ;
-  `create-questions --mettre-a-jour` ne touche JAMAIS un publié → `update-published-questions.ts` ; `col()` en texte → `colt()` ;
-  spec fraction = `\\frac{a}{b}` ; pas de ligne `Claude-Session:` dans les commits ; pendant `deploy:prod`, aucun merge.
+  `create-questions --mettre-a-jour` ne touche JAMAIS un publié → `update-published-questions.ts` ;
+  `col()` en texte → `colt()` ; spec fraction = `\\frac{a}{b}` ; pas de ligne `Claude-Session:` ;
+  une suite de ligne commençant par `--` est désindentée par prettier.
 - **Worktree / branche** : `../ubumaths-wt-questions-2de`, HEAD détachée sur `origin/main`.
 
 ## 1. Relevé (prod, 2026-10-27)
@@ -1521,3 +1521,5 @@ Avant de corriger : revérifier dans le code de rendu que `\textcolor` hors math
   (`export-question-templates.ts`), seules les `variations` remplacées. Prod comparée aux fichiers
   d'avant correctif : identique champ par champ (hors `id`, `status`). Simulation : 24 cibles, `variations`
   seules à modifier, specs vertes.
+- **Écrit en prod** par David (`--lot textcolor-2de --publier`, 2026-11-02). Revérifié par export de la
+  prod : 24/24 publiés, variations identiques aux instantanés, `hors-maths.py` → 0.
