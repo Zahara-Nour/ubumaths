@@ -19,11 +19,11 @@
  */
 
 import { toPrincipalLabel } from '../parser/trig-circle-parser';
+import { TRIG_PLACER_STEPS, stepOfRadians, wrapStep } from './trig-steps';
+
+export { TRIG_PLACER_STEPS, stepOfRadians };
 
 // Constantes
-
-/** Nombre de crans par tour : un tous les π/12 (décision 5) */
-export const TRIG_PLACER_STEPS = 24;
 
 /** Largeur (et hauteur) du dessin du cercle, en unités du SVG */
 export const TRIG_SVG_SIZE = 320;
@@ -31,8 +31,6 @@ export const TRIG_SVG_SIZE = 320;
 export const TRIG_RADIUS = 120;
 
 const STEP = (2 * Math.PI) / TRIG_PLACER_STEPS;
-/** Écart toléré entre un angle et son cran (calculs en virgule flottante) */
-const TOLERANCE = 1e-9;
 
 /** Réponse d'une case : le cran, en chiffres */
 const ANSWER_REGEX = /^\s*(\d{1,2})\s*$/;
@@ -45,37 +43,24 @@ const LATEX_REGEX = /^(-?)(?:\\frac\{(\d*)\\pi\}\{(\d+)\}|(\d*)\\pi|(0))$/;
 
 // Functions
 
-/** Ramène un rang de cran dans [0 ; 24[ */
-function wrap(step: number): number {
-	return ((step % TRIG_PLACER_STEPS) + TRIG_PLACER_STEPS) % TRIG_PLACER_STEPS;
-}
-
-/** Le cran d'un angle multiple de π/12, modulo 2π ; null s'il tombe entre deux crans */
-export function stepOfRadians(radians: number): number | null {
-	const exact = radians / STEP;
-	const k = Math.round(exact);
-	if (Math.abs(exact - k) > TOLERANCE * Math.max(1, Math.abs(exact))) return null;
-	return wrap(k);
-}
-
 /** Aimant : le cran le plus proche d'un angle quelconque */
 export function nearestStep(radians: number): number {
-	return wrap(Math.round(radians / STEP));
+	return wrapStep(Math.round(radians / STEP));
 }
 
 /** L'angle d'un cran, dans [0 ; 2π[ */
 export function stepRadians(step: number): number {
-	return wrap(step) * STEP;
+	return wrapStep(step) * STEP;
 }
 
 /** Clavier, boutons : `delta` crans depuis `from`, en faisant le tour */
 export function moveStep(from: number, delta: number): number {
-	return wrap(from + delta);
+	return wrapStep(from + delta);
 }
 
 /** Réponse d'une case : le cran écrit (`'8'`) */
 export function stepAnswer(step: number): string {
-	return String(wrap(step));
+	return String(wrapStep(step));
 }
 
 /** Le cran d'une réponse écrite par `stepAnswer` ; null si vide ou illisible */

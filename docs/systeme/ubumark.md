@@ -376,6 +376,7 @@ près du centre (30 % du rayon) ; il se glisse ; toucher un point posé le chois
 une étiquette-bouton par point quand il y en a plusieurs ; ◀ ▶ toujours visibles et flèches = un cran
 (sens indirect / direct), Début = 0, sans point le premier appui pose sur 0 ; zone `role="slider"`,
 `aria-valuetext` « point M sur 2π/3 » (position de l'élève, mesure principale). Calcul pur
+`utils/trig-steps.ts` (crans, partagé par le parseur et le juge, sans import circulaire) et
 `utils/trig-placer.ts` : réponse = le cran (`'8'`, `stepAnswer`), lecture `readStepAnswer`, attendue
 `expectedStepAnswer` (mesure principale dans ]−π ; π] en LaTeX, `\frac{2\pi}{3}`), juge
 `isPlacedAngleCorrect` (même cran, donc modulo 2π), phrases `placedAngleMistake` (« Ton point M est

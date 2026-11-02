@@ -22,7 +22,7 @@ import type { TrigCircleNode, TrigAngle, TrigArc, TrigNamedPoint } from '../type
 import { REMARKABLE_ANGLES, TRIG_DEFAULT_COLOR, isNamedPointAngle } from '../types/trig-circle';
 import { convertLatexToTypstMath } from './typst-generator';
 import { authorColorTypst, resolveAuthorColor } from '$lib/theme/author-color';
-import { TRIG_PLACER_STEPS } from '../utils/trig-placer';
+import { TRIG_PLACER_STEPS } from '../utils/trig-steps';
 
 // ============================================================================
 // CONFIGURATION

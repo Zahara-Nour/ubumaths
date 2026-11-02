@@ -58,7 +58,7 @@ import {
 import { specialBlockEnd } from './unclosed-block';
 import { unnestedLine } from './nested-line';
 import { MASKED_VALUE } from '../utils/masked-value';
-import { stepOfRadians } from '../utils/trig-placer';
+import { stepOfRadians } from '../utils/trig-steps';
 
 /** Les clés du bloc : une ligne qui commence par l'une d'elles n'est jamais du texte (Q66) */
 const BLOCK_KEYS = [
