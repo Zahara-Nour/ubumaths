@@ -13,9 +13,10 @@ _Mis à jour le 2026-11-02, chantier « unité du résultat » ouvert (aucune PR
   local (`c587a6555`, non poussé) : `tidy` choisit parmi les unités tapées (moins de chiffres) ;
   `expressedInWritten` court-circuité. Banc fixtures : 5/200 tirages changent (affichage seul) ;
   oracle cases à unité : 0 verdict changé sur 1 724.
-- **Prochaine action** : banc sur les 12 modèles de prod lus par `scratchpad/banc/dump.ts` (lancé
-  par David, le mode auto refuse la lecture prod) → page à cocher (cas réels + cas types) → PR.
-- **En attente de David** : la lecture des 12 modèles (commande donnée dans la conversation).
+- **Prochaine action** : lire les avis de la page à cocher
+  (https://claude.ai/artifact/ACdgknQzoNEgTY1UTWkKJR, collection `avis`, 34 fiches), puis PR
+  (règle durées h-min-s dans `tidy`, tests réécrits, nouvelle branche).
+- **En attente de David** : ses avis sur la page à cocher.
 - **Tranché** : voir § Unité du résultat ; avant : Q9 EN ENTIER, A-D du lot 2, `decimal` en LaTeX,
   `plafond-02` → 1000, Q24, `signes-06` — NE PAS reposer.
 - **Pièges** : la branche a été rebasée sur `origin/main` → pousser sur une NOUVELLE branche
@@ -435,3 +436,7 @@ Sonde jetable (vitest sous `src/`, `produceRegistre` / `produceAtelier`), 25 lig
   réponse attendue seule, énoncés « tu choisis l'unité » : `0bb7a4ca` 1,1 h → 66 min, `75956b22`
   3,85 h → 231 min (→ h-min avec la reco durées), `64e55fc7` 1,005 kL → 1005 L, 1,06 hg → 106 g.
   Oracle : 1 724 réponses, 0 verdict changé.
+- **Banc prod** (12 modèles lus par David : 10 absents des fixtures + 2 peut-être périmés, 96
+  tirages) : 0 différence. Total : 35 modèles à unités, 5 tirages changent (les 3 modèles ci-dessus).
+- **Page à cocher** publiée : 5 cas réels, 24 cas types (avant : tidy / {{eval}} / Atelier
+  mesurés, souvent en désaccord), 5 durées (prévues, pas codées).
