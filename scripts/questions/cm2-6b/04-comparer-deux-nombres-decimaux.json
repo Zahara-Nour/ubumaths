@@ -1,0 +1,310 @@
+{
+	"title": "Comparer deux nombres décimaux",
+	"description": "Comparer deux nombres décimaux avec <, = ou > : 4,592 … 4,71 (plus de chiffres ne veut pas dire plus grand) ; 3,7 … 3,70 ; 4,758 … 4,72 ; 5,2 … 4,876",
+	"grades": ["CM2"],
+	"theme": "Décimaux",
+	"domain": "Apprivoiser",
+	"subdomain": "Comparer",
+	"level": 6,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète avec le symbole qui convient.\n\n$${{if:o==0|{{x}}|{{if:g==1|{{x}}0|{{y}}}}}} \\ldots {{if:o==0|{{if:g==1|{{x}}0|{{y}}}}|{{x}}}}$$\n\n```choix\nmelanger: non\n- $$<$$\n- $$=$$\n- $$>$$\n```",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "0..3"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "a",
+					"expression": "1..98"
+				},
+				{
+					"name": "t",
+					"expression": "2..9"
+				},
+				{
+					"name": "s",
+					"expression": "1..{{eval:t-1}}"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "v",
+					"expression": "1..9"
+				},
+				{
+					"name": "w",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "11..99"
+				},
+				{
+					"name": "xm",
+					"expression": "eval:{{if:g==0|1000*a+100*s+q|{{if:g==1|1000*a+100*t|1000*a+100*t+10*u+v}}}}"
+				},
+				{
+					"name": "ym",
+					"expression": "eval:{{if:g==0|1000*a+100*t+10*u|{{if:g==1|xm|{{if:g==2|1000*a+100*t+10*w|1000*a+1000+100*s}}}}}}"
+				},
+				{
+					"name": "x",
+					"expression": "eval:xm/1000;d"
+				},
+				{
+					"name": "y",
+					"expression": "eval:ym/1000;d"
+				},
+				{
+					"name": "gm",
+					"expression": "eval:{{if:o==0|xm|ym}}"
+				},
+				{
+					"name": "dm",
+					"expression": "eval:{{if:o==0|ym|xm}}"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(gm-dm)+1"
+				}
+			],
+			"conditions": ["mod(q,10)!=0", "g!=2 or w!=u"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Comparer deux décimaux.** On compare d'abord les parties entières. Si elles sont égales, on écrit les deux nombres avec autant de chiffres après la virgule, puis on compare rang par rang : le nombre de chiffres ne dit pas qui est le plus grand.",
+					"{{if:g==3|Les parties entières sont différentes : ${{a}}$ et ${{eval:a+1}}$.|Même partie entière ${{a}}$. Avec trois chiffres après la virgule : ${{eval:floor(gm/1000)}}.{{eval:floor(mod(gm,1000)/100)}}{{eval:floor(mod(gm,100)/10)}}{{eval:mod(gm,10)}}$ et ${{eval:floor(dm/1000)}}.{{eval:floor(mod(dm,1000)/100)}}{{eval:floor(mod(dm,100)/10)}}{{eval:mod(dm,10)}}$.}}",
+					"$${{if:o==0|{{x}}|{{if:g==1|{{x}}0|{{y}}}}}} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} {{if:o==0|{{if:g==1|{{x}}0|{{y}}}}|{{x}}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4,592 < 4,71",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"t": "7",
+				"s": "5",
+				"u": "1",
+				"v": "3",
+				"w": "1",
+				"q": "92",
+				"g": "0",
+				"o": "0",
+				"xm": "4592",
+				"ym": "4710",
+				"x": "4.592",
+				"y": "4.71",
+				"gm": "4592",
+				"dm": "4710",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4,592 > 4,71 (plus de chiffres)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"t": "7",
+				"s": "5",
+				"u": "1",
+				"v": "3",
+				"w": "1",
+				"q": "92",
+				"g": "0",
+				"o": "0",
+				"xm": "4592",
+				"ym": "4710",
+				"x": "4.592",
+				"y": "4.71",
+				"gm": "4592",
+				"dm": "4710",
+				"r": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4,71 > 4,592",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"t": "7",
+				"s": "5",
+				"u": "1",
+				"v": "3",
+				"w": "1",
+				"q": "92",
+				"g": "0",
+				"o": "1",
+				"xm": "4592",
+				"ym": "4710",
+				"x": "4.592",
+				"y": "4.71",
+				"gm": "4710",
+				"dm": "4592",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3,7 = 3,70",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"t": "7",
+				"s": "5",
+				"u": "1",
+				"v": "3",
+				"w": "1",
+				"q": "92",
+				"g": "1",
+				"o": "0",
+				"xm": "3700",
+				"ym": "3700",
+				"x": "3.7",
+				"y": "3.7",
+				"gm": "3700",
+				"dm": "3700",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3,7 < 3,70",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"t": "7",
+				"s": "5",
+				"u": "1",
+				"v": "3",
+				"w": "1",
+				"q": "92",
+				"g": "1",
+				"o": "0",
+				"xm": "3700",
+				"ym": "3700",
+				"x": "3.7",
+				"y": "3.7",
+				"gm": "3700",
+				"dm": "3700",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4,758 > 4,72",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"t": "7",
+				"s": "5",
+				"u": "5",
+				"v": "8",
+				"w": "2",
+				"q": "92",
+				"g": "2",
+				"o": "0",
+				"xm": "4758",
+				"ym": "4720",
+				"x": "4.758",
+				"y": "4.72",
+				"gm": "4758",
+				"dm": "4720",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "5,2 > 4,876",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"t": "8",
+				"s": "2",
+				"u": "7",
+				"v": "6",
+				"w": "1",
+				"q": "92",
+				"g": "3",
+				"o": "1",
+				"xm": "4876",
+				"ym": "5200",
+				"x": "4.876",
+				"y": "5.2",
+				"gm": "5200",
+				"dm": "4876",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5,2 < 4,876",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"t": "8",
+				"s": "2",
+				"u": "7",
+				"v": "6",
+				"w": "1",
+				"q": "92",
+				"g": "3",
+				"o": "1",
+				"xm": "4876",
+				"ym": "5200",
+				"x": "4.876",
+				"y": "5.2",
+				"gm": "5200",
+				"dm": "4876",
+				"r": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,311 @@
+{
+	"title": "Ranger des nombres décimaux",
+	"description": "Ranger dans l'ordre croissant ou décroissant cinq nombres : un entier, trois décimaux de même partie entière et une fraction décimale (12,082 ; 12,09 ; 12 324/1 000 ; 12,6 ; 14)",
+	"grades": ["CM2"],
+	"theme": "Décimaux",
+	"domain": "Apprivoiser",
+	"subdomain": "Comparer",
+	"level": 7,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Range ces nombres du plus petit au plus grand.\n\n```ranger\nsigne: <\n- ${{x1}}$\n- ${{x2}}$\n- $\\frac{{{f}}}{1000}$\n- ${{x4}}$\n- ${{x5}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..20"
+				},
+				{
+					"name": "n",
+					"expression": "1..2"
+				},
+				{
+					"name": "p",
+					"expression": "1..8"
+				},
+				{
+					"name": "q",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:p+1}}..9"
+				},
+				{
+					"name": "b",
+					"expression": "101..499"
+				},
+				{
+					"name": "t",
+					"expression": "{{eval:floor(b/100)+1}}..9"
+				},
+				{
+					"name": "f",
+					"expression": "eval:1000*a+b"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:(1000*a+10*p+q)/1000;d"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:(100*a+c)/100;d"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:f/1000;d"
+				},
+				{
+					"name": "x4",
+					"expression": "eval:(10*a+t)/10;d"
+				},
+				{
+					"name": "x5",
+					"expression": "eval:a+n"
+				}
+			],
+			"conditions": ["mod(b,10)!=0"],
+			"correction": {
+				"steps": [
+					"**Tout à virgule.** $\\frac{{{f}}}{1000} = {{x3}}$.",
+					"${{x5}}$ est le seul à avoir ${{x5}}$ unités : c'est le plus grand. Les quatre autres ont ${{a}}$ unités : on compare leurs dixièmes ($0$, $0$, ${{eval:floor(b/100)}}$ et ${{t}}$), puis, pour ${{x1}}$ et ${{x2}}$, leurs centièmes (${{p}}$ et ${{c}}$).",
+					"$$\\textcolor{{{color:primary.0}}}{{{x1}} < {{x2}} < \\frac{{{f}}}{1000} < {{x4}} < {{x5}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Range ces nombres du plus grand au plus petit.\n\n```ranger\nsigne: >\n- ${{x5}}$\n- ${{x4}}$\n- $\\frac{{{f}}}{1000}$\n- ${{x2}}$\n- ${{x1}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..20"
+				},
+				{
+					"name": "n",
+					"expression": "1..2"
+				},
+				{
+					"name": "p",
+					"expression": "1..8"
+				},
+				{
+					"name": "q",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:p+1}}..9"
+				},
+				{
+					"name": "b",
+					"expression": "101..499"
+				},
+				{
+					"name": "t",
+					"expression": "{{eval:floor(b/100)+1}}..9"
+				},
+				{
+					"name": "f",
+					"expression": "eval:1000*a+b"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:(1000*a+10*p+q)/1000;d"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:(100*a+c)/100;d"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:f/1000;d"
+				},
+				{
+					"name": "x4",
+					"expression": "eval:(10*a+t)/10;d"
+				},
+				{
+					"name": "x5",
+					"expression": "eval:a+n"
+				}
+			],
+			"conditions": ["mod(b,10)!=0"],
+			"correction": {
+				"steps": [
+					"**Tout à virgule.** $\\frac{{{f}}}{1000} = {{x3}}$.",
+					"${{x5}}$ est le seul à avoir ${{x5}}$ unités : c'est le plus grand. Les quatre autres ont ${{a}}$ unités : on compare leurs dixièmes ($0$, $0$, ${{eval:floor(b/100)}}$ et ${{t}}$), puis, pour ${{x1}}$ et ${{x2}}$, leurs centièmes (${{p}}$ et ${{c}}$).",
+					"$$\\textcolor{{{color:primary.0}}}{{{x5}} > {{x4}} > \\frac{{{f}}}{1000} > {{x2}} > {{x1}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "croissant : 12,082 < 12,09 < 12324/1000 < 12,6 < 14",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"n": "2",
+				"p": "8",
+				"q": "2",
+				"c": "9",
+				"b": "324",
+				"t": "6",
+				"f": "12324",
+				"x1": "12.082",
+				"x2": "12.09",
+				"x3": "12.324",
+				"x4": "12.6",
+				"x5": "14"
+			},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 12,6 < 12,09 < 12,082 (après la virgule lu comme un entier)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"n": "2",
+				"p": "8",
+				"q": "2",
+				"c": "9",
+				"b": "324",
+				"t": "6",
+				"f": "12324",
+				"x1": "12.082",
+				"x2": "12.09",
+				"x3": "12.324",
+				"x4": "12.6",
+				"x5": "14"
+			},
+			"answers": ["2", "0", "4", "3", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 12,09 avant 12,082",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"n": "2",
+				"p": "8",
+				"q": "2",
+				"c": "9",
+				"b": "324",
+				"t": "6",
+				"f": "12324",
+				"x1": "12.082",
+				"x2": "12.09",
+				"x3": "12.324",
+				"x4": "12.6",
+				"x5": "14"
+			},
+			"answers": ["0", "4", "1", "2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ordre décroissant",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"n": "2",
+				"p": "8",
+				"q": "2",
+				"c": "9",
+				"b": "324",
+				"t": "6",
+				"f": "12324",
+				"x1": "12.082",
+				"x2": "12.09",
+				"x3": "12.324",
+				"x4": "12.6",
+				"x5": "14"
+			},
+			"answers": ["3", "2", "1", "0", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "décroissant : 14 > 12,6 > 12324/1000 > 12,09 > 12,082",
+			"variationIndex": 1,
+			"variables": {
+				"a": "12",
+				"n": "2",
+				"p": "8",
+				"q": "2",
+				"c": "9",
+				"b": "324",
+				"t": "6",
+				"f": "12324",
+				"x1": "12.082",
+				"x2": "12.09",
+				"x3": "12.324",
+				"x4": "12.6",
+				"x5": "14"
+			},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 12324/1000 le plus grand (numérateur lu)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "12",
+				"n": "2",
+				"p": "8",
+				"q": "2",
+				"c": "9",
+				"b": "324",
+				"t": "6",
+				"f": "12324",
+				"x1": "12.082",
+				"x2": "12.09",
+				"x3": "12.324",
+				"x4": "12.6",
+				"x5": "14"
+			},
+			"answers": ["1", "4", "0", "2", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ordre croissant",
+			"variationIndex": 1,
+			"variables": {
+				"a": "12",
+				"n": "2",
+				"p": "8",
+				"q": "2",
+				"c": "9",
+				"b": "324",
+				"t": "6",
+				"f": "12324",
+				"x1": "12.082",
+				"x2": "12.09",
+				"x3": "12.324",
+				"x4": "12.6",
+				"x5": "14"
+			},
+			"answers": ["3", "2", "1", "0", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

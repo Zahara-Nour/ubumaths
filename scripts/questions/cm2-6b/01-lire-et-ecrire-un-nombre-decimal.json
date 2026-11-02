@@ -1,0 +1,408 @@
+{
+	"title": "Lire et écrire un nombre décimal",
+	"description": "Quatre unités et cent-sept millièmes ↔ 4,107 : écrire avec une virgule un nombre donné en lettres (un rang parfois vide : 3,205), le lire parmi quatre écritures ; au plus trois décimales",
+	"grades": ["CM2"],
+	"theme": "Décimaux",
+	"domain": "Apprivoiser",
+	"subdomain": "Ecriture",
+	"level": 13,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris en chiffres le nombre « **{{if:a==1|une unité|{{if:a==2|deux unités|{{if:a==3|trois unités|{{if:a==4|quatre unités|{{if:a==7|sept unités|{{if:a==8|huit unités|{{if:a==12|douze unités|{{if:a==15|quinze unités|{{if:a==23|vingt-trois unités|{{if:a==36|trente-six unités|{{if:a==48|quarante-huit unités|{{if:a==57|cinquante-sept unités|{{if:a==64|soixante-quatre unités|{{if:a==75|soixante-quinze unités|{{if:a==90|quatre-vingt-dix unités|{{if:a==105|cent-cinq unités|{{if:a==240|deux-cent-quarante unités|trois-cent-sept unités}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} et {{if:c==10003|trois dixièmes|{{if:c==10007|sept dixièmes|{{if:c==10009|neuf dixièmes|{{if:c==20005|cinq centièmes|{{if:c==20008|huit centièmes|{{if:c==20023|vingt-trois centièmes|{{if:c==20047|quarante-sept centièmes|{{if:c==20081|quatre-vingt-un centièmes|{{if:c==30007|sept millièmes|{{if:c==30023|vingt-trois millièmes|{{if:c==30065|soixante-cinq millièmes|{{if:c==30107|cent-sept millièmes|{{if:c==30205|deux-cent-cinq millièmes|{{if:c==30451|quatre-cent-cinquante-et-un millièmes|{{if:c==30607|six-cent-sept millièmes|neuf-cent-quatre-vingt-dix-neuf millièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}** ».\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1|2|3|4|7|8|12|15|23|36|48|57|64|75|90|105|240|307"
+				},
+				{
+					"name": "c",
+					"expression": "10003|10007|10009|20005|20008|20023|20047|20081|30007|30023|30065|30107|30205|30451|30607|30999"
+				},
+				{
+					"name": "p",
+					"expression": "{{if:c>30000|3|{{if:c>20000|2|1}}}}"
+				},
+				{
+					"name": "d",
+					"expression": "eval:10^p"
+				},
+				{
+					"name": "n",
+					"expression": "eval:mod(c,10000)"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a+n/d;d"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les rangs après la virgule.** Le premier chiffre après la virgule compte les **dixièmes**, le deuxième les **centièmes**, le troisième les **millièmes** : $1 = 10$ dixièmes $= 100$ centièmes $= 1\\,000$ millièmes.",
+					"« {{if:c==10003|trois dixièmes|{{if:c==10007|sept dixièmes|{{if:c==10009|neuf dixièmes|{{if:c==20005|cinq centièmes|{{if:c==20008|huit centièmes|{{if:c==20023|vingt-trois centièmes|{{if:c==20047|quarante-sept centièmes|{{if:c==20081|quatre-vingt-un centièmes|{{if:c==30007|sept millièmes|{{if:c==30023|vingt-trois millièmes|{{if:c==30065|soixante-cinq millièmes|{{if:c==30107|cent-sept millièmes|{{if:c==30205|deux-cent-cinq millièmes|{{if:c==30451|quatre-cent-cinquante-et-un millièmes|{{if:c==30607|six-cent-sept millièmes|neuf-cent-quatre-vingt-dix-neuf millièmes}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} » : des {{if:p==1|dixièmes|{{if:p==2|centièmes|millièmes}}}}, donc ${{p}}$ chiffre{{if:p>1|s|}} après la virgule : on écrit ${{if:p==3|{{if:n<10|00|{{if:n<100|0|}}}}|{{if:p==2|{{if:n<10|0|}}|}}}}{{n}}$.",
+					"$$\\textcolor{{{color:primary.0}}}{{{x}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Écris en chiffres le nombre « **{{if:a==1|une unité|{{if:a==2|deux unités|{{if:a==3|trois unités|{{if:a==4|quatre unités|{{if:a==7|sept unités|{{if:a==8|huit unités|{{if:a==12|douze unités|{{if:a==15|quinze unités|{{if:a==23|vingt-trois unités|{{if:a==36|trente-six unités|{{if:a==48|quarante-huit unités|{{if:a==57|cinquante-sept unités|{{if:a==64|soixante-quatre unités|{{if:a==75|soixante-quinze unités|{{if:a==90|quatre-vingt-dix unités|{{if:a==105|cent-cinq unités|{{if:a==240|deux-cent-quarante unités|trois-cent-sept unités}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}, {{if:t==0|{{if:u==1|un centième|{{if:u==2|deux centièmes|{{if:u==3|trois centièmes|{{if:u==4|quatre centièmes|{{if:u==5|cinq centièmes|{{if:u==6|six centièmes|{{if:u==7|sept centièmes|{{if:u==8|huit centièmes|neuf centièmes}}}}}}}}}}}}}}}}|{{if:t==1|un dixième|{{if:t==2|deux dixièmes|{{if:t==3|trois dixièmes|{{if:t==4|quatre dixièmes|{{if:t==5|cinq dixièmes|{{if:t==6|six dixièmes|{{if:t==7|sept dixièmes|{{if:t==8|huit dixièmes|neuf dixièmes}}}}}}}}}}}}}}}}}} et {{if:v==1|un millième|{{if:v==2|deux millièmes|{{if:v==3|trois millièmes|{{if:v==4|quatre millièmes|{{if:v==5|cinq millièmes|{{if:v==6|six millièmes|{{if:v==7|sept millièmes|{{if:v==8|huit millièmes|neuf millièmes}}}}}}}}}}}}}}}}** ».\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1|2|3|4|7|8|12|15|23|36|48|57|64|75|90|105|240|307"
+				},
+				{
+					"name": "t",
+					"expression": "0..9"
+				},
+				{
+					"name": "u",
+					"expression": "0..9"
+				},
+				{
+					"name": "v",
+					"expression": "1..9"
+				},
+				{
+					"name": "x",
+					"expression": "eval:(1000*a+100*t+10*u+v)/1000;d"
+				}
+			],
+			"conditions": ["t*u==0", "t+u>0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les rangs après la virgule.** Le premier chiffre après la virgule compte les **dixièmes**, le deuxième les **centièmes**, le troisième les **millièmes** : $1 = 10$ dixièmes $= 100$ centièmes $= 1\\,000$ millièmes.",
+					"Les unités avant la virgule, puis ${{t}}$ au rang des dixièmes, ${{u}}$ au rang des centièmes, ${{v}}$ au rang des millièmes : le rang vide reçoit un $0$.",
+					"$$\\textcolor{{{color:primary.0}}}{{{x}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Comment lit-on le nombre ${{x}}$ ?\n\n```choix\n- {{if:a==1|une unité|{{if:a==2|deux unités|{{if:a==3|trois unités|{{if:a==4|quatre unités|{{if:a==5|cinq unités|{{if:a==6|six unités|{{if:a==7|sept unités|{{if:a==8|huit unités|neuf unités}}}}}}}}}}}}}}}} et {{if:n==7|sept millièmes|{{if:n==23|vingt-trois millièmes|{{if:n==65|soixante-cinq millièmes|{{if:n==107|cent-sept millièmes|{{if:n==205|deux-cent-cinq millièmes|{{if:n==451|quatre-cent-cinquante-et-un millièmes|{{if:n==607|six-cent-sept millièmes|neuf-cent-quatre-vingt-dix-neuf millièmes}}}}}}}}}}}}}}\n- {{if:a==1|une unité|{{if:a==2|deux unités|{{if:a==3|trois unités|{{if:a==4|quatre unités|{{if:a==5|cinq unités|{{if:a==6|six unités|{{if:a==7|sept unités|{{if:a==8|huit unités|neuf unités}}}}}}}}}}}}}}}} et {{if:n==7|sept centièmes|{{if:n==23|vingt-trois centièmes|{{if:n==65|soixante-cinq centièmes|{{if:n==107|cent-sept centièmes|{{if:n==205|deux-cent-cinq centièmes|{{if:n==451|quatre-cent-cinquante-et-un centièmes|{{if:n==607|six-cent-sept centièmes|neuf-cent-quatre-vingt-dix-neuf centièmes}}}}}}}}}}}}}}\n- {{if:a==1|mille|{{if:a==2|deux-mille|{{if:a==3|trois-mille|{{if:a==4|quatre-mille|{{if:a==5|cinq-mille|{{if:a==6|six-mille|{{if:a==7|sept-mille|{{if:a==8|huit-mille|neuf-mille}}}}}}}}}}}}}}}}-{{if:n==7|sept|{{if:n==23|vingt-trois|{{if:n==65|soixante-cinq|{{if:n==107|cent-sept|{{if:n==205|deux-cent-cinq|{{if:n==451|quatre-cent-cinquante-et-un|{{if:n==607|six-cent-sept|neuf-cent-quatre-vingt-dix-neuf}}}}}}}}}}}}}}\n- {{if:n==7|sept unités|{{if:n==23|vingt-trois unités|{{if:n==65|soixante-cinq unités|{{if:n==107|cent-sept unités|{{if:n==205|deux-cent-cinq unités|{{if:n==451|quatre-cent-cinquante-et-un unités|{{if:n==607|six-cent-sept unités|neuf-cent-quatre-vingt-dix-neuf unités}}}}}}}}}}}}}} et {{if:a==1|un millième|{{if:a==2|deux millièmes|{{if:a==3|trois millièmes|{{if:a==4|quatre millièmes|{{if:a==5|cinq millièmes|{{if:a==6|six millièmes|{{if:a==7|sept millièmes|{{if:a==8|huit millièmes|neuf millièmes}}}}}}}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "7|23|65|107|205|451|607|999"
+				},
+				{
+					"name": "x",
+					"expression": "eval:(1000*a+n)/1000;d"
+				}
+			],
+			"conditions": ["a!=n"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les rangs après la virgule.** Le premier chiffre après la virgule compte les **dixièmes**, le deuxième les **centièmes**, le troisième les **millièmes** : $1 = 10$ dixièmes $= 100$ centièmes $= 1\\,000$ millièmes.",
+					"${{x}}$ : ${{a}}$ avant la virgule, ${{if:n<10|00|{{if:n<100|0|}}}}{{n}}$ après, sur trois rangs : des millièmes. On lit **« {{if:a==1|une unité|{{if:a==2|deux unités|{{if:a==3|trois unités|{{if:a==4|quatre unités|{{if:a==5|cinq unités|{{if:a==6|six unités|{{if:a==7|sept unités|{{if:a==8|huit unités|neuf unités}}}}}}}}}}}}}}}} et {{if:n==7|sept millièmes|{{if:n==23|vingt-trois millièmes|{{if:n==65|soixante-cinq millièmes|{{if:n==107|cent-sept millièmes|{{if:n==205|deux-cent-cinq millièmes|{{if:n==451|quatre-cent-cinquante-et-un millièmes|{{if:n==607|six-cent-sept millièmes|neuf-cent-quatre-vingt-dix-neuf millièmes}}}}}}}}}}}}}} »**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "quatre unités et cent-sept millièmes : 4,107",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"c": "30107",
+				"p": "3",
+				"d": "1000",
+				"n": "107",
+				"x": "4.107"
+			},
+			"answers": ["4,107"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4,17 (zéro oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"c": "30107",
+				"p": "3",
+				"d": "1000",
+				"n": "107",
+				"x": "4.107"
+			},
+			"answers": ["4,17"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4,1007",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"c": "30107",
+				"p": "3",
+				"d": "1000",
+				"n": "107",
+				"x": "4.107"
+			},
+			"answers": ["4,1007"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : 4107/1000 (fraction)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"c": "30107",
+				"p": "3",
+				"d": "1000",
+				"n": "107",
+				"x": "4.107"
+			},
+			"answers": ["\\frac{4\\,107}{1\\,000}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Forme : 4 + 107/1000",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"c": "30107",
+				"p": "3",
+				"d": "1000",
+				"n": "107",
+				"x": "4.107"
+			},
+			"answers": ["4+\\frac{107}{1\\,000}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "quatre unités et sept millièmes : 4,007",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"c": "30007",
+				"p": "3",
+				"d": "1000",
+				"n": "7",
+				"x": "4.007"
+			},
+			"answers": ["4,007"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4,7",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"c": "30007",
+				"p": "3",
+				"d": "1000",
+				"n": "7",
+				"x": "4.007"
+			},
+			"answers": ["4,7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4,07",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"c": "30007",
+				"p": "3",
+				"d": "1000",
+				"n": "7",
+				"x": "4.007"
+			},
+			"answers": ["4,07"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "quinze unités et vingt-trois centièmes : 15,23",
+			"variationIndex": 0,
+			"variables": {
+				"a": "15",
+				"c": "20023",
+				"p": "2",
+				"d": "100",
+				"n": "23",
+				"x": "15.23"
+			},
+			"answers": ["15,23"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 15,023 (millièmes lus)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "15",
+				"c": "20023",
+				"p": "2",
+				"d": "100",
+				"n": "23",
+				"x": "15.23"
+			},
+			"answers": ["15,023"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 unités, 2 dixièmes et 5 millièmes : 3,205",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"t": "2",
+				"u": "0",
+				"v": "5",
+				"x": "3.205"
+			},
+			"answers": ["3,205"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3,25 (rang vide oublié)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"t": "2",
+				"u": "0",
+				"v": "5",
+				"x": "3.205"
+			},
+			"answers": ["3,25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 unités, 4 centièmes et 5 millièmes : 3,045",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"t": "0",
+				"u": "4",
+				"v": "5",
+				"x": "3.045"
+			},
+			"answers": ["3,045"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3,45",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"t": "0",
+				"u": "4",
+				"v": "5",
+				"x": "3.045"
+			},
+			"answers": ["3,45"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4,107 : quatre unités et cent-sept millièmes",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"n": "107",
+				"x": "4.107"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cent-sept centièmes",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"n": "107",
+				"x": "4.107"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : quatre-mille-cent-sept",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"n": "107",
+				"x": "4.107"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : unités et millièmes échangés",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"n": "107",
+				"x": "4.107"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
