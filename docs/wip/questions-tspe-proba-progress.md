@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 5a publié._
+_Mis à jour le 2026-11-02, lot 5b en phase 0._
 
-- **État** : lot 5a **publié** en prod (9 modèles, #2240, #2241, relecture 9/9 OK, `publier-lot --publier` par David, relu au MCP : 9/9 `published`). Worktree retiré.
-- **Prochaine action** : lot 5b, phase 0 (points du § « Lots » ci-dessous) : recréer le worktree `../ubumaths-wt-questions-tspe-proba` sur une branche `feat/questions-tspe-proba-5b` depuis `origin/main`.
+- **État** : lot 5a publié (9/9, #2240, #2241). Lot 5b : phase 0 proposée (§ « Lot 5b »), en attente de validation.
+- **Prochaine action** : après validation de la phase 0 du 5b, script `docs/wip/questions/lot-tspe-5b-sommes.py`.
 - **En attente de David** : dire si le défaut ` ```probtree ` (étiquette sans `\` écrite en texte) va dans `docs/wip/outils-manquants.md`.
 - **Pièges en cours** : voir « Décisions communes et pièges » ci-dessous.
-- **Worktree / branche** : aucun pour l'instant (à recréer pour 5b).
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-proba` · `feat/questions-tspe-proba-5b`.
 
 ---
 
@@ -176,3 +176,52 @@ https://claude.ai/artifact/4pTuHyH4DZ1CfwXgqgtZeV.
 
 **Publication** (2026-11-02) : relecture 9/9 « OK » sur la page à cocher ; `publier-lot` en simulation, 9 contrôles
 passés ; `--publier` par David ; relu au MCP : 9/9 `published`. **Lot 5a clos.**
+
+## Lot 5b : sommes de variables aléatoires, loi des grands nombres
+
+_2026-11-02. Relevé MCP (prod) : 518, 521, 525 sur « Sommes et concentration › espérance et variance d'une somme » ;
+532 sur « Sommes et concentration › loi des grands nombres ». Aucun des 4 n'a de modèle. Voisins publiés, à ne pas
+répéter : 71cb8ab7 (V(X + Y), V(X − Y), **V(aX + bY) avec X, Y indépendantes**, σ(X + Y)), 7974722d (E(aX + bY)),
+aced2e6c (V et σ de Sₙ, Mₙ), de8fa591 (E(Sₙ) = nμ, μ donnée), dbee4649 / 38001c3f (E, V de la loi binomiale),
+1043c29e (V de Bernoulli), 0943e867, 91db0034, 95f73515 (Bienaymé-Tchebychev, concentration) ; 1re spé 0417223e
+(linéarité de l'espérance), 006fce09 (écart moyenne / espérance) ; 2de 7953dcfc (« Loi des grands nombres »,
+brouillon, fréquences). Catégories `T_SPE` : « Sommes de variables aléatoires › Espérance et variance » (2, 3),
+« › Échantillons » (2, 3) ; « Concentration et loi des grands nombres › Inégalité de Bienaymé-Tchebychev » (2),
+« › Inégalité de concentration » (2, 3). Aucune sous-notion neuve._
+
+**Phase 0 (proposée)** : niveau `T_SPE` seul, un point par modèle, réponses en case (fraction irréductible ou décimal
+exact, `acceptDecimal`) ou en case choix, jamais les deux dans une variation.
+
+| #   | Point    | Titre                                | Catégorie (niveau)                                                   | Nœud                                       |
+| --- | -------- | ------------------------------------ | -------------------------------------------------------------------- | ------------------------------------------ |
+| M1  | TSPE-518 | Loi de la somme de deux variables    | Sommes de variables aléatoires › Loi d'une somme (1)                 | Sommes et conc. › esp. et var. d'une somme |
+| M2  | TSPE-521 | Variance de aX + b : V(aX) = a²V(X)  | Sommes de variables aléatoires › Espérance et variance (1)           | idem                                       |
+| M3  | TSPE-525 | Écrire une variable comme somme      | Sommes de variables aléatoires › Décomposer en somme (1)             | idem                                       |
+| M4  | TSPE-532 | Loi des grands nombres : interpréter | Concentration et loi des grands nombres › Loi des grands nombres (1) | Sommes et conc. › loi des grands nombres   |
+
+Variations :
+
+- **M1** v0 X et Y indépendantes données par leurs lois (deux petits tableaux, 2 ou 3 valeurs, probabilités décimales
+  à un chiffre) : P(X + Y = s), somme des produits sur les couples (s atteint par 2 ou 3 couples) ; v1 un dé à 4 faces
+  et un dé à 6 faces : P(S = s), fraction sur 24 ; v2 (choix) valeurs prises par X + Y : la bonne liste parmi l'union
+  des valeurs, les couples, une liste où manque une somme.
+- **M2** v0 V(X) donnée, a entier relatif (|a| de 2 à 6) : V(aX) (pièges aV(X), |a|V(X)) ; v1 V(aX + b) (b ne compte
+  pas) ; v2 σ(aX + b) = |a|σ(X), a négatif ; v3 en contexte : gain Y = aX − b euros, V(X) donnée, V(Y).
+- **M3** v0 (choix) n épreuves de Bernoulli, X nombre de succès : X = X₁ + ⋯ + Xₙ avec Xᵢ = 1 si la i-ème est un succès
+  ✔ ; X = nX₁ ; X = X₁ × ⋯ × Xₙ ; X = (X₁ + ⋯ + Xₙ)/n ; v1 n dés lancés, S somme des faces : E(S) = 3,5n en écrivant
+  S = D₁ + ⋯ + Dₙ ; v2 épreuves **différentes** : n₁ lancers de pièce (succès : Pile) puis n₂ lancers de dé (succès :
+  6), N nombre total de succès = Y + Z : E(N) (Y, Z de lois binomiales différentes) ; v3 même expérience : V(N) =
+  V(Y) + V(Z) (indépendance).
+- **M4** (choix) v0 l'énoncé de la loi des grands nombres : P(|Mₙ − μ| ⩾ δ) → 0 ✔ ; Mₙ = μ pour n assez grand ;
+  P(|Mₙ − μ| ⩾ δ) = 0 pour n assez grand ; V(Mₙ) → μ ; v1 en contexte (dé lancé n fois, fréquence des 6) : « la
+  probabilité que la fréquence s'écarte de 1/6 d'au moins 0,01 tend vers 0 » ✔ ; sophisme du joueur (après une série
+  sans 6, un 6 est plus probable) ; « la fréquence vaut exactement 1/6 pour n multiple de 6 » ; « le nombre de 6 est à
+  moins de 1 de n/6 » ; v2 limite de P(|Mₙ − μ| ⩾ δ) quand n → +∞ : 0 ✔, 1, δ, V/δ².
+
+**Questions à David** :
+
+- **Q1** Sous-domaines neufs « Loi d'une somme » (M1) et « Décomposer en somme » (M3) — reco —, ou M1 et M3 aux niveaux
+  1 et 4 de « Espérance et variance » ?
+- **Q2** M4 dans un sous-domaine neuf « Loi des grands nombres » de « Concentration et loi des grands nombres » — reco ?
+
+**Question d'accès** : personne ne gagne ni ne perd d'accès (brouillons ; visibles des élèves après `publier-lot`).
