@@ -175,7 +175,8 @@ export const courbeEntry: BlockCatalogEntry = {
 			settings: [
 				{
 					key: 'tracer',
-					values: 'y = 2x - 1, x = 3, ou 2x + 3y - 6 = 0 (fractions et variables permises)',
+					values:
+						'y = 2x - 1, x = 3, ou 2x + 3y - 6 = 0 (fraction en ligne : y = 1/2x + 1 ; variables permises)',
 					defaultValue: 'aucune',
 					description:
 						'L’élève pose deux points sur les nœuds de la grille ; la droite qui passe par eux se dessine. Une case, juste si les deux points sont distincts et sur la droite, quels qu’ils soient. La droite doit passer par au moins deux nœuds de la grille dans la fenêtre. Jamais avec placer: dans le même repère. Jamais écrite à l’écran avant la correction.'

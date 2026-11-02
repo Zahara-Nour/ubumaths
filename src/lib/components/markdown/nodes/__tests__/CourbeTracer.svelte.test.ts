@@ -140,10 +140,19 @@ describe('Droite à tracer — correction', () => {
 			props: { node: node(...WINDOW, TRACER), answers: [locked('0;-1/1;2', false)] }
 		});
 		const root = screen.container;
-		expect(root.textContent).toContain('Ta droite n’est pas celle d’équation y = 2x − 1.');
+		expect(root.textContent).toContain('Ta droite n’est pas celle d’équation');
+		expect(root.querySelector('p math-span')?.textContent).toBe('y = 2 x - 1');
 		expect(root.querySelectorAll('.placer-correction line.courbe-trace')).toHaveLength(1);
 		expect(root.querySelectorAll('.placer-correction circle.courbe-pose')).toHaveLength(2);
 		expect(root.querySelector('.placer-faux')).not.toBeNull();
+	});
+
+	it('équation des variables mise au propre : y = 1x + 0 écrite y = x', async () => {
+		const screen = await render(Courbe, {
+			target: mainElement(),
+			props: { node: node(...WINDOW, 'tracer: y = 1x + 0'), answers: [locked('0;0/1;2', false)] }
+		});
+		expect(screen.container.querySelector('p math-span')?.textContent).toBe('y = x');
 	});
 
 	it('un seul point : « Il faut placer deux points. »', async () => {
@@ -210,7 +219,8 @@ describe('Droite à tracer — correction', () => {
 			}
 		});
 		const root = screen.container;
-		expect(root.textContent).toContain('Ta droite n’est pas celle d’équation y = 2x − 1.');
+		expect(root.textContent).toContain('Ta droite n’est pas celle d’équation');
+		expect(root.querySelector('p math-span')?.textContent).toBe('y = 2 x - 1');
 		expect(label(root, 'Point 1')).toBeUndefined();
 	});
 });

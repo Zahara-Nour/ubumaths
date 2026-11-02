@@ -10,6 +10,7 @@ import { describe, it, expect } from 'vitest';
 import { parseCourbeContent } from '../../parser/courbe-parser';
 import {
 	correctionPoints,
+	equationLatex,
 	isCourbeAnswerCorrect,
 	isTracedLineCorrect,
 	lineCoefficients,
@@ -215,14 +216,31 @@ describe('réponse et juge', () => {
 
 	it('phrases de la correction', () => {
 		expect(tracedLineMistake('0;-1/1;1', 'y = 2x - 1')).toBeNull();
-		expect(tracedLineMistake('', 'y = 2x - 1')).toBe('Il faut placer deux points.');
-		expect(tracedLineMistake('/1;1', 'y = 2x - 1')).toBe('Il faut placer deux points.');
-		expect(tracedLineMistake('1;1/1;1', 'y = 2x - 1')).toBe(
-			'Tes deux points sont au même endroit : ils ne font pas une droite.'
-		);
-		expect(tracedLineMistake('0;-1/1;2', 'y = 2x - 1')).toBe(
-			'Ta droite n’est pas celle d’équation y = 2x − 1.'
-		);
+		expect(tracedLineMistake('', 'y = 2x - 1')).toEqual({ text: 'Il faut placer deux points.' });
+		expect(tracedLineMistake('/1;1', 'y = 2x - 1')).toEqual({
+			text: 'Il faut placer deux points.'
+		});
+		expect(tracedLineMistake('1;1/1;1', 'y = 2x - 1')).toEqual({
+			text: 'Tes deux points sont au même endroit : ils ne font pas une droite.'
+		});
+		expect(tracedLineMistake('0;-1/1;2', 'y = 2x - 1')).toEqual({
+			text: 'Ta droite n’est pas celle d’équation',
+			latex: 'y = 2 x - 1'
+		});
+	});
+
+	it('équation écrite à l’élève : mise au propre (coefficients 1 et 0 des variables)', () => {
+		expect(equationLatex('y = 1x + 0')).toBe('y = x');
+		expect(equationLatex('y = 0x + 2')).toBe('y = 2');
+		expect(equationLatex('y = -1x - 3')).toBe('y = -x - 3');
+		expect(equationLatex('y = 2*-x')).toBe('y = -2 x');
+		expect(equationLatex('y = 1/2x + 1')).toBe('y = \\dfrac{x}{2} + 1');
+		expect(equationLatex('2x + 3y - 6 = 0')).toBe('2 x + 3 y - 6 = 0');
+	});
+
+	it('droite très raide : la tolérance ne grandit pas avec la pente', () => {
+		expect(isTracedLineCorrect('0;0/1;100000', 'y = 99999x')).toBe(false);
+		expect(isTracedLineCorrect('0;0/1;99999', 'y = 99999x')).toBe(true);
 	});
 });
 

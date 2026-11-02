@@ -49,9 +49,11 @@
 		readTracedAnswer,
 		tracedAnswer,
 		tracedLineMistake,
-		type LineCoefficients
+		type LineCoefficients,
+		type TracedLineMistake
 	} from '$lib/ubumark/utils/courbe-tracer';
 	import Courbe, { type CourbeMark, type CourbeTrace } from './Courbe.svelte';
+	import MathInline from './MathInline.svelte';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
 	interface Props {
@@ -169,8 +171,8 @@
 		return traceOf(typeof line === 'string' ? null : line, SOLUTION_COLOR);
 	});
 
-	/** Phrases de la correction : une par point faux */
-	let mistakes = $derived(
+	/** Phrases de la correction : une par point faux ; droite à tracer, une (équation en formule) */
+	let mistakes = $derived<TracedLineMistake[]>(
 		tracing
 			? tracedMistakes()
 			: targets.flatMap((target, i) => {
@@ -180,12 +182,12 @@
 						answers[i].value,
 						pointAnswer(target.x, target.y)
 					);
-					return sentence === null ? [] : [sentence];
+					return sentence === null ? [] : [{ text: sentence }];
 				})
 	);
 
 	/** Droite à tracer : la phrase de la correction (aucune si l'équation est masquée) */
-	function tracedMistakes(): string[] {
+	function tracedMistakes(): TracedLineMistake[] {
 		if (answers?.[0]?.isCorrect !== false || knownEquation === null) return [];
 		const sentence = tracedLineMistake(answers[0].value, knownEquation);
 		return sentence === null ? [] : [sentence];
@@ -400,8 +402,11 @@
 	{/if}
 
 	{#if verdict === false}
-		{#each mistakes as mistake (mistake)}
-			<p class="text-sm">{mistake}</p>
+		{#each mistakes as mistake (mistake.text)}
+			<p class="text-sm">
+				{mistake.text}{#if mistake.latex !== undefined}
+					<MathInline expression={mistake.latex} syntax="latex" />.{/if}
+			</p>
 		{/each}
 		<div class="placer-correction flex w-full flex-col items-center gap-1">
 			<p class="text-sm font-medium text-muted-foreground">Correction</p>

@@ -372,9 +372,12 @@ droite qui passe par **moins de deux nœuds** de la grille dans la fenêtre (`li
 « 2 » ; dès qu'ils sont distincts, la droite qui passe par eux (`lineThrough`) se dessine d'un bord à
 l'autre de la fenêtre (`lineSegmentInWindow`, prop `traces` de `Courbe.svelte`). Une case, réponse
 `x1;y1/x2;y2` (`tracedAnswer`, `readTracedAnswer`) ; juste si les deux points sont distincts et sur la
-droite (`isTracedLineCorrect`), quels qu'ils soient. Phrases (`tracedLineMistake`) : « Il faut placer
+droite (`isTracedLineCorrect`, écart rapporté à `|ax| + |by| + |c|`), quels qu'ils soient ; le juge
+ne vérifie pas que ce sont des nœuds de la fenêtre (l'écran ne pose que des nœuds, et une réponse
+forgée hors nœud désigne quand même la bonne droite). Phrases (`tracedLineMistake`) : « Il faut placer
 deux points. », « Tes deux points sont au même endroit : ils ne font pas une droite. », « Ta droite
-n'est pas celle d'équation y = 2x − 1. » (`equationText` : vrai signe moins, virgule décimale) ;
+n'est pas celle d'équation » suivie de l'équation en formule (`MathInline`), mise au propre par
+`equationLatex` (`tidy` de mathAST côté par côté : `y = 1x + 0` des variables s'écrit `y = x`) ;
 correction : la droite juste et ses deux nœuds les plus proches de l'origine (`correctionPoints`,
 `solutionLine`), en vert ; rien quand l'équation est masquée (`tracer: ?`). PDF : le repère seul ;
 `solved` dessine la droite et ses deux nœuds.

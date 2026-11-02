@@ -22,6 +22,8 @@
 
 import { parseCustom } from '$lib/mathAST/parser/custom';
 import { compile } from '$lib/mathAST/eval/compile';
+import { tidy } from '$lib/mathAST/tidy';
+import { toLatex } from '$lib/mathAST/latex-generator';
 import type { CourbeWindow } from '../types/courbe';
 import {
 	courbeGridSteps,
@@ -41,6 +43,12 @@ export interface LineCoefficients {
 	a: number;
 	b: number;
 	c: number;
+}
+
+/** Phrase de la correction ; `latex` : l'équation à écrire en formule après le texte, puis « . » */
+export interface TracedLineMistake {
+	text: string;
+	latex?: string;
 }
 
 // Constantes
@@ -119,9 +127,13 @@ export function lineCoefficients(equation: string): LineCoefficients | string {
 	return { a, b, c };
 }
 
-/** Le point est-il sur la droite (au bruit flottant près) ? */
+/**
+ * Le point est-il sur la droite (au bruit flottant près) ? L'écart est rapporté à
+ * la taille des termes (`|ax| + |by| + |c|`), pas à celle des coefficients : une
+ * droite très raide n'élargit pas la tolérance
+ */
 function onLine(line: LineCoefficients, p: CourbePlacedPoint): boolean {
-	const scale = (Math.abs(line.a) + Math.abs(line.b)) * Math.max(1, Math.abs(p.x), Math.abs(p.y));
+	const scale = Math.abs(line.a * p.x) + Math.abs(line.b * p.y) + Math.abs(line.c);
 	return Math.abs(line.a * p.x + line.b * p.y + line.c) <= RELATIVE_TOLERANCE * Math.max(1, scale);
 }
 
@@ -207,18 +219,29 @@ export function isCourbeAnswerCorrect(answer: string, expected: string): boolean
 		: isPlacedPointCorrect(answer, expected);
 }
 
-/** L'équation écrite pour l'élève : vrai signe moins, virgule décimale */
-export function equationText(equation: string): string {
-	return equation.replace(/(\d)\.(\d)/g, '$1,$2').replace(/-/g, '−');
+/**
+ * L'équation en LaTeX, mise au propre côté par côté (`tidy` : `1x + 0` → `x`,
+ * `0x + 2` → `2`, `2*-x` → `-2x`), pour l'écrire à l'élève ; l'équation telle
+ * quelle si un côté ne se lit pas
+ */
+export function equationLatex(equation: string): string {
+	try {
+		return equation
+			.split('=')
+			.map((side) => toLatex(tidy(parseCustom(side.trim()))))
+			.join(' = ');
+	} catch {
+		return equation;
+	}
 }
 
 /** La phrase de la correction ; null si la droite est juste */
-export function tracedLineMistake(answer: string, equation: string): string | null {
+export function tracedLineMistake(answer: string, equation: string): TracedLineMistake | null {
 	if (isTracedLineCorrect(answer, equation)) return null;
 	const [p, q] = readTracedAnswer(answer);
-	if (!p || !q) return TWO_POINTS;
-	if (samePoint(p, q)) return SAME_POINT;
-	return `Ta droite n’est pas celle d’équation ${equationText(equation)}.`;
+	if (!p || !q) return { text: TWO_POINTS };
+	if (samePoint(p, q)) return { text: SAME_POINT };
+	return { text: 'Ta droite n’est pas celle d’équation', latex: equationLatex(equation) };
 }
 
 /**
