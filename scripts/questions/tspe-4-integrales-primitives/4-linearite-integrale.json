@@ -1,0 +1,221 @@
+{
+	"title": "Linéarité de l'intégrale",
+	"description": "Calculer avec la linéarité : combinaison αf + βg, déduire ∫g de ∫(f + g), constante ajoutée (piège : ∫c = c au lieu de c(b − a))",
+	"grades": ["T_SPE"],
+	"theme": "Intégration",
+	"domain": "Propriétés de l'intégrale",
+	"subdomain": "Linéarité",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "$f$ et $g$ sont deux fonctions continues sur $\\left[{{a}}\\,;{{b}}\\right]$. On sait que $\\displaystyle\\int_{{{a}}}^{{{b}}}f(x)\\,\\mathrm{d}x={{p}}$ et $\\displaystyle\\int_{{{a}}}^{{{b}}}g(x)\\,\\mathrm{d}x={{q}}$.\n\nCalcule $\\displaystyle\\int_{{{a}}}^{{{b}}}\\left({{k}}f(x){{if:m==1|+g(x)}}{{if:m==-1|-g(x)}}{{if:m>1|+{{eval:m}}g(x)}}{{if:m<-1|{{eval:m}}g(x)}}\\right)\\,\\mathrm{d}x$.\n\n$?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*p+m*q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Linéarité : $\\displaystyle\\int_{{{a}}}^{{{b}}}\\left({{k}}f(x){{if:m==1|+g(x)}}{{if:m==-1|-g(x)}}{{if:m>1|+{{eval:m}}g(x)}}{{if:m<-1|{{eval:m}}g(x)}}\\right)\\,\\mathrm{d}x={{k}}\\displaystyle\\int_{{{a}}}^{{{b}}}f(x)\\,\\mathrm{d}x{{if:m>0|+|}}{{if:m==1|\\displaystyle\\int_{{{a}}}^{{{b}}}g(x)\\,\\mathrm{d}x}}{{if:m==-1|-\\displaystyle\\int_{{{a}}}^{{{b}}}g(x)\\,\\mathrm{d}x}}{{if:m!=1 && m!=-1|{{eval:m}}\\displaystyle\\int_{{{a}}}^{{{b}}}g(x)\\,\\mathrm{d}x}}$.",
+					"Donc l'intégrale vaut ${{k}}\\times({{p}}){{if:m>0|+|}}{{m}}\\times({{q}})=\\textcolor{{{color:primary.0}}}{{{eval:k*p+m*q}}}$."
+				]
+			},
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-2..1"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "p",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "k",
+					"expression": "2..4"
+				},
+				{
+					"name": "m",
+					"expression": "1..3;±"
+				}
+			]
+		},
+		{
+			"statement": "$f$ et $g$ sont deux fonctions continues sur $\\left[{{a}}\\,;{{b}}\\right]$. On sait que $\\displaystyle\\int_{{{a}}}^{{{b}}}f(x)\\,\\mathrm{d}x={{p}}$ et $\\displaystyle\\int_{{{a}}}^{{{b}}}\\left(f(x)+g(x)\\right)\\,\\mathrm{d}x={{t}}$.\n\nCalcule $\\displaystyle\\int_{{{a}}}^{{{b}}}g(x)\\,\\mathrm{d}x$.\n\n$?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:t-p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Linéarité : $\\displaystyle\\int_{{{a}}}^{{{b}}}\\left(f(x)+g(x)\\right)\\,\\mathrm{d}x=\\displaystyle\\int_{{{a}}}^{{{b}}}f(x)\\,\\mathrm{d}x+\\displaystyle\\int_{{{a}}}^{{{b}}}g(x)\\,\\mathrm{d}x$.",
+					"Donc ${{t}}={{p}}+\\displaystyle\\int_{{{a}}}^{{{b}}}g(x)\\,\\mathrm{d}x$, d'où $\\displaystyle\\int_{{{a}}}^{{{b}}}g(x)\\,\\mathrm{d}x={{t}}-({{p}})=\\textcolor{{{color:primary.0}}}{{{eval:t-p}}}$."
+				]
+			},
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-2..1"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "p",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "t",
+					"expression": "1..8;±"
+				}
+			],
+			"conditions": ["t != p"]
+		},
+		{
+			"statement": "$f$ est une fonction continue sur $\\left[{{a}}\\,;{{b}}\\right]$ telle que $\\displaystyle\\int_{{{a}}}^{{{b}}}f(x)\\,\\mathrm{d}x={{p}}$.\n\nCalcule $\\displaystyle\\int_{{{a}}}^{{{b}}}\\left({{k}}f(x){{if:c>0|+}}{{eval:c}}\\right)\\,\\mathrm{d}x$.\n\n$?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*p+c*(b-a)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Linéarité : $\\displaystyle\\int_{{{a}}}^{{{b}}}\\left({{k}}f(x){{if:c>0|+}}{{eval:c}}\\right)\\,\\mathrm{d}x={{k}}\\displaystyle\\int_{{{a}}}^{{{b}}}f(x)\\,\\mathrm{d}x+\\displaystyle\\int_{{{a}}}^{{{b}}}({{c}})\\,\\mathrm{d}x$.",
+					"L'intégrale de la constante ${{c}}$ sur $\\left[{{a}}\\,;{{b}}\\right]$ vaut ${{c}}\\times({{b}}-({{a}}))={{eval:c*(b-a)}}$ (aire algébrique d'un rectangle), et non ${{c}}$.",
+					"Total : ${{k}}\\times({{p}})+({{eval:c*(b-a)}})=\\textcolor{{{color:primary.0}}}{{{eval:k*p+c*(b-a)}}}$."
+				]
+			},
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-1..1"
+				},
+				{
+					"name": "b",
+					"expression": "2..4"
+				},
+				{
+					"name": "p",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "k",
+					"expression": "2..4"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				}
+			]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 2·3 + (−1)·4 = 2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "0",
+				"b": "3",
+				"p": "3",
+				"q": "4",
+				"k": "2",
+				"m": "-1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : coefficient de g oublié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "0",
+				"b": "3",
+				"p": "3",
+				"q": "4",
+				"k": "2",
+				"m": "-1"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 5 − 2 = 3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "0",
+				"b": "3",
+				"p": "2",
+				"t": "5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : somme au lieu de différence",
+			"variationIndex": 1,
+			"variables": {
+				"a": "0",
+				"b": "3",
+				"p": "2",
+				"t": "5"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 2·3 + 4·3 = 18",
+			"variationIndex": 2,
+			"variables": {
+				"a": "0",
+				"b": "3",
+				"p": "3",
+				"k": "2",
+				"c": "4"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : ∫c = c",
+			"variationIndex": 2,
+			"variables": {
+				"a": "0",
+				"b": "3",
+				"p": "3",
+				"k": "2",
+				"c": "4"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

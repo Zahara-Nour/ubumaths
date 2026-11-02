@@ -1,0 +1,107 @@
+{
+	"title": "Estimer graphiquement une intégrale",
+	"description": "Estimer l'intégrale d'une fonction positive en comptant les carreaux sous la courbe (pièges : carreau de 2 unités d'aire, rectangle de hauteur maximale)",
+	"grades": ["T_SPE"],
+	"theme": "Intégration",
+	"domain": "Intégrale et aire",
+	"subdomain": "Lecture graphique",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ continue et positive sur $\\left[0\\,;4\\right]$ ; le domaine sous la courbe est colorié.\n\n```courbe\nx: -0.5 ; 4.5\ny: -1 ; 6.5\ngrille: 1 ; 1\nf(x) = {{if:k==0|0.25*x^2+1}}{{if:k==1|4-0.25*x^2}}{{if:k==2|6/(x+1)}} sur [0 ; 4]   bleu   nom=C_f\naire: f ; 0 ; 4\ntaille: moyenne\ndescription: Courbe positive sur [0 ; 4] au-dessus d'un quadrillage d'un carreau par unité, aire sous la courbe coloriée.\n```\n\nParmi ces valeurs, laquelle est la meilleure estimation de $\\displaystyle\\int_{0}^{4}f(x)\\,\\mathrm{d}x$ ?\n\n```choix\n- ${{if:k==0|9}}{{if:k==1|11}}{{if:k==2|10}}$\n- ${{if:k==0|4}}{{if:k==1|6}}{{if:k==2|5}}$\n- ${{if:k==0|14}}{{if:k==1|16}}{{if:k==2|15}}$\n- ${{if:k==0|20}}{{if:k==1|21}}{{if:k==2|24}}$\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est positive : $\\displaystyle\\int_{0}^{4}f(x)\\,\\mathrm{d}x$ est l'**aire** du domaine colorié, en unités d'aire.",
+					"Ici un carreau mesure $1\\times 1$ : une unité d'aire. On compte les carreaux entiers, puis on regroupe les morceaux de carreaux coupés par la courbe.",
+					"On trouve environ $\\textcolor{{{color:primary.0}}}{{{if:k==0|9}}{{if:k==1|11}}{{if:k==2|10}}}$ carreaux. (Valeur exacte : ${{if:k==0|\\dfrac{28}{3}\\approx 9{,}3}}{{if:k==1|\\dfrac{32}{3}\\approx 10{,}7}}{{if:k==2|6\\ln 5\\approx 9{,}7}}$.)"
+				]
+			},
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				}
+			]
+		},
+		{
+			"statement": "On a représenté ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ continue et positive sur $\\left[0\\,;4\\right]$ ; le domaine sous la courbe est colorié.\n\n```courbe\nx: -0.5 ; 4.5\ny: -2 ; 13\ngrille: 1 ; 2\nf(x) = {{if:k==0|0.5*x^2+2}}{{if:k==1|8-0.5*x^2}}{{if:k==2|12/(x+1)}} sur [0 ; 4]   bleu   nom=C_f\naire: f ; 0 ; 4\ntaille: moyenne\ndescription: Courbe positive sur [0 ; 4] ; le quadrillage a un pas de 1 en abscisse et de 2 en ordonnée ; aire sous la courbe coloriée.\n```\n\nRegarde bien les graduations. Parmi ces valeurs, laquelle est la meilleure estimation de $\\displaystyle\\int_{0}^{4}f(x)\\,\\mathrm{d}x$ ?\n\n```choix\n- ${{if:k==0|19}}{{if:k==1|21}}{{if:k==2|19}}$\n- ${{if:k==0|9}}{{if:k==1|11}}{{if:k==2|10}}$\n- ${{if:k==0|27}}{{if:k==1|29}}{{if:k==2|27}}$\n- ${{if:k==0|40}}{{if:k==1|32}}{{if:k==2|48}}$\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est positive : $\\displaystyle\\int_{0}^{4}f(x)\\,\\mathrm{d}x$ est l'aire du domaine colorié, en unités d'aire.",
+					"Attention : un carreau mesure $1$ en abscisse et $2$ en ordonnée, soit $2$ unités d'aire.",
+					"On compte environ ${{if:k==0|9{,}5}}{{if:k==1|10{,}5}}{{if:k==2|9{,}5}}$ carreaux, donc environ $\\textcolor{{{color:primary.0}}}{{{if:k==0|19}}{{if:k==1|21}}{{if:k==2|19}}}$ unités d'aire. (Valeur exacte : ${{if:k==0|\\dfrac{56}{3}\\approx 18{,}7}}{{if:k==1|\\dfrac{64}{3}\\approx 21{,}3}}{{if:k==2|12\\ln 5\\approx 19{,}3}}$.)"
+				]
+			},
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				}
+			]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 9",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : rectangle de hauteur max",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 21",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : carreaux comptés pour 1",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

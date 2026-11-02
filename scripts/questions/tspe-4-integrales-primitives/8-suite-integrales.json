@@ -1,0 +1,235 @@
+{
+	"title": "Suite d'intégrales",
+	"description": "Suites définies par une intégrale : calculer Iₙ = ∫₀¹ xⁿ, sens de variation par comparaison des fonctions intégrées, termes par une relation de récurrence (pièges : 1/n, signe de x − 1)",
+	"grades": ["T_SPE"],
+	"theme": "Intégration",
+	"domain": "Calcul intégral",
+	"subdomain": "Suites d'intégrales",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Pour tout entier naturel $n$, on pose $I_n=\\displaystyle\\int_{0}^{1}x^n\\,\\mathrm{d}x$.\n\nCalcule $I_{{{k}}}$.\n\n$I_{{{k}}}=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{1}{{{eval:k+1}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une primitive de $x\\mapsto x^{{{k}}}$ est $x\\mapsto\\dfrac{x^{{{eval:k+1}}}}{{{eval:k+1}}}$.",
+					"$I_{{{k}}}=\\left[\\dfrac{x^{{{eval:k+1}}}}{{{eval:k+1}}}\\right]_0^1=\\dfrac{1}{{{eval:k+1}}}-0=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{{{eval:k+1}}}}$."
+				]
+			},
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				}
+			]
+		},
+		{
+			"statement": "Pour tout entier naturel $n$, on pose $I_n=\\displaystyle\\int_{0}^{1}{{if:k==0|\\dfrac{x^n}{1+x}}}{{if:k==1|x^n e^{-x}}}\\,\\mathrm{d}x$.\n\nQuel est le sens de variation de la suite $(I_n)$ ?\n\n```choix\n- $(I_n)$ est décroissante\n- $(I_n)$ est croissante\n- $(I_n)$ est constante\n- On ne peut pas le savoir sans calculer $I_n$\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compare $I_{n+1}$ et $I_n$ sans les calculer : $I_{n+1}-I_n=\\displaystyle\\int_{0}^{1}{{if:k==0|\\dfrac{x^n(x-1)}{1+x}}}{{if:k==1|x^n(x-1)e^{-x}}}\\,\\mathrm{d}x$ (linéarité).",
+					"Sur $\\left[0\\,;1\\right]$, $x^n\\geqslant 0$, $x-1\\leqslant 0$ et {{if:k==0|$1+x>0$}}{{if:k==1|$e^{-x}>0$}} : la fonction intégrée est négative, et les bornes sont dans le bon ordre.",
+					"Donc $I_{n+1}-I_n\\leqslant 0$ : $(I_n)$ est $\\textcolor{{{color:primary.0}}}{\\text{décroissante}}$."
+				]
+			},
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				}
+			]
+		},
+		{
+			"statement": "Pour tout entier naturel $n$, on pose $I_n=\\displaystyle\\int_{0}^{1}x^n e^{x}\\,\\mathrm{d}x$. On admet que $I_0=e-1$ et que, pour tout $n$, $I_{n+1}=e-(n+1)I_n$.\n\nCalcule la valeur exacte de $I_{{{m}}}$.\n\n$I_{{{m}}}=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:m==1|1}}{{if:m==2|e-2}}{{if:m==3|6-2e}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On applique la relation de proche en proche, à partir de $I_0=e-1$.",
+					"$I_1=e-1\\times I_0=e-(e-1)=1${{if:m==1|.}}{{if:m==2| ; $I_2=e-2\\times I_1=e-2$.}}{{if:m==3| ; $I_2=e-2\\times I_1=e-2$ ; $I_3=e-3\\times I_2=e-3(e-2)=6-2e$.}}",
+					"$I_{{{m}}}=\\textcolor{{{color:primary.0}}}{{{if:m==1|1}}{{if:m==2|e-2}}{{if:m==3|6-2e}}}$."
+				]
+			},
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..3"
+				}
+			]
+		},
+		{
+			"statement": "Pour tout entier naturel $n$, on pose $J_n=\\displaystyle\\int_{0}^{1}\\dfrac{x^n}{1+x}\\,\\mathrm{d}x$. On admet que $J_0=\\ln 2$ et que, pour tout $n$, $J_n+J_{n+1}=\\dfrac{1}{n+1}$.\n\nCalcule la valeur exacte de $J_{{{m}}}$.\n\n$J_{{{m}}}=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:m==1|1-\\ln 2}}{{if:m==2|\\ln 2-\\dfrac{1}{2}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $n=0$ : $J_0+J_1=1$, donc $J_1=1-\\ln 2$.{{if:m==1|}}{{if:m==2| Avec $n=1$ : $J_1+J_2=\\dfrac{1}{2}$, donc $J_2=\\dfrac{1}{2}-(1-\\ln 2)=\\ln 2-\\dfrac{1}{2}$.}}",
+					"$J_{{{m}}}=\\textcolor{{{color:primary.0}}}{{{if:m==1|1-\\ln 2}}{{if:m==2|\\ln 2-\\dfrac{1}{2}}}}$."
+				]
+			},
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..2"
+				}
+			]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : I₃ = 1/4",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["\\dfrac{1}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 1/3",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["\\dfrac{1}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : décroissante",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : croissante",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : I₁ = 1",
+			"variationIndex": 2,
+			"variables": {
+				"m": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : I₂ = e − 2",
+			"variationIndex": 2,
+			"variables": {
+				"m": "2"
+			},
+			"answers": ["e-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : I₂ = 2 − e",
+			"variationIndex": 2,
+			"variables": {
+				"m": "2"
+			},
+			"answers": ["2-e"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : I₃ = 6 − 2e",
+			"variationIndex": 2,
+			"variables": {
+				"m": "3"
+			},
+			"answers": ["6-2e"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : I₃ = e − 6",
+			"variationIndex": 2,
+			"variables": {
+				"m": "3"
+			},
+			"answers": ["e-6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : J₁ = 1 − ln 2",
+			"variationIndex": 3,
+			"variables": {
+				"m": "1"
+			},
+			"answers": ["1-\\ln 2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : J₁ = ln 2 − 1",
+			"variationIndex": 3,
+			"variables": {
+				"m": "1"
+			},
+			"answers": ["\\ln 2-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : J₂ = ln 2 − 1/2",
+			"variationIndex": 3,
+			"variables": {
+				"m": "2"
+			},
+			"answers": ["\\ln 2-\\dfrac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

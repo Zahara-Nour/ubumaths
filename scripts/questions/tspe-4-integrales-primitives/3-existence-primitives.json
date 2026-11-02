@@ -1,0 +1,118 @@
+{
+	"title": "Existence de primitives d'une fonction continue",
+	"description": "Toute fonction continue sur un intervalle admet des primitives, même sans expression explicite (pièges : pas de formule donc pas de primitive, une seule primitive, fonction non définie sur l'intervalle)",
+	"grades": ["T_SPE"],
+	"theme": "Primitives et équations différentielles",
+	"domain": "Primitives",
+	"subdomain": "Notion de primitive",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "La fonction $f : x\\mapsto {{if:k==0|e^{-x^2}}}{{if:k==1|\\sqrt{x^3+1}}}{{if:k==2|\\dfrac{e^{x}}{x}}}$ est continue sur $I={{if:k==0|\\mathbb{R}}}{{if:k==1|\\left[0\\,;+\\infty\\right[}}{{if:k==2|\\left]0\\,;+\\infty\\right[}}$. On ne sait pas écrire une de ses primitives à l'aide des fonctions usuelles.\n\nQue peut-on affirmer ?\n\n```choix\n- $f$ admet des primitives sur $I$\n- $f$ n'admet pas de primitive sur $I$, puisqu'on ne sait pas l'écrire\n- $f$ admet une seule primitive sur $I$\n- $f$ admet des primitives sur $I$ seulement si elle est dérivable sur $I$\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Théorème : $\\textcolor{{{color:primary.0}}}{\\text{toute fonction continue sur un intervalle admet des primitives}}$ sur cet intervalle.",
+					"$f$ est continue sur $I$ : elle a des primitives, même si on ne sait pas les écrire avec les fonctions usuelles.",
+					"Elle en a même une infinité : deux primitives diffèrent d'une constante."
+				]
+			},
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				}
+			]
+		},
+		{
+			"statement": "Laquelle de ces fonctions admet des primitives sur l'intervalle $\\left[-1\\,;1\\right]$, d'après le théorème du cours ?\n\n```choix\n- $x\\mapsto\\dfrac{1}{x^2+{{c}}}$\n- $x\\mapsto\\dfrac{1}{x}$\n- $x\\mapsto\\ln x$\n- $x\\mapsto\\dfrac{1}{2x-1}$\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le théorème s'applique aux fonctions **continues sur tout l'intervalle** $\\left[-1\\,;1\\right]$.",
+					"$x\\mapsto\\dfrac{1}{x}$ n'est pas définie en $0$, $\\ln$ n'est pas définie sur $\\left[-1\\,;0\\right]$, $x\\mapsto\\dfrac{1}{2x-1}$ n'est pas définie en $\\dfrac{1}{2}$.",
+					"$x^2+{{c}}>0$ : $\\textcolor{{{color:primary.0}}}{x\\mapsto\\dfrac{1}{x^2+{{c}}}}$ est continue sur $\\left[-1\\,;1\\right]$, elle admet des primitives."
+				]
+			},
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..5"
+				}
+			]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : admet des primitives",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : pas de formule",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : une seule",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 1/(x² + c)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 1/x",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
