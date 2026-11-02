@@ -6,17 +6,16 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2096._
+_Mis à jour le 2026-11-02, lot 2 en cours._
 
-- **État** : lot 1 (`placer:` + `axes:` dans ` ```courbe `) mergé (#2096), pas en prod ; restes au § 7.
-- **Prochaine action** : APRÈS le chantier `fuite-enonce` (décision Q4 de David, 2026-11-01), lot 2
-  (`tracer:` une droite, § 3) dans un worktree neuf `ubumaths-wt-points-repere` depuis `origin/main`.
-- **En attente de David** : essai du repère à placer (dev, puis prod après deploy) ; corrigé PDF des blocs à
-  placer, à brancher le jour d'un corrigé imprimé (§ 7).
-- **Pièges en cours** : un geste ne doit jamais donner la réponse (ni à l'écran, ni dans un attribut lu, ni
-  dans l'énoncé public : chantier `fuite-enonce`) ; CI « Client Tests » `wrapDynamicImport` = infra ;
-  lancer `pnpm types:cliquet` avant la PR (oublié au lot 1).
-- **Worktree / branche** : aucun (retiré après #2096).
+- **État** : lot 2 (`tracer:` une droite) en cours sur `feat/points-repere-tracer` ; moteur fait (parseur,
+  `utils/courbe-tracer.ts`, juge, générateur, masquage `tracer: ?`) ; reste écran, copie corrigée, PDF, doc.
+- **Prochaine action** : `CourbePlacer.svelte` en mode tracer (2 points, étiquettes « 1 » / « 2 », droite
+  dessinée), `Courbe.svelte` (`traces`), `BuildAnswer`, `FillBlanksInput`, Typst corrigé ; puis doc, PR.
+- **En attente de David** : essai du repère à placer (lot 1) ; corrigé PDF des blocs à placer (§ 7).
+- **Pièges en cours** : un geste ne doit jamais donner la réponse (énoncé masqué : `tracer: ?`) ; CI
+  « Client Tests » `wrapDynamicImport` = infra ; `pnpm types:cliquet` avant la PR.
+- **Worktree / branche** : `../ubumaths-wt-points-repere`, `feat/points-repere-tracer`.
 
 ---
 
@@ -212,3 +211,19 @@ grapheur, catalogue), correctifs de revue. Revue `code-reviewer` (Opus) : rien d
   (ligne `placer:` comprise) au navigateur dans une évaluation notée — vrai aussi pour droite, horloge,
   barres. Non vérifié ; signalé à David.
 - **Téléphone** : `touch-action: pan-y` comme la droite ; à essayer sur iPhone / tablette.
+
+## 8. Lot 2 — précisions validées (2026-11-02)
+
+David, « oui » aux quatre recos :
+
+1. `tracer:` et `placer:` dans le même bloc : refusé au prof (un seul geste par repère).
+2. Deux étiquettes-boutons « 1 » / « 2 » sous le repère pour choisir le point (clavier) ; au doigt, toucher un
+   point le reprend.
+3. Phrases : « Il faut placer deux points. » ; « Tes deux points sont au même endroit : ils ne font pas une
+   droite. » ; « Ta droite n'est pas celle d'équation y = 2x − 1. »
+4. Correction : la droite juste et ses deux nœuds les plus proches de l'origine (à égalité, la plus petite
+   abscisse).
+
+Choix techniques : réponse attendue = l'équation normalisée (espaces, signes des variables, virgule → point) ;
+lue en `ax + by + c = 0` par mathAST (`parseCustom` + évaluation, vérifiée affine : `1/2x`, `2*(x - 1)`
+acceptés) ; case `x1;y1/x2;y2` ; juge `isCourbeAnswerCorrect` (équation reconnue à son `=`, sinon point).

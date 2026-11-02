@@ -19,8 +19,8 @@
 /** La valeur masquée, telle qu'écrite dans le bloc */
 export const MASKED_VALUE = '?';
 
-/** Ligne de la réponse d'un bloc à geste : `placer:`, `construire:`, `colorier:` */
-const ANSWER_KEY_LINE = /^(?:placer|construire|colorier)\s*:(.*)$/i;
+/** Ligne de la réponse d'un bloc à geste : `placer:`, `tracer:`, `construire:`, `colorier:` */
+const ANSWER_KEY_LINE = /^(?:placer|tracer|construire|colorier)\s*:(.*)$/i;
 
 /**
  * Donnée masquée : une barre (`Natation = ?`) ou une boîte à moustaches
