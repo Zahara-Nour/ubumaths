@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 8a écrit (11 modèles, specs vertes)._
+_Mis à jour le 2026-11-02, migration 8a écrite et testée._
 
-- **État** : lot 7 publié (6/6) ; lot 8 : phase 0 écrite (§ « Lot 8 : phase 0 »), 26 « à savoir » en 3 sous-lots, 31 couverts, 4 déjà tagués.
-- **Prochaine action** : PR des fichiers de 8a, CI verte → merge ; puis David lance `create-questions --publier` depuis le dépôt principal ; migration nœud + tag (gabarit lot 7).
+- **État** : lot 8 (D-L8 : 26 « à savoir » en 8a/8b/8c) ; fichiers de 8a mergés (#2259), 11 modèles, pas encore en prod.
+- **Prochaine action** : `security-auditor` sur la migration 8a, PR + `check:migrations --pr`, merge, `db:migrate`, page à cocher.
 - **En attente de David** : rien.
 - **Pièges en cours** : relevé de nœuds → filtrer `archived_at is null` ; `!=` dans `$…$` lu « ≠ » (écrire `!\,=`) ; garde « notion sans sous-notion » : liste `sous_notions_admises` (migration `20261102181059`).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · `feat/questions-tspe-restes-8`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · `feat/questions-tspe-restes-8a-migration`.
 
 ---
 
@@ -213,4 +213,19 @@ sous-domaine « À savoir » neuf par domaine ; Q4 427, 477, 398 couverts ; Q5 a
 1-3 ; Fonctions › Continuité 1-2 ; Fonctions › Fonction logarithme 1-2). 2 ou 3 variations par modèle, case choix à 4
 propositions ; pour les théorèmes (381, 400), une variation « piège » dont la bonne réponse est « On ne peut rien
 conclure ». Specs : 128 vertes (une juste, trois fausses par variation), 1 550 tirages ; aperçus relus (scratchpad).
-Simulation `create-questions` : 11 à créer, 0 en base.
+Simulation `create-questions` : 11 à créer, 0 en base. **#2259 mergée** (CI verte). Nœuds des 11 points (MCP) : sous-notions
+actives — Suites › Limites de suites › comparaison et encadrement (381, 570) ; Fonctions › Limites de fonctions ›
+comparaison et encadrement (400), opérations (401) ; Fonctions › Convexité › caractérisations (410, 411, 585) ;
+Fonctions › Continuité › valeurs intermédiaires (428, 429) ; Fonctions › Logarithmes › propriétés algébriques (439),
+dérivée (440).
+
+## Lot 8a : création en prod et migration nœud + tag (2026-11-02)
+
+**Création en prod** (David, 2026-11-02, 20 h 39 UTC, après #2259), relue au MCP : 11 brouillons [T_SPE], « À savoir »,
+sans nœud ni tag — 747d627a (381), 2b29942c (570), 5bf5b452 (400), f6415cb9 (401), 12ed13ec (410), eeb72d3a (411),
+cfd13223 (585), c10096eb (428), fe7f5218 (429), 7c8b341b (439), 9de80159 (440).
+
+Migration `20261102204034_questions_tspe_lot8a_rangement_tags.sql` (copie du lot 7, préfixe `_qtl8a_` ; diff avec le
+gabarit = les lignes du lot). Test `tests/integration/questions-tspe-lot8a-rangement-tags.test.ts` (copie du lot 7, sans
+les trois cas propres à M6) : 10/10 ; **rouge** sans l'étape 4 (suite principale « lot incohérent », 5 sautés, et le
+test du rollback).
