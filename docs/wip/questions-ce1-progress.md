@@ -5,20 +5,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01 vers 23 h, tout arrêté sur ordre de David._
+_Mis à jour le 2026-11-02, après #2176._
 
-- **⚠️ Arrêt** : David a fait arrêter le `deploy:prod` (rien créé ; production = v0.59.0 ; v0.61.0 sur main non
-  déployée) : **la session questions-cm2 règle d'abord le problème des migrations en base**. La PAUSE MERGES envoyée
-  par cette session vers 22 h 53 court encore : son « go » est laissé à questions-cm2 (prévenue). Ne rien pousser ni
-  merger avant son feu vert.
-- **État** : lot 9 : 9 brouillons en prod (#2168). **#2176** (migrations nœud + tag du lot 9, et `a7dfe502` au CP ET au
-  CE1, tags CP-058 + CE1-073) : migrations renommées `20261101224820` et `20261101224900` (collision avec 2de),
-  **commits locaux non poussés** dans `../ubumaths-wt-questions-ce1` ; `security-auditor` sans finding bloquant (×2).
-- **Prochaine action** : au feu vert de questions-cm2 : `git merge origin/main`, relancer les 2 tests d'intégration,
-  `pnpm check:migrations --pr 2176`, push, CI, merge, `db:migrate`, vérifier au MCP ; puis page à cocher du lot 9
-  (dessin de ` ```partage ` à ajouter au script) ; lot 8 après un `deploy:prod` réussi (centimes).
-- **Consignes de questions-cm2** (#2181) : au « go », `git merge origin/main` ; horodatages 224820 / 224900 gardés si la garde du pre-push ne dit rien (plus besoin d'être après main) ; `db:migrate` qui refuse « inserted before the last migration » → `pnpm db:migrate --dry-run --include-all`, relire la liste (migrations mergées seulement), puis `--include-all`.
-- **En attente de David** : la fin du chantier migrations (questions-cm2). Chantier `verrou-deploy` à ouvrir (mémoire).
+- **État** : lots 0 à 7 publiés. Lot 8 (monnaie) : 6 brouillons rangés et tagués, **centimes en prod depuis v0.62.0**
+  (déployée par questions-cm2) → publiable. Lot 9 : 9 brouillons rangés et tagués (#2168, #2176, `db:migrate` joué,
+  vérifié au MCP) ; `a7dfe502` (trois points alignés) au CP ET au CE1, tags CP-058 + CE1-073.
+- **Prochaine action** : lot 8 : relever les catégories, page à cocher, `publier-lot` (simulation, puis David).
+  Lot 9 : ajouter le dessin de ` ```partage ` au script de la page à cocher (petite PR de code), puis page à cocher,
+  `publier-lot`. Ensuite lot 10 (espace et mesure, § 12).
+- **En attente de David** : rien. Chantier `verrou-deploy` à ouvrir dans sa session (mémoire).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
@@ -754,3 +749,7 @@ Réponse de David (« je suis tes recos », 2026-11-01) : les six recommandation
   sans, verts avec (9/9, 10/10). `deploy:prod` demandé par David : v0.60.0 et v0.61.0 créées, CI de version rouge par
   instabilité navigateur puis annulée par des merges ; PAUSE MERGES demandée aux sessions (accord de David) ; nouveau
   lancement en cours. Diagnostic du verrou : mémoire `project_chantier-verrou-deploy`.
+- 2026-11-02 : #2176 mergée (CI verte, intégration comprise ; migrations renommées 20261101224820 et 20261101224900
+  après deux collisions) ; `db:migrate` joué (dry-run : nos 2 migrations seules) ; vérifié au MCP : 10/10 sur leur nœud
+  et leurs points, brouillons, `updated_at` intact. Le `deploy:prod` de cette session a été arrêté par David ;
+  v0.62.0 mise en prod par questions-cm2 après #2181 (horodatages à l'heure réelle).
