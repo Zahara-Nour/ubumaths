@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2159 et `db:migrate`._
+_Mis à jour le 2026-11-02, après la publication du lot 4b._
 
-- **État** : lot 4b (calcul posé, 6 modèles) en brouillons en prod, rangés et tagués (migration `20261101224741`, #2159, jouée et vérifiée au MCP) ; page à cocher publiée (§ 13 quinquies).
-- **Prochaine action** : compter les verdicts de la page (`ArtifactData list verdicts`) → `publier-lot --dir scripts/questions/cm1-4b` en simulation → David lance `--publier` → relire `published` au MCP. Puis lot 5 grandeurs (nouveau worktree, nouvelle branche).
-- **En attente de David** : verdicts sur la page https://claude.ai/artifact/QwvVUKnuztGXrZ7ermrd6F ; accord pour supprimer la branche locale `sauvegarde/questions-cm1-lot4b-rebase` (rebase abandonné, contenu identique, `-D`).
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** (main avance vite : #2159 renumérotée 3 fois, 224100 → 224701 → 224702 → 224741 ; tant que #2177 n'est pas mergée, `--prochain` donne « max + 1 s » à toutes les sessions en même temps) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») et le type `content` (prendre `feat`) ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; dépôt partagé : relire `git diff --cached --name-only` avant CHAQUE commit (journal ce2 emporté le 2026-11-01) ; coloriage : specs non mesurées par le test du corpus, sauf si un modèle active `orderIndependent` (la prod le mesurerait alors) ; extension Chrome muette → Playwright à 390 px.
-- **Worktree / branche** : aucun (worktree de #2159 retiré) ; recréer `../ubumaths-wt-questions-cm1` pour le lot 5.
+- **État** : lots 0 à 4b publiés en prod ; lot 4b (calcul posé) : 6/6 verdicts OK, 6 `published` relus au MCP (§ 13 sexies).
+- **Prochaine action** : lot 5 grandeurs — recréer `../ubumaths-wt-questions-cm1` (nouvelle branche), puis phase 0 (points du § 3, ordre du § 4 bis) à faire valider par David.
+- **En attente de David** : accord pour supprimer la branche locale `sauvegarde/questions-cm1-lot4b-rebase` (rebase abandonné, contenu identique, `-D`).
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** (main avance vite : #2159 renumérotée 3 fois) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») et le type `content` (prendre `feat`) ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; dépôt partagé : relire `git diff --cached --name-only` avant CHAQUE commit ; coloriage : specs non mesurées par le test du corpus, sauf si un modèle active `orderIndependent` ; extension Chrome muette → Playwright à 390 px.
+- **Worktree / branche** : aucun ; recréer `../ubumaths-wt-questions-cm1` pour le lot 5.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -837,3 +837,9 @@ CE1 ; 3. 050 et 165 rangés sous « Décimaux : calculs › addition » et « �
 - Page : https://claude.ai/artifact/QwvVUKnuztGXrZ7ermrd6F (capacité `db`), rendu vu à 390 px
   (6 fiches, pas de défilement horizontal) ; `verdicts` vide à la publication. Alertes attendues :
   bloc `operation` non dessiné (6), à jouer dans l'aperçu.
+
+### 13 sexies. Lot 4b — publication (2026-11-02)
+
+- Page à cocher : 6 verdicts « OK », sans commentaire (comptés dans `verdicts`). Simulation
+  `publier-lot --dir scripts/questions/cm1-4b` : 6 brouillons passent ; `--publier` lancé par David ;
+  6 `published` relus au MCP. Lot 4b fini.
