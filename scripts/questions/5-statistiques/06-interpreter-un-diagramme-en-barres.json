@@ -1,0 +1,210 @@
+{
+	"title": "Interpréter un diagramme en barres",
+	"description": "Exploiter un diagramme en barres : la catégorie la plus choisie, un écart entre deux barres, l'effectif total",
+	"grades": ["5"],
+	"theme": "Statistiques",
+	"domain": "Représenter des données",
+	"subdomain": "diagrammes en barres",
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On a demandé leur sport préféré aux élèves de 5e.\n\n```barres\ntitre: Sport préféré des élèves de 5e\naxes: Sport ; Élèves\nFootball = {{eval:5*a}}\nBasket = {{eval:5*b}}\nDanse = {{eval:5*c}}\nNatation = {{eval:5*d}}\naxe: 0 à 50, de 5 en 5\n```\n\nQuel sport est le plus choisi ?\n\n```choix\nmelanger: non\n- Football\n- Basket\n- Danse\n- Natation\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..10"
+				},
+				{
+					"name": "b",
+					"expression": "1..10"
+				},
+				{
+					"name": "c",
+					"expression": "1..10"
+				},
+				{
+					"name": "d",
+					"expression": "1..10"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:a>b && a>c && a>d|0|{{if:b>a && b>c && b>d|1|{{if:c>a && c>b && c>d|2|3}}}}}}"
+				}
+			],
+			"conditions": [
+				"(a-b)*(a-b) > 0",
+				"(a-c)*(a-c) > 0",
+				"(a-d)*(a-d) > 0",
+				"(b-c)*(b-c) > 0",
+				"(b-d)*(b-d) > 0",
+				"(c-d)*(c-d) > 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le sport le plus choisi est celui de la barre **la plus haute**.",
+					"C'est {{if:r==0|le football|{{if:r==1|le basket|{{if:r==2|la danse|la natation}}}}}} : $\\textcolor{{{color:primary.0}}}{{{eval:5*({{if:r==0|{{a}}|{{if:r==1|{{b}}|{{if:r==2|{{c}}|{{d}}}}}}}})}}}$ élèves."
+				]
+			}
+		},
+		{
+			"statement": "Voici l'âge des élèves inscrits à l'association sportive.\n\n```barres\ntitre: Âge des élèves de l'association sportive\naxes: Âge (ans) ; Élèves\n11 ans = {{eval:2*a}}\n12 ans = {{eval:2*b}}\n13 ans = {{eval:2*c}}\n14 ans = {{eval:2*d}}\naxe: 0 à 24, de 2 en 2\n```\n\nCombien d'élèves de $12$ ans de plus que d'élèves de $14$ ans ?\n\n$?$ élèves de plus",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..12"
+				},
+				{
+					"name": "b",
+					"expression": "1..12"
+				},
+				{
+					"name": "c",
+					"expression": "1..12"
+				},
+				{
+					"name": "d",
+					"expression": "1..12"
+				}
+			],
+			"conditions": ["b - d >= 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*(b-d)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On lit : $12$ ans → ${{eval:2*b}}$ élèves ; $14$ ans → ${{eval:2*d}}$ élèves.",
+					"${{eval:2*b}} - {{eval:2*d}} = \\textcolor{{{color:primary.0}}}{{{eval:2*(b-d)}}}$ élèves de plus."
+				]
+			}
+		},
+		{
+			"statement": "On a demandé leur sport préféré aux élèves de 5e.\n\n```barres\ntitre: Sport préféré des élèves de 5e\naxes: Sport ; Élèves\nFootball = {{eval:5*a}}\nBasket = {{eval:5*b}}\nDanse = {{eval:5*c}}\nNatation = {{eval:5*d}}\naxe: 0 à 50, de 5 en 5\n```\n\nCombien d'élèves ont répondu ?\n\n$?$ élèves",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..10"
+				},
+				{
+					"name": "b",
+					"expression": "1..10"
+				},
+				{
+					"name": "c",
+					"expression": "1..10"
+				},
+				{
+					"name": "d",
+					"expression": "1..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:5*(a+b+c+d)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On lit chaque barre, puis on additionne les effectifs.",
+					"${{eval:5*a}} + {{eval:5*b}} + {{eval:5*c}} + {{eval:5*d}} = \\textcolor{{{color:primary.0}}}{{{eval:5*(a+b+c+d)}}}$ élèves."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Danse la plus choisie",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "7",
+				"c": "9",
+				"d": "3",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la moins choisie",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "7",
+				"c": "9",
+				"d": "3",
+				"r": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "14 - 6 = 8",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "7",
+				"c": "9",
+				"d": "3"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : graduations comptées de 1 en 1",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "7",
+				"c": "9",
+				"d": "3"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Total : 115",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "7",
+				"c": "9",
+				"d": "3"
+			},
+			"answers": ["115"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une barre oubliée",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "7",
+				"c": "9",
+				"d": "3"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,163 @@
+{
+	"title": "Lire un diagramme en barres",
+	"description": "Lire un effectif sur un diagramme en barres gradué de 2 en 2 ou de 5 en 5 (combien d'élèves ont 12 ans ?)",
+	"grades": ["5"],
+	"theme": "Statistiques",
+	"domain": "Représenter des données",
+	"subdomain": "diagrammes en barres",
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici l'âge des élèves inscrits à l'association sportive.\n\n```barres\ntitre: Âge des élèves de l'association sportive\naxes: Âge (ans) ; Élèves\n11 ans = {{eval:2*a}}\n12 ans = {{eval:2*b}}\n13 ans = {{eval:2*c}}\n14 ans = {{eval:2*d}}\naxe: 0 à 24, de 2 en 2\n```\n\nCombien d'élèves ont ${{eval:10+k}}$ ans ?\n\n$?$ élèves",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..12"
+				},
+				{
+					"name": "b",
+					"expression": "1..12"
+				},
+				{
+					"name": "c",
+					"expression": "1..12"
+				},
+				{
+					"name": "d",
+					"expression": "1..12"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"conditions": [
+				"(a-b)*(a-b) > 0",
+				"(a-c)*(a-c) > 0",
+				"(a-d)*(a-d) > 0",
+				"(b-c)*(b-c) > 0",
+				"(b-d)*(b-d) > 0",
+				"(c-d)*(c-d) > 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*({{if:k==1|{{a}}|{{if:k==2|{{b}}|{{if:k==3|{{c}}|{{d}}}}}}}})}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On suit le haut de la barre « ${{eval:10+k}}$ ans » jusqu'à l'axe vertical, gradué de $2$ en $2$.",
+					"$\\textcolor{{{color:primary.0}}}{{{eval:2*({{if:k==1|{{a}}|{{if:k==2|{{b}}|{{if:k==3|{{c}}|{{d}}}}}}}})}}}$ élèves ont ${{eval:10+k}}$ ans."
+				]
+			}
+		},
+		{
+			"statement": "On a demandé leur sport préféré aux élèves de 5e.\n\n```barres\ntitre: Sport préféré des élèves de 5e\naxes: Sport ; Élèves\nFootball = {{eval:5*a}}\nBasket = {{eval:5*b}}\nDanse = {{eval:5*c}}\nNatation = {{eval:5*d}}\naxe: 0 à 50, de 5 en 5\n```\n\nCombien d'élèves ont choisi {{if:k==1|le football|{{if:k==2|le basket|{{if:k==3|la danse|la natation}}}}}} ?\n\n$?$ élèves",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..10"
+				},
+				{
+					"name": "b",
+					"expression": "1..10"
+				},
+				{
+					"name": "c",
+					"expression": "1..10"
+				},
+				{
+					"name": "d",
+					"expression": "1..10"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"conditions": [
+				"(a-b)*(a-b) > 0",
+				"(a-c)*(a-c) > 0",
+				"(a-d)*(a-d) > 0",
+				"(b-c)*(b-c) > 0",
+				"(b-d)*(b-d) > 0",
+				"(c-d)*(c-d) > 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:5*({{if:k==1|{{a}}|{{if:k==2|{{b}}|{{if:k==3|{{c}}|{{d}}}}}}}})}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On suit le haut de la barre jusqu'à l'axe vertical, gradué de $5$ en $5$.",
+					"$\\textcolor{{{color:primary.0}}}{{{eval:5*({{if:k==1|{{a}}|{{if:k==2|{{b}}|{{if:k==3|{{c}}|{{d}}}}}}}})}}}$ élèves ont choisi {{if:k==1|le football|{{if:k==2|le basket|{{if:k==3|la danse|la natation}}}}}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "12 ans : 14",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "7",
+				"c": "9",
+				"d": "3",
+				"k": "2"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : graduations comptées de 1 en 1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "7",
+				"c": "9",
+				"d": "3",
+				"k": "2"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Danse : 45",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "7",
+				"c": "9",
+				"d": "3",
+				"k": "3"
+			},
+			"answers": ["45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : barre voisine",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "7",
+				"c": "9",
+				"d": "3",
+				"k": "3"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,373 @@
+{
+	"title": "Compter des effectifs",
+	"description": "Compter dans une liste brute de données combien de fois revient une valeur (l'effectif de 12 ans parmi les âges de 20 élèves)",
+	"grades": ["5"],
+	"theme": "Statistiques",
+	"domain": "Représenter des données",
+	"subdomain": "effectifs et fréquences",
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici l'âge, en années, des $20$ élèves d'un club de théâtre :\n\n${{x1}} ~;~ {{x2}} ~;~ {{x3}} ~;~ {{x4}} ~;~ {{x5}} ~;~ {{x6}} ~;~ {{x7}} ~;~ {{x8}} ~;~ {{x9}} ~;~ {{x10}} ~;~ {{x11}} ~;~ {{x12}} ~;~ {{x13}} ~;~ {{x14}} ~;~ {{x15}} ~;~ {{x16}} ~;~ {{x17}} ~;~ {{x18}} ~;~ {{x19}} ~;~ {{x20}}$\n\nCombien d'élèves ont ${{c}}$ ans ?\n\n$?$ élèves",
+			"variables": [
+				{
+					"name": "x1",
+					"expression": "11..14"
+				},
+				{
+					"name": "x2",
+					"expression": "11..14"
+				},
+				{
+					"name": "x3",
+					"expression": "11..14"
+				},
+				{
+					"name": "x4",
+					"expression": "11..14"
+				},
+				{
+					"name": "x5",
+					"expression": "11..14"
+				},
+				{
+					"name": "x6",
+					"expression": "11..14"
+				},
+				{
+					"name": "x7",
+					"expression": "11..14"
+				},
+				{
+					"name": "x8",
+					"expression": "11..14"
+				},
+				{
+					"name": "x9",
+					"expression": "11..14"
+				},
+				{
+					"name": "x10",
+					"expression": "11..14"
+				},
+				{
+					"name": "x11",
+					"expression": "11..14"
+				},
+				{
+					"name": "x12",
+					"expression": "11..14"
+				},
+				{
+					"name": "x13",
+					"expression": "11..14"
+				},
+				{
+					"name": "x14",
+					"expression": "11..14"
+				},
+				{
+					"name": "x15",
+					"expression": "11..14"
+				},
+				{
+					"name": "x16",
+					"expression": "11..14"
+				},
+				{
+					"name": "x17",
+					"expression": "11..14"
+				},
+				{
+					"name": "x18",
+					"expression": "11..14"
+				},
+				{
+					"name": "x19",
+					"expression": "11..14"
+				},
+				{
+					"name": "x20",
+					"expression": "11..14"
+				},
+				{
+					"name": "c",
+					"expression": "11..14"
+				},
+				{
+					"name": "n",
+					"expression": "eval:{{if:x1=={{c}}|1|0}}+{{if:x2=={{c}}|1|0}}+{{if:x3=={{c}}|1|0}}+{{if:x4=={{c}}|1|0}}+{{if:x5=={{c}}|1|0}}+{{if:x6=={{c}}|1|0}}+{{if:x7=={{c}}|1|0}}+{{if:x8=={{c}}|1|0}}+{{if:x9=={{c}}|1|0}}+{{if:x10=={{c}}|1|0}}+{{if:x11=={{c}}|1|0}}+{{if:x12=={{c}}|1|0}}+{{if:x13=={{c}}|1|0}}+{{if:x14=={{c}}|1|0}}+{{if:x15=={{c}}|1|0}}+{{if:x16=={{c}}|1|0}}+{{if:x17=={{c}}|1|0}}+{{if:x18=={{c}}|1|0}}+{{if:x19=={{c}}|1|0}}+{{if:x20=={{c}}|1|0}}"
+				}
+			],
+			"conditions": ["n >= 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On parcourt la liste et on compte chaque ${{c}}$ (en le barrant pour ne pas le compter deux fois).",
+					"Il y a $\\textcolor{{{color:primary.0}}}{{{n}}}$ fois ${{c}}$ : l'**effectif** de ${{c}}$ ans est ${{n}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici les notes sur $10$ de $18$ élèves à une interrogation :\n\n${{x1}} ~;~ {{x2}} ~;~ {{x3}} ~;~ {{x4}} ~;~ {{x5}} ~;~ {{x6}} ~;~ {{x7}} ~;~ {{x8}} ~;~ {{x9}} ~;~ {{x10}} ~;~ {{x11}} ~;~ {{x12}} ~;~ {{x13}} ~;~ {{x14}} ~;~ {{x15}} ~;~ {{x16}} ~;~ {{x17}} ~;~ {{x18}}$\n\nCombien d'élèves ont eu ${{c}}$ ?\n\n$?$ élèves",
+			"variables": [
+				{
+					"name": "x1",
+					"expression": "4..10"
+				},
+				{
+					"name": "x2",
+					"expression": "4..10"
+				},
+				{
+					"name": "x3",
+					"expression": "4..10"
+				},
+				{
+					"name": "x4",
+					"expression": "4..10"
+				},
+				{
+					"name": "x5",
+					"expression": "4..10"
+				},
+				{
+					"name": "x6",
+					"expression": "4..10"
+				},
+				{
+					"name": "x7",
+					"expression": "4..10"
+				},
+				{
+					"name": "x8",
+					"expression": "4..10"
+				},
+				{
+					"name": "x9",
+					"expression": "4..10"
+				},
+				{
+					"name": "x10",
+					"expression": "4..10"
+				},
+				{
+					"name": "x11",
+					"expression": "4..10"
+				},
+				{
+					"name": "x12",
+					"expression": "4..10"
+				},
+				{
+					"name": "x13",
+					"expression": "4..10"
+				},
+				{
+					"name": "x14",
+					"expression": "4..10"
+				},
+				{
+					"name": "x15",
+					"expression": "4..10"
+				},
+				{
+					"name": "x16",
+					"expression": "4..10"
+				},
+				{
+					"name": "x17",
+					"expression": "4..10"
+				},
+				{
+					"name": "x18",
+					"expression": "4..10"
+				},
+				{
+					"name": "c",
+					"expression": "5..9"
+				},
+				{
+					"name": "n",
+					"expression": "eval:{{if:x1=={{c}}|1|0}}+{{if:x2=={{c}}|1|0}}+{{if:x3=={{c}}|1|0}}+{{if:x4=={{c}}|1|0}}+{{if:x5=={{c}}|1|0}}+{{if:x6=={{c}}|1|0}}+{{if:x7=={{c}}|1|0}}+{{if:x8=={{c}}|1|0}}+{{if:x9=={{c}}|1|0}}+{{if:x10=={{c}}|1|0}}+{{if:x11=={{c}}|1|0}}+{{if:x12=={{c}}|1|0}}+{{if:x13=={{c}}|1|0}}+{{if:x14=={{c}}|1|0}}+{{if:x15=={{c}}|1|0}}+{{if:x16=={{c}}|1|0}}+{{if:x17=={{c}}|1|0}}+{{if:x18=={{c}}|1|0}}"
+				}
+			],
+			"conditions": ["n >= 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On parcourt la liste et on compte chaque ${{c}}$ (en le barrant pour ne pas le compter deux fois).",
+					"Il y a $\\textcolor{{{color:primary.0}}}{{{n}}}$ fois ${{c}}$ : l'**effectif** de la note ${{c}}$ est ${{n}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4 fois 12",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "13",
+				"x2": "14",
+				"x3": "11",
+				"x4": "11",
+				"x5": "14",
+				"x6": "11",
+				"x7": "11",
+				"x8": "13",
+				"x9": "13",
+				"x10": "11",
+				"x11": "13",
+				"x12": "14",
+				"x13": "12",
+				"x14": "14",
+				"x15": "12",
+				"x16": "13",
+				"x17": "11",
+				"x18": "13",
+				"x19": "12",
+				"x20": "12",
+				"c": "12",
+				"n": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un de trop",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "13",
+				"x2": "14",
+				"x3": "11",
+				"x4": "11",
+				"x5": "14",
+				"x6": "11",
+				"x7": "11",
+				"x8": "13",
+				"x9": "13",
+				"x10": "11",
+				"x11": "13",
+				"x12": "14",
+				"x13": "12",
+				"x14": "14",
+				"x15": "12",
+				"x16": "13",
+				"x17": "11",
+				"x18": "13",
+				"x19": "12",
+				"x20": "12",
+				"c": "12",
+				"n": "4"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : l'effectif total",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "13",
+				"x2": "14",
+				"x3": "11",
+				"x4": "11",
+				"x5": "14",
+				"x6": "11",
+				"x7": "11",
+				"x8": "13",
+				"x9": "13",
+				"x10": "11",
+				"x11": "13",
+				"x12": "14",
+				"x13": "12",
+				"x14": "14",
+				"x15": "12",
+				"x16": "13",
+				"x17": "11",
+				"x18": "13",
+				"x19": "12",
+				"x20": "12",
+				"c": "12",
+				"n": "4"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5 fois 7",
+			"variationIndex": 1,
+			"variables": {
+				"x1": "6",
+				"x2": "9",
+				"x3": "7",
+				"x4": "5",
+				"x5": "5",
+				"x6": "6",
+				"x7": "10",
+				"x8": "7",
+				"x9": "5",
+				"x10": "7",
+				"x11": "6",
+				"x12": "5",
+				"x13": "7",
+				"x14": "8",
+				"x15": "8",
+				"x16": "8",
+				"x17": "10",
+				"x18": "7",
+				"c": "7",
+				"n": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un de moins",
+			"variationIndex": 1,
+			"variables": {
+				"x1": "6",
+				"x2": "9",
+				"x3": "7",
+				"x4": "5",
+				"x5": "5",
+				"x6": "6",
+				"x7": "10",
+				"x8": "7",
+				"x9": "5",
+				"x10": "7",
+				"x11": "6",
+				"x12": "5",
+				"x13": "7",
+				"x14": "8",
+				"x15": "8",
+				"x16": "8",
+				"x17": "10",
+				"x18": "7",
+				"c": "7",
+				"n": "5"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

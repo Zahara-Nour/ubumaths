@@ -1,0 +1,209 @@
+{
+	"title": "Interpréter un tableau",
+	"description": "Exploiter un tableau d'effectifs : la valeur la plus fréquente, combien au-delà d'une valeur, l'effectif total",
+	"grades": ["5"],
+	"theme": "Statistiques",
+	"domain": "Représenter des données",
+	"subdomain": "tableaux",
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici l'âge des élèves inscrits au club d'échecs.\n\n| Âge (ans) | 11 | 12 | 13 | 14 |\n| --- | --- | --- | --- | --- |\n| Effectif | ${{a}}$ | ${{b}}$ | ${{c}}$ | ${{d}}$ |\n\nQuel âge est le plus fréquent ?\n\n```choix\nmelanger: non\n- $11$ ans\n- $12$ ans\n- $13$ ans\n- $14$ ans\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..15"
+				},
+				{
+					"name": "b",
+					"expression": "2..15"
+				},
+				{
+					"name": "c",
+					"expression": "2..15"
+				},
+				{
+					"name": "d",
+					"expression": "2..15"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:a>b && a>c && a>d|0|{{if:b>a && b>c && b>d|1|{{if:c>a && c>b && c>d|2|3}}}}}}"
+				}
+			],
+			"conditions": [
+				"(a-b)*(a-b) > 0",
+				"(a-c)*(a-c) > 0",
+				"(a-d)*(a-d) > 0",
+				"(b-c)*(b-c) > 0",
+				"(b-d)*(b-d) > 0",
+				"(c-d)*(c-d) > 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'âge le plus fréquent est celui qui a le plus grand **effectif**.",
+					"Le plus grand effectif est ${{if:r==0|{{a}}|{{if:r==1|{{b}}|{{if:r==2|{{c}}|{{d}}}}}}}}$ : l'âge le plus fréquent est $\\textcolor{{{color:primary.0}}}{{{eval:11+r}}}$ ans."
+				]
+			}
+		},
+		{
+			"statement": "Voici l'âge des élèves inscrits au club d'échecs.\n\n| Âge (ans) | 11 | 12 | 13 | 14 |\n| --- | --- | --- | --- | --- |\n| Effectif | ${{a}}$ | ${{b}}$ | ${{c}}$ | ${{d}}$ |\n\nCombien d'élèves ont **plus de** $12$ ans ?\n\n$?$ élèves",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..15"
+				},
+				{
+					"name": "b",
+					"expression": "2..15"
+				},
+				{
+					"name": "c",
+					"expression": "2..15"
+				},
+				{
+					"name": "d",
+					"expression": "2..15"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c+d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Plus de $12$ ans : $13$ ans et $14$ ans ($12$ ans ne compte pas).",
+					"${{c}} + {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:c+d}}}$ élèves."
+				]
+			}
+		},
+		{
+			"statement": "Voici l'âge des élèves inscrits au club d'échecs.\n\n| Âge (ans) | 11 | 12 | 13 | 14 |\n| --- | --- | --- | --- | --- |\n| Effectif | ${{a}}$ | ${{b}}$ | ${{c}}$ | ${{d}}$ |\n\nCombien d'élèves sont inscrits au club ?\n\n$?$ élèves",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..15"
+				},
+				{
+					"name": "b",
+					"expression": "2..15"
+				},
+				{
+					"name": "c",
+					"expression": "2..15"
+				},
+				{
+					"name": "d",
+					"expression": "2..15"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b+c+d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'**effectif total** est la somme de tous les effectifs.",
+					"${{a}} + {{b}} + {{c}} + {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:a+b+c+d}}}$ élèves."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "12 ans le plus fréquent",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "11",
+				"c": "9",
+				"d": "4",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 11 ans (première colonne)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "11",
+				"c": "9",
+				"d": "4",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Plus de 12 : 13",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"b": "11",
+				"c": "9",
+				"d": "4"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 12 ans compris",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"b": "11",
+				"c": "9",
+				"d": "4"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Total : 30",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"b": "11",
+				"c": "9",
+				"d": "4"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une colonne oubliée",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"b": "11",
+				"c": "9",
+				"d": "4"
+			},
+			"answers": ["26"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

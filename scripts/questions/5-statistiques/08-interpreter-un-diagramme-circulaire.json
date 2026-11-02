@@ -1,0 +1,158 @@
+{
+	"title": "Interpréter un diagramme circulaire",
+	"description": "Exploiter un diagramme circulaire en pourcentages : la catégorie la plus utilisée, le nombre d'élèves d'une catégorie sur 200",
+	"grades": ["5"],
+	"theme": "Statistiques",
+	"domain": "Représenter des données",
+	"subdomain": "diagrammes circulaires",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici comment viennent au collège ses $200$ élèves.\n\n```circulaire\ntitre: Moyen de transport des 200 élèves du collège\nÀ pied = {{eval:5*a}} %\nVélo = {{eval:5*b}} %\nBus = {{eval:5*c}} %\nVoiture = {{eval:5*d}} %\nétiquettes: pourcentages\n```\n\nQuel moyen de transport est le plus utilisé ?\n\n```choix\nmelanger: non\n- À pied\n- Vélo\n- Bus\n- Voiture\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..10"
+				},
+				{
+					"name": "b",
+					"expression": "1..10"
+				},
+				{
+					"name": "c",
+					"expression": "1..10"
+				},
+				{
+					"name": "d",
+					"expression": "eval:20-a-b-c"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:a>b && a>c && a>d|0|{{if:b>a && b>c && b>d|1|{{if:c>a && c>b && c>d|2|3}}}}}}"
+				}
+			],
+			"conditions": [
+				"d >= 1",
+				"d <= 10",
+				"(a-b)*(a-b) > 0",
+				"(a-c)*(a-c) > 0",
+				"(a-d)*(a-d) > 0",
+				"(b-c)*(b-c) > 0",
+				"(b-d)*(b-d) > 0",
+				"(c-d)*(c-d) > 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le plus utilisé est celui du plus grand secteur, donc du plus grand pourcentage.",
+					"C'est « {{if:r==0|À pied|{{if:r==1|Vélo|{{if:r==2|Bus|Voiture}}}}}} », avec $\\textcolor{{{color:primary.0}}}{{{eval:5*({{if:r==0|{{a}}|{{if:r==1|{{b}}|{{if:r==2|{{c}}|{{d}}}}}}}})}}~\\%}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici comment viennent au collège ses $200$ élèves.\n\n```circulaire\ntitre: Moyen de transport des 200 élèves du collège\nÀ pied = {{eval:5*a}} %\nVélo = {{eval:5*b}} %\nBus = {{eval:5*c}} %\nVoiture = {{eval:5*d}} %\nétiquettes: pourcentages\n```\n\nCombien d'élèves viennent {{if:k==1|à pied|{{if:k==2|à vélo|{{if:k==3|en bus|en voiture}}}}}} ?\n\n$?$ élèves",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..10"
+				},
+				{
+					"name": "b",
+					"expression": "1..10"
+				},
+				{
+					"name": "c",
+					"expression": "1..10"
+				},
+				{
+					"name": "d",
+					"expression": "eval:20-a-b-c"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"conditions": ["d >= 1", "d <= 10"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*({{if:k==1|{{a}}|{{if:k==2|{{b}}|{{if:k==3|{{c}}|{{d}}}}}}}})}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On lit le pourcentage : ${{eval:5*({{if:k==1|{{a}}|{{if:k==2|{{b}}|{{if:k==3|{{c}}|{{d}}}}}}}})}}~\\%$ des $200$ élèves.",
+					"$1~\\%$ de $200$, c'est $2$ élèves ; donc ${{eval:5*({{if:k==1|{{a}}|{{if:k==2|{{b}}|{{if:k==3|{{c}}|{{d}}}}}}}})}}~\\%$, c'est ${{eval:5*({{if:k==1|{{a}}|{{if:k==2|{{b}}|{{if:k==3|{{c}}|{{d}}}}}}}})}} \\times 2 = \\textcolor{{{color:primary.0}}}{{{eval:10*({{if:k==1|{{a}}|{{if:k==2|{{b}}|{{if:k==3|{{c}}|{{d}}}}}}}})}}}$ élèves."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Bus le plus utilisé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "8",
+				"d": "4",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : vélo",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "8",
+				"d": "4",
+				"r": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Vélo : 25 % de 200 = 50",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "8",
+				"d": "4",
+				"k": "2"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le pourcentage recopié",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "8",
+				"d": "4",
+				"k": "2"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
