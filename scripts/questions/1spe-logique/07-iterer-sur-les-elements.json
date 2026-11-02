@@ -1,0 +1,246 @@
+{
+	"title": "Itérer sur les éléments d'une liste",
+	"description": "Itération sur les éléments d'une liste (for x in L) : somme, plus petit élément, nouvelle liste construite à partir des éléments qui vérifient une condition",
+	"grades": ["1_SPE"],
+	"theme": "Algorithmique",
+	"domain": "Listes",
+	"subdomain": "Parcourir une liste",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On exécute le programme Python suivant.\n\n```python\nL = [{{z0}}, {{z1}}, {{z2}}, {{z3}}, {{z4}}]\ns = 0\nfor x in L:\n    s = s + x\nprint(s)\n```\n\nQuelle valeur est affichée ?\n\n$?$",
+			"variables": [
+				{
+					"name": "z0",
+					"expression": "1..20"
+				},
+				{
+					"name": "z1",
+					"expression": "1..20"
+				},
+				{
+					"name": "z2",
+					"expression": "1..20"
+				},
+				{
+					"name": "z3",
+					"expression": "1..20"
+				},
+				{
+					"name": "z4",
+					"expression": "1..20"
+				},
+				{
+					"name": "somme",
+					"expression": "eval:z0+z1+z2+z3+z4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:somme}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`for x in L` donne à `x` **chaque élément** de la liste, dans l'ordre : ${{z0}}, {{z1}}, {{z2}}, {{z3}}, {{z4}}$.",
+					"`s` les additionne : $s={{z0}}+{{z1}}+{{z2}}+{{z3}}+{{z4}}=\\textcolor{{{color:primary.0}}}{{{eval:somme}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On exécute le programme Python suivant.\n\n```python\nL = [{{z0}}, {{z1}}, {{z2}}, {{z3}}, {{z4}}, {{z5}}]\nm = L[0]\nfor x in L:\n    if x < m:\n        m = x\nprint(m)\n```\n\nQuelle valeur est affichée ?\n\n$?$",
+			"variables": [
+				{
+					"name": "z0",
+					"expression": "1..20"
+				},
+				{
+					"name": "z1",
+					"expression": "1..20"
+				},
+				{
+					"name": "z2",
+					"expression": "1..20"
+				},
+				{
+					"name": "z3",
+					"expression": "1..20"
+				},
+				{
+					"name": "z4",
+					"expression": "1..20"
+				},
+				{
+					"name": "z5",
+					"expression": "1..20"
+				},
+				{
+					"name": "m",
+					"expression": "eval:min(z0,z1,z2,z3,z4,z5)"
+				}
+			],
+			"conditions": ["z0 != m"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`m` part du premier élément ; à chaque élément `x` plus petit que `m`, `m` prend la valeur `x`.",
+					"À la fin, `m` est le **plus petit** élément de la liste : $\\textcolor{{{color:primary.0}}}{{{eval:m}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On exécute le programme Python suivant.\n\n```python\nL = [{{eval:2*o0+1}}, {{eval:2*g0}}, {{eval:2*g1}}, {{eval:2*o1+1}}, {{eval:2*o2+1}}]\nM = []\nfor x in L:\n    if x % 2 == 1:\n        M.append({{eval:a}} * x)\n```\n\nQue contient la liste `M` à la fin ?\n\n$M=[?,\\ ?,\\ ?]$",
+			"variables": [
+				{
+					"name": "o0",
+					"expression": "0..9"
+				},
+				{
+					"name": "o1",
+					"expression": "0..9"
+				},
+				{
+					"name": "o2",
+					"expression": "0..9"
+				},
+				{
+					"name": "g0",
+					"expression": "1..9"
+				},
+				{
+					"name": "g1",
+					"expression": "1..9"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*(2*o0+1)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a*(2*o1+1)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a*(2*o2+1)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`for x in L` parcourt les éléments ; `x % 2 == 1` est vrai pour les éléments **impairs** : ${{eval:2*o0+1}}$, ${{eval:2*o1+1}}$ et ${{eval:2*o2+1}}$.",
+					"Chacun est multiplié par ${{eval:a}}$ puis ajouté à la fin de `M` :",
+					"$$M=[\\textcolor{{{color:primary.0}}}{{{eval:a*(2*o0+1)}}},\\ \\textcolor{{{color:primary.0}}}{{{eval:a*(2*o1+1)}}},\\ \\textcolor{{{color:primary.0}}}{{{eval:a*(2*o2+1)}}}]$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Somme juste",
+			"variationIndex": 0,
+			"variables": {
+				"z0": "4",
+				"z1": "15",
+				"z2": "9",
+				"z3": "12",
+				"z4": "18",
+				"somme": "58"
+			},
+			"answers": ["58"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dernier élément oublié",
+			"variationIndex": 0,
+			"variables": {
+				"z0": "4",
+				"z1": "15",
+				"z2": "9",
+				"z3": "12",
+				"z4": "18",
+				"somme": "58"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Minimum juste",
+			"variationIndex": 1,
+			"variables": {
+				"z0": "9",
+				"z1": "15",
+				"z2": "4",
+				"z3": "12",
+				"z4": "18",
+				"z5": "6",
+				"m": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : maximum",
+			"variationIndex": 1,
+			"variables": {
+				"z0": "9",
+				"z1": "15",
+				"z2": "4",
+				"z3": "12",
+				"z4": "18",
+				"z5": "6",
+				"m": "4"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Liste juste",
+			"variationIndex": 2,
+			"variables": {
+				"o0": "2",
+				"o1": "0",
+				"o2": "6",
+				"g0": "3",
+				"g1": "4",
+				"a": "3"
+			},
+			"answers": ["15", "3", "39"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : éléments pairs",
+			"variationIndex": 2,
+			"variables": {
+				"o0": "2",
+				"o1": "0",
+				"o2": "6",
+				"g0": "3",
+				"g1": "4",
+				"a": "3"
+			},
+			"answers": ["18", "24", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

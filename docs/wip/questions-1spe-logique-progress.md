@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, à la création du sous-chantier._
+_Mis à jour le 2026-11-02, avant le premier commit (fichiers écrits, PR pas encore ouverte)._
 
-- **État** : rien d'écrit ; points et classement repris de l'index (§ 3).
-- **Prochaine action** : lot « logique et listes » : worktree neuf, relevé MCP des voisins (nœuds, niveaux des catégories, modèles du chantier `logique-1spe`), phase 0 à faire valider.
-- **En attente de David** : rien (la phase 0 est à produire).
-- **Pièges en cours** : voir « Décisions communes et pièges » ci-dessous.
-- **Worktree / branche** : aucun ; worktree neuf `../ubumaths-wt-questions-1spe-logique` depuis `origin/main`.
+- **État** : phase 0 validée (D1) ; 7 modèles écrits (`docs/wip/questions/lot-1spe-logique.py` → `scripts/questions/1spe-logique/`), 64 specs vertes, 4 400 tirages, 280 aperçus relus ; simulation `create-questions` (prod) : 7 à créer ; essai en base **locale** : 7 créés, 05 joué (case par case juste), 02 pas encore regardé.
+- **Prochaine action** : regarder 02 (choix en code) et 01 dans l'aperçu local (port 5176, `pnpm exec svelte-kit sync` déjà fait), puis PR des fichiers (revue : aucune, `Doc-inchangée: contenu`), merge ; ensuite David lance `create-questions --publier` depuis `main`.
+- **En attente de David** : rien.
+- **Pièges en cours** : `i` et `e` interdits comme noms de variables ; `{{if:}}` imbriqué refusé dans une variable ; `eval:` sans comparaisons (indicatrices `min`/`max`/`abs`) ; `create-questions` vise la PROD sans `set -a; . ./.env.local; set +a`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-logique`, `content/questions-1spe-logique`.
 
 ---
 
@@ -55,3 +55,39 @@ _Mis à jour le 2026-11-02, à la création du sous-chantier._
   `pull --rebase`) ; ne pas toucher aux catégories d'une autre session.
 - **Commits** : `Doc-inchangée:` dans un COMMIT (≤ 100 caractères) ; aucun trailer `Claude-Session:`.
 - **Page à cocher** : collection `verdicts`, compter les verdicts avant `publier-lot` ; rendu vérifié à 390 px.
+
+## Lot « logique et listes »
+
+_Relevé prod du 2026-11-02 (MCP) : les 7 points sans modèle, chacun sur son nœud (203 → Logique › Quantificateurs et négation ›
+pour tout, il existe ; 206, 367 → Algorithmique › Listes › créer une liste ; 207 → liste en compréhension ; 208 → éléments et
+indices ; 209, 210 → parcourir une liste). Aucun modèle de liste en base, tous niveaux confondus. Nœud de 203 partagé avec
+2-215, 2-412 (lot 10 de questions-2de, autre grain) ; nœuds des listes partagés avec 1TECHNO-008 à 011. Pas de case « liste »
+dans le juge._
+
+**Phase 0 (D1, David, 2026-11-02, « go » sur les recos)** : un modèle par point, `1_SPE` seul, brouillons.
+
+| #   | Point | Modèle                              | Catégorie, niveau                                                  | Réponse             |
+| --- | ----- | ----------------------------------- | ------------------------------------------------------------------ | ------------------- |
+| 1   | 203   | Quantification implicite            | Logique › Logique et raisonnement › Quantificateurs et négation, 4 | choix               |
+| 2   | 206   | Liste en extension                  | Algorithmique › Listes › Créer une liste (neuve), 1                | choix ; cases       |
+| 3   | 367   | Liste par ajouts successifs         | Algorithmique › Listes › Créer une liste, 2                        | cases               |
+| 4   | 207   | Liste en compréhension              | Algorithmique › Listes › Liste en compréhension (neuve), 1         | cases ; choix       |
+| 5   | 208   | Éléments et indices d'une liste     | Algorithmique › Listes › Éléments et indices (neuve), 1            | case ; cases ; case |
+| 6   | 209   | Parcourir une liste par ses indices | Algorithmique › Listes › Parcourir une liste (neuve), 1            | case                |
+| 7   | 210   | Itérer sur les éléments d'une liste | Algorithmique › Listes › Parcourir une liste, 2                    | case ; cases        |
+
+Q1 contenu d'une liste : une case par élément sur la ligne « L = [?, ?, ?] ». Q2 Python partout, une variation en langage
+naturel (367). Q3 209 = parcours par indice (`range(len(L))`), 210 = itération sur les éléments (`for x in L`). Q4 `1_SPE`
+seul (1TECHNO pour un chantier de 1re techno). Q5 question d'accès : personne (brouillons ; la migration ne pose que nœud et
+tags).
+
+**Écriture** : `docs/wip/questions/lot-1spe-logique.py` → `scripts/questions/1spe-logique/`. `question:specs` : 7 / 7
+importables, 64 specs (justes et erreurs typiques : indices dès 1, borne de `range` incluse, décalage après `del`, ajout
+après la multiplication), 4 400 tirages ; 280 aperçus relus (`{{`, NaN, `+-` : rien). Simulation `create-questions` (prod) :
+7 à créer. Essai en base **locale** : 7 créés ; 05 v1 joué (3 cases justes, 1 fausse : « case 4 : faux », rendu du bloc
+Python et de la ligne `L = [ , , , ]` propre).
+
+**Pièges du lot** : `i` lu comme l'imaginaire (« Complex numbers not supported »), `e` = Euler → jamais en nom de variable ;
+`{{if:}}` imbriqué dans l'expression d'une variable refusé (un seul niveau passe) ; `eval:` ne connaît pas `==` ni `>` →
+indicatrices `min(max(x-s,0),1)` et `1-min(abs(r-k),1)` ; dans une variable, `eval:…` sans accolades ; worktree neuf :
+`pnpm exec svelte-kit sync` avant `question:specs` (`$lib` introuvable).

@@ -1,0 +1,153 @@
+{
+	"title": "Liste en extension",
+	"description": "Créer une liste en énumérant ses éléments : reconnaître l'instruction Python (bornes, premier terme), ou écrire la liste d'entiers décrite en mots",
+	"grades": ["1_SPE"],
+	"theme": "Algorithmique",
+	"domain": "Listes",
+	"subdomain": "Créer une liste",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On veut créer en Python la liste `L` des multiples de ${{eval:p}}$ compris entre ${{eval:p}}$ et ${{eval:5*p}}$ (inclus), rangés dans l'ordre croissant.\n\nQuelle instruction crée cette liste ?\n\n```choix\n- `L = [{{eval:1*p}}, {{eval:2*p}}, {{eval:3*p}}, {{eval:4*p}}, {{eval:5*p}}]`\n- `L = [0, {{eval:1*p}}, {{eval:2*p}}, {{eval:3*p}}, {{eval:4*p}}, {{eval:5*p}}]`\n- `L = [{{eval:1*p}}, {{eval:2*p}}, {{eval:3*p}}, {{eval:4*p}}]`\n- `L = [{{eval:2*p}}, {{eval:3*p}}, {{eval:4*p}}, {{eval:5*p}}, {{eval:6*p}}]`\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "3..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une liste **en extension** s'écrit en énumérant tous ses éléments entre crochets, séparés par des virgules.",
+					"Les multiples de ${{eval:p}}$ de ${{eval:p}}$ à ${{eval:5*p}}$ sont ${{eval:1*p}}, {{eval:2*p}}, {{eval:3*p}}, {{eval:4*p}}$ et ${{eval:5*p}}$ : $0$ n'est pas compris entre ${{eval:p}}$ et ${{eval:5*p}}$, et ${{eval:5*p}}$ est inclus.",
+					"D'où $\\textcolor{{{color:primary.0}}}{\\texttt{L = [{{eval:1*p}}, {{eval:2*p}}, {{eval:3*p}}, {{eval:4*p}}, {{eval:5*p}}]}}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris en extension la liste `L` des entiers impairs compris entre ${{eval:a}}$ et ${{eval:a+8}}$ (inclus), rangés dans l'ordre croissant.\n\n$L=[?,\\ ?,\\ ?,\\ ?,\\ ?]$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "0..20"
+				},
+				{
+					"name": "a",
+					"expression": "2*m+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+0}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a+2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a+4}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a+6}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a+8}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On part de ${{eval:a}}$ (impair) et on ajoute $2$ à chaque fois, jusqu'à ${{eval:a+8}}$.",
+					"$$L=[\\textcolor{{{color:primary.0}}}{{{eval:a+0}}},\\ \\textcolor{{{color:primary.0}}}{{{eval:a+2}}},\\ \\textcolor{{{color:primary.0}}}{{{eval:a+4}}},\\ \\textcolor{{{color:primary.0}}}{{{eval:a+6}}},\\ \\textcolor{{{color:primary.0}}}{{{eval:a+8}}}]$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "les cinq multiples",
+			"variationIndex": 0,
+			"variables": {
+				"p": "7"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0 en trop",
+			"variationIndex": 0,
+			"variables": {
+				"p": "7"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : dernier oublié",
+			"variationIndex": 0,
+			"variables": {
+				"p": "7"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : départ au double",
+			"variationIndex": 0,
+			"variables": {
+				"p": "7"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Liste juste",
+			"variationIndex": 1,
+			"variables": {
+				"m": "3",
+				"a": "7"
+			},
+			"answers": ["7", "9", "11", "13", "15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : entiers pairs",
+			"variationIndex": 1,
+			"variables": {
+				"m": "3",
+				"a": "7"
+			},
+			"answers": ["8", "10", "12", "14", "16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : pas de 1",
+			"variationIndex": 1,
+			"variables": {
+				"m": "3",
+				"a": "7"
+			},
+			"answers": ["7", "8", "9", "10", "11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
