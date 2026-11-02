@@ -1,23 +1,21 @@
 ---
-status: phase-0
+status: en-cours
 ---
 
 # Chantier `controles-figure` — nouveaux contrôles de la figure à compléter (symétrique d'abord)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, relevé fait, phase 0 proposée._
+_Mis à jour le 2026-11-02, phase 0 validée, code en cours._
 
-- **État** : rien de codé. Chantier ouvert sur la ligne n° 1 de
+- **État** : code du lot 1 en cours (branche ouverte). Chantier ouvert sur la ligne n° 1 de
   [outils-manquants.md](outils-manquants.md) (David, 2026-11-02 : « je te suis »).
-- **Prochaine action** : relevé fait (§ 2) ; phase 0 du lot 1 (§ 3, symétrique sur quadrillage) à
-  faire valider AVANT tout code ; worktree `git worktree add -b feat/controles-figure ../ubumaths-wt-controles-figure origin/main`
-  seulement après la validation.
-- **En attente de David** : les 4 questions du § 3.
+- **Prochaine action** : phase 0 du lot 1 validée (§ 3) ; tests rouges puis juge `symetrique`.
+- **En attente de David** : rien.
 - **Pièges en cours** : un contrôle ne doit jamais donner la réponse (masquage `verifier: ?` en évaluation,
   chantier `fuite-enonce`) ; géométrie = `geometry-expert` / `pedagogy-expert` ; revue Opus (correction des
   réponses).
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `../ubumaths-wt-controles-figure`, `feat/controles-figure`.
 
 ---
 
@@ -60,7 +58,7 @@ Hors chantier : rotation, homothétie (absentes du BO au collège) ; rapporteur 
   (propriétés de la symétrie axiale pour construire, papier uni compris). Journaux qui les attendent :
   `questions-ce2` l. 100, `questions-cm1` l. 80, `questions-cm2` l. 97, `questions-6` l. 127.
 
-## 3. Phase 0 — lot 1 : symétrique sur quadrillage (à valider)
+## 3. Phase 0 — lot 1 : symétrique sur quadrillage (validée le 2026-11-02)
 
 ### Écriture par le prof
 
@@ -109,6 +107,16 @@ tracé dans la figure sauf l'axe**. `par O` (un point) = symétrie centrale (5e)
 3. **Symétrie centrale dans le même lot** (même juge, `par O`) ou plus tard ?
 4. **6-180 (papier uni)** : sans quadrillage, l'élève n'atteint l'image qu'avec des instruments (équerre,
    compas) ou un outil « point » — hors du lot 1 (recommandé), à reprendre avec l'outil « point » ?
+
+### Décisions de David (2026-11-02, « je valide » mes recommandations)
+
+1. L'élève transforme **tout le tracé sauf l'axe** (`symetrique par d`) ; forme facultative
+   `symetrique A ; B ; C par d` : seulement les traits dont les deux bouts sont parmi ces points.
+2. « Ta figure a glissé » **gardé**, seulement quand TOUT ce que l'élève a tracé (hors figure de départ et
+   axe) est la figure de départ glissée ; même règle pour l'erreur d'axe oblique (l'élève retourne comme
+   si l'axe était vertical ou horizontal) → « L'axe est oblique : … ».
+3. **Symétrie centrale dans le lot** (`symetrique par O`, O un point).
+4. 6-180 papier uni **hors du lot 1** (outil « point », lot suivant). Translation (3e) plus tard (outil n° 3).
 
 Lots suivants (après celui-ci) : outil « point » et symétrique d'un point, puis angle, triangle,
 médiatrice, bissectrice, cercle circonscrit, 4e sommet (§ 1).
