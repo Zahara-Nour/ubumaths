@@ -1,0 +1,118 @@
+{
+	"title": "Produit scalaire en base orthonormée",
+	"description": "À savoir : en base orthonormée u·v = xx′ + yy′, et la condition de validité de la formule (erreurs typiques : déterminant, xy + x′y′, n'importe quelle base)",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Produit scalaire",
+	"subdomain": "À savoir",
+	"level": 3,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}x\\\\y\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}x'\\\\y'\\end{pmatrix}$.\n\nLe produit scalaire $\\vec{u}\\cdot \\vec{v}$ est égal à :\n\n```choix\n- $xx'+yy'$\n- $xy'-x'y$\n- $xy+x'y'$\n- $xx'\\times yy'$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : dans un repère orthonormé, $\\vec{u}\\cdot \\vec{v}=\\textcolor{{{color:primary.0}}}{xx'+yy'}$.",
+					"Ne pas confondre avec $xy'-x'y$, le déterminant, qui sert à tester la colinéarité."
+				]
+			}
+		},
+		{
+			"statement": "On considère les vecteurs $\\vec{u}\\begin{pmatrix}x\\\\y\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}x'\\\\y'\\end{pmatrix}$, de coordonnées données dans une base du plan.\n\nL'égalité $\\vec{u}\\cdot \\vec{v}=xx'+yy'$ est vraie :\n\n```choix\n- lorsque la base est orthonormée\n- dans n'importe quelle base\n- seulement si $\\vec{u}$ et $\\vec{v}$ sont orthogonaux\n- seulement si $\\vec{u}$ et $\\vec{v}$ sont colinéaires\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : l'expression $\\vec{u}\\cdot \\vec{v}=xx'+yy'$ n'est valable que dans une base $\\textcolor{{{color:primary.0}}}{\\text{orthonormée}}$.",
+					"Dans une autre base, les produits scalaires des vecteurs de la base entre eux ne valent pas $0$ ou $1$, et la formule change."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "xx′ + yy′",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : déterminant",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : xy + x′y′",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : xx′ × yy′",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "base orthonormée",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : toute base",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : orthogonaux",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : colinéaires",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

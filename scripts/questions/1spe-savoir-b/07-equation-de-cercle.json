@@ -1,0 +1,118 @@
+{
+	"title": "Équation de cercle",
+	"description": "À savoir : en repère orthonormé, (x − a)² + (y − b)² = r² est une équation du cercle de centre (a ; b) et de rayon r, dans les deux sens (erreurs typiques : signes, r au lieu de r², disque)",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Géométrie repérée",
+	"subdomain": "À savoir",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Le plan est muni d'un repère orthonormé. Soit $a$, $b$ deux réels et $r$ un réel strictement positif.\n\nUne équation du cercle de centre $\\Omega(a\\,;b)$ et de rayon $r$ est :\n\n```choix\n- $(x-a)^2+(y-b)^2=r^2$\n- $(x+a)^2+(y+b)^2=r^2$\n- $(x-a)^2+(y-b)^2=r$\n- $x^2+y^2=r^2$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : un point $M(x\\,;y)$ est sur le cercle si et seulement si $\\Omega M=r$, c'est-à-dire $\\Omega M^2=r^2$.",
+					"En repère orthonormé, $\\Omega M^2=(x-a)^2+(y-b)^2$, d'où l'équation $\\textcolor{{{color:primary.0}}}{(x-a)^2+(y-b)^2=r^2}$."
+				]
+			}
+		},
+		{
+			"statement": "Le plan est muni d'un repère orthonormé. Soit $a$, $b$ deux réels et $r$ un réel strictement positif.\n\nL'ensemble des points $M(x\\,;y)$ tels que $(x-a)^2+(y-b)^2=r^2$ est :\n\n```choix\n- le cercle de centre $(a\\,;b)$ et de rayon $r$\n- le cercle de centre $(-a\\,;-b)$ et de rayon $r$\n- le cercle de centre $(a\\,;b)$ et de rayon $r^2$\n- le disque de centre $(a\\,;b)$ et de rayon $r$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : $(x-a)^2+(y-b)^2=r^2$ équivaut à $\\Omega M=r$ avec $\\Omega(a\\,;b)$.",
+					"C'est donc $\\textcolor{{{color:primary.0}}}{\\text{le cercle de centre } (a\\,;b) \\text{ et de rayon } r}$ : le rayon est $r$, pas $r^2$, et le disque serait $(x-a)^2+(y-b)^2\\leqslant r^2$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(x − a)² + (y − b)² = r²",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signes",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : r non élevé au carré",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : centre oublié",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "cercle (a ; b), r",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : centre opposé",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rayon r²",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : disque",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

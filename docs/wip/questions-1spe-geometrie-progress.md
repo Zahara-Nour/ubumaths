@@ -10,13 +10,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, à la création du sous-chantier._
+_Mis à jour le 2026-11-02, lot 6b écrit (PR des fichiers à ouvrir)._
 
-- **État** : rien d'écrit. Phase 0 du lot 6b **déjà validée** (D29, tableau du § 23 de l'index, lignes 8 à 14).
-- **Prochaine action** : lot 6b : worktree neuf, relevé MCP (catégories Produit scalaire et Géométrie repérée, aucune « À savoir » encore), script `docs/wip/questions/lot-1spe-savoir-b.py` sur le gabarit `lot-1spe-savoir-a.py`.
-- **En attente de David** : rien.
+- **État** : lot 6b écrit, 7 modèles (`scripts/questions/1spe-savoir-b/`), simulation verte, essai en base locale fait.
+- **Prochaine action** : merger la PR des fichiers ; puis David lance `create-questions --publier` depuis le dépôt principal ;
+  relever les `id`, migration nœud + tag (gabarit 6a).
+- **En attente de David** : rien avant le merge ; ensuite la création en prod (`!`).
 - **Pièges en cours** : voir « Décisions communes et pièges » ci-dessous.
-- **Worktree / branche** : aucun ; worktree neuf `../ubumaths-wt-questions-1spe-geometrie` depuis `origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-geometrie`, `content/questions-1spe-geometrie` ; dev sur 5176.
 
 ---
 
@@ -64,3 +65,30 @@ puis les formules (relever les niveaux des catégories voisines après la créat
   `pull --rebase`) ; ne pas toucher aux catégories d'une autre session.
 - **Commits** : `Doc-inchangée:` dans un COMMIT (≤ 100 caractères) ; aucun trailer `Claude-Session:`.
 - **Page à cocher** : collection `verdicts`, compter les verdicts avant `publier-lot` ; rendu vérifié à 390 px.
+
+## Lot 6b : écriture (2026-11-02)
+
+Relevé prod (MCP, 2026-11-02) : aucune catégorie « À savoir » dans Produit scalaire ni Géométrie repérée ; les 12 points du
+sous-chantier (6b et formules) toujours sans modèle. Catégories voisines inchangées (Calculer un produit scalaire 1-5,
+Propriétés 1-5, Angles et longueurs 1-3, Lieux de points 2-3, Équation de cercle 1-5, Projeté orthogonal 2-3, Vecteur normal
+1-5).
+
+Script `docs/wip/questions/lot-1spe-savoir-b.py` → `scripts/questions/1spe-savoir-b/` (01 à 07, ordre du tableau D29) :
+
+| #   | Point | Variation 1 (formule → …)        | Variation 2 (autre sens)                                  |
+| --- | ----- | -------------------------------- | --------------------------------------------------------- |
+| 01  | 412   | u·v = ‖u‖‖v‖cos(u, v)            | cos(u, v) = u·v / (‖u‖‖v‖)                                |
+| 02  | 310   | AB·AC = AB·AH                    | A entre H et B : AB·AC = −AB × AH (signe)                 |
+| 03  | 313   | u·v = xx′ + yy′                  | la formule vaut en base orthonormée (pas dans toute base) |
+| 04  | 311   | orthogonaux ⟺ u·v = 0            | u·v = 0 ⟹ orthogonaux (pas « un des vecteurs est nul »)   |
+| 05  | 415   | orthogonaux ⟺ xx′ + yy′ = 0      | (−y ; x) est orthogonal à u(x ; y)                        |
+| 06  | 316   | BC² = AB² + AC² − 2AB·AC·cos BAC | angle droit : Al-Kashi redonne Pythagore                  |
+| 07  | 329   | (x − a)² + (y − b)² = r²         | l'équation décrit le cercle de centre (a ; b), rayon r    |
+
+Distracteurs : erreurs typiques (cosinus oublié ou sinus ; AB × AC sans projeter ; signe oublié ; déterminant xy′ − x′y,
+critère de colinéarité ; « un des vecteurs est nul » ; angle mal placé ; signes du centre, r au lieu de r², disque).
+
+Vérifications : 56 specs (une juste, trois erreurs par variation) ; `create-questions` en simulation 7 / 7 ; 193 formules
+(énoncés, propositions, corrigés) passées à MathLive (`validateLatex`, mathlive-ssr) : 0 erreur ; trois `col()` hors `$…$`
+remplacés par `colt` avant l'essai. Base **locale** : 7 brouillons créés ; 07 joué dans l'aperçu admin (bonne réponse comptée
+juste, propositions rendues à la largeur d'un téléphone) ; 01 regardé.
