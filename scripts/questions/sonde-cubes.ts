@@ -1,11 +1,11 @@
 /**
- * Sonde des blocs ```cubes d'un lot de modèles
- * ============================================
+ * Sonde des blocs d'espace (```cubes, ```solide, ```patron) d'un lot de modèles
+ * ============================================================================
  *
- * Tire chaque modèle du dossier N fois (graines 1 à N) et passe chaque bloc ```cubes de
+ * Tire chaque modèle du dossier N fois (graines 1 à N) et passe chaque bloc d'espace de
  * l'instance (énoncé, options d'un choix, corrigé) au parseur de l'appli (`parseEspaceContent`) :
  * les specs et les tirages ne voient pas un bloc d'affichage en erreur (« Solide indisponible »
- * côté élève). À lancer avant la page à cocher d'un lot d'assemblages de cubes : 0 problème exigé.
+ * côté élève). À lancer avant la page à cocher d'un lot de cubes ou de solides : 0 problème exigé.
  * Démarche : docs/pratiques/couvrir-un-niveau.md § 5 (calquée sur sonde-figures.ts).
  *
  *   pnpm tsx scripts/questions/sonde-cubes.ts --dir scripts/questions/6-assemblages-cubes [--tirages 300]
@@ -18,11 +18,13 @@ import { basename, join } from 'node:path';
 import { generateInstance } from '../../src/lib/questions/generator/instance-generator';
 import { parseEspaceContent } from '../../src/lib/ubumark/parser/espace-parser';
 import type { QuestionTemplate } from '../../src/lib/questions/types';
+import type { EspaceKind } from '../../src/lib/ubumark/types/espace';
 import { readTemplateFile } from '../lib/template-file';
 import { valeurArgument } from '../lib/lot-questions';
 
-// Bloc ```cubes dans une chaîne de l'instance ; `case: N` est posé par le générateur
-const BLOC_CUBES = /```cubes\n([\s\S]*?)```/g;
+// Bloc d'espace dans une chaîne de l'instance (genre = mot de clôture) ; `case: N` est posé
+// par le générateur
+const BLOC_ESPACE = /```(cubes|solide|patron)\n([\s\S]*?)```/g;
 
 function lireModele(chemin: string): QuestionTemplate {
 	const nom = basename(chemin);
@@ -65,10 +67,10 @@ function sonder(dossier: string, tirages: number): number {
 				continue;
 			}
 			for (const texte of chaines(r.instance)) {
-				for (const m of texte.matchAll(BLOC_CUBES)) {
+				for (const m of texte.matchAll(BLOC_ESPACE)) {
 					blocs++;
-					const corps = corpsDuBloc(m[1]);
-					const erreurs = parseEspaceContent(corps, 'cubes').errors;
+					const corps = corpsDuBloc(m[2]);
+					const erreurs = parseEspaceContent(corps, m[1] as EspaceKind).errors;
 					const cle = erreurs.join(' | ');
 					if (erreurs.length > 0 && !vus.has(cle)) {
 						vus.add(cle);
@@ -79,7 +81,9 @@ function sonder(dossier: string, tirages: number): number {
 			}
 		}
 	}
-	console.log(`${fichiers.length} modèle(s), ${blocs} bloc(s) cubes lus, ${problemes} problème(s)`);
+	console.log(
+		`${fichiers.length} modèle(s), ${blocs} bloc(s) d'espace lus, ${problemes} problème(s)`
+	);
 	return problemes;
 }
 

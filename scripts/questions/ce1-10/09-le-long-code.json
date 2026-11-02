@@ -1,0 +1,136 @@
+{
+	"title": "Le robot et un long code de flèches",
+	"description": "De 8 à 15 flèches, au plus 4 changements de direction : où arrive le robot ? quel code ?",
+	"grades": ["CE1"],
+	"theme": "Géométrie",
+	"domain": "Repérage et déplacements",
+	"subdomain": "Coder un déplacement",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le robot part du carré rouge.\n\nChaque flèche fait avancer le robot d'un carreau dans son sens.\n\nCode : {{if:k==1|$\\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\downarrow\\ \\rightarrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow\\ \\uparrow$|{{if:k==2|$\\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow$|{{if:k==3|$\\downarrow\\ \\downarrow\\ \\leftarrow\\ \\uparrow\\ \\uparrow\\ \\uparrow\\ \\uparrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow$|{{if:k==4|$\\leftarrow\\ \\leftarrow\\ \\leftarrow\\ \\uparrow\\ \\leftarrow\\ \\leftarrow\\ \\downarrow\\ \\downarrow$|{{if:k==5|$\\uparrow\\ \\rightarrow\\ \\rightarrow\\ \\downarrow\\ \\downarrow\\ \\downarrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow$|{{if:k==6|$\\uparrow\\ \\uparrow\\ \\uparrow\\ \\rightarrow\\ \\downarrow\\ \\downarrow\\ \\downarrow\\ \\downarrow\\ \\leftarrow$|{{if:k==7|$\\uparrow\\ \\uparrow\\ \\rightarrow\\ \\rightarrow\\ \\downarrow\\ \\downarrow\\ \\downarrow\\ \\rightarrow\\ \\rightarrow\\ \\rightarrow$|{{if:k==8|$\\leftarrow\\ \\downarrow\\ \\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow$|{{if:k==9|$\\downarrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow\\ \\uparrow\\ \\uparrow\\ \\uparrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow$|$\\uparrow\\ \\uparrow\\ \\uparrow\\ \\leftarrow\\ \\uparrow\\ \\uparrow\\ \\uparrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow$}}}}}}}}}}}}}}}}}}\n\n{{if:k==1|```figure\nfenetre: -0.6 ; 10.6 ; -0.6 ; 6.6\ndescription: Un quadrillage, le robot au départ et trois points numérotés 1, 2 et 3.\ngrille: oui\n---\ndp0 = point(2.8, 0.8, visible=faux)\ndp1 = point(3.2, 0.8, visible=faux)\ndp2 = point(3.2, 1.2, visible=faux)\ndp3 = point(2.8, 1.2, visible=faux)\ndp = polygone(dp0, dp1, dp2, dp3, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\nP0 = point(8, 3, couleur=\"noir\", etiquette=\"aucune\")\ntexte(8.3, 3.3, \"2\")\nP1 = point(7, 3, couleur=\"noir\", etiquette=\"aucune\")\ntexte(7.3, 3.3, \"3\")\nP2 = point(2, 3, couleur=\"noir\", etiquette=\"aucune\")\ntexte(2.3, 3.3, \"1\")\n```|{{if:k==2|```figure\nfenetre: -0.6 ; 10.6 ; -0.6 ; 6.6\ndescription: Un quadrillage, le robot au départ et trois points numérotés 1, 2 et 3.\ngrille: oui\n---\ndp0 = point(6.8, 0.8, visible=faux)\ndp1 = point(7.2, 0.8, visible=faux)\ndp2 = point(7.2, 1.2, visible=faux)\ndp3 = point(6.8, 1.2, visible=faux)\ndp = polygone(dp0, dp1, dp2, dp3, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\nP0 = point(6, 3, couleur=\"noir\", etiquette=\"aucune\")\ntexte(6.3, 3.3, \"1\")\nP1 = point(7, 3, couleur=\"noir\", etiquette=\"aucune\")\ntexte(7.3, 3.3, \"2\")\nP2 = point(0, 3, couleur=\"noir\", etiquette=\"aucune\")\ntexte(0.3, 3.3, \"3\")\n```|{{if:k==3|```figure\nfenetre: -0.6 ; 10.6 ; -0.6 ; 6.6\ndescription: Un quadrillage, le robot au départ et trois points numérotés 1, 2 et 3.\ngrille: oui\n---\ndp0 = point(5.8, 3.8, visible=faux)\ndp1 = point(6.2, 3.8, visible=faux)\ndp2 = point(6.2, 4.2, visible=faux)\ndp3 = point(5.8, 4.2, visible=faux)\ndp = polygone(dp0, dp1, dp2, dp3, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\nP0 = point(2, 6, couleur=\"noir\", etiquette=\"aucune\")\ntexte(2.3, 6.3, \"3\")\nP1 = point(2, 5, couleur=\"noir\", etiquette=\"aucune\")\ntexte(2.3, 5.3, \"2\")\nP2 = point(4, 6, couleur=\"noir\", etiquette=\"aucune\")\ntexte(4.3, 6.3, \"1\")\n```|{{if:k==4|```figure\nfenetre: -0.6 ; 10.6 ; -0.6 ; 6.6\ndescription: Un quadrillage, le robot au départ et trois points numérotés 1, 2 et 3.\ngrille: oui\n---\ndp0 = point(4.8, 3.8, visible=faux)\ndp1 = point(5.2, 3.8, visible=faux)\ndp2 = point(5.2, 4.2, visible=faux)\ndp3 = point(4.8, 4.2, visible=faux)\ndp = polygone(dp0, dp1, dp2, dp3, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\nP0 = point(0, 3, couleur=\"noir\", etiquette=\"aucune\")\ntexte(0.3, 3.3, \"3\")\nP1 = point(1, 3, couleur=\"noir\", etiquette=\"aucune\")\ntexte(1.3, 3.3, \"2\")\nP2 = point(6, 3, couleur=\"noir\", etiquette=\"aucune\")\ntexte(6.3, 3.3, \"1\")\n```|{{if:k==5|```figure\nfenetre: -0.6 ; 10.6 ; -0.6 ; 6.6\ndescription: Un quadrillage, le robot au départ et trois points numérotés 1, 2 et 3.\ngrille: oui\n---\ndp0 = point(5.8, 1.8, visible=faux)\ndp1 = point(6.2, 1.8, visible=faux)\ndp2 = point(6.2, 2.2, visible=faux)\ndp3 = point(5.8, 2.2, visible=faux)\ndp = polygone(dp0, dp1, dp2, dp3, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\nP0 = point(4, 0, couleur=\"noir\", etiquette=\"aucune\")\ntexte(4.3, 0.3, \"2\")\nP1 = point(5, 0, couleur=\"noir\", etiquette=\"aucune\")\ntexte(5.3, 0.3, \"1\")\nP2 = point(0, 0, couleur=\"noir\", etiquette=\"aucune\")\ntexte(0.3, 0.3, \"3\")\n```|{{if:k==6|```figure\nfenetre: -0.6 ; 10.6 ; -0.6 ; 6.6\ndescription: Un quadrillage, le robot au départ et trois points numérotés 1, 2 et 3.\ngrille: oui\n---\ndp0 = point(8.8, 1.8, visible=faux)\ndp1 = point(9.2, 1.8, visible=faux)\ndp2 = point(9.2, 2.2, visible=faux)\ndp3 = point(8.8, 2.2, visible=faux)\ndp = polygone(dp0, dp1, dp2, dp3, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\nP0 = point(9, 1, couleur=\"noir\", etiquette=\"aucune\")\ntexte(9.3, 1.3, \"2\")\nP1 = point(9, 2, couleur=\"noir\", etiquette=\"aucune\")\ntexte(9.3, 2.3, \"3\")\nP2 = point(7, 1, couleur=\"noir\", etiquette=\"aucune\")\ntexte(7.3, 1.3, \"1\")\n```|{{if:k==7|```figure\nfenetre: -0.6 ; 10.6 ; -0.6 ; 6.6\ndescription: Un quadrillage, le robot au départ et trois points numérotés 1, 2 et 3.\ngrille: oui\n---\ndp0 = point(2.8, 2.8, visible=faux)\ndp1 = point(3.2, 2.8, visible=faux)\ndp2 = point(3.2, 3.2, visible=faux)\ndp3 = point(2.8, 3.2, visible=faux)\ndp = polygone(dp0, dp1, dp2, dp3, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\nP0 = point(8, 2, couleur=\"noir\", etiquette=\"aucune\")\ntexte(8.3, 2.3, \"2\")\nP1 = point(8, 3, couleur=\"noir\", etiquette=\"aucune\")\ntexte(8.3, 3.3, \"3\")\nP2 = point(4, 2, couleur=\"noir\", etiquette=\"aucune\")\ntexte(4.3, 2.3, \"1\")\n```|{{if:k==8|```figure\nfenetre: -0.6 ; 10.6 ; -0.6 ; 6.6\ndescription: Un quadrillage, le robot au départ et trois points numérotés 1, 2 et 3.\ngrille: oui\n---\ndp0 = point(0.8, 2.8, visible=faux)\ndp1 = point(1.2, 2.8, visible=faux)\ndp2 = point(1.2, 3.2, visible=faux)\ndp3 = point(0.8, 3.2, visible=faux)\ndp = polygone(dp0, dp1, dp2, dp3, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\nP0 = point(4, 4, couleur=\"noir\", etiquette=\"aucune\")\ntexte(4.3, 4.3, \"2\")\nP1 = point(3, 4, couleur=\"noir\", etiquette=\"aucune\")\ntexte(3.3, 4.3, \"3\")\nP2 = point(6, 4, couleur=\"noir\", etiquette=\"aucune\")\ntexte(6.3, 4.3, \"1\")\n```|{{if:k==9|```figure\nfenetre: -0.6 ; 10.6 ; -0.6 ; 6.6\ndescription: Un quadrillage, le robot au départ et trois points numérotés 1, 2 et 3.\ngrille: oui\n---\ndp0 = point(6.8, 1.8, visible=faux)\ndp1 = point(7.2, 1.8, visible=faux)\ndp2 = point(7.2, 2.2, visible=faux)\ndp3 = point(6.8, 2.2, visible=faux)\ndp = polygone(dp0, dp1, dp2, dp3, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\nP0 = point(1, 4, couleur=\"noir\", etiquette=\"aucune\")\ntexte(1.3, 4.3, \"2\")\nP1 = point(2, 4, couleur=\"noir\", etiquette=\"aucune\")\ntexte(2.3, 4.3, \"1\")\nP2 = point(7, 4, couleur=\"noir\", etiquette=\"aucune\")\ntexte(7.3, 4.3, \"3\")\n```|```figure\nfenetre: -0.6 ; 10.6 ; -0.6 ; 6.6\ndescription: Un quadrillage, le robot au départ et trois points numérotés 1, 2 et 3.\ngrille: oui\n---\ndp0 = point(4.8, -0.2, visible=faux)\ndp1 = point(5.2, -0.2, visible=faux)\ndp2 = point(5.2, 0.2, visible=faux)\ndp3 = point(4.8, 0.2, visible=faux)\ndp = polygone(dp0, dp1, dp2, dp3, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\nP0 = point(1, 6, couleur=\"noir\", etiquette=\"aucune\")\ntexte(1.3, 6.3, \"2\")\nP1 = point(1, 5, couleur=\"noir\", etiquette=\"aucune\")\ntexte(1.3, 5.3, \"3\")\nP2 = point(3, 6, couleur=\"noir\", etiquette=\"aucune\")\ntexte(3.3, 6.3, \"1\")\n```}}}}}}}}}}}}}}}}}}\n\nOù arrive le robot ?\n\n```choix\nmelanger: non\n- Au point 1.\n- Au point 2.\n- Au point 3.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..10"
+				},
+				{
+					"name": "a",
+					"expression": "{{if:k==1|1|{{if:k==2|0|{{if:k==3|2|{{if:k==4|2|{{if:k==5|1|{{if:k==6|1|{{if:k==7|1|{{if:k==8|1|{{if:k==9|1|1}}}}}}}}}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On suit le code une instruction après l'autre, depuis le départ.",
+					"Le robot arrive au \\textcolor{{{color:primary.0}}}{point {{if:k==1|2|{{if:k==2|1|{{if:k==3|3|{{if:k==4|3|{{if:k==5|2|{{if:k==6|2|{{if:k==7|2|{{if:k==8|2|{{if:k==9|2|2}}}}}}}}}}}}}}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Le robot part du carré rouge.\n\nChaque flèche fait avancer le robot d'un carreau dans son sens.\n\n{{if:k==1|```figure\nfenetre: -0.6 ; 10.6 ; -0.6 ; 6.6\ndescription: Un quadrillage, le robot au départ et le carré vert de l'arrivée.\ngrille: oui\n---\ndp0 = point(2.8, 0.8, visible=faux)\ndp1 = point(3.2, 0.8, visible=faux)\ndp2 = point(3.2, 1.2, visible=faux)\ndp3 = point(2.8, 1.2, visible=faux)\ndp = polygone(dp0, dp1, dp2, dp3, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\nar0 = point(7.8, 2.8, visible=faux)\nar1 = point(8.2, 2.8, visible=faux)\nar2 = point(8.2, 3.2, visible=faux)\nar3 = point(7.8, 3.2, visible=faux)\nar = polygone(ar0, ar1, ar2, ar3, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\n```|{{if:k==2|```figure\nfenetre: -0.6 ; 10.6 ; -0.6 ; 6.6\ndescription: Un quadrillage, le robot au départ et le carré vert de l'arrivée.\ngrille: oui\n---\ndp0 = point(6.8, 0.8, visible=faux)\ndp1 = point(7.2, 0.8, visible=faux)\ndp2 = point(7.2, 1.2, visible=faux)\ndp3 = point(6.8, 1.2, visible=faux)\ndp = polygone(dp0, dp1, dp2, dp3, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\nar0 = point(5.8, 2.8, visible=faux)\nar1 = point(6.2, 2.8, visible=faux)\nar2 = point(6.2, 3.2, visible=faux)\nar3 = point(5.8, 3.2, visible=faux)\nar = polygone(ar0, ar1, ar2, ar3, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\n```|{{if:k==3|```figure\nfenetre: -0.6 ; 10.6 ; -0.6 ; 6.6\ndescription: Un quadrillage, le robot au départ et le carré vert de l'arrivée.\ngrille: oui\n---\ndp0 = point(5.8, 3.8, visible=faux)\ndp1 = point(6.2, 3.8, visible=faux)\ndp2 = point(6.2, 4.2, visible=faux)\ndp3 = point(5.8, 4.2, visible=faux)\ndp = polygone(dp0, dp1, dp2, dp3, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\nar0 = point(1.8, 5.8, visible=faux)\nar1 = point(2.2, 5.8, visible=faux)\nar2 = point(2.2, 6.2, visible=faux)\nar3 = point(1.8, 6.2, visible=faux)\nar = polygone(ar0, ar1, ar2, ar3, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\n```|{{if:k==4|```figure\nfenetre: -0.6 ; 10.6 ; -0.6 ; 6.6\ndescription: Un quadrillage, le robot au départ et le carré vert de l'arrivée.\ngrille: oui\n---\ndp0 = point(4.8, 3.8, visible=faux)\ndp1 = point(5.2, 3.8, visible=faux)\ndp2 = point(5.2, 4.2, visible=faux)\ndp3 = point(4.8, 4.2, visible=faux)\ndp = polygone(dp0, dp1, dp2, dp3, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\nar0 = point(-0.2, 2.8, visible=faux)\nar1 = point(0.2, 2.8, visible=faux)\nar2 = point(0.2, 3.2, visible=faux)\nar3 = point(-0.2, 3.2, visible=faux)\nar = polygone(ar0, ar1, ar2, ar3, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\n```|{{if:k==5|```figure\nfenetre: -0.6 ; 10.6 ; -0.6 ; 6.6\ndescription: Un quadrillage, le robot au départ et le carré vert de l'arrivée.\ngrille: oui\n---\ndp0 = point(5.8, 1.8, visible=faux)\ndp1 = point(6.2, 1.8, visible=faux)\ndp2 = point(6.2, 2.2, visible=faux)\ndp3 = point(5.8, 2.2, visible=faux)\ndp = polygone(dp0, dp1, dp2, dp3, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\nar0 = point(3.8, -0.2, visible=faux)\nar1 = point(4.2, -0.2, visible=faux)\nar2 = point(4.2, 0.2, visible=faux)\nar3 = point(3.8, 0.2, visible=faux)\nar = polygone(ar0, ar1, ar2, ar3, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\n```|{{if:k==6|```figure\nfenetre: -0.6 ; 10.6 ; -0.6 ; 6.6\ndescription: Un quadrillage, le robot au départ et le carré vert de l'arrivée.\ngrille: oui\n---\ndp0 = point(8.8, 1.8, visible=faux)\ndp1 = point(9.2, 1.8, visible=faux)\ndp2 = point(9.2, 2.2, visible=faux)\ndp3 = point(8.8, 2.2, visible=faux)\ndp = polygone(dp0, dp1, dp2, dp3, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\nar0 = point(8.8, 0.8, visible=faux)\nar1 = point(9.2, 0.8, visible=faux)\nar2 = point(9.2, 1.2, visible=faux)\nar3 = point(8.8, 1.2, visible=faux)\nar = polygone(ar0, ar1, ar2, ar3, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\n```|{{if:k==7|```figure\nfenetre: -0.6 ; 10.6 ; -0.6 ; 6.6\ndescription: Un quadrillage, le robot au départ et le carré vert de l'arrivée.\ngrille: oui\n---\ndp0 = point(2.8, 2.8, visible=faux)\ndp1 = point(3.2, 2.8, visible=faux)\ndp2 = point(3.2, 3.2, visible=faux)\ndp3 = point(2.8, 3.2, visible=faux)\ndp = polygone(dp0, dp1, dp2, dp3, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\nar0 = point(7.8, 1.8, visible=faux)\nar1 = point(8.2, 1.8, visible=faux)\nar2 = point(8.2, 2.2, visible=faux)\nar3 = point(7.8, 2.2, visible=faux)\nar = polygone(ar0, ar1, ar2, ar3, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\n```|{{if:k==8|```figure\nfenetre: -0.6 ; 10.6 ; -0.6 ; 6.6\ndescription: Un quadrillage, le robot au départ et le carré vert de l'arrivée.\ngrille: oui\n---\ndp0 = point(0.8, 2.8, visible=faux)\ndp1 = point(1.2, 2.8, visible=faux)\ndp2 = point(1.2, 3.2, visible=faux)\ndp3 = point(0.8, 3.2, visible=faux)\ndp = polygone(dp0, dp1, dp2, dp3, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\nar0 = point(3.8, 3.8, visible=faux)\nar1 = point(4.2, 3.8, visible=faux)\nar2 = point(4.2, 4.2, visible=faux)\nar3 = point(3.8, 4.2, visible=faux)\nar = polygone(ar0, ar1, ar2, ar3, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\n```|{{if:k==9|```figure\nfenetre: -0.6 ; 10.6 ; -0.6 ; 6.6\ndescription: Un quadrillage, le robot au départ et le carré vert de l'arrivée.\ngrille: oui\n---\ndp0 = point(6.8, 1.8, visible=faux)\ndp1 = point(7.2, 1.8, visible=faux)\ndp2 = point(7.2, 2.2, visible=faux)\ndp3 = point(6.8, 2.2, visible=faux)\ndp = polygone(dp0, dp1, dp2, dp3, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\nar0 = point(0.8, 3.8, visible=faux)\nar1 = point(1.2, 3.8, visible=faux)\nar2 = point(1.2, 4.2, visible=faux)\nar3 = point(0.8, 4.2, visible=faux)\nar = polygone(ar0, ar1, ar2, ar3, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\n```|```figure\nfenetre: -0.6 ; 10.6 ; -0.6 ; 6.6\ndescription: Un quadrillage, le robot au départ et le carré vert de l'arrivée.\ngrille: oui\n---\ndp0 = point(4.8, -0.2, visible=faux)\ndp1 = point(5.2, -0.2, visible=faux)\ndp2 = point(5.2, 0.2, visible=faux)\ndp3 = point(4.8, 0.2, visible=faux)\ndp = polygone(dp0, dp1, dp2, dp3, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\nar0 = point(0.8, 5.8, visible=faux)\nar1 = point(1.2, 5.8, visible=faux)\nar2 = point(1.2, 6.2, visible=faux)\nar3 = point(0.8, 6.2, visible=faux)\nar = polygone(ar0, ar1, ar2, ar3, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\n```}}}}}}}}}}}}}}}}}}\n\nQuel code mène le robot au carré vert ?\n\n```choix\n- {{if:k==1|$\\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\downarrow\\ \\rightarrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow\\ \\uparrow$|{{if:k==2|$\\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow$|{{if:k==3|$\\downarrow\\ \\downarrow\\ \\leftarrow\\ \\uparrow\\ \\uparrow\\ \\uparrow\\ \\uparrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow$|{{if:k==4|$\\leftarrow\\ \\leftarrow\\ \\leftarrow\\ \\uparrow\\ \\leftarrow\\ \\leftarrow\\ \\downarrow\\ \\downarrow$|{{if:k==5|$\\uparrow\\ \\rightarrow\\ \\rightarrow\\ \\downarrow\\ \\downarrow\\ \\downarrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow$|{{if:k==6|$\\uparrow\\ \\uparrow\\ \\uparrow\\ \\rightarrow\\ \\downarrow\\ \\downarrow\\ \\downarrow\\ \\downarrow\\ \\leftarrow$|{{if:k==7|$\\uparrow\\ \\uparrow\\ \\rightarrow\\ \\rightarrow\\ \\downarrow\\ \\downarrow\\ \\downarrow\\ \\rightarrow\\ \\rightarrow\\ \\rightarrow$|{{if:k==8|$\\leftarrow\\ \\downarrow\\ \\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow$|{{if:k==9|$\\downarrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow\\ \\uparrow\\ \\uparrow\\ \\uparrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow$|$\\uparrow\\ \\uparrow\\ \\uparrow\\ \\leftarrow\\ \\uparrow\\ \\uparrow\\ \\uparrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow$}}}}}}}}}}}}}}}}}}\n- {{if:k==1|$\\rightarrow\\ \\rightarrow\\ \\downarrow\\ \\rightarrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow\\ \\uparrow$|{{if:k==2|$\\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow$|{{if:k==3|$\\downarrow\\ \\downarrow\\ \\leftarrow\\ \\uparrow\\ \\uparrow\\ \\uparrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow$|{{if:k==4|$\\leftarrow\\ \\leftarrow\\ \\uparrow\\ \\leftarrow\\ \\leftarrow\\ \\downarrow\\ \\downarrow$|{{if:k==5|$\\uparrow\\ \\rightarrow\\ \\rightarrow\\ \\downarrow\\ \\downarrow\\ \\downarrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow$|{{if:k==6|$\\uparrow\\ \\uparrow\\ \\uparrow\\ \\rightarrow\\ \\downarrow\\ \\downarrow\\ \\downarrow\\ \\leftarrow$|{{if:k==7|$\\uparrow\\ \\uparrow\\ \\rightarrow\\ \\rightarrow\\ \\downarrow\\ \\downarrow\\ \\rightarrow\\ \\rightarrow\\ \\rightarrow$|{{if:k==8|$\\leftarrow\\ \\downarrow\\ \\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow$|{{if:k==9|$\\downarrow\\ \\leftarrow\\ \\leftarrow\\ \\uparrow\\ \\uparrow\\ \\uparrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow$|$\\uparrow\\ \\uparrow\\ \\leftarrow\\ \\uparrow\\ \\uparrow\\ \\uparrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow$}}}}}}}}}}}}}}}}}}\n- {{if:k==1|$\\leftarrow\\ \\leftarrow\\ \\leftarrow\\ \\downarrow\\ \\rightarrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow\\ \\uparrow$|{{if:k==2|$\\leftarrow\\ \\leftarrow\\ \\leftarrow\\ \\uparrow\\ \\uparrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow$|{{if:k==3|$\\downarrow\\ \\downarrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow\\ \\uparrow\\ \\uparrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow$|{{if:k==4|$\\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\uparrow\\ \\leftarrow\\ \\leftarrow\\ \\downarrow\\ \\downarrow$|{{if:k==5|$\\uparrow\\ \\leftarrow\\ \\leftarrow\\ \\downarrow\\ \\downarrow\\ \\downarrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow$|{{if:k==6|$\\uparrow\\ \\uparrow\\ \\uparrow\\ \\leftarrow\\ \\downarrow\\ \\downarrow\\ \\downarrow\\ \\downarrow\\ \\leftarrow$|{{if:k==7|$\\uparrow\\ \\uparrow\\ \\leftarrow\\ \\leftarrow\\ \\downarrow\\ \\downarrow\\ \\downarrow\\ \\rightarrow\\ \\rightarrow\\ \\rightarrow$|{{if:k==8|$\\rightarrow\\ \\downarrow\\ \\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow$|{{if:k==9|$\\downarrow\\ \\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow\\ \\uparrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow$|$\\uparrow\\ \\uparrow\\ \\uparrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow\\ \\uparrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow$}}}}}}}}}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On essaie chaque code depuis le départ : un seul s'arrête sur le carré vert.",
+					"Le bon code : {{if:k==1|$\\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\downarrow\\ \\rightarrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow\\ \\uparrow$|{{if:k==2|$\\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow$|{{if:k==3|$\\downarrow\\ \\downarrow\\ \\leftarrow\\ \\uparrow\\ \\uparrow\\ \\uparrow\\ \\uparrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow$|{{if:k==4|$\\leftarrow\\ \\leftarrow\\ \\leftarrow\\ \\uparrow\\ \\leftarrow\\ \\leftarrow\\ \\downarrow\\ \\downarrow$|{{if:k==5|$\\uparrow\\ \\rightarrow\\ \\rightarrow\\ \\downarrow\\ \\downarrow\\ \\downarrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow$|{{if:k==6|$\\uparrow\\ \\uparrow\\ \\uparrow\\ \\rightarrow\\ \\downarrow\\ \\downarrow\\ \\downarrow\\ \\downarrow\\ \\leftarrow$|{{if:k==7|$\\uparrow\\ \\uparrow\\ \\rightarrow\\ \\rightarrow\\ \\downarrow\\ \\downarrow\\ \\downarrow\\ \\rightarrow\\ \\rightarrow\\ \\rightarrow$|{{if:k==8|$\\leftarrow\\ \\downarrow\\ \\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow$|{{if:k==9|$\\downarrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow\\ \\uparrow\\ \\uparrow\\ \\uparrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow$|$\\uparrow\\ \\uparrow\\ \\uparrow\\ \\leftarrow\\ \\uparrow\\ \\uparrow\\ \\uparrow\\ \\leftarrow\\ \\leftarrow\\ \\leftarrow$}}}}}}}}}}}}}}}}}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Où arrive-t-il ? (k = 1)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'arrivée du code mal suivi (k = 1)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Où arrive-t-il ? (k = 4)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'arrivée du code mal suivi (k = 4)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Quel code ? le bon",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le code faux",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : l'autre code faux",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

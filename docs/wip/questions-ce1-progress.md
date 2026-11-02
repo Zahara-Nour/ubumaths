@@ -5,11 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lots 8 et 9 publiés._
+_Mis à jour le 2026-11-02, lot 10 écrit._
 
-- **État** : lots 0 à 9 publiés (8 et 9 le 2026-11-02, statuts relus en base).
-- **Prochaine action** : lot 10 (espace et mesure, § 17, validé) — écrire `lot-ce1-10.py` dans le worktree
-  `ubumaths-wt-questions-ce1`, branche `feat/questions-ce1-lot10`.
+- **État** : lots 0 à 9 publiés. Lot 10 (espace et mesure, § 17) écrit : 9 modèles, 80 specs, simulation 9/9,
+  sondes figures et espace 0 problème, 9 brouillons en base locale joués dans l'aperçu ; PR des fichiers à ouvrir.
+- **Prochaine action** : PR `feat/questions-ce1-lot10`, CI, merge ; puis `create-questions --publier` par David
+  (brouillons en prod), migration nœud + tag, page à cocher.
 - **En attente de David** : chantier `verrou-deploy` à ouvrir dans sa session (mémoire).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
@@ -811,3 +812,8 @@ tag ne change aucune règle.
    Recommandation : oui. Les catégories seront relevées de nouveau juste avant la publication.
 
 Réponse de David (« tes recos ? » puis « go », 2026-11-02) : les cinq recommandations.
+
+- 2026-11-02 : lot 10 écrit (`lot-ce1-10.py`, `scripts/questions/ce1-10/`) : 9 modèles, 80 specs ; `create-questions`
+  simulé 9/9 ; `sonde-figures` 0 problème (fenêtre de la règle élargie : rapport ≥ 1/4) ; `sonde-cubes` étendue aux
+  blocs `solide et `patron, 0 problème sur 5 100 blocs ; aucun `{{` résiduel sur 400 tirages par modèle ; 9 brouillons
+  en base locale, joués dans l'aperçu admin (règle, choix de solides et d'assemblages, étagère, plan, robots).
