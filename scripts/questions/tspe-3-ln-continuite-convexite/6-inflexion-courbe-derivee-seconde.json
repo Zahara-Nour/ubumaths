@@ -1,0 +1,135 @@
+{
+	"title": "Point d'inflexion lu sur la courbe de f″",
+	"description": "Lire sur la courbe de f″ les points d'inflexion de f : zéros où f″ change de signe (pièges : le sommet de f″, un zéro où f″ ne change pas de signe)",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions",
+	"domain": "Convexité",
+	"subdomain": "Point d'inflexion",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On a représenté ci-dessous la courbe de la fonction **dérivée seconde** $f''$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:h-4}} ; {{eval:h+4}}\ny: -5 ; 5\ngrille: 1 ; 1\ng(x) = {{s}}*0.5*((x-{{h}})^2-{{eval:m^2}})   violet\ntaille: moyenne\ndescription: Courbe de la dérivée seconde f″ : une parabole qui coupe l'axe des abscisses en deux points.\n```\n\nLa courbe de $f$ a deux points d'inflexion. Donne leurs abscisses, de la plus petite à la plus grande.\n\n$x_1=?$ et $x_2=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:h-m}}"
+				},
+				{
+					"expectedAnswer": "{{eval:h+m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La courbe de $f$ a un point d'inflexion là où $f''$ s'annule **en changeant de signe** : la convexité de $f$ change.",
+					"Sur le graphique, $f''$ change de signe en $x={{eval:h-m}}$ et en $x={{eval:h+m}}$.",
+					"$x_1=\\textcolor{{{color:primary.0}}}{{{eval:h-m}}}$ et $x_2=\\textcolor{{{color:primary.0}}}{{{eval:h+m}}}$. (Le sommet de la courbe de $f''$, en $x={{h}}$, n'est pas un point d'inflexion de $f$.)"
+				]
+			},
+			"variables": [
+				{
+					"name": "s",
+					"expression": "-1|1"
+				},
+				{
+					"name": "h",
+					"expression": "-2..2"
+				},
+				{
+					"name": "m",
+					"expression": "1..2"
+				}
+			]
+		},
+		{
+			"statement": "On a représenté ci-dessous la courbe de la fonction **dérivée seconde** $f''$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:min(a,b)-3}} ; {{eval:max(a,b)+3}}\ny: -5 ; 5\ngrille: 1 ; 1\ng(x) = {{s}}*0.2*(x-{{a}})^2*(x-{{b}})   violet\ntaille: moyenne\ndescription: Courbe de la dérivée seconde f″ : elle touche l'axe des abscisses en un point sans le traverser, et le traverse en un autre.\n```\n\nCombien la courbe de $f$ a-t-elle de points d'inflexion ?\n\n$?$",
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un point d'inflexion correspond à un zéro de $f''$ où $f''$ **change de signe**.",
+					"En $x={{a}}$, la courbe de $f''$ touche l'axe sans le traverser : $f''$ garde le même signe, pas de point d'inflexion.",
+					"En $x={{b}}$, $f''$ change de signe : un point d'inflexion. Il y en a donc $\\textcolor{{{color:primary.0}}}{1}$."
+				]
+			},
+			"variables": [
+				{
+					"name": "s",
+					"expression": "-1|1"
+				},
+				{
+					"name": "a",
+					"expression": "-2..2"
+				},
+				{
+					"name": "b",
+					"expression": "-2..2"
+				}
+			],
+			"conditions": ["abs(a-b) >= 2", "abs(a-b) <= 3"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : h ± m",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"h": "0",
+				"m": "2"
+			},
+			"answers": ["-2", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : sommet",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"h": "0",
+				"m": "2"
+			},
+			"answers": ["0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 1",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"a": "-1",
+				"b": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 2 (racine double comptée)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"a": "-1",
+				"b": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

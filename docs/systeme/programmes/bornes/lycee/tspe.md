@@ -41,7 +41,7 @@ Les points « approfondissement » du BO (« en aucun cas obligatoires », p.3) 
 
 - **TSPE-444** : le BO dit « de l'exponentielle ou du logarithme pour transformer une écriture » ; le libellé ne garde que le logarithme, et la partie exponentielle n'a aucun point en terminale.
 
-## Terminale spécialité (325 points, 318 avec une borne propre)
+## Terminale spécialité (326 points, 319 avec une borne propre)
 
 ### Bornes générales (héritées par tous les points du niveau)
 
@@ -490,6 +490,9 @@ Les points « approfondissement » du BO (« en aucun cas obligatoires », p.3) 
   - ⚠ libellé : le BO dit « Utiliser l'équation fonctionnelle de l'exponentielle ou du logarithme pour transformer une écriture » ; le libellé ne garde que le logarithme et aucun point de Tle spé ne porte la partie exponentielle (elle existe en 1re spé).
   - → David (2026-10-23) : **laisser**
   - → David (2026-10-23) : point neuf à créer à côté — « Utiliser l'équation fonctionnelle de l'exponentielle pour transformer une écriture »
+- **TSPE-626** — Utiliser l'équation fonctionnelle de l'exponentielle pour transformer une écriture
+  - Transformer une écriture avec exp par l'équation fonctionnelle (exp(a + b) = exp(a)·exp(b) et ses conséquences : exp(−a) = 1/exp(a), exp(na) = exp(a)ⁿ) : factoriser, réduire au même dénominateur, diviser par eˣ. — _BO Tle spé p.10_ (BO)
+  - Point neuf, coupé de TSPE-444 (2026-10-23) ; borne écrite le 2026-11-02 (questions-tspe, Q6). La simple réduction d'un exposant est de 1re spé (1SPE-294).
 - **TSPE-445** — Utiliser l'équation fonctionnelle de l'exponentielle pour résoudre une équation
   - Résoudre une équation par l'équation fonctionnelle de l'exponentielle. — _BO Tle spé p.10_ (BO)
   - Équations, inéquations et écritures où intervient exp ou ln, traitées par l'équation fonctionnelle. — _BO Tle spé p.10_ (BO)
