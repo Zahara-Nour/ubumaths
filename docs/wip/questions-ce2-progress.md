@@ -575,7 +575,7 @@ Réponse de David (« tes recos ? » puis « ok », 2026-11-02) : les cinq recom
 
 ### Lot 7a — brouillons en prod et migration (2026-11-02)
 
-- `create-questions --publier` (David) : 10 brouillons, relus au MCP (draft, CE2, catégories et niveaux attendus, 81 specs, sans
+- `security-auditor` : aucun finding (2026-11-02). `create-questions --publier` (David) : 10 brouillons, relus au MCP (draft, CE2, catégories et niveaux attendus, 81 specs, sans
   nœud ni tag) : 01 `3d1856ac`, 02 `89698b69`, 03 `b0740746`, 04 `d1fc9daa`, 05 `c25f80f0`, 06 `4954edb5`, 07 `8c90be06`,
   08 `e05931f9`, 09 `91805d1e`, 10 `52206066` (préfixes). Rangement : 01 → CE2-016 ; 02, 03 → CE2-090 (Entiers : addition et
   soustraction › calcul posé) ; 04, 05 → CE2-019 (Entiers : multiplication › calcul posé) ; 06 → CE2-055 et 07 → CE2-056
