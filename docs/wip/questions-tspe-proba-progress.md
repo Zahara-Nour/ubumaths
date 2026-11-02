@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2241 (migration passée en prod)._
+_Mis à jour le 2026-11-02, lot 5a publié._
 
-- **État** : lot 5a en prod en brouillons, rangés et tagués (#2240, #2241, `db:migrate` passé par David, relu au MCP : 9/9 nœud + point). Page à cocher publiée : https://claude.ai/artifact/4pTuHyH4DZ1CfwXgqgtZeV (collection `verdicts`, vide au départ).
-- **Prochaine action** : David relit la page → compter les verdicts (`ArtifactData list verdicts`) → corriger les « À revoir » (`--mettre-a-jour`) → `publier-lot.ts --dir scripts/questions/tspe-5a-succession` en simulation, puis `--publier` par David. Ensuite, phase 0 du lot 5b.
-- **En attente de David** : la relecture ; dire si le défaut ` ```probtree ` (étiquette sans `\` écrite en texte) va dans `docs/wip/outils-manquants.md`.
+- **État** : lot 5a **publié** en prod (9 modèles, #2240, #2241, relecture 9/9 OK, `publier-lot --publier` par David, relu au MCP : 9/9 `published`). Worktree retiré.
+- **Prochaine action** : lot 5b, phase 0 (points du § « Lots » ci-dessous) : recréer le worktree `../ubumaths-wt-questions-tspe-proba` sur une branche `feat/questions-tspe-proba-5b` depuis `origin/main`.
+- **En attente de David** : dire si le défaut ` ```probtree ` (étiquette sans `\` écrite en texte) va dans `docs/wip/outils-manquants.md`.
 - **Pièges en cours** : voir « Décisions communes et pièges » ci-dessous.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-proba` ; branche `feat/questions-tspe-proba-5a-migration` mergée (prochaine branche à créer pour 5b).
+- **Worktree / branche** : aucun pour l'instant (à recréer pour 5b).
 
 ---
 
@@ -173,3 +173,6 @@ nœuds 0/9 »). `security-auditor` (2026-11-02, recoupé en prod) : aucun findin
 **Migration en prod** : #2241 mergée le 2026-11-02 (CI verte) ; `db:migrate` passé par David (seule migration en attente) ;
 relu au MCP : les 9 modèles sur leur nœud, un point chacun, toujours brouillons. Page à cocher :
 https://claude.ai/artifact/4pTuHyH4DZ1CfwXgqgtZeV.
+
+**Publication** (2026-11-02) : relecture 9/9 « OK » sur la page à cocher ; `publier-lot` en simulation, 9 contrôles
+passés ; `--publier` par David ; relu au MCP : 9/9 `published`. **Lot 5a clos.**
