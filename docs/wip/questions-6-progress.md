@@ -1455,3 +1455,9 @@ de l'auteur seuls jusqu'à la publication, la migration ne fait que ranger et ta
 3. 166 sans construction (le compas reste à la figure à compléter, § 3 C 4) ?
 4. 163 sans figure, distances écrites ?
 5. Valider la phase 0 (variations, niveaux, formes de réponse) ?
+
+**Réponses de David (2026-11-02)** : recommandations suivies, « je te suis ». (1) Un seul lot de 8 modèles. (2) 160 et
+161 suivent le nœud de leur point (« cercle ») ; un nœud « distances » éventuel = rangement à part, les modèles
+suivront le point. (3) 166 sans construction ; une variation construite viendra si `controles-figure` livre le
+contrôle « médiatrice ». (4) 163 sans figure, distances écrites. (5) Phase 0 validée, avec un ajout : 167 v2 joue
+aussi le leurre « au milieu de [AB] » (centre confondu avec le milieu de la corde).
