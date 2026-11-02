@@ -1,0 +1,151 @@
+{
+	"title": "Combien de cubes pour construire cet assemblage ?",
+	"description": "Assemblage de 4 à 10 cubes, sans cube caché, sur une ou deux rangées",
+	"grades": ["CE1"],
+	"theme": "Géométrie",
+	"domain": "Solides",
+	"subdomain": "Assemblages de cubes",
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Combien de cubes faut-il pour construire cet assemblage ?\n\n```cubes\nhauteurs: {{a}} {{b}} {{c}} {{d}}\n```\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "1..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..3"
+				},
+				{
+					"name": "d",
+					"expression": "1..3"
+				}
+			],
+			"conditions": ["a+b+c+d <= 10"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b+c+d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte les cubes de chaque pile, de gauche à droite : ${{a}}$, ${{b}}$, ${{c}}$ et ${{d}}$.",
+					"${{a}} + {{b}} + {{c}} + {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:a+b+c+d}}}$ cubes."
+				]
+			}
+		},
+		{
+			"statement": "Combien de cubes faut-il pour construire cet assemblage ?\n\n```cubes\nhauteurs: 0 {{b}} 0 {{d}} / {{a}} 0 {{c}} 0\n```\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "1..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..3"
+				},
+				{
+					"name": "d",
+					"expression": "1..3"
+				}
+			],
+			"conditions": ["a+b+c+d <= 10"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b+c+d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les piles sont sur deux rangées, l'une devant, l'autre derrière. On compte chaque pile, de gauche à droite : ${{a}}$, ${{b}}$, ${{c}}$ et ${{d}}$.",
+					"${{a}} + {{b}} + {{c}} + {{d}} = \\textcolor{{{color:primary.0}}}{{{eval:a+b+c+d}}}$ cubes."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2, 1, 3, 1 : 7 cubes",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "3",
+				"d": "1"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 (les piles comptées, pas les cubes)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "3",
+				"d": "1"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 6 (un cube oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "3",
+				"d": "1"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Deux rangées, 3, 2, 1, 2 : 8 cubes",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "1",
+				"d": "2"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 (les piles)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "1",
+				"d": "2"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

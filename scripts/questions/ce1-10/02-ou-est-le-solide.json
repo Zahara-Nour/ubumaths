@@ -1,0 +1,326 @@
+{
+	"title": "Où est le solide ? Cube, boule, cône, pyramide, cylindre, pavé",
+	"description": "Trouver un solide nommé parmi quatre dessins",
+	"grades": ["CE1"],
+	"theme": "Géométrie",
+	"domain": "Solides",
+	"subdomain": "Reconnaître et décrire",
+	"level": 7,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Où est le cube ?\n\n````choix\n- ```solide\n  forme: cube 3\n  ```\n- ```solide\n  forme: pave 4.5 3 3\n  ```\n- ```solide\n  forme: pyramide {{if:q==1|carree 3 3.5|triangle 3.5 3.5}}\n  ```\n- ```solide\n  forme: cylindre 1.5 {{h}}\n  ```\n````",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..2"
+				},
+				{
+					"name": "q",
+					"expression": "1..2"
+				},
+				{
+					"name": "h",
+					"expression": "3..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le cube a $6$ faces, toutes des carrés de la même taille.",
+					"C'est \\textcolor{{{color:primary.0}}}{le cube}."
+				]
+			}
+		},
+		{
+			"statement": "Où est le pavé ?\n\n````choix\n- ```solide\n  forme: pave {{if:o==1|5 2.5 2|2.5 2 4.5}}\n  ```\n- ```solide\n  forme: cube 3\n  ```\n- ```solide\n  forme: cylindre 1.5 {{h}}\n  ```\n- ```solide\n  forme: pyramide {{if:q==1|carree 3 3.5|triangle 3.5 3.5}}\n  ```\n````",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..2"
+				},
+				{
+					"name": "q",
+					"expression": "1..2"
+				},
+				{
+					"name": "h",
+					"expression": "3..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le pavé a $6$ faces, des rectangles : il est plus long dans un sens.",
+					"C'est \\textcolor{{{color:primary.0}}}{le pavé}."
+				]
+			}
+		},
+		{
+			"statement": "Où est la boule ?\n\n````choix\n- ```solide\n  forme: boule 2\n  ```\n- ```solide\n  forme: cylindre 1.5 {{h}}\n  ```\n- ```solide\n  forme: cone 1.5 {{h}}\n  ```\n- ```solide\n  forme: cube 3\n  ```\n````",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..2"
+				},
+				{
+					"name": "q",
+					"expression": "1..2"
+				},
+				{
+					"name": "h",
+					"expression": "3..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boule est toute ronde : elle n'a ni face plate, ni pointe, ni arête.",
+					"C'est \\textcolor{{{color:primary.0}}}{la boule}."
+				]
+			}
+		},
+		{
+			"statement": "Où est le cône ?\n\n````choix\n- ```solide\n  forme: cone 1.5 {{h}}\n  ```\n- ```solide\n  forme: pyramide {{if:q==1|carree 3 3.5|triangle 3.5 3.5}}\n  ```\n- ```solide\n  forme: cylindre 1.5 {{h}}\n  ```\n- ```solide\n  forme: boule 2\n  ```\n````",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..2"
+				},
+				{
+					"name": "q",
+					"expression": "1..2"
+				},
+				{
+					"name": "h",
+					"expression": "3..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le cône a une base ronde, un disque, et une face courbe qui finit en pointe.",
+					"C'est \\textcolor{{{color:primary.0}}}{le cône}."
+				]
+			}
+		},
+		{
+			"statement": "Où est la pyramide ?\n\n````choix\n- ```solide\n  forme: pyramide {{if:q==1|carree 3 3.5|triangle 3.5 3.5}}\n  ```\n- ```solide\n  forme: cone 1.5 {{h}}\n  ```\n- ```solide\n  forme: cube 3\n  ```\n- ```solide\n  forme: pave {{if:o==1|5 2.5 2|2.5 2 4.5}}\n  ```\n````",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..2"
+				},
+				{
+					"name": "q",
+					"expression": "1..2"
+				},
+				{
+					"name": "h",
+					"expression": "3..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La pyramide a une base plate ({{if:q==1|un carré|un triangle}}) et des faces en triangles qui se rejoignent en une pointe.",
+					"C'est \\textcolor{{{color:primary.0}}}{la pyramide}."
+				]
+			}
+		},
+		{
+			"statement": "Où est le cylindre ?\n\n````choix\n- ```solide\n  forme: cylindre 1.5 {{h}}\n  ```\n- ```solide\n  forme: cone 1.5 {{h}}\n  ```\n- ```solide\n  forme: pave {{if:o==1|5 2.5 2|2.5 2 4.5}}\n  ```\n- ```solide\n  forme: boule 2\n  ```\n````",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..2"
+				},
+				{
+					"name": "q",
+					"expression": "1..2"
+				},
+				{
+					"name": "h",
+					"expression": "3..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le cylindre a deux disques, en haut et en bas, reliés par une face courbe ; il n'a pas de pointe.",
+					"C'est \\textcolor{{{color:primary.0}}}{le cylindre}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Le cube",
+			"variationIndex": 0,
+			"variables": {
+				"o": "1",
+				"q": "1",
+				"h": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le pavé à faces carrées pris pour le cube",
+			"variationIndex": 0,
+			"variables": {
+				"o": "1",
+				"q": "1",
+				"h": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le pavé debout",
+			"variationIndex": 1,
+			"variables": {
+				"o": "2",
+				"q": "1",
+				"h": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le cube pris pour le pavé",
+			"variationIndex": 1,
+			"variables": {
+				"o": "2",
+				"q": "1",
+				"h": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "La boule",
+			"variationIndex": 2,
+			"variables": {
+				"o": "1",
+				"q": "2",
+				"h": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Le cône",
+			"variationIndex": 3,
+			"variables": {
+				"o": "1",
+				"q": "2",
+				"h": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la pyramide prise pour le cône",
+			"variationIndex": 3,
+			"variables": {
+				"o": "1",
+				"q": "2",
+				"h": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "La pyramide à base triangle",
+			"variationIndex": 4,
+			"variables": {
+				"o": "1",
+				"q": "2",
+				"h": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le cône pris pour la pyramide",
+			"variationIndex": 4,
+			"variables": {
+				"o": "1",
+				"q": "2",
+				"h": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Le cylindre",
+			"variationIndex": 5,
+			"variables": {
+				"o": "2",
+				"q": "1",
+				"h": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le cône pris pour le cylindre",
+			"variationIndex": 5,
+			"variables": {
+				"o": "2",
+				"q": "1",
+				"h": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

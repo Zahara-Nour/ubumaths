@@ -1,0 +1,151 @@
+{
+	"title": "Le même assemblage de cubes",
+	"description": "Retrouver un assemblage parmi trois : un cube de plus, deux piles échangées",
+	"grades": ["CE1"],
+	"theme": "Géométrie",
+	"domain": "Solides",
+	"subdomain": "Assemblages de cubes",
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici un assemblage de cubes.\n\n```cubes\nhauteurs: {{a}} {{b}} {{c}} {{d}}\n```\n\nQuel assemblage est le même ?\n\n````choix\n- ```cubes\n  hauteurs: {{a}} {{b}} {{c}} {{d}}\n  ```\n- ```cubes\n  hauteurs: {{a}} {{b}} {{eval:c+1}} {{d}}\n  ```\n- ```cubes\n  hauteurs: {{b}} {{a}} {{c}} {{d}}\n  ```\n````",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "1..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..3"
+				},
+				{
+					"name": "d",
+					"expression": "1..3"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compare pile par pile, de gauche à droite : ${{a}}$, ${{b}}$, ${{c}}$ et ${{d}}$ cubes.",
+					"Le \\textcolor{{{color:primary.0}}}{même assemblage} a les mêmes piles, aux mêmes places. Un autre a un cube de plus ; un autre a le même nombre de cubes, mais deux piles ont changé de place."
+				]
+			}
+		},
+		{
+			"statement": "Voici un assemblage de cubes.\n\n```cubes\nhauteurs: 0 {{b}} 0 {{d}} / {{a}} 0 {{c}} 0\n```\n\nQuel assemblage est le même ?\n\n````choix\n- ```cubes\n  hauteurs: 0 {{b}} 0 {{d}} / {{a}} 0 {{c}} 0\n  ```\n- ```cubes\n  hauteurs: 0 {{b}} 0 {{d}} / {{a}} 0 {{eval:c+1}} 0\n  ```\n- ```cubes\n  hauteurs: 0 {{a}} 0 {{d}} / {{b}} 0 {{c}} 0\n  ```\n````",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "1..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..3"
+				},
+				{
+					"name": "d",
+					"expression": "1..3"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compare pile par pile, de gauche à droite : ${{a}}$ devant, ${{b}}$ derrière, ${{c}}$ devant, ${{d}}$ derrière.",
+					"Le \\textcolor{{{color:primary.0}}}{même assemblage} a les mêmes piles, aux mêmes places. Un autre a un cube de plus ; un autre a le même nombre de cubes, mais deux piles ont changé de place."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Le même",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "3",
+				"d": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un cube de plus",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "3",
+				"d": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : deux piles échangées (même nombre de cubes)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "3",
+				"d": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Deux rangées : le même",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "3",
+				"c": "2",
+				"d": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Deux rangées, erreur : piles échangées",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "3",
+				"c": "2",
+				"d": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

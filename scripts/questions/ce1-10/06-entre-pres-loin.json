@@ -1,0 +1,301 @@
+{
+	"title": "Entre, à gauche, à droite, au-dessus, en dessous, près, loin",
+	"description": "Situer des objets sur une étagère",
+	"grades": ["CE1"],
+	"theme": "Géométrie",
+	"domain": "Repérage et déplacements",
+	"subdomain": "Positions et plans",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Sur la planche {{if:u==1|du haut|{{if:u==2|du bas|{{if:u==3|du haut|{{if:u==4|du bas|{{if:u==5|du haut|{{if:u==6|du bas|{{if:u==7|du haut|{{if:u==8|du bas|{{if:u==9|du haut|{{if:u==10|du bas|{{if:u==11|du haut|du bas}}}}}}}}}}}}}}}}}}}}}}, quel objet est entre {{if:u==1|la boîte|{{if:u==2|la tente|{{if:u==3|la boîte|{{if:u==4|l'étoile|{{if:u==5|la boîte|{{if:u==6|l'étoile|{{if:u==7|le ballon|{{if:u==8|la tente|{{if:u==9|la tente|{{if:u==10|la boîte|{{if:u==11|la boîte|le pot}}}}}}}}}}}}}}}}}}}}}} et {{if:u==1|le livre|{{if:u==2|le pot|{{if:u==3|le livre|{{if:u==4|le ballon|{{if:u==5|le ballon|{{if:u==6|la tente|{{if:u==7|le livre|{{if:u==8|l'étoile|{{if:u==9|l'étoile|{{if:u==10|le pot|{{if:u==11|le livre|l'étoile}}}}}}}}}}}}}}}}}}}}}} ?\n\n{{if:k==1|```figure\nfenetre: 0 ; 10 ; -0.2 ; 6\ndescription: Une étagère à deux planches ; sur chacune, trois objets avec leur nom.\n---\npl0a = point(0.5, 3.6, visible=faux)\npl0b = point(9.5, 3.6, visible=faux)\nsegment(pl0a, pl0b, couleur=\"marron\", epaisseur=5)\npl1a = point(0.5, 0.6, visible=faux)\npl1b = point(9.5, 0.6, visible=faux)\nsegment(pl1a, pl1b, couleur=\"marron\", epaisseur=5)\no000 = point(1.45, 3.6, visible=faux)\no001 = point(2.55, 3.6, visible=faux)\no002 = point(2.55, 4.7, visible=faux)\no003 = point(1.45, 4.7, visible=faux)\no00 = polygone(o000, o001, o002, o003, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ntexte(2, 3.2, \"boîte\")\no010 = point(5, 4.85, visible=faux)\no011 = point(4.84, 4.42, visible=faux)\no012 = point(4.38, 4.4, visible=faux)\no013 = point(4.74, 4.12, visible=faux)\no014 = point(4.62, 3.67, visible=faux)\no015 = point(5, 3.93, visible=faux)\no016 = point(5.38, 3.67, visible=faux)\no017 = point(5.26, 4.12, visible=faux)\no018 = point(5.62, 4.4, visible=faux)\no019 = point(5.16, 4.42, visible=faux)\no01 = polygone(o010, o011, o012, o013, o014, o015, o016, o017, o018, o019, couleur=\"noir\", remplissage=\"violet\", opacite_fond=1)\ntexte(5, 3.2, \"étoile\")\no020 = point(7.65, 3.6, visible=faux)\no021 = point(8.35, 3.6, visible=faux)\no022 = point(8.35, 4.9, visible=faux)\no023 = point(7.65, 4.9, visible=faux)\no02 = polygone(o020, o021, o022, o023, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte(8, 3.2, \"livre\")\no100 = point(1.3, 0.6, visible=faux)\no101 = point(2.7, 0.6, visible=faux)\no102 = point(2, 1.7, visible=faux)\no10 = polygone(o100, o101, o102, couleur=\"noir\", remplissage=\"orange\", opacite_fond=1)\ntexte(2, 0.2, \"tente\")\no11o = point(5, 1.15, visible=faux)\no11 = cercle(o11o, rayon=0.55, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(5, 0.2, \"ballon\")\no120 = point(7.6, 0.6, visible=faux)\no121 = point(8.4, 0.6, visible=faux)\no122 = point(8.6, 1.6, visible=faux)\no123 = point(7.4, 1.6, visible=faux)\no12 = polygone(o120, o121, o122, o123, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\ntexte(8, 0.2, \"pot\")\n```|{{if:k==2|```figure\nfenetre: 0 ; 10 ; -0.2 ; 6\ndescription: Une étagère à deux planches ; sur chacune, trois objets avec leur nom.\n---\npl0a = point(0.5, 3.6, visible=faux)\npl0b = point(9.5, 3.6, visible=faux)\nsegment(pl0a, pl0b, couleur=\"marron\", epaisseur=5)\npl1a = point(0.5, 0.6, visible=faux)\npl1b = point(9.5, 0.6, visible=faux)\nsegment(pl1a, pl1b, couleur=\"marron\", epaisseur=5)\no000 = point(1.45, 3.6, visible=faux)\no001 = point(2.55, 3.6, visible=faux)\no002 = point(2.55, 4.7, visible=faux)\no003 = point(1.45, 4.7, visible=faux)\no00 = polygone(o000, o001, o002, o003, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ntexte(2, 3.2, \"boîte\")\no010 = point(4.6, 3.6, visible=faux)\no011 = point(5.4, 3.6, visible=faux)\no012 = point(5.6, 4.6, visible=faux)\no013 = point(4.4, 4.6, visible=faux)\no01 = polygone(o010, o011, o012, o013, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\ntexte(5, 3.2, \"pot\")\no020 = point(7.65, 3.6, visible=faux)\no021 = point(8.35, 3.6, visible=faux)\no022 = point(8.35, 4.9, visible=faux)\no023 = point(7.65, 4.9, visible=faux)\no02 = polygone(o020, o021, o022, o023, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte(8, 3.2, \"livre\")\no100 = point(2, 1.85, visible=faux)\no101 = point(1.84, 1.42, visible=faux)\no102 = point(1.38, 1.4, visible=faux)\no103 = point(1.74, 1.12, visible=faux)\no104 = point(1.62, 0.67, visible=faux)\no105 = point(2, 0.93, visible=faux)\no106 = point(2.38, 0.67, visible=faux)\no107 = point(2.26, 1.12, visible=faux)\no108 = point(2.62, 1.4, visible=faux)\no109 = point(2.16, 1.42, visible=faux)\no10 = polygone(o100, o101, o102, o103, o104, o105, o106, o107, o108, o109, couleur=\"noir\", remplissage=\"violet\", opacite_fond=1)\ntexte(2, 0.2, \"étoile\")\no110 = point(4.3, 0.6, visible=faux)\no111 = point(5.7, 0.6, visible=faux)\no112 = point(5, 1.7, visible=faux)\no11 = polygone(o110, o111, o112, couleur=\"noir\", remplissage=\"orange\", opacite_fond=1)\ntexte(5, 0.2, \"tente\")\no12o = point(8, 1.15, visible=faux)\no12 = cercle(o12o, rayon=0.55, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(8, 0.2, \"ballon\")\n```|{{if:k==3|```figure\nfenetre: 0 ; 10 ; -0.2 ; 6\ndescription: Une étagère à deux planches ; sur chacune, trois objets avec leur nom.\n---\npl0a = point(0.5, 3.6, visible=faux)\npl0b = point(9.5, 3.6, visible=faux)\nsegment(pl0a, pl0b, couleur=\"marron\", epaisseur=5)\npl1a = point(0.5, 0.6, visible=faux)\npl1b = point(9.5, 0.6, visible=faux)\nsegment(pl1a, pl1b, couleur=\"marron\", epaisseur=5)\no000 = point(1.45, 3.6, visible=faux)\no001 = point(2.55, 3.6, visible=faux)\no002 = point(2.55, 4.7, visible=faux)\no003 = point(1.45, 4.7, visible=faux)\no00 = polygone(o000, o001, o002, o003, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ntexte(2, 3.2, \"boîte\")\no010 = point(4.65, 3.6, visible=faux)\no011 = point(5.35, 3.6, visible=faux)\no012 = point(5.35, 4.9, visible=faux)\no013 = point(4.65, 4.9, visible=faux)\no01 = polygone(o010, o011, o012, o013, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte(5, 3.2, \"livre\")\no02o = point(8, 4.15, visible=faux)\no02 = cercle(o02o, rayon=0.55, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(8, 3.2, \"ballon\")\no100 = point(2, 1.85, visible=faux)\no101 = point(1.84, 1.42, visible=faux)\no102 = point(1.38, 1.4, visible=faux)\no103 = point(1.74, 1.12, visible=faux)\no104 = point(1.62, 0.67, visible=faux)\no105 = point(2, 0.93, visible=faux)\no106 = point(2.38, 0.67, visible=faux)\no107 = point(2.26, 1.12, visible=faux)\no108 = point(2.62, 1.4, visible=faux)\no109 = point(2.16, 1.42, visible=faux)\no10 = polygone(o100, o101, o102, o103, o104, o105, o106, o107, o108, o109, couleur=\"noir\", remplissage=\"violet\", opacite_fond=1)\ntexte(2, 0.2, \"étoile\")\no110 = point(4.6, 0.6, visible=faux)\no111 = point(5.4, 0.6, visible=faux)\no112 = point(5.6, 1.6, visible=faux)\no113 = point(4.4, 1.6, visible=faux)\no11 = polygone(o110, o111, o112, o113, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\ntexte(5, 0.2, \"pot\")\no120 = point(7.3, 0.6, visible=faux)\no121 = point(8.7, 0.6, visible=faux)\no122 = point(8, 1.7, visible=faux)\no12 = polygone(o120, o121, o122, couleur=\"noir\", remplissage=\"orange\", opacite_fond=1)\ntexte(8, 0.2, \"tente\")\n```|{{if:k==4|```figure\nfenetre: 0 ; 10 ; -0.2 ; 6\ndescription: Une étagère à deux planches ; sur chacune, trois objets avec leur nom.\n---\npl0a = point(0.5, 3.6, visible=faux)\npl0b = point(9.5, 3.6, visible=faux)\nsegment(pl0a, pl0b, couleur=\"marron\", epaisseur=5)\npl1a = point(0.5, 0.6, visible=faux)\npl1b = point(9.5, 0.6, visible=faux)\nsegment(pl1a, pl1b, couleur=\"marron\", epaisseur=5)\no00o = point(2, 4.15, visible=faux)\no00 = cercle(o00o, rayon=0.55, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(2, 3.2, \"ballon\")\no010 = point(4.45, 3.6, visible=faux)\no011 = point(5.55, 3.6, visible=faux)\no012 = point(5.55, 4.7, visible=faux)\no013 = point(4.45, 4.7, visible=faux)\no01 = polygone(o010, o011, o012, o013, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ntexte(5, 3.2, \"boîte\")\no020 = point(7.65, 3.6, visible=faux)\no021 = point(8.35, 3.6, visible=faux)\no022 = point(8.35, 4.9, visible=faux)\no023 = point(7.65, 4.9, visible=faux)\no02 = polygone(o020, o021, o022, o023, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte(8, 3.2, \"livre\")\no100 = point(1.3, 0.6, visible=faux)\no101 = point(2.7, 0.6, visible=faux)\no102 = point(2, 1.7, visible=faux)\no10 = polygone(o100, o101, o102, couleur=\"noir\", remplissage=\"orange\", opacite_fond=1)\ntexte(2, 0.2, \"tente\")\no110 = point(4.6, 0.6, visible=faux)\no111 = point(5.4, 0.6, visible=faux)\no112 = point(5.6, 1.6, visible=faux)\no113 = point(4.4, 1.6, visible=faux)\no11 = polygone(o110, o111, o112, o113, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\ntexte(5, 0.2, \"pot\")\no120 = point(8, 1.85, visible=faux)\no121 = point(7.84, 1.42, visible=faux)\no122 = point(7.38, 1.4, visible=faux)\no123 = point(7.74, 1.12, visible=faux)\no124 = point(7.62, 0.67, visible=faux)\no125 = point(8, 0.93, visible=faux)\no126 = point(8.38, 0.67, visible=faux)\no127 = point(8.26, 1.12, visible=faux)\no128 = point(8.62, 1.4, visible=faux)\no129 = point(8.16, 1.42, visible=faux)\no12 = polygone(o120, o121, o122, o123, o124, o125, o126, o127, o128, o129, couleur=\"noir\", remplissage=\"violet\", opacite_fond=1)\ntexte(8, 0.2, \"étoile\")\n```|{{if:k==5|```figure\nfenetre: 0 ; 10 ; -0.2 ; 6\ndescription: Une étagère à deux planches ; sur chacune, trois objets avec leur nom.\n---\npl0a = point(0.5, 3.6, visible=faux)\npl0b = point(9.5, 3.6, visible=faux)\nsegment(pl0a, pl0b, couleur=\"marron\", epaisseur=5)\npl1a = point(0.5, 0.6, visible=faux)\npl1b = point(9.5, 0.6, visible=faux)\nsegment(pl1a, pl1b, couleur=\"marron\", epaisseur=5)\no000 = point(1.3, 3.6, visible=faux)\no001 = point(2.7, 3.6, visible=faux)\no002 = point(2, 4.7, visible=faux)\no00 = polygone(o000, o001, o002, couleur=\"noir\", remplissage=\"orange\", opacite_fond=1)\ntexte(2, 3.2, \"tente\")\no01o = point(5, 4.15, visible=faux)\no01 = cercle(o01o, rayon=0.55, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(5, 3.2, \"ballon\")\no020 = point(8, 4.85, visible=faux)\no021 = point(7.84, 4.42, visible=faux)\no022 = point(7.38, 4.4, visible=faux)\no023 = point(7.74, 4.12, visible=faux)\no024 = point(7.62, 3.67, visible=faux)\no025 = point(8, 3.93, visible=faux)\no026 = point(8.38, 3.67, visible=faux)\no027 = point(8.26, 4.12, visible=faux)\no028 = point(8.62, 4.4, visible=faux)\no029 = point(8.16, 4.42, visible=faux)\no02 = polygone(o020, o021, o022, o023, o024, o025, o026, o027, o028, o029, couleur=\"noir\", remplissage=\"violet\", opacite_fond=1)\ntexte(8, 3.2, \"étoile\")\no100 = point(1.45, 0.6, visible=faux)\no101 = point(2.55, 0.6, visible=faux)\no102 = point(2.55, 1.7, visible=faux)\no103 = point(1.45, 1.7, visible=faux)\no10 = polygone(o100, o101, o102, o103, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ntexte(2, 0.2, \"boîte\")\no110 = point(4.65, 0.6, visible=faux)\no111 = point(5.35, 0.6, visible=faux)\no112 = point(5.35, 1.9, visible=faux)\no113 = point(4.65, 1.9, visible=faux)\no11 = polygone(o110, o111, o112, o113, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte(5, 0.2, \"livre\")\no120 = point(7.6, 0.6, visible=faux)\no121 = point(8.4, 0.6, visible=faux)\no122 = point(8.6, 1.6, visible=faux)\no123 = point(7.4, 1.6, visible=faux)\no12 = polygone(o120, o121, o122, o123, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\ntexte(8, 0.2, \"pot\")\n```|```figure\nfenetre: 0 ; 10 ; -0.2 ; 6\ndescription: Une étagère à deux planches ; sur chacune, trois objets avec leur nom.\n---\npl0a = point(0.5, 3.6, visible=faux)\npl0b = point(9.5, 3.6, visible=faux)\nsegment(pl0a, pl0b, couleur=\"marron\", epaisseur=5)\npl1a = point(0.5, 0.6, visible=faux)\npl1b = point(9.5, 0.6, visible=faux)\nsegment(pl1a, pl1b, couleur=\"marron\", epaisseur=5)\no000 = point(1.45, 3.6, visible=faux)\no001 = point(2.55, 3.6, visible=faux)\no002 = point(2.55, 4.7, visible=faux)\no003 = point(1.45, 4.7, visible=faux)\no00 = polygone(o000, o001, o002, o003, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ntexte(2, 3.2, \"boîte\")\no010 = point(4.3, 3.6, visible=faux)\no011 = point(5.7, 3.6, visible=faux)\no012 = point(5, 4.7, visible=faux)\no01 = polygone(o010, o011, o012, couleur=\"noir\", remplissage=\"orange\", opacite_fond=1)\ntexte(5, 3.2, \"tente\")\no020 = point(7.65, 3.6, visible=faux)\no021 = point(8.35, 3.6, visible=faux)\no022 = point(8.35, 4.9, visible=faux)\no023 = point(7.65, 4.9, visible=faux)\no02 = polygone(o020, o021, o022, o023, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte(8, 3.2, \"livre\")\no100 = point(1.6, 0.6, visible=faux)\no101 = point(2.4, 0.6, visible=faux)\no102 = point(2.6, 1.6, visible=faux)\no103 = point(1.4, 1.6, visible=faux)\no10 = polygone(o100, o101, o102, o103, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\ntexte(2, 0.2, \"pot\")\no11o = point(5, 1.15, visible=faux)\no11 = cercle(o11o, rayon=0.55, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(5, 0.2, \"ballon\")\no120 = point(8, 1.85, visible=faux)\no121 = point(7.84, 1.42, visible=faux)\no122 = point(7.38, 1.4, visible=faux)\no123 = point(7.74, 1.12, visible=faux)\no124 = point(7.62, 0.67, visible=faux)\no125 = point(8, 0.93, visible=faux)\no126 = point(8.38, 0.67, visible=faux)\no127 = point(8.26, 1.12, visible=faux)\no128 = point(8.62, 1.4, visible=faux)\no129 = point(8.16, 1.42, visible=faux)\no12 = polygone(o120, o121, o122, o123, o124, o125, o126, o127, o128, o129, couleur=\"noir\", remplissage=\"violet\", opacite_fond=1)\ntexte(8, 0.2, \"étoile\")\n```}}}}}}}}}}\n\n```choix\nmelanger: non\n- Le ballon.\n- La boîte.\n- Le livre.\n- La tente.\n- Le pot.\n- L'étoile.\n```",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..12"
+				},
+				{
+					"name": "k",
+					"expression": "{{if:u==1|1|{{if:u==2|1|{{if:u==3|2|{{if:u==4|2|{{if:u==5|3|{{if:u==6|3|{{if:u==7|4|{{if:u==8|4|{{if:u==9|5|{{if:u==10|5|{{if:u==11|6|6}}}}}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "a",
+					"expression": "{{if:u==1|5|{{if:u==2|0|{{if:u==3|4|{{if:u==4|3|{{if:u==5|2|{{if:u==6|4|{{if:u==7|1|{{if:u==8|4|{{if:u==9|0|{{if:u==10|2|{{if:u==11|3|0}}}}}}}}}}}}}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur la planche {{if:u==1|du haut|{{if:u==2|du bas|{{if:u==3|du haut|{{if:u==4|du bas|{{if:u==5|du haut|{{if:u==6|du bas|{{if:u==7|du haut|{{if:u==8|du bas|{{if:u==9|du haut|{{if:u==10|du bas|{{if:u==11|du haut|du bas}}}}}}}}}}}}}}}}}}}}}}, \\textcolor{{{color:primary.0}}}{{{if:u==1|l'étoile|{{if:u==2|le ballon|{{if:u==3|le pot|{{if:u==4|la tente|{{if:u==5|le livre|{{if:u==6|le pot|{{if:u==7|la boîte|{{if:u==8|le pot|{{if:u==9|le ballon|{{if:u==10|le livre|{{if:u==11|la tente|le ballon}}}}}}}}}}}}}}}}}}}}}}} est au milieu : d'un côté {{if:u==1|la boîte|{{if:u==2|la tente|{{if:u==3|la boîte|{{if:u==4|l'étoile|{{if:u==5|la boîte|{{if:u==6|l'étoile|{{if:u==7|le ballon|{{if:u==8|la tente|{{if:u==9|la tente|{{if:u==10|la boîte|{{if:u==11|la boîte|le pot}}}}}}}}}}}}}}}}}}}}}}, de l'autre {{if:u==1|le livre|{{if:u==2|le pot|{{if:u==3|le livre|{{if:u==4|le ballon|{{if:u==5|le ballon|{{if:u==6|la tente|{{if:u==7|le livre|{{if:u==8|l'étoile|{{if:u==9|l'étoile|{{if:u==10|le pot|{{if:u==11|le livre|l'étoile}}}}}}}}}}}}}}}}}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Quel objet est juste {{if:u==1|au-dessus de la tente|{{if:u==2|en dessous de l'étoile|{{if:u==3|au-dessus de la tente|{{if:u==4|en dessous du livre|{{if:u==5|au-dessus de la tente|{{if:u==6|en dessous de la boîte|{{if:u==7|au-dessus de la tente|{{if:u==8|en dessous de la boîte|{{if:u==9|au-dessus du livre|{{if:u==10|en dessous de l'étoile|{{if:u==11|au-dessus de l'étoile|en dessous de la boîte}}}}}}}}}}}}}}}}}}}}}} ?\n\n{{if:k==1|```figure\nfenetre: 0 ; 10 ; -0.2 ; 6\ndescription: Une étagère à deux planches ; sur chacune, trois objets avec leur nom.\n---\npl0a = point(0.5, 3.6, visible=faux)\npl0b = point(9.5, 3.6, visible=faux)\nsegment(pl0a, pl0b, couleur=\"marron\", epaisseur=5)\npl1a = point(0.5, 0.6, visible=faux)\npl1b = point(9.5, 0.6, visible=faux)\nsegment(pl1a, pl1b, couleur=\"marron\", epaisseur=5)\no000 = point(1.45, 3.6, visible=faux)\no001 = point(2.55, 3.6, visible=faux)\no002 = point(2.55, 4.7, visible=faux)\no003 = point(1.45, 4.7, visible=faux)\no00 = polygone(o000, o001, o002, o003, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ntexte(2, 3.2, \"boîte\")\no010 = point(5, 4.85, visible=faux)\no011 = point(4.84, 4.42, visible=faux)\no012 = point(4.38, 4.4, visible=faux)\no013 = point(4.74, 4.12, visible=faux)\no014 = point(4.62, 3.67, visible=faux)\no015 = point(5, 3.93, visible=faux)\no016 = point(5.38, 3.67, visible=faux)\no017 = point(5.26, 4.12, visible=faux)\no018 = point(5.62, 4.4, visible=faux)\no019 = point(5.16, 4.42, visible=faux)\no01 = polygone(o010, o011, o012, o013, o014, o015, o016, o017, o018, o019, couleur=\"noir\", remplissage=\"violet\", opacite_fond=1)\ntexte(5, 3.2, \"étoile\")\no020 = point(7.65, 3.6, visible=faux)\no021 = point(8.35, 3.6, visible=faux)\no022 = point(8.35, 4.9, visible=faux)\no023 = point(7.65, 4.9, visible=faux)\no02 = polygone(o020, o021, o022, o023, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte(8, 3.2, \"livre\")\no100 = point(1.3, 0.6, visible=faux)\no101 = point(2.7, 0.6, visible=faux)\no102 = point(2, 1.7, visible=faux)\no10 = polygone(o100, o101, o102, couleur=\"noir\", remplissage=\"orange\", opacite_fond=1)\ntexte(2, 0.2, \"tente\")\no11o = point(5, 1.15, visible=faux)\no11 = cercle(o11o, rayon=0.55, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(5, 0.2, \"ballon\")\no120 = point(7.6, 0.6, visible=faux)\no121 = point(8.4, 0.6, visible=faux)\no122 = point(8.6, 1.6, visible=faux)\no123 = point(7.4, 1.6, visible=faux)\no12 = polygone(o120, o121, o122, o123, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\ntexte(8, 0.2, \"pot\")\n```|{{if:k==2|```figure\nfenetre: 0 ; 10 ; -0.2 ; 6\ndescription: Une étagère à deux planches ; sur chacune, trois objets avec leur nom.\n---\npl0a = point(0.5, 3.6, visible=faux)\npl0b = point(9.5, 3.6, visible=faux)\nsegment(pl0a, pl0b, couleur=\"marron\", epaisseur=5)\npl1a = point(0.5, 0.6, visible=faux)\npl1b = point(9.5, 0.6, visible=faux)\nsegment(pl1a, pl1b, couleur=\"marron\", epaisseur=5)\no000 = point(1.45, 3.6, visible=faux)\no001 = point(2.55, 3.6, visible=faux)\no002 = point(2.55, 4.7, visible=faux)\no003 = point(1.45, 4.7, visible=faux)\no00 = polygone(o000, o001, o002, o003, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ntexte(2, 3.2, \"boîte\")\no010 = point(4.6, 3.6, visible=faux)\no011 = point(5.4, 3.6, visible=faux)\no012 = point(5.6, 4.6, visible=faux)\no013 = point(4.4, 4.6, visible=faux)\no01 = polygone(o010, o011, o012, o013, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\ntexte(5, 3.2, \"pot\")\no020 = point(7.65, 3.6, visible=faux)\no021 = point(8.35, 3.6, visible=faux)\no022 = point(8.35, 4.9, visible=faux)\no023 = point(7.65, 4.9, visible=faux)\no02 = polygone(o020, o021, o022, o023, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte(8, 3.2, \"livre\")\no100 = point(2, 1.85, visible=faux)\no101 = point(1.84, 1.42, visible=faux)\no102 = point(1.38, 1.4, visible=faux)\no103 = point(1.74, 1.12, visible=faux)\no104 = point(1.62, 0.67, visible=faux)\no105 = point(2, 0.93, visible=faux)\no106 = point(2.38, 0.67, visible=faux)\no107 = point(2.26, 1.12, visible=faux)\no108 = point(2.62, 1.4, visible=faux)\no109 = point(2.16, 1.42, visible=faux)\no10 = polygone(o100, o101, o102, o103, o104, o105, o106, o107, o108, o109, couleur=\"noir\", remplissage=\"violet\", opacite_fond=1)\ntexte(2, 0.2, \"étoile\")\no110 = point(4.3, 0.6, visible=faux)\no111 = point(5.7, 0.6, visible=faux)\no112 = point(5, 1.7, visible=faux)\no11 = polygone(o110, o111, o112, couleur=\"noir\", remplissage=\"orange\", opacite_fond=1)\ntexte(5, 0.2, \"tente\")\no12o = point(8, 1.15, visible=faux)\no12 = cercle(o12o, rayon=0.55, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(8, 0.2, \"ballon\")\n```|{{if:k==3|```figure\nfenetre: 0 ; 10 ; -0.2 ; 6\ndescription: Une étagère à deux planches ; sur chacune, trois objets avec leur nom.\n---\npl0a = point(0.5, 3.6, visible=faux)\npl0b = point(9.5, 3.6, visible=faux)\nsegment(pl0a, pl0b, couleur=\"marron\", epaisseur=5)\npl1a = point(0.5, 0.6, visible=faux)\npl1b = point(9.5, 0.6, visible=faux)\nsegment(pl1a, pl1b, couleur=\"marron\", epaisseur=5)\no000 = point(1.45, 3.6, visible=faux)\no001 = point(2.55, 3.6, visible=faux)\no002 = point(2.55, 4.7, visible=faux)\no003 = point(1.45, 4.7, visible=faux)\no00 = polygone(o000, o001, o002, o003, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ntexte(2, 3.2, \"boîte\")\no010 = point(4.65, 3.6, visible=faux)\no011 = point(5.35, 3.6, visible=faux)\no012 = point(5.35, 4.9, visible=faux)\no013 = point(4.65, 4.9, visible=faux)\no01 = polygone(o010, o011, o012, o013, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte(5, 3.2, \"livre\")\no02o = point(8, 4.15, visible=faux)\no02 = cercle(o02o, rayon=0.55, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(8, 3.2, \"ballon\")\no100 = point(2, 1.85, visible=faux)\no101 = point(1.84, 1.42, visible=faux)\no102 = point(1.38, 1.4, visible=faux)\no103 = point(1.74, 1.12, visible=faux)\no104 = point(1.62, 0.67, visible=faux)\no105 = point(2, 0.93, visible=faux)\no106 = point(2.38, 0.67, visible=faux)\no107 = point(2.26, 1.12, visible=faux)\no108 = point(2.62, 1.4, visible=faux)\no109 = point(2.16, 1.42, visible=faux)\no10 = polygone(o100, o101, o102, o103, o104, o105, o106, o107, o108, o109, couleur=\"noir\", remplissage=\"violet\", opacite_fond=1)\ntexte(2, 0.2, \"étoile\")\no110 = point(4.6, 0.6, visible=faux)\no111 = point(5.4, 0.6, visible=faux)\no112 = point(5.6, 1.6, visible=faux)\no113 = point(4.4, 1.6, visible=faux)\no11 = polygone(o110, o111, o112, o113, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\ntexte(5, 0.2, \"pot\")\no120 = point(7.3, 0.6, visible=faux)\no121 = point(8.7, 0.6, visible=faux)\no122 = point(8, 1.7, visible=faux)\no12 = polygone(o120, o121, o122, couleur=\"noir\", remplissage=\"orange\", opacite_fond=1)\ntexte(8, 0.2, \"tente\")\n```|{{if:k==4|```figure\nfenetre: 0 ; 10 ; -0.2 ; 6\ndescription: Une étagère à deux planches ; sur chacune, trois objets avec leur nom.\n---\npl0a = point(0.5, 3.6, visible=faux)\npl0b = point(9.5, 3.6, visible=faux)\nsegment(pl0a, pl0b, couleur=\"marron\", epaisseur=5)\npl1a = point(0.5, 0.6, visible=faux)\npl1b = point(9.5, 0.6, visible=faux)\nsegment(pl1a, pl1b, couleur=\"marron\", epaisseur=5)\no00o = point(2, 4.15, visible=faux)\no00 = cercle(o00o, rayon=0.55, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(2, 3.2, \"ballon\")\no010 = point(4.45, 3.6, visible=faux)\no011 = point(5.55, 3.6, visible=faux)\no012 = point(5.55, 4.7, visible=faux)\no013 = point(4.45, 4.7, visible=faux)\no01 = polygone(o010, o011, o012, o013, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ntexte(5, 3.2, \"boîte\")\no020 = point(7.65, 3.6, visible=faux)\no021 = point(8.35, 3.6, visible=faux)\no022 = point(8.35, 4.9, visible=faux)\no023 = point(7.65, 4.9, visible=faux)\no02 = polygone(o020, o021, o022, o023, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte(8, 3.2, \"livre\")\no100 = point(1.3, 0.6, visible=faux)\no101 = point(2.7, 0.6, visible=faux)\no102 = point(2, 1.7, visible=faux)\no10 = polygone(o100, o101, o102, couleur=\"noir\", remplissage=\"orange\", opacite_fond=1)\ntexte(2, 0.2, \"tente\")\no110 = point(4.6, 0.6, visible=faux)\no111 = point(5.4, 0.6, visible=faux)\no112 = point(5.6, 1.6, visible=faux)\no113 = point(4.4, 1.6, visible=faux)\no11 = polygone(o110, o111, o112, o113, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\ntexte(5, 0.2, \"pot\")\no120 = point(8, 1.85, visible=faux)\no121 = point(7.84, 1.42, visible=faux)\no122 = point(7.38, 1.4, visible=faux)\no123 = point(7.74, 1.12, visible=faux)\no124 = point(7.62, 0.67, visible=faux)\no125 = point(8, 0.93, visible=faux)\no126 = point(8.38, 0.67, visible=faux)\no127 = point(8.26, 1.12, visible=faux)\no128 = point(8.62, 1.4, visible=faux)\no129 = point(8.16, 1.42, visible=faux)\no12 = polygone(o120, o121, o122, o123, o124, o125, o126, o127, o128, o129, couleur=\"noir\", remplissage=\"violet\", opacite_fond=1)\ntexte(8, 0.2, \"étoile\")\n```|{{if:k==5|```figure\nfenetre: 0 ; 10 ; -0.2 ; 6\ndescription: Une étagère à deux planches ; sur chacune, trois objets avec leur nom.\n---\npl0a = point(0.5, 3.6, visible=faux)\npl0b = point(9.5, 3.6, visible=faux)\nsegment(pl0a, pl0b, couleur=\"marron\", epaisseur=5)\npl1a = point(0.5, 0.6, visible=faux)\npl1b = point(9.5, 0.6, visible=faux)\nsegment(pl1a, pl1b, couleur=\"marron\", epaisseur=5)\no000 = point(1.3, 3.6, visible=faux)\no001 = point(2.7, 3.6, visible=faux)\no002 = point(2, 4.7, visible=faux)\no00 = polygone(o000, o001, o002, couleur=\"noir\", remplissage=\"orange\", opacite_fond=1)\ntexte(2, 3.2, \"tente\")\no01o = point(5, 4.15, visible=faux)\no01 = cercle(o01o, rayon=0.55, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(5, 3.2, \"ballon\")\no020 = point(8, 4.85, visible=faux)\no021 = point(7.84, 4.42, visible=faux)\no022 = point(7.38, 4.4, visible=faux)\no023 = point(7.74, 4.12, visible=faux)\no024 = point(7.62, 3.67, visible=faux)\no025 = point(8, 3.93, visible=faux)\no026 = point(8.38, 3.67, visible=faux)\no027 = point(8.26, 4.12, visible=faux)\no028 = point(8.62, 4.4, visible=faux)\no029 = point(8.16, 4.42, visible=faux)\no02 = polygone(o020, o021, o022, o023, o024, o025, o026, o027, o028, o029, couleur=\"noir\", remplissage=\"violet\", opacite_fond=1)\ntexte(8, 3.2, \"étoile\")\no100 = point(1.45, 0.6, visible=faux)\no101 = point(2.55, 0.6, visible=faux)\no102 = point(2.55, 1.7, visible=faux)\no103 = point(1.45, 1.7, visible=faux)\no10 = polygone(o100, o101, o102, o103, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ntexte(2, 0.2, \"boîte\")\no110 = point(4.65, 0.6, visible=faux)\no111 = point(5.35, 0.6, visible=faux)\no112 = point(5.35, 1.9, visible=faux)\no113 = point(4.65, 1.9, visible=faux)\no11 = polygone(o110, o111, o112, o113, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte(5, 0.2, \"livre\")\no120 = point(7.6, 0.6, visible=faux)\no121 = point(8.4, 0.6, visible=faux)\no122 = point(8.6, 1.6, visible=faux)\no123 = point(7.4, 1.6, visible=faux)\no12 = polygone(o120, o121, o122, o123, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\ntexte(8, 0.2, \"pot\")\n```|```figure\nfenetre: 0 ; 10 ; -0.2 ; 6\ndescription: Une étagère à deux planches ; sur chacune, trois objets avec leur nom.\n---\npl0a = point(0.5, 3.6, visible=faux)\npl0b = point(9.5, 3.6, visible=faux)\nsegment(pl0a, pl0b, couleur=\"marron\", epaisseur=5)\npl1a = point(0.5, 0.6, visible=faux)\npl1b = point(9.5, 0.6, visible=faux)\nsegment(pl1a, pl1b, couleur=\"marron\", epaisseur=5)\no000 = point(1.45, 3.6, visible=faux)\no001 = point(2.55, 3.6, visible=faux)\no002 = point(2.55, 4.7, visible=faux)\no003 = point(1.45, 4.7, visible=faux)\no00 = polygone(o000, o001, o002, o003, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ntexte(2, 3.2, \"boîte\")\no010 = point(4.3, 3.6, visible=faux)\no011 = point(5.7, 3.6, visible=faux)\no012 = point(5, 4.7, visible=faux)\no01 = polygone(o010, o011, o012, couleur=\"noir\", remplissage=\"orange\", opacite_fond=1)\ntexte(5, 3.2, \"tente\")\no020 = point(7.65, 3.6, visible=faux)\no021 = point(8.35, 3.6, visible=faux)\no022 = point(8.35, 4.9, visible=faux)\no023 = point(7.65, 4.9, visible=faux)\no02 = polygone(o020, o021, o022, o023, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte(8, 3.2, \"livre\")\no100 = point(1.6, 0.6, visible=faux)\no101 = point(2.4, 0.6, visible=faux)\no102 = point(2.6, 1.6, visible=faux)\no103 = point(1.4, 1.6, visible=faux)\no10 = polygone(o100, o101, o102, o103, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\ntexte(2, 0.2, \"pot\")\no11o = point(5, 1.15, visible=faux)\no11 = cercle(o11o, rayon=0.55, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(5, 0.2, \"ballon\")\no120 = point(8, 1.85, visible=faux)\no121 = point(7.84, 1.42, visible=faux)\no122 = point(7.38, 1.4, visible=faux)\no123 = point(7.74, 1.12, visible=faux)\no124 = point(7.62, 0.67, visible=faux)\no125 = point(8, 0.93, visible=faux)\no126 = point(8.38, 0.67, visible=faux)\no127 = point(8.26, 1.12, visible=faux)\no128 = point(8.62, 1.4, visible=faux)\no129 = point(8.16, 1.42, visible=faux)\no12 = polygone(o120, o121, o122, o123, o124, o125, o126, o127, o128, o129, couleur=\"noir\", remplissage=\"violet\", opacite_fond=1)\ntexte(8, 0.2, \"étoile\")\n```}}}}}}}}}}\n\n```choix\nmelanger: non\n- Le ballon.\n- La boîte.\n- Le livre.\n- La tente.\n- Le pot.\n- L'étoile.\n```",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..12"
+				},
+				{
+					"name": "k",
+					"expression": "{{if:u==1|1|{{if:u==2|1|{{if:u==3|2|{{if:u==4|2|{{if:u==5|3|{{if:u==6|3|{{if:u==7|4|{{if:u==8|4|{{if:u==9|5|{{if:u==10|5|{{if:u==11|6|6}}}}}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "a",
+					"expression": "{{if:u==1|1|{{if:u==2|0|{{if:u==3|4|{{if:u==4|0|{{if:u==5|0|{{if:u==6|5|{{if:u==7|0|{{if:u==8|4|{{if:u==9|0|{{if:u==10|4|{{if:u==11|2|4}}}}}}}}}}}}}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"\\textcolor{{{color:primary.0}}}{{{if:u==1|la boîte|{{if:u==2|le ballon|{{if:u==3|le pot|{{if:u==4|le ballon|{{if:u==5|le ballon|{{if:u==6|l'étoile|{{if:u==7|le ballon|{{if:u==8|le pot|{{if:u==9|le ballon|{{if:u==10|le pot|{{if:u==11|le livre|le pot}}}}}}}}}}}}}}}}}}}}}}} est sur l'autre planche, {{if:u==1|juste au-dessus de la tente|{{if:u==2|juste en dessous de l'étoile|{{if:u==3|juste au-dessus de la tente|{{if:u==4|juste en dessous du livre|{{if:u==5|juste au-dessus de la tente|{{if:u==6|juste en dessous de la boîte|{{if:u==7|juste au-dessus de la tente|{{if:u==8|juste en dessous de la boîte|{{if:u==9|juste au-dessus du livre|{{if:u==10|juste en dessous de l'étoile|{{if:u==11|juste au-dessus de l'étoile|juste en dessous de la boîte}}}}}}}}}}}}}}}}}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "{{if:u==1|La boîte|{{if:u==2|Le ballon|{{if:u==3|Le ballon|{{if:u==4|Le livre|{{if:u==5|La boîte|{{if:u==6|L'étoile|{{if:u==7|L'étoile|{{if:u==8|La boîte|{{if:u==9|La tente|{{if:u==10|Le pot|{{if:u==11|L'étoile|La boîte}}}}}}}}}}}}}}}}}}}}}} est … {{if:u==1|de l'étoile|{{if:u==2|de l'étoile|{{if:u==3|de la tente|{{if:u==4|du ballon|{{if:u==5|du livre|{{if:u==6|de la boîte|{{if:u==7|du pot|{{if:u==8|du pot|{{if:u==9|du ballon|{{if:u==10|de l'étoile|{{if:u==11|du ballon|du pot}}}}}}}}}}}}}}}}}}}}}}.\n\n{{if:k==1|```figure\nfenetre: 0 ; 10 ; -0.2 ; 6\ndescription: Une étagère à deux planches ; sur chacune, trois objets avec leur nom.\n---\npl0a = point(0.5, 3.6, visible=faux)\npl0b = point(9.5, 3.6, visible=faux)\nsegment(pl0a, pl0b, couleur=\"marron\", epaisseur=5)\npl1a = point(0.5, 0.6, visible=faux)\npl1b = point(9.5, 0.6, visible=faux)\nsegment(pl1a, pl1b, couleur=\"marron\", epaisseur=5)\no000 = point(1.45, 3.6, visible=faux)\no001 = point(2.55, 3.6, visible=faux)\no002 = point(2.55, 4.7, visible=faux)\no003 = point(1.45, 4.7, visible=faux)\no00 = polygone(o000, o001, o002, o003, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ntexte(2, 3.2, \"boîte\")\no010 = point(5, 4.85, visible=faux)\no011 = point(4.84, 4.42, visible=faux)\no012 = point(4.38, 4.4, visible=faux)\no013 = point(4.74, 4.12, visible=faux)\no014 = point(4.62, 3.67, visible=faux)\no015 = point(5, 3.93, visible=faux)\no016 = point(5.38, 3.67, visible=faux)\no017 = point(5.26, 4.12, visible=faux)\no018 = point(5.62, 4.4, visible=faux)\no019 = point(5.16, 4.42, visible=faux)\no01 = polygone(o010, o011, o012, o013, o014, o015, o016, o017, o018, o019, couleur=\"noir\", remplissage=\"violet\", opacite_fond=1)\ntexte(5, 3.2, \"étoile\")\no020 = point(7.65, 3.6, visible=faux)\no021 = point(8.35, 3.6, visible=faux)\no022 = point(8.35, 4.9, visible=faux)\no023 = point(7.65, 4.9, visible=faux)\no02 = polygone(o020, o021, o022, o023, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte(8, 3.2, \"livre\")\no100 = point(1.3, 0.6, visible=faux)\no101 = point(2.7, 0.6, visible=faux)\no102 = point(2, 1.7, visible=faux)\no10 = polygone(o100, o101, o102, couleur=\"noir\", remplissage=\"orange\", opacite_fond=1)\ntexte(2, 0.2, \"tente\")\no11o = point(5, 1.15, visible=faux)\no11 = cercle(o11o, rayon=0.55, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(5, 0.2, \"ballon\")\no120 = point(7.6, 0.6, visible=faux)\no121 = point(8.4, 0.6, visible=faux)\no122 = point(8.6, 1.6, visible=faux)\no123 = point(7.4, 1.6, visible=faux)\no12 = polygone(o120, o121, o122, o123, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\ntexte(8, 0.2, \"pot\")\n```|{{if:k==2|```figure\nfenetre: 0 ; 10 ; -0.2 ; 6\ndescription: Une étagère à deux planches ; sur chacune, trois objets avec leur nom.\n---\npl0a = point(0.5, 3.6, visible=faux)\npl0b = point(9.5, 3.6, visible=faux)\nsegment(pl0a, pl0b, couleur=\"marron\", epaisseur=5)\npl1a = point(0.5, 0.6, visible=faux)\npl1b = point(9.5, 0.6, visible=faux)\nsegment(pl1a, pl1b, couleur=\"marron\", epaisseur=5)\no000 = point(1.45, 3.6, visible=faux)\no001 = point(2.55, 3.6, visible=faux)\no002 = point(2.55, 4.7, visible=faux)\no003 = point(1.45, 4.7, visible=faux)\no00 = polygone(o000, o001, o002, o003, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ntexte(2, 3.2, \"boîte\")\no010 = point(4.6, 3.6, visible=faux)\no011 = point(5.4, 3.6, visible=faux)\no012 = point(5.6, 4.6, visible=faux)\no013 = point(4.4, 4.6, visible=faux)\no01 = polygone(o010, o011, o012, o013, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\ntexte(5, 3.2, \"pot\")\no020 = point(7.65, 3.6, visible=faux)\no021 = point(8.35, 3.6, visible=faux)\no022 = point(8.35, 4.9, visible=faux)\no023 = point(7.65, 4.9, visible=faux)\no02 = polygone(o020, o021, o022, o023, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte(8, 3.2, \"livre\")\no100 = point(2, 1.85, visible=faux)\no101 = point(1.84, 1.42, visible=faux)\no102 = point(1.38, 1.4, visible=faux)\no103 = point(1.74, 1.12, visible=faux)\no104 = point(1.62, 0.67, visible=faux)\no105 = point(2, 0.93, visible=faux)\no106 = point(2.38, 0.67, visible=faux)\no107 = point(2.26, 1.12, visible=faux)\no108 = point(2.62, 1.4, visible=faux)\no109 = point(2.16, 1.42, visible=faux)\no10 = polygone(o100, o101, o102, o103, o104, o105, o106, o107, o108, o109, couleur=\"noir\", remplissage=\"violet\", opacite_fond=1)\ntexte(2, 0.2, \"étoile\")\no110 = point(4.3, 0.6, visible=faux)\no111 = point(5.7, 0.6, visible=faux)\no112 = point(5, 1.7, visible=faux)\no11 = polygone(o110, o111, o112, couleur=\"noir\", remplissage=\"orange\", opacite_fond=1)\ntexte(5, 0.2, \"tente\")\no12o = point(8, 1.15, visible=faux)\no12 = cercle(o12o, rayon=0.55, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(8, 0.2, \"ballon\")\n```|{{if:k==3|```figure\nfenetre: 0 ; 10 ; -0.2 ; 6\ndescription: Une étagère à deux planches ; sur chacune, trois objets avec leur nom.\n---\npl0a = point(0.5, 3.6, visible=faux)\npl0b = point(9.5, 3.6, visible=faux)\nsegment(pl0a, pl0b, couleur=\"marron\", epaisseur=5)\npl1a = point(0.5, 0.6, visible=faux)\npl1b = point(9.5, 0.6, visible=faux)\nsegment(pl1a, pl1b, couleur=\"marron\", epaisseur=5)\no000 = point(1.45, 3.6, visible=faux)\no001 = point(2.55, 3.6, visible=faux)\no002 = point(2.55, 4.7, visible=faux)\no003 = point(1.45, 4.7, visible=faux)\no00 = polygone(o000, o001, o002, o003, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ntexte(2, 3.2, \"boîte\")\no010 = point(4.65, 3.6, visible=faux)\no011 = point(5.35, 3.6, visible=faux)\no012 = point(5.35, 4.9, visible=faux)\no013 = point(4.65, 4.9, visible=faux)\no01 = polygone(o010, o011, o012, o013, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte(5, 3.2, \"livre\")\no02o = point(8, 4.15, visible=faux)\no02 = cercle(o02o, rayon=0.55, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(8, 3.2, \"ballon\")\no100 = point(2, 1.85, visible=faux)\no101 = point(1.84, 1.42, visible=faux)\no102 = point(1.38, 1.4, visible=faux)\no103 = point(1.74, 1.12, visible=faux)\no104 = point(1.62, 0.67, visible=faux)\no105 = point(2, 0.93, visible=faux)\no106 = point(2.38, 0.67, visible=faux)\no107 = point(2.26, 1.12, visible=faux)\no108 = point(2.62, 1.4, visible=faux)\no109 = point(2.16, 1.42, visible=faux)\no10 = polygone(o100, o101, o102, o103, o104, o105, o106, o107, o108, o109, couleur=\"noir\", remplissage=\"violet\", opacite_fond=1)\ntexte(2, 0.2, \"étoile\")\no110 = point(4.6, 0.6, visible=faux)\no111 = point(5.4, 0.6, visible=faux)\no112 = point(5.6, 1.6, visible=faux)\no113 = point(4.4, 1.6, visible=faux)\no11 = polygone(o110, o111, o112, o113, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\ntexte(5, 0.2, \"pot\")\no120 = point(7.3, 0.6, visible=faux)\no121 = point(8.7, 0.6, visible=faux)\no122 = point(8, 1.7, visible=faux)\no12 = polygone(o120, o121, o122, couleur=\"noir\", remplissage=\"orange\", opacite_fond=1)\ntexte(8, 0.2, \"tente\")\n```|{{if:k==4|```figure\nfenetre: 0 ; 10 ; -0.2 ; 6\ndescription: Une étagère à deux planches ; sur chacune, trois objets avec leur nom.\n---\npl0a = point(0.5, 3.6, visible=faux)\npl0b = point(9.5, 3.6, visible=faux)\nsegment(pl0a, pl0b, couleur=\"marron\", epaisseur=5)\npl1a = point(0.5, 0.6, visible=faux)\npl1b = point(9.5, 0.6, visible=faux)\nsegment(pl1a, pl1b, couleur=\"marron\", epaisseur=5)\no00o = point(2, 4.15, visible=faux)\no00 = cercle(o00o, rayon=0.55, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(2, 3.2, \"ballon\")\no010 = point(4.45, 3.6, visible=faux)\no011 = point(5.55, 3.6, visible=faux)\no012 = point(5.55, 4.7, visible=faux)\no013 = point(4.45, 4.7, visible=faux)\no01 = polygone(o010, o011, o012, o013, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ntexte(5, 3.2, \"boîte\")\no020 = point(7.65, 3.6, visible=faux)\no021 = point(8.35, 3.6, visible=faux)\no022 = point(8.35, 4.9, visible=faux)\no023 = point(7.65, 4.9, visible=faux)\no02 = polygone(o020, o021, o022, o023, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte(8, 3.2, \"livre\")\no100 = point(1.3, 0.6, visible=faux)\no101 = point(2.7, 0.6, visible=faux)\no102 = point(2, 1.7, visible=faux)\no10 = polygone(o100, o101, o102, couleur=\"noir\", remplissage=\"orange\", opacite_fond=1)\ntexte(2, 0.2, \"tente\")\no110 = point(4.6, 0.6, visible=faux)\no111 = point(5.4, 0.6, visible=faux)\no112 = point(5.6, 1.6, visible=faux)\no113 = point(4.4, 1.6, visible=faux)\no11 = polygone(o110, o111, o112, o113, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\ntexte(5, 0.2, \"pot\")\no120 = point(8, 1.85, visible=faux)\no121 = point(7.84, 1.42, visible=faux)\no122 = point(7.38, 1.4, visible=faux)\no123 = point(7.74, 1.12, visible=faux)\no124 = point(7.62, 0.67, visible=faux)\no125 = point(8, 0.93, visible=faux)\no126 = point(8.38, 0.67, visible=faux)\no127 = point(8.26, 1.12, visible=faux)\no128 = point(8.62, 1.4, visible=faux)\no129 = point(8.16, 1.42, visible=faux)\no12 = polygone(o120, o121, o122, o123, o124, o125, o126, o127, o128, o129, couleur=\"noir\", remplissage=\"violet\", opacite_fond=1)\ntexte(8, 0.2, \"étoile\")\n```|{{if:k==5|```figure\nfenetre: 0 ; 10 ; -0.2 ; 6\ndescription: Une étagère à deux planches ; sur chacune, trois objets avec leur nom.\n---\npl0a = point(0.5, 3.6, visible=faux)\npl0b = point(9.5, 3.6, visible=faux)\nsegment(pl0a, pl0b, couleur=\"marron\", epaisseur=5)\npl1a = point(0.5, 0.6, visible=faux)\npl1b = point(9.5, 0.6, visible=faux)\nsegment(pl1a, pl1b, couleur=\"marron\", epaisseur=5)\no000 = point(1.3, 3.6, visible=faux)\no001 = point(2.7, 3.6, visible=faux)\no002 = point(2, 4.7, visible=faux)\no00 = polygone(o000, o001, o002, couleur=\"noir\", remplissage=\"orange\", opacite_fond=1)\ntexte(2, 3.2, \"tente\")\no01o = point(5, 4.15, visible=faux)\no01 = cercle(o01o, rayon=0.55, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(5, 3.2, \"ballon\")\no020 = point(8, 4.85, visible=faux)\no021 = point(7.84, 4.42, visible=faux)\no022 = point(7.38, 4.4, visible=faux)\no023 = point(7.74, 4.12, visible=faux)\no024 = point(7.62, 3.67, visible=faux)\no025 = point(8, 3.93, visible=faux)\no026 = point(8.38, 3.67, visible=faux)\no027 = point(8.26, 4.12, visible=faux)\no028 = point(8.62, 4.4, visible=faux)\no029 = point(8.16, 4.42, visible=faux)\no02 = polygone(o020, o021, o022, o023, o024, o025, o026, o027, o028, o029, couleur=\"noir\", remplissage=\"violet\", opacite_fond=1)\ntexte(8, 3.2, \"étoile\")\no100 = point(1.45, 0.6, visible=faux)\no101 = point(2.55, 0.6, visible=faux)\no102 = point(2.55, 1.7, visible=faux)\no103 = point(1.45, 1.7, visible=faux)\no10 = polygone(o100, o101, o102, o103, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ntexte(2, 0.2, \"boîte\")\no110 = point(4.65, 0.6, visible=faux)\no111 = point(5.35, 0.6, visible=faux)\no112 = point(5.35, 1.9, visible=faux)\no113 = point(4.65, 1.9, visible=faux)\no11 = polygone(o110, o111, o112, o113, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte(5, 0.2, \"livre\")\no120 = point(7.6, 0.6, visible=faux)\no121 = point(8.4, 0.6, visible=faux)\no122 = point(8.6, 1.6, visible=faux)\no123 = point(7.4, 1.6, visible=faux)\no12 = polygone(o120, o121, o122, o123, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\ntexte(8, 0.2, \"pot\")\n```|```figure\nfenetre: 0 ; 10 ; -0.2 ; 6\ndescription: Une étagère à deux planches ; sur chacune, trois objets avec leur nom.\n---\npl0a = point(0.5, 3.6, visible=faux)\npl0b = point(9.5, 3.6, visible=faux)\nsegment(pl0a, pl0b, couleur=\"marron\", epaisseur=5)\npl1a = point(0.5, 0.6, visible=faux)\npl1b = point(9.5, 0.6, visible=faux)\nsegment(pl1a, pl1b, couleur=\"marron\", epaisseur=5)\no000 = point(1.45, 3.6, visible=faux)\no001 = point(2.55, 3.6, visible=faux)\no002 = point(2.55, 4.7, visible=faux)\no003 = point(1.45, 4.7, visible=faux)\no00 = polygone(o000, o001, o002, o003, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ntexte(2, 3.2, \"boîte\")\no010 = point(4.3, 3.6, visible=faux)\no011 = point(5.7, 3.6, visible=faux)\no012 = point(5, 4.7, visible=faux)\no01 = polygone(o010, o011, o012, couleur=\"noir\", remplissage=\"orange\", opacite_fond=1)\ntexte(5, 3.2, \"tente\")\no020 = point(7.65, 3.6, visible=faux)\no021 = point(8.35, 3.6, visible=faux)\no022 = point(8.35, 4.9, visible=faux)\no023 = point(7.65, 4.9, visible=faux)\no02 = polygone(o020, o021, o022, o023, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte(8, 3.2, \"livre\")\no100 = point(1.6, 0.6, visible=faux)\no101 = point(2.4, 0.6, visible=faux)\no102 = point(2.6, 1.6, visible=faux)\no103 = point(1.4, 1.6, visible=faux)\no10 = polygone(o100, o101, o102, o103, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\ntexte(2, 0.2, \"pot\")\no11o = point(5, 1.15, visible=faux)\no11 = cercle(o11o, rayon=0.55, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(5, 0.2, \"ballon\")\no120 = point(8, 1.85, visible=faux)\no121 = point(7.84, 1.42, visible=faux)\no122 = point(7.38, 1.4, visible=faux)\no123 = point(7.74, 1.12, visible=faux)\no124 = point(7.62, 0.67, visible=faux)\no125 = point(8, 0.93, visible=faux)\no126 = point(8.38, 0.67, visible=faux)\no127 = point(8.26, 1.12, visible=faux)\no128 = point(8.62, 1.4, visible=faux)\no129 = point(8.16, 1.42, visible=faux)\no12 = polygone(o120, o121, o122, o123, o124, o125, o126, o127, o128, o129, couleur=\"noir\", remplissage=\"violet\", opacite_fond=1)\ntexte(8, 0.2, \"étoile\")\n```}}}}}}}}}}\n\n```choix\nmelanger: non\n- à gauche\n- à droite\n- au-dessus\n- en dessous\n```",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..12"
+				},
+				{
+					"name": "k",
+					"expression": "{{if:u==1|1|{{if:u==2|1|{{if:u==3|2|{{if:u==4|2|{{if:u==5|3|{{if:u==6|3|{{if:u==7|4|{{if:u==8|4|{{if:u==9|5|{{if:u==10|5|{{if:u==11|6|6}}}}}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "a",
+					"expression": "{{if:u==1|0|{{if:u==2|3|{{if:u==3|1|{{if:u==4|2|{{if:u==5|0|{{if:u==6|3|{{if:u==7|1|{{if:u==8|2|{{if:u==9|0|{{if:u==10|3|{{if:u==11|1|2}}}}}}}}}}}}}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On regarde le dessin, tel qu'on le voit.",
+					"{{if:u==1|La boîte|{{if:u==2|Le ballon|{{if:u==3|Le ballon|{{if:u==4|Le livre|{{if:u==5|La boîte|{{if:u==6|L'étoile|{{if:u==7|L'étoile|{{if:u==8|La boîte|{{if:u==9|La tente|{{if:u==10|Le pot|{{if:u==11|L'étoile|La boîte}}}}}}}}}}}}}}}}}}}}}} est \\textcolor{{{color:primary.0}}}{{{if:u==1|à gauche|{{if:u==2|en dessous|{{if:u==3|à droite|{{if:u==4|au-dessus|{{if:u==5|à gauche|{{if:u==6|en dessous|{{if:u==7|à droite|{{if:u==8|au-dessus|{{if:u==9|à gauche|{{if:u==10|en dessous|{{if:u==11|à droite|au-dessus}}}}}}}}}}}}}}}}}}}}}}} {{if:u==1|de l'étoile|{{if:u==2|de l'étoile|{{if:u==3|de la tente|{{if:u==4|du ballon|{{if:u==5|du livre|{{if:u==6|de la boîte|{{if:u==7|du pot|{{if:u==8|du pot|{{if:u==9|du ballon|{{if:u==10|de l'étoile|{{if:u==11|du ballon|du pot}}}}}}}}}}}}}}}}}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Quel objet est {{if:u==1|le plus près du livre|{{if:u==2|le plus loin du livre|{{if:u==3|le plus près du livre|{{if:u==4|le plus loin du livre|{{if:u==5|le plus près du pot|{{if:u==6|le plus loin du pot|{{if:u==7|le plus près du pot|{{if:u==8|le plus loin du pot|{{if:u==9|le plus près du ballon|{{if:u==10|le plus loin du ballon|{{if:u==11|le plus près du ballon|le plus loin du ballon}}}}}}}}}}}}}}}}}}}}}} ?\n\n{{if:k==1|```figure\nfenetre: 0 ; 10 ; -0.2 ; 2.6\ndescription: Une planche et quatre objets avec leur nom, plus ou moins écartés.\n---\npla = point(0.3, 0.6, visible=faux)\nplb = point(9.7, 0.6, visible=faux)\nsegment(pla, plb, couleur=\"marron\", epaisseur=5)\np00 = point(0.65, 0.6, visible=faux)\np01 = point(1.35, 0.6, visible=faux)\np02 = point(1.35, 1.9, visible=faux)\np03 = point(0.65, 1.9, visible=faux)\np0 = polygone(p00, p01, p02, p03, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte(1, 0.2, \"livre\")\np10 = point(3.85, 0.6, visible=faux)\np11 = point(4.95, 0.6, visible=faux)\np12 = point(4.95, 1.7, visible=faux)\np13 = point(3.85, 1.7, visible=faux)\np1 = polygone(p10, p11, p12, p13, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ntexte(4.4, 0.2, \"boîte\")\np2o = point(5.8, 1.15, visible=faux)\np2 = cercle(p2o, rayon=0.55, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(5.8, 0.2, \"ballon\")\np30 = point(8.1, 0.6, visible=faux)\np31 = point(9.5, 0.6, visible=faux)\np32 = point(8.8, 1.7, visible=faux)\np3 = polygone(p30, p31, p32, couleur=\"noir\", remplissage=\"orange\", opacite_fond=1)\ntexte(8.8, 0.2, \"tente\")\n```|{{if:k==2|```figure\nfenetre: 0 ; 10 ; -0.2 ; 2.6\ndescription: Une planche et quatre objets avec leur nom, plus ou moins écartés.\n---\npla = point(0.3, 0.6, visible=faux)\nplb = point(9.7, 0.6, visible=faux)\nsegment(pla, plb, couleur=\"marron\", epaisseur=5)\np00 = point(8.65, 0.6, visible=faux)\np01 = point(9.35, 0.6, visible=faux)\np02 = point(9.35, 1.9, visible=faux)\np03 = point(8.65, 1.9, visible=faux)\np0 = polygone(p00, p01, p02, p03, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte(9, 0.2, \"livre\")\np10 = point(3.8, 0.6, visible=faux)\np11 = point(4.6, 0.6, visible=faux)\np12 = point(4.8, 1.6, visible=faux)\np13 = point(3.6, 1.6, visible=faux)\np1 = polygone(p10, p11, p12, p13, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\ntexte(4.2, 0.2, \"pot\")\np20 = point(2.25, 0.6, visible=faux)\np21 = point(3.35, 0.6, visible=faux)\np22 = point(3.35, 1.7, visible=faux)\np23 = point(2.25, 1.7, visible=faux)\np2 = polygone(p20, p21, p22, p23, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ntexte(2.8, 0.2, \"boîte\")\np30 = point(1.2, 1.85, visible=faux)\np31 = point(1.04, 1.42, visible=faux)\np32 = point(0.58, 1.4, visible=faux)\np33 = point(0.94, 1.12, visible=faux)\np34 = point(0.82, 0.67, visible=faux)\np35 = point(1.2, 0.93, visible=faux)\np36 = point(1.58, 0.67, visible=faux)\np37 = point(1.46, 1.12, visible=faux)\np38 = point(1.82, 1.4, visible=faux)\np39 = point(1.36, 1.42, visible=faux)\np3 = polygone(p30, p31, p32, p33, p34, p35, p36, p37, p38, p39, couleur=\"noir\", remplissage=\"violet\", opacite_fond=1)\ntexte(1.2, 0.2, \"étoile\")\n```|{{if:k==3|```figure\nfenetre: 0 ; 10 ; -0.2 ; 2.6\ndescription: Une planche et quatre objets avec leur nom, plus ou moins écartés.\n---\npla = point(0.3, 0.6, visible=faux)\nplb = point(9.7, 0.6, visible=faux)\nsegment(pla, plb, couleur=\"marron\", epaisseur=5)\np00 = point(0.6, 0.6, visible=faux)\np01 = point(1.4, 0.6, visible=faux)\np02 = point(1.6, 1.6, visible=faux)\np03 = point(0.4, 1.6, visible=faux)\np0 = polygone(p00, p01, p02, p03, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\ntexte(1, 0.2, \"pot\")\np10 = point(4.05, 0.6, visible=faux)\np11 = point(4.75, 0.6, visible=faux)\np12 = point(4.75, 1.9, visible=faux)\np13 = point(4.05, 1.9, visible=faux)\np1 = polygone(p10, p11, p12, p13, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte(4.4, 0.2, \"livre\")\np2o = point(7.2, 1.15, visible=faux)\np2 = cercle(p2o, rayon=0.55, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(7.2, 0.2, \"ballon\")\np30 = point(8.8, 1.85, visible=faux)\np31 = point(8.64, 1.42, visible=faux)\np32 = point(8.18, 1.4, visible=faux)\np33 = point(8.54, 1.12, visible=faux)\np34 = point(8.42, 0.67, visible=faux)\np35 = point(8.8, 0.93, visible=faux)\np36 = point(9.18, 0.67, visible=faux)\np37 = point(9.06, 1.12, visible=faux)\np38 = point(9.42, 1.4, visible=faux)\np39 = point(8.96, 1.42, visible=faux)\np3 = polygone(p30, p31, p32, p33, p34, p35, p36, p37, p38, p39, couleur=\"noir\", remplissage=\"violet\", opacite_fond=1)\ntexte(8.8, 0.2, \"étoile\")\n```|{{if:k==4|```figure\nfenetre: 0 ; 10 ; -0.2 ; 2.6\ndescription: Une planche et quatre objets avec leur nom, plus ou moins écartés.\n---\npla = point(0.3, 0.6, visible=faux)\nplb = point(9.7, 0.6, visible=faux)\nsegment(pla, plb, couleur=\"marron\", epaisseur=5)\np00 = point(0.6, 0.6, visible=faux)\np01 = point(1.4, 0.6, visible=faux)\np02 = point(1.6, 1.6, visible=faux)\np03 = point(0.4, 1.6, visible=faux)\np0 = polygone(p00, p01, p02, p03, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\ntexte(1, 0.2, \"pot\")\np10 = point(3.85, 0.6, visible=faux)\np11 = point(4.95, 0.6, visible=faux)\np12 = point(4.95, 1.7, visible=faux)\np13 = point(3.85, 1.7, visible=faux)\np1 = polygone(p10, p11, p12, p13, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ntexte(4.4, 0.2, \"boîte\")\np20 = point(5.1, 0.6, visible=faux)\np21 = point(6.5, 0.6, visible=faux)\np22 = point(5.8, 1.7, visible=faux)\np2 = polygone(p20, p21, p22, couleur=\"noir\", remplissage=\"orange\", opacite_fond=1)\ntexte(5.8, 0.2, \"tente\")\np3o = point(8.8, 1.15, visible=faux)\np3 = cercle(p3o, rayon=0.55, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(8.8, 0.2, \"ballon\")\n```|{{if:k==5|```figure\nfenetre: 0 ; 10 ; -0.2 ; 2.6\ndescription: Une planche et quatre objets avec leur nom, plus ou moins écartés.\n---\npla = point(0.3, 0.6, visible=faux)\nplb = point(9.7, 0.6, visible=faux)\nsegment(pla, plb, couleur=\"marron\", epaisseur=5)\np0o = point(9, 1.15, visible=faux)\np0 = cercle(p0o, rayon=0.55, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(9, 0.2, \"ballon\")\np10 = point(5.2, 0.6, visible=faux)\np11 = point(6, 0.6, visible=faux)\np12 = point(6.2, 1.6, visible=faux)\np13 = point(5, 1.6, visible=faux)\np1 = polygone(p10, p11, p12, p13, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\ntexte(5.6, 0.2, \"pot\")\np20 = point(3.5, 0.6, visible=faux)\np21 = point(4.9, 0.6, visible=faux)\np22 = point(4.2, 1.7, visible=faux)\np2 = polygone(p20, p21, p22, couleur=\"noir\", remplissage=\"orange\", opacite_fond=1)\ntexte(4.2, 0.2, \"tente\")\np30 = point(1.2, 1.85, visible=faux)\np31 = point(1.04, 1.42, visible=faux)\np32 = point(0.58, 1.4, visible=faux)\np33 = point(0.94, 1.12, visible=faux)\np34 = point(0.82, 0.67, visible=faux)\np35 = point(1.2, 0.93, visible=faux)\np36 = point(1.58, 0.67, visible=faux)\np37 = point(1.46, 1.12, visible=faux)\np38 = point(1.82, 1.4, visible=faux)\np39 = point(1.36, 1.42, visible=faux)\np3 = polygone(p30, p31, p32, p33, p34, p35, p36, p37, p38, p39, couleur=\"noir\", remplissage=\"violet\", opacite_fond=1)\ntexte(1.2, 0.2, \"étoile\")\n```|```figure\nfenetre: 0 ; 10 ; -0.2 ; 2.6\ndescription: Une planche et quatre objets avec leur nom, plus ou moins écartés.\n---\npla = point(0.3, 0.6, visible=faux)\nplb = point(9.7, 0.6, visible=faux)\nsegment(pla, plb, couleur=\"marron\", epaisseur=5)\np0o = point(9, 1.15, visible=faux)\np0 = cercle(p0o, rayon=0.55, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(9, 0.2, \"ballon\")\np10 = point(6.25, 0.6, visible=faux)\np11 = point(7.35, 0.6, visible=faux)\np12 = point(7.35, 1.7, visible=faux)\np13 = point(6.25, 1.7, visible=faux)\np1 = polygone(p10, p11, p12, p13, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\ntexte(6.8, 0.2, \"boîte\")\np20 = point(2.4, 0.6, visible=faux)\np21 = point(3.2, 0.6, visible=faux)\np22 = point(3.4, 1.6, visible=faux)\np23 = point(2.2, 1.6, visible=faux)\np2 = polygone(p20, p21, p22, p23, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\ntexte(2.8, 0.2, \"pot\")\np30 = point(1.2, 1.85, visible=faux)\np31 = point(1.04, 1.42, visible=faux)\np32 = point(0.58, 1.4, visible=faux)\np33 = point(0.94, 1.12, visible=faux)\np34 = point(0.82, 0.67, visible=faux)\np35 = point(1.2, 0.93, visible=faux)\np36 = point(1.58, 0.67, visible=faux)\np37 = point(1.46, 1.12, visible=faux)\np38 = point(1.82, 1.4, visible=faux)\np39 = point(1.36, 1.42, visible=faux)\np3 = polygone(p30, p31, p32, p33, p34, p35, p36, p37, p38, p39, couleur=\"noir\", remplissage=\"violet\", opacite_fond=1)\ntexte(1.2, 0.2, \"étoile\")\n```}}}}}}}}}}\n\n```choix\nmelanger: non\n- Le ballon.\n- La boîte.\n- Le livre.\n- La tente.\n- Le pot.\n- L'étoile.\n```",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..12"
+				},
+				{
+					"name": "k",
+					"expression": "{{if:u==1|1|{{if:u==2|1|{{if:u==3|2|{{if:u==4|2|{{if:u==5|3|{{if:u==6|3|{{if:u==7|4|{{if:u==8|4|{{if:u==9|5|{{if:u==10|5|{{if:u==11|6|6}}}}}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "a",
+					"expression": "{{if:u==1|1|{{if:u==2|3|{{if:u==3|4|{{if:u==4|5|{{if:u==5|2|{{if:u==6|5|{{if:u==7|1|{{if:u==8|0|{{if:u==9|4|{{if:u==10|5|{{if:u==11|1|5}}}}}}}}}}}}}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On regarde l'écart entre {{if:u==1|le livre|{{if:u==2|le livre|{{if:u==3|le livre|{{if:u==4|le livre|{{if:u==5|le pot|{{if:u==6|le pot|{{if:u==7|le pot|{{if:u==8|le pot|{{if:u==9|le ballon|{{if:u==10|le ballon|{{if:u==11|le ballon|le ballon}}}}}}}}}}}}}}}}}}}}}} et chacun des autres objets.",
+					"\\textcolor{{{color:primary.0}}}{{{if:u==1|la boîte|{{if:u==2|la tente|{{if:u==3|le pot|{{if:u==4|l'étoile|{{if:u==5|le livre|{{if:u==6|l'étoile|{{if:u==7|la boîte|{{if:u==8|le ballon|{{if:u==9|le pot|{{if:u==10|l'étoile|{{if:u==11|la boîte|l'étoile}}}}}}}}}}}}}}}}}}}}}}} est {{if:u==1|le plus près|{{if:u==2|le plus loin|{{if:u==3|le plus près|{{if:u==4|le plus loin|{{if:u==5|le plus près|{{if:u==6|le plus loin|{{if:u==7|le plus près|{{if:u==8|le plus loin|{{if:u==9|le plus près|{{if:u==10|le plus loin|{{if:u==11|le plus près|le plus loin}}}}}}}}}}}}}}}}}}}}}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Entre (u = 1)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "1"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Entre (u = 6)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "6"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Entre (u = 11)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "11"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un voisin, pas celui du milieu",
+			"variationIndex": 0,
+			"variables": {
+				"u": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Au-dessus, en dessous (u = 1)",
+			"variationIndex": 1,
+			"variables": {
+				"u": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Au-dessus, en dessous (u = 6)",
+			"variationIndex": 1,
+			"variables": {
+				"u": "6"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Au-dessus, en dessous (u = 11)",
+			"variationIndex": 1,
+			"variables": {
+				"u": "11"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un autre objet de la planche",
+			"variationIndex": 1,
+			"variables": {
+				"u": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Gauche, droite, dessus, dessous (u = 1)",
+			"variationIndex": 2,
+			"variables": {
+				"u": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Gauche, droite, dessus, dessous (u = 6)",
+			"variationIndex": 2,
+			"variables": {
+				"u": "6"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Gauche, droite, dessus, dessous (u = 11)",
+			"variationIndex": 2,
+			"variables": {
+				"u": "11"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une autre relation",
+			"variationIndex": 2,
+			"variables": {
+				"u": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Près, loin (u = 1)",
+			"variationIndex": 3,
+			"variables": {
+				"u": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Près, loin (u = 6)",
+			"variationIndex": 3,
+			"variables": {
+				"u": "6"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Près, loin (u = 11)",
+			"variationIndex": 3,
+			"variables": {
+				"u": "11"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un autre objet",
+			"variationIndex": 3,
+			"variables": {
+				"u": "2"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
