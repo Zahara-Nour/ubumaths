@@ -232,8 +232,8 @@ ajouté à `docs/wip/outils-manquants.md` (n° 11).
 
 **Écriture** : `docs/wip/questions/lot-tspe-5b-sommes.py` → `scripts/questions/tspe-5b-sommes/`. Specs 13 + 12 + 16 + 9
 vertes, 7 000 tirages réussis, `create-questions` en simulation (prod) : 4 à créer. Corrigé après relecture des
-tirages : `\sigma(X)` lu comme un produit par le moteur (« σ X ») → `\sigma\left(X\right)` (⚠️ les modèles publiés
-71cb8ab7 et aced2e6c écrivent `\sigma(X)`, `\sigma(M)` : même défaut probable, signalé à David) ; `(2)^2` → parenthèses
+tirages : `\sigma(X)` réécrit « σ X » par `cleanCoefficients` → `\sigma\left(X\right)` (71cb8ab7 et aced2e6c,
+sans `cleanCoefficients`, gardent leurs parenthèses : vérifié); `(2)^2` → parenthèses
 seulement si a < 0 ; M1 v1 : S = 2 et S = 10 écartés (« x de 1 à 1 »).
 
 **Base locale** : 4 brouillons créés (91b21c5a, 2b8c65a4, c56290a7, 4ce1e314).
