@@ -10,11 +10,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2243 et son `db:migrate`._
+_Mis à jour le 2026-11-02, page à cocher du lot 7 publiée._
 
-- **État** : lot 7 en prod, 6 brouillons rangés et tagués (relu au MCP ; M6 sur la notion « Modèles d'évolution », D-M6) ; pas encore publiés.
-- **Prochaine action** : page à cocher du lot 7 (skill `couvrir-niveau`), relecture par David, puis `publier-lot --publier` (David, `!`). Lot 8 (« à savoir ») après `proba` et `espace`.
-- **En attente de David** : rien (la page à cocher vient d'abord).
+- **État** : lot 7 en prod, 6 brouillons rangés et tagués (relu au MCP ; M6 sur la notion « Modèles d'évolution », D-M6) ; page à cocher https://claude.ai/artifact/XunJ3wwM6yWA9KjwJuSXkz ; pas encore publiés.
+- **Prochaine action** : lire et compter les verdicts (`ArtifactData list verdicts`), puis `publier-lot.ts --dir scripts/questions/tspe-7-restes` en simulation, puis `--publier` (David, `!`). Lot 8 (« à savoir ») après `proba` et `espace`.
+- **En attente de David** : relecture de la page à cocher du lot 7.
 - **Pièges en cours** : relevé de nœuds → filtrer `archived_at is null` ; `!=` dans `$…$` lu « ≠ » (écrire `!\,=`) ; garde « notion sans sous-notion » : liste `sous_notions_admises` (migration `20261102181059`).
 - **Worktree / branche** : aucun (retiré après #2243) ; en créer un neuf depuis `origin/main` pour le lot 8.
 
@@ -141,3 +141,7 @@ rouge avec la garde du lot 4 (M6 refusé, « non admise »).
 
 **Mergé** : #2243 (2026-11-02), `db:migrate` passé seul (`migration list --linked` : aucune autre en attente). Prod relue
 au MCP : les 6 modèles sur leur nœud, un point chacun, `updated_at` inchangé, toujours en brouillon.
+
+**Page à cocher** (2026-11-02) : `page-a-cocher.ts --dir scripts/questions/tspe-7-restes`, 6 fiches lues en prod
+(brouillons, aucune alerte), 19 exemples : https://claude.ai/artifact/XunJ3wwM6yWA9KjwJuSXkz (`verdicts` vide à
+la publication). Rendu vu dans Chrome à ~606 px (la fenêtre ne descend pas à 390) : KaTeX dessiné, aucun débordement.
