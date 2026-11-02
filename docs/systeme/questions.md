@@ -569,7 +569,11 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    (compas) recouvre le cercle que donne l'expression (même centre, même rayon ; `expected.circles`) ;
    ses autres cercles et ses droites sont des traits de construction. Le cercle doit être construit : son
    centre et son point de passage sont des points construits (points de la figure, intersections de deux
-   AUTRES traits) ; sinon « Ton cercle est tracé à l'œil : construis son centre avec tes instruments. ».
+   AUTRES traits) ; centre non construit : « Ton cercle est tracé à l'œil : construis son centre avec tes
+   instruments. » ; le bon cercle, centre construit mais compas ouvert à l'œil (toucher libre pile au bon
+   rayon) : « Ton compas est ouvert à l'œil : ouvre-le jusqu'à un sommet du triangle. ». Seul le centre
+   décide du « à l'œil » pour le cercle essayé : bon centre construit et compas ouvert à la main → « bon
+   centre ».
    Le cercle essayé, pour le message : parmi ceux qui ne sont pas centrés sur un sommet (arcs des
    médiatrices), celui qui a le bon centre, sinon celui qui passe par le plus de sommets (à égalité, le
    dernier) ; aucun → « Trace le cercle circonscrit au triangle ABC. ». Messages ensuite : « Ton cercle a
@@ -579,7 +583,8 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    quadrillage (aussi refusé par le parseur), centre hors de la fenêtre, cercle qui sort de la fenêtre,
    sommet invisible, moins de deux médiatrices constructibles dans la fenêtre (`circumcenterSupportError`,
    même règle que `mediatriceSupportError` côté par côté ; aussi pour le centre seul), deux vérifications
-   pour le même cercle. Mêmes règles de mélange et de palette que `droite`. Correction : le cercle et son
+   pour le même cercle, centre déjà dans la figure (point nommé ou bout d'un trait : rien à construire).
+   Mêmes règles de mélange et de palette que `droite`. Correction : le cercle et son
    centre en pointillés, les médiatrices de deux côtés constructibles en traits fins (`solutionCircles`).
    **Papier uni (lot 2b)** : sans `grille:`, `point` et
    `symetrique` reçoivent une palette d'instruments (`PLAIN_PAPER_TOOLS`) ; équerre = perpendiculaire à

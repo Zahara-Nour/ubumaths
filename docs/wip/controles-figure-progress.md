@@ -417,8 +417,8 @@ BO 6e « Connaître et construire le cercle circonscrit à un triangle » ; 5e (
 fenetre: 0 ; 10 ; 0 ; 8
 verifier: cercle c = cercle_circonscrit(A, B, C)
 ---
-A = point(2, 2)
-B = point(8, 3)
+A = point(3, 4)
+B = point(7, 4)
 C = point(4, 7)
 t = triangle(A, B, C)
 ```
@@ -449,3 +449,24 @@ Nouvelle vérification `cercle <nom> = <expression>` (comme `point`, `droite`). 
 2. **Quadrillage refusé** pour l'instant (erreur d'auteur « ajouter grille: non »).
 3. **Cercle entier dans la fenêtre** exigé.
 4. **Correction** : cercle et centre en pointillés + médiatrices de deux côtés en traits fins.
+
+_(L'exemple proposé en phase 0, A(2 ; 2), B(8 ; 3), C(4 ; 7), est refusé par la règle « deux médiatrices
+constructibles » : remplacé par celui de l'aide, revue du 2026-11-02.)_
+
+## 12. Lot 3b — ce qui est fait (2026-11-02, #2268)
+
+- Vérification `cercle c = cercle_circonscrit(A, B, C)` (`CircleCheck`, `construction/circle.ts` :
+  `judgeCircles`, `assertCircles`, `circleSolution`) ; cercles attendus calculés avec les points
+  (`expectedPoints` → `circles`, `circleOf` extrait de `figureShapes`). Parseur : quadrillage refusé,
+  palette règle · équerre · compas, jamais mêlée. Centre seul : `centre(cercle_circonscrit(…))` accepté
+  par `point` sur papier uni (`circumcenterSupportError`).
+- Écran : correction = cercle et centre en pointillés, deux médiatrices en traits fins (`bon-cercle`).
+  Aide à l'écriture : exemple « Construire le cercle circonscrit à un triangle ».
+- Tests : `construction-circle.test.ts` (36), écran `figure-a-completer-cercle.svelte.test.ts` (3).
+- Revue Opus : 5 findings. Corrigés : bon centre construit + compas ouvert à la main → « bon centre »
+  (l'ancien code disait « construis son centre ») ; le bon cercle ouvert à l'œil pile au rayon → message
+  neuf « Ton compas est ouvert à l'œil : ouvre-le jusqu'à un sommet du triangle. » ; centre déjà nommé
+  dans la figure = erreur d'auteur ; tests en coordonnées non entières. Gardés : un cercle centré sur un
+  sommet n'est jamais l'essai (indiscernable d'un arc de médiatrice) ; règle « deux médiatrices au
+  compas de rayon un côté » sévère (refuse des triangles ordinaires dans 0..10 × 0..8) — même règle que
+  la médiatrice, à revoir avec le report de longueur (lot triangle).

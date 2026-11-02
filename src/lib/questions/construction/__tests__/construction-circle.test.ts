@@ -17,6 +17,7 @@ import { ConstructionAuthorError, assertConstructionChecks, judgeConstruction } 
 import {
 	CIRCLE_EYEBALLED_FEEDBACK,
 	CIRCLE_GOOD_CENTER_FEEDBACK,
+	CIRCLE_THROUGH_EYEBALLED_FEEDBACK,
 	circumcircleMissingFeedback,
 	notCircumcircleFeedback,
 	twoVerticesFeedback
@@ -173,6 +174,39 @@ describe('vérification cercle : cercle circonscrit construit', () => {
 		});
 	});
 
+	it('coordonnées non entières : chaque paire de médiatrices, chaque sommet → juste (revue)', () => {
+		const [a, b, c] = [
+			{ x: 3.3, y: 4.1 },
+			{ x: 6.8, y: 3.9 },
+			{ x: 4.4, y: 6.7 }
+		];
+		const source = figure('cercle c = cercle_circonscrit(A, B, C)', [
+			'A = point(3.3, 4.1)',
+			'B = point(6.8, 3.9)',
+			'C = point(4.4, 6.7)',
+			't = triangle(A, B, C)'
+		]);
+		expect(() => assertChecks(source)).not.toThrow();
+		const sides: [Position, Position][] = [
+			[a, b],
+			[a, c],
+			[b, c]
+		];
+		const built = sides.map(([p, q]) => mediatrice(p, q));
+		for (const [i, j] of [
+			[0, 1],
+			[0, 2],
+			[1, 2]
+		]) {
+			const pair = [built[i], built[j]];
+			const [center] = cross(pair[0].line, pair[1].line);
+			const traits = pair.flatMap((m) => [...m.arcs, m.line]);
+			for (const through of [a, b, c]) {
+				expect(judge(source, [...traits, cercle(center, through)])).toEqual({ status: 'correct' });
+			}
+		}
+	});
+
 	it('triangle rectangle : centre = médiatrice ∩ hypoténuse → juste', () => {
 		// A(3 ; 4), B(7 ; 4), C(3 ; 7) : rectangle en A, centre (5 ; 5,5), rayon 2,5
 		const source = figure('cercle c = cercle_circonscrit(A, B, C)', [
@@ -218,6 +252,26 @@ describe('vérification cercle : message du cercle essayé', () => {
 		expect(judge(CIRCONSCRIT, [...CONSTRUCTION, cercle(O, top)])).toEqual({
 			status: 'incorrect',
 			feedback: CIRCLE_GOOD_CENTER_FEEDBACK
+		});
+	});
+
+	it('bon centre construit, compas ouvert à l’œil → bon centre (revue)', () => {
+		for (const through of [
+			{ x: 3.02, y: 4.01 },
+			{ x: 6.3, y: 1.2 }
+		]) {
+			expect(judge(CIRCONSCRIT, [...CONSTRUCTION, cercle(O, through)])).toEqual({
+				status: 'incorrect',
+				feedback: CIRCLE_GOOD_CENTER_FEEDBACK
+			});
+		}
+	});
+
+	it('bon centre construit, compas ouvert à l’œil pile au bon rayon → compas à l’œil', () => {
+		// (4 ; 3), toucher libre aux coordonnées rondes : à √5 du centre (5 ; 5), sur le cercle
+		expect(judge(CIRCONSCRIT, [...CONSTRUCTION, cercle(O, { x: 4, y: 3 })])).toEqual({
+			status: 'incorrect',
+			feedback: CIRCLE_THROUGH_EYEBALLED_FEEDBACK
 		});
 	});
 
@@ -306,6 +360,12 @@ describe('vérification cercle : erreurs d’auteur', () => {
 			'C = point(5, 7.9)'
 		]);
 		expect(() => assertChecks(source)).toThrow(/moins de deux médiatrices/);
+	});
+
+	it('centre déjà nommé dans la figure : rien à construire (revue)', () => {
+		const source = figure('cercle c = cercle_circonscrit(A, B, C)', [...BODY, 'O = point(5, 5)']);
+		expect(() => assertChecks(source)).toThrow(ConstructionAuthorError);
+		expect(() => assertChecks(source)).toThrow(/déjà dans la figure \(au même endroit que O\)/);
 	});
 
 	it('deux vérifications pour le même cercle', () => {

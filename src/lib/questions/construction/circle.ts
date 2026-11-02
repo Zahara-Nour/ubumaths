@@ -12,8 +12,9 @@
  * et son point de passage étant des points construits (points de la figure,
  * intersections de deux AUTRES traits).
  *
- * Messages, dans l'ordre : il manque le cercle, cercle tracé à l'œil, bon centre
- * mais mauvais rayon, passe par deux sommets seulement, ce n'est pas le cercle
+ * Messages, dans l'ordre : il manque le cercle, cercle tracé à l'œil (centre non
+ * construit ; le bon cercle, centre construit, compas ouvert à l'œil : « Ton
+ * compas est ouvert à l'œil… »), bon centre mais mauvais rayon, passe par deux sommets seulement, ce n'est pas le cercle
  * circonscrit. Le cercle « essai » : parmi ceux qui ne sont pas centrés sur un
  * sommet (arcs de construction des médiatrices), celui qui a le bon centre,
  * sinon celui qui passe par le plus de sommets, à égalité le dernier tracé.
@@ -37,6 +38,9 @@ export const CIRCLE_EYEBALLED_FEEDBACK =
 	'Ton cercle est tracé à l’œil : construis son centre avec tes instruments.';
 export const CIRCLE_GOOD_CENTER_FEEDBACK =
 	'Ton cercle a le bon centre mais ne passe pas par les sommets du triangle.';
+
+export const CIRCLE_THROUGH_EYEBALLED_FEEDBACK =
+	'Ton compas est ouvert à l’œil : ouvre-le jusqu’à un sommet du triangle.';
 
 export const circumcircleMissingFeedback = (names: readonly string[]) =>
 	`Trace le cercle circonscrit au triangle ${names.join('')}.`;
@@ -181,20 +185,32 @@ export function assertCircles(
 		}
 		const message = circumcenterSupportError(vertices, points, shapes);
 		if (message) throw new CircleAuthorError(`${label} : ${message}`);
+		// Centre déjà dans la figure : rien à construire (comme `assertPoints`, revue)
+		const eps = tolerance(circle.center, ...points.values());
+		const existing = [...points].find(([, p]) => distance(p, circle.center) <= eps);
+		const drawnEnd = shapes.segments.some(
+			(seg) => distance(seg.a, circle.center) <= eps || distance(seg.b, circle.center) <= eps
+		);
+		if (existing || drawnEnd) {
+			const where = existing ? `au même endroit que ${existing[0]}` : 'au bout d’un trait';
+			throw new CircleAuthorError(
+				`${label} : le centre du cercle est déjà dans la figure (${where}) : rien à construire`
+			);
+		}
 	}
 }
 
 /**
- * Le cercle d'indice `index` est-il construit ? Son centre et son point de
- * passage sont des points construits ; les traits autres que lui seul comptent
- * (un point « sur le cercle » n'est pas une intersection).
+ * Le centre et le point de passage du cercle d'indice `index` sont-ils des
+ * points construits ? Les traits autres que lui seul comptent (un point « sur
+ * le cercle » n'est pas une intersection).
  */
-function isConstructedCircle(
+function constructedParts(
 	index: number,
 	objects: readonly DrawnObject[],
 	points: readonly Position[],
 	figureTraits: readonly Trait[]
-): boolean {
+): { center: boolean; through: boolean } {
 	const circle = objects[index] as DrawnCircle;
 	const traits = [
 		...figureTraits,
@@ -203,10 +219,10 @@ function isConstructedCircle(
 			return trait ? [trait] : [];
 		})
 	];
-	return (
-		isConstructed(centerOf(circle), points, traits) &&
-		isConstructed({ x: circle.x, y: circle.y }, points, traits)
-	);
+	return {
+		center: isConstructed(centerOf(circle), points, traits),
+		through: isConstructed({ x: circle.x, y: circle.y }, points, traits)
+	};
 }
 
 /** Le cercle passe-t-il par `p` (au calcul flottant près) ? */
@@ -261,7 +277,11 @@ export function judgeCircles(
 	const named = [...points.values()];
 	const figureTraits = shapes?.traits ?? [];
 	const circleIndexes = objects.flatMap((o, i) => (o.kind === 'cercle' ? [i] : []));
-	const built = (i: number) => isConstructedCircle(i, objects, named, figureTraits);
+	const parts = (i: number) => constructedParts(i, objects, named, figureTraits);
+	const built = (i: number) => {
+		const { center, through } = parts(i);
+		return center && through;
+	};
 	const taken = new Set<number>();
 	for (const check of checks) {
 		const target = expectedOf(check, expected);
@@ -275,7 +295,14 @@ export function judgeCircles(
 			taken.add(good);
 			continue;
 		}
-		if (covering.length > 0) return { status: 'incorrect', feedback: CIRCLE_EYEBALLED_FEEDBACK };
+		if (covering.length > 0) {
+			// Centre construit, compas ouvert à l'œil pile au bon rayon (revue, finding 1)
+			const centerBuilt = covering.some((i) => parts(i).center);
+			return {
+				status: 'incorrect',
+				feedback: centerBuilt ? CIRCLE_THROUGH_EYEBALLED_FEEDBACK : CIRCLE_EYEBALLED_FEEDBACK
+			};
+		}
 		const names = circumcircleOf(check.expression);
 		const vertices = names?.map((n) => points.get(n));
 		if (!names || !vertices || !vertices.every((v): v is Position => v !== undefined)) {
@@ -285,7 +312,9 @@ export function judgeCircles(
 		if (shown === null) {
 			return { status: 'incorrect', feedback: circumcircleMissingFeedback(names) };
 		}
-		if (!built(shown)) return { status: 'incorrect', feedback: CIRCLE_EYEBALLED_FEEDBACK };
+		// Seul le centre décide du « à l'œil » : un compas ouvert à la main sur un bon
+		// centre construit a le bon centre (revue, finding 1)
+		if (!parts(shown).center) return { status: 'incorrect', feedback: CIRCLE_EYEBALLED_FEEDBACK };
 		const circle = objects[shown] as DrawnCircle;
 		if (hasCenter(circle, target.center)) {
 			return { status: 'incorrect', feedback: CIRCLE_GOOD_CENTER_FEEDBACK };
