@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot B écrit (PR à ouvrir), lot A toujours pas en prod._
+_Mis à jour le 2026-11-02, après #2253 (lot B mergé, lots A et B créés en prod)._
 
-- **État** : lot A mergé (#2245), **pas encore en prod**. Lot B (4 modèles, `scripts/questions/1spe-analyse-b/`, gabarit `docs/wip/questions/lot-1spe-analyse-b.py`) : specs vertes, sonde-courbes 0 problème, essayé en base locale ; PR des fichiers en cours.
-- **Prochaine action** : merger la PR du lot B ; puis David crée les lots A et B en prod (`create-questions --dir … --publier`, depuis le dépôt principal) ; relever les 9 `id` ; une migration nœud + tag pour A et B, avec le tag de 7d6cf480 (Q6) et les jumeaux de B4 (Q5).
-- **En attente de David** : la création des lots A et B en prod (écriture en prod refusée au mode auto).
-- **Pièges en cours** : `create-questions` vise la **PROD** même avec `.env.local` → `set -a; . ./.env.local; set +a` avant tout `--publier` local ; `--mettre-a-jour` pour réécrire un modèle déjà en base ; variable `e` = Euler (vue par sonde-courbes seulement, pas par les specs) ; `mode: arc` du ```trig ne dessine que les solutions d'une équation.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-analyse` · `content/questions-1spe-analyse-b` · serveur 5176.
+- **État** : lots A (#2245) et B (#2253) mergés et **créés en prod en brouillon** (9 `id` : § « Identifiants en prod »). Aucun nœud ni tag posé. Worktree du lot B retiré.
+- **Prochaine action** : UNE migration nœud + tag pour A et B (gabarit `supabase/migrations/20261102090607_questions_1spe_savoir_a_rangement_tags.sql` + son test d'intégration), dans un worktree neuf `content/questions-1spe-analyse-rangement`. Deux cas hors gabarit : B4 porte 3 points (1SPE-432, 1GEN-062, 1TECHNO-139) ; 7d6cf480 (publié, seconde) reçoit 1SPE-434, 1GEN-064, 1TECHNO-141 **et** les niveaux `1_SPE`, `1_GEN`, `1_TECHNO` (Q6). Q7 (accès) déjà tranchée : personne, seul 7d6cf480 apparaît aux classes de 1re dans le cahier de texte.
+- **En attente de David** : rien.
+- **Pièges en cours** : `db:migrate` passe toutes les migrations en attente (celles des autres sessions comprises) ; vérifier les nœuds des points jumeaux en prod avant le SQL ; regarder sur la page à cocher le tableau de signes de B4 qui déborde en case choix.
+- **Worktree / branche** : aucun.
 
 ---
 
@@ -195,3 +195,17 @@ Fichiers `scripts/questions/1spe-analyse-b/` (gabarit `docs/wip/questions/lot-1s
   équation) ; variable `e` de B4 renommée (Euler).
 - À regarder sur la page à cocher : en case choix, le tableau de signes de B4 (5 valeurs de x) déborde d'environ
   25 px à 606 px de large et défile horizontalement ; plus encore à 390 px.
+
+## Identifiants en prod (brouillons, relevé MCP du 2026-11-02)
+
+| Lot | Modèle                                        | `id`                                   |
+| --- | --------------------------------------------- | -------------------------------------- |
+| A1  | Factoriser un trinôme quand c'est possible    | `db7bb314-7e6a-41e8-86e8-2f38a2a71f72` |
+| A2  | Polynôme s'annulant en deux réels donnés      | `aab8e41c-4539-4c90-9c1d-6ee41dc7a1cb` |
+| A3  | Signe d'un trinôme sous forme factorisée      | `afe51ac4-8552-454e-b45e-46f0edbd9416` |
+| A4  | Courbe de t ↦ e^{−kt}                         | `5a132ffc-86bd-4db2-9e06-954e49da0da3` |
+| A5  | Courbe de t ↦ e^{kt}                          | `a2852ea5-ce64-4010-805b-d00874605510` |
+| B1  | Le cercle trigonométrique                     | `aae5c0fc-e220-4958-9604-01f110b6fecf` |
+| B2  | Longueur d'un arc du cercle trigonométrique   | `ac9b1868-c019-42c3-a5fe-4b2952cce654` |
+| B3  | Placer un point sur le cercle trigonométrique | `558c31a7-cbf0-4f7f-b282-2ada6a64c9f3` |
+| B4  | Signe d'une fonction lu sur sa courbe         | `33dffa7a-8523-440e-99fe-304df3ced8b3` |
