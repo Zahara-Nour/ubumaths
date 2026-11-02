@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, migration de rangement écrite (PR à ouvrir)._
+_Mis à jour le 2026-11-02, après #2247 et son `db:migrate`._
 
-- **État** : 7 brouillons en prod — 01 `dd9a33b7`, 02 `344a2248`, 03 `63849c41`, 04 `5d17692b`, 05 `de42b303`, 06 `2f7d637b`, 07 `051ff81f`. Migration `20261102182612_questions_1spe_logique_rangement_tags.sql` + test d'intégration (10 verts ; rouge sans l'étape 4 : 2 échecs), relevé MCP du 2026-11-02 : 7 sans nœud ni tag.
-- **Prochaine action** : PR, CI verte, merge, `db:migrate` depuis la branche mergée (`migration list --linked` avant) ; puis page à cocher et `publier-lot`.
-- **En attente de David** : rien.
-- **Pièges en cours** : `i` et `e` interdits comme noms de variables ; `{{if:}}` imbriqué refusé dans une variable ; `eval:` sans comparaisons ; `create-questions` vise la PROD sans `set -a; . ./.env.local; set +a`.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-logique`, `feat/questions-1spe-logique-rangement`.
+- **État** : 7 brouillons en prod, rangés et tagués (#2247, migration `20261102182612` appliquée, relue par MCP : nœud + point justes, `updated_at` intact) — 01 `dd9a33b7` (203), 02 `344a2248` (206), 03 `63849c41` (367), 04 `5d17692b` (207), 05 `de42b303` (208), 06 `2f7d637b` (209), 07 `051ff81f` (210).
+- **Prochaine action** : page à cocher (collection `verdicts`, rendu à 390 px), relecture par David, puis `publier-lot` (simulation, puis `--publier` par David).
+- **En attente de David** : rien (la page à cocher vient d'abord).
+- **Pièges en cours** : `i` et `e` interdits comme noms de variables ; `{{if:}}` imbriqué refusé dans une variable ; `eval:` sans comparaisons ; `create-questions` vise la PROD sans `set -a; . ./.env.local; set +a` ; `db:migrate` refusé si une autre session a migré entre-temps → avancer la branche sur `origin/main`, puis `migration list --linked`.
+- **Worktree / branche** : aucun (retiré après #2247) ; la page à cocher n'a pas besoin de branche.
 
 ---
 
