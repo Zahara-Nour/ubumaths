@@ -228,6 +228,124 @@ describe('dessinerBlocs', () => {
 		);
 	});
 
+	it('histogramme : un rectangle par classe, graduations, titres d’axes, sans alerte', () => {
+		const r = dessinerBlocs(
+			'```histogramme\naxes: Taille (cm) ; Effectif\n[0 ; 10[ = 3\n[10 ; 20[ = 8\n[20 ; 30[ = 5\nvaleurs: oui\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.avertissements).toEqual([]);
+		expect(surUneLigne(r.markdown)).toBe(true);
+		expect(r.markdown.match(/class="stat-rectangle"/g)).toHaveLength(3);
+		// Effectifs au-dessus des rectangles, bornes des classes sous l'axe
+		for (const v of ['3', '8', '5'])
+			expect(r.markdown).toContain(`text-anchor="middle">${v}</text>`);
+		for (const b of ['0', '10', '20', '30']) expect(r.markdown).toContain(`>${b}</text>`);
+		expect(r.markdown).toContain('>Taille (cm)</text>');
+		expect(r.markdown).toContain('>Effectif</text>');
+	});
+
+	it('frequences-cumulees avec lecture: médiane : polygone, sommets et lignes de lecture', () => {
+		const r = dessinerBlocs(
+			'```frequences-cumulees\nlecture: médiane\n[0 ; 10[ = 12\n[10 ; 20[ = 18\n[20 ; 30[ = 10\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown).toContain('<polyline class="stat-polygone"');
+		// Origine du polygone + une borne par classe
+		expect(r.markdown.match(/class="stat-sommet"/g)).toHaveLength(4);
+		expect(r.markdown.match(/class="stat-lecture"/g)).toHaveLength(1);
+		expect(r.markdown).toMatch(/Me ≈ [\d,]+/);
+	});
+
+	it('frequences-cumulees sans lecture : aucune ligne de lecture', () => {
+		const r = dessinerBlocs('```frequences-cumulees\n[0 ; 10[ = 12\n[10 ; 20[ = 18\n```');
+		expect(r.markdown).not.toContain('stat-lecture');
+	});
+
+	it('barres : une barre par catégorie, noms et valeurs', () => {
+		const r = dessinerBlocs(
+			'```barres\ntitre: Sports\nFootball = 12\nDanse = 7\nJudo = 4\nvaleurs: oui\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown.match(/class="stat-barre"/g)).toHaveLength(3);
+		for (const n of ['Football', 'Danse', 'Judo', 'Sports']) expect(r.markdown).toContain(n);
+		expect(surUneLigne(r.markdown)).toBe(true);
+	});
+
+	it('boite-a-moustaches : les cinq valeurs de la boîte, médiane épaisse', () => {
+		const r = dessinerBlocs(
+			'```boite-a-moustaches\nNautic = 28 ; 30 ; 37 ; 45 ; 58\nvaleurs: oui\naxe: 25 à 60, de 5 en 5\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		for (const v of ['28', '30', '37', '45', '58'])
+			expect(r.markdown).toContain(`text-anchor="middle">${v}</text>`);
+		expect(r.markdown).toContain('>Nautic</text>');
+		expect(r.markdown.match(/class="stat-mediane"/g)).toHaveLength(1);
+		expect(r.markdown.match(/class="stat-moustache-bout"/g)).toHaveLength(2);
+		expect(r.markdown.match(/class="stat-boite"/g)).toHaveLength(1);
+	});
+
+	it('tableau-croise : cases ? vides à remplir, totaux calculés', () => {
+		const r = dessinerBlocs(
+			'```tableau-croise\nlignes: Filles ; Garçons\ncolonnes: Demi-pension ; Externe\nFilles = 12 ; ?\nGarçons = 8 ; 10\ntotaux: oui\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown).toMatch(/^@@HTML@@.*<table class="stat-tableau"/);
+		// La case `?` et les totaux qui en dépendent sont vides
+		expect(r.markdown.match(/<td class="stat-case-vide"><\/td>/g)?.length).toBeGreaterThanOrEqual(
+			1
+		);
+		for (const t of ['Filles', 'Garçons', 'Demi-pension', 'Externe', 'Total'])
+			expect(r.markdown).toContain(`>${t}</th>`);
+		expect(r.markdown).toContain('<td>12</td>');
+	});
+
+	it('tableau-croise avec masquer : la case masquée est vide, sans sa valeur', () => {
+		const r = dessinerBlocs(
+			'```tableau-croise\nlignes: A ; B\ncolonnes: X ; Y\nA = 11 ; 22\nB = 33 ; 44\nmasquer: A/X\n```'
+		);
+		expect(r.markdown).toContain('stat-case-vide');
+		expect(r.markdown).not.toContain('<td>11</td>');
+		expect(r.markdown).toContain('<td>22</td>');
+	});
+
+	it('probtree : une branche par arc, probabilités et événements en formules', () => {
+		const r = dessinerBlocs(
+			'```probtree\nroot: Urne\nRouge:3/5\n  Gagné:1/2\n  Perdu:1/2\nBleue:2/5\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		expect(surUneLigne(r.markdown)).toBe(true);
+		expect(r.markdown.match(/class="pt-branche"/g)).toHaveLength(4);
+		for (const tex of [
+			'\\text{Rouge}',
+			'\\text{Bleue}',
+			'\\text{Urne}',
+			'\\text{Gagné}',
+			'3/5',
+			'2/5'
+		])
+			expect(r.markdown).toContain(`data-tex="${tex}"`);
+	});
+
+	it('simulation en tirages : tableau des effectifs observés', () => {
+		const r = dessinerBlocs('```simulation\nX = 1 ; 2\nP = 1/2 ; 1/2\ntirages: 50\n```');
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown).toContain('<table class="stat-tableau">');
+		expect(r.markdown).toContain('>Simulation de 50 tirages');
+	});
+
+	it('blocs statistiques et arbre en erreur : la page s’arrête, ligne fautive nommée', () => {
+		expect(() => dessinerBlocs('```histogramme\ntitre: vide\n```')).toThrow(
+			/bloc histogramme en erreur/
+		);
+		expect(() => dessinerBlocs('```boite-a-moustaches\nA = 3 ; 1 ; 2\n```')).toThrow(
+			/bloc boite-a-moustaches en erreur/
+		);
+		expect(() => dessinerBlocs('```tableau-croise\nlignes: A\n```')).toThrow(
+			/bloc tableau-croise en erreur/
+		);
+		expect(() => dessinerBlocs('```probtree\nRouge 1/2\n```')).toThrow(/bloc probtree en erreur/);
+	});
+
 	it('python : le programme tel quel, échappé, sans alerte', () => {
 		const r = dessinerBlocs('```python\ndef f(n):\n    return n < 3\n```');
 		expect(r.nonDessines).toEqual([]);

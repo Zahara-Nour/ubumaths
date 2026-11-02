@@ -65,8 +65,26 @@ import type {
 	VariationPosition,
 	VariationValue
 } from '../../src/lib/ubumark/types/variation-table';
+import { parseStatChartContent } from '../../src/lib/ubumark/parser/stat-chart-parser';
+import type { StatChartKind } from '../../src/lib/ubumark/types/stat-chart';
+import {
+	buildStatChartScene,
+	SCATTER_LABEL_CHAR_PX,
+	STAT_CHART_CHAR_PX,
+	type BarScene,
+	type BoxPlotScene,
+	type ComparisonScene,
+	type CrossTableScene,
+	type CumulativeScene,
+	type HistogramScene,
+	type SceneReading,
+	type SimulationScene,
+	type StatChartScene
+} from '../../src/lib/ubumark/utils/stat-chart-scene';
+import { parseProbTreeContent } from '../../src/lib/ubumark/parser/probability-tree-parser';
+import type { ProbTreeNode } from '../../src/lib/ubumark/types/probability-tree';
 import { namedColorScreen, namedColorTable } from '../../src/lib/theme/named-colors';
-import { toFrenchDecimal } from '../../src/lib/utils/french-math';
+import { toFrenchDecimal, toLocaleDecimal } from '../../src/lib/utils/french-math';
 import type { ModeleFichier } from './lot-questions';
 
 // Types
@@ -710,6 +728,573 @@ function partage(source: string): Bloc {
 	};
 }
 
+// ---- Statistiques : scènes de `buildStatChartScene`, balisage de StatChart.svelte / BoxPlotChart.svelte ----
+
+const STAT_HAUT = 26;
+const STAT_DROITE = 12;
+const STAT_BAS = 26;
+const STAT_TITRE_AXE = 18;
+const STAT_GAUCHE = 44;
+const STAT_GAUCHE_MIN = 40;
+const STAT_CHIFFRE_PX = 6.2;
+const SIN_45 = Math.SQRT1_2;
+/** Nombre de motifs de hachures posés : un identifiant par motif, unique dans la page */
+let hachuresPosees = 0;
+
+/** Coordonnée de SVG arrondie au centième */
+const c2 = (x: number) => +x.toFixed(2);
+const trait = (c: CourbeColor) => ` style="stroke:${COURBE_COULEUR[c]}"`;
+
+function motifHachures(id: string, couleur: CourbeColor): string {
+	return `<defs><pattern id="${id}" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke-width="2.5" style="stroke:${COURBE_COULEUR[couleur]}"/></pattern></defs>`;
+}
+
+function cadreSvg(
+	scene: StatChartScene,
+	largeur: number,
+	hauteur: number,
+	contenu: string,
+	classe = ''
+): string {
+	return `<svg class="stat-svg${classe}" role="img" aria-label="${attr(`${scene.accessibleTitle}. ${scene.description}`)}" viewBox="0 0 ${c2(largeur)} ${c2(hauteur)}" style="max-width:${c2(largeur)}px">${contenu}</svg>`;
+}
+
+function pointsDe(ps: ScenePoint[], x: (v: number) => number, y: (v: number) => number): string {
+	return ps.map((p) => `${c2(x(p.x))},${c2(y(p.y))}`).join(' ');
+}
+
+/** Axes : flèche de l'axe vertical, titres, axe horizontal (communs aux barres et aux classes) */
+function axesStat(
+	gauche: number,
+	largeur: number,
+	yAxe: number,
+	titreY: string | null,
+	titreX: string | null,
+	bas: number
+): string {
+	return (
+		`<g class="stat-axes"><line x1="${gauche}" y1="${c2(yAxe)}" x2="${c2(gauche + largeur)}" y2="${c2(yAxe)}"/>` +
+		`<line x1="${gauche}" y1="${c2(yAxe)}" x2="${gauche}" y2="${STAT_HAUT - 10}"/>` +
+		`<polygon points="${gauche},${STAT_HAUT - 14} ${gauche - 3.5},${STAT_HAUT - 7} ${gauche + 3.5},${STAT_HAUT - 7}"/>` +
+		(titreY
+			? `<text class="stat-titre-axe" x="${gauche + 6}" y="${STAT_HAUT - 12}">${attr(titreY)}</text>`
+			: '') +
+		(titreX
+			? `<text class="stat-titre-axe" x="${c2(gauche + largeur / 2)}" y="${c2(bas - 4)}" text-anchor="middle">${attr(titreX)}</text>`
+			: '') +
+		'</g>'
+	);
+}
+
+function graduationsY(
+	ticks: { value: number; label: string }[],
+	gauche: number,
+	largeur: number,
+	y: (v: number) => number
+): string {
+	return (
+		'<g class="stat-graduations">' +
+		ticks
+			.map(
+				(t) =>
+					`<line class="stat-grille" x1="${gauche}" y1="${c2(y(t.value))}" x2="${c2(gauche + largeur)}" y2="${c2(y(t.value))}"/>` +
+					`<line x1="${gauche - 4}" y1="${c2(y(t.value))}" x2="${gauche}" y2="${c2(y(t.value))}"/>` +
+					`<text x="${gauche - 6}" y="${c2(y(t.value))}" text-anchor="end" dominant-baseline="middle">${attr(t.label)}</text>`
+			)
+			.join('') +
+		'</g>'
+	);
+}
+
+const legendeSeries = (items: string) => `<ul class="stat-legende-series">${items}</ul>`;
+
+function barresStat(s: BarScene): string {
+	const hachure = s.secondColor ? `stat-hachures-${++hachuresPosees}` : '';
+	const tourne = s.rotateLabels;
+	const etendue = tourne ? s.longestLabel * STAT_CHART_CHAR_PX * SIN_45 : 0;
+	const w = s.pixelSize.width;
+	const h = s.pixelSize.height;
+	const bas = (tourne ? 16 + etendue : STAT_BAS) + (s.axisTitles.x ? STAT_TITRE_AXE : 0);
+	const gauche = Math.max(
+		STAT_GAUCHE_MIN,
+		12 + Math.max(...s.ticks.map((t) => t.label.length)) * STAT_CHIFFRE_PX,
+		etendue - w / s.labels.length / 2 + 6
+	);
+	const sx = (x: number) => gauche + (x / s.labels.length) * w;
+	const sy = (v: number) => STAT_HAUT + (1 - v / s.yMax) * h;
+	const rects = s.bars
+		.map((b) => {
+			const fond =
+				b.series === 1
+					? `url(#${hachure})`
+					: b.highlighted === false
+						? 'var(--color-muted-foreground)'
+						: COURBE_COULEUR[s.color];
+			const bord =
+				b.series === 1 && s.secondColor ? `;stroke:${COURBE_COULEUR[s.secondColor]}` : '';
+			return (
+				`<rect class="stat-barre" x="${c2(sx(b.left))}" y="${c2(sy(b.value))}" width="${c2(sx(b.right) - sx(b.left))}" height="${c2(sy(0) - sy(b.value))}" style="fill:${fond}${bord}"/>` +
+				(s.showValues
+					? `<text class="stat-valeur${s.legend ? ' stat-valeur-serree' : ''}" x="${c2((sx(b.left) + sx(b.right)) / 2)}" y="${c2(sy(b.value) - 4)}" text-anchor="middle">${attr(b.valueLabel)}</text>`
+					: '')
+			);
+		})
+		.join('');
+	const noms = s.labels
+		.map((l) => {
+			const x = c2(sx(l.center));
+			return tourne
+				? `<text x="${x}" y="${c2(sy(0) + 10)}" text-anchor="end" transform="rotate(-45 ${x} ${c2(sy(0) + 10)})">${attr(l.text)}</text>`
+				: `<text x="${x}" y="${c2(sy(0) + 16)}" text-anchor="middle">${attr(l.text)}</text>`;
+		})
+		.join('');
+	const total = STAT_HAUT + h + bas;
+	let html = cadreSvg(
+		s,
+		gauche + w + STAT_DROITE,
+		total,
+		(s.secondColor ? motifHachures(hachure, s.secondColor) : '') +
+			graduationsY(s.ticks, gauche, w, sy) +
+			rects +
+			`<g class="stat-categories">${noms}</g>` +
+			axesStat(gauche, w, sy(0), s.axisTitles.y, s.axisTitles.x, total)
+	);
+	if (s.legend && s.secondColor) {
+		const seconde = s.secondColor;
+		html += legendeSeries(
+			s.legend
+				.map(
+					(nom, i) =>
+						`<li><svg width="12" height="12" aria-hidden="true"><rect x="0.5" y="0.5" width="11" height="11" style="fill:${i === 0 ? COURBE_COULEUR[s.color] : `url(#${hachure})`};stroke:${i === 0 ? 'none' : COURBE_COULEUR[seconde]}"/></svg>${attr(nom)}</li>`
+				)
+				.join('')
+		);
+	}
+	if (s.indicatorTable) html += comparaisonStat(s.indicatorTable);
+	return html;
+}
+
+/** Cadre commun des classes (histogramme, polygone) : marges, échelles, graduations horizontales */
+function classesStat(
+	s: HistogramScene | CumulativeScene,
+	dessin: (cx: (x: number) => number, cy: (v: number) => number, yMax: number) => string,
+	defs = ''
+): string {
+	const w = s.pixelSize.width;
+	const h = s.pixelSize.height;
+	const yMax = s.kind === 'histogramme' ? s.yMax : 100;
+	const bas = STAT_BAS + (s.axisTitles.x ? STAT_TITRE_AXE : 0);
+	const cx = (x: number) => STAT_GAUCHE + ((x - s.xMin) / (s.xMax - s.xMin)) * w;
+	const cy = (v: number) => STAT_HAUT + (1 - v / (yMax || 1)) * h;
+	const carreaux = s.kind === 'histogramme' && s.mode === 'carreaux';
+	const total = STAT_HAUT + h + bas;
+	const xTicks = s.xTicks
+		.map(
+			(t) =>
+				`<line x1="${c2(cx(t.value))}" y1="${c2(cy(0))}" x2="${c2(cx(t.value))}" y2="${c2(cy(0) + 4)}"/><text x="${c2(cx(t.value))}" y="${c2(cy(0) + 16)}" text-anchor="middle">${attr(t.label)}</text>`
+		)
+		.join('');
+	return cadreSvg(
+		s,
+		STAT_GAUCHE + w + STAT_DROITE,
+		total,
+		defs +
+			(carreaux ? '' : graduationsY(s.ticks, STAT_GAUCHE, w, cy)) +
+			dessin(cx, cy, yMax) +
+			`<g class="stat-axes">${xTicks}</g>` +
+			axesStat(STAT_GAUCHE, w, cy(0), s.axisTitles.y, s.axisTitles.x, total)
+	);
+}
+
+function histogrammeStat(s: HistogramScene): string {
+	const id = s.hatched ? `stat-hachures-${++hachuresPosees}` : '';
+	const defs = s.hatched ? motifHachures(id, s.hatchColor ?? 'orange') : '';
+	let html = s.seriesName ? `<div class="stat-nom-serie">${attr(s.seriesName)}</div>` : '';
+	html += classesStat(
+		s,
+		(cx, cy, yMax) => {
+			const rects = s.rects
+				.map((r) => {
+					const fond = s.hatched
+						? `url(#${id})`
+						: r.highlighted === false
+							? 'var(--color-muted-foreground)'
+							: COURBE_COULEUR[s.color];
+					const bord = s.hatched ? `;stroke:${COURBE_COULEUR[s.hatchColor ?? 'orange']}` : '';
+					return (
+						`<rect class="stat-rectangle${s.densityCurve ? ' stat-rectangle-sous-courbe' : ''}" x="${c2(cx(r.lower))}" y="${c2(cy(r.height))}" width="${c2(cx(r.upper) - cx(r.lower))}" height="${c2(cy(0) - cy(r.height))}" style="fill:${fond}${bord}"/>` +
+						(s.showValues
+							? `<text class="stat-valeur" x="${c2((cx(r.lower) + cx(r.upper)) / 2)}" y="${c2(cy(r.height) - 4)}" text-anchor="middle">${attr(r.valueLabel)}</text>`
+							: '')
+					);
+				})
+				.join('');
+			const courbe = s.densityCurve
+				? `<polyline class="stat-polygone" points="${pointsDe(s.densityCurve.points, cx, cy)}"${trait(s.densityCurve.color)}/>`
+				: '';
+			const grille =
+				s.mode === 'carreaux'
+					? `<g class="stat-quadrillage">${s.grid.xs.map((x) => `<line x1="${c2(cx(x))}" y1="${c2(cy(0))}" x2="${c2(cx(x))}" y2="${c2(cy(yMax))}"/>`).join('')}${s.grid.ys.map((y) => `<line x1="${c2(cx(s.xMin))}" y1="${c2(cy(y))}" x2="${c2(cx(s.xMax))}" y2="${c2(cy(y))}"/>`).join('')}</g>`
+					: '';
+			return rects + courbe + grille;
+		},
+		defs
+	);
+	if (s.carreau)
+		html += `<p class="stat-legende-aire"><span class="stat-carreau"></span>${attr(s.carreau.legend)}</p>`;
+	if (s.second) html += histogrammeStat(s.second);
+	if (s.indicatorTable) html += comparaisonStat(s.indicatorTable);
+	return html;
+}
+
+function polygoneStat(s: CumulativeScene): string {
+	let html = classesStat(s, (cx, cy) => {
+		const polygone = (points: ScenePoint[], couleur: CourbeColor, classe: string): string =>
+			`<polyline class="stat-polygone${classe}" points="${pointsDe(points, cx, cy)}"${trait(couleur)}/>` +
+			points
+				.map(
+					(p) =>
+						`<circle class="stat-sommet" cx="${c2(cx(p.x))}" cy="${c2(cy(p.y))}" r="2.5" style="fill:${COURBE_COULEUR[couleur]}"/>`
+				)
+				.join('');
+		/** Lecture : pointillés de l'axe vertical au polygone, puis à l'axe horizontal */
+		const lecture = (r: SceneReading, x: number, y: number, style: string, texteStyle: string) =>
+			`<g class="stat-lecture"><polyline points="${c2(cx(s.xMin))},${c2(cy(r.percent))} ${c2(cx(r.x))},${c2(cy(r.percent))} ${c2(cx(r.x))},${c2(cy(0))}"${style}/><text x="${c2(x)}" y="${c2(y)}"${texteStyle}>${attr(r.text)}</text></g>`;
+		const croissant = s.direction === 'croissantes';
+		let out = polygone(s.points, s.color, '');
+		if (s.second) {
+			const sec = s.second;
+			out += polygone(sec.points, sec.color, ' stat-polygone-second');
+			out += sec.readings
+				.map((r) =>
+					lecture(
+						r,
+						cx(r.x) + 4,
+						cy(r.percent) + (croissant ? 12 : -4),
+						trait(sec.color),
+						` style="fill:${COURBE_COULEUR[sec.color]}"`
+					)
+				)
+				.join('');
+		}
+		out += s.readings
+			.map((r) => lecture(r, cx(s.xMin) + 4, cy(r.percent) + (croissant ? -4 : 12), '', ''))
+			.join('');
+		return out;
+	});
+	if (s.legend && s.second) {
+		const seconde = s.second;
+		html += legendeSeries(
+			s.legend
+				.map(
+					(nom, i) =>
+						`<li><svg width="18" height="8" aria-hidden="true"><line x1="0" y1="4" x2="18" y2="4" stroke-width="2"${i === 0 ? '' : ' stroke-dasharray="4 3"'} style="stroke:${COURBE_COULEUR[i === 0 ? s.color : seconde.color]}"/></svg>${attr(nom)}</li>`
+				)
+				.join('')
+		);
+	}
+	if (s.indicatorTable) html += comparaisonStat(s.indicatorTable);
+	return html;
+}
+
+const tableStat = (legende: string, corps: string) =>
+	`<div class="stat-tableau-defilement"><table class="stat-tableau"><caption>${legende}</caption>${corps}</table></div>`;
+
+/** Tableau croisé : cases `?` ou masquées vides (`stat-case-vide`), à compléter */
+function croiseStat(s: CrossTableScene): string {
+	const tete = `<thead><tr><td class="stat-coin">${s.corner === null ? '' : attr(s.corner)}</td>${s.columnHeaders.map((c) => `<th>${attr(c)}</th>`).join('')}</tr></thead>`;
+	const lignes = s.rows
+		.map(
+			(r) =>
+				`<tr><th>${attr(r.header)}</th>${r.cells.map((c) => (c.hidden ? '<td class="stat-case-vide"></td>' : `<td>${attr(c.text)}</td>`)).join('')}</tr>`
+		)
+		.join('');
+	return tableStat(attr(s.title ?? s.accessibleTitle), `${tete}<tbody>${lignes}</tbody>`);
+}
+
+function comparaisonStat(s: ComparisonScene): string {
+	const tete = `<thead><tr><td></td>${s.columns.map((c) => `<th>${attr(c)}</th>`).join('')}</tr></thead>`;
+	const lignes = s.rows
+		.map(
+			(r) =>
+				`<tr${r.groupStart ? ' class="stat-groupe"' : ''}><th>${attr(r.header)}</th>${r.cells.map((c) => `<td>${attr(c)}</td>`).join('')}</tr>`
+		)
+		.join('');
+	return tableStat(attr(s.accessibleTitle), `${tete}<tbody>${lignes}</tbody>`);
+}
+
+function simulationStat(s: SimulationScene): string {
+	const tete = `<thead><tr><th><i>${attr(s.variable.toLowerCase())}</i><sub>i</sub></th><th>${attr(s.headers.count)}</th><th>${attr(s.headers.frequency)}</th><th>${attr(s.headers.probability)}</th></tr></thead>`;
+	const lignes = s.rows
+		.map(
+			(r) =>
+				`<tr><th>${attr(r.value)}</th><td>${attr(r.count)}</td><td>${attr(r.frequency)}</td><td>${attr(r.probability)}</td></tr>`
+		)
+		.join('');
+	return tableStat(
+		(s.title ? `<span class="stat-titre">${attr(s.title)}</span>` : '') + attr(s.caption),
+		`${tete}<tbody>${lignes}</tbody>`
+	);
+}
+
+/** Boîtes à moustaches horizontales (BoxPlotChart.svelte) */
+function boitesStat(s: BoxPlotScene): string {
+	const w = s.pixelSize.width;
+	const hauteur = s.pixelSize.height;
+	const marge = (t: { label: string } | undefined) =>
+		Math.max(12, ((t?.label.length ?? 0) * SCATTER_LABEL_CHAR_PX) / 2 + 4);
+	const gauche = marge(s.xTicks[0]);
+	const droite = marge(s.xTicks.at(-1));
+	const haut = 4;
+	const axe = haut + hauteur;
+	const total = axe + 26 + (s.axisTitle ? STAT_TITRE_AXE : 0);
+	const sx = (v: number) => gauche + ((v - s.xMin) / (s.xMax - s.xMin || 1)) * w;
+	const couleur = COURBE_COULEUR[s.color];
+	const grille = s.xTicks
+		.map(
+			(t) =>
+				`<line class="stat-grille" x1="${c2(sx(t.value))}" y1="${haut}" x2="${c2(sx(t.value))}" y2="${axe}"/>`
+		)
+		.join('');
+	const ligne = (c: string, x1: number, y1: number, x2: number, y2: number) =>
+		`<line class="${c}" x1="${c2(x1)}" y1="${c2(y1)}" x2="${c2(x2)}" y2="${c2(y2)}"/>`;
+	const boites = s.boxes
+		.map((box, i) => {
+			const band = s.bands[i];
+			const top = haut + band.top;
+			const bottom = haut + band.bottom;
+			const milieu = (top + bottom) / 2;
+			const bout = (bottom - top) / 4;
+			const [min, q1, med, q3, max] = box.values;
+			const nom =
+				box.name !== null && band.nameY !== null
+					? `<text class="stat-nom-boite" x="${gauche}" y="${haut + band.nameY}">${attr(box.name)}</text>`
+					: '';
+			// Boîte à construire (`placer:`) : son nom seul, comme l'écran hors geste
+			if (box.toPlace) return `<g>${nom}</g>`;
+			return (
+				`<g style="stroke:${couleur}">${nom}` +
+				ligne('stat-moustache', sx(min), milieu, sx(q1), milieu) +
+				ligne('stat-moustache', sx(q3), milieu, sx(max), milieu) +
+				ligne('stat-moustache-bout', sx(min), top + bout, sx(min), bottom - bout) +
+				ligne('stat-moustache-bout', sx(max), top + bout, sx(max), bottom - bout) +
+				`<rect class="stat-boite" x="${c2(sx(q1))}" y="${c2(top)}" width="${c2(sx(q3) - sx(q1))}" height="${c2(bottom - top)}" style="fill:color-mix(in oklab, ${couleur} 22%, var(--color-background))"/>` +
+				ligne('stat-mediane', sx(med), top, sx(med), bottom) +
+				(s.showValues
+					? box.values
+							.map(
+								(v, j) =>
+									`<text class="stat-valeur" x="${c2(sx(v))}" y="${haut + band.valueY[box.valueRows[j]]}" text-anchor="middle">${attr(box.labels[j])}</text>`
+							)
+							.join('')
+					: '') +
+				'</g>'
+			);
+		})
+		.join('');
+	const graduations = s.xTicks
+		.map(
+			(t) =>
+				`<line x1="${c2(sx(t.value))}" y1="${axe}" x2="${c2(sx(t.value))}" y2="${axe + 4}"/><text x="${c2(sx(t.value))}" y="${axe + 16}" text-anchor="middle">${attr(t.label)}</text>`
+		)
+		.join('');
+	const axes =
+		`<g class="stat-axes"><line x1="${gauche}" y1="${axe}" x2="${c2(gauche + w)}" y2="${axe}"/>${graduations}` +
+		(s.axisTitle
+			? `<text class="stat-titre-axe" x="${c2(gauche + w / 2)}" y="${total - 4}" text-anchor="middle">${attr(s.axisTitle)}</text>`
+			: '') +
+		'</g>';
+	return cadreSvg(s, gauche + w + droite, total, grille + boites + axes, ' stat-boites');
+}
+
+/** Messages situés d'un bloc que le parseur refuse : la page s'arrête sur la ligne fautive */
+const erreursSituees = (
+	bloc: string,
+	errors: { message: string; line?: number; content?: string }[]
+) =>
+	`bloc ${bloc} en erreur : ` +
+	(errors
+		.map(
+			(e) =>
+				`${e.message}${e.line ? ` (ligne ${e.line})` : ''}${e.content ? ` : ${e.content}` : ''}`
+		)
+		.join(' ; ') || 'illisible');
+
+/** Un bloc statistique : parse, scène (la même que l'écran), puis balisage de la scène */
+function statistique(kind: StatChartKind, source: string): Bloc {
+	const node = parseStatChartContent(kind, source);
+	if (!node.spec || node.errors.length > 0) throw new Error(erreursSituees(kind, node.errors));
+	const sc = buildStatChartScene(node.spec, { locale: 'fr' });
+	const avertissements = node.warnings.map((w) => `bloc ${kind} : ${w.message}`);
+	const figure = (corps: string, titre = true) =>
+		(titre && sc.title ? `<div class="stat-titre">${attr(sc.title)}</div>` : '') +
+		(sc.series ? `<p class="stat-serie">${attr(sc.series).replace(/\n/g, '<br>')}</p>` : '') +
+		corps +
+		(sc.indicators.length > 0
+			? `<ul class="stat-indicateurs">${sc.indicators.map((i) => `<li>${attr(i)}</li>`).join('')}</ul>`
+			: '');
+	let corps: string;
+	switch (sc.kind) {
+		case 'barres':
+			corps = figure(barresStat(sc));
+			break;
+		case 'histogramme':
+			corps = figure(histogrammeStat(sc));
+			break;
+		case 'frequences-cumulees':
+			corps = figure(polygoneStat(sc));
+			break;
+		case 'tableau-croise':
+			corps = figure(croiseStat(sc), false);
+			break;
+		case 'boite-a-moustaches':
+			corps = figure(boitesStat(sc));
+			break;
+		case 'simulation':
+			corps = figure(simulationStat(sc), false);
+			break;
+		default:
+			// Scène que la page ne sait pas encore dessiner : la source, signalée
+			return {
+				html: `<div class="non-dessine"><span class="r-tag">bloc ${attr(kind)} (scène ${attr(sc.kind)}), non dessiné ici : le jouer dans l'aperçu</span><code>${source.split('\n').map(attr).join('<br>')}</code></div>`,
+				avertissements: [`bloc ${kind} : scène « ${sc.kind} » non dessinée par la page`]
+			};
+	}
+	const aPlacer =
+		node.spec.toPlace || node.spec.boxPlot?.toPlace
+			? '<span class="r-tag">À construire par l’élève : la correction est dessinée</span>'
+			: '';
+	return { html: `<figure class="stat">${aPlacer}${corps}</figure>`, avertissements };
+}
+
+// ---- Arbre de probabilités : mise en page de ProbabilityTree.svelte (pas de scène partagée) ----
+
+const ARBRE_BRANCHE = 80;
+const ARBRE_ECART = 50;
+const ARBRE_CAR = 8;
+const ARBRE_ETIQUETTE_MIN = 25;
+const ARBRE_MARGE_ETIQUETTE = 16;
+const ARBRE_PROB_PERP = 14;
+const ARBRE_PROB_DECALAGE = 12;
+const ARBRE_RACINE_X = 20;
+const ARBRE_HAUT = 30;
+const ARBRE_DROITE = 40;
+const ARBRE_ISSUES = 120;
+const ARBRE_INTERSECTION = 180;
+
+/** Largeur visuelle d'une étiquette : une commande LaTeX compte pour un caractère */
+function longueurVisuelle(texte: string): number {
+	const t = texte
+		.replace(/\\(bar|hat|tilde|overline|underline|vec|dot|ddot)\{([^}]*)\}/g, '$2')
+		.replace(/\\[a-zA-Z]+/g, 'X')
+		.replace(/[{}\\]/g, '');
+	return t.length || 1;
+}
+
+/** Étiquette de plusieurs lettres : en `\text{}`, comme l'écran */
+const etiquetteTex = (e: string) => (e.includes('\\') || e.length === 1 ? e : `\\text{${e}}`);
+
+function arbre(source: string): Bloc {
+	const { node, errors } = parseProbTreeContent(source.split('\n'));
+	if (!node || errors.length > 0) throw new Error(erreursSituees('probtree', errors));
+	const etiquettes: string[] = node.config.rootLabel ? [node.config.rootLabel] : [];
+	const collecte = (n: ProbTreeNode) =>
+		n.branches.forEach((b) => {
+			etiquettes.push(b.eventLabel);
+			collecte(b.child);
+		});
+	collecte(node.root);
+	const largeurEtiquette = etiquettes.length
+		? Math.max(
+				ARBRE_ETIQUETTE_MIN,
+				Math.max(...etiquettes.map(longueurVisuelle)) * ARBRE_CAR + ARBRE_MARGE_ETIQUETTE
+			)
+		: ARBRE_ETIQUETTE_MIN;
+	const niveau = ARBRE_BRANCHE + largeurEtiquette;
+	const hauteurDe = (n: ProbTreeNode): number =>
+		n.isLeaf ? ARBRE_ECART : n.branches.reduce((t, b) => t + hauteurDe(b.child), 0);
+	const positions = new Map<string, { x: number; y: number }>();
+	const place = (n: ProbTreeNode, x: number, yDebut: number): number => {
+		const hauteur = hauteurDe(n);
+		if (n.isLeaf) {
+			positions.set(n.id, { x, y: yDebut + hauteur / 2 });
+			return hauteur;
+		}
+		let y = yDebut;
+		const ys: number[] = [];
+		for (const b of n.branches) {
+			y += place(b.child, x + niveau, y);
+			ys.push(positions.get(b.child.id)!.y);
+		}
+		positions.set(n.id, { x, y: (Math.min(...ys) + Math.max(...ys)) / 2 });
+		return hauteur;
+	};
+	place(node.root, ARBRE_RACINE_X, ARBRE_HAUT);
+	const largeur =
+		ARBRE_RACINE_X +
+		niveau * node.maxDepth +
+		largeurEtiquette +
+		ARBRE_DROITE +
+		(node.config.showIntersection ? ARBRE_INTERSECTION : 0) +
+		(node.config.showOutcomes ? ARBRE_ISSUES : 0);
+	const hauteur = hauteurDe(node.root) + 2 * ARBRE_HAUT;
+	/** Formule que le gabarit rend en KaTeX, dans un cadre HTML du SVG */
+	const formule = (x: number, y: number, l: number, h: number, latex: string, classe: string) =>
+		`<foreignObject x="${c2(x)}" y="${c2(y)}" width="${c2(l)}" height="${h}"><div class="pt-label ${classe}"><span class="tex" data-tex="${attr(toLocaleDecimal(latex, 'fr'))}"></span></div></foreignObject>`;
+	let corps = '';
+	if (node.config.rootLabel) {
+		const p = positions.get(node.root.id)!;
+		corps += formule(p.x, p.y - 10, largeurEtiquette, 20, etiquetteTex(node.config.rootLabel), '');
+	}
+	const feuilles: { n: ProbTreeNode; chemin: string[] }[] = [];
+	const branches = (n: ProbTreeNode, chemin: string[]) => {
+		const p = positions.get(n.id)!;
+		for (const b of n.branches) {
+			const q = positions.get(b.child.id)!;
+			const x1 = p.x + largeurEtiquette;
+			const dx = q.x - x1;
+			const dy = q.y - p.y;
+			const longueur = Math.hypot(dx, dy);
+			const decalage =
+				Math.abs(dy / dx) < 0.3 ? ARBRE_PROB_DECALAGE : dy > 10 ? ARBRE_PROB_DECALAGE * 0.5 : 0;
+			const lx = (x1 + q.x) / 2 + (dy / longueur) * ARBRE_PROB_PERP + (dx / longueur) * decalage;
+			const ly = (p.y + q.y) / 2 - (dx / longueur) * ARBRE_PROB_PERP + (dy / longueur) * decalage;
+			corps +=
+				`<line class="pt-branche" x1="${c2(x1)}" y1="${c2(p.y)}" x2="${c2(q.x)}" y2="${c2(q.y)}"/>` +
+				formule(lx - 40, ly - 10, 80, 20, b.probability.display, 'pt-prob') +
+				formule(q.x, q.y - 10, largeurEtiquette, 20, etiquetteTex(b.eventLabel), '');
+			branches(b.child, [...chemin, etiquetteTex(b.eventLabel.replace(/^\$|\$$/g, ''))]);
+		}
+		if (n.isLeaf) feuilles.push({ n, chemin });
+	};
+	branches(node.root, []);
+	const decalageIssues = node.config.showIntersection ? ARBRE_INTERSECTION : 0;
+	for (const { n, chemin } of feuilles) {
+		const p = positions.get(n.id)!;
+		if (node.config.showIntersection && chemin.length > 0)
+			corps += formule(
+				p.x + largeurEtiquette + 10,
+				p.y - 12,
+				ARBRE_INTERSECTION - 20,
+				24,
+				`P(${chemin.join('\\,\\cap\\,')})`,
+				'pt-inter'
+			);
+		if (node.config.showOutcomes && n.outcome)
+			corps += formule(
+				p.x + largeurEtiquette + 10 + decalageIssues,
+				p.y - 12,
+				ARBRE_ISSUES - 20,
+				24,
+				n.outcome,
+				'pt-issue'
+			);
+	}
+	return {
+		html: `<svg class="pt-svg" role="img" aria-label="Arbre de probabilité${node.config.rootLabel ? ` : ${attr(node.config.rootLabel)}` : ''}" viewBox="0 0 ${c2(largeur)} ${c2(hauteur)}" style="width:${c2(largeur)}px;max-width:100%">${corps}</svg>`
+	};
+}
+
 const DESSINS: Record<string, (source: string) => Bloc> = {
 	figure,
 	monnaie,
@@ -717,7 +1302,14 @@ const DESSINS: Record<string, (source: string) => Bloc> = {
 	collection,
 	horloge,
 	courbe,
-	variation
+	variation,
+	histogramme: (s) => statistique('histogramme', s),
+	'frequences-cumulees': (s) => statistique('frequences-cumulees', s),
+	barres: (s) => statistique('barres', s),
+	'boite-a-moustaches': (s) => statistique('boite-a-moustaches', s),
+	'tableau-croise': (s) => statistique('tableau-croise', s),
+	simulation: (s) => statistique('simulation', s),
+	probtree: arbre
 };
 
 /** Types de blocs que la page dessine elle-même */
