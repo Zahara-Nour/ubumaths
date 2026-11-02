@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2188._
+_Mis à jour le 2026-11-02, après #2188 (migration des tags en cours)._
 
 - **État** : lot 5-VA (§ 22, D28) mergé (#2188) : 8 modèles dans `scripts/questions/1spe-va/`, 62 specs vertes, simulation 8 / 8, essai en base locale fait.
-- **Prochaine action** : **David** lance `create-questions --dir scripts/questions/1spe-va --publier` depuis le dépôt principal → relever les `id` (MCP) → migration nœud + tag (gabarit lot 4, nouveau worktree) → page à cocher.
+- **Prochaine action** : PR de la migration nœud + tag (`20261102051042`) → `security-auditor`, CI, `check:migrations --pr`, merge → `db:migrate` depuis le dépôt principal → vérif MCP → page à cocher.
 - **En attente de David** : relecture et publication des 8 brouillons du lot 4 (§ 21) ; création en prod du lot 5 après merge.
 - **Pièges en cours** : `blankDefaults.acceptDecimal` obligatoire ; **variable `e` = Euler** (renommée `u`, lot 5) ; choix mélangés à l'affichage → jamais « première phrase » dans un corrigé ; `col()` hors `$…$` ne s'affiche pas (`colt`) ; aucun trailer `Claude-Session:` ni lien claude.ai ; migration : heure réelle.
-- **Worktree / branche** : aucun (retiré après #2188) ; migration sur une nouvelle branche `feat/questions-1spe-lot5-va-tags`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `feat/questions-1spe-lot5-va-tags`.
 - **Ensuite (D7)** : lot « à savoir » (D2), restes (produit scalaire formules, second degré / exponentielle / trigo, logique et listes Python), lots en attente d'un outil.
 
 ## 1. Relevé (prod, 2026-10-27)
@@ -1077,6 +1077,12 @@ variation (5 200) sans `{{`, NaN ni avertissement ; simulation `create-questions
 le tableau des sommes du corrigé de 03 reste à voir sur la page à cocher.
 
 #2188 mergée (CI verte) le 2026-11-02.
+
+**Création en prod (David, 2026-11-02, 05 h 10 UTC)** : 8 brouillons, sans nœud ni tag (relevé MCP) — 477016d2 (347),
+97a4df30 (354), a362079f (428), 3bd19f82 (429), 9c04693a (430), 58c55bba (352), 5192e88a (363), 006fce09 (364). Migration
+`20261102051042_questions_1spe_va_rangement_tags` (gabarit lot 4 ; 347 et 354 sur la notion « Probabilités › Variables
+aléatoires », nœud de leur point) ; test d'intégration 10/10, rouge 2/10 sans les étapes 4 et 5. `security-auditor` : aucun finding
+(diff avec le gabarit = les lignes du lot ; prod relue). `check:migrations --pr 2192` vert.
 
 **Pièges du lot** : variable `e` lue comme la constante d'Euler (renommée `u`) ; `E(X)^2` après un signe moins rendu
 « E X² » → `{E(X)}^2` (rendu « (E(X))² ») ; réponses colorées dans le texte hors formule → `colt` (`$…$`) ; les choix
