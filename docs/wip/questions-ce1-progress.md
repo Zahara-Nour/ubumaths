@@ -5,21 +5,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2203 et les brouillons en prod._
+_Mis à jour le 2026-11-02, après #2211, #2217, #2219 et #2230._
 
-- **État** : lots 0 à 9 publiés. Lot 10 (espace et mesure, § 17) : 9 brouillons en prod (ids ci-dessous, vérifiés au
-  MCP le 2026-11-02), pas encore rangés ni tagués.
-- **Prochaine action** : migration nœud + tag du lot 10 (worktree neuf, test d'intégration rouge puis vert,
-  `security-auditor`), puis page à cocher et `publier-lot`.
-- **En attente de David** : chantier `verrou-deploy` à ouvrir dans sa session (mémoire).
-- **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
-  `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
-  non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; **niveaux : relever la
-  catégorie juste avant la publication** ; horodatage de migration : `pnpm migration:horodatage`, `pnpm check:migrations
---pr <n>` avant le merge ; commitlint : sujet sans majuscule ; aucun lien de session dans une PR ; **un défaut vu sur
-  la page à cocher peut venir du script de la page : comparer à l'aperçu admin avant d'accuser le modèle**.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1`, `chore/questions-ce1-lot10-tags` (migration du lot 10). `!` de David :
-  toujours préfixer `cd /Users/david/Coding/js/ubumaths &&`.
+- **État** : lots 0 à 9 publiés. Lot 10 : 9 brouillons rangés et tagués en prod (#2211), corrections recolorées (#2219,
+  `--mettre-a-jour` fait), relus 9/9 OK (page https://claude.ai/artifact/6q3oJbAwbPBsF7JXfPyR8V). #2230 (01 au niveau 6)
+  mergée, **`db:migrate` PAS ENCORE JOUÉ** : le dry-run pousserait aussi les migrations d'autres sessions (2de, 6, 1spe).
+- **Prochaine action** : dry-run → `db:migrate` quand seule `20261102091820_questions_ce1_lot10_niveau` reste (ou go de
+  David pour pousser le tout), vérifier au MCP (niveau 6), simulation `publier-lot --dir scripts/questions/ce1-10`, puis
+  David : `--publier`.
+- **En attente de David** : chantier `verrou-deploy` (mémoire) ; futur chantier « `\textcolor` hors formule » (53 fichiers).
+- **Pièges en cours** : jamais de variable `e` ni `i` ; **mots en couleur dans le texte = `colt()` (`$\textcolor{…}{\text{…}}$`),
+  jamais `\textcolor` nu** ; `{{if:}}` à condition contenant `{{eval:}}` non résolu → relire `--apercu` ; **niveaux :
+  relever la catégorie juste avant la publication** (01 pris le matin même) ; horodatage `pnpm migration:horodatage`,
+  `check:migrations --pr <n>` ; commitlint : sujet sans majuscule, corps ≤ 100 colonnes ; shards navigateur de la CI :
+  « Browser connection was closed » = relancer les jobs ; `create-questions --mettre-a-jour` même en simulation refusé
+  au mode auto.
+- **Worktree / branche** : aucun. `!` de David : toujours préfixer `cd /Users/david/Coding/js/ubumaths &&`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
