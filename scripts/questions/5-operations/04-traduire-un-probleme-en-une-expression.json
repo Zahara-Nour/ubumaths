@@ -1,6 +1,6 @@
 {
 	"title": "Traduire un problème en une seule expression",
-	"description": "Écrire en une seule expression, sans l'effectuer, le calcul qui résout un problème : 3 × 2 + 1, 2 × 3 + 3 × 5, 40 − 3 × 7, (8 + 6) × 5",
+	"description": "Écrire en une seule expression, sans l'effectuer, le calcul qui résout un problème : 3 × 2 + 1, 2 × 3 + 3 × 5, 40 − 3 × 7 ; (8 + 6) × 5 quand l'énoncé impose de calculer une journée d'abord",
 	"grades": ["5"],
 	"theme": "Entiers",
 	"domain": "Priorités opératoires",
@@ -108,7 +108,7 @@
 			}
 		},
 		{
-			"statement": "Chaque jour, Tom lit ${{a}}$ pages le matin et ${{b}}$ pages le soir. On cherche le nombre de pages qu'il lit en ${{c}}$ jours.\n\nÉcris le calcul en **une seule expression**, sans l'effectuer.\n\n$?$",
+			"statement": "Chaque jour, Tom lit ${{a}}$ pages le matin et ${{b}}$ pages le soir. Il calcule **d'abord** le nombre de pages lues en un jour, **puis** le nombre de pages lues en ${{c}}$ jours.\n\nÉcris le calcul de Tom en **une seule expression**, sans l'effectuer.\n\n$?$",
 			"variables": [
 				{
 					"name": "a",
@@ -132,7 +132,7 @@
 			"correction": {
 				"steps": [
 					"**Une seule expression.** On écrit tout le calcul en une ligne, sans l'effectuer. La multiplication est prioritaire sur l'addition et la soustraction ; des **parenthèses** obligent à faire un calcul en premier.",
-					"En un jour : ${{a}} + {{b}}$ pages ; en ${{c}}$ jours, ${{c}}$ fois plus. L'addition doit se faire **d'abord** : il faut des parenthèses.",
+					"Tom calcule d'abord une journée : ${{a}} + {{b}}$ pages ; puis ${{c}}$ jours, ${{c}}$ fois plus. L'addition doit se faire **d'abord** : il faut des parenthèses.",
 					"$$\\textcolor{{{color:primary.0}}}{({{a}} + {{b}}) \\times {{c}}}$$"
 				]
 			}
@@ -340,7 +340,7 @@
 			}
 		},
 		{
-			"description": "Développé : 8 × 5 + 6 × 5 (forme refusée)",
+			"description": "Autre démarche que celle de Tom : 8 × 5 + 6 × 5 (forme refusée)",
 			"variationIndex": 3,
 			"variables": {
 				"a": "8",

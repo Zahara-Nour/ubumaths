@@ -388,13 +388,14 @@ RESTE = variation(
      '$$' + col('{{a}} - {{b}} ' + X + ' {{c}}') + '$$'],
     ['b*c<a'])
 PAGES = variation(
-    'Chaque jour, Tom lit ${{a}}$ pages le matin et ${{b}}$ pages le soir. On cherche le nombre'
-    ' de pages qu\'il lit en ${{c}}$ jours.' + CONSIGNE,
+    'Chaque jour, Tom lit ${{a}}$ pages le matin et ${{b}}$ pages le soir. Il calcule **d\'abord**'
+    ' le nombre de pages lues en un jour, **puis** le nombre de pages lues en ${{c}}$ jours.'
+    '\n\nÉcris le calcul de Tom en **une seule expression**, sans l\'effectuer.\n\n$?$',
     [var('a', '5..15'), var('b', '5..15'), var('c', '3..7')],
     ['({{a}}+{{b}})' + X + '{{c}}'],
     [UNE_EXPRESSION,
-     'En un jour : ${{a}} + {{b}}$ pages ; en ${{c}}$ jours, ${{c}}$ fois plus. L\'addition doit'
-     ' se faire **d\'abord** : il faut des parenthèses.',
+     'Tom calcule d\'abord une journée : ${{a}} + {{b}}$ pages ; puis ${{c}}$ jours, ${{c}}$ fois'
+     ' plus. L\'addition doit se faire **d\'abord** : il faut des parenthèses.',
      '$$' + col('({{a}} + {{b}}) ' + X + ' {{c}}') + '$$'],
     ['a!=b'])
 
@@ -402,7 +403,8 @@ ABC = {'a': 3, 'b': 2, 'c': 1}
 MODELES.append(modele(
     '04-traduire-un-probleme-en-une-expression', 'Traduire un problème en une seule expression',
     'Écrire en une seule expression, sans l\'effectuer, le calcul qui résout un problème :'
-    ' 3 × 2 + 1, 2 × 3 + 3 × 5, 40 − 3 × 7, (8 + 6) × 5',
+    ' 3 × 2 + 1, 2 × 3 + 3 × 5, 40 − 3 × 7 ; (8 + 6) × 5 quand l\'énoncé impose de calculer une'
+    ' journée d\'abord',
     'Entiers', 'Priorités opératoires', 'Traduire en une expression', 1,
     [ACHAT_SIMPLE, DEUX_ACHATS, RESTE, PAGES],
     [spec('3 × 2 + 1', 0, ABC, '3\\times2+1', 'correct'),
@@ -424,7 +426,7 @@ MODELES.append(modele(
      spec('5 × (6 + 8) (ordre changé)', 3, {'a': 8, 'b': 6, 'c': 5}, '5\\times(6+8)', 'correct'),
      spec('Erreur : 8 + 6 × 5 (parenthèses oubliées)', 3, {'a': 8, 'b': 6, 'c': 5},
           '8+6\\times5', 'incorrect'),
-     spec('Développé : 8 × 5 + 6 × 5 (forme refusée)', 3, {'a': 8, 'b': 6, 'c': 5},
+     spec('Autre démarche que celle de Tom : 8 × 5 + 6 × 5 (forme refusée)', 3, {'a': 8, 'b': 6, 'c': 5},
           '8\\times5+6\\times5', 'bad_form', ['form'])],
     delay=60, options=EXPRESSION))
 
