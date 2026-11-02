@@ -137,3 +137,41 @@ test `tests/integration/questions-tspe-lot6a-rangement-tags.test.ts` : 10 verts,
 5 sautés). Nœuds des 9 points revérifiés au MCP le même jour.
 
 **Migration** : #2246 mergée le 2026-11-02 (CI verte, security-auditor sans finding), `db:migrate` passé (seule en attente), 9 modèles vérifiés au MCP sur leur nœud avec leur point.
+
+## Lot 6b : plans, représentations paramétriques, équations cartésiennes
+
+_2026-11-02. Relevé MCP (prod, lecture seule) : nœuds des 4 points, modèles de leurs sous-notions et voisins._
+
+**Nœuds des points** (branche « Géométrie ») : 358 et 368 sur « Orthogonalité et distances dans l'espace › vecteur
+normal et équation cartésienne » (4 modèles : d192da3e, 35697e01, 91c7b083, 2b240d8c) ; **566 sur la notion**
+« Espace » (le modèle ira sur « Espace › vecteurs de l'espace », comme M1 du 6a) ; 568 sur « Espace › positions
+relatives et intersections » (0808e518, 3bace561). Aucune sous-notion neuve.
+
+**Niveaux pris** (catégories T_SPE seules) : Représentations… › Équation cartésienne d'un plan 1, 2 ; Positions
+relatives 2 ; Intersections 2 ; Vecteurs, droites et plans › Coplanarité, décomposition 2.
+
+**Déjà couvert en partie** : d192da3e v2 (tagué 367) calcule le `d` du plan médiateur (358) ; ac94a453 (333)
+décompose w sur (u, v), deux inconnues ; 3bace561 v2 (567) décide la position de deux plans, 0808e518 (372) résout
+droite ∩ plan. Aucun ne fait interpréter des solutions déjà obtenues (568) ni trois inconnues (566).
+
+**Phase 0 proposée** (niveau `T_SPE` seul, un point par modèle, repère orthonormé, réponse en case **ou** en case
+choix, jamais les deux) :
+
+| #   | Point    | Titre                                  | Variations                                                                                                                                                                                                                                                                                                  | Catégorie (niveau)                                          | Nœud                                   |
+| --- | -------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- | -------------------------------------- |
+| N1  | TSPE-358 | Lieux géométriques dans l'espace       | v0 A, B, M donnés : M est-il sur le plan médiateur de [AB] ? (MA² = MB², case choix oui / non) ; v1 équation complète du plan médiateur (normal AB, passe par le milieu) ; v2 lieu des M tels que MA·MB = 0 : sphère de diamètre [AB], rayon exact                                                          | Orthogonalité… › Lieux géométriques (1)                     | vecteur normal et équation cartésienne |
+| N2  | TSPE-368 | Reconnaître un plan par son équation   | case choix : v0 nature de l'ensemble {M : équation} — plan / sphère / droite / point (équation linéaire déguisée, x² + y² + z² …, système) ; v1 z = k, x = k, y = k : plan parallèle à quel plan de coordonnées ; v2 2(x − 1) + 3(y + 2) = z : plan, case pour le `d` de la forme réduite                   | Représentations… › Équation cartésienne d'un plan (3)       | vecteur normal et équation cartésienne |
+| N3  | TSPE-566 | Coordonnées d'un vecteur dans une base | v0 u, v, w (base, système triangulaire, par substitution, lts-6), t donné : a, b, c tels que t = au + bv + cw (trois cases) ; v1 « traduire » : quel système traduit t = au + bv + cw ? (case choix, leurres : coordonnées lues en ligne au lieu de colonne)                                                | Vecteurs, droites et plans › Coplanarité, décomposition (3) | vecteurs de l'espace                   |
+| N4  | TSPE-568 | Interpréter les solutions d'un système | case choix : v0 droite ∩ plan, la substitution donne « kt = m », « 0t = m » ou « 0t = 0 » → un point / strictement parallèles / droite incluse ; v1 deux plans, ensemble des solutions donné (paramétré, vide, une équation) → droite / parallèles / confondus ; v2 trois plans, solution unique → un point | Représentations… › Positions relatives (3)                  | positions relatives et intersections   |
+
+**Questions posées** :
+
+- **Q1** 358 : d192da3e v2 fait déjà le `d` du plan médiateur (tagué 367). Reco : N1 quand même, sur le **lieu**
+  (appartenance, équation complète, sphère de diamètre [AB]), plutôt que noter 358 « couvert par ».
+- **Q2** Catégorie neuve « Lieux géométriques » pour N1. Reco : oui ; sinon Équation cartésienne d'un plan (4).
+- **Q3** N3 v1 (« quel système traduit… ») : le BO dit « traduire par un système ». Reco : oui, en case choix.
+- **Q4** N4 : énoncés qui **donnent** le résultat du calcul (l'élève interprète seulement), pour ne pas refaire
+  0808e518 et 3bace561. Reco : oui.
+
+**Question d'accès** (migration nœud + tag, après la création) : personne ne gagne ni ne perd d'accès (brouillons ;
+visibles des élèves après `publier-lot`).
