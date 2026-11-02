@@ -10,19 +10,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2237 ; #2242 ouverte._
+_Mis à jour le 2026-11-02, après #2242 (mergée, migration appliquée en prod par David)._
 
-- **État** : 6b créé en prod par David (brouillons, 17 h 35 UTC) : 4f8c7b91 (412), 7bf472bc (310), 24ca7584 (313),
-  52a3ad9b (311), 9af16245 (415), 71205949 (316), 47d451b4 (329). Migration nœud + tag
-  `20261102173610_questions_1spe_savoir_b_rangement_tags` en PR #2242 : test 10/10, rouge sans l'étape 4,
-  `security-auditor` sans finding, `check:migrations --pr 2242` vert ; CI en cours au `/clear`.
-- **Prochaine action** : `gh pr checks 2242` → verte : merger, `db:migrate` depuis le dépôt principal (`migration list
---linked` d'abord) ; relire en base (MCP) ; page à cocher (`scripts/questions/page-a-cocher.ts --dir
-scripts/questions/1spe-savoir-b`) ; puis `publier-lot`.
-- **En attente de David** : rien avant la page à cocher.
+- **État** : 6b en prod, 7 brouillons rangés (relu au MCP : nœud du point, 1 tag chacun) : 4f8c7b91 (412),
+  7bf472bc (310), 24ca7584 (313), 52a3ad9b (311), 9af16245 (415), 71205949 (316), 47d451b4 (329). Page à cocher
+  publiée : https://claude.ai/artifact/3v9Z4Yu1kvxdAcvEZ3gt7p (collection `verdicts`, vide à la publication).
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`) ; corriger les « À revoir » ; puis
+  `publier-lot` du 6b. Ensuite le lot formules (413, 414, 314, 315, 416), nouveau worktree/branche.
+- **En attente de David** : la relecture sur la page à cocher.
 - **Pièges en cours** : `pnpm migration:horodatage` sans `-s` ; KaTeX absent du dépôt, sonde de formules par
-  `mathlive-ssr` (`validateLatex`). Base locale : 7 brouillons d'essai du 6b (ids locaux, sans importance).
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-geometrie`, `feat/questions-1spe-savoir-b-tags` (#2242).
+  `mathlive-ssr` (`validateLatex`). `db:migrate` refusé par le classifieur du mode auto → David le lance (`!`).
+  CI : shard client coupé (« Browser connection was closed ») = panne, `gh run rerun --failed`.
+- **Worktree / branche** : aucun (`feat/questions-1spe-savoir-b-tags` mergée, worktree retiré).
 
 ---
 
