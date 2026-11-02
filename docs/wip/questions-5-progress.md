@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2213._
+_Mis à jour le 2026-11-02, lot 9 publié._
 
-- **État** : lots 1 à 8 publiés ; lot 9 « Statistiques » (§ 23) : 10 brouillons en prod, rangés et tagués (#2213,
-  migration jouée) ; page à cocher https://claude.ai/artifact/6Td2Enhp5q5JJnNfZw6b4o publiée.
-- **Prochaine action** : lire et compter les verdicts (`ArtifactData list verdicts`) ; 07 et 08 (circulaire)
-  non dessinés par la page → à jouer dans l'aperçu ; puis `publier-lot.ts --dir scripts/questions/5-statistiques`
-  en simulation, David `--publier`. Ensuite : lot suivant (112 barres à construire, puis proportionnalité et graphiques).
+- **État** : lots 1 à 9 publiés (lot 9 « Statistiques », 10 modèles, § 23). Relevé du § 22 moins les 10 points
+  du lot 9 : 59 points de 5e sans modèle (B, C, D ; 122 attend l'outil « étiquettes à ranger »).
+- **Prochaine action** : phase 0 du lot 10 : 112 (barres à construire, reporté du lot 9), puis proportionnalité et
+  graphiques (089, 090, 094, 142 ; 141, 091, 099, 096, 143) — vérifier d'abord que l'outil des barres à construire
+  est en prod.
 - **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la
   main : au pilotage Chrome, la frappe dans la 2e case arrivait aussi dans la 1re — extension ou appli ?
 - **Pièges en cours** : `db:migrate` en prod refusé par le classifieur du mode auto → David le lance ; il pousse
@@ -19,7 +19,7 @@ _Mis à jour le 2026-11-02, après #2213._
   `pnpm check:migrations --pr <n>` avant merge ; horodatage = `pnpm migration:horodatage` ; garde
   `docs:check-a-jour` sur une migration de données → ligne `Doc-inchangée:` dans un COMMIT (pas la PR) ;
   `gh pr checks --watch` rend la main avant l'intégration : suivre les runs ; jamais `e`.
-- **Worktree / branche** : `../ubumaths-wt-questions-5` (branches du lot 9 mergées ; serveur local 5176).
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -683,3 +683,8 @@ barres 1-3 (CE1) ; diagrammes circulaires et courbes et repères : aucun. Borne 
   leur sous-notion, 1 tag chacun, `updated_at` intact (07:53).
 - Page à cocher https://claude.ai/artifact/6Td2Enhp5q5JJnNfZw6b4o (10 fiches, capacité `db`, `verdicts` vide) ;
   alerte : bloc `circulaire` non dessiné par la page (07, 08) → aperçu admin.
+
+### Lot 9 : publication (2026-11-02)
+
+- Page à cocher : **10 verdicts sur 10 « ok »**, sans commentaire (comptés en base de l'artefact). Simulation
+  `publier-lot` 10/10 ; David : `--publier` → 10/10 ; vérifié au MCP (`status = published` pour les 10). **Lot 9 clos.**
