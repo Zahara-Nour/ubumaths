@@ -1,0 +1,222 @@
+{
+	"title": "De la phrase à la notation",
+	"description": "Langue naturelle → symboles : au moins, au plus, strictement plus de, perdre de l'argent ({G < 0}) ; événement {G = a} ou probabilité P(G = a)",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Variables aléatoires",
+	"subdomain": "Notations",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans un jeu, on note $G$ le gain algébrique du joueur pour une partie, en euros. L'événement « le joueur gagne au moins ${{eval:a}}$ € » s'écrit :\n\n```choix\n- $\\{G\\geqslant {{a}}\\}$\n- $\\{G> {{a}}\\}$\n- $\\{G\\leqslant {{a}}\\}$\n- $\\{G< {{a}}\\}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« Au moins ${{eval:a}}$ » : ${{eval:a}}$ ou plus, ${{eval:a}}$ compris.",
+					"L'événement s'écrit $\\textcolor{{{color:primary.0}}}{\\{G\\geqslant {{eval:a}}\\}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un jeu, on note $G$ le gain algébrique du joueur pour une partie, en euros. L'événement « le joueur gagne au plus ${{eval:a}}$ € » s'écrit :\n\n```choix\n- $\\{G\\leqslant {{a}}\\}$\n- $\\{G< {{a}}\\}$\n- $\\{G\\geqslant {{a}}\\}$\n- $\\{G> {{a}}\\}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« Au plus ${{eval:a}}$ » : ${{eval:a}}$ ou moins, ${{eval:a}}$ compris.",
+					"L'événement s'écrit $\\textcolor{{{color:primary.0}}}{\\{G\\leqslant {{eval:a}}\\}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un jeu, on note $G$ le gain algébrique du joueur pour une partie, en euros. L'événement « le joueur gagne strictement plus de ${{eval:a}}$ € » s'écrit :\n\n```choix\n- $\\{G> {{a}}\\}$\n- $\\{G\\geqslant {{a}}\\}$\n- $\\{G< {{a}}\\}$\n- $\\{G\\leqslant {{a}}\\}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« Strictement plus de ${{eval:a}}$ » : ${{eval:a}}$ n'est pas compris.",
+					"L'événement s'écrit $\\textcolor{{{color:primary.0}}}{\\{G>{{eval:a}}\\}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un jeu, on note $G$ le gain algébrique du joueur pour une partie, en euros. L'événement « le joueur perd de l'argent » s'écrit :\n\n```choix\n- $\\{G< 0\\}$\n- $\\{G\\leqslant 0\\}$\n- $\\{G> 0\\}$\n- $\\{G= 0\\}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Perdre de l'argent, c'est avoir un gain algébrique strictement négatif ; un gain nul n'est pas une perte.",
+					"L'événement s'écrit $\\textcolor{{{color:primary.0}}}{\\{G<0\\}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un jeu, on note $G$ le gain algébrique du joueur pour une partie, en euros. La **probabilité** que le joueur gagne exactement ${{eval:a}}$ € s'écrit :\n\n```choix\n- $P(G={{eval:a}})$\n- $\\{G={{eval:a}}\\}$\n- $P(G)={{eval:a}}$\n- $G=P({{eval:a}})$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\{G={{eval:a}}\\}$ est l'**événement** « le joueur gagne exactement ${{eval:a}}$ € » ; sa probabilité est un **nombre**, noté $P(G={{eval:a}})$.",
+					"La probabilité s'écrit $\\textcolor{{{color:primary.0}}}{P(G={{eval:a}})}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Au moins : ⩾",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : au moins → >",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Au plus : ⩽",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : au plus → <",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Strictement plus : >",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : strictement plus → ⩾",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Perdre : G < 0",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : G ⩽ 0",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Probabilité : P(G = a)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'événement",
+			"variationIndex": 4,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,193 @@
+{
+	"title": "Variance par la formule de König-Huygens",
+	"description": "V(X) = E(X²) − E(X)² : E(X²) calculée depuis la loi (E(X) donnée), ou E(X) et E(X²) données (E(X) parfois négative)",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Variables aléatoires",
+	"subdomain": "Variance et écart-type",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La loi de probabilité d'une variable aléatoire $X$ est donnée par le tableau suivant.\n\n| $x_k$ | ${{x1}}$ | ${{x2}}$ | ${{x3}}$ |\n|---|---|---|---|\n| $P(X=x_k)$ | ${{eval:a/10;d}}$ | ${{eval:b/10;d}}$ | ${{eval:c/10;d}}$ |\n\nOn sait que $E(X)={{eval:E}}$. Calcule $E(X^2)$, puis la variance de $X$ par la formule de König-Huygens. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E(X^2)=?$\n\n$V(X)=?$",
+			"variables": [
+				{
+					"name": "x1",
+					"expression": "-4..4"
+				},
+				{
+					"name": "d1",
+					"expression": "1..4"
+				},
+				{
+					"name": "d2",
+					"expression": "1..4"
+				},
+				{
+					"name": "x2",
+					"expression": "{{eval:x1+d1}}"
+				},
+				{
+					"name": "x3",
+					"expression": "{{eval:x2+d2}}"
+				},
+				{
+					"name": "a",
+					"expression": "1..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{eval:9-a}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:10-a-b}}"
+				},
+				{
+					"name": "S",
+					"expression": "{{eval:a*(x1)+b*(x2)+c*(x3)}}"
+				},
+				{
+					"name": "Q",
+					"expression": "{{eval:a*(x1)^2+b*(x2)^2+c*(x3)^2}}"
+				},
+				{
+					"name": "E",
+					"expression": "{{eval:S/10}}"
+				}
+			],
+			"conditions": ["mod(S,10) == 0", "S != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:Q/10}}"
+				},
+				{
+					"expectedAnswer": "{{eval:Q/10-E^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$E(X^2)=\\sum p_k x_k^2={{eval:a/10;d}}\\times {{eval:x1;()}}^2+{{eval:b/10;d}}\\times {{eval:x2;()}}^2+{{eval:c/10;d}}\\times {{eval:x3;()}}^2=\\textcolor{{{color:primary.0}}}{{{eval:Q/10;d}}}$.",
+					"Formule de König-Huygens : $V(X)=E(X^2)-{E(X)}^2$.",
+					"$V(X)={{eval:Q/10;d}}-{{eval:E;()}}^2={{eval:Q/10;d}}-{{eval:E^2}}=\\textcolor{{{color:primary.0}}}{{{eval:Q/10-E^2;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour une variable aléatoire $X$, on sait que $E(X)={{eval:u/10;d}}$ et $E(X^2)={{eval:q/10;d}}$. Calcule la variance de $X$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$V(X)=?$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "-30..30"
+				},
+				{
+					"name": "q",
+					"expression": "1..150"
+				}
+			],
+			"conditions": ["10*q > u^2", "u != 0", "mod(u,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q/10-u^2/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Formule de König-Huygens : $V(X)=E(X^2)-{E(X)}^2$.",
+					"$E(X)^2={{eval:u/10;d;()}}^2={{eval:u^2/100;d}}$ (un carré est positif).",
+					"$V(X)={{eval:q/10;d}}-{{eval:u^2/100;d}}=\\textcolor{{{color:primary.0}}}{{{eval:q/10-u^2/100;d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x = 1, 2, 3 ; p = 0,3 ; 0,4 ; 0,3 : E(X²) = 4,6, V = 0,6",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "1",
+				"d1": "1",
+				"d2": "1",
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["4{,}6", "0{,}6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En fractions",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "1",
+				"d1": "1",
+				"d2": "1",
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["\\frac{23}{5}", "\\frac{3}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : V = E(X²) − E(X)",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "1",
+				"d1": "1",
+				"d2": "1",
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["4{,}6", "2{,}6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "E = −1,5 ; E(X²) = 4,7 : V = 2,45",
+			"variationIndex": 1,
+			"variables": {
+				"u": "-15",
+				"q": "47"
+			},
+			"answers": ["2{,}45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −(−1,5)² compté négatif",
+			"variationIndex": 1,
+			"variables": {
+				"u": "-15",
+				"q": "47"
+			},
+			"answers": ["6{,}95"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : carré oublié",
+			"variationIndex": 1,
+			"variables": {
+				"u": "-15",
+				"q": "47"
+			},
+			"answers": ["6{,}2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
