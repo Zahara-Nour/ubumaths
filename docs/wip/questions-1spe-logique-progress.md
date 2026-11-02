@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2244._
+_Mis à jour le 2026-11-02, après #2244 et la création en prod._
 
-- **État** : 7 modèles en fichiers sur `main` (#2244 : `scripts/questions/1spe-logique/`, 64 specs, 4 400 tirages) ; aperçus locaux 01, 02, 05 joués (rendu, mélange des choix, validation : bons). Rien en prod encore.
-- **Prochaine action** : David lance la création en brouillons depuis le dépôt principal (`! pnpm tsx scripts/create-questions.ts …` sur `scripts/questions/1spe-logique/`, `--publier`) ; puis nouveau worktree : migration nœud + tags (gabarit `20261102090607_questions_1spe_savoir_a_rangement_tags.sql` + son test d'intégration), page à cocher, `publier-lot`.
-- **En attente de David** : la commande `create-questions --publier` (écriture en prod).
+- **État** : 7 brouillons en prod (créés par David le 2026-11-02, relus par MCP : 7 `draft`) — 01 `dd9a33b7`, 02 `344a2248`, 03 `63849c41`, 04 `5d17692b`, 05 `de42b303`, 06 `2f7d637b`, 07 `051ff81f`.
+- **Prochaine action** : nouveau worktree `questions-1spe-logique` (branche `feat/questions-1spe-logique-rangement`) : migration nœud + tags (gabarit `20261102090607_questions_1spe_savoir_a_rangement_tags.sql` + son test d'intégration, question d'accès déjà tranchée : Q5, personne), PR, `db:migrate` ; puis page à cocher et `publier-lot`.
+- **En attente de David** : rien.
 - **Pièges en cours** : `i` et `e` interdits comme noms de variables ; `{{if:}}` imbriqué refusé dans une variable ; `eval:` sans comparaisons ; `create-questions` vise la PROD sans `set -a; . ./.env.local; set +a`.
-- **Worktree / branche** : aucun (`ubumaths-wt-questions-1spe-logique` retiré après #2244).
+- **Worktree / branche** : aucun pour l'instant.
 
 ---
 
