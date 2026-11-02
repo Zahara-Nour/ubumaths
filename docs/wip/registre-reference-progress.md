@@ -6,22 +6,21 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, PR tidy (Q9 + `signes-06`) : revue corrigée, NON poussée._
+_Mis à jour le 2026-11-02, après #2255 (tidy : Q9 en entier + `signes-06`, mergée)._
 
-- **État** : 4 commits sur la branche (tests rouges, correctif, journal, corrections de revue),
-  non poussés. Revue opus corrigée (§ écriture ci-dessous) ; banc 0 différence ; typecheck 0 ;
-  cliquet tenu. Suite serveur complète relancée après la revue : résultat NON lu
-  (log : scratchpad de la session, perdu au /clear → la relancer).
-- **Prochaine action** : `pnpm test:server` complet (seul rouge admis : `deploy-prod.test.ts`,
-  rouge aussi sur main) → `lint:fast` → commit avec la ligne
-  `Doc-inchangée: mathast/README.md résume tidy, détail dans tidy-spec.md` → push, PR, CI, merge.
-- **Ensuite** : petite PR `tidy-units.test.ts:24` (12000 m gardé), puis PR 1 (`.dériver`, D1).
-- **En attente de David** : rien. À lui signaler dans la PR : Atelier `0,5x/x` → « 1/2, pour x ≠ 0 »
-  (avant « 0,5 ») ; point 4 de la revue laissé (`(2x+2)/(4x+4)`, déjà ainsi avant).
+- **État** : corpus complet (193 entrées), juge étendu. Connues fausses : registre 69, Atelier 19.
+  #2255 mergée : `0,5/x → 1/(2x)`, `(2x+2)/(4(x+1)) → (x+1)/(2(x+1))` ; Atelier `0,5x/x` → « 1/2,
+  pour x ≠ 0 ».
+- **Prochaine action** : petite PR `tidy-units.test.ts:24` (12000 m → 12 km contraire à
+  `grandeurs-01`) : vérifier d'abord qui utilise la conversion, phase 0, tests rouges.
+- **Ensuite** : PR 1 (`.dériver`, D1).
+- **En attente de David** : rien. Laissé de la revue de #2255 (déjà ainsi avant) :
+  `(2x+2)/(4x+4) → (x+1)/(2x+2)` (autre côté non primitif non reconnu).
 - **Tranché** : Q9 EN ENTIER + Q-a ; A-D du lot 2 ; `decimal` en LaTeX ; `plafond-02` → 1000 ;
   Q24 gardée ; `12000 m` gardé ; `signes-06` → `(x+1)/(2(x+1))` — NE PAS reposer.
-- **Pièges** : idempotence (B1) ; sonde = vitest jetable sous `src/` ; banc = script jetable sous
-  `scripts/` (dump prod en lecture, `generatedAt` retiré) ; jamais `cat >` sans fichier source.
+- **Pièges** : idempotence (B1) ; greper TOUT le journal avant une question ; sonde = vitest
+  jetable sous `src/` ; banc = script jetable sous `scripts/` (dump prod en lecture, `generatedAt`
+  retiré) ; `deploy-prod.test.ts` rouge en local, aussi sur main (vert en CI).
 - **Worktree / branche** : `../ubumaths-wt-registre-reference` · `refactor/registre-reference`.
 
 ---
