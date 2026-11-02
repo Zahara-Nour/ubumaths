@@ -1,0 +1,222 @@
+{
+	"title": "Image d'une issue par une variable aléatoire",
+	"description": "Variable aléatoire comme fonction de l'univers : gain associé à une issue (deux pièces, dé et pièce) ; reconnaître la définition d'une variable aléatoire",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Variables aléatoires",
+	"subdomain": "Modéliser par une variable aléatoire",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On lance deux pièces équilibrées et on note les faces obtenues, dans l'ordre ($P$ : pile, $F$ : face). L'univers est $\\Omega=\\{(P\\,;P)\\,;(P\\,;F)\\,;(F\\,;P)\\,;(F\\,;F)\\}$.\n\nChaque pile obtenu fait gagner ${{eval:a}}$ € au joueur et chaque face lui fait perdre ${{eval:b}}$ €. On note $X$ la variable aléatoire qui, à chaque issue, associe le gain algébrique du joueur, en euros.\n\n$X\\big((P\\,;F)\\big)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..6"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a-b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$X$ est une fonction définie sur l'univers : elle associe un nombre réel à chaque issue.",
+					"L'issue $(P\\,;F)$ compte un pile et une face : $X\\big((P\\,;F)\\big)={{eval:a}}-{{eval:b}}=\\textcolor{{{color:primary.0}}}{{{eval:a-b}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On lance deux pièces équilibrées et on note les faces obtenues, dans l'ordre ($P$ : pile, $F$ : face). L'univers est $\\Omega=\\{(P\\,;P)\\,;(P\\,;F)\\,;(F\\,;P)\\,;(F\\,;F)\\}$.\n\nChaque pile obtenu fait gagner ${{eval:a}}$ € au joueur et chaque face lui fait perdre ${{eval:b}}$ €. On note $X$ la variable aléatoire qui, à chaque issue, associe le gain algébrique du joueur, en euros.\n\n$X\\big((F\\,;F)\\big)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..6"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-2*b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$X$ est une fonction définie sur l'univers : elle associe un nombre réel à chaque issue.",
+					"L'issue $(F\\,;F)$ compte deux faces : le joueur perd $2\\times{{eval:b}}={{eval:2*b}}$ €, donc $X\\big((F\\,;F)\\big)=\\textcolor{{{color:primary.0}}}{{{eval:-2*b}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On lance un dé équilibré à six faces, puis une pièce équilibrée. Une issue s'écrit $(n\\,;P)$ ou $(n\\,;F)$, où $n$ est le numéro du dé.\n\nOn note $X$ la variable aléatoire qui, à chaque issue, associe : le double du numéro si la pièce tombe sur pile ; le numéro diminué de ${{eval:c}}$ si elle tombe sur face.\n\n$X\\big(({{eval:n}}\\,;F)\\big)=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..6"
+				},
+				{
+					"name": "c",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["n != c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n-c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La pièce tombe sur face : $X$ associe à cette issue le numéro diminué de ${{eval:c}}$.",
+					"$X\\big(({{eval:n}}\\,;F)\\big)={{eval:n}}-{{eval:c}}=\\textcolor{{{color:primary.0}}}{{{eval:n-c}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On lance deux dés et on note $X$ la somme des numéros obtenus. Quelle phrase décrit correctement la variable aléatoire $X$ ?\n\n```choix\n- $X$ est une fonction qui, à chaque issue de l'univers, associe un nombre réel.\n- $X$ est la probabilité d'obtenir une somme donnée.\n- $X$ est un événement de l'univers.\n- $X$ est l'ensemble des issues de l'expérience.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une variable aléatoire est une **fonction** définie sur l'univers $\\Omega$, à valeurs réelles : à l'issue « $(2\\,;5)$ », par exemple, $X$ associe le nombre $7$.",
+					"Ce n'est ni une probabilité (un nombre entre $0$ et $1$), ni un événement (une partie de $\\Omega$), ni l'univers lui-même : $\\textcolor{{{color:primary.0}}}{X \\text{ est une fonction}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "X(P;F) = 5 − 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 + 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "X(P;F) négatif : 2 − 6",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "6"
+			},
+			"answers": ["-4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "X(F;F) = −2 × 3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["-6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe oublié",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "X(4;F) = 4 − 3",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4",
+				"c": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : règle de pile",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4",
+				"c": "3"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Fonction",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : probabilité",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : événement",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

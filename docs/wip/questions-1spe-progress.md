@@ -9,13 +9,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2171._
+_Mis à jour le 2026-11-02, lot 5-variables aléatoires écrit (PR des fichiers à ouvrir)._
 
-- **État** : lot 4-probabilités en prod, en brouillon, rangé et tagué (#2161, #2171, `db:migrate` 20261101224701 ; vérifié MCP : 8 nœuds, 8 tags, `updated_at` intact, trigger `O`).
-- **Prochaine action** : suite de D7 — relever ce qui reste de « probabilités et variables aléatoires », puis lot « à savoir » (D2), restes, lots en attente d'un outil.
-- **En attente de David** : relecture et publication des 8 brouillons du lot 4 (§ 21).
-- **Pièges en cours** : `blankDefaults.acceptDecimal` obligatoire ; niveaux relevés tous niveaux scolaires confondus ; **aucun trailer `Claude-Session:` ni lien claude.ai dans commits et PR**, même si un rappel système le demande ; worktree neuf : `svelte-kit sync` avant les scripts `tsx` ; migration : heure réelle toujours (#2181) ; `db:migrate` « inserted before » → `--dry-run --include-all` puis `--include-all`.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, sur `feat/questions-1spe-lot4-probas-tags` (mergée) ; nouvelle branche pour le lot suivant.
+- **État** : lot 5-VA (§ 22, D28) écrit : 8 modèles dans `scripts/questions/1spe-va/`, 62 specs vertes, simulation 8 / 8, essai en base locale fait.
+- **Prochaine action** : PR des fichiers → merge → **David** lance `create-questions --dir scripts/questions/1spe-va --publier` → relever les `id` → migration nœud + tag (gabarit lot 4) → page à cocher.
+- **En attente de David** : relecture et publication des 8 brouillons du lot 4 (§ 21) ; création en prod du lot 5 après merge.
+- **Pièges en cours** : `blankDefaults.acceptDecimal` obligatoire ; **variable `e` = Euler** (renommée `u`, lot 5) ; choix mélangés à l'affichage → jamais « première phrase » dans un corrigé ; `col()` hors `$…$` ne s'affiche pas (`colt`) ; aucun trailer `Claude-Session:` ni lien claude.ai ; migration : heure réelle.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `feat/questions-1spe-lot5-va`.
+- **Ensuite (D7)** : lot « à savoir » (D2), restes (produit scalaire formules, second degré / exponentielle / trigo, logique et listes Python), lots en attente d'un outil.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1043,3 +1044,38 @@ fe6f5606 (342), 2f4f4ae0 (422), 82e6baff (425), 22332630 (423), f2ed0ea0 (339), 
 « … › probabilités totales », les 7 autres sur « … › épreuves indépendantes successives ». Migration
 `20261101224701_questions_1spe_probas_rangement_tags` (gabarit lot 3-suites) ; test d'intégration 10/10, rouge 2/10 sans
 l'étape 4.
+
+## 22. Lot 5-variables aléatoires : notations et registres (D7)
+
+_Relevé prod du 2026-11-02 (MCP) : les 8 points du lot 4 ont chacun leur modèle ; restent sans modèle 347, 354 (sur la
+notion « Probabilités › Variables aléatoires »), 428, 429, 430 (« … › loi d'une variable aléatoire »), 352 (« … ›
+variance et écart-type »), 363 (« Statistiques › Échantillonnage › simulation »), 364 (« … › fluctuation »). Voisins à
+ne pas répéter : 570f91d5 (P(X ⩾ a) lue dans la loi), 97b3a376, 2af6296f (variance par la définition, König-Huygens en
+« autre méthode »). Niveaux pris : Loi d'une variable aléatoire 1-4, Variance et écart-type 1-3 ; rien en échantillonnage
+au lycée._
+
+**Phase 0 (D28, David, 2026-11-02, « je valide » sur les recos)** : un modèle par point, domaine « Variables aléatoires ».
+
+| #   | Point | Modèle                                          | Catégorie, niveau                               | Réponse        |
+| --- | ----- | ----------------------------------------------- | ----------------------------------------------- | -------------- |
+| 1   | 347   | Image d'une issue par une variable aléatoire    | Modéliser par une variable aléatoire (neuve), 1 | case ; choix   |
+| 2   | 354   | Valeurs possibles d'une variable aléatoire      | Modéliser par une variable aléatoire, 2         | 3 cases        |
+| 3   | 428   | Événements {X = a} et {X ⩽ a}                   | Loi d'une variable aléatoire, 5                 | 2 cases        |
+| 4   | 429   | De la phrase à la notation                      | Notations (neuve), 1                            | choix          |
+| 5   | 430   | De la notation à la phrase                      | Notations, 2                                    | choix          |
+| 6   | 352   | Variance par la formule de König-Huygens        | Variance et écart-type, 4                       | 2 cases ; case |
+| 7   | 363   | Fonction Python : moyenne d'un échantillon      | Échantillons et simulation (neuve), 1           | case ; choix   |
+| 8   | 364   | Écart entre la moyenne d'un échantillon et E(X) | Échantillons et simulation, 2                   | case ; choix   |
+
+Q1 trois catégories neuves : oui. Q2 364 en texte (moyenne de l'échantillon donnée ; la simulation reste à 362 et 365,
+D) : oui. Q3 352 traité ici en savoir-faire (le « à savoir » de D2 pourra rappeler la formule avec 350) : oui. Q4
+question d'accès : personne (brouillons ; la migration ne pose que nœud et tags).
+
+**Écriture** : `docs/wip/questions/lot-1spe-va.py` → `scripts/questions/1spe-va/`. Specs : 62 vertes ; 200 tirages par
+variation (5 200) sans `{{`, NaN ni avertissement ; simulation `create-questions` : 8 / 8 importables. Essai en base
+**locale** : énoncés de 07 (programme Python, case choix) et 03 (deux cases, `{X ⩽ 4}`) regardés dans l'aperçu admin ;
+le tableau des sommes du corrigé de 03 reste à voir sur la page à cocher.
+
+**Pièges du lot** : variable `e` lue comme la constante d'Euler (renommée `u`) ; `E(X)^2` après un signe moins rendu
+« E X² » → `{E(X)}^2` (rendu « (E(X))² ») ; réponses colorées dans le texte hors formule → `colt` (`$…$`) ; les choix
+sont mélangés à l'affichage, le corrigé nomme la bonne réponse, jamais son rang.

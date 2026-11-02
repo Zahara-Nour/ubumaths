@@ -1,0 +1,201 @@
+{
+	"title": "Écart entre la moyenne d'un échantillon et l'espérance",
+	"description": "Calculer E(X) depuis la loi puis l'écart |m − E(X)| avec la moyenne m d'un échantillon simulé ; l'écart diminue en général quand la taille de l'échantillon augmente",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Variables aléatoires",
+	"subdomain": "Échantillons et simulation",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La loi de probabilité d'une variable aléatoire $X$ est donnée par le tableau suivant.\n\n| $x_k$ | ${{x1}}$ | ${{x2}}$ | ${{x3}}$ |\n|---|---|---|---|\n| $P(X=x_k)$ | ${{eval:a/10;d}}$ | ${{eval:b/10;d}}$ | ${{eval:c/10;d}}$ |\n\nOn a simulé un échantillon de taille ${{eval:n}}$ de $X$ : la moyenne de l'échantillon est $m={{eval:E+t/100;d}}$.\n\nCalcule l'écart entre $m$ et l'espérance de $X$, c'est-à-dire $|m-E(X)|$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$|m-E(X)|=?$",
+			"variables": [
+				{
+					"name": "x1",
+					"expression": "-4..4"
+				},
+				{
+					"name": "d1",
+					"expression": "1..4"
+				},
+				{
+					"name": "d2",
+					"expression": "1..4"
+				},
+				{
+					"name": "x2",
+					"expression": "{{eval:x1+d1}}"
+				},
+				{
+					"name": "x3",
+					"expression": "{{eval:x2+d2}}"
+				},
+				{
+					"name": "a",
+					"expression": "1..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{eval:9-a}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:10-a-b}}"
+				},
+				{
+					"name": "S",
+					"expression": "{{eval:a*(x1)+b*(x2)+c*(x3)}}"
+				},
+				{
+					"name": "Q",
+					"expression": "{{eval:a*(x1)^2+b*(x2)^2+c*(x3)^2}}"
+				},
+				{
+					"name": "E",
+					"expression": "{{eval:S/10}}"
+				},
+				{
+					"name": "t",
+					"expression": "-60..60"
+				},
+				{
+					"name": "n",
+					"expression": "100|200|500|1000"
+				}
+			],
+			"conditions": ["t != 0", "mod(t,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:abs(t)/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$E(X)=\\sum p_k x_k={{eval:a/10;d}}\\times {{eval:x1;()}}+{{eval:b/10;d}}\\times {{eval:x2;()}}+{{eval:c/10;d}}\\times {{eval:x3;()}}={{eval:E;d}}$.",
+					"$|m-E(X)|=|{{eval:E+t/100;d}}-{{eval:E;d;()}}|=|{{eval:t/100;d}}|=\\textcolor{{{color:primary.0}}}{{{eval:abs(t)/100;d}}}$.",
+					"La moyenne de l'échantillon est proche de l'espérance sans lui être égale : elle fluctue d'un échantillon à l'autre."
+				]
+			}
+		},
+		{
+			"statement": "On simule des échantillons de taille $n$ d'une variable aléatoire $X$ d'espérance ${{eval:mu}}$, et on note $m$ la moyenne de chaque échantillon. En général, quand la taille $n$ de l'échantillon augmente, l'écart $|m-{{eval:mu}}|$ :\n\n```choix\n- devient plus petit\n- devient plus grand\n- est toujours nul\n- ne dépend pas de $n$\n```",
+			"variables": [
+				{
+					"name": "mu",
+					"expression": "2..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La moyenne d'un échantillon fluctue autour de l'espérance, et d'autant moins que l'échantillon est grand.",
+					"En général, l'écart $\\textcolor{{{color:primary.0}}}{\\text{devient plus petit}}$ quand $n$ augmente ; il n'est pas nul pour autant."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "E = 2, m = 2,35 : écart 0,35",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "1",
+				"d1": "1",
+				"d2": "1",
+				"a": "3",
+				"b": "4",
+				"t": "35",
+				"n": "100"
+			},
+			"answers": ["0{,}35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "E = 2, m = 1,77 : écart 0,23",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "1",
+				"d1": "1",
+				"d2": "1",
+				"a": "3",
+				"b": "4",
+				"t": "-23",
+				"n": "100"
+			},
+			"answers": ["0{,}23"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : écart négatif",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "1",
+				"d1": "1",
+				"d2": "1",
+				"a": "3",
+				"b": "4",
+				"t": "-23",
+				"n": "100"
+			},
+			"answers": ["-0{,}23"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : m recopiée",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "1",
+				"d1": "1",
+				"d2": "1",
+				"a": "3",
+				"b": "4",
+				"t": "35",
+				"n": "100"
+			},
+			"answers": ["2{,}35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Plus petit",
+			"variationIndex": 1,
+			"variables": {
+				"mu": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : toujours nul",
+			"variationIndex": 1,
+			"variables": {
+				"mu": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

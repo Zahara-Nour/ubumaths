@@ -1,0 +1,211 @@
+{
+	"title": "Valeurs possibles d'une variable aléatoire",
+	"description": "Modéliser une situation par une variable aléatoire et donner ses valeurs possibles, dans l'ordre croissant (deux pièces, urne avec mise, dé)",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Variables aléatoires",
+	"subdomain": "Modéliser par une variable aléatoire",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On lance deux pièces équilibrées. Chaque pile obtenu fait gagner ${{eval:a}}$ € au joueur et chaque face lui fait perdre ${{eval:b}}$ €. On note $X$ le gain algébrique du joueur, en euros.\n\nDonne les valeurs possibles de $X$, rangées dans l'ordre croissant.\n\n$?$ ; $?$ ; $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..6"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-2*b}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a-b}}"
+				},
+				{
+					"expectedAnswer": "{{eval:2*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le joueur peut obtenir deux faces, un pile et une face (dans un ordre ou dans l'autre), ou deux piles.",
+					"Deux faces : $X=-2\\times{{eval:b}}={{eval:-2*b}}$. Un pile et une face : $X={{eval:a}}-{{eval:b}}={{eval:a-b}}$. Deux piles : $X=2\\times{{eval:a}}={{eval:2*a}}$.",
+					"Dans l'ordre croissant : $\\textcolor{{{color:primary.0}}}{{{eval:-2*b}}}$ ; $\\textcolor{{{color:primary.0}}}{{{eval:a-b}}}$ ; $\\textcolor{{{color:primary.0}}}{{{eval:2*a}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour jouer, on paie ${{eval:m}}$ €, puis on tire une boule au hasard dans une urne qui contient des boules rouges, vertes et noires. Une boule rouge rapporte ${{eval:a}}$ €, une boule verte rapporte ${{eval:c}}$ €, une boule noire ne rapporte rien. On note $X$ le gain algébrique du joueur (ce qu'il reçoit moins sa mise), en euros.\n\nDonne les valeurs possibles de $X$, rangées dans l'ordre croissant.\n\n$?$ ; $?$ ; $?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..6"
+				},
+				{
+					"name": "a",
+					"expression": "5..15"
+				}
+			],
+			"conditions": ["c < a", "c != m"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-m}}"
+				},
+				{
+					"expectedAnswer": "{{eval:c-m}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a-m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le gain algébrique tient compte de la mise, payée dans tous les cas.",
+					"Boule noire : $X=0-{{eval:m}}={{eval:-m}}$. Boule verte : $X={{eval:c}}-{{eval:m}}={{eval:c-m}}$. Boule rouge : $X={{eval:a}}-{{eval:m}}={{eval:a-m}}$.",
+					"Dans l'ordre croissant : $\\textcolor{{{color:primary.0}}}{{{eval:-m}}}$ ; $\\textcolor{{{color:primary.0}}}{{{eval:c-m}}}$ ; $\\textcolor{{{color:primary.0}}}{{{eval:a-m}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On lance un dé équilibré à six faces. Si l'on obtient $6$, on gagne ${{eval:a}}$ € ; si l'on obtient $4$ ou $5$, on gagne ${{eval:b}}$ € ; sinon, on perd ${{eval:c}}$ €. On note $X$ le gain algébrique, en euros.\n\nDonne les valeurs possibles de $X$, rangées dans l'ordre croissant.\n\n$?$ ; $?$ ; $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "6..12"
+				},
+				{
+					"name": "b",
+					"expression": "1..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-c}}"
+				},
+				{
+					"expectedAnswer": "{{eval:b}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Trois cas : $6$ ; $4$ ou $5$ ; $1$, $2$ ou $3$. Perdre ${{eval:c}}$ € correspond à $X={{eval:-c}}$.",
+					"Dans l'ordre croissant : $\\textcolor{{{color:primary.0}}}{{{eval:-c}}}$ ; $\\textcolor{{{color:primary.0}}}{{{eval:b}}}$ ; $\\textcolor{{{color:primary.0}}}{{{eval:a}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "−6 ; 2 ; 10",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["-6", "2", "10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ordre décroissant",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["10", "2", "-6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : gain de 2 faces positif",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["2", "6", "10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−3 ; 1 ; 7",
+			"variationIndex": 1,
+			"variables": {
+				"m": "3",
+				"c": "4",
+				"a": "10"
+			},
+			"answers": ["-3", "1", "7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : mise oubliée",
+			"variationIndex": 1,
+			"variables": {
+				"m": "3",
+				"c": "4",
+				"a": "10"
+			},
+			"answers": ["0", "4", "10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−2 ; 3 ; 8",
+			"variationIndex": 2,
+			"variables": {
+				"a": "8",
+				"b": "3",
+				"c": "2"
+			},
+			"answers": ["-2", "3", "8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : perte positive",
+			"variationIndex": 2,
+			"variables": {
+				"a": "8",
+				"b": "3",
+				"c": "2"
+			},
+			"answers": ["2", "3", "8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

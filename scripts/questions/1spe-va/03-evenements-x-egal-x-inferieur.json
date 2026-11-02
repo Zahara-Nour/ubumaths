@@ -1,0 +1,181 @@
+{
+	"title": "Événements {X = a} et {X ⩽ a}",
+	"description": "Notations {X = a}, {X ⩽ a}, P(X = a), P(X ⩽ a) : compter les issues de l'événement puis calculer sa probabilité (somme de deux dés à quatre faces, nombre de piles sur trois pièces)",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Variables aléatoires",
+	"subdomain": "Loi d'une variable aléatoire",
+	"level": 5,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On lance deux dés équilibrés à quatre faces, numérotées de $1$ à $4$. L'univers compte $16$ issues équiprobables. On note $X$ la somme des deux numéros obtenus. On s'intéresse à l'événement $\\{X={{eval:s}}\\}$.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nNombre d'issues : $?$\n\n$P(X={{eval:s}})=?$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "3..7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:4-abs(s-5)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(4-abs(s-5))/16}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'événement $\\{X={{eval:s}}\\}$ est formé des issues dont la somme vaut ${{eval:s}}$. On les compte dans le tableau des sommes :\n\n| $+$ | $1$ | $2$ | $3$ | $4$ |\n|---|---|---|---|---|\n| $1$ | $2$ | $3$ | $4$ | $5$ |\n| $2$ | $3$ | $4$ | $5$ | $6$ |\n| $3$ | $4$ | $5$ | $6$ | $7$ |\n| $4$ | $5$ | $6$ | $7$ | $8$ |",
+					"La somme ${{eval:s}}$ apparaît $\\textcolor{{{color:primary.0}}}{{{eval:4-abs(s-5)}}}$ fois.",
+					"Les issues sont équiprobables : $P(X={{eval:s}})=\\dfrac{{{eval:4-abs(s-5)}}}{16}=\\textcolor{{{color:primary.0}}}{{{eval:(4-abs(s-5))/16}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On lance deux dés équilibrés à quatre faces, numérotées de $1$ à $4$. L'univers compte $16$ issues équiprobables. On note $X$ la somme des deux numéros obtenus. On s'intéresse à l'événement $\\{X\\leqslant {{eval:s}}\\}$.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nNombre d'issues : $?$\n\n$P(X\\leqslant {{eval:s}})=?$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "3..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:s*(s-1)/2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:s*(s-1)/32}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'événement $\\{X\\leqslant {{eval:s}}\\}$ est formé des issues dont la somme vaut **au plus** ${{eval:s}}$ : ${{eval:s}}$ compris. On les compte dans le tableau des sommes :\n\n| $+$ | $1$ | $2$ | $3$ | $4$ |\n|---|---|---|---|---|\n| $1$ | $2$ | $3$ | $4$ | $5$ |\n| $2$ | $3$ | $4$ | $5$ | $6$ |\n| $3$ | $4$ | $5$ | $6$ | $7$ |\n| $4$ | $5$ | $6$ | $7$ | $8$ |",
+					"Les sommes inférieures ou égales à ${{eval:s}}$ apparaissent en tout $\\textcolor{{{color:primary.0}}}{{{eval:s*(s-1)/2}}}$ fois.",
+					"Les issues sont équiprobables : $P(X\\leqslant {{eval:s}})=\\dfrac{{{eval:s*(s-1)/2}}}{16}=\\textcolor{{{color:primary.0}}}{{{eval:s*(s-1)/32}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On lance trois pièces équilibrées. L'univers compte $8$ issues équiprobables : $PPP$, $PPF$, $PFP$, $FPP$, $PFF$, $FPF$, $FFP$, $FFF$. On note $X$ le nombre de piles obtenus. On s'intéresse à l'événement $\\{X\\leqslant {{eval:k}}\\}$.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nNombre d'issues : $?$\n\n$P(X\\leqslant {{eval:k}})=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:3*k+1}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(3*k+1)/8}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'événement $\\{X\\leqslant {{eval:k}}\\}$ : « au plus ${{eval:k}}$ {{if:k == 1|pile|piles}} », ${{eval:k}}$ compris.",
+					"Issues : $FFF$, $PFF$, $FPF$, $FFP${{if:k == 2|, $PPF$, $PFP$, $FPP$|}}, soit $\\textcolor{{{color:primary.0}}}{{{eval:3*k+1}}}$ issues.",
+					"Les issues sont équiprobables : $P(X\\leqslant {{eval:k}})=\\dfrac{{{eval:3*k+1}}}{8}=\\textcolor{{{color:primary.0}}}{{{eval:(3*k+1)/8}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "{X = 4} : 3 issues, 3/16",
+			"variationIndex": 0,
+			"variables": {
+				"s": "4"
+			},
+			"answers": ["3", "\\frac{3}{16}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "{X = 5} : décimal 0,25",
+			"variationIndex": 0,
+			"variables": {
+				"s": "5"
+			},
+			"answers": ["4", "0{,}25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sur 8 issues",
+			"variationIndex": 0,
+			"variables": {
+				"s": "4"
+			},
+			"answers": ["3", "\\frac{3}{8}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "{X ⩽ 4} : 6 issues, 3/8",
+			"variationIndex": 1,
+			"variables": {
+				"s": "4"
+			},
+			"answers": ["6", "\\frac{3}{8}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : {X < 4} ou {X = 4}",
+			"variationIndex": 1,
+			"variables": {
+				"s": "4"
+			},
+			"answers": ["3", "\\frac{3}{16}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "{X ⩽ 1} : 4 issues, 1/2",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["4", "\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "{X ⩽ 2} : 7 issues, 0,875",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["7", "0{,}875"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : {X = 1}",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["3", "\\frac{3}{8}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

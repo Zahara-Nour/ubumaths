@@ -1,0 +1,213 @@
+{
+	"title": "De la notation à la phrase",
+	"description": "Symboles → langue naturelle : {X ⩽ a}, P(X > a) (au moins a + 1, X entier), {X < a} (au plus a − 1) ; P(X ⩽ a) est un nombre",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Variables aléatoires",
+	"subdomain": "Notations",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Un élève répond au hasard aux ${{eval:n}}$ questions d'un QCM. On note $X$ le nombre de bonnes réponses qu'il obtient.\n\nL'événement $\\{X\\leqslant {{eval:a}}\\}$ est l'événement :\n\n```choix\n- « l'élève obtient au plus ${{eval:a}}$ bonnes réponses »\n- « l'élève obtient moins de ${{eval:a}}$ bonnes réponses »\n- « l'élève obtient au moins ${{eval:a}}$ bonnes réponses »\n- « l'élève obtient exactement ${{eval:a}}$ bonnes réponses »\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "8..12"
+				},
+				{
+					"name": "a",
+					"expression": "3..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$X\\leqslant {{eval:a}}$ : ${{eval:a}}$ bonnes réponses ou moins, ${{eval:a}}$ compris.",
+					"C'est « l'élève obtient $\\textcolor{{{color:primary.0}}}{\\text{au plus } {{eval:a}}}$ bonnes réponses »."
+				]
+			}
+		},
+		{
+			"statement": "Un élève répond au hasard aux ${{eval:n}}$ questions d'un QCM. On note $X$ le nombre de bonnes réponses qu'il obtient.\n\n$P(X>{{eval:a}})$ est la probabilité que :\n\n```choix\n- l'élève obtienne au moins ${{eval:a+1}}$ bonnes réponses\n- l'élève obtienne au moins ${{eval:a}}$ bonnes réponses\n- l'élève obtienne au plus ${{eval:a}}$ bonnes réponses\n- l'élève obtienne plus de ${{eval:a+1}}$ bonnes réponses\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "8..12"
+				},
+				{
+					"name": "a",
+					"expression": "3..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$X>{{eval:a}}$ : strictement plus de ${{eval:a}}$ bonnes réponses. $X$ ne prend que des valeurs entières : c'est ${{eval:a+1}}$ bonnes réponses ou plus.",
+					"C'est la probabilité que l'élève obtienne $\\textcolor{{{color:primary.0}}}{\\text{au moins } {{eval:a+1}}}$ bonnes réponses."
+				]
+			}
+		},
+		{
+			"statement": "Un élève répond au hasard aux ${{eval:n}}$ questions d'un QCM. On note $X$ le nombre de bonnes réponses qu'il obtient.\n\nL'événement $\\{X<{{eval:a}}\\}$ est l'événement :\n\n```choix\n- « l'élève obtient au plus ${{eval:a-1}}$ bonnes réponses »\n- « l'élève obtient au plus ${{eval:a}}$ bonnes réponses »\n- « l'élève obtient au moins ${{eval:a-1}}$ bonnes réponses »\n- « l'élève obtient moins de ${{eval:a-1}}$ bonnes réponses »\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "8..12"
+				},
+				{
+					"name": "a",
+					"expression": "3..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$X<{{eval:a}}$ : strictement moins de ${{eval:a}}$ bonnes réponses. $X$ ne prend que des valeurs entières : c'est ${{eval:a-1}}$ bonnes réponses ou moins.",
+					"C'est « l'élève obtient $\\textcolor{{{color:primary.0}}}{\\text{au plus } {{eval:a-1}}}$ bonnes réponses »."
+				]
+			}
+		},
+		{
+			"statement": "Un élève répond au hasard aux ${{eval:n}}$ questions d'un QCM. On note $X$ le nombre de bonnes réponses qu'il obtient.\n\nQue désigne l'écriture $P(X\\leqslant {{eval:a}})$ ?\n\n```choix\n- un nombre compris entre $0$ et $1$\n- un événement\n- une valeur prise par $X$\n- un nombre de bonnes réponses\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "8..12"
+				},
+				{
+					"name": "a",
+					"expression": "3..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\{X\\leqslant {{eval:a}}\\}$ est un événement ; $P(X\\leqslant {{eval:a}})$ est sa probabilité.",
+					"C'est donc $\\textcolor{{{color:primary.0}}}{\\text{un nombre compris entre } 0 \\text{ et } 1}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "{X ⩽ a} : au plus",
+			"variationIndex": 0,
+			"variables": {
+				"n": "10",
+				"a": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : moins de",
+			"variationIndex": 0,
+			"variables": {
+				"n": "10",
+				"a": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "P(X > a) : au moins a + 1",
+			"variationIndex": 1,
+			"variables": {
+				"n": "10",
+				"a": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : au moins a",
+			"variationIndex": 1,
+			"variables": {
+				"n": "10",
+				"a": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "{X < a} : au plus a − 1",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10",
+				"a": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : au plus a",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10",
+				"a": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "P(X ⩽ a) : un nombre",
+			"variationIndex": 3,
+			"variables": {
+				"n": "10",
+				"a": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un événement",
+			"variationIndex": 3,
+			"variables": {
+				"n": "10",
+				"a": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

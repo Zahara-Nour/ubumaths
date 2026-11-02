@@ -1,0 +1,204 @@
+{
+	"title": "Fonction Python : moyenne d'un échantillon",
+	"description": "Lire une fonction Python de moyenne (valeur renvoyée pour une liste), compléter sa dernière ligne (return s / n), comprendre ce que renvoie moyenne(1000)",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Variables aléatoires",
+	"subdomain": "Échantillons et simulation",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef moyenne(echantillon):\n    s = 0\n    for x in echantillon:\n        s = s + x\n    return s / len(echantillon)\n```\n\nQue renvoie l'appel `moyenne([{{eval:u}}, {{eval:v}}, {{eval:w}}, {{eval:z}}])` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "0..12"
+				},
+				{
+					"name": "v",
+					"expression": "0..12"
+				},
+				{
+					"name": "w",
+					"expression": "0..12"
+				},
+				{
+					"name": "z",
+					"expression": "0..12"
+				}
+			],
+			"conditions": ["mod(u+v+w+z,4) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(u+v+w+z)/4}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boucle ajoute chaque valeur à `s` : à la fin, $s={{eval:u}}+{{eval:v}}+{{eval:w}}+{{eval:z}}={{eval:u+v+w+z}}$.",
+					"La liste contient $4$ valeurs : la fonction renvoie $\\dfrac{{{eval:u+v+w+z}}}{4}=\\textcolor{{{color:primary.0}}}{{{eval:(u+v+w+z)/4;d}}}$, la moyenne de l'échantillon."
+				]
+			}
+		},
+		{
+			"statement": "La fonction `X` ci-dessous simule une variable aléatoire. La fonction `moyenne` doit renvoyer la moyenne d'un échantillon de taille `n` de cette variable aléatoire.\n\n```python\nfrom random import random\n\ndef X():\n    if random() < 0.{{eval:p}}:\n        return {{eval:g}}\n    return -{{eval:h}}\n\ndef moyenne(n):\n    s = 0\n    for i in range(n):\n        s = s + X()\n    ...\n```\n\nPar quelle instruction faut-il remplacer les points de suspension ?\n\n```choix\n- `return s / n`\n- `return s`\n- `return X() / n`\n- `return s / i`\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "g",
+					"expression": "2..9"
+				},
+				{
+					"name": "h",
+					"expression": "1..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La boucle appelle `n` fois la fonction `X` : `s` est la **somme** des `n` valeurs simulées.",
+					"La moyenne de l'échantillon est cette somme divisée par l'effectif `n` : $\\textcolor{{{color:primary.0}}}{\\texttt{return s / n}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère le programme Python suivant.\n\n```python\nfrom random import random\n\ndef X():\n    if random() < 0.{{eval:p}}:\n        return {{eval:g}}\n    return -{{eval:h}}\n\ndef moyenne(n):\n    s = 0\n    for i in range(n):\n        s = s + X()\n    return s / n\n```\n\nQue renvoie l'appel `moyenne(1000)` ?\n\n```choix\n- la moyenne d'un échantillon de taille $1000$ de la variable aléatoire simulée par `X`\n- l'espérance exacte de la variable aléatoire simulée par `X`\n- la somme de $1000$ valeurs de la variable aléatoire simulée par `X`\n- la probabilité que `X()` renvoie ${{eval:g}}$\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "g",
+					"expression": "2..9"
+				},
+				{
+					"name": "h",
+					"expression": "1..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`moyenne(1000)` simule $1000$ valeurs de la variable aléatoire, les additionne, puis divise par $1000$.",
+					"C'est $\\textcolor{{{color:primary.0}}}{\\text{la moyenne d'un échantillon de taille } 1000}$ : un nombre qui change d'un appel à l'autre, en général proche de l'espérance sans lui être égal."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Moyenne de 3, 8, 5, 1 = 4,25",
+			"variationIndex": 0,
+			"variables": {
+				"u": "3",
+				"v": "8",
+				"w": "5",
+				"z": "1"
+			},
+			"answers": ["4{,}25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En fraction",
+			"variationIndex": 0,
+			"variables": {
+				"u": "3",
+				"v": "8",
+				"w": "5",
+				"z": "1"
+			},
+			"answers": ["\\frac{17}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la somme",
+			"variationIndex": 0,
+			"variables": {
+				"u": "3",
+				"v": "8",
+				"w": "5",
+				"z": "1"
+			},
+			"answers": ["17"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "return s / n",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3",
+				"g": "5",
+				"h": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : return s",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3",
+				"g": "5",
+				"h": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Moyenne d'un échantillon",
+			"variationIndex": 2,
+			"variables": {
+				"p": "3",
+				"g": "5",
+				"h": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'espérance exacte",
+			"variationIndex": 2,
+			"variables": {
+				"p": "3",
+				"g": "5",
+				"h": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
