@@ -1,0 +1,166 @@
+{
+	"title": "Compléter un tableau croisé avec une fréquence conditionnelle",
+	"description": "Marges données et « p % des filles » : cases du tableau croisé",
+	"grades": ["2"],
+	"theme": "Statistiques",
+	"domain": "Tableaux croisés",
+	"subdomain": "Fréquences conditionnelles",
+	"level": 3,
+	"delay": 150,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans un lycée, on a relevé le sexe et le régime des élèves. On sait que **${{pf}}\\,\\%$ des filles** sont internes.\n\n```tableau-croise\nlignes: Filles ; Garçons\ncolonnes: Interne ; Externe\nFilles = {{fi}} ; {{fx}}\nGarçons = {{gi}} ; {{gx}}\ncoin: Sexe \\ Régime\nmasquer: Filles/Interne ; Filles/Externe ; Garçons/Interne ; Garçons/Externe\n```\n\nComplète le tableau.\n\nFilles internes : $?$\n\nGarçons internes : $?$\n\nGarçons externes : $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..8"
+				},
+				{
+					"name": "r",
+					"expression": "2..12"
+				},
+				{
+					"name": "pf",
+					"expression": "eval:5*(r)"
+				},
+				{
+					"name": "b",
+					"expression": "3..8"
+				},
+				{
+					"name": "tf",
+					"expression": "eval:20*(a)"
+				},
+				{
+					"name": "tg",
+					"expression": "eval:20*(b)"
+				},
+				{
+					"name": "fi",
+					"expression": "eval:(tf)*(pf)/100"
+				},
+				{
+					"name": "gi",
+					"expression": "4..50"
+				},
+				{
+					"name": "fx",
+					"expression": "eval:(tf)-(fi)"
+				},
+				{
+					"name": "gx",
+					"expression": "eval:(tg)-(gi)"
+				},
+				{
+					"name": "ti",
+					"expression": "eval:(fi)+(gi)"
+				},
+				{
+					"name": "tx",
+					"expression": "eval:(fx)+(gx)"
+				},
+				{
+					"name": "nt",
+					"expression": "eval:(tf)+(tg)"
+				}
+			],
+			"conditions": ["gi < tg", "gi != fi"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{fi}}"
+				},
+				{
+					"expectedAnswer": "{{gi}}"
+				},
+				{
+					"expectedAnswer": "{{gx}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« ${{pf}}\\,\\%$ des filles » : le pourcentage porte sur les **${{tf}}$ filles**, pas sur tout le lycée.",
+					"Filles internes : ${{eval:(pf)/100;d}}\\times{{tf}}=\\textcolor{{{color:primary.0}}}{{{fi}}}$.",
+					"Garçons internes : ${{ti}}-{{fi}}=\\textcolor{{{color:primary.0}}}{{{gi}}}$ ; garçons externes : ${{tg}}-{{gi}}=\\textcolor{{{color:primary.0}}}{{{gx}}}$.",
+					"```tableau-croise\nlignes: Filles ; Garçons\ncolonnes: Interne ; Externe\nFilles = {{fi}} ; {{fx}}\nGarçons = {{gi}} ; {{gx}}\ncoin: Sexe \\ Régime\n```"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "30 % de 100 filles = 30 ; 50 − 30 = 20 ; 80 − 20 = 60",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"r": "6",
+				"pf": "30",
+				"b": "4",
+				"tf": "100",
+				"tg": "80",
+				"fi": "30",
+				"gi": "20",
+				"fx": "70",
+				"gx": "60",
+				"ti": "50",
+				"tx": "130",
+				"nt": "180"
+			},
+			"answers": ["30", "20", "60"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 30 % de tout le lycée (54)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"r": "6",
+				"pf": "30",
+				"b": "4",
+				"tf": "100",
+				"tg": "80",
+				"fi": "30",
+				"gi": "20",
+				"fx": "70",
+				"gx": "60",
+				"ti": "50",
+				"tx": "130",
+				"nt": "180"
+			},
+			"answers": ["54", "-4", "84"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 30 % des garçons aussi (24)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"r": "6",
+				"pf": "30",
+				"b": "4",
+				"tf": "100",
+				"tg": "80",
+				"fi": "30",
+				"gi": "20",
+				"fx": "70",
+				"gx": "60",
+				"ti": "50",
+				"tx": "130",
+				"nt": "180"
+			},
+			"answers": ["30", "24", "56"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

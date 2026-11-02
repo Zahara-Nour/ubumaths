@@ -1,0 +1,303 @@
+{
+	"title": "Calculer une fréquence conditionnelle",
+	"description": "Tableau croisé : « parmi les A, fréquence de B », en pourcentage ou en fraction (piège : diviser par le total)",
+	"grades": ["2"],
+	"theme": "Statistiques",
+	"domain": "Tableaux croisés",
+	"subdomain": "Fréquences conditionnelles",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le tableau ci-dessous donne la répartition des élèves d'un lycée selon leur sexe et leur régime.\n\n```tableau-croise\nlignes: Filles ; Garçons\ncolonnes: Externe ; Demi-pensionnaire ; Interne\nFilles = {{f1}} ; {{f2}} ; {{f3}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}}\ncoin: Sexe \\ Régime\n```\n\nParmi les **garçons**, quel pourcentage est demi-pensionnaire ?\n\n$?\\,\\%$",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "8..60"
+				},
+				{
+					"name": "f2",
+					"expression": "8..60"
+				},
+				{
+					"name": "f3",
+					"expression": "8..60"
+				},
+				{
+					"name": "k",
+					"expression": "3..6"
+				},
+				{
+					"name": "q",
+					"expression": "5..14"
+				},
+				{
+					"name": "pg",
+					"expression": "eval:5*(q)"
+				},
+				{
+					"name": "g2",
+					"expression": "eval:20*(k)*(pg)/100"
+				},
+				{
+					"name": "g1",
+					"expression": "3..40"
+				},
+				{
+					"name": "g3",
+					"expression": "eval:20*(k)-(g1)-(g2)"
+				},
+				{
+					"name": "tf",
+					"expression": "eval:(f1)+(f2)+(f3)"
+				},
+				{
+					"name": "tg",
+					"expression": "eval:(g1)+(g2)+(g3)"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:(f1)+(g1)"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:(f2)+(g2)"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:(f3)+(g3)"
+				},
+				{
+					"name": "nt",
+					"expression": "eval:(tf)+(tg)"
+				}
+			],
+			"conditions": ["g3 >= 3", "g2 != g1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{pg}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« Parmi les garçons » : le dénominateur est l'effectif des **garçons**, ${{tg}}$ (colonne Total), pas l'effectif du lycée.",
+					"$\\dfrac{ {{g2}} }{ {{tg}} }={{eval:(pg)/100;d}}=\\textcolor{{{color:primary.0}}}{{{pg}}\\,\\%}$."
+				]
+			}
+		},
+		{
+			"statement": "Le tableau ci-dessous donne la répartition des élèves d'un lycée selon leur sexe et leur régime.\n\n```tableau-croise\nlignes: Filles ; Garçons\ncolonnes: Externe ; Demi-pensionnaire ; Interne\nFilles = {{f1}} ; {{f2}} ; {{f3}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}}\ncoin: Sexe \\ Régime\n```\n\nParmi les **externes**, quelle est la fréquence des filles ? Donne une fraction irréductible ou un nombre décimal.\n\n$?$",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "8..60"
+				},
+				{
+					"name": "f2",
+					"expression": "8..60"
+				},
+				{
+					"name": "f3",
+					"expression": "8..60"
+				},
+				{
+					"name": "g1",
+					"expression": "8..60"
+				},
+				{
+					"name": "g2",
+					"expression": "8..60"
+				},
+				{
+					"name": "g3",
+					"expression": "8..60"
+				},
+				{
+					"name": "tf",
+					"expression": "eval:(f1)+(f2)+(f3)"
+				},
+				{
+					"name": "tg",
+					"expression": "eval:(g1)+(g2)+(g3)"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:(f1)+(g1)"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:(f2)+(g2)"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:(f3)+(g3)"
+				},
+				{
+					"name": "nt",
+					"expression": "eval:(tf)+(tg)"
+				}
+			],
+			"conditions": ["f1 != g1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(f1)/(t1)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« Parmi les externes » : le dénominateur est l'effectif des **externes**, ${{t1}}$ (ligne Total).",
+					"$\\dfrac{ {{f1}} }{ {{t1}} }=\\textcolor{{{color:primary.0}}}{{{eval:(f1)/(t1)}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Parmi 80 garçons, 36 demi-pensionnaires : 45 %",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "30",
+				"f2": "20",
+				"f3": "10",
+				"g1": "20",
+				"g2": "36",
+				"g3": "24",
+				"tf": "60",
+				"tg": "80",
+				"t1": "50",
+				"t2": "56",
+				"t3": "34",
+				"nt": "140",
+				"k": "4",
+				"q": "9",
+				"pg": "45"
+			},
+			"answers": ["45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : divisé par le total (36/140 ≈ 25,7)",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "30",
+				"f2": "20",
+				"f3": "10",
+				"g1": "20",
+				"g2": "36",
+				"g3": "24",
+				"tf": "60",
+				"tg": "80",
+				"t1": "50",
+				"t2": "56",
+				"t3": "34",
+				"nt": "140",
+				"k": "4",
+				"q": "9",
+				"pg": "45"
+			},
+			"answers": ["25.7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : parmi les demi-pensionnaires (36/56 ≈ 64,3)",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "30",
+				"f2": "20",
+				"f3": "10",
+				"g1": "20",
+				"g2": "36",
+				"g3": "24",
+				"tf": "60",
+				"tg": "80",
+				"t1": "50",
+				"t2": "56",
+				"t3": "34",
+				"nt": "140",
+				"k": "4",
+				"q": "9",
+				"pg": "45"
+			},
+			"answers": ["64.3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Parmi 50 externes, 30 filles : 3/5",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "30",
+				"f2": "20",
+				"f3": "10",
+				"g1": "20",
+				"g2": "36",
+				"g3": "24",
+				"tf": "60",
+				"tg": "80",
+				"t1": "50",
+				"t2": "56",
+				"t3": "34",
+				"nt": "140"
+			},
+			"answers": ["\\frac{3}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Parmi 50 externes, 30 filles : 0,6",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "30",
+				"f2": "20",
+				"f3": "10",
+				"g1": "20",
+				"g2": "36",
+				"g3": "24",
+				"tf": "60",
+				"tg": "80",
+				"t1": "50",
+				"t2": "56",
+				"t3": "34",
+				"nt": "140"
+			},
+			"answers": ["0.6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : parmi les filles (30/60 = 1/2)",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "30",
+				"f2": "20",
+				"f3": "10",
+				"g1": "20",
+				"g2": "36",
+				"g3": "24",
+				"tf": "60",
+				"tg": "80",
+				"t1": "50",
+				"t2": "56",
+				"t3": "34",
+				"nt": "140"
+			},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

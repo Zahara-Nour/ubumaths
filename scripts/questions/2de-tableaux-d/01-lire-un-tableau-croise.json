@@ -1,0 +1,345 @@
+{
+	"title": "Lire un tableau croisé d'effectifs",
+	"description": "Tableau croisé sexe × régime : effectif d'une case, d'une marge, effectif total",
+	"grades": ["2"],
+	"theme": "Statistiques",
+	"domain": "Tableaux croisés",
+	"subdomain": "Effectifs",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le tableau ci-dessous donne la répartition des élèves d'un lycée selon leur sexe et leur régime.\n\n```tableau-croise\nlignes: Filles ; Garçons\ncolonnes: Externe ; Demi-pensionnaire ; Interne\nFilles = {{f1}} ; {{f2}} ; {{f3}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}}\ncoin: Sexe \\ Régime\n```\n\nCombien de filles sont demi-pensionnaires ?\n\n$?$ filles",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "8..60"
+				},
+				{
+					"name": "f2",
+					"expression": "8..60"
+				},
+				{
+					"name": "f3",
+					"expression": "8..60"
+				},
+				{
+					"name": "g1",
+					"expression": "8..60"
+				},
+				{
+					"name": "g2",
+					"expression": "8..60"
+				},
+				{
+					"name": "g3",
+					"expression": "8..60"
+				},
+				{
+					"name": "tf",
+					"expression": "eval:(f1)+(f2)+(f3)"
+				},
+				{
+					"name": "tg",
+					"expression": "eval:(g1)+(g2)+(g3)"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:(f1)+(g1)"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:(f2)+(g2)"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:(f3)+(g3)"
+				},
+				{
+					"name": "nt",
+					"expression": "eval:(tf)+(tg)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{f2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une case du tableau croise une **ligne** (le sexe) et une **colonne** (le régime).",
+					"Ligne « Filles », colonne « Demi-pensionnaire » : $\\textcolor{{{color:primary.0}}}{{{f2}}}$ filles."
+				]
+			}
+		},
+		{
+			"statement": "Le tableau ci-dessous donne la répartition des élèves d'un lycée selon leur sexe et leur régime.\n\n```tableau-croise\nlignes: Filles ; Garçons\ncolonnes: Externe ; Demi-pensionnaire ; Interne\nFilles = {{f1}} ; {{f2}} ; {{f3}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}}\ncoin: Sexe \\ Régime\n```\n\nCombien d'élèves du lycée sont internes ?\n\n$?$ élèves",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "8..60"
+				},
+				{
+					"name": "f2",
+					"expression": "8..60"
+				},
+				{
+					"name": "f3",
+					"expression": "8..60"
+				},
+				{
+					"name": "g1",
+					"expression": "8..60"
+				},
+				{
+					"name": "g2",
+					"expression": "8..60"
+				},
+				{
+					"name": "g3",
+					"expression": "8..60"
+				},
+				{
+					"name": "tf",
+					"expression": "eval:(f1)+(f2)+(f3)"
+				},
+				{
+					"name": "tg",
+					"expression": "eval:(g1)+(g2)+(g3)"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:(f1)+(g1)"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:(f2)+(g2)"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:(f3)+(g3)"
+				},
+				{
+					"name": "nt",
+					"expression": "eval:(tf)+(tg)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{t3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Tous les internes, filles et garçons : c'est la case de la ligne **Total**, colonne « Interne ».",
+					"${{f3}}+{{g3}}=\\textcolor{{{color:primary.0}}}{{{t3}}}$ élèves."
+				]
+			}
+		},
+		{
+			"statement": "Le tableau ci-dessous donne la répartition des élèves d'un lycée selon leur sexe et leur régime.\n\n```tableau-croise\nlignes: Filles ; Garçons\ncolonnes: Externe ; Demi-pensionnaire ; Interne\nFilles = {{f1}} ; {{f2}} ; {{f3}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}}\ncoin: Sexe \\ Régime\ntotaux: non\n```\n\nCombien d'élèves compte le lycée ?\n\n$?$ élèves",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "8..60"
+				},
+				{
+					"name": "f2",
+					"expression": "8..60"
+				},
+				{
+					"name": "f3",
+					"expression": "8..60"
+				},
+				{
+					"name": "g1",
+					"expression": "8..60"
+				},
+				{
+					"name": "g2",
+					"expression": "8..60"
+				},
+				{
+					"name": "g3",
+					"expression": "8..60"
+				},
+				{
+					"name": "tf",
+					"expression": "eval:(f1)+(f2)+(f3)"
+				},
+				{
+					"name": "tg",
+					"expression": "eval:(g1)+(g2)+(g3)"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:(f1)+(g1)"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:(f2)+(g2)"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:(f3)+(g3)"
+				},
+				{
+					"name": "nt",
+					"expression": "eval:(tf)+(tg)"
+				}
+			],
+			"conditions": ["f3 != g3"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{nt}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque élève est compté dans **une seule** case : on additionne les six cases.",
+					"${{f1}}+{{f2}}+{{f3}}+{{g1}}+{{g2}}+{{g3}}=\\textcolor{{{color:primary.0}}}{{{nt}}}$ élèves."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Filles demi-pensionnaires : 55",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "40",
+				"f2": "55",
+				"f3": "15",
+				"g1": "35",
+				"g2": "45",
+				"g3": "20",
+				"tf": "110",
+				"tg": "100",
+				"t1": "75",
+				"t2": "100",
+				"t3": "35",
+				"nt": "210"
+			},
+			"answers": ["55"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : garçons demi-pensionnaires (45)",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "40",
+				"f2": "55",
+				"f3": "15",
+				"g1": "35",
+				"g2": "45",
+				"g3": "20",
+				"tf": "110",
+				"tg": "100",
+				"t1": "75",
+				"t2": "100",
+				"t3": "35",
+				"nt": "210"
+			},
+			"answers": ["45"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Internes : 35",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "40",
+				"f2": "55",
+				"f3": "15",
+				"g1": "35",
+				"g2": "45",
+				"g3": "20",
+				"tf": "110",
+				"tg": "100",
+				"t1": "75",
+				"t2": "100",
+				"t3": "35",
+				"nt": "210"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : filles internes seulement (15)",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "40",
+				"f2": "55",
+				"f3": "15",
+				"g1": "35",
+				"g2": "45",
+				"g3": "20",
+				"tf": "110",
+				"tg": "100",
+				"t1": "75",
+				"t2": "100",
+				"t3": "35",
+				"nt": "210"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Total : 210",
+			"variationIndex": 2,
+			"variables": {
+				"f1": "40",
+				"f2": "55",
+				"f3": "15",
+				"g1": "35",
+				"g2": "45",
+				"g3": "20",
+				"tf": "110",
+				"tg": "100",
+				"t1": "75",
+				"t2": "100",
+				"t3": "35",
+				"nt": "210"
+			},
+			"answers": ["210"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : filles seulement (110)",
+			"variationIndex": 2,
+			"variables": {
+				"f1": "40",
+				"f2": "55",
+				"f3": "15",
+				"g1": "35",
+				"g2": "45",
+				"g3": "20",
+				"tf": "110",
+				"tg": "100",
+				"t1": "75",
+				"t2": "100",
+				"t3": "35",
+				"nt": "210"
+			},
+			"answers": ["110"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
