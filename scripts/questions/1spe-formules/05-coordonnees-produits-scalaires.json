@@ -1,0 +1,236 @@
+{
+	"title": "Coordonnées et produits scalaires",
+	"description": "Utiliser x = u·i et y = u·j dans une base orthonormée (i, j) : coordonnées à partir des produits scalaires, produit scalaire avec un vecteur de la base, et la formule parmi des erreurs typiques",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Produit scalaire",
+	"subdomain": "Propriétés",
+	"level": 10,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le plan est muni d'une base orthonormée $(\\vec{i},\\vec{j})$. Un vecteur $\\vec{u}$ vérifie $\\vec{u}\\cdot \\vec{i}={{a}}$ et $\\vec{u}\\cdot \\vec{j}={{b}}$.\n\nDonne les coordonnées de $\\vec{u}$.\n\n$\\vec{u}(?\\,;\\,?)$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans une base orthonormée $(\\vec{i},\\vec{j})$, les coordonnées de $\\vec{u}$ sont $x=\\vec{u}\\cdot \\vec{i}$ et $y=\\vec{u}\\cdot \\vec{j}$.",
+					"En effet, si $\\vec{u}=x\\,\\vec{i}+y\\,\\vec{j}$, alors $\\vec{u}\\cdot \\vec{i}=x\\,\\vec{i}\\cdot \\vec{i}+y\\,\\vec{j}\\cdot \\vec{i}=x$ car $\\vec{i}\\cdot \\vec{i}=1$ et $\\vec{j}\\cdot \\vec{i}=0$.",
+					"Donc $\\vec{u}\\textcolor{{{color:primary.0}}}{({{a}}\\,;\\,{{b}})}$."
+				]
+			}
+		},
+		{
+			"statement": "Le plan est muni d'une base orthonormée $(\\vec{i},\\vec{j})$. On considère le vecteur $\\vec{u}\\begin{pmatrix}{{x}}\\\\{{y}}\\end{pmatrix}$.\n\nCalcule $\\vec{u}\\cdot\\vec{ {{if:w==1|i|j}} }$.\n\n$\\vec{u}\\cdot\\vec{ {{if:w==1|i|j}} }=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "y",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "w",
+					"expression": "0..1"
+				}
+			],
+			"conditions": ["x != y", "x + y != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:w*x+(1-w)*y}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans une base orthonormée $(\\vec{i},\\vec{j})$, $\\vec{u}\\cdot \\vec{i}$ est l'abscisse de $\\vec{u}$ et $\\vec{u}\\cdot \\vec{j}$ son ordonnée.",
+					"Donc $\\vec{u}\\cdot\\vec{ {{if:w==1|i|j}} }=\\textcolor{{{color:primary.0}}}{{{eval:w*x+(1-w)*y}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le plan est muni d'une base orthonormée $(\\vec{i},\\vec{j})$. Pour un vecteur $\\vec{u}\\begin{pmatrix}x\\\\y\\end{pmatrix}$, l'abscisse $x$ est égale à :\n\n```choix\n- $\\vec{u}\\cdot \\vec{i}$\n- $\\vec{u}\\cdot \\vec{j}$\n- $\\|\\vec{u}\\|$\n- $\\vec{u}\\cdot(\\vec{i}+\\vec{j})$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\vec{u}=x\\,\\vec{i}+y\\,\\vec{j}$, donc $\\vec{u}\\cdot \\vec{i}=x\\,\\vec{i}\\cdot \\vec{i}+y\\,\\vec{j}\\cdot \\vec{i}$.",
+					"La base est orthonormée : $\\vec{i}\\cdot \\vec{i}=1$ et $\\vec{j}\\cdot \\vec{i}=0$, donc $x=\\textcolor{{{color:primary.0}}}{\\vec{u}\\cdot \\vec{i}}$ (et $y=\\vec{u}\\cdot \\vec{j}$)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(3 ; −5)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "-5"
+			},
+			"answers": ["3", "-5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : coordonnées échangées",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "-5"
+			},
+			"answers": ["-5", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u·i = 4",
+			"variationIndex": 1,
+			"variables": {
+				"x": "4",
+				"y": "-3",
+				"w": "1"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ordonnée au lieu de l'abscisse",
+			"variationIndex": 1,
+			"variables": {
+				"x": "4",
+				"y": "-3",
+				"w": "1"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x + y",
+			"variationIndex": 1,
+			"variables": {
+				"x": "4",
+				"y": "-3",
+				"w": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : norme",
+			"variationIndex": 1,
+			"variables": {
+				"x": "4",
+				"y": "-3",
+				"w": "1"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u·j = −3",
+			"variationIndex": 1,
+			"variables": {
+				"x": "4",
+				"y": "-3",
+				"w": "0"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : abscisse au lieu de l'ordonnée",
+			"variationIndex": 1,
+			"variables": {
+				"x": "4",
+				"y": "-3",
+				"w": "0"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u·i",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : u·j",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ‖u‖",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : u·(i + j)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

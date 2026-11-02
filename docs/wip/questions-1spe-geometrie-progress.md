@@ -10,20 +10,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2242 (mergée, migration appliquée en prod par David)._
+_Mis à jour le 2026-11-02, lot formules écrit (PR des fichiers à ouvrir)._
 
-- **État** : 6b en prod, 7 brouillons rangés (relu au MCP : nœud du point, 1 tag chacun) : 4f8c7b91 (412),
-  7bf472bc (310), 24ca7584 (313), 52a3ad9b (311), 9af16245 (415), 71205949 (316), 47d451b4 (329). Page à cocher
-  publiée : https://claude.ai/artifact/3v9Z4Yu1kvxdAcvEZ3gt7p (collection `verdicts`, vide à la publication).
-- **6b CLOS** : 7/7 « OK » sur la page à cocher, publiés par David (`publier-lot --publier`), `published` relu au
-  MCP le 2026-11-02.
-- **Prochaine action** : lot formules (413, 414, 314, 315, 416) : phase 0 (relever les niveaux des catégories
-  voisines après le 6b), nouveau worktree `ubumaths-wt-questions-1spe-geometrie`, branche neuve.
-- **En attente de David** : rien.
-- **Pièges en cours** : `pnpm migration:horodatage` sans `-s` ; KaTeX absent du dépôt, sonde de formules par
-  `mathlive-ssr` (`validateLatex`). `db:migrate` refusé par le classifieur du mode auto → David le lance (`!`).
-  CI : shard client coupé (« Browser connection was closed ») = panne, `gh run rerun --failed`.
-- **Worktree / branche** : aucun (`feat/questions-1spe-savoir-b-tags` mergée, worktree retiré).
+- **État** : 6b CLOS (7 publiés). Lot formules : phase 0 validée (« je valide »), 5 modèles écrits
+  (`scripts/questions/1spe-formules/`, Propriétés 6-10), 62 specs vertes, 290 formules sondées, essai local joué.
+- **Prochaine action** : PR des fichiers (revue : aucune, contenu) → merge → David lance `create-questions --dir
+scripts/questions/1spe-formules --publier` depuis le dépôt principal → migration nœud + tag (gabarit 6b).
+- **En attente de David** : rien avant le merge.
+- **Pièges en cours** : `validateLatex` ne voit PAS les accolades déséquilibrées (compte à part dans la sonde) ;
+  worktree neuf → `pnpm exec svelte-kit sync` avant `question:specs` (`$lib` introuvable) ; `create-questions`
+  vise la PROD sans `set -a; . ./.env.local; set +a`. `db:migrate` → David (`!`). Shard client coupé → rerun.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-geometrie`, `content/questions-1spe-formules`.
 
 ---
 
@@ -108,3 +105,38 @@ Géométrie › Produit scalaire › expressions du produit scalaire ; 311, 415 
 longueurs ; 329 → Géométrie › Géométrie repérée › équation de cercle. Migration `20261102173610` (gabarit 6a) et test
 `tests/integration/questions-1spe-savoir-b-rangement-tags.test.ts` : 10/10, rouge sans l'étape 4 (« lot incohérent : nœuds
 0/7 »). `security-auditor` : aucun finding (diff = le lot ; rollback complet ; prod relue ; aucune règle d'accès). PR #2242.
+
+## Lot formules : phase 0 (2026-11-02)
+
+Relevé prod (MCP) : 413, 414, 314, 315, 416 sans modèle ; Produit scalaire publié en entier (À savoir 1-6, Calculer
+1-5, Propriétés 1-5, Angles et longueurs 1-3, Lieux de points 2-3). Recouvrements : 74363137 (Propriétés 4, calcul
+direct de ‖u ± v‖², tagué 320, dont les bornes citent ce développement) ; cf08f061 (seconde, norme d'un vecteur).
+
+**Décisions (David, « je valide » sur les recos, 2026-11-02)** :
+
+- **F1** : Propriétés 6 à 10, ordre 413, 315, 416, 414, 314 (modèles qui font APPLIQUER la formule ; À savoir garde
+  la récitation), sans renuméroter l'existant.
+- **F2** : 315 et 416 = deux modèles neufs sur la formule elle-même (bon développement, cas orthogonal, calcul à
+  l'envers) ; 74363137 reste tagué 320.
+- **F3** : 414 = modèle neuf de 1re (√n réduite, formule) ; cf08f061 reste en seconde seule.
+- Question d'accès de la migration : aucune (5 brouillons rangés et tagués, aucune règle d'accès).
+
+## Lot formules : écriture (2026-11-02)
+
+Script `docs/wip/questions/lot-1spe-formules.py` → `scripts/questions/1spe-formules/` :
+
+| #   | Point | Niv. | Variation 1                    | Variation 2                          | Variation 3 (choix)         |
+| --- | ----- | ---- | ------------------------------ | ------------------------------------ | --------------------------- |
+| 01  | 413   | 6    | u·v = k → v·u                  | v·u + u·w (k, m donnés)              | AB·AC = AC·AB               |
+| 02  | 315   | 7    | ‖u+v‖² = ‖u‖² + 2u·v + ‖v‖²    | u ⊥ v → a² + b²                      | ‖u‖² à partir de ‖u+v‖² (*) |
+| 03  | 416   | 8    | ‖u−v‖² = ‖u‖² − 2u·v + ‖v‖²    | u ⊥ v → a² + b²                      | ‖u‖² à partir de ‖u−v‖² (*) |
+| 04  | 414   | 9    | triplet pythagoricien → entier | √n réduite (√20 = forme à améliorer) | √(x² + y²)                  |
+| 05  | 314   | 10   | u·i, u·j → u(a ; b) (2 cases)  | u(x ; y) → u·i ou u·j                | x = u·i                     |
+
+(*) Dans 02 et 03, la case choix est la variation 1 et le calcul à l'envers la 3 (ordre du script).
+
+Vérifications : 62 specs (juste + erreurs typiques) ; 1 200 tirages réussis ; 290 formules distinctes des aperçus
+passées à `validateLatex` + compte d'accolades : 0 erreur (la sonde vérifiée sur deux formules fausses) ; corrigés
+relus (`;+` au lieu de « +(−12) », « √N = » seulement si N a un facteur carré). `create-questions` en simulation
+(prod) : 5 / 5 à créer. Base **locale** : 5 brouillons ; joués dans l'aperçu admin : 01 (juste), 04 √2 (juste),
+05 coordonnées échangées (faux, case par case), 02 choix (juste).

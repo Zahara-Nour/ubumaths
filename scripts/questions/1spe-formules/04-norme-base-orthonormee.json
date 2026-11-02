@@ -1,0 +1,304 @@
+{
+	"title": "Norme en base orthonormée",
+	"description": "Utiliser ‖u‖ = √(x² + y²) en base orthonormée : norme entière (triplet pythagoricien), norme exacte en racine réduite, et la formule parmi des erreurs typiques",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Produit scalaire",
+	"subdomain": "Propriétés",
+	"level": 9,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le plan est muni d'une base orthonormée $(\\vec{i},\\vec{j})$. On considère le vecteur $\\vec{u}\\begin{pmatrix}{{x}}\\\\{{y}}\\end{pmatrix}$.\n\nCalcule $\\|\\vec{u}\\|$.\n\n$\\|\\vec{u}\\|=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..4"
+				},
+				{
+					"name": "n",
+					"expression": "1..3"
+				},
+				{
+					"name": "sw",
+					"expression": "0..1"
+				},
+				{
+					"name": "sx",
+					"expression": "1|-1"
+				},
+				{
+					"name": "sy",
+					"expression": "1|-1"
+				},
+				{
+					"name": "x",
+					"expression": "{{eval:sx*(sw*(m^2-n^2)+(1-sw)*2*m*n)}}"
+				},
+				{
+					"name": "y",
+					"expression": "{{eval:sy*(sw*2*m*n+(1-sw)*(m^2-n^2))}}"
+				},
+				{
+					"name": "N",
+					"expression": "{{eval:x^2+y^2}}"
+				},
+				{
+					"name": "R",
+					"expression": "{{eval:m^2+n^2}}"
+				}
+			],
+			"conditions": ["n < m"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{R}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"En base orthonormée, $\\|\\vec{u}\\|^2=\\vec{u}\\cdot \\vec{u}=x^2+y^2$, donc $\\|\\vec{u}\\|=\\sqrt{x^2+y^2}$.",
+					"$\\|\\vec{u}\\|=\\sqrt{ {{x;()}}^2+{{y;()}}^2 }=\\sqrt{ {{eval:x^2}}+{{eval:y^2}} }=\\sqrt{ {{N}} }=\\textcolor{{{color:primary.0}}}{{{R}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le plan est muni d'une base orthonormée $(\\vec{i},\\vec{j})$. On considère le vecteur $\\vec{u}\\begin{pmatrix}{{x}}\\\\{{y}}\\end{pmatrix}$.\n\nCalcule $\\|\\vec{u}\\|$. Donne sa valeur exacte.\n\n$\\|\\vec{u}\\|=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "y",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "N",
+					"expression": "{{eval:x^2+y^2}}"
+				},
+				{
+					"name": "R",
+					"expression": "{{eval:sqrt(N)}}"
+				}
+			],
+			"conditions": ["sqrt(N) != round(sqrt(N))"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{R}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"En base orthonormée, $\\|\\vec{u}\\|^2=\\vec{u}\\cdot \\vec{u}=x^2+y^2$, donc $\\|\\vec{u}\\|=\\sqrt{x^2+y^2}$.",
+					"$\\|\\vec{u}\\|=\\sqrt{ {{x;()}}^2+{{y;()}}^2 }=\\sqrt{ {{eval:x^2}}+{{eval:y^2}} }={{if:N%4==0 or N%9==0 or N%25==0 or N%49==0|\\sqrt{ {{N}} }=\\textcolor{{{color:primary.0}}}{{{R}}}|\\textcolor{{{color:primary.0}}}{{{R}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le plan est muni d'une base orthonormée $(\\vec{i},\\vec{j})$. Pour un vecteur $\\vec{u}\\begin{pmatrix}x\\\\y\\end{pmatrix}$, la norme $\\|\\vec{u}\\|$ est égale à :\n\n```choix\n- $\\sqrt{x^2+y^2}$\n- $x^2+y^2$\n- $\\sqrt{x+y}$\n- $|x|+|y|$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"En base orthonormée, $\\|\\vec{u}\\|^2=\\vec{u}\\cdot \\vec{u}=x\\times x+y\\times y=x^2+y^2$.",
+					"Une norme est positive, donc $\\|\\vec{u}\\|=\\textcolor{{{color:primary.0}}}{\\sqrt{x^2+y^2}}$ ($x^2+y^2$ est son carré)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "√(9 + 16) = 5",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"n": "1",
+				"sw": "1",
+				"sx": "1",
+				"sy": "-1",
+				"x": "3",
+				"y": "-4",
+				"N": "25",
+				"R": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : racine oubliée",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"n": "1",
+				"sw": "1",
+				"sx": "1",
+				"sy": "-1",
+				"x": "3",
+				"y": "-4",
+				"N": "25",
+				"R": "5"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : |x| + |y|",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"n": "1",
+				"sw": "1",
+				"sx": "1",
+				"sy": "-1",
+				"x": "3",
+				"y": "-4",
+				"N": "25",
+				"R": "5"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x + y",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"n": "1",
+				"sw": "1",
+				"sx": "1",
+				"sy": "-1",
+				"x": "3",
+				"y": "-4",
+				"N": "25",
+				"R": "5"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "√20 = 2√5",
+			"variationIndex": 1,
+			"variables": {
+				"x": "2",
+				"y": "-4",
+				"N": "20"
+			},
+			"answers": ["2\\sqrt{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "√20 non réduite",
+			"variationIndex": 1,
+			"variables": {
+				"x": "2",
+				"y": "-4",
+				"N": "20"
+			},
+			"answers": ["\\sqrt{20}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedRadicals"]
+			}
+		},
+		{
+			"description": "Erreur : racine oubliée",
+			"variationIndex": 1,
+			"variables": {
+				"x": "2",
+				"y": "-4",
+				"N": "20"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : |x| + |y|",
+			"variationIndex": 1,
+			"variables": {
+				"x": "2",
+				"y": "-4",
+				"N": "20"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : valeur approchée refusée",
+			"variationIndex": 1,
+			"variables": {
+				"x": "2",
+				"y": "-4",
+				"N": "20"
+			},
+			"answers": ["4,47"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "√(x² + y²)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : racine oubliée",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : √(x + y)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : |x| + |y|",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
