@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2238 et la création des brouillons en prod._
+_Mis à jour le 2026-11-02, après #2243 et son `db:migrate`._
 
-- **État** : lot 7 en prod, 6 brouillons sans nœud ni tag (`id` au § « Lot 7 : création en prod ») ; M6 rangé sur la NOTION « Modèles d'évolution » (D-M6 ci-dessous) ; migration pas encore écrite.
-- **Prochaine action** : migration nœud + tag (copier `20261102083457_questions_tspe_lot4_rangement_tags.sql` et `tests/integration/questions-tspe-lot4-rangement-tags.test.ts`), garde « notion sans sous-notion » levée pour M6 seul ; test rouge puis vert, `security-auditor`, PR, `check:migrations --pr`, merge, `db:migrate` ; puis page à cocher et publication. Lot 8 après `proba` et `espace`.
-- **En attente de David** : rien.
-- **Pièges en cours** : relevé de nœuds → filtrer `archived_at is null` (« pourcentages » était archivée) ; `!=` dans `$…$` lu « ≠ » (écrire `!\,=`).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes`, `feat/questions-tspe-restes-lot7-tags` (depuis `origin/main`).
+- **État** : lot 7 en prod, 6 brouillons rangés et tagués (relu au MCP ; M6 sur la notion « Modèles d'évolution », D-M6) ; pas encore publiés.
+- **Prochaine action** : page à cocher du lot 7 (skill `couvrir-niveau`), relecture par David, puis `publier-lot --publier` (David, `!`). Lot 8 (« à savoir ») après `proba` et `espace`.
+- **En attente de David** : rien (la page à cocher vient d'abord).
+- **Pièges en cours** : relevé de nœuds → filtrer `archived_at is null` ; `!=` dans `$…$` lu « ≠ » (écrire `!\,=`) ; garde « notion sans sous-notion » : liste `sous_notions_admises` (migration `20261102181059`).
+- **Worktree / branche** : aucun (retiré après #2243) ; en créer un neuf depuis `origin/main` pour le lot 8.
 
 ---
 
@@ -138,3 +138,6 @@ Prod relue au MCP avant écriture : 6 brouillons [T_SPE] sans nœud ni tag ; sou
 si « pourcentages » revient, ou si une autre sous-notion arrive, la migration échoue et M6 doit y aller. Test
 `tests/integration/questions-tspe-lot7-rangement-tags.test.ts` : 13 verts ; rouge sans le fichier (8 échecs) et
 rouge avec la garde du lot 4 (M6 refusé, « non admise »).
+
+**Mergé** : #2243 (2026-11-02), `db:migrate` passé seul (`migration list --linked` : aucune autre en attente). Prod relue
+au MCP : les 6 modèles sur leur nœud, un point chacun, `updated_at` inchangé, toujours en brouillon.
