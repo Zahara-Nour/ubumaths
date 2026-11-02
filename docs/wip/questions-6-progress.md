@@ -5,20 +5,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, migration du lot 9 en PR._
+_Mis à jour le 2026-11-02, après #2208._
 
 - **État** : lot 9 « Tableaux et programmes » : 7 brouillons en prod ; migration nœud + tag
-  `20261102070305_questions_6_lot9_rangement_tags.sql` écrite, test 15/15 (rouge vérifié sans elle),
-  `security-auditor` sans bloquant (§ 22.3). Lot 8 publié. 6e : 158 publiés + 1 brouillon (3a7a5711).
-- **Prochaine action** : PR verte → merge → `db:migrate` depuis le dépôt principal (4 conditions réunies) → MCP :
-  7 nœuds + 7 tags, trigger `updated_at` en `O` ; puis page à cocher, publication ; puis lots 10-11 (géométrie
-  dessinée).
-- **En attente de David** : rien.
+  `20261102070305_questions_6_lot9_rangement_tags.sql` mergée (#2208), PAS ENCORE jouée en prod (§ 22.3). Lot 8
+  publié. 6e : 158 publiés + 1 brouillon (3a7a5711).
+- **Prochaine action** : après le `db:migrate` de David, MCP : 7 nœuds + 7 tags, trigger `updated_at` en `O` ;
+  puis page à cocher, publication ; puis lots 10-11 (géométrie dessinée).
+- **En attente de David** : `! pnpm db:migrate` (refusé au mode auto). Il poussera aussi
+  `20261102070008_questions_3_lots7_8_rangement_tags.sql` (chantier questions-3, mergée, en attente) : à
+  coordonner avec ce chantier.
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs --file`. Jamais de
   variable `e`. PR en conflit = pas de CI : vérifier `mergeable`. `db:migrate` refusant « inserted before » :
   `--dry-run --include-all`, relire, puis `--include-all`. `publier-lot` refusé au mode auto : David le lance
   avec `!`. Aperçu admin : Playwright hors dépôt (Chrome refuse localhost).
-- **Worktree / branche** : `ubumaths-wt-questions-6` · `feat/questions-6-lot9-tags`.
+- **Worktree / branche** : aucun (retiré après #2208).
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1375,3 +1376,5 @@ nombre de répétitions accordé à l'angle (4 × 90° carré, 3 × 120° triang
   nominale tombée) ; cas ajouté : sous-notion archivée → résolution refusée.
 - `security-auditor` : aucun bloquant. Remarques faibles déjà vraies au lot 8 : `set local lock_timeout` sans
   effet hors transaction explicite ; rollback atomique seulement en un seul envoi (le commentaire le dit).
+- #2208 mergée (CI verte, `check:migrations --pr` passé), worktree retiré. `migration list --linked` : deux
+  migrations en attente, celle-ci et `20261102070008` (questions-3) ; `db:migrate` laissé à David.
