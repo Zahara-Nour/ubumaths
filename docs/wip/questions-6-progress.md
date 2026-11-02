@@ -5,16 +5,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2208._
+_Mis à jour le 2026-11-02, après #2208 et son `db:migrate`._
 
-- **État** : lot 9 « Tableaux et programmes » : 7 brouillons en prod ; migration nœud + tag
-  `20261102070305_questions_6_lot9_rangement_tags.sql` mergée (#2208), PAS ENCORE jouée en prod (§ 22.3). Lot 8
-  publié. 6e : 158 publiés + 1 brouillon (3a7a5711).
-- **Prochaine action** : après le `db:migrate` de David, MCP : 7 nœuds + 7 tags, trigger `updated_at` en `O` ;
-  puis page à cocher, publication ; puis lots 10-11 (géométrie dessinée).
-- **En attente de David** : `! pnpm db:migrate` (refusé au mode auto). Il poussera aussi
-  `20261102070008_questions_3_lots7_8_rangement_tags.sql` (chantier questions-3, mergée, en attente) : à
-  coordonner avec ce chantier.
+- **État** : lot 9 « Tableaux et programmes » : 7 brouillons en prod, rangés et tagués (migration jouée, MCP vérifié,
+  § 22.4). Page à cocher publiée : https://claude.ai/artifact/LzKMxYtkr4YUghfHoibJCH (0 verdict). Lot 8 publié.
+  6e : 158 publiés + 8 brouillons (7 du lot 9 + 3a7a5711).
+- **Prochaine action** : lire `verdicts` (ArtifactData), compter 7 ; « À revoir » → corriger (§ 7). Puis
+  `publier-lot` en simulation, David `--publier` ; puis lots 10-11 (géométrie dessinée).
+- **En attente de David** : relecture de la page à cocher (blocs `scratch` non dessinés : les jouer dans l'aperçu).
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs --file`. Jamais de
   variable `e`. PR en conflit = pas de CI : vérifier `mergeable`. `db:migrate` refusant « inserted before » :
   `--dry-run --include-all`, relire, puis `--include-all`. `publier-lot` refusé au mode auto : David le lance
@@ -1378,3 +1376,12 @@ nombre de répétitions accordé à l'angle (4 × 90° carré, 3 × 120° triang
   effet hors transaction explicite ; rollback atomique seulement en un seul envoi (le commentaire le dit).
 - #2208 mergée (CI verte, `check:migrations --pr` passé), worktree retiré. `migration list --linked` : deux
   migrations en attente, celle-ci et `20261102070008` (questions-3) ; `db:migrate` laissé à David.
+
+### 22.4 Rangement en prod et page à cocher (2026-11-02)
+
+- `migration list --linked` : 20261102070305 et 20261102070008 (questions-3) jouées. MCP : les 7 en brouillon, `['6']`,
+  nœud = celui de leur point (suites de motifs ; tableaux ×2 ; Situations de proportionnalité ; Préalgorithmique ×3),
+  un tag chacun (6-143, 6-184, 6-185, 6-192, 6-194, 6-195, 6-196), `updated_at` d'avant la migration, trigger `O`.
+- Page à cocher générée depuis `main` (12e63a739), publiée (`db`, 0 verdict) :
+  https://claude.ai/artifact/LzKMxYtkr4YUghfHoibJCH. Alerte sur 05-07 : bloc `scratch` non dessiné (le jouer dans
+  l'aperçu).
