@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 6a écrit (PR des fichiers ouverte)._
+_Mis à jour le 2026-11-02, lot 6a rangé en prod (après #2228), page à cocher publiée._
 
-- **État** : lot 6 « à savoir » (D2, D29) : 6a (264, 391, 392, 290, 404, 336, 350) écrit, PR des fichiers ouverte ; 6b (412, 310, 313, 311, 415, 316, 329) à écrire.
-- **Prochaine action** : merger la PR 6a, puis David lance `create-questions --publier` sur `scripts/questions/1spe-savoir-a` ; relever les `id`, migration nœud + tags (catégories neuves « À savoir »).
-- **En attente de David** : `create-questions --publier` après le merge.
-- **Pièges en cours** : **pas de `cleanCoefficients` sur un modèle sans variable** (`\sigma(X)` rendu « σX ») ; `blankDefaults.acceptDecimal` obligatoire (réponses numériques) ; **variable `e` = Euler** ; choix mélangés → jamais « première phrase » dans un corrigé ; `col()` hors `$…$` (`colt`) ; `Doc-inchangée:` dans un COMMIT (≤ 100 caractères) ; aucun trailer `Claude-Session:` ; `--include-all` pousse TOUTES les migrations en attente.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `feat/questions-1spe-lot6a`.
+- **État** : lot 6 « à savoir » (D2, D29) : 6a (264, 391, 392, 290, 404, 336, 350) en prod, 7 brouillons rangés et tagués ; page à cocher https://claude.ai/artifact/Y21yTgK4VdnefixEr5kfCV ; 6b (412, 310, 313, 311, 415, 316, 329) à écrire.
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 7), puis `publier-lot` en simulation sur `scripts/questions/1spe-savoir-a` ; ensuite lot 6b (même gabarit, `lot-1spe-savoir-a.py`).
+- **En attente de David** : relecture de la page à cocher, puis `publier-lot --publier`.
+- **Pièges en cours** : **pas de `cleanCoefficients` sur un modèle sans variable** (`\sigma(X)` rendu « σX ») ; `blankDefaults.acceptDecimal` obligatoire (réponses numériques) ; **variable `e` = Euler** ; choix mélangés → jamais « première phrase » dans un corrigé ; `col()` hors `$…$` (`colt`) ; `Doc-inchangée:` dans un COMMIT (≤ 100 caractères) ; aucun trailer `Claude-Session:` ; worktree non lié à Supabase → copier `supabase/.temp/{project-ref,linked-project.json,pooler-url,postgres-version}` du dépôt principal avant `migration list --linked`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe` (détaché sur `origin/main`, à recréer en branche pour 6b).
 - **Ensuite (D7)** : lot 6b, restes (produit scalaire formules, second degré / exponentielle / trigo, logique et listes Python), lots en attente d'un outil.
 
 ## 1. Relevé (prod, 2026-10-27)
@@ -1157,3 +1157,15 @@ inverse de 392 sur ]0 ; +∞[ (l'ensemble de dérivabilité reste à d2bca2d8).
 **Piège du lot** : `cleanCoefficients` lit `\sigma(X)` comme le produit σ·(X) et le rend « σX » (V(X), f(x) intacts). Lot
 sans variable → option retirée. Prod non touchée : les 5 modèles publiés qui écrivent `\sigma(…)` (35ad8891, bad86bec,
 aced2e6c, 38001c3f, 71cb8ab7) n'ont pas l'option (relevé MCP du 2026-11-02).
+
+PR #2224 (fichiers) mergée le 2026-11-02. **Création en prod (David, 2026-11-02, 09 h 05 UTC)** : 7 brouillons, sans nœud ni tag
+(relevé MCP) — a181f10b (264), a16a9bba (391), 7201f3b2 (392), c24d21e1 (290), 56ec6a7c (404), 21f42c7f (336), fba01378 (350).
+Migration `20261102090607_questions_1spe_savoir_a_rangement_tags` (gabarit lot 5) ; test d'intégration 10/10, rouge 2/10 sans
+l'étape 4 ; `security-auditor` : aucun finding (diff avec le gabarit = les lignes du lot ; prod relue) ; `check:migrations --pr
+2228` vert ; #2228 mergée (CI 16/16) après la fin d'un `deploy:prod`. `db:migrate` lancé par David depuis le worktree : refusé
+(versions distantes 20261102090404 et 20261102091820 absentes du dossier local, worktree en retard) ; après `fetch`, plus aucun
+écart : la migration avait été appliquée entre-temps par un `db push` d'une autre session. Relu en base (MCP) : version
+20261102090607 enregistrée, 7 modèles sur le nœud de leur point, un tag chacun, `draft`, `updated_at` = `created_at`, trigger `O`.
+
+**Page à cocher** : https://claude.ai/artifact/Y21yTgK4VdnefixEr5kfCV (7 fiches, aucune alerte ; collection `verdicts` vide à
+la publication ; rendu vérifié à 390 px, sans débordement).
