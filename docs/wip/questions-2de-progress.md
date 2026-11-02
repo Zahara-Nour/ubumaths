@@ -6,14 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après la migration de la vague 8 (#2204, jouée)._
+_Mis à jour le 2026-11-02, après la publication de la vague 8 (§ 55)._
 
-- **État** : lots 1 à 7 publiés. Lot 8 (information chiffrée, statistiques, tableaux croisés, probabilités) :
-  vague 8 (22 modèles) en brouillon en prod, rangée et tagguée (§ 54) ; page à cocher publiée :
-  https://claude.ai/artifact/JrSwxKsh2iemADRjp84YSR (`verdicts` vide au départ).
-- **Prochaine action** : relecture de David sur la page → lire et compter `verdicts` (22) → `publier-lot`
-  (simulation puis `--publier`, David avec `!`, trois dossiers) ; ensuite vague 8 bis (8 D, 8 E).
-- **En attente de David** : la relecture de la page.
+- **État** : lots 1 à 7 publiés ; lot 8 : vague 8 (22 modèles, 8 A/B/C) **publiée** ; reste la vague 8 bis
+  (8 D, 8 E, voir § 51).
+- **Prochaine action** : vague 8 bis — relire le § 51 (contenu prévu de 8 D et 8 E), écrire les générateurs
+  `questions-2de/lot-*-d-2de.py` / `-e-`, specs, `page-a-cocher.ts` en local AVANT la PR des fichiers.
+- **En attente de David** : rien.
 - **Pièges en cours** : le worktree n'a pas de `.env` ; `publier-lot` (même en simulation) → David avec `!`
   et `set -a && . ../ubumaths/.env && set +a`, pas `pnpm -s` ; `page-a-cocher.ts` passe en chargeant ce `.env`
   dans la commande ; `Doc-inchangée:` dans un commit, jamais dans le corps de PR ; horodatage →
@@ -1433,3 +1432,11 @@ D, E) ; L8-f PR « page à cocher : blocs statistiques et arbres » avant la rel
 - `page-a-cocher.ts` sur les 22 (copie dans le scratchpad, préfixes `a-`/`b-`/`c-`, `.env` de prod chargé
   dans la commande) : 22 fiches, **aucune alerte**. Page (capacité `db`, `verdicts` vide) :
   https://claude.ai/artifact/JrSwxKsh2iemADRjp84YSR
+
+## 55. Vague 8 publiée (2026-11-02)
+
+- Relecture de David sur la page : `verdicts` lus et comptés, 22/22 « ok », aucun commentaire ; les 22 ids
+  sont ceux du § 53.
+- `publier-lot` simulé par David (trois dossiers) : 8 + 7 + 7 passent le contrôle ; puis `--publier` : 8/8,
+  7/7, 7/7.
+- MCP (prod) : les 22 `published`, rangés sur un nœud, un tag chacun.
