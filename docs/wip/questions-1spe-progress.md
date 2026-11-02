@@ -1081,7 +1081,8 @@ le tableau des sommes du corrigé de 03 reste à voir sur la page à cocher.
 **Création en prod (David, 2026-11-02, 05 h 10 UTC)** : 8 brouillons, sans nœud ni tag (relevé MCP) — 477016d2 (347),
 97a4df30 (354), a362079f (428), 3bd19f82 (429), 9c04693a (430), 58c55bba (352), 5192e88a (363), 006fce09 (364). Migration
 `20261102051042_questions_1spe_va_rangement_tags` (gabarit lot 4 ; 347 et 354 sur la notion « Probabilités › Variables
-aléatoires », nœud de leur point) ; test d'intégration 10/10, rouge 2/10 sans les étapes 4 et 5.
+aléatoires », nœud de leur point) ; test d'intégration 10/10, rouge 2/10 sans les étapes 4 et 5. `security-auditor` : aucun finding
+(diff avec le gabarit = les lignes du lot ; prod relue). `check:migrations --pr 2192` vert.
 
 **Pièges du lot** : variable `e` lue comme la constante d'Euler (renommée `u`) ; `E(X)^2` après un signe moins rendu
 « E X² » → `{E(X)}^2` (rendu « (E(X))² ») ; réponses colorées dans le texte hors formule → `colt` (`$…$`) ; les choix
