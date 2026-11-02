@@ -10,19 +10,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2249 (fichiers du lot formules, mergée)._
+_Mis à jour le 2026-11-02, après #2251 (migration nœud + tag mergée, appliquée en prod par David)._
 
-- **État** : 6b CLOS (7 publiés). Lot formules : 5 modèles mergés (`scripts/questions/1spe-formules/`, Propriétés
-  6-10, points 413, 315, 416, 414, 314), pas encore en prod.
-- **Prochaine action** : David lance, depuis le dépôt principal, `pnpm tsx scripts/create-questions.ts --dir
-scripts/questions/1spe-formules --publier` → relever les `id` (MCP) → migration nœud + tag (gabarit 6b
-  `20261102173610`, test d'intégration) → page à cocher → `publier-lot`.
-- **En attente de David** : la création en prod (commande ci-dessus, `!`).
-- **Pièges en cours** : `validateLatex` ne voit PAS les accolades déséquilibrées (compte à part dans la sonde) ;
-  worktree neuf → `pnpm exec svelte-kit sync` avant `question:specs` ; `create-questions` vise la PROD sans
-  `set -a; . ./.env.local; set +a`. `db:migrate` → David (`!`). Shard client coupé → `gh run rerun --failed`.
-- **Worktree / branche** : aucun (`content/questions-1spe-formules` mergée, worktree retiré) ; la migration prendra
-  un worktree neuf `ubumaths-wt-questions-1spe-geometrie`.
+- **État** : lot formules en prod, 5 brouillons rangés (relu au MCP : nœud du point, 1 tag chacun) : 6ba40e95 (413),
+  1608d73f (315), 1ef71e63 (416), 8bc17308 (414), d43747e1 (314). Page à cocher publiée :
+  https://claude.ai/artifact/PFhWf324fpaznZKSQPcCv2 (collection `verdicts`, vide à la publication ; 390 px vérifié).
+- **Prochaine action** : compter les verdicts (`ArtifactData list verdicts`) ; 5 « OK » → `pnpm tsx
+scripts/questions/publier-lot.ts --dir scripts/questions/1spe-formules` en simulation, puis David `--publier`.
+- **En attente de David** : la relecture sur la page à cocher.
+- **Pièges en cours** : `validateLatex` ne voit PAS les accolades déséquilibrées ; worktree neuf → `pnpm exec
+svelte-kit sync` ; `create-questions` vise la PROD sans `.env.local` chargé. `db:migrate` → David (`!`).
+- **Worktree / branche** : aucun (#2249 et #2251 mergées, worktrees retirés). Après ce lot, le sous-chantier
+  `questions-1spe-geometrie` n'a plus de point à couvrir : versement au journal d'index.
 
 ---
 
@@ -152,3 +151,8 @@ Création en prod par David (18 h 52 UTC), relue (MCP) : 5 `draft`, Propriétés
 propriétés ; 315, 416 → … › angles et longueurs ; 414, 314 → … › expressions du produit scalaire. Migration
 `20261102185249` (gabarit 6b) et test `tests/integration/questions-1spe-formules-rangement-tags.test.ts` : 10/10, rouge
 sans l'étape 4 (« lot incohérent : nœuds 0/5 »), restauré depuis une copie.
+
+PR #2251 mergée le 2026-11-02 (CI verte, 16 succès ; `security-auditor` : aucun finding, logique identique au gabarit 6b ;
+`check:migrations --pr` : OK). `db:migrate` par David ; relu au MCP : 5 modèles sur le nœud de leur point, 1 tag chacun.
+Page à cocher : https://claude.ai/artifact/PFhWf324fpaznZKSQPcCv2 (5 fiches, aucune alerte ; à 390 px : aucune
+débordement, 154 formules rendues, 0 `$` ni `\commande` brut).
