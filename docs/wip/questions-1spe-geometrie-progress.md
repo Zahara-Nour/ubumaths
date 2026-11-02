@@ -10,17 +10,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot formules écrit (PR des fichiers à ouvrir)._
+_Mis à jour le 2026-11-02, après #2249 (fichiers du lot formules, mergée)._
 
-- **État** : 6b CLOS (7 publiés). Lot formules : phase 0 validée (« je valide »), 5 modèles écrits
-  (`scripts/questions/1spe-formules/`, Propriétés 6-10), 62 specs vertes, 290 formules sondées, essai local joué.
-- **Prochaine action** : PR des fichiers (revue : aucune, contenu) → merge → David lance `create-questions --dir
-scripts/questions/1spe-formules --publier` depuis le dépôt principal → migration nœud + tag (gabarit 6b).
-- **En attente de David** : rien avant le merge.
+- **État** : 6b CLOS (7 publiés). Lot formules : 5 modèles mergés (`scripts/questions/1spe-formules/`, Propriétés
+  6-10, points 413, 315, 416, 414, 314), pas encore en prod.
+- **Prochaine action** : David lance, depuis le dépôt principal, `pnpm tsx scripts/create-questions.ts --dir
+scripts/questions/1spe-formules --publier` → relever les `id` (MCP) → migration nœud + tag (gabarit 6b
+  `20261102173610`, test d'intégration) → page à cocher → `publier-lot`.
+- **En attente de David** : la création en prod (commande ci-dessus, `!`).
 - **Pièges en cours** : `validateLatex` ne voit PAS les accolades déséquilibrées (compte à part dans la sonde) ;
-  worktree neuf → `pnpm exec svelte-kit sync` avant `question:specs` (`$lib` introuvable) ; `create-questions`
-  vise la PROD sans `set -a; . ./.env.local; set +a`. `db:migrate` → David (`!`). Shard client coupé → rerun.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-geometrie`, `content/questions-1spe-formules`.
+  worktree neuf → `pnpm exec svelte-kit sync` avant `question:specs` ; `create-questions` vise la PROD sans
+  `set -a; . ./.env.local; set +a`. `db:migrate` → David (`!`). Shard client coupé → `gh run rerun --failed`.
+- **Worktree / branche** : aucun (`content/questions-1spe-formules` mergée, worktree retiré) ; la migration prendra
+  un worktree neuf `ubumaths-wt-questions-1spe-geometrie`.
 
 ---
 
@@ -140,3 +142,5 @@ passées à `validateLatex` + compte d'accolades : 0 erreur (la sonde vérifiée
 relus (`;+` au lieu de « +(−12) », « √N = » seulement si N a un facteur carré). `create-questions` en simulation
 (prod) : 5 / 5 à créer. Base **locale** : 5 brouillons ; joués dans l'aperçu admin : 01 (juste), 04 √2 (juste),
 05 coordonnées échangées (faux, case par case), 02 choix (juste).
+
+PR #2249 (fichiers) mergée le 2026-11-02 (CI verte, 9 succès, 6 sautés).
