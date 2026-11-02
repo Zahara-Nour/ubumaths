@@ -6,11 +6,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2193._
+_Mis à jour le 2026-11-02, après la relecture du lot 6b._
 
-- **État** : lots 0 à 5 et 6a publiés. Lot 6b (décimaux, 6 modèles) : brouillons en prod, rangés et tagués (#2193, `db:migrate` joué, vérifié au MCP) ; page à cocher publiée : https://claude.ai/artifact/1r1VKqXyLZKDJU3jrpuLhC (collection `verdicts`, vide au départ).
-- **Prochaine action** : lire `verdicts` (ArtifactData list) et compter ; « À revoir » → corriger ; tout OK → `publier-lot --dir scripts/questions/cm2-6b` en simulation, puis `--publier` par David. Ensuite : la suite du chantier (§ 3, points restants).
-- **En attente de David** : la relecture des 6 fiches.
+- **État** : lots 0 à 5 et 6a publiés. Lot 6b (décimaux, 6 brouillons rangés et tagués) : relu par David, 6 OK sur 6 ; `publier-lot` en simulation : 6 brouillons passent le contrôle.
+- **Prochaine action** : après le `--publier` de David, vérifier au MCP (6 `published`, rangés, tagués) et clore le lot 6b (§ 11.9) ; puis la suite du chantier (§ 3, points restants : relevé, phase 0 du lot 7).
+- **En attente de David** : `! pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/cm2-6b --publier` (depuis le dépôt principal).
 - **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; garde = doublon seulement ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `pnpm db:migrate --dry-run --include-all`, liste relue, puis `--include-all`. `Doc-inchangée:` dans un COMMIT, pas dans la PR. `spacesFromFourDigits` → specs en `1\,000` ; homonymes du CM1 sur la page ; `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm2` en HEAD détachée (`feat/questions-cm2-lot6b-rangement` mergée, supprimée).
 
@@ -653,3 +653,7 @@ décimale (0,435 → message de forme, à vérifier en local). Tableau du § 11 
 - Migration `20261102051111_questions_cm2_lot6b_rangement_tags.sql` (`pnpm migration:horodatage`), copie du lot 6a ; nœuds des points relevés au MCP (Décimaux : numération > écritures, arrondis et ordres de grandeur, ordre, encadrement). Test `questions-cm2-lot6b-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges ; fichier restauré depuis sa copie.
 - #2193 : `security-auditor` sans finding ; CI verte ; `check:migrations --pr 2193` sortie 0 ; mergée. `migration list --linked` : seule la nôtre en attente ; `db:migrate --dry-run` puis `db:migrate` : jouée. MCP : 6 `draft`, nœud et point attendus, `updated_at` = création.
 - Page à cocher publiée (6 fiches ; alertes « homonyme » des modèles CM1 / 6e de même titre écartés, ids justes ; « Ranger » non dessiné, à jouer dans l'aperçu) : https://claude.ai/artifact/1r1VKqXyLZKDJU3jrpuLhC
+
+### 11.8 Lot 6b : relecture (David, 2026-11-02)
+
+- 6 OK sur 6, sans commentaire (`verdicts` lu et compté). `publier-lot` en simulation : 6 brouillons passent le contrôle.
