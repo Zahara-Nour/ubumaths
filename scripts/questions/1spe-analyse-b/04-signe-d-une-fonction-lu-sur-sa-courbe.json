@@ -1,0 +1,351 @@
+{
+	"title": "Signe d'une fonction lu sur sa courbe",
+	"description": "Lire sur la courbe le signe de f(x) sur un intervalle, l'ensemble où f(x) ≥ 0 et le tableau de signes",
+	"grades": ["1_SPE", "1_GEN", "1_TECHNO"],
+	"theme": "Fonctions",
+	"domain": "Généralités",
+	"subdomain": "Signe",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La fonction $f$ est définie sur $\\left[{{eval:r-1}}\\,;{{eval:t+1}}\\right]$ ; sa courbe $\\mathcal{C}_f$ est tracée ci-dessous.\n\n```courbe\nx: -6 ; 6\ny: -7 ; 7\ngrille: 1 ; 1\nf(x) = {{a}}*(x{{eval:-r;+}})*(x{{eval:-s;+}})*(x{{eval:-t;+}})/4 sur [{{eval:r-1}} ; {{eval:t+1}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction qui coupe l'axe des abscisses en {{r}}, {{s}} et {{t}}.\n```\n\nQuel est le signe de $f(x)$ pour $x\\in\\left]{{u}}\\,;{{v}}\\right[$ ?\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n- il change de signe\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1|-1"
+				},
+				{
+					"name": "r",
+					"expression": "-4..0"
+				},
+				{
+					"name": "d",
+					"expression": "2|3"
+				},
+				{
+					"name": "g",
+					"expression": "2|3"
+				},
+				{
+					"name": "s",
+					"expression": "eval:r+d"
+				},
+				{
+					"name": "t",
+					"expression": "eval:s+g"
+				},
+				{
+					"name": "z",
+					"expression": "0|1|2"
+				},
+				{
+					"name": "u",
+					"expression": "eval:r+(s-r)*z*(2-z)"
+				},
+				{
+					"name": "v",
+					"expression": "eval:s+(t-s)*z*(3-z)/2"
+				}
+			],
+			"conditions": ["d + g <= 5", "t <= 4"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:z==2|2|{{eval:(1-a*(1-2*z))/2}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(x)$ est **positif** là où $\\mathcal{C}_f$ est au-dessus de l'axe des abscisses, **négatif** là où elle est au-dessous, et **nul** là où elle le coupe : en ${{r}}$, ${{s}}$ et ${{t}}$.",
+					"```variation\nvariable: x\ndomain: {{eval:r-1}}, {{r}}, {{s}}, {{t}}, {{eval:t+1}}\n\nsign: f(x)\n  {{eval:r-1}},{{r}}: {{if:a>0|-|+}}\n  {{r}}: z\n  {{r}},{{s}}: {{if:a>0|+|-}}\n  {{s}}: z\n  {{s}},{{t}}: {{if:a>0|-|+}}\n  {{t}}: z\n  {{t}},{{eval:t+1}}: {{if:a>0|+|-}}\n```",
+					"{{if:z==2|Sur $\\left]{{u}}\\,;{{v}}\\right[$, la courbe traverse l'axe en ${{s}}$ : $f(x)$ $\\textcolor{{{color:primary.0}}}{\\text{change de signe}}$.|Sur $\\left]{{u}}\\,;{{v}}\\right[$, la courbe est {{if:a*(1-2*z)>0|au-dessus|au-dessous}} de l'axe : $f(x)$ est $\\textcolor{{{color:primary.0}}}{\\text{strictement {{if:a*(1-2*z)>0|positif|négatif}}}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "La fonction $f$ est définie sur $\\left[{{eval:r-1}}\\,;{{eval:t+1}}\\right]$ ; sa courbe $\\mathcal{C}_f$ est tracée ci-dessous.\n\n```courbe\nx: -6 ; 6\ny: -7 ; 7\ngrille: 1 ; 1\nf(x) = {{a}}*(x{{eval:-r;+}})*(x{{eval:-s;+}})*(x{{eval:-t;+}})/4 sur [{{eval:r-1}} ; {{eval:t+1}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction qui coupe l'axe des abscisses en {{r}}, {{s}} et {{t}}.\n```\n\nRésous l'inéquation $f(x)\\geqslant0$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1|-1"
+				},
+				{
+					"name": "r",
+					"expression": "-4..0"
+				},
+				{
+					"name": "d",
+					"expression": "2|3"
+				},
+				{
+					"name": "g",
+					"expression": "2|3"
+				},
+				{
+					"name": "s",
+					"expression": "eval:r+d"
+				},
+				{
+					"name": "t",
+					"expression": "eval:s+g"
+				}
+			],
+			"conditions": ["d + g <= 5", "t <= 4"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>0|[{{r}};{{s}}]\\cup[{{t}};{{eval:t+1}}]|[{{eval:r-1}};{{r}}]\\cup[{{s}};{{t}}]}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(x)$ est **positif** là où $\\mathcal{C}_f$ est au-dessus de l'axe des abscisses, **négatif** là où elle est au-dessous, et **nul** là où elle le coupe : en ${{r}}$, ${{s}}$ et ${{t}}$.",
+					"```variation\nvariable: x\ndomain: {{eval:r-1}}, {{r}}, {{s}}, {{t}}, {{eval:t+1}}\n\nsign: f(x)\n  {{eval:r-1}},{{r}}: {{if:a>0|-|+}}\n  {{r}}: z\n  {{r}},{{s}}: {{if:a>0|+|-}}\n  {{s}}: z\n  {{s}},{{t}}: {{if:a>0|-|+}}\n  {{t}}: z\n  {{t}},{{eval:t+1}}: {{if:a>0|+|-}}\n```",
+					"On garde les intervalles où $\\mathcal{C}_f$ est au-dessus de l'axe, **et** les points où elle le coupe (l'inégalité est large), sans sortir de l'ensemble de définition.",
+					"$S=\\textcolor{{{color:primary.0}}}{{{if:a>0|\\left[{{r}}\\,;{{s}}\\right]\\cup\\left[{{t}}\\,;{{eval:t+1}}\\right]|\\left[{{eval:r-1}}\\,;{{r}}\\right]\\cup\\left[{{s}}\\,;{{t}}\\right]}}}$"
+				]
+			}
+		},
+		{
+			"statement": "La fonction $f$ est définie sur $\\left[{{eval:r-1}}\\,;{{eval:t+1}}\\right]$ ; sa courbe $\\mathcal{C}_f$ est tracée ci-dessous.\n\n```courbe\nx: -6 ; 6\ny: -7 ; 7\ngrille: 1 ; 1\nf(x) = {{a}}*(x{{eval:-r;+}})*(x{{eval:-s;+}})*(x{{eval:-t;+}})/4 sur [{{eval:r-1}} ; {{eval:t+1}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction qui coupe l'axe des abscisses en {{r}}, {{s}} et {{t}}.\n```\n\nQuel est le tableau de signes de $f(x)$ ?\n\n````choix\n- ```variation\n  variable: x\n  domain: {{eval:r-1}}, {{r}}, {{s}}, {{t}}, {{eval:t+1}}\n  \n  sign: f(x)\n    {{eval:r-1}},{{r}}: {{if:a>0|-|+}}\n    {{r}}: z\n    {{r}},{{s}}: {{if:a>0|+|-}}\n    {{s}}: z\n    {{s}},{{t}}: {{if:a>0|-|+}}\n    {{t}}: z\n    {{t}},{{eval:t+1}}: {{if:a>0|+|-}}\n  ```\n- ```variation\n  variable: x\n  domain: {{eval:r-1}}, {{r}}, {{s}}, {{t}}, {{eval:t+1}}\n  \n  sign: f(x)\n    {{eval:r-1}},{{r}}: {{if:a>0|+|-}}\n    {{r}}: z\n    {{r}},{{s}}: {{if:a>0|-|+}}\n    {{s}}: z\n    {{s}},{{t}}: {{if:a>0|+|-}}\n    {{t}}: z\n    {{t}},{{eval:t+1}}: {{if:a>0|-|+}}\n  ```\n- ```variation\n  variable: x\n  domain: {{eval:r-1}}, {{r}}, {{s}}, {{t}}, {{eval:t+1}}\n  \n  sign: f(x)\n    {{eval:r-1}},{{r}}: {{if:a>0|-|+}}\n    {{r}}: z\n    {{r}},{{s}}: {{if:a>0|+|-}}\n    {{s}}: z\n    {{s}},{{t}}: {{if:a>0|+|-}}\n    {{t}}: z\n    {{t}},{{eval:t+1}}: {{if:a>0|+|-}}\n  ```\n````",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1|-1"
+				},
+				{
+					"name": "r",
+					"expression": "-4..0"
+				},
+				{
+					"name": "d",
+					"expression": "2|3"
+				},
+				{
+					"name": "g",
+					"expression": "2|3"
+				},
+				{
+					"name": "s",
+					"expression": "eval:r+d"
+				},
+				{
+					"name": "t",
+					"expression": "eval:s+g"
+				}
+			],
+			"conditions": ["d + g <= 5", "t <= 4"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(x)$ est **positif** là où $\\mathcal{C}_f$ est au-dessus de l'axe des abscisses, **négatif** là où elle est au-dessous, et **nul** là où elle le coupe : en ${{r}}$, ${{s}}$ et ${{t}}$.",
+					"Entre deux zéros consécutifs, le signe se lit à la position de la courbe : elle est {{if:a>0|au-dessous|au-dessus}} de l'axe avant ${{r}}$, puis elle **traverse** l'axe en chacun des trois zéros, donc le signe change à chaque fois.",
+					"```variation\nvariable: x\ndomain: {{eval:r-1}}, {{r}}, {{s}}, {{t}}, {{eval:t+1}}\n\nsign: f(x)\n  {{eval:r-1}},{{r}}: {{if:a>0|-|+}}\n  {{r}}: z\n  {{r}},{{s}}: {{if:a>0|+|-}}\n  {{s}}: z\n  {{s}},{{t}}: {{if:a>0|-|+}}\n  {{t}}: z\n  {{t}},{{eval:t+1}}: {{if:a>0|+|-}}\n```"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a > 0, ]r ; s[ : positif",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"d": "2",
+				"g": "3",
+				"s": "0",
+				"t": "3",
+				"z": "0",
+				"u": "-2",
+				"v": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "a > 0, ]s ; t[ : négatif",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"d": "2",
+				"g": "3",
+				"s": "0",
+				"t": "3",
+				"z": "1",
+				"u": "0",
+				"v": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a > 0, ]s ; t[ lu positif",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"d": "2",
+				"g": "3",
+				"s": "0",
+				"t": "3",
+				"z": "1",
+				"u": "0",
+				"v": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a < 0, ]r ; s[ : négatif",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"r": "-2",
+				"d": "2",
+				"g": "3",
+				"s": "0",
+				"t": "3",
+				"z": "0",
+				"u": "-2",
+				"v": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "]r ; t[ : change de signe",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"r": "-2",
+				"d": "2",
+				"g": "3",
+				"s": "0",
+				"t": "3",
+				"z": "2",
+				"u": "-2",
+				"v": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "a > 0 : [−2 ; 0] ∪ [3 ; 4]",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"d": "2",
+				"g": "3",
+				"s": "0",
+				"t": "3"
+			},
+			"answers": ["[-2;0]\\cup[3;4]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : crochets ouverts",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"d": "2",
+				"g": "3",
+				"s": "0",
+				"t": "3"
+			},
+			"answers": ["]-2;0[\\cup]3;4["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a < 0 : [−3 ; −2] ∪ [0 ; 3]",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"r": "-2",
+				"d": "2",
+				"g": "3",
+				"s": "0",
+				"t": "3"
+			},
+			"answers": ["[-3;-2]\\cup[0;3]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a < 0, ensemble de f(x) ≤ 0",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"r": "-2",
+				"d": "2",
+				"g": "3",
+				"s": "0",
+				"t": "3"
+			},
+			"answers": ["[-2;0]\\cup[3;4]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Tableau juste",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"d": "2",
+				"g": "3",
+				"s": "0",
+				"t": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signes inversés",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"d": "2",
+				"g": "3",
+				"s": "0",
+				"t": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

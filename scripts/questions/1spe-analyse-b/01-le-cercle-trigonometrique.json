@@ -1,0 +1,203 @@
+{
+	"title": "Le cercle trigonométrique",
+	"description": "Rayon et longueur du cercle trigonométrique, sens direct (ou indirect), point du cercle associé à un multiple de π/2",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Cercle et radians",
+	"level": 4,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le cercle trigonométrique a pour rayon $?$ et pour longueur $?$.",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "2\\pi"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le cercle trigonométrique est le cercle de **centre $O$ et de rayon $1$**, orienté.",
+					"Sa longueur est $2\\pi\\times 1$ : le rayon vaut $\\textcolor{{{color:primary.0}}}{1}$ et la longueur $\\textcolor{{{color:primary.0}}}{2\\pi}$."
+				]
+			}
+		},
+		{
+			"statement": "Sur le cercle trigonométrique, le sens {{if:w==0|direct|indirect}} (ou sens {{if:w==0|positif|négatif}}) est :\n\n```choix\n- le sens inverse des aiguilles d'une montre\n- le sens des aiguilles d'une montre\n- l'un ou l'autre, au choix\n```",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0|1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le cercle trigonométrique est **orienté** : le sens direct (positif) est fixé une fois pour toutes, c'est le sens inverse des aiguilles d'une montre ; le sens indirect est le sens des aiguilles d'une montre.",
+					"Le sens {{if:w==0|direct|indirect}} est le $\\textcolor{{{color:primary.0}}}{\\text{sens {{if:w==0|inverse des|des}} aiguilles d'une montre}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel point du cercle trigonométrique est associé au réel ${{r}}$ ?\n\n```trig\npreset: custom\nlabels: false\npoints: M = {{o}}*pi/2, N = {{eval:o+1}}*pi/2, P = {{eval:o+2}}*pi/2, Q = {{eval:o+3}}*pi/2\n```\n\n```choix\nmelanger: non\n- $M$\n- $N$\n- $P$\n- $Q$\n```",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "0|\\frac{\\pi}{2}|\\pi|-\\frac{\\pi}{2}|2\\pi|-\\pi|\\frac{3\\pi}{2}|\\frac{5\\pi}{2}|-\\frac{3\\pi}{2}|3\\pi"
+				},
+				{
+					"name": "p",
+					"expression": "eval:2*r/\\pi"
+				},
+				{
+					"name": "o",
+					"expression": "0..3"
+				},
+				{
+					"name": "k",
+					"expression": "eval:mod(p-o+8,4)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le réel $0$ est associé au point $I(1\\,;0)$. On enroule la droite des réels sur le cercle : un quart de tour mesure $\\dfrac{\\pi}{2}$, dans le sens direct pour un réel positif, dans le sens indirect pour un réel négatif ; un tour complet ($2\\pi$) ramène au même point.",
+					"{{if:p==0|Le réel $0$ est associé au point de départ $I$.|${{r}}={{p}}\\times\\dfrac{\\pi}{2}$ : on fait ${{eval:abs(p)}}$ quart{{if:p*p>1|s|}} de tour dans le sens {{if:p<0|indirect|direct}} en partant de $I$.}}",
+					"```trig\npreset: custom\nlabels: false\npoints: M = {{o}}*pi/2, N = {{eval:o+1}}*pi/2, P = {{eval:o+2}}*pi/2, Q = {{eval:o+3}}*pi/2\n```",
+					"Le réel ${{r}}$ est associé au point $\\textcolor{{{color:primary.0}}}{{{if:k==0|M|{{if:k==1|N|{{if:k==2|P|Q}}}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Rayon 1, longueur 2π",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1", "2\\pi"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : longueur π (demi-cercle)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1", "\\pi"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sens direct : inverse des aiguilles",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sens direct = des aiguilles",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sens indirect : des aiguilles",
+			"variationIndex": 1,
+			"variables": {
+				"w": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "π/2 avec M en 0 : N",
+			"variationIndex": 2,
+			"variables": {
+				"r": "\\frac{\\pi}{2}",
+				"o": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "−π/2 avec M en 0 : Q",
+			"variationIndex": 2,
+			"variables": {
+				"r": "-\\frac{\\pi}{2}",
+				"o": "0"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −π/2 lu dans le sens direct (N)",
+			"variationIndex": 2,
+			"variables": {
+				"r": "-\\frac{\\pi}{2}",
+				"o": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5π/2 avec M en π/2 : M",
+			"variationIndex": 2,
+			"variables": {
+				"r": "\\frac{5\\pi}{2}",
+				"o": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3π avec M en 0 : P",
+			"variationIndex": 2,
+			"variables": {
+				"r": "3\\pi",
+				"o": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

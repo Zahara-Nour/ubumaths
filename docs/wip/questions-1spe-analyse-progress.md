@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2245 (lot A mergé)._
+_Mis à jour le 2026-11-02, lot B écrit (PR à ouvrir), lot A toujours pas en prod._
 
-- **État** : phase 0 validée (Q1-Q7) ; lot A (5 modèles, `scripts/questions/1spe-analyse-a/`) mergé (#2245), essayé en base locale ; **pas encore en prod**. Worktree du lot A retiré.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-analyse-a --publier` (prod, brouillons) ; relever les 5 `id` ; migration nœud + tag (doc couvrir-un-niveau § 6). En parallèle : lot B (4 modèles neufs dont 306 + tag de 7d6cf480, décisions Q1, Q5, Q6) dans un nouveau worktree.
-- **En attente de David** : la création du lot A en prod (écriture en prod refusée au mode auto).
-- **Pièges en cours** : `create-questions` vise la **PROD** même avec `.env.local` présent → charger `.env.local` dans le shell avant tout `--publier` local ; worktree neuf → `pnpm exec svelte-kit sync` avant `question:specs` ; spec `bad_form` → `constraintViolations: ['form']` ; 306 en lot B (outil #2189 en prod).
-- **Worktree / branche** : aucun (lot A mergé) ; lot B → `git worktree add -b content/questions-1spe-analyse-b ../ubumaths-wt-questions-1spe-analyse origin/main`.
+- **État** : lot A mergé (#2245), **pas encore en prod**. Lot B (4 modèles, `scripts/questions/1spe-analyse-b/`, gabarit `docs/wip/questions/lot-1spe-analyse-b.py`) : specs vertes, sonde-courbes 0 problème, essayé en base locale ; PR des fichiers en cours.
+- **Prochaine action** : merger la PR du lot B ; puis David crée les lots A et B en prod (`create-questions --dir … --publier`, depuis le dépôt principal) ; relever les 9 `id` ; une migration nœud + tag pour A et B, avec le tag de 7d6cf480 (Q6) et les jumeaux de B4 (Q5).
+- **En attente de David** : la création des lots A et B en prod (écriture en prod refusée au mode auto).
+- **Pièges en cours** : `create-questions` vise la **PROD** même avec `.env.local` → `set -a; . ./.env.local; set +a` avant tout `--publier` local ; `--mettre-a-jour` pour réécrire un modèle déjà en base ; variable `e` = Euler (vue par sonde-courbes seulement, pas par les specs) ; `mode: arc` du ```trig ne dessine que les solutions d'une équation.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-analyse` · `content/questions-1spe-analyse-b` · serveur 5176.
 
 ---
 
@@ -174,3 +174,24 @@ Q3 deux lots (A, B) ; Q4 A1 en case choix ; Q5 B4 tagué aussi 1GEN-062 et 1TECH
   signes de 03, courbes de 04 et 05).
 - Détails visuels sans gravité, laissés tels quels : l'étiquette 𝒞₂ de 04 (variation 2) touche l'axe des
   abscisses vers t = 2,7 ; le point (0 ; 1) de la correction de 05 est nommé `A` sans que le texte le nomme.
+
+## Lot B — écriture et essai en base locale (2026-11-02)
+
+Fichiers `scripts/questions/1spe-analyse-b/` (gabarit `docs/wip/questions/lot-1spe-analyse-b.py`, qui les régénère) :
+
+| #   | Fichier                                         | Point(s)                      | Variations                                                                                |
+| --- | ----------------------------------------------- | ----------------------------- | ----------------------------------------------------------------------------------------- |
+| B1  | `01-le-cercle-trigonometrique.json`             | 303                           | rayon + longueur ; sens direct / indirect (choix) ; point associé à un multiple de π/2    |
+| B2  | `02-longueur-d-un-arc.json`                     | 408                           | arc IM ; arc AB (b − a) ; réel associé à un arc parcouru dans un sens ; fractions de tour |
+| B3  | `03-placer-un-point-sur-le-cercle.json`         | 306                           | ` ```trig placer: ` dans ]−π ; π] ; hors (mesure principale) ; M et N (−x ou π − x)       |
+| B4  | `04-signe-d-une-fonction-lu-sur-sa-courbe.json` | 432 (+ 1GEN-062, 1TECHNO-139) | signe sur un intervalle ; f(x) ⩾ 0 (intervalles) ; tableau de signes parmi 3 (choix)      |
+
+- B4 : niveaux `1_SPE`, `1_GEN`, `1_TECHNO` (Q5), catégorie Généralités › Signe, 2. Courbe f(x) = ±(x − r)(x − s)(x − t)/4
+  sur [r − 1 ; t + 1], écarts entre racines 2 ou 3 (bosses d'au moins 0,77 : lisibles sur la grille).
+- B5 (434) = pas de modèle : tag de 7d6cf480 dans la migration (Q6).
+- Essai local (aperçu admin) : B3 placé juste → « Juste » ; rendu des cercles (B1, B2, B3) et de la courbe B4 vérifié.
+- Corrigé en cours d'essai : points A-D de B1 renommés M, N, P, Q (ils doublaient les lettres A-D de la case choix) ;
+  point `I = 0` ajouté aux cercles de B2 et B3 (les énoncés le citent) ; `mode: arc` retiré (n'affiche rien hors
+  équation) ; variable `e` de B4 renommée (Euler).
+- À regarder sur la page à cocher : en case choix, le tableau de signes de B4 (5 valeurs de x) déborde d'environ
+  25 px à 606 px de large et défile horizontalement ; plus encore à 390 px.
