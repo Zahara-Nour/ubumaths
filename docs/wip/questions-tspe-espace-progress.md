@@ -10,10 +10,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 6b écrit (PR des fichiers à ouvrir)._
+_Mis à jour le 2026-11-02, PR des fichiers #2254 ouverte._
 
-- **État** : lot 6b écrit et vérifié — 4 modèles (N1 358, N2 368, N3 566, N4 568) dans `scripts/questions/tspe-6b-plans-systemes/`, specs vertes, simulation `create-questions` : 4 à créer, base locale : 4 brouillons, aperçu joué. Commit sur la branche, pas encore poussé.
-- **Prochaine action** : pousser, ouvrir la PR des fichiers (revue : aucune, contenu), CI verte → merge ; puis David lance `create-questions --publier` depuis le dépôt principal ; migration nœud + tag (gabarit 6a).
+- **État** : lot 6b écrit et vérifié — 4 modèles (N1 358, N2 368, N3 566, N4 568) dans `scripts/questions/tspe-6b-plans-systemes/`, specs vertes, simulation `create-questions` : 4 à créer, base locale : 4 brouillons, aperçu joué. PR #2254 ouverte (CI en cours).
+- **Prochaine action** : `gh pr checks 2254 --watch`, CI verte → `gh pr merge 2254 --merge` (revue : aucune, contenu) ; puis David lance `create-questions --publier` depuis le dépôt principal ; migration nœud + tag (gabarit 6a).
 - **En attente de David** : rien avant le merge.
 - **Pièges en cours** : voir « Décisions communes et pièges » ; `--publier` : donner la commande avec `!` ; commitlint refuse le type `content` (prendre `feat`) ; le choix est mélangé à l'affichage.
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe-espace`, `feat/questions-tspe-espace-6b`.
