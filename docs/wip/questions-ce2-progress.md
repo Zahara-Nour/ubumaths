@@ -6,20 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, avant l'ouverture de la PR du lot 7a._
+_Mis à jour le 2026-11-02, après #2194._
 
-- **État** : lots 1 à 6b en prod ET publiés. Lot 7a (calcul posé + monnaie) : phase 0 validée, 10 modèles écrits
-  (`scripts/questions/ce2-7a/`, 81 specs vertes, simulation `create-questions` 10/10), PR ouverte depuis le worktree
-  `ubumaths-wt-questions-ce2` (branche `feat/questions-ce2-7a`).
-- **Prochaine action** : PR mergée → David lance `create-questions --dir scripts/questions/ce2-7a --publier` (`!`),
-  relevé MCP, migration nœud + tag (016, 090, 019, 055, 056, 054, 080), page à cocher, `publier-lot`. Puis lot 7b
-  (`horloge` + `line` : 057, 059, 094, 010, 058), 7c statistiques, `figure` / images fixes, QCM, outils neufs.
-- **En attente de David** : rien.
-- **Pièges en cours** : jamais de variable `e` (Euler) même dans un texte `{{eval:10*e}}` ; `--publier` refusé par le
-  classifieur (`!`) ; verdicts du 6b posés en 3 s : relecture non prouvée ; case d'opération posée sans
-  `expectedAnswer` ; niveaux monnaie à relever juste avant la publication (brouillons CE1 du lot 8 non publiés) ;
-  commitlint : corps ≤ 100 caractères par ligne, sujet sans majuscule ; pas de mention Claude.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2` · `feat/questions-ce2-7a`.
+- **État** : lots 1 à 6b en prod ET publiés. Lot 7a (calcul posé + monnaie) : 10 modèles mergés (#2194, CI verte),
+  **pas encore créés en prod** (`scripts/questions/ce2-7a/`, simulation 10/10). Aucun worktree en cours.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce2-7a --publier`
+  (`!`) ; je relève au MCP, puis migration nœud + tag (016, 090, 019, 055, 056, 054, 080), page à cocher,
+  `publier-lot`. Ensuite lot 7b (`horloge` + `line` : 057, 059, 094, 010, 058), 7c statistiques, `figure` / images
+  fixes, QCM, outils neufs.
+- **En attente de David** : lancer `create-questions --publier` (écriture prod refusée au classifieur).
+- **Pièges en cours** : jamais de variable `e` (Euler) même dans un texte `{{eval:10*e}}` ; corrigé des unités mêlées (06)
+  sans bloc `operation` résolu (écart à la décision 3, rendu non vérifié) ; verdicts du 6b posés en 3 s : relecture non
+  prouvée ; niveaux monnaie à relever juste avant la publication (brouillons CE1 du lot 8 non publiés) ; commitlint :
+  corps ≤ 100 caractères par ligne, sujet sans majuscule ; pas de mention Claude.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
