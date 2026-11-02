@@ -12,7 +12,7 @@ _Mis à jour le 2026-11-02, lot 1 codé, revue en cours._
   (§ 4) ; PR pas encore ouverte.
 - **Prochaine action** : revue Opus (`code-reviewer`), PR, CI, merge ; puis lot 2 (outil « point »,
   symétrique d'un point, 6-179 / 6-180).
-- **En attente de David** : essai sur le serveur de la branche (port 5176).
+- **En attente de David** : essai sur le serveur de la branche (port 5178).
 - **Pièges en cours** : les `testSpecs` d'un modèle ne vérifient que le statut, pas le message (`TestSpecExpected`
   n'a pas de `feedback`) : le message se teste à l'écran ou au juge. Un contrôle ne doit jamais donner la
   réponse (`verifier: ?`).
