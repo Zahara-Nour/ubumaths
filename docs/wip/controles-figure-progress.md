@@ -11,14 +11,14 @@ _Mis à jour le 2026-11-02, après #2264._
 - **État** : lots 1, 2a, 2b, « point construit exigé » et 3 (médiatrice, milieu sur papier uni, #2264)
   **mergés**, pas encore en prod (`deploy:prod` sur demande de David). Vérifications à l'œil dans
   `verifications-manuelles.md` (#2257, #2264).
-- **Prochaine action** : phase 0 du lot **3b, cercle circonscrit** (vérification `cercle` neuve : centre
-  faux, rayon faux), puis triangle (report de longueur, 4e sommet du parallélogramme), angle, bissectrice.
+- **Prochaine action** : lot **3b, cercle circonscrit** (phase 0 validée, § 11) en cours ; ensuite
+  triangle (report de longueur, 4e sommet du parallélogramme), angle, bissectrice.
 - **En attente de David** : rien.
 - **Pièges en cours** : `perpendiculaire(A, s)` échoue quand A est un bout de s (geometry-core,
   « createTranslatedPoint… must all be distinct ») ; pas de prime dans le langage des figures (§ 6) ;
   `symetrie(P, axe=d)` échoue si P définit d ; l'« Essayer » de l'aide ne rend pas la case jouable ;
   au clavier, droites annoncées « Droite 1, 2… » ; plafond de 20 objets sans message.
-- **Worktree / branche** : aucun (retiré après #2264).
+- **Worktree / branche** : `../ubumaths-wt-controles-figure`, `feat/controles-figure-cercle`.
 
 ---
 
@@ -405,3 +405,68 @@ Nouvelle vérification `droite <nom> = <expression>` (comme `point A' = …`). P
 - Revue Opus : 8 findings, tous corrigés (règle et équerre hors des nœuds sur quadrillage, intersections
   hors fenêtre — l'exemple de l'aide l'était —, palette avec point/segment, point de passage invisible,
   règle prise pour l'équerre, (AB) repassée, même droite deux fois).
+
+## 11. Phase 0 — lot 3b : cercle circonscrit (validée le 2026-11-02)
+
+BO 6e « Connaître et construire le cercle circonscrit à un triangle » ; 5e (triangles particuliers) ; 4e
+(triangle rectangle : centre au milieu de l'hypoténuse).
+
+### Écriture par le prof
+
+```figure-a-completer
+fenetre: 0 ; 10 ; 0 ; 8
+verifier: cercle c = cercle_circonscrit(A, B, C)
+---
+A = point(3, 4)
+B = point(7, 4)
+C = point(4, 7)
+t = triangle(A, B, C)
+```
+
+Nouvelle vérification `cercle <nom> = <expression>` (comme `point`, `droite`). Palette déduite : Règle ·
+Équerre · Compas (`outils:` restreint). Réponse inchangée (`cercle(cx;cy;x;y)`).
+
+### Comportements
+
+- **Nominal** : deux médiatrices (compas + règle), compas piqué à leur intersection, passant par un
+  sommet → juste. Autres chemins : médiatrice à l'équerre au milieu construit ; triangle rectangle
+  (centre = médiatrice ∩ hypoténuse).
+- **Limites** (juste) : arcs et droites de construction en trop ignorés ; un des cercles suffit ; passage
+  par B ou C plutôt que A.
+- **Construit** : centre ET point de passage construits (point de la figure ou intersection de traits).
+- **Erreurs** (faux, première cause ; cercle « essai » = celui qui passe par le plus de sommets, à
+  égalité le dernier tracé) : aucun cercle → « Trace le cercle circonscrit au triangle ABC. » ; à l'œil →
+  « Ton cercle est tracé à l'œil : construis son centre avec tes instruments. » ; bon centre, mauvais
+  rayon → « Ton cercle a le bon centre mais ne passe pas par les sommets du triangle. » ; deux sommets
+  seulement → « Ton cercle passe par A et B mais pas par C. » ; sinon « Ce n'est pas le cercle
+  circonscrit au triangle ABC. »
+- **Erreurs d'auteur** : expression qui n'est pas un cercle, sommets alignés, sommet invisible, centre
+  hors fenêtre, moins de deux médiatrices constructibles dans la fenêtre, cercle qui sort de la fenêtre.
+
+### Décisions de David (2026-11-02, « je suis tes recos »)
+
+1. **Centre seul** (`point O = centre(cercle_circonscrit(A, B, C))`) **dans ce lot**.
+2. **Quadrillage refusé** pour l'instant (erreur d'auteur « ajouter grille: non »).
+3. **Cercle entier dans la fenêtre** exigé.
+4. **Correction** : cercle et centre en pointillés + médiatrices de deux côtés en traits fins.
+
+_(L'exemple proposé en phase 0, A(2 ; 2), B(8 ; 3), C(4 ; 7), est refusé par la règle « deux médiatrices
+constructibles » : remplacé par celui de l'aide, revue du 2026-11-02.)_
+
+## 12. Lot 3b — ce qui est fait (2026-11-02, #2268)
+
+- Vérification `cercle c = cercle_circonscrit(A, B, C)` (`CircleCheck`, `construction/circle.ts` :
+  `judgeCircles`, `assertCircles`, `circleSolution`) ; cercles attendus calculés avec les points
+  (`expectedPoints` → `circles`, `circleOf` extrait de `figureShapes`). Parseur : quadrillage refusé,
+  palette règle · équerre · compas, jamais mêlée. Centre seul : `centre(cercle_circonscrit(…))` accepté
+  par `point` sur papier uni (`circumcenterSupportError`).
+- Écran : correction = cercle et centre en pointillés, deux médiatrices en traits fins (`bon-cercle`).
+  Aide à l'écriture : exemple « Construire le cercle circonscrit à un triangle ».
+- Tests : `construction-circle.test.ts` (36), écran `figure-a-completer-cercle.svelte.test.ts` (3).
+- Revue Opus : 5 findings. Corrigés : bon centre construit + compas ouvert à la main → « bon centre »
+  (l'ancien code disait « construis son centre ») ; le bon cercle ouvert à l'œil pile au rayon → message
+  neuf « Ton compas est ouvert à l'œil : ouvre-le jusqu'à un sommet du triangle. » ; centre déjà nommé
+  dans la figure = erreur d'auteur ; tests en coordonnées non entières. Gardés : un cercle centré sur un
+  sommet n'est jamais l'essai (indiscernable d'un arc de médiatrice) ; règle « deux médiatrices au
+  compas de rayon un côté » sévère (refuse des triangles ordinaires dans 0..10 × 0..8) — même règle que
+  la médiatrice, à revoir avec le report de longueur (lot triangle).

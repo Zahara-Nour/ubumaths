@@ -33,7 +33,9 @@ export const PLAIN_PAPER_TOOLS: Partial<Record<ConstructionCheckKind, Constructi
 	point: ['point', 'droite', 'equerre', 'compas'],
 	symetrique: ['segment', 'droite', 'equerre', 'compas'],
 	// Lot 3 (§ 9) : la même palette sur quadrillage (équerre gardée, décision de David)
-	droite: ['droite', 'equerre', 'compas']
+	droite: ['droite', 'equerre', 'compas'],
+	// Lot 3b (§ 11) : cercle circonscrit, papier uni seulement
+	cercle: ['droite', 'equerre', 'compas']
 };
 
 /** Vérifications que l'auteur peut nommer dans `verifier:` */
@@ -43,7 +45,8 @@ export const CONSTRUCTION_CHECK_KINDS = [
 	'rectangle',
 	'symetrique',
 	'point',
-	'droite'
+	'droite',
+	'cercle'
 ] as const;
 export type ConstructionCheckKind = (typeof CONSTRUCTION_CHECK_KINDS)[number];
 
@@ -123,7 +126,21 @@ export interface LineCheck {
 	line: number;
 }
 
-export type ConstructionCheck = DroiteParCheck | SegmentFigureCheck | PointCheck | LineCheck;
+/**
+ * `cercle c = cercle_circonscrit(A, B, C)` : un des cercles tracés par l'élève
+ * (compas) est celui que l'expression du langage des figures donne, construit
+ * (centre et point de passage construits) ; les autres traits sont de
+ * construction (chantier `controles-figure`, lot 3b, 2026-11-02).
+ */
+export interface CircleCheck {
+	kind: 'cercle';
+	name: string;
+	expression: string;
+	line: number;
+}
+
+export type ConstructionCheck =
+	DroiteParCheck | SegmentFigureCheck | PointCheck | LineCheck | CircleCheck;
 
 /** L'outil avec lequel se trace chaque vérification */
 export const CHECK_TOOL: Record<ConstructionCheckKind, ConstructionTool> = {
@@ -132,7 +149,8 @@ export const CHECK_TOOL: Record<ConstructionCheckKind, ConstructionTool> = {
 	rectangle: 'segment',
 	symetrique: 'segment',
 	point: 'point',
-	droite: 'droite'
+	droite: 'droite',
+	cercle: 'compas'
 };
 
 export interface ConstructionSpec {

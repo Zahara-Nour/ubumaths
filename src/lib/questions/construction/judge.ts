@@ -27,6 +27,7 @@ import {
 	type ExpectedPoints
 } from './point';
 import { LineAuthorError, assertLines, isLineCheck, judgeLines } from './line';
+import { CircleAuthorError, assertCircles, isCircleCheck, judgeCircles } from './circle';
 import { PolygonAuthorError, givenVertices, judgePolygon } from './polygon';
 import { SymmetryAuthorError, assertSymmetry, judgeSymmetry, type FigureShapes } from './symmetry';
 
@@ -129,7 +130,8 @@ function asAuthorError(error: unknown): unknown {
 		error instanceof PolygonAuthorError ||
 		error instanceof SymmetryAuthorError ||
 		error instanceof PointAuthorError ||
-		error instanceof LineAuthorError
+		error instanceof LineAuthorError ||
+		error instanceof CircleAuthorError
 	) {
 		return new ConstructionAuthorError(error.message);
 	}
@@ -141,7 +143,8 @@ function asAuthorError(error: unknown): unknown {
  * sinon (point inconnu, sommets confondus…) : `check-template` l'appelle à
  * chaque tirage, pour ne pas l'apprendre au premier élève. `shapes` : les
  * traits de la figure (vérification `symetrique`) ; `expected` : les points
- * attendus (vérification `point`) et les droites attendues (`droite`).
+ * attendus (vérification `point`), les droites (`droite`) et les cercles
+ * attendus (`cercle`).
  */
 export function assertConstructionChecks(
 	checks: readonly ConstructionCheck[],
@@ -165,8 +168,16 @@ export function assertConstructionChecks(
 			throw asAuthorError(error);
 		}
 	}
+	const circleChecks = checks.filter(isCircleCheck);
+	if (circleChecks.length > 0) {
+		try {
+			assertCircles(circleChecks, expected, points, shapes);
+		} catch (error) {
+			throw asAuthorError(error);
+		}
+	}
 	for (const check of checks) {
-		if (check.kind === 'point' || check.kind === 'droite') continue;
+		if (check.kind === 'point' || check.kind === 'droite' || check.kind === 'cercle') continue;
 		if (check.kind === 'symetrique') {
 			try {
 				assertSymmetry(check, points, shapes);
@@ -226,6 +237,15 @@ export function judgeConstruction(
 	if (lineChecks.length > 0) {
 		try {
 			return judgeLines(lineChecks, expected, points, shapes, objects);
+		} catch (error) {
+			throw asAuthorError(error);
+		}
+	}
+	// Cercles à construire (lot 3b) : seuls dans la figure (garanti par le parseur)
+	const circleChecks = allChecks.filter(isCircleCheck);
+	if (circleChecks.length > 0) {
+		try {
+			return judgeCircles(circleChecks, expected, points, shapes, objects);
 		} catch (error) {
 			throw asAuthorError(error);
 		}

@@ -34,6 +34,7 @@ import {
 } from './instruments';
 import { isPointCheck, pointSolution, type ExpectedPoints, type PointSolution } from './point';
 import { isLineCheck, lineCodages, lineSolution, type LineCodage } from './line';
+import { circleSolution, isCircleCheck, type CircleSolution } from './circle';
 import { polygonSolution } from './polygon';
 import { symmetrySolution, type FigureShapes } from './symmetry';
 
@@ -218,7 +219,7 @@ export function solutionLines(
 	expected?: ExpectedPoints
 ): DrawnLine[] {
 	return checks.flatMap((check): DrawnLine[] => {
-		if (check.kind === 'point') return [];
+		if (check.kind === 'point' || check.kind === 'cercle') return [];
 		if (check.kind === 'droite') return lineSolution([check], expected);
 		if (check.kind === 'symetrique') return symmetrySolution(check, points, shapes);
 		if (check.kind !== 'droite_par')
@@ -236,6 +237,16 @@ export function solutionCodages(
 	points: ReadonlyMap<string, Position>
 ): LineCodage[] {
 	return lineCodages(checks.filter(isLineCheck), points);
+}
+
+/** Les cercles à construire (lot 3b) : le cercle, son centre, deux médiatrices */
+export function solutionCircles(
+	checks: readonly ConstructionCheck[],
+	expected: ExpectedPoints | undefined,
+	points: ReadonlyMap<string, Position>,
+	shapes?: FigureShapes
+): CircleSolution[] {
+	return circleSolution(checks.filter(isCircleCheck), expected, points, shapes);
 }
 
 /** Les points à placer : où ils vont, avec leur nom (vérifications `point`) */

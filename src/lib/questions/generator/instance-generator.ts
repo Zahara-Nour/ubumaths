@@ -640,7 +640,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					// Symétrique : l'axe ou le centre est nommé aussi (`d = droite(P, Q)`, `O = point(…)`) ;
 					// point à placer : son expression est calculée à la publication (`check-template`)
 					const names =
-						check.kind === 'point' || check.kind === 'droite'
+						check.kind === 'point' || check.kind === 'droite' || check.kind === 'cercle'
 							? []
 							: check.kind === 'symetrique'
 								? [...(check.points ?? []), check.by]
@@ -958,9 +958,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 									? `point(${check.name})`
 									: check.kind === 'droite'
 										? `droite(${check.name})`
-										: check.kind === 'symetrique'
-											? `symetrique(${[...(check.points ?? []), check.by].join(';')})`
-											: `droite(${check.points[0]};${check.points[1]})`
+										: check.kind === 'cercle'
+											? `cercle(${check.name})`
+											: check.kind === 'symetrique'
+												? `symetrique(${[...(check.points ?? []), check.by].join(';')})`
+												: `droite(${check.points[0]};${check.points[1]})`
 							)
 							.join('|'),
 						type: 'graphical',

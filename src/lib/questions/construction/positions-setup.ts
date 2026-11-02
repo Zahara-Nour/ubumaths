@@ -9,14 +9,14 @@
 import { parseFigureContent } from '$lib/ubumark/parser/figure-parser';
 import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
 import { buildFigureScene, type FigureScene } from '$lib/ubumark/utils/figure-scene';
-import { isPointElement, type GeoElement } from '$lib/geometry-core/types/elements';
+import { isCircle, isPointElement, type GeoElement } from '$lib/geometry-core/types/elements';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 import { circleToSVG } from '$lib/geometry-core/rendering/svg-primitives';
 import { createTransformer } from '$lib/geometry-core/viewport/viewport';
 import type { Trait } from './instruments';
 import { ConstructionAuthorError, type Position } from './judge';
 import { registerConstructionPositions, type ConstructionGeometry } from './positions';
-import type { ExpectedLine, ExpectedPoints } from './point';
+import type { ExpectedCircle, ExpectedLine, ExpectedPoints } from './point';
 import type { FigureLine, FigureSegment, FigureShapes } from './symmetry';
 import type { FigureHeader } from '$lib/ubumark/types/figure';
 import type { ConstructionCheck } from '$lib/ubumark/types/construction';
@@ -57,6 +57,22 @@ function straightEnds(element: GeoElement): [string, string] | null {
 }
 
 /**
+ * Centre et rayon d'un cercle de la figure, relus du rendu (même calcul que le
+ * dessin), à l'échelle 1 ; null pour un autre objet
+ */
+function circleOf(element: GeoElement, scene: FigureScene): ExpectedCircle | null {
+	if (!isCircle(element)) return null;
+	const { xMin, xMax, yMin, yMax } = scene.viewport;
+	const transformer = createTransformer(scene.viewport, xMax - xMin, yMax - yMin);
+	const svg = circleToSVG(element.id, scene.figure, transformer);
+	if (!svg) return null;
+	const center = transformer.svgToMath(svg.cx, svg.cy);
+	const radius = svg.r;
+	if (!Number.isFinite(center.x) || !Number.isFinite(center.y) || !(radius > 0)) return null;
+	return { center, radius };
+}
+
+/**
  * Traits de la figure de départ (vérification `symetrique`) : segments et côtés
  * des polygones VISIBLES ; objets droits nommés (axes possibles), visibles ou
  * non ; quadrillage et fenêtre de l'en-tête.
@@ -84,9 +100,6 @@ export function figureShapes(scene: FigureScene, header: FigureHeader): FigureSh
 		}
 	}
 	const traits: Trait[] = segments.map(({ a, b }) => ({ kind: 'segment', a, b }));
-	// Cercles : centre et rayon relus du rendu (même calcul que le dessin), à l'échelle 1
-	const { xMin, xMax, yMin, yMax } = scene.viewport;
-	const transformer = createTransformer(scene.viewport, xMax - xMin, yMax - yMin);
 	for (const element of scene.elements) {
 		if (element.type === 'line' || element.type === 'ray') {
 			const [from, to] = straightEnds(element) as [string, string];
@@ -95,20 +108,8 @@ export function figureShapes(scene: FigureScene, header: FigureHeader): FigureSh
 			if (a && b) traits.push({ kind: element.type, a, b });
 			continue;
 		}
-		if (
-			element.type !== 'circleByRadius' &&
-			element.type !== 'circleByPoint' &&
-			element.type !== 'circleBy3Points'
-		) {
-			continue;
-		}
-		const svg = circleToSVG(element.id, scene.figure, transformer);
-		if (!svg) continue;
-		const center = transformer.svgToMath(svg.cx, svg.cy);
-		const radius = svg.r;
-		if (Number.isFinite(center.x) && Number.isFinite(center.y) && radius > 0) {
-			traits.push({ kind: 'circle', center, radius });
-		}
+		const circle = circleOf(element, scene);
+		if (circle) traits.push({ kind: 'circle', ...circle });
 	}
 	const lines = new Map<string, FigureLine>();
 	for (const element of scene.figure.getAllElements()) {
@@ -138,7 +139,8 @@ const EXPECTED_NAME = 'zzPointAttendu';
 
 /**
  * Points des vérifications `point A' = <expression>` et droites des
- * vérifications `droite m = <expression>` (lot 3) : chaque expression est
+ * vérifications `droite m = <expression>` (lot 3), cercles des vérifications
+ * `cercle c = <expression>` (lot 3b) : chaque expression est
  * ajoutée à la fin du script, sous un nom interne, dans une figure calculée à
  * part (jamais celle que voit l'élève, ni ses points d'aimantation).
  */
@@ -148,9 +150,10 @@ export function expectedPoints(
 ): ExpectedPoints {
 	const positions = new Map<string, Position>();
 	const lines = new Map<string, ExpectedLine>();
+	const circles = new Map<string, ExpectedCircle>();
 	const errors = new Map<string, string>();
 	for (const check of checks) {
-		if (check.kind !== 'point' && check.kind !== 'droite') continue;
+		if (check.kind !== 'point' && check.kind !== 'droite' && check.kind !== 'cercle') continue;
 		const node = parseFigureContent(`${figureSource}\n${EXPECTED_NAME} = ${check.expression}`);
 		const { scene, errors: sceneErrors } = buildFigureScene(node);
 		if (check.kind === 'point') {
@@ -159,20 +162,27 @@ export function expectedPoints(
 				positions.set(check.name, position);
 				continue;
 			}
-		} else if (scene) {
+		} else if (scene && check.kind === 'droite') {
 			const line = expectedLine(scene);
 			if (line) {
 				lines.set(check.name, line);
 				continue;
 			}
+		} else if (scene) {
+			const element = scene.figure.getAllElements().find((e) => e.label === EXPECTED_NAME);
+			const circle = element ? circleOf(element, scene) : null;
+			if (circle) {
+				circles.set(check.name, circle);
+				continue;
+			}
 		}
 		const messages = [...node.errors, ...sceneErrors].map((e) => e.message);
-		// Sans erreur : l'expression se calcule, mais ce n'est pas un point / une droite (le juge le dit)
+		// Sans erreur : l'expression se calcule, mais ce n'est pas un point / une droite / un cercle (le juge le dit)
 		if (messages.length > 0) {
 			errors.set(check.name, `l’expression ne se calcule pas (${messages.join(' ; ')})`);
 		}
 	}
-	return { positions, lines, errors };
+	return { positions, lines, circles, errors };
 }
 
 /** La droite (entière) que donne l'expression, par deux de ses points ; null sinon */
