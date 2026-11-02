@@ -5,19 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2208 et son `db:migrate`._
+_Mis à jour le 2026-11-02, après la publication du lot 9._
 
-- **État** : lot 9 « Tableaux et programmes » : 7 brouillons en prod, rangés et tagués (migration jouée, MCP vérifié,
-  § 22.4). Page à cocher publiée : https://claude.ai/artifact/LzKMxYtkr4YUghfHoibJCH (0 verdict). Lot 8 publié.
-  6e : 158 publiés + 8 brouillons (7 du lot 9 + 3a7a5711).
-- **Prochaine action** : lire `verdicts` (ArtifactData), compter 7 ; « À revoir » → corriger (§ 7). Puis
-  `publier-lot` en simulation, David `--publier` ; puis lots 10-11 (géométrie dessinée).
-- **En attente de David** : relecture de la page à cocher (blocs `scratch` non dessinés : les jouer dans l'aperçu).
+- **État** : lot 9 « Tableaux et programmes » publié (7/7, § 22.5). 6e : 165 publiés + 1 brouillon (3a7a5711).
+  **30 points sans modèle publié** (§ 23).
+- **Prochaine action** : phase 0 du lot 10 « géométrie dessinée » (distances, cercle, médiatrice : 160-167),
+  à faire valider ; puis lot 11 (angles, triangles, symétrie : 148, 168, 171, 174-179).
+- **En attente de David** : rien.
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs --file`. Jamais de
   variable `e`. PR en conflit = pas de CI : vérifier `mergeable`. `db:migrate` refusant « inserted before » :
   `--dry-run --include-all`, relire, puis `--include-all`. `publier-lot` refusé au mode auto : David le lance
   avec `!`. Aperçu admin : Playwright hors dépôt (Chrome refuse localhost).
-- **Worktree / branche** : aucun (retiré après #2208).
+- **Worktree / branche** : aucun (lot 10 : `git worktree add -b feat/questions-6-lot10 ../ubumaths-wt-questions-6 origin/main`).
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1385,3 +1384,17 @@ nombre de répétitions accordé à l'angle (4 × 90° carré, 3 × 120° triang
 - Page à cocher générée depuis `main` (12e63a739), publiée (`db`, 0 verdict) :
   https://claude.ai/artifact/LzKMxYtkr4YUghfHoibJCH. Alerte sur 05-07 : bloc `scratch` non dessiné (le jouer dans
   l'aperçu).
+
+### 22.5 Relecture et publication (2026-11-02)
+
+- Relecture de David : 7/7 « OK », aucun commentaire (base de la page lue, 7 verdicts comptés). `publier-lot` en
+  simulation : 7 brouillons passent le contrôle. David lance `--publier` : « 7/7 modèles du lot publiés (statut relu
+  en base) ». MCP : les 7 `published`.
+
+## 23. Relevé après le lot 9 (2026-11-02)
+
+Relevé MCP prod : 6e = 165 publiés, 1 brouillon (3a7a5711). **30 points de 6e sans modèle publié** (37 au § 21,
+moins 143, 184, 185, 192, 194, 195, 196) : 129, 138, 142, 148, 160-180, 182, 183, 197, 207, 210. Classement du § 14
+inchangé. Lots restants : **10** géométrie dessinée, distances, cercle, médiatrice (160-167) · **11** angles,
+triangles, symétrie (148, 168, 171, 174-179) · restent C (169, 142), figure à compléter (170, 172, 173, 180, 207)
+et D (129, 138, 182, 183, 197, 210).
