@@ -1,0 +1,156 @@
+{
+	"title": "Arbre de deux épreuves indépendantes",
+	"description": "Pièce puis urne : probabilité d'un chemin de l'arbre (produit des branches)",
+	"grades": ["2"],
+	"theme": "Probabilités",
+	"domain": "Probabilités conditionnelles",
+	"subdomain": "Arbres pondérés",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On lance une pièce équilibrée ($P$ : Pile, $F$ : Face), puis on tire une boule au hasard dans une urne qui contient ${{r}}$ boules rouges ($R$) et ${{bl}}$ boules bleues ($B$). Les deux épreuves sont indépendantes.\n\n```probtree\nP:1/2\n  R:{{r}}/{{n}}\n  B:{{bl}}/{{n}}\nF:1/2\n  R:{{r}}/{{n}}\n  B:{{bl}}/{{n}}\n```\n\nQuelle est la probabilité d'obtenir Pile **puis** une boule rouge ?\n\n$P(P\\cap R)=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5|7"
+				},
+				{
+					"name": "r",
+					"expression": "2..5"
+				},
+				{
+					"name": "bl",
+					"expression": "eval:(n)-(r)"
+				}
+			],
+			"conditions": ["bl >= 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(r)/(2*(n))}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La probabilité d'un chemin est le **produit** des probabilités de ses branches.",
+					"Chemin $P$ puis $R$ : $\\dfrac{1}{2}\\times\\dfrac{ {{r}} }{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{eval:(r)/(2*(n))}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On lance une pièce équilibrée ($P$ : Pile, $F$ : Face), puis on tire une boule au hasard dans une urne qui contient ${{r}}$ boules rouges ($R$) et ${{bl}}$ boules bleues ($B$). Les deux épreuves sont indépendantes.\n\n```probtree\nP:1/2\n  R:{{r}}/{{n}}\n  B:{{bl}}/{{n}}\nF:1/2\n  R:{{r}}/{{n}}\n  B:{{bl}}/{{n}}\n```\n\nQuelle est la probabilité d'obtenir Face **puis** une boule bleue ?\n\n$P(F\\cap B)=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5|7"
+				},
+				{
+					"name": "r",
+					"expression": "2..5"
+				},
+				{
+					"name": "bl",
+					"expression": "eval:(n)-(r)"
+				}
+			],
+			"conditions": ["bl >= 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(bl)/(2*(n))}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La probabilité d'un chemin est le **produit** des probabilités de ses branches.",
+					"Chemin $F$ puis $B$ : $\\dfrac{1}{2}\\times\\dfrac{ {{bl}} }{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{eval:(bl)/(2*(n))}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1/2 × 3/5 = 3/10",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"r": "3",
+				"bl": "2"
+			},
+			"answers": ["\\frac{3}{10}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3/10 en décimal",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"r": "3",
+				"bl": "2"
+			},
+			"answers": ["0.3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme 1/2 + 3/5",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"r": "3",
+				"bl": "2"
+			},
+			"answers": ["\\frac{11}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : branche seule 3/5",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"r": "3",
+				"bl": "2"
+			},
+			"answers": ["\\frac{3}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/2 × 2/5 = 1/5",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5",
+				"r": "3",
+				"bl": "2"
+			},
+			"answers": ["\\frac{1}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rouge au lieu de bleue",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5",
+				"r": "3",
+				"bl": "2"
+			},
+			"answers": ["\\frac{3}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

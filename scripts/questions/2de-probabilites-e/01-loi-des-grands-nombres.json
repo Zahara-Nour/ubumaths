@@ -1,0 +1,157 @@
+{
+	"title": "Loi des grands nombres",
+	"description": "Lancers d'un dé : la fréquence d'une grande série est, sauf exception, proche de la probabilité",
+	"grades": ["2"],
+	"theme": "Probabilités",
+	"domain": "Simulation",
+	"subdomain": "Stabilisation",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Trois élèves lancent un dé équilibré et notent la fréquence d'apparition du $6$ : l'un fait $20$ lancers, un autre $100$, le dernier $10\\,000$. Ils ont mélangé leurs résultats : ${{eval:(k20)/20;d}}$, ${{eval:(kc)/100;d}}$ et ${{eval:(km)/10000;d}}$.\n\nQuelle fréquence vient, selon toute vraisemblance, de la série de $10\\,000$ lancers ?\n\n```choix\n- ${{eval:(km)/10000;d}}$\n- ${{eval:(kc)/100;d}}$\n- ${{eval:(k20)/20;d}}$\n```",
+			"variables": [
+				{
+					"name": "k20",
+					"expression": "1|2|5|6"
+				},
+				{
+					"name": "kc",
+					"expression": "10|11|12|13|14|19|20|21|22|23"
+				},
+				{
+					"name": "km",
+					"expression": "1650..1685"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La probabilité d'obtenir $6$ avec un dé équilibré est $\\dfrac{1}{6}\\approx0{,}167$.",
+					"**Loi des grands nombres** : quand le nombre de lancers est grand, la fréquence observée est, sauf exception, proche de la probabilité.",
+					"La fréquence la plus proche de $0{,}167$ est $\\textcolor{{{color:primary.0}}}{{{eval:(km)/10000;d}}}$ : c'est elle qui vient, selon toute vraisemblance, des $10\\,000$ lancers."
+				]
+			}
+		},
+		{
+			"statement": "On lance un dé équilibré $n$ fois et on calcule la fréquence $f$ d'apparition du $6$. La probabilité d'obtenir $6$ est $\\dfrac{1}{6}$. Une série de $100$ lancers a donné $f={{eval:(kc)/100;d}}$.\n\nQuelle affirmation est juste ?\n\n```choix\n- Pour $n$ grand, $f$ est, sauf exception, proche de $\\dfrac{1}{6}$.\n- Pour $n=10\\,000$, $f$ est exactement égale à $\\dfrac{1}{6}$.\n- Comme $f\\neq\\dfrac{1}{6}$, le dé est truqué.\n- La fréquence $f$ ne dépend pas du nombre de lancers.\n```",
+			"variables": [
+				{
+					"name": "k20",
+					"expression": "1|2|5|6"
+				},
+				{
+					"name": "kc",
+					"expression": "10|11|12|13|14|19|20|21|22|23"
+				},
+				{
+					"name": "km",
+					"expression": "1650..1685"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Loi des grands nombres** : quand $n$ est grand, la fréquence observée est, sauf exception, **proche** de la probabilité — rarement égale.",
+					"Sur $100$ lancers, $f={{eval:(kc)/100;d}}$ s'écarte de $\\dfrac{1}{6}\\approx0{,}167$ sans que le dé soit truqué : les fréquences fluctuent. Avec $10\\,000$ lancers simulés :",
+					"```simulation\nX = 1 ; 2 ; 3 ; 4 ; 5 ; 6\nP = 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6\ntirages: 10000\n```",
+					"$\\textcolor{{{color:primary.0}}}{\\text{Pour } n \\text{ grand, } f \\text{ est proche de } \\tfrac{1}{6}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "0,1672 vient des 10 000 lancers (rang 0)",
+			"variationIndex": 0,
+			"variables": {
+				"k20": "5",
+				"kc": "21",
+				"km": "1672"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,21",
+			"variationIndex": 0,
+			"variables": {
+				"k20": "5",
+				"kc": "21",
+				"km": "1672"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0,25 (20 lancers)",
+			"variationIndex": 0,
+			"variables": {
+				"k20": "5",
+				"kc": "21",
+				"km": "1672"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Affirmation juste (rang 0)",
+			"variationIndex": 1,
+			"variables": {
+				"k20": "5",
+				"kc": "21",
+				"km": "1672"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : égale pour 10 000",
+			"variationIndex": 1,
+			"variables": {
+				"k20": "5",
+				"kc": "21",
+				"km": "1672"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : dé truqué",
+			"variationIndex": 1,
+			"variables": {
+				"k20": "5",
+				"kc": "21",
+				"km": "1672"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

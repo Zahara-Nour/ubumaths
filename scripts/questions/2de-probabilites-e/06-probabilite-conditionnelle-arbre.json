@@ -1,0 +1,212 @@
+{
+	"title": "Probabilité conditionnelle sur un arbre",
+	"description": "Lire P_Ā(B) sur une branche du second niveau ; retrouver P_A(B) à partir de P(A ∩ B)",
+	"grades": ["2"],
+	"theme": "Probabilités",
+	"domain": "Probabilités conditionnelles",
+	"subdomain": "Arbres pondérés",
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère l'arbre pondéré ci-dessous.\n\n```probtree\nA:0.{{a}}\n  B:0.{{b}}\n  \\overline{B}:0.{{nb}}\n\\overline{A}:0.{{na}}\n  B:0.{{c}}\n  \\overline{B}:0.{{nc}}\n```\n\nQuelle est la probabilité de $B$ sachant $\\overline{A}$ ?\n\n$P_{\\overline{A}}(B)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "na",
+					"expression": "eval:10-(a)"
+				},
+				{
+					"name": "nb",
+					"expression": "eval:10-(b)"
+				},
+				{
+					"name": "nc",
+					"expression": "eval:10-(c)"
+				},
+				{
+					"name": "ab",
+					"expression": "eval:(a)*(b)"
+				}
+			],
+			"conditions": ["b != c", "c != na"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(c)/10}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur un arbre, les branches du **second niveau** portent des probabilités conditionnelles : la branche $B$ issue de $\\overline{A}$ porte $P_{\\overline{A}}(B)$.",
+					"$P_{\\overline{A}}(B)=\\textcolor{{{color:primary.0}}}{0{,}{{c}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère l'arbre pondéré ci-dessous, dont deux branches sont effacées.\n\n```probtree\nA:0.{{a}}\n  B:?\n  \\overline{B}:?\n\\overline{A}:0.{{na}}\n  B:0.{{c}}\n  \\overline{B}:0.{{nc}}\n```\n\nOn sait que $P(A\\cap B)={{eval:(ab)/100;d}}$. Calcule $P_A(B)$.\n\n$P_A(B)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "na",
+					"expression": "eval:10-(a)"
+				},
+				{
+					"name": "nb",
+					"expression": "eval:10-(b)"
+				},
+				{
+					"name": "nc",
+					"expression": "eval:10-(c)"
+				},
+				{
+					"name": "ab",
+					"expression": "eval:(a)*(b)"
+				}
+			],
+			"conditions": ["b != a"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(b)/10}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Probabilité d'un chemin : $P(A\\cap B)=P(A)\\times P_A(B)$, donc $P_A(B)=\\dfrac{P(A\\cap B)}{P(A)}$.",
+					"$P_A(B)=\\dfrac{ {{eval:(ab)/100;d}} }{ 0{,}{{a}} }=\\textcolor{{{color:primary.0}}}{0{,}{{b}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "P_Ā(B) = 0,7",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "3",
+				"c": "7",
+				"na": "6",
+				"nb": "7",
+				"nc": "3",
+				"ab": "12"
+			},
+			"answers": ["0.7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : P(Ā) = 0,6",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "3",
+				"c": "7",
+				"na": "6",
+				"nb": "7",
+				"nc": "3",
+				"ab": "12"
+			},
+			"answers": ["0.6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : P_A(B) = 0,3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "3",
+				"c": "7",
+				"na": "6",
+				"nb": "7",
+				"nc": "3",
+				"ab": "12"
+			},
+			"answers": ["0.3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "P_A(B) = 0,12 / 0,4 = 0,3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "3",
+				"c": "7",
+				"na": "6",
+				"nb": "7",
+				"nc": "3",
+				"ab": "12"
+			},
+			"answers": ["0.3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : P(A ∩ B) × P(A) (0,048)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "3",
+				"c": "7",
+				"na": "6",
+				"nb": "7",
+				"nc": "3",
+				"ab": "12"
+			},
+			"answers": ["0.048"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : P(A ∩ B) recopiée (0,12)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "3",
+				"c": "7",
+				"na": "6",
+				"nb": "7",
+				"nc": "3",
+				"ab": "12"
+			},
+			"answers": ["0.12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

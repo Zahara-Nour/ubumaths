@@ -1,0 +1,176 @@
+{
+	"title": "Construire un tableau croisé d'effectifs",
+	"description": "Énoncé en pourcentages traduit en tableau croisé, puis probabilité d'un événement",
+	"grades": ["2"],
+	"theme": "Probabilités",
+	"domain": "Probabilités conditionnelles",
+	"subdomain": "Tableaux croisés",
+	"level": 4,
+	"delay": 180,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Un lycée compte ${{nt}}$ élèves, dont ${{tf}}$ filles. ${{p}}\\,\\%$ des filles et ${{q}}\\,\\%$ des garçons pratiquent un sport en club.\n\n```tableau-croise\nlignes: Filles ; Garçons\ncolonnes: Club ; Sans club\nFilles = {{fc}} ; {{fs}}\nGarçons = {{gc}} ; {{gs}}\ncoin: Sexe \\ Sport\nmasquer: Filles/Club ; Filles/Sans club ; Filles/Total ; Garçons/Club ; Garçons/Sans club ; Garçons/Total ; Total/Club ; Total/Sans club ; Total/Total\n```\n\nComplète le tableau croisé d'effectifs.\n\nFilles en club : $?$\n\nGarçons en club : $?$\n\nÉlèves en club : $?$\n\nOn choisit un élève au hasard. Quelle est la probabilité qu'il pratique un sport en club ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "4..8"
+				},
+				{
+					"name": "b",
+					"expression": "4..8"
+				},
+				{
+					"name": "r",
+					"expression": "2..12"
+				},
+				{
+					"name": "s",
+					"expression": "2..12"
+				},
+				{
+					"name": "tf",
+					"expression": "eval:20*(a)"
+				},
+				{
+					"name": "tg",
+					"expression": "eval:20*(b)"
+				},
+				{
+					"name": "nt",
+					"expression": "eval:(tf)+(tg)"
+				},
+				{
+					"name": "p",
+					"expression": "eval:5*(r)"
+				},
+				{
+					"name": "q",
+					"expression": "eval:5*(s)"
+				},
+				{
+					"name": "fc",
+					"expression": "eval:(tf)*(p)/100"
+				},
+				{
+					"name": "gc",
+					"expression": "eval:(tg)*(q)/100"
+				},
+				{
+					"name": "fs",
+					"expression": "eval:(tf)-(fc)"
+				},
+				{
+					"name": "gs",
+					"expression": "eval:(tg)-(gc)"
+				},
+				{
+					"name": "tc",
+					"expression": "eval:(fc)+(gc)"
+				}
+			],
+			"conditions": ["p != q"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{fc}}"
+				},
+				{
+					"expectedAnswer": "{{gc}}"
+				},
+				{
+					"expectedAnswer": "{{tc}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(tc)/(nt)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Garçons : ${{nt}}-{{tf}}={{tg}}$.",
+					"Filles en club : ${{p}}\\,\\%$ **des filles**, ${{eval:(p)/100;d}}\\times{{tf}}=\\textcolor{{{color:primary.0}}}{{{fc}}}$ ; garçons en club : ${{eval:(q)/100;d}}\\times{{tg}}=\\textcolor{{{color:primary.0}}}{{{gc}}}$ ; en tout ${{fc}}+{{gc}}=\\textcolor{{{color:primary.0}}}{{{tc}}}$.",
+					"```tableau-croise\nlignes: Filles ; Garçons\ncolonnes: Club ; Sans club\nFilles = {{fc}} ; {{fs}}\nGarçons = {{gc}} ; {{gs}}\ncoin: Sexe \\ Sport\n```",
+					"Tirage au hasard (équiprobabilité) : $\\dfrac{ {{tc}} }{ {{nt}} }=\\textcolor{{{color:primary.0}}}{{{eval:(tc)/(nt)}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "36 ; 40 ; 76 ; 76/200 = 19/50",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "4",
+				"r": "6",
+				"s": "10",
+				"tf": "120",
+				"tg": "80",
+				"nt": "200",
+				"p": "30",
+				"q": "50",
+				"fc": "36",
+				"gc": "40",
+				"fs": "84",
+				"gs": "40",
+				"tc": "76"
+			},
+			"answers": ["36", "40", "76", "\\frac{19}{50}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "36 ; 40 ; 76 ; 0,38",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "4",
+				"r": "6",
+				"s": "10",
+				"tf": "120",
+				"tg": "80",
+				"nt": "200",
+				"p": "30",
+				"q": "50",
+				"fc": "36",
+				"gc": "40",
+				"fs": "84",
+				"gs": "40",
+				"tc": "76"
+			},
+			"answers": ["36", "40", "76", "0.38"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pourcentages du total (60 ; 100)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "4",
+				"r": "6",
+				"s": "10",
+				"tf": "120",
+				"tg": "80",
+				"nt": "200",
+				"p": "30",
+				"q": "50",
+				"fc": "36",
+				"gc": "40",
+				"fs": "84",
+				"gs": "40",
+				"tc": "76"
+			},
+			"answers": ["60", "100", "160", "\\frac{4}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

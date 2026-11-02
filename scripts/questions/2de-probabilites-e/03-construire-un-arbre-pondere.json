@@ -1,0 +1,125 @@
+{
+	"title": "Construire un arbre pondéré",
+	"description": "Énoncé « x % des…, parmi eux y % » traduit en arbre : six pondérations",
+	"grades": ["2"],
+	"theme": "Probabilités",
+	"domain": "Probabilités conditionnelles",
+	"subdomain": "Arbres pondérés",
+	"level": 4,
+	"delay": 180,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans un club, ${{a}}0\\,\\%$ des adhérents sont des filles, les autres des garçons. Parmi les filles, ${{b}}0\\,\\%$ font de la compétition ; parmi les garçons, ${{c}}0\\,\\%$. On choisit un adhérent au hasard ; on note $F$ « c'est une fille », $G$ « c'est un garçon » et $C$ « il fait de la compétition ».\n\n```probtree\nF:?\n  C:?\n  \\overline{C}:?\nG:?\n  C:?\n  \\overline{C}:?\n```\n\nComplète l'arbre pondéré.\n\n$P(F)=?$\n\n$P(G)=?$\n\n$P_{F}(C)=?$\n\n$P_{F}(\\overline{C})=?$\n\n$P_{G}(C)=?$\n\n$P_{G}(\\overline{C})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "ga",
+					"expression": "eval:10-(a)"
+				},
+				{
+					"name": "nb",
+					"expression": "eval:10-(b)"
+				},
+				{
+					"name": "nc",
+					"expression": "eval:10-(c)"
+				}
+			],
+			"conditions": ["b != c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a)/10}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(ga)/10}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(b)/10}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(nb)/10}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(c)/10}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(nc)/10}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Premier niveau : le sexe ; $P(G)=1-P(F)$.",
+					"Second niveau : « parmi les filles » donne une probabilité **sachant $F$**, portée par les branches qui partent de $F$ ; la somme des branches issues d'un même nœud vaut $1$.",
+					"```probtree\nF:0.{{a}}\n  C:0.{{b}}\n  \\overline{C}:0.{{nb}}\nG:0.{{ga}}\n  C:0.{{c}}\n  \\overline{C}:0.{{nc}}\n```"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "0,6 ; 0,4 ; 0,3 ; 0,7 ; 0,5 ; 0,5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "3",
+				"c": "5",
+				"ga": "4",
+				"nb": "7",
+				"nc": "5"
+			},
+			"answers": ["0.6", "0.4", "0.3", "0.7", "0.5", "0.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : P_F(C̄) = 1 − P(F)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "3",
+				"c": "5",
+				"ga": "4",
+				"nb": "7",
+				"nc": "5"
+			},
+			"answers": ["0.6", "0.4", "0.3", "0.4", "0.5", "0.5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : P_F(C) = P(F) × 0,3 (0,18)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "3",
+				"c": "5",
+				"ga": "4",
+				"nb": "7",
+				"nc": "5"
+			},
+			"answers": ["0.6", "0.4", "0.18", "0.82", "0.2", "0.8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

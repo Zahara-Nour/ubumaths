@@ -1,0 +1,246 @@
+{
+	"title": "Faux positifs : P_M(T) ou P_T(M)",
+	"description": "Test de dépistage en tableau croisé : sensibilité, probabilité d'être malade sachant le test positif, faux positifs",
+	"grades": ["2"],
+	"theme": "Probabilités",
+	"domain": "Probabilités conditionnelles",
+	"subdomain": "Problèmes en contexte",
+	"level": 4,
+	"delay": 150,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Un test de dépistage d'une maladie est essayé sur $10\\,000$ personnes. On choisit une personne au hasard ; on note $M$ « elle est malade » et $T$ « son test est positif ».\n\n```tableau-croise\nlignes: Malade ; Non malade\ncolonnes: Test positif ; Test négatif\nMalade = {{vp}} ; {{fn}}\nNon malade = {{fp}} ; {{vn}}\ncoin: État \\ Test\n```\n\nDonne les résultats en fraction ou en écriture décimale.\n\nLa **sensibilité** du test est la probabilité qu'un malade ait un test positif.\n\n$P_M(T)=?$\n\nUne personne a un test positif. Quelle est la probabilité qu'elle soit malade ?\n\n$P_T(M)=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "100|200|500"
+				},
+				{
+					"name": "s",
+					"expression": "90|95|98"
+				},
+				{
+					"name": "sp",
+					"expression": "90|95|98|99"
+				},
+				{
+					"name": "vp",
+					"expression": "eval:(m)*(s)/100"
+				},
+				{
+					"name": "fn",
+					"expression": "eval:(m)-(vp)"
+				},
+				{
+					"name": "nm",
+					"expression": "eval:10000-(m)"
+				},
+				{
+					"name": "vn",
+					"expression": "eval:(nm)*(sp)/100"
+				},
+				{
+					"name": "fp",
+					"expression": "eval:(nm)-(vn)"
+				},
+				{
+					"name": "tp",
+					"expression": "eval:(vp)+(fp)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(vp)/(m)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(vp)/(tp)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$P_M(T)$ : **parmi les malades** (ligne « Malade », ${{m}}$ personnes), ceux qui ont un test positif : $\\dfrac{ {{vp}} }{ {{m}} }=\\textcolor{{{color:primary.0}}}{{{eval:(vp)/(m)}}}$.",
+					"$P_T(M)$ : **parmi les tests positifs** (colonne « Test positif », ${{tp}}$ personnes), les malades : $\\dfrac{ {{vp}} }{ {{tp}} }=\\textcolor{{{color:primary.0}}}{{{eval:(vp)/(tp)}}}$.",
+					"Les deux probabilités sont très différentes : beaucoup de tests positifs sont des **faux positifs** (${{fp}}$ non-malades testés positifs), car les non-malades sont très nombreux."
+				]
+			}
+		},
+		{
+			"statement": "Un test de dépistage d'une maladie est essayé sur $10\\,000$ personnes. On choisit une personne au hasard ; on note $M$ « elle est malade » et $T$ « son test est positif ».\n\n```tableau-croise\nlignes: Malade ; Non malade\ncolonnes: Test positif ; Test négatif\nMalade = {{vp}} ; {{fn}}\nNon malade = {{fp}} ; {{vn}}\ncoin: État \\ Test\n```\n\nDonne les résultats en fraction ou en écriture décimale.\n\nCombien de **faux positifs** (personnes non malades dont le test est positif) compte cet essai ?\n\n$?$\n\nUne personne a un test positif. Quelle est la probabilité qu'elle ne soit **pas** malade ?\n\n$P_T(\\overline{M})=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "100|200|500"
+				},
+				{
+					"name": "s",
+					"expression": "90|95|98"
+				},
+				{
+					"name": "sp",
+					"expression": "90|95|98|99"
+				},
+				{
+					"name": "vp",
+					"expression": "eval:(m)*(s)/100"
+				},
+				{
+					"name": "fn",
+					"expression": "eval:(m)-(vp)"
+				},
+				{
+					"name": "nm",
+					"expression": "eval:10000-(m)"
+				},
+				{
+					"name": "vn",
+					"expression": "eval:(nm)*(sp)/100"
+				},
+				{
+					"name": "fp",
+					"expression": "eval:(nm)-(vn)"
+				},
+				{
+					"name": "tp",
+					"expression": "eval:(vp)+(fp)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{fp}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(fp)/(tp)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Faux positifs : ligne « Non malade », colonne « Test positif » : $\\textcolor{{{color:primary.0}}}{{{fp}}}$.",
+					"$P_T(\\overline{M})$ : **parmi les ${{tp}}$ tests positifs**, les non-malades : $\\dfrac{ {{fp}} }{ {{tp}} }=\\textcolor{{{color:primary.0}}}{{{eval:(fp)/(tp)}}}$.",
+					"À ne pas confondre avec $P_{\\overline{M}}(T)=\\dfrac{ {{fp}} }{ {{nm}} }$, la proportion de tests positifs parmi les non-malades."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "P_M(T) = 19/20, P_T(M) = 19/68",
+			"variationIndex": 0,
+			"variables": {
+				"m": "200",
+				"s": "95",
+				"sp": "95",
+				"vp": "190",
+				"fn": "10",
+				"nm": "9800",
+				"vn": "9310",
+				"fp": "490",
+				"tp": "680"
+			},
+			"answers": ["\\frac{19}{20}", "\\frac{19}{68}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "0,95 et 19/68",
+			"variationIndex": 0,
+			"variables": {
+				"m": "200",
+				"s": "95",
+				"sp": "95",
+				"vp": "190",
+				"fn": "10",
+				"nm": "9800",
+				"vn": "9310",
+				"fp": "490",
+				"tp": "680"
+			},
+			"answers": ["0.95", "\\frac{19}{68}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : P_T(M) = P_M(T)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "200",
+				"s": "95",
+				"sp": "95",
+				"vp": "190",
+				"fn": "10",
+				"nm": "9800",
+				"vn": "9310",
+				"fp": "490",
+				"tp": "680"
+			},
+			"answers": ["0.95", "0.95"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : P_T(M) = 190/10000",
+			"variationIndex": 0,
+			"variables": {
+				"m": "200",
+				"s": "95",
+				"sp": "95",
+				"vp": "190",
+				"fn": "10",
+				"nm": "9800",
+				"vn": "9310",
+				"fp": "490",
+				"tp": "680"
+			},
+			"answers": ["0.95", "0.019"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "490 faux positifs, P_T(M̄) = 49/68",
+			"variationIndex": 1,
+			"variables": {
+				"m": "200",
+				"s": "95",
+				"sp": "95",
+				"vp": "190",
+				"fn": "10",
+				"nm": "9800",
+				"vn": "9310",
+				"fp": "490",
+				"tp": "680"
+			},
+			"answers": ["490", "\\frac{49}{68}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : P_M̄(T) = 490/9800 = 0,05",
+			"variationIndex": 1,
+			"variables": {
+				"m": "200",
+				"s": "95",
+				"sp": "95",
+				"vp": "190",
+				"fn": "10",
+				"nm": "9800",
+				"vn": "9310",
+				"fp": "490",
+				"tp": "680"
+			},
+			"answers": ["490", "0.05"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
