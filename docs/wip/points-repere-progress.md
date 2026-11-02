@@ -6,16 +6,19 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 2 en cours._
+_Mis à jour le 2026-11-02, après #2265._
 
-- **État** : lot 2 (`tracer:` une droite) en cours sur `feat/points-repere-tracer` ; moteur fait (parseur,
-  `utils/courbe-tracer.ts`, juge, générateur, masquage `tracer: ?`) ; reste écran, copie corrigée, PDF, doc.
-- **Prochaine action** : `CourbePlacer.svelte` en mode tracer (2 points, étiquettes « 1 » / « 2 », droite
-  dessinée), `Courbe.svelte` (`traces`), `BuildAnswer`, `FillBlanksInput`, Typst corrigé ; puis doc, PR.
-- **En attente de David** : essai du repère à placer (lot 1) ; corrigé PDF des blocs à placer (§ 7).
-- **Pièges en cours** : un geste ne doit jamais donner la réponse (énoncé masqué : `tracer: ?`) ; CI
-  « Client Tests » `wrapDynamicImport` = infra ; `pnpm types:cliquet` avant la PR.
-- **Worktree / branche** : `../ubumaths-wt-points-repere`, `feat/points-repere-tracer`.
+- **État** : lot 1 (`placer:`, #2096) et lot 2 (`tracer:` une droite, #2265) mergés, pas en prod.
+- **Prochaine action** : lot 3, `tracer: vecteur (3 ; -2)` (2-298, § 3) dans un worktree neuf
+  `ubumaths-wt-points-repere` depuis `origin/main` ; d'abord phase 0 des détails (origine imposée
+  `depuis A`, étiquettes, phrases), comme le § 8 pour la droite.
+- **En attente de David** : essais à l'œil des lots 1 et 2 (`docs/wip/verifications-manuelles.md`) ;
+  corrigé PDF des blocs à placer, à brancher le jour d'un corrigé imprimé (§ 7).
+- **Pièges en cours** : un geste ne doit jamais donner la réponse (énoncé masqué `placer: A=?`,
+  `tracer: ?`) ; phrase de correction avec une équation : `equationLatex` (tidy), jamais le texte brut ;
+  CI « Client Tests » `wrapDynamicImport` = bruit, `/demo/lexique` instable (repassé au 2e essai) ;
+  `pnpm types:cliquet` avant la PR.
+- **Worktree / branche** : aucun (retiré après #2265).
 
 ---
 
@@ -227,3 +230,14 @@ David, « oui » aux quatre recos :
 Choix techniques : réponse attendue = l'équation normalisée (espaces, signes des variables, virgule → point) ;
 lue en `ax + by + c = 0` par mathAST (`parseCustom` + évaluation, vérifiée affine : `1/2x`, `2*(x - 1)`
 acceptés) ; case `x1;y1/x2;y2` ; juge `isCourbeAnswerCorrect` (équation reconnue à son `=`, sinon point).
+
+## 9. Lot 2 — fait (2026-11-02, #2265)
+
+Commits : moteur (`utils/courbe-tracer.ts` : `lineCoefficients`, `lineNodes`, `correctionPoints`,
+`isTracedLineCorrect`, `isCourbeAnswerCorrect` ; parseur `tracer:`, masquage `tracer: ?`), écran
+(`CourbePlacer` en mode tracer, `traces` de `Courbe.svelte`, `BuildAnswer`, `FillBlanksInput`, Typst
+`solved`), doc (ubumark, questions, grapheur, catalogue). Revue `code-reviewer` (Opus) : rien de bloquant ;
+corrigé l'équation brute de la phrase (« y = 1x + 0 » → `equationLatex` + `MathInline`), la tolérance du
+juge des droites raides, l'exemple `1/2x` du catalogue. Laissé, documenté : le juge ne vérifie pas que les
+points sont des nœuds (une réponse forgée hors nœud désigne quand même la bonne droite). `\frac` refusé
+dans `tracer:` (écrire `1/2x`).
