@@ -10,20 +10,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après la publication du lot 4._
+_Mis à jour le 2026-11-02, répartition en trois sous-chantiers (§ 18)._
 
-- **État** : lots 0 à 4 faits ; lot 4 (intégrales et primitives, § 17) **publié** le 2026-11-02 (9/9 `published`,
-  relu au MCP ; 9 verdicts OK sur la page à cocher).
-- **Prochaine action** : lot 5 « probabilités : succession d'épreuves, sommes de variables » (501, 612, 505, 615, 507,
-  509, 613, 506, 617, 518, 521, 525, 532 ; deux lots, § 4) : worktree neuf depuis `origin/main`, relevé MCP des
-  voisins, phase 0 à faire valider.
-- **En attente de David** : rien (la phase 0 du lot 5 est à produire).
-- **Pièges en cours** : `cleanCoefficients` ne nettoie que les formules analysables → signes par `coef()`/`terme()`,
-  couleur toujours dans `$…$` (§ 17) ; un tag sur le nœud du modèle ou sa notion (§ 14), un modèle peut aller sur une
-  notion sans sous-notion (garde § 17) ; `create-questions` et `publier-lot` → David (`!`) ; `db:migrate` passe TOUTES
-  les migrations en attente ; `pnpm migration:horodatage` ; job navigateur `wrapDynamicImport` en CI : relancer ;
-  saisie MathLive non pilotable par l'automate ; port 5176 pris par une autre session.
-- **Worktree / branche** : aucun ; lot 5 → worktree neuf depuis `origin/main`.
+- **État** : lots 0 à 4 publiés. La suite est répartie en trois sessions parallèles (§ 18) :
+  `questions-tspe-proba` (5a, 5b), `questions-tspe-espace` (6a, 6b), `questions-tspe-restes` (7, puis 8).
+- **Prochaine action** : aucune ici ; chaque session part de `/reprendre <sous-chantier>`. Ce journal reste
+  l'index : y noter seulement la fin de chaque sous-chantier.
+- **En attente de David** : ouvrir les trois sessions.
+- **Pièges en cours** : repris dans chaque sous-journal (« Décisions communes et pièges »).
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -899,3 +894,17 @@ la publication). Rendu à 390 px non vérifié. `publier-lot.ts` simulé : 9 bro
 
 **Publication** (2026-11-02) : 9 verdicts « OK » lus en base de la page (comptés, sans commentaire) ;
 `publier-lot.ts --publier` lancé par David : 9/9 `published`, relus au MCP.
+
+## 18. Répartition en sous-chantiers (2026-11-02)
+
+David : « accélérer le chantier en répartissant les lots sur plusieurs sessions », seulement la terminale
+spécialité ; découpage validé (« oui »). Ce journal devient l'**index** (relevé, classement, décisions communes,
+lots 0 à 4) ; chaque sous-chantier a son journal, son worktree et sa session.
+
+| Sous-chantier           | Lots                              | Journal                                                                |
+| ----------------------- | --------------------------------- | ---------------------------------------------------------------------- |
+| `questions-tspe-proba`  | 5a, 5b                            | [questions-tspe-proba-progress.md](questions-tspe-proba-progress.md)   |
+| `questions-tspe-espace` | 6a, 6b                            | [questions-tspe-espace-progress.md](questions-tspe-espace-progress.md) |
+| `questions-tspe-restes` | 7, puis 8 (après les deux autres) | [questions-tspe-restes-progress.md](questions-tspe-restes-progress.md) |
+
+Lot 9 (espace sur figure, B\*) : attend le chantier `solides`, non attribué.
