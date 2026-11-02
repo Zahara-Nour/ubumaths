@@ -5,20 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 8 écrit (PR à ouvrir)._
+_Mis à jour le 2026-11-02, après #2187._
 
 - **État** : lots 0 à 6 publiés en prod ; lot 7 (algorithmique) mergé (#2128), pas en base ; lot 8
-  (boîte à moustaches, 2 modèles) écrit et essayé en base locale (§ 15.6), branche `content/questions-3-lot8`.
-- **Prochaine action** : PR du lot 8 → CI → merge. Puis, lots 7 et 8 : `create-questions --publier`
-  (David, depuis le dépôt principal à jour), migration de rangement (lot 7 : sous-notion neuve, § 14.10 ;
+  (boîte à moustaches, 2 modèles) mergé (#2187), pas en base.
+- **Prochaine action** : lots 7 et 8 en base : `create-questions --publier` (David, depuis le dépôt
+  principal à jour, `--dir scripts/questions/3-lot-7` puis `3-lot-8`), relever les `id`, migration de rangement (lot 7 : sous-notion neuve, § 14.10 ;
   lot 8 : f2167091, § 15.2), page à cocher.
-- **En attente de David** : rien.
+- **En attente de David** : les deux `create-questions --publier`.
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; aperçu admin : `--host 127.0.0.1` ; `audit-question-draws` :
   faux positifs « nombres juxtaposés » (blocs statistiques), « gabarit non résolu » sur `<<` (Scratch) ;
   sonde hors du dépôt : fichier `.mts` + `tsx --tsconfig tsconfig.json` ; `col()` hors de `$…$` s'affiche en
   brut ; `db:migrate` « inserted before » → `--dry-run --include-all` puis `--include-all` (#2181).
-- **Worktree / branche** : `../ubumaths-wt-questions-3`, `content/questions-3-lot8`.
+- **Worktree / branche** : `../ubumaths-wt-questions-3`, HEAD détachée sur `origin/main`.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -1102,3 +1102,7 @@ publiés de plus. Aucune règle ne change.
 - Base locale : `ad2d0d43` (lire), `1e6a8934` (construire). Aperçu : construire v2 (11 notes) posée juste ;
   lire v4 réponse fausse → « coché à tort », bonne réponse et corrigé affichés.
 - Retouches après sonde : couleur hors formule dans le corrigé de v5 → gras ; notes tirées de 2 à 20.
+
+### 15.7 Lot 8 : fichiers mergés (2026-11-02)
+
+- #2187 mergée (CI verte au 1er passage).
