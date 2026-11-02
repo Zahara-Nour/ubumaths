@@ -1,0 +1,220 @@
+{
+	"id": "a4de4154-a681-48b9-802a-f5f1b9df6fb9",
+	"title": "Moyenne après l'ajout ou le retrait d'une valeur",
+	"description": "Nouvelle moyenne quand on ajoute ou retire une valeur (par la somme) ; sens de variation sans calcul",
+	"grades": ["2"],
+	"theme": "Statistiques",
+	"domain": "Indicateurs",
+	"subdomain": "Moyenne",
+	"level": 5,
+	"delay": 60,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Une série de ${{n}}$ valeurs a pour moyenne ${{m}}$. On ajoute la valeur ${{v}}$ à la série.\n\nQuelle est la nouvelle moyenne ?\n\nNouvelle moyenne : $?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "4..9"
+				},
+				{
+					"name": "m",
+					"expression": "8..15"
+				},
+				{
+					"name": "v",
+					"expression": "0..30"
+				}
+			],
+			"conditions": ["v != m", "mod((n)*(m)+(v),(n)+1) == 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((n)*(m)+(v))/((n)+1)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Somme des ${{n}}$ valeurs : ${{n}}\\times{{m}}={{eval:(n)*(m)}}$.",
+					"Après l'ajout : ${{eval:(n)+1}}$ valeurs, de somme ${{eval:(n)*(m)}}+{{v}}={{eval:(n)*(m)+(v)}}$.",
+					"Nouvelle moyenne : $\\dfrac{ {{eval:(n)*(m)+(v)}} }{ {{eval:(n)+1}} }=\\textcolor{{{color:primary.0}}}{{{eval:((n)*(m)+(v))/((n)+1)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une série de ${{n}}$ valeurs a pour moyenne ${{m}}$. On retire de la série la valeur ${{v}}$.\n\nQuelle est la nouvelle moyenne ?\n\nNouvelle moyenne : $?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..10"
+				},
+				{
+					"name": "m",
+					"expression": "8..15"
+				},
+				{
+					"name": "v",
+					"expression": "0..30"
+				}
+			],
+			"conditions": ["v != m", "mod((n)*(m)-(v),(n)-1) == 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((n)*(m)-(v))/((n)-1)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Somme des ${{n}}$ valeurs : ${{n}}\\times{{m}}={{eval:(n)*(m)}}$.",
+					"Après le retrait : ${{eval:(n)-1}}$ valeurs, de somme ${{eval:(n)*(m)}}-{{v}}={{eval:(n)*(m)-(v)}}$.",
+					"Nouvelle moyenne : $\\dfrac{ {{eval:(n)*(m)-(v)}} }{ {{eval:(n)-1}} }=\\textcolor{{{color:primary.0}}}{{{eval:((n)*(m)-(v))/((n)-1)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La moyenne d'une série est ${{m}}$. On ajoute à la série la valeur ${{v}}$.\n\nSans calcul : la moyenne…\n\n```choix\nmelanger: non\n- augmente\n- ne change pas\n- diminue\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "8..15"
+				},
+				{
+					"name": "s",
+					"expression": "0|1|2"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "v",
+					"expression": "eval:(m)+(1-(s))*(d)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une valeur ajoutée **au-dessus** de la moyenne la fait augmenter, **au-dessous** la fait diminuer, **égale** à la moyenne ne la change pas.",
+					"{{if:s==0|${{v}}>{{m}}$ : la valeur est au-dessus de la moyenne, qui $\\textcolor{{{color:primary.0}}}{\\text{augmente}}$.| }}{{if:s==1|${{v}}={{m}}$ : la valeur est égale à la moyenne, qui $\\textcolor{{{color:primary.0}}}{\\text{ne change pas}}$.| }}{{if:s==2|${{v}}<{{m}}$ : la valeur est au-dessous de la moyenne, qui $\\textcolor{{{color:primary.0}}}{\\text{diminue}}$.| }}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"m": "10",
+				"n": "4",
+				"v": "20"
+			},
+			"description": "4 valeurs de moyenne 10, + 20 : 12",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "10",
+				"n": "4",
+				"v": "20"
+			},
+			"description": "Erreur : moyenne de 10 et 20 (15)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "10",
+				"n": "4",
+				"v": "20"
+			},
+			"description": "Erreur : divisé par 4 (15)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["14"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"m": "12",
+				"n": "6",
+				"v": "2"
+			},
+			"description": "6 valeurs de moyenne 12, − 2 : 14",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"m": "12",
+				"n": "6",
+				"v": "2"
+			},
+			"description": "Erreur : 12 − 2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"d": "5",
+				"m": "10",
+				"s": "0",
+				"v": "15"
+			},
+			"description": "15 > 10 : augmente",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"d": "3",
+				"m": "10",
+				"s": "2",
+				"v": "7"
+			},
+			"description": "7 < 10 : diminue",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "3",
+				"m": "10",
+				"s": "2",
+				"v": "7"
+			},
+			"description": "Erreur : ne change pas",
+			"variationIndex": 2
+		}
+	]
+}

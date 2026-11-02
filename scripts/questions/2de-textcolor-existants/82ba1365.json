@@ -1,0 +1,148 @@
+{
+	"id": "82ba1365-0c8f-4d04-bce2-4c314748e291",
+	"title": "Interpréter un quartile",
+	"description": "Sens de Q1 et Q3 (« au moins 25 % / 75 % des valeurs sont inférieures ou égales ») ; nombre minimal de valeurs concernées",
+	"grades": ["2"],
+	"theme": "Statistiques",
+	"domain": "Indicateurs",
+	"subdomain": "Quartiles",
+	"level": 2,
+	"delay": 60,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Pour une série statistique, on a ${{if:g==0|Q_1|Q_3}}={{q}}$.\n\nQuelle phrase est juste ?\n\n```choix\n- au moins ${{if:g==0|25|75}}\\,\\%$ des valeurs sont inférieures ou égales à ${{q}}$\n- exactement ${{if:g==0|25|75}}\\,\\%$ des valeurs sont égales à ${{q}}$\n- au plus ${{if:g==0|25|75}}\\,\\%$ des valeurs sont inférieures ou égales à ${{q}}$\n- la moyenne de la série est ${{q}}$\n```",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "0|1"
+				},
+				{
+					"name": "q",
+					"expression": "8..40"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{if:g==0|Q_1|Q_3}}$ est la plus petite valeur de la série telle qu'**au moins** ${{if:g==0|25|75}}\\,\\%$ des valeurs lui soient inférieures ou égales.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\text{au moins }{{if:g==0|25|75}}\\,\\%\\text{ des valeurs sont} \\leqslant {{q}}}$. Le quartile ne dit rien de la moyenne."
+				]
+			}
+		},
+		{
+			"statement": "Une série compte ${{n}}$ valeurs et ${{if:g==0|Q_1|Q_3}}={{q}}$.\n\nAu moins combien de valeurs sont inférieures ou égales à ${{q}}$ ?\n\nAu moins $?$ valeurs",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "0|1"
+				},
+				{
+					"name": "n",
+					"expression": "20|40|60|80|100|200"
+				},
+				{
+					"name": "q",
+					"expression": "8..40"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n)*(1+2*(g))/4}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Au moins ${{if:g==0|25|75}}\\,\\%$ des valeurs sont inférieures ou égales à ${{if:g==0|Q_1|Q_3}}$.",
+					"${{if:g==0|25|75}}\\,\\%$ de ${{n}}$ : $\\dfrac{{{if:g==0|25|75}}}{100}\\times{{n}}=\\textcolor{{{color:primary.0}}}{{{eval:(n)*(1+2*(g))/4}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"g": "0",
+				"q": "12"
+			},
+			"description": "Phrase juste",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"g": "0",
+				"q": "12"
+			},
+			"description": "Erreur : « exactement »",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"g": "0",
+				"q": "12"
+			},
+			"description": "Erreur : « au plus »",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["30"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"g": "1",
+				"n": "40",
+				"q": "15"
+			},
+			"description": "Q3, 40 valeurs : au moins 30",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"g": "1",
+				"n": "40",
+				"q": "15"
+			},
+			"description": "Erreur : 10 (le quart)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["50"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"g": "0",
+				"n": "200",
+				"q": "15"
+			},
+			"description": "Q1, 200 valeurs : au moins 50",
+			"variationIndex": 1
+		}
+	]
+}

@@ -106,7 +106,7 @@
 			],
 			"correction": {
 				"steps": [
-					"Une fonction affine non constante qui passe {{if:s>0|du négatif au positif|du positif au négatif}} est \\textcolor{{{color:primary.0}}}{\\text{{{if:s>0|croissante|décroissante}}}} : son coefficient directeur est {{if:s>0|positif|négatif}}."
+					"Une fonction affine non constante qui passe {{if:s>0|du négatif au positif|du positif au négatif}} est $\\textcolor{{{color:primary.0}}}{\\text{{{if:s>0|croissante|décroissante}}}}$ : son coefficient directeur est {{if:s>0|positif|négatif}}."
 				]
 			}
 		}

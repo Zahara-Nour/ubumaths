@@ -28,7 +28,7 @@
  * Usage :
  *   pnpm tsx scripts/update-published-questions.ts --lot <lot>            (simulation, diff)
  *   pnpm tsx scripts/update-published-questions.ts --lot <lot> --publier  (écrit)
- *   lots : second-degre, suites, derivation
+ *   lots : second-degre, suites, derivation, textcolor-2de
  *   … --seulement <id8>[,<id8>]   restreint aux cibles dont l'id commence ainsi
  *   … --sans-diff                 simulation sans le diff (preuves rouges seulement)
  */
@@ -96,10 +96,40 @@ const DERIVATION: readonly string[] = [
 	'74d77343-34b9-4259-94c2-c9e2c473b052' // Apprivoiser › calculer une dérivée 2 — attendu sans variable x, variations k√x, kxⁿ, kx + b
 ];
 
+/** Seconde : `\textcolor` écrit hors `$…$` s'affichait en LaTeX brut (docs/wip/questions-2de-progress.md,
+ *  § 56, § 59) ; seules les variations changent, régénérées par les générateurs du lot */
+const TEXTCOLOR_2DE: readonly string[] = [
+	'7ca1d2da-5519-4968-b903-5003ed4b1502', // classes-c › Lire un histogramme
+	'7a56029d-3c3b-4dcd-a7fc-c94912d9d80f', // classes-c › Lire un polygone des fréquences cumulées
+	'b7c71958-5d88-4828-87d7-5a4964fcb1d1', // classes-c › Classe médiane d'une série regroupée en classes
+	'b73677c8-0bb9-4e8d-af79-3a45d30a6a11', // classes-c › Comparer deux séries sur leurs boîtes à moustaches
+	'de146ac1-f0fb-413c-996e-3132a1f02f7e', // evolutions-a › Variation absolue d'une grandeur
+	'11f91d46-82c7-4dca-8812-e85b7bd93ae2', // evolutions-a › Pourcentage d'un pourcentage
+	'afbfa8c6-ad87-40ed-83e9-2e29cec24480', // evolutions-a › Pourcentages de pourcentages : effectifs
+	'5b3bef9f-f2b0-49e0-8b15-9ef7d19c9c4b', // evolutions-a › Effectifs, proportions et pourcentages
+	'42c19a19-4533-4dc5-81a3-2dba70b5cdb4', // fonctions-a › Point d'une courbe : image et antécédent
+	'ef92701a-a752-42b5-9873-7aa9f2035166', // indicateurs-b › Écart type d'une série
+	'a4de4154-a681-48b9-802a-f5f1b9df6fb9', // indicateurs-b › Moyenne après l'ajout ou le retrait d'une valeur
+	'82ba1365-0c8f-4d04-bce2-4c314748e291', // indicateurs-b › Interpréter un quartile
+	'893eb3cd-4c8e-4957-b739-844bcb4caaa7', // indicateurs-b › Comparer deux séries : moyenne et écart type
+	'6b2b7055-f935-4481-98b2-f0704be3a0f3', // indicateurs-b › Comparer deux séries : médiane et écart interquartile
+	'0cecc7f2-9741-4d83-ad08-99b5d0c3007c', // signes-a › Signe des fonctions de référence
+	'23908ef7-a9ac-4218-a8a7-5faf479a8158', // signes-a › Signe de la fonction valeur absolue
+	'71c7933f-edca-45b8-9847-b180a8c05196', // signes-a › Signe de la fonction carré
+	'6670b161-4120-44a4-a6fd-22c8db71d2a1', // signes-a › Fonction affine : variations, signe et droite
+	'6bb5ff09-34ba-401b-a7d5-8edb76d9dee0', // signes-a › Signe d'un produit, sans tableau
+	'80826238-a393-4840-b6be-b115dbfae8d7', // signes-a › Signe d'un quotient, sans tableau
+	'9c7ab1c7-d3f3-4c78-96f4-c14e5a657574', // signes-b › Tableau de signes d'un quotient
+	'93bc8b5e-b2a5-4793-b64e-271601504498', // variations-c › Croissante ou décroissante sur un intervalle
+	'4f887f53-263e-4ef3-b497-b3b50d83ec59', // variations-c › Comparer des images par le sens de variation
+	'275cb665-f0ab-4649-8188-df9ae44bb322' // variations-c › Comparer des images sur la courbe
+];
+
 const LOTS: Record<string, Lot> = {
 	'second-degre': { dossier: 'scripts/questions/second-degre-existants', cibles: SECOND_DEGRE },
 	suites: { dossier: 'scripts/questions/suites-existants', cibles: SUITES },
-	derivation: { dossier: 'scripts/questions/derivation-existants', cibles: DERIVATION }
+	derivation: { dossier: 'scripts/questions/derivation-existants', cibles: DERIVATION },
+	'textcolor-2de': { dossier: 'scripts/questions/2de-textcolor-existants', cibles: TEXTCOLOR_2DE }
 };
 
 /** Champs écrits ; tout le reste doit être identique entre le fichier et la base */

@@ -46,7 +46,7 @@
 			"correction": {
 				"steps": [
 					"$x^2\\geqslant 0$ ; multiplié par $-{{k}}$, négatif, il change de signe.",
-					"$-{{k}}x^2\\leqslant 0$, nul pour $x=0$ : il est \\textcolor{{{color:primary.0}}}{\\text{négatif ou nul}}."
+					"$-{{k}}x^2\\leqslant 0$, nul pour $x=0$ : il est $\\textcolor{{{color:primary.0}}}{\\text{négatif ou nul}}$."
 				]
 			}
 		},
@@ -69,7 +69,7 @@
 			"correction": {
 				"steps": [
 					"Un carré est positif ou nul, et nul seulement quand le nombre élevé au carré est nul.",
-					"$(x{{eval:-(a);+}})^2$ est \\textcolor{{{color:primary.0}}}{\\text{positif ou nul}}, nul pour $x{{eval:-(a);+}}=0$, soit $x=\\textcolor{{{color:primary.1}}}{{{a}}}$."
+					"$(x{{eval:-(a);+}})^2$ est $\\textcolor{{{color:primary.0}}}{\\text{positif ou nul}}$, nul pour $x{{eval:-(a);+}}=0$, soit $x=\\textcolor{{{color:primary.1}}}{{{a}}}$."
 				]
 			}
 		}

@@ -31,7 +31,7 @@
 			"correction": {
 				"steps": [
 					"Un carré est toujours positif ou nul : $x^2\\geqslant 0$, et $x^2=0$ seulement pour $x=0$.",
-					"{{if:g==1|Ici $x\\neq 0$ : $x^2$ est \\textcolor{{{color:primary.0}}}{\\text{strictement positif}}.|Il vaut $0$ pour $x=0$ : $x^2$ est \\textcolor{{{color:primary.0}}}{\\text{positif ou nul}}.}}"
+					"{{if:g==1|Ici $x\\neq 0$ : $x^2$ est $\\textcolor{{{color:primary.0}}}{\\text{strictement positif}}$.|Il vaut $0$ pour $x=0$ : $x^2$ est $\\textcolor{{{color:primary.0}}}{\\text{positif ou nul}}$.}}"
 				]
 			}
 		},
@@ -51,7 +51,7 @@
 			"correction": {
 				"steps": [
 					"$\\dfrac{1}{x}$ est du **signe de $x$** (on divise $1$, positif, par $x$) et n'est jamais nul.",
-					"Ici $x{{if:g==1|<|>}}0$ : $\\dfrac{1}{x}$ est \\textcolor{{{color:primary.0}}}{\\text{strictement {{if:g==1|négatif|positif}}}}."
+					"Ici $x{{if:g==1|<|>}}0$ : $\\dfrac{1}{x}$ est $\\textcolor{{{color:primary.0}}}{\\text{strictement {{if:g==1|négatif|positif}}}}$."
 				]
 			}
 		},
@@ -71,7 +71,7 @@
 			"correction": {
 				"steps": [
 					"$\\lvert x\\rvert$ est la distance de $x$ à $0$ : elle est positive ou nulle, et nulle seulement pour $x=0$.",
-					"{{if:g==1|Ici $x\\neq 0$ : $\\lvert x\\rvert$ est \\textcolor{{{color:primary.0}}}{\\text{strictement positif}}.|Elle vaut $0$ pour $x=0$ : $\\lvert x\\rvert$ est \\textcolor{{{color:primary.0}}}{\\text{positif ou nul}}.}}"
+					"{{if:g==1|Ici $x\\neq 0$ : $\\lvert x\\rvert$ est $\\textcolor{{{color:primary.0}}}{\\text{strictement positif}}$.|Elle vaut $0$ pour $x=0$ : $\\lvert x\\rvert$ est $\\textcolor{{{color:primary.0}}}{\\text{positif ou nul}}$.}}"
 				]
 			}
 		},
@@ -96,7 +96,7 @@
 			"correction": {
 				"steps": [
 					"$\\dfrac{1}{x}$ est du signe de $x$.",
-					"$-\\dfrac{ {{p}} }{ {{q}} }<0$, donc son image est \\textcolor{{{color:primary.0}}}{\\text{strictement négative}}."
+					"$-\\dfrac{ {{p}} }{ {{q}} }<0$, donc son image est $\\textcolor{{{color:primary.0}}}{\\text{strictement négative}}$."
 				]
 			}
 		},
@@ -121,7 +121,7 @@
 			"correction": {
 				"steps": [
 					"Un carré est positif ou nul, et nul seulement en $0$.",
-					"$-\\dfrac{ {{p}} }{ {{q}} }\\neq 0$, donc son carré est \\textcolor{{{color:primary.0}}}{\\text{strictement positif}}, même si le nombre est négatif."
+					"$-\\dfrac{ {{p}} }{ {{q}} }\\neq 0$, donc son carré est $\\textcolor{{{color:primary.0}}}{\\text{strictement positif}}$, même si le nombre est négatif."
 				]
 			}
 		}

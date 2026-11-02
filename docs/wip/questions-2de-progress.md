@@ -6,19 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2227 (§ 57, § 58)._
+_Mis à jour le 2026-11-02, § 59 (PR du correctif `\textcolor` en cours)._
 
 - **État** : vague 8 bis en brouillon en prod, rangée ; page à cocher (20 fiches) :
-  https://claude.ai/artifact/AH7MKr1qcSeK2c7Du7EMYY. **Go de David (§ 58)** pour corriger les `\textcolor` hors `$`.
-- **Prochaine action** : correctif `\textcolor` (§ 58) : 7 générateurs 2de, une PR de contenu, puis vérifier que
-  `create-questions` MET À JOUR un modèle publié (sans doublon) avant la commande de David ; garde dans
-  `question:specs` (PR de code séparée, noter dans `outils-manquants.md`) ; les 35 autres fichiers hors 2de :
-  les montrer à David, rien sans son accord.
+  https://claude.ai/artifact/AH7MKr1qcSeK2c7Du7EMYY. Correctif `\textcolor` des 24 publiés : branche
+  `fix/questions-2de-textcolor` (générateurs + lot `textcolor-2de` de `update-published-questions.ts`).
+- **Prochaine action** : PR mergée → David : `! pnpm tsx scripts/update-published-questions.ts --lot
+textcolor-2de --publier` (simulation déjà verte : 24 cibles, `variations` seules) ; puis garde dans
+  `question:specs` (PR de code séparée, ligne dans `outils-manquants.md`) ; puis montrer à David les
+  35 fichiers hors 2de (§ 58), rien sans son accord.
 - **En attente de David** : la relecture de la page ; puis lire `verdicts`, corriger, `publier-lot` (ids § 57).
-- **Pièges en cours** : `--publier`, `publier-lot`, `db:migrate` → David avec `!` ; index du dépôt principal
-  parfois tenu par une autre session (vérifier en prod par MCP) ; `col()` DANS `$…$` ; spec fraction =
-  `\\frac{a}{b}` ; pendant `deploy:prod`, aucun merge.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, HEAD détachée sur `origin/main`.
+- **Pièges en cours** : `--publier`, `publier-lot`, `db:migrate` → David avec `!` ; `create-questions
+--mettre-a-jour` ne touche JAMAIS un publié → `update-published-questions.ts` ; `col()` en texte → `colt()` ;
+  spec fraction = `\\frac{a}{b}` ; pendant `deploy:prod`, aucun merge.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, branche `fix/questions-2de-textcolor`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1498,3 +1499,24 @@ David valide (« Je valide ») : corriger maintenant les 2de, garde dans `questi
 
 Avant de corriger : revérifier dans le code de rendu que `\textcolor` hors maths n'est vraiment pas traité
 (l'ampleur hors 2de, sur des lots publiés depuis longtemps, rend la question légitime).
+
+## 59. `\textcolor` hors `$` : correctif des 24 modèles publiés de 2de (2026-11-02)
+
+- **Revérifié dans le code** : le parseur ubumark laisse `\textcolor{…}{…}` hors `$` dans un nœud texte
+  (`parseMarkdown`, essai direct) ; aucun nœud de rendu ni pré-traitement ne le reconnaît (seul le PDF
+  typst le convertit). L'élève voit bien le LaTeX brut. Ubumark n'a pas de syntaxe de texte coloré.
+- **Générateurs** (7 lots) : `colt(x, k)` = `'$' + col(x, k) + '$'`, à la place de `col()` sur les 52
+  appels écrits en texte. Repérés sans tri à l'œil : `col()` instrumenté (ligne:colonne de l'appel),
+  tirages, appels dont le marqueur tombe hors `$`. Cas à part (`fonctions-a` 02) : le contenu portait
+  lui-même des `$` → `colt('{{b}}\\text{ est l\'image de }{{a}}')`.
+- **JSON régénérés** : 24 fichiers, 23 ne diffèrent que par des `$` ; `hors-maths.py` → 0 ;
+  `question:specs` 24/24 importables. Sonde de rendu (tirages réels → `parseMarkdown`, 40 graines par
+  modèle) : `\textcolor` dans un nœud texte **648 avant → 0 après** ; formules colorées valides
+  (`validateLatex` de MathLive).
+- **Mise à jour des publiés** : `create-questions --mettre-a-jour` ne touche jamais un publié
+  (`.eq('status', 'draft')`) — pas de doublon (même titre au même endroit = « déjà en base »), mais rien
+  d'écrit. Outil existant : `update-published-questions.ts`, lot **`textcolor-2de`** (24 ids explicites).
+  Instantanés `scripts/questions/2de-textcolor-existants/<id8>.json` = export de la prod
+  (`export-question-templates.ts`), seules les `variations` remplacées. Prod comparée aux fichiers
+  d'avant correctif : identique champ par champ (hors `id`, `status`). Simulation : 24 cibles, `variations`
+  seules à modifier, specs vertes.

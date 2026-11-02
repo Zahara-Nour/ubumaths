@@ -68,7 +68,7 @@
 			"correction": {
 				"steps": [
 					"Trois ensembles emboîtés : on multiplie les trois proportions.",
-					"${{eval:(p1)/100;d}}\\times{{eval:(p2)/100;d}}\\times{{eval:(p3)/100;d}}={{eval:(p1)*(p2)*(p3)/1000000;d}}$, soit \\textcolor{{{color:primary.0}}}{{{eval:(p1)*(p2)*(p3)/10000;d}}\\,\\%}."
+					"${{eval:(p1)/100;d}}\\times{{eval:(p2)/100;d}}\\times{{eval:(p3)/100;d}}={{eval:(p1)*(p2)*(p3)/1000000;d}}$, soit $\\textcolor{{{color:primary.0}}}{{{eval:(p1)*(p2)*(p3)/10000;d}}\\,\\%}$."
 				]
 			}
 		}

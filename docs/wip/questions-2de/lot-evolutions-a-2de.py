@@ -67,6 +67,11 @@ def col(x, k=0):
     return '\\textcolor{{{color:primary.' + str(k) + '}}}{' + x + '}'
 
 
+def colt(x, k=0):
+    """Valeur colorée en plein texte : `\\textcolor` hors `$…$` s'afficherait en LaTeX brut."""
+    return '$' + col(x, k) + '$'
+
+
 def choix(question, options, melanger=True):
     entete = '' if melanger else 'melanger: non\n'
     return question + '\n\n```choix\n' + entete + ''.join('- ' + o + '\n' for o in options) + '```'
@@ -114,8 +119,8 @@ ABSOLUE_RELATIVE = variation(
      ' ${{b2}}-{{b1}}={{eval:(b2)-(b1)}}' + EUROS + '$.',
      'Variations relatives : $A$ : $\\dfrac{ {{eval:(a2)-(a1)}} }{ {{a1}} }={{ta}}' + PCT + '$ ; $B$ :'
      ' $\\dfrac{ {{eval:(b2)-(b1)}} }{ {{b1}} }={{tb}}' + PCT + '$.',
-     '{{if:g==0|En euros, la plus forte hausse est celle de ' + col('\\text{l\'article B}')
-     + '|En pourcentage, la plus forte hausse est celle de ' + col('\\text{l\'article A}') + '}} :'
+     '{{if:g==0|En euros, la plus forte hausse est celle de ' + colt('\\text{l\'article B}')
+     + '|En pourcentage, la plus forte hausse est celle de ' + colt('\\text{l\'article A}') + '}} :'
      ' la variation absolue et la variation relative ne classent pas les hausses de la même façon.'],
     ['(b2)-(b1) > (a2)-(a1)', 'ta > tb'])
 
@@ -235,7 +240,7 @@ POURCENT_POURCENT = variation(
     ['Prendre $p_2$ d\'une partie qui représente $p_1$ du tout, c\'est prendre $p_1\\times p_2$ du'
      ' tout : les proportions se **multiplient**.',
      '$\\dfrac{ {{p1}} }{100}\\times\\dfrac{ {{p2}} }{100}={{eval:(p1)/100;d}}\\times'
-     ' {{eval:(p2)/100;d}}={{eval:(p1)*(p2)/10000;d}}$, soit ' + col('{{eval:(p1)*(p2)/100;d}}' + PCT)
+     ' {{eval:(p2)/100;d}}={{eval:(p1)*(p2)/10000;d}}$, soit ' + colt('{{eval:(p1)*(p2)/100;d}}' + PCT)
      + '.'])
 
 POURCENT_INVERSE = variation(
@@ -247,7 +252,7 @@ POURCENT_INVERSE = variation(
     ['La proportion du tout est le produit : $\\dfrac{ {{p1}} }{100}\\times p='
      '\\dfrac{ {{eval:(p1)*(p2)/100;d}} }{100}$.',
      '$p=\\dfrac{ {{eval:(p1)*(p2)/100;d}} }{ {{p1}} }={{eval:(p2)/100;d}}$, soit '
-     + col('{{p2}}' + PCT) + '.'])
+     + colt('{{p2}}' + PCT) + '.'])
 
 SP_PP = {'g': 0, 'p1': 40, 'p2': 25}
 SP_PP2 = {'g': 1, 'p1': 60, 'p2': 75}
@@ -292,7 +297,7 @@ TROIS_NIVEAUX = variation(
     ['Trois ensembles emboîtés : on multiplie les trois proportions.',
      '${{eval:(p1)/100;d}}\\times{{eval:(p2)/100;d}}\\times{{eval:(p3)/100;d}}='
      '{{eval:(p1)*(p2)*(p3)/1000000;d}}$, soit '
-     + col('{{eval:(p1)*(p2)*(p3)/10000;d}}' + PCT) + '.'])
+     + colt('{{eval:(p1)*(p2)*(p3)/10000;d}}' + PCT) + '.'])
 
 SP_EMB = {'n': 5000, 'p1': 60, 'p2': 30}
 SP_TROIS = {'p1': 50, 'p2': 20, 'p3': 50}
@@ -320,7 +325,7 @@ VERS_POURCENT = variation(
     ['{{p}}'],
     ['La proportion est $\\dfrac{\\text{effectif de la partie}}{\\text{effectif total}}='
      '\\dfrac{ {{k}} }{ {{n}} }={{eval:(k)/(n);d}}$.',
-     'En pourcentage : ${{eval:(k)/(n);d}}=\\dfrac{ {{p}} }{100}$, soit ' + col('{{p}}' + PCT) + '.'])
+     'En pourcentage : ${{eval:(k)/(n);d}}=\\dfrac{ {{p}} }{100}$, soit ' + colt('{{p}}' + PCT) + '.'])
 
 VERS_EFFECTIF = variation(
     'Dans un club de ${{n}}$ adhérents, ${{p}}' + PCT + '$ ont moins de $18$ ans.\n\nCombien'

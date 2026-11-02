@@ -1,0 +1,190 @@
+{
+	"id": "de146ac1-f0fb-413c-996e-3132a1f02f7e",
+	"title": "Variation absolue d'une grandeur",
+	"description": "Variation absolue V2 − V1 (avec son signe) ; comparer deux hausses en euros et en pourcentage",
+	"grades": ["2"],
+	"theme": "Proportionnalité",
+	"domain": "Pourcentages",
+	"subdomain": "Variations",
+	"level": 12,
+	"delay": 60,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le prix d'un article passe de ${{v1}}~\\unit{€}$ à ${{v2}}~\\unit{€}$.\n\nQuelle est la variation absolue de ce prix ?\n\nVariation absolue : $?~\\unit{€}$",
+			"variables": [
+				{
+					"name": "v1",
+					"expression": "20..200"
+				},
+				{
+					"name": "d",
+					"expression": "-40..40"
+				},
+				{
+					"name": "v2",
+					"expression": "eval:(v1)+(d)"
+				}
+			],
+			"conditions": ["d != 0", "v2 > 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(v2)-(v1)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La variation absolue est la **valeur finale moins la valeur initiale** : $V_2-V_1$.",
+					"$V_2-V_1={{v2}}-{{v1}}=\\textcolor{{{color:primary.0}}}{{{d}}}$ : le prix {{if:d>0|augmente|baisse}} de ${{eval:abs(d)}}~\\unit{€}$."
+				]
+			}
+		},
+		{
+			"statement": "Le prix de l'article A passe de ${{a1}}~\\unit{€}$ à ${{a2}}~\\unit{€}$ ; celui de l'article B passe de ${{b1}}~\\unit{€}$ à ${{b2}}~\\unit{€}$.\n\nQuel article a la plus forte hausse {{if:g==0|en euros (variation absolue)|en pourcentage}} ?\n\n```choix\nmelanger: non\n- l'article A\n- l'article B\n- les deux ont la même hausse\n```",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "20|40|50|80"
+				},
+				{
+					"name": "ta",
+					"expression": "25|50"
+				},
+				{
+					"name": "a2",
+					"expression": "eval:(a1)*(1+(ta)/100)"
+				},
+				{
+					"name": "b1",
+					"expression": "200|400|500"
+				},
+				{
+					"name": "tb",
+					"expression": "5|10|20"
+				},
+				{
+					"name": "b2",
+					"expression": "eval:(b1)*(1+(tb)/100)"
+				},
+				{
+					"name": "g",
+					"expression": "0|1"
+				}
+			],
+			"conditions": ["(b2)-(b1) > (a2)-(a1)", "ta > tb"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:g==0|1|0}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Variations absolues : $A$ : ${{a2}}-{{a1}}={{eval:(a2)-(a1)}}~\\unit{€}$ ; $B$ : ${{b2}}-{{b1}}={{eval:(b2)-(b1)}}~\\unit{€}$.",
+					"Variations relatives : $A$ : $\\dfrac{ {{eval:(a2)-(a1)}} }{ {{a1}} }={{ta}}\\,\\%$ ; $B$ : $\\dfrac{ {{eval:(b2)-(b1)}} }{ {{b1}} }={{tb}}\\,\\%$.",
+					"{{if:g==0|En euros, la plus forte hausse est celle de $\\textcolor{{{color:primary.0}}}{\\text{l'article B}}$|En pourcentage, la plus forte hausse est celle de $\\textcolor{{{color:primary.0}}}{\\text{l'article A}}$}} : la variation absolue et la variation relative ne classent pas les hausses de la même façon."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["-15"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"d": "-15",
+				"v1": "120",
+				"v2": "105"
+			},
+			"description": "120 € → 105 € : −15",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"d": "-15",
+				"v1": "120",
+				"v2": "105"
+			},
+			"description": "Erreur : V1 − V2 (15)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"g": "0",
+				"a1": "40",
+				"a2": "50",
+				"b1": "200",
+				"b2": "220",
+				"ta": "25",
+				"tb": "10"
+			},
+			"description": "A 40 → 50, B 200 → 220 : en euros, B",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"g": "0",
+				"a1": "40",
+				"a2": "50",
+				"b1": "200",
+				"b2": "220",
+				"ta": "25",
+				"tb": "10"
+			},
+			"description": "Erreur : A (confond avec le pourcentage)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"g": "1",
+				"a1": "40",
+				"a2": "50",
+				"b1": "200",
+				"b2": "220",
+				"ta": "25",
+				"tb": "10"
+			},
+			"description": "En pourcentage : A",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"g": "1",
+				"a1": "40",
+				"a2": "50",
+				"b1": "200",
+				"b2": "220",
+				"ta": "25",
+				"tb": "10"
+			},
+			"description": "Erreur : B",
+			"variationIndex": 1
+		}
+	]
+}

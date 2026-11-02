@@ -1,0 +1,228 @@
+{
+	"id": "7a56029d-3c3b-4dcd-a7fc-c94912d9d80f",
+	"title": "Lire un polygone des fréquences cumulées",
+	"description": "Fréquence cumulée lue à une borne de classe ; médiane lue à 50 %",
+	"grades": ["2"],
+	"theme": "Statistiques",
+	"domain": "Représenter des données",
+	"subdomain": "Fréquences cumulées",
+	"level": 1,
+	"delay": 90,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On a relevé la durée (en minutes) de $100$ appels téléphoniques. Voici le polygone des fréquences cumulées croissantes.\n\n```frequences-cumulees\naxes: Durée (min) ; Fréquence cumulée\n[{{eval:(x0)+0*(h)}} ; {{eval:(x0)+1*(h)}}[ = {{n1}}\n[{{eval:(x0)+1*(h)}} ; {{eval:(x0)+2*(h)}}[ = {{n2}}\n[{{eval:(x0)+2*(h)}} ; {{eval:(x0)+3*(h)}}[ = {{n3}}\n[{{eval:(x0)+3*(h)}} ; {{eval:(x0)+4*(h)}}[ = {{n4}}\n[{{eval:(x0)+4*(h)}} ; {{eval:(x0)+5*(h)}}[ = {{n5}}\ndescription: Polygone des fréquences cumulées croissantes de cinq classes.\n```\n\nQuel pourcentage des appels ont duré moins de ${{eval:(x0)+(c)*(h)}}$ minutes ?\n\n$?\\,\\%$",
+			"variables": [
+				{
+					"name": "x0",
+					"expression": "0|10|20|30|40"
+				},
+				{
+					"name": "h",
+					"expression": "5|10|20"
+				},
+				{
+					"name": "a1",
+					"expression": "1..4"
+				},
+				{
+					"name": "a3",
+					"expression": "1..3"
+				},
+				{
+					"name": "a4",
+					"expression": "1..3"
+				},
+				{
+					"name": "n1",
+					"expression": "eval:10*(a1)"
+				},
+				{
+					"name": "n2",
+					"expression": "eval:50-(n1)"
+				},
+				{
+					"name": "n3",
+					"expression": "eval:10*(a3)"
+				},
+				{
+					"name": "n4",
+					"expression": "eval:10*(a4)"
+				},
+				{
+					"name": "n5",
+					"expression": "eval:50-(n3)-(n4)"
+				},
+				{
+					"name": "c",
+					"expression": "1|3|4"
+				},
+				{
+					"name": "fc",
+					"expression": "eval:(n1)*min(1,max(0,(c)-0))+(n2)*min(1,max(0,(c)-1))+(n3)*min(1,max(0,(c)-2))+(n4)*min(1,max(0,(c)-3))+(n5)*min(1,max(0,(c)-4))"
+				}
+			],
+			"conditions": ["n5 >= 10"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{fc}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le polygone passe, à la borne droite de chaque classe, par la fréquence cumulée : la part des valeurs **inférieures** à cette borne.",
+					"À l'abscisse ${{eval:(x0)+(c)*(h)}}$, on lit $\\textcolor{{{color:primary.0}}}{{{fc}}\\,\\%}$."
+				]
+			}
+		},
+		{
+			"statement": "On a relevé la durée (en minutes) de $100$ appels téléphoniques. Voici le polygone des fréquences cumulées croissantes.\n\n```frequences-cumulees\naxes: Durée (min) ; Fréquence cumulée\n[{{eval:(x0)+0*(h)}} ; {{eval:(x0)+1*(h)}}[ = {{n1}}\n[{{eval:(x0)+1*(h)}} ; {{eval:(x0)+2*(h)}}[ = {{n2}}\n[{{eval:(x0)+2*(h)}} ; {{eval:(x0)+3*(h)}}[ = {{n3}}\n[{{eval:(x0)+3*(h)}} ; {{eval:(x0)+4*(h)}}[ = {{n4}}\n[{{eval:(x0)+4*(h)}} ; {{eval:(x0)+5*(h)}}[ = {{n5}}\ndescription: Polygone des fréquences cumulées croissantes de cinq classes.\n```\n\nLis une valeur de la médiane de la durée des appels.\n\nMédiane : $?$ minutes",
+			"variables": [
+				{
+					"name": "x0",
+					"expression": "0|10|20|30|40"
+				},
+				{
+					"name": "h",
+					"expression": "5|10|20"
+				},
+				{
+					"name": "a1",
+					"expression": "1..4"
+				},
+				{
+					"name": "a3",
+					"expression": "1..3"
+				},
+				{
+					"name": "a4",
+					"expression": "1..3"
+				},
+				{
+					"name": "n1",
+					"expression": "eval:10*(a1)"
+				},
+				{
+					"name": "n2",
+					"expression": "eval:50-(n1)"
+				},
+				{
+					"name": "n3",
+					"expression": "eval:10*(a3)"
+				},
+				{
+					"name": "n4",
+					"expression": "eval:10*(a4)"
+				},
+				{
+					"name": "n5",
+					"expression": "eval:50-(n3)-(n4)"
+				}
+			],
+			"conditions": ["n5 >= 10"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(x0)+2*(h)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La médiane est l'abscisse du point du polygone d'ordonnée $50\\,\\%$.",
+					"```frequences-cumulees\naxes: Durée (min) ; Fréquence cumulée\nlecture: médiane\n[{{eval:(x0)+0*(h)}} ; {{eval:(x0)+1*(h)}}[ = {{n1}}\n[{{eval:(x0)+1*(h)}} ; {{eval:(x0)+2*(h)}}[ = {{n2}}\n[{{eval:(x0)+2*(h)}} ; {{eval:(x0)+3*(h)}}[ = {{n3}}\n[{{eval:(x0)+3*(h)}} ; {{eval:(x0)+4*(h)}}[ = {{n4}}\n[{{eval:(x0)+4*(h)}} ; {{eval:(x0)+5*(h)}}[ = {{n5}}\ndescription: Polygone des fréquences cumulées croissantes de cinq classes.\n```",
+					"On lit $\\textcolor{{{color:primary.0}}}{{{eval:(x0)+2*(h)}}}$ minutes."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["70"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "3",
+				"h": "5",
+				"a1": "2",
+				"a3": "2",
+				"a4": "2",
+				"fc": "70",
+				"n1": "20",
+				"n2": "30",
+				"n3": "20",
+				"n4": "20",
+				"n5": "10",
+				"x0": "0"
+			},
+			"description": "Moins de 15 min : 70 %",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "3",
+				"h": "5",
+				"a1": "2",
+				"a3": "2",
+				"a4": "2",
+				"fc": "70",
+				"n1": "20",
+				"n2": "30",
+				"n3": "20",
+				"n4": "20",
+				"n5": "10",
+				"x0": "0"
+			},
+			"description": "Erreur : effectif de la classe (20)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"h": "5",
+				"a1": "2",
+				"a3": "2",
+				"a4": "2",
+				"n1": "20",
+				"n2": "30",
+				"n3": "20",
+				"n4": "20",
+				"n5": "10",
+				"x0": "0"
+			},
+			"description": "Médiane : 10",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["50"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"h": "5",
+				"a1": "2",
+				"a3": "2",
+				"a4": "2",
+				"n1": "20",
+				"n2": "30",
+				"n3": "20",
+				"n4": "20",
+				"n5": "10",
+				"x0": "0"
+			},
+			"description": "Erreur : 50 (l'ordonnée)",
+			"variationIndex": 1
+		}
+	]
+}

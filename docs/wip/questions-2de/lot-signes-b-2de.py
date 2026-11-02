@@ -69,6 +69,11 @@ def col(x, k=0):
     return '\\textcolor{{{color:primary.' + str(k) + '}}}{' + x + '}'
 
 
+def colt(x, k=0):
+    """Valeur colorée en plein texte : `\\textcolor` hors `$…$` s'afficherait en LaTeX brut."""
+    return '$' + col(x, k) + '$'
+
+
 def choix(question, options, melanger=False):
     entete = '' if melanger else 'melanger: non\n'
     return question + '\n\n```choix\n' + entete + ''.join('- ' + o + '\n' for o in options) + '```'
@@ -297,7 +302,7 @@ def quotient_lire(ordre):
         + choix('Dans la ligne de $B(x)$, sous la valeur ${{rb}}$, on écrit :', ['$0$', 'une double barre']),
         FACTEURS,
         [case(REP_EXT), case(REP_MIL), case(REP_EXT), case('1')],
-        [REGLE, 'En ${{rb}}$ le dénominateur est nul : $B({{rb}})$ n\'existe pas, d\'où la ' + col('\\text{double'
+        [REGLE, 'En ${{rb}}$ le dénominateur est nul : $B({{rb}})$ n\'existe pas, d\'où la ' + colt('\\text{double'
          ' barre}') + '.', tableau_quotient(x1, x2, ordre)],
         cond(ordre))
 
