@@ -9,9 +9,9 @@ _Mis à jour le 2026-11-02, lot 8 publié (5/5)._
 
 - **État** : lot 8 « Assemblages de cubes » publié par David le 2026-11-02 ; MCP : 5 `published`, nœud et tag
   conformes, 3a7a5711 toujours en brouillon. 6e : 158 publiés + 1 brouillon. **37 points sans modèle publié** (§ 21).
-- **Prochaine action** : phase 0 du lot 9 « tableaux et programmes » (143, 184, 185, 192, 194-196), dans un
-  nouveau worktree `ubumaths-wt-questions-6` ; puis lots 10-11 géométrie dessinée.
-- **En attente de David** : rien (la phase 0 du lot 9 sera à valider).
+- **Prochaine action** : écrire le lot 9 « tableaux et programmes » (§ 22, phase 0 validée le 2026-11-02 : 7
+  modèles, 143, 184, 185, 192, 194-196) dans le worktree `ubumaths-wt-questions-6` ; puis lots 10-11 géométrie.
+- **En attente de David** : rien.
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs --file`. Jamais de variable
   `e`. `Doc-inchangée:` va dans un message de COMMIT. PR en conflit = pas de CI : vérifier `mergeable`. Horodatage
   de migration : `pnpm migration:horodatage` (heure réelle UTC, #2181) ; si `db:migrate` refuse « inserted before
@@ -1335,3 +1335,8 @@ de l'auteur seuls jusqu'à la publication, la migration ne fait que ranger et ta
 2. 192 v3 : trois tableaux dans l'énoncé et réponse A / B / C (recommandé), plutôt que des tableaux dans les choix
    eux-mêmes (rendu d'un tableau dans un choix pas encore vérifié).
 3. Valider la phase 0 (variations, niveaux, formes de réponse) ?
+
+**Réponses de David (2026-11-02)** : recommandations suivies, « je valide ». (1) Un seul lot de 7 modèles. (2) 192
+v3 : trois tableaux A, B, C dans l'énoncé, réponse A / B / C. (3) Phase 0 validée, avec la correction de 196 v2 :
+nombre de répétitions accordé à l'angle (4 × 90° carré, 3 × 120° triangle équilatéral, 6 × 60° hexagone ; leurre
+« rectangle ») ; corrigé : le lutin tourne du supplément de l'angle de la figure (120° pour un angle de 60°).
