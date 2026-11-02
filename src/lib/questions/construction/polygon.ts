@@ -31,13 +31,13 @@ export const PROLONGED_RECTANGLE_SIDES_FEEDBACK =
 /** Tolérance relative : les touchers aimantés sur les nœuds arrivent exacts */
 const EPSILON = 1e-9;
 
-interface Segment {
+export interface Segment {
 	a: Position;
 	b: Position;
 }
 
 /** Morceau d'une droite porteuse : p(t) = t·u + c·n, t de t0 à t1 */
-interface Carrier {
+export interface Carrier {
 	u: Position;
 	c: number;
 	t0: number;
@@ -47,15 +47,15 @@ interface Carrier {
 /** Erreur de l'AUTEUR, levée sous le nom de la classe du juge par l'appelant */
 export class PolygonAuthorError extends Error {}
 
-const sub = (p: Position, q: Position): Position => ({ x: p.x - q.x, y: p.y - q.y });
+export const sub = (p: Position, q: Position): Position => ({ x: p.x - q.x, y: p.y - q.y });
 const add = (p: Position, q: Position): Position => ({ x: p.x + q.x + 0, y: p.y + q.y + 0 });
 const scale = (k: number, p: Position): Position => ({ x: k * p.x + 0, y: k * p.y + 0 });
-const dot = (p: Position, q: Position) => p.x * q.x + p.y * q.y;
+export const dot = (p: Position, q: Position) => p.x * q.x + p.y * q.y;
 const cross = (p: Position, q: Position) => p.x * q.y - p.y * q.x;
 /** Quart de tour dans le sens direct */
 const normal = (p: Position): Position => ({ x: -p.y + 0, y: p.x });
 
-function tolerance(...points: Position[]): number {
+export function tolerance(...points: Position[]): number {
 	return EPSILON * Math.max(1, ...points.flatMap((p) => [Math.abs(p.x), Math.abs(p.y)]));
 }
 
@@ -65,7 +65,7 @@ function isAxisAligned({ a, b }: Segment): boolean {
 }
 
 /** La droite porteuse d'un segment, direction rendue unique (vers la droite, sinon vers le haut) */
-function carrierOf({ a, b }: Segment): Carrier {
+export function carrierOf({ a, b }: Segment): Carrier {
 	const d = sub(b, a);
 	const length = Math.hypot(d.x, d.y);
 	let u = { x: d.x / length, y: d.y / length };
@@ -75,12 +75,12 @@ function carrierOf({ a, b }: Segment): Carrier {
 	return { u, c: cross(u, a), t0: Math.min(ta, tb), t1: Math.max(ta, tb) };
 }
 
-function sameLine(p: Carrier, q: Carrier, eps: number): boolean {
+export function sameLine(p: Carrier, q: Carrier, eps: number): boolean {
 	return Math.abs(cross(p.u, q.u)) <= EPSILON && Math.abs(p.c - q.c) <= eps;
 }
 
 /** Fusionner les morceaux qui se touchent ou se chevauchent sur une même droite */
-function mergeSegments(segments: readonly Segment[], eps: number): Carrier[] {
+export function mergeSegments(segments: readonly Segment[], eps: number): Carrier[] {
 	const groups: Carrier[][] = [];
 	for (const carrier of segments.map(carrierOf)) {
 		const group = groups.find((g) => sameLine(g[0], carrier, eps));
@@ -100,7 +100,11 @@ function mergeSegments(segments: readonly Segment[], eps: number): Carrier[] {
 }
 
 /** Le morceau qui couvre tout le côté [PQ], s'il existe */
-function coveringPiece(side: Segment, pieces: readonly Carrier[], eps: number): Carrier | null {
+export function coveringPiece(
+	side: Segment,
+	pieces: readonly Carrier[],
+	eps: number
+): Carrier | null {
 	const s = carrierOf(side);
 	return (
 		pieces.find((p) => sameLine(p, s, eps) && p.t0 <= s.t0 + eps && p.t1 >= s.t1 - eps) ?? null

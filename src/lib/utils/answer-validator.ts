@@ -83,7 +83,7 @@ import { isPlacedAngleCorrect } from '$lib/ubumark/utils/trig-placer';
 import { isColoringCorrect } from '$lib/ubumark/utils/partage-colorier';
 import { isCubesAnswerCorrect } from '$lib/ubumark/utils/cubes-gestes';
 import { isPatronAnswerCorrect } from '$lib/ubumark/utils/patron-gestes';
-import { constructionPositions } from '$lib/questions/construction/positions';
+import { constructionPositions, constructionShapes } from '$lib/questions/construction/positions';
 import {
 	correctChoiceIndexesOf,
 	displayedChoiceLetter,
@@ -1229,7 +1229,12 @@ function constructionBlankResult(
 	construction: NonNullable<InstanceBlank['construction']>
 ): ReturnType<typeof validateSingleBlank> {
 	const points = constructionPositions(construction.source);
-	const { status, feedback } = judgeConstruction(construction.checks, points, answer);
+	const { status, feedback } = judgeConstruction(
+		construction.checks,
+		points,
+		answer,
+		constructionShapes(construction.source)
+	);
 	if (status === 'empty') return { isCorrect: false, status: 'empty' };
 	if (status === 'correct') return { isCorrect: true, status: 'correct' };
 	return feedback ? { isCorrect: false, feedback } : { isCorrect: false };

@@ -203,3 +203,75 @@ describe('checkTemplate — case « figure » construite à chaque tirage', () =
 		expect(formatCheckReport(report)).not.toContain('Figures construites');
 	});
 });
+
+/**
+ * « Trace le symétrique du triangle par rapport à la droite d » (chantier
+ * `controles-figure`, lot 1) : `xa` = abscisse de A ; image de A en 12 − xa
+ */
+function symmetryTemplate(xa: string): QuestionTemplate {
+	return {
+		id: 'tmp-sym',
+		title: 'Tracer un symétrique',
+		status: 'draft',
+		variations: [
+			{
+				statement: templateMarkdown(
+					[
+						'Trace le symétrique du triangle par rapport à la droite $d$.',
+						'',
+						'```figure-a-completer',
+						'fenetre: 0 ; 12 ; 0 ; 8',
+						'grille: 1',
+						'verifier: symetrique par d',
+						'---',
+						'P = point(6, 0, visible=faux)',
+						'Q = point(6, 8, visible=faux)',
+						'd = droite(P, Q)',
+						'A = point({{xa}}, 2)',
+						'B = point(4, 2)',
+						'C = point(4, 6)',
+						'polygone(A, B, C)',
+						'```'
+					].join('\n')
+				),
+				variables: [{ name: 'xa', expression: xa }]
+			}
+		],
+		grades: ['CM1'],
+		theme: 'Géométrie',
+		domain: 'Symétrie',
+		level: 1,
+		testSpecs: [
+			{
+				description: 'le symétrique',
+				variables: { xa: '2' },
+				answers: ['segment(10;2;8;2)|segment(8;2;8;6)|segment(8;6;10;2)'],
+				expected: { status: 'correct' }
+			},
+			{
+				description: 'la figure glissée (message : test d’écran figure-a-completer-symetrique)',
+				variables: { xa: '2' },
+				answers: ['segment(8;2;10;2)|segment(10;2;10;6)|segment(10;6;8;2)'],
+				expected: { status: 'incorrect' }
+			}
+		]
+	};
+}
+
+describe('checkTemplate — symétrique à tracer (`verifier: symetrique par d`)', () => {
+	it('modèle juste : importable, specs jugées par le vrai juge', () => {
+		const report = checkTemplate(symmetryTemplate('1..3'), { instances: 10 });
+		expect(report.reasons).toEqual([]);
+		expect(report.specs.every((spec) => spec.passed)).toBe(true);
+		expect(report.passed).toBe(true);
+	});
+
+	it('image hors de la fenêtre à certains tirages : NON importable', () => {
+		// xa = -1 : image en x = 13, hors de la fenêtre 0 ; 12
+		const report = checkTemplate(symmetryTemplate('-1..2'), { instances: 20 });
+		expect(report.figures.failures.some((f) => f.errors[0].includes('sort de la fenêtre'))).toBe(
+			true
+		);
+		expect(report.passed).toBe(false);
+	});
+});

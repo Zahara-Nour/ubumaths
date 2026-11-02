@@ -112,7 +112,9 @@ describe('construction — erreurs situées', () => {
 	it('vérification inconnue', () => {
 		expect(
 			messages(block('fenetre: 0 ; 10 ; 0 ; 6', 'verifier: cercle_par A ; B', '---'))
-		).toContain('Ligne 2 : vérification « cercle_par » inconnue (droite_par, carre, rectangle)');
+		).toContain(
+			'Ligne 2 : vérification « cercle_par » inconnue (droite_par, carre, rectangle, symetrique)'
+		);
 	});
 
 	it('droite_par attend deux points', () => {
@@ -229,6 +231,63 @@ describe('carré et rectangle sur quadrillage (CP-060, § 7 et § 9)', () => {
 				block('fenetre: 0 ; 10 ; 0 ; 7', 'verifier: carre A ; B', 'verifier: carre C ; D', '---')
 			)
 		).toContain('Ligne 3 : un seul carré ou rectangle par figure');
+	});
+});
+
+describe('symétrique (chantier `controles-figure`, lot 1, 2026-11-02)', () => {
+	const messages = (markdown: string) => firstNode(markdown).errors.map((e) => e.message);
+
+	it('`symetrique par d` : tout le tracé sauf l’axe, outil segment', () => {
+		const node = firstNode(
+			block('fenetre: 0 ; 12 ; 0 ; 8', 'grille: 1', 'verifier: symetrique par d', '---')
+		);
+		expect(node.errors).toEqual([]);
+		expect(node.construction).toEqual({
+			tools: ['segment'],
+			checks: [{ kind: 'symetrique', by: 'd', line: 3 }]
+		});
+	});
+
+	it('`symétrique A ; B ; C par O` : accent admis, points listés', () => {
+		const node = firstNode(
+			block('fenetre: 0 ; 12 ; 0 ; 8', 'verifier: symétrique A ; B ; C par O', '---')
+		);
+		expect(node.errors).toEqual([]);
+		expect(node.construction?.checks).toEqual([
+			{ kind: 'symetrique', by: 'O', points: ['A', 'B', 'C'], line: 2 }
+		]);
+	});
+
+	it('`par` manquant, ou sans nom', () => {
+		const expected = 'Ligne 2 : symetrique attend un axe ou un centre : « symetrique par d »';
+		expect(messages(block('fenetre: 0 ; 12 ; 0 ; 8', 'verifier: symetrique d', '---'))).toContain(
+			expected
+		);
+		expect(messages(block('fenetre: 0 ; 12 ; 0 ; 8', 'verifier: symetrique par', '---'))).toContain(
+			expected
+		);
+	});
+
+	it('points listés : deux au moins, tous différents', () => {
+		expect(
+			messages(block('fenetre: 0 ; 12 ; 0 ; 8', 'verifier: symetrique A par d', '---'))
+		).toContain('Ligne 2 : symetrique attend deux points au moins : « symetrique A ; B par d »');
+		expect(
+			messages(block('fenetre: 0 ; 12 ; 0 ; 8', 'verifier: symetrique A ; A par d', '---'))
+		).toContain('Ligne 2 : symetrique attend des points différents');
+	});
+
+	it('un seul symétrique par figure, jamais mêlé à un carré', () => {
+		expect(
+			messages(
+				block(
+					'fenetre: 0 ; 12 ; 0 ; 8',
+					'verifier: symetrique par d',
+					'verifier: carre A ; B',
+					'---'
+				)
+			)
+		).toContain('Ligne 3 : un seul carré, rectangle ou symétrique par figure');
 	});
 });
 

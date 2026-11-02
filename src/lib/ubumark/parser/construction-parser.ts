@@ -4,7 +4,8 @@
  *
  * Le bloc est une figure de départ : en-tête et langage de ```figure, plus
  * trois lignes d'en-tête à lui (`verifier: carre A ; B` ou
- * `rectangle A ; B ; C` avec l'outil segment, CP-060) :
+ * `rectangle A ; B ; C` avec l'outil segment, CP-060 ; `symetrique par d`,
+ * `symetrique A ; B ; C par d`, symétrique sur quadrillage) :
  *
  * ```figure-a-completer
  * fenetre: 0 ; 10 ; 0 ; 6
@@ -86,27 +87,54 @@ function readTools(value: string): ConstructionTool[] {
 }
 
 /** Nombre de points de chaque vérification, et comment l'écrire */
-const CHECK_ARITY: Record<ConstructionCheckKind, { count: number; example: string; word: string }> =
-	{
-		droite_par: { count: 2, example: 'droite_par A ; B', word: 'deux' },
-		carre: { count: 2, example: 'carre A ; B', word: 'deux' },
-		rectangle: { count: 3, example: 'rectangle A ; B ; C', word: 'trois' }
-	};
+const CHECK_ARITY: Record<
+	Exclude<ConstructionCheckKind, 'symetrique'>,
+	{ count: number; example: string; word: string }
+> = {
+	droite_par: { count: 2, example: 'droite_par A ; B', word: 'deux' },
+	carre: { count: 2, example: 'carre A ; B', word: 'deux' },
+	rectangle: { count: 3, example: 'rectangle A ; B ; C', word: 'trois' }
+};
+
+/** Points d'une liste `A ; B ; C` (noms vides retirés) */
+function splitPoints(text: string): string[] {
+	return text
+		.split(';')
+		.map((name) => name.trim())
+		.filter((name) => name !== '');
+}
+
+/** `symetrique par d` ou `symetrique A ; B ; C par d` */
+function readSymetrique(rest: string, line: number): ConstructionCheck {
+	const match = /^(.*?)\s*\bpar\s+(\S+)\s*$/.exec(rest);
+	if (!match || !POINT_NAME_REGEX.test(match[2])) {
+		throw new LineError('symetrique attend un axe ou un centre : « symetrique par d »');
+	}
+	const by = match[2];
+	if (match[1].trim() === '') return { kind: 'symetrique', by, line };
+	const points = splitPoints(match[1]);
+	if (points.length < 2 || !points.every((name) => POINT_NAME_REGEX.test(name))) {
+		throw new LineError('symetrique attend deux points au moins : « symetrique A ; B par d »');
+	}
+	if (new Set(points).size !== points.length) {
+		throw new LineError('symetrique attend des points différents');
+	}
+	return { kind: 'symetrique', by, points, line };
+}
 
 function readCheck(value: string, line: number): ConstructionCheck {
-	const [word = '', ...rest] = value.split(/\s+/);
+	const [rawWord = '', ...rest] = value.split(/\s+/);
+	// `symétrique` accentué, comme `vérifier:`
+	const word = rawWord.toLowerCase() === 'symétrique' ? 'symetrique' : rawWord;
+	if (word === 'symetrique') return readSymetrique(rest.join(' '), line);
 	if (!(CONSTRUCTION_CHECK_KINDS as readonly string[]).includes(word)) {
 		throw new LineError(
 			`vérification « ${word} » inconnue (${CONSTRUCTION_CHECK_KINDS.join(', ')})`
 		);
 	}
-	const kind = word as ConstructionCheckKind;
+	const kind = word as Exclude<ConstructionCheckKind, 'symetrique'>;
 	const { count, example, word: countWord } = CHECK_ARITY[kind];
-	const points = rest
-		.join(' ')
-		.split(';')
-		.map((name) => name.trim())
-		.filter((name) => name !== '');
+	const points = splitPoints(rest.join(' '));
 	if (points.length !== count || !points.every((name) => POINT_NAME_REGEX.test(name))) {
 		throw new LineError(`${kind} attend ${countWord} points : « ${example} »`);
 	}
@@ -128,9 +156,12 @@ function coherenceError(check: ConstructionCheck, spec: ConstructionSpec): strin
 	const tool = CHECK_TOOL[check.kind];
 	if (!spec.tools.includes(tool))
 		return `${check.kind} se trace avec l’outil ${tool} (outils: ${tool})`;
-	const polygons = spec.checks.filter((c) => c.kind !== 'droite_par');
-	if (check.kind !== 'droite_par' && polygons[0] !== check) {
-		return 'un seul carré ou rectangle par figure';
+	const segmentChecks = spec.checks.filter((c) => c.kind !== 'droite_par');
+	if (check.kind !== 'droite_par' && segmentChecks[0] !== check) {
+		const symmetry = check.kind === 'symetrique' || segmentChecks[0].kind === 'symetrique';
+		return symmetry
+			? 'un seul carré, rectangle ou symétrique par figure'
+			: 'un seul carré ou rectangle par figure';
 	}
 	return null;
 }
