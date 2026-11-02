@@ -5,7 +5,8 @@
 # modèles `scripts/questions/**/*.json`, de la doc et des `.md` hors src/, static/, data/.
 # Aucun test ne lit docs/ (garde : src/lib/__tests__/tests-sans-lecture-de-docs) : seuls
 # les tests qui lisent scripts/questions peuvent changer de verdict. On les trouve par le
-# chemin écrit dans leur source, sans liste à tenir à jour.
+# chemin écrit dans leur source, sans liste à tenir à jour. ⚠️ Un test qui lit les modèles
+# doit donc écrire `scripts/questions` en clair (pas `resolve(__dirname, '../questions')`).
 #
 # Périmètre = projet vitest `server` (vite.config.ts) : `src/**` et `scripts/**`, sans les
 # `*.svelte.{test,spec}.*` (projet `client`, sauté sur une PR de contenu : aucun ne lit
@@ -18,7 +19,8 @@ set -uo pipefail
 
 fichiers="$(git grep -l -E "scripts/questions|'scripts', ?'questions'" -- \
 	'src/**/*.test.ts' 'src/**/*.spec.ts' 'scripts/**/*.test.ts' 'scripts/**/*.spec.ts' \
-	':!*.svelte.test.ts' ':!*.svelte.spec.ts')"
+	'src/**/*.test.js' 'src/**/*.spec.js' 'scripts/**/*.test.js' 'scripts/**/*.spec.js' \
+	':!*.svelte.test.ts' ':!*.svelte.spec.ts' ':!*.svelte.test.js' ':!*.svelte.spec.js')"
 
 if [ -z "$fichiers" ]; then
 	echo "ci-tests-contenu : aucun test ne lit scripts/questions → échec (motif à revoir)" >&2

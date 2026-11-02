@@ -65,12 +65,14 @@ describe('ci-tests-contenu', () => {
 		ecrire('src/lib/q/__tests__/corpus.test.ts', LIT);
 		ecrire('scripts/__tests__/lot.test.ts', "run(['--dir', 'scripts/questions/cp-c']);");
 		ecrire('src/lib/q/__tests__/autre.spec.ts', "join(process.cwd(), 'scripts', 'questions')");
+		ecrire('scripts/__tests__/vieux.test.js', LIT);
 		ecrire('src/lib/q/__tests__/sans-rapport.test.ts', 'expect(1).toBe(1);');
 
 		expect(lancer()).toEqual({
 			status: 0,
 			lignes: [
 				'scripts/__tests__/lot.test.ts',
+				'scripts/__tests__/vieux.test.js',
 				'src/lib/q/__tests__/autre.spec.ts',
 				'src/lib/q/__tests__/corpus.test.ts'
 			]
