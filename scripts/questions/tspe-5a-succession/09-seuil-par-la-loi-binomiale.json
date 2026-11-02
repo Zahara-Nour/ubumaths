@@ -1,0 +1,227 @@
+{
+	"title": "Seuil par la loi binomiale",
+	"description": "Loi binomiale : plus petit n tel que P(X ⩾ 1) ⩾ s par 1 − (1 − p)ⁿ ⩾ s et le logarithme (abstrait, contrôle de pièces) ; comparer deux jeux par P(X ⩾ 1)",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Loi binomiale",
+	"subdomain": "Calcul de probabilités",
+	"level": 6,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On répète $n$ fois, de façon indépendante, une épreuve de Bernoulli de probabilité de succès $p={{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}1}}{{if:k==3|0{,}15}}{{if:k==4|0{,}2}}{{if:k==5|0{,}2}}{{if:k==6|0{,}3}}{{if:k==7|0{,}3}}$. On note $X$ le nombre de succès : $X$ suit la loi binomiale $\\mathcal{B}(n\\,;{{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}1}}{{if:k==3|0{,}15}}{{if:k==4|0{,}2}}{{if:k==5|0{,}2}}{{if:k==6|0{,}3}}{{if:k==7|0{,}3}})$.\n\nPlus petit entier $n$ tel que $P(X\\geqslant1)\\geqslant{{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}95}}{{if:k==3|0{,}9}}{{if:k==4|0{,}95}}{{if:k==5|0{,}99}}{{if:k==6|0{,}9}}{{if:k==7|0{,}95}}$ : $n=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k==0|59}}{{if:k==1|22}}{{if:k==2|29}}{{if:k==3|15}}{{if:k==4|14}}{{if:k==5|21}}{{if:k==6|7}}{{if:k==7|9}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$P(X=0)=(1-p)^n={{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}}^n$, donc $P(X\\geqslant1)=1-P(X=0)=1-{{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}}^n$.",
+					"$1-{{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}}^n\\geqslant{{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}95}}{{if:k==3|0{,}9}}{{if:k==4|0{,}95}}{{if:k==5|0{,}99}}{{if:k==6|0{,}9}}{{if:k==7|0{,}95}}\\iff{{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}}^n\\leqslant{{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}05}}{{if:k==3|0{,}1}}{{if:k==4|0{,}05}}{{if:k==5|0{,}01}}{{if:k==6|0{,}1}}{{if:k==7|0{,}05}}\\iff n\\ln({{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}})\\leqslant\\ln({{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}05}}{{if:k==3|0{,}1}}{{if:k==4|0{,}05}}{{if:k==5|0{,}01}}{{if:k==6|0{,}1}}{{if:k==7|0{,}05}})\\iff n\\geqslant\\dfrac{\\ln({{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}05}}{{if:k==3|0{,}1}}{{if:k==4|0{,}05}}{{if:k==5|0{,}01}}{{if:k==6|0{,}1}}{{if:k==7|0{,}05}})}{\\ln({{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}})}$ : on divise par $\\ln({{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}})<0$, l'inégalité change de sens.",
+					"$\\dfrac{\\ln({{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}05}}{{if:k==3|0{,}1}}{{if:k==4|0{,}05}}{{if:k==5|0{,}01}}{{if:k==6|0{,}1}}{{if:k==7|0{,}05}})}{\\ln({{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}})}\\approx{{if:k==0|58{,}4}}{{if:k==1|21{,}85}}{{if:k==2|28{,}43}}{{if:k==3|14{,}17}}{{if:k==4|13{,}43}}{{if:k==5|20{,}64}}{{if:k==6|6{,}46}}{{if:k==7|8{,}4}}$ : le plus petit entier $n$ est $\\textcolor{{{color:primary.0}}}{{{if:k==0|59}}{{if:k==1|22}}{{if:k==2|29}}{{if:k==3|15}}{{if:k==4|14}}{{if:k==5|21}}{{if:k==6|7}}{{if:k==7|9}}}$ (pour $n={{if:k==0|58}}{{if:k==1|21}}{{if:k==2|28}}{{if:k==3|14}}{{if:k==4|13}}{{if:k==5|20}}{{if:k==6|6}}{{if:k==7|8}}$, la probabilité reste inférieure à ${{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}95}}{{if:k==3|0{,}9}}{{if:k==4|0{,}95}}{{if:k==5|0{,}99}}{{if:k==6|0{,}9}}{{if:k==7|0{,}95}}$)."
+				]
+			}
+		},
+		{
+			"statement": "Une machine produit des pièces dont une proportion ${{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}1}}{{if:k==3|0{,}15}}{{if:k==4|0{,}2}}{{if:k==5|0{,}2}}{{if:k==6|0{,}3}}{{if:k==7|0{,}3}}$ est défectueuse. On prélève $n$ pièces ; le prélèvement est assimilé à un tirage avec remise. On note $X$ le nombre de pièces défectueuses du prélèvement.\n\nCombien de pièces faut-il prélever, au minimum, pour que la probabilité d'obtenir au moins une pièce défectueuse soit supérieure ou égale à ${{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}95}}{{if:k==3|0{,}9}}{{if:k==4|0{,}95}}{{if:k==5|0{,}99}}{{if:k==6|0{,}9}}{{if:k==7|0{,}95}}$ ?\n\n$n=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k==0|59}}{{if:k==1|22}}{{if:k==2|29}}{{if:k==3|15}}{{if:k==4|14}}{{if:k==5|21}}{{if:k==6|7}}{{if:k==7|9}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$X$ suit la loi binomiale $\\mathcal{B}(n\\,;{{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}1}}{{if:k==3|0{,}15}}{{if:k==4|0{,}2}}{{if:k==5|0{,}2}}{{if:k==6|0{,}3}}{{if:k==7|0{,}3}})$ : $P(X=0)={{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}}^n$, donc $P(X\\geqslant1)=1-P(X=0)=1-{{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}}^n$.",
+					"$1-{{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}}^n\\geqslant{{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}95}}{{if:k==3|0{,}9}}{{if:k==4|0{,}95}}{{if:k==5|0{,}99}}{{if:k==6|0{,}9}}{{if:k==7|0{,}95}}\\iff{{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}}^n\\leqslant{{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}05}}{{if:k==3|0{,}1}}{{if:k==4|0{,}05}}{{if:k==5|0{,}01}}{{if:k==6|0{,}1}}{{if:k==7|0{,}05}}\\iff n\\ln({{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}})\\leqslant\\ln({{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}05}}{{if:k==3|0{,}1}}{{if:k==4|0{,}05}}{{if:k==5|0{,}01}}{{if:k==6|0{,}1}}{{if:k==7|0{,}05}})\\iff n\\geqslant\\dfrac{\\ln({{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}05}}{{if:k==3|0{,}1}}{{if:k==4|0{,}05}}{{if:k==5|0{,}01}}{{if:k==6|0{,}1}}{{if:k==7|0{,}05}})}{\\ln({{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}})}$ : on divise par $\\ln({{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}})<0$, l'inégalité change de sens.",
+					"$\\dfrac{\\ln({{if:k==0|0{,}05}}{{if:k==1|0{,}1}}{{if:k==2|0{,}05}}{{if:k==3|0{,}1}}{{if:k==4|0{,}05}}{{if:k==5|0{,}01}}{{if:k==6|0{,}1}}{{if:k==7|0{,}05}})}{\\ln({{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}9}}{{if:k==3|0{,}85}}{{if:k==4|0{,}8}}{{if:k==5|0{,}8}}{{if:k==6|0{,}7}}{{if:k==7|0{,}7}})}\\approx{{if:k==0|58{,}4}}{{if:k==1|21{,}85}}{{if:k==2|28{,}43}}{{if:k==3|14{,}17}}{{if:k==4|13{,}43}}{{if:k==5|20{,}64}}{{if:k==6|6{,}46}}{{if:k==7|8{,}4}}$ : le plus petit entier $n$ est $\\textcolor{{{color:primary.0}}}{{{if:k==0|59}}{{if:k==1|22}}{{if:k==2|29}}{{if:k==3|15}}{{if:k==4|14}}{{if:k==5|21}}{{if:k==6|7}}{{if:k==7|9}}}$ (pour $n={{if:k==0|58}}{{if:k==1|21}}{{if:k==2|28}}{{if:k==3|14}}{{if:k==4|13}}{{if:k==5|20}}{{if:k==6|6}}{{if:k==7|8}}$, la probabilité reste inférieure à ${{if:k==0|0{,}95}}{{if:k==1|0{,}9}}{{if:k==2|0{,}95}}{{if:k==3|0{,}9}}{{if:k==4|0{,}95}}{{if:k==5|0{,}99}}{{if:k==6|0{,}9}}{{if:k==7|0{,}95}}$)."
+				]
+			}
+		},
+		{
+			"statement": "Deux jeux sont proposés. Au jeu A, on a ${{eval:s*n2+(1-s)*n1}}$ essais indépendants, chacun gagnant avec la probabilité ${{eval:(s*b+(1-s)*a)/10;d}}$. Au jeu B, on a ${{eval:s*n1+(1-s)*n2}}$ essais indépendants, chacun gagnant avec la probabilité ${{eval:(s*a+(1-s)*b)/10;d}}$.\n\nQuel jeu donne la plus grande probabilité de gagner au moins une fois ?\n\n```choix\n- Le jeu A.\n- Le jeu B.\n- Les deux jeux donnent la même probabilité.\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "n1",
+					"expression": "2..8"
+				},
+				{
+					"name": "a",
+					"expression": "1..4"
+				},
+				{
+					"name": "n2",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre de gains suit une loi binomiale ; gagner au moins une fois est le contraire de perdre tous les essais : $P(X\\geqslant1)=1-(1-p)^n$.",
+					"Jeu A : $1-{{eval:1-(s*b+(1-s)*a)/10;d}}^{{{eval:s*n2+(1-s)*n1}}}\\approx{{eval:round(1000*(1-(1-(s*b+(1-s)*a)/10)^(s*n2+(1-s)*n1)))/1000;d}}$ ; jeu B : $1-{{eval:1-(s*a+(1-s)*b)/10;d}}^{{{eval:s*n1+(1-s)*n2}}}\\approx{{eval:round(1000*(1-(1-(s*a+(1-s)*b)/10)^(s*n1+(1-s)*n2)))/1000;d}}$.",
+					"Le meilleur est $\\textcolor{{{color:primary.0}}}{\\text{le jeu {{if:s==0|A}}{{if:s==1|B}}}}$, même s'il a {{if:n1<n2|moins d'essais}}{{if:n1>n2|une probabilité plus faible à chaque essai}}."
+				]
+			},
+			"conditions": ["n1 != n2", "a != b", "(n1-n2)*(a-b) < 0", "(1-b/10)^n2 - (1-a/10)^n1 >= 0.03"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "p = 0,1, s = 0,9 : 22",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["22"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : arrondi au plus proche (58,4 → 58)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["58"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "p = 0,05, s = 0,95 : 59",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["59"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sens de l'inégalité (n = 21)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["21"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pièces p = 0,2, s = 0,99 : 21",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["21"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 20",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Jeu A meilleur (s = 0)",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"n1": "3",
+				"a": "4",
+				"n2": "6",
+				"b": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : B",
+			"variationIndex": 2,
+			"variables": {
+				"s": "0",
+				"n1": "3",
+				"a": "4",
+				"n2": "6",
+				"b": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Montré en B (s = 1)",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"n1": "3",
+				"a": "4",
+				"n2": "6",
+				"b": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : égalité",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1",
+				"n1": "3",
+				"a": "4",
+				"n2": "6",
+				"b": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

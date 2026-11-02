@@ -1,0 +1,239 @@
+{
+	"title": "Calculer en utilisant l'indépendance",
+	"description": "Trois événements indépendants de probabilités différentes : montage en série (produit), en parallèle (événement contraire), exactement une réussite sur trois (trois produits)",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Succession d'épreuves",
+	"subdomain": "Épreuves indépendantes",
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Un appareil comporte trois composants $C_1$, $C_2$ et $C_3$, qui fonctionnent indépendamment les uns des autres, avec les probabilités respectives ${{eval:x/20;d}}$, ${{eval:y/20;d}}$ et ${{eval:z/20;d}}$. L'appareil fonctionne si **les trois** composants fonctionnent (montage en série).\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité que l'appareil fonctionne : $?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "16..19"
+				},
+				{
+					"name": "y",
+					"expression": "16..19"
+				},
+				{
+					"name": "z",
+					"expression": "16..19"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:x*y*z/8000}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On note $F_i$ l'événement « $C_i$ fonctionne ». L'appareil fonctionne si $F_1\\cap F_2\\cap F_3$ est réalisé.",
+					"Les événements sont indépendants : $P(F_1\\cap F_2\\cap F_3)=P(F_1)\\times P(F_2)\\times P(F_3)$.",
+					"${{eval:x/20;d}}\\times{{eval:y/20;d}}\\times{{eval:z/20;d}}=\\textcolor{{{color:primary.0}}}{{{eval:x*y*z/8000;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un appareil comporte trois composants $C_1$, $C_2$ et $C_3$, qui fonctionnent indépendamment les uns des autres, avec les probabilités respectives ${{eval:x/20;d}}$, ${{eval:y/20;d}}$ et ${{eval:z/20;d}}$. L'appareil fonctionne si **au moins un** des composants fonctionne (montage en parallèle).\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité que l'appareil fonctionne : $?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "16..19"
+				},
+				{
+					"name": "y",
+					"expression": "16..19"
+				},
+				{
+					"name": "z",
+					"expression": "16..19"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-(20-x)*(20-y)*(20-z)/8000}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'événement contraire de « au moins un composant fonctionne » est « aucun ne fonctionne » : $\\overline{F_1}\\cap\\overline{F_2}\\cap\\overline{F_3}$.",
+					"Les pannes sont indépendantes : $P(\\overline{F_1}\\cap\\overline{F_2}\\cap\\overline{F_3})={{eval:1-x/20;d}}\\times{{eval:1-y/20;d}}\\times{{eval:1-z/20;d}}={{eval:(20-x)*(20-y)*(20-z)/8000;d}}$.",
+					"Probabilité que l'appareil fonctionne : $1-{{eval:(20-x)*(20-y)*(20-z)/8000;d}}=\\textcolor{{{color:primary.0}}}{{{eval:1-(20-x)*(20-y)*(20-z)/8000;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Sam passe trois épreuves indépendantes. Il réussit la première avec la probabilité ${{eval:a/10;d}}$, la deuxième avec la probabilité ${{eval:b/10;d}}$ et la troisième avec la probabilité ${{eval:c/10;d}}$.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité qu'il réussisse **exactement une** épreuve : $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "2..8"
+				},
+				{
+					"name": "c",
+					"expression": "2..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a*(10-b)*(10-c)+(10-a)*b*(10-c)+(10-a)*(10-b)*c)/1000}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On note $R_1$, $R_2$, $R_3$ les événements « il réussit la première, la deuxième, la troisième épreuve ». « Exactement une » est réalisé par trois issues incompatibles : $R_1\\cap\\overline{R_2}\\cap\\overline{R_3}$, $\\overline{R_1}\\cap R_2\\cap\\overline{R_3}$, $\\overline{R_1}\\cap\\overline{R_2}\\cap R_3$.",
+					"Par indépendance, chacune est un produit : ${{eval:a/10;d}}\\times{{eval:1-b/10;d}}\\times{{eval:1-c/10;d}}={{eval:a*(10-b)*(10-c)/1000;d}}$, ${{eval:1-a/10;d}}\\times{{eval:b/10;d}}\\times{{eval:1-c/10;d}}={{eval:(10-a)*b*(10-c)/1000;d}}$, ${{eval:1-a/10;d}}\\times{{eval:1-b/10;d}}\\times{{eval:c/10;d}}={{eval:(10-a)*(10-b)*c/1000;d}}$.",
+					"On additionne : $\\textcolor{{{color:primary.0}}}{{{eval:(a*(10-b)*(10-c)+(10-a)*b*(10-c)+(10-a)*(10-b)*c)/1000;d}}}$."
+				]
+			},
+			"conditions": ["a != b", "b != c", "a != c"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "0,85 × 0,9 × 0,95",
+			"variationIndex": 0,
+			"variables": {
+				"x": "17",
+				"y": "18",
+				"z": "19"
+			},
+			"answers": ["0{,}726\\,75"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : parallèle",
+			"variationIndex": 0,
+			"variables": {
+				"x": "17",
+				"y": "18",
+				"z": "19"
+			},
+			"answers": ["0{,}99925"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : deux composants",
+			"variationIndex": 0,
+			"variables": {
+				"x": "17",
+				"y": "18",
+				"z": "19"
+			},
+			"answers": ["0{,}765"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 − 0,15 × 0,1 × 0,05",
+			"variationIndex": 1,
+			"variables": {
+				"x": "17",
+				"y": "18",
+				"z": "19"
+			},
+			"answers": ["0{,}999\\,25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : série",
+			"variationIndex": 1,
+			"variables": {
+				"x": "17",
+				"y": "18",
+				"z": "19"
+			},
+			"answers": ["0{,}72675"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1 − produit des fiabilités",
+			"variationIndex": 1,
+			"variables": {
+				"x": "17",
+				"y": "18",
+				"z": "19"
+			},
+			"answers": ["0{,}27325"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,21 + 0,06 + 0,09",
+			"variationIndex": 2,
+			"variables": {
+				"a": "7",
+				"b": "4",
+				"c": "5"
+			},
+			"answers": ["0{,}36"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En fraction",
+			"variationIndex": 2,
+			"variables": {
+				"a": "7",
+				"b": "4",
+				"c": "5"
+			},
+			"answers": ["\\frac{9}{25}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un seul chemin",
+			"variationIndex": 2,
+			"variables": {
+				"a": "7",
+				"b": "4",
+				"c": "5"
+			},
+			"answers": ["0{,}21"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : au moins une",
+			"variationIndex": 2,
+			"variables": {
+				"a": "7",
+				"b": "4",
+				"c": "5"
+			},
+			"answers": ["0{,}91"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

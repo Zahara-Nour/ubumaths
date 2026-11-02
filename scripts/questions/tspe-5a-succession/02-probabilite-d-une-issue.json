@@ -1,0 +1,185 @@
+{
+	"title": "Probabilité d'une issue (x₁, …, xₙ)",
+	"description": "Épreuves indépendantes : la probabilité d'une issue est le produit des probabilités de ses composantes (trois épreuves différentes ; n = 5 à 7 tirs)",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Succession d'épreuves",
+	"subdomain": "Épreuves indépendantes",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On lance un dé équilibré à six faces, puis une pièce truquée qui tombe sur face ($F$) avec la probabilité ${{eval:a/10;d}}$, puis on tire une boule dans une urne qui contient ${{eval:r}}$ boules rouges ($R$) et ${{eval:b}}$ boules blanches. Les trois épreuves sont indépendantes.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité de l'issue $({{eval:f}}\\,;F\\,;R)$ : $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "r",
+					"expression": "1..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..6"
+				},
+				{
+					"name": "f",
+					"expression": "1..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*r/(60*(r+b))}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les épreuves sont indépendantes : la probabilité d'une issue est le **produit** des probabilités de ses composantes.",
+					"$P({{eval:f}})=\\dfrac{1}{6}$, $P(F)={{eval:a/10;d}}$ et $P(R)=\\dfrac{{{eval:r}}}{{{eval:r+b}}}$.",
+					"$P\\big(({{eval:f}}\\,;F\\,;R)\\big)=\\dfrac{1}{6}\\times{{eval:a/10;d}}\\times\\dfrac{{{eval:r}}}{{{eval:r+b}}}=\\textcolor{{{color:primary.0}}}{{{eval:a*r/(60*(r+b))}}}$."
+				]
+			},
+			"conditions": ["a != 5"]
+		},
+		{
+			"statement": "Lina tire des penaltys. À chaque tir, elle marque ($S$) avec la probabilité ${{eval:a/10;d}}$, et ses tirs sont indépendants. Elle tire ${{eval:m+5}}$ penaltys.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité de l'issue ${{if:m==0|(S\\,;\\overline{S}\\,;S\\,;S\\,;\\overline{S})}}{{if:m==1|(\\overline{S}\\,;S\\,;S\\,;\\overline{S}\\,;S\\,;S)}}{{if:m==2|(S\\,;S\\,;\\overline{S}\\,;S\\,;S\\,;S\\,;\\overline{S})}}$ : $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "m",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a/10)^(m+3)*(1-a/10)^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les tirs sont indépendants : la probabilité de l'issue est le produit des probabilités de ses composantes, avec $P(S)={{eval:a/10;d}}$ et $P(\\overline{S})=1-{{eval:a/10;d}}={{eval:1-a/10;d}}$.",
+					"L'issue compte ${{eval:m+3}}$ fois $S$ et $2$ fois $\\overline{S}$ ; l'ordre ne change pas le produit.",
+					"${{eval:a/10;d}}^{{{eval:m+3}}}\\times{{eval:1-a/10;d}}^2=\\textcolor{{{color:primary.0}}}{{{eval:(a/10)^(m+3)*(1-a/10)^2;d}}}$."
+				]
+			},
+			"conditions": ["a != 5"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1/6 × 0,3 × 2/5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"r": "2",
+				"b": "3",
+				"f": "4"
+			},
+			"answers": ["\\frac{1}{50}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En décimal",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"r": "2",
+				"b": "3",
+				"f": "4"
+			},
+			"answers": ["0{,}02"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : urne oubliée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"r": "2",
+				"b": "3",
+				"f": "4"
+			},
+			"answers": ["0{,}05"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : boules blanches",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"r": "2",
+				"b": "3",
+				"f": "4"
+			},
+			"answers": ["0{,}03"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,6³ × 0,4²",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"m": "0"
+			},
+			"answers": ["0{,}034\\,56"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "n = 7 : 0,6⁵ × 0,4²",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"m": "2"
+			},
+			"answers": ["0{,}012\\,441\\,6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : exposants échangés",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"m": "0"
+			},
+			"answers": ["0{,}02304"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : succès seuls",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"m": "0"
+			},
+			"answers": ["0{,}216"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

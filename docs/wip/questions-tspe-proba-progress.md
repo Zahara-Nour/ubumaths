@@ -12,9 +12,9 @@
 
 _Mis à jour le 2026-11-02, phase 0 du lot 5a écrite._
 
-- **État** : relevé MCP fait, phase 0 du lot 5a écrite (§ « Lot 5a » en bas), aucun fichier de modèle écrit.
-- **Prochaine action** : écrire le lot 5a (`docs/wip/questions/lot-tspe-5a-succession.py`) dès la validation.
-- **En attente de David** : validation de la phase 0 du lot 5a (Q1 à Q3).
+- **État** : lot 5a écrit (9 modèles, specs et 6 300 tirages verts, joués en base locale), PR des fichiers ouverte.
+- **Prochaine action** : merge de la PR des fichiers, puis David lance `create-questions --publier` depuis le dépôt principal ; ensuite migration nœud + tag.
+- **En attente de David** : `create-questions --publier` après le merge.
 - **Pièges en cours** : voir « Décisions communes et pièges » ci-dessous.
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe-proba`, `feat/questions-tspe-proba-5a`.
 
@@ -137,3 +137,23 @@ Variations :
 
 **Question d'accès** : personne ne gagne ni ne perd d'accès (brouillons ; visibles des élèves après `publier-lot`).
 Aucune sous-notion neuve.
+
+**Décisions (David, 2026-11-02, « tes recos ? » puis « je valide »)** : Q1 domaine neuf « Succession d'épreuves » ;
+Q2 M9 au niveau 6 de « Loi binomiale › Calcul de probabilités » ; Q3 M5 v1 en case choix à **quatre options
+justifiées** (oui / non, chacun avec le bon critère et un faux critère : « même nombre de branches », « pondérations
+d'un même nœud différentes ») ; la bonne est l'un des deux bons critères selon le tirage.
+
+**Écriture** : `docs/wip/questions/lot-tspe-5a-succession.py` → `scripts/questions/tspe-5a-succession/`. Specs 9 + 8 + 6 +
+10 + 10 + 6 + 9 + 7 + 10 vertes, 6 300 tirages réussis, `create-questions` en simulation : 9 à créer. Corrigé après
+relecture des tirages : variable `i` lue comme l'imaginaire (« Complex numbers not supported ») → `w`, `v` ; `$i$` nu
+rendu `\imaginaryI` dans trois corrigés → indices écrits en toutes lettres ; décimaux de plus de 4 chiffres attendus
+groupés (`0{,}034\,56` ; non groupés : `unoptimal_form`) ; M3 v1 : n = 6 donnait deux options identiques → `n != 6` ;
+M5 v1 : `P_{A}(B)=0,4` réécrit « P_A B » par le nettoyage → phrase sans formule ; M6 v1 : les deux branches après une
+défaite masquées (sinon on complétait à 1 sans lire l'énoncé).
+
+**Piège ` ```probtree `** : une étiquette **sans `\`** est écrite en texte (`wrapTextLabel`) : « G_1 » sort brut,
+sans indice → `\mathrm{G}_1` (droit, comme les étiquettes surlignées). Vu dans l'aperçu local ; défaut du composant
+`ProbabilityTree.svelte`, signalé à David.
+
+**Base locale** : 9 brouillons créés ; M5 v1 (arbre dessiné, choix juste accepté), M6 v1 (arbre à trous) et M8 v1
+(arbre complet) vus dans l'aperçu (port 5177).

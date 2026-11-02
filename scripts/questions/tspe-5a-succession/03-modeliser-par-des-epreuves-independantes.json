@@ -1,0 +1,137 @@
+{
+	"title": "Modéliser par des épreuves indépendantes",
+	"description": "Reconnaître une succession d'épreuves indépendantes (avec ou sans remise, simultané) ; choisir la modélisation de n lancers de dé (univers {S ; S̄}ⁿ, P(S) = 1/6)",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Succession d'épreuves",
+	"subdomain": "Épreuves indépendantes",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Une urne contient ${{eval:r}}$ boules rouges et ${{eval:b}}$ boules noires.\n\nLaquelle de ces expériences se modélise par une succession de trois épreuves indépendantes ?\n\n```choix\n- On tire une boule, on note sa couleur et on la remet dans l'urne ; on fait cela trois fois.\n- On tire successivement trois boules, sans remettre dans l'urne les boules tirées.\n- On tire simultanément trois boules de l'urne.\n- On tire des boules une à une, sans remise, jusqu'à obtenir une boule noire.\n```",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "3..8"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec remise, l'urne est la même avant chaque tirage : la composition, donc la probabilité de chaque couleur, ne dépend pas des tirages précédents. Les trois épreuves sont **indépendantes**.",
+					"Sans remise, la composition change après chaque tirage : les épreuves ne sont pas indépendantes. Un tirage simultané est une seule épreuve ; « jusqu'à obtenir une noire » n'a pas un nombre fixé d'épreuves.",
+					"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{trois tirages avec remise}}$."
+				]
+			}
+		},
+		{
+			"statement": "On lance ${{eval:n}}$ fois un dé équilibré à six faces et on note, à chaque lancer, si l'on obtient $6$ (succès $S$) ou non (échec $\\overline{S}$).\n\nQuelle modélisation convient ?\n\n```choix\n- ${{eval:n}}$ épreuves identiques et indépendantes ; univers $\\{S\\,;\\overline{S}\\}^{{{eval:n}}}$ ; $P(S)=\\dfrac{1}{6}$ à chaque lancer.\n- ${{eval:n}}$ épreuves dépendantes : la probabilité d'obtenir $6$ change après un $6$.\n- Une seule épreuve, d'univers $\\{1\\,;2\\,;3\\,;4\\,;5\\,;6\\}$.\n- ${{eval:n}}$ épreuves indépendantes ; univers $\\{S\\,;\\overline{S}\\}^{{{eval:n}}}$ ; $P(S)=\\dfrac{1}{{{eval:n}}}$.\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque lancer est une épreuve à deux issues ($S$ : « obtenir $6$ », de probabilité $\\dfrac{1}{6}$) ; le dé ne garde pas la mémoire des lancers : les épreuves sont identiques et indépendantes.",
+					"L'expérience est la succession de ces ${{eval:n}}$ épreuves : univers $\\{S\\,;\\overline{S}\\}^{{{eval:n}}}$, et $P(S)=\\dfrac{1}{6}$ ne dépend pas du nombre de lancers.",
+					"Réponse : $\\textcolor{{{color:primary.0}}}{{{eval:n}}\\text{ épreuves identiques et indépendantes, } P(S)=\\dfrac{1}{6}}$."
+				]
+			},
+			"conditions": ["n != 6"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Avec remise",
+			"variationIndex": 0,
+			"variables": {
+				"r": "4",
+				"b": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans remise",
+			"variationIndex": 0,
+			"variables": {
+				"r": "4",
+				"b": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : simultané",
+			"variationIndex": 0,
+			"variables": {
+				"r": "4",
+				"b": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Bonne modélisation",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dépendantes",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : P(S) = 1/n",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

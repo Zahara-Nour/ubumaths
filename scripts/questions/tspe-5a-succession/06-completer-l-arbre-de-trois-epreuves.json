@@ -1,0 +1,171 @@
+{
+	"title": "Compléter l'arbre de trois épreuves",
+	"description": "Arbre pondéré à trois niveaux, à compléter : trois épreuves indépendantes différentes (mêmes pondérations à chaque niveau) ; trois parties dépendantes (pondérations selon la partie précédente)",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Succession d'épreuves",
+	"subdomain": "Arbres",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Inès tire un penalty ($F$ : « réussi »), puis un lancer franc ($L$ : « réussi »), puis une fléchette ($C$ : « au centre »). Elle réussit avec les probabilités respectives ${{eval:a/10;d}}$, ${{eval:b/10;d}}$ et ${{eval:c/10;d}}$, et les trois épreuves sont indépendantes.\n\nComplète l'arbre pondéré qui représente cette expérience.\n\n```probtree\nF:{{eval:a/10;d}}\n  L:{{eval:b/10;d}}\n    C:{{eval:c/10;d}}\n    \\overline{C}:?\n  \\overline{L}:?\n    C:{{eval:c/10;d}}\n    \\overline{C}:?\n\\overline{F}:?\n  L:?\n    C:{{eval:c/10;d}}\n    \\overline{C}:?\n  \\overline{L}:?\n    C:{{eval:c/10;d}}\n    \\overline{C}:?\n```\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nBranche $\\overline{F}$ : $?$\n\nBranche $L$ issue de $\\overline{F}$ : $?$\n\nChaque branche $\\overline{C}$ : $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "2..8"
+				},
+				{
+					"name": "c",
+					"expression": "2..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-a/10}}"
+				},
+				{
+					"expectedAnswer": "{{eval:b/10}}"
+				},
+				{
+					"expectedAnswer": "{{eval:1-c/10}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$P(\\overline{F})=1-{{eval:a/10;d}}=\\textcolor{{{color:primary.0}}}{{{eval:1-a/10;d}}}$.",
+					"Les épreuves sont indépendantes : le lancer franc est réussi avec la même probabilité, que le penalty soit réussi ou non. Sous $\\overline{F}$ comme sous $F$, la branche $L$ porte $\\textcolor{{{color:primary.0}}}{{{eval:b/10;d}}}$.",
+					"De même, à chaque nœud du troisième niveau, $P(\\overline{C})=1-{{eval:c/10;d}}=\\textcolor{{{color:primary.0}}}{{{eval:1-c/10;d}}}$.\n\n```probtree\nF:{{eval:a/10;d}}\n  L:{{eval:b/10;d}}\n    C:{{eval:c/10;d}}\n    \\overline{C}:{{eval:1-c/10;d}}\n  \\overline{L}:{{eval:1-b/10;d}}\n    C:{{eval:c/10;d}}\n    \\overline{C}:{{eval:1-c/10;d}}\n\\overline{F}:{{eval:1-a/10;d}}\n  L:{{eval:b/10;d}}\n    C:{{eval:c/10;d}}\n    \\overline{C}:{{eval:1-c/10;d}}\n  \\overline{L}:{{eval:1-b/10;d}}\n    C:{{eval:c/10;d}}\n    \\overline{C}:{{eval:1-c/10;d}}\n```"
+				]
+			},
+			"conditions": ["a != 5", "b != 5", "c != 5", "a != b", "b != c"]
+		},
+		{
+			"statement": "Noé joue trois parties. Il gagne la première avec la probabilité ${{eval:a/10;d}}$. Ensuite, s'il a gagné une partie, il gagne la suivante avec la probabilité ${{eval:g/10;d}}$ ; s'il l'a perdue, il gagne la suivante avec la probabilité ${{eval:h/10;d}}$. On note $G_1$, $G_2$ et $G_3$ les événements « Noé gagne la première, la deuxième, la troisième partie ».\n\nComplète l'arbre pondéré qui représente cette expérience.\n\n```probtree\n\\mathrm{G}_1:{{eval:a/10;d}}\n  \\mathrm{G}_2:{{eval:g/10;d}}\n    \\mathrm{G}_3:{{eval:g/10;d}}\n    \\overline{G_3}:?\n  \\overline{G_2}:?\n    \\mathrm{G}_3:?\n    \\overline{G_3}:?\n\\overline{G_1}:?\n  \\mathrm{G}_2:?\n    \\mathrm{G}_3:{{eval:g/10;d}}\n    \\overline{G_3}:?\n  \\overline{G_2}:?\n    \\mathrm{G}_3:?\n    \\overline{G_3}:?\n```\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nBranche $\\overline{G_1}$ : $?$\n\nChaque branche $G_2$ ou $G_3$ qui suit une défaite : $?$\n\nChaque branche $\\overline{G_2}$ ou $\\overline{G_3}$ qui suit une victoire : $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "g",
+					"expression": "5..9"
+				},
+				{
+					"name": "h",
+					"expression": "1..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-a/10}}"
+				},
+				{
+					"expectedAnswer": "{{eval:h/10}}"
+				},
+				{
+					"expectedAnswer": "{{eval:1-g/10}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$P(\\overline{G_1})=1-{{eval:a/10;d}}=\\textcolor{{{color:primary.0}}}{{{eval:1-a/10;d}}}$.",
+					"Les parties ne sont pas indépendantes : la pondération d'une branche dépend de la partie précédente. Après une défaite, Noé gagne avec la probabilité $\\textcolor{{{color:primary.0}}}{{{eval:h/10;d}}}$ : par exemple $P_{\\overline{G_1}}(G_2)={{eval:h/10;d}}$.",
+					"Après une victoire, il perd avec la probabilité $1-{{eval:g/10;d}}=\\textcolor{{{color:primary.0}}}{{{eval:1-g/10;d}}}$.\n\n```probtree\n\\mathrm{G}_1:{{eval:a/10;d}}\n  \\mathrm{G}_2:{{eval:g/10;d}}\n    \\mathrm{G}_3:{{eval:g/10;d}}\n    \\overline{G_3}:{{eval:1-g/10;d}}\n  \\overline{G_2}:{{eval:1-g/10;d}}\n    \\mathrm{G}_3:{{eval:h/10;d}}\n    \\overline{G_3}:{{eval:1-h/10;d}}\n\\overline{G_1}:{{eval:1-a/10;d}}\n  \\mathrm{G}_2:{{eval:h/10;d}}\n    \\mathrm{G}_3:{{eval:g/10;d}}\n    \\overline{G_3}:{{eval:1-g/10;d}}\n  \\overline{G_2}:{{eval:1-h/10;d}}\n    \\mathrm{G}_3:{{eval:h/10;d}}\n    \\overline{G_3}:{{eval:1-h/10;d}}\n```"
+				]
+			},
+			"conditions": ["g > h", "a != 5"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "0,3 ; 0,4 ; 0,4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "4",
+				"c": "6"
+			},
+			"answers": ["0{,}3", "0{,}4", "0{,}4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : L sous F̄ = 1 − 0,4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "4",
+				"c": "6"
+			},
+			"answers": ["0{,}3", "0{,}6", "0{,}4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : C̄ = 0,6",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "4",
+				"c": "6"
+			},
+			"answers": ["0{,}3", "0{,}4", "0{,}6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,4 ; 0,3 ; 0,2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"g": "8",
+				"h": "3"
+			},
+			"answers": ["0{,}4", "0{,}3", "0{,}2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : après défaite = 1 − 0,3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"g": "8",
+				"h": "3"
+			},
+			"answers": ["0{,}4", "0{,}7", "0{,}2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : après victoire = 1 − h",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"g": "8",
+				"h": "3"
+			},
+			"answers": ["0{,}4", "0{,}3", "0{,}7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
