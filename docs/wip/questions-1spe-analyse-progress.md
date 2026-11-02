@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2253 (lot B mergé, lots A et B créés en prod)._
+_Mis à jour le 2026-11-02, migration nœud + tags écrite (PR à ouvrir)._
 
-- **État** : lots A (#2245) et B (#2253) mergés et **créés en prod en brouillon** (9 `id` : § « Identifiants en prod »). Aucun nœud ni tag posé. Worktree du lot B retiré.
-- **Prochaine action** : UNE migration nœud + tag pour A et B (gabarit `supabase/migrations/20261102090607_questions_1spe_savoir_a_rangement_tags.sql` + son test d'intégration), dans un worktree neuf `content/questions-1spe-analyse-rangement`. Deux cas hors gabarit : B4 porte 3 points (1SPE-432, 1GEN-062, 1TECHNO-139) ; 7d6cf480 (publié, seconde) reçoit 1SPE-434, 1GEN-064, 1TECHNO-141 **et** les niveaux `1_SPE`, `1_GEN`, `1_TECHNO` (Q6). Q7 (accès) déjà tranchée : personne, seul 7d6cf480 apparaît aux classes de 1re dans le cahier de texte.
+- **État** : lots A (#2245) et B (#2253) créés en prod en brouillon. Migration `20261102192857_questions_1spe_analyse_rangement_tags.sql` + test `tests/integration/questions-1spe-analyse-rangement-tags.test.ts` (12 verts, rouge sans l'étape 4), branche `content/questions-1spe-analyse-rangement`.
+- **Prochaine action** : PR → CI verte → `check:migrations --pr` → merge → `migration list --linked` puis `db:migrate` depuis le dépôt principal (4 conditions : Q7 tranchée, preuve rouge, `security-auditor`, additive + rollback) → relevé MCP → page à cocher → `publier-lot` (David).
 - **En attente de David** : rien.
-- **Pièges en cours** : `db:migrate` passe toutes les migrations en attente (celles des autres sessions comprises) ; vérifier les nœuds des points jumeaux en prod avant le SQL ; regarder sur la page à cocher le tableau de signes de B4 qui déborde en case choix.
-- **Worktree / branche** : aucun.
+- **Pièges en cours** : `db:migrate` passe toutes les migrations en attente (celles des autres sessions comprises) ; regarder sur la page à cocher le tableau de signes de B4 qui déborde en case choix.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-analyse-rangement` · `content/questions-1spe-analyse-rangement`.
 
 ---
 
@@ -209,3 +209,17 @@ Fichiers `scripts/questions/1spe-analyse-b/` (gabarit `docs/wip/questions/lot-1s
 | B2  | Longueur d'un arc du cercle trigonométrique   | `ac9b1868-c019-42c3-a5fe-4b2952cce654` |
 | B3  | Placer un point sur le cercle trigonométrique | `558c31a7-cbf0-4f7f-b282-2ada6a64c9f3` |
 | B4  | Signe d'une fonction lu sur sa courbe         | `33dffa7a-8523-440e-99fe-304df3ced8b3` |
+
+## Migration nœud + tags (2026-11-02)
+
+Relevé MCP du 2026-11-02 avant le SQL : les 9 brouillons sans nœud ni tag (niveaux `1_SPE` ; B4 `1_SPE`, `1_GEN`,
+`1_TECHNO`) ; points et jumeaux tous sur le nœud attendu (432, 1GEN-062, 1TECHNO-139 : « Généralités sur les
+fonctions › signe » ; 434, 1GEN-064, 1TECHNO-141 : « Fonctions affines › coefficient directeur et ordonnée à
+l'origine », nœud de 7d6cf480) ; 7d6cf480 publié, niveaux `{2}`, tagué 2-313 seulement.
+
+- Migration `20261102192857_questions_1spe_analyse_rangement_tags.sql` : 9 neufs rangés et tagués (14 tags en tout
+  avec ceux de 7d6cf480) ; 7d6cf480 : + 1SPE-434, 1GEN-064, 1TECHNO-141, niveaux `{2, 1_SPE, 1_GEN, 1_TECHNO}`.
+  Gardes : tout ou rien (10 modèles), statut, nœud, niveaux et tags EXACTS du relevé. `updated_at` préservé.
+- Test : 12 verts ; sans l'étape 4, suite rouge (la garde du rollback refuse l'état non migré).
+- PR #2258. `security-auditor` : aucun finding bloquant (aucune policy ne lit `grades` ; 7d6cf480 déjà publié, donc
+  déjà lisible) ; remarque faible prise : la garde du rollback vérifie aussi le nœud des 9 brouillons.
