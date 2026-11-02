@@ -1,19 +1,19 @@
 ---
-status: relevé
+status: phase-0
 ---
 
 # Chantier `controles-figure` — nouveaux contrôles de la figure à compléter (symétrique d'abord)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, ouverture du chantier._
+_Mis à jour le 2026-11-02, relevé fait, phase 0 proposée._
 
 - **État** : rien de codé. Chantier ouvert sur la ligne n° 1 de
   [outils-manquants.md](outils-manquants.md) (David, 2026-11-02 : « je te suis »).
-- **Prochaine action** : relevé de l'existant (§ 2 à remplir), puis phase 0 (§ 3) à faire valider
-  AVANT tout code ; worktree `git worktree add -b feat/controles-figure ../ubumaths-wt-controles-figure origin/main`
+- **Prochaine action** : relevé fait (§ 2) ; phase 0 du lot 1 (§ 3, symétrique sur quadrillage) à
+  faire valider AVANT tout code ; worktree `git worktree add -b feat/controles-figure ../ubumaths-wt-controles-figure origin/main`
   seulement après la validation.
-- **En attente de David** : rien.
+- **En attente de David** : les 4 questions du § 3.
 - **Pièges en cours** : un contrôle ne doit jamais donner la réponse (masquage `verifier: ?` en évaluation,
   chantier `fuite-enonce`) ; géométrie = `geometry-expert` / `pedagogy-expert` ; revue Opus (correction des
   réponses).
@@ -35,12 +35,80 @@ La case « figure » (` ```figure-a-completer `, `verifier:`) ne sait vérifier 
 
 Hors chantier : rotation, homothétie (absentes du BO au collège) ; rapporteur (outil n° 4).
 
-## 2. Existant (à relever)
+## 2. Existant (relevé le 2026-11-02)
 
-À lire : `docs/archive/wip/figure-et-choix-progress.md`, `docs/archive/wip/constructions-progress.md`,
-`src/lib/ubumark/types/construction.ts`, `src/lib/questions/construction/judge.ts`, le parseur
-`construction-parser.ts`, la doc `docs/systeme/` de la case « figure ».
+- **Contrôles** (`CONSTRUCTION_CHECK_KINDS`, `ubumark/types/construction.ts`) : `droite_par P ; Q`
+  (outil `droite`), `carre A ; B` et `rectangle A ; B ; C` (outil `segment`, un seul par figure, jamais
+  mêlé à `droite_par`). Un outil par figure (`CHECK_TOOL`).
+- **Réponse** (`construction/answer.ts`) : `droite(x1;y1;x2;y2)` / `segment(…)` séparés par `|`, 20 objets
+  et 1 000 caractères au plus, Zod. Aucun objet « point » : un point isolé demandera un nouvel outil.
+- **Tracé** (`drawing.ts`) : deux touchers = un trait ; aimantation sur les points nommés (24 px) et,
+  avec `grille:`, sur les **nœuds** du quadrillage (`snapToGrid`) ; « Effacer » = dernier trait.
+- **Juge** (`judge.ts`, `polygon.ts`) : par positions, tout-ou-rien, message de la première vérification
+  ratée. `polygon.ts` sait déjà **fusionner** côtés donnés et traits de l'élève par droite porteuse
+  (côté en morceaux, trait repassé : sans effet), dire « trait de trop », « trait qui dépasse », « hors
+  des lignes du quadrillage » — briques réutilisables pour un symétrique.
+- **Correction** : `solutionLines` (bonne figure en pointillés, `FigureAnswer.svelte`) ; `checkTemplate`
+  construit la figure à chaque tirage et appelle `assertConstructionChecks` (erreurs d'auteur).
+  Évaluation : `verifier: ?` masque les contrôles (`masked`), la case publique ne porte rien.
+- **Langage des figures** : `symetrie(axe=d)`, `symetrie(centre=O)`, `symetrie(M, axe=d)` existent
+  (`dsl-builtins.md`, `transform-apply.ts`) ; `translation` aussi. Le prof peut donc DESSINER une
+  image ; ce qui manque est le CONTRÔLE de l'image tracée par l'élève.
+- **Points du BO** : CE2-073 « compléter, sur une feuille quadrillée ou pointée, une figure simple pour la
+  rendre symétrique par rapport à un axe donné » ; CM1-107 (compléter, axe H ou V) ; CM1-108 et CM2-097
+  (construire le symétrique d'une figure sur quadrillage, axe H, V, puis diagonale au CM2) ; 6-180
+  (propriétés de la symétrie axiale pour construire, papier uni compris). Journaux qui les attendent :
+  `questions-ce2` l. 100, `questions-cm1` l. 80, `questions-cm2` l. 97, `questions-6` l. 127.
 
-## 3. Phase 0 (à proposer)
+## 3. Phase 0 — lot 1 : symétrique sur quadrillage (à valider)
 
-Écriture par le prof en exemples, comportements nominal / limite / erreur, questions à David.
+### Écriture par le prof
+
+```figure-a-completer
+fenetre: 0 ; 12 ; 0 ; 8
+grille: 1
+verifier: symetrique par d
+---
+d = droite(point(6, 0), point(6, 8))
+A = point(2, 2)
+B = point(4, 2)
+C = point(4, 6)
+polygone(A, B, C)
+```
+
+`verifier: symetrique par d` : l'élève trace (outil `segment`, déduit) l'image de **tout ce qui est
+tracé dans la figure sauf l'axe**. `par O` (un point) = symétrie centrale (5e), même juge.
+
+### Comportements
+
+- **Nominal** : l'image de chaque segment de la figure est couverte par les traits de l'élève, rien de
+  plus → juste. Correction : l'image en pointillés sur la figure.
+- **Limites** (juste) : un côté de l'image tracé en deux morceaux ; un trait repassé sur la figure de
+  départ ou sur l'axe (sans effet) ; « compléter » (CE2-073, CM1-107) : la moitié donnée touche l'axe, ses
+  sommets sur l'axe sont leurs propres images ; axe diagonal (CM2-097) : les sommets de l'image restent
+  des nœuds, l'aimantation suffit.
+- **Erreurs** (faux, message de la première cause, dans cet ordre) :
+  1. rien tracé → vide (comme aujourd'hui) ;
+  2. un trait qui n'appartient pas à l'image → « Ce trait n'est pas à sa place : ce n'est pas le
+     symétrique. » ; si TOUTE la figure tracée est la figure de départ **glissée** (translation, erreur
+     classique) → « Ta figure a glissé : le symétrique est retourné de l'autre côté de l'axe. » ;
+  3. un morceau de l'image manque → « Il manque une partie du symétrique. » ;
+  4. trait qui dépasse de l'image → message existant (« Un de tes traits dépasse… »).
+- **Erreurs d'auteur** (refus à la publication, `assertConstructionChecks`) : axe ou centre inconnu ;
+  figure sans rien à transformer ; image hors de la fenêtre ; image dont un sommet n'est pas un nœud de
+  la grille (l'élève ne pourrait pas l'atteindre).
+- **Évaluation** : `verifier: ?` masque déjà le contrôle (rien à faire).
+
+### Questions à David
+
+1. **Ce que l'élève transforme** : tout le tracé sauf l'axe (recommandé : rien à nommer, l'écriture la
+   plus simple) ou une liste de sommets (`symetrique A ; B ; C par d`, plus précis si la figure contient
+   d'autres traits) ?
+2. **Message « ta figure a glissé »** : le garder (erreur fréquente, coût faible) ou s'en tenir au
+   message générique ?
+3. **Symétrie centrale dans le même lot** (même juge, `par O`) ou plus tard ?
+4. **6-180 (papier uni)** : sans quadrillage, l'élève n'atteint l'image qu'avec des instruments (équerre,
+   compas) ou un outil « point » — hors du lot 1 (recommandé), à reprendre avec l'outil « point » ?
+
+Lots suivants (après celui-ci) : outil « point » et symétrique d'un point, puis angle, triangle,
+médiatrice, bissectrice, cercle circonscrit, 4e sommet (§ 1).
