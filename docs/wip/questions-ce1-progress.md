@@ -831,3 +831,5 @@ Réponse de David (« tes recos ? » puis « go », 2026-11-02) : les cinq recom
   comparaison et mesure ; 064, 065 solides › propriétés ; 079 solides › constructions ; 076, 077 repérage › positions et
   plans ; 080 repérage › coder un déplacement). Migration `20261102072625_questions_ce1_lot10_rangement_tags` + test :
   rouge sans (3 échecs, suite principale non lancée), vert 9/9. Le test d'archivage vise 077 (080 porte deux modèles).
+  PR #2211 ; `security-auditor` : aucun finding bloquant (SQL identique au lot 9 hors valeurs ; chemins et points
+  résolus à 1 en prod) ; `check:migrations --pr 2211` OK.
