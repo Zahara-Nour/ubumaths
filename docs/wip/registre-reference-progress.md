@@ -6,18 +6,17 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 2 écrit en partie (78/108), PR pas encore ouverte._
+_Mis à jour le 2026-11-02, lot 2 écrit en entier (108/108), PR ouverte._
 
-- **État** : 78 fiches tranchées écrites dans `tests/fixtures/mathast/registre-corpus.ts`
-  (familles 1-7, `decimal`/`decimalExact`) ; juge étendu (grandeurs, degrés, factorielles,
-  écriture décimale) ; connues fausses mises à jour (registre 61, Atelier 19) ; tests verts.
-  Page : https://claude.ai/artifact/GZgw832zPgg2Eqqs9dpZF2 (collection `verdicts/<id>`), 82/108 relues.
-- **Prochaine action** : quand David a relu, lire `verdicts`, écrire les 30 fiches restantes
-  (même générateur : `page-data.json` du scratchpad du 2026-11-01, sinon la page), PR sur cette branche.
-- **En attente de David** : 26 fiches non relues (`grands-09`, `grandeurs-02..11`, `approche-01..15`) ;
-  à trancher : `signes-06` (attendu `(x+1)/(2(x+1))`, correctif tidy à part), `decimal-10` (Q9),
-  `grands-06` (Q24, exposant négatif), `grandeurs-01` (garder 12000 m ?).
-- **Tranché** : A-D du lot 2 ; `plafond-02` → 1000 ; ordre des termes, S3, R-point, domaine — NE PAS reposer.
+- **État** : corpus lot 2 complet (193 entrées) + juge étendu, PR « corpus, lot 2 » sur
+  `refactor/registre-reference`. Connues fausses : registre 69, Atelier 21.
+- **Prochaine action** : merger la PR (CI verte) ; puis PR 1 (`.dériver` réduite, D1) selon le
+  § Découpage — ou d'abord les PR à part de tidy (Q9 rouverte, `signes-06`, tidy-units:24).
+- **En attente de David** : portée de Q9 rouverte (seulement `0.5/x`, ou aussi `1.5/x`,
+  `0.5/(x+1)`, `(0.5x+0.5)/(x+1)` ?) — à poser avant la PR de tidy.
+- **Tranché** : A-D du lot 2 ; `decimal` en LaTeX (`approche-09`) ; `plafond-02` → 1000 ; Q24 gardée
+  (`grands-06`) ; `12000 m` gardé (`grandeurs-01`) ; `signes-06` → `(x+1)/(2(x+1))` ; ordre des termes,
+  S3, R-point, domaine — NE PAS reposer.
 - **Pièges** : greper TOUT le journal avant une question ; sonde = vitest jetable sous `src/` ;
   bugs registre notés (degrés, `π` tapé, `pi`, égalités sans réponse) → PR à part.
 - **Worktree / branche** : `../ubumaths-wt-registre-reference` · `refactor/registre-reference`.
@@ -334,3 +333,19 @@ Sonde jetable (vitest sous `src/`, `produceRegistre` / `produceAtelier`), 25 lig
 - **Connues fausses** : registre 61 (dont 13 `décimal : absente`), Atelier 19 (`plafond-02`, égalités
   sans réponse lisible, `2 \approx 2` sans refus). Preuve rouge : `decimal-02` faussé (0.8334) →
   les deux outils échouent.
+
+## Lot 2 — écriture, 2e partie (2026-11-02)
+
+- David a tout relu (108/108). Tranché : `grands-06` OK (Q24 gardée, exposant négatif compris) ;
+  `grandeurs-01` OK (`12000 m` gardé : l'unité ne se choisit que par un calcul ou `.convertir`) ;
+  `decimal-10` corrigé en `1/(2x)` (**Q9 rouverte pour ce cas**) ; `signes-06` corrigé en
+  `(x+1)(2(x+1))`, lu comme la fraction `(x+1)/(2(x+1))` (le produit n'a pas la valeur de la ligne) ;
+  questions de la page : `grandeurs-11` (décimale avec unité) OK, `approche-09` OK → **`decimal` en
+  LaTeX** (`8.7700 \times 10^{9}`), appliqué à toutes les écritures scientifiques.
+- 30 fiches ajoutées (familles 8-9 : `grandeurs-`, `approche-`, et les 4 tranchées). Toutes les
+  grandeurs passent les deux outils. Nouveaux écarts : `decimal-10`, `signes-06` (tidy, les deux
+  outils) ; registre : `π`/`pi` (`approche-08/09/12`), `0.3^1000` sans `answer`, décimale absente
+  de `3` et `100!`.
+- **PR à part, à venir** : tidy — Q9 rouverte (portée à faire préciser), `signes-06` (garde-fou de
+  `mergeFactors`, spec + `tidy-fraction-reduce.test.ts:77-84`), `tidy-units.test.ts:24` (12000 m → 12 km,
+  contraire à `grandeurs-01`).

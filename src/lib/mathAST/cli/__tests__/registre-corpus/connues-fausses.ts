@@ -49,6 +49,8 @@ export const REGISTRE_CONNUES_FAUSSES: Readonly<Record<string, string>> = {
 	'remarquables-09': 'décimal : absente',
 	'racines-01': 'décimal : absente',
 	'racines-08': 'décimal : absente',
+	'approche-13': 'décimal : absente',
+	'approche-15': 'décimal : absente',
 	// Lot 2 · décision D : une expression à lettres tapée seule est rangée (le registre la recopie)
 	'decimal-05': 'forme : 2.5 x / 5',
 	'decimal-06': 'forme : x / 0.5',
@@ -74,6 +76,7 @@ export const REGISTRE_CONNUES_FAUSSES: Readonly<Record<string, string>> = {
 	'plafond-04': 'sans-reponse : (1+1/1000)^1000',
 	'plafond-05': 'sans-reponse : 1.01^365',
 	'plafond-06': 'sans-reponse : factorial(1000)',
+	'approche-11': 'sans-reponse : 0.3^1000',
 	// Lot 2 · degrés non lus, `pi` lu p·i, `π` tapé lu comme une lettre
 	'remarquables-01': 'valeur : \\cos\\left( 60 ° \\right)',
 	'remarquables-02': 'valeur : \\sin\\left( 30 ° \\right) + 1',
@@ -83,12 +86,19 @@ export const REGISTRE_CONNUES_FAUSSES: Readonly<Record<string, string>> = {
 	'remarquables-08': 'accepte : \\cos\\left( p \\dfrac{\\imaginaryI}{3} \\right)',
 	'remarquables-12': 'valeur : \\cos\\left( 420 ° \\right)',
 	'racines-06': 'valeur : 5 π / 6',
+	'approche-08': 'accepte : p \\imaginaryI^{20}',
+	'approche-09': 'valeur : π^{20}',
+	'approche-12': 'valeur : π',
 	// Lot 2 · décision C : une égalité tapée seule répond `\text{vrai}` / `\text{faux}`
 	'comparer-01': 'sans-reponse : true',
 	'comparer-05': 'sans-reponse : true',
 	'comparer-09': 'sans-reponse : false',
 	'comparer-12': 'sans-reponse : true',
-	'comparer-14': 'sans-reponse : true'
+	'comparer-14': 'sans-reponse : true',
+	// Lot 2 · tidy : décimal chassé sous une barre à lettre (Q9 rouverte) ; réduction par 2 qui
+	// fait apparaître x+1 en haut et en bas (garde-fou de `mergeFactors` antérieur à S3) — PR à part
+	'decimal-10': 'forme : 0.5 / x',
+	'signes-06': 'forme : \\left( 2 x + 2 \\right) / \\left( 4 \\left( x + 1 \\right) \\right)'
 };
 
 /** L'Atelier (`runInput`, champ `latex`) */
@@ -120,5 +130,9 @@ export const ATELIER_CONNUES_FAUSSES: Readonly<Record<string, string>> = {
 	'comparer-12': 'sans-reponse : true',
 	'comparer-13':
 		'sans-reponse : Erreur de calcul : Relation « ≈ » non évaluable : seules = ≠ < > ≤ ≥ se tranchent',
-	'comparer-14': 'sans-reponse : true'
+	'comparer-14': 'sans-reponse : true',
+	// Lot 2 · tidy : décimal chassé sous une barre à lettre (Q9 rouverte) ; réduction par 2 qui
+	// fait apparaître x+1 en haut et en bas (garde-fou de `mergeFactors` antérieur à S3) — PR à part
+	'decimal-10': 'forme : \\dfrac{0{,}5}{x}',
+	'signes-06': 'forme : \\dfrac{2 x + 2}{4 \\left( x + 1 \\right)}'
 };

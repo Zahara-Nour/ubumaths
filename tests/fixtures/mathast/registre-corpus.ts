@@ -14,8 +14,10 @@
  * - `refus: true` : la ligne doit être refusée, et `attendu` est le message.
  * - `decimal` / `decimalExact` (décision A du lot 2) : l'écriture décimale que
  *   le registre rend À CÔTÉ de la réponse exacte, au point, arrondie selon Q3
- *   (4 décimales, scientifique `a*10^n` au-delà), et si elle est exacte.
- *   Absente : la ligne n'en a pas (lettres, comparaison, grandeur, angle).
+ *   (4 décimales, scientifique `a \times 10^{n}` au-delà, en LaTeX comme
+ *   `answer`), et si elle est exacte.
+ *   Absente : la ligne n'en a pas (lettres, comparaison, angle, grandeur
+ *   déjà écrite en décimal).
  * - Grandeur et angle : `12~\mathrm{km}`, `90{}^{\circ}` — même nombre, même
  *   unité.
  * - Comparaison : `checkForm` (espaces, signe ×, ordre des termes…), plus un
@@ -41,7 +43,7 @@ export interface RegistreCase {
 	/** La réponse brute en LaTeX ; pour un refus, le message */
 	readonly attendu: string;
 	readonly refus?: true;
-	/** L'écriture décimale, au point (`0.8333`, `1.0715*10^301`) */
+	/** L'écriture décimale, au point (`0.8333`, `1.0715 \times 10^{301}`) */
 	readonly decimal?: string;
 	/** `true` : l'écriture décimale est la valeur exacte (`=`), sinon `≈` */
 	readonly decimalExact?: boolean;
@@ -296,6 +298,12 @@ export const REGISTRE_CORPUS: Readonly<Record<string, readonly RegistreCase[]>> 
 		},
 		{ id: 'decimal-09', ligne: '0.5x+x/3', attendu: '\\dfrac{5 x}{6}' },
 		{
+			id: 'decimal-10',
+			ligne: '0.5/x',
+			attendu: '\\dfrac{1}{2 x}',
+			note: 'Q9 de simplify-carte rouverte pour ce cas : le décimal se chasse sous une barre à lettre (David, 2026-11-02).'
+		},
+		{
 			id: 'decimal-11',
 			ligne: 'sqrt(0.5)',
 			attendu: '\\dfrac{\\sqrt{2}}{2}',
@@ -331,22 +339,30 @@ export const REGISTRE_CORPUS: Readonly<Record<string, readonly RegistreCase[]>> 
 			id: 'grands-03',
 			ligne: '10^15+1',
 			attendu: '1000000000000001',
-			decimal: '1.0000*10^15',
+			decimal: '1.0000 \\times 10^{15}',
 			decimalExact: false
 		},
 		{
 			id: 'grands-04',
 			ligne: '2^64',
 			attendu: '18446744073709551616',
-			decimal: '1.8447*10^19',
+			decimal: '1.8447 \\times 10^{19}',
 			decimalExact: false
 		},
 		{
 			id: 'grands-05',
 			ligne: '3*10^20',
 			attendu: '3 \\times 10^{20}',
-			decimal: '3*10^20',
+			decimal: '3 \\times 10^{20}',
 			decimalExact: true
+		},
+		{
+			id: 'grands-06',
+			ligne: '2.5*10^-3',
+			attendu: '2.5 \\times 10^{-3}',
+			decimal: '0.0025',
+			decimalExact: true,
+			note: 'Q24 : une notation scientifique tapée est gardée, exposant négatif compris (David, 2026-11-02).'
 		},
 		{ id: 'grands-07', ligne: '12*10^2', attendu: '1200', decimal: '1200', decimalExact: true },
 		{
@@ -354,6 +370,13 @@ export const REGISTRE_CORPUS: Readonly<Record<string, readonly RegistreCase[]>> 
 			ligne: '1.5*10^(-2)',
 			attendu: '0.015',
 			decimal: '0.015',
+			decimalExact: true
+		},
+		{
+			id: 'grands-09',
+			ligne: '7*10^-3',
+			attendu: '7 \\times 10^{-3}',
+			decimal: '0.007',
 			decimalExact: true
 		}
 	],
@@ -363,7 +386,7 @@ export const REGISTRE_CORPUS: Readonly<Record<string, readonly RegistreCase[]>> 
 			ligne: '2^1000',
 			attendu:
 				'10715086071862673209484250490600018105614048117055336074437503883703510511249361224931983788156958581275946729175531468251871452856923140435984577574698574803934567774824230985421074605062371141877954182153046474983581941267398767559165543946077062914571196477686542167660429831652624386837205668069376',
-			decimal: '1.0715*10^301',
+			decimal: '1.0715 \\times 10^{301}',
 			decimalExact: false
 		},
 		{
@@ -400,7 +423,7 @@ export const REGISTRE_CORPUS: Readonly<Record<string, readonly RegistreCase[]>> 
 			id: 'plafond-06',
 			ligne: '1000!',
 			attendu: '1000!',
-			decimal: '4.0239*10^2567',
+			decimal: '4.0239 \\times 10^{2567}',
 			decimalExact: false
 		}
 	],
@@ -527,6 +550,12 @@ export const REGISTRE_CORPUS: Readonly<Record<string, readonly RegistreCase[]>> 
 		{ id: 'signes-03', ligne: '(6x+3)/9', attendu: '\\dfrac{2 x + 1}{3}' },
 		{ id: 'signes-04', ligne: '(2x+4)/2', attendu: 'x + 2' },
 		{ id: 'signes-05', ligne: '2x/(4x+6)', attendu: '\\dfrac{x}{2 x + 3}' },
+		{
+			id: 'signes-06',
+			ligne: '(2x+2)/(4(x+1))',
+			attendu: '\\dfrac{x + 1}{2 \\left( x + 1 \\right)}',
+			note: "Réduite par 2 sans barrer x+1 (S3) : la réduction ne dépend pas de l'écriture (David, 2026-11-02)."
+		},
 		{ id: 'signes-07', ligne: '3(-x-1)', attendu: '-3 \\left( x + 1 \\right)' },
 		{ id: 'signes-08', ligne: '(-x-1)^2', attendu: '\\left( x + 1 \\right)^2' },
 		{ id: 'signes-09', ligne: 'x/(-y)', attendu: '-\\dfrac{x}{y}' },
@@ -570,6 +599,127 @@ export const REGISTRE_CORPUS: Readonly<Record<string, readonly RegistreCase[]>> 
 			note: '≈ ne se tranche pas : refus.'
 		},
 		{ id: 'comparer-14', ligne: 'x+x=2x', attendu: '\\text{vrai}' }
+	],
+	grandeurs: [
+		{
+			id: 'grandeurs-01',
+			ligne: '12000[m]',
+			attendu: '12000~\\mathrm{m}',
+			note: "Une grandeur tapée seule garde son unité ; l'unité ne se choisit que par un calcul ou .convertir (David, 2026-11-02)."
+		},
+		{ id: 'grandeurs-02', ligne: '0.005[m]', attendu: '0.005~\\mathrm{m}' },
+		{ id: 'grandeurs-03', ligne: '12[km]+500[m]', attendu: '12.5~\\mathrm{km}' },
+		{ id: 'grandeurs-04', ligne: '3600[s]', attendu: '3600~\\mathrm{s}' },
+		{ id: 'grandeurs-05', ligne: '1500[g]', attendu: '1500~\\mathrm{g}' },
+		{ id: 'grandeurs-06', ligne: '90[km/h]*2[h]', attendu: '180~\\mathrm{km}' },
+		{ id: 'grandeurs-07', ligne: '2[km]*3[km]', attendu: '6~\\mathrm{km}^{2}' },
+		{ id: 'grandeurs-08', ligne: '0.25[h]', attendu: '0.25~\\mathrm{h}' },
+		{
+			id: 'grandeurs-09',
+			ligne: '20[°C]+5[°C]',
+			refus: true,
+			attendu:
+				'Ce calcul de températures n’a pas de sens : on soustrait deux températures (l’écart est en K), ou on ajoute un écart en K à une température, par exemple 20[°C]+5[K].'
+		},
+		{ id: 'grandeurs-10', ligne: '5[m] < 600[cm] < 7[m]', attendu: '\\text{vrai}' },
+		{
+			id: 'grandeurs-11',
+			ligne: '1/3[km]',
+			attendu: '\\dfrac{1}{3}~\\mathrm{km}',
+			decimal: '0.3333~\\mathrm{km}',
+			decimalExact: false,
+			note: "L'écriture décimale garde l'unité."
+		}
+	],
+	'valeurs approchées': [
+		{
+			id: 'approche-01',
+			ligne: 'sqrt(2)/2',
+			attendu: '\\dfrac{\\sqrt{2}}{2}',
+			decimal: '0.7071',
+			decimalExact: false
+		},
+		{
+			id: 'approche-02',
+			ligne: '2/7',
+			attendu: '\\dfrac{2}{7}',
+			decimal: '0.2857',
+			decimalExact: false
+		},
+		{
+			id: 'approche-03',
+			ligne: '1/4',
+			attendu: '\\dfrac{1}{4}',
+			decimal: '0.25',
+			decimalExact: true
+		},
+		{
+			id: 'approche-04',
+			ligne: '1/32',
+			attendu: '\\dfrac{1}{32}',
+			decimal: '0.0313',
+			decimalExact: false
+		},
+		{
+			id: 'approche-05',
+			ligne: '-3/2',
+			attendu: '-\\dfrac{3}{2}',
+			decimal: '-1.5',
+			decimalExact: true
+		},
+		{
+			id: 'approche-06',
+			ligne: 'e^20',
+			attendu: '\\exponentialE^{20}',
+			decimal: '485165195.4098',
+			decimalExact: false
+		},
+		{
+			id: 'approche-07',
+			ligne: 'e^-10',
+			attendu: '\\dfrac{1}{\\exponentialE^{10}}',
+			decimal: '0.00004540',
+			decimalExact: false
+		},
+		{
+			id: 'approche-08',
+			ligne: 'pi^20',
+			refus: true,
+			attendu: 'Écris π avec \\pi ou le symbole π.'
+		},
+		{
+			id: 'approche-09',
+			ligne: 'π^20',
+			attendu: '\\pi^{20}',
+			decimal: '8.7700 \\times 10^{9}',
+			decimalExact: false,
+			note: 'Écriture décimale scientifique en LaTeX, comme `answer` (David, 2026-11-02).'
+		},
+		{
+			id: 'approche-10',
+			ligne: '1/8000000',
+			attendu: '\\dfrac{1}{8000000}',
+			decimal: '1.25 \\times 10^{-7}',
+			decimalExact: true
+		},
+		{
+			id: 'approche-11',
+			ligne: '0.3^1000',
+			attendu: '0.3^{1000}',
+			decimal: '1.3221 \\times 10^{-523}',
+			decimalExact: false
+		},
+		{ id: 'approche-12', ligne: 'π', attendu: '\\pi', decimal: '3.1416', decimalExact: false },
+		{ id: 'approche-13', ligne: '3', attendu: '3', decimal: '3', decimalExact: true },
+		{ id: 'approche-14', ligne: '2x+1', attendu: '2 x + 1' },
+		{
+			id: 'approche-15',
+			ligne: '100!',
+			attendu:
+				'93326215443944152681699238856266700490715968264381621468592963895217599993229915608941463976156518286253697920827223758251185210916864000000000000000000000000',
+			decimal: '9.3326 \\times 10^{157}',
+			decimalExact: false
+		}
 	],
 	refus: [
 		{
