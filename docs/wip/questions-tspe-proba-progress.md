@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2248._
+_Mis à jour le 2026-11-02, après #2248 et la création en prod._
 
-- **État** : lot 5a publié. Lot 5b : 4 modèles écrits, PR des fichiers #2248 **mergée** (CI verte) ; 4 brouillons en base locale seulement.
-- **Prochaine action** : David crée les 4 brouillons en prod, depuis le dépôt principal à jour : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-5b-sommes --publier` ; puis relevé MCP des ids, migration nœud + tags (gabarit du 5a, préfixe `_qtl5b_`) sur une branche `feat/questions-tspe-proba-5b-migration`.
-- **En attente de David** : la création en prod (commande ci-dessus, avec `!`).
+- **État** : lot 5b, 4 brouillons créés en prod par David (c413489d M1, 32bf80ae M2, e8e14e8f M3, dc08795e M4 ; relu au MCP : `draft`, sans nœud ni tag). Migration `20261102185349_questions_tspe_lot5b_rangement_tags.sql` écrite (gabarit du 5a, préfixe `_qtl5b_`), **non testée**.
+- **Prochaine action** : écrire `tests/integration/questions-tspe-lot5b-rangement-tags.test.ts` (copie du test 5a : LOT de 4, « sur 4 », point archivé TSPE-521, déplacement vers « Sommes et concentration > loi des grands nombres »), le voir vert puis **rouge** sans l'étape 4 ; `security-auditor` ; PR + `check:migrations --pr` ; merge ; `db:migrate` (David) ; page à cocher.
+- **En attente de David** : rien.
 - **Pièges en cours** : `cleanCoefficients` réécrit `\sigma(X)` en « σ X » → `\sigma\left(X\right)` ; voir aussi « Décisions communes et pièges ».
-- **Worktree / branche** : aucun (retiré après #2248) ; à recréer pour la migration.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-proba` · `feat/questions-tspe-proba-5b-migration`.
 
 ---
 
@@ -239,3 +239,14 @@ seulement si a < 0 ; M1 v1 : S = 2 et S = 10 écartés (« x de 1 à 1 »).
 **Base locale** : 4 brouillons créés (91b21c5a, 2b8c65a4, c56290a7, 4ce1e314).
 
 **PR des fichiers** : #2248 mergée le 2026-11-02 (CI verte).
+
+**Création en prod** (David, 2026-11-02) : c413489d (M1), 32bf80ae (M2), e8e14e8f (M3), dc08795e (M4), brouillons
+[T_SPE], niveaux de la phase 0, sans nœud ni tag (relu au MCP).
+
+**Migration** `20261102185349_questions_tspe_lot5b_rangement_tags.sql` (gabarit du 5a, préfixe `_qtl5b_`) : M1, M2,
+M3 sur « Sommes et concentration › espérance et variance d'une somme » (TSPE-518, 521, 525), M4 sur « loi des grands
+nombres » (TSPE-532). Test `tests/integration/questions-tspe-lot5b-rangement-tags.test.ts` : 12/12 ; **rouge** sans
+l'étape 4 (« lot incohérent : nœuds 0/4 »). Deux cas de plus que le 5a, sur remarque du `security-auditor` (non
+bloquant, recoupé en prod) : rollback refusé si un tag a été retiré ; un tag sur un modèle non rangé est refusé par le
+trigger (« n'est rangé dans aucun nœud »), la garde « déjà tagués » est donc inatteignable. PR #2252,
+`check:migrations --pr` passé. Piège : la garde de doc veut `Doc-inchangée:` dans un **commit**, pas dans le corps de PR.
