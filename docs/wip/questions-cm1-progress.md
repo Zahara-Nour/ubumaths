@@ -926,3 +926,16 @@ modèles CM1 propres, case « choix ».
   (km → m, m → cm). Piège déjà au § 9 de la doc : jamais de `{{if}}` dans une réponse attendue.
 - `question:specs` 300 tirages par variation : tout réussi ; `create-questions` en simulation (prod) : 7/7
   verts, 88 specs ; test du corpus vert ; base locale : 7 brouillons, pas de défilement horizontal.
+
+### 14 quater. Lot 5a — brouillons en prod, rangement et tags (2026-11-02)
+
+- `create-questions --publier` lancé par David. MCP : 7 brouillons [CM1], sans nœud ni tag, créés à 06:22 UTC,
+  niveaux 12 à 15 (Unités), 5 (Comparaison et mesure), 6 et 7 (Ordres de grandeur). Ids :
+  `0720f9de-4387-4bd4-ad5c-3e6526f27dc1` (unités, 067), `da2e705f-ca7b-4715-b0fc-992d440f02b5` (relations, 068),
+  `e22cff99-529a-49c9-8ef9-0c48b7dae6ea` (décimaux et fractions, 068), `2a08a490-7ee7-45c6-8b17-9c7abd3a3bf9`
+  (choisir, 069), `8aa2821f-d852-464b-9ff6-c7a8c373a6e9` (comparer, 070), `89283903-974d-44b3-8350-99f62f56e3ce`
+  (références, 071), `1e01404d-5400-4a39-b465-7e86b5b7bd6e` (estimer, 072).
+- Migration `20261102062309_questions_cm1_lot5a_rangement_tags` et son test, générés du gabarit du lot 4b. Écart :
+  le point est cherché sur le nœud du modèle **seulement** (aucun point du lot n'est sur une notion) ; le test
+  « point hors du nœud » le pose sur la notion « Longueurs » et la migration échoue.
+- Test d'intégration : rouge sans le corps de la migration (6 échecs), 10/10 vert avec.
