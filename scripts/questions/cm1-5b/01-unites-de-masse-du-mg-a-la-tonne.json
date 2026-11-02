@@ -1,0 +1,236 @@
+{
+	"title": "Les unités de masse, du milligramme à la tonne",
+	"description": "Symbole et sens de mg, cg, dg, g, dag, hg, kg et t ; la plus grande ou la plus petite de trois unités",
+	"grades": ["CM1"],
+	"theme": "Grandeurs",
+	"domain": "Masses",
+	"subdomain": "Unités",
+	"level": 6,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quel est le symbole {{if:k==1|de la tonne|{{if:k==2|du kilogramme|{{if:k==3|de l'hectogramme|{{if:k==4|du décagramme|{{if:k==5|du gramme|{{if:k==6|du décigramme|{{if:k==7|du centigramme|du milligramme}}}}}}}}}}}}}} ?\n\n```choix\n- t\n- kg\n- hg\n- dag\n- g\n- dg\n- cg\n- mg\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..8"
+				},
+				{
+					"name": "r",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« kilo » veut dire mille, « hecto » cent, « déca » dix ; « déci » un dixième, « centi » un centième, « milli » un millième. La tonne vaut mille kilogrammes.",
+					"{{if:k==1|La tonne|{{if:k==2|Le kilogramme|{{if:k==3|L'hectogramme|{{if:k==4|Le décagramme|{{if:k==5|Le gramme|{{if:k==6|Le décigramme|{{if:k==7|Le centigramme|Le milligramme}}}}}}}}}}}}}} s'écrit **{{if:k==1|t|{{if:k==2|kg|{{if:k==3|hg|{{if:k==4|dag|{{if:k==5|g|{{if:k==6|dg|{{if:k==7|cg|mg}}}}}}}}}}}}}}**."
+				]
+			}
+		},
+		{
+			"statement": "Que veut dire le symbole **{{if:k==1|t|{{if:k==2|kg|{{if:k==3|hg|{{if:k==4|dag|{{if:k==5|g|{{if:k==6|dg|{{if:k==7|cg|mg}}}}}}}}}}}}}}** ?\n\n```choix\n- tonne\n- kilogramme\n- hectogramme\n- décagramme\n- gramme\n- décigramme\n- centigramme\n- milligramme\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..8"
+				},
+				{
+					"name": "r",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« kilo » veut dire mille, « hecto » cent, « déca » dix ; « déci » un dixième, « centi » un centième, « milli » un millième. La tonne vaut mille kilogrammes.",
+					"**{{if:k==1|t|{{if:k==2|kg|{{if:k==3|hg|{{if:k==4|dag|{{if:k==5|g|{{if:k==6|dg|{{if:k==7|cg|mg}}}}}}}}}}}}}}** veut dire **{{if:k==1|tonne|{{if:k==2|kilogramme|{{if:k==3|hectogramme|{{if:k==4|décagramme|{{if:k==5|gramme|{{if:k==6|décigramme|{{if:k==7|centigramme|milligramme}}}}}}}}}}}}}}**."
+				]
+			}
+		},
+		{
+			"statement": "Quelle est la plus {{if:s==1|grande|petite}} de ces trois unités de masse ?\n\n```choix\n- {{if:s==1|{{if:k==1|la tonne (t)|{{if:k==2|le kilogramme (kg)|{{if:k==3|le kilogramme (kg)|{{if:k==4|l'hectogramme (hg)|{{if:k==5|le gramme (g)|la tonne (t)}}}}}}}}}}|{{if:k==1|le gramme (g)|{{if:k==2|le gramme (g)|{{if:k==3|le milligramme (mg)|{{if:k==4|le décigramme (dg)|{{if:k==5|le centigramme (cg)|le milligramme (mg)}}}}}}}}}}}}\n- {{if:k==1|le kilogramme (kg)|{{if:k==2|l'hectogramme (hg)|{{if:k==3|le gramme (g)|{{if:k==4|le décagramme (dag)|{{if:k==5|le décigramme (dg)|le gramme (g)}}}}}}}}}}\n- {{if:s==1|{{if:k==1|le gramme (g)|{{if:k==2|le gramme (g)|{{if:k==3|le milligramme (mg)|{{if:k==4|le décigramme (dg)|{{if:k==5|le centigramme (cg)|le milligramme (mg)}}}}}}}}}}|{{if:k==1|la tonne (t)|{{if:k==2|le kilogramme (kg)|{{if:k==3|le kilogramme (kg)|{{if:k==4|l'hectogramme (hg)|{{if:k==5|le gramme (g)|la tonne (t)}}}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "s",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"De la plus grande à la plus petite : t, kg, hg, dag, g, dg, cg, mg.",
+					"La plus {{if:s==1|grande est **{{if:k==1|la tonne (t)|{{if:k==2|le kilogramme (kg)|{{if:k==3|le kilogramme (kg)|{{if:k==4|l'hectogramme (hg)|{{if:k==5|le gramme (g)|la tonne (t)}}}}}}}}}}**|petite est **{{if:k==1|le gramme (g)|{{if:k==2|le gramme (g)|{{if:k==3|le milligramme (mg)|{{if:k==4|le décigramme (dg)|{{if:k==5|le centigramme (cg)|le milligramme (mg)}}}}}}}}}}**}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "symbole de la tonne : t",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "symbole de l'hectogramme : hg",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : hectogramme → dag",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"r": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "symbole du centigramme : cg",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7",
+				"r": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : centigramme → mg",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7",
+				"r": "6"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "dg veut dire décigramme",
+			"variationIndex": 1,
+			"variables": {
+				"k": "6",
+				"r": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dg lu décagramme",
+			"variationIndex": 1,
+			"variables": {
+				"k": "6",
+				"r": "5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "t veut dire tonne",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "la plus grande de t, kg, g : t",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"s": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la plus grande → g",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"s": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "la plus petite de hg, dag, dg : dg",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"s": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la plus petite → dag (déca/déci confondus)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"s": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

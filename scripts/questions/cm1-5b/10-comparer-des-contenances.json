@@ -1,0 +1,349 @@
+{
+	"title": "Comparer des contenances d'unités différentes",
+	"description": "0,8 L et 75 cL ; 2,5 L et 2 400 mL ; ranger quatre contenances en cL, L, mL et dL ; 1 L − 25 cL ; 2 L + 50 cL",
+	"grades": ["CM1"],
+	"theme": "Grandeurs",
+	"domain": "Contenances",
+	"subdomain": "Comparaison",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Compare ces deux contenances.\n\n$${{eval:a+t/10;d}}~\\unit{L} \\quad \\ldots \\quad {{c}}~\\unit{cL}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..9"
+				},
+				{
+					"name": "t",
+					"expression": "1..9"
+				},
+				{
+					"name": "k",
+					"expression": "0..8"
+				},
+				{
+					"name": "c",
+					"expression": "eval:100*a+100*t/10+5*(k-4)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(100*a+100*t/10-c)+1"
+				}
+			],
+			"conditions": ["c > 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit les deux contenances dans la même unité : ${{eval:a+t/10;d}}~\\unit{L} = {{eval:100*a+100*t/10}}~\\unit{cL}$.",
+					"$${{eval:100*a+100*t/10}}~\\unit{cL} {{if:r==0|<|{{if:r==1|=|>}}}} {{c}}~\\unit{cL}$$",
+					"$${{eval:a+t/10;d}}~\\unit{L} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} {{c}}~\\unit{cL}$$"
+				]
+			}
+		},
+		{
+			"statement": "Compare ces deux contenances.\n\n$${{eval:a+t/10;d}}~\\unit{L} \\quad \\ldots \\quad {{c}}~\\unit{mL}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "t",
+					"expression": "1..9"
+				},
+				{
+					"name": "k",
+					"expression": "0..8"
+				},
+				{
+					"name": "c",
+					"expression": "eval:1000*a+1000*t/10+50*(k-4)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(1000*a+1000*t/10-c)+1"
+				}
+			],
+			"conditions": ["c > 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit les deux contenances dans la même unité : ${{eval:a+t/10;d}}~\\unit{L} = {{eval:1000*a+1000*t/10}}~\\unit{mL}$.",
+					"$${{eval:1000*a+1000*t/10}}~\\unit{mL} {{if:r==0|<|{{if:r==1|=|>}}}} {{c}}~\\unit{mL}$$",
+					"$${{eval:a+t/10;d}}~\\unit{L} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} {{c}}~\\unit{mL}$$"
+				]
+			}
+		},
+		{
+			"statement": "Range ces contenances de la plus petite à la plus grande.\n\n```ranger\nsigne: <\n- ${{eval:100*b-30}}~\\unit{cL}$\n- ${{eval:b-0.1;d}}~\\unit{L}$\n- ${{eval:1000*b}}~\\unit{mL}$\n- ${{eval:10*b+1}}~\\unit{dL}$\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit toutes les contenances en centilitres : ${{eval:b-0.1;d}}~\\unit{L} = {{eval:100*b-10}}~\\unit{cL}$, ${{eval:1000*b}}~\\unit{mL} = {{eval:100*b}}~\\unit{cL}$ et ${{eval:10*b+1}}~\\unit{dL} = {{eval:100*b+10}}~\\unit{cL}$.",
+					"$${{eval:100*b-30}}~\\unit{cL} < {{eval:100*b-10}}~\\unit{cL} < {{eval:100*b}}~\\unit{cL} < {{eval:100*b+10}}~\\unit{cL}$$"
+				]
+			}
+		},
+		{
+			"statement": "Range ces contenances de la plus grande à la plus petite.\n\n```ranger\nsigne: >\n- ${{eval:10*b+1}}~\\unit{dL}$\n- ${{eval:1000*b}}~\\unit{mL}$\n- ${{eval:b-0.1;d}}~\\unit{L}$\n- ${{eval:100*b-30}}~\\unit{cL}$\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit toutes les contenances en centilitres : ${{eval:b-0.1;d}}~\\unit{L} = {{eval:100*b-10}}~\\unit{cL}$, ${{eval:1000*b}}~\\unit{mL} = {{eval:100*b}}~\\unit{cL}$ et ${{eval:10*b+1}}~\\unit{dL} = {{eval:100*b+10}}~\\unit{cL}$.",
+					"$${{eval:100*b+10}}~\\unit{cL} > {{eval:100*b}}~\\unit{cL} > {{eval:100*b-10}}~\\unit{cL} > {{eval:100*b-30}}~\\unit{cL}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{L} - {{b}}~\\unit{cL} = ?~\\text{cL}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "k",
+					"expression": "1..19"
+				},
+				{
+					"name": "b",
+					"expression": "eval:5*k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*a-b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour soustraire deux contenances, on les écrit dans la même unité : ${{a}}~\\unit{L} = {{eval:100*a}}~\\unit{cL}$.",
+					"$${{eval:100*a}}~\\unit{cL} - {{b}}~\\unit{cL} = \\textcolor{{{color:primary.0}}}{{{eval:100*a-b}}}~\\unit{cL}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{L} + {{b}}~\\unit{cL} = ?~\\text{cL}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "5..95"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour ajouter deux contenances, on les écrit dans la même unité : ${{a}}~\\unit{L} = {{eval:100*a}}~\\unit{cL}$.",
+					"$${{eval:100*a}}~\\unit{cL} + {{b}}~\\unit{cL} = \\textcolor{{{color:primary.0}}}{{{eval:100*a+b}}}~\\unit{cL}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "0,8 L > 75 cL",
+			"variationIndex": 0,
+			"variables": {
+				"a": "0",
+				"t": "8",
+				"k": "3",
+				"c": "75",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,8 L < 75 cL (nombres seuls)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "0",
+				"t": "8",
+				"k": "3",
+				"c": "75",
+				"r": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,8 L = 80 cL",
+			"variationIndex": 0,
+			"variables": {
+				"a": "0",
+				"t": "8",
+				"k": "4",
+				"c": "80",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2,5 L > 2 400 mL",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"t": "5",
+				"k": "2",
+				"c": "2400",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2,5 L < 2 400 mL",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"t": "5",
+				"k": "2",
+				"c": "2400",
+				"r": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "croissant : 270 cL < 2,9 L < 3 000 mL < 31 dL",
+			"variationIndex": 2,
+			"variables": {
+				"b": "3"
+			},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : les nombres seuls (2,9 < 31 < 270 < 3 000)",
+			"variationIndex": 2,
+			"variables": {
+				"b": "3"
+			},
+			"answers": ["0", "2", "3", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "décroissant : 31 dL > 3 000 mL > 2,9 L > 270 cL",
+			"variationIndex": 3,
+			"variables": {
+				"b": "3"
+			},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BO : 1 L − 25 cL = 75 cL",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"k": "5",
+				"b": "25"
+			},
+			"answers": ["75"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 L − 25 cL = 24 cL",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"k": "5",
+				"b": "25"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1 L − 25 cL = 85 cL (retenue)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"k": "5",
+				"b": "25"
+			},
+			"answers": ["85"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 L + 50 cL = 250 cL",
+			"variationIndex": 5,
+			"variables": {
+				"a": "2",
+				"b": "50"
+			},
+			"answers": ["250"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 L + 50 cL = 52 cL",
+			"variationIndex": 5,
+			"variables": {
+				"a": "2",
+				"b": "50"
+			},
+			"answers": ["52"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

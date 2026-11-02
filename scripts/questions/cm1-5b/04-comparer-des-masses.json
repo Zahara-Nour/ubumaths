@@ -1,0 +1,378 @@
+{
+	"title": "Comparer des masses d'unités différentes",
+	"description": "1,5 kg et 1 200 g ; 2,4 t et 2 450 kg ; ranger trois masses en g, kg et hg ; 8,2 kg + 840 g ; 3 kg − 250 g",
+	"grades": ["CM1"],
+	"theme": "Grandeurs",
+	"domain": "Masses",
+	"subdomain": "Comparaison",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Compare ces deux masses.\n\n$${{eval:a+t/10;d}}~\\unit{kg} \\quad \\ldots \\quad {{c}}~\\unit{g}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "t",
+					"expression": "1..9"
+				},
+				{
+					"name": "k",
+					"expression": "0..8"
+				},
+				{
+					"name": "c",
+					"expression": "eval:1000*a+1000*t/10+50*(k-4)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(1000*a+1000*t/10-c)+1"
+				}
+			],
+			"conditions": ["c > 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit les deux masses dans la même unité : ${{eval:a+t/10;d}}~\\unit{kg} = {{eval:1000*a+1000*t/10}}~\\unit{g}$.",
+					"$${{eval:1000*a+1000*t/10}}~\\unit{g} {{if:r==0|<|{{if:r==1|=|>}}}} {{c}}~\\unit{g}$$",
+					"$${{eval:a+t/10;d}}~\\unit{kg} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} {{c}}~\\unit{g}$$"
+				]
+			}
+		},
+		{
+			"statement": "Compare ces deux masses.\n\n$${{eval:a+t/10;d}}~\\unit{t} \\quad \\ldots \\quad {{c}}~\\unit{kg}$$\n\n```choix\nmelanger: non\n- $<$\n- $=$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "t",
+					"expression": "1..9"
+				},
+				{
+					"name": "k",
+					"expression": "0..8"
+				},
+				{
+					"name": "c",
+					"expression": "eval:1000*a+1000*t/10+50*(k-4)"
+				},
+				{
+					"name": "r",
+					"expression": "eval:sign(1000*a+1000*t/10-c)+1"
+				}
+			],
+			"conditions": ["c > 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit les deux masses dans la même unité : ${{eval:a+t/10;d}}~\\unit{t} = {{eval:1000*a+1000*t/10}}~\\unit{kg}$.",
+					"$${{eval:1000*a+1000*t/10}}~\\unit{kg} {{if:r==0|<|{{if:r==1|=|>}}}} {{c}}~\\unit{kg}$$",
+					"$${{eval:a+t/10;d}}~\\unit{t} \\textcolor{{{color:primary.0}}}{{{if:r==0|<|{{if:r==1|=|>}}}}} {{c}}~\\unit{kg}$$"
+				]
+			}
+		},
+		{
+			"statement": "Range ces masses de la plus légère à la plus lourde.\n\n```ranger\nsigne: <\n- ${{eval:1000*b-250}}~\\unit{g}$\n- ${{eval:b-0.1;d}}~\\unit{kg}$\n- ${{eval:10*b+1}}~\\unit{hg}$\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit toutes les masses en grammes : ${{eval:b-0.1;d}}~\\unit{kg} = {{eval:1000*b-100}}~\\unit{g}$ et ${{eval:10*b+1}}~\\unit{hg} = {{eval:1000*b+100}}~\\unit{g}$, car $1~\\unit{hg} = 100~\\unit{g}$.",
+					"$${{eval:1000*b-250}}~\\unit{g} < {{eval:1000*b-100}}~\\unit{g} < {{eval:1000*b+100}}~\\unit{g}$$"
+				]
+			}
+		},
+		{
+			"statement": "Range ces masses de la plus lourde à la plus légère.\n\n```ranger\nsigne: >\n- ${{eval:10*b+1}}~\\unit{hg}$\n- ${{eval:b-0.1;d}}~\\unit{kg}$\n- ${{eval:1000*b-250}}~\\unit{g}$\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit toutes les masses en grammes : ${{eval:b-0.1;d}}~\\unit{kg} = {{eval:1000*b-100}}~\\unit{g}$ et ${{eval:10*b+1}}~\\unit{hg} = {{eval:1000*b+100}}~\\unit{g}$, car $1~\\unit{hg} = 100~\\unit{g}$.",
+					"$${{eval:1000*b+100}}~\\unit{g} > {{eval:1000*b-100}}~\\unit{g} > {{eval:1000*b-250}}~\\unit{g}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:a+t/10;d}}~\\unit{kg} + {{b}}~\\unit{g} = ?~\\text{g}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "t",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "105..995"
+				}
+			],
+			"conditions": ["mod(b,5) == 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1000*a+100*t+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour ajouter deux masses, on les écrit dans la même unité : ${{eval:a+t/10;d}}~\\unit{kg} = {{eval:1000*a+100*t}}~\\unit{g}$.",
+					"$${{eval:1000*a+100*t}}~\\unit{g} + {{b}}~\\unit{g} = \\textcolor{{{color:primary.0}}}{{{eval:1000*a+100*t+b}}}~\\unit{g}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{kg} - {{b}}~\\unit{g} = ?~\\text{g}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "k",
+					"expression": "1..19"
+				},
+				{
+					"name": "b",
+					"expression": "eval:50*k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1000*a-b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour soustraire deux masses, on les écrit dans la même unité : ${{a}}~\\unit{kg} = {{eval:1000*a}}~\\unit{g}$.",
+					"$${{eval:1000*a}}~\\unit{g} - {{b}}~\\unit{g} = \\textcolor{{{color:primary.0}}}{{{eval:1000*a-b}}}~\\unit{g}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1,5 kg > 1 200 g",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"t": "5",
+				"k": "0",
+				"c": "1300",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1,5 kg < 1 300 g (nombres seuls)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"t": "5",
+				"k": "0",
+				"c": "1300",
+				"r": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1,5 kg = 1 500 g",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"t": "5",
+				"k": "4",
+				"c": "1500",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2,4 t < 2 450 kg",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"t": "4",
+				"k": "5",
+				"c": "2450",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2,4 t > 2 450 kg",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"t": "4",
+				"k": "5",
+				"c": "2450",
+				"r": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "croissant : 2 750 g < 2,9 kg < 31 hg",
+			"variationIndex": 2,
+			"variables": {
+				"b": "3"
+			},
+			"answers": ["2", "0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : les nombres seuls (2,9 < 31 < 2 750)",
+			"variationIndex": 2,
+			"variables": {
+				"b": "3"
+			},
+			"answers": ["0", "1", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ordre décroissant",
+			"variationIndex": 2,
+			"variables": {
+				"b": "3"
+			},
+			"answers": ["1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "décroissant : 31 hg > 2,9 kg > 2 750 g",
+			"variationIndex": 3,
+			"variables": {
+				"b": "3"
+			},
+			"answers": ["2", "0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ordre croissant",
+			"variationIndex": 3,
+			"variables": {
+				"b": "3"
+			},
+			"answers": ["1", "0", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 8,2 kg + 840 g = 9 040 g",
+			"variationIndex": 4,
+			"variables": {
+				"a": "8",
+				"t": "2",
+				"b": "840"
+			},
+			"answers": ["9 040"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8,2 kg + 840 g = 848,2 g",
+			"variationIndex": 4,
+			"variables": {
+				"a": "8",
+				"t": "2",
+				"b": "840"
+			},
+			"answers": ["848,2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 8,2 kg + 840 g = 1 660 g (820 + 840)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "8",
+				"t": "2",
+				"b": "840"
+			},
+			"answers": ["1 660"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 kg − 250 g = 2 750 g",
+			"variationIndex": 5,
+			"variables": {
+				"a": "3",
+				"k": "5",
+				"b": "250"
+			},
+			"answers": ["2 750"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 kg − 250 g = 2 850 g (retenue)",
+			"variationIndex": 5,
+			"variables": {
+				"a": "3",
+				"k": "5",
+				"b": "250"
+			},
+			"answers": ["2 850"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

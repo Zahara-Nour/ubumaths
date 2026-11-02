@@ -1,0 +1,145 @@
+{
+	"title": "Des masses de référence, du milligramme à la tonne",
+	"description": "1 mg : une petite fourmi ; 1 g : un trombone ; 100 g : une tablette de chocolat ; 1 kg : une bouteille d'un litre d'eau ; 10 kg : un seau de dix litres d'eau ; 1 t : une voiture",
+	"grades": ["CM1"],
+	"theme": "Grandeurs",
+	"domain": "Masses",
+	"subdomain": "Ordres de grandeur",
+	"level": 3,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Qu'est-ce qui pèse environ {{if:k==1|$1~\\unit{mg}$|{{if:k==2|$1~\\unit{g}$|{{if:k==3|$100~\\unit{g}$|{{if:k==4|$1~\\unit{kg}$|{{if:k==5|$10~\\unit{kg}$|$1~\\unit{t}$}}}}}}}}}} ?\n\n```choix\n- {{if:k==1|une petite fourmi|{{if:k==2|un trombone|{{if:k==3|une tablette de chocolat|{{if:k==4|une bouteille d'un litre d'eau|{{if:k==5|un seau de dix litres d'eau|une voiture}}}}}}}}}}\n- {{if:k==1|une tablette de chocolat|{{if:k==2|une bouteille d'un litre d'eau|{{if:k==3|un seau de dix litres d'eau|{{if:k==4|une voiture|{{if:k==5|une petite fourmi|un trombone}}}}}}}}}}\n- {{if:k==1|une bouteille d'un litre d'eau|{{if:k==2|un seau de dix litres d'eau|{{if:k==3|une voiture|{{if:k==4|une petite fourmi|{{if:k==5|un trombone|une tablette de chocolat}}}}}}}}}}\n- {{if:k==1|un seau de dix litres d'eau|{{if:k==2|une voiture|{{if:k==3|une petite fourmi|{{if:k==4|un trombone|{{if:k==5|une tablette de chocolat|une bouteille d'un litre d'eau}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Repères : une petite fourmi, environ $1~\\unit{mg}$ ; un trombone, environ $1~\\unit{g}$ ; une tablette de chocolat, environ $100~\\unit{g}$ ; une bouteille d'un litre d'eau, environ $1~\\unit{kg}$ ; un seau de dix litres d'eau, environ $10~\\unit{kg}$ ; une voiture, environ $1~\\unit{t}$.",
+					"**{{if:k==1|Une petite fourmi|{{if:k==2|Un trombone|{{if:k==3|Une tablette de chocolat|{{if:k==4|Une bouteille d'un litre d'eau|{{if:k==5|Un seau de dix litres d'eau|Une voiture}}}}}}}}}}** pèse environ {{if:k==1|$1~\\unit{mg}$|{{if:k==2|$1~\\unit{g}$|{{if:k==3|$100~\\unit{g}$|{{if:k==4|$1~\\unit{kg}$|{{if:k==5|$10~\\unit{kg}$|$1~\\unit{t}$}}}}}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "{{if:k==1|Une petite fourmi|{{if:k==2|Un trombone|{{if:k==3|Une tablette de chocolat|{{if:k==4|Une bouteille d'un litre d'eau|{{if:k==5|Un seau de dix litres d'eau|Une voiture}}}}}}}}}} pèse environ…\n\n```choix\nmelanger: non\n- $1~\\unit{mg}$\n- $1~\\unit{g}$\n- $100~\\unit{g}$\n- $1~\\unit{kg}$\n- $10~\\unit{kg}$\n- $1~\\unit{t}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "r",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Repères : une petite fourmi, environ $1~\\unit{mg}$ ; un trombone, environ $1~\\unit{g}$ ; une tablette de chocolat, environ $100~\\unit{g}$ ; une bouteille d'un litre d'eau, environ $1~\\unit{kg}$ ; un seau de dix litres d'eau, environ $10~\\unit{kg}$ ; une voiture, environ $1~\\unit{t}$.",
+					"{{if:k==1|Une petite fourmi|{{if:k==2|Un trombone|{{if:k==3|Une tablette de chocolat|{{if:k==4|Une bouteille d'un litre d'eau|{{if:k==5|Un seau de dix litres d'eau|Une voiture}}}}}}}}}} pèse environ **{{if:k==1|$1~\\unit{mg}$|{{if:k==2|$1~\\unit{g}$|{{if:k==3|$100~\\unit{g}$|{{if:k==4|$1~\\unit{kg}$|{{if:k==5|$10~\\unit{kg}$|$1~\\unit{t}$}}}}}}}}}}**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "environ 1 g : un trombone",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 g, un seau d'eau",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "environ 1 t : une voiture",
+			"variationIndex": 0,
+			"variables": {
+				"k": "6"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "bouteille d'un litre d'eau : 1 kg",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"r": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : bouteille d'un litre, 1 g",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"r": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "voiture : 1 t",
+			"variationIndex": 1,
+			"variables": {
+				"k": "6",
+				"r": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : voiture, 10 kg",
+			"variationIndex": 1,
+			"variables": {
+				"k": "6",
+				"r": "5"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

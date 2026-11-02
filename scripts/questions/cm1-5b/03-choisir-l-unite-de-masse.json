@@ -1,0 +1,140 @@
+{
+	"title": "Quelle unité pour peser un objet ?",
+	"description": "Choisir parmi mg, g, kg et t : un comprimé de 500 mg, une pomme de 150 g, un enfant de 30 kg, un camion de 20 t",
+	"grades": ["CM1"],
+	"theme": "Grandeurs",
+	"domain": "Masses",
+	"subdomain": "Unités",
+	"level": 7,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "{{if:k==1|Un comprimé de vitamine pèse $500$|{{if:k==2|Un moustique pèse $2$|{{if:k==3|Un grain de riz pèse $25$|{{if:k==4|Une pomme pèse $150$|{{if:k==5|Une lettre pèse $20$|{{if:k==6|Une tablette de chocolat pèse $100$|{{if:k==7|Un enfant de 10 ans pèse $30$|{{if:k==8|Un sac de pommes de terre pèse $5$|{{if:k==9|Un vélo pèse $12$|{{if:k==10|Un camion pèse $20$|{{if:k==11|Un éléphant pèse $5$|Une baleine bleue pèse $150$}}}}}}}}}}}}}}}}}}}}}} …\n\nQuelle unité convient ?\n\n```choix\nmelanger: non\n- mg\n- g\n- kg\n- t\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..12"
+				},
+				{
+					"name": "r",
+					"expression": "eval:floor((k-1)/3)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Repères : $1~\\unit{mg}$, une petite fourmi ; $1~\\unit{g}$, un trombone ; $1~\\unit{kg}$, une bouteille d'un litre d'eau ; $1~\\unit{t}$, une voiture.",
+					"{{if:k==1|Un comprimé de vitamine pèse $500$|{{if:k==2|Un moustique pèse $2$|{{if:k==3|Un grain de riz pèse $25$|{{if:k==4|Une pomme pèse $150$|{{if:k==5|Une lettre pèse $20$|{{if:k==6|Une tablette de chocolat pèse $100$|{{if:k==7|Un enfant de 10 ans pèse $30$|{{if:k==8|Un sac de pommes de terre pèse $5$|{{if:k==9|Un vélo pèse $12$|{{if:k==10|Un camion pèse $20$|{{if:k==11|Un éléphant pèse $5$|Une baleine bleue pèse $150$}}}}}}}}}}}}}}}}}}}}}} {{if:r==0|milligrammes|{{if:r==1|grammes|{{if:r==2|kilogrammes|tonnes}}}}}} (**{{if:r==0|mg|{{if:r==1|g|{{if:r==2|kg|t}}}}}}**)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "comprimé : mg",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : comprimé de 500 g",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "pomme : g",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pomme de 150 kg",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"r": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "enfant : kg",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : enfant de 30 g",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7",
+				"r": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "éléphant : t",
+			"variationIndex": 0,
+			"variables": {
+				"k": "11",
+				"r": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : éléphant de 5 kg",
+			"variationIndex": 0,
+			"variables": {
+				"k": "11",
+				"r": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

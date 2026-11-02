@@ -1,0 +1,116 @@
+{
+	"title": "Estimer une masse, du milligramme à la tonne",
+	"description": "Choisir l'ordre de grandeur : une pomme de 150 g, un comprimé de 500 mg, un enfant de 30 kg, un éléphant de 5 t",
+	"grades": ["CM1"],
+	"theme": "Grandeurs",
+	"domain": "Masses",
+	"subdomain": "Ordres de grandeur",
+	"level": 4,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "{{if:k==1|Une pomme|{{if:k==2|Une lettre|{{if:k==3|Un comprimé|{{if:k==4|Un moustique|{{if:k==5|Un enfant de 10 ans|{{if:k==6|Un vélo|{{if:k==7|Une tablette de chocolat|{{if:k==8|Une baguette de pain|{{if:k==9|Un éléphant|{{if:k==10|Un camion|{{if:k==11|Une pastèque|Un sac de pommes de terre}}}}}}}}}}}}}}}}}}}}}} pèse environ…\n\n```choix\nmelanger: non\n- ${{if:k==1|150|{{if:k==2|20|{{if:k==3|500|{{if:k==4|2|{{if:k==5|30|{{if:k==6|12|{{if:k==7|100|{{if:k==8|250|{{if:k==9|5|{{if:k==10|20|{{if:k==11|4|5}}}}}}}}}}}}}}}}}}}}}}~\\unit{{{if:k==1|g|{{if:k==2|g|{{if:k==3|mg|{{if:k==4|mg|{{if:k==5|g|{{if:k==6|g|{{if:k==7|mg|{{if:k==8|mg|{{if:k==9|g|{{if:k==10|g|{{if:k==11|mg|mg}}}}}}}}}}}}}}}}}}}}}}}$\n- ${{if:k==1|150|{{if:k==2|20|{{if:k==3|500|{{if:k==4|2|{{if:k==5|30|{{if:k==6|12|{{if:k==7|100|{{if:k==8|250|{{if:k==9|5|{{if:k==10|20|{{if:k==11|4|5}}}}}}}}}}}}}}}}}}}}}}~\\unit{{{if:k==1|kg|{{if:k==2|kg|{{if:k==3|g|{{if:k==4|g|{{if:k==5|kg|{{if:k==6|kg|{{if:k==7|g|{{if:k==8|g|{{if:k==9|kg|{{if:k==10|kg|{{if:k==11|g|g}}}}}}}}}}}}}}}}}}}}}}}$\n- ${{if:k==1|150|{{if:k==2|20|{{if:k==3|500|{{if:k==4|2|{{if:k==5|30|{{if:k==6|12|{{if:k==7|100|{{if:k==8|250|{{if:k==9|5|{{if:k==10|20|{{if:k==11|4|5}}}}}}}}}}}}}}}}}}}}}}~\\unit{{{if:k==1|t|{{if:k==2|t|{{if:k==3|kg|{{if:k==4|kg|{{if:k==5|t|{{if:k==6|t|{{if:k==7|kg|{{if:k==8|kg|{{if:k==9|t|{{if:k==10|t|{{if:k==11|kg|kg}}}}}}}}}}}}}}}}}}}}}}}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..12"
+				},
+				{
+					"name": "r",
+					"expression": "eval:floor((k-1)/4)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compare à des masses connues : $1~\\unit{g}$, un trombone ; $1~\\unit{kg}$, une bouteille d'un litre d'eau ; $1~\\unit{t}$, une voiture.",
+					"{{if:k==1|Une pomme|{{if:k==2|Une lettre|{{if:k==3|Un comprimé|{{if:k==4|Un moustique|{{if:k==5|Un enfant de 10 ans|{{if:k==6|Un vélo|{{if:k==7|Une tablette de chocolat|{{if:k==8|Une baguette de pain|{{if:k==9|Un éléphant|{{if:k==10|Un camion|{{if:k==11|Une pastèque|Un sac de pommes de terre}}}}}}}}}}}}}}}}}}}}}} pèse environ **${{if:k==1|150|{{if:k==2|20|{{if:k==3|500|{{if:k==4|2|{{if:k==5|30|{{if:k==6|12|{{if:k==7|100|{{if:k==8|250|{{if:k==9|5|{{if:k==10|20|{{if:k==11|4|5}}}}}}}}}}}}}}}}}}}}}}~\\unit{{{if:k==1|g|{{if:k==2|g|{{if:k==3|mg|{{if:k==4|mg|{{if:k==5|kg|{{if:k==6|kg|{{if:k==7|g|{{if:k==8|g|{{if:k==9|t|{{if:k==10|t|{{if:k==11|kg|kg}}}}}}}}}}}}}}}}}}}}}}}$**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "une pomme : 150 g",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une pomme de 150 kg",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "un enfant de 10 ans : 30 kg",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un enfant de 30 g",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "un éléphant : 5 t",
+			"variationIndex": 0,
+			"variables": {
+				"k": "9",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un éléphant de 5 kg",
+			"variationIndex": 0,
+			"variables": {
+				"k": "9",
+				"r": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
