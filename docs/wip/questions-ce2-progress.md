@@ -6,20 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2200._
+_Mis à jour le 2026-11-02, après la publication du lot 7a._
 
-- **État** : lots 1 à 6b en prod ET publiés. Lot 7a : 10 brouillons créés, rangés et tagués en prod (vérifié au MCP, `db:migrate`
-  joué) ; page à cocher publiée (https://claude.ai/artifact/B9LcfMmL6dzr6RN6axdsyG), aucun verdict pour l'instant.
-  Aucun worktree en cours.
-- **Prochaine action** : David relit (7 fiches `operation` à jouer dans l'aperçu admin) ; lire `ArtifactData list verdicts`
-  et **compter** avant de dire « tout est relu » ; relever les catégories juste avant ; `publier-lot` (simulation, puis
-  David avec `--publier`). Ensuite lot 7b (`horloge` + `line` : 057, 059, 094, 010, 058), 7c statistiques, `figure` /
-  images fixes, QCM, outils neufs.
-- **En attente de David** : relire le lot 7a sur la page à cocher.
-- **Pièges en cours** : jamais de variable `e` (Euler) ; corrigé des unités mêlées (06) sans bloc `operation` résolu (écart
-  à la décision 3) ; verdicts du 6b posés en 3 s : relecture non prouvée ; niveaux monnaie à relever juste avant la
-  publication (brouillons CE1 du lot 8 non publiés) ; `Doc-inchangée:` dans un MESSAGE DE COMMIT (pas la PR) ; commitlint :
-  corps ≤ 100 caractères par ligne ; pas de mention Claude.
+- **État** : lots 1 à 7a en prod ET publiés (7a : 10 modèles, calcul posé et monnaie). Aucun worktree en cours.
+- **Prochaine action** : phase 0 du lot 7b (`horloge` + `line` : 057 lire, 059 et 094 durées entre deux cadrans, 010 droite
+  graduée, 058 QCM de cadrans) : relever la prod (nœuds, niveaux, modèles `horloge` du CE1), lire la doc des outils, poser
+  le tableau « point → modèle → variations » et les questions à David. Ensuite 7c statistiques, `figure` / images fixes,
+  QCM (040, 041, 042, 049, 050, 063, 064, 067, 069), outils neufs (`centaines:`/milliers, barres à monter).
+- **En attente de David** : rien.
+- **Pièges en cours** : jamais de variable `e` (Euler) ; verdicts des lots 6b et 7a posés en quelques secondes : relecture
+  non prouvée (7a : grilles `operation` et corrigé des unités mêlées du 06 non vues sur la page) ; `Doc-inchangée:` dans un
+  MESSAGE DE COMMIT (pas la PR) ; `db:migrate --include-all` quand des migrations plus récentes sont déjà jouées ;
+  commitlint : corps ≤ 100 caractères par ligne ; pas de mention Claude.
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
@@ -592,3 +590,11 @@ Réponse de David (« tes recos ? » puis « ok », 2026-11-02) : les cinq recom
 - Page à cocher publiée : https://claude.ai/artifact/B9LcfMmL6dzr6RN6axdsyG (capacité `db`, collection `verdicts` vide).
   ⚠ 7 fiches (les blocs `operation`) ne sont pas dessinées par la page : à jouer dans l'aperçu admin
   (`/dashboard/admin/questions/<id>/preview`, base locale ou prod) ; à vérifier aussi : corrigé des unités mêlées (06).
+
+### Lot 7a — relecture et publication (2026-11-02)
+
+- Page à cocher : 10 verdicts « OK » (comptés), **posés en 5 s** (06:16:31 à 06:16:36) : relecture non prouvée, surtout pour
+  les 7 fiches `operation` que la page ne dessine pas. David a répondu « j'ai relu » ; à vérifier dans l'aperçu admin si un
+  doute revient (grille posée, corrigé des unités mêlées du 06).
+- `publier-lot` : simulation 10/10 (niveaux libres, aucune collision), puis `--publier` lancé par David : 10/10 `published`,
+  relu au MCP (rangés, un point chacun). Lot 7a clos.
