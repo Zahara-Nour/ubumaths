@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2207._
+_Mis à jour le 2026-11-02, après #2207 et la publication du lot 5a._
 
-- **État** : lots 0 à 4b publiés ; lot 5 phase 0 validée (§ 14 bis : 5a longueurs, 5b masses + contenances, 5d périmètres). **Lot 5a** : 7 brouillons en prod, rangés et tagués (#2207, migration appliquée, vérifiée au MCP) ; page à cocher publiée (§ 14 quinquies), `verdicts` vide.
-- **Prochaine action** : lire et COMPTER les verdicts de la page (https://claude.ai/artifact/GQ9MJAnZJSn9grR3CAJTYk) ; 7 OK → `publier-lot --dir scripts/questions/cm1-5a` en simulation, puis `--publier` par David. Ensuite lot 5b (masses + contenances, 10 modèles, § 14).
-- **En attente de David** : relecture de la page à cocher du 5a.
+- **État** : lots 0 à 5a publiés ; lot 5 phase 0 validée (§ 14 bis : 5a longueurs, 5b masses + contenances, 5d périmètres). Lot 5a fini (§ 14 sexies).
+- **Prochaine action** : lot 5b (masses + contenances, 10 modèles, § 14) : recréer le worktree, écrire le script `lot-cm1-5b.py` sur le patron du 5a.
+- **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** (test `student-answer-safety`, CI rouge de #2201) ; positions du `ranger` lues par essai des permutations ; aperçu : corrigé derrière le bouton « Voir la correction » (Playwright à 390 px).
 - **Worktree / branche** : aucun ; recréer `../ubumaths-wt-questions-cm1` pour le lot 5b.
 
@@ -837,6 +837,12 @@ CE1 ; 3. 050 et 165 rangés sous « Décimaux : calculs › addition » et « �
 - Page : https://claude.ai/artifact/QwvVUKnuztGXrZ7ermrd6F (capacité `db`), rendu vu à 390 px
   (6 fiches, pas de défilement horizontal) ; `verdicts` vide à la publication. Alertes attendues :
   bloc `operation` non dessiné (6), à jouer dans l'aperçu.
+
+### 14 sexies. Lot 5a — publication (2026-11-02)
+
+- Page à cocher : 7 verdicts « OK », sans commentaire (comptés dans `verdicts`, ids = les 7 brouillons). Simulation
+  `publier-lot --dir scripts/questions/cm1-5a` : 7 brouillons passent ; `--publier` lancé par David ;
+  7 `published` relus au MCP. Lot 5a fini.
 
 ### 13 sexies. Lot 4b — publication (2026-11-02)
 
