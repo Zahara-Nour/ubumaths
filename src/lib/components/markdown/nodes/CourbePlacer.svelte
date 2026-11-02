@@ -20,6 +20,10 @@
 	  (`pointAnswer`, '' sans point), jugée par le juge ordinaire. Faux : une phrase
 	  par point faux et le repère juste à côté, points en vert.
 	- Sans `answers` (aperçu du prof, cours) : le même geste, rien de jugé.
+	- Droite à tracer (`tracer: y = 2x - 1`, lot 2) : deux points sans nom, étiquettes
+	  « 1 » / « 2 » ; dès qu'ils sont distincts, la droite qui passe par eux se dessine
+	  d'un bord à l'autre. UNE case : `x1;y1/x2;y2` (`tracedAnswer`). Faux : une phrase,
+	  et la droite juste avec ses deux nœuds les plus proches de l'origine.
 
 	@module components/markdown/nodes/CourbePlacer
 -->
@@ -37,13 +41,23 @@
 		startNode,
 		type CourbePlacedPoint
 	} from '$lib/ubumark/utils/courbe-placer';
-	import Courbe, { type CourbeMark } from './Courbe.svelte';
+	import {
+		correctionPoints,
+		lineCoefficients,
+		lineSegmentInWindow,
+		lineThrough,
+		readTracedAnswer,
+		tracedAnswer,
+		tracedLineMistake,
+		type LineCoefficients
+	} from '$lib/ubumark/utils/courbe-tracer';
+	import Courbe, { type CourbeMark, type CourbeTrace } from './Courbe.svelte';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
 	interface Props {
 		/** Repère à placer (`spec.placer` défini) */
 		node: CourbeNode;
-		/** Une case par point de `placer:`, dans l'ordre écrit */
+		/** Une case par point de `placer:`, dans l'ordre écrit ; droite à tracer : une case */
 		answers?: BuildCase[];
 		/** Avertissements d'auteur (par défaut : contexte d'édition) */
 		showErrors?: boolean;
@@ -61,9 +75,19 @@
 	/** Distance (px) sous laquelle toucher un point posé le reprend */
 	const GRAB_DISTANCE = 18;
 
+	/** Équation masquée (énoncé d'une évaluation notée) : rien à montrer en correction */
+	const MASKED_EQUATION = '?';
+	/** Les deux points d'une droite à tracer, sans nom sur la figure */
+	const TRACE_SLOTS = ['1', '2'];
+
 	let spec = $derived(node.spec!);
 	let targets = $derived<CourbeTarget[]>(node.spec?.placer ?? []);
-	let several = $derived(targets.length > 1);
+	/** Droite à tracer : l'équation attendue (jamais dessinée avant la correction) */
+	let equation = $derived(node.spec?.tracer?.equation);
+	let tracing = $derived(equation !== undefined);
+	/** Noms des étiquettes : les points de `placer:`, ou « 1 » et « 2 » pour une droite */
+	let slots = $derived(tracing ? TRACE_SLOTS : targets.map((t) => t.name));
+	let several = $derived(slots.length > 1);
 
 	/**
 	 * Position de chaque point : gardée ici, les cases n'en gardent que l'écriture.
@@ -71,13 +95,15 @@
 	 * composant remonté) ; réassignée à chaque geste (dérivé modifiable).
 	 */
 	let positions = $derived<(CourbePlacedPoint | null)[]>(
-		targets.map((_, i) => readPointAnswer(answers?.[i]?.value ?? ''))
+		tracing
+			? readTracedAnswer(answers?.[0]?.value ?? '')
+			: targets.map((_, i) => readPointAnswer(answers?.[i]?.value ?? ''))
 	);
 
 	/** Point choisi par l'élève : au départ, le premier point non posé */
 	let chosen = $state(untrack(() => Math.max(0, positions.indexOf(null))));
 	/** Rang du point que le geste déplace (ramené dans les bornes si le prof retire des points) */
-	let active = $derived(Math.min(chosen, Math.max(0, targets.length - 1)));
+	let active = $derived(Math.min(chosen, Math.max(0, slots.length - 1)));
 	let locked = $derived(answers?.some((a) => a.disabled) ?? false);
 	let dragging = $state(false);
 	/** Le point actif était absent quand le doigt s'est posé : au lever, on passe au suivant */
@@ -87,7 +113,7 @@
 	/** Le bloc sans `placer:` : il se dessine seul (une seule fois par bloc, pour le budget) */
 	let base = $derived<CourbeNode>({
 		...node,
-		spec: { ...spec, placer: undefined },
+		spec: { ...spec, placer: undefined, tracer: undefined },
 		caseIndex: undefined
 	});
 
@@ -95,6 +121,24 @@
 		positions.flatMap((p, i) =>
 			p === null ? [] : [{ name: targets[i]?.name ?? '', x: p.x, y: p.y, color: STUDENT_COLOR }]
 		)
+	);
+
+	/** Le segment d'une droite visible dans la fenêtre, à la couleur donnée */
+	function traceOf(line: LineCoefficients | null, color: CourbeTrace['color']): CourbeTrace[] {
+		const segment = line === null ? null : lineSegmentInWindow(line, spec.window);
+		return segment === null ? [] : [{ from: segment[0], to: segment[1], color }];
+	}
+
+	/** La droite de l'élève, dès que ses deux points sont posés et distincts */
+	let traces = $derived.by<CourbeTrace[]>(() => {
+		const [p, q] = positions;
+		if (!tracing || !p || !q) return [];
+		return traceOf(lineThrough(p, q), STUDENT_COLOR);
+	});
+
+	/** L'équation attendue, connue (pas masquée) */
+	let knownEquation = $derived(
+		equation !== undefined && equation !== MASKED_EQUATION ? equation : null
 	);
 
 	/** Verdict du repère : faux dès qu'un point l'est, juste quand tous le sont */
@@ -105,29 +149,58 @@
 	});
 
 	/** Points justes : seulement dans la correction, jamais avant */
-	let solutionMarks = $derived<CourbeMark[]>(
-		verdict === false
-			? targets.map((t) => ({ name: t.name, x: t.x, y: t.y, color: SOLUTION_COLOR }))
-			: []
-	);
+	let solutionMarks = $derived.by<CourbeMark[]>(() => {
+		if (verdict !== false) return [];
+		if (knownEquation !== null) {
+			return correctionPoints(spec, knownEquation).map((p) => ({
+				name: '',
+				x: p.x,
+				y: p.y,
+				color: SOLUTION_COLOR
+			}));
+		}
+		return targets.map((t) => ({ name: t.name, x: t.x, y: t.y, color: SOLUTION_COLOR }));
+	});
+
+	/** La droite juste : seulement dans la correction */
+	let solutionTraces = $derived.by<CourbeTrace[]>(() => {
+		if (verdict !== false || knownEquation === null) return [];
+		const line = lineCoefficients(knownEquation);
+		return traceOf(typeof line === 'string' ? null : line, SOLUTION_COLOR);
+	});
 
 	/** Phrases de la correction : une par point faux */
 	let mistakes = $derived(
-		targets.flatMap((target, i) => {
-			if (answers?.[i]?.isCorrect !== false) return [];
-			const sentence = placedPointMistake(
-				target.name,
-				answers[i].value,
-				pointAnswer(target.x, target.y)
-			);
-			return sentence === null ? [] : [sentence];
-		})
+		tracing
+			? tracedMistakes()
+			: targets.flatMap((target, i) => {
+					if (answers?.[i]?.isCorrect !== false) return [];
+					const sentence = placedPointMistake(
+						target.name,
+						answers[i].value,
+						pointAnswer(target.x, target.y)
+					);
+					return sentence === null ? [] : [sentence];
+				})
 	);
 
-	let zoneLabel = $derived(several ? 'Repère : tes points' : 'Repère : ton point');
+	/** Droite à tracer : la phrase de la correction (aucune si l'équation est masquée) */
+	function tracedMistakes(): string[] {
+		if (answers?.[0]?.isCorrect !== false || knownEquation === null) return [];
+		const sentence = tracedLineMistake(answers[0].value, knownEquation);
+		return sentence === null ? [] : [sentence];
+	}
+
+	let zoneLabel = $derived(
+		tracing
+			? 'Repère : les deux points de ta droite'
+			: several
+				? 'Repère : tes points'
+				: 'Repère : ton point'
+	);
 	let valueText = $derived.by(() => {
 		const p = positions[active] ?? null;
-		const name = targets[active]?.name;
+		const name = slots[active];
 		const label = name ? `point ${name}` : 'point';
 		if (p === null) return name ? `${label} pas placé` : 'aucun point';
 		return `${label} en ${pointText(p.x, p.y)}`;
@@ -138,13 +211,14 @@
 		const current = positions[active];
 		if (current && current.x === p.x && current.y === p.y) return;
 		positions = positions.with(active, p);
-		answers?.[active]?.onChange(pointAnswer(p.x, p.y));
+		if (tracing) answers?.[0]?.onChange(tracedAnswer(positions));
+		else answers?.[active]?.onChange(pointAnswer(p.x, p.y));
 	}
 
 	/** Après la pose d'un point absent : le premier point suivant non placé devient actif */
 	function advance() {
-		for (let step = 1; step < targets.length; step++) {
-			const i = (active + step) % targets.length;
+		for (let step = 1; step < slots.length; step++) {
+			const i = (active + step) % slots.length;
 			if (positions[i] === null) {
 				chosen = i;
 				return;
@@ -297,23 +371,23 @@
 		onpointercancel={handlePointerUp}
 		onkeydown={handleKeyDown}
 	>
-		<Courbe node={base} {showErrors} {marks} />
+		<Courbe node={base} {showErrors} {marks} {traces} />
 	</div>
 
 	{#if showControls && several}
 		<div class="flex gap-1" role="group" aria-label="Point à déplacer">
-			{#each targets as target, i (target.name)}
+			{#each slots as slot, i (slot)}
 				<button
 					type="button"
 					class="placer-etiquette flex min-h-11 min-w-11 items-center justify-center rounded-md border font-semibold"
 					class:placer-etiquette-active={i === active}
 					class:placer-etiquette-absente={positions[i] === null}
-					aria-label="Point {target.name}"
+					aria-label="Point {slot}"
 					aria-pressed={i === active}
 					disabled={locked}
 					onclick={() => (chosen = i)}
 				>
-					{target.name}
+					{slot}
 				</button>
 			{/each}
 		</div>
@@ -331,7 +405,7 @@
 		{/each}
 		<div class="placer-correction flex w-full flex-col items-center gap-1">
 			<p class="text-sm font-medium text-muted-foreground">Correction</p>
-			<Courbe node={base} showErrors={false} marks={solutionMarks} />
+			<Courbe node={base} showErrors={false} marks={solutionMarks} traces={solutionTraces} />
 		</div>
 	{/if}
 </div>

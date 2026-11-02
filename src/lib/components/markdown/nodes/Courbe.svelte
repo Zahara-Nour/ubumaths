@@ -25,6 +25,13 @@
 		y: number;
 		color: CourbeColor;
 	}
+
+	/** Droite tracée par-dessus la figure (droite à tracer), d'un bord à l'autre de la fenêtre */
+	export interface CourbeTrace {
+		from: { x: number; y: number };
+		to: { x: number; y: number };
+		color: CourbeColor;
+	}
 </script>
 
 <script lang="ts">
@@ -43,7 +50,9 @@
 		showErrors?: boolean;
 		/** Points posés par-dessus la figure (repère à points à placer) */
 		marks?: CourbeMark[];
-		/** Repère à points à placer, dans une question : une case par point */
+		/** Droites tracées par-dessus la figure (droite à tracer), sous les points posés */
+		traces?: CourbeTrace[];
+		/** Repère à points à placer, dans une question : une case par point (droite à tracer : une) */
 		answers?: BuildCase[];
 		/** false : repère seul, sans étiquettes de points (copie corrigée) */
 		showControls?: boolean;
@@ -54,6 +63,7 @@
 		node,
 		showErrors,
 		marks = [],
+		traces = [],
 		answers,
 		showControls = true,
 		class: className = ''
@@ -86,8 +96,11 @@
 	let errorsVisible = $derived(showErrors ?? authoring());
 	/** Budget du document (nombre de blocs, temps cumulé) partagé avec ```figure */
 	const budget = readRenderBudget();
-	/** Repère à points à placer : c'est la figure dérivée de `CourbePlacer` qui compte au budget */
-	let toPlace = $derived(node.spec?.placer !== undefined);
+	/**
+	 * Repère à points à placer ou à droite à tracer : c'est la figure dérivée de
+	 * `CourbePlacer` qui compte au budget
+	 */
+	let toPlace = $derived(node.spec?.placer !== undefined || node.spec?.tracer !== undefined);
 	let admitted = $derived(toPlace || (budget()?.admits(node) ?? true));
 	let computed = $derived.by(() => {
 		const spec = node.spec;
@@ -350,6 +363,18 @@
 				<text class="courbe-point-nom" x={sx(p.x) + 5} y={sy(p.y) - 5}>{p.name}</text>
 			{/each}
 
+			<!-- Droites tracées (droite à tracer) -->
+			{#each traces as t, i (i)}
+				<line
+					class="courbe-trace"
+					x1={sx(t.from.x)}
+					y1={sy(t.from.y)}
+					x2={sx(t.to.x)}
+					y2={sy(t.to.y)}
+					style:stroke={COLOR_VAR[t.color]}
+				/>
+			{/each}
+
 			<!-- Points posés (repère à points à placer) -->
 			{#each marks as m, i (i)}
 				<circle
@@ -513,6 +538,11 @@
 	.courbe-titre-axe {
 		fill: var(--color-foreground);
 		font-size: 11px;
+	}
+
+	.courbe-trace {
+		stroke-width: 2;
+		stroke-linecap: round;
 	}
 
 	.courbe-pose {

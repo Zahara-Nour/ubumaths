@@ -125,4 +125,14 @@ describe('courbe → Typst : titres d’axes et points à placer', () => {
 		expect(out).toContain('[A]');
 		expect(out).toContain('[B]');
 	});
+
+	it('droite à tracer : énoncé vide, corrigé = la droite et deux de ses nœuds', () => {
+		const source = 'x: -5 ; 5\ny: -5 ; 5\ngrille: 1\ntracer: y = 2x - 1';
+		expect(generateCourbeTypst(parseCourbeContent(source))).not.toContain('// solution');
+		const out = generateCourbeTypst(parseCourbeContent(source), { solved: true });
+		expect(count(out, /^\s*\/\/ solution droite/gm)).toBe(1);
+		// Segment de (-2 ; -5) à (3 ; 5) dans un cadre de la fenêtre [-5 ; 5]²
+		expect(out).toMatch(/line\(\([\d.]+, 0\), \([\d.]+, [\d.]+\), stroke: 1pt/);
+		expect(count(out, /circle\([^)]*\), radius: 0\.06/g)).toBe(2);
+	});
 });

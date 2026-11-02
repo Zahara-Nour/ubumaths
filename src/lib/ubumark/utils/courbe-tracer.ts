@@ -257,3 +257,18 @@ export function lineSegmentInWindow(
 	const [p, q] = best;
 	return p.x < q.x || (p.x === q.x && p.y < q.y) ? [p, q] : [q, p];
 }
+
+/**
+ * La droite juste, telle que la correction la dessine : son segment dans la
+ * fenêtre et ses deux nœuds les plus proches de l'origine ; null si l'équation
+ * ne se lit pas (masquée)
+ */
+export function solutionLine(
+	spec: CourbeGridSpec,
+	equation: string
+): { segment: [CourbePlacedPoint, CourbePlacedPoint]; points: CourbePlacedPoint[] } | null {
+	const line = lineCoefficients(equation);
+	if (typeof line === 'string') return null;
+	const segment = lineSegmentInWindow(line, spec.window);
+	return segment === null ? null : { segment, points: correctionPoints(spec, equation) };
+}
