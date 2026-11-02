@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, écriture du lot 6b._
+_Mis à jour le 2026-11-02, après #2186._
 
-- **État** : lots 0 à 5 et 6a publiés. Lot 6b (décimaux, 6 modèles) écrit, specs vertes (§ 11.6) ; vérification locale puis PR.
-- **Prochaine action** : jeu local (rendu de 3,70, ranger avec 12 324/1 000), PR, CI, merge ; simulation `create-questions` (prod) ; `--publier` par David ; migration de rangement.
-- **En attente de David** : rien pour l'instant.
+- **État** : lots 0 à 5 et 6a publiés. Lot 6b (décimaux, 6 modèles) : #2186 mergée ; simulation `create-questions` (prod) depuis le dépôt principal : 6 à créer, 0 en base.
+- **Prochaine action** : après le `--publier` de David, relever les 6 `id` au MCP ; branche `feat/questions-cm2-lot6b-rangement` (migration nœud + tag) ; page à cocher ; publication.
+- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-6b --publier` (depuis le dépôt principal, à jour).
 - **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; garde = doublon seulement ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `pnpm db:migrate --dry-run --include-all`, liste relue, puis `--include-all`. `Doc-inchangée:` dans un COMMIT, pas dans la PR. `spacesFromFourDigits` → specs en `1\,000` ; homonymes du CM1 sur la page ; `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2` · `feat/questions-cm2-lot6b`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2` en HEAD détachée ; prochaine branche : `feat/questions-cm2-lot6b-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -645,3 +645,4 @@ décimale (0,435 → message de forme, à vérifier en local). Tableau du § 11 
 - `question:specs` : 1 000 tirages par variation, 59 specs, tout vert.
 - Pièges mesurés : intercaler, 3 456/1 000 → `unoptimal_form` (non simplifiée) → `reducedFractions: off` pour ce modèle seul (décision c). Nombres construits en millièmes entiers (`xm/1000`) pour éviter les flottants. Ranger : positions affichées relevées avec `generateInstanceWithFixedVariables` (sonde tsx hors dépôt) : croissant x2 x3 x4 x5 x1, décroissant x4 x3 x2 x1 x5. Comparer « = » : la droite s'écrit `{{x}}0` (3,70), le zéro survit dans l'énoncé généré.
 - Local (port 5183, base locale, `set -a; . ./.env.local`) : 6 brouillons créés ; comparer « 92,5 … 92,50 » garde son zéro ; ranger lisible (15 143/1 000 espacé, 5 étiquettes), réponse attendue juste. ⚠️ `create-questions` sans `.env.local` chargé vise la **prod** (simulation seulement).
+- #2186 mergée (CI verte du premier coup). Simulation `create-questions` (prod, dépôt principal) : 6 à créer, 0 en base. Un premier `--publier` de David, lancé avant le merge, s'est arrêté sur `ENOENT` (dossier absent de `main`) : rien d'écrit.
