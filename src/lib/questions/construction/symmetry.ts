@@ -64,12 +64,12 @@ export interface FigureLine extends Segment {
 
 /** Ce que la figure de départ trace, pour le symétrique */
 export interface FigureShapes {
-	/** Traits visibles : segments et côtés des polygones */
-	segments: FigureSegment[];
+	/** Traits visibles : segments et côtés des polygones (partagés : lecture seule) */
+	readonly segments: readonly FigureSegment[];
 	/** Objets droits, par nom (identifiant et nom affiché) */
-	lines: ReadonlyMap<string, FigureLine>;
-	grid: FigureStep | null;
-	window: FigureWindow | null;
+	readonly lines: ReadonlyMap<string, FigureLine>;
+	readonly grid: FigureStep | null;
+	readonly window: FigureWindow | null;
 }
 
 /** Erreur de l'AUTEUR, levée sous le nom de la classe du juge par l'appelant */
@@ -78,7 +78,10 @@ export class SymmetryAuthorError extends Error {}
 type Transform = (p: Position) => Position;
 
 interface Setting {
+	/** Traits à transformer */
 	source: Segment[];
+	/** Tous les traits de la figure sauf l'axe (repassés : sans effet) */
+	figure: Segment[];
 	expected: Segment[];
 	transform: Transform;
 	/** L'axe (symétrie axiale), null pour un centre */
@@ -98,6 +101,8 @@ function reflectOver(axis: Segment): Transform {
 function halfTurn(center: Position): Transform {
 	return (p) => ({ x: 2 * center.x - p.x + 0, y: 2 * center.y - p.y + 0 });
 }
+
+const ends = (segments: readonly Segment[]) => segments.flatMap((s) => [s.a, s.b]);
 
 const image = (transform: Transform) => (s: Segment) => ({ a: transform(s.a), b: transform(s.b) });
 
@@ -125,8 +130,9 @@ function settingOf(
 		}
 	}
 	const listed = check.points ? new Set(check.points) : null;
-	const source: Segment[] = shapes.segments
-		.filter((s) => s.owner !== line?.owner)
+	const outsideAxis = shapes.segments.filter((s) => s.owner !== line?.owner);
+	const figure: Segment[] = outsideAxis.map(({ a, b }) => ({ a, b }));
+	const source: Segment[] = outsideAxis
 		.filter((s) => !listed || s.ends.every((name) => name !== null && listed.has(name)))
 		.map(({ a, b }) => ({ a, b }));
 	if (source.length === 0) {
@@ -135,7 +141,13 @@ function settingOf(
 		);
 	}
 	const transform = line ? reflectOver(line) : halfTurn(center as Position);
-	return { source, expected: source.map(image(transform)), transform, axis: line ?? null };
+	return {
+		source,
+		figure,
+		expected: source.map(image(transform)),
+		transform,
+		axis: line ?? null
+	};
 }
 
 const isOnGrid = (value: number, step: number, eps: number) =>
@@ -144,14 +156,15 @@ const isOnGrid = (value: number, step: number, eps: number) =>
 /**
  * Le symétrique est-il traçable ? Erreur d'AUTEUR sinon : axe ou centre
  * inconnu, rien à transformer, pas de quadrillage, image hors de la fenêtre ou
- * hors des nœuds (l'élève ne pourrait pas l'atteindre).
+ * hors des nœuds (l'élève ne pourrait pas l'atteindre), figure déjà symétrique
+ * (rien à tracer : repasser la figure serait juste).
  */
 export function assertSymmetry(
 	check: SymetriqueCheck,
 	points: ReadonlyMap<string, Position>,
 	shapes: FigureShapes | undefined
 ): void {
-	const { expected } = settingOf(check, points, shapes);
+	const { expected, figure } = settingOf(check, points, shapes);
 	const { grid, window } = shapes as FigureShapes;
 	if (!grid) {
 		throw new SymmetryAuthorError(
@@ -177,6 +190,13 @@ export function assertSymmetry(
 			);
 		}
 	}
+	const eps = tolerance(...ends(figure), ...ends(expected));
+	const figurePieces = mergeSegments(figure, eps);
+	if (expected.every((s) => coveringPiece(s, figurePieces, eps) !== null)) {
+		throw new SymmetryAuthorError(
+			`verifier: symetrique par ${check.by} : la figure est déjà symétrique, il n’y a rien à tracer`
+		);
+	}
 }
 
 /** Longueur du morceau `c` couverte par les morceaux de sa droite */
@@ -186,33 +206,66 @@ function overlap(c: Carrier, pieces: readonly Carrier[], eps: number): number {
 		.reduce((sum, p) => sum + Math.max(0, Math.min(p.t1, c.t1) - Math.max(p.t0, c.t0)), 0);
 }
 
-/** Mêmes morceaux, une fois fusionnés par droite porteuse */
-function sameDrawing(p: readonly Segment[], q: readonly Segment[], eps: number): boolean {
-	const mp = mergeSegments(p, eps);
-	const mq = mergeSegments(q, eps);
+/** Un morceau fusionné, rendu en segment (p(t) = t·u + c·n, n = quart de tour de u) */
+function pieceSegment(piece: Carrier): Segment {
+	const at = (t: number) => ({
+		x: t * piece.u.x - piece.c * piece.u.y + 0,
+		y: t * piece.u.y + piece.c * piece.u.x + 0
+	});
+	return { a: at(piece.t0), b: at(piece.t1) };
+}
+
+function samePieces(p: readonly Carrier[], q: readonly Carrier[], eps: number): boolean {
 	return (
-		mp.length === mq.length &&
-		mp.every((a) =>
-			mq.some(
+		p.length === q.length &&
+		p.every((a) =>
+			q.some(
 				(b) => sameLine(a, b, eps) && Math.abs(a.t0 - b.t0) <= eps && Math.abs(a.t1 - b.t1) <= eps
 			)
 		)
 	);
 }
 
-const ends = (segments: readonly Segment[]) => segments.flatMap((s) => [s.a, s.b]);
-
-/** Tout ce qui est tracé est la figure de départ glissée (translation non nulle) */
-function isSlid(drawn: readonly Segment[], source: readonly Segment[], eps: number): boolean {
-	for (const p of ends(drawn)) {
-		for (const q of ends(source)) {
-			const v = sub(p, q);
-			if (Math.hypot(v.x, v.y) <= eps) continue;
-			const moved = source.map(image((m) => ({ x: m.x + v.x, y: m.y + v.y })));
-			if (sameDrawing(drawn, moved, eps)) return true;
+/**
+ * Le tracé est-il l'image de la figure par une des transformations candidates ?
+ * Une transformation (translation, retournement) envoie les morceaux fusionnés
+ * sur les morceaux fusionnés : on compare des morceaux (au plus 20 côté élève),
+ * et un bout du tracé est forcément l'image d'un bout de la figure — d'où les
+ * candidates, construites depuis CE bout (coût borné, quelle que soit la figure).
+ */
+function isImageOf(
+	drawn: readonly Segment[],
+	source: readonly Segment[],
+	candidates: (target: Position, from: Position) => Transform[],
+	eps: number
+): boolean {
+	const drawnPieces = mergeSegments(drawn, eps);
+	const sourcePieces = mergeSegments(source, eps);
+	if (drawnPieces.length === 0 || drawnPieces.length !== sourcePieces.length) return false;
+	const base = sourcePieces.map(pieceSegment);
+	const target = pieceSegment(drawnPieces[0]).a;
+	for (const from of ends(base)) {
+		for (const transform of candidates(target, from)) {
+			if (samePieces(drawnPieces, mergeSegments(base.map(image(transform)), eps), eps)) {
+				return true;
+			}
 		}
 	}
 	return false;
+}
+
+/** Tout ce qui est tracé est la figure de départ glissée (translation non nulle) */
+function isSlid(drawn: readonly Segment[], source: readonly Segment[], eps: number): boolean {
+	return isImageOf(
+		drawn,
+		source,
+		(target, from) => {
+			const v = sub(target, from);
+			if (Math.hypot(v.x, v.y) <= eps) return [];
+			return [(m) => ({ x: m.x + v.x + 0, y: m.y + v.y + 0 })];
+		},
+		eps
+	);
 }
 
 /** Tout ce qui est tracé est la figure retournée par une verticale ou une horizontale */
@@ -221,18 +274,19 @@ function isFlippedStraight(
 	source: readonly Segment[],
 	eps: number
 ): boolean {
-	for (const p of ends(drawn)) {
-		for (const q of ends(source)) {
-			const vertical = (p.x + q.x) / 2;
-			const horizontal = (p.y + q.y) / 2;
-			const flips: Transform[] = [
-				(m) => ({ x: 2 * vertical - m.x + 0, y: m.y }),
-				(m) => ({ x: m.x, y: 2 * horizontal - m.y + 0 })
+	return isImageOf(
+		drawn,
+		source,
+		(target, from) => {
+			const vertical = target.x + from.x;
+			const horizontal = target.y + from.y;
+			return [
+				(m) => ({ x: vertical - m.x + 0, y: m.y }),
+				(m) => ({ x: m.x, y: horizontal - m.y + 0 })
 			];
-			if (flips.some((flip) => sameDrawing(drawn, source.map(image(flip)), eps))) return true;
-		}
-	}
-	return false;
+		},
+		eps
+	);
 }
 
 function isAxisAligned(axis: Segment, eps: number): boolean {
@@ -245,7 +299,7 @@ export function judgeSymmetry(
 	shapes: FigureShapes | undefined,
 	lines: readonly DrawnLine[]
 ): ConstructionVerdict {
-	const { source, expected, axis } = settingOf(check, points, shapes);
+	const { source, figure, expected, axis } = settingOf(check, points, shapes);
 	if (lines.some((l) => l.kind !== 'segment')) return { status: 'incorrect' };
 	const drawn: Segment[] = lines.map((l) => ({ a: { x: l.x1, y: l.y1 }, b: { x: l.x2, y: l.y2 } }));
 	const eps = tolerance(...ends(source), ...ends(expected), ...ends(drawn));
@@ -253,7 +307,8 @@ export function judgeSymmetry(
 	// Un trait repassé sur l'axe ne compte pas
 	const axisCarrier = axis ? carrierOf(axis) : null;
 	const useful = drawn.filter((s) => !axisCarrier || !sameLine(carrierOf(s), axisCarrier, eps));
-	const allowed = mergeSegments([...expected, ...source], eps);
+	// Trait repassé sur la figure de départ (même hors de la liste) : sans effet
+	const allowed = mergeSegments([...expected, ...figure], eps);
 
 	let misplaced = false;
 	let overshoot = false;
@@ -266,9 +321,10 @@ export function judgeSymmetry(
 
 	if (misplaced) {
 		// Les traits repassés sur la figure de départ ne disent rien de l'erreur
-		const sourcePieces = mergeSegments(source, eps);
-		const own = useful.filter((s) => coveringPiece(s, sourcePieces, eps) === null);
-		if (own.length > 0 && isSlid(own, source, eps)) {
+		const figurePieces = mergeSegments(figure, eps);
+		const own = useful.filter((s) => coveringPiece(s, figurePieces, eps) === null);
+		// Figure glissée sur elle-même (un côté commun) : tout le tracé ; sinon sans les traits repassés
+		if (isSlid(useful, source, eps) || isSlid(own, source, eps)) {
 			return {
 				status: 'incorrect',
 				feedback: axis ? SYMMETRY_SLID_FEEDBACK : SYMMETRY_SLID_CENTRAL_FEEDBACK
@@ -277,15 +333,14 @@ export function judgeSymmetry(
 		if (
 			axis &&
 			!isAxisAligned(axis, eps) &&
-			own.length > 0 &&
-			isFlippedStraight(own, source, eps)
+			(isFlippedStraight(useful, source, eps) || isFlippedStraight(own, source, eps))
 		) {
 			return { status: 'incorrect', feedback: SYMMETRY_OBLIQUE_FEEDBACK };
 		}
 		return { status: 'incorrect', feedback: SYMMETRY_NOT_IN_PLACE_FEEDBACK };
 	}
 
-	const pieces = mergeSegments([...source, ...useful], eps);
+	const pieces = mergeSegments([...figure, ...useful], eps);
 	if (expected.some((s) => coveringPiece(s, pieces, eps) === null)) {
 		return { status: 'incorrect', feedback: SYMMETRY_MISSING_FEEDBACK };
 	}
@@ -305,10 +360,10 @@ export function symmetrySolution(
 	} catch {
 		return [];
 	}
-	const { source, expected } = setting;
-	const eps = tolerance(...ends(source), ...ends(expected));
-	const sourcePieces = mergeSegments(source, eps);
+	const { figure, expected } = setting;
+	const eps = tolerance(...ends(figure), ...ends(expected));
+	const figurePieces = mergeSegments(figure, eps);
 	return expected
-		.filter((s) => coveringPiece(s, sourcePieces, eps) === null)
+		.filter((s) => coveringPiece(s, figurePieces, eps) === null)
 		.map((s) => ({ kind: 'segment', x1: s.a.x, y1: s.a.y, x2: s.b.x, y2: s.b.y }));
 }

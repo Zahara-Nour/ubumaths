@@ -20,8 +20,9 @@ import type { FigureShapes } from './symmetry';
 
 /** Ce que le juge lit d'une figure : points nommés, et traits (symétrique) */
 export interface ConstructionGeometry {
-	points: Map<string, Position>;
-	shapes: FigureShapes;
+	/** Partagé (cache du registre) : lecture seule */
+	readonly points: ReadonlyMap<string, Position>;
+	readonly shapes: FigureShapes;
 }
 
 /** Points nommés et traits d'un bloc (texte entre les clôtures) */
@@ -57,7 +58,7 @@ function geometry(source: string): ConstructionGeometry {
 	return resolver(source);
 }
 
-export function constructionPositions(source: string): Map<string, Position> {
+export function constructionPositions(source: string): ReadonlyMap<string, Position> {
 	return geometry(source).points;
 }
 

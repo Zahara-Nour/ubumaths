@@ -146,6 +146,58 @@ describe('symétrique axial — erreurs', () => {
 	});
 });
 
+describe('revue du 2026-11-02 : cas limites', () => {
+	it('carré glissé de son côté (un côté commun avec la figure) : « glissé »', () => {
+		// Carré (1;2)-(3;4), axe x = 6 ; l'élève le décale de 2 carreaux : [x = 3] commun
+		const source = [
+			'fenetre: 0 ; 12 ; 0 ; 8',
+			'grille: 1',
+			'verifier: symetrique par d',
+			'---',
+			'P = point(6, 0)',
+			'Q = point(6, 8)',
+			'd = droite(P, Q)',
+			'A = point(1, 2)',
+			'B = point(3, 2)',
+			'C = point(3, 4)',
+			'D = point(1, 4)',
+			'polygone(A, B, C, D)'
+		].join('\n');
+		const answer = [seg(3, 2, 5, 2), seg(5, 2, 5, 4), seg(5, 4, 3, 4), seg(3, 4, 3, 2)].join('|');
+		expect(judge(source, answer)).toEqual({
+			status: 'incorrect',
+			feedback: SYMMETRY_SLID_FEEDBACK
+		});
+	});
+
+	it('grande figure, vingt traits faux : jugée vite (coût borné par le tracé)', () => {
+		// Un polygone de 150 côtés en escalier, à gauche de l'axe x = 40
+		const vertices: string[] = [];
+		const names: string[] = [];
+		for (let i = 0; i < 75; i++) {
+			vertices.push(`V${2 * i} = point(${1 + (i % 2)}, ${i})`);
+			vertices.push(`V${2 * i + 1} = point(${3 + (i % 2)}, ${i})`);
+			names.push(`V${2 * i}`, `V${2 * i + 1}`);
+		}
+		const source = [
+			'fenetre: 0 ; 80 ; 0 ; 80',
+			'grille: 1',
+			'verifier: symetrique par d',
+			'---',
+			'P = point(40, 0)',
+			'Q = point(40, 80)',
+			'd = droite(P, Q)',
+			...vertices,
+			`polygone(${names.join(', ')})`
+		].join('\n');
+		const wrong = Array.from({ length: 20 }, (_, i) => seg(50 + i, 1, 51 + i, 3)).join('|');
+		judge(source, wrong); // figure calculée et mise en cache
+		const start = performance.now();
+		expect(judge(source, wrong).status).toBe('incorrect');
+		expect(performance.now() - start).toBeLessThan(200);
+	});
+});
+
 describe('compléter une figure pour la rendre symétrique (CE2-073, CM1-107)', () => {
 	// La moitié gauche d'un rectangle qui touche l'axe x = 6
 	const HALF = [
@@ -279,6 +331,10 @@ describe('forme `symetrique A ; B ; C par d` : ces traits-là seulement', () => 
 		expect(judge(LISTED, IMAGE)).toEqual({ status: 'correct' });
 	});
 
+	it('[EF] (hors de la liste) repassé sur la figure de départ : sans effet', () => {
+		expect(judge(LISTED, [IMAGE, seg(1, 7, 3, 7)].join('|'))).toEqual({ status: 'correct' });
+	});
+
 	it('l’image de [EF] en plus est un trait de trop', () => {
 		expect(judge(LISTED, [IMAGE, seg(11, 7, 9, 7)].join('|'))).toEqual({
 			status: 'incorrect',
@@ -326,6 +382,17 @@ describe('erreurs de l’auteur (refus à la publication)', () => {
 			'segment(A, B)'
 		);
 		expect(() => assertChecks(source)).toThrow(/nœud/);
+	});
+
+	it('figure déjà symétrique (segment à cheval sur l’axe) : rien à tracer', () => {
+		const source = figure(
+			'symetrique par d',
+			...AXIS,
+			'A = point(4, 2)',
+			'B = point(8, 2)',
+			'segment(A, B)'
+		);
+		expect(() => assertChecks(source)).toThrow(/déjà symétrique/);
 	});
 
 	it('forme à points : un point inconnu', () => {

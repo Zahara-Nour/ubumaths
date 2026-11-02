@@ -6,11 +6,11 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 1 codé, revue en cours._
+_Mis à jour le 2026-11-02, lot 1 codé et relu, PR ouverte._
 
 - **État** : lot 1 (symétrique sur quadrillage, axial + central) codé et testé sur `feat/controles-figure`
   (§ 4) ; PR pas encore ouverte.
-- **Prochaine action** : revue Opus (`code-reviewer`), PR, CI, merge ; puis lot 2 (outil « point »,
+- **Prochaine action** : CI de la PR, merge ; puis lot 2 (outil « point »,
   symétrique d'un point, 6-179 / 6-180).
 - **En attente de David** : essai sur le serveur de la branche (port 5178).
 - **Pièges en cours** : les `testSpecs` d'un modèle ne vérifient que le statut, pas le message (`TestSpecExpected`
@@ -135,3 +135,7 @@ médiatrice, bissectrice, cercle circonscrit, 4e sommet (§ 1).
   quadrillage, refus** (l'élève ne pourrait pas atteindre l'image : c'est le lot 2).
 - Aide à l'écriture : deux exemples (axe vertical, centre) et une erreur (« par » oublié).
 - Tests : juge (21), lecture (5), modèle de bout en bout (`check-template-figure`, 2), écran (2).
+- Revue Opus (2026-11-02), 5 points corrigés, tests rouges avant / verts après : trait hors liste
+  repassé sur la figure (était faux), coût borné par le tracé (figure de 150 côtés : 1,2 s → < 200 ms),
+  « glissé » quand la figure glisse sur elle-même, figure déjà symétrique refusée à la publication,
+  registre en lecture seule.
