@@ -1,0 +1,189 @@
+{
+	"title": "Nier une proposition à deux quantificateurs",
+	"description": "Négation d'une proposition à deux quantificateurs, écrits en mots (pièges : un seul quantificateur changé, propriété non niée, ordre inversé, inégalité large, condition n ⩾ N niée)",
+	"grades": ["T_SPE"],
+	"theme": "Logique",
+	"domain": "Quantificateurs et négation",
+	"subdomain": "Négation d'une proposition",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Quelle est la négation de la proposition « pour tout réel $x$, il existe un réel $y$ tel que $x+y{{if:r==0|>}}{{if:r==1|\\geqslant }}{{if:r==2|< }}{{if:r==3|\\leqslant }}{{c}}$ » ?\n\n```choix\n- Il existe un réel $x$ tel que, pour tout réel $y$, $x+y{{if:r==0|\\leqslant }}{{if:r==1|< }}{{if:r==2|\\geqslant }}{{if:r==3|>}}{{c}}$.\n- Pour tout réel $x$, il existe un réel $y$ tel que $x+y{{if:r==0|\\leqslant }}{{if:r==1|< }}{{if:r==2|\\geqslant }}{{if:r==3|>}}{{c}}$.\n- Il existe un réel $x$ tel que, pour tout réel $y$, $x+y{{if:r==0|>}}{{if:r==1|\\geqslant }}{{if:r==2|< }}{{if:r==3|\\leqslant }}{{c}}$.\n- Il existe un réel $y$ tel que, pour tout réel $x$, $x+y{{if:r==0|\\leqslant }}{{if:r==1|< }}{{if:r==2|\\geqslant }}{{if:r==3|>}}{{c}}$.\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour nier une proposition, on **change chaque quantificateur** (« pour tout » devient « il existe », et inversement), **dans le même ordre**, puis on **nie la propriété** finale.",
+					"« Pour tout réel $x$, il existe un réel $y$ » devient « il existe un réel $x$ tel que, pour tout réel $y$ » : $x$ reste en premier.",
+					"La négation de « $>$ » est « $\\leqslant$ », celle de « $\\geqslant$ » est « $<$ » (et inversement).",
+					"La négation est : « il existe un réel $x$ tel que, pour tout réel $y$, $\\textcolor{{{color:primary.0}}}{x+y{{if:r==0|\\leqslant }}{{if:r==1|< }}{{if:r==2|\\geqslant }}{{if:r==3|>}}{{c}}}$ »."
+				]
+			},
+			"variables": [
+				{
+					"name": "r",
+					"expression": "0..3"
+				},
+				{
+					"name": "c",
+					"expression": "-9..9"
+				}
+			]
+		},
+		{
+			"statement": "Dire que la suite $(u_n)$ est {{if:s==0|majorée|minorée}}, c'est dire : « il existe un réel $M$ tel que, pour tout entier naturel $n$, $u_n{{if:s==0|\\leqslant |\\geqslant }}M$ ».\n\nQuelle est la négation de cette proposition ?\n\n```choix\n- Pour tout réel $M$, il existe un entier naturel $n$ tel que $u_n{{if:s==0|>|< }}M$.\n- Il existe un réel $M$ tel que, pour tout entier naturel $n$, $u_n{{if:s==0|>|< }}M$.\n- Pour tout réel $M$, il existe un entier naturel $n$ tel que $u_n{{if:s==0|\\geqslant |\\leqslant }}M$.\n- Pour tout réel $M$, il existe un entier naturel $n$ tel que $u_n{{if:s==0|\\leqslant |\\geqslant }}M$.\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour nier une proposition, on **change chaque quantificateur** (« pour tout » devient « il existe », et inversement), **dans le même ordre**, puis on **nie la propriété** finale.",
+					"« Il existe un réel $M$ tel que, pour tout entier naturel $n$ » devient « pour tout réel $M$, il existe un entier naturel $n$ tel que ».",
+					"La négation de $u_n{{if:s==0|\\leqslant |\\geqslant }}M$ est $u_n{{if:s==0|>|< }}M$ (inégalité **stricte**).",
+					"La négation est : « pour tout réel $M$, il existe un entier naturel $n$ tel que $\\textcolor{{{color:primary.0}}}{u_n{{if:s==0|>|< }}M}$ » : la suite n'est pas {{if:s==0|majorée|minorée}}."
+				]
+			},
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..1"
+				}
+			]
+		},
+		{
+			"statement": "Quelle est la négation de la proposition « il existe un entier naturel $N$ tel que, pour tout entier $n\\geqslant N$, $u_n{{if:r==0|>}}{{if:r==1|\\geqslant }}{{if:r==2|< }}{{if:r==3|\\leqslant }}{{c}}$ » ?\n\n```choix\n- Pour tout entier naturel $N$, il existe un entier $n\\geqslant N$ tel que $u_n{{if:r==0|\\leqslant }}{{if:r==1|< }}{{if:r==2|\\geqslant }}{{if:r==3|>}}{{c}}$.\n- Pour tout entier naturel $N$, il existe un entier $n< N$ tel que $u_n{{if:r==0|\\leqslant }}{{if:r==1|< }}{{if:r==2|\\geqslant }}{{if:r==3|>}}{{c}}$.\n- Pour tout entier naturel $N$ et pour tout entier $n\\geqslant N$, $u_n{{if:r==0|\\leqslant }}{{if:r==1|< }}{{if:r==2|\\geqslant }}{{if:r==3|>}}{{c}}$.\n- Il existe un entier naturel $N$ tel que, pour tout entier $n\\geqslant N$, $u_n{{if:r==0|\\leqslant }}{{if:r==1|< }}{{if:r==2|\\geqslant }}{{if:r==3|>}}{{c}}$.\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour nier une proposition, on **change chaque quantificateur** (« pour tout » devient « il existe », et inversement), **dans le même ordre**, puis on **nie la propriété** finale.",
+					"« Il existe $N$ » devient « pour tout $N$ », et « pour tout entier $n\\geqslant N$ » devient « il existe un entier $n\\geqslant N$ » : la condition $n\\geqslant N$ décrit **où** on cherche $n$, on ne la nie pas.",
+					"La négation de « $>$ » est « $\\leqslant$ », celle de « $\\geqslant$ » est « $<$ » (et inversement).",
+					"La négation est : « pour tout entier naturel $N$, il existe un entier $n\\geqslant N$ tel que $\\textcolor{{{color:primary.0}}}{u_n{{if:r==0|\\leqslant }}{{if:r==1|< }}{{if:r==2|\\geqslant }}{{if:r==3|>}}{{c}}}$ »."
+				]
+			},
+			"variables": [
+				{
+					"name": "r",
+					"expression": "0..3"
+				},
+				{
+					"name": "c",
+					"expression": "-9..9"
+				}
+			]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : il existe x, pour tout y, non R",
+			"variationIndex": 0,
+			"variables": {
+				"r": "0",
+				"c": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : propriété seule niée",
+			"variationIndex": 0,
+			"variables": {
+				"r": "0",
+				"c": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : propriété non niée",
+			"variationIndex": 0,
+			"variables": {
+				"r": "0",
+				"c": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : ordre inversé",
+			"variationIndex": 0,
+			"variables": {
+				"r": "0",
+				"c": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : non majorée",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : inégalité large",
+			"variationIndex": 1,
+			"variables": {
+				"s": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : il existe n ⩾ N",
+			"variationIndex": 2,
+			"variables": {
+				"r": "1",
+				"c": "-2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : n < N",
+			"variationIndex": 2,
+			"variables": {
+				"r": "1",
+				"c": "-2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

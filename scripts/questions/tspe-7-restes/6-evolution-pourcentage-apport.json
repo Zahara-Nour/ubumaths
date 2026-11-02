@@ -1,0 +1,255 @@
+{
+	"title": "Évolution en pourcentage avec apport constant",
+	"description": "Modéliser une évolution « p % puis apport constant » par u_{n+1} = a·u_n + b : relation, premiers termes, évolution à long terme (pièges : multiplier par p/100, apport avant le pourcentage, stabilisation confondue avec croissance sans limite)",
+	"grades": ["T_SPE"],
+	"theme": "Suites",
+	"domain": "Modèles d'évolution",
+	"subdomain": "Pourcentages",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "{{if:k==0|Un club compte ${{eval:100*m}}$ adhérents en 2025. Chaque année, ${{p}}~\\%$ des adhérents ne renouvellent pas leur adhésion et ${{b}}$ nouveaux adhérents s'inscrivent. On note $u_n$ le nombre d'adhérents en $2025+n$.}}{{if:k==1|Un patient reçoit ${{eval:100*m}}~\\unit{mg}$ d'un médicament. Chaque heure, son organisme élimine ${{p}}~\\%$ de la quantité présente, puis on lui injecte ${{b}}~\\unit{mg}$. On note $u_n$ la quantité (en $\\unit{mg}$) présente au bout de $n$ heures.}}{{if:k==2|Mehdi place ${{eval:100*m}}~\\unit{€}$ à ${{p}}~\\%$ par an (intérêts composés) et ajoute ${{b}}~\\unit{€}$ à la fin de chaque année. On note $u_n$ la somme (en euros) au bout de $n$ années.}}\n\nQuelle relation vérifie la suite $(u_n)$ ?\n\n```choix\n- $u_{n+1}={{if:k==0|{{eval:1-p/100;d}}}}{{if:k==1|{{eval:1-p/100;d}}}}{{if:k==2|{{eval:1+p/100;d}}}}u_n+{{b}}$\n- $u_{n+1}={{eval:p/100;d}}u_n+{{b}}$\n- $u_{n+1}={{if:k==0|{{eval:1-p/100;d}}}}{{if:k==1|{{eval:1-p/100;d}}}}{{if:k==2|{{eval:1+p/100;d}}}}(u_n+{{b}})$\n- $u_{n+1}={{if:k==0|{{eval:1-p/100;d}}}}{{if:k==1|{{eval:1-p/100;d}}}}{{if:k==2|{{eval:1+p/100;d}}}}u_n-{{b}}$\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==0|Perdre ${{p}}~\\%$, c'est multiplier par $1-\\dfrac{{{p}}}{100}={{if:k==0|{{eval:1-p/100;d}}}}{{if:k==1|{{eval:1-p/100;d}}}}{{if:k==2|{{eval:1+p/100;d}}}}$ ; on ajoute ensuite les ${{b}}$ nouveaux.}}{{if:k==1|Éliminer ${{p}}~\\%$, c'est multiplier par $1-\\dfrac{{{p}}}{100}={{if:k==0|{{eval:1-p/100;d}}}}{{if:k==1|{{eval:1-p/100;d}}}}{{if:k==2|{{eval:1+p/100;d}}}}$ ; l'injection vient **après** : on ajoute ${{b}}$ au résultat.}}{{if:k==2|Augmenter de ${{p}}~\\%$, c'est multiplier par $1+\\dfrac{{{p}}}{100}={{if:k==0|{{eval:1-p/100;d}}}}{{if:k==1|{{eval:1-p/100;d}}}}{{if:k==2|{{eval:1+p/100;d}}}}$ ; on ajoute ensuite les ${{b}}~\\unit{€}$ versés.}}",
+					"Donc $\\textcolor{{{color:primary.0}}}{u_{n+1}={{if:k==0|{{eval:1-p/100;d}}}}{{if:k==1|{{eval:1-p/100;d}}}}{{if:k==2|{{eval:1+p/100;d}}}}u_n+{{b}}}$.",
+					"{{if:k==0|Multiplier par ${{eval:p/100;d}}$ donnerait seulement les ${{p}}~\\%$ perdus, pas ce qui reste.}}{{if:k==1|Multiplier par ${{eval:p/100;d}}$ donnerait seulement les ${{p}}~\\%$ éliminés, pas ce qui reste.}}{{if:k==2|Multiplier par ${{eval:p/100;d}}$ donnerait seulement les intérêts, sans la somme placée.}}"
+				]
+			},
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "m",
+					"expression": "2..9"
+				},
+				{
+					"name": "p",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "10..90"
+				}
+			]
+		},
+		{
+			"statement": "Une citerne contient ${{eval:100*m}}~\\unit{m^3}$ d'eau. Chaque semaine, ${{p}}~\\%$ de l'eau est consommée, puis on la remplit de ${{b}}~\\unit{m^3}$. On note $u_n$ le volume (en $\\unit{m^3}$) au bout de $n$ semaines : $u_0={{eval:100*m}}$ et $u_{n+1}={{eval:1-p/100;d}}u_n+{{b}}$.\n\nCalcule $u_1$ et $u_2$.\n\n$u_1=?$ et $u_2=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*m*(1-p/100)+b}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(100*m*(1-p/100)+b)*(1-p/100)+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_1={{eval:1-p/100;d}}\\times{{eval:100*m}}+{{b}}=\\textcolor{{{color:primary.0}}}{{{eval:100*m*(1-p/100)+b}}}$.",
+					"$u_2={{eval:1-p/100;d}}\\times{{eval:100*m*(1-p/100)+b}}+{{b}}=\\textcolor{{{color:primary.0}}}{{{eval:(100*m*(1-p/100)+b)*(1-p/100)+b;d}}}$."
+				]
+			},
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..9"
+				},
+				{
+					"name": "p",
+					"expression": "10|20|30"
+				},
+				{
+					"name": "b",
+					"expression": "10|20|30|40|50|60|70|80|90"
+				}
+			]
+		},
+		{
+			"statement": "{{if:k==0|Une réserve contient $u_0={{eval:100*m-h}}$ tonnes de grain. Chaque mois, ${{p}}~\\%$ du grain est vendu, puis on rentre ${{eval:m*p}}$ tonnes : $u_{n+1}={{eval:1-p/100;d}}u_n+{{eval:m*p}}$.}}{{if:k==1|Une réserve contient $u_0={{eval:100*m+h}}$ tonnes de grain. Chaque mois, ${{p}}~\\%$ du grain est vendu, puis on rentre ${{eval:m*p}}$ tonnes : $u_{n+1}={{eval:1-p/100;d}}u_n+{{eval:m*p}}$.}}{{if:k==2|Un compte rapporte ${{p}}~\\%$ par an et reçoit ${{eval:m*p}}~\\unit{€}$ à la fin de chaque année, avec $u_0={{eval:100*m}}$ (en euros) : $u_{n+1}={{eval:1+p/100;d}}u_n+{{eval:m*p}}$.}}\n\nComment évolue cette quantité au fil du temps ?\n\n```choix\n- {{if:k==0|Elle augmente et se rapproche d'une valeur limite}}{{if:k==1|Elle diminue et se rapproche d'une valeur limite}}{{if:k==2|Elle augmente sans limite}}\n- {{if:k==0|Elle augmente sans limite}}{{if:k==1|Elle diminue jusqu'à devenir nulle}}{{if:k==2|Elle augmente et se rapproche d'une valeur limite}}\n- {{if:k==0|Elle diminue et se rapproche d'une valeur limite}}{{if:k==1|Elle augmente et se rapproche d'une valeur limite}}{{if:k==2|Elle diminue et se rapproche d'une valeur limite}}\n- {{if:k==0|Elle diminue jusqu'à devenir nulle}}{{if:k==1|Elle augmente sans limite}}{{if:k==2|Elle diminue jusqu'à devenir nulle}}\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==0|La quantité qui ne change plus vérifie $\\ell={{eval:1-p/100;d}}\\ell+{{eval:m*p}}$, soit $\\ell={{eval:100*m}}$ : les ventes compensent alors exactement les rentrées.}}{{if:k==1|La quantité qui ne change plus vérifie $\\ell={{eval:1-p/100;d}}\\ell+{{eval:m*p}}$, soit $\\ell={{eval:100*m}}$ : les ventes compensent alors exactement les rentrées.}}{{if:k==2|Chaque année, la somme est multipliée par ${{eval:1+p/100;d}}>1$ **et** augmentée de ${{eval:m*p}}~\\unit{€}$ : rien ne la freine.}}",
+					"{{if:k==0|$u_0={{eval:100*m-h}}<{{eval:100*m}}$ : les rentrées dépassent les ventes, la quantité monte vers ${{eval:100*m}}$ sans l'atteindre.}}{{if:k==1|$u_0={{eval:100*m+h}}>{{eval:100*m}}$ : les ventes dépassent les rentrées, la quantité descend vers ${{eval:100*m}}$ sans l'atteindre.}}{{if:k==2|Elle dépasse donc n'importe quel montant au bout d'un nombre suffisant d'années.}}",
+					"Réponse : {{if:k==0|$\\textcolor{{{color:primary.0}}}{\\text{elle augmente et se rapproche de }{{eval:100*m}}}$}}{{if:k==1|$\\textcolor{{{color:primary.0}}}{\\text{elle diminue et se rapproche de }{{eval:100*m}}}$}}{{if:k==2|$\\textcolor{{{color:primary.0}}}{\\text{elle augmente sans limite}}$}}."
+				]
+			},
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "m",
+					"expression": "2..9"
+				},
+				{
+					"name": "p",
+					"expression": "2..9"
+				},
+				{
+					"name": "h",
+					"expression": "20..90"
+				}
+			]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : a uₙ + b",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"m": "5",
+				"p": "4",
+				"b": "30"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : p/100",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"m": "5",
+				"p": "4",
+				"b": "30"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : apport avant",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"m": "5",
+				"p": "4",
+				"b": "30"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : épargne",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"m": "5",
+				"p": "4",
+				"b": "30"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : u₁ = 430, u₂ = 374",
+			"variationIndex": 1,
+			"variables": {
+				"m": "5",
+				"p": "20",
+				"b": "30"
+			},
+			"answers": ["430", "374"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : u₁ = 130 (p/100)",
+			"variationIndex": 1,
+			"variables": {
+				"m": "5",
+				"p": "20",
+				"b": "30"
+			},
+			"answers": ["130", "56"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : p = 30",
+			"variationIndex": 1,
+			"variables": {
+				"m": "3",
+				"p": "30",
+				"b": "10"
+			},
+			"answers": ["220", "164"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : monte vers ℓ",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0",
+				"m": "5",
+				"p": "4",
+				"h": "50"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : sans limite",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0",
+				"m": "5",
+				"p": "4",
+				"h": "50"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : épargne sans limite",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"m": "5",
+				"p": "4",
+				"h": "50"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
