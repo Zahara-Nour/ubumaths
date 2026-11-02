@@ -152,8 +152,12 @@
 	let hintText = $derived(interactive && hint?.node === node ? hint.text : '');
 	/** Figure de travail : traits gris une fois la saisie finie, jamais de verdict */
 	let workDone = $derived(node.construction?.work === true && answer !== undefined && !interactive);
-	/** Quadrillage + segment ou point : touchers sur les nœuds (sinon aimantation sur les points) */
-	let grid = $derived(tool === 'segment' || tool === 'point' ? node.header.grid : null);
+	/** Droite à construire (lot 3) : sur quadrillage, tous ses outils vont aux nœuds */
+	let lineCheck = $derived(checks.some((c) => c.kind === 'droite'));
+	/** Quadrillage + segment ou point (ou droite à construire) : touchers sur les nœuds (sinon aimantation sur les points) */
+	let grid = $derived(
+		tool === 'segment' || tool === 'point' || lineCheck ? node.header.grid : null
+	);
 	/** Points à placer, montrés à la correction (calculés à part : jamais aimantés) */
 	let pointSolutions = $derived.by((): PointSolution[] => {
 		if (!corrected || !checks.some((c) => c.kind === 'point')) return [];
@@ -240,14 +244,21 @@
 		const transformer = createTransformer(scene.viewport, width, height);
 		const math = transformer.svgToMath(local.x, local.y);
 		// Rayon à l'écran → unités de la fenêtre (échelle d'affichage) → unités de la figure
+		const radius = SNAP_RADIUS_PX / Math.abs(matrix.a) / transformer.scaleX;
 		if (grid) {
+			// Équerre (droite à construire sur quadrillage) : d'abord la droite à longer
+			if (tool === 'equerre' && !drawing.guide) {
+				const guide = straightAt(math, traitsOf(scene), radius);
+				if (guide) chooseLine(guide);
+				else if (interactive) hint = { node, text: 'Touche d’abord une droite.' };
+				return;
+			}
 			const node = snapToGrid(math, grid, scene.viewport);
 			// Le curseur clavier (s'il est là) suit le dernier toucher
 			if (cursor) cursor = node;
 			tapAt(node);
 			return;
 		}
-		const radius = SNAP_RADIUS_PX / Math.abs(matrix.a) / transformer.scaleX;
 		if (!instruments) {
 			tapAt(snapTap(math, namedPointPositions(scene), radius));
 			return;
@@ -549,7 +560,7 @@
 					onkeydown={(event) => handlePointKey(event, position)}
 				/>
 			{/each}
-			{#if instruments && !grid}
+			{#if instruments && (!grid || (tool === 'equerre' && !drawing.guide))}
 				{@const targets = snapTargets(scene)}
 				{#if tool === 'equerre' && !drawing.guide}
 					<!-- Équerre au clavier : chaque droite est un bouton -->

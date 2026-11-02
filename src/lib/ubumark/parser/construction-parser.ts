@@ -208,6 +208,11 @@ function coherenceError(
 		}
 		const first = spec.checks.find((c) => c.kind === 'droite' && c.name === check.name);
 		if (first !== check) return `deux droites nommées ${check.name.replace("'", '’')}`;
+		// Un point ou un segment tracé serait jugé comme une réponse forgée (revue du lot 3)
+		const allowed = PLAIN_PAPER_TOOLS.droite ?? [];
+		const other = spec.tools.find((t) => !allowed.includes(t));
+		if (other)
+			return `droite ${check.name} : outil ${other} hors de la palette (${allowed.join(', ')})`;
 	} else if (check.kind === 'point') {
 		const first = spec.checks.find((c) => c.kind === 'point' && c.name === check.name);
 		if (first !== check) return `deux points nommés ${check.name.replace("'", '’')}`;

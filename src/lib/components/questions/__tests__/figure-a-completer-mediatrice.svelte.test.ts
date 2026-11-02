@@ -44,8 +44,8 @@ const TEMPLATE = {
 	level: 1
 } as unknown as QuestionTemplate;
 
-function instance(): QuestionInstance {
-	const result = generateInstance(TEMPLATE, 42);
+function instance(template: QuestionTemplate = TEMPLATE): QuestionInstance {
+	const result = generateInstance(template, 42);
 	if (!result.success) throw new Error(result.errors.join(' ; '));
 	return result.instance;
 }
@@ -91,10 +91,10 @@ function button(container: HTMLElement, text: string): HTMLButtonElement {
 const all = (container: HTMLElement, testid: string) =>
 	[...container.querySelectorAll(`[data-testid="${testid}"]`)] as SVGElement[];
 
-async function rendered() {
+async function rendered(template?: QuestionTemplate) {
 	const { container } = await render(FlashCard, {
 		target: mainElement(),
-		props: { instance: instance(), interactive: true }
+		props: { instance: instance(template), interactive: true }
 	});
 	return { container, rect: await zone(container) };
 }
@@ -137,5 +137,25 @@ describe('case « figure » : construire la médiatrice', () => {
 			.toContain('Ta droite est tracée à l’œil : construis-la avec tes instruments.');
 		await expect.poll(() => all(container, 'bonne-droite').length).toBe(1);
 		expect(all(container, 'codage-mediatrice')).toHaveLength(1);
+	});
+
+	it('sur quadrillage, la règle va aux nœuds : droite par deux nœuds juste (revue)', async () => {
+		const grid = {
+			...TEMPLATE,
+			variations: [
+				{
+					statement: templateMarkdown(
+						`Trace la médiatrice de $[AB]$.\n\n${BLOCK.replace('fenetre: 0 ; 12 ; 0 ; 8', 'fenetre: 0 ; 12 ; 0 ; 8\ngrille: 1')}`
+					)
+				}
+			]
+		} as unknown as QuestionTemplate;
+		const { container, rect } = await rendered(grid);
+		// Touchers à côté des nœuds (6 ; 7) et (6 ; 1)
+		tap(rect, 6.3, 6.8);
+		tap(rect, 5.8, 1.2);
+		await expect.poll(() => all(container, 'droite-eleve').length).toBe(1);
+		button(container, 'Valider').click();
+		await expect.poll(() => container.querySelectorAll('.droite-juste').length).toBeGreaterThan(0);
 	});
 });

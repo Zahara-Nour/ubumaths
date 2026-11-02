@@ -24,7 +24,15 @@
 
 import type { LineCheck } from '$lib/ubumark/types/construction';
 import type { DrawnLine, DrawnObject } from './answer';
-import { isConstructed, isStraight, lineCrossesFrame, traitOf, type Trait } from './instruments';
+import {
+	isConstructed,
+	isInFrame,
+	isStraight,
+	lineCrossesFrame,
+	perpendicularThrough,
+	traitOf,
+	type Trait
+} from './instruments';
 import type { ConstructionVerdict, Position } from './judge';
 import type { ExpectedLine, ExpectedPoints } from './point';
 import { tolerance } from './polygon';
@@ -113,22 +121,62 @@ function gridNodesOn(line: ExpectedLine, shapes: FigureShapes): number {
 }
 
 /**
+ * Papier uni : la médiatrice de [AB] se construit-elle dans la fenêtre ? A et B
+ * visibles (le compas s'y pique), et les deux intersections des cercles de
+ * centres A et B de rayon AB dans la fenêtre (l'élève n'a pas de report de
+ * longueur : son rayon est AB) ; sert aussi au milieu (`point.ts`). Le message,
+ * ou null.
+ */
+export function mediatriceSupportError(
+	names: [string, string],
+	points: ReadonlyMap<string, Position>,
+	shapes: FigureShapes
+): string | null {
+	const hidden = names.find((name) => !shapes.visiblePoints.has(name));
+	if (hidden) return `${hidden} n’est pas visible (l’élève ne peut pas y piquer le compas)`;
+	const a = points.get(names[0]);
+	const b = points.get(names[1]);
+	if (!a || !b || !shapes.window) return null;
+	const u = sub(b, a);
+	const half = Math.sqrt(3) / 2;
+	const middle = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+	const crossings = [1, -1].map((side) => ({
+		x: middle.x - side * half * u.y,
+		y: middle.y + side * half * u.x
+	}));
+	if (crossings.every((p) => isInFrame(p, shapes.window as NonNullable<FigureShapes['window']>))) {
+		return null;
+	}
+	return `les cercles de centres ${names[0]} et ${names[1]} de rayon ${names[0]}${names[1]} se coupent hors de la fenêtre (l’élève ne peut pas construire la médiatrice) : agrandir la fenêtre ou rapprocher ${names[0]} et ${names[1]}`;
+}
+
+/**
  * Les droites sont-elles faisables ? Erreur d'AUTEUR sinon : expression qui ne
- * se calcule pas ou ne donne pas une droite, droite hors de la fenêtre, sur
- * quadrillage droite qui ne passe pas par deux nœuds, médiatrice d'un point
- * invisible (l'élève ne peut pas y piquer le compas).
+ * se calcule pas ou ne donne pas une droite, droite hors de la fenêtre, deux
+ * vérifications pour la même droite ; sur quadrillage, droite qui ne passe pas
+ * par deux nœuds ; sur papier uni, autre chose qu'une médiatrice, ou médiatrice
+ * qui ne se construit pas dans la fenêtre (`mediatriceSupportError`).
  */
 export function assertLines(
 	checks: readonly LineCheck[],
 	expected: ExpectedPoints | undefined,
+	points: ReadonlyMap<string, Position>,
 	shapes: FigureShapes | undefined
 ): void {
 	if (!shapes) {
 		throw new LineAuthorError('Case « figure » : traits de la figure non fournis au juge (droite)');
 	}
+	const seen: { name: string; line: ExpectedLine }[] = [];
 	for (const check of checks) {
 		const label = `verifier: droite ${check.name}`;
 		const line = expectedOf(check, expected);
+		const twin = seen.find((other) => isOnLine(line.a, other.line) && isOnLine(line.b, other.line));
+		if (twin) {
+			throw new LineAuthorError(
+				`verifier: les droites ${twin.name} et ${check.name} sont la même droite`
+			);
+		}
+		seen.push({ name: check.name, line });
 		if (shapes.window && !lineCrossesFrame(line.a, line.b, shapes.window)) {
 			throw new LineAuthorError(`${label} : la droite attendue est hors de la fenêtre`);
 		}
@@ -137,19 +185,23 @@ export function assertLines(
 				`${label} : la droite attendue ne passe pas par deux nœuds du quadrillage dans la fenêtre (l’élève ne peut pas la tracer)`
 			);
 		}
-		const hidden = mediatriceOf(check.expression)?.find((name) => !shapes.visiblePoints.has(name));
-		if (hidden) {
+		if (shapes.grid) continue;
+		const mediatrice = mediatriceOf(check.expression);
+		if (!mediatrice) {
 			throw new LineAuthorError(
-				`${label} : ${hidden} n’est pas visible (l’élève ne peut pas y piquer le compas)`
+				`${label} : sans quadrillage, seulement une médiatrice (mediatrice(A, B)) ; sinon ajouter « grille: 1 »`
 			);
 		}
+		const message = mediatriceSupportError(mediatrice, points, shapes);
+		if (message) throw new LineAuthorError(`${label} : ${message}`);
 	}
 }
 
 /**
  * La droite d'indice `index` est-elle construite ? Par deux points construits,
- * ou par un point construit et perpendiculaire à un autre trait droit
- * (équerre). Les traits autres qu'elle seule comptent : une extrémité posée
+ * ou tracée à l'équerre : son départ construit, son second point exactement
+ * celui que pose l'équerre le long d'un autre trait droit (`perpendicularThrough`),
+ * ce qu'un toucher à la règle n'atteint pas. Les traits autres qu'elle seule comptent : une extrémité posée
  * « sur un trait » n'est pas une intersection.
  */
 function isConstructedLine(
@@ -167,12 +219,14 @@ function isConstructedLine(
 		})
 	];
 	const [p, q] = ends(line);
-	const builtP = isConstructed(p, points, traits);
-	const builtQ = isConstructed(q, points, traits);
-	if (builtP && builtQ) return true;
-	if (!builtP && !builtQ) return false;
-	const direction = sub(q, p);
-	return traits.some((t) => isStraight(t) && isPerpendicular(direction, sub(t.b, t.a)));
+	if (!isConstructed(p, points, traits)) return false;
+	if (isConstructed(q, points, traits)) return true;
+	const eps = tolerance(p, q);
+	return traits.some((t) => {
+		if (!isStraight(t)) return false;
+		const square = perpendicularThrough(t, p);
+		return Math.hypot(square.x2 - q.x, square.y2 - q.y) <= eps;
+	});
 }
 
 /** Pourquoi la droite n'est pas la médiatrice de [AB] */
@@ -186,19 +240,29 @@ function mediatriceFeedback(line: DrawnLine, a: Position, b: Position, names: [s
 	return notMediatriceFeedback(...names);
 }
 
-/** Une droite de l'élève « qui touche au but » : perpendiculaire à [AB] ou par son milieu */
+/**
+ * Une droite de l'élève « qui touche au but » : perpendiculaire à [AB] ou par
+ * son milieu ; une droite qui repasse un trait de la figure ((AB) elle-même)
+ * n'est pas son essai de médiatrice
+ */
 function closest(
 	candidates: readonly number[],
 	objects: readonly DrawnObject[],
 	a: Position,
-	b: Position
+	b: Position,
+	figureTraits: readonly Trait[]
 ): number {
 	const middle = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
-	const near = candidates.find((i) => {
+	const own = candidates.filter((i) => {
+		const line = { a: ends(objects[i] as DrawnLine)[0], b: ends(objects[i] as DrawnLine)[1] };
+		return !figureTraits.some((t) => isStraight(t) && isOnLine(t.a, line) && isOnLine(t.b, line));
+	});
+	const tries = own.length > 0 ? own : candidates;
+	const near = tries.find((i) => {
 		const [p, q] = ends(objects[i] as DrawnLine);
 		return isPerpendicular(sub(q, p), sub(b, a)) || isOnLine(middle, { a: p, b: q });
 	});
-	return near ?? candidates[candidates.length - 1];
+	return near ?? tries[tries.length - 1];
 }
 
 /**
@@ -239,7 +303,7 @@ export function judgeLines(
 		if (free.length === 0) return { status: 'incorrect', feedback: missing };
 		const a = mediatrice ? points.get(mediatrice[0]) : undefined;
 		const b = mediatrice ? points.get(mediatrice[1]) : undefined;
-		const shown = a && b ? closest(free, objects, a, b) : free[free.length - 1];
+		const shown = a && b ? closest(free, objects, a, b, figureTraits) : free[free.length - 1];
 		if (!built(shown)) return { status: 'incorrect', feedback: LINE_EYEBALLED_FEEDBACK };
 		if (!mediatrice || !a || !b) {
 			return { status: 'incorrect', feedback: LINE_NOT_IN_PLACE_FEEDBACK };

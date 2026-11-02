@@ -29,6 +29,7 @@
 import type { ConstructionCheck, PointCheck } from '$lib/ubumark/types/construction';
 import { isDrawnPoint, type DrawnObject } from './answer';
 import { isConstructed, isInFrame, traitsOfObjects } from './instruments';
+import { mediatriceSupportError } from './line';
 import type { ConstructionVerdict, Position } from './judge';
 import { dot, sub, tolerance } from './polygon';
 import { plainPaperSupportError, type FigureShapes } from './symmetry';
@@ -130,12 +131,8 @@ function assertPlainPaper(
 	// Lot 3 (§ 9) : le milieu se construit par la médiatrice (compas, règle)
 	const midpoint = MIDPOINT_REGEX.exec(check.expression.trim());
 	if (midpoint) {
-		const hidden = [midpoint[1], midpoint[2]].find((name) => !shapes.visiblePoints.has(name));
-		if (hidden) {
-			throw new PointAuthorError(
-				`${label} : ${hidden} n’est pas visible (l’élève ne peut pas y piquer le compas)`
-			);
-		}
+		const message = mediatriceSupportError([midpoint[1], midpoint[2]], points, shapes);
+		if (message) throw new PointAuthorError(`${label} : ${message}`);
 		return;
 	}
 	const symmetry = symmetryOf(check.expression);

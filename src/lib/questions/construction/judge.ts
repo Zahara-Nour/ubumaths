@@ -160,7 +160,7 @@ export function assertConstructionChecks(
 	const lineChecks = checks.filter(isLineCheck);
 	if (lineChecks.length > 0) {
 		try {
-			assertLines(lineChecks, expected, shapes);
+			assertLines(lineChecks, expected, points, shapes);
 		} catch (error) {
 			throw asAuthorError(error);
 		}

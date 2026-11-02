@@ -81,16 +81,16 @@ const cercle = (cx: number, cy: number, x: number, y: number): DrawnObject => ({
 });
 const point = (x: number, y: number): DrawnObject => ({ kind: 'point', x, y });
 
-// [AB] horizontal, A(2 ; 3), B(6 ; 3) : médiatrice x = 4, milieu (4 ; 3)
-const AB_BODY = ['A = point(2, 3)', 'B = point(6, 3)', 's = segment(A, B)'];
+// [AB] horizontal, A(2 ; 4), B(6 ; 4) : médiatrice x = 4, milieu (4 ; 4)
+const AB_BODY = ['A = point(2, 4)', 'B = point(6, 4)', 's = segment(A, B)'];
 const MEDIATRICE = figure('droite m = mediatrice(A, B)', AB_BODY);
 const MEDIATRICE_GRID = figure('droite m = mediatrice(A, B)', AB_BODY, ['grille: 1']);
 
-// Cercles de rayon AB centrés en A et B : intersections (4 ; 3 ± √12)
+// Cercles de rayon AB centrés en A et B : intersections (4 ; 4 ± √12), dans la fenêtre
 const H = Math.sqrt(12);
-const TOP = { x: 4, y: 3 + H };
-const BOTTOM = { x: 4, y: 3 - H };
-const COMPASS = [cercle(2, 3, 6, 3), cercle(6, 3, 2, 3)];
+const TOP = { x: 4, y: 4 + H };
+const BOTTOM = { x: 4, y: 4 - H };
+const COMPASS = [cercle(2, 4, 6, 4), cercle(6, 4, 2, 4)];
 
 describe('vérification droite : lecture de l’en-tête', () => {
 	it('lit le nom et l’expression ; palette déduite Règle · Équerre · Compas', () => {
@@ -127,6 +127,13 @@ describe('vérification droite : lecture de l’en-tête', () => {
 		expect(readConstructionHeader(source).errors[0]?.message).toMatch(/droite .* ne se mêle pas/);
 	});
 
+	it('refuse un point ou un segment dans la palette (réponse jugée forgée, revue)', () => {
+		for (const tools of ['droite, equerre, compas, point', 'droite, segment']) {
+			const source = figure('droite m = mediatrice(A, B)', AB_BODY, [`outils: ${tools}`]);
+			expect(readConstructionHeader(source).errors[0]?.message).toMatch(/hors de la palette/);
+		}
+	});
+
 	it('refuse deux droites du même nom', () => {
 		const source = figure(['droite m = mediatrice(A, B)', 'droite m = mediatrice(A, B)'], AB_BODY);
 		expect(readConstructionHeader(source).errors[0]?.message).toMatch(/deux droites nommées m/);
@@ -141,15 +148,15 @@ describe('vérification droite : médiatrice sur papier uni', () => {
 	});
 
 	it('deux paires de cercles de rayons différents → juste', () => {
-		// Rayon 5 : intersections (4 ; 3 ± √21) ; rayon 3 : (4 ; 3 ± √5)
-		const big = [cercle(2, 3, 7, 3), cercle(6, 3, 1, 3)];
-		const small = [cercle(2, 3, 5, 3), cercle(6, 3, 3, 3)];
-		const answer = [...big, ...small, droite(4, 3 + Math.sqrt(21), 4, 3 + Math.sqrt(5))];
+		// Rayon 5 : intersections (4 ; 4 ± √21) ; rayon 3 : (4 ; 4 ± √5)
+		const big = [cercle(2, 4, 7, 4), cercle(6, 4, 1, 4)];
+		const small = [cercle(2, 4, 5, 4), cercle(6, 4, 3, 4)];
+		const answer = [...big, ...small, droite(4, 4 + Math.sqrt(21), 4, 4 + Math.sqrt(5))];
 		expect(judge(MEDIATRICE, answer)).toEqual({ status: 'correct' });
 	});
 
 	it('à l’équerre, perpendiculaire à [AB] par une intersection des cercles → juste', () => {
-		const ab = { kind: 'segment' as const, a: { x: 2, y: 3 }, b: { x: 6, y: 3 } };
+		const ab = { kind: 'segment' as const, a: { x: 2, y: 4 }, b: { x: 6, y: 4 } };
 		expect(judge(MEDIATRICE, [...COMPASS, perpendicularThrough(ab, TOP)])).toEqual({
 			status: 'correct'
 		});
@@ -158,7 +165,7 @@ describe('vérification droite : médiatrice sur papier uni', () => {
 	it('traits de construction en trop ignorés (décision 1), droite repassée sans effet', () => {
 		const answer = [
 			...COMPASS,
-			droite(2, 3, TOP.x, TOP.y),
+			droite(2, 4, TOP.x, TOP.y),
 			droite(TOP.x, TOP.y, BOTTOM.x, BOTTOM.y),
 			droite(BOTTOM.x, BOTTOM.y, TOP.x, TOP.y)
 		];
@@ -172,9 +179,11 @@ describe('vérification droite : médiatrice sur papier uni', () => {
 		});
 	});
 
-	it('une extrémité construite, l’autre libre, perpendiculaire à [AB] : le tracé de l’équerre → juste', () => {
+	it('à la règle, d’une intersection vers un toucher libre, même perpendiculaire → à l’œil (revue)', () => {
+		// Le toucher libre (4 ; 1), arrondi au centième, tombe pile sur la médiatrice
 		expect(judge(MEDIATRICE, [...COMPASS, droite(TOP.x, TOP.y, 4, 1)])).toEqual({
-			status: 'correct'
+			status: 'incorrect',
+			feedback: LINE_EYEBALLED_FEEDBACK
 		});
 	});
 
@@ -186,8 +195,8 @@ describe('vérification droite : médiatrice sur papier uni', () => {
 	});
 
 	it('des extrémités « sur un trait » ne la rendent pas construite', () => {
-		// (4 ; 3) est sur [AB], pas à l'intersection de deux autres traits
-		expect(judge(MEDIATRICE, [cercle(2, 3, 6, 3), droite(TOP.x, TOP.y, 4, 3)])).toEqual({
+		// (4 ; 4) est sur [AB], pas à l'intersection de deux autres traits
+		expect(judge(MEDIATRICE, [cercle(2, 4, 6, 4), droite(TOP.x, TOP.y, 4, 4)])).toEqual({
 			status: 'incorrect',
 			feedback: LINE_EYEBALLED_FEEDBACK
 		});
@@ -205,8 +214,18 @@ describe('vérification droite : médiatrice sur papier uni', () => {
 	});
 
 	it('un point ou un segment dans la réponse (sans leur outil) → faux', () => {
-		expect(judge(MEDIATRICE, [...COMPASS, point(4, 3)]).status).toBe('incorrect');
+		expect(judge(MEDIATRICE, [...COMPASS, point(4, 4)]).status).toBe('incorrect');
 		expect(judge(MEDIATRICE, 'segment(4;0;4;8)').status).toBe('incorrect');
+	});
+});
+
+describe('vérification droite : message de la droite essayée', () => {
+	it('(AB) repassée n’est pas l’essai de médiatrice (revue)', () => {
+		// À l'œil en x = 4,5, plus (AB) repassée par A et B
+		expect(judge(MEDIATRICE_GRID, [droite(2, 4, 6, 4), droite(4.5, 0, 4.5, 8)])).toEqual({
+			status: 'incorrect',
+			feedback: notMidpointFeedback('A', 'B')
+		});
 	});
 });
 
@@ -223,7 +242,7 @@ describe('vérification droite : médiatrice sur quadrillage (pas de « à l’�
 	});
 
 	it('par le milieu, pas perpendiculaire', () => {
-		expect(judge(MEDIATRICE_GRID, [droite(4, 3, 5, 7)])).toEqual({
+		expect(judge(MEDIATRICE_GRID, [droite(4, 4, 5, 7)])).toEqual({
 			status: 'incorrect',
 			feedback: notPerpendicularToSegmentFeedback('A', 'B')
 		});
@@ -320,6 +339,29 @@ describe('vérification droite : erreurs d’auteur', () => {
 		expect(() => assertChecks(source)).toThrow(/A n’est pas visible/);
 	});
 
+	it('papier uni : cercles de rayon AB qui se coupent hors de la fenêtre (revue)', () => {
+		// A(2 ; 3), B(7 ; 5) dans 0..10 × 0..8 : intersections (2,77 ; 8,33) et (6,23 ; −0,33)
+		const source = figure('droite m = mediatrice(A, B)', [
+			'A = point(2, 3)',
+			'B = point(7, 5)',
+			's = segment(A, B)'
+		]);
+		expect(() => assertChecks(source)).toThrow(/se coupent hors de la fenêtre/);
+	});
+
+	it('papier uni : seulement une médiatrice (revue : point de passage invisible)', () => {
+		const source = figure('droite p = perpendiculaire(C, s)', [
+			...AB_BODY,
+			'C = point(3, 6, visible=faux)'
+		]);
+		expect(() => assertChecks(source)).toThrow(/sans quadrillage, seulement une médiatrice/);
+	});
+
+	it('deux vérifications pour la même droite (revue)', () => {
+		const source = figure(['droite m = mediatrice(A, B)', 'droite n = mediatrice(B, A)'], AB_BODY);
+		expect(() => assertChecks(source)).toThrow(/m et n sont la même droite/);
+	});
+
 	it('quadrillage : droite qui ne passe pas par deux nœuds de la fenêtre', () => {
 		const source = figure(
 			'droite m = mediatrice(A, B)',
@@ -338,12 +380,17 @@ describe('milieu construit sur papier uni (décision 3)', () => {
 	});
 
 	it('médiatrice construite, point à son intersection avec [AB] → juste', () => {
-		const answer = [...COMPASS, droite(TOP.x, TOP.y, BOTTOM.x, BOTTOM.y), point(4, 3)];
+		const answer = [...COMPASS, droite(TOP.x, TOP.y, BOTTOM.x, BOTTOM.y), point(4, 4)];
 		expect(judge(MILIEU, answer)).toEqual({ status: 'correct' });
 	});
 
+	it('cercles de rayon AB hors de la fenêtre : refusé', () => {
+		const source = figure('point I = milieu(A, B)', ['A = point(2, 3)', 'B = point(7, 5)']);
+		expect(() => assertChecks(source)).toThrow(/se coupent hors de la fenêtre/);
+	});
+
 	it('point posé à l’œil pile au milieu → faux', () => {
-		expect(judge(MILIEU, [point(4, 3)])).toEqual({
+		expect(judge(MILIEU, [point(4, 4)])).toEqual({
 			status: 'incorrect',
 			feedback: POINT_EYEBALLED_FEEDBACK
 		});
@@ -366,7 +413,7 @@ describe('correction de la médiatrice', () => {
 		expect(line.x1).toBeCloseTo(4);
 		expect(line.x2).toBeCloseTo(4);
 		expect(solutionCodages(checks, constructionPositions(MEDIATRICE))).toEqual([
-			{ from: { x: 2, y: 3 }, foot: { x: 4, y: 3 }, to: { x: 6, y: 3 } }
+			{ from: { x: 2, y: 4 }, foot: { x: 4, y: 4 }, to: { x: 6, y: 4 } }
 		]);
 	});
 });

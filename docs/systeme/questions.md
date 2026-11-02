@@ -541,23 +541,29 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    deux traits (de la figure ou de l'élève, `isConstructed`) rend la réponse fausse, même posé pile au bon
    endroit : « Ton point est placé à l'œil : construis-le avec tes instruments. ». Erreurs de l'auteur : expression qui ne se calcule pas ou ne donne pas un point, nom
    déjà pris, point déjà dans la figure, hors de la fenêtre, hors des nœuds (quadrillage) ; sans
-   quadrillage, autre chose que `symetrie(A, axe=d)` / `symetrie(A, centre=O)` / `milieu(A, B)` (A et B
-   visibles), ou axe hors de la fenêtre ; deux points au même endroit. Vérification
+   quadrillage, autre chose que `symetrie(A, axe=d)` / `symetrie(A, centre=O)` / `milieu(A, B)` (comme
+   la médiatrice, ci-dessous), ou axe hors de la fenêtre ; deux points au même endroit. Vérification
    `droite m = <expression>` (`construction/line.ts`, lot 3 du chantier) : une des droites de l'élève
    (règle, équerre) recouvre la droite que donne l'expression (calculée comme les points, `expected.lines`) ;
    ses autres droites et ses cercles sont des traits de construction, ignorés ; plusieurs vérifications
    `droite` : chacune prend sa droite. Sur papier uni, la droite doit être construite : deux extrémités
-   construites (points de la figure, intersections de deux AUTRES traits), ou une seule et perpendiculaire
-   à un autre trait droit (le tracé de l'équerre) ; sinon « Ta droite est tracée à l'œil : construis-la
+   construites (points de la figure, intersections de deux AUTRES traits), ou le tracé exact de l'équerre
+   (départ construit, second point `perpendicularThrough` d'un autre trait droit : un toucher à la règle
+   ne l'atteint pas) ; sinon « Ta droite est tracée à l'œil : construis-la
    avec tes instruments. ». Messages : il manque la droite (« Trace la médiatrice de [AB]. », « Trace la
    droite m. »), puis, pour une médiatrice, la droite qui touche au but (perpendiculaire à [AB] ou par
-   son milieu) : « … perpendiculaire à [AB] mais ne passe pas par son milieu. », « … passe par le milieu
+   son milieu ; une droite qui repasse un trait de la figure, (AB) elle-même, n'est pas un essai) : « … perpendiculaire à [AB] mais ne passe pas par son milieu. », « … passe par le milieu
    de [AB] mais n'est pas perpendiculaire à [AB]. », « Ce n'est pas la médiatrice de [AB]. » ; autre
    expression : « Ta droite n'est pas à sa place. ». Un point ou un segment dans la réponse : faux, sans
    message. Erreurs de l'auteur : expression qui ne se calcule pas ou ne donne pas une droite, droite
-   hors de la fenêtre, sur quadrillage droite sans deux nœuds dans la fenêtre, médiatrice d'un point
-   invisible. Une `droite` ne se mêle à aucune autre vérification (parseur). Palette : règle, équerre,
-   compas, avec ou sans quadrillage (`PLAIN_PAPER_TOOLS.droite`). Correction : la droite en pointillés ;
+   hors de la fenêtre, deux vérifications pour la même droite ; sur quadrillage, droite sans deux nœuds
+   dans la fenêtre ; sur papier uni, autre chose qu'une médiatrice, A ou B invisible, ou cercles de
+   centres A et B de rayon AB qui se coupent hors de la fenêtre (`mediatriceSupportError`, aussi pour
+   `milieu(A, B)` : l'élève n'a pas de report de longueur). Une `droite` ne se mêle à aucune autre
+   vérification, et sa palette ne prend que règle, équerre, compas (parseur : un point ou un segment
+   tracé ferait une réponse forgée). Palette : règle, équerre, compas, avec ou sans quadrillage
+   (`PLAIN_PAPER_TOOLS.droite`) ; sur quadrillage, tous ses touchers vont aux nœuds (l'équerre choisit
+   d'abord sa droite). Correction : la droite en pointillés ;
    médiatrice : angle droit au milieu et moitiés codés (`solutionCodages`). **Papier uni (lot 2b)** : sans `grille:`, `point` et
    `symetrique` reçoivent une palette d'instruments (`PLAIN_PAPER_TOOLS`) ; équerre = perpendiculaire à
    une droite choisie par un point (écrite `droite(…)`), compas = cercle par son centre et un point
