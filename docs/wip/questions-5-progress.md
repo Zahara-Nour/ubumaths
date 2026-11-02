@@ -5,11 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2209._
+_Mis à jour le 2026-11-02, après #2213._
 
-- **État** : lots 1 à 8 publiés ; lot 9 « Statistiques » (§ 23) : fichiers mergés (#2209), pas encore en prod.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/5-statistiques
---publier` (brouillons en prod) ; puis relever les `id`, migration nœud + tag (gabarit lot 8), page à cocher.
+- **État** : lots 1 à 8 publiés ; lot 9 « Statistiques » (§ 23) : 10 brouillons en prod, rangés et tagués (#2213,
+  migration jouée) ; page à cocher https://claude.ai/artifact/6Td2Enhp5q5JJnNfZw6b4o publiée.
+- **Prochaine action** : lire et compter les verdicts (`ArtifactData list verdicts`) ; 07 et 08 (circulaire)
+  non dessinés par la page → à jouer dans l'aperçu ; puis `publier-lot.ts --dir scripts/questions/5-statistiques`
+  en simulation, David `--publier`. Ensuite : lot suivant (112 barres à construire, puis proportionnalité et graphiques).
 - **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la
   main : au pilotage Chrome, la frappe dans la 2e case arrivait aussi dans la 1re — extension ou appli ?
 - **Pièges en cours** : `db:migrate` en prod refusé par le classifieur du mode auto → David le lance ; il pousse
@@ -17,7 +19,7 @@ _Mis à jour le 2026-11-02, après #2209._
   `pnpm check:migrations --pr <n>` avant merge ; horodatage = `pnpm migration:horodatage` ; garde
   `docs:check-a-jour` sur une migration de données → ligne `Doc-inchangée:` dans un COMMIT (pas la PR) ;
   `gh pr checks --watch` rend la main avant l'intégration : suivre les runs ; jamais `e`.
-- **Worktree / branche** : `../ubumaths-wt-questions-5` (branche `feat/questions-5-lot9` mergée ; nouvelle branche pour la migration).
+- **Worktree / branche** : `../ubumaths-wt-questions-5` (branches du lot 9 mergées ; serveur local 5176).
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -670,3 +672,14 @@ barres 1-3 (CE1) ; diagrammes circulaires et courbes et repères : aucun. Borne 
   4 cases (04). Saisie au pilotage Chrome sans effet (même symptôme qu'au lot 7) : juge couvert par les specs.
 - #2209 mergée (CI verte après correctif : la garde `student-answer-safety` refuse un `{{if:…}}` imbriqué sur 7
   niveaux en réponse attendue → passer par une variable).
+
+### 23.2 Lot 9 en prod, rangé (2026-11-02, #2213)
+
+- Brouillons créés par David : 273050b8 (01), c5aa0dd9 (02), 446c1b41 (03), d85ade81 (04), eeba38c7 (05),
+  98db0948 (06), 593cb70b (07), 86e43598 (08), 06c07f43 (09), 927b676b (10) ; relevé `etat-prod-2026-11-02-lot9/`.
+- Migration `20261102075355_questions_5_lot9_rangement_tags` (`lot-9-rangement.py`, gabarit lot 8) + test : 12 rouges
+  avec une migration vide, 19/19 vert ; `security-auditor` : aucun finding. #2213 mergée (CI et intégration vertes,
+  `check:migrations` 0). `db:migrate` lancé par David (dry-run : celle-là seule). Vérifié au MCP : 10 brouillons sur
+  leur sous-notion, 1 tag chacun, `updated_at` intact (07:53).
+- Page à cocher https://claude.ai/artifact/6Td2Enhp5q5JJnNfZw6b4o (10 fiches, capacité `db`, `verdicts` vide) ;
+  alerte : bloc `circulaire` non dessiné par la page (07, 08) → aperçu admin.
