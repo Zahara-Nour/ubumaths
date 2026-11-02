@@ -32,7 +32,7 @@
 			],
 			"correction": {
 				"steps": [
-					"Sur la planche {{if:u==1|du haut|{{if:u==2|du bas|{{if:u==3|du haut|{{if:u==4|du bas|{{if:u==5|du haut|{{if:u==6|du bas|{{if:u==7|du haut|{{if:u==8|du bas|{{if:u==9|du haut|{{if:u==10|du bas|{{if:u==11|du haut|du bas}}}}}}}}}}}}}}}}}}}}}}, \\textcolor{{{color:primary.0}}}{{{if:u==1|l'étoile|{{if:u==2|le ballon|{{if:u==3|le pot|{{if:u==4|la tente|{{if:u==5|le livre|{{if:u==6|le pot|{{if:u==7|la boîte|{{if:u==8|le pot|{{if:u==9|le ballon|{{if:u==10|le livre|{{if:u==11|la tente|le ballon}}}}}}}}}}}}}}}}}}}}}}} est au milieu : d'un côté {{if:u==1|la boîte|{{if:u==2|la tente|{{if:u==3|la boîte|{{if:u==4|l'étoile|{{if:u==5|la boîte|{{if:u==6|l'étoile|{{if:u==7|le ballon|{{if:u==8|la tente|{{if:u==9|la tente|{{if:u==10|la boîte|{{if:u==11|la boîte|le pot}}}}}}}}}}}}}}}}}}}}}}, de l'autre {{if:u==1|le livre|{{if:u==2|le pot|{{if:u==3|le livre|{{if:u==4|le ballon|{{if:u==5|le ballon|{{if:u==6|la tente|{{if:u==7|le livre|{{if:u==8|l'étoile|{{if:u==9|l'étoile|{{if:u==10|le pot|{{if:u==11|le livre|l'étoile}}}}}}}}}}}}}}}}}}}}}}."
+					"Sur la planche {{if:u==1|du haut|{{if:u==2|du bas|{{if:u==3|du haut|{{if:u==4|du bas|{{if:u==5|du haut|{{if:u==6|du bas|{{if:u==7|du haut|{{if:u==8|du bas|{{if:u==9|du haut|{{if:u==10|du bas|{{if:u==11|du haut|du bas}}}}}}}}}}}}}}}}}}}}}}, $\\textcolor{{{color:primary.0}}}{\\text{{{if:u==1|l'étoile|{{if:u==2|le ballon|{{if:u==3|le pot|{{if:u==4|la tente|{{if:u==5|le livre|{{if:u==6|le pot|{{if:u==7|la boîte|{{if:u==8|le pot|{{if:u==9|le ballon|{{if:u==10|le livre|{{if:u==11|la tente|le ballon}}}}}}}}}}}}}}}}}}}}}}}}$ est au milieu : d'un côté {{if:u==1|la boîte|{{if:u==2|la tente|{{if:u==3|la boîte|{{if:u==4|l'étoile|{{if:u==5|la boîte|{{if:u==6|l'étoile|{{if:u==7|le ballon|{{if:u==8|la tente|{{if:u==9|la tente|{{if:u==10|la boîte|{{if:u==11|la boîte|le pot}}}}}}}}}}}}}}}}}}}}}}, de l'autre {{if:u==1|le livre|{{if:u==2|le pot|{{if:u==3|le livre|{{if:u==4|le ballon|{{if:u==5|le ballon|{{if:u==6|la tente|{{if:u==7|le livre|{{if:u==8|l'étoile|{{if:u==9|l'étoile|{{if:u==10|le pot|{{if:u==11|le livre|l'étoile}}}}}}}}}}}}}}}}}}}}}}."
 				]
 			}
 		},
@@ -59,7 +59,7 @@
 			],
 			"correction": {
 				"steps": [
-					"\\textcolor{{{color:primary.0}}}{{{if:u==1|la boîte|{{if:u==2|le ballon|{{if:u==3|le pot|{{if:u==4|le ballon|{{if:u==5|le ballon|{{if:u==6|l'étoile|{{if:u==7|le ballon|{{if:u==8|le pot|{{if:u==9|le ballon|{{if:u==10|le pot|{{if:u==11|le livre|le pot}}}}}}}}}}}}}}}}}}}}}}} est sur l'autre planche, {{if:u==1|juste au-dessus de la tente|{{if:u==2|juste en dessous de l'étoile|{{if:u==3|juste au-dessus de la tente|{{if:u==4|juste en dessous du livre|{{if:u==5|juste au-dessus de la tente|{{if:u==6|juste en dessous de la boîte|{{if:u==7|juste au-dessus de la tente|{{if:u==8|juste en dessous de la boîte|{{if:u==9|juste au-dessus du livre|{{if:u==10|juste en dessous de l'étoile|{{if:u==11|juste au-dessus de l'étoile|juste en dessous de la boîte}}}}}}}}}}}}}}}}}}}}}}."
+					"$\\textcolor{{{color:primary.0}}}{\\text{{{if:u==1|la boîte|{{if:u==2|le ballon|{{if:u==3|le pot|{{if:u==4|le ballon|{{if:u==5|le ballon|{{if:u==6|l'étoile|{{if:u==7|le ballon|{{if:u==8|le pot|{{if:u==9|le ballon|{{if:u==10|le pot|{{if:u==11|le livre|le pot}}}}}}}}}}}}}}}}}}}}}}}}$ est sur l'autre planche, {{if:u==1|juste au-dessus de la tente|{{if:u==2|juste en dessous de l'étoile|{{if:u==3|juste au-dessus de la tente|{{if:u==4|juste en dessous du livre|{{if:u==5|juste au-dessus de la tente|{{if:u==6|juste en dessous de la boîte|{{if:u==7|juste au-dessus de la tente|{{if:u==8|juste en dessous de la boîte|{{if:u==9|juste au-dessus du livre|{{if:u==10|juste en dessous de l'étoile|{{if:u==11|juste au-dessus de l'étoile|juste en dessous de la boîte}}}}}}}}}}}}}}}}}}}}}}."
 				]
 			}
 		},
@@ -87,7 +87,7 @@
 			"correction": {
 				"steps": [
 					"On regarde le dessin, tel qu'on le voit.",
-					"{{if:u==1|La boîte|{{if:u==2|Le ballon|{{if:u==3|Le ballon|{{if:u==4|Le livre|{{if:u==5|La boîte|{{if:u==6|L'étoile|{{if:u==7|L'étoile|{{if:u==8|La boîte|{{if:u==9|La tente|{{if:u==10|Le pot|{{if:u==11|L'étoile|La boîte}}}}}}}}}}}}}}}}}}}}}} est \\textcolor{{{color:primary.0}}}{{{if:u==1|à gauche|{{if:u==2|en dessous|{{if:u==3|à droite|{{if:u==4|au-dessus|{{if:u==5|à gauche|{{if:u==6|en dessous|{{if:u==7|à droite|{{if:u==8|au-dessus|{{if:u==9|à gauche|{{if:u==10|en dessous|{{if:u==11|à droite|au-dessus}}}}}}}}}}}}}}}}}}}}}}} {{if:u==1|de l'étoile|{{if:u==2|de l'étoile|{{if:u==3|de la tente|{{if:u==4|du ballon|{{if:u==5|du livre|{{if:u==6|de la boîte|{{if:u==7|du pot|{{if:u==8|du pot|{{if:u==9|du ballon|{{if:u==10|de l'étoile|{{if:u==11|du ballon|du pot}}}}}}}}}}}}}}}}}}}}}}."
+					"{{if:u==1|La boîte|{{if:u==2|Le ballon|{{if:u==3|Le ballon|{{if:u==4|Le livre|{{if:u==5|La boîte|{{if:u==6|L'étoile|{{if:u==7|L'étoile|{{if:u==8|La boîte|{{if:u==9|La tente|{{if:u==10|Le pot|{{if:u==11|L'étoile|La boîte}}}}}}}}}}}}}}}}}}}}}} est $\\textcolor{{{color:primary.0}}}{\\text{{{if:u==1|à gauche|{{if:u==2|en dessous|{{if:u==3|à droite|{{if:u==4|au-dessus|{{if:u==5|à gauche|{{if:u==6|en dessous|{{if:u==7|à droite|{{if:u==8|au-dessus|{{if:u==9|à gauche|{{if:u==10|en dessous|{{if:u==11|à droite|au-dessus}}}}}}}}}}}}}}}}}}}}}}}}$ {{if:u==1|de l'étoile|{{if:u==2|de l'étoile|{{if:u==3|de la tente|{{if:u==4|du ballon|{{if:u==5|du livre|{{if:u==6|de la boîte|{{if:u==7|du pot|{{if:u==8|du pot|{{if:u==9|du ballon|{{if:u==10|de l'étoile|{{if:u==11|du ballon|du pot}}}}}}}}}}}}}}}}}}}}}}."
 				]
 			}
 		},
@@ -115,7 +115,7 @@
 			"correction": {
 				"steps": [
 					"On regarde l'écart entre {{if:u==1|le livre|{{if:u==2|le livre|{{if:u==3|le livre|{{if:u==4|le livre|{{if:u==5|le pot|{{if:u==6|le pot|{{if:u==7|le pot|{{if:u==8|le pot|{{if:u==9|le ballon|{{if:u==10|le ballon|{{if:u==11|le ballon|le ballon}}}}}}}}}}}}}}}}}}}}}} et chacun des autres objets.",
-					"\\textcolor{{{color:primary.0}}}{{{if:u==1|la boîte|{{if:u==2|la tente|{{if:u==3|le pot|{{if:u==4|l'étoile|{{if:u==5|le livre|{{if:u==6|l'étoile|{{if:u==7|la boîte|{{if:u==8|le ballon|{{if:u==9|le pot|{{if:u==10|l'étoile|{{if:u==11|la boîte|l'étoile}}}}}}}}}}}}}}}}}}}}}}} est {{if:u==1|le plus près|{{if:u==2|le plus loin|{{if:u==3|le plus près|{{if:u==4|le plus loin|{{if:u==5|le plus près|{{if:u==6|le plus loin|{{if:u==7|le plus près|{{if:u==8|le plus loin|{{if:u==9|le plus près|{{if:u==10|le plus loin|{{if:u==11|le plus près|le plus loin}}}}}}}}}}}}}}}}}}}}}}."
+					"$\\textcolor{{{color:primary.0}}}{\\text{{{if:u==1|la boîte|{{if:u==2|la tente|{{if:u==3|le pot|{{if:u==4|l'étoile|{{if:u==5|le livre|{{if:u==6|l'étoile|{{if:u==7|la boîte|{{if:u==8|le ballon|{{if:u==9|le pot|{{if:u==10|l'étoile|{{if:u==11|la boîte|l'étoile}}}}}}}}}}}}}}}}}}}}}}}}$ est {{if:u==1|le plus près|{{if:u==2|le plus loin|{{if:u==3|le plus près|{{if:u==4|le plus loin|{{if:u==5|le plus près|{{if:u==6|le plus loin|{{if:u==7|le plus près|{{if:u==8|le plus loin|{{if:u==9|le plus près|{{if:u==10|le plus loin|{{if:u==11|le plus près|le plus loin}}}}}}}}}}}}}}}}}}}}}}."
 				]
 			}
 		}

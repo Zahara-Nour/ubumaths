@@ -32,7 +32,7 @@
 			],
 			"correction": {
 				"steps": [
-					"Du même côté de la rue, on trouve {{if:u==1|le parc|{{if:u==2|la poste|{{if:u==3|la poste|{{if:u==4|la gare|{{if:u==5|la piscine|{{if:u==6|le parc|{{if:u==7|la piscine|{{if:u==8|la mairie|{{if:u==9|la piscine|{{if:u==10|la poste|{{if:u==11|l'école|la poste}}}}}}}}}}}}}}}}}}}}}}, puis \\textcolor{{{color:primary.0}}}{{{if:u==1|la gare|{{if:u==2|l'école|{{if:u==3|le parc|{{if:u==4|la piscine|{{if:u==5|la mairie|{{if:u==6|la gare|{{if:u==7|la poste|{{if:u==8|le parc|{{if:u==9|la gare|{{if:u==10|l'école|{{if:u==11|la gare|le parc}}}}}}}}}}}}}}}}}}}}}}}, puis {{if:u==1|la mairie|{{if:u==2|la piscine|{{if:u==3|la mairie|{{if:u==4|l'école|{{if:u==5|l'école|{{if:u==6|la poste|{{if:u==7|l'école|{{if:u==8|la gare|{{if:u==9|le parc|{{if:u==10|la mairie|{{if:u==11|la mairie|la piscine}}}}}}}}}}}}}}}}}}}}}}."
+					"Du même côté de la rue, on trouve {{if:u==1|le parc|{{if:u==2|la poste|{{if:u==3|la poste|{{if:u==4|la gare|{{if:u==5|la piscine|{{if:u==6|le parc|{{if:u==7|la piscine|{{if:u==8|la mairie|{{if:u==9|la piscine|{{if:u==10|la poste|{{if:u==11|l'école|la poste}}}}}}}}}}}}}}}}}}}}}}, puis $\\textcolor{{{color:primary.0}}}{\\text{{{if:u==1|la gare|{{if:u==2|l'école|{{if:u==3|le parc|{{if:u==4|la piscine|{{if:u==5|la mairie|{{if:u==6|la gare|{{if:u==7|la poste|{{if:u==8|le parc|{{if:u==9|la gare|{{if:u==10|l'école|{{if:u==11|la gare|le parc}}}}}}}}}}}}}}}}}}}}}}}}$, puis {{if:u==1|la mairie|{{if:u==2|la piscine|{{if:u==3|la mairie|{{if:u==4|l'école|{{if:u==5|l'école|{{if:u==6|la poste|{{if:u==7|l'école|{{if:u==8|la gare|{{if:u==9|le parc|{{if:u==10|la mairie|{{if:u==11|la mairie|la piscine}}}}}}}}}}}}}}}}}}}}}}."
 				]
 			}
 		},
@@ -59,7 +59,7 @@
 			],
 			"correction": {
 				"steps": [
-					"On traverse la rue tout droit depuis {{if:u==1|le parc|{{if:u==2|l'école|{{if:u==3|le parc|{{if:u==4|l'école|{{if:u==5|l'école|{{if:u==6|le parc|{{if:u==7|la piscine|{{if:u==8|le parc|{{if:u==9|la gare|{{if:u==10|la mairie|{{if:u==11|la mairie|la poste}}}}}}}}}}}}}}}}}}}}}} : on arrive à \\textcolor{{{color:primary.0}}}{{{if:u==1|la poste|{{if:u==2|la gare|{{if:u==3|la piscine|{{if:u==4|la mairie|{{if:u==5|la poste|{{if:u==6|la piscine|{{if:u==7|la mairie|{{if:u==8|la poste|{{if:u==9|l'école|{{if:u==10|le parc|{{if:u==11|la piscine|l'école}}}}}}}}}}}}}}}}}}}}}}}."
+					"On traverse la rue tout droit depuis {{if:u==1|le parc|{{if:u==2|l'école|{{if:u==3|le parc|{{if:u==4|l'école|{{if:u==5|l'école|{{if:u==6|le parc|{{if:u==7|la piscine|{{if:u==8|le parc|{{if:u==9|la gare|{{if:u==10|la mairie|{{if:u==11|la mairie|la poste}}}}}}}}}}}}}}}}}}}}}} : on arrive à $\\textcolor{{{color:primary.0}}}{\\text{{{if:u==1|la poste|{{if:u==2|la gare|{{if:u==3|la piscine|{{if:u==4|la mairie|{{if:u==5|la poste|{{if:u==6|la piscine|{{if:u==7|la mairie|{{if:u==8|la poste|{{if:u==9|l'école|{{if:u==10|le parc|{{if:u==11|la piscine|l'école}}}}}}}}}}}}}}}}}}}}}}}}$."
 				]
 			}
 		},
@@ -86,7 +86,7 @@
 			],
 			"correction": {
 				"steps": [
-					"{{if:u==1|La gare|{{if:u==2|L'école|{{if:u==3|Le parc|{{if:u==4|La piscine|{{if:u==5|La mairie|{{if:u==6|La gare|{{if:u==7|La poste|{{if:u==8|Le parc|{{if:u==9|La gare|{{if:u==10|L'école|{{if:u==11|La gare|Le parc}}}}}}}}}}}}}}}}}}}}}} a un voisin de chaque côté ; \\textcolor{{{color:primary.0}}}{{{if:u==1|le parc|{{if:u==2|la poste|{{if:u==3|la mairie|{{if:u==4|l'école|{{if:u==5|la piscine|{{if:u==6|le parc|{{if:u==7|l'école|{{if:u==8|la gare|{{if:u==9|la piscine|{{if:u==10|la poste|{{if:u==11|la mairie|la piscine}}}}}}}}}}}}}}}}}}}}}}} est le plus près, l'autre est plus loin."
+					"{{if:u==1|La gare|{{if:u==2|L'école|{{if:u==3|Le parc|{{if:u==4|La piscine|{{if:u==5|La mairie|{{if:u==6|La gare|{{if:u==7|La poste|{{if:u==8|Le parc|{{if:u==9|La gare|{{if:u==10|L'école|{{if:u==11|La gare|Le parc}}}}}}}}}}}}}}}}}}}}}} a un voisin de chaque côté ; $\\textcolor{{{color:primary.0}}}{\\text{{{if:u==1|le parc|{{if:u==2|la poste|{{if:u==3|la mairie|{{if:u==4|l'école|{{if:u==5|la piscine|{{if:u==6|le parc|{{if:u==7|l'école|{{if:u==8|la gare|{{if:u==9|la piscine|{{if:u==10|la poste|{{if:u==11|la mairie|la piscine}}}}}}}}}}}}}}}}}}}}}}}}$ est le plus près, l'autre est plus loin."
 				]
 			}
 		},
@@ -113,7 +113,7 @@
 			],
 			"correction": {
 				"steps": [
-					"On regarde le plan tel qu'on le voit : {{if:u==1|le parc|{{if:u==2|la piscine|{{if:u==3|la mairie|{{if:u==4|la gare|{{if:u==5|la piscine|{{if:u==6|la poste|{{if:u==7|l'école|{{if:u==8|la mairie|{{if:u==9|la piscine|{{if:u==10|la mairie|{{if:u==11|la mairie|la poste}}}}}}}}}}}}}}}}}}}}}} est \\textcolor{{{color:primary.0}}}{{{if:u==1|à gauche|{{if:u==2|à droite|{{if:u==3|à droite|{{if:u==4|à gauche|{{if:u==5|à gauche|{{if:u==6|à droite|{{if:u==7|à droite|{{if:u==8|à gauche|{{if:u==9|à gauche|{{if:u==10|à droite|{{if:u==11|à droite|à gauche}}}}}}}}}}}}}}}}}}}}}}} {{if:u==1|de la mairie|{{if:u==2|de la poste|{{if:u==3|de la poste|{{if:u==4|de l'école|{{if:u==5|de l'école|{{if:u==6|du parc|{{if:u==7|de la piscine|{{if:u==8|de la gare|{{if:u==9|du parc|{{if:u==10|de la poste|{{if:u==11|de l'école|de la piscine}}}}}}}}}}}}}}}}}}}}}}."
+					"On regarde le plan tel qu'on le voit : {{if:u==1|le parc|{{if:u==2|la piscine|{{if:u==3|la mairie|{{if:u==4|la gare|{{if:u==5|la piscine|{{if:u==6|la poste|{{if:u==7|l'école|{{if:u==8|la mairie|{{if:u==9|la piscine|{{if:u==10|la mairie|{{if:u==11|la mairie|la poste}}}}}}}}}}}}}}}}}}}}}} est $\\textcolor{{{color:primary.0}}}{\\text{{{if:u==1|à gauche|{{if:u==2|à droite|{{if:u==3|à droite|{{if:u==4|à gauche|{{if:u==5|à gauche|{{if:u==6|à droite|{{if:u==7|à droite|{{if:u==8|à gauche|{{if:u==9|à gauche|{{if:u==10|à droite|{{if:u==11|à droite|à gauche}}}}}}}}}}}}}}}}}}}}}}}}$ {{if:u==1|de la mairie|{{if:u==2|de la poste|{{if:u==3|de la poste|{{if:u==4|de l'école|{{if:u==5|de l'école|{{if:u==6|du parc|{{if:u==7|de la piscine|{{if:u==8|de la gare|{{if:u==9|du parc|{{if:u==10|de la poste|{{if:u==11|de l'école|de la piscine}}}}}}}}}}}}}}}}}}}}}}."
 				]
 			}
 		}

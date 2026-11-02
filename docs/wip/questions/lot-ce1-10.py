@@ -87,7 +87,13 @@ def selon(k, textes, n=1):
 
 
 def col(x, k=0):
+    """Couleur DANS une formule (entre `$…$`)."""
     return '\\textcolor{{{color:primary.' + str(k) + '}}}{' + x + '}'
+
+
+def colt(x, k=0):
+    """Mots en couleur dans le texte : une formule à part (hors `$…$`, `\\textcolor` resterait brut)."""
+    return '$' + col('\\text{' + x + '}', k) + '$'
 
 
 def nombre(x):
@@ -214,7 +220,7 @@ def ou_est(nom, formes):
         'Où est ' + LE[nom] + ' ?'
         + choix_dessins([('solide', [f]) for f in formes]),
         ['0'], SOLIDE_VARS,
-        [DIT[nom], 'C\'est ' + col(LE[nom]) + '.'])
+        [DIT[nom], 'C\'est ' + colt(LE[nom]) + '.'])
 
 
 OU_EST_VARIATIONS = [ou_est(n, f) for n, f in OU_EST]
@@ -244,7 +250,7 @@ def nomme(nom):
     return variation(
         'Comment s\'appelle ce solide ?' + bloc('solide', FORME[nom]) + choix(C_NOMS),
         [str(NOMS_065.index(nom))], SOLIDE_VARS,
-        [DIT[nom], 'C\'est ' + col(('une ' if nom in ('boule', 'pyramide') else 'un ') + nom)
+        [DIT[nom], 'C\'est ' + colt(('une ' if nom in ('boule', 'pyramide') else 'un ') + nom)
          + '.'])
 
 
@@ -307,7 +313,7 @@ def le_meme(modele_hauteurs, ajoute, echange, description_piles):
                          ('cubes', [echange])]),
         ['0'], VARS_PILES,
         ['On compare pile par pile, de gauche à droite : ' + description_piles + '.',
-         'Le ' + col('même assemblage') + ' a les mêmes piles, aux mêmes places. Un autre a un'
+         'Le ' + colt('même assemblage') + ' a les mêmes piles, aux mêmes places. Un autre a un'
          ' cube de plus ; un autre a le même nombre de cubes, mais deux piles ont changé de'
          ' place.'],
         ['a != b'])
@@ -450,7 +456,7 @@ def entre_variation():
         [var('u', '1..12'), var('k', selon('u', [k + 1 for k, _ in cas])),
          var('a', selon('u', reponses))],
         ['Sur la planche ' + selon('u', [t[0] for t in textes]) + ', '
-         + col(selon('u', [OBJETS[RANGEMENTS[k][r][1]][0] for k, r in cas])) + ' est au milieu :'
+         + colt(selon('u', [OBJETS[RANGEMENTS[k][r][1]][0] for k, r in cas])) + ' est au milieu :'
          ' d\'un côté ' + selon('u', [t[1] for t in textes]) + ', de l\'autre '
          + selon('u', [t[2] for t in textes]) + '.'])
 
@@ -478,7 +484,7 @@ def dessus_dessous_variation():
         ['{{a}}'],
         [var('u', '1..12'), var('k', selon('u', [k + 1 for k, _, _ in cas])),
          var('a', selon('u', reponses))],
-        [col(selon('u', [OBJETS[a][0] for a, _, _ in cibles])) + ' est sur l\'autre planche, '
+        [colt(selon('u', [OBJETS[a][0] for a, _, _ in cibles])) + ' est sur l\'autre planche, '
          + selon('u', ['juste au-dessus ' + OBJETS[b][1] if s == 'au-dessus'
                        else 'juste en dessous ' + OBJETS[b][1] for _, s, b in cibles]) + '.'])
 
@@ -510,7 +516,7 @@ def relation_variation():
         [var('u', '1..12'), var('k', selon('u', [k + 1 for k, _, _, _ in cas])),
          var('a', selon('u', [rel for _, _, rel, _ in cas]))],
         ['On regarde le dessin, tel qu\'on le voit.',
-         objet + ' est ' + col(selon('u', [RELATIONS[rel] for _, _, rel, _ in cas])) + ' '
+         objet + ' est ' + colt(selon('u', [RELATIONS[rel] for _, _, rel, _ in cas])) + ' '
          + repere + '.'])
 
 
@@ -568,7 +574,7 @@ def pres_loin_variation():
          var('a', selon('u', reponses))],
         ['On regarde l\'écart entre ' + selon('u', [OBJETS[r][0] for _, _, r in cibles])
          + ' et chacun des autres objets.',
-         col(selon('u', [OBJETS[c][0] for c, _, _ in cibles])) + ' est '
+         colt(selon('u', [OBJETS[c][0] for c, _, _ in cibles])) + ' est '
          + selon('u', ['le plus près' if s == 0 else 'le plus loin' for _, s, _ in cibles]) + '.'])
 
 
@@ -670,7 +676,7 @@ def plan_entre():
         [var('u', '1..12'), var('k', selon('u', [k + 1 for k, _ in cas])),
          var('a', selon('u', rep))],
         ['Du même côté de la rue, on trouve ' + selon('u', [x[0] for x in t]) + ', puis '
-         + col(selon('u', [x[2] for x in t])) + ', puis ' + selon('u', [x[1] for x in t]) + '.'])
+         + colt(selon('u', [x[2] for x in t])) + ', puis ' + selon('u', [x[1] for x in t]) + '.'])
 
 
 def plan_en_face():
@@ -689,7 +695,7 @@ def plan_en_face():
         [var('u', '1..12'), var('k', selon('u', [k + 1 for k, _ in cas])),
          var('a', selon('u', rep))],
         ['On traverse la rue tout droit depuis ' + selon('u', [x[0] for x in t]) + ' : on arrive à '
-         + col(selon('u', [x[1] for x in t])) + '.'])
+         + colt(selon('u', [x[1] for x in t])) + '.'])
 
 
 def plan_pres():
@@ -707,7 +713,7 @@ def plan_pres():
         [var('u', '1..12'), var('k', selon('u', [k + 1 for k, _ in cas])),
          var('a', selon('u', rep))],
         [selon('u', [x[2][0].upper() + x[2][1:] for x in t]) + ' a un voisin de chaque côté ; '
-         + col(selon('u', [x[1] for x in t])) + ' est le plus près, l\'autre est plus loin.'])
+         + colt(selon('u', [x[1] for x in t])) + ' est le plus près, l\'autre est plus loin.'])
 
 
 def plan_gauche_droite():
@@ -728,7 +734,7 @@ def plan_gauche_droite():
         [var('u', '1..12'), var('k', selon('u', [k + 1 for k, _ in cas])),
          var('a', selon('u', rep))],
         ['On regarde le plan tel qu\'on le voit : ' + selon('u', [x[0] for x in t]) + ' est '
-         + col(selon('u', ['à gauche' if x[2] == 0 else 'à droite' for x in t])) + ' '
+         + colt(selon('u', ['à gauche' if x[2] == 0 else 'à droite' for x in t])) + ' '
          + selon('u', [x[1] for x in t]) + '.'])
 
 
@@ -881,7 +887,7 @@ def ou_arrive(programmes, fenetre, regle_txt, texte_code_fn, intro, dessin_depar
         [var('k', f'1..{len(programmes)}'),
          var('a', selon('k', [p['labels'][0] - 1 for p in programmes]))],
         ['On suit le code une instruction après l\'autre, depuis le départ.',
-         'Le robot arrive au ' + col('point ' + selon('k', [p['labels'][0] for p in programmes]))
+         'Le robot arrive au ' + colt('point ' + selon('k', [p['labels'][0] for p in programmes]))
          + '.'])
 
 

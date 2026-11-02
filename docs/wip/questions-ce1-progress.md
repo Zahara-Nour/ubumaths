@@ -833,3 +833,12 @@ Réponse de David (« tes recos ? » puis « go », 2026-11-02) : les cinq recom
   rouge sans (3 échecs, suite principale non lancée), vert 9/9. Le test d'archivage vise 077 (080 porte deux modèles).
   PR #2211 ; `security-auditor` : aucun finding bloquant (SQL identique au lot 9 hors valeurs ; chemins et points
   résolus à 1 en prod) ; `check:migrations --pr 2211` OK.
+- 2026-11-02 : #2211 mergée (shards navigateur relancés : « Browser connection was closed ») ; `db:migrate` (dry-run :
+  la seule migration du lot) ; vérifié au MCP : 9/9 sur le nœud de leur point, un tag chacun, brouillons, `updated_at` intact.
+- 2026-11-02 : page à cocher : `solide` et `cubes` non dessinés → PR #2217 (la page les dessine). Page du lot 10 publiée
+  (https://claude.ai/artifact/6q3oJbAwbPBsF7JXfPyR8V), aucune alerte.
+- 2026-11-02 : **défaut vu sur la page, confirmé dans l'aperçu admin en prod** : `\textcolor{…}{…}` écrit HORS de `$…$`
+  reste brut chez l'élève (« C'est \textcolor{#FF5722}{le cône}. »). Lot 10 : 7 modèles (02, 03, 05 à 09). Décision de
+  David : lot 10 seul ; `colt()` dans `lot-ce1-10.py` écrit `$\textcolor{…}{\text{…}}$` ; rendu juste vérifié en local.
+  Instantané : les 9 intacts depuis la création (`created_at = updated_at`, MCP). **53 autres fichiers** de lots ont le
+  même motif (CE1 lot 9, 2de, 3e, 4e, CM1, Tle, beaucoup publiés) : futur chantier, non traité ici.
