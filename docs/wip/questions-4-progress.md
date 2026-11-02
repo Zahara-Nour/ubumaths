@@ -5,14 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après la publication du lot 9._
+_Mis à jour le 2026-11-02, phase 0 du lot 10 proposée._
 
-- **État** : lots 1 à 9 en prod et **publiés** (lot 9 : 4-065, 4-066, 4-067 relus 3/3 OK, publiés le 2026-11-02, § 49).
-  Tous les lots du § 4 sont faits sauf le 9e point : les outils C (§ 3), chacun en chantier à part.
-- **Prochaine action** : David choisit l'ordre des outils C (solides en perspective → 027, 028 ; schéma de fraction →
-  074 ; rectangle sans équerre → 038), ou décide de les laisser aux chantiers d'outils de la 6e ; puis fin de
-  chantier (versement du durable dans `docs/systeme/`, journal archivé).
-- **En attente de David** : ce choix pour les outils C.
+- **État** : lots 1 à 9 en prod et publiés. Outils C revus le 2026-11-02 (§ 50.1) : solides et patrons LIVRÉS
+  (chantier `solides`), schéma de fraction couvert par ` ```partage ` (grille = carré unité, bande = barres) →
+  lot 10 (027, 028, 074) ; seul 038 (rectangle sans équerre) reste un outil neuf, rattaché à la 6e.
+- **Prochaine action** : au « go » de David sur le § 50 : écrire le lot 10 (worktree, `lot-4-10.py`).
+- **En attente de David** : les 4 questions du § 50.5.
 - **Pièges en cours** : migrations, dès #2165 mergée (règle de David, 2026-11-01) : horodatage par `pnpm
 migration:horodatage` (jamais un nombre rond choisi à la main), `pnpm check:migrations --pr <n>` avant `gh pr merge`,
   premier job de CI = porte des horodatages (`git merge origin/main` dans le worktree d'abord) ; `mtexte()` refusé dans une figure de question (§ 26) ; `db push --include-all` : **réservé à
@@ -1165,3 +1164,62 @@ Algorithmique / Variables / Accumulation 1 (067) ; variante « au moins 18 ans �
   publiés. MCP : `published`.
 - Doublon : une 2e page à cocher (https://claude.ai/artifact/4Px4HzbKxdf7VhaYVrxmED) publiée par erreur après une
   reprise sur le journal périmé du worktree (HEAD détachée) ; le journal de `main` faisait foi.
+
+## 50. Lot 10 (solides et fraction d'une fraction) : phase 0 (proposée le 2026-11-02)
+
+### 50.1 Pourquoi ce lot : les outils C du § 3 existent
+
+David avait choisi (2026-11-02) de rattacher les outils C à la 6e, sur ma présentation fausse : je les disais
+« prévus ». Constat après coup :
+
+- **C1 solides en perspective (027, 028)** : chantier `solides` clos le 2026-11-01, blocs ` ```solide ` (pavé, cube,
+  prisme droit, pyramide, cône, cylindre, boule) et ` ```patron ` (cube, pavé, prisme, pyramide, cylindre ; gestes
+  `designer:`), **en prod** depuis la v0.62.0 ; ` ```solide ` déjà servi par 4-029, 4-076, 3-019, 3-020.
+- **C2 schéma de fraction (074)** : ` ```partage ` (chantier fractions-a-colorier, en prod) : `grille L×C` = carré
+  unité, `bande N` = schéma en barres ; geste `colorier:`.
+- **C3 rectangle sans équerre (038)** : aucun outil ; même famille que les contrôles de figure à compléter de la 6e
+  (`figure-et-choix`) → rattaché à la 6e, hors de ce chantier.
+
+David : « oui » (2026-11-02) à un lot 10 pour 027, 028, 074, puis le versement.
+
+### 50.2 Relevé (MCP, 2026-11-02)
+
+- 027 → Géométrie > Solides > propriétés ; 028 → Géométrie > Solides > perspective cavalière ; 074 → Nombres et
+  calculs > Fractions : calculs > fraction d'une quantité. 0 modèle chacun, aucun nœud à créer.
+- Bornes (cycle4.json) : 027 « pyramide, cône de révolution » (BO c4 p. 14) ; 028 « pavé droit, cube, cylindre de
+  révolution, prisme droit, pyramides, cônes de révolution » (BO c4 p. 14) ; 074 « carré unité ou schéma en
+  barres » (Exemples 2026 p. 16, accompagnement). Aucune ne repose sur 2019/2016.
+- Voisins : « Fraction d'une fraction » (a635df43, 4-009, publié) = le CALCUL, sans schéma ; 074 = la représentation.
+  Patrons : aucun modèle en prod ne s'en sert encore (premier usage). Précédents de ` ```solide ` dans un choix :
+  `ce1-10/02-ou-est-le-solide.json`.
+
+### 50.3 Modèles proposés (3, un par point)
+
+| Point | Modèle (catégorie, niveau)                                                                  | Variations                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Réponse                             |
+| ----- | ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| 027   | Reconnaître une pyramide, un cône (Géométrie / Solides / Pyramide et cône, 1)               | 1) un ` ```solide ` (pyramide à base carrée, rectangle ou triangle, cône ; leurres prisme, cylindre) : « Comment s'appelle ce solide ? » pyramide / cône / prisme droit / cylindre ; 2) parmi 4 solides dessinés, lequel est une pyramide (un cône) ; 3) pyramide nommée SABCD : son sommet, sa base, la nature de ses faces latérales (triangles) ; 4) pyramide à base de n côtés (n de 3 à 8, dessinée pour 3 et 4) : nombre de faces (n + 1), d'arêtes (2n), de sommets (n + 1) ; 5) cône : nature de la base (disque), son sommet, a-t-il des arêtes | case choix · case                   |
+| 028   | Passer d'une représentation à l'autre (Géométrie / Solides / Représentations, 1)            | 1) un ` ```patron ` (cube, pavé, prisme, pyramide, cylindre) : quel solide ? ; 2) un ` ```solide ` : lequel de 3 patrons (solides différents) est le sien ; 3) patron du cube ou du pavé à geste `designer: opposee` : toucher la face opposée à la face marquée ; 4) patron à geste `designer: sommet A` : toucher les faces qui contiennent A ; 5) cylindre de rayon r, hauteur h, patron coté : longueur du rectangle (2πr, au dixième) ; pavé l × p × h en perspective : dimensions d'une face sur le patron                                         | case choix · geste · case nombre    |
+| 074   | Représenter une fraction d'une fraction (Fractions / Calculer / Fraction d'une quantité, 9) | 1) carré unité ` ```partage grille b×d ` : « colorie les a/b des c/d du carré » (geste `colorier:`, a·c parts sur b·d) ; 2) même grille, rectangle de a lignes × c colonnes déjà gris : « quelle fraction du carré ? On a pris a/b de c/d » (ac/bd) ; 3) schéma en barres ` ```partage bande b ` (a parts grises) : la bande représente Q (€, élèves) : combien la partie grise ? (a·Q/b) ; 4) bande de b·d parts, « Léa mange a/b de la moitié (des c/d) du gâteau » : colorier, puis la fraction du gâteau                                             | geste · case fraction · case nombre |
+
+- Plages : b, d de 2 à 5 (grille ≤ 10 × 10 imposée par le bloc), a < b, c < d ; Q multiple de b, ≤ 200 ;
+  cylindre r, h entiers de 2 à 10.
+- `testSpecs` d'erreurs typiques : 027 → faces = n (base oubliée), arêtes = n + 1 ; prisme pris pour une pyramide ;
+  028 → face voisine prise pour l'opposée ; 2πr confondu avec πr ou 2r ; 074 → a/b + c/d au lieu du produit, a/b de
+  la figure ENTIÈRE (a·d parts) au lieu de a/b des c/d ; Q/b sans × a.
+
+### 50.4 Question d'accès
+
+Comme les lots précédents : brouillons, puis migration nœud + tag ; **personne** ne gagne d'accès. À la
+publication, les élèves de 4e voient 3 modèles de plus.
+
+### 50.5 Questions à David
+
+1. Valider les 3 modèles du § 50.3 ?
+2. Catégories : Géométrie / Solides / Pyramide et cône 1 (027), Géométrie / Solides / Représentations 1 (028),
+   Fractions / Calculer / Fraction d'une quantité 9 (074, à côté de « Fraction d'une fraction ») ?
+3. 074 variation 1 : le geste `colorier:` juge le NOMBRE de parts coloriées, pas leur place (6 parts n'importe où
+   pour 2/3 de 3/4 sur 12). **Reco** : l'accepter, c'est le geste existant ; la correction dessine la bonne
+   disposition (le rectangle). Sinon, ne garder que les variations 2 à 4.
+4. 028 variation 2 : un ` ```patron ` comme option d'un choix n'a pas encore servi (seul ` ```cubes ` a sa taille de
+   choix réglée). **Reco** : l'essayer à l'écriture en base locale, la retirer si le rendu est mauvais (pas de
+   correctif d'outil dans ce lot).
