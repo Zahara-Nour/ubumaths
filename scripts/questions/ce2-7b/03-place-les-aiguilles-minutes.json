@@ -1,0 +1,306 @@
+{
+	"title": "Place les aiguilles (heures et minutes)",
+	"description": "Poser les aiguilles : 8 h 35, 6 h 18 ; cinq heures et quart, quatre heures moins vingt ; treize heures vingt",
+	"grades": ["CE2"],
+	"theme": "Grandeurs",
+	"domain": "Durées",
+	"subdomain": "Lire l'heure",
+	"level": 7,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Place les aiguilles : il est {{if:5*q==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{eval:5*q}}$}}.\n\n```horloge\nplacer: {{h}} h {{eval:5*q}}\nchiffres: tous\ngraduations: minutes\n```",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "1..12"
+				},
+				{
+					"name": "q",
+					"expression": "0..11"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"La grande aiguille montre les minutes, la petite montre l'heure.",
+					"La grande aiguille va sur le {{if:q==0|$12$|${{q}}$}} : ${{eval:5*q}}$ minutes, on compte de $5$ en $5$.",
+					"{{if:q==0|La petite aiguille va pile sur le ${{h}}$.|La petite aiguille va entre le ${{h}}$ et le ${{eval:mod({{h}},12)+1}}$ : l'heure n'est pas encore passée.}}"
+				]
+			}
+		},
+		{
+			"statement": "Place les aiguilles : il est {{if:m==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{eval:m}}$}}.\n\n```horloge\nplacer: {{h}} h {{m}}\nchiffres: tous\ngraduations: minutes\n```",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "1..12"
+				},
+				{
+					"name": "q",
+					"expression": "0..11"
+				},
+				{
+					"name": "r",
+					"expression": "1..4"
+				},
+				{
+					"name": "m",
+					"expression": "eval:5*q+r"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"La grande aiguille montre les minutes, la petite montre l'heure.",
+					"La grande aiguille passe le {{if:q==0|$12$|${{q}}$}} (${{eval:5*q}}$ minutes) et avance de ${{r}}$ petite{{if:r>1|s|}} graduation{{if:r>1|s|}} : ${{eval:5*q+r}}$ minutes.",
+					"{{if:m==0|La petite aiguille va pile sur le ${{h}}$.|La petite aiguille va entre le ${{h}}$ et le ${{eval:mod({{h}},12)+1}}$ : l'heure n'est pas encore passée.}}"
+				]
+			}
+		},
+		{
+			"statement": "Place les aiguilles : il est {{if:t<7|{{if:h==1|une|{{h}}}} heure{{if:h>1|s|}} {{if:t==1|cinq|{{if:t==2|dix|{{if:t==3|et quart|{{if:t==4|vingt|{{if:t==5|vingt-cinq|et demie}}}}}}}}}}|{{eval:h+1}} heures moins {{if:t==7|vingt-cinq|{{if:t==8|vingt|{{if:t==9|le quart|{{if:t==10|dix|cinq}}}}}}}}}}.\n\n```horloge\nplacer: {{h}} h {{eval:5*t}}\nchiffres: tous\ngraduations: minutes\n```",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "1..11"
+				},
+				{
+					"name": "t",
+					"expression": "1..11"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"{{if:t<7|{{if:t<7|{{if:h==1|une|{{h}}}} heure{{if:h>1|s|}} {{if:t==1|cinq|{{if:t==2|dix|{{if:t==3|et quart|{{if:t==4|vingt|{{if:t==5|vingt-cinq|et demie}}}}}}}}}}|{{eval:h+1}} heures moins {{if:t==7|vingt-cinq|{{if:t==8|vingt|{{if:t==9|le quart|{{if:t==10|dix|cinq}}}}}}}}}}, c'est {{if:5*t==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{eval:5*t}}$}}.|{{if:t<7|{{if:h==1|une|{{h}}}} heure{{if:h>1|s|}} {{if:t==1|cinq|{{if:t==2|dix|{{if:t==3|et quart|{{if:t==4|vingt|{{if:t==5|vingt-cinq|et demie}}}}}}}}}}|{{eval:h+1}} heures moins {{if:t==7|vingt-cinq|{{if:t==8|vingt|{{if:t==9|le quart|{{if:t==10|dix|cinq}}}}}}}}}}, c'est un peu avant {{eval:h+1}} heures : ${{h}}~\\text{h}~{{eval:5*t}}$.}}",
+					"La grande aiguille va sur le ${{t}}$ (${{eval:5*t}}$ minutes).",
+					"La petite aiguille va entre le ${{h}}$ et le ${{eval:h+1}}$ : l'heure n'est pas encore passée."
+				]
+			}
+		},
+		{
+			"statement": "Place les aiguilles : il est {{if:m==0|${{eval:h+12}}~\\text{h}$|${{eval:h+12}}~\\text{h}~{{eval:m}}$}}.\n\n```horloge\nplacer: {{eval:h+12}} h {{m}}\nchiffres: tous\ngraduations: minutes\n```",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "1..11"
+				},
+				{
+					"name": "q",
+					"expression": "0..11"
+				},
+				{
+					"name": "r",
+					"expression": "0..4"
+				},
+				{
+					"name": "m",
+					"expression": "eval:5*q+r"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Sur le cadran, on retrouve l'heure en enlevant $12$ : ${{eval:h+12}} - 12 = {{h}}$.",
+					"La grande aiguille montre les minutes, la petite montre l'heure.",
+					"La grande aiguille va sur {{m}} minute{{if:m>1|s|}} : {{if:r>0|elle passe {{if:q==0|le $12$|le ${{q}}$}} et avance de ${{r}}$ graduation{{if:r>1|s|}}.|elle est sur {{if:q==0|le $12$|le ${{q}}$}}.}}",
+					"{{if:m==0|La petite aiguille va pile sur le ${{h}}$.|La petite aiguille va entre le ${{h}}$ et le ${{eval:mod({{h}},12)+1}}$ : l'heure n'est pas encore passée.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "8 h 35",
+			"variationIndex": 0,
+			"variables": {
+				"h": "8",
+				"q": "7"
+			},
+			"answers": ["43 35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8 h 35, aiguilles inversées",
+			"variationIndex": 0,
+			"variables": {
+				"h": "8",
+				"q": "7"
+			},
+			"answers": ["35 40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 8 h 35, grande sur le 5",
+			"variationIndex": 0,
+			"variables": {
+				"h": "8",
+				"q": "7"
+			},
+			"answers": ["43 25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "9 h juste",
+			"variationIndex": 0,
+			"variables": {
+				"h": "9",
+				"q": "0"
+			},
+			"answers": ["45 0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rien placé : case vide",
+			"variationIndex": 0,
+			"variables": {
+				"h": "9",
+				"q": "0"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		},
+		{
+			"description": "BO : 6 h 18",
+			"variationIndex": 1,
+			"variables": {
+				"h": "6",
+				"q": "3",
+				"r": "3",
+				"m": "18"
+			},
+			"answers": ["32 18"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6 h 18, grande sur le 3 (15 min)",
+			"variationIndex": 1,
+			"variables": {
+				"h": "6",
+				"q": "3",
+				"r": "3",
+				"m": "18"
+			},
+			"answers": ["32 15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 6 h 18, grande sur le 18",
+			"variationIndex": 1,
+			"variables": {
+				"h": "6",
+				"q": "3",
+				"r": "3",
+				"m": "18"
+			},
+			"answers": ["32 90"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : cinq heures et quart",
+			"variationIndex": 2,
+			"variables": {
+				"h": "5",
+				"t": "3"
+			},
+			"answers": ["26 15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Sept heures moins le quart = 6 h 45",
+			"variationIndex": 2,
+			"variables": {
+				"h": "6",
+				"t": "9"
+			},
+			"answers": ["34 45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Quatre heures moins vingt = 3 h 40",
+			"variationIndex": 2,
+			"variables": {
+				"h": "3",
+				"t": "8"
+			},
+			"answers": ["18 40"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : quatre heures moins vingt placé 4 h 40",
+			"variationIndex": 2,
+			"variables": {
+				"h": "3",
+				"t": "8"
+			},
+			"answers": ["23 40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sept heures moins le quart placé 7 h 15",
+			"variationIndex": 2,
+			"variables": {
+				"h": "6",
+				"t": "9"
+			},
+			"answers": ["36 15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : treize heures vingt",
+			"variationIndex": 3,
+			"variables": {
+				"h": "1",
+				"q": "4",
+				"r": "0",
+				"m": "20"
+			},
+			"answers": ["7 20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 13 h 20, grande sur le 13",
+			"variationIndex": 3,
+			"variables": {
+				"h": "1",
+				"q": "4",
+				"r": "0",
+				"m": "20"
+			},
+			"answers": ["7 65"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

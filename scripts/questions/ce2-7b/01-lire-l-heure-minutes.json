@@ -1,0 +1,303 @@
+{
+	"title": "Quelle heure est-il ? (heures et minutes)",
+	"description": "Lire l'heure à la minute près sur une horloge à aiguilles (8 h 35, 6 h 18) ; l'après-midi, 15 h 22",
+	"grades": ["CE2"],
+	"theme": "Grandeurs",
+	"domain": "Durées",
+	"subdomain": "Lire l'heure",
+	"level": 5,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quelle heure est-il ?\n\n```horloge\nheure: {{h}} h {{eval:5*q}}\nchiffres: tous\ngraduations: minutes\n```\n\nIl est $?~\\text{h}~?$.",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "1..12"
+				},
+				{
+					"name": "q",
+					"expression": "1..11"
+				},
+				{
+					"name": "m",
+					"expression": "eval:5*q"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{h}}"
+				},
+				{
+					"expectedAnswer": "{{eval:5*q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La petite aiguille montre les heures : elle a passé le ${{h}}$ sans atteindre le suivant{{if:m>=45| (elle est presque sur le ${{eval:mod(h,12)+1}}$, mais l'heure n'est pas encore passée)|}}. L'heure est donc ${{h}}$.",
+					"La grande aiguille montre les minutes. Elle est sur le ${{q}}$ : on compte de $5$ en $5$, ${{q}} \\times 5 = {{eval:5*q}}$ minutes.",
+					"Il est $\\textcolor{{{color:primary.0}}}{{{h}}~\\text{h}~{{eval:5*q}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quelle heure est-il ?\n\n```horloge\nheure: {{h}} h {{eval:5*q+r}}\nchiffres: tous\ngraduations: minutes\n```\n\nIl est $?~\\text{h}~?$.",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "1..12"
+				},
+				{
+					"name": "q",
+					"expression": "0..11"
+				},
+				{
+					"name": "r",
+					"expression": "1..4"
+				},
+				{
+					"name": "m",
+					"expression": "eval:5*q+r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{h}}"
+				},
+				{
+					"expectedAnswer": "{{m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La petite aiguille montre les heures : elle a passé le ${{h}}$ sans atteindre le suivant{{if:m>=45| (elle est presque sur le ${{eval:mod(h,12)+1}}$, mais l'heure n'est pas encore passée)|}}. L'heure est donc ${{h}}$.",
+					"La grande aiguille a passé {{if:q==0|le $12$ ($0$ minute)|le ${{q}}$ (${{eval:5*q}}$ minutes)}}, puis elle avance de ${{r}}$ petite{{if:r>1|s|}} graduation{{if:r>1|s|}} : ${{eval:5*q}} + {{r}} = {{eval:5*q+r}}$ minutes.",
+					"Il est $\\textcolor{{{color:primary.0}}}{{{h}}~\\text{h}~{{m}}}$."
+				]
+			}
+		},
+		{
+			"statement": "C'est l'après-midi. Quelle heure est-il ?\n\n```horloge\nheure: {{if:m==0|{{h}} h|{{h}} h {{eval:m}}}}\nchiffres: tous\ngraduations: minutes\n```\n\nIl est $?~\\text{h}~?$.",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "1..11"
+				},
+				{
+					"name": "q",
+					"expression": "0..11"
+				},
+				{
+					"name": "r",
+					"expression": "0..4"
+				},
+				{
+					"name": "m",
+					"expression": "eval:5*q+r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:h+12}}",
+					"validationRules": [
+						{
+							"type": "custom",
+							"expression": "answer != {{h}}",
+							"description": "L'après-midi, on compte après midi : {{h}} heures de l'après-midi, c'est {{eval:h+12}} h."
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La petite aiguille montre les heures : elle a passé le ${{h}}$ sans atteindre le suivant{{if:m>=45| (elle est presque sur le ${{eval:mod(h,12)+1}}$, mais l'heure n'est pas encore passée)|}}. L'heure est donc ${{h}}$.",
+					"{{if:r>0|La grande aiguille a passé {{if:q==0|le $12$|le ${{q}}$}} (${{eval:5*q}}$ minutes), puis elle avance de ${{r}}$ graduation{{if:r>1|s|}} : ${{eval:5*q}} + {{r}} = {{m}}$ minutes.|La grande aiguille est sur le {{if:q==0|$12$|${{q}}$}} : {{m}} minute{{if:m>1|s|}}.}}",
+					"Le cadran montre ${{h}}~\\text{h}~{{m}}$. L'après-midi, on ajoute $12$ aux heures : ${{h}} + 12 = {{eval:h+12}}$.",
+					"Il est $\\textcolor{{{color:primary.0}}}{{{eval:h+12}}~\\text{h}~{{m}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "8 h 35",
+			"variationIndex": 0,
+			"variables": {
+				"h": "8",
+				"q": "7",
+				"m": "35"
+			},
+			"answers": ["8", "35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8 h 35 lu 8 h 7 (le chiffre du cadran)",
+			"variationIndex": 0,
+			"variables": {
+				"h": "8",
+				"q": "7",
+				"m": "35"
+			},
+			"answers": ["8", "7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 8 h 35 lu 7 h 35 (petite aiguille entre le 8 et le 9)",
+			"variationIndex": 0,
+			"variables": {
+				"h": "8",
+				"q": "7",
+				"m": "35"
+			},
+			"answers": ["7", "35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : aiguilles inversées, 8 h 35 lu 7 h 40",
+			"variationIndex": 0,
+			"variables": {
+				"h": "8",
+				"q": "7",
+				"m": "35"
+			},
+			"answers": ["7", "40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "8 h 55, petite presque sur le 9",
+			"variationIndex": 0,
+			"variables": {
+				"h": "8",
+				"q": "11",
+				"m": "55"
+			},
+			"answers": ["8", "55"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8 h 55 lu 9 h 55",
+			"variationIndex": 0,
+			"variables": {
+				"h": "8",
+				"q": "11",
+				"m": "55"
+			},
+			"answers": ["9", "55"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 6 h 18",
+			"variationIndex": 1,
+			"variables": {
+				"h": "6",
+				"q": "3",
+				"m": "18",
+				"r": "3"
+			},
+			"answers": ["6", "18"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6 h 18 lu 6 h 15 (graduations oubliées)",
+			"variationIndex": 1,
+			"variables": {
+				"h": "6",
+				"q": "3",
+				"m": "18",
+				"r": "3"
+			},
+			"answers": ["6", "15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 6 h 18 lu 6 h 3 (le chiffre du cadran)",
+			"variationIndex": 1,
+			"variables": {
+				"h": "6",
+				"q": "3",
+				"m": "18",
+				"r": "3"
+			},
+			"answers": ["6", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 h 04 : passé le 12 de 4 graduations",
+			"variationIndex": 1,
+			"variables": {
+				"h": "2",
+				"q": "0",
+				"m": "4",
+				"r": "4"
+			},
+			"answers": ["2", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BO : 15 h 22 l'après-midi",
+			"variationIndex": 2,
+			"variables": {
+				"h": "3",
+				"q": "4",
+				"m": "22",
+				"r": "2"
+			},
+			"answers": ["15", "22"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 h 22 l'après-midi",
+			"variationIndex": 2,
+			"variables": {
+				"h": "3",
+				"q": "4",
+				"m": "22",
+				"r": "2"
+			},
+			"answers": ["3", "22"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Après-midi, minute 0 : 14 h",
+			"variationIndex": 2,
+			"variables": {
+				"h": "2",
+				"q": "0",
+				"m": "0",
+				"r": "0"
+			},
+			"answers": ["14", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

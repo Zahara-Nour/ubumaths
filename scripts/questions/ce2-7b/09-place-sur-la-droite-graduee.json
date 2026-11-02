@@ -1,0 +1,302 @@
+{
+	"title": "Placer des nombres sur une droite graduée (de 1 en 1 à 1 000 en 1 000)",
+	"description": "Placer un nombre ou deux sur une portion de demi-droite graduée : de 1 en 1, de 10 en 10, de 100 en 100, de 1 000 en 1 000",
+	"grades": ["CE2"],
+	"theme": "Nombres",
+	"domain": "Entiers",
+	"subdomain": "Repérage",
+	"level": 3,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Place le nombre ${{x}}$ sur la demi-droite graduée.\n\n```line\nstart: {{lo}}\nend: {{hi}}\nstep: {{p}}\nmajor: 5\nlabels: {{lo}}, {{hi}}\nplacer: {{x}}\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1|10|100"
+				},
+				{
+					"name": "a",
+					"expression": "0..9"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "lo",
+					"expression": "eval:10*p*a"
+				},
+				{
+					"name": "hi",
+					"expression": "eval:lo+10*p"
+				},
+				{
+					"name": "x",
+					"expression": "eval:lo+k*p"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** De ${{lo}}$ à ${{hi}}$, il y a $10$ intervalles égaux : chaque intervalle vaut ${{p}}$.",
+					"${{x}} = {{lo}} + {{k}} \\times {{p}}$ : on se place à ${{k}}$ intervalle{{if:k>1|s|}} après ${{lo}}$."
+				]
+			}
+		},
+		{
+			"statement": "Place le nombre ${{x}}$ sur la demi-droite graduée.\n\n```line\nstart: 0\nend: 10000\nstep: 1000\nmajor: 5\nlabels: 0, 10000\nplacer: {{x}}\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1000"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "lo",
+					"expression": "0"
+				},
+				{
+					"name": "hi",
+					"expression": "10000"
+				},
+				{
+					"name": "x",
+					"expression": "eval:k*p"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** De ${{lo}}$ à ${{hi}}$, il y a $10$ intervalles égaux : chaque intervalle vaut $1\\,000$ (on avance de $1\\,000$ en $1\\,000$).",
+					"${{x}} = {{lo}} + {{k}} \\times {{p}}$ : on se place à ${{k}}$ intervalle{{if:k>1|s|}} après ${{lo}}$."
+				]
+			}
+		},
+		{
+			"statement": "Place $A$ sur ${{x}}$ et $B$ sur ${{y}}$ sur la demi-droite graduée.\n\n```line\nstart: {{lo}}\nend: {{hi}}\nstep: {{p}}\nmajor: 5\nlabels: {{lo}}, {{hi}}\nplacer: A={{x}} ; B={{y}}\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "10|100"
+				},
+				{
+					"name": "a",
+					"expression": "0..9"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "l",
+					"expression": "1..9"
+				},
+				{
+					"name": "lo",
+					"expression": "eval:10*p*a"
+				},
+				{
+					"name": "hi",
+					"expression": "eval:lo+10*p"
+				},
+				{
+					"name": "x",
+					"expression": "eval:lo+k*p"
+				},
+				{
+					"name": "y",
+					"expression": "eval:lo+l*p"
+				}
+			],
+			"conditions": ["k != l"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** De ${{lo}}$ à ${{hi}}$, il y a $10$ intervalles égaux : chaque intervalle vaut ${{p}}$.",
+					"$A$ : ${{x}} = {{lo}} + {{k}} \\times {{p}}$, à ${{k}}$ intervalle{{if:k>1|s|}} après ${{lo}}$.",
+					"$B$ : ${{y}} = {{lo}} + {{l}} \\times {{p}}$, à ${{l}}$ intervalle{{if:l>1|s|}} après ${{lo}}$."
+				]
+			}
+		},
+		{
+			"statement": "Place le nombre ${{x}}$ sur la demi-droite graduée.\n\n```line\nstart: {{lo}}\nend: {{hi}}\nstep: {{p}}\nmajor: 5\nlabels: {{lo}}, {{hi}}\nplacer: {{x}}\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "10|100"
+				},
+				{
+					"name": "a",
+					"expression": "0..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "lo",
+					"expression": "eval:p*(10*a+b)"
+				},
+				{
+					"name": "hi",
+					"expression": "eval:lo+10*p"
+				},
+				{
+					"name": "x",
+					"expression": "eval:lo+k*p"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** De ${{lo}}$ à ${{hi}}$, il y a $10$ intervalles égaux : chaque intervalle vaut ${{p}}$.",
+					"${{x}} = {{lo}} + {{k}} \\times {{p}}$ : on se place à ${{k}}$ intervalle{{if:k>1|s|}} après ${{lo}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Placer 340 sur la droite de 300 à 400",
+			"variationIndex": 0,
+			"variables": {
+				"p": "10",
+				"a": "30",
+				"k": "4",
+				"lo": "300",
+				"hi": "400",
+				"x": "340"
+			},
+			"answers": ["340"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 340 placé sur 330",
+			"variationIndex": 0,
+			"variables": {
+				"p": "10",
+				"a": "30",
+				"k": "4",
+				"lo": "300",
+				"hi": "400",
+				"x": "340"
+			},
+			"answers": ["330"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rien placé : case vide",
+			"variationIndex": 0,
+			"variables": {
+				"p": "10",
+				"a": "30",
+				"k": "4",
+				"lo": "300",
+				"hi": "400",
+				"x": "340"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		},
+		{
+			"description": "Placer 3 000 de 1 000 en 1 000",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1000",
+				"k": "3",
+				"lo": "0",
+				"hi": "10000",
+				"x": "3000"
+			},
+			"answers": ["3000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Deux points : A sur 120 et B sur 150",
+			"variationIndex": 2,
+			"variables": {
+				"p": "10",
+				"a": "10",
+				"k": "2",
+				"l": "5",
+				"lo": "100",
+				"hi": "200",
+				"x": "120",
+				"y": "150"
+			},
+			"answers": ["120", "150"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : A et B échangés",
+			"variationIndex": 2,
+			"variables": {
+				"p": "10",
+				"a": "10",
+				"k": "2",
+				"l": "5",
+				"lo": "100",
+				"hi": "200",
+				"x": "120",
+				"y": "150"
+			},
+			"answers": ["150", "120"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Portion : 2 380 sur la droite de 2 350 à 2 450",
+			"variationIndex": 3,
+			"variables": {
+				"p": "10",
+				"a": "23",
+				"b": "5",
+				"k": "3",
+				"lo": "2350",
+				"hi": "2450",
+				"x": "2380"
+			},
+			"answers": ["2380"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : portion, 2 380 placé à la 3e graduation depuis 2 300",
+			"variationIndex": 3,
+			"variables": {
+				"p": "10",
+				"a": "23",
+				"b": "5",
+				"k": "3",
+				"lo": "2350",
+				"hi": "2450",
+				"x": "2380"
+			},
+			"answers": ["2330"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

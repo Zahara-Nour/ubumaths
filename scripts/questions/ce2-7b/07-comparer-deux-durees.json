@@ -1,0 +1,286 @@
+{
+	"title": "Quelle durée est la plus longue ? (deux horloges)",
+	"description": "Le film ou le match, lu sur quatre horloges ; de combien de minutes l'un dure-t-il plus longtemps que l'autre",
+	"grades": ["CE2"],
+	"theme": "Grandeurs",
+	"domain": "Durées",
+	"subdomain": "Durée écoulée",
+	"level": 7,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Tom a regardé un film, puis un match.\n\n```horloge\nheure: {{if:mod((60*h1+5*p),60)==0|{{eval:floor((60*h1+5*p)/60)}} h|{{eval:floor((60*h1+5*p)/60)}} h {{eval:mod((60*h1+5*p),60)}}}} ; {{if:mod((60*h1+5*p+5*f),60)==0|{{eval:floor((60*h1+5*p+5*f)/60)}} h|{{eval:floor((60*h1+5*p+5*f)/60)}} h {{eval:mod((60*h1+5*p+5*f),60)}}}} ; {{if:mod((60*h2+5*q),60)==0|{{eval:floor((60*h2+5*q)/60)}} h|{{eval:floor((60*h2+5*q)/60)}} h {{eval:mod((60*h2+5*q),60)}}}} ; {{if:mod((60*h2+5*q+5*g),60)==0|{{eval:floor((60*h2+5*q+5*g)/60)}} h|{{eval:floor((60*h2+5*q+5*g)/60)}} h {{eval:mod((60*h2+5*q+5*g),60)}}}}\nchiffres: tous\nlégendes: Début du film ; Fin du film ; Début du match ; Fin du match\n```\n\nLequel a duré le plus longtemps ?\n\n```choix\nmelanger: non\n- Le film\n- Le match\n- Ils ont duré autant.\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "-4..4"
+				},
+				{
+					"name": "h1",
+					"expression": "7..9"
+				},
+				{
+					"name": "p",
+					"expression": "0..11"
+				},
+				{
+					"name": "f",
+					"expression": "8..24"
+				},
+				{
+					"name": "h2",
+					"expression": "eval:floor((60*h1+5*p+5*f)/60)+1"
+				},
+				{
+					"name": "q",
+					"expression": "0..11"
+				},
+				{
+					"name": "g",
+					"expression": "eval:f+s"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:s<0|0|{{if:s>0|1|2}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le film : de {{if:mod((60*h1+5*p),60)==0|${{eval:floor((60*h1+5*p)/60)}}~\\text{h}$|${{eval:floor((60*h1+5*p)/60)}}~\\text{h}~{{eval:mod((60*h1+5*p),60)}}$}} à {{if:mod((60*h1+5*p+5*f),60)==0|${{eval:floor((60*h1+5*p+5*f)/60)}}~\\text{h}$|${{eval:floor((60*h1+5*p+5*f)/60)}}~\\text{h}~{{eval:mod((60*h1+5*p+5*f),60)}}$}}. Il a duré ${{eval:5*f}}~\\text{min}$ ({{f}} intervalles de $5$ minutes).",
+					"Le match : de {{if:mod((60*h2+5*q),60)==0|${{eval:floor((60*h2+5*q)/60)}}~\\text{h}$|${{eval:floor((60*h2+5*q)/60)}}~\\text{h}~{{eval:mod((60*h2+5*q),60)}}$}} à {{if:mod((60*h2+5*q+5*g),60)==0|${{eval:floor((60*h2+5*q+5*g)/60)}}~\\text{h}$|${{eval:floor((60*h2+5*q+5*g)/60)}}~\\text{h}~{{eval:mod((60*h2+5*q+5*g),60)}}$}}. Il a duré ${{eval:5*g}}~\\text{min}$ ({{g}} intervalles de $5$ minutes).",
+					"{{if:s<0|Le **film** a duré le plus longtemps.|{{if:s>0|Le **match** a duré le plus longtemps.|Ils ont duré **autant**.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Tom a regardé un film, puis un match.\n\n```horloge\nheure: {{if:mod((60*h1+5*p),60)==0|{{eval:floor((60*h1+5*p)/60)}} h|{{eval:floor((60*h1+5*p)/60)}} h {{eval:mod((60*h1+5*p),60)}}}} ; {{if:mod((60*h1+5*p+5*f),60)==0|{{eval:floor((60*h1+5*p+5*f)/60)}} h|{{eval:floor((60*h1+5*p+5*f)/60)}} h {{eval:mod((60*h1+5*p+5*f),60)}}}} ; {{if:mod((60*h2+5*q),60)==0|{{eval:floor((60*h2+5*q)/60)}} h|{{eval:floor((60*h2+5*q)/60)}} h {{eval:mod((60*h2+5*q),60)}}}} ; {{if:mod((60*h2+5*q+5*g),60)==0|{{eval:floor((60*h2+5*q+5*g)/60)}} h|{{eval:floor((60*h2+5*q+5*g)/60)}} h {{eval:mod((60*h2+5*q+5*g),60)}}}}\nchiffres: tous\nlégendes: Début du film ; Fin du film ; Début du match ; Fin du match\n```\n\nCombien de minutes le film a-t-il duré de plus que le match ?\n\nLe film a duré $?~\\text{min}$ de plus.",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..4"
+				},
+				{
+					"name": "h1",
+					"expression": "7..9"
+				},
+				{
+					"name": "p",
+					"expression": "0..11"
+				},
+				{
+					"name": "f",
+					"expression": "8..24"
+				},
+				{
+					"name": "h2",
+					"expression": "eval:floor((60*h1+5*p+5*f)/60)+1"
+				},
+				{
+					"name": "q",
+					"expression": "0..11"
+				},
+				{
+					"name": "g",
+					"expression": "eval:f-s"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:5*s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le film : de {{if:mod((60*h1+5*p),60)==0|${{eval:floor((60*h1+5*p)/60)}}~\\text{h}$|${{eval:floor((60*h1+5*p)/60)}}~\\text{h}~{{eval:mod((60*h1+5*p),60)}}$}} à {{if:mod((60*h1+5*p+5*f),60)==0|${{eval:floor((60*h1+5*p+5*f)/60)}}~\\text{h}$|${{eval:floor((60*h1+5*p+5*f)/60)}}~\\text{h}~{{eval:mod((60*h1+5*p+5*f),60)}}$}}. Il a duré ${{eval:5*f}}~\\text{min}$ ({{f}} intervalles de $5$ minutes).",
+					"Le match : de {{if:mod((60*h2+5*q),60)==0|${{eval:floor((60*h2+5*q)/60)}}~\\text{h}$|${{eval:floor((60*h2+5*q)/60)}}~\\text{h}~{{eval:mod((60*h2+5*q),60)}}$}} à {{if:mod((60*h2+5*q+5*g),60)==0|${{eval:floor((60*h2+5*q+5*g)/60)}}~\\text{h}$|${{eval:floor((60*h2+5*q+5*g)/60)}}~\\text{h}~{{eval:mod((60*h2+5*q+5*g),60)}}$}}. Il a duré ${{eval:5*g}}~\\text{min}$ ({{g}} intervalles de $5$ minutes).",
+					"${{eval:5*f}} - {{eval:5*g}} = {{eval:5*s}}$.",
+					"Le film a duré $\\textcolor{{{color:primary.0}}}{{{eval:5*s}}}~\\text{min}$ de plus."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Film 1 h, match 40 min : le film",
+			"variationIndex": 0,
+			"variables": {
+				"s": "-4",
+				"h1": "8",
+				"p": "0",
+				"f": "12",
+				"h2": "10",
+				"q": "0",
+				"g": "8",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le match (il finit plus tard)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "-4",
+				"h1": "8",
+				"p": "0",
+				"f": "12",
+				"h2": "10",
+				"q": "0",
+				"g": "8",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Match plus long : le match",
+			"variationIndex": 0,
+			"variables": {
+				"s": "4",
+				"h1": "8",
+				"p": "3",
+				"f": "8",
+				"h2": "9",
+				"q": "2",
+				"g": "12",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : match plus long, le film",
+			"variationIndex": 0,
+			"variables": {
+				"s": "4",
+				"h1": "8",
+				"p": "3",
+				"f": "8",
+				"h2": "9",
+				"q": "2",
+				"g": "12",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Même durée : autant",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"h1": "8",
+				"p": "5",
+				"f": "10",
+				"h2": "10",
+				"q": "7",
+				"g": "10",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : même durée, le film",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"h1": "8",
+				"p": "5",
+				"f": "10",
+				"h2": "10",
+				"q": "7",
+				"g": "10",
+				"r": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Écart : 60 min contre 40 min = 20",
+			"variationIndex": 1,
+			"variables": {
+				"s": "4",
+				"h1": "8",
+				"p": "0",
+				"f": "12",
+				"h2": "10",
+				"q": "0",
+				"g": "8"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : écart donné en intervalles (4)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "4",
+				"h1": "8",
+				"p": "0",
+				"f": "12",
+				"h2": "10",
+				"q": "0",
+				"g": "8"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : écart = durée du film (60)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "4",
+				"h1": "8",
+				"p": "0",
+				"f": "12",
+				"h2": "10",
+				"q": "0",
+				"g": "8"
+			},
+			"answers": ["60"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Écart : 90 min contre 85 min = 5",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"h1": "8",
+				"p": "3",
+				"f": "18",
+				"h2": "10",
+				"q": "1",
+				"g": "17"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

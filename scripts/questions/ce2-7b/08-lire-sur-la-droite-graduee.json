@@ -1,0 +1,375 @@
+{
+	"title": "Repérer un point sur une droite graduée (de 1 en 1 à 1 000 en 1 000)",
+	"description": "Lire le nombre qui repère un point d'une portion de demi-droite graduée : de 1 en 1, de 10 en 10, de 100 en 100, de 1 000 en 1 000",
+	"grades": ["CE2"],
+	"theme": "Nombres",
+	"domain": "Entiers",
+	"subdomain": "Repérage",
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quel nombre repère le point $A$ ?\n\n```line\nstart: {{lo}}\nend: {{hi}}\nstep: 1\nmajor: 5\nlabels: {{lo}}, {{hi}}\npoints: A={{x}}\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1"
+				},
+				{
+					"name": "a",
+					"expression": "0..99"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "lo",
+					"expression": "eval:10*a"
+				},
+				{
+					"name": "hi",
+					"expression": "eval:lo+10"
+				},
+				{
+					"name": "x",
+					"expression": "eval:lo+k*p"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** De ${{lo}}$ à ${{hi}}$, il y a $10$ intervalles égaux : chaque intervalle vaut $1$ (on avance de $1$ en $1$).",
+					"$A$ est ${{k}}$ intervalle{{if:k>1|s|}} après ${{lo}}$ : ${{lo}} + {{k}} \\times {{p}} = \\textcolor{{{color:primary.0}}}{{{x}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel nombre repère le point $A$ ?\n\n```line\nstart: {{lo}}\nend: {{hi}}\nstep: 10\nmajor: 5\nlabels: {{lo}}, {{hi}}\npoints: A={{x}}\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "10"
+				},
+				{
+					"name": "a",
+					"expression": "0..99"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "lo",
+					"expression": "eval:100*a"
+				},
+				{
+					"name": "hi",
+					"expression": "eval:lo+100"
+				},
+				{
+					"name": "x",
+					"expression": "eval:lo+k*p"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** De ${{lo}}$ à ${{hi}}$, il y a $10$ intervalles égaux : chaque intervalle vaut $10$ (on avance de $10$ en $10$).",
+					"$A$ est ${{k}}$ intervalle{{if:k>1|s|}} après ${{lo}}$ : ${{lo}} + {{k}} \\times {{p}} = \\textcolor{{{color:primary.0}}}{{{x}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel nombre repère le point $A$ ?\n\n```line\nstart: {{lo}}\nend: {{hi}}\nstep: 100\nmajor: 5\nlabels: {{lo}}, {{hi}}\npoints: A={{x}}\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "100"
+				},
+				{
+					"name": "a",
+					"expression": "0..8"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "lo",
+					"expression": "eval:1000*a"
+				},
+				{
+					"name": "hi",
+					"expression": "eval:lo+1000"
+				},
+				{
+					"name": "x",
+					"expression": "eval:lo+k*p"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** De ${{lo}}$ à ${{hi}}$, il y a $10$ intervalles égaux : chaque intervalle vaut $100$ (on avance de $100$ en $100$).",
+					"$A$ est ${{k}}$ intervalle{{if:k>1|s|}} après ${{lo}}$ : ${{lo}} + {{k}} \\times {{p}} = \\textcolor{{{color:primary.0}}}{{{x}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel nombre repère le point $A$ ?\n\n```line\nstart: 0\nend: 10000\nstep: 1000\nmajor: 5\nlabels: 0, 10000\npoints: A={{x}}\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1000"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "lo",
+					"expression": "0"
+				},
+				{
+					"name": "hi",
+					"expression": "10000"
+				},
+				{
+					"name": "x",
+					"expression": "eval:k*p"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** De ${{lo}}$ à ${{hi}}$, il y a $10$ intervalles égaux : chaque intervalle vaut $1\\,000$ (on avance de $1\\,000$ en $1\\,000$).",
+					"$A$ est ${{k}}$ intervalle{{if:k>1|s|}} après ${{lo}}$ : ${{lo}} + {{k}} \\times {{p}} = \\textcolor{{{color:primary.0}}}{{{x}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel nombre repère le point $A$ ?\n\n```line\nstart: {{lo}}\nend: {{hi}}\nstep: {{p}}\nmajor: 5\nlabels: {{lo}}, {{hi}}\npoints: A={{x}}\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "10|100"
+				},
+				{
+					"name": "a",
+					"expression": "0..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "lo",
+					"expression": "eval:p*(10*a+b)"
+				},
+				{
+					"name": "hi",
+					"expression": "eval:lo+10*p"
+				},
+				{
+					"name": "x",
+					"expression": "eval:lo+k*p"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Ce que vaut un petit intervalle.** De ${{lo}}$ à ${{hi}}$, il y a $10$ intervalles égaux : ${{hi}} - {{lo}} = {{eval:hi-lo}}$ ; en $10$ intervalles, chacun vaut ${{p}}$.",
+					"$A$ est ${{k}}$ intervalle{{if:k>1|s|}} après ${{lo}}$ : ${{lo}} + {{k}} \\times {{p}} = \\textcolor{{{color:primary.0}}}{{{x}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "De 1 en 1 : 230 + 4 = 234",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"a": "23",
+				"k": "4",
+				"lo": "230",
+				"hi": "240",
+				"x": "234"
+			},
+			"answers": ["234"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pas de 1 lu comme un pas de 10 (270)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"a": "23",
+				"k": "4",
+				"lo": "230",
+				"hi": "240",
+				"x": "234"
+			},
+			"answers": ["270"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "De 10 en 10 : 2 300 + 40 = 2 340",
+			"variationIndex": 1,
+			"variables": {
+				"p": "10",
+				"a": "23",
+				"k": "4",
+				"lo": "2300",
+				"hi": "2400",
+				"x": "2340"
+			},
+			"answers": ["2340"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pas de 10 lu comme un pas de 1 (2 304)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "10",
+				"a": "23",
+				"k": "4",
+				"lo": "2300",
+				"hi": "2400",
+				"x": "2340"
+			},
+			"answers": ["2304"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "De 100 en 100 : 3 000 + 700 = 3 700",
+			"variationIndex": 2,
+			"variables": {
+				"p": "100",
+				"a": "3",
+				"k": "7",
+				"lo": "3000",
+				"hi": "4000",
+				"x": "3700"
+			},
+			"answers": ["3700"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pas de 100 lu comme un pas de 10 (3 070)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "100",
+				"a": "3",
+				"k": "7",
+				"lo": "3000",
+				"hi": "4000",
+				"x": "3700"
+			},
+			"answers": ["3070"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "De 1 000 en 1 000 : 6 000",
+			"variationIndex": 3,
+			"variables": {
+				"p": "1000",
+				"k": "6",
+				"lo": "0",
+				"hi": "10000",
+				"x": "6000"
+			},
+			"answers": ["6000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6 000 lu 600",
+			"variationIndex": 3,
+			"variables": {
+				"p": "1000",
+				"k": "6",
+				"lo": "0",
+				"hi": "10000",
+				"x": "6000"
+			},
+			"answers": ["600"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Portion : de 2 350 à 2 450, A à 2 380",
+			"variationIndex": 4,
+			"variables": {
+				"p": "10",
+				"a": "23",
+				"b": "5",
+				"k": "3",
+				"lo": "2350",
+				"hi": "2450",
+				"x": "2380"
+			},
+			"answers": ["2380"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : portion, A lu 2 303 (départ oublié)",
+			"variationIndex": 4,
+			"variables": {
+				"p": "10",
+				"a": "23",
+				"b": "5",
+				"k": "3",
+				"lo": "2350",
+				"hi": "2450",
+				"x": "2380"
+			},
+			"answers": ["2303"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
