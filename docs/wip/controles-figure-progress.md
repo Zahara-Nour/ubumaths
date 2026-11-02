@@ -6,19 +6,20 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2264._
+_Mis à jour le 2026-11-03, après #2268._
 
-- **État** : lots 1, 2a, 2b, « point construit exigé » et 3 (médiatrice, milieu sur papier uni, #2264)
-  **mergés**, pas encore en prod (`deploy:prod` sur demande de David). Vérifications à l'œil dans
-  `verifications-manuelles.md` (#2257, #2264).
-- **Prochaine action** : lot **3b, cercle circonscrit** (phase 0 validée, § 11) en cours ; ensuite
-  triangle (report de longueur, 4e sommet du parallélogramme), angle, bissectrice.
-- **En attente de David** : rien.
-- **Pièges en cours** : `perpendiculaire(A, s)` échoue quand A est un bout de s (geometry-core,
-  « createTranslatedPoint… must all be distinct ») ; pas de prime dans le langage des figures (§ 6) ;
-  `symetrie(P, axe=d)` échoue si P définit d ; l'« Essayer » de l'aide ne rend pas la case jouable ;
-  au clavier, droites annoncées « Droite 1, 2… » ; plafond de 20 objets sans message.
-- **Worktree / branche** : `../ubumaths-wt-controles-figure`, `feat/controles-figure-cercle`.
+- **État** : lots 1, 2a, 2b, « point construit exigé », 3 (médiatrice, #2264) et 3b (cercle circonscrit,
+  centre seul, #2268) **mergés**, pas encore en prod (`deploy:prod` sur demande de David). Vérifications à
+  l'œil dans `verifications-manuelles.md` (#2257, #2264, #2268).
+- **Prochaine action** : phase 0 du lot **triangle** (report de longueur au compas, 4e sommet du
+  parallélogramme), puis angle, bissectrice.
+- **En attente de David** : avis sur le message neuf « Ton compas est ouvert à l'œil : ouvre-le jusqu'à un
+  sommet du triangle. » (§ 12, ajouté après la revue sans phase 0).
+- **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12, à revoir avec le
+  report de longueur) ; `perpendiculaire(A, s)` échoue quand A est un bout de s ; pas de prime dans le
+  langage des figures ; `symetrie(P, axe=d)` échoue si P définit d ; l'« Essayer » de l'aide ne rend pas la
+  case jouable ; au clavier, droites annoncées « Droite 1, 2… » ; plafond de 20 objets sans message.
+- **Worktree / branche** : aucun (retiré après #2268).
 
 ---
 
