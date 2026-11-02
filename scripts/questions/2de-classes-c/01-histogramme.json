@@ -1,0 +1,374 @@
+{
+	"title": "Lire un histogramme",
+	"description": "Histogramme à classes de même amplitude : effectif d'une classe, effectif total, classe modale",
+	"grades": ["2"],
+	"theme": "Statistiques",
+	"domain": "Représenter des données",
+	"subdomain": "Histogramme",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "L'histogramme ci-dessous donne la répartition des tailles (en cm) de plantes mesurées dans un jardin.\n\n```histogramme\naxes: Taille (cm) ; Effectif\n[{{eval:(x0)+0*(h)}} ; {{eval:(x0)+1*(h)}}[ = {{n1}}\n[{{eval:(x0)+1*(h)}} ; {{eval:(x0)+2*(h)}}[ = {{n2}}\n[{{eval:(x0)+2*(h)}} ; {{eval:(x0)+3*(h)}}[ = {{n3}}\n[{{eval:(x0)+3*(h)}} ; {{eval:(x0)+4*(h)}}[ = {{n4}}\n[{{eval:(x0)+4*(h)}} ; {{eval:(x0)+5*(h)}}[ = {{n5}}\ndescription: Histogramme de cinq classes de même amplitude.\n```\n\nCombien de plantes ont une taille dans la classe $\\left[{{eval:(x0)+((c)-1)*(h)}}\\,;{{eval:(x0)+(c)*(h)}}\\right[$ ?\n\n$?$ plantes",
+			"variables": [
+				{
+					"name": "x0",
+					"expression": "0|10|20|30|40"
+				},
+				{
+					"name": "h",
+					"expression": "5|10|20"
+				},
+				{
+					"name": "p",
+					"expression": "1..5"
+				},
+				{
+					"name": "s1",
+					"expression": "1..6"
+				},
+				{
+					"name": "s2",
+					"expression": "1..6"
+				},
+				{
+					"name": "s3",
+					"expression": "1..6"
+				},
+				{
+					"name": "s4",
+					"expression": "1..6"
+				},
+				{
+					"name": "s5",
+					"expression": "1..6"
+				},
+				{
+					"name": "n1",
+					"expression": "eval:2*(s1)+12*(1-min(1,abs((p)-1)))"
+				},
+				{
+					"name": "n2",
+					"expression": "eval:2*(s2)+12*(1-min(1,abs((p)-2)))"
+				},
+				{
+					"name": "n3",
+					"expression": "eval:2*(s3)+12*(1-min(1,abs((p)-3)))"
+				},
+				{
+					"name": "n4",
+					"expression": "eval:2*(s4)+12*(1-min(1,abs((p)-4)))"
+				},
+				{
+					"name": "n5",
+					"expression": "eval:2*(s5)+12*(1-min(1,abs((p)-5)))"
+				},
+				{
+					"name": "c",
+					"expression": "1..5"
+				},
+				{
+					"name": "nc",
+					"expression": "eval:(n1)*(1-min(1,abs((c)-1)))+(n2)*(1-min(1,abs((c)-2)))+(n3)*(1-min(1,abs((c)-3)))+(n4)*(1-min(1,abs((c)-4)))+(n5)*(1-min(1,abs((c)-5)))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{nc}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Classes de même amplitude : la **hauteur** de chaque rectangle donne l'effectif de la classe.",
+					"Le rectangle de la classe $\\left[{{eval:(x0)+((c)-1)*(h)}}\\,;{{eval:(x0)+(c)*(h)}}\\right[$ monte à \\textcolor{{{color:primary.0}}}{{{nc}}} : ${{nc}}$ plantes."
+				]
+			}
+		},
+		{
+			"statement": "L'histogramme ci-dessous donne la répartition des tailles (en cm) de plantes mesurées dans un jardin.\n\n```histogramme\naxes: Taille (cm) ; Effectif\n[{{eval:(x0)+0*(h)}} ; {{eval:(x0)+1*(h)}}[ = {{n1}}\n[{{eval:(x0)+1*(h)}} ; {{eval:(x0)+2*(h)}}[ = {{n2}}\n[{{eval:(x0)+2*(h)}} ; {{eval:(x0)+3*(h)}}[ = {{n3}}\n[{{eval:(x0)+3*(h)}} ; {{eval:(x0)+4*(h)}}[ = {{n4}}\n[{{eval:(x0)+4*(h)}} ; {{eval:(x0)+5*(h)}}[ = {{n5}}\ndescription: Histogramme de cinq classes de même amplitude.\n```\n\nCombien de plantes ont été mesurées en tout ?\n\n$?$ plantes",
+			"variables": [
+				{
+					"name": "x0",
+					"expression": "0|10|20|30|40"
+				},
+				{
+					"name": "h",
+					"expression": "5|10|20"
+				},
+				{
+					"name": "p",
+					"expression": "1..5"
+				},
+				{
+					"name": "s1",
+					"expression": "1..6"
+				},
+				{
+					"name": "s2",
+					"expression": "1..6"
+				},
+				{
+					"name": "s3",
+					"expression": "1..6"
+				},
+				{
+					"name": "s4",
+					"expression": "1..6"
+				},
+				{
+					"name": "s5",
+					"expression": "1..6"
+				},
+				{
+					"name": "n1",
+					"expression": "eval:2*(s1)+12*(1-min(1,abs((p)-1)))"
+				},
+				{
+					"name": "n2",
+					"expression": "eval:2*(s2)+12*(1-min(1,abs((p)-2)))"
+				},
+				{
+					"name": "n3",
+					"expression": "eval:2*(s3)+12*(1-min(1,abs((p)-3)))"
+				},
+				{
+					"name": "n4",
+					"expression": "eval:2*(s4)+12*(1-min(1,abs((p)-4)))"
+				},
+				{
+					"name": "n5",
+					"expression": "eval:2*(s5)+12*(1-min(1,abs((p)-5)))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n1)+(n2)+(n3)+(n4)+(n5)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On lit l'effectif de chaque classe (hauteur des rectangles), puis on les additionne.",
+					"${{n1}}+{{n2}}+{{n3}}+{{n4}}+{{n5}}=\\textcolor{{{color:primary.0}}}{{{eval:(n1)+(n2)+(n3)+(n4)+(n5)}}}$ plantes."
+				]
+			}
+		},
+		{
+			"statement": "L'histogramme ci-dessous donne la répartition des tailles (en cm) de plantes mesurées dans un jardin.\n\n```histogramme\naxes: Taille (cm) ; Effectif\n[{{eval:(x0)+0*(h)}} ; {{eval:(x0)+1*(h)}}[ = {{n1}}\n[{{eval:(x0)+1*(h)}} ; {{eval:(x0)+2*(h)}}[ = {{n2}}\n[{{eval:(x0)+2*(h)}} ; {{eval:(x0)+3*(h)}}[ = {{n3}}\n[{{eval:(x0)+3*(h)}} ; {{eval:(x0)+4*(h)}}[ = {{n4}}\n[{{eval:(x0)+4*(h)}} ; {{eval:(x0)+5*(h)}}[ = {{n5}}\ndescription: Histogramme de cinq classes de même amplitude.\n```\n\nQuelle est la classe modale (la classe de plus grand effectif) ?\n\n```choix\nmelanger: non\n- $\\left[{{eval:(x0)+0*(h)}}\\,;{{eval:(x0)+1*(h)}}\\right[$\n- $\\left[{{eval:(x0)+1*(h)}}\\,;{{eval:(x0)+2*(h)}}\\right[$\n- $\\left[{{eval:(x0)+2*(h)}}\\,;{{eval:(x0)+3*(h)}}\\right[$\n- $\\left[{{eval:(x0)+3*(h)}}\\,;{{eval:(x0)+4*(h)}}\\right[$\n- $\\left[{{eval:(x0)+4*(h)}}\\,;{{eval:(x0)+5*(h)}}\\right[$\n```",
+			"variables": [
+				{
+					"name": "x0",
+					"expression": "0|10|20|30|40"
+				},
+				{
+					"name": "h",
+					"expression": "5|10|20"
+				},
+				{
+					"name": "p",
+					"expression": "1..5"
+				},
+				{
+					"name": "s1",
+					"expression": "1..6"
+				},
+				{
+					"name": "s2",
+					"expression": "1..6"
+				},
+				{
+					"name": "s3",
+					"expression": "1..6"
+				},
+				{
+					"name": "s4",
+					"expression": "1..6"
+				},
+				{
+					"name": "s5",
+					"expression": "1..6"
+				},
+				{
+					"name": "n1",
+					"expression": "eval:2*(s1)+12*(1-min(1,abs((p)-1)))"
+				},
+				{
+					"name": "n2",
+					"expression": "eval:2*(s2)+12*(1-min(1,abs((p)-2)))"
+				},
+				{
+					"name": "n3",
+					"expression": "eval:2*(s3)+12*(1-min(1,abs((p)-3)))"
+				},
+				{
+					"name": "n4",
+					"expression": "eval:2*(s4)+12*(1-min(1,abs((p)-4)))"
+				},
+				{
+					"name": "n5",
+					"expression": "eval:2*(s5)+12*(1-min(1,abs((p)-5)))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(p)-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La classe modale est celle du rectangle le **plus haut**.",
+					"Effectifs : ${{n1}}$, ${{n2}}$, ${{n3}}$, ${{n4}}$, ${{n5}}$ ; le plus grand est ${{eval:max((n1),(n2),(n3),(n4),(n5))}}$, classe \\textcolor{{{color:primary.0}}}{\\left[{{eval:(x0)+((p)-1)*(h)}}\\,;{{eval:(x0)+(p)*(h)}}\\right[}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Classe [50 ; 60[ : 10",
+			"variationIndex": 0,
+			"variables": {
+				"x0": "20",
+				"h": "10",
+				"p": "3",
+				"s1": "2",
+				"s2": "4",
+				"s3": "3",
+				"s4": "5",
+				"s5": "1",
+				"n1": "4",
+				"n2": "8",
+				"n3": "18",
+				"n4": "10",
+				"n5": "2",
+				"c": "4",
+				"nc": "10"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : classe voisine (18)",
+			"variationIndex": 0,
+			"variables": {
+				"x0": "20",
+				"h": "10",
+				"p": "3",
+				"s1": "2",
+				"s2": "4",
+				"s3": "3",
+				"s4": "5",
+				"s5": "1",
+				"n1": "4",
+				"n2": "8",
+				"n3": "18",
+				"n4": "10",
+				"n5": "2",
+				"c": "4",
+				"nc": "10"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Total : 42",
+			"variationIndex": 1,
+			"variables": {
+				"x0": "20",
+				"h": "10",
+				"p": "3",
+				"s1": "2",
+				"s2": "4",
+				"s3": "3",
+				"s4": "5",
+				"s5": "1",
+				"n1": "4",
+				"n2": "8",
+				"n3": "18",
+				"n4": "10",
+				"n5": "2"
+			},
+			"answers": ["42"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : plus grand effectif (18)",
+			"variationIndex": 1,
+			"variables": {
+				"x0": "20",
+				"h": "10",
+				"p": "3",
+				"s1": "2",
+				"s2": "4",
+				"s3": "3",
+				"s4": "5",
+				"s5": "1",
+				"n1": "4",
+				"n2": "8",
+				"n3": "18",
+				"n4": "10",
+				"n5": "2"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Classe modale [40 ; 50[ (rang 2)",
+			"variationIndex": 2,
+			"variables": {
+				"x0": "20",
+				"h": "10",
+				"p": "3",
+				"s1": "2",
+				"s2": "4",
+				"s3": "3",
+				"s4": "5",
+				"s5": "1",
+				"n1": "4",
+				"n2": "8",
+				"n3": "18",
+				"n4": "10",
+				"n5": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dernière classe",
+			"variationIndex": 2,
+			"variables": {
+				"x0": "20",
+				"h": "10",
+				"p": "3",
+				"s1": "2",
+				"s2": "4",
+				"s3": "3",
+				"s4": "5",
+				"s5": "1",
+				"n1": "4",
+				"n2": "8",
+				"n3": "18",
+				"n4": "10",
+				"n5": "2"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
