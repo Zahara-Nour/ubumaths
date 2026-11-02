@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après la publication du lot 4b._
+_Mis à jour le 2026-11-02, après #2201._
 
-- **État** : lots 0 à 4b publiés en prod ; lot 4b (calcul posé) : 6/6 verdicts OK, 6 `published` relus au MCP (§ 13 sexies).
-- **Prochaine action** : lot 5 grandeurs — recréer `../ubumaths-wt-questions-cm1` (nouvelle branche), puis phase 0 (points du § 3, ordre du § 4 bis) à faire valider par David.
-- **En attente de David** : rien.
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** (main avance vite : #2159 renumérotée 3 fois) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») et le type `content` (prendre `feat`) ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; dépôt partagé : relire `git diff --cached --name-only` avant CHAQUE commit ; coloriage : specs non mesurées par le test du corpus, sauf si un modèle active `orderIndependent` ; extension Chrome muette → Playwright à 390 px.
-- **Worktree / branche** : aucun ; recréer `../ubumaths-wt-questions-cm1` pour le lot 5.
+- **État** : lots 0 à 4b publiés ; lot 5 phase 0 validée (§ 14 bis : 5a longueurs, 5b masses + contenances, 5d périmètres) ; **lot 5a** (7 modèles de longueurs) : fichiers mergés (#2201), brouillons locaux joués à 390 px (§ 14 ter).
+- **Prochaine action** : après le `--publier` de David, relever les 7 `id` au MCP ; branche `feat/questions-cm1-lot5a-rangement` (migration nœud + tag, gabarit lot 4b) ; page à cocher ; publication. Puis lot 5b.
+- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm1-5a --publier` (depuis le dépôt principal, à jour).
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** (test `student-answer-safety`, CI rouge de #2201) ; positions du `ranger` lues par essai des permutations ; aperçu : corrigé derrière le bouton « Voir la correction » (Playwright à 390 px).
+- **Worktree / branche** : aucun ; recréer `../ubumaths-wt-questions-cm1` pour la migration du 5a.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
