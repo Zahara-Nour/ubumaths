@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 8a écrit (11 modèles, specs vertes)._
+_Mis à jour le 2026-11-02, après #2259 (fichiers du lot 8a)._
 
-- **État** : lot 7 publié (6/6) ; lot 8 : phase 0 écrite (§ « Lot 8 : phase 0 »), 26 « à savoir » en 3 sous-lots, 31 couverts, 4 déjà tagués.
-- **Prochaine action** : PR des fichiers de 8a, CI verte → merge ; puis David lance `create-questions --publier` depuis le dépôt principal ; migration nœud + tag (gabarit lot 7).
-- **En attente de David** : rien.
+- **État** : lot 8 (D-L8 : 26 « à savoir » en 8a/8b/8c) ; fichiers de 8a mergés (#2259), 11 modèles, pas encore en prod.
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/tspe-8a-savoir --publier` depuis le dépôt principal ; puis migration nœud + tag (gabarit lot 7 ; les 11 points sont sur des sous-notions actives), page à cocher.
+- **En attente de David** : la création en prod des 11 brouillons de 8a.
 - **Pièges en cours** : relevé de nœuds → filtrer `archived_at is null` ; `!=` dans `$…$` lu « ≠ » (écrire `!\,=`) ; garde « notion sans sous-notion » : liste `sous_notions_admises` (migration `20261102181059`).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · `feat/questions-tspe-restes-8`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · `feat/questions-tspe-restes-8a-migration`.
 
 ---
 
@@ -213,4 +213,8 @@ sous-domaine « À savoir » neuf par domaine ; Q4 427, 477, 398 couverts ; Q5 a
 1-3 ; Fonctions › Continuité 1-2 ; Fonctions › Fonction logarithme 1-2). 2 ou 3 variations par modèle, case choix à 4
 propositions ; pour les théorèmes (381, 400), une variation « piège » dont la bonne réponse est « On ne peut rien
 conclure ». Specs : 128 vertes (une juste, trois fausses par variation), 1 550 tirages ; aperçus relus (scratchpad).
-Simulation `create-questions` : 11 à créer, 0 en base.
+Simulation `create-questions` : 11 à créer, 0 en base. **#2259 mergée** (CI verte). Nœuds des 11 points (MCP) : sous-notions
+actives — Suites › Limites de suites › comparaison et encadrement (381, 570) ; Fonctions › Limites de fonctions ›
+comparaison et encadrement (400), opérations (401) ; Fonctions › Convexité › caractérisations (410, 411, 585) ;
+Fonctions › Continuité › valeurs intermédiaires (428, 429) ; Fonctions › Logarithmes › propriétés algébriques (439),
+dérivée (440).
