@@ -6,20 +6,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, § 59 (PR du correctif `\textcolor` en cours)._
+_Mis à jour le 2026-11-02, après #2235 (§ 59)._
 
 - **État** : vague 8 bis en brouillon en prod, rangée ; page à cocher (20 fiches) :
-  https://claude.ai/artifact/AH7MKr1qcSeK2c7Du7EMYY. Correctif `\textcolor` des 24 publiés : branche
-  `fix/questions-2de-textcolor` (générateurs + lot `textcolor-2de` de `update-published-questions.ts`).
-- **Prochaine action** : PR mergée → David : `! pnpm tsx scripts/update-published-questions.ts --lot
-textcolor-2de --publier` (simulation déjà verte : 24 cibles, `variations` seules) ; puis garde dans
-  `question:specs` (PR de code séparée, ligne dans `outils-manquants.md`) ; puis montrer à David les
+  https://claude.ai/artifact/AH7MKr1qcSeK2c7Du7EMYY. Correctif `\textcolor` des 24 publiés **mergé**
+  (#2235), pas encore écrit en prod.
+- **Prochaine action** : David : `! pnpm tsx scripts/update-published-questions.ts --lot textcolor-2de
+--publier` (simulation verte : 24 cibles, `variations` seules) ; puis garde contre `\textcolor` hors
+  `$` (où ? `checkTemplate` garde AUSSI la publication dans l'appli → question à David) ; puis les
   35 fichiers hors 2de (§ 58), rien sans son accord.
-- **En attente de David** : la relecture de la page ; puis lire `verdicts`, corriger, `publier-lot` (ids § 57).
+- **En attente de David** : le `--publier` ci-dessus ; la place de la garde ; la relecture de la page,
+  puis `verdicts`, corrections, `publier-lot` (ids § 57).
 - **Pièges en cours** : `--publier`, `publier-lot`, `db:migrate` → David avec `!` ; `create-questions
 --mettre-a-jour` ne touche JAMAIS un publié → `update-published-questions.ts` ; `col()` en texte → `colt()` ;
-  spec fraction = `\\frac{a}{b}` ; pendant `deploy:prod`, aucun merge.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, branche `fix/questions-2de-textcolor`.
+  spec fraction = `\\frac{a}{b}` ; pas de ligne `Claude-Session:` dans les commits ; pendant `deploy:prod`, aucun merge.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, HEAD détachée sur `origin/main`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
