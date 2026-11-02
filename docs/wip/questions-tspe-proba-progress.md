@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2248 et la création en prod._
+_Mis à jour le 2026-11-02, après #2252 et le `db:migrate`._
 
-- **État** : lot 5b, 4 brouillons créés en prod par David (c413489d M1, 32bf80ae M2, e8e14e8f M3, dc08795e M4 ; relu au MCP : `draft`, sans nœud ni tag). Migration `20261102185349_questions_tspe_lot5b_rangement_tags.sql` écrite (gabarit du 5a, préfixe `_qtl5b_`), **non testée**.
-- **Prochaine action** : écrire `tests/integration/questions-tspe-lot5b-rangement-tags.test.ts` (copie du test 5a : LOT de 4, « sur 4 », point archivé TSPE-521, déplacement vers « Sommes et concentration > loi des grands nombres »), le voir vert puis **rouge** sans l'étape 4 ; `security-auditor` ; PR + `check:migrations --pr` ; merge ; `db:migrate` (David) ; page à cocher.
-- **En attente de David** : rien.
-- **Pièges en cours** : `cleanCoefficients` réécrit `\sigma(X)` en « σ X » → `\sigma\left(X\right)` ; voir aussi « Décisions communes et pièges ».
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-proba` · `feat/questions-tspe-proba-5b-migration`.
+- **État** : lot 5b rangé et tagué en prod (#2252 mergée, `db:migrate` passé avec `--include-all` : deux migrations d'autres sessions étaient passées après la sienne ; relu au MCP : 4/4 sur leur nœud, un point chacun, brouillons). Page à cocher : https://claude.ai/artifact/D11yhkJtKpXxioeVu7tNh8.
+- **Prochaine action** : relecture de David sur la page ; puis `publier-lot` en simulation, `--publier` par David, relu au MCP → lot 5b clos, chantier `questions-tspe-proba` à verser.
+- **En attente de David** : la relecture des 4 fiches.
+- **Pièges en cours** : la garde de doc veut `Doc-inchangée:` dans un **commit**, pas dans le corps de PR ; voir aussi « Décisions communes et pièges ».
+- **Worktree / branche** : aucun (worktree supprimé après #2252) ; la suite se fait depuis le dépôt principal.
 
 ---
 
@@ -250,3 +250,8 @@ l'étape 4 (« lot incohérent : nœuds 0/4 »). Deux cas de plus que le 5a, sur
 bloquant, recoupé en prod) : rollback refusé si un tag a été retiré ; un tag sur un modèle non rangé est refusé par le
 trigger (« n'est rangé dans aucun nœud »), la garde « déjà tagués » est donc inatteignable. PR #2252,
 `check:migrations --pr` passé. Piège : la garde de doc veut `Doc-inchangée:` dans un **commit**, pas dans le corps de PR.
+
+**Migration en prod** : #2252 mergée le 2026-11-02 (CI verte) ; `db:push` refusé (« inserted before » : 20261102192653 et
+20261102192857 d'autres sessions passées après) → `--dry-run --include-all` (seule la 5b à pousser) puis `--include-all` ;
+relu au MCP : 4/4 sur leur nœud, un point chacun, brouillons. Page à cocher :
+https://claude.ai/artifact/D11yhkJtKpXxioeVu7tNh8.
