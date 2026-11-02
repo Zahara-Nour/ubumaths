@@ -194,7 +194,9 @@ garde-fous, issus de la revue de la PR :
   changerait le domaine. Le résultat est celui de l'écriture déjà réduite
   (`signes-06`, David, 2026-11-02) : `(2x+2)/(4(x+1)) → (x+1)/(2(x+1))`
   (comme `2(x+1)/(4(x+1))`, et non `1/2`), `(4x+4)/(2(x+1)) → 2(x+1)/(x+1)`,
-  `(2x+2)/(4(x+1)²) → 1/(2(x+1))` ; `tidyWithConditions` rend `1/2, pour
+  `(2x+2)/(4(x+1)²) → 1/(2(x+1))`, même sans nombre commun :
+  `(2x+2)/(x+1) → 2(x+1)/(x+1)`, `(3x+3)/(x+1)² → 3/(x+1)` ; seul l'autre côté
+  écrit primitif est reconnu (`(2x+2)/(4x+4)` donne `(x+1)/(2x+2)`, non traité) ; `tidyWithConditions` rend `1/2, pour
 x ≠ −1`. Code : `mergeKeepingDomain`, `meetsAcross` ;
 - **pas de développement** : un nombre venu de l'autre côté de la barre reste
   en coefficient — `(x+1)/(1/2) → 2(x+1)`, `((x+1)/2)/(x+3) → (x+1)/(2(x+3))`.
@@ -274,7 +276,9 @@ les décimaux se chassent, au coefficient comme dans une somme — `0,5/x →
 `(x+0,5)/(x−1) → (2x+1)/(2(x−1))`, `x/(0,5x+1) → 2x/(x+2)`, `(0,5x+1)/(x+1)
 → (x+2)/(2(x+1))`, `0,5x/x → x/(2x)` (S3), quel que soit le dénominateur :
 `0,5√2/x → √2/(2x)`, `0,5/eˣ → 1/(2eˣ)`, `0,5/ln x → 1/(2 ln x)`. Une somme
-se range terme par terme : `0,5/x + 0,5 → 0,5 + 1/(2x)`. Avant (2026-10-23),
+se range terme par terme : `0,5/x + 0,5 → 0,5 + 1/(2x)`. Sauf une grandeur, dont la
+valeur reste décimale (§D : `0,5 m/x` gardé), et une division par zéro, qui
+ressort telle quelle (`1,5/0`, jamais `3/(2·0)`). Avant (2026-10-23),
 ces décimaux restaient ; les raisons sont tombées (S3 accepte
 `(x+1)/(2(x+1))`, et une règle limitée à certains dénominateurs dépendrait de
 l'écriture).

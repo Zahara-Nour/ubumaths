@@ -97,7 +97,10 @@ describe('revue : jamais de simplification par une somme (domaine)', () => {
 		['(2x+2)/(4(x+1))', '2(x+1)/(4(x+1))'],
 		['(4x+4)/(2(x+1))', '2(x+1)/(x+1)'],
 		['(2x+2)/(4(x+1)^2)', '(x+1)/(2(x+1)^2)'],
-		['(2x+2)^2/(4(x+1))', '(x+1)^2/(x+1)']
+		['(2x+2)^2/(4(x+1))', '(x+1)^2/(x+1)'],
+		// Revue : sans nombre commun à simplifier aussi
+		['(2x+2)/(x+1)', '2(x+1)/(x+1)'],
+		['(3x+3)/(x+1)^2', '3(x+1)/(x+1)^2']
 	])('même résultat que l’écriture réduite : %s ≡ %s', (input, other) => {
 		expect(t(input)).toBe(t(other));
 	});

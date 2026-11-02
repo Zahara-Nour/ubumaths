@@ -146,6 +146,19 @@ describe('tidy — sous une barre dont le dénominateur a une lettre, les décim
 		expect(t(input)).toBe(expected);
 	});
 
+	// E1, revue de la PR : une grandeur garde son décimal (§D), une division par
+	// zéro ressort telle quelle (pas de `2·0` au dénominateur)
+	it.each([
+		['0.5[m]/x', '0.5'],
+		['0.5x^(-1)[m]', '0.5'],
+		['1.5/0', '1.5'],
+		['0.5x/0', '0.5'],
+		['0.5*0^(-1)', '0.5'],
+		['2.5x/(x-x)', '2.5']
+	])('le décimal reste : %s garde %s', (input, decimal) => {
+		expect(t(input)).toContain(decimal);
+	});
+
 	// L3 : une somme se range terme par terme (comme `0,3x+1/2`)
 	it.each([
 		['0.5/x+0.5', '0.5+1/{2x}'],

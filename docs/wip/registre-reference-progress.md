@@ -6,20 +6,22 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, PR tidy (Q9 + `signes-06`) en cours, avant revue._
+_Mis à jour le 2026-11-02, PR tidy (Q9 + `signes-06`) : revue corrigée, NON poussée._
 
-- **État** : tests rouges (8d96b07e7) puis correctif `collect.ts` (c135fefa9) commités, non poussés.
-  Suite serveur verte (sauf `deploy-prod.test.ts`, rouge aussi sur main) ; banc 1 982 × 8 :
-  0 différence ; `check:incremental` 0 ; cliquet tenu ; `tidy-spec.md` à jour.
-- **Prochaine action** : revue `code-reviewer` opus (lancée) → corrections → ligne
-  `Doc-inchangée:` pour `mathast/README.md` → push, PR, CI, merge.
+- **État** : 4 commits sur la branche (tests rouges, correctif, journal, corrections de revue),
+  non poussés. Revue opus corrigée (§ écriture ci-dessous) ; banc 0 différence ; typecheck 0 ;
+  cliquet tenu. Suite serveur complète relancée après la revue : résultat NON lu
+  (log : scratchpad de la session, perdu au /clear → la relancer).
+- **Prochaine action** : `pnpm test:server` complet (seul rouge admis : `deploy-prod.test.ts`,
+  rouge aussi sur main) → `lint:fast` → commit avec la ligne
+  `Doc-inchangée: mathast/README.md résume tidy, détail dans tidy-spec.md` → push, PR, CI, merge.
 - **Ensuite** : petite PR `tidy-units.test.ts:24` (12000 m gardé), puis PR 1 (`.dériver`, D1).
-- **En attente de David** : rien.
-- **Tranché** : Q9 EN ENTIER + Q-a (tout dénominateur) ; A-D du lot 2 ; `decimal` en LaTeX ;
-  `plafond-02` → 1000 ; Q24 gardée ; `12000 m` gardé ; `signes-06` → `(x+1)/(2(x+1))` — NE PAS reposer.
-- **Pièges** : idempotence (B1) ; greper TOUT le journal avant une question ; sonde = vitest
-  jetable sous `src/` ; banc = script jetable sous `scripts/` (dump prod en lecture, `generatedAt`
-  retiré, `collect.ts` de main remis puis restauré d'une copie vérifiée par `cmp`).
+- **En attente de David** : rien. À lui signaler dans la PR : Atelier `0,5x/x` → « 1/2, pour x ≠ 0 »
+  (avant « 0,5 ») ; point 4 de la revue laissé (`(2x+2)/(4x+4)`, déjà ainsi avant).
+- **Tranché** : Q9 EN ENTIER + Q-a ; A-D du lot 2 ; `decimal` en LaTeX ; `plafond-02` → 1000 ;
+  Q24 gardée ; `12000 m` gardé ; `signes-06` → `(x+1)/(2(x+1))` — NE PAS reposer.
+- **Pièges** : idempotence (B1) ; sonde = vitest jetable sous `src/` ; banc = script jetable sous
+  `scripts/` (dump prod en lecture, `generatedAt` retiré) ; jamais `cat >` sans fichier source.
 - **Worktree / branche** : `../ubumaths-wt-registre-reference` · `refactor/registre-reference`.
 
 ---
@@ -397,3 +399,12 @@ Sonde jetable (vitest sous `src/`, `produceRegistre` / `produceAtelier`), 25 lig
   `deploy-prod` « CI toujours en cours », rouge aussi sur main) ; banc **1 982 modèles de prod × 8
   tirages (15 856) : 0 différence** (témoin non construit) ; `check:incremental` 0 ; cliquet tenu ;
   `lint:fast` propre.
+- **Revue `code-reviewer` opus, corrigé (8 rouges d'abord)** : (1) une grandeur passait en fraction
+  (`0,5 m/x → (1/(2x)) m`) et (2) une division par zéro aussi (`1,5/0 → 3/(2·0)`) — contraires à
+  E1 : `readsFraction` n'applique Q9 ni à un terme avec unité ni à un dénominateur nul ; (3)
+  `(2x+2)/(x+1)` restait (pas de nombre commun) alors que `(4x+4)/(2(x+1)) → 2(x+1)/(x+1)` :
+  réécrit aussi (`(3x+3)/(x+1)² → 3/(x+1)`). **Laissé (avant la PR, déjà ainsi)** : (4)
+  `meetsAcross` ne reconnaît que l'autre côté écrit primitif — `(2x+2)/(4x+4) → (x+1)/(2x+2)`,
+  `(4x+4)/(6x+6) → (2x+2)/(3x+3)`, `(2−2x)/(4(x−1))` sans `−1/2` conditionnel. Rien vu sur valeur,
+  domaine, idempotence (74 entrées), narration. Après correction : banc 0 différence,
+  `check:incremental` 0, cliquet tenu.

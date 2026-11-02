@@ -1126,9 +1126,15 @@ function reduceFractionOfSums(term: TidyTerm, settings: Settings, watch: FamilyW
 
 	const common = gcd(productOf(top), productOf(bottom));
 	const innerFraction = sums.some(({ content }) => content.d !== 1n);
+	// Une somme qui rejoint un facteur de l'autre côté se réécrit même sans
+	// nombre commun (revue) : `(2x+2)/(x+1)` → `2(x+1)/(x+1)`, comme écrit ainsi
+	const meets = sums.some(
+		({ index, content, primitive }) =>
+			!isOneRational(content) && meetsAcross(term, index, primitive, settings)
+	);
 	// Sans dénominateur, seul un nombre commun justifie de toucher au terme
 	if (!hasDenominator && common === 1n) return term;
-	if (common === 1n && !innerFraction) return term;
+	if (common === 1n && !innerFraction && !meets) return term;
 
 	divideParts(top, common);
 	divideParts(bottom, common);
@@ -1306,7 +1312,7 @@ function toTerm(
 		quantity,
 		decimal:
 			(acc.decimal || acc.decimalRoot) &&
-			!readsFraction(acc, factors) &&
+			!readsFraction(acc, factors, unit !== null) &&
 			writesDecimal(coefficient),
 		written:
 			settings.unitChoice === 'written' && unit !== null && quantity !== null
@@ -1606,12 +1612,23 @@ function writesDecimal(coefficient: Rational): boolean {
  * `0,5/x → 1/(2x)`, `(0,5x+1)/(x+1) → (x+2)/(2(x+1))`. Un facteur resté au
  * dénominateur aussi : `0,5·x⁻¹` s'écrit `1/(2x)`, relu de même — `tidy`
  * reste idempotent (B1, revue du lot 4b).
+ *
+ * Sauf (revue de la PR, E1) pour une grandeur, dont la valeur reste décimale
+ * (§D : `0,5 m/x`), et pour une division par zéro, qui ressort telle quelle
+ * (`1,5/0`, jamais `3/(2·0)`) : là, seul un dénominateur numérique compte.
  */
-function readsFraction(acc: Accumulator, factors: readonly TidyFactor[]): boolean {
+function readsFraction(
+	acc: Accumulator,
+	factors: readonly TidyFactor[],
+	hasUnit: boolean
+): boolean {
+	const lettered = hasVariableDenominator(factors);
+	const keepsDecimal =
+		hasUnit || factors.some((factor) => factor.exponent.n < 0n && isZeroNumberNode(factor.base));
 	return (
 		acc.fraction ||
-		acc.bar ||
-		hasVariableDenominator(factors) ||
+		(acc.bar && !lettered) ||
+		(lettered && !keepsDecimal) ||
 		(acc.decimalRoot && hasRootFactor(factors))
 	);
 }
