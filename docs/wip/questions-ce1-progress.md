@@ -961,3 +961,5 @@ tag + niveau de `a7dfe502` ne change aucune règle.
    pas de piège à ce niveau). Recommandation : oui ; la pyramide reste au 066 (faces triangles et carré, borne du BO).
 4. **Niveaux** : premiers libres (Sens 6, 7 ; Reconnaître et décrire 9, 10, 11 ; Propriétés 6, 7) ; `a7dfe502` à 2.
    Recommandation : oui ; catégories relevées de nouveau avant la publication.
+
+Réponse de David (« je suis tes recos », 2026-11-02) : les quatre recommandations.
