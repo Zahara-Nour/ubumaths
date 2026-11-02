@@ -17,7 +17,7 @@ _Mis à jour le 2026-11-02, après #2190 (lot 8 A)._
 - **Pièges en cours** : le worktree n'a pas de `.env` ; `publier-lot` (même en simulation) → David avec `!`
   et `set -a && . ../ubumaths/.env && set +a`, pas `pnpm -s` ; `Doc-inchangée:` dans un commit, jamais dans
   le corps de PR ; horodatage → `pnpm migration:horodatage` ; `db push`, `--publier` → David avec `!`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, HEAD détachée sur `origin/main` (aucune branche ouverte).
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, branche `feat/questions-2de-lot8c` (8 B et 8 C empilés).
 
 ## 1. Relevé (prod, 2026-10-27)
 
