@@ -31,6 +31,7 @@
 	// Inscrit aussi le calcul des positions du juge (effet de bord voulu, cf. positions.ts)
 	import {
 		allNamedPointPositions,
+		figureShapes,
 		namedPointPositions
 	} from '$lib/questions/construction/positions-setup';
 	import {
@@ -253,7 +254,7 @@
 			{/if}
 		{/each}
 		{#if corrected}
-			{#each solutionLines(checks, allPoints, lines) as line, i (i)}
+			{#each solutionLines(checks, allPoints, lines, figureShapes(scene, node.header)) as line, i (i)}
 				{@const s = toScreen(line, scene, width, height)}
 				{#if s}
 					<line

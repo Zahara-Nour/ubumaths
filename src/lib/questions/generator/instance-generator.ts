@@ -636,7 +636,10 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				// `Z = …`), sinon l'élève aurait un « faux » pour une erreur de l'auteur
 				const named = namesAssignedIn(header.figureSource);
 				for (const check of header.spec.checks) {
-					for (const name of check.points) {
+					// Symétrique : l'axe ou le centre est nommé aussi (`d = droite(P, Q)`, `O = point(…)`)
+					const names =
+						check.kind === 'symetrique' ? [...(check.points ?? []), check.by] : check.points;
+					for (const name of names) {
 						if (!named.has(name)) {
 							errors.push({
 								message: `Ligne ${check.line} : le point ${name} n’est pas nommé dans la figure (écrire « ${name} = … »)`
@@ -940,10 +943,14 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					return { expectedAnswer: '', type: 'graphical', construction };
 				}
 				if (construction) {
-					// Réponse attendue symbolique (`droite(A;B)`) : affichage du corrigé
+					// Réponse attendue symbolique (`droite(A;B)`, `symetrique(d)`) : affichage du corrigé
 					return {
 						expectedAnswer: construction.checks
-							.map((check) => `droite(${check.points[0]};${check.points[1]})`)
+							.map((check) =>
+								check.kind === 'symetrique'
+									? `symetrique(${[...(check.points ?? []), check.by].join(';')})`
+									: `droite(${check.points[0]};${check.points[1]})`
+							)
 							.join('|'),
 						type: 'graphical',
 						construction

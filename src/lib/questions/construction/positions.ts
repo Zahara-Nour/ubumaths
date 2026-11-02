@@ -16,9 +16,16 @@
  */
 
 import type { Position } from './judge';
+import type { FigureShapes } from './symmetry';
 
-/** Positions des points nommés d'un bloc (texte entre les clôtures) */
-export type ConstructionPositionsResolver = (source: string) => Map<string, Position>;
+/** Ce que le juge lit d'une figure : points nommés, et traits (symétrique) */
+export interface ConstructionGeometry {
+	points: Map<string, Position>;
+	shapes: FigureShapes;
+}
+
+/** Points nommés et traits d'un bloc (texte entre les clôtures) */
+export type ConstructionPositionsResolver = (source: string) => ConstructionGeometry;
 
 let resolver: ConstructionPositionsResolver | null = null;
 
@@ -41,11 +48,20 @@ export function loadConstructionPositions(): Promise<unknown> {
 	return import('./positions-setup');
 }
 
-export function constructionPositions(source: string): Map<string, Position> {
+function geometry(source: string): ConstructionGeometry {
 	if (!resolver) {
 		throw new Error(
 			'Case « figure » : positions des figures non inscrites (importer questions/construction/positions-setup)'
 		);
 	}
 	return resolver(source);
+}
+
+export function constructionPositions(source: string): Map<string, Position> {
+	return geometry(source).points;
+}
+
+/** Traits de la figure de départ (vérification `symetrique`) */
+export function constructionShapes(source: string): FigureShapes {
+	return geometry(source).shapes;
 }

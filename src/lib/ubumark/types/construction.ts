@@ -17,7 +17,7 @@ export const CONSTRUCTION_TOOLS = ['droite', 'segment'] as const;
 export type ConstructionTool = (typeof CONSTRUCTION_TOOLS)[number];
 
 /** Vérifications que l'auteur peut nommer dans `verifier:` */
-export const CONSTRUCTION_CHECK_KINDS = ['droite_par', 'carre', 'rectangle'] as const;
+export const CONSTRUCTION_CHECK_KINDS = ['droite_par', 'carre', 'rectangle', 'symetrique'] as const;
 export type ConstructionCheckKind = (typeof CONSTRUCTION_CHECK_KINDS)[number];
 
 /** `droite_par A ; B` : une droite tracée passe par les points A et B */
@@ -51,13 +51,32 @@ export interface RectangleCheck {
 /** Carré ou rectangle à compléter : une seule vérification de ce genre par figure */
 export type PolygonCheck = CarreCheck | RectangleCheck;
 
-export type ConstructionCheck = DroiteParCheck | PolygonCheck;
+/**
+ * `symetrique par d` : l'élève trace l'image de tout ce qui est tracé dans la
+ * figure sauf l'axe ; `par O` (un point) : symétrie centrale.
+ * `symetrique A ; B ; C par d` : seulement les traits dont les deux bouts sont
+ * parmi ces points (chantier `controles-figure`, lot 1, 2026-11-02)
+ */
+export interface SymetriqueCheck {
+	kind: 'symetrique';
+	/** Nom de l'axe (droite, segment) ou du centre (point) */
+	by: string;
+	/** Points listés (forme facultative) ; absent : tout le tracé */
+	points?: string[];
+	line: number;
+}
+
+/** Vérifications qui jugent l'ensemble des segments : une seule par figure */
+export type SegmentFigureCheck = PolygonCheck | SymetriqueCheck;
+
+export type ConstructionCheck = DroiteParCheck | SegmentFigureCheck;
 
 /** L'outil avec lequel se trace chaque vérification */
 export const CHECK_TOOL: Record<ConstructionCheckKind, ConstructionTool> = {
 	droite_par: 'droite',
 	carre: 'segment',
-	rectangle: 'segment'
+	rectangle: 'segment',
+	symetrique: 'segment'
 };
 
 export interface ConstructionSpec {

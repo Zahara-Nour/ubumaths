@@ -18,6 +18,7 @@ import type { FigureStep } from '$lib/ubumark/types/figure';
 import { CONSTRUCTION_ANSWER_LIMITS, serializeConstructionAnswer, type DrawnLine } from './answer';
 import type { Position } from './judge';
 import { polygonSolution } from './polygon';
+import { symmetrySolution, type FigureShapes } from './symmetry';
 
 /** Rayon d'aimantation, en pixels À L'ÉCRAN (un doigt d'enfant sur tablette) */
 export const SNAP_RADIUS_PX = 24;
@@ -143,14 +144,17 @@ export function canErase(drawing: Drawing): boolean {
 /**
  * La bonne figure : une droite par vérification `droite_par`, par ses deux
  * points ; carré / rectangle : les côtés qui manquent (carré : du côté où
- * l'élève a le plus tracé, d'où `drawn`).
+ * l'élève a le plus tracé, d'où `drawn`) ; symétrique : l'image, sans ce que
+ * la figure de départ trace déjà (`shapes`).
  */
 export function solutionLines(
 	checks: readonly ConstructionCheck[],
 	points: ReadonlyMap<string, Position>,
-	drawn: readonly DrawnLine[] = []
+	drawn: readonly DrawnLine[] = [],
+	shapes?: FigureShapes
 ): DrawnLine[] {
 	return checks.flatMap((check): DrawnLine[] => {
+		if (check.kind === 'symetrique') return symmetrySolution(check, points, shapes);
 		if (check.kind !== 'droite_par') return polygonSolution(check, points, drawn);
 		const a = points.get(check.points[0]);
 		const b = points.get(check.points[1]);
