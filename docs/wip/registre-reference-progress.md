@@ -6,20 +6,21 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 2 écrit en entier (108/108), PR ouverte._
+_Mis à jour le 2026-11-02, après #2231 (corpus lot 2 mergé)._
 
-- **État** : corpus lot 2 complet (193 entrées) + juge étendu, PR « corpus, lot 2 » sur
-  `refactor/registre-reference`. Connues fausses : registre 69, Atelier 21.
-- **Prochaine action** : merger la PR (CI verte) ; puis PR 1 (`.dériver` réduite, D1) selon le
-  § Découpage — ou d'abord les PR à part de tidy (Q9 rouverte, `signes-06`, tidy-units:24).
+- **État** : corpus complet (193 entrées : PR 0 + lot 2), juge étendu (grandeurs, degrés,
+  factorielles, écriture décimale). Connues fausses : registre 69, Atelier 21.
+- **Prochaine action** : PR 1 (`.dériver` réduite, D1) selon le § Découpage — ou d'abord les PR
+  à part de tidy (Q9 rouverte, `signes-06`, tidy-units:24) ; demander à David l'ordre.
 - **En attente de David** : portée de Q9 rouverte (seulement `0.5/x`, ou aussi `1.5/x`,
-  `0.5/(x+1)`, `(0.5x+0.5)/(x+1)` ?) — à poser avant la PR de tidy.
-- **Tranché** : A-D du lot 2 ; `decimal` en LaTeX (`approche-09`) ; `plafond-02` → 1000 ; Q24 gardée
-  (`grands-06`) ; `12000 m` gardé (`grandeurs-01`) ; `signes-06` → `(x+1)/(2(x+1))` ; ordre des termes,
-  S3, R-point, domaine — NE PAS reposer.
+  `0.5/(x+1)`, `(0.5x+0.5)/(x+1)` ?) — avant la PR de tidy.
+- **Tranché** : A-D du lot 2 ; `decimal` en LaTeX ; `plafond-02` → 1000 ; Q24 gardée ; `12000 m`
+  gardé ; `signes-06` → `(x+1)/(2(x+1))` ; ordre des termes, S3, R-point, domaine — NE PAS reposer.
 - **Pièges** : greper TOUT le journal avant une question ; sonde = vitest jetable sous `src/` ;
-  bugs registre notés (degrés, `π` tapé, `pi`, égalités sans réponse) → PR à part.
-- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `refactor/registre-reference`.
+  revue du juge (#2231) : `\sin^2 x` / `\sin x^2` jugés `forme`, `parseLatex('@@@')` ne lève pas
+  (contrôle d'attendu plus faible que « se parse ») — non corrigés.
+- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `refactor/registre-reference`
+  (gardée pour la suite du chantier, comme après #2163).
 
 ---
 
