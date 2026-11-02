@@ -105,24 +105,66 @@ describe("tidy — la racine d'un décimal sans écriture décimale finie s'écr
 	});
 });
 
-describe('tidy — sous une barre dont le dénominateur a une variable, les décimaux restent (Q9)', () => {
+/**
+ * Q9 rouverte en entier (David, 2026-11-02, journal registre-reference § « Ordre
+ * et Q9 ») : une barre est une fraction, que son dénominateur ait une lettre ou
+ * non. Les raisons du 2026-10-23 sont tombées (S3 accepte `(x+1)/(2(x+1))`,
+ * `0,5/x` corrigé en `1/(2x)`) ; une règle limitée à certains dénominateurs
+ * dépendrait de l'écriture.
+ */
+describe('tidy — sous une barre dont le dénominateur a une lettre, les décimaux se chassent (Q9)', () => {
 	it.each([
-		['(0.5x+1)/(x+1)', '{0.5x+1}/{x+1}'],
-		['(0.5x+0.5)/(x+1)', '{0.5x+0.5}/{x+1}'],
-		['0.5/x', '0.5/x'],
-		['0.5*x^(-1)', '0.5/x'],
-		['1.5/x', '1.5/x'],
-		['0.5/(x+1)', '0.5/{x+1}'],
-		['(x+0.5)/(x-1)', '{x+0.5}/{x-1}'],
-		['x/(0.5x+1)', 'x/{0.5x+1}'],
-		['0.5x/x', '{0.5x}/x'],
-		['0.25x^(-1)+0.25x^(-1)', '0.5/x'],
+		['0.5/x', '1/{2x}'],
+		['0.5*x^(-1)', '1/{2x}'],
+		['1.5/x', '3/{2x}'],
+		['2.5/x', '5/{2x}'],
+		['0.1/x', '1/{10x}'],
+		['0.3/x^2', '3/{10x^2}'],
+		['0.5/(x+1)', '1/{2(x+1)}'],
+		['0.5/(x-1)^2', '1/{2(x-1)^2}'],
+		['(x+0.5)/(x-1)', '{2x+1}/{2(x-1)}'],
+		['x/(0.5x+1)', '{2x}/{x+2}'],
+		['3/(0.2x+1)', '15/{x+5}'],
+		['0.5/(x+0.5)', '1/{2x+1}'],
+		['(0.5x+1)/(x+1)', '{x+2}/{2(x+1)}'],
+		['(0.5x)/(x+1)', 'x/{2(x+1)}'],
+		['(1.2x+0.6)/(x+3)', '{6x+3}/{5(x+3)}'],
+		// S3 : x/x reste gardé
+		['0.5x/x', 'x/{2x}'],
+		['0.5/x*x/2', 'x/{4x}'],
+		['0.25x^(-1)+0.25x^(-1)', '1/{2x}'],
+		// Q-a (David, 2026-11-02) : quel que soit le dénominateur
+		['0.5*sqrt(2)/x', 'sqrt(2)/{2x}'],
+		['0.5/sqrt(x)', '1/{2sqrt(x)}'],
+		['0.5/e^x', '1/{2e^x}'],
+		['0.5/ln(x)', '1/{2ln(x)}'],
 		// Une vraie fraction interne se chasse toujours
 		['(x/2+1)/(x+1)', '{x+2}/{2(x+1)}'],
-		// Revue : une fraction dans la même somme qu'un décimal se chasse
 		['(x/3+0.5)/x', '{2x+3}/{6x}'],
 		['(0.5x+1/3)/(x+1)', '{3x+2}/{6(x+1)}']
 	])('%s → %s', (input, expected) => {
+		expect(t(input)).toBe(expected);
+	});
+
+	// E1, revue de la PR : une grandeur garde son décimal (§D), une division par
+	// zéro ressort telle quelle (pas de `2·0` au dénominateur)
+	it.each([
+		['0.5[m]/x', '0.5'],
+		['0.5x^(-1)[m]', '0.5'],
+		['1.5/0', '1.5'],
+		['0.5x/0', '0.5'],
+		['0.5*0^(-1)', '0.5'],
+		['2.5x/(x-x)', '2.5']
+	])('le décimal reste : %s garde %s', (input, decimal) => {
+		expect(t(input)).toContain(decimal);
+	});
+
+	// L3 : une somme se range terme par terme (comme `0,3x+1/2`)
+	it.each([
+		['0.5/x+0.5', '0.5+1/{2x}'],
+		['0.5/x+1', '1+1/{2x}'],
+		['x+0.5/x', 'x+1/{2x}']
+	])('somme, terme par terme : %s → %s', (input, expected) => {
 		expect(t(input)).toBe(expected);
 	});
 });
@@ -172,9 +214,15 @@ describe('tidy — invariants sur les décimaux', () => {
 		'sqrt(0.5)*sqrt(0.5)',
 		// Q9
 		'(0.5x+1)/(x+1)',
+		'(0.5x+0.5)/(x+1)',
 		'x/(0.5x+1)',
 		'0.5x/x',
-		'(x+0.5)/(x-1)'
+		'(x+0.5)/(x-1)',
+		'0.5/x',
+		'0.5/(x+0.5)',
+		'0.5/x+0.5',
+		'0.5*sqrt(2)/x',
+		'0.5/e^x'
 	];
 
 	it.each(cases)('idempotent : %s', (input) => {

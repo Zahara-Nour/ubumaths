@@ -6,20 +6,22 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2231 ; ordre et portée de Q9 tranchés._
+_Mis à jour le 2026-11-02, PR tidy (Q9 + `signes-06`) : revue corrigée, NON poussée._
 
-- **État** : corpus complet (193 entrées), juge étendu. Connues fausses : registre 69, Atelier 21.
-- **Prochaine action** : **PR tidy (Q9 + `signes-06`)**, sur le § « Ordre et Q9 » ci-dessous :
-  phase 0 (comportements) → tests rouges → tidy → corpus (retirer `decimal-10`, `signes-06` des
-  connues fausses) → banc des 1 008 modèles × 8 tirages → revue `code-reviewer` opus.
+- **État** : 4 commits sur la branche (tests rouges, correctif, journal, corrections de revue),
+  non poussés. Revue opus corrigée (§ écriture ci-dessous) ; banc 0 différence ; typecheck 0 ;
+  cliquet tenu. Suite serveur complète relancée après la revue : résultat NON lu
+  (log : scratchpad de la session, perdu au /clear → la relancer).
+- **Prochaine action** : `pnpm test:server` complet (seul rouge admis : `deploy-prod.test.ts`,
+  rouge aussi sur main) → `lint:fast` → commit avec la ligne
+  `Doc-inchangée: mathast/README.md résume tidy, détail dans tidy-spec.md` → push, PR, CI, merge.
 - **Ensuite** : petite PR `tidy-units.test.ts:24` (12000 m gardé), puis PR 1 (`.dériver`, D1).
-- **En attente de David** : rien.
-- **Tranché** : Q9 rouverte EN ENTIER ; A-D du lot 2 ; `decimal` en LaTeX ; `plafond-02` → 1000 ;
-  Q24 gardée ; `12000 m` gardé ; `signes-06` → `(x+1)/(2(x+1))` ; ordre des termes, S3, R-point,
-  domaine — NE PAS reposer.
-- **Pièges** : idempotence (`0.5·x⁻¹ → 0.5/x → 1/(2x)`, B1 de simplify-carte § 37) ; greper TOUT le
-  journal avant une question ; sonde = vitest jetable sous `src/` ; `\sin^2 x`/`\sin x^2` jugés
-  `forme`, `parseLatex('@@@')` ne lève pas (non corrigés).
+- **En attente de David** : rien. À lui signaler dans la PR : Atelier `0,5x/x` → « 1/2, pour x ≠ 0 »
+  (avant « 0,5 ») ; point 4 de la revue laissé (`(2x+2)/(4x+4)`, déjà ainsi avant).
+- **Tranché** : Q9 EN ENTIER + Q-a ; A-D du lot 2 ; `decimal` en LaTeX ; `plafond-02` → 1000 ;
+  Q24 gardée ; `12000 m` gardé ; `signes-06` → `(x+1)/(2(x+1))` — NE PAS reposer.
+- **Pièges** : idempotence (B1) ; sonde = vitest jetable sous `src/` ; banc = script jetable sous
+  `scripts/` (dump prod en lecture, `generatedAt` retiré) ; jamais `cat >` sans fichier source.
 - **Worktree / branche** : `../ubumaths-wt-registre-reference` · `refactor/registre-reference`.
 
 ---
@@ -362,3 +364,47 @@ Sonde jetable (vitest sous `src/`, `produceRegistre` / `produceAtelier`), 25 lig
 - **Ordre** : (1) PR tidy Q9 + `signes-06` (même mécanisme ; `(0.5x+0.5)/(x+1)` a besoin des deux) ;
   (2) petite PR `tidy-units.test.ts:24` (vérifier d'abord qui utilise la conversion) ; (3) PR 1
   `.dériver`. Revue de la PR tidy : `code-reviewer` opus (change l'affichage élève).
+
+## PR tidy Q9 + `signes-06` — phase 0 (David, 2026-11-02, « je te suis »)
+
+- **Q9 en entier** : `0,5/x → 1/(2x)`, `1,5/x → 3/(2x)`, `0,5/(x+1) → 1/(2(x+1))`,
+  `(x+0,5)/(x−1) → (2x+1)/(2(x−1))`, `x/(0,5x+1) → 2x/(x+2)`, `(0,5x+1)/(x+1) → (x+2)/(2(x+1))`,
+  `(1,2x+0,6)/(x+3) → (6x+3)/(5(x+3))`, `0,5x/x → x/(2x)` (S3).
+- **Q-a** (reco suivie) : quel que soit le dénominateur — `0,5√2/x → √2/(2x)`, `0,5/√x → 1/(2√x)`,
+  `0,5/eˣ → 1/(2eˣ)`, `0,5/ln x → 1/(2 ln x)`.
+- **`signes-06`** : une somme réduite égale à un facteur de l'autre côté y reste des deux côtés
+  (comme S3), au lieu d'abandonner la réduction : `(2x+2)/(4(x+1)) → (x+1)/(2(x+1))`,
+  `(4x+4)/(2(x+1)) → 2(x+1)/(x+1)`, `(2x+2)/(4(x+1)²) → 1/(2(x+1))` — chaque fois le résultat de
+  l'écriture déjà réduite.
+- **Limites** : L1 sans barre rien ne bouge (`0,5x`, `0,5(x+1)`, `0,5√2`, `0,4⁻¹ → 2,5`) ; L2 une
+  lettre à puissance négative = dénominateur (`0,5x⁻¹ → 1/(2x)`, idempotence B1) ; L3 somme terme
+  par terme (`0,5/x + 0,5 → 0,5 + 1/(2x)`) ; L4 idempotence ; L5 `tidyWithConditions` pareil pour
+  les deux écritures (`1/2`, x ≠ −1).
+- **Erreurs** : division par zéro, grandeurs, écriture gardée : inchangés ; `checkForm` n'utilise
+  pas `tidy` (correction des élèves non touchée).
+
+## PR tidy Q9 + `signes-06` — écriture (2026-11-02)
+
+- **Code** (`collect.ts`) : `readsFraction` — une barre est une fraction quel que soit le
+  dénominateur, un facteur resté au dénominateur aussi (`0,5x⁻¹`) ; `reduceFractionOfSums` ne garde
+  plus les décimaux sous une barre à lettre ; `mergeKeepingDomain` remplace `mergeFactors` dans la
+  réduction (S3 via `keepDomain`, au lieu d'abandonner) ; `meetsAcross` envoie le nombre d'une
+  somme qui rejoint un facteur de l'autre côté au coefficient (`(4x+4)/(2(x+1)) → 2(x+1)/(x+1)`,
+  sinon `(2x+2)/(x+1)`). `mergeFactors` reste pour `flipNumerator`.
+- **Changement de plus, voulu** : Atelier, `0,5x/x` → « 1/2, pour x ≠ 0 » (avant « 0,5 » : revue du
+  2026-10-26 qui découlait de l'ancienne Q9) — `domaine-garde.test.ts`.
+- **Corpus** : `decimal-10`, `signes-06` justes pour l'Atelier (retirés) ; le registre reste connu
+  faux sur ces deux lignes, pour la décision D (il recopie la ligne à lettres).
+- **Mesures** : 41 rouges avant ; suite serveur 63 709 verts, 2 rouges (`domaine-garde`, corrigé ;
+  `deploy-prod` « CI toujours en cours », rouge aussi sur main) ; banc **1 982 modèles de prod × 8
+  tirages (15 856) : 0 différence** (témoin non construit) ; `check:incremental` 0 ; cliquet tenu ;
+  `lint:fast` propre.
+- **Revue `code-reviewer` opus, corrigé (8 rouges d'abord)** : (1) une grandeur passait en fraction
+  (`0,5 m/x → (1/(2x)) m`) et (2) une division par zéro aussi (`1,5/0 → 3/(2·0)`) — contraires à
+  E1 : `readsFraction` n'applique Q9 ni à un terme avec unité ni à un dénominateur nul ; (3)
+  `(2x+2)/(x+1)` restait (pas de nombre commun) alors que `(4x+4)/(2(x+1)) → 2(x+1)/(x+1)` :
+  réécrit aussi (`(3x+3)/(x+1)² → 3/(x+1)`). **Laissé (avant la PR, déjà ainsi)** : (4)
+  `meetsAcross` ne reconnaît que l'autre côté écrit primitif — `(2x+2)/(4x+4) → (x+1)/(2x+2)`,
+  `(4x+4)/(6x+6) → (2x+2)/(3x+3)`, `(2−2x)/(4(x−1))` sans `−1/2` conditionnel. Rien vu sur valeur,
+  domaine, idempotence (74 entrées), narration. Après correction : banc 0 différence,
+  `check:incremental` 0, cliquet tenu.

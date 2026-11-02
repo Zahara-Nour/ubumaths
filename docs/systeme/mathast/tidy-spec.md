@@ -188,10 +188,16 @@ pas sur la fraction telle qu'elle est écrite : `−(6x+3)/9`, `(x(6x+3))/(9x)`
 et `(6x+3)/9` donnent tous `(2x+1)/3`, et `tidy` reste idempotent. Deux
 garde-fous, issus de la revue de la PR :
 
-- **pas d'annulation cachée** : si la somme réduite devenait égale à un autre
-  facteur, les deux s'annuleraient — une simplification par une somme, qui
-  change le domaine. Le terme reste alors tel quel : `(2x+2)/(4(x+1))`
-  inchangé (et non `1/2`) ;
+- **pas d'annulation cachée** : si la somme réduite devient égale à un facteur
+  de l'autre côté de la barre, elle y reste des deux côtés, comme une base
+  écrite des deux côtés (S3, `keepDomain`) — simplifier par une somme
+  changerait le domaine. Le résultat est celui de l'écriture déjà réduite
+  (`signes-06`, David, 2026-11-02) : `(2x+2)/(4(x+1)) → (x+1)/(2(x+1))`
+  (comme `2(x+1)/(4(x+1))`, et non `1/2`), `(4x+4)/(2(x+1)) → 2(x+1)/(x+1)`,
+  `(2x+2)/(4(x+1)²) → 1/(2(x+1))`, même sans nombre commun :
+  `(2x+2)/(x+1) → 2(x+1)/(x+1)`, `(3x+3)/(x+1)² → 3/(x+1)` ; seul l'autre côté
+  écrit primitif est reconnu (`(2x+2)/(4x+4)` donne `(x+1)/(2x+2)`, non traité) ; `tidyWithConditions` rend `1/2, pour
+x ≠ −1`. Code : `mergeKeepingDomain`, `meetsAcross` ;
 - **pas de développement** : un nombre venu de l'autre côté de la barre reste
   en coefficient — `(x+1)/(1/2) → 2(x+1)`, `((x+1)/2)/(x+3) → (x+1)/(2(x+3))`.
   Un produit sans dénominateur ne se réduit que si un nombre commun se
@@ -237,11 +243,12 @@ nœud de parenthèse. Un arbre construit par le moteur, `x(2x+1) − (x²+x+1)` 
 ce nœud, est aplati par `flattenSumShallow` et le − est distribué
 (`x(2x+1) − x² − x − 1`). `tidyTerms` le contourne (§G.1) ; `tidy` non.
 
-### A.3 Le registre décimal (S1, David, 2026-10-22 ; Q3, Q8, Q9 le 2026-10-23)
+### A.3 Le registre décimal (S1, David, 2026-10-22 ; Q3, Q8 le 2026-10-23 ; Q9 le 2026-11-02)
 
 Un décimal reste décimal. Le coefficient d'un terme s'écrit en **fraction** si
-un opérande est une fraction — **une barre de fraction en est une** quand
-rien d'autre qu'un nombre n'est dessous (Q3, Q9) — ou si le résultat n'a pas
+un opérande est une fraction — **une barre de fraction en est une**, quel que
+soit son dénominateur (Q3, Q9), un facteur resté au dénominateur aussi
+(`0,5·x⁻¹`) — ou si le résultat n'a pas
 d'écriture décimale finie. Un entier ne compte ni pour l'un ni pour l'autre.
 Code : `Accumulator.decimal` / `.fraction` / `.bar`, `readsFraction` et
 `TidyTerm.decimal` dans `collect.ts`, rendu par `buildTermMagnitude`.
@@ -262,11 +269,19 @@ Code : `Accumulator.decimal` / `.fraction` / `.bar`, `readsFraction` et
 | `2,5x/5`     | `x/2`     |                                                   |
 | `(0,5x+1)/3` | `(x+2)/6` | table A.1                                         |
 
-**Dénominateur avec une variable (Q9)** : la barre ne compte pas comme
-fraction, les décimaux restent, au coefficient comme dans une somme —
-`0,5/x`, `0,5·x⁻¹ → 0,5/x`, `(0,5x+1)/(x+1)`, `x/(0,5x+1)`, `0,5x/x`
-inchangés. Une vraie fraction interne se chasse toujours :
-`(x/2+1)/(x+1) → (x+2)/(2(x+1))`.
+**Dénominateur avec une lettre (Q9, rouverte en entier par David le
+2026-11-02, chantier registre-reference)** : la barre compte comme fraction,
+les décimaux se chassent, au coefficient comme dans une somme — `0,5/x →
+1/(2x)`, `0,5·x⁻¹ → 1/(2x)`, `1,5/x → 3/(2x)`, `0,5/(x+1) → 1/(2(x+1))`,
+`(x+0,5)/(x−1) → (2x+1)/(2(x−1))`, `x/(0,5x+1) → 2x/(x+2)`, `(0,5x+1)/(x+1)
+→ (x+2)/(2(x+1))`, `0,5x/x → x/(2x)` (S3), quel que soit le dénominateur :
+`0,5√2/x → √2/(2x)`, `0,5/eˣ → 1/(2eˣ)`, `0,5/ln x → 1/(2 ln x)`. Une somme
+se range terme par terme : `0,5/x + 0,5 → 0,5 + 1/(2x)`. Sauf une grandeur, dont la
+valeur reste décimale (§D : `0,5 m/x` gardé), et une division par zéro, qui
+ressort telle quelle (`1,5/0`, jamais `3/(2·0)`). Avant (2026-10-23),
+ces décimaux restaient ; les raisons sont tombées (S3 accepte
+`(x+1)/(2(x+1))`, et une règle limitée à certains dénominateurs dépendrait de
+l'écriture).
 
 **Racine d'un décimal (Q8)** : un décimal **sous** la racine donne une fraction
 si la racine est irrationnelle — `√0,5 → √2/2`, `√0,2 → √5/5`,
@@ -645,3 +660,7 @@ des termes notamment).
 - 2026-10-26 : conditions écrites sur la lettre aux points irrationnels
   (`x ≠ √2`, `x ≠ tan(1)`), en intervalles (`x < −√2 ou x > √2`) ; `tan`,
   `arcsin`, `arccos` ont un domaine écrit (tidy-conditions § 5, PR A).
+- 2026-11-02 : Q9 rouverte en entier (un décimal sous une barre à lettre se
+  chasse : `0,5/x → 1/(2x)`) ; une somme réduite égale à un facteur de
+  l'autre côté reste des deux côtés au lieu de bloquer la réduction
+  (`(2x+2)/(4(x+1)) → (x+1)/(2(x+1))`) — chantier registre-reference.

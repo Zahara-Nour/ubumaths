@@ -179,8 +179,8 @@ type Accumulator = {
 	/** Une fraction a été lue (`√(1/4)`, `√0,5`) : le résultat s'écrit en fraction (S1, Q8). */
 	fraction: boolean;
 	/**
-	 * Une barre de fraction a été lue. Elle ne compte comme fraction que si le
-	 * dénominateur est un nombre (Q3, Q9) : `0,5/2 → 1/4`, mais `0,5/x` reste.
+	 * Une barre de fraction a été lue. Elle compte comme fraction, quel que
+	 * soit le dénominateur (Q3, Q9) : `0,5/2 → 1/4`, `0,5/x → 1/(2x)`.
 	 */
 	bar: boolean;
 	/**
@@ -1076,18 +1076,18 @@ function productOf(parts: readonly NumberPart[]): bigint {
  * - le facteur numérique commun se simplifie, la barre de fraction reste
  *   unique : `(6x+3)/9` → `(2x+1)/3`, jamais `2x/3 + 1/3` ;
  * - les fractions numériques internes sont chassées : `(x/2+1)/3` → `(x+2)/6`,
- *   `1/(x/2+1)` → `2/(x+2)` ; un décimal ne se chasse que sous un
- *   dénominateur numérique (Q9) : `(0,5x+1)/3` → `(x+2)/6`, mais
- *   `(0,5x+1)/(x+1)` reste ;
+ *   `1/(x/2+1)` → `2/(x+2)` ; un décimal aussi, quel que soit le
+ *   dénominateur (Q9, rouverte le 2026-11-02) : `(0,5x+1)/3` → `(x+2)/6`,
+ *   `(0,5x+1)/(x+1)` → `(x+2)/(2(x+1))` ;
  * - le signe − passe dans l'unique numérateur, quel que soit son degré, si le
  *   nombre de signes − y diminue : `(6x−3)/(−9)` → `(1−2x)/3`,
  *   `(−6x²+3)/(−9)` → `(2x²−1)/3` ; jamais à égalité ni devant un premier
  *   terme négatif : `(3x²−6x+3)/(−9)` → `−(x²−2x+1)/3`, `(3x²−3)/(−6x)` →
  *   `−(x²−1)/(2x)` ;
  * - seul le NOMBRE se simplifie : `(6x²−3x)/(3x)` → `(2x²−x)/x`. Si la
- *   réduction faisait apparaître une somme égale à un autre facteur
- *   (`(2x+2)/(4(x+1))`), les deux s'annuleraient — simplifier par `x+1` change
- *   le domaine : le terme reste alors tel quel.
+ *   réduction fait apparaître une somme égale à un facteur de l'autre côté
+ *   (`(2x+2)/(4(x+1))`), elle y reste des deux côtés (S3) — simplifier par
+ *   `x+1` changerait le domaine : `(x+1)/(2(x+1))`.
  *
  * Elle travaille sur le terme ACCUMULÉ, pas sur la fraction écrite : `−(6x+3)/9`
  * et `(x(6x+3))/(9x)` sont le même terme que `(6x+3)/9`, et `tidy` reste
@@ -1106,27 +1106,19 @@ function reduceFractionOfSums(term: TidyTerm, settings: Settings, watch: FamilyW
 		if (sum !== null) sums.push(sum);
 	});
 	if (sums.length === 0) return term;
-	// Sous une barre dont le dénominateur a une variable, les décimaux d'une
-	// somme restent (Q9) : `(0,5x+1)/(x+1)`, `x/(0,5x+1)` ; une fraction lue
-	// à côté se chasse, eux avec (revue) : `(x/3+0,5)/x → (2x+3)/(6x)`
-	const bases = sums.map(({ index }) => term.factors[index].base);
-	if (
-		hasVariableDenominator(term.factors) &&
-		bases.some(hasDecimalLiteral) &&
-		!bases.some((base) => findNodes(base, (n) => n.type === 'division').length > 0)
-	) {
-		return term;
-	}
 
 	// Les nombres de part et d'autre de la barre, chacun à sa place. Le
 	// dénominateur d'une fraction interne change de côté (`(x/2+1)/3` : le 2 descend).
 	const top: NumberPart[] = [{ value: absBigInt(term.coefficient.n), home: 'coefficient' }];
 	const bottom: NumberPart[] = [{ value: term.coefficient.d, home: 'coefficient' }];
-	for (const { index, content } of sums) {
+	for (const { index, content, primitive } of sums) {
 		const exponent = term.factors[index].exponent.n;
 		const power = exponent < 0n ? -exponent : exponent;
-		// Une puissance de somme cède son nombre au coefficient : `((6x+3)/9)²` → `(2x+1)²/9`
-		const home = power === 1n ? index : 'coefficient';
+		// Une puissance de somme cède son nombre au coefficient : `((6x+3)/9)²` → `(2x+1)²/9` ;
+		// une somme qui rejoint un facteur de l'autre côté aussi, pour s'écrire
+		// comme lui (`signes-06`) : `(4x+4)/(2(x+1))` → `2(x+1)/(x+1)`
+		const home =
+			power === 1n && !meetsAcross(term, index, primitive, settings) ? index : 'coefficient';
 		const [own, other] = exponent > 0n ? [top, bottom] : [bottom, top];
 		own.push({ value: content.n ** power, home });
 		other.push({ value: content.d ** power, home: 'coefficient' });
@@ -1134,9 +1126,15 @@ function reduceFractionOfSums(term: TidyTerm, settings: Settings, watch: FamilyW
 
 	const common = gcd(productOf(top), productOf(bottom));
 	const innerFraction = sums.some(({ content }) => content.d !== 1n);
+	// Une somme qui rejoint un facteur de l'autre côté se réécrit même sans
+	// nombre commun (revue) : `(2x+2)/(x+1)` → `2(x+1)/(x+1)`, comme écrit ainsi
+	const meets = sums.some(
+		({ index, content, primitive }) =>
+			!isOneRational(content) && meetsAcross(term, index, primitive, settings)
+	);
 	// Sans dénominateur, seul un nombre commun justifie de toucher au terme
 	if (!hasDenominator && common === 1n) return term;
-	if (common === 1n && !innerFraction) return term;
+	if (common === 1n && !innerFraction && !meets) return term;
 
 	divideParts(top, common);
 	divideParts(bottom, common);
@@ -1159,10 +1157,61 @@ function reduceFractionOfSums(term: TidyTerm, settings: Settings, watch: FamilyW
 
 	if (!hasDenominator && coefficient.d !== 1n) return term;
 
-	const reduced = mergeFactors(factors, splitKeys(term.factors));
-	if (reduced === null) return term;
 	watch?.add('other');
-	return { ...term, coefficient, factors: reduced };
+	return { ...term, coefficient, factors: mergeKeepingDomain(factors, settings, watch) };
+}
+
+/**
+ * La somme, réduite à sa partie primitive, est-elle un facteur de l'autre côté
+ * de la barre ? `4x+4` face à `x+1` dans `(4x+4)/(2(x+1))`.
+ */
+function meetsAcross(
+	term: TidyTerm,
+	index: number,
+	primitive: readonly TidyTerm[],
+	settings: Settings
+): boolean {
+	const below = term.factors[index].exponent.n < 0n;
+	const key = factorKey(buildSum(ordered(primitive, settings)), settings);
+	return term.factors.some(
+		(factor, other) => other !== index && factor.key === key && factor.exponent.n < 0n !== below
+	);
+}
+
+/**
+ * Les facteurs égaux réunis après la réduction, selon S3 (`keepDomain`) : une
+ * somme réduite qui rencontre un facteur de l'autre côté de la barre y reste
+ * des deux côtés, comme si la fraction avait été écrite réduite (`signes-06`,
+ * David, 2026-11-02) : `(2x+2)/(4(x+1))` → `(x+1)/(2(x+1))`, comme
+ * `2(x+1)/(4(x+1))` ; `(2x+2)/(4(x+1)²)` → `1/(2(x+1))`. Du même côté, ils se
+ * multiplient : `(6x+3)(4x+2)/12` → `(2x+1)²/2`.
+ */
+function mergeKeepingDomain(
+	factors: readonly TidyFactor[],
+	settings: Settings,
+	watch: FamilyWatch
+): TidyFactor[] {
+	const merged = new Map<string, MutableFactor>();
+	for (const { base, exponent, key } of factors) {
+		const denominator = isNegativeRational(exponent) ? exponent : ZERO;
+		const existing = merged.get(key);
+		if (existing === undefined) {
+			merged.set(key, {
+				base,
+				exponent,
+				key,
+				denominator,
+				crossed: false,
+				grouped: false,
+				barred: false
+			});
+			continue;
+		}
+		existing.crossed ||= isNegativeRational(existing.exponent) !== isNegativeRational(exponent);
+		existing.exponent = addRational(existing.exponent, exponent);
+		existing.denominator = addRational(existing.denominator, denominator);
+	}
+	return sortFactors([...merged.values()].flatMap((factor) => keepDomain(factor, settings, watch)));
 }
 
 /**
@@ -1263,7 +1312,7 @@ function toTerm(
 		quantity,
 		decimal:
 			(acc.decimal || acc.decimalRoot) &&
-			!readsFraction(acc, factors) &&
+			!readsFraction(acc, factors, unit !== null) &&
 			writesDecimal(coefficient),
 		written:
 			settings.unitChoice === 'written' && unit !== null && quantity !== null
@@ -1558,15 +1607,28 @@ function writesDecimal(coefficient: Rational): boolean {
 }
 
 /**
- * Le terme a-t-il lu une fraction (S1) ? Une barre n'en est une que si rien
- * d'autre qu'un nombre n'y reste dessous (Q3, Q9) : `0,5/2 → 1/4`,
- * `(0,5x+1)/3 → (x+2)/6`, mais `0,5/x` et `(0,5x+1)/(x+1)` restent. `0,5·x⁻¹`
- * s'écrit `0,5/x`, relu de même : `tidy` reste idempotent (revue du lot 4b).
+ * Le terme a-t-il lu une fraction (S1) ? Une barre en est une, quel que soit
+ * son dénominateur (Q3, Q9 rouverte le 2026-11-02) : `0,5/2 → 1/4`,
+ * `0,5/x → 1/(2x)`, `(0,5x+1)/(x+1) → (x+2)/(2(x+1))`. Un facteur resté au
+ * dénominateur aussi : `0,5·x⁻¹` s'écrit `1/(2x)`, relu de même — `tidy`
+ * reste idempotent (B1, revue du lot 4b).
+ *
+ * Sauf (revue de la PR, E1) pour une grandeur, dont la valeur reste décimale
+ * (§D : `0,5 m/x`), et pour une division par zéro, qui ressort telle quelle
+ * (`1,5/0`, jamais `3/(2·0)`) : là, seul un dénominateur numérique compte.
  */
-function readsFraction(acc: Accumulator, factors: readonly TidyFactor[]): boolean {
+function readsFraction(
+	acc: Accumulator,
+	factors: readonly TidyFactor[],
+	hasUnit: boolean
+): boolean {
+	const lettered = hasVariableDenominator(factors);
+	const keepsDecimal =
+		hasUnit || factors.some((factor) => factor.exponent.n < 0n && isZeroNumberNode(factor.base));
 	return (
 		acc.fraction ||
-		(acc.bar && !hasVariableDenominator(factors)) ||
+		(acc.bar && !lettered) ||
+		(lettered && !keepsDecimal) ||
 		(acc.decimalRoot && hasRootFactor(factors))
 	);
 }
