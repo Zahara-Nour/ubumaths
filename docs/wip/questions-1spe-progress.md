@@ -9,11 +9,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 6a rangé en prod (après #2228), page à cocher publiée._
+_Mis à jour le 2026-11-02, lot 6a publié (7 / 7)._
 
-- **État** : lot 6 « à savoir » (D2, D29) : 6a (264, 391, 392, 290, 404, 336, 350) en prod, 7 brouillons rangés et tagués ; page à cocher https://claude.ai/artifact/Y21yTgK4VdnefixEr5kfCV ; 6b (412, 310, 313, 311, 415, 316, 329) à écrire.
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 7), puis `publier-lot` en simulation sur `scripts/questions/1spe-savoir-a` ; ensuite lot 6b (même gabarit, `lot-1spe-savoir-a.py`).
-- **En attente de David** : relecture de la page à cocher, puis `publier-lot --publier`.
+- **État** : lot 6 « à savoir » (D2, D29) : 6a (264, 391, 392, 290, 404, 336, 350) **publié** (7 verdicts ok) ; 6b (412, 310, 313, 311, 415, 316, 329) à écrire.
+- **Prochaine action** : lot 6b — recréer une branche dans le worktree, script sur le gabarit `lot-1spe-savoir-a.py` (Produit scalaire › À savoir 1-6, Géométrie repérée › À savoir 1), distracteurs du tableau D29 (§ 23).
+- **En attente de David** : rien.
 - **Pièges en cours** : **pas de `cleanCoefficients` sur un modèle sans variable** (`\sigma(X)` rendu « σX ») ; `blankDefaults.acceptDecimal` obligatoire (réponses numériques) ; **variable `e` = Euler** ; choix mélangés → jamais « première phrase » dans un corrigé ; `col()` hors `$…$` (`colt`) ; `Doc-inchangée:` dans un COMMIT (≤ 100 caractères) ; aucun trailer `Claude-Session:` ; worktree non lié à Supabase → copier `supabase/.temp/{project-ref,linked-project.json,pooler-url,postgres-version}` du dépôt principal avant `migration list --linked`.
 - **Worktree / branche** : `../ubumaths-wt-questions-1spe` (détaché sur `origin/main`, à recréer en branche pour 6b).
 - **Ensuite (D7)** : lot 6b, restes (produit scalaire formules, second degré / exponentielle / trigo, logique et listes Python), lots en attente d'un outil.
@@ -1113,7 +1113,7 @@ sont `published` en base. **Lot 5-variables aléatoires clos.**
 « E X² » → `{E(X)}^2` (rendu « (E(X))² ») ; réponses colorées dans le texte hors formule → `colt` (`$…$`) ; les choix
 sont mélangés à l'affichage, le corrigé nomme la bonne réponse, jamais son rang.
 
-## 23. Lot 6 « à savoir » (D2) : faits à connaître (D7)
+## 23. Lot 6 « à savoir » (D2) : faits à connaître (D7 ; 6a CLOS : 7 publiés le 2026-11-02, #2224, #2228)
 
 _Relevé prod du 2026-11-02 (MCP) : les 14 points de D2 (264, 391, 392, 290, 404, 310, 412, 313, 311, 415, 316, 329, 336,
 350), tous « connaissance », toujours sans modèle. Voisin le plus proche : a86442c1 « Calculer une dérivée » (Dérivation ›
@@ -1169,3 +1169,6 @@ l'étape 4 ; `security-auditor` : aucun finding (diff avec le gabarit = les lign
 
 **Page à cocher** : https://claude.ai/artifact/Y21yTgK4VdnefixEr5kfCV (7 fiches, aucune alerte ; collection `verdicts` vide à
 la publication ; rendu vérifié à 390 px, sans débordement).
+
+**Publication 6a** : 7 verdicts « ok » sans commentaire (lus en base de l'artefact) ; `publier-lot` simulé vert puis lancé
+par David avec `--publier` ; relu en base (MCP) : 7 `published`.
