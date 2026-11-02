@@ -115,7 +115,7 @@
 			"correction": {
 				"steps": [
 					"{{if:g==0|$f$ **croissante** sur $I$ : les images sont rangées **dans le même ordre** que les nombres.|$f$ **décroissante** sur $I$ : les images sont rangées **dans l'ordre contraire** des nombres.}}",
-					"$a<b$ donc \\textcolor{{{color:primary.0}}}{{{if:g==0|f(a)\\leqslant f(b)|f(a)\\geqslant f(b)}}}."
+					"$a<b$ donc $\\textcolor{{{color:primary.0}}}{{{if:g==0|f(a)\\leqslant f(b)|f(a)\\geqslant f(b)}}}$."
 				]
 			}
 		}

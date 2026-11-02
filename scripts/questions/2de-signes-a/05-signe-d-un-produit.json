@@ -68,7 +68,7 @@
 			"correction": {
 				"steps": [
 					"En $x={{x0}}$, le facteur ${{a}}x{{b;+}}$ vaut ${{u}}$ et le facteur ${{c}}x{{d;+}}$ vaut ${{w}}$.",
-					"Un facteur {{if:u>0|positif|négatif}}, un facteur {{if:w>0|positif|négatif}} : par la **règle des signes**, $A({{x0}})$ est \\textcolor{{{color:primary.0}}}{\\text{strictement {{if:v>0|positif|négatif}}}}."
+					"Un facteur {{if:u>0|positif|négatif}}, un facteur {{if:w>0|positif|négatif}} : par la **règle des signes**, $A({{x0}})$ est $\\textcolor{{{color:primary.0}}}{\\text{strictement {{if:v>0|positif|négatif}}}}$."
 				]
 			}
 		},
@@ -109,7 +109,7 @@
 			"correction": {
 				"steps": [
 					"En $x={{r1}}$, le facteur ${{a}}x{{b;+}}$ vaut $0$.",
-					"Un produit dont un facteur est nul est nul : $A({{r1}})$ est \\textcolor{{{color:primary.0}}}{\\text{nul}}."
+					"Un produit dont un facteur est nul est nul : $A({{r1}})$ est $\\textcolor{{{color:primary.0}}}{\\text{nul}}$."
 				]
 			}
 		},
@@ -161,7 +161,7 @@
 			"correction": {
 				"steps": [
 					"Pour $x\\in\\left]{{p}}\\,;{{q}}\\right[$ : ${{if:s1>0|x{{eval:-(p);+}}|{{p}}-x}}$ est {{if:u>0|positif|négatif}} et ${{if:s2>0|x{{eval:-(q);+}}|{{q}}-x}}$ est {{if:w>0|positif|négatif}}.",
-					"Par la **règle des signes** du produit, $A(x)$ est \\textcolor{{{color:primary.0}}}{\\text{strictement {{if:v>0|positif|négatif}}}}."
+					"Par la **règle des signes** du produit, $A(x)$ est $\\textcolor{{{color:primary.0}}}{\\text{strictement {{if:v>0|positif|négatif}}}}$."
 				]
 			}
 		},
@@ -217,7 +217,7 @@
 			"correction": {
 				"steps": [
 					"Pour $x\\in{{if:g==0|\\left]-\\infty\\,;{{p}}\\right[|\\left]{{q}}\\,;+\\infty\\right[}}$ : ${{if:s1>0|x{{eval:-(p);+}}|{{p}}-x}}$ est {{if:u>0|positif|négatif}} et ${{if:s2>0|x{{eval:-(q);+}}|{{q}}-x}}$ est {{if:w>0|positif|négatif}}.",
-					"Par la **règle des signes** du produit, $A(x)$ est \\textcolor{{{color:primary.0}}}{\\text{strictement {{if:v>0|positif|négatif}}}}."
+					"Par la **règle des signes** du produit, $A(x)$ est $\\textcolor{{{color:primary.0}}}{\\text{strictement {{if:v>0|positif|négatif}}}}$."
 				]
 			}
 		}

@@ -75,7 +75,7 @@
 			"correction": {
 				"steps": [
 					"Le polygone passe, à la borne droite de chaque classe, par la fréquence cumulée : la part des valeurs **inférieures** à cette borne.",
-					"À l'abscisse ${{eval:(x0)+(c)*(h)}}$, on lit \\textcolor{{{color:primary.0}}}{{{fc}}\\,\\%}."
+					"À l'abscisse ${{eval:(x0)+(c)*(h)}}$, on lit $\\textcolor{{{color:primary.0}}}{{{fc}}\\,\\%}$."
 				]
 			}
 		},
@@ -133,7 +133,7 @@
 				"steps": [
 					"La médiane est l'abscisse du point du polygone d'ordonnée $50\\,\\%$.",
 					"```frequences-cumulees\naxes: Durée (min) ; Fréquence cumulée\nlecture: médiane\n[{{eval:(x0)+0*(h)}} ; {{eval:(x0)+1*(h)}}[ = {{n1}}\n[{{eval:(x0)+1*(h)}} ; {{eval:(x0)+2*(h)}}[ = {{n2}}\n[{{eval:(x0)+2*(h)}} ; {{eval:(x0)+3*(h)}}[ = {{n3}}\n[{{eval:(x0)+3*(h)}} ; {{eval:(x0)+4*(h)}}[ = {{n4}}\n[{{eval:(x0)+4*(h)}} ; {{eval:(x0)+5*(h)}}[ = {{n5}}\ndescription: Polygone des fréquences cumulées croissantes de cinq classes.\n```",
-					"On lit \\textcolor{{{color:primary.0}}}{{{eval:(x0)+2*(h)}}} minutes."
+					"On lit $\\textcolor{{{color:primary.0}}}{{{eval:(x0)+2*(h)}}}$ minutes."
 				]
 			}
 		}

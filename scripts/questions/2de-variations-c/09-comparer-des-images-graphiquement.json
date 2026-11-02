@@ -44,7 +44,7 @@
 			"correction": {
 				"steps": [
 					"$f(u)$ et $f(v)$ sont les **ordonnées** de $A$ et de $B$ : on compare leurs hauteurs.",
-					"{{if:fu<fv|$A$ est plus bas que $B$ : \\textcolor{{{color:primary.0}}}{f(u)<f(v)}.|$A$ est plus haut que $B$ : \\textcolor{{{color:primary.0}}}{f(u)>f(v)}.}}"
+					"{{if:fu<fv|$A$ est plus bas que $B$ : $\\textcolor{{{color:primary.0}}}{f(u)<f(v)}$.|$A$ est plus haut que $B$ : $\\textcolor{{{color:primary.0}}}{f(u)>f(v)}$.}}"
 				]
 			}
 		},
@@ -77,7 +77,7 @@
 			"correction": {
 				"steps": [
 					"$f(u)$ et $f(v)$ sont les **ordonnées** de $A$ et de $B$ : on compare leurs hauteurs.",
-					"{{if:fu<fv|$A$ est plus bas que $B$ : \\textcolor{{{color:primary.0}}}{f(u)<f(v)}.|$A$ est plus haut que $B$ : \\textcolor{{{color:primary.0}}}{f(u)>f(v)}.}}"
+					"{{if:fu<fv|$A$ est plus bas que $B$ : $\\textcolor{{{color:primary.0}}}{f(u)<f(v)}$.|$A$ est plus haut que $B$ : $\\textcolor{{{color:primary.0}}}{f(u)>f(v)}$.}}"
 				]
 			}
 		},
@@ -110,7 +110,7 @@
 			"correction": {
 				"steps": [
 					"$f(u)$ et $f(v)$ sont les **ordonnées** de $A$ et de $B$ : on compare leurs hauteurs.",
-					"{{if:fu<fv|$A$ est plus bas que $B$ : \\textcolor{{{color:primary.0}}}{f(u)<f(v)}.|$A$ est plus haut que $B$ : \\textcolor{{{color:primary.0}}}{f(u)>f(v)}.}}"
+					"{{if:fu<fv|$A$ est plus bas que $B$ : $\\textcolor{{{color:primary.0}}}{f(u)<f(v)}$.|$A$ est plus haut que $B$ : $\\textcolor{{{color:primary.0}}}{f(u)>f(v)}$.}}"
 				]
 			}
 		},
@@ -143,7 +143,7 @@
 			"correction": {
 				"steps": [
 					"$f(u)$ et $f(v)$ sont les **ordonnées** de $A$ et de $B$ : on compare leurs hauteurs.",
-					"$A$ et $B$ sont à la même hauteur : \\textcolor{{{color:primary.0}}}{f(u)=f(v)}."
+					"$A$ et $B$ sont à la même hauteur : $\\textcolor{{{color:primary.0}}}{f(u)=f(v)}$."
 				]
 			}
 		}

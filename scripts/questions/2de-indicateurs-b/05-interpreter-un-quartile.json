@@ -34,7 +34,7 @@
 			"correction": {
 				"steps": [
 					"${{if:g==0|Q_1|Q_3}}$ est la plus petite valeur de la série telle qu'**au moins** ${{if:g==0|25|75}}\\,\\%$ des valeurs lui soient inférieures ou égales.",
-					"Donc \\textcolor{{{color:primary.0}}}{\\text{au moins }{{if:g==0|25|75}}\\,\\%\\text{ des valeurs sont} \\leqslant {{q}}}. Le quartile ne dit rien de la moyenne."
+					"Donc $\\textcolor{{{color:primary.0}}}{\\text{au moins }{{if:g==0|25|75}}\\,\\%\\text{ des valeurs sont} \\leqslant {{q}}}$. Le quartile ne dit rien de la moyenne."
 				]
 			}
 		},

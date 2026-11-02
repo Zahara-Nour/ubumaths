@@ -1,0 +1,144 @@
+{
+	"id": "afbfa8c6-ad87-40ed-83e9-2e29cec24480",
+	"title": "Pourcentages de pourcentages : effectifs",
+	"description": "Situation à ensembles emboîtés : effectif d'une partie d'une partie ; trois proportions successives",
+	"grades": ["2"],
+	"theme": "Proportionnalité",
+	"domain": "Pourcentages",
+	"subdomain": "Problèmes",
+	"level": 2,
+	"delay": 60,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Une ville compte ${{n}}$ habitants. ${{p1}}\\,\\%$ d'entre eux ont un emploi ; parmi ceux qui ont un emploi, ${{p2}}\\,\\%$ travaillent dans une autre ville.\n\nCombien d'habitants travaillent dans une autre ville ?\n\n$?$ habitants",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2000|4000|5000|8000|10000|20000"
+				},
+				{
+					"name": "p1",
+					"expression": "40|50|60|75|80"
+				},
+				{
+					"name": "p2",
+					"expression": "10|20|25|30|40|60"
+				}
+			],
+			"conditions": ["mod((n)*(p1)*(p2),10000) == 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n)*(p1)*(p2)/10000}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Habitants qui ont un emploi : $\\dfrac{ {{p1}} }{100}\\times {{n}}={{eval:(n)*(p1)/100}}$.",
+					"Parmi eux : $\\dfrac{ {{p2}} }{100}\\times {{eval:(n)*(p1)/100}}=\\textcolor{{{color:primary.0}}}{{{eval:(n)*(p1)*(p2)/10000}}}$ habitants.",
+					"On peut aussi multiplier les proportions : ${{eval:(p1)/100;d}}\\times{{eval:(p2)/100;d}}={{eval:(p1)*(p2)/10000;d}}$, et ${{eval:(p1)*(p2)/10000;d}}\\times {{n}}={{eval:(n)*(p1)*(p2)/10000}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un lycée, ${{p1}}\\,\\%$ des élèves sont des filles ; parmi les filles, ${{p2}}\\,\\%$ sont internes ; parmi les filles internes, ${{p3}}\\,\\%$ font du sport le mercredi.\n\nQuelle proportion des élèves du lycée sont des filles internes qui font du sport le mercredi ?\n\nProportion : $?\\,\\%$",
+			"variables": [
+				{
+					"name": "p1",
+					"expression": "40|50|60"
+				},
+				{
+					"name": "p2",
+					"expression": "10|20|50"
+				},
+				{
+					"name": "p3",
+					"expression": "25|50|80"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(p1)*(p2)*(p3)/10000;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Trois ensembles emboîtés : on multiplie les trois proportions.",
+					"${{eval:(p1)/100;d}}\\times{{eval:(p2)/100;d}}\\times{{eval:(p3)/100;d}}={{eval:(p1)*(p2)*(p3)/1000000;d}}$, soit $\\textcolor{{{color:primary.0}}}{{{eval:(p1)*(p2)*(p3)/10000;d}}\\,\\%}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["900"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "5000",
+				"p1": "60",
+				"p2": "30"
+			},
+			"description": "5 000, 60 %, 30 % : 900",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1500"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "5000",
+				"p1": "60",
+				"p2": "30"
+			},
+			"description": "Erreur : seulement 30 % de 5 000 (1 500)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["4500"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "5000",
+				"p1": "60",
+				"p2": "30"
+			},
+			"description": "Erreur : 90 % de 5 000 (4 500)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p1": "50",
+				"p2": "20",
+				"p3": "50"
+			},
+			"description": "50 %, 20 %, 50 % : 5 %",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["120"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"p1": "50",
+				"p2": "20",
+				"p3": "50"
+			},
+			"description": "Erreur : somme (120)",
+			"variationIndex": 1
+		}
+	]
+}

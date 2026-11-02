@@ -38,7 +38,7 @@
 			"correction": {
 				"steps": [
 					"La proportion est $\\dfrac{\\text{effectif de la partie}}{\\text{effectif total}}=\\dfrac{ {{k}} }{ {{n}} }={{eval:(k)/(n);d}}$.",
-					"En pourcentage : ${{eval:(k)/(n);d}}=\\dfrac{ {{p}} }{100}$, soit \\textcolor{{{color:primary.0}}}{{{p}}\\,\\%}."
+					"En pourcentage : ${{eval:(k)/(n);d}}=\\dfrac{ {{p}} }{100}$, soit $\\textcolor{{{color:primary.0}}}{{{p}}\\,\\%}$."
 				]
 			}
 		},

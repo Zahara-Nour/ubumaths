@@ -36,7 +36,7 @@
 			"correction": {
 				"steps": [
 					"$A(x\\,;\\,y)$ est sur $\\mathcal{C}_f$ si et seulement si $y=f(x)$ : l'**abscisse** est le nombre de départ, l'**ordonnée** son image.",
-					"Ici $\\textcolor{{{color:primary.0}}}{f({{a}})={{b}}}$ : \\textcolor{{{color:primary.0}}}{${{b}}$ est l'image de ${{a}}$}, et \\textcolor{{{color:primary.0}}}{${{a}}$ est un antécédent de ${{b}}$}."
+					"Ici $\\textcolor{{{color:primary.0}}}{f({{a}})={{b}}}$ : $\\textcolor{{{color:primary.0}}}{{{b}}\\text{ est l'image de }{{a}}}$, et $\\textcolor{{{color:primary.0}}}{{{a}}\\text{ est un antécédent de }{{b}}}$."
 				]
 			}
 		},

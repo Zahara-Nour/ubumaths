@@ -1,0 +1,279 @@
+{
+	"id": "0cecc7f2-9741-4d83-ad08-99b5d0c3007c",
+	"title": "Signe des fonctions de référence",
+	"description": "Signe de x², de 1/x et de |x| selon x ; signe d'une image sans calcul (pièges : x² « négatif pour x < 0 », 1/x « toujours positif », oubli du cas nul)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Généralités",
+	"subdomain": "Signe",
+	"level": 1,
+	"delay": 60,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Pour tout réel $x${{if:g==1| non nul|}}, le nombre $x^2$ est :\n\n```choix\nmelanger: non\n- strictement positif\n- positif ou nul\n- strictement négatif\n- négatif ou nul\n- de signe variable : il dépend de $x$\n```",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "0|1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-(g)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un carré est toujours positif ou nul : $x^2\\geqslant 0$, et $x^2=0$ seulement pour $x=0$.",
+					"{{if:g==1|Ici $x\\neq 0$ : $x^2$ est $\\textcolor{{{color:primary.0}}}{\\text{strictement positif}}$.|Il vaut $0$ pour $x=0$ : $x^2$ est $\\textcolor{{{color:primary.0}}}{\\text{positif ou nul}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "Pour tout réel $x{{if:g==1|<|>}}0$, le nombre $\\dfrac{1}{x}$ est :\n\n```choix\nmelanger: non\n- strictement positif\n- positif ou nul\n- strictement négatif\n- négatif ou nul\n- de signe variable : il dépend de $x$\n```",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "0|1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*(g)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{1}{x}$ est du **signe de $x$** (on divise $1$, positif, par $x$) et n'est jamais nul.",
+					"Ici $x{{if:g==1|<|>}}0$ : $\\dfrac{1}{x}$ est $\\textcolor{{{color:primary.0}}}{\\text{strictement {{if:g==1|négatif|positif}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout réel $x${{if:g==1| non nul|}}, le nombre $\\lvert x\\rvert$ est :\n\n```choix\nmelanger: non\n- strictement positif\n- positif ou nul\n- strictement négatif\n- négatif ou nul\n- de signe variable : il dépend de $x$\n```",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "0|1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-(g)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\lvert x\\rvert$ est la distance de $x$ à $0$ : elle est positive ou nulle, et nulle seulement pour $x=0$.",
+					"{{if:g==1|Ici $x\\neq 0$ : $\\lvert x\\rvert$ est $\\textcolor{{{color:primary.0}}}{\\text{strictement positif}}$.|Elle vaut $0$ pour $x=0$ : $\\lvert x\\rvert$ est $\\textcolor{{{color:primary.0}}}{\\text{positif ou nul}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "On note $f$ la fonction inverse : $f(x)=\\dfrac{1}{x}$.\n\nSans calculer, quel est le signe de $f\\left(-\\dfrac{ {{p}} }{ {{q}} }\\right)$ ?\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["gcd(p, q) == 1", "p != q"],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{1}{x}$ est du signe de $x$.",
+					"$-\\dfrac{ {{p}} }{ {{q}} }<0$, donc son image est $\\textcolor{{{color:primary.0}}}{\\text{strictement négative}}$."
+				]
+			}
+		},
+		{
+			"statement": "On note $f$ la fonction carré : $f(x)=x^2$.\n\nSans calculer, quel est le signe de $f\\left(-\\dfrac{ {{p}} }{ {{q}} }\\right)$ ?\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["gcd(p, q) == 1", "p != q"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un carré est positif ou nul, et nul seulement en $0$.",
+					"$-\\dfrac{ {{p}} }{ {{q}} }\\neq 0$, donc son carré est $\\textcolor{{{color:primary.0}}}{\\text{strictement positif}}$, même si le nombre est négatif."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"g": "0"
+			},
+			"description": "x² positif ou nul",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"g": "0"
+			},
+			"description": "Erreur : strictement positif (oubli de 0)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"g": "1"
+			},
+			"description": "x² pour x ≠ 0 : strictement positif",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"g": "1"
+			},
+			"description": "Erreur : signe variable",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"g": "0"
+			},
+			"description": "1/x pour x > 0 : strictement positif",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"g": "1"
+			},
+			"description": "1/x pour x < 0 : strictement négatif",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"g": "1"
+			},
+			"description": "Erreur : 1/x toujours positif",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"g": "0"
+			},
+			"description": "|x| positif ou nul",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"g": "1"
+			},
+			"description": "|x| pour x ≠ 0 : strictement positif",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "2",
+				"q": "3"
+			},
+			"description": "f(−2/3) < 0 pour l'inverse",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"p": "2",
+				"q": "3"
+			},
+			"description": "Erreur : positif",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "2",
+				"q": "3"
+			},
+			"description": "(−2/3)² > 0",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"p": "2",
+				"q": "3"
+			},
+			"description": "Erreur : négatif « car le nombre est négatif »",
+			"variationIndex": 4
+		}
+	]
+}

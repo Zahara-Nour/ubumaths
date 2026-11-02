@@ -102,7 +102,7 @@
 			"correction": {
 				"steps": [
 					"Une valeur ajoutée **au-dessus** de la moyenne la fait augmenter, **au-dessous** la fait diminuer, **égale** à la moyenne ne la change pas.",
-					"{{if:s==0|${{v}}>{{m}}$ : la valeur est au-dessus de la moyenne, qui \\textcolor{{{color:primary.0}}}{\\text{augmente}}.| }}{{if:s==1|${{v}}={{m}}$ : la valeur est égale à la moyenne, qui \\textcolor{{{color:primary.0}}}{\\text{ne change pas}}.| }}{{if:s==2|${{v}}<{{m}}$ : la valeur est au-dessous de la moyenne, qui \\textcolor{{{color:primary.0}}}{\\text{diminue}}.| }}"
+					"{{if:s==0|${{v}}>{{m}}$ : la valeur est au-dessus de la moyenne, qui $\\textcolor{{{color:primary.0}}}{\\text{augmente}}$.| }}{{if:s==1|${{v}}={{m}}$ : la valeur est égale à la moyenne, qui $\\textcolor{{{color:primary.0}}}{\\text{ne change pas}}$.| }}{{if:s==2|${{v}}<{{m}}$ : la valeur est au-dessous de la moyenne, qui $\\textcolor{{{color:primary.0}}}{\\text{diminue}}$.| }}"
 				]
 			}
 		}

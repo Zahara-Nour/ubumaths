@@ -68,7 +68,7 @@
 			"correction": {
 				"steps": [
 					"En $x={{x0}}$, le numérateur ${{a}}x{{b;+}}$ vaut ${{u}}$ et le dénominateur ${{c}}x{{d;+}}$ vaut ${{w}}$.",
-					"Numérateur {{if:u>0|positif|négatif}}, dénominateur {{if:w>0|positif|négatif}} : par la **règle des signes**, $B({{x0}})$ est \\textcolor{{{color:primary.0}}}{\\text{strictement {{if:v>0|positif|négatif}}}}."
+					"Numérateur {{if:u>0|positif|négatif}}, dénominateur {{if:w>0|positif|négatif}} : par la **règle des signes**, $B({{x0}})$ est $\\textcolor{{{color:primary.0}}}{\\text{strictement {{if:v>0|positif|négatif}}}}$."
 				]
 			}
 		},
@@ -109,7 +109,7 @@
 			"correction": {
 				"steps": [
 					"En $x={{r1}}$, le numérateur ${{a}}x{{b;+}}$ vaut $0$ et le dénominateur ${{c}}x{{d;+}}$ vaut ${{eval:(c)*(r1)+(d)}}\\neq 0$.",
-					"Un quotient de numérateur nul est nul : $B({{r1}})$ est \\textcolor{{{color:primary.0}}}{\\text{nul}}."
+					"Un quotient de numérateur nul est nul : $B({{r1}})$ est $\\textcolor{{{color:primary.0}}}{\\text{nul}}$."
 				]
 			}
 		},
@@ -150,7 +150,7 @@
 			"correction": {
 				"steps": [
 					"En $x={{r2}}$, le dénominateur ${{c}}x{{d;+}}$ vaut $0$.",
-					"On ne divise pas par $0$ : $B({{r2}})$ \\textcolor{{{color:primary.0}}}{\\text{n'existe pas}} (${{r2}}$ est une **valeur interdite**)."
+					"On ne divise pas par $0$ : $B({{r2}})$ $\\textcolor{{{color:primary.0}}}{\\text{n'existe pas}}$ (${{r2}}$ est une **valeur interdite**)."
 				]
 			}
 		},
@@ -202,7 +202,7 @@
 			"correction": {
 				"steps": [
 					"Pour $x\\in\\left]{{p}}\\,;{{q}}\\right[$ : ${{if:s1>0|x{{eval:-(p);+}}|{{p}}-x}}$ est {{if:u>0|positif|négatif}} et ${{if:s2>0|x{{eval:-(q);+}}|{{q}}-x}}$ est {{if:w>0|positif|négatif}}.",
-					"Par la **règle des signes** du quotient, $B(x)$ est \\textcolor{{{color:primary.0}}}{\\text{strictement {{if:v>0|positif|négatif}}}}."
+					"Par la **règle des signes** du quotient, $B(x)$ est $\\textcolor{{{color:primary.0}}}{\\text{strictement {{if:v>0|positif|négatif}}}}$."
 				]
 			},
 			"conditions": ["p != 0", "q != 0"]
@@ -259,7 +259,7 @@
 			"correction": {
 				"steps": [
 					"Pour $x\\in{{if:g==0|\\left]-\\infty\\,;{{p}}\\right[|\\left]{{q}}\\,;+\\infty\\right[}}$ : ${{if:s1>0|x{{eval:-(p);+}}|{{p}}-x}}$ est {{if:u>0|positif|négatif}} et ${{if:s2>0|x{{eval:-(q);+}}|{{q}}-x}}$ est {{if:w>0|positif|négatif}}.",
-					"Par la **règle des signes** du quotient, $B(x)$ est \\textcolor{{{color:primary.0}}}{\\text{strictement {{if:v>0|positif|négatif}}}}."
+					"Par la **règle des signes** du quotient, $B(x)$ est $\\textcolor{{{color:primary.0}}}{\\text{strictement {{if:v>0|positif|négatif}}}}$."
 				]
 			},
 			"conditions": ["p != 0", "q != 0"]

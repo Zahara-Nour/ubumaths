@@ -143,7 +143,7 @@
 			"correction": {
 				"steps": [
 					"L'**écart interquartile** $Q_3-Q_1$ mesure la dispersion de la moitié centrale des valeurs.",
-					"Lycée A : ${{ra}}-{{qa}}={{ia}}$ ; lycée B : ${{rb}}-{{qb}}={{ib}}$. Les temps les plus dispersés sont ceux du \\textcolor{{{color:primary.0}}}{\\text{lycée {{if:ia>ib|A|B}}}}."
+					"Lycée A : ${{ra}}-{{qa}}={{ia}}$ ; lycée B : ${{rb}}-{{qb}}={{ib}}$. Les temps les plus dispersés sont ceux du $\\textcolor{{{color:primary.0}}}{\\text{lycée {{if:ia>ib|A|B}}}}$."
 				]
 			}
 		}

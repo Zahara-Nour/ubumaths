@@ -1,0 +1,205 @@
+{
+	"id": "5b3bef9f-f2b0-49e0-8b15-9ef7d19c9c4b",
+	"title": "Effectifs, proportions et pourcentages",
+	"description": "Passer de l'effectif à la proportion (décimale ou en pourcentage) et de la proportion à l'effectif",
+	"grades": ["2"],
+	"theme": "Proportionnalité",
+	"domain": "Pourcentages",
+	"subdomain": "Proportion",
+	"level": 5,
+	"delay": 60,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans un club de ${{n}}$ adhérents, ${{k}}$ ont moins de $18$ ans.\n\nQuel pourcentage des adhérents ont moins de $18$ ans ?\n\n$?\\,\\%$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "20|40|60|80|200|400|500"
+				},
+				{
+					"name": "p",
+					"expression": "5|10|15|20|25|30|35|40|45|55|60|65|70|75|80|85|90|95"
+				},
+				{
+					"name": "k",
+					"expression": "eval:(n)*(p)/100"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La proportion est $\\dfrac{\\text{effectif de la partie}}{\\text{effectif total}}=\\dfrac{ {{k}} }{ {{n}} }={{eval:(k)/(n);d}}$.",
+					"En pourcentage : ${{eval:(k)/(n);d}}=\\dfrac{ {{p}} }{100}$, soit $\\textcolor{{{color:primary.0}}}{{{p}}\\,\\%}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un club de ${{n}}$ adhérents, ${{p}}\\,\\%$ ont moins de $18$ ans.\n\nCombien d'adhérents ont moins de $18$ ans ?\n\n$?$ adhérents",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "40|50|80|120|150|200|300|400|500"
+				},
+				{
+					"name": "p",
+					"expression": "5|10|15|20|25|30|35|40|45|60|65|70|75"
+				}
+			],
+			"conditions": ["mod((n)*(p),100) == 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n)*(p)/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Effectif de la partie $=$ proportion $\\times$ effectif total.",
+					"$\\dfrac{ {{p}} }{100}\\times {{n}}={{eval:(p)/100;d}}\\times{{n}}=\\textcolor{{{color:primary.0}}}{{{eval:(n)*(p)/100}}}$ adhérents."
+				]
+			}
+		},
+		{
+			"statement": "Dans un club de ${{n}}$ adhérents, ${{k}}$ ont moins de $18$ ans.\n\nQuelle est la proportion d'adhérents de moins de $18$ ans, en écriture décimale ?\n\nProportion : $?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "20|40|60|80|200|400"
+				},
+				{
+					"name": "p",
+					"expression": "5|10|15|20|25|30|35|40|45|55|60|65|70|75|80|85|90|95"
+				},
+				{
+					"name": "k",
+					"expression": "eval:(n)*(p)/100"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(p)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Proportion $=\\dfrac{\\text{effectif de la partie}}{\\text{effectif total}}=\\dfrac{ {{k}} }{ {{n}} }=\\textcolor{{{color:primary.0}}}{{{eval:(p)/100;d}}}$.",
+					"Soit ${{p}}\\,\\%$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["35"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "28",
+				"n": "80",
+				"p": "35"
+			},
+			"description": "28 sur 80 : 35 %",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["285.7"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "28",
+				"n": "80",
+				"p": "35"
+			},
+			"description": "Erreur : 80/28 en %",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["0.35"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "28",
+				"n": "80",
+				"p": "35"
+			},
+			"description": "Erreur : 0,35 au lieu de 35",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["105"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"n": "300",
+				"p": "35"
+			},
+			"description": "35 % de 300 : 105",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["265"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"n": "300",
+				"p": "35"
+			},
+			"description": "Erreur : 300 − 35",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0.35"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "14",
+				"n": "40",
+				"p": "35"
+			},
+			"description": "14 sur 40 : 0,35",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\dfrac{7}{20}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"k": "14",
+				"n": "40",
+				"p": "35"
+			},
+			"description": "Fraction 7/20 : écriture décimale demandée",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["35"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "14",
+				"n": "40",
+				"p": "35"
+			},
+			"description": "Erreur : 35 (pourcentage)",
+			"variationIndex": 2
+		}
+	]
+}

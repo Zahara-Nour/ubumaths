@@ -85,7 +85,7 @@
 				"steps": [
 					"Variations absolues : $A$ : ${{a2}}-{{a1}}={{eval:(a2)-(a1)}}~\\unit{€}$ ; $B$ : ${{b2}}-{{b1}}={{eval:(b2)-(b1)}}~\\unit{€}$.",
 					"Variations relatives : $A$ : $\\dfrac{ {{eval:(a2)-(a1)}} }{ {{a1}} }={{ta}}\\,\\%$ ; $B$ : $\\dfrac{ {{eval:(b2)-(b1)}} }{ {{b1}} }={{tb}}\\,\\%$.",
-					"{{if:g==0|En euros, la plus forte hausse est celle de \\textcolor{{{color:primary.0}}}{\\text{l'article B}}|En pourcentage, la plus forte hausse est celle de \\textcolor{{{color:primary.0}}}{\\text{l'article A}}}} : la variation absolue et la variation relative ne classent pas les hausses de la même façon."
+					"{{if:g==0|En euros, la plus forte hausse est celle de $\\textcolor{{{color:primary.0}}}{\\text{l'article B}}$|En pourcentage, la plus forte hausse est celle de $\\textcolor{{{color:primary.0}}}{\\text{l'article A}}$}} : la variation absolue et la variation relative ne classent pas les hausses de la même façon."
 				]
 			}
 		}

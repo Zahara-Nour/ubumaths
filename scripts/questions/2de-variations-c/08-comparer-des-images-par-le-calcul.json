@@ -36,7 +36,7 @@
 			"correction": {
 				"steps": [
 					"$u$ et $v$ sont dans $\\left[0\\,;+\\infty\\right[$, où la fonction carré est **croissante** : les images sont dans le même ordre.",
-					"$u<v$ donc \\textcolor{{{color:primary.0}}}{f(u)<f(v)}."
+					"$u<v$ donc $\\textcolor{{{color:primary.0}}}{f(u)<f(v)}$."
 				]
 			}
 		},
@@ -61,7 +61,7 @@
 			"correction": {
 				"steps": [
 					"$u$ et $v$ sont dans $\\left]-\\infty\\,;0\\right]$, où la fonction carré est **décroissante** : les images sont dans l'ordre contraire.",
-					"$u<v$ donc \\textcolor{{{color:primary.0}}}{f(u)>f(v)}."
+					"$u<v$ donc $\\textcolor{{{color:primary.0}}}{f(u)>f(v)}$."
 				]
 			}
 		},
@@ -86,7 +86,7 @@
 			"correction": {
 				"steps": [
 					"$u$ et $v$ sont dans $\\left]0\\,;+\\infty\\right[$, où la fonction inverse est **décroissante** : les images sont dans l'ordre contraire.",
-					"$u<v$ donc \\textcolor{{{color:primary.0}}}{f(u)>f(v)}."
+					"$u<v$ donc $\\textcolor{{{color:primary.0}}}{f(u)>f(v)}$."
 				]
 			}
 		},
@@ -111,7 +111,7 @@
 			"correction": {
 				"steps": [
 					"$u$ et $v$ sont dans $\\left]-\\infty\\,;0\\right[$, où la fonction inverse est **décroissante** : les images sont dans l'ordre contraire.",
-					"$u<v$ donc \\textcolor{{{color:primary.0}}}{f(u)>f(v)}."
+					"$u<v$ donc $\\textcolor{{{color:primary.0}}}{f(u)>f(v)}$."
 				]
 			}
 		},
@@ -136,7 +136,7 @@
 			"correction": {
 				"steps": [
 					"$u$ et $v$ ne sont pas du même côté de $0$ : on compare leurs **distances à $0$**.",
-					"$\\lvert u\\rvert={{eval:(q)/10;d}}$ et $\\lvert v\\rvert={{eval:(p)/10;d}}$, donc \\textcolor{{{color:primary.0}}}{f(u)>f(v)}."
+					"$\\lvert u\\rvert={{eval:(q)/10;d}}$ et $\\lvert v\\rvert={{eval:(p)/10;d}}$, donc $\\textcolor{{{color:primary.0}}}{f(u)>f(v)}$."
 				]
 			}
 		},
@@ -161,7 +161,7 @@
 			"correction": {
 				"steps": [
 					"$u$ et $v$ ne sont pas du même côté de $0$ : la fonction carré n'est pas monotone sur un intervalle qui les contient. On compare leurs **distances à $0$** : $(-a)^2=a^2$.",
-					"$f(u)=f({{eval:(p)/10;d}})$ et ${{eval:(p)/10;d}}<{{eval:(q)/10;d}}$ dans $\\left[0\\,;+\\infty\\right[$, donc \\textcolor{{{color:primary.0}}}{f(u)<f(v)}."
+					"$f(u)=f({{eval:(p)/10;d}})$ et ${{eval:(p)/10;d}}<{{eval:(q)/10;d}}$ dans $\\left[0\\,;+\\infty\\right[$, donc $\\textcolor{{{color:primary.0}}}{f(u)<f(v)}$."
 				]
 			}
 		}

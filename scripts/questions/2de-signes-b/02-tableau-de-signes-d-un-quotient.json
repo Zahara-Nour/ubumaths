@@ -181,7 +181,7 @@
 			"correction": {
 				"steps": [
 					"Dans chaque colonne, on applique la **règle des signes** : deux signes identiques donnent $+$, deux signes contraires donnent $-$.",
-					"En ${{rb}}$ le dénominateur est nul : $B({{rb}})$ n'existe pas, d'où la \\textcolor{{{color:primary.0}}}{\\text{double barre}}.",
+					"En ${{rb}}$ le dénominateur est nul : $B({{rb}})$ n'existe pas, d'où la $\\textcolor{{{color:primary.0}}}{\\text{double barre}}$.",
 					"```variation\nvariable: x\ndomain: -inf, {{ra}}, {{rb}}, +inf\n\nsign: {{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}x{{b;+}}\n  -inf,{{ra}}: {{if:a>0|-|+}}\n  {{ra}}: z\n  {{ra}},{{rb}}: {{if:a>0|+|-}}\n  {{rb}},+inf: {{if:a>0|+|-}}\n\nsign: {{if:c==-1|-|}}{{if:c*c>1|{{c}}|}}x{{d;+}}\n  -inf,{{ra}}: {{if:c>0|-|+}}\n  {{ra}},{{rb}}: {{if:c>0|-|+}}\n  {{rb}}: z\n  {{rb}},+inf: {{if:c>0|+|-}}\n\nsign: B(x)\n  -inf,{{ra}}: {{if:ac>0|+|-}}\n  {{ra}}: z\n  {{ra}},{{rb}}: {{if:ac>0|-|+}}\n  {{rb}}: ||\n  {{rb}},+inf: {{if:ac>0|+|-}}\n```"
 				]
 			}
@@ -236,7 +236,7 @@
 			"correction": {
 				"steps": [
 					"Dans chaque colonne, on applique la **règle des signes** : deux signes identiques donnent $+$, deux signes contraires donnent $-$.",
-					"En ${{rb}}$ le dénominateur est nul : $B({{rb}})$ n'existe pas, d'où la \\textcolor{{{color:primary.0}}}{\\text{double barre}}.",
+					"En ${{rb}}$ le dénominateur est nul : $B({{rb}})$ n'existe pas, d'où la $\\textcolor{{{color:primary.0}}}{\\text{double barre}}$.",
 					"```variation\nvariable: x\ndomain: -inf, {{rb}}, {{ra}}, +inf\n\nsign: {{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}x{{b;+}}\n  -inf,{{rb}}: {{if:a>0|-|+}}\n  {{rb}},{{ra}}: {{if:a>0|-|+}}\n  {{ra}}: z\n  {{ra}},+inf: {{if:a>0|+|-}}\n\nsign: {{if:c==-1|-|}}{{if:c*c>1|{{c}}|}}x{{d;+}}\n  -inf,{{rb}}: {{if:c>0|-|+}}\n  {{rb}}: z\n  {{rb}},{{ra}}: {{if:c>0|+|-}}\n  {{ra}},+inf: {{if:c>0|+|-}}\n\nsign: B(x)\n  -inf,{{rb}}: {{if:ac>0|+|-}}\n  {{rb}}: ||\n  {{rb}},{{ra}}: {{if:ac>0|-|+}}\n  {{ra}}: z\n  {{ra}},+inf: {{if:ac>0|+|-}}\n```"
 				]
 			}
