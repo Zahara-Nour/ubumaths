@@ -6,14 +6,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2199 (lot 8 C)._
+_Mis à jour le 2026-11-02, après #2204 (migration de la vague 8)._
 
 - **État** : lots 1 à 7 publiés. Lot 8 (information chiffrée, statistiques, tableaux croisés, probabilités) :
-  phase 0 validée (§ 51) ; vague 8 (8 A, 8 B, 8 C, 22 modèles) mergée : #2190, #2196, #2199 (§ 52).
-- **Prochaine action** : David crée les 22 brouillons (`create-questions --publier`, trois dossiers) ;
-  merger #2198 (page à cocher) ; relevé des id, migration nœud + tag, page à cocher de la vague 8.
-- **En attente de David** : les trois `create-questions --publier` (2de-evolutions-a, 2de-indicateurs-b,
-  2de-classes-c).
+  phase 0 validée (§ 51) ; vague 8 (22 modèles) mergée (#2190, #2196, #2199), 22 brouillons en prod,
+  migration nœud + tag mergée (#2204) mais pas jouée (§ 53).
+- **Prochaine action** : `db:migrate` de #2204 (mergée), vérification MCP (22 rangés, taggués, brouillons),
+  puis page à cocher de la vague 8 (`page-a-cocher.ts`, un `--dir` par lot) ; ensuite vague 8 bis (8 D, 8 E).
+- **En attente de David** : où jouer `db:migrate` (dépôt principal bloqué par `questions-6`, § 53) —
+  reco : depuis le worktree sur `origin/main`.
 - **Pièges en cours** : le worktree n'a pas de `.env` ; `publier-lot` (même en simulation) → David avec `!`
   et `set -a && . ../ubumaths/.env && set +a`, pas `pnpm -s` ; `Doc-inchangée:` dans un commit, jamais dans
   le corps de PR ; horodatage → `pnpm migration:horodatage` ; `db push`, `--publier` → David avec `!`.
@@ -1404,3 +1405,22 @@ D, E) ; L8-f PR « page à cocher : blocs statistiques et arbres » avant la rel
   (lecture), barres, boîtes, tableau croisé (cases `?` vides), simulation (tirages), probtree (mise en page
   portée de `ProbabilityTree.svelte`, pas de scène partagée). Revue `code-reviewer` : aucun bloquant ;
   corrigés : `série: seule` (la page dessinait la figure à construire), légende du tableau croisé sans titre.
+
+## 53. Vague 8 : brouillons en prod et migration nœud + tag (2026-11-02)
+
+- David a créé les 22 brouillons (`create-questions --publier`, trois dossiers) ; MCP : 22 `draft`, `['2']`,
+  sans nœud, 0 tag.
+  - 8 A : de146ac1 (2-365), 2dec310f (2-368), 7a763528 (2-478), 11f91d46 (2-364), afbfa8c6 (2-376),
+    5b3bef9f (2-375), 39b4823d (2-490), cc88ebd3 (2-491) ;
+  - 8 B : ba0925ce (2-369), ef92701a (2-370), a4de4154 (2-371), 3c411c3b (2-479), 82ba1365 (2-402),
+    893eb3cd (2-382), 6b2b7055 (2-483) ;
+  - 8 C : 7ca1d2da (2-372), 7a56029d (2-480), 03d8f171 (2-380), 90e2e7d8 (2-481), b7c71958 (2-381),
+    8d94fd69 (2-482), b73677c8 (2-484).
+- Migration `20261102055259_questions_2de_statistiques_rangement_tags` + test, générés par
+  `questions-2de/lot-8-rangement-2de.py` depuis ceux du lot 7 ; rouge sans la migration (5 échecs), vert
+  avec (10/10) ; `security-auditor` : aucun finding ; **#2204 mergée** (CI verte, intégration comprise).
+- **#2198 mergée** (page à cocher : blocs statistiques et arbres) ; worktree de l'agent retiré.
+- **`db:migrate` PAS ENCORE JOUÉ** : le dépôt principal est bloqué par la session `questions-6` (commit
+  local non poussé `1cb3ca05b` + journal indexé, `origin/main` en avance de 10) ; `pull --rebase` refuse.
+  Recommandé à David : migrer depuis le worktree sur `origin/main` (liaison `supabase/.temp` copiée,
+  `migration list --linked` d'abord : s'arrêter si d'autres migrations attendent) — **réponse attendue**.
