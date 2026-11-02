@@ -1,0 +1,405 @@
+{
+	"title": "Médiane après l'ajout ou le retrait d'une valeur",
+	"description": "Série de 7 valeurs donnée dans le désordre ; nouvelle médiane après l'ajout d'une valeur extrême ou le retrait de la plus grande",
+	"grades": ["2"],
+	"theme": "Statistiques",
+	"domain": "Indicateurs",
+	"subdomain": "Médiane",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Voici une série de $7$ valeurs : ${{x3}}\\ ;\\ {{x7}}\\ ;\\ {{x1}}\\ ;\\ {{x5}}\\ ;\\ {{x2}}\\ ;\\ {{x6}}\\ ;\\ {{x4}}$.\n\nOn ajoute la valeur ${{v}}$.\n\nQuelle est la médiane de la nouvelle série ?\n\nMédiane : $?$",
+			"variables": [
+				{
+					"name": "x1",
+					"expression": "2..6"
+				},
+				{
+					"name": "d2",
+					"expression": "1..4"
+				},
+				{
+					"name": "d3",
+					"expression": "1..4"
+				},
+				{
+					"name": "d4",
+					"expression": "1..4"
+				},
+				{
+					"name": "d5",
+					"expression": "1..4"
+				},
+				{
+					"name": "d6",
+					"expression": "1..4"
+				},
+				{
+					"name": "d7",
+					"expression": "1..4"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:(x1)+(d2)"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:(x2)+(d3)"
+				},
+				{
+					"name": "x4",
+					"expression": "eval:(x3)+(d4)"
+				},
+				{
+					"name": "x5",
+					"expression": "eval:(x4)+(d5)"
+				},
+				{
+					"name": "x6",
+					"expression": "eval:(x5)+(d6)"
+				},
+				{
+					"name": "x7",
+					"expression": "eval:(x6)+(d7)"
+				},
+				{
+					"name": "w",
+					"expression": "1..10"
+				},
+				{
+					"name": "v",
+					"expression": "eval:(x7)+(w)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((x4)+(x5))/2;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Série rangée : ${{x1}}\\ ;\\ {{x2}}\\ ;\\ {{x3}}\\ ;\\ {{x4}}\\ ;\\ {{x5}}\\ ;\\ {{x6}}\\ ;\\ {{x7}}$ ; sa médiane est la $4^\\text{e}$ valeur, ${{x4}}$.",
+					"On ajoute ${{v}}$, la plus grande valeur : $8$ valeurs, la médiane est la moyenne des $4^\\text{e}$ et $5^\\text{e}$ : $\\dfrac{ {{x4}}+{{x5}} }{2}=\\textcolor{{{color:primary.0}}}{{{eval:((x4)+(x5))/2;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici une série de $7$ valeurs : ${{x3}}\\ ;\\ {{x7}}\\ ;\\ {{x1}}\\ ;\\ {{x5}}\\ ;\\ {{x2}}\\ ;\\ {{x6}}\\ ;\\ {{x4}}$.\n\nOn ajoute la valeur ${{v}}$.\n\nQuelle est la médiane de la nouvelle série ?\n\nMédiane : $?$",
+			"variables": [
+				{
+					"name": "x1",
+					"expression": "2..6"
+				},
+				{
+					"name": "d2",
+					"expression": "1..4"
+				},
+				{
+					"name": "d3",
+					"expression": "1..4"
+				},
+				{
+					"name": "d4",
+					"expression": "1..4"
+				},
+				{
+					"name": "d5",
+					"expression": "1..4"
+				},
+				{
+					"name": "d6",
+					"expression": "1..4"
+				},
+				{
+					"name": "d7",
+					"expression": "1..4"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:(x1)+(d2)"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:(x2)+(d3)"
+				},
+				{
+					"name": "x4",
+					"expression": "eval:(x3)+(d4)"
+				},
+				{
+					"name": "x5",
+					"expression": "eval:(x4)+(d5)"
+				},
+				{
+					"name": "x6",
+					"expression": "eval:(x5)+(d6)"
+				},
+				{
+					"name": "x7",
+					"expression": "eval:(x6)+(d7)"
+				},
+				{
+					"name": "v",
+					"expression": "eval:(x1)-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((x3)+(x4))/2;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Série rangée : ${{x1}}\\ ;\\ {{x2}}\\ ;\\ {{x3}}\\ ;\\ {{x4}}\\ ;\\ {{x5}}\\ ;\\ {{x6}}\\ ;\\ {{x7}}$ ; sa médiane est la $4^\\text{e}$ valeur, ${{x4}}$.",
+					"On ajoute ${{v}}$, la plus petite valeur : la série rangée devient ${{v}}\\ ;\\ {{x1}}\\ ;\\ {{x2}}\\ ;\\ {{x3}}\\ ;\\ {{x4}}\\ ;\\ {{x5}}\\ ;\\ {{x6}}\\ ;\\ {{x7}}$. Médiane : moyenne des $4^\\text{e}$ et $5^\\text{e}$ valeurs, $\\dfrac{ {{x3}}+{{x4}} }{2}=\\textcolor{{{color:primary.0}}}{{{eval:((x3)+(x4))/2;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici une série de $7$ valeurs : ${{x3}}\\ ;\\ {{x7}}\\ ;\\ {{x1}}\\ ;\\ {{x5}}\\ ;\\ {{x2}}\\ ;\\ {{x6}}\\ ;\\ {{x4}}$.\n\nOn retire la plus grande valeur.\n\nQuelle est la médiane de la nouvelle série ?\n\nMédiane : $?$",
+			"variables": [
+				{
+					"name": "x1",
+					"expression": "2..6"
+				},
+				{
+					"name": "d2",
+					"expression": "1..4"
+				},
+				{
+					"name": "d3",
+					"expression": "1..4"
+				},
+				{
+					"name": "d4",
+					"expression": "1..4"
+				},
+				{
+					"name": "d5",
+					"expression": "1..4"
+				},
+				{
+					"name": "d6",
+					"expression": "1..4"
+				},
+				{
+					"name": "d7",
+					"expression": "1..4"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:(x1)+(d2)"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:(x2)+(d3)"
+				},
+				{
+					"name": "x4",
+					"expression": "eval:(x3)+(d4)"
+				},
+				{
+					"name": "x5",
+					"expression": "eval:(x4)+(d5)"
+				},
+				{
+					"name": "x6",
+					"expression": "eval:(x5)+(d6)"
+				},
+				{
+					"name": "x7",
+					"expression": "eval:(x6)+(d7)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((x3)+(x4))/2;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Série rangée : ${{x1}}\\ ;\\ {{x2}}\\ ;\\ {{x3}}\\ ;\\ {{x4}}\\ ;\\ {{x5}}\\ ;\\ {{x6}}\\ ;\\ {{x7}}$ ; on retire ${{x7}}$.",
+					"Il reste $6$ valeurs : la médiane est la moyenne des $3^\\text{e}$ et $4^\\text{e}$, $\\dfrac{ {{x3}}+{{x4}} }{2}=\\textcolor{{{color:primary.0}}}{{{eval:((x3)+(x4))/2;d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 5 6 9 11 12 16 + 21 : (9 + 11)/2 = 10",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "3",
+				"d2": "2",
+				"d3": "1",
+				"d4": "3",
+				"d5": "2",
+				"d6": "1",
+				"d7": "4",
+				"x2": "5",
+				"x3": "6",
+				"x4": "9",
+				"x5": "11",
+				"x6": "12",
+				"x7": "16",
+				"w": "5",
+				"v": "21"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ancienne médiane (9)",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "3",
+				"d2": "2",
+				"d3": "1",
+				"d4": "3",
+				"d5": "2",
+				"d6": "1",
+				"d7": "4",
+				"x2": "5",
+				"x3": "6",
+				"x4": "9",
+				"x5": "11",
+				"x6": "12",
+				"x7": "16",
+				"w": "5",
+				"v": "21"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4e valeur de la série non rangée (11)",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "3",
+				"d2": "2",
+				"d3": "1",
+				"d4": "3",
+				"d5": "2",
+				"d6": "1",
+				"d7": "4",
+				"x2": "5",
+				"x3": "6",
+				"x4": "9",
+				"x5": "11",
+				"x6": "12",
+				"x7": "16",
+				"w": "5",
+				"v": "21"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "+ 2 : (6 + 9)/2 = 7,5",
+			"variationIndex": 1,
+			"variables": {
+				"x1": "3",
+				"d2": "2",
+				"d3": "1",
+				"d4": "3",
+				"d5": "2",
+				"d6": "1",
+				"d7": "4",
+				"x2": "5",
+				"x3": "6",
+				"x4": "9",
+				"x5": "11",
+				"x6": "12",
+				"x7": "16",
+				"v": "2"
+			},
+			"answers": ["7.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 9",
+			"variationIndex": 1,
+			"variables": {
+				"x1": "3",
+				"d2": "2",
+				"d3": "1",
+				"d4": "3",
+				"d5": "2",
+				"d6": "1",
+				"d7": "4",
+				"x2": "5",
+				"x3": "6",
+				"x4": "9",
+				"x5": "11",
+				"x6": "12",
+				"x7": "16",
+				"v": "2"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Retrait de 16 : 7,5",
+			"variationIndex": 2,
+			"variables": {
+				"x1": "3",
+				"d2": "2",
+				"d3": "1",
+				"d4": "3",
+				"d5": "2",
+				"d6": "1",
+				"d7": "4",
+				"x2": "5",
+				"x3": "6",
+				"x4": "9",
+				"x5": "11",
+				"x6": "12",
+				"x7": "16"
+			},
+			"answers": ["7.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ancienne médiane (9)",
+			"variationIndex": 2,
+			"variables": {
+				"x1": "3",
+				"d2": "2",
+				"d3": "1",
+				"d4": "3",
+				"d5": "2",
+				"d6": "1",
+				"d7": "4",
+				"x2": "5",
+				"x3": "6",
+				"x4": "9",
+				"x5": "11",
+				"x6": "12",
+				"x7": "16"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

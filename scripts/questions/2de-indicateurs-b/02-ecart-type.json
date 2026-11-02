@@ -1,0 +1,187 @@
+{
+	"title": "Écart type d'une série",
+	"description": "Calculer l'écart type d'une petite série (résultat entier) ; comparer les écarts types de deux séries de même moyenne",
+	"grades": ["2"],
+	"theme": "Statistiques",
+	"domain": "Indicateurs",
+	"subdomain": "Écart type",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Voici une série de $5$ valeurs : ${{eval:(m)+(k)}}\\ ;\\ {{eval:(m)-4*(k)}}\\ ;\\ {{eval:(m)+(k)}}\\ ;\\ {{eval:(m)+(k)}}\\ ;\\ {{eval:(m)+(k)}}$.\n\nSa moyenne vaut ${{m}}$. Calcule son écart type.\n\n$\\sigma=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "13..20"
+				},
+				{
+					"name": "k",
+					"expression": "1|2|3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*(k)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'écart type est la racine carrée de la moyenne des carrés des écarts à la moyenne : $\\sigma=\\sqrt{\\dfrac{(x_1-\\overline{x})^2+\\dots+(x_n-\\overline{x})^2}{n}}$.",
+					"Écarts à la moyenne : $-{{eval:4*(k)}}$ (une fois) et ${{k}}$ (quatre fois) ; carrés : ${{eval:16*(k)*(k)}}$ et ${{eval:(k)*(k)}}$.",
+					"Moyenne des carrés : $\\dfrac{ {{eval:16*(k)*(k)}}+4\\times{{eval:(k)*(k)}} }{5}=\\dfrac{ {{eval:20*(k)*(k)}} }{5}={{eval:4*(k)*(k)}}$.",
+					"$\\sigma=\\sqrt{ {{eval:4*(k)*(k)}} }=\\textcolor{{{color:primary.0}}}{{{eval:2*(k)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici une série de $8$ valeurs : ${{eval:(m)+2*(k)}}\\ ;\\ {{eval:(m)-(k)}}\\ ;\\ {{m}}\\ ;\\ {{eval:(m)+4*(k)}}\\ ;\\ {{eval:(m)-(k)}}\\ ;\\ {{eval:(m)-3*(k)}}\\ ;\\ {{m}}\\ ;\\ {{eval:(m)-(k)}}$.\n\nSa moyenne vaut ${{m}}$. Calcule son écart type.\n\n$\\sigma=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "10..20"
+				},
+				{
+					"name": "k",
+					"expression": "1|2|3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*(k)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'écart type est la racine carrée de la moyenne des carrés des écarts à la moyenne : $\\sigma=\\sqrt{\\dfrac{(x_1-\\overline{x})^2+\\dots+(x_n-\\overline{x})^2}{n}}$.",
+					"Écarts à la moyenne : $-{{eval:3*(k)}}$, $-{{k}}$ (trois fois), $0$ (deux fois), ${{eval:2*(k)}}$ et ${{eval:4*(k)}}$.",
+					"Somme des carrés : ${{eval:9*(k)*(k)}}+3\\times{{eval:(k)*(k)}}+0+{{eval:4*(k)*(k)}}+{{eval:16*(k)*(k)}}={{eval:32*(k)*(k)}}$ ; moyenne des carrés : $\\dfrac{ {{eval:32*(k)*(k)}} }{8}={{eval:4*(k)*(k)}}$.",
+					"$\\sigma=\\sqrt{ {{eval:4*(k)*(k)}} }=\\textcolor{{{color:primary.0}}}{{{eval:2*(k)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Série A : ${{eval:(m)-(a)}}\\ ;\\ {{m}}\\ ;\\ {{eval:(m)+(a)}}$ ; série B : ${{eval:(m)-(b)}}\\ ;\\ {{m}}\\ ;\\ {{eval:(m)+(b)}}$.\n\nLes deux séries ont la même moyenne ${{m}}$. Laquelle a le plus grand écart type ?\n\n```choix\nmelanger: non\n- la série A\n- la série B\n- elles ont le même écart type\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "10..20"
+				},
+				{
+					"name": "a",
+					"expression": "1..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..8"
+				}
+			],
+			"conditions": ["a != b", "m > a", "m > b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>b|0|1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'écart type mesure la **dispersion** des valeurs autour de la moyenne : plus les valeurs sont éloignées de la moyenne, plus il est grand.",
+					"Les valeurs de A s'écartent de ${{a}}$ de la moyenne, celles de B de ${{b}}$ : c'est \\textcolor{{{color:primary.0}}}{\\text{la série {{if:a>b|A|B}}}} qui a le plus grand écart type."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Écarts (−8, 2, 2, 2, 2) : σ = 4",
+			"variationIndex": 0,
+			"variables": {
+				"m": "15",
+				"k": "2"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : moyenne des carrés (16)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "15",
+				"k": "2"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : étendue (10)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "15",
+				"k": "2"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Série de 8 : σ = 2",
+			"variationIndex": 1,
+			"variables": {
+				"m": "12",
+				"k": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 (sans racine)",
+			"variationIndex": 1,
+			"variables": {
+				"m": "12",
+				"k": "1"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A (±2), B (±5) : B",
+			"variationIndex": 2,
+			"variables": {
+				"m": "12",
+				"a": "2",
+				"b": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : même écart type",
+			"variationIndex": 2,
+			"variables": {
+				"m": "12",
+				"a": "2",
+				"b": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
