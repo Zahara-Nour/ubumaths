@@ -1,0 +1,169 @@
+{
+	"title": "Propriétés algébriques du logarithme",
+	"description": "À savoir : ln(ab) = ln a + ln b, ln(a/b) = ln a − ln b, ln(aⁿ) = n ln a, parmi des erreurs typiques (ln a × ln b, ln(a + b), (ln a)ⁿ)",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction logarithme",
+	"subdomain": "À savoir",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Pour tous réels $a>0$ et $b>0$, $\\ln(ab)$ est égal à :\n\n```choix\n- $\\ln a+\\ln b$\n- $\\ln a\\times\\ln b$\n- $\\ln(a+b)$\n- $a\\ln b$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : le logarithme transforme un produit en somme.",
+					"Pour tous réels $a>0$ et $b>0$, $\\ln(ab)=\\textcolor{{{color:primary.0}}}{\\ln a+\\ln b}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tous réels $a>0$ et $b>0$, $\\ln\\left(\\dfrac{a}{b}\\right)$ est égal à :\n\n```choix\n- $\\ln a-\\ln b$\n- $\\dfrac{\\ln a}{\\ln b}$\n- $\\ln(a-b)$\n- $\\ln b-\\ln a$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : pour tous réels $a>0$ et $b>0$, $\\ln\\left(\\dfrac{a}{b}\\right)=\\textcolor{{{color:primary.0}}}{\\ln a-\\ln b}$.",
+					"En particulier, $\\ln\\left(\\dfrac{1}{b}\\right)=-\\ln b$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout réel $a>0$ et tout entier naturel $n$, $\\ln\\left(a^n\\right)$ est égal à :\n\n```choix\n- $n\\ln a$\n- $(\\ln a)^n$\n- $\\ln a+n$\n- $a\\ln n$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : pour tout réel $a>0$ et tout entier $n$, $\\ln\\left(a^n\\right)=\\textcolor{{{color:primary.0}}}{n\\ln a}$.",
+					"C'est la propriété du produit répétée $n$ fois : $\\ln(a\\times a\\times\\cdots\\times a)=\\ln a+\\ln a+\\cdots+\\ln a$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "somme",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : produit des ln",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ln(a + b)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a ln b",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "différence",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : quotient des ln",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ln(a − b)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ordre inversé",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n ln a",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (ln a)ⁿ",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ln a + n",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a ln n",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,169 @@
+{
+	"title": "Convexité : position par rapport aux sécantes",
+	"description": "À savoir : f convexe sur I ⟺ courbe en dessous de ses sécantes (définition) ; concave : au-dessus ; distracteurs : tangentes, signe, sens de variation",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions convexes",
+	"domain": "Convexité",
+	"subdomain": "À savoir",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Une fonction $f$ est **convexe** sur un intervalle $I$ lorsque, sur $I$, sa courbe représentative est :\n\n```choix\n- en dessous de chacune de ses sécantes, entre les deux points d'intersection\n- au-dessus de chacune de ses sécantes, entre les deux points d'intersection\n- en dessous de chacune de ses tangentes\n- au-dessus de l'axe des abscisses\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître (définition) : $f$ est convexe sur $I$ lorsque, pour tous points $A$ et $B$ de sa courbe d'abscisses dans $I$, la courbe est $\\textcolor{{{color:primary.0}}}{\\text{en dessous de la sécante }(AB)}$ entre $A$ et $B$.",
+					"Ne pas confondre : une fonction convexe peut être négative, et sa courbe est AU-DESSUS de ses tangentes."
+				]
+			}
+		},
+		{
+			"statement": "Une fonction $f$ est **concave** sur un intervalle $I$ lorsque, sur $I$, sa courbe représentative est :\n\n```choix\n- au-dessus de chacune de ses sécantes, entre les deux points d'intersection\n- en dessous de chacune de ses sécantes, entre les deux points d'intersection\n- au-dessus de chacune de ses tangentes\n- en dessous de l'axe des abscisses\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : $f$ est concave sur $I$ lorsque $-f$ est convexe sur $I$.",
+					"Sa courbe est donc $\\textcolor{{{color:primary.0}}}{\\text{au-dessus de chacune de ses sécantes}}$ entre les deux points d'intersection."
+				]
+			}
+		},
+		{
+			"statement": "Sur un intervalle $I$, la courbe représentative d'une fonction $f$ est en dessous de chacune de ses sécantes, entre les deux points d'intersection.\n\nAlors :\n\n```choix\n- $f$ est convexe sur $I$\n- $f$ est concave sur $I$\n- $f$ est croissante sur $I$\n- $f$ est positive sur $I$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître (définition) : « courbe en dessous de ses sécantes » signifie « $f$ convexe ».",
+					"Donc $\\textcolor{{{color:primary.0}}}{f\\text{ est convexe sur }I}$ ; cela ne dit rien du sens de variation ni du signe de $f$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "sous les sécantes",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : au-dessus",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sous les tangentes",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : positive",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "au-dessus des sécantes",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : en dessous",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : au-dessus des tangentes",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : négative",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "convexe",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : concave",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : croissante",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : positive",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

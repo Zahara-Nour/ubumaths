@@ -1,0 +1,170 @@
+{
+	"title": "Opérations sur les limites : formes indéterminées",
+	"description": "À savoir : opérations sur les limites, formes indéterminées ∞ − ∞, 0 × ∞, ∞/∞, 0/0 ; reconnaître une forme indéterminée et conclure quand ce n'en est pas une",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions",
+	"domain": "Limites de fonctions",
+	"subdomain": "À savoir",
+	"level": 2,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $f$ et $g$ deux fonctions. Dans laquelle de ces situations, en $+\\infty$, obtient-on une **forme indéterminée** ?\n\n```choix\n- $f$ tend vers $+\\infty$, $g$ tend vers $-\\infty$, et l'on cherche la limite de $f+g$\n- $f$ et $g$ tendent vers $+\\infty$, et l'on cherche la limite de $f+g$\n- $f$ tend vers $+\\infty$, $g$ tend vers $3$, et l'on cherche la limite de $f\\times g$\n- $f$ tend vers $2$, $g$ tend vers $+\\infty$, et l'on cherche la limite de $\\dfrac{f}{g}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : les formes indéterminées sont « $\\infty-\\infty$ », « $0\\times\\infty$ », « $\\dfrac{\\infty}{\\infty}$ » et « $\\dfrac{0}{0}$ ».",
+					"Pour $f+g$ avec $f\\to+\\infty$ et $g\\to-\\infty$, c'est « $\\textcolor{{{color:primary.0}}}{+\\infty-\\infty}$ » : forme indéterminée.",
+					"Les autres se concluent : $+\\infty+\\infty=+\\infty$ ; $+\\infty\\times 3=+\\infty$ ; $\\dfrac{2}{+\\infty}$ donne $0$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ et $g$ deux fonctions telles que $\\lim\\limits_{x\\to+\\infty}f(x)=+\\infty$ et $\\lim\\limits_{x\\to+\\infty}g(x)=0$.\n\nQue peut-on dire de la limite de $f\\times g$ en $+\\infty$ ?\n\n```choix\n- C'est une forme indéterminée : on ne peut pas conclure sans transformer l'écriture.\n- Elle vaut $0$.\n- Elle vaut $+\\infty$.\n- Elle vaut $1$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : « $0\\times\\infty$ » est une forme indéterminée.",
+					"Selon les fonctions, la limite peut être $0$ ($f(x)=x$, $g(x)=\\dfrac{1}{x^2}$), $+\\infty$ ($f(x)=x^2$, $g(x)=\\dfrac{1}{x}$) ou un autre réel : $\\textcolor{{{color:primary.0}}}{\\text{forme indéterminée}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ et $g$ deux fonctions telles que $\\lim\\limits_{x\\to+\\infty}f(x)=-\\infty$ et $\\lim\\limits_{x\\to+\\infty}g(x)=-\\infty$.\n\nQue peut-on dire de la limite de $f\\times g$ en $+\\infty$ ?\n\n```choix\n- Elle vaut $+\\infty$.\n- Elle vaut $-\\infty$.\n- C'est une forme indéterminée : on ne peut pas conclure sans transformer l'écriture.\n- Elle vaut $0$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : un produit de limites infinies est infini, avec la règle des signes.",
+					"« $(-\\infty)\\times(-\\infty)$ » donne $\\textcolor{{{color:primary.0}}}{+\\infty}$ : ce n'est pas une forme indéterminée."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "+∞ − ∞",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : +∞ + ∞",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : +∞ × 3",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2/+∞",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "forme indéterminée",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : +∞",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "+∞",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −∞ (signe)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : forme indéterminée",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

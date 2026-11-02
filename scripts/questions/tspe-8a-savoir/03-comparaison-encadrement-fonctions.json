@@ -1,0 +1,168 @@
+{
+	"title": "Comparaison et encadrement pour les fonctions",
+	"description": "À savoir : f ≥ g et g → +∞ ⟹ f → +∞ ; encadrement g ≤ f ≤ h, même limite ; piège : f ≤ g et g → +∞ ne dit rien de f",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions",
+	"domain": "Limites de fonctions",
+	"subdomain": "À savoir",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $f$ et $g$ deux fonctions définies sur un intervalle $[a\\,;+\\infty[$ telles que, pour tout $x\\geqslant a$, $f(x)\\geqslant g(x)$.\n\nOn sait que $\\lim\\limits_{x\\to+\\infty}g(x)=+\\infty$. Alors :\n\n```choix\n- $\\lim\\limits_{x\\to+\\infty}f(x)=+\\infty$\n- $\\lim\\limits_{x\\to+\\infty}f(x)=-\\infty$\n- $f$ a une limite finie en $+\\infty$\n- On ne peut rien conclure.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître (théorème de comparaison) : si $f(x)\\geqslant g(x)$ pour $x$ assez grand et si $\\lim\\limits_{x\\to+\\infty}g(x)=+\\infty$, alors $\\textcolor{{{color:primary.0}}}{\\lim\\limits_{x\\to+\\infty}f(x)=+\\infty}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$, $g$ et $h$ trois fonctions définies sur un intervalle $[a\\,;+\\infty[$ telles que, pour tout $x\\geqslant a$, $g(x)\\leqslant f(x)\\leqslant h(x)$.\n\nOn sait que $\\lim\\limits_{x\\to+\\infty}g(x)=2$ et $\\lim\\limits_{x\\to+\\infty}h(x)=2$. Alors :\n\n```choix\n- $\\lim\\limits_{x\\to+\\infty}f(x)=2$\n- $f$ a une limite finie en $+\\infty$, mais pas forcément $2$\n- $\\lim\\limits_{x\\to+\\infty}f(x)=4$\n- On ne peut rien conclure.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître (théorème d'encadrement, ou « des gendarmes ») : si $g(x)\\leqslant f(x)\\leqslant h(x)$ pour $x$ assez grand, et si $g$ et $h$ ont la même limite finie $\\ell$ en $+\\infty$, alors $f$ a aussi pour limite $\\ell$.",
+					"Ici $\\ell=2$, donc $\\textcolor{{{color:primary.0}}}{\\lim\\limits_{x\\to+\\infty}f(x)=2}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ et $g$ deux fonctions définies sur un intervalle $[a\\,;+\\infty[$ telles que, pour tout $x\\geqslant a$, $f(x)\\leqslant g(x)$.\n\nOn sait que $\\lim\\limits_{x\\to+\\infty}g(x)=+\\infty$. Que peut-on dire de la limite de $f$ en $+\\infty$ ?\n\n```choix\n- On ne peut rien conclure.\n- $\\lim\\limits_{x\\to+\\infty}f(x)=+\\infty$\n- $\\lim\\limits_{x\\to+\\infty}f(x)=-\\infty$\n- $f$ a une limite finie en $+\\infty$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : la comparaison pousse vers $+\\infty$ la fonction la plus GRANDE.",
+					"Ici, c'est la plus grande, $g$, qui tend vers $+\\infty$ : cela ne dit rien de $f$. Par exemple $g(x)=x$ avec $f(x)=1$, ou avec $f(x)=-x$. Donc $\\textcolor{{{color:primary.0}}}{\\text{on ne peut rien conclure}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "f → +∞",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −∞",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : limite finie",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rien",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f → 2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : limite finie quelconque",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : somme 4",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rien",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "rien",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : +∞ (sens inversé)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −∞",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : limite finie",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

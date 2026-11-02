@@ -1,0 +1,169 @@
+{
+	"title": "Théorème des valeurs intermédiaires : cas strictement monotone",
+	"description": "À savoir : f continue et strictement monotone sur [a ; b], k entre f(a) et f(b) ⟹ solution unique ; hypothèse : stricte monotonie (au sens large ne suffit pas)",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions",
+	"domain": "Continuité",
+	"subdomain": "À savoir",
+	"level": 2,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $f$ une fonction continue et strictement croissante sur un intervalle $[a\\,;b]$, et $k$ un réel compris entre $f(a)$ et $f(b)$.\n\nCombien l'équation $f(x)=k$ a-t-elle de solutions dans $[a\\,;b]$ ?\n\n```choix\n- Exactement une.\n- Aucune.\n- Au moins deux.\n- On ne peut pas savoir.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : si $f$ est continue et strictement monotone sur $[a\\,;b]$, alors pour tout réel $k$ compris entre $f(a)$ et $f(b)$, l'équation $f(x)=k$ admet $\\textcolor{{{color:primary.0}}}{\\text{une unique solution}}$ dans $[a\\,;b]$.",
+					"La continuité donne au moins une solution ; la stricte monotonie empêche d'en avoir deux."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ une fonction continue sur un intervalle $[a\\,;b]$, et $k$ un réel compris entre $f(a)$ et $f(b)$.\n\nQuelle hypothèse supplémentaire garantit que l'équation $f(x)=k$ a une **unique** solution dans $[a\\,;b]$ ?\n\n```choix\n- $f$ est strictement monotone sur $[a\\,;b]$\n- $f$ est monotone sur $[a\\,;b]$, au sens large\n- $f(a)<f(b)$\n- $f$ est dérivable sur $[a\\,;b]$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : c'est la $\\textcolor{{{color:primary.0}}}{\\text{stricte monotonie}}$ qui donne l'unicité.",
+					"La monotonie au sens large ne suffit pas : une fonction constante sur un morceau de $[a\\,;b]$ peut prendre la valeur $k$ en une infinité de points."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ une fonction continue et strictement décroissante sur $[0\\,;5]$, telle que $f(0)=7$ et $f(5)=-2$.\n\nCombien l'équation $f(x)=0$ a-t-elle de solutions dans $[0\\,;5]$ ?\n\n```choix\n- Exactement une.\n- Aucune.\n- Deux.\n- On ne peut pas savoir.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : $f$ est continue et strictement monotone sur $[0\\,;5]$, et $0$ est compris entre $f(5)=-2$ et $f(0)=7$.",
+					"L'équation $f(x)=0$ a donc $\\textcolor{{{color:primary.0}}}{\\text{exactement une solution}}$ dans $[0\\,;5]$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "une",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : aucune",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : au moins deux",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : on ne sait pas",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "strictement monotone",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : au sens large",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : f(a) < f(b)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : dérivable",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "une",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : aucune",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : deux",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : on ne sait pas",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -10,10 +10,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, phase 0 du lot 8 validée (D-L8)._
+_Mis à jour le 2026-11-02, lot 8a écrit (11 modèles, specs vertes)._
 
 - **État** : lot 7 publié (6/6) ; lot 8 : phase 0 écrite (§ « Lot 8 : phase 0 »), 26 « à savoir » en 3 sous-lots, 31 couverts, 4 déjà tagués.
-- **Prochaine action** : écrire le sous-lot 8a (11 modèles, gabarit `scripts/questions/1spe-savoir-a/`).
+- **Prochaine action** : PR des fichiers de 8a, CI verte → merge ; puis David lance `create-questions --publier` depuis le dépôt principal ; migration nœud + tag (gabarit lot 7).
 - **En attente de David** : rien.
 - **Pièges en cours** : relevé de nœuds → filtrer `archived_at is null` ; `!=` dans `$…$` lu « ≠ » (écrire `!\,=`) ; garde « notion sans sous-notion » : liste `sous_notions_admises` (migration `20261102181059`).
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · `feat/questions-tspe-restes-8`.
@@ -205,3 +205,12 @@ migration ne pose que nœud et tags).
 
 **D-L8 (David, 2026-11-02, « je valide », sur les recos)** : Q1 26 à savoir, 31 couverts ; Q2 8a → 8b → 8c ; Q3
 sous-domaine « À savoir » neuf par domaine ; Q4 427, 477, 398 couverts ; Q5 accès : personne.
+
+## Lot 8a : écriture (2026-11-02)
+
+`docs/wip/questions/lot-tspe-savoir-a.py` → `scripts/questions/tspe-8a-savoir/` : 11 modèles `[T_SPE]`, sous-domaine
+« À savoir » (Suites › Limites de suites 1-2 ; Fonctions › Limites de fonctions 1-2 ; Fonctions convexes › Convexité
+1-3 ; Fonctions › Continuité 1-2 ; Fonctions › Fonction logarithme 1-2). 2 ou 3 variations par modèle, case choix à 4
+propositions ; pour les théorèmes (381, 400), une variation « piège » dont la bonne réponse est « On ne peut rien
+conclure ». Specs : 128 vertes (une juste, trois fausses par variation), 1 550 tirages ; aperçus relus (scratchpad).
+Simulation `create-questions` : 11 à créer, 0 en base.
