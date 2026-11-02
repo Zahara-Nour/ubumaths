@@ -18,7 +18,7 @@ _Mis à jour le 2026-11-02, après #2203 et les brouillons en prod._
   catégorie juste avant la publication** ; horodatage de migration : `pnpm migration:horodatage`, `pnpm check:migrations
 --pr <n>` avant le merge ; commitlint : sujet sans majuscule ; aucun lien de session dans une PR ; **un défaut vu sur
   la page à cocher peut venir du script de la page : comparer à l'aperçu admin avant d'accuser le modèle**.
-- **Worktree / branche** : aucun (retiré le 2026-11-02 ; le prochain lot en repart un neuf sur `origin/main`). `!` de David :
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1`, `chore/questions-ce1-lot10-tags` (migration du lot 10). `!` de David :
   toujours préfixer `cd /Users/david/Coding/js/ubumaths &&`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
@@ -827,3 +827,9 @@ Réponse de David (« tes recos ? » puis « go », 2026-11-02) : les cinq recom
   05 `bf4619fc-617a-4fea-9c56-3fe13f0acb2a` (079), 06 `1b29650b-bfd7-4282-b8e3-d48aa6684c1c` (076),
   07 `48627efc-439a-48c0-b3af-c0c7a58b1079` (077), 08 `e3bacfdc-aa73-4e44-90fe-03156dce6c53` (080),
   09 `8cbd4fb3-4414-42a5-a624-0b2370035c9d` (080).
+- 2026-11-02 : relevé MCP : les 9 toujours brouillons, sans nœud ni tag ; points sur leurs sous-notions (044 longueurs ›
+  comparaison et mesure ; 064, 065 solides › propriétés ; 079 solides › constructions ; 076, 077 repérage › positions et
+  plans ; 080 repérage › coder un déplacement). Migration `20261102072625_questions_ce1_lot10_rangement_tags` + test :
+  rouge sans (3 échecs, suite principale non lancée), vert 9/9. Le test d'archivage vise 077 (080 porte deux modèles).
+  PR #2211 ; `security-auditor` : aucun finding bloquant (SQL identique au lot 9 hors valeurs ; chemins et points
+  résolus à 1 en prod) ; `check:migrations --pr 2211` OK.
