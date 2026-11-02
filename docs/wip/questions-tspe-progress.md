@@ -10,21 +10,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, phase 0 du lot 3 validée, fichiers écrits._
+_Mis à jour le 2026-11-02, après #2195 (fichiers du lot 3) ; migration du lot 3 en PR._
 
-- **État** : lots 0, 1, 2 faits (2 publié) ; lot 3 (§ 16) : 6 modèles écrits, specs vertes, essayés en base locale ;
-  borne de TSPE-626 écrite (Q6). PR des fichiers à ouvrir / merger.
-- **Prochaine action** : PR des fichiers mergée → David lance `create-questions --dir
-scripts/questions/tspe-3-ln-continuite-convexite --publier` (prod) → relever les `id` → migration nœud + tag
-  (aucune sous-notion neuve) → page à cocher → publication.
-- **En attente de David** : `create-questions --publier` en prod, après le merge.
+- **État** : lots 0, 1, 2 faits (2 publié) ; lot 3 (§ 16) : fichiers mergés (#2195), 6 brouillons créés en prod par
+  David ; migration nœud + tag écrite (test 10/10, rouge prouvé, `security-auditor` sans bloquant), PR à merger.
+- **Prochaine action** : merge de la PR de migration → `check:migrations --pr` → `db:migrate` depuis le dépôt
+  principal → relecture MCP → page à cocher (`page-a-cocher.ts --dir scripts/questions/tspe-3-ln-continuite-convexite`)
+  → `publier-lot` simulé → David publie.
+- **En attente de David** : rien jusqu'à la page à cocher.
 - **Pièges en cours** : un tag doit être sur le **nœud du modèle ou sa notion** (§ 14) ; le **niveau est dans la
   clé** de `create-questions`. `create-questions` et `publier-lot` → David (`!`) ; `db:migrate` depuis le dépôt
   principal (`echo y |`) ; corps de commit ≤ 100 caractères par ligne. **Migrations** (#2181) : `pnpm migration:horodatage`
   = heure réelle UTC ; « inserted before the last migration » → `--dry-run --include-all`, relire, puis
   `--include-all`. Worktree neuf : `pnpm exec svelte-kit sync` avant `question:specs` (sinon `$lib` introuvable).
   `|` interdit dans une branche de `{{if:…}}` (`\lvert x\rvert`).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe` · `feat/questions-tspe-lot3`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe` · `feat/questions-tspe-lot3-tags`.
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -809,3 +809,15 @@ l'aperçu.
 
 **Question d'accès** (migration à venir) : personne ne gagne ni ne perd d'accès (brouillons ; les élèves ne les
 voient qu'après `publier-lot`).
+
+**PR des fichiers** : #2195 mergée le 2026-11-02 (CI verte après relance du job navigateur, `wrapDynamicImport`).
+
+**Création en prod** (David, 2026-11-02) : 86c59a05 (M1), 28ede1b8 (M2), 560effd0 (M3), 7ea93a82 (M4), 9102bbb0 (M5),
+5ffe398a (M6), en brouillon, [T_SPE], niveaux 1, 4, 8, 2, 3, 4, sans nœud ni tag (relu au MCP).
+
+**Migration** `20261102053828_questions_tspe_lot3_rangement_tags.sql` (gabarit du lot 2, sans sous-notion neuve) :
+gardes avant écriture (TOUT ou RIEN, sans nœud ni tag), résolution stricte (point sur le nœud ou sa notion),
+rangement puis tags, `updated_at` préservé, rollback gardé en commentaire. Test
+`tests/integration/questions-tspe-lot3-rangement-tags.test.ts` : 10/10 ; **rouge** sans l'étape 4 (« lot
+incohérent : nœuds 0/6, tags du lot 0/6 »). `security-auditor` : aucun bloquant (faibles : commentaire « db push
+sans transaction » imprécis, verrou bref de `DISABLE TRIGGER` ; identiques au lot 2, laissés).
