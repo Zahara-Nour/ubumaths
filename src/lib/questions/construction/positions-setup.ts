@@ -16,7 +16,7 @@ import { createTransformer } from '$lib/geometry-core/viewport/viewport';
 import type { Trait } from './instruments';
 import { ConstructionAuthorError, type Position } from './judge';
 import { registerConstructionPositions, type ConstructionGeometry } from './positions';
-import type { ExpectedPoints } from './point';
+import type { ExpectedLine, ExpectedPoints } from './point';
 import type { FigureLine, FigureSegment, FigureShapes } from './symmetry';
 import type { FigureHeader } from '$lib/ubumark/types/figure';
 import type { ConstructionCheck } from '$lib/ubumark/types/construction';
@@ -137,7 +137,8 @@ export function figureShapes(scene: FigureScene, header: FigureHeader): FigureSh
 const EXPECTED_NAME = 'zzPointAttendu';
 
 /**
- * Points des vérifications `point A' = <expression>` : chaque expression est
+ * Points des vérifications `point A' = <expression>` et droites des
+ * vérifications `droite m = <expression>` (lot 3) : chaque expression est
  * ajoutée à la fin du script, sous un nom interne, dans une figure calculée à
  * part (jamais celle que voit l'élève, ni ses points d'aimantation).
  */
@@ -146,23 +147,46 @@ export function expectedPoints(
 	checks: readonly ConstructionCheck[]
 ): ExpectedPoints {
 	const positions = new Map<string, Position>();
+	const lines = new Map<string, ExpectedLine>();
 	const errors = new Map<string, string>();
 	for (const check of checks) {
-		if (check.kind !== 'point') continue;
+		if (check.kind !== 'point' && check.kind !== 'droite') continue;
 		const node = parseFigureContent(`${figureSource}\n${EXPECTED_NAME} = ${check.expression}`);
 		const { scene, errors: sceneErrors } = buildFigureScene(node);
-		const position = scene ? allNamedPointPositions(scene).get(EXPECTED_NAME) : undefined;
-		if (position) {
-			positions.set(check.name, position);
-			continue;
+		if (check.kind === 'point') {
+			const position = scene ? allNamedPointPositions(scene).get(EXPECTED_NAME) : undefined;
+			if (position) {
+				positions.set(check.name, position);
+				continue;
+			}
+		} else if (scene) {
+			const line = expectedLine(scene);
+			if (line) {
+				lines.set(check.name, line);
+				continue;
+			}
 		}
 		const messages = [...node.errors, ...sceneErrors].map((e) => e.message);
-		// Sans erreur : l'expression se calcule, mais ce n'est pas un point (le juge le dit)
+		// Sans erreur : l'expression se calcule, mais ce n'est pas un point / une droite (le juge le dit)
 		if (messages.length > 0) {
 			errors.set(check.name, `l’expression ne se calcule pas (${messages.join(' ; ')})`);
 		}
 	}
-	return { positions, errors };
+	return { positions, lines, errors };
+}
+
+/** La droite (entière) que donne l'expression, par deux de ses points ; null sinon */
+function expectedLine(scene: FigureScene): ExpectedLine | null {
+	const element = scene.figure.getAllElements().find((e) => e.label === EXPECTED_NAME);
+	if (!element || element.type !== 'line') return null;
+	const ends = straightEnds(element);
+	if (!ends) return null;
+	const [a, b] = ends.map((id) => {
+		const p = scene.figure.getPosition(id);
+		return p ? { x: geoToNumber(p.x), y: geoToNumber(p.y) } : null;
+	});
+	if (!a || !b || ![a.x, a.y, b.x, b.y].every(Number.isFinite)) return null;
+	return { a, b };
 }
 
 function resolveGeometry(source: string): ConstructionGeometry {

@@ -71,7 +71,7 @@
 		constructionExpected,
 		constructionPositions
 	} from '$lib/questions/construction/positions';
-	import type { PointSolution } from '$lib/questions/construction/point';
+	import type { ExpectedPoints, PointSolution } from '$lib/questions/construction/point';
 	import {
 		SNAP_RADIUS_PX,
 		addTap,
@@ -83,6 +83,7 @@
 		snapTap,
 		snapWithInstruments,
 		snapToGrid,
+		solutionCodages,
 		solutionLines,
 		solutionPoints,
 		type ConstructionAnswerInput,
@@ -151,8 +152,12 @@
 	let hintText = $derived(interactive && hint?.node === node ? hint.text : '');
 	/** Figure de travail : traits gris une fois la saisie finie, jamais de verdict */
 	let workDone = $derived(node.construction?.work === true && answer !== undefined && !interactive);
-	/** Quadrillage + segment ou point : touchers sur les nœuds (sinon aimantation sur les points) */
-	let grid = $derived(tool === 'segment' || tool === 'point' ? node.header.grid : null);
+	/** Droite à construire (lot 3) : sur quadrillage, tous ses outils vont aux nœuds */
+	let lineCheck = $derived(checks.some((c) => c.kind === 'droite'));
+	/** Quadrillage + segment ou point (ou droite à construire) : touchers sur les nœuds (sinon aimantation sur les points) */
+	let grid = $derived(
+		tool === 'segment' || tool === 'point' || lineCheck ? node.header.grid : null
+	);
 	/** Points à placer, montrés à la correction (calculés à part : jamais aimantés) */
 	let pointSolutions = $derived.by((): PointSolution[] => {
 		if (!corrected || !checks.some((c) => c.kind === 'point')) return [];
@@ -167,6 +172,14 @@
 			return [];
 		}
 	});
+	/** Droites et points attendus (droite à construire, lot 3) ; rien si la figure ne se construit pas */
+	function expectedOf(): ExpectedPoints | undefined {
+		try {
+			return constructionExpected(node.source);
+		} catch {
+			return undefined;
+		}
+	}
 	/** Curseur clavier sur le quadrillage (nœud), affiché quand la zone a le focus */
 	let cursor = $state.raw<Position | null>(null);
 
@@ -231,14 +244,21 @@
 		const transformer = createTransformer(scene.viewport, width, height);
 		const math = transformer.svgToMath(local.x, local.y);
 		// Rayon à l'écran → unités de la fenêtre (échelle d'affichage) → unités de la figure
+		const radius = SNAP_RADIUS_PX / Math.abs(matrix.a) / transformer.scaleX;
 		if (grid) {
-			const node = snapToGrid(math, grid, scene.viewport);
+			// Équerre (droite à construire sur quadrillage) : d'abord la droite à longer
+			if (tool === 'equerre' && !drawing.guide) {
+				const guide = straightAt(math, traitsOf(scene), radius);
+				if (guide) chooseLine(guide);
+				else if (interactive) hint = { node, text: 'Touche d’abord une droite.' };
+				return;
+			}
+			const nearest = snapToGrid(math, grid, scene.viewport);
 			// Le curseur clavier (s'il est là) suit le dernier toucher
-			if (cursor) cursor = node;
-			tapAt(node);
+			if (cursor) cursor = nearest;
+			tapAt(nearest);
 			return;
 		}
-		const radius = SNAP_RADIUS_PX / Math.abs(matrix.a) / transformer.scaleX;
 		if (!instruments) {
 			tapAt(snapTap(math, namedPointPositions(scene), radius));
 			return;
@@ -473,7 +493,7 @@
 			{/if}
 		{/if}
 		{#if corrected}
-			{#each solutionLines(checks, allPoints, lines, figureShapes(scene, node.header)) as line, i (i)}
+			{#each solutionLines(checks, allPoints, lines, figureShapes(scene, node.header), expectedOf()) as line, i (i)}
 				{@const s = toScreen(line, scene, width, height)}
 				{#if s}
 					<line
@@ -484,6 +504,22 @@
 						x2={s.x2}
 						y2={s.y2}
 					/>
+				{/if}
+			{/each}
+		{/if}
+		{#if corrected}
+			{#each solutionCodages(checks, allPoints) as m, i (i)}
+				{@const c = codage(
+					{ name: '', at: m.to, from: m.from, foot: m.foot, axial: true },
+					scene,
+					width,
+					height
+				)}
+				{#if c}
+					<g data-testid="codage-mediatrice" class="bon-point">
+						{#if c.corner}<path class="bon-point-codage" d={c.corner} />{/if}
+						{#each c.ticks as t, j (j)}<line class="bon-point-codage" {...t} />{/each}
+					</g>
 				{/if}
 			{/each}
 		{/if}
@@ -524,7 +560,7 @@
 					onkeydown={(event) => handlePointKey(event, position)}
 				/>
 			{/each}
-			{#if instruments && !grid}
+			{#if instruments && (!grid || (tool === 'equerre' && !drawing.guide))}
 				{@const targets = snapTargets(scene)}
 				{#if tool === 'equerre' && !drawing.guide}
 					<!-- Équerre au clavier : chaque droite est un bouton -->

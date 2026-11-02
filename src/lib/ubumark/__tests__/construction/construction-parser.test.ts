@@ -71,7 +71,11 @@ describe('construction — lecture du bloc', () => {
 				'A = point(1, 2)'
 			)
 		);
-		expect(node.construction?.checks.map((c) => (c.kind === 'point' ? null : c.points))).toEqual([
+		expect(
+			node.construction?.checks.map((c) =>
+				c.kind === 'point' || c.kind === 'droite' ? null : c.points
+			)
+		).toEqual([
 			['A', 'B'],
 			['C', 'D']
 		]);
@@ -113,7 +117,7 @@ describe('construction — erreurs situées', () => {
 		expect(
 			messages(block('fenetre: 0 ; 10 ; 0 ; 6', 'verifier: cercle_par A ; B', '---'))
 		).toContain(
-			'Ligne 2 : vérification « cercle_par » inconnue (droite_par, carre, rectangle, symetrique, point)'
+			'Ligne 2 : vérification « cercle_par » inconnue (droite_par, carre, rectangle, symetrique, point, droite)'
 		);
 	});
 

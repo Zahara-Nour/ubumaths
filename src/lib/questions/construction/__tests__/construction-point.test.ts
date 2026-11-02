@@ -335,7 +335,7 @@ describe('erreurs d’auteur (refus à la publication)', () => {
 		expect(() =>
 			assertChecks(figure("point A' = symetrie(A, axe=d)", AXIS_BODY, []))
 		).not.toThrow();
-		expect(() => assertChecks(figure("point A' = milieu(A, Q)", AXIS_BODY, []))).toThrow(
+		expect(() => assertChecks(figure("point A' = point(5, 4)", AXIS_BODY, []))).toThrow(
 			'sans quadrillage, seulement un symétrique'
 		);
 	});

@@ -15,7 +15,8 @@
  *
  * Lot 2a : sur quadrillage (touchers aux nœuds). Lot 2b (§ 7) : papier uni,
  * l'élève construit avec la règle, l'équerre et le compas (`instruments.ts`) ;
- * seulement un symétrique (`symetrie(A, axe=d)` ou `symetrie(A, centre=O)`) ;
+ * seulement un symétrique (`symetrie(A, axe=d)` ou `symetrie(A, centre=O)`) ou,
+ * lot 3, un milieu (`milieu(A, B)`, par la médiatrice) ;
  * un point qui n'est ni un point de la figure ni une intersection de deux traits
  * est « placé à l'œil », faux même posé pile au bon endroit.
  *
@@ -28,6 +29,7 @@
 import type { ConstructionCheck, PointCheck } from '$lib/ubumark/types/construction';
 import { isDrawnPoint, type DrawnObject } from './answer';
 import { isConstructed, isInFrame, traitsOfObjects } from './instruments';
+import { mediatriceSupportError } from './line';
 import type { ConstructionVerdict, Position } from './judge';
 import { dot, sub, tolerance } from './polygon';
 import { plainPaperSupportError, type FigureShapes } from './symmetry';
@@ -50,10 +52,18 @@ export const notPerpendicularFeedback = (source: string, name: string) =>
 export const notSameDistanceFeedback = (source: string, name: string) =>
 	`${typographic(name)} doit être à la même distance de l’axe que ${typographic(source)}.`;
 
-/** Points attendus, calculés par le registre à partir des expressions */
+/** Une droite attendue (vérification `droite`, lot 3), par deux de ses points */
+export interface ExpectedLine {
+	a: Position;
+	b: Position;
+}
+
+/** Points (et droites) attendus, calculés par le registre à partir des expressions */
 export interface ExpectedPoints {
 	/** Position de chaque point attendu, par son nom (lecture seule) */
 	readonly positions: ReadonlyMap<string, Position>;
+	/** Droites des vérifications `droite m = …`, par leur nom (absent : aucune) */
+	readonly lines?: ReadonlyMap<string, ExpectedLine>;
 	/** Pourquoi une expression ne se calcule pas (erreur d'auteur), par nom */
 	readonly errors: ReadonlyMap<string, string>;
 }
@@ -70,6 +80,10 @@ export interface PointSolution {
 	/** Symétrie axiale (codage de l'angle droit), sinon centrale */
 	axial?: boolean;
 }
+
+/** `milieu(A, B)` : deux points nommés (le milieu d'un segment nommé n'est pas pris) */
+export const MIDPOINT_REGEX =
+	/^milieu\(\s*([A-Za-z][A-Za-z0-9_]*)\s*,\s*([A-Za-z][A-Za-z0-9_]*)\s*\)$/;
 
 const SYMMETRY_REGEX =
 	/^sym[eé]trie\(\s*([A-Za-z][A-Za-z0-9_]*)\s*,\s*(axe|centre)\s*=\s*([A-Za-z][A-Za-z0-9_]*)?/;
@@ -114,10 +128,17 @@ function assertPlainPaper(
 	shapes: FigureShapes
 ): void {
 	const label = `verifier: point ${check.name}`;
+	// Lot 3 (§ 9) : le milieu se construit par la médiatrice (compas, règle)
+	const midpoint = MIDPOINT_REGEX.exec(check.expression.trim());
+	if (midpoint) {
+		const message = mediatriceSupportError([midpoint[1], midpoint[2]], points, shapes);
+		if (message) throw new PointAuthorError(`${label} : ${message}`);
+		return;
+	}
 	const symmetry = symmetryOf(check.expression);
 	if (!symmetry || !symmetry.target) {
 		throw new PointAuthorError(
-			`${label} : sans quadrillage, seulement un symétrique (symetrie(A, axe=d) ou symetrie(A, centre=O)) ; sinon ajouter « grille: 1 »`
+			`${label} : sans quadrillage, seulement un symétrique (symetrie(A, axe=d) ou symetrie(A, centre=O)) ou un milieu (milieu(A, B)) ; sinon ajouter « grille: 1 »`
 		);
 	}
 	const axis = symmetry.by === 'axe' ? (shapes.lines.get(symmetry.target) ?? null) : null;

@@ -6,19 +6,17 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2261._
+_Mis à jour le 2026-11-02, phase 0 du lot 3 validée._
 
-- **État** : lots 1 (#2226), 2a (#2233), 2b (#2257 : équerre, compas, palette, papier uni) et « point
-  construit exigé » sur papier uni (#2261) **mergés**, pas encore en prod (`deploy:prod` sur demande de
-  David). Vérifications à l'œil dans `verifications-manuelles.md` (#2257).
-- **Prochaine action** : phase 0 de la **médiatrice** (compas + règle, déjà là ; ouvre milieu, cercle
-  circonscrit, 4e sommet), puis triangle (report de longueur au compas), puis angle et bissectrice
-  (§ 1, ordre recommandé le 2026-11-02) ; modèles CE2-073, CM1-107/108, CM2-097, 6-179/180.
+- **État** : lots 1, 2a, 2b et « point construit exigé » mergés (#2226, #2233, #2257, #2261), pas encore en
+  prod. Lot 3 (médiatrice, § 9) : phase 0 validée, code en cours.
+- **Prochaine action** : lot 3 — vérification `droite m = mediatrice(A, B)`, `milieu(A, B)` sur papier uni.
+  Ensuite 3b cercle circonscrit, puis triangle (report de longueur, 4e sommet), angle, bissectrice.
 - **En attente de David** : rien.
 - **Pièges en cours** : pas de prime dans le langage des figures (§ 6) ; `symetrie(P, axe=d)` échoue si
   P définit d ; l'« Essayer » de l'aide ne rend pas la case jouable (essai dans un modèle brouillon) ;
   au clavier, droites annoncées « Droite 1, 2… » ; plafond de 20 objets sans message.
-- **Worktree / branche** : aucun (retiré après #2261).
+- **Worktree / branche** : `../ubumaths-wt-controles-figure`, `feat/controles-figure-mediatrice`.
 
 ---
 
@@ -346,3 +344,42 @@ Même contrôle qu'au lot 2a ; **sans `grille:`**, il n'est plus refusé : l'él
 - Sur papier uni, un point **doit être construit** (point de la figure ou intersection de deux traits) :
   posé à l'œil pile sur A' (coordonnées rondes), il est **faux**, « Ton point est placé à l'œil… ».
   Fait dans `judgePoints` (vérifié avant l'appariement) ; quadrillage inchangé (touchers aux nœuds).
+
+## 9. Phase 0 — lot 3 : médiatrice (validée le 2026-11-02)
+
+BO 6e « Médiatrice d'un segment » ; elle ouvre le milieu construit, le cercle circonscrit (6e, 5e) et le
+4e sommet.
+
+### Écriture par le prof
+
+```figure-a-completer
+fenetre: 0 ; 10 ; 0 ; 8
+verifier: droite m = mediatrice(A, B)
+---
+A = point(2, 3)
+B = point(7, 5)
+s = segment(A, B)
+```
+
+Nouvelle vérification `droite <nom> = <expression>` (comme `point A' = …`). Palette déduite : Règle ·
+Équerre · Compas (`outils:` restreint). `point` accepte aussi `milieu(A, B)` sur papier uni.
+
+### Comportements
+
+- **Nominal** : deux cercles de même rayon centrés en A et B, droite par leurs intersections → juste.
+  Autres chemins : deux paires de cercles de rayons différents ; sur quadrillage, droite par deux nœuds.
+- **Limites** (juste) : cercles et traits de construction en trop ignorés ; droite repassée.
+- **Erreurs** (faux, première cause) : aucune droite → « Trace la médiatrice de [AB]. » ; droite qui ne
+  passe pas par deux points construits (papier uni) → « Ta droite est tracée à l'œil : construis-la avec
+  tes instruments. » ; perpendiculaire hors du milieu ; par le milieu, pas perpendiculaire ; sinon « Ce
+  n'est pas la médiatrice de [AB]. »
+- **Erreurs d'auteur** : expression qui n'est pas une droite, droite hors de la fenêtre, A ou B invisible.
+- **Correction** : la médiatrice en pointillés, angle droit et moitiés égales codés.
+
+### Décisions de David (2026-11-02, « je suis tes recos »)
+
+1. Plusieurs droites tracées : **juste si l'une est la médiatrice** (les autres = traits de construction).
+2. **Équerre gardée** dans la palette (quadrillage : milieu au nœud + équerre).
+3. **Milieu construit** (`point I = milieu(A, B)`) **dans ce lot**.
+4. **Cercle circonscrit** au **lot 3b** (vérification `cercle` neuve).
+5. **4e sommet du parallélogramme** avec le **triangle** (report de longueur au compas).

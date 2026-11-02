@@ -23,17 +23,17 @@ export const figureACompleterEntry: BlockCatalogEntry = {
 				{
 					key: 'verifier',
 					values:
-						"droite_par A ; B · carre A ; B · rectangle A ; B ; C · symetrique par d · symetrique A ; B ; C par d · point A' = symetrie(A, axe=d)",
+						"droite_par A ; B · carre A ; B · rectangle A ; B ; C · symetrique par d · symetrique A ; B ; C par d · point A' = symetrie(A, axe=d) · droite m = mediatrice(A, B)",
 					defaultValue: null,
 					description:
-						"Ce que la figure de l’élève doit contenir. droite_par : une droite qui passe par les deux points nommés (une ligne par droite ; toute droite en plus est fausse). carre : le côté [AB] est tracé, l’élève trace les trois autres, d’un côté ou de l’autre. rectangle : les côtés [AB] et [BC] sont tracés, l’élève trace les deux autres. symetrique par d : l’élève trace le symétrique de tout ce qui est tracé (segments, polygones) sauf l’axe d ; par O (un point) : symétrie centrale ; symetrique A ; B ; C par d : seulement les traits entre ces points. Sur quadrillage (grille:), le symétrique dans la fenêtre et sur les nœuds. Un seul carré, rectangle ou symétrique par figure. point A' = <expression> : l’élève place un point là où l’expression du langage des figures le met (symetrie, milieu, intersection…) ; une ligne par point, l’élève ne les nomme pas ; A' n’est pas un nom de la figure, il sert à la correction et aux messages. Sur quadrillage (grille:), le point dans la fenêtre et sur un nœud. Sans quadrillage (papier uni), l’élève construit avec la règle, l’équerre et le compas : seulement un symétrique (symetrie(A, axe=d) ou symetrie(A, centre=O)), l’axe dans la fenêtre ; un point qui n’est ni un point de la figure ni une intersection de traits est « placé à l’œil », faux même s’il est bien placé. Le symétrique d’une figure se construit aussi sur papier uni."
+						"Ce que la figure de l’élève doit contenir. droite_par : une droite qui passe par les deux points nommés (une ligne par droite ; toute droite en plus est fausse). carre : le côté [AB] est tracé, l’élève trace les trois autres, d’un côté ou de l’autre. rectangle : les côtés [AB] et [BC] sont tracés, l’élève trace les deux autres. symetrique par d : l’élève trace le symétrique de tout ce qui est tracé (segments, polygones) sauf l’axe d ; par O (un point) : symétrie centrale ; symetrique A ; B ; C par d : seulement les traits entre ces points. Sur quadrillage (grille:), le symétrique dans la fenêtre et sur les nœuds. Un seul carré, rectangle ou symétrique par figure. point A' = <expression> : l’élève place un point là où l’expression du langage des figures le met (symetrie, milieu, intersection…) ; une ligne par point, l’élève ne les nomme pas ; A' n’est pas un nom de la figure, il sert à la correction et aux messages. Sur quadrillage (grille:), le point dans la fenêtre et sur un nœud. Sans quadrillage (papier uni), l’élève construit avec la règle, l’équerre et le compas : seulement un symétrique (symetrie(A, axe=d) ou symetrie(A, centre=O)), l’axe dans la fenêtre ; un point qui n’est ni un point de la figure ni une intersection de traits est « placé à l’œil », faux même s’il est bien placé. Le symétrique d’une figure se construit aussi sur papier uni, et le milieu (milieu(A, B)) par la médiatrice. droite m = <expression> : une des droites que trace l’élève (règle, équerre) doit être celle de l’expression (mediatrice, perpendiculaire…) ; ses autres droites et ses cercles sont des traits de construction ; m sert à la correction. Sur papier uni, la droite passe par deux points construits (ou, à l’équerre, par un point construit) : sinon elle est « tracée à l’œil ». Sans quadrillage, seulement une médiatrice (mediatrice(A, B)), et les cercles de centres A et B de rayon AB doivent se couper dans la fenêtre (l’élève n’a pas de report de longueur) ; sur quadrillage, toute droite qui passe par deux nœuds, la règle et l’équerre allant aux nœuds. Une droite à construire ne se mêle pas à d’autres vérifications, et sa palette ne prend que la règle, l’équerre et le compas."
 				},
 				{
 					key: 'outils',
 					values: 'droite, segment, point, equerre, compas',
 					defaultValue: 'celui de la vérification ; sans quadrillage, les instruments',
 					description:
-						'Les outils proposés à l’élève : droite (la règle) pour droite_par, segment pour carre, rectangle et symetrique, point pour point ; un seul outil pour droite_par, carre, rectangle. Avec un quadrillage (grille:) et le segment ou le point, chaque toucher va au nœud le plus proche. Sans quadrillage, point et symetrique reçoivent une palette d’instruments (droite, equerre, compas, et point ou segment) : l’équerre trace la perpendiculaire à une droite par un point, le compas un cercle par son centre et un point ; chaque toucher s’aimante sur un point, une intersection de deux traits ou un trait. Écrire outils: pour restreindre la palette.'
+						'Les outils proposés à l’élève : droite (la règle) pour droite_par, segment pour carre, rectangle et symetrique, point pour point ; un seul outil pour droite_par, carre, rectangle ; droite m = … reçoit la règle, l’équerre et le compas, avec ou sans quadrillage. Avec un quadrillage (grille:) et le segment ou le point, chaque toucher va au nœud le plus proche. Sans quadrillage, point et symetrique reçoivent une palette d’instruments (droite, equerre, compas, et point ou segment) : l’équerre trace la perpendiculaire à une droite par un point, le compas un cercle par son centre et un point ; chaque toucher s’aimante sur un point, une intersection de deux traits ou un trait. Écrire outils: pour restreindre la palette.'
 				},
 				{
 					key: 'fenetre, taille…',
@@ -157,6 +157,20 @@ export const figureACompleterEntry: BlockCatalogEntry = {
 			),
 			explanation:
 				'Sans grille:, l’élève reçoit la règle, l’équerre, le compas et le point. Il trace la perpendiculaire à d par A (équerre), pique le compas au pied de cette perpendiculaire et l’ouvre jusqu’à A, puis place A’ à l’autre intersection. Deux cercles centrés sur l’axe et passant par A donnent aussi A’. Un point posé à l’œil, même pile au bon endroit, est faux : « Ton point est placé à l’œil : construis-le avec tes instruments. »'
+		},
+		{
+			title: 'Construire la médiatrice d’un segment',
+			source: fence(
+				'figure-a-completer',
+				'fenetre: 0 ; 10 ; 0 ; 8',
+				'verifier: droite m = mediatrice(A, B)',
+				'---',
+				'A = point(3, 4)',
+				'B = point(6, 5)',
+				'segment(A, B)'
+			),
+			explanation:
+				'L’élève reçoit la règle, l’équerre et le compas. Il trace deux cercles de même rayon centrés en A et en B, puis la droite par leurs deux intersections. Une droite perpendiculaire à [AB] hors du milieu : « Ta droite est perpendiculaire à [AB] mais ne passe pas par son milieu » ; une droite tracée sans passer par des points construits : « Ta droite est tracée à l’œil ». À la correction, la médiatrice en pointillés, l’angle droit et les moitiés codés.'
 		},
 		{
 			title: 'Vérifier un alignement, puis répondre oui ou non',

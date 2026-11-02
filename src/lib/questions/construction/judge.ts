@@ -26,6 +26,7 @@ import {
 	judgePoints,
 	type ExpectedPoints
 } from './point';
+import { LineAuthorError, assertLines, isLineCheck, judgeLines } from './line';
 import { PolygonAuthorError, givenVertices, judgePolygon } from './polygon';
 import { SymmetryAuthorError, assertSymmetry, judgeSymmetry, type FigureShapes } from './symmetry';
 
@@ -127,7 +128,8 @@ function asAuthorError(error: unknown): unknown {
 	if (
 		error instanceof PolygonAuthorError ||
 		error instanceof SymmetryAuthorError ||
-		error instanceof PointAuthorError
+		error instanceof PointAuthorError ||
+		error instanceof LineAuthorError
 	) {
 		return new ConstructionAuthorError(error.message);
 	}
@@ -139,7 +141,7 @@ function asAuthorError(error: unknown): unknown {
  * sinon (point inconnu, sommets confondus…) : `check-template` l'appelle à
  * chaque tirage, pour ne pas l'apprendre au premier élève. `shapes` : les
  * traits de la figure (vérification `symetrique`) ; `expected` : les points
- * attendus (vérification `point`).
+ * attendus (vérification `point`) et les droites attendues (`droite`).
  */
 export function assertConstructionChecks(
 	checks: readonly ConstructionCheck[],
@@ -155,8 +157,16 @@ export function assertConstructionChecks(
 			throw asAuthorError(error);
 		}
 	}
+	const lineChecks = checks.filter(isLineCheck);
+	if (lineChecks.length > 0) {
+		try {
+			assertLines(lineChecks, expected, points, shapes);
+		} catch (error) {
+			throw asAuthorError(error);
+		}
+	}
 	for (const check of checks) {
-		if (check.kind === 'point') continue;
+		if (check.kind === 'point' || check.kind === 'droite') continue;
 		if (check.kind === 'symetrique') {
 			try {
 				assertSymmetry(check, points, shapes);
@@ -207,6 +217,15 @@ export function judgeConstruction(
 	if (pointChecks.length > 0) {
 		try {
 			return judgePoints(pointChecks, expected, points, shapes, objects);
+		} catch (error) {
+			throw asAuthorError(error);
+		}
+	}
+	// Droites à construire (lot 3) : seules dans la figure (garanti par le parseur)
+	const lineChecks = allChecks.filter(isLineCheck);
+	if (lineChecks.length > 0) {
+		try {
+			return judgeLines(lineChecks, expected, points, shapes, objects);
 		} catch (error) {
 			throw asAuthorError(error);
 		}

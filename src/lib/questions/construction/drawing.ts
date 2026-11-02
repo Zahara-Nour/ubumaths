@@ -33,6 +33,7 @@ import {
 	type StraightTrait
 } from './instruments';
 import { isPointCheck, pointSolution, type ExpectedPoints, type PointSolution } from './point';
+import { isLineCheck, lineCodages, lineSolution, type LineCodage } from './line';
 import { polygonSolution } from './polygon';
 import { symmetrySolution, type FigureShapes } from './symmetry';
 
@@ -206,16 +207,19 @@ export function canErase(drawing: Drawing): boolean {
  * La bonne figure : une droite par vérification `droite_par`, par ses deux
  * points ; carré / rectangle : les côtés qui manquent (carré : du côté où
  * l'élève a le plus tracé, d'où `drawn`) ; symétrique : l'image, sans ce que
- * la figure de départ trace déjà (`shapes`).
+ * la figure de départ trace déjà (`shapes`) ; droite à construire : la droite
+ * attendue (`expected`).
  */
 export function solutionLines(
 	checks: readonly ConstructionCheck[],
 	points: ReadonlyMap<string, Position>,
 	drawn: readonly DrawnObject[] = [],
-	shapes?: FigureShapes
+	shapes?: FigureShapes,
+	expected?: ExpectedPoints
 ): DrawnLine[] {
 	return checks.flatMap((check): DrawnLine[] => {
 		if (check.kind === 'point') return [];
+		if (check.kind === 'droite') return lineSolution([check], expected);
 		if (check.kind === 'symetrique') return symmetrySolution(check, points, shapes);
 		if (check.kind !== 'droite_par')
 			return polygonSolution(check, points, drawn.filter(isDrawnLine));
@@ -224,6 +228,14 @@ export function solutionLines(
 		if (!a || !b) return [];
 		return [{ kind: 'droite', x1: a.x, y1: a.y, x2: b.x, y2: b.y }];
 	});
+}
+
+/** Le codage des médiatrices à construire (angle droit au milieu, moitiés égales) */
+export function solutionCodages(
+	checks: readonly ConstructionCheck[],
+	points: ReadonlyMap<string, Position>
+): LineCodage[] {
+	return lineCodages(checks.filter(isLineCheck), points);
 }
 
 /** Les points à placer : où ils vont, avec leur nom (vérifications `point`) */

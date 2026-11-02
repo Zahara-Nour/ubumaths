@@ -31,7 +31,9 @@ export const INSTRUMENT_TOOLS: readonly ConstructionTool[] = ['equerre', 'compas
  */
 export const PLAIN_PAPER_TOOLS: Partial<Record<ConstructionCheckKind, ConstructionTool[]>> = {
 	point: ['point', 'droite', 'equerre', 'compas'],
-	symetrique: ['segment', 'droite', 'equerre', 'compas']
+	symetrique: ['segment', 'droite', 'equerre', 'compas'],
+	// Lot 3 (§ 9) : la même palette sur quadrillage (équerre gardée, décision de David)
+	droite: ['droite', 'equerre', 'compas']
 };
 
 /** Vérifications que l'auteur peut nommer dans `verifier:` */
@@ -40,7 +42,8 @@ export const CONSTRUCTION_CHECK_KINDS = [
 	'carre',
 	'rectangle',
 	'symetrique',
-	'point'
+	'point',
+	'droite'
 ] as const;
 export type ConstructionCheckKind = (typeof CONSTRUCTION_CHECK_KINDS)[number];
 
@@ -107,7 +110,20 @@ export interface PointCheck {
 	line: number;
 }
 
-export type ConstructionCheck = DroiteParCheck | SegmentFigureCheck | PointCheck;
+/**
+ * `droite m = mediatrice(A, B)` : une des droites tracées par l'élève (règle,
+ * équerre) est celle que l'expression du langage des figures donne ; les autres
+ * traits sont de construction (chantier `controles-figure`, lot 3, 2026-11-02).
+ * Le nom sert aux messages et à la correction.
+ */
+export interface LineCheck {
+	kind: 'droite';
+	name: string;
+	expression: string;
+	line: number;
+}
+
+export type ConstructionCheck = DroiteParCheck | SegmentFigureCheck | PointCheck | LineCheck;
 
 /** L'outil avec lequel se trace chaque vérification */
 export const CHECK_TOOL: Record<ConstructionCheckKind, ConstructionTool> = {
@@ -115,7 +131,8 @@ export const CHECK_TOOL: Record<ConstructionCheckKind, ConstructionTool> = {
 	carre: 'segment',
 	rectangle: 'segment',
 	symetrique: 'segment',
-	point: 'point'
+	point: 'point',
+	droite: 'droite'
 };
 
 export interface ConstructionSpec {

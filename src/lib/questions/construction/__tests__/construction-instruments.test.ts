@@ -541,8 +541,8 @@ describe('symétrique d’un point, papier uni — erreurs d’auteur', () => {
 		expect(() => assertChecks(CENTRAL)).not.toThrow();
 	});
 
-	it('autre expression (milieu) : refusée sans quadrillage', () => {
-		expect(() => assertChecks(figure("point M' = milieu(A, Q)", AXIS_BODY))).toThrow(
+	it('autre expression (un point écrit) : refusée sans quadrillage', () => {
+		expect(() => assertChecks(figure("point M' = point(5, 4)", AXIS_BODY))).toThrow(
 			'sans quadrillage, seulement un symétrique'
 		);
 	});
