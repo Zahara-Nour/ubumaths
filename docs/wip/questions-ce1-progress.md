@@ -5,20 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après le relevé du § 18._
+_Mis à jour le 2026-11-02, phase 0 du lot 11 écrite (§ 18)._
 
-- **État** : lots 0 à 10 publiés ; relevé du § 18 : 13 points sans modèle publié, dont 4 points A oubliés (023, 066,
-  067, 071) et le brouillon `a7dfe502` (073) jamais publié.
-- **Prochaine action** : réponses de David aux questions du § 18, puis lot 11.
-- **En attente de David** : questions du § 18 ; chantier `verrou-deploy` (mémoire) ; futur chantier « `\textcolor` hors
-  formule » (53 fichiers de lots, beaucoup publiés : texte brut chez l'élève).
+- **État** : lots 0 à 10 publiés. Relevé de fin de découpage (§ 18) : 023, 066, 067, 071 oubliés, `a7dfe502` (073)
+  jamais publié. Décidé : lot 11 (ces points + 072 en partie), puis chantier `centaines:` de `collection` (001, 002).
+- **Prochaine action** : phase 0 du lot 11 (§ 18) à valider, puis écrire `lot-ce1-11.py` dans un worktree.
+- **En attente de David** : 3 questions du § 18 ; essai tablette des cases « figure » (CP-060, CP-058) ; chantier
+  `verrou-deploy` ; futur chantier « `\textcolor` hors formule » (53 fichiers de lots).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; **mots en couleur dans le texte = `colt()`
   (`$\textcolor{…}{\text{…}}$`), jamais `\textcolor` nu** ; `{{if:}}` à condition contenant `{{eval:}}` non résolu →
-  relire `--apercu` ; **niveaux : relever la catégorie juste avant la publication** ; horodatage
-  `pnpm migration:horodatage`, `check:migrations --pr <n>` ; `db:migrate` : dry-run d'abord, ne pas pousser les
-  migrations des autres sessions ; commitlint : sujet sans majuscule, corps ≤ 100 colonnes ; shards navigateur de la CI :
-  « Browser connection was closed » = relancer les jobs ; `create-questions --mettre-a-jour` refusé au mode auto (même
-  en simulation).
+  relire `--apercu` ; **niveaux : relever la catégorie juste avant la publication** ; `publier-lot` = tout le dossier
+  ou rien ; horodatage `pnpm migration:horodatage`, `check:migrations --pr <n>` ; `db:migrate` : dry-run d'abord ;
+  commitlint : sujet sans majuscule, corps ≤ 100 colonnes ; shards navigateur : « Browser connection was closed » =
+  relancer ; `create-questions --mettre-a-jour` refusé au mode auto.
 - **Worktree / branche** : aucun. `!` de David : toujours préfixer `cd /Users/david/Coding/js/ubumaths &&`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
@@ -872,3 +871,50 @@ Questions à David :
 2. **`a7dfe502`** (073) : le mettre dans la page à cocher du lot 11 et le publier avec lui ? Recommandation : oui.
 3. **`centaines:` de `collection`** (001, 002, et le CE2) : ouvrir le petit chantier à part après le lot 11 ?
    Recommandation : oui ; ce sera la fin du CE1 (hors points D).
+
+## 18. Relevé de fin de découpage et lot 11 — phase 0 (2026-11-02)
+
+Relevé MCP du 2026-11-02 : **12 points sans modèle** — 001, 002 (`centaines:`), 092, 048, 068, 078 (D), 072, 074
+(tracer), et **023, 066, 067, 071** : classés A au § 3, jamais mis dans un lot (oubli du découpage des lots 1 à 5).
+Brouillons : `47f97c9f` (doublon dépublié au lot 0, normal) ; **`a7dfe502` (073) jamais publié** : repris au lot 9
+(§ 16, recommandation 5) mais absent des 9 fichiers relus et publiés ; en prod, « Géométrie · Tracés · Droites »,
+niveau **1** (prévu 2 ; le niveau 1 est aussi celui de `010d81a5`, CP, brouillon).
+
+Décisions (David, « je suis tes recos », 2026-11-02) :
+
+1. **Lot 11** = 023, 066, 067, 071, plus `a7dfe502` (073) relu et publié avec le lot (niveau relevé juste avant).
+2. **072 en partie** dans le lot (carré, rectangle à terminer sur quadrillage) ; triangle, triangle rectangle, cercle
+   quand `controles-figure` les vérifiera.
+3. Chantier **`centaines:` de `collection`** (001, 002) ouvert **après** le lot 11.
+
+### Phase 0 du lot 11
+
+État de la case « figure » : **aucun** modèle à case « figure » n'est publié, à aucun niveau (`010d81a5`, `1cf6eaa9`
+CP en brouillon) ; l'essai de David sur tablette de CP-060 et CP-058 est encore à faire
+(`verifications-manuelles.md`). Le juge sait `carre A ; B` et `rectangle A ; B ; C` avec l'outil `segment` ; un côté
+donné oblique est permis (le message « côtés sur les lignes » ne part que si les côtés donnés sont sur les lignes).
+
+| Fichier                          | Point   | Catégorie · niveau                    | Variations                                                                                                                                                                                                                                      |
+| -------------------------------- | ------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `01-le-signe-fois`               | CE1-023 | Entiers · Multiplier · Sens · 6       | « Quelle écriture veut dire 4 + 4 + 4 ? » (choix : 3 × 4, 3 + 4, 4 × 4, 34) ; « 7 × 3 se lit… » (7 fois 3, 7 plus 3, 73) ; situation à unités, BO « 7 × 20 biscuits » : `$5 \times 10$ biscuits = [_] biscuits` (facteurs ≤ 10, ou × 10 / × 20) |
+| `02-faces-sommets-aretes`        | CE1-066 | Solides · Reconnaître et décrire · 9  | ` ```solide ` cube, pavé, pyramide à base carrée : combien de faces / d'arêtes / de sommets → [_] (6/12/8 ; 6/12/8 ; 5/8/5) ; un élément marqué (`marquer:`) : face, arête ou sommet ? (choix)                                                  |
+| `03-les-faces-du-cube-du-pave`   | CE1-067 | Solides · Reconnaître et décrire · 10 | cube : combien de faces carrées ? (6) ; pavé quelconque : faces → rectangles (choix) ; pavé à base carrée : combien de faces carrées / rectangulaires ? (2 / 4) — au-delà du CP (`8e207417`, `74d6b4f3`)                                        |
+| `04-carre-et-rectangle`          | CE1-071 | Figures planes · Propriétés · 6       | figure cotée (deux côtés écrits en cm, angles droits codés) : longueur d'un autre côté → [_] ; carré : un côté donné → les trois autres ; « Quelle phrase est vraie pour tout rectangle ? » (choix, jamais de piège carré/rectangle)            |
+| `05-termine-carre-rectangle-ce1` | CE1-072 | Tracés · Carrés et rectangles · 2     | ` ```figure-a-completer ` sur quadrillage, **côté donné oblique** (pas (2;1), (1;2), (3;1)…) : terminer le carré ; rectangle à deux côtés obliques donnés ; le CP (`1cf6eaa9`) garde les côtés sur les lignes                                   |
+| `a7dfe502` (repris)              | CE1-073 | Tracés · Droites · 2                  | tel quel ; niveau 1 → 2 par la migration du lot                                                                                                                                                                                                 |
+
+Erreurs typiques dans les `testSpecs` : 4 + 4 + 4 → 4 × 4 ou 3 + 4 ; faces vues seules comptées (3) ; sommets pris
+pour arêtes ; pyramide comptée comme un cube ; pavé à base carrée « 6 rectangles » ; côtés adjacents pris pour égaux
+dans le rectangle.
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud +
+tag (et le niveau de `a7dfe502`) ne change aucune règle.
+
+Questions à David :
+
+1. **05 et `a7dfe502` publiés après votre essai** des cases « figure » sur tablette (le jeu de CP-060 / CP-058 vaut
+   pour les deux) ? Recommandation : oui ; le lot 11 publié en deux fois (01-04 d'abord, puis 05 et `a7dfe502`).
+2. **Pavé à base carrée au 067** (2 carrés + 4 rectangles) : le BO dit « faces carrés ou rectangles ». Recommandation :
+   oui, c'est le cas qui distingue le CE1 du CP.
+3. **Niveaux** : premiers libres (Sens 6 ; Reconnaître et décrire 9, 10 ; Propriétés 6 ; Carrés et rectangles 2 ;
+   Droites 2 pour `a7dfe502`). Recommandation : oui, relevés de nouveau avant la publication.
