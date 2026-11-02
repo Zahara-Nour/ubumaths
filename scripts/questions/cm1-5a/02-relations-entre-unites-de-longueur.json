@@ -1,6 +1,6 @@
 {
 	"title": "Relations entre les unités de longueur",
-	"description": "1 unité = 10 fois l'unité suivante : 7 dam = 70 m ; 340 mm = 34 cm ; 5 hm = 50 000 cm ; 3 km 250 m = 3 250 m ; 4 m 5 cm = 405 cm",
+	"description": "1 unité = 10 fois l'unité suivante : 7 dam = 70 m ; 340 mm = 34 cm ; 5 hm = 500 m ; 3 km 250 m = 3 250 m ; 4 m 5 cm = 405 cm",
 	"grades": ["CM1"],
 	"theme": "Grandeurs",
 	"domain": "Longueurs",

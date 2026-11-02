@@ -921,5 +921,8 @@ modèles CM1 propres, case « choix ».
 - Corrigés relus dans l'aperçu à 390 px (Playwright, port 5178) : accords « 1 mètre », « 1 dixième » ajoutés ;
   « l'hectomètre » (h muet) ; facteur en formule (« 1\,000 » sortait brut dans le texte) ; chaîne des unités
   écrite en texte (la suite d'égalités se coupait sur une virgule en début de ligne).
+- **CI rouge** (`student-answer-safety.render`, liste blanche) : la réponse de la fraction (1/2 km = … m) était un
+  `{{if:…}}` imbriqué ; elle est désormais calculée (`n × base / d`, variables `n`, `d`), en deux variations
+  (km → m, m → cm). Piège déjà au § 9 de la doc : jamais de `{{if}}` dans une réponse attendue.
 - `question:specs` 300 tirages par variation : tout réussi ; `create-questions` en simulation (prod) : 7/7
   verts, 88 specs ; test du corpus vert ; base locale : 7 brouillons, pas de défilement horizontal.

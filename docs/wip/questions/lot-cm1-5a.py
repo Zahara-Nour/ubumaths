@@ -225,7 +225,7 @@ M_ET_CM = variation(
 
 MODELES['02-relations-entre-unites-de-longueur'] = modele(
     'Relations entre les unités de longueur',
-    '1 unité = 10 fois l\'unité suivante : 7 dam = 70 m ; 340 mm = 34 cm ; 5 hm = 50 000 cm ;'
+    '1 unité = 10 fois l\'unité suivante : 7 dam = 70 m ; 340 mm = 34 cm ; 5 hm = 500 m ;'
     ' 3 km 250 m = 3 250 m ; 4 m 5 cm = 405 cm', 'Unités', 14,
     [UN_CRAN, UN_CRAN_RETOUR, DEUX_CRANS, KM_ET_M, M_ET_CM],
     [spec('7 dam = 70 m', 0, {'x': 3, 'y': 4, 'a': 7}, '70', 'correct'),
@@ -289,34 +289,34 @@ VERS_LA_SUIVANTE = variation(
      '$${{n}}~\\unit{' + UY + '} = ' + col(evd('n/10')) + '~\\unit{' + UX + '}$$'],
     conditions=['mod(n,10) != 0'])
 
-# Fractions simples d'une unité (BO : 1/2 km = 500 m ; 3/4 m = 75 cm)
-FRACTIONS = [('1', '2', 'km', 'm', '500', MILLE), ('1', '4', 'km', 'm', '250', MILLE),
-             ('3', '4', 'km', 'm', '750', MILLE), ('1', '10', 'km', 'm', '100', MILLE),
-             ('1', '2', 'm', 'cm', '50', '100'), ('1', '4', 'm', 'cm', '25', '100'),
-             ('3', '4', 'm', 'cm', '75', '100'), ('1', '10', 'm', 'cm', '10', '100')]
+# Fractions simples d'une unité (BO : 1/2 km = 500 m ; 3/4 m = 75 cm) : n/d avec (n, d) parmi
+# (1, 2), (1, 4), (3, 4), (1, 10). La réponse est calculée (n × base / d) : jamais de `{{if:…}}`
+# dans une réponse attendue (la liste blanche des réponses d'élèves la refuse)
+FRACTION_VARS = [var('n', '1|3'), var('d', '2|4|10')]
+FRACTION_CONDITIONS = ['(n-1)*(d-4) == 0']
 
 
-def f(i):
-    return [x[i] for x in FRACTIONS]
+def fraction(grande, petite, base, base_tex):
+    return variation(
+        'Complète.\n\n$\\dfrac{{{n}}}{{{d}}}~\\unit{' + grande + '} = ?~\\text{' + petite + '}$',
+        [ev('n*' + base + '/d')], FRACTION_VARS,
+        ['$1~\\unit{' + grande + '} = ' + base_tex + '~\\unit{' + petite + '}$.',
+         '$\\dfrac{1}{{{d}}}~\\unit{' + grande + '}$, c\'est $' + base_tex + '~\\unit{' + petite
+         + '}$ partagés en {{d}} parts égales : $' + ev(base + '/d') + '~\\unit{' + petite
+         + '}${{if:n==3|, et on en prend 3|}}.',
+         '$$\\dfrac{{{n}}}{{{d}}}~\\unit{' + grande + '} = ' + col(ev('n*' + base + '/d'))
+         + '~\\unit{' + petite + '}$$'],
+        conditions=FRACTION_CONDITIONS)
 
 
-FRACTION = variation(
-    'Complète.\n\n$\\dfrac{' + selon('k', f(0)) + '}{' + selon('k', f(1)) + '}~\\unit{'
-    + selon('k', f(2)) + '} = ?~\\text{' + selon('k', f(3)) + '}$', [selon('k', f(4))],
-    [var('k', '1..8')],
-    ['$1~\\unit{' + selon('k', f(2)) + '} = ' + selon('k', f(5)) + '~\\unit{'
-     + selon('k', f(3)) + '}$.',
-     '$\\dfrac{1}{' + selon('k', f(1)) + '}~\\unit{' + selon('k', f(2)) + '}$, c\'est $'
-     + selon('k', f(5)) + '~\\unit{' + selon('k', f(3)) + '}$ partagés en ' + selon('k', f(1))
-     + ' parts égales{{if:k==3|, et on en prend 3|{{if:k==7|, et on en prend 3|}}}}.',
-     '$$\\dfrac{' + selon('k', f(0)) + '}{' + selon('k', f(1)) + '}~\\unit{' + selon('k', f(2))
-     + '} = ' + col(selon('k', f(4))) + '~\\unit{' + selon('k', f(3)) + '}$$'])
+FRACTION_KM = fraction('km', 'm', '1000', MILLE)
+FRACTION_M = fraction('m', 'cm', '100', '100')
 
 MODELES['03-longueurs-decimaux-et-fractions'] = modele(
     'Longueurs : écritures décimales et fractions',
     '215 cm = 2,15 m ; 2,15 m = 215 cm ; 3,75 km = 3 750 m ; 7 cm = 0,7 dm ; 1/2 km = 500 m ;'
     ' 3/4 m = 75 cm', 'Unités', 15,
-    [CM_EN_M, M_EN_CM, KM_EN_M, VERS_LA_SUIVANTE, FRACTION],
+    [CM_EN_M, M_EN_CM, KM_EN_M, VERS_LA_SUIVANTE, FRACTION_KM, FRACTION_M],
     [spec('BO : 215 cm = 2,15 m', 0, {'n': 215, 'm': 2, 'c': 15}, '2,15', 'correct'),
      spec('Erreur : 215 cm = 21,5 m (÷ 10)', 0, {'n': 215, 'm': 2, 'c': 15}, '21,5', 'incorrect'),
      spec('Erreur : 215 cm = 21 500 m (× 100)', 0, {'n': 215, 'm': 2, 'c': 15}, '21 500', 'incorrect'),
@@ -336,11 +336,14 @@ MODELES['03-longueurs-decimaux-et-fractions'] = modele(
      spec('Erreur : 7 cm = 70 dm', 3, {'x': 5, 'y': 6, 'n': 7}, '70', 'incorrect'),
      spec('25 mm = 2,5 cm', 3, {'x': 6, 'y': 7, 'n': 25}, '2,5', 'correct'),
      spec('Erreur : 25 mm = 0,25 cm', 3, {'x': 6, 'y': 7, 'n': 25}, '0,25', 'incorrect'),
-     spec('BO : 1/2 km = 500 m', 4, {'k': 1}, '500', 'correct'),
-     spec('Erreur : 1/2 km = 0,5 m', 4, {'k': 1}, '0,5', 'incorrect'),
-     spec('BO : 3/4 m = 75 cm', 4, {'k': 7}, '75', 'correct'),
-     spec('Erreur : 3/4 m = 34 cm', 4, {'k': 7}, '34', 'incorrect'),
-     spec('1/10 m = 10 cm', 4, {'k': 8}, '10', 'correct')],
+     spec('BO : 1/2 km = 500 m', 4, {'n': 1, 'd': 2}, '500', 'correct'),
+     spec('Erreur : 1/2 km = 0,5 m', 4, {'n': 1, 'd': 2}, '0,5', 'incorrect'),
+     spec('3/4 km = 750 m', 4, {'n': 3, 'd': 4}, '750', 'correct'),
+     spec('BO : 3/4 m = 75 cm', 5, {'n': 3, 'd': 4}, '75', 'correct'),
+     spec('Erreur : 3/4 m = 34 cm', 5, {'n': 3, 'd': 4}, '34', 'incorrect'),
+     spec('Erreur : 3/4 m = 25 cm (un quart seulement)', 5, {'n': 3, 'd': 4}, '25',
+          'incorrect'),
+     spec('1/10 m = 10 cm', 5, {'n': 1, 'd': 10}, '10', 'correct')],
     delay=90)
 
 # =============== 4. CM1-069 : choisir l'unité ===============
