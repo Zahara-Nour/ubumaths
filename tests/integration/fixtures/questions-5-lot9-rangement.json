@@ -1,0 +1,112 @@
+[
+	{
+		"id": "06c07f43-dff7-40ba-ae44-2c414e76c8c9",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données > courbes et repères",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-077"]
+	},
+	{
+		"id": "273050b8-866b-45e4-8e78-25d39f585588",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données > effectifs et fréquences",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-076"]
+	},
+	{
+		"id": "446c1b41-3c6c-4371-a955-817094e16e38",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données > tableaux",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-136"]
+	},
+	{
+		"id": "593cb70b-4e39-4a9a-a971-35cc010f5f14",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données > diagrammes circulaires",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-111"]
+	},
+	{
+		"id": "86e43598-c030-41bb-8f06-3db0bbc51d1b",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données > diagrammes circulaires",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-138"]
+	},
+	{
+		"id": "927b676b-e483-44f8-9fab-865d8af44202",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données > courbes et repères",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-135"]
+	},
+	{
+		"id": "98db0948-cb05-4802-9099-e9395541580f",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données > diagrammes en barres",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-137"]
+	},
+	{
+		"id": "c5aa0dd9-10e2-4d9d-93b7-1479c4308be6",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données > tableaux",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-109"]
+	},
+	{
+		"id": "d85ade81-efb4-40ec-92f3-4d55f96fb9d1",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données > tableaux",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-078"]
+	},
+	{
+		"id": "eeba38c7-b5f2-47d5-a3ff-8d6f4bc19221",
+		"noeudAvant": null,
+		"noeudApres": "Statistiques > Représenter des données > diagrammes en barres",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-110"]
+	}
+]
