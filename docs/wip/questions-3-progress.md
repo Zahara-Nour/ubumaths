@@ -1111,3 +1111,20 @@ publiés de plus. Aucune règle ne change.
 
 - 3-047 `962da675-6cde-45c9-9ba4-56d96a2be9c6` · 3-048 `9f9bddbd-19cc-43cc-90b9-e67c9058468d` ·
   3-049 `4ce8eb3c-e00a-4a26-adf7-d4f215b8cc3b` · 3-050 `0a470416-e296-4f2b-b11d-dee7150ebc7a`.
+
+## 16. Rangement des lots 7 et 8 (2026-11-02)
+
+- Brouillons en prod (David) : lot 7 (§ 14.11), lot 8 `1bd7378d` (lire, 3-062), `9a9026fc` (construire, 3-030).
+- Migration `20261102070008_questions_3_lots7_8_rangement_tags.sql`, générée par
+  `docs/wip/questions/lot-rangement-3-7-8.py` (gabarit : `questions-5/lot-6-rangement.py`, qui crée aussi une
+  sous-notion) depuis le relevé `etat-prod-2026-11-02-3e-lots7-8/` : sous-notion **neuve** « Algorithmique >
+  Variables et instructions > blocs personnalisés » (§ 14.10), où passe le point **3-050** (comme 5-079 au lot 6
+  de la 5e) ; 6 brouillons sur le nœud de leur point, 6 tags posés.
+- Test `tests/integration/questions-3-lots7-8-rangement-tags.test.ts` : **rouge sans la migration** (corps
+  neutralisé : 13 échecs), vert avec (23/23). Fixtures `arbre-notions-seed.json` (+ la sous-notion) et
+  `seed-cycle4-points.json` (3-050) à jour ; migration ajoutée à `later-migrations.ts`.
+- ⚠️ Base locale en retard d'une soixantaine de migrations (depuis le 2026-10-29) : les tests d'arbre
+  (`nettoyage-facettes`, `passe-points-lycee`, `rangements-modeles-exercices`) y échouent avec ou sans cette
+  migration → la CI fait foi.
+- Ouvert : 4-068 / 4-069 restent sur la notion (la sous-notion « leur servira », § 14.10) ; à ranger avec les
+  modèles de 4e qui les couvrent.

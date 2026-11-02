@@ -25,8 +25,12 @@ export const QUESTIONS_5_LOT6 =
 /** Sous-notions « limites usuelles » (×2) et « Limites de suites > croissances comparées », lot 2 de terminale spé. */
 export const QUESTIONS_TSPE_LOT2 =
 	'supabase/migrations/20261101224702_questions_tspe_lot2_rangement_tags.sql';
+/** Sous-notion « Algorithmique > Variables et instructions > blocs personnalisés » (3-050), lots 7 et 8 de la 3e. */
+export const QUESTIONS_3_LOTS7_8 =
+	'supabase/migrations/20261102070008_questions_3_lots7_8_rangement_tags.sql';
 /** Du plus récent au plus ancien. */
 const LATER = [
+	QUESTIONS_3_LOTS7_8,
 	QUESTIONS_TSPE_LOT2,
 	QUESTIONS_5_LOT6,
 	QUESTIONS_CP_FORMES,
