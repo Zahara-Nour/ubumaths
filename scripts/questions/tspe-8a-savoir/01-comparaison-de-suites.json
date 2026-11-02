@@ -1,0 +1,169 @@
+{
+	"title": "Théorèmes de comparaison pour les suites",
+	"description": "À savoir : uₙ ≤ vₙ et uₙ → +∞ ⟹ vₙ → +∞ ; vₙ → −∞ ⟹ uₙ → −∞ ; piège : uₙ → −∞ ne dit rien de vₙ",
+	"grades": ["T_SPE"],
+	"theme": "Suites",
+	"domain": "Limites de suites",
+	"subdomain": "À savoir",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $(u_n)$ et $(v_n)$ deux suites telles que, à partir d'un certain rang, $u_n\\leqslant v_n$.\n\nOn sait que $\\lim\\limits_{n\\to+\\infty}u_n=+\\infty$. Alors :\n\n```choix\n- $\\lim\\limits_{n\\to+\\infty}v_n=+\\infty$\n- $\\lim\\limits_{n\\to+\\infty}v_n=-\\infty$\n- $(v_n)$ converge\n- On ne peut rien conclure.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître (théorème de comparaison) : si, à partir d'un certain rang, $u_n\\leqslant v_n$ et si $\\lim\\limits_{n\\to+\\infty}u_n=+\\infty$, alors $\\textcolor{{{color:primary.0}}}{\\lim\\limits_{n\\to+\\infty}v_n=+\\infty}$.",
+					"La suite $(v_n)$, plus grande que $(u_n)$, est « poussée » vers $+\\infty$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $(u_n)$ et $(v_n)$ deux suites telles que, à partir d'un certain rang, $u_n\\leqslant v_n$.\n\nOn sait que $\\lim\\limits_{n\\to+\\infty}v_n=-\\infty$. Alors :\n\n```choix\n- $\\lim\\limits_{n\\to+\\infty}u_n=-\\infty$\n- $\\lim\\limits_{n\\to+\\infty}u_n=+\\infty$\n- $(u_n)$ converge\n- On ne peut rien conclure.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître (théorème de comparaison) : si, à partir d'un certain rang, $u_n\\leqslant v_n$ et si $\\lim\\limits_{n\\to+\\infty}v_n=-\\infty$, alors $\\textcolor{{{color:primary.0}}}{\\lim\\limits_{n\\to+\\infty}u_n=-\\infty}$.",
+					"La suite $(u_n)$, plus petite que $(v_n)$, est entraînée vers $-\\infty$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $(u_n)$ et $(v_n)$ deux suites telles que, à partir d'un certain rang, $u_n\\leqslant v_n$.\n\nOn sait que $\\lim\\limits_{n\\to+\\infty}u_n=-\\infty$. Que peut-on dire de la limite de $(v_n)$ ?\n\n```choix\n- On ne peut rien conclure.\n- $\\lim\\limits_{n\\to+\\infty}v_n=-\\infty$\n- $\\lim\\limits_{n\\to+\\infty}v_n=+\\infty$\n- $(v_n)$ converge\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : le théorème de comparaison pousse la plus GRANDE suite vers $+\\infty$, ou la plus PETITE vers $-\\infty$.",
+					"Ici, c'est la plus petite, $(u_n)$, qui tend vers $-\\infty$ : cela ne dit rien de $(v_n)$. Par exemple $u_n=-n$ et $v_n=1$, ou $u_n=-n$ et $v_n=n$. Donc $\\textcolor{{{color:primary.0}}}{\\text{on ne peut rien conclure}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "vₙ → +∞",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −∞",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : converge",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rien",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "uₙ → −∞",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : +∞",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : converge",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rien",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "rien",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −∞ (sens inversé)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : +∞",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : converge",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

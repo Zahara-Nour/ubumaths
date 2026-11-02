@@ -1,0 +1,119 @@
+{
+	"title": "Théorème des gendarmes",
+	"description": "À savoir : uₙ ≤ wₙ ≤ vₙ, uₙ et vₙ → ℓ ⟹ wₙ → ℓ ; hypothèse : les deux suites, même limite",
+	"grades": ["T_SPE"],
+	"theme": "Suites",
+	"domain": "Limites de suites",
+	"subdomain": "À savoir",
+	"level": 2,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $(u_n)$, $(v_n)$ et $(w_n)$ trois suites telles que, à partir d'un certain rang, $u_n\\leqslant w_n\\leqslant v_n$.\n\nOn sait que $(u_n)$ et $(v_n)$ convergent toutes les deux vers le même réel $\\ell$. Alors :\n\n```choix\n- $(w_n)$ converge vers $\\ell$\n- $(w_n)$ converge, mais pas forcément vers $\\ell$\n- $(w_n)$ est constante, égale à $\\ell$\n- On ne peut rien conclure.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître (théorème des gendarmes) : si, à partir d'un certain rang, $u_n\\leqslant w_n\\leqslant v_n$ et si $(u_n)$ et $(v_n)$ convergent vers la même limite $\\ell$, alors $\\textcolor{{{color:primary.0}}}{(w_n)\\text{ converge vers }\\ell}$.",
+					"Le théorème donne à la fois la convergence de $(w_n)$ et sa limite."
+				]
+			}
+		},
+		{
+			"statement": "Soit $(u_n)$, $(v_n)$ et $(w_n)$ trois suites telles que, pour tout entier naturel $n$, $u_n\\leqslant w_n\\leqslant v_n$.\n\nQuelle information permet de conclure que $(w_n)$ converge vers $3$ ?\n\n```choix\n- $\\lim\\limits_{n\\to+\\infty}u_n=3$ et $\\lim\\limits_{n\\to+\\infty}v_n=3$\n- $\\lim\\limits_{n\\to+\\infty}u_n=3$ seulement\n- $\\lim\\limits_{n\\to+\\infty}v_n=3$ seulement\n- $(u_n)$ et $(v_n)$ convergent\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : le théorème des gendarmes demande que les DEUX suites qui encadrent convergent vers la MÊME limite.",
+					"Il faut donc $\\textcolor{{{color:primary.0}}}{\\lim\\limits_{n\\to+\\infty}u_n=3\\text{ et }\\lim\\limits_{n\\to+\\infty}v_n=3}$.",
+					"Une seule des deux ne suffit pas, et deux limites différentes non plus : avec $u_n=0$ et $v_n=3$, $(w_n)$ peut ne pas converger."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "converge vers ℓ",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pas forcément vers ℓ",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : constante",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rien",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "les deux vers 3",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : u seule",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : v seule",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : convergent, limites quelconques",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

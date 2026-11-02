@@ -1,0 +1,169 @@
+{
+	"title": "Convexité et croissance de la dérivée",
+	"description": "À savoir : f deux fois dérivable, convexe ⟺ f′ croissante ; concave ⟺ f′ décroissante ; distracteur : f′ positive (f croissante)",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions convexes",
+	"domain": "Convexité",
+	"subdomain": "À savoir",
+	"level": 3,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$.\n\n$f$ est convexe sur $I$ si et seulement si :\n\n```choix\n- $f'$ est croissante sur $I$\n- $f$ est croissante sur $I$\n- $f'$ est positive sur $I$\n- $f'$ est décroissante sur $I$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître (admis) : pour $f$ deux fois dérivable sur $I$, $f$ est convexe sur $I$ si et seulement si $\\textcolor{{{color:primary.0}}}{f'\\text{ est croissante sur }I}$.",
+					"Ne pas confondre : « $f'$ positive » signifie « $f$ croissante », pas « $f$ convexe »."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$, telle que $f'$ est **décroissante** sur $I$.\n\nAlors :\n\n```choix\n- $f$ est concave sur $I$\n- $f$ est convexe sur $I$\n- $f$ est décroissante sur $I$\n- $f$ est négative sur $I$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : $f$ convexe sur $I$ si et seulement si $f'$ est croissante sur $I$ ; $f$ concave si et seulement si $f'$ est décroissante sur $I$.",
+					"Ici $f'$ décroît, donc $\\textcolor{{{color:primary.0}}}{f\\text{ est concave sur }I}$ ; cela ne dit rien du sens de variation de $f$ (c'est le signe de $f'$ qui le donne)."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ une fonction deux fois dérivable et convexe sur un intervalle $I$.\n\nQue peut-on dire de $f'$ sur $I$ ?\n\n```choix\n- $f'$ est croissante sur $I$\n- $f'$ est positive sur $I$\n- $f'$ est décroissante sur $I$\n- $f'$ est constante sur $I$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : $f$ convexe sur $I$ si et seulement si $f'$ est croissante sur $I$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{f'\\text{ est croissante sur }I}$ ; son signe peut changer (par exemple $f(x)=x^2$, $f'(x)=2x$)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "f′ croissante",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f croissante",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : f′ positive",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : f′ décroissante",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "concave",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : convexe",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : décroissante",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : négative",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f′ croissante",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : f′ positive",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : f′ décroissante",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : f′ constante",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

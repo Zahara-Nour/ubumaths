@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 7 publié._
+_Mis à jour le 2026-11-02, lot 8a écrit (11 modèles, specs vertes)._
 
-- **État** : lot 7 terminé, 6 modèles **publiés** (relecture : 6 « ok » sur 6 ; `published` relu au MCP).
-- **Prochaine action** : lot 8 (« à savoir »), une fois `questions-tspe-proba` et `questions-tspe-espace` finis (leurs worktrees existent encore le 2026-11-02) ; phase 0 d'abord.
+- **État** : lot 7 publié (6/6) ; lot 8 : phase 0 écrite (§ « Lot 8 : phase 0 »), 26 « à savoir » en 3 sous-lots, 31 couverts, 4 déjà tagués.
+- **Prochaine action** : PR des fichiers de 8a, CI verte → merge ; puis David lance `create-questions --publier` depuis le dépôt principal ; migration nœud + tag (gabarit lot 7).
 - **En attente de David** : rien.
 - **Pièges en cours** : relevé de nœuds → filtrer `archived_at is null` ; `!=` dans `$…$` lu « ≠ » (écrire `!\,=`) ; garde « notion sans sous-notion » : liste `sous_notions_admises` (migration `20261102181059`).
-- **Worktree / branche** : aucun ; en créer un neuf depuis `origin/main` pour le lot 8.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · `feat/questions-tspe-restes-8`.
 
 ---
 
@@ -148,3 +148,69 @@ la publication). Rendu vu dans Chrome à ~606 px (la fenêtre ne descend pas à 
 
 **Relecture** (David, 2026-11-02) : 6 « ok » sur 6, aucun commentaire (lu en base). **Publication** : `publier-lot.ts`
 simulé (6 passent), lancé par David avec `--publier` : 6/6 `published`, relus au MCP, toujours sur leur nœud.
+
+## Lot 8 : phase 0 (2026-11-02, validée)
+
+_Relevé MCP prod (lecture seule) des 61 points « = » du § 3 de l'index : tags actuels et catégories `T_SPE`._
+
+**Règle proposée (D2 de 1re spé, lue comme au lot 6 de 1re)** : modèle « à savoir » pour un **fait énonçable**
+(formule, propriété, théorème et ses hypothèses), même si un voisin l'applique (264 créé malgré a86442c1) ; aucun
+modèle pour une **notion** dont le savoir-faire voisin est la seule épreuve (« représentation paramétrique » ≈
+« déterminer une représentation »). Forme D29 : case choix à 4 propositions, erreurs typiques en distracteurs, 2-3
+variations dans les deux sens. Rangement : nœud du point ; sous-domaine neuf « À savoir » dans chaque domaine (aucun
+en `T_SPE` en prod) → aucune collision de niveaux avec les sessions `proba` et `espace`, qui écrivent ailleurs.
+
+**Déjà couverts par un tag (4)** : 316 (ef3c495c), 508 (4ff9d049), 586 (a80a780f), 609 (7a0b795c).
+
+**À savoir (26)**, en trois sous-lots :
+
+| Sous-lot | Point | Fait                                                  | Domaine › À savoir (niveau)  |
+| -------- | ----- | ----------------------------------------------------- | ---------------------------- |
+| 8a       | 381   | comparaison : uₙ ≤ vₙ et uₙ → +∞ ⟹ vₙ → +∞            | Suites, 1                    |
+| 8a       | 570   | théorème des gendarmes (hypothèses)                   | Suites, 2                    |
+| 8a       | 400   | comparaison pour les fonctions                        | Limites de fonctions, 1      |
+| 8a       | 401   | opérations : reconnaître les formes indéterminées     | Limites de fonctions, 2      |
+| 8a       | 410   | convexe ⟺ courbe sous ses sécantes                    | Convexité, 1                 |
+| 8a       | 411   | convexe ⟺ courbe au-dessus de ses tangentes           | Convexité, 2                 |
+| 8a       | 585   | convexe ⟺ f′ croissante                               | Convexité, 3                 |
+| 8a       | 428   | TVI : hypothèses (continuité)                         | Continuité, 1                |
+| 8a       | 429   | TVI, cas strictement monotone : solution unique       | Continuité, 2                |
+| 8a       | 439   | ln(ab), ln(a/b), ln(aⁿ), ln(1/a)                      | Fonction logarithme, 1       |
+| 8a       | 440   | (ln x)′ = 1/x                                         | Fonction logarithme, 2       |
+| 8b       | 463   | primitive de xⁿ, n ∈ ℤ, n ≠ −1                        | Primitives, 1                |
+| 8b       | 603   | primitive de 1/√x                                     | Primitives, 2                |
+| 8b       | 604   | primitive de exp                                      | Primitives, 3                |
+| 8b       | 605   | primitive de sin                                      | Primitives, 4                |
+| 8b       | 606   | primitive de cos                                      | Primitives, 5                |
+| 8b       | 466   | solutions de y′ = ay + b                              | Équations différentielles, 1 |
+| 8b       | 484   | formule d'intégration par parties                     | Calcul intégral, 1           |
+| 8c       | 541   | un ensemble à n éléments a 2ⁿ parties                 | Dénombrement, 1              |
+| 8c       | 614   | P(X = k) = C(n,k) pᵏ(1−p)ⁿ⁻ᵏ                          | Loi binomiale, 1             |
+| 8c       | 519   | linéarité de l'espérance                              | Sommes de v. a., 1           |
+| 8c       | 520   | V(X+Y) = V(X)+V(Y) sous indépendance                  | Sommes de v. a., 2           |
+| 8c       | 343   | u ⊥ v ⟺ u·v = 0 (espace)                              | domaine de l'espace, 1       |
+| 8c       | 351   | plans perpendiculaires ⟺ vecteurs normaux orthogonaux | domaine de l'espace, 2       |
+| 8c       | 329   | droite = point + vecteur directeur                    | domaine de l'espace, 3       |
+| 8c       | 331   | plan = point + deux vecteurs non colinéaires          | domaine de l'espace, 4       |
+
+**Couverts par leur voisin, sans modèle (31)** : 301, 540 → 306 ; 544 → 541 ; 547 → ef3c495c (316) ; 317 → 318 ;
+326, 327, 328, 330 → 550, 333 ; 342 → 345 ; 348 → 357 ; 349 → 565 ; 560 → 367 ; 350 → 370 ; 561 → 369 ; 363 → 365 ;
+397, 572, 573 → 415 ; 398 → 404 ; 399, 574, 575 → 403 (limites usuelles, lot 2) ; 581 → 806c10f4, 04ec9518 (415) ;
+427 → 432 ; 453 → 597-601 ; 477 → 487 ; 608 → dd0ee69a (489) ; 503, 504 → 508 ; 523 → 524.
+
+**Questions** : Q1 règle et partage 26 / 31 ; Q2 trois sous-lots (8a 11, 8b 7, 8c 8), dans cet ordre ; Q3 sous-domaine
+« À savoir » neuf par domaine ; Q4 cas limites : 427 (suite convergente et fonction continue), 477 (∫ = F(b) − F(a)),
+398 (asymptote) laissés « couverts » ; Q5 question d'accès : personne ne gagne ni ne perd d'accès (brouillons ; la
+migration ne pose que nœud et tags).
+
+**D-L8 (David, 2026-11-02, « je valide », sur les recos)** : Q1 26 à savoir, 31 couverts ; Q2 8a → 8b → 8c ; Q3
+sous-domaine « À savoir » neuf par domaine ; Q4 427, 477, 398 couverts ; Q5 accès : personne.
+
+## Lot 8a : écriture (2026-11-02)
+
+`docs/wip/questions/lot-tspe-savoir-a.py` → `scripts/questions/tspe-8a-savoir/` : 11 modèles `[T_SPE]`, sous-domaine
+« À savoir » (Suites › Limites de suites 1-2 ; Fonctions › Limites de fonctions 1-2 ; Fonctions convexes › Convexité
+1-3 ; Fonctions › Continuité 1-2 ; Fonctions › Fonction logarithme 1-2). 2 ou 3 variations par modèle, case choix à 4
+propositions ; pour les théorèmes (381, 400), une variation « piège » dont la bonne réponse est « On ne peut rien
+conclure ». Specs : 128 vertes (une juste, trois fausses par variation), 1 550 tirages ; aperçus relus (scratchpad).
+Simulation `create-questions` : 11 à créer, 0 en base.

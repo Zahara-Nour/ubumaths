@@ -1,0 +1,119 @@
+{
+	"title": "Dérivée de la fonction logarithme",
+	"description": "À savoir : ln′(x) = 1/x sur ]0 ; +∞[, reconnue parmi des erreurs typiques, et dans l'autre sens (quelle fonction a pour dérivée 1/x)",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction logarithme",
+	"subdomain": "À savoir",
+	"level": 2,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "La fonction $\\ln$ est dérivable sur $]0\\,;+\\infty[$. Pour tout réel $x>0$, $\\ln'(x)$ est égal à :\n\n```choix\n- $\\dfrac{1}{x}$\n- $\\ln x$\n- $\\dfrac{1}{x^2}$\n- $-\\dfrac{1}{x}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : la fonction $\\ln$ est dérivable sur $]0\\,;+\\infty[$ et, pour tout réel $x>0$, $\\ln'(x)=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{x}}$.",
+					"Comme $\\dfrac{1}{x}>0$ sur $]0\\,;+\\infty[$, la fonction $\\ln$ y est strictement croissante."
+				]
+			}
+		},
+		{
+			"statement": "Parmi ces fonctions définies sur $]0\\,;+\\infty[$, laquelle a pour dérivée la fonction $x\\mapsto\\dfrac{1}{x}$ ?\n\n```choix\n- $x\\mapsto\\ln x$\n- $x\\mapsto-\\dfrac{1}{x^2}$\n- $x\\mapsto x\\ln x$\n- $x\\mapsto\\ln x+x$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : pour tout réel $x>0$, $\\ln'(x)=\\dfrac{1}{x}$.",
+					"La fonction qui a pour dérivée $x\\mapsto\\dfrac{1}{x}$ est donc $\\textcolor{{{color:primary.0}}}{x\\mapsto\\ln x}$.",
+					"Vérification des autres : $-\\dfrac{1}{x^2}$ est la dérivée de $\\dfrac{1}{x}$ (sens inversé), $(x\\ln x)'=\\ln x+1$ et $(\\ln x+x)'=\\dfrac{1}{x}+1$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1/x",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ln x",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/x²",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −1/x",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "ln x",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −1/x² (dérivée de 1/x)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x ln x",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ln x + x",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

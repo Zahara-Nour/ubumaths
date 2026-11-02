@@ -1,0 +1,170 @@
+{
+	"title": "Convexité : position par rapport aux tangentes",
+	"description": "À savoir : f deux fois dérivable, convexe ⟺ courbe au-dessus de ses tangentes ; inégalité f(x) ≥ f′(a)(x − a) + f(a) ; concave : en dessous",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions convexes",
+	"domain": "Convexité",
+	"subdomain": "À savoir",
+	"level": 2,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$.\n\n$f$ est convexe sur $I$ si et seulement si, sur $I$, sa courbe représentative est :\n\n```choix\n- au-dessus de chacune de ses tangentes\n- en dessous de chacune de ses tangentes\n- au-dessus de chacune de ses sécantes\n- au-dessus de l'axe des abscisses\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître (admis) : pour $f$ deux fois dérivable sur $I$, $f$ est convexe sur $I$ si et seulement si sa courbe est $\\textcolor{{{color:primary.0}}}{\\text{au-dessus de chacune de ses tangentes}}$.",
+					"Et en dessous de ses sécantes : les deux positions vont ensemble."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ une fonction deux fois dérivable et convexe sur $\\mathbb{R}$, et $a$ un réel.\n\nPour tout réel $x$ :\n\n```choix\n- $f(x)\\geqslant f'(a)(x-a)+f(a)$\n- $f(x)\\leqslant f'(a)(x-a)+f(a)$\n- $f(x)=f'(a)(x-a)+f(a)$\n- $f(x)\\geqslant f(a)$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : la tangente en $a$ a pour équation $y=f'(a)(x-a)+f(a)$, et la courbe d'une fonction convexe est au-dessus de ses tangentes.",
+					"Donc, pour tout réel $x$, $\\textcolor{{{color:primary.0}}}{f(x)\\geqslant f'(a)(x-a)+f(a)}$.",
+					"$f(x)\\geqslant f(a)$ serait vrai seulement si la tangente en $a$ était horizontale."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ une fonction deux fois dérivable et **concave** sur un intervalle $I$.\n\nSur $I$, sa courbe représentative est :\n\n```choix\n- en dessous de chacune de ses tangentes\n- au-dessus de chacune de ses tangentes\n- en dessous de chacune de ses sécantes\n- en dessous de l'axe des abscisses\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : $f$ concave équivaut à $-f$ convexe ; la courbe de $-f$ est au-dessus de ses tangentes.",
+					"Celle de $f$ est donc $\\textcolor{{{color:primary.0}}}{\\text{en dessous de chacune de ses tangentes}}$ (et au-dessus de ses sécantes)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "au-dessus des tangentes",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : en dessous",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : au-dessus des sécantes",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : positive",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "≥ tangente",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ≤",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : =",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ≥ f(a)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "sous les tangentes",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : au-dessus",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sous les sécantes",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : négative",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
