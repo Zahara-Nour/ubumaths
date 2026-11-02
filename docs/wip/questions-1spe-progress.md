@@ -9,17 +9,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, répartition en trois sous-chantiers (§ 24)._
+_Mis à jour le 2026-11-02, les trois sous-chantiers clos (§ 24)._
 
-- **État** : lots 0 à 6a publiés. La suite est répartie en trois sessions parallèles (§ 24) :
-  `questions-1spe-geometrie` (6b, produit scalaire formules), `questions-1spe-analyse` (restes second degré /
-  exponentielle / trigo, automatismes 434 et 432), `questions-1spe-logique` (logique et listes Python).
-- **Prochaine action** : aucune ici ; chaque session part de `/reprendre <sous-chantier>`. Ce journal reste
-  l'index : y noter seulement la fin de chaque sous-chantier.
-- **En attente de David** : ouvrir les trois sessions.
-- **Pièges en cours** : repris dans chaque sous-journal (« Décisions communes et pièges »).
-- **Worktree / branche** : aucun (l'ancien `../ubumaths-wt-questions-1spe`, détaché, est retiré).
-- **Ensuite** : outils C (433, 271, 306) dans des chantiers à part (D5) ; versement quand les trois sont clos.
+- **État** : lots 0 à 6a publiés ; les trois sous-chantiers du § 24 (`geometrie`, `analyse`, `logique`) sont clos,
+  leurs modèles publiés. 306 a été couvert par `analyse` (B3, geste ` ```trig placer: `).
+- **Prochaine action** : versement du chantier (le durable vers `docs/systeme/`, les quatre journaux archivés) — à
+  lancer sur go de David.
+- **En attente de David** : go du versement ; outils C restants (433, 271) dans des chantiers à part (D5).
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1185,7 +1182,7 @@ sous-chantier a son journal, son worktree et sa session.
 | Sous-chantier              | Lots                                                                                               | Journal                                                                      |
 | -------------------------- | -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
 | `questions-1spe-geometrie` | 6b (412, 310, 313, 311, 415, 316, 329), puis formules (413, 414, 314, 315, 416) — ✅ clos, publiés | [questions-1spe-geometrie-progress.md](questions-1spe-geometrie-progress.md) |
-| `questions-1spe-analyse`   | restes (385, 252, 382, 251, 296, 407, 408, 303), automatismes (434, 432)                           | [questions-1spe-analyse-progress.md](questions-1spe-analyse-progress.md)     |
+| `questions-1spe-analyse`   | restes (385, 252, 382, 251, 296, 407, 408, 303, + 306), automatismes (434, 432) — ✅ clos, publiés | [questions-1spe-analyse-progress.md](questions-1spe-analyse-progress.md)     |
 | `questions-1spe-logique`   | logique et listes Python (203, 206, 367, 207, 208, 209, 210) — ✅ clos, publiés                    | [questions-1spe-logique-progress.md](questions-1spe-logique-progress.md)     |
 
 6b et les formules dans une seule session : même catégorie Produit scalaire (niveaux). 434 et 432 (§ 3.2) n'étaient

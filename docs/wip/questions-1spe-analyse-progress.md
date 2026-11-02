@@ -10,12 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2258 (migration nœud + tags passée en prod) et la page à cocher._
+_Mis à jour le 2026-11-02, après la publication des lots A et B._
 
-- **État** : lots A et B en prod en brouillon, rangés et tagués (relevé MCP après `db:migrate` : 10 modèles conformes, `updated_at` préservé) ; 7d6cf480 tagué 1SPE-434, 1GEN-064, 1TECHNO-141, niveaux `{2, 1_SPE, 1_GEN, 1_TECHNO}`.
-- **Prochaine action** : compter les verdicts de la page à cocher (https://claude.ai/artifact/LGKmmCDSg2HaC6NpwL3d8G), puis `publier-lot` sur `1spe-analyse-a` et `1spe-analyse-b` (simulation, puis `--publier` par David).
-- **En attente de David** : relecture de la page à cocher (9 fiches).
-- **Pièges en cours** : regarder sur la page à cocher le tableau de signes de B4 qui déborde en case choix.
+- **État** : ✅ **clos**. Lots A et B publiés en prod (9 modèles, `publier-lot --publier` lancé par David, statuts
+  relus en base) ; 7d6cf480 tagué pour 434. Périmètre couvert : 385, 252, 382 (par 251), 251, 296, 407, 408, 303,
+  306, 432, 434.
+- **Prochaine action** : aucune ici ; la fin est notée dans l'index (`questions-1spe`), dont le versement prend la suite.
+- **En attente de David** : rien.
 - **Worktree / branche** : aucun.
 
 ---
@@ -232,3 +233,7 @@ préfixés `a`/`b`), 30 exemples ; 3 alertes « bloc trig non dessiné » (B1-B3
 `verdicts` vide à la publication. Rendu à 390 px (cadre local) : pas de défilement de page ; en case choix, les 3 tableaux
 de signes de B4 tiennent (277 px dans 278) ; dans le corrigé de B4, le tableau à 5 valeurs déborde de la fiche d'environ
 6 px ; les calculs de Δ du corrigé de A1 défilent dans leur cadre.
+
+**Verdicts** : 9 « ok » sur 9, aucun commentaire. Simulation `publier-lot` : 5/5 (A) et 4/4 (B) passent le contrôle.
+`publier-lot --publier` lancé par David le 2026-11-02 : les 9 modèles sont `published` (relevé MCP ; niveaux inchangés,
+B4 `1_SPE`, `1_GEN`, `1_TECHNO`).
