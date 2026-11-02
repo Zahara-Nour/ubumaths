@@ -1,0 +1,231 @@
+{
+	"title": "Répéter à la main une séquence d'instructions",
+	"description": "Suivre une boucle « répéter » à la main : où arrive un robot sur un quadrillage, quelle figure trace le lutin, combien de répétitions pour une distance imposée",
+	"grades": ["6"],
+	"theme": "Algorithmique",
+	"domain": "Boucles",
+	"subdomain": "Boucle bornée",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le robot part de la case rouge. Chaque flèche le fait avancer d'un carreau.\n\nProgramme : **répéter ${{r}}$ fois** {{if:m==1|$\\rightarrow\\ \\rightarrow\\ \\uparrow$|{{if:m==2|$\\rightarrow\\ \\uparrow\\ \\uparrow$|$\\uparrow\\ \\rightarrow\\ \\rightarrow$}}}}\n\n```figure\nfenetre: -0.8 ; 7.5 ; -0.9 ; 7.5\ndescription: Un quadrillage, la case de départ du robot et trois points A, B et C.\ngrille: oui\n---\ndep1 = point(-0.2, -0.2, visible=faux)\ndep2 = point(0.2, -0.2, visible=faux)\ndep3 = point(0.2, 0.2, visible=faux)\ndep4 = point(-0.2, 0.2, visible=faux)\ndep = polygone(dep1, dep2, dep3, dep4, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(0, -0.55, \"départ\")\nA = point({{if:mod(0+l,3)==0|{{eval:r*dx}}|{{if:mod(0+l,3)==1|{{dx}}|{{eval:r*dy}}}}}}, {{if:mod(0+l,3)==0|{{eval:r*dy}}|{{if:mod(0+l,3)==1|{{dy}}|{{eval:r*dx}}}}}}, couleur=\"noir\")\nB = point({{if:mod(1+l,3)==0|{{eval:r*dx}}|{{if:mod(1+l,3)==1|{{dx}}|{{eval:r*dy}}}}}}, {{if:mod(1+l,3)==0|{{eval:r*dy}}|{{if:mod(1+l,3)==1|{{dy}}|{{eval:r*dx}}}}}}, couleur=\"noir\")\nC = point({{if:mod(2+l,3)==0|{{eval:r*dx}}|{{if:mod(2+l,3)==1|{{dx}}|{{eval:r*dy}}}}}}, {{if:mod(2+l,3)==0|{{eval:r*dy}}|{{if:mod(2+l,3)==1|{{dy}}|{{eval:r*dx}}}}}}, couleur=\"noir\")\n```\n\nOù arrive le robot ?\n\n```choix\nmelanger: non\n- au point A\n- au point B\n- au point C\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..3"
+				},
+				{
+					"name": "r",
+					"expression": "2..3"
+				},
+				{
+					"name": "l",
+					"expression": "0..2"
+				},
+				{
+					"name": "dx",
+					"expression": "{{if:m==2|1|2}}"
+				},
+				{
+					"name": "dy",
+					"expression": "{{if:m==2|2|1}}"
+				},
+				{
+					"name": "j",
+					"expression": "eval:mod(3-l,3)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Un passage.** {{if:m==1|$\\rightarrow\\ \\rightarrow\\ \\uparrow$|{{if:m==2|$\\rightarrow\\ \\uparrow\\ \\uparrow$|$\\uparrow\\ \\rightarrow\\ \\rightarrow$}}}} : le robot avance de ${{dx}}$ carreau{{if:dx==1||x}} vers la droite et de ${{dy}}$ vers le haut.",
+					"**${{r}}$ passages.** ${{eval:r*dx}}$ carreaux vers la droite, ${{eval:r*dy}}$ vers le haut : le point $\\textcolor{{{color:primary.0}}}{{{if:j==0|A|{{if:j==1|B|C}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le lutin a le stylo posé : il dessine en avançant.\n\n```scratch\nquand le drapeau vert pressé\nstylo en position d'écriture\nrépéter ({{if:k==1|4|{{if:k==2|3|6}}}}) fois\navancer de ({{c}}) pas\ntourner ↻ de ({{if:k==1|90|{{if:k==2|120|60}}}}) degrés\nfin\n```\n\nQuelle figure le lutin trace-t-il ?\n\n```choix\n- un carré\n- un triangle équilatéral\n- un hexagone régulier\n- un rectangle\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "c",
+					"expression": "50|80|100"
+				},
+				{
+					"name": "j",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Les côtés.** Le lutin avance {{if:k==1|$4$|{{if:k==2|$3$|$6$}}}} fois de ${{c}}$ pas : {{if:k==1|$4$|{{if:k==2|$3$|$6$}}}} côtés de même longueur.",
+					"**Les angles.** Il tourne de {{if:k==1|$90°$|{{if:k==2|$120°$|$60°$}}}} : l'angle de la figure est $180° - {{if:k==1|90° = 90°|{{if:k==2|120° = 60°|60° = 120°}}}}$. C'est **{{if:k==1|un carré|{{if:k==2|un triangle équilatéral|un hexagone régulier}}}}**."
+				]
+			}
+		},
+		{
+			"statement": "Le lutin doit avancer de ${{eval:c*n}}$ pas en tout.\n\n```scratch\nquand le drapeau vert pressé\nrépéter (n) fois\navancer de ({{c}}) pas\nfin\n```\n\nQuel nombre faut-il mettre à la place de $n$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "10|20|25|50"
+				},
+				{
+					"name": "n",
+					"expression": "3..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Une répétition.** À chaque passage dans la boucle, le lutin avance de ${{c}}$ pas.",
+					"${{eval:c*n}} \\div {{c}} = \\textcolor{{{color:primary.0}}}{{{n}}}$ répétitions : ${{n}} \\times {{c}} = {{eval:c*n}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "m = 1, r = 2, l = 0 : A",
+			"variationIndex": 0,
+			"variables": {
+				"m": "1",
+				"r": "2",
+				"l": "0",
+				"dx": "2",
+				"dy": "1",
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un seul passage",
+			"variationIndex": 0,
+			"variables": {
+				"m": "1",
+				"r": "2",
+				"l": "0",
+				"dx": "2",
+				"dy": "1",
+				"j": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "m = 2, r = 3, l = 1 : C",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"r": "3",
+				"l": "1",
+				"dx": "1",
+				"dy": "2",
+				"j": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Carré",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"c": "80",
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Triangle équilatéral (tourner de 120°)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"c": "80",
+				"j": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : hexagone pour 120°",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"c": "80",
+				"j": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rectangle",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"c": "80",
+				"j": "0"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "200 pas, 25 par passage : 8",
+			"variationIndex": 2,
+			"variables": {
+				"c": "25",
+				"n": "8"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 175 (soustraction)",
+			"variationIndex": 2,
+			"variables": {
+				"c": "25",
+				"n": "8"
+			},
+			"answers": ["175"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

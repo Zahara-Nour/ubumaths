@@ -1,0 +1,216 @@
+{
+	"title": "Exécuter un programme pour un nombre de départ",
+	"description": "Appliquer un programme de calcul à un nombre donné : écrit en liste, en Scratch (demander, mettre, dire), avec un nombre de départ décimal",
+	"grades": ["6"],
+	"theme": "Algorithmique",
+	"domain": "Variables et instructions",
+	"subdomain": "Exécuter un programme",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici un programme de calcul :\n\n- choisir un nombre ;\n- le multiplier par ${{a}}$ ;\n- ajouter ${{b}}$ ;\n- multiplier le résultat par ${{c}}$.\n\nApplique ce programme au nombre ${{n}}$.\n\nRésultat : $?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..12"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c*(a*n+b)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Dans l'ordre.** On applique chaque étape au résultat de la précédente.",
+					"${{n}} \\times {{a}} = {{eval:a*n}}$",
+					"${{eval:a*n}} + {{b}} = {{eval:a*n+b}}$",
+					"${{eval:a*n+b}} \\times {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:c*(a*n+b)}}}$"
+				]
+			}
+		},
+		{
+			"statement": "Voici un programme.\n\n```scratch\nquand le drapeau vert pressé\ndemander [Choisis un nombre.] et attendre\nmettre [nombre v] à ((réponse) + ({{a}}))\nmettre [nombre v] à ((nombre) * ({{b}}))\nmettre [nombre v] à ((nombre) - ({{c}}))\ndire (nombre)\n```\n\nOn tape ${{n}}$. Quel nombre le lutin dit-il ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..15"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n+a)*b-c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Une instruction après l'autre.** La variable « nombre » garde le dernier résultat.",
+					"${{n}} + {{a}} = {{eval:n+a}}$",
+					"${{eval:n+a}} \\times {{b}} = {{eval:(n+a)*b}}$",
+					"${{eval:(n+a)*b}} - {{c}} = \\textcolor{{{color:primary.0}}}{{{eval:(n+a)*b-c}}}$ : le lutin dit $\\textcolor{{{color:primary.0}}}{{{eval:(n+a)*b-c}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici un programme de calcul :\n\n- choisir un nombre ;\n- le multiplier par $10$ ;\n- ajouter ${{b}}$ ;\n- diviser le résultat par $2$.\n\nApplique ce programme au nombre ${{eval:m/10;d}}$.\n\nRésultat : $?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "11..99"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["mod(m,10) != 0", "mod(m+b,2) == 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(m+b)/2;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Dans l'ordre.** On applique chaque étape au résultat de la précédente.",
+					"${{eval:m/10;d}} \\times 10 = {{m}}$",
+					"${{m}} + {{b}} = {{eval:m+b}}$",
+					"${{eval:m+b}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{eval:(m+b)/2;d}}}$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 × 4 + 5, × 2 = 34",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"a": "4",
+				"b": "5",
+				"c": "2"
+			},
+			"answers": ["34"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 × 4 + 5 × 2 = 22 (priorités)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"a": "4",
+				"b": "5",
+				"c": "2"
+			},
+			"answers": ["22"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : dernière étape oubliée",
+			"variationIndex": 0,
+			"variables": {
+				"n": "3",
+				"a": "4",
+				"b": "5",
+				"c": "2"
+			},
+			"answers": ["17"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(7 + 3) × 4 − 5 = 35",
+			"variationIndex": 1,
+			"variables": {
+				"n": "7",
+				"a": "3",
+				"b": "4",
+				"c": "5"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 + 3 × 4 − 5 = 14",
+			"variationIndex": 1,
+			"variables": {
+				"n": "7",
+				"a": "3",
+				"b": "4",
+				"c": "5"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3,7 → 37 + 5 = 42 → 21",
+			"variationIndex": 2,
+			"variables": {
+				"m": "37",
+				"b": "5"
+			},
+			"answers": ["21"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 10 oublié, (3,7 + 5) ÷ 2 = 4,35",
+			"variationIndex": 2,
+			"variables": {
+				"m": "37",
+				"b": "5"
+			},
+			"answers": ["4,35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2,4 → 24 + 7 = 31 → 15,5",
+			"variationIndex": 2,
+			"variables": {
+				"m": "24",
+				"b": "7"
+			},
+			"answers": ["15,5"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

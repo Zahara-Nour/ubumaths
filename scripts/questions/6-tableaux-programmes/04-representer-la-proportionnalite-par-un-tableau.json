@@ -1,0 +1,223 @@
+{
+	"title": "Représenter une situation de proportionnalité par un tableau",
+	"description": "Ranger les données d'un énoncé dans un tableau de proportionnalité (nom et unité de chaque grandeur), écrire le nombre qui fait passer d'une ligne à l'autre, reconnaître le tableau qui représente la situation",
+	"grades": ["6"],
+	"theme": "Proportionnalité",
+	"domain": "Tableaux de proportionnalité",
+	"subdomain": "Représenter",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "À la papeterie, tous les cahiers ont le même prix. ${{q2}}$ cahiers coûtent ${{eval:q2*p}}~\\unit{€}$, ${{q3}}$ cahiers coûtent ${{eval:q3*p}}~\\unit{€}$ et ${{q1}}$ cahiers coûtent ${{eval:q1*p}}~\\unit{€}$.\n\nComplète le tableau avec les prix de l'énoncé.\n\n| Nombre de cahiers | Prix (€) |\n|---|---|\n| ${{q1}}$ | $?$ |\n| ${{q2}}$ | $?$ |\n| ${{q3}}$ | $?$ |\n",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..6"
+				},
+				{
+					"name": "q1",
+					"expression": "2..4"
+				},
+				{
+					"name": "q2",
+					"expression": "5..7"
+				},
+				{
+					"name": "q3",
+					"expression": "8..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q1*p}}"
+				},
+				{
+					"expectedAnswer": "{{eval:q2*p}}"
+				},
+				{
+					"expectedAnswer": "{{eval:q3*p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Une ligne par achat.** Chaque prix va à côté de son nombre de cahiers : le tableau garde les couples de l'énoncé.",
+					"${{q1}}$ cahiers : $\\textcolor{{{color:primary.0}}}{{{eval:q1*p}}}~\\unit{€}$ ; ${{q2}}$ cahiers : $\\textcolor{{{color:primary.0}}}{{{eval:q2*p}}}~\\unit{€}$ ; ${{q3}}$ cahiers : $\\textcolor{{{color:primary.0}}}{{{eval:q3*p}}}~\\unit{€}$.",
+					"C'est bien un tableau de proportionnalité : chaque prix est ${{p}}$ fois le nombre de cahiers (un cahier coûte ${{p}}~\\unit{€}$)."
+				]
+			}
+		},
+		{
+			"statement": "Au marché, les pommes sont vendues au même prix par kilogramme.\n\n| Masse de pommes (kg) | ${{m1}}$ | ${{m2}}$ | ${{m3}}$ |\n|---|---|---|---|\n| Prix (€) | ${{eval:m1*p}}$ | ${{eval:m2*p}}$ | ${{eval:m3*p}}$ |\n\nPar quel nombre multiplie-t-on la masse pour obtenir le prix ?\n\n$\\times ?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..9"
+				},
+				{
+					"name": "m1",
+					"expression": "1..3"
+				},
+				{
+					"name": "m2",
+					"expression": "4..6"
+				},
+				{
+					"name": "m3",
+					"expression": "7..10"
+				}
+			],
+			"conditions": ["m1 != 1 || p >= 3"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**D'une ligne à l'autre.** ${{eval:m1*p}} \\div {{m1}} = {{p}}$, ${{eval:m2*p}} \\div {{m2}} = {{p}}$, ${{eval:m3*p}} \\div {{m3}} = {{p}}$ : toujours le même nombre.",
+					"On multiplie par $\\textcolor{{{color:primary.0}}}{{{p}}}$ : c'est le prix d'un kilogramme, ${{p}}~\\unit{€}$ le kilo."
+				]
+			}
+		},
+		{
+			"statement": "Les pommes coûtent ${{p}}~\\unit{€}$ le kilogramme.\n\n**Tableau A**\n\n| Masse de pommes (kg) | $1$ | $2$ | $3$ |\n|---|---|---|---|\n| Prix (€) | ${{if:mod(0+k,3)==0|{{p}}|{{if:mod(0+k,3)==1|{{p}}|{{eval:p+1}}}}}}$ | ${{if:mod(0+k,3)==0|{{eval:2*p}}|{{if:mod(0+k,3)==1|{{eval:2*p}}|{{eval:2*p+2}}}}}}$ | ${{if:mod(0+k,3)==0|{{eval:3*p}}|{{if:mod(0+k,3)==1|{{eval:4*p}}|{{eval:3*p+3}}}}}}$ |\n\n**Tableau B**\n\n| Masse de pommes (kg) | $1$ | $2$ | $3$ |\n|---|---|---|---|\n| Prix (€) | ${{if:mod(1+k,3)==0|{{p}}|{{if:mod(1+k,3)==1|{{p}}|{{eval:p+1}}}}}}$ | ${{if:mod(1+k,3)==0|{{eval:2*p}}|{{if:mod(1+k,3)==1|{{eval:2*p}}|{{eval:2*p+2}}}}}}$ | ${{if:mod(1+k,3)==0|{{eval:3*p}}|{{if:mod(1+k,3)==1|{{eval:4*p}}|{{eval:3*p+3}}}}}}$ |\n\n**Tableau C**\n\n| Masse de pommes (kg) | $1$ | $2$ | $3$ |\n|---|---|---|---|\n| Prix (€) | ${{if:mod(2+k,3)==0|{{p}}|{{if:mod(2+k,3)==1|{{p}}|{{eval:p+1}}}}}}$ | ${{if:mod(2+k,3)==0|{{eval:2*p}}|{{if:mod(2+k,3)==1|{{eval:2*p}}|{{eval:2*p+2}}}}}}$ | ${{if:mod(2+k,3)==0|{{eval:3*p}}|{{if:mod(2+k,3)==1|{{eval:4*p}}|{{eval:3*p+3}}}}}}$ |\n\nQuel tableau représente cette situation ?\n\n```choix\nmelanger: non\n- le tableau A\n- le tableau B\n- le tableau C\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..5"
+				},
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "j",
+					"expression": "eval:mod(3-k,3)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le bon tableau.** Un kilogramme coûte ${{p}}~\\unit{€}$ : $1~\\unit{kg}$ → ${{p}}~\\unit{€}$, $2~\\unit{kg}$ → ${{eval:2*p}}~\\unit{€}$, $3~\\unit{kg}$ → ${{eval:3*p}}~\\unit{€}$ : c'est le tableau $\\textcolor{{{color:primary.0}}}{{{if:j==0|A|{{if:j==1|B|C}}}}}$.",
+					"**Les deux autres.** Celui où $3~\\unit{kg}$ coûtent ${{eval:4*p}}~\\unit{€}$ n'est pas proportionnel ($3$ fois la masse, mais pas $3$ fois le prix). Celui qui commence à ${{eval:p+1}}~\\unit{€}$ est proportionnel, mais à ${{eval:p+1}}~\\unit{€}$ le kilo : ce n'est pas cette situation."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Prix à leur place",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q1": "2",
+				"q2": "5",
+				"q3": "8"
+			},
+			"answers": ["6", "15", "24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : prix dans l'ordre de l'énoncé",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q1": "2",
+				"q2": "5",
+				"q3": "8"
+			},
+			"answers": ["15", "24", "6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "× 4",
+			"variationIndex": 1,
+			"variables": {
+				"p": "4",
+				"m1": "2",
+				"m2": "5",
+				"m3": "8"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : + 6 (additif)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "4",
+				"m1": "2",
+				"m2": "5",
+				"m3": "8"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "k = 0 : tableau A",
+			"variationIndex": 2,
+			"variables": {
+				"p": "3",
+				"k": "0",
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "k = 1 : tableau C",
+			"variationIndex": 2,
+			"variables": {
+				"p": "3",
+				"k": "1",
+				"j": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur k = 1 : le tableau non proportionnel",
+			"variationIndex": 2,
+			"variables": {
+				"p": "3",
+				"k": "1",
+				"j": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur k = 1 : proportionnel, autre prix",
+			"variationIndex": 2,
+			"variables": {
+				"p": "3",
+				"k": "1",
+				"j": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
