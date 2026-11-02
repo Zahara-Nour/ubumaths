@@ -5,18 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après la publication du lot 9._
+_Mis à jour le 2026-11-02, après #2225 (lot 10 écrit et mergé)._
 
-- **État** : lot 9 « Tableaux et programmes » publié (7/7, § 22.5). 6e : 165 publiés + 1 brouillon (3a7a5711).
-  **30 points sans modèle publié** (§ 23).
-- **Prochaine action** : phase 0 du lot 10 « géométrie dessinée » (distances, cercle, médiatrice : 160-167),
-  à faire valider ; puis lot 11 (angles, triangles, symétrie : 148, 168, 171, 174-179).
-- **En attente de David** : rien.
-- **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs --file`. Jamais de
-  variable `e`. PR en conflit = pas de CI : vérifier `mergeable`. `db:migrate` refusant « inserted before » :
-  `--dry-run --include-all`, relire, puis `--include-all`. `publier-lot` refusé au mode auto : David le lance
-  avec `!`. Aperçu admin : Playwright hors dépôt (Chrome refuse localhost).
-- **Worktree / branche** : aucun (lot 10 : `git worktree add -b feat/questions-6-lot10 ../ubumaths-wt-questions-6 origin/main`).
+- **État** : lot 10 « Distances, cercle, médiatrice » (160-167, 8 modèles) mergé (#2225, § 24.1), **pas encore en
+  prod**. 6e : 165 publiés + 1 brouillon (3a7a5711).
+- **Prochaine action** : après le `--publier` de David, relever les 8 `id` en prod, migration nœud + tag (gabarit
+  lot 9 : `20261102070305_questions_6_lot9_rangement_tags.sql` + son test), page à cocher, publication ; puis
+  lot 11 (angles, triangles, symétrie : 148, 168, 171, 174-179).
+- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-distances-cercle-mediatrice --publier`.
+- **Pièges en cours** : 3a7a5711 : NE PAS publier. `{{eval:…/10}}` = fraction : toujours `;d`. Mot coloré hors
+  `$…$` : `colt`. Choix multiple incomplet = `unoptimal_form`. `svelte-kit sync` avant `question:specs --file`.
+  `db:migrate` « inserted before » : `--dry-run --include-all` puis `--include-all`. `publier-lot` : David avec `!`.
+- **Worktree / branche** : aucun (migration : `git worktree add -b feat/questions-6-lot10-rangement ../ubumaths-wt-questions-6 origin/main`).
 
 ## 1. Relevé (prod, 2026-10-26)
 
