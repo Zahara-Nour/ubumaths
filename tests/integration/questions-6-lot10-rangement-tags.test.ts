@@ -33,6 +33,7 @@ interface Etat {
 	grades: Map<string, string>;
 	dates: Map<string, string>;
 	tags: string[];
+	trigger: string;
 }
 
 // ============================================================================
@@ -94,11 +95,15 @@ async function lireEtat(pg: Client): Promise<Etat> {
 		   join public.curriculum_points p on p.id = q.point_id where q.template_id = any($1::uuid[])`,
 		[ids]
 	);
+	const tg = await pg.query<{ tgenabled: string }>(
+		`select tgenabled from pg_trigger where tgname = 'update_question_templates_updated_at'`
+	);
 	return {
 		noeuds: new Map(q.rows.map((r) => [r.id, chemins.get(r.node ?? '') ?? '∅'])),
 		grades: new Map(q.rows.map((r) => [r.id, r.grades.join(',')])),
 		dates: new Map(q.rows.map((r) => [r.id, r.updated_at.toISOString()])),
-		tags: t.rows.map((r) => `${r.template_id}§${r.grade}§${r.code}`).sort()
+		tags: t.rows.map((r) => `${r.template_id}§${r.grade}§${r.code}`).sort(),
+		trigger: tg.rows[0]?.tgenabled ?? '∅'
 	};
 }
 
@@ -143,6 +148,10 @@ describe('Questions 6e, lot 10 « Distances, cercle, médiatrice » : nœud et t
 
 	it('`updated_at` des modèles est préservé', () => {
 		expect([...apres.dates.values()]).toEqual(ids.map(() => AVANT));
+	});
+
+	it('le trigger `updated_at` est réactivé après la migration et après le rollback', () => {
+		expect([apres.trigger, annule.trigger]).toEqual(['O', 'O']);
 	});
 
 	it('le rollback écrit dans la migration rend l’état d’avant', () => {

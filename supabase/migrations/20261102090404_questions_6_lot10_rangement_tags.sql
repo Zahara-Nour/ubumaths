@@ -115,7 +115,7 @@
 set local lock_timeout = '5s';
 
 -- ---- 1. Le lot, en table temporaire ------------------------------------------------
--- `sous_notion` nulle : le point est rangé sur la notion elle-même.
+-- Les 8 points sont sur une SOUS-NOTION (la branche « notion seule » de l'étape 2 ne sert pas ici).
 drop table if exists pg_temp._q6l10_modeles;
 create temporary table _q6l10_modeles (
 	id uuid primary key,
