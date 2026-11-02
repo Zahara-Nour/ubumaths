@@ -1,0 +1,68 @@
+[
+	{
+		"id": "091c2784-a53e-4535-9a26-f5fdb9703ab9",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Entiers : priorités opératoires > écriture d'une expression",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-117"]
+	},
+	{
+		"id": "ab4cf356-c5f9-47fb-a0d6-9f11b41ec81e",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Décimaux : calculs",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-002"]
+	},
+	{
+		"id": "c241cf63-6aac-48dd-8ff7-73fb82212d6b",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Décimaux : calculs",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-001"]
+	},
+	{
+		"id": "c7fc49c4-1778-415a-b036-42180236ff48",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Entiers : priorités opératoires > écriture d'une expression",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-116"]
+	},
+	{
+		"id": "d9811133-1a11-4fc8-86f7-cc391654a463",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Entiers : priorités opératoires > écriture d'une expression",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-005"]
+	},
+	{
+		"id": "eb5ecee6-0008-40c6-826a-c5948ebce59f",
+		"noeudAvant": null,
+		"noeudApres": "Nombres et calculs > Décimaux : calculs",
+		"gradesAvant": ["5"],
+		"gradesApres": ["5"],
+		"statutAvant": "draft",
+		"statutApres": "draft",
+		"tagsAvant": [],
+		"tagsApres": ["5§5-001"]
+	}
+]
