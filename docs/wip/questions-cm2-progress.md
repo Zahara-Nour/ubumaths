@@ -9,8 +9,8 @@
 _Mis à jour le 2026-11-02, phase 0 du lot 7 proposée (§ 12)._
 
 - **État** : lots 0 à 5, 6a et **6b publiés** (6b : 6/6, vérifiés au MCP le 2026-11-02 : `published`, rangés, tagués). **Lot 6 clos.**
-- **Prochaine action** : réponses de David au § 12 (« À trancher »), puis écriture du lot 7a (droites graduées) dans le worktree, branche `feat/questions-cm2-lot7a`.
-- **En attente de David** : les 4 questions du § 12 (découpage, « entier moins une fraction », restes 038 / 053 / 055-057, reclassement du § 3).
+- **Prochaine action** : écriture du lot 7a (droites graduées) dans le worktree, branche `feat/questions-cm2-lot7a`.
+- **En attente de David** : rien (décisions au § 12.1).
 - **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; garde = doublon seulement ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `pnpm db:migrate --dry-run --include-all`, liste relue, puis `--include-all`. `Doc-inchangée:` dans un COMMIT, pas dans la PR. `spacesFromFourDigits` → specs en `1\,000` ; homonymes du CM1 sur la page ; `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm2` en HEAD détachée sur `origin/main` (remis à jour le 2026-11-02 : son journal était périmé).
 
@@ -716,3 +716,10 @@ leur place dans « problèmes » ? (d) après le lot 7, reclasser le § 3 : plus
 sont maintenant en prod (figure à colorier → 131, 136, 143 ; barres à construire → 121 ; repère à
 placer → 122 ; cubes, patrons → 100, 102, 105 ; horloge à placer → 083 sans secondes, toujours pas de
 trotteuse).
+
+### 12.1 Lot 7 : décisions (David, 2026-11-02)
+
+Recommandations suivies (« je suis tes recos ») : (a) deux lots, **7a** (entiers et fractions, modèles
+1-6) puis **7b** (fractions décimales et décimaux, modèles 7-10) ; (b) #4 garde la V2 « entier moins
+une fraction » ; (c) 038, 053, 055-057 en **petit lot 8** juste après le lot 7 ; (d) après le lot 7,
+reclasser le § 3 (outils de la classe C maintenant en prod). Tableau du § 12 gardé.
