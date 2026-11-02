@@ -1,0 +1,154 @@
+{
+	"title": "Pourcentage d'un pourcentage",
+	"description": "Ensembles emboîtés : la proportion d'une partie d'une partie est le produit des proportions ; retrouver une des deux proportions",
+	"grades": ["2"],
+	"theme": "Proportionnalité",
+	"domain": "Pourcentages",
+	"subdomain": "Proportion",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "${{p1}}\\,\\%$ des {{if:g==0|élèves du lycée|salariés de l'entreprise}} {{if:g==0|sont en seconde|sont des cadres}} ; parmi eux, ${{p2}}\\,\\%$ {{if:g==0|sont demi-pensionnaires|travaillent à temps partiel}}.\n\nQuelle proportion des {{if:g==0|élèves du lycée|salariés de l'entreprise}} sont des {{if:g==0|élèves de seconde demi-pensionnaires|cadres à temps partiel}} ?\n\nProportion : $?\\,\\%$",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "0|1"
+				},
+				{
+					"name": "p1",
+					"expression": "20|25|40|50|60|80"
+				},
+				{
+					"name": "p2",
+					"expression": "10|20|25|30|40|50|75"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(p1)*(p2)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Prendre $p_2$ d'une partie qui représente $p_1$ du tout, c'est prendre $p_1\\times p_2$ du tout : les proportions se **multiplient**.",
+					"$\\dfrac{ {{p1}} }{100}\\times\\dfrac{ {{p2}} }{100}={{eval:(p1)/100;d}}\\times {{eval:(p2)/100;d}}={{eval:(p1)*(p2)/10000;d}}$, soit \\textcolor{{{color:primary.0}}}{{{eval:(p1)*(p2)/100;d}}\\,\\%}."
+				]
+			}
+		},
+		{
+			"statement": "${{p1}}\\,\\%$ des {{if:g==0|élèves du lycée|salariés de l'entreprise}} {{if:g==0|sont en seconde|sont des cadres}}. Les {{if:g==0|élèves de seconde demi-pensionnaires|cadres à temps partiel}} représentent ${{eval:(p1)*(p2)/100;d}}\\,\\%$ des {{if:g==0|élèves du lycée|salariés de l'entreprise}}.\n\nQuelle proportion {{if:g==0|des élèves de seconde|des cadres}} {{if:g==0|sont demi-pensionnaires|travaillent à temps partiel}} ?\n\nProportion : $?\\,\\%$",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "0|1"
+				},
+				{
+					"name": "p1",
+					"expression": "20|25|40|50|80"
+				},
+				{
+					"name": "p2",
+					"expression": "10|20|25|30|40|50|75"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La proportion du tout est le produit : $\\dfrac{ {{p1}} }{100}\\times p=\\dfrac{ {{eval:(p1)*(p2)/100;d}} }{100}$.",
+					"$p=\\dfrac{ {{eval:(p1)*(p2)/100;d}} }{ {{p1}} }={{eval:(p2)/100;d}}$, soit \\textcolor{{{color:primary.0}}}{{{p2}}\\,\\%}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "40 % puis 25 % : 10 %",
+			"variationIndex": 0,
+			"variables": {
+				"g": "0",
+				"p1": "40",
+				"p2": "25"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme (65)",
+			"variationIndex": 0,
+			"variables": {
+				"g": "0",
+				"p1": "40",
+				"p2": "25"
+			},
+			"answers": ["65"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : produit sans diviser (1000)",
+			"variationIndex": 0,
+			"variables": {
+				"g": "0",
+				"p1": "40",
+				"p2": "25"
+			},
+			"answers": ["1000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "60 % puis 75 % : 45 %",
+			"variationIndex": 0,
+			"variables": {
+				"g": "1",
+				"p1": "60",
+				"p2": "75"
+			},
+			"answers": ["45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Inverse : 10 % sur 40 % → 25 %",
+			"variationIndex": 1,
+			"variables": {
+				"g": "0",
+				"p1": "40",
+				"p2": "25"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : différence (30)",
+			"variationIndex": 1,
+			"variables": {
+				"g": "0",
+				"p1": "40",
+				"p2": "25"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

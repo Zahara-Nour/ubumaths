@@ -1,0 +1,142 @@
+{
+	"title": "Coefficients multiplicateurs successifs",
+	"description": "Le coefficient global de deux évolutions successives est le produit des coefficients ; retrouver un coefficient manquant",
+	"grades": ["2"],
+	"theme": "Proportionnalité",
+	"domain": "Pourcentages",
+	"subdomain": "Coefficient",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Une grandeur est multipliée par ${{eval:c1;d}}$, puis le résultat est multiplié par ${{eval:c2;d}}$.\n\nPar quel nombre la grandeur de départ est-elle multipliée en tout ?\n\nCoefficient multiplicateur global : $?$",
+			"variables": [
+				{
+					"name": "c1",
+					"expression": "1.1|1.2|1.25|1.5|2|0.9|0.8|0.75|0.6|0.5"
+				},
+				{
+					"name": "c2",
+					"expression": "1.1|1.2|1.25|1.5|2|0.9|0.8|0.75|0.6|0.5"
+				}
+			],
+			"conditions": ["c1 != c2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(c1)*(c2);d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Des évolutions successives se composent en **multipliant les coefficients multiplicateurs**.",
+					"$C={{eval:c1;d}}\\times {{eval:c2;d}}=\\textcolor{{{color:primary.0}}}{{{eval:(c1)*(c2);d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une grandeur est multipliée par ${{eval:c1;d}}$, puis par un nombre $k$. Au total, elle est multipliée par ${{eval:(c1)*(c2);d}}$.\n\nQuelle est la valeur de $k$ ?\n\n$k=?$",
+			"variables": [
+				{
+					"name": "c1",
+					"expression": "1.1|1.2|1.25|1.5|2|0.9|0.8|0.75|0.6|0.5"
+				},
+				{
+					"name": "c2",
+					"expression": "1.1|1.2|1.25|1.5|2|0.9|0.8|0.75|0.6|0.5"
+				}
+			],
+			"conditions": ["c1 != c2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c2;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le coefficient global est le produit des coefficients : ${{eval:c1;d}}\\times k={{eval:(c1)*(c2);d}}$.",
+					"Donc $k=\\dfrac{ {{eval:(c1)*(c2);d}} }{ {{eval:c1;d}} }=\\textcolor{{{color:primary.0}}}{{{eval:c2;d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1,2 puis 0,75 : 0,9",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "1.2",
+				"c2": "0.75"
+			},
+			"answers": ["0.9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme moins 1 (0,95)",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "1.2",
+				"c2": "0.75"
+			},
+			"answers": ["0.95"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : somme (1,95)",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "1.2",
+				"c2": "0.75"
+			},
+			"answers": ["1.95"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1,25 puis 0,8 : 1",
+			"variationIndex": 0,
+			"variables": {
+				"c1": "1.25",
+				"c2": "0.8"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Manquant : 1,2 × k = 0,9 → 0,75",
+			"variationIndex": 1,
+			"variables": {
+				"c1": "1.2",
+				"c2": "0.75"
+			},
+			"answers": ["0.75"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : différence (−0,3)",
+			"variationIndex": 1,
+			"variables": {
+				"c1": "1.2",
+				"c2": "0.75"
+			},
+			"answers": ["-0.3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,149 @@
+{
+	"title": "Coefficient multiplicateur réciproque",
+	"description": "Le coefficient de l'évolution réciproque est l'inverse du coefficient (fraction quand ce n'est pas un décimal)",
+	"grades": ["2"],
+	"theme": "Proportionnalité",
+	"domain": "Pourcentages",
+	"subdomain": "Coefficient",
+	"level": 5,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Une grandeur est multipliée par ${{eval:1+(t)/100;d}}$.\n\nPar quel nombre faut-il multiplier la nouvelle valeur pour retrouver la valeur de départ ?\n\nCoefficient réciproque : $?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "25|60|100|150|20|50|-20|-25|-40|-50|-60|-75"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100/(100+(t))}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour revenir à la valeur de départ, on multiplie par l'**inverse** du coefficient multiplicateur.",
+					"$\\dfrac{1}{ {{eval:1+(t)/100;d}} }=\\dfrac{100}{ {{eval:100+(t)}} }=\\textcolor{{{color:primary.0}}}{{{eval:100/(100+(t))}}}$.",
+					"{{if:mod(100000,100+(t))==0|En écriture décimale : ${{eval:100/(100+(t));d}}$.|Ce n'est pas un nombre décimal : on garde la fraction.}}"
+				]
+			}
+		},
+		{
+			"statement": "Une grandeur est multipliée par ${{eval:1+(t)/100;d}}$, puis le résultat est multiplié par un nombre $k$ : on retrouve la valeur de départ.\n\nQuelle est la valeur de $k$ ?\n\n$k=?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "25|60|100|150|-20|-50|-60|-75"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100/(100+(t))}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On retrouve la valeur de départ : le coefficient global vaut $1$, donc ${{eval:1+(t)/100;d}}\\times k=1$.",
+					"$k=\\dfrac{1}{ {{eval:1+(t)/100;d}} }=\\textcolor{{{color:primary.0}}}{{{eval:100/(100+(t));d}}}$ : c'est l'inverse du coefficient."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "× 1,25 → × 0,8",
+			"variationIndex": 0,
+			"variables": {
+				"t": "25"
+			},
+			"answers": ["0.8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En fraction 4/5",
+			"variationIndex": 0,
+			"variables": {
+				"t": "25"
+			},
+			"answers": ["\\dfrac{4}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,75 (taux opposé)",
+			"variationIndex": 0,
+			"variables": {
+				"t": "25"
+			},
+			"answers": ["0.75"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "× 1,2 → × 5/6",
+			"variationIndex": 0,
+			"variables": {
+				"t": "20"
+			},
+			"answers": ["\\dfrac{5}{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,8 (taux opposé)",
+			"variationIndex": 0,
+			"variables": {
+				"t": "20"
+			},
+			"answers": ["0.8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : arrondi 0,83",
+			"variationIndex": 0,
+			"variables": {
+				"t": "20"
+			},
+			"answers": ["0.83"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "× 0,25 → k = 4",
+			"variationIndex": 1,
+			"variables": {
+				"t": "-75"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1,75",
+			"variationIndex": 1,
+			"variables": {
+				"t": "-75"
+			},
+			"answers": ["1.75"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
