@@ -1,0 +1,124 @@
+{
+	"title": "Estimer la médiane d'une série regroupée en classes",
+	"description": "Répartition uniforme dans la classe médiane : médiane estimée par proportionnalité",
+	"grades": ["2"],
+	"theme": "Statistiques",
+	"domain": "Indicateurs",
+	"subdomain": "Médiane",
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On a relevé la durée (en minutes) de $100$ trajets.\n\n| Durée (min) | $\\left[{{eval:(x0)+0*(h)}}\\,;{{eval:(x0)+1*(h)}}\\right[$ | $\\left[{{eval:(x0)+1*(h)}}\\,;{{eval:(x0)+2*(h)}}\\right[$ | $\\left[{{eval:(x0)+2*(h)}}\\,;{{eval:(x0)+3*(h)}}\\right[$ | $\\left[{{eval:(x0)+3*(h)}}\\,;{{eval:(x0)+4*(h)}}\\right[$ | $\\left[{{eval:(x0)+4*(h)}}\\,;{{eval:(x0)+5*(h)}}\\right[$ |\n|---|---|---|---|---|---|\n| Effectif | ${{n1}}$ | ${{n2}}$ | ${{n3}}$ | ${{n4}}$ | ${{n5}}$ |\n\nLa classe médiane est $\\left[{{eval:(x0)+2*(h)}}\\,;{{eval:(x0)+3*(h)}}\\right[$. On suppose les durées **réparties uniformément** dans cette classe. Estime la médiane.\n\nMédiane : $?$ minutes",
+			"variables": [
+				{
+					"name": "x0",
+					"expression": "0|10|20|30|40"
+				},
+				{
+					"name": "h",
+					"expression": "5|10|20"
+				},
+				{
+					"name": "n1",
+					"expression": "5..20"
+				},
+				{
+					"name": "n2",
+					"expression": "5..20"
+				},
+				{
+					"name": "n3",
+					"expression": "20|25|40|50"
+				},
+				{
+					"name": "n4",
+					"expression": "5..15"
+				},
+				{
+					"name": "n5",
+					"expression": "eval:100-(n1)-(n2)-(n3)-(n4)"
+				},
+				{
+					"name": "cb",
+					"expression": "eval:(n1)+(n2)"
+				}
+			],
+			"conditions": ["cb < 50", "(cb)+(n3) > 50", "n5 >= 1", "mod(10*(50-(cb))*(h),n3) == 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(x0)+2*(h)+(50-(cb))*(h)/(n3);d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avant la classe médiane, il y a ${{n1}}+{{n2}}={{cb}}$ valeurs ; il en manque $50-{{cb}}={{eval:50-(cb)}}$ pour atteindre la moitié.",
+					"Répartition uniforme : ces ${{eval:50-(cb)}}$ valeurs, sur les ${{n3}}$ de la classe, occupent la fraction $\\dfrac{ {{eval:50-(cb)}} }{ {{n3}} }$ de l'amplitude ${{h}}$.",
+					"$Me\\approx{{eval:(x0)+2*(h)}}+\\dfrac{ {{eval:50-(cb)}} }{ {{n3}} }\\times{{h}}=\\textcolor{{{color:primary.0}}}{{{eval:(x0)+2*(h)+(50-(cb))*(h)/(n3);d}}}$ minutes."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "35 avant, 25 dans [20 ; 30[ : 20 + 15/25 × 10 = 26",
+			"variationIndex": 0,
+			"variables": {
+				"x0": "0",
+				"h": "10",
+				"n1": "15",
+				"n2": "20",
+				"n3": "25",
+				"n4": "15",
+				"n5": "25",
+				"cb": "35"
+			},
+			"answers": ["26"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : centre de la classe (25)",
+			"variationIndex": 0,
+			"variables": {
+				"x0": "0",
+				"h": "10",
+				"n1": "15",
+				"n2": "20",
+				"n3": "25",
+				"n4": "15",
+				"n5": "25",
+				"cb": "35"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : borne gauche (20)",
+			"variationIndex": 0,
+			"variables": {
+				"x0": "0",
+				"h": "10",
+				"n1": "15",
+				"n2": "20",
+				"n3": "25",
+				"n4": "15",
+				"n5": "25",
+				"cb": "35"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,109 @@
+{
+	"title": "Moyenne à partir des moyennes des classes",
+	"description": "Série regroupée en classes : moyenne pondérée des moyennes de classe (piège : moyenne des moyennes)",
+	"grades": ["2"],
+	"theme": "Statistiques",
+	"domain": "Indicateurs",
+	"subdomain": "Moyenne",
+	"level": 6,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Les adhérents d'un club sont répartis en trois classes d'âge. Pour chaque classe, on connaît l'effectif et la moyenne des âges.\n\n| Âge | Effectif | Moyenne des âges de la classe |\n|---|---|---|\n| $\\left[{{eval:(x0)+0*(h)}}\\,;{{eval:(x0)+1*(h)}}\\right[$ | ${{n1}}$ | ${{eval:(x0)+0*(h)+(u1);d}}$ |\n| $\\left[{{eval:(x0)+1*(h)}}\\,;{{eval:(x0)+2*(h)}}\\right[$ | ${{n2}}$ | ${{eval:(x0)+1*(h)+(u2);d}}$ |\n| $\\left[{{eval:(x0)+2*(h)}}\\,;{{eval:(x0)+3*(h)}}\\right[$ | ${{n3}}$ | ${{eval:(x0)+2*(h)+(u3);d}}$ |\n\nCalcule l'âge moyen des adhérents du club.\n\nÂge moyen : $?$ ans",
+			"variables": [
+				{
+					"name": "x0",
+					"expression": "10|20|30"
+				},
+				{
+					"name": "h",
+					"expression": "10"
+				},
+				{
+					"name": "n1",
+					"expression": "5..30"
+				},
+				{
+					"name": "n2",
+					"expression": "5..30"
+				},
+				{
+					"name": "n3",
+					"expression": "5..30"
+				},
+				{
+					"name": "u1",
+					"expression": "2..8"
+				},
+				{
+					"name": "u2",
+					"expression": "2..8"
+				},
+				{
+					"name": "u3",
+					"expression": "2..8"
+				}
+			],
+			"conditions": [
+				"mod(10*((n1)*((x0)+0*(h)+(u1))+(n2)*((x0)+1*(h)+(u2))+(n3)*((x0)+2*(h)+(u3))),(n1)+(n2)+(n3)) == 0",
+				"n1 != n2"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((n1)*((x0)+0*(h)+(u1))+(n2)*((x0)+1*(h)+(u2))+(n3)*((x0)+2*(h)+(u3)))/((n1)+(n2)+(n3));d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La moyenne de la série est la moyenne des moyennes de classe **pondérée par les effectifs** : $\\overline{x}=\\dfrac{n_1\\overline{x}_1+n_2\\overline{x}_2+n_3\\overline{x}_3}{n_1+n_2+n_3}$.",
+					"Somme des âges : ${{n1}}\\times{{eval:(x0)+0*(h)+(u1)}}+{{n2}}\\times{{eval:(x0)+1*(h)+(u2)}}+{{n3}}\\times{{eval:(x0)+2*(h)+(u3)}}={{eval:(n1)*((x0)+0*(h)+(u1))+(n2)*((x0)+1*(h)+(u2))+(n3)*((x0)+2*(h)+(u3))}}$ ; effectif : ${{eval:(n1)+(n2)+(n3)}}$.",
+					"$\\overline{x}=\\dfrac{ {{eval:(n1)*((x0)+0*(h)+(u1))+(n2)*((x0)+1*(h)+(u2))+(n3)*((x0)+2*(h)+(u3))}} }{ {{eval:(n1)+(n2)+(n3)}} }=\\textcolor{{{color:primary.0}}}{{{eval:((n1)*((x0)+0*(h)+(u1))+(n2)*((x0)+1*(h)+(u2))+(n3)*((x0)+2*(h)+(u3)))/((n1)+(n2)+(n3));d}}}$ ans."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(30×24 + 10×35 + 10×46)/50 = 30,6",
+			"variationIndex": 0,
+			"variables": {
+				"x0": "20",
+				"h": "10",
+				"n1": "30",
+				"n2": "10",
+				"n3": "10",
+				"u1": "4",
+				"u2": "5",
+				"u3": "6"
+			},
+			"answers": ["30.6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : moyenne des moyennes (35)",
+			"variationIndex": 0,
+			"variables": {
+				"x0": "20",
+				"h": "10",
+				"n1": "30",
+				"n2": "10",
+				"n3": "10",
+				"u1": "4",
+				"u2": "5",
+				"u3": "6"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
