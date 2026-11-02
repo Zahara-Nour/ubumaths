@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 5-variables aléatoires écrit (PR des fichiers à ouvrir)._
+_Mis à jour le 2026-11-02, après #2188._
 
-- **État** : lot 5-VA (§ 22, D28) écrit : 8 modèles dans `scripts/questions/1spe-va/`, 62 specs vertes, simulation 8 / 8, essai en base locale fait.
-- **Prochaine action** : PR des fichiers → merge → **David** lance `create-questions --dir scripts/questions/1spe-va --publier` → relever les `id` → migration nœud + tag (gabarit lot 4) → page à cocher.
+- **État** : lot 5-VA (§ 22, D28) mergé (#2188) : 8 modèles dans `scripts/questions/1spe-va/`, 62 specs vertes, simulation 8 / 8, essai en base locale fait.
+- **Prochaine action** : **David** lance `create-questions --dir scripts/questions/1spe-va --publier` depuis le dépôt principal → relever les `id` (MCP) → migration nœud + tag (gabarit lot 4, nouveau worktree) → page à cocher.
 - **En attente de David** : relecture et publication des 8 brouillons du lot 4 (§ 21) ; création en prod du lot 5 après merge.
 - **Pièges en cours** : `blankDefaults.acceptDecimal` obligatoire ; **variable `e` = Euler** (renommée `u`, lot 5) ; choix mélangés à l'affichage → jamais « première phrase » dans un corrigé ; `col()` hors `$…$` ne s'affiche pas (`colt`) ; aucun trailer `Claude-Session:` ni lien claude.ai ; migration : heure réelle.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `feat/questions-1spe-lot5-va`.
+- **Worktree / branche** : aucun (retiré après #2188) ; migration sur une nouvelle branche `feat/questions-1spe-lot5-va-tags`.
 - **Ensuite (D7)** : lot « à savoir » (D2), restes (produit scalaire formules, second degré / exponentielle / trigo, logique et listes Python), lots en attente d'un outil.
 
 ## 1. Relevé (prod, 2026-10-27)
@@ -1075,6 +1075,8 @@ question d'accès : personne (brouillons ; la migration ne pose que nœud et tag
 variation (5 200) sans `{{`, NaN ni avertissement ; simulation `create-questions` : 8 / 8 importables. Essai en base
 **locale** : énoncés de 07 (programme Python, case choix) et 03 (deux cases, `{X ⩽ 4}`) regardés dans l'aperçu admin ;
 le tableau des sommes du corrigé de 03 reste à voir sur la page à cocher.
+
+#2188 mergée (CI verte) le 2026-11-02.
 
 **Pièges du lot** : variable `e` lue comme la constante d'Euler (renommée `u`) ; `E(X)^2` après un signe moins rendu
 « E X² » → `{E(X)}^2` (rendu « (E(X))² ») ; réponses colorées dans le texte hors formule → `colt` (`$…$`) ; les choix
