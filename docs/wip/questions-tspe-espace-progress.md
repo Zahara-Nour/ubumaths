@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, PR des fichiers #2254 ouverte._
+_Mis à jour le 2026-11-02, PR de migration du 6b ouverte._
 
-- **État** : lot 6b écrit et vérifié — 4 modèles (N1 358, N2 368, N3 566, N4 568) dans `scripts/questions/tspe-6b-plans-systemes/`, specs vertes, simulation `create-questions` : 4 à créer, base locale : 4 brouillons, aperçu joué. PR #2254 ouverte (CI en cours).
-- **Prochaine action** : `gh pr checks 2254 --watch`, CI verte → `gh pr merge 2254 --merge` (revue : aucune, contenu) ; puis David lance `create-questions --publier` depuis le dépôt principal ; migration nœud + tag (gabarit 6a).
-- **En attente de David** : rien avant le merge.
-- **Pièges en cours** : voir « Décisions communes et pièges » ; `--publier` : donner la commande avec `!` ; commitlint refuse le type `content` (prendre `feat`) ; le choix est mélangé à l'affichage.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-espace`, `feat/questions-tspe-espace-6b`.
+- **État** : lot 6b créé en prod par David (4 brouillons, sans nœud ni tag). Migration `20261102192653_questions_tspe_lot6b_rangement_tags.sql` + test d'intégration : 10 verts, rouge sans la migration. PR de migration ouverte, `security-auditor` lancé.
+- **Prochaine action** : CI verte + auditeur sans finding bloquant → `check:migrations --pr <n>` → merge → `db:migrate` depuis le dépôt principal (`migration list --linked` avant : ne passer que la nôtre) → vérifier au MCP les 4 modèles sur leur nœud avec leur point → chantier 6a + 6b terminé (versement).
+- **En attente de David** : rien.
+- **Pièges en cours** : voir « Décisions communes et pièges » ; commitlint refuse le type `content` (prendre `feat`).
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-espace`, `feat/questions-tspe-espace-6b-migration`.
 
 ---
 
@@ -187,3 +187,13 @@ catégorie neuve « Lieux géométriques » ; N3 v1 en case choix ; N4 donne le 
   gardée) ; « 0+3t » dans les triplets de N4 (`comp()`) ; « b = 0, donc b = 0 » dans N3 v0 (substitution écrite) ;
   « le système 2 » retiré de N3 v1 (le choix est mélangé à l'affichage). Base locale : 4 brouillons ; N4 v2 (choix juste
   accepté) et N3 v1 (système transposé refusé, bonne réponse montrée) joués dans l'aperçu.
+
+**PR des fichiers** : #2254 mergée le 2026-11-02 (CI verte).
+
+**Création en prod** (David, 2026-11-02) : 4 brouillons en [T_SPE], sans nœud ni tag — N1 8767110f, N2 86efd357,
+N3 0027cea7, N4 833cf1f1 ; nœuds des 4 points revérifiés au MCP le même jour (358, 368 sur « vecteur normal et équation
+cartésienne », 566 sur la notion « Espace », 568 sur « positions relatives et intersections »).
+
+**Migration nœud + tag** : `20261102192653_questions_tspe_lot6b_rangement_tags.sql` (copie du gabarit du 6a, préfixe
+`_qtl6b_`), test `tests/integration/questions-tspe-lot6b-rangement-tags.test.ts` : 10 verts, rouge sans la migration
+(4 échecs, 5 sautés).
