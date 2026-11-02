@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; graduations décimales en virgule le 2026-11-01 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30 ; sections du bloc solide (`section:`) le 2026-10-31 ; repère à placer (` ```courbe ` + `placer:`) et titres d'axes (`axes:`) le 2026-11-01 ; valeur masquée `?` (énoncé d'évaluation) le 2026-11-01 ; trotteuse du bloc horloge (lire, placer) le 2026-11-01 ; centimes et billets de 200 / 500 € du bloc monnaie le 2026-11-01 (réponse de la case et messages après revue, le même jour) ; boîte à moustaches (affichage) le 2026-11-01, à construire (`placer:`) le 2026-11-01.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; graduations décimales en virgule le 2026-11-01 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30 ; sections du bloc solide (`section:`) le 2026-10-31 ; repère à placer (` ```courbe ` + `placer:`) et titres d'axes (`axes:`) le 2026-11-01 ; valeur masquée `?` (énoncé d'évaluation) le 2026-11-01 ; trotteuse du bloc horloge (lire, placer) le 2026-11-01 ; point à placer sur le cercle trigonométrique (` ```trig ` + `placer:`) le 2026-11-02 ; centimes et billets de 200 / 500 € du bloc monnaie le 2026-11-01 (réponse de la case et messages après revue, le même jour) ; boîte à moustaches (affichage) le 2026-11-01, à construire (`placer:`) le 2026-11-01.
 
 ## À quoi ça sert
 
@@ -356,6 +356,31 @@ as échangé l'abscisse et l'ordonnée. ») ; cadre rouge dès qu'un point est f
 justes ; le repère juste à côté, points nommés en vert. Hors question : le même geste, rien de jugé.
 PDF : le repère sans les points (l'enfant fait ses croix) ; option `solved` de `courbe-typst.ts` qui
 dessine les points attendus, qu'aucun corrigé imprimé n'appelle encore.
+
+**Cercle trigonométrique à placer** (chantier [cercle-trotteuse](../wip/cercle-trotteuse-progress.md)
+§ 4 et § 6, 1re spé 306) — `src/lib/ubumark/__tests__/parser/trig-circle-placer.test.ts`,
+`__tests__/trig/trig-placer.test.ts`, `TrigPlacer.svelte.test.ts`, `trig-circle-placer-typst.test.ts` :
+`placer: M = 2*pi/3 ; N = -pi/4` dans un ` ```trig ` (nœud : `placer`, liste de `TrigNamedPoint` ;
+`caseIndex` lu de `case: N`, posée par le générateur ; points séparés par « ; », angles écrits comme
+dans `angles:`, degrés compris). **24 crans de π/12.** Refusé : angle entre deux crans (`pi/5`), point
+sans nom, nom en double ou déjà pris par `points:`, plus de 8 points, `mode: interactive`, `equation:`,
+`display: table` ou `circle+table`, et un angle **déjà montré par le cercle** : par `points:` (un point
+donné au même endroit), par `angles:` ou un préréglage plus fin que les repères (`preset: sixths` avec
+`placer: M = -2*pi/3`) ; les quatre repères 0, π/2, π, 3π/2 ne comptent jamais (l'élève y place `5π/2`
+ou `-π/2` sans que leur écriture soit au tableau) ; `case:` sans `placer:`. `M = ?` (énoncé d'une
+évaluation notée) : angle de remplacement, rien de vérifié. `TrigCircle.svelte` passe la main à
+`TrigPlacer.svelte`, qui dessine le nœud **sans** `placer` (l'angle attendu n'entre jamais dans le
+DOM), avec 24 graduations sans étiquette (prop `ticks`) et les points de l'élève (prop `marks`, nom
+sans valeur) : toucher le cercle pose le point actif sur le cran le plus proche (`nearestStep`), sauf
+près du centre (30 % du rayon) ; il se glisse ; toucher un point posé le choisit sans le déplacer ;
+une étiquette-bouton par point quand il y en a plusieurs ; ◀ ▶ toujours visibles et flèches = un cran
+(sens indirect / direct), Début = 0, sans point le premier appui pose sur 0 ; zone `role="slider"`,
+`aria-valuetext` « point M sur 2π/3 » (position de l'élève, mesure principale). Calcul pur
+`utils/trig-placer.ts` : réponse = le cran (`'8'`, `stepAnswer`), lecture `readStepAnswer`, attendue
+`expectedStepAnswer` (mesure principale dans ]−π ; π] en LaTeX, `\frac{2\pi}{3}`), juge
+`isPlacedAngleCorrect` (même cran, donc modulo 2π), phrases `placedAngleMistake` (« Ton point M est
+sur 3π/4. », « Tu n'as pas placé M. »). PDF (`trig-circle-typst.ts`) : le cercle gradué sans les
+points, l'élève fait sa croix.
 
 **Figure** (en-tête, `---`, puis script du DSL de `geometry-core` — doc :
 [dsl-builtins](geometrie/dsl-builtins.md)) — `src/lib/ubumark/__tests__/figure/figure-markdown-to-typst.test.ts` :
@@ -1171,7 +1196,7 @@ Points à retenir :
     aussi la conclusion ; recalculer les ferait diverger.
 12. **Valeur masquée `?` d'un bloc à geste** (chantier [fuite-enonce](../archive/wip/fuite-enonce-progress.md)) :
     l'énoncé envoyé pendant une évaluation notée remplace la valeur à trouver par `?`
-    (`placer: A=? ; B=?` en ` ```line ` / ` ```courbe `, `placer: ?` en ` ```horloge ` — `? s` pour une heure à secondes —,
+    (`placer: A=? ; B=?` en ` ```line ` / ` ```courbe `, `placer: M=? ; N=?` en ` ```trig `, `placer: ?` en ` ```horloge ` — `? s` pour une heure à secondes —,
     `construire: ?`, `colorier: ?`, `Natation = ?` pour une barre de `placer:`, `Notes = ? ; ? ; ? ;
 ? ; ?` pour une boîte à moustaches de `placer:`, `données:` compris). Les parseurs la
     lisent comme une valeur de remplacement (`utils/masked-value.ts`) : mêmes noms, même nombre de

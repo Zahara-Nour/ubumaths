@@ -18,7 +18,9 @@
 	(```boite-a-moustaches, `placer:`) : les traits de l'élève (cinq cases par boîte),
 	ou la boîte juste. Étiquettes à ranger (```ranger) : les places
 	verrouillées avec les étiquettes de l'élève (`answers`, une par place) et, faux,
-	le rangement juste (`expected`) ; ou le rangement juste seul.
+	le rangement juste (`expected`) ; ou le rangement juste seul. Cercle trigonométrique
+	à placer (```trig, `placer:`) : le cercle verrouillé avec les points de l'élève
+	(`answers`, un par point), ou les points justes en vert.
 
 	@module components/questions/BuildAnswer
 -->
@@ -49,6 +51,10 @@
 	import { solvedBoxPlotSpec } from '$lib/ubumark/utils/boxplot-placer';
 	import BoxPlotPlacer from '$lib/components/markdown/nodes/BoxPlotPlacer.svelte';
 	import { HORLOGE_SIZE_CM } from '$lib/ubumark/types/horloge';
+	import TrigPlacer from '$lib/components/markdown/nodes/TrigPlacer.svelte';
+	import TrigCircle from '$lib/components/markdown/nodes/TrigCircle.svelte';
+	import { parseTrigCircleContent } from '$lib/ubumark/parser/trig-circle-parser';
+	import { TRIG_PLACER_STEPS } from '$lib/ubumark/utils/trig-placer';
 	import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
 	import { parseCollectionContent } from '$lib/ubumark/parser/collection-parser';
 	import { parseMonnaieContent } from '$lib/ubumark/parser/monnaie-parser';
@@ -95,6 +101,7 @@
 	let monnaie = $derived(kind === 'monnaie' ? parseMonnaieContent(source) : null);
 	let line = $derived(kind === 'line' ? parseNumberLineContent(source).node : null);
 	let courbe = $derived(kind === 'courbe' ? parseCourbeContent(source) : null);
+	let trig = $derived(kind === 'trig' ? parseTrigCircleContent(source).node : null);
 	let horloge = $derived(kind === 'horloge' ? parseHorlogeContent(source) : null);
 	let barres = $derived(kind === 'barres' ? parseStatChartContent('barres', source) : null);
 	let boite = $derived(
@@ -141,6 +148,17 @@
 		<Courbe
 			node={{ ...courbe, spec: { ...spec, placer: undefined } }}
 			marks={spec.placer!.map((t) => ({ name: t.name, x: t.x, y: t.y, color: 'vert' }))}
+		/>
+	{/if}
+{:else if trig?.placer !== undefined}
+	{#if lineCases}
+		<TrigPlacer node={trig} answers={lineCases} showControls={false} />
+	{:else}
+		<!-- Le cercle avec les points justes, sans `placer:` : dessiné seul -->
+		<TrigCircle
+			node={{ ...trig, placer: undefined, caseIndex: undefined }}
+			ticks={TRIG_PLACER_STEPS}
+			marks={trig.placer.map((point) => ({ point, color: 'vert' }))}
 		/>
 	{/if}
 {:else if barres?.spec?.toPlace}

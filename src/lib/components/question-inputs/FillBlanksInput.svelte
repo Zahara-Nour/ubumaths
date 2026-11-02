@@ -77,6 +77,7 @@
 	import NumberLine from '$lib/components/markdown/nodes/NumberLine.svelte';
 	import Courbe from '$lib/components/markdown/nodes/Courbe.svelte';
 	import HorlogePlacer from '$lib/components/markdown/nodes/HorlogePlacer.svelte';
+	import TrigPlacer from '$lib/components/markdown/nodes/TrigPlacer.svelte';
 	import BarresPlacer from '$lib/components/markdown/nodes/BarresPlacer.svelte';
 	import BoxPlotPlacer from '$lib/components/markdown/nodes/BoxPlotPlacer.svelte';
 	import RangerPlacer from '$lib/components/markdown/nodes/RangerPlacer.svelte';
@@ -220,6 +221,7 @@
 		if (node.type === 'number-line') return node.caseIndex !== undefined;
 		if (node.type === 'horloge') return node.caseIndex !== undefined;
 		if (node.type === 'courbe') return node.caseIndex !== undefined;
+		if (node.type === 'trig-circle') return node.caseIndex !== undefined;
 		if (node.type === 'partage') return node.caseIndex !== undefined;
 		if (node.type === 'espace') return node.caseIndex !== undefined;
 		if (node.type === 'stat-chart') return node.caseIndex !== undefined;
@@ -916,6 +918,27 @@
 						<Courbe
 							{node}
 							answers={node.spec.placer.map((_, k) => ({
+								value: inputStates[firstCase + k]?.value ?? '',
+								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value: string) => handleInputChange(firstCase + k, value)
+							}))}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'trig-circle' && node.caseIndex !== undefined && node.placer !== undefined}
+				<!-- Cercle trigonométrique à points à placer : l'élève pose ses points, une case
+				     par point (N, N + 1…), le cran de chacun est sa réponse -->
+				{@const firstCase = node.caseIndex}
+				{@const caseCount = node.placer.length}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : le cercle avec les points justes -->
+					<BuildAnswer kind="trig" source={node.source ?? ''} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={firstCase} data-construire-cases={caseCount}>
+						<TrigPlacer
+							{node}
+							answers={node.placer.map((_, k) => ({
 								value: inputStates[firstCase + k]?.value ?? '',
 								isCorrect: flashMode ? null : (inputStates[firstCase + k]?.isCorrect ?? null),
 								disabled: flashMode || effectiveDisabled,

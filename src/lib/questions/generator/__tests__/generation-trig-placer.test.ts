@@ -26,7 +26,7 @@ function template(variation: Omit<QuestionVariation, 'statement'> & { statement:
 		title: 'Placer un point sur le cercle',
 		status: 'draft',
 		variations: [{ ...variation, statement: templateMarkdown(variation.statement) }],
-		grades: ['1spe'],
+		grades: ['1_SPE'],
 		theme: 'Test',
 		domain: 'Test',
 		level: 1
