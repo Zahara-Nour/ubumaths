@@ -6,18 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2180 ; correctif des textes du lot 6b en PR._
+_Mis à jour le 2026-11-02, après #2183 (textes du lot 6b corrigés) et la mise à jour des brouillons._
 
-- **État** : lots 1 à 6a en prod et publiés. Lot 6b : 4 brouillons en prod, **rangés et tagués** (relevé MCP du
-  2026-11-02 : bon nœud, bon point, `draft`). Relecture de la page à cocher : 3 défauts de texte trouvés (« La visite
-  … dure-t-il », variable `e` = Euler affichée « 10 e minutes », « pause à midi » incohérente) → corrigés dans le script.
-- **Prochaine action** : PR du correctif mergée → **David** lance `--mettre-a-jour` (12 et 13 ont un contenu différent
-  en base) → page à cocher régénérée et publiée en artefact (`db`) → verdicts → `publier-lot`.
-- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce2-6b --publier
---mettre-a-jour` après le merge.
-- **Pièges en cours** : jamais de variable `e` (Euler) même dans un texte `{{eval:10*e}}` ; `mod()` refuse les
-  variables non entières en condition ; commitlint : corps ≤ 100 caractères par ligne ; pas de mention Claude.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2-6b` · `fix/questions-ce2-lot6b-textes`.
+- **État** : lots 1 à 6a en prod et publiés. Lot 6b : 4 brouillons en prod, rangés et tagués, textes corrigés
+  (`--mettre-a-jour` passé : 12 et 13 mis à jour). Page à cocher publiée (4 fiches, aucune alerte) :
+  https://claude.ai/artifact/UFe3Rfy2Kck8Fjor9RNdLU (capacité `db`, collection `verdicts` vide au départ).
+- **Prochaine action** : David relit et pose ses verdicts → je lis `verdicts` et **compte** les réponses → un « À revoir »
+  se corrige (§ 7) → `publier-lot --dir scripts/questions/ce2-6b` (simulation), niveaux relevés juste avant.
+- **En attente de David** : la relecture de la page ; puis `! … publier-lot … --publier`.
+- **Pièges en cours** : jamais de variable `e` (Euler) même dans un texte `{{eval:10*e}}` ; `--publier` refusé par le
+  classifieur (`!`) ; commitlint : corps ≤ 100 caractères par ligne ; pas de mention Claude.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
