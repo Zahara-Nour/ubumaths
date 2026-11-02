@@ -298,3 +298,12 @@ Même contrôle qu'au lot 2a ; **sans `grille:`**, il n'est plus refusé : l'él
    instruments) : dans ce lot (recommandé : le juge existe, seule l'aimantation change) ou plus tard ?
 5. **Report de longueur au compas** (prendre l'écartement AB, piquer ailleurs) : plus tard, avec le
    triangle (recommandé) ?
+
+### Décisions de David (2026-11-02, « je te suis » sur mes recommandations)
+
+1. Palette **déduite** (`point` ou `symetrique` sans `grille:` → Règle, Équerre, Compas, Point —
+   Segment en plus pour `symetrique`) ; `outils:` peut la restreindre.
+2. Aimantation **sur un trait** gardée (seulement avec des instruments).
+3. Message « placé à l'œil » **gardé**.
+4. Symétrique d'une **figure** sur papier uni **dans ce lot**.
+5. Report de longueur au compas **plus tard** (avec le triangle).
