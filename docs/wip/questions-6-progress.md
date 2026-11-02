@@ -1398,3 +1398,60 @@ moins 143, 184, 185, 192, 194, 195, 196) : 129, 138, 142, 148, 160-180, 182, 183
 inchangé. Lots restants : **10** géométrie dessinée, distances, cercle, médiatrice (160-167) · **11** angles,
 triangles, symétrie (148, 168, 171, 174-179) · restent C (169, 142), figure à compléter (170, 172, 173, 180, 207)
 et D (129, 138, 182, 183, 197, 210).
+
+## 24. Lot 10 « Distances, cercle, médiatrice » : phase 0 (proposée le 2026-11-02, à valider)
+
+Relevé prod : rien en CM1, CM2, 6e ou 5e sur ces 8 points (titres « cercle », « disque », « rayon », « corde »,
+« milieu », « distance », « médiatrice » : seuls les modèles de périmètre et d'aire du disque). Nœuds en prod : 160-164
+→ « Géométrie > Figures planes > cercle » ; 165-167 → « … > médiatrice et bissectrice ». Outils en prod :
+` ```figure ` (`cercle`, `milieu`, `mediatrice`, `marque_segment`, angle droit, `remplissage`), case « choix ».
+Exemples de réussite 6e (p. 11-12) suivis de près. Un modèle par point, 8 modèles.
+
+Règles communes : longueurs en cm, entières ou au dixième, ≤ 12 cm ; **écrites** sur la figure ou dans l'énoncé (on ne
+mesure pas à l'écran), et la figure leur est fidèle (proportions vraies, `sonde-figures` à 0 problème). Codages
+lus (traits d'égalité, angle droit). Aucune construction : tracer au compas reste la figure à compléter.
+
+1. **Distance entre deux points** (160, niveaux 1-3) — v1 C sur [AB], AC et CB écrits : AB = ? (case) ; v2 C hors de
+   [AB] (triangle aplati évité), AC = 3,2 cm, CB = 4,5 cm : « AB est plus petit que 7,7 cm / égal / plus grand »
+   (choix) ; v3 « AB = 7 cm, AC = 3 cm, CB = 4 cm : C est-il sur le segment [AB] ? » et le leurre AC + CB > AB
+   (choix oui / non). Corrigé : le plus court chemin de A à B est le segment [AB], AC + CB ⩾ AB.
+2. **Milieu d'un segment** (161, 1-3) — v1 I milieu (codé), AB = 9 cm : AI = ? (case) ; v2 AI = 3,7 cm : AB = ?
+   (case) ; v3 « I est-il le milieu de [AB] ? » sur une figure tirée parmi trois : I sur [AB] mais AI ≠ IB ; AI = IB
+   mais I hors de (AB) ; vrai milieu (choix : oui / non, pas à égale distance / non, pas sur le segment).
+3. **Cercle, disque, rayon, diamètre, corde** (162, 1-3) — cercle de centre O avec un rayon, un diamètre, une corde
+   tracés. v1 « que représente le segment [CD] ? » (choix rayon / diamètre / corde) ; v2 rayon donné → diamètre, ou
+   l'inverse (case) ; v3 partie colorée : « un cercle ou un disque ? » (choix) ; v4 « dans un cercle de rayon 4 cm,
+   une corde peut-elle mesurer 9 cm ? » (choix ; le diamètre est la plus longue corde).
+4. **Cercle et disque comme ensembles de points** (163, 1-2) — **sans figure** (elle donnerait la réponse) : « cercle
+   de centre O et de rayon 3 cm ; OA = 3 cm, OB = 2,4 cm, OC = 3,6 cm, OD = 3 cm ». v1 lesquels sont sur le cercle
+   (choix, plusieurs) ; v2 lesquels appartiennent au **disque** (le cercle compris : piège OA = 3) ; v3 « OE ≠ 3 cm :
+   E est-il sur le cercle ? » (choix).
+5. **Problèmes de distances à un point** (164, 1-3) — v1 la chèvre attachée en P par une corde de 8 m : « peut-elle
+   brouter l'herbe en un point à 7 m de P ? à 9 m ? » (choix) ; v2 deux conditions : « à moins de 3 km de la gare et
+   à plus de 2 km de l'usine : quelles maisons ? » (distances en tableau, choix plusieurs) ; v3 figure : AB = 6 cm,
+   cercles de centre A (5 cm) et B (4 cm) : « combien de points sont à 5 cm de A et à 4 cm de B ? » (case : 2).
+6. **Définition de la médiatrice** (165, 1-2) — v1 segment [AB] et une droite d codée : « d est-elle la médiatrice de
+   [AB] ? » sur une figure tirée parmi trois (perpendiculaire hors du milieu ; par le milieu sans angle droit ;
+   médiatrice) → choix oui / non, pas perpendiculaire / non, ne passe pas par le milieu ; v2 la définition (choix :
+   « la droite perpendiculaire au segment passant par son milieu » et trois leurres incomplets).
+7. **Propriété caractéristique de la médiatrice** (166, 1-3) — v1 M sur la médiatrice de [AB], MA = 4,2 cm : MB = ?
+   (case) ; v2 MA et MB donnés (égaux ou non) : « M est-il sur la médiatrice de [AB] ? » (choix : oui / non, plus près
+   de A / non, plus près de B) ; v3 quatre points et leurs distances à A et B (tableau) : lesquels sont sur la
+   médiatrice ? (choix, plusieurs). Corrigé : « la médiatrice est l'ensemble des points équidistants des extrémités ».
+8. **Problèmes avec la médiatrice** (167, 2-3) — v1 cercle de centre O et corde [AB] : « pourquoi O est-il sur la
+   médiatrice de [AB] ? » (choix : OA = OB, rayons / O est le milieu de [AB] / [AB] est un diamètre) ; v2 « le centre
+   d'un cercle passant par A et B se trouve : » (choix : sur la médiatrice de [AB] / sur [AB] / sur la droite (AB)) ;
+   v3 un puits à égale distance de deux maisons A et B, au bord de la route d : figure avec la médiatrice tracée et
+   trois points P, Q, R sur d (choix). Pas de concours des médiatrices (point du triangle, hors lot).
+
+**Question d'accès** (migration nœud + tag des 8) : personne ne lit rien de plus ; brouillons visibles de l'admin et
+de l'auteur seuls jusqu'à la publication, la migration ne fait que ranger et taguer.
+
+**Questions** :
+
+1. Lot 10 = ces 8 modèles, un par point, en un seul lot ?
+2. 160 (distance) et 161 (milieu) sont rangés en prod sous « cercle » : on suit le nœud du point (recommandé, la
+   migration ne peut faire autrement) ou tu veux d'abord un nœud « distances » ?
+3. 166 sans construction (le compas reste à la figure à compléter, § 3 C 4) ?
+4. 163 sans figure, distances écrites ?
+5. Valider la phase 0 (variations, niveaux, formes de réponse) ?
