@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2244 et la création en prod._
+_Mis à jour le 2026-11-02, migration de rangement écrite (PR à ouvrir)._
 
-- **État** : 7 brouillons en prod (créés par David le 2026-11-02, relus par MCP : 7 `draft`) — 01 `dd9a33b7`, 02 `344a2248`, 03 `63849c41`, 04 `5d17692b`, 05 `de42b303`, 06 `2f7d637b`, 07 `051ff81f`.
-- **Prochaine action** : nouveau worktree `questions-1spe-logique` (branche `feat/questions-1spe-logique-rangement`) : migration nœud + tags (gabarit `20261102090607_questions_1spe_savoir_a_rangement_tags.sql` + son test d'intégration, question d'accès déjà tranchée : Q5, personne), PR, `db:migrate` ; puis page à cocher et `publier-lot`.
+- **État** : 7 brouillons en prod — 01 `dd9a33b7`, 02 `344a2248`, 03 `63849c41`, 04 `5d17692b`, 05 `de42b303`, 06 `2f7d637b`, 07 `051ff81f`. Migration `20261102182612_questions_1spe_logique_rangement_tags.sql` + test d'intégration (10 verts ; rouge sans l'étape 4 : 2 échecs), relevé MCP du 2026-11-02 : 7 sans nœud ni tag.
+- **Prochaine action** : PR, CI verte, merge, `db:migrate` depuis la branche mergée (`migration list --linked` avant) ; puis page à cocher et `publier-lot`.
 - **En attente de David** : rien.
 - **Pièges en cours** : `i` et `e` interdits comme noms de variables ; `{{if:}}` imbriqué refusé dans une variable ; `eval:` sans comparaisons ; `create-questions` vise la PROD sans `set -a; . ./.env.local; set +a`.
-- **Worktree / branche** : aucun pour l'instant.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-logique`, `feat/questions-1spe-logique-rangement`.
 
 ---
 
