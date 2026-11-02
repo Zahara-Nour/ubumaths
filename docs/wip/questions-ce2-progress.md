@@ -6,17 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2180 (rangement du lot 6b mergé)._
+_Mis à jour le 2026-11-02, après #2180 ; correctif des textes du lot 6b en PR._
 
-- **État** : lots 1 à 6a en prod et publiés. Lot 6b : 4 brouillons créés en prod, migration de rangement mergée
-  (#2180) mais **pas encore poussée en base**.
-- **Prochaine action** : David lance `! pnpm db:migrate` (si « inserted before the last migration » : `--dry-run
---include-all`, relire, puis `--include-all`) → relevé MCP (4 nœuds, 4 tags) → page à cocher → publication
-  (`publier-lot`, niveaux relevés juste avant).
-- **En attente de David** : `db:migrate`.
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente ; `--publier` refusé par le classifieur
-  (`!`) ; commitlint : sujet sans majuscule, corps ≤ 100 caractères par ligne ; pas de mention Claude.
-- **Worktree / branche** : aucun (à créer pour la suite si du code est touché).
+- **État** : lots 1 à 6a en prod et publiés. Lot 6b : 4 brouillons en prod, **rangés et tagués** (relevé MCP du
+  2026-11-02 : bon nœud, bon point, `draft`). Relecture de la page à cocher : 3 défauts de texte trouvés (« La visite
+  … dure-t-il », variable `e` = Euler affichée « 10 e minutes », « pause à midi » incohérente) → corrigés dans le script.
+- **Prochaine action** : PR du correctif mergée → **David** lance `--mettre-a-jour` (12 et 13 ont un contenu différent
+  en base) → page à cocher régénérée et publiée en artefact (`db`) → verdicts → `publier-lot`.
+- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce2-6b --publier
+--mettre-a-jour` après le merge.
+- **Pièges en cours** : jamais de variable `e` (Euler) même dans un texte `{{eval:10*e}}` ; `mod()` refuse les
+  variables non entières en condition ; commitlint : corps ≤ 100 caractères par ligne ; pas de mention Claude.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2-6b` · `fix/questions-ce2-lot6b-textes`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
