@@ -195,6 +195,34 @@ export interface DomainPoint {
 	expression: string;
 	/** True if this is an open bound (parenthesis), false if closed (bracket) */
 	open?: boolean;
+	/**
+	 * Valeur de x cachée (`?` devant, dans `domain:`) : case à compléter par l'élève.
+	 * `expression` garde la vraie valeur, rangée sans le `?` ; un jeton `??n`
+	 * (évaluation notée) la remplace quand la réponse ne doit pas partir.
+	 */
+	hidden?: boolean;
+}
+
+/** Nature d'une case cachée */
+export type HiddenCellKind = 'valeur' | 'signe' | 'marque';
+
+/**
+ * Case cachée d'un tableau (`?` devant la cellule dans le bloc).
+ *
+ * Numérotées 0..n-1 dans l'ORDRE DE LECTURE : le domaine de gauche à droite, puis
+ * chaque ligne `sign:` dans son ordre, ses cellules par position de colonne
+ * (point, intervalle, point…) — jamais l'ordre d'écriture de l'auteur.
+ */
+export interface HiddenCell {
+	/** Numéro de la case (0..n-1), dans l'ordre de lecture */
+	index: number;
+	/** `'domain'` ou l'indice de la ligne dans `rows` */
+	row: 'domain' | number;
+	/** Clé de la cellule : valeur du domaine, point (`-3`) ou intervalle (`-inf,-3`) */
+	key: string;
+	kind: HiddenCellKind;
+	/** Réponse attendue : expression | '+' | '-' | 'z' | '||' | 'rien' ; '' si masquée (évaluation) */
+	answer: string;
 }
 
 // ============================================================================
@@ -234,6 +262,12 @@ export interface VariationTableNode extends BaseNode {
 	domain: DomainPoint[];
 	/** Rows of the table (sign and/or variation rows) */
 	rows: (SignRow | VariationRow)[];
+	/** Cases cachées (`?`), dans l'ordre de lecture. Absent si le bloc n'a aucun `?`. */
+	cases?: HiddenCell[];
+	/** Numéro de la case de la question (`case: N`), posé par le générateur de questions */
+	caseIndex?: number;
+	/** Texte source du bloc, gardé quand il a des `?` (l'éditeur riche le réaffiche tel quel) */
+	source?: string;
 }
 
 // ============================================================================

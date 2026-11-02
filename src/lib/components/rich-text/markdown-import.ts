@@ -618,6 +618,12 @@ function convertVideo(video: VideoNode): JSONContent {
  * will parse and render it.
  */
 function convertVariationTable(node: VariationTableNode): JSONContent {
+	// Cases cachées (`?`) : la structure range les valeurs sans le `?`, la resérialiser
+	// le perdrait. Comme la droite graduée, on repart du texte source.
+	if (node.source !== undefined && node.cases && node.cases.length > 0) {
+		return { type: 'variationTable', attrs: { content: node.source } };
+	}
+
 	const lines: string[] = [];
 
 	// Variable line
