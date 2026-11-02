@@ -6,16 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2183 (textes du lot 6b corrigés) et la mise à jour des brouillons._
+_Mis à jour le 2026-11-02, après la publication du lot 6b._
 
-- **État** : lots 1 à 6a en prod et publiés. Lot 6b : 4 brouillons en prod, rangés et tagués, textes corrigés
-  (`--mettre-a-jour` passé : 12 et 13 mis à jour). Page à cocher publiée (4 fiches, aucune alerte) :
-  https://claude.ai/artifact/UFe3Rfy2Kck8Fjor9RNdLU (capacité `db`, collection `verdicts` vide au départ).
-- **Prochaine action** : David relit et pose ses verdicts → je lis `verdicts` et **compte** les réponses → un « À revoir »
-  se corrige (§ 7) → `publier-lot --dir scripts/questions/ce2-6b` (simulation), niveaux relevés juste avant.
-- **En attente de David** : la relecture de la page ; puis `! … publier-lot … --publier`.
+- **État** : lots 1 à 6b en prod ET publiés. Lot 6b : 4 verdicts « OK » (page à cocher), simulation passée,
+  `publier-lot --publier` lancé par David, relevé MCP : 4 `published` (niveaux 1-2 Contenances, 3-4 Durées).
+  Aucun worktree en cours.
+- **Prochaine action** : lot suivant de la phase 0 du § 10 (QCM : références / estimations 040, 041, 049, 050 et
+  périmètre 042, voir décision 3) ; relire le journal pour les lots restants avant de proposer.
+- **En attente de David** : rien.
 - **Pièges en cours** : jamais de variable `e` (Euler) même dans un texte `{{eval:10*e}}` ; `--publier` refusé par le
-  classifieur (`!`) ; commitlint : corps ≤ 100 caractères par ligne ; pas de mention Claude.
+  classifieur (`!`) ; verdicts du 6b posés en 3 s (4 fiches) : relecture non prouvée ; commitlint : corps ≤ 100
+  caractères par ligne ; pas de mention Claude.
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
