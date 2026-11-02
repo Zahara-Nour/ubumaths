@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot A essayé en base locale, PR ouverte._
+_Mis à jour le 2026-11-02, après #2245 (lot A mergé)._
 
-- **État** : phase 0 validée (Q1-Q7) ; lot A (5 modèles, `scripts/questions/1spe-analyse-a/`) essayé en base locale (5 créés, joués dans l'aperçu : juste, faux, correction, OK ; sonde-courbes 0 problème) ; PR des fichiers ouverte.
-- **Prochaine action** : CI verte → merge ; puis David lance `create-questions --dir scripts/questions/1spe-analyse-a --publier` en prod (brouillons), relever les `id`, migration nœud + tag (doc § 6).
-- **En attente de David** : rien.
+- **État** : phase 0 validée (Q1-Q7) ; lot A (5 modèles, `scripts/questions/1spe-analyse-a/`) mergé (#2245), essayé en base locale ; **pas encore en prod**. Worktree du lot A retiré.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-analyse-a --publier` (prod, brouillons) ; relever les 5 `id` ; migration nœud + tag (doc couvrir-un-niveau § 6). En parallèle : lot B (4 modèles neufs dont 306 + tag de 7d6cf480, décisions Q1, Q5, Q6) dans un nouveau worktree.
+- **En attente de David** : la création du lot A en prod (écriture en prod refusée au mode auto).
 - **Pièges en cours** : `create-questions` vise la **PROD** même avec `.env.local` présent → charger `.env.local` dans le shell avant tout `--publier` local ; worktree neuf → `pnpm exec svelte-kit sync` avant `question:specs` ; spec `bad_form` → `constraintViolations: ['form']` ; 306 en lot B (outil #2189 en prod).
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-analyse`, `content/questions-1spe-analyse`.
+- **Worktree / branche** : aucun (lot A mergé) ; lot B → `git worktree add -b content/questions-1spe-analyse-b ../ubumaths-wt-questions-1spe-analyse origin/main`.
 
 ---
 
