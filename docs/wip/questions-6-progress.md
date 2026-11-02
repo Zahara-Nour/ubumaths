@@ -5,18 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2225 (lot 10 écrit et mergé)._
+_Mis à jour le 2026-11-02, après #2229 (migration du lot 10 mergée, pas appliquée)._
 
-- **État** : lot 10 « Distances, cercle, médiatrice » (160-167, 8 modèles) mergé (#2225, § 24.1), **pas encore en
-  prod**. 6e : 165 publiés + 1 brouillon (3a7a5711).
-- **Prochaine action** : après le `--publier` de David, relever les 8 `id` en prod, migration nœud + tag (gabarit
-  lot 9 : `20261102070305_questions_6_lot9_rangement_tags.sql` + son test), page à cocher, publication ; puis
-  lot 11 (angles, triangles, symétrie : 148, 168, 171, 174-179).
-- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/6-distances-cercle-mediatrice --publier`.
+- **État** : lot 10 (160-167) : 8 brouillons en prod (§ 24.2), migration de rangement mergée (#2229) mais **pas
+  appliquée** en prod. 6e : 165 publiés + 1 brouillon (3a7a5711) + 8 brouillons du lot 10.
+- **Prochaine action** : après le `db:migrate`, vérifier en prod (8 modèles sur leur nœud, un tag chacun,
+  `updated_at` inchangé), page à cocher, publication ; puis lot 11 (angles, triangles, symétrie : 148, 168, 171,
+  174-179).
+- **En attente de David** : `! pnpm db:migrate` depuis le dépôt principal ; il applique aussi 3 migrations d'autres
+  chantiers (2de `…090330`, 1re spé `…090607`, CE1 `…091820`).
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `{{eval:…/10}}` = fraction : toujours `;d`. Mot coloré hors
-  `$…$` : `colt`. Choix multiple incomplet = `unoptimal_form`. `svelte-kit sync` avant `question:specs --file`.
-  `db:migrate` « inserted before » : `--dry-run --include-all` puis `--include-all`. `publier-lot` : David avec `!`.
-- **Worktree / branche** : aucun (migration : `git worktree add -b feat/questions-6-lot10-rangement ../ubumaths-wt-questions-6 origin/main`).
+  `$…$` : `colt`. Choix multiple incomplet = `unoptimal_form`. `Doc-inchangée:` dans un commit, corps ≤ 100 car.
+  Migrations en attente : lire `schema_migrations` (MCP), pas un JSON parsé. `publier-lot` : David avec `!`.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1477,3 +1478,19 @@ Pièges rencontrés :
 - Mot coloré du corrigé hors des `$…$` (`col('\\text{non}')`) : LaTeX brut ; helper `colt` qui ajoute les `$`.
 - Case choix à plusieurs réponses : un sous-ensemble des bonnes réponses est jugé `unoptimal_form` (réussite
   partielle), pas `incorrect` ; specs alignées.
+
+### 24.2 Brouillons en prod et migration nœud + tag (2026-11-02)
+
+- `create-questions --publier` lancé par David : 8 brouillons, niveaux et catégories attendus, sans nœud ni tag.
+  Identifiants : 4a86db27 (160), 3ec74bbc (161), b8939937 (162), 48524505 (163), 2f3da9ce (164), 15f9d78b (165),
+  9e90342c (166), 1b2ed3a5 (167).
+- `20261102090404_questions_6_lot10_rangement_tags.sql` (patron du lot 9) : 160-164 → « Géométrie > Figures planes >
+  cercle », 165-167 → « … > médiatrice et bissectrice ». Test `questions-6-lot10-rangement-tags.test.ts` 16/16, rouge
+  vérifié (migration vidée : 9 échecs + suite nominale tombée) ; assertion ajoutée sur `tgenabled = 'O'` (remarque
+  de `security-auditor`, aucun bloquant), rouge vérifiée.
+- #2229 mergée (CI verte, `check:migrations --pr` passé). Pièges : la garde « doc à jour » exige `Doc-inchangée:`
+  dans un COMMIT (le corps de la PR ne compte pas) ; commitlint refuse une ligne de corps > 100 caractères.
+- **`db:migrate` NON lancé** : 4 migrations en attente en prod, dont 3 d'autres chantiers (`20261102090330` 2de,
+  `20261102090607` 1re spé, `20261102091820` CE1) ; `supabase db push` les appliquerait toutes. Laissé à David.
+  Piège : un script d'attente qui lit `migration list -o json` a pris un échec de lecture pour « rien en attente » ;
+  vérifier dans `supabase_migrations.schema_migrations` (MCP).
