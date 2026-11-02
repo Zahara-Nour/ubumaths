@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2174 (et #2181, v0.62.0 en prod)._
+_Mis à jour le 2026-11-02, après la publication du lot 6a._
 
-- **État** : lots 0 à 5 publiés. Lot 6a (fractions décimales, 7 brouillons) : rangé et tagué en prod (#2174, migration `20261101222238` jouée, vérifiée au MCP) ; page à cocher publiée : https://claude.ai/artifact/WM4ijtHNaqPwyVu3Bidr1R (`verdicts` vide au départ).
-- **Prochaine action** : lire les verdicts de David (`ArtifactData list verdicts`, compter) ; tout OK → `publier-lot` en simulation, puis David lance `--publier` ; ensuite écriture du 6b (décimaux, § 11).
-- **En attente de David** : la relecture de la page à cocher (07 « Ranger » : bloc non dessiné sur la page, à jouer dans l'aperçu).
-- **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; garde = doublon seulement ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `pnpm db:migrate --dry-run --include-all`, liste relue, puis `--include-all`. `Doc-inchangée:` dans un COMMIT, pas dans la PR. `spacesFromFourDigits` → specs en `1\,000` ; homonymes du CM1 sur la page ; `git commit -m … -- <fichiers>`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2` en HEAD détachée sur `origin/main` ; prochaine branche : `feat/questions-cm2-lot6b`.
+- **État** : lots 0 à 5 et **6a publiés** (7/7, vérifiés au MCP le 2026-11-02 : `published`, rangés, tagués).
+- **Prochaine action** : écriture du **6b** (décimaux, modèles 8-13 du § 11, décisions § 11.1) sur une branche neuve `feat/questions-cm2-lot6b` dans le worktree (`git checkout -b feat/questions-cm2-lot6b origin/main`), dossier `scripts/questions/cm2-6b/`.
+- **En attente de David** : rien.
+- **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; garde = doublon seulement ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `pnpm db:migrate --dry-run --include-all`, liste relue, puis `--include-all`. `Doc-inchangée:` dans un COMMIT, pas dans la PR. `spacesFromFourDigits` → specs en `1\,000` ; homonymes du CM1 sur la page ; `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2` en HEAD détachée (ancienne) ; prochaine branche : `feat/questions-cm2-lot6b`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -630,3 +630,11 @@ décimale (0,435 → message de forme, à vérifier en local). Tableau du § 11 
 - 2e collision : `20261101224702` pris par `questions_tspe_lot2_rangement_tags` pendant la CI ; renommée en `20261101224703`. `migration:horodatage` = max de `main` + 1 s : deux sessions proches reçoivent le même numéro.
 - 3e collision : `20261101224703` pris par `questions_2de_signes_variations_rangement_tags` (ancien outil). Après #2181 : renommée en `20261101222238` (heure réelle).
 - 2026-11-01 soir : #2181 (horodatage à l'heure réelle, garde allégée) mergée ; `deploy:prod` lancé à la demande de David : v0.62.0 en prod. #2174 renommée une 3e fois (`…224703` pris par `questions_2de_signes_variations`), puis `20261101222238` (heure réelle) ; CI verte, mergée. `db:migrate` : refus « inserted before the last migration » attendu, `--dry-run --include-all` → la nôtre seule, jouée. MCP : 7 brouillons rangés et tagués, `updated_at` = création. Page à cocher publiée (7 fiches ; 5 alertes « homonyme » CM1 écartés, ids justes ; « Ranger » non dessiné).
+
+### 11.4 Lot 6a : relecture (David, 2026-11-02)
+
+- 7 OK sur 7, sans commentaire (`verdicts` lu et compté). `publier-lot` en simulation : 7 brouillons passent le contrôle.
+
+### 11.5 Lot 6a : publication (2026-11-02)
+
+- David lance `publier-lot --publier` : 7/7 publiés. MCP : 7 `published` (niveaux 9, 8, 8, 17, 6, 7, 4), 7 rangés, 7 tagués (CM2-023, 024, 027, 028, 139, 140, 029). **Lot 6a clos.**
