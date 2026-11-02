@@ -23,10 +23,10 @@ export const figureDeTravailEntry: BlockCatalogEntry = {
 			settings: [
 				{
 					key: 'outils',
-					values: 'droite ou segment',
+					values: 'droite, segment, point, equerre, compas',
 					defaultValue: 'droite',
 					description:
-						'L’outil proposé à l’élève, un seul par figure. Avec un quadrillage (grille:) et le segment, chaque toucher va au nœud le plus proche.'
+						'Les outils proposés à l’élève ; plusieurs : une palette (outils: droite, equerre, compas). Avec un quadrillage (grille:) et le segment, chaque toucher va au nœud le plus proche ; avec l’équerre ou le compas, il s’aimante sur un point, une intersection de deux traits ou un trait.'
 				},
 				{
 					key: 'fenetre, taille…',
