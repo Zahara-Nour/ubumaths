@@ -26,6 +26,16 @@ import {
 } from '../../src/lib/ubumark/utils/monnaie-scene';
 import * as monnaieConstruire from '../../src/lib/ubumark/utils/monnaie-construire';
 import { coinFamily, denominationLabel } from '../../src/lib/ubumark/utils/monnaie-valeurs';
+import { parsePartageContent } from '../../src/lib/ubumark/parser/partage-parser';
+import {
+	PARTAGE_CM_PER_UNIT,
+	PARTAGE_MARGIN,
+	PARTAGE_STROKE,
+	buildPartageScenes,
+	partageFigureLabel,
+	type PartagePart,
+	type PartageScene
+} from '../../src/lib/ubumark/utils/partage-scene';
 import {
 	buildCollectionScene,
 	COLLECTION_VIEW,
@@ -646,9 +656,64 @@ function variation(source: string): Bloc {
 	};
 }
 
+// ---- Partage : polygones de `buildPartageScenes`, comme Partage.svelte ----
+
+function partageSvg(
+	scene: PartageScene,
+	label: string,
+	coloriees: (part: PartagePart) => boolean
+): string {
+	const w = scene.width + 2 * PARTAGE_MARGIN;
+	const h = scene.height + 2 * PARTAGE_MARGIN;
+	const parts = scene.parts
+		.map((part) => {
+			const points = part.points
+				.map((p) => `${+(p.x + PARTAGE_MARGIN).toFixed(2)},${+(p.y + PARTAGE_MARGIN).toFixed(2)}`)
+				.join(' ');
+			return `<polygon class="p-part${coloriees(part) ? ' p-coloriee' : ''}" points="${points}"/>`;
+		})
+		.join('');
+	return `<svg class="p-dessin" role="img" aria-label="${attr(label)}" viewBox="0 0 ${w} ${h}" style="width:${+(w * PARTAGE_CM_PER_UNIT).toFixed(2)}cm" stroke-width="${PARTAGE_STROKE}" stroke-linejoin="round">${parts}</svg>`;
+}
+
+/**
+ * Figure partagée. À colorier (`colorier:`) : la figure vide que voit l'élève, puis un coloriage
+ * juste (les premières parts ; l'appli accepte toutes les parts qui font la fraction).
+ */
+function partage(source: string): Bloc {
+	const node = parsePartageContent(source);
+	const spec = node.spec;
+	if (!spec || node.errors.length > 0)
+		throw new Error('bloc partage en erreur : ' + node.errors.join(' ; ') + ' : ' + source);
+	const scenes = buildPartageScenes(spec);
+	const dessins = (coloriees: (part: PartagePart) => boolean) =>
+		scenes.map((scene, i) => partageSvg(scene, partageFigureLabel(spec, i), coloriees));
+	if (!spec.colorier)
+		return {
+			html: figures(
+				dessins((part) => part.shaded),
+				[]
+			)
+		};
+	const n = spec.colorier.parts;
+	const total = scenes.reduce((t, sc) => t + sc.parts.length, 0);
+	return {
+		html:
+			`<div class="cons"><span class="r-tag">À colorier : ${spec.colorier.num}/${spec.colorier.den}, l'élève touche les parts</span>${figures(
+				dessins(() => false),
+				[]
+			)}` +
+			`<span class="r-tag">Un coloriage juste : ${n} part${n > 1 ? 's' : ''} sur ${total}</span>${figures(
+				dessins((part) => part.rank <= n),
+				[]
+			)}</div>`
+	};
+}
+
 const DESSINS: Record<string, (source: string) => Bloc> = {
 	figure,
 	monnaie,
+	partage,
 	collection,
 	horloge,
 	courbe,

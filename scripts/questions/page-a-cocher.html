@@ -631,6 +631,18 @@
 		stroke: color-mix(in oklab, var(--m-primaire) 45%, black);
 		stroke-width: 0.8;
 	}
+	/* Partage : parts sur le fond, la seule couleur d'accent pour les parts coloriées */
+	.p-dessin {
+		max-width: 100%;
+		height: auto;
+	}
+	.p-part {
+		fill: var(--surface);
+		stroke: var(--fg);
+	}
+	.p-coloriee {
+		fill: #e8833a;
+	}
 	.m-billet {
 		fill: color-mix(in oklab, var(--m-primaire) 35%, white);
 		stroke: color-mix(in oklab, var(--m-primaire) 45%, black);
@@ -931,16 +943,16 @@
 		);
 	}
 	function enLigne(t) {
-		return t
-			.split(/\$([^$]*)\$/)
-			.map((m, i) =>
-				i % 2
-					? maths(m)
-					: esc(m)
-							.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-							.replace(/(^|[\s(])_([^_]+)_(?=$|[\s.,;:!?)])/g, '$1<em>$2</em>')
-			)
-			.join('');
+		return (
+			t
+				.split(/\$([^$]*)\$/)
+				.map((m, i) =>
+					i % 2 ? maths(m) : esc(m).replace(/(^|[\s(])_([^_]+)_(?=$|[\s.,;:!?)])/g, '$1<em>$2</em>')
+				)
+				.join('')
+				// gras après recollage : « **partagé en $4$ triangles** » enjambe une formule
+				.replace(/\*\*([\s\S]+?)\*\*/g, '<strong>$1</strong>')
+		);
 	}
 	function tableau(par) {
 		const lignes = par
