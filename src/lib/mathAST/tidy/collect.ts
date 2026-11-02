@@ -445,6 +445,62 @@ function writtenUnitOf(symbols: ReadonlyMap<string, number>, unit: Unit): Unit |
 	return composeUnit(parts);
 }
 
+/** L'unité écrite d'un terme produit, en liste (vide hors du mode `'written'`). */
+function writtenUnitsOf(
+	symbols: ReadonlyMap<string, number>,
+	unit: Unit | null,
+	quantity: TidyQuantity | null,
+	settings: Settings
+): readonly Unit[] {
+	if (settings.unitChoice !== 'written' || unit === null || quantity === null) return [];
+	const written = writtenUnitOf(symbols, unit);
+	return written === null ? [] : [written];
+}
+
+/** Les unités, dans l'ordre, sans doublon d'écriture. */
+function distinctUnits(units: readonly Unit[]): readonly Unit[] {
+	const seen = new Set<string>();
+	return units.filter((unit) => {
+		const key = hashUnit(unit);
+		if (seen.has(key)) return false;
+		seen.add(key);
+		return true;
+	});
+}
+
+/**
+ * Parmi les écritures d'une valeur dans les unités écrites (dans l'ordre, `null`
+ * si elle n'y tombe pas juste) : la première, sauf si la valeur y est sous 1 —
+ * alors la plus grande unité écrite où elle vaut au moins 1, sinon la plus petite.
+ * `12[km]+500[m]` → `12,5 km` ; `2000[m]+3[km]` → `5000 m` ; `1[km]-999[m]` → `1 m`.
+ */
+function chooseWrittenUnit(candidates: readonly (TidyTerm | null)[]): TidyTerm | null {
+	const finite = candidates.filter((candidate): candidate is TidyTerm => candidate !== null);
+	const [first] = finite;
+	if (first === undefined || atLeastOne(first)) return first ?? null;
+	const above = finite.filter(atLeastOne);
+	const pool = above.length > 0 ? above : finite;
+	// La plus grande unité = la plus petite valeur au-dessus de 1 ; sinon la plus
+	// petite unité = la plus grande valeur.
+	return pool.reduce((best, candidate) => {
+		const smaller = compareMagnitude(candidate, best) < 0;
+		return above.length > 0 === smaller ? candidate : best;
+	});
+}
+
+function atLeastOne(term: TidyTerm): boolean {
+	const magnitude = absRational(term.coefficient);
+	return magnitude.n >= magnitude.d;
+}
+
+/** Signe de |a| − |b|. */
+function compareMagnitude(a: TidyTerm, b: TidyTerm): number {
+	const x = absRational(a.coefficient);
+	const y = absRational(b.coefficient);
+	const diff = x.n * y.d - y.n * x.d;
+	return diff === 0n ? 0 : diff < 0n ? -1 : 1;
+}
+
 /**
  * Écart B (relecture de #483) — une unité qui écrit deux fois la même dimension
  * (`min.km/h`, `h.min`) se réécrit avec la première unité écrite de chaque
@@ -1314,10 +1370,7 @@ function toTerm(
 			(acc.decimal || acc.decimalRoot) &&
 			!readsFraction(acc, factors, unit !== null) &&
 			writesDecimal(coefficient),
-		written:
-			settings.unitChoice === 'written' && unit !== null && quantity !== null
-				? writtenUnitOf(acc.unitSymbols, unit)
-				: null
+		written: writtenUnitsOf(acc.unitSymbols, unit, quantity, settings)
 	};
 	return reduceFractionOfSums(term, settings, watch);
 }
@@ -1401,7 +1454,7 @@ function verbatimTerm(node: MathNode, negative: boolean): TidyTerm {
 		verbatim: true,
 		quantity: null,
 		decimal: false,
-		written: null
+		written: []
 	};
 }
 
@@ -1764,7 +1817,8 @@ function collectLikeTerms(terms: readonly TidyTerm[], settings: Settings): TidyT
 		result.push({
 			...term,
 			coefficient,
-			decimal: decimal && !fraction && writesDecimal(coefficient)
+			decimal: decimal && !fraction && writesDecimal(coefficient),
+			written: distinctUnits(members.flatMap((member) => member.written))
 		});
 	}
 	return result;
@@ -1818,8 +1872,8 @@ function chooseUnit(term: TidyTerm, imposed: Unit | null, settings: Settings): T
 	// Écart B : sinon, une unité qui écrit deux fois la même dimension (`min.km/h`) est
 	// simplifiée (`km`), la valeur en fraction si rien ne tombe juste.
 	const writtenFraction = (): TidyTerm | null => {
-		if (settings.unitChoice === 'written' && term.written !== null)
-			return rewritten(term.written, false);
+		if (settings.unitChoice === 'written' && term.written.length > 0)
+			return rewritten(term.written[0], false);
 		const coherent = term.unit === null ? null : coherentUnitOf(term.unit);
 		return coherent === null ? null : rewritten(coherent, false);
 	};
@@ -1829,9 +1883,11 @@ function chooseUnit(term: TidyTerm, imposed: Unit | null, settings: Settings): T
 		if (chosen !== null) return chosen;
 	}
 
-	// `unitChoice: 'written'` — l'unité écrite d'abord, si la valeur y tombe juste.
-	if (settings.unitChoice === 'written' && term.written !== null) {
-		const chosen = rewritten(term.written);
+	// `unitChoice: 'written'` — l'unité écrite d'abord, si la valeur y tombe juste ;
+	// une valeur sous 1 passe dans une autre unité écrite du calcul (`1[km]-999[m]`
+	// → `1[m]`, David, 2026-11-02).
+	if (settings.unitChoice === 'written' && term.written.length > 0) {
+		const chosen = chooseWrittenUnit(term.written.map((unit) => rewritten(unit)));
 		if (chosen !== null) return chosen;
 	}
 
@@ -1953,7 +2009,7 @@ function settingsOf(options: InnerOptions | undefined): Settings {
 	if (options?.settings !== undefined) return options.settings;
 	const domain = options?.domain ?? [];
 	return {
-		unitChoice: options?.unitChoice ?? 'school',
+		unitChoice: options?.unitChoice ?? 'written',
 		typeCtx: options?.typeCtx,
 		nonZero: domain.length === 0 ? NO_BASE : nonZeroBases(domain, (n) => tidyExpression(n)),
 		positive: domain.length === 0 ? NO_BASE : positiveBases(domain, (n) => tidyExpression(n)),
