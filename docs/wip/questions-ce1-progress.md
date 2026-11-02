@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2230 et la publication du lot 10._
+_Mis à jour le 2026-11-02, après le relevé du § 18._
 
-- **État** : lots 0 à 10 publiés (lot 10 : 9/9, relu, publié par David le 2026-11-02). Dernier lot du découpage (§ 12).
-- **Prochaine action** : relevé MCP des points CE1 encore sans modèle (requêtes du § 1 de `couvrir-un-niveau.md`), puis
-  questions à David sur la suite (`centaines:` de `collection` pour 001, 002 ; ce qui reste en C ou D).
-- **En attente de David** : chantier `verrou-deploy` (mémoire) ; futur chantier « `\textcolor` hors formule » (53
-  fichiers de lots, beaucoup publiés : texte brut chez l'élève).
+- **État** : lots 0 à 10 publiés ; relevé du § 18 : 13 points sans modèle publié, dont 4 points A oubliés (023, 066,
+  067, 071) et le brouillon `a7dfe502` (073) jamais publié.
+- **Prochaine action** : réponses de David aux questions du § 18, puis lot 11.
+- **En attente de David** : questions du § 18 ; chantier `verrou-deploy` (mémoire) ; futur chantier « `\textcolor` hors
+  formule » (53 fichiers de lots, beaucoup publiés : texte brut chez l'élève).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; **mots en couleur dans le texte = `colt()`
   (`$\textcolor{…}{\text{…}}$`), jamais `\textcolor` nu** ; `{{if:}}` à condition contenant `{{eval:}}` non résolu →
   relire `--apercu` ; **niveaux : relever la catégorie juste avant la publication** ; horodatage
@@ -849,3 +849,26 @@ Réponse de David (« tes recos ? » puis « go », 2026-11-02) : les cinq recom
   rouge sans (2 échecs), vert 6/6.
 - 2026-11-02 : #2230 mergée ; migration jouée (niveau 6 vérifié au MCP, contenu intact) ; `publier-lot` simulé 9/9 ;
   publié par David, 9/9 `published` (MCP). **Lot 10 clos.**
+
+## 18. Relevé après le lot 10 (prod, MCP lecture seule, 2026-11-02)
+
+144 modèles CE1 publiés, 2 brouillons : `47f97c9f` (doublon dépublié au lot 0, voulu) et `a7dfe502` (CE1-073).
+
+13 points sans modèle publié :
+
+| Points             | Classe (§ 3) | État                                                                        |
+| ------------------ | ------------ | --------------------------------------------------------------------------- |
+| 023, 066, 067, 071 | A            | **jamais mis dans un lot** (oubli du découpage des lots 1 à 5)              |
+| 073                | B            | brouillon `a7dfe502` repris au lot 9 (tag, nœud), **jamais relu ni publié** |
+| 001, 002           | C partiel    | `centaines:` de `collection` toujours réservée (`collection-parser.ts`)     |
+| 092, 048, 068, 078 | D            | sans modèle (décision 5 du § 4 bis)                                         |
+| 072, 074           | D            | après la case « figure » de `figure-et-choix` (décision 5)                  |
+
+Questions à David :
+
+1. **Lot 11** = les 4 points A oubliés : 023 (« × » lu « fois », 7 × 20 biscuits), 066 et 067 avec ` ```solide `
+   (faces, sommets, arêtes ; nature des faces), 071 (angles droits, côtés égaux du carré et du rectangle, sur
+   `figure`) ? Recommandation : oui, un seul lot de 4 modèles.
+2. **`a7dfe502`** (073) : le mettre dans la page à cocher du lot 11 et le publier avec lui ? Recommandation : oui.
+3. **`centaines:` de `collection`** (001, 002, et le CE2) : ouvrir le petit chantier à part après le lot 11 ?
+   Recommandation : oui ; ce sera la fin du CE1 (hors points D).
