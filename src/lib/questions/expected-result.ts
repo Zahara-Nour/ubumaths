@@ -35,6 +35,7 @@ import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
 import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
 import { findBarsToPlace, findBoxPlotsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
 import { findCourbesToPlace } from '$lib/ubumark/parser/courbe-parser';
+import { findTrigCirclesToPlace } from '$lib/ubumark/parser/trig-circle-parser';
 import { findRangersToPlace } from '$lib/ubumark/parser/ranger-parser';
 import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
 import { NOTHING_COLORED } from '$lib/ubumark/utils/partage-colorier';
@@ -311,7 +312,8 @@ function buildCaseBlocks(statement: string): Map<number, BuildCaseBlock> {
 		...findPartagesToColorier(statement).map((b) => ({ ...b, kind: 'partage' as const })),
 		...findCubesToBuild(statement).map((b) => ({ ...b, kind: 'cubes' as const })),
 		...findPatronsToBuild(statement).map((b) => ({ ...b, kind: 'patron' as const })),
-		...findCourbesToPlace(statement).map((b) => ({ ...b, kind: 'courbe' as const }))
+		...findCourbesToPlace(statement).map((b) => ({ ...b, kind: 'courbe' as const })),
+		...findTrigCirclesToPlace(statement).map((b) => ({ ...b, kind: 'trig' as const }))
 	];
 	const blocks = new Map<number, BuildCaseBlock>();
 	for (const block of found) {

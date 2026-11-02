@@ -10,7 +10,7 @@
  * noms, le nombre de points ou de barres, la forme. La correction ne change pas :
  * le serveur juge sur l'instance complète.
  *
- * Masqué : ```line et ```courbe (`placer:`), ```horloge (`placer:`), ```collection et
+ * Masqué : ```line, ```courbe et ```trig (`placer:`), ```horloge (`placer:`), ```collection et
  * ```monnaie (`construire:`, avec sa réserve par défaut écrite : `maskMonnaie`), ```partage (`colorier:`), ```barres (effectifs des
  * barres de `placer:`, `axe: à choisir` compris : l'échelle ne se déduit plus),
  * ```boite-a-moustaches (les cinq valeurs des boîtes de `placer:`, ou `données:`).
@@ -34,6 +34,7 @@
 
 import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
 import { findCourbesToPlace } from '$lib/ubumark/parser/courbe-parser';
+import { findTrigCirclesToPlace } from '$lib/ubumark/parser/trig-circle-parser';
 import {
 	findHorlogesToPlace,
 	isMaskedPlacerValue,
@@ -374,6 +375,7 @@ export function findUnmaskedAnswers(statement: string): string[] {
 	return [
 		...leaks('line', findLinesToPlace(statement), keyMasked(['placer'])),
 		...leaks('courbe', findCourbesToPlace(statement), keyMasked(['placer'])),
+		...leaks('trig', findTrigCirclesToPlace(statement), keyMasked(['placer'])),
 		...leaks('horloge', findHorlogesToPlace(statement), (block) =>
 			valuesOf(block.body, ['placer']).every(isMaskedPlacerValue)
 		),
@@ -409,6 +411,7 @@ export function maskGestureAnswers(statement: string): string {
 	const placer = keyLine(PLACER_LINE, maskLineTargets);
 	maskBlocks(findLinesToPlace(statement), () => placer);
 	maskBlocks(findCourbesToPlace(statement), () => keyLine(PLACER_LINE, maskCourbeTargets));
+	maskBlocks(findTrigCirclesToPlace(statement), () => placer);
 	maskBlocks(findHorlogesToPlace(statement), () => keyLine(PLACER_LINE, maskedPlacerValue));
 	const build = keyLine(BUILD_LINE, () => MASKED_VALUE);
 	maskBlocks(findBuildCollections(statement), () => build);

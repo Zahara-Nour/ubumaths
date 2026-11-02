@@ -38,6 +38,7 @@ import { findRangersToPlace } from '$lib/ubumark/parser/ranger-parser';
 import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
 import { findCubesToBuild, findPatronsToBuild } from '$lib/ubumark/parser/espace-parser';
 import { findCourbesToPlace } from '$lib/ubumark/parser/courbe-parser';
+import { findTrigCirclesToPlace } from '$lib/ubumark/parser/trig-circle-parser';
 import { NESTED_PREFIX } from '$lib/ubumark/parser/nested-line';
 import { buildCaseCount } from './build-answer';
 import { buildKindName, type BuildKind } from '../types';
@@ -240,6 +241,9 @@ function choiceBlockErrors(block: MarkedChoiceBlock, caseIndex: number): string[
 	if (findCourbesToPlace(block.body.join('\n')).length > 0) {
 		errors.push(`${prefix} ${buildNestedMessage('courbe')}`);
 	}
+	if (findTrigCirclesToPlace(block.body.join('\n')).length > 0) {
+		errors.push(`${prefix} ${buildNestedMessage('trig')}`);
+	}
 	parseChoiceBody(block.body).choices.forEach((choice, index) => {
 		if (choiceHasBlank(choice)) {
 			errors.push(
@@ -350,7 +354,8 @@ const NESTED_BLOCK_NAMES: Record<BuildKind, string> = {
 	partage: 'Une figure à colorier',
 	cubes: 'Un assemblage de cubes à geste',
 	patron: 'Un patron à geste',
-	courbe: 'Un repère à points à placer'
+	courbe: 'Un repère à points à placer',
+	trig: 'Un cercle trigonométrique à points à placer'
 };
 
 const buildNestedMessage = (kind: BuildKind) =>
@@ -472,7 +477,8 @@ function markBuildBlocks(statement: string): {
 		...findPartagesToColorier(statement).map((b) => ({ ...b, kind: 'partage' as const })),
 		...findCubesToBuild(statement).map((b) => ({ ...b, kind: 'cubes' as const })),
 		...findPatronsToBuild(statement).map((b) => ({ ...b, kind: 'patron' as const })),
-		...findCourbesToPlace(statement).map((b) => ({ ...b, kind: 'courbe' as const }))
+		...findCourbesToPlace(statement).map((b) => ({ ...b, kind: 'courbe' as const })),
+		...findTrigCirclesToPlace(statement).map((b) => ({ ...b, kind: 'trig' as const }))
 	].sort((a, b) => a.startIndex - b.startIndex);
 	const errors = found.filter((b) => b.nested).map((b) => buildNestedMessage(b.kind));
 	const marked = found.filter((b) => !b.nested);
@@ -653,7 +659,8 @@ export function assignBlankIndices(
 								build.kind === 'barres' ||
 								build.kind === 'boite-a-moustaches' ||
 								build.kind === 'ranger' ||
-								build.kind === 'courbe') && {
+								build.kind === 'courbe' ||
+								build.kind === 'trig') && {
 								point
 							})
 						};
@@ -665,6 +672,7 @@ export function assignBlankIndices(
 						blankTypes.push(
 							build.kind === 'horloge' ||
 								build.kind === 'courbe' ||
+								build.kind === 'trig' ||
 								build.kind === 'ranger' ||
 								build.kind === 'partage' ||
 								build.kind === 'cubes' ||

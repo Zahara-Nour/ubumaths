@@ -12,6 +12,8 @@
  * - Arcs for equation solutions
  * - Value table (optional)
  * - Math expressions converted from LaTeX to Typst
+ * - Points à placer (`placer:`) : le cercle sans les points, avec ses 24
+ *   graduations sans étiquette ; l'élève fait ses croix
  *
  * @module ubumark/generators/trig-circle-typst
  */
@@ -20,6 +22,7 @@ import type { TrigCircleNode, TrigAngle, TrigArc, TrigNamedPoint } from '../type
 import { REMARKABLE_ANGLES, TRIG_DEFAULT_COLOR, isNamedPointAngle } from '../types/trig-circle';
 import { convertLatexToTypstMath } from './typst-generator';
 import { authorColorTypst, resolveAuthorColor } from '$lib/theme/author-color';
+import { TRIG_PLACER_STEPS } from '../utils/trig-steps';
 
 // ============================================================================
 // CONFIGURATION
@@ -100,6 +103,9 @@ export function generateTrigCircleTypst(
 
 		// Draw the unit circle
 		parts.push(generateCircle(opts));
+
+		// Points à placer : les crans, jamais les points attendus
+		if (node.placer !== undefined) parts.push(generateCircleTicks(opts));
 
 		// Draw solution arcs if in arc mode
 		if (node.config.mode === 'arc' && node.solution?.arcs && node.solution.arcs.length > 0) {
@@ -249,6 +255,22 @@ function generateCircle(opts: Required<TrigCircleTypstOptions>): string {
 	lines.push(`  circle((0, 0), radius: ${formatNumber(opts.radius)})`);
 	lines.push('');
 
+	return lines.join('\n');
+}
+
+/** Graduations sans étiquette sur le cercle, une tous les π/12 (point à placer) */
+function generateCircleTicks(opts: Required<TrigCircleTypstOptions>): string {
+	const half = 0.08;
+	const lines = ['  // Graduations du cercle (point à placer)'];
+	for (let k = 0; k < TRIG_PLACER_STEPS; k++) {
+		const radians = (2 * Math.PI * k) / TRIG_PLACER_STEPS;
+		const inner = angleToCoords(radians, opts.radius - half);
+		const outer = angleToCoords(radians, opts.radius + half);
+		lines.push(
+			`  line((${formatNumber(inner.x)}, ${formatNumber(inner.y)}), (${formatNumber(outer.x)}, ${formatNumber(outer.y)}), stroke: 0.4pt + luma(90))`
+		);
+	}
+	lines.push('');
 	return lines.join('\n');
 }
 

@@ -6,19 +6,18 @@ status: phase 0
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2179._
+_Mis à jour le 2026-11-02, PR 2 en cours._
 
-- **État** : PR 1 (trotteuse, lire et placer) **mergée (#2179)**, pas encore en prod ; vérification manuelle
-  notée dans `verifications-manuelles.md`. Worktree de la PR 1 retiré.
-- **Prochaine action** : PR 2 — point à placer sur le cercle trigonométrique (phase 0 au § 4, décisions au § 6) :
-  nouveau worktree `git worktree add -b feat/cercle-trigo-placer ../ubumaths-wt-cercle-trotteuse origin/main`,
-  tests d'abord.
-- **En attente de David** : rien.
-- **Pièges en cours** : un geste ne doit jamais donner la réponse (énoncé masqué) ; client vitest « Orchestrator
-  not found » = relancer par dossier ; page d'aide réservée au **prof** : tester sur `http://[::1]:<port>` avec
-  `teacher@local.test` (cookies séparés de la session admin de David sur `localhost`) ; aucune ligne
-  `Claude-Session` dans les commits ni la PR.
-- **Worktree / branche** : aucun (à recréer pour la PR 2).
+- **État** : PR 1 (trotteuse) mergée (#2179). PR 2 (point à placer sur le cercle trigo) codée et testée
+  sur `feat/cercle-trigo-placer` (§ 8), revue et PR à faire.
+- **Prochaine action** : revue (`code-reviewer`), PR, CI, merge ; vérification manuelle à noter dans
+  `verifications-manuelles.md`.
+- **En attente de David** : confirmer l'interprétation du § 8 (les repères 0, π/2, π, 3π/2 ne comptent
+  jamais comme « angle déjà montré »).
+- **Pièges en cours** : un geste ne doit jamais donner la réponse (énoncé masqué, `placer: M=?`) ;
+  client vitest « Orchestrator not found » = relancer par dossier ; aucune ligne `Claude-Session` dans
+  les commits ni la PR.
+- **Worktree / branche** : `../ubumaths-wt-cercle-trotteuse`, `feat/cercle-trigo-placer`.
 
 ---
 
@@ -185,3 +184,31 @@ bloc (`pi/3`, `-5*pi/4`, `13*pi/6`, `90°`).
 - `maskedPlacerValue('? s')` → `? s` (masquage idempotent).
 - `9 h 25 40 s` refusé : les secondes demandent `min`.
 - Non retenu : refus de `graduations: heures` avec secondes (les minutes se lisent déjà sans graduations).
+
+## 8. PR 2 — point à placer sur le cercle trigonométrique (2026-11-02)
+
+- Parseur `trig-circle-parser.ts` : clés `placer:` (points séparés par « ; », nom obligatoire, angle
+  comme `angles:`, `M = ?` masqué) et `case:` ; `findTrigCirclesToPlace`, `hasTrigCircleToPlace`.
+  Nœud : `placer?: TrigNamedPoint[]`, `caseIndex?`.
+- Refus (`placerProblems`) : angle hors des 24 crans ; `mode: interactive`, `equation:`, `display:`
+  autre que `circle` ; nom pris par `points:` ; angle déjà montré par `points:`, `angles:` ou un
+  préréglage. **Interprétation (à confirmer par David)** : les quatre repères 0, π/2, π, 3π/2 ne comptent
+  jamais (ils sont le décor de tous les cercles à placer) : `placer: M = 5*pi/2` ou `-pi/2` permis, même
+  avec `preset: sixths` ou `angles: pi/2`.
+- Juge `utils/trig-placer.ts` : réponse = le cran (`'8'`), attendue = mesure principale en LaTeX
+  (`\frac{2\pi}{3}`), `isPlacedAngleCorrect` (même cran, modulo 2π), `placedAngleMistake`
+  (« Ton point M est sur 3π/4. », « Tu n’as pas placé M. »).
+- Questions : `BuildKind` `'trig'` (« cercle trigonométrique »), cases `text`, une par point ; branché
+  dans `assign-blank-indices`, `build-answer` (`MASKABLE_KINDS`), `instance-generator`,
+  `template-validator`, `expected-result`, `answer-validator`, `masked-statement` (masque
+  `maskLineTargets`, garde `findUnmaskedAnswers`).
+- Écran : `TrigPlacer.svelte` (zone `role="slider"`, aimant, glisser, toucher un point posé le choisit
+  sans le bouger, rien près du centre, étiquettes si plusieurs points, ◀ ▶ toujours visibles, flèches,
+  Début) ; `TrigCircle.svelte` lui passe la main quand `placer` est défini, et reçoit `ticks` (24
+  graduations sans étiquette) et `marks` (points posés). `FillBlanksInput`, `BuildAnswer`.
+- PDF : cercle gradué sans les points (`generateCircleTicks`). Pas de corrigé imprimé (comme le repère).
+- Page d'aide (`block-catalog/trig.ts`) : réglage `placer`, exemple, erreur « hors des graduations ».
+  Doc : `ubumark.md`, `questions.md` (écart connu retiré).
+- Tests : `trig-placer.test.ts` (15), `trig-circle-placer.test.ts` (17), `generation-trig-placer.test.ts`
+  (17), `TrigPlacer.svelte.test.ts` (14 ; sans le branchement FillBlanksInput / BuildAnswer : 3 rouges),
+  `trig-circle-placer-typst.test.ts` (2).

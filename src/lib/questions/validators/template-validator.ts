@@ -20,6 +20,7 @@ import { hasLineToPlace } from '$lib/ubumark/parser/number-line-parser';
 import { hasHorlogeToPlace } from '$lib/ubumark/parser/horloge-parser';
 import { hasStatChartToPlace } from '$lib/ubumark/parser/stat-chart-parser';
 import { hasCourbeToPlace } from '$lib/ubumark/parser/courbe-parser';
+import { hasTrigCircleToPlace } from '$lib/ubumark/parser/trig-circle-parser';
 import { hasRangerToPlace } from '$lib/ubumark/parser/ranger-parser';
 import { hasPartageToColorier } from '$lib/ubumark/parser/partage-parser';
 import { hasCubesToBuild, hasPatronsToBuild } from '$lib/ubumark/parser/espace-parser';
@@ -183,7 +184,7 @@ function validateVariation(
 			// ou ```monnaie à construire aussi (sa réponse est sa valeur), une droite ou une horloge
 			// à placer aussi, un diagramme en barres à construire aussi, des étiquettes à ranger aussi, une figure à colorier aussi,
 			// un assemblage de cubes à geste aussi, un patron à geste aussi, un repère à points
-			// à placer aussi
+			// à placer aussi, un cercle trigonométrique à points à placer aussi
 			if (
 				(!variation.blanks || variation.blanks.length === 0) &&
 				!hasOperationToFill(String(variation.statement ?? shared?.statement ?? '')) &&
@@ -193,6 +194,7 @@ function validateVariation(
 				!hasHorlogeToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasStatChartToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasCourbeToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasTrigCircleToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasRangerToPlace(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasPartageToColorier(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasCubesToBuild(String(variation.statement ?? shared?.statement ?? '')) &&

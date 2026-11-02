@@ -12,6 +12,9 @@
 	- Optional interactive mode (drag angle)
 	- Optional cos/sin value table
 	- Points nommés (`points: M = 2*pi/3`) : le nom, jamais la valeur
+	- Points à placer (`placer:`) : rendu par `TrigPlacer` (le geste de l'élève),
+	  qui redessine ce cercle sans `placer:`, avec ses graduations (`ticks`) et
+	  les points de l'élève ou de la correction (`marks`)
 	- Erreur : message situé pour le prof (`showErrors`, ou contexte posé par
 	  `MarkdownRenderer`), cadre neutre « Figure indisponible » pour l'élève
 	- Dark mode support via CSS variables
@@ -33,26 +36,44 @@
 		TRIG_DEFAULT_COLOR,
 		isNamedPointAngle
 	} from '$lib/ubumark/types/trig-circle';
+	import { TRIG_RADIUS, TRIG_SVG_SIZE } from '$lib/ubumark/utils/trig-placer';
 	import { readAuthoringErrors } from '../authoring-errors';
+	import TrigPlacer from './TrigPlacer.svelte';
+
+	/** Point posé par-dessus le cercle (point à placer) : disque coloré et nom */
+	interface TrigMark {
+		point: TrigNamedPoint;
+		/** Couleur de la palette (`bleu`, `vert`) */
+		color: string;
+	}
 
 	interface Props {
 		node: TrigCircleNode;
 		/** Montrer le détail des erreurs (prof) ; par défaut, le contexte décide */
 		showErrors?: boolean;
+		/** Graduations sans étiquette sur le cercle (24 : tous les π/12) ; aucune par défaut */
+		ticks?: number;
+		/** Points posés par-dessus le cercle (élève, correction) */
+		marks?: TrigMark[];
 		class?: string;
 	}
 
-	let { node, showErrors, class: className = '' }: Props = $props();
+	let { node, showErrors, ticks = 0, marks = [], class: className = '' }: Props = $props();
 
 	// =========================================================================
 	// LAYOUT CONSTANTS
 	// =========================================================================
 
-	const SVG_SIZE = 320;
+	const SVG_SIZE = TRIG_SVG_SIZE;
 	const CENTER = SVG_SIZE / 2;
-	const RADIUS = 120;
+	const RADIUS = TRIG_RADIUS;
+	/** Demi-longueur d'une graduation du cercle, de part et d'autre du trait */
+	const CIRCLE_TICK = 4;
 	const POINT_RADIUS = 4;
-	const LABEL_OFFSET = 25;
+	/** Écart entre un point du cercle et son étiquette */
+	const LABEL_GAP = 8;
+	const LABEL_BOX_WIDTH = 80;
+	const LABEL_BOX_HEIGHT = 36;
 	const AXIS_EXTENSION = 20;
 	const TICK_SIZE = 5;
 	const TABLE_WIDTH = 200;
@@ -182,21 +203,75 @@
 	// LABEL POSITIONING
 	// =========================================================================
 
-	function getLabelPosition(radians: number): { x: number; y: number; anchor: string } {
-		const point = angleToPoint(radians);
+	/** Boîte d'une étiquette d'angle (foreignObject) et l'alignement de son texte */
+	interface LabelBox {
+		x: number;
+		y: number;
+		justify: 'flex-start' | 'center' | 'flex-end';
+		align: 'flex-start' | 'center' | 'flex-end';
+	}
+
+	/**
+	 * Étiquette accrochée juste à l'extérieur du point, du côté opposé au centre :
+	 * la boîte part du point d'accroche (texte collé à ce côté), jamais centrée
+	 * dessus, sinon elle déborde sur le cercle. Avec les axes, les quatre repères
+	 * s'écartent des axes : π/2 et 3π/2 à droite de l'axe vertical (la flèche et
+	 * la valeur ±1 sont dessus ou à gauche), 0 et π au-dessus de l'axe horizontal
+	 * (la flèche est dessus, ±1 dessous).
+	 */
+	function getLabelBox(radians: number): LabelBox {
 		const cos = Math.cos(radians);
 		const sin = Math.sin(radians);
-
-		// Position label outside the circle
-		const labelX = point.x + LABEL_OFFSET * cos;
-		const labelY = point.y - LABEL_OFFSET * sin;
-
-		// Determine text anchor based on position
-		let anchor = 'middle';
-		if (cos > 0.3) anchor = 'start';
-		else if (cos < -0.3) anchor = 'end';
-
-		return { x: labelX, y: labelY, anchor };
+		const w = LABEL_BOX_WIDTH;
+		const h = LABEL_BOX_HEIGHT;
+		if (node.config.showAxes) {
+			const quarter = Math.round(radians / (Math.PI / 2));
+			if (Math.abs(radians - (quarter * Math.PI) / 2) < 1e-9) {
+				const k = ((quarter % 4) + 4) % 4;
+				if (k === 0) {
+					return {
+						x: CENTER + RADIUS + LABEL_GAP,
+						y: CENTER - h - 2,
+						justify: 'flex-start',
+						align: 'flex-end'
+					};
+				}
+				if (k === 2) {
+					return {
+						x: CENTER - RADIUS - LABEL_GAP - w,
+						y: CENTER - h - 2,
+						justify: 'flex-end',
+						align: 'flex-end'
+					};
+				}
+				if (k === 1) {
+					return {
+						x: CENTER + LABEL_GAP,
+						y: CENTER - RADIUS - 2 - h,
+						justify: 'flex-start',
+						align: 'flex-end'
+					};
+				}
+				return {
+					x: CENTER + LABEL_GAP,
+					y: CENTER + RADIUS + 2,
+					justify: 'flex-start',
+					align: 'flex-start'
+				};
+			}
+		}
+		const ax = CENTER + (RADIUS + LABEL_GAP) * cos;
+		const ay = CENTER - (RADIUS + LABEL_GAP) * sin;
+		const right = cos > 0.3;
+		const left = cos < -0.3;
+		const up = sin > 0.3;
+		const down = sin < -0.3;
+		return {
+			x: right ? ax : left ? ax - w : ax - w / 2,
+			y: up ? ay - h : down ? ay : ay - h / 2,
+			justify: right ? 'flex-start' : left ? 'flex-end' : 'center',
+			align: up ? 'flex-end' : down ? 'flex-start' : 'center'
+		};
 	}
 
 	// =========================================================================
@@ -350,7 +425,9 @@
 	});
 </script>
 
-{#if errors.length > 0}
+{#if node.placer !== undefined && errors.length === 0}
+	<TrigPlacer {node} {showErrors} class={className} />
+{:else if errors.length > 0}
 	{#if errorsVisible}
 		<div
 			class="trig-erreur rounded-md border border-destructive p-3 text-sm text-foreground {className}"
@@ -481,6 +558,23 @@
 
 				<!-- Unit circle -->
 				<circle cx={CENTER} cy={CENTER} r={RADIUS} class="trig-unit-circle" />
+
+				<!-- Graduations sans étiquette (point à placer : un cran tous les π/12) -->
+				{#if ticks > 0}
+					<g class="trig-ticks">
+						{#each Array.from({ length: ticks }, (_, k) => (2 * Math.PI * k) / ticks) as radians (radians)}
+							{@const c = Math.cos(radians)}
+							{@const s = Math.sin(radians)}
+							<line
+								x1={CENTER + (RADIUS - CIRCLE_TICK) * c}
+								y1={CENTER - (RADIUS - CIRCLE_TICK) * s}
+								x2={CENTER + (RADIUS + CIRCLE_TICK) * c}
+								y2={CENTER - (RADIUS + CIRCLE_TICK) * s}
+								class="trig-circle-tick"
+							/>
+						{/each}
+					</g>
+				{/if}
 
 				<!-- Solution arcs (for inequations) -->
 				{#if node.config.mode === 'arc' && displayArcs.length > 0}
@@ -660,19 +754,16 @@
 				{#if node.config.showLabels}
 					<g class="trig-labels">
 						{#each labelledAngles as angle (angle.radians)}
-							{@const pos = getLabelPosition(angle.radians)}
+							{@const box = getLabelBox(angle.radians)}
 							{@const isHovered =
 								hoveredAngle !== null && Math.abs(hoveredAngle.radians - angle.radians) < 1e-6}
 							{@const isSolution = isSolutionAngle(angle.radians)}
-							<foreignObject x={pos.x - 40} y={pos.y - 16} width="80" height="32">
+							<foreignObject x={box.x} y={box.y} width={LABEL_BOX_WIDTH} height={LABEL_BOX_HEIGHT}>
 								<div
 									class="trig-label"
 									class:trig-label-highlighted={isHovered || isSolution}
-									style="text-align: {pos.anchor === 'start'
-										? 'left'
-										: pos.anchor === 'end'
-											? 'right'
-											: 'center'}"
+									style:justify-content={box.justify}
+									style:align-items={box.align}
 								>
 									<math-span>{angle.latex || angle.expression}</math-span>
 								</div>
@@ -688,6 +779,33 @@
 							{@const point = angleToPoint(p.angle.radians)}
 							{@const pos = getNamePosition(p.angle.radians)}
 							<circle cx={point.x} cy={point.y} r={POINT_RADIUS + 1} class="trig-named-point" />
+							<text
+								x={pos.x}
+								y={pos.y}
+								text-anchor={pos.anchor}
+								dominant-baseline={pos.baseline}
+								class="trig-point-name"
+								>{p.base}{#if p.sub}<tspan baseline-shift="sub" font-size="0.7em">{p.sub}</tspan
+									>{/if}{'′'.repeat(p.primes)}</text
+							>
+						{/each}
+					</g>
+				{/if}
+
+				<!-- Points posés par-dessus (élève, correction) : le nom, jamais la valeur -->
+				{#if marks.length > 0}
+					<g class="trig-marks">
+						{#each marks as mark (mark.point.name)}
+							{@const p = mark.point}
+							{@const point = angleToPoint(p.angle.radians)}
+							{@const pos = getNamePosition(p.angle.radians)}
+							<circle
+								cx={point.x}
+								cy={point.y}
+								r={POINT_RADIUS + 2}
+								class="trig-mark"
+								style:fill={resolveAuthorColor(mark.color, TRIG_DEFAULT_COLOR).screen}
+							/>
 							<text
 								x={pos.x}
 								y={pos.y}
@@ -748,6 +866,16 @@
 {/if}
 
 <style>
+	.trig-circle-tick {
+		stroke: var(--color-muted-foreground);
+		stroke-width: 1;
+	}
+
+	.trig-mark {
+		stroke: var(--color-background);
+		stroke-width: 1.5;
+	}
+
 	/* Points nommés : le nom en italique, comme une lettre de géométrie */
 	.trig-named-point {
 		fill: var(--primary-color);

@@ -277,6 +277,13 @@ export interface TrigCircleNode extends BaseNode {
 	/** Points nommés (`points:`), dessinés en plus des angles, sans leur valeur */
 	points?: TrigNamedPoint[];
 	/**
+	 * Points à placer par l'élève (`placer: M = 2*pi/3 ; N = -pi/4`), chacun sur un
+	 * cran de π/12 ; absent sans la clé. Jamais dessinés avant la correction.
+	 */
+	placer?: TrigNamedPoint[];
+	/** Première case du bloc (`case: N`, posée par le générateur), une par point de `placer:` */
+	caseIndex?: number;
+	/**
 	 * Erreurs situées (« Ligne N : … »). Non vide : la figure n'est pas
 	 * dessinée — message au prof, « Figure indisponible » à l'élève (comme ```courbe).
 	 */

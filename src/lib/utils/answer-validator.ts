@@ -79,6 +79,7 @@ import { expectsUnitlessValue, withoutDegreeSuffix } from '$lib/questions/answer
 import { judgeConstruction } from '$lib/questions/construction/judge';
 import { isPlacedTimeCorrect } from '$lib/ubumark/utils/horloge-placer';
 import { isPlacedPointCorrect } from '$lib/ubumark/utils/courbe-placer';
+import { isPlacedAngleCorrect } from '$lib/ubumark/utils/trig-placer';
 import { isColoringCorrect } from '$lib/ubumark/utils/partage-colorier';
 import { isCubesAnswerCorrect } from '$lib/ubumark/utils/cubes-gestes';
 import { isPatronAnswerCorrect } from '$lib/ubumark/utils/patron-gestes';
@@ -813,6 +814,8 @@ function validateBlankValue(
 	if (blank.construire === 'horloge') return isPlacedTimeCorrect(userAnswer, blank.expectedAnswer);
 	// Point d'un repère à placer : les coordonnées exactes du nœud posé
 	if (blank.construire === 'courbe') return isPlacedPointCorrect(userAnswer, blank.expectedAnswer);
+	// Point du cercle trigonométrique : le même cran, modulo 2π
+	if (blank.construire === 'trig') return isPlacedAngleCorrect(userAnswer, blank.expectedAnswer);
 	// Figure à colorier : le nombre de parts coloriées, quelles qu'elles soient
 	if (blank.construire === 'partage') return isColoringCorrect(userAnswer, blank.expectedAnswer);
 	// Assemblage de cubes : la vue à une translation près, ou les mêmes vues
@@ -1304,6 +1307,13 @@ function validateSingleBlank(
 	// Point d'un repère à placer : les coordonnées exactes du nœud posé
 	if (blank.construire === 'courbe') {
 		return isPlacedPointCorrect(userAnswer, blank.expectedAnswer)
+			? { isCorrect: true, status: 'correct' }
+			: { isCorrect: false };
+	}
+
+	// Point du cercle trigonométrique : le même cran, modulo 2π
+	if (blank.construire === 'trig') {
+		return isPlacedAngleCorrect(userAnswer, blank.expectedAnswer)
 			? { isCorrect: true, status: 'correct' }
 			: { isCorrect: false };
 	}
