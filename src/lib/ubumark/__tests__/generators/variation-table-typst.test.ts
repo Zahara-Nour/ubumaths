@@ -970,3 +970,43 @@ describe('generateVariationTableTypst - Rendu PDF', () => {
 		expect(typst).toContain('let k = calc.min(0.55, size.width / natural) * 100%');
 	});
 });
+
+// ============================================================================
+// Cases cachées (`?`) : option hiddenCells
+// ============================================================================
+
+describe('cellules cachées', () => {
+	function hiddenNode(): VariationTableNode {
+		const node = createBasicNode();
+		node.domain[1] = { expression: '0', hidden: true };
+		node.cases = [
+			{ index: 0, row: 'domain', key: '0', kind: 'valeur', answer: '0' },
+			{ index: 1, row: 0, key: '-inf,0', kind: 'signe', answer: '+' },
+			{ index: 2, row: 0, key: '0', kind: 'marque', answer: 'z' }
+		];
+		return node;
+	}
+
+	it('sans ? : sortie identique, quelle que soit l’option', () => {
+		const base = generateVariationTableTypst(createBasicNode());
+		expect(generateVariationTableTypst(createBasicNode(), { hiddenCells: 'filled' })).toBe(base);
+		expect(generateVariationTableTypst(createBasicNode(), { hiddenCells: 'blank' })).toBe(base);
+	});
+
+	it('filled dessine les valeurs comme un tableau sans ?', () => {
+		const typst = generateVariationTableTypst(hiddenNode(), { hiddenCells: 'filled' });
+		const nu = createBasicNode();
+		expect(typst).toBe(generateVariationTableTypst(nu));
+	});
+
+	it('blank est le défaut et vide les cellules cachées en gardant la structure', () => {
+		const blank = generateVariationTableTypst(hiddenNode());
+		expect(blank).toBe(generateVariationTableTypst(hiddenNode(), { hiddenCells: 'blank' }));
+		expect(blank).not.toContain('"0"');
+		expect(blank).not.toContain('$0$');
+		// la ligne de signes garde ses deux intervalles ; le 2e (non caché) reste dessiné
+		expect(blank).toContain('$-$');
+		expect(blank).not.toContain('$+$');
+		expect(blank).toContain('box(');
+	});
+});

@@ -39,7 +39,9 @@ import type {
 	VariationTableParseResult,
 	TableRow,
 	LimitValue,
-	LimitSide
+	LimitSide,
+	HiddenCell,
+	HiddenCellKind
 } from '../types/variation-table';
 import { specialBlockEnd } from './unclosed-block';
 
@@ -54,7 +56,8 @@ const BLOCK_KEYS = [
 	'limit-top',
 	'limit-bottom',
 	'asymptote',
-	'forbidden'
+	'forbidden',
+	'case'
 ];
 
 // ============================================================================
@@ -110,6 +113,31 @@ const SIGN_SYMBOL_MAP: Record<string, SignValue> = {
 	'|h|': { type: 'marker', marker: 'forbidden' },
 	d: { type: 'marker', marker: 'discontinuity' }
 };
+
+/** `case: N` : numéro de la case de la question, posé par le générateur de questions */
+const CASE_LINE_REGEX = /^\s*case\s*:\s*(.*?)\s*$/;
+const CASE_INDEX_REGEX = /^\d{1,3}$/;
+
+/** Valeur de x d'un tableau d'évaluation : jeton de rang `??1`, `??2`… */
+const MASK_TOKEN_REGEX = /^\?\d{1,3}$/;
+
+/** Les infinis ne se cachent pas : ce ne sont pas des valeurs à calculer */
+const INFINITY_EXPRESSIONS = ['-inf', '+inf', 'inf', '-∞', '+∞', '∞'];
+
+/**
+ * Déclare un refus lié à un `?` : erreur située, en français. Le bloc entier est
+ * alors invalide (nœud nul) plutôt que rendu avec une case en moins.
+ */
+type Refuse = (line: number, content: string, message: string) => void;
+
+/** Case cachée lue dans une ligne `sign:`, validée une fois le domaine connu */
+interface PendingCell {
+	key: string;
+	kind: HiddenCellKind;
+	answer: string;
+	line: number;
+	content: string;
+}
 
 /**
  * Valid positions for variation values
@@ -173,7 +201,7 @@ export function isBlockEnd(line: string): boolean {
  * @param expr - Expression to parse (may include [ ] bounds)
  * @returns DomainPoint with expression and open status
  */
-function parseDomainPoint(expr: string): DomainPoint {
+function parseDomainPoint(expr: string, refuse: Refuse, line: number): DomainPoint {
 	let expression = expr.trim();
 	let open = false;
 
@@ -193,7 +221,34 @@ function parseDomainPoint(expr: string): DomainPoint {
 		expression = expression.slice(0, -1).trim();
 	}
 
-	return { expression, open: open || undefined };
+	const point: DomainPoint = open ? { expression, open: true } : { expression };
+
+	// `?` devant la valeur : case à compléter
+	if (expression.startsWith('?')) {
+		const rest = expression.slice(1).trim();
+		if (rest.startsWith('?')) {
+			// Jeton de masquage `??1` : l'expression est inconnue
+			if (MASK_TOKEN_REGEX.test(rest)) {
+				point.expression = `?${rest}`;
+				point.hidden = true;
+			} else {
+				refuse(line, expr, `jeton de masquage « ?${rest} » invalide : attendu ??1, ??2…`);
+			}
+		} else if (rest === '') {
+			refuse(line, expr, 'le ? doit précéder une valeur de x (par exemple ?-3)');
+		} else if (INFINITY_EXPRESSIONS.includes(rest)) {
+			refuse(
+				line,
+				expr,
+				`on ne peut pas cacher ${rest} : un infini n'est pas une valeur à calculer`
+			);
+		} else {
+			point.expression = rest;
+			point.hidden = true;
+		}
+	}
+
+	return point;
 }
 
 /**
@@ -206,7 +261,7 @@ function parseDomainPoint(expr: string): DomainPoint {
  * @param content - Domain content after "domain:"
  * @returns Array of DomainPoint
  */
-function parseDomainContent(content: string): DomainPoint[] {
+function parseDomainContent(content: string, refuse: Refuse, line: number): DomainPoint[] {
 	const points: DomainPoint[] = [];
 
 	// Try to detect bound-style notation (contains [ or ])
@@ -221,7 +276,7 @@ function parseDomainContent(content: string): DomainPoint[] {
 
 			// Each segment may contain bounds at start/end
 			// e.g., ]-inf or 0[ or ]0
-			const point = parseDomainPoint(trimmed);
+			const point = parseDomainPoint(trimmed, refuse, line);
 			if (point.expression) {
 				points.push(point);
 			}
@@ -232,7 +287,7 @@ function parseDomainContent(content: string): DomainPoint[] {
 		for (const part of parts) {
 			const trimmed = part.trim();
 			if (trimmed) {
-				points.push({ expression: trimmed });
+				points.push(parseDomainPoint(trimmed, refuse, line));
 			}
 		}
 	}
@@ -464,19 +519,66 @@ function parseVariationEntry(key: string, value: string): [string, VariationValu
 // ============================================================================
 
 /**
+ * Lit la valeur d'une cellule cachée (`?-`, `?z`, `?||`, `?rien`, `?`).
+ *
+ * @returns la valeur à ranger dans `values` (absente pour `rien` et `?`) et la
+ *          réponse attendue ; null si refusée (le refus est déjà déclaré)
+ */
+function parseHiddenSignValue(
+	rest: string,
+	isInterval: boolean,
+	refuse: (message: string) => void
+): { value?: SignValue; kind: HiddenCellKind; answer: string } | null {
+	const kind: HiddenCellKind = isInterval ? 'signe' : 'marque';
+
+	if (rest === '') return { kind, answer: '' };
+
+	if (rest === '+' || rest === '-') {
+		if (!isInterval) {
+			refuse(`un signe ne se cache que sur un intervalle, pas sur un point (?${rest})`);
+			return null;
+		}
+		return { value: { type: 'sign', value: rest }, kind, answer: rest };
+	}
+
+	if (rest === '|h|' || rest === 'd') {
+		refuse(`on ne peut pas cacher la marque « ${rest} » : seuls ?z, ?||, ?rien se cachent`);
+		return null;
+	}
+
+	if (rest === 'z' || rest === '0' || rest === '||' || rest === 'rien') {
+		if (isInterval) {
+			refuse(`une marque ne se cache que sur un point, pas sur un intervalle (?${rest})`);
+			return null;
+		}
+		if (rest === 'rien') return { kind, answer: 'rien' };
+		if (rest === '||') {
+			return { value: { type: 'marker', marker: 'asymptote' }, kind, answer: '||' };
+		}
+		return { value: { type: 'marker', marker: 'zero' }, kind, answer: 'z' };
+	}
+
+	refuse(`valeur cachée inconnue : « ?${rest} ». Attendu ?+, ?-, ?z, ?||, ?rien ou ?`);
+	return null;
+}
+
+/**
  * Parse entries for a sign row
  *
  * @param lines - Lines of entries (indented with 2+ spaces)
  * @param startLine - Line number for error reporting
  * @param errors - Error array to append to
- * @returns Map of key -> SignValue
+ * @param refuse - Déclare un refus lié à un `?`
+ * @returns les valeurs (key -> SignValue) et les cases cachées à valider
  */
 function parseSignRowEntries(
 	lines: string[],
 	startLine: number,
-	errors: VariationTableParseError[]
-): Map<string, SignValue> {
+	errors: VariationTableParseError[],
+	refuse: Refuse
+): { values: Map<string, SignValue>; hidden: PendingCell[] } {
 	const values = new Map<string, SignValue>();
+	const hidden = new Map<string, PendingCell>();
 
 	for (let i = 0; i < lines.length; i++) {
 		const match = lines[i].match(ROW_ENTRY_REGEX);
@@ -490,21 +592,48 @@ function parseSignRowEntries(
 		}
 
 		const [, key, value] = match;
+		const lineNumber = startLine + i;
+
+		if (value.trim().startsWith('?')) {
+			const normalizedKey = key
+				.split(',')
+				.map((p) => p.trim())
+				.join(',');
+			const read = parseHiddenSignValue(
+				value.trim().slice(1).trim(),
+				normalizedKey.includes(','),
+				(m) => refuse(lineNumber, lines[i], m)
+			);
+			if (!read) continue;
+			if (read.value) values.set(normalizedKey, read.value);
+			else values.delete(normalizedKey);
+			hidden.set(normalizedKey, {
+				key: normalizedKey,
+				kind: read.kind,
+				answer: read.answer,
+				line: lineNumber,
+				content: lines[i]
+			});
+			continue;
+		}
+
 		const parsed = parseSignEntry(key, value);
 
 		if (!parsed) {
 			errors.push({
 				message: `Unknown sign value: "${value}". Expected +, -, z, ||, |h|, or d`,
-				line: startLine + i,
+				line: lineNumber,
 				content: lines[i]
 			});
 			continue;
 		}
 
 		values.set(parsed[0], parsed[1]);
+		// Une écriture ordinaire plus loin remplace la case cachée de la même clé
+		hidden.delete(parsed[0]);
 	}
 
-	return values;
+	return { values, hidden: [...hidden.values()] };
 }
 
 /**
@@ -518,11 +647,22 @@ function parseSignRowEntries(
 function parseVariationRowEntries(
 	lines: string[],
 	startLine: number,
-	errors: VariationTableParseError[]
+	errors: VariationTableParseError[],
+	refuse: Refuse
 ): Map<string, VariationValue> {
 	const values = new Map<string, VariationValue>();
 
 	for (let i = 0; i < lines.length; i++) {
+		// `?` en tête de clé ou de valeur = cellule cachée ; ailleurs, simple texte
+		const entry = lines[i].match(ROW_ENTRY_REGEX);
+		if (entry && (entry[1].trim().startsWith('?') || entry[2].trim().startsWith('?'))) {
+			refuse(
+				startLine + i,
+				lines[i],
+				'on ne peut pas cacher une cellule d’une ligne variation: (seul le tableau de signes a des cases)'
+			);
+			continue;
+		}
 		const match = lines[i].match(ROW_ENTRY_REGEX);
 		if (!match) {
 			errors.push({
@@ -549,6 +689,78 @@ function parseVariationRowEntries(
 	}
 
 	return values;
+}
+
+// ============================================================================
+// CASES CACHÉES
+// ============================================================================
+
+/**
+ * Numérote les cases cachées dans l'ORDRE DE LECTURE : le domaine de gauche à
+ * droite, puis chaque ligne `sign:` dans son ordre, ses cellules par colonne
+ * (point, intervalle, point…). L'ordre d'écriture de l'auteur ne compte pas.
+ *
+ * Refuse (via `refuse`) une clé cachée qui n'est pas une cellule du domaine.
+ */
+function buildHiddenCells(
+	domain: DomainPoint[],
+	hiddenByRow: Map<number, PendingCell[]>,
+	refuse: Refuse,
+	domainLine: number
+): HiddenCell[] {
+	const cells: HiddenCell[] = [];
+	// Une valeur de x répétée rendrait deux cellules indiscernables (clés identiques)
+	const seen = new Set<string>();
+	for (const point of domain) {
+		if (seen.has(point.expression)) {
+			refuse(
+				domainLine,
+				`domain: … ${point.expression} …`,
+				`la valeur de x « ${point.expression} » est répétée dans le domaine`
+			);
+			return [];
+		}
+		seen.add(point.expression);
+	}
+	const push = (cell: Omit<HiddenCell, 'index'>) => cells.push({ index: cells.length, ...cell });
+
+	for (const point of domain) {
+		if (point.hidden) {
+			push({
+				row: 'domain',
+				key: point.expression,
+				kind: 'valeur',
+				// Un jeton `??n` ne porte pas la réponse
+				answer: point.expression.startsWith('??') ? '' : point.expression
+			});
+		}
+	}
+
+	// Cellules d'une ligne de signes, en colonnes : point, intervalle, point…
+	const columnKeys: string[] = [];
+	domain.forEach((point, j) => {
+		columnKeys.push(point.expression);
+		if (j < domain.length - 1) columnKeys.push(`${point.expression},${domain[j + 1].expression}`);
+	});
+
+	for (const rowIndex of [...hiddenByRow.keys()].sort((a, b) => a - b)) {
+		const pending = hiddenByRow.get(rowIndex) ?? [];
+		for (const cell of pending) {
+			if (!columnKeys.includes(cell.key)) {
+				refuse(
+					cell.line,
+					cell.content,
+					`la cellule « ${cell.key} » n'est pas dans le domaine du tableau`
+				);
+			}
+		}
+		for (const key of columnKeys) {
+			const cell = pending.find((p) => p.key === key);
+			if (cell) push({ row: rowIndex, key, kind: cell.kind, answer: cell.answer });
+		}
+	}
+
+	return cells;
 }
 
 // ============================================================================
@@ -580,6 +792,15 @@ export function parseVariationTableContent(lines: string[]): VariationTableParse
 	let variable: string | null = null;
 	let domain: DomainPoint[] = [];
 	const rows: TableRow[] = [];
+	const hiddenByRow = new Map<number, PendingCell[]>();
+	let caseIndex: number | undefined;
+	let domainLine = 0;
+	let refused = false;
+
+	const refuse: Refuse = (line, content, message) => {
+		refused = true;
+		errors.push({ message: `Ligne ${line} : ${message}`, line, content });
+	};
 
 	let i = 0;
 
@@ -639,7 +860,8 @@ export function parseVariationTableContent(lines: string[]): VariationTableParse
 					content: line
 				});
 			}
-			domain = parseDomainContent(domainMatch[1]);
+			domain = parseDomainContent(domainMatch[1], refuse, lineNum);
+			domainLine = lineNum;
 			i++;
 			continue;
 		}
@@ -648,10 +870,14 @@ export function parseVariationTableContent(lines: string[]): VariationTableParse
 		const signMatch = line.match(SIGN_HEADER_REGEX);
 		if (signMatch) {
 			const label = signMatch[1];
+			if (label.trimStart().startsWith('?')) {
+				refuse(lineNum, line, 'on ne peut pas cacher une étiquette de ligne (sign: …)');
+			}
 			i++;
 			const entryStartLine = i + 1;
 			const entryLines = collectEntryLines();
-			const values = parseSignRowEntries(entryLines, entryStartLine, errors);
+			const { values, hidden } = parseSignRowEntries(entryLines, entryStartLine, errors, refuse);
+			if (hidden.length > 0) hiddenByRow.set(rows.length, hidden);
 
 			const signRow: SignRow = {
 				type: 'sign',
@@ -666,10 +892,13 @@ export function parseVariationTableContent(lines: string[]): VariationTableParse
 		const variationMatch = line.match(VARIATION_HEADER_REGEX);
 		if (variationMatch) {
 			const label = variationMatch[1];
+			if (label.trimStart().startsWith('?')) {
+				refuse(lineNum, line, 'on ne peut pas cacher une étiquette de ligne (variation: …)');
+			}
 			i++;
 			const entryStartLine = i + 1;
 			const entryLines = collectEntryLines();
-			const values = parseVariationRowEntries(entryLines, entryStartLine, errors);
+			const values = parseVariationRowEntries(entryLines, entryStartLine, errors, refuse);
 
 			const variationRow: VariationRow = {
 				type: 'variation',
@@ -677,6 +906,22 @@ export function parseVariationTableContent(lines: string[]): VariationTableParse
 				values
 			};
 			rows.push(variationRow);
+			continue;
+		}
+
+		// Numéro de case posé par le générateur de questions
+		const caseMatch = line.match(CASE_LINE_REGEX);
+		if (caseMatch) {
+			if (!CASE_INDEX_REGEX.test(caseMatch[1])) {
+				errors.push({
+					message: `Ligne ${lineNum} : case: attend un numéro de case (0, 1, 2…)`,
+					line: lineNum,
+					content: line
+				});
+			} else {
+				caseIndex = Number(caseMatch[1]);
+			}
+			i++;
 			continue;
 		}
 
@@ -702,8 +947,12 @@ export function parseVariationTableContent(lines: string[]): VariationTableParse
 		errors.push({ message: 'No sign or variation rows defined' });
 	}
 
+	const hasHidden = hiddenByRow.size > 0 || domain.some((point) => point.hidden);
+	const cases =
+		refused || !hasHidden ? [] : buildHiddenCells(domain, hiddenByRow, refuse, domainLine);
+
 	// If we have critical errors, return null node
-	if (!variable || domain.length === 0) {
+	if (!variable || domain.length === 0 || refused) {
 		return { node: null, errors };
 	}
 
@@ -713,6 +962,11 @@ export function parseVariationTableContent(lines: string[]): VariationTableParse
 		domain,
 		rows
 	};
+	if (cases.length > 0) {
+		node.cases = cases;
+		node.source = lines.join('\n');
+	}
+	if (caseIndex !== undefined) node.caseIndex = caseIndex;
 
 	return { node, errors };
 }

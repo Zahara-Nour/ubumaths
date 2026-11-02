@@ -19,6 +19,7 @@
 import { COURBE_COLORS, type CourbeLabel, type CourbeNode, type CourbeSize } from '../types/courbe';
 import { namedColorTable, namedColorTypst } from '$lib/theme/named-colors';
 import { buildCourbeScene, type ScenePoint } from '../utils/courbe-scene';
+import { solutionLine } from '../utils/courbe-tracer';
 
 // ============================================================================
 // CONFIGURATION
@@ -28,8 +29,9 @@ export interface CourbeTypstOptions {
 	/** Langue du document : séparateur décimal des graduations */
 	language?: string;
 	/**
-	 * Corrigé : les points à placer (`placer:`) sont dessinés. Sans cette option
-	 * (énoncé), le repère reste vide : l'élève fait ses croix.
+	 * Corrigé : les points à placer (`placer:`), ou la droite à tracer (`tracer:`)
+	 * et deux de ses nœuds, sont dessinés. Sans cette option (énoncé), le repère
+	 * reste vide : l'élève fait ses croix.
 	 */
 	solved?: boolean;
 }
@@ -280,6 +282,18 @@ export function generateCourbeTypst(node: CourbeNode, options: CourbeTypstOption
 				lines.push(
 					`  content((${fmt(Number(X(t.x)) + 0.08)}, ${fmt(Number(Y(t.y)) + 0.08)}), anchor: "south-west", text(size: 8pt, style: "italic", fill: ${color})[${t.name}])`
 				);
+			}
+		}
+		const tracer = node.spec.tracer;
+		const solution = tracer ? solutionLine(node.spec, tracer.equation) : null;
+		if (solution) {
+			const color = TYPST_COLORS.vert;
+			lines.push('  // solution droite');
+			lines.push(
+				`  line(${P(solution.segment[0])}, ${P(solution.segment[1])}, stroke: 1pt + ${color})`
+			);
+			for (const p of solution.points) {
+				lines.push(`  circle(${P(p)}, radius: 0.06, fill: ${color}, stroke: none)`);
 			}
 		}
 	}

@@ -33,6 +33,7 @@
 	import NumberLinePlacer from '$lib/components/markdown/nodes/NumberLinePlacer.svelte';
 	import Courbe from '$lib/components/markdown/nodes/Courbe.svelte';
 	import { parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
+	import { solutionLine } from '$lib/ubumark/utils/courbe-tracer';
 	import Horloge from '$lib/components/markdown/nodes/Horloge.svelte';
 	import HorlogePlacer from '$lib/components/markdown/nodes/HorlogePlacer.svelte';
 	import { parseHorlogeContent } from '$lib/ubumark/parser/horloge-parser';
@@ -137,6 +138,21 @@
 				points: line.placer.map((t) => ({ label: t.name, value: t.value, color: 'vert' }))
 			}}
 			pointsOnLine
+		/>
+	{/if}
+{:else if courbe?.spec?.tracer !== undefined}
+	{@const spec = courbe.spec}
+	{#if lineCases}
+		<Courbe node={courbe} answers={lineCases} showControls={false} />
+	{:else}
+		<!-- Le repère avec la droite juste et deux de ses nœuds, sans `tracer:` : dessiné seul -->
+		{@const solution = solutionLine(spec, spec.tracer!.equation)}
+		<Courbe
+			node={{ ...courbe, spec: { ...spec, tracer: undefined } }}
+			marks={(solution?.points ?? []).map((p) => ({ name: '', x: p.x, y: p.y, color: 'vert' }))}
+			traces={solution
+				? [{ from: solution.segment[0], to: solution.segment[1], color: 'vert' }]
+				: []}
 		/>
 	{/if}
 {:else if courbe?.spec?.placer !== undefined}

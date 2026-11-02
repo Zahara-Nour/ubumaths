@@ -1,0 +1,118 @@
+{
+	"title": "Plans perpendiculaires et vecteurs normaux",
+	"description": "À savoir : deux plans sont perpendiculaires ⟺ leurs vecteurs normaux sont orthogonaux ; caractérisation, exemple en repère orthonormé ; distracteurs : colinéarité (plans parallèles), produit scalaire égal à 1",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Orthogonalité et distances dans l'espace",
+	"subdomain": "À savoir",
+	"level": 2,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $\\mathcal{P}$ et $\\mathcal{P}'$ deux plans de vecteurs normaux respectifs $\\vec{n}$ et $\\vec{n}\\,'$. Les plans $\\mathcal{P}$ et $\\mathcal{P}'$ sont perpendiculaires si et seulement si :\n\n```choix\n- $\\vec{n}\\cdot\\vec{n}\\,'=0$\n- $\\vec{n}$ et $\\vec{n}\\,'$ sont colinéaires\n- $\\vec{n}\\cdot\\vec{n}\\,'=1$\n- $\\vec{n}=\\vec{n}\\,'$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : deux plans sont perpendiculaires si et seulement si leurs vecteurs normaux sont orthogonaux, c'est-à-dire $\\textcolor{{{color:primary.0}}}{\\vec{n}\\cdot\\vec{n}\\,'=0}$.",
+					"Des vecteurs normaux COLINÉAIRES caractérisent au contraire des plans parallèles."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère orthonormé de l'espace, le plan $\\mathcal{P}$ a pour vecteur normal $\\vec{n}\\begin{pmatrix}2\\\\1\\\\-1\\end{pmatrix}$ et le plan $\\mathcal{P}'$ a pour vecteur normal $\\vec{n}\\,'\\begin{pmatrix}1\\\\-1\\\\1\\end{pmatrix}$. Les plans $\\mathcal{P}$ et $\\mathcal{P}'$ sont :\n\n```choix\n- perpendiculaires\n- parallèles\n- sécants, mais pas perpendiculaires\n- confondus\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : deux plans sont perpendiculaires si et seulement si leurs vecteurs normaux sont orthogonaux.",
+					"Ici $\\vec{n}\\cdot\\vec{n}\\,'=2\\times1+1\\times(-1)+(-1)\\times1=0$ : les plans sont $\\textcolor{{{color:primary.0}}}{\\text{perpendiculaires}}$. Parallèles ou confondus, ils auraient des vecteurs normaux colinéaires, ce qui n'est pas le cas."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "n · n′ = 0",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : colinéaires (parallèles)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n · n′ = 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n = n′",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "perpendiculaires",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : parallèles",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sécants non perpendiculaires",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : confondus",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

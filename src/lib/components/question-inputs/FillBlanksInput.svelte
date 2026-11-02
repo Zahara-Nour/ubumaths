@@ -905,6 +905,27 @@
 						/>
 					</div>
 				{/if}
+			{:else if node.type === 'courbe' && node.caseIndex !== undefined && node.spec?.tracer !== undefined}
+				<!-- Droite à tracer : l'élève pose deux points, une case (x1;y1/x2;y2) -->
+				{@const lineCase = node.caseIndex}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : le repère avec la droite juste -->
+					<BuildAnswer kind="courbe" source={node.source} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={lineCase} data-construire-cases={1}>
+						<Courbe
+							{node}
+							answers={[
+								{
+									value: inputStates[lineCase]?.value ?? '',
+									isCorrect: flashMode ? null : (inputStates[lineCase]?.isCorrect ?? null),
+									disabled: flashMode || effectiveDisabled,
+									onChange: (value: string) => handleInputChange(lineCase, value)
+								}
+							]}
+						/>
+					</div>
+				{/if}
 			{:else if node.type === 'courbe' && node.caseIndex !== undefined && node.spec?.placer !== undefined}
 				<!-- Repère à points à placer : l'élève pose ses points, une case par point
 				     (N, N + 1…), les coordonnées de chacun sont sa réponse -->

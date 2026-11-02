@@ -10,7 +10,8 @@
  * noms, le nombre de points ou de barres, la forme. La correction ne change pas :
  * le serveur juge sur l'instance complète.
  *
- * Masqué : ```line, ```courbe et ```trig (`placer:`), ```horloge (`placer:`), ```collection et
+ * Masqué : ```line, ```courbe et ```trig (`placer:`), ```courbe (`tracer:` : l'équation
+ * de la droite devient `tracer: ?`), ```horloge (`placer:`), ```collection et
  * ```monnaie (`construire:`, avec sa réserve par défaut écrite : `maskMonnaie`), ```partage (`colorier:`), ```barres (effectifs des
  * barres de `placer:`, `axe: à choisir` compris : l'échelle ne se déduit plus),
  * ```boite-a-moustaches (les cinq valeurs des boîtes de `placer:`, ou `données:`).
@@ -75,6 +76,7 @@ type MaskLine = (line: string, rank: number) => string | string[] | null;
 
 // Constantes
 const PLACER_LINE = /^(placer\s*:)(.*)$/i;
+const TRACER_LINE = /^(tracer\s*:)(.*)$/i;
 const BUILD_LINE = /^(construire\s*:)(.*)$/i;
 const COLORIER_LINE = /^(colorier\s*:)(.*)$/i;
 const RESERVE_LINE = /^réserve\s*:/i;
@@ -374,7 +376,7 @@ export function findUnmaskedAnswers(statement: string): string[] {
 		valuesOf(block.body, keys).every(allMasked);
 	return [
 		...leaks('line', findLinesToPlace(statement), keyMasked(['placer'])),
-		...leaks('courbe', findCourbesToPlace(statement), keyMasked(['placer'])),
+		...leaks('courbe', findCourbesToPlace(statement), keyMasked(['placer', 'tracer'])),
 		...leaks('trig', findTrigCirclesToPlace(statement), keyMasked(['placer'])),
 		...leaks('horloge', findHorlogesToPlace(statement), (block) =>
 			valuesOf(block.body, ['placer']).every(isMaskedPlacerValue)
@@ -410,7 +412,12 @@ export function maskGestureAnswers(statement: string): string {
 		);
 	const placer = keyLine(PLACER_LINE, maskLineTargets);
 	maskBlocks(findLinesToPlace(statement), () => placer);
-	maskBlocks(findCourbesToPlace(statement), () => keyLine(PLACER_LINE, maskCourbeTargets));
+	const courbePoints = keyLine(PLACER_LINE, maskCourbeTargets);
+	const courbeLine = keyLine(TRACER_LINE, () => MASKED_VALUE);
+	maskBlocks(
+		findCourbesToPlace(statement),
+		() => (line, rank) => courbePoints(line, rank) ?? courbeLine(line, rank)
+	);
 	maskBlocks(findTrigCirclesToPlace(statement), () => placer);
 	maskBlocks(findHorlogesToPlace(statement), () => keyLine(PLACER_LINE, maskedPlacerValue));
 	const build = keyLine(BUILD_LINE, () => MASKED_VALUE);

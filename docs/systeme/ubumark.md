@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; largeur des étiquettes de la droite graduée le 2026-11-02 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire le 2026-11-02, cercle circonscrit le 2026-11-02) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; graduations décimales en virgule le 2026-11-01 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30 ; sections du bloc solide (`section:`) le 2026-10-31 ; repère à placer (` ```courbe ` + `placer:`) et titres d'axes (`axes:`) le 2026-11-01 ; valeur masquée `?` (énoncé d'évaluation) le 2026-11-01 ; trotteuse du bloc horloge (lire, placer) le 2026-11-01 ; point à placer sur le cercle trigonométrique (` ```trig ` + `placer:`) le 2026-11-02 ; centimes et billets de 200 / 500 € du bloc monnaie le 2026-11-01 (réponse de la case et messages après revue, le même jour) ; boîte à moustaches (affichage) le 2026-11-01, à construire (`placer:`) le 2026-11-01.
+> Vérifié contre le code le 2026-10-11 ; largeur des étiquettes de la droite graduée le 2026-11-02 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire le 2026-11-02, cercle circonscrit le 2026-11-02) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; graduations décimales en virgule le 2026-11-01 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30 ; sections du bloc solide (`section:`) le 2026-10-31 ; repère à placer (` ```courbe ` + `placer:`) et titres d'axes (`axes:`) le 2026-11-01, droite à tracer (`tracer:`) le 2026-11-02 ; valeur masquée `?` (énoncé d'évaluation) le 2026-11-01 ; trotteuse du bloc horloge (lire, placer) le 2026-11-01 ; point à placer sur le cercle trigonométrique (` ```trig ` + `placer:`) le 2026-11-02 ; centimes et billets de 200 / 500 € du bloc monnaie le 2026-11-01 (réponse de la case et messages après revue, le même jour) ; boîte à moustaches (affichage) le 2026-11-01, à construire (`placer:`) le 2026-11-01.
 
 ## À quoi ça sert
 
@@ -253,6 +253,24 @@ Une ligne `variation: f(x)` suivie de `-1: 3, top` / `0: 0, bottom` ajoute les f
 un ` ```variation ` sans ligne `variation:`. Une borne ±∞ sans entrée est complétée au rendu
 par `withImplicitEndpoints`. Les virgules séparent les valeurs : écrire `11/2`, pas `5,5`.
 
+**Cellules cachées** (tableau de signes à compléter, chantier `tableau-signes`,
+`src/lib/ubumark/__tests__/parser/variation-table-hidden.test.ts`) : l'auteur écrit le tableau juste et
+préfixe d'un `?` chaque cellule à faire compléter — valeur de x (`domain: -inf, ?-3, 2, +inf`, jamais ±∞),
+signe d'un intervalle (`-inf,-3: ?-`), marque d'un point (`-3: ?z`, `?||`, `?rien` pour « ni 0 ni double
+barre » ; `?0` = `?z`). Le parseur range l'expression sans `?` (`DomainPoint.hidden`), garde la vraie valeur
+dans `values` et liste les cellules dans `cases` (`HiddenCell` : `kind` valeur / signe / marque, `answer`),
+numérotées dans l'**ordre de lecture** (domaine, puis chaque ligne `sign:` colonne par colonne), quel que
+soit l'ordre d'écriture. Ligne `case: N` (numéro de la première case, posé par le générateur) ; `source`
+garde le texte brut (l'éditeur riche repart de lui : les `?` survivent à l'aller-retour). Énoncé masqué
+d'évaluation : `??n` (valeur de x masquée, reprise telle quelle dans les clés d'intervalles) et `?` seul
+(signe ou marque masqué), `answer` vide. Refusés, message « Ligne N : … » et bloc rendu en source : `?` sur
+±∞, dans une étiquette `sign:` ou une ligne `variation:`, `?|h|`, `?d`, signe caché sur un point, marque
+cachée sur un intervalle, clé hors du domaine. Un bloc sans `?` donne l'arbre d'avant (ni `cases`, ni
+`source`). Typst (`generateVariationTableTypst`, option `hiddenCells`) : `blank` (défaut) dessine une case
+vide pour une valeur ou un signe, retire le « 0 » d'une marque (le trait reste, comme pour toute colonne) ;
+`filled` dessine la valeur. ⚠️ Sur papier, une marque cachée ne se distingue pas encore d'une colonne « sans
+marque » donnée (vartable 0.2.1 ne place rien sur le trait).
+
 **Arbre, cercle, droite graduée** — `src/lib/ubumark/__tests__/blocs-speciaux-listes.test.ts`
 (les quatre blocs « historiques », en item de liste) :
 
@@ -357,6 +375,30 @@ as échangé l'abscisse et l'ordonnée. ») ; cadre rouge dès qu'un point est f
 justes ; le repère juste à côté, points nommés en vert. Hors question : le même geste, rien de jugé.
 PDF : le repère sans les points (l'enfant fait ses croix) ; option `solved` de `courbe-typst.ts` qui
 dessine les points attendus, qu'aucun corrigé imprimé n'appelle encore.
+
+**Droite à tracer** (même chantier, lot 2, 2-316, 2-445) — `courbe-tracer.test.ts`,
+`CourbeTracer.svelte.test.ts` : `tracer: y = 2x - 1` dans un ` ```courbe ` (nœud : `spec.tracer`,
+`CourbeLineToTrace` `equation`, `line`). Équation réduite, verticale (`x = 3`) ou cartésienne
+(`2x + 3y - 6 = 0`), en syntaxe mathAST (`1/2x`, `0.5x`, `2*(x - 1)`, virgule décimale permise),
+80 caractères au plus ; le parseur la normalise (`normalizeCourbeExpression` puis une espace autour de
+`=`, `+`, `-` binaires : `y = -2x + -3` → `y = -2x - 3`) et la lit en `ax + by + c = 0`
+(`lineCoefficients`, `utils/courbe-tracer.ts` : évaluée en trois points, vérifiée affine en quatre
+autres). Refusé : pas une droite (`y = x^2`, `y = 1/x`), autre inconnue que x et y, plus d'un `=`,
+droite qui passe par **moins de deux nœuds** de la grille dans la fenêtre (`lineNodes`), `tracer:` et
+`placer:` dans le même bloc (un seul geste par repère, décision du 2026-11-02), deux lignes
+`tracer:`. `CourbePlacer.svelte` fait le geste : deux points sans nom, étiquettes-boutons « 1 » et
+« 2 » ; dès qu'ils sont distincts, la droite qui passe par eux (`lineThrough`) se dessine d'un bord à
+l'autre de la fenêtre (`lineSegmentInWindow`, prop `traces` de `Courbe.svelte`). Une case, réponse
+`x1;y1/x2;y2` (`tracedAnswer`, `readTracedAnswer`) ; juste si les deux points sont distincts et sur la
+droite (`isTracedLineCorrect`, écart rapporté à `|ax| + |by| + |c|`), quels qu'ils soient ; le juge
+ne vérifie pas que ce sont des nœuds de la fenêtre (l'écran ne pose que des nœuds, et une réponse
+forgée hors nœud désigne quand même la bonne droite). Phrases (`tracedLineMistake`) : « Il faut placer
+deux points. », « Tes deux points sont au même endroit : ils ne font pas une droite. », « Ta droite
+n'est pas celle d'équation » suivie de l'équation en formule (`MathInline`), mise au propre par
+`equationLatex` (`tidy` de mathAST côté par côté : `y = 1x + 0` des variables s'écrit `y = x`) ;
+correction : la droite juste et ses deux nœuds les plus proches de l'origine (`correctionPoints`,
+`solutionLine`), en vert ; rien quand l'équation est masquée (`tracer: ?`). PDF : le repère seul ;
+`solved` dessine la droite et ses deux nœuds.
 
 **Cercle trigonométrique à placer** (chantier [cercle-trotteuse](../archive/wip/cercle-trotteuse-progress.md)
 § 4 et § 6, 1re spé 306) — `src/lib/ubumark/__tests__/parser/trig-circle-placer.test.ts`,
@@ -1206,7 +1248,7 @@ Points à retenir :
     aussi la conclusion ; recalculer les ferait diverger.
 12. **Valeur masquée `?` d'un bloc à geste** (chantier [fuite-enonce](../archive/wip/fuite-enonce-progress.md)) :
     l'énoncé envoyé pendant une évaluation notée remplace la valeur à trouver par `?`
-    (`placer: A=? ; B=?` en ` ```line ` / ` ```courbe `, `placer: M=? ; N=?` en ` ```trig `, `placer: ?` en ` ```horloge ` — `? s` pour une heure à secondes —,
+    (`placer: A=? ; B=?` en ` ```line ` / ` ```courbe `, `tracer: ?` en ` ```courbe `, `placer: M=? ; N=?` en ` ```trig `, `placer: ?` en ` ```horloge ` — `? s` pour une heure à secondes —,
     `construire: ?`, `colorier: ?`, `Natation = ?` pour une barre de `placer:`, `Notes = ? ; ? ; ? ;
 ? ; ?` pour une boîte à moustaches de `placer:`, `données:` compris). Les parseurs la
     lisent comme une valeur de remplacement (`utils/masked-value.ts`) : mêmes noms, même nombre de

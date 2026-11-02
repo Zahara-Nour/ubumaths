@@ -6,17 +6,19 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2096._
+_Mis à jour le 2026-11-02, après #2265._
 
-- **État** : lot 1 (`placer:` + `axes:` dans ` ```courbe `) mergé (#2096), pas en prod ; restes au § 7.
-- **Prochaine action** : APRÈS le chantier `fuite-enonce` (décision Q4 de David, 2026-11-01), lot 2
-  (`tracer:` une droite, § 3) dans un worktree neuf `ubumaths-wt-points-repere` depuis `origin/main`.
-- **En attente de David** : essai du repère à placer (dev, puis prod après deploy) ; corrigé PDF des blocs à
-  placer, à brancher le jour d'un corrigé imprimé (§ 7).
-- **Pièges en cours** : un geste ne doit jamais donner la réponse (ni à l'écran, ni dans un attribut lu, ni
-  dans l'énoncé public : chantier `fuite-enonce`) ; CI « Client Tests » `wrapDynamicImport` = infra ;
-  lancer `pnpm types:cliquet` avant la PR (oublié au lot 1).
-- **Worktree / branche** : aucun (retiré après #2096).
+- **État** : lot 1 (`placer:`, #2096) et lot 2 (`tracer:` une droite, #2265) mergés, pas en prod.
+- **Prochaine action** : lot 3, `tracer: vecteur (3 ; -2)` (2-298, § 3) dans un worktree neuf
+  `ubumaths-wt-points-repere` depuis `origin/main` ; d'abord phase 0 des détails (origine imposée
+  `depuis A`, étiquettes, phrases), comme le § 8 pour la droite.
+- **En attente de David** : essais à l'œil des lots 1 et 2 (`docs/wip/verifications-manuelles.md`) ;
+  corrigé PDF des blocs à placer, à brancher le jour d'un corrigé imprimé (§ 7).
+- **Pièges en cours** : un geste ne doit jamais donner la réponse (énoncé masqué `placer: A=?`,
+  `tracer: ?`) ; phrase de correction avec une équation : `equationLatex` (tidy), jamais le texte brut ;
+  CI « Client Tests » `wrapDynamicImport` = bruit, `/demo/lexique` instable (repassé au 2e essai) ;
+  `pnpm types:cliquet` avant la PR.
+- **Worktree / branche** : aucun (retiré après #2265).
 
 ---
 
@@ -212,3 +214,30 @@ grapheur, catalogue), correctifs de revue. Revue `code-reviewer` (Opus) : rien d
   (ligne `placer:` comprise) au navigateur dans une évaluation notée — vrai aussi pour droite, horloge,
   barres. Non vérifié ; signalé à David.
 - **Téléphone** : `touch-action: pan-y` comme la droite ; à essayer sur iPhone / tablette.
+
+## 8. Lot 2 — précisions validées (2026-11-02)
+
+David, « oui » aux quatre recos :
+
+1. `tracer:` et `placer:` dans le même bloc : refusé au prof (un seul geste par repère).
+2. Deux étiquettes-boutons « 1 » / « 2 » sous le repère pour choisir le point (clavier) ; au doigt, toucher un
+   point le reprend.
+3. Phrases : « Il faut placer deux points. » ; « Tes deux points sont au même endroit : ils ne font pas une
+   droite. » ; « Ta droite n'est pas celle d'équation y = 2x − 1. »
+4. Correction : la droite juste et ses deux nœuds les plus proches de l'origine (à égalité, la plus petite
+   abscisse).
+
+Choix techniques : réponse attendue = l'équation normalisée (espaces, signes des variables, virgule → point) ;
+lue en `ax + by + c = 0` par mathAST (`parseCustom` + évaluation, vérifiée affine : `1/2x`, `2*(x - 1)`
+acceptés) ; case `x1;y1/x2;y2` ; juge `isCourbeAnswerCorrect` (équation reconnue à son `=`, sinon point).
+
+## 9. Lot 2 — fait (2026-11-02, #2265)
+
+Commits : moteur (`utils/courbe-tracer.ts` : `lineCoefficients`, `lineNodes`, `correctionPoints`,
+`isTracedLineCorrect`, `isCourbeAnswerCorrect` ; parseur `tracer:`, masquage `tracer: ?`), écran
+(`CourbePlacer` en mode tracer, `traces` de `Courbe.svelte`, `BuildAnswer`, `FillBlanksInput`, Typst
+`solved`), doc (ubumark, questions, grapheur, catalogue). Revue `code-reviewer` (Opus) : rien de bloquant ;
+corrigé l'équation brute de la phrase (« y = 1x + 0 » → `equationLatex` + `MathInline`), la tolérance du
+juge des droites raides, l'exemple `1/2x` du catalogue. Laissé, documenté : le juge ne vérifie pas que les
+points sont des nœuds (une réponse forgée hors nœud désigne quand même la bonne droite). `\frac` refusé
+dans `tracer:` (écrire `1/2x`).

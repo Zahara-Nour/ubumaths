@@ -1,0 +1,118 @@
+{
+	"title": "Expression de la loi binomiale",
+	"description": "À savoir : si X suit B(n ; p), P(X = k) = C(n, k) pᵏ(1 − p)ⁿ⁻ᵏ ; formule, exemple B(10 ; 0,3) ; distracteurs : coefficient oublié, exposants échangés, exposant des échecs",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Loi binomiale",
+	"subdomain": "À savoir",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $X$ une variable aléatoire qui suit la loi binomiale $\\mathcal{B}(n\\,;p)$. Pour tout entier $k$ compris entre $0$ et $n$, $P(X=k)$ est égal à :\n\n```choix\n- $\\dbinom{n}{k}p^k(1-p)^{n-k}$\n- $p^k(1-p)^{n-k}$\n- $\\dbinom{n}{k}p^{n-k}(1-p)^k$\n- $\\dbinom{n}{k}p^k$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : si $X$ suit la loi $\\mathcal{B}(n\\,;p)$, alors $P(X=k)=\\textcolor{{{color:primary.0}}}{\\dbinom{n}{k}p^k(1-p)^{n-k}}$ pour $0\\leqslant k\\leqslant n$.",
+					"$p^k(1-p)^{n-k}$ est la probabilité d'UN chemin à $k$ succès ; $\\dbinom{n}{k}$ compte ces chemins. L'exposant de $p$ est le nombre de succès $k$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $X$ une variable aléatoire qui suit la loi binomiale $\\mathcal{B}(10\\,;0{,}3)$. $P(X=4)$ est égal à :\n\n```choix\n- $\\dbinom{10}{4}\\times0{,}3^4\\times0{,}7^6$\n- $0{,}3^4\\times0{,}7^6$\n- $\\dbinom{10}{4}\\times0{,}3^6\\times0{,}7^4$\n- $\\dbinom{10}{4}\\times0{,}3^4\\times0{,}7^4$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : $P(X=k)=\\dbinom{n}{k}p^k(1-p)^{n-k}$.",
+					"Ici $n=10$, $p=0{,}3$, $1-p=0{,}7$ et $k=4$ : $P(X=4)=\\textcolor{{{color:primary.0}}}{\\dbinom{10}{4}\\times0{,}3^4\\times0{,}7^6}$ (l'exposant de $0{,}7$ est $10-4=6$, le nombre d'échecs)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "C(n, k) pᵏ(1 − p)ⁿ⁻ᵏ",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans C(n, k)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : exposants échangés",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans (1 − p)ⁿ⁻ᵏ",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "C(10, 4) × 0,3⁴ × 0,7⁶",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans C(10, 4)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : exposants échangés",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0,7⁴",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
