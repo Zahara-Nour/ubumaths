@@ -1,0 +1,138 @@
+{
+	"title": "Calculer le tout connaissant une partie",
+	"description": "Effectif total à partir d'une partie et de sa proportion (fraction, décimal ou pourcentage)",
+	"grades": ["2"],
+	"theme": "Proportionnalité",
+	"domain": "Pourcentages",
+	"subdomain": "Proportion",
+	"level": 6,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "${{eval:(a)*(m)}}$ adhérents d'un club ont moins de $18$ ans, ce qui représente ${{if:f==0|\\dfrac{ {{a}} }{ {{b}} }|{{if:f==1|{{eval:(a)/(b);d}}|{{eval:100*(a)/(b);d}}\\,\\%}}}}$ des adhérents.\n\nCombien le club compte-t-il d'adhérents ?\n\n$?$ adhérents",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "4|5|8|10|20"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "m",
+					"expression": "2..12"
+				},
+				{
+					"name": "f",
+					"expression": "0|1|2"
+				}
+			],
+			"conditions": ["a < b", "gcd(a,b) == 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(b)*(m)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Partie $=$ proportion $\\times$ tout, donc tout $=\\dfrac{\\text{partie}}{\\text{proportion}}$.",
+					"Ici la proportion vaut $\\dfrac{ {{a}} }{ {{b}} }$ : $\\dfrac{ {{eval:(a)*(m)}} }{ \\frac{ {{a}} }{ {{b}} } }={{eval:(a)*(m)}}\\times\\dfrac{ {{b}} }{ {{a}} }=\\textcolor{{{color:primary.0}}}{{{eval:(b)*(m)}}}$ adhérents.",
+					"Vérification : $\\dfrac{ {{eval:(a)*(m)}} }{ {{eval:(b)*(m)}} }=\\dfrac{ {{a}} }{ {{b}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "18 = 3/8 du club : 48",
+			"variationIndex": 0,
+			"variables": {
+				"b": "8",
+				"a": "3",
+				"m": "6",
+				"f": "0"
+			},
+			"answers": ["48"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : partie × proportion (6,75)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "8",
+				"a": "3",
+				"m": "6",
+				"f": "0"
+			},
+			"answers": ["6.75"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 18 + 3/8 de 18",
+			"variationIndex": 0,
+			"variables": {
+				"b": "8",
+				"a": "3",
+				"m": "6",
+				"f": "0"
+			},
+			"answers": ["24.75"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "18 = 0,375 : 48",
+			"variationIndex": 0,
+			"variables": {
+				"b": "8",
+				"a": "3",
+				"m": "6",
+				"f": "1"
+			},
+			"answers": ["48"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "21 = 35 % : 60",
+			"variationIndex": 0,
+			"variables": {
+				"b": "20",
+				"a": "7",
+				"m": "3",
+				"f": "2"
+			},
+			"answers": ["60"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 35 % de 21",
+			"variationIndex": 0,
+			"variables": {
+				"b": "20",
+				"a": "7",
+				"m": "3",
+				"f": "2"
+			},
+			"answers": ["7.35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

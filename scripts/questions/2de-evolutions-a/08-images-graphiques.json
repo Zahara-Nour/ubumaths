@@ -1,0 +1,212 @@
+{
+	"title": "Déterminer graphiquement des images",
+	"description": "Image d'un nombre lue sur une courbe : ordonnée du point d'abscisse donnée (pièges : abscisse recopiée, signe)",
+	"grades": ["2"],
+	"theme": "Fonctions",
+	"domain": "Généralités",
+	"subdomain": "Lecture graphique",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\left[{{eval:(a)-3}}\\,;{{eval:(a)+3}}\\right]$.\n\n```courbe\nx: {{eval:min(-1,(a)-4)}} ; {{eval:max(1,(a)+4)}}\ny: {{eval:min(0,(m),(m)+4*(c))-1}} ; {{eval:max(0,(m),(m)+4*(c))+1}}\ngrille: 1 ; 1\nf(x) = {{m}}+({{c}})*(x-({{a}}))^2 sur [{{eval:(a)-3}} ; {{eval:(a)+3}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Parabole d'une fonction f.\n```\n\nDétermine graphiquement l'image de ${{x0}}$ par $f$.\n\n$f({{x0}})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-2..2"
+				},
+				{
+					"name": "m",
+					"expression": "-2..2"
+				},
+				{
+					"name": "c",
+					"expression": "1|-1"
+				},
+				{
+					"name": "u",
+					"expression": "-2|-1|0|1|2"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:(a)+(u)"
+				},
+				{
+					"name": "y0",
+					"expression": "eval:(m)+(c)*(u)*(u)"
+				}
+			],
+			"conditions": ["x0 != y0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{y0}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On part de ${{x0}}$ sur l'axe des abscisses, on va verticalement jusqu'à $\\mathcal{C}_f$ (point $M$), puis horizontalement jusqu'à l'axe des ordonnées : l'image est l'**ordonnée** de $M$.",
+					"```courbe\nx: {{eval:min(-1,(a)-4)}} ; {{eval:max(1,(a)+4)}}\ny: {{eval:min(0,(m),(m)+4*(c))-1}} ; {{eval:max(0,(m),(m)+4*(c))+1}}\ngrille: 1 ; 1\nf(x) = {{m}}+({{c}})*(x-({{a}}))^2 sur [{{eval:(a)-3}} ; {{eval:(a)+3}}]   bleu   nom=C_f\npoints: M({{x0}} ; {{y0}}){{if:y0==0| |, M'({{x0}} ; 0)}}{{if:x0==0| |, M''(0 ; {{y0}})}}\ntaille: moyenne\ndescription: Courbe de f et point M({{x0}} ; {{y0}}) de la courbe.\n```",
+					"Le point de $\\mathcal{C}_f$ d'abscisse ${{x0}}$ est $M({{x0}}\\,;{{y0}})$ : $f({{x0}})=\\textcolor{{{color:primary.0}}}{{{y0}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\left[{{eval:(p)-1}}\\,;{{eval:(q)+1}}\\right]$.\n\n```courbe\nx: {{eval:(p)-2}} ; {{eval:max(1,(q)+2)}}\ny: {{eval:floor(min(0,(k)-(c)*(d)*(d)/4,(k)+(c)*(1+(d))))-1}} ; {{eval:ceil(max(0,(k)-(c)*(d)*(d)/4,(k)+(c)*(1+(d))))+1}}\ngrille: 1 ; 1\nf(x) = {{k}}+({{c}})*(x-({{p}}))*(x-({{q}})) sur [{{eval:(p)-1}} ; {{eval:(q)+1}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe en forme de parabole d'une fonction f.\n```\n\nDétermine graphiquement l'image de ${{x0}}$ par $f$.\n\n$f({{x0}})=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "-4..0"
+				},
+				{
+					"name": "d",
+					"expression": "2|4"
+				},
+				{
+					"name": "q",
+					"expression": "eval:(p)+(d)"
+				},
+				{
+					"name": "c",
+					"expression": "1|-1"
+				},
+				{
+					"name": "k",
+					"expression": "-2..2"
+				},
+				{
+					"name": "j",
+					"expression": "0..6"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:(p)-1+(j)"
+				},
+				{
+					"name": "y0",
+					"expression": "eval:(k)+(c)*((x0)-(p))*((x0)-(q))"
+				}
+			],
+			"conditions": ["x0 <= (q)+1", "x0 != y0", "x0 != p", "x0 != q"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{y0}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On part de ${{x0}}$ sur l'axe des abscisses, on va verticalement jusqu'à $\\mathcal{C}_f$ (point $M$), puis horizontalement jusqu'à l'axe des ordonnées : l'image est l'**ordonnée** de $M$.",
+					"```courbe\nx: {{eval:(p)-2}} ; {{eval:max(1,(q)+2)}}\ny: {{eval:floor(min(0,(k)-(c)*(d)*(d)/4,(k)+(c)*(1+(d))))-1}} ; {{eval:ceil(max(0,(k)-(c)*(d)*(d)/4,(k)+(c)*(1+(d))))+1}}\ngrille: 1 ; 1\nf(x) = {{k}}+({{c}})*(x-({{p}}))*(x-({{q}})) sur [{{eval:(p)-1}} ; {{eval:(q)+1}}]   bleu   nom=C_f\npoints: M({{x0}} ; {{y0}}){{if:y0==0| |, M'({{x0}} ; 0)}}{{if:x0==0| |, M''(0 ; {{y0}})}}\ntaille: moyenne\ndescription: Courbe de f et point M({{x0}} ; {{y0}}) de la courbe.\n```",
+					"Le point de $\\mathcal{C}_f$ d'abscisse ${{x0}}$ est $M({{x0}}\\,;{{y0}})$ : $f({{x0}})=\\textcolor{{{color:primary.0}}}{{{y0}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Sommet (1 ; −1), x0 = 3 : f(3) = 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"m": "-1",
+				"c": "1",
+				"u": "2",
+				"x0": "3",
+				"y0": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe (−3)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"m": "-1",
+				"c": "1",
+				"u": "2",
+				"x0": "3",
+				"y0": "3"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sommet (0 ; 2), f(−1) = 1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "0",
+				"m": "2",
+				"c": "-1",
+				"u": "-1",
+				"x0": "-1",
+				"y0": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : abscisse recopiée (−1)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "0",
+				"m": "2",
+				"c": "-1",
+				"u": "-1",
+				"x0": "-1",
+				"y0": "1"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f(−1) = −4",
+			"variationIndex": 1,
+			"variables": {
+				"p": "-2",
+				"d": "4",
+				"q": "2",
+				"c": "1",
+				"k": "-1",
+				"j": "2",
+				"x0": "-1",
+				"y0": "-4"
+			},
+			"answers": ["-4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : antécédent confondu (−1)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "-2",
+				"d": "4",
+				"q": "2",
+				"c": "1",
+				"k": "-1",
+				"j": "2",
+				"x0": "-1",
+				"y0": "-4"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
