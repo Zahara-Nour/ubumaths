@@ -10,12 +10,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2266 (migration 8b passée en prod)._
+_Mis à jour le 2026-11-02, 8b publié (7/7)._
 
-- **État** : lot 8 (D-L8 : 26 « à savoir » en 8a/8b/8c) ; 8a clos ; **8b** : 7 brouillons en prod, rangés et tagués (#2263, #2266), page à cocher publiée.
-- **Prochaine action** : lire les verdicts de https://claude.ai/artifact/4cKVLRrQN9wQKFnyjaXQbz (compter) ; puis `publier-lot.ts --dir scripts/questions/tspe-8b-savoir` simulé, `--publier` par David ; ensuite 8c (541, 614, 519, 520, 343, 351, 329, 331 : 8 modèles).
-- **En attente de David** : la relecture des 7 fiches de 8b.
-- **Pièges en cours** : relevé de nœuds → filtrer `archived_at is null` ; `!=` dans `$…$` lu « ≠ » (écrire `!\,=`) ; garde « notion sans sous-notion » : liste `sous_notions_admises` (migration `20261102181059`).
+- **État** : lot 8 (D-L8 : 26 « à savoir » en 8a/8b/8c) ; **8a et 8b clos** (18 modèles publiés : #2259, #2260, #2263, #2266 ; relectures toutes « ok »).
+- **Prochaine action** : 8c (541, 614, 519, 520, 343, 351, 329, 331 : 8 modèles), même chaîne ; gabarit `docs/wip/questions/lot-tspe-savoir-b.py`, migration `20261102222541` ; relever d'abord les nœuds des points (MCP) et les thèmes des voisins (Dénombrement, Loi binomiale, Sommes de v. a., espace).
+- **En attente de David** : rien.
+- **Pièges en cours** : relevé de nœuds → filtrer `archived_at is null` ; `!=` dans `$…$` lu « ≠ » (écrire `!\,=`) ; garde « notion sans sous-notion » : liste `sous_notions_admises` (migration `20261102181059`) ; worktree sans `.env*` → les copier pour les tests d'intégration.
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · branche neuve depuis `origin/main` pour 8c.
 
 ---
@@ -278,3 +278,7 @@ principal (4 conditions réunies). Prod relue au MCP : 7 modèles sur leur nœud
 **Page à cocher** : `page-a-cocher.ts --dir scripts/questions/tspe-8b-savoir`, 7 fiches lues en prod, aucune alerte, 17
 exemples : https://claude.ai/artifact/4cKVLRrQN9wQKFnyjaXQbz (`verdicts` vide à la publication ; rendu non regardé dans
 Chrome).
+
+**Relecture** (David, 2026-11-02) : 7 « ok » sur 7, aucun commentaire (lu en base de l'artefact). **Publication** :
+`publier-lot.ts` simulé (7 passent), lancé par David avec `--publier` : 7/7 `published`, relus au MCP, toujours sur leur
+nœud, un tag chacun. **8b clos.**
