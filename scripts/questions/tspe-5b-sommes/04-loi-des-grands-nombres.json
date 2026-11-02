@@ -1,0 +1,218 @@
+{
+	"title": "Loi des grands nombres : interpréter",
+	"description": "Énoncé de la loi des grands nombres (P(|Mₙ − μ| ⩾ δ) → 0), interprétation sur la fréquence d'une face d'un dé (pièges : sophisme du joueur, égalité exacte), limite de la probabilité d'écart",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Concentration et loi des grands nombres",
+	"subdomain": "Loi des grands nombres",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "$(X_1, \\ldots, X_n)$ est un échantillon de taille $n$ d'une loi d'espérance $\\mu={{eval:m}}$ et de variance $V={{eval:v}}$ ; on note $M_n$ sa moyenne. On prend $\\delta={{eval:d/100;d}}$.\n\nQue dit la loi des grands nombres ?\n\n```choix\n- $\\displaystyle\\lim_{n\\to+\\infty}P\\big(\\lvert M_n-{{eval:m}}\\rvert\\geqslant{{eval:d/100;d}}\\big)=0$.\n- $M_n={{eval:m}}$ dès que $n$ est assez grand.\n- $P\\big(\\lvert M_n-{{eval:m}}\\rvert\\geqslant{{eval:d/100;d}}\\big)=0$ dès que $n$ est assez grand.\n- $\\displaystyle\\lim_{n\\to+\\infty}V(M_n)={{eval:m}}$.\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..9"
+				},
+				{
+					"name": "v",
+					"expression": "2..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La loi des grands nombres : pour tout $\\delta>0$, la probabilité que la moyenne $M_n$ s'écarte de $\\mu$ d'au moins $\\delta$ **tend vers** $0$ quand $n$ tend vers $+\\infty$.",
+					"Elle ne dit pas que $M_n$ finit par valoir $\\mu$, ni que cette probabilité devient nulle : $M_n$ reste aléatoire. $V(M_n)=\\dfrac{V}{n}$ tend vers $0$, pas vers $\\mu$.",
+					"Réponse : $\\textcolor{{{color:primary.0}}}{\\lim P\\big(\\lvert M_n-{{eval:m}}\\rvert\\geqslant{{eval:d/100;d}}\\big)=0}$."
+				]
+			}
+		},
+		{
+			"statement": "On lance $n$ fois un dé équilibré à six faces et on note $F_n$ la fréquence d'apparition du ${{eval:f}}$ au cours des $n$ lancers.\n\nQue permet d'affirmer la loi des grands nombres ?\n\n```choix\n- La probabilité que $F_n$ s'écarte de $\\dfrac{1}{6}$ d'au moins ${{eval:d/100;d}}$ tend vers $0$ quand $n$ tend vers $+\\infty$.\n- Après une longue série de lancers sans ${{eval:f}}$, obtenir ${{eval:f}}$ au lancer suivant devient plus probable.\n- $F_n=\\dfrac{1}{6}$ dès que $n$ est un multiple de $6$.\n- Pour $n$ assez grand, le nombre de ${{eval:f}}$ obtenus est à moins de $1$ de $\\dfrac{n}{6}$.\n```",
+			"variables": [
+				{
+					"name": "f",
+					"expression": "1..6"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$F_n$ est la moyenne de $n$ variables de Bernoulli indépendantes de paramètre $\\dfrac{1}{6}$ : la loi des grands nombres dit que la probabilité d'un écart d'au moins $\\delta$ entre $F_n$ et $\\dfrac{1}{6}$ tend vers $0$.",
+					"Les lancers sont indépendants : le dé n'a pas de mémoire, une série sans ${{eval:f}}$ ne rend pas le ${{eval:f}}$ plus probable. La loi parle de la **fréquence**, pas du nombre de ${{eval:f}}$, et jamais d'une égalité exacte.",
+					"Réponse : $\\textcolor{{{color:primary.0}}}{P\\big(\\lvert F_n-\\tfrac{1}{6}\\rvert\\geqslant{{eval:d/100;d}}\\big)\\to0}$."
+				]
+			}
+		},
+		{
+			"statement": "$(X_1, \\ldots, X_n)$ est un échantillon de taille $n$ d'une loi d'espérance $\\mu={{eval:m}}$ et de variance $V={{eval:v}}$ ; on note $M_n$ sa moyenne. On prend $\\delta={{eval:d/100;d}}$.\n\nQuand $n$ tend vers $+\\infty$, vers quoi tend $P\\big(\\lvert M_n-{{eval:m}}\\rvert\\geqslant{{eval:d/100;d}}\\big)$ ?\n\n```choix\n- $0$\n- $1$\n- ${{eval:d/100;d}}$\n- $\\dfrac{{{eval:v}}}{{{eval:d/100;d}}^2}$\n```",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..9"
+				},
+				{
+					"name": "v",
+					"expression": "2..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"C'est la loi des grands nombres : la probabilité d'un écart d'au moins $\\delta$ entre $M_n$ et $\\mu$ tend vers $0$.",
+					"On le retrouve par l'inégalité de concentration : $P\\big(\\lvert M_n-\\mu\\rvert\\geqslant\\delta\\big)\\leqslant\\dfrac{V}{n\\delta^2}$, et $\\dfrac{{{eval:v}}}{n\\times{{eval:d/100;d}}^2}$ tend vers $0$. $\\dfrac{V}{\\delta^2}$ est le majorant de Bienaymé-Tchebychev pour **une** variable, il ne dépend pas de $n$.",
+					"Réponse : $\\textcolor{{{color:primary.0}}}{0}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Limite nulle",
+			"variationIndex": 0,
+			"variables": {
+				"m": "5",
+				"v": "4",
+				"d": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Mₙ = μ",
+			"variationIndex": 0,
+			"variables": {
+				"m": "5",
+				"v": "4",
+				"d": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : probabilité nulle",
+			"variationIndex": 0,
+			"variables": {
+				"m": "5",
+				"v": "4",
+				"d": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Fréquence proche de 1/6",
+			"variationIndex": 1,
+			"variables": {
+				"f": "6",
+				"d": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sophisme du joueur",
+			"variationIndex": 1,
+			"variables": {
+				"f": "6",
+				"d": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : nombre de 6",
+			"variationIndex": 1,
+			"variables": {
+				"f": "6",
+				"d": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Tend vers 0",
+			"variationIndex": 2,
+			"variables": {
+				"m": "5",
+				"v": "4",
+				"d": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 2,
+			"variables": {
+				"m": "5",
+				"v": "4",
+				"d": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : majorant de Bienaymé-Tchebychev",
+			"variationIndex": 2,
+			"variables": {
+				"m": "5",
+				"v": "4",
+				"d": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

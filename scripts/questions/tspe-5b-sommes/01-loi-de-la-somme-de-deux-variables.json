@@ -1,0 +1,284 @@
+{
+	"title": "Loi de la somme de deux variables",
+	"description": "X et Y indépendantes : P(X + Y = s) par les couples de valeurs (lois en tableaux ; un dé à 4 faces et un dé à 6 faces) ; valeurs prises par X + Y",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Sommes de variables aléatoires",
+	"subdomain": "Loi d'une somme",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Deux variables aléatoires **indépendantes** $X$ et $Y$ ont les lois données ci-dessous.\n\n| $x$ | $0$ | $1$ | $2$ |\n|---|---|---|---|\n| $P(X=x)$ | ${{eval:a/10;d}}$ | ${{eval:b/10;d}}$ | ${{eval:(10-a-b)/10;d}}$ |\n\n| $y$ | $0$ | $1$ | $2$ |\n|---|---|---|---|\n| $P(Y=y)$ | ${{eval:c/10;d}}$ | ${{eval:g/10;d}}$ | ${{eval:(10-c-g)/10;d}}$ |\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X+Y={{eval:2+k}})=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				},
+				{
+					"name": "a",
+					"expression": "1..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..8"
+				},
+				{
+					"name": "c",
+					"expression": "1..8"
+				},
+				{
+					"name": "g",
+					"expression": "1..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((1-k)*(a*(10-c-g)+b*g+(10-a-b)*c)+k*(b*(10-c-g)+(10-a-b)*g))/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'événement $\\{X+Y={{eval:2+k}}\\}$ est la réunion des événements incompatibles {{if:k==0|$\\{X=0\\}\\cap\\{Y=2\\}$, $\\{X=1\\}\\cap\\{Y=1\\}$ et $\\{X=2\\}\\cap\\{Y=0\\}$}}{{if:k==1|$\\{X=1\\}\\cap\\{Y=2\\}$ et $\\{X=2\\}\\cap\\{Y=1\\}$}} : on liste les couples de valeurs dont la somme vaut ${{eval:2+k}}$.",
+					"$X$ et $Y$ sont indépendantes : la probabilité de chaque intersection est un produit. {{if:k==0|${{eval:a/10;d}}\\times{{eval:(10-c-g)/10;d}}+{{eval:b/10;d}}\\times{{eval:g/10;d}}+{{eval:(10-a-b)/10;d}}\\times{{eval:c/10;d}}$}}{{if:k==1|${{eval:b/10;d}}\\times{{eval:(10-c-g)/10;d}}+{{eval:(10-a-b)/10;d}}\\times{{eval:g/10;d}}$}}.",
+					"$P(X+Y={{eval:2+k}})=\\textcolor{{{color:primary.0}}}{{{eval:((1-k)*(a*(10-c-g)+b*g+(10-a-b)*c)+k*(b*(10-c-g)+(10-a-b)*g))/100;d}}}$."
+				]
+			},
+			"conditions": ["a+b <= 9", "c+g <= 9"]
+		},
+		{
+			"statement": "On lance un dé équilibré à quatre faces numérotées de $1$ à $4$ et un dé équilibré à six faces numérotées de $1$ à $6$, indépendamment. On note $X$ le résultat du premier dé, $Y$ celui du second et $S=X+Y$.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(S={{eval:s}})=?$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "2..10"
+				},
+				{
+					"name": "cnt",
+					"expression": "{{eval:min(min(s-1,4),11-s)}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:cnt/24}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les dés sont indépendants : chaque couple $(x\\,;y)$ a pour probabilité $\\dfrac{1}{4}\\times\\dfrac{1}{6}=\\dfrac{1}{24}$.",
+					"$S={{eval:s}}$ pour les couples $(x\\,;{{eval:s}}-x)$ avec $x$ de ${{eval:max(1,s-6)}}$ à ${{eval:min(4,s-1)}}$ : il y en a ${{eval:cnt}}$.",
+					"$P(S={{eval:s}})={{eval:cnt}}\\times\\dfrac{1}{24}=\\textcolor{{{color:primary.0}}}{{{eval:cnt/24}}}$."
+				]
+			},
+			"conditions": ["s > 2", "s < 10"]
+		},
+		{
+			"statement": "Une variable aléatoire $X$ prend les valeurs $0$ et ${{eval:a}}$ ; une variable aléatoire $Y$, indépendante de $X$, prend les valeurs $1$ et ${{eval:b}}$, chacune avec une probabilité non nulle.\n\nQuelles valeurs prend la variable $X+Y$ ?\n\n```choix\n- $\\{1\\,;{{eval:a+1}}\\,;{{eval:b}}\\,;{{eval:a+b}}\\}$\n- $\\{0\\,;1\\,;{{eval:a}}\\,;{{eval:b}}\\}$\n- $\\{1\\,;{{eval:a+b}}\\}$\n- $\\{1\\,;{{eval:a+1}}\\,;{{eval:a+b}}\\}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "b",
+					"expression": "6..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$X+Y$ prend toutes les sommes $x+y$, avec $x$ une valeur de $X$ et $y$ une valeur de $Y$ : un couple de valeurs donne une somme.",
+					"Les quatre couples donnent $0+1=1$, ${{eval:a}}+1={{eval:a+1}}$, $0+{{eval:b}}={{eval:b}}$ et ${{eval:a}}+{{eval:b}}={{eval:a+b}}$ ; par indépendance, chacun a une probabilité non nulle.",
+					"Valeurs de $X+Y$ : $\\textcolor{{{color:primary.0}}}{\\{1\\,;{{eval:a+1}}\\,;{{eval:b}}\\,;{{eval:a+b}}\\}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "s = 2 : 0,06 + 0,09 + 0,2",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"a": "2",
+				"b": "3",
+				"c": "4",
+				"g": "3"
+			},
+			"answers": ["0{,}35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En fraction",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"a": "2",
+				"b": "3",
+				"c": "4",
+				"g": "3"
+			},
+			"answers": ["\\frac{7}{20}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un seul couple",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"a": "2",
+				"b": "3",
+				"c": "4",
+				"g": "3"
+			},
+			"answers": ["0{,}2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : somme sans produits",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"a": "2",
+				"b": "3",
+				"c": "4",
+				"g": "3"
+			},
+			"answers": ["1{,}4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "s = 3 : 0,09 + 0,15",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "2",
+				"b": "3",
+				"c": "4",
+				"g": "3"
+			},
+			"answers": ["0{,}24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (1 ; 2) oublié",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "2",
+				"b": "3",
+				"c": "4",
+				"g": "3"
+			},
+			"answers": ["0{,}15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "S = 7 : 4/24",
+			"variationIndex": 1,
+			"variables": {
+				"s": "7",
+				"cnt": "4"
+			},
+			"answers": ["\\frac{1}{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "S = 3 : 2/24",
+			"variationIndex": 1,
+			"variables": {
+				"s": "3",
+				"cnt": "2"
+			},
+			"answers": ["\\frac{1}{12}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sur 36",
+			"variationIndex": 1,
+			"variables": {
+				"s": "3",
+				"cnt": "2"
+			},
+			"answers": ["\\frac{1}{18}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : un couple",
+			"variationIndex": 1,
+			"variables": {
+				"s": "3",
+				"cnt": "2"
+			},
+			"answers": ["\\frac{1}{24}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Les quatre sommes",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "7"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : réunion des valeurs",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "7"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : extrêmes",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "7"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,297 @@
+{
+	"title": "Écrire une variable comme somme",
+	"description": "Nombre de succès = somme de variables de Bernoulli ; somme de n dés (E = 3,5n) ; succès de deux séries d'épreuves différentes : N = Y + Z, E(N) et V(N)",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Sommes de variables aléatoires",
+	"subdomain": "Décomposer en somme",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Un QCM compte ${{eval:n}}$ questions ; à chacune, Noé répond au hasard, indépendamment des autres. On note $X$ le nombre de bonnes réponses.\n\nQuelle écriture de $X$ est juste ?\n\n```choix\n- $X=X_1+X_2+\\cdots+X_{{{eval:n}}}$, où $X_k$ vaut $1$ si la $k$-ième réponse est juste et $0$ sinon.\n- $X={{eval:n}}X_1$, où $X_1$ vaut $1$ si la première réponse est juste et $0$ sinon.\n- $X=X_1\\times X_2\\times\\cdots\\times X_{{{eval:n}}}$, où $X_k$ vaut $1$ si la $k$-ième réponse est juste et $0$ sinon.\n- $X=\\dfrac{X_1+X_2+\\cdots+X_{{{eval:n}}}}{{{eval:n}}}$, où $X_k$ vaut $1$ si la $k$-ième réponse est juste et $0$ sinon.\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque question est une épreuve de Bernoulli : $X_k$ vaut $1$ (succès) ou $0$ (échec).",
+					"Additionner les $X_k$ compte les $1$, c'est-à-dire les bonnes réponses. ${{eval:n}}X_1$ ne regarde que la première question, le produit vaut $1$ seulement si **toutes** sont justes, et le quotient est la **proportion** de bonnes réponses.",
+					"Réponse : $\\textcolor{{{color:primary.0}}}{X=X_1+\\cdots+X_{{{eval:n}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On lance ${{eval:n}}$ dés équilibrés à six faces et on note $S$ la somme des faces obtenues.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E(S)=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:7*n/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit $S=D_1+D_2+\\cdots+D_{{{eval:n}}}$, où $D_k$ est le résultat du $k$-ième dé : on n'a pas besoin de la loi de $S$.",
+					"Chaque $D_k$ a pour espérance $\\dfrac{1+2+3+4+5+6}{6}=3{,}5$.",
+					"Par linéarité de l'espérance : $E(S)={{eval:n}}\\times3{,}5=\\textcolor{{{color:primary.0}}}{{{eval:7*n/2;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On lance ${{eval:p}}$ fois une pièce équilibrée (succès : « pile »), puis ${{eval:q}}$ fois un dé équilibré à six faces (succès : « $6$ »), tous les lancers étant indépendants. On note $N$ le nombre total de succès.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E(N)=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..10"
+				},
+				{
+					"name": "q",
+					"expression": "2..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p/2+q/6}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit $N=Y+Z$, où $Y$ est le nombre de piles et $Z$ le nombre de $6$ : $Y$ suit la loi binomiale $\\mathcal{B}\\big({{eval:p}}\\,;\\tfrac{1}{2}\\big)$ et $Z$ la loi $\\mathcal{B}\\big({{eval:q}}\\,;\\tfrac{1}{6}\\big)$. $N$ ne suit pas une loi binomiale : les succès n'ont pas tous la même probabilité.",
+					"$E(Y)={{eval:p}}\\times\\dfrac{1}{2}={{eval:p/2}}$ et $E(Z)={{eval:q}}\\times\\dfrac{1}{6}={{eval:q/6}}$.",
+					"Par linéarité : $E(N)=E(Y)+E(Z)=\\textcolor{{{color:primary.0}}}{{{eval:p/2+q/6}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On lance ${{eval:p}}$ fois une pièce équilibrée (succès : « pile »), puis ${{eval:q}}$ fois un dé équilibré à six faces (succès : « $6$ »), tous les lancers étant indépendants. On note $N$ le nombre total de succès.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$V(N)=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..10"
+				},
+				{
+					"name": "q",
+					"expression": "2..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p/4+5*q/36}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit $N=Y+Z$, où $Y$ est le nombre de piles et $Z$ le nombre de $6$ : $Y$ suit la loi binomiale $\\mathcal{B}\\big({{eval:p}}\\,;\\tfrac{1}{2}\\big)$ et $Z$ la loi $\\mathcal{B}\\big({{eval:q}}\\,;\\tfrac{1}{6}\\big)$. $N$ ne suit pas une loi binomiale : les succès n'ont pas tous la même probabilité.",
+					"$V(Y)={{eval:p}}\\times\\dfrac{1}{2}\\times\\dfrac{1}{2}={{eval:p/4}}$ et $V(Z)={{eval:q}}\\times\\dfrac{1}{6}\\times\\dfrac{5}{6}={{eval:5*q/36}}$.",
+					"$Y$ et $Z$ portent sur des lancers différents, donc sont indépendantes : $V(N)=V(Y)+V(Z)={{eval:p/4}}+{{eval:5*q/36}}=\\textcolor{{{color:primary.0}}}{{{eval:p/4+5*q/36}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Somme des indicatrices",
+			"variationIndex": 0,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : nX₁",
+			"variationIndex": 0,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : produit",
+			"variationIndex": 0,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : moyenne",
+			"variationIndex": 0,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5 dés : 17,5",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["17{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En fraction",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["\\frac{35}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un dé",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["3{,}5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 5 × 21",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["105"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 piles, 9 dés : 2 + 3/2",
+			"variationIndex": 2,
+			"variables": {
+				"p": "4",
+				"q": "9"
+			},
+			"answers": ["\\frac{7}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En décimal",
+			"variationIndex": 2,
+			"variables": {
+				"p": "4",
+				"q": "9"
+			},
+			"answers": ["3{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : tout à 1/2",
+			"variationIndex": 2,
+			"variables": {
+				"p": "4",
+				"q": "9"
+			},
+			"answers": ["\\frac{13}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : tout à 1/6",
+			"variationIndex": 2,
+			"variables": {
+				"p": "4",
+				"q": "9"
+			},
+			"answers": ["\\frac{13}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 piles, 9 dés : 1 + 5/4",
+			"variationIndex": 3,
+			"variables": {
+				"p": "4",
+				"q": "9"
+			},
+			"answers": ["\\frac{9}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En décimal",
+			"variationIndex": 3,
+			"variables": {
+				"p": "4",
+				"q": "9"
+			},
+			"answers": ["2{,}25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : E(N)",
+			"variationIndex": 3,
+			"variables": {
+				"p": "4",
+				"q": "9"
+			},
+			"answers": ["\\frac{7}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : tout à 1/4",
+			"variationIndex": 3,
+			"variables": {
+				"p": "4",
+				"q": "9"
+			},
+			"answers": ["\\frac{13}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

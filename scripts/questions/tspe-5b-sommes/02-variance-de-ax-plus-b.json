@@ -1,0 +1,284 @@
+{
+	"title": "Variance de aX + b : V(aX) = a²V(X)",
+	"description": "V(aX) = a²V(X), V(aX + b) = a²V(X), σ(aX + b) = |a|σ(X) avec a négatif, gain G = aX − b (pièges : aV(X), b ajouté, σ négatif)",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Sommes de variables aléatoires",
+	"subdomain": "Espérance et variance",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Une variable aléatoire $X$ a pour variance $V(X)={{eval:v}}$.\n\n$V({{eval:a}}X)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-6..6"
+				},
+				{
+					"name": "v",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a^2*v}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Multiplier une variable par $a$ multiplie ses écarts à l'espérance par $a$, donc les carrés de ces écarts par $a^2$ : $V(aX)=a^2V(X)$.",
+					"$V({{eval:a}}X)={{if:a<0|(}}{{eval:a}}{{if:a<0|)}}^2\\times{{eval:v}}={{eval:a^2}}\\times{{eval:v}}=\\textcolor{{{color:primary.0}}}{{{eval:a^2*v}}}$."
+				]
+			},
+			"conditions": ["a^2 > 1"]
+		},
+		{
+			"statement": "Une variable aléatoire $X$ a pour variance $V(X)={{eval:v/10;d}}$. On pose $Y={{eval:a}}X+{{eval:b}}$.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$V(Y)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-5..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "v",
+					"expression": "2..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a^2*v/10}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Ajouter la constante ${{eval:b}}$ décale toutes les valeurs et l'espérance de la même quantité : les écarts à l'espérance ne changent pas, $V(aX+b)=V(aX)$.",
+					"$V(aX)=a^2V(X)$ : $V(Y)={{if:a<0|(}}{{eval:a}}{{if:a<0|)}}^2\\times{{eval:v/10;d}}=\\textcolor{{{color:primary.0}}}{{{eval:a^2*v/10;d}}}$."
+				]
+			},
+			"conditions": ["a^2 > 1"]
+		},
+		{
+			"statement": "Une variable aléatoire $X$ a pour écart type $\\sigma\\left(X\\right)={{eval:s}}$. On pose $Y={{eval:a}}X+{{eval:b}}$.\n\n$\\sigma\\left(Y\\right)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-6..-2"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "s",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-a*s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$V(Y)=a^2V(X)$, donc $\\sigma(Y)=\\sqrt{a^2V(X)}=\\lvert a\\rvert\\,\\sigma(X)$ : un écart type est positif, $a={{eval:a}}$ compte par sa valeur absolue.",
+					"$\\sigma(Y)=\\lvert{{eval:a}}\\rvert\\times{{eval:s}}={{eval:-a}}\\times{{eval:s}}=\\textcolor{{{color:primary.0}}}{{{eval:-a*s}}}$."
+				]
+			}
+		},
+		{
+			"statement": "À un jeu, on note $X$ le nombre de cibles touchées ; $V(X)={{eval:v/10;d}}$. Le gain du joueur, en euros, est $G={{eval:a}}X-{{eval:b}}$.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$V(G)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..10"
+				},
+				{
+					"name": "b",
+					"expression": "1..20"
+				},
+				{
+					"name": "v",
+					"expression": "2..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a^2*v/10}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$G=aX+b$ avec $a={{eval:a}}$ et $b=-{{eval:b}}$ : la constante ne change pas la variance, et $V(aX)=a^2V(X)$.",
+					"$V(G)={{eval:a}}^2\\times{{eval:v/10;d}}={{eval:a^2}}\\times{{eval:v/10;d}}=\\textcolor{{{color:primary.0}}}{{{eval:a^2*v/10;d}}}$ (en euros au carré)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a = −3, V = 4 : 36",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"v": "4"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : aV(X)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"v": "4"
+			},
+			"answers": ["-12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : |a|V(X)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"v": "4"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a = 2, b = 5, V = 1,5 : 6",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"v": "15"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : + b",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"v": "15"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2V",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"v": "15"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a = −4, σ = 3 : 12",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-4",
+				"b": "2",
+				"s": "3"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : σ négatif",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-4",
+				"b": "2",
+				"s": "3"
+			},
+			"answers": ["-12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a²σ",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-4",
+				"b": "2",
+				"s": "3"
+			},
+			"answers": ["48"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a = 5, V = 1,2 : 30",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"b": "8",
+				"v": "12"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 × 1,2",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"b": "8",
+				"v": "12"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 25 × 1,2 − 8",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"b": "8",
+				"v": "12"
+			},
+			"answers": ["22"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
