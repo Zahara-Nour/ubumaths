@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, à la création du sous-chantier._
+_Mis à jour le 2026-11-02, phase 0 du lot 5a écrite._
 
-- **État** : rien d'écrit ; points et classement repris de l'index (§ 3).
-- **Prochaine action** : lot 5a (succession d'épreuves) : worktree neuf, relevé MCP des voisins (nœuds, niveaux des catégories), phase 0 à faire valider.
-- **En attente de David** : rien (la phase 0 est à produire).
+- **État** : relevé MCP fait, phase 0 du lot 5a écrite (§ « Lot 5a » en bas), aucun fichier de modèle écrit.
+- **Prochaine action** : écrire le lot 5a (`docs/wip/questions/lot-tspe-5a-succession.py`) dès la validation.
+- **En attente de David** : validation de la phase 0 du lot 5a (Q1 à Q3).
 - **Pièges en cours** : voir « Décisions communes et pièges » ci-dessous.
-- **Worktree / branche** : aucun ; worktree neuf `../ubumaths-wt-questions-tspe-proba` depuis `origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-proba`, `feat/questions-tspe-proba-5a`.
 
 ---
 
