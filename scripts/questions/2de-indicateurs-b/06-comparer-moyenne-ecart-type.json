@@ -1,0 +1,142 @@
+{
+	"title": "Comparer deux séries : moyenne et écart type",
+	"description": "Deux séries résumées par (moyenne, écart type) : la meilleure moyenne, la plus homogène",
+	"grades": ["2"],
+	"theme": "Statistiques",
+	"domain": "Problèmes",
+	"subdomain": "Comparer des séries",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Deux classes ont passé le même devoir, noté sur $20$.\n\n| | Moyenne | Écart type |\n|---|---|---|\n| Classe A | ${{eval:(ma)/10;d}}$ | ${{eval:(sa)/10;d}}$ |\n| Classe B | ${{eval:(mb)/10;d}}$ | ${{eval:(sb)/10;d}}$ |\n\nQuelle classe a les meilleurs résultats en moyenne ?\n\n```choix\nmelanger: non\n- la classe A\n- la classe B\n```",
+			"variables": [
+				{
+					"name": "ma",
+					"expression": "90..135"
+				},
+				{
+					"name": "mb",
+					"expression": "90..135"
+				},
+				{
+					"name": "sa",
+					"expression": "10..50"
+				},
+				{
+					"name": "sb",
+					"expression": "10..50"
+				}
+			],
+			"conditions": ["abs((ma)-(mb)) >= 3", "abs((sa)-(sb)) >= 8"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:ma>mb|0|1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La **moyenne** indique le niveau : on compare ${{eval:(ma)/10;d}}$ et ${{eval:(mb)/10;d}}$.",
+					"C'est \\textcolor{{{color:primary.0}}}{\\text{la classe {{if:ma>mb|A|B}}}} qui a la meilleure moyenne."
+				]
+			}
+		},
+		{
+			"statement": "Deux classes ont passé le même devoir, noté sur $20$.\n\n| | Moyenne | Écart type |\n|---|---|---|\n| Classe A | ${{eval:(ma)/10;d}}$ | ${{eval:(sa)/10;d}}$ |\n| Classe B | ${{eval:(mb)/10;d}}$ | ${{eval:(sb)/10;d}}$ |\n\nQuelle classe a les résultats les plus homogènes (les plus regroupés autour de la moyenne) ?\n\n```choix\nmelanger: non\n- la classe A\n- la classe B\n```",
+			"variables": [
+				{
+					"name": "ma",
+					"expression": "90..135"
+				},
+				{
+					"name": "mb",
+					"expression": "90..135"
+				},
+				{
+					"name": "sa",
+					"expression": "10..50"
+				},
+				{
+					"name": "sb",
+					"expression": "10..50"
+				}
+			],
+			"conditions": ["abs((ma)-(mb)) >= 3", "abs((sa)-(sb)) >= 8"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:sa<sb|0|1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'**écart type** mesure la dispersion autour de la moyenne : le plus petit écart type correspond aux résultats les plus homogènes.",
+					"On compare ${{eval:(sa)/10;d}}$ et ${{eval:(sb)/10;d}}$ : c'est \\textcolor{{{color:primary.0}}}{\\text{la classe {{if:sa<sb|A|B}}}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "11,2 contre 10,8 : A",
+			"variationIndex": 0,
+			"variables": {
+				"ma": "112",
+				"mb": "108",
+				"sa": "45",
+				"sb": "21"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : B",
+			"variationIndex": 0,
+			"variables": {
+				"ma": "112",
+				"mb": "108",
+				"sa": "45",
+				"sb": "21"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Écarts types 4,5 et 2,1 : B plus homogène",
+			"variationIndex": 1,
+			"variables": {
+				"ma": "112",
+				"mb": "108",
+				"sa": "45",
+				"sb": "21"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : A (plus grand écart type)",
+			"variationIndex": 1,
+			"variables": {
+				"ma": "112",
+				"mb": "108",
+				"sa": "45",
+				"sb": "21"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
