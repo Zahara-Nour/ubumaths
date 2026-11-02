@@ -6,20 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2194._
+_Mis à jour le 2026-11-02, avant la PR de migration du lot 7a._
 
-- **État** : lots 1 à 6b en prod ET publiés. Lot 7a (calcul posé + monnaie) : 10 modèles mergés (#2194, CI verte),
-  **pas encore créés en prod** (`scripts/questions/ce2-7a/`, simulation 10/10). Aucun worktree en cours.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce2-7a --publier`
-  (`!`) ; je relève au MCP, puis migration nœud + tag (016, 090, 019, 055, 056, 054, 080), page à cocher,
-  `publier-lot`. Ensuite lot 7b (`horloge` + `line` : 057, 059, 094, 010, 058), 7c statistiques, `figure` / images
-  fixes, QCM, outils neufs.
-- **En attente de David** : lancer `create-questions --publier` (écriture prod refusée au classifieur).
-- **Pièges en cours** : jamais de variable `e` (Euler) même dans un texte `{{eval:10*e}}` ; corrigé des unités mêlées (06)
-  sans bloc `operation` résolu (écart à la décision 3, rendu non vérifié) ; verdicts du 6b posés en 3 s : relecture non
-  prouvée ; niveaux monnaie à relever juste avant la publication (brouillons CE1 du lot 8 non publiés) ; commitlint :
-  corps ≤ 100 caractères par ligne, sujet sans majuscule ; pas de mention Claude.
-- **Worktree / branche** : aucun.
+- **État** : lots 1 à 6b en prod ET publiés. Lot 7a : 10 brouillons créés en prod (vérifiés au MCP), migration nœud +
+  tag écrite, test rouge sans / vert avec ; PR de migration en cours (worktree `ubumaths-wt-questions-ce2`).
+- **Prochaine action** : `security-auditor`, CI verte, merge, `pnpm check:migrations --pr <n>` avant le merge, `db:migrate`
+  depuis le worktree mergé ; puis page à cocher, `publier-lot`. Ensuite lot 7b (`horloge` + `line`), 7c statistiques,
+  `figure` / images fixes, QCM, outils neufs.
+- **En attente de David** : rien.
+- **Pièges en cours** : jamais de variable `e` (Euler) ; corrigé des unités mêlées (06) sans bloc `operation` résolu (écart
+  à la décision 3, rendu non vérifié) ; verdicts du 6b posés en 3 s : relecture non prouvée ; niveaux monnaie à relever
+  juste avant la publication (brouillons CE1 du lot 8 non publiés) ; commitlint : corps ≤ 100 caractères par ligne.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce2` · `feat/questions-ce2-7a-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -574,3 +572,14 @@ Réponse de David (« tes recos ? » puis « ok », 2026-11-02) : les cinq recom
   zéro à casser géré (« il n'y a rien à casser ici… il reste 9 »), relu à l'aperçu. Case posée sans `expectedAnswer`.
 - Prix des corrigés de monnaie en centimes entiers, `zeros: off` (2,2 juste pour 2,20 €). Rendu : condition
   `floor(p/100)+1 < B` (sinon « de 5 € à 5 €, il faut 0 € »).
+
+### Lot 7a — brouillons en prod et migration (2026-11-02)
+
+- `create-questions --publier` (David) : 10 brouillons, relus au MCP (draft, CE2, catégories et niveaux attendus, 81 specs, sans
+  nœud ni tag) : 01 `3d1856ac`, 02 `89698b69`, 03 `b0740746`, 04 `d1fc9daa`, 05 `c25f80f0`, 06 `4954edb5`, 07 `8c90be06`,
+  08 `e05931f9`, 09 `91805d1e`, 10 `52206066` (préfixes). Rangement : 01 → CE2-016 ; 02, 03 → CE2-090 (Entiers : addition et
+  soustraction › calcul posé) ; 04, 05 → CE2-019 (Entiers : multiplication › calcul posé) ; 06 → CE2-055 et 07 → CE2-056
+  (Monnaie › euros et centimes) ; 08 → CE2-054 (pièces et billets) ; 09, 10 → CE2-080 (rendre la monnaie).
+- Migration `20261102053224_questions_ce2_lot7a_rangement_tags` (additive, rollback en commentaire) et test
+  `tests/integration/questions-ce2-lot7a-rangement-tags.test.ts` : rouge sans le corps de la migration (5 échecs sur 9),
+  vert avec (9/9).
