@@ -1,0 +1,587 @@
+{
+	"title": "Lire une boîte à moustaches",
+	"description": "Lire la médiane, les quartiles, l'étendue sur une boîte à moustaches ; choisir la phrase juste ; comparer deux boîtes",
+	"grades": ["3"],
+	"theme": "Statistiques",
+	"domain": "Indicateurs",
+	"subdomain": "Boîte à moustaches",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "La boîte à moustaches résume le temps de trajet, en minutes, entre la maison et le collège des élèves d'une classe.\n\n```boite-a-moustaches\naxe: 0 à 50, de 2 en 2\ntitre: Temps de trajet (min)\nTrajet = {{lo}} ; {{qa}} ; {{me}} ; {{qb}} ; {{hi}}\n```\n\nQuelle est la médiane du temps de trajet, en minutes ?\n\n$?$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..6"
+				},
+				{
+					"name": "g1",
+					"expression": "1..4"
+				},
+				{
+					"name": "g2",
+					"expression": "1..4"
+				},
+				{
+					"name": "g3",
+					"expression": "1..4"
+				},
+				{
+					"name": "g4",
+					"expression": "1..4"
+				},
+				{
+					"name": "lo",
+					"expression": "eval:0+2*u"
+				},
+				{
+					"name": "qa",
+					"expression": "eval:lo+2*g1"
+				},
+				{
+					"name": "me",
+					"expression": "eval:qa+2*g2"
+				},
+				{
+					"name": "qb",
+					"expression": "eval:me+2*g3"
+				},
+				{
+					"name": "hi",
+					"expression": "eval:qb+2*g4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{me}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur une boîte à moustaches, on lit de gauche à droite : le minimum (bout de la moustache gauche), le premier quartile $Q_1$ (bord gauche de la boîte), la médiane (trait dans la boîte), le troisième quartile $Q_3$ (bord droit), le maximum (bout de la moustache droite).",
+					"L'axe est gradué de $2$ en $2$ : le trait dans la boîte est à $\\textcolor{{{color:primary.0}}}{{{me}}}$.",
+					"Au moins la moitié des élèves mettent ${{me}}$ minutes ou moins, au moins la moitié ${{me}}$ minutes ou plus."
+				]
+			}
+		},
+		{
+			"statement": "La boîte à moustaches résume les notes sur $20$ des élèves de 3e à un devoir commun.\n\n```boite-a-moustaches\naxe: 0 à 20\ntitre: Note sur 20\nNotes = {{lo}} ; {{qa}} ; {{me}} ; {{qb}} ; {{hi}}\n```\n\nLis le premier quartile $Q_1$ et le troisième quartile $Q_3$.\n\n$Q_1=?$ et $Q_3=?$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "2..6"
+				},
+				{
+					"name": "g1",
+					"expression": "1..4"
+				},
+				{
+					"name": "g2",
+					"expression": "1..4"
+				},
+				{
+					"name": "g3",
+					"expression": "1..4"
+				},
+				{
+					"name": "g4",
+					"expression": "1..4"
+				},
+				{
+					"name": "lo",
+					"expression": "eval:0+1*u"
+				},
+				{
+					"name": "qa",
+					"expression": "eval:lo+1*g1"
+				},
+				{
+					"name": "me",
+					"expression": "eval:qa+1*g2"
+				},
+				{
+					"name": "qb",
+					"expression": "eval:me+1*g3"
+				},
+				{
+					"name": "hi",
+					"expression": "eval:qb+1*g4"
+				}
+			],
+			"conditions": ["hi <= 20"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{qa}}"
+				},
+				{
+					"expectedAnswer": "{{qb}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur une boîte à moustaches, on lit de gauche à droite : le minimum (bout de la moustache gauche), le premier quartile $Q_1$ (bord gauche de la boîte), la médiane (trait dans la boîte), le troisième quartile $Q_3$ (bord droit), le maximum (bout de la moustache droite).",
+					"Bord gauche de la boîte : $Q_1 = \\textcolor{{{color:primary.0}}}{{{qa}}}$ ; bord droit : $Q_3 = \\textcolor{{{color:primary.1}}}{{{qb}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La boîte à moustaches résume la taille, en centimètres, des élèves d'un collège.\n\n```boite-a-moustaches\naxe: 140 à 180, de 2 en 2\ntitre: Taille (cm)\nTailles = {{lo}} ; {{qa}} ; {{me}} ; {{qb}} ; {{hi}}\n```\n\nQuelle est l'étendue des tailles, en centimètres ?\n\n$?$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..4"
+				},
+				{
+					"name": "g1",
+					"expression": "1..4"
+				},
+				{
+					"name": "g2",
+					"expression": "1..4"
+				},
+				{
+					"name": "g3",
+					"expression": "1..4"
+				},
+				{
+					"name": "g4",
+					"expression": "1..4"
+				},
+				{
+					"name": "lo",
+					"expression": "eval:140+2*u"
+				},
+				{
+					"name": "qa",
+					"expression": "eval:lo+2*g1"
+				},
+				{
+					"name": "me",
+					"expression": "eval:qa+2*g2"
+				},
+				{
+					"name": "qb",
+					"expression": "eval:me+2*g3"
+				},
+				{
+					"name": "hi",
+					"expression": "eval:qb+2*g4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:hi-lo}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'étendue est la différence entre le maximum et le minimum : les deux bouts des moustaches.",
+					"Minimum : ${{lo}}$ cm ; maximum : ${{hi}}$ cm (axe gradué de $2$ en $2$).",
+					"Étendue : ${{hi}} - {{lo}} = \\textcolor{{{color:primary.0}}}{{{eval:hi-lo}}}$ cm."
+				]
+			}
+		},
+		{
+			"statement": "La boîte à moustaches résume les notes sur $20$ des élèves d'une classe.\n\n```boite-a-moustaches\naxe: 0 à 20\ntitre: Note sur 20\nNotes = {{lo}} ; {{qa}} ; {{me}} ; {{qb}} ; {{hi}}\n```\n\nQuelle phrase est juste ?\n\n```choix\n- {{if:t==0|Au moins la moitié des élèves ont une note supérieure ou égale à ${{me}}$.|{{if:t==1|Au moins $25~\\%$ des élèves ont une note inférieure ou égale à ${{qa}}$.|Au moins $75~\\%$ des élèves ont une note inférieure ou égale à ${{qb}}$.}}}}\n- Au moins $75~\\%$ des élèves ont une note supérieure ou égale à ${{qb}}$.\n- Au moins la moitié des élèves ont une note inférieure ou égale à ${{qa}}$.\n- L'étendue des notes est ${{hi}}$.\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "u",
+					"expression": "2..6"
+				},
+				{
+					"name": "g1",
+					"expression": "1..4"
+				},
+				{
+					"name": "g2",
+					"expression": "1..4"
+				},
+				{
+					"name": "g3",
+					"expression": "1..4"
+				},
+				{
+					"name": "g4",
+					"expression": "1..4"
+				},
+				{
+					"name": "lo",
+					"expression": "eval:0+1*u"
+				},
+				{
+					"name": "qa",
+					"expression": "eval:lo+1*g1"
+				},
+				{
+					"name": "me",
+					"expression": "eval:qa+1*g2"
+				},
+				{
+					"name": "qb",
+					"expression": "eval:me+1*g3"
+				},
+				{
+					"name": "hi",
+					"expression": "eval:qb+1*g4"
+				}
+			],
+			"conditions": ["hi <= 20"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur une boîte à moustaches, on lit de gauche à droite : le minimum (bout de la moustache gauche), le premier quartile $Q_1$ (bord gauche de la boîte), la médiane (trait dans la boîte), le troisième quartile $Q_3$ (bord droit), le maximum (bout de la moustache droite).",
+					"{{if:t==0|${{me}}$ est la médiane : au moins la moitié des notes sont au-dessus (ou égales).|{{if:t==1|${{qa}}$ est le premier quartile : au moins un quart des notes sont en dessous (ou égales).|${{qb}}$ est le troisième quartile : au moins trois quarts des notes sont en dessous (ou égales).}}}}",
+					"Les autres sont fausses : au moins $75~\\%$ des notes sont inférieures ou égales à ${{qb}}$ (pas supérieures) ; ${{qa}}$ est sous la médiane, donc moins de la moitié des notes sont inférieures ou égales à ${{qa}}$ ; l'étendue est ${{hi}} - {{lo}} = {{eval:hi-lo}}$."
+				]
+			}
+		},
+		{
+			"statement": "Les deux boîtes à moustaches résument les notes sur $20$ de deux classes au même devoir.\n\n```boite-a-moustaches\naxe: 0 à 20\ntitre: Note sur 20\n3e A = {{Alo}} ; {{Aqa}} ; {{Ame}} ; {{Aqb}} ; {{Ahi}}\n3e B = {{Blo}} ; {{Bqa}} ; {{Bme}} ; {{Bqb}} ; {{Bhi}}\n```\n\nQuelle phrase est juste ?\n\n```choix\n- La {{if:Ame>Bme|3e A|3e B}} a la plus grande médiane, la {{if:(Ahi-Alo)>(Bhi-Blo)|3e A|3e B}} la plus grande étendue.\n- La {{if:Ame>Bme|3e B|3e A}} a la plus grande médiane, la {{if:(Ahi-Alo)>(Bhi-Blo)|3e A|3e B}} la plus grande étendue.\n- La {{if:Ame>Bme|3e A|3e B}} a la plus grande médiane, la {{if:(Ahi-Alo)>(Bhi-Blo)|3e B|3e A}} la plus grande étendue.\n- La {{if:Ame>Bme|3e B|3e A}} a la plus grande médiane, la {{if:(Ahi-Alo)>(Bhi-Blo)|3e B|3e A}} la plus grande étendue.\n```",
+			"variables": [
+				{
+					"name": "Au",
+					"expression": "2..6"
+				},
+				{
+					"name": "Ag1",
+					"expression": "1..4"
+				},
+				{
+					"name": "Ag2",
+					"expression": "1..4"
+				},
+				{
+					"name": "Ag3",
+					"expression": "1..4"
+				},
+				{
+					"name": "Ag4",
+					"expression": "1..4"
+				},
+				{
+					"name": "Alo",
+					"expression": "eval:0+1*Au"
+				},
+				{
+					"name": "Aqa",
+					"expression": "eval:Alo+1*Ag1"
+				},
+				{
+					"name": "Ame",
+					"expression": "eval:Aqa+1*Ag2"
+				},
+				{
+					"name": "Aqb",
+					"expression": "eval:Ame+1*Ag3"
+				},
+				{
+					"name": "Ahi",
+					"expression": "eval:Aqb+1*Ag4"
+				},
+				{
+					"name": "Bu",
+					"expression": "2..6"
+				},
+				{
+					"name": "Bg1",
+					"expression": "1..4"
+				},
+				{
+					"name": "Bg2",
+					"expression": "1..4"
+				},
+				{
+					"name": "Bg3",
+					"expression": "1..4"
+				},
+				{
+					"name": "Bg4",
+					"expression": "1..4"
+				},
+				{
+					"name": "Blo",
+					"expression": "eval:0+1*Bu"
+				},
+				{
+					"name": "Bqa",
+					"expression": "eval:Blo+1*Bg1"
+				},
+				{
+					"name": "Bme",
+					"expression": "eval:Bqa+1*Bg2"
+				},
+				{
+					"name": "Bqb",
+					"expression": "eval:Bme+1*Bg3"
+				},
+				{
+					"name": "Bhi",
+					"expression": "eval:Bqb+1*Bg4"
+				}
+			],
+			"conditions": ["Ame != Bme", "(Ahi-Alo) != (Bhi-Blo)", "Ahi <= 20", "Bhi <= 20"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Médianes (trait dans la boîte) : 3e A ${{Ame}}$, 3e B ${{Bme}}$ → **{{if:Ame>Bme|3e A|3e B}}**.",
+					"Étendues (maximum − minimum) : 3e A ${{Ahi}} - {{Alo}} = {{eval:Ahi-Alo}}$, 3e B ${{Bhi}} - {{Blo}} = {{eval:Bhi-Blo}}$ → **{{if:(Ahi-Alo)>(Bhi-Blo)|3e A|3e B}}**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Trajet 6, 10, 16, 22, 30 : médiane 16",
+			"variationIndex": 0,
+			"variables": {
+				"u": "3",
+				"g1": "2",
+				"g2": "3",
+				"g3": "3",
+				"g4": "4"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Q1 lu pour la médiane",
+			"variationIndex": 0,
+			"variables": {
+				"u": "3",
+				"g1": "2",
+				"g2": "3",
+				"g3": "3",
+				"g4": "4"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : graduation de 2 lue de 1 (8 traits)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "3",
+				"g1": "2",
+				"g2": "3",
+				"g3": "3",
+				"g4": "4"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Notes 2, 5, 7, 11, 14 : Q1 = 5, Q3 = 11",
+			"variationIndex": 1,
+			"variables": {
+				"u": "2",
+				"g1": "3",
+				"g2": "2",
+				"g3": "4",
+				"g4": "3"
+			},
+			"answers": ["5", "11"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Q1 et Q3 inversés",
+			"variationIndex": 1,
+			"variables": {
+				"u": "2",
+				"g1": "3",
+				"g2": "2",
+				"g3": "4",
+				"g4": "3"
+			},
+			"answers": ["11", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : minimum et maximum",
+			"variationIndex": 1,
+			"variables": {
+				"u": "2",
+				"g1": "3",
+				"g2": "2",
+				"g3": "4",
+				"g4": "3"
+			},
+			"answers": ["2", "14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Tailles 146 à 170 : étendue 24",
+			"variationIndex": 2,
+			"variables": {
+				"u": "3",
+				"g1": "2",
+				"g2": "3",
+				"g3": "3",
+				"g4": "4"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : étendue = maximum",
+			"variationIndex": 2,
+			"variables": {
+				"u": "3",
+				"g1": "2",
+				"g2": "3",
+				"g3": "3",
+				"g4": "4"
+			},
+			"answers": ["170"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : écart interquartile",
+			"variationIndex": 2,
+			"variables": {
+				"u": "3",
+				"g1": "2",
+				"g2": "3",
+				"g3": "3",
+				"g4": "4"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Phrase juste (médiane)",
+			"variationIndex": 3,
+			"variables": {
+				"t": "0",
+				"u": "2",
+				"g1": "3",
+				"g2": "2",
+				"g3": "4",
+				"g4": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Phrase juste (Q3)",
+			"variationIndex": 3,
+			"variables": {
+				"t": "2",
+				"u": "2",
+				"g1": "3",
+				"g2": "2",
+				"g3": "4",
+				"g4": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « 75 % au-dessus de Q3 »",
+			"variationIndex": 3,
+			"variables": {
+				"t": "0",
+				"u": "2",
+				"g1": "3",
+				"g2": "2",
+				"g3": "4",
+				"g4": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : étendue = maximum",
+			"variationIndex": 3,
+			"variables": {
+				"t": "1",
+				"u": "2",
+				"g1": "3",
+				"g2": "2",
+				"g3": "4",
+				"g4": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A plus grande médiane (9 contre 7), B plus grande étendue (13 contre 12)",
+			"variationIndex": 4,
+			"variables": {
+				"Au": "2",
+				"Ag1": "3",
+				"Ag2": "4",
+				"Ag3": "2",
+				"Ag4": "3",
+				"Bu": "3",
+				"Bg1": "2",
+				"Bg2": "2",
+				"Bg3": "4",
+				"Bg4": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la 3e A a aussi la plus grande étendue",
+			"variationIndex": 4,
+			"variables": {
+				"Au": "2",
+				"Ag1": "3",
+				"Ag2": "4",
+				"Ag3": "2",
+				"Ag4": "3",
+				"Bu": "3",
+				"Bg1": "2",
+				"Bg2": "2",
+				"Bg3": "4",
+				"Bg4": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
