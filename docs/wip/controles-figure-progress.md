@@ -231,3 +231,70 @@ calculée à chaque tirage. Plusieurs lignes `point …` dans le même `verifier
   (point attendu, essai) la plus proche ; point attendu au bout d'un trait sans nom = déjà dans la figure.
 - Tests : juge et lecture (`construction-point.test.ts`, 47), modèle (`check-template-figure`, 2), écran
   (`figure-a-completer-point.svelte.test.ts`, 2).
+
+## 7. Phase 0 — lot 2b : instruments sur papier uni (proposée le 2026-11-02)
+
+Points : 6-180 (papier uni), puis 5e (symétrie centrale tracée). Les instruments resserviront à la
+médiatrice, au triangle, au cercle circonscrit et à la bissectrice (§ 1).
+
+### Écriture par le prof
+
+```figure-a-completer
+fenetre: 0 ; 10 ; 0 ; 8
+verifier: point A' = symetrie(A, axe=d)
+---
+d = droite(point(4, 0), point(7, 8))
+A = point(2, 5)
+```
+
+Même contrôle qu'au lot 2a ; **sans `grille:`**, il n'est plus refusé : l'élève reçoit les instruments.
+
+### Les gestes
+
+- **Palette** (plusieurs outils dans une figure : nouveau) : Règle · Équerre · Compas · Point, boutons
+  au-dessus de la figure ; un seul outil → pas de palette (comme aujourd'hui). Changer d'outil annule
+  un départ en attente.
+- **Règle** : comme l'outil droite actuel (deux touchers, droite jusqu'aux bords).
+- **Équerre** : 1er toucher **sur une droite** (de la figure ou de l'élève : elle se surligne), 2e
+  toucher sur un point → la perpendiculaire à cette droite par ce point, jusqu'aux bords. 1er toucher
+  loin de toute droite → rien, et l'écran dit « Touche d'abord une droite. »
+- **Compas** : 1er toucher = le centre, 2e = un point du cercle → le cercle entier.
+- **Point** : un toucher place un point (comme au lot 2a).
+- **Aimantation** (à chaque toucher, dans le rayon de 24 px, dans cet ordre) : point nommé →
+  **intersection de deux traits** (droites, segments, cercles, de la figure ou de l'élève) → **sur un
+  trait** (le toucher est ramené sur la droite ou le cercle le plus proche) → libre (arrondi au
+  centième, comme aujourd'hui). « Sur un trait » sert à piquer le compas n'importe où sur l'axe.
+- **Effacer** : le départ en attente, sinon le dernier objet (perpendiculaire et cercle compris).
+- **Clavier** : les points nommés ET les intersections sont des boutons (Tab, Entrée) ; avec
+  l'équerre, les droites aussi. Pas de toucher libre au clavier (inutile : seuls les points exacts
+  comptent).
+- **Réponse** : la perpendiculaire s'écrit `droite(…)` (rien de neuf pour le juge) ; le cercle,
+  `cercle(cx;cy;px;py)` (nouveau, Zod) ; coordonnées en pleine précision → plafond porté de 1 000 à
+  2 000 caractères (20 objets inchangé).
+
+### Comportements
+
+- **Nominal** : perpendiculaire à d par A, compas centré au pied H par A, point à l'autre
+  intersection → juste. Autre chemin juste : deux cercles centrés sur l'axe passant par A, point à leur
+  seconde intersection.
+- **Limites** (juste) : traits de construction en trop ignorés ; point posé sur A' par une autre
+  construction exacte.
+- **Erreurs** (faux, première cause) : celles du lot 2a, plus, en tête : point posé **hors de toute
+  intersection** de traits et loin de A' → « Ton point est placé à l'œil : construis-le avec tes
+  instruments. »
+- **Erreurs d'auteur** (à la publication) : sans `grille:`, expression autre que `symetrie(…, axe=…)`
+  ou `symetrie(…, centre=…)` (les autres attendent les lots suivants) ; axe hors de la fenêtre ; A'
+  hors de la fenêtre.
+- **Correction** : inchangée (A' en pointillés, [AA'] codé).
+
+### Questions à David
+
+1. **Palette** : déduite (`point` sans `grille:` → Règle, Équerre, Compas, Point ; recommandé) ou
+   écrite par le prof (`outils: equerre, compas, point`) ? Dans les deux cas `outils:` peut restreindre.
+2. **Aimantation « sur un trait »** (seulement quand il y a des instruments) : la garder (recommandé :
+   sans elle, un compas piqué « sur l'axe » est à un centième près, et A' est faux) ?
+3. **Message « placé à l'œil »** : le garder (recommandé, il dit ce qu'on attend) ?
+4. **Symétrique d'une FIGURE sur papier uni** (`symetrique par d` sans `grille:`, outil segment +
+   instruments) : dans ce lot (recommandé : le juge existe, seule l'aimantation change) ou plus tard ?
+5. **Report de longueur au compas** (prendre l'écartement AB, piquer ailleurs) : plus tard, avec le
+   triangle (recommandé) ?
