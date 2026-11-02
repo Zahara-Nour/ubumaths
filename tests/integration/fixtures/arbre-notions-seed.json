@@ -1254,7 +1254,12 @@
 				{
 					"nom": "Variables et instructions",
 					"niveaux": "5e à 2de",
-					"sous_notions": ["variables et affectation", "types", "instructions conditionnelles"],
+					"sous_notions": [
+						"variables et affectation",
+						"types",
+						"instructions conditionnelles",
+						"blocs personnalisés"
+					],
 					"note": null
 				},
 				{

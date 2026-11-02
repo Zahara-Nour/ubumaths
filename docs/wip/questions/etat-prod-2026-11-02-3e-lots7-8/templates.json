@@ -1,0 +1,2117 @@
+[
+	{
+		"id": "0a470416-e296-4f2b-b11d-dee7150ebc7a",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 90,
+		"theme": "Algorithmique",
+		"domain": "Structurer un programme",
+		"subdomain": "Bloc personnalisé",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a+(n-1)*k}}"
+					}
+				],
+				"statement": "Le programme ci-dessous utilise un bloc personnalisé « dessine carré ».\n\n```scratch\ndéfinir dessine carré (côté)\nrépéter (4) fois\navancer de (côté) pas\ntourner ↻ de (90) degrés\nfin\n\nquand le drapeau vert pressé\nstylo en position d'écriture\nmettre [c v] à ({{a}})\nrépéter ({{n}}) fois\ndessine carré (c)\najouter ({{k}}) à [c v]\nfin\n```\n\nQuelle est la longueur du côté du **plus grand** carré dessiné (en pas) ?\n\n$?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "10..40"
+					},
+					{
+						"name": "n",
+						"expression": "3..6"
+					},
+					{
+						"name": "k",
+						"expression": "5..20"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le bloc « dessine carré (côté) » est **défini** une fois (en haut) : il trace un carré dont le côté est la valeur donnée entre parenthèses à chaque **appel**.",
+						"La boucle appelle ${{n}}$ fois le bloc, avec $c = {{a}}$, puis ${{eval:a+k}}$, ${{eval:a+2*k}}$, … : $c$ augmente de ${{k}}$ **après** chaque carré.",
+						"Le dernier carré (le ${{n}}$e) a pour côté ${{a}} + {{eval:n-1}} \\times {{k}} = {{eval:a+(n-1)*k}}$ ; l'ajout qui suit ne dessine plus rien.",
+						"Le plus grand carré a un côté de $\\textcolor{{{color:primary.0}}}{{{eval:a+(n-1)*k}}}$ pas."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:floor((s-a)/k)+1}}"
+					}
+				],
+				"statement": "Le programme ci-dessous utilise un bloc personnalisé « dessine carré ».\n\n```scratch\ndéfinir dessine carré (côté)\nrépéter (4) fois\navancer de (côté) pas\ntourner ↻ de (90) degrés\nfin\n\nquand le drapeau vert pressé\nstylo en position d'écriture\nmettre [c v] à ({{a}})\nrépéter jusqu'à ce que <(c) > [{{s}}]>\ndessine carré (c)\najouter ({{k}}) à [c v]\nfin\n```\n\nCombien de carrés le programme dessine-t-il ?\n\n$?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "10..30"
+					},
+					{
+						"name": "k",
+						"expression": "5..15"
+					},
+					{
+						"name": "s",
+						"expression": "60..120"
+					}
+				],
+				"conditions": ["floor((s-a)/k)+1>=3", "floor((s-a)/k)+1<=10"],
+				"correction": {
+					"steps": [
+						"Le bloc « dessine carré (côté) » est **défini** une fois (en haut) : il trace un carré dont le côté est la valeur donnée entre parenthèses à chaque **appel**.",
+						"Les carrés ont pour côtés ${{a}}$, ${{eval:a+k}}$, ${{eval:a+2*k}}$, … tant que $c \\leqslant {{s}}$ (la condition est testée avant chaque passage).",
+						"Le dernier côté dessiné est ${{eval:a+floor((s-a)/k)*k}} \\leqslant {{s}}$ ; le suivant, ${{eval:a+(floor((s-a)/k)+1)*k}}$, dépasse ${{s}}$ : la boucle s'arrête.",
+						"De ${{a}}$ à ${{eval:a+floor((s-a)/k)*k}}$ de ${{k}}$ en ${{k}}$ : ${{eval:floor((s-a)/k)}} + 1 = \\textcolor{{{color:primary.0}}}{{{eval:floor((s-a)/k)+1}}}$ carrés."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:4*(a+b)}}"
+					}
+				],
+				"statement": "Le programme ci-dessous utilise un bloc personnalisé « dessine carré ».\n\n```scratch\ndéfinir dessine carré (côté)\nrépéter (4) fois\navancer de (côté) pas\ntourner ↻ de (90) degrés\nfin\n\nquand le drapeau vert pressé\nstylo en position d'écriture\ndessine carré ({{a}})\ndessine carré ({{b}})\n```\n\nQuelle longueur le stylo trace-t-il en tout (en pas) ?\n\n$?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "10..60"
+					},
+					{
+						"name": "b",
+						"expression": "10..60"
+					}
+				],
+				"conditions": ["a!=b", "a%10==0 or b%10==0"],
+				"correction": {
+					"steps": [
+						"Le bloc « dessine carré (côté) » est **défini** une fois (en haut) : il trace un carré dont le côté est la valeur donnée entre parenthèses à chaque **appel**.",
+						"Un appel « dessine carré (côté) » avance $4$ fois de *côté* pas : il trace $4 \\times$ *côté* pas.",
+						"Premier appel : $4 \\times {{a}} = {{eval:4*a}}$ pas ; second appel : $4 \\times {{b}} = {{eval:4*b}}$ pas.",
+						"En tout : ${{eval:4*a}} + {{eval:4*b}} = \\textcolor{{{color:primary.0}}}{{{eval:4*(a+b)}}}$ pas."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Bloc personnalisé",
+		"description": "Lire un programme Scratch qui définit et appelle un bloc personnalisé « dessine carré » : côté du plus grand carré, nombre de carrés, longueur tracée",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["50"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "20",
+					"k": "10",
+					"n": "4"
+				},
+				"description": "a = 20, 4 carrés, +10 : 50",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["60"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "20",
+					"k": "10",
+					"n": "4"
+				},
+				"description": "Erreur : le dernier ajout compté (60)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["20"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "20",
+					"k": "10",
+					"n": "4"
+				},
+				"description": "Erreur : le premier carré (20)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "20",
+					"k": "10",
+					"s": "75"
+				},
+				"description": "a = 20, +10, jusqu'à > 75 : 6 carrés",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "20",
+					"k": "10",
+					"s": "75"
+				},
+				"description": "Erreur : un carré de moins (5)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "20",
+					"k": "10",
+					"s": "75"
+				},
+				"description": "Erreur : un carré de trop (7)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["320"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "30",
+					"b": "50"
+				},
+				"description": "Carrés de 30 et 50 : 320",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["80"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "30",
+					"b": "50"
+				},
+				"description": "Erreur : les côtés seuls (80)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["120"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "30",
+					"b": "50"
+				},
+				"description": "Erreur : le premier carré seul (120)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "1bd7378d-e2e3-4c28-af26-16fa904e58dd",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 90,
+		"theme": "Statistiques",
+		"domain": "Indicateurs",
+		"subdomain": "Boîte à moustaches",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{me}}"
+					}
+				],
+				"statement": "La boîte à moustaches résume le temps de trajet, en minutes, entre la maison et le collège des élèves d'une classe.\n\n```boite-a-moustaches\naxe: 0 à 50, de 2 en 2\ntitre: Temps de trajet (min)\nTrajet = {{lo}} ; {{qa}} ; {{me}} ; {{qb}} ; {{hi}}\n```\n\nQuelle est la médiane du temps de trajet, en minutes ?\n\n$?$",
+				"variables": [
+					{
+						"name": "u",
+						"expression": "1..6"
+					},
+					{
+						"name": "g1",
+						"expression": "1..4"
+					},
+					{
+						"name": "g2",
+						"expression": "1..4"
+					},
+					{
+						"name": "g3",
+						"expression": "1..4"
+					},
+					{
+						"name": "g4",
+						"expression": "1..4"
+					},
+					{
+						"name": "lo",
+						"expression": "eval:0+2*u"
+					},
+					{
+						"name": "qa",
+						"expression": "eval:lo+2*g1"
+					},
+					{
+						"name": "me",
+						"expression": "eval:qa+2*g2"
+					},
+					{
+						"name": "qb",
+						"expression": "eval:me+2*g3"
+					},
+					{
+						"name": "hi",
+						"expression": "eval:qb+2*g4"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Sur une boîte à moustaches, on lit de gauche à droite : le minimum (bout de la moustache gauche), le premier quartile $Q_1$ (bord gauche de la boîte), la médiane (trait dans la boîte), le troisième quartile $Q_3$ (bord droit), le maximum (bout de la moustache droite).",
+						"L'axe est gradué de $2$ en $2$ : le trait dans la boîte est à $\\textcolor{{{color:primary.0}}}{{{me}}}$.",
+						"Au moins la moitié des élèves mettent ${{me}}$ minutes ou moins, au moins la moitié ${{me}}$ minutes ou plus."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{qa}}"
+					},
+					{
+						"expectedAnswer": "{{qb}}"
+					}
+				],
+				"statement": "La boîte à moustaches résume les notes sur $20$ des élèves de 3e à un devoir commun.\n\n```boite-a-moustaches\naxe: 0 à 20\ntitre: Note sur 20\nNotes = {{lo}} ; {{qa}} ; {{me}} ; {{qb}} ; {{hi}}\n```\n\nLis le premier quartile $Q_1$ et le troisième quartile $Q_3$.\n\n$Q_1=?$ et $Q_3=?$",
+				"variables": [
+					{
+						"name": "u",
+						"expression": "2..6"
+					},
+					{
+						"name": "g1",
+						"expression": "1..4"
+					},
+					{
+						"name": "g2",
+						"expression": "1..4"
+					},
+					{
+						"name": "g3",
+						"expression": "1..4"
+					},
+					{
+						"name": "g4",
+						"expression": "1..4"
+					},
+					{
+						"name": "lo",
+						"expression": "eval:0+1*u"
+					},
+					{
+						"name": "qa",
+						"expression": "eval:lo+1*g1"
+					},
+					{
+						"name": "me",
+						"expression": "eval:qa+1*g2"
+					},
+					{
+						"name": "qb",
+						"expression": "eval:me+1*g3"
+					},
+					{
+						"name": "hi",
+						"expression": "eval:qb+1*g4"
+					}
+				],
+				"conditions": ["hi <= 20"],
+				"correction": {
+					"steps": [
+						"Sur une boîte à moustaches, on lit de gauche à droite : le minimum (bout de la moustache gauche), le premier quartile $Q_1$ (bord gauche de la boîte), la médiane (trait dans la boîte), le troisième quartile $Q_3$ (bord droit), le maximum (bout de la moustache droite).",
+						"Bord gauche de la boîte : $Q_1 = \\textcolor{{{color:primary.0}}}{{{qa}}}$ ; bord droit : $Q_3 = \\textcolor{{{color:primary.1}}}{{{qb}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:hi-lo}}"
+					}
+				],
+				"statement": "La boîte à moustaches résume la taille, en centimètres, des élèves d'un collège.\n\n```boite-a-moustaches\naxe: 140 à 180, de 2 en 2\ntitre: Taille (cm)\nTailles = {{lo}} ; {{qa}} ; {{me}} ; {{qb}} ; {{hi}}\n```\n\nQuelle est l'étendue des tailles, en centimètres ?\n\n$?$",
+				"variables": [
+					{
+						"name": "u",
+						"expression": "1..4"
+					},
+					{
+						"name": "g1",
+						"expression": "1..4"
+					},
+					{
+						"name": "g2",
+						"expression": "1..4"
+					},
+					{
+						"name": "g3",
+						"expression": "1..4"
+					},
+					{
+						"name": "g4",
+						"expression": "1..4"
+					},
+					{
+						"name": "lo",
+						"expression": "eval:140+2*u"
+					},
+					{
+						"name": "qa",
+						"expression": "eval:lo+2*g1"
+					},
+					{
+						"name": "me",
+						"expression": "eval:qa+2*g2"
+					},
+					{
+						"name": "qb",
+						"expression": "eval:me+2*g3"
+					},
+					{
+						"name": "hi",
+						"expression": "eval:qb+2*g4"
+					}
+				],
+				"correction": {
+					"steps": [
+						"L'étendue est la différence entre le maximum et le minimum : les deux bouts des moustaches.",
+						"Minimum : ${{lo}}$ cm ; maximum : ${{hi}}$ cm (axe gradué de $2$ en $2$).",
+						"Étendue : ${{hi}} - {{lo}} = \\textcolor{{{color:primary.0}}}{{{eval:hi-lo}}}$ cm."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "La boîte à moustaches résume les notes sur $20$ des élèves d'une classe.\n\n```boite-a-moustaches\naxe: 0 à 20\ntitre: Note sur 20\nNotes = {{lo}} ; {{qa}} ; {{me}} ; {{qb}} ; {{hi}}\n```\n\nQuelle phrase est juste ?\n\n```choix\n- {{if:t==0|Au moins la moitié des élèves ont une note supérieure ou égale à ${{me}}$.|{{if:t==1|Au moins $25~\\%$ des élèves ont une note inférieure ou égale à ${{qa}}$.|Au moins $75~\\%$ des élèves ont une note inférieure ou égale à ${{qb}}$.}}}}\n- Au moins $75~\\%$ des élèves ont une note supérieure ou égale à ${{qb}}$.\n- Au moins la moitié des élèves ont une note inférieure ou égale à ${{qa}}$.\n- L'étendue des notes est ${{hi}}$.\n```",
+				"variables": [
+					{
+						"name": "t",
+						"expression": "0..2"
+					},
+					{
+						"name": "u",
+						"expression": "2..6"
+					},
+					{
+						"name": "g1",
+						"expression": "1..4"
+					},
+					{
+						"name": "g2",
+						"expression": "1..4"
+					},
+					{
+						"name": "g3",
+						"expression": "1..4"
+					},
+					{
+						"name": "g4",
+						"expression": "1..4"
+					},
+					{
+						"name": "lo",
+						"expression": "eval:0+1*u"
+					},
+					{
+						"name": "qa",
+						"expression": "eval:lo+1*g1"
+					},
+					{
+						"name": "me",
+						"expression": "eval:qa+1*g2"
+					},
+					{
+						"name": "qb",
+						"expression": "eval:me+1*g3"
+					},
+					{
+						"name": "hi",
+						"expression": "eval:qb+1*g4"
+					}
+				],
+				"conditions": ["hi <= 20"],
+				"correction": {
+					"steps": [
+						"Sur une boîte à moustaches, on lit de gauche à droite : le minimum (bout de la moustache gauche), le premier quartile $Q_1$ (bord gauche de la boîte), la médiane (trait dans la boîte), le troisième quartile $Q_3$ (bord droit), le maximum (bout de la moustache droite).",
+						"{{if:t==0|${{me}}$ est la médiane : au moins la moitié des notes sont au-dessus (ou égales).|{{if:t==1|${{qa}}$ est le premier quartile : au moins un quart des notes sont en dessous (ou égales).|${{qb}}$ est le troisième quartile : au moins trois quarts des notes sont en dessous (ou égales).}}}}",
+						"Les autres sont fausses : au moins $75~\\%$ des notes sont inférieures ou égales à ${{qb}}$ (pas supérieures) ; ${{qa}}$ est sous la médiane, donc moins de la moitié des notes sont inférieures ou égales à ${{qa}}$ ; l'étendue est ${{hi}} - {{lo}} = {{eval:hi-lo}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Les deux boîtes à moustaches résument les notes sur $20$ de deux classes au même devoir.\n\n```boite-a-moustaches\naxe: 0 à 20\ntitre: Note sur 20\n3e A = {{Alo}} ; {{Aqa}} ; {{Ame}} ; {{Aqb}} ; {{Ahi}}\n3e B = {{Blo}} ; {{Bqa}} ; {{Bme}} ; {{Bqb}} ; {{Bhi}}\n```\n\nQuelle phrase est juste ?\n\n```choix\n- La {{if:Ame>Bme|3e A|3e B}} a la plus grande médiane, la {{if:(Ahi-Alo)>(Bhi-Blo)|3e A|3e B}} la plus grande étendue.\n- La {{if:Ame>Bme|3e B|3e A}} a la plus grande médiane, la {{if:(Ahi-Alo)>(Bhi-Blo)|3e A|3e B}} la plus grande étendue.\n- La {{if:Ame>Bme|3e A|3e B}} a la plus grande médiane, la {{if:(Ahi-Alo)>(Bhi-Blo)|3e B|3e A}} la plus grande étendue.\n- La {{if:Ame>Bme|3e B|3e A}} a la plus grande médiane, la {{if:(Ahi-Alo)>(Bhi-Blo)|3e B|3e A}} la plus grande étendue.\n```",
+				"variables": [
+					{
+						"name": "Au",
+						"expression": "2..6"
+					},
+					{
+						"name": "Ag1",
+						"expression": "1..4"
+					},
+					{
+						"name": "Ag2",
+						"expression": "1..4"
+					},
+					{
+						"name": "Ag3",
+						"expression": "1..4"
+					},
+					{
+						"name": "Ag4",
+						"expression": "1..4"
+					},
+					{
+						"name": "Alo",
+						"expression": "eval:0+1*Au"
+					},
+					{
+						"name": "Aqa",
+						"expression": "eval:Alo+1*Ag1"
+					},
+					{
+						"name": "Ame",
+						"expression": "eval:Aqa+1*Ag2"
+					},
+					{
+						"name": "Aqb",
+						"expression": "eval:Ame+1*Ag3"
+					},
+					{
+						"name": "Ahi",
+						"expression": "eval:Aqb+1*Ag4"
+					},
+					{
+						"name": "Bu",
+						"expression": "2..6"
+					},
+					{
+						"name": "Bg1",
+						"expression": "1..4"
+					},
+					{
+						"name": "Bg2",
+						"expression": "1..4"
+					},
+					{
+						"name": "Bg3",
+						"expression": "1..4"
+					},
+					{
+						"name": "Bg4",
+						"expression": "1..4"
+					},
+					{
+						"name": "Blo",
+						"expression": "eval:0+1*Bu"
+					},
+					{
+						"name": "Bqa",
+						"expression": "eval:Blo+1*Bg1"
+					},
+					{
+						"name": "Bme",
+						"expression": "eval:Bqa+1*Bg2"
+					},
+					{
+						"name": "Bqb",
+						"expression": "eval:Bme+1*Bg3"
+					},
+					{
+						"name": "Bhi",
+						"expression": "eval:Bqb+1*Bg4"
+					}
+				],
+				"conditions": ["Ame != Bme", "(Ahi-Alo) != (Bhi-Blo)", "Ahi <= 20", "Bhi <= 20"],
+				"correction": {
+					"steps": [
+						"Médianes (trait dans la boîte) : 3e A ${{Ame}}$, 3e B ${{Bme}}$ → **{{if:Ame>Bme|3e A|3e B}}**.",
+						"Étendues (maximum − minimum) : 3e A ${{Ahi}} - {{Alo}} = {{eval:Ahi-Alo}}$, 3e B ${{Bhi}} - {{Blo}} = {{eval:Bhi-Blo}}$ → **{{if:(Ahi-Alo)>(Bhi-Blo)|3e A|3e B}}**."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Lire une boîte à moustaches",
+		"description": "Lire la médiane, les quartiles, l'étendue sur une boîte à moustaches ; choisir la phrase juste ; comparer deux boîtes",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["16"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"u": "3",
+					"g1": "2",
+					"g2": "3",
+					"g3": "3",
+					"g4": "4"
+				},
+				"description": "Trajet 6, 10, 16, 22, 30 : médiane 16",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"u": "3",
+					"g1": "2",
+					"g2": "3",
+					"g3": "3",
+					"g4": "4"
+				},
+				"description": "Erreur : Q1 lu pour la médiane",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"u": "3",
+					"g1": "2",
+					"g2": "3",
+					"g3": "3",
+					"g4": "4"
+				},
+				"description": "Erreur : graduation de 2 lue de 1 (8 traits)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5", "11"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"u": "2",
+					"g1": "3",
+					"g2": "2",
+					"g3": "4",
+					"g4": "3"
+				},
+				"description": "Notes 2, 5, 7, 11, 14 : Q1 = 5, Q3 = 11",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["11", "5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"u": "2",
+					"g1": "3",
+					"g2": "2",
+					"g3": "4",
+					"g4": "3"
+				},
+				"description": "Erreur : Q1 et Q3 inversés",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2", "14"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"u": "2",
+					"g1": "3",
+					"g2": "2",
+					"g3": "4",
+					"g4": "3"
+				},
+				"description": "Erreur : minimum et maximum",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["24"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"u": "3",
+					"g1": "2",
+					"g2": "3",
+					"g3": "3",
+					"g4": "4"
+				},
+				"description": "Tailles 146 à 170 : étendue 24",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["170"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"u": "3",
+					"g1": "2",
+					"g2": "3",
+					"g3": "3",
+					"g4": "4"
+				},
+				"description": "Erreur : étendue = maximum",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["12"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"u": "3",
+					"g1": "2",
+					"g2": "3",
+					"g3": "3",
+					"g4": "4"
+				},
+				"description": "Erreur : écart interquartile",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"t": "0",
+					"u": "2",
+					"g1": "3",
+					"g2": "2",
+					"g3": "4",
+					"g4": "3"
+				},
+				"description": "Phrase juste (médiane)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"t": "2",
+					"u": "2",
+					"g1": "3",
+					"g2": "2",
+					"g3": "4",
+					"g4": "3"
+				},
+				"description": "Phrase juste (Q3)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"t": "0",
+					"u": "2",
+					"g1": "3",
+					"g2": "2",
+					"g3": "4",
+					"g4": "3"
+				},
+				"description": "Erreur : « 75 % au-dessus de Q3 »",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"t": "1",
+					"u": "2",
+					"g1": "3",
+					"g2": "2",
+					"g3": "4",
+					"g4": "3"
+				},
+				"description": "Erreur : étendue = maximum",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"Au": "2",
+					"Bu": "3",
+					"Ag1": "3",
+					"Ag2": "4",
+					"Ag3": "2",
+					"Ag4": "3",
+					"Bg1": "2",
+					"Bg2": "2",
+					"Bg3": "4",
+					"Bg4": "5"
+				},
+				"description": "A plus grande médiane (9 contre 7), B plus grande étendue (13 contre 12)",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"Au": "2",
+					"Bu": "3",
+					"Ag1": "3",
+					"Ag2": "4",
+					"Ag3": "2",
+					"Ag4": "3",
+					"Bg1": "2",
+					"Bg2": "2",
+					"Bg3": "4",
+					"Bg4": "5"
+				},
+				"description": "Erreur : la 3e A a aussi la plus grande étendue",
+				"variationIndex": 4
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "4ce8eb3c-e00a-4a26-adf7-d4f215b8cc3b",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 90,
+		"theme": "Algorithmique",
+		"domain": "Boucles",
+		"subdomain": "Boucle non bornée",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:n-d*floor(n/d)}}"
+					}
+				],
+				"statement": "Voici un programme (exemple du programme officiel).\n\n```scratch\nquand le drapeau vert pressé\ndemander [Quel est le nombre à diviser ?] et attendre\nmettre [reste v] à (réponse)\ndemander [Quel est le diviseur ?] et attendre\nrépéter jusqu'à ce que <(reste) < (réponse)>\nmettre [reste v] à ((reste) - (réponse))\nfin\ndire (reste)\n```\n\nOn saisit ${{n}}$ puis ${{d}}$. Que dit le programme à la fin ?\n\n$?$",
+				"variables": [
+					{
+						"name": "d",
+						"expression": "3..9"
+					},
+					{
+						"name": "n",
+						"expression": "20..60"
+					}
+				],
+				"conditions": ["n>=3*d"],
+				"correction": {
+					"steps": [
+						"La variable *réponse* contient la dernière saisie : le diviseur ${{d}}$. *reste* part de ${{n}}$.",
+						"La condition est testée **avant** chaque passage : dès qu'elle est vraie, la boucle s'arrête. Tant que *reste* $\\geqslant {{d}}$, on lui retire ${{d}}$.",
+						"*reste* prend les valeurs ${{n}}$, ${{eval:n-d}}$, ${{eval:n-2*d}}$, … ; après ${{eval:floor(n/d)}}$ passages, *reste* $= {{n}} - {{eval:floor(n/d)}} \\times {{d}} = {{eval:n-d*floor(n/d)}}$, et ${{eval:n-d*floor(n/d)}} < {{d}}$ : la boucle s'arrête.",
+						"Le programme dit $\\textcolor{{{color:primary.0}}}{{{eval:n-d*floor(n/d)}}}$ : c'est le reste de la division euclidienne de ${{n}}$ par ${{d}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:floor(n/d)}}"
+					}
+				],
+				"statement": "Combien de fois les instructions de la boucle sont-elles exécutées ?\n\n```scratch\nmettre [reste v] à ({{n}})\nrépéter jusqu'à ce que <(reste) < [{{d}}]>\nmettre [reste v] à ((reste) - ({{d}}))\nfin\ndire (reste)\n```\n\n$?$ fois",
+				"variables": [
+					{
+						"name": "d",
+						"expression": "3..9"
+					},
+					{
+						"name": "n",
+						"expression": "20..60"
+					},
+					{
+						"name": "r",
+						"expression": "eval:n-d*floor(n/d)"
+					}
+				],
+				"conditions": ["n>=3*d", "floor(n/d)<=12"],
+				"correction": {
+					"steps": [
+						"La condition est testée **avant** chaque passage : dès qu'elle est vraie, la boucle s'arrête.",
+						"Chaque passage retire ${{d}}$ à *reste* ; la boucle s'arrête quand *reste* $< {{d}}$.",
+						"${{n}} = {{eval:floor(n/d)}} \\times {{d}}{{if:r>0| + {{r}}|}}$ : après ${{eval:floor(n/d)}}$ passages, *reste* $= {{r}} < {{d}}$.",
+						"La boucle est exécutée $\\textcolor{{{color:primary.0}}}{{{eval:floor(n/d)}}}$ fois."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:k*(floor(s/k)+1)}}"
+					}
+				],
+				"statement": "Que dit ce programme à la fin ?\n\n```scratch\nmettre [i v] à (0)\nrépéter jusqu'à ce que <(i) > [{{s}}]>\najouter ({{k}}) à [i v]\nfin\ndire (i)\n```\n\n$?$",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "2..9"
+					},
+					{
+						"name": "s",
+						"expression": "10..60"
+					}
+				],
+				"conditions": ["floor(s/k)+1<=12", "floor(s/k)>=3"],
+				"correction": {
+					"steps": [
+						"La condition est testée **avant** chaque passage : dès qu'elle est vraie, la boucle s'arrête.",
+						"$i$ prend les valeurs $0$, ${{k}}$, ${{eval:2*k}}$, ${{eval:3*k}}$, … (les multiples de ${{k}}$).",
+						"Le plus grand multiple de ${{k}}$ inférieur ou égal à ${{s}}$ est ${{eval:k*floor(s/k)}}$ : « ${{eval:k*floor(s/k)}} > {{s}}$ » est fausse, la boucle continue.",
+						"Le multiple suivant, ${{eval:k*(floor(s/k)+1)}}$, est plus grand que ${{s}}$ : la boucle s'arrête. Le programme dit $\\textcolor{{{color:primary.0}}}{{{eval:k*(floor(s/k)+1)}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:2^t}}"
+					}
+				],
+				"statement": "Que dit ce programme à la fin ?\n\n```scratch\nmettre [x v] à (1)\nrépéter jusqu'à ce que <(x) > [{{s}}]>\nmettre [x v] à ((x) * (2))\nfin\ndire (x)\n```\n\n$?$",
+				"variables": [
+					{
+						"name": "t",
+						"expression": "4..9"
+					},
+					{
+						"name": "u",
+						"expression": "0..9"
+					},
+					{
+						"name": "s",
+						"expression": "eval:2^(t-1)+floor(u*2^(t-1)/10)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La condition est testée **avant** chaque passage : dès qu'elle est vraie, la boucle s'arrête.",
+						"$x$ double à chaque passage : $1$, $2$, $4$, $8$, $16$, … (les puissances de $2$).",
+						"${{eval:2^(t-1)}} \\leqslant {{s}}$ : la boucle continue ; puis $x = {{eval:2^t}}$ et ${{eval:2^t}} > {{s}}$ : la boucle s'arrête.",
+						"Le programme dit $\\textcolor{{{color:primary.0}}}{{{eval:2^t}}}$."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Boucle « répéter jusqu'à ce que »",
+		"description": "Exécuter à la main une boucle « répéter jusqu'à ce que » d'un programme Scratch : reste par soustractions successives, nombre de passages, compteur, doublement",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "6",
+					"n": "47"
+				},
+				"description": "47 et 6 : reste 5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["11"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "6",
+					"n": "47"
+				},
+				"description": "Erreur : arrêt un tour trop tôt (11)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["47"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "6",
+					"n": "47"
+				},
+				"description": "Erreur : le nombre de départ (47)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "6",
+					"n": "47"
+				},
+				"description": "Erreur : le quotient (7)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"d": "6",
+					"n": "47",
+					"r": "5"
+				},
+				"description": "47 et 6 : 7 passages",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"d": "6",
+					"n": "47",
+					"r": "5"
+				},
+				"description": "Erreur : un passage de trop (8)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["25"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "5",
+					"s": "23"
+				},
+				"description": "k = 5, s = 23 : 25",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["20"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "5",
+					"s": "23"
+				},
+				"description": "Erreur : arrêt un tour trop tôt (20)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["24"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "4",
+					"s": "20"
+				},
+				"description": "k = 4, s = 20 : 24 (20 n'est pas > 20)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["20"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "4",
+					"s": "20"
+				},
+				"description": "Erreur : arrêt à i = s (20)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["64"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"s": "40",
+					"t": "6",
+					"u": "2"
+				},
+				"description": "s = 40 : 64",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["32"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"s": "40",
+					"t": "6",
+					"u": "2"
+				},
+				"description": "Erreur : arrêt un tour trop tôt (32)",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "962da675-6cde-45c9-9ba4-56d96a2be9c6",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 90,
+		"theme": "Algorithmique",
+		"domain": "Variables et instructions",
+		"subdomain": "Variables et affectation",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:n+m}}"
+					},
+					{
+						"expectedAnswer": "{{n}}"
+					}
+				],
+				"statement": "Voici un programme qui utilise deux variables $a$ et $b$.\n\n```scratch\nmettre [a v] à ({{n}})\nmettre [b v] à ({{m}})\nmettre [a v] à ((a) + (b))\nmettre [b v] à ((a) - (b))\n```\n\nQuelles sont les valeurs de $a$ et de $b$ à la fin du programme ?\n\n$a = ?$ et $b = ?$",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "2..20"
+					},
+					{
+						"name": "m",
+						"expression": "2..20"
+					}
+				],
+				"conditions": ["n!=m"],
+				"correction": {
+					"steps": [
+						"Les instructions s'exécutent **dans l'ordre**, et chaque affectation remplace l'ancienne valeur.",
+						"Après les deux premières lignes : $a = {{n}}$ et $b = {{m}}$.",
+						"Ligne 3 : $a$ prend la valeur $a + b = {{n}} + {{m}} = {{eval:n+m}}$.",
+						"Ligne 4 : $b$ prend la valeur $a - b$, calculée avec la **nouvelle** valeur de $a$ : ${{eval:n+m}} - {{m}} = {{n}}$.",
+						"À la fin : $\\textcolor{{{color:primary.0}}}{a = {{eval:n+m}}}$ et $\\textcolor{{{color:primary.0}}}{b = {{n}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:p*q+f}}"
+					}
+				],
+				"statement": "Un commerçant utilise ce programme pour calculer le prix à payer, frais de port compris.\n\n```scratch\nquand le drapeau vert pressé\ndemander [Prix d'un objet ?] et attendre\nmettre [prix v] à (réponse)\ndemander [Nombre d'objets ?] et attendre\nmettre [quantité v] à (réponse)\nmettre [total v] à ((prix) * (quantité))\nmettre [total v] à ((total) + ({{f}}))\ndire (total)\n```\n\nOn saisit ${{p}}$ puis ${{q}}$. Que dit le programme à la fin ?\n\n$?$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "2..15"
+					},
+					{
+						"name": "q",
+						"expression": "2..9"
+					},
+					{
+						"name": "f",
+						"expression": "3..9"
+					}
+				],
+				"conditions": ["p!=q"],
+				"correction": {
+					"steps": [
+						"La variable *prix* vaut ${{p}}$ et la variable *quantité* vaut ${{q}}$.",
+						"*total* prend d'abord la valeur *prix* × *quantité* : ${{p}} \\times {{q}} = {{eval:p*q}}$.",
+						"Puis *total* prend la valeur *total* + ${{f}}$ : ${{eval:p*q}} + {{f}} = {{eval:p*q+f}}$.",
+						"Le programme dit $\\textcolor{{{color:primary.0}}}{{{eval:p*q+f}}}$."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Au départ, la variable $a$ vaut ${{n}}$ et la variable $b$ vaut ${{m}}$. Lequel de ces programmes **échange** leurs valeurs (à la fin, $a$ vaut ${{m}}$ et $b$ vaut ${{n}}$) ?\n\n````choix\n- ```scratch\n  mettre [c v] à (a)\n  mettre [a v] à (b)\n  mettre [b v] à (c)\n  ```\n- ```scratch\n  mettre [a v] à (b)\n  mettre [b v] à (a)\n  ```\n- ```scratch\n  mettre [c v] à (a)\n  mettre [b v] à (c)\n  mettre [a v] à (b)\n  ```\n````",
+				"variables": [
+					{
+						"name": "n",
+						"expression": "2..20"
+					},
+					{
+						"name": "m",
+						"expression": "2..20"
+					}
+				],
+				"conditions": ["n!=m"],
+				"correction": {
+					"steps": [
+						"Avec deux affectations seulement (`a` ← `b`, puis `b` ← `a`), l'ancienne valeur de $a$ est **perdue** dès la première ligne : $a$ et $b$ valent tous deux ${{m}}$.",
+						"Il faut une troisième variable $c$ pour **garder** l'ancienne valeur de $a$ : $c = {{n}}$, puis $a = {{m}}$, puis $b = c = {{n}}$.",
+						"Dans l'ordre « $c$ ← $a$, $b$ ← $c$, $a$ ← $b$ », $b$ prend ${{n}}$ puis $a$ prend la nouvelle valeur de $b$ : les deux valent ${{n}}$.",
+						"Le bon programme : **c ← a, puis a ← b, puis b ← c**."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Plusieurs variables",
+		"description": "Suivre un programme Scratch à plusieurs variables : valeurs finales après des affectations successives, programme de calcul avec saisies, échange de deux variables",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["8", "5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"m": "3",
+					"n": "5"
+				},
+				"description": "n = 5, m = 3 : a = 8, b = 5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8", "3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"m": "3",
+					"n": "5"
+				},
+				"description": "Erreur : b inchangé (b = 3)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8", "2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"m": "3",
+					"n": "5"
+				},
+				"description": "Erreur : b calculé avec l'ancien a (5 − 3 = 2)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["18"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"f": "6",
+					"p": "4",
+					"q": "3"
+				},
+				"description": "Prix 4, 3 objets, port 6 : 18",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["12"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"f": "6",
+					"p": "4",
+					"q": "3"
+				},
+				"description": "Erreur : port oublié (12)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["13"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"f": "6",
+					"p": "4",
+					"q": "3"
+				},
+				"description": "Erreur : tout ajouté (13)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"m": "3",
+					"n": "5"
+				},
+				"description": "Échange avec c",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"m": "3",
+					"n": "5"
+				},
+				"description": "Erreur : sans variable c",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"m": "3",
+					"n": "5"
+				},
+				"description": "Erreur : avec c, mais à l'envers",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "9a9026fc-8baf-4d1f-b1ff-0d6758de63fe",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 300,
+		"theme": "Statistiques",
+		"domain": "Indicateurs",
+		"subdomain": "Boîte à moustaches",
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [],
+				"statement": "Dans un club, on a relevé le temps, en minutes, que met chaque nageur pour nager $1$ km. Voici les indicateurs de cette série :\n\nminimum : ${{lo}}$ ; premier quartile : ${{qa}}$ ; médiane : ${{me}}$ ; troisième quartile : ${{qb}}$ ; maximum : ${{hi}}$.\n\nConstruis la boîte à moustaches.\n\n```boite-a-moustaches\naxe: 10 à 50, de 2 en 2\ntitre: Temps pour 1 km (min)\nNageurs = {{lo}} ; {{qa}} ; {{me}} ; {{qb}} ; {{hi}}\nplacer: Nageurs\n```\n\n",
+				"variables": [
+					{
+						"name": "u",
+						"expression": "1..4"
+					},
+					{
+						"name": "g1",
+						"expression": "1..4"
+					},
+					{
+						"name": "g2",
+						"expression": "1..4"
+					},
+					{
+						"name": "g3",
+						"expression": "1..4"
+					},
+					{
+						"name": "g4",
+						"expression": "1..4"
+					},
+					{
+						"name": "lo",
+						"expression": "eval:10+2*u"
+					},
+					{
+						"name": "qa",
+						"expression": "eval:lo+2*g1"
+					},
+					{
+						"name": "me",
+						"expression": "eval:qa+2*g2"
+					},
+					{
+						"name": "qb",
+						"expression": "eval:me+2*g3"
+					},
+					{
+						"name": "hi",
+						"expression": "eval:qb+2*g4"
+					}
+				],
+				"correction": {
+					"steps": [
+						"L'axe est gradué de $2$ en $2$.",
+						"La boîte va de $Q_1 = {{qa}}$ à $Q_3 = {{qb}}$, avec un trait à la médiane ${{me}}$ ; les moustaches vont jusqu'au minimum ${{lo}}$ et au maximum ${{hi}}$."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Voici les notes sur $20$ de ${{n}}$ élèves à une évaluation :\n\n{{if:k==0|{{if:p==0|{{x3}} ; {{x6}} ; {{x4}} ; {{x2}} ; {{x7}} ; {{x1}} ; {{x8}} ; {{x5}} ; {{x9}}|{{x8}} ; {{x3}} ; {{x5}} ; {{x4}} ; {{x1}} ; {{x2}} ; {{x6}} ; {{x9}} ; {{x7}}}}|{{if:k==1|{{if:p==0|{{x11}} ; {{x2}} ; {{x8}} ; {{x6}} ; {{x3}} ; {{x1}} ; {{x9}} ; {{x7}} ; {{x5}} ; {{x10}} ; {{x4}}|{{x7}} ; {{x4}} ; {{x6}} ; {{x2}} ; {{x1}} ; {{x8}} ; {{x10}} ; {{x9}} ; {{x11}} ; {{x3}} ; {{x5}}}}|{{if:p==0|{{x12}} ; {{x11}} ; {{x8}} ; {{x4}} ; {{x13}} ; {{x6}} ; {{x10}} ; {{x3}} ; {{x5}} ; {{x9}} ; {{x7}} ; {{x1}} ; {{x2}}|{{x5}} ; {{x3}} ; {{x2}} ; {{x4}} ; {{x12}} ; {{x7}} ; {{x1}} ; {{x10}} ; {{x13}} ; {{x6}} ; {{x11}} ; {{x8}} ; {{x9}}}}}}}}\n\nConstruis la boîte à moustaches de cette série.\n\n```boite-a-moustaches\naxe: 0 à 20\ntitre: Note sur 20\ndonnées: {{if:k==0|{{if:p==0|{{x3}} ; {{x6}} ; {{x4}} ; {{x2}} ; {{x7}} ; {{x1}} ; {{x8}} ; {{x5}} ; {{x9}}|{{x8}} ; {{x3}} ; {{x5}} ; {{x4}} ; {{x1}} ; {{x2}} ; {{x6}} ; {{x9}} ; {{x7}}}}|{{if:k==1|{{if:p==0|{{x11}} ; {{x2}} ; {{x8}} ; {{x6}} ; {{x3}} ; {{x1}} ; {{x9}} ; {{x7}} ; {{x5}} ; {{x10}} ; {{x4}}|{{x7}} ; {{x4}} ; {{x6}} ; {{x2}} ; {{x1}} ; {{x8}} ; {{x10}} ; {{x9}} ; {{x11}} ; {{x3}} ; {{x5}}}}|{{if:p==0|{{x12}} ; {{x11}} ; {{x8}} ; {{x4}} ; {{x13}} ; {{x6}} ; {{x10}} ; {{x3}} ; {{x5}} ; {{x9}} ; {{x7}} ; {{x1}} ; {{x2}}|{{x5}} ; {{x3}} ; {{x2}} ; {{x4}} ; {{x12}} ; {{x7}} ; {{x1}} ; {{x10}} ; {{x13}} ; {{x6}} ; {{x11}} ; {{x8}} ; {{x9}}}}}}}}\nplacer: toutes\n```\n\n",
+				"variables": [
+					{
+						"name": "k",
+						"expression": "0..2"
+					},
+					{
+						"name": "p",
+						"expression": "0..1"
+					},
+					{
+						"name": "x1",
+						"expression": "1..5"
+					},
+					{
+						"name": "d2",
+						"expression": "0..2"
+					},
+					{
+						"name": "d3",
+						"expression": "0..2"
+					},
+					{
+						"name": "d4",
+						"expression": "0..2"
+					},
+					{
+						"name": "d5",
+						"expression": "0..2"
+					},
+					{
+						"name": "d6",
+						"expression": "0..2"
+					},
+					{
+						"name": "d7",
+						"expression": "0..2"
+					},
+					{
+						"name": "d8",
+						"expression": "0..2"
+					},
+					{
+						"name": "d9",
+						"expression": "0..2"
+					},
+					{
+						"name": "d10",
+						"expression": "0..2"
+					},
+					{
+						"name": "d11",
+						"expression": "0..2"
+					},
+					{
+						"name": "d12",
+						"expression": "0..2"
+					},
+					{
+						"name": "d13",
+						"expression": "0..2"
+					},
+					{
+						"name": "x2",
+						"expression": "eval:x1+d2"
+					},
+					{
+						"name": "x3",
+						"expression": "eval:x2+d3"
+					},
+					{
+						"name": "x4",
+						"expression": "eval:x3+d4"
+					},
+					{
+						"name": "x5",
+						"expression": "eval:x4+d5"
+					},
+					{
+						"name": "x6",
+						"expression": "eval:x5+d6"
+					},
+					{
+						"name": "x7",
+						"expression": "eval:x6+d7"
+					},
+					{
+						"name": "x8",
+						"expression": "eval:x7+d8"
+					},
+					{
+						"name": "x9",
+						"expression": "eval:x8+d9"
+					},
+					{
+						"name": "x10",
+						"expression": "eval:x9+d10"
+					},
+					{
+						"name": "x11",
+						"expression": "eval:x10+d11"
+					},
+					{
+						"name": "x12",
+						"expression": "eval:x11+d12"
+					},
+					{
+						"name": "x13",
+						"expression": "eval:x12+d13"
+					},
+					{
+						"name": "n",
+						"expression": "eval:9+2*k"
+					},
+					{
+						"name": "qa",
+						"expression": "eval:(x3)*(k-1)*(k-2)/2+(x3)*k*(2-k)+(x4)*k*(k-1)/2"
+					},
+					{
+						"name": "me",
+						"expression": "eval:(x5)*(k-1)*(k-2)/2+(x6)*k*(2-k)+(x7)*k*(k-1)/2"
+					},
+					{
+						"name": "qb",
+						"expression": "eval:(x7)*(k-1)*(k-2)/2+(x9)*k*(2-k)+(x10)*k*(k-1)/2"
+					},
+					{
+						"name": "hi",
+						"expression": "eval:(x9)*(k-1)*(k-2)/2+(x11)*k*(2-k)+(x13)*k*(k-1)/2"
+					}
+				],
+				"conditions": ["x13 <= 20", "x1 < qa", "qa < me", "me < qb", "qb < hi"],
+				"correction": {
+					"steps": [
+						"On range les notes : {{if:k==0|{{x1}} ; {{x2}} ; {{x3}} ; {{x4}} ; {{x5}} ; {{x6}} ; {{x7}} ; {{x8}} ; {{x9}}|{{if:k==1|{{x1}} ; {{x2}} ; {{x3}} ; {{x4}} ; {{x5}} ; {{x6}} ; {{x7}} ; {{x8}} ; {{x9}} ; {{x10}} ; {{x11}}|{{x1}} ; {{x2}} ; {{x3}} ; {{x4}} ; {{x5}} ; {{x6}} ; {{x7}} ; {{x8}} ; {{x9}} ; {{x10}} ; {{x11}} ; {{x12}} ; {{x13}}}}}}.",
+						"Minimum : ${{x1}}$ ; maximum : ${{hi}}$.",
+						"Médiane : ${{n}}$ notes, la note de rang $\\dfrac{ {{n}}+1}{2} = {{eval:5+k}}$, soit ${{me}}$.",
+						"$Q_1$ : $\\dfrac{ {{n}} }{4} = {{if:k==0|2{,}25|{{if:k==1|2{,}75|3{,}25}}}}$, la note de rang {{if:k==0|3|{{if:k==1|3|4}}}}, soit ${{qa}}$ ; $Q_3$ : $\\dfrac{3 \\times {{n}} }{4} = {{if:k==0|6{,}75|{{if:k==1|8{,}25|9{,}75}}}}$, la note de rang {{if:k==0|7|{{if:k==1|9|10}}}}, soit ${{qb}}$.",
+						"La boîte va de ${{qa}}$ à ${{qb}}$, trait à ${{me}}$ ; moustaches de ${{x1}}$ à ${{hi}}$."
+					]
+				}
+			},
+			{
+				"blanks": [],
+				"statement": "Voici les pointures des élèves d'un club de basket.\n\n```effectifs\ntitre: Pointure\n{{eval:v0+0}} = {{n0}}\n{{eval:v0+1}} = {{n1}}\n{{eval:v0+2}} = {{n2}}\n{{eval:v0+3}} = {{n3}}\n{{eval:v0+4}} = {{n4}}\n{{eval:v0+5}} = {{n5}}\nlignes: effectifs\n```\n\nConstruis la boîte à moustaches de cette série.\n\n```boite-a-moustaches\naxe: 32 à 46\ntitre: Pointure\nPointures = {{v0}} ; {{eval:v0+Q}} ; {{eval:v0+M}} ; {{eval:v0+R}} ; {{eval:v0+5}}\nplacer: Pointures\n```\n\n",
+				"variables": [
+					{
+						"name": "v0",
+						"expression": "35..38"
+					},
+					{
+						"name": "n0",
+						"expression": "1..6"
+					},
+					{
+						"name": "n1",
+						"expression": "1..6"
+					},
+					{
+						"name": "n2",
+						"expression": "1..6"
+					},
+					{
+						"name": "n3",
+						"expression": "1..6"
+					},
+					{
+						"name": "n4",
+						"expression": "1..6"
+					},
+					{
+						"name": "n5",
+						"expression": "1..6"
+					},
+					{
+						"name": "C0",
+						"expression": "eval:n0"
+					},
+					{
+						"name": "C1",
+						"expression": "eval:n0+n1"
+					},
+					{
+						"name": "C2",
+						"expression": "eval:n0+n1+n2"
+					},
+					{
+						"name": "C3",
+						"expression": "eval:n0+n1+n2+n3"
+					},
+					{
+						"name": "C4",
+						"expression": "eval:n0+n1+n2+n3+n4"
+					},
+					{
+						"name": "C5",
+						"expression": "eval:n0+n1+n2+n3+n4+n5"
+					},
+					{
+						"name": "N",
+						"expression": "eval:C5"
+					},
+					{
+						"name": "Q",
+						"expression": "{{if:4*C0>=N|0|{{if:4*C1>=N|1|{{if:4*C2>=N|2|{{if:4*C3>=N|3|{{if:4*C4>=N|4|5}}}}}}}}}}"
+					},
+					{
+						"name": "M",
+						"expression": "{{if:2*C0>=N+1|0|{{if:2*C1>=N+1|1|{{if:2*C2>=N+1|2|{{if:2*C3>=N+1|3|{{if:2*C4>=N+1|4|5}}}}}}}}}}"
+					},
+					{
+						"name": "R",
+						"expression": "{{if:4*C0>=3*N|0|{{if:4*C1>=3*N|1|{{if:4*C2>=3*N|2|{{if:4*C3>=3*N|3|{{if:4*C4>=3*N|4|5}}}}}}}}}}"
+					}
+				],
+				"conditions": ["N-2*floor(N/2) == 1", "N <= 25", "Q > 0", "Q < M", "M < R", "R < 5"],
+				"correction": {
+					"steps": [
+						"Effectif total : $N = {{N}}$ (impair).",
+						"Effectifs cumulés croissants : ${{eval:v0+0}}$ → ${{C0}}$ ; ${{eval:v0+1}}$ → ${{C1}}$ ; ${{eval:v0+2}}$ → ${{C2}}$ ; ${{eval:v0+3}}$ → ${{C3}}$ ; ${{eval:v0+4}}$ → ${{C4}}$ ; ${{eval:v0+5}}$ → ${{C5}}$.",
+						"Médiane : rang $\\dfrac{ {{N}}+1}{2} = {{eval:(N+1)/2}}$ → {{eval:v0+M}}. $Q_1$ : premier cumulé qui atteint $\\dfrac{ {{N}} }{4}$ → {{eval:v0+Q}}. $Q_3$ : premier cumulé qui atteint $\\dfrac{3 \\times {{N}} }{4}$ → {{eval:v0+R}}.",
+						"Minimum ${{v0}}$, maximum {{eval:v0+5}} : la boîte va de {{eval:v0+Q}} à {{eval:v0+R}}."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Construire une boîte à moustaches",
+		"description": "Construire une boîte à moustaches à partir de ses indicateurs, d'une série de notes à ranger, ou d'un tableau d'effectifs (quartiles du programme)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["16", "22", "28", "36", "44"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"u": "3",
+					"g1": "3",
+					"g2": "3",
+					"g3": "4",
+					"g4": "4"
+				},
+				"description": "Nageurs 16, 22, 28, 36, 44",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["16", "36", "28", "22", "44"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"u": "3",
+					"g1": "3",
+					"g2": "3",
+					"g3": "4",
+					"g4": "4"
+				},
+				"description": "Erreur : Q1 et Q3 inversés",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3", "7", "10", "12", "16"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "0",
+					"p": "0",
+					"d2": "2",
+					"d3": "2",
+					"d4": "1",
+					"d5": "2",
+					"d6": "1",
+					"d7": "1",
+					"d8": "2",
+					"d9": "2",
+					"x1": "3",
+					"d10": "0",
+					"d11": "0",
+					"d12": "0",
+					"d13": "0"
+				},
+				"description": "9 notes : 3, 7, 10, 12, 16",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3", "6", "10", "12", "16"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "0",
+					"p": "0",
+					"d2": "2",
+					"d3": "2",
+					"d4": "1",
+					"d5": "2",
+					"d6": "1",
+					"d7": "1",
+					"d8": "2",
+					"d9": "2",
+					"x1": "3",
+					"d10": "0",
+					"d11": "0",
+					"d12": "0",
+					"d13": "0"
+				},
+				"description": "Erreur : Q1 par la demi-série (6)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3", "7", "12", "12", "16"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "0",
+					"p": "0",
+					"d2": "2",
+					"d3": "2",
+					"d4": "1",
+					"d5": "2",
+					"d6": "1",
+					"d7": "1",
+					"d8": "2",
+					"d9": "2",
+					"x1": "3",
+					"d10": "0",
+					"d11": "0",
+					"d12": "0",
+					"d13": "0"
+				},
+				"description": "Erreur : médiane = note du milieu de l'énoncé",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2", "6", "10", "13", "17"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "2",
+					"p": "1",
+					"d2": "2",
+					"d3": "1",
+					"d4": "1",
+					"d5": "2",
+					"d6": "1",
+					"d7": "1",
+					"d8": "0",
+					"d9": "2",
+					"x1": "2",
+					"d10": "1",
+					"d11": "1",
+					"d12": "1",
+					"d13": "2"
+				},
+				"description": "13 notes : 2, 6, 10, 13, 17",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["6", "6", "10", "13", "13"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "2",
+					"p": "1",
+					"d2": "2",
+					"d3": "1",
+					"d4": "1",
+					"d5": "2",
+					"d6": "1",
+					"d7": "1",
+					"d8": "0",
+					"d9": "2",
+					"x1": "2",
+					"d10": "1",
+					"d11": "1",
+					"d12": "1",
+					"d13": "2"
+				},
+				"description": "Erreur : minimum et maximum oubliés (laissés sur Q1, Q3)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["37", "38", "39", "41", "42"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"n0": "2",
+					"n1": "3",
+					"n2": "5",
+					"n3": "4",
+					"n4": "3",
+					"n5": "2",
+					"v0": "37"
+				},
+				"description": "Pointures 37 à 42, N = 19 : 37, 38, 39, 41, 42",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["37", "38", "40", "41", "42"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"n0": "2",
+					"n1": "3",
+					"n2": "5",
+					"n3": "4",
+					"n4": "3",
+					"n5": "2",
+					"v0": "37"
+				},
+				"description": "Erreur : médiane des six pointures sans les effectifs (40)",
+				"variationIndex": 2
+			}
+		],
+		"classification_node_id": null
+	},
+	{
+		"id": "9f9bddbd-19cc-43cc-90b9-e67c9058468d",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["3"],
+		"delay": 90,
+		"theme": "Algorithmique",
+		"domain": "Variables et instructions",
+		"subdomain": "Instructions conditionnelles",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Que dit ce programme ?\n\n```scratch\nmettre [x v] à ({{x}})\nsi <<(x) > [{{p}}]> et <(x) < [{{q}}]>> alors\ndire [Oui]\nsinon\ndire [Non]\nfin\n```\n\n````choix\n- « {{if:x>p and x<q|Oui|Non}} »\n- « {{if:x>p and x<q|Non|Oui}} »\n````",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "2..9"
+					},
+					{
+						"name": "q",
+						"expression": "eval:p+5"
+					},
+					{
+						"name": "dx",
+						"expression": "-2..7"
+					},
+					{
+						"name": "x",
+						"expression": "eval:p+dx"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Une condition « … **et** … » est vraie seulement si **les deux** conditions sont vraies.",
+						"$x = {{x}}$ : « $x > {{p}}$ » est {{if:x>p|vraie|fausse}} ; « $x < {{q}}$ » est {{if:x<q|vraie|fausse}}.",
+						"La condition composée est donc {{if:x>p and x<q|vraie|fausse}} : le programme dit **« {{if:x>p and x<q|Oui|Non}} »**."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Que dit ce programme ?\n\n```scratch\nmettre [x v] à ({{x}})\nsi <<(x) < [{{p}}]> ou <(x) > [{{q}}]>> alors\ndire [Oui]\nsinon\ndire [Non]\nfin\n```\n\n````choix\n- « {{if:x<p or x>q|Oui|Non}} »\n- « {{if:x<p or x>q|Non|Oui}} »\n````",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "2..9"
+					},
+					{
+						"name": "q",
+						"expression": "eval:p+5"
+					},
+					{
+						"name": "dx",
+						"expression": "-2..7"
+					},
+					{
+						"name": "x",
+						"expression": "eval:p+dx"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Une condition « … **ou** … » est vraie dès qu'**au moins une** des deux conditions est vraie.",
+						"$x = {{x}}$ : « $x < {{p}}$ » est {{if:x<p|vraie|fausse}} ; « $x > {{q}}$ » est {{if:x>q|vraie|fausse}}.",
+						"La condition composée est donc {{if:x<p or x>q|vraie|fausse}} : le programme dit **« {{if:x<p or x>q|Oui|Non}} »**."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Ce programme décide si un enfant peut monter dans un manège.\n\n```scratch\nquand le drapeau vert pressé\ndemander [Quel est ton âge ?] et attendre\nmettre [âge v] à (réponse)\ndemander [Quelle est ta taille en cm ?] et attendre\nmettre [taille v] à (réponse)\nsi <<(âge) > [{{A}}]> et <(taille) > [{{T}}]>> alors\ndire [Tu peux monter]\nsinon\ndire [Pas encore]\nfin\n```\n\nUn enfant saisit ${{a}}$ pour son âge et ${{t}}$ pour sa taille. Que dit le programme ?\n\n````choix\n- « {{if:a>A and t>T|Tu peux monter|Pas encore}} »\n- « {{if:a>A and t>T|Pas encore|Tu peux monter}} »\n````",
+				"variables": [
+					{
+						"name": "A",
+						"expression": "7..10"
+					},
+					{
+						"name": "T",
+						"expression": "120..140"
+					},
+					{
+						"name": "a",
+						"expression": "6..13"
+					},
+					{
+						"name": "dt",
+						"expression": "-12..12"
+					},
+					{
+						"name": "t",
+						"expression": "eval:T+dt"
+					}
+				],
+				"conditions": ["dt!=0"],
+				"correction": {
+					"steps": [
+						"Il faut **les deux** : âge $> {{A}}$ **et** taille $> {{T}}$.",
+						"Âge ${{a}}$ : « ${{a}} > {{A}}$ » est {{if:a>A|vraie|fausse}} ; taille ${{t}}$ : « ${{t}} > {{T}}$ » est {{if:t>T|vraie|fausse}}.",
+						"Le programme dit **« {{if:a>A and t>T|Tu peux monter|Pas encore}} »**."
+					]
+				}
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Quelle condition est vraie exactement quand $x$ est **strictement compris** entre ${{p}}$ et ${{q}}$ ?\n\n````choix\n- ```scratch\n  <<(x) > [{{p}}]> et <(x) < [{{q}}]>>\n  ```\n- ```scratch\n  <<(x) > [{{p}}]> ou <(x) < [{{q}}]>>\n  ```\n- ```scratch\n  <<(x) < [{{p}}]> et <(x) > [{{q}}]>>\n  ```\n- ```scratch\n  <<(x) < [{{p}}]> ou <(x) > [{{q}}]>>\n  ```\n````",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "2..9"
+					},
+					{
+						"name": "dq",
+						"expression": "3..9"
+					},
+					{
+						"name": "q",
+						"expression": "eval:p+dq"
+					}
+				],
+				"correction": {
+					"steps": [
+						"« $x$ est strictement compris entre ${{p}}$ et ${{q}}$ » signifie : $x > {{p}}$ **et** $x < {{q}}$ (les deux à la fois).",
+						"Avec « ou », $x = {{eval:q+5}}$ conviendrait (car ${{eval:q+5}} > {{p}}$) : la condition serait vraie pour tous les nombres.",
+						"La bonne condition : **(x > {{p}}) et (x < {{q}})**."
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "draft",
+		"title": "Conditions composées",
+		"description": "Lire une condition composée avec « et » ou « ou » dans un programme Scratch : ce que dit le programme selon les valeurs, traduire « strictement compris entre »",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "3",
+					"q": "8",
+					"x": "5",
+					"dx": "2"
+				},
+				"description": "et, x dedans : Oui",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "3",
+					"q": "8",
+					"x": "10",
+					"dx": "7"
+				},
+				"description": "Erreur : et lu ou (x = 10)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "3",
+					"q": "8",
+					"x": "3",
+					"dx": "0"
+				},
+				"description": "Erreur : borne incluse (x = 3)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "3",
+					"q": "8",
+					"x": "10",
+					"dx": "7"
+				},
+				"description": "ou, x dehors : Oui",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "3",
+					"q": "8",
+					"x": "10",
+					"dx": "7"
+				},
+				"description": "Erreur : ou lu et (x = 10)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"A": "8",
+					"T": "135",
+					"a": "12",
+					"t": "130",
+					"dt": "-5"
+				},
+				"description": "Manège : 12 ans, 130 cm, seuils 8 et 135 → Pas encore",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"A": "8",
+					"T": "135",
+					"a": "12",
+					"t": "130",
+					"dt": "-5"
+				},
+				"description": "Erreur : une seule condition suffit",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "3",
+					"q": "8",
+					"dq": "5"
+				},
+				"description": "Traduire : (x > p) et (x < q)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "3",
+					"q": "8",
+					"dq": "5"
+				},
+				"description": "Erreur : ou à la place de et",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "3",
+					"q": "8",
+					"dq": "5"
+				},
+				"description": "Erreur : bornes inversées",
+				"variationIndex": 3
+			}
+		],
+		"classification_node_id": null
+	}
+]
