@@ -5,16 +5,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2169 (rangement du lot 9 mergé, migration jouée)._
+_Mis à jour le 2026-11-02, après la publication du lot 9._
 
-- **État** : lots 1 à 8 en prod et publiés. Lot 9 « pensée informatique » : 3 brouillons rangés en prod (#2169,
-  `20261102041300` jouée ; MCP : 4-065, 4-066 sur « instructions conditionnelles », 4-067 sur « variables et
-  affectation », un tag chacun, `draft`). Page à cocher publiée : https://claude.ai/artifact/1bjivDjH9FTW7esD9aV9BZ
-  (3 fiches, 14 exemples, aucune alerte, `verdicts` vide) (§ 48).
-- **Prochaine action** : quand David a relu : compter les verdicts (`ArtifactData list verdicts`), corriger les
-  « À revoir », puis `publier-lot.ts --dir scripts/questions/4-lot-9` (simulation, puis publication par David).
-  Ensuite : outils C (§ 3) et fin de chantier (versement).
-- **En attente de David** : la relecture du lot 9 sur la page à cocher.
+- **État** : lots 1 à 9 en prod et **publiés** (lot 9 : 4-065, 4-066, 4-067 relus 3/3 OK, publiés le 2026-11-02, § 49).
+  Tous les lots du § 4 sont faits sauf le 9e point : les outils C (§ 3), chacun en chantier à part.
+- **Prochaine action** : David choisit l'ordre des outils C (solides en perspective → 027, 028 ; schéma de fraction →
+  074 ; rectangle sans équerre → 038), ou décide de les laisser aux chantiers d'outils de la 6e ; puis fin de
+  chantier (versement du durable dans `docs/systeme/`, journal archivé).
+- **En attente de David** : ce choix pour les outils C.
 - **Pièges en cours** : migrations, dès #2165 mergée (règle de David, 2026-11-01) : horodatage par `pnpm
 migration:horodatage` (jamais un nombre rond choisi à la main), `pnpm check:migrations --pr <n>` avant `gh pr merge`,
   premier job de CI = porte des horodatages (`git merge origin/main` dans le worktree d'abord) ; `mtexte()` refusé dans une figure de question (§ 26) ; `db push --include-all` : **réservé à
@@ -1159,3 +1157,11 @@ Algorithmique / Variables / Accumulation 1 (067) ; variante « au moins 18 ans �
   `git pull`. `migration list --linked` avant : seule `20261102041300` en attente.
 - MCP : les 3 modèles sur leur nœud, un tag chacun (4-065, 4-066, 4-067), `draft`, niveau [4].
 - Page à cocher : https://claude.ai/artifact/1bjivDjH9FTW7esD9aV9BZ (capacités `db` + `user`, `verdicts` vide).
+
+## 49. Lot 9 : relecture et publication (2026-11-02)
+
+- Page à cocher (§ 48) : 3 verdicts sur 3, tous « OK », sans commentaire.
+- `publier-lot.ts --dir scripts/questions/4-lot-9` : simulation OK, `--publier` lancé par David avec `!` : 3/3
+  publiés. MCP : `published`.
+- Doublon : une 2e page à cocher (https://claude.ai/artifact/4Px4HzbKxdf7VhaYVrxmED) publiée par erreur après une
+  reprise sur le journal périmé du worktree (HEAD détachée) ; le journal de `main` faisait foi.
