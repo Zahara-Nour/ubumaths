@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 8 publié._
+_Mis à jour le 2026-11-02, lot 9 validé en phase 0._
 
-- **État** : lots 1 à 8 publiés. **Les points de classe A sont tous couverts** sauf 5-122 (étiquettes à ranger,
-  outil neuf). Relevé prod du 2026-11-02 : 69 points de 5e sans modèle (B, C, D, § 3 et § 22).
-- **Prochaine action** : phase 0 du lot 9 « Statistiques » (choisi par David, § 22) : 076, 077, 135, 109, 136,
-  110, 137, 111, 138, 078 ; relevé prod (niveaux libres, modèles stats existants), bornes, blocs `barres` /
-  `circulaire` / `nuage` / tableau, puis tableau de modèles à faire valider.
+- **État** : lots 1 à 8 publiés ; lot 9 « Statistiques » validé (§ 23), à écrire. Classe A couverte sauf 5-122
+  (étiquettes à ranger, outil neuf).
+- **Prochaine action** : écrire le lot 9 dans le worktree `ubumaths-wt-questions-5` (branche
+  `feat/questions-5-lot9`) : script `docs/wip/questions/lot-5-statistiques.py` → `scripts/questions/5-statistiques/` ;
+  vérifier le rendu de la ` ```courbe ` à segments (09-10) dans l'aperçu.
 - **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la
   main : au pilotage Chrome, la frappe dans la 2e case arrivait aussi dans la 1re — extension ou appli ?
 - **Pièges en cours** : `db:migrate` en prod refusé par le classifieur du mode auto → David le lance ; il pousse
@@ -19,7 +19,7 @@ _Mis à jour le 2026-11-02, lot 8 publié._
   `pnpm check:migrations --pr <n>` avant merge ; horodatage = `pnpm migration:horodatage` ; garde
   `docs:check-a-jour` sur une migration de données → ligne `Doc-inchangée:` dans un COMMIT (pas la PR) ;
   `gh pr checks --watch` rend la main avant l'intégration : suivre les runs ; jamais `e`.
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `../ubumaths-wt-questions-5`, `feat/questions-5-lot9`.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -633,3 +633,31 @@ Relevé prod : 69 points de 5e sans modèle : 011 016 040 042 043 046 047 048 04
 - **Choix de David (2026-11-02)** : premier lot B = **Statistiques** (076, 077, 135, 109, 136, 110, 137, 111, 138,
   078), reco suivie ; puis proportionnalité et graphiques, géométrie sur figure (forme à fixer avec le chantier
   `figure-et-choix`), droite graduée.
+
+## 23. Lot 9 « Statistiques » : décisions (David, 2026-11-02, « je te suis » sur les recos)
+
+Relevé prod : aucun modèle sur les 10 points, à aucun niveau du collège ; les 10 points sont déjà sur leur
+sous-notion. Niveaux pris : effectifs et fréquences 1 (5e), 5 (2de) ; tableaux 1 (CP), 2 (CE1) ; diagrammes en
+barres 1-3 (CE1) ; diagrammes circulaires et courbes et repères : aucun. Borne : 5-111, aucun secteur > 180°.
+
+| #   | Point | Modèle                              | Réponse         | Sous-notion, niveau        |
+| --- | ----- | ----------------------------------- | --------------- | -------------------------- |
+| 01  | 5-076 | Compter des effectifs               | case            | effectifs et fréquences, 2 |
+| 02  | 5-109 | Lire un tableau                     | case            | tableaux, 3                |
+| 03  | 5-136 | Interpréter un tableau              | choix ; case    | tableaux, 4                |
+| 04  | 5-078 | Ranger des données dans un tableau  | cases           | tableaux, 5                |
+| 05  | 5-110 | Lire un diagramme en barres         | case            | diagrammes en barres, 4    |
+| 06  | 5-137 | Interpréter un diagramme en barres  | choix ; case    | diagrammes en barres, 5    |
+| 07  | 5-111 | Lire un diagramme circulaire        | case (fraction) | diagrammes circulaires, 1  |
+| 08  | 5-138 | Interpréter un diagramme circulaire | choix ; case    | diagrammes circulaires, 2  |
+| 09  | 5-077 | Lire un graphique                   | case            | courbes et repères, 1      |
+| 10  | 5-135 | Interpréter un graphique            | choix           | courbes et repères, 2      |
+
+- 01 : liste brute de 15 à 25 données. 02 : tableau âge / effectif, lecture directe et inverse. 04 : ligne des
+  effectifs à remplir. 05 : axe de 2 en 2 ou de 5 en 5, valeurs sur les graduations. 07 : sans étiquettes, parts
+  ½, ¼, ⅛, ⅜ ; **fraction seule** (reco suivie). 08 : étiquettes en pourcentages, effectif total 200.
+- 09-10 : **` ```courbe `** (reco suivie) : années en abscisse, un point par année, un segment affine par
+  intervalle (≤ 10 tracés) ; rendu à vérifier dans l'aperçu avant la page à cocher.
+- 112 (barres à construire) : question posée sans reco, non tranchée → **lot suivant** (le choix qui ne change
+  rien au lot). 113 reste C.
+- Accès : rien de neuf (brouillons jusqu'à la publication, tags lisibles par tout compte connecté).
