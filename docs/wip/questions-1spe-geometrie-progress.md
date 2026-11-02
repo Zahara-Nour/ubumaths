@@ -10,14 +10,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 6b écrit (PR des fichiers à ouvrir)._
+_Mis à jour le 2026-11-02, après #2237._
 
-- **État** : lot 6b écrit, 7 modèles (`scripts/questions/1spe-savoir-b/`), simulation verte, essai en base locale fait.
-- **Prochaine action** : merger la PR des fichiers ; puis David lance `create-questions --publier` depuis le dépôt principal ;
-  relever les `id`, migration nœud + tag (gabarit 6a).
-- **En attente de David** : rien avant le merge ; ensuite la création en prod (`!`).
+- **État** : lot 6b écrit et mergé (#2237, fichiers seuls) : 7 modèles dans `scripts/questions/1spe-savoir-b/` ; rien en prod.
+- **Prochaine action** : David lance `create-questions --dir scripts/questions/1spe-savoir-b --publier` depuis le dépôt
+  principal ; relever les 7 `id` (MCP) ; migration nœud + tag sur le gabarit 6a (branche neuve dans le worktree).
+- **En attente de David** : la création en prod (`!`).
 - **Pièges en cours** : voir « Décisions communes et pièges » ci-dessous.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-geometrie`, `content/questions-1spe-geometrie` ; dev sur 5176.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-geometrie` (branche #2237 mergée : en repartir avec une branche
+  neuve depuis `origin/main` pour la migration) ; dev sur 5176.
 
 ---
 
@@ -92,3 +93,5 @@ Vérifications : 56 specs (une juste, trois erreurs par variation) ; `create-que
 (énoncés, propositions, corrigés) passées à MathLive (`validateLatex`, mathlive-ssr) : 0 erreur ; trois `col()` hors `$…$`
 remplacés par `colt` avant l'essai. Base **locale** : 7 brouillons créés ; 07 joué dans l'aperçu admin (bonne réponse comptée
 juste, propositions rendues à la largeur d'un téléphone) ; 01 regardé.
+
+PR #2237 (fichiers) mergée le 2026-11-02 (CI verte, 9 succès, 6 sautés).
