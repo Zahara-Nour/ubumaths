@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après la publication du lot 6b._
+_Mis à jour le 2026-11-02, phase 0 du lot 7 proposée (§ 12)._
 
 - **État** : lots 0 à 5, 6a et **6b publiés** (6b : 6/6, vérifiés au MCP le 2026-11-02 : `published`, rangés, tagués). **Lot 6 clos.**
-- **Prochaine action** : suite du chantier : relire le § 3 (points restants sans modèle), relevé MCP, puis phase 0 du lot 7 à proposer à David.
-- **En attente de David** : rien.
+- **Prochaine action** : réponses de David au § 12 (« À trancher »), puis écriture du lot 7a (droites graduées) dans le worktree, branche `feat/questions-cm2-lot7a`.
+- **En attente de David** : les 4 questions du § 12 (découpage, « entier moins une fraction », restes 038 / 053 / 055-057, reclassement du § 3).
 - **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; garde = doublon seulement ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `pnpm db:migrate --dry-run --include-all`, liste relue, puis `--include-all`. `Doc-inchangée:` dans un COMMIT, pas dans la PR. `spacesFromFourDigits` → specs en `1\,000` ; homonymes du CM1 sur la page ; `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2` en HEAD détachée (`feat/questions-cm2-lot6b-rangement` mergée, supprimée).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2` en HEAD détachée sur `origin/main` (remis à jour le 2026-11-02 : son journal était périmé).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -661,3 +661,58 @@ décimale (0,435 → message de forme, à vérifier en local). Tableau du § 11 
 ### 11.9 Lot 6b : publication (2026-11-02)
 
 - David lance `publier-lot --publier` : 6/6 publiés. MCP : 6 `published` (niveaux 13, 6, 7, 6, 7, 7), 6 rangés, 6 tagués (CM2-031, 033, 145, 034, 146, 147). **Lot 6b clos, lot 6 clos.**
+
+## 12. Lot 7 — droites graduées : phase 0 (proposée le 2026-11-02)
+
+Relevé MCP du 2026-11-02 : les 10 points de droite graduée n'ont **aucun** modèle CM2 : 129, 007
+(entiers) ; 018, 134, 017, 133 (fractions) ; 138, 025 (fractions décimales) ; 144, 032 (décimaux). Le
+geste « placer » (` ```line ` + `placer:`, un ou plusieurs points) est **en prod** : plus besoin de
+garder les modèles en brouillon. Jumeaux du CM1 publiés (`cm1-3a`, `cm1-3b`, `cm1-4`) : `c2fa5767`,
+`6d94994a`, `0e3f82a1`, `00910e5b`, `6de4ad5b`, `5b038fc8`, `06f246e4`, `3560dded` ; de 6e : `8adac6d1`,
+`0ce253ea`, `5f9ba34d` ; entiers : `d6268317` (CE1) seulement. Décision du § 4 bis : modèles CM2
+propres. Bornes CM2 (`cycle3.json`) : entiers gradués de 1 en 1, 10 en 10, 100 en 100, etc. ;
+fractions supérieures à 1 (5/3, 7/3), dénominateur ≤ 60, écritures 3 + 2/10 et **4 − 2/3** ;
+dénominateurs 10, 100, 1 000 ; décimaux en millièmes ou par **agrandissement** (2,812 ; 33,916).
+
+Nœuds : sous-notion « droite graduée » de « Entiers : numération » (129, 007), « Fractions : sens et
+écritures » (018, 134, 017, 133, 025, 138), « Décimaux : numération » (144, 032). Niveaux relevés
+(catégorie Apprivoiser/Repérage, tous statuts) : Entiers 1, Fractions 1-7, Décimaux 1-4 → la suite.
+
+**7a — entiers et fractions**
+
+| #   | Point   | Modèle                                                                                                                                                                                          | Catégorie, niveau     |
+| --- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| 1   | CM2-129 | Lire un entier : V1 morceau de droite gradué de 1 en 1, 10 en 10 ou 100 en 100 (≤ 100 000) ; V2 de 1 000 en 1 000 ou 10 000 en 10 000, grands nombres (3 450 000) ; deux graduations étiquetées | Entiers/Repérage 2    |
+| 2   | CM2-007 | Placer un entier : mêmes droites ; V3 deux points sur la même droite                                                                                                                            | Entiers/Repérage 3    |
+| 3   | CM2-018 | Lire une fraction : V1 unité en 2 à 12 parts, point **au-delà de 1** (7/3) ; V2 morceau de droite qui commence à un entier (2 à 5)                                                              | Fractions/Repérage 8  |
+| 4   | CM2-134 | Repérer par un entier et une fraction : V1 ? + ?/d (comme le CM1, d jusqu'à 12) ; V2 ? − ?/d, point juste avant un entier (4 − 1/3)                                                             | Fractions/Repérage 9  |
+| 5   | CM2-017 | Placer une fraction supérieure à 1 (5/3, 7/3) : V1 un point ; V2 deux points (A = 5/3 ; B = 7/3)                                                                                                | Fractions/Repérage 10 |
+| 6   | CM2-133 | Placer un entier plus une fraction : V1 un point (d jusqu'à 12) ; V2 deux points                                                                                                                | Fractions/Repérage 11 |
+
+**7b — fractions décimales et décimaux**
+
+| #   | Point   | Modèle                                                                                                                                   | Catégorie, niveau     |
+| --- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| 7   | CM2-138 | Lire une fraction décimale : V1 dixièmes (23/10) ; V2 morceau en centièmes (237/100) ; V3 morceau agrandi en **millièmes** (2 812/1 000) | Fractions/Repérage 12 |
+| 8   | CM2-025 | Placer une fraction décimale : les mêmes trois droites                                                                                   | Fractions/Repérage 13 |
+| 9   | CM2-144 | Lire un nombre décimal : V1 dixièmes ; V2 centièmes ; V3 morceau agrandi en millièmes (2,812 ; 33,916), partie entière jusqu'à 99        | Décimaux/Repérage 5   |
+| 10  | CM2-032 | Placer un nombre décimal : les mêmes trois droites ; V4 deux points                                                                      | Décimaux/Repérage 6   |
+
+Corrigés : valeur d'un petit intervalle (l'unité partagée en d parts ; 10 graduations entre 2,81 et
+2,82 → un millième) puis compter depuis la graduation étiquetée. Erreurs typiques en `testSpecs` :
+graduation voisine, intervalle compté pour 1 (au lieu de 10, 100…), fraction comptée depuis le mauvais
+entier, millième pris pour un centième (2,82 au lieu de 2,812), 4 + 1/3 au lieu de 4 − 1/3.
+
+À vérifier en local : étiquettes des grands nombres (espaces, largeur sur téléphone), pas `0.001`
+sur un morceau agrandi, `placer:` à deux points avec des fractions.
+
+**Question d'accès** : brouillons neufs, puis nœud + tag → personne ne lit rien de plus avant la
+publication.
+
+**À trancher** : (a) découpage 7a (6 modèles) puis 7b (4) ? (b) #4 V2 « entier moins une fraction »
+(exemple du BO, 4 − 2/3) : à garder ? (c) les restes sans modèle des lots précédents (038 relations
+entre fractions usuelles, 053 estimation, 055-057 opérations posées) : un petit lot après le 7, ou à
+leur place dans « problèmes » ? (d) après le lot 7, reclasser le § 3 : plusieurs outils de la classe C
+sont maintenant en prod (figure à colorier → 131, 136, 143 ; barres à construire → 121 ; repère à
+placer → 122 ; cubes, patrons → 100, 102, 105 ; horloge à placer → 083 sans secondes, toujours pas de
+trotteuse).
