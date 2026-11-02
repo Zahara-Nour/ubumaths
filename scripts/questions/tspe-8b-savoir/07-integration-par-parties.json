@@ -1,0 +1,169 @@
+{
+	"title": "Formule d'intégration par parties",
+	"description": "À savoir : ∫ uv′ = [uv] − ∫ u′v, u et v dérivables de dérivées continues ; formule, hypothèses, exemple x eˣ ; distracteurs : signe +, crochet u′v, produit des intégrales",
+	"grades": ["T_SPE"],
+	"theme": "Intégration",
+	"domain": "Calcul intégral",
+	"subdomain": "À savoir",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $u$ et $v$ deux fonctions dérivables sur $[a\\,;b]$, de dérivées continues. La formule d'intégration par parties s'écrit :\n\n```choix\n- $\\displaystyle\\int_a^bu(x)v'(x)\\,\\mathrm{d}x=\\big[u(x)v(x)\\big]_a^b-\\displaystyle\\int_a^bu'(x)v(x)\\,\\mathrm{d}x$\n- $\\displaystyle\\int_a^bu(x)v'(x)\\,\\mathrm{d}x=\\big[u(x)v(x)\\big]_a^b+\\displaystyle\\int_a^bu'(x)v(x)\\,\\mathrm{d}x$\n- $\\displaystyle\\int_a^bu(x)v'(x)\\,\\mathrm{d}x=\\big[u'(x)v(x)\\big]_a^b-\\displaystyle\\int_a^bu(x)v(x)\\,\\mathrm{d}x$\n- $\\displaystyle\\int_a^bu(x)v'(x)\\,\\mathrm{d}x=\\displaystyle\\int_a^bu(x)\\,\\mathrm{d}x\\times\\displaystyle\\int_a^bv'(x)\\,\\mathrm{d}x$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : pour $u$ et $v$ dérivables sur $[a\\,;b]$, de dérivées continues, $\\textcolor{{{color:primary.0}}}{\\displaystyle\\int_a^bu(x)v'(x)\\,\\mathrm{d}x=\\big[u(x)v(x)\\big]_a^b-\\displaystyle\\int_a^bu'(x)v(x)\\,\\mathrm{d}x}$.",
+					"Elle vient de la dérivée d'un produit : $(uv)'=u'v+uv'$, donc $uv'=(uv)'-u'v$, que l'on intègre entre $a$ et $b$. L'intégrale d'un produit n'est PAS le produit des intégrales."
+				]
+			}
+		},
+		{
+			"statement": "Pour appliquer la formule d'intégration par parties sur $[a\\,;b]$ aux fonctions $u$ et $v$, il faut que :\n\n```choix\n- $u$ et $v$ soient dérivables sur $[a\\,;b]$, de dérivées continues\n- $u$ et $v$ soient continues sur $[a\\,;b]$, sans plus\n- $u$ et $v$ soient positives sur $[a\\,;b]$\n- $u$ et $v$ soient strictement monotones sur $[a\\,;b]$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : la formule demande que $\\textcolor{{{color:primary.0}}}{u\\text{ et }v\\text{ soient dérivables, de dérivées continues}}$ sur $[a\\,;b]$.",
+					"Il faut en effet que $u'v$ et $uv'$ soient continues pour que leurs intégrales aient un sens ; ni le signe ni le sens de variation n'interviennent."
+				]
+			}
+		},
+		{
+			"statement": "On pose $u(x)=x$ et $v'(x)=e^x$, avec $v(x)=e^x$. L'intégration par parties donne :\n\n```choix\n- $\\displaystyle\\int_0^1xe^x\\,\\mathrm{d}x=\\big[xe^x\\big]_0^1-\\int_0^1e^x\\,\\mathrm{d}x$\n- $\\displaystyle\\int_0^1xe^x\\,\\mathrm{d}x=\\big[xe^x\\big]_0^1+\\int_0^1e^x\\,\\mathrm{d}x$\n- $\\displaystyle\\int_0^1xe^x\\,\\mathrm{d}x=\\big[e^x\\big]_0^1-\\int_0^1e^x\\,\\mathrm{d}x$\n- $\\displaystyle\\int_0^1xe^x\\,\\mathrm{d}x=\\int_0^1x\\,\\mathrm{d}x\\times\\int_0^1e^x\\,\\mathrm{d}x$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : $\\displaystyle\\int_a^bu(x)v'(x)\\,\\mathrm{d}x=\\big[u(x)v(x)\\big]_a^b-\\int_a^bu'(x)v(x)\\,\\mathrm{d}x$.",
+					"Ici $u(x)v(x)=xe^x$ et $u'(x)v(x)=1\\times e^x=e^x$, d'où $\\textcolor{{{color:primary.0}}}{\\displaystyle\\int_0^1xe^x\\,\\mathrm{d}x=\\big[xe^x\\big]_0^1-\\int_0^1e^x\\,\\mathrm{d}x}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "[uv] − ∫ u′v",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe +",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : [u′v] − ∫ uv",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : produit des intégrales",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "dérivables, dérivées continues",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : continues",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : positives",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : strictement monotones",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "[xeˣ] − ∫ eˣ",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe +",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : crochet [eˣ]",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : produit des intégrales",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

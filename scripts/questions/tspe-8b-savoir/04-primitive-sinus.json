@@ -1,0 +1,118 @@
+{
+	"title": "Primitive de la fonction sinus",
+	"description": "À savoir : une primitive de sin sur ℝ est −cos ; dans les deux sens ; distracteurs : cos (signe), −sin, la fonction elle-même",
+	"grades": ["T_SPE"],
+	"theme": "Primitives et équations différentielles",
+	"domain": "Primitives",
+	"subdomain": "À savoir",
+	"level": 4,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Une primitive sur $\\mathbb{R}$ de la fonction $x\\mapsto\\sin x$ est :\n\n```choix\n- $x\\mapsto-\\cos x$\n- $x\\mapsto\\cos x$\n- $x\\mapsto-\\sin x$\n- $x\\mapsto\\sin x$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : une primitive sur $\\mathbb{R}$ de $x\\mapsto\\sin x$ est $\\textcolor{{{color:primary.0}}}{x\\mapsto-\\cos x}$.",
+					"Vérification : $(-\\cos x)'=-(-\\sin x)=\\sin x$. Avec $\\cos x$, le signe est faux : $(\\cos x)'=-\\sin x$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction $x\\mapsto-\\cos x$ est une primitive sur $\\mathbb{R}$ de la fonction :\n\n```choix\n- $x\\mapsto\\sin x$\n- $x\\mapsto-\\sin x$\n- $x\\mapsto\\cos x$\n- $x\\mapsto-\\cos x$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : une primitive de $x\\mapsto\\sin x$ est $x\\mapsto-\\cos x$.",
+					"Autrement dit, $(-\\cos x)'=\\textcolor{{{color:primary.0}}}{\\sin x}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "−cos",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cos (signe)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −sin",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sin",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "sin",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −sin (signe)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : cos",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −cos",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

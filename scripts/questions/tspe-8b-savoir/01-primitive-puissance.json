@@ -1,0 +1,170 @@
+{
+	"title": "Primitive de x ↦ xⁿ",
+	"description": "À savoir : une primitive de xⁿ (n ∈ ℤ, n ≠ −1) est xⁿ⁺¹/(n + 1) ; formule générale, cas n = 3, cas n = −2 ; distracteurs : dérivée, oubli de la division, division par n",
+	"grades": ["T_SPE"],
+	"theme": "Primitives et équations différentielles",
+	"domain": "Primitives",
+	"subdomain": "À savoir",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $n$ un entier relatif, $n\\neq -1$. Sur un intervalle où elle est définie, une primitive de la fonction $x\\mapsto x^n$ est :\n\n```choix\n- $x\\mapsto\\dfrac{x^{n+1}}{n+1}$\n- $x\\mapsto nx^{n-1}$\n- $x\\mapsto x^{n+1}$\n- $x\\mapsto\\dfrac{x^{n+1}}{n}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : pour $n$ entier relatif, $n\\neq -1$, une primitive de $x\\mapsto x^n$ est $\\textcolor{{{color:primary.0}}}{x\\mapsto\\dfrac{x^{n+1}}{n+1}}$ (sur $\\mathbb{R}$ si $n\\geqslant 0$, sur $]0\\,;+\\infty[$ ou $]-\\infty\\,;0[$ si $n\\leqslant -2$).",
+					"Vérification : la dérivée de $\\dfrac{x^{n+1}}{n+1}$ est $\\dfrac{(n+1)x^n}{n+1}=x^n$. $nx^{n-1}$ est la DÉRIVÉE de $x^n$, pas une primitive."
+				]
+			}
+		},
+		{
+			"statement": "Une primitive sur $\\mathbb{R}$ de la fonction $x\\mapsto x^3$ est :\n\n```choix\n- $x\\mapsto\\dfrac{x^4}{4}$\n- $x\\mapsto 3x^2$\n- $x\\mapsto x^4$\n- $x\\mapsto\\dfrac{x^4}{3}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : une primitive de $x\\mapsto x^n$ est $x\\mapsto\\dfrac{x^{n+1}}{n+1}$.",
+					"Avec $n=3$ : $\\textcolor{{{color:primary.0}}}{x\\mapsto\\dfrac{x^4}{4}}$. Vérification : $\\left(\\dfrac{x^4}{4}\\right)'=\\dfrac{4x^3}{4}=x^3$."
+				]
+			}
+		},
+		{
+			"statement": "Une primitive sur $]0\\,;+\\infty[$ de la fonction $x\\mapsto\\dfrac{1}{x^2}$ est :\n\n```choix\n- $x\\mapsto-\\dfrac{1}{x}$\n- $x\\mapsto\\dfrac{1}{x}$\n- $x\\mapsto-\\dfrac{2}{x^3}$\n- $x\\mapsto-\\dfrac{1}{3x^3}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : une primitive de $x\\mapsto x^n$ ($n\\neq -1$) est $x\\mapsto\\dfrac{x^{n+1}}{n+1}$, aussi pour $n$ négatif.",
+					"Ici $\\dfrac{1}{x^2}=x^{-2}$, donc $n=-2$ et $n+1=-1$ : une primitive est $\\dfrac{x^{-1}}{-1}$, soit $\\textcolor{{{color:primary.0}}}{x\\mapsto-\\dfrac{1}{x}}$.",
+					"$-\\dfrac{2}{x^3}$ est la DÉRIVÉE de $\\dfrac{1}{x^2}$ ; $-\\dfrac{1}{3x^3}$ vient de l'exposant $n-1$ au lieu de $n+1$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "xⁿ⁺¹/(n + 1)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dérivée nxⁿ⁻¹",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : xⁿ⁺¹ sans diviser",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : division par n",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x⁴/4",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dérivée 3x²",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x⁴",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x⁴/3",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−1/x",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/x (signe)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : dérivée −2/x³",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : exposant n − 1",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
