@@ -249,7 +249,9 @@ niveau chacune (`idx_question_templates_unique_category`).
    Une fiche par fichier du lot, **un exemple par variation tiré par le vrai générateur**
    (`generateInstance`, graine fixe : page reproductible). Les blocs `figure`, `monnaie`,
    `collection`, `horloge` et `courbe` sont dessinés par les scènes de l'appli (à construire :
-   réserve, plan vide, et la construction juste à part) ; un bloc `python` est montré tel quel ;
+   réserve, plan vide, et la construction juste à part) ; un bloc `variation` (tableau de signes ou
+   de variations) est lu par le parseur de l'appli et dessiné comme `VariationTable.svelte` (valeurs
+   en KaTeX, zéros, double barre, flèches) ; un bloc `python` est montré tel quel ;
    un autre bloc (`operation`…) est montré par sa source et signalé. Les formules restent en texte quand elles n'ont que des nombres et des signes (CP) ; au-delà
    (fractions, `\left`, exposants), KaTeX les rend en MathML (cdnjs, sans feuille de style), y compris
    la réponse attendue, le libellé du point, ses bornes et les réponses des specs ; un bloc `$$…$$` est

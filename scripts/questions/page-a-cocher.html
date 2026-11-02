@@ -488,6 +488,95 @@
 		width: 12rem;
 	}
 
+	/* Bloc variation : tableau de VariationTable.svelte (signes en couleur du texte) */
+	.vt {
+		border-collapse: collapse;
+		margin: 0.5rem auto;
+	}
+	.vt th,
+	.vt td {
+		border: 1px solid var(--line);
+		padding: 0.3rem 0.5rem;
+		text-align: center;
+		vertical-align: middle;
+	}
+	.vt .vt-tete th {
+		background: color-mix(in srgb, var(--line) 35%, transparent);
+	}
+	/* Valeurs et intervalles : pas de trait vertical entre eux, comme à l'écran */
+	.vt td.vt-point,
+	.vt td.vt-intervalle,
+	.vt .vt-tete th + th {
+		border-left: none;
+		border-right: none;
+	}
+	.vt .vt-ligne-variation td {
+		height: 4.5em;
+		padding: 0.15rem 0.3rem;
+	}
+	.vt .vt-ligne-variation td.vt-point {
+		position: relative;
+		min-width: 2.5em;
+	}
+	.vt .vt-val {
+		display: flex;
+		height: 100%;
+		min-height: 4.2em;
+		justify-content: center;
+	}
+	.vt .vt-haut {
+		align-items: flex-start;
+	}
+	.vt .vt-milieu {
+		align-items: center;
+	}
+	.vt .vt-bas {
+		align-items: flex-end;
+	}
+	.vt .vt-asy {
+		display: flex;
+		align-items: stretch;
+		gap: 0.25rem;
+	}
+	.vt .vt-barre {
+		display: inline-block;
+		width: 4px;
+		min-height: 1.4em;
+		align-self: stretch;
+		border-left: 1px solid currentColor;
+		border-right: 1px solid currentColor;
+	}
+	.vt .vt-hachure {
+		display: inline-block;
+		width: 1.2em;
+		min-height: 1.4em;
+		align-self: stretch;
+		background: repeating-linear-gradient(45deg, currentColor 0 1px, transparent 1px 5px);
+		opacity: 0.6;
+	}
+	.vt .vt-hachure.vt-large {
+		display: block;
+		width: 100%;
+	}
+	.vt .vt-fleche {
+		display: block;
+		width: 3.5em;
+		height: 2.2em;
+		margin: auto;
+		overflow: visible;
+	}
+	.vt .vt-fleche line {
+		stroke: currentColor;
+		stroke-width: 3;
+		vector-effect: non-scaling-stroke;
+	}
+	.vt .vt-fleche polygon {
+		fill: currentColor;
+	}
+	.choix li .vt {
+		font-size: 0.85rem;
+	}
+
 	/* Bloc monnaie : balisage et couleurs de Monnaie.svelte (--color-primary de app.css) */
 	:root {
 		--m-primaire: light-dark(#fc8f1b, #ffc400);
@@ -717,6 +806,20 @@
 	let enCours = false;
 	let delai = 2000;
 
+	/* Formules d'un bloc dessiné (tableau de variations) : `data-tex` rendu comme une formule de l'énoncé */
+	function formules(html) {
+		const brut = (s) =>
+			s
+				.replace(/&quot;/g, '"')
+				.replace(/&lt;/g, '<')
+				.replace(/&gt;/g, '>')
+				.replace(/&amp;/g, '&');
+		return html.replace(
+			/<span class="tex" data-tex="([^"]*)"><\/span>/g,
+			// KaTeX toujours (signes moins, italiques), comme le rendu MathLive de l'écran
+			(_, t) => `<span class="tex">${mathsKatex(brut(t)) ?? maths(brut(t))}</span>`
+		);
+	}
 	function esc(s) {
 		return String(s).replace(
 			/[&<>"]/g,
@@ -844,7 +947,7 @@
 	function morceau(par) {
 		if (par.startsWith('|')) return tableau(par);
 		if (/^[●▲■★○△□ ]+$/.test(par)) return `<div class="formes">${esc(par)}</div>`;
-		if (par.startsWith('@@HTML@@')) return `<div class="bloc">${par.slice(8)}</div>`;
+		if (par.startsWith('@@HTML@@')) return `<div class="bloc">${formules(par.slice(8))}</div>`;
 		if (par.startsWith('$$')) return `<div class="calc">${maths(par.slice(2, -2), true)}</div>`;
 		return `<div>${enLigne(par)}</div>`;
 	}
@@ -871,7 +974,7 @@
 
 	function exemple(e) {
 		const reponse = e.choices
-			? `<ul class="choix${e.choices.some((c) => c.content.startsWith('@@HTML@@')) ? ' dessins' : ''}">${e.choices.map((c) => `<li class="${c.bon ? 'bon' : ''}">${c.bon ? '✔ ' : ''}${c.content.startsWith('@@HTML@@') ? c.content.slice(8) : enLigne(c.content)}</li>`).join('')}</ul>`
+			? `<ul class="choix${e.choices.some((c) => c.content.startsWith('@@HTML@@')) ? ' dessins' : ''}">${e.choices.map((c) => `<li class="${c.bon ? 'bon' : ''}">${c.bon ? '✔ ' : ''}${c.content.startsWith('@@HTML@@') ? formules(c.content.slice(8)) : enLigne(c.content)}</li>`).join('')}</ul>`
 			: `<div class="attendu">Attendu, case par case : <b>${e.answer.split(' | ').map(maths).join(' | ')}</b></div>${e.solution ? `<div class="sol"><div class="attendu">Une construction juste, le moins d'objets (celle que montre la correction) :</div><div class="m-bloc">${e.solution}</div></div>` : ''}`;
 		return `<div class="ex"><div class="var">variation ${e.variation}</div><div class="enonce">${rendu(e.statement)}</div>${reponse}<ol class="corrige">${e.steps.map((s) => `<li>${s.includes('@@HTML@@') ? rendu(s) : etape(s)}</li>`).join('')}</ol></div>`;
 	}

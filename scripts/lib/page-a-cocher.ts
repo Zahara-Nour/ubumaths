@@ -44,6 +44,16 @@ import {
 	type CourbeLabel
 } from '../../src/lib/ubumark/types/courbe';
 import { buildCourbeScene, type ScenePoint } from '../../src/lib/ubumark/utils/courbe-scene';
+import {
+	parseVariationTableContent,
+	withImplicitEndpoints
+} from '../../src/lib/ubumark/parser/variation-table-parser';
+import type {
+	SignValue,
+	VariationMarker,
+	VariationPosition,
+	VariationValue
+} from '../../src/lib/ubumark/types/variation-table';
 import { namedColorScreen, namedColorTable } from '../../src/lib/theme/named-colors';
 import { toFrenchDecimal } from '../../src/lib/utils/french-math';
 import type { ModeleFichier } from './lot-questions';
@@ -492,12 +502,155 @@ function courbe(source: string): Bloc {
 	};
 }
 
+// ---- Variation : tableau de VariationTable.svelte (même parseur, mêmes flèches) ----
+
+/** `±inf` en `±\infty`, comme `toLatex` de VariationTable.svelte */
+const versLatex = (e: string) =>
+	e.replace(/\+inf/g, '+\\infty').replace(/-inf/g, '-\\infty').replace(/^inf$/g, '\\infty');
+/** Formule que le gabarit rend en KaTeX (`data-tex`), rien si la valeur est implicite */
+const tex = (e: string) => (e ? `<span class="tex" data-tex="${attr(versLatex(e))}"></span>` : '');
+const RANG: Record<VariationPosition, number> = {
+	top: 3,
+	'limit-top': 3,
+	center: 2,
+	bottom: 1,
+	'limit-bottom': 1
+};
+const PLACE: Record<VariationPosition, string> = {
+	top: 'vt-haut',
+	'limit-top': 'vt-haut',
+	center: 'vt-milieu',
+	bottom: 'vt-bas',
+	'limit-bottom': 'vt-bas'
+};
+const MARQUE: Record<VariationMarker, string> = {
+	zero: '<span class="vt-zero">0</span>',
+	asymptote: '<span class="vt-barre"></span>',
+	forbidden: '<span class="vt-hachure"></span>',
+	discontinuity: '<span class="vt-zero">d</span>'
+};
+/** Hachure sur toute la case d'intervalle (`vt-hatch-wide` de l'écran) */
+const MARQUE_LARGE = '<span class="vt-hachure vt-large"></span>';
+
+function signe(v: SignValue | undefined): string {
+	if (!v) return '';
+	if (v.type === 'marker') return MARQUE[v.marker];
+	return `<span class="vt-signe">${v.value === '-' ? '−' : '+'}</span>`;
+}
+
+/** Case d'intervalle : l'écran n'y montre que le signe ou la hachure, jamais 0, barre ni `d` */
+function signeDIntervalle(v: SignValue | undefined): string {
+	if (!v) return '';
+	if (v.type === 'marker') return v.marker === 'forbidden' ? MARQUE_LARGE : '';
+	return signe(v);
+}
+
+/** Zone interdite : ni flèche ni valeur (valeur interdite, asymptote sans limite) */
+const interdite = (v: VariationValue | undefined) =>
+	!!v && (v.marker === 'forbidden' || (v.marker === 'asymptote' && !v.limits && !v.limitSide));
+
+function valeurDeVariation(v: VariationValue | undefined): string {
+	if (!v) return '';
+	const val = (e: string, p: VariationPosition) =>
+		`<div class="vt-val ${PLACE[p]}">${tex(e)}</div>`;
+	if (v.marker === 'forbidden') return MARQUE.forbidden;
+	if (v.marker === 'asymptote') {
+		if (v.limits)
+			return `<div class="vt-asy">${val(v.limits[0].expression, v.limits[0].position)}${MARQUE.asymptote}${val(v.limits[1].expression, v.limits[1].position)}</div>`;
+		if (v.limitSide === 'left')
+			return `<div class="vt-asy">${val(v.expression, v.position)}${MARQUE.asymptote}</div>`;
+		if (v.limitSide === 'right')
+			return `<div class="vt-asy">${MARQUE.asymptote}${val(v.expression, v.position)}</div>`;
+		return MARQUE.asymptote;
+	}
+	return val(v.expression, v.position);
+}
+
+/** Sens de la flèche : on quitte la limite de DROITE, on arrive à celle de GAUCHE (comme l'écran) */
+function sens(de: VariationValue | undefined, vers: VariationValue | undefined): 1 | -1 | 0 {
+	if (!de || !vers) return 0;
+	const a = RANG[de.limits ? de.limits[1].position : de.position] ?? 2;
+	const b = RANG[vers.limits ? vers.limits[0].position : vers.position] ?? 2;
+	return a === b ? 0 : b > a ? 1 : -1;
+}
+
+/** Flèche de la case (cadre 100 × 60, comme l'écran), pointe dessinée : pas de `marker` à identifiant */
+function fleche(s: 1 | -1): string {
+	const [y1, y2] = s === 1 ? [55, 5] : [5, 55];
+	const angle = Math.atan2(y2 - y1, 90);
+	const pointe = [0, -0.4, 0.4]
+		.map((da, k) =>
+			k === 0 ? [95, y2] : [95 - 22 * Math.cos(angle + da), y2 - 22 * Math.sin(angle + da)]
+		)
+		.map(([x, y]) => `${+x.toFixed(2)},${+y.toFixed(2)}`)
+		.join(' ');
+	return `<svg class="vt-fleche" viewBox="0 0 100 60" role="img" aria-label="${s === 1 ? 'croissante' : 'décroissante'}"><line x1="5" y1="${y1}" x2="95" y2="${y2}"/><polygon points="${pointe}"/></svg>`;
+}
+
+function variation(source: string): Bloc {
+	const { node, errors } = parseVariationTableContent(source.split('\n'));
+	if (!node || errors.length > 0)
+		throw new Error(
+			'bloc variation en erreur : ' +
+				(errors
+					.map(
+						(e) =>
+							`${e.message}${e.line ? ` (ligne ${e.line})` : ''}${e.content ? ` : ${e.content}` : ''}`
+					)
+					.join(' ; ') || 'illisible')
+		);
+	const d = node.domain;
+	const derniere = d.length - 1;
+	// Une ligne : l'étiquette, puis une case par valeur et une par intervalle
+	const ligne = (
+		classe: string,
+		etiquette: string,
+		point: (i: number) => string,
+		intervalle: (i: number) => string
+	) =>
+		`<tr class="${classe}"><th>${tex(etiquette)}</th>${d
+			.map(
+				(_, i) =>
+					`<td class="vt-point">${point(i)}</td>` +
+					(i < derniere ? `<td class="vt-intervalle">${intervalle(i)}</td>` : '')
+			)
+			.join('')}</tr>`;
+	const tete = `<tr class="vt-tete"><th>${tex(node.variable)}</th>${d
+		.map((p, i) => `<th>${tex(p.expression)}</th>` + (i < derniere ? '<th></th>' : ''))
+		.join('')}</tr>`;
+	const lignes = node.rows.map((row) => {
+		if (row.type === 'sign')
+			return ligne(
+				'vt-ligne-signe',
+				row.label,
+				(i) => signe(row.values.get(d[i].expression)),
+				(i) => signeDIntervalle(row.values.get(`${d[i].expression},${d[i + 1].expression}`))
+			);
+		const r = withImplicitEndpoints(row, d);
+		const v = (i: number) => r.values.get(d[i].expression);
+		return ligne(
+			'vt-ligne-variation',
+			r.label,
+			(i) => valeurDeVariation(v(i)),
+			(i) => {
+				if (interdite(v(i)) || interdite(v(i + 1))) return MARQUE_LARGE;
+				const s = sens(v(i), v(i + 1));
+				return s === 0 ? '' : fleche(s);
+			}
+		);
+	});
+	return {
+		html: `<table class="vt" aria-label="Tableau de la fonction ${attr(node.variable)}">${tete}${lignes.join('')}</table>`
+	};
+}
+
 const DESSINS: Record<string, (source: string) => Bloc> = {
 	figure,
 	monnaie,
 	collection,
 	horloge,
-	courbe
+	courbe,
+	variation
 };
 
 /** Types de blocs que la page dessine elle-même */

@@ -5,16 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2146 et la publication du lot 7._
+_Mis à jour le 2026-11-02, phase 0 du lot 8 proposée (§ 19)._
 
-- **État** : lots 1 à 7 publiés (lot 7 : 6/6 « ok » sur la page à cocher, publié par David, vérifié au MCP).
-- **Prochaine action** : lot 8 « Opérations » (001, 002, 005, 116, 117) : relevé prod, décisions (phase 0) à
-  faire valider, nouveau worktree `ubumaths-wt-questions-5`.
-- **En attente de David** : 02 du lot 7 (deux cases sur deux lignes, désormais publié) à essayer à la main : au
+- **État** : lots 1 à 7 publiés. Lot 8 « Opérations » : relevé prod fait, phase 0 **proposée, PAS validée** (§ 19).
+- **Prochaine action** : reposer à David les 2 points du § 19 (5-001 en 1 ou 2 modèles ; sous-catégorie de 04-06)
+  et faire valider le tableau ; puis worktree `ubumaths-wt-questions-5`, mesurer le juge (écriture exigée).
+- **En attente de David** : validation du § 19 ; 02 du lot 7 (deux cases sur deux lignes, désormais publié) à essayer à la main : au
   pilotage Chrome, la frappe dans la 2e case arrivait aussi dans la 1re — extension ou appli ?
 - **Pièges en cours** : `db:migrate` en prod refusé par le classifieur du mode auto → David le lance ; il pousse
   toutes les migrations en attente (se coordonner avec les autres sessions) ; `pnpm check:migrations --pr <n>`
-  avant merge (#2165) ; worktree non lié à Supabase → `db:migrate` depuis le dépôt principal ; jamais `e`.
+  avant merge ; depuis #2181 : horodatage = `pnpm migration:horodatage` (heure réelle), plus de renommage ; si
+  `db:migrate` refuse « inserted before the last migration » → `--dry-run --include-all`, relire, `--include-all` ;
+  `git merge origin/main` avant push ; worktree non lié à Supabase → `db:migrate` depuis le dépôt principal ; jamais `e`.
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-28)
@@ -559,3 +561,28 @@ Calcul littéral › Écrire › Formules 1-3, nœud = notion Algèbre › Calcu
 
 - Page à cocher : **6 verdicts sur 6 « ok »**, sans commentaire (comptés en base de l'artefact). David :
   `publier-lot.ts --publier` → 6/6 publiés ; vérifié au MCP (`status = published` pour les 6).
+
+## 19. Lot 8 « Opérations » : phase 0 PROPOSÉE (2026-11-01, non validée)
+
+Relevé prod (MCP) : aucun modèle sur 5-001, 5-002, 5-005, 5-116, 5-117. En 4e, « Traduire une phrase en expression
+mathématique » (5d515eb1, 78feafed : vocabulaire « la somme du produit de… », Entiers › Vocabulaire › Traduire 1-2,
+`products: off`) et « Appliquer un programme de calcul » (edcc194a : la valeur) — tâches différentes, pas retagués.
+6e : problèmes à une opération (32b7a9bc, 87cfa41b, Décimaux › Problèmes › Multiplication / Division, niveau 1).
+Nœuds : 5-001, 5-002 sur la notion « Décimaux : calculs » ; 5-005, 5-116, 5-117 sur « Entiers : priorités
+opératoires › écriture d'une expression ». Chaque modèle sur le nœud de son point, aucun nœud créé.
+
+| #   | Point | Modèle                                                                                                    | Réponse           | Catégorie, niveau                                               |
+| --- | ----- | --------------------------------------------------------------------------------------------------------- | ----------------- | --------------------------------------------------------------- |
+| 01  | 5-001 | Problèmes à deux opérations, décimaux positifs (achat, rendu de monnaie, partage après dépense, longueur) | case              | Décimaux › Problèmes › Plusieurs opérations, 1                  |
+| 02  | 5-001 | Contrôler la vraisemblance (bonne / erreur de virgule ×10 / mauvaise opération)                           | choix parmi 3     | Décimaux › Problèmes › Vraisemblance, 1                         |
+| 03  | 5-002 | Choisir l'opération (partage, groupement, écart, prix × quantité, réunion) ; propositions « 12,5 ÷ 5 »…   | choix parmi 4     | Décimaux › Problèmes › Choisir l'opération, 1                   |
+| 04  | 5-005 | Traduire un problème en une seule expression (3 × 2 + 1, a × b + c × d, a − b × c, (a + b) × c)           | case (expression) | Entiers › Priorités opératoires › Traduire en une expression, 1 |
+| 05  | 5-116 | Traduire une succession d'opérations ((5 + 3) × 2 ; une variation sans parenthèses nécessaires)           | case (expression) | idem, 2                                                         |
+| 06  | 5-117 | Traduire un programme de calcul (2 ou 3 étapes) en une seule expression                                   | case (expression) | idem, 3                                                         |
+
+- Bornes : décimaux positifs, ≤ 2 décimales, résultats < 1 000, pas de relatifs ; 04-06 en entiers.
+- 04-06 : mesurer avant d'écrire que le juge refuse la valeur (« 7 ») et le mauvais parenthésage, accepte l'ordre
+  commutatif et les parenthèses superflues ; ÷ comme en 4e (`:` + `requiredForm`) si le juge le permet.
+- 01 : `zeros: off` (prix). Niveaux vérifiés libres au MCP. Accès : rien de neuf (brouillons, aucun nœud créé).
+- **À trancher par David** : (1) 5-001 en deux modèles (reco) ou un ; (2) sous-catégorie neuve « Traduire en une
+  expression » sous Entiers › Priorités opératoires (reco) ou Fonctions › Programmes de calcul pour 06.

@@ -17,7 +17,9 @@
  * générateur (chantier `docs/wip/reponses-a-placer-progress.md` § 13, 14).
  *
  * - `heure:` (obligatoire) : 1 à 4 heures séparées par `;`, écrites `9 h`,
- *   `9 h 30`, `9h5` ; heures de 0 à 23, minutes de 0 à 59.
+ *   `9 h 30`, `9h5`, `9 h 30 min 15 s` ; heures de 0 à 23, minutes et secondes
+ *   de 0 à 59. Des secondes écrites font dessiner la trotteuse (chantier
+ *   `docs/wip/cercle-trotteuse-progress.md`).
  * - Le reste est facultatif ; une clé inconnue ou une valeur hors liste est
  *   une erreur située, jamais un réglage ignoré.
  *
@@ -35,6 +37,7 @@ import { specialBlockEnd } from './unclosed-block';
 import { isMaskedValue } from '../utils/masked-value';
 import {
 	HORLOGE_CAPTION_MAX,
+	HORLOGE_MASKED_WITH_SECONDS,
 	HORLOGE_MAX_CLOCKS,
 	HORLOGE_NUMBERS,
 	HORLOGE_SIZE_CM,
@@ -58,8 +61,13 @@ const BLOCK_END_REGEX = /^```\s*$/;
 /** `clé: valeur` */
 const KEY_LINE_REGEX = /^([A-Za-zÀ-ÿ]+)\s*:\s*(.*)$/;
 
-/** `9 h`, `9 h 30`, `9h5` ; le signe est lu pour dire « de 0 à 23 » plutôt que « illisible » */
-const TIME_REGEX = /^(-?\d+)\s*h(?:\s*(\d+))?$/;
+/**
+ * `9 h`, `9 h 30`, `9h5`, `9 h 25 min`, `9 h 25 min 40 s` ; le signe est lu pour
+ * dire « de 0 à 23 » plutôt que « illisible ». Les secondes demandent les minutes
+ * (`9 h 40 s` est refusé, jamais lu `9 h 4 min 0 s`) et un `min` écrit (`9 h 25 40 s`
+ * est refusé : il se lit mal).
+ */
+const TIME_REGEX = /^(-?\d+)\s*h(?:\s*(\d+)(?:\s*min(?:\s*(\d+)\s*s)?)?)?$/;
 
 /** `3cm`, `2,5 cm` */
 const SIZE_REGEX = /^(\d+(?:[.,]\d+)?)\s*cm$/i;
@@ -101,7 +109,7 @@ const KEY_NAMES: Key[] = [
 	'case'
 ];
 
-const TIME_FORMAT_HINT = 'écris l’heure sous la forme 9 h 30 (ou 9 h)';
+const TIME_FORMAT_HINT = 'écris l’heure sous la forme 9 h 30 (ou 9 h, ou 9 h 30 min 15 s)';
 
 // ============================================================================
 // DÉTECTION
@@ -215,7 +223,25 @@ function parseTime(raw: string): HorlogeTime {
 		throw new LineError(`heure « ${raw} » : de 0 à 23 h (minuit s’écrit 0 h)`);
 	}
 	if (minutes > 59) throw new LineError(`heure « ${raw} » : minutes de 0 à 59`);
-	return { hours, minutes };
+	if (match[3] === undefined) return { hours, minutes };
+	const seconds = Number(match[3]);
+	if (seconds > 59) throw new LineError(`heure « ${raw} » : secondes de 0 à 59`);
+	return { hours, minutes, seconds };
+}
+
+/**
+ * Valeur masquée d'un `placer:` (énoncé d'une évaluation notée) : `? s` pour une
+ * heure à secondes — l'élève doit encore voir la trotteuse à poser —, `?` sinon
+ */
+export function maskedPlacerValue(value: string): string {
+	// Déjà masquée : inchangée (un second masquage garde la trotteuse)
+	if (value.trim() === HORLOGE_MASKED_WITH_SECONDS) return HORLOGE_MASKED_WITH_SECONDS;
+	return TIME_REGEX.exec(value.trim())?.[3] === undefined ? '?' : HORLOGE_MASKED_WITH_SECONDS;
+}
+
+/** Un `placer:` masqué : `?`, ou `? s` (heure à secondes) */
+export function isMaskedPlacerValue(value: string): boolean {
+	return isMaskedValue(value) || value.trim() === HORLOGE_MASKED_WITH_SECONDS;
 }
 
 function parseTimes(value: string): HorlogeTime[] {
@@ -326,7 +352,12 @@ export function parseHorlogeContent(source: string): HorlogeNode {
 						throw new LineError('une seule heure à placer par horloge (un bloc par horloge)');
 					}
 					// Énoncé d'une évaluation notée : heure de remplacement (`masked-value.ts`)
-					placer = isMaskedValue(value) ? { hours: 12, minutes: 0 } : parseTime(value);
+					// (`? s` : une heure à secondes, la trotteuse reste à poser)
+					placer = isMaskedValue(value)
+						? { hours: 12, minutes: 0 }
+						: value.trim() === HORLOGE_MASKED_WITH_SECONDS
+							? { hours: 12, minutes: 0, seconds: 0 }
+							: parseTime(value);
 					placerLine = lineNo;
 					break;
 				case 'case':
@@ -372,7 +403,12 @@ export function parseHorlogeContent(source: string): HorlogeNode {
 			);
 		}
 	} else {
-		if (!minuteHand && readTimes.some((t) => t.minutes !== 0)) {
+		if (!minuteHand && readTimes.some((t) => t.seconds !== undefined)) {
+			fail(
+				timesLine,
+				'aiguille des minutes cachée : impossible avec des secondes (la trotteuse se lit avec la grande aiguille)'
+			);
+		} else if (!minuteHand && readTimes.some((t) => t.minutes !== 0)) {
 			fail(
 				timesLine,
 				'aiguille des minutes cachée : écris une heure entière (ex. heure: 9 h), sinon la petite aiguille ne se lit pas'

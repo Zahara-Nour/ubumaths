@@ -55,11 +55,22 @@ export type HorlogeTicks = (typeof HORLOGE_TICKS)[number];
 // NŒUD
 // ============================================================================
 
-/** Une heure affichée : heures de 0 à 23, minutes de 0 à 59 */
+/**
+ * Une heure affichée : heures de 0 à 23, minutes de 0 à 59 ; secondes de 0 à 59
+ * quand elles sont écrites (`9 h 25 min 40 s`) — elles seules font dessiner la
+ * trotteuse (chantier `docs/wip/cercle-trotteuse-progress.md` § 3, 6)
+ */
 export interface HorlogeTime {
 	hours: number;
 	minutes: number;
+	seconds?: number;
 }
+
+/**
+ * `placer:` masqué d'une heure à secondes (énoncé d'une évaluation notée,
+ * `masked-statement.ts`) : `?` cacherait aussi qu'il y a une trotteuse à poser
+ */
+export const HORLOGE_MASKED_WITH_SECONDS = '? s';
 
 export interface HorlogeSpec {
 	/** 1 à 4 cadrans, dans l'ordre de la ligne `heure:` ; vide pour une horloge à placer */
