@@ -6,18 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2204 (migration de la vague 8)._
+_Mis à jour le 2026-11-02, après la migration de la vague 8 (#2204, jouée)._
 
 - **État** : lots 1 à 7 publiés. Lot 8 (information chiffrée, statistiques, tableaux croisés, probabilités) :
-  phase 0 validée (§ 51) ; vague 8 (22 modèles) mergée (#2190, #2196, #2199), 22 brouillons en prod,
-  migration nœud + tag mergée (#2204) mais pas jouée (§ 53).
-- **Prochaine action** : `db:migrate` de #2204 (mergée), vérification MCP (22 rangés, taggués, brouillons),
-  puis page à cocher de la vague 8 (`page-a-cocher.ts`, un `--dir` par lot) ; ensuite vague 8 bis (8 D, 8 E).
-- **En attente de David** : où jouer `db:migrate` (dépôt principal bloqué par `questions-6`, § 53) —
-  reco : depuis le worktree sur `origin/main`.
+  vague 8 (22 modèles) en brouillon en prod, rangée et tagguée (§ 54) ; page à cocher publiée :
+  https://claude.ai/artifact/JrSwxKsh2iemADRjp84YSR (`verdicts` vide au départ).
+- **Prochaine action** : relecture de David sur la page → lire et compter `verdicts` (22) → `publier-lot`
+  (simulation puis `--publier`, David avec `!`, trois dossiers) ; ensuite vague 8 bis (8 D, 8 E).
+- **En attente de David** : la relecture de la page.
 - **Pièges en cours** : le worktree n'a pas de `.env` ; `publier-lot` (même en simulation) → David avec `!`
-  et `set -a && . ../ubumaths/.env && set +a`, pas `pnpm -s` ; `Doc-inchangée:` dans un commit, jamais dans
-  le corps de PR ; horodatage → `pnpm migration:horodatage` ; `db push`, `--publier` → David avec `!`.
+  et `set -a && . ../ubumaths/.env && set +a`, pas `pnpm -s` ; `page-a-cocher.ts` passe en chargeant ce `.env`
+  dans la commande ; `Doc-inchangée:` dans un commit, jamais dans le corps de PR ; horodatage →
+  `pnpm migration:horodatage` ; `db push`, `--publier` → David avec `!`.
 - **Worktree / branche** : `../ubumaths-wt-questions-2de`, HEAD détachée sur `origin/main` (aucune branche ouverte).
 
 ## 1. Relevé (prod, 2026-10-27)
@@ -1424,3 +1424,12 @@ D, E) ; L8-f PR « page à cocher : blocs statistiques et arbres » avant la rel
   local non poussé `1cb3ca05b` + journal indexé, `origin/main` en avance de 10) ; `pull --rebase` refuse.
   Recommandé à David : migrer depuis le worktree sur `origin/main` (liaison `supabase/.temp` copiée,
   `migration list --linked` d'abord : s'arrêter si d'autres migrations attendent) — **réponse attendue**.
+
+## 54. Vague 8 : migration jouée, page à cocher (2026-11-02)
+
+- `db:migrate` lancé par David depuis le worktree : 20261102055259 (2de) jouée, avec 20261102062309 (CM1 lot
+  5 A, autre session, mergée entre-temps).
+- MCP (prod) : les 22 en `draft`, `['2']`, rangés sur le nœud de leur point, un tag chacun, le bon code.
+- `page-a-cocher.ts` sur les 22 (copie dans le scratchpad, préfixes `a-`/`b-`/`c-`, `.env` de prod chargé
+  dans la commande) : 22 fiches, **aucune alerte**. Page (capacité `db`, `verdicts` vide) :
+  https://claude.ai/artifact/JrSwxKsh2iemADRjp84YSR
