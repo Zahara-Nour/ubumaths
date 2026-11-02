@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2201._
+_Mis à jour le 2026-11-02, après #2207._
 
-- **État** : lots 0 à 4b publiés ; lot 5 phase 0 validée (§ 14 bis : 5a longueurs, 5b masses + contenances, 5d périmètres) ; **lot 5a** (7 modèles de longueurs) : fichiers mergés (#2201), brouillons locaux joués à 390 px (§ 14 ter).
-- **Prochaine action** : après le `--publier` de David, relever les 7 `id` au MCP ; branche `feat/questions-cm1-lot5a-rangement` (migration nœud + tag, gabarit lot 4b) ; page à cocher ; publication. Puis lot 5b.
-- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm1-5a --publier` (depuis le dépôt principal, à jour).
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** (test `student-answer-safety`, CI rouge de #2201) ; positions du `ranger` lues par essai des permutations ; aperçu : corrigé derrière le bouton « Voir la correction » (Playwright à 390 px).
-- **Worktree / branche** : aucun ; recréer `../ubumaths-wt-questions-cm1` pour la migration du 5a.
+- **État** : lots 0 à 4b publiés ; lot 5 phase 0 validée (§ 14 bis : 5a longueurs, 5b masses + contenances, 5d périmètres). **Lot 5a** : 7 brouillons en prod, rangés et tagués (#2207, migration appliquée, vérifiée au MCP) ; page à cocher publiée (§ 14 quinquies), `verdicts` vide.
+- **Prochaine action** : lire et COMPTER les verdicts de la page (https://claude.ai/artifact/GQ9MJAnZJSn9grR3CAJTYk) ; 7 OK → `publier-lot --dir scripts/questions/cm1-5a` en simulation, puis `--publier` par David. Ensuite lot 5b (masses + contenances, 10 modèles, § 14).
+- **En attente de David** : relecture de la page à cocher du 5a.
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** (test `student-answer-safety`, CI rouge de #2201) ; positions du `ranger` lues par essai des permutations ; aperçu : corrigé derrière le bouton « Voir la correction » (Playwright à 390 px).
+- **Worktree / branche** : aucun ; recréer `../ubumaths-wt-questions-cm1` pour le lot 5b.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -939,3 +939,15 @@ modèles CM1 propres, case « choix ».
   le point est cherché sur le nœud du modèle **seulement** (aucun point du lot n'est sur une notion) ; le test
   « point hors du nœud » le pose sur la notion « Longueurs » et la migration échoue.
 - Test d'intégration : rouge sans le corps de la migration (6 échecs), 10/10 vert avec.
+
+### 14 quinquies. Lot 5a — rangement vérifié, page à cocher (2026-11-02)
+
+- #2207 mergée (CI verte, `check:migrations --pr 2207` passé). `security-auditor` : aucun finding bloquant
+  (contrôler après coup que `update_question_templates_updated_at` est actif). `pnpm db:migrate` lancé par David :
+  « up to date », la migration avait déjà été poussée par une autre session (avec celle du lot 8 de 2de).
+- MCP : les 7 modèles sur le bon nœud (Longueurs › unités et conversions : 067, 068 ×2, 069 ; › comparaison et
+  mesure : 070, 071, 072), un tag chacun, toujours brouillons ; trigger `updated_at` actif (`O`).
+- Page : https://claude.ai/artifact/GQ9MJAnZJSn9grR3CAJTYk (capacité `db`), rendu vu à 390 px (7 fiches, pas de
+  défilement horizontal) ; `verdicts` vide à la publication. Alertes attendues : bloc `ranger` non dessiné (05, à
+  jouer dans l'aperçu) ; homonyme « Estimer une longueur » du CE1 (`1bd819dd`, niveau 5) écarté, le bon modèle est
+  `1e01404d`.
