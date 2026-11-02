@@ -1,0 +1,178 @@
+{
+	"title": "Lire un tableau",
+	"description": "Lire un effectif dans un tableau (combien d'élèves ont 12 ans ?), ou la valeur qui a un effectif donné",
+	"grades": ["5"],
+	"theme": "Statistiques",
+	"domain": "Représenter des données",
+	"subdomain": "tableaux",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici l'âge des élèves inscrits au club de judo.\n\n| Âge (ans) | 11 | 12 | 13 | 14 |\n| --- | --- | --- | --- | --- |\n| Effectif | ${{a}}$ | ${{b}}$ | ${{c}}$ | ${{d}}$ |\n\nCombien d'élèves ont ${{eval:10+k}}$ ans ?\n\n$?$ élèves",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..15"
+				},
+				{
+					"name": "b",
+					"expression": "2..15"
+				},
+				{
+					"name": "c",
+					"expression": "2..15"
+				},
+				{
+					"name": "d",
+					"expression": "2..15"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"conditions": [
+				"(a-b)*(a-b) > 0",
+				"(a-c)*(a-c) > 0",
+				"(a-d)*(a-d) > 0",
+				"(b-c)*(b-c) > 0",
+				"(b-d)*(b-d) > 0",
+				"(c-d)*(c-d) > 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k==1|{{a}}|{{if:k==2|{{b}}|{{if:k==3|{{c}}|{{d}}}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On repère la colonne « ${{eval:10+k}}$ » et on lit l'effectif en dessous.",
+					"$\\textcolor{{{color:primary.0}}}{{{if:k==1|{{a}}|{{if:k==2|{{b}}|{{if:k==3|{{c}}|{{d}}}}}}}}}$ élèves ont ${{eval:10+k}}$ ans."
+				]
+			}
+		},
+		{
+			"statement": "Voici l'âge des élèves inscrits au club de judo.\n\n| Âge (ans) | 11 | 12 | 13 | 14 |\n| --- | --- | --- | --- | --- |\n| Effectif | ${{a}}$ | ${{b}}$ | ${{c}}$ | ${{d}}$ |\n\nQuel âge ont les ${{if:k==1|{{a}}|{{if:k==2|{{b}}|{{if:k==3|{{c}}|{{d}}}}}}}}$ élèves de la même colonne ?\n\n$?$ ans",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..15"
+				},
+				{
+					"name": "b",
+					"expression": "2..15"
+				},
+				{
+					"name": "c",
+					"expression": "2..15"
+				},
+				{
+					"name": "d",
+					"expression": "2..15"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"conditions": [
+				"(a-b)*(a-b) > 0",
+				"(a-c)*(a-c) > 0",
+				"(a-d)*(a-d) > 0",
+				"(b-c)*(b-c) > 0",
+				"(b-d)*(b-d) > 0",
+				"(c-d)*(c-d) > 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10+k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche l'effectif ${{if:k==1|{{a}}|{{if:k==2|{{b}}|{{if:k==3|{{c}}|{{d}}}}}}}}$ dans la ligne du bas et on lit l'âge au-dessus.",
+					"Ces élèves ont $\\textcolor{{{color:primary.0}}}{{{eval:10+k}}}$ ans."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "12 ans : 11",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "11",
+				"c": "9",
+				"d": "4",
+				"k": "2"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : colonne voisine",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "11",
+				"c": "9",
+				"d": "4",
+				"k": "2"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : l'âge au lieu de l'effectif",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "11",
+				"c": "9",
+				"d": "4",
+				"k": "2"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "9 élèves : 13 ans",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"b": "11",
+				"c": "9",
+				"d": "4",
+				"k": "3"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'effectif recopié",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"b": "11",
+				"c": "9",
+				"d": "4",
+				"k": "3"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -661,3 +661,12 @@ barres 1-3 (CE1) ; diagrammes circulaires et courbes et repères : aucun. Borne 
 - 112 (barres à construire) : question posée sans reco, non tranchée → **lot suivant** (le choix qui ne change
   rien au lot). 113 reste C.
 - Accès : rien de neuf (brouillons jusqu'à la publication, tags lisibles par tout compte connecté).
+
+### 23.1 Lot 9 écrit (2026-11-02)
+
+- Script `docs/wip/questions/lot-5-statistiques.py` → `scripts/questions/5-statistiques/` (10 modèles, 48 specs) ;
+  `question:specs` 200 tirages par fichier tout vert ; simulation prod : 10 « à créer » ; `sonde-courbes` 0 problème.
+- Moteur : pas de `==` dans `eval:` → un effectif se compte en additionnant des `{{if:x==v|1|0}}` (01, 04).
+- Base locale : 10 brouillons ; rendu vu dans l'aperçu : ligne brisée de la ` ```courbe ` (09, points aux
+  sommets), circulaire sans étiquettes en huitièmes (07), en pourcentages (08), barres de 5 en 5 (05), tableau à
+  4 cases (04). Saisie au pilotage Chrome sans effet (même symptôme qu'au lot 7) : juge couvert par les specs.
