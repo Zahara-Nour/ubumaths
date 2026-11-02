@@ -6,15 +6,16 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, phase 0 validée, code en cours._
+_Mis à jour le 2026-11-02, lot 1 codé, revue en cours._
 
-- **État** : code du lot 1 en cours (branche ouverte). Chantier ouvert sur la ligne n° 1 de
-  [outils-manquants.md](outils-manquants.md) (David, 2026-11-02 : « je te suis »).
-- **Prochaine action** : phase 0 du lot 1 validée (§ 3) ; tests rouges puis juge `symetrique`.
-- **En attente de David** : rien.
-- **Pièges en cours** : un contrôle ne doit jamais donner la réponse (masquage `verifier: ?` en évaluation,
-  chantier `fuite-enonce`) ; géométrie = `geometry-expert` / `pedagogy-expert` ; revue Opus (correction des
-  réponses).
+- **État** : lot 1 (symétrique sur quadrillage, axial + central) codé et testé sur `feat/controles-figure`
+  (§ 4) ; PR pas encore ouverte.
+- **Prochaine action** : revue Opus (`code-reviewer`), PR, CI, merge ; puis lot 2 (outil « point »,
+  symétrique d'un point, 6-179 / 6-180).
+- **En attente de David** : essai sur le serveur de la branche (port 5176).
+- **Pièges en cours** : les `testSpecs` d'un modèle ne vérifient que le statut, pas le message (`TestSpecExpected`
+  n'a pas de `feedback`) : le message se teste à l'écran ou au juge. Un contrôle ne doit jamais donner la
+  réponse (`verifier: ?`).
 - **Worktree / branche** : `../ubumaths-wt-controles-figure`, `feat/controles-figure`.
 
 ---
@@ -120,3 +121,17 @@ tracé dans la figure sauf l'axe**. `par O` (un point) = symétrie centrale (5e)
 
 Lots suivants (après celui-ci) : outil « point » et symétrique d'un point, puis angle, triangle,
 médiatrice, bissectrice, cercle circonscrit, 4e sommet (§ 1).
+
+## 4. Lot 1 — ce qui est fait (2026-11-02)
+
+- `verifier: symetrique par d` / `par O` / `symetrique A ; B ; C par d` (`symétrique` accentué admis),
+  outil segment déduit ; un seul carré, rectangle ou symétrique par figure.
+- Juge `construction/symmetry.ts` (fusion par droite porteuse reprise de `polygon.ts`) ; le registre rend
+  aussi les traits de la figure (`constructionShapes`, segments et côtés de polygones visibles, objets
+  droits nommés pour l'axe).
+- Correction : l'image en pointillés, sans ce que la figure de départ trace déjà (`symmetrySolution`).
+- Erreurs d'auteur (`assertConstructionChecks`, à chaque tirage) : axe/centre inconnu, rien à
+  transformer, pas de `grille:`, image hors fenêtre ou hors nœuds. Décision prise en codant : **sans
+  quadrillage, refus** (l'élève ne pourrait pas atteindre l'image : c'est le lot 2).
+- Aide à l'écriture : deux exemples (axe vertical, centre) et une erreur (« par » oublié).
+- Tests : juge (21), lecture (5), modèle de bout en bout (`check-template-figure`, 2), écran (2).
