@@ -10,17 +10,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 4 : brouillons créés en prod, migration écrite._
+_Mis à jour le 2026-11-02, après #2223 (lot 4 rangé en prod, page à cocher publiée)._
 
-- **État** : lots 0 à 3 publiés. Lot 4 (§ 17) : #2215 mergée, 9 brouillons créés en prod ; migration nœud + tag
-  écrite et testée (vert, rouge sans l'étape 4), `security-auditor` sans bloquant, PR #2223 ouverte.
-- **Prochaine action** : PR de la migration → CI → `check:migrations --pr` → merge → `db:migrate` depuis le dépôt
-  principal → relecture MCP → page à cocher → publication.
-- **En attente de David** : rien avant la publication (`publier-lot --publier`, `!`).
-- **Pièges en cours** : M6 rangé sur une **notion** (Valeur moyenne, sans sous-notion) ; `cleanCoefficients` ne
-  nettoie que les formules analysables (§ 17) ; un tag sur le nœud du modèle ou sa notion (§ 14) ; `db:migrate`
-  depuis le dépôt principal (`echo y |`), `migration list --linked` avant. Port 5176 pris (dev sur 5178).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe` · `feat/questions-tspe-lot4-migration`.
+- **État** : lots 0 à 3 publiés. Lot 4 (§ 17) : 9 brouillons en prod, rangés et tagués (#2223, `db:migrate` fait),
+  page à cocher https://claude.ai/artifact/DKutqLvQRjb87JbwEhqLdn publiée, simulation de publication verte.
+- **Prochaine action** : lire et **compter** les verdicts (`ArtifactData list verdicts`) ; 9 « OK » → David lance
+  `publier-lot.ts --dir scripts/questions/tspe-4-integrales-primitives --publier` ; relire `published` au MCP. Puis
+  lot 5 (probabilités : succession d'épreuves, sommes de variables), § 4.
+- **En attente de David** : relecture de la page à cocher, puis `publier-lot --publier` (`!`).
+- **Pièges en cours** : `cleanCoefficients` ne nettoie que les formules analysables (§ 17) ; couleur toujours dans
+  `$…$` ; un modèle peut aller sur une notion sans sous-notion (garde § 17) ; `db:migrate` passe TOUTES les
+  migrations en attente (une autre session peut en avoir une) ; port 5176 pris par une autre session.
+- **Worktree / branche** : aucun (retiré après #2223).
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -884,3 +885,12 @@ sont déjà) : `sous_notion` nulle → résolution sur la notion, dans la migrat
 incohérent : nœuds 0/9, tags du lot 0/9 »). `security-auditor` (2026-11-02, recoupé en prod) : **aucun finding
 bloquant** ; faible : rien n'imposait qu'une notion visée sans sous-notion n'en ait aucune → garde ajoutée (« notion
 visée sans sous-notion, mais elle en a ») et son test (11/11).
+
+**PR #2223** mergée le 2026-11-02 (CI verte, `check:migrations --pr` passé). **`db:migrate`** lancé par David le
+2026-11-02 (avec `20261102083604`, lot 5b de `questions-cm1`, en attente au même moment) ; relu en prod : 9 modèles sur
+leur nœud (M6 sur la notion « Valeur moyenne »), un seul tag chacun, brouillon, niveaux inchangés, `updated_at` = date de
+création.
+
+**Page à cocher** (2026-11-02) : `page-a-cocher.ts --dir scripts/questions/tspe-4-integrales-primitives`, 9 fiches lues
+en prod (brouillons, aucune alerte), 22 exemples : https://claude.ai/artifact/DKutqLvQRjb87JbwEhqLdn (`verdicts` vide à
+la publication). Rendu à 390 px non vérifié. `publier-lot.ts` simulé : 9 brouillons passent le contrôle.
