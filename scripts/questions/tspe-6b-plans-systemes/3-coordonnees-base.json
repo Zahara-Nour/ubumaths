@@ -1,0 +1,302 @@
+{
+	"title": "Espace : coordonnées d'un vecteur dans une base",
+	"description": "Traduire t = au + bv + cw par un système et le résoudre par substitution (base triangulaire), choisir le système qui traduit l'égalité (pièges : coordonnées dans le repère à la place, lignes lues au lieu des colonnes)",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs, droites et plans de l'espace",
+	"subdomain": "Coplanarité, décomposition",
+	"level": 3,
+	"delay": 180,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans l'espace muni d'un repère, on considère les vecteurs $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\\\{{u3}}\\end{pmatrix}$, $\\vec{v}\\begin{pmatrix}0\\\\{{v2}}\\\\{{v3}}\\end{pmatrix}$, $\\vec{w}\\begin{pmatrix}0\\\\0\\\\{{w3}}\\end{pmatrix}$ et $\\vec{t}\\begin{pmatrix}{{t1}}\\\\{{t2}}\\\\{{t3}}\\end{pmatrix}$. On admet que $(\\vec{u},\\vec{v},\\vec{w})$ est une base de l'espace.\n\nDétermine les coordonnées de $\\vec{t}$ dans cette base, c'est-à-dire les réels $a$, $b$, $c$ tels que $\\vec{t}=a\\vec{u}+b\\vec{v}+c\\vec{w}$.\n\n$a=?$, $b=?$, $c=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				},
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\vec{t}=a\\vec{u}+b\\vec{v}+c\\vec{w}$ s'écrit coordonnée par coordonnée :\n\n$$\\begin{cases} {{if:u1==1|a}}{{if:u1==-1|-a}}{{if:u1!=1 && u1!=-1|{{eval:u1}}a}}={{t1}}\\\\ {{if:u2==1|a}}{{if:u2==-1|-a}}{{if:u2!=1 && u2!=-1|{{eval:u2}}a}}{{if:v2==1|+b}}{{if:v2==-1|-b}}{{if:v2>1|+{{eval:v2}}b}}{{if:v2< -1|{{eval:v2}}b}}={{t2}}\\\\ {{if:u3==1|a}}{{if:u3==-1|-a}}{{if:u3!=1 && u3!=-1|{{eval:u3}}a}}{{if:v3==1|+b}}{{if:v3==-1|-b}}{{if:v3>1|+{{eval:v3}}b}}{{if:v3< -1|{{eval:v3}}b}}{{if:w3==1|+c}}{{if:w3==-1|-c}}{{if:w3>1|+{{eval:w3}}c}}{{if:w3< -1|{{eval:w3}}c}}={{t3}}\\end{cases}$$",
+					"La première équation donne $a={{a}}$. On remplace dans la deuxième : ${{if:v2==1|b}}{{if:v2==-1|-b}}{{if:v2!=1 && v2!=-1|{{eval:v2}}b}}={{t2}}{{if:u2*a!=0|{{if:-u2*a>0|+}}{{eval:-u2*a}}={{eval:t2-u2*a}}}}$, donc $b={{b}}$. Puis dans la troisième : ${{if:w3==1|c}}{{if:w3==-1|-c}}{{if:w3!=1 && w3!=-1|{{eval:w3}}c}}={{t3}}{{if:u3*a+v3*b!=0|{{if:-u3*a-v3*b>0|+}}{{eval:-u3*a-v3*b}}={{eval:t3-u3*a-v3*b}}}}$, donc $c={{c}}$.",
+					"Les coordonnées de $\\vec{t}$ dans la base $(\\vec{u},\\vec{v},\\vec{w})$ sont $\\textcolor{{{color:primary.0}}}{ ({{a}}\\,;\\,{{b}}\\,;\\,{{c}}) }$."
+				]
+			},
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "u2",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "u3",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "v2",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "v3",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "w3",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "a",
+					"expression": "-3..3"
+				},
+				{
+					"name": "b",
+					"expression": "-3..3"
+				},
+				{
+					"name": "c",
+					"expression": "-3..3"
+				},
+				{
+					"name": "t1",
+					"expression": "{{eval:a*u1}}"
+				},
+				{
+					"name": "t2",
+					"expression": "{{eval:a*u2+b*v2}}"
+				},
+				{
+					"name": "t3",
+					"expression": "{{eval:a*u3+b*v3+c*w3}}"
+				}
+			],
+			"conditions": ["abs(a)+abs(b)+abs(c) > 0"]
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère, on considère les vecteurs $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\\\{{u3}}\\end{pmatrix}$, $\\vec{v}\\begin{pmatrix}{{v1}}\\\\{{v2}}\\\\{{v3}}\\end{pmatrix}$, $\\vec{w}\\begin{pmatrix}{{w1}}\\\\{{w2}}\\\\{{w3}}\\end{pmatrix}$ et $\\vec{t}\\begin{pmatrix}{{t1}}\\\\{{t2}}\\\\{{t3}}\\end{pmatrix}$, où $(\\vec{u},\\vec{v},\\vec{w})$ est une base.\n\nQuel système traduit l'égalité $\\vec{t}=a\\vec{u}+b\\vec{v}+c\\vec{w}$ ?\n\n```choix\n- {{if:pos==0|${{if:u1==1|a}}{{if:u1==-1|-a}}{{if:u1!=1 && u1!=-1|{{eval:u1}}a}}{{if:v1==1|+b}}{{if:v1==-1|-b}}{{if:v1>1|+{{eval:v1}}b}}{{if:v1< -1|{{eval:v1}}b}}{{if:w1==1|+c}}{{if:w1==-1|-c}}{{if:w1>1|+{{eval:w1}}c}}{{if:w1< -1|{{eval:w1}}c}}={{t1}}$ ; ${{if:u2==1|a}}{{if:u2==-1|-a}}{{if:u2!=1 && u2!=-1|{{eval:u2}}a}}{{if:v2==1|+b}}{{if:v2==-1|-b}}{{if:v2>1|+{{eval:v2}}b}}{{if:v2< -1|{{eval:v2}}b}}{{if:w2==1|+c}}{{if:w2==-1|-c}}{{if:w2>1|+{{eval:w2}}c}}{{if:w2< -1|{{eval:w2}}c}}={{t2}}$ ; ${{if:u3==1|a}}{{if:u3==-1|-a}}{{if:u3!=1 && u3!=-1|{{eval:u3}}a}}{{if:v3==1|+b}}{{if:v3==-1|-b}}{{if:v3>1|+{{eval:v3}}b}}{{if:v3< -1|{{eval:v3}}b}}{{if:w3==1|+c}}{{if:w3==-1|-c}}{{if:w3>1|+{{eval:w3}}c}}{{if:w3< -1|{{eval:w3}}c}}={{t3}}$}}{{if:pos==1|${{if:w1==1|a}}{{if:w1==-1|-a}}{{if:w1!=1 && w1!=-1|{{eval:w1}}a}}{{if:v1==1|+b}}{{if:v1==-1|-b}}{{if:v1>1|+{{eval:v1}}b}}{{if:v1< -1|{{eval:v1}}b}}{{if:u1==1|+c}}{{if:u1==-1|-c}}{{if:u1>1|+{{eval:u1}}c}}{{if:u1< -1|{{eval:u1}}c}}={{t1}}$ ; ${{if:w2==1|a}}{{if:w2==-1|-a}}{{if:w2!=1 && w2!=-1|{{eval:w2}}a}}{{if:v2==1|+b}}{{if:v2==-1|-b}}{{if:v2>1|+{{eval:v2}}b}}{{if:v2< -1|{{eval:v2}}b}}{{if:u2==1|+c}}{{if:u2==-1|-c}}{{if:u2>1|+{{eval:u2}}c}}{{if:u2< -1|{{eval:u2}}c}}={{t2}}$ ; ${{if:w3==1|a}}{{if:w3==-1|-a}}{{if:w3!=1 && w3!=-1|{{eval:w3}}a}}{{if:v3==1|+b}}{{if:v3==-1|-b}}{{if:v3>1|+{{eval:v3}}b}}{{if:v3< -1|{{eval:v3}}b}}{{if:u3==1|+c}}{{if:u3==-1|-c}}{{if:u3>1|+{{eval:u3}}c}}{{if:u3< -1|{{eval:u3}}c}}={{t3}}$}}{{if:pos==2|${{if:u1==1|a}}{{if:u1==-1|-a}}{{if:u1!=1 && u1!=-1|{{eval:u1}}a}}{{if:u2==1|+b}}{{if:u2==-1|-b}}{{if:u2>1|+{{eval:u2}}b}}{{if:u2< -1|{{eval:u2}}b}}{{if:u3==1|+c}}{{if:u3==-1|-c}}{{if:u3>1|+{{eval:u3}}c}}{{if:u3< -1|{{eval:u3}}c}}={{t1}}$ ; ${{if:v1==1|a}}{{if:v1==-1|-a}}{{if:v1!=1 && v1!=-1|{{eval:v1}}a}}{{if:v2==1|+b}}{{if:v2==-1|-b}}{{if:v2>1|+{{eval:v2}}b}}{{if:v2< -1|{{eval:v2}}b}}{{if:v3==1|+c}}{{if:v3==-1|-c}}{{if:v3>1|+{{eval:v3}}c}}{{if:v3< -1|{{eval:v3}}c}}={{t2}}$ ; ${{if:w1==1|a}}{{if:w1==-1|-a}}{{if:w1!=1 && w1!=-1|{{eval:w1}}a}}{{if:w2==1|+b}}{{if:w2==-1|-b}}{{if:w2>1|+{{eval:w2}}b}}{{if:w2< -1|{{eval:w2}}b}}{{if:w3==1|+c}}{{if:w3==-1|-c}}{{if:w3>1|+{{eval:w3}}c}}{{if:w3< -1|{{eval:w3}}c}}={{t3}}$}}\n- {{if:pos==0|${{if:u1==1|a}}{{if:u1==-1|-a}}{{if:u1!=1 && u1!=-1|{{eval:u1}}a}}{{if:u2==1|+b}}{{if:u2==-1|-b}}{{if:u2>1|+{{eval:u2}}b}}{{if:u2< -1|{{eval:u2}}b}}{{if:u3==1|+c}}{{if:u3==-1|-c}}{{if:u3>1|+{{eval:u3}}c}}{{if:u3< -1|{{eval:u3}}c}}={{t1}}$ ; ${{if:v1==1|a}}{{if:v1==-1|-a}}{{if:v1!=1 && v1!=-1|{{eval:v1}}a}}{{if:v2==1|+b}}{{if:v2==-1|-b}}{{if:v2>1|+{{eval:v2}}b}}{{if:v2< -1|{{eval:v2}}b}}{{if:v3==1|+c}}{{if:v3==-1|-c}}{{if:v3>1|+{{eval:v3}}c}}{{if:v3< -1|{{eval:v3}}c}}={{t2}}$ ; ${{if:w1==1|a}}{{if:w1==-1|-a}}{{if:w1!=1 && w1!=-1|{{eval:w1}}a}}{{if:w2==1|+b}}{{if:w2==-1|-b}}{{if:w2>1|+{{eval:w2}}b}}{{if:w2< -1|{{eval:w2}}b}}{{if:w3==1|+c}}{{if:w3==-1|-c}}{{if:w3>1|+{{eval:w3}}c}}{{if:w3< -1|{{eval:w3}}c}}={{t3}}$}}{{if:pos==1|${{if:u1==1|a}}{{if:u1==-1|-a}}{{if:u1!=1 && u1!=-1|{{eval:u1}}a}}{{if:v1==1|+b}}{{if:v1==-1|-b}}{{if:v1>1|+{{eval:v1}}b}}{{if:v1< -1|{{eval:v1}}b}}{{if:w1==1|+c}}{{if:w1==-1|-c}}{{if:w1>1|+{{eval:w1}}c}}{{if:w1< -1|{{eval:w1}}c}}={{t1}}$ ; ${{if:u2==1|a}}{{if:u2==-1|-a}}{{if:u2!=1 && u2!=-1|{{eval:u2}}a}}{{if:v2==1|+b}}{{if:v2==-1|-b}}{{if:v2>1|+{{eval:v2}}b}}{{if:v2< -1|{{eval:v2}}b}}{{if:w2==1|+c}}{{if:w2==-1|-c}}{{if:w2>1|+{{eval:w2}}c}}{{if:w2< -1|{{eval:w2}}c}}={{t2}}$ ; ${{if:u3==1|a}}{{if:u3==-1|-a}}{{if:u3!=1 && u3!=-1|{{eval:u3}}a}}{{if:v3==1|+b}}{{if:v3==-1|-b}}{{if:v3>1|+{{eval:v3}}b}}{{if:v3< -1|{{eval:v3}}b}}{{if:w3==1|+c}}{{if:w3==-1|-c}}{{if:w3>1|+{{eval:w3}}c}}{{if:w3< -1|{{eval:w3}}c}}={{t3}}$}}{{if:pos==2|${{if:w1==1|a}}{{if:w1==-1|-a}}{{if:w1!=1 && w1!=-1|{{eval:w1}}a}}{{if:v1==1|+b}}{{if:v1==-1|-b}}{{if:v1>1|+{{eval:v1}}b}}{{if:v1< -1|{{eval:v1}}b}}{{if:u1==1|+c}}{{if:u1==-1|-c}}{{if:u1>1|+{{eval:u1}}c}}{{if:u1< -1|{{eval:u1}}c}}={{t1}}$ ; ${{if:w2==1|a}}{{if:w2==-1|-a}}{{if:w2!=1 && w2!=-1|{{eval:w2}}a}}{{if:v2==1|+b}}{{if:v2==-1|-b}}{{if:v2>1|+{{eval:v2}}b}}{{if:v2< -1|{{eval:v2}}b}}{{if:u2==1|+c}}{{if:u2==-1|-c}}{{if:u2>1|+{{eval:u2}}c}}{{if:u2< -1|{{eval:u2}}c}}={{t2}}$ ; ${{if:w3==1|a}}{{if:w3==-1|-a}}{{if:w3!=1 && w3!=-1|{{eval:w3}}a}}{{if:v3==1|+b}}{{if:v3==-1|-b}}{{if:v3>1|+{{eval:v3}}b}}{{if:v3< -1|{{eval:v3}}b}}{{if:u3==1|+c}}{{if:u3==-1|-c}}{{if:u3>1|+{{eval:u3}}c}}{{if:u3< -1|{{eval:u3}}c}}={{t3}}$}}\n- {{if:pos==0|${{if:w1==1|a}}{{if:w1==-1|-a}}{{if:w1!=1 && w1!=-1|{{eval:w1}}a}}{{if:v1==1|+b}}{{if:v1==-1|-b}}{{if:v1>1|+{{eval:v1}}b}}{{if:v1< -1|{{eval:v1}}b}}{{if:u1==1|+c}}{{if:u1==-1|-c}}{{if:u1>1|+{{eval:u1}}c}}{{if:u1< -1|{{eval:u1}}c}}={{t1}}$ ; ${{if:w2==1|a}}{{if:w2==-1|-a}}{{if:w2!=1 && w2!=-1|{{eval:w2}}a}}{{if:v2==1|+b}}{{if:v2==-1|-b}}{{if:v2>1|+{{eval:v2}}b}}{{if:v2< -1|{{eval:v2}}b}}{{if:u2==1|+c}}{{if:u2==-1|-c}}{{if:u2>1|+{{eval:u2}}c}}{{if:u2< -1|{{eval:u2}}c}}={{t2}}$ ; ${{if:w3==1|a}}{{if:w3==-1|-a}}{{if:w3!=1 && w3!=-1|{{eval:w3}}a}}{{if:v3==1|+b}}{{if:v3==-1|-b}}{{if:v3>1|+{{eval:v3}}b}}{{if:v3< -1|{{eval:v3}}b}}{{if:u3==1|+c}}{{if:u3==-1|-c}}{{if:u3>1|+{{eval:u3}}c}}{{if:u3< -1|{{eval:u3}}c}}={{t3}}$}}{{if:pos==1|${{if:u1==1|a}}{{if:u1==-1|-a}}{{if:u1!=1 && u1!=-1|{{eval:u1}}a}}{{if:u2==1|+b}}{{if:u2==-1|-b}}{{if:u2>1|+{{eval:u2}}b}}{{if:u2< -1|{{eval:u2}}b}}{{if:u3==1|+c}}{{if:u3==-1|-c}}{{if:u3>1|+{{eval:u3}}c}}{{if:u3< -1|{{eval:u3}}c}}={{t1}}$ ; ${{if:v1==1|a}}{{if:v1==-1|-a}}{{if:v1!=1 && v1!=-1|{{eval:v1}}a}}{{if:v2==1|+b}}{{if:v2==-1|-b}}{{if:v2>1|+{{eval:v2}}b}}{{if:v2< -1|{{eval:v2}}b}}{{if:v3==1|+c}}{{if:v3==-1|-c}}{{if:v3>1|+{{eval:v3}}c}}{{if:v3< -1|{{eval:v3}}c}}={{t2}}$ ; ${{if:w1==1|a}}{{if:w1==-1|-a}}{{if:w1!=1 && w1!=-1|{{eval:w1}}a}}{{if:w2==1|+b}}{{if:w2==-1|-b}}{{if:w2>1|+{{eval:w2}}b}}{{if:w2< -1|{{eval:w2}}b}}{{if:w3==1|+c}}{{if:w3==-1|-c}}{{if:w3>1|+{{eval:w3}}c}}{{if:w3< -1|{{eval:w3}}c}}={{t3}}$}}{{if:pos==2|${{if:u1==1|a}}{{if:u1==-1|-a}}{{if:u1!=1 && u1!=-1|{{eval:u1}}a}}{{if:v1==1|+b}}{{if:v1==-1|-b}}{{if:v1>1|+{{eval:v1}}b}}{{if:v1< -1|{{eval:v1}}b}}{{if:w1==1|+c}}{{if:w1==-1|-c}}{{if:w1>1|+{{eval:w1}}c}}{{if:w1< -1|{{eval:w1}}c}}={{t1}}$ ; ${{if:u2==1|a}}{{if:u2==-1|-a}}{{if:u2!=1 && u2!=-1|{{eval:u2}}a}}{{if:v2==1|+b}}{{if:v2==-1|-b}}{{if:v2>1|+{{eval:v2}}b}}{{if:v2< -1|{{eval:v2}}b}}{{if:w2==1|+c}}{{if:w2==-1|-c}}{{if:w2>1|+{{eval:w2}}c}}{{if:w2< -1|{{eval:w2}}c}}={{t2}}$ ; ${{if:u3==1|a}}{{if:u3==-1|-a}}{{if:u3!=1 && u3!=-1|{{eval:u3}}a}}{{if:v3==1|+b}}{{if:v3==-1|-b}}{{if:v3>1|+{{eval:v3}}b}}{{if:v3< -1|{{eval:v3}}b}}{{if:w3==1|+c}}{{if:w3==-1|-c}}{{if:w3>1|+{{eval:w3}}c}}{{if:w3< -1|{{eval:w3}}c}}={{t3}}$}}\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "{{pos}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit l'égalité coordonnée par coordonnée : pour les abscisses, $x_{\\vec{t}}=a\\,x_{\\vec{u}}+b\\,x_{\\vec{v}}+c\\,x_{\\vec{w}}$, de même pour $y$ et $z$. Les coefficients de $a$ sont donc les coordonnées de $\\vec{u}$ (sa colonne), ceux de $b$ celles de $\\vec{v}$, ceux de $c$ celles de $\\vec{w}$.",
+					"Le bon système est donc : ${{if:u1==1|a}}{{if:u1==-1|-a}}{{if:u1!=1 && u1!=-1|{{eval:u1}}a}}{{if:v1==1|+b}}{{if:v1==-1|-b}}{{if:v1>1|+{{eval:v1}}b}}{{if:v1< -1|{{eval:v1}}b}}{{if:w1==1|+c}}{{if:w1==-1|-c}}{{if:w1>1|+{{eval:w1}}c}}{{if:w1< -1|{{eval:w1}}c}}={{t1}}$ ; ${{if:u2==1|a}}{{if:u2==-1|-a}}{{if:u2!=1 && u2!=-1|{{eval:u2}}a}}{{if:v2==1|+b}}{{if:v2==-1|-b}}{{if:v2>1|+{{eval:v2}}b}}{{if:v2< -1|{{eval:v2}}b}}{{if:w2==1|+c}}{{if:w2==-1|-c}}{{if:w2>1|+{{eval:w2}}c}}{{if:w2< -1|{{eval:w2}}c}}={{t2}}$ ; ${{if:u3==1|a}}{{if:u3==-1|-a}}{{if:u3!=1 && u3!=-1|{{eval:u3}}a}}{{if:v3==1|+b}}{{if:v3==-1|-b}}{{if:v3>1|+{{eval:v3}}b}}{{if:v3< -1|{{eval:v3}}b}}{{if:w3==1|+c}}{{if:w3==-1|-c}}{{if:w3>1|+{{eval:w3}}c}}{{if:w3< -1|{{eval:w3}}c}}={{t3}}$.",
+					"Les deux autres systèmes lisent les coordonnées en ligne au lieu de les lire en colonne, ou échangent les rôles de $a$ et de $c$."
+				]
+			},
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "u2",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "u3",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "v1",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "v2",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "v3",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "w1",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "w2",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "w3",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "t1",
+					"expression": "-5..5"
+				},
+				{
+					"name": "t2",
+					"expression": "-5..5"
+				},
+				{
+					"name": "t3",
+					"expression": "-5..5"
+				},
+				{
+					"name": "pos",
+					"expression": "0..2"
+				}
+			],
+			"conditions": [
+				"abs(u1*(v2*w3-v3*w2)-v1*(u2*w3-u3*w2)+w1*(u2*v3-u3*v2)) > 0",
+				"abs(u2-v1)+abs(u3-w1)+abs(v3-w2) > 0",
+				"abs(u1-w1)+abs(u2-w2)+abs(u3-w3) > 0",
+				"abs(w1-u1)+abs(v1-u2)+abs(u1-u3)+abs(w2-v1)+abs(u2-v3)+abs(w3-w1)+abs(v3-w2)+abs(u3-w3) > 0"
+			]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : (2 ; -1 ; 1)",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"v2": "1",
+				"v3": "3",
+				"w3": "2",
+				"a": "2",
+				"b": "-1",
+				"c": "1",
+				"t1": "2",
+				"t2": "3",
+				"t3": "-3"
+			},
+			"answers": ["2", "-1", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : coordonnées dans le repère (piège)",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"v2": "1",
+				"v3": "3",
+				"w3": "2",
+				"a": "2",
+				"b": "-1",
+				"c": "1",
+				"t1": "2",
+				"t2": "3",
+				"t3": "-3"
+			},
+			"answers": ["2", "3", "-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : b sans substitution",
+			"variationIndex": 0,
+			"variables": {
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"v2": "1",
+				"v3": "3",
+				"w3": "2",
+				"a": "2",
+				"b": "-1",
+				"c": "1",
+				"t1": "2",
+				"t2": "3",
+				"t3": "-3"
+			},
+			"answers": ["2", "3", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : bon système en 1",
+			"variationIndex": 1,
+			"variables": {
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"v1": "3",
+				"v2": "1",
+				"v3": "1",
+				"w1": "-2",
+				"w2": "1",
+				"w3": "2",
+				"t1": "1",
+				"t2": "0",
+				"t3": "4",
+				"pos": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : bon système en 3",
+			"variationIndex": 1,
+			"variables": {
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"v1": "3",
+				"v2": "1",
+				"v3": "1",
+				"w1": "-2",
+				"w2": "1",
+				"w3": "2",
+				"t1": "1",
+				"t2": "0",
+				"t3": "4",
+				"pos": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : système transposé (piège)",
+			"variationIndex": 1,
+			"variables": {
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"v1": "3",
+				"v2": "1",
+				"v3": "1",
+				"w1": "-2",
+				"w2": "1",
+				"w3": "2",
+				"t1": "1",
+				"t2": "0",
+				"t3": "4",
+				"pos": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2246._
+_Mis à jour le 2026-11-02, PR des fichiers #2254 ouverte._
 
-- **État** : lot 6a fini — 9 brouillons créés en prod, rangés et tagués (#2246, `db:migrate` fait, vérifié au MCP) ; publication par David quand il veut (`publier-lot`).
-- **Prochaine action** : phase 0 du lot 6b (points 358, 368, 566, 568 : plans, représentations paramétriques, équations cartésiennes), relevé MCP des nœuds d'abord.
-- **En attente de David** : rien.
-- **Pièges en cours** : voir « Décisions communes et pièges » ; `--publier` : donner la commande avec `!` (un « go » ne passe pas le classifieur) ; d192da3e v1 (367) fait déjà le plan médiateur (358).
-- **Worktree / branche** : aucun (rangé après #2246) ; worktree neuf `../ubumaths-wt-questions-tspe-espace` depuis `origin/main` pour le 6b.
+- **État** : lot 6b écrit et vérifié — 4 modèles (N1 358, N2 368, N3 566, N4 568) dans `scripts/questions/tspe-6b-plans-systemes/`, specs vertes, simulation `create-questions` : 4 à créer, base locale : 4 brouillons, aperçu joué. PR #2254 ouverte (CI en cours).
+- **Prochaine action** : `gh pr checks 2254 --watch`, CI verte → `gh pr merge 2254 --merge` (revue : aucune, contenu) ; puis David lance `create-questions --publier` depuis le dépôt principal ; migration nœud + tag (gabarit 6a).
+- **En attente de David** : rien avant le merge.
+- **Pièges en cours** : voir « Décisions communes et pièges » ; `--publier` : donner la commande avec `!` ; commitlint refuse le type `content` (prendre `feat`) ; le choix est mélangé à l'affichage.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-espace`, `feat/questions-tspe-espace-6b`.
 
 ---
 
@@ -137,3 +137,53 @@ test `tests/integration/questions-tspe-lot6a-rangement-tags.test.ts` : 10 verts,
 5 sautés). Nœuds des 9 points revérifiés au MCP le même jour.
 
 **Migration** : #2246 mergée le 2026-11-02 (CI verte, security-auditor sans finding), `db:migrate` passé (seule en attente), 9 modèles vérifiés au MCP sur leur nœud avec leur point.
+
+## Lot 6b : plans, représentations paramétriques, équations cartésiennes
+
+_2026-11-02. Relevé MCP (prod, lecture seule) : nœuds des 4 points, modèles de leurs sous-notions et voisins._
+
+**Nœuds des points** (branche « Géométrie ») : 358 et 368 sur « Orthogonalité et distances dans l'espace › vecteur
+normal et équation cartésienne » (4 modèles : d192da3e, 35697e01, 91c7b083, 2b240d8c) ; **566 sur la notion**
+« Espace » (le modèle ira sur « Espace › vecteurs de l'espace », comme M1 du 6a) ; 568 sur « Espace › positions
+relatives et intersections » (0808e518, 3bace561). Aucune sous-notion neuve.
+
+**Niveaux pris** (catégories T_SPE seules) : Représentations… › Équation cartésienne d'un plan 1, 2 ; Positions
+relatives 2 ; Intersections 2 ; Vecteurs, droites et plans › Coplanarité, décomposition 2.
+
+**Déjà couvert en partie** : d192da3e v2 (tagué 367) calcule le `d` du plan médiateur (358) ; ac94a453 (333)
+décompose w sur (u, v), deux inconnues ; 3bace561 v2 (567) décide la position de deux plans, 0808e518 (372) résout
+droite ∩ plan. Aucun ne fait interpréter des solutions déjà obtenues (568) ni trois inconnues (566).
+
+**Phase 0 proposée** (niveau `T_SPE` seul, un point par modèle, repère orthonormé, réponse en case **ou** en case
+choix, jamais les deux) :
+
+| #   | Point    | Titre                                  | Variations                                                                                                                                                                                                                                                                                                  | Catégorie (niveau)                                          | Nœud                                   |
+| --- | -------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- | -------------------------------------- |
+| N1  | TSPE-358 | Lieux géométriques dans l'espace       | v0 A, B, M donnés : M est-il sur le plan médiateur de [AB] ? (MA² = MB², case choix oui / non) ; v1 équation complète du plan médiateur (normal AB, passe par le milieu) ; v2 lieu des M tels que MA·MB = 0 : sphère de diamètre [AB], rayon exact                                                          | Orthogonalité… › Lieux géométriques (1)                     | vecteur normal et équation cartésienne |
+| N2  | TSPE-368 | Reconnaître un plan par son équation   | case choix : v0 nature de l'ensemble {M : équation} — plan / sphère / droite / point (équation linéaire déguisée, x² + y² + z² …, système) ; v1 z = k, x = k, y = k : plan parallèle à quel plan de coordonnées ; v2 2(x − 1) + 3(y + 2) = z : plan, case pour le `d` de la forme réduite                   | Représentations… › Équation cartésienne d'un plan (3)       | vecteur normal et équation cartésienne |
+| N3  | TSPE-566 | Coordonnées d'un vecteur dans une base | v0 u, v, w (base, système triangulaire, par substitution, lts-6), t donné : a, b, c tels que t = au + bv + cw (trois cases) ; v1 « traduire » : quel système traduit t = au + bv + cw ? (case choix, leurres : coordonnées lues en ligne au lieu de colonne)                                                | Vecteurs, droites et plans › Coplanarité, décomposition (3) | vecteurs de l'espace                   |
+| N4  | TSPE-568 | Interpréter les solutions d'un système | case choix : v0 droite ∩ plan, la substitution donne « kt = m », « 0t = m » ou « 0t = 0 » → un point / strictement parallèles / droite incluse ; v1 deux plans, ensemble des solutions donné (paramétré, vide, une équation) → droite / parallèles / confondus ; v2 trois plans, solution unique → un point | Représentations… › Positions relatives (3)                  | positions relatives et intersections   |
+
+**Questions posées** :
+
+- **Q1** 358 : d192da3e v2 fait déjà le `d` du plan médiateur (tagué 367). Reco : N1 quand même, sur le **lieu**
+  (appartenance, équation complète, sphère de diamètre [AB]), plutôt que noter 358 « couvert par ».
+- **Q2** Catégorie neuve « Lieux géométriques » pour N1. Reco : oui ; sinon Équation cartésienne d'un plan (4).
+- **Q3** N3 v1 (« quel système traduit… ») : le BO dit « traduire par un système ». Reco : oui, en case choix.
+- **Q4** N4 : énoncés qui **donnent** le résultat du calcul (l'élève interprète seulement), pour ne pas refaire
+  0808e518 et 3bace561. Reco : oui.
+
+**Question d'accès** (migration nœud + tag, après la création) : personne ne gagne ni ne perd d'accès (brouillons ;
+visibles des élèves après `publier-lot`).
+
+**Décisions (David, 2026-11-02, « tes recos ? » puis « je valide »)** : Q1 à Q4 selon les recos (N1 sur le lieu ;
+catégorie neuve « Lieux géométriques » ; N3 v1 en case choix ; N4 donne le résultat du calcul).
+
+**Écriture** : `docs/wip/questions/lot-tspe-espace-6b.py` → `scripts/questions/tspe-6b-plans-systemes/`. Specs 9 + 11
+
+- 6 + 12 vertes, 2 200 tirages (200 par variation), 0 avertissement ; `create-questions` en simulation : 4 à créer.
+  N1 v1 en `answerKind: equation` : une équation proportionnelle est acceptée (spec). Corrigé après relecture des
+  tirages : « +(−2)(y+1) » et « (x0) » dans la correction de N1 v1 (`coef`/`terme` sur les facteurs, constante nulle
+  gardée) ; « 0+3t » dans les triplets de N4 (`comp()`) ; « b = 0, donc b = 0 » dans N3 v0 (substitution écrite) ;
+  « le système 2 » retiré de N3 v1 (le choix est mélangé à l'affichage). Base locale : 4 brouillons ; N4 v2 (choix juste
+  accepté) et N3 v1 (système transposé refusé, bonne réponse montrée) joués dans l'aperçu.
