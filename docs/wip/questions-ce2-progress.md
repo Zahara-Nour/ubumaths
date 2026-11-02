@@ -6,18 +6,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, avant la PR de migration du lot 7a._
+_Mis à jour le 2026-11-02, après #2200._
 
-- **État** : lots 1 à 6b en prod ET publiés. Lot 7a : 10 brouillons créés en prod (vérifiés au MCP), migration nœud +
-  tag écrite, test rouge sans / vert avec ; PR de migration en cours (worktree `ubumaths-wt-questions-ce2`).
-- **Prochaine action** : `security-auditor`, CI verte, merge, `pnpm check:migrations --pr <n>` avant le merge, `db:migrate`
-  depuis le worktree mergé ; puis page à cocher, `publier-lot`. Ensuite lot 7b (`horloge` + `line`), 7c statistiques,
-  `figure` / images fixes, QCM, outils neufs.
-- **En attente de David** : rien.
+- **État** : lots 1 à 6b en prod ET publiés. Lot 7a : 10 brouillons créés, rangés et tagués en prod (vérifié au MCP, `db:migrate`
+  joué) ; page à cocher publiée (https://claude.ai/artifact/B9LcfMmL6dzr6RN6axdsyG), aucun verdict pour l'instant.
+  Aucun worktree en cours.
+- **Prochaine action** : David relit (7 fiches `operation` à jouer dans l'aperçu admin) ; lire `ArtifactData list verdicts`
+  et **compter** avant de dire « tout est relu » ; relever les catégories juste avant ; `publier-lot` (simulation, puis
+  David avec `--publier`). Ensuite lot 7b (`horloge` + `line` : 057, 059, 094, 010, 058), 7c statistiques, `figure` /
+  images fixes, QCM, outils neufs.
+- **En attente de David** : relire le lot 7a sur la page à cocher.
 - **Pièges en cours** : jamais de variable `e` (Euler) ; corrigé des unités mêlées (06) sans bloc `operation` résolu (écart
-  à la décision 3, rendu non vérifié) ; verdicts du 6b posés en 3 s : relecture non prouvée ; niveaux monnaie à relever
-  juste avant la publication (brouillons CE1 du lot 8 non publiés) ; commitlint : corps ≤ 100 caractères par ligne.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce2` · `feat/questions-ce2-7a-rangement`.
+  à la décision 3) ; verdicts du 6b posés en 3 s : relecture non prouvée ; niveaux monnaie à relever juste avant la
+  publication (brouillons CE1 du lot 8 non publiés) ; `Doc-inchangée:` dans un MESSAGE DE COMMIT (pas la PR) ; commitlint :
+  corps ≤ 100 caractères par ligne ; pas de mention Claude.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -583,3 +586,9 @@ Réponse de David (« tes recos ? » puis « ok », 2026-11-02) : les cinq recom
 - Migration `20261102053224_questions_ce2_lot7a_rangement_tags` (additive, rollback en commentaire) et test
   `tests/integration/questions-ce2-lot7a-rangement-tags.test.ts` : rouge sans le corps de la migration (5 échecs sur 9),
   vert avec (9/9).
+- #2200 mergée (CI verte après ajout de la ligne `Doc-inchangée:` dans un commit : la garde ne lit pas le corps de la PR) ;
+  `check:migrations` ok ; `db:migrate --include-all` (dry-run : seule la mienne) joué depuis le dépôt principal ; MCP : les 10
+  modèles rangés, un point chacun, toujours `draft`. Worktree et branche supprimés.
+- Page à cocher publiée : https://claude.ai/artifact/B9LcfMmL6dzr6RN6axdsyG (capacité `db`, collection `verdicts` vide).
+  ⚠ 7 fiches (les blocs `operation`) ne sont pas dessinées par la page : à jouer dans l'aperçu admin
+  (`/dashboard/admin/questions/<id>/preview`, base locale ou prod) ; à vérifier aussi : corrigé des unités mêlées (06).
