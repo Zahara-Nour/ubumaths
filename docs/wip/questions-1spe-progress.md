@@ -9,14 +9,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 6a publié (7 / 7)._
+_Mis à jour le 2026-11-02, répartition en trois sous-chantiers (§ 24)._
 
-- **État** : lot 6 « à savoir » (D2, D29) : 6a (264, 391, 392, 290, 404, 336, 350) **publié** (7 verdicts ok) ; 6b (412, 310, 313, 311, 415, 316, 329) à écrire.
-- **Prochaine action** : lot 6b — recréer une branche dans le worktree, script sur le gabarit `lot-1spe-savoir-a.py` (Produit scalaire › À savoir 1-6, Géométrie repérée › À savoir 1), distracteurs du tableau D29 (§ 23).
-- **En attente de David** : rien.
-- **Pièges en cours** : **pas de `cleanCoefficients` sur un modèle sans variable** (`\sigma(X)` rendu « σX ») ; `blankDefaults.acceptDecimal` obligatoire (réponses numériques) ; **variable `e` = Euler** ; choix mélangés → jamais « première phrase » dans un corrigé ; `col()` hors `$…$` (`colt`) ; `Doc-inchangée:` dans un COMMIT (≤ 100 caractères) ; aucun trailer `Claude-Session:` ; worktree non lié à Supabase → copier `supabase/.temp/{project-ref,linked-project.json,pooler-url,postgres-version}` du dépôt principal avant `migration list --linked`.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe` (détaché sur `origin/main`, à recréer en branche pour 6b).
-- **Ensuite (D7)** : lot 6b, restes (produit scalaire formules, second degré / exponentielle / trigo, logique et listes Python), lots en attente d'un outil.
+- **État** : lots 0 à 6a publiés. La suite est répartie en trois sessions parallèles (§ 24) :
+  `questions-1spe-geometrie` (6b, produit scalaire formules), `questions-1spe-analyse` (restes second degré /
+  exponentielle / trigo, automatismes 434 et 432), `questions-1spe-logique` (logique et listes Python).
+- **Prochaine action** : aucune ici ; chaque session part de `/reprendre <sous-chantier>`. Ce journal reste
+  l'index : y noter seulement la fin de chaque sous-chantier.
+- **En attente de David** : ouvrir les trois sessions.
+- **Pièges en cours** : repris dans chaque sous-journal (« Décisions communes et pièges »).
+- **Worktree / branche** : aucun (l'ancien `../ubumaths-wt-questions-1spe`, détaché, est retiré).
+- **Ensuite** : outils C (433, 271, 306) dans des chantiers à part (D5) ; versement quand les trois sont clos.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1172,3 +1175,18 @@ la publication ; rendu vérifié à 390 px, sans débordement).
 
 **Publication 6a** : 7 verdicts « ok » sans commentaire (lus en base de l'artefact) ; `publier-lot` simulé vert puis lancé
 par David avec `--publier` ; relu en base (MCP) : 7 `published`.
+
+## 24. Répartition en sous-chantiers (2026-11-02)
+
+David : « accélérer le chantier des premières spé en répartissant les lots sur plusieurs sessions » ; découpage
+validé (« oui »). Ce journal devient l'**index** (relevé, classement, décisions communes, lots 0 à 6a) ; chaque
+sous-chantier a son journal, son worktree et sa session.
+
+| Sous-chantier              | Lots                                                                            | Journal                                                                      |
+| -------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `questions-1spe-geometrie` | 6b (412, 310, 313, 311, 415, 316, 329), puis formules (413, 414, 314, 315, 416) | [questions-1spe-geometrie-progress.md](questions-1spe-geometrie-progress.md) |
+| `questions-1spe-analyse`   | restes (385, 252, 382, 251, 296, 407, 408, 303), automatismes (434, 432)        | [questions-1spe-analyse-progress.md](questions-1spe-analyse-progress.md)     |
+| `questions-1spe-logique`   | logique et listes Python (203, 206, 367, 207, 208, 209, 210)                    | [questions-1spe-logique-progress.md](questions-1spe-logique-progress.md)     |
+
+6b et les formules dans une seule session : même catégorie Produit scalaire (niveaux). 434 et 432 (§ 3.2) n'étaient
+dans aucun lot du § 4 : rattachés à `analyse`. Outils C (433, 271, 306) : non attribués (D5).
