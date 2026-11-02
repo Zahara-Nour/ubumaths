@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, PR de migration du 6b ouverte._
+_Mis à jour le 2026-11-02, après #2256._
 
-- **État** : lot 6b créé en prod par David (4 brouillons, sans nœud ni tag). Migration `20261102192653_questions_tspe_lot6b_rangement_tags.sql` + test d'intégration : 10 verts, rouge sans la migration. PR de migration ouverte, `security-auditor` lancé.
-- **Prochaine action** : CI verte + auditeur sans finding bloquant → `check:migrations --pr <n>` → merge → `db:migrate` depuis le dépôt principal (`migration list --linked` avant : ne passer que la nôtre) → vérifier au MCP les 4 modèles sur leur nœud avec leur point → chantier 6a + 6b terminé (versement).
-- **En attente de David** : rien.
-- **Pièges en cours** : voir « Décisions communes et pièges » ; commitlint refuse le type `content` (prendre `feat`).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-espace`, `feat/questions-tspe-espace-6b-migration`.
+- **État** : lots 6a (9) et 6b (4) créés en prod, sur leur nœud avec leur point (migrations #2246, #2256 passées, relu au MCP) ; les 13 sont encore **brouillons**.
+- **Prochaine action** : page à cocher des 13 modèles (comme le 5a : https://claude.ai/artifact/4pTuHyH4DZ1CfwXgqgtZeV, collection `verdicts`) → relecture de David → `publier-lot` en simulation → `--publier` par David (`!`) → relu au MCP : 13 `published` → versement du chantier.
+- **En attente de David** : rien avant la page.
+- **Pièges en cours** : voir « Décisions communes et pièges » ; le choix est mélangé à l'affichage.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-espace`, branche mergée `feat/questions-tspe-espace-6b-migration` (en créer une neuve depuis `origin/main` s'il faut du code).
 
 ---
 
@@ -197,3 +197,7 @@ cartésienne », 566 sur la notion « Espace », 568 sur « positions relatives 
 **Migration nœud + tag** : `20261102192653_questions_tspe_lot6b_rangement_tags.sql` (copie du gabarit du 6a, préfixe
 `_qtl6b_`), test `tests/integration/questions-tspe-lot6b-rangement-tags.test.ts` : 10 verts, rouge sans la migration
 (4 échecs, 5 sautés).
+
+**Migration** : #2256 mergée le 2026-11-02 (CI verte, security-auditor sans finding, `check:migrations --pr` passé),
+`db:migrate` passé (seule en attente) ; relu au MCP : les 4 modèles sur leur nœud avec leur point, `updated_at`
+préservé, toujours brouillons.
