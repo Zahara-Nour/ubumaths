@@ -1,0 +1,242 @@
+{
+	"id": "6b2b7055-f935-4481-98b2-f0704be3a0f3",
+	"title": "Comparer deux séries : médiane et écart interquartile",
+	"description": "Deux séries résumées par (Q1, médiane, Q3) : écarts interquartiles, la plus dispersée",
+	"grades": ["2"],
+	"theme": "Statistiques",
+	"domain": "Problèmes",
+	"subdomain": "Comparer des séries",
+	"level": 3,
+	"delay": 60,
+	"status": "published",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On a relevé les temps de trajet (en minutes) des élèves de deux lycées A et B.\n\n| | $Q_1$ | Médiane | $Q_3$ |\n|---|---|---|---|\n| Lycée A | ${{qa}}$ | ${{ma}}$ | ${{ra}}$ |\n| Lycée B | ${{qb}}$ | ${{mb}}$ | ${{rb}}$ |\n\nCalcule l'écart interquartile des temps de chaque lycée.\n\nLycée A : $?$ ; lycée B : $?$",
+			"variables": [
+				{
+					"name": "qa",
+					"expression": "5..12"
+				},
+				{
+					"name": "ga",
+					"expression": "1..6"
+				},
+				{
+					"name": "ha",
+					"expression": "1..8"
+				},
+				{
+					"name": "ma",
+					"expression": "eval:(qa)+(ga)"
+				},
+				{
+					"name": "ra",
+					"expression": "eval:(ma)+(ha)"
+				},
+				{
+					"name": "qb",
+					"expression": "5..12"
+				},
+				{
+					"name": "gb",
+					"expression": "1..6"
+				},
+				{
+					"name": "hb",
+					"expression": "1..8"
+				},
+				{
+					"name": "mb",
+					"expression": "eval:(qb)+(gb)"
+				},
+				{
+					"name": "rb",
+					"expression": "eval:(mb)+(hb)"
+				},
+				{
+					"name": "ia",
+					"expression": "eval:(ra)-(qa)"
+				},
+				{
+					"name": "ib",
+					"expression": "eval:(rb)-(qb)"
+				}
+			],
+			"conditions": ["ia != ib"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{ia}}"
+				},
+				{
+					"expectedAnswer": "{{ib}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Écart interquartile $=Q_3-Q_1$.",
+					"Lycée A : ${{ra}}-{{qa}}=\\textcolor{{{color:primary.0}}}{{{ia}}}$ ; lycée B : ${{rb}}-{{qb}}=\\textcolor{{{color:primary.0}}}{{{ib}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On a relevé les temps de trajet (en minutes) des élèves de deux lycées A et B.\n\n| | $Q_1$ | Médiane | $Q_3$ |\n|---|---|---|---|\n| Lycée A | ${{qa}}$ | ${{ma}}$ | ${{ra}}$ |\n| Lycée B | ${{qb}}$ | ${{mb}}$ | ${{rb}}$ |\n\nSelon l'écart interquartile, quel lycée a les temps les plus dispersés ?\n\n```choix\nmelanger: non\n- le lycée A\n- le lycée B\n- aussi dispersés l'un que l'autre\n```",
+			"variables": [
+				{
+					"name": "qa",
+					"expression": "5..12"
+				},
+				{
+					"name": "ga",
+					"expression": "1..6"
+				},
+				{
+					"name": "ha",
+					"expression": "1..8"
+				},
+				{
+					"name": "ma",
+					"expression": "eval:(qa)+(ga)"
+				},
+				{
+					"name": "ra",
+					"expression": "eval:(ma)+(ha)"
+				},
+				{
+					"name": "qb",
+					"expression": "5..12"
+				},
+				{
+					"name": "gb",
+					"expression": "1..6"
+				},
+				{
+					"name": "hb",
+					"expression": "1..8"
+				},
+				{
+					"name": "mb",
+					"expression": "eval:(qb)+(gb)"
+				},
+				{
+					"name": "rb",
+					"expression": "eval:(mb)+(hb)"
+				},
+				{
+					"name": "ia",
+					"expression": "eval:(ra)-(qa)"
+				},
+				{
+					"name": "ib",
+					"expression": "eval:(rb)-(qb)"
+				}
+			],
+			"conditions": ["ia != ib"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:ia>ib|0|1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'**écart interquartile** $Q_3-Q_1$ mesure la dispersion de la moitié centrale des valeurs.",
+					"Lycée A : ${{ra}}-{{qa}}={{ia}}$ ; lycée B : ${{rb}}-{{qb}}={{ib}}$. Les temps les plus dispersés sont ceux du $\\textcolor{{{color:primary.0}}}{\\text{lycée {{if:ia>ib|A|B}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["7", "12"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"ga": "4",
+				"gb": "4",
+				"ha": "3",
+				"hb": "8",
+				"ia": "7",
+				"ib": "12",
+				"ma": "12",
+				"mb": "10",
+				"qa": "8",
+				"qb": "6",
+				"ra": "15",
+				"rb": "18"
+			},
+			"description": "A : 15 − 8 = 7 ; B : 18 − 6 = 12",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["4", "4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"ga": "4",
+				"gb": "4",
+				"ha": "3",
+				"hb": "8",
+				"ia": "7",
+				"ib": "12",
+				"ma": "12",
+				"mb": "10",
+				"qa": "8",
+				"qb": "6",
+				"ra": "15",
+				"rb": "18"
+			},
+			"description": "Erreur : médiane − Q1",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"ga": "4",
+				"gb": "4",
+				"ha": "3",
+				"hb": "8",
+				"ia": "7",
+				"ib": "12",
+				"ma": "12",
+				"mb": "10",
+				"qa": "8",
+				"qb": "6",
+				"ra": "15",
+				"rb": "18"
+			},
+			"description": "B plus dispersée",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"ga": "4",
+				"gb": "4",
+				"ha": "3",
+				"hb": "8",
+				"ia": "7",
+				"ib": "12",
+				"ma": "12",
+				"mb": "10",
+				"qa": "8",
+				"qb": "6",
+				"ra": "15",
+				"rb": "18"
+			},
+			"description": "Erreur : A (meilleure médiane)",
+			"variationIndex": 1
+		}
+	]
+}

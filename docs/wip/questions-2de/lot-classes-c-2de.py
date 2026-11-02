@@ -68,6 +68,11 @@ def col(x, k=0):
     return '\\textcolor{{{color:primary.' + str(k) + '}}}{' + x + '}'
 
 
+def colt(x, k=0):
+    """Valeur colorée en plein texte : `\\textcolor` hors `$…$` s'afficherait en LaTeX brut."""
+    return '$' + col(x, k) + '$'
+
+
 def choix(question, options, melanger=True):
     entete = '' if melanger else 'melanger: non\n'
     return question + '\n\n```choix\n' + entete + ''.join('- ' + o + '\n' for o in options) + '```'
@@ -134,7 +139,7 @@ HISTO_CLASSE = variation(
     ['{{nc}}'],
     ['Classes de même amplitude : la **hauteur** de chaque rectangle donne l\'effectif de la classe.',
      'Le rectangle de la classe $\\left[{{eval:(x0)+((c)-1)*(h)}}\\,;{{eval:(x0)+(c)*(h)}}\\right[$'
-     ' monte à ' + col('{{nc}}') + ' : ${{nc}}$ plantes.'])
+     ' monte à ' + colt('{{nc}}') + ' : ${{nc}}$ plantes.'])
 
 HISTO_TOTAL = variation(
     INTRO_HISTO + 'Combien de plantes ont été mesurées en tout ?\n\n$?$ plantes',
@@ -151,7 +156,7 @@ HISTO_MODALE = variation(
     ['La classe modale est celle du rectangle le **plus haut**.',
      'Effectifs : ' + ', '.join('$' + n + '$' for n in NOMS) + ' ; le plus grand est'
      ' ${{eval:max(' + ','.join('(n' + str(k) + ')' for k in range(1, 6)) + ')}}$, classe '
-     + col('\\left[{{eval:(x0)+((p)-1)*(h)}}\\,;{{eval:(x0)+(p)*(h)}}\\right[') + '.'])
+     + colt('\\left[{{eval:(x0)+((p)-1)*(h)}}\\,;{{eval:(x0)+(p)*(h)}}\\right[') + '.'])
 
 SP_H = {'x0': 20, 'h': 10, 'p': 3, 's1': 2, 's2': 4, 's3': 3, 's4': 5, 's5': 1,
         'n1': 4, 'n2': 8, 'n3': 18, 'n4': 10, 'n5': 2}
@@ -196,7 +201,7 @@ CUM_LIRE = variation(
     ['{{fc}}'],
     ['Le polygone passe, à la borne droite de chaque classe, par la fréquence cumulée : la part des'
      ' valeurs **inférieures** à cette borne.',
-     'À l\'abscisse ${{eval:(x0)+(c)*(h)}}$, on lit ' + col('{{fc}}\\,\\%') + '.'],
+     'À l\'abscisse ${{eval:(x0)+(c)*(h)}}$, on lit ' + colt('{{fc}}\\,\\%') + '.'],
     ['n5 >= 10'])
 
 CUM_MEDIANE = variation(
@@ -205,7 +210,7 @@ CUM_MEDIANE = variation(
     ['{{eval:(x0)+2*(h)}}'],
     ['La médiane est l\'abscisse du point du polygone d\'ordonnée $50\\,\\%$.',
      polygone(lecture=True),
-     'On lit ' + col('{{eval:(x0)+2*(h)}}') + ' minutes.'],
+     'On lit ' + colt('{{eval:(x0)+2*(h)}}') + ' minutes.'],
     ['n5 >= 10'])
 
 SP_CUM = {'x0': 0, 'h': 5, 'a1': 2, 'a3': 2, 'a4': 2, 'n1': 20, 'n2': 30, 'n3': 20, 'n4': 20, 'n5': 10}
@@ -305,7 +310,7 @@ CLASSE_MEDIANE = variation(
      ' $\\dfrac{ {{eval:' + N_381 + '}}+1}{2}={{eval:' + RANG + '}}$.',
      'Effectifs cumulés : ' + ', '.join('${{eval:' + c + '}}$' for c in CUMS) + ', ${{eval:' + N_381
      + '}}$. La classe médiane est la première dont l\'effectif cumulé atteint ${{eval:' + RANG
-     + '}}$ : ' + col('\\left[{{eval:(x0)+(m)*(h)}}\\,;{{eval:(x0)+((m)+1)*(h)}}\\right[') + '.'],
+     + '}}$ : ' + colt('\\left[{{eval:(x0)+(m)*(h)}}\\,;{{eval:(x0)+((m)+1)*(h)}}\\right[') + '.'],
     ['mod(' + N_381 + ',2) == 1'])
 
 SP_381 = {'x0': 100, 'h': 20, 'n1': 3, 'n2': 5, 'n3': 4, 'n4': 6, 'n5': 3, 'm': 2}
@@ -386,7 +391,7 @@ BOITE_MEDIANE = variation(
     BOITES_VARS,
     ['{{if:mea>meb|0|1}}'],
     ['La médiane est le trait **à l\'intérieur** de la boîte.', LECTURE_AB,
-     'La plus grande médiane est celle de ' + col('\\text{la classe {{if:mea>meb|A|B}}}') + '.'],
+     'La plus grande médiane est celle de ' + colt('\\text{la classe {{if:mea>meb|A|B}}}') + '.'],
     ['mea != meb'])
 
 BOITE_ETENDUE = variation(
@@ -396,7 +401,7 @@ BOITE_ETENDUE = variation(
     ['L\'étendue est la longueur totale, d\'une extrémité des moustaches à l\'autre : maximum $-$'
      ' minimum.', LECTURE_AB,
      'Étendues : A : ${{mxa}}-{{m0a}}={{eta}}$ ; B : ${{mxb}}-{{m0b}}={{etb}}$ : '
-     + col('\\text{la classe {{if:eta>etb|A|B}}}') + '.'],
+     + colt('\\text{la classe {{if:eta>etb|A|B}}}') + '.'],
     ['eta != etb'])
 
 BOITE_IQ = variation(
@@ -405,7 +410,7 @@ BOITE_IQ = variation(
     ['{{if:iqa>iqb|0|1}}'],
     ['L\'écart interquartile $Q_3-Q_1$ est la **longueur de la boîte**.', LECTURE_AB,
      'Écarts interquartiles : A : ${{q3a}}-{{q1a}}={{iqa}}$ ; B : ${{q3b}}-{{q1b}}={{iqb}}$ : '
-     + col('\\text{la classe {{if:iqa>iqb|A|B}}}') + '.'],
+     + colt('\\text{la classe {{if:iqa>iqb|A|B}}}') + '.'],
     ['iqa != iqb'])
 
 SP_B = {'m0a': 10, 'g1a': 2, 'g2a': 1, 'g3a': 1, 'g4a': 3, 'q1a': 20, 'mea': 25, 'q3a': 30, 'mxa': 45,

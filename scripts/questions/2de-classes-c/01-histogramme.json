@@ -86,7 +86,7 @@
 			"correction": {
 				"steps": [
 					"Classes de même amplitude : la **hauteur** de chaque rectangle donne l'effectif de la classe.",
-					"Le rectangle de la classe $\\left[{{eval:(x0)+((c)-1)*(h)}}\\,;{{eval:(x0)+(c)*(h)}}\\right[$ monte à \\textcolor{{{color:primary.0}}}{{{nc}}} : ${{nc}}$ plantes."
+					"Le rectangle de la classe $\\left[{{eval:(x0)+((c)-1)*(h)}}\\,;{{eval:(x0)+(c)*(h)}}\\right[$ monte à $\\textcolor{{{color:primary.0}}}{{{nc}}}$ : ${{nc}}$ plantes."
 				]
 			}
 		},
@@ -222,7 +222,7 @@
 			"correction": {
 				"steps": [
 					"La classe modale est celle du rectangle le **plus haut**.",
-					"Effectifs : ${{n1}}$, ${{n2}}$, ${{n3}}$, ${{n4}}$, ${{n5}}$ ; le plus grand est ${{eval:max((n1),(n2),(n3),(n4),(n5))}}$, classe \\textcolor{{{color:primary.0}}}{\\left[{{eval:(x0)+((p)-1)*(h)}}\\,;{{eval:(x0)+(p)*(h)}}\\right[}."
+					"Effectifs : ${{n1}}$, ${{n2}}$, ${{n3}}$, ${{n4}}$, ${{n5}}$ ; le plus grand est ${{eval:max((n1),(n2),(n3),(n4),(n5))}}$, classe $\\textcolor{{{color:primary.0}}}{\\left[{{eval:(x0)+((p)-1)*(h)}}\\,;{{eval:(x0)+(p)*(h)}}\\right[}$."
 				]
 			}
 		}

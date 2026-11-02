@@ -116,7 +116,7 @@
 				"steps": [
 					"La médiane est le trait **à l'intérieur** de la boîte.",
 					"Classe A : minimum ${{m0a}}$, $Q_1={{q1a}}$, médiane ${{mea}}$, $Q_3={{q3a}}$, maximum ${{mxa}}$. Classe B : minimum ${{m0b}}$, $Q_1={{q1b}}$, médiane ${{meb}}$, $Q_3={{q3b}}$, maximum ${{mxb}}$.",
-					"La plus grande médiane est celle de \\textcolor{{{color:primary.0}}}{\\text{la classe {{if:mea>meb|A|B}}}}."
+					"La plus grande médiane est celle de $\\textcolor{{{color:primary.0}}}{\\text{la classe {{if:mea>meb|A|B}}}}$."
 				]
 			}
 		},
@@ -222,7 +222,7 @@
 				"steps": [
 					"L'étendue est la longueur totale, d'une extrémité des moustaches à l'autre : maximum $-$ minimum.",
 					"Classe A : minimum ${{m0a}}$, $Q_1={{q1a}}$, médiane ${{mea}}$, $Q_3={{q3a}}$, maximum ${{mxa}}$. Classe B : minimum ${{m0b}}$, $Q_1={{q1b}}$, médiane ${{meb}}$, $Q_3={{q3b}}$, maximum ${{mxb}}$.",
-					"Étendues : A : ${{mxa}}-{{m0a}}={{eta}}$ ; B : ${{mxb}}-{{m0b}}={{etb}}$ : \\textcolor{{{color:primary.0}}}{\\text{la classe {{if:eta>etb|A|B}}}}."
+					"Étendues : A : ${{mxa}}-{{m0a}}={{eta}}$ ; B : ${{mxb}}-{{m0b}}={{etb}}$ : $\\textcolor{{{color:primary.0}}}{\\text{la classe {{if:eta>etb|A|B}}}}$."
 				]
 			}
 		},
@@ -328,7 +328,7 @@
 				"steps": [
 					"L'écart interquartile $Q_3-Q_1$ est la **longueur de la boîte**.",
 					"Classe A : minimum ${{m0a}}$, $Q_1={{q1a}}$, médiane ${{mea}}$, $Q_3={{q3a}}$, maximum ${{mxa}}$. Classe B : minimum ${{m0b}}$, $Q_1={{q1b}}$, médiane ${{meb}}$, $Q_3={{q3b}}$, maximum ${{mxb}}$.",
-					"Écarts interquartiles : A : ${{q3a}}-{{q1a}}={{iqa}}$ ; B : ${{q3b}}-{{q1b}}={{iqb}}$ : \\textcolor{{{color:primary.0}}}{\\text{la classe {{if:iqa>iqb|A|B}}}}."
+					"Écarts interquartiles : A : ${{q3a}}-{{q1a}}={{iqa}}$ ; B : ${{q3b}}-{{q1b}}={{iqb}}$ : $\\textcolor{{{color:primary.0}}}{\\text{la classe {{if:iqa>iqb|A|B}}}}$."
 				]
 			}
 		}

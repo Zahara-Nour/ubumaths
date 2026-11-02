@@ -91,7 +91,7 @@
 			"correction": {
 				"steps": [
 					"L'écart type mesure la **dispersion** des valeurs autour de la moyenne : plus les valeurs sont éloignées de la moyenne, plus il est grand.",
-					"Les valeurs de A s'écartent de ${{a}}$ de la moyenne, celles de B de ${{b}}$ : c'est \\textcolor{{{color:primary.0}}}{\\text{la série {{if:a>b|A|B}}}} qui a le plus grand écart type."
+					"Les valeurs de A s'écartent de ${{a}}$ de la moyenne, celles de B de ${{b}}$ : c'est $\\textcolor{{{color:primary.0}}}{\\text{la série {{if:a>b|A|B}}}}$ qui a le plus grand écart type."
 				]
 			}
 		}

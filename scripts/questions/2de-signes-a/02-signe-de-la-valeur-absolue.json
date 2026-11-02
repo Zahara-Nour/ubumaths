@@ -62,7 +62,7 @@
 			"correction": {
 				"steps": [
 					"$\\lvert x\\rvert\\geqslant 0$ ; multiplié par $-{{k}}$, négatif, il change de signe.",
-					"$-{{k}}\\lvert x\\rvert\\leqslant 0$, nul pour $x=0$ : il est \\textcolor{{{color:primary.0}}}{\\text{négatif ou nul}}."
+					"$-{{k}}\\lvert x\\rvert\\leqslant 0$, nul pour $x=0$ : il est $\\textcolor{{{color:primary.0}}}{\\text{négatif ou nul}}$."
 				]
 			}
 		}
