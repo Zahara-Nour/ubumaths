@@ -461,6 +461,35 @@ describe('symétrique d’un point, papier uni — faux', () => {
 		});
 	});
 
+	it('posé à l’œil PILE sur A’ (coordonnées rondes) : faux, « placé à l’œil » (décision de David)', () => {
+		expect(judge(OBLIQUE, 'point(5;2)')).toEqual({
+			status: 'incorrect',
+			feedback: POINT_EYEBALLED_FEEDBACK
+		});
+		// Avec des traits qui ne passent pas par ce point : toujours à l'œil
+		expect(judge(OBLIQUE, 'droite(2;5;3;5)|point(5;2)')).toEqual({
+			status: 'incorrect',
+			feedback: POINT_EYEBALLED_FEEDBACK
+		});
+	});
+
+	it('deux points, l’un construit, l’autre posé pile au bon endroit à l’œil : faux', () => {
+		const two = figure(
+			["point A' = symetrie(A, axe=d)", "point B' = symetrie(B, axe=d)"],
+			[...AXIS_BODY, 'B = point(1, 3)']
+		);
+		const screen = new Screen(two)
+			.tap('equerre', 6, 6.2)
+			.tap('equerre', 2.1, 5)
+			.tap('compas', 3.6, 3.4)
+			.tap('compas', 2, 5.1)
+			.tap('point', 5.1, 2.1);
+		expect(judge(two, `${screen.answer}|point(3;1)`)).toEqual({
+			status: 'incorrect',
+			feedback: POINT_EYEBALLED_FEEDBACK
+		});
+	});
+
 	it('sur un seul trait (la perpendiculaire), pas à une intersection : « placé à l’œil »', () => {
 		const screen = new Screen(OBLIQUE)
 			.tap('equerre', 6, 6.2)

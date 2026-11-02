@@ -537,9 +537,9 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    [AA'] doit être perpendiculaire à l'axe. » s'il est à la bonne distance, « A' doit être à la même
    distance de l'axe que A. » s'il est sur la perpendiculaire ; sinon « Ce point n'est pas le symétrique
    de A. », ou « Ce point n'est pas à sa place. » pour une autre expression), point manquant, point de
-   trop ; sur papier uni, en tête, un point qui n'est ni un point de la figure ni une intersection de deux
-   traits (de la figure ou de l'élève, `isConstructed`) : « Ton point est placé à l'œil : construis-le avec
-   tes instruments. ». Erreurs de l'auteur : expression qui ne se calcule pas ou ne donne pas un point, nom
+   trop ; sur papier uni, avant tout, un point qui n'est ni un point de la figure ni une intersection de
+   deux traits (de la figure ou de l'élève, `isConstructed`) rend la réponse fausse, même posé pile au bon
+   endroit : « Ton point est placé à l'œil : construis-le avec tes instruments. ». Erreurs de l'auteur : expression qui ne se calcule pas ou ne donne pas un point, nom
    déjà pris, point déjà dans la figure, hors de la fenêtre, hors des nœuds (quadrillage) ; sans
    quadrillage, autre chose que `symetrie(A, axe=d)` / `symetrie(A, centre=O)`, ou axe hors de la
    fenêtre ; deux points au même endroit. **Papier uni (lot 2b)** : sans `grille:`, `point` et

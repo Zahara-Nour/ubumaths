@@ -361,6 +361,12 @@ function plainPaperPointTemplate(xa: string, expression = 'symetrie(A, axe=d)'):
 				variables: { xa: '2' },
 				answers: ['point(10.01;5)'],
 				expected: { status: 'incorrect' }
+			},
+			{
+				description: 'posé à l’œil pile au bon endroit, sans construction',
+				variables: { xa: '2' },
+				answers: ['point(10;5)'],
+				expected: { status: 'incorrect' }
 			}
 		]
 	};
