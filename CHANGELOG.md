@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.64.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.63.0...v0.64.0) (2026-11-02)
+
+### ✨ Features
+
+- **db:** 2de, vague 8 bis, nœud et tag de 14 modèles neufs ([84b1afd](https://github.com/Zahara-Nour/ubumaths/commit/84b1afd96618b6a7b8622e2063cd45ea9593401e))
+- **db:** questions-6 lot 10, rangement et tags des 8 brouillons ([f23fa1f](https://github.com/Zahara-Nour/ubumaths/commit/f23fa1f7eba84478adec5af88c887c3f09d9ac30))
+- **questions:** 1re spé, lot 6a à savoir, nœud et tag des 7 modèles ([1c6a79f](https://github.com/Zahara-Nour/ubumaths/commit/1c6a79f48e7f3669ee5d410ed0254f6b77ae1a18))
+- **questions:** figure à compléter, vérification symetrique (axe ou centre) ([b0fedc8](https://github.com/Zahara-Nour/ubumaths/commit/b0fedc8093df8fb388a6389f38c2e82ed5f06991))
+
+### 🐛 Bug Fixes
+
+- **questions:** symétrique, corrections de la revue (trait repassé, coût borné) ([7652526](https://github.com/Zahara-Nour/ubumaths/commit/7652526d1cb449b7ccd0e1e2de345667baa38fc0))
+
+### 📚 Documentation
+
+- **wip:** controles-figure, lot 1 codé ([ea6f4d7](https://github.com/Zahara-Nour/ubumaths/commit/ea6f4d70834dea17209b2afa49e67675cab912fc))
+- **wip:** controles-figure, lot 1 mergé ([#2226](https://github.com/Zahara-Nour/ubumaths/issues/2226)) ([84346e3](https://github.com/Zahara-Nour/ubumaths/commit/84346e360f27b173ee40d5c447c84fba11c8c2cb))
+- **wip:** controles-figure, phase 0 du lot 1 validée (symétrique) ([218f5f6](https://github.com/Zahara-Nour/ubumaths/commit/218f5f6f48d5af4d93c5592eebfbc0f578b049f9))
+- **wip:** controles-figure, port du serveur de test ([782b3c9](https://github.com/Zahara-Nour/ubumaths/commit/782b3c922f0c670f8573df385201419b82368341))
+- **wip:** controles-figure, PR [#2226](https://github.com/Zahara-Nour/ubumaths/issues/2226) ([a3c82a4](https://github.com/Zahara-Nour/ubumaths/commit/a3c82a4197f269e80c2efbfd03c30e7fcb5634d9))
+- **wip:** questions-6, migration du lot 10 mergée ([#2229](https://github.com/Zahara-Nour/ubumaths/issues/2229)), db:migrate en attente ([e9333f5](https://github.com/Zahara-Nour/ubumaths/commit/e9333f5a6260b25e4c44d2059ea3de85ddc9c953))
+- **wip:** questions-ce1, lot 10 relu, migration de niveau à jouer ([f396079](https://github.com/Zahara-Nour/ubumaths/commit/f396079fe0bdc5cc3cc149b8cee2bcfe50da5bd2))
+- **wip:** registre-reference, garde-fou de tidy antérieur à S3 (signes-06) ([8e549f6](https://github.com/Zahara-Nour/ubumaths/commit/8e549f641ff8fc21ef23b384255a6da086e3a527))
+- **wip:** registre-reference, lot 2 : 108 candidats et page à cocher ([cb1d767](https://github.com/Zahara-Nour/ubumaths/commit/cb1d767cc0e67303f6cd2e8ae39cbab2b4bbfbf1))
+- **wip:** registre-reference, lot 2 : A-D tranchées (decimal, decimalExact) ([0b874bc](https://github.com/Zahara-Nour/ubumaths/commit/0b874bcc50d7db3058c92e6c147b927e823ce66d))
+- **wip:** registre-reference, lot 2 : relecture 82/108 ([3ad9660](https://github.com/Zahara-Nour/ubumaths/commit/3ad96600e24da29a258b6bfbac24438ffe89a481))
+- **wip:** registre-reference, lot 2 : relecture en cours (20/108) ([1a7f56e](https://github.com/Zahara-Nour/ubumaths/commit/1a7f56e2d18caa40ca3d07d49ace264a85bea924))
+- **wip:** registre-reference, lot 2 : signes-06, vraie raison du garde-fou ([7d1caf8](https://github.com/Zahara-Nour/ubumaths/commit/7d1caf8418ca07fc34ebd0d08d41b7c1cc5204ce))
+- **wip:** registre-reference, reprendre ici (lot 2 en relecture) ([6ebb9da](https://github.com/Zahara-Nour/ubumaths/commit/6ebb9dad805fb0db6f6c454c597d2aeda08afe7d))
+- **wip:** registre-reference, reprendre ici après [#2163](https://github.com/Zahara-Nour/ubumaths/issues/2163) ([cd6da7b](https://github.com/Zahara-Nour/ubumaths/commit/cd6da7bd979853d55ca7e6952077e039317bd45c))
+- **wip:** registre-reference, reprendre ici après [#2231](https://github.com/Zahara-Nour/ubumaths/issues/2231) ([bb5a15f](https://github.com/Zahara-Nour/ubumaths/commit/bb5a15f1690c56a473bfeae67c1998ee716f093e))
+- **wip:** registre-reference, sonde des expressions nues (registre contre Atelier) ([3881dac](https://github.com/Zahara-Nour/ubumaths/commit/3881dacfc4fe91d69553d87c020ef973443daa41))
+
 ## [0.63.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.62.0...v0.63.0) (2026-11-02)
 
 ### ✨ Features
