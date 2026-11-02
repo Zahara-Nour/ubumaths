@@ -208,6 +208,10 @@ principe, chaque bloc ``figure passé au moteur de l'appli (`parseFigure` puis
    Lot d'horloges ou de droites graduées : `pnpm tsx scripts/questions/sonde-horloges.ts --dir …`, même
    principe, chaque bloc ` ```horloge ` et ` ```line ` (énoncé, corrigé, horloges d'un choix) passé à son
    parseur → **0 problème** (heure refusée, point hors de la droite : les specs ne le voient pas).
+   Lot de formules (lycée) : passer chaque formule `$…$` des aperçus (`question:specs --apercu 40`) à
+   `validateLatex` de `mathlive/ssr` **et** compter les accolades : `validateLatex` ne signale que les
+   commandes inconnues et les environnements mal fermés, pas `\frac{1` ni `\sqrt{2}}` (vu le 2026-11-02,
+   lot formules de 1re spé) → **0 problème**.
 4. Base **locale** : `set -a; . ./.env.local; set +a` puis `create-questions … --publier`
    (sans cela, le script vise `.env` = la PROD). Jouer chaque modèle dans l'aperçu admin
    (`/dashboard/admin/questions/<id>/preview`, `admin@local.test`), une réponse juste, une fausse,

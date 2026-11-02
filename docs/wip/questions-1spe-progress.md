@@ -1182,11 +1182,11 @@ David : « accélérer le chantier des premières spé en répartissant les lots
 validé (« oui »). Ce journal devient l'**index** (relevé, classement, décisions communes, lots 0 à 6a) ; chaque
 sous-chantier a son journal, son worktree et sa session.
 
-| Sous-chantier              | Lots                                                                            | Journal                                                                      |
-| -------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `questions-1spe-geometrie` | 6b (412, 310, 313, 311, 415, 316, 329), puis formules (413, 414, 314, 315, 416) | [questions-1spe-geometrie-progress.md](questions-1spe-geometrie-progress.md) |
-| `questions-1spe-analyse`   | restes (385, 252, 382, 251, 296, 407, 408, 303), automatismes (434, 432)        | [questions-1spe-analyse-progress.md](questions-1spe-analyse-progress.md)     |
-| `questions-1spe-logique`   | logique et listes Python (203, 206, 367, 207, 208, 209, 210) — ✅ clos, publiés | [questions-1spe-logique-progress.md](questions-1spe-logique-progress.md)     |
+| Sous-chantier              | Lots                                                                                               | Journal                                                                      |
+| -------------------------- | -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `questions-1spe-geometrie` | 6b (412, 310, 313, 311, 415, 316, 329), puis formules (413, 414, 314, 315, 416) — ✅ clos, publiés | [questions-1spe-geometrie-progress.md](questions-1spe-geometrie-progress.md) |
+| `questions-1spe-analyse`   | restes (385, 252, 382, 251, 296, 407, 408, 303), automatismes (434, 432)                           | [questions-1spe-analyse-progress.md](questions-1spe-analyse-progress.md)     |
+| `questions-1spe-logique`   | logique et listes Python (203, 206, 367, 207, 208, 209, 210) — ✅ clos, publiés                    | [questions-1spe-logique-progress.md](questions-1spe-logique-progress.md)     |
 
 6b et les formules dans une seule session : même catégorie Produit scalaire (niveaux). 434 et 432 (§ 3.2) n'étaient
 dans aucun lot du § 4 : rattachés à `analyse`. Outils C (433, 271, 306) : non attribués (D5).
