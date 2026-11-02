@@ -129,3 +129,12 @@ elle en a » est levée pour M6 seul (commentée). Ni l'arbre ni la copie figée
 inchangé (1, catégorie « Suites / Modèles d'évolution / Pourcentages », vide).
 
 **Question d'accès** : personne ne gagne ni ne perd d'accès (brouillons ; élèves seulement après `publier-lot`).
+
+## Lot 7 : migration nœud + tag (2026-11-02)
+
+Prod relue au MCP avant écriture : 6 brouillons [T_SPE] sans nœud ni tag ; sous « Modèles d'évolution », seule
+« seuil » est active. Migration `20261102181059_questions_tspe_lot7_rangement_tags.sql` (copie du lot 4) : la garde
+« notion sans sous-notion » prend une liste `sous_notions_admises` (`{seuil}` pour M6 seul) au lieu d'être retirée :
+si « pourcentages » revient, ou si une autre sous-notion arrive, la migration échoue et M6 doit y aller. Test
+`tests/integration/questions-tspe-lot7-rangement-tags.test.ts` : 13 verts ; rouge sans le fichier (8 échecs) et
+rouge avec la garde du lot 4 (M6 refusé, « non admise »).
