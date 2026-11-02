@@ -10,13 +10,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2256._
+_Mis à jour le 2026-11-02, après la publication des lots 6a et 6b._
 
-- **État** : lots 6a (9) et 6b (4) créés en prod, sur leur nœud avec leur point (migrations #2246, #2256 passées, relu au MCP) ; les 13 sont encore **brouillons**.
-- **Prochaine action** : page à cocher des 13 modèles (comme le 5a : https://claude.ai/artifact/4pTuHyH4DZ1CfwXgqgtZeV, collection `verdicts`) → relecture de David → `publier-lot` en simulation → `--publier` par David (`!`) → relu au MCP : 13 `published` → versement du chantier.
-- **En attente de David** : rien avant la page.
-- **Pièges en cours** : voir « Décisions communes et pièges » ; le choix est mélangé à l'affichage.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-espace`, branche mergée `feat/questions-tspe-espace-6b-migration` (en créer une neuve depuis `origin/main` s'il faut du code).
+- **État** : **sous-chantier clos.** Les 13 modèles (6a : 9, 6b : 4) sont `published` en prod, sur leur nœud avec leur point (relu au MCP).
+- **Prochaine action** : aucune ici. La suite (lot 8 « à savoir », lot 9 « espace sur figure ») et le versement final se font dans le chantier index `questions-tspe` et dans `questions-tspe-restes`.
+- **En attente de David** : rien.
+- **Worktree / branche** : retirés.
 
 ---
 
@@ -201,3 +200,12 @@ cartésienne », 566 sur la notion « Espace », 568 sur « positions relatives 
 **Migration** : #2256 mergée le 2026-11-02 (CI verte, security-auditor sans finding, `check:migrations --pr` passé),
 `db:migrate` passé (seule en attente) ; relu au MCP : les 4 modèles sur leur nœud avec leur point, `updated_at`
 préservé, toujours brouillons.
+
+## Publication des lots 6a et 6b (2026-11-02)
+
+Page à cocher des 13 modèles (les deux lots sur une même page, fichiers copiés dans un dossier de travail) :
+https://claude.ai/artifact/V3TXKaBX4mjdK6QYDYvK7a. Aucune alerte, 13 brouillons sur leur nœud. Relecture : **13/13 « OK »**
+comptés en base, sans commentaire. `publier-lot` (simulation puis `--publier`) lancé par David dossier par dossier
+(la simulation est refusée par le mode auto, comme l'écriture). Relu au MCP : **13/13 `published`**
+(158e5e1a, f42d3f90, 49b2182f, 2af3814b, 49fc94d2, 2edf8213, 4f056eb3, aaa16821, dcabc409, 8767110f, 86efd357,
+0027cea7, 833cf1f1). **Sous-chantier clos.**
