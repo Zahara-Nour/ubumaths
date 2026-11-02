@@ -11,9 +11,9 @@ status: en cours
 
 _Mis à jour le 2026-11-02, phase 0 validée._
 
-- **État** : phase 0 validée (Q1-Q5) ; exploration du code avant le plan d'implémentation.
-- **Prochaine action** : plan (fichiers, tests rouges), puis tests d'abord.
-- **En attente de David** : Q6 (réécrire les modèles 2de « cases sous le tableau » ou non).
+- **État** : phase 0 et plan technique validés (Q1-Q6, a, b) ; PR 1 (ubumark : AST, parseur, éditeur, Typst) en cours.
+- **Prochaine action** : PR 1 tests rouges puis implémentation ; puis PR 2, 3, 4 (§ Plan technique).
+- **En attente de David** : rien.
 - **Pièges en cours** : —
 - **Worktree / branche** : `../ubumaths-wt-tableau-signes`, `feat/tableau-signes-cases`.
 
@@ -57,8 +57,8 @@ _Mis à jour le 2026-11-02, phase 0 validée._
 signes, marques (pas les étiquettes). Q3 syntaxe `?` devant la valeur. Q4 une case par cellule. Q5 tableau construit
 entièrement par l'élève (nombre de colonnes) : hors chantier.
 
-**Ouverte** : Q6 — après l'outil, réécrire les modèles 2de faits en « cases sous le tableau » (268, 426, 330, 446,
-337, 449-451) ou les laisser et ne servir que les nouveaux modèles ?
+**Q6 (David, 2026-11-02, « je valide »)** : après l'outil, **réécrire 330 et 446** (tableau de signes d'un produit /
+quotient : le tableau EST la compétence) ; **laisser** 268, 426, 337, 449-451 (réponse = ensemble de solutions ou signe).
 
 ## Plan technique (pedagogy-expert, 2026-11-02)
 
@@ -80,4 +80,5 @@ entièrement par l'élève (nombre de colonnes) : hors chantier.
   `ubumark.md`, `questions.md`, `fiches-exercices.md`, `outils-manquants.md`.
 - **Pièges** : décimal `?1,5` coupé aux virgules du domaine (écrire une fraction) ; messages d'erreur du parseur en
   anglais (« Unknown sign value ») → messages français situés.
-- **À trancher** : (a) marque « rien » cachée = `?rien` ; (b) `?|h|`, `?d`, signe caché sur un point → refusés.
+- **Tranché (David, 2026-11-02, « je valide »)** : (a) marque « rien » cachée = `?rien` ; (b) `?|h|`, `?d`, signe
+  caché sur un point → refusés avec message.
