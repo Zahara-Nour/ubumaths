@@ -228,6 +228,22 @@ describe('dessinerBlocs', () => {
 		);
 	});
 
+	it('« série: seule » : la série seule, sans figure ni indicateurs (comme l’écran)', () => {
+		const r = dessinerBlocs(
+			'```frequences-cumulees\nclasses: 0 ; 10 ; 20\ndonnées: 3 ; 12 ; 15\nsérie: seule\n```'
+		);
+		expect(r.markdown).toContain('class="stat-serie"');
+		expect(r.markdown).not.toContain('<svg');
+		expect(r.markdown).not.toContain('stat-indicateurs');
+	});
+
+	it('tableau croisé sans titre : pas de légende visible (sr-only à l’écran)', () => {
+		const r = dessinerBlocs(
+			'```tableau-croise\nlignes: A ; B\ncolonnes: X ; Y\nA = 1 ; 2\nB = 3 ; 4\n```'
+		);
+		expect(r.markdown).not.toContain('<caption>');
+	});
+
 	it('histogramme : un rectangle par classe, graduations, titres d’axes, sans alerte', () => {
 		const r = dessinerBlocs(
 			'```histogramme\naxes: Taille (cm) ; Effectif\n[0 ; 10[ = 3\n[10 ; 20[ = 8\n[20 ; 30[ = 5\nvaleurs: oui\n```'

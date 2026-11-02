@@ -997,8 +997,9 @@ function polygoneStat(s: CumulativeScene): string {
 	return html;
 }
 
+/** Légende visible seulement quand l'auteur a écrit un titre (sinon `sr-only` à l'écran) */
 const tableStat = (legende: string, corps: string) =>
-	`<div class="stat-tableau-defilement"><table class="stat-tableau"><caption>${legende}</caption>${corps}</table></div>`;
+	`<div class="stat-tableau-defilement"><table class="stat-tableau">${legende === '' ? '' : `<caption>${legende}</caption>`}${corps}</table></div>`;
 
 /** Tableau croisé : cases `?` ou masquées vides (`stat-case-vide`), à compléter */
 function croiseStat(s: CrossTableScene): string {
@@ -1009,7 +1010,7 @@ function croiseStat(s: CrossTableScene): string {
 				`<tr><th>${attr(r.header)}</th>${r.cells.map((c) => (c.hidden ? '<td class="stat-case-vide"></td>' : `<td>${attr(c.text)}</td>`)).join('')}</tr>`
 		)
 		.join('');
-	return tableStat(attr(s.title ?? s.accessibleTitle), `${tete}<tbody>${lignes}</tbody>`);
+	return tableStat(attr(s.title ?? ''), `${tete}<tbody>${lignes}</tbody>`);
 }
 
 function comparaisonStat(s: ComparisonScene): string {
@@ -1133,6 +1134,13 @@ function statistique(kind: StatChartKind, source: string): Bloc {
 		(sc.indicators.length > 0
 			? `<ul class="stat-indicateurs">${sc.indicators.map((i) => `<li>${attr(i)}</li>`).join('')}</ul>`
 			: '');
+	// « série: seule » : l'écran ne montre que la série (figure à construire par l'élève)
+	if (sc.seriesOnly && sc.series) {
+		return {
+			html: `<figure class="stat"><p class="stat-serie">${attr(sc.series).replace(/\n/g, '<br>')}</p></figure>`,
+			avertissements
+		};
+	}
 	let corps: string;
 	switch (sc.kind) {
 		case 'barres':
