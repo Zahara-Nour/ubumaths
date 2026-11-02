@@ -5,16 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 9 écrit (§ 45), PR à ouvrir._
+_Mis à jour le 2026-11-02, après #2166 (lot 9 mergé) ; #2169 (rangement du lot 9) en attente._
 
-- **État** : lots 1 à 7 en prod et publiés. Lot 8 publié (§ 43).
-  Lot 9 « pensée informatique » : 3 modèles écrits, specs vertes, joués en local (§ 45), branche `feat/questions-4-lot-9`.
-- **Prochaine action** : au « go » de la pause CI, `git merge origin/main` + push + merge de #2166 ; puis la
-  migration de rangement du lot 9, prête et auditée sur la branche locale `feat/questions-4-lot9-rangement` (§ 46) :
-  horodatage par `pnpm migration:horodatage`, PR, merge, `db:migrate`, MCP, page à cocher. Le lot 9 est le dernier de
-  l'ordre validé (§ 5 bis) : restent les outils C (§ 3) et la fin de chantier (versement).
-- **En attente de David** : rien. **Pause CI** demandée le 2026-11-01 (session migrations-collision) : run de #2166
-  annulé, ni push ni merge avant son « go » ; au « go » : `git merge origin/main`, push, CI, merge.
+- **État** : lots 1 à 8 en prod et publiés. Lot 9 « pensée informatique » : fichiers mergés (#2166), 3 brouillons en
+  prod (6c9c9649 → 4-065, 8b6f9e98 → 4-066, 20cb9b55 → 4-067), sans nœud ni tag. #2169 (migration de rangement) :
+  CI verte 3 fois, bloquée 4 fois par la garde (horodatages pris par d'autres sessions, § 47) ; renommée en local
+  `20261102041300` (outil de #2181, heure réelle), garde OK, intégration 9/9, **commits locaux NON poussés**.
+- **Prochaine action** : au « go » de David : `git merge origin/main`, push, CI de #2169, `pnpm check:migrations --pr
+2169`, merge, `db:migrate` (s'il refuse « inserted before the last migration » : `--dry-run --include-all`, relire,
+  puis `--include-all`), vérifier au MCP (nœud + tag des 3), page à cocher (`page-a-cocher.ts --dir
+scripts/questions/4-lot-9`, après le `db:migrate`). Puis : outils C (§ 3) et fin de chantier (versement).
+- **En attente de David** : le « go » pour pousser #2169 (il a choisi « attendre un créneau », 2026-11-01).
 - **Pièges en cours** : migrations, dès #2165 mergée (règle de David, 2026-11-01) : horodatage par `pnpm
 migration:horodatage` (jamais un nombre rond choisi à la main), `pnpm check:migrations --pr <n>` avant `gh pr merge`,
   premier job de CI = porte des horodatages (`git merge origin/main` dans le worktree d'abord) ; `mtexte()` refusé dans une figure de question (§ 26) ; `db push --include-all` : **réservé à
@@ -1140,3 +1141,12 @@ Algorithmique / Variables / Accumulation 1 (067) ; variante « au moins 18 ans �
   index uniques ; rollback complet). Question d'accès tranchée au § 44.3 : personne ne gagne d'accès.
 - Au « go » de la pause CI : merger #2166 ; puis renommer la migration (horodatage), pousser la branche, PR, CI verte,
   merge, `db:migrate` (sans `--include-all`), vérifier au MCP ; page à cocher.
+
+## 47. Lot 9 : rangement, course aux horodatages (2026-11-01 → 02)
+
+- #2169 : `20261101223001` → `…223101` → `…224001` → `…224701` → `…224702`, chaque fois dépassé ou PRIS par une
+  autre session pendant la CI (CE2, 5e, 6e, 1re spé, Tle spé : toutes calculaient « dernière + 1 s »). La garde
+  `check:migrations --pr` a bloqué chaque merge : rien de cassé. Constat transmis à la session coordinatrice.
+- David : « attendre un créneau ». Pauses CI et merges des autres sessions (deploy:prod, v0.62.0 en prod) ; #2177
+  puis #2181 : `migration:horodatage` = heure réelle UTC, garde réduite aux doublons.
+- Renommée `20261102041300` en local, branche à jour de `main`, garde OK, intégration 9/9 ; pas poussée.
