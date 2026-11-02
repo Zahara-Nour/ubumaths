@@ -9,7 +9,7 @@ _Mis à jour le 2026-11-02, après la publication du lot 4b._
 
 - **État** : lots 0 à 4b publiés en prod ; lot 4b (calcul posé) : 6/6 verdicts OK, 6 `published` relus au MCP (§ 13 sexies).
 - **Prochaine action** : lot 5 grandeurs — recréer `../ubumaths-wt-questions-cm1` (nouvelle branche), puis phase 0 (points du § 3, ordre du § 4 bis) à faire valider par David.
-- **En attente de David** : accord pour supprimer la branche locale `sauvegarde/questions-cm1-lot4b-rebase` (rebase abandonné, contenu identique, `-D`).
+- **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** (main avance vite : #2159 renumérotée 3 fois) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») et le type `content` (prendre `feat`) ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; dépôt partagé : relire `git diff --cached --name-only` avant CHAQUE commit ; coloriage : specs non mesurées par le test du corpus, sauf si un modèle active `orderIndependent` ; extension Chrome muette → Playwright à 390 px.
 - **Worktree / branche** : aucun ; recréer `../ubumaths-wt-questions-cm1` pour le lot 5.
 
