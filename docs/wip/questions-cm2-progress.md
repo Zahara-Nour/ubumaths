@@ -646,3 +646,8 @@ décimale (0,435 → message de forme, à vérifier en local). Tableau du § 11 
 - Pièges mesurés : intercaler, 3 456/1 000 → `unoptimal_form` (non simplifiée) → `reducedFractions: off` pour ce modèle seul (décision c). Nombres construits en millièmes entiers (`xm/1000`) pour éviter les flottants. Ranger : positions affichées relevées avec `generateInstanceWithFixedVariables` (sonde tsx hors dépôt) : croissant x2 x3 x4 x5 x1, décroissant x4 x3 x2 x1 x5. Comparer « = » : la droite s'écrit `{{x}}0` (3,70), le zéro survit dans l'énoncé généré.
 - Local (port 5183, base locale, `set -a; . ./.env.local`) : 6 brouillons créés ; comparer « 92,5 … 92,50 » garde son zéro ; ranger lisible (15 143/1 000 espacé, 5 étiquettes), réponse attendue juste. ⚠️ `create-questions` sans `.env.local` chargé vise la **prod** (simulation seulement).
 - #2186 mergée (CI verte du premier coup). Simulation `create-questions` (prod, dépôt principal) : 6 à créer, 0 en base. Un premier `--publier` de David, lancé avant le merge, s'est arrêté sur `ENOENT` (dossier absent de `main`) : rien d'écrit.
+
+### 11.7 Lot 6b : brouillons, rangement (2026-11-02)
+
+- David : `create-questions --dir scripts/questions/cm2-6b --publier` → 6 brouillons [CM2] sans nœud ni tag (MCP) : `bc2cc245` (031), `ffd1e67f` (033), `e28629a0` (145), `fdf0418e` (034), `de29bf83` (146), `a733232c` (147) ; niveaux 13, 6, 7, 6, 7, 7.
+- Migration `20261102051111_questions_cm2_lot6b_rangement_tags.sql` (`pnpm migration:horodatage`), copie du lot 6a ; nœuds des points relevés au MCP (Décimaux : numération > écritures, arrondis et ordres de grandeur, ordre, encadrement). Test `questions-cm2-lot6b-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 5 rouges ; fichier restauré depuis sa copie.
