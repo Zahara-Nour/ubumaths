@@ -1,0 +1,203 @@
+{
+	"title": "Problèmes : calculer un périmètre",
+	"description": "Grillage autour d'un jardin rectangulaire, tour d'un champ à cinq côtés, ruban autour d'un cadre carré ; sans formule",
+	"grades": ["CM1"],
+	"theme": "Grandeurs",
+	"domain": "Périmètres",
+	"subdomain": "Périmètre d'un polygone",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le jardin de Léo est un rectangle de ${{L}}~\\unit{m}$ de long et ${{l}}~\\unit{m}$ de large. Il veut poser un grillage tout autour.\n\nIl lui faut $?~\\text{m}$ de grillage.",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "12..40"
+				},
+				{
+					"name": "l",
+					"expression": "5..20"
+				}
+			],
+			"conditions": ["l <= L-3"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*L+2*l}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le grillage fait **le tour** du jardin : sa longueur est le périmètre du rectangle.",
+					"Un rectangle a deux longueurs et deux largeurs : $${{L}} + {{l}} + {{L}} + {{l}} = \\textcolor{{{color:primary.0}}}{{{eval:2*L+2*l}}}$$",
+					"Il lui faut ${{eval:2*L+2*l}}~\\unit{m}$ de grillage."
+				]
+			}
+		},
+		{
+			"statement": "Un champ a cinq côtés, qui mesurent ${{a}}~\\unit{m}$, ${{b}}~\\unit{m}$, ${{c}}~\\unit{m}$, ${{f}}~\\unit{m}$ et ${{g}}~\\unit{m}$. Quel est son périmètre ?\n\nLe périmètre du champ est $?~\\text{m}$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "20..90"
+				},
+				{
+					"name": "b",
+					"expression": "20..90"
+				},
+				{
+					"name": "c",
+					"expression": "20..90"
+				},
+				{
+					"name": "f",
+					"expression": "20..90"
+				},
+				{
+					"name": "g",
+					"expression": "20..90"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b+c+f+g}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le périmètre d'une figure, c'est la longueur de son **tour** : on ajoute les longueurs de **tous** ses côtés.",
+					"$${{a}} + {{b}} + {{c}} + {{f}} + {{g}} = \\textcolor{{{color:primary.0}}}{{{eval:a+b+c+f+g}}}$$",
+					"Le périmètre du champ est ${{eval:a+b+c+f+g}}~\\unit{m}$."
+				]
+			}
+		},
+		{
+			"statement": "Mia veut coller un ruban tout autour d'un cadre carré de ${{eval:n/2;d}}~\\unit{cm}$ de côté.\n\nIl lui faut $?~\\text{cm}$ de ruban.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "13..49"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le ruban fait **le tour** du cadre : sa longueur est le périmètre du carré.",
+					"Un carré a **quatre** côtés de même longueur : $${{eval:n/2;d}} + {{eval:n/2;d}} + {{eval:n/2;d}} + {{eval:n/2;d}} = \\textcolor{{{color:primary.0}}}{{{eval:2*n}}}$$",
+					"Il lui faut ${{eval:2*n}}~\\unit{cm}$ de ruban."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "jardin 25 × 12 : 74",
+			"variationIndex": 0,
+			"variables": {
+				"L": "25",
+				"l": "12"
+			},
+			"answers": ["74"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une longueur et une largeur (37)",
+			"variationIndex": 0,
+			"variables": {
+				"L": "25",
+				"l": "12"
+			},
+			"answers": ["37"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : l'aire (300)",
+			"variationIndex": 0,
+			"variables": {
+				"L": "25",
+				"l": "12"
+			},
+			"answers": ["300"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "champ : 230",
+			"variationIndex": 1,
+			"variables": {
+				"a": "40",
+				"b": "55",
+				"c": "35",
+				"f": "60",
+				"g": "40"
+			},
+			"answers": ["230"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un côté oublié (190)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "40",
+				"b": "55",
+				"c": "35",
+				"f": "60",
+				"g": "40"
+			},
+			"answers": ["190"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "carré de 12,5 : 50",
+			"variationIndex": 2,
+			"variables": {
+				"n": "25"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deux côtés (25)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "25"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "carré de 9 : 36",
+			"variationIndex": 2,
+			"variables": {
+				"n": "18"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

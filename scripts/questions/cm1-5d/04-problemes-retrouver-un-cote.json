@@ -1,0 +1,285 @@
+{
+	"title": "Problèmes : retrouver un côté connaissant le périmètre",
+	"description": "Triangle ou quadrilatère : tous les côtés sauf un ; rectangle : un côté et le périmètre (8 cm et 27 cm → 5,5 cm) ; carré : le périmètre",
+	"grades": ["CM1"],
+	"theme": "Grandeurs",
+	"domain": "Périmètres",
+	"subdomain": "Périmètre d'un polygone",
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le périmètre d'un triangle est ${{eval:a+b+c}}~\\unit{cm}$. Deux de ses côtés mesurent ${{a}}~\\unit{cm}$ et ${{b}}~\\unit{cm}$.\n\nLe troisième côté mesure $?~\\text{cm}$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "4..15"
+				},
+				{
+					"name": "b",
+					"expression": "4..15"
+				},
+				{
+					"name": "c",
+					"expression": "4..15"
+				}
+			],
+			"conditions": ["c < a+b", "a < b+c", "b < a+c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le périmètre, c'est le tour : ${{a}} + {{b}} + \\text{le troisième côté} = {{eval:a+b+c}}$.",
+					"Les deux côtés connus font ${{a}} + {{b}} = {{eval:a+b}}~\\unit{cm}$. Il reste $${{eval:a+b+c}} - {{eval:a+b}} = \\textcolor{{{color:primary.0}}}{{{c}}}$$",
+					"Le troisième côté mesure ${{c}}~\\unit{cm}$."
+				]
+			}
+		},
+		{
+			"statement": "Le périmètre d'un quadrilatère est ${{eval:a+b+c+f}}~\\unit{cm}$. Trois de ses côtés mesurent ${{a}}~\\unit{cm}$, ${{b}}~\\unit{cm}$ et ${{c}}~\\unit{cm}$.\n\nLe quatrième côté mesure $?~\\text{cm}$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..15"
+				},
+				{
+					"name": "b",
+					"expression": "3..15"
+				},
+				{
+					"name": "c",
+					"expression": "3..15"
+				},
+				{
+					"name": "f",
+					"expression": "3..15"
+				}
+			],
+			"conditions": ["f < a+b+c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{f}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le périmètre, c'est le tour : on ajoute les quatre côtés.",
+					"Les trois côtés connus font ${{a}} + {{b}} + {{c}} = {{eval:a+b+c}}~\\unit{cm}$. Il reste $${{eval:a+b+c+f}} - {{eval:a+b+c}} = \\textcolor{{{color:primary.0}}}{{{f}}}$$",
+					"Le quatrième côté mesure ${{f}}~\\unit{cm}$."
+				]
+			}
+		},
+		{
+			"statement": "Un rectangle a un côté de ${{a}}~\\unit{cm}$ et un périmètre de ${{eval:2*a+n}}~\\unit{cm}$.\n\nSon autre côté mesure $?~\\text{cm}$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..12"
+				},
+				{
+					"name": "n",
+					"expression": "5..30"
+				}
+			],
+			"conditions": ["n != 2*a"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/2;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un rectangle a **deux** côtés de ${{a}}~\\unit{cm}$ : ensemble, ils font $${{a}} + {{a}} = {{eval:2*a}}~\\unit{cm}$$",
+					"Il reste ${{eval:2*a+n}} - {{eval:2*a}} = {{n}}~\\unit{cm}$ pour les **deux autres** côtés, qui ont la même longueur.",
+					"Chacun mesure la moitié : $${{n}} : 2 = \\textcolor{{{color:primary.0}}}{{{eval:n/2;d}}}$$ L'autre côté mesure ${{eval:n/2;d}}~\\unit{cm}$."
+				]
+			}
+		},
+		{
+			"statement": "Le périmètre d'un carré est ${{eval:2*n}}~\\unit{cm}$.\n\nSon côté mesure $?~\\text{cm}$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "6..40"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/2;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un carré a **quatre** côtés de même longueur : le périmètre, c'est quatre fois le côté.",
+					"On partage le périmètre en quatre : $${{eval:2*n}} : 4 = \\textcolor{{{color:primary.0}}}{{{eval:n/2;d}}}$$",
+					"Vérification : ${{eval:n/2;d}} + {{eval:n/2;d}} + {{eval:n/2;d}} + {{eval:n/2;d}} = {{eval:2*n}}$. Le côté mesure ${{eval:n/2;d}}~\\unit{cm}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "triangle 7 + 9 + ? = 22 : 6",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "9",
+				"c": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le périmètre ajouté (38)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "9",
+				"c": "6"
+			},
+			"answers": ["38"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "quadrilatère 5 + 8 + 6 + ? = 26 : 7",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "8",
+				"c": "6",
+				"f": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un côté retiré seulement (21)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "8",
+				"c": "6",
+				"f": "7"
+			},
+			"answers": ["21"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 8 cm et 27 cm → 5,5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "8",
+				"n": "11"
+			},
+			"answers": ["5,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 27 − 8 = 19",
+			"variationIndex": 2,
+			"variables": {
+				"a": "8",
+				"n": "11"
+			},
+			"answers": ["19"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : non partagé (11)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "8",
+				"n": "11"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : 11/2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "8",
+				"n": "11"
+			},
+			"answers": ["\\frac{11}{2}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "rectangle 6 cm, périmètre 26 : 7",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"n": "14"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "carré de périmètre 34 : 8,5",
+			"variationIndex": 3,
+			"variables": {
+				"n": "17"
+			},
+			"answers": ["8,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : partagé en deux (17)",
+			"variationIndex": 3,
+			"variables": {
+				"n": "17"
+			},
+			"answers": ["17"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "carré de périmètre 36 : 9",
+			"variationIndex": 3,
+			"variables": {
+				"n": "18"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

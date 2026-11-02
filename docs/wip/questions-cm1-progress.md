@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2222 (lot 5b rangé, page à cocher) ; phase 0 du lot 5d écrite._
+_Mis à jour le 2026-11-02 : lot 5d écrit (4 modèles, § 15 ter), commité sur sa branche, PR pas encore ouverte._
 
-- **État** : lots 0 à 5a publiés. **Lot 5b** (masses + contenances, 10 brouillons) rangé et tagué en prod (#2222, `db:migrate` fait, vérifié au MCP) ; page à cocher publiée (§ 14 nonies).
-- **Prochaine action** : (a) lot 5b : lire `verdicts` de https://claude.ai/artifact/AbSGVphXpE4a34gWngHjmK (vide le 2026-11-02 en reprise) et compter (10) ; « À revoir » → corriger ; puis `publier-lot --dir scripts/questions/cm1-5b` (simulation), David lance `--publier`. (b) lot 5d : phase 0 écrite (§ 15), attendre les réponses aux 4 questions, puis écrire.
-- **En attente de David** : la relecture de la page du lot 5b ; les 4 questions du § 15.
+- **État** : lots 0 à 5a publiés. **Lot 5b** (10 brouillons) rangé et tagué en prod, page à cocher publiée (§ 14 nonies), `verdicts` vide à la reprise du 2026-11-02. **Lot 5d** (périmètres 073-075, 4 modèles) : phase 0 validée (§ 15 bis), fichiers écrits et vérifiés (specs, sonde, simulation prod 4/4, base locale, aperçu 390 px).
+- **Prochaine action** : (a) lot 5d : ouvrir la PR des fichiers (revue : aucune, contenu ; `Doc-inchangée: contenu` est dans le commit), CI verte, merge ; puis David lance `create-questions --dir scripts/questions/cm1-5d --publier` ; relever les `id`, migration nœud + tag (nœud = notion « Périmètres »). (b) lot 5b : lire `verdicts` de https://claude.ai/artifact/AbSGVphXpE4a34gWngHjmK et compter (10) ; puis `publier-lot --dir scripts/questions/cm1-5b` (simulation), David lance `--publier`.
+- **En attente de David** : la relecture de la page du lot 5b.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `create-questions` = `pnpm tsx scripts/create-questions.ts …` (pas de script pnpm de ce nom) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; positions du `ranger` lues par essai des permutations ; aperçu : corrigé derrière le bouton « Voir la correction » (Playwright à 390 px).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot5d` (phase 0 seulement).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot5d` (fichiers du lot 5d commités et poussés).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1054,3 +1054,26 @@ Questions :
    plus petites).
 
 **Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
+
+### 15 bis. Lot 5d : réponse de David (2026-11-02)
+
+« je suis tes recos », en réponse aux quatre questions du § 15 : 1. **quatre modèles** (075 coupé en « calculer » et
+« retrouver un côté ») ; 2. variation **règle** (côtés bout à bout au-dessus de la règle dessinée) gardée ; 3.
+variation **aire ≠ périmètre** gardée ; 4. CE2-042, 043, 044 laissés au chantier `questions-ce2`.
+
+### 15 ter. Lot 5d — écriture (2026-11-02)
+
+- Script `docs/wip/questions/lot-cm1-5d.py` → `scripts/questions/cm1-5d/` (4 JSON), patrons `lot-cm1-5a.py`
+  (virgule exigée) et `lot-ce1-10.py` (règle dessinée, choix de dessins). Catégorie `Grandeurs · Périmètres ·
+Périmètre d'un polygone`, niveaux 1 à 4 (catégorie neuve).
+- **Premières figures dans les options d'une case « choix »** (073, quatre dessins du même polygone) : rendu vu dans
+  l'aperçu à 390 px, correct. `sonde-figures` ne passe pas ces figures-là (121 blocs pour 300 tirages) : à voir à
+  l'œil sur la page à cocher.
+- Piège : dans un bloc `figure`, `{{eval:a/2}}` sort une fraction (`\dfrac{27}{5}`), refusée par le moteur → toujours
+  `;d` (`evd`) pour une coordonnée qui divise. Fenêtre de la règle : `-0.5 ; 3.9` en hauteur (3.4 : « fenêtre trop
+  allongée », rapport < 1/4).
+- Aperçu Playwright : ne pas injecter de CSS `div{height:auto}` pour dérouler la page, il efface les formules ;
+  fenêtre de 2 600 px de haut à la place (script dans le scratchpad).
+- `question:specs` 300 tirages par variation : tout réussi, 49 specs vertes ; `sonde-figures` : 0 problème ;
+  `create-questions` en simulation (prod) : 4/4 verts ; base locale : 4 brouillons, variations vues à 390 px (pas de
+  défilement horizontal).
