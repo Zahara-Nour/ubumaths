@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 5b en phase 0._
+_Mis à jour le 2026-11-02, après #2248._
 
-- **État** : lot 5a publié (9/9, #2240, #2241). Lot 5b : phase 0 validée, script écrit (4 modèles, specs vertes), PR des fichiers à ouvrir.
-- **Prochaine action** : PR des fichiers, CI, merge ; puis `create-questions --publier` par David depuis le dépôt principal.
-- **En attente de David** : rien.
-- **Pièges en cours** : voir « Décisions communes et pièges » ci-dessous.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-proba` · `feat/questions-tspe-proba-5b`.
+- **État** : lot 5a publié. Lot 5b : 4 modèles écrits, PR des fichiers #2248 **mergée** (CI verte) ; 4 brouillons en base locale seulement.
+- **Prochaine action** : David crée les 4 brouillons en prod, depuis le dépôt principal à jour : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-5b-sommes --publier` ; puis relevé MCP des ids, migration nœud + tags (gabarit du 5a, préfixe `_qtl5b_`) sur une branche `feat/questions-tspe-proba-5b-migration`.
+- **En attente de David** : la création en prod (commande ci-dessus, avec `!`).
+- **Pièges en cours** : `cleanCoefficients` réécrit `\sigma(X)` en « σ X » → `\sigma\left(X\right)` ; voir aussi « Décisions communes et pièges ».
+- **Worktree / branche** : aucun (retiré après #2248) ; à recréer pour la migration.
 
 ---
 
@@ -237,3 +237,5 @@ sans `cleanCoefficients`, gardent leurs parenthèses : vérifié); `(2)^2` → p
 seulement si a < 0 ; M1 v1 : S = 2 et S = 10 écartés (« x de 1 à 1 »).
 
 **Base locale** : 4 brouillons créés (91b21c5a, 2b8c65a4, c56290a7, 4ce1e314).
+
+**PR des fichiers** : #2248 mergée le 2026-11-02 (CI verte).
