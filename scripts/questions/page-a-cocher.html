@@ -617,6 +617,15 @@
 		stroke: color-mix(in oklab, var(--m-primaire) 45%, black);
 		stroke-width: 0.8;
 	}
+	/* Pièces de centimes : cuivre (1, 2, 5 c) et dorées (10, 20, 50 c), comme MonnaieObjets.svelte */
+	.m-piece-cuivre {
+		fill: #d9a27a;
+		stroke: #7a4a2a;
+	}
+	.m-piece-dore {
+		fill: #f0c840;
+		stroke: #8a6d10;
+	}
 	.m-anneau {
 		fill: color-mix(in oklab, var(--m-primaire) 65%, black);
 		stroke: color-mix(in oklab, var(--m-primaire) 45%, black);
@@ -908,6 +917,8 @@
 				.replace(/ - /g, ' − ')
 				.replace(/^-$/, '−')
 				.replace(/\^\{\\text\{([^}]*)\}\}/g, '<sup>$1</sup>')
+				// texte en maths après une case (« ?~\text{centimes} ») : écrit tel quel
+				.replace(/\\text\{([^}]*)\}/g, '$1')
 				// unité après une case : cm^2 et cm^3 écrits cm² et cm³
 				.replace(
 					/~?\\unit\{([^}]*)\}/g,

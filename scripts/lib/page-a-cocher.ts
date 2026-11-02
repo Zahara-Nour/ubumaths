@@ -25,6 +25,7 @@ import {
 	type MonnaieItem
 } from '../../src/lib/ubumark/utils/monnaie-scene';
 import * as monnaieConstruire from '../../src/lib/ubumark/utils/monnaie-construire';
+import { coinFamily, denominationLabel } from '../../src/lib/ubumark/utils/monnaie-valeurs';
 import {
 	buildCollectionScene,
 	COLLECTION_VIEW,
@@ -225,14 +226,15 @@ function monnaieObjets(items: readonly MonnaieItem[]): string {
 			if (it.kind === 'billet') {
 				const coin = (x: number, y: number) =>
 					`<text class="m-val" x="${x}" y="${y}" font-size="${N.cornerSize}">${it.value}</text>`;
-				return `<g><rect class="m-billet" x="${it.x}" y="${it.y}" width="${it.width}" height="${it.height}" rx="${N.radius}"/><text class="m-val" x="${it.cx}" y="${it.cy}" font-size="${N.size}">${it.value} €</text>${coin(it.x + N.cornerInset + N.cornerBox / 2, it.y + 1 + N.cornerBox / 2)}${coin(it.x + it.width - N.cornerInset - N.cornerBox / 2, it.y + it.height - 1 - N.cornerBox / 2)}</g>`;
+				return `<g><rect class="m-billet" x="${it.x}" y="${it.y}" width="${it.width}" height="${it.height}" rx="${N.radius}"/><text class="m-val" x="${it.cx}" y="${it.cy}" font-size="${N.size}">${denominationLabel(it.value)}</text>${coin(it.x + N.cornerInset + N.cornerBox / 2, it.y + 1 + N.cornerBox / 2)}${coin(it.x + it.width - N.cornerInset - N.cornerBox / 2, it.y + it.height - 1 - N.cornerBox / 2)}</g>`;
 			}
 			const r = it.width / 2;
 			const disque =
 				it.value === 2
 					? `<circle class="m-anneau" cx="${it.cx}" cy="${it.cy}" r="${r}"/><circle class="m-piece" cx="${it.cx}" cy="${it.cy}" r="${+(r * C.innerRatio).toFixed(2)}"/>`
-					: `<circle class="m-piece" cx="${it.cx}" cy="${it.cy}" r="${r}"/>`;
-			return `<g>${disque}<text class="m-val" x="${it.cx}" y="${it.cy}" font-size="${C.size}">${it.value} €</text></g>`;
+					: `<circle class="m-piece m-piece-${coinFamily(it.value)}" cx="${it.cx}" cy="${it.cy}" r="${r}"/>`;
+			// « 50 c » sur une pièce de centimes, « 2 € » sinon, comme MonnaieObjets.svelte
+			return `<g>${disque}<text class="m-val" x="${it.cx}" y="${it.cy}" font-size="${C.size}">${denominationLabel(it.value)}</text></g>`;
 		})
 		.join('');
 }

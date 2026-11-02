@@ -74,7 +74,17 @@ describe('dessinerBlocs', () => {
 		expect(r.solutions).toHaveLength(1);
 		// 8 € = 5 + 2 + 1 : un billet, deux pièces
 		expect(r.solutions[0].match(/class="m-billet"/g)).toHaveLength(1);
-		expect(r.solutions[0].match(/<circle class="m-(anneau|piece)"/g)).toHaveLength(3);
+		expect(r.solutions[0].match(/<circle class="m-(anneau|piece)[" ]/g)).toHaveLength(3);
+	});
+
+	it('pièces de centimes : « 50 c » écrit sur la pièce, teinte cuivre ou dorée', () => {
+		const md = dessinerBlocs('```monnaie\npièces: 1×50c 1×5c 1×2\n```').markdown;
+		expect(md).toContain('>50 c</text>');
+		expect(md).toContain('>5 c</text>');
+		expect(md).toContain('>2 €</text>');
+		expect(md).not.toContain('0.5 €');
+		expect(md).toContain('m-piece-dore');
+		expect(md).toContain('m-piece-cuivre');
 	});
 
 	it('collection à construire : la construction juste pose les barres et les cubes', () => {
