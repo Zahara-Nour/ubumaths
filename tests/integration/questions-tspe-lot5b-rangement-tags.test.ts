@@ -262,4 +262,31 @@ describe('Terminale spé, lot 5b : les branches d’échec de la migration', () 
 			);
 		});
 	});
+
+	it('un modèle tagué à la main sans être rangé : le tag est refusé (la garde « déjà tagués » est inatteignable)', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await expect(
+				pg.query(
+					`insert into public.question_template_points (template_id, point_id)
+					 select $1, id from public.curriculum_points
+					  where grade = 'T_SPE' and code = 'TSPE-518' and archived_at is null`,
+					[ids[0]]
+				)
+			).rejects.toThrow(/n.est rangé dans aucun nœud de l.arbre/);
+		});
+	});
+
+	it('rollback refusé si un tag du lot a été retiré depuis la migration', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await pg.query(readFileSync(MIGRATION, 'utf-8'));
+			await pg.query('delete from public.question_template_points where template_id = $1', [
+				ids[3]
+			]);
+			await expect(pg.query(extractRollback(MIGRATION))).rejects.toThrow(
+				/rollback : tags changés depuis la migration \(3 du lot sur 3, attendus 4\)/
+			);
+		});
+	});
 });
