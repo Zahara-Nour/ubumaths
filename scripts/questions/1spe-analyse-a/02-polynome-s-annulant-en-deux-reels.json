@@ -1,0 +1,227 @@
+{
+	"title": "Polynôme s'annulant en deux réels donnés",
+	"description": "Polynômes a(x − x₁)(x − x₂) : écrire celui de coefficient a donné (forme factorisée), retrouver a par P(0), reconnaître la famille (a ≠ 0 quelconque) ; pièges : signes, constante ajoutée",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"subdomain": "Racines",
+	"level": 8,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Donne le polynôme du second degré $P$, de coefficient de $x^2$ égal à ${{a}}$, qui s'annule en ${{r}}$ et en ${{s}}$. Donne-le sous forme factorisée.\n\n$P(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "r",
+					"expression": "-6..5"
+				},
+				{
+					"name": "s",
+					"expression": "-5..6"
+				}
+			],
+			"conditions": ["r < s", "r != 0", "s != 0", "r + s != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*(x-r)*(x-s)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un polynôme du second degré qui s'annule en $x_1$ et $x_2$ (distincts) s'écrit $a(x-x_1)(x-x_2)$, avec $a\\neq0$.",
+					"Ici $a={{a}}$, $x_1={{r}}$ et $x_2={{s}}$ :",
+					"$$P(x)=\\textcolor{{{color:primary.0}}}{{{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}(x{{eval:-(r);+}})(x{{eval:-(s);+}})}$$",
+					"Développé, c'est $P(x)={{eval:a*x^2-a*(r+s)*x+a*r*s}}$ : on vérifie qu'il s'annule en ${{r}}$ et en ${{s}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le polynôme du second degré $P(x)=a(x{{eval:-(r);+}})(x{{eval:-(s);+}})$ vérifie $P(0)={{eval:a*r*s}}$.\n\nQue vaut $a$ ?\n\n$a=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "s",
+					"expression": "1..5;±"
+				}
+			],
+			"conditions": ["r < s", "r != 0", "s != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $x$ par $0$ : $P(0)=a\\times{{eval:-r;()}}\\times{{eval:-s;()}}={{eval:r*s}}a$.",
+					"${{eval:r*s}}a={{eval:a*r*s}}$ donne $a=\\textcolor{{{color:primary.0}}}{{{a}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quels sont **tous** les polynômes du second degré qui s'annulent en ${{r}}$ et en ${{s}}$ ?\n\n```choix\n- les polynômes $a(x{{eval:-(r);+}})(x{{eval:-(s);+}})$, pour tout réel $a\\neq0$\n- le seul polynôme $(x{{eval:-(r);+}})(x{{eval:-(s);+}})$\n- les polynômes $a(x{{eval:-(-r);+}})(x{{eval:-(-s);+}})$, pour tout réel $a\\neq0$\n- les polynômes $(x{{eval:-(r);+}})(x{{eval:-(s);+}})+a$, pour tout réel $a$\n```",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "-6..5"
+				},
+				{
+					"name": "s",
+					"expression": "-5..6"
+				}
+			],
+			"conditions": ["r < s", "r != 0", "s != 0", "r + s != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un polynôme du second degré qui s'annule en $x_1$ et $x_2$ (distincts) s'écrit $a(x-x_1)(x-x_2)$, avec $a\\neq0$.",
+					"Le coefficient $a$ est **quelconque** (non nul) : il y a une infinité de tels polynômes, tous de la forme $\\textcolor{{{color:primary.0}}}{a(x{{eval:-(r);+}})(x{{eval:-(s);+}})}$.",
+					"Ajouter une constante $a$ change les racines : $(x{{eval:-(r);+}})(x{{eval:-(s);+}})+a$ ne s'annule plus en ${{r}}$ dès que $a\\neq0$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2(x + 1)(x − 3), factorisé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "-1",
+				"s": "3"
+			},
+			"answers": ["2(x+1)(x-3)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Développé : forme non demandée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "-1",
+				"s": "3"
+			},
+			"answers": ["2x^2-4x-6"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur : signes des racines",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "-1",
+				"s": "3"
+			},
+			"answers": ["2(x-1)(x+3)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a oublié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "-1",
+				"s": "3"
+			},
+			"answers": ["(x+1)(x-3)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "P(0) = −12, racines −2 et 3 : a = 2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"r": "-2",
+				"s": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a = P(0)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"r": "-2",
+				"s": "3"
+			},
+			"answers": ["-12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signe, a = −2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"r": "-2",
+				"s": "3"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Famille a(x − r)(x − s)",
+			"variationIndex": 2,
+			"variables": {
+				"r": "-2",
+				"s": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un seul polynôme",
+			"variationIndex": 2,
+			"variables": {
+				"r": "-2",
+				"s": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

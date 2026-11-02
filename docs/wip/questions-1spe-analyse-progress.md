@@ -10,12 +10,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, phase 0 des lots écrite._
+_Mis à jour le 2026-11-02, lot A écrit (pas encore de PR)._
 
-- **État** : relevé prod fait (§ Relevé) ; phase 0 des deux lots écrite (§ Phase 0), rien de codé.
-- **Prochaine action** : réponses de David à Q1-Q7, puis écrire le lot A (`lot-1spe-analyse-a.py`).
-- **En attente de David** : Q1-Q7 (§ Phase 0).
-- **Pièges en cours** : 306 n'est plus un outil C (` ```trig placer: `, #2189, en prod) ; voir aussi « Décisions communes et pièges ».
+- **État** : phase 0 validée (Q1-Q7) ; lot A écrit : `docs/wip/questions/lot-1spe-analyse-a.py` → `scripts/questions/1spe-analyse-a/` (5 modèles, 47 specs vertes, tirages relus) ; simulation `create-questions` : 5 à créer, 0 en base.
+- **Prochaine action** : essai en base locale (`set -a; . ./.env.local; set +a` puis `create-questions --dir scripts/questions/1spe-analyse-a --publier`, doc § 4 l. 211), jouer les modèles dans l'aperçu admin, puis PR des fichiers.
+- **En attente de David** : rien.
+- **Pièges en cours** : `create-questions` vise la **PROD** même avec `.env.local` présent → charger `.env.local` dans le shell avant tout `--publier` local ; worktree neuf → `pnpm exec svelte-kit sync` avant `question:specs` ; spec `bad_form` → `constraintViolations: ['form']` ; 306 en lot B (outil #2189 en prod).
 - **Worktree / branche** : `../ubumaths-wt-questions-1spe-analyse`, `content/questions-1spe-analyse`.
 
 ---
@@ -86,7 +86,7 @@ Aucun des 10 points n'a de modèle ; le point 306 non plus. Nœuds des points et
 - Le journal `automatismes-1spe` (2026-09-28) ne contient aucun modèle de lecture de signe ni de coefficient
   directeur.
 
-## Phase 0 (à valider)
+## Phase 0 (D-A1, validée par David le 2026-11-02 : « je valide » sur les recos)
 
 Deux lots de 5, chacun une PR de fichiers puis une PR de migration (nœud + tag, gabarit lot 6a). Niveau `1_SPE`
 seul, un point par modèle (sauf Q5), brouillons. Rangement : nœud du point.
@@ -157,3 +157,10 @@ seul, un point par modèle (sauf Q5), brouillons. Rangement : nœud du point.
 - **Q7 (question d'accès des migrations)** : qui pourra lire quoi, qu'il ne pouvait pas lire avant ? Reco :
   personne pour les modèles neufs (brouillons, la migration ne pose que nœud et tags). Si Q6 (a) : 7d6cf480
   (publié) devient visible des classes de 1re dans le cahier de texte ; aucune règle ne change.
+
+**Décisions (David, 2026-11-02, « je valide » sur les recos)** : Q1 306 dans le lot B ; Q2 382 « couvert par 251 » ;
+Q3 deux lots (A, B) ; Q4 A1 en case choix ; Q5 B4 tagué aussi 1GEN-062 et 1TECHNO-139, niveaux `1_SPE`, `1_GEN`,
+`1_TECHNO` ; Q6 (a) 7d6cf480 tagué 1SPE-434, 1GEN-064, 1TECHNO-141, niveaux de 1re ajoutés (lot B = 4 modèles neufs
+
+- ce tag) ; Q7 personne ne gagne d'accès (brouillons ; seul 7d6cf480, publié, apparaît aux classes de 1re dans le
+  cahier de texte).

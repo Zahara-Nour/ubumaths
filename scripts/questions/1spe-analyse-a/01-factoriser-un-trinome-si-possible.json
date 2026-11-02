@@ -1,0 +1,328 @@
+{
+	"title": "Factoriser un trinôme quand c'est possible",
+	"description": "Discriminant puis forme factorisée (case choix) : Δ > 0 avec a = 1 ou a ≠ 1, Δ = 0, Δ < 0 (ne se factorise pas) ; pièges : signes des racines, a oublié, somme prise pour un produit",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"subdomain": "Formes",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $P(x)={{eval:a*x^2+b*x+c}}$.\n\nQuelle est la forme factorisée de $P(x)$ dans $\\mathbb{R}$ ?\n\n```choix\n- $P(x)=(x{{eval:-(r);+}})(x{{eval:-(s);+}})$\n- $P(x)=(x{{eval:-(-r);+}})(x{{eval:-(-s);+}})$\n- $P(x)=x(x{{eval:-(r+s);+}}){{eval:r*s;+}}$\n- $P(x)$ ne se factorise pas dans $\\mathbb{R}$\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1"
+				},
+				{
+					"name": "r",
+					"expression": "-6..5"
+				},
+				{
+					"name": "s",
+					"expression": "-5..6"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-a*(r+s)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*r*s"
+				}
+			],
+			"conditions": ["r < s", "r != 0", "s != 0", "r + s != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule le discriminant : $$\\Delta=b^2-4ac={{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}}={{eval:b^2-4*a*c}}$$",
+					"$\\Delta>0$ : $P$ a deux racines, $x_{1,2}=\\dfrac{-b\\pm\\sqrt{\\Delta}}{2a}$, soit $x_1={{r}}$ et $x_2={{s}}$.",
+					"Si $\\Delta>0$, $P(x)=a(x-x_1)(x-x_2)$ ; si $\\Delta=0$, $P(x)=a(x-x_0)^2$ ; si $\\Delta<0$, $P$ n'a pas de racine et **ne se factorise pas**. Ici $a=1$ :",
+					"$$P(x)=\\textcolor{{{color:primary.0}}}{(x{{eval:-(r);+}})(x{{eval:-(s);+}})}$$",
+					"Attention : $x(x{{eval:-(r+s);+}}){{eval:r*s;+}}$ n'est pas une forme factorisée, c'est une somme."
+				]
+			}
+		},
+		{
+			"statement": "Soit $P(x)={{eval:a*x^2+b*x+c}}$.\n\nQuelle est la forme factorisée de $P(x)$ dans $\\mathbb{R}$ ?\n\n```choix\n- $P(x)={{a}}(x{{eval:-(r);+}})(x{{eval:-(s);+}})$\n- $P(x)=(x{{eval:-(r);+}})(x{{eval:-(s);+}})$\n- $P(x)={{a}}(x{{eval:-(-r);+}})(x{{eval:-(-s);+}})$\n- $P(x)$ ne se factorise pas dans $\\mathbb{R}$\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "r",
+					"expression": "-5..4"
+				},
+				{
+					"name": "s",
+					"expression": "-4..5"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-a*(r+s)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*r*s"
+				}
+			],
+			"conditions": ["r < s", "r != 0", "s != 0", "r + s != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule le discriminant : $$\\Delta=b^2-4ac={{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}}={{eval:b^2-4*a*c}}$$",
+					"$\\Delta>0$ : $P$ a deux racines, $x_{1,2}=\\dfrac{-b\\pm\\sqrt{\\Delta}}{2a}$, soit $x_1={{r}}$ et $x_2={{s}}$.",
+					"Si $\\Delta>0$, $P(x)=a(x-x_1)(x-x_2)$ ; si $\\Delta=0$, $P(x)=a(x-x_0)^2$ ; si $\\Delta<0$, $P$ n'a pas de racine et **ne se factorise pas**. Ici $a={{a}}$ : sans lui, on n'écrit pas $P(x)$ mais $\\dfrac{P(x)}{ {{a}} }$.",
+					"$$P(x)=\\textcolor{{{color:primary.0}}}{{{a}}(x{{eval:-(r);+}})(x{{eval:-(s);+}})}$$"
+				]
+			}
+		},
+		{
+			"statement": "Soit $P(x)={{eval:a*x^2+b*x+c}}$.\n\nQuelle est la forme factorisée de $P(x)$ dans $\\mathbb{R}$ ?\n\n```choix\n- $P(x)=(x{{eval:-(r);+}})^2$\n- $P(x)=(x{{eval:-(-r);+}})^2$\n- $P(x)=(x{{eval:-(r);+}})(x{{eval:-(-r);+}})$\n- $P(x)$ ne se factorise pas dans $\\mathbb{R}$\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1"
+				},
+				{
+					"name": "r",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "s",
+					"expression": "eval:r"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-a*(r+s)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*r*s"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule le discriminant : $$\\Delta=b^2-4ac={{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}}={{eval:b^2-4*a*c}}$$",
+					"$\\Delta=0$ : $P$ a une seule racine, $x_0=-\\dfrac{b}{2a}={{r}}$.",
+					"Si $\\Delta>0$, $P(x)=a(x-x_1)(x-x_2)$ ; si $\\Delta=0$, $P(x)=a(x-x_0)^2$ ; si $\\Delta<0$, $P$ n'a pas de racine et **ne se factorise pas**. Ici $a=1$ :",
+					"$$P(x)=\\textcolor{{{color:primary.0}}}{(x{{eval:-(r);+}})^2}$$"
+				]
+			}
+		},
+		{
+			"statement": "Soit $P(x)={{eval:a*x^2+b*x+c}}$.\n\nQuelle est la forme factorisée de $P(x)$ dans $\\mathbb{R}$ ?\n\n```choix\n- $P(x)$ ne se factorise pas dans $\\mathbb{R}$\n- $P(x)=(x{{eval:-(h+m);+}})(x{{eval:-(h-m);+}})$\n- $P(x)=(x{{eval:-(h);+}})^2$\n- $P(x)=(x{{eval:-(h);+}})(x{{eval:-(-h);+}})$\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1"
+				},
+				{
+					"name": "h",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "m",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-2*h"
+				},
+				{
+					"name": "c",
+					"expression": "eval:h^2+m^2"
+				}
+			],
+			"conditions": ["h != m", "h != -m"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule le discriminant : $$\\Delta=b^2-4ac={{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}}={{eval:b^2-4*a*c}}$$",
+					"$\\Delta<0$ : $P$ n'a **aucune racine** réelle.",
+					"Si $\\Delta>0$, $P(x)=a(x-x_1)(x-x_2)$ ; si $\\Delta=0$, $P(x)=a(x-x_0)^2$ ; si $\\Delta<0$, $P$ n'a pas de racine et **ne se factorise pas**.",
+					"$P(x)$ $\\textcolor{{{color:primary.0}}}{\\text{ne se factorise pas}}$ dans $\\mathbb{R}$ : sa forme canonique est $P(x)=(x{{eval:-(h);+}})^2+{{eval:m^2}}$, toujours strictement positive. Écrire $(x{{eval:-(h+m);+}})(x{{eval:-(h-m);+}})$, c'est factoriser $(x{{eval:-(h);+}})^2-{{eval:m^2}}$ : erreur de signe."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x² − x − 6 = (x + 2)(x − 3)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"s": "3",
+				"b": "-1",
+				"c": "-6"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signes des racines",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"s": "3",
+				"b": "-1",
+				"c": "-6"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : somme",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"s": "3",
+				"b": "-1",
+				"c": "-6"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2(x − 1)(x − 3)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"r": "1",
+				"s": "3",
+				"b": "-8",
+				"c": "6"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a oublié",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"r": "1",
+				"s": "3",
+				"b": "-8",
+				"c": "6"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(x − 3)²",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"r": "3",
+				"s": "3",
+				"b": "-6",
+				"c": "9"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « ne se factorise pas »",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"r": "3",
+				"s": "3",
+				"b": "-6",
+				"c": "9"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Δ < 0 : ne se factorise pas",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"h": "2",
+				"m": "1",
+				"b": "-4",
+				"c": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (x − 3)(x − 1)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"h": "2",
+				"m": "1",
+				"b": "-4",
+				"c": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
