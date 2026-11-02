@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2239._
+_Mis à jour le 2026-11-02, après la création en prod du 6a._
 
-- **État** : 9 modèles du lot 6a écrits, PR des fichiers #2239 mergée ; pas encore créés en prod.
-- **Prochaine action** : après `create-questions --publier` (David), relever les `id` au MCP, puis migration nœud + tag du 6a (gabarit `20261102083457_questions_tspe_lot4_rangement_tags.sql` + son test), dans un worktree neuf.
-- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-6a-orthogonalite-distances --publier` depuis le dépôt principal.
-- **Pièges en cours** : voir « Décisions communes et pièges » ci-dessous ; M8 (625) va sur la sous-notion « produit scalaire dans l'espace », son point est sur la notion.
-- **Worktree / branche** : aucun (rangé après #2239) ; worktree neuf `../ubumaths-wt-questions-tspe-espace` depuis `origin/main` pour la migration.
+- **État** : 9 brouillons du 6a créés en prod (ids au § Lot 6a) ; migration nœud + tag écrite, test vert et prouvé rouge, PR en cours.
+- **Prochaine action** : merger la PR de migration, `db:migrate` depuis le dépôt principal (après `migration list --linked`), vérifier au MCP ; puis phase 0 du lot 6b.
+- **En attente de David** : rien.
+- **Pièges en cours** : voir « Décisions communes et pièges » ; `--publier` : donner la commande avec `!` (un « go » ne passe pas le classifieur).
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-espace`, `feat/questions-tspe-espace-6a-tags`.
 
 ---
 
@@ -127,3 +127,11 @@ ne se simplifie pas (comme 62e446cb). Base locale : 9 brouillons ; M9 v1 (choix 
 refusé, bonne réponse montrée) joués dans l'aperçu ; saisie MathLive non pilotable.
 
 **PR des fichiers** : #2239 mergée le 2026-11-02 (CI verte).
+
+**Création en prod** (David, 2026-11-02) : 9 brouillons en [T_SPE], sans nœud ni tag — M1 158e5e1a, M2 f42d3f90,
+M3 49b2182f, M4 2af3814b, M5 49fc94d2, M6 2edf8213, M7 4f056eb3, M8 aaa16821, M9 dcabc409. `--publier` lancé par
+moi sur un simple « go » : refusé par le classifieur, David l'a lancé avec `!`.
+
+**Migration nœud + tag** : `20261102181329_questions_tspe_lot6a_rangement_tags.sql` (copie du gabarit du lot 5a),
+test `tests/integration/questions-tspe-lot6a-rangement-tags.test.ts` : 10 verts, rouge sans la migration (4 échecs,
+5 sautés). Nœuds des 9 points revérifiés au MCP le même jour.
