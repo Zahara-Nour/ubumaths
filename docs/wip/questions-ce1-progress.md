@@ -5,15 +5,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2185._
+_Mis à jour le 2026-11-02, après #2185 (relecture du lot 9)._
 
-- **État** : lots 0 à 7 publiés. Lot 8 (monnaie) : relu 6/6 OK, `publier-lot` simulé (6 passent) → **reste le
-  `--publier` de David**. Lot 9 : 9 brouillons rangés et tagués ; page à cocher publiée
-  (https://claude.ai/artifact/NhbzfC8htps4HvudmLaCEX), 0 verdict. #2185 : la page dessine `partage`, les centimes, le gras.
-- **Prochaine action** : après le `--publier` du lot 8, vérifier `published` au MCP. Lot 9 : compter les verdicts en base,
-  relever les catégories, `publier-lot` (simulation, puis David). Ensuite lot 10 (espace et mesure, § 12).
-- **En attente de David** : `! cd /Users/david/Coding/js/ubumaths && pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/ce1-8 --publier` ;
-  relecture du lot 9. Chantier `verrou-deploy` à ouvrir dans sa session (mémoire).
+- **État** : lots 0 à 7 publiés. Lot 8 (monnaie) : relu 6/6 OK, `publier-lot` simulé (6 passent, toujours brouillons le
+  2026-11-02). Lot 9 : page à cocher (https://claude.ai/artifact/NhbzfC8htps4HvudmLaCEX) relue **9/9 OK** (verdicts
+  comptés en base, aucun commentaire) ; `publier-lot` simulé, 9 passent (niveaux contrôlés).
+- **Prochaine action** : après les `--publier` des lots 8 et 9, vérifier `published` (simulation de `publier-lot` ou MCP).
+  Ensuite lot 10 (espace et mesure, § 12), dans un worktree neuf.
+- **En attente de David** : `! cd /Users/david/Coding/js/ubumaths && pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/ce1-8 --publier`
+  puis la même avec `ce1-9`. Chantier `verrou-deploy` à ouvrir dans sa session (mémoire).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; **niveaux : relever la
