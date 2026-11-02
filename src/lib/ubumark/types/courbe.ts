@@ -184,6 +184,17 @@ export interface CourbeTarget {
 	line: number;
 }
 
+/**
+ * Droite à tracer par l'élève (`tracer: y = 2x - 1`, une question) : l'équation
+ * telle qu'écrite (normalisée), passant par au moins deux nœuds de la grille dans
+ * la fenêtre (vérifié à l'analyse) ; `?` dans l'énoncé masqué d'une évaluation
+ * notée. Jamais dessinée avant la correction : c'est la réponse attendue.
+ */
+export interface CourbeLineToTrace {
+	equation: string;
+	line: number;
+}
+
 /** Titres des axes (`axes: x = Durée (min) ; y = Température (°C)`), null : pas de titre */
 export interface CourbeAxisTitles {
 	x: string | null;
@@ -210,6 +221,11 @@ export interface CourbeSpec {
 	 * (chantier `docs/wip/points-repere-progress.md`).
 	 */
 	placer?: CourbeTarget[];
+	/**
+	 * Droite à tracer (`tracer:`, jamais avec `placer:`) : la RÉPONSE attendue,
+	 * jamais dessinée ni écrite dans le DOM avant la correction
+	 */
+	tracer?: CourbeLineToTrace;
 	/** Titres des axes (`axes:`) ; absent sans la clé */
 	axisTitles?: CourbeAxisTitles;
 }
@@ -246,7 +262,8 @@ export interface CourbeNode extends BaseNode {
 	warnings: CourbeIssue[];
 	/**
 	 * Repère à points à placer dans une question : première case (`case: N`,
-	 * posée par le générateur) ; le point k a la case N + k
+	 * posée par le générateur) ; le point k a la case N + k. Droite à tracer :
+	 * une seule case, N
 	 */
 	caseIndex?: number;
 }
@@ -277,6 +294,8 @@ export const COURBE_LIMITS = {
 	tangents: 10,
 	/** Points à placer par l'élève (`placer:`) */
 	targets: 6,
+	/** Longueur de l'équation d'une droite à tracer (`tracer:`) */
+	equation: 80,
 	/** Longueur d'un titre d'axe (`axes:`) */
 	axisTitle: 60,
 	sequences: 10,

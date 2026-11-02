@@ -25,6 +25,10 @@
  * point sur un nœud de la grille et dans la fenêtre ; `case: N` est posée par
  * le générateur. Titres des axes : `axes: x = Durée (min) ; y = Température (°C)`.
  *
+ * Droite à tracer (une question) : `tracer: y = 2x - 1` (réduite, `x = 3`, ou
+ * cartésienne `2x + 3y - 6 = 0`), jamais avec `placer:` ; la droite doit passer par
+ * au moins deux nœuds de la grille dans la fenêtre.
+ *
  * Les variables de template (`{{a}}`) sont remplacées AVANT l'analyse : une
  * valeur négative produit donc `x--2` ou `+-3`, normalisés ici.
  *
@@ -49,6 +53,7 @@ import type {
 	CourbeSequenceTerm,
 	CourbeIssue,
 	CourbeLabel,
+	CourbeLineToTrace,
 	CourbeNode,
 	CourbePoint,
 	CourbeSize,
@@ -67,6 +72,7 @@ import { variable } from '$lib/mathAST/factory';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { computeSequenceTerms, PREV_TERM_VARIABLE } from '$lib/grapheur/sequence';
 import { isGridNode, isInWindow, courbeGridSteps } from '../utils/courbe-placer';
+import { lineCoefficients, lineNodes } from '../utils/courbe-tracer';
 
 // ============================================================================
 // CONSTANTES
@@ -112,6 +118,7 @@ const KNOWN_KEYS = [
 	'taille',
 	'description',
 	'placer',
+	'tracer',
 	'axes',
 	'case'
 ] as const;
@@ -127,6 +134,9 @@ const MASKED_TARGET_REGEX = /^(?:([A-Z])\s*=\s*)?\?$/;
  * ni nœud ni fenêtre à vérifier. Un objet par point, jamais réutilisé.
  */
 const maskedTargets = new WeakSet<CourbeTarget>();
+
+/** Droite à tracer masquée (`tracer: ?`) : énoncé d'une évaluation notée */
+const MASKED_EQUATION = '?';
 
 /** `x = Durée (min)` : axe, titre */
 const AXIS_TITLE_REGEX = /^([^=\s]+)\s*=\s*(.*)$/;
@@ -197,11 +207,12 @@ export function findCourbeBlocks(lines: string[]): CourbeBlockRange[] {
 	return blocks;
 }
 
-/** Ligne `placer:` d'un bloc */
-const PLACER_LINE_REGEX = /^\s*placer\s*:/i;
+/** Ligne du geste d'un bloc : `placer:` (points) ou `tracer:` (droite) */
+const GESTURE_LINE_REGEX = /^\s*(?:placer|tracer)\s*:/i;
 
 /**
- * Les repères à points à placer (`placer:`) d'un énoncé, délimités comme le
+ * Les repères à points à placer (`placer:`) ou à droite à tracer (`tracer:`)
+ * d'un énoncé, délimités comme le
  * parseur : corps sans clôtures, fermeture, et `nested` pour un bloc en
  * retrait, cité ou ouvert sur la ligne d'un item (l'élève ne pourrait pas y
  * répondre : sa case n'est pas créée)
@@ -225,10 +236,10 @@ export function findCourbesToPlace(markdown: string): {
 				nested: lines[block.startIndex] !== plain[block.startIndex]
 			};
 		})
-		.filter((block) => block.body.some((line) => PLACER_LINE_REGEX.test(line)));
+		.filter((block) => block.body.some((line) => GESTURE_LINE_REGEX.test(line)));
 }
 
-/** L'énoncé a-t-il un repère à points à placer ? */
+/** L'énoncé a-t-il un repère à points à placer ou à droite à tracer ? */
 export function hasCourbeToPlace(markdown: string): boolean {
 	return findCourbesToPlace(markdown).length > 0;
 }
@@ -950,6 +961,51 @@ function targetProblem(
 	return null;
 }
 
+/**
+ * `tracer: y = 2x - 1` : l'équation normalisée (variables substituées, virgule
+ * décimale) ; `tracer: ?` (énoncé masqué d'une évaluation notée) est gardé tel quel
+ */
+function parseLineToTrace(value: string, line: number): CourbeLineToTrace {
+	if (value === '') {
+		throw new LineError('tracer: attend l’équation d’une droite (ex. tracer: y = 2x - 1)');
+	}
+	if (value === MASKED_EQUATION) return { equation: MASKED_EQUATION, line };
+	if (value.length > COURBE_LIMITS.equation) {
+		throw new LineError(
+			`tracer : équation trop longue (${COURBE_LIMITS.equation} caractères au plus)`
+		);
+	}
+	const equation = spacedEquation(normalizeCourbeExpression(decimalPoint(value)));
+	const coefficients = lineCoefficients(equation);
+	if (typeof coefficients === 'string') throw new LineError(`tracer : ${coefficients}`);
+	return { equation, line };
+}
+
+/**
+ * Une espace de part et d'autre de `=`, `+` et `-` binaires, aucune après un
+ * signe : `y=-2x-3` → `y = -2x - 3`
+ */
+function spacedEquation(equation: string): string {
+	return equation
+		.replace(/\s*([=+-])\s*/g, ' $1 ')
+		.trim()
+		.replace(/(^|[=(*/^])\s*([+-])\s+/g, (_, before: string, sign: string) =>
+			before === '' ? sign : before === '=' ? `= ${sign}` : `${before}${sign}`
+		);
+}
+
+/** Ce qui empêche l'élève de tracer la droite : moins de deux nœuds dans la fenêtre */
+function traceProblem(
+	tracer: CourbeLineToTrace,
+	spec: Pick<CourbeSpec, 'window' | 'grid' | 'size'>
+): string | null {
+	if (tracer.equation === MASKED_EQUATION) return null;
+	const coefficients = lineCoefficients(tracer.equation);
+	if (typeof coefficients === 'string') return coefficients;
+	if (lineNodes(spec, coefficients).length >= 2) return null;
+	return `la droite ${tracer.equation} passe par moins de deux nœuds de la grille dans la fenêtre : l'élève ne peut pas la tracer (régler x:, y: ou grille:)`;
+}
+
 /** `axes: x = Durée (min) ; y = Température (°C)` : un titre par axe, un ou deux axes */
 function parseAxisTitles(value: string): CourbeAxisTitles {
 	const example = 'ex. axes: x = Durée (min) ; y = Température (°C)';
@@ -1007,6 +1063,7 @@ export function parseCourbeContent(source: string): CourbeNode {
 	}[] = [];
 	const seenKeys = new Set<string>();
 	let axisTitles: CourbeAxisTitles | undefined;
+	let tracer: CourbeLineToTrace | undefined;
 	let caseIndex: number | undefined;
 	let caseLine = 0;
 
@@ -1118,6 +1175,9 @@ export function parseCourbeContent(source: string): CourbeNode {
 				case 'axes':
 					axisTitles = parseAxisTitles(value);
 					break;
+				case 'tracer':
+					tracer = parseLineToTrace(value, line);
+					break;
 				case 'case':
 					if (!/^\d+$/.test(value)) {
 						throw new LineError(`case « ${value} » : numéro de case entier`);
@@ -1204,9 +1264,9 @@ export function parseCourbeContent(source: string): CourbeNode {
 		}
 	}
 
-	if (caseIndex !== undefined && !seenKeys.has('placer')) {
+	if (caseIndex !== undefined && !seenKeys.has('placer') && !seenKeys.has('tracer')) {
 		errors.push({
-			message: `Ligne ${caseLine} : case: sans objet sans placer:`,
+			message: `Ligne ${caseLine} : case: sans objet sans placer: ni tracer:`,
 			line: caseLine,
 			content: lines[caseLine - 1].trim()
 		});
@@ -1227,6 +1287,21 @@ export function parseCourbeContent(source: string): CourbeNode {
 		}
 	}
 
+	// Droite à tracer : seule sur son repère, au moins deux nœuds dans la fenêtre
+	if (errors.length === 0 && tracer !== undefined) {
+		const problem =
+			placer !== undefined
+				? 'tracer: et placer: ne vont pas ensemble : un seul geste par repère'
+				: traceProblem(tracer, { window: window as CourbeWindow, grid, size });
+		if (problem !== null) {
+			errors.push({
+				message: `Ligne ${tracer.line} : tracer : ${problem}`,
+				line: tracer.line,
+				content: lines[tracer.line - 1].trim()
+			});
+		}
+	}
+
 	const spec: CourbeSpec | null =
 		errors.length === 0
 			? {
@@ -1241,6 +1316,7 @@ export function parseCourbeContent(source: string): CourbeNode {
 					size,
 					description,
 					...(placer !== undefined && { placer }),
+					...(tracer !== undefined && { tracer }),
 					...(axisTitles !== undefined && { axisTitles })
 				}
 			: null;

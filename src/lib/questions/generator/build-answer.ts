@@ -16,7 +16,8 @@
  * les vues d'un assemblage de cubes (```cubes, `dessiner: face` : `100/111` ;
  * `retrouver: face` : `face : 2 1 / 1 2`), ou les coordonnées d'un point à placer
  * dans un repère (```courbe, `placer: A=(2 ; 3)` : `2;3`, écrites par `pointAnswer`,
- * comme la réponse de l'élève), ou la mesure principale d'un point à placer sur le
+ * comme la réponse de l'élève), ou l'équation d'une droite à tracer (```courbe,
+ * `tracer: y = 2x - 1` : `y = 2x - 1`, normalisée par le parseur), ou la mesure principale d'un point à placer sur le
  * cercle trigonométrique (```trig, `placer: M = -pi/4` : `-\frac{\pi}{4}`).
  *
  * @module questions/generator/build-answer
@@ -118,6 +119,8 @@ export function buildAnswerOf(
 		const node = parseCourbeContent(source);
 		if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
 		if (node.spec === null) return { errors: node.errors.map((e) => e.message) };
+		// Droite à tracer : l'équation (le juge accepte toute paire de points de la droite)
+		if (node.spec.tracer !== undefined) return { answer: node.spec.tracer.equation };
 		const target = node.spec.placer?.[point];
 		if (target === undefined) return { errors: ['placer: absent'] };
 		return { answer: pointAnswer(target.x, target.y) };
