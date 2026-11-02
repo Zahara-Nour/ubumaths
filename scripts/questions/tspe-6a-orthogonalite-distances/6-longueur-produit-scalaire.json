@@ -1,0 +1,171 @@
+{
+	"title": "Espace : calculer une longueur avec le produit scalaire",
+	"description": "Diagonale d'un pavé droit par AG = AB + AD + AE, longueur AB connaissant OA, OB et OA·OB (pièges : racine oubliée, double produit oublié ou de mauvais signe)",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Orthogonalité et distances dans l'espace",
+	"subdomain": "Norme et distance",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "$ABCDEFGH$ est un pavé droit : $ABCD$ et $EFGH$ sont deux faces opposées, $[AE]$, $[BF]$, $[CG]$, $[DH]$ des arêtes. On donne $AB={{a}}$, $AD={{b}}$ et $AE={{c}}$, et on admet que $\\overrightarrow{AG}=\\overrightarrow{AB}+\\overrightarrow{AD}+\\overrightarrow{AE}$.\n\nCalcule la longueur $AG$ (valeur exacte).\n\n$AG=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:sqrt(a^2+b^2+c^2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$AG^2=\\overrightarrow{AG}\\cdot\\overrightarrow{AG}=\\left(\\overrightarrow{AB}+\\overrightarrow{AD}+\\overrightarrow{AE}\\right)\\cdot\\left(\\overrightarrow{AB}+\\overrightarrow{AD}+\\overrightarrow{AE}\\right)$. En développant : $AG^2=AB^2+AD^2+AE^2+2\\left(\\overrightarrow{AB}\\cdot\\overrightarrow{AD}+\\overrightarrow{AB}\\cdot\\overrightarrow{AE}+\\overrightarrow{AD}\\cdot\\overrightarrow{AE}\\right)$.",
+					"Les arêtes $[AB]$, $[AD]$, $[AE]$ d'un pavé droit sont deux à deux perpendiculaires : les trois produits scalaires sont nuls.",
+					"$AG^2={{a}}^2+{{b}}^2+{{c}}^2={{eval:a^2+b^2+c^2}}$, donc $AG=\\sqrt{{{eval:a^2+b^2+c^2}}}=\\textcolor{{{color:primary.0}}}{ {{eval:sqrt(a^2+b^2+c^2)}} }$"
+				]
+			},
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..6"
+				},
+				{
+					"name": "c",
+					"expression": "1..6"
+				}
+			],
+			"conditions": ["a <= b", "b <= c"]
+		},
+		{
+			"statement": "Dans l'espace, $O$, $A$ et $B$ sont trois points tels que $OA={{a}}$, $OB={{b}}$ et $\\overrightarrow{OA}\\cdot\\overrightarrow{OB}={{p}}$.\n\nCalcule la longueur $AB$ (valeur exacte).\n\n$AB=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:sqrt(a^2-2*p+b^2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AB}=\\overrightarrow{OB}-\\overrightarrow{OA}$, donc $AB^2=\\left(\\overrightarrow{OB}-\\overrightarrow{OA}\\right)\\cdot\\left(\\overrightarrow{OB}-\\overrightarrow{OA}\\right)=OB^2-2\\,\\overrightarrow{OA}\\cdot\\overrightarrow{OB}+OA^2$.",
+					"$AB^2={{b}}^2-2\\times{{eval:p;()}}+{{a}}^2={{eval:a^2-2*p+b^2}}$.",
+					"Une longueur est positive : $AB=\\sqrt{{{eval:a^2-2*p+b^2}}}=\\textcolor{{{color:primary.0}}}{ {{eval:sqrt(a^2-2*p+b^2)}} }$"
+				]
+			},
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..6"
+				},
+				{
+					"name": "p",
+					"expression": "-12..12"
+				}
+			],
+			"conditions": ["abs(p) < a*b"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : √(4 + 9 + 36) = 7",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "6"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : AG² donné",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "6"
+			},
+			"answers": ["49"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : somme des arêtes",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "6"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : √14",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "3"
+			},
+			"answers": ["\\sqrt{14}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 9 - 2×2 + 16 = 21",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"p": "2"
+			},
+			"answers": ["\\sqrt{21}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : double produit oublié",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"p": "2"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : signe du double produit",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"p": "2"
+			},
+			"answers": ["\\sqrt{29}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,167 @@
+{
+	"title": "Espace : distance d'un point à une droite",
+	"description": "Distance de M à une droite (point, vecteur directeur) par le projeté orthogonal H = A + t u (pièges : distance AM, carré de la distance)",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Orthogonalité et distances dans l'espace",
+	"subdomain": "Projeté orthogonal",
+	"level": 5,
+	"delay": 240,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ passant par $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et de vecteur directeur $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\\\{{u3}}\\end{pmatrix}$, et le point $M({{mx}}\\,;\\,{{my}}\\,;\\,{{mz}})$.\n\nCalcule la distance du point $M$ à la droite $d$ (valeur exacte).\n\nDistance : $?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:sqrt(w1^2+w2^2+w3^2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La distance de $M$ à $d$ est la distance $MH$, où $H$ est le **projeté orthogonal** de $M$ sur $d$ : $H=A+t\\vec{u}$ pour un réel $t$, avec $\\overrightarrow{HM}\\cdot\\vec{u}=0$.",
+					"$\\overrightarrow{HM}=\\overrightarrow{AM}-t\\vec{u}$, donc la condition s'écrit $\\overrightarrow{AM}\\cdot\\vec{u}-t\\|\\vec{u}\\|^2=0$ ; ici $\\overrightarrow{AM}\\cdot\\vec{u}={{eval:(mx-ax)*u1+(my-ay)*u2+(mz-az)*u3}}$ et $\\|\\vec{u}\\|^2={{eval:u1^2+u2^2+u3^2}}$, donc $t={{s}}$ et $H({{hx}}\\,;\\,{{hy}}\\,;\\,{{hz}})$.",
+					"$\\overrightarrow{HM}\\begin{pmatrix}{{w1}}\\\\{{w2}}\\\\{{w3}}\\end{pmatrix}$, donc $MH=\\sqrt{{{eval:w1;()}}^2+{{eval:w2;()}}^2+{{eval:w3;()}}^2}=\\textcolor{{{color:primary.0}}}{ {{eval:sqrt(w1^2+w2^2+w3^2)}} }$"
+				]
+			},
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-3..3"
+				},
+				{
+					"name": "ay",
+					"expression": "-3..3"
+				},
+				{
+					"name": "az",
+					"expression": "-3..3"
+				},
+				{
+					"name": "u1",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "u2",
+					"expression": "-2..2"
+				},
+				{
+					"name": "u3",
+					"expression": "-2..2"
+				},
+				{
+					"name": "s",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "sel",
+					"expression": "0..1"
+				},
+				{
+					"name": "w1",
+					"expression": "{{eval:r*(1-sel)*u2}}"
+				},
+				{
+					"name": "w2",
+					"expression": "{{eval:r*((sel-1)*u1+sel*u3)}}"
+				},
+				{
+					"name": "w3",
+					"expression": "{{eval:-r*sel*u2}}"
+				},
+				{
+					"name": "hx",
+					"expression": "{{eval:ax+s*u1}}"
+				},
+				{
+					"name": "hy",
+					"expression": "{{eval:ay+s*u2}}"
+				},
+				{
+					"name": "hz",
+					"expression": "{{eval:az+s*u3}}"
+				},
+				{
+					"name": "mx",
+					"expression": "{{eval:hx+w1}}"
+				},
+				{
+					"name": "my",
+					"expression": "{{eval:hy+w2}}"
+				},
+				{
+					"name": "mz",
+					"expression": "{{eval:hz+w3}}"
+				}
+			],
+			"conditions": ["abs(w1)+abs(w2)+abs(w3) > 0"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : √5",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"s": "1",
+				"r": "1",
+				"sel": "0"
+			},
+			"answers": ["\\sqrt{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : distance AM (piège)",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"s": "1",
+				"r": "1",
+				"sel": "0"
+			},
+			"answers": ["\\sqrt{11}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : MH² donné",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"u1": "1",
+				"u2": "2",
+				"u3": "-1",
+				"s": "1",
+				"r": "1",
+				"sel": "0"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

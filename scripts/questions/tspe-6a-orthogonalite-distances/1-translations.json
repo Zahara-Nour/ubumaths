@@ -1,0 +1,258 @@
+{
+	"title": "Espace : translations",
+	"description": "Image d'un point par la translation qui transforme A en B, image par deux translations enchaînées (pièges : vecteur BA, M donné à la place de N, un seul vecteur ajouté)",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs, droites et plans de l'espace",
+	"subdomain": "Translations",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans l'espace muni d'un repère, on considère les points $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$, $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$ et $C({{cx}}\\,;\\,{{cy}}\\,;\\,{{cz}})$.\n\nOn note $t$ la translation qui transforme $A$ en $B$. Donne les coordonnées de l'image $C'$ de $C$ par $t$.\n\n$C'(?\\,;\\,?\\,;\\,?)$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:cx+bx-ax}}"
+				},
+				{
+					"expectedAnswer": "{{eval:cy+by-ay}}"
+				},
+				{
+					"expectedAnswer": "{{eval:cz+bz-az}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$t$ est la translation de vecteur $\\overrightarrow{AB}$ : $C'=t(C)$ signifie $\\overrightarrow{CC'}=\\overrightarrow{AB}$.",
+					"$\\overrightarrow{AB}\\begin{pmatrix}{{eval:bx-ax}}\\\\{{eval:by-ay}}\\\\{{eval:bz-az}}\\end{pmatrix}$, donc $x_{C'}={{cx}}+{{eval:bx-ax;()}}$, $y_{C'}={{cy}}+{{eval:by-ay;()}}$, $z_{C'}={{cz}}+{{eval:bz-az;()}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{ C'({{eval:cx+bx-ax}}\\,;\\,{{eval:cy+by-ay}}\\,;\\,{{eval:cz+bz-az}}) }$."
+				]
+			},
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-5..5"
+				},
+				{
+					"name": "ay",
+					"expression": "-5..5"
+				},
+				{
+					"name": "az",
+					"expression": "-5..5"
+				},
+				{
+					"name": "bx",
+					"expression": "-5..5"
+				},
+				{
+					"name": "by",
+					"expression": "-5..5"
+				},
+				{
+					"name": "bz",
+					"expression": "-5..5"
+				},
+				{
+					"name": "cx",
+					"expression": "-5..5"
+				},
+				{
+					"name": "cy",
+					"expression": "-5..5"
+				},
+				{
+					"name": "cz",
+					"expression": "-5..5"
+				}
+			],
+			"conditions": ["abs(bx-ax)+abs(by-ay)+abs(bz-az) > 0", "abs(cx-ax)+abs(cy-ay)+abs(cz-az) > 0"]
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère, on considère le point $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et les vecteurs $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\\\{{u3}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{v1}}\\\\{{v2}}\\\\{{v3}}\\end{pmatrix}$.\n\nLe point $M$ est l'image de $A$ par la translation de vecteur $\\vec{u}$, puis $N$ est l'image de $M$ par la translation de vecteur $\\vec{v}$. Donne les coordonnées de $N$.\n\n$N(?\\,;\\,?\\,;\\,?)$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:ax+u1+v1}}"
+				},
+				{
+					"expectedAnswer": "{{eval:ay+u2+v2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:az+u3+v3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Enchaîner la translation de vecteur $\\vec{u}$ puis celle de vecteur $\\vec{v}$ revient à appliquer la translation de vecteur $\\vec{u}+\\vec{v}$ : $\\overrightarrow{AN}=\\overrightarrow{AM}+\\overrightarrow{MN}=\\vec{u}+\\vec{v}$.",
+					"$\\vec{u}+\\vec{v}\\begin{pmatrix}{{eval:u1+v1}}\\\\{{eval:u2+v2}}\\\\{{eval:u3+v3}}\\end{pmatrix}$, donc $x_N={{ax}}+{{eval:u1+v1;()}}$, $y_N={{ay}}+{{eval:u2+v2;()}}$, $z_N={{az}}+{{eval:u3+v3;()}}$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{ N({{eval:ax+u1+v1}}\\,;\\,{{eval:ay+u2+v2}}\\,;\\,{{eval:az+u3+v3}}) }$."
+				]
+			},
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-5..5"
+				},
+				{
+					"name": "ay",
+					"expression": "-5..5"
+				},
+				{
+					"name": "az",
+					"expression": "-5..5"
+				},
+				{
+					"name": "u1",
+					"expression": "-4..4"
+				},
+				{
+					"name": "u2",
+					"expression": "-4..4"
+				},
+				{
+					"name": "u3",
+					"expression": "-4..4"
+				},
+				{
+					"name": "v1",
+					"expression": "-4..4"
+				},
+				{
+					"name": "v2",
+					"expression": "-4..4"
+				},
+				{
+					"name": "v3",
+					"expression": "-4..4"
+				}
+			],
+			"conditions": [
+				"abs(u1)+abs(u2)+abs(u3) > 0",
+				"abs(v1)+abs(v2)+abs(v3) > 0",
+				"abs(u1+v1)+abs(u2+v2)+abs(u3+v3) > 0"
+			]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : C'(4 ; 1 ; -1)",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "-2",
+				"az": "3",
+				"bx": "3",
+				"by": "1",
+				"bz": "0",
+				"cx": "2",
+				"cy": "-2",
+				"cz": "2"
+			},
+			"answers": ["4", "1", "-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : vecteur BA (piège)",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "-2",
+				"az": "3",
+				"bx": "3",
+				"by": "1",
+				"bz": "0",
+				"cx": "2",
+				"cy": "-2",
+				"cz": "2"
+			},
+			"answers": ["0", "-5", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : AB donné à la place de C'",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "-2",
+				"az": "3",
+				"bx": "3",
+				"by": "1",
+				"bz": "0",
+				"cx": "2",
+				"cy": "-2",
+				"cz": "2"
+			},
+			"answers": ["2", "3", "-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : N(3 ; 0 ; 2)",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"az": "-1",
+				"u1": "3",
+				"u2": "-1",
+				"u3": "2",
+				"v1": "-1",
+				"v2": "-1",
+				"v3": "1"
+			},
+			"answers": ["3", "0", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : M donné à la place de N",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"az": "-1",
+				"u1": "3",
+				"u2": "-1",
+				"u3": "2",
+				"v1": "-1",
+				"v2": "-1",
+				"v3": "1"
+			},
+			"answers": ["4", "1", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : u - v (piège)",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "1",
+				"ay": "2",
+				"az": "-1",
+				"u1": "3",
+				"u2": "-1",
+				"u3": "2",
+				"v1": "-1",
+				"v2": "-1",
+				"v3": "1"
+			},
+			"answers": ["5", "2", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,155 @@
+{
+	"title": "Espace : symétrie du produit scalaire",
+	"description": "(u + v)·(u − v) = ‖u‖² − ‖v‖² (les termes u·v et v·u s'annulent par symétrie), v·(ku) connaissant u·v (pièges : normes non élevées au carré, signe, coefficient oublié)",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Orthogonalité et distances dans l'espace",
+	"subdomain": "Produit scalaire",
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans l'espace, $\\vec{u}$ et $\\vec{v}$ sont deux vecteurs tels que $\\|\\vec{u}\\|={{a}}$ et $\\|\\vec{v}\\|={{b}}$.\n\nCalcule $\\left(\\vec{u}+\\vec{v}\\right)\\cdot\\left(\\vec{u}-\\vec{v}\\right)$.\n\n$\\left(\\vec{u}+\\vec{v}\\right)\\cdot\\left(\\vec{u}-\\vec{v}\\right)=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a^2-b^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On développe : $\\left(\\vec{u}+\\vec{v}\\right)\\cdot\\left(\\vec{u}-\\vec{v}\\right)=\\vec{u}\\cdot\\vec{u}-\\vec{u}\\cdot\\vec{v}+\\vec{v}\\cdot\\vec{u}-\\vec{v}\\cdot\\vec{v}$.",
+					"Le produit scalaire est **symétrique** : $\\vec{v}\\cdot\\vec{u}=\\vec{u}\\cdot\\vec{v}$, donc les deux termes du milieu s'annulent, et $\\vec{u}\\cdot\\vec{u}=\\|\\vec{u}\\|^2$.",
+					"$\\left(\\vec{u}+\\vec{v}\\right)\\cdot\\left(\\vec{u}-\\vec{v}\\right)=\\|\\vec{u}\\|^2-\\|\\vec{v}\\|^2={{a}}^2-{{b}}^2=\\textcolor{{{color:primary.0}}}{ {{eval:a^2-b^2}} }$"
+				]
+			},
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["a != b"]
+		},
+		{
+			"statement": "Dans l'espace, $\\vec{u}$ et $\\vec{v}$ sont deux vecteurs tels que $\\vec{u}\\cdot\\vec{v}={{p}}$.\n\nCalcule $\\vec{v}\\cdot\\left({{k}}\\vec{u}\\right)$.\n\n$\\vec{v}\\cdot\\left({{k}}\\vec{u}\\right)=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le coefficient sort du produit scalaire : $\\vec{v}\\cdot\\left({{k}}\\vec{u}\\right)={{k}}\\,(\\vec{v}\\cdot\\vec{u})$.",
+					"Le produit scalaire est **symétrique** : $\\vec{v}\\cdot\\vec{u}=\\vec{u}\\cdot\\vec{v}={{p}}$.",
+					"$\\vec{v}\\cdot\\left({{k}}\\vec{u}\\right)={{k}}\\times{{eval:p;()}}=\\textcolor{{{color:primary.0}}}{ {{eval:k*p}} }$"
+				]
+			},
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..6;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..9;±"
+				}
+			]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 5² - 3² = 16",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : a - b (piège)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : a² + b² (piège)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["34"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 2² - 7² = -45",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "7"
+			},
+			"answers": ["-45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : -3 × 4 = -12",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-3",
+				"p": "4"
+			},
+			"answers": ["-12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : coefficient oublié",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-3",
+				"p": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : signe changé (piège)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-3",
+				"p": "4"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

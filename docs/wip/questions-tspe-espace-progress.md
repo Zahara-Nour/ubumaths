@@ -10,11 +10,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, phase 0 du lot 6a écrite._
+_Mis à jour le 2026-11-02, fichiers du lot 6a écrits._
 
-- **État** : relevé MCP fait (§ « Lot 6a ») ; phase 0 du lot 6a (9 modèles) écrite, pas encore validée.
-- **Prochaine action** : faire valider la phase 0 du 6a, puis écrire `docs/wip/questions/lot-tspe-espace-6a.py`.
-- **En attente de David** : Q1 à Q4 du lot 6a (549 couvert par d6938108 ?, M3 symétrie, catégories neuves, M8 grandeurs).
+- **État** : phase 0 du 6a validée ; 9 modèles écrits (`scripts/questions/tspe-6a-orthogonalite-distances/`), specs vertes, essai en base locale ; PR des fichiers ouverte.
+- **Prochaine action** : merge de la PR des fichiers, puis David lance `create-questions --publier` depuis le dépôt principal ; relever les `id`, migration nœud + tag.
+- **En attente de David** : `create-questions --publier` après le merge.
 - **Pièges en cours** : voir « Décisions communes et pièges » ci-dessous.
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe-espace`, `feat/questions-tspe-espace`.
 
@@ -101,7 +101,9 @@ réponse en case **ou** en case choix, jamais les deux) :
 | M8  | TSPE-625 | Aire et volume en repère                       | v0 triangle ABC rectangle en A (à vérifier par AB·AC = 0) : aire ; v1 tétraèdre OABC, OA, OB, OC deux à deux orthogonaux : volume                         | Orthogonalité… › Grandeurs (1)                            | produit scalaire dans l'espace    |
 | M9  | TSPE-357 | Deux droites orthogonales ?                    | v0 (AB) et (CD) par quatre points ; v1 deux droites par représentation paramétrique ; case choix oui / non (orthogonales ≠ sécantes)                      | Orthogonalité… › Orthogonalité (1)                        | orthogonalité de droites et plans |
 
-**Questions à David** :
+**Décisions (David, 2026-11-02, « tes recos ? » puis « je valide »)** : Q1 à Q4 selon les recos (M1 écrit ; M3 par (u + v)·(u − v) et v·(ku) ; trois catégories neuves ; M8 aire et volume seulement).
+
+**Questions posées** :
 
 - **Q1** 549 : d6938108 a déjà une variation « image par une translation » (taguée 332). Reco : M1 quand même (image
   par la translation qui envoie A sur B, composée), plutôt que noter 549 « couvert par ».
@@ -114,3 +116,12 @@ réponse en case **ou** en case choix, jamais les deux) :
 
 **Question d'accès** (migration nœud + tag, après la création) : personne ne gagne ni ne perd d'accès (brouillons ;
 visibles des élèves après `publier-lot`).
+
+**Écriture** : `docs/wip/questions/lot-tspe-espace-6a.py` → `scripts/questions/tspe-6a-orthogonalite-distances/`.
+Specs 6 + 8 + 7 + 8 + 5 + 7 + 3 + 6 + 5 vertes, 3 600 tirages (200 par variation), 0 avertissement ;
+`create-questions` en simulation : 9 à créer. M5 : les 12 cas (2 familles × signe × 3 cas) vérifiés par `assert` à
+l'écriture. Corrigé après relecture des tirages et de l'aperçu : M9 v1, systèmes `cases` en ligne (`$…$`) absents de
+l'énoncé → un `$$…$$` par droite ; M5, fractions illisibles dans les colonnes en ligne et primes de ı⃗′, ȷ⃗′ cachées
+par la flèche → vecteurs u, v, w sur une ligne `$$…$$`, en `\dfrac`. Vus, laissés : « √10 = √10 » quand la racine
+ne se simplifie pas (comme 62e446cb). Base locale : 9 brouillons ; M9 v1 (choix juste accepté) et M5 (choix faux
+refusé, bonne réponse montrée) joués dans l'aperçu ; saisie MathLive non pilotable.

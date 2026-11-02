@@ -1,0 +1,221 @@
+{
+	"title": "Espace : bilinéarité du produit scalaire",
+	"description": "Produit scalaire d'une combinaison linéaire, à droite et à gauche, et de deux vecteurs multipliés par des réels (pièges : coefficient oublié, coefficients additionnés)",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Orthogonalité et distances dans l'espace",
+	"subdomain": "Produit scalaire",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans l'espace, $\\vec{u}$, $\\vec{v}$ et $\\vec{w}$ sont trois vecteurs tels que $\\vec{u}\\cdot\\vec{v}={{p}}$ et $\\vec{u}\\cdot\\vec{w}={{q}}$.\n\nCalcule $\\vec{u}\\cdot\\left({{if:a==1|\\vec{v}}}{{if:a==-1|-\\vec{v}}}{{if:a!=1 && a!=-1|{{eval:a}}\\vec{v}}}{{if:b==1|+\\vec{w}}}{{if:b==-1|-\\vec{w}}}{{if:b>1|+{{eval:b}}\\vec{w}}}{{if:b< -1|{{eval:b}}\\vec{w}}}\\right)$.\n\n$\\vec{u}\\cdot\\left({{if:a==1|\\vec{v}}}{{if:a==-1|-\\vec{v}}}{{if:a!=1 && a!=-1|{{eval:a}}\\vec{v}}}{{if:b==1|+\\vec{w}}}{{if:b==-1|-\\vec{w}}}{{if:b>1|+{{eval:b}}\\vec{w}}}{{if:b< -1|{{eval:b}}\\vec{w}}}\\right)=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*p+b*q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le produit scalaire est **bilinéaire** : $\\vec{u}\\cdot\\left(a\\vec{v}+b\\vec{w}\\right)=a\\,(\\vec{u}\\cdot\\vec{v})+b\\,(\\vec{u}\\cdot\\vec{w})$.",
+					"$\\vec{u}\\cdot\\left({{if:a==1|\\vec{v}}}{{if:a==-1|-\\vec{v}}}{{if:a!=1 && a!=-1|{{eval:a}}\\vec{v}}}{{if:b==1|+\\vec{w}}}{{if:b==-1|-\\vec{w}}}{{if:b>1|+{{eval:b}}\\vec{w}}}{{if:b< -1|{{eval:b}}\\vec{w}}}\\right)={{a}}\\times{{eval:p;()}}+{{eval:b;()}}\\times{{eval:q;()}}=\\textcolor{{{color:primary.0}}}{ {{eval:a*p+b*q}} }$"
+				]
+			},
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..6;±"
+				}
+			]
+		},
+		{
+			"statement": "Dans l'espace, $\\vec{u}$ et $\\vec{v}$ sont deux vecteurs tels que $\\vec{u}\\cdot\\vec{v}={{p}}$.\n\nCalcule $\\left({{a}}\\vec{u}\\right)\\cdot\\left({{b}}\\vec{v}\\right)$.\n\n$\\left({{a}}\\vec{u}\\right)\\cdot\\left({{b}}\\vec{v}\\right)=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*b*p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Par **bilinéarité**, les coefficients sortent du produit scalaire : $\\left(a\\vec{u}\\right)\\cdot\\left(b\\vec{v}\\right)=ab\\,(\\vec{u}\\cdot\\vec{v})$.",
+					"$\\left({{a}}\\vec{u}\\right)\\cdot\\left({{b}}\\vec{v}\\right)={{a}}\\times{{eval:b;()}}\\times{{eval:p;()}}=\\textcolor{{{color:primary.0}}}{ {{eval:a*b*p}} }$"
+				]
+			},
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..6;±"
+				}
+			]
+		},
+		{
+			"statement": "Dans l'espace, $\\vec{u}$, $\\vec{v}$ et $\\vec{w}$ sont trois vecteurs tels que $\\vec{u}\\cdot\\vec{w}={{p}}$ et $\\vec{v}\\cdot\\vec{w}={{q}}$.\n\nCalcule $\\left({{if:a==1|\\vec{u}}}{{if:a==-1|-\\vec{u}}}{{if:a!=1 && a!=-1|{{eval:a}}\\vec{u}}}{{if:b==1|+\\vec{v}}}{{if:b==-1|-\\vec{v}}}{{if:b>1|+{{eval:b}}\\vec{v}}}{{if:b< -1|{{eval:b}}\\vec{v}}}\\right)\\cdot\\vec{w}$.\n\n$\\left({{if:a==1|\\vec{u}}}{{if:a==-1|-\\vec{u}}}{{if:a!=1 && a!=-1|{{eval:a}}\\vec{u}}}{{if:b==1|+\\vec{v}}}{{if:b==-1|-\\vec{v}}}{{if:b>1|+{{eval:b}}\\vec{v}}}{{if:b< -1|{{eval:b}}\\vec{v}}}\\right)\\cdot\\vec{w}=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*p+b*q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le produit scalaire est **bilinéaire** : $\\left(a\\vec{u}+b\\vec{v}\\right)\\cdot\\vec{w}=a\\,(\\vec{u}\\cdot\\vec{w})+b\\,(\\vec{v}\\cdot\\vec{w})$.",
+					"$\\left({{if:a==1|\\vec{u}}}{{if:a==-1|-\\vec{u}}}{{if:a!=1 && a!=-1|{{eval:a}}\\vec{u}}}{{if:b==1|+\\vec{v}}}{{if:b==-1|-\\vec{v}}}{{if:b>1|+{{eval:b}}\\vec{v}}}{{if:b< -1|{{eval:b}}\\vec{v}}}\\right)\\cdot\\vec{w}={{a}}\\times{{eval:p;()}}+{{eval:b;()}}\\times{{eval:q;()}}=\\textcolor{{{color:primary.0}}}{ {{eval:a*p+b*q}} }$"
+				]
+			},
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..6;±"
+				}
+			]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 2×3 + (-1)×4 = 2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"p": "3",
+				"q": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : b oublié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"p": "3",
+				"q": "4"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : coefficients oubliés",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"p": "3",
+				"q": "4"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 3×(-2)×5 = -30",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"p": "5"
+			},
+			"answers": ["-30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : coefficients additionnés",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"p": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : un seul coefficient",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"p": "5"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : -3×2 + 2×(-5) = -16",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-3",
+				"b": "2",
+				"p": "2",
+				"q": "-5"
+			},
+			"answers": ["-16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : a oublié",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-3",
+				"b": "2",
+				"p": "2",
+				"q": "-5"
+			},
+			"answers": ["-8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
