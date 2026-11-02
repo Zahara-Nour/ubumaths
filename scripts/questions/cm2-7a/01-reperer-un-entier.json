@@ -1,0 +1,230 @@
+{
+	"title": "Repérer un point par un nombre entier",
+	"description": "Lire le nombre entier qui repère un point d'une demi-droite graduée de 1 en 1, 10 en 10 ou 100 en 100, ou de 1 000 en 1 000 jusqu'à 100 000 en 100 000 (3 470 000) ; deux graduations étiquetées, le pas est à trouver",
+	"grades": ["CM2"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Repérage",
+	"level": 2,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quel nombre repère le point $A$ ?\n\n```line\nstart: {{a}}\nend: {{fin}}\nstep: {{s}}\nmajor: 5\nlabels: {{a}}, {{l}}\npoints: A={{x}}\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1|10|100"
+				},
+				{
+					"name": "b",
+					"expression": "1..99"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*s*b"
+				},
+				{
+					"name": "l",
+					"expression": "eval:a+5*s"
+				},
+				{
+					"name": "fin",
+					"expression": "eval:a+10*s"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a+k*s"
+				}
+			],
+			"conditions": ["k!=5"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le pas.** De ${{a}}$ à ${{l}}$, il y a $5$ intervalles : un intervalle vaut $({{l}} - {{a}}) \\div 5 = {{s}}$.",
+					"Le point $A$ est à ${{k}}$ intervalle{{if:k>1|s|}} de ${{a}}$ : il repère ${{a}} + {{k}} \\times {{s}} = \\textcolor{green}{{{x}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel nombre repère le point $A$ ?\n\n```line\nstart: {{a}}\nend: {{fin}}\nstep: {{s}}\nmajor: 5\nlabels: {{a}}, {{l}}\npoints: A={{x}}\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1000|10000|100000"
+				},
+				{
+					"name": "b",
+					"expression": "1..99"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*s*b"
+				},
+				{
+					"name": "l",
+					"expression": "eval:a+5*s"
+				},
+				{
+					"name": "fin",
+					"expression": "eval:a+10*s"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a+k*s"
+				}
+			],
+			"conditions": ["k!=5"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le pas.** De ${{a}}$ à ${{l}}$, il y a $5$ intervalles : un intervalle vaut $({{l}} - {{a}}) \\div 5 = {{s}}$.",
+					"Le point $A$ est à ${{k}}$ intervalle{{if:k>1|s|}} de ${{a}}$ : il repère ${{a}} + {{k}} \\times {{s}} = \\textcolor{green}{{{x}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A repère 3 700",
+			"variationIndex": 0,
+			"variables": {
+				"s": "100",
+				"b": "34",
+				"a": "3400",
+				"l": "3900",
+				"fin": "4400",
+				"k": "3",
+				"x": "3700"
+			},
+			"answers": ["3\\,700"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 403 (intervalle compté pour 1)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "100",
+				"b": "34",
+				"a": "3400",
+				"l": "3900",
+				"fin": "4400",
+				"k": "3",
+				"x": "3700"
+			},
+			"answers": ["3\\,403"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 600 (graduation voisine)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "100",
+				"b": "34",
+				"a": "3400",
+				"l": "3900",
+				"fin": "4400",
+				"k": "3",
+				"x": "3700"
+			},
+			"answers": ["3\\,600"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sans espaces : forme à améliorer",
+			"variationIndex": 0,
+			"variables": {
+				"s": "100",
+				"b": "34",
+				"a": "3400",
+				"l": "3900",
+				"fin": "4400",
+				"k": "3",
+				"x": "3700"
+			},
+			"answers": ["3700"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			}
+		},
+		{
+			"description": "A repère 3 470 000",
+			"variationIndex": 1,
+			"variables": {
+				"s": "10000",
+				"b": "34",
+				"a": "3400000",
+				"l": "3450000",
+				"fin": "3500000",
+				"k": "7",
+				"x": "3470000"
+			},
+			"answers": ["3\\,470\\,000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 407 000 (pas de 1 000)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "10000",
+				"b": "34",
+				"a": "3400000",
+				"l": "3450000",
+				"fin": "3500000",
+				"k": "7",
+				"x": "3470000"
+			},
+			"answers": ["3\\,407\\,000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 400 007 (intervalle compté pour 1)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "10000",
+				"b": "34",
+				"a": "3400000",
+				"l": "3450000",
+				"fin": "3500000",
+				"k": "7",
+				"x": "3470000"
+			},
+			"answers": ["3\\,400\\,007"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

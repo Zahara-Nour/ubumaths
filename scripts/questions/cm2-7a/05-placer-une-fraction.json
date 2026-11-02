@@ -1,0 +1,180 @@
+{
+	"title": "Placer une fraction sur une demi-droite graduée",
+	"description": "Placer une fraction supérieure à 1 sur une demi-droite graduée (place 7/3), unité partagée en 2 à 6 parts ; puis deux points sur la même droite (5/3 et 7/3)",
+	"grades": ["CM2"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Repérage",
+	"level": 10,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Place le nombre $\\frac{{{n}}}{{{d}}}$ sur la demi-droite graduée.\n\n```line\nstart: 0\nend: {{u}}\nstep: 1/{{d}}\nmajor: {{d}}\nplacer: {{n}}/{{d}}\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2|3|4|5|6"
+				},
+				{
+					"name": "u",
+					"expression": "eval:min(4,floor(12/d))"
+				},
+				{
+					"name": "nm",
+					"expression": "eval:u*d-1"
+				},
+				{
+					"name": "n0",
+					"expression": "eval:d+1"
+				},
+				{
+					"name": "n",
+					"expression": "{{n0}}..{{nm}}"
+				}
+			],
+			"conditions": ["mod(n,d)!=0", "n>d"],
+			"correction": {
+				"steps": [
+					"**L'unité.** D'une graduation entière à la suivante, l'unité est partagée en ${{d}}$ parts égales : chaque petit intervalle vaut $\\frac{1}{{{d}}}$.",
+					"$\\frac{{{n}}}{{{d}}}$, c'est ${{n}}$ petits intervalles à partir de $0$."
+				]
+			}
+		},
+		{
+			"statement": "Place les points $A\\left(\\frac{{{n}}}{{{d}}}\\right)$ et $B\\left(\\frac{{{p}}}{{{d}}}\\right)$ sur la demi-droite graduée.\n\n```line\nstart: 0\nend: {{u}}\nstep: 1/{{d}}\nmajor: {{d}}\nplacer: A={{n}}/{{d}} ; B={{p}}/{{d}}\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2|3|4|5|6"
+				},
+				{
+					"name": "u",
+					"expression": "eval:min(4,floor(12/d))"
+				},
+				{
+					"name": "nm",
+					"expression": "eval:u*d-1"
+				},
+				{
+					"name": "n0",
+					"expression": "eval:d+1"
+				},
+				{
+					"name": "n",
+					"expression": "{{n0}}..{{nm}}"
+				},
+				{
+					"name": "p",
+					"expression": "{{n0}}..{{nm}}"
+				}
+			],
+			"conditions": ["mod(n,d)!=0", "mod(p,d)!=0", "n>d", "p>d", "n!=p"],
+			"correction": {
+				"steps": [
+					"**L'unité.** D'une graduation entière à la suivante, l'unité est partagée en ${{d}}$ parts égales : chaque petit intervalle vaut $\\frac{1}{{{d}}}$.",
+					"$A$ : ${{n}}$ petits intervalles à partir de $0$ ; $B$ : ${{p}}$ petits intervalles."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "7/3 placé",
+			"variationIndex": 0,
+			"variables": {
+				"d": "3",
+				"u": "4",
+				"nm": "11",
+				"n0": "4",
+				"n": "7"
+			},
+			"answers": ["\\frac{7}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7/3 compté depuis 1 (10/3)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "3",
+				"u": "4",
+				"nm": "11",
+				"n0": "4",
+				"n": "7"
+			},
+			"answers": ["\\frac{10}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 7 sur la graduation 3 (3)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "3",
+				"u": "4",
+				"nm": "11",
+				"n0": "4",
+				"n": "7"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5/4 placé",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"u": "3",
+				"nm": "11",
+				"n0": "5",
+				"n": "5"
+			},
+			"answers": ["1.25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "A 5/3, B 7/3 placés",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3",
+				"u": "4",
+				"nm": "11",
+				"n0": "4",
+				"n": "5",
+				"p": "7"
+			},
+			"answers": ["\\frac{5}{3}", "\\frac{7}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : A et B échangés",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3",
+				"u": "4",
+				"nm": "11",
+				"n0": "4",
+				"n": "5",
+				"p": "7"
+			},
+			"answers": ["\\frac{7}{3}", "\\frac{5}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

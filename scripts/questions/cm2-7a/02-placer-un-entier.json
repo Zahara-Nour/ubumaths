@@ -1,0 +1,254 @@
+{
+	"title": "Placer un nombre entier sur une demi-droite graduée",
+	"description": "Placer un nombre entier sur une demi-droite graduée de 1 en 1 jusqu'à 100 000 en 100 000 (deux graduations étiquetées, le pas est à trouver), puis deux points sur la même droite",
+	"grades": ["CM2"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Repérage",
+	"level": 3,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Place le nombre ${{x}}$ sur la demi-droite graduée.\n\n```line\nstart: {{a}}\nend: {{fin}}\nstep: {{s}}\nmajor: 5\nlabels: {{a}}, {{l}}\nplacer: {{x}}\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1|10|100"
+				},
+				{
+					"name": "b",
+					"expression": "1..99"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*s*b"
+				},
+				{
+					"name": "l",
+					"expression": "eval:a+5*s"
+				},
+				{
+					"name": "fin",
+					"expression": "eval:a+10*s"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a+k*s"
+				}
+			],
+			"conditions": ["k!=5"],
+			"correction": {
+				"steps": [
+					"**Le pas.** De ${{a}}$ à ${{l}}$, il y a $5$ intervalles : un intervalle vaut $({{l}} - {{a}}) \\div 5 = {{s}}$.",
+					"${{x}} = {{a}} + {{k}} \\times {{s}}$ : on part de ${{a}}$ et on avance de ${{k}}$ intervalle{{if:k>1|s|}}."
+				]
+			}
+		},
+		{
+			"statement": "Place le nombre ${{x}}$ sur la demi-droite graduée.\n\n```line\nstart: {{a}}\nend: {{fin}}\nstep: {{s}}\nmajor: 5\nlabels: {{a}}, {{l}}\nplacer: {{x}}\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1000|10000|100000"
+				},
+				{
+					"name": "b",
+					"expression": "1..99"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*s*b"
+				},
+				{
+					"name": "l",
+					"expression": "eval:a+5*s"
+				},
+				{
+					"name": "fin",
+					"expression": "eval:a+10*s"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a+k*s"
+				}
+			],
+			"conditions": ["k!=5"],
+			"correction": {
+				"steps": [
+					"**Le pas.** De ${{a}}$ à ${{l}}$, il y a $5$ intervalles : un intervalle vaut $({{l}} - {{a}}) \\div 5 = {{s}}$.",
+					"${{x}} = {{a}} + {{k}} \\times {{s}}$ : on part de ${{a}}$ et on avance de ${{k}}$ intervalle{{if:k>1|s|}}."
+				]
+			}
+		},
+		{
+			"statement": "Place les points $A({{x}})$ et $B({{y}})$ sur la demi-droite graduée.\n\n```line\nstart: {{a}}\nend: {{fin}}\nstep: {{s}}\nmajor: 5\nlabels: {{a}}, {{l}}\nplacer: A={{x}} ; B={{y}}\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "10|100|1000|10000"
+				},
+				{
+					"name": "b",
+					"expression": "1..99"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*s*b"
+				},
+				{
+					"name": "l",
+					"expression": "eval:a+5*s"
+				},
+				{
+					"name": "fin",
+					"expression": "eval:a+10*s"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "m",
+					"expression": "1..9"
+				},
+				{
+					"name": "x",
+					"expression": "eval:a+k*s"
+				},
+				{
+					"name": "y",
+					"expression": "eval:a+m*s"
+				}
+			],
+			"conditions": ["k!=5", "m!=5", "k!=m"],
+			"correction": {
+				"steps": [
+					"**Le pas.** De ${{a}}$ à ${{l}}$, il y a $5$ intervalles : un intervalle vaut $({{l}} - {{a}}) \\div 5 = {{s}}$.",
+					"$A$ : ${{x}} = {{a}} + {{k}} \\times {{s}}$ ; $B$ : ${{y}} = {{a}} + {{m}} \\times {{s}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 700 placé",
+			"variationIndex": 0,
+			"variables": {
+				"s": "100",
+				"b": "34",
+				"a": "3400",
+				"l": "3900",
+				"fin": "4400",
+				"k": "3",
+				"x": "3700"
+			},
+			"answers": ["3700"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 600 (graduation voisine)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "100",
+				"b": "34",
+				"a": "3400",
+				"l": "3900",
+				"fin": "4400",
+				"k": "3",
+				"x": "3700"
+			},
+			"answers": ["3600"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 470 000 placé",
+			"variationIndex": 1,
+			"variables": {
+				"s": "10000",
+				"b": "34",
+				"a": "3400000",
+				"l": "3450000",
+				"fin": "3500000",
+				"k": "7",
+				"x": "3470000"
+			},
+			"answers": ["3470000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 420 000 (2 intervalles au lieu de 7)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "10000",
+				"b": "34",
+				"a": "3400000",
+				"l": "3450000",
+				"fin": "3500000",
+				"k": "7",
+				"x": "3470000"
+			},
+			"answers": ["3420000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A 1 220, B 1 280 placés",
+			"variationIndex": 2,
+			"variables": {
+				"s": "10",
+				"b": "12",
+				"a": "1200",
+				"l": "1250",
+				"fin": "1300",
+				"k": "2",
+				"m": "8",
+				"x": "1220",
+				"y": "1280"
+			},
+			"answers": ["1220", "1280"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : A et B échangés",
+			"variationIndex": 2,
+			"variables": {
+				"s": "10",
+				"b": "12",
+				"a": "1200",
+				"l": "1250",
+				"fin": "1300",
+				"k": "2",
+				"m": "8",
+				"x": "1220",
+				"y": "1280"
+			},
+			"answers": ["1280", "1220"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
