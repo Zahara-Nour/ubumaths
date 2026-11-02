@@ -6,11 +6,11 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 1 codé et relu, PR ouverte._
+_Mis à jour le 2026-11-02, lot 1 codé et relu, PR #2226 ouverte._
 
 - **État** : lot 1 (symétrique sur quadrillage, axial + central) codé et testé sur `feat/controles-figure`
   (§ 4) ; PR pas encore ouverte.
-- **Prochaine action** : CI de la PR, merge ; puis lot 2 (outil « point »,
+- **Prochaine action** : CI de la PR #2226, merge ; puis lot 2 (outil « point »,
   symétrique d'un point, 6-179 / 6-180).
 - **En attente de David** : essai sur le serveur de la branche (port 5178).
 - **Pièges en cours** : les `testSpecs` d'un modèle ne vérifient que le statut, pas le message (`TestSpecExpected`
