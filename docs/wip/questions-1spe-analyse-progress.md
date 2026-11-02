@@ -10,11 +10,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2258 (migration nœud + tags passée en prod)._
+_Mis à jour le 2026-11-02, après #2258 (migration nœud + tags passée en prod) et la page à cocher._
 
 - **État** : lots A et B en prod en brouillon, rangés et tagués (relevé MCP après `db:migrate` : 10 modèles conformes, `updated_at` préservé) ; 7d6cf480 tagué 1SPE-434, 1GEN-064, 1TECHNO-141, niveaux `{2, 1_SPE, 1_GEN, 1_TECHNO}`.
-- **Prochaine action** : page à cocher des 9 brouillons (collection `verdicts`, rendu à 390 px), puis `publier-lot` (simulation, puis `--publier` par David).
-- **En attente de David** : rien.
+- **Prochaine action** : compter les verdicts de la page à cocher (https://claude.ai/artifact/LGKmmCDSg2HaC6NpwL3d8G), puis `publier-lot` sur `1spe-analyse-a` et `1spe-analyse-b` (simulation, puis `--publier` par David).
+- **En attente de David** : relecture de la page à cocher (9 fiches).
 - **Pièges en cours** : regarder sur la page à cocher le tableau de signes de B4 qui déborde en case choix.
 - **Worktree / branche** : aucun.
 
@@ -224,3 +224,11 @@ l'origine », nœud de 7d6cf480) ; 7d6cf480 publié, niveaux `{2}`, tagué 2-313
 - PR #2258. `security-auditor` : aucun finding bloquant (aucune policy ne lit `grades` ; 7d6cf480 déjà publié, donc
   déjà lisible) ; remarque faible prise : la garde du rollback vérifie aussi le nœud des 9 brouillons.
 - Mergée (#2258) ; `migration list --linked` : seule celle-ci en attente ; `db:migrate` passé ; relevé MCP conforme.
+
+## Page à cocher (2026-11-02)
+
+https://claude.ai/artifact/LGKmmCDSg2HaC6NpwL3d8G — 9 fiches (lots A et B réunis dans un dossier du scratchpad, fichiers
+préfixés `a`/`b`), 30 exemples ; 3 alertes « bloc trig non dessiné » (B1-B3, Q-T3 : à jouer dans l'aperçu). Collection
+`verdicts` vide à la publication. Rendu à 390 px (cadre local) : pas de défilement de page ; en case choix, les 3 tableaux
+de signes de B4 tiennent (277 px dans 278) ; dans le corrigé de B4, le tableau à 5 valeurs déborde de la fiche d'environ
+6 px ; les calculs de Δ du corrigé de A1 défilent dans leur cadre.
