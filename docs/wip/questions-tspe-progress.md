@@ -10,14 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2202 (migration du lot 3) et `db:migrate`._
+_Mis à jour le 2026-11-02, après la publication du lot 3._
 
-- **État** : lots 0, 1, 2 faits (2 publié) ; lot 3 (§ 16) : 6 brouillons en prod, rangés et tagués (#2202,
-  `db:migrate` relu au MCP) ; page à cocher publiée ; `publier-lot` simulé : 6 passent.
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter) ; tout OK → David lance
-  `publier-lot.ts --dir scripts/questions/tspe-3-ln-continuite-convexite --publier`, relire `published` au MCP.
-  Ensuite lot 4 « intégrales et primitives : restes » (461, 462, 478, 480, 489, 491, 485, 486, 465, § 4).
-- **En attente de David** : relecture de la page à cocher https://claude.ai/artifact/72Ma4bZR8XtK6LMwMVPh5L.
+- **État** : lots 0, 1, 2 et 3 faits ; lot 3 (ln, continuité, convexité, § 16) **publié** le 2026-11-02 (6/6
+  `published`, relu au MCP ; 6 verdicts OK sur la page à cocher).
+- **Prochaine action** : lot 4 « intégrales et primitives : restes » (461, 462, 478, 480, 489, 491, 485, 486, 465,
+  § 4) : worktree neuf depuis `origin/main`, relevé MCP des voisins, phase 0 à faire valider.
+- **En attente de David** : rien (la phase 0 du lot 4 est à produire).
 - **Pièges en cours** : un tag doit être sur le **nœud du modèle ou sa notion** (§ 14) ; le **niveau est dans la
   clé** de `create-questions`, qui se lance depuis le dépôt principal APRÈS le merge (dossier absent avant).
   `create-questions` et `publier-lot` → David (`!`) ; `db:migrate` depuis le dépôt principal (`echo y |`) ;
@@ -829,3 +828,6 @@ niveaux inchangés, `updated_at` = date de création.
 **Page à cocher** (2026-11-02) : `page-a-cocher.ts --dir scripts/questions/tspe-3-ln-continuite-convexite`, 6 fiches lues
 en prod (brouillons, aucune alerte), 18 exemples : https://claude.ai/artifact/72Ma4bZR8XtK6LMwMVPh5L (`verdicts` vide à
 la publication). Rendu à 390 px non vérifié. `publier-lot.ts` simulé : 6 brouillons passent le contrôle.
+
+**Publication** (2026-11-02) : 6 verdicts « OK » lus en base de la page (comptés) ; `publier-lot.ts --publier` lancé
+par David : 6/6 `published`, relus au MCP.
