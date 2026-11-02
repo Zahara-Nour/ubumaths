@@ -242,3 +242,11 @@ seulement si a < 0 ; M1 v1 : S = 2 et S = 10 écartés (« x de 1 à 1 »).
 
 **Création en prod** (David, 2026-11-02) : c413489d (M1), 32bf80ae (M2), e8e14e8f (M3), dc08795e (M4), brouillons
 [T_SPE], niveaux de la phase 0, sans nœud ni tag (relu au MCP).
+
+**Migration** `20261102185349_questions_tspe_lot5b_rangement_tags.sql` (gabarit du 5a, préfixe `_qtl5b_`) : M1, M2,
+M3 sur « Sommes et concentration › espérance et variance d'une somme » (TSPE-518, 521, 525), M4 sur « loi des grands
+nombres » (TSPE-532). Test `tests/integration/questions-tspe-lot5b-rangement-tags.test.ts` : 12/12 ; **rouge** sans
+l'étape 4 (« lot incohérent : nœuds 0/4 »). Deux cas de plus que le 5a, sur remarque du `security-auditor` (non
+bloquant, recoupé en prod) : rollback refusé si un tag a été retiré ; un tag sur un modèle non rangé est refusé par le
+trigger (« n'est rangé dans aucun nœud »), la garde « déjà tagués » est donc inatteignable. PR #2252,
+`check:migrations --pr` passé. Piège : la garde de doc veut `Doc-inchangée:` dans un **commit**, pas dans le corps de PR.
