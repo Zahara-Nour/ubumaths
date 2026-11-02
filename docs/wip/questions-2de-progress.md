@@ -6,19 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2227 (§ 57)._
+_Mis à jour le 2026-11-02, après #2227 (§ 57, § 58)._
 
-- **État** : vague 8 bis en prod en brouillon (14 neufs), rangée (nœud + tag, migration jouée) ; page à
-  cocher publiée (14 neufs + 6 anciens brouillons) : https://claude.ai/artifact/AH7MKr1qcSeK2c7Du7EMYY
-- **Prochaine action** : quand David a relu, lire `verdicts` (20 attendus), corriger les « à revoir » ; puis
-  `publier-lot` (simulation, puis `--publier`) par David, sur les dossiers `2de-tableaux-d`,
-  `2de-probabilites-e` et les 6 anciens (ids au § 57).
-- **En attente de David** : la relecture de la page ; décider du correctif des `\textcolor` hors `$` dans
-  les 24 modèles déjà publiés (§ 56).
-- **Pièges en cours** : `--publier`, `publier-lot` et `db:migrate` → David avec `!` ; le dépôt principal peut
-  être bloqué par l'index d'une autre session (`git pull` refusé) : vérifier en prod par MCP
-  (`supabase_migrations.schema_migrations`) avant de redemander ; `col()` DANS `$…$` ; fraction en spec =
-  `\\frac{a}{b}` ; pendant `deploy:prod`, aucun merge (garde).
+- **État** : vague 8 bis en brouillon en prod, rangée ; page à cocher (20 fiches) :
+  https://claude.ai/artifact/AH7MKr1qcSeK2c7Du7EMYY. **Go de David (§ 58)** pour corriger les `\textcolor` hors `$`.
+- **Prochaine action** : correctif `\textcolor` (§ 58) : 7 générateurs 2de, une PR de contenu, puis vérifier que
+  `create-questions` MET À JOUR un modèle publié (sans doublon) avant la commande de David ; garde dans
+  `question:specs` (PR de code séparée, noter dans `outils-manquants.md`) ; les 35 autres fichiers hors 2de :
+  les montrer à David, rien sans son accord.
+- **En attente de David** : la relecture de la page ; puis lire `verdicts`, corriger, `publier-lot` (ids § 57).
+- **Pièges en cours** : `--publier`, `publier-lot`, `db:migrate` → David avec `!` ; index du dépôt principal
+  parfois tenu par une autre session (vérifier en prod par MCP) ; `col()` DANS `$…$` ; spec fraction =
+  `\\frac{a}{b}` ; pendant `deploy:prod`, aucun merge.
 - **Worktree / branche** : `../ubumaths-wt-questions-2de`, HEAD détachée sur `origin/main`.
 
 ## 1. Relevé (prod, 2026-10-27)
@@ -1484,3 +1483,18 @@ D, E) ; L8-f PR « page à cocher : blocs statistiques et arbres » avant la rel
   MCP : les 14 sur le nœud de leur point, un tag chacun, le bon code.
 - `page-a-cocher.ts` sur les 20 (scratchpad, préfixes `d-`/`e-`/`f-ancien-`) : 20 fiches, aucune alerte.
   Page (capacité `db`, `verdicts` vide) : https://claude.ai/artifact/AH7MKr1qcSeK2c7Du7EMYY
+
+## 58. `\textcolor` hors `$` : mesure sur tous les niveaux, go de David (2026-11-02)
+
+David valide (« Je valide ») : corriger maintenant les 2de, garde dans `question:specs`, mesurer ailleurs.
+`hors-maths.py` (corrigé : variation sans `correction` ne plante plus) sur `scripts/questions/*/` :
+106 textes dans 53 fichiers. Textes par dossier :
+
+- 2de (18 fichiers, 51 textes) : signes-a 18, variations-c 11, classes-c 8, indicateurs-b 6, evolutions-a 5,
+  signes-b 2, fonctions-a 1.
+- Hors 2de (35 fichiers, 55 textes, à montrer à David) : ce1-9 14, 3-lot-6 9, 4-lot-6 8,
+  tspe-3-ln-continuite-convexite 4, fonctions-terminale 4, 4-lot-5 4, 4-lot-8 3, 1spe-probas 3,
+  trigo-terminale 2, cm1-2 2, 3-lot-4b 2.
+
+Avant de corriger : revérifier dans le code de rendu que `\textcolor` hors maths n'est vraiment pas traité
+(l'ampleur hors 2de, sur des lots publiés depuis longtemps, rend la question légitime).
