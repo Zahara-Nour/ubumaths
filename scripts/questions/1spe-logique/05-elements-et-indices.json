@@ -1,0 +1,294 @@
+{
+	"title": "Éléments et indices d'une liste",
+	"description": "Lire un élément par son indice (dès 0), modifier, ajouter (append) et supprimer (del) des éléments, et suivre le décalage des indices",
+	"grades": ["1_SPE"],
+	"theme": "Algorithmique",
+	"domain": "Listes",
+	"subdomain": "Éléments et indices",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On a défini en Python la liste suivante.\n\n```python\nL = [{{y0}}, {{y1}}, {{y2}}, {{y3}}, {{y4}}, {{y5}}]\n```\n\nQue vaut `L[{{eval:r}}]` ?\n\n$?$",
+			"variables": [
+				{
+					"name": "y0",
+					"expression": "1..30"
+				},
+				{
+					"name": "y1",
+					"expression": "1..30"
+				},
+				{
+					"name": "y2",
+					"expression": "1..30"
+				},
+				{
+					"name": "y3",
+					"expression": "1..30"
+				},
+				{
+					"name": "y4",
+					"expression": "1..30"
+				},
+				{
+					"name": "y5",
+					"expression": "1..30"
+				},
+				{
+					"name": "r",
+					"expression": "1..4"
+				},
+				{
+					"name": "v",
+					"expression": "eval:y1*(1-min(abs(r-(1)),1))+y2*(1-min(abs(r-(2)),1))+y3*(1-min(abs(r-(3)),1))+y4*(1-min(abs(r-(4)),1))"
+				}
+			],
+			"conditions": ["y0 != y1", "y1 != y2", "y2 != y3", "y3 != y4", "y4 != y5"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:v}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"En Python, les indices d'une liste commencent à $0$ : `L[0]` est le premier élément, `L[1]` le deuxième, et ainsi de suite.",
+					"`L[{{eval:r}}]` est donc l'élément n° ${{eval:r+1}}$ : $\\textcolor{{{color:primary.0}}}{{{eval:v}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On exécute le programme Python suivant.\n\n```python\nL = [{{y0}}, {{y1}}, {{y2}}, {{y3}}]\nL.append({{eval:a}})\nL[1] = {{eval:b}}\ndel L[0]\n```\n\nQue contient la liste `L` à la fin ?\n\n$L=[?,\\ ?,\\ ?,\\ ?]$",
+			"variables": [
+				{
+					"name": "y0",
+					"expression": "1..30"
+				},
+				{
+					"name": "y1",
+					"expression": "1..30"
+				},
+				{
+					"name": "y2",
+					"expression": "1..30"
+				},
+				{
+					"name": "y3",
+					"expression": "1..30"
+				},
+				{
+					"name": "y4",
+					"expression": "1..30"
+				},
+				{
+					"name": "y5",
+					"expression": "1..30"
+				},
+				{
+					"name": "a",
+					"expression": "31..50"
+				},
+				{
+					"name": "b",
+					"expression": "31..50"
+				}
+			],
+			"conditions": ["y0 != y1", "y1 != y2", "y2 != y3", "y3 != y4", "y4 != y5", "a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b}}"
+				},
+				{
+					"expectedAnswer": "{{eval:y2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:y3}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`L.append({{eval:a}})` ajoute ${{eval:a}}$ à la fin : $L=[{{y0}},\\ {{y1}},\\ {{y2}},\\ {{y3}},\\ {{eval:a}}]$.",
+					"`L[1] = {{eval:b}}` remplace l'élément d'indice $1$ (le deuxième) : $L=[{{y0}},\\ {{eval:b}},\\ {{y2}},\\ {{y3}},\\ {{eval:a}}]$.",
+					"`del L[0]` supprime le premier élément, les suivants reculent d'un rang :",
+					"$$L=[\\textcolor{{{color:primary.0}}}{{{eval:b}}},\\ \\textcolor{{{color:primary.0}}}{{{y2}}},\\ \\textcolor{{{color:primary.0}}}{{{y3}}},\\ \\textcolor{{{color:primary.0}}}{{{eval:a}}}]$$"
+				]
+			}
+		},
+		{
+			"statement": "On exécute le programme Python suivant.\n\n```python\nL = [{{y0}}, {{y1}}, {{y2}}, {{y3}}, {{y4}}]\ndel L[{{eval:d}}]\nprint(L[2])\n```\n\nQuelle valeur est affichée ?\n\n$?$",
+			"variables": [
+				{
+					"name": "y0",
+					"expression": "1..30"
+				},
+				{
+					"name": "y1",
+					"expression": "1..30"
+				},
+				{
+					"name": "y2",
+					"expression": "1..30"
+				},
+				{
+					"name": "y3",
+					"expression": "1..30"
+				},
+				{
+					"name": "y4",
+					"expression": "1..30"
+				},
+				{
+					"name": "y5",
+					"expression": "1..30"
+				},
+				{
+					"name": "d",
+					"expression": "0..2"
+				}
+			],
+			"conditions": ["y0 != y1", "y1 != y2", "y2 != y3", "y3 != y4", "y4 != y5"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:y3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`del L[{{eval:d}}]` supprime l'élément d'indice ${{eval:d}}$ ; les éléments qui le suivent **reculent d'un rang** (leurs indices diminuent de $1$).",
+					"Comme ${{eval:d}}\\leqslant 2$, l'ancien `L[3]` devient le nouveau `L[2]` : la valeur affichée est $\\textcolor{{{color:primary.0}}}{{{eval:y3}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Indice 2 = troisième élément",
+			"variationIndex": 0,
+			"variables": {
+				"y0": "4",
+				"y1": "11",
+				"y2": "7",
+				"y3": "23",
+				"y4": "15",
+				"y5": "2",
+				"r": "2",
+				"v": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : indices comptés dès 1",
+			"variationIndex": 0,
+			"variables": {
+				"y0": "4",
+				"y1": "11",
+				"y2": "7",
+				"y3": "23",
+				"y4": "15",
+				"y5": "2",
+				"r": "2",
+				"v": "7"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Liste juste",
+			"variationIndex": 1,
+			"variables": {
+				"y0": "4",
+				"y1": "11",
+				"y2": "7",
+				"y3": "23",
+				"y4": "15",
+				"y5": "2",
+				"a": "40",
+				"b": "33"
+			},
+			"answers": ["33", "7", "23", "40"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : del oublié sur le bon élément",
+			"variationIndex": 1,
+			"variables": {
+				"y0": "4",
+				"y1": "11",
+				"y2": "7",
+				"y3": "23",
+				"y4": "15",
+				"y5": "2",
+				"a": "40",
+				"b": "33"
+			},
+			"answers": ["4", "7", "23", "40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : L[1] pris comme premier élément",
+			"variationIndex": 1,
+			"variables": {
+				"y0": "4",
+				"y1": "11",
+				"y2": "7",
+				"y3": "23",
+				"y4": "15",
+				"y5": "2",
+				"a": "40",
+				"b": "33"
+			},
+			"answers": ["11", "7", "23", "40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Valeur juste",
+			"variationIndex": 2,
+			"variables": {
+				"y0": "4",
+				"y1": "11",
+				"y2": "7",
+				"y3": "23",
+				"y4": "15",
+				"y5": "2",
+				"d": "1"
+			},
+			"answers": ["23"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : décalage oublié",
+			"variationIndex": 2,
+			"variables": {
+				"y0": "4",
+				"y1": "11",
+				"y2": "7",
+				"y3": "23",
+				"y4": "15",
+				"y5": "2",
+				"d": "1"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

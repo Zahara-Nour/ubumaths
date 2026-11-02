@@ -1,0 +1,197 @@
+{
+	"title": "Liste par ajouts successifs",
+	"description": "Contenu d'une liste construite par append dans une boucle (Python, avec ou sans condition), ou par « ajouter à la fin » en langage naturel",
+	"grades": ["1_SPE"],
+	"theme": "Algorithmique",
+	"domain": "Listes",
+	"subdomain": "Créer une liste",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On exécute le programme Python suivant.\n\n```python\nL = []\nfor k in range(5):\n    L.append({{eval:a}} * k + {{eval:b}})\n```\n\nQue contient la liste `L` à la fin ?\n\n$L=[?,\\ ?,\\ ?,\\ ?,\\ ?]$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:0*a+b}}"
+				},
+				{
+					"expectedAnswer": "{{eval:1*a+b}}"
+				},
+				{
+					"expectedAnswer": "{{eval:2*a+b}}"
+				},
+				{
+					"expectedAnswer": "{{eval:3*a+b}}"
+				},
+				{
+					"expectedAnswer": "{{eval:4*a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`L.append(x)` ajoute `x` **à la fin** de la liste ; `range(5)` donne $k=0,1,2,3,4$ (cinq passages, $5$ exclu).",
+					"Passages successifs : ${{eval:0*a+b}}, {{eval:1*a+b}}, {{eval:2*a+b}}, {{eval:3*a+b}}, {{eval:4*a+b}}$.",
+					"$$L=[\\textcolor{{{color:primary.0}}}{{{eval:0*a+b}}},\\ \\textcolor{{{color:primary.0}}}{{{eval:1*a+b}}},\\ \\textcolor{{{color:primary.0}}}{{{eval:2*a+b}}},\\ \\textcolor{{{color:primary.0}}}{{{eval:3*a+b}}},\\ \\textcolor{{{color:primary.0}}}{{{eval:4*a+b}}}]$$"
+				]
+			}
+		},
+		{
+			"statement": "On exécute le programme Python suivant.\n\n```python\nL = []\nfor k in range(1, {{eval:5*q}}):\n    if k % {{eval:q}} == 0:\n        L.append(k)\n```\n\nQue contient la liste `L` à la fin ?\n\n$L=[?,\\ ?,\\ ?,\\ ?]$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "3..7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1*q}}"
+				},
+				{
+					"expectedAnswer": "{{eval:2*q}}"
+				},
+				{
+					"expectedAnswer": "{{eval:3*q}}"
+				},
+				{
+					"expectedAnswer": "{{eval:4*q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`range(1, {{eval:5*q}})` donne les entiers de $1$ à ${{eval:5*q-1}}$ (${{eval:5*q}}$ exclu). `k % {{eval:q}} == 0` est vrai quand $k$ est un multiple de ${{eval:q}}$ : seuls ces entiers sont ajoutés.",
+					"$$L=[\\textcolor{{{color:primary.0}}}{{{eval:1*q}}},\\ \\textcolor{{{color:primary.0}}}{{{eval:2*q}}},\\ \\textcolor{{{color:primary.0}}}{{{eval:3*q}}},\\ \\textcolor{{{color:primary.0}}}{{{eval:4*q}}}]$$"
+				]
+			}
+		},
+		{
+			"statement": "On exécute l'algorithme suivant, écrit en langage naturel.\n\n```\nL ← liste vide\nu ← {{eval:u}}\nPour k allant de 1 à 4 :\n    Ajouter u à la fin de L\n    u ← {{eval:q}} × u\nFin Pour\n```\n\nQue contient la liste `L` à la fin ?\n\n$L=[?,\\ ?,\\ ?,\\ ?]$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..5"
+				},
+				{
+					"name": "q",
+					"expression": "2..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:u}}"
+				},
+				{
+					"expectedAnswer": "{{eval:u*q}}"
+				},
+				{
+					"expectedAnswer": "{{eval:u*q^2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:u*q^3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À chaque passage, on ajoute d'abord la valeur **actuelle** de $u$ à la fin de $L$, puis on la multiplie par ${{eval:q}}$.",
+					"Valeurs ajoutées : ${{eval:u}}$, puis ${{eval:u*q}}$, ${{eval:u*q^2}}$ et ${{eval:u*q^3}}$ (la dernière valeur de $u$, ${{eval:u*q^4}}$, n'est jamais ajoutée).",
+					"$$L=[\\textcolor{{{color:primary.0}}}{{{eval:u}}},\\ \\textcolor{{{color:primary.0}}}{{{eval:u*q}}},\\ \\textcolor{{{color:primary.0}}}{{{eval:u*q^2}}},\\ \\textcolor{{{color:primary.0}}}{{{eval:u*q^3}}}]$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Liste juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["2", "5", "8", "11", "14"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : k de 1 à 5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["5", "8", "11", "14", "17"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Liste juste",
+			"variationIndex": 1,
+			"variables": {
+				"q": "4"
+			},
+			"answers": ["4", "8", "12", "16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0 compté",
+			"variationIndex": 1,
+			"variables": {
+				"q": "4"
+			},
+			"answers": ["0", "4", "8", "12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 20 compté (borne exclue)",
+			"variationIndex": 1,
+			"variables": {
+				"q": "4"
+			},
+			"answers": ["8", "12", "16", "20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Liste juste",
+			"variationIndex": 2,
+			"variables": {
+				"u": "3",
+				"q": "2"
+			},
+			"answers": ["3", "6", "12", "24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ajout après la multiplication",
+			"variationIndex": 2,
+			"variables": {
+				"u": "3",
+				"q": "2"
+			},
+			"answers": ["6", "12", "24", "48"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

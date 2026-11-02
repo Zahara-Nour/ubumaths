@@ -1,0 +1,353 @@
+{
+	"title": "Parcourir une liste par ses indices",
+	"description": "Parcours d'une liste par ses indices (for k in range(len(L))) : compter selon une condition, trouver l'indice du plus grand élément, sommer selon l'indice",
+	"grades": ["1_SPE"],
+	"theme": "Algorithmique",
+	"domain": "Listes",
+	"subdomain": "Parcourir une liste",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On exécute le programme Python suivant.\n\n```python\nL = [{{z0}}, {{z1}}, {{z2}}, {{z3}}, {{z4}}, {{z5}}]\nc = 0\nfor k in range(len(L)):\n    if L[k] > {{eval:s}}:\n        c = c + 1\nprint(c)\n```\n\nQuelle valeur est affichée ?\n\n$?$",
+			"variables": [
+				{
+					"name": "z0",
+					"expression": "1..20"
+				},
+				{
+					"name": "z1",
+					"expression": "1..20"
+				},
+				{
+					"name": "z2",
+					"expression": "1..20"
+				},
+				{
+					"name": "z3",
+					"expression": "1..20"
+				},
+				{
+					"name": "z4",
+					"expression": "1..20"
+				},
+				{
+					"name": "z5",
+					"expression": "1..20"
+				},
+				{
+					"name": "s",
+					"expression": "8..12"
+				},
+				{
+					"name": "c",
+					"expression": "eval:min(max(z0-s,0),1)+min(max(z1-s,0),1)+min(max(z2-s,0),1)+min(max(z3-s,0),1)+min(max(z4-s,0),1)+min(max(z5-s,0),1)"
+				}
+			],
+			"conditions": [
+				"c >= 1",
+				"c <= 5",
+				"z0 != s",
+				"z1 != s",
+				"z2 != s",
+				"z3 != s",
+				"z4 != s",
+				"z5 != s"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`len(L)` vaut $6$ : `k` prend les indices $0$ à $5$, et `L[k]` parcourt tous les éléments.",
+					"Le compteur `c` augmente de $1$ pour chaque élément **strictement** supérieur à ${{eval:s}}$.",
+					"Il y en a $\\textcolor{{{color:primary.0}}}{{{eval:c}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On exécute le programme Python suivant.\n\n```python\nL = [{{w0}}, {{w1}}, {{w2}}, {{w3}}, {{w4}}, {{w5}}]\nj = 0\nfor k in range(1, len(L)):\n    if L[k] > L[j]:\n        j = k\nprint(j)\n```\n\nQuelle valeur est affichée ?\n\n$?$",
+			"variables": [
+				{
+					"name": "t0",
+					"expression": "1..20"
+				},
+				{
+					"name": "t1",
+					"expression": "1..20"
+				},
+				{
+					"name": "t2",
+					"expression": "1..20"
+				},
+				{
+					"name": "t3",
+					"expression": "1..20"
+				},
+				{
+					"name": "t4",
+					"expression": "1..20"
+				},
+				{
+					"name": "t5",
+					"expression": "1..20"
+				},
+				{
+					"name": "p",
+					"expression": "1..5"
+				},
+				{
+					"name": "M",
+					"expression": "21..30"
+				},
+				{
+					"name": "w0",
+					"expression": "{{if:p==0|{{M}}|{{t0}}}}"
+				},
+				{
+					"name": "w1",
+					"expression": "{{if:p==1|{{M}}|{{t1}}}}"
+				},
+				{
+					"name": "w2",
+					"expression": "{{if:p==2|{{M}}|{{t2}}}}"
+				},
+				{
+					"name": "w3",
+					"expression": "{{if:p==3|{{M}}|{{t3}}}}"
+				},
+				{
+					"name": "w4",
+					"expression": "{{if:p==4|{{M}}|{{t4}}}}"
+				},
+				{
+					"name": "w5",
+					"expression": "{{if:p==5|{{M}}|{{t5}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`j` garde l'**indice** du plus grand élément rencontré : à chaque `k`, si `L[k]` dépasse `L[j]`, `j` prend la valeur `k`.",
+					"Le plus grand élément est ${{eval:M}}$, à l'indice ${{eval:p}}$ (les indices commencent à $0$).",
+					"Le programme affiche $\\textcolor{{{color:primary.0}}}{{{eval:p}}}$ (l'indice, pas la valeur ${{eval:M}}$)."
+				]
+			}
+		},
+		{
+			"statement": "On exécute le programme Python suivant.\n\n```python\nL = [{{z0}}, {{z1}}, {{z2}}, {{z3}}, {{z4}}, {{z5}}]\ns = 0\nfor k in range(len(L)):\n    if k % 2 == 0:\n        s = s + L[k]\nprint(s)\n```\n\nQuelle valeur est affichée ?\n\n$?$",
+			"variables": [
+				{
+					"name": "z0",
+					"expression": "1..20"
+				},
+				{
+					"name": "z1",
+					"expression": "1..20"
+				},
+				{
+					"name": "z2",
+					"expression": "1..20"
+				},
+				{
+					"name": "z3",
+					"expression": "1..20"
+				},
+				{
+					"name": "z4",
+					"expression": "1..20"
+				},
+				{
+					"name": "z5",
+					"expression": "1..20"
+				},
+				{
+					"name": "somme",
+					"expression": "eval:z0+z2+z4"
+				}
+			],
+			"conditions": ["z0+z2+z4 != z1+z3+z5"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:somme}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La condition `k % 2 == 0` porte sur l'**indice** `k`, pas sur la valeur : on ajoute les éléments d'indices $0$, $2$ et $4$.",
+					"$s={{z0}}+{{z2}}+{{z4}}=\\textcolor{{{color:primary.0}}}{{{eval:somme}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Compte juste",
+			"variationIndex": 0,
+			"variables": {
+				"z0": "4",
+				"z1": "15",
+				"z2": "9",
+				"z3": "12",
+				"z4": "18",
+				"z5": "13",
+				"s": "10",
+				"c": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : éléments inférieurs comptés",
+			"variationIndex": 0,
+			"variables": {
+				"z0": "4",
+				"z1": "15",
+				"z2": "9",
+				"z3": "12",
+				"z4": "18",
+				"z5": "13",
+				"s": "10",
+				"c": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : un de trop",
+			"variationIndex": 0,
+			"variables": {
+				"z0": "4",
+				"z1": "15",
+				"z2": "9",
+				"z3": "12",
+				"z4": "18",
+				"z5": "13",
+				"s": "10",
+				"c": "4"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Indice juste",
+			"variationIndex": 1,
+			"variables": {
+				"t0": "5",
+				"t1": "8",
+				"t2": "3",
+				"t3": "17",
+				"t4": "2",
+				"t5": "9",
+				"p": "3",
+				"M": "26",
+				"w0": "5",
+				"w1": "8",
+				"w2": "3",
+				"w3": "26",
+				"w4": "2",
+				"w5": "9"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : valeur au lieu de l'indice",
+			"variationIndex": 1,
+			"variables": {
+				"t0": "5",
+				"t1": "8",
+				"t2": "3",
+				"t3": "17",
+				"t4": "2",
+				"t5": "9",
+				"p": "3",
+				"M": "26",
+				"w0": "5",
+				"w1": "8",
+				"w2": "3",
+				"w3": "26",
+				"w4": "2",
+				"w5": "9"
+			},
+			"answers": ["26"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rang compté dès 1",
+			"variationIndex": 1,
+			"variables": {
+				"t0": "5",
+				"t1": "8",
+				"t2": "3",
+				"t3": "17",
+				"t4": "2",
+				"t5": "9",
+				"p": "3",
+				"M": "26",
+				"w0": "5",
+				"w1": "8",
+				"w2": "3",
+				"w3": "26",
+				"w4": "2",
+				"w5": "9"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Somme juste",
+			"variationIndex": 2,
+			"variables": {
+				"z0": "4",
+				"z1": "15",
+				"z2": "9",
+				"z3": "12",
+				"z4": "18",
+				"z5": "3",
+				"somme": "31"
+			},
+			"answers": ["31"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : indices impairs",
+			"variationIndex": 2,
+			"variables": {
+				"z0": "4",
+				"z1": "15",
+				"z2": "9",
+				"z3": "12",
+				"z4": "18",
+				"z5": "3",
+				"somme": "31"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,301 @@
+{
+	"title": "Quantification implicite",
+	"description": "Repérer le « pour tout » sous-entendu d'une proposition conditionnelle (forme explicite, « pour tout » ou « il existe », vraie ou fausse par un contre-exemple)",
+	"grades": ["1_SPE"],
+	"theme": "Logique",
+	"domain": "Logique et raisonnement",
+	"subdomain": "Quantificateurs et négation",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On considère la proposition : « Si un entier est multiple de $6$, alors il est pair. »\n\nQuelle phrase dit exactement la même chose ?\n\n```choix\n- Pour tout entier $n$, si $n$ est multiple de $6$, alors $n$ est pair.\n- Il existe un entier $n$ multiple de $6$ qui est pair.\n- Pour tout entier $n$, si $n$ est pair, alors $n$ est multiple de $6$.\n- Tous les entiers sont multiples de $6$ et pairs.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une proposition conditionnelle « Si un entier est…, alors il est… » parle de **tous** les entiers qui vérifient la condition : le « pour tout » est **sous-entendu**.",
+					"Elle s'écrit donc : **« Pour tout entier $n$, si $n$ est multiple de $6$, alors $n$ est pair. »**",
+					"« Il existe… » ne garantit qu'un seul exemple ; échanger la condition et la conclusion donne la réciproque (fausse ici : $4$ est pair sans être multiple de $6$)."
+				]
+			}
+		},
+		{
+			"statement": "On considère la proposition : « Si un quadrilatère est un losange, alors ses diagonales sont perpendiculaires. »\n\nQuelle phrase dit exactement la même chose ?\n\n```choix\n- Pour tout quadrilatère $ABCD$, si $ABCD$ est un losange, alors ses diagonales sont perpendiculaires.\n- Il existe un losange dont les diagonales sont perpendiculaires.\n- Pour tout quadrilatère $ABCD$, si ses diagonales sont perpendiculaires, alors $ABCD$ est un losange.\n- Tous les quadrilatères ont des diagonales perpendiculaires.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La proposition conditionnelle parle de **tous** les losanges : le « pour tout » est **sous-entendu**.",
+					"Elle s'écrit donc : **« Pour tout quadrilatère $ABCD$, si $ABCD$ est un losange, alors ses diagonales sont perpendiculaires. »**",
+					"« Il existe… » ne garantit qu'un seul exemple ; échanger la condition et la conclusion donne la réciproque (fausse ici : un cerf-volant a des diagonales perpendiculaires sans être un losange)."
+				]
+			}
+		},
+		{
+			"statement": "Parmi ces propositions, laquelle sous-entend « il existe » (et non « pour tout ») ?\n\n```choix\n- Une équation du second degré peut avoir deux solutions.\n- Un carré est un rectangle.\n- Le carré d'un nombre réel est positif ou nul.\n- Si deux réels sont positifs, leur somme est positive.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« Un carré est un rectangle », « le carré d'un réel est positif ou nul » et « si deux réels sont positifs, leur somme est positive » valent pour **tous** les carrés, tous les réels : « pour tout » est sous-entendu.",
+					"« Une équation du second degré **peut** avoir deux solutions » signifie : **« il existe une équation du second degré qui a deux solutions »** (par exemple $x^2-1=0$), pas que toutes en ont deux ($x^2+1=0$ n'en a aucune)."
+				]
+			}
+		},
+		{
+			"statement": "On considère la proposition, où $x$ désigne un nombre réel : « Si $x^2={{eval:a^2}}$, alors $x={{eval:a}}$. »\n\nCette proposition est :\n\n```choix\n- fausse : pour $x=-{{eval:a}}$, on a $x^2={{eval:a^2}}$ mais $x\\neq {{eval:a}}$.\n- vraie : pour $x={{eval:a}}$, on a bien $x^2={{eval:a^2}}$.\n- vraie, car $\\sqrt{{{eval:a^2}}}={{eval:a}}$.\n- ni vraie ni fausse : on ne sait pas de quel réel $x$ il s'agit.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La proposition sous-entend « **pour tout** réel $x$ » : elle est vraie seulement si **chaque** réel $x$ tel que $x^2={{eval:a^2}}$ vérifie $x={{eval:a}}$.",
+					"Un seul contre-exemple suffit à la rendre fausse : $x=-{{eval:a}}$ donne $x^2={{eval:a^2}}$ et $x\\neq {{eval:a}}$.",
+					"La proposition est donc $\\textcolor{{{color:primary.0}}}{\\text{fausse}}$. Un exemple ($x={{eval:a}}$) ne prouve pas une proposition qui commence par « pour tout »."
+				]
+			}
+		},
+		{
+			"statement": "On considère la proposition, où $x$ désigne un nombre réel : « Si $x^2>{{eval:a^2}}$, alors $x>{{eval:a}}$. »\n\nCette proposition est :\n\n```choix\n- fausse : pour $x=-{{eval:a+1}}$, on a $x^2={{eval:(a+1)^2}}>{{eval:a^2}}$ mais $x<{{eval:a}}$.\n- vraie : pour $x={{eval:a+1}}$, on a $x^2>{{eval:a^2}}$ et $x>{{eval:a}}$.\n- vraie, car la fonction carré est croissante.\n- fausse : pour $x={{eval:a}}$, on n'a pas $x^2>{{eval:a^2}}$.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La proposition sous-entend « **pour tout** réel $x$ » : un seul contre-exemple suffit à la rendre fausse, il doit **vérifier la condition** sans vérifier la conclusion.",
+					"$x=-{{eval:a+1}}$ convient : $x^2={{eval:(a+1)^2}}>{{eval:a^2}}$ mais $x<{{eval:a}}$. La proposition est donc $\\textcolor{{{color:primary.0}}}{\\text{fausse}}$.",
+					"La fonction carré n'est croissante que sur $[0\\,;+\\infty[$ ; et $x={{eval:a}}$ ne vérifie pas la condition, ce n'est pas un contre-exemple."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "pour tout explicite",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : il existe",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : réciproque",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : tous les entiers",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "pour tout explicite",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : il existe",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : réciproque",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : tous",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "peut avoir",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un carré est un rectangle",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : carré positif",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : somme",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "contre-exemple −3",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un exemple",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : racine",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : indécidable",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "contre-exemple −5",
+			"variationIndex": 4,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un exemple",
+			"variationIndex": 4,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : carré croissant",
+			"variationIndex": 4,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x = a ne vérifie pas la condition",
+			"variationIndex": 4,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
