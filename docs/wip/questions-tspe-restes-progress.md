@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, 8b créé en prod, migration en PR._
+_Mis à jour le 2026-11-02, après #2266 (migration 8b passée en prod)._
 
-- **État** : lot 8 (D-L8 : 26 « à savoir » en 8a/8b/8c) ; 8a clos ; **8b** : 7 brouillons en prod (#2263), migration nœud + tag `20261102222541` en PR (test 11 vert, rouge sans l'étape 4).
-- **Prochaine action** : `security-auditor`, `check:migrations --pr`, merge, `migration list --linked` puis `db:migrate` ; relecture MCP ; page à cocher `page-a-cocher.ts --dir scripts/questions/tspe-8b-savoir`.
-- **En attente de David** : rien (puis relecture de la page à cocher).
+- **État** : lot 8 (D-L8 : 26 « à savoir » en 8a/8b/8c) ; 8a clos ; **8b** : 7 brouillons en prod, rangés et tagués (#2263, #2266), page à cocher publiée.
+- **Prochaine action** : lire les verdicts de https://claude.ai/artifact/4cKVLRrQN9wQKFnyjaXQbz (compter) ; puis `publier-lot.ts --dir scripts/questions/tspe-8b-savoir` simulé, `--publier` par David ; ensuite 8c (541, 614, 519, 520, 343, 351, 329, 331 : 8 modèles).
+- **En attente de David** : la relecture des 7 fiches de 8b.
 - **Pièges en cours** : relevé de nœuds → filtrer `archived_at is null` ; `!=` dans `$…$` lu « ≠ » (écrire `!\,=`) ; garde « notion sans sous-notion » : liste `sous_notions_admises` (migration `20261102181059`).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · `content/questions-tspe-8b-rangement`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · branche neuve depuis `origin/main` pour 8c.
 
 ---
 
@@ -268,3 +268,13 @@ NOTION « Équations différentielles › y′ = ay + b » : ses deux sous-notio
 initiale ») sont archivées depuis le 2026-10-10 (MCP) → `sous_notions_admises` vide, garde entière. Test
 `tests/integration/questions-tspe-lot8b-rangement-tags.test.ts` (copie de 8a + un cas : « solution générale »
 désarchivée → la migration échoue) : 11/11 ; **rouge** sans l'étape 4 (suite principale, 5 sautés, rollback).
+
+`security-auditor` (2026-11-02, prod relue au MCP) : **aucun finding bloquant** (diff avec le gabarit = les lignes du
+lot ; garde « notion sans sous-notion » efficace pour TSPE-466). `check:migrations --pr 2266` vert ; **#2266 mergée**
+(CI 16/16). `migration list --linked` : seule `20261102222541` en attente ; **`db:migrate`** lancé depuis le dépôt
+principal (4 conditions réunies). Prod relue au MCP : 7 modèles sur leur nœud (466 sur la notion), un tag chacun,
+`updated_at` = `created_at`, toujours `draft`.
+
+**Page à cocher** : `page-a-cocher.ts --dir scripts/questions/tspe-8b-savoir`, 7 fiches lues en prod, aucune alerte, 17
+exemples : https://claude.ai/artifact/4cKVLRrQN9wQKFnyjaXQbz (`verdicts` vide à la publication ; rendu non regardé dans
+Chrome).
