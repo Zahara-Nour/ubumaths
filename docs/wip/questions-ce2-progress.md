@@ -6,16 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après la phase 0 du lot 7b._
+_Mis à jour le 2026-11-02, après #2221._
 
-- **État** : lots 1 à 7a en prod. Lot 7b (horloge + droite graduée, 9 modèles) : phase 0 **validée** (§ 12), rien écrit.
-- **Prochaine action** : worktree `questions-ce2-7b`, tests rouges, puis les 9 fichiers `scripts/questions/ce2-7b/`
-  (brouillons), `create-questions` en local, `checkTemplate`, brouillons en prod (David lance `--publier`).
-- **En attente de David** : rien.
-- **Pièges en cours** : jamais de variable `e` (Euler) ; verdicts des lots 6b et 7a posés en quelques secondes : relecture
-  non prouvée ; `Doc-inchangée:` dans un MESSAGE DE COMMIT (pas la PR) ; `db:migrate --include-all` quand des migrations
-  plus récentes sont déjà jouées ; commitlint : corps ≤ 100 caractères par ligne ; pas de mention Claude.
-- **Worktree / branche** : aucun encore.
+- **État** : lots 1 à 7a en prod. Lot 7b (horloge + droite graduée, 9 modèles, `scripts/questions/ce2-7b/`) : fichiers mergés
+  (#2221), **pas encore en prod**. Jouées dans l'aperçu local : 01, 04, 09 ; restent 03, 05-08 (page à cocher).
+- **Prochaine action** : David lance `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce2-7b --publier`
+  (brouillons en prod) ; je relève les `id`, puis migration nœud + tag (`pnpm migration:horodatage`, gabarit lot 7a) et son
+  test rouge sans la migration, `security-auditor`, merge, `db:migrate`, page à cocher, publication. Ensuite 7c.
+- **En attente de David** : la commande `--publier` ci-dessus.
+- **Pièges en cours** : jamais de variable `e` (Euler) ; `sonde-horloges.ts` (blocs `horloge` / `line`, choix compris) à
+  relancer si on retouche un modèle ; niveaux : lecture de l'heure 5-8, calcul de durées 5-7 (6e occupe déjà 5-8), droite
+  graduée 2-3 ; `Doc-inchangée:` dans un MESSAGE DE COMMIT ; commitlint : sujet en minuscule, corps ≤ 100 caractères.
+- **Worktree / branche** : aucun (retirés après #2221).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -624,3 +626,6 @@ quart » lu 15 ; passage de l'heure mal compté (15 h 40 → 16 h 05 = 65) ; 2 h
 Décisions (David, « tes recos ? » puis « ok », 2026-11-02) : niveaux partagés ci-dessus (écart avec le 6e sur le calcul
 de durées noté, publiés intacts) ; horloge « digitale » = texte + `cadran: 24`, pas de bloc numérique ; 058 en deux modèles
 (03 et 04) ; 094 en case choix puis écart ; un seul lot de 9 modèles.
+
+- 2026-11-02 : #2221 mergée (CI verte, revue : aucune, contenu) ; worktree retiré. 9 modèles écrits (130 specs), simulation
+  verte, sonde 0 problème (300 tirages × 9). Aperçu local : 01, 04, 09 bien rendus ; 09 réponse juste → « Juste ».
