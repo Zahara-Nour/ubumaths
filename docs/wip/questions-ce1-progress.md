@@ -5,15 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2185 (relecture du lot 9)._
+_Mis à jour le 2026-11-02, lots 8 et 9 publiés._
 
-- **État** : lots 0 à 7 publiés. Lot 8 (monnaie) : relu 6/6 OK, `publier-lot` simulé (6 passent, toujours brouillons le
-  2026-11-02). Lot 9 : page à cocher (https://claude.ai/artifact/NhbzfC8htps4HvudmLaCEX) relue **9/9 OK** (verdicts
-  comptés en base, aucun commentaire) ; `publier-lot` simulé, 9 passent (niveaux contrôlés).
-- **Prochaine action** : après les `--publier` des lots 8 et 9, vérifier `published` (simulation de `publier-lot` ou MCP).
-  Ensuite lot 10 (espace et mesure, § 12), dans un worktree neuf.
-- **En attente de David** : `! cd /Users/david/Coding/js/ubumaths && pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/ce1-8 --publier`
-  puis la même avec `ce1-9`. Chantier `verrou-deploy` à ouvrir dans sa session (mémoire).
+- **État** : lots 0 à 9 publiés (8 et 9 le 2026-11-02, statuts relus en base).
+- **Prochaine action** : lot 10 (espace et mesure, § 12 : 044 ; 064, 065 ; 079 ; 076, 077 ; 080) — phase 0, dans un
+  worktree neuf.
+- **En attente de David** : chantier `verrou-deploy` à ouvrir dans sa session (mémoire).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; **niveaux : relever la
@@ -761,3 +758,4 @@ Réponse de David (« je suis tes recos », 2026-11-01) : les six recommandation
 - 2026-11-02 : #2185 mergée (CI verte) : la page à cocher dessine ` ```partage ` (figure à colorier : vide, puis un
   coloriage juste), les pièces de centimes, et le gras qui enjambe une formule. Page du lot 9 publiée
   (https://claude.ai/artifact/NhbzfC8htps4HvudmLaCEX), aucune alerte, rendu vérifié.
+- 2026-11-02 : lot 8 publié par David (`publier-lot --publier`, 6/6) ; lot 9 relu 9/9 OK (verdicts comptés en base), simulé, publié par David (9/9) ; statuts relus par simulation de `publier-lot` (« déjà publié »).
