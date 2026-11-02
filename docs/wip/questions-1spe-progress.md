@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, correctif du pluriel du lot 4 en PR._
+_Mis à jour le 2026-11-02, lot 4 publié (après #2210)._
 
-- **État** : lot 5-variables aléatoires **clos** (8 publiés). Lot 4-probabilités : 8 brouillons rangés, tagués, 8 « ok » ; pluriel « 1 boules rouges » corrigé (fe6f5606, 2f4f4ae0, `accord()` → `{{if:…}}` ×4, 800 tirages propres), branche `fix/questions-1spe-pluriel-urnes`.
-- **Prochaine action** : PR mergée → **David** lance `create-questions --dir scripts/questions/1spe-probas --publier --mettre-a-jour` ; je vérifie (MCP, md5), puis publication du lot 4 (David : « corriger avant », 2026-11-02).
-- **En attente de David** : le `--mettre-a-jour` après le merge.
+- **État** : lots 4-probabilités et 5-variables aléatoires **clos** (8 + 8 publiés). Pluriel « 1 boules rouges » corrigé avant publication (#2210, `--mettre-a-jour`).
+- **Prochaine action** : lot suivant de D7 — lot « à savoir » (D2) : relevé prod, phase 0 à soumettre à David.
+- **En attente de David** : rien.
 - **Pièges en cours** : `blankDefaults.acceptDecimal` obligatoire ; **variable `e` = Euler** ; pluriel d'une quantité 1..n → `{{if:…}}` ; choix mélangés → jamais « première phrase » dans un corrigé ; `col()` hors `$…$` (`colt`) ; `Doc-inchangée:` dans un COMMIT (≤ 100 caractères) ; aucun trailer `Claude-Session:` ; `--include-all` pousse TOUTES les migrations en attente.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `fix/questions-1spe-pluriel-urnes`.
+- **Worktree / branche** : aucun.
 - **Ensuite (D7)** : lot « à savoir » (D2), restes (produit scalaire formules, second degré / exponentielle / trigo, logique et listes Python), lots en attente d'un outil.
 
 ## 1. Relevé (prod, 2026-10-27)
@@ -1006,7 +1006,7 @@ md5 de `variations` en base = fichiers, nœud, niveau, tag et statut inchangés 
 **Publication (2026-11-01)** : `publier-lot --publier` lancé par David : 10 / 10 publiés, statuts relus en base (MCP).
 **Lot 3-suites clos.**
 
-## 21. Lot 4-probabilités : partition, Bernoulli, arbres et tableaux (D7)
+## 21. Lot 4-probabilités : partition, Bernoulli, arbres et tableaux (D7, CLOS : 8 publiés le 2026-11-02, #2210)
 
 _Relevé prod du 2026-11-01 (MCP) : les 8 points toujours sans modèle ; 337 sur « Probabilités › Probabilités
 conditionnelles › probabilités totales », les 7 autres sur « … › épreuves indépendantes successives ». Voisins à ne
@@ -1056,7 +1056,9 @@ suspendue à la question posée à David : corriger le pluriel avant (reco) ou a
 `docs/wip/questions-1spe/etat-prod-2026-11-02-urnes/` (brouillons, md5 des variations = fichiers du lot) ; fonction
 `accord(n, un, plusieurs)` du script → `{{if:r==1|boule rouge|boules rouges}}` (×4, énoncé `ENONCE_URNES`) ; seuls 02
 et 03 changent ; simulation `create-questions` : 8 importables, « CONTENU DIFFÉRENT » sur 02 et 03 seulement ; sonde
-de 400 tirages par modèle (`generateInstance`) : aucun « 1 boules », aucun singulier fautif.
+de 400 tirages par modèle (`generateInstance`) : aucun « 1 boules », aucun singulier fautif. PR #2210 mergée ; `--mettre-a-jour` lancé par David : 2 mis à jour,
+md5 relus en prod = fichiers. **Publication (2026-11-02)** : `publier-lot --publier` lancé par David : 8 / 8 publiés,
+statuts relus en base (MCP). **Lot 4 CLOS.**
 
 ## 22. Lot 5-variables aléatoires : notations et registres (D7)
 
