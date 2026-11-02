@@ -5,17 +5,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2166 (lot 9 mergé) ; #2169 (rangement du lot 9) en attente._
+_Mis à jour le 2026-11-02, après #2169 (rangement du lot 9 mergé, migration jouée)._
 
-- **État** : lots 1 à 8 en prod et publiés. Lot 9 « pensée informatique » : fichiers mergés (#2166), 3 brouillons en
-  prod (6c9c9649 → 4-065, 8b6f9e98 → 4-066, 20cb9b55 → 4-067), sans nœud ni tag. #2169 (migration de rangement) :
-  CI verte 3 fois, bloquée 4 fois par la garde (horodatages pris par d'autres sessions, § 47) ; renommée en local
-  `20261102041300` (outil de #2181, heure réelle), garde OK, intégration 9/9, **commits locaux NON poussés**.
-- **Prochaine action** : au « go » de David : `git merge origin/main`, push, CI de #2169, `pnpm check:migrations --pr
-2169`, merge, `db:migrate` (s'il refuse « inserted before the last migration » : `--dry-run --include-all`, relire,
-  puis `--include-all`), vérifier au MCP (nœud + tag des 3), page à cocher (`page-a-cocher.ts --dir
-scripts/questions/4-lot-9`, après le `db:migrate`). Puis : outils C (§ 3) et fin de chantier (versement).
-- **En attente de David** : le « go » pour pousser #2169 (il a choisi « attendre un créneau », 2026-11-01).
+- **État** : lots 1 à 8 en prod et publiés. Lot 9 « pensée informatique » : 3 brouillons rangés en prod (#2169,
+  `20261102041300` jouée ; MCP : 4-065, 4-066 sur « instructions conditionnelles », 4-067 sur « variables et
+  affectation », un tag chacun, `draft`). Page à cocher publiée : https://claude.ai/artifact/1bjivDjH9FTW7esD9aV9BZ
+  (3 fiches, 14 exemples, aucune alerte, `verdicts` vide) (§ 48).
+- **Prochaine action** : quand David a relu : compter les verdicts (`ArtifactData list verdicts`), corriger les
+  « À revoir », puis `publier-lot.ts --dir scripts/questions/4-lot-9` (simulation, puis publication par David).
+  Ensuite : outils C (§ 3) et fin de chantier (versement).
+- **En attente de David** : la relecture du lot 9 sur la page à cocher.
 - **Pièges en cours** : migrations, dès #2165 mergée (règle de David, 2026-11-01) : horodatage par `pnpm
 migration:horodatage` (jamais un nombre rond choisi à la main), `pnpm check:migrations --pr <n>` avant `gh pr merge`,
   premier job de CI = porte des horodatages (`git merge origin/main` dans le worktree d'abord) ; `mtexte()` refusé dans une figure de question (§ 26) ; `db push --include-all` : **réservé à
@@ -1150,3 +1149,13 @@ Algorithmique / Variables / Accumulation 1 (067) ; variante « au moins 18 ans �
 - David : « attendre un créneau ». Pauses CI et merges des autres sessions (deploy:prod, v0.62.0 en prod) ; #2177
   puis #2181 : `migration:horodatage` = heure réelle UTC, garde réduite aux doublons.
 - Renommée `20261102041300` en local, branche à jour de `main`, garde OK, intégration 9/9 ; pas poussée.
+
+## 48. Lot 9 : rangé en prod, page à cocher (2026-11-02)
+
+- #2169 : `git merge origin/main`, push ; CI : job navigateur tombé deux fois (`wrapDynamicImport`, puis « Browser
+  connection was closed » sur `indice-lien-dangereux`), vert au 3e essai ; `check:migrations --pr 2169` OK ; mergée.
+- `db:migrate` : refusé par le classifieur du mode auto (écriture en prod) → lancé par David avec `!`. Depuis le
+  worktree : `ProjectRefNotLinkedError` (worktree non lié à Supabase) → **depuis le dépôt principal** après
+  `git pull`. `migration list --linked` avant : seule `20261102041300` en attente.
+- MCP : les 3 modèles sur leur nœud, un tag chacun (4-065, 4-066, 4-067), `draft`, niveau [4].
+- Page à cocher : https://claude.ai/artifact/1bjivDjH9FTW7esD9aV9BZ (capacités `db` + `user`, `verdicts` vide).

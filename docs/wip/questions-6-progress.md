@@ -5,20 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, lot 8 relu 5/5, #2130 en prod (v0.62.0)._
+_Mis à jour le 2026-11-02, lot 8 publié (5/5)._
 
-- **État** : lot 8 « Assemblages de cubes » : 5 brouillons en prod, rangés et tagués (migration `20261101224700`,
-  #2153, jouée par David le 2026-11-01 ; MCP vérifié). Page à cocher publiée (`db`, 0 verdict) :
-  https://claude.ai/artifact/UciEqZSoxGS9QjeRATbGf1 (bloc `cubes` non dessiné : le jouer dans l'aperçu).
-- **Prochaine action** : David lance `pnpm tsx scripts/questions/publier-lot.ts --dir
-scripts/questions/6-assemblages-cubes --publier` (#2130 en prod depuis v0.62.0) ; relire `published`, nœuds et
-  tags au MCP ; puis relevé des points de 6e sans modèle et choix du lot 9.
-- **En attente de David** : le `--publier` du lot 8.
+- **État** : lot 8 « Assemblages de cubes » publié par David le 2026-11-02 ; MCP : 5 `published`, nœud et tag
+  conformes, 3a7a5711 toujours en brouillon. 6e : 158 publiés + 1 brouillon. **37 points sans modèle publié** (§ 21).
+- **Prochaine action** : phase 0 du lot 9 « tableaux et programmes » (143, 184, 185, 192, 194-196), dans un
+  nouveau worktree `ubumaths-wt-questions-6` ; puis lots 10-11 géométrie dessinée.
+- **En attente de David** : rien (la phase 0 du lot 9 sera à valider).
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs --file`. Jamais de variable
   `e`. `Doc-inchangée:` va dans un message de COMMIT. PR en conflit = pas de CI : vérifier `mergeable`. Horodatage
-  de migration : `pnpm migration:horodatage` (heure réelle UTC, #2181), plus besoin de passer après `main` ; si
-  `db:migrate` refuse « inserted before the last migration » : `--dry-run --include-all`, relire, puis `--include-all`.
-- **Worktree / branche** : aucun (retiré après #2153) ; prochain lot → nouveau worktree.
+  de migration : `pnpm migration:horodatage` (heure réelle UTC, #2181) ; si `db:migrate` refuse « inserted before
+  the last migration » : `--dry-run --include-all`, relire, puis `--include-all`. `publier-lot`, même en
+  simulation, est refusé par le classifieur du mode auto (base prod) : David le lance avec `!`.
+- **Worktree / branche** : aucun ; prochain lot → nouveau worktree.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1272,3 +1271,17 @@ toutes distinctes, chaque leurre du 3 v1 a une vue différente des vues données
 - Soir du 2026-11-01 : v0.60.0 et v0.61.0 ratées (flake navigateur `wrapDynamicImport`, merges qui dépassaient la CI
   de version) ; pause des merges entre sessions ; v0.62.0 mise en prod (production = 92a58c3b5) : #2130 en prod.
   #2181 mergée : nouvelle règle d'horodatage (cf. pièges). Publication du lot 8 à lancer par David.
+
+### 20.3 Publication (2026-11-02)
+
+- David lance `publier-lot --publier` : « 5/5 modèles du lot publiés (statut relu en base) ». MCP : ce3c4e11,
+  763d1183, 37c6852c (Géométrie > Solides ; 6-209, 6-181, 6-208), 650dcfc6, 0464c3f6 (Grandeurs et mesures >
+  Volumes ; 6-155, 6-154), `published`, `updated_at` 2026-11-02 04:42 ; 3a7a5711 en brouillon.
+- 6e en prod : 158 publiés, 1 brouillon (3a7a5711).
+
+## 21. Relevé après le lot 8 (2026-11-02)
+
+Relevé MCP prod : **37 points de 6e sans modèle publié** (42 au § 19, moins 154, 155, 181, 208, 209) : 129, 138,
+142, 143, 148, 160-180, 182-185, 192, 194-197, 207, 210. Classement du § 14 inchangé. Lots restants : **9**
+tableaux et programmes (143, 184, 185, 192, 194-196) · **10, 11** géométrie dessinée · restent C (169, 142),
+figure à compléter (170, 172, 173, 180, 207) et D (129, 138, 182, 183, 197, 210).
