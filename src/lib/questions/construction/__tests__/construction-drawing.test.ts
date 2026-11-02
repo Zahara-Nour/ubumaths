@@ -25,7 +25,7 @@ const POINTS = new Map([
 	['B', { x: 7, y: 2 }],
 	['C', { x: 4, y: 5 }]
 ]);
-const EMPTY: Drawing = { lines: [], start: null };
+const EMPTY: Drawing = { objects: [], start: null };
 
 describe('aimantation', () => {
 	it('près d’un point : sa position exacte', () => {
@@ -53,17 +53,17 @@ describe('aimantation', () => {
 describe('toucher A puis B', () => {
 	it('premier toucher : un départ, aucune droite', () => {
 		const d = addTap(EMPTY, { x: 1, y: 2 });
-		expect(d).toEqual({ lines: [], start: { x: 1, y: 2 } });
+		expect(d).toEqual({ objects: [], start: { x: 1, y: 2 } });
 	});
 
 	it('second toucher : la droite par les deux, jugée juste', () => {
 		const d = addTap(addTap(EMPTY, { x: 1, y: 2 }), { x: 7, y: 2 });
 		expect(d.start).toBeNull();
-		expect(d.lines).toEqual([{ kind: 'droite', x1: 1, y1: 2, x2: 7, y2: 2 }]);
+		expect(d.objects).toEqual([{ kind: 'droite', x1: 1, y1: 2, x2: 7, y2: 2 }]);
 		const checks = [
 			{ kind: 'droite_par' as const, points: ['A', 'B'] as [string, string], line: 1 }
 		];
-		expect(judgeConstruction(checks, POINTS, serializeConstructionAnswer(d.lines))).toEqual({
+		expect(judgeConstruction(checks, POINTS, serializeConstructionAnswer(d.objects))).toEqual({
 			status: 'correct'
 		});
 	});
@@ -78,9 +78,9 @@ describe('toucher A puis B', () => {
 		for (let i = 0; i < CONSTRUCTION_ANSWER_LIMITS.objects + 3; i++) {
 			d = addTap(addTap(d, { x: 0, y: i }), { x: 1, y: i + 0.5 });
 		}
-		expect(d.lines).toHaveLength(CONSTRUCTION_ANSWER_LIMITS.objects);
+		expect(d.objects).toHaveLength(CONSTRUCTION_ANSWER_LIMITS.objects);
 		expect(d.start).toBeNull();
-		expect(parseConstructionAnswer(serializeConstructionAnswer(d.lines))).not.toBeNull();
+		expect(parseConstructionAnswer(serializeConstructionAnswer(d.objects))).not.toBeNull();
 	});
 
 	it('positions longues (tiers) : jamais au-delà de la longueur lisible', () => {
@@ -88,10 +88,10 @@ describe('toucher A puis B', () => {
 		for (let i = 0; i < CONSTRUCTION_ANSWER_LIMITS.objects; i++) {
 			d = addTap(addTap(d, { x: 1 / 3, y: i / 7 }), { x: 2 / 3, y: i / 11 + 1 / 3 });
 		}
-		expect(serializeConstructionAnswer(d.lines).length).toBeLessThanOrEqual(
+		expect(serializeConstructionAnswer(d.objects).length).toBeLessThanOrEqual(
 			CONSTRUCTION_ANSWER_LIMITS.chars
 		);
-		expect(parseConstructionAnswer(serializeConstructionAnswer(d.lines))).not.toBeNull();
+		expect(parseConstructionAnswer(serializeConstructionAnswer(d.objects))).not.toBeNull();
 	});
 });
 
@@ -165,8 +165,11 @@ describe('segments sur quadrillage (CP-060, § 9)', () => {
 	it('toucher un nœud puis un autre : un segment, qui s’arrête à ses deux bouts', () => {
 		const one = addTap(EMPTY, { x: 5, y: 3 }, 'segment');
 		const two = addTap(one, { x: 5, y: 6 }, 'segment');
-		expect(two).toEqual({ lines: [{ kind: 'segment', x1: 5, y1: 3, x2: 5, y2: 6 }], start: null });
-		expect(serializeConstructionAnswer(two.lines)).toBe('segment(5;3;5;6)');
+		expect(two).toEqual({
+			objects: [{ kind: 'segment', x1: 5, y1: 3, x2: 5, y2: 6 }],
+			start: null
+		});
+		expect(serializeConstructionAnswer(two.objects)).toBe('segment(5;3;5;6)');
 	});
 
 	const SQUARE_POINTS = new Map([

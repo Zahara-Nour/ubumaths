@@ -205,3 +205,23 @@ calculée à chaque tirage. Plusieurs lignes `point …` dans le même `verifier
 4. Messages « perpendiculaire » et « même distance » **gardés**.
 5. Découpage : **lot 2a** = outil point + contrôle `point …` (quadrillage, nœuds aimantés) ; **lot 2b** =
    équerre, compas, aimantation sur les intersections (papier uni).
+
+## 6. Lot 2a — ce qui est fait (2026-11-02)
+
+- `verifier: point A' = <expression>` (une ligne par point, nom unique, expression ≤ 200 caractères),
+  outil `point` déduit (un toucher, réponse `point(x;y)`, aux nœuds sur quadrillage).
+- **Le langage des figures n'a pas de prime** (`A' = …` : « Caractere inattendu »). Le nom écrit dans
+  `verifier:` n'est donc pas un objet de la figure : il sert à l'étiquette de la correction et aux
+  messages. Le registre calcule l'expression sous un nom interne (`zzPointAttendu`), dans une figure à
+  part (`expectedPoints`, `constructionExpected`) : jamais affiché, jamais aimanté.
+- Juge `construction/point.ts` : ensemble de points, traits ignorés ; messages « perpendiculaire » /
+  « même distance » pour `symetrie(A, axe=d)` (axe nommé), générique sinon (centre compris).
+- Erreurs d'auteur : expression qui ne se calcule pas ou ne donne pas un point, nom déjà pris, point déjà
+  dans la figure (A sur l'axe), sans `grille:`, hors fenêtre, hors nœuds, deux points au même endroit.
+- Correction : point en pointillés + nom ; symétrique : [AA'] en pointillés, angle droit (axe) et une
+  marque sur chaque moitié.
+- **Défaut de geometry-core trouvé, non corrigé** : `symetrie(P, axe=d)` quand `P` définit `d`
+  (`d = droite(P, Q)`) → « addNode "reflL_5": duplicate parent IDs are not allowed ». Contourné dans les
+  tests (point M de l'axe) ; pour l'auteur, l'erreur sort à la publication.
+- Tests : juge et lecture (`construction-point.test.ts`, 44), modèle (`check-template-figure`, 2), écran
+  (`figure-a-completer-point.svelte.test.ts`, 2).

@@ -636,9 +636,14 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				// `Z = …`), sinon l'élève aurait un « faux » pour une erreur de l'auteur
 				const named = namesAssignedIn(header.figureSource);
 				for (const check of header.spec.checks) {
-					// Symétrique : l'axe ou le centre est nommé aussi (`d = droite(P, Q)`, `O = point(…)`)
+					// Symétrique : l'axe ou le centre est nommé aussi (`d = droite(P, Q)`, `O = point(…)`) ;
+					// point à placer : son expression est calculée à la publication (`check-template`)
 					const names =
-						check.kind === 'symetrique' ? [...(check.points ?? []), check.by] : check.points;
+						check.kind === 'point'
+							? []
+							: check.kind === 'symetrique'
+								? [...(check.points ?? []), check.by]
+								: check.points;
 					for (const name of names) {
 						if (!named.has(name)) {
 							errors.push({
@@ -947,9 +952,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					return {
 						expectedAnswer: construction.checks
 							.map((check) =>
-								check.kind === 'symetrique'
-									? `symetrique(${[...(check.points ?? []), check.by].join(';')})`
-									: `droite(${check.points[0]};${check.points[1]})`
+								check.kind === 'point'
+									? `point(${check.name})`
+									: check.kind === 'symetrique'
+										? `symetrique(${[...(check.points ?? []), check.by].join(';')})`
+										: `droite(${check.points[0]};${check.points[1]})`
 							)
 							.join('|'),
 						type: 'graphical',

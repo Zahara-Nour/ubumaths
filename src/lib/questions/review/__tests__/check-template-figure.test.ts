@@ -275,3 +275,68 @@ describe('checkTemplate — symétrique à tracer (`verifier: symetrique par d`)
 		expect(report.passed).toBe(false);
 	});
 });
+
+/** « Place le symétrique de A par rapport à d » ; `xa` = abscisse de A (axe x = 6) */
+function pointTemplate(xa: string): QuestionTemplate {
+	return {
+		id: 'tmp',
+		title: 'Placer le symétrique d’un point',
+		status: 'draft',
+		variations: [
+			{
+				statement: templateMarkdown(
+					[
+						'Place le point $A’$, symétrique du point $A$ par rapport à la droite $d$.',
+						'',
+						'```figure-a-completer',
+						'fenetre: 0 ; 12 ; 0 ; 8',
+						'grille: 1',
+						"verifier: point A' = symetrie(A, axe=d)",
+						'---',
+						'P = point(6, 0, visible=faux)',
+						'Q = point(6, 8, visible=faux)',
+						'd = droite(P, Q)',
+						'A = point({{xa}}, 5)',
+						'```'
+					].join('\n')
+				),
+				variables: [{ name: 'xa', expression: xa }]
+			}
+		],
+		grades: ['6'],
+		theme: 'Géométrie',
+		domain: 'Symétrie',
+		level: 1,
+		testSpecs: [
+			{
+				description: 'le symétrique',
+				variables: { xa: '2' },
+				answers: ['point(10;5)'],
+				expected: { status: 'correct' }
+			},
+			{
+				description: 'pas à la même distance',
+				variables: { xa: '2' },
+				answers: ['point(9;5)'],
+				expected: { status: 'incorrect' }
+			}
+		]
+	} as QuestionTemplate;
+}
+
+describe('checkTemplate — point à placer (`verifier: point A’ = …`)', () => {
+	it('modèle juste : importable, specs jugées par le vrai juge', () => {
+		const report = checkTemplate(pointTemplate('1..4'), { instances: 10 });
+		expect(report.reasons).toEqual([]);
+		expect(report.specs.every((spec) => spec.passed)).toBe(true);
+		expect(report.passed).toBe(true);
+	});
+
+	it('A sur l’axe à certains tirages (rien à placer) : NON importable', () => {
+		const report = checkTemplate(pointTemplate('4..6'), { instances: 30 });
+		expect(report.figures.failures.some((f) => f.errors[0].includes('déjà dans la figure'))).toBe(
+			true
+		);
+		expect(report.passed).toBe(false);
+	});
+});

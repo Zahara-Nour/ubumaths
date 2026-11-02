@@ -13,8 +13,10 @@ import { isPointElement, type GeoElement } from '$lib/geometry-core/types/elemen
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 import { ConstructionAuthorError, type Position } from './judge';
 import { registerConstructionPositions, type ConstructionGeometry } from './positions';
+import type { ExpectedPoints } from './point';
 import type { FigureLine, FigureSegment, FigureShapes } from './symmetry';
 import type { FigureHeader } from '$lib/ubumark/types/figure';
+import type { ConstructionCheck } from '$lib/ubumark/types/construction';
 
 /** Position de chaque point NOMMÉ d'une scène (le nom affiché : A, B…) */
 export function namedPointPositions(scene: FigureScene): Map<string, Position> {
@@ -92,15 +94,55 @@ export function figureShapes(scene: FigureScene, header: FigureHeader): FigureSh
 	return { segments, lines, grid: header.grid, window: header.window };
 }
 
+/**
+ * Nom interne du point attendu dans la figure calculée à part : le nom écrit
+ * (A') n'est pas un nom du langage des figures, qui n'a pas de prime
+ */
+const EXPECTED_NAME = 'zzPointAttendu';
+
+/**
+ * Points des vérifications `point A' = <expression>` : chaque expression est
+ * ajoutée à la fin du script, sous un nom interne, dans une figure calculée à
+ * part (jamais celle que voit l'élève, ni ses points d'aimantation).
+ */
+export function expectedPoints(
+	figureSource: string,
+	checks: readonly ConstructionCheck[]
+): ExpectedPoints {
+	const positions = new Map<string, Position>();
+	const errors = new Map<string, string>();
+	for (const check of checks) {
+		if (check.kind !== 'point') continue;
+		const node = parseFigureContent(`${figureSource}\n${EXPECTED_NAME} = ${check.expression}`);
+		const { scene, errors: sceneErrors } = buildFigureScene(node);
+		const position = scene ? allNamedPointPositions(scene).get(EXPECTED_NAME) : undefined;
+		if (position) {
+			positions.set(check.name, position);
+			continue;
+		}
+		const messages = [...node.errors, ...sceneErrors].map((e) => e.message);
+		// Sans erreur : l'expression se calcule, mais ce n'est pas un point (le juge le dit)
+		if (messages.length > 0) {
+			errors.set(check.name, `l’expression ne se calcule pas (${messages.join(' ; ')})`);
+		}
+	}
+	return { positions, errors };
+}
+
 function resolveGeometry(source: string): ConstructionGeometry {
-	const node = parseFigureContent(readConstructionHeader(source).figureSource);
+	const { figureSource, spec } = readConstructionHeader(source);
+	const node = parseFigureContent(figureSource);
 	const { scene, errors } = buildFigureScene(node);
 	if (!scene) {
 		throw new ConstructionAuthorError(
 			`Case « figure » : la figure ne se construit pas (${errors.map((e) => e.message).join(' ; ')})`
 		);
 	}
-	return { points: allNamedPointPositions(scene), shapes: figureShapes(scene, node.header) };
+	return {
+		points: allNamedPointPositions(scene),
+		shapes: figureShapes(scene, node.header),
+		expected: expectedPoints(figureSource, spec.checks)
+	};
 }
 
 /** Dernière figure calculée : le juge lit points et traits du même bloc à la suite */

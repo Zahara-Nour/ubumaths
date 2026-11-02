@@ -16,13 +16,16 @@
  */
 
 import type { Position } from './judge';
+import type { ExpectedPoints } from './point';
 import type { FigureShapes } from './symmetry';
 
-/** Ce que le juge lit d'une figure : points nommés, et traits (symétrique) */
+/** Ce que le juge lit d'une figure : points nommés, traits (symétrique), points attendus */
 export interface ConstructionGeometry {
 	/** Partagé (cache du registre) : lecture seule */
 	readonly points: ReadonlyMap<string, Position>;
 	readonly shapes: FigureShapes;
+	/** Points des vérifications `point …`, calculés par le langage des figures */
+	readonly expected: ExpectedPoints;
 }
 
 /** Points nommés et traits d'un bloc (texte entre les clôtures) */
@@ -65,4 +68,9 @@ export function constructionPositions(source: string): ReadonlyMap<string, Posit
 /** Traits de la figure de départ (vérification `symetrique`) */
 export function constructionShapes(source: string): FigureShapes {
 	return geometry(source).shapes;
+}
+
+/** Points attendus des vérifications `point A' = …` (jamais affichés à l'élève) */
+export function constructionExpected(source: string): ExpectedPoints {
+	return geometry(source).expected;
 }

@@ -23,17 +23,17 @@ export const figureACompleterEntry: BlockCatalogEntry = {
 				{
 					key: 'verifier',
 					values:
-						'droite_par A ; B · carre A ; B · rectangle A ; B ; C · symetrique par d · symetrique A ; B ; C par d',
+						"droite_par A ; B · carre A ; B · rectangle A ; B ; C · symetrique par d · symetrique A ; B ; C par d · point A' = symetrie(A, axe=d)",
 					defaultValue: null,
 					description:
-						'Ce que la figure de l’élève doit contenir. droite_par : une droite qui passe par les deux points nommés (une ligne par droite ; toute droite en plus est fausse). carre : le côté [AB] est tracé, l’élève trace les trois autres, d’un côté ou de l’autre. rectangle : les côtés [AB] et [BC] sont tracés, l’élève trace les deux autres. symetrique par d : l’élève trace le symétrique de tout ce qui est tracé (segments, polygones) sauf l’axe d ; par O (un point) : symétrie centrale ; symetrique A ; B ; C par d : seulement les traits entre ces points. Sur quadrillage (grille:), le symétrique dans la fenêtre et sur les nœuds. Un seul carré, rectangle ou symétrique par figure.'
+						"Ce que la figure de l’élève doit contenir. droite_par : une droite qui passe par les deux points nommés (une ligne par droite ; toute droite en plus est fausse). carre : le côté [AB] est tracé, l’élève trace les trois autres, d’un côté ou de l’autre. rectangle : les côtés [AB] et [BC] sont tracés, l’élève trace les deux autres. symetrique par d : l’élève trace le symétrique de tout ce qui est tracé (segments, polygones) sauf l’axe d ; par O (un point) : symétrie centrale ; symetrique A ; B ; C par d : seulement les traits entre ces points. Sur quadrillage (grille:), le symétrique dans la fenêtre et sur les nœuds. Un seul carré, rectangle ou symétrique par figure. point A' = <expression> : l’élève place un point là où l’expression du langage des figures le met (symetrie, milieu, intersection…) ; une ligne par point, l’élève ne les nomme pas ; A' n’est pas un nom de la figure, il sert à la correction et aux messages. Sur quadrillage seulement (grille:), le point dans la fenêtre et sur un nœud."
 				},
 				{
 					key: 'outils',
-					values: 'droite ou segment',
+					values: 'droite, segment ou point',
 					defaultValue: 'celui de la vérification',
 					description:
-						'L’outil proposé à l’élève, un seul par figure : droite pour droite_par, segment pour carre, rectangle et symetrique. Avec un quadrillage (grille:) et le segment, chaque toucher va au nœud le plus proche.'
+						'L’outil proposé à l’élève, un seul par figure : droite pour droite_par, segment pour carre, rectangle et symetrique, point pour point. Avec un quadrillage (grille:) et le segment ou le point, chaque toucher va au nœud le plus proche.'
 				},
 				{
 					key: 'fenetre, taille…',
@@ -128,6 +128,22 @@ export const figureACompleterEntry: BlockCatalogEntry = {
 			explanation: 'Après « par », un point : le symétrique fait un demi-tour autour de O.'
 		},
 		{
+			title: 'Placer le symétrique d’un point (axe oblique)',
+			source: fence(
+				'figure-a-completer',
+				'fenetre: 0 ; 10 ; 0 ; 8',
+				'grille: 1',
+				"verifier: point A' = symetrie(A, axe=d)",
+				'---',
+				'P = point(1, 1, visible=faux)',
+				'Q = point(7, 7, visible=faux)',
+				'd = droite(P, Q)',
+				'A = point(2, 5)'
+			),
+			explanation:
+				'L’élève place A’ en (5 ; 2). À la même distance de l’axe mais à l’horizontale de A, il lit « Le segment [AA’] doit être perpendiculaire à l’axe » ; sur la perpendiculaire mais trop près ou trop loin, « A’ doit être à la même distance de l’axe que A ». Plusieurs points : une ligne « verifier: point … » par point.'
+		},
+		{
 			title: 'Vérifier un alignement, puis répondre oui ou non',
 			source: fence(
 				'figure-a-completer',
@@ -184,6 +200,19 @@ export const figureACompleterEntry: BlockCatalogEntry = {
 			),
 			message: 'symetrique attend un axe ou un centre',
 			explanation: 'Écrire « symetrique par d » (l’axe) ou « symetrique par O » (le centre).'
+		},
+		{
+			title: 'Point sans expression',
+			source: fence(
+				'figure-a-completer',
+				'fenetre: 0 ; 12 ; 0 ; 8',
+				'grille: 1',
+				"verifier: point A'",
+				'---',
+				'A = point(2, 5)'
+			),
+			message: 'point attend un nom et une expression',
+			explanation: "Écrire où va le point : « point A' = symetrie(A, axe=d) »."
 		}
 	],
 	tryIt: fence(

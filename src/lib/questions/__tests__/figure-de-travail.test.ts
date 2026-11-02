@@ -127,7 +127,7 @@ describe('lecture du bloc ```figure-de-travail', () => {
 			['```figure-de-travail', BODY[0], 'outils: compas', ...BODY.slice(2), '```'].join('\n')
 		);
 		expect(node.errors.map((e) => e.message)).toEqual([
-			'Ligne 2 : outil « compas » inconnu (droite, segment)'
+			'Ligne 2 : outil « compas » inconnu (droite, segment, point)'
 		]);
 	});
 
