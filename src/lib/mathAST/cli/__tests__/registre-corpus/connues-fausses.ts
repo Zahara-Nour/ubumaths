@@ -95,8 +95,7 @@ export const REGISTRE_CONNUES_FAUSSES: Readonly<Record<string, string>> = {
 	'comparer-09': 'sans-reponse : false',
 	'comparer-12': 'sans-reponse : true',
 	'comparer-14': 'sans-reponse : true',
-	// Lot 2 · tidy : décimal chassé sous une barre à lettre (Q9 rouverte) ; réduction par 2 qui
-	// fait apparaître x+1 en haut et en bas (garde-fou de `mergeFactors` antérieur à S3) — PR à part
+	// Lot 2 · décision D (tidy corrigé pour Q9 et `signes-06`, le registre recopie encore la ligne)
 	'decimal-10': 'forme : 0.5 / x',
 	'signes-06': 'forme : \\left( 2 x + 2 \\right) / \\left( 4 \\left( x + 1 \\right) \\right)'
 };
@@ -130,9 +129,5 @@ export const ATELIER_CONNUES_FAUSSES: Readonly<Record<string, string>> = {
 	'comparer-12': 'sans-reponse : true',
 	'comparer-13':
 		'sans-reponse : Erreur de calcul : Relation « ≈ » non évaluable : seules = ≠ < > ≤ ≥ se tranchent',
-	'comparer-14': 'sans-reponse : true',
-	// Lot 2 · tidy : décimal chassé sous une barre à lettre (Q9 rouverte) ; réduction par 2 qui
-	// fait apparaître x+1 en haut et en bas (garde-fou de `mergeFactors` antérieur à S3) — PR à part
-	'decimal-10': 'forme : \\dfrac{0{,}5}{x}',
-	'signes-06': 'forme : \\dfrac{2 x + 2}{4 \\left( x + 1 \\right)}'
+	'comparer-14': 'sans-reponse : true'
 };
