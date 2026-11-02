@@ -16,7 +16,8 @@
  * Lot 2a : sur quadrillage (touchers aux nœuds). Lot 2b (§ 7) : papier uni,
  * l'élève construit avec la règle, l'équerre et le compas (`instruments.ts`) ;
  * seulement un symétrique (`symetrie(A, axe=d)` ou `symetrie(A, centre=O)`) ou,
- * lot 3, un milieu (`milieu(A, B)`, par la médiatrice) ;
+ * lot 3, un milieu (`milieu(A, B)`, par la médiatrice) ou, lot 3b, le centre
+ * d'un cercle circonscrit (`centre(cercle_circonscrit(A, B, C))`) ;
  * un point qui n'est ni un point de la figure ni une intersection de deux traits
  * est « placé à l'œil », faux même posé pile au bon endroit.
  *
@@ -30,6 +31,7 @@ import type { ConstructionCheck, PointCheck } from '$lib/ubumark/types/construct
 import { isDrawnPoint, type DrawnObject } from './answer';
 import { isConstructed, isInFrame, traitsOfObjects } from './instruments';
 import { mediatriceSupportError } from './line';
+import { circumcenterOf, circumcenterSupportError } from './circle';
 import type { ConstructionVerdict, Position } from './judge';
 import { dot, sub, tolerance } from './polygon';
 import { plainPaperSupportError, type FigureShapes } from './symmetry';
@@ -58,12 +60,20 @@ export interface ExpectedLine {
 	b: Position;
 }
 
+/** Un cercle attendu (vérification `cercle`, lot 3b) : centre et rayon */
+export interface ExpectedCircle {
+	center: Position;
+	radius: number;
+}
+
 /** Points (et droites) attendus, calculés par le registre à partir des expressions */
 export interface ExpectedPoints {
 	/** Position de chaque point attendu, par son nom (lecture seule) */
 	readonly positions: ReadonlyMap<string, Position>;
 	/** Droites des vérifications `droite m = …`, par leur nom (absent : aucune) */
 	readonly lines?: ReadonlyMap<string, ExpectedLine>;
+	/** Cercles des vérifications `cercle c = …`, par leur nom (absent : aucun) */
+	readonly circles?: ReadonlyMap<string, ExpectedCircle>;
 	/** Pourquoi une expression ne se calcule pas (erreur d'auteur), par nom */
 	readonly errors: ReadonlyMap<string, string>;
 }
@@ -135,10 +145,17 @@ function assertPlainPaper(
 		if (message) throw new PointAuthorError(`${label} : ${message}`);
 		return;
 	}
+	// Lot 3b (§ 11, décision 1) : le centre du cercle circonscrit, par deux médiatrices
+	const circumcenter = circumcenterOf(check.expression);
+	if (circumcenter) {
+		const message = circumcenterSupportError(circumcenter, points, shapes);
+		if (message) throw new PointAuthorError(`${label} : ${message}`);
+		return;
+	}
 	const symmetry = symmetryOf(check.expression);
 	if (!symmetry || !symmetry.target) {
 		throw new PointAuthorError(
-			`${label} : sans quadrillage, seulement un symétrique (symetrie(A, axe=d) ou symetrie(A, centre=O)) ou un milieu (milieu(A, B)) ; sinon ajouter « grille: 1 »`
+			`${label} : sans quadrillage, seulement un symétrique (symetrie(A, axe=d) ou symetrie(A, centre=O)), un milieu (milieu(A, B)) ou le centre d’un cercle circonscrit (centre(cercle_circonscrit(A, B, C))) ; sinon ajouter « grille: 1 »`
 		);
 	}
 	const axis = symmetry.by === 'axe' ? (shapes.lines.get(symmetry.target) ?? null) : null;

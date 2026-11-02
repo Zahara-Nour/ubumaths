@@ -103,7 +103,7 @@ function hasGrid(lines: readonly string[], headerEnd: number): boolean {
 
 /** Nombre de points de chaque vérification, et comment l'écrire */
 const CHECK_ARITY: Record<
-	Exclude<ConstructionCheckKind, 'symetrique' | 'point' | 'droite'>,
+	Exclude<ConstructionCheckKind, 'symetrique' | 'point' | 'droite' | 'cercle'>,
 	{ count: number; example: string; word: string }
 > = {
 	droite_par: { count: 2, example: 'droite_par A ; B', word: 'deux' },
@@ -139,14 +139,19 @@ function readSymetrique(rest: string, line: number): ConstructionCheck {
 
 const NAMED_EXAMPLES = {
 	point: "point A' = symetrie(A, axe=d)",
-	droite: 'droite m = mediatrice(A, B)'
+	droite: 'droite m = mediatrice(A, B)',
+	cercle: 'cercle c = cercle_circonscrit(A, B, C)'
 } as const;
 
 /**
  * `point A' = symetrie(A, axe=d)` ou `droite m = mediatrice(A, B)` : le nom et
  * l'expression, calculée au jugement
  */
-function readNamed(kind: 'point' | 'droite', rest: string, line: number): ConstructionCheck {
+function readNamed(
+	kind: 'point' | 'droite' | 'cercle',
+	rest: string,
+	line: number
+): ConstructionCheck {
 	const match = POINT_CHECK_REGEX.exec(rest.trim());
 	if (!match) {
 		throw new LineError(`${kind} attend un nom et une expression : « ${NAMED_EXAMPLES[kind]} »`);
@@ -165,13 +170,15 @@ function readCheck(value: string, line: number): ConstructionCheck {
 	// `symétrique` accentué, comme `vérifier:`
 	const word = rawWord.toLowerCase() === 'symétrique' ? 'symetrique' : rawWord;
 	if (word === 'symetrique') return readSymetrique(rest.join(' '), line);
-	if (word === 'point' || word === 'droite') return readNamed(word, rest.join(' '), line);
+	if (word === 'point' || word === 'droite' || word === 'cercle') {
+		return readNamed(word, rest.join(' '), line);
+	}
 	if (!(CONSTRUCTION_CHECK_KINDS as readonly string[]).includes(word)) {
 		throw new LineError(
 			`vérification « ${word} » inconnue (${CONSTRUCTION_CHECK_KINDS.join(', ')})`
 		);
 	}
-	const kind = word as Exclude<ConstructionCheckKind, 'symetrique' | 'point' | 'droite'>;
+	const kind = word as Exclude<ConstructionCheckKind, 'symetrique' | 'point' | 'droite' | 'cercle'>;
 	const { count, example, word: countWord } = CHECK_ARITY[kind];
 	const points = splitPoints(rest.join(' '));
 	if (points.length !== count || !points.every((name) => POINT_NAME_REGEX.test(name))) {
@@ -201,24 +208,33 @@ function coherenceError(
 		return check.kind === 'point'
 			? 'point se place avec l’outil point (outils: point)'
 			: `${check.kind} se trace avec l’outil ${tool} (outils: ${tool})`;
-	if (check.kind === 'droite') {
-		// Lot 3 : le juge des droites ignore les autres traits ; il ne juge rien d'autre
-		if (spec.checks.some((c) => c.kind !== 'droite')) {
-			return `droite ${check.name} : une droite à construire ne se mêle pas à d’autres vérifications`;
+	if (check.kind === 'droite' || check.kind === 'cercle') {
+		// Lots 3 et 3b : ce juge ignore les autres traits ; il ne juge rien d'autre
+		const what = check.kind === 'droite' ? 'une droite' : 'un cercle';
+		if (spec.checks.some((c) => c.kind !== check.kind)) {
+			return `${check.kind} ${check.name} : ${what} à construire ne se mêle pas à d’autres vérifications`;
 		}
-		const first = spec.checks.find((c) => c.kind === 'droite' && c.name === check.name);
-		if (first !== check) return `deux droites nommées ${check.name.replace("'", '’')}`;
+		const first = spec.checks.find((c) => c.kind === check.kind && c.name === check.name);
+		if (first !== check) {
+			const twins = check.kind === 'droite' ? 'deux droites nommées' : 'deux cercles nommés';
+			return `${twins} ${check.name.replace("'", '’')}`;
+		}
 		// Un point ou un segment tracé serait jugé comme une réponse forgée (revue du lot 3)
-		const allowed = PLAIN_PAPER_TOOLS.droite ?? [];
+		const allowed = PLAIN_PAPER_TOOLS[check.kind] ?? [];
 		const other = spec.tools.find((t) => !allowed.includes(t));
 		if (other)
-			return `droite ${check.name} : outil ${other} hors de la palette (${allowed.join(', ')})`;
+			return `${check.kind} ${check.name} : outil ${other} hors de la palette (${allowed.join(', ')})`;
+		// Lot 3b (§ 11, décision de David) : le centre tombe rarement sur un nœud
+		if (check.kind === 'cercle' && grid) {
+			return `cercle ${check.name} : le cercle circonscrit se construit sur papier uni ; retirer « grille: » (ou écrire « grille: non »)`;
+		}
 	} else if (check.kind === 'point') {
 		const first = spec.checks.find((c) => c.kind === 'point' && c.name === check.name);
 		if (first !== check) return `deux points nommés ${check.name.replace("'", '’')}`;
 	} else {
 		const segmentChecks = spec.checks.filter(
-			(c) => c.kind !== 'droite_par' && c.kind !== 'point' && c.kind !== 'droite'
+			(c) =>
+				c.kind !== 'droite_par' && c.kind !== 'point' && c.kind !== 'droite' && c.kind !== 'cercle'
 		);
 		if (check.kind !== 'droite_par' && segmentChecks[0] !== check) {
 			const symmetry = check.kind === 'symetrique' || segmentChecks[0].kind === 'symetrique';
@@ -301,8 +317,9 @@ export function readConstructionHeader(
 	const grid = hasGrid(lines, headerEnd);
 	if (!toolsSeen && spec.checks.length > 0) {
 		const kind = spec.checks[0].kind;
-		// La droite (lot 3) garde ses instruments sur quadrillage
-		const plainPaper = grid && kind !== 'droite' ? undefined : PLAIN_PAPER_TOOLS[kind];
+		// La droite (lot 3) garde ses instruments sur quadrillage ; le cercle (lot 3b) y est refusé
+		const keeps = kind === 'droite' || kind === 'cercle';
+		const plainPaper = grid && !keeps ? undefined : PLAIN_PAPER_TOOLS[kind];
 		spec.tools = plainPaper ? [...plainPaper] : [CHECK_TOOL[kind]];
 	}
 	const coherent: ConstructionCheck[] = [];

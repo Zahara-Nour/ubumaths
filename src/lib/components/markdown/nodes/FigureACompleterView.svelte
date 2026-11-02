@@ -83,6 +83,7 @@
 		snapTap,
 		snapWithInstruments,
 		snapToGrid,
+		solutionCircles,
 		solutionCodages,
 		solutionLines,
 		solutionPoints,
@@ -523,6 +524,38 @@
 				{/if}
 			{/each}
 		{/if}
+		{#if corrected}
+			<!-- Cercle à construire (lot 3b) : le cercle, son centre, deux médiatrices en traits fins -->
+			{#each solutionCircles(checks, expectedOf(), allPoints, figureShapes(scene, node.header)) as solution (solution.name)}
+				{@const center = transformer.mathToSvg(solution.center.x, solution.center.y)}
+				{@const edge = transformer.mathToSvg(
+					solution.center.x + solution.radius,
+					solution.center.y
+				)}
+				<g data-testid="bon-cercle" class="bon-cercle">
+					{#each solution.mediatrices as line, i (i)}
+						{@const s = toScreen(line, scene, width, height)}
+						{#if s}
+							<line
+								data-testid="bon-cercle-mediatrice"
+								class="bon-cercle-mediatrice"
+								x1={s.x1}
+								y1={s.y1}
+								x2={s.x2}
+								y2={s.y2}
+							/>
+						{/if}
+					{/each}
+					<circle
+						class="bon-cercle-trait"
+						cx={center.x}
+						cy={center.y}
+						r={Math.hypot(edge.x - center.x, edge.y - center.y)}
+					/>
+					<circle class="bon-cercle-centre" cx={center.x} cy={center.y} r="3.5" />
+				</g>
+			{/each}
+		{/if}
 		{#each pointSolutions as solution (solution.name)}
 			{@const p = transformer.mathToSvg(solution.at.x, solution.at.y)}
 			{@const c = codage(solution, scene, width, height)}
@@ -680,6 +713,28 @@
 
 	.point-travail line {
 		stroke: var(--color-muted-foreground);
+	}
+
+	.bon-cercle {
+		pointer-events: none;
+	}
+
+	.bon-cercle-trait {
+		fill: none;
+		stroke: var(--color-success);
+		stroke-width: 2.5;
+		stroke-dasharray: 8 5;
+	}
+
+	.bon-cercle-centre {
+		fill: var(--color-success);
+	}
+
+	.bon-cercle-mediatrice {
+		stroke: var(--color-success);
+		stroke-width: 1;
+		stroke-dasharray: 4 4;
+		opacity: 0.7;
 	}
 
 	.bon-point {

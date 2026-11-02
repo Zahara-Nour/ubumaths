@@ -31,7 +31,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; QCM retiré (case choix seule) le 2026-10-28 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire (médiatrice) et milieu sur papier uni le 2026-11-02 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26, à plusieurs points le 2026-10-27 ; horloge à placer (``horloge, `placer:`) le 2026-10-27, trotteuse le 2026-11-01 ; diagramme en barres à construire (``barres, `placer:`) le 2026-10-28, réponse d'une monnaie à centimes (`3,45`) le 2026-11-01, échelle à choisir le 2026-10-29 ; étiquettes à ranger (`ranger) le 2026-10-28 ; repère à placer (``courbe, `placer:`) le 2026-11-01 ; cercle trigonométrique à placer (``trig, `placer:`) le 2026-11-02 ; assemblage de cubes dans un choix (`--espace-taille`) le 2026-10-30 ; figure à colorier (`partage, `colorier:`) le 2026-10-29, assemblage de cubes à geste (`cubes, `dessiner:`/`retrouver:`) le 2026-10-30, patron à geste (`patron, `designer:`/`completer:`) le 2026-10-30, plusieurs figures (`unites:`, attendue `7/4`) le 2026-10-29 ; texte d'aide des cases à écrire le 2026-10-26 ; boîte à moustaches à construire (``boite-a-moustaches, `placer:`) le 2026-11-01.
+> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; QCM retiré (case choix seule) le 2026-10-28 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire (médiatrice) et milieu sur papier uni le 2026-11-02, cercle circonscrit le 2026-11-02 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26, à plusieurs points le 2026-10-27 ; horloge à placer (``horloge, `placer:`) le 2026-10-27, trotteuse le 2026-11-01 ; diagramme en barres à construire (``barres, `placer:`) le 2026-10-28, réponse d'une monnaie à centimes (`3,45`) le 2026-11-01, échelle à choisir le 2026-10-29 ; étiquettes à ranger (`ranger) le 2026-10-28 ; repère à placer (``courbe, `placer:`) le 2026-11-01 ; cercle trigonométrique à placer (``trig, `placer:`) le 2026-11-02 ; assemblage de cubes dans un choix (`--espace-taille`) le 2026-10-30 ; figure à colorier (`partage, `colorier:`) le 2026-10-29, assemblage de cubes à geste (`cubes, `dessiner:`/`retrouver:`) le 2026-10-30, patron à geste (`patron, `designer:`/`completer:`) le 2026-10-30, plusieurs figures (`unites:`, attendue `7/4`) le 2026-10-29 ; texte d'aide des cases à écrire le 2026-10-26 ; boîte à moustaches à construire (``boite-a-moustaches, `placer:`) le 2026-11-01.
 
 ## À quoi ça sert
 
@@ -542,7 +542,7 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    endroit : « Ton point est placé à l'œil : construis-le avec tes instruments. ». Erreurs de l'auteur : expression qui ne se calcule pas ou ne donne pas un point, nom
    déjà pris, point déjà dans la figure, hors de la fenêtre, hors des nœuds (quadrillage) ; sans
    quadrillage, autre chose que `symetrie(A, axe=d)` / `symetrie(A, centre=O)` / `milieu(A, B)` (comme
-   la médiatrice, ci-dessous), ou axe hors de la fenêtre ; deux points au même endroit. Vérification
+   la médiatrice, ci-dessous) / `centre(cercle_circonscrit(A, B, C))` (comme le cercle, ci-dessous), ou axe hors de la fenêtre ; deux points au même endroit. Vérification
    `droite m = <expression>` (`construction/line.ts`, lot 3 du chantier) : une des droites de l'élève
    (règle, équerre) recouvre la droite que donne l'expression (calculée comme les points, `expected.lines`) ;
    ses autres droites et ses cercles sont des traits de construction, ignorés ; plusieurs vérifications
@@ -564,7 +564,24 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    tracé ferait une réponse forgée). Palette : règle, équerre, compas, avec ou sans quadrillage
    (`PLAIN_PAPER_TOOLS.droite`) ; sur quadrillage, tous ses touchers vont aux nœuds (l'équerre choisit
    d'abord sa droite). Correction : la droite en pointillés ;
-   médiatrice : angle droit au milieu et moitiés codés (`solutionCodages`). **Papier uni (lot 2b)** : sans `grille:`, `point` et
+   médiatrice : angle droit au milieu et moitiés codés (`solutionCodages`). Vérification
+   `cercle c = <expression>` (`construction/circle.ts`, lot 3b du chantier) : un des cercles de l'élève
+   (compas) recouvre le cercle que donne l'expression (même centre, même rayon ; `expected.circles`) ;
+   ses autres cercles et ses droites sont des traits de construction. Le cercle doit être construit : son
+   centre et son point de passage sont des points construits (points de la figure, intersections de deux
+   AUTRES traits) ; sinon « Ton cercle est tracé à l'œil : construis son centre avec tes instruments. ».
+   Le cercle essayé, pour le message : parmi ceux qui ne sont pas centrés sur un sommet (arcs des
+   médiatrices), celui qui a le bon centre, sinon celui qui passe par le plus de sommets (à égalité, le
+   dernier) ; aucun → « Trace le cercle circonscrit au triangle ABC. ». Messages ensuite : « Ton cercle a
+   le bon centre mais ne passe pas par les sommets du triangle. », « Ton cercle passe par A et B mais pas
+   par C. », « Ce n'est pas le cercle circonscrit au triangle ABC. ». Erreurs de l'auteur : expression
+   qui ne se calcule pas ou ne donne pas un cercle, autre chose que `cercle_circonscrit(A, B, C)`,
+   quadrillage (aussi refusé par le parseur), centre hors de la fenêtre, cercle qui sort de la fenêtre,
+   sommet invisible, moins de deux médiatrices constructibles dans la fenêtre (`circumcenterSupportError`,
+   même règle que `mediatriceSupportError` côté par côté ; aussi pour le centre seul), deux vérifications
+   pour le même cercle. Mêmes règles de mélange et de palette que `droite`. Correction : le cercle et son
+   centre en pointillés, les médiatrices de deux côtés constructibles en traits fins (`solutionCircles`).
+   **Papier uni (lot 2b)** : sans `grille:`, `point` et
    `symetrique` reçoivent une palette d'instruments (`PLAIN_PAPER_TOOLS`) ; équerre = perpendiculaire à
    une droite choisie par un point (écrite `droite(…)`), compas = cercle par son centre et un point
    (`cercle(…)`) ; chaque toucher s'aimante sur un point nommé, puis une intersection de deux traits,
