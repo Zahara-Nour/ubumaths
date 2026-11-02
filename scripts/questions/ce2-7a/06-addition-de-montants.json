@@ -1,0 +1,239 @@
+{
+	"title": "Pose et calcule une addition de montants en euros",
+	"description": "Additionner deux ou trois montants à virgule ; unités mêlées (43,45 € + 68 centimes)",
+	"grades": ["CE2"],
+	"theme": "Grandeurs",
+	"domain": "Monnaie",
+	"subdomain": "Euros et centimes",
+	"level": 3,
+	"delay": 180,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Pose et calcule, en euros.\n\n```operation\ncalcul: {{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}} + {{eval:floor((q)/100)}}.{{eval:floor(mod(q,100)/10)}}{{eval:mod(q,10)}}\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "101..4999"
+				},
+				{
+					"name": "q",
+					"expression": "101..4999"
+				}
+			],
+			"conditions": ["mod(p,100) != 0", "mod(q,100) != 0", "mod(p,100) + mod(q,100) >= 100"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On aligne les virgules : centimes sous centimes, euros sous euros. On calcule comme avec des nombres entiers, de droite à gauche ; la virgule du résultat se place sous les autres.",
+					"${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€} + {{eval:floor((q)/100)}}.{{eval:floor(mod(q,100)/10)}}{{eval:mod(q,10)}}~\\unit{€} = \\textcolor{{{color:primary.0}}}{{{eval:floor((p+q)/100)}}.{{eval:floor(mod(p+q,100)/10)}}{{eval:mod(p+q,10)}}}~\\unit{€}$"
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule, en euros.\n\n```operation\ncalcul: {{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}} + {{eval:floor((q)/100)}}.{{eval:floor(mod(q,100)/10)}}{{eval:mod(q,10)}} + {{eval:floor((r)/100)}}.{{eval:floor(mod(r,100)/10)}}{{eval:mod(r,10)}}\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "101..3999"
+				},
+				{
+					"name": "q",
+					"expression": "101..3999"
+				},
+				{
+					"name": "r",
+					"expression": "101..3999"
+				}
+			],
+			"conditions": [
+				"mod(p,100) != 0",
+				"mod(q,100) != 0",
+				"mod(r,100) != 0",
+				"mod(p,100) + mod(q,100) + mod(r,100) >= 100"
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On aligne les virgules : centimes sous centimes, euros sous euros. On calcule comme avec des nombres entiers, de droite à gauche ; la virgule du résultat se place sous les autres.",
+					"${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€} + {{eval:floor((q)/100)}}.{{eval:floor(mod(q,100)/10)}}{{eval:mod(q,10)}}~\\unit{€} + {{eval:floor((r)/100)}}.{{eval:floor(mod(r,100)/10)}}{{eval:mod(r,10)}}~\\unit{€} = \\textcolor{{{color:primary.0}}}{{{eval:floor((p+q+r)/100)}}.{{eval:floor(mod(p+q+r,100)/10)}}{{eval:mod(p+q+r,10)}}}~\\unit{€}$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule : ${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$ + ${{c}}$ centimes.\n\n$?~\\text{€}$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1001..9999"
+				},
+				{
+					"name": "c",
+					"expression": "10..99"
+				}
+			],
+			"conditions": ["mod(p,100) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(p+c)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On convertit : ${{c}}$ centimes, c'est ${{eval:floor((c)/100)}}.{{eval:floor(mod(c,100)/10)}}{{eval:mod(c,10)}}~\\unit{€}$.",
+					"On aligne les virgules : centimes sous centimes, euros sous euros. On calcule comme avec des nombres entiers, de droite à gauche ; la virgule du résultat se place sous les autres.",
+					"${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€} + {{eval:floor((c)/100)}}.{{eval:floor(mod(c,100)/10)}}{{eval:mod(c,10)}}~\\unit{€} = \\textcolor{{{color:primary.0}}}{{{eval:floor((p+c)/100)}}.{{eval:floor(mod(p+c,100)/10)}}{{eval:mod(p+c,10)}}}~\\unit{€}$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule : ${{n}}~\\unit{€}$ + ${{eval:floor((b)/100)}}.{{eval:floor(mod(b,100)/10)}}{{eval:mod(b,10)}}~\\unit{€}$ + ${{c}}$ centimes.\n\n$?~\\text{€}$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "20..300"
+				},
+				{
+					"name": "b",
+					"expression": "101..999"
+				},
+				{
+					"name": "c",
+					"expression": "10..99"
+				}
+			],
+			"conditions": ["mod(b,100) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(100*n+b+c)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On convertit : ${{c}}$ centimes, c'est ${{eval:floor((c)/100)}}.{{eval:floor(mod(c,100)/10)}}{{eval:mod(c,10)}}~\\unit{€}$.",
+					"On aligne les virgules : centimes sous centimes, euros sous euros. On calcule comme avec des nombres entiers, de droite à gauche ; la virgule du résultat se place sous les autres.",
+					"${{n}}~\\unit{€} + {{eval:floor((b)/100)}}.{{eval:floor(mod(b,100)/10)}}{{eval:mod(b,10)}}~\\unit{€} + {{eval:floor((c)/100)}}.{{eval:floor(mod(c,100)/10)}}{{eval:mod(c,10)}}~\\unit{€} = \\textcolor{{{color:primary.0}}}{{{eval:floor((100*n+b+c)/100)}}.{{eval:floor(mod(100*n+b+c,100)/10)}}{{eval:mod(100*n+b+c,10)}}}~\\unit{€}$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4,56 € + 15,30 € = 19,86 €",
+			"variationIndex": 0,
+			"variables": {
+				"p": "456",
+				"q": "1530"
+			},
+			"answers": ["19,86"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : virgule oubliée (1986)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "456",
+				"q": "1530"
+			},
+			"answers": ["1986"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4,56 + 15,3 lu 4,56 + 1,53",
+			"variationIndex": 0,
+			"variables": {
+				"p": "456",
+				"q": "1530"
+			},
+			"answers": ["6,09"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "8,95 + 12,40 + 3,75 = 25,10",
+			"variationIndex": 1,
+			"variables": {
+				"p": "895",
+				"q": "1240",
+				"r": "375"
+			},
+			"answers": ["25,1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : retenue des centimes oubliée (2 € de moins)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "895",
+				"q": "1240",
+				"r": "375"
+			},
+			"answers": ["23,1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "43,45 € + 68 centimes = 44,13 €",
+			"variationIndex": 2,
+			"variables": {
+				"p": "4345",
+				"c": "68"
+			},
+			"answers": ["44,13"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 68 centimes pris pour 68 € (111,45)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "4345",
+				"c": "68"
+			},
+			"answers": ["111,45"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "143 € + 3,67 € + 54 centimes = 147,21 €",
+			"variationIndex": 3,
+			"variables": {
+				"n": "143",
+				"b": "367",
+				"c": "54"
+			},
+			"answers": ["147,21"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 54 centimes pris pour 54 € (200,67)",
+			"variationIndex": 3,
+			"variables": {
+				"n": "143",
+				"b": "367",
+				"c": "54"
+			},
+			"answers": ["200,67"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,177 @@
+{
+	"title": "Pose et calcule une multiplication par un nombre à deux chiffres",
+	"description": "Multiplication posée : 2 chiffres × 2 chiffres, 3 chiffres × 2 chiffres (produit ≤ 10 000), × 20, × 30",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Multiplier",
+	"subdomain": "Calcul posé",
+	"level": 3,
+	"delay": 240,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{a}} × {{b}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "12..99"
+				},
+				{
+					"name": "b",
+					"expression": "12..99"
+				},
+				{
+					"name": "u",
+					"expression": "eval:mod(b,10)"
+				},
+				{
+					"name": "d",
+					"expression": "eval:floor(b/10)"
+				}
+			],
+			"conditions": ["mod(b,10) != 0"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On multiplie ${{a}}$ par chaque chiffre de ${{b}}$, en commençant par les unités.",
+					"Unités : ${{a}} \\times {{u}} = {{eval:a*u}}$.",
+					"Dizaines : ${{a}} \\times {{d}} = {{eval:a*d}}$ dizaines : on l'écrit avec un $0$ de décalage, ${{eval:10*a*d}}$.",
+					"On additionne : ${{eval:a*u}} + {{eval:10*a*d}} = {{eval:a*b}}$.",
+					"$${{a}} \\times {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a*b}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{a}} × {{b}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "101..525"
+				},
+				{
+					"name": "b",
+					"expression": "11..19"
+				},
+				{
+					"name": "u",
+					"expression": "eval:mod(b,10)"
+				},
+				{
+					"name": "d",
+					"expression": "eval:floor(b/10)"
+				}
+			],
+			"conditions": ["mod(b,10) != 0", "a*b <= 10000"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On multiplie ${{a}}$ par chaque chiffre de ${{b}}$, en commençant par les unités.",
+					"Unités : ${{a}} \\times {{u}} = {{eval:a*u}}$.",
+					"Dizaines : ${{a}} \\times {{d}} = {{eval:a*d}}$ dizaines : on l'écrit avec un $0$ de décalage, ${{eval:10*a*d}}$.",
+					"On additionne : ${{eval:a*u}} + {{eval:10*a*d}} = {{eval:a*b}}$.",
+					"$${{a}} \\times {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a*b}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{a}} × {{b}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "12..99"
+				},
+				{
+					"name": "d",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "eval:10*d"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On multiplie ${{a}}$ par chaque chiffre de ${{b}}$, en commençant par les unités.",
+					"Le chiffre des unités de ${{b}}$ est $0$ : sa ligne vaudrait $0$, on la saute.",
+					"Dizaines : ${{a}} \\times {{d}} = {{eval:a*d}}$ dizaines : on l'écrit avec un $0$ de décalage, ${{eval:10*a*d}}$.",
+					"$${{a}} \\times {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a*b}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "48 × 37 = 1 776",
+			"variationIndex": 0,
+			"variables": {
+				"a": "48",
+				"b": "37"
+			},
+			"answers": ["1 776"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : décalage oublié, 48 × 7 + 48 × 3 = 480",
+			"variationIndex": 0,
+			"variables": {
+				"a": "48",
+				"b": "37"
+			},
+			"answers": ["480"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "348 × 16 = 5 568",
+			"variationIndex": 1,
+			"variables": {
+				"a": "348",
+				"b": "16"
+			},
+			"answers": ["5 568"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : décalage oublié, 348 × 6 + 348 = 2 436",
+			"variationIndex": 1,
+			"variables": {
+				"a": "348",
+				"b": "16"
+			},
+			"answers": ["2 436"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "46 × 30 = 1 380",
+			"variationIndex": 2,
+			"variables": {
+				"a": "46",
+				"d": "3"
+			},
+			"answers": ["1 380"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le zéro oublié, 46 × 3 = 138",
+			"variationIndex": 2,
+			"variables": {
+				"a": "46",
+				"d": "3"
+			},
+			"answers": ["138"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
