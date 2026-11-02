@@ -126,7 +126,7 @@ LIRE_CASE = variation(
     INTRO + tableau() + '\n\nCombien de filles sont demi-pensionnaires ?\n\n$?$ filles',
     VARS, ['{{f2}}'],
     ['Une case du tableau croise une **ligne** (le sexe) et une **colonne** (le régime).',
-     'Ligne « Filles », colonne « Demi-pensionnaire » : ' + col('{{f2}}') + ' filles.'])
+     'Ligne « Filles », colonne « Demi-pensionnaire » : $' + col('{{f2}}') + '$ filles.'])
 
 LIRE_MARGE = variation(
     INTRO + tableau() + '\n\nCombien d\'élèves du lycée sont internes ?\n\n$?$ élèves',
@@ -165,7 +165,7 @@ MARG_INTERNES = variation(
     VARS, ['0'],
     ['Une **fréquence marginale** se lit dans les marges : effectif d\'une modalité (ligne ou colonne'
      ' **Total**) divisé par l\'effectif total.',
-     'Internes : ${{t3}}$ sur ${{nt}}$ élèves : ' + col(frac('{{t3}}', '{{nt}}')) + '.'],
+     'Internes : ${{t3}}$ sur ${{nt}}$ élèves : $' + col(frac('{{t3}}', '{{nt}}')) + '$.'],
     ['tf != nt'])
 
 MARG_GARCONS = variation(
@@ -176,7 +176,7 @@ MARG_GARCONS = variation(
     VARS, ['0'],
     ['Une **fréquence marginale** se lit dans les marges : effectif d\'une modalité (ligne ou colonne'
      ' **Total**) divisé par l\'effectif total.',
-     'Garçons : ${{tg}}$ sur ${{nt}}$ élèves : ' + col(frac('{{tg}}', '{{nt}}')) + '.'],
+     'Garçons : ${{tg}}$ sur ${{nt}}$ élèves : $' + col(frac('{{tg}}', '{{nt}}')) + '$.'],
     ['tg != tf'])
 
 MODELES.append(modele(
@@ -238,7 +238,7 @@ COND_FILLES = variation(
     VARS, ['0'],
     ['« Parmi les filles » : on ne regarde que la ligne des filles ; le dénominateur est l\'effectif'
      ' des **filles**, pas l\'effectif total.',
-     'Filles internes : ${{f3}}$ sur ${{tf}}$ filles : ' + col(frac('{{f3}}', '{{tf}}')) + '.'],
+     'Filles internes : ${{f3}}$ sur ${{tf}}$ filles : $' + col(frac('{{f3}}', '{{tf}}')) + '$.'],
     ['tf != t3'])
 
 COND_INTERNES = variation(
@@ -249,7 +249,7 @@ COND_INTERNES = variation(
     VARS, ['0'],
     ['« Parmi les internes » : on ne regarde que la colonne des internes ; le dénominateur est'
      ' l\'effectif des **internes**.',
-     'Filles internes : ${{f3}}$ sur ${{t3}}$ internes : ' + col(frac('{{f3}}', '{{t3}}')) + '.'],
+     'Filles internes : ${{f3}}$ sur ${{t3}}$ internes : $' + col(frac('{{f3}}', '{{t3}}')) + '$.'],
     ['tf != t3'])
 
 MODELES.append(modele(

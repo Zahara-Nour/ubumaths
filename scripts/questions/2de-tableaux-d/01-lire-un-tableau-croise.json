@@ -74,7 +74,7 @@
 			"correction": {
 				"steps": [
 					"Une case du tableau croise une **ligne** (le sexe) et une **colonne** (le régime).",
-					"Ligne « Filles », colonne « Demi-pensionnaire » : \\textcolor{{{color:primary.0}}}{{{f2}}} filles."
+					"Ligne « Filles », colonne « Demi-pensionnaire » : $\\textcolor{{{color:primary.0}}}{{{f2}}}$ filles."
 				]
 			}
 		},

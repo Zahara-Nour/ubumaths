@@ -75,7 +75,7 @@
 			"correction": {
 				"steps": [
 					"« Parmi les filles » : on ne regarde que la ligne des filles ; le dénominateur est l'effectif des **filles**, pas l'effectif total.",
-					"Filles internes : ${{f3}}$ sur ${{tf}}$ filles : \\textcolor{{{color:primary.0}}}{\\dfrac{ {{f3}} }{ {{tf}} }}."
+					"Filles internes : ${{f3}}$ sur ${{tf}}$ filles : $\\textcolor{{{color:primary.0}}}{\\dfrac{ {{f3}} }{ {{tf}} }}$."
 				]
 			}
 		},
@@ -140,7 +140,7 @@
 			"correction": {
 				"steps": [
 					"« Parmi les internes » : on ne regarde que la colonne des internes ; le dénominateur est l'effectif des **internes**.",
-					"Filles internes : ${{f3}}$ sur ${{t3}}$ internes : \\textcolor{{{color:primary.0}}}{\\dfrac{ {{f3}} }{ {{t3}} }}."
+					"Filles internes : ${{f3}}$ sur ${{t3}}$ internes : $\\textcolor{{{color:primary.0}}}{\\dfrac{ {{f3}} }{ {{t3}} }}$."
 				]
 			}
 		}

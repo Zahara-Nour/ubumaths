@@ -75,7 +75,7 @@
 			"correction": {
 				"steps": [
 					"Une **fréquence marginale** se lit dans les marges : effectif d'une modalité (ligne ou colonne **Total**) divisé par l'effectif total.",
-					"Internes : ${{t3}}$ sur ${{nt}}$ élèves : \\textcolor{{{color:primary.0}}}{\\dfrac{ {{t3}} }{ {{nt}} }}."
+					"Internes : ${{t3}}$ sur ${{nt}}$ élèves : $\\textcolor{{{color:primary.0}}}{\\dfrac{ {{t3}} }{ {{nt}} }}$."
 				]
 			}
 		},
@@ -140,7 +140,7 @@
 			"correction": {
 				"steps": [
 					"Une **fréquence marginale** se lit dans les marges : effectif d'une modalité (ligne ou colonne **Total**) divisé par l'effectif total.",
-					"Garçons : ${{tg}}$ sur ${{nt}}$ élèves : \\textcolor{{{color:primary.0}}}{\\dfrac{ {{tg}} }{ {{nt}} }}."
+					"Garçons : ${{tg}}$ sur ${{nt}}$ élèves : $\\textcolor{{{color:primary.0}}}{\\dfrac{ {{tg}} }{ {{nt}} }}$."
 				]
 			}
 		}
