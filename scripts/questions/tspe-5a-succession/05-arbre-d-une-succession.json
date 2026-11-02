@@ -1,0 +1,241 @@
+{
+	"title": "Arbre d'une succession : chemins, indépendance",
+	"description": "Arbre de trois épreuves : nombre de chemins (une par issue) et de branches ; reconnaître sur un arbre pondéré si les épreuves sont indépendantes (mêmes pondérations à chaque niveau)",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Succession d'épreuves",
+	"subdomain": "Arbres",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Une expérience enchaîne trois épreuves : la première a ${{eval:a}}$ issues, la deuxième ${{eval:b}}$ issues et la troisième ${{eval:c}}$ issues, quelle que soit l'issue des épreuves précédentes. On la représente par un arbre.\n\nNombre de chemins de l'arbre : $?$\n\nNombre total de branches de l'arbre : $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "b",
+					"expression": "2..4"
+				},
+				{
+					"name": "c",
+					"expression": "2..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*b*c}}"
+				},
+				{
+					"expectedAnswer": "{{eval:a+a*b+a*b*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Premier niveau : ${{eval:a}}$ branches. Chacune se divise en ${{eval:b}}$ : ${{eval:a}}\\times{{eval:b}}={{eval:a*b}}$ branches au deuxième niveau, puis ${{eval:a*b}}\\times{{eval:c}}={{eval:a*b*c}}$ au troisième.",
+					"Un chemin va de la racine à une extrémité du troisième niveau : il y en a autant que de branches du dernier niveau, $\\textcolor{{{color:primary.0}}}{{{eval:a*b*c}}}$ (une par issue).",
+					"Branches : ${{eval:a}}+{{eval:a*b}}+{{eval:a*b*c}}=\\textcolor{{{color:primary.0}}}{{{eval:a+a*b+a*b*c}}}$."
+				]
+			}
+		},
+		{
+			"statement": "L'arbre pondéré ci-dessous représente une succession de trois épreuves.\n\n```probtree\nA:{{eval:a/10;d}}\n  B:{{eval:b/10;d}}\n    C:{{eval:c/10;d}}\n    \\overline{C}:{{eval:1-c/10;d}}\n  \\overline{B}:{{eval:1-b/10;d}}\n    C:{{eval:c/10;d}}\n    \\overline{C}:{{eval:1-c/10;d}}\n\\overline{A}:{{eval:1-a/10;d}}\n  B:{{eval:q/10;d}}\n    C:{{eval:c/10;d}}\n    \\overline{C}:{{eval:1-c/10;d}}\n  \\overline{B}:{{eval:1-q/10;d}}\n    C:{{eval:c/10;d}}\n    \\overline{C}:{{eval:1-c/10;d}}\n```\n\nCes trois épreuves sont-elles indépendantes ?\n\n```choix\n- Oui : sous chaque nœud d'un même niveau, les branches portent les mêmes pondérations.\n- Oui : chaque nœud a le même nombre de branches.\n- Non : les pondérations du niveau suivant changent selon la branche dont on vient.\n- Non : les pondérations issues d'un même nœud sont différentes.\n```",
+			"variables": [
+				{
+					"name": "ind",
+					"expression": "0..1"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "{{eval:ind*b+(1-ind)*d}}"
+				},
+				{
+					"name": "rep",
+					"expression": "{{eval:2-2*ind}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{rep}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Des épreuves sont indépendantes quand la probabilité de chaque issue d'une épreuve ne dépend pas des issues précédentes : sur l'arbre, les branches d'un même niveau portent les **mêmes** pondérations sous chaque nœud.",
+					"Le nombre de branches ne suffit pas, et des pondérations différentes sous un même nœud sont normales (elles ont pour somme $1$).",
+					"Ici, la branche $B$ porte ${{eval:b/10;d}}$ sous $A$ et ${{eval:q/10;d}}$ sous $\\overline{A}$. {{if:ind==1|Ce sont les mêmes, comme pour $C$ à chaque nœud : $\\textcolor{{{color:primary.0}}}{\\text{oui}}$, les épreuves sont indépendantes.}}{{if:ind==0|Ces pondérations diffèrent : $\\textcolor{{{color:primary.0}}}{\\text{non}}$, la deuxième épreuve dépend de la première.}}"
+				]
+			},
+			"conditions": ["a != 5", "b != 5", "c != 5", "d != 5", "d != b"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2, 3, 4 : 24 et 32",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "4"
+			},
+			"answers": ["24", "32"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme des issues",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "4"
+			},
+			"answers": ["9", "32"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : branches = chemins",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "4"
+			},
+			"answers": ["24", "24"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : branches = 2 + 3 + 4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "4"
+			},
+			"answers": ["24", "9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Indépendantes : bon critère",
+			"variationIndex": 1,
+			"variables": {
+				"ind": "1",
+				"a": "3",
+				"b": "4",
+				"c": "7",
+				"d": "6"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Indépendantes : faux critère",
+			"variationIndex": 1,
+			"variables": {
+				"ind": "1",
+				"a": "3",
+				"b": "4",
+				"c": "7",
+				"d": "6"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Indépendantes : « non »",
+			"variationIndex": 1,
+			"variables": {
+				"ind": "1",
+				"a": "3",
+				"b": "4",
+				"c": "7",
+				"d": "6"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Dépendantes : bon critère",
+			"variationIndex": 1,
+			"variables": {
+				"ind": "0",
+				"a": "3",
+				"b": "4",
+				"c": "7",
+				"d": "6"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Dépendantes : « oui »",
+			"variationIndex": 1,
+			"variables": {
+				"ind": "0",
+				"a": "3",
+				"b": "4",
+				"c": "7",
+				"d": "6"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Dépendantes : faux critère",
+			"variationIndex": 1,
+			"variables": {
+				"ind": "0",
+				"a": "3",
+				"b": "4",
+				"c": "7",
+				"d": "6"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

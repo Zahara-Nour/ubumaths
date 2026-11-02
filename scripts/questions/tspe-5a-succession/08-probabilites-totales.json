@@ -1,0 +1,188 @@
+{
+	"title": "Probabilités totales",
+	"description": "Formule des probabilités totales : partition en trois (trois machines) ; probabilité de gagner la troisième partie sur un arbre de trois épreuves dépendantes (quatre chemins)",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Succession d'épreuves",
+	"subdomain": "Épreuves dépendantes",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Une usine fabrique des pièces sur trois machines : $A_1$ en produit ${{eval:10*v}}~\\%$, $A_2$ en produit ${{eval:10*w}}~\\%$ et $A_3$ le reste. Une pièce est défectueuse ($D$) avec la probabilité ${{eval:d/100;d}}$ si elle sort de $A_1$, ${{eval:t/100;d}}$ si elle sort de $A_2$ et ${{eval:u/100;d}}$ si elle sort de $A_3$. On prend une pièce au hasard.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(D)=?$",
+			"variables": [
+				{
+					"name": "v",
+					"expression": "2..5"
+				},
+				{
+					"name": "w",
+					"expression": "2..4"
+				},
+				{
+					"name": "d",
+					"expression": "1..6"
+				},
+				{
+					"name": "t",
+					"expression": "1..6"
+				},
+				{
+					"name": "u",
+					"expression": "1..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(v*d+w*t+(10-v-w)*u)/1000}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A_1$, $A_2$, $A_3$ forment une **partition** de l'univers (chaque pièce sort d'une seule machine) :\n\n```probtree\n\\mathrm{A}_1:{{eval:v/10;d}}\n  D:{{eval:d/100;d}}\n  \\overline{D}:{{eval:1-d/100;d}}\n\\mathrm{A}_2:{{eval:w/10;d}}\n  D:{{eval:t/100;d}}\n  \\overline{D}:{{eval:1-t/100;d}}\n\\mathrm{A}_3:{{eval:1-(v+w)/10;d}}\n  D:{{eval:u/100;d}}\n  \\overline{D}:{{eval:1-u/100;d}}\n```",
+					"Formule des probabilités totales : $P(D)=P(A_1)P_{A_1}(D)+P(A_2)P_{A_2}(D)+P(A_3)P_{A_3}(D)$.",
+					"$P(D)={{eval:v/10;d}}\\times{{eval:d/100;d}}+{{eval:w/10;d}}\\times{{eval:t/100;d}}+{{eval:1-(v+w)/10;d}}\\times{{eval:u/100;d}}=\\textcolor{{{color:primary.0}}}{{{eval:(v*d+w*t+(10-v-w)*u)/1000;d}}}$."
+				]
+			},
+			"conditions": ["v + w <= 8", "d != t", "t != u", "d != u"]
+		},
+		{
+			"statement": "Noé joue trois parties. Il gagne la première avec la probabilité ${{eval:a/10;d}}$. Ensuite, s'il a gagné une partie, il gagne la suivante avec la probabilité ${{eval:g/10;d}}$ ; s'il l'a perdue, il gagne la suivante avec la probabilité ${{eval:h/10;d}}$. On note $G_1$, $G_2$ et $G_3$ les événements « Noé gagne la première, la deuxième, la troisième partie ».\n\nL'arbre pondéré ci-dessous représente cette expérience.\n\n```probtree\n\\mathrm{G}_1:{{eval:a/10;d}}\n  \\mathrm{G}_2:{{eval:g/10;d}}\n    \\mathrm{G}_3:{{eval:g/10;d}}\n    \\overline{G_3}:{{eval:1-g/10;d}}\n  \\overline{G_2}:{{eval:1-g/10;d}}\n    \\mathrm{G}_3:{{eval:h/10;d}}\n    \\overline{G_3}:{{eval:1-h/10;d}}\n\\overline{G_1}:{{eval:1-a/10;d}}\n  \\mathrm{G}_2:{{eval:h/10;d}}\n    \\mathrm{G}_3:{{eval:g/10;d}}\n    \\overline{G_3}:{{eval:1-g/10;d}}\n  \\overline{G_2}:{{eval:1-h/10;d}}\n    \\mathrm{G}_3:{{eval:h/10;d}}\n    \\overline{G_3}:{{eval:1-h/10;d}}\n```\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité que Noé gagne la troisième partie : $P(G_3)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "g",
+					"expression": "5..9"
+				},
+				{
+					"name": "h",
+					"expression": "1..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a*g*g+a*(10-g)*h+(10-a)*h*g+(10-a)*(10-h)*h)/1000}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$G_3$ est réalisé par quatre chemins incompatibles : $G_1G_2G_3$, $G_1\\overline{G_2}G_3$, $\\overline{G_1}G_2G_3$ et $\\overline{G_1}\\overline{G_2}G_3$ (formule des probabilités totales, avec la partition formée par les deux premières parties).",
+					"Chacun a pour probabilité le produit de ses branches : ${{eval:a/10;d}}\\times{{eval:g/10;d}}\\times{{eval:g/10;d}}={{eval:a*g*g/1000;d}}$ ; ${{eval:a/10;d}}\\times{{eval:1-g/10;d}}\\times{{eval:h/10;d}}={{eval:a*(10-g)*h/1000;d}}$ ; ${{eval:1-a/10;d}}\\times{{eval:h/10;d}}\\times{{eval:g/10;d}}={{eval:(10-a)*h*g/1000;d}}$ ; ${{eval:1-a/10;d}}\\times{{eval:1-h/10;d}}\\times{{eval:h/10;d}}={{eval:(10-a)*(10-h)*h/1000;d}}$.",
+					"On additionne : $P(G_3)=\\textcolor{{{color:primary.0}}}{{{eval:(a*g*g+a*(10-g)*h+(10-a)*h*g+(10-a)*(10-h)*h)/1000;d}}}$."
+				]
+			},
+			"conditions": ["g > h", "a != 5"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "0,5 × 0,02 + 0,3 × 0,03 + 0,2 × 0,05",
+			"variationIndex": 0,
+			"variables": {
+				"v": "5",
+				"w": "3",
+				"d": "2",
+				"t": "3",
+				"u": "5"
+			},
+			"answers": ["0{,}029"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En fraction",
+			"variationIndex": 0,
+			"variables": {
+				"v": "5",
+				"w": "3",
+				"d": "2",
+				"t": "3",
+				"u": "5"
+			},
+			"answers": ["\\frac{29}{1000}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : moyenne des taux",
+			"variationIndex": 0,
+			"variables": {
+				"v": "5",
+				"w": "3",
+				"d": "2",
+				"t": "3",
+				"u": "5"
+			},
+			"answers": ["\\frac{1}{30}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une machine",
+			"variationIndex": 0,
+			"variables": {
+				"v": "5",
+				"w": "3",
+				"d": "2",
+				"t": "3",
+				"u": "5"
+			},
+			"answers": ["0{,}01"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a = 0,6, g = 0,7, h = 0,4 : 0,574",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"g": "7",
+				"h": "4"
+			},
+			"answers": ["0{,}574"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un seul chemin",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"g": "7",
+				"h": "4"
+			},
+			"answers": ["0{,}294"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : P(G₂)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"g": "7",
+				"h": "4"
+			},
+			"answers": ["0{,}58"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

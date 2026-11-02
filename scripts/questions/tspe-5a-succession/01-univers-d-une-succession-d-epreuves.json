@@ -1,0 +1,188 @@
+{
+	"title": "Univers d'une succession d'épreuves",
+	"description": "Univers produit cartésien : nombre d'issues de trois épreuves différentes, de n épreuves de Bernoulli ({0 ; 1}ⁿ) ; reconnaître une issue (triplet ordonné)",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Succession d'épreuves",
+	"subdomain": "Épreuves indépendantes",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On lance un dé équilibré à ${{eval:2*w+4}}$ faces numérotées de $1$ à ${{eval:2*w+4}}$, puis une pièce de monnaie (pile $P$ ou face $F$), puis on tire une boule dans une urne qui contient des boules de ${{eval:c}}$ couleurs différentes. On note le résultat sous la forme d'un triplet (numéro ; côté ; couleur).\n\nNombre d'issues de cette expérience : $?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..4"
+				},
+				{
+					"name": "c",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(2*w+4)*2*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'univers est le **produit cartésien** des univers des trois épreuves : $\\{1\\,;\\ldots\\,;{{eval:2*w+4}}\\}\\times\\{P\\,;F\\}\\times C$, où $C$ est l'ensemble des ${{eval:c}}$ couleurs.",
+					"Une issue est un triplet : ${{eval:2*w+4}}$ choix pour le numéro, $2$ pour le côté, ${{eval:c}}$ pour la couleur. Il y a ${{eval:2*w+4}}\\times2\\times{{eval:c}}=\\textcolor{{{color:primary.0}}}{{{eval:(2*w+4)*2*c}}}$ issues."
+				]
+			}
+		},
+		{
+			"statement": "On répète ${{eval:n}}$ fois une épreuve de Bernoulli. On code chaque succès par $1$ et chaque échec par $0$ : une issue est une liste de ${{eval:n}}$ chiffres égaux à $0$ ou à $1$, par exemple $(1\\,;0\\,;0\\,;1\\,;\\ldots)$.\n\nNombre d'issues de cette expérience : $?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2^n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'univers est $\\{0\\,;1\\}^{{{eval:n}}}=\\{0\\,;1\\}\\times\\cdots\\times\\{0\\,;1\\}$ (${{eval:n}}$ facteurs).",
+					"Chaque composante a $2$ valeurs possibles : il y a $2^{{{eval:n}}}=\\textcolor{{{color:primary.0}}}{{{eval:2^n}}}$ issues."
+				]
+			}
+		},
+		{
+			"statement": "On lance un dé à six faces, puis une pièce (pile $P$ ou face $F$), puis on tire une boule rouge, verte ou bleue ($R$, $V$ ou $B$). L'univers est $\\{1\\,;2\\,;3\\,;4\\,;5\\,;6\\}\\times\\{P\\,;F\\}\\times\\{R\\,;V\\,;B\\}$.\n\nLaquelle de ces écritures est une issue de cette expérience ?\n\n```choix\n- $({{eval:d}}\\,;F\\,;V)$\n- $\\{{{eval:d}}\\,;F\\,;V\\}$\n- $(F\\,;{{eval:d}}\\,;V)$\n- $({{eval:d}}\\,;F)$\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "1..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une issue d'un produit cartésien est une liste **ordonnée** (un triplet ici) : une composante par épreuve, dans l'ordre des épreuves.",
+					"Les accolades désignent un ensemble, sans ordre ; $(F\\,;{{eval:d}}\\,;V)$ met le côté avant le numéro ; $({{eval:d}}\\,;F)$ oublie la troisième épreuve.",
+					"L'issue est $\\textcolor{{{color:primary.0}}}{({{eval:d}}\\,;F\\,;V)}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Dé à 6, 3 couleurs : 36",
+			"variationIndex": 0,
+			"variables": {
+				"w": "1",
+				"c": "3"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme 6 + 2 + 3",
+			"variationIndex": 0,
+			"variables": {
+				"w": "1",
+				"c": "3"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : pièce oubliée",
+			"variationIndex": 0,
+			"variables": {
+				"w": "1",
+				"c": "3"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n = 7 : 128",
+			"variationIndex": 1,
+			"variables": {
+				"n": "7"
+			},
+			"answers": ["128"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2n",
+			"variationIndex": 1,
+			"variables": {
+				"n": "7"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n²",
+			"variationIndex": 1,
+			"variables": {
+				"n": "7"
+			},
+			"answers": ["49"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Triplet ordonné",
+			"variationIndex": 2,
+			"variables": {
+				"d": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ensemble",
+			"variationIndex": 2,
+			"variables": {
+				"d": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ordre",
+			"variationIndex": 2,
+			"variables": {
+				"d": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

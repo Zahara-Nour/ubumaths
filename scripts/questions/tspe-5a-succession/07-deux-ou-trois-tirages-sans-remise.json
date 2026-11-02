@@ -1,0 +1,204 @@
+{
+	"title": "Deux ou trois tirages sans remise",
+	"description": "Épreuves non indépendantes (deux ou trois tirages sans remise) : probabilité d'un chemin par les probabilités conditionnelles, d'un événement réalisé par deux chemins, d'« au moins une » par l'événement contraire",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Succession d'épreuves",
+	"subdomain": "Épreuves dépendantes",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Une urne contient ${{eval:r}}$ boules rouges ($R$) et ${{eval:b}}$ boules blanches ($B$). On tire successivement trois boules, **sans remise**.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité de l'issue $(R\\,;R\\,;B)$ : $?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "3..6"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r*(r-1)*b/((r+b)*((r+b)-1)*((r+b)-2))}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sans remise, la composition de l'urne change à chaque tirage : les épreuves ne sont pas indépendantes. On multiplie les probabilités **conditionnelles** le long du chemin.",
+					"Premier tirage : $P(R_1)=\\dfrac{{{eval:r}}}{{{eval:(r+b)}}}$. Il reste ${{eval:r-1}}$ rouges sur ${{eval:(r+b)-1}}$ boules : $P_{R_1}(R_2)=\\dfrac{{{eval:r-1}}}{{{eval:(r+b)-1}}}$. Puis ${{eval:b}}$ blanches sur ${{eval:(r+b)-2}}$ : $P_{R_1\\cap R_2}(B_3)=\\dfrac{{{eval:b}}}{{{eval:(r+b)-2}}}$.",
+					"$\\dfrac{{{eval:r}}}{{{eval:(r+b)}}}\\times\\dfrac{{{eval:r-1}}}{{{eval:(r+b)-1}}}\\times\\dfrac{{{eval:b}}}{{{eval:(r+b)-2}}}=\\textcolor{{{color:primary.0}}}{{{eval:r*(r-1)*b/((r+b)*((r+b)-1)*((r+b)-2))}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une urne contient ${{eval:r}}$ boules rouges ($R$) et ${{eval:b}}$ boules blanches ($B$). On tire successivement deux boules, **sans remise**.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité que les deux boules soient de la même couleur : $?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "3..6"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(r*(r-1)+b*(b-1))/((r+b)*((r+b)-1))}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« Même couleur » est réalisé par deux chemins incompatibles : $(R\\,;R)$ et $(B\\,;B)$.",
+					"Sans remise : $P\\big((R\\,;R)\\big)=\\dfrac{{{eval:r}}}{{{eval:(r+b)}}}\\times\\dfrac{{{eval:r-1}}}{{{eval:(r+b)-1}}}={{eval:r*(r-1)/((r+b)*((r+b)-1))}}$ et $P\\big((B\\,;B)\\big)=\\dfrac{{{eval:b}}}{{{eval:(r+b)}}}\\times\\dfrac{{{eval:b-1}}}{{{eval:(r+b)-1}}}={{eval:b*(b-1)/((r+b)*((r+b)-1))}}$.",
+					"On additionne : $\\textcolor{{{color:primary.0}}}{{{eval:(r*(r-1)+b*(b-1))/((r+b)*((r+b)-1))}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une urne contient ${{eval:r}}$ boules rouges ($R$) et ${{eval:b}}$ boules blanches ($B$). On tire successivement trois boules, **sans remise**.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité d'obtenir au moins une boule blanche : $?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "3..6"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-r*(r-1)*(r-2)/((r+b)*((r+b)-1)*((r+b)-2))}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'événement contraire de « au moins une blanche » est « trois rouges » : le chemin $(R\\,;R\\,;R)$.",
+					"Sans remise : $P\\big((R\\,;R\\,;R)\\big)=\\dfrac{{{eval:r}}}{{{eval:(r+b)}}}\\times\\dfrac{{{eval:r-1}}}{{{eval:(r+b)-1}}}\\times\\dfrac{{{eval:r-2}}}{{{eval:(r+b)-2}}}={{eval:r*(r-1)*(r-2)/((r+b)*((r+b)-1)*((r+b)-2))}}$.",
+					"Probabilité d'au moins une blanche : $1-{{eval:r*(r-1)*(r-2)/((r+b)*((r+b)-1)*((r+b)-2))}}=\\textcolor{{{color:primary.0}}}{{{eval:1-r*(r-1)*(r-2)/((r+b)*((r+b)-1)*((r+b)-2))}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4R 3B : 4/7 × 3/6 × 3/5",
+			"variationIndex": 0,
+			"variables": {
+				"r": "4",
+				"b": "3"
+			},
+			"answers": ["\\frac{6}{35}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : avec remise",
+			"variationIndex": 0,
+			"variables": {
+				"r": "4",
+				"b": "3"
+			},
+			"answers": ["\\frac{48}{343}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ordre oublié (×3)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "4",
+				"b": "3"
+			},
+			"answers": ["\\frac{18}{35}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Même couleur : 12/42 + 6/42",
+			"variationIndex": 1,
+			"variables": {
+				"r": "4",
+				"b": "3"
+			},
+			"answers": ["\\frac{3}{7}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : avec remise",
+			"variationIndex": 1,
+			"variables": {
+				"r": "4",
+				"b": "3"
+			},
+			"answers": ["\\frac{25}{49}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rouges seules",
+			"variationIndex": 1,
+			"variables": {
+				"r": "4",
+				"b": "3"
+			},
+			"answers": ["\\frac{2}{7}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Au moins une blanche : 1 − 4/35",
+			"variationIndex": 2,
+			"variables": {
+				"r": "4",
+				"b": "3"
+			},
+			"answers": ["\\frac{31}{35}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : avec remise",
+			"variationIndex": 2,
+			"variables": {
+				"r": "4",
+				"b": "3"
+			},
+			"answers": ["\\frac{279}{343}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : P(RRR)",
+			"variationIndex": 2,
+			"variables": {
+				"r": "4",
+				"b": "3"
+			},
+			"answers": ["\\frac{4}{35}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
