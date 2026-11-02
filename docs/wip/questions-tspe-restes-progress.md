@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, 8a publié (11/11)._
+_Mis à jour le 2026-11-02, 8b écrit (PR à merger)._
 
-- **État** : lot 8 (D-L8 : 26 « à savoir » en 8a/8b/8c) ; **8a clos** : 11 modèles publiés (#2259, #2260 ; relecture 11 « ok »).
-- **Prochaine action** : 8b (463, 603, 604, 605, 606, 466, 484 : primitives de référence, y′ = ay + b, IPP ; 7 modèles, gabarit `docs/wip/questions/lot-tspe-savoir-a.py`), même chaîne que 8a.
-- **En attente de David** : rien.
+- **État** : lot 8 (D-L8 : 26 « à savoir » en 8a/8b/8c) ; 8a clos ; **8b** : 7 modèles écrits (`scripts/questions/tspe-8b-savoir/`), specs 68 vertes, simulation `create-questions` : 7 à créer.
+- **Prochaine action** : merger la PR de 8b ; puis `create-questions --dir scripts/questions/tspe-8b-savoir --publier` par David (dépôt principal) ; relevé MCP ; migration nœud + tag (copie de `20261102204034`, TSPE-466 va sur la NOTION « Équations différentielles › y′ = ay + b » : relever ses sous-notions pour `sous_notions_admises`).
+- **En attente de David** : `create-questions --publier` après le merge.
 - **Pièges en cours** : relevé de nœuds → filtrer `archived_at is null` ; `!=` dans `$…$` lu « ≠ » (écrire `!\,=`) ; garde « notion sans sous-notion » : liste `sous_notions_admises` (migration `20261102181059`).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · branche neuve depuis `origin/main` pour 8b.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · `content/questions-tspe-8b`.
 
 ---
 
@@ -243,3 +243,16 @@ dans Chrome).
 **Relecture** (David, 2026-11-02) : 11 « ok » sur 11, aucun commentaire (lu en base de l'artefact). **Publication** :
 `publier-lot.ts` simulé (11 passent), lancé par David avec `--publier` : 11/11 `published`, relus au MCP, toujours sur
 leur nœud. **8a clos.**
+
+## Lot 8b : écriture (2026-11-02)
+
+`docs/wip/questions/lot-tspe-savoir-b.py` (copie de 8a) → `scripts/questions/tspe-8b-savoir/` : 7 modèles `[T_SPE]`,
+sous-domaine « À savoir » (relevé prod : aucun dans ces domaines) ; thèmes des voisins : « Primitives et équations
+différentielles » (Primitives 1-5 : 463 xⁿ, 603 1/√x, 604 exp, 605 sin, 606 cos ; Équations différentielles 1 : 466)
+et « Intégration » (Calcul intégral 1 : 484). 2 ou 3 variations par modèle, case choix à 4 propositions, deux sens de
+lecture (primitive ↔ fonction), cas n = 3 et n = −2 pour 463, solution constante et exemple y′ = −y + 4 pour 466,
+hypothèses et exemple x eˣ pour 484. Specs : 68 vertes, aperçus relus (le moteur réécrit `e^x` en `\exponentialE^x`
+dans les formules qu'il analyse, comme dans les modèles d'exponentielle de 1re). Simulation `create-questions` : 7 à
+créer, 0 en base. Nœuds des points (MCP) : 463, 603-606 → Équations différentielles › y′ = f › primitives des fonctions
+de référence ; 466 → NOTION Équations différentielles › y′ = ay + b ; 484 → Intégration › Calcul d'intégrales ›
+intégration par parties. Aucun de ces points n'a de tag.

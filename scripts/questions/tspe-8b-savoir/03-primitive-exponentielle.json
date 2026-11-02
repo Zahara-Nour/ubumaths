@@ -1,0 +1,119 @@
+{
+	"title": "Primitive de la fonction exponentielle",
+	"description": "À savoir : exp est une primitive de exp sur ℝ ; les primitives sont eˣ + C ; distracteurs : formules des puissances, Ceˣ, eˣ + Cx",
+	"grades": ["T_SPE"],
+	"theme": "Primitives et équations différentielles",
+	"domain": "Primitives",
+	"subdomain": "À savoir",
+	"level": 3,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Une primitive sur $\\mathbb{R}$ de la fonction exponentielle $x\\mapsto e^x$ est :\n\n```choix\n- $x\\mapsto e^x$\n- $x\\mapsto xe^{x-1}$\n- $x\\mapsto\\dfrac{e^{x+1}}{x+1}$\n- $x\\mapsto e^{-x}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : la fonction exponentielle est sa propre dérivée, donc $\\textcolor{{{color:primary.0}}}{x\\mapsto e^x}$ est une primitive de $x\\mapsto e^x$ sur $\\mathbb{R}$.",
+					"Les formules des puissances ($xe^{x-1}$, $\\dfrac{e^{x+1}}{x+1}$) ne s'appliquent pas : l'inconnue est dans l'EXPOSANT."
+				]
+			}
+		},
+		{
+			"statement": "Les primitives sur $\\mathbb{R}$ de la fonction $x\\mapsto e^x$ sont les fonctions (où $C$ est un réel quelconque) :\n\n```choix\n- $x\\mapsto e^x+C$\n- $x\\mapsto Ce^x$\n- $x\\mapsto e^x+Cx$\n- $x\\mapsto xe^x+C$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : $x\\mapsto e^x$ est une primitive de $x\\mapsto e^x$, et deux primitives diffèrent d'une constante.",
+					"Les primitives sont donc les fonctions $\\textcolor{{{color:primary.0}}}{x\\mapsto e^x+C}$, $C\\in\\mathbb{R}$.",
+					"$Ce^x$ a pour dérivée $Ce^x$, égale à $e^x$ seulement si $C=1$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "eˣ",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : xeˣ⁻¹ (puissances)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : eˣ⁺¹/(x + 1)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : e⁻ˣ",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "eˣ + C",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : Ceˣ",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : eˣ + Cx",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : xeˣ + C",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

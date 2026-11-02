@@ -1,0 +1,118 @@
+{
+	"title": "Primitive de x ↦ 1/√x",
+	"description": "À savoir : une primitive de 1/√x sur ]0 ; +∞[ est 2√x ; dans les deux sens ; distracteurs : √x (facteur oublié), √x/2, dérivée",
+	"grades": ["T_SPE"],
+	"theme": "Primitives et équations différentielles",
+	"domain": "Primitives",
+	"subdomain": "À savoir",
+	"level": 2,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Une primitive sur $]0\\,;+\\infty[$ de la fonction $x\\mapsto\\dfrac{1}{\\sqrt{x}}$ est :\n\n```choix\n- $x\\mapsto 2\\sqrt{x}$\n- $x\\mapsto\\sqrt{x}$\n- $x\\mapsto\\dfrac{\\sqrt{x}}{2}$\n- $x\\mapsto-\\dfrac{1}{2x\\sqrt{x}}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : une primitive sur $]0\\,;+\\infty[$ de $x\\mapsto\\dfrac{1}{\\sqrt{x}}$ est $\\textcolor{{{color:primary.0}}}{x\\mapsto 2\\sqrt{x}}$.",
+					"Vérification : $\\left(2\\sqrt{x}\\right)'=2\\times\\dfrac{1}{2\\sqrt{x}}=\\dfrac{1}{\\sqrt{x}}$. $\\sqrt{x}$ a pour dérivée $\\dfrac{1}{2\\sqrt{x}}$ : il manque le facteur $2$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction $x\\mapsto 2\\sqrt{x}$ est une primitive sur $]0\\,;+\\infty[$ de la fonction :\n\n```choix\n- $x\\mapsto\\dfrac{1}{\\sqrt{x}}$\n- $x\\mapsto\\dfrac{1}{2\\sqrt{x}}$\n- $x\\mapsto\\sqrt{x}$\n- $x\\mapsto\\dfrac{4}{3}x\\sqrt{x}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : une primitive sur $]0\\,;+\\infty[$ de $x\\mapsto\\dfrac{1}{\\sqrt{x}}$ est $x\\mapsto 2\\sqrt{x}$.",
+					"Autrement dit, $\\left(2\\sqrt{x}\\right)'=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{\\sqrt{x}}}$. $\\dfrac{4}{3}x\\sqrt{x}$ est une primitive de $2\\sqrt{x}$ (sens inversé)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2√x",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : √x",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : √x/2",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : dérivée",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/√x",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/(2√x)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : √x",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : primitive (sens inversé)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

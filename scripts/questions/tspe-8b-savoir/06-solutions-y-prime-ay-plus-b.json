@@ -1,0 +1,169 @@
+{
+	"title": "Solutions de l'équation y′ = ay + b",
+	"description": "À savoir : pour a ≠ 0, les solutions de y′ = ay + b sont Ce^(ax) − b/a ; solution constante −b/a ; exemple y′ = −y + 4 ; distracteurs : signe, oubli de diviser par a, e^(−ax)",
+	"grades": ["T_SPE"],
+	"theme": "Primitives et équations différentielles",
+	"domain": "Équations différentielles",
+	"subdomain": "À savoir",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $a$ et $b$ deux réels, $a\\neq 0$. Les solutions sur $\\mathbb{R}$ de l'équation différentielle $y'=ay+b$ sont les fonctions (où $C$ est un réel quelconque) :\n\n```choix\n- $x\\mapsto Ce^{ax}-\\dfrac{b}{a}$\n- $x\\mapsto Ce^{ax}+\\dfrac{b}{a}$\n- $x\\mapsto Ce^{ax}-b$\n- $x\\mapsto Ce^{-ax}-\\dfrac{b}{a}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : pour $a\\neq 0$, les solutions de $y'=ay+b$ sont les fonctions $\\textcolor{{{color:primary.0}}}{x\\mapsto Ce^{ax}-\\dfrac{b}{a}}$, $C\\in\\mathbb{R}$.",
+					"Ce sont les solutions de $y'=ay$, $x\\mapsto Ce^{ax}$, auxquelles on ajoute la solution constante $-\\dfrac{b}{a}$ (elle vérifie $0=ay+b$)."
+				]
+			}
+		},
+		{
+			"statement": "Soit $a$ et $b$ deux réels, $a\\neq 0$. La solution constante de l'équation différentielle $y'=ay+b$ est la fonction :\n\n```choix\n- $x\\mapsto-\\dfrac{b}{a}$\n- $x\\mapsto\\dfrac{b}{a}$\n- $x\\mapsto-\\dfrac{a}{b}$\n- $x\\mapsto b$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : une fonction constante a une dérivée nulle ; elle est solution lorsque $0=ay+b$.",
+					"Donc $y=\\textcolor{{{color:primary.0}}}{-\\dfrac{b}{a}}$. Les autres solutions s'en déduisent : $x\\mapsto Ce^{ax}-\\dfrac{b}{a}$."
+				]
+			}
+		},
+		{
+			"statement": "Les solutions sur $\\mathbb{R}$ de l'équation différentielle $y'=-y+4$ sont les fonctions (où $C$ est un réel quelconque) :\n\n```choix\n- $x\\mapsto Ce^{-x}+4$\n- $x\\mapsto Ce^{-x}-4$\n- $x\\mapsto Ce^{x}+4$\n- $x\\mapsto Ce^{-x}+\\dfrac{1}{4}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : les solutions de $y'=ay+b$ ($a\\neq 0$) sont les fonctions $x\\mapsto Ce^{ax}-\\dfrac{b}{a}$.",
+					"Ici $a=-1$ et $b=4$, donc $-\\dfrac{b}{a}=-\\dfrac{4}{-1}=4$ : les solutions sont $\\textcolor{{{color:primary.0}}}{x\\mapsto Ce^{-x}+4}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Ce^(ax) − b/a",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : + b/a (signe)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : − b",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : e^(−ax)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−b/a",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : b/a (signe)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −a/b",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : b",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Ce⁻ˣ + 4",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : − 4 (signe)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : eˣ",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/4",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
