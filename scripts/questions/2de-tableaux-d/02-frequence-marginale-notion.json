@@ -1,0 +1,260 @@
+{
+	"title": "Reconnaître une fréquence marginale",
+	"description": "Tableau croisé : choisir le quotient qui donne la fréquence d'une modalité dans toute la population",
+	"grades": ["2"],
+	"theme": "Statistiques",
+	"domain": "Tableaux croisés",
+	"subdomain": "Fréquences marginales",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le tableau ci-dessous donne la répartition des élèves d'un lycée selon leur sexe et leur régime.\n\n```tableau-croise\nlignes: Filles ; Garçons\ncolonnes: Externe ; Demi-pensionnaire ; Interne\nFilles = {{f1}} ; {{f2}} ; {{f3}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}}\ncoin: Sexe \\ Régime\n```\n\nQuelle est la fréquence des internes dans l'ensemble du lycée ?\n\n```choix\n- $\\dfrac{ {{t3}} }{ {{nt}} }$\n- $\\dfrac{ {{f3}} }{ {{t3}} }$\n- $\\dfrac{ {{t3}} }{ {{tf}} }$\n- $\\dfrac{ {{nt}} }{ {{t3}} }$\n```",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "8..60"
+				},
+				{
+					"name": "f2",
+					"expression": "8..60"
+				},
+				{
+					"name": "f3",
+					"expression": "8..60"
+				},
+				{
+					"name": "g1",
+					"expression": "8..60"
+				},
+				{
+					"name": "g2",
+					"expression": "8..60"
+				},
+				{
+					"name": "g3",
+					"expression": "8..60"
+				},
+				{
+					"name": "tf",
+					"expression": "eval:(f1)+(f2)+(f3)"
+				},
+				{
+					"name": "tg",
+					"expression": "eval:(g1)+(g2)+(g3)"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:(f1)+(g1)"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:(f2)+(g2)"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:(f3)+(g3)"
+				},
+				{
+					"name": "nt",
+					"expression": "eval:(tf)+(tg)"
+				}
+			],
+			"conditions": ["tf != nt"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une **fréquence marginale** se lit dans les marges : effectif d'une modalité (ligne ou colonne **Total**) divisé par l'effectif total.",
+					"Internes : ${{t3}}$ sur ${{nt}}$ élèves : \\textcolor{{{color:primary.0}}}{\\dfrac{ {{t3}} }{ {{nt}} }}."
+				]
+			}
+		},
+		{
+			"statement": "Le tableau ci-dessous donne la répartition des élèves d'un lycée selon leur sexe et leur régime.\n\n```tableau-croise\nlignes: Filles ; Garçons\ncolonnes: Externe ; Demi-pensionnaire ; Interne\nFilles = {{f1}} ; {{f2}} ; {{f3}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}}\ncoin: Sexe \\ Régime\n```\n\nQuelle est la fréquence des garçons dans l'ensemble du lycée ?\n\n```choix\n- $\\dfrac{ {{tg}} }{ {{nt}} }$\n- $\\dfrac{ {{g1}} }{ {{nt}} }$\n- $\\dfrac{ {{tg}} }{ {{tf}} }$\n- $\\dfrac{ {{g3}} }{ {{tg}} }$\n```",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "8..60"
+				},
+				{
+					"name": "f2",
+					"expression": "8..60"
+				},
+				{
+					"name": "f3",
+					"expression": "8..60"
+				},
+				{
+					"name": "g1",
+					"expression": "8..60"
+				},
+				{
+					"name": "g2",
+					"expression": "8..60"
+				},
+				{
+					"name": "g3",
+					"expression": "8..60"
+				},
+				{
+					"name": "tf",
+					"expression": "eval:(f1)+(f2)+(f3)"
+				},
+				{
+					"name": "tg",
+					"expression": "eval:(g1)+(g2)+(g3)"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:(f1)+(g1)"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:(f2)+(g2)"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:(f3)+(g3)"
+				},
+				{
+					"name": "nt",
+					"expression": "eval:(tf)+(tg)"
+				}
+			],
+			"conditions": ["tg != tf"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une **fréquence marginale** se lit dans les marges : effectif d'une modalité (ligne ou colonne **Total**) divisé par l'effectif total.",
+					"Garçons : ${{tg}}$ sur ${{nt}}$ élèves : \\textcolor{{{color:primary.0}}}{\\dfrac{ {{tg}} }{ {{nt}} }}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Internes : 35/210 (rang 0)",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "40",
+				"f2": "55",
+				"f3": "15",
+				"g1": "35",
+				"g2": "45",
+				"g3": "20",
+				"tf": "110",
+				"tg": "100",
+				"t1": "75",
+				"t2": "100",
+				"t3": "35",
+				"nt": "210"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : parmi les internes, les filles",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "40",
+				"f2": "55",
+				"f3": "15",
+				"g1": "35",
+				"g2": "45",
+				"g3": "20",
+				"tf": "110",
+				"tg": "100",
+				"t1": "75",
+				"t2": "100",
+				"t3": "35",
+				"nt": "210"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : divisé par les filles",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "40",
+				"f2": "55",
+				"f3": "15",
+				"g1": "35",
+				"g2": "45",
+				"g3": "20",
+				"tf": "110",
+				"tg": "100",
+				"t1": "75",
+				"t2": "100",
+				"t3": "35",
+				"nt": "210"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Garçons : 100/210 (rang 0)",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "40",
+				"f2": "55",
+				"f3": "15",
+				"g1": "35",
+				"g2": "45",
+				"g3": "20",
+				"tf": "110",
+				"tg": "100",
+				"t1": "75",
+				"t2": "100",
+				"t3": "35",
+				"nt": "210"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : divisé par les filles",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "40",
+				"f2": "55",
+				"f3": "15",
+				"g1": "35",
+				"g2": "45",
+				"g3": "20",
+				"tf": "110",
+				"tg": "100",
+				"t1": "75",
+				"t2": "100",
+				"t3": "35",
+				"nt": "210"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

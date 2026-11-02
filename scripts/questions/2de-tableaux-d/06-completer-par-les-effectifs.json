@@ -1,0 +1,250 @@
+{
+	"title": "Compléter un tableau croisé par les effectifs",
+	"description": "Cases cachées d'un tableau croisé retrouvées par sommes et différences",
+	"grades": ["2"],
+	"theme": "Statistiques",
+	"domain": "Tableaux croisés",
+	"subdomain": "Effectifs",
+	"level": 2,
+	"delay": 150,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le tableau ci-dessous donne la répartition des élèves d'un lycée selon leur sexe et leur régime.\n\n```tableau-croise\nlignes: Filles ; Garçons\ncolonnes: Externe ; Demi-pensionnaire ; Interne\nFilles = {{f1}} ; {{f2}} ; {{f3}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}}\ncoin: Sexe \\ Régime\nmasquer: Filles/Interne ; Garçons/Total\n```\n\nComplète les cases cachées.\n\nFilles internes : $?$\n\nNombre total de garçons : $?$",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "8..60"
+				},
+				{
+					"name": "f2",
+					"expression": "8..60"
+				},
+				{
+					"name": "f3",
+					"expression": "8..60"
+				},
+				{
+					"name": "g1",
+					"expression": "8..60"
+				},
+				{
+					"name": "g2",
+					"expression": "8..60"
+				},
+				{
+					"name": "g3",
+					"expression": "8..60"
+				},
+				{
+					"name": "tf",
+					"expression": "eval:(f1)+(f2)+(f3)"
+				},
+				{
+					"name": "tg",
+					"expression": "eval:(g1)+(g2)+(g3)"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:(f1)+(g1)"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:(f2)+(g2)"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:(f3)+(g3)"
+				},
+				{
+					"name": "nt",
+					"expression": "eval:(tf)+(tg)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{f3}}"
+				},
+				{
+					"expectedAnswer": "{{tg}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque total est la **somme** de sa ligne ou de sa colonne : une case inconnue s'obtient par **différence**.",
+					"Filles internes : total des filles moins les autres filles : ${{tf}}-{{f1}}-{{f2}}=\\textcolor{{{color:primary.0}}}{{{f3}}}$ (ou ${{t3}}-{{g3}}$).",
+					"Garçons : effectif total moins les filles : ${{nt}}-{{tf}}=\\textcolor{{{color:primary.0}}}{{{tg}}}$.",
+					"```tableau-croise\nlignes: Filles ; Garçons\ncolonnes: Externe ; Demi-pensionnaire ; Interne\nFilles = {{f1}} ; {{f2}} ; {{f3}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}}\ncoin: Sexe \\ Régime\n```"
+				]
+			}
+		},
+		{
+			"statement": "Le tableau ci-dessous donne la répartition des élèves d'un lycée selon leur sexe et leur régime.\n\n```tableau-croise\nlignes: Filles ; Garçons\ncolonnes: Externe ; Demi-pensionnaire ; Interne\nFilles = {{f1}} ; {{f2}} ; {{f3}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}}\ncoin: Sexe \\ Régime\nmasquer: Filles/Total ; Garçons/Externe ; Total/Externe\n```\n\nComplète les cases cachées.\n\nNombre total de filles : $?$\n\nGarçons externes : $?$\n\nNombre total d'externes : $?$",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "8..60"
+				},
+				{
+					"name": "f2",
+					"expression": "8..60"
+				},
+				{
+					"name": "f3",
+					"expression": "8..60"
+				},
+				{
+					"name": "g1",
+					"expression": "8..60"
+				},
+				{
+					"name": "g2",
+					"expression": "8..60"
+				},
+				{
+					"name": "g3",
+					"expression": "8..60"
+				},
+				{
+					"name": "tf",
+					"expression": "eval:(f1)+(f2)+(f3)"
+				},
+				{
+					"name": "tg",
+					"expression": "eval:(g1)+(g2)+(g3)"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:(f1)+(g1)"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:(f2)+(g2)"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:(f3)+(g3)"
+				},
+				{
+					"name": "nt",
+					"expression": "eval:(tf)+(tg)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{tf}}"
+				},
+				{
+					"expectedAnswer": "{{g1}}"
+				},
+				{
+					"expectedAnswer": "{{t1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque total est la **somme** de sa ligne ou de sa colonne : une case inconnue s'obtient par **différence**.",
+					"Filles : ${{nt}}-{{tg}}=\\textcolor{{{color:primary.0}}}{{{tf}}}$.",
+					"Garçons externes : ${{tg}}-{{g2}}-{{g3}}=\\textcolor{{{color:primary.0}}}{{{g1}}}$.",
+					"Externes : ${{f1}}+{{g1}}=\\textcolor{{{color:primary.0}}}{{{t1}}}$.",
+					"```tableau-croise\nlignes: Filles ; Garçons\ncolonnes: Externe ; Demi-pensionnaire ; Interne\nFilles = {{f1}} ; {{f2}} ; {{f3}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}}\ncoin: Sexe \\ Régime\n```"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Filles internes 15, garçons 100",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "40",
+				"f2": "55",
+				"f3": "15",
+				"g1": "35",
+				"g2": "45",
+				"g3": "20",
+				"tf": "110",
+				"tg": "100",
+				"t1": "75",
+				"t2": "100",
+				"t3": "35",
+				"nt": "210"
+			},
+			"answers": ["15", "100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : t3 au lieu de f3",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "40",
+				"f2": "55",
+				"f3": "15",
+				"g1": "35",
+				"g2": "45",
+				"g3": "20",
+				"tf": "110",
+				"tg": "100",
+				"t1": "75",
+				"t2": "100",
+				"t3": "35",
+				"nt": "210"
+			},
+			"answers": ["35", "100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Filles 110, garçons externes 35, externes 75",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "40",
+				"f2": "55",
+				"f3": "15",
+				"g1": "35",
+				"g2": "45",
+				"g3": "20",
+				"tf": "110",
+				"tg": "100",
+				"t1": "75",
+				"t2": "100",
+				"t3": "35",
+				"nt": "210"
+			},
+			"answers": ["110", "35", "75"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : externes = filles externes",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "40",
+				"f2": "55",
+				"f3": "15",
+				"g1": "35",
+				"g2": "45",
+				"g3": "20",
+				"tf": "110",
+				"tg": "100",
+				"t1": "75",
+				"t2": "100",
+				"t3": "35",
+				"nt": "210"
+			},
+			"answers": ["110", "35", "40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,260 @@
+{
+	"title": "Reconnaître une fréquence conditionnelle",
+	"description": "Tableau croisé : « parmi les A, proportion de B » — choisir le quotient au bon dénominateur",
+	"grades": ["2"],
+	"theme": "Statistiques",
+	"domain": "Tableaux croisés",
+	"subdomain": "Fréquences conditionnelles",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le tableau ci-dessous donne la répartition des élèves d'un lycée selon leur sexe et leur régime.\n\n```tableau-croise\nlignes: Filles ; Garçons\ncolonnes: Externe ; Demi-pensionnaire ; Interne\nFilles = {{f1}} ; {{f2}} ; {{f3}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}}\ncoin: Sexe \\ Régime\n```\n\nParmi les **filles**, quelle est la proportion d'internes ?\n\n```choix\n- $\\dfrac{ {{f3}} }{ {{tf}} }$\n- $\\dfrac{ {{f3}} }{ {{nt}} }$\n- $\\dfrac{ {{f3}} }{ {{t3}} }$\n- $\\dfrac{ {{tf}} }{ {{nt}} }$\n```",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "8..60"
+				},
+				{
+					"name": "f2",
+					"expression": "8..60"
+				},
+				{
+					"name": "f3",
+					"expression": "8..60"
+				},
+				{
+					"name": "g1",
+					"expression": "8..60"
+				},
+				{
+					"name": "g2",
+					"expression": "8..60"
+				},
+				{
+					"name": "g3",
+					"expression": "8..60"
+				},
+				{
+					"name": "tf",
+					"expression": "eval:(f1)+(f2)+(f3)"
+				},
+				{
+					"name": "tg",
+					"expression": "eval:(g1)+(g2)+(g3)"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:(f1)+(g1)"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:(f2)+(g2)"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:(f3)+(g3)"
+				},
+				{
+					"name": "nt",
+					"expression": "eval:(tf)+(tg)"
+				}
+			],
+			"conditions": ["tf != t3"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« Parmi les filles » : on ne regarde que la ligne des filles ; le dénominateur est l'effectif des **filles**, pas l'effectif total.",
+					"Filles internes : ${{f3}}$ sur ${{tf}}$ filles : \\textcolor{{{color:primary.0}}}{\\dfrac{ {{f3}} }{ {{tf}} }}."
+				]
+			}
+		},
+		{
+			"statement": "Le tableau ci-dessous donne la répartition des élèves d'un lycée selon leur sexe et leur régime.\n\n```tableau-croise\nlignes: Filles ; Garçons\ncolonnes: Externe ; Demi-pensionnaire ; Interne\nFilles = {{f1}} ; {{f2}} ; {{f3}}\nGarçons = {{g1}} ; {{g2}} ; {{g3}}\ncoin: Sexe \\ Régime\n```\n\nParmi les **internes**, quelle est la proportion de filles ?\n\n```choix\n- $\\dfrac{ {{f3}} }{ {{t3}} }$\n- $\\dfrac{ {{f3}} }{ {{tf}} }$\n- $\\dfrac{ {{f3}} }{ {{nt}} }$\n- $\\dfrac{ {{t3}} }{ {{nt}} }$\n```",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "8..60"
+				},
+				{
+					"name": "f2",
+					"expression": "8..60"
+				},
+				{
+					"name": "f3",
+					"expression": "8..60"
+				},
+				{
+					"name": "g1",
+					"expression": "8..60"
+				},
+				{
+					"name": "g2",
+					"expression": "8..60"
+				},
+				{
+					"name": "g3",
+					"expression": "8..60"
+				},
+				{
+					"name": "tf",
+					"expression": "eval:(f1)+(f2)+(f3)"
+				},
+				{
+					"name": "tg",
+					"expression": "eval:(g1)+(g2)+(g3)"
+				},
+				{
+					"name": "t1",
+					"expression": "eval:(f1)+(g1)"
+				},
+				{
+					"name": "t2",
+					"expression": "eval:(f2)+(g2)"
+				},
+				{
+					"name": "t3",
+					"expression": "eval:(f3)+(g3)"
+				},
+				{
+					"name": "nt",
+					"expression": "eval:(tf)+(tg)"
+				}
+			],
+			"conditions": ["tf != t3"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« Parmi les internes » : on ne regarde que la colonne des internes ; le dénominateur est l'effectif des **internes**.",
+					"Filles internes : ${{f3}}$ sur ${{t3}}$ internes : \\textcolor{{{color:primary.0}}}{\\dfrac{ {{f3}} }{ {{t3}} }}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Parmi les filles, internes : 15/110 (rang 0)",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "40",
+				"f2": "55",
+				"f3": "15",
+				"g1": "35",
+				"g2": "45",
+				"g3": "20",
+				"tf": "110",
+				"tg": "100",
+				"t1": "75",
+				"t2": "100",
+				"t3": "35",
+				"nt": "210"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : divisé par le total",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "40",
+				"f2": "55",
+				"f3": "15",
+				"g1": "35",
+				"g2": "45",
+				"g3": "20",
+				"tf": "110",
+				"tg": "100",
+				"t1": "75",
+				"t2": "100",
+				"t3": "35",
+				"nt": "210"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : parmi les internes",
+			"variationIndex": 0,
+			"variables": {
+				"f1": "40",
+				"f2": "55",
+				"f3": "15",
+				"g1": "35",
+				"g2": "45",
+				"g3": "20",
+				"tf": "110",
+				"tg": "100",
+				"t1": "75",
+				"t2": "100",
+				"t3": "35",
+				"nt": "210"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Parmi les internes, filles : 15/35 (rang 0)",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "40",
+				"f2": "55",
+				"f3": "15",
+				"g1": "35",
+				"g2": "45",
+				"g3": "20",
+				"tf": "110",
+				"tg": "100",
+				"t1": "75",
+				"t2": "100",
+				"t3": "35",
+				"nt": "210"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : parmi les filles",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "40",
+				"f2": "55",
+				"f3": "15",
+				"g1": "35",
+				"g2": "45",
+				"g3": "20",
+				"tf": "110",
+				"tg": "100",
+				"t1": "75",
+				"t2": "100",
+				"t3": "35",
+				"nt": "210"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
