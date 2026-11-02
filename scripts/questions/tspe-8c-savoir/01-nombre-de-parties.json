@@ -1,0 +1,169 @@
+{
+	"title": "Nombre de parties d'un ensemble",
+	"description": "À savoir : un ensemble à n éléments a 2ⁿ parties, lien avec les n-uplets de {0 ; 1} ; formule, exemple n = 5, codage ; distracteurs : n², n!, 2n, oubli de l'ensemble vide",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Dénombrement",
+	"subdomain": "À savoir",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $n$ un entier naturel. Le nombre de parties d'un ensemble à $n$ éléments est :\n\n```choix\n- $2^n$\n- $n^2$\n- $n!$\n- $2n$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : un ensemble à $n$ éléments possède $\\textcolor{{{color:primary.0}}}{2^n}$ parties (l'ensemble vide et l'ensemble lui-même compris).",
+					"Pour $n=3$ : $\\{a\\,;b\\,;c\\}$ a $8=2^3$ parties ($\\varnothing$, trois singletons, trois paires et l'ensemble entier), et non $3^2=9$ ni $3!\\,=6$."
+				]
+			}
+		},
+		{
+			"statement": "Le nombre de parties d'un ensemble à $5$ éléments est :\n\n```choix\n- $32$\n- $31$\n- $25$\n- $10$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : un ensemble à $n$ éléments possède $2^n$ parties.",
+					"Avec $n=5$ : $2^5=\\textcolor{{{color:primary.0}}}{32}$. Ce compte inclut l'ensemble vide : $31$ l'oublie."
+				]
+			}
+		},
+		{
+			"statement": "On compte les parties d'un ensemble $E$ à $n$ éléments en associant à chaque partie $A$ un $n$-uplet de $\\{0\\,;1\\}$. Ce $n$-uplet est obtenu en écrivant, pour chaque élément de $E$ :\n\n```choix\n- $1$ s'il appartient à $A$, $0$ sinon\n- le nombre d'éléments de $A$\n- $1$ s'il est le plus petit élément de $A$, $0$ sinon\n- sa position dans $E$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : une partie $A$ de $E$ est déterminée par la réponse « oui » ($1$) ou « non » ($0$) à la question « l'élément est-il dans $A$ ? », posée pour chacun des $n$ éléments.",
+					"Il y a donc autant de parties que de $n$-uplets de $\\{0\\,;1\\}$, soit $\\textcolor{{{color:primary.0}}}{2^n}$ (principe multiplicatif : $2$ choix pour chaque élément)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2ⁿ",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n²",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n!",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2n",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "32",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 31 (oubli de ∅)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 25 = 5²",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 10 = 2 × 5",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 si dans A, 0 sinon",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cardinal de A",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : plus petit élément",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : position dans E",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

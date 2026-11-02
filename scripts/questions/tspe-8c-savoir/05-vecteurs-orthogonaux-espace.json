@@ -1,0 +1,118 @@
+{
+	"title": "Vecteurs orthogonaux dans l'espace",
+	"description": "À savoir : u et v orthogonaux ⟺ u · v = 0 ; caractérisation, exemple en repère orthonormé ; distracteurs : u · v = 1, colinéarité, normes",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Orthogonalité et distances dans l'espace",
+	"subdomain": "À savoir",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Deux vecteurs $\\vec{u}$ et $\\vec{v}$ de l'espace sont orthogonaux si et seulement si :\n\n```choix\n- $\\vec{u}\\cdot\\vec{v}=0$\n- $\\vec{u}\\cdot\\vec{v}=1$\n- $\\vec{u}$ et $\\vec{v}$ sont colinéaires\n- $\\|\\vec{u}+\\vec{v}\\|=\\|\\vec{u}\\|+\\|\\vec{v}\\|$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : dans l'espace comme dans le plan, $\\vec{u}$ et $\\vec{v}$ sont orthogonaux si et seulement si $\\textcolor{{{color:primary.0}}}{\\vec{u}\\cdot\\vec{v}=0}$.",
+					"Le vecteur nul est orthogonal à tout vecteur. L'égalité $\\|\\vec{u}+\\vec{v}\\|=\\|\\vec{u}\\|+\\|\\vec{v}\\|$ caractérise des vecteurs colinéaires de même sens ; c'est $\\|\\vec{u}+\\vec{v}\\|^2=\\|\\vec{u}\\|^2+\\|\\vec{v}\\|^2$ (Pythagore) qui équivaut à l'orthogonalité."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère orthonormé de l'espace, on considère les vecteurs $\\vec{u}\\begin{pmatrix}1\\\\2\\\\-1\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}3\\\\-1\\\\1\\end{pmatrix}$. Ces vecteurs :\n\n```choix\n- sont orthogonaux, car $1\\times3+2\\times(-1)+(-1)\\times1=0$\n- ne sont pas orthogonaux, car leurs coordonnées ne sont pas proportionnelles\n- ne sont pas orthogonaux, car ils n'ont pas la même norme\n- sont colinéaires\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : $\\vec{u}$ et $\\vec{v}$ sont orthogonaux si et seulement si $\\vec{u}\\cdot\\vec{v}=0$ ; dans un repère orthonormé, $\\vec{u}\\cdot\\vec{v}=xx'+yy'+zz'$.",
+					"Ici $\\vec{u}\\cdot\\vec{v}=3-2-1=0$ : les vecteurs sont $\\textcolor{{{color:primary.0}}}{\\text{orthogonaux}}$. La proportionnalité des coordonnées teste la colinéarité, pas l'orthogonalité."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u · v = 0",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : u · v = 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : colinéaires",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : normes additives",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "orthogonaux, produit scalaire nul",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : proportionnalité",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : même norme",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : colinéaires",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

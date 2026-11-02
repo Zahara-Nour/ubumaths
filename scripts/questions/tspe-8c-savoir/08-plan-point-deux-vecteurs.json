@@ -1,0 +1,118 @@
+{
+	"title": "Plan : un point et deux vecteurs non colinéaires",
+	"description": "À savoir : un plan est déterminé par un point A et deux vecteurs u, v non colinéaires, M ∈ P ⟺ AM = s u + t v ; caractérisation, données ; distracteurs : droite, droite orthogonale, vecteurs colinéaires",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs, droites et plans de l'espace",
+	"subdomain": "À savoir",
+	"level": 2,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $A$ un point de l'espace et $\\vec{u}$, $\\vec{v}$ deux vecteurs non colinéaires. Le plan passant par $A$ et dirigé par $\\vec{u}$ et $\\vec{v}$ est l'ensemble des points $M$ tels que :\n\n```choix\n- $\\overrightarrow{AM}=s\\,\\vec{u}+t\\,\\vec{v}$ pour des réels $s$ et $t$\n- $\\overrightarrow{AM}=t\\,\\vec{u}$ pour un réel $t$\n- $\\overrightarrow{AM}\\cdot\\vec{u}=0$ et $\\overrightarrow{AM}\\cdot\\vec{v}=0$\n- $\\overrightarrow{AM}=\\vec{u}+\\vec{v}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : le plan passant par $A$ dirigé par $\\vec{u}$ et $\\vec{v}$ (non colinéaires) est l'ensemble des points $M$ tels que $\\textcolor{{{color:primary.0}}}{\\overrightarrow{AM}=s\\,\\vec{u}+t\\,\\vec{v},\\ s,t\\in\\mathbb{R}}$.",
+					"$\\overrightarrow{AM}=t\\,\\vec{u}$ décrit une droite ; les deux produits scalaires nuls décrivent la droite passant par $A$ orthogonale à $\\vec{u}$ et à $\\vec{v}$."
+				]
+			}
+		},
+		{
+			"statement": "Un plan de l'espace est déterminé par un point et :\n\n```choix\n- deux vecteurs non colinéaires\n- un vecteur non nul\n- deux vecteurs colinéaires non nuls\n- deux vecteurs quelconques\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : un plan est déterminé par un point et $\\textcolor{{{color:primary.0}}}{\\text{deux vecteurs non colinéaires}}$ (un couple de vecteurs directeurs).",
+					"Avec un seul vecteur, ou deux vecteurs colinéaires, on ne décrit qu'une droite."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "AM = s u + t v",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : AM = t u (droite)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : produits scalaires nuls",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : AM = u + v",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "deux vecteurs non colinéaires",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un vecteur",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : deux colinéaires",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : quelconques",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

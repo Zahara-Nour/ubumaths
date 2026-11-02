@@ -1,0 +1,169 @@
+{
+	"title": "Linéarité de l'espérance",
+	"description": "À savoir : E(X + Y) = E(X) + E(Y) et E(aX) = aE(X), sans hypothèse ; somme, produit par un réel, exemple E(2X + Y) ; distracteurs : variance, produit, a²",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Sommes de variables aléatoires",
+	"subdomain": "À savoir",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $X$ et $Y$ deux variables aléatoires définies sur le même univers. On a toujours :\n\n```choix\n- $E(X+Y)=E(X)+E(Y)$\n- $V(X+Y)=V(X)+V(Y)$\n- $E(X+Y)=E(X)\\times E(Y)$\n- $E(XY)=E(X)\\times E(Y)$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : l'espérance est linéaire : $\\textcolor{{{color:primary.0}}}{E(X+Y)=E(X)+E(Y)}$, sans aucune hypothèse sur $X$ et $Y$.",
+					"L'égalité $V(X+Y)=V(X)+V(Y)$, elle, demande que $X$ et $Y$ soient indépendantes."
+				]
+			}
+		},
+		{
+			"statement": "Soit $X$ une variable aléatoire et $a$ un réel. $E(aX)$ est égal à :\n\n```choix\n- $aE(X)$\n- $a^2E(X)$\n- $E(X)$\n- $a+E(X)$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : $\\textcolor{{{color:primary.0}}}{E(aX)=aE(X)}$ (et plus généralement $E(aX+b)=aE(X)+b$).",
+					"C'est la VARIANCE qui fait apparaître $a^2$ : $V(aX)=a^2V(X)$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $X$ et $Y$ deux variables aléatoires définies sur le même univers, avec $E(X)=3$ et $E(Y)=5$. $E(2X+Y)$ est égal à :\n\n```choix\n- $11$\n- $8$\n- $16$\n- $17$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : $E(X+Y)=E(X)+E(Y)$ et $E(aX)=aE(X)$.",
+					"Donc $E(2X+Y)=2E(X)+E(Y)=2\\times3+5=\\textcolor{{{color:primary.0}}}{11}$. ($16$ multiplie aussi $E(Y)$ par $2$ ; $17$ vient de $2^2\\times3+5$.)"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "E(X + Y) = E(X) + E(Y)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : V(X + Y) (indépendance)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : produit",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : E(XY)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "aE(X)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a²E(X)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : E(X)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a + E(X)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "11",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8 = 3 + 5",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 16 = 2 × 8",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 17 = 4 × 3 + 5",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
