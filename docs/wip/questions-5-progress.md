@@ -9,8 +9,10 @@ _Mis à jour le 2026-11-02, lot 8 publié._
 
 - **État** : lots 1 à 8 publiés. **Les points de classe A sont tous couverts** sauf 5-122 (étiquettes à ranger,
   outil neuf). Relevé prod du 2026-11-02 : 69 points de 5e sans modèle (B, C, D, § 3 et § 22).
-- **Prochaine action** : proposer à David le premier lot B (§ 22) et attendre son choix ; puis phase 0.
-- **En attente de David** : le choix du premier lot B ; 02 du lot 7 (deux cases sur deux lignes) à essayer à la
+- **Prochaine action** : phase 0 du lot 9 « Statistiques » (choisi par David, § 22) : 076, 077, 135, 109, 136,
+  110, 137, 111, 138, 078 ; relevé prod (niveaux libres, modèles stats existants), bornes, blocs `barres` /
+  `circulaire` / `nuage` / tableau, puis tableau de modèles à faire valider.
+- **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la
   main : au pilotage Chrome, la frappe dans la 2e case arrivait aussi dans la 1re — extension ou appli ?
 - **Pièges en cours** : `db:migrate` en prod refusé par le classifieur du mode auto → David le lance ; il pousse
   toutes les migrations en attente (`--include-all` si une plus ancienne arrive après coup ; dry-run d'abord) ;
@@ -627,3 +629,7 @@ Relevé prod : 69 points de 5e sans modèle : 011 016 040 042 043 046 047 048 04
 065 066 067 068 069 070 071 072 075 076 077 078 084 089 090 091 093 094 095 096 097 099 100 101 102 103 104 105
 106 109 110 111 112 113 114 115 121 122 127 128 130 131 132 133 135 136 137 138 141 142 143 144. Classe A restante :
 122 seulement (outil « étiquettes à ranger », chantier à part, § 5.4). Le reste est B, C ou D (§ 3).
+
+- **Choix de David (2026-11-02)** : premier lot B = **Statistiques** (076, 077, 135, 109, 136, 110, 137, 111, 138,
+  078), reco suivie ; puis proportionnalité et graphiques, géométrie sur figure (forme à fixer avec le chantier
+  `figure-et-choix`), droite graduée.
