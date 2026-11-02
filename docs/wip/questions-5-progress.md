@@ -5,21 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, PR de migration #2197 ouverte._
+_Mis à jour le 2026-11-02, après #2197 et `db:migrate`._
 
-- **État** : lots 1 à 7 publiés. Lot 8 « Opérations » : 6 brouillons en prod (#2184, § 21) ; migration nœud +
-  tag `20261102051844` en PR #2197 (test rouge puis 19/19 vert, `security-auditor` sans finding bloquant).
-- **Prochaine action** : CI verte → `check:migrations --pr 2197` → merge → David lance `db:migrate` depuis le
-  dépôt principal → vérifier en prod → page à cocher.
-- **En attente de David** : `db:migrate` après le merge de #2197 ; 02 du lot 7 (deux cases sur deux lignes) à essayer à la
-  main : au pilotage Chrome, la frappe dans la 2e case arrivait aussi dans la 1re — extension ou appli ?
+- **État** : lots 1 à 7 publiés. Lot 8 « Opérations » : 6 brouillons en prod, rangés et tagués (#2197, migration
+  appliquée et vérifiée au MCP, § 21) ; page à cocher https://claude.ai/artifact/1g59HkYRvUMm1hgfaFVyRU publiée.
+- **Prochaine action** : quand David a relu, compter les verdicts (`ArtifactData list verdicts`, 6 attendus) ;
+  corriger les « À revoir » ; `publier-lot.ts --dir scripts/questions/5-operations` en simulation, puis David
+  `--publier` ; vérifier `published` au MCP.
+- **En attente de David** : la relecture de la page à cocher ; 02 du lot 7 (deux cases sur deux lignes) à essayer
+  à la main : au pilotage Chrome, la frappe dans la 2e case arrivait aussi dans la 1re — extension ou appli ?
 - **Pièges en cours** : `db:migrate` en prod refusé par le classifieur du mode auto → David le lance ; il pousse
-  toutes les migrations en attente (se coordonner avec les autres sessions) ; `pnpm check:migrations --pr <n>`
-  avant merge ; horodatage = `pnpm migration:horodatage` ; si « inserted before the last migration » →
-  `--dry-run --include-all`, relire, `--include-all` ; `git merge origin/main` avant push ; worktree non lié à
-  Supabase → `db:migrate` depuis le dépôt principal ; jamais `e`.
-- **Worktree / branche** : `../ubumaths-wt-questions-5` (branche `feat/questions-5-operations` mergée ; la
-  migration se fera sur une branche neuve depuis `origin/main`).
+  toutes les migrations en attente (`--include-all` si une plus ancienne arrive après coup ; dry-run d'abord) ;
+  `pnpm check:migrations --pr <n>` avant merge ; horodatage = `pnpm migration:horodatage` ; une garde
+  `docs:check-a-jour` sur une migration de données → ligne `Doc-inchangée:` dans un COMMIT (pas la PR) ; jamais `e`.
+- **Worktree / branche** : aucun (retiré après #2197).
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -610,3 +609,10 @@ opératoires › écriture d'une expression ». Chaque modèle sur le nœud de s
   01-03 → notion « Nombres et calculs > Décimaux : calculs » ; 04-06 → « Entiers : priorités opératoires >
   écriture d'une expression ». Test `questions-5-lot8-rangement-tags` : 11 rouges avec une migration vide,
   19/19 vert. `security-auditor` : aucun finding (diff SQL exécutable nul avec le lot 7, relevé recoupé au MCP).
+- Merge #2197 (CI verte, intégration comprise ; `check:migrations` 0). `db:migrate --include-all` lancé par
+  David : 20261102051042 (questions-1spe, #2192, à sa demande) puis 20261102051844 ; dry-run vu avant (ces 2
+  seulement). Vérifié au MCP : 6 brouillons sur leur nœud, 1 tag chacun (5-001 ×2, 5-002, 5-005, 5-116,
+  5-117), `grades` = 5, `updated_at` intact (04:51). questions-1spe a vérifié la sienne.
+- Page à cocher https://claude.ai/artifact/1g59HkYRvUMm1hgfaFVyRU (6 fiches, aucune alerte, capacité `db`,
+  collection `verdicts` vide au départ). Rendu 390 px non vérifié : le redimensionnement de Chrome est resté sans
+  effet.
