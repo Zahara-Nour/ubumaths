@@ -1,0 +1,198 @@
+{
+	"title": "Repérer un point par une fraction",
+	"description": "Lire la fraction qui repère un point d'une demi-droite graduée, au-delà de 1 (A repère 7/3) ; ou sur un morceau de droite qui commence à un entier, unité partagée jusqu'à 12 parts (A repère 17/7)",
+	"grades": ["CM2"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Repérage",
+	"level": 8,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quel nombre repère le point $A$ ? Écris-le sous la forme d'une fraction.\n\n```line\nstart: 0\nend: {{u}}\nstep: 1/{{d}}\nmajor: {{d}}\npoints: A={{n}}/{{d}}\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2|3|4|5|6"
+				},
+				{
+					"name": "u",
+					"expression": "eval:min(4,floor(12/d))"
+				},
+				{
+					"name": "nm",
+					"expression": "eval:u*d-1"
+				},
+				{
+					"name": "n0",
+					"expression": "eval:d+1"
+				},
+				{
+					"name": "n",
+					"expression": "{{n0}}..{{nm}}"
+				}
+			],
+			"conditions": ["mod(n,d)!=0", "n>d"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{n}}}{{{d}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**L'unité.** D'une graduation entière à la suivante, l'unité est partagée en ${{d}}$ parts égales : chaque petit intervalle vaut $\\frac{1}{{{d}}}$.",
+					"Le point $A$ est à ${{n}}$ petits intervalles de $0$ : il repère $\\textcolor{green}{\\frac{{{n}}}{{{d}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel nombre repère le point $A$ ? Écris-le sous la forme d'une fraction.\n\n```line\nstart: {{k}}\nend: {{eval:k+1}}\nstep: 1/{{d}}\nmajor: {{d}}\npoints: A={{n}}/{{d}}\n```\n\n$$A : ?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3|4|5|6|7|8|9|10|12"
+				},
+				{
+					"name": "k",
+					"expression": "1..5"
+				},
+				{
+					"name": "dm",
+					"expression": "eval:d-1"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{dm}}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:k*d+r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{{{n}}}{{{d}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**L'unité.** D'une graduation entière à la suivante, l'unité est partagée en ${{d}}$ parts égales : chaque petit intervalle vaut $\\frac{1}{{{d}}}$.",
+					"${{k}} = \\frac{{{eval:k*d}}}{{{d}}}$, et le point $A$ est ${{r}}$ petit{{if:r>1|s|}} intervalle{{if:r>1|s|}} plus loin : il repère $\\frac{{{eval:k*d}} + {{r}}}{{{d}}} = \\textcolor{green}{\\frac{{{n}}}{{{d}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A repère 7/3",
+			"variationIndex": 0,
+			"variables": {
+				"d": "3",
+				"u": "4",
+				"nm": "11",
+				"n0": "4",
+				"n": "7"
+			},
+			"answers": ["\\frac{7}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "14/6 (fraction égale)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "3",
+				"u": "4",
+				"nm": "11",
+				"n0": "4",
+				"n": "7"
+			},
+			"answers": ["\\frac{14}{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7/12 (toute la droite comptée)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "3",
+				"u": "4",
+				"nm": "11",
+				"n0": "4",
+				"n": "7"
+			},
+			"answers": ["\\frac{7}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/3 (compté depuis la graduation 2)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "3",
+				"u": "4",
+				"nm": "11",
+				"n0": "4",
+				"n": "7"
+			},
+			"answers": ["\\frac{1}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A repère 17/7",
+			"variationIndex": 1,
+			"variables": {
+				"d": "7",
+				"k": "2",
+				"dm": "6",
+				"r": "3",
+				"n": "17"
+			},
+			"answers": ["\\frac{17}{7}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/7 (le début du morceau pris pour 0)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "7",
+				"k": "2",
+				"dm": "6",
+				"r": "3",
+				"n": "17"
+			},
+			"answers": ["\\frac{3}{7}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 23/7 (compté depuis 3)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "7",
+				"k": "2",
+				"dm": "6",
+				"r": "3",
+				"n": "17"
+			},
+			"answers": ["\\frac{23}{7}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

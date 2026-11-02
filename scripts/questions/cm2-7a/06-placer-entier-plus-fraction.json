@@ -1,0 +1,244 @@
+{
+	"title": "Placer un entier plus une fraction sur une demi-droite",
+	"description": "Placer la somme d'un entier et d'une fraction inférieure à 1 sur un morceau de demi-droite graduée (place 2 + 1/4 ; 3 + 5/7), unité partagée jusqu'à 12 parts ; puis deux points sur la même droite",
+	"grades": ["CM2"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Repérage",
+	"level": 11,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Place le nombre ${{q}} + \\frac{{{r}}}{{{d}}}$ sur la demi-droite graduée.\n\n```line\nstart: {{m}}\nend: {{eval:m+w}}\nstep: 1/{{d}}\nmajor: {{d}}\nplacer: {{n}}/{{d}}\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2|3|4|5|6|7|8|9|10|12"
+				},
+				{
+					"name": "w",
+					"expression": "eval:min(2,floor(12/d))"
+				},
+				{
+					"name": "m",
+					"expression": "1..5"
+				},
+				{
+					"name": "dm",
+					"expression": "eval:d-1"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{dm}}"
+				},
+				{
+					"name": "qm",
+					"expression": "eval:m+w-1"
+				},
+				{
+					"name": "q",
+					"expression": "{{m}}..{{qm}}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:q*d+r"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**L'unité.** D'une graduation entière à la suivante, l'unité est partagée en ${{d}}$ parts égales : chaque petit intervalle vaut $\\frac{1}{{{d}}}$.",
+					"${{q}} + \\frac{{{r}}}{{{d}}}$ : on va jusqu'à la graduation ${{q}}$, puis ${{r}}$ petit{{if:r>1|s|}} intervalle{{if:r>1|s|}} plus loin."
+				]
+			}
+		},
+		{
+			"statement": "Place les points $A\\left({{q}} + \\frac{{{r}}}{{{d}}}\\right)$ et $B\\left({{t}} + \\frac{{{v}}}{{{d}}}\\right)$ sur la demi-droite graduée.\n\n```line\nstart: {{m}}\nend: {{eval:m+w}}\nstep: 1/{{d}}\nmajor: {{d}}\nplacer: A={{n}}/{{d}} ; B={{p}}/{{d}}\n```",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2|3|4|5|6"
+				},
+				{
+					"name": "w",
+					"expression": "2"
+				},
+				{
+					"name": "m",
+					"expression": "1..5"
+				},
+				{
+					"name": "dm",
+					"expression": "eval:d-1"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{dm}}"
+				},
+				{
+					"name": "v",
+					"expression": "1..{{dm}}"
+				},
+				{
+					"name": "q",
+					"expression": "{{m}}"
+				},
+				{
+					"name": "t",
+					"expression": "eval:m+1"
+				},
+				{
+					"name": "n",
+					"expression": "eval:q*d+r"
+				},
+				{
+					"name": "p",
+					"expression": "eval:t*d+v"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**L'unité.** D'une graduation entière à la suivante, l'unité est partagée en ${{d}}$ parts égales : chaque petit intervalle vaut $\\frac{1}{{{d}}}$.",
+					"$A$ : graduation ${{q}}$, puis ${{r}}$ petit{{if:r>1|s|}} intervalle{{if:r>1|s|}} ; $B$ : graduation ${{t}}$, puis ${{v}}$ petit{{if:v>1|s|}} intervalle{{if:v>1|s|}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2 + 1/4 placé",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"w": "2",
+				"m": "2",
+				"dm": "3",
+				"r": "1",
+				"qm": "3",
+				"q": "2",
+				"n": "9"
+			},
+			"answers": ["2.25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/4 de trop (2,5)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"w": "2",
+				"m": "2",
+				"dm": "3",
+				"r": "1",
+				"qm": "3",
+				"q": "2",
+				"n": "9"
+			},
+			"answers": ["2.5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 + 1/4 (graduation suivante)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"w": "2",
+				"m": "2",
+				"dm": "3",
+				"r": "1",
+				"qm": "3",
+				"q": "2",
+				"n": "9"
+			},
+			"answers": ["3.25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 + 5/7 placé",
+			"variationIndex": 0,
+			"variables": {
+				"d": "7",
+				"w": "1",
+				"m": "3",
+				"dm": "6",
+				"r": "5",
+				"qm": "3",
+				"q": "3",
+				"n": "26"
+			},
+			"answers": ["\\frac{26}{7}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 + 4/7",
+			"variationIndex": 0,
+			"variables": {
+				"d": "7",
+				"w": "1",
+				"m": "3",
+				"dm": "6",
+				"r": "5",
+				"qm": "3",
+				"q": "3",
+				"n": "26"
+			},
+			"answers": ["\\frac{25}{7}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A 2 + 2/3, B 3 + 1/3 placés",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3",
+				"w": "2",
+				"m": "2",
+				"dm": "2",
+				"r": "2",
+				"v": "1",
+				"q": "2",
+				"t": "3",
+				"n": "8",
+				"p": "10"
+			},
+			"answers": ["\\frac{8}{3}", "\\frac{10}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : A et B échangés",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3",
+				"w": "2",
+				"m": "2",
+				"dm": "2",
+				"r": "2",
+				"v": "1",
+				"q": "2",
+				"t": "3",
+				"n": "8",
+				"p": "10"
+			},
+			"answers": ["\\frac{10}{3}", "\\frac{8}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

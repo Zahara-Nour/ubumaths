@@ -1,0 +1,255 @@
+{
+	"title": "Repérer un point par un entier et une fraction",
+	"description": "Lire le nombre qui repère un point d'un morceau de demi-droite graduée, sous la forme d'un entier plus une fraction inférieure à 1 (3 + 1/4), ou d'un entier moins une fraction inférieure à 1 (4 − 1/3) ; unité partagée jusqu'à 12 parts",
+	"grades": ["CM2"],
+	"theme": "Fractions",
+	"domain": "Apprivoiser",
+	"subdomain": "Repérage",
+	"level": 9,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le point $A$ repère la somme d'un nombre entier et d'une fraction inférieure à $1$. Complète.\n\n```line\nstart: {{m}}\nend: {{eval:m+w}}\nstep: 1/{{d}}\nmajor: {{d}}\npoints: A={{n}}/{{d}}\n```\n\n$$A : ? + \\frac{?}{{{d}}}$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2|3|4|5|6|7|8|9|10|12"
+				},
+				{
+					"name": "w",
+					"expression": "eval:min(2,floor(12/d))"
+				},
+				{
+					"name": "m",
+					"expression": "1..5"
+				},
+				{
+					"name": "dm",
+					"expression": "eval:d-1"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{dm}}"
+				},
+				{
+					"name": "qm",
+					"expression": "eval:m+w-1"
+				},
+				{
+					"name": "q",
+					"expression": "{{m}}..{{qm}}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:q*d+r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**L'unité.** D'une graduation entière à la suivante, l'unité est partagée en ${{d}}$ parts égales : chaque petit intervalle vaut $\\frac{1}{{{d}}}$.",
+					"Le point $A$ est après la graduation ${{q}}$, à ${{r}}$ petit{{if:r>1|s|}} intervalle{{if:r>1|s|}} plus loin : il repère $\\textcolor{green}{{{q}}} + \\frac{\\textcolor{green}{{{r}}}}{{{d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le point $A$ repère un nombre entier moins une fraction inférieure à $1$. Complète.\n\n```line\nstart: {{m}}\nend: {{eval:m+w}}\nstep: 1/{{d}}\nmajor: {{d}}\npoints: A={{n}}/{{d}}\n```\n\n$$A : ? - \\frac{?}{{{d}}}$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2|3|4|5|6|7|8|9|10|12"
+				},
+				{
+					"name": "w",
+					"expression": "eval:min(2,floor(12/d))"
+				},
+				{
+					"name": "m",
+					"expression": "1..5"
+				},
+				{
+					"name": "dm",
+					"expression": "eval:d-1"
+				},
+				{
+					"name": "r",
+					"expression": "1..{{dm}}"
+				},
+				{
+					"name": "qa",
+					"expression": "eval:m+1"
+				},
+				{
+					"name": "qb",
+					"expression": "eval:m+w"
+				},
+				{
+					"name": "q",
+					"expression": "{{qa}}..{{qb}}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:q*d-r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**L'unité.** D'une graduation entière à la suivante, l'unité est partagée en ${{d}}$ parts égales : chaque petit intervalle vaut $\\frac{1}{{{d}}}$.",
+					"Le point $A$ est avant la graduation ${{q}}$, à ${{r}}$ petit{{if:r>1|s|}} intervalle{{if:r>1|s|}} en arrière : il repère $\\textcolor{green}{{{q}}} - \\frac{\\textcolor{green}{{{r}}}}{{{d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "A repère 3 + 1/4",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"w": "2",
+				"m": "2",
+				"dm": "3",
+				"r": "1",
+				"qm": "3",
+				"q": "3",
+				"n": "13"
+			},
+			"answers": ["3", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 + 1/4 (graduation suivante)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"w": "2",
+				"m": "2",
+				"dm": "3",
+				"r": "1",
+				"qm": "3",
+				"q": "3",
+				"n": "13"
+			},
+			"answers": ["4", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2 + 5/4 (fraction pas inférieure à 1)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"w": "2",
+				"m": "2",
+				"dm": "3",
+				"r": "1",
+				"qm": "3",
+				"q": "3",
+				"n": "13"
+			},
+			"answers": ["2", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 + 3/4 (compté depuis 4)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "4",
+				"w": "2",
+				"m": "2",
+				"dm": "3",
+				"r": "1",
+				"qm": "3",
+				"q": "3",
+				"n": "13"
+			},
+			"answers": ["3", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "A repère 4 − 1/3",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3",
+				"w": "2",
+				"m": "2",
+				"dm": "2",
+				"r": "1",
+				"qa": "3",
+				"qb": "4",
+				"q": "4",
+				"n": "11"
+			},
+			"answers": ["4", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 − 1/3 (entier d'avant)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3",
+				"w": "2",
+				"m": "2",
+				"dm": "2",
+				"r": "1",
+				"qa": "3",
+				"qb": "4",
+				"q": "4",
+				"n": "11"
+			},
+			"answers": ["3", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4 − 2/3 (compté depuis 3)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3",
+				"w": "2",
+				"m": "2",
+				"dm": "2",
+				"r": "1",
+				"qa": "3",
+				"qb": "4",
+				"q": "4",
+				"n": "11"
+			},
+			"answers": ["4", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
