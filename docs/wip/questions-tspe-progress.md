@@ -10,13 +10,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2173._
+_Mis à jour le 2026-11-02, après #2173 (page à cocher publiée)._
 
 - **État** : lot 2 (limites) **rangé et tagué en prod** (#2173, `db:migrate` le 2026-11-01, relu au MCP) :
   3d7d1d25, 0fb97bb9, 6d611634, ae70373c en brouillon, niveau 1, sur leur sous-notion (§ 15).
-- **Prochaine action** : page à cocher des 4 brouillons (aperçus admin `/dashboard/admin/questions/<id>/preview`),
-  relecture par David, puis `publier-lot` (simulation d'abord, David lance `--publier`) ; ensuite lot 3.
-- **En attente de David** : la relecture des 4 brouillons (page à cocher à produire).
+- **Prochaine action** : relecture par David de la page à cocher
+  https://claude.ai/artifact/YGQn3HFMHFV5spbaJeTeBm (collection `verdicts`, compter les réponses), puis
+  `publier-lot --dir scripts/questions/tspe-2-limites` (simulation d'abord, David lance `--publier`) ; ensuite lot 3.
+- **En attente de David** : la relecture des 4 brouillons sur cette page.
 - **Pièges en cours** : un tag doit être sur le **nœud du modèle ou sa notion** (§ 14) ; le **niveau est dans la
   clé** de `create-questions`. `create-questions` et `publier-lot` → David (`!`) ; `db:migrate` depuis le dépôt
   principal (`echo y |`) ; corps de commit ≤ 100 caractères par ligne. **Migrations** (#2181) : `pnpm migration:horodatage`
@@ -768,3 +769,7 @@ de la copie figée de l'arbre) → arbre figé (630 chemins, 477 sous-notions) e
 renommée 224001 → 224701 → 224702 (main avancée deux fois). `security-auditor` : aucun bloquant (message du
 rollback remis à l'endroit). **PR #2173 mergée** ; **`db:migrate`** le 2026-11-01 ; relu en prod : 4 modèles sur
 leur sous-notion, tag posé, brouillon, niveau 1, `updated_at` inchangé.
+
+**Page à cocher** (2026-11-02) : `page-a-cocher.ts --dir scripts/questions/tspe-2-limites`, 4 fiches lues en prod
+(brouillons, aucune alerte), 17 exemples : https://claude.ai/artifact/YGQn3HFMHFV5spbaJeTeBm (`verdicts` vide à
+la publication). Rendu à 390 px non vérifié.
