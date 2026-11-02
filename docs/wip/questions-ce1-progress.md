@@ -842,3 +842,8 @@ Réponse de David (« tes recos ? » puis « go », 2026-11-02) : les cinq recom
   David : lot 10 seul ; `colt()` dans `lot-ce1-10.py` écrit `$\textcolor{…}{\text{…}}$` ; rendu juste vérifié en local.
   Instantané : les 9 intacts depuis la création (`created_at = updated_at`, MCP). **53 autres fichiers** de lots ont le
   même motif (CE1 lot 9, 2de, 3e, 4e, CM1, Tle, beaucoup publiés) : futur chantier, non traité ici.
+- 2026-11-02 : #2219 et #2217 mergées ; `--mettre-a-jour` par David : 7 modèles corrigés en prod (MCP : `\textcolor` tous
+  dans une formule). Relecture 9/9 « OK » (verdicts comptés en base). `publier-lot` (simulation) refuse 01 : niveau 5 de
+  « Grandeurs · Longueurs · Comparaison et mesure » pris ce matin par 8aa2821f (CM1, publié). Premier libre : 6 (décision
+  de phase 0 ; question d'accès : personne, David). Migration `20261102091820_questions_ce1_lot10_niveau` + fichier :
+  rouge sans (2 échecs), vert 6/6.
