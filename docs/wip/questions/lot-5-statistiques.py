@@ -540,8 +540,8 @@ LIRE_GRAPH = variation(
     'Ce graphique donne le nombre de visiteurs d\'un musée chaque année, en milliers.' + EVOL_LIRE
     + 'Combien de milliers de visiteurs le musée a-t-il reçus en ${{eval:2015+k}}$ ?\n\n'
     '$?$ milliers',
-    [var(y, '2..13') for y in Y] + [var('k', '2..7')],
-    [SEL_ANNEE],
+    [var(y, '2..13') for y in Y] + [var('k', '2..7'), var('v', SEL_ANNEE)],
+    ['{{v}}'],
     ['On part de ${{eval:2015+k}}$ sur l\'axe horizontal, on monte jusqu\'à la ligne, puis on lit'
      ' la valeur sur l\'axe vertical.',
      'En ${{eval:2015+k}}$, le musée a reçu ' + m(SEL_ANNEE) + ' milliers de visiteurs.'])
@@ -561,8 +561,8 @@ MODELES.append(modele(
     'Lire une valeur sur un graphique d\'évolution (quelle est la valeur en 2020 ?), ou l\'année'
     ' qui correspond à une valeur',
     R, 'courbes et repères', 1, [LIRE_GRAPH, LIRE_GRAPH_INVERSE],
-    [spec('2020 : 4', 0, V_GRAPH | {'k': 5}, '4', 'correct'),
-     spec('Erreur : année voisine', 0, V_GRAPH | {'k': 5}, '9', 'incorrect'),
+    [spec('2020 : 4', 0, V_GRAPH | {'k': 5, 'v': 4}, '4', 'correct'),
+     spec('Erreur : année voisine', 0, V_GRAPH | {'k': 5, 'v': 4}, '9', 'incorrect'),
      spec('11 milliers : 2022', 1, V_GRAPH | {'k': 7}, '2022', 'correct'),
      spec('Erreur : la valeur recopiée', 1, V_GRAPH | {'k': 7}, '11', 'incorrect')]))
 
