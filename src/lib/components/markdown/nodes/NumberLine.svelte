@@ -209,8 +209,9 @@
 
 				<!-- Labels -->
 				{#if grad.label !== null}
-					<!-- 45 px : une fraction (23/10) en math-field en fait 42 -->
-					<foreignObject x={grad.x - 30} y={LINE_Y + LABEL_Y_OFFSET - 5} width="60" height="45">
+					<!-- 45 px : une fraction (23/10) en math-field en fait 42 ; 100 px de large, centrés :
+					     « 99 000 000 » en fait 64 (le CM2 gradue jusqu'aux millions), le SVG déborde -->
+					<foreignObject x={grad.x - 50} y={LINE_Y + LABEL_Y_OFFSET - 5} width="100" height="45">
 						<div class="number-line-label" class:hidden-label={grad.hidden}>
 							{#if grad.hidden}
 								<span class="hidden-mark">?</span>
