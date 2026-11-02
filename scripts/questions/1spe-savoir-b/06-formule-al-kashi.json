@@ -1,0 +1,118 @@
+{
+	"title": "Formule d'Al-Kashi",
+	"description": "À savoir : BC² = AB² + AC² − 2 AB × AC × cos BAC, et le cas de l'angle droit (Pythagore) ; erreurs typiques : signe, angle mal choisi, cosinus oublié",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Produit scalaire",
+	"subdomain": "À savoir",
+	"level": 6,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Dans un triangle $ABC$, $BC^2$ est égal à :\n\n```choix\n- $AB^2+AC^2-2\\times AB\\times AC\\times\\cos\\widehat{BAC}$\n- $AB^2+AC^2+2\\times AB\\times AC\\times\\cos\\widehat{BAC}$\n- $AB^2+AC^2$\n- $AB^2+AC^2-2\\times AB\\times AC\\times\\cos\\widehat{ABC}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître (formule d'Al-Kashi) : $BC^2=\\textcolor{{{color:primary.0}}}{AB^2+AC^2-2\\times AB\\times AC\\times\\cos\\widehat{BAC}}$.",
+					"L'angle est celui compris entre les deux côtés connus, en face du côté cherché : ici l'angle en $A$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un triangle $ABC$ rectangle en $A$, la formule d'Al-Kashi $BC^2=AB^2+AC^2-2\\times AB\\times AC\\times\\cos\\widehat{BAC}$ devient :\n\n```choix\n- $BC^2=AB^2+AC^2$\n- $BC^2=AB^2+AC^2-2\\times AB\\times AC$\n- $BC=AB+AC$\n- $BC^2=AB^2-AC^2$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\widehat{BAC}=90^\\circ$ et $\\cos 90^\\circ=0$ : le dernier terme disparaît.",
+					"On retrouve le théorème de Pythagore : $\\textcolor{{{color:primary.0}}}{BC^2=AB^2+AC^2}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "formule",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe +",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : Pythagore hors angle droit",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : angle en B",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pythagore",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cosinus remplacé par 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans carrés",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : différence",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,119 @@
+{
+	"title": "Produit scalaire et projection orthogonale",
+	"description": "À savoir : AB·AC = AB·AH, H projeté de C sur (AB), et le signe de AB × AH selon le sens (erreurs typiques : AB × AC, signe oublié)",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Produit scalaire",
+	"subdomain": "À savoir",
+	"level": 2,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $A$, $B$ et $C$ trois points, avec $A\\neq B$, et $H$ le projeté orthogonal de $C$ sur la droite $(AB)$.\n\nLe produit scalaire $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$ est égal à :\n\n```choix\n- $\\overrightarrow{AB}\\cdot\\overrightarrow{AH}$\n- $\\overrightarrow{AB}\\cdot\\overrightarrow{HC}$\n- $AB\\times AC$\n- $\\overrightarrow{AC}\\cdot\\overrightarrow{HC}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : on peut remplacer $\\overrightarrow{AC}$ par son projeté orthogonal sur la droite $(AB)$, donc $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=\\textcolor{{{color:primary.0}}}{\\overrightarrow{AB}\\cdot\\overrightarrow{AH}}$.",
+					"En effet $\\overrightarrow{AC}=\\overrightarrow{AH}+\\overrightarrow{HC}$ et $\\overrightarrow{AB}\\cdot\\overrightarrow{HC}=0$, car $\\overrightarrow{HC}$ est orthogonal à $(AB)$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $A$, $B$ et $C$ trois points, avec $A\\neq B$, et $H$ le projeté orthogonal de $C$ sur la droite $(AB)$. Le point $A$ est situé **entre** $H$ et $B$.\n\nLe produit scalaire $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$ est égal à :\n\n```choix\n- $-AB\\times AH$\n- $AB\\times AH$\n- $AB\\times AC$\n- $-AB\\times AC$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=\\overrightarrow{AB}\\cdot\\overrightarrow{AH}$, et $\\overrightarrow{AB}$, $\\overrightarrow{AH}$ sont colinéaires.",
+					"$A$ est entre $H$ et $B$ : $\\overrightarrow{AB}$ et $\\overrightarrow{AH}$ sont de sens contraires, donc $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=\\textcolor{{{color:primary.0}}}{-AB\\times AH}$.",
+					"Avec $H$ du même côté que $B$ par rapport à $A$, le signe serait $+$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "AB·AH",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : AB·HC (nul)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : AB × AC",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : AC·HC",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−AB × AH",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe oublié",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : AB × AC",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −AB × AC",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

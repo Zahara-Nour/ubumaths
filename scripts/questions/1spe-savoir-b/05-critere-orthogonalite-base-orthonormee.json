@@ -1,0 +1,119 @@
+{
+	"title": "Critère d'orthogonalité en base orthonormée",
+	"description": "À savoir : en base orthonormée, u ⊥ v ⟺ xx′ + yy′ = 0, et un vecteur orthogonal à u(x ; y) (erreurs typiques : critère de colinéarité, vecteur colinéaire, coordonnées échangées)",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Produit scalaire",
+	"subdomain": "À savoir",
+	"level": 5,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}x\\\\y\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}x'\\\\y'\\end{pmatrix}$.\n\nLes vecteurs $\\vec{u}$ et $\\vec{v}$ sont **orthogonaux** si et seulement si :\n\n```choix\n- $xx'+yy'=0$\n- $xy'-x'y=0$\n- $xy+x'y'=0$\n- $xx'+yy'=1$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : dans un repère orthonormé, $\\vec{u}\\cdot \\vec{v}=xx'+yy'$, donc $\\vec{u}$ et $\\vec{v}$ sont orthogonaux si et seulement si $\\textcolor{{{color:primary.0}}}{xx'+yy'=0}$.",
+					"Attention : $xy'-x'y=0$ est le critère de **colinéarité**."
+				]
+			}
+		},
+		{
+			"statement": "Le plan est muni d'un repère orthonormé. Soit $\\vec{u}\\begin{pmatrix}x\\\\y\\end{pmatrix}$ un vecteur non nul.\n\nLequel de ces vecteurs est orthogonal à $\\vec{u}$ ?\n\n```choix\n- $\\begin{pmatrix}-y\\\\x\\end{pmatrix}$\n- $\\begin{pmatrix}y\\\\x\\end{pmatrix}$\n- $\\begin{pmatrix}-x\\\\-y\\end{pmatrix}$\n- $\\begin{pmatrix}-x\\\\y\\end{pmatrix}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : en repère orthonormé, deux vecteurs sont orthogonaux si et seulement si $xx'+yy'=0$.",
+					"Avec $\\begin{pmatrix}-y\\\\x\\end{pmatrix}$ : $x\\times(-y)+y\\times x=0$, donc $\\textcolor{{{color:primary.0}}}{\\begin{pmatrix}-y\\\\x\\end{pmatrix}}$ est orthogonal à $\\vec{u}$.",
+					"$\\begin{pmatrix}-x\\\\-y\\end{pmatrix}$ est colinéaire à $\\vec{u}$ ; avec $\\begin{pmatrix}y\\\\x\\end{pmatrix}$ on obtient $2xy$, qui n'est pas nul en général."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "xx′ + yy′ = 0",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : colinéarité",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : xy + x′y′",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : = 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(−y ; x)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (y ; x)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : colinéaire",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : (−x ; y)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

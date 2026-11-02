@@ -1,0 +1,118 @@
+{
+	"title": "Caractérisation de l'orthogonalité",
+	"description": "À savoir : u et v orthogonaux ⟺ u·v = 0, dans les deux sens, parmi des erreurs typiques (u·v = 1, colinéaires, « un des vecteurs est nul »)",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Produit scalaire",
+	"subdomain": "À savoir",
+	"level": 4,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $\\vec{u}$ et $\\vec{v}$ deux vecteurs. Les vecteurs $\\vec{u}$ et $\\vec{v}$ sont **orthogonaux** si et seulement si :\n\n```choix\n- $\\vec{u}\\cdot \\vec{v}=0$\n- $\\vec{u}\\cdot \\vec{v}=1$\n- $\\vec{u}\\cdot \\vec{v}=\\|\\vec{u}\\|\\times\\|\\vec{v}\\|$\n- $\\|\\vec{u}\\|=\\|\\vec{v}\\|$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : $\\vec{u}$ et $\\vec{v}$ sont orthogonaux si et seulement si $\\textcolor{{{color:primary.0}}}{\\vec{u}\\cdot \\vec{v}=0}$.",
+					"$\\vec{u}\\cdot \\vec{v}=\\|\\vec{u}\\|\\times\\|\\vec{v}\\|$ correspond au contraire à deux vecteurs colinéaires de même sens."
+				]
+			}
+		},
+		{
+			"statement": "Soit $\\vec{u}$ et $\\vec{v}$ deux vecteurs tels que $\\vec{u}\\cdot \\vec{v}=0$.\n\nOn peut en conclure que :\n\n```choix\n- les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux\n- les vecteurs $\\vec{u}$ et $\\vec{v}$ sont colinéaires\n- $\\vec{u}=\\vec{0}$ ou $\\vec{v}=\\vec{0}$\n- $\\|\\vec{u}\\|=\\|\\vec{v}\\|$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : $\\vec{u}\\cdot \\vec{v}=0$ si et seulement si $\\vec{u}$ et $\\vec{v}$ sont $\\textcolor{{{color:primary.0}}}{\\text{orthogonaux}}$.",
+					"Un produit scalaire nul n'oblige pas un des vecteurs à être nul : $\\begin{pmatrix}1\\\\0\\end{pmatrix}\\cdot\\begin{pmatrix}0\\\\1\\end{pmatrix}=0$ en base orthonormée. Par convention, le vecteur nul est orthogonal à tout vecteur."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u·v = 0",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : u·v = 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : u·v = ‖u‖‖v‖",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : normes égales",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "orthogonaux",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : colinéaires",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : un vecteur nul",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : normes égales",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

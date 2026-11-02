@@ -1,0 +1,118 @@
+{
+	"title": "Produit scalaire et cosinus",
+	"description": "À savoir : u·v = ‖u‖‖v‖cos(u, v), et dans l'autre sens cos(u, v) = u·v / (‖u‖‖v‖), parmi des erreurs typiques (cosinus oublié, sinus, quotient renversé)",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Produit scalaire",
+	"subdomain": "À savoir",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $\\vec{u}$ et $\\vec{v}$ deux vecteurs non nuls. Le produit scalaire $\\vec{u}\\cdot \\vec{v}$ est égal à :\n\n```choix\n- $\\|\\vec{u}\\|\\times\\|\\vec{v}\\|\\times\\cos(\\vec{u},\\vec{v})$\n- $\\|\\vec{u}\\|\\times\\|\\vec{v}\\|$\n- $\\|\\vec{u}\\|\\times\\|\\vec{v}\\|\\times\\sin(\\vec{u},\\vec{v})$\n- $\\left(\\|\\vec{u}\\|+\\|\\vec{v}\\|\\right)\\times\\cos(\\vec{u},\\vec{v})$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : si $\\vec{u}$ et $\\vec{v}$ sont non nuls, $\\vec{u}\\cdot \\vec{v}=\\textcolor{{{color:primary.0}}}{\\|\\vec{u}\\|\\times\\|\\vec{v}\\|\\times\\cos(\\vec{u},\\vec{v})}$.",
+					"Sans le cosinus, on n'obtient le produit scalaire que si les vecteurs sont colinéaires et de même sens (angle nul)."
+				]
+			}
+		},
+		{
+			"statement": "Soit $\\vec{u}$ et $\\vec{v}$ deux vecteurs non nuls. Le cosinus $\\cos(\\vec{u},\\vec{v})$ est égal à :\n\n```choix\n- $\\dfrac{\\vec{u}\\cdot \\vec{v}}{\\|\\vec{u}\\|\\times\\|\\vec{v}\\|}$\n- $\\dfrac{\\|\\vec{u}\\|\\times\\|\\vec{v}\\|}{\\vec{u}\\cdot \\vec{v}}$\n- $\\vec{u}\\cdot \\vec{v}\\times\\|\\vec{u}\\|\\times\\|\\vec{v}\\|$\n- $\\dfrac{\\vec{u}\\cdot \\vec{v}}{\\|\\vec{u}\\|+\\|\\vec{v}\\|}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : $\\vec{u}\\cdot \\vec{v}=\\|\\vec{u}\\|\\times\\|\\vec{v}\\|\\times\\cos(\\vec{u},\\vec{v})$.",
+					"Les normes sont non nulles : on divise par leur produit, $\\cos(\\vec{u},\\vec{v})=\\textcolor{{{color:primary.0}}}{\\dfrac{\\vec{u}\\cdot \\vec{v}}{\\|\\vec{u}\\|\\times\\|\\vec{v}\\|}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "‖u‖‖v‖cos",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cosinus oublié",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sinus",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : somme des normes",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u·v / (‖u‖‖v‖)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : quotient renversé",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : produit",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : somme des normes",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
