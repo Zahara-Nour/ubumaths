@@ -1,0 +1,342 @@
+{
+	"title": "Pose et calcule une soustraction (par compensation, jusqu'à 10 000)",
+	"description": "Soustraction posée, méthode par compensation : 4 − 3 chiffres, 4 − 4 chiffres, zéros (5 002 − 847)",
+	"grades": ["CE2"],
+	"theme": "Nombres",
+	"domain": "Soustraction",
+	"subdomain": "Calcul posé",
+	"level": 4,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{a}} − {{b}}\nméthode: compensation\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1001..9999"
+				},
+				{
+					"name": "b",
+					"expression": "101..999"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:mod(a,10)"
+				},
+				{
+					"name": "y0",
+					"expression": "eval:mod(b,10)"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:mod(floor(a/10),10)"
+				},
+				{
+					"name": "y1",
+					"expression": "eval:mod(floor(b/10),10)"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:mod(floor(a/100),10)"
+				},
+				{
+					"name": "y2",
+					"expression": "eval:mod(floor(b/100),10)"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:mod(floor(a/1000),10)"
+				},
+				{
+					"name": "y3",
+					"expression": "eval:mod(floor(b/1000),10)"
+				},
+				{
+					"name": "f0",
+					"expression": "{{if:mod(a,10)<mod(b,10)|1|0}}"
+				},
+				{
+					"name": "f1",
+					"expression": "{{if:mod(a,100)<mod(b,100)|1|0}}"
+				},
+				{
+					"name": "f2",
+					"expression": "{{if:mod(a,1000)<mod(b,1000)|1|0}}"
+				},
+				{
+					"name": "f3",
+					"expression": "{{if:mod(a,10000)<mod(b,10000)|1|0}}"
+				}
+			],
+			"conditions": ["mod(a,10) < mod(b,10)", "a > b"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On aligne les chiffres : unités sous les unités, dizaines sous les dizaines, et ainsi de suite.",
+					"Unités : {{if:f0==1|on ne peut pas ôter ${{eval:y0}}$ de ${{x0}}$ : on ajoute $10$ en haut : ${{eval:x0+10}} - {{eval:y0}} = {{eval:x0+10-(y0)}}$ ; on compensera dans la colonne suivante.|${{x0}} - {{eval:y0}} = {{eval:x0-(y0)}}$.}}",
+					"Dizaines : {{if:f0==1|en bas, ${{y1}}$ devient ${{y1}} + 1 = {{eval:y1+f0}}$ (compensation) ; {{if:f1==1|on ne peut pas ôter ${{eval:y1+f0}}$ de ${{x1}}$ : on ajoute $10$ en haut : ${{eval:x1+10}} - {{eval:y1+f0}} = {{eval:x1+10-(y1+f0)}}$ ; on compensera dans la colonne suivante.|${{x1}} - {{eval:y1+f0}} = {{eval:x1-(y1+f0)}}$.}}|{{if:f1==1|on ne peut pas ôter ${{eval:y1}}$ de ${{x1}}$ : on ajoute $10$ en haut : ${{eval:x1+10}} - {{eval:y1}} = {{eval:x1+10-(y1)}}$ ; on compensera dans la colonne suivante.|${{x1}} - {{eval:y1}} = {{eval:x1-(y1)}}$.}}}}",
+					"Centaines : {{if:f1==1|en bas, ${{y2}}$ devient ${{y2}} + 1 = {{eval:y2+f1}}$ (compensation) ; {{if:f2==1|on ne peut pas ôter ${{eval:y2+f1}}$ de ${{x2}}$ : on ajoute $10$ en haut : ${{eval:x2+10}} - {{eval:y2+f1}} = {{eval:x2+10-(y2+f1)}}$ ; on compensera dans la colonne suivante.|${{x2}} - {{eval:y2+f1}} = {{eval:x2-(y2+f1)}}$.}}|{{if:f2==1|on ne peut pas ôter ${{eval:y2}}$ de ${{x2}}$ : on ajoute $10$ en haut : ${{eval:x2+10}} - {{eval:y2}} = {{eval:x2+10-(y2)}}$ ; on compensera dans la colonne suivante.|${{x2}} - {{eval:y2}} = {{eval:x2-(y2)}}$.}}}}",
+					"Milliers : {{if:f2==1|en bas, ${{y3}}$ devient ${{y3}} + 1 = {{eval:y3+f2}}$ (compensation) ; {{if:f3==1|on ne peut pas ôter ${{eval:y3+f2}}$ de ${{x3}}$ : on ajoute $10$ en haut : ${{eval:x3+10}} - {{eval:y3+f2}} = {{eval:x3+10-(y3+f2)}}$ ; on compensera dans la colonne suivante.|${{x3}} - {{eval:y3+f2}} = {{eval:x3-(y3+f2)}}$.}}|{{if:f3==1|on ne peut pas ôter ${{eval:y3}}$ de ${{x3}}$ : on ajoute $10$ en haut : ${{eval:x3+10}} - {{eval:y3}} = {{eval:x3+10-(y3)}}$ ; on compensera dans la colonne suivante.|${{x3}} - {{eval:y3}} = {{eval:x3-(y3)}}$.}}}}",
+					"$${{a}} - {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a-b}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{a}} − {{b}}\nméthode: compensation\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2001..9999"
+				},
+				{
+					"name": "b",
+					"expression": "1001..8999"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:mod(a,10)"
+				},
+				{
+					"name": "y0",
+					"expression": "eval:mod(b,10)"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:mod(floor(a/10),10)"
+				},
+				{
+					"name": "y1",
+					"expression": "eval:mod(floor(b/10),10)"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:mod(floor(a/100),10)"
+				},
+				{
+					"name": "y2",
+					"expression": "eval:mod(floor(b/100),10)"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:mod(floor(a/1000),10)"
+				},
+				{
+					"name": "y3",
+					"expression": "eval:mod(floor(b/1000),10)"
+				},
+				{
+					"name": "f0",
+					"expression": "{{if:mod(a,10)<mod(b,10)|1|0}}"
+				},
+				{
+					"name": "f1",
+					"expression": "{{if:mod(a,100)<mod(b,100)|1|0}}"
+				},
+				{
+					"name": "f2",
+					"expression": "{{if:mod(a,1000)<mod(b,1000)|1|0}}"
+				},
+				{
+					"name": "f3",
+					"expression": "{{if:mod(a,10000)<mod(b,10000)|1|0}}"
+				}
+			],
+			"conditions": ["mod(a,100) < mod(b,100)", "a > b"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On aligne les chiffres : unités sous les unités, dizaines sous les dizaines, et ainsi de suite.",
+					"Unités : {{if:f0==1|on ne peut pas ôter ${{eval:y0}}$ de ${{x0}}$ : on ajoute $10$ en haut : ${{eval:x0+10}} - {{eval:y0}} = {{eval:x0+10-(y0)}}$ ; on compensera dans la colonne suivante.|${{x0}} - {{eval:y0}} = {{eval:x0-(y0)}}$.}}",
+					"Dizaines : {{if:f0==1|en bas, ${{y1}}$ devient ${{y1}} + 1 = {{eval:y1+f0}}$ (compensation) ; {{if:f1==1|on ne peut pas ôter ${{eval:y1+f0}}$ de ${{x1}}$ : on ajoute $10$ en haut : ${{eval:x1+10}} - {{eval:y1+f0}} = {{eval:x1+10-(y1+f0)}}$ ; on compensera dans la colonne suivante.|${{x1}} - {{eval:y1+f0}} = {{eval:x1-(y1+f0)}}$.}}|{{if:f1==1|on ne peut pas ôter ${{eval:y1}}$ de ${{x1}}$ : on ajoute $10$ en haut : ${{eval:x1+10}} - {{eval:y1}} = {{eval:x1+10-(y1)}}$ ; on compensera dans la colonne suivante.|${{x1}} - {{eval:y1}} = {{eval:x1-(y1)}}$.}}}}",
+					"Centaines : {{if:f1==1|en bas, ${{y2}}$ devient ${{y2}} + 1 = {{eval:y2+f1}}$ (compensation) ; {{if:f2==1|on ne peut pas ôter ${{eval:y2+f1}}$ de ${{x2}}$ : on ajoute $10$ en haut : ${{eval:x2+10}} - {{eval:y2+f1}} = {{eval:x2+10-(y2+f1)}}$ ; on compensera dans la colonne suivante.|${{x2}} - {{eval:y2+f1}} = {{eval:x2-(y2+f1)}}$.}}|{{if:f2==1|on ne peut pas ôter ${{eval:y2}}$ de ${{x2}}$ : on ajoute $10$ en haut : ${{eval:x2+10}} - {{eval:y2}} = {{eval:x2+10-(y2)}}$ ; on compensera dans la colonne suivante.|${{x2}} - {{eval:y2}} = {{eval:x2-(y2)}}$.}}}}",
+					"Milliers : {{if:f2==1|en bas, ${{y3}}$ devient ${{y3}} + 1 = {{eval:y3+f2}}$ (compensation) ; {{if:f3==1|on ne peut pas ôter ${{eval:y3+f2}}$ de ${{x3}}$ : on ajoute $10$ en haut : ${{eval:x3+10}} - {{eval:y3+f2}} = {{eval:x3+10-(y3+f2)}}$ ; on compensera dans la colonne suivante.|${{x3}} - {{eval:y3+f2}} = {{eval:x3-(y3+f2)}}$.}}|{{if:f3==1|on ne peut pas ôter ${{eval:y3}}$ de ${{x3}}$ : on ajoute $10$ en haut : ${{eval:x3+10}} - {{eval:y3}} = {{eval:x3+10-(y3)}}$ ; on compensera dans la colonne suivante.|${{x3}} - {{eval:y3}} = {{eval:x3-(y3)}}$.}}}}",
+					"$${{a}} - {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a-b}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{a}} − {{b}}\nméthode: compensation\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..9"
+				},
+				{
+					"name": "r",
+					"expression": "0..8"
+				},
+				{
+					"name": "a",
+					"expression": "eval:1000*p+r"
+				},
+				{
+					"name": "b",
+					"expression": "101..999"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:mod(a,10)"
+				},
+				{
+					"name": "y0",
+					"expression": "eval:mod(b,10)"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:mod(floor(a/10),10)"
+				},
+				{
+					"name": "y1",
+					"expression": "eval:mod(floor(b/10),10)"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:mod(floor(a/100),10)"
+				},
+				{
+					"name": "y2",
+					"expression": "eval:mod(floor(b/100),10)"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:mod(floor(a/1000),10)"
+				},
+				{
+					"name": "y3",
+					"expression": "eval:mod(floor(b/1000),10)"
+				},
+				{
+					"name": "f0",
+					"expression": "{{if:mod(a,10)<mod(b,10)|1|0}}"
+				},
+				{
+					"name": "f1",
+					"expression": "{{if:mod(a,100)<mod(b,100)|1|0}}"
+				},
+				{
+					"name": "f2",
+					"expression": "{{if:mod(a,1000)<mod(b,1000)|1|0}}"
+				},
+				{
+					"name": "f3",
+					"expression": "{{if:mod(a,10000)<mod(b,10000)|1|0}}"
+				}
+			],
+			"conditions": ["a > b"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On aligne les chiffres : unités sous les unités, dizaines sous les dizaines, et ainsi de suite.",
+					"Unités : {{if:f0==1|on ne peut pas ôter ${{eval:y0}}$ de ${{x0}}$ : on ajoute $10$ en haut : ${{eval:x0+10}} - {{eval:y0}} = {{eval:x0+10-(y0)}}$ ; on compensera dans la colonne suivante.|${{x0}} - {{eval:y0}} = {{eval:x0-(y0)}}$.}}",
+					"Dizaines : {{if:f0==1|en bas, ${{y1}}$ devient ${{y1}} + 1 = {{eval:y1+f0}}$ (compensation) ; {{if:f1==1|on ne peut pas ôter ${{eval:y1+f0}}$ de ${{x1}}$ : on ajoute $10$ en haut : ${{eval:x1+10}} - {{eval:y1+f0}} = {{eval:x1+10-(y1+f0)}}$ ; on compensera dans la colonne suivante.|${{x1}} - {{eval:y1+f0}} = {{eval:x1-(y1+f0)}}$.}}|{{if:f1==1|on ne peut pas ôter ${{eval:y1}}$ de ${{x1}}$ : on ajoute $10$ en haut : ${{eval:x1+10}} - {{eval:y1}} = {{eval:x1+10-(y1)}}$ ; on compensera dans la colonne suivante.|${{x1}} - {{eval:y1}} = {{eval:x1-(y1)}}$.}}}}",
+					"Centaines : {{if:f1==1|en bas, ${{y2}}$ devient ${{y2}} + 1 = {{eval:y2+f1}}$ (compensation) ; {{if:f2==1|on ne peut pas ôter ${{eval:y2+f1}}$ de ${{x2}}$ : on ajoute $10$ en haut : ${{eval:x2+10}} - {{eval:y2+f1}} = {{eval:x2+10-(y2+f1)}}$ ; on compensera dans la colonne suivante.|${{x2}} - {{eval:y2+f1}} = {{eval:x2-(y2+f1)}}$.}}|{{if:f2==1|on ne peut pas ôter ${{eval:y2}}$ de ${{x2}}$ : on ajoute $10$ en haut : ${{eval:x2+10}} - {{eval:y2}} = {{eval:x2+10-(y2)}}$ ; on compensera dans la colonne suivante.|${{x2}} - {{eval:y2}} = {{eval:x2-(y2)}}$.}}}}",
+					"Milliers : {{if:f2==1|en bas, ${{y3}}$ devient ${{y3}} + 1 = {{eval:y3+f2}}$ (compensation) ; {{if:f3==1|on ne peut pas ôter ${{eval:y3+f2}}$ de ${{x3}}$ : on ajoute $10$ en haut : ${{eval:x3+10}} - {{eval:y3+f2}} = {{eval:x3+10-(y3+f2)}}$ ; on compensera dans la colonne suivante.|${{x3}} - {{eval:y3+f2}} = {{eval:x3-(y3+f2)}}$.}}|{{if:f3==1|on ne peut pas ôter ${{eval:y3}}$ de ${{x3}}$ : on ajoute $10$ en haut : ${{eval:x3+10}} - {{eval:y3}} = {{eval:x3+10-(y3)}}$ ; on compensera dans la colonne suivante.|${{x3}} - {{eval:y3}} = {{eval:x3-(y3)}}$.}}}}",
+					"$${{a}} - {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a-b}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "6 453 − 278 = 6 175",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6453",
+				"b": "278"
+			},
+			"answers": ["6175"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : plus petit ôté du plus grand, 6 453 − 278",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6453",
+				"b": "278"
+			},
+			"answers": ["6225"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 305 − 2 468 = 4 837",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7305",
+				"b": "2468"
+			},
+			"answers": ["4837"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : plus petit ôté du plus grand, 7 305 − 2 468",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7305",
+				"b": "2468"
+			},
+			"answers": ["5163"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5 002 − 847 = 4 155",
+			"variationIndex": 2,
+			"variables": {
+				"p": "5",
+				"r": "2",
+				"b": "847"
+			},
+			"answers": ["4155"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : plus petit ôté du plus grand, 5 002 − 847",
+			"variationIndex": 2,
+			"variables": {
+				"p": "5",
+				"r": "2",
+				"b": "847"
+			},
+			"answers": ["5845"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : zéros mal échangés, 5 002 − 847 = 5 245",
+			"variationIndex": 2,
+			"variables": {
+				"p": "5",
+				"r": "2",
+				"b": "847"
+			},
+			"answers": ["5245"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 000 − 478 = 2 522",
+			"variationIndex": 2,
+			"variables": {
+				"p": "3",
+				"r": "0",
+				"b": "478"
+			},
+			"answers": ["2522"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

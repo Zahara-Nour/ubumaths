@@ -1,0 +1,167 @@
+{
+	"title": "Pose et calcule une multiplication par un nombre à un chiffre",
+	"description": "Multiplication posée : 2 ou 3 chiffres × 1 chiffre, retenues, un 0 au milieu (305 × 7)",
+	"grades": ["CE2"],
+	"theme": "Entiers",
+	"domain": "Multiplier",
+	"subdomain": "Calcul posé",
+	"level": 2,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{a}} × {{b}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "12..99"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["mod(a,10)*b >= 10"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On multiplie chaque chiffre de ${{a}}$ par ${{b}}$, en commençant par les unités, et on retient les dizaines.",
+					"Unités : ${{eval:mod(a,10)}} \\times {{b}} = {{eval:mod(a,10)*b}}${{if:mod(a,10)*b>=10| : on écrit ${{eval:mod(mod(a,10)*b,10)}}$ et on retient ${{eval:floor((mod(a,10)*b)/10)}}$.|.}}",
+					"Dizaines : ${{eval:mod(floor(a/10),10)}} \\times {{b}}{{if:floor((mod(a,10)*b)/10)>0| + {{eval:floor((mod(a,10)*b)/10)}}|}} = {{eval:(mod(floor(a/10),10)*b+floor((mod(a,10)*b)/10))}}$ : on écrit ${{eval:(mod(floor(a/10),10)*b+floor((mod(a,10)*b)/10))}}$.",
+					"$${{a}} \\times {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a*b}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{a}} × {{b}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "102..999"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["mod(a,10)*b >= 10"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On multiplie chaque chiffre de ${{a}}$ par ${{b}}$, en commençant par les unités, et on retient les dizaines.",
+					"Unités : ${{eval:mod(a,10)}} \\times {{b}} = {{eval:mod(a,10)*b}}${{if:mod(a,10)*b>=10| : on écrit ${{eval:mod(mod(a,10)*b,10)}}$ et on retient ${{eval:floor((mod(a,10)*b)/10)}}$.|.}}",
+					"Dizaines : ${{eval:mod(floor(a/10),10)}} \\times {{b}}{{if:floor((mod(a,10)*b)/10)>0| + {{eval:floor((mod(a,10)*b)/10)}}|}} = {{eval:(mod(floor(a/10),10)*b+floor((mod(a,10)*b)/10))}}${{if:(mod(floor(a/10),10)*b+floor((mod(a,10)*b)/10))>=10| : on écrit ${{eval:mod((mod(floor(a/10),10)*b+floor((mod(a,10)*b)/10)),10)}}$ et on retient ${{eval:floor(((mod(floor(a/10),10)*b+floor((mod(a,10)*b)/10)))/10)}}$.|.}}",
+					"Centaines : ${{eval:mod(floor(a/100),10)}} \\times {{b}}{{if:floor(((mod(floor(a/10),10)*b+floor((mod(a,10)*b)/10)))/10)>0| + {{eval:floor(((mod(floor(a/10),10)*b+floor((mod(a,10)*b)/10)))/10)}}|}} = {{eval:(mod(floor(a/100),10)*b+floor(((mod(floor(a/10),10)*b+floor((mod(a,10)*b)/10)))/10))}}$ : on écrit ${{eval:(mod(floor(a/100),10)*b+floor(((mod(floor(a/10),10)*b+floor((mod(a,10)*b)/10)))/10))}}$.",
+					"$${{a}} \\times {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a*b}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{a}} × {{b}}\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "1..9"
+				},
+				{
+					"name": "z",
+					"expression": "1..9"
+				},
+				{
+					"name": "a",
+					"expression": "eval:100*x+z"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On multiplie chaque chiffre de ${{a}}$ par ${{b}}$, en commençant par les unités, et on retient les dizaines.",
+					"Unités : ${{eval:mod(a,10)}} \\times {{b}} = {{eval:mod(a,10)*b}}${{if:mod(a,10)*b>=10| : on écrit ${{eval:mod(mod(a,10)*b,10)}}$ et on retient ${{eval:floor((mod(a,10)*b)/10)}}$.|.}}",
+					"Dizaines : ${{eval:mod(floor(a/10),10)}} \\times {{b}}{{if:floor((mod(a,10)*b)/10)>0| + {{eval:floor((mod(a,10)*b)/10)}}|}} = {{eval:(mod(floor(a/10),10)*b+floor((mod(a,10)*b)/10))}}${{if:(mod(floor(a/10),10)*b+floor((mod(a,10)*b)/10))>=10| : on écrit ${{eval:mod((mod(floor(a/10),10)*b+floor((mod(a,10)*b)/10)),10)}}$ et on retient ${{eval:floor(((mod(floor(a/10),10)*b+floor((mod(a,10)*b)/10)))/10)}}$.|.}}",
+					"Centaines : ${{eval:mod(floor(a/100),10)}} \\times {{b}}{{if:floor(((mod(floor(a/10),10)*b+floor((mod(a,10)*b)/10)))/10)>0| + {{eval:floor(((mod(floor(a/10),10)*b+floor((mod(a,10)*b)/10)))/10)}}|}} = {{eval:(mod(floor(a/100),10)*b+floor(((mod(floor(a/10),10)*b+floor((mod(a,10)*b)/10)))/10))}}$ : on écrit ${{eval:(mod(floor(a/100),10)*b+floor(((mod(floor(a/10),10)*b+floor((mod(a,10)*b)/10)))/10))}}$.",
+					"$${{a}} \\times {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a*b}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "48 × 7 = 336",
+			"variationIndex": 0,
+			"variables": {
+				"a": "48",
+				"b": "7"
+			},
+			"answers": ["336"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : retenue oubliée, 48 × 7 = 286",
+			"variationIndex": 0,
+			"variables": {
+				"a": "48",
+				"b": "7"
+			},
+			"answers": ["286"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "548 × 6 = 3 288",
+			"variationIndex": 1,
+			"variables": {
+				"a": "548",
+				"b": "6"
+			},
+			"answers": ["3 288"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : retenue oubliée, 548 × 6 = 2 748",
+			"variationIndex": 1,
+			"variables": {
+				"a": "548",
+				"b": "6"
+			},
+			"answers": ["2 748"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "305 × 7 = 2 135",
+			"variationIndex": 2,
+			"variables": {
+				"x": "3",
+				"z": "5",
+				"b": "7"
+			},
+			"answers": ["2 135"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0 × 7 oublié, 305 × 7 = 215",
+			"variationIndex": 2,
+			"variables": {
+				"x": "3",
+				"z": "5",
+				"b": "7"
+			},
+			"answers": ["215"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

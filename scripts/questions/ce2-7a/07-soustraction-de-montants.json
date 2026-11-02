@@ -1,0 +1,190 @@
+{
+	"title": "Pose et calcule une soustraction de montants en euros",
+	"description": "Soustraire deux montants à virgule, avec ou sans échange sur les centimes ; ôter un montant entier (143,45 € − 68 €) ; un reste",
+	"grades": ["CE2"],
+	"theme": "Grandeurs",
+	"domain": "Monnaie",
+	"subdomain": "Euros et centimes",
+	"level": 4,
+	"delay": 180,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Pose et calcule, en euros.\n\n```operation\ncalcul: {{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}} − {{eval:floor((q)/100)}}.{{eval:floor(mod(q,100)/10)}}{{eval:mod(q,10)}}\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2001..9999"
+				},
+				{
+					"name": "q",
+					"expression": "101..1999"
+				}
+			],
+			"conditions": ["mod(p,100) != 0", "mod(q,100) != 0", "mod(p,100) >= mod(q,100)", "p > q"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On aligne les virgules : centimes sous centimes, euros sous euros. On calcule comme avec des nombres entiers, de droite à gauche ; la virgule du résultat se place sous les autres.",
+					"${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€} - {{eval:floor((q)/100)}}.{{eval:floor(mod(q,100)/10)}}{{eval:mod(q,10)}}~\\unit{€} = \\textcolor{{{color:primary.0}}}{{{eval:floor((p-q)/100)}}.{{eval:floor(mod(p-q,100)/10)}}{{eval:mod(p-q,10)}}}~\\unit{€}$"
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule, en euros.\n\n```operation\ncalcul: {{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}} − {{eval:floor((q)/100)}}.{{eval:floor(mod(q,100)/10)}}{{eval:mod(q,10)}}\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2001..9999"
+				},
+				{
+					"name": "q",
+					"expression": "101..1999"
+				}
+			],
+			"conditions": ["mod(p,100) != 0", "mod(q,100) != 0", "mod(p,100) < mod(q,100)", "p > q"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On aligne les virgules : centimes sous centimes, euros sous euros. On calcule comme avec des nombres entiers, de droite à gauche ; la virgule du résultat se place sous les autres.",
+					"Les centimes : on ne peut pas ôter {{eval:mod(q,100)}} de {{eval:mod(p,100)}} : on prend $1$ euro de la colonne suivante, qui vaut $100$ centimes.",
+					"${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€} - {{eval:floor((q)/100)}}.{{eval:floor(mod(q,100)/10)}}{{eval:mod(q,10)}}~\\unit{€} = \\textcolor{{{color:primary.0}}}{{{eval:floor((p-q)/100)}}.{{eval:floor(mod(p-q,100)/10)}}{{eval:mod(p-q,10)}}}~\\unit{€}$"
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule, en euros.\n\n```operation\ncalcul: {{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}} − {{n}}\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "10001..19999"
+				},
+				{
+					"name": "n",
+					"expression": "21..99"
+				}
+			],
+			"conditions": ["mod(p,100) != 0", "p > 100*n"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On aligne les virgules : centimes sous centimes, euros sous euros. On calcule comme avec des nombres entiers, de droite à gauche ; la virgule du résultat se place sous les autres.",
+					"${{n}}$ est un nombre entier : on peut penser ${{n}}{,}00$.",
+					"${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€} - {{n}}~\\unit{€} = \\textcolor{{{color:primary.0}}}{{{eval:floor((p-100*n)/100)}}.{{eval:floor(mod(p-100*n,100)/10)}}{{eval:mod(p-100*n,10)}}}~\\unit{€}$"
+				]
+			}
+		},
+		{
+			"statement": "Léa avait ${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$. Elle dépense ${{eval:floor((q)/100)}}.{{eval:floor(mod(q,100)/10)}}{{eval:mod(q,10)}}~\\unit{€}$. Combien lui reste-t-il ?\n\n```operation\ncalcul: {{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}} − {{eval:floor((q)/100)}}.{{eval:floor(mod(q,100)/10)}}{{eval:mod(q,10)}}\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2001..9999"
+				},
+				{
+					"name": "q",
+					"expression": "101..1999"
+				}
+			],
+			"conditions": ["mod(p,100) != 0", "mod(q,100) != 0", "p > q"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On aligne les virgules : centimes sous centimes, euros sous euros. On calcule comme avec des nombres entiers, de droite à gauche ; la virgule du résultat se place sous les autres.",
+					"Il lui reste $\\textcolor{{{color:primary.0}}}{{{eval:floor((p-q)/100)}}.{{eval:floor(mod(p-q,100)/10)}}{{eval:mod(p-q,10)}}}~\\unit{€}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "74,56 € − 15,30 € = 59,26 €",
+			"variationIndex": 0,
+			"variables": {
+				"p": "7456",
+				"q": "1530"
+			},
+			"answers": ["59,26"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : virgule oubliée (5926)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "7456",
+				"q": "1530"
+			},
+			"answers": ["5926"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "74,36 € − 12,58 € = 61,78 €",
+			"variationIndex": 1,
+			"variables": {
+				"p": "7436",
+				"q": "1258"
+			},
+			"answers": ["61,78"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : plus petit ôté du plus grand (62,22)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "7436",
+				"q": "1258"
+			},
+			"answers": ["62,22"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "143,45 € − 68 € = 75,45 €",
+			"variationIndex": 2,
+			"variables": {
+				"p": "14345",
+				"n": "68"
+			},
+			"answers": ["75,45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 68 ôté des centimes (142,77)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "14345",
+				"n": "68"
+			},
+			"answers": ["142,77"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Il lui reste 60,16 €",
+			"variationIndex": 3,
+			"variables": {
+				"p": "7436",
+				"q": "1420"
+			},
+			"answers": ["60,16"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
