@@ -6,17 +6,20 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, phase 0 du lot 2 validée (§ 5)._
+_Mis à jour le 2026-11-02, après #2233._
 
-- **État** : lot 1 mergé (#2226), pas encore en prod. Phase 0 du lot 2 **validée** (§ 5, décisions).
-- **Prochaine action** : lot 2a — outil `point`, contrôle `verifier: point A' = <expression>` sur
-  quadrillage (tests rouges d'abord). Puis lot 2b (équerre, compas, intersections, papier uni), puis
-  angle, triangle, médiatrice, bissectrice, cercle circonscrit, 4e sommet (§ 1).
+- **État** : lot 1 (#2226) et lot 2a (#2233, `verifier: point A' = <expression>`, outil point sur
+  quadrillage) **mergés**, pas encore en prod (`deploy:prod` sur demande de David). Vérifications à
+  l'œil notées dans `verifications-manuelles.md`.
+- **Prochaine action** : lot 2b — équerre (perpendiculaire à une droite par un point), compas (cercle
+  par son centre et un point), aimantation sur les intersections des traits, papier uni (§ 5,
+  décisions) : phase 0 des gestes d'abord. Puis angle, triangle, médiatrice, bissectrice, cercle
+  circonscrit, 4e sommet (§ 1) ; modèles CE2-073, CM1-107/108, CM2-097, 6-179/180 (journaux de niveau).
 - **En attente de David** : rien.
-- **Pièges en cours** : les `testSpecs` d'un modèle ne vérifient que le statut (pas de `feedback`) ;
-  sans `grille:`, `symetrique` est refusé à la publication ; un contrôle ne doit jamais donner la
-  réponse (`verifier: ?`).
-- **Worktree / branche** : `../ubumaths-wt-controles-figure`, `feat/controles-figure-point` (lot 2a).
+- **Pièges en cours** : le langage des figures n'a pas de prime (`A'` = nom de correction seulement,
+  § 6) ; geometry-core : `symetrie(P, axe=d)` échoue si P définit d (« duplicate parent IDs ») ;
+  `testSpecs` = statut seulement ; sans `grille:`, `symetrique` et `point` refusés à la publication.
+- **Worktree / branche** : aucun (retiré après #2233).
 
 ---
 
