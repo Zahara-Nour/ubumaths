@@ -1,0 +1,169 @@
+{
+	"title": "Variance d'une somme de variables indépendantes",
+	"description": "À savoir : V(X + Y) = V(X) + V(Y) si X et Y sont indépendantes ; hypothèse, exemple, écart-type ; distracteurs : sans hypothèse, somme des écarts-types",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Sommes de variables aléatoires",
+	"subdomain": "À savoir",
+	"level": 2,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $X$ et $Y$ deux variables aléatoires définies sur le même univers. L'égalité $V(X+Y)=V(X)+V(Y)$ est vraie :\n\n```choix\n- lorsque $X$ et $Y$ sont indépendantes\n- pour toutes variables $X$ et $Y$\n- seulement si $X$ et $Y$ ont la même loi\n- jamais : c'est $\\sigma(X+Y)=\\sigma(X)+\\sigma(Y)$ qui est vraie\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : si $X$ et $Y$ sont $\\textcolor{{{color:primary.0}}}{\\text{indépendantes}}$ (par exemple liées à des épreuves indépendantes), alors $V(X+Y)=V(X)+V(Y)$.",
+					"Sans indépendance, l'égalité peut être fausse : avec $Y=X$, $V(2X)=4V(X)$ et non $2V(X)$. Ce sont les variances qui s'ajoutent, pas les écarts-types."
+				]
+			}
+		},
+		{
+			"statement": "Soit $X$ et $Y$ deux variables aléatoires indépendantes, avec $V(X)=4$ et $V(Y)=9$. $V(X+Y)$ est égal à :\n\n```choix\n- $13$\n- $25$\n- $5$\n- $36$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : si $X$ et $Y$ sont indépendantes, $V(X+Y)=V(X)+V(Y)$.",
+					"Donc $V(X+Y)=4+9=\\textcolor{{{color:primary.0}}}{13}$. ($25=(2+3)^2$ ajoute les écarts-types avant d'élever au carré ; $5=2+3$ est la somme des écarts-types.)"
+				]
+			}
+		},
+		{
+			"statement": "Soit $X$ et $Y$ deux variables aléatoires indépendantes, avec $V(X)=9$ et $V(Y)=16$. L'écart-type $\\sigma(X+Y)$ est égal à :\n\n```choix\n- $5$\n- $7$\n- $25$\n- $\\sqrt{7}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : si $X$ et $Y$ sont indépendantes, $V(X+Y)=V(X)+V(Y)$ ; ce sont les VARIANCES qui s'ajoutent.",
+					"Ici $V(X+Y)=9+16=25$, donc $\\sigma(X+Y)=\\sqrt{25}=\\textcolor{{{color:primary.0}}}{5}$, et non $\\sigma(X)+\\sigma(Y)=3+4=7$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "indépendantes",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : toujours",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : même loi",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : écarts-types",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "13",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 25 = (2 + 3)²",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 5 = 2 + 3",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 36 = 4 × 9",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 = 3 + 4",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 25 (variance)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : √7",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

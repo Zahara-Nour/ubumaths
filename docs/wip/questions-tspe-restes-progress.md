@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, 8b publié (7/7)._
+_Mis à jour le 2026-11-02, 8c écrit (PR ouverte)._
 
-- **État** : lot 8 (D-L8 : 26 « à savoir » en 8a/8b/8c) ; **8a et 8b clos** (18 modèles publiés : #2259, #2260, #2263, #2266 ; relectures toutes « ok »).
-- **Prochaine action** : 8c (541, 614, 519, 520, 343, 351, 329, 331 : 8 modèles), même chaîne ; gabarit `docs/wip/questions/lot-tspe-savoir-b.py`, migration `20261102222541` ; relever d'abord les nœuds des points (MCP) et les thèmes des voisins (Dénombrement, Loi binomiale, Sommes de v. a., espace).
+- **État** : lot 8 (D-L8 : 26 « à savoir » en 8a/8b/8c) ; **8a et 8b clos** (18 publiés) ; **8c écrit** (8 modèles, specs vertes, PR de contenu ouverte).
+- **Prochaine action** : merge de la PR 8c → David crée les brouillons en prod (`create-questions --dir scripts/questions/tspe-8c-savoir --publier`, depuis le dépôt principal) → migration nœud + tag (gabarit `20261102222541`, préfixe `_qtl8c_`, nœuds relevés au § « Lot 8c : écriture »).
 - **En attente de David** : rien.
 - **Pièges en cours** : relevé de nœuds → filtrer `archived_at is null` ; `!=` dans `$…$` lu « ≠ » (écrire `!\,=`) ; garde « notion sans sous-notion » : liste `sous_notions_admises` (migration `20261102181059`) ; worktree sans `.env*` → les copier pour les tests d'intégration.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · branche neuve depuis `origin/main` pour 8c.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · branche `content/questions-tspe-8c-savoir`.
 
 ---
 
@@ -282,3 +282,17 @@ Chrome).
 **Relecture** (David, 2026-11-02) : 7 « ok » sur 7, aucun commentaire (lu en base de l'artefact). **Publication** :
 `publier-lot.ts` simulé (7 passent), lancé par David avec `--publier` : 7/7 `published`, relus au MCP, toujours sur leur
 nœud, un tag chacun. **8b clos.**
+
+## Lot 8c : écriture (2026-11-02)
+
+`docs/wip/questions/lot-tspe-savoir-c.py` (copie de 8b) → `scripts/questions/tspe-8c-savoir/` : 8 modèles `[T_SPE]`,
+sous-domaine « À savoir » (relevé prod : aucun dans ces domaines). Thèmes et domaines repris des voisins sur le nœud de
+chaque point : « Probabilités » (Dénombrement 1 : 541 ; Loi binomiale 1 : 614 ; Sommes de variables aléatoires 1-2 : 519, 520) et « Géométrie » (Orthogonalité et distances dans l'espace 1-2 : 343, 351 ; Vecteurs, droites et plans de l'espace
+1-2 : 329, 331). La phase 0 disait « domaine de l'espace, 1-4 » : en prod, les voisins sont dans DEUX domaines → deux
+« À savoir » numérotés 1-2. 2 ou 3 variations par modèle, case choix à 4 propositions. Specs : 76 vertes, aperçus relus
+(`$3!=6$` rendu « 3 ≠ 6 » → `3!\,=6`). Simulation `create-questions` : 8 à créer, 0 en base. Nœuds des points (MCP),
+tous sous-notions actives, aucun tag : 541 → Dénombrement › Principes de dénombrement › parties d'un ensemble ; 614 →
+Probabilités › Loi binomiale › expression de la loi ; 519, 520 → Probabilités › Sommes et concentration › espérance et
+variance d'une somme ; 343 → Géométrie › Orthogonalité et distances dans l'espace › produit scalaire dans l'espace ; 351
+→ même notion › orthogonalité de droites et plans ; 329 → Géométrie › Espace › colinéarité et alignement ; 331 →
+Géométrie › Espace › coplanarité et décomposition.

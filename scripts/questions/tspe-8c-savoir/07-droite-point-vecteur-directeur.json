@@ -1,0 +1,118 @@
+{
+	"title": "Droite : un point et un vecteur directeur",
+	"description": "À savoir : une droite est déterminée par un point A et un vecteur directeur u non nul, M ∈ d ⟺ AM = t u ; caractérisation, données ; distracteurs : plan normal, demi-droite, point ou vecteur seul",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs, droites et plans de l'espace",
+	"subdomain": "À savoir",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $A$ un point de l'espace et $\\vec{u}$ un vecteur non nul. La droite passant par $A$ et de vecteur directeur $\\vec{u}$ est l'ensemble des points $M$ tels que :\n\n```choix\n- $\\overrightarrow{AM}=t\\,\\vec{u}$ pour un réel $t$\n- $\\overrightarrow{AM}\\cdot\\vec{u}=0$\n- $\\overrightarrow{AM}=\\vec{u}$\n- $\\overrightarrow{AM}=t\\,\\vec{u}$ pour un réel $t\\geqslant0$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : la droite passant par $A$ de vecteur directeur $\\vec{u}$ ($\\vec{u}\\neq\\vec{0}$) est l'ensemble des points $M$ tels que $\\textcolor{{{color:primary.0}}}{\\overrightarrow{AM}=t\\,\\vec{u},\\ t\\in\\mathbb{R}}$ : $\\overrightarrow{AM}$ et $\\vec{u}$ sont colinéaires.",
+					"Avec $t\\geqslant0$ seulement, on n'obtient qu'une demi-droite ; $\\overrightarrow{AM}\\cdot\\vec{u}=0$ décrit le plan passant par $A$ de vecteur normal $\\vec{u}$."
+				]
+			}
+		},
+		{
+			"statement": "Une droite de l'espace est déterminée par :\n\n```choix\n- un point et un vecteur non nul\n- un point seul\n- un vecteur non nul seul\n- un point et deux vecteurs non colinéaires\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : une droite est déterminée par $\\textcolor{{{color:primary.0}}}{\\text{un point et un vecteur directeur non nul}}$.",
+					"Un vecteur seul fixe une direction (une infinité de droites parallèles) ; un point et deux vecteurs non colinéaires déterminent un PLAN."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "AM = t u, t réel",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : AM · u = 0 (plan)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : AM = u",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : t ⩾ 0 (demi-droite)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "point + vecteur non nul",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : point seul",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : vecteur seul",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : deux vecteurs (plan)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
