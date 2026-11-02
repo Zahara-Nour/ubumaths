@@ -253,10 +253,10 @@
 				else if (interactive) hint = { node, text: 'Touche d’abord une droite.' };
 				return;
 			}
-			const node = snapToGrid(math, grid, scene.viewport);
+			const nearest = snapToGrid(math, grid, scene.viewport);
 			// Le curseur clavier (s'il est là) suit le dernier toucher
-			if (cursor) cursor = node;
-			tapAt(node);
+			if (cursor) cursor = nearest;
+			tapAt(nearest);
 			return;
 		}
 		if (!instruments) {
