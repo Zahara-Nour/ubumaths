@@ -121,7 +121,7 @@ function withObject(drawing: Drawing, object: DrawnObject): Drawing {
 }
 
 /**
- * Un toucher : outil point → le point ; sinon premier → départ ; second → la
+ * Un toucher : outil point → le point (rien s'il y est déjà) ; sinon premier → départ ; second → la
  * droite (ou le segment, qui s'arrête à ses deux bouts). Toucher le départ une
  * seconde fois ne fait rien.
  */
@@ -130,7 +130,15 @@ export function addTap(
 	position: Position,
 	tool: ConstructionTool = 'droite'
 ): Drawing {
-	if (tool === 'point') return withObject(drawing, { kind: 'point', x: position.x, y: position.y });
+	if (tool === 'point') {
+		// Toucher un point déjà posé (double toucher) ne fait rien, comme le départ d'un trait
+		const placed = drawing.objects.some(
+			(o) =>
+				o.kind === 'point' && Math.hypot(o.x - position.x, o.y - position.y) <= SAME_TAP_EPSILON
+		);
+		if (placed) return { objects: drawing.objects, start: null };
+		return withObject(drawing, { kind: 'point', x: position.x, y: position.y });
+	}
 	const { start } = drawing;
 	if (!start) return { objects: drawing.objects, start: position };
 	if (Math.hypot(position.x - start.x, position.y - start.y) <= SAME_TAP_EPSILON) return drawing;

@@ -248,6 +248,18 @@ describe('faux, message de la première cause', () => {
 		});
 	});
 
+	it('deux points attendus, un seul essai : le message porte sur le point visé', () => {
+		// (10 ; 2) : visiblement B' (8 ; 1) mal placé, pas A' (10 ; 5)
+		const source = figure(
+			["point A' = symetrie(A, axe=d)", "point B' = symetrie(B, axe=d)"],
+			[...AXIS_BODY, 'B = point(4, 1)']
+		);
+		expect(judge(source, pt(9, 1))).toEqual({
+			status: 'incorrect',
+			feedback: notSameDistanceFeedback('B', "B'")
+		});
+	});
+
 	it('un point de trop', () => {
 		expect(judge(VERTICAL, [pt(10, 5), pt(1, 1)].join('|'))).toEqual({
 			status: 'incorrect',
@@ -306,6 +318,14 @@ describe('erreurs d’auteur (refus à la publication)', () => {
 		expect(() => assertChecks(figure(verifier, AXIS_BODY))).toThrow(message);
 	});
 
+	it('point attendu au bout d’un trait sans nom : déjà dans la figure', () => {
+		const source = figure("point A' = symetrie(A, axe=d)", [
+			...AXIS_BODY,
+			'segment(A, point(10, 5))'
+		]);
+		expect(() => assertChecks(source)).toThrow('au bout d’un trait');
+	});
+
 	it('point attendu hors des nœuds du quadrillage', () => {
 		const source = figure("point A' = milieu(A, Q)", AXIS_BODY);
 		expect(() => assertChecks(source)).toThrow('nœud');
@@ -331,6 +351,11 @@ describe('tracé et correction', () => {
 		const one = addTap(empty, { x: 10, y: 5 }, 'point');
 		expect(one).toEqual({ objects: [{ kind: 'point', x: 10, y: 5 }], start: null });
 		expect(eraseLast(one)).toEqual(empty);
+	});
+
+	it('toucher deux fois le même nœud : un seul point (double toucher)', () => {
+		const one = addTap({ objects: [], start: null }, { x: 10, y: 5 }, 'point');
+		expect(addTap(one, { x: 10, y: 5 }, 'point')).toEqual(one);
 	});
 
 	it('la correction : chaque point attendu, son nom, et [AA’] pour un symétrique', () => {

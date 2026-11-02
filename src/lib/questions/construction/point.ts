@@ -140,9 +140,12 @@ export function assertPoints(
 			);
 		}
 		const existing = [...points].find(([, p]) => near(p, at, eps));
-		if (existing) {
+		// Bout d'un trait de la figure, même sans nom (`segment(A, point(10, 5))`)
+		const drawnEnd = shapes.segments.some((s) => near(s.a, at, eps) || near(s.b, at, eps));
+		if (existing || drawnEnd) {
+			const where = existing ? `au même endroit que ${existing[0]}` : 'au bout d’un trait';
 			throw new PointAuthorError(
-				`${label} : le point attendu est déjà dans la figure (au même endroit que ${existing[0]}) : rien à placer`
+				`${label} : le point attendu est déjà dans la figure (${where}) : rien à placer`
 			);
 		}
 		const twin = placed.find((p) => near(p.at, at, eps));
@@ -184,10 +187,10 @@ function wrongPointFeedback(
 }
 
 /**
- * Verdict : chaque point attendu prend un point de l'élève à sa place ; le
- * premier point attendu sans preneur est expliqué avec le point de l'élève le
- * plus proche, qu'aucun autre n'a pris ; un point que personne ne prend est de
- * trop.
+ * Verdict : chaque point attendu prend un point de l'élève à sa place ; parmi
+ * les points attendus sans preneur et les points de l'élève qu'aucun n'a pris,
+ * la paire la plus proche est expliquée ; un point que personne ne prend est
+ * de trop.
  */
 export function judgePoints(
 	checks: readonly PointCheck[],
@@ -211,12 +214,17 @@ export function judgePoints(
 			: { status: 'correct' };
 	}
 	if (unused.length === 0) return { status: 'incorrect', feedback: POINT_MISSING_FEEDBACK };
-	const { check, at } = missed[0];
-	const distance = (p: Position) => Math.hypot(p.x - at.x, p.y - at.y);
-	const closest = unused.reduce((best, p) => (distance(p) < distance(best) ? p : best));
+	// Le point de l'élève et le point attendu les plus proches : l'essai le plus probable
+	let best = { target: missed[0], drawn: unused[0], distance: Infinity };
+	for (const target of missed) {
+		for (const drawn of unused) {
+			const distance = Math.hypot(drawn.x - target.at.x, drawn.y - target.at.y);
+			if (distance < best.distance) best = { target, drawn, distance };
+		}
+	}
 	return {
 		status: 'incorrect',
-		feedback: wrongPointFeedback(check, closest, at, points, shapes)
+		feedback: wrongPointFeedback(best.target.check, best.drawn, best.target.at, points, shapes)
 	};
 }
 

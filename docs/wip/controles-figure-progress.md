@@ -223,5 +223,8 @@ calculée à chaque tirage. Plusieurs lignes `point …` dans le même `verifier
 - **Défaut de geometry-core trouvé, non corrigé** : `symetrie(P, axe=d)` quand `P` définit `d`
   (`d = droite(P, Q)`) → « addNode "reflL_5": duplicate parent IDs are not allowed ». Contourné dans les
   tests (point M de l'axe) ; pour l'auteur, l'erreur sort à la publication.
-- Tests : juge et lecture (`construction-point.test.ts`, 44), modèle (`check-template-figure`, 2), écran
+- Revue Opus (2026-11-02), 3 points corrigés : double toucher sur un nœud = un seul point (était
+  « point de trop » avec une seule croix visible) ; avec plusieurs points, le message porte sur la paire
+  (point attendu, essai) la plus proche ; point attendu au bout d'un trait sans nom = déjà dans la figure.
+- Tests : juge et lecture (`construction-point.test.ts`, 47), modèle (`check-template-figure`, 2), écran
   (`figure-a-completer-point.svelte.test.ts`, 2).
