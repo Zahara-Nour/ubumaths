@@ -10,11 +10,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2260 (migration 8a passée en prod)._
+_Mis à jour le 2026-11-02, 8a publié (11/11)._
 
-- **État** : lot 8 (D-L8 : 26 « à savoir » en 8a/8b/8c) ; 8a : 11 brouillons en prod, rangés et tagués (#2259, #2260), page à cocher publiée.
-- **Prochaine action** : lire les verdicts de https://claude.ai/artifact/BEs9jcWtrZegQoP7vN2toa (compter) ; puis `publier-lot.ts --dir scripts/questions/tspe-8a-savoir` simulé, `--publier` par David ; ensuite 8b (primitives, y′ = ay + b, IPP : 7 modèles).
-- **En attente de David** : la relecture des 11 fiches de 8a.
+- **État** : lot 8 (D-L8 : 26 « à savoir » en 8a/8b/8c) ; **8a clos** : 11 modèles publiés (#2259, #2260 ; relecture 11 « ok »).
+- **Prochaine action** : 8b (463, 603, 604, 605, 606, 466, 484 : primitives de référence, y′ = ay + b, IPP ; 7 modèles, gabarit `docs/wip/questions/lot-tspe-savoir-a.py`), même chaîne que 8a.
+- **En attente de David** : rien.
 - **Pièges en cours** : relevé de nœuds → filtrer `archived_at is null` ; `!=` dans `$…$` lu « ≠ » (écrire `!\,=`) ; garde « notion sans sous-notion » : liste `sous_notions_admises` (migration `20261102181059`).
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · branche neuve depuis `origin/main` pour 8b.
 
@@ -239,3 +239,7 @@ MCP : 11 modèles sur leur sous-notion, un tag chacun, `updated_at` = `created_a
 **Page à cocher** : `page-a-cocher.ts --dir scripts/questions/tspe-8a-savoir`, 11 fiches lues en prod, aucune alerte,
 31 exemples : https://claude.ai/artifact/BEs9jcWtrZegQoP7vN2toa (`verdicts` vide à la publication ; rendu non regardé
 dans Chrome).
+
+**Relecture** (David, 2026-11-02) : 11 « ok » sur 11, aucun commentaire (lu en base de l'artefact). **Publication** :
+`publier-lot.ts` simulé (11 passent), lancé par David avec `--publier` : 11/11 `published`, relus au MCP, toujours sur
+leur nœud. **8a clos.**
