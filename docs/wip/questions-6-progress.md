@@ -5,15 +5,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2229 (migration du lot 10 mergée, pas appliquée)._
+_Mis à jour le 2026-11-02, après #2229 et le `db:migrate` (lot 10 rangé, page à cocher publiée)._
 
-- **État** : lot 10 (160-167) : 8 brouillons en prod (§ 24.2), migration de rangement mergée (#2229) mais **pas
-  appliquée** en prod. 6e : 165 publiés + 1 brouillon (3a7a5711) + 8 brouillons du lot 10.
-- **Prochaine action** : après le `db:migrate`, vérifier en prod (8 modèles sur leur nœud, un tag chacun,
-  `updated_at` inchangé), page à cocher, publication ; puis lot 11 (angles, triangles, symétrie : 148, 168, 171,
-  174-179).
-- **En attente de David** : `! pnpm db:migrate` depuis le dépôt principal ; il applique aussi 3 migrations d'autres
-  chantiers (2de `…090330`, 1re spé `…090607`, CE1 `…091820`).
+- **État** : lot 10 (160-167) : 8 brouillons en prod, rangés et tagués (§ 24.2) ; page à cocher publiée (§ 24.3,
+  https://claude.ai/artifact/CBDvnDQFzMr8XRw7Cm3tBC). 6e : 165 publiés + 1 brouillon (3a7a5711) + 8 du lot 10.
+- **Prochaine action** : lire et **compter** les verdicts (`ArtifactData list verdicts`) ; corriger les « À revoir »
+  (§ 7 de la doc) ; `publier-lot.ts --dir scripts/questions/6-distances-cercle-mediatrice` en simulation, puis
+  David avec `--publier`. Ensuite lot 11 (angles, triangles, symétrie : 148, 168, 171, 174-179).
+- **En attente de David** : relecture de la page à cocher.
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `{{eval:…/10}}` = fraction : toujours `;d`. Mot coloré hors
   `$…$` : `colt`. Choix multiple incomplet = `unoptimal_form`. `Doc-inchangée:` dans un commit, corps ≤ 100 car.
   Migrations en attente : lire `schema_migrations` (MCP), pas un JSON parsé. `publier-lot` : David avec `!`.
@@ -1494,3 +1493,12 @@ Pièges rencontrés :
   `20261102090607` 1re spé, `20261102091820` CE1) ; `supabase db push` les appliquerait toutes. Laissé à David.
   Piège : un script d'attente qui lit `migration list -o json` a pris un échec de lecture pour « rien en attente » ;
   vérifier dans `supabase_migrations.schema_migrations` (MCP).
+- **`db:migrate` lancé par David** (2026-11-02). Vérifié en prod (MCP) : migration `20261102090404` enregistrée ; 8
+  modèles sur leur nœud (5 « cercle », 3 « médiatrice et bissectrice »), un tag chacun (6-160 à 6-167), `updated_at`
+  inchangé, trigger `tgenabled = 'O'`.
+
+### 24.3 Page à cocher (2026-11-02)
+
+Page générée depuis la prod (aucune alerte) et publiée avec la capacité `db` :
+https://claude.ai/artifact/CBDvnDQFzMr8XRw7Cm3tBC — collection `verdicts` vide à la publication. Rendu à 390 px vérifié
+sur l'essai local (même gabarit).
