@@ -12,6 +12,14 @@
  * - `attendu` est en LaTeX. Un ensemble commence par `S =` (solutions) ou
  *   `D =` (domaine) ; un verdict s'écrit `\text{vrai}` / `\text{faux}`.
  * - `refus: true` : la ligne doit être refusée, et `attendu` est le message.
+ * - `decimal` / `decimalExact` (décision A du lot 2) : l'écriture décimale que
+ *   le registre rend À CÔTÉ de la réponse exacte, au point, arrondie selon Q3
+ *   (4 décimales, scientifique `a \times 10^{n}` au-delà, en LaTeX comme
+ *   `answer`), et si elle est exacte.
+ *   Absente : la ligne n'en a pas (lettres, comparaison, angle, grandeur
+ *   déjà écrite en décimal).
+ * - Grandeur et angle : `12~\mathrm{km}`, `90{}^{\circ}` — même nombre, même
+ *   unité.
  * - Comparaison : `checkForm` (espaces, signe ×, ordre des termes…), plus un
  *   contrôle numérique qui distingue « autre écriture » de « autre valeur »
  *   (`src/lib/mathAST/cli/__tests__/registre-corpus/compare.ts`).
@@ -35,6 +43,10 @@ export interface RegistreCase {
 	/** La réponse brute en LaTeX ; pour un refus, le message */
 	readonly attendu: string;
 	readonly refus?: true;
+	/** L'écriture décimale, au point (`0.8333`, `1.0715 \times 10^{301}`) */
+	readonly decimal?: string;
+	/** `true` : l'écriture décimale est la valeur exacte (`=`), sinon `≈` */
+	readonly decimalExact?: boolean;
 	/** Pourquoi cet attendu (règle de l'ADR 0032, décision du chantier) */
 	readonly note?: string;
 }
@@ -253,6 +265,462 @@ export const REGISTRE_CORPUS: Readonly<Record<string, readonly RegistreCase[]>> 
 		{ id: 'calcul-10', ligne: '10/4', attendu: '\\frac{5}{2}' }
 	],
 
+	décimal: [
+		{ id: 'decimal-01', ligne: '0.5+0.25', attendu: '0.75', decimal: '0.75', decimalExact: true },
+		{
+			id: 'decimal-02',
+			ligne: '1/3+0.5',
+			attendu: '\\dfrac{5}{6}',
+			decimal: '0.8333',
+			decimalExact: false
+		},
+		{ id: 'decimal-03', ligne: '1/2+0.5', attendu: '1', decimal: '1', decimalExact: true },
+		{
+			id: 'decimal-04',
+			ligne: '0.5/2',
+			attendu: '\\dfrac{1}{4}',
+			decimal: '0.25',
+			decimalExact: true
+		},
+		{ id: 'decimal-05', ligne: '2.5x/5', attendu: '\\dfrac{x}{2}' },
+		{ id: 'decimal-06', ligne: 'x/0.5', attendu: '2 x' },
+		{
+			id: 'decimal-07',
+			ligne: '0.5(x+1)',
+			attendu: '0.5 \\left( x + 1 \\right)',
+			note: 'Rangée, pas développée : tidy ne distribue pas, comme 3(x+1) (tidy-spec § A.2).'
+		},
+		{
+			id: 'decimal-08',
+			ligne: '0.5(2x+4)',
+			attendu: 'x + 2',
+			note: 'Facteur commun qui laisse un entier : il se simplifie (tidy-decimaux).'
+		},
+		{ id: 'decimal-09', ligne: '0.5x+x/3', attendu: '\\dfrac{5 x}{6}' },
+		{
+			id: 'decimal-10',
+			ligne: '0.5/x',
+			attendu: '\\dfrac{1}{2 x}',
+			note: 'Q9 de simplify-carte rouverte pour ce cas : le décimal se chasse sous une barre à lettre (David, 2026-11-02).'
+		},
+		{
+			id: 'decimal-11',
+			ligne: 'sqrt(0.5)',
+			attendu: '\\dfrac{\\sqrt{2}}{2}',
+			decimal: '0.7071',
+			decimalExact: false
+		},
+		{ id: 'decimal-12', ligne: 'sqrt(0.25)', attendu: '0.5', decimal: '0.5', decimalExact: true },
+		{
+			id: 'decimal-13',
+			ligne: '0.5*sqrt(2)',
+			attendu: '\\dfrac{\\sqrt{2}}{2}',
+			decimal: '0.7071',
+			decimalExact: false
+		},
+		{ id: 'decimal-14', ligne: '2.50', attendu: '2.5', decimal: '2.5', decimalExact: true }
+	],
+	'grands nombres': [
+		{
+			id: 'grands-01',
+			ligne: '2^40',
+			attendu: '1099511627776',
+			decimal: '1099511627776',
+			decimalExact: true
+		},
+		{
+			id: 'grands-02',
+			ligne: '10^14+1',
+			attendu: '100000000000001',
+			decimal: '100000000000001',
+			decimalExact: true
+		},
+		{
+			id: 'grands-03',
+			ligne: '10^15+1',
+			attendu: '1000000000000001',
+			decimal: '1.0000 \\times 10^{15}',
+			decimalExact: false
+		},
+		{
+			id: 'grands-04',
+			ligne: '2^64',
+			attendu: '18446744073709551616',
+			decimal: '1.8447 \\times 10^{19}',
+			decimalExact: false
+		},
+		{
+			id: 'grands-05',
+			ligne: '3*10^20',
+			attendu: '3 \\times 10^{20}',
+			decimal: '3 \\times 10^{20}',
+			decimalExact: true
+		},
+		{
+			id: 'grands-06',
+			ligne: '2.5*10^-3',
+			attendu: '2.5 \\times 10^{-3}',
+			decimal: '0.0025',
+			decimalExact: true,
+			note: 'Q24 : une notation scientifique tapée est gardée, exposant négatif compris (David, 2026-11-02).'
+		},
+		{ id: 'grands-07', ligne: '12*10^2', attendu: '1200', decimal: '1200', decimalExact: true },
+		{
+			id: 'grands-08',
+			ligne: '1.5*10^(-2)',
+			attendu: '0.015',
+			decimal: '0.015',
+			decimalExact: true
+		},
+		{
+			id: 'grands-09',
+			ligne: '7*10^-3',
+			attendu: '7 \\times 10^{-3}',
+			decimal: '0.007',
+			decimalExact: true
+		}
+	],
+	plafond: [
+		{
+			id: 'plafond-01',
+			ligne: '2^1000',
+			attendu:
+				'10715086071862673209484250490600018105614048117055336074437503883703510511249361224931983788156958581275946729175531468251871452856923140435984577574698574803934567774824230985421074605062371141877954182153046474983581941267398767559165543946077062914571196477686542167660429831652624386837205668069376',
+			decimal: '1.0715 \\times 10^{301}',
+			decimalExact: false
+		},
+		{
+			id: 'plafond-02',
+			ligne: '1000!/999!',
+			attendu: '1000',
+			decimal: '1000',
+			decimalExact: true,
+			note: 'Calcul puis mesure : le résultat est court, il se calcule (David, 2026-11-01).'
+		},
+		{
+			id: 'plafond-03',
+			ligne: '10^600/10^598',
+			attendu: '100',
+			decimal: '100',
+			decimalExact: true
+		},
+		{
+			id: 'plafond-04',
+			ligne: '(1+1/1000)^1000',
+			attendu: '\\left( 1 + 1 / 1000 \\right)^{1000}',
+			decimal: '2.7169',
+			decimalExact: false,
+			note: "Résultat exact trop long (> 1 000 caractères) : l'écriture tapée est gardée."
+		},
+		{
+			id: 'plafond-05',
+			ligne: '1.01^365',
+			attendu: '1.01^{365}',
+			decimal: '37.7834',
+			decimalExact: false
+		},
+		{
+			id: 'plafond-06',
+			ligne: '1000!',
+			attendu: '1000!',
+			decimal: '4.0239 \\times 10^{2567}',
+			decimalExact: false
+		}
+	],
+	'valeurs remarquables': [
+		{
+			id: 'remarquables-01',
+			ligne: 'cos(60°)',
+			attendu: '\\dfrac{1}{2}',
+			decimal: '0.5',
+			decimalExact: true
+		},
+		{
+			id: 'remarquables-02',
+			ligne: 'sin(30°)+1',
+			attendu: '\\dfrac{3}{2}',
+			decimal: '1.5',
+			decimalExact: true
+		},
+		{ id: 'remarquables-03', ligne: 'tan(45°)', attendu: '1', decimal: '1', decimalExact: true },
+		{
+			id: 'remarquables-04',
+			ligne: 'cos(-60°)',
+			attendu: '\\dfrac{1}{2}',
+			decimal: '0.5',
+			decimalExact: true
+		},
+		{
+			id: 'remarquables-05',
+			ligne: 'cos(60)',
+			attendu: '\\cos\\left( 60 \\right)',
+			decimal: '-0.9524',
+			decimalExact: false,
+			note: "Sans °, l'angle est en radians."
+		},
+		{ id: 'remarquables-06', ligne: '2*45°', attendu: '90{}^{\\circ}' },
+		{
+			id: 'remarquables-07',
+			ligne: 'cos(π/3)',
+			attendu: '\\dfrac{1}{2}',
+			decimal: '0.5',
+			decimalExact: true
+		},
+		{
+			id: 'remarquables-08',
+			ligne: 'cos(pi/3)',
+			refus: true,
+			attendu: 'Écris π avec \\pi ou le symbole π.',
+			note: "« pi » n'est pas π (lu p·i par le registre)."
+		},
+		{ id: 'remarquables-09', ligne: 'tan(π/4)', attendu: '1', decimal: '1', decimalExact: true },
+		{
+			id: 'remarquables-10',
+			ligne: 'sin(π/5)',
+			attendu: '\\sin\\left( \\dfrac{\\pi}{5} \\right)',
+			decimal: '0.5878',
+			decimalExact: false
+		},
+		{ id: 'remarquables-11', ligne: '.simplifier x cos(π/3)', attendu: '\\dfrac{x}{2}' },
+		{ id: 'remarquables-12', ligne: '.simplifier cos(420°)', attendu: '\\dfrac{1}{2}' }
+	],
+	racines: [
+		{ id: 'racines-01', ligne: 'sqrt(2)*sqrt(8)', attendu: '4', decimal: '4', decimalExact: true },
+		{
+			id: 'racines-02',
+			ligne: '1/sqrt(2)',
+			attendu: '\\dfrac{\\sqrt{2}}{2}',
+			decimal: '0.7071',
+			decimalExact: false
+		},
+		{
+			id: 'racines-03',
+			ligne: '1/(1+sqrt(2))',
+			attendu: '\\sqrt{2} - 1',
+			decimal: '0.4142',
+			decimalExact: false
+		},
+		{
+			id: 'racines-04',
+			ligne: '-1+sqrt(2)',
+			attendu: '\\sqrt{2} - 1',
+			decimal: '0.4142',
+			decimalExact: false
+		},
+		{
+			id: 'racines-05',
+			ligne: 'sqrt(21/25)',
+			attendu: '\\dfrac{\\sqrt{21}}{5}',
+			decimal: '0.9165',
+			decimalExact: false
+		},
+		{
+			id: 'racines-06',
+			ligne: '5π/6',
+			attendu: '\\dfrac{5 \\pi}{6}',
+			decimal: '2.6180',
+			decimalExact: false
+		},
+		{
+			id: 'racines-07',
+			ligne: 'sqrt(2)/2',
+			attendu: '\\dfrac{\\sqrt{2}}{2}',
+			decimal: '0.7071',
+			decimalExact: false
+		},
+		{ id: 'racines-08', ligne: 'e^(ln(2))', attendu: '2', decimal: '2', decimalExact: true },
+		{
+			id: 'racines-09',
+			ligne: 'ln(8)',
+			attendu: '3 \\ln\\left( 2 \\right)',
+			decimal: '2.0794',
+			decimalExact: false
+		},
+		{
+			id: 'racines-10',
+			ligne: 'ln(2)+ln(3)',
+			attendu: '\\ln\\left( 2 \\right) + \\ln\\left( 3 \\right)',
+			decimal: '1.7918',
+			decimalExact: false
+		}
+	],
+	signes: [
+		{ id: 'signes-01', ligne: '(6x-3)/(-9)', attendu: '\\dfrac{1 - 2 x}{3}' },
+		{ id: 'signes-02', ligne: '(2x+1)/(-3)', attendu: '-\\dfrac{2 x + 1}{3}' },
+		{ id: 'signes-03', ligne: '(6x+3)/9', attendu: '\\dfrac{2 x + 1}{3}' },
+		{ id: 'signes-04', ligne: '(2x+4)/2', attendu: 'x + 2' },
+		{ id: 'signes-05', ligne: '2x/(4x+6)', attendu: '\\dfrac{x}{2 x + 3}' },
+		{
+			id: 'signes-06',
+			ligne: '(2x+2)/(4(x+1))',
+			attendu: '\\dfrac{x + 1}{2 \\left( x + 1 \\right)}',
+			note: "Réduite par 2 sans barrer x+1 (S3) : la réduction ne dépend pas de l'écriture (David, 2026-11-02)."
+		},
+		{ id: 'signes-07', ligne: '3(-x-1)', attendu: '-3 \\left( x + 1 \\right)' },
+		{ id: 'signes-08', ligne: '(-x-1)^2', attendu: '\\left( x + 1 \\right)^2' },
+		{ id: 'signes-09', ligne: 'x/(-y)', attendu: '-\\dfrac{x}{y}' },
+		{ id: 'signes-10', ligne: 'x-(-3)', attendu: 'x + 3' },
+		{ id: 'signes-11', ligne: '-(x+2)', attendu: '-\\left( x + 2 \\right)' },
+		{
+			id: 'signes-12',
+			ligne: 'x/x',
+			attendu: '\\dfrac{x}{x}',
+			note: 'S3 : x/x gardé, la simplification changerait le domaine.'
+		},
+		{ id: 'signes-13', ligne: '2x+3-x+1', attendu: 'x + 4' },
+		{ id: 'signes-14', ligne: '2x+3x', attendu: '5 x' },
+		{ id: 'signes-15', ligne: 'x*x', attendu: 'x^2' },
+		{ id: 'signes-16', ligne: 'a+b-a', attendu: 'b' },
+		{ id: 'signes-17', ligne: '1/x+1/x', attendu: '\\dfrac{2}{x}' }
+	],
+	comparaisons: [
+		{
+			id: 'comparer-01',
+			ligne: '2=2',
+			attendu: '\\text{vrai}',
+			note: 'Décision C : une égalité tapée seule répond vrai / faux.'
+		},
+		{ id: 'comparer-02', ligne: '2 != 3', attendu: '\\text{vrai}' },
+		{ id: 'comparer-03', ligne: '1/2 != 0.5', attendu: '\\text{faux}' },
+		{ id: 'comparer-04', ligne: '1/2 == 0.5', attendu: '\\text{vrai}' },
+		{ id: 'comparer-05', ligne: '3! = 6', attendu: '\\text{vrai}' },
+		{ id: 'comparer-06', ligne: '1<2<3', attendu: '\\text{vrai}' },
+		{ id: 'comparer-07', ligne: '1<5<3', attendu: '\\text{faux}' },
+		{ id: 'comparer-08', ligne: '1 < 3/2 < 2', attendu: '\\text{vrai}' },
+		{ id: 'comparer-09', ligne: '2 = 2 = 3', attendu: '\\text{faux}' },
+		{ id: 'comparer-10', ligne: '2>1 et 3>2', attendu: '\\text{vrai}' },
+		{ id: 'comparer-11', ligne: '2<1 ou 1>2', attendu: '\\text{faux}' },
+		{ id: 'comparer-12', ligne: '1/3+1/6=1/2', attendu: '\\text{vrai}' },
+		{
+			id: 'comparer-13',
+			ligne: '2 \\approx 2',
+			refus: true,
+			attendu: 'Relation « ≈ » non évaluable : seules = ≠ < > ≤ ≥ se tranchent',
+			note: '≈ ne se tranche pas : refus.'
+		},
+		{ id: 'comparer-14', ligne: 'x+x=2x', attendu: '\\text{vrai}' }
+	],
+	grandeurs: [
+		{
+			id: 'grandeurs-01',
+			ligne: '12000[m]',
+			attendu: '12000~\\mathrm{m}',
+			note: "Une grandeur tapée seule garde son unité ; l'unité ne se choisit que par un calcul ou .convertir (David, 2026-11-02)."
+		},
+		{ id: 'grandeurs-02', ligne: '0.005[m]', attendu: '0.005~\\mathrm{m}' },
+		{ id: 'grandeurs-03', ligne: '12[km]+500[m]', attendu: '12.5~\\mathrm{km}' },
+		{ id: 'grandeurs-04', ligne: '3600[s]', attendu: '3600~\\mathrm{s}' },
+		{ id: 'grandeurs-05', ligne: '1500[g]', attendu: '1500~\\mathrm{g}' },
+		{ id: 'grandeurs-06', ligne: '90[km/h]*2[h]', attendu: '180~\\mathrm{km}' },
+		{ id: 'grandeurs-07', ligne: '2[km]*3[km]', attendu: '6~\\mathrm{km}^{2}' },
+		{ id: 'grandeurs-08', ligne: '0.25[h]', attendu: '0.25~\\mathrm{h}' },
+		{
+			id: 'grandeurs-09',
+			ligne: '20[°C]+5[°C]',
+			refus: true,
+			attendu:
+				'Ce calcul de températures n’a pas de sens : on soustrait deux températures (l’écart est en K), ou on ajoute un écart en K à une température, par exemple 20[°C]+5[K].'
+		},
+		{ id: 'grandeurs-10', ligne: '5[m] < 600[cm] < 7[m]', attendu: '\\text{vrai}' },
+		{
+			id: 'grandeurs-11',
+			ligne: '1/3[km]',
+			attendu: '\\dfrac{1}{3}~\\mathrm{km}',
+			decimal: '0.3333~\\mathrm{km}',
+			decimalExact: false,
+			note: "L'écriture décimale garde l'unité."
+		}
+	],
+	'valeurs approchées': [
+		{
+			id: 'approche-01',
+			ligne: 'sqrt(2)/2',
+			attendu: '\\dfrac{\\sqrt{2}}{2}',
+			decimal: '0.7071',
+			decimalExact: false
+		},
+		{
+			id: 'approche-02',
+			ligne: '2/7',
+			attendu: '\\dfrac{2}{7}',
+			decimal: '0.2857',
+			decimalExact: false
+		},
+		{
+			id: 'approche-03',
+			ligne: '1/4',
+			attendu: '\\dfrac{1}{4}',
+			decimal: '0.25',
+			decimalExact: true
+		},
+		{
+			id: 'approche-04',
+			ligne: '1/32',
+			attendu: '\\dfrac{1}{32}',
+			decimal: '0.0313',
+			decimalExact: false
+		},
+		{
+			id: 'approche-05',
+			ligne: '-3/2',
+			attendu: '-\\dfrac{3}{2}',
+			decimal: '-1.5',
+			decimalExact: true
+		},
+		{
+			id: 'approche-06',
+			ligne: 'e^20',
+			attendu: '\\exponentialE^{20}',
+			decimal: '485165195.4098',
+			decimalExact: false
+		},
+		{
+			id: 'approche-07',
+			ligne: 'e^-10',
+			attendu: '\\dfrac{1}{\\exponentialE^{10}}',
+			decimal: '0.00004540',
+			decimalExact: false
+		},
+		{
+			id: 'approche-08',
+			ligne: 'pi^20',
+			refus: true,
+			attendu: 'Écris π avec \\pi ou le symbole π.'
+		},
+		{
+			id: 'approche-09',
+			ligne: 'π^20',
+			attendu: '\\pi^{20}',
+			decimal: '8.7700 \\times 10^{9}',
+			decimalExact: false,
+			note: 'Écriture décimale scientifique en LaTeX, comme `answer` (David, 2026-11-02).'
+		},
+		{
+			id: 'approche-10',
+			ligne: '1/8000000',
+			attendu: '\\dfrac{1}{8000000}',
+			decimal: '1.25 \\times 10^{-7}',
+			decimalExact: true
+		},
+		{
+			id: 'approche-11',
+			ligne: '0.3^1000',
+			attendu: '0.3^{1000}',
+			decimal: '1.3221 \\times 10^{-523}',
+			decimalExact: false
+		},
+		{ id: 'approche-12', ligne: 'π', attendu: '\\pi', decimal: '3.1416', decimalExact: false },
+		{ id: 'approche-13', ligne: '3', attendu: '3', decimal: '3', decimalExact: true },
+		{ id: 'approche-14', ligne: '2x+1', attendu: '2 x + 1' },
+		{
+			id: 'approche-15',
+			ligne: '100!',
+			attendu:
+				'93326215443944152681699238856266700490715968264381621468592963895217599993229915608941463976156518286253697920827223758251185210916864000000000000000000000000',
+			decimal: '9.3326 \\times 10^{157}',
+			decimalExact: false
+		}
+	],
 	refus: [
 		{
 			id: 'refus-01',

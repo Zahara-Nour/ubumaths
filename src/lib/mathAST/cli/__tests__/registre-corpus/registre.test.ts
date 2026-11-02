@@ -7,4 +7,6 @@ import { describeCorpus } from './harness';
 import { produceRegistre } from './produce';
 import { REGISTRE_CONNUES_FAUSSES } from './connues-fausses';
 
-describeCorpus('Le registre', produceRegistre, REGISTRE_CONNUES_FAUSSES);
+describeCorpus('Le registre', produceRegistre, REGISTRE_CONNUES_FAUSSES, {
+	decimalRequired: true
+});

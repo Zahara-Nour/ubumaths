@@ -1,28 +1,24 @@
 ---
 title: Le registre des commandes, référence commune (pnpm math, Atelier, calculatrice) — journal
 date: 2026-11-01
-status: PR 0 ouverte (#2163), lot 2 en préparation
+status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, PR #2163 (PR 0) ouverte, CI en cours._
+_Mis à jour le 2026-11-02, lot 2 écrit en entier (108/108), PR ouverte._
 
-- **État** : corpus 85/85 « juste » (page v11, https://claude.ai/artifact/RSWgLdsubFwGayPgQgCETo).
-  PR 0 = **#2163** ouverte, `main` intégré (correctif #2154 compris), revue faite, CI lancée.
-- **Prochaine action** : `gh pr checks 2163` → verte : `gh pr merge 2163 --merge`, puis branche
-  supprimée APRÈS lecture de `MERGED` ; le worktree reste (lot 2 sur une nouvelle branche ou
-  la même, à voir). Puis `git merge origin/main` (règles migrations de #2165).
-- **En attente de David** : questions **A-D du lot 2** (section « Lot 2 — relevé » plus bas) :
-  A `approx` arrondi au point dans le registre ? B mode décimal = choix d'affichage de l'outil ?
-  C `2=2` → `\text{vrai}` ? D expression sans commande → sa forme rangée ? (mes recos : oui ×4)
-- ⚠️ **Déjà tranché, NE PAS reposer** : ordre des termes (juge E1 le tolère) ; S3 (pas de
-  simplification qui change le domaine, hypothèses = étape H) ; R-point (le registre travaille au
-  point, chaque outil traduit la virgule) ; `domaine` = ℝ \ {0}.
-- **Étape H** (hypothèses `avec`/`dans` dans le registre) : étude en profondeur AVANT tout code.
-- **Pièges** : greper TOUT le journal avant de poser une question ; nouvelles règles migrations
-  (`pnpm migration:horodatage`, `pnpm check:migrations --pr <n>`, #2165) ; sonde de l'Atelier =
-  vitest jetable sous `src/` ; la page rend en MathJax SVG.
+- **État** : corpus lot 2 complet (193 entrées) + juge étendu, PR « corpus, lot 2 » sur
+  `refactor/registre-reference`. Connues fausses : registre 69, Atelier 21.
+- **Prochaine action** : merger la PR (CI verte) ; puis PR 1 (`.dériver` réduite, D1) selon le
+  § Découpage — ou d'abord les PR à part de tidy (Q9 rouverte, `signes-06`, tidy-units:24).
+- **En attente de David** : portée de Q9 rouverte (seulement `0.5/x`, ou aussi `1.5/x`,
+  `0.5/(x+1)`, `(0.5x+0.5)/(x+1)` ?) — à poser avant la PR de tidy.
+- **Tranché** : A-D du lot 2 ; `decimal` en LaTeX (`approche-09`) ; `plafond-02` → 1000 ; Q24 gardée
+  (`grands-06`) ; `12000 m` gardé (`grandeurs-01`) ; `signes-06` → `(x+1)/(2(x+1))` ; ordre des termes,
+  S3, R-point, domaine — NE PAS reposer.
+- **Pièges** : greper TOUT le journal avant une question ; sonde = vitest jetable sous `src/` ;
+  bugs registre notés (degrés, `π` tapé, `pi`, égalités sans réponse) → PR à part.
 - **Worktree / branche** : `../ubumaths-wt-registre-reference` · `refactor/registre-reference`.
 
 ---
@@ -252,3 +248,104 @@ décidées, au point (`8.7700*10^9`), `answer` reste exact ; l'outil traduit vir
 B : le registre rend toujours `answer` + `approx`, le mode décimal est un choix d'affichage de
 l'outil (règle le point 1 de la revue). C : `2=2` → `\text{vrai}` (point 2). D : expression sans
 commande → sa forme rangée ; seul `f` tapé seul n'a pas de réponse (point 3).
+
+**Tranché (David, 2026-11-01, « ok pour les 4, decimal + decimalExact »)** — A : le registre rend
+`decimal` (écriture décimale au point, arrondie selon Q3 : 4 décimales, scientifique au-delà) et
+`decimalExact` (`true` si l'écriture est exacte) ; `answer` reste exact ; l'outil pose `=`/`≈`, la
+virgule, le `×`. Le nom `approx` est rejeté (l'écriture peut être exacte). B : le registre rend
+toujours `answer` + `decimal` + `decimalExact` ; le mode décimal est un choix d'affichage de l'outil.
+C : égalité / comparaison tapée seule → `\text{vrai}` / `\text{faux}` dans `answer`. D : expression
+nue → sa forme rangée (celle de l'Atelier) ; `f` seul sans réponse.
+
+## Expressions nues : registre contre Atelier (sonde du 2026-11-01)
+
+Sonde jetable (vitest sous `src/`, `produceRegistre` / `produceAtelier`), 25 lignes, supprimée après.
+
+- **Pareil** : calculs sans lettre (`1/3+0.5` → 5/6, `√12+√3` → 3√3, `1/(√3−1)` → (1+√3)/2,
+  `2^(3/2)` → 2√2, `calcul-01…10` du corpus) ; écritures déjà rangées (`x+1`, `3(x+1)`, `(x+1)²`,
+  `x²−1`, `√(x²)`) ; `ln(eˣ)`, `sin²x+cos²x` réduits par aucun des deux.
+- **Différent** : avec une lettre, le registre RECOPIE la ligne, en texte linéaire (`answer` =
+  `x * x`, `2 x / 4`), l'Atelier la range : `2x+3x` → 5x · `x*x` → x² · `x+2+3` → x+5 ·
+  `a+b-a` → b · `2x/4` → x/2 · `1/x+1/x` → 2/x · `(6x-3)/(-9)` → (1−2x)/3 · `3(-x-1)` →
+  −3(x+1) · `e^x*e^2` → e²eˣ · `x/x` gardé par l'Atelier (S3) · `0.5x` → `0{,}5 x` (R-point).
+- **Bug du registre** : `cos(pi/3)` lu `cos(p·i/3)` (i imaginaire) ; l'Atelier refuse (« Écris π
+  avec \pi ou le symbole π. »). Pour le lot 2, famille 4.
+- **Conséquence pour D** : ces lignes entrent au lot 2, attendu = la réponse de l'Atelier, registre
+  en « connue fausse » jusqu'à la PR qui le corrige.
+
+## Lot 2 — candidats et page à cocher (2026-11-01)
+
+- **Page** : https://claude.ai/artifact/GZgw832zPgg2Eqqs9dpZF2 (« Corpus du registre, lot 2 », db
+  `verdicts/<id>`), 108 lignes, familles 1-9, ids `decimal-`, `grands-`, `plafond-`,
+  `remarquables-`, `racines-`, `signes-`, `comparer-`, `grandeurs-`, `approche-`. Source des
+  données : relevé (agent Explore, tests cités `fichier:ligne`) + sonde des deux outils + `judge`
+  réel ; scratchpad de la session (`build_candidates.py`, `juges-lot2.json`) — régénérable.
+- **Attendus** : réponse de l'Atelier (`{,}` → point) ; écarts posés en question seulement ;
+  C appliquée (`2=2`, `3! = 6`, `1/3+1/6=1/2`, `x+x=2x` → `\text{vrai}`). `decimal` tiré du bouton
+  ≈ de l'Atelier, sinon du mode décimal du moteur ; absent pour les expressions à lettres, les
+  comparaisons, les grandeurs (sauf `1/3[km]`, question), les angles.
+- **Mesure** (juge actuel) : Atelier 96/108 juste, registre 57/108.
+- **Écarts du registre trouvés** : degrés non lus (`cos(60°)` gardé ; l'Atelier traduit) ;
+  `π` tapé lu comme une lettre dans `5π/6`, `π`, `π^20` (pas dans `cos(π/3)`) ; `pi` lu p·i ;
+  expressions à lettres recopiées (famille 6) ; écriture gardée (> 1 000 car.) sans `answer` ;
+  égalités `=` sans `answer` (« true »). Atelier : égalités `=` sans réponse lisible, `2 \approx 2`
+  sans refus.
+- **Juge à compléter dans la PR** : il ne lit pas `1000!`, `90{}^{\circ}`, `\mathrm{km}`
+  composés/puissances, et compte `\unit{m}` contre `\mathrm{m}` comme « autre valeur ».
+- **Questions sur la page (6)** : `plafond-02` 1000!/999! → 1000 ? · `plafond-04` écriture gardée
+  avec `/` ou `\frac` ? · `grandeurs-01` 12000 m gardé ou → 12 km (tidy-units:24) ? ·
+  `grandeurs-11` décimale d'une grandeur avec unité ? · `comparer-13` `2 \approx 2` → refus du
+  registre ? · `approche-09` `decimal` en texte (`8.7700*10^9`) ou LaTeX (`8.7700 \times 10^{9}`) ?
+- **Relecture en cours (2026-11-01)** : 20/108 fiches (`decimal-01…14`, `grands-01…06`), 17 OK.
+  Questions de David répondues sur la page (champ `reponse`) : `decimal-07` (0,5(x+1) non
+  distribué : tidy ne développe pas, comme 3(x+1)) → OK ; `decimal-10` (0,5/x : Q9 de
+  simplify-carte) et `grands-06` (2,5×10⁻³ gardé : Q24 posée avec 3×10²⁰ seulement, l'exposant
+  négatif n'a jamais été montré à part) → en attente.
+- **Relecture, 2e passage** : 82/108. Tranché : `plafond-02` → **1000** (règle « calcul puis
+  mesure » contre l'Atelier) ; `plafond-04` écriture gardée avec `/` OK ; `comparer-13` refus OK ;
+  familles 4, 5, 7 entières OK. Répondu, en attente : `signes-06` (pas de réduction par 2 qui fait
+  apparaître x+1 en haut et en bas) — **ma 1re raison était fausse** (« inviterait à barrer », David :
+  x/x est déjà gardé) ; vraie raison : garde-fou technique de tidy (tidy-spec § réduction, 4fd94d6bd :
+  réduction sur le terme accumulé, x+1 deviendrait le même facteur et s'annulerait). David veut
+  peut-être `(x+1)/(2(x+1))`. **Vérifié (David : « tidy ne doit pas changer le domaine, on a ajouté
+  des contraintes, vérifie »)** : `2(x+1)/(4(x+1))` → tidy `(x+1)/(2(x+1))`, avec conditions `1/2`
+  (x ≠ −1) ; `(2x+2)/(4(x+1))` → inchangé dans les deux. Le garde-fou de `mergeFactors` (10-20) date
+  d'avant S3/`keepDomain` (1394b7343, 10-23) ; son exception ne couvre qu'une base déjà écrite des
+  deux côtés. Reste à corriger (contraire à « la réduction ne dépend pas de l'écriture »). Proposé :
+  attendu `(x+1)/(2(x+1))`, les deux outils connus faux, correction de tidy en PR à part ; en attente ; `grandeurs-01` (David :
+  « je ne sais pas encore ») (mon avis : garder
+  12000 m, unité choisie seulement par un calcul, `.convertir` sinon ; tidy-units:24 = écart de
+  tidy à signaler). Reste : `grands-09`, `grandeurs-02…11`, `approche-01…15`.
+
+## Lot 2 — écriture, 1re partie (2026-11-02)
+
+- **78 fiches** relues et tranchées écrites (familles 1-7 : `decimal-`, `grands-`, `plafond-`,
+  `remarquables-`, `racines-`, `signes-`, `comparer-` ; sauf `decimal-10`, `grands-06`, `signes-06`
+  en attente). `plafond-02` → `1000` (correction de David).
+- **Juge** (`compare.ts`) : lisible = se parse (`1000!` se compare au texte) ; **grandeur / angle** :
+  même unité (texte, `\unit{m}` = `\mathrm{m}`, `km^2`), puis le nombre ; une autre unité de même
+  valeur est une autre réponse (`12 km` ≠ `12000 m`) ; **écriture décimale** jugée une fois la réponse
+  juste, au texte près (virgule/point, `\times 10^{n}`/`*10^n`) et `=`/`≈` compris. Le registre doit
+  la rendre (B : `décimal : absente` sinon) ; l'Atelier n'est jugé que s'il l'affiche (bouton ≈).
+  Le format de `decimal` (question `approche-09`) ne change pas le verdict : le juge normalise.
+- **Producteurs** : registre → `approximateLatex` en attendant le champ `decimal` (A) ; Atelier →
+  `alternative.latex` quand il commence par `=` / `\approx` et ne porte pas de domaine.
+- **Connues fausses** : registre 61 (dont 13 `décimal : absente`), Atelier 19 (`plafond-02`, égalités
+  sans réponse lisible, `2 \approx 2` sans refus). Preuve rouge : `decimal-02` faussé (0.8334) →
+  les deux outils échouent.
+
+## Lot 2 — écriture, 2e partie (2026-11-02)
+
+- David a tout relu (108/108). Tranché : `grands-06` OK (Q24 gardée, exposant négatif compris) ;
+  `grandeurs-01` OK (`12000 m` gardé : l'unité ne se choisit que par un calcul ou `.convertir`) ;
+  `decimal-10` corrigé en `1/(2x)` (**Q9 rouverte pour ce cas**) ; `signes-06` corrigé en
+  `(x+1)(2(x+1))`, lu comme la fraction `(x+1)/(2(x+1))` (le produit n'a pas la valeur de la ligne) ;
+  questions de la page : `grandeurs-11` (décimale avec unité) OK, `approche-09` OK → **`decimal` en
+  LaTeX** (`8.7700 \times 10^{9}`), appliqué à toutes les écritures scientifiques.
+- 30 fiches ajoutées (familles 8-9 : `grandeurs-`, `approche-`, et les 4 tranchées). Toutes les
+  grandeurs passent les deux outils. Nouveaux écarts : `decimal-10`, `signes-06` (tidy, les deux
+  outils) ; registre : `π`/`pi` (`approche-08/09/12`), `0.3^1000` sans `answer`, décimale absente
+  de `3` et `100!`.
+- **PR à part, à venir** : tidy — Q9 rouverte (portée à faire préciser), `signes-06` (garde-fou de
+  `mergeFactors`, spec + `tidy-fraction-reduce.test.ts:77-84`), `tidy-units.test.ts:24` (12000 m → 12 km,
+  contraire à `grandeurs-01`).
