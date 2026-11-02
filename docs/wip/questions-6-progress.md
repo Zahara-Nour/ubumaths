@@ -5,21 +5,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2205._
+_Mis à jour le 2026-11-02, après #2205 et les brouillons du lot 9 en prod._
 
-- **État** : lot 9 « Tableaux et programmes » (7 modèles, 143, 184, 185, 192, 194-196) écrit, vérifié en local,
-  #2205 mergée (§ 22.1). Lot 8 publié. 6e : 158 publiés + 1 brouillon ; 37 points sans modèle avant le lot 9.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir
-scripts/questions/6-tableaux-programmes --publier` (brouillons en prod) ; relever les 7 `id` au MCP ; puis
-  migration nœud + tag (nouveau worktree, patron `20261101224700`), page à cocher, publication. Ensuite lots 10-11.
-- **En attente de David** : le `create-questions --publier` du lot 9.
-- **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs --file`. Jamais de variable
-  `e`. PR en conflit = pas de CI : vérifier `mergeable`. Horodatage de migration : `pnpm migration:horodatage` ;
-  si `db:migrate` refuse « inserted before the last migration » : `--dry-run --include-all`, relire, puis
-  `--include-all`. `publier-lot` (même en simulation) refusé au mode auto : David le lance avec `!`. Nœuds du lot 9 :
-  143 → sous-notion « suites de motifs », 184-185 → sous-notion « tableaux », 192 et 194-196 → notions.
-  Aperçu admin : Playwright hors dépôt (Chrome refuse localhost) ; la correction n'apparaît qu'après une réponse.
-- **Worktree / branche** : aucun (retiré après #2205) ; migration → nouveau worktree.
+- **État** : lot 9 « Tableaux et programmes » : 7 brouillons en prod (§ 22.2, MCP vérifié : `['6']`, niveaux
+  justes, sans nœud ni tag). Lot 8 publié. 6e : 158 publiés + 1 brouillon (3a7a5711).
+- **Prochaine action** : migration nœud + tag des 7 (nouveau worktree `ubumaths-wt-questions-6`, patron
+  `20261101224700_questions_6_lot8_rangement_tags.sql` + son test ; horodatage `pnpm migration:horodatage`) ;
+  question d'accès déjà tranchée (§ 22 : personne ne lit rien de plus) ; puis page à cocher, publication ; puis
+  lots 10-11 (géométrie dessinée).
+- **En attente de David** : rien.
+- **Pièges en cours** : 3a7a5711 : NE PAS publier. Nœuds du lot 9 : 143 → sous-notion « suites de motifs »,
+  184-185 → sous-notion « tableaux » (la résolution du lot 8 s'arrêtait à une NOTION : l'adapter), 192 →
+  « Situations de proportionnalité », 194-196 → « Préalgorithmique » (notions). `svelte-kit sync` avant
+  `question:specs --file`. Jamais de variable `e`. PR en conflit = pas de CI : vérifier `mergeable`. `db:migrate`
+  refusant « inserted before » : `--dry-run --include-all`, relire, puis `--include-all`. `publier-lot` refusé au
+  mode auto : David le lance avec `!`. Aperçu admin : Playwright hors dépôt (Chrome refuse localhost).
+- **Worktree / branche** : aucun ; migration → nouveau worktree.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1359,3 +1360,9 @@ nombre de répétitions accordé à l'angle (4 × 90° carré, 3 × 120° triang
   fenêtre accordée au nombre de lignes, rapport hauteur/largeur ≥ 1/4), tableaux à cases en ligne qui débordaient
   (pluie de la semaine, prix des cahiers : passés en colonnes, une ligne par jour / par achat).
 - Corrections relues en texte (`--apercu`) : l'aperçu ne montre la correction qu'après une réponse.
+
+### 22.2 Brouillons en prod (2026-11-02)
+
+- #2205 mergée (CI verte), worktree retiré. David lance `create-questions --publier` : 01 39bafe0e, 02 6cabd2db,
+  03 b371908d, 04 3838457d, 05 4aa51892, 06 f1295102, 07 a8ec4c14, en brouillon. MCP : 7 brouillons, `['6']`,
+  niveaux 1, 3, 1, 1, 1, 1, 1, catégories du § 22.1, sans nœud ni tag.
