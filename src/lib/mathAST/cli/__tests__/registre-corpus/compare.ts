@@ -169,6 +169,9 @@ function judgeAnswer(c: RegistreCase, produced: Produced): Verdict {
 
 /** Vérifier que l'attendu d'une entrée se lit (test du corpus lui-même). */
 export function expectedProblem(c: RegistreCase): string | null {
+	if (c.decimal !== undefined && readDecimal(c.decimal) === null) {
+		return `écriture décimale illisible : ${c.decimal}`;
+	}
 	if (c.refus === true || isText(c.attendu)) return null;
 	if (/^[SD]\s*=/.test(c.attendu)) {
 		const set = readSet(c.attendu);
@@ -179,9 +182,6 @@ export function expectedProblem(c: RegistreCase): string | null {
 	const quantity = readQuantity(c.attendu);
 	if (quantity !== null) {
 		return readable(quantity.value) ? null : `grandeur illisible : ${c.attendu}`;
-	}
-	if (c.decimal !== undefined && readDecimal(c.decimal) === null) {
-		return `écriture décimale illisible : ${c.decimal}`;
 	}
 	return readable(c.attendu) ? null : `attendu illisible : ${c.attendu}`;
 }
@@ -197,7 +197,8 @@ function compact(latex: string): string {
 		.replace(/\\[,;:! ]/g, '')
 		.replace(/\{,\}/g, ',')
 		.replace(/\\dfrac|\\tfrac/g, '\\frac')
-		.replace(/\\exponentialE/g, 'e')
+		.replace(/\\exponentialE|\\mathrm\{e\}/g, 'e')
+		.replace(/\\mathrm\{i\}/g, 'i')
 		.replace(/\\varnothing/g, '\\emptyset')
 		.replace(/\\geqslant/g, '\\geq')
 		.replace(/\\leqslant/g, '\\leq')
@@ -292,9 +293,8 @@ function judgeQuantity(expected: Quantity, rendered: string): Verdict {
 
 /** `\approx 4{,}0239 \times 10^{2567}` → `{ text: '4.0239*10^2567', exact: false }` ; sans signe : `exact` absent */
 function readDecimal(latex: string): { readonly text: string; readonly exact?: boolean } | null {
-	let text = compact(latex)
-		.replace(/\\text\{,\}/g, '.')
-		.replace(/,/g, '.');
+	// `\text{,}` avant `compact`, qui en ferait `\text,`
+	let text = compact(latex.replace(/\\text\{,\}/g, '.')).replace(/,/g, '.');
 	let exact: boolean | undefined;
 	const sign = /^(=|\\approx|≈)/.exec(text);
 	if (sign !== null) {

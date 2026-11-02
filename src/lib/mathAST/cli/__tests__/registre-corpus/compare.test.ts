@@ -90,6 +90,7 @@ describe('Le juge du corpus', () => {
 			);
 		expect(answer('\\approx 0{,}8333')).toBe('juste');
 		expect(answer('\\approx 0.8333')).toBe('juste');
+		expect(answer('\\approx 0\\text{,}8333')).toBe('juste');
 		expect(answer('= 0.8333')).toBe('décimal : = 0.8333');
 		expect(answer('\\approx 0.833')).toBe('décimal : \\approx 0.833');
 		expect(answer()).toBe('décimal : absente');
@@ -111,6 +112,19 @@ describe('Le juge du corpus', () => {
 				})
 			)
 		).toBe('juste');
+	});
+
+	it('lit `\\mathrm{e}` et `\\mathrm{i}` comme des constantes, pas des unités', () => {
+		expect(verdictOf('2\\mathrm{e}^{2}', '2e^{2}')).toBe('juste');
+		expect(verdictOf('3\\mathrm{i}', '3i')).toBe('juste');
+	});
+
+	it('repère une écriture décimale attendue illisible, quelle que soit la réponse', () => {
+		const bad = (attendu: string) =>
+			expectedProblem({ id: 't', ligne: '', attendu, decimal: 'zz' });
+		expect(bad('12~\\mathrm{km}')).toBe('écriture décimale illisible : zz');
+		expect(bad('S = \\{1\\}')).toBe('écriture décimale illisible : zz');
+		expect(bad('\\text{vrai}')).toBe('écriture décimale illisible : zz');
 	});
 
 	it('compare un refus à son message, et repère une réponse là où un refus est attendu', () => {
