@@ -5,22 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après la clôture du chantier boite-a-moustaches._
+_Mis à jour le 2026-11-02, lot 8 écrit (PR à ouvrir)._
 
-- **État** : lots 0 à 6 publiés en prod ; lot 7 (algorithmique, 4 modèles ` ```scratch `) mergé (#2128),
-  pas en base ; chantier `boite-a-moustaches` clos (#2151, #2162). Lot 8 : phase 0 proposée (§ 15).
-- **Prochaine action** : réponses de David au § 15.3, puis écrire le lot 8 (`lot-3-8.py` →
-  `scripts/questions/3-lot-8/`). Lots 7 et 8 : scratch et boîte en prod (v0.62.0, 2026-11-01) → `create-questions --publier` (David), rangement (lot 7 :
-  sous-notion neuve, § 14.10 ; lot 8 : f2167091, § 15.2), page à cocher.
-- **En attente de David** : § 15.3 (modèles du lot 8).
+- **État** : lots 0 à 6 publiés en prod ; lot 7 (algorithmique) mergé (#2128), pas en base ; lot 8
+  (boîte à moustaches, 2 modèles) écrit et essayé en base locale (§ 15.6), branche `content/questions-3-lot8`.
+- **Prochaine action** : PR du lot 8 → CI → merge. Puis, lots 7 et 8 : `create-questions --publier`
+  (David, depuis le dépôt principal à jour), migration de rangement (lot 7 : sous-notion neuve, § 14.10 ;
+  lot 8 : f2167091, § 15.2), page à cocher.
+- **En attente de David** : rien.
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
-  du mode auto → David les lance avec `!` ; aperçu admin : serveur lancé avec `--host 127.0.0.1` ;
-  worktree neuf : `svelte-kit sync` avant `tsx` ; commits de doc depuis le worktree (`git push origin
-HEAD:main`) ; `db:migrate` depuis un worktree À JOUR d'`origin/main` ; `Doc-inchangée:` dans un COMMIT ;
-  `%` refusé dans l'`eval` d'une variable ; `audit-question-draws` : faux positifs « nombres juxtaposés »
-  (blocs statistiques) et « gabarit non résolu » sur `<<` (Scratch). `db:migrate` refuse « inserted before the last
-  migration » → `--dry-run --include-all`, relire, puis `--include-all` (#2181).
-- **Worktree / branche** : `../ubumaths-wt-questions-3`, HEAD détachée sur `origin/main`.
+  du mode auto → David les lance avec `!` ; aperçu admin : `--host 127.0.0.1` ; `audit-question-draws` :
+  faux positifs « nombres juxtaposés » (blocs statistiques), « gabarit non résolu » sur `<<` (Scratch) ;
+  sonde hors du dépôt : fichier `.mts` + `tsx --tsconfig tsconfig.json` ; `col()` hors de `$…$` s'affiche en
+  brut ; `db:migrate` « inserted before » → `--dry-run --include-all` puis `--include-all` (#2181).
+- **Worktree / branche** : `../ubumaths-wt-questions-3`, `content/questions-3-lot8`.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -1078,3 +1076,29 @@ interquartile, comparaison) le décidera dans sa session.
 
 Brouillons : personne ne lit rien de neuf. Rangement puis publication : élèves et prof de 3e voient 2 modèles
 publiés de plus. Aucune règle ne change.
+
+### 15.5 Décisions (David, 2026-11-02, « je valide » sur les recommandations)
+
+- 3-062 : **un seul modèle** (lire + interpréter + comparer, 5 variations).
+- Modèles et variations du § 15.1, avec : v4 (phrase juste) sur une liste FERMÉE de phrases écrites à
+  l'avance (justes et fausses, fausses = erreurs connues) ; v5 deux boîtes sur le même axe, médianes et
+  étendues différentes ; construire v2 : 9 à 13 notes (au lieu de 15) ; v3 : effectif total impair ⩽ 25,
+  6 valeurs ; axes de 1 en 1 et de 2 en 2 mêlés ; contextes familiers (notes, tailles, trajets, pointures).
+
+### 15.6 Lot 8 : écrit (2026-11-02)
+
+- `docs/wip/questions/lot-3-8.py` → `scripts/questions/3-lot-8/` (2 JSON, 8 variations, 24 specs) ;
+  `create-questions` en simulation vert. Niveaux : lire 1, construire 2.
+- Lire (3-062) : médiane (trajet, axe de 2 en 2), Q1 et Q3 (notes), étendue (tailles 140-180, de 2 en 2),
+  phrase juste (une juste tirée parmi 3 : médiane, Q1 25 %, Q3 75 % ; fausses : « 75 % au-dessus de Q3 »,
+  « au moins la moitié ⩽ Q1 », « étendue = maximum »), deux classes (4 combinaisons médiane / étendue).
+- Construire (3-030) : indicateurs donnés (nageurs, de 2 en 2), série brute de 9, 11 ou 13 notes montrée
+  mélangée (`données:`, permutations fixes ; rangs par polynômes de Lagrange en k), tableau d'effectifs
+  (6 pointures, N impair ⩽ 25).
+- Vérifs : sonde (scratchpad) 300 tirages par variation : chaque bloc parsé sans erreur, attendus des boîtes
+  à construire = `describeList` recalculé à part, liste affichée = permutation de la série rangée → **0
+  problème** ; `check:ubumark` (64 tirages) 0 problème ; `audit-question-draws` : seuls les faux positifs
+  « nombres juxtaposés ».
+- Base locale : `ad2d0d43` (lire), `1e6a8934` (construire). Aperçu : construire v2 (11 notes) posée juste ;
+  lire v4 réponse fausse → « coché à tort », bonne réponse et corrigé affichés.
+- Retouches après sonde : couleur hors formule dans le corrigé de v5 → gras ; notes tirées de 2 à 20.
