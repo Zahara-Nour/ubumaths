@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2240._
+_Mis à jour le 2026-11-02, migration du lot 5a en PR (#2241)._
 
-- **État** : lot 5a écrit, PR des fichiers #2240 mergée ; rien en prod.
-- **Prochaine action** : David lance `create-questions --publier` (dépôt principal), puis relevé MCP des `id` et migration nœud + tag (gabarit du lot 4).
-- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-5a-succession --publier`.
+- **État** : 9 brouillons créés en prod par David (#2240) ; migration nœud + tag `20261102173448_questions_tspe_lot5a_rangement_tags.sql` en PR #2241 (test 10/10, rouge sans l'étape 4, `security-auditor` sans finding, `check:migrations --pr` passé) ; CI en cours à la relance.
+- **Prochaine action** : CI de #2241 verte → merge → `db:migrate` depuis le dépôt principal (`migration list --linked` d'abord : rien d'autre en attente au 2026-11-02 17 h 50) → relire en prod → page à cocher (`page-a-cocher.ts --dir scripts/questions/tspe-5a-succession`) → publication par David.
+- **En attente de David** : dire si le défaut ` ```probtree ` (étiquette sans `\` écrite en texte) va dans `docs/wip/outils-manquants.md`.
 - **Pièges en cours** : voir « Décisions communes et pièges » ci-dessous.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-proba`, `feat/questions-tspe-proba-5a-migration` (depuis `origin/main`).
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-proba`, `feat/questions-tspe-proba-5a-migration` (PR #2241).
 
 ---
 
@@ -159,3 +159,13 @@ sans indice → `\mathrm{G}_1` (droit, comme les étiquettes surlignées). Vu da
 (arbre complet) vus dans l'aperçu (port 5177).
 
 **PR des fichiers** : #2240 mergée le 2026-11-02 (CI verte).
+
+**Création en prod** (David, 2026-11-02) : bd9b293f (M1), 7e357962 (M2), 303aeac2 (M3), e82450c7 (M4), eb12ac14 (M5),
+883c9922 (M6), 5925e666 (M7), ecf4d46b (M8), 4ee9a359 (M9), brouillons [T_SPE], niveaux de la phase 0, sans nœud ni
+tag (relu au MCP).
+
+**Migration** `20261102173448_questions_tspe_lot5a_rangement_tags.sql` (gabarit du lot 4, préfixe `_qtl5a_`) : M4 sur
+« indépendance », M8 sur « probabilités totales » (points 507, 617 sur la notion), M9 sur « Loi binomiale › expression
+de la loi », les six autres sur « épreuves indépendantes successives ». Test
+`tests/integration/questions-tspe-lot5a-rangement-tags.test.ts` : 10/10 ; **rouge** sans l'étape 4 (« lot incohérent :
+nœuds 0/9 »). `security-auditor` (2026-11-02, recoupé en prod) : aucun finding. PR #2241, `check:migrations --pr` passé.
