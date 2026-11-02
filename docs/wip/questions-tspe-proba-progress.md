@@ -12,9 +12,9 @@
 
 _Mis à jour le 2026-11-02, lot 5b en phase 0._
 
-- **État** : lot 5a publié (9/9, #2240, #2241). Lot 5b : phase 0 proposée (§ « Lot 5b »), en attente de validation.
-- **Prochaine action** : après validation de la phase 0 du 5b, script `docs/wip/questions/lot-tspe-5b-sommes.py`.
-- **En attente de David** : dire si le défaut ` ```probtree ` (étiquette sans `\` écrite en texte) va dans `docs/wip/outils-manquants.md`.
+- **État** : lot 5a publié (9/9, #2240, #2241). Lot 5b : phase 0 validée, script écrit (4 modèles, specs vertes), PR des fichiers à ouvrir.
+- **Prochaine action** : PR des fichiers, CI, merge ; puis `create-questions --publier` par David depuis le dépôt principal.
+- **En attente de David** : rien.
 - **Pièges en cours** : voir « Décisions communes et pièges » ci-dessous.
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe-proba` · `feat/questions-tspe-proba-5b`.
 
@@ -225,3 +225,15 @@ Variations :
 - **Q2** M4 dans un sous-domaine neuf « Loi des grands nombres » de « Concentration et loi des grands nombres » — reco ?
 
 **Question d'accès** : personne ne gagne ni ne perd d'accès (brouillons ; visibles des élèves après `publier-lot`).
+
+**Décisions (David, 2026-11-02, « tes recos ? » puis « je valide »)** : Q1 sous-domaines neufs « Loi d'une somme »
+(M1) et « Décomposer en somme » (M3) ; Q2 sous-domaine neuf « Loi des grands nombres » (M4) ; défaut ` ```probtree `
+ajouté à `docs/wip/outils-manquants.md` (n° 11).
+
+**Écriture** : `docs/wip/questions/lot-tspe-5b-sommes.py` → `scripts/questions/tspe-5b-sommes/`. Specs 13 + 12 + 16 + 9
+vertes, 7 000 tirages réussis, `create-questions` en simulation (prod) : 4 à créer. Corrigé après relecture des
+tirages : `\sigma(X)` lu comme un produit par le moteur (« σ X ») → `\sigma\left(X\right)` (⚠️ les modèles publiés
+71cb8ab7 et aced2e6c écrivent `\sigma(X)`, `\sigma(M)` : même défaut probable, signalé à David) ; `(2)^2` → parenthèses
+seulement si a < 0 ; M1 v1 : S = 2 et S = 10 écartés (« x de 1 à 1 »).
+
+**Base locale** : 4 brouillons créés (91b21c5a, 2b8c65a4, c56290a7, 4ce1e314).
