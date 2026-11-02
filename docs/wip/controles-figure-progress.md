@@ -6,7 +6,7 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2257._
+_Mis à jour le 2026-11-02, après #2257 ; PR « point construit exigé » en cours._
 
 - **État** : lots 1 (#2226), 2a (#2233) et 2b (#2257 : équerre, compas, palette, aimantation sur
   intersections et traits, papier uni pour `point` et `symetrique`) **mergés**, pas encore en prod
@@ -14,12 +14,12 @@ _Mis à jour le 2026-11-02, après #2257._
 - **Prochaine action** : angle, triangle (avec le report de longueur au compas), médiatrice,
   bissectrice, cercle circonscrit, 4e sommet (§ 1) : phase 0 d'abord ; puis modèles CE2-073,
   CM1-107/108, CM2-097, 6-179/180 (journaux de niveau).
-- **En attente de David** : point posé à l'œil pile sur A' (coordonnées rondes) jugé juste — l'accepter
-  ou exiger un point construit (point nommé ou intersection) ? (§ 8, dernier point).
+- **En attente de David** : rien (point construit exigé : tranché, PR en cours sur
+  `fix/controles-figure-point-construit`).
 - **Pièges en cours** : pas de prime dans le langage des figures (§ 6) ; `symetrie(P, axe=d)` échoue si
   P définit d ; l'« Essayer » de l'aide ne rend pas la case jouable (essai dans un modèle brouillon) ;
   au clavier, droites annoncées « Droite 1, 2… » ; plafond de 20 objets sans message.
-- **Worktree / branche** : aucun (retiré après #2257).
+- **Worktree / branche** : `../ubumaths-wt-controles-figure`, `fix/controles-figure-point-construit`.
 
 ---
 
@@ -341,3 +341,9 @@ Même contrôle qu'au lot 2a ; **sans `grille:`**, il n'est plus refusé : l'él
   sur un A' « rond » (ex. (5 ; 2)), il est jugé JUSTE sans construction. Phase 0 : « placé à l'œil » =
   hors intersection ET loin de A'. Gardé tel quel (choix qui ne change rien) en attendant sa réponse ;
   autre choix : exiger un point construit (point nommé ou intersection) même bien placé.
+
+### Décision de David (2026-11-02, « je te suis » sur ma recommandation)
+
+- Sur papier uni, un point **doit être construit** (point de la figure ou intersection de deux traits) :
+  posé à l'œil pile sur A' (coordonnées rondes), il est **faux**, « Ton point est placé à l'œil… ».
+  Fait dans `judgePoints` (vérifié avant l'appariement) ; quadrillage inchangé (touchers aux nœuds).

@@ -16,7 +16,8 @@
  * Lot 2a : sur quadrillage (touchers aux nœuds). Lot 2b (§ 7) : papier uni,
  * l'élève construit avec la règle, l'équerre et le compas (`instruments.ts`) ;
  * seulement un symétrique (`symetrie(A, axe=d)` ou `symetrie(A, centre=O)`) ;
- * un point posé hors de toute intersection de traits : « placé à l'œil ».
+ * un point qui n'est ni un point de la figure ni une intersection de deux traits
+ * est « placé à l'œil », faux même posé pile au bon endroit.
  *
  * Pur : positions de la figure et points attendus donnés par l'appelant
  * (registre `positions.ts`, qui calcule l'expression).
@@ -222,6 +223,15 @@ export function judgePoints(
 ): ConstructionVerdict {
 	const targets = checks.map((check) => ({ check, at: expectedOf(check, expected) }));
 	const unused = objects.filter(isDrawnPoint).map(({ x, y }) => ({ x, y }));
+	// Papier uni : chaque point doit être CONSTRUIT (point de la figure ou intersection de deux
+	// traits), même posé pile au bon endroit (décision de David, 2026-11-02, § 8)
+	if (shapes && !shapes.grid && unused.length > 0) {
+		const traits = [...shapes.traits, ...traitsOfObjects(objects)];
+		const named = [...points.values()];
+		if (unused.some((p) => !isConstructed(p, named, traits))) {
+			return { status: 'incorrect', feedback: POINT_EYEBALLED_FEEDBACK };
+		}
+	}
 	const eps = tolerance(...targets.map((t) => t.at), ...unused);
 	const missed: typeof targets = [];
 	for (const target of targets) {
@@ -241,13 +251,6 @@ export function judgePoints(
 		for (const drawn of unused) {
 			const distance = Math.hypot(drawn.x - target.at.x, drawn.y - target.at.y);
 			if (distance < best.distance) best = { target, drawn, distance };
-		}
-	}
-	// Papier uni : un point qui n'est ni un point de la figure ni une intersection de traits
-	if (shapes && !shapes.grid) {
-		const traits = [...shapes.traits, ...traitsOfObjects(objects)];
-		if (!isConstructed(best.drawn, [...points.values()], traits)) {
-			return { status: 'incorrect', feedback: POINT_EYEBALLED_FEEDBACK };
 		}
 	}
 	return {
