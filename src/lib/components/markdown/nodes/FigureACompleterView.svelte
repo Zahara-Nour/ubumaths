@@ -71,7 +71,7 @@
 		constructionExpected,
 		constructionPositions
 	} from '$lib/questions/construction/positions';
-	import type { PointSolution } from '$lib/questions/construction/point';
+	import type { ExpectedPoints, PointSolution } from '$lib/questions/construction/point';
 	import {
 		SNAP_RADIUS_PX,
 		addTap,
@@ -83,6 +83,7 @@
 		snapTap,
 		snapWithInstruments,
 		snapToGrid,
+		solutionCodages,
 		solutionLines,
 		solutionPoints,
 		type ConstructionAnswerInput,
@@ -167,6 +168,14 @@
 			return [];
 		}
 	});
+	/** Droites et points attendus (droite à construire, lot 3) ; rien si la figure ne se construit pas */
+	function expectedOf(): ExpectedPoints | undefined {
+		try {
+			return constructionExpected(node.source);
+		} catch {
+			return undefined;
+		}
+	}
 	/** Curseur clavier sur le quadrillage (nœud), affiché quand la zone a le focus */
 	let cursor = $state.raw<Position | null>(null);
 
@@ -473,7 +482,7 @@
 			{/if}
 		{/if}
 		{#if corrected}
-			{#each solutionLines(checks, allPoints, lines, figureShapes(scene, node.header)) as line, i (i)}
+			{#each solutionLines(checks, allPoints, lines, figureShapes(scene, node.header), expectedOf()) as line, i (i)}
 				{@const s = toScreen(line, scene, width, height)}
 				{#if s}
 					<line
@@ -484,6 +493,22 @@
 						x2={s.x2}
 						y2={s.y2}
 					/>
+				{/if}
+			{/each}
+		{/if}
+		{#if corrected}
+			{#each solutionCodages(checks, allPoints) as m, i (i)}
+				{@const c = codage(
+					{ name: '', at: m.to, from: m.from, foot: m.foot, axial: true },
+					scene,
+					width,
+					height
+				)}
+				{#if c}
+					<g data-testid="codage-mediatrice" class="bon-point">
+						{#if c.corner}<path class="bon-point-codage" d={c.corner} />{/if}
+						{#each c.ticks as t, j (j)}<line class="bon-point-codage" {...t} />{/each}
+					</g>
 				{/if}
 			{/each}
 		{/if}

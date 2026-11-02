@@ -103,7 +103,7 @@ function hasGrid(lines: readonly string[], headerEnd: number): boolean {
 
 /** Nombre de points de chaque vérification, et comment l'écrire */
 const CHECK_ARITY: Record<
-	Exclude<ConstructionCheckKind, 'symetrique' | 'point'>,
+	Exclude<ConstructionCheckKind, 'symetrique' | 'point' | 'droite'>,
 	{ count: number; example: string; word: string }
 > = {
 	droite_par: { count: 2, example: 'droite_par A ; B', word: 'deux' },
@@ -137,21 +137,27 @@ function readSymetrique(rest: string, line: number): ConstructionCheck {
 	return { kind: 'symetrique', by, points, line };
 }
 
-/** `point A' = symetrie(A, axe=d)` : le nom et l'expression, calculée au jugement */
-function readPoint(rest: string, line: number): ConstructionCheck {
+const NAMED_EXAMPLES = {
+	point: "point A' = symetrie(A, axe=d)",
+	droite: 'droite m = mediatrice(A, B)'
+} as const;
+
+/**
+ * `point A' = symetrie(A, axe=d)` ou `droite m = mediatrice(A, B)` : le nom et
+ * l'expression, calculée au jugement
+ */
+function readNamed(kind: 'point' | 'droite', rest: string, line: number): ConstructionCheck {
 	const match = POINT_CHECK_REGEX.exec(rest.trim());
 	if (!match) {
-		throw new LineError(
-			"point attend un nom et une expression : « point A' = symetrie(A, axe=d) »"
-		);
+		throw new LineError(`${kind} attend un nom et une expression : « ${NAMED_EXAMPLES[kind]} »`);
 	}
 	const expression = match[2].trim();
 	if (expression.length > POINT_EXPRESSION_MAX_LENGTH) {
 		throw new LineError(
-			`point : expression trop longue (${POINT_EXPRESSION_MAX_LENGTH} caractères au plus)`
+			`${kind} : expression trop longue (${POINT_EXPRESSION_MAX_LENGTH} caractères au plus)`
 		);
 	}
-	return { kind: 'point', name: match[1], expression, line };
+	return { kind, name: match[1], expression, line };
 }
 
 function readCheck(value: string, line: number): ConstructionCheck {
@@ -159,13 +165,13 @@ function readCheck(value: string, line: number): ConstructionCheck {
 	// `symétrique` accentué, comme `vérifier:`
 	const word = rawWord.toLowerCase() === 'symétrique' ? 'symetrique' : rawWord;
 	if (word === 'symetrique') return readSymetrique(rest.join(' '), line);
-	if (word === 'point') return readPoint(rest.join(' '), line);
+	if (word === 'point' || word === 'droite') return readNamed(word, rest.join(' '), line);
 	if (!(CONSTRUCTION_CHECK_KINDS as readonly string[]).includes(word)) {
 		throw new LineError(
 			`vérification « ${word} » inconnue (${CONSTRUCTION_CHECK_KINDS.join(', ')})`
 		);
 	}
-	const kind = word as Exclude<ConstructionCheckKind, 'symetrique' | 'point'>;
+	const kind = word as Exclude<ConstructionCheckKind, 'symetrique' | 'point' | 'droite'>;
 	const { count, example, word: countWord } = CHECK_ARITY[kind];
 	const points = splitPoints(rest.join(' '));
 	if (points.length !== count || !points.every((name) => POINT_NAME_REGEX.test(name))) {
@@ -195,11 +201,20 @@ function coherenceError(
 		return check.kind === 'point'
 			? 'point se place avec l’outil point (outils: point)'
 			: `${check.kind} se trace avec l’outil ${tool} (outils: ${tool})`;
-	if (check.kind === 'point') {
+	if (check.kind === 'droite') {
+		// Lot 3 : le juge des droites ignore les autres traits ; il ne juge rien d'autre
+		if (spec.checks.some((c) => c.kind !== 'droite')) {
+			return `droite ${check.name} : une droite à construire ne se mêle pas à d’autres vérifications`;
+		}
+		const first = spec.checks.find((c) => c.kind === 'droite' && c.name === check.name);
+		if (first !== check) return `deux droites nommées ${check.name.replace("'", '’')}`;
+	} else if (check.kind === 'point') {
 		const first = spec.checks.find((c) => c.kind === 'point' && c.name === check.name);
 		if (first !== check) return `deux points nommés ${check.name.replace("'", '’')}`;
 	} else {
-		const segmentChecks = spec.checks.filter((c) => c.kind !== 'droite_par' && c.kind !== 'point');
+		const segmentChecks = spec.checks.filter(
+			(c) => c.kind !== 'droite_par' && c.kind !== 'point' && c.kind !== 'droite'
+		);
 		if (check.kind !== 'droite_par' && segmentChecks[0] !== check) {
 			const symmetry = check.kind === 'symetrique' || segmentChecks[0].kind === 'symetrique';
 			return symmetry
@@ -281,7 +296,8 @@ export function readConstructionHeader(
 	const grid = hasGrid(lines, headerEnd);
 	if (!toolsSeen && spec.checks.length > 0) {
 		const kind = spec.checks[0].kind;
-		const plainPaper = grid ? undefined : PLAIN_PAPER_TOOLS[kind];
+		// La droite (lot 3) garde ses instruments sur quadrillage
+		const plainPaper = grid && kind !== 'droite' ? undefined : PLAIN_PAPER_TOOLS[kind];
 		spec.tools = plainPaper ? [...plainPaper] : [CHECK_TOOL[kind]];
 	}
 	const coherent: ConstructionCheck[] = [];

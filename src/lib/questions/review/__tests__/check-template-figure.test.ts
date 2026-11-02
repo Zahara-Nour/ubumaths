@@ -381,7 +381,7 @@ describe('checkTemplate — point à construire sur papier uni (lot 2b)', () => 
 	});
 
 	it('autre chose qu’un symétrique sans quadrillage : NON importable', () => {
-		const report = checkTemplate(plainPaperPointTemplate('1..4', 'milieu(A, Q)'), {
+		const report = checkTemplate(plainPaperPointTemplate('1..4', 'point(5, 4)'), {
 			instances: 5
 		});
 		expect(
