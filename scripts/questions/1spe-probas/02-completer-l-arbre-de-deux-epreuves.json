@@ -16,7 +16,7 @@
 	},
 	"variations": [
 		{
-			"statement": "Une urne $U_1$ contient ${{eval:r}}$ boules rouges et ${{eval:v}}$ boules vertes. Une urne $U_2$ contient ${{eval:b}}$ boules blanches et ${{eval:k}}$ boules noires. On tire une boule au hasard dans $U_1$, puis une boule au hasard dans $U_2$ : les deux tirages sont indépendants.\n\nOn note $R$, $V$, $B$ et $N$ les événements « la boule tirée est rouge », « verte », « blanche », « noire ».\n\nComplète l'arbre pondéré qui représente cette expérience.\n\n```probtree\nR:{{eval:r/(r+v)}}\n  B:?\n  N:?\nV:?\n  B:?\n  N:?\n```\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nBranche $V$ : $?$\n\nChaque branche $B$ : $?$\n\nChaque branche $N$ : $?$",
+			"statement": "Une urne $U_1$ contient ${{eval:r}}$ {{if:r==1|boule rouge|boules rouges}} et ${{eval:v}}$ {{if:v==1|boule verte|boules vertes}}. Une urne $U_2$ contient ${{eval:b}}$ {{if:b==1|boule blanche|boules blanches}} et ${{eval:k}}$ {{if:k==1|boule noire|boules noires}}. On tire une boule au hasard dans $U_1$, puis une boule au hasard dans $U_2$ : les deux tirages sont indépendants.\n\nOn note $R$, $V$, $B$ et $N$ les événements « la boule tirée est rouge », « verte », « blanche », « noire ».\n\nComplète l'arbre pondéré qui représente cette expérience.\n\n```probtree\nR:{{eval:r/(r+v)}}\n  B:?\n  N:?\nV:?\n  B:?\n  N:?\n```\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nBranche $V$ : $?$\n\nChaque branche $B$ : $?$\n\nChaque branche $N$ : $?$",
 			"variables": [
 				{
 					"name": "r",

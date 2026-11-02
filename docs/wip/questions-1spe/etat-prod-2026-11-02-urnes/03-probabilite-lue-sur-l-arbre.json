@@ -1,0 +1,158 @@
+{
+	"title": "Probabilité lue sur l'arbre",
+	"description": "Arbre de deux épreuves indépendantes : probabilité d'un chemin (deux urnes), d'un événement réalisé par deux chemins (un seul tir réussi)",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Probabilités conditionnelles",
+	"subdomain": "Épreuves indépendantes",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Une urne $U_1$ contient ${{eval:r}}$ boules rouges et ${{eval:v}}$ boules vertes. Une urne $U_2$ contient ${{eval:b}}$ boules blanches et ${{eval:k}}$ boules noires. On tire une boule au hasard dans $U_1$, puis une boule au hasard dans $U_2$ : les deux tirages sont indépendants.\n\nOn note $R$, $V$, $B$ et $N$ les événements « la boule tirée est rouge », « verte », « blanche », « noire ».\n\nL'arbre pondéré ci-dessous représente cette expérience.\n\n```probtree\nR:{{eval:r/(r+v)}}\n  B:{{eval:b/(b+k)}}\n  N:{{eval:k/(b+k)}}\nV:{{eval:v/(r+v)}}\n  B:{{eval:b/(b+k)}}\n  N:{{eval:k/(b+k)}}\n```\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité de tirer une boule rouge puis une boule blanche : $P(R\\cap B)=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "1..6"
+				},
+				{
+					"name": "v",
+					"expression": "1..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..6"
+				},
+				{
+					"name": "k",
+					"expression": "1..6"
+				}
+			],
+			"conditions": ["r != v", "b != k"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r*b/((r+v)*(b+k))}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'événement $R\\cap B$ correspond au chemin $R$ puis $B$ : sa probabilité est le produit des pondérations des branches de ce chemin.",
+					"$P(R\\cap B)={{eval:r/(r+v)}}\\times{{eval:b/(b+k)}}=\\textcolor{{{color:primary.0}}}{{{eval:r*b/((r+v)*(b+k))}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Inès tire un penalty au football, puis un lancer franc au basket. Elle réussit son penalty avec la probabilité ${{eval:a/10;d}}$ et son lancer franc avec la probabilité ${{eval:c/10;d}}$ ; les deux tirs sont indépendants.\n\nOn note $F$ l'événement « le penalty est réussi » et $L$ l'événement « le lancer franc est réussi ».\n\nL'arbre pondéré ci-dessous représente cette expérience.\n\n```probtree\nF:{{eval:a/10;d}}\n  L:{{eval:c/10;d}}\n  \\overline{L}:{{eval:1-c/10;d}}\n\\overline{F}:{{eval:1-a/10;d}}\n  L:{{eval:c/10;d}}\n  \\overline{L}:{{eval:1-c/10;d}}\n```\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité qu'Inès réussisse un seul de ses deux tirs : $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..8"
+				}
+			],
+			"conditions": ["a != c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a*(10-c)+(10-a)*c)/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« Un seul tir réussi » est réalisé par deux chemins : $F$ puis $\\overline{L}$, et $\\overline{F}$ puis $L$.",
+					"$P(F\\cap\\overline{L})={{eval:a/10;d}}\\times{{eval:1-c/10;d}}={{eval:a*(10-c)/100;d}}$ et $P(\\overline{F}\\cap L)={{eval:1-a/10;d}}\\times{{eval:c/10;d}}={{eval:(10-a)*c/100;d}}$.",
+					"Ces deux chemins sont incompatibles : on additionne. ${{eval:a*(10-c)/100;d}}+{{eval:(10-a)*c/100;d}}=\\textcolor{{{color:primary.0}}}{{{eval:(a*(10-c)+(10-a)*c)/100;d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2/5 × 4/5",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"v": "3",
+				"b": "4",
+				"k": "1"
+			},
+			"answers": ["\\frac{8}{25}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En décimal",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"v": "3",
+				"b": "4",
+				"k": "1"
+			},
+			"answers": ["0{,}32"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme des branches",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"v": "3",
+				"b": "4",
+				"k": "1"
+			},
+			"answers": ["\\frac{6}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,7 × 0,6 + 0,3 × 0,4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"c": "4"
+			},
+			"answers": ["0{,}54"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un seul chemin",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"c": "4"
+			},
+			"answers": ["0{,}42"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : les deux réussis",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"c": "4"
+			},
+			"answers": ["0{,}28"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

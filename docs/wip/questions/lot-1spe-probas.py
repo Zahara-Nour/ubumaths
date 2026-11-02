@@ -74,6 +74,11 @@ def ev(x):
     return '{{eval:' + x + '}}'
 
 
+def accord(n, un, plusieurs):
+    """Accorde le nom à la quantité n (1 → singulier) : « 1 boule rouge », « 3 boules rouges »."""
+    return '{{if:' + n + '==1|' + un + '|' + plusieurs + '}}'
+
+
 def evd(x):
     return '{{eval:' + x + ';d}}'
 
@@ -154,9 +159,10 @@ MODELES.append(modele(
 # --- 2. 1SPE-342 : compléter l'arbre de deux épreuves ------------------------------------------
 
 ENONCE_URNES = (
-    'Une urne $U_1$ contient $' + ev('r') + '$ boules rouges et $' + ev('v') + '$ boules vertes.'
-    ' Une urne $U_2$ contient $' + ev('b') + '$ boules blanches et $' + ev('k') + '$ boules'
-    ' noires. On tire une boule au hasard dans $U_1$, puis une boule au hasard dans $U_2$ : les'
+    'Une urne $U_1$ contient $' + ev('r') + '$ ' + accord('r', 'boule rouge', 'boules rouges')
+    + ' et $' + ev('v') + '$ ' + accord('v', 'boule verte', 'boules vertes') + '. Une urne $U_2$'
+    ' contient $' + ev('b') + '$ ' + accord('b', 'boule blanche', 'boules blanches') + ' et $'
+    + ev('k') + '$ ' + accord('k', 'boule noire', 'boules noires') + '. On tire une boule au hasard dans $U_1$, puis une boule au hasard dans $U_2$ : les'
     ' deux tirages sont indépendants.\n\nOn note $R$, $V$, $B$ et $N$ les événements « la boule'
     ' tirée est rouge », « verte », « blanche », « noire ».')
 VARS_URNES = [var('r', '1..6'), var('v', '1..6'), var('b', '1..6'), var('k', '1..6')]
