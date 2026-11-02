@@ -5,19 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, phase 0 du lot 8 proposée (§ 19)._
+_Mis à jour le 2026-11-02, phase 0 du lot 8 validée (§ 19)._
 
-- **État** : lots 1 à 7 publiés. Lot 8 « Opérations » : relevé prod fait, phase 0 **proposée, PAS validée** (§ 19).
-- **Prochaine action** : reposer à David les 2 points du § 19 (5-001 en 1 ou 2 modèles ; sous-catégorie de 04-06)
-  et faire valider le tableau ; puis worktree `ubumaths-wt-questions-5`, mesurer le juge (écriture exigée).
-- **En attente de David** : validation du § 19 ; 02 du lot 7 (deux cases sur deux lignes, désormais publié) à essayer à la main : au
+- **État** : lots 1 à 7 publiés. Lot 8 « Opérations » : phase 0 **validée** (§ 19), écriture en cours.
+- **Prochaine action** : worktree `ubumaths-wt-questions-5`, branche `feat/questions-5-operations` ; mesurer le
+  juge pour 04-06 (refuse la valeur, le mauvais parenthésage ; accepte commutativité, parenthèses superflues) ;
+  écrire `lot-5-operations.py`, simulation, essai local, PR des fichiers.
+- **En attente de David** : 02 du lot 7 (deux cases sur deux lignes, publié) à essayer à la main : au
   pilotage Chrome, la frappe dans la 2e case arrivait aussi dans la 1re — extension ou appli ?
 - **Pièges en cours** : `db:migrate` en prod refusé par le classifieur du mode auto → David le lance ; il pousse
   toutes les migrations en attente (se coordonner avec les autres sessions) ; `pnpm check:migrations --pr <n>`
-  avant merge ; depuis #2181 : horodatage = `pnpm migration:horodatage` (heure réelle), plus de renommage ; si
-  `db:migrate` refuse « inserted before the last migration » → `--dry-run --include-all`, relire, `--include-all` ;
-  `git merge origin/main` avant push ; worktree non lié à Supabase → `db:migrate` depuis le dépôt principal ; jamais `e`.
-- **Worktree / branche** : aucun.
+  avant merge ; horodatage = `pnpm migration:horodatage` ; si « inserted before the last migration » →
+  `--dry-run --include-all`, relire, `--include-all` ; `git merge origin/main` avant push ; worktree non lié à
+  Supabase → `db:migrate` depuis le dépôt principal ; jamais `e`.
+- **Worktree / branche** : `../ubumaths-wt-questions-5` · `feat/questions-5-operations`.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -562,7 +563,7 @@ Calcul littéral › Écrire › Formules 1-3, nœud = notion Algèbre › Calcu
 - Page à cocher : **6 verdicts sur 6 « ok »**, sans commentaire (comptés en base de l'artefact). David :
   `publier-lot.ts --publier` → 6/6 publiés ; vérifié au MCP (`status = published` pour les 6).
 
-## 19. Lot 8 « Opérations » : phase 0 PROPOSÉE (2026-11-01, non validée)
+## 19. Lot 8 « Opérations » : décisions (David, 2026-11-02, tableau validé, recos suivies)
 
 Relevé prod (MCP) : aucun modèle sur 5-001, 5-002, 5-005, 5-116, 5-117. En 4e, « Traduire une phrase en expression
 mathématique » (5d515eb1, 78feafed : vocabulaire « la somme du produit de… », Entiers › Vocabulaire › Traduire 1-2,
@@ -584,5 +585,5 @@ opératoires › écriture d'une expression ». Chaque modèle sur le nœud de s
 - 04-06 : mesurer avant d'écrire que le juge refuse la valeur (« 7 ») et le mauvais parenthésage, accepte l'ordre
   commutatif et les parenthèses superflues ; ÷ comme en 4e (`:` + `requiredForm`) si le juge le permet.
 - 01 : `zeros: off` (prix). Niveaux vérifiés libres au MCP. Accès : rien de neuf (brouillons, aucun nœud créé).
-- **À trancher par David** : (1) 5-001 en deux modèles (reco) ou un ; (2) sous-catégorie neuve « Traduire en une
-  expression » sous Entiers › Priorités opératoires (reco) ou Fonctions › Programmes de calcul pour 06.
+- **Tranché par David (2026-11-02)** : (1) 5-001 en **deux modèles** (01 + 02) ; (2) sous-catégorie neuve
+  **« Traduire en une expression » sous Entiers › Priorités opératoires** pour 04, 05 et 06 ; tableau validé tel quel.
