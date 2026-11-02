@@ -1,0 +1,212 @@
+{
+	"title": "Espace : développer ‖u + v‖²",
+	"description": "‖u + v‖², ‖u − v‖² et ‖u + v‖ connaissant ‖u‖, ‖v‖ et u·v ; données possibles (|u·v| < ‖u‖‖v‖) (pièges : facteur 2 oublié, double produit oublié, racine oubliée)",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Orthogonalité et distances dans l'espace",
+	"subdomain": "Produit scalaire",
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans l'espace, $\\vec{u}$ et $\\vec{v}$ sont deux vecteurs tels que $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et $\\vec{u}\\cdot\\vec{v}={{p}}$.\n\nCalcule $\\|\\vec{u}+\\vec{v}\\|^2$.\n\n$\\|\\vec{u}+\\vec{v}\\|^2=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a^2+2*p+b^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\|\\vec{u}+\\vec{v}\\|^2=\\left(\\vec{u}+\\vec{v}\\right)\\cdot\\left(\\vec{u}+\\vec{v}\\right)=\\|\\vec{u}\\|^2+2\\,\\vec{u}\\cdot\\vec{v}+\\|\\vec{v}\\|^2$.",
+					"$\\|\\vec{u}+\\vec{v}\\|^2={{a}}^2+2\\times{{eval:p;()}}+{{b}}^2=\\textcolor{{{color:primary.0}}}{ {{eval:a^2+2*p+b^2}} }$"
+				]
+			},
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..6"
+				},
+				{
+					"name": "p",
+					"expression": "-12..12"
+				}
+			],
+			"conditions": ["abs(p) < a*b"]
+		},
+		{
+			"statement": "Dans l'espace, $\\vec{u}$ et $\\vec{v}$ sont deux vecteurs tels que $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et $\\vec{u}\\cdot\\vec{v}={{p}}$.\n\nCalcule $\\|\\vec{u}-\\vec{v}\\|^2$.\n\n$\\|\\vec{u}-\\vec{v}\\|^2=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a^2-2*p+b^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\|\\vec{u}-\\vec{v}\\|^2=\\left(\\vec{u}-\\vec{v}\\right)\\cdot\\left(\\vec{u}-\\vec{v}\\right)=\\|\\vec{u}\\|^2-2\\,\\vec{u}\\cdot\\vec{v}+\\|\\vec{v}\\|^2$.",
+					"$\\|\\vec{u}-\\vec{v}\\|^2={{a}}^2-2\\times{{eval:p;()}}+{{b}}^2=\\textcolor{{{color:primary.0}}}{ {{eval:a^2-2*p+b^2}} }$"
+				]
+			},
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..6"
+				},
+				{
+					"name": "p",
+					"expression": "-12..12"
+				}
+			],
+			"conditions": ["abs(p) < a*b"]
+		},
+		{
+			"statement": "Dans l'espace, $\\vec{u}$ et $\\vec{v}$ sont deux vecteurs tels que $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et $\\vec{u}\\cdot\\vec{v}={{p}}$.\n\nCalcule $\\|\\vec{u}+\\vec{v}\\|$ (valeur exacte).\n\n$\\|\\vec{u}+\\vec{v}\\|=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:sqrt(a^2+2*p+b^2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\|\\vec{u}+\\vec{v}\\|^2=\\left(\\vec{u}+\\vec{v}\\right)\\cdot\\left(\\vec{u}+\\vec{v}\\right)=\\|\\vec{u}\\|^2+2\\,\\vec{u}\\cdot\\vec{v}+\\|\\vec{v}\\|^2$.",
+					"$\\|\\vec{u}+\\vec{v}\\|^2={{a}}^2+2\\times{{eval:p;()}}+{{b}}^2={{eval:a^2+2*p+b^2}}$.",
+					"Une norme est positive : $\\|\\vec{u}+\\vec{v}\\|=\\sqrt{{{eval:a^2+2*p+b^2}}}=\\textcolor{{{color:primary.0}}}{ {{eval:sqrt(a^2+2*p+b^2)}} }$"
+				]
+			},
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..6"
+				},
+				{
+					"name": "p",
+					"expression": "-12..12"
+				}
+			],
+			"conditions": ["abs(p) < a*b"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 9 + 2×(-2) + 16 = 21",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"p": "-2"
+			},
+			"answers": ["21"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : facteur 2 oublié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"p": "-2"
+			},
+			"answers": ["23"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : double produit oublié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"p": "-2"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 9 - 2×(-2) + 16 = 29",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"p": "-2"
+			},
+			"answers": ["29"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : signe du double produit",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"p": "-2"
+			},
+			"answers": ["21"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : √21",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"p": "-2"
+			},
+			"answers": ["\\sqrt{21}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : racine oubliée",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"p": "-2"
+			},
+			"answers": ["21"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 4 + 2×2 + 4 = 12 → 2√3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "2",
+				"p": "2"
+			},
+			"answers": ["2\\sqrt{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
