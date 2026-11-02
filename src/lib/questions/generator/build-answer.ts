@@ -16,7 +16,8 @@
  * les vues d'un assemblage de cubes (```cubes, `dessiner: face` : `100/111` ;
  * `retrouver: face` : `face : 2 1 / 1 2`), ou les coordonnées d'un point à placer
  * dans un repère (```courbe, `placer: A=(2 ; 3)` : `2;3`, écrites par `pointAnswer`,
- * comme la réponse de l'élève).
+ * comme la réponse de l'élève), ou la mesure principale d'un point à placer sur le
+ * cercle trigonométrique (```trig, `placer: M = -pi/4` : `-\frac{\pi}{4}`).
  *
  * @module questions/generator/build-answer
  */
@@ -47,6 +48,8 @@ import { indexOfValue, placerAnswer } from '$lib/ubumark/utils/number-line-place
 import { numVal } from '$lib/ubumark/utils/number-line-render';
 import { parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
 import { pointAnswer } from '$lib/ubumark/utils/courbe-placer';
+import { parseTrigCircleContent } from '$lib/ubumark/parser/trig-circle-parser';
+import { expectedStepAnswer, stepOfRadians } from '$lib/ubumark/utils/trig-placer';
 import { hasMaskedValue } from '$lib/ubumark/utils/masked-value';
 
 // Constantes
@@ -55,6 +58,7 @@ import { hasMaskedValue } from '$lib/ubumark/utils/masked-value';
 const MASKABLE_KINDS = new Set<BuildKind>([
 	'line',
 	'courbe',
+	'trig',
 	'horloge',
 	'collection',
 	'monnaie',
@@ -77,6 +81,7 @@ export function buildCaseCount(kind: BuildKind, source: string): number {
 	if (kind === 'line') return Math.max(1, parseNumberLineContent(source).node?.placer?.length ?? 1);
 	if (kind === 'ranger') return Math.max(1, parseRangerContent(source).labels.length);
 	if (kind === 'courbe') return Math.max(1, parseCourbeContent(source).spec?.placer?.length ?? 1);
+	if (kind === 'trig') return Math.max(1, parseTrigCircleContent(source).node?.placer?.length ?? 1);
 	if (kind === 'barres') {
 		const spec = parseStatChartContent('barres', source).spec;
 		return Math.max(1, spec ? barsCaseCount(spec) : 1);
@@ -116,6 +121,15 @@ export function buildAnswerOf(
 		const target = node.spec.placer?.[point];
 		if (target === undefined) return { errors: ['placer: absent'] };
 		return { answer: pointAnswer(target.x, target.y) };
+	}
+	if (kind === 'trig') {
+		const { node, errors } = parseTrigCircleContent(source);
+		if (node?.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
+		if (node === null || errors.length > 0) return { errors: errors.map((e) => e.message) };
+		const target = node.placer?.[point];
+		const step = target ? stepOfRadians(target.angle.radians) : null;
+		if (step === null) return { errors: ['placer: absent ou hors des crans'] };
+		return { answer: expectedStepAnswer(step) };
 	}
 	if (kind === 'barres') {
 		const node = parseStatChartContent('barres', source);

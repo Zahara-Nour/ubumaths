@@ -23,6 +23,10 @@
  * mesures: principales
  * ```
  *
+ * Point à placer (une question) : `placer: M = 2*pi/3 ; N = -pi/4`, chaque point
+ * sur un cran de π/12 ; `case: N` est posée par le générateur
+ * (`docs/wip/cercle-trotteuse-progress.md` § 4).
+ *
  * @module ubumark/parser/trig-circle-parser
  */
 
@@ -52,6 +56,9 @@ import {
 	REMARKABLE_ANGLES
 } from '../types/trig-circle';
 import { specialBlockEnd } from './unclosed-block';
+import { unnestedLine } from './nested-line';
+import { MASKED_VALUE } from '../utils/masked-value';
+import { stepOfRadians } from '../utils/trig-placer';
 
 /** Les clés du bloc : une ligne qui commence par l'une d'elles n'est jamais du texte (Q66) */
 const BLOCK_KEYS = [
@@ -68,7 +75,9 @@ const BLOCK_KEYS = [
 	'grid',
 	'projections',
 	'values',
-	'mesures'
+	'mesures',
+	'placer',
+	'case'
 ];
 
 // ============================================================================
@@ -130,7 +139,8 @@ const KNOWN_KEYS = [
 	'axes',
 	'labels',
 	'values',
-	'mesures'
+	'mesures',
+	'placer'
 ];
 
 /** Nom de point : une lettre, des chiffres (indice), des primes (`'` ou `′`) */
@@ -174,6 +184,43 @@ export function findTrigCircleBlocks(lines: string[]): TrigCircleBlockRange[] {
 	}
 
 	return blocks;
+}
+
+/** Ligne `placer:` d'un bloc */
+const PLACER_LINE_REGEX = /^\s*placer\s*:/i;
+
+/**
+ * Les cercles à points à placer (`placer:`) d'un énoncé, délimités comme le
+ * parseur : corps sans clôtures, fermeture, et `nested` pour un bloc en retrait
+ * ou cité (l'élève ne pourrait pas y répondre : sa case n'est pas créée)
+ */
+export function findTrigCirclesToPlace(markdown: string): {
+	startIndex: number;
+	body: string[];
+	closed: boolean;
+	nested: boolean;
+}[] {
+	const lines = markdown.split('\n');
+	const plain = lines.map(unnestedLine);
+	const found: { startIndex: number; body: string[]; closed: boolean; nested: boolean }[] = [];
+	let i = 0;
+	while (i < plain.length) {
+		if (isTrigCircleBlockStart(plain[i])) {
+			const { endIndex, closed } = specialBlockEnd(plain, i, isBlockEnd, BLOCK_KEYS);
+			const body = plain.slice(i + 1, closed ? endIndex : endIndex + 1);
+			if (body.some((line) => PLACER_LINE_REGEX.test(line))) {
+				found.push({ startIndex: i, body, closed, nested: lines[i] !== plain[i] });
+			}
+			i = endIndex;
+		}
+		i++;
+	}
+	return found;
+}
+
+/** L'énoncé a-t-il un cercle trigonométrique à points à placer ? */
+export function hasTrigCircleToPlace(markdown: string): boolean {
+	return findTrigCirclesToPlace(markdown).length > 0;
 }
 
 // ============================================================================
@@ -714,6 +761,12 @@ export function parseTrigCircleContent(content: string | string[]): TrigCirclePa
 	const config: TrigCircleConfig = { ...DEFAULT_TRIG_CIRCLE_CONFIG };
 	let equation: TrigEquation | undefined;
 	const points: TrigNamedPoint[] = [];
+	/** Points à placer (`placer:`), et ceux dont l'angle est masqué (`M = ?`) */
+	const placer: TrigNamedPoint[] = [];
+	const masked = new Set<TrigNamedPoint>();
+	let placerLine: number | undefined;
+	let caseIndex: number | undefined;
+	let caseLine = 1;
 
 	/** Erreur située : « Ligne N : … », comme le bloc ```courbe */
 	const fail = (lineNum: number, message: string, line: string) =>
@@ -765,6 +818,20 @@ export function parseTrigCircleContent(content: string | string[]): TrigCirclePa
 
 			case 'points':
 				parseNamedPoints(value, points, (message) => fail(lineNum, message, line));
+				break;
+
+			case 'placer':
+				placerLine = lineNum;
+				parsePlacerTargets(value, placer, masked, (message) => fail(lineNum, message, line));
+				break;
+
+			case 'case':
+				caseLine = lineNum;
+				if (!/^\d+$/.test(value)) {
+					fail(lineNum, `case « ${value} » : numéro de case entier`, line);
+				} else {
+					caseIndex = Number(value);
+				}
 				break;
 
 			case 'equation':
@@ -846,6 +913,14 @@ export function parseTrigCircleContent(content: string | string[]): TrigCirclePa
 		}
 	}
 
+	if (caseIndex !== undefined && placerLine === undefined) {
+		fail(caseLine, 'case: sans objet sans placer:', `case: ${caseIndex}`);
+	}
+	if (placerLine !== undefined && errors.length === 0) {
+		const problems = placerProblems(placer, masked, config, equation, points);
+		for (const problem of problems) fail(placerLine, problem, lines[placerLine - 1].trim());
+	}
+
 	// Validate custom preset requires angles
 	if (
 		errors.length === 0 &&
@@ -915,7 +990,9 @@ export function parseTrigCircleContent(content: string | string[]): TrigCirclePa
 		angles: uniqueAngles,
 		solution,
 		points,
-		errors: []
+		errors: [],
+		...(placerLine !== undefined && { placer }),
+		...(caseIndex !== undefined && { caseIndex })
 	};
 
 	return { node, errors: [], warnings };
@@ -963,6 +1040,118 @@ function parseNamedPoints(
 		}
 		points.push({ name, base: parts[1], sub: parts[2], primes: parts[3].length, angle });
 	}
+}
+
+/**
+ * Ajoute à `placer` les points de `M = 2*pi/3 ; N = -pi/4` (séparés par « ; »,
+ * comme les autres blocs à placer). `M = ?` : énoncé d'une évaluation notée,
+ * l'angle est de remplacement (`masked`), rien à vérifier.
+ */
+function parsePlacerTargets(
+	value: string,
+	placer: TrigNamedPoint[],
+	masked: Set<TrigNamedPoint>,
+	fail: (message: string) => void
+): void {
+	if (value === '') {
+		fail('« placer: » sans point (exemple : placer: M = 2*pi/3 ; N = -pi/4)');
+		return;
+	}
+	for (const item of value.split(';').map((s) => s.trim())) {
+		if (item === '') {
+			fail(`placer : ${value} — point vide (un « ; » en trop ?)`);
+			return;
+		}
+		const eq = item.match(/^(\S+?)\s*=\s*(.+)$/);
+		if (!eq) {
+			fail(`placer : « ${item} » — chaque point porte un nom (exemple : placer: M = 2*pi/3)`);
+			return;
+		}
+		const name = eq[1];
+		const parts = name.match(POINT_NAME_REGEX);
+		if (!parts) {
+			fail(
+				`nom de point invalide « ${name} » (une lettre, éventuellement suivie de chiffres ou de primes : M, A1, M')`
+			);
+			return;
+		}
+		const hidden = eq[2].trim() === MASKED_VALUE;
+		const angle: TrigAngle | null = hidden
+			? { expression: MASKED_VALUE, radians: 0 }
+			: parseAngleExpression(eq[2]);
+		if (!angle) {
+			fail(`angle illisible « ${eq[2].trim()} » pour le point ${name}`);
+			return;
+		}
+		if (placer.some((p) => p.name === name)) {
+			fail(`placer : point « ${name} » nommé deux fois`);
+			return;
+		}
+		if (placer.length >= TRIG_MAX_NAMED_POINTS) {
+			fail(`placer : ${TRIG_MAX_NAMED_POINTS} points à placer au plus`);
+			return;
+		}
+		const target = { name, base: parts[1], sub: parts[2], primes: parts[3].length, angle };
+		if (hidden) masked.add(target);
+		placer.push(target);
+	}
+}
+
+/** Les quatre repères (0, π/2, π, 3π/2) : toujours étiquetés, ils ne disent pas la réponse */
+function isQuarterAngle(radians: number): boolean {
+	const step = stepOfRadians(radians);
+	return step !== null && step % 6 === 0;
+}
+
+/**
+ * Ce qui empêche l'élève de placer ces points : un mode sans geste, un angle
+ * entre deux crans, un nom pris, ou un cercle qui montre déjà l'angle attendu
+ * (`angles:`, un préréglage plus fin que les repères, un point donné)
+ */
+function placerProblems(
+	placer: TrigNamedPoint[],
+	masked: Set<TrigNamedPoint>,
+	config: TrigCircleConfig,
+	equation: TrigEquation | undefined,
+	points: TrigNamedPoint[]
+): string[] {
+	if (config.mode === 'interactive') return ['placer: ne se combine pas avec mode: interactive'];
+	if (equation) return ['placer: ne se combine pas avec equation:'];
+	if (config.display !== 'circle') {
+		return [`placer: ne se combine pas avec display: ${config.display}`];
+	}
+	const same = (a: number, b: number) =>
+		stepOfRadians(a) !== null && stepOfRadians(a) === stepOfRadians(b);
+	const problems: string[] = [];
+	for (const target of placer) {
+		const { name, angle } = target;
+		if (points.some((p) => p.name === name)) {
+			problems.push(`${name} est déjà un point donné (points:) ; choisis un autre nom`);
+			continue;
+		}
+		if (masked.has(target)) continue;
+		if (stepOfRadians(angle.radians) === null) {
+			problems.push(
+				`placer : ${name} = ${angle.expression} — un point à placer tombe sur un multiple de π/12 (π/6, π/4, π/3…)`
+			);
+			continue;
+		}
+		const shownBy = points.some((p) => same(p.angle.radians, angle.radians))
+			? 'points:'
+			: isQuarterAngle(angle.radians)
+				? null
+				: config.customAngles.some((a) => same(a.radians, angle.radians))
+					? 'angles:'
+					: getPresetAngles(config.preset).some((a) => same(a.radians, angle.radians))
+						? `preset: ${config.preset}`
+						: null;
+		if (shownBy !== null) {
+			problems.push(
+				`l’angle de ${name} est déjà sur le cercle (${shownBy}) : la réponse serait écrite ; retire-le`
+			);
+		}
+	}
+	return problems;
 }
 
 // ============================================================================
