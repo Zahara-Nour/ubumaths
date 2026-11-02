@@ -1016,7 +1016,7 @@ MODELES = {
         'Mesurer un segment avec la règle, sans partir du 0',
         'Segment de 3 à 10 cm qui ne commence pas au 0 ; segment dont le bout tombe entre deux'
         ' graduations (encadrer entre deux nombres entiers de centimètres)',
-        'Grandeurs', 'Longueurs', 'Comparaison et mesure', 5, [PAS_AU_ZERO, ENCADRER],
+        'Grandeurs', 'Longueurs', 'Comparaison et mesure', 6, [PAS_AU_ZERO, ENCADRER],
         SPECS_REGLE),
     '02-ou-est-le-solide': modele(
         'Où est le solide ? Cube, boule, cône, pyramide, cylindre, pavé',
