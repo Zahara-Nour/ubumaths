@@ -849,29 +849,6 @@ Réponse de David (« tes recos ? » puis « go », 2026-11-02) : les cinq recom
 - 2026-11-02 : #2230 mergée ; migration jouée (niveau 6 vérifié au MCP, contenu intact) ; `publier-lot` simulé 9/9 ;
   publié par David, 9/9 `published` (MCP). **Lot 10 clos.**
 
-## 18. Relevé après le lot 10 (prod, MCP lecture seule, 2026-11-02)
-
-144 modèles CE1 publiés, 2 brouillons : `47f97c9f` (doublon dépublié au lot 0, voulu) et `a7dfe502` (CE1-073).
-
-13 points sans modèle publié :
-
-| Points             | Classe (§ 3) | État                                                                        |
-| ------------------ | ------------ | --------------------------------------------------------------------------- |
-| 023, 066, 067, 071 | A            | **jamais mis dans un lot** (oubli du découpage des lots 1 à 5)              |
-| 073                | B            | brouillon `a7dfe502` repris au lot 9 (tag, nœud), **jamais relu ni publié** |
-| 001, 002           | C partiel    | `centaines:` de `collection` toujours réservée (`collection-parser.ts`)     |
-| 092, 048, 068, 078 | D            | sans modèle (décision 5 du § 4 bis)                                         |
-| 072, 074           | D            | après la case « figure » de `figure-et-choix` (décision 5)                  |
-
-Questions à David :
-
-1. **Lot 11** = les 4 points A oubliés : 023 (« × » lu « fois », 7 × 20 biscuits), 066 et 067 avec ` ```solide `
-   (faces, sommets, arêtes ; nature des faces), 071 (angles droits, côtés égaux du carré et du rectangle, sur
-   `figure`) ? Recommandation : oui, un seul lot de 4 modèles.
-2. **`a7dfe502`** (073) : le mettre dans la page à cocher du lot 11 et le publier avec lui ? Recommandation : oui.
-3. **`centaines:` de `collection`** (001, 002, et le CE2) : ouvrir le petit chantier à part après le lot 11 ?
-   Recommandation : oui ; ce sera la fin du CE1 (hors points D).
-
 ## 18. Relevé de fin de découpage et lot 11 — phase 0 (2026-11-02)
 
 Relevé MCP du 2026-11-02 : **12 points sans modèle** — 001, 002 (`centaines:`), 092, 048, 068, 078 (D), 072, 074
@@ -918,48 +895,3 @@ Questions à David :
    oui, c'est le cas qui distingue le CE1 du CP.
 3. **Niveaux** : premiers libres (Sens 6 ; Reconnaître et décrire 9, 10 ; Propriétés 6 ; Carrés et rectangles 2 ;
    Droites 2 pour `a7dfe502`). Recommandation : oui, relevés de nouveau avant la publication.
-
-Réponse de David (« je te suis », 2026-11-02) : les trois recommandations.
-
-## 19. Lot 11 : points oubliés — phase 0 (2026-11-02)
-
-Points : 023 ; 066, 067 ; 071 ; et 073 par le brouillon `a7dfe502` (§ 18). Outils : ` ```solide ` (`marquer: face
-ABCD, arete AE, sommet G` ; arêtes cachées en pointillés), ` ```figure `, case « choix ».
-
-Existant voisin (prod) : « Entiers · Multiplier · Sens » 1, 2 (CP, « fois » sans le signe ×), 3 à 5 (CE2) ;
-« Géométrie · Solides · Reconnaître et décrire » 4 à 6 (CP : partie coloriée, combien de faces, forme des faces — cube
-et pavé, sans pyramide), 7, 8 (CE1, lot 10) ; « Géométrie · Figures planes · Propriétés » 5 = `0fa9f1f8` (CE1-105,
-**combien d'angles droits** a un carré, un rectangle…) ; « Géométrie · Tracés · Droites » 1 = `a7dfe502`
-(brouillon, **niveau encore 1** en base, 2 décidé au lot 9) et `010d81a5` (CP, brouillon).
-
-| Fichier                    | Point   | Catégorie · niveau                                | Variations                                                                                                                                       |
-| -------------------------- | ------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `01-le-signe-fois`         | CE1-023 | Entiers · Multiplier · Sens · 6                   | lire : « 6 × 3 se lit… » (6 fois 3, 6 plus 3, soixante-trois) ; écrire : « 5 fois 7 s'écrit… » (5 × 7, 5 + 7, 57) ; 4 + 4 + 4 = [_] × 4 ; 2 à 9  |
-| `02-fois-avec-des-unites`  | CE1-023 | Entiers · Multiplier · Sens · 7                   | « 7 paquets de 20 biscuits » → 7 × 20 biscuits = [_] biscuits ; 2 à 9 groupes de 2 à 10, ou de 20 à 50 ; produit ≤ 500                           |
-| `03-face-arete-sommet`     | CE1-066 | Géométrie · Solides · Reconnaître et décrire · 9  | cube, pavé ou pyramide carrée, une face, une arête ou un sommet marqué → « Comment s'appelle la partie marquée ? » (face, arête, sommet)         |
-| `04-sommets-et-aretes`     | CE1-066 | Géométrie · Solides · Reconnaître et décrire · 10 | « Combien de sommets / d'arêtes / de faces a ce … ? » : cube et pavé 8 / 12 / 6, pyramide carrée 5 / 8 / 5 ; arêtes cachées en pointillés → [_]  |
-| `05-les-faces-du-pave`     | CE1-067 | Géométrie · Solides · Reconnaître et décrire · 11 | « Ce cube (pavé) a [_] faces. Ce sont des… » (carrés, rectangles, triangles, disques) ; pavé à trois dimensions différentes (aucune face carrée) |
-| `06-cotes-egaux`           | CE1-071 | Géométrie · Figures planes · Propriétés · 6       | rectangle, deux côtés voisins cotés (2 à 12 cm), un côté opposé marqué « ? » → [_] cm ; carré, un côté coté → un autre côté ; dessins tournés    |
-| `07-vrai-ou-faux`          | CE1-071 | Géométrie · Figures planes · Propriétés · 7       | « Un rectangle a quatre angles droits », « Les quatre côtés d'un rectangle ont la même longueur », « côtés opposés »… → vrai / faux (choix)      |
-| `a7dfe502` (repris, lot 9) | CE1-073 | Géométrie · Tracés · Droites · 2                  | tel quel ; la migration du lot passe son niveau de 1 à 2                                                                                         |
-
-Erreurs typiques dans les `testSpecs` : « 6 × 3 » lu « 6 plus 3 » ou écrit 63 ; nombre de groupes et taille inversés
-dans le trou (3 × 4 pour 4 + 4 + 4 : accepté ? cf. question 1) ; 7 × 20 = 27 ou 720 ; face / arête confondues ;
-sommets comptés sans les cachés (7 au lieu de 8), arêtes vues seulement (9) ; pyramide à 4 sommets ; faces du pavé
-dites carrés ; côté opposé pris pour le voisin ; « le rectangle a quatre côtés égaux » jugé vrai.
-
-**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud +
-tag + niveau de `a7dfe502` ne change aucune règle.
-
-### Questions à David
-
-1. **4 + 4 + 4 = [\_] × 4** : on fixe le 4 à droite (le trou = le nombre de fois), pour que la réponse soit unique.
-   Recommandation : oui ; l'échange des nombres est déjà un modèle CE1 (`b2a4a178`).
-2. **071 et `0fa9f1f8`** : les angles droits du carré et du rectangle sont déjà comptés (CE1-105). Recommandation :
-   071 porte sur les **longueurs** (06) et l'ensemble des propriétés en vrai / faux (07), sans recompter les angles.
-3. **067 sans pyramide** (le BO : cube ou pavé) et **pavé sans face carrée** (« un carré est aussi un rectangle » :
-   pas de piège à ce niveau). Recommandation : oui ; la pyramide reste au 066 (faces triangles et carré, borne du BO).
-4. **Niveaux** : premiers libres (Sens 6, 7 ; Reconnaître et décrire 9, 10, 11 ; Propriétés 6, 7) ; `a7dfe502` à 2.
-   Recommandation : oui ; catégories relevées de nouveau avant la publication.
-
-Réponse de David (« je suis tes recos », 2026-11-02) : les quatre recommandations.
