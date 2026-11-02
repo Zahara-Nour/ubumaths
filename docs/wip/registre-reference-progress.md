@@ -6,24 +6,21 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2163 (PR 0 mergée) ; lot 2 en relecture._
+_Mis à jour le 2026-11-02, lot 2 écrit en partie (78/108), PR pas encore ouverte._
 
-- **État** : PR 0 #2163 mergée. Lot 2 : 108 candidats sur la page à cocher
-  https://claude.ai/artifact/GZgw832zPgg2Eqqs9dpZF2 (collection `verdicts/<id>`). Relu 82/108 au
-  2026-11-01 ; `plafond-02` corrigé en `1000`. Juge : Atelier 96/108, registre 57/108.
-- **Prochaine action** : quand David a fini, lire `verdicts` (ArtifactData), écrire le lot 2 dans
-  `tests/fixtures/mathast/registre-corpus.ts` (+ `decimal`/`decimalExact`), étendre le juge
-  (décimal, factorielles, degrés, `\unit`), connues fausses, PR sur cette branche.
-- **En attente de David** : 26 fiches non relues (grands-09, grandeurs-02..11, approche-01..15,
-  dont approche-09 format décimal et grandeurs-11) ; à trancher : `signes-06` (attendu proposé
-  `(x+1)/(2(x+1))`, garde-fou de `mergeFactors` antérieur à S3 → correctif tidy en PR à part),
-  `decimal-10` (Q9), `grands-06` (Q24, exposant négatif), `grandeurs-01` (« je ne sais pas encore »).
-- **Tranché** : A-D du lot 2 oui ×4 (`decimal` + `decimalExact`, vrai/faux, forme rangée) ;
-  ordre des termes, S3, R-point, domaine — NE PAS reposer. Étape H : étude avant code.
+- **État** : 78 fiches tranchées écrites dans `tests/fixtures/mathast/registre-corpus.ts`
+  (familles 1-7, `decimal`/`decimalExact`) ; juge étendu (grandeurs, degrés, factorielles,
+  écriture décimale) ; connues fausses mises à jour (registre 61, Atelier 19) ; tests verts.
+  Page : https://claude.ai/artifact/GZgw832zPgg2Eqqs9dpZF2 (collection `verdicts/<id>`), 82/108 relues.
+- **Prochaine action** : quand David a relu, lire `verdicts`, écrire les 30 fiches restantes
+  (même générateur : `page-data.json` du scratchpad du 2026-11-01, sinon la page), PR sur cette branche.
+- **En attente de David** : 26 fiches non relues (`grands-09`, `grandeurs-02..11`, `approche-01..15`) ;
+  à trancher : `signes-06` (attendu `(x+1)/(2(x+1))`, correctif tidy à part), `decimal-10` (Q9),
+  `grands-06` (Q24, exposant négatif), `grandeurs-01` (garder 12000 m ?).
+- **Tranché** : A-D du lot 2 ; `plafond-02` → 1000 ; ordre des termes, S3, R-point, domaine — NE PAS reposer.
 - **Pièges** : greper TOUT le journal avant une question ; sonde = vitest jetable sous `src/` ;
   bugs registre notés (degrés, `π` tapé, `pi`, égalités sans réponse) → PR à part.
-- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `refactor/registre-reference`
-  (origin/main intégré le 2026-11-01 après v0.62.0).
+- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `refactor/registre-reference`.
 
 ---
 
@@ -320,3 +317,20 @@ Sonde jetable (vitest sous `src/`, `produceRegistre` / `produceAtelier`), 25 lig
   « je ne sais pas encore ») (mon avis : garder
   12000 m, unité choisie seulement par un calcul, `.convertir` sinon ; tidy-units:24 = écart de
   tidy à signaler). Reste : `grands-09`, `grandeurs-02…11`, `approche-01…15`.
+
+## Lot 2 — écriture, 1re partie (2026-11-02)
+
+- **78 fiches** relues et tranchées écrites (familles 1-7 : `decimal-`, `grands-`, `plafond-`,
+  `remarquables-`, `racines-`, `signes-`, `comparer-` ; sauf `decimal-10`, `grands-06`, `signes-06`
+  en attente). `plafond-02` → `1000` (correction de David).
+- **Juge** (`compare.ts`) : lisible = se parse (`1000!` se compare au texte) ; **grandeur / angle** :
+  même unité (texte, `\unit{m}` = `\mathrm{m}`, `km^2`), puis le nombre ; une autre unité de même
+  valeur est une autre réponse (`12 km` ≠ `12000 m`) ; **écriture décimale** jugée une fois la réponse
+  juste, au texte près (virgule/point, `\times 10^{n}`/`*10^n`) et `=`/`≈` compris. Le registre doit
+  la rendre (B : `décimal : absente` sinon) ; l'Atelier n'est jugé que s'il l'affiche (bouton ≈).
+  Le format de `decimal` (question `approche-09`) ne change pas le verdict : le juge normalise.
+- **Producteurs** : registre → `approximateLatex` en attendant le champ `decimal` (A) ; Atelier →
+  `alternative.latex` quand il commence par `=` / `\approx` et ne porte pas de domaine.
+- **Connues fausses** : registre 61 (dont 13 `décimal : absente`), Atelier 19 (`plafond-02`, égalités
+  sans réponse lisible, `2 \approx 2` sans refus). Preuve rouge : `decimal-02` faussé (0.8334) →
+  les deux outils échouent.

@@ -4,13 +4,15 @@
  *
  * - **Registre** : le champ `answer` de `WebReplEngine`, sur la ligne aux
  *   noms traduits (`.dériver` → `.diff`) et RIEN d'autre de réécrit : ce qui
- *   ne se lit qu'à travers l'Atelier (virgule décimale…) se voit.
- * - **Atelier** : le `latex` de la ligne affichée par `runInput`.
+ *   ne se lit qu'à travers l'Atelier (virgule décimale…) se voit. Écriture
+ *   décimale : `approximateLatex`, en attendant le champ `decimal` (décision A).
+ * - **Atelier** : le `latex` de la ligne affichée par `runInput` ; écriture
+ *   décimale : l'autre écriture du bouton (`= 0{,}25`, `\approx 0{,}7071`).
  */
 
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { Atelier } from '$lib/atelier/atelier.svelte';
-import { runInput } from '$lib/atelier/calcul';
+import { runInput, type Alternative } from '$lib/atelier/calcul';
 import { resolveCommand } from '$lib/atelier/commands';
 import type { Produced } from './compare';
 
@@ -26,7 +28,7 @@ export function produceRegistre(ligne: string): Produced {
 	}
 	return result.answer === undefined
 		? { kind: 'sans-reponse', detail: firstLine(result.output) }
-		: { kind: 'reponse', latex: result.answer };
+		: { kind: 'reponse', latex: result.answer, decimal: result.approximateLatex };
 }
 
 /** La réponse affichée par l'Atelier, dans un atelier neuf. */
@@ -38,7 +40,13 @@ export function produceAtelier(ligne: string): Produced {
 	}
 	return result.latex === undefined
 		? { kind: 'sans-reponse', detail: firstLine(result.output) }
-		: { kind: 'reponse', latex: result.latex };
+		: { kind: 'reponse', latex: result.latex, decimal: decimalOf(result.alternative) };
+}
+
+/** L'autre écriture, quand c'est une écriture décimale (pas « pour x ≠ 0 ») */
+function decimalOf(alternative: Alternative | undefined): string | undefined {
+	if (alternative === undefined || alternative.domain !== undefined) return undefined;
+	return /^\s*(=|\\approx)/.test(alternative.latex) ? alternative.latex : undefined;
 }
 
 function firstLine(text: string): string {

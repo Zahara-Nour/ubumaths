@@ -59,6 +59,60 @@ describe('Le juge du corpus', () => {
 		).toBe('juste');
 	});
 
+	it('juge une grandeur et un angle : même unité, puis le nombre', () => {
+		expect(verdictOf('12000~\\mathrm{m}', '12000~\\unit{m}')).toBe('juste');
+		expect(verdictOf('12.5~\\mathrm{km}', '12{,}5~\\mathrm{km}')).toBe('juste');
+		expect(verdictOf('6~\\mathrm{km}^{2}', '6~\\unit{km^2}')).toBe('juste');
+		expect(verdictOf('\\dfrac{1}{3}~\\mathrm{km}', '\\frac{1}{3}~\\mathrm{km}')).toBe('juste');
+		// Même valeur, autre unité : une autre réponse
+		expect(verdictOf('12~\\mathrm{km}', '12000~\\mathrm{m}')).toBe('valeur : 12000~\\mathrm{m}');
+		expect(verdictOf('90{}^{\\circ}', '90^{\\circ}')).toBe('juste');
+		expect(verdictOf('90{}^{\\circ}', '90°')).toBe('juste');
+		expect(verdictOf('90{}^{\\circ}', '90')).toBe('valeur : 90');
+	});
+
+	it('lit une factorielle sans la calculer', () => {
+		expect(verdictOf('1000!', '1000!')).toBe('juste');
+		expect(verdictOf('1000!', '999!')).toBe('valeur : 999!');
+	});
+
+	it('juge l’écriture décimale une fois la réponse juste', () => {
+		const c: RegistreCase = {
+			id: 't',
+			ligne: '',
+			attendu: '\\dfrac{5}{6}',
+			decimal: '0.8333',
+			decimalExact: false
+		};
+		const answer = (decimal?: string) =>
+			describeVerdict(
+				judge(c, { kind: 'reponse', latex: '\\frac{5}{6}', decimal }, { decimalRequired: true })
+			);
+		expect(answer('\\approx 0{,}8333')).toBe('juste');
+		expect(answer('\\approx 0.8333')).toBe('juste');
+		expect(answer('= 0.8333')).toBe('décimal : = 0.8333');
+		expect(answer('\\approx 0.833')).toBe('décimal : \\approx 0.833');
+		expect(answer()).toBe('décimal : absente');
+		// Un outil qui habille n'est jugé que s'il affiche l'écriture
+		expect(describeVerdict(judge(c, { kind: 'reponse', latex: '\\frac{5}{6}' }))).toBe('juste');
+		const big: RegistreCase = {
+			id: 't',
+			ligne: '',
+			attendu: '1000!',
+			decimal: '4.0239*10^2567',
+			decimalExact: false
+		};
+		expect(
+			describeVerdict(
+				judge(big, {
+					kind: 'reponse',
+					latex: '1000!',
+					decimal: '\\approx 4{,}0239 \\times 10^{2567}'
+				})
+			)
+		).toBe('juste');
+	});
+
 	it('compare un refus à son message, et repère une réponse là où un refus est attendu', () => {
 		const c: RegistreCase = { id: 't', ligne: '', attendu: 'Non.', refus: true };
 		expect(describeVerdict(judge(c, { kind: 'refus', message: 'Non.' }))).toBe('juste');

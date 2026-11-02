@@ -9,7 +9,7 @@ import {
 	REGISTRE_CASES,
 	REGISTRE_CORPUS
 } from '../../../../../../tests/fixtures/mathast/registre-corpus';
-import { judge, type Produced, type Verdict } from './compare';
+import { judge, type JudgeOptions, type Produced, type Verdict } from './compare';
 
 // =============================================================================
 // Fonctions
@@ -23,7 +23,8 @@ export function describeVerdict(verdict: Verdict): string {
 export function describeCorpus(
 	tool: string,
 	produce: (ligne: string) => Produced,
-	known: Readonly<Record<string, string>>
+	known: Readonly<Record<string, string>>,
+	options: JudgeOptions = {}
 ): void {
 	describe(`${tool} contre le corpus du registre`, () => {
 		it('la liste « connues fausses » ne cite que des entrées du corpus', () => {
@@ -35,7 +36,7 @@ export function describeCorpus(
 			describe(command, () => {
 				for (const c of cases) {
 					it(`${c.id} : ${c.ligne}`, () => {
-						const verdict = judge(c, produce(c.ligne));
+						const verdict = judge(c, produce(c.ligne), options);
 						const knownWrong = known[c.id];
 						if (knownWrong === undefined) {
 							expect(describeVerdict(verdict), `attendu : ${c.attendu}`).toBe('juste');

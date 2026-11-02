@@ -17,7 +17,16 @@
  *   découpés (réunion, intervalle, ℝ privé de, ensemble fini, vide) et chaque
  *   borne ou élément est jugé comme une expression ; l'ordre des éléments
  *   compte (rangés dans l'ordre croissant).
+ * - **Grandeur, angle** (`12.5~\mathrm{km}`, `90{}^{\circ}`) : même unité
+ *   (texte, `\unit{m}` vaut `\mathrm{m}`), puis le nombre jugé comme une
+ *   expression. Une autre unité est une autre réponse, même de même valeur
+ *   (`12 km` n'est pas `12000 m`).
  * - **Verdict** (`\text{vrai}`) et **refus** (message) : texte exact.
+ * - **Écriture décimale** (`decimal`, décision A du lot 2) : jugée une fois la
+ *   réponse juste, au texte près (virgule ou point, `\times 10^{n}` ou
+ *   `*10^n`), `=` ou `≈` compris. Le registre DOIT la rendre (décision B) ;
+ *   un outil qui l'habille n'est jugé que s'il l'affiche.
+ * - Lisible = se parse : `1000!` ne se calcule pas, mais se compare au texte.
  */
 
 import { checkForm } from '$lib/mathAST/cosmetic-transforms';
@@ -33,7 +42,12 @@ import type { RegistreCase } from '../../../../../../tests/fixtures/mathast/regi
 
 /** Ce qu'un outil a rendu pour une ligne. */
 export type Produced =
-	| { readonly kind: 'reponse'; readonly latex: string }
+	| {
+			readonly kind: 'reponse';
+			readonly latex: string;
+			/** L'écriture décimale affichée, `=` ou `\approx` devant (`\approx 0{,}8333`) */
+			readonly decimal?: string;
+	  }
 	| { readonly kind: 'refus'; readonly message: string }
 	/** Ni réponse brute lisible ni refus (sortie texte seule, champ absent) */
 	| { readonly kind: 'sans-reponse'; readonly detail: string };
@@ -53,6 +67,8 @@ export type Verdict =
 	| { readonly status: 'message'; readonly rendu: string }
 	/** Refus attendu : une réponse a été rendue */
 	| { readonly status: 'accepte'; readonly rendu: string }
+	/** Réponse juste, écriture décimale autre ou absente */
+	| { readonly status: 'décimal'; readonly rendu: string }
 	/** L'attendu lui-même ne se lit pas : bug du CORPUS */
 	| { readonly status: 'corpus'; readonly rendu: string };
 
@@ -68,6 +84,18 @@ type Part =
 			readonly upper: string;
 			readonly close: string;
 	  };
+
+/** Ce qui se juge, selon l'outil */
+export interface JudgeOptions {
+	/** L'écriture décimale doit être rendue (le registre, décision B) */
+	readonly decimalRequired?: boolean;
+}
+
+/** `12.5~\mathrm{km}` → `{ value: '12.5', unit: 'km' }` */
+interface Quantity {
+	readonly value: string;
+	readonly unit: string;
+}
 
 interface SetAnswer {
 	readonly prefix: 'S' | 'D';
@@ -92,7 +120,15 @@ const MIN_POINTS = 3;
 // =============================================================================
 
 /** Juger ce qu'un outil a rendu pour une entrée du corpus. */
-export function judge(c: RegistreCase, produced: Produced): Verdict {
+export function judge(c: RegistreCase, produced: Produced, options: JudgeOptions = {}): Verdict {
+	const verdict = judgeAnswer(c, produced);
+	if (verdict.status !== 'juste' || produced.kind !== 'reponse' || c.decimal === undefined) {
+		return verdict;
+	}
+	return judgeDecimal(c.decimal, c.decimalExact === true, produced.decimal, options);
+}
+
+function judgeAnswer(c: RegistreCase, produced: Produced): Verdict {
 	if (c.refus === true) {
 		if (produced.kind === 'refus') {
 			return produced.message.trim() === c.attendu
@@ -112,12 +148,19 @@ export function judge(c: RegistreCase, produced: Produced): Verdict {
 			? { status: 'juste' }
 			: { status: 'valeur', rendu };
 	}
+	const expectedQuantity = readQuantity(c.attendu);
+	if (expectedQuantity !== null) {
+		if (!readable(expectedQuantity.value)) {
+			return { status: 'corpus', rendu: `grandeur illisible : ${c.attendu}` };
+		}
+		return judgeQuantity(expectedQuantity, rendu);
+	}
 	const expectedSet = readSet(c.attendu);
 	if (expectedSet !== null) return judgeSet(expectedSet, rendu);
 	if (/^[SD]\s*=/.test(c.attendu)) {
 		return { status: 'corpus', rendu: `ensemble illisible : ${c.attendu}` };
 	}
-	if (compileLatex(c.attendu) === null) {
+	if (!readable(c.attendu)) {
 		return { status: 'corpus', rendu: `attendu illisible : ${c.attendu}` };
 	}
 	const verdict = compareExpressions(rendu, c.attendu);
@@ -130,10 +173,17 @@ export function expectedProblem(c: RegistreCase): string | null {
 	if (/^[SD]\s*=/.test(c.attendu)) {
 		const set = readSet(c.attendu);
 		if (set === null) return `ensemble illisible : ${c.attendu}`;
-		const bad = set.parts.flatMap(partExpressions).find((e) => compileLatex(e) === null);
+		const bad = set.parts.flatMap(partExpressions).find((e) => !readable(e));
 		return bad === undefined ? null : `élément illisible : ${bad}`;
 	}
-	return compileLatex(c.attendu) === null ? `attendu illisible : ${c.attendu}` : null;
+	const quantity = readQuantity(c.attendu);
+	if (quantity !== null) {
+		return readable(quantity.value) ? null : `grandeur illisible : ${c.attendu}`;
+	}
+	if (c.decimal !== undefined && readDecimal(c.decimal) === null) {
+		return `écriture décimale illisible : ${c.decimal}`;
+	}
+	return readable(c.attendu) ? null : `attendu illisible : ${c.attendu}`;
 }
 
 function isText(latex: string): boolean {
@@ -157,6 +207,16 @@ function compact(latex: string): string {
 /** `0,75` / `0{,}75` → `0.75`, pour la lecture numérique seulement */
 function withDecimalPoint(latex: string): string {
 	return latex.replace(/\{,\}/g, '.').replace(/(\d),(\d)/g, '$1.$2');
+}
+
+/** L'écriture se parse (elle peut ne pas se calculer : `1000!`) */
+function readable(latex: string): boolean {
+	try {
+		parseLatex(withDecimalPoint(latex));
+		return true;
+	} catch {
+		return false;
+	}
 }
 
 function compileLatex(latex: string): ReturnType<typeof compile> | null {
@@ -206,6 +266,62 @@ function sameValue(a: string, b: string): boolean {
 		compared++;
 	}
 	return compared >= Math.min(MIN_POINTS, names.length === 0 ? 1 : MIN_POINTS);
+}
+
+// --- Grandeurs et angles ------------------------------------------------------
+
+/** `12.5~\mathrm{km}`, `6~\mathrm{km}^{2}`, `12000~\unit{m}`, `90{}^{\circ}`, `90°` ; `null` sinon */
+function readQuantity(latex: string): Quantity | null {
+	const text = compact(latex);
+	const degrees = /^(.+?)(?:\{\})?(?:\^\{?\\circ\}?|°)$/.exec(text);
+	if (degrees !== null) return { value: degrees[1], unit: '°' };
+	const unit = /^(.+?)~?\\(?:mathrm|unit|text)\{([^{}]+)\}(?:\^\{?(-?\d+)\}?)?$/.exec(text);
+	if (unit === null || unit[1].endsWith('\\')) return null;
+	const power = unit[3] === undefined ? '' : `^${unit[3]}`;
+	return { value: unit[1].replace(/~$/, ''), unit: unit[2].replace(/[{}]/g, '') + power };
+}
+
+function judgeQuantity(expected: Quantity, rendered: string): Verdict {
+	const got = readQuantity(rendered);
+	if (got === null || got.unit !== expected.unit) return { status: 'valeur', rendu: rendered };
+	const verdict = compareExpressions(got.value, expected.value);
+	return verdict === 'juste' ? { status: 'juste' } : { status: verdict, rendu: rendered };
+}
+
+// --- Écriture décimale --------------------------------------------------------
+
+/** `\approx 4{,}0239 \times 10^{2567}` → `{ text: '4.0239*10^2567', exact: false }` ; sans signe : `exact` absent */
+function readDecimal(latex: string): { readonly text: string; readonly exact?: boolean } | null {
+	let text = compact(latex)
+		.replace(/\\text\{,\}/g, '.')
+		.replace(/,/g, '.');
+	let exact: boolean | undefined;
+	const sign = /^(=|\\approx|≈)/.exec(text);
+	if (sign !== null) {
+		exact = sign[1] === '=';
+		text = text.slice(sign[1].length);
+	}
+	text = text.replace(/(?:\\times|\\cdot|\*)10\^\{?(-?\d+)\}?/g, '*10^$1');
+	return /^-?\d/.test(text) ? { text, exact } : null;
+}
+
+function judgeDecimal(
+	expected: string,
+	expectedExact: boolean,
+	rendered: string | undefined,
+	options: JudgeOptions
+): Verdict {
+	if (rendered === undefined) {
+		return options.decimalRequired === true
+			? { status: 'décimal', rendu: 'absente' }
+			: { status: 'juste' };
+	}
+	const want = readDecimal(expected);
+	const got = readDecimal(rendered);
+	if (want === null || got === null) return { status: 'décimal', rendu: rendered };
+	return got.text === want.text && (got.exact ?? true) === expectedExact
+		? { status: 'juste' }
+		: { status: 'décimal', rendu: rendered };
 }
 
 // --- Ensembles ---------------------------------------------------------------
