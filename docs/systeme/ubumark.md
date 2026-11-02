@@ -431,11 +431,12 @@ C = point(4, 5)
 
 Même en-tête et même langage que ` ```figure `, plus trois lignes propres, lues par
 `construction-parser.ts` (`readConstructionHeader`) puis effacées avant le parseur de figure (numéros
-de ligne gardés) : `outils:` (`CONSTRUCTION_TOOLS` : `droite` ou `segment`, un seul ; absent : celui de la vérification,
+de ligne gardés) : `outils:` (`CONSTRUCTION_TOOLS` : `droite`, `segment` ou `point`, un seul ; absent : celui de la vérification,
 `CHECK_TOOL`), `verifier:` (obligatoire, une par ligne ; `CONSTRUCTION_CHECK_KINDS` : `droite_par P ; Q`,
 `carre A ; B`, `rectangle A ; B ; C`, `symetrique par d` / `symetrique A ; B ; C par d` (`symétrique`
 accentué admis ; `d` = droite, segment ou point nommé, le centre d'une symétrie centrale) — un seul carré,
-rectangle ou symétrique, jamais mêlé à `droite_par`) et `case: N`, posée
+rectangle ou symétrique, jamais mêlé à `droite_par` ; `point A' = <expression>`, outil point, une ligne par
+point à placer, expression du langage des figures au plus 200 caractères, nom unique) et `case: N`, posée
 par le générateur de questions. Le nœud est un nœud **`figure`** qui porte `construction`
 (`ConstructionSpec`, `types/construction.ts`) : partout où une figure s'affiche (écran, PDF, listes),
 le bloc s'affiche comme sa figure de départ. Le repérage est celui de ` ```figure `

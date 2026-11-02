@@ -10,6 +10,9 @@
 	  près d'un point, le toucher est aimanté (`SNAP_RADIUS_PX` à l'écran) ;
 	- outil segment sur quadrillage (CP-060, § 9) : chaque toucher va au nœud le
 	  plus proche, le segment s'arrête à ses deux bouts ;
+	- outil point (chantier `controles-figure`, lot 2a) : un toucher place un
+	  point (au nœud sur quadrillage) ; la correction montre chaque point attendu
+	  avec son nom et, pour un symétrique, [AA'] codé ;
 	- clavier : les points nommés sont des boutons (Tab, puis Entrée ou Espace) ;
 	  sur quadrillage, un curseur se déplace de nœud en nœud avec les flèches ;
 	- « Effacer » : le départ en attente, sinon la dernière droite ;
@@ -35,11 +38,18 @@
 		namedPointPositions
 	} from '$lib/questions/construction/positions-setup';
 	import {
+		isDrawnLine,
+		isDrawnPoint,
 		parseConstructionAnswer,
 		serializeConstructionAnswer,
 		type DrawnLine
 	} from '$lib/questions/construction/answer';
 	import type { Position } from '$lib/questions/construction/judge';
+	import {
+		constructionExpected,
+		constructionPositions
+	} from '$lib/questions/construction/positions';
+	import type { PointSolution } from '$lib/questions/construction/point';
 	import {
 		SNAP_RADIUS_PX,
 		addTap,
@@ -49,6 +59,7 @@
 		snapTap,
 		snapToGrid,
 		solutionLines,
+		solutionPoints,
 		type ConstructionAnswerInput,
 		type Drawing
 	} from '$lib/questions/construction/drawing';
@@ -82,23 +93,41 @@
 	let pending = $state.raw<{ node: FigureNode; at: Position } | null>(null);
 
 	let interactive = $derived(answer !== undefined && !answer.disabled);
-	let lines = $derived(parseConstructionAnswer(answer?.value ?? '') ?? []);
+	let objects = $derived(parseConstructionAnswer(answer?.value ?? '') ?? []);
+	let lines = $derived(objects.filter(isDrawnLine));
+	let placedPoints = $derived(objects.filter(isDrawnPoint));
 	// Plus de saisie (Valider, correction) ou autre bloc : le départ en attente disparaît
 	let start = $derived(interactive && pending?.node === node ? pending.at : null);
-	let drawing: Drawing = $derived({ lines, start });
+	let drawing: Drawing = $derived({ objects, start });
 	let corrected = $derived(answer?.isCorrect === false || showSolution);
 	let checks = $derived(node.construction?.checks ?? []);
 	let tool = $derived(node.construction?.tools[0] ?? 'droite');
 	/** Figure de travail : traits gris une fois la saisie finie, jamais de verdict */
 	let workDone = $derived(node.construction?.work === true && answer !== undefined && !interactive);
-	/** Quadrillage + segment : touchers sur les nœuds (sinon aimantation sur les points) */
-	let grid = $derived(tool === 'segment' ? node.header.grid : null);
+	/** Quadrillage + segment ou point : touchers sur les nœuds (sinon aimantation sur les points) */
+	let grid = $derived(tool === 'segment' || tool === 'point' ? node.header.grid : null);
+	/** Points à placer, montrés à la correction (calculés à part : jamais aimantés) */
+	let pointSolutions = $derived.by((): PointSolution[] => {
+		if (!corrected || !checks.some((c) => c.kind === 'point')) return [];
+		try {
+			return solutionPoints(
+				checks,
+				constructionExpected(node.source),
+				constructionPositions(node.source)
+			);
+		} catch {
+			// Figure qui ne se construit pas : l'erreur est celle de la figure
+			return [];
+		}
+	});
 	/** Curseur clavier sur le quadrillage (nœud), affiché quand la zone a le focus */
 	let cursor = $state.raw<Position | null>(null);
 
 	function apply(next: Drawing) {
 		pending = next.start ? { node, at: next.start } : null;
-		if (next.lines !== drawing.lines) answer?.onChange(serializeConstructionAnswer(next.lines));
+		if (next.objects !== drawing.objects) {
+			answer?.onChange(serializeConstructionAnswer(next.objects));
+		}
 	}
 
 	function tapAt(position: Position) {
@@ -172,11 +201,14 @@
 	}
 
 	/** Annonce du lecteur d'écran sur le quadrillage : nœud du curseur, départ choisi */
-	let gridStatus = $derived(
-		cursor
-			? `Nœud ${cursor.x} ; ${cursor.y}${drawing.start ? ', départ choisi' : ''}, ${lines.length} trait${lines.length > 1 ? 's' : ''} tracé${lines.length > 1 ? 's' : ''}`
-			: ''
-	);
+	let gridStatus = $derived.by(() => {
+		if (!cursor) return '';
+		const count = tool === 'point' ? placedPoints.length : lines.length;
+		const plural = count > 1 ? 's' : '';
+		const what =
+			tool === 'point' ? `point${plural} placé${plural}` : `trait${plural} tracé${plural}`;
+		return `Nœud ${cursor.x} ; ${cursor.y}${drawing.start ? ', départ choisi' : ''}, ${count} ${what}`;
+	});
 
 	function handlePointKey(event: KeyboardEvent, position: Position) {
 		if (event.key !== 'Enter' && event.key !== ' ') return;
@@ -196,6 +228,44 @@
 		const a = transformer.mathToSvg(clipped.x1, clipped.y1);
 		const b = transformer.mathToSvg(clipped.x2, clipped.y2);
 		return { x1: a.x, y1: a.y, x2: b.x, y2: b.y };
+	}
+
+	/** Taille des codages (angle droit, marques), en unités SVG */
+	const MARK = 8;
+
+	/**
+	 * Codage du symétrique d'un point, en coordonnées SVG : angle droit au pied
+	 * de [AA'] sur l'axe (symétrie axiale), une marque sur chaque moitié
+	 */
+	function codage(solution: PointSolution, scene: FigureScene, width: number, height: number) {
+		const { from, foot } = solution;
+		if (!from || !foot) return null;
+		const transformer = createTransformer(scene.viewport, width, height);
+		const a = transformer.mathToSvg(from.x, from.y);
+		const h = transformer.mathToSvg(foot.x, foot.y);
+		const b = transformer.mathToSvg(solution.at.x, solution.at.y);
+		const length = Math.hypot(a.x - h.x, a.y - h.y);
+		if (length === 0) return null;
+		// u : de H vers A ; v : le long de l'axe
+		const u = { x: (a.x - h.x) / length, y: (a.y - h.y) / length };
+		const v = { x: -u.y, y: u.x };
+		const tick = (m: { x: number; y: number }) => ({
+			x1: m.x - (v.x * MARK) / 2,
+			y1: m.y - (v.y * MARK) / 2,
+			x2: m.x + (v.x * MARK) / 2,
+			y2: m.y + (v.y * MARK) / 2
+		});
+		const corner = solution.axial
+			? `M ${h.x + u.x * MARK} ${h.y + u.y * MARK} L ${h.x + (u.x + v.x) * MARK} ${h.y + (u.y + v.y) * MARK} L ${h.x + v.x * MARK} ${h.y + v.y * MARK}`
+			: null;
+		return {
+			segment: { x1: a.x, y1: a.y, x2: b.x, y2: b.y },
+			corner,
+			ticks: [
+				tick({ x: (a.x + h.x) / 2, y: (a.y + h.y) / 2 }),
+				tick({ x: (h.x + b.x) / 2, y: (h.y + b.y) / 2 })
+			]
+		};
 	}
 </script>
 
@@ -238,6 +308,18 @@
 				/>
 			{/if}
 		{/if}
+		{#each placedPoints as point, i (i)}
+			{@const p = transformer.mathToSvg(point.x, point.y)}
+			<g
+				data-testid="point-eleve"
+				class="point-eleve"
+				class:point-juste={answer?.isCorrect === true}
+				class:point-travail={workDone}
+			>
+				<line x1={p.x - 6} y1={p.y - 6} x2={p.x + 6} y2={p.y + 6} />
+				<line x1={p.x - 6} y1={p.y + 6} x2={p.x + 6} y2={p.y - 6} />
+			</g>
+		{/each}
 		{#each lines as line, i (i)}
 			{@const s = toScreen(line, scene, width, height)}
 			{#if s}
@@ -268,6 +350,19 @@
 				{/if}
 			{/each}
 		{/if}
+		{#each pointSolutions as solution (solution.name)}
+			{@const p = transformer.mathToSvg(solution.at.x, solution.at.y)}
+			{@const c = codage(solution, scene, width, height)}
+			<g data-testid="bon-point" class="bon-point">
+				{#if c}
+					<line class="bon-point-segment" {...c.segment} />
+					{#if c.corner}<path class="bon-point-codage" d={c.corner} />{/if}
+					{#each c.ticks as t, i (i)}<line class="bon-point-codage" {...t} />{/each}
+				{/if}
+				<circle cx={p.x} cy={p.y} r="6" />
+				<text x={p.x + 9} y={p.y - 9}>{solution.name.replaceAll("'", '’')}</text>
+			</g>
+		{/each}
 		{#if drawing.start}
 			{@const p = transformer.mathToSvg(drawing.start.x, drawing.start.y)}
 			<circle data-testid="depart" class="depart" cx={p.x} cy={p.y} r="9" />
@@ -339,6 +434,50 @@
 		stroke-width: 2.5;
 		stroke-dasharray: 8 5;
 		pointer-events: none;
+	}
+
+	.point-eleve line {
+		stroke: var(--color-primary);
+		stroke-width: 2.5;
+		stroke-linecap: round;
+		pointer-events: none;
+	}
+
+	.point-juste line {
+		stroke: var(--color-success);
+	}
+
+	.point-travail line {
+		stroke: var(--color-muted-foreground);
+	}
+
+	.bon-point {
+		pointer-events: none;
+	}
+
+	.bon-point circle {
+		fill: none;
+		stroke: var(--color-success);
+		stroke-width: 2.5;
+		stroke-dasharray: 4 3;
+	}
+
+	.bon-point text {
+		fill: var(--color-success);
+		font-size: 15px;
+		font-style: italic;
+	}
+
+	.bon-point-segment {
+		stroke: var(--color-success);
+		stroke-width: 1.5;
+		stroke-dasharray: 8 5;
+	}
+
+	.bon-point-codage {
+		fill: none;
+		stroke: var(--color-success);
+		stroke-width: 1.5;
 	}
 
 	.depart {

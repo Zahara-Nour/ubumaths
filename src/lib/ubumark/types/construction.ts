@@ -12,12 +12,21 @@
  * @module ubumark/types/construction
  */
 
-/** Outils proposés à l'élève (un seul par figure) : droite (CP-059), segment (CP-060) */
-export const CONSTRUCTION_TOOLS = ['droite', 'segment'] as const;
+/**
+ * Outils proposés à l'élève (un seul par figure) : droite (CP-059), segment
+ * (CP-060), point (un toucher, chantier `controles-figure` lot 2a)
+ */
+export const CONSTRUCTION_TOOLS = ['droite', 'segment', 'point'] as const;
 export type ConstructionTool = (typeof CONSTRUCTION_TOOLS)[number];
 
 /** Vérifications que l'auteur peut nommer dans `verifier:` */
-export const CONSTRUCTION_CHECK_KINDS = ['droite_par', 'carre', 'rectangle', 'symetrique'] as const;
+export const CONSTRUCTION_CHECK_KINDS = [
+	'droite_par',
+	'carre',
+	'rectangle',
+	'symetrique',
+	'point'
+] as const;
 export type ConstructionCheckKind = (typeof CONSTRUCTION_CHECK_KINDS)[number];
 
 /** `droite_par A ; B` : une droite tracée passe par les points A et B */
@@ -69,14 +78,29 @@ export interface SymetriqueCheck {
 /** Vérifications qui jugent l'ensemble des segments : une seule par figure */
 export type SegmentFigureCheck = PolygonCheck | SymetriqueCheck;
 
-export type ConstructionCheck = DroiteParCheck | SegmentFigureCheck;
+/**
+ * `point A' = symetrie(A, axe=d)` : l'élève place un point là où l'expression
+ * du langage des figures le met (chantier `controles-figure`, lot 2a,
+ * 2026-11-02). Plusieurs par figure : points jugés comme un ensemble. Le nom
+ * n'est pas un objet de la figure (le langage n'a pas de prime) : il sert à
+ * l'étiquette de la correction et aux messages.
+ */
+export interface PointCheck {
+	kind: 'point';
+	name: string;
+	expression: string;
+	line: number;
+}
+
+export type ConstructionCheck = DroiteParCheck | SegmentFigureCheck | PointCheck;
 
 /** L'outil avec lequel se trace chaque vérification */
 export const CHECK_TOOL: Record<ConstructionCheckKind, ConstructionTool> = {
 	droite_par: 'droite',
 	carre: 'segment',
 	rectangle: 'segment',
-	symetrique: 'segment'
+	symetrique: 'segment',
+	point: 'point'
 };
 
 export interface ConstructionSpec {

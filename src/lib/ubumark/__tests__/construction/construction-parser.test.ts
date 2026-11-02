@@ -71,7 +71,7 @@ describe('construction — lecture du bloc', () => {
 				'A = point(1, 2)'
 			)
 		);
-		expect(node.construction?.checks.map((c) => c.points)).toEqual([
+		expect(node.construction?.checks.map((c) => (c.kind === 'point' ? null : c.points))).toEqual([
 			['A', 'B'],
 			['C', 'D']
 		]);
@@ -106,14 +106,14 @@ describe('construction — erreurs situées', () => {
 			messages(
 				block('fenetre: 0 ; 10 ; 0 ; 6', 'outils: compas', 'verifier: droite_par A ; B', '---')
 			)
-		).toContain('Ligne 2 : outil « compas » inconnu (droite, segment)');
+		).toContain('Ligne 2 : outil « compas » inconnu (droite, segment, point)');
 	});
 
 	it('vérification inconnue', () => {
 		expect(
 			messages(block('fenetre: 0 ; 10 ; 0 ; 6', 'verifier: cercle_par A ; B', '---'))
 		).toContain(
-			'Ligne 2 : vérification « cercle_par » inconnue (droite_par, carre, rectangle, symetrique)'
+			'Ligne 2 : vérification « cercle_par » inconnue (droite_par, carre, rectangle, symetrique, point)'
 		);
 	});
 

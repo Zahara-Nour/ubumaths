@@ -18,7 +18,14 @@ import type {
 	DroiteParCheck,
 	PolygonCheck
 } from '$lib/ubumark/types/construction';
-import { parseConstructionAnswer, type DrawnLine } from './answer';
+import { isDrawnLine, parseConstructionAnswer, type DrawnLine } from './answer';
+import {
+	PointAuthorError,
+	assertPoints,
+	isPointCheck,
+	judgePoints,
+	type ExpectedPoints
+} from './point';
 import { PolygonAuthorError, givenVertices, judgePolygon } from './polygon';
 import { SymmetryAuthorError, assertSymmetry, judgeSymmetry, type FigureShapes } from './symmetry';
 
@@ -117,7 +124,11 @@ function isPolygonCheck(check: ConstructionCheck): check is PolygonCheck {
 
 /** Erreur d'auteur d'un module de vérification → celle du juge ; le reste passe */
 function asAuthorError(error: unknown): unknown {
-	if (error instanceof PolygonAuthorError || error instanceof SymmetryAuthorError) {
+	if (
+		error instanceof PolygonAuthorError ||
+		error instanceof SymmetryAuthorError ||
+		error instanceof PointAuthorError
+	) {
 		return new ConstructionAuthorError(error.message);
 	}
 	return error;
@@ -127,14 +138,25 @@ function asAuthorError(error: unknown): unknown {
  * Les vérifications sont-elles faisables sur cette figure ? Erreur d'AUTEUR
  * sinon (point inconnu, sommets confondus…) : `check-template` l'appelle à
  * chaque tirage, pour ne pas l'apprendre au premier élève. `shapes` : les
- * traits de la figure (vérification `symetrique`).
+ * traits de la figure (vérification `symetrique`) ; `expected` : les points
+ * attendus (vérification `point`).
  */
 export function assertConstructionChecks(
 	checks: readonly ConstructionCheck[],
 	points: ReadonlyMap<string, Position>,
-	shapes?: FigureShapes
+	shapes?: FigureShapes,
+	expected?: ExpectedPoints
 ): void {
+	const pointChecks = checks.filter(isPointCheck);
+	if (pointChecks.length > 0) {
+		try {
+			assertPoints(pointChecks, expected, points, shapes);
+		} catch (error) {
+			throw asAuthorError(error);
+		}
+	}
 	for (const check of checks) {
+		if (check.kind === 'point') continue;
 		if (check.kind === 'symetrique') {
 			try {
 				assertSymmetry(check, points, shapes);
@@ -167,17 +189,31 @@ export function assertConstructionChecks(
  * celles tracées ; une droite qu'aucune vérification ne prend est de trop.
  * Carré / rectangle (une seule vérification, garantie par le parseur) :
  * `polygon.ts` ; symétrique (seul aussi) : `symmetry.ts`, avec les traits de
- * la figure (`shapes`).
+ * la figure (`shapes`) ; points à placer : `point.ts`, avec les points
+ * attendus (`expected`).
  */
 export function judgeConstruction(
 	allChecks: readonly ConstructionCheck[],
 	points: ReadonlyMap<string, Position>,
 	answer: string,
-	shapes?: FigureShapes
+	shapes?: FigureShapes,
+	expected?: ExpectedPoints
 ): ConstructionVerdict {
-	const lines = parseConstructionAnswer(answer);
-	if (lines === null) return { status: 'incorrect' };
-	if (lines.length === 0) return { status: 'empty' };
+	const objects = parseConstructionAnswer(answer);
+	if (objects === null) return { status: 'incorrect' };
+	if (objects.length === 0) return { status: 'empty' };
+
+	const pointChecks = allChecks.filter(isPointCheck);
+	if (pointChecks.length > 0) {
+		try {
+			return judgePoints(pointChecks, expected, points, shapes, objects);
+		} catch (error) {
+			throw asAuthorError(error);
+		}
+	}
+	// Un point placé sans outil point : réponse forgée
+	const lines = objects.filter(isDrawnLine);
+	if (lines.length !== objects.length) return { status: 'incorrect' };
 
 	const symmetry = allChecks.find((c) => c.kind === 'symetrique');
 	if (symmetry) {

@@ -83,7 +83,11 @@ import { isPlacedAngleCorrect } from '$lib/ubumark/utils/trig-placer';
 import { isColoringCorrect } from '$lib/ubumark/utils/partage-colorier';
 import { isCubesAnswerCorrect } from '$lib/ubumark/utils/cubes-gestes';
 import { isPatronAnswerCorrect } from '$lib/ubumark/utils/patron-gestes';
-import { constructionPositions, constructionShapes } from '$lib/questions/construction/positions';
+import {
+	constructionExpected,
+	constructionPositions,
+	constructionShapes
+} from '$lib/questions/construction/positions';
 import {
 	correctChoiceIndexesOf,
 	displayedChoiceLetter,
@@ -1233,7 +1237,8 @@ function constructionBlankResult(
 		construction.checks,
 		points,
 		answer,
-		constructionShapes(construction.source)
+		constructionShapes(construction.source),
+		constructionExpected(construction.source)
 	);
 	if (status === 'empty') return { isCorrect: false, status: 'empty' };
 	if (status === 'correct') return { isCorrect: true, status: 'correct' };

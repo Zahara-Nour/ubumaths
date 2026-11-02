@@ -5,7 +5,8 @@
  * Le bloc est une figure de départ : en-tête et langage de ```figure, plus
  * trois lignes d'en-tête à lui (`verifier: carre A ; B` ou
  * `rectangle A ; B ; C` avec l'outil segment, CP-060 ; `symetrique par d`,
- * `symetrique A ; B ; C par d`, symétrique sur quadrillage) :
+ * `symetrique A ; B ; C par d`, symétrique sur quadrillage ; `point A' = <expression>`
+ * avec l'outil point, une ligne par point à placer) :
  *
  * ```figure-a-completer
  * fenetre: 0 ; 10 ; 0 ; 6
@@ -48,6 +49,10 @@ const SEPARATOR_REGEX = /^\s*---\s*$/;
 const KEY_LINE_REGEX = /^(outils|verifier|vérifier|case)\s*:\s*(.*)$/i;
 const POINT_NAME_REGEX = /^[A-Za-z][A-Za-z0-9_']*$/;
 const CASE_INDEX_REGEX = /^\d{1,3}$/;
+/** `point A' = <expression>` : le nom, puis l'expression du langage des figures */
+const POINT_CHECK_REGEX = /^([A-Za-z][A-Za-z0-9_']*)\s*=\s*(\S.*)$/;
+/** Expression d'un `point …` : au-delà, refusée (ligne d'en-tête, pas un script) */
+export const POINT_EXPRESSION_MAX_LENGTH = 200;
 
 export const CONSTRUCTION_MISSING_CHECK_MESSAGE =
 	'Vérification manquante : ajouter « verifier: droite_par A ; B »';
@@ -88,7 +93,7 @@ function readTools(value: string): ConstructionTool[] {
 
 /** Nombre de points de chaque vérification, et comment l'écrire */
 const CHECK_ARITY: Record<
-	Exclude<ConstructionCheckKind, 'symetrique'>,
+	Exclude<ConstructionCheckKind, 'symetrique' | 'point'>,
 	{ count: number; example: string; word: string }
 > = {
 	droite_par: { count: 2, example: 'droite_par A ; B', word: 'deux' },
@@ -122,17 +127,35 @@ function readSymetrique(rest: string, line: number): ConstructionCheck {
 	return { kind: 'symetrique', by, points, line };
 }
 
+/** `point A' = symetrie(A, axe=d)` : le nom et l'expression, calculée au jugement */
+function readPoint(rest: string, line: number): ConstructionCheck {
+	const match = POINT_CHECK_REGEX.exec(rest.trim());
+	if (!match) {
+		throw new LineError(
+			"point attend un nom et une expression : « point A' = symetrie(A, axe=d) »"
+		);
+	}
+	const expression = match[2].trim();
+	if (expression.length > POINT_EXPRESSION_MAX_LENGTH) {
+		throw new LineError(
+			`point : expression trop longue (${POINT_EXPRESSION_MAX_LENGTH} caractères au plus)`
+		);
+	}
+	return { kind: 'point', name: match[1], expression, line };
+}
+
 function readCheck(value: string, line: number): ConstructionCheck {
 	const [rawWord = '', ...rest] = value.split(/\s+/);
 	// `symétrique` accentué, comme `vérifier:`
 	const word = rawWord.toLowerCase() === 'symétrique' ? 'symetrique' : rawWord;
 	if (word === 'symetrique') return readSymetrique(rest.join(' '), line);
+	if (word === 'point') return readPoint(rest.join(' '), line);
 	if (!(CONSTRUCTION_CHECK_KINDS as readonly string[]).includes(word)) {
 		throw new LineError(
 			`vérification « ${word} » inconnue (${CONSTRUCTION_CHECK_KINDS.join(', ')})`
 		);
 	}
-	const kind = word as Exclude<ConstructionCheckKind, 'symetrique'>;
+	const kind = word as Exclude<ConstructionCheckKind, 'symetrique' | 'point'>;
 	const { count, example, word: countWord } = CHECK_ARITY[kind];
 	const points = splitPoints(rest.join(' '));
 	if (points.length !== count || !points.every((name) => POINT_NAME_REGEX.test(name))) {
@@ -155,8 +178,14 @@ function readCheck(value: string, line: number): ConstructionCheck {
 function coherenceError(check: ConstructionCheck, spec: ConstructionSpec): string | null {
 	const tool = CHECK_TOOL[check.kind];
 	if (!spec.tools.includes(tool))
-		return `${check.kind} se trace avec l’outil ${tool} (outils: ${tool})`;
-	const segmentChecks = spec.checks.filter((c) => c.kind !== 'droite_par');
+		return check.kind === 'point'
+			? 'point se place avec l’outil point (outils: point)'
+			: `${check.kind} se trace avec l’outil ${tool} (outils: ${tool})`;
+	if (check.kind === 'point') {
+		const first = spec.checks.find((c) => c.kind === 'point' && c.name === check.name);
+		return first === check ? null : `deux points nommés ${check.name.replace("'", '’')}`;
+	}
+	const segmentChecks = spec.checks.filter((c) => c.kind !== 'droite_par' && c.kind !== 'point');
 	if (check.kind !== 'droite_par' && segmentChecks[0] !== check) {
 		const symmetry = check.kind === 'symetrique' || segmentChecks[0].kind === 'symetrique';
 		return symmetry

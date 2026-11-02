@@ -3,8 +3,9 @@
  * ==================================================================
  *
  * Logique PURE de l'écran : toucher un point puis un autre trace une droite ;
- * près d'un point de la figure, le toucher est aimanté sur lui ; « Effacer »
- * enlève le départ en attente, sinon la dernière droite. Comportements validés
+ * près d'un point de la figure, le toucher est aimanté sur lui ; outil point :
+ * un toucher place un point ; « Effacer » enlève le départ en attente, sinon
+ * le dernier objet. Comportements validés
  * par David le 2026-10-25 (`docs/wip/geometrie-validation-progress.md` § 5).
  *
  * Aucune dépendance à geometry-core : les positions des points sont données
@@ -15,8 +16,15 @@
 
 import type { ConstructionCheck, ConstructionTool } from '$lib/ubumark/types/construction';
 import type { FigureStep } from '$lib/ubumark/types/figure';
-import { CONSTRUCTION_ANSWER_LIMITS, serializeConstructionAnswer, type DrawnLine } from './answer';
+import {
+	CONSTRUCTION_ANSWER_LIMITS,
+	isDrawnLine,
+	serializeConstructionAnswer,
+	type DrawnLine,
+	type DrawnObject
+} from './answer';
 import type { Position } from './judge';
+import { isPointCheck, pointSolution, type ExpectedPoints, type PointSolution } from './point';
 import { polygonSolution } from './polygon';
 import { symmetrySolution, type FigureShapes } from './symmetry';
 
@@ -39,9 +47,9 @@ export interface ConstructionAnswerInput {
 	onChange: (value: string) => void;
 }
 
-/** Ce que l'élève a tracé, et le départ d'une droite en attente du second toucher */
+/** Ce que l'élève a tracé ou placé, et le départ d'une droite en attente du second toucher */
 export interface Drawing {
-	lines: DrawnLine[];
+	objects: DrawnObject[];
 	start: Position | null;
 }
 
@@ -100,45 +108,57 @@ export function snapToGrid(tap: Position, grid: FigureStep, window?: FigureWindo
 	};
 }
 
+/** L'objet ajouté, sauf au-delà des plafonds du juge (il rendrait la réponse illisible) */
+function withObject(drawing: Drawing, object: DrawnObject): Drawing {
+	const objects = [...drawing.objects, object];
+	if (
+		objects.length > CONSTRUCTION_ANSWER_LIMITS.objects ||
+		serializeConstructionAnswer(objects).length > CONSTRUCTION_ANSWER_LIMITS.chars
+	) {
+		return { objects: drawing.objects, start: null };
+	}
+	return { objects, start: null };
+}
+
 /**
- * Un toucher : premier → départ ; second → la droite (ou le segment, qui
- * s'arrête à ses deux bouts). Toucher le départ une
- * seconde fois ne fait rien ; au-delà des plafonds du juge, la droite n'est
- * pas ajoutée (elle rendrait la réponse illisible).
+ * Un toucher : outil point → le point (rien s'il y est déjà) ; sinon premier → départ ; second → la
+ * droite (ou le segment, qui s'arrête à ses deux bouts). Toucher le départ une
+ * seconde fois ne fait rien.
  */
 export function addTap(
 	drawing: Drawing,
 	position: Position,
 	tool: ConstructionTool = 'droite'
 ): Drawing {
+	if (tool === 'point') {
+		// Toucher un point déjà posé (double toucher) ne fait rien, comme le départ d'un trait
+		const placed = drawing.objects.some(
+			(o) =>
+				o.kind === 'point' && Math.hypot(o.x - position.x, o.y - position.y) <= SAME_TAP_EPSILON
+		);
+		if (placed) return { objects: drawing.objects, start: null };
+		return withObject(drawing, { kind: 'point', x: position.x, y: position.y });
+	}
 	const { start } = drawing;
-	if (!start) return { lines: drawing.lines, start: position };
+	if (!start) return { objects: drawing.objects, start: position };
 	if (Math.hypot(position.x - start.x, position.y - start.y) <= SAME_TAP_EPSILON) return drawing;
-	const line: DrawnLine = {
+	return withObject(drawing, {
 		kind: tool,
 		x1: start.x,
 		y1: start.y,
 		x2: position.x,
 		y2: position.y
-	};
-	const lines = [...drawing.lines, line];
-	if (
-		lines.length > CONSTRUCTION_ANSWER_LIMITS.objects ||
-		serializeConstructionAnswer(lines).length > CONSTRUCTION_ANSWER_LIMITS.chars
-	) {
-		return { lines: drawing.lines, start: null };
-	}
-	return { lines, start: null };
+	});
 }
 
-/** « Effacer » : le départ en attente, sinon la dernière droite */
+/** « Effacer » : le départ en attente, sinon le dernier objet */
 export function eraseLast(drawing: Drawing): Drawing {
-	if (drawing.start) return { lines: drawing.lines, start: null };
-	return { lines: drawing.lines.slice(0, -1), start: null };
+	if (drawing.start) return { objects: drawing.objects, start: null };
+	return { objects: drawing.objects.slice(0, -1), start: null };
 }
 
 export function canErase(drawing: Drawing): boolean {
-	return drawing.start !== null || drawing.lines.length > 0;
+	return drawing.start !== null || drawing.objects.length > 0;
 }
 
 /**
@@ -150,17 +170,28 @@ export function canErase(drawing: Drawing): boolean {
 export function solutionLines(
 	checks: readonly ConstructionCheck[],
 	points: ReadonlyMap<string, Position>,
-	drawn: readonly DrawnLine[] = [],
+	drawn: readonly DrawnObject[] = [],
 	shapes?: FigureShapes
 ): DrawnLine[] {
 	return checks.flatMap((check): DrawnLine[] => {
+		if (check.kind === 'point') return [];
 		if (check.kind === 'symetrique') return symmetrySolution(check, points, shapes);
-		if (check.kind !== 'droite_par') return polygonSolution(check, points, drawn);
+		if (check.kind !== 'droite_par')
+			return polygonSolution(check, points, drawn.filter(isDrawnLine));
 		const a = points.get(check.points[0]);
 		const b = points.get(check.points[1]);
 		if (!a || !b) return [];
 		return [{ kind: 'droite', x1: a.x, y1: a.y, x2: b.x, y2: b.y }];
 	});
+}
+
+/** Les points à placer : où ils vont, avec leur nom (vérifications `point`) */
+export function solutionPoints(
+	checks: readonly ConstructionCheck[],
+	expected: ExpectedPoints | undefined,
+	points: ReadonlyMap<string, Position>
+): PointSolution[] {
+	return pointSolution(checks.filter(isPointCheck), expected, points);
 }
 
 /**

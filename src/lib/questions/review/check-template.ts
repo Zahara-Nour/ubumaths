@@ -35,7 +35,11 @@ import {
 	findUnparenthesizedNegatives,
 	type VariableDraw
 } from '$lib/questions/validators/negative-substitution';
-import { constructionPositions, constructionShapes } from '$lib/questions/construction/positions';
+import {
+	constructionExpected,
+	constructionPositions,
+	constructionShapes
+} from '$lib/questions/construction/positions';
 import {
 	assertConstructionChecks,
 	ConstructionAuthorError
@@ -168,7 +172,12 @@ function constructionErrors(instance: QuestionInstance): string[] | null {
 	if (constructions.length === 0) return null;
 	return constructions.flatMap(({ source, checks }) => {
 		try {
-			assertConstructionChecks(checks, constructionPositions(source), constructionShapes(source));
+			assertConstructionChecks(
+				checks,
+				constructionPositions(source),
+				constructionShapes(source),
+				constructionExpected(source)
+			);
 			return [];
 		} catch (error) {
 			if (error instanceof ConstructionAuthorError) return [error.message];

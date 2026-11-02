@@ -525,7 +525,20 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    horizontale alors que l'axe est oblique), image incomplète (« Il manque une partie du symétrique. »),
    trait qui dépasse. Le juge lit les traits de la figure dans le registre (`constructionShapes`, même
    calcul que `constructionPositions`). Erreurs de l'auteur : axe ou centre inconnu, rien à transformer,
-   pas de `grille:`, image hors de la fenêtre ou hors des nœuds. Réponse illisible ou démesurée
+   pas de `grille:`, image hors de la fenêtre ou hors des nœuds. Vérification `point A' = <expression>`
+   (outil point, réponse `point(x;y)`, `construction/point.ts`, lot 2a du chantier) : l'élève place des
+   points, non nommés, jugés comme un ensemble (chaque point attendu touché, aucun de trop ; traits de
+   construction ignorés). L'expression (langage des figures : `symetrie`, `milieu`…) est calculée par le
+   registre (`constructionExpected`) sous un nom interne, dans une figure à part : le langage n'a pas de
+   prime, `A'` ne sert qu'à la correction et aux messages ; le point attendu n'est jamais un point
+   d'aimantation. Messages, dans l'ordre : point mal placé (symétrique par un axe nommé : « Le segment
+   [AA'] doit être perpendiculaire à l'axe. » s'il est à la bonne distance, « A' doit être à la même
+   distance de l'axe que A. » s'il est sur la perpendiculaire ; sinon « Ce point n'est pas le symétrique
+   de A. », ou « Ce point n'est pas à sa place. » pour une autre expression), point manquant, point de
+   trop. Erreurs de l'auteur : expression qui ne se calcule pas ou ne donne pas un point, nom déjà pris,
+   point déjà dans la figure, pas de `grille:` (papier uni : lot 2b, équerre et compas), hors de la
+   fenêtre ou des nœuds, deux points au même endroit. Correction : chaque point en pointillés avec son
+   nom ; symétrique : [AA'] codé (angle droit pour un axe, une marque sur chaque moitié). Réponse illisible ou démesurée
    (`CONSTRUCTION_ANSWER_LIMITS`) → faux sans message. Les positions des points viennent d'un
    **registre** (`constructionPositions`), comme le PDF des figures : le juge reste léger (sans lui,
    geometry-core ajoutait ~430 Ko minifiés à toutes les pages qui génèrent une question). Il est
