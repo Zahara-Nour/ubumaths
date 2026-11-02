@@ -1,0 +1,287 @@
+{
+	"title": "Choisir l'opération",
+	"description": "Choisir l'opération qui résout un problème : partage, groupement, écart, prix × quantité, réunion de deux quantités",
+	"grades": ["5"],
+	"theme": "Décimaux",
+	"domain": "Problèmes",
+	"subdomain": "Choisir l'opération",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On verse ${{eval:V/10;d}}~\\unit{L}$ de jus, à parts égales, dans ${{b}}$ bouteilles. On cherche la quantité de jus dans une bouteille. Quel calcul donne la réponse ?\n\n```choix\n- ${{eval:V/10;d}} \\div {{b}}$\n- ${{eval:V/10;d}} + {{b}}$\n- ${{eval:V/10;d}} - {{b}}$\n- ${{eval:V/10;d}} \\times {{b}}$\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "3..6"
+				},
+				{
+					"name": "q",
+					"expression": "12..45"
+				},
+				{
+					"name": "V",
+					"expression": "eval:b*q"
+				}
+			],
+			"conditions": ["mod(q,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Division** : on partage en parts égales, ou on cherche combien de fois une quantité tient dans une autre.",
+					"On partage ${{eval:V/10;d}}~\\unit{L}$ en ${{b}}$ parts égales : $\\textcolor{{{color:primary.0}}}{{{eval:V/10;d}} \\div {{b}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On range ${{n}}$ œufs dans des boîtes de ${{b}}$. On cherche le nombre de boîtes remplies. Quel calcul donne la réponse ?\n\n```choix\n- ${{n}} \\div {{b}}$\n- ${{n}} + {{b}}$\n- ${{n}} - {{b}}$\n- ${{n}} \\times {{b}}$\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "6|10|12"
+				},
+				{
+					"name": "q",
+					"expression": "7..25"
+				},
+				{
+					"name": "n",
+					"expression": "eval:b*q"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Division** : on partage en parts égales, ou on cherche combien de fois une quantité tient dans une autre.",
+					"On cherche combien de fois ${{b}}$ tient dans ${{n}}$ : $\\textcolor{{{color:primary.0}}}{{{n}} \\div {{b}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Léna mesure ${{eval:A/100;d}}~\\unit{m}$ et son frère ${{eval:B/100;d}}~\\unit{m}$. On cherche de combien Léna est plus grande que son frère. Quel calcul donne la réponse ?\n\n```choix\n- ${{eval:A/100;d}} - {{eval:B/100;d}}$\n- ${{eval:A/100;d}} + {{eval:B/100;d}}$\n- ${{eval:A/100;d}} \\times {{eval:B/100;d}}$\n- ${{eval:A/100;d}} \\div {{eval:B/100;d}}$\n```",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "140..175"
+				},
+				{
+					"name": "B",
+					"expression": "110..139"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Soustraction** : on cherche un écart, ce qui reste ou ce qui manque.",
+					"On cherche l'écart entre les deux tailles : $\\textcolor{{{color:primary.0}}}{{{eval:A/100;d}} - {{eval:B/100;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Les pommes coûtent ${{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}}~\\unit{€}$ le kilogramme. Sami en achète ${{m}}~\\unit{kg}$. On cherche le prix à payer. Quel calcul donne la réponse ?\n\n```choix\n- ${{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} \\times {{m}}$\n- ${{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} + {{m}}$\n- ${{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} - {{m}}$\n- ${{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} \\div {{m}}$\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "14..39"
+				},
+				{
+					"name": "P",
+					"expression": "eval:10*p+5"
+				},
+				{
+					"name": "m",
+					"expression": "2..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Multiplication** : on répète la même quantité plusieurs fois (prix × quantité).",
+					"On paie ${{m}}$ fois le prix d'un kilogramme : $\\textcolor{{{color:primary.0}}}{{{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} \\times {{m}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un sac de riz pèse ${{eval:A/100;d}}~\\unit{kg}$ et un sac de pâtes ${{eval:B/100;d}}~\\unit{kg}$. On cherche la masse des deux sacs ensemble. Quel calcul donne la réponse ?\n\n```choix\n- ${{eval:A/100;d}} + {{eval:B/100;d}}$\n- ${{eval:A/100;d}} - {{eval:B/100;d}}$\n- ${{eval:A/100;d}} \\times {{eval:B/100;d}}$\n- ${{eval:A/100;d}} \\div {{eval:B/100;d}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "21..99"
+				},
+				{
+					"name": "A",
+					"expression": "eval:5*a"
+				},
+				{
+					"name": "b",
+					"expression": "21..99"
+				},
+				{
+					"name": "B",
+					"expression": "eval:5*b"
+				}
+			],
+			"conditions": ["a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Addition** : on réunit deux quantités.",
+					"On réunit les deux masses : $\\textcolor{{{color:primary.0}}}{{{eval:A/100;d}} + {{eval:B/100;d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Partage : division",
+			"variationIndex": 0,
+			"variables": {
+				"b": "5",
+				"q": "25",
+				"V": "125"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : multiplication",
+			"variationIndex": 0,
+			"variables": {
+				"b": "5",
+				"q": "25",
+				"V": "125"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Groupement : division",
+			"variationIndex": 1,
+			"variables": {
+				"b": "6",
+				"q": "14",
+				"n": "84"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : soustraction",
+			"variationIndex": 1,
+			"variables": {
+				"b": "6",
+				"q": "14",
+				"n": "84"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Écart : soustraction",
+			"variationIndex": 2,
+			"variables": {
+				"A": "152",
+				"B": "138"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : addition",
+			"variationIndex": 2,
+			"variables": {
+				"A": "152",
+				"B": "138"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Prix × quantité : multiplication",
+			"variationIndex": 3,
+			"variables": {
+				"p": "23",
+				"P": "235",
+				"m": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : addition",
+			"variationIndex": 3,
+			"variables": {
+				"p": "23",
+				"P": "235",
+				"m": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Réunion : addition",
+			"variationIndex": 4,
+			"variables": {
+				"a": "48",
+				"A": "240",
+				"b": "75",
+				"B": "375"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : multiplication",
+			"variationIndex": 4,
+			"variables": {
+				"a": "48",
+				"A": "240",
+				"b": "75",
+				"B": "375"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

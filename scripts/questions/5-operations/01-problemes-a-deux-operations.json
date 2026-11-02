@@ -1,0 +1,389 @@
+{
+	"title": "Problèmes à deux opérations",
+	"description": "Résoudre un problème à deux étapes avec des décimaux : achat de plusieurs articles, monnaie rendue, partage de ce qui reste après une dépense, longueur restante",
+	"grades": ["5"],
+	"theme": "Décimaux",
+	"domain": "Problèmes",
+	"subdomain": "Plusieurs opérations",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Léa achète ${{n}}$ cahiers à ${{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}}~\\unit{€}$ l'un et une trousse à ${{eval:floor(Q/100)}}.{{eval:floor(mod(Q,100)/10)}}{{eval:mod(Q,10)}}~\\unit{€}$. Combien paie-t-elle en tout ?\n\n$?~\\unit{€}$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..6"
+				},
+				{
+					"name": "p",
+					"expression": "11..49"
+				},
+				{
+					"name": "P",
+					"expression": "eval:10*p+5"
+				},
+				{
+					"name": "q",
+					"expression": "15..99"
+				},
+				{
+					"name": "Q",
+					"expression": "eval:10*q"
+				},
+				{
+					"name": "T",
+					"expression": "eval:n*P"
+				}
+			],
+			"conditions": ["mod(q,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n*P+Q)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Problème à deux étapes.** On cherche d'abord un résultat intermédiaire, puis on s'en sert pour répondre à la question.",
+					"Prix des cahiers : ${{n}} \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} = {{eval:floor(T/100)}}.{{eval:floor(mod(T,100)/10)}}{{eval:mod(T,10)}}~\\unit{€}$.",
+					"Prix total : ${{eval:floor(T/100)}}.{{eval:floor(mod(T,100)/10)}}{{eval:mod(T,10)}} + {{eval:floor(Q/100)}}.{{eval:floor(mod(Q,100)/10)}}{{eval:mod(Q,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((T+Q)/100)}}.{{eval:floor(mod((T+Q),100)/10)}}{{eval:mod((T+Q),10)}}}~\\unit{€}$."
+				]
+			}
+		},
+		{
+			"statement": "Malik achète ${{n}}$ baguettes à ${{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}}~\\unit{€}$ l'une. Il paie avec un billet de ${{B}}~\\unit{€}$. Combien la boulangère lui rend-elle ?\n\n$?~\\unit{€}$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..5"
+				},
+				{
+					"name": "p",
+					"expression": "17..78"
+				},
+				{
+					"name": "P",
+					"expression": "eval:5*p"
+				},
+				{
+					"name": "B",
+					"expression": "10|20"
+				},
+				{
+					"name": "T",
+					"expression": "eval:n*P"
+				}
+			],
+			"conditions": ["100*B-n*P>=100"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(100*B-n*P)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Problème à deux étapes.** On cherche d'abord un résultat intermédiaire, puis on s'en sert pour répondre à la question.",
+					"Prix des baguettes : ${{n}} \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} = {{eval:floor(T/100)}}.{{eval:floor(mod(T,100)/10)}}{{eval:mod(T,10)}}~\\unit{€}$.",
+					"Monnaie rendue : ${{B}} - {{eval:floor(T/100)}}.{{eval:floor(mod(T,100)/10)}}{{eval:mod(T,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor((100*B-T)/100)}}.{{eval:floor(mod((100*B-T),100)/10)}}{{eval:mod((100*B-T),10)}}}~\\unit{€}$."
+				]
+			}
+		},
+		{
+			"statement": "${{k}}$ amis ont ${{B}}~\\unit{€}$ à eux tous. Ils dépensent ${{eval:floor(D/100)}}.{{eval:floor(mod(D,100)/10)}}{{eval:mod(D,10)}}~\\unit{€}$ pour le goûter, puis se partagent ce qui reste à parts égales. Combien chacun reçoit-il ?\n\n$?~\\unit{€}$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..4"
+				},
+				{
+					"name": "B",
+					"expression": "20|30|40|50"
+				},
+				{
+					"name": "s",
+					"expression": "30..198"
+				},
+				{
+					"name": "S",
+					"expression": "eval:5*s"
+				},
+				{
+					"name": "R",
+					"expression": "eval:k*S"
+				},
+				{
+					"name": "D",
+					"expression": "eval:100*B-R"
+				}
+			],
+			"conditions": ["D>=150"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:S/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Problème à deux étapes.** On cherche d'abord un résultat intermédiaire, puis on s'en sert pour répondre à la question.",
+					"Ce qui reste : ${{B}} - {{eval:floor(D/100)}}.{{eval:floor(mod(D,100)/10)}}{{eval:mod(D,10)}} = {{eval:floor(R/100)}}.{{eval:floor(mod(R,100)/10)}}{{eval:mod(R,10)}}~\\unit{€}$.",
+					"Part de chacun : ${{eval:floor(R/100)}}.{{eval:floor(mod(R,100)/10)}}{{eval:mod(R,10)}} \\div {{k}} = \\textcolor{{{color:primary.0}}}{{{eval:floor(S/100)}}.{{eval:floor(mod(S,100)/10)}}{{eval:mod(S,10)}}}~\\unit{€}$."
+				]
+			}
+		},
+		{
+			"statement": "Un ruban mesure ${{eval:L/100;d}}~\\unit{m}$. Inès en coupe ${{n}}$ morceaux de ${{eval:M/100;d}}~\\unit{m}$ chacun. Quelle longueur de ruban reste-t-il ?\n\n$?~\\unit{m}$",
+			"variables": [
+				{
+					"name": "l",
+					"expression": "15..48"
+				},
+				{
+					"name": "L",
+					"expression": "eval:10*l"
+				},
+				{
+					"name": "n",
+					"expression": "2..4"
+				},
+				{
+					"name": "m",
+					"expression": "2..9"
+				},
+				{
+					"name": "M",
+					"expression": "eval:10*m+5"
+				},
+				{
+					"name": "C",
+					"expression": "eval:n*M"
+				}
+			],
+			"conditions": ["mod(l,10)!=0", "L-n*M>=20"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(L-n*M)/100;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Problème à deux étapes.** On cherche d'abord un résultat intermédiaire, puis on s'en sert pour répondre à la question.",
+					"Longueur coupée : ${{n}} \\times {{eval:M/100;d}} = {{eval:C/100;d}}~\\unit{m}$.",
+					"Longueur restante : ${{eval:L/100;d}} - {{eval:C/100;d}} = \\textcolor{{{color:primary.0}}}{{{eval:(L-C)/100;d}}}~\\unit{m}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4 × 2,35 + 3,20 = 12,6",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"p": "23",
+				"P": "235",
+				"q": "32",
+				"Q": "320",
+				"T": "940"
+			},
+			"answers": ["12,6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "12,60 accepté",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"p": "23",
+				"P": "235",
+				"q": "32",
+				"Q": "320",
+				"T": "940"
+			},
+			"answers": ["12,60"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : les cahiers seulement (9,4)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"p": "23",
+				"P": "235",
+				"q": "32",
+				"Q": "320",
+				"T": "940"
+			},
+			"answers": ["9,4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2,35 + 3,20 (5,55)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"p": "23",
+				"P": "235",
+				"q": "32",
+				"Q": "320",
+				"T": "940"
+			},
+			"answers": ["5,55"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "10 − 3 × 1,15 = 6,55",
+			"variationIndex": 1,
+			"variables": {
+				"n": "3",
+				"p": "23",
+				"P": "115",
+				"B": "10",
+				"T": "345"
+			},
+			"answers": ["6,55"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le prix payé (3,45)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "3",
+				"p": "23",
+				"P": "115",
+				"B": "10",
+				"T": "345"
+			},
+			"answers": ["3,45"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 10 − 1,15 (8,85)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "3",
+				"p": "23",
+				"P": "115",
+				"B": "10",
+				"T": "345"
+			},
+			"answers": ["8,85"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(30 − 10,65) ÷ 3 = 6,45",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"B": "30",
+				"s": "129",
+				"S": "645",
+				"R": "1935",
+				"D": "1065"
+			},
+			"answers": ["6,45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le reste (19,35)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"B": "30",
+				"s": "129",
+				"S": "645",
+				"R": "1935",
+				"D": "1065"
+			},
+			"answers": ["19,35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 30 ÷ 3 (10)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"B": "30",
+				"s": "129",
+				"S": "645",
+				"R": "1935",
+				"D": "1065"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2,5 − 3 × 0,45 = 1,15",
+			"variationIndex": 3,
+			"variables": {
+				"l": "25",
+				"L": "250",
+				"n": "3",
+				"m": "4",
+				"M": "45",
+				"C": "135"
+			},
+			"answers": ["1,15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la longueur coupée (1,35)",
+			"variationIndex": 3,
+			"variables": {
+				"l": "25",
+				"L": "250",
+				"n": "3",
+				"m": "4",
+				"M": "45",
+				"C": "135"
+			},
+			"answers": ["1,35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2,5 − 0,45 (2,05)",
+			"variationIndex": 3,
+			"variables": {
+				"l": "25",
+				"L": "250",
+				"n": "3",
+				"m": "4",
+				"M": "45",
+				"C": "135"
+			},
+			"answers": ["2,05"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
