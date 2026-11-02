@@ -6,19 +6,20 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 2b en PR (instruments sur papier uni)._
+_Mis à jour le 2026-11-02, après #2257._
 
-- **État** : lots 1 (#2226) et 2a (#2233) mergés ; lot 2b (équerre, compas, palette, aimantation sur
-  intersections et traits, papier uni pour `point` et `symetrique`) en PR depuis
-  `feat/controles-figure-instruments`, revue Opus faite et corrigée (§ 8). Rien en prod.
-- **Prochaine action** : merger le lot 2b (CI verte), ligne dans `verifications-manuelles.md` ; puis
-  angle, triangle, médiatrice, bissectrice, cercle circonscrit, 4e sommet (§ 1), report de longueur au
-  compas avec le triangle ; modèles CE2-073, CM1-107/108, CM2-097, 6-179/180.
+- **État** : lots 1 (#2226), 2a (#2233) et 2b (#2257 : équerre, compas, palette, aimantation sur
+  intersections et traits, papier uni pour `point` et `symetrique`) **mergés**, pas encore en prod
+  (`deploy:prod` sur demande de David). Vérifications à l'œil dans `verifications-manuelles.md`.
+- **Prochaine action** : angle, triangle (avec le report de longueur au compas), médiatrice,
+  bissectrice, cercle circonscrit, 4e sommet (§ 1) : phase 0 d'abord ; puis modèles CE2-073,
+  CM1-107/108, CM2-097, 6-179/180 (journaux de niveau).
 - **En attente de David** : point posé à l'œil pile sur A' (coordonnées rondes) jugé juste — l'accepter
-  ou exiger un point construit ? (§ 8, dernier point).
+  ou exiger un point construit (point nommé ou intersection) ? (§ 8, dernier point).
 - **Pièges en cours** : pas de prime dans le langage des figures (§ 6) ; `symetrie(P, axe=d)` échoue si
-  P définit d ; l'« Essayer » de l'aide ne rend pas la case jouable (essai dans un modèle brouillon).
-- **Worktree / branche** : `../ubumaths-wt-controles-figure`, `feat/controles-figure-instruments`.
+  P définit d ; l'« Essayer » de l'aide ne rend pas la case jouable (essai dans un modèle brouillon) ;
+  au clavier, droites annoncées « Droite 1, 2… » ; plafond de 20 objets sans message.
+- **Worktree / branche** : aucun (retiré après #2257).
 
 ---
 
