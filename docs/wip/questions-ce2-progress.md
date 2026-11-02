@@ -8,15 +8,15 @@
 
 _Mis à jour le 2026-11-02, après la publication du lot 6b._
 
-- **État** : lots 1 à 6b en prod ET publiés. Lot 6b : 4 verdicts « OK » (page à cocher), simulation passée,
-  `publier-lot --publier` lancé par David, relevé MCP : 4 `published` (niveaux 1-2 Contenances, 3-4 Durées).
-  Aucun worktree en cours.
-- **Prochaine action** : lot suivant de la phase 0 du § 10 (QCM : références / estimations 040, 041, 049, 050 et
-  périmètre 042, voir décision 3) ; relire le journal pour les lots restants avant de proposer.
-- **En attente de David** : rien.
+- **État** : lots 1 à 6b en prod ET publiés. **Phase 0 du lot 7a (calcul posé + monnaie, 10 modèles) écrite au § 11,
+  en attente de validation de David** (5 questions, recommandations données). Aucun worktree en cours.
+- **Prochaine action** : après validation du § 11, écrire `lot-ce2-7a.py`. Lots suivants (décision 7) : 7b `horloge` +
+  `line`, 7c statistiques, `figure` / images fixes, QCM (040, 041, 042, 049, 050, 063, 064, 067, 069), outils neufs.
+- **En attente de David** : les 5 questions du § 11.
 - **Pièges en cours** : jamais de variable `e` (Euler) même dans un texte `{{eval:10*e}}` ; `--publier` refusé par le
-  classifieur (`!`) ; verdicts du 6b posés en 3 s (4 fiches) : relecture non prouvée ; commitlint : corps ≤ 100
-  caractères par ligne ; pas de mention Claude.
+  classifieur (`!`) ; verdicts du 6b posés en 3 s : relecture non prouvée ; case d'opération posée sans
+  `expectedAnswer` ; niveaux monnaie à relever juste avant la publication (brouillons CE1 du lot 8 non publiés) ;
+  commitlint : corps ≤ 100 caractères par ligne, sujet sans majuscule ; pas de mention Claude.
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
@@ -500,3 +500,58 @@ conversion, puis le mélange, puis l'unité à déduire).
   (h, min) ; 13 pose `u = t - 6 floor(t/6)` pour éviter `mod` en condition.
 - Brouillons créés le 2026-11-01 : 10 `186f05a4`, 11 `cda9c7de`, 12 `ea1a0929`, 13 `ba8f2f75` (préfixes). Rangement :
   10 → CE2-052 et 11 → CE2-053 sur Contenances / unités et conversions ; 12 et 13 → CE2-060 sur Durées / calcul de durées.
+
+## 11. Lot 7a — calcul posé et monnaie (phase 0, 2026-11-02, EN ATTENTE de validation)
+
+Ordre rappelé (décision 7 du § 4 bis) : lots à outils existants avant le lot QCM ; le lot 7 est découpé par outil :
+**7a** `operation` + `monnaie` (ce lot), **7b** `horloge` + `line` (057, 059, 094, 010, 058), **7c** statistiques,
+puis `figure` / images fixes, puis QCM (040, 041, 042, 049, 050, 063, 064, 067, 069), puis outils neufs.
+
+Points CE2-016, 090, 019, 055, 056, 054, 080, sans modèle au relevé MCP du 2026-11-02. Nœuds existants, aucun à créer :
+« Entiers : addition et soustraction › calcul posé » (016, 090 ; occupé : addition CP 1 et CE1 2, soustraction CE1 1
+cassage et 2 compensation), « Entiers : multiplication › calcul posé » (019 ; occupé : CM1 niveau 1,
+`Poser une multiplication de deux nombres entiers`), « Monnaie › euros et centimes » (055, 056 ; CE1 1 et 2),
+« Monnaie › pièces et billets » (054 ; CP 1 à 7, CE1 8 à 11 **en brouillon**), « Monnaie › rendre la monnaie » (080 ;
+CP 1 et 2, CE1 3 et 4 **en brouillon**). Outils : ` ```operation ` (`calcul:` avec virgule, `cases: résultat | aucune`,
+`retenues:`, `méthode: cassage | compensation`), ` ```monnaie ` avec centimes, billets de 200 / 500 € et `construire:`
+(**en prod depuis v0.62.0**). Bornes (`cycle2.json`) : 016 et 090, entiers ≤ 10 000 ; 019, 2 ou 3 chiffres × 1 ou 2
+chiffres, produit ≤ 10 000 ; 055 et 056, écriture à virgule, centimes à 2 décimales, jusqu'à 3 termes, unités mêlées
+(43,45 € + 68 centimes ; 143 € + 3,67 € + 54 centimes) ; 054, simuler des achats avec pièces et billets fictifs ;
+080, rendre par ajouts (5 € pour 3,68 € : 32 c puis 1 €).
+
+| Fichier                           | Point | Catégorie · niveau               | Variations                                                                                                                                               |
+| --------------------------------- | ----- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `01-addition-posee`               | 016   | Addition · Calcul posé · 3       | 4 + 3 chiffres ; 4 + 4 chiffres (somme ≤ 10 000) ; 3 termes ; retenues en chaîne (999 + 1 001) ; `retenues: oui`                                         |
+| `02-soustraction-cassage`         | 090   | Soustraction · Calcul posé · 3   | 4 − 3 chiffres ; 4 − 4 chiffres ; zéros (5 002 − 1 847, 3 000 − 478) ; `méthode: cassage`                                                                |
+| `03-soustraction-compensation`    | 090   | Soustraction · Calcul posé · 4   | mêmes nombres, `méthode: compensation`                                                                                                                   |
+| `04-multiplication-un-chiffre`    | 019   | Multiplication · Calcul posé · 2 | 2 ou 3 chiffres × 1 chiffre (548 × 6) ; zéro au milieu (305 × 7) ; produit ≤ 10 000                                                                      |
+| `05-multiplication-deux-chiffres` | 019   | Multiplication · Calcul posé · 3 | 2 chiffres × 2 chiffres (37 × 48) ; 3 chiffres × 2 chiffres (16 × 548 = 8 768, le plus long en haut) ; × 10, × 20 (une seule ligne) ; produit ≤ 10 000   |
+| `06-addition-de-montants`         | 055   | Monnaie · Euros et centimes · 3  | 4,56 € + 15,30 € ; 3 termes ; unités mêlées (43,45 € + 68 centimes, 143 € + 3,67 € + 54 centimes) : texte, l'élève convertit puis pose                   |
+| `07-soustraction-de-montants`     | 056   | Monnaie · Euros et centimes · 4  | 74,56 € − 15,30 € ; 143,45 € − 68 € ; 74,36 € − 12,50 € ; retenue sur les centimes                                                                       |
+| `08-simule-tes-achats`            | 054   | Monnaie · Pièces et billets · 12 | `construire:` le total de 2 ou 3 articles (< 100 €, centimes) ; réserve limitée (pas de pièce de 1 €) ; « peut-il acheter ? » en case choix              |
+| `09-rends-la-monnaie-par-ajouts`  | 080   | Monnaie · Rendre la monnaie · 5  | 3,68 € payé 5 € : « 3,68 € + [_] c = 4 € puis 4 € + [_] € = 5 € » ; payé 10 €, 20 €, 50 € (billet), prix 1,05 à 48,90 € ; total rendu en euros à virgule |
+| `10-pose-la-monnaie-rendue`       | 080   | Monnaie · Rendre la monnaie · 6  | mêmes situations, l'élève pose le rendu (`construire:`, réserve 1, 2, 5, 10, 20 € et 10, 20, 50 c)                                                       |
+
+Erreurs typiques dans les `testSpecs` : retenue oubliée (4 758 + 3 645) ; plus petit chiffre ôté du plus grand
+(5 002 − 1 847) ; zéro mal échangé ; ligne de produit partiel mal décalée (37 × 48) ; virgule oubliée dans la somme de
+montants (4,56 + 15,30 = 1986) ; 43,45 + 68 lu 111,45 (68 centimes pris pour 68 €) ; rendu calculé sur 4 € au lieu de 5 €.
+
+Dépendances : la publication des niveaux CE2 de la monnaie vient **après** les brouillons CE1 du lot 8 (niveaux
+8-11 et 3-4), qui n'ont pas encore été publiés : relever les catégories **juste avant la publication**.
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud + tag
+ne change aucune règle.
+
+### Questions à David
+
+1. **Soustraction : deux modèles** (cassage, compensation), comme au CE1, le prof choisit la méthode de sa classe ?
+   Recommandation : oui (10 modèles au lot).
+2. **Multiplication : niveaux 2 et 3** sur le nœud, au-dessus du seul modèle CM1 (niveau 1, 876 × 208), sans toucher
+   au publié ? L'ordre de difficulté n'est alors pas parfait entre CE2 et CM1. Recommandation : oui, écart noté,
+   le publié ne bouge pas (décision 1 du § 4 bis).
+3. **Montants à unités mêlées** (055) : pas de bloc, l'élève convertit 68 centimes en 0,68 € puis pose ? Un bloc
+   `operation` montrerait déjà la conversion. Recommandation : texte seul, réponse en case ; l'opération posée,
+   résolue (`cases: aucune`), dans le corrigé.
+4. **Un seul lot de 10 modèles** (7 points) plutôt que deux (opérations 01-05, monnaie 06-10) ? Recommandation : un seul.
+5. **Rendre la monnaie par ajouts** : la case guide les deux ajouts (32 c puis 1 €), puis une variation demande
+   seulement le total rendu ? Recommandation : oui, les deux dans 09.
