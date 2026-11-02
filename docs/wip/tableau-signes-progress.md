@@ -59,3 +59,25 @@ entièrement par l'élève (nombre de colonnes) : hors chantier.
 
 **Ouverte** : Q6 — après l'outil, réécrire les modèles 2de faits en « cases sous le tableau » (268, 426, 330, 446,
 337, 449-451) ou les laisser et ne servir que les nouveaux modèles ?
+
+## Plan technique (pedagogy-expert, 2026-11-02)
+
+- **AST** : `SignValue` et `VariationMarker` inchangés (unions lues partout en `sign | marker`) ; ajouts
+  `DomainPoint.hidden`, `cases?: HiddenCell[]` (`{ index, row, key, kind: valeur|signe|marque, answer }`, ordre de
+  LECTURE — domaine, puis lignes `sign:` par colonne, pas l'ordre de la `Map`), `caseIndex` (ligne `case: N` posée par le
+  générateur), `source` brut. `values` garde la vraie valeur (corrigé, page à cocher).
+- **Indexation** : marquage calqué sur `markBuildBlocks` (plusieurs cases par bloc), blocs délimités par
+  `findVariationBlocks` ; `variationBlanks` ; valeur = case `math`, signe/marque = `text` + `InstanceBlank.cellule`.
+- **Jugement** : signe/marque en égalité exacte (comme `ranger`), avant `isChoiceBlank` ; « rien » = jeton `rien`
+  (une case vide est `empty`) ; `0` ramené à `z`. Valeur : juge ordinaire — vérifier `1,5` contre `\frac{3}{2}`.
+- **Évaluation notée (risque)** : l'énoncé envoyé contient les réponses, les CLÉS d'intervalles aussi
+  (`-inf,-3`) → masquage dans `masked-statement.ts` (`??n` pour une valeur, `?` seul pour signe/marque) +
+  `findUnmaskedAnswers` ; refusés dans un modèle.
+- **Corrigé** : nouvelle `ExpectedLine` `sign-table` (sinon une ligne `expected-only` par case) ; Typst
+  `hiddenCells: blank|filled` ; éditeur riche : importer depuis `node.source` (`convertVariationTable` perdrait les `?`).
+- **PR** : 1 ubumark (AST, parseur, éditeur, Typst) · 2 génération, jugement, masquage (revue Opus + `security-auditor`)
+  · 3 saisie (`VariationTable.svelte`, `FillBlanksInput.svelte`) · 4 corrigé, page à cocher, testSpecs. Docs :
+  `ubumark.md`, `questions.md`, `fiches-exercices.md`, `outils-manquants.md`.
+- **Pièges** : décimal `?1,5` coupé aux virgules du domaine (écrire une fraction) ; messages d'erreur du parseur en
+  anglais (« Unknown sign value ») → messages français situés.
+- **À trancher** : (a) marque « rien » cachée = `?rien` ; (b) `?|h|`, `?d`, signe caché sur un point → refusés.
