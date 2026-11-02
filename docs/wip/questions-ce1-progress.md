@@ -5,15 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2185._
+_Mis à jour le 2026-11-02, lots 8 et 9 publiés._
 
-- **État** : lots 0 à 7 publiés. Lot 8 (monnaie) : relu 6/6 OK, `publier-lot` simulé (6 passent) → **reste le
-  `--publier` de David**. Lot 9 : 9 brouillons rangés et tagués ; page à cocher publiée
-  (https://claude.ai/artifact/NhbzfC8htps4HvudmLaCEX), 0 verdict. #2185 : la page dessine `partage`, les centimes, le gras.
-- **Prochaine action** : après le `--publier` du lot 8, vérifier `published` au MCP. Lot 9 : compter les verdicts en base,
-  relever les catégories, `publier-lot` (simulation, puis David). Ensuite lot 10 (espace et mesure, § 12).
-- **En attente de David** : `! cd /Users/david/Coding/js/ubumaths && pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/ce1-8 --publier` ;
-  relecture du lot 9. Chantier `verrou-deploy` à ouvrir dans sa session (mémoire).
+- **État** : lots 0 à 9 publiés (8 et 9 le 2026-11-02, statuts relus en base).
+- **Prochaine action** : lot 10 (espace et mesure, § 17, validé) — écrire `lot-ce1-10.py` dans le worktree
+  `ubumaths-wt-questions-ce1`, branche `feat/questions-ce1-lot10`.
+- **En attente de David** : chantier `verrou-deploy` à ouvrir dans sa session (mémoire).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; **niveaux : relever la
@@ -761,3 +758,56 @@ Réponse de David (« je suis tes recos », 2026-11-01) : les six recommandation
 - 2026-11-02 : #2185 mergée (CI verte) : la page à cocher dessine ` ```partage ` (figure à colorier : vide, puis un
   coloriage juste), les pièces de centimes, et le gras qui enjambe une formule. Page du lot 9 publiée
   (https://claude.ai/artifact/NhbzfC8htps4HvudmLaCEX), aucune alerte, rendu vérifié.
+- 2026-11-02 : lot 8 publié par David (`publier-lot --publier`, 6/6) ; lot 9 relu 9/9 OK (verdicts comptés en base), simulé, publié par David (9/9) ; statuts relus par simulation de `publier-lot` (« déjà publié »).
+
+## 17. Lot 10 : espace et mesure — phase 0 (2026-11-02)
+
+Points : 044 ; 064, 065 ; 079 ; 076, 077 ; 080 (§ 12). Outils relevés le 2026-11-02 : ` ```solide ` (cube, pavé,
+pyramide carrée / triangle, cylindre, cône, boule ; nom accessible sans le nom du solide ; `--espace-taille` dans un
+choix), ` ```cubes ` (perspective ; gestes `dessiner:` / `retrouver:`, niveau 6e), ` ```figure ` (`grille:`,
+polygones, `texte`) ; case « choix ».
+
+Existant voisin (prod) : « Grandeurs · Longueurs · Comparaison et mesure » 1 à 4 (2 = CP `d50c6e21` « Mesure avec la
+règle » : segment de 2 à 12 cm, **0 au début**, règle dessinée en ` ```figure `) ; « Géométrie · Solides · Reconnaître
+et décrire » 1 à 6 (CP, solides dessinés en ` ```figure `, sans pyramide) ; « Géométrie · Solides · Assemblages de
+cubes » 1 à 3 (6e : compter, dessiner une vue, retrouver) ; « Géométrie · Repérage et déplacements · Positions et
+plans » 1, 2 (CP `d5a36be9` « Où est-il ? » : gauche / droite, dessus / dessous, sur / sous / à côté, devant /
+derrière ; `2fc01600` « Qui est assis à côté ? » : plan de la classe) ; « … · Coder un déplacement » 1 (CP `f7167af7`,
+flèches absolues, « où arrive le robot ? » et « quel code ? »).
+
+| Fichier                      | Point   | Catégorie · niveau                                              | Variations                                                                                                                                                                                                                                          |
+| ---------------------------- | ------- | --------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `01-mesure-a-la-regle`       | CE1-044 | Grandeurs · Longueurs · Comparaison et mesure · 5               | règle de 0 à 15 cm ; segment de 3 à 12 cm entiers **qui ne part pas du 0** (départ 1 à 4) → [_] cm ; bout entre deux graduations (départ au 0) → « entre [_] et [_] cm »                                                                            |
+| `02-ou-est-le-solide`        | CE1-064 | Géométrie · Solides · Reconnaître et décrire · 7                | « Où est le cylindre ? » (le pavé, la pyramide…) : 4 solides dessinés en ` ```solide `, choix de dessins ; pyramide carrée ou à base triangle ; pavé couché ou debout ; cube et pavé presque cube ensemble                                          |
+| `03-nomme-le-solide`         | CE1-065 | Géométrie · Solides · Reconnaître et décrire · 8                | un solide dessiné (cube, pavé, boule, cône, pyramide), tailles et proportions tirées → choix parmi cube, pavé, boule, cône, pyramide                                                                                                                |
+| `04-combien-de-cubes`        | CE1-079 | Géométrie · Solides · Assemblages de cubes · 4                  | assemblage de 3 à 10 cubes en perspective, **aucun cube caché** (une rangée, ou celle du fond plus haute) → [_]                                                                                                                                     |
+| `05-le-meme-assemblage`      | CE1-079 | Géométrie · Solides · Assemblages de cubes · 5                  | un modèle ; « Quel assemblage est le même ? » : 3 dessins, deux à un cube près (ajouté, retiré, déplacé)                                                                                                                                            |
+| `06-entre-pres-loin`         | CE1-076 | Géométrie · Repérage et déplacements · Positions et plans · 3   | objets rangés sur une étagère à deux planches : entre, à gauche / à droite de, sur / sous, au-dessus / en dessous ; « le plus près / le plus loin de » ; phrase vraie (choix)                                                                       |
+| `07-sur-le-plan-du-quartier` | CE1-077 | Géométrie · Repérage et déplacements · Positions et plans · 4   | plan vu du dessus (rues, école, boulangerie, parc, mairie, poste, piscine, étiquetés) : « Qu'y a-t-il entre … et … ? », « en face de … », « le plus près de … » (choix)                                                                             |
+| `08-le-robot-pivote`         | CE1-080 | Géométrie · Repérage et déplacements · Coder un déplacement · 2 | robot sur quadrillage, **orienté** (triangle) ; code « avance de n », « pivote d'un quart de tour à gauche / à droite » : 3 à 7 instructions, 1 à 3 virages ; « où arrive-t-il ? » (points 1, 2, 3) et « quel code mène au carré vert ? » (3 codes) |
+| `09-le-long-code`            | CE1-080 | Géométrie · Repérage et déplacements · Coder un déplacement · 3 | flèches comme au CP mais plus longues : 8 à 15 flèches, jusqu'à 4 changements de direction ; mêmes deux questions                                                                                                                                   |
+
+Erreurs typiques dans les `testSpecs` : lire le nombre en face du bout droit sans retirer le départ ; compter les
+graduations au lieu des intervalles (+ 1) ; encadrement renversé ou à 2 cm près ; cylindre / cône, pyramide / cône,
+cube / pavé presque cube ; cubes comptés en faces vues ; gauche / droite inversées ; « entre » pris pour « à côté » ;
+quart de tour pris pour un demi-tour, pivot compté comme un pas, pivot à gauche / à droite inversé.
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la migration nœud +
+tag ne change aucune règle.
+
+### Questions à David
+
+1. **Cylindre au 065** : le BO ne le met pas dans la liste à nommer au CE1 (il l'est au 064, à reconnaître).
+   Recommandation : au 065, ni dessiné ni proposé ; au 064, il est l'un des solides à trouver.
+2. **079 « construire des assemblages »** : aucun geste d'empilement à l'écran (`retrouver:` cache la perspective,
+   niveau 6e). Recommandation : compter (sans cube caché) et « le même assemblage » (choix de dessins) ; un geste
+   « empiler d'après un modèle » noté comme outil futur (C), pas dans ce lot.
+3. **Gauche / droite (076, 077)** : toujours du point de vue de l'élève qui regarde le dessin, jamais d'un personnage
+   vu de face. Recommandation : oui (pas de piège de latéralisation dans une question à l'écran).
+4. **080 « produire »** : choisir le bon code parmi trois, en attendant le geste « suite d'instructions à produire »
+   (outil futur, § 3 C 4). Recommandation : oui, et deux modèles (codage relatif « avance / pivote », niveau 2 ; flèches
+   longues, niveau 3).
+5. **Niveaux** : premiers libres de chaque catégorie, aucun publié renuméroté (5 ; 7, 8 ; 4, 5 ; 3, 4 ; 2, 3).
+   Recommandation : oui. Les catégories seront relevées de nouveau juste avant la publication.
+
+Réponse de David (« tes recos ? » puis « go », 2026-11-02) : les cinq recommandations.

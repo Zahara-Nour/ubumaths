@@ -577,6 +577,187 @@
 		font-size: 0.85rem;
 	}
 
+	/* Blocs statistiques : styles de StatChart.svelte et BoxPlotChart.svelte (jetons --color-* de la page) */
+	.stat {
+		margin: 0.5rem 0;
+		overflow-x: auto;
+	}
+	.stat .stat-titre {
+		text-align: center;
+		font-weight: 600;
+		margin-bottom: 0.25rem;
+	}
+	.stat .stat-serie {
+		margin-bottom: 0.5rem;
+		overflow-wrap: anywhere;
+	}
+	.stat-svg {
+		display: block;
+		width: 100%;
+		min-width: 300px;
+		height: auto;
+		margin: 0 auto;
+		font-family: inherit;
+	}
+	.stat-svg text {
+		fill: var(--color-foreground);
+		stroke: none;
+		font-size: 11px;
+	}
+	.stat-graduations line,
+	.stat-axes line {
+		stroke: var(--color-foreground);
+		stroke-width: 1;
+	}
+	.stat-svg .stat-grille {
+		stroke: color-mix(in oklab, var(--color-foreground) 30%, transparent);
+		stroke-width: 0.75;
+	}
+	.stat-graduations text {
+		font-size: 10px;
+	}
+	.stat-axes polygon {
+		fill: var(--color-foreground);
+	}
+	.stat-svg .stat-titre-axe,
+	.stat-svg .stat-nom-boite {
+		font-weight: 600;
+	}
+	.stat-svg .stat-valeur {
+		font-size: 10px;
+		font-variant-numeric: tabular-nums;
+	}
+	.stat-svg .stat-valeur-serree {
+		font-size: 8px;
+	}
+	.stat-rectangle {
+		stroke: var(--color-background);
+		stroke-width: 1.5;
+	}
+	.stat-rectangle-sous-courbe {
+		fill-opacity: 0.4;
+	}
+	.stat-quadrillage line {
+		stroke: color-mix(in oklab, var(--color-foreground) 50%, transparent);
+		stroke-width: 0.75;
+	}
+	.stat-polygone {
+		fill: none;
+		stroke-width: 2;
+		stroke-linejoin: round;
+	}
+	.stat-polygone-second {
+		stroke-dasharray: 6 4;
+	}
+	.stat-lecture polyline {
+		fill: none;
+		stroke: var(--color-foreground);
+		stroke-width: 1.5;
+		stroke-dasharray: 4 3;
+	}
+	.stat-svg .stat-lecture text {
+		paint-order: stroke;
+		stroke: var(--color-background);
+		stroke-width: 3px;
+	}
+	.stat-moustache,
+	.stat-moustache-bout,
+	.stat-boite {
+		stroke-width: 1.5;
+	}
+	.stat-mediane {
+		stroke-width: 3;
+	}
+	.stat-nom-serie {
+		text-align: center;
+		font-weight: 600;
+		font-size: 0.875rem;
+		margin-top: 0.5rem;
+	}
+	.stat-legende-series,
+	.stat-indicateurs,
+	.stat-legende-aire {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		align-items: center;
+		gap: 0.4rem 1rem;
+		margin: 0.25rem 0 0;
+		padding: 0;
+		list-style: none;
+		font-size: 0.875rem;
+	}
+	.stat-legende-series li {
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
+	}
+	.stat-carreau {
+		display: inline-block;
+		width: 0.75rem;
+		height: 0.75rem;
+		border: 1px solid var(--color-foreground);
+	}
+	.stat-tableau-defilement {
+		overflow-x: auto;
+	}
+	.stat-tableau {
+		margin: 0.25rem auto;
+		border-collapse: collapse;
+		font-size: 0.875rem;
+	}
+	.stat-tableau caption {
+		margin-bottom: 0.25rem;
+	}
+	.stat-tableau caption .stat-titre {
+		display: block;
+	}
+	.stat-tableau th,
+	.stat-tableau td {
+		border: 1px solid var(--color-foreground);
+		padding: 0.3rem 0.6rem;
+		text-align: center;
+		font-variant-numeric: tabular-nums;
+	}
+	.stat-tableau .stat-coin {
+		font-style: italic;
+	}
+	/* Case à remplir : assez large pour y écrire, repérable sans bordure */
+	.stat-tableau .stat-case-vide {
+		width: 3.5rem;
+		background: color-mix(in srgb, var(--line) 60%, transparent);
+	}
+	.stat-tableau .stat-groupe th,
+	.stat-tableau .stat-groupe td {
+		border-top-width: 3px;
+	}
+	.choix li .stat-svg {
+		min-width: 0;
+	}
+
+	/* Arbre de probabilités : ProbabilityTree.svelte (formules KaTeX dans des cadres HTML du SVG) */
+	.pt-svg {
+		display: block;
+		margin: 0.5rem auto;
+		overflow: visible;
+	}
+	.pt-branche {
+		stroke: var(--color-foreground);
+		stroke-width: 1.5;
+	}
+	.pt-label {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100%;
+		font-size: 0.9rem;
+		white-space: nowrap;
+	}
+	.pt-label.pt-inter,
+	.pt-label.pt-issue {
+		justify-content: flex-start;
+	}
+
 	/* Bloc monnaie : balisage et couleurs de Monnaie.svelte (--color-primary de app.css) */
 	:root {
 		--m-primaire: light-dark(#fc8f1b, #ffc400);

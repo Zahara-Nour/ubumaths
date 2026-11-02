@@ -1,0 +1,499 @@
+{
+	"title": "Longueurs : écritures décimales et fractions",
+	"description": "215 cm = 2,15 m ; 2,15 m = 215 cm ; 3,75 km = 3 750 m ; 7 cm = 0,7 dm ; 1/2 km = 500 m ; 3/4 m = 75 cm",
+	"grades": ["CM1"],
+	"theme": "Grandeurs",
+	"domain": "Longueurs",
+	"subdomain": "Unités",
+	"level": 15,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète.\n\n${{n}}~\\unit{cm} = ?~\\text{m}$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "101..999"
+				},
+				{
+					"name": "m",
+					"expression": "eval:floor(n/100)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:mod(n,100)"
+				}
+			],
+			"conditions": ["mod(n,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/100;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"$100~\\unit{cm} = 1~\\unit{m}$, donc $1~\\unit{cm} = \\dfrac{1}{100}~\\unit{m}$ : un centimètre est un centième de mètre.",
+					"${{n}}~\\unit{cm} = {{m}}~\\unit{m}~{{c}}~\\unit{cm}$, c'est {{m}} {{if:m==1|mètre|mètres}} et {{c}} {{if:c==1|centième|centièmes}} de mètre.",
+					"$${{n}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{eval:n/100;d}}}~\\unit{m}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:a+D/100;d}}~\\unit{m} = ?~\\text{cm}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "D",
+					"expression": "1..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*a+D}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{m} = 100~\\unit{cm}$ ; le chiffre des dixièmes compte des dizaines de centimètres ($0{,}1~\\unit{m} = 10~\\unit{cm}$), celui des centièmes des centimètres ($0{,}01~\\unit{m} = 1~\\unit{cm}$).",
+					"${{eval:a+D/100;d}}~\\unit{m} = {{a}}~\\unit{m} + {{eval:D/100;d}}~\\unit{m} = {{eval:100*a}}~\\unit{cm} + {{D}}~\\unit{cm}$",
+					"$${{eval:a+D/100;d}}~\\unit{m} = \\textcolor{{{color:primary.0}}}{{{eval:100*a+D}}}~\\unit{cm}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:a+D/100;d}}~\\unit{km} = ?~\\text{m}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..20"
+				},
+				{
+					"name": "D",
+					"expression": "1..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1000*a+10*D}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{km} = 1\\,000~\\unit{m}$, donc $0{,}1~\\unit{km} = 100~\\unit{m}$ et $0{,}01~\\unit{km} = 10~\\unit{m}$.",
+					"${{eval:a+D/100;d}}~\\unit{km} = {{a}}~\\unit{km} + {{eval:D/100;d}}~\\unit{km} = {{eval:1000*a}}~\\unit{m} + {{eval:10*D}}~\\unit{m}$",
+					"$${{eval:a+D/100;d}}~\\unit{km} = \\textcolor{{{color:primary.0}}}{{{eval:1000*a+10*D}}}~\\unit{m}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{n}}~\\unit{{{if:y==1|km|{{if:y==2|hm|{{if:y==3|dam|{{if:y==4|m|{{if:y==5|dm|{{if:y==6|cm|mm}}}}}}}}}}}}} = ?~\\text{{{if:x==1|km|{{if:x==2|hm|{{if:x==3|dam|{{if:x==4|m|{{if:x==5|dm|{{if:x==6|cm|mm}}}}}}}}}}}}}$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "1..6"
+				},
+				{
+					"name": "y",
+					"expression": "eval:x+1"
+				},
+				{
+					"name": "n",
+					"expression": "1..99"
+				}
+			],
+			"conditions": ["mod(n,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/10;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"$10~\\unit{{{if:y==1|km|{{if:y==2|hm|{{if:y==3|dam|{{if:y==4|m|{{if:y==5|dm|{{if:y==6|cm|mm}}}}}}}}}}}}} = 1~\\unit{{{if:x==1|km|{{if:x==2|hm|{{if:x==3|dam|{{if:x==4|m|{{if:x==5|dm|{{if:x==6|cm|mm}}}}}}}}}}}}}$, donc $1~\\unit{{{if:y==1|km|{{if:y==2|hm|{{if:y==3|dam|{{if:y==4|m|{{if:y==5|dm|{{if:y==6|cm|mm}}}}}}}}}}}}} = \\dfrac{1}{10}~\\unit{{{if:x==1|km|{{if:x==2|hm|{{if:x==3|dam|{{if:x==4|m|{{if:x==5|dm|{{if:x==6|cm|mm}}}}}}}}}}}}} = 0{,}1~\\unit{{{if:x==1|km|{{if:x==2|hm|{{if:x==3|dam|{{if:x==4|m|{{if:x==5|dm|{{if:x==6|cm|mm}}}}}}}}}}}}}$.",
+					"${{n}}~\\unit{{{if:y==1|km|{{if:y==2|hm|{{if:y==3|dam|{{if:y==4|m|{{if:y==5|dm|{{if:y==6|cm|mm}}}}}}}}}}}}}$, c'est ${{n}}$ {{if:n==1|dixième|dixièmes}} de {{if:x==1|kilomètre|{{if:x==2|hectomètre|{{if:x==3|décamètre|{{if:x==4|mètre|{{if:x==5|décimètre|{{if:x==6|centimètre|millimètre}}}}}}}}}}}}.",
+					"$${{n}}~\\unit{{{if:y==1|km|{{if:y==2|hm|{{if:y==3|dam|{{if:y==4|m|{{if:y==5|dm|{{if:y==6|cm|mm}}}}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{eval:n/10;d}}}~\\unit{{{if:x==1|km|{{if:x==2|hm|{{if:x==3|dam|{{if:x==4|m|{{if:x==5|dm|{{if:x==6|cm|mm}}}}}}}}}}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$\\dfrac{{{n}}}{{{d}}}~\\unit{km} = ?~\\text{m}$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1|3"
+				},
+				{
+					"name": "d",
+					"expression": "2|4|10"
+				}
+			],
+			"conditions": ["(n-1)*(d-4) == 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*1000/d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{km} = 1\\,000~\\unit{m}$.",
+					"$\\dfrac{1}{{{d}}}~\\unit{km}$, c'est $1\\,000~\\unit{m}$ partagés en {{d}} parts égales : ${{eval:1000/d}}~\\unit{m}${{if:n==3|, et on en prend 3|}}.",
+					"$$\\dfrac{{{n}}}{{{d}}}~\\unit{km} = \\textcolor{{{color:primary.0}}}{{{eval:n*1000/d}}}~\\unit{m}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$\\dfrac{{{n}}}{{{d}}}~\\unit{m} = ?~\\text{cm}$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1|3"
+				},
+				{
+					"name": "d",
+					"expression": "2|4|10"
+				}
+			],
+			"conditions": ["(n-1)*(d-4) == 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*100/d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{m} = 100~\\unit{cm}$.",
+					"$\\dfrac{1}{{{d}}}~\\unit{m}$, c'est $100~\\unit{cm}$ partagés en {{d}} parts égales : ${{eval:100/d}}~\\unit{cm}${{if:n==3|, et on en prend 3|}}.",
+					"$$\\dfrac{{{n}}}{{{d}}}~\\unit{m} = \\textcolor{{{color:primary.0}}}{{{eval:n*100/d}}}~\\unit{cm}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 215 cm = 2,15 m",
+			"variationIndex": 0,
+			"variables": {
+				"n": "215",
+				"m": "2",
+				"c": "15"
+			},
+			"answers": ["2,15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 215 cm = 21,5 m (÷ 10)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "215",
+				"m": "2",
+				"c": "15"
+			},
+			"answers": ["21,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 215 cm = 21 500 m (× 100)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "215",
+				"m": "2",
+				"c": "15"
+			},
+			"answers": ["21 500"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : 215/100",
+			"variationIndex": 0,
+			"variables": {
+				"n": "215",
+				"m": "2",
+				"c": "15"
+			},
+			"answers": ["\\frac{215}{100}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "305 cm = 3,05 m",
+			"variationIndex": 0,
+			"variables": {
+				"n": "305",
+				"m": "3",
+				"c": "5"
+			},
+			"answers": ["3,05"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 305 cm = 3,5 m",
+			"variationIndex": 0,
+			"variables": {
+				"n": "305",
+				"m": "3",
+				"c": "5"
+			},
+			"answers": ["3,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2,15 m = 215 cm",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"D": "15"
+			},
+			"answers": ["215"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2,15 m = 0,0215 cm (sens inversé)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"D": "15"
+			},
+			"answers": ["0,0215"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2,5 m = 250 cm",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"D": "50"
+			},
+			"answers": ["250"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2,5 m = 205 cm",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"D": "50"
+			},
+			"answers": ["205"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3,75 km = 3 750 m",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"D": "75"
+			},
+			"answers": ["3 750"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3,7 km = 3 700 m",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"D": "70"
+			},
+			"answers": ["3 700"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3,7 km = 3 007 m",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"D": "70"
+			},
+			"answers": ["3 007"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3,7 km = 370 m",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"D": "70"
+			},
+			"answers": ["370"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 cm = 0,7 dm",
+			"variationIndex": 3,
+			"variables": {
+				"x": "5",
+				"y": "6",
+				"n": "7"
+			},
+			"answers": ["0,7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 cm = 70 dm",
+			"variationIndex": 3,
+			"variables": {
+				"x": "5",
+				"y": "6",
+				"n": "7"
+			},
+			"answers": ["70"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "25 mm = 2,5 cm",
+			"variationIndex": 3,
+			"variables": {
+				"x": "6",
+				"y": "7",
+				"n": "25"
+			},
+			"answers": ["2,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 25 mm = 0,25 cm",
+			"variationIndex": 3,
+			"variables": {
+				"x": "6",
+				"y": "7",
+				"n": "25"
+			},
+			"answers": ["0,25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 1/2 km = 500 m",
+			"variationIndex": 4,
+			"variables": {
+				"n": "1",
+				"d": "2"
+			},
+			"answers": ["500"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/2 km = 0,5 m",
+			"variationIndex": 4,
+			"variables": {
+				"n": "1",
+				"d": "2"
+			},
+			"answers": ["0,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3/4 km = 750 m",
+			"variationIndex": 4,
+			"variables": {
+				"n": "3",
+				"d": "4"
+			},
+			"answers": ["750"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BO : 3/4 m = 75 cm",
+			"variationIndex": 5,
+			"variables": {
+				"n": "3",
+				"d": "4"
+			},
+			"answers": ["75"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/4 m = 34 cm",
+			"variationIndex": 5,
+			"variables": {
+				"n": "3",
+				"d": "4"
+			},
+			"answers": ["34"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3/4 m = 25 cm (un quart seulement)",
+			"variationIndex": 5,
+			"variables": {
+				"n": "3",
+				"d": "4"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/10 m = 10 cm",
+			"variationIndex": 5,
+			"variables": {
+				"n": "1",
+				"d": "10"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

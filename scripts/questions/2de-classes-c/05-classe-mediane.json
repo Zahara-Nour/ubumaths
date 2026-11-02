@@ -1,0 +1,105 @@
+{
+	"title": "Classe médiane d'une série regroupée en classes",
+	"description": "Effectifs de cinq classes : classe médiane par les effectifs cumulés (effectif total impair)",
+	"grades": ["2"],
+	"theme": "Statistiques",
+	"domain": "Indicateurs",
+	"subdomain": "Médiane",
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Voici la répartition des masses (en grammes) des pommes d'une cagette.\n\n| Masse (g) | $\\left[{{eval:(x0)+0*(h)}}\\,;{{eval:(x0)+1*(h)}}\\right[$ | $\\left[{{eval:(x0)+1*(h)}}\\,;{{eval:(x0)+2*(h)}}\\right[$ | $\\left[{{eval:(x0)+2*(h)}}\\,;{{eval:(x0)+3*(h)}}\\right[$ | $\\left[{{eval:(x0)+3*(h)}}\\,;{{eval:(x0)+4*(h)}}\\right[$ | $\\left[{{eval:(x0)+4*(h)}}\\,;{{eval:(x0)+5*(h)}}\\right[$ |\n|---|---|---|---|---|---|\n| Effectif | ${{n1}}$ | ${{n2}}$ | ${{n3}}$ | ${{n4}}$ | ${{n5}}$ |\n\nQuelle est la classe médiane ?\n\n```choix\nmelanger: non\n- $\\left[{{eval:(x0)+0*(h)}}\\,;{{eval:(x0)+1*(h)}}\\right[$\n- $\\left[{{eval:(x0)+1*(h)}}\\,;{{eval:(x0)+2*(h)}}\\right[$\n- $\\left[{{eval:(x0)+2*(h)}}\\,;{{eval:(x0)+3*(h)}}\\right[$\n- $\\left[{{eval:(x0)+3*(h)}}\\,;{{eval:(x0)+4*(h)}}\\right[$\n- $\\left[{{eval:(x0)+4*(h)}}\\,;{{eval:(x0)+5*(h)}}\\right[$\n```",
+			"variables": [
+				{
+					"name": "x0",
+					"expression": "100|120|150"
+				},
+				{
+					"name": "h",
+					"expression": "10|20"
+				},
+				{
+					"name": "n1",
+					"expression": "1..12"
+				},
+				{
+					"name": "n2",
+					"expression": "1..12"
+				},
+				{
+					"name": "n3",
+					"expression": "1..12"
+				},
+				{
+					"name": "n4",
+					"expression": "1..12"
+				},
+				{
+					"name": "n5",
+					"expression": "1..12"
+				},
+				{
+					"name": "m",
+					"expression": "eval:min(1,max(0,((n1)+(n2)+(n3)+(n4)+(n5)+1)/2-((n1))))+min(1,max(0,((n1)+(n2)+(n3)+(n4)+(n5)+1)/2-((n1)+(n2))))+min(1,max(0,((n1)+(n2)+(n3)+(n4)+(n5)+1)/2-((n1)+(n2)+(n3))))+min(1,max(0,((n1)+(n2)+(n3)+(n4)+(n5)+1)/2-((n1)+(n2)+(n3)+(n4))))"
+				}
+			],
+			"conditions": ["mod((n1)+(n2)+(n3)+(n4)+(n5),2) == 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Effectif total : ${{eval:(n1)+(n2)+(n3)+(n4)+(n5)}}$, impair : la médiane est la valeur de rang $\\dfrac{ {{eval:(n1)+(n2)+(n3)+(n4)+(n5)}}+1}{2}={{eval:((n1)+(n2)+(n3)+(n4)+(n5)+1)/2}}$.",
+					"Effectifs cumulés : ${{eval:(n1)}}$, ${{eval:(n1)+(n2)}}$, ${{eval:(n1)+(n2)+(n3)}}$, ${{eval:(n1)+(n2)+(n3)+(n4)}}$, ${{eval:(n1)+(n2)+(n3)+(n4)+(n5)}}$. La classe médiane est la première dont l'effectif cumulé atteint ${{eval:((n1)+(n2)+(n3)+(n4)+(n5)+1)/2}}$ : \\textcolor{{{color:primary.0}}}{\\left[{{eval:(x0)+(m)*(h)}}\\,;{{eval:(x0)+((m)+1)*(h)}}\\right[}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "N = 21, rang 11 : cumulés 3, 8, 12 → [140 ; 160[",
+			"variationIndex": 0,
+			"variables": {
+				"x0": "100",
+				"h": "20",
+				"n1": "3",
+				"n2": "5",
+				"n3": "4",
+				"n4": "6",
+				"n5": "3",
+				"m": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : classe modale [160 ; 180[",
+			"variationIndex": 0,
+			"variables": {
+				"x0": "100",
+				"h": "20",
+				"n1": "3",
+				"n2": "5",
+				"n3": "4",
+				"n4": "6",
+				"n5": "3",
+				"m": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

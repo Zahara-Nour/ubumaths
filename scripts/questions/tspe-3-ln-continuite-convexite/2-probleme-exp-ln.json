@@ -1,0 +1,243 @@
+{
+	"title": "Problème : demi-vie, doublement (exp et ln)",
+	"description": "Décroissance radioactive (demi-vie, constante λ) et croissance exponentielle (temps pour multiplier par k) : valeur exacte par ln (pièges : arrondi, ln(1/2) = ln 2, λ/ln 2)",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions",
+	"domain": "Logarithmes",
+	"subdomain": "Équations et inéquations",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "La masse, en grammes, d'un isotope radioactif au bout de $t$ années est $m(t)={{m0}}\\,e^{-{{eval:1/duree;d}}t}$.\n\nLa **demi-vie** est la durée $T$ au bout de laquelle la masse a été divisée par $2$ : $m(T)=\\dfrac{ {{m0}} }{2}$.\n\nDonne la valeur exacte de $T$.\n\n$T=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{duree}}\\ln 2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$m(T)=\\dfrac{ {{m0}} }{2}\\iff e^{-{{eval:1/duree;d}}T}=\\dfrac{1}{2}$ (on divise par ${{m0}}$).",
+					"On applique $\\ln$ : $-{{eval:1/duree;d}}T=\\ln\\dfrac{1}{2}=-\\ln 2$.",
+					"$T=\\dfrac{\\ln 2}{{{eval:1/duree;d}}}=\\textcolor{{{color:primary.0}}}{{{duree}}\\ln 2}$ années (environ {{eval:round(duree*6.931)/10;d}})."
+				]
+			},
+			"variables": [
+				{
+					"name": "duree",
+					"expression": "10|20|25|50"
+				},
+				{
+					"name": "m0",
+					"expression": "100|200|500"
+				}
+			]
+		},
+		{
+			"statement": "La masse d'un isotope radioactif au bout de $t$ années est $m(t)=m_0\\,e^{-\\lambda t}$, où $m_0$ est la masse de départ et $\\lambda$ un réel strictement positif.\n\nSa **demi-vie** est de ${{duree}}$ années : $m({{duree}})=\\dfrac{m_0}{2}$.\n\nDonne la valeur exacte de $\\lambda$.\n\n$\\lambda=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{\\ln 2}{ {{duree}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$m({{duree}})=\\dfrac{m_0}{2}\\iff e^{-{{duree}}\\lambda}=\\dfrac{1}{2}$ (on divise par $m_0>0$).",
+					"On applique $\\ln$ : $-{{duree}}\\lambda=\\ln\\dfrac{1}{2}=-\\ln 2$.",
+					"$\\lambda=\\textcolor{{{color:primary.0}}}{\\dfrac{\\ln 2}{ {{duree}} }}$."
+				]
+			},
+			"variables": [
+				{
+					"name": "duree",
+					"expression": "5|8|12|30"
+				}
+			]
+		},
+		{
+			"statement": "Le nombre de bactéries d'une culture au bout de $t$ heures est $N(t)={{n0}}\\,e^{{{eval:1/duree;d}}t}$.\n\nAu bout de combien d'heures le nombre de bactéries aura-t-il été multiplié par ${{fois}}$ ? Donne la valeur exacte.\n\n$t=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{duree}}\\ln {{fois}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$N(t)={{fois}}\\times{{n0}}\\iff e^{{{eval:1/duree;d}}t}={{fois}}$ (on divise par ${{n0}}$).",
+					"On applique $\\ln$ : ${{eval:1/duree;d}}t=\\ln {{fois}}$.",
+					"$t=\\dfrac{\\ln {{fois}}}{{{eval:1/duree;d}}}=\\textcolor{{{color:primary.0}}}{{{duree}}\\ln {{fois}}}$ heures."
+				]
+			},
+			"variables": [
+				{
+					"name": "duree",
+					"expression": "10|20|25|50"
+				},
+				{
+					"name": "n0",
+					"expression": "1000|2000|5000"
+				},
+				{
+					"name": "fois",
+					"expression": "2|3|5|10"
+				}
+			]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 25 ln 2",
+			"variationIndex": 0,
+			"variables": {
+				"duree": "25",
+				"m0": "200"
+			},
+			"answers": ["25\\ln 2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : ln 2 / 0,04 non simplifié",
+			"variationIndex": 0,
+			"variables": {
+				"duree": "25",
+				"m0": "200"
+			},
+			"answers": ["\\dfrac{\\ln 2}{0,04}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "v0 : arrondi",
+			"variationIndex": 0,
+			"variables": {
+				"duree": "25",
+				"m0": "200"
+			},
+			"answers": ["17,3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 0,04 / ln 2",
+			"variationIndex": 0,
+			"variables": {
+				"duree": "25",
+				"m0": "200"
+			},
+			"answers": ["\\dfrac{0,04}{\\ln 2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : −25 ln 2",
+			"variationIndex": 0,
+			"variables": {
+				"duree": "25",
+				"m0": "200"
+			},
+			"answers": ["-25\\ln 2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : ln 2 / 8",
+			"variationIndex": 1,
+			"variables": {
+				"duree": "8"
+			},
+			"answers": ["\\dfrac{\\ln 2}{8}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 8 ln 2",
+			"variationIndex": 1,
+			"variables": {
+				"duree": "8"
+			},
+			"answers": ["8\\ln 2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 8 / ln 2",
+			"variationIndex": 1,
+			"variables": {
+				"duree": "8"
+			},
+			"answers": ["\\dfrac{8}{\\ln 2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 20 ln 3",
+			"variationIndex": 2,
+			"variables": {
+				"duree": "20",
+				"n0": "1000",
+				"fois": "3"
+			},
+			"answers": ["20\\ln 3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : ln 3 / 0,05 non simplifié",
+			"variationIndex": 2,
+			"variables": {
+				"duree": "20",
+				"n0": "1000",
+				"fois": "3"
+			},
+			"answers": ["\\dfrac{\\ln 3}{0,05}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "v2 : 60 (3 × 20)",
+			"variationIndex": 2,
+			"variables": {
+				"duree": "20",
+				"n0": "1000",
+				"fois": "3"
+			},
+			"answers": ["60"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : arrondi",
+			"variationIndex": 2,
+			"variables": {
+				"duree": "20",
+				"n0": "1000",
+				"fois": "3"
+			},
+			"answers": ["22"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

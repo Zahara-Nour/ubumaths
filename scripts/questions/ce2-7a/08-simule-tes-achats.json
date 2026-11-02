@@ -1,0 +1,289 @@
+{
+	"title": "Simule tes achats avec des pièces et des billets",
+	"description": "Payer un article, trois articles, sans pièce de 1 € ; dire si l'argent montré suffit",
+	"grades": ["CE2"],
+	"theme": "Grandeurs",
+	"domain": "Monnaie",
+	"subdomain": "Pièces et billets",
+	"level": 12,
+	"delay": 120,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"zeros": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Tu achètes {{if:o==1|un livre|{{if:o==2|un ballon|un jeu}}}} à ${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$. Paie-le avec des pièces et des billets.\n\n```monnaie\nconstruire: {{p}}c\nréserve: 50 20 10 5 2 1 50c 20c 10c 5c 2c 1c\n```",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..3"
+				},
+				{
+					"name": "k",
+					"expression": "201..4999"
+				},
+				{
+					"name": "p",
+					"expression": "eval:5*k"
+				}
+			],
+			"conditions": ["mod(p,100) != 0"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On pose exactement le prix : ${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$, c'est ${{eval:floor(p/100)}}~\\unit{€}$ et ${{eval:mod(p,100)}}$ centimes.",
+					"Il y a d'autres façons justes : ce qui compte, c'est la somme posée."
+				]
+			}
+		},
+		{
+			"statement": "Tu achètes {{if:o==1|un cahier|{{if:o==2|un stylo|une règle}}}} à ${{eval:floor((a)/100)}}.{{eval:floor(mod(a,100)/10)}}{{eval:mod(a,10)}}~\\unit{€}$, un classeur à ${{eval:floor((b)/100)}}.{{eval:floor(mod(b,100)/10)}}{{eval:mod(b,10)}}~\\unit{€}$ et une trousse à ${{eval:floor((c)/100)}}.{{eval:floor(mod(c,100)/10)}}{{eval:mod(c,10)}}~\\unit{€}$. Paie tes achats.\n\n```monnaie\nconstruire: {{s}}c\nréserve: 50 20 10 5 2 1 50c 20c 10c 5c 2c 1c\n```",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..3"
+				},
+				{
+					"name": "x",
+					"expression": "40..400"
+				},
+				{
+					"name": "y",
+					"expression": "100..800"
+				},
+				{
+					"name": "z",
+					"expression": "200..900"
+				},
+				{
+					"name": "a",
+					"expression": "eval:5*x"
+				},
+				{
+					"name": "b",
+					"expression": "eval:5*y"
+				},
+				{
+					"name": "c",
+					"expression": "eval:5*z"
+				},
+				{
+					"name": "s",
+					"expression": "eval:a+b+c"
+				}
+			],
+			"conditions": ["mod(a,100) != 0", "mod(b,100) != 0", "mod(c,100) != 0", "s < 10000"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On additionne les trois prix : les euros ensemble, les centimes ensemble.",
+					"${{eval:floor((a)/100)}}.{{eval:floor(mod(a,100)/10)}}{{eval:mod(a,10)}}~\\unit{€} + {{eval:floor((b)/100)}}.{{eval:floor(mod(b,100)/10)}}{{eval:mod(b,10)}}~\\unit{€} + {{eval:floor((c)/100)}}.{{eval:floor(mod(c,100)/10)}}{{eval:mod(c,10)}}~\\unit{€} = \\textcolor{{{color:primary.0}}}{{{eval:floor((s)/100)}}.{{eval:floor(mod(s,100)/10)}}{{eval:mod(s,10)}}}~\\unit{€}$",
+					"Tu paies ${{eval:floor((s)/100)}}.{{eval:floor(mod(s,100)/10)}}{{eval:mod(s,10)}}~\\unit{€}$."
+				]
+			}
+		},
+		{
+			"statement": "Tu paies ${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$ sans pièce de $1~\\unit{€}$ ni de $2~\\unit{€}$.\n\n```monnaie\nconstruire: {{p}}c\nréserve: 20 10 5 50c 20c 10c 5c\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "120..999"
+				},
+				{
+					"name": "p",
+					"expression": "eval:5*k"
+				}
+			],
+			"conditions": ["mod(p,100) != 0"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"$1~\\unit{€}$, c'est $100$ centimes : deux pièces de $50$ centimes, ou cinq pièces de $20$ centimes.",
+					"${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$, c'est ${{eval:floor(p/100)}}~\\unit{€}$ et ${{eval:mod(p,100)}}$ centimes : on pose des billets de $5$, $10$, $20~\\unit{€}$ et des pièces de centimes."
+				]
+			}
+		},
+		{
+			"statement": "Voici l'argent de Léo.\n\n```monnaie\nbillets: {{k}}×10 {{m}}×5\npièces: {{g}}×2 {{h}}×1 {{a}}×50c {{b}}×20c {{c}}×10c\n```\n\nIl veut acheter {{if:o==1|un livre|{{if:o==2|un jeu|un ballon}}}} à ${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$. Peut-il l'acheter ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..3"
+				},
+				{
+					"name": "k",
+					"expression": "0..2"
+				},
+				{
+					"name": "m",
+					"expression": "0..2"
+				},
+				{
+					"name": "g",
+					"expression": "0..2"
+				},
+				{
+					"name": "h",
+					"expression": "0..2"
+				},
+				{
+					"name": "a",
+					"expression": "0..1"
+				},
+				{
+					"name": "b",
+					"expression": "0..2"
+				},
+				{
+					"name": "c",
+					"expression": "0..2"
+				},
+				{
+					"name": "x",
+					"expression": "eval:1000*k+500*m+200*g+100*h+50*a+20*b+10*c"
+				},
+				{
+					"name": "d",
+					"expression": "-6..6"
+				},
+				{
+					"name": "p",
+					"expression": "eval:x+10*d"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:x>=p|0|1}}"
+				}
+			],
+			"conditions": ["d != 0", "x >= 500", "mod(p,100) != 0", "mod(x,100) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Léo a ${{eval:floor((x)/100)}}.{{eval:floor(mod(x,100)/10)}}{{eval:mod(x,10)}}~\\unit{€}$.",
+					"{{if:r==0|${{eval:floor((x)/100)}}.{{eval:floor(mod(x,100)/10)}}{{eval:mod(x,10)}}~\\unit{€}$, c'est plus que ${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$ : oui, il peut l'acheter.|${{eval:floor((x)/100)}}.{{eval:floor(mod(x,100)/10)}}{{eval:mod(x,10)}}~\\unit{€}$, c'est moins que ${{eval:floor((p)/100)}}.{{eval:floor(mod(p,100)/10)}}{{eval:mod(p,10)}}~\\unit{€}$ : non, il lui manque ${{eval:floor((p-x)/100)}}.{{eval:floor(mod(p-x,100)/10)}}{{eval:mod(p-x,10)}}~\\unit{€}$.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Poser 12,45 €",
+			"variationIndex": 0,
+			"variables": {
+				"o": "1",
+				"k": "249"
+			},
+			"answers": ["12,45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 12,4 posé pour 12,45 €",
+			"variationIndex": 0,
+			"variables": {
+				"o": "1",
+				"k": "249"
+			},
+			"answers": ["12,4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Trois articles : 3,50 + 8,20 + 5,95 = 17,65 €",
+			"variationIndex": 1,
+			"variables": {
+				"o": "1",
+				"x": "70",
+				"y": "164",
+				"z": "119"
+			},
+			"answers": ["17,65"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deux articles seulement (11,70 €)",
+			"variationIndex": 1,
+			"variables": {
+				"o": "1",
+				"x": "70",
+				"y": "164",
+				"z": "119"
+			},
+			"answers": ["11,7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sans 1 € : 7,35 € posé",
+			"variationIndex": 2,
+			"variables": {
+				"k": "147"
+			},
+			"answers": ["7,35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7,3 € posé pour 7,35 €",
+			"variationIndex": 2,
+			"variables": {
+				"k": "147"
+			},
+			"answers": ["7,3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Léo a 12,80 €, le jeu coûte 12,50 € : oui",
+			"variationIndex": 3,
+			"variables": {
+				"o": "2",
+				"k": "1",
+				"m": "0",
+				"g": "1",
+				"h": "1",
+				"a": "1",
+				"b": "1",
+				"c": "1",
+				"d": "-3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : non à 12,50 € avec 13 €",
+			"variationIndex": 3,
+			"variables": {
+				"o": "2",
+				"k": "1",
+				"m": "0",
+				"g": "1",
+				"h": "1",
+				"a": "1",
+				"b": "1",
+				"c": "1",
+				"d": "-3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

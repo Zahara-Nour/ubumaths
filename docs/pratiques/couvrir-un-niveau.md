@@ -251,7 +251,12 @@ niveau chacune (`idx_question_templates_unique_category`).
    `collection`, `horloge` et `courbe` sont dessinés par les scènes de l'appli (à construire :
    réserve, plan vide, et la construction juste à part) ; un bloc `variation` (tableau de signes ou
    de variations) est lu par le parseur de l'appli et dessiné comme `VariationTable.svelte` (valeurs
-   en KaTeX, zéros, double barre, flèches) ; un bloc `python` est montré tel quel ;
+   en KaTeX, zéros, double barre, flèches) ; les blocs `histogramme`, `frequences-cumulees` (lignes
+   de lecture), `barres`, `boite-a-moustaches`, `tableau-croise` (cases `?` ou masquées vides) et
+   `simulation` en tirages sont dessinés depuis `buildStatChartScene` (la scène de l'écran), `probtree`
+   d'après la mise en page de `ProbabilityTree.svelte` (formules en KaTeX) ; une scène statistique que
+   la page ne dessine pas encore (`loi`, `nuage`, `circulaire`, `effectifs`) est montrée par sa source
+   et signalée ; un bloc en erreur arrête la page ; un bloc `python` est montré tel quel ;
    un autre bloc (`operation`…) est montré par sa source et signalé. Les formules restent en texte quand elles n'ont que des nombres et des signes (CP) ; au-delà
    (fractions, `\left`, exposants), KaTeX les rend en MathML (cdnjs, sans feuille de style), y compris
    la réponse attendue, le libellé du point, ses bornes et les réponses des specs ; un bloc `$$…$$` est

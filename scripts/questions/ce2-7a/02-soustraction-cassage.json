@@ -1,0 +1,342 @@
+{
+	"title": "Pose et calcule une soustraction (par cassage, jusqu'à 10 000)",
+	"description": "Soustraction posée, méthode par cassage : 4 − 3 chiffres, 4 − 4 chiffres, zéros (5 002 − 847)",
+	"grades": ["CE2"],
+	"theme": "Nombres",
+	"domain": "Soustraction",
+	"subdomain": "Calcul posé",
+	"level": 3,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{a}} − {{b}}\nméthode: cassage\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1001..9999"
+				},
+				{
+					"name": "b",
+					"expression": "101..999"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:mod(a,10)"
+				},
+				{
+					"name": "y0",
+					"expression": "eval:mod(b,10)"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:mod(floor(a/10),10)"
+				},
+				{
+					"name": "y1",
+					"expression": "eval:mod(floor(b/10),10)"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:mod(floor(a/100),10)"
+				},
+				{
+					"name": "y2",
+					"expression": "eval:mod(floor(b/100),10)"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:mod(floor(a/1000),10)"
+				},
+				{
+					"name": "y3",
+					"expression": "eval:mod(floor(b/1000),10)"
+				},
+				{
+					"name": "f0",
+					"expression": "{{if:mod(a,10)<mod(b,10)|1|0}}"
+				},
+				{
+					"name": "f1",
+					"expression": "{{if:mod(a,100)<mod(b,100)|1|0}}"
+				},
+				{
+					"name": "f2",
+					"expression": "{{if:mod(a,1000)<mod(b,1000)|1|0}}"
+				},
+				{
+					"name": "f3",
+					"expression": "{{if:mod(a,10000)<mod(b,10000)|1|0}}"
+				}
+			],
+			"conditions": ["mod(a,10) < mod(b,10)", "a > b"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On aligne les chiffres : unités sous les unités, dizaines sous les dizaines, et ainsi de suite.",
+					"Unités : {{if:f0==1|on ne peut pas ôter ${{y0}}$ de ${{eval:x0}}$ : on casse une unité de la colonne suivante, ce qui donne ${{eval:x0+10}}$. ${{eval:x0+10}} - {{y0}} = {{eval:x0+10-y0}}$.|${{eval:x0}} - {{y0}} = {{eval:x0-y0}}$.}}",
+					"Dizaines : {{if:f0==1|{{if:x1==0|il n'y a rien à casser ici : on casse une unité de la colonne suivante, on a $10$, on en cède $1$ à la colonne de droite : il reste $9$. $9 - {{y1}} = {{eval:9-y1}}$.|on a cassé une unité de cette colonne pour celle de droite : ${{x1}}$ devient ${{eval:x1-f0}}$ ; {{if:f1==1|on ne peut pas ôter ${{y1}}$ de ${{eval:x1-f0}}$ : on casse une unité de la colonne suivante, ce qui donne ${{eval:x1-f0+10}}$. ${{eval:x1-f0+10}} - {{y1}} = {{eval:x1-f0+10-y1}}$.|${{eval:x1-f0}} - {{y1}} = {{eval:x1-f0-y1}}$.}}}}|{{if:f1==1|on ne peut pas ôter ${{y1}}$ de ${{eval:x1}}$ : on casse une unité de la colonne suivante, ce qui donne ${{eval:x1+10}}$. ${{eval:x1+10}} - {{y1}} = {{eval:x1+10-y1}}$.|${{eval:x1}} - {{y1}} = {{eval:x1-y1}}$.}}}}",
+					"Centaines : {{if:f1==1|{{if:x2==0|il n'y a rien à casser ici : on casse une unité de la colonne suivante, on a $10$, on en cède $1$ à la colonne de droite : il reste $9$. $9 - {{y2}} = {{eval:9-y2}}$.|on a cassé une unité de cette colonne pour celle de droite : ${{x2}}$ devient ${{eval:x2-f1}}$ ; {{if:f2==1|on ne peut pas ôter ${{y2}}$ de ${{eval:x2-f1}}$ : on casse une unité de la colonne suivante, ce qui donne ${{eval:x2-f1+10}}$. ${{eval:x2-f1+10}} - {{y2}} = {{eval:x2-f1+10-y2}}$.|${{eval:x2-f1}} - {{y2}} = {{eval:x2-f1-y2}}$.}}}}|{{if:f2==1|on ne peut pas ôter ${{y2}}$ de ${{eval:x2}}$ : on casse une unité de la colonne suivante, ce qui donne ${{eval:x2+10}}$. ${{eval:x2+10}} - {{y2}} = {{eval:x2+10-y2}}$.|${{eval:x2}} - {{y2}} = {{eval:x2-y2}}$.}}}}",
+					"Milliers : {{if:f2==1|{{if:x3==0|il n'y a rien à casser ici : on casse une unité de la colonne suivante, on a $10$, on en cède $1$ à la colonne de droite : il reste $9$. $9 - {{y3}} = {{eval:9-y3}}$.|on a cassé une unité de cette colonne pour celle de droite : ${{x3}}$ devient ${{eval:x3-f2}}$ ; {{if:f3==1|on ne peut pas ôter ${{y3}}$ de ${{eval:x3-f2}}$ : on casse une unité de la colonne suivante, ce qui donne ${{eval:x3-f2+10}}$. ${{eval:x3-f2+10}} - {{y3}} = {{eval:x3-f2+10-y3}}$.|${{eval:x3-f2}} - {{y3}} = {{eval:x3-f2-y3}}$.}}}}|{{if:f3==1|on ne peut pas ôter ${{y3}}$ de ${{eval:x3}}$ : on casse une unité de la colonne suivante, ce qui donne ${{eval:x3+10}}$. ${{eval:x3+10}} - {{y3}} = {{eval:x3+10-y3}}$.|${{eval:x3}} - {{y3}} = {{eval:x3-y3}}$.}}}}",
+					"$${{a}} - {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a-b}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{a}} − {{b}}\nméthode: cassage\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2001..9999"
+				},
+				{
+					"name": "b",
+					"expression": "1001..8999"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:mod(a,10)"
+				},
+				{
+					"name": "y0",
+					"expression": "eval:mod(b,10)"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:mod(floor(a/10),10)"
+				},
+				{
+					"name": "y1",
+					"expression": "eval:mod(floor(b/10),10)"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:mod(floor(a/100),10)"
+				},
+				{
+					"name": "y2",
+					"expression": "eval:mod(floor(b/100),10)"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:mod(floor(a/1000),10)"
+				},
+				{
+					"name": "y3",
+					"expression": "eval:mod(floor(b/1000),10)"
+				},
+				{
+					"name": "f0",
+					"expression": "{{if:mod(a,10)<mod(b,10)|1|0}}"
+				},
+				{
+					"name": "f1",
+					"expression": "{{if:mod(a,100)<mod(b,100)|1|0}}"
+				},
+				{
+					"name": "f2",
+					"expression": "{{if:mod(a,1000)<mod(b,1000)|1|0}}"
+				},
+				{
+					"name": "f3",
+					"expression": "{{if:mod(a,10000)<mod(b,10000)|1|0}}"
+				}
+			],
+			"conditions": ["mod(a,100) < mod(b,100)", "a > b"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On aligne les chiffres : unités sous les unités, dizaines sous les dizaines, et ainsi de suite.",
+					"Unités : {{if:f0==1|on ne peut pas ôter ${{y0}}$ de ${{eval:x0}}$ : on casse une unité de la colonne suivante, ce qui donne ${{eval:x0+10}}$. ${{eval:x0+10}} - {{y0}} = {{eval:x0+10-y0}}$.|${{eval:x0}} - {{y0}} = {{eval:x0-y0}}$.}}",
+					"Dizaines : {{if:f0==1|{{if:x1==0|il n'y a rien à casser ici : on casse une unité de la colonne suivante, on a $10$, on en cède $1$ à la colonne de droite : il reste $9$. $9 - {{y1}} = {{eval:9-y1}}$.|on a cassé une unité de cette colonne pour celle de droite : ${{x1}}$ devient ${{eval:x1-f0}}$ ; {{if:f1==1|on ne peut pas ôter ${{y1}}$ de ${{eval:x1-f0}}$ : on casse une unité de la colonne suivante, ce qui donne ${{eval:x1-f0+10}}$. ${{eval:x1-f0+10}} - {{y1}} = {{eval:x1-f0+10-y1}}$.|${{eval:x1-f0}} - {{y1}} = {{eval:x1-f0-y1}}$.}}}}|{{if:f1==1|on ne peut pas ôter ${{y1}}$ de ${{eval:x1}}$ : on casse une unité de la colonne suivante, ce qui donne ${{eval:x1+10}}$. ${{eval:x1+10}} - {{y1}} = {{eval:x1+10-y1}}$.|${{eval:x1}} - {{y1}} = {{eval:x1-y1}}$.}}}}",
+					"Centaines : {{if:f1==1|{{if:x2==0|il n'y a rien à casser ici : on casse une unité de la colonne suivante, on a $10$, on en cède $1$ à la colonne de droite : il reste $9$. $9 - {{y2}} = {{eval:9-y2}}$.|on a cassé une unité de cette colonne pour celle de droite : ${{x2}}$ devient ${{eval:x2-f1}}$ ; {{if:f2==1|on ne peut pas ôter ${{y2}}$ de ${{eval:x2-f1}}$ : on casse une unité de la colonne suivante, ce qui donne ${{eval:x2-f1+10}}$. ${{eval:x2-f1+10}} - {{y2}} = {{eval:x2-f1+10-y2}}$.|${{eval:x2-f1}} - {{y2}} = {{eval:x2-f1-y2}}$.}}}}|{{if:f2==1|on ne peut pas ôter ${{y2}}$ de ${{eval:x2}}$ : on casse une unité de la colonne suivante, ce qui donne ${{eval:x2+10}}$. ${{eval:x2+10}} - {{y2}} = {{eval:x2+10-y2}}$.|${{eval:x2}} - {{y2}} = {{eval:x2-y2}}$.}}}}",
+					"Milliers : {{if:f2==1|{{if:x3==0|il n'y a rien à casser ici : on casse une unité de la colonne suivante, on a $10$, on en cède $1$ à la colonne de droite : il reste $9$. $9 - {{y3}} = {{eval:9-y3}}$.|on a cassé une unité de cette colonne pour celle de droite : ${{x3}}$ devient ${{eval:x3-f2}}$ ; {{if:f3==1|on ne peut pas ôter ${{y3}}$ de ${{eval:x3-f2}}$ : on casse une unité de la colonne suivante, ce qui donne ${{eval:x3-f2+10}}$. ${{eval:x3-f2+10}} - {{y3}} = {{eval:x3-f2+10-y3}}$.|${{eval:x3-f2}} - {{y3}} = {{eval:x3-f2-y3}}$.}}}}|{{if:f3==1|on ne peut pas ôter ${{y3}}$ de ${{eval:x3}}$ : on casse une unité de la colonne suivante, ce qui donne ${{eval:x3+10}}$. ${{eval:x3+10}} - {{y3}} = {{eval:x3+10-y3}}$.|${{eval:x3}} - {{y3}} = {{eval:x3-y3}}$.}}}}",
+					"$${{a}} - {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a-b}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{a}} − {{b}}\nméthode: cassage\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..9"
+				},
+				{
+					"name": "r",
+					"expression": "0..8"
+				},
+				{
+					"name": "a",
+					"expression": "eval:1000*p+r"
+				},
+				{
+					"name": "b",
+					"expression": "101..999"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:mod(a,10)"
+				},
+				{
+					"name": "y0",
+					"expression": "eval:mod(b,10)"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:mod(floor(a/10),10)"
+				},
+				{
+					"name": "y1",
+					"expression": "eval:mod(floor(b/10),10)"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:mod(floor(a/100),10)"
+				},
+				{
+					"name": "y2",
+					"expression": "eval:mod(floor(b/100),10)"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:mod(floor(a/1000),10)"
+				},
+				{
+					"name": "y3",
+					"expression": "eval:mod(floor(b/1000),10)"
+				},
+				{
+					"name": "f0",
+					"expression": "{{if:mod(a,10)<mod(b,10)|1|0}}"
+				},
+				{
+					"name": "f1",
+					"expression": "{{if:mod(a,100)<mod(b,100)|1|0}}"
+				},
+				{
+					"name": "f2",
+					"expression": "{{if:mod(a,1000)<mod(b,1000)|1|0}}"
+				},
+				{
+					"name": "f3",
+					"expression": "{{if:mod(a,10000)<mod(b,10000)|1|0}}"
+				}
+			],
+			"conditions": ["a > b"],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"On aligne les chiffres : unités sous les unités, dizaines sous les dizaines, et ainsi de suite.",
+					"Unités : {{if:f0==1|on ne peut pas ôter ${{y0}}$ de ${{eval:x0}}$ : on casse une unité de la colonne suivante, ce qui donne ${{eval:x0+10}}$. ${{eval:x0+10}} - {{y0}} = {{eval:x0+10-y0}}$.|${{eval:x0}} - {{y0}} = {{eval:x0-y0}}$.}}",
+					"Dizaines : {{if:f0==1|{{if:x1==0|il n'y a rien à casser ici : on casse une unité de la colonne suivante, on a $10$, on en cède $1$ à la colonne de droite : il reste $9$. $9 - {{y1}} = {{eval:9-y1}}$.|on a cassé une unité de cette colonne pour celle de droite : ${{x1}}$ devient ${{eval:x1-f0}}$ ; {{if:f1==1|on ne peut pas ôter ${{y1}}$ de ${{eval:x1-f0}}$ : on casse une unité de la colonne suivante, ce qui donne ${{eval:x1-f0+10}}$. ${{eval:x1-f0+10}} - {{y1}} = {{eval:x1-f0+10-y1}}$.|${{eval:x1-f0}} - {{y1}} = {{eval:x1-f0-y1}}$.}}}}|{{if:f1==1|on ne peut pas ôter ${{y1}}$ de ${{eval:x1}}$ : on casse une unité de la colonne suivante, ce qui donne ${{eval:x1+10}}$. ${{eval:x1+10}} - {{y1}} = {{eval:x1+10-y1}}$.|${{eval:x1}} - {{y1}} = {{eval:x1-y1}}$.}}}}",
+					"Centaines : {{if:f1==1|{{if:x2==0|il n'y a rien à casser ici : on casse une unité de la colonne suivante, on a $10$, on en cède $1$ à la colonne de droite : il reste $9$. $9 - {{y2}} = {{eval:9-y2}}$.|on a cassé une unité de cette colonne pour celle de droite : ${{x2}}$ devient ${{eval:x2-f1}}$ ; {{if:f2==1|on ne peut pas ôter ${{y2}}$ de ${{eval:x2-f1}}$ : on casse une unité de la colonne suivante, ce qui donne ${{eval:x2-f1+10}}$. ${{eval:x2-f1+10}} - {{y2}} = {{eval:x2-f1+10-y2}}$.|${{eval:x2-f1}} - {{y2}} = {{eval:x2-f1-y2}}$.}}}}|{{if:f2==1|on ne peut pas ôter ${{y2}}$ de ${{eval:x2}}$ : on casse une unité de la colonne suivante, ce qui donne ${{eval:x2+10}}$. ${{eval:x2+10}} - {{y2}} = {{eval:x2+10-y2}}$.|${{eval:x2}} - {{y2}} = {{eval:x2-y2}}$.}}}}",
+					"Milliers : {{if:f2==1|{{if:x3==0|il n'y a rien à casser ici : on casse une unité de la colonne suivante, on a $10$, on en cède $1$ à la colonne de droite : il reste $9$. $9 - {{y3}} = {{eval:9-y3}}$.|on a cassé une unité de cette colonne pour celle de droite : ${{x3}}$ devient ${{eval:x3-f2}}$ ; {{if:f3==1|on ne peut pas ôter ${{y3}}$ de ${{eval:x3-f2}}$ : on casse une unité de la colonne suivante, ce qui donne ${{eval:x3-f2+10}}$. ${{eval:x3-f2+10}} - {{y3}} = {{eval:x3-f2+10-y3}}$.|${{eval:x3-f2}} - {{y3}} = {{eval:x3-f2-y3}}$.}}}}|{{if:f3==1|on ne peut pas ôter ${{y3}}$ de ${{eval:x3}}$ : on casse une unité de la colonne suivante, ce qui donne ${{eval:x3+10}}$. ${{eval:x3+10}} - {{y3}} = {{eval:x3+10-y3}}$.|${{eval:x3}} - {{y3}} = {{eval:x3-y3}}$.}}}}",
+					"$${{a}} - {{b}} = \\textcolor{{{color:primary.0}}}{{{eval:a-b}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "6 453 − 278 = 6 175",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6453",
+				"b": "278"
+			},
+			"answers": ["6175"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : plus petit ôté du plus grand, 6 453 − 278",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6453",
+				"b": "278"
+			},
+			"answers": ["6225"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 305 − 2 468 = 4 837",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7305",
+				"b": "2468"
+			},
+			"answers": ["4837"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : plus petit ôté du plus grand, 7 305 − 2 468",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7305",
+				"b": "2468"
+			},
+			"answers": ["5163"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5 002 − 847 = 4 155",
+			"variationIndex": 2,
+			"variables": {
+				"p": "5",
+				"r": "2",
+				"b": "847"
+			},
+			"answers": ["4155"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : plus petit ôté du plus grand, 5 002 − 847",
+			"variationIndex": 2,
+			"variables": {
+				"p": "5",
+				"r": "2",
+				"b": "847"
+			},
+			"answers": ["5845"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : zéros mal échangés, 5 002 − 847 = 5 245",
+			"variationIndex": 2,
+			"variables": {
+				"p": "5",
+				"r": "2",
+				"b": "847"
+			},
+			"answers": ["5245"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 000 − 478 = 2 522",
+			"variationIndex": 2,
+			"variables": {
+				"p": "3",
+				"r": "0",
+				"b": "478"
+			},
+			"answers": ["2522"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

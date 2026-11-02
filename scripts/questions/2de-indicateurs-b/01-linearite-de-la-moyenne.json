@@ -1,0 +1,165 @@
+{
+	"title": "Linéarité de la moyenne",
+	"description": "Moyenne d'une série dont chaque valeur est augmentée de b, multipliée par a, ou transformée en ax + b",
+	"grades": ["2"],
+	"theme": "Statistiques",
+	"domain": "Indicateurs",
+	"subdomain": "Moyenne",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La moyenne des notes d'un devoir est ${{eval:(m)/10;d}}$. Le professeur ajoute ${{b}}$ points à **chaque** note.\n\nQuelle est la nouvelle moyenne ?\n\nNouvelle moyenne : $?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "80..140"
+				},
+				{
+					"name": "b",
+					"expression": "1|2|3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(m)/10+(b);d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Si on ajoute le même nombre $b$ à chaque valeur, la moyenne augmente de $b$.",
+					"${{eval:(m)/10;d}}+{{b}}=\\textcolor{{{color:primary.0}}}{{{eval:(m)/10+(b);d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La moyenne des notes sur ${{s}}$ d'un devoir est ${{eval:(m)/10;d}}$. Le professeur convertit **chaque** note pour qu'elle soit sur ${{t}}$.\n\nQuelle est la moyenne des notes converties ?\n\nNouvelle moyenne : $?$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "20|40"
+				},
+				{
+					"name": "t",
+					"expression": "10|20"
+				},
+				{
+					"name": "m",
+					"expression": "60..140"
+				}
+			],
+			"conditions": ["s != t"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(m)/10*(t)/(s);d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Convertir sur ${{t}}$ une note sur ${{s}}$, c'est la multiplier par $\\dfrac{ {{t}} }{ {{s}} }={{eval:(t)/(s);d}}$.",
+					"Si on multiplie chaque valeur par un même nombre $a$, la moyenne est multipliée par $a$ : ${{eval:(m)/10;d}}\\times{{eval:(t)/(s);d}}=\\textcolor{{{color:primary.0}}}{{{eval:(m)/10*(t)/(s);d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La température moyenne d'un mois est ${{m}}~\\unit{°C}$. Pour passer des degrés Celsius aux degrés Fahrenheit, on transforme **chaque** température $x$ en $1{,}8x+32$.\n\nQuelle est la température moyenne du mois en degrés Fahrenheit ?\n\nMoyenne : $?~\\unit{°F}$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "5..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1.8*(m)+32;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Si chaque valeur $x$ devient $ax+b$, la moyenne $\\overline{x}$ devient $a\\overline{x}+b$.",
+					"$1{,}8\\times{{m}}+32=\\textcolor{{{color:primary.0}}}{{{eval:1.8*(m)+32;d}}}~\\unit{°F}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "11,2 + 2 : 13,2",
+			"variationIndex": 0,
+			"variables": {
+				"m": "112",
+				"b": "2"
+			},
+			"answers": ["13.2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : moyenne inchangée",
+			"variationIndex": 0,
+			"variables": {
+				"m": "112",
+				"b": "2"
+			},
+			"answers": ["11.2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "12,6 sur 20 → 6,3 sur 10",
+			"variationIndex": 1,
+			"variables": {
+				"s": "20",
+				"t": "10",
+				"m": "126"
+			},
+			"answers": ["6.3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 12,6 × 2",
+			"variationIndex": 1,
+			"variables": {
+				"s": "20",
+				"t": "10",
+				"m": "126"
+			},
+			"answers": ["25.2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "15 °C → 59 °F",
+			"variationIndex": 2,
+			"variables": {
+				"m": "15"
+			},
+			"answers": ["59"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : + 32 oublié (27)",
+			"variationIndex": 2,
+			"variables": {
+				"m": "15"
+			},
+			"answers": ["27"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

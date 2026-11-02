@@ -1,0 +1,354 @@
+{
+	"title": "Relations entre les unités de longueur",
+	"description": "1 unité = 10 fois l'unité suivante : 7 dam = 70 m ; 340 mm = 34 cm ; 5 hm = 500 m ; 3 km 250 m = 3 250 m ; 4 m 5 cm = 405 cm",
+	"grades": ["CM1"],
+	"theme": "Grandeurs",
+	"domain": "Longueurs",
+	"subdomain": "Unités",
+	"level": 14,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{{{if:x==1|km|{{if:x==2|hm|{{if:x==3|dam|{{if:x==4|m|{{if:x==5|dm|{{if:x==6|cm|mm}}}}}}}}}}}}} = ?~\\text{{{if:y==1|km|{{if:y==2|hm|{{if:y==3|dam|{{if:y==4|m|{{if:y==5|dm|{{if:y==6|cm|mm}}}}}}}}}}}}}$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "1..6"
+				},
+				{
+					"name": "y",
+					"expression": "eval:x+1"
+				},
+				{
+					"name": "a",
+					"expression": "2..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque unité de longueur vaut **10 fois** la suivante : km, hm, dam, m, dm, cm, mm.",
+					"$1~\\unit{{{if:x==1|km|{{if:x==2|hm|{{if:x==3|dam|{{if:x==4|m|{{if:x==5|dm|{{if:x==6|cm|mm}}}}}}}}}}}}} = 10~\\unit{{{if:y==1|km|{{if:y==2|hm|{{if:y==3|dam|{{if:y==4|m|{{if:y==5|dm|{{if:y==6|cm|mm}}}}}}}}}}}}}$, donc ${{a}}~\\unit{{{if:x==1|km|{{if:x==2|hm|{{if:x==3|dam|{{if:x==4|m|{{if:x==5|dm|{{if:x==6|cm|mm}}}}}}}}}}}}}$, c'est ${{a}}$ fois $10~\\unit{{{if:y==1|km|{{if:y==2|hm|{{if:y==3|dam|{{if:y==4|m|{{if:y==5|dm|{{if:y==6|cm|mm}}}}}}}}}}}}}$.",
+					"$${{a}}~\\unit{{{if:x==1|km|{{if:x==2|hm|{{if:x==3|dam|{{if:x==4|m|{{if:x==5|dm|{{if:x==6|cm|mm}}}}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{eval:10*a}}}~\\unit{{{if:y==1|km|{{if:y==2|hm|{{if:y==3|dam|{{if:y==4|m|{{if:y==5|dm|{{if:y==6|cm|mm}}}}}}}}}}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:10*a}}~\\unit{{{if:y==1|km|{{if:y==2|hm|{{if:y==3|dam|{{if:y==4|m|{{if:y==5|dm|{{if:y==6|cm|mm}}}}}}}}}}}}} = ?~\\text{{{if:x==1|km|{{if:x==2|hm|{{if:x==3|dam|{{if:x==4|m|{{if:x==5|dm|{{if:x==6|cm|mm}}}}}}}}}}}}}$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "1..6"
+				},
+				{
+					"name": "y",
+					"expression": "eval:x+1"
+				},
+				{
+					"name": "a",
+					"expression": "2..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque unité de longueur vaut **10 fois** la suivante : km, hm, dam, m, dm, cm, mm.",
+					"$10~\\unit{{{if:y==1|km|{{if:y==2|hm|{{if:y==3|dam|{{if:y==4|m|{{if:y==5|dm|{{if:y==6|cm|mm}}}}}}}}}}}}} = 1~\\unit{{{if:x==1|km|{{if:x==2|hm|{{if:x==3|dam|{{if:x==4|m|{{if:x==5|dm|{{if:x==6|cm|mm}}}}}}}}}}}}}$ : dans ${{eval:10*a}}~\\unit{{{if:y==1|km|{{if:y==2|hm|{{if:y==3|dam|{{if:y==4|m|{{if:y==5|dm|{{if:y==6|cm|mm}}}}}}}}}}}}}$, il y a ${{a}}$ fois $10~\\unit{{{if:y==1|km|{{if:y==2|hm|{{if:y==3|dam|{{if:y==4|m|{{if:y==5|dm|{{if:y==6|cm|mm}}}}}}}}}}}}}$.",
+					"$${{eval:10*a}}~\\unit{{{if:y==1|km|{{if:y==2|hm|{{if:y==3|dam|{{if:y==4|m|{{if:y==5|dm|{{if:y==6|cm|mm}}}}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{a}}}~\\unit{{{if:x==1|km|{{if:x==2|hm|{{if:x==3|dam|{{if:x==4|m|{{if:x==5|dm|{{if:x==6|cm|mm}}}}}}}}}}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{{{if:x==1|km|{{if:x==2|hm|{{if:x==3|dam|{{if:x==4|m|{{if:x==5|dm|{{if:x==6|cm|mm}}}}}}}}}}}}} = ?~\\text{{{if:y==1|km|{{if:y==2|hm|{{if:y==3|dam|{{if:y==4|m|{{if:y==5|dm|{{if:y==6|cm|mm}}}}}}}}}}}}}$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "1..5"
+				},
+				{
+					"name": "d",
+					"expression": "2..3"
+				},
+				{
+					"name": "y",
+					"expression": "eval:x+d"
+				},
+				{
+					"name": "a",
+					"expression": "2..30"
+				}
+			],
+			"conditions": ["y <= 7"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*10^(y-x)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque unité de longueur vaut **10 fois** la suivante : km, hm, dam, m, dm, cm, mm.",
+					"De {{if:x==1|km|{{if:x==2|hm|{{if:x==3|dam|{{if:x==4|m|{{if:x==5|dm|{{if:x==6|cm|mm}}}}}}}}}}}} à {{if:y==1|km|{{if:y==2|hm|{{if:y==3|dam|{{if:y==4|m|{{if:y==5|dm|{{if:y==6|cm|mm}}}}}}}}}}}}, on descend de {{d}} unités : on multiplie {{d}} fois par 10, c'est-à-dire par ${{if:y-x==1|10|{{if:y-x==2|100|1\\,000}}}}$ : $1~\\unit{{{if:x==1|km|{{if:x==2|hm|{{if:x==3|dam|{{if:x==4|m|{{if:x==5|dm|{{if:x==6|cm|mm}}}}}}}}}}}}} = {{if:y-x==1|10|{{if:y-x==2|100|1\\,000}}}}~\\unit{{{if:y==1|km|{{if:y==2|hm|{{if:y==3|dam|{{if:y==4|m|{{if:y==5|dm|{{if:y==6|cm|mm}}}}}}}}}}}}}$.",
+					"$${{a}}~\\unit{{{if:x==1|km|{{if:x==2|hm|{{if:x==3|dam|{{if:x==4|m|{{if:x==5|dm|{{if:x==6|cm|mm}}}}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{eval:a*10^(y-x)}}}~\\unit{{{if:y==1|km|{{if:y==2|hm|{{if:y==3|dam|{{if:y==4|m|{{if:y==5|dm|{{if:y==6|cm|mm}}}}}}}}}}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{km}~{{b}}~\\unit{m} = ?~\\text{m}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..30"
+				},
+				{
+					"name": "b",
+					"expression": "1..999"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1000*a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{km} = 1\\,000~\\unit{m}$, donc ${{a}}~\\unit{km} = {{eval:1000*a}}~\\unit{m}$.",
+					"$${{eval:1000*a}}~\\unit{m} + {{b}}~\\unit{m} = \\textcolor{{{color:primary.0}}}{{{eval:1000*a+b}}}~\\unit{m}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{m}~{{b}}~\\unit{cm} = ?~\\text{cm}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..30"
+				},
+				{
+					"name": "b",
+					"expression": "1..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{m} = 100~\\unit{cm}$, donc ${{a}}~\\unit{m} = {{eval:100*a}}~\\unit{cm}$.",
+					"$${{eval:100*a}}~\\unit{cm} + {{b}}~\\unit{cm} = \\textcolor{{{color:primary.0}}}{{{eval:100*a+b}}}~\\unit{cm}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "7 dam = 70 m",
+			"variationIndex": 0,
+			"variables": {
+				"x": "3",
+				"y": "4",
+				"a": "7"
+			},
+			"answers": ["70"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 dam = 700 m",
+			"variationIndex": 0,
+			"variables": {
+				"x": "3",
+				"y": "4",
+				"a": "7"
+			},
+			"answers": ["700"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "34 hm = 340 dam",
+			"variationIndex": 0,
+			"variables": {
+				"x": "2",
+				"y": "3",
+				"a": "34"
+			},
+			"answers": ["340"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "340 mm = 34 cm",
+			"variationIndex": 1,
+			"variables": {
+				"x": "6",
+				"y": "7",
+				"a": "34"
+			},
+			"answers": ["34"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 340 mm = 3 400 cm (sens inversé)",
+			"variationIndex": 1,
+			"variables": {
+				"x": "6",
+				"y": "7",
+				"a": "34"
+			},
+			"answers": ["3 400"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5 hm = 500 m",
+			"variationIndex": 2,
+			"variables": {
+				"x": "2",
+				"d": "2",
+				"y": "4",
+				"a": "5"
+			},
+			"answers": ["500"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "4 m = 4 000 mm",
+			"variationIndex": 2,
+			"variables": {
+				"x": "4",
+				"d": "3",
+				"y": "7",
+				"a": "4"
+			},
+			"answers": ["4 000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 m = 400 mm",
+			"variationIndex": 2,
+			"variables": {
+				"x": "4",
+				"d": "3",
+				"y": "7",
+				"a": "4"
+			},
+			"answers": ["400"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : 4000 sans espace",
+			"variationIndex": 2,
+			"variables": {
+				"x": "4",
+				"d": "3",
+				"y": "7",
+				"a": "4"
+			},
+			"answers": ["4000"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			}
+		},
+		{
+			"description": "3 km 250 m = 3 250 m",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "250"
+			},
+			"answers": ["3 250"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3 km 40 m = 3 040 m",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "40"
+			},
+			"answers": ["3 040"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 km 40 m = 3 400 m (zéro oublié)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "40"
+			},
+			"answers": ["3 400"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 km 40 m = 43 m",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "40"
+			},
+			"answers": ["43"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 m 5 cm = 405 cm",
+			"variationIndex": 4,
+			"variables": {
+				"a": "4",
+				"b": "5"
+			},
+			"answers": ["405"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 m 5 cm = 450 cm",
+			"variationIndex": 4,
+			"variables": {
+				"a": "4",
+				"b": "5"
+			},
+			"answers": ["450"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

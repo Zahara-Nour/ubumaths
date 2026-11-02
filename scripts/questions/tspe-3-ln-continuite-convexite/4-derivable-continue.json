@@ -1,0 +1,127 @@
+{
+	"title": "Dérivable implique continue",
+	"description": "Toute fonction dérivable est continue : la propriété, sa réciproque fausse (|x|, √x en 0), sa contraposée",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions",
+	"domain": "Continuité",
+	"subdomain": "Continuité en un point",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ une fonction définie sur un intervalle $I$ et $a$ un réel de $I$.\n\nOn sait que $f$ est **dérivable** en $a$. Que peut-on en déduire ?\n\n```choix\n- $f$ est continue en $a$\n- $f'(a)=0$\n- $f$ n'est pas forcément continue en $a$\n- $f$ est dérivable sur tout l'intervalle $I$\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Propriété : toute fonction \\textcolor{{{color:primary.0}}}{dérivable en a est continue en a}.",
+					"$f'(a)=0$ n'a aucune raison d'être vrai : c'est le cas seulement aux extremums."
+				]
+			}
+		},
+		{
+			"statement": "Que penser de l'affirmation : « Si $f$ est continue en $a$, alors $f$ est dérivable en $a$ » ?\n\n```choix\n- Fausse : {{if:c==0|$x\\mapsto\\lvert x\\rvert$|$x\\mapsto\\sqrt{x}$}} est continue en $0$ mais pas dérivable en $0$\n- Vraie : c'est la propriété du cours\n- Vraie : toute fonction continue est dérivable\n- Fausse : une fonction continue en $a$ n'est jamais dérivable en $a$\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le cours dit : dérivable $\\implies$ continue. L'affirmation est la **réciproque**, qui est \\textcolor{{{color:primary.0}}}{fausse}.",
+					"{{if:c==0|$x\\mapsto\\lvert x\\rvert$ est continue en $0$, mais sa courbe a un point anguleux en $0$ : elle n'y est pas dérivable.|$x\\mapsto\\sqrt{x}$ est continue en $0$, mais sa courbe a une tangente verticale en $0$ : elle n'y est pas dérivable.}}"
+				]
+			},
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..1"
+				}
+			]
+		},
+		{
+			"statement": "Soit $f$ une fonction définie sur un intervalle $I$ et $a$ un réel de $I$.\n\nOn sait que $f$ n'est **pas continue** en $a$. Que peut-on en déduire ?\n\n```choix\n- $f$ n'est pas dérivable en $a$\n- $f$ est dérivable en $a$\n- On ne peut rien dire de la dérivabilité de $f$ en $a$\n- $f'(a)=0$\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Si $f$ était dérivable en $a$, elle serait continue en $a$ (propriété du cours).",
+					"Comme elle n'est pas continue en $a$, \\textcolor{{{color:primary.0}}}{f \\text{ n'est pas dérivable en } a}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : continue",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : f′(a) = 0",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : fausse, contre-exemple",
+			"variationIndex": 1,
+			"variables": {
+				"c": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : vraie",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : pas dérivable",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : on ne peut rien dire",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

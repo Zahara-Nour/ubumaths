@@ -6,17 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après la publication du lot 6b._
+_Mis à jour le 2026-11-02, après #2194._
 
-- **État** : lots 1 à 6b en prod ET publiés. **Phase 0 du lot 7a (calcul posé + monnaie, 10 modèles) écrite au § 11,
-  en attente de validation de David** (5 questions, recommandations données). Aucun worktree en cours.
-- **Prochaine action** : après validation du § 11, écrire `lot-ce2-7a.py`. Lots suivants (décision 7) : 7b `horloge` +
-  `line`, 7c statistiques, `figure` / images fixes, QCM (040, 041, 042, 049, 050, 063, 064, 067, 069), outils neufs.
-- **En attente de David** : les 5 questions du § 11.
-- **Pièges en cours** : jamais de variable `e` (Euler) même dans un texte `{{eval:10*e}}` ; `--publier` refusé par le
-  classifieur (`!`) ; verdicts du 6b posés en 3 s : relecture non prouvée ; case d'opération posée sans
-  `expectedAnswer` ; niveaux monnaie à relever juste avant la publication (brouillons CE1 du lot 8 non publiés) ;
-  commitlint : corps ≤ 100 caractères par ligne, sujet sans majuscule ; pas de mention Claude.
+- **État** : lots 1 à 6b en prod ET publiés. Lot 7a (calcul posé + monnaie) : 10 modèles mergés (#2194, CI verte),
+  **pas encore créés en prod** (`scripts/questions/ce2-7a/`, simulation 10/10). Aucun worktree en cours.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce2-7a --publier`
+  (`!`) ; je relève au MCP, puis migration nœud + tag (016, 090, 019, 055, 056, 054, 080), page à cocher,
+  `publier-lot`. Ensuite lot 7b (`horloge` + `line` : 057, 059, 094, 010, 058), 7c statistiques, `figure` / images
+  fixes, QCM, outils neufs.
+- **En attente de David** : lancer `create-questions --publier` (écriture prod refusée au classifieur).
+- **Pièges en cours** : jamais de variable `e` (Euler) même dans un texte `{{eval:10*e}}` ; corrigé des unités mêlées (06)
+  sans bloc `operation` résolu (écart à la décision 3, rendu non vérifié) ; verdicts du 6b posés en 3 s : relecture non
+  prouvée ; niveaux monnaie à relever juste avant la publication (brouillons CE1 du lot 8 non publiés) ; commitlint :
+  corps ≤ 100 caractères par ligne, sujet sans majuscule ; pas de mention Claude.
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
@@ -501,7 +503,7 @@ conversion, puis le mélange, puis l'unité à déduire).
 - Brouillons créés le 2026-11-01 : 10 `186f05a4`, 11 `cda9c7de`, 12 `ea1a0929`, 13 `ba8f2f75` (préfixes). Rangement :
   10 → CE2-052 et 11 → CE2-053 sur Contenances / unités et conversions ; 12 et 13 → CE2-060 sur Durées / calcul de durées.
 
-## 11. Lot 7a — calcul posé et monnaie (phase 0, 2026-11-02, EN ATTENTE de validation)
+## 11. Lot 7a — calcul posé et monnaie (phase 0 validée le 2026-11-02)
 
 Ordre rappelé (décision 7 du § 4 bis) : lots à outils existants avant le lot QCM ; le lot 7 est découpé par outil :
 **7a** `operation` + `monnaie` (ce lot), **7b** `horloge` + `line` (057, 059, 094, 010, 058), **7c** statistiques,
@@ -555,3 +557,20 @@ ne change aucune règle.
 4. **Un seul lot de 10 modèles** (7 points) plutôt que deux (opérations 01-05, monnaie 06-10) ? Recommandation : un seul.
 5. **Rendre la monnaie par ajouts** : la case guide les deux ajouts (32 c puis 1 €), puis une variation demande
    seulement le total rendu ? Recommandation : oui, les deux dans 09.
+
+Réponse de David (« tes recos ? » puis « ok », 2026-11-02) : les cinq recommandations.
+
+### Lot 7a — écriture (2026-11-02)
+
+- Script `docs/wip/questions/lot-ce2-7a.py` → `scripts/questions/ce2-7a/` : 10 modèles, 81 specs, `question:specs`
+  vert (200 tirages par variation, 7 400 réussis), `create-questions` en simulation (prod) : 10 « à créer ».
+  Catégories posées d'après le relevé MCP du jour (**à relire avant la publication**, les brouillons CE1 du lot 8 sont
+  encore à publier) : Addition / Calcul posé 3 ; Soustraction / Calcul posé 3 (cassage), 4 (compensation) ;
+  Entiers · Multiplier · Calcul posé 2, 3 ; Monnaie / Euros et centimes 3, 4 ; Pièces et billets 12 ; Rendre la
+  monnaie 5, 6.
+- Écart à la décision 3 : le corrigé des unités mêlées (06, variations 3 et 4) écrit l'opération en formule, **sans
+  bloc `operation` résolu** (aucun précédent de bloc dans une étape de correction ; rendu non vérifié).
+- Corrigés des soustractions : colonne par colonne, générés (chiffres `x0..x3`, `y0..y3`, emprunts `f0..f3`) ; cas du
+  zéro à casser géré (« il n'y a rien à casser ici… il reste 9 »), relu à l'aperçu. Case posée sans `expectedAnswer`.
+- Prix des corrigés de monnaie en centimes entiers, `zeros: off` (2,2 juste pour 2,20 €). Rendu : condition
+  `floor(p/100)+1 < B` (sinon « de 5 € à 5 €, il faut 0 € »).

@@ -12,7 +12,7 @@ _Mis à jour le 2026-11-02, après #2187._
 - **Prochaine action** : lots 7 et 8 en base : `create-questions --publier` (David, depuis le dépôt
   principal à jour, `--dir scripts/questions/3-lot-7` puis `3-lot-8`), relever les `id`, migration de rangement (lot 7 : sous-notion neuve, § 14.10 ;
   lot 8 : f2167091, § 15.2), page à cocher.
-- **En attente de David** : les deux `create-questions --publier`.
+- **En attente de David** : `create-questions --publier` du lot 8 (lot 7 en base, § 14.11).
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
   du mode auto → David les lance avec `!` ; aperçu admin : `--host 127.0.0.1` ; `audit-question-draws` :
   faux positifs « nombres juxtaposés » (blocs statistiques), « gabarit non résolu » sur `<<` (Scratch) ;
@@ -1106,3 +1106,8 @@ publiés de plus. Aucune règle ne change.
 ### 15.7 Lot 8 : fichiers mergés (2026-11-02)
 
 - #2187 mergée (CI verte au 1er passage).
+
+### 14.11 Lot 7 en base prod (David, 2026-11-02, brouillons)
+
+- 3-047 `962da675-6cde-45c9-9ba4-56d96a2be9c6` · 3-048 `9f9bddbd-19cc-43cc-90b9-e67c9058468d` ·
+  3-049 `4ce8eb3c-e00a-4a26-adf7-d4f215b8cc3b` · 3-050 `0a470416-e296-4f2b-b11d-dee7150ebc7a`.

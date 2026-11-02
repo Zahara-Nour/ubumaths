@@ -1,0 +1,119 @@
+{
+	"title": "Moyenne d'une série regroupée en classes",
+	"description": "Répartition uniforme dans chaque classe : moyenne calculée avec les centres des classes",
+	"grades": ["2"],
+	"theme": "Statistiques",
+	"domain": "Indicateurs",
+	"subdomain": "Moyenne",
+	"level": 7,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Voici la répartition des temps de course (en minutes) des élèves d'un lycée.\n\n| Temps (min) | $\\left[{{eval:(x0)+0*(h)}}\\,;{{eval:(x0)+1*(h)}}\\right[$ | $\\left[{{eval:(x0)+1*(h)}}\\,;{{eval:(x0)+2*(h)}}\\right[$ | $\\left[{{eval:(x0)+2*(h)}}\\,;{{eval:(x0)+3*(h)}}\\right[$ | $\\left[{{eval:(x0)+3*(h)}}\\,;{{eval:(x0)+4*(h)}}\\right[$ | $\\left[{{eval:(x0)+4*(h)}}\\,;{{eval:(x0)+5*(h)}}\\right[$ |\n|---|---|---|---|---|---|\n| Effectif | ${{n1}}$ | ${{n2}}$ | ${{n3}}$ | ${{n4}}$ | ${{n5}}$ |\n\nOn suppose les valeurs **réparties uniformément** dans chaque classe. Calcule le temps moyen.\n\nTemps moyen : $?$ minutes",
+			"variables": [
+				{
+					"name": "x0",
+					"expression": "0|10|20|30|40"
+				},
+				{
+					"name": "h",
+					"expression": "5|10|20"
+				},
+				{
+					"name": "n1",
+					"expression": "1..12"
+				},
+				{
+					"name": "n2",
+					"expression": "1..12"
+				},
+				{
+					"name": "n3",
+					"expression": "1..12"
+				},
+				{
+					"name": "n4",
+					"expression": "1..12"
+				},
+				{
+					"name": "n5",
+					"expression": "1..12"
+				}
+			],
+			"conditions": [
+				"mod(100*((n1)*((x0)+0*(h)+(h)/2)+(n2)*((x0)+1*(h)+(h)/2)+(n3)*((x0)+2*(h)+(h)/2)+(n4)*((x0)+3*(h)+(h)/2)+(n5)*((x0)+4*(h)+(h)/2)),(n1)+(n2)+(n3)+(n4)+(n5)) == 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((n1)*((x0)+0*(h)+(h)/2)+(n2)*((x0)+1*(h)+(h)/2)+(n3)*((x0)+2*(h)+(h)/2)+(n4)*((x0)+3*(h)+(h)/2)+(n5)*((x0)+4*(h)+(h)/2))/((n1)+(n2)+(n3)+(n4)+(n5));d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Répartition uniforme : chaque classe est représentée par son **centre**, $\\dfrac{a+b}{2}$.",
+					"Centres : ${{eval:(x0)+0*(h)+(h)/2;d}}$, ${{eval:(x0)+1*(h)+(h)/2;d}}$, ${{eval:(x0)+2*(h)+(h)/2;d}}$, ${{eval:(x0)+3*(h)+(h)/2;d}}$, ${{eval:(x0)+4*(h)+(h)/2;d}}$ ; effectif total ${{eval:(n1)+(n2)+(n3)+(n4)+(n5)}}$.",
+					"$\\overline{x}=\\dfrac{{{n1}}\\times{{eval:(x0)+0*(h)+(h)/2;d}}+{{n2}}\\times{{eval:(x0)+1*(h)+(h)/2;d}}+{{n3}}\\times{{eval:(x0)+2*(h)+(h)/2;d}}+{{n4}}\\times{{eval:(x0)+3*(h)+(h)/2;d}}+{{n5}}\\times{{eval:(x0)+4*(h)+(h)/2;d}}}{ {{eval:(n1)+(n2)+(n3)+(n4)+(n5)}} }=\\textcolor{{{color:primary.0}}}{{{eval:((n1)*((x0)+0*(h)+(h)/2)+(n2)*((x0)+1*(h)+(h)/2)+(n3)*((x0)+2*(h)+(h)/2)+(n4)*((x0)+3*(h)+(h)/2)+(n5)*((x0)+4*(h)+(h)/2))/((n1)+(n2)+(n3)+(n4)+(n5));d}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Centres 25…65, effectifs 2 3 5 6 4 : 970/20 = 48,5",
+			"variationIndex": 0,
+			"variables": {
+				"x0": "20",
+				"h": "10",
+				"n1": "2",
+				"n2": "3",
+				"n3": "5",
+				"n4": "6",
+				"n5": "4"
+			},
+			"answers": ["48.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : bornes gauches (43,5)",
+			"variationIndex": 0,
+			"variables": {
+				"x0": "20",
+				"h": "10",
+				"n1": "2",
+				"n2": "3",
+				"n3": "5",
+				"n4": "6",
+				"n5": "4"
+			},
+			"answers": ["43.5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : moyenne des centres (45)",
+			"variationIndex": 0,
+			"variables": {
+				"x0": "20",
+				"h": "10",
+				"n1": "2",
+				"n2": "3",
+				"n3": "5",
+				"n4": "6",
+				"n5": "4"
+			},
+			"answers": ["45"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
