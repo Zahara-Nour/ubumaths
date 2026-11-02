@@ -5,20 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2197 et `db:migrate`._
+_Mis à jour le 2026-11-02, lot 8 publié._
 
-- **État** : lots 1 à 7 publiés. Lot 8 « Opérations » : 6 brouillons en prod, rangés et tagués (#2197, migration
-  appliquée et vérifiée au MCP, § 21) ; page à cocher https://claude.ai/artifact/1g59HkYRvUMm1hgfaFVyRU publiée.
-- **Prochaine action** : quand David a relu, compter les verdicts (`ArtifactData list verdicts`, 6 attendus) ;
-  corriger les « À revoir » ; `publier-lot.ts --dir scripts/questions/5-operations` en simulation, puis David
-  `--publier` ; vérifier `published` au MCP.
-- **En attente de David** : la relecture de la page à cocher ; 02 du lot 7 (deux cases sur deux lignes) à essayer
-  à la main : au pilotage Chrome, la frappe dans la 2e case arrivait aussi dans la 1re — extension ou appli ?
+- **État** : lots 1 à 8 publiés. **Les points de classe A sont tous couverts** sauf 5-122 (étiquettes à ranger,
+  outil neuf). Relevé prod du 2026-11-02 : 69 points de 5e sans modèle (B, C, D, § 3 et § 22).
+- **Prochaine action** : proposer à David le premier lot B (§ 22) et attendre son choix ; puis phase 0.
+- **En attente de David** : le choix du premier lot B ; 02 du lot 7 (deux cases sur deux lignes) à essayer à la
+  main : au pilotage Chrome, la frappe dans la 2e case arrivait aussi dans la 1re — extension ou appli ?
 - **Pièges en cours** : `db:migrate` en prod refusé par le classifieur du mode auto → David le lance ; il pousse
   toutes les migrations en attente (`--include-all` si une plus ancienne arrive après coup ; dry-run d'abord) ;
-  `pnpm check:migrations --pr <n>` avant merge ; horodatage = `pnpm migration:horodatage` ; une garde
-  `docs:check-a-jour` sur une migration de données → ligne `Doc-inchangée:` dans un COMMIT (pas la PR) ; jamais `e`.
-- **Worktree / branche** : aucun (retiré après #2197).
+  `pnpm check:migrations --pr <n>` avant merge ; horodatage = `pnpm migration:horodatage` ; garde
+  `docs:check-a-jour` sur une migration de données → ligne `Doc-inchangée:` dans un COMMIT (pas la PR) ;
+  `gh pr checks --watch` rend la main avant l'intégration : suivre les runs ; jamais `e`.
+- **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -616,3 +615,15 @@ opératoires › écriture d'une expression ». Chaque modèle sur le nœud de s
 - Page à cocher https://claude.ai/artifact/1g59HkYRvUMm1hgfaFVyRU (6 fiches, aucune alerte, capacité `db`,
   collection `verdicts` vide au départ). Rendu 390 px non vérifié : le redimensionnement de Chrome est resté sans
   effet.
+
+### Lot 8 : publication (2026-11-02)
+
+- Page à cocher : **6 verdicts sur 6 « ok »**, sans commentaire (comptés en base de l'artefact). Simulation
+  `publier-lot` 6/6 ; David : `--publier` → 6/6 ; vérifié au MCP (`status = published` pour les 6).
+
+## 22. Après les lots A (2026-11-02)
+
+Relevé prod : 69 points de 5e sans modèle : 011 016 040 042 043 046 047 048 049 054 055 057 059 060 062 063 064
+065 066 067 068 069 070 071 072 075 076 077 078 084 089 090 091 093 094 095 096 097 099 100 101 102 103 104 105
+106 109 110 111 112 113 114 115 121 122 127 128 130 131 132 133 135 136 137 138 141 142 143 144. Classe A restante :
+122 seulement (outil « étiquettes à ranger », chantier à part, § 5.4). Le reste est B, C ou D (§ 3).
