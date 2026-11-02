@@ -1,0 +1,163 @@
+{
+	"title": "Résoudre l'équation y′ = f",
+	"description": "Les solutions de y′ = f sont les primitives de f, à une constante près (pièges : une seule solution, la dérivée au lieu d'une primitive, exposant non divisé, f elle-même)",
+	"grades": ["T_SPE"],
+	"theme": "Primitives et équations différentielles",
+	"domain": "Primitives",
+	"subdomain": "Notion de primitive",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On considère l'équation différentielle $(E) : y'={{if:3*p==1|x^2}}{{if:3*p==-1|-x^2}}{{if:3*p!=1 && 3*p!=-1|{{eval:3*p}}x^2}}{{if:2*q==1|+x}}{{if:2*q==-1|-x}}{{if:2*q>1|+{{eval:2*q}}x}}{{if:2*q<-1|{{eval:2*q}}x}}{{if:c>0|+}}{{eval:c}}$ sur $\\mathbb{R}$.\n\nQuelles sont les solutions de cette équation ?\n\n```choix\n- les fonctions $x\\mapsto {{if:p==1|x^3}}{{if:p==-1|-x^3}}{{if:p!=1 && p!=-1|{{eval:p}}x^3}}{{if:q==1|+x^2}}{{if:q==-1|-x^2}}{{if:q>1|+{{eval:q}}x^2}}{{if:q<-1|{{eval:q}}x^2}}{{if:c==1|+x}}{{if:c==-1|-x}}{{if:c>1|+{{eval:c}}x}}{{if:c<-1|{{eval:c}}x}}+C$, où $C$ est un réel quelconque\n- la seule fonction $x\\mapsto {{if:p==1|x^3}}{{if:p==-1|-x^3}}{{if:p!=1 && p!=-1|{{eval:p}}x^3}}{{if:q==1|+x^2}}{{if:q==-1|-x^2}}{{if:q>1|+{{eval:q}}x^2}}{{if:q<-1|{{eval:q}}x^2}}{{if:c==1|+x}}{{if:c==-1|-x}}{{if:c>1|+{{eval:c}}x}}{{if:c<-1|{{eval:c}}x}}$\n- les fonctions $x\\mapsto {{if:6*p==1|x}}{{if:6*p==-1|-x}}{{if:6*p!=1 && 6*p!=-1|{{eval:6*p}}x}}{{if:2*q>0|+}}{{eval:2*q}}+C$, où $C$ est un réel quelconque\n- les fonctions $x\\mapsto {{if:3*p==1|x^3}}{{if:3*p==-1|-x^3}}{{if:3*p!=1 && 3*p!=-1|{{eval:3*p}}x^3}}{{if:2*q==1|+x^2}}{{if:2*q==-1|-x^2}}{{if:2*q>1|+{{eval:2*q}}x^2}}{{if:2*q<-1|{{eval:2*q}}x^2}}{{if:c==1|+x}}{{if:c==-1|-x}}{{if:c>1|+{{eval:c}}x}}{{if:c<-1|{{eval:c}}x}}+C$, où $C$ est un réel quelconque\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les solutions de $y'=f$ sont les **primitives** de $f$ : on ne dérive pas, on cherche $F$ telle que $F'=f$.",
+					"Une primitive de $x\\mapsto {{if:3*p==1|x^2}}{{if:3*p==-1|-x^2}}{{if:3*p!=1 && 3*p!=-1|{{eval:3*p}}x^2}}{{if:2*q==1|+x}}{{if:2*q==-1|-x}}{{if:2*q>1|+{{eval:2*q}}x}}{{if:2*q<-1|{{eval:2*q}}x}}{{if:c>0|+}}{{eval:c}}$ est $F(x)={{if:p==1|x^3}}{{if:p==-1|-x^3}}{{if:p!=1 && p!=-1|{{eval:p}}x^3}}{{if:q==1|+x^2}}{{if:q==-1|-x^2}}{{if:q>1|+{{eval:q}}x^2}}{{if:q<-1|{{eval:q}}x^2}}{{if:c==1|+x}}{{if:c==-1|-x}}{{if:c>1|+{{eval:c}}x}}{{if:c<-1|{{eval:c}}x}}$ (on divise par le nouvel exposant).",
+					"Les solutions sont $\\textcolor{{{color:primary.0}}}{\\text{les fonctions } x\\mapsto {{if:p==1|x^3}}{{if:p==-1|-x^3}}{{if:p!=1 && p!=-1|{{eval:p}}x^3}}{{if:q==1|+x^2}}{{if:q==-1|-x^2}}{{if:q>1|+{{eval:q}}x^2}}{{if:q<-1|{{eval:q}}x^2}}{{if:c==1|+x}}{{if:c==-1|-x}}{{if:c>1|+{{eval:c}}x}}{{if:c<-1|{{eval:c}}x}}+C}$, $C\\in\\mathbb{R}$ : il y en a une infinité, qui diffèrent d'une constante."
+				]
+			},
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				}
+			]
+		},
+		{
+			"statement": "On considère l'équation différentielle $(E) : y'={{if:k==0|\\dfrac{{{a}}}{x}}}{{if:k==1|{{a}}\\cos x}}{{if:k==2|{{a}}\\sin x}}{{if:k==3|\\dfrac{{{a}}}{x^2}}}$ sur ${{if:k==0|\\left]0\\,;+\\infty\\right[}}{{if:k==1|\\mathbb{R}}}{{if:k==2|\\mathbb{R}}}{{if:k==3|\\left]0\\,;+\\infty\\right[}}$.\n\nQuelles sont les solutions de cette équation ?\n\n```choix\n- les fonctions $x\\mapsto {{if:k==0|{{a}}\\ln x}}{{if:k==1|{{a}}\\sin x}}{{if:k==2|-{{a}}\\cos x}}{{if:k==3|-\\dfrac{{{a}}}{x}}}+C$, où $C$ est un réel quelconque\n- la seule fonction $x\\mapsto {{if:k==0|{{a}}\\ln x}}{{if:k==1|{{a}}\\sin x}}{{if:k==2|-{{a}}\\cos x}}{{if:k==3|-\\dfrac{{{a}}}{x}}}$\n- les fonctions $x\\mapsto {{if:k==0|-\\dfrac{{{a}}}{x^2}}}{{if:k==1|-{{a}}\\sin x}}{{if:k==2|{{a}}\\cos x}}{{if:k==3|-\\dfrac{{{eval:2*a}}}{x^3}}}+C$, où $C$ est un réel quelconque\n- les fonctions $x\\mapsto {{if:k==0|\\dfrac{{{a}}}{x}}}{{if:k==1|{{a}}\\cos x}}{{if:k==2|{{a}}\\sin x}}{{if:k==3|\\dfrac{{{a}}}{x^2}}}+C$, où $C$ est un réel quelconque\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les solutions de $y'=f$ sur un intervalle sont les **primitives** de $f$ sur cet intervalle.",
+					"Une primitive de $x\\mapsto {{if:k==0|\\dfrac{{{a}}}{x}}}{{if:k==1|{{a}}\\cos x}}{{if:k==2|{{a}}\\sin x}}{{if:k==3|\\dfrac{{{a}}}{x^2}}}$ sur ${{if:k==0|\\left]0\\,;+\\infty\\right[}}{{if:k==1|\\mathbb{R}}}{{if:k==2|\\mathbb{R}}}{{if:k==3|\\left]0\\,;+\\infty\\right[}}$ est $x\\mapsto {{if:k==0|{{a}}\\ln x}}{{if:k==1|{{a}}\\sin x}}{{if:k==2|-{{a}}\\cos x}}{{if:k==3|-\\dfrac{{{a}}}{x}}}$ : sa dérivée redonne bien ${{if:k==0|\\dfrac{{{a}}}{x}}}{{if:k==1|{{a}}\\cos x}}{{if:k==2|{{a}}\\sin x}}{{if:k==3|\\dfrac{{{a}}}{x^2}}}$.",
+					"Les solutions sont $\\textcolor{{{color:primary.0}}}{\\text{les fonctions } x\\mapsto {{if:k==0|{{a}}\\ln x}}{{if:k==1|{{a}}\\sin x}}{{if:k==2|-{{a}}\\cos x}}{{if:k==3|-\\dfrac{{{a}}}{x}}}+C}$, $C\\in\\mathbb{R}$."
+				]
+			},
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..3"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				}
+			]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : F + C",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"q": "-2",
+				"c": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : une seule solution",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"q": "-2",
+				"c": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : dérivée",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"q": "-2",
+				"c": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : exposant non divisé",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"q": "-2",
+				"c": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : a ln x + C",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0",
+				"a": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : −a cos x + C",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"a": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : f + C",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"a": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

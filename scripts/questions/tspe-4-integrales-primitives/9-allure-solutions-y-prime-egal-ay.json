@@ -1,0 +1,137 @@
+{
+	"title": "Allure des solutions de y′ = ay",
+	"description": "Solutions Ce^(ax) de y′ = ay : lire le signe de a et de f(0) sur la courbe, décrire l'allure connaissant a et f(0) (pièges : signe de a confondu avec le sens de variation, limite en +∞)",
+	"grades": ["T_SPE"],
+	"theme": "Primitives et équations différentielles",
+	"domain": "Équations différentielles",
+	"subdomain": "Allure des courbes",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $a$ un réel non nul. La courbe $\\mathcal{C}_f$ ci-dessous représente une solution $f$, sur $\\mathbb{R}$, de l'équation différentielle $y'=ay$.\n\n```courbe\nx: -3 ; 3\ny: -8 ; 8\ngrille: 1 ; 2\nf(x) = {{C}}*exp({{s}}*{{h}}*x/2)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction exponentielle, qui tend vers 0 d'un côté et s'éloigne de l'axe des abscisses de l'autre.\n```\n\nQue peut-on dire du signe de $a$ et de celui de $f(0)$ ?\n\n```choix\n- $a{{if:s>0|>|<}}0$ et $f(0){{if:C>0|>|<}}0$\n- $a{{if:s>0|<|>}}0$ et $f(0){{if:C>0|>|<}}0$\n- $a{{if:s>0|>|<}}0$ et $f(0){{if:C>0|<|>}}0$\n- $a{{if:s>0|<|>}}0$ et $f(0){{if:C>0|<|>}}0$\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les solutions de $y'=ay$ sont les fonctions $f(x)=Ce^{ax}$, avec $C=f(0)$.",
+					"$f(0)$ est l'ordonnée du point d'abscisse $0$ : on lit $f(0)={{C}}$, donc $f(0){{if:C>0|>|<}}0$.",
+					"La courbe tend vers $0$ en {{if:s>0|$-\\infty$|$+\\infty$}} : $e^{ax}$ tend vers $0$ en {{if:s>0|$-\\infty$|$+\\infty$}} quand {{if:s>0|$a>0$|$a<0$}}. Donc $\\textcolor{{{color:primary.0}}}{a{{if:s>0|>|<}}0 \\text{ et } f(0){{if:C>0|>|<}}0}$."
+				]
+			},
+			"variables": [
+				{
+					"name": "s",
+					"expression": "-1|1"
+				},
+				{
+					"name": "h",
+					"expression": "1..2"
+				},
+				{
+					"name": "C",
+					"expression": "1..3;±"
+				}
+			]
+		},
+		{
+			"statement": "Soit $f$ la solution sur $\\mathbb{R}$ de l'équation différentielle $y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}$ telle que $f(0)={{y0}}$.\n\nQuelle phrase décrit l'allure de la courbe de $f$ ?\n\n```choix\n- $f$ est {{if:a*y0>0|croissante|décroissante}} sur $\\mathbb{R}$ et tend vers ${{if:a<0|0}}{{if:a>0 && y0>0|+\\infty}}{{if:a>0 && y0<0|-\\infty}}$ en $+\\infty$\n- $f$ est {{if:a*y0>0|décroissante|croissante}} sur $\\mathbb{R}$ et tend vers ${{if:a<0|0}}{{if:a>0 && y0>0|+\\infty}}{{if:a>0 && y0<0|-\\infty}}$ en $+\\infty$\n- $f$ est {{if:a*y0>0|croissante|décroissante}} sur $\\mathbb{R}$ et tend vers ${{if:a>0|0}}{{if:a<0 && y0>0|+\\infty}}{{if:a<0 && y0<0|-\\infty}}$ en $+\\infty$\n- $f$ est {{if:a*y0>0|décroissante|croissante}} sur $\\mathbb{R}$ et tend vers ${{if:a>0|0}}{{if:a<0 && y0>0|+\\infty}}{{if:a<0 && y0<0|-\\infty}}$ en $+\\infty$\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(x)={{if:y0==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:y0==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:y0!=1 && y0!=-1|{{eval:y0}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}$ et $f'(x)={{if:a*y0==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:a*y0==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:a*y0!=1 && a*y0!=-1|{{eval:a*y0}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}$ : comme $e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}>0$, $f'$ a le signe de ${{eval:a*y0}}$, {{if:a*y0>0|positif|négatif}} : $f$ est {{if:a*y0>0|croissante|décroissante}}.",
+					"{{if:a<0|Comme $a<0$, $e^{ax}$ tend vers $0$ en $+\\infty$, donc $f$ aussi.|Comme $a>0$, $e^{ax}$ tend vers $+\\infty$ en $+\\infty$ ; $f(0)$ donne le signe de la limite.}}",
+					"$f$ est $\\textcolor{{{color:primary.0}}}{\\text{{{if:a*y0>0|croissante|décroissante}}}}$ et tend vers $\\textcolor{{{color:primary.0}}}{{{if:a<0|0}}{{if:a>0 && y0>0|+\\infty}}{{if:a>0 && y0<0|-\\infty}}}$ en $+\\infty$."
+				]
+			},
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "y0",
+					"expression": "1..4;±"
+				}
+			]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : a > 0, f(0) > 0",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"h": "2",
+				"C": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : signe de a inversé",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"h": "2",
+				"C": "-2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : a < 0, y0 > 0",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"y0": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : a > 0, y0 < 0",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"y0": "-3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : sens inversé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"y0": "-3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

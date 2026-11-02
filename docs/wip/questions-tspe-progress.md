@@ -10,20 +10,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après la publication du lot 3._
+_Mis à jour le 2026-11-02, lot 4 écrit, PR des fichiers ouverte._
 
-- **État** : lots 0, 1, 2 et 3 faits ; lot 3 (ln, continuité, convexité, § 16) **publié** le 2026-11-02 (6/6
-  `published`, relu au MCP ; 6 verdicts OK sur la page à cocher).
-- **Prochaine action** : lot 4 « intégrales et primitives : restes » (461, 462, 478, 480, 489, 491, 485, 486, 465,
-  § 4) : worktree neuf depuis `origin/main`, relevé MCP des voisins, phase 0 à faire valider.
-- **En attente de David** : rien (la phase 0 du lot 4 est à produire).
-- **Pièges en cours** : un tag doit être sur le **nœud du modèle ou sa notion** (§ 14) ; le **niveau est dans la
-  clé** de `create-questions`, qui se lance depuis le dépôt principal APRÈS le merge (dossier absent avant).
-  `create-questions` et `publier-lot` → David (`!`) ; `db:migrate` depuis le dépôt principal (`echo y |`) ;
-  corps de commit ≤ 100 caractères par ligne. Migrations : `pnpm migration:horodatage`, `migration list --linked`
-  avant `db:migrate`. Worktree neuf : `pnpm exec svelte-kit sync` avant `question:specs`. `|` interdit dans une
-  branche de `{{if:…}}` (`\lvert x\rvert`). Job navigateur `wrapDynamicImport` en CI : relancer.
-- **Worktree / branche** : aucun (retiré après #2202) ; lot 4 → worktree neuf depuis `origin/main`.
+- **État** : lots 0 à 3 publiés. Lot 4 (intégrales et primitives, 9 modèles, § 17) : phase 0 validée, fichiers
+  écrits dans `scripts/questions/tspe-4-integrales-primitives/`, specs et sonde vertes, essai local fait.
+- **Prochaine action** : PR des fichiers → CI → merge ; puis David lance `create-questions --publier` depuis le
+  dépôt principal ; migration nœud + tag (gabarit lot 3) ; page à cocher ; publication.
+- **En attente de David** : rien avant le merge ; ensuite `create-questions --publier` (`!`).
+- **Pièges en cours** : `cleanCoefficients` ne nettoie que les formules analysables → signes par `coef()`/`terme()`
+  (§ 17) ; couleur toujours dans `$…$` ; un tag sur le **nœud du modèle ou sa notion** (§ 14) ; niveau dans la clé de
+  `create-questions` ; `db:migrate` depuis le dépôt principal (`echo y |`) ; `pnpm migration:horodatage`. Port 5176
+  pris par une autre session (dev sur 5178).
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe` · `feat/questions-tspe-lot4`.
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -831,3 +829,45 @@ la publication). Rendu à 390 px non vérifié. `publier-lot.ts` simulé : 6 bro
 
 **Publication** (2026-11-02) : 6 verdicts « OK » lus en base de la page (comptés) ; `publier-lot.ts --publier` lancé
 par David : 6/6 `published`, relus au MCP.
+
+## 17. Lot 4 : intégrales et primitives, restes (461, 462, 478, 480, 485, 486, 489, 491, 465)
+
+_2026-11-02. Relevé MCP : 461 sur la notion « y′ = f », 462 et 478 sur « y′ = f › primitives : notion » (3dbc5a7b
+niveau 1), 480 sur « Calcul d'intégrales › linéarité » (vide), 485 sur « Intégrale et aire › aire algébrique »
+(6ed907d7, a32e6d38), 486 sur la notion « Valeur moyenne » (76843d15, 298e2335, 7a0b795c), 489 sur « Calcul
+d'intégrales › positivité et inégalités » (dd0ee69a), 491 sur « Calcul d'intégrales › suites d'intégrales » (vide),
+465 sur « Généralités › allure des courbes » (624bf511). **Déjà tagués** : 465 (624bf511 : y′ = ay + b, b ≠ 0 en v0 ;
+y′ = ay seulement si m = 0 en v1, 1 tirage sur 9) et 489 (dd0ee69a : encadrement par des **constantes** ou par la
+monotonie, jamais par une autre fonction)._
+
+**Phase 0 (validée par David le 2026-11-02, « go » sur les recos)** : niveau `T_SPE` seul, un point par modèle, réponses en case ou en
+case choix (jamais les deux), estimations graphiques en case choix (pas de tolérance en case).
+
+| #   | Point    | Titre                                           | Catégorie (niveau)                                       | Nœud                                      |
+| --- | -------- | ----------------------------------------------- | -------------------------------------------------------- | ----------------------------------------- |
+| M1  | TSPE-461 | Résoudre l'équation y′ = f                      | Primitives › Notion de primitive (3)                     | y′ = f › primitives : notion              |
+| M2  | TSPE-462 | F est-elle une primitive de f ?                 | Primitives › Notion de primitive (2)                     | y′ = f › primitives : notion              |
+| M3  | TSPE-478 | Existence de primitives d'une fonction continue | Primitives › Notion de primitive (4)                     | y′ = f › primitives : notion              |
+| M4  | TSPE-480 | Linéarité de l'intégrale                        | Propriétés de l'intégrale › Linéarité (1)                | Calcul d'intégrales › linéarité           |
+| M5  | TSPE-485 | Estimer graphiquement une intégrale             | Intégrale et aire › Lecture graphique (2)                | Intégrale et aire › aire algébrique       |
+| M6  | TSPE-486 | Estimer graphiquement une valeur moyenne        | Valeur moyenne › Lecture graphique (1)                   | Valeur moyenne (notion)                   |
+| M7  | TSPE-489 | Majorer une intégrale par une autre fonction    | Propriétés de l'intégrale › Positivité et inégalités (3) | Calcul d'intégrales › positivité…         |
+| M8  | TSPE-491 | Suite d'intégrales                              | Calcul intégral › Suites d'intégrales (1)                | Calcul d'intégrales › suites d'intégrales |
+| M9  | TSPE-465 | Allure des solutions de y′ = ay                 | Équations différentielles › Allure des courbes (1)       | Généralités › allure des courbes          |
+
+Niveaux : relevé MCP des catégories (2026-11-02), aucun pris. Aucune sous-notion neuve.
+**Question d'accès** : personne ne gagne ni ne perd d'accès (brouillons ; visibles des élèves après `publier-lot`).
+
+**Décisions (David, 2026-11-02, « tes recos ? » puis « go »)** : M7 et M9 écrits malgré les tags existants (dd0ee69a
+n'encadre que par des constantes ; 624bf511 ne donne y′ = ay qu'une fois sur 9) ; M5 et M6 en case choix ; M8 garde
+ses 4 variations (dont Jₙ + Jₙ₊₁ = 1/(n + 1)) ; M3 en case choix courte.
+
+**Écriture** : `docs/wip/questions/lot-tspe-integrales-primitives.py` → `scripts/questions/tspe-4-integrales-primitives/`.
+Specs 7 + 7 + 5 + 6 + 4 + 4 + 9 + 12 + 5 vertes, 2 200 tirages, 0 avertissement ; `sonde-courbes` 0 problème
+(751 blocs) ; `create-questions` en simulation : 9 à créer. Corrigé après relecture des tirages : **le nettoyage des
+coefficients ne lit que les formules qu'il sait analyser** (`(E) : y′ = …`, `x ↦ …` restaient en « +-2x », « 1x³ ») →
+signes écrits par `coef()` / `terme()` ; couleurs hors `$…$` (13) → `colm()` ; « solutions de $(E)$ » rendu « $E$ »
+(parenthèses retirées par le nettoyage) → « de cette équation » ; exposant `{{eval:s*h/2}}` rendu `\dfrac{1}{2}`,
+illisible par ```courbe → `{{s}}*{{h}}*x/2`. Base locale : 9 brouillons créés ; M5 (courbe et aire dessinées,
+choix faux refusé, bonne réponse montrée) et M9 v1 (choix juste accepté) joués dans l'aperçu ; saisie MathLive non
+pilotable par l'automate (M7 non joué en saisie, réponses tapées couvertes par les specs).
