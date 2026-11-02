@@ -6,16 +6,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2175 et #2182._
+_Mis à jour le 2026-11-02, après la publication du lot 7._
 
-- **État** : lots 1 à 6 publiés ; lot 7 (21 modèles) en brouillons en prod, rangés et tagués (§ 48) ; page à
-  cocher publiée (tableaux ` ```variation ` dessinés, #2182, § 49) : https://claude.ai/artifact/JvwcMAT212utBRQL1AQ6Mp
-- **Prochaine action** : David relit la page ; lire `verdicts` (ArtifactData list) et COMPTER ; « À revoir » →
-  corriger (`--mettre-a-jour` par David) ; puis `publier-lot` en simulation (trois dossiers), `--publier` par David.
-- **En attente de David** : relecture du lot 7 sur la page.
-- **Pièges en cours** : page générée depuis une copie des trois dossiers (préfixes a-/b-/c-, scratchpad) ;
-  `Doc-inchangée:` dans un commit, jamais dans le corps de PR ; horodatage → `pnpm migration:horodatage` ;
-  `db push`, `--publier` → David avec `!`.
+- **État** : lots 1 à 7 publiés (lot 7 : 21/21, vérifié en base de prod, § 50). Aucune PR ouverte.
+- **Prochaine action** : nouveau relevé en prod des points de seconde encore sans modèle, puis proposer le
+  lot 8 en phase 0 (skill `couvrir-niveau`), en greppant d'abord ce qui est déjà tranché dans le journal.
+- **En attente de David** : rien.
+- **Pièges en cours** : le worktree n'a pas de `.env` ; `publier-lot` (même en simulation) → David avec `!`
+  et `set -a && . ../ubumaths/.env && set +a`, pas `pnpm -s` ; `Doc-inchangée:` dans un commit, jamais dans
+  le corps de PR ; horodatage → `pnpm migration:horodatage` ; `db push`, `--publier` → David avec `!`.
 - **Worktree / branche** : `../ubumaths-wt-questions-2de`, HEAD détachée sur `origin/main` (aucune branche ouverte).
 
 ## 1. Relevé (prod, 2026-10-27)
@@ -1230,3 +1229,13 @@ ni 2-348 ; L7-d trois PR de fichiers (7 A = 6, 7 B = 6, 7 C = 9), une migration,
   (asymptote à deux limites, bornes implicites, case d'intervalle) : 43/43. Une zone interdite SANS limite
   n'est pas écrivable dans une ligne de variation (le parseur exige des limites).
 - #2182 mergée (CI verte). Page du lot 7 publiée (artefact, capacité `db`), `verdicts` vide au départ.
+
+## 50. Lot 7 publié (2026-11-02)
+
+- Relecture de David sur la page à cocher : `verdicts` lus et comptés, 21/21 « ok », aucun commentaire ; les
+  21 ids sont ceux du § 48.
+- `publier-lot` simulé par David (trois dossiers) : 6 + 6 + 9 passent le contrôle ; puis `--publier` : 6/6,
+  6/6, 9/9.
+- MCP (prod) : les 21 `published`, 21 rangés sur un nœud, un tag chacun.
+- Le mode auto refuse de copier le `.env` de prod dans le worktree, même pour une simulation : David lance la
+  commande avec `!` en chargeant `../ubumaths/.env`.
