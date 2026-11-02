@@ -10,7 +10,7 @@
 	"status": "draft",
 	"variations": [
 		{
-			"statement": "{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|La visite du musée|Le tournoi}}}}}} commence à ${{h}}~\\text{h}~{{eval:10*q}}$ et finit à ${{eval:h+d}}~\\text{h}~{{eval:10*q}}$. Combien de temps dure-t-il ?\n\nIl dure $?~\\text{h}$.",
+			"statement": "{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|Le concert|Le tournoi}}}}}} commence à ${{h}}~\\text{h}~{{eval:10*q}}$ et finit à ${{eval:h+d}}~\\text{h}~{{eval:10*q}}$. Combien de temps dure-t-il ?\n\nIl dure $?~\\text{h}$.",
 			"variables": [
 				{
 					"name": "k",
@@ -38,12 +38,12 @@
 				"steps": [
 					"Les minutes sont les mêmes au début et à la fin : on compte les heures sur l'axe.",
 					"${{h}}~\\text{h}~{{eval:10*q}}$ $\\to$ ${{eval:h+d}}~\\text{h}~{{eval:10*q}}$ : ${{d}}$ heures.",
-					"{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|La visite du musée|Le tournoi}}}}}} dure $\\textcolor{{{color:primary.0}}}{{{d}}}~\\text{h}$."
+					"{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|Le concert|Le tournoi}}}}}} dure $\\textcolor{{{color:primary.0}}}{{{d}}}~\\text{h}$."
 				]
 			}
 		},
 		{
-			"statement": "{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|La visite du musée|Le tournoi}}}}}} commence à ${{h}}~\\text{h}~{{eval:10*p}}$ et finit à ${{h}}~\\text{h}~{{eval:10*q}}$. Combien de temps dure-t-il ?\n\nIl dure $?~\\text{min}$.",
+			"statement": "{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|Le concert|Le tournoi}}}}}} commence à ${{h}}~\\text{h}~{{eval:10*p}}$ et finit à ${{h}}~\\text{h}~{{eval:10*q}}$. Combien de temps dure-t-il ?\n\nIl dure $?~\\text{min}$.",
 			"variables": [
 				{
 					"name": "k",
@@ -72,12 +72,12 @@
 				"steps": [
 					"L'heure ne change pas : seules les minutes avancent.",
 					"De ${{eval:10*p}}$ à ${{eval:10*q}}$ minutes, il s'est écoulé ${{eval:10*(q-p)}}$ minutes.",
-					"{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|La visite du musée|Le tournoi}}}}}} dure $\\textcolor{{{color:primary.0}}}{{{eval:10*(q-p)}}}~\\text{min}$."
+					"{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|Le concert|Le tournoi}}}}}} dure $\\textcolor{{{color:primary.0}}}{{{eval:10*(q-p)}}}~\\text{min}$."
 				]
 			}
 		},
 		{
-			"statement": "{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|La visite du musée|Le tournoi}}}}}} commence à ${{h}}~\\text{h}~{{eval:10*p}}$ et finit à ${{eval:h+d}}~\\text{h}~{{eval:10*q}}$. Combien de temps dure-t-il ?\n\nIl dure $?~\\text{h}~?~\\text{min}$.",
+			"statement": "{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|Le concert|Le tournoi}}}}}} commence à ${{h}}~\\text{h}~{{eval:10*p}}$ et finit à ${{eval:h+d}}~\\text{h}~{{eval:10*q}}$. Combien de temps dure-t-il ?\n\nIl dure $?~\\text{h}~?~\\text{min}$.",
 			"variables": [
 				{
 					"name": "k",
@@ -113,12 +113,12 @@
 				"steps": [
 					"On compte d'abord les heures pleines, puis les minutes.",
 					"${{h}}~\\text{h}~{{eval:10*p}}$ $\\to$ ${{eval:h+d}}~\\text{h}~{{eval:10*p}}$ : ${{d}}$ {{if:d==1|heure|heures}}, puis ${{eval:h+d}}~\\text{h}~{{eval:10*p}}$ $\\to$ ${{eval:h+d}}~\\text{h}~{{eval:10*q}}$ : ${{eval:10*(q-p)}}$ minutes.",
-					"{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|La visite du musée|Le tournoi}}}}}} dure $\\textcolor{{{color:primary.0}}}{{{d}}}~\\text{h}~\\textcolor{{{color:primary.0}}}{{{eval:10*(q-p)}}}~\\text{min}$."
+					"{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|Le concert|Le tournoi}}}}}} dure $\\textcolor{{{color:primary.0}}}{{{d}}}~\\text{h}~\\textcolor{{{color:primary.0}}}{{{eval:10*(q-p)}}}~\\text{min}$."
 				]
 			}
 		},
 		{
-			"statement": "{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|La visite du musée|Le tournoi}}}}}} commence à ${{h}}~\\text{h}~{{eval:10*p}}$ et finit à ${{eval:h+d}}~\\text{h}~{{eval:10*q}}$. Combien de temps dure-t-il ?\n\nIl dure $?~\\text{h}~?~\\text{min}$.",
+			"statement": "{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|Le concert|Le tournoi}}}}}} commence à ${{h}}~\\text{h}~{{eval:10*p}}$ et finit à ${{eval:h+d}}~\\text{h}~{{eval:10*q}}$. Combien de temps dure-t-il ?\n\nIl dure $?~\\text{h}~?~\\text{min}$.",
 			"variables": [
 				{
 					"name": "k",
@@ -155,12 +155,12 @@
 					"On avance de repère en repère sur l'axe : jusqu'à l'heure ronde, puis les heures pleines, puis les minutes qui restent.",
 					"${{h}}~\\text{h}~{{eval:10*p}}$ $\\to$ ${{eval:h+1}}~\\text{h}$ : ${{eval:60-10*p}}$ minutes. Puis ${{eval:h+1}}~\\text{h}$ $\\to$ ${{eval:h+d}}~\\text{h}$ : ${{eval:d-1}}$ {{if:d==2|heure|heures}}. Enfin ${{eval:h+d}}~\\text{h}$ $\\to$ ${{eval:h+d}}~\\text{h}~{{eval:10*q}}$ : ${{eval:10*q}}$ minutes.",
 					"${{eval:60-10*p}} + {{eval:10*q}} = {{eval:60-10*p+10*q}}$ minutes, et ${{eval:d-1}}$ {{if:d==2|heure|heures}} pleines.",
-					"{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|La visite du musée|Le tournoi}}}}}} dure $\\textcolor{{{color:primary.0}}}{{{eval:d-1}}}~\\text{h}~\\textcolor{{{color:primary.0}}}{{{eval:60-10*(p-q)}}}~\\text{min}$."
+					"{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|Le concert|Le tournoi}}}}}} dure $\\textcolor{{{color:primary.0}}}{{{eval:d-1}}}~\\text{h}~\\textcolor{{{color:primary.0}}}{{{eval:60-10*(p-q)}}}~\\text{min}$."
 				]
 			}
 		},
 		{
-			"statement": "{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|La visite du musée|Le tournoi}}}}}} commence à ${{h}}~\\text{h}~{{eval:10*p}}$ et dure ${{a}}~\\text{h}~{{eval:10*r}}~\\text{min}$. À quelle heure finit-il ?\n\nIl finit à $?~\\text{h}~?$.",
+			"statement": "{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|Le concert|Le tournoi}}}}}} commence à ${{h}}~\\text{h}~{{eval:10*p}}$ et dure ${{a}}~\\text{h}~{{eval:10*r}}~\\text{min}$. À quelle heure finit-il ?\n\nIl finit à $?~\\text{h}~?$.",
 			"variables": [
 				{
 					"name": "k",
@@ -196,12 +196,12 @@
 				"steps": [
 					"On ajoute les heures, puis les minutes.",
 					"${{h}}~\\text{h}~{{eval:10*p}}$ + ${{a}}~\\text{h}$ = ${{eval:h+a}}~\\text{h}~{{eval:10*p}}$ ; puis + ${{eval:10*r}}~\\text{min}$ : ${{eval:10*p}} + {{eval:10*r}} = {{eval:10*(p+r)}}$.",
-					"{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|La visite du musée|Le tournoi}}}}}} finit à $\\textcolor{{{color:primary.0}}}{{{eval:h+a}}}~\\text{h}~\\textcolor{{{color:primary.0}}}{{{eval:10*(p+r)}}}$."
+					"{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|Le concert|Le tournoi}}}}}} finit à $\\textcolor{{{color:primary.0}}}{{{eval:h+a}}}~\\text{h}~\\textcolor{{{color:primary.0}}}{{{eval:10*(p+r)}}}$."
 				]
 			}
 		},
 		{
-			"statement": "{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|La visite du musée|Le tournoi}}}}}} finit à ${{h}}~\\text{h}~{{eval:10*q}}$ et dure ${{d}}~\\text{h}$. À quelle heure a-t-il commencé ?\n\nIl a commencé à $?~\\text{h}~{{eval:10*q}}$.",
+			"statement": "{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|Le concert|Le tournoi}}}}}} finit à ${{h}}~\\text{h}~{{eval:10*q}}$ et dure ${{d}}~\\text{h}$. À quelle heure a-t-il commencé ?\n\nIl a commencé à $?~\\text{h}~{{eval:10*q}}$.",
 			"variables": [
 				{
 					"name": "k",
@@ -229,7 +229,7 @@
 				"steps": [
 					"Pour trouver le début, on recule sur l'axe : on enlève les heures, les minutes ne changent pas.",
 					"${{h}}~\\text{h} - {{d}}~\\text{h} = {{eval:h-d}}~\\text{h}$.",
-					"{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|La visite du musée|Le tournoi}}}}}} a commencé à $\\textcolor{{{color:primary.0}}}{{{eval:h-d}}}~\\text{h}~{{eval:10*q}}$."
+					"{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|Le concert|Le tournoi}}}}}} a commencé à $\\textcolor{{{color:primary.0}}}{{{eval:h-d}}}~\\text{h}~{{eval:10*q}}$."
 				]
 			}
 		}

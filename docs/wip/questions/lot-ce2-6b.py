@@ -296,7 +296,7 @@ def D(h, m):
     return '$' + h + '~\\text{h}~' + m + '~\\text{min}$'
 
 
-QUI = ['Le spectacle', 'Le film', 'La visite du musée', 'Le tournoi']
+QUI = ['Le spectacle', 'Le film', 'Le concert', 'Le tournoi']
 QUI_K = selon('k', QUI)
 BLANK_HM = '$?~\\text{h}~?~\\text{min}$'
 
@@ -426,18 +426,18 @@ DEUX_H = variation(
 DEPART_DEUX = variation(
     selon('k', ['Léa', 'Karim', 'Inès', 'Hugo']) + ' part à '
     + Tf('{{h}}', '{{eval:10*p}}') + '. ' + selon('k', ['Elle', 'Il', 'Elle', 'Il'])
-    + ' roule ' + D('{{c}}', '{{eval:10*q}}') + ', puis s\'arrête {{eval:10*e}} minutes.'
+    + ' roule ' + D('{{c}}', '{{eval:10*q}}') + ', puis s\'arrête {{eval:10*w}} minutes.'
     ' À quelle heure repart-' + selon('k', ['elle', 'il', 'elle', 'il']) + ' ?\n\n'
     + selon('k', ['Elle', 'Il', 'Elle', 'Il']) + ' repart à ' + BLANK_HM + '.',
     ['{{eval:h+c+floor(t/6)}}', ev('10*u')],
     [var('k', '1..4'), var('h', '6..10'), var('p', '1..5'), var('c', '1..3'),
-     var('q', '1..5'), var('e', '1..5'),
-     var('t', 'eval:p+q+e'), var('u', 'eval:t-6*floor(t/6)')],
+     var('q', '1..5'), var('w', '1..5'),
+     var('t', 'eval:p+q+w'), var('u', 'eval:t-6*floor(t/6)')],
     ['On ajoute les durées une par une, en comptant sur l\'axe.',
      Tf('{{h}}', '{{eval:10*p}}') + ' + ${{c}}~\\text{h}$ = ' + Tf('{{eval:h+c}}',
                                                                   '{{eval:10*p}}')
-     + ' ; puis + ${{eval:10*q}}$ min, puis + ${{eval:10*e}}$ min.',
-     'Les minutes : ${{eval:10*p}} + {{eval:10*q}} + {{eval:10*e}} = {{eval:10*(p+q+e)}}$.'
+     + ' ; puis + ${{eval:10*q}}$ min, puis + ${{eval:10*w}}$ min.',
+     'Les minutes : ${{eval:10*p}} + {{eval:10*q}} + {{eval:10*w}} = {{eval:10*(p+q+w)}}$.'
      ' {{if:t>=6|Cela fait plus de 60 minutes : on retient une heure.|}}',
      'Il repart à ' + Tf(col('{{eval:h+c+floor(t/6)}}'),
                          col(ev('10*u')), ) + '.'],
@@ -458,7 +458,7 @@ TOTAL = variation(
 # Pause enlevée : de h1 h 30 à h2 h 30, moins une pause de 15 t minutes
 AVEC_PAUSE = variation(
     'Un marché ouvre à ' + Tf('{{h}}', '30') + ' et ferme à ' + Tf('{{eval:h+d}}', '30')
-    + '. Le marchand fait une pause de {{eval:15*t}} minutes à midi. Combien de temps'
+    + '. Le marchand fait une pause de {{eval:15*t}} minutes. Combien de temps'
     ' vend-il ?\n\nIl vend pendant ' + BLANK_HM + '.',
     ['{{eval:d-1}}', ev('60-15*t')],
     [var('h', '6..9'), var('d', '3..6'), var('t', '1..3')],
@@ -474,13 +474,13 @@ SPECS_DEUX_ETAPES = [
     spec('Erreur : on n\'ajoute qu\'une durée', 0, {'h': 7, 'p': 1, 'a': 1, 'b': 2}, '8',
          'incorrect'),
     spec('7 h 10 + 1 h 30 + 40 min = 9 h 20', 1,
-         {'k': 1, 'h': 7, 'p': 1, 'c': 1, 'q': 3, 'e': 4, 't': 8, 'u': 2}, ['9', '20'], 'correct'),
+         {'k': 1, 'h': 7, 'p': 1, 'c': 1, 'q': 3, 'w': 4, 't': 8, 'u': 2}, ['9', '20'], 'correct'),
     spec('Erreur : 7 h 10 + 1 h 30 + 40 min = 9 h 80', 1,
-         {'k': 1, 'h': 7, 'p': 1, 'c': 1, 'q': 3, 'e': 4, 't': 8, 'u': 2}, ['9', '80'], 'incorrect'),
+         {'k': 1, 'h': 7, 'p': 1, 'c': 1, 'q': 3, 'w': 4, 't': 8, 'u': 2}, ['9', '80'], 'incorrect'),
     spec('Erreur : 7 h 10 + 1 h 30 + 40 min = 8 h 20 (heure retenue oubliée)', 1,
-         {'k': 1, 'h': 7, 'p': 1, 'c': 1, 'q': 3, 'e': 4, 't': 8, 'u': 2}, ['8', '20'], 'incorrect'),
+         {'k': 1, 'h': 7, 'p': 1, 'c': 1, 'q': 3, 'w': 4, 't': 8, 'u': 2}, ['8', '20'], 'incorrect'),
     spec('8 h 20 + 2 h 10 + 20 min = 10 h 50', 1,
-         {'k': 2, 'h': 8, 'p': 2, 'c': 2, 'q': 1, 'e': 2, 't': 5, 'u': 5}, ['10', '50'], 'correct'),
+         {'k': 2, 'h': 8, 'p': 2, 'c': 2, 'q': 1, 'w': 2, 't': 5, 'u': 5}, ['10', '50'], 'correct'),
     spec('1 h 30 + 40 min = 2 h 10', 2, {'k': 1, 'a': 1, 'p': 3, 'q': 4}, ['2', '10'],
          'correct'),
     spec('Erreur : 1 h 30 + 40 min = 1 h 70', 2, {'k': 1, 'a': 1, 'p': 3, 'q': 4},

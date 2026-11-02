@@ -43,7 +43,7 @@
 			}
 		},
 		{
-			"statement": "{{if:k==1|Léa|{{if:k==2|Karim|{{if:k==3|Inès|Hugo}}}}}} part à ${{h}}~\\text{h}~{{eval:10*p}}$. {{if:k==1|Elle|{{if:k==2|Il|{{if:k==3|Elle|Il}}}}}} roule ${{c}}~\\text{h}~{{eval:10*q}}~\\text{min}$, puis s'arrête {{eval:10*e}} minutes. À quelle heure repart-{{if:k==1|elle|{{if:k==2|il|{{if:k==3|elle|il}}}}}} ?\n\n{{if:k==1|Elle|{{if:k==2|Il|{{if:k==3|Elle|Il}}}}}} repart à $?~\\text{h}~?~\\text{min}$.",
+			"statement": "{{if:k==1|Léa|{{if:k==2|Karim|{{if:k==3|Inès|Hugo}}}}}} part à ${{h}}~\\text{h}~{{eval:10*p}}$. {{if:k==1|Elle|{{if:k==2|Il|{{if:k==3|Elle|Il}}}}}} roule ${{c}}~\\text{h}~{{eval:10*q}}~\\text{min}$, puis s'arrête {{eval:10*w}} minutes. À quelle heure repart-{{if:k==1|elle|{{if:k==2|il|{{if:k==3|elle|il}}}}}} ?\n\n{{if:k==1|Elle|{{if:k==2|Il|{{if:k==3|Elle|Il}}}}}} repart à $?~\\text{h}~?~\\text{min}$.",
 			"variables": [
 				{
 					"name": "k",
@@ -66,12 +66,12 @@
 					"expression": "1..5"
 				},
 				{
-					"name": "e",
+					"name": "w",
 					"expression": "1..5"
 				},
 				{
 					"name": "t",
-					"expression": "eval:p+q+e"
+					"expression": "eval:p+q+w"
 				},
 				{
 					"name": "u",
@@ -90,8 +90,8 @@
 			"correction": {
 				"steps": [
 					"On ajoute les durées une par une, en comptant sur l'axe.",
-					"${{h}}~\\text{h}~{{eval:10*p}}$ + ${{c}}~\\text{h}$ = ${{eval:h+c}}~\\text{h}~{{eval:10*p}}$ ; puis + ${{eval:10*q}}$ min, puis + ${{eval:10*e}}$ min.",
-					"Les minutes : ${{eval:10*p}} + {{eval:10*q}} + {{eval:10*e}} = {{eval:10*(p+q+e)}}$. {{if:t>=6|Cela fait plus de 60 minutes : on retient une heure.|}}",
+					"${{h}}~\\text{h}~{{eval:10*p}}$ + ${{c}}~\\text{h}$ = ${{eval:h+c}}~\\text{h}~{{eval:10*p}}$ ; puis + ${{eval:10*q}}$ min, puis + ${{eval:10*w}}$ min.",
+					"Les minutes : ${{eval:10*p}} + {{eval:10*q}} + {{eval:10*w}} = {{eval:10*(p+q+w)}}$. {{if:t>=6|Cela fait plus de 60 minutes : on retient une heure.|}}",
 					"Il repart à $\\textcolor{{{color:primary.0}}}{{{eval:h+c+floor(t/6)}}}~\\text{h}~\\textcolor{{{color:primary.0}}}{{{eval:10*u}}}$."
 				]
 			}
@@ -135,7 +135,7 @@
 			}
 		},
 		{
-			"statement": "Un marché ouvre à ${{h}}~\\text{h}~30$ et ferme à ${{eval:h+d}}~\\text{h}~30$. Le marchand fait une pause de {{eval:15*t}} minutes à midi. Combien de temps vend-il ?\n\nIl vend pendant $?~\\text{h}~?~\\text{min}$.",
+			"statement": "Un marché ouvre à ${{h}}~\\text{h}~30$ et ferme à ${{eval:h+d}}~\\text{h}~30$. Le marchand fait une pause de {{eval:15*t}} minutes. Combien de temps vend-il ?\n\nIl vend pendant $?~\\text{h}~?~\\text{min}$.",
 			"variables": [
 				{
 					"name": "h",
@@ -206,7 +206,7 @@
 				"p": "1",
 				"c": "1",
 				"q": "3",
-				"e": "4",
+				"w": "4",
 				"t": "8",
 				"u": "2"
 			},
@@ -224,7 +224,7 @@
 				"p": "1",
 				"c": "1",
 				"q": "3",
-				"e": "4",
+				"w": "4",
 				"t": "8",
 				"u": "2"
 			},
@@ -242,7 +242,7 @@
 				"p": "1",
 				"c": "1",
 				"q": "3",
-				"e": "4",
+				"w": "4",
 				"t": "8",
 				"u": "2"
 			},
@@ -260,7 +260,7 @@
 				"p": "2",
 				"c": "2",
 				"q": "1",
-				"e": "2",
+				"w": "2",
 				"t": "5",
 				"u": "5"
 			},
