@@ -6,19 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après la publication du lot 7a._
+_Mis à jour le 2026-11-02, après la phase 0 du lot 7b._
 
-- **État** : lots 1 à 7a en prod ET publiés (7a : 10 modèles, calcul posé et monnaie). Aucun worktree en cours.
-- **Prochaine action** : phase 0 du lot 7b (`horloge` + `line` : 057 lire, 059 et 094 durées entre deux cadrans, 010 droite
-  graduée, 058 QCM de cadrans) : relever la prod (nœuds, niveaux, modèles `horloge` du CE1), lire la doc des outils, poser
-  le tableau « point → modèle → variations » et les questions à David. Ensuite 7c statistiques, `figure` / images fixes,
-  QCM (040, 041, 042, 049, 050, 063, 064, 067, 069), outils neufs (`centaines:`/milliers, barres à monter).
+- **État** : lots 1 à 7a en prod. Lot 7b (horloge + droite graduée, 9 modèles) : phase 0 **validée** (§ 12), rien écrit.
+- **Prochaine action** : worktree `questions-ce2-7b`, tests rouges, puis les 9 fichiers `scripts/questions/ce2-7b/`
+  (brouillons), `create-questions` en local, `checkTemplate`, brouillons en prod (David lance `--publier`).
 - **En attente de David** : rien.
 - **Pièges en cours** : jamais de variable `e` (Euler) ; verdicts des lots 6b et 7a posés en quelques secondes : relecture
-  non prouvée (7a : grilles `operation` et corrigé des unités mêlées du 06 non vues sur la page) ; `Doc-inchangée:` dans un
-  MESSAGE DE COMMIT (pas la PR) ; `db:migrate --include-all` quand des migrations plus récentes sont déjà jouées ;
-  commitlint : corps ≤ 100 caractères par ligne ; pas de mention Claude.
-- **Worktree / branche** : aucun.
+  non prouvée ; `Doc-inchangée:` dans un MESSAGE DE COMMIT (pas la PR) ; `db:migrate --include-all` quand des migrations
+  plus récentes sont déjà jouées ; commitlint : corps ≤ 100 caractères par ligne ; pas de mention Claude.
+- **Worktree / branche** : aucun encore.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -598,3 +595,32 @@ Réponse de David (« tes recos ? » puis « ok », 2026-11-02) : les cinq recom
   doute revient (grille posée, corrigé des unités mêlées du 06).
 - `publier-lot` : simulation 10/10 (niveaux libres, aucune collision), puis `--publier` lancé par David : 10/10 `published`,
   relu au MCP (rangés, un point chacun). Lot 7a clos.
+
+## 12. Lot 7b — horloge et droite graduée (phase 0 validée le 2026-11-02)
+
+Points CE2-057, 058, 059, 094, 010, sans modèle au relevé MCP du 2026-11-02. Nœuds existants, aucun à créer :
+« Durées › lecture de l'heure » (057, 058 ; CP 1-2, CE1 2-4 publiés), « Durées › calcul de durées » (059, 094 ; CE1 1-2,
+CE2 3-4 du lot 6b, 6e 1-8), « Entiers : numération › droite graduée » (010 ; CE1 niveau 1, 20 images fixes). Outils en
+prod : ` ```horloge ` (`heure:`, `placer:`, `cadran: 24`, `graduations: minutes`, horloges à 3 cm dans un choix),
+` ```line ` (`points:`, `placer: A=? ; B=?`, début ≠ 0, `step` 1 / 10 / 100 / 1000).
+
+| Fichier                          | Point | Nœud · niveau          | Variations                                                                                                  |
+| -------------------------------- | ----- | ---------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `01-lire-l-heure-minutes`        | 057   | Lecture de l'heure · 5 | minutes visibles, graduations ; 5 min près puis à la minute ; deux cases (h, min)                           |
+| `02-lire-l-heure-en-mots`        | 057   | Lecture de l'heure · 6 | cadran → « sept heures moins le quart » = 6 h 45 ; moins vingt, quart, demie, midi ; `cadran: 24` (15 h 42) |
+| `03-place-les-aiguilles-minutes` | 058   | Lecture de l'heure · 7 | `placer:` heures entières, multiples de 5, toute minute (6 h 18) ; chiffres, mots, 24 h (13 h 20)           |
+| `04-quelle-horloge-indique`      | 058   | Lecture de l'heure · 8 | choix de 3-4 horloges ; aiguilles permutées, 20 / 40 min, moins le quart / et quart                         |
+| `05-duree-entre-deux-horloges`   | 059   | Calcul de durées · 5   | 8 h 30 → 8 h 50 ; passage de l'heure (15 h 40 → 16 h 05) ; minutes ou h et min                              |
+| `06-minutes-dans-une-duree`      | 059   | Calcul de durées · 6   | minutes dans 2 h 20 (140) ; durée lue sur deux cadrans puis en minutes                                      |
+| `07-comparer-deux-durees`        | 094   | Calcul de durées · 7   | 4 horloges, case choix « la plus longue », puis écart en minutes                                            |
+| `08-lire-sur-la-droite-graduee`  | 010   | Droite graduée · 2     | `points: A=…`, pas 1 / 10 / 100 / 1 000, portion de droite (début ≠ 0)                                      |
+| `09-place-sur-la-droite-graduee` | 010   | Droite graduée · 3     | `placer: A=? ; B=?` (1 à 3 points), mêmes pas                                                               |
+
+Erreurs typiques des `testSpecs` : aiguilles inversées ; chiffre du cadran lu comme des minutes (8 pour 40) ; « moins le
+quart » lu 15 ; passage de l'heure mal compté (15 h 40 → 16 h 05 = 65) ; 2 h 20 lu 220 min ; pas de 10 lu comme un pas de 1.
+
+**Question d'accès** : personne ne lit rien de plus (brouillons, admin seul) ; la migration nœud + tag ne change aucune règle.
+
+Décisions (David, « tes recos ? » puis « ok », 2026-11-02) : niveaux partagés ci-dessus (écart avec le 6e sur le calcul
+de durées noté, publiés intacts) ; horloge « digitale » = texte + `cadran: 24`, pas de bloc numérique ; 058 en deux modèles
+(03 et 04) ; 094 en case choix puis écart ; un seul lot de 9 modèles.
