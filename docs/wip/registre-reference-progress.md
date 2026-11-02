@@ -6,21 +6,21 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2255 (tidy : Q9 en entier + `signes-06`, mergée)._
+_Mis à jour le 2026-11-02, chantier « unité du résultat » ouvert (aucune PR encore)._
 
-- **État** : corpus complet (193 entrées), juge étendu. Connues fausses : registre 69, Atelier 19.
-  #2255 mergée : `0,5/x → 1/(2x)`, `(2x+2)/(4(x+1)) → (x+1)/(2(x+1))` ; Atelier `0,5x/x` → « 1/2,
-  pour x ≠ 0 ».
-- **Prochaine action** : petite PR `tidy-units.test.ts:24` (12000 m → 12 km contraire à
-  `grandeurs-01`) : vérifier d'abord qui utilise la conversion, phase 0, tests rouges.
-- **Ensuite** : PR 1 (`.dériver`, D1).
-- **En attente de David** : rien. Laissé de la revue de #2255 (déjà ainsi avant) :
-  `(2x+2)/(4x+4) → (x+1)/(2x+2)` (autre côté non primitif non reconnu).
-- **Tranché** : Q9 EN ENTIER + Q-a ; A-D du lot 2 ; `decimal` en LaTeX ; `plafond-02` → 1000 ;
-  Q24 gardée ; `12000 m` gardé ; `signes-06` → `(x+1)/(2(x+1))` — NE PAS reposer.
-- **Pièges** : idempotence (B1) ; greper TOUT le journal avant une question ; sonde = vitest
-  jetable sous `src/` ; banc = script jetable sous `scripts/` (dump prod en lecture, `generatedAt`
-  retiré) ; `deploy-prod.test.ts` rouge en local, aussi sur main (vert en CI).
+- **État** : la règle de l'unité du résultat est REPRISE À ZÉRO (David : « ne te base pas sur ce que
+  j'ai validé »). Principes, règle et 4 recos validés (§ Unité du résultat). Prototype commité en
+  local (`c587a6555`, non poussé) : `tidy` choisit parmi les unités tapées (moins de chiffres) ;
+  `expressedInWritten` court-circuité. Banc fixtures : 5/200 tirages changent (affichage seul) ;
+  oracle cases à unité : 0 verdict changé sur 1 724.
+- **Prochaine action** : banc sur les 12 modèles de prod lus par `scratchpad/banc/dump.ts` (lancé
+  par David, le mode auto refuse la lecture prod) → page à cocher (cas réels + cas types) → PR.
+- **En attente de David** : la lecture des 12 modèles (commande donnée dans la conversation).
+- **Tranché** : voir § Unité du résultat ; avant : Q9 EN ENTIER, A-D du lot 2, `decimal` en LaTeX,
+  `plafond-02` → 1000, Q24, `signes-06` — NE PAS reposer.
+- **Pièges** : la branche a été rebasée sur `origin/main` → pousser sur une NOUVELLE branche
+  (`fix/tidy-unite-ecrite`), pas de push forcé ; zsh ne découpe pas `$FILES` ; sonde = vitest
+  jetable sous `src/lib/mathAST/__sonde__/` (à retirer) ; `deploy-prod.test.ts` rouge en local.
 - **Worktree / branche** : `../ubumaths-wt-registre-reference` · `refactor/registre-reference`.
 
 ---
@@ -407,3 +407,31 @@ Sonde jetable (vitest sous `src/`, `produceRegistre` / `produceAtelier`), 25 lig
   `(4x+4)/(6x+6) → (2x+2)/(3x+3)`, `(2−2x)/(4(x−1))` sans `−1/2` conditionnel. Rien vu sur valeur,
   domaine, idempotence (74 entrées), narration. Après correction : banc 0 différence,
   `check:incremental` 0, cliquet tenu.
+
+## Unité du résultat — reprise à zéro (David, 2026-11-02)
+
+- **Constat** : deux choix d'unité. `tidy` par défaut (`'school'`, 12000 m → 12 km, contraire à
+  l'ADR 0026) atteint l'Atelier par `f(4)` (f(x)=3000[m]·x → 12 km) et le registre par `.simplify`.
+  `cli/quantities.ts` refait un choix par-dessus (`expressedInWritten`, écriture la plus courte) :
+  `tidy` 21 600 000 J contre Atelier 6 kW·h, `tidy` 2,5 h contre Atelier 2 h 30 min.
+- **Principes** (validés) : (1) indépendant de l'ordre d'écriture ; (2) indépendant du chemin, une
+  seule fonction ; (3) pas de conversion non demandée → candidats = unités TAPÉES dans le calcul,
+  `.convertir` sinon ; (4) lisible et exact.
+- **Règle** (validée) : parmi les unités tapées, celle où la valeur s'écrit avec le MOINS DE
+  CHIFFRES (zéros compris : `0,001` = 4, `5000` = 4) ; à égalité la plus petite unité ; produit /
+  quotient : une unité tapée par dimension de base, ou l'unité composée tapée (`kW·h`). Sans écriture
+  finie : la fraction la plus courte. Écartés : première tapée (ordre), plus petite toujours
+  (`5000 m`), plus grande ≥ 1 (seuil arbitraire), toutes les unités usuelles (convertit à la place
+  de l'élève).
+- **Recos validées** : durées h-min-s quand ≥ 2 de h/min/s tapées et durée juste en secondes,
+  DANS la règle commune ; terme à lettre inchangé (`x km + 0,5 km`) ; banc prod avant de coder ;
+  retirer le second choix de `quantities.ts`. Ordre : banc → page à cocher → PR.
+- **Mesures du prototype** : `12[km]+500[m]` 12,5 km ; `2000[m]+3[km]` 5 km (les deux ordres) ;
+  `1[m]+1[km]` 1001 m ; `7[mm]×5[cm]` 3,5 cm² ; `2[cm]×3[mm]` 60 mm² ; `3[kW]×2[h]` 6 kW·h ;
+  `2500[mL]` par `simplify` gardé (garde : le candidat développé ne gagne pas s'il écrit une unité
+  absente). Tests : 31 rouges, tous des attentes de l'ancienne règle (dont `octets-calcul`
+  `1[Ko]+1[o]` → 1001 o, `5[km]+3[m]` → 5003 m, `1[h]+45[min]+30[min]` → 135 min avant durées).
+- **Banc** (25 modèles de `tests/fixtures/correction-cases-unite/`, 8 graines) : 5/200 changent,
+  réponse attendue seule, énoncés « tu choisis l'unité » : `0bb7a4ca` 1,1 h → 66 min, `75956b22`
+  3,85 h → 231 min (→ h-min avec la reco durées), `64e55fc7` 1,005 kL → 1005 L, 1,06 hg → 106 g.
+  Oracle : 1 724 réponses, 0 verdict changé.
