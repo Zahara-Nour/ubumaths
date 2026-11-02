@@ -1,0 +1,119 @@
+{
+	"title": "Dérivée de la fonction cube",
+	"description": "À savoir : (x³)′ = 3x², reconnue parmi des erreurs typiques, et dans l'autre sens (quelle fonction a pour dérivée 3x²)",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "À savoir",
+	"level": 2,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction cube, définie sur $\\mathbb{R}$ par $f(x)=x^3$.\n\nPour tout réel $x$, $f'(x)$ est égal à :\n\n```choix\n- $3x^2$\n- $3x$\n- $x^2$\n- $\\dfrac{x^4}{4}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : la fonction cube est dérivable sur $\\mathbb{R}$ et, pour tout réel $x$, $(x^3)'=3x^2$.",
+					"Donc $f'(x)=\\textcolor{{{color:primary.0}}}{3x^2}$."
+				]
+			}
+		},
+		{
+			"statement": "Parmi ces fonctions définies sur $\\mathbb{R}$, laquelle a pour dérivée la fonction $x\\mapsto 3x^2$ ?\n\n```choix\n- $x\\mapsto x^3$\n- $x\\mapsto 3x^3$\n- $x\\mapsto 6x$\n- $x\\mapsto \\dfrac{x^3}{3}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : pour tout réel $x$, $(x^3)'=3x^2$.",
+					"La fonction qui a pour dérivée $x\\mapsto 3x^2$ est donc $\\textcolor{{{color:primary.0}}}{x\\mapsto x^3}$.",
+					"Attention au sens : $6x$ est la dérivée de $3x^2$, pas une fonction dont $3x^2$ est la dérivée."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3x²",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3x",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x²",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x⁴/4",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x³",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3x³ (dérivée 9x²)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 6x (sens inversé)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x³/3 (dérivée x²)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

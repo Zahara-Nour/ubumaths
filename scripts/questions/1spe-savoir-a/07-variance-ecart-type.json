@@ -1,0 +1,118 @@
+{
+	"title": "Variance et écart type",
+	"description": "À savoir : V(X) = E((X − E(X))²) et σ(X) = √V(X), parmi des erreurs typiques (E(X)², E(X − E(X)), V(X)²) ; König-Huygens reste au point 352",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Variables aléatoires",
+	"subdomain": "À savoir",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $X$ une variable aléatoire d'espérance $E(X)$. La variance $V(X)$ est égale à :\n\n```choix\n- $E\\left(\\left(X-E(X)\\right)^2\\right)$\n- ${E(X)}^2$\n- $E\\left(X-E(X)\\right)$\n- $E\\left(X^2\\right)$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : la variance est la moyenne des carrés des écarts à l'espérance, $V(X)=\\textcolor{{{color:primary.0}}}{E\\left(\\left(X-E(X)\\right)^2\\right)}$.",
+					"Sans le carré, les écarts se compensent : $E\\left(X-E(X)\\right)=0$ pour toute variable aléatoire."
+				]
+			}
+		},
+		{
+			"statement": "Soit $X$ une variable aléatoire de variance $V(X)$. L'écart type $\\sigma(X)$ est égal à :\n\n```choix\n- $\\sqrt{V(X)}$\n- ${V(X)}^2$\n- $\\dfrac{V(X)}{2}$\n- $\\sqrt{E(X)}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : l'écart type est la racine carrée de la variance, $\\sigma(X)=\\textcolor{{{color:primary.0}}}{\\sqrt{V(X)}}$.",
+					"Il s'exprime dans la même unité que $X$, alors que la variance s'exprime dans le carré de cette unité."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "définition",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : E(X)²",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sans le carré",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : E(X²)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "√V",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : V²",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : V/2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : √E(X)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

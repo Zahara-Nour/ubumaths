@@ -1,0 +1,119 @@
+{
+	"title": "Dérivée de la fonction inverse",
+	"description": "À savoir : (1/x)′ = −1/x² sur ]−∞ ; 0[ et ]0 ; +∞[, reconnue parmi des erreurs typiques (signe oublié, −1/x, 0), et dans l'autre sens",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "À savoir",
+	"level": 3,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction inverse, définie et dérivable sur $]-\\infty\\,;0[$ et sur $]0\\,;+\\infty[$ par $f(x)=\\dfrac{1}{x}$.\n\nPour tout réel $x$ non nul, $f'(x)$ est égal à :\n\n```choix\n- $-\\dfrac{1}{x^2}$\n- $\\dfrac{1}{x^2}$\n- $-\\dfrac{1}{x}$\n- $0$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : la fonction inverse est dérivable sur $]-\\infty\\,;0[$ et sur $]0\\,;+\\infty[$ et, pour tout réel $x$ non nul, $\\left(\\dfrac{1}{x}\\right)'=-\\dfrac{1}{x^2}$.",
+					"Donc $f'(x)=\\textcolor{{{color:primary.0}}}{-\\dfrac{1}{x^2}}$ : le signe moins ne s'oublie pas (la fonction inverse est décroissante sur chacun de ces intervalles)."
+				]
+			}
+		},
+		{
+			"statement": "Parmi ces fonctions définies sur $]0\\,;+\\infty[$, laquelle a pour dérivée la fonction $x\\mapsto -\\dfrac{1}{x^2}$ ?\n\n```choix\n- $x\\mapsto \\dfrac{1}{x}$\n- $x\\mapsto -\\dfrac{1}{x}$\n- $x\\mapsto \\dfrac{1}{x^2}$\n- $x\\mapsto x^2$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : pour tout réel $x$ non nul, $\\left(\\dfrac{1}{x}\\right)'=-\\dfrac{1}{x^2}$.",
+					"La fonction qui a pour dérivée $x\\mapsto -\\dfrac{1}{x^2}$ est donc $\\textcolor{{{color:primary.0}}}{x\\mapsto \\dfrac{1}{x}}$.",
+					"Vérification : $\\left(-\\dfrac{1}{x}\\right)'=\\dfrac{1}{x^2}$, le signe est contraire."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "−1/x²",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe oublié",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −1/x",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0 (numérateur dérivé)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/x",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −1/x (signe contraire)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/x²",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x²",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

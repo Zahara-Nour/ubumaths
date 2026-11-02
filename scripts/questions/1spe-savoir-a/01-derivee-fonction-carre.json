@@ -1,0 +1,119 @@
+{
+	"title": "Dérivée de la fonction carré",
+	"description": "À savoir : (x²)′ = 2x, reconnue parmi des erreurs typiques, et dans l'autre sens (quelle fonction a pour dérivée 2x)",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "À savoir",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction carré, définie sur $\\mathbb{R}$ par $f(x)=x^2$.\n\nPour tout réel $x$, $f'(x)$ est égal à :\n\n```choix\n- $2x$\n- $x$\n- $2$\n- $\\dfrac{x^2}{2}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : la fonction carré est dérivable sur $\\mathbb{R}$ et, pour tout réel $x$, $(x^2)'=2x$.",
+					"Donc $f'(x)=\\textcolor{{{color:primary.0}}}{2x}$."
+				]
+			}
+		},
+		{
+			"statement": "Parmi ces fonctions définies sur $\\mathbb{R}$, laquelle a pour dérivée la fonction $x\\mapsto 2x$ ?\n\n```choix\n- $x\\mapsto x^2$\n- $x\\mapsto 2x^2$\n- $x\\mapsto 2$\n- $x\\mapsto \\dfrac{x^2}{2}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : pour tout réel $x$, $(x^2)'=2x$.",
+					"La fonction qui a pour dérivée $x\\mapsto 2x$ est donc $\\textcolor{{{color:primary.0}}}{x\\mapsto x^2}$.",
+					"Vérification des autres : $(2x^2)'=4x$, $(2)'=0$ et $\\left(\\dfrac{x^2}{2}\\right)'=x$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2x",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x²/2",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x²",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2x² (dérivée 4x)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : constante 2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x²/2 (dérivée x)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

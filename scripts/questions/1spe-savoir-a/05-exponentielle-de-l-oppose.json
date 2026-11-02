@@ -1,0 +1,118 @@
+{
+	"title": "Exponentielle de l'opposé",
+	"description": "À savoir : exp(x)exp(−x) = 1, donc exp(−x) = 1/exp(x), parmi des erreurs typiques (−exp(x), exp(1/x), 1 − exp(x))",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction exponentielle",
+	"subdomain": "À savoir",
+	"level": 2,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Pour tout réel $x$, $\\exp(x)\\times\\exp(-x)$ est égal à :\n\n```choix\n- $1$\n- $0$\n- $-1$\n- $\\exp(-x^2)$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : pour tout réel $x$, $\\exp(x)\\times\\exp(-x)=\\exp(x-x)=\\exp(0)$.",
+					"Or $\\exp(0)=1$, donc $\\exp(x)\\times\\exp(-x)=\\textcolor{{{color:primary.0}}}{1}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout réel $x$, $\\exp(-x)$ est égal à :\n\n```choix\n- $\\dfrac{1}{\\exp(x)}$\n- $-\\exp(x)$\n- $\\exp\\left(\\dfrac{1}{x}\\right)$\n- $1-\\exp(x)$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : pour tout réel $x$, $\\exp(x)\\times\\exp(-x)=1$, et $\\exp(x)\\neq 0$.",
+					"Donc $\\exp(-x)=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{\\exp(x)}}$ : c'est un nombre strictement positif, jamais $-\\exp(x)$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : exp(−x²)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/exp(x)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −exp(x)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : exp(1/x)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1 − exp(x)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

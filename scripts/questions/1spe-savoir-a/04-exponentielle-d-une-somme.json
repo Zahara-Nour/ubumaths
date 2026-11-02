@@ -1,0 +1,118 @@
+{
+	"title": "Exponentielle d'une somme",
+	"description": "À savoir : exp(x + y) = exp(x)exp(y), dans les deux sens, parmi des erreurs typiques (somme des exponentielles, exp(xy))",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction exponentielle",
+	"subdomain": "À savoir",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Pour tous réels $x$ et $y$, $\\exp(x+y)$ est égal à :\n\n```choix\n- $\\exp(x)\\times\\exp(y)$\n- $\\exp(x)+\\exp(y)$\n- $\\exp(x\\times y)$\n- $x\\times\\exp(y)$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : l'exponentielle transforme une somme en produit.",
+					"Pour tous réels $x$ et $y$, $\\exp(x+y)=\\textcolor{{{color:primary.0}}}{\\exp(x)\\times\\exp(y)}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tous réels $x$ et $y$, $\\exp(x)\\times\\exp(y)$ est égal à :\n\n```choix\n- $\\exp(x+y)$\n- $\\exp(x\\times y)$\n- $\\exp(x)+\\exp(y)$\n- $2\\exp(x+y)$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : pour tous réels $x$ et $y$, $\\exp(x+y)=\\exp(x)\\times\\exp(y)$.",
+					"Lue de droite à gauche : $\\exp(x)\\times\\exp(y)=\\textcolor{{{color:primary.0}}}{\\exp(x+y)}$ (les exposants s'ajoutent, ils ne se multiplient pas)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "produit",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : exp(xy)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x·exp(y)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "exp(x + y)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : exp(xy)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : somme",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2exp(x + y)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
