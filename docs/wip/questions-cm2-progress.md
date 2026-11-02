@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2212 (lot 7a mergé)._
+_Mis à jour le 2026-11-02, migration de rangement du lot 7a en PR (§ 12.3)._
 
-- **État** : lots 0 à 6 publiés. Lot 7a (droites graduées, entiers et fractions, 6 modèles) : #2212 mergée (fichiers + correctif des étiquettes longues de la droite graduée).
-- **Prochaine action** : après le `--publier` de David (simulation prod faite le 2026-11-02 : 6 à créer, 0 en base), relever les 6 `id` au MCP ; migration nœud + tag (`feat/questions-cm2-lot7a-rangement`). Publication des #1-#2 après le `deploy:prod` qui livre le correctif des étiquettes.
-- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-7a --publier` (depuis le dépôt principal à jour, après ma simulation) ; plus tard, le `deploy:prod` qui livre le correctif des étiquettes (#2212).
+- **État** : lots 0 à 6 publiés. Lot 7a : 6 brouillons créés en prod (ids au § 12.3), migration nœud + tag sur `feat/questions-cm2-lot7a-rangement`.
+- **Prochaine action** : PR verte → merge → `migration list --linked`, `db:migrate --dry-run` puis `db:migrate` ; vérifier au MCP ; page à cocher. Publication des #1-#2 (entiers) après le `deploy:prod` qui livre le correctif des étiquettes (#2212).
+- **En attente de David** : le `deploy:prod` qui livre le correctif des étiquettes (#2212), avant de publier #1-#2.
 - **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; garde = doublon seulement ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `pnpm db:migrate --dry-run --include-all`, liste relue, puis `--include-all`. `Doc-inchangée:` dans un COMMIT, pas dans la PR. `spacesFromFourDigits` → specs en `1\,000` ; homonymes du CM1 sur la page ; `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2` en HEAD détachée sur `origin/main` (`feat/questions-cm2-lot7a` mergée, supprimée).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot7a-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -731,3 +731,8 @@ reclasser le § 3 (outils de la classe C maintenant en prod). Tableau du § 12 g
 - Piège : la réponse d'une droite à placer passe par le juge de forme, écrite sans espaces (`placerAnswer`) → dès 5 chiffres, « forme à améliorer » (contrôle `spaces` en `warn` par défaut). `spaces: off` sur « Placer un entier ». **Tout futur modèle à placer avec des grands nombres** : même réglage.
 - Essai en base locale (David : `create-questions --publier` avec `.env.local`, le classifieur refuse même en local) ; aperçu à 390 px : **étiquettes de 7 chiffres coupées** (« 6 700 0 », cadre de 60 px dans `NumberLine.svelte`). Correctif dans la même PR : cadre de 100 px, centré ; test `NumberLine-etiquettes-longues` rouge (64 > 60) puis vert ; `ubumark.md` mis à jour. Ensuite : 30 tirages, rien de coupé, aucun avertissement « téléphone ».
 - #2212 (fichiers + correctif) : CI verte, mergée. ⚠️ Les modèles #1 et #2 ne se publient qu'après le `deploy:prod` qui livre le correctif.
+
+### 12.3 Lot 7a : brouillons, rangement (2026-11-02)
+
+- David : `create-questions --dir scripts/questions/cm2-7a --publier` → 6 brouillons [CM2] sans nœud ni tag (MCP, `updated_at` = création) : `c20b687f` (129), `7df1aadd` (007), `de02429a` (018), `daf8a942` (134), `826f6971` (017), `c0eef6ff` (133).
+- Migration `20261102081228_questions_cm2_lot7a_rangement_tags.sql` (`pnpm migration:horodatage`), copie du lot 6b ; nœuds relevés au MCP : sous-notion « droite graduée » de « Entiers : numération » (129, 007) et de « Fractions : sens et écritures » (018, 134, 017, 133). Test `questions-cm2-lot7a-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 3 rouges et le premier bloc tombe au `beforeAll` (4 sautés) ; fichier restauré depuis sa copie.
