@@ -6,18 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2190 (lot 8 A)._
+_Mis à jour le 2026-11-02, après #2199 (lot 8 C)._
 
 - **État** : lots 1 à 7 publiés. Lot 8 (information chiffrée, statistiques, tableaux croisés, probabilités) :
-  phase 0 validée (§ 51) ; 8 A mergé (#2190), 8 B en PR (#2196), 8 C écrit (§ 52).
-- **Prochaine action** : merger #2196 (8 B), puis la PR de 8 C ; PR page à cocher (blocs statistiques,
-  arbres, § 52) ; puis David crée les 22 brouillons (trois `create-questions --publier`), migration nœud +
-  tag, page à cocher de la vague 8.
-- **En attente de David** : rien.
+  phase 0 validée (§ 51) ; vague 8 (8 A, 8 B, 8 C, 22 modèles) mergée : #2190, #2196, #2199 (§ 52).
+- **Prochaine action** : David crée les 22 brouillons (`create-questions --publier`, trois dossiers) ;
+  merger #2198 (page à cocher) ; relevé des id, migration nœud + tag, page à cocher de la vague 8.
+- **En attente de David** : les trois `create-questions --publier` (2de-evolutions-a, 2de-indicateurs-b,
+  2de-classes-c).
 - **Pièges en cours** : le worktree n'a pas de `.env` ; `publier-lot` (même en simulation) → David avec `!`
   et `set -a && . ../ubumaths/.env && set +a`, pas `pnpm -s` ; `Doc-inchangée:` dans un commit, jamais dans
   le corps de PR ; horodatage → `pnpm migration:horodatage` ; `db push`, `--publier` → David avec `!`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, branche `feat/questions-2de-lot8c` (8 B et 8 C empilés).
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, HEAD détachée sur `origin/main` (aucune branche ouverte).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1390,15 +1390,17 @@ D, E) ; L8-f PR « page à cocher : blocs statistiques et arbres » avant la rel
 - **8 B** : `questions-2de/lot-indicateurs-b-2de.py` → `scripts/questions/2de-indicateurs-b/` (7 modèles).
   Statistiques › Indicateurs › Moyenne niv. 4, 5 (2-369, 2-371) ; › Écart type niv. 1 (2-370, séries à écart
   type entier) ; › Médiane niv. 3 (2-479) ; › Quartiles niv. 2 (2-402) ; Problèmes › Comparer des séries niv. 2,
-  3 (2-382, 2-483). PR #2196.
+  3 (2-382, 2-483). **#2196 mergée.**
 - **8 C** : `questions-2de/lot-classes-c-2de.py` → `scripts/questions/2de-classes-c/` (7 modèles). Représenter
   des données › Histogramme niv. 1 (2-372) ; › Fréquences cumulées niv. 1 (2-480) ; Indicateurs › Moyenne
   niv. 6, 7 (2-380, 2-481) ; › Médiane niv. 4, 5 (2-381, 2-482) ; Problèmes › Comparer des séries niv. 4
-  (2-484). Branche `feat/questions-2de-lot8c`, empilée sur 8 B.
+  (2-484). **#2199 mergée.**
 - **Pièges** : un choix d'index par variable s'écrit avec l'indicatrice `(1-min(1,abs((p)-k)))` dans un `eval` ;
   le générateur ne retente que 100 fois les conditions (tirages à faible taux d'acceptation → tirer la valeur
   dérivée) ; « en écriture décimale » → une fraction est `bad_form` (`constraintViolations: ['form']`) ;
   histogramme quadrillé de 2 en 2 → effectifs pairs ; polygone des fréquences cumulées quadrillé de 10 en
   10 % → effectifs multiples de 10 (vu dans l'aperçu).
-- **L8-f** : PR « page à cocher : blocs statistiques et arbres » confiée à un agent (branche
-  `feat/page-a-cocher-stats`).
+- **L8-f** : PR #2198 « page à cocher : blocs statistiques et arbres » (agent) : histogramme, polygone
+  (lecture), barres, boîtes, tableau croisé (cases `?` vides), simulation (tirages), probtree (mise en page
+  portée de `ProbabilityTree.svelte`, pas de scène partagée). Revue `code-reviewer` : aucun bloquant ;
+  corrigés : `série: seule` (la page dessinait la figure à construire), légende du tableau croisé sans titre.
