@@ -1,0 +1,261 @@
+{
+	"title": "Contrôler la vraisemblance d'un résultat",
+	"description": "Repérer, par un ordre de grandeur, le résultat vraisemblable d'un problème à deux étapes parmi trois : le bon, une virgule mal placée, une mauvaise opération",
+	"grades": ["5"],
+	"theme": "Décimaux",
+	"domain": "Problèmes",
+	"subdomain": "Vraisemblance",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Tom achète ${{n}}$ cahiers à ${{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}}~\\unit{€}$ l'un et un stylo à ${{eval:floor(Q/100)}}.{{eval:floor(mod(Q,100)/10)}}{{eval:mod(Q,10)}}~\\unit{€}$. Quel résultat est vraisemblable ?\n\n```choix\n- ${{eval:floor(T/100)}}.{{eval:floor(mod(T,100)/10)}}{{eval:mod(T,10)}}~\\unit{€}$\n- ${{eval:floor((10*T)/100)}}.{{eval:floor(mod((10*T),100)/10)}}{{eval:mod((10*T),10)}}~\\unit{€}$\n- ${{eval:floor((100*n+P+Q)/100)}}.{{eval:floor(mod((100*n+P+Q),100)/10)}}{{eval:mod((100*n+P+Q),10)}}~\\unit{€}$\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..8"
+				},
+				{
+					"name": "p",
+					"expression": "41..99"
+				},
+				{
+					"name": "P",
+					"expression": "eval:5*p"
+				},
+				{
+					"name": "q",
+					"expression": "21..58"
+				},
+				{
+					"name": "Q",
+					"expression": "eval:5*q"
+				},
+				{
+					"name": "T",
+					"expression": "eval:n*P+Q"
+				}
+			],
+			"conditions": ["mod(P,100)!=50", "100*n+P+Q!=T"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Vraisemblance.** Avant de calculer, on cherche un **ordre de grandeur** en arrondissant les nombres ; un résultat très loin de cet ordre de grandeur est faux.",
+					"Un cahier coûte un peu {{if:mod(P,100)<50|plus|moins}} de ${{eval:round(P/100)}}~\\unit{€}$ : ${{n}}$ cahiers coûtent environ ${{n}} \\times {{eval:round(P/100)}} = {{eval:n*round(P/100)}}~\\unit{€}$, et le stylo ajoute un peu.",
+					"Calcul exact : ${{n}} \\times {{eval:floor(P/100)}}.{{eval:floor(mod(P,100)/10)}}{{eval:mod(P,10)}} + {{eval:floor(Q/100)}}.{{eval:floor(mod(Q,100)/10)}}{{eval:mod(Q,10)}} = \\textcolor{{{color:primary.0}}}{{{eval:floor(T/100)}}.{{eval:floor(mod(T,100)/10)}}{{eval:mod(T,10)}}}~\\unit{€}$. Les deux autres résultats sont trop grands (virgule mal placée) ou trop petits (on a additionné au lieu de multiplier)."
+				]
+			}
+		},
+		{
+			"statement": "Un ruban mesure ${{eval:L/100;d}}~\\unit{m}$. On en coupe ${{n}}$ morceaux de ${{eval:M/100;d}}~\\unit{m}$. On cherche la longueur qui reste. Quel résultat est vraisemblable ?\n\n```choix\n- ${{eval:R/100;d}}~\\unit{m}$\n- ${{eval:R/1000;d}}~\\unit{m}$\n- ${{eval:(L+n*M)/100;d}}~\\unit{m}$\n```",
+			"variables": [
+				{
+					"name": "l",
+					"expression": "30..90"
+				},
+				{
+					"name": "L",
+					"expression": "eval:10*l"
+				},
+				{
+					"name": "n",
+					"expression": "2..5"
+				},
+				{
+					"name": "m",
+					"expression": "3..9"
+				},
+				{
+					"name": "M",
+					"expression": "eval:10*m+5"
+				},
+				{
+					"name": "R",
+					"expression": "eval:L-n*M"
+				}
+			],
+			"conditions": ["R>=200"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Vraisemblance.** Avant de calculer, on cherche un **ordre de grandeur** en arrondissant les nombres ; un résultat très loin de cet ordre de grandeur est faux.",
+					"Il reste **moins** que la longueur du ruban, ${{eval:L/100;d}}~\\unit{m}$ : on écarte ${{eval:(L+n*M)/100;d}}~\\unit{m}$. On coupe environ ${{n}} \\times {{eval:round(M/10)/10;d}} = {{eval:n*round(M/10)/10;d}}~\\unit{m}$ : il reste plus de ${{eval:R/1000;d}}~\\unit{m}$.",
+					"Calcul exact : ${{eval:L/100;d}} - {{n}} \\times {{eval:M/100;d}} = \\textcolor{{{color:primary.0}}}{{{eval:R/100;d}}}~\\unit{m}$."
+				]
+			}
+		},
+		{
+			"statement": "${{k}}$ amis partagent à parts égales un repas de ${{eval:floor(A/100)}}.{{eval:floor(mod(A,100)/10)}}{{eval:mod(A,10)}}~\\unit{€}$, après une réduction de ${{r}}~\\unit{€}$. On cherche ce que paie chacun. Quel résultat est vraisemblable ?\n\n```choix\n- ${{eval:floor(S/100)}}.{{eval:floor(mod(S,100)/10)}}{{eval:mod(S,10)}}~\\unit{€}$\n- ${{eval:floor((10*S)/100)}}.{{eval:floor(mod((10*S),100)/10)}}{{eval:mod((10*S),10)}}~\\unit{€}$\n- ${{eval:floor((k*(A-100*r))/100)}}.{{eval:floor(mod((k*(A-100*r)),100)/10)}}{{eval:mod((k*(A-100*r)),10)}}~\\unit{€}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3..5"
+				},
+				{
+					"name": "s",
+					"expression": "170..480"
+				},
+				{
+					"name": "S",
+					"expression": "eval:5*s"
+				},
+				{
+					"name": "r",
+					"expression": "5|10"
+				},
+				{
+					"name": "A",
+					"expression": "eval:k*S+100*r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Vraisemblance.** Avant de calculer, on cherche un **ordre de grandeur** en arrondissant les nombres ; un résultat très loin de cet ordre de grandeur est faux.",
+					"Après la réduction, le repas coûte ${{eval:floor((A-100*r)/100)}}.{{eval:floor(mod((A-100*r),100)/10)}}{{eval:mod((A-100*r),10)}}~\\unit{€}$ : chacun paie **moins** que ce prix. Ordre de grandeur : ${{eval:round((A-100*r)/100)}} \\div {{k}}$, à peu près ${{eval:round((A-100*r)/(100*k))}}~\\unit{€}$ chacun.",
+					"Calcul exact : $({{eval:floor(A/100)}}.{{eval:floor(mod(A,100)/10)}}{{eval:mod(A,10)}} - {{r}}) \\div {{k}} = {{eval:floor((A-100*r)/100)}}.{{eval:floor(mod((A-100*r),100)/10)}}{{eval:mod((A-100*r),10)}} \\div {{k}} = \\textcolor{{{color:primary.0}}}{{{eval:floor(S/100)}}.{{eval:floor(mod(S,100)/10)}}{{eval:mod(S,10)}}}~\\unit{€}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Le bon total",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"p": "47",
+				"P": "235",
+				"q": "24",
+				"Q": "120",
+				"T": "1060"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : virgule (106 €)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"p": "47",
+				"P": "235",
+				"q": "24",
+				"Q": "120",
+				"T": "1060"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : addition (7,55 €)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"p": "47",
+				"P": "235",
+				"q": "24",
+				"Q": "120",
+				"T": "1060"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "La bonne longueur",
+			"variationIndex": 1,
+			"variables": {
+				"l": "50",
+				"L": "500",
+				"n": "3",
+				"m": "8",
+				"M": "85",
+				"R": "245"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : plus long que le ruban",
+			"variationIndex": 1,
+			"variables": {
+				"l": "50",
+				"L": "500",
+				"n": "3",
+				"m": "8",
+				"M": "85",
+				"R": "245"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "La bonne part",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"s": "247",
+				"S": "1235",
+				"r": "10",
+				"A": "5940"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : virgule (123,50 €)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"s": "247",
+				"S": "1235",
+				"r": "10",
+				"A": "5940"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : multiplié",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"s": "247",
+				"S": "1235",
+				"r": "10",
+				"A": "5940"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

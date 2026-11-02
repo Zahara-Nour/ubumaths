@@ -1,0 +1,286 @@
+{
+	"title": "Traduire un programme de calcul",
+	"description": "Écrire en une seule expression le calcul d'un programme de calcul à deux ou trois étapes : « choisis 5, ajoute 3, multiplie par 2 » s'écrit (5 + 3) × 2",
+	"grades": ["5"],
+	"theme": "Entiers",
+	"domain": "Priorités opératoires",
+	"subdomain": "Traduire en une expression",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"products": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Voici un programme de calcul :\n\n- choisir ${{n}}$ ;\n- ajouter ${{a}}$ ;\n- multiplier le résultat par ${{b}}$.\n\nÉcris en **une seule expression** le calcul effectué par ce programme, sans l'effectuer.\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["n!=a"],
+			"blanks": [
+				{
+					"expectedAnswer": "({{n}}+{{a}})\\times{{b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Programme de calcul.** Chaque étape s'applique au **résultat** de la précédente. Une addition ou une soustraction suivie d'une multiplication se met entre parenthèses.",
+					"${{n}} + {{a}}$, puis on multiplie **ce résultat** par ${{b}}$ : parenthèses.",
+					"$$\\textcolor{{{color:primary.0}}}{({{n}} + {{a}}) \\times {{b}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Voici un programme de calcul :\n\n- choisir ${{n}}$ ;\n- le multiplier par ${{a}}$ ;\n- ajouter ${{b}}$ ;\n- multiplier le résultat par ${{c}}$.\n\nÉcris en **une seule expression** le calcul effectué par ce programme, sans l'effectuer.\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["n!=a", "a!=c"],
+			"blanks": [
+				{
+					"expectedAnswer": "({{n}}\\times{{a}}+{{b}})\\times{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Programme de calcul.** Chaque étape s'applique au **résultat** de la précédente. Une addition ou une soustraction suivie d'une multiplication se met entre parenthèses.",
+					"Les deux premières étapes : ${{n}} \\times {{a}} + {{b}}$ (la multiplication se fait d'abord, pas de parenthèses).",
+					"On multiplie **tout ce résultat** par ${{c}}$ : parenthèses.",
+					"$$\\textcolor{{{color:primary.0}}}{({{n}} \\times {{a}} + {{b}}) \\times {{c}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Voici un programme de calcul :\n\n- choisir ${{n}}$ ;\n- soustraire ${{a}}$ ;\n- multiplier le résultat par ${{b}}$ ;\n- ajouter ${{c}}$.\n\nÉcris en **une seule expression** le calcul effectué par ce programme, sans l'effectuer.\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "n",
+					"expression": "6..12"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["b!=c"],
+			"blanks": [
+				{
+					"expectedAnswer": "({{n}}-{{a}})\\times{{b}}+{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Programme de calcul.** Chaque étape s'applique au **résultat** de la précédente. Une addition ou une soustraction suivie d'une multiplication se met entre parenthèses.",
+					"${{n}} - {{a}}$, puis on multiplie **ce résultat** par ${{b}}$ : $({{n}} - {{a}}) \\times {{b}}$.",
+					"On ajoute ${{c}}$ à la fin : la multiplication se fait déjà avant, pas d'autres parenthèses.",
+					"$$\\textcolor{{{color:primary.0}}}{({{n}} - {{a}}) \\times {{b}} + {{c}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(5 + 3) × 2",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["(5+3)\\times2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2 × (5 + 3) (ordre changé)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["2\\times(5+3)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 + 3 × 2",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["5+3\\times2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : la valeur 16",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"a": "3",
+				"b": "2"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "(4 × 3 + 5) × 2",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4",
+				"a": "3",
+				"b": "5",
+				"c": "2"
+			},
+			"answers": ["(4\\times3+5)\\times2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2 × (3 × 4 + 5) (ordre changé)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4",
+				"a": "3",
+				"b": "5",
+				"c": "2"
+			},
+			"answers": ["2\\times(3\\times4+5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "((4 × 3) + 5) × 2 : parenthèses superflues",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4",
+				"a": "3",
+				"b": "5",
+				"c": "2"
+			},
+			"answers": ["((4\\times3)+5)\\times2"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["brackets"]
+			}
+		},
+		{
+			"description": "Erreur : 4 × 3 + 5 × 2",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4",
+				"a": "3",
+				"b": "5",
+				"c": "2"
+			},
+			"answers": ["4\\times3+5\\times2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4 × (3 + 5) × 2",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4",
+				"a": "3",
+				"b": "5",
+				"c": "2"
+			},
+			"answers": ["4\\times(3+5)\\times2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(9 − 2) × 4 + 3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"n": "9",
+				"b": "4",
+				"c": "3"
+			},
+			"answers": ["(9-2)\\times4+3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 9 − 2 × 4 + 3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"n": "9",
+				"b": "4",
+				"c": "3"
+			},
+			"answers": ["9-2\\times4+3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : (9 − 2) × (4 + 3)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"n": "9",
+				"b": "4",
+				"c": "3"
+			},
+			"answers": ["(9-2)\\times(4+3)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
