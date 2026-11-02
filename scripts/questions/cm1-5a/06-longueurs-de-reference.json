@@ -1,0 +1,145 @@
+{
+	"title": "Des longueurs de référence, du millimètre au kilomètre",
+	"description": "1 mm : l'épaisseur d'une carte ; 1 cm : la largeur d'un doigt ; 1 dm : la largeur d'une main ; 1 m : un grand pas ; 10 m : un bus ; 100 m : un terrain de football ; 1 km : un quart d'heure de marche",
+	"grades": ["CM1"],
+	"theme": "Grandeurs",
+	"domain": "Longueurs",
+	"subdomain": "Ordres de grandeur",
+	"level": 6,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Qu'est-ce qui mesure environ {{if:k==1|$1~\\unit{mm}$|{{if:k==2|$1~\\unit{cm}$|{{if:k==3|$1~\\unit{dm}$|{{if:k==4|$1~\\unit{m}$|{{if:k==5|$10~\\unit{m}$|{{if:k==6|$100~\\unit{m}$|$1~\\unit{km}$}}}}}}}}}}}} ?\n\n```choix\n- {{if:k==1|l'épaisseur d'une carte de bibliothèque|{{if:k==2|la largeur d'un doigt|{{if:k==3|la largeur d'une main|{{if:k==4|un grand pas d'adulte|{{if:k==5|la longueur d'un bus|{{if:k==6|la longueur d'un terrain de football|un quart d'heure de marche}}}}}}}}}}}}\n- {{if:k==1|la largeur d'une main|{{if:k==2|un grand pas d'adulte|{{if:k==3|la longueur d'un bus|{{if:k==4|la longueur d'un terrain de football|{{if:k==5|un quart d'heure de marche|{{if:k==6|l'épaisseur d'une carte de bibliothèque|la largeur d'un doigt}}}}}}}}}}}}\n- {{if:k==1|la longueur d'un bus|{{if:k==2|la longueur d'un terrain de football|{{if:k==3|un quart d'heure de marche|{{if:k==4|l'épaisseur d'une carte de bibliothèque|{{if:k==5|la largeur d'un doigt|{{if:k==6|la largeur d'une main|un grand pas d'adulte}}}}}}}}}}}}\n- {{if:k==1|la longueur d'un terrain de football|{{if:k==2|un quart d'heure de marche|{{if:k==3|l'épaisseur d'une carte de bibliothèque|{{if:k==4|la largeur d'un doigt|{{if:k==5|la largeur d'une main|{{if:k==6|un grand pas d'adulte|la longueur d'un bus}}}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Repères : l'épaisseur d'une carte de bibliothèque, environ $1~\\unit{mm}$ ; la largeur d'un doigt, environ $1~\\unit{cm}$ ; la largeur d'une main, environ $1~\\unit{dm}$ ; un grand pas d'adulte, environ $1~\\unit{m}$ ; la longueur d'un bus, environ $10~\\unit{m}$ ; la longueur d'un terrain de football, environ $100~\\unit{m}$ ; un quart d'heure de marche, environ $1~\\unit{km}$.",
+					"**{{if:k==1|L'épaisseur d'une carte de bibliothèque|{{if:k==2|La largeur d'un doigt|{{if:k==3|La largeur d'une main|{{if:k==4|Un grand pas d'adulte|{{if:k==5|La longueur d'un bus|{{if:k==6|La longueur d'un terrain de football|Un quart d'heure de marche}}}}}}}}}}}}** mesure environ {{if:k==1|$1~\\unit{mm}$|{{if:k==2|$1~\\unit{cm}$|{{if:k==3|$1~\\unit{dm}$|{{if:k==4|$1~\\unit{m}$|{{if:k==5|$10~\\unit{m}$|{{if:k==6|$100~\\unit{m}$|$1~\\unit{km}$}}}}}}}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "{{if:k==1|L'épaisseur d'une carte de bibliothèque|{{if:k==2|La largeur d'un doigt|{{if:k==3|La largeur d'une main|{{if:k==4|Un grand pas d'adulte|{{if:k==5|La longueur d'un bus|{{if:k==6|La longueur d'un terrain de football|Un quart d'heure de marche}}}}}}}}}}}} mesure environ…\n\n```choix\nmelanger: non\n- $1~\\unit{mm}$\n- $1~\\unit{cm}$\n- $1~\\unit{dm}$\n- $1~\\unit{m}$\n- $10~\\unit{m}$\n- $100~\\unit{m}$\n- $1~\\unit{km}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..7"
+				},
+				{
+					"name": "r",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Repères : l'épaisseur d'une carte de bibliothèque, environ $1~\\unit{mm}$ ; la largeur d'un doigt, environ $1~\\unit{cm}$ ; la largeur d'une main, environ $1~\\unit{dm}$ ; un grand pas d'adulte, environ $1~\\unit{m}$ ; la longueur d'un bus, environ $10~\\unit{m}$ ; la longueur d'un terrain de football, environ $100~\\unit{m}$ ; un quart d'heure de marche, environ $1~\\unit{km}$.",
+					"{{if:k==1|L'épaisseur d'une carte de bibliothèque|{{if:k==2|La largeur d'un doigt|{{if:k==3|La largeur d'une main|{{if:k==4|Un grand pas d'adulte|{{if:k==5|La longueur d'un bus|{{if:k==6|La longueur d'un terrain de football|Un quart d'heure de marche}}}}}}}}}}}} mesure environ **{{if:k==1|$1~\\unit{mm}$|{{if:k==2|$1~\\unit{cm}$|{{if:k==3|$1~\\unit{dm}$|{{if:k==4|$1~\\unit{m}$|{{if:k==5|$10~\\unit{m}$|{{if:k==6|$100~\\unit{m}$|$1~\\unit{km}$}}}}}}}}}}}}**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "environ 1 dm : la largeur d'une main",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 dm, un terrain de football",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "environ 1 km : un quart d'heure de marche",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "largeur d'une main : 1 dm",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : largeur d'une main, 1 m",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"r": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "épaisseur d'une carte : 1 mm",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : épaisseur d'une carte, 1 cm",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,116 @@
+{
+	"title": "Estimer une longueur",
+	"description": "Choisir l'ordre de grandeur : une fourmi de 5 mm, une gomme de 4 cm, une salle de classe de 8 m, un trajet d'une heure en voiture de 80 km",
+	"grades": ["CM1"],
+	"theme": "Grandeurs",
+	"domain": "Longueurs",
+	"subdomain": "Ordres de grandeur",
+	"level": 7,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "{{if:k==1|Une fourmi|{{if:k==2|L'épaisseur d'un cahier|{{if:k==3|L'épaisseur d'une pièce de monnaie|{{if:k==4|L'épaisseur d'un téléphone|{{if:k==5|Une gomme|{{if:k==6|Un crayon neuf|{{if:k==7|La longueur d'une salle de classe|{{if:k==8|La hauteur de la tour Eiffel|{{if:k==9|Un trajet d'une heure en voiture|{{if:k==10|La France, du nord au sud|{{if:k==11|Une piscine olympique|Un lit}}}}}}}}}}}}}}}}}}}}}} mesure environ…\n\n```choix\nmelanger: non\n- ${{if:k==1|5|{{if:k==2|5|{{if:k==3|2|{{if:k==4|8|{{if:k==5|4|{{if:k==6|18|{{if:k==7|8|{{if:k==8|330|{{if:k==9|80|{{if:k==10|1\\,000|{{if:k==11|50|2}}}}}}}}}}}}}}}}}}}}}}~\\unit{{{if:k==1|mm|{{if:k==2|mm|{{if:k==3|mm|{{if:k==4|mm|{{if:k==5|mm|{{if:k==6|mm|{{if:k==7|dm|{{if:k==8|cm|{{if:k==9|cm|{{if:k==10|cm|{{if:k==11|cm|mm}}}}}}}}}}}}}}}}}}}}}}}$\n- ${{if:k==1|5|{{if:k==2|5|{{if:k==3|2|{{if:k==4|8|{{if:k==5|4|{{if:k==6|18|{{if:k==7|8|{{if:k==8|330|{{if:k==9|80|{{if:k==10|1\\,000|{{if:k==11|50|2}}}}}}}}}}}}}}}}}}}}}}~\\unit{{{if:k==1|cm|{{if:k==2|cm|{{if:k==3|cm|{{if:k==4|cm|{{if:k==5|cm|{{if:k==6|cm|{{if:k==7|m|{{if:k==8|m|{{if:k==9|m|{{if:k==10|m|{{if:k==11|dm|cm}}}}}}}}}}}}}}}}}}}}}}}$\n- ${{if:k==1|5|{{if:k==2|5|{{if:k==3|2|{{if:k==4|8|{{if:k==5|4|{{if:k==6|18|{{if:k==7|8|{{if:k==8|330|{{if:k==9|80|{{if:k==10|1\\,000|{{if:k==11|50|2}}}}}}}}}}}}}}}}}}}}}}~\\unit{{{if:k==1|dm|{{if:k==2|dm|{{if:k==3|dm|{{if:k==4|dm|{{if:k==5|m|{{if:k==6|m|{{if:k==7|km|{{if:k==8|km|{{if:k==9|km|{{if:k==10|km|{{if:k==11|m|m}}}}}}}}}}}}}}}}}}}}}}}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..12"
+				},
+				{
+					"name": "r",
+					"expression": "eval:floor((k-1)/4)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compare à des longueurs connues : $1~\\unit{mm}$, l'épaisseur d'une carte ; $1~\\unit{cm}$, la largeur d'un doigt ; $1~\\unit{m}$, un grand pas ; $1~\\unit{km}$, un quart d'heure de marche.",
+					"{{if:k==1|Une fourmi|{{if:k==2|L'épaisseur d'un cahier|{{if:k==3|L'épaisseur d'une pièce de monnaie|{{if:k==4|L'épaisseur d'un téléphone|{{if:k==5|Une gomme|{{if:k==6|Un crayon neuf|{{if:k==7|La longueur d'une salle de classe|{{if:k==8|La hauteur de la tour Eiffel|{{if:k==9|Un trajet d'une heure en voiture|{{if:k==10|La France, du nord au sud|{{if:k==11|Une piscine olympique|Un lit}}}}}}}}}}}}}}}}}}}}}} mesure environ **${{if:k==1|5|{{if:k==2|5|{{if:k==3|2|{{if:k==4|8|{{if:k==5|4|{{if:k==6|18|{{if:k==7|8|{{if:k==8|330|{{if:k==9|80|{{if:k==10|1\\,000|{{if:k==11|50|2}}}}}}}}}}}}}}}}}}}}}}~\\unit{{{if:k==1|mm|{{if:k==2|mm|{{if:k==3|mm|{{if:k==4|mm|{{if:k==5|cm|{{if:k==6|cm|{{if:k==7|m|{{if:k==8|m|{{if:k==9|km|{{if:k==10|km|{{if:k==11|m|m}}}}}}}}}}}}}}}}}}}}}}}$**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "une fourmi : 5 mm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une fourmi de 5 cm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "une salle de classe : 8 m",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : une salle de 8 dm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7",
+				"r": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "un trajet d'une heure : 80 km",
+			"variationIndex": 0,
+			"variables": {
+				"k": "9",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un trajet de 80 m",
+			"variationIndex": 0,
+			"variables": {
+				"k": "9",
+				"r": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

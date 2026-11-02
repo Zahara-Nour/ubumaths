@@ -1,0 +1,224 @@
+{
+	"title": "Les unités de longueur, du millimètre au kilomètre",
+	"description": "Symbole et sens de mm, cm, dm, m, dam, hm, km ; la plus grande ou la plus petite de trois unités",
+	"grades": ["CM1"],
+	"theme": "Grandeurs",
+	"domain": "Longueurs",
+	"subdomain": "Unités",
+	"level": 12,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quel est le symbole {{if:k==1|du kilomètre|{{if:k==2|de l'hectomètre|{{if:k==3|du décamètre|{{if:k==4|du mètre|{{if:k==5|du décimètre|{{if:k==6|du centimètre|du millimètre}}}}}}}}}}}} ?\n\n```choix\n- km\n- hm\n- dam\n- m\n- dm\n- cm\n- mm\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..7"
+				},
+				{
+					"name": "r",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« kilo » veut dire mille, « hecto » cent, « déca » dix ; « déci » un dixième, « centi » un centième, « milli » un millième.",
+					"{{if:k==1|Le kilomètre|{{if:k==2|L'hectomètre|{{if:k==3|Le décamètre|{{if:k==4|Le mètre|{{if:k==5|Le décimètre|{{if:k==6|Le centimètre|Le millimètre}}}}}}}}}}}} s'écrit **{{if:k==1|km|{{if:k==2|hm|{{if:k==3|dam|{{if:k==4|m|{{if:k==5|dm|{{if:k==6|cm|mm}}}}}}}}}}}}**."
+				]
+			}
+		},
+		{
+			"statement": "Que veut dire le symbole **{{if:k==1|km|{{if:k==2|hm|{{if:k==3|dam|{{if:k==4|m|{{if:k==5|dm|{{if:k==6|cm|mm}}}}}}}}}}}}** ?\n\n```choix\n- kilomètre\n- hectomètre\n- décamètre\n- mètre\n- décimètre\n- centimètre\n- millimètre\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..7"
+				},
+				{
+					"name": "r",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« kilo » veut dire mille, « hecto » cent, « déca » dix ; « déci » un dixième, « centi » un centième, « milli » un millième.",
+					"**{{if:k==1|km|{{if:k==2|hm|{{if:k==3|dam|{{if:k==4|m|{{if:k==5|dm|{{if:k==6|cm|mm}}}}}}}}}}}}** veut dire **{{if:k==1|kilomètre|{{if:k==2|hectomètre|{{if:k==3|décamètre|{{if:k==4|mètre|{{if:k==5|décimètre|{{if:k==6|centimètre|millimètre}}}}}}}}}}}}**."
+				]
+			}
+		},
+		{
+			"statement": "Quelle est la plus {{if:s==1|grande|petite}} de ces trois unités de longueur ?\n\n```choix\n- {{if:s==1|{{if:k==1|le kilomètre (km)|{{if:k==2|l'hectomètre (hm)|{{if:k==3|le décamètre (dam)|{{if:k==4|le kilomètre (km)|{{if:k==5|le mètre (m)|l'hectomètre (hm)}}}}}}}}}}|{{if:k==1|le mètre (m)|{{if:k==2|le décimètre (dm)|{{if:k==3|le centimètre (cm)|{{if:k==4|le millimètre (mm)|{{if:k==5|le millimètre (mm)|le centimètre (cm)}}}}}}}}}}}}\n- {{if:k==1|l'hectomètre (hm)|{{if:k==2|le décamètre (dam)|{{if:k==3|le mètre (m)|{{if:k==4|le décamètre (dam)|{{if:k==5|le décimètre (dm)|le mètre (m)}}}}}}}}}}\n- {{if:s==1|{{if:k==1|le mètre (m)|{{if:k==2|le décimètre (dm)|{{if:k==3|le centimètre (cm)|{{if:k==4|le millimètre (mm)|{{if:k==5|le millimètre (mm)|le centimètre (cm)}}}}}}}}}}|{{if:k==1|le kilomètre (km)|{{if:k==2|l'hectomètre (hm)|{{if:k==3|le décamètre (dam)|{{if:k==4|le kilomètre (km)|{{if:k==5|le mètre (m)|l'hectomètre (hm)}}}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "s",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Du plus grand au plus petit : km, hm, dam, m, dm, cm, mm.",
+					"La plus {{if:s==1|grande est **{{if:k==1|le kilomètre (km)|{{if:k==2|l'hectomètre (hm)|{{if:k==3|le décamètre (dam)|{{if:k==4|le kilomètre (km)|{{if:k==5|le mètre (m)|l'hectomètre (hm)}}}}}}}}}}**|petite est **{{if:k==1|le mètre (m)|{{if:k==2|le décimètre (dm)|{{if:k==3|le centimètre (cm)|{{if:k==4|le millimètre (mm)|{{if:k==5|le millimètre (mm)|le centimètre (cm)}}}}}}}}}}**}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "symbole de l'hectomètre : hm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : hectomètre → dam",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"r": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "symbole du décamètre : dam",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : décamètre → dm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"r": "2"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "dm veut dire décimètre",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"r": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dm lu décamètre",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"r": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "hm veut dire hectomètre",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "la plus grande de km, hm, m : km",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"s": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la plus grande → m",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"s": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "la plus petite de hm, dam, dm : dm",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"s": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la plus petite → dam (déca/déci confondus)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"s": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

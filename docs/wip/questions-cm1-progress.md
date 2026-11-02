@@ -903,3 +903,23 @@ Questions :
    pas), case « choix », plutôt que d'ajouter le CM1 aux modèles CE1 ? Reco : propres.
 
 **Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
+
+### 14 bis. Lot 5 : réponse de David (2026-11-02)
+
+« je te suis », en réponse aux quatre recommandations du § 14 : 1. lot **5a** longueurs (7 modèles), puis **5b**
+masses + contenances ensemble (10 modèles) ; 2. périmètres (073, 074, 075) en **lot 5d** juste après ; 3. réponses
+décimales à virgule exigée (215/100 refusé), fractions dans l'énoncé seulement ; 4. références et estimations :
+modèles CM1 propres, case « choix ».
+
+### 14 ter. Lot 5a — écriture (2026-11-02)
+
+- Script `docs/wip/questions/lot-cm1-5a.py` → `scripts/questions/cm1-5a/` (7 JSON), patrons `lot-ce2-6a.py` et
+  `lot-cm1-4.py` (virgule exigée). Catégories `Grandeurs · Longueurs` : Unités 12 (unités), 13 (choisir), 14
+  (relations, entiers), 15 (décimaux et fractions) ; Comparaison et mesure 5 ; Ordres de grandeur 6, 7.
+- `ranger` de quatre longueurs (cm, m, mm, dm) : positions affichées lues par essai des 24 permutations
+  (b = 2, 3, 9), stables : bonne réponse 3, 0, 1, 2.
+- Corrigés relus dans l'aperçu à 390 px (Playwright, port 5178) : accords « 1 mètre », « 1 dixième » ajoutés ;
+  « l'hectomètre » (h muet) ; facteur en formule (« 1\,000 » sortait brut dans le texte) ; chaîne des unités
+  écrite en texte (la suite d'égalités se coupait sur une virgule en début de ligne).
+- `question:specs` 300 tirages par variation : tout réussi ; `create-questions` en simulation (prod) : 7/7
+  verts, 88 specs ; test du corpus vert ; base locale : 7 brouillons, pas de défilement horizontal.
