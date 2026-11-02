@@ -1285,3 +1285,53 @@ Relevé MCP prod : **37 points de 6e sans modèle publié** (42 au § 19, moins 
 142, 143, 148, 160-180, 182-185, 192, 194-197, 207, 210. Classement du § 14 inchangé. Lots restants : **9**
 tableaux et programmes (143, 184, 185, 192, 194-196) · **10, 11** géométrie dessinée · restent C (169, 142),
 figure à compléter (170, 172, 173, 180, 207) et D (129, 138, 182, 183, 197, 210).
+
+## 22. Lot 9 « Tableaux et programmes » : phase 0 (proposée le 2026-11-02, à valider)
+
+Relevé prod : rien en CM1, CM2 ou 6e sur ces 7 points (titres « motif », « tableau », « programme », « instruction »,
+« filtrer » : seuls les deux modèles de 6-190). Outils en prod : tableau markdown à cases `$?$` (patron `ce1-7/04`),
+` ```figure ` avec `grille: oui` (patron `cp-b2/08`, robot), ` ```scratch ` (#2122, v0.62.0, patron `3-lot-7`), case
+« choix ». Nœuds en prod : 143 → « suites de motifs » ; 184, 185 → « tableaux » ; 192 → « Situations de
+proportionnalité » ; 194-196 → « Préalgorithmique ». Un modèle par point, 7 modèles.
+
+1. **Motif évolutif** (143, niveaux 1-3) — trois étapes dessinées (` ```figure ` : allumettes en rangée, carrés de
+   points, croix), réponse en case. v1 combien d'éléments à l'étape 4 ; v2 combien on en ajoute à chaque étape ;
+   v3 à l'étape 10 (la régularité, sans dessin) ; v4 quelle étape compte N éléments. Sans lettre (BO : lettres au
+   cycle 4). Corrigé : « on ajoute k à chaque étape », le compte par étapes.
+2. **Construire un tableau simple** (184, 1-2) — un relevé brut en phrase ou en liste (couleur préférée de
+   15 à 24 élèves, 4 catégories ; espèces vues dans un jardin), le tableau à compléter en cases. v1 effectifs de
+   4 catégories ; v2 avec la ligne Total ; v3 observations datées (pluie relevée chaque jour, une phrase par
+   jour → tableau jour / hauteur en mm).
+3. **Filtrer un tableau** (185, 1-3) — tableau de 5 à 6 lignes (villes : température moyenne, pluie ;
+   forfaits : prix, données), données sobres et plausibles. v1 un critère, « lesquelles ? » (choix, plusieurs) ;
+   v2 combien de lignes vérifient le critère (case) ; v3 deux critères (« moins de 20 € **et** au moins 50 Go :
+   lequel choisir ? », choix, une réponse).
+4. **Représenter la proportionnalité par un tableau** (192, 1-3 ; borne : nom et unité de chaque grandeur,
+   flèches, pas de produit en croix) — v1 compléter le tableau d'après l'énoncé (« 3 cahiers coûtent 4,50 €, 5
+   cahiers… » → valeurs à leur place, en-têtes donnés) ; v2 le nombre sur la flèche (× ? entre les deux lignes,
+   coefficient entier ou « prix d'un cahier ») ; v3 « quel tableau représente la situation ? » (trois tableaux
+   A, B, C dans l'énoncé, réponse A / B / C : grandeurs inversées ou valeurs non proportionnelles en leurres).
+   Distinct de 6-191 (calculer la quatrième proportionnelle, 3 modèles) : ici on range, on ne cherche pas.
+5. **Identifier une instruction, une séquence** (194, 1-2) — programme ` ```scratch ` court (5 à 7 blocs). v1
+   « quelle instruction le lutin exécute-t-il juste après … ? » (choix) ; v2 combien de fois « avancer de … » est
+   exécutée (une `répéter N fois`, une ou deux instructions dedans : case) ; v3 l'entrée et la sortie (« quelle
+   instruction donne une information au programme ? » : `demander … et attendre` ; choix).
+6. **Exécuter un programme pour un nombre de départ** (195, 1-3) — v1 programme de calcul écrit en liste (3
+   étapes, entiers ≤ 100, × + −) ; v2 le même en ` ```scratch ` (`demander`, `mettre`, `dire`) ; v3 avec un
+   décimal simple (× 10, + 0,5, ÷ 2 d'un pair). Corrigé : une ligne par étape (patron `4-lot-8/01`, sans relatif ni
+   carré).
+7. **Répéter à la main une séquence** (196, 1-3) — v1 robot sur quadrillage (` ```figure `, `grille: oui`) :
+   « répéter 3 fois : → → ↑ », où arrive-t-il ? (choix parmi les points 1, 2, 3) ; v2 lutin qui trace
+   (`répéter 4 fois` avancer / tourner de 90, 120 ou 60 degrés) : quelle figure ? (choix : carré, triangle
+   équilatéral, hexagone, rectangle) ; v3 tâche imposée : « le lutin doit avancer de 200 pas en tout, 25 par
+   répétition : combien de fois répéter ? » (case).
+
+**Question d'accès** (migration nœud + tag des 7) : personne ne lit rien de plus ; brouillons visibles de l'admin et
+de l'auteur seuls jusqu'à la publication, la migration ne fait que ranger et taguer.
+
+**Questions** :
+
+1. Lot 9 = ces 7 modèles, un par point (ou scinder : tableaux 143-192, puis programmes 194-196) ?
+2. 192 v3 : trois tableaux dans l'énoncé et réponse A / B / C (recommandé), plutôt que des tableaux dans les choix
+   eux-mêmes (rendu d'un tableau dans un choix pas encore vérifié).
+3. Valider la phase 0 (variations, niveaux, formes de réponse) ?
