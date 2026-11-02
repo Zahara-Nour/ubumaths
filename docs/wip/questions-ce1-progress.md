@@ -8,9 +8,9 @@
 _Mis à jour le 2026-11-02, lots 8 et 9 publiés._
 
 - **État** : lots 0 à 9 publiés (8 et 9 le 2026-11-02, statuts relus en base).
-- **Prochaine action** : lot 10 (espace et mesure) — phase 0 écrite au § 17 (9 modèles) ; après les réponses de
-  David, worktree neuf `ubumaths-wt-questions-ce1`, script `lot-ce1-10.py`.
-- **En attente de David** : les 5 questions du § 17. Chantier `verrou-deploy` à ouvrir dans sa session (mémoire).
+- **Prochaine action** : lot 10 (espace et mesure, § 17, validé) — écrire `lot-ce1-10.py` dans le worktree
+  `ubumaths-wt-questions-ce1`, branche `feat/questions-ce1-lot10`.
+- **En attente de David** : chantier `verrou-deploy` à ouvrir dans sa session (mémoire).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; **niveaux : relever la
@@ -809,3 +809,5 @@ tag ne change aucune règle.
    longues, niveau 3).
 5. **Niveaux** : premiers libres de chaque catégorie, aucun publié renuméroté (5 ; 7, 8 ; 4, 5 ; 3, 4 ; 2, 3).
    Recommandation : oui. Les catégories seront relevées de nouveau juste avant la publication.
+
+Réponse de David (« tes recos ? » puis « go », 2026-11-02) : les cinq recommandations.
