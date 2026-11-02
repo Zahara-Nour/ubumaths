@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, migration de rangement du lot 7a en PR (§ 12.3)._
+_Mis à jour le 2026-11-02, après #2218 (rangement du lot 7a joué en prod)._
 
-- **État** : lots 0 à 6 publiés. Lot 7a : 6 brouillons créés en prod (ids au § 12.3), migration nœud + tag sur `feat/questions-cm2-lot7a-rangement`.
-- **Prochaine action** : PR verte → merge → `migration list --linked`, `db:migrate --dry-run` puis `db:migrate` ; vérifier au MCP ; page à cocher. Publication des #1-#2 (entiers) après le `deploy:prod` qui livre le correctif des étiquettes (#2212).
-- **En attente de David** : le `deploy:prod` qui livre le correctif des étiquettes (#2212), avant de publier #1-#2.
-- **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; garde = doublon seulement ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `pnpm db:migrate --dry-run --include-all`, liste relue, puis `--include-all`. `Doc-inchangée:` dans un COMMIT, pas dans la PR. `spacesFromFourDigits` → specs en `1\,000` ; homonymes du CM1 sur la page ; `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot7a-rangement`.
+- **État** : lots 0 à 6 publiés. Lot 7a : 6 brouillons rangés et tagués en prod (ids au § 12.3) ; page à cocher publiée : https://claude.ai/artifact/6SVfmVU1t4cgHjjRsuRCwZ
+- **Prochaine action** : lire et compter les `verdicts` de la page ; corriger les « À revoir » ; puis `publier-lot --dir scripts/questions/cm2-7a` en simulation. Ensuite lot 7b (§ 12, modèles 7-10).
+- **En attente de David** : la relecture sur la page à cocher (droites à jouer dans l'aperçu) ; le `deploy:prod` qui livre le correctif des étiquettes (#2212) avant de publier #1-#2 (entiers).
+- **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` (lien projet) du dépôt principal. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2` en HEAD détachée sur `origin/main`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -736,3 +736,5 @@ reclasser le § 3 (outils de la classe C maintenant en prod). Tableau du § 12 g
 
 - David : `create-questions --dir scripts/questions/cm2-7a --publier` → 6 brouillons [CM2] sans nœud ni tag (MCP, `updated_at` = création) : `c20b687f` (129), `7df1aadd` (007), `de02429a` (018), `daf8a942` (134), `826f6971` (017), `c0eef6ff` (133).
 - Migration `20261102081228_questions_cm2_lot7a_rangement_tags.sql` (`pnpm migration:horodatage`), copie du lot 6b ; nœuds relevés au MCP : sous-notion « droite graduée » de « Entiers : numération » (129, 007) et de « Fractions : sens et écritures » (018, 134, 017, 133). Test `questions-cm2-lot7a-rangement-tags` : 9 verts ; corps remplacé par `select 1;` → 3 rouges et le premier bloc tombe au `beforeAll` (4 sautés) ; fichier restauré depuis sa copie.
+- #2218 : `security-auditor` sans finding bloquant ; CI verte ; `check:migrations --pr 2218` sortie 0 ; mergée. Worktree non lié au projet (`ProjectRefNotLinkedError`) : `supabase/.temp/{project-ref,linked-project.json,pooler-url,postgres-version}` copiés du dépôt principal. `db:migrate --dry-run` : la nôtre seule ; `db:migrate` : jouée. MCP : 6 `draft`, nœud et point attendus, `updated_at` = création, trigger `tgenabled = 'O'`.
+- Page à cocher publiée (6 fiches ; « bloc line non dessiné » sur les 6 : à jouer dans l'aperçu ; homonymes CM1 `c2fa5767`, `0e3f82a1`, `00910e5b` écartés, ids justes) : https://claude.ai/artifact/6SVfmVU1t4cgHjjRsuRCwZ ; `verdicts` vide au départ.
