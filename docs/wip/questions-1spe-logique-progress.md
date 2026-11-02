@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2247 et son `db:migrate`._
+_Mis à jour le 2026-11-02, page à cocher publiée._
 
-- **État** : 7 brouillons en prod, rangés et tagués (#2247, migration `20261102182612` appliquée, relue par MCP : nœud + point justes, `updated_at` intact) — 01 `dd9a33b7` (203), 02 `344a2248` (206), 03 `63849c41` (367), 04 `5d17692b` (207), 05 `de42b303` (208), 06 `2f7d637b` (209), 07 `051ff81f` (210).
-- **Prochaine action** : page à cocher (collection `verdicts`, rendu à 390 px), relecture par David, puis `publier-lot` (simulation, puis `--publier` par David).
-- **En attente de David** : rien (la page à cocher vient d'abord).
-- **Pièges en cours** : `i` et `e` interdits comme noms de variables ; `{{if:}}` imbriqué refusé dans une variable ; `eval:` sans comparaisons ; `create-questions` vise la PROD sans `set -a; . ./.env.local; set +a` ; `db:migrate` refusé si une autre session a migré entre-temps → avancer la branche sur `origin/main`, puis `migration list --linked`.
-- **Worktree / branche** : aucun (retiré après #2247) ; la page à cocher n'a pas besoin de branche.
+- **État** : 7 brouillons en prod, rangés et tagués (#2247) — 01 `dd9a33b7` (203), 02 `344a2248` (206), 03 `63849c41` (367), 04 `5d17692b` (207), 05 `de42b303` (208), 06 `2f7d637b` (209), 07 `051ff81f` (210). Page à cocher : https://claude.ai/artifact/McSs9rW6zXxaysExnJ6J4Z (`verdicts` vide à la publication).
+- **Prochaine action** : lire et **compter** les verdicts (`ArtifactData list verdicts`, 7 attendus) ; un « À revoir » → correction (§ 7 de couvrir-un-niveau) ; puis `publier-lot.ts --dir scripts/questions/1spe-logique` en simulation, puis `--publier` (David, `!`).
+- **En attente de David** : relecture de la page à cocher.
+- **Pièges en cours** : la page montre `` `L` `` avec ses accents graves (le générateur de page ne rend pas le code en ligne ; l'appli, si) ; `i` et `e` interdits comme noms de variables ; `create-questions` vise la PROD sans `set -a; . ./.env.local; set +a`.
+- **Worktree / branche** : aucun ; la publication n'a pas besoin de branche.
 
 ---
 
@@ -91,3 +91,8 @@ Python et de la ligne `L = [ , , , ]` propre).
 `{{if:}}` imbriqué dans l'expression d'une variable refusé (un seul niveau passe) ; `eval:` ne connaît pas `==` ni `>` →
 indicatrices `min(max(x-s,0),1)` et `1-min(abs(r-k),1)` ; dans une variable, `eval:…` sans accolades ; worktree neuf :
 `pnpm exec svelte-kit sync` avant `question:specs` (`$lib` introuvable).
+
+**Page à cocher** (2026-11-02) : `page-a-cocher.ts --dir scripts/questions/1spe-logique`, 7 fiches lues en prod
+(brouillons, aucune alerte), 22 exemples : https://claude.ai/artifact/McSs9rW6zXxaysExnJ6J4Z (`verdicts` vide à la
+publication). Rendu vu dans Chrome à ~606 px (la fenêtre ne descend pas à 390) : KaTeX dessiné, aucun débordement ;
+le code en ligne (`` `L` ``) reste en texte brut sur la page, alors que l'appli le rend en police de code.
