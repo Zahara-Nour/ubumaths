@@ -10,18 +10,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2223 (lot 4 rangé en prod, page à cocher publiée)._
+_Mis à jour le 2026-11-02, après la publication du lot 4._
 
-- **État** : lots 0 à 3 publiés. Lot 4 (§ 17) : 9 brouillons en prod, rangés et tagués (#2223, `db:migrate` fait),
-  page à cocher https://claude.ai/artifact/DKutqLvQRjb87JbwEhqLdn publiée, simulation de publication verte.
-- **Prochaine action** : lire et **compter** les verdicts (`ArtifactData list verdicts`) ; 9 « OK » → David lance
-  `publier-lot.ts --dir scripts/questions/tspe-4-integrales-primitives --publier` ; relire `published` au MCP. Puis
-  lot 5 (probabilités : succession d'épreuves, sommes de variables), § 4.
-- **En attente de David** : relecture de la page à cocher, puis `publier-lot --publier` (`!`).
-- **Pièges en cours** : `cleanCoefficients` ne nettoie que les formules analysables (§ 17) ; couleur toujours dans
-  `$…$` ; un modèle peut aller sur une notion sans sous-notion (garde § 17) ; `db:migrate` passe TOUTES les
-  migrations en attente (une autre session peut en avoir une) ; port 5176 pris par une autre session.
-- **Worktree / branche** : aucun (retiré après #2223).
+- **État** : lots 0 à 4 faits ; lot 4 (intégrales et primitives, § 17) **publié** le 2026-11-02 (9/9 `published`,
+  relu au MCP ; 9 verdicts OK sur la page à cocher).
+- **Prochaine action** : lot 5 « probabilités : succession d'épreuves, sommes de variables » (501, 612, 505, 615, 507,
+  509, 613, 506, 617, 518, 521, 525, 532 ; deux lots, § 4) : worktree neuf depuis `origin/main`, relevé MCP des
+  voisins, phase 0 à faire valider.
+- **En attente de David** : rien (la phase 0 du lot 5 est à produire).
+- **Pièges en cours** : `cleanCoefficients` ne nettoie que les formules analysables → signes par `coef()`/`terme()`,
+  couleur toujours dans `$…$` (§ 17) ; un tag sur le nœud du modèle ou sa notion (§ 14), un modèle peut aller sur une
+  notion sans sous-notion (garde § 17) ; `create-questions` et `publier-lot` → David (`!`) ; `db:migrate` passe TOUTES
+  les migrations en attente ; `pnpm migration:horodatage` ; job navigateur `wrapDynamicImport` en CI : relancer ;
+  saisie MathLive non pilotable par l'automate ; port 5176 pris par une autre session.
+- **Worktree / branche** : aucun ; lot 5 → worktree neuf depuis `origin/main`.
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -894,3 +896,6 @@ création.
 **Page à cocher** (2026-11-02) : `page-a-cocher.ts --dir scripts/questions/tspe-4-integrales-primitives`, 9 fiches lues
 en prod (brouillons, aucune alerte), 22 exemples : https://claude.ai/artifact/DKutqLvQRjb87JbwEhqLdn (`verdicts` vide à
 la publication). Rendu à 390 px non vérifié. `publier-lot.ts` simulé : 9 brouillons passent le contrôle.
+
+**Publication** (2026-11-02) : 9 verdicts « OK » lus en base de la page (comptés, sans commentaire) ;
+`publier-lot.ts --publier` lancé par David : 9/9 `published`, relus au MCP.
