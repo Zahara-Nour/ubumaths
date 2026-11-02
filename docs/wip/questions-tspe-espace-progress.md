@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, fichiers du lot 6a écrits._
+_Mis à jour le 2026-11-02, après #2239._
 
-- **État** : phase 0 du 6a validée ; 9 modèles écrits (`scripts/questions/tspe-6a-orthogonalite-distances/`), specs vertes, essai en base locale ; PR des fichiers ouverte.
-- **Prochaine action** : merge de la PR des fichiers, puis David lance `create-questions --publier` depuis le dépôt principal ; relever les `id`, migration nœud + tag.
-- **En attente de David** : `create-questions --publier` après le merge.
-- **Pièges en cours** : voir « Décisions communes et pièges » ci-dessous.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-espace`, `feat/questions-tspe-espace`.
+- **État** : 9 modèles du lot 6a écrits, PR des fichiers #2239 mergée ; pas encore créés en prod.
+- **Prochaine action** : après `create-questions --publier` (David), relever les `id` au MCP, puis migration nœud + tag du 6a (gabarit `20261102083457_questions_tspe_lot4_rangement_tags.sql` + son test), dans un worktree neuf.
+- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-6a-orthogonalite-distances --publier` depuis le dépôt principal.
+- **Pièges en cours** : voir « Décisions communes et pièges » ci-dessous ; M8 (625) va sur la sous-notion « produit scalaire dans l'espace », son point est sur la notion.
+- **Worktree / branche** : aucun (rangé après #2239) ; worktree neuf `../ubumaths-wt-questions-tspe-espace` depuis `origin/main` pour la migration.
 
 ---
 
@@ -125,3 +125,5 @@ l'énoncé → un `$$…$$` par droite ; M5, fractions illisibles dans les colon
 par la flèche → vecteurs u, v, w sur une ligne `$$…$$`, en `\dfrac`. Vus, laissés : « √10 = √10 » quand la racine
 ne se simplifie pas (comme 62e446cb). Base locale : 9 brouillons ; M9 v1 (choix juste accepté) et M5 (choix faux
 refusé, bonne réponse montrée) joués dans l'aperçu ; saisie MathLive non pilotable.
+
+**PR des fichiers** : #2239 mergée le 2026-11-02 (CI verte).
