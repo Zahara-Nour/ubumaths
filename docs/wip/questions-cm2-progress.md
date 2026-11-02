@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 7a publié (§ 12.3)._
+_Mis à jour le 2026-11-02, lot 7b écrit (§ 12.4)._
 
-- **État** : lots 0 à 6 et **7a publiés** (7a : 6/6 vérifiés au MCP). Correctif des étiquettes longues (#2212) en prod (v0.64.0).
-- **Prochaine action** : écriture du lot 7b (fractions décimales et décimaux, modèles 7-10 du § 12) dans le worktree, branche `feat/questions-cm2-lot7b`. Puis petit lot 8 (038, 053, 055-057), puis reclasser le § 3 (§ 12.1).
-- **En attente de David** : rien.
+- **État** : lots 0 à 7a publiés. Lot 7b (4 modèles : 138, 025, 144, 032) écrit, essayé en base locale, PR `feat/questions-cm2-lot7b` ouverte.
+- **Prochaine action** : merger la PR du lot 7b ; puis `create-questions --dir scripts/questions/cm2-7b --publier` (David, prod), migration de rangement (copie du lot 7a), page à cocher. Ensuite petit lot 8 (038, 053, 055-057), puis reclasser le § 3 (§ 12.1).
+- **En attente de David** : le `--publier` en prod après le merge.
 - **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` (lien projet) du dépôt principal. Modèle à placer avec grands nombres : `spaces: off`. Page à cocher : `line` non dessiné, à jouer dans l'aperçu. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2` en HEAD détachée sur `origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot7b`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -741,3 +741,10 @@ reclasser le § 3 (outils de la classe C maintenant en prod). Tableau du § 12 g
 - Relecture de David : 6 OK sur 6, sans commentaire (`verdicts` lu et compté). `publier-lot` en simulation : 6 passent.
 - `deploy:prod` : la CI de la v0.63.0 a planté (`wrapDynamicImport`), verrou relâché, 4 merges ont annulé sa relance → chantier `verrou-deploy` (#2232). v0.64.0 en prod (11:48), correctif des étiquettes (#2212) compris, Vercel vert.
 - David lance `publier-lot --publier` : 6/6 publiés. MCP : 6 `published` (niveaux 2, 3, 8, 9, 10, 11), 6 rangés, 6 tagués (CM2-129, 007, 018, 134, 017, 133). **Lot 7a clos.**
+
+### 12.4 Lot 7b : écriture (2026-11-02)
+
+- `docs/wip/questions/lot-cm2-7b.py` → `scripts/questions/cm2-7b/` (4 modèles), jumeau de `lot-cm1-3b.py` #7-8 et `lot-cm1-4.py` #3-4, avec une 3e droite : morceau agrandi en **millièmes** (de 281/100 à 282/100 ; de 33,91 à 33,92). Niveaux revérifiés au MCP : Fractions/Repérage 1-11, Décimaux/Repérage 1-4 → 12, 13, 5, 6.
+- `question:specs` : 41 specs vertes, 13 000 tirages réussis. Fractions : `requiredForm: 'fraction'`, `reducedFractions: off`, `spacesFromFourDigits` (réponse `\frac{2\,812}{1\,000}`, comme le lot 6a).
+- Sonde tsx hors dépôt (parseur + `number-line-placer`), 3 000 tirages par modèle : toujours 11 graduations, chaque point à placer sur une graduation, `placerAnswer` = réponse attendue (pas `0.001` sans erreur d'arrondi), aucun `phoneGapWarning`.
+- Base locale (`create-questions --publier` avec `.env.local`, passé cette fois) ; aperçu (port 5183, fenêtre de 606 px, Chrome ne descend pas plus bas) : deux points en millièmes (35,501 ; 35,507) placés → « Juste » ; étiquettes 108/100 et 109/100 lisibles.
