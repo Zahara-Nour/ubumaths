@@ -205,6 +205,9 @@ principe, chaque bloc ``figure passé au moteur de l'appli (`parseFigure` puis
    chaque bloc `cubes, `solide et ``patron (énoncé, options d'un choix, corrigé) passé à
    `parseEspaceContent` avec son genre → **0 problème** (un bloc d'affichage en erreur, « Solide
    indisponible », échappe aux specs).
+   Lot d'horloges ou de droites graduées : `pnpm tsx scripts/questions/sonde-horloges.ts --dir …`, même
+   principe, chaque bloc ` ```horloge ` et ` ```line ` (énoncé, corrigé, horloges d'un choix) passé à son
+   parseur → **0 problème** (heure refusée, point hors de la droite : les specs ne le voient pas).
 4. Base **locale** : `set -a; . ./.env.local; set +a` puis `create-questions … --publier`
    (sans cela, le script vise `.env` = la PROD). Jouer chaque modèle dans l'aperçu admin
    (`/dashboard/admin/questions/<id>/preview`, `admin@local.test`), une réponse juste, une fausse,

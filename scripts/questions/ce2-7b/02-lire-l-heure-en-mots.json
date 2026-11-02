@@ -1,0 +1,326 @@
+{
+	"title": "Dire l'heure et l'écrire en chiffres",
+	"description": "Sept heures moins le quart = 6 h 45 ; huit heures et demie ; midi moins dix ; cadran de 24 h : quinze heures quarante-deux",
+	"grades": ["CE2"],
+	"theme": "Grandeurs",
+	"domain": "Durées",
+	"subdomain": "Lire l'heure",
+	"level": 6,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris l'heure en chiffres : **{{n}} heures moins {{if:t==1|cinq|{{if:t==2|dix|{{if:t==3|le quart|vingt}}}}}}**.\n\nIl est $?~\\text{h}~?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..12"
+				},
+				{
+					"name": "t",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n-1}}"
+				},
+				{
+					"expectedAnswer": "{{eval:60-5*t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« Moins {{if:t==1|cinq|{{if:t==2|dix|{{if:t==3|le quart|vingt}}}}}} », c'est avant {{n}} heures : il manque ${{eval:5*t}}$ minutes pour arriver à ${{n}}~\\text{h}$.",
+					"On est donc dans l'heure d'avant, ${{n}} - 1 = {{eval:n-1}}$, et il s'est écoulé $60 - {{eval:5*t}} = {{eval:60-5*t}}$ minutes.",
+					"Il est $\\textcolor{{{color:primary.0}}}{{{eval:n-1}}~\\text{h}~{{eval:60-5*t}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris l'heure en chiffres : **{{if:n==1|une|{{n}}}} heure{{if:n>1|s|}} {{if:t==1|cinq|{{if:t==2|dix|{{if:t==3|et quart|{{if:t==4|vingt|{{if:t==5|vingt-cinq|et demie}}}}}}}}}}**.\n\nIl est $?~\\text{h}~?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..12"
+				},
+				{
+					"name": "t",
+					"expression": "1..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				},
+				{
+					"expectedAnswer": "{{eval:5*t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les heures sont dites en premier : ${{n}}$ heure{{if:n>1|s|}}.",
+					"« {{if:t==1|cinq|{{if:t==2|dix|{{if:t==3|et quart|{{if:t==4|vingt|{{if:t==5|vingt-cinq|et demie}}}}}}}}}} » : {{if:t==3|un quart d'heure, c'est $15$ minutes|{{if:t==6|une demi-heure, c'est $30$ minutes|${{eval:5*t}}$ minutes}}}}.",
+					"Il est $\\textcolor{{{color:primary.0}}}{{{n}}~\\text{h}~{{eval:5*t}}}$."
+				]
+			}
+		},
+		{
+			"statement": "C'est l'après-midi. Quelle heure est-il ? Écris-la sur $24$ heures.\n\n```horloge\nheure: {{if:m==0|{{h}} h|{{h}} h {{eval:m}}}}\nchiffres: tous\ncadran: 24\n```\n\nIl est $?~\\text{h}~?$.",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "13..23"
+				},
+				{
+					"name": "q",
+					"expression": "0..11"
+				},
+				{
+					"name": "r",
+					"expression": "0..4"
+				},
+				{
+					"name": "m",
+					"expression": "eval:5*q+r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{h}}"
+				},
+				{
+					"expectedAnswer": "{{m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La petite aiguille est sur le ${{eval:h-12}}$ de la couronne du dehors. Sur la couronne du dedans, au même endroit, on lit ${{h}}$ : c'est l'heure de l'après-midi.",
+					"La grande aiguille donne les minutes : {{m}} minute{{if:m>1|s|}}.",
+					"Il est $\\textcolor{{{color:primary.0}}}{{{h}}~\\text{h}~{{m}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris l'heure en chiffres : **{{if:k==1|midi et quart|{{if:k==2|midi et demi|{{if:k==3|midi moins le quart|midi moins dix}}}}}}**.\n\nIl est $?~\\text{h}~?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "hh",
+					"expression": "{{if:k<3|12|11}}"
+				},
+				{
+					"name": "mm",
+					"expression": "{{if:k==1|15|{{if:k==2|30|{{if:k==3|45|50}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{hh}}"
+				},
+				{
+					"expectedAnswer": "{{mm}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Midi, c'est $12~\\text{h}$.",
+					"{{if:k<3|Après midi : $12~\\text{h}$ et ${{mm}}$ minutes.|Avant midi : on est dans l'heure d'avant, $11~\\text{h}$, et il s'est écoulé {{mm}} minutes.}}",
+					"Il est $\\textcolor{{{color:primary.0}}}{{{hh}}~\\text{h}~{{mm}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : sept heures moins le quart = 6 h 45",
+			"variationIndex": 0,
+			"variables": {
+				"n": "7",
+				"t": "3"
+			},
+			"answers": ["6", "45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : moins le quart lu 7 h 45",
+			"variationIndex": 0,
+			"variables": {
+				"n": "7",
+				"t": "3"
+			},
+			"answers": ["7", "45"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : moins le quart lu 6 h 15",
+			"variationIndex": 0,
+			"variables": {
+				"n": "7",
+				"t": "3"
+			},
+			"answers": ["6", "15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : quatre heures moins vingt = 3 h 40",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"t": "4"
+			},
+			"answers": ["3", "40"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : quatre heures moins vingt lu 3 h 20",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"t": "4"
+			},
+			"answers": ["3", "20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : huit heures et demie",
+			"variationIndex": 1,
+			"variables": {
+				"n": "8",
+				"t": "6"
+			},
+			"answers": ["8", "30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Cinq heures et quart",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5",
+				"t": "3"
+			},
+			"answers": ["5", "15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cinq heures et quart lu 5 h 45",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5",
+				"t": "3"
+			},
+			"answers": ["5", "45"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sept heures vingt",
+			"variationIndex": 1,
+			"variables": {
+				"n": "7",
+				"t": "4"
+			},
+			"answers": ["7", "20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sept heures vingt lu 8 h 20",
+			"variationIndex": 1,
+			"variables": {
+				"n": "7",
+				"t": "4"
+			},
+			"answers": ["8", "20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : quinze heures quarante-deux",
+			"variationIndex": 2,
+			"variables": {
+				"h": "15",
+				"q": "8",
+				"r": "2",
+				"m": "42"
+			},
+			"answers": ["15", "42"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 15 h 42 lu 3 h 42 (cadran de 24 h)",
+			"variationIndex": 2,
+			"variables": {
+				"h": "15",
+				"q": "8",
+				"r": "2",
+				"m": "42"
+			},
+			"answers": ["3", "42"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Midi et quart",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"hh": "12",
+				"mm": "15"
+			},
+			"answers": ["12", "15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Midi moins le quart = 11 h 45",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3",
+				"hh": "11",
+				"mm": "45"
+			},
+			"answers": ["11", "45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : midi moins le quart lu 12 h 45",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3",
+				"hh": "11",
+				"mm": "45"
+			},
+			"answers": ["12", "45"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

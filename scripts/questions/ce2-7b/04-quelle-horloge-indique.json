@@ -1,0 +1,289 @@
+{
+	"title": "Quelle horloge indique… ? (heures et minutes)",
+	"description": "Reconnaître l'horloge qui montre 8 h 35, 13 h 20, « sept heures moins le quart » ; leurres : aiguilles inversées, heure d'après, minutes symétriques",
+	"grades": ["CE2"],
+	"theme": "Grandeurs",
+	"domain": "Durées",
+	"subdomain": "Lire l'heure",
+	"level": 8,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quelle horloge indique ${{h}}~\\text{h}~{{eval:5*q}}$ ?\n\n````choix\n- ```horloge\n  heure: {{h}} h {{eval:5*q}}\n  chiffres: tous\n  ```\n- ```horloge\n  heure: {{inv}}\n  chiffres: tous\n  ```\n- ```horloge\n  heure: {{suiv}}\n  chiffres: tous\n  ```\n- ```horloge\n  heure: {{sym}}\n  chiffres: tous\n  ```\n````",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "1..11"
+				},
+				{
+					"name": "q",
+					"expression": "1..11"
+				},
+				{
+					"name": "inv",
+					"expression": "{{q}} h {{eval:mod(5*h,60)}}"
+				},
+				{
+					"name": "suiv",
+					"expression": "{{eval:h+1}} h {{eval:5*q}}"
+				},
+				{
+					"name": "sym",
+					"expression": "{{h}} h {{eval:60-5*q}}"
+				}
+			],
+			"conditions": ["h != q", "q != 6"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La petite aiguille montre l'heure, la grande montre les minutes : attention à ne pas les inverser.",
+					"Pour ${{h}}~\\text{h}~{{eval:5*q}}$ : la grande aiguille sur le ${{q}}$ (${{eval:5*q}}$ minutes), la petite entre le ${{h}}$ et le ${{eval:h+1}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quelle horloge indique ${{hh}}~\\text{h}~{{eval:5*q}}$ ?\n\n````choix\n- ```horloge\n  heure: {{h}} h {{eval:5*q}}\n  chiffres: tous\n  ```\n- ```horloge\n  heure: {{inv}}\n  chiffres: tous\n  ```\n- ```horloge\n  heure: {{suiv}}\n  chiffres: tous\n  ```\n- ```horloge\n  heure: {{sym}}\n  chiffres: tous\n  ```\n````",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "1..11"
+				},
+				{
+					"name": "hh",
+					"expression": "eval:h+12"
+				},
+				{
+					"name": "q",
+					"expression": "1..11"
+				},
+				{
+					"name": "inv",
+					"expression": "{{q}} h {{eval:mod(5*h,60)}}"
+				},
+				{
+					"name": "suiv",
+					"expression": "{{eval:h+1}} h {{eval:5*q}}"
+				},
+				{
+					"name": "sym",
+					"expression": "{{h}} h {{eval:60-5*q}}"
+				}
+			],
+			"conditions": ["h != q", "q != 6"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur un cadran de $12$ heures, on enlève $12$ : ${{eval:hh}} - 12 = {{h}}$.",
+					"Pour ${{h}}~\\text{h}~{{eval:5*q}}$ : la grande aiguille sur le ${{q}}$ (${{eval:5*q}}$ minutes), la petite entre le ${{h}}$ et le ${{eval:h+1}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quelle horloge indique **{{n}} heures {{if:k==1|et quart|{{if:k==2|et demie|{{if:k==3|moins le quart|moins vingt}}}}}}** ?\n\n````choix\n- ```horloge\n  heure: {{b}}\n  chiffres: tous\n  ```\n- ```horloge\n  heure: {{l1}}\n  chiffres: tous\n  ```\n- ```horloge\n  heure: {{l2}}\n  chiffres: tous\n  ```\n- ```horloge\n  heure: {{l3}}\n  chiffres: tous\n  ```\n````",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..12"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "b",
+					"expression": "{{if:k==1|{{n}} h 15|{{if:k==2|{{n}} h 30|{{if:k==3|{{eval:n-1}} h 45|{{eval:n-1}} h 40}}}}}}"
+				},
+				{
+					"name": "l1",
+					"expression": "{{if:k==1|{{n}} h 45|{{if:k==2|{{n}} h 15|{{if:k==3|{{n}} h 45|{{n}} h 40}}}}}}"
+				},
+				{
+					"name": "l2",
+					"expression": "{{if:k==1|{{eval:mod(n,12)+1}} h 15|{{if:k==2|{{eval:mod(n,12)+1}} h 30|{{if:k==3|{{n}} h 15|{{n}} h 20}}}}}}"
+				},
+				{
+					"name": "l3",
+					"expression": "{{if:k==1|{{n}} h 30|{{if:k==2|{{n}} h 45|{{if:k==3|{{eval:n-1}} h 15|{{eval:n-1}} h 20}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« {{n}} heures {{if:k==1|et quart|{{if:k==2|et demie|{{if:k==3|moins le quart|moins vingt}}}}}} » : {{if:k<3|on est après {{n}} heures, dans l'heure ${{n}}$.|on est avant {{n}} heures, dans l'heure {{eval:n-1}}.}}",
+					"{{if:k==1|Un quart d'heure, c'est $15$ minutes : la grande aiguille est sur le $3$.|{{if:k==2|Une demi-heure, c'est $30$ minutes : la grande aiguille est sur le $6$.|{{if:k==3|Il manque un quart d'heure : $60 - 15 = 45$ minutes, la grande aiguille est sur le $9$.|Il manque vingt minutes : $60 - 20 = 40$ minutes, la grande aiguille est sur le $8$.}}}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "8 h 35 : bonne horloge",
+			"variationIndex": 0,
+			"variables": {
+				"h": "8",
+				"q": "7",
+				"inv": "7 h 40",
+				"suiv": "9 h 35",
+				"sym": "8 h 25"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : aiguilles inversées",
+			"variationIndex": 0,
+			"variables": {
+				"h": "8",
+				"q": "7",
+				"inv": "7 h 40",
+				"suiv": "9 h 35",
+				"sym": "8 h 25"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : heure d'après",
+			"variationIndex": 0,
+			"variables": {
+				"h": "8",
+				"q": "7",
+				"inv": "7 h 40",
+				"suiv": "9 h 35",
+				"sym": "8 h 25"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 35 lu 25 (minutes symétriques)",
+			"variationIndex": 0,
+			"variables": {
+				"h": "8",
+				"q": "7",
+				"inv": "7 h 40",
+				"suiv": "9 h 35",
+				"sym": "8 h 25"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "13 h 20 : bonne horloge",
+			"variationIndex": 1,
+			"variables": {
+				"h": "1",
+				"hh": "13",
+				"q": "4",
+				"inv": "4 h 5",
+				"suiv": "2 h 20",
+				"sym": "1 h 40"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 13 h 20, heure d'après",
+			"variationIndex": 1,
+			"variables": {
+				"h": "1",
+				"hh": "13",
+				"q": "4",
+				"inv": "4 h 5",
+				"suiv": "2 h 20",
+				"sym": "1 h 40"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sept heures moins le quart : bonne horloge",
+			"variationIndex": 2,
+			"variables": {
+				"n": "7",
+				"k": "3",
+				"b": "6 h 45",
+				"l1": "7 h 45",
+				"l2": "7 h 15",
+				"l3": "6 h 15"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sept heures moins le quart pris pour 7 h 45",
+			"variationIndex": 2,
+			"variables": {
+				"n": "7",
+				"k": "3",
+				"b": "6 h 45",
+				"l1": "7 h 45",
+				"l2": "7 h 15",
+				"l3": "6 h 15"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sept heures moins le quart pris pour 7 h 15",
+			"variationIndex": 2,
+			"variables": {
+				"n": "7",
+				"k": "3",
+				"b": "6 h 45",
+				"l1": "7 h 45",
+				"l2": "7 h 15",
+				"l3": "6 h 15"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : sept heures moins le quart pris pour 6 h 15",
+			"variationIndex": 2,
+			"variables": {
+				"n": "7",
+				"k": "3",
+				"b": "6 h 45",
+				"l1": "7 h 45",
+				"l2": "7 h 15",
+				"l3": "6 h 15"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

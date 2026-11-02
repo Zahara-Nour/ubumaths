@@ -1,0 +1,337 @@
+{
+	"title": "Combien de temps a-t-il duré ? (deux horloges)",
+	"description": "Durée entre deux horloges : 8 h 30 → 8 h 50 ; 15 h 40 → 16 h 05 ; 9 h 15 → 10 h 30",
+	"grades": ["CE2"],
+	"theme": "Grandeurs",
+	"domain": "Durées",
+	"subdomain": "Durée écoulée",
+	"level": 5,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:k==1|La récréation|{{if:k==2|La séance de piscine|{{if:k==3|Le film|La promenade}}}}}} commence et finit aux heures montrées. Combien de temps a-t-{{if:k==3|il|elle}} duré ?\n\n```horloge\nheure: {{if:5*p==0|{{h}} h|{{h}} h {{eval:5*p}}}} ; {{if:5*(p+n)==0|{{h}} h|{{h}} h {{eval:5*(p+n)}}}}\nchiffres: tous\nlégendes: Début ; Fin\n```\n\nDurée : $?~\\text{min}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "h",
+					"expression": "1..12"
+				},
+				{
+					"name": "p",
+					"expression": "0..10"
+				},
+				{
+					"name": "n",
+					"expression": "1..6"
+				}
+			],
+			"conditions": ["p + n <= 11"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:5*n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Début : {{if:5*p==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{eval:5*p}}$}}. Fin : {{if:5*(p+n)==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{eval:5*(p+n)}}$}}.",
+					"L'heure ne change pas, on compte les minutes : la grande aiguille passe du ${{p}}$ au ${{eval:p+n}}$, soit {{n}} intervalle{{if:n>1|s|}} de $5$ minutes.",
+					"Cela fait $\\textcolor{{{color:primary.0}}}{{{eval:5*n}}}~\\text{min}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:k==1|La récréation|{{if:k==2|La séance de piscine|{{if:k==3|Le film|La promenade}}}}}} commence et finit aux heures montrées. Combien de temps a-t-{{if:k==3|il|elle}} duré ?\n\n```horloge\nheure: {{if:5*p==0|{{h}} h|{{h}} h {{eval:5*p}}}} ; {{if:5*q==0|{{eval:mod(h,12)+1}} h|{{eval:mod(h,12)+1}} h {{eval:5*q}}}}\nchiffres: tous\nlégendes: Début ; Fin\n```\n\nDurée : $?~\\text{min}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "h",
+					"expression": "1..12"
+				},
+				{
+					"name": "p",
+					"expression": "1..11"
+				},
+				{
+					"name": "q",
+					"expression": "0..10"
+				}
+			],
+			"conditions": ["q < p"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:60-5*p+5*q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Début : {{if:5*p==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{eval:5*p}}$}}. Fin : {{if:5*q==0|${{eval:mod(h,12)+1}}~\\text{h}$|${{eval:mod(h,12)+1}}~\\text{h}~{{eval:5*q}}$}}.",
+					"De {{if:5*p==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{eval:5*p}}$}} à ${{eval:mod(h,12)+1}}~\\text{h}$ : $60 - {{eval:5*p}} = {{eval:60-5*p}}$ minutes.{{if:q>0| Puis de ${{eval:mod(h,12)+1}}~\\text{h}$ à {{if:5*q==0|${{eval:mod(h,12)+1}}~\\text{h}$|${{eval:mod(h,12)+1}}~\\text{h}~{{eval:5*q}}$}} : ${{eval:5*q}}$ minutes.|}}",
+					"{{if:q>0|${{eval:60-5*p}} + {{eval:5*q}} = {{eval:60-5*p+5*q}}$. |}}Cela fait $\\textcolor{{{color:primary.0}}}{{{eval:60-5*p+5*q}}}~\\text{min}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:k==1|La récréation|{{if:k==2|La séance de piscine|{{if:k==3|Le film|La promenade}}}}}} commence et finit aux heures montrées. Combien de temps a-t-{{if:k==3|il|elle}} duré ?\n\n```horloge\nheure: {{if:5*p==0|{{h}} h|{{h}} h {{eval:5*p}}}} ; {{if:5*q==0|{{eval:h+1}} h|{{eval:h+1}} h {{eval:5*q}}}}\nchiffres: tous\ncadran: 24\nlégendes: Début ; Fin\n```\n\nDurée : $?~\\text{min}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "h",
+					"expression": "13..22"
+				},
+				{
+					"name": "p",
+					"expression": "1..11"
+				},
+				{
+					"name": "q",
+					"expression": "0..10"
+				}
+			],
+			"conditions": ["q < p"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:60-5*p+5*q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Début : {{if:5*p==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{eval:5*p}}$}}. Fin : {{if:5*q==0|${{eval:h+1}}~\\text{h}$|${{eval:h+1}}~\\text{h}~{{eval:5*q}}$}}.",
+					"De {{if:5*p==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{eval:5*p}}$}} à ${{eval:h+1}}~\\text{h}$ : $60 - {{eval:5*p}} = {{eval:60-5*p}}$ minutes.{{if:q>0| Puis de ${{eval:h+1}}~\\text{h}$ à {{if:5*q==0|${{eval:h+1}}~\\text{h}$|${{eval:h+1}}~\\text{h}~{{eval:5*q}}$}} : ${{eval:5*q}}$ minutes.|}}",
+					"{{if:q>0|${{eval:60-5*p}} + {{eval:5*q}} = {{eval:60-5*p+5*q}}$. |}}Cela fait $\\textcolor{{{color:primary.0}}}{{{eval:60-5*p+5*q}}}~\\text{min}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:k==1|La récréation|{{if:k==2|La séance de piscine|{{if:k==3|Le film|La promenade}}}}}} commence et finit aux heures montrées. Combien de temps a-t-{{if:k==3|il|elle}} duré ?\n\n```horloge\nheure: {{if:5*p==0|{{h}} h|{{h}} h {{eval:5*p}}}} ; {{if:mod(60*h+5*p+5*n,60)==0|{{eval:floor((60*h+5*p+5*n)/60)}} h|{{eval:floor((60*h+5*p+5*n)/60)}} h {{eval:mod(60*h+5*p+5*n,60)}}}}\nchiffres: tous\nlégendes: Début ; Fin\n```\n\nDurée : $?~\\text{h}~?~\\text{min}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "h",
+					"expression": "7..17"
+				},
+				{
+					"name": "p",
+					"expression": "0..11"
+				},
+				{
+					"name": "n",
+					"expression": "12..30"
+				}
+			],
+			"conditions": ["mod(n,12) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor(5*n/60)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:mod(5*n,60)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Début : {{if:5*p==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{eval:5*p}}$}}. Fin : {{if:mod(60*h+5*p+5*n,60)==0|${{eval:floor((60*h+5*p+5*n)/60)}}~\\text{h}$|${{eval:floor((60*h+5*p+5*n)/60)}}~\\text{h}~{{eval:mod(60*h+5*p+5*n,60)}}$}}.",
+					"D'abord les heures : de {{if:5*p==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{eval:5*p}}$}} à {{if:5*p==0|${{eval:h+floor(5*n/60)}}~\\text{h}$|${{eval:h+floor(5*n/60)}}~\\text{h}~{{eval:5*p}}$}}, il y a ${{eval:floor(5*n/60)}}~\\text{h}$.",
+					"Puis les minutes : de {{if:5*p==0|${{eval:h+floor(5*n/60)}}~\\text{h}$|${{eval:h+floor(5*n/60)}}~\\text{h}~{{eval:5*p}}$}} à {{if:mod(60*h+5*p+5*n,60)==0|${{eval:floor((60*h+5*p+5*n)/60)}}~\\text{h}$|${{eval:floor((60*h+5*p+5*n)/60)}}~\\text{h}~{{eval:mod(60*h+5*p+5*n,60)}}$}}, il y a ${{eval:mod(5*n,60)}}~\\text{min}$.",
+					"Cela fait $\\textcolor{{{color:primary.0}}}{{{eval:floor(5*n/60)}}~\\text{h}~{{eval:mod(5*n,60)}}~\\text{min}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 8 h 30 → 8 h 50 = 20 min",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"h": "8",
+				"p": "6",
+				"n": "4"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8 h 30 → 8 h 50 = 50",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"h": "8",
+				"p": "6",
+				"n": "4"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 6 → 10 sur le cadran = 4",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"h": "8",
+				"p": "6",
+				"n": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 15 h 40 → 16 h 05 = 25 min (cadran : 3 h 40 → 4 h 05)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"h": "3",
+				"p": "8",
+				"q": "1"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1605 − 1540 = 65",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"h": "3",
+				"p": "8",
+				"q": "1"
+			},
+			"answers": ["65"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 40 − 5 = 35",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"h": "3",
+				"p": "8",
+				"q": "1"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "9 h 55 → 10 h = 5 min",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"h": "9",
+				"p": "11",
+				"q": "0"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BO : cadran de 24 h, 15 h 40 → 16 h 05 = 25 min",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"h": "15",
+				"p": "8",
+				"q": "1"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cadran de 24 h, 65",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"h": "15",
+				"p": "8",
+				"q": "1"
+			},
+			"answers": ["65"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "9 h 15 → 10 h 30 = 1 h 15 min",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"h": "9",
+				"p": "3",
+				"n": "15"
+			},
+			"answers": ["1", "15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 9 h 15 → 10 h 30 = 1 h 30 min (minutes de la fin)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"h": "9",
+				"p": "3",
+				"n": "15"
+			},
+			"answers": ["1", "30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 9 h 15 → 10 h 30 = 1 h 75 min",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"h": "9",
+				"p": "3",
+				"n": "15"
+			},
+			"answers": ["1", "75"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "8 h 40 → 10 h 25 = 1 h 45 min",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2",
+				"h": "8",
+				"p": "8",
+				"n": "21"
+			},
+			"answers": ["1", "45"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

@@ -1,0 +1,256 @@
+{
+	"title": "Convertir une durée en minutes",
+	"description": "Minutes dans 2 h 20 ; 140 minutes en heures et minutes ; durée lue sur deux horloges, en minutes",
+	"grades": ["CE2"],
+	"theme": "Grandeurs",
+	"domain": "Durées",
+	"subdomain": "Durée écoulée",
+	"level": 6,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:k==1|Un film|{{if:k==2|Un spectacle|{{if:k==3|Un match|Un voyage}}}}}} dure ${{a}}~\\text{h}~{{eval:5*t}}~\\text{min}$. Combien cela fait-il de minutes ?\n\nCela fait $?~\\text{min}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "a",
+					"expression": "1..4"
+				},
+				{
+					"name": "t",
+					"expression": "1..11"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:60*a+5*t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\text{h} = 60~\\text{min}$, donc ${{a}}~\\text{h} = {{eval:60*a}}~\\text{min}$.",
+					"${{eval:60*a}} + {{eval:5*t}} = {{eval:60*a+5*t}}$.",
+					"Cela fait $\\textcolor{{{color:primary.0}}}{{{eval:60*a+5*t}}}~\\text{min}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:k==1|Un film|{{if:k==2|Un spectacle|{{if:k==3|Un match|Un voyage}}}}}} dure ${{eval:60*a+5*t}}~\\text{min}$. Écris cette durée en heures et en minutes.\n\nCela fait $?~\\text{h}~?~\\text{min}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "t",
+					"expression": "1..11"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{eval:5*t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$60~\\text{min} = 1~\\text{h}$ : on cherche combien de fois $60$ minutes tiennent dans ${{eval:60*a+5*t}}$.",
+					"${{eval:60*a+5*t}} = {{eval:60*a}} + {{eval:5*t}}$, et ${{eval:60*a}}~\\text{min} = {{a}}~\\text{h}$.",
+					"Cela fait $\\textcolor{{{color:primary.0}}}{{{a}}~\\text{h}~{{eval:5*t}}~\\text{min}}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:k==1|La récréation|{{if:k==2|La séance de piscine|{{if:k==3|Le film|La promenade}}}}}} commence et finit aux heures montrées. Combien de temps a-t-{{if:k==3|il|elle}} duré ?\n\n```horloge\nheure: {{if:5*p==0|{{h}} h|{{h}} h {{eval:5*p}}}} ; {{if:mod(60*h+5*p+5*n,60)==0|{{eval:floor((60*h+5*p+5*n)/60)}} h|{{eval:floor((60*h+5*p+5*n)/60)}} h {{eval:mod(60*h+5*p+5*n,60)}}}}\nchiffres: tous\nlégendes: Début ; Fin\n```\n\nDurée : $?~\\text{min}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "h",
+					"expression": "7..17"
+				},
+				{
+					"name": "p",
+					"expression": "0..11"
+				},
+				{
+					"name": "n",
+					"expression": "12..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:5*n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Début : {{if:5*p==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{eval:5*p}}$}}. Fin : {{if:mod(60*h+5*p+5*n,60)==0|${{eval:floor((60*h+5*p+5*n)/60)}}~\\text{h}$|${{eval:floor((60*h+5*p+5*n)/60)}}~\\text{h}~{{eval:mod(60*h+5*p+5*n,60)}}$}}.",
+					"D'abord les heures : de {{if:5*p==0|${{h}}~\\text{h}$|${{h}}~\\text{h}~{{eval:5*p}}$}} à {{if:5*p==0|${{eval:h+floor(5*n/60)}}~\\text{h}$|${{eval:h+floor(5*n/60)}}~\\text{h}~{{eval:5*p}}$}}, il y a ${{eval:floor(5*n/60)}}~\\text{h} = {{eval:60*floor(5*n/60)}}~\\text{min}$.",
+					"Puis les minutes : ${{eval:mod(5*n,60)}}~\\text{min}$.",
+					"${{eval:60*floor(5*n/60)}} + {{eval:mod(5*n,60)}} = {{eval:5*n}}$.",
+					"Cela fait $\\textcolor{{{color:primary.0}}}{{{eval:5*n}}}~\\text{min}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 2 h 20 = 140 min",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "2",
+				"t": "4"
+			},
+			"answers": ["140"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 h 20 lu 220 min",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "2",
+				"t": "4"
+			},
+			"answers": ["220"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2 h 20 lu 120 min (minutes oubliées)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "2",
+				"t": "4"
+			},
+			"answers": ["120"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2 h 20 lu 80 min (1 h = 30 min)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "2",
+				"t": "4"
+			},
+			"answers": ["80"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 h 45 = 105 min",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"a": "1",
+				"t": "9"
+			},
+			"answers": ["105"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "140 min = 2 h 20 min",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"a": "2",
+				"t": "4"
+			},
+			"answers": ["2", "20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 140 min = 1 h 40 min",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"a": "2",
+				"t": "4"
+			},
+			"answers": ["1", "40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 140 min = 2 h 40 min",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"a": "2",
+				"t": "4"
+			},
+			"answers": ["2", "40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "95 min = 1 h 35 min",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "1",
+				"t": "7"
+			},
+			"answers": ["1", "35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "9 h 15 → 10 h 30 = 75 min",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"h": "9",
+				"p": "3",
+				"n": "15"
+			},
+			"answers": ["75"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 9 h 15 → 10 h 30 lu 115 min",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"h": "9",
+				"p": "3",
+				"n": "15"
+			},
+			"answers": ["115"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
