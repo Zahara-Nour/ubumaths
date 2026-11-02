@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2238._
+_Mis à jour le 2026-11-02, après #2238 et la création des brouillons en prod._
 
-- **État** : lot 7 (302, 303, 310, 569, 386, 387) écrit, fichiers mergés (#2238) ; 6 brouillons en base locale seulement.
-- **Prochaine action** : quand David a créé les brouillons en prod, relever les `id` (MCP), puis migration nœud + tag (gabarit lot 4 de l'index, `20261102083457_…`, rangement du § « Lot 7 : phase 0 »), page à cocher, publication. Lot 8 après la fin de `questions-tspe-proba` et `questions-tspe-espace`.
-- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-7-restes --publier` depuis le dépôt principal (brouillons en prod).
-- **Pièges en cours** : `!=` dans un `$…$` lu comme « ≠ » (écrire `!\,=`) ; aperçu admin local non joué (Chrome n'ouvrait pas `localhost`) → relecture sur la page à cocher.
-- **Worktree / branche** : aucun (supprimés après #2238) ; nouveau worktree pour la PR de migration.
+- **État** : lot 7 en prod, 6 brouillons sans nœud ni tag (`id` au § « Lot 7 : création en prod ») ; M6 rangé sur la NOTION « Modèles d'évolution » (D-M6 ci-dessous) ; migration pas encore écrite.
+- **Prochaine action** : migration nœud + tag (copier `20261102083457_questions_tspe_lot4_rangement_tags.sql` et `tests/integration/questions-tspe-lot4-rangement-tags.test.ts`), garde « notion sans sous-notion » levée pour M6 seul ; test rouge puis vert, `security-auditor`, PR, `check:migrations --pr`, merge, `db:migrate` ; puis page à cocher et publication. Lot 8 après `proba` et `espace`.
+- **En attente de David** : rien.
+- **Pièges en cours** : relevé de nœuds → filtrer `archived_at is null` (« pourcentages » était archivée) ; `!=` dans `$…$` lu « ≠ » (écrire `!\,=`).
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes`, `feat/questions-tspe-restes-lot7-tags` (depuis `origin/main`).
 
 ---
 
@@ -105,3 +105,27 @@ nettoyage (écrire `0!\,=1` partout où `!` précède `=`), `({{eval:n+2}})!` re
 M5 v2 : la forme développée est refusée (`bad_form`), l'énoncé demande la forme factorisée (formule au rang k+1).
 Décimaux : l'aperçu montre « 0.8 », la virgule vient au rendu. Simulation `create-questions` (prod) : 6 à créer, 0
 en base. Base locale : 6 brouillons créés ; aperçu admin non joué (l'extension Chrome n'ouvre pas `localhost`).
+
+## Lot 7 : création en prod et rangement (2026-11-02)
+
+**Création en prod** (David, 2026-11-02, après #2238), relue au MCP : 6 brouillons [T_SPE], sans nœud ni tag.
+
+| #   | id                                     | Point    | Rangement (branche › notion › sous-notion)                         | Niveau |
+| --- | -------------------------------------- | -------- | ------------------------------------------------------------------ | -----: |
+| M1  | `d3cf8005-825c-4213-84a8-470a7c303eb7` | TSPE-302 | Logique › Quantificateurs et négation › négation d'une proposition |      3 |
+| M2  | `043436d5-b6ad-4525-ab33-6b5bb0ebc48e` | TSPE-303 | Logique › Raisonnements › par équivalence                          |      1 |
+| M3  | `ecc7bf70-34d1-4ca6-8c14-bdb74b1c39e5` | TSPE-310 | Dénombrement › Arrangements et permutations › factorielle          |      1 |
+| M4  | `5063e393-f45e-4701-afa7-fbccbfb2f070` | TSPE-569 | Suites › Limites de suites › définition                            |      5 |
+| M5  | `d1aee0b9-ccca-4e3b-bbeb-80d4fff6f53d` | TSPE-386 | Suites › Raisonnement par récurrence › structure d'une récurrence  |      3 |
+| M6  | `651907b3-cb88-498f-92a1-d782b0a3fa1d` | TSPE-387 | Suites › Modèles d'évolution (NOTION, pas de sous-notion)          |      1 |
+
+Les cinq sous-notions de M1 à M5 résolues au MCP (actives, une chacune).
+
+**D-M6 (David, 2026-11-02, « je valide » après « tes recos ? »)** : la sous-notion « pourcentages » visée en phase 0
+est **archivée** depuis le 2026-10-10 (avec « placements » et « algorithmes » ; seule « seuil » reste) — erreur du
+relevé, qui ne filtrait pas `archived_at`. M6 va **sur la notion « Modèles d'évolution »**, comme les 5 modèles de
+1re spé (intérêts) ; TSPE-387 est sur cette notion. La garde de la migration « notion visée sans sous-notion, mais
+elle en a » est levée pour M6 seul (commentée). Ni l'arbre ni la copie figée des tests ne changent. Niveau de M6
+inchangé (1, catégorie « Suites / Modèles d'évolution / Pourcentages », vide).
+
+**Question d'accès** : personne ne gagne ni ne perd d'accès (brouillons ; élèves seulement après `publier-lot`).
