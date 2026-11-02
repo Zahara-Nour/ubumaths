@@ -1,0 +1,152 @@
+{
+	"title": "Quelle unité pour mesurer une longueur ?",
+	"description": "Choisir parmi mm, cm, dm, m et km : une graine de riz de 6 mm, un téléphone de 15 cm, une chaise de 9 dm, une girafe de 5 m, un marathon de 42 km",
+	"grades": ["CM1"],
+	"theme": "Grandeurs",
+	"domain": "Longueurs",
+	"subdomain": "Unités",
+	"level": 13,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "{{if:k==1|Une graine de riz mesure $6$|{{if:k==2|L'épaisseur d'un cahier mesure $5$|{{if:k==3|Une coccinelle mesure $7$|{{if:k==4|Un téléphone mesure $15$|{{if:k==5|Une règle d'écolier mesure $20$|{{if:k==6|Le pied d'un adulte mesure $26$|{{if:k==7|Une baguette de pain mesure $6$|{{if:k==8|La hauteur d'une chaise mesure $9$|{{if:k==9|La largeur d'un écran d'ordinateur mesure $5$|{{if:k==10|Une girafe mesure $5$|{{if:k==11|Un terrain de basket mesure $28$|{{if:k==12|Un immeuble de trois étages mesure $12$|{{if:k==13|Un marathon fait $42$|{{if:k==14|La route de Paris à Lyon fait $465$|Le trajet en voiture d'une ville à la ville voisine fait $20$}}}}}}}}}}}}}}}}}}}}}}}}}}}} …\n\nQuelle unité convient ?\n\n```choix\nmelanger: non\n- mm\n- cm\n- dm\n- m\n- km\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..15"
+				},
+				{
+					"name": "r",
+					"expression": "eval:floor((k-1)/3)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Repères : $1~\\unit{mm}$, l'épaisseur d'une carte ; $1~\\unit{cm}$, la largeur d'un doigt ; $1~\\unit{dm}$, la largeur d'une main ; $1~\\unit{m}$, un grand pas ; $1~\\unit{km}$, un quart d'heure de marche.",
+					"{{if:k==1|Une graine de riz mesure $6$|{{if:k==2|L'épaisseur d'un cahier mesure $5$|{{if:k==3|Une coccinelle mesure $7$|{{if:k==4|Un téléphone mesure $15$|{{if:k==5|Une règle d'écolier mesure $20$|{{if:k==6|Le pied d'un adulte mesure $26$|{{if:k==7|Une baguette de pain mesure $6$|{{if:k==8|La hauteur d'une chaise mesure $9$|{{if:k==9|La largeur d'un écran d'ordinateur mesure $5$|{{if:k==10|Une girafe mesure $5$|{{if:k==11|Un terrain de basket mesure $28$|{{if:k==12|Un immeuble de trois étages mesure $12$|{{if:k==13|Un marathon fait $42$|{{if:k==14|La route de Paris à Lyon fait $465$|Le trajet en voiture d'une ville à la ville voisine fait $20$}}}}}}}}}}}}}}}}}}}}}}}}}}}} {{if:r==0|millimètres|{{if:r==1|centimètres|{{if:r==2|décimètres|{{if:r==3|mètres|kilomètres}}}}}}}} (**{{if:r==0|mm|{{if:r==1|cm|{{if:r==2|dm|{{if:r==3|m|km}}}}}}}}**)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "graine de riz : mm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : graine de 6 cm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "téléphone : cm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : téléphone de 15 dm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"r": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "chaise : dm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : chaise de 9 m",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"r": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "girafe : m",
+			"variationIndex": 0,
+			"variables": {
+				"k": "10",
+				"r": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "marathon : km",
+			"variationIndex": 0,
+			"variables": {
+				"k": "13",
+				"r": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : marathon de 42 m",
+			"variationIndex": 0,
+			"variables": {
+				"k": "13",
+				"r": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
