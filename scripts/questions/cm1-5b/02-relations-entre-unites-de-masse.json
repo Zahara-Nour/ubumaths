@@ -1,0 +1,641 @@
+{
+	"title": "Relations entre les unités de masse",
+	"description": "40 dg = 4 g ; 3 g + 5 cg = 305 cg ; 6,2 t = 6 200 kg ; 3 250 kg = 3,25 t ; 1/4 kg = 250 g ; 1/2 t = 500 kg ; 1,25 kg = 1 250 g",
+	"grades": ["CM1"],
+	"theme": "Grandeurs",
+	"domain": "Masses",
+	"subdomain": "Unités",
+	"level": 8,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{{{if:x==1|kg|{{if:x==2|hg|{{if:x==3|dag|{{if:x==4|g|{{if:x==5|dg|{{if:x==6|cg|mg}}}}}}}}}}}}} = ?~\\text{{{if:y==1|kg|{{if:y==2|hg|{{if:y==3|dag|{{if:y==4|g|{{if:y==5|dg|{{if:y==6|cg|mg}}}}}}}}}}}}}$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "1..6"
+				},
+				{
+					"name": "y",
+					"expression": "eval:x+1"
+				},
+				{
+					"name": "a",
+					"expression": "2..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque unité de masse vaut **10 fois** la suivante : kg, hg, dag, g, dg, cg, mg. Et $1~\\unit{t} = 1\\,000~\\unit{kg}$.",
+					"$1~\\unit{{{if:x==1|kg|{{if:x==2|hg|{{if:x==3|dag|{{if:x==4|g|{{if:x==5|dg|{{if:x==6|cg|mg}}}}}}}}}}}}} = 10~\\unit{{{if:y==1|kg|{{if:y==2|hg|{{if:y==3|dag|{{if:y==4|g|{{if:y==5|dg|{{if:y==6|cg|mg}}}}}}}}}}}}}$, donc ${{a}}~\\unit{{{if:x==1|kg|{{if:x==2|hg|{{if:x==3|dag|{{if:x==4|g|{{if:x==5|dg|{{if:x==6|cg|mg}}}}}}}}}}}}}$, c'est ${{a}}$ fois $10~\\unit{{{if:y==1|kg|{{if:y==2|hg|{{if:y==3|dag|{{if:y==4|g|{{if:y==5|dg|{{if:y==6|cg|mg}}}}}}}}}}}}}$.",
+					"$${{a}}~\\unit{{{if:x==1|kg|{{if:x==2|hg|{{if:x==3|dag|{{if:x==4|g|{{if:x==5|dg|{{if:x==6|cg|mg}}}}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{eval:10*a}}}~\\unit{{{if:y==1|kg|{{if:y==2|hg|{{if:y==3|dag|{{if:y==4|g|{{if:y==5|dg|{{if:y==6|cg|mg}}}}}}}}}}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:10*a}}~\\unit{{{if:y==1|kg|{{if:y==2|hg|{{if:y==3|dag|{{if:y==4|g|{{if:y==5|dg|{{if:y==6|cg|mg}}}}}}}}}}}}} = ?~\\text{{{if:x==1|kg|{{if:x==2|hg|{{if:x==3|dag|{{if:x==4|g|{{if:x==5|dg|{{if:x==6|cg|mg}}}}}}}}}}}}}$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "1..6"
+				},
+				{
+					"name": "y",
+					"expression": "eval:x+1"
+				},
+				{
+					"name": "a",
+					"expression": "2..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque unité de masse vaut **10 fois** la suivante : kg, hg, dag, g, dg, cg, mg. Et $1~\\unit{t} = 1\\,000~\\unit{kg}$.",
+					"$10~\\unit{{{if:y==1|kg|{{if:y==2|hg|{{if:y==3|dag|{{if:y==4|g|{{if:y==5|dg|{{if:y==6|cg|mg}}}}}}}}}}}}} = 1~\\unit{{{if:x==1|kg|{{if:x==2|hg|{{if:x==3|dag|{{if:x==4|g|{{if:x==5|dg|{{if:x==6|cg|mg}}}}}}}}}}}}}$ : dans ${{eval:10*a}}~\\unit{{{if:y==1|kg|{{if:y==2|hg|{{if:y==3|dag|{{if:y==4|g|{{if:y==5|dg|{{if:y==6|cg|mg}}}}}}}}}}}}}$, il y a ${{a}}$ fois $10~\\unit{{{if:y==1|kg|{{if:y==2|hg|{{if:y==3|dag|{{if:y==4|g|{{if:y==5|dg|{{if:y==6|cg|mg}}}}}}}}}}}}}$.",
+					"$${{eval:10*a}}~\\unit{{{if:y==1|kg|{{if:y==2|hg|{{if:y==3|dag|{{if:y==4|g|{{if:y==5|dg|{{if:y==6|cg|mg}}}}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{a}}}~\\unit{{{if:x==1|kg|{{if:x==2|hg|{{if:x==3|dag|{{if:x==4|g|{{if:x==5|dg|{{if:x==6|cg|mg}}}}}}}}}}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{{{if:x==1|kg|{{if:x==2|hg|{{if:x==3|dag|{{if:x==4|g|{{if:x==5|dg|{{if:x==6|cg|mg}}}}}}}}}}}}} = ?~\\text{{{if:y==1|kg|{{if:y==2|hg|{{if:y==3|dag|{{if:y==4|g|{{if:y==5|dg|{{if:y==6|cg|mg}}}}}}}}}}}}}$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "1..5"
+				},
+				{
+					"name": "d",
+					"expression": "2..3"
+				},
+				{
+					"name": "y",
+					"expression": "eval:x+d"
+				},
+				{
+					"name": "a",
+					"expression": "2..30"
+				}
+			],
+			"conditions": ["y <= 7"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*10^(y-x)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque unité de masse vaut **10 fois** la suivante : kg, hg, dag, g, dg, cg, mg. Et $1~\\unit{t} = 1\\,000~\\unit{kg}$.",
+					"De {{if:x==1|kg|{{if:x==2|hg|{{if:x==3|dag|{{if:x==4|g|{{if:x==5|dg|{{if:x==6|cg|mg}}}}}}}}}}}} à {{if:y==1|kg|{{if:y==2|hg|{{if:y==3|dag|{{if:y==4|g|{{if:y==5|dg|{{if:y==6|cg|mg}}}}}}}}}}}}, on descend de {{d}} unités : on multiplie {{d}} fois par 10, c'est-à-dire par ${{if:y-x==1|10|{{if:y-x==2|100|1\\,000}}}}$ : $1~\\unit{{{if:x==1|kg|{{if:x==2|hg|{{if:x==3|dag|{{if:x==4|g|{{if:x==5|dg|{{if:x==6|cg|mg}}}}}}}}}}}}} = {{if:y-x==1|10|{{if:y-x==2|100|1\\,000}}}}~\\unit{{{if:y==1|kg|{{if:y==2|hg|{{if:y==3|dag|{{if:y==4|g|{{if:y==5|dg|{{if:y==6|cg|mg}}}}}}}}}}}}}$.",
+					"$${{a}}~\\unit{{{if:x==1|kg|{{if:x==2|hg|{{if:x==3|dag|{{if:x==4|g|{{if:x==5|dg|{{if:x==6|cg|mg}}}}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{eval:a*10^(y-x)}}}~\\unit{{{if:y==1|kg|{{if:y==2|hg|{{if:y==3|dag|{{if:y==4|g|{{if:y==5|dg|{{if:y==6|cg|mg}}}}}}}}}}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{g} + {{b}}~\\unit{cg} = ?~\\text{cg}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque unité de masse vaut **10 fois** la suivante : kg, hg, dag, g, dg, cg, mg. Et $1~\\unit{t} = 1\\,000~\\unit{kg}$.",
+					"De g à cg, on descend de 2 unités : $1~\\unit{g} = 100~\\unit{cg}$, donc ${{a}}~\\unit{g} = {{eval:100*a}}~\\unit{cg}$.",
+					"$${{eval:100*a}}~\\unit{cg} + {{b}}~\\unit{cg} = \\textcolor{{{color:primary.0}}}{{{eval:100*a+b}}}~\\unit{cg}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:a+D/100;d}}~\\unit{t} = ?~\\text{kg}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "D",
+					"expression": "1..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1000*a+1000*D/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{t} = 1\\,000~\\unit{kg}$, donc $0{,}1~\\unit{t} = {{eval:1000/10}}~\\unit{kg}$ et $0{,}01~\\unit{t} = {{eval:1000/100}}~\\unit{kg}$.",
+					"${{eval:a+D/100;d}}~\\unit{t} = {{a}}~\\unit{t} + {{eval:D/100;d}}~\\unit{t} = {{eval:1000*a}}~\\unit{kg} + {{eval:1000*D/100}}~\\unit{kg}$",
+					"$${{eval:a+D/100;d}}~\\unit{t} = \\textcolor{{{color:primary.0}}}{{{eval:1000*a+1000*D/100}}}~\\unit{kg}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:1000*a+10*D}}~\\unit{kg} = ?~\\text{t}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "D",
+					"expression": "1..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+D/100;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1\\,000~\\unit{kg} = 1~\\unit{t}$, donc $100~\\unit{kg} = 0{,}1~\\unit{t}$ et $10~\\unit{kg} = 0{,}01~\\unit{t}$.",
+					"${{eval:1000*a+10*D}}~\\unit{kg} = {{eval:1000*a}}~\\unit{kg} + {{eval:10*D}}~\\unit{kg}$, c'est ${{a}}~\\unit{t}$ et ${{eval:D/100;d}}~\\unit{t}$.",
+					"$${{eval:1000*a+10*D}}~\\unit{kg} = \\textcolor{{{color:primary.0}}}{{{eval:a+D/100;d}}}~\\unit{t}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$\\dfrac{{{n}}}{{{d}}}~\\unit{kg} = ?~\\text{g}$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1|3"
+				},
+				{
+					"name": "d",
+					"expression": "2|4|10"
+				}
+			],
+			"conditions": ["(n-1)*(d-4) == 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*1000/d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{kg} = 1\\,000~\\unit{g}$.",
+					"$\\dfrac{1}{{{d}}}~\\unit{kg}$, c'est $1\\,000~\\unit{g}$ partagés en {{d}} parts égales : ${{eval:1000/d}}~\\unit{g}${{if:n==3|, et on en prend 3|}}.",
+					"$$\\dfrac{{{n}}}{{{d}}}~\\unit{kg} = \\textcolor{{{color:primary.0}}}{{{eval:n*1000/d}}}~\\unit{g}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$\\dfrac{{{n}}}{{{d}}}~\\unit{t} = ?~\\text{kg}$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1|3"
+				},
+				{
+					"name": "d",
+					"expression": "2|4|10"
+				}
+			],
+			"conditions": ["(n-1)*(d-4) == 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*1000/d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{t} = 1\\,000~\\unit{kg}$.",
+					"$\\dfrac{1}{{{d}}}~\\unit{t}$, c'est $1\\,000~\\unit{kg}$ partagés en {{d}} parts égales : ${{eval:1000/d}}~\\unit{kg}${{if:n==3|, et on en prend 3|}}.",
+					"$$\\dfrac{{{n}}}{{{d}}}~\\unit{t} = \\textcolor{{{color:primary.0}}}{{{eval:n*1000/d}}}~\\unit{kg}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:a+D/100;d}}~\\unit{kg} = ?~\\text{g}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "D",
+					"expression": "1..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1000*a+1000*D/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{kg} = 1\\,000~\\unit{g}$, donc $0{,}1~\\unit{kg} = {{eval:1000/10}}~\\unit{g}$ et $0{,}01~\\unit{kg} = {{eval:1000/100}}~\\unit{g}$.",
+					"${{eval:a+D/100;d}}~\\unit{kg} = {{a}}~\\unit{kg} + {{eval:D/100;d}}~\\unit{kg} = {{eval:1000*a}}~\\unit{g} + {{eval:1000*D/100}}~\\unit{g}$",
+					"$${{eval:a+D/100;d}}~\\unit{kg} = \\textcolor{{{color:primary.0}}}{{{eval:1000*a+1000*D/100}}}~\\unit{g}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "7 dag = 70 g",
+			"variationIndex": 0,
+			"variables": {
+				"x": "3",
+				"y": "4",
+				"a": "7"
+			},
+			"answers": ["70"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 dag = 700 g",
+			"variationIndex": 0,
+			"variables": {
+				"x": "3",
+				"y": "4",
+				"a": "7"
+			},
+			"answers": ["700"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 40 dg = 4 g",
+			"variationIndex": 1,
+			"variables": {
+				"x": "4",
+				"y": "5",
+				"a": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 40 dg = 400 g (sens inversé)",
+			"variationIndex": 1,
+			"variables": {
+				"x": "4",
+				"y": "5",
+				"a": "4"
+			},
+			"answers": ["400"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5 kg = 500 dag",
+			"variationIndex": 2,
+			"variables": {
+				"x": "1",
+				"d": "2",
+				"y": "3",
+				"a": "5"
+			},
+			"answers": ["500"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3 g = 3 000 mg",
+			"variationIndex": 2,
+			"variables": {
+				"x": "4",
+				"d": "3",
+				"y": "7",
+				"a": "3"
+			},
+			"answers": ["3 000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 g = 300 mg",
+			"variationIndex": 2,
+			"variables": {
+				"x": "4",
+				"d": "3",
+				"y": "7",
+				"a": "3"
+			},
+			"answers": ["300"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : 3000 sans espace",
+			"variationIndex": 2,
+			"variables": {
+				"x": "4",
+				"d": "3",
+				"y": "7",
+				"a": "3"
+			},
+			"answers": ["3000"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			}
+		},
+		{
+			"description": "BO : 3 g + 5 cg = 305 cg",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["305"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 g + 5 cg = 35 cg",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 g + 5 cg = 8 cg",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 g + 45 cg = 345 cg",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3",
+				"b": "45"
+			},
+			"answers": ["345"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "BO : 6,2 t = 6 200 kg",
+			"variationIndex": 4,
+			"variables": {
+				"a": "6",
+				"D": "20"
+			},
+			"answers": ["6 200"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6,2 t = 6 002 kg",
+			"variationIndex": 4,
+			"variables": {
+				"a": "6",
+				"D": "20"
+			},
+			"answers": ["6 002"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 6,2 t = 620 kg",
+			"variationIndex": 4,
+			"variables": {
+				"a": "6",
+				"D": "20"
+			},
+			"answers": ["620"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3,25 t = 3 250 kg",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"D": "25"
+			},
+			"answers": ["3 250"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3 250 kg = 3,25 t",
+			"variationIndex": 5,
+			"variables": {
+				"a": "3",
+				"D": "25"
+			},
+			"answers": ["3,25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3 500 kg = 3,5 t",
+			"variationIndex": 5,
+			"variables": {
+				"a": "3",
+				"D": "50"
+			},
+			"answers": ["3,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 500 kg = 35 t",
+			"variationIndex": 5,
+			"variables": {
+				"a": "3",
+				"D": "50"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 500 kg = 3,05 t",
+			"variationIndex": 5,
+			"variables": {
+				"a": "3",
+				"D": "50"
+			},
+			"answers": ["3,05"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : 3 500 kg = 7/2 t",
+			"variationIndex": 5,
+			"variables": {
+				"a": "3",
+				"D": "50"
+			},
+			"answers": ["\\frac{7}{2}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "BO : 1/4 kg = 250 g",
+			"variationIndex": 6,
+			"variables": {
+				"n": "1",
+				"d": "4"
+			},
+			"answers": ["250"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/4 kg = 0,25 g",
+			"variationIndex": 6,
+			"variables": {
+				"n": "1",
+				"d": "4"
+			},
+			"answers": ["0,25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/4 kg = 25 g",
+			"variationIndex": 6,
+			"variables": {
+				"n": "1",
+				"d": "4"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3/4 kg = 750 g",
+			"variationIndex": 6,
+			"variables": {
+				"n": "3",
+				"d": "4"
+			},
+			"answers": ["750"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1/2 t = 500 kg",
+			"variationIndex": 7,
+			"variables": {
+				"n": "1",
+				"d": "2"
+			},
+			"answers": ["500"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1/2 t = 12 kg",
+			"variationIndex": 7,
+			"variables": {
+				"n": "1",
+				"d": "2"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1,25 kg = 1 250 g",
+			"variationIndex": 8,
+			"variables": {
+				"a": "1",
+				"D": "25"
+			},
+			"answers": ["1 250"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1,25 kg = 125 g",
+			"variationIndex": 8,
+			"variables": {
+				"a": "1",
+				"D": "25"
+			},
+			"answers": ["125"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1,25 kg = 1 025 g",
+			"variationIndex": 8,
+			"variables": {
+				"a": "1",
+				"D": "25"
+			},
+			"answers": ["1 025"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

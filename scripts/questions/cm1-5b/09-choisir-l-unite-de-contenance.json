@@ -1,0 +1,140 @@
+{
+	"title": "Quelle unité pour mesurer une contenance ?",
+	"description": "Choisir parmi mL, cL, L et hL : une cuillère de 5 mL, un verre de 20 cL, un seau de 10 L, un tonneau de 2 hL",
+	"grades": ["CM1"],
+	"theme": "Grandeurs",
+	"domain": "Contenances",
+	"subdomain": "Unités",
+	"level": 4,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "{{if:k==1|Une cuillère à café contient $5$|{{if:k==2|Une seringue contient $10$|{{if:k==3|Un flacon de sirop contient $125$|{{if:k==4|Un verre contient $20$|{{if:k==5|Une canette contient $33$|{{if:k==6|Un pot de yaourt contient $12$|{{if:k==7|Un seau contient $10$|{{if:k==8|Un arrosoir contient $8$|{{if:k==9|Une baignoire contient $150$|{{if:k==10|Un tonneau contient $2$|{{if:k==11|Une cuve à fioul contient $15$|Un camion-citerne contient $300$}}}}}}}}}}}}}}}}}}}}}} …\n\nQuelle unité convient ?\n\n```choix\nmelanger: non\n- mL\n- cL\n- L\n- hL\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..12"
+				},
+				{
+					"name": "r",
+					"expression": "eval:floor((k-1)/3)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Repères : $5~\\unit{mL}$, une cuillère à café ; $20~\\unit{cL}$, un verre ; $1~\\unit{L}$, une bouteille d'un litre ; $1~\\unit{hL}$, cent litres (une baignoire en contient environ $150~\\unit{L}$).",
+					"{{if:k==1|Une cuillère à café contient $5$|{{if:k==2|Une seringue contient $10$|{{if:k==3|Un flacon de sirop contient $125$|{{if:k==4|Un verre contient $20$|{{if:k==5|Une canette contient $33$|{{if:k==6|Un pot de yaourt contient $12$|{{if:k==7|Un seau contient $10$|{{if:k==8|Un arrosoir contient $8$|{{if:k==9|Une baignoire contient $150$|{{if:k==10|Un tonneau contient $2$|{{if:k==11|Une cuve à fioul contient $15$|Un camion-citerne contient $300$}}}}}}}}}}}}}}}}}}}}}} {{if:r==0|millilitres|{{if:r==1|centilitres|{{if:r==2|litres|hectolitres}}}}}} (**{{if:r==0|mL|{{if:r==1|cL|{{if:r==2|L|hL}}}}}}**)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "cuillère à café : mL",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cuillère de 5 L",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "verre : cL",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : verre de 20 L",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"r": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "seau : L",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7",
+				"r": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : seau de 10 hL",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7",
+				"r": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "camion-citerne : hL",
+			"variationIndex": 0,
+			"variables": {
+				"k": "12",
+				"r": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : camion-citerne de 300 L",
+			"variationIndex": 0,
+			"variables": {
+				"k": "12",
+				"r": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

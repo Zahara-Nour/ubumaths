@@ -1,0 +1,489 @@
+{
+	"title": "Relations entre les unités de contenance",
+	"description": "1 cL = 10 mL ; 4 hL = 40 daL ; 3 L = 3 000 mL ; 23 dL = 2,3 L ; 125 cL = 1,25 L ; 6,4 L = 640 cL ; 0,75 L = 75 cL",
+	"grades": ["CM1"],
+	"theme": "Grandeurs",
+	"domain": "Contenances",
+	"subdomain": "Unités",
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{{{if:x==1|hL|{{if:x==2|daL|{{if:x==3|L|{{if:x==4|dL|{{if:x==5|cL|mL}}}}}}}}}}} = ?~\\text{{{if:y==1|hL|{{if:y==2|daL|{{if:y==3|L|{{if:y==4|dL|{{if:y==5|cL|mL}}}}}}}}}}}$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "1..5"
+				},
+				{
+					"name": "y",
+					"expression": "eval:x+1"
+				},
+				{
+					"name": "a",
+					"expression": "2..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque unité de contenance vaut **10 fois** la suivante : hL, daL, L, dL, cL, mL.",
+					"$1~\\unit{{{if:x==1|hL|{{if:x==2|daL|{{if:x==3|L|{{if:x==4|dL|{{if:x==5|cL|mL}}}}}}}}}}} = 10~\\unit{{{if:y==1|hL|{{if:y==2|daL|{{if:y==3|L|{{if:y==4|dL|{{if:y==5|cL|mL}}}}}}}}}}}$, donc ${{a}}~\\unit{{{if:x==1|hL|{{if:x==2|daL|{{if:x==3|L|{{if:x==4|dL|{{if:x==5|cL|mL}}}}}}}}}}}$, c'est ${{a}}$ fois $10~\\unit{{{if:y==1|hL|{{if:y==2|daL|{{if:y==3|L|{{if:y==4|dL|{{if:y==5|cL|mL}}}}}}}}}}}$.",
+					"$${{a}}~\\unit{{{if:x==1|hL|{{if:x==2|daL|{{if:x==3|L|{{if:x==4|dL|{{if:x==5|cL|mL}}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{eval:10*a}}}~\\unit{{{if:y==1|hL|{{if:y==2|daL|{{if:y==3|L|{{if:y==4|dL|{{if:y==5|cL|mL}}}}}}}}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:10*a}}~\\unit{{{if:y==1|hL|{{if:y==2|daL|{{if:y==3|L|{{if:y==4|dL|{{if:y==5|cL|mL}}}}}}}}}}} = ?~\\text{{{if:x==1|hL|{{if:x==2|daL|{{if:x==3|L|{{if:x==4|dL|{{if:x==5|cL|mL}}}}}}}}}}}$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "1..5"
+				},
+				{
+					"name": "y",
+					"expression": "eval:x+1"
+				},
+				{
+					"name": "a",
+					"expression": "2..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque unité de contenance vaut **10 fois** la suivante : hL, daL, L, dL, cL, mL.",
+					"$10~\\unit{{{if:y==1|hL|{{if:y==2|daL|{{if:y==3|L|{{if:y==4|dL|{{if:y==5|cL|mL}}}}}}}}}}} = 1~\\unit{{{if:x==1|hL|{{if:x==2|daL|{{if:x==3|L|{{if:x==4|dL|{{if:x==5|cL|mL}}}}}}}}}}}$ : dans ${{eval:10*a}}~\\unit{{{if:y==1|hL|{{if:y==2|daL|{{if:y==3|L|{{if:y==4|dL|{{if:y==5|cL|mL}}}}}}}}}}}$, il y a ${{a}}$ fois $10~\\unit{{{if:y==1|hL|{{if:y==2|daL|{{if:y==3|L|{{if:y==4|dL|{{if:y==5|cL|mL}}}}}}}}}}}$.",
+					"$${{eval:10*a}}~\\unit{{{if:y==1|hL|{{if:y==2|daL|{{if:y==3|L|{{if:y==4|dL|{{if:y==5|cL|mL}}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{a}}}~\\unit{{{if:x==1|hL|{{if:x==2|daL|{{if:x==3|L|{{if:x==4|dL|{{if:x==5|cL|mL}}}}}}}}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{a}}~\\unit{{{if:x==1|hL|{{if:x==2|daL|{{if:x==3|L|{{if:x==4|dL|{{if:x==5|cL|mL}}}}}}}}}}} = ?~\\text{{{if:y==1|hL|{{if:y==2|daL|{{if:y==3|L|{{if:y==4|dL|{{if:y==5|cL|mL}}}}}}}}}}}$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "1..4"
+				},
+				{
+					"name": "d",
+					"expression": "2..3"
+				},
+				{
+					"name": "y",
+					"expression": "eval:x+d"
+				},
+				{
+					"name": "a",
+					"expression": "2..30"
+				}
+			],
+			"conditions": ["y <= 6"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*10^(y-x)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque unité de contenance vaut **10 fois** la suivante : hL, daL, L, dL, cL, mL.",
+					"De {{if:x==1|hL|{{if:x==2|daL|{{if:x==3|L|{{if:x==4|dL|{{if:x==5|cL|mL}}}}}}}}}} à {{if:y==1|hL|{{if:y==2|daL|{{if:y==3|L|{{if:y==4|dL|{{if:y==5|cL|mL}}}}}}}}}}, on descend de {{d}} unités : on multiplie {{d}} fois par 10, c'est-à-dire par ${{if:y-x==1|10|{{if:y-x==2|100|1\\,000}}}}$ : $1~\\unit{{{if:x==1|hL|{{if:x==2|daL|{{if:x==3|L|{{if:x==4|dL|{{if:x==5|cL|mL}}}}}}}}}}} = {{if:y-x==1|10|{{if:y-x==2|100|1\\,000}}}}~\\unit{{{if:y==1|hL|{{if:y==2|daL|{{if:y==3|L|{{if:y==4|dL|{{if:y==5|cL|mL}}}}}}}}}}}$.",
+					"$${{a}}~\\unit{{{if:x==1|hL|{{if:x==2|daL|{{if:x==3|L|{{if:x==4|dL|{{if:x==5|cL|mL}}}}}}}}}}} = \\textcolor{{{color:primary.0}}}{{{eval:a*10^(y-x)}}}~\\unit{{{if:y==1|hL|{{if:y==2|daL|{{if:y==3|L|{{if:y==4|dL|{{if:y==5|cL|mL}}}}}}}}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{n}}~\\unit{dL} = ?~\\text{L}$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "11..99"
+				},
+				{
+					"name": "a",
+					"expression": "eval:floor(n/10)"
+				},
+				{
+					"name": "u",
+					"expression": "eval:mod(n,10)"
+				}
+			],
+			"conditions": ["u != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/10;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"$10~\\unit{dL} = 1~\\unit{L}$, donc $1~\\unit{dL} = \\dfrac{1}{10}~\\unit{L} = 0{,}1~\\unit{L}$ : un décilitre est un dixième de litre.",
+					"${{n}}~\\unit{dL} = {{a}}~\\unit{L}~{{u}}~\\unit{dL}$, c'est {{a}} {{if:a==1|litre|litres}} et {{u}} {{if:u==1|dixième|dixièmes}} de litre.",
+					"$${{n}}~\\unit{dL} = \\textcolor{{{color:primary.0}}}{{{eval:n/10;d}}}~\\unit{L}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{n}}~\\unit{cL} = ?~\\text{L}$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "101..999"
+				},
+				{
+					"name": "a",
+					"expression": "eval:floor(n/100)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:mod(n,100)"
+				}
+			],
+			"conditions": ["mod(n,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/100;d}}",
+					"requiredForm": {
+						"pattern": "a:number"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"$100~\\unit{cL} = 1~\\unit{L}$, donc $1~\\unit{cL} = \\dfrac{1}{100}~\\unit{L}$ : un centilitre est un centième de litre.",
+					"${{n}}~\\unit{cL} = {{a}}~\\unit{L}~{{c}}~\\unit{cL}$, c'est {{a}} {{if:a==1|litre|litres}} et {{c}} {{if:c==1|centième|centièmes}} de litre.",
+					"$${{n}}~\\unit{cL} = \\textcolor{{{color:primary.0}}}{{{eval:n/100;d}}}~\\unit{L}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n${{eval:a+D/100;d}}~\\unit{L} = ?~\\text{cL}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..9"
+				},
+				{
+					"name": "D",
+					"expression": "1..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*a+100*D/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1~\\unit{L} = 100~\\unit{cL}$, donc $0{,}1~\\unit{L} = {{eval:100/10}}~\\unit{cL}$ et $0{,}01~\\unit{L} = {{eval:100/100}}~\\unit{cL}$.",
+					"${{eval:a+D/100;d}}~\\unit{L} = {{a}}~\\unit{L} + {{eval:D/100;d}}~\\unit{L} = {{eval:100*a}}~\\unit{cL} + {{eval:100*D/100}}~\\unit{cL}$",
+					"$${{eval:a+D/100;d}}~\\unit{L} = \\textcolor{{{color:primary.0}}}{{{eval:100*a+100*D/100}}}~\\unit{cL}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "BO : 1 cL = 10 mL",
+			"variationIndex": 0,
+			"variables": {
+				"x": "5",
+				"y": "6",
+				"a": "1"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "4 hL = 40 daL",
+			"variationIndex": 0,
+			"variables": {
+				"x": "1",
+				"y": "2",
+				"a": "4"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 hL = 400 daL",
+			"variationIndex": 0,
+			"variables": {
+				"x": "1",
+				"y": "2",
+				"a": "4"
+			},
+			"answers": ["400"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "350 mL = 35 cL",
+			"variationIndex": 1,
+			"variables": {
+				"x": "5",
+				"y": "6",
+				"a": "35"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 350 mL = 3 500 cL (sens inversé)",
+			"variationIndex": 1,
+			"variables": {
+				"x": "5",
+				"y": "6",
+				"a": "35"
+			},
+			"answers": ["3 500"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 L = 3 000 mL",
+			"variationIndex": 2,
+			"variables": {
+				"x": "3",
+				"d": "3",
+				"y": "6",
+				"a": "3"
+			},
+			"answers": ["3 000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 L = 300 mL",
+			"variationIndex": 2,
+			"variables": {
+				"x": "3",
+				"d": "3",
+				"y": "6",
+				"a": "3"
+			},
+			"answers": ["300"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 hL = 200 L",
+			"variationIndex": 2,
+			"variables": {
+				"x": "1",
+				"d": "2",
+				"y": "3",
+				"a": "2"
+			},
+			"answers": ["200"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 hL = 20 L",
+			"variationIndex": 2,
+			"variables": {
+				"x": "1",
+				"d": "2",
+				"y": "3",
+				"a": "2"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 23 dL = 2,3 L",
+			"variationIndex": 3,
+			"variables": {
+				"n": "23",
+				"a": "2",
+				"u": "3"
+			},
+			"answers": ["2,3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 23 dL = 0,23 L",
+			"variationIndex": 3,
+			"variables": {
+				"n": "23",
+				"a": "2",
+				"u": "3"
+			},
+			"answers": ["0,23"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 23 dL = 230 L",
+			"variationIndex": 3,
+			"variables": {
+				"n": "23",
+				"a": "2",
+				"u": "3"
+			},
+			"answers": ["230"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Forme : 23/10",
+			"variationIndex": 3,
+			"variables": {
+				"n": "23",
+				"a": "2",
+				"u": "3"
+			},
+			"answers": ["\\frac{23}{10}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "125 cL = 1,25 L",
+			"variationIndex": 4,
+			"variables": {
+				"n": "125",
+				"a": "1",
+				"c": "25"
+			},
+			"answers": ["1,25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 125 cL = 12,5 L",
+			"variationIndex": 4,
+			"variables": {
+				"n": "125",
+				"a": "1",
+				"c": "25"
+			},
+			"answers": ["12,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "205 cL = 2,05 L",
+			"variationIndex": 4,
+			"variables": {
+				"n": "205",
+				"a": "2",
+				"c": "5"
+			},
+			"answers": ["2,05"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 205 cL = 2,5 L",
+			"variationIndex": 4,
+			"variables": {
+				"n": "205",
+				"a": "2",
+				"c": "5"
+			},
+			"answers": ["2,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BO : 6,4 L = 640 cL",
+			"variationIndex": 5,
+			"variables": {
+				"a": "6",
+				"D": "40"
+			},
+			"answers": ["640"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6,4 L = 64 cL",
+			"variationIndex": 5,
+			"variables": {
+				"a": "6",
+				"D": "40"
+			},
+			"answers": ["64"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 6,4 L = 604 cL",
+			"variationIndex": 5,
+			"variables": {
+				"a": "6",
+				"D": "40"
+			},
+			"answers": ["604"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,75 L = 75 cL",
+			"variationIndex": 5,
+			"variables": {
+				"a": "0",
+				"D": "75"
+			},
+			"answers": ["75"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,75 L = 7,5 cL",
+			"variationIndex": 5,
+			"variables": {
+				"a": "0",
+				"D": "75"
+			},
+			"answers": ["7,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,212 @@
+{
+	"title": "Les unités de contenance, du millilitre à l'hectolitre",
+	"description": "Symbole et sens de mL, cL, dL, L, daL et hL ; la plus grande ou la plus petite de trois unités",
+	"grades": ["CM1"],
+	"theme": "Grandeurs",
+	"domain": "Contenances",
+	"subdomain": "Unités",
+	"level": 3,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quel est le symbole {{if:k==1|de l'hectolitre|{{if:k==2|du décalitre|{{if:k==3|du litre|{{if:k==4|du décilitre|{{if:k==5|du centilitre|du millilitre}}}}}}}}}} ?\n\n```choix\n- hL\n- daL\n- L\n- dL\n- cL\n- mL\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "r",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« kilo » veut dire mille, « hecto » cent, « déca » dix ; « déci » un dixième, « centi » un centième, « milli » un millième.",
+					"{{if:k==1|L'hectolitre|{{if:k==2|Le décalitre|{{if:k==3|Le litre|{{if:k==4|Le décilitre|{{if:k==5|Le centilitre|Le millilitre}}}}}}}}}} s'écrit **{{if:k==1|hL|{{if:k==2|daL|{{if:k==3|L|{{if:k==4|dL|{{if:k==5|cL|mL}}}}}}}}}}**."
+				]
+			}
+		},
+		{
+			"statement": "Que veut dire le symbole **{{if:k==1|hL|{{if:k==2|daL|{{if:k==3|L|{{if:k==4|dL|{{if:k==5|cL|mL}}}}}}}}}}** ?\n\n```choix\n- hectolitre\n- décalitre\n- litre\n- décilitre\n- centilitre\n- millilitre\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "r",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« kilo » veut dire mille, « hecto » cent, « déca » dix ; « déci » un dixième, « centi » un centième, « milli » un millième.",
+					"**{{if:k==1|hL|{{if:k==2|daL|{{if:k==3|L|{{if:k==4|dL|{{if:k==5|cL|mL}}}}}}}}}}** veut dire **{{if:k==1|hectolitre|{{if:k==2|décalitre|{{if:k==3|litre|{{if:k==4|décilitre|{{if:k==5|centilitre|millilitre}}}}}}}}}}**."
+				]
+			}
+		},
+		{
+			"statement": "Quelle est la plus {{if:s==1|grande|petite}} de ces trois unités de contenance ?\n\n```choix\n- {{if:s==1|{{if:k==1|l'hectolitre (hL)|{{if:k==2|l'hectolitre (hL)|{{if:k==3|le décalitre (daL)|{{if:k==4|le litre (L)|{{if:k==5|le litre (L)|le décalitre (daL)}}}}}}}}}}|{{if:k==1|le litre (L)|{{if:k==2|le centilitre (cL)|{{if:k==3|le décilitre (dL)|{{if:k==4|le millilitre (mL)|{{if:k==5|le millilitre (mL)|le centilitre (cL)}}}}}}}}}}}}\n- {{if:k==1|le décalitre (daL)|{{if:k==2|le litre (L)|{{if:k==3|le litre (L)|{{if:k==4|le décilitre (dL)|{{if:k==5|le centilitre (cL)|le décilitre (dL)}}}}}}}}}}\n- {{if:s==1|{{if:k==1|le litre (L)|{{if:k==2|le centilitre (cL)|{{if:k==3|le décilitre (dL)|{{if:k==4|le millilitre (mL)|{{if:k==5|le millilitre (mL)|le centilitre (cL)}}}}}}}}}}|{{if:k==1|l'hectolitre (hL)|{{if:k==2|l'hectolitre (hL)|{{if:k==3|le décalitre (daL)|{{if:k==4|le litre (L)|{{if:k==5|le litre (L)|le décalitre (daL)}}}}}}}}}}}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6"
+				},
+				{
+					"name": "s",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"De la plus grande à la plus petite : hL, daL, L, dL, cL, mL.",
+					"La plus {{if:s==1|grande est **{{if:k==1|l'hectolitre (hL)|{{if:k==2|l'hectolitre (hL)|{{if:k==3|le décalitre (daL)|{{if:k==4|le litre (L)|{{if:k==5|le litre (L)|le décalitre (daL)}}}}}}}}}}**|petite est **{{if:k==1|le litre (L)|{{if:k==2|le centilitre (cL)|{{if:k==3|le décilitre (dL)|{{if:k==4|le millilitre (mL)|{{if:k==5|le millilitre (mL)|le centilitre (cL)}}}}}}}}}}**}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "symbole de l'hectolitre : hL",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : hectolitre → daL",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "symbole du millilitre : mL",
+			"variationIndex": 0,
+			"variables": {
+				"k": "6",
+				"r": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : millilitre → cL",
+			"variationIndex": 0,
+			"variables": {
+				"k": "6",
+				"r": "5"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "daL veut dire décalitre",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"r": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : daL lu décilitre",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"r": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "la plus grande de daL, L, dL : daL",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"s": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la plus grande → dL",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"s": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "la plus petite de L, dL, mL : mL",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"s": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la plus petite → dL",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"s": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

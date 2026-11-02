@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2207 et la publication du lot 5a._
+_Mis à jour le 2026-11-02, lot 5b écrit (PR des fichiers)._
 
-- **État** : lots 0 à 5a publiés ; lot 5 phase 0 validée (§ 14 bis : 5a longueurs, 5b masses + contenances, 5d périmètres). Lot 5a fini (§ 14 sexies).
-- **Prochaine action** : lot 5b (masses + contenances, 10 modèles, § 14) : recréer le worktree, écrire le script `lot-cm1-5b.py` sur le patron du 5a.
-- **En attente de David** : rien.
+- **État** : lots 0 à 5a publiés. **Lot 5b** (masses + contenances, 10 modèles) écrit, tout vert (§ 14 septies) ; PR des fichiers ouverte.
+- **Prochaine action** : CI verte → merge ; puis David lance `create-questions --dir scripts/questions/cm1-5b --publier` (brouillons) ; relever les ids, migration nœud + tag (gabarit du 5a). Ensuite lot 5d (périmètres 073-075).
+- **En attente de David** : deux écarts à la phase 0 (§ 14 septies) : repère du milligramme (« une petite fourmi » au lieu d'« un grain de sel », qui pèse bien moins) ; titres « Estimer une masse » et « Des masses de référence » suffixés « du milligramme à la tonne » (homonymes du CE1).
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** (test `student-answer-safety`, CI rouge de #2201) ; positions du `ranger` lues par essai des permutations ; aperçu : corrigé derrière le bouton « Voir la correction » (Playwright à 390 px).
-- **Worktree / branche** : aucun ; recréer `../ubumaths-wt-questions-cm1` pour le lot 5b.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot5b`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -843,6 +843,29 @@ CE1 ; 3. 050 et 165 rangés sous « Décimaux : calculs › addition » et « �
 - Page à cocher : 7 verdicts « OK », sans commentaire (comptés dans `verdicts`, ids = les 7 brouillons). Simulation
   `publier-lot --dir scripts/questions/cm1-5a` : 7 brouillons passent ; `--publier` lancé par David ;
   7 `published` relus au MCP. Lot 5a fini.
+
+### 14 septies. Lot 5b — écriture (2026-11-02)
+
+- Script `docs/wip/questions/lot-cm1-5b.py` → `scripts/questions/cm1-5b/` (10 JSON), patron `lot-cm1-5a.py`
+  rendu générique (classe `Grandeur` : unités, relations, choisir). Niveaux relevés au MCP : Masses / Unités 6
+  (unités), 7 (choisir), 8 (relations) ; Comparaison 4 ; Ordres de grandeur 3 (références), 4 (estimer) ;
+  Contenances / Unités 3, 4, 5 ; Comparaison 1 (catégorie neuve, nom « Comparaison » comme les masses).
+- Relations de masse : 9 variations (un cran, retour, deux crans, 3 g + 5 cg, t → kg, kg → t décimal,
+  fractions de kg et de t, kg décimal → g) ; contenances : 6 (un cran, retour, deux crans, dL → L, cL → L,
+  L décimal → cL). Comparer : signe, `ranger` (3 masses g / kg / hg, 4 contenances cL / L / mL / dL), somme
+  et différence.
+- `ranger` à trois étiquettes : positions lues par essai des 6 permutations (b = 2, 3, 9), stables : 2, 0, 1 ;
+  à quatre : 3, 0, 1, 2 (comme au 5a).
+- **Écarts à la phase 0, à confirmer par David** : repère du milligramme « une petite fourmi » (un grain de sel
+  pèse bien moins de 1 mg) ; titres suffixés « du milligramme à la tonne » pour ne pas doublonner les modèles
+  CE1 « Estimer une masse » et « Des masses de référence ».
+- Corrigés relus dans l'aperçu à 390 px (Playwright, port 5179, verso « En classe », chaque variation vue) :
+  parenthèse « (1 hg = 100 g) » qui se coupait → « car 1 hg = 100 g » ; repère « 1 hL, une demi-baignoire »
+  contredisait la baignoire de 150 L → « cent litres (une baignoire en contient environ 150 L) ». Pas de
+  défilement horizontal.
+- `question:specs` 300 tirages par variation : tout réussi, 131 specs vertes ; `create-questions` en
+  simulation (prod) : 10/10 verts ; tests `student-answer-safety.render` et `answer-complexity-corpus` verts ;
+  base locale : 10 brouillons.
 
 ### 13 sexies. Lot 4b — publication (2026-11-02)
 
