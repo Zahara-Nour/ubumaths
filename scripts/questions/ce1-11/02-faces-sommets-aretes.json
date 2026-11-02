@@ -1,0 +1,433 @@
+{
+	"title": "Faces, arêtes et sommets : cube, pavé, pyramide",
+	"description": "Compter les faces, les arêtes, les sommets d'un cube, d'un pavé, d'une pyramide à base carrée",
+	"grades": ["CE1"],
+	"theme": "Géométrie",
+	"domain": "Solides",
+	"subdomain": "Reconnaître et décrire",
+	"level": 9,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Combien ce cube a-t-il de faces ?\n\nLes arêtes cachées sont en pointillés.\n\n```solide\nforme: cube 3\n```\n\n$?$ faces",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On voit $3$ faces : devant, dessus, à droite. Il y en a $3$ cachées : derrière, dessous, à gauche.",
+					"$3 + 3 = 6$ faces."
+				]
+			}
+		},
+		{
+			"statement": "Combien ce cube a-t-il de arêtes ?\n\nLes arêtes cachées sont en pointillés.\n\n```solide\nforme: cube 3\n```\n\n$?$ arêtes",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "12"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une $\\textcolor{{{color:primary.0}}}{\\text{arête}}$ est un bord, là où deux faces se touchent.",
+					"$4$ arêtes en bas, $4$ en haut, $4$ debout : $4 + 4 + 4 = 12$ arêtes."
+				]
+			}
+		},
+		{
+			"statement": "Combien ce cube a-t-il de sommets ?\n\nLes arêtes cachées sont en pointillés.\n\n```solide\nforme: cube 3\n```\n\n$?$ sommets",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "8"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un $\\textcolor{{{color:primary.0}}}{\\text{sommet}}$ est un coin, là où les arêtes se rejoignent.",
+					"$4$ sommets en bas, $4$ en haut : $4 + 4 = 8$ sommets."
+				]
+			}
+		},
+		{
+			"statement": "Combien ce pavé a-t-il de faces ?\n\nLes arêtes cachées sont en pointillés.\n\n```solide\nforme: pave {{if:o==1|5 2.5 2|2.5 2 4.5}}\n```\n\n$?$ faces",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "6"
+				}
+			],
+			"correction": {
+				"steps": ["Comme le cube, le pavé a $3$ faces vues et $3$ cachées : $3 + 3 = 6$ faces."]
+			}
+		},
+		{
+			"statement": "Combien ce pavé a-t-il de arêtes ?\n\nLes arêtes cachées sont en pointillés.\n\n```solide\nforme: pave {{if:o==1|5 2.5 2|2.5 2 4.5}}\n```\n\n$?$ arêtes",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "12"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une $\\textcolor{{{color:primary.0}}}{\\text{arête}}$ est un bord, là où deux faces se touchent.",
+					"$4$ arêtes en bas, $4$ en haut, $4$ qui les relient : $4 + 4 + 4 = 12$ arêtes."
+				]
+			}
+		},
+		{
+			"statement": "Combien ce pavé a-t-il de sommets ?\n\nLes arêtes cachées sont en pointillés.\n\n```solide\nforme: pave {{if:o==1|5 2.5 2|2.5 2 4.5}}\n```\n\n$?$ sommets",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "8"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un $\\textcolor{{{color:primary.0}}}{\\text{sommet}}$ est un coin, là où les arêtes se rejoignent.",
+					"$4$ sommets en bas, $4$ en haut : $4 + 4 = 8$ sommets."
+				]
+			}
+		},
+		{
+			"statement": "Combien cette pyramide a-t-elle de faces ?\n\nLes arêtes cachées sont en pointillés.\n\n```solide\nforme: pyramide carree 3 3.5\n```\n\n$?$ faces",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La base est un carré : $1$ face.",
+					"Sur chaque côté du carré, une face en triangle monte jusqu'à la pointe : $4$ faces.",
+					"$1 + 4 = 5$ faces."
+				]
+			}
+		},
+		{
+			"statement": "Combien cette pyramide a-t-elle de arêtes ?\n\nLes arêtes cachées sont en pointillés.\n\n```solide\nforme: pyramide carree 3 3.5\n```\n\n$?$ arêtes",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "8"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une $\\textcolor{{{color:primary.0}}}{\\text{arête}}$ est un bord, là où deux faces se touchent.",
+					"$4$ arêtes autour de la base carrée, $4$ qui montent vers la pointe : $4 + 4 = 8$ arêtes."
+				]
+			}
+		},
+		{
+			"statement": "Combien cette pyramide a-t-elle de sommets ?\n\nLes arêtes cachées sont en pointillés.\n\n```solide\nforme: pyramide carree 3 3.5\n```\n\n$?$ sommets",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un $\\textcolor{{{color:primary.0}}}{\\text{sommet}}$ est un coin, là où les arêtes se rejoignent.",
+					"$4$ sommets au coin de la base, plus la pointe : $4 + 1 = 5$ sommets."
+				]
+			}
+		},
+		{
+			"statement": "Combien de faces de cette pyramide sont des triangles ?\n\n```solide\nforme: pyramide carree 3 3.5\n```\n\n$?$ faces en triangle",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La base est un carré : ce n'est pas un triangle.",
+					"Sur chaque côté du carré, une face en triangle monte jusqu'à la pointe : $4$ triangles."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "cube : 6 faces",
+			"variationIndex": 0,
+			"variables": {
+				"o": "1"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cube, seulement les faces qu'on voit",
+			"variationIndex": 0,
+			"variables": {
+				"o": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "cube : 12 arêtes",
+			"variationIndex": 1,
+			"variables": {
+				"o": "1"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cube, seulement les arêtes qu'on voit",
+			"variationIndex": 1,
+			"variables": {
+				"o": "2"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "cube : 8 sommets",
+			"variationIndex": 2,
+			"variables": {
+				"o": "1"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cube, seulement les sommets qu'on voit",
+			"variationIndex": 2,
+			"variables": {
+				"o": "2"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "pavé : 6 faces",
+			"variationIndex": 3,
+			"variables": {
+				"o": "1"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pavé, seulement les faces qu'on voit",
+			"variationIndex": 3,
+			"variables": {
+				"o": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "pavé : 12 arêtes",
+			"variationIndex": 4,
+			"variables": {
+				"o": "1"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pavé, seulement les arêtes qu'on voit",
+			"variationIndex": 4,
+			"variables": {
+				"o": "2"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "pavé : 8 sommets",
+			"variationIndex": 5,
+			"variables": {
+				"o": "1"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pavé, seulement les sommets qu'on voit",
+			"variationIndex": 5,
+			"variables": {
+				"o": "2"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "pyramide : 5 faces",
+			"variationIndex": 6,
+			"variables": {
+				"o": "1"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pyramide, seulement les faces qu'on voit",
+			"variationIndex": 6,
+			"variables": {
+				"o": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "pyramide : 8 arêtes",
+			"variationIndex": 7,
+			"variables": {
+				"o": "1"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pyramide, seulement les arêtes qu'on voit",
+			"variationIndex": 7,
+			"variables": {
+				"o": "2"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "pyramide : 5 sommets",
+			"variationIndex": 8,
+			"variables": {
+				"o": "1"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Pyramide : 4 triangles",
+			"variationIndex": 9,
+			"variables": {},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : la base comptée (5)",
+			"variationIndex": 9,
+			"variables": {},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : les triangles vus seuls (2)",
+			"variationIndex": 9,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : les sommets du cube pour la pyramide",
+			"variationIndex": 8,
+			"variables": {
+				"o": "1"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

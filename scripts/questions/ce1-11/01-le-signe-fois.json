@@ -1,0 +1,277 @@
+{
+	"title": "Le signe × : « fois »",
+	"description": "Écrire une addition répétée avec ×, lire ×, et le calcul d'une situation (paquets de 10 ou 20)",
+	"grades": ["CE1"],
+	"theme": "Entiers",
+	"domain": "Multiplier",
+	"subdomain": "Sens",
+	"level": 6,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quelle écriture veut dire la même chose que ${{if:g==3|{{n}} + {{n}} + {{n}}|{{if:g==4|{{n}} + {{n}} + {{n}} + {{n}}|{{n}} + {{n}} + {{n}} + {{n}} + {{n}}}}}}$ ?\n\n```choix\n- ${{g}} \\times {{n}}$\n- ${{g}} + {{n}}$\n- ${{n}} \\times {{n}}$\n- ${{g}}{{n}}$\n```",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "3..5"
+				},
+				{
+					"name": "n",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["g != n"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On ajoute ${{g}}$ fois le nombre ${{n}}$.",
+					"« ${{g}}$ fois ${{n}}$ » s'écrit $\\textcolor{{{color:primary.0}}}{{{g}} \\times {{n}}}$ : le signe $\\times$ se lit « fois »."
+				]
+			}
+		},
+		{
+			"statement": "Comment se lit ${{a}} \\times {{b}}$ ?\n\n```choix\n- « {{a}} fois {{b}} »\n- « {{a}} plus {{b}} »\n- « {{a}} moins {{b}} »\n- « {{a}}{{b}} »\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le signe $\\times$ se lit $\\textcolor{{{color:primary.0}}}{\\text{« fois »}}$ : $\\times$ n'est pas $+$.",
+					"${{a}} \\times {{b}}$ se lit « {{a}} fois {{b}} »."
+				]
+			}
+		},
+		{
+			"statement": "Quelle addition est égale à ${{g}} \\times {{n}}$ ?\n\n```choix\n- ${{if:g==3|{{n}} + {{n}} + {{n}}|{{if:g==4|{{n}} + {{n}} + {{n}} + {{n}}|{{n}} + {{n}} + {{n}} + {{n}} + {{n}}}}}}$\n- ${{g}} + {{n}}$\n- ${{n}} + {{n}}$\n- ${{if:g==3|{{n}} + {{n}} + {{n}} + {{n}}|{{if:g==4|{{n}} + {{n}} + {{n}} + {{n}} + {{n}}|{{n}} + {{n}} + {{n}} + {{n}} + {{n}} + {{n}}}}}}$\n```",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "3..5"
+				},
+				{
+					"name": "n",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["g != n"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{g}} \\times {{n}}$, c'est « ${{g}}$ fois ${{n}}$ » : on ajoute ${{g}}$ fois le nombre ${{n}}$.",
+					"$\\textcolor{{{color:primary.0}}}{{{if:g==3|{{n}} + {{n}} + {{n}}|{{if:g==4|{{n}} + {{n}} + {{n}} + {{n}}|{{n}} + {{n}} + {{n}} + {{n}} + {{n}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Il y a ${{g}}$ paquets de ${{n}}$ biscuits.\n\nNombre de biscuits : ${{g}} \\times {{n}} = ?$",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "2..9"
+				},
+				{
+					"name": "m",
+					"expression": "1..2"
+				},
+				{
+					"name": "n",
+					"expression": "eval:10*m"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:g*n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{g}}$ paquets de ${{n}}$ biscuits, c'est ${{g}}$ fois ${{n}}$ biscuits : ${{g}} \\times {{n}}$.",
+					"${{g}} \\times {{n}} = \\textcolor{{{color:primary.0}}}{{{eval:g*n}}}$ : il y a ${{eval:g*n}}$ biscuits."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4 + 4 + 4 = 3 × 4",
+			"variationIndex": 0,
+			"variables": {
+				"g": "3",
+				"n": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3 + 4",
+			"variationIndex": 0,
+			"variables": {
+				"g": "3",
+				"n": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4 × 4 (le nombre répété, deux fois)",
+			"variationIndex": 0,
+			"variables": {
+				"g": "3",
+				"n": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 34 (les chiffres collés)",
+			"variationIndex": 0,
+			"variables": {
+				"g": "3",
+				"n": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 × 3 se lit « 7 fois 3 »",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « 7 plus 3 »",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5 × 4 = 4 + 4 + 4 + 4 + 4",
+			"variationIndex": 2,
+			"variables": {
+				"g": "5",
+				"n": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5 + 4",
+			"variationIndex": 2,
+			"variables": {
+				"g": "5",
+				"n": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une fois de trop",
+			"variationIndex": 2,
+			"variables": {
+				"g": "5",
+				"n": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 paquets de 20 : 140",
+			"variationIndex": 3,
+			"variables": {
+				"g": "7",
+				"m": "2",
+				"n": "20"
+			},
+			"answers": ["140"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "5 paquets de 10 : 50",
+			"variationIndex": 3,
+			"variables": {
+				"g": "5",
+				"m": "1",
+				"n": "10"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 + 20 = 27",
+			"variationIndex": 3,
+			"variables": {
+				"g": "7",
+				"m": "2",
+				"n": "20"
+			},
+			"answers": ["27"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 720 (les nombres collés)",
+			"variationIndex": 3,
+			"variables": {
+				"g": "7",
+				"m": "2",
+				"n": "20"
+			},
+			"answers": ["720"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

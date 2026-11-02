@@ -1,0 +1,233 @@
+{
+	"title": "Les faces du cube et du pavé : carrés ou rectangles",
+	"description": "Nombre et forme des faces ; pavé à deux faces carrées",
+	"grades": ["CE1"],
+	"theme": "Géométrie",
+	"domain": "Solides",
+	"subdomain": "Reconnaître et décrire",
+	"level": 10,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Combien de faces de ce cube sont des carrés ?\n\n```solide\nforme: cube 3\ncotes: cm\n```\n\n$?$ faces carrées",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Toutes les arêtes du cube ont la même longueur : chacune de ses faces a $4$ côtés égaux et $4$ angles droits.",
+					"Les $6$ faces du cube sont des $\\textcolor{{{color:primary.0}}}{\\text{carrés}}$."
+				]
+			}
+		},
+		{
+			"statement": "Les faces de ce pavé sont…\n\n```solide\nforme: pave {{if:o==1|5 2.5 2|2.5 2 4.5}}\n```\n\n```choix\n- … des rectangles.\n- … des triangles.\n- … des disques.\n- … des cercles.\n```",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque face du pavé a $4$ côtés et $4$ angles droits.",
+					"Les faces du pavé sont des $\\textcolor{{{color:primary.0}}}{\\text{rectangles}}$."
+				]
+			}
+		},
+		{
+			"statement": "Combien de faces de ce pavé sont des carrés ?\n\n```solide\nforme: pave {{l}} {{p}} {{h}}\ncotes: cm\n```\n\n$?$ faces carrées",
+			"variables": [
+				{
+					"name": "l",
+					"expression": "4..6"
+				},
+				{
+					"name": "p",
+					"expression": "2..3"
+				},
+				{
+					"name": "h",
+					"expression": "1..3"
+				}
+			],
+			"conditions": ["p != h", "l != p", "l != h"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les faces ont pour côtés ${{l}}$ cm et ${{p}}$ cm, ${{l}}$ cm et ${{h}}$ cm, ${{p}}$ cm et ${{h}}$ cm.",
+					"Aucune n'a ses $4$ côtés de la même longueur : $\\textcolor{{{color:primary.0}}}{\\text{aucune}}$ n'est un carré. Ce sont des rectangles."
+				]
+			}
+		},
+		{
+			"statement": "Ce pavé a des faces carrées et des faces rectangulaires (qui ne sont pas des carrés).\n\n```solide\nforme: pave {{if:k==1|{{l}} 3 3|3 3 {{l}}}}\ncotes: cm\n```\n\nFaces carrées : $?$\n\nFaces rectangulaires : $?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "l",
+					"expression": "4..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				},
+				{
+					"expectedAnswer": "4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les deux faces de $3$ cm sur $3$ cm sont des $\\textcolor{{{color:primary.0}}}{\\text{carrés}}$ : {{if:k==1|à gauche et à droite|en haut et en bas}}.",
+					"Les $4$ autres faces mesurent ${{l}}$ cm sur $3$ cm : ce sont des $\\textcolor{{{color:primary.1}}}{\\text{rectangles}}$.",
+					"$2 + 4 = 6$ faces."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Cube : 6 carrés",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : les carrés vus seuls (3)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pavé : des rectangles",
+			"variationIndex": 1,
+			"variables": {
+				"o": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : triangles",
+			"variationIndex": 1,
+			"variables": {
+				"o": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pavé 5 × 3 × 2 : aucun carré",
+			"variationIndex": 2,
+			"variables": {
+				"l": "5",
+				"p": "3",
+				"h": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6 (pavé pris pour un cube)",
+			"variationIndex": 2,
+			"variables": {
+				"l": "5",
+				"p": "3",
+				"h": "2"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Pavé couché : 2 carrés, 4 rectangles",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"l": "5"
+			},
+			"answers": ["2", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Pavé debout : 2 carrés, 4 rectangles",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2",
+				"l": "4"
+			},
+			"answers": ["2", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0 et 6 (« un pavé n'a que des rectangles »)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"l": "5"
+			},
+			"answers": ["0", "6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le carré vu seul, 1 et 5",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"l": "5"
+			},
+			"answers": ["1", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4 et 2 (inversés)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2",
+				"l": "6"
+			},
+			"answers": ["4", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
