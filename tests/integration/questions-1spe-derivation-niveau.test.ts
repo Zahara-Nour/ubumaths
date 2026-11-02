@@ -5,7 +5,7 @@
  * Migration `20261101190000_questions_1spe_derivation_niveau` : d2bca2d8 (Ensemble de
  * dérivabilité), refusé à la publication parce que 8b599a53 (publié) occupe le niveau 6 de
  * Fonctions / Dérivation / Fonctions dérivées, passe au niveau 7. Décision de David du 2026-11-01
- * (journal docs/wip/questions-1spe-progress.md, § 18, D24).
+ * (journal docs/archive/wip/questions-1spe-progress.md, § 18, D24).
  *
  * Le modèle n'existe qu'en production. Le test fabrique donc l'état de la prod — une copie
  * minimale portant le VRAI identifiant, en brouillon, dans sa catégorie et à son niveau relevés —

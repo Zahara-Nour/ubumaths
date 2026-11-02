@@ -6,7 +6,7 @@
  * B (créés le 2026-11-02 par scripts/create-questions.ts, sans nœud ni tag) vont sur le nœud de
  * leur point et reçoivent ce point (B4 : aussi les points jumeaux 1GEN-062, 1TECHNO-139) ;
  * 7d6cf480 (seconde, publié) reçoit 1SPE-434, 1GEN-064, 1TECHNO-141 et les niveaux de 1re.
- * Phase 0 : journal docs/wip/questions-1spe-analyse-progress.md (Q5, Q6).
+ * Phase 0 : journal docs/archive/wip/questions-1spe-analyse-progress.md (Q5, Q6).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, au statut, aux niveaux, au nœud et aux tags relevés —

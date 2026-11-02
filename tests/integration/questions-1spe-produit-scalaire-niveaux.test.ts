@@ -5,7 +5,7 @@
  * Migration `20261030120000_questions_1spe_produit_scalaire_niveaux` : 9 des 15 brouillons de
  * Géométrie / Produit scalaire, refusés à la publication parce que plusieurs modèles de la sélection
  * partagent catégorie et niveau, sont renumérotés (8 changent de niveau). Décision de David du
- * 2026-10-30 (journal docs/wip/questions-1spe-progress.md, § 12).
+ * 2026-10-30 (journal docs/archive/wip/questions-1spe-progress.md, § 12).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, en brouillon, dans leur catégorie et à leur niveau

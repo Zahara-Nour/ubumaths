@@ -2,7 +2,7 @@
 dans scripts/questions/1spe-formules/.
 
 Phase 0 validée par David le 2026-11-02 (« je valide » sur les recos, journal
-« docs/wip/questions-1spe-geometrie-progress.md », § Lot formules : phase 0), un point par modèle :
+« docs/archive/wip/questions-1spe-geometrie-progress.md », § Lot formules : phase 0), un point par modèle :
 
 | # | Point    | Titre                                   | Catégorie, niveau                  |
 | 1 | 1SPE-413 | Symétrie du produit scalaire            | Produit scalaire › Propriétés, 6   |

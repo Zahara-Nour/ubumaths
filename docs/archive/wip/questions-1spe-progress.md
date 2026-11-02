@@ -1053,7 +1053,7 @@ valent 1..6 → `{{if:r == 1|boule rouge|boules rouges}}` (×4), correction § 7
 suspendue à la question posée à David : corriger le pluriel avant (reco) ou après publication.
 
 **Correctif du pluriel (David, 2026-11-02 : « corriger avant »)** : instantané
-`docs/wip/questions-1spe/etat-prod-2026-11-02-urnes/` (brouillons, md5 des variations = fichiers du lot) ; fonction
+`docs/archive/wip/questions-1spe/etat-prod-2026-11-02-urnes/` (brouillons, md5 des variations = fichiers du lot) ; fonction
 `accord(n, un, plusieurs)` du script → `{{if:r==1|boule rouge|boules rouges}}` (×4, énoncé `ENONCE_URNES`) ; seuls 02
 et 03 changent ; simulation `create-questions` : 8 importables, « CONTENU DIFFÉRENT » sur 02 et 03 seulement ; sonde
 de 400 tirages par modèle (`generateInstance`) : aucun « 1 boules », aucun singulier fautif. PR #2210 mergée ; `--mettre-a-jour` lancé par David : 2 mis à jour,

@@ -1,7 +1,7 @@
 """Écrit les 7 modèles du lot « logique et listes » de la 1re spé dans scripts/questions/1spe-logique/.
 
 Phase 0 validée par David le 2026-11-02 (« go » sur les recos, journal
-« docs/wip/questions-1spe-logique-progress.md », D1), un point par modèle :
+« docs/archive/wip/questions-1spe-logique-progress.md », D1), un point par modèle :
 
 | # | Point    | Titre                               | Catégorie, niveau                                                |
 | 1 | 1SPE-203 | Quantification implicite            | Logique › Logique et raisonnement › Quantificateurs et négation, 4 |

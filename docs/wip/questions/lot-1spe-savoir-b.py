@@ -2,7 +2,7 @@
 dans scripts/questions/1spe-savoir-b/.
 
 Phase 0 validée par David le 2026-11-02 (« je valide » sur les recos, § 23 du journal
-« docs/wip/questions-1spe-progress.md », D29, lignes 8 à 14), un point par modèle :
+« docs/archive/wip/questions-1spe-progress.md », D29, lignes 8 à 14), un point par modèle :
 
 | # | Point    | Titre                                         | Catégorie, niveau                  |
 | 1 | 1SPE-412 | Produit scalaire et cosinus                   | Produit scalaire › À savoir, 1     |

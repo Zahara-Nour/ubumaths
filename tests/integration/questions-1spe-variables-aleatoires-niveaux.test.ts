@@ -5,7 +5,7 @@
  * Migration `20261030201000_questions_1spe_variables_aleatoires_niveaux` : 7 des 17 brouillons de
  * Probabilités / Variables aléatoires, refusés à la publication parce que plusieurs modèles de la sélection
  * partagent catégorie et niveau, sont renumérotés (chacun change de niveau). Décision de David du
- * 2026-10-30 (journal docs/wip/questions-1spe-progress.md, § 15, D20).
+ * 2026-10-30 (journal docs/archive/wip/questions-1spe-progress.md, § 15, D20).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, en brouillon, dans leur catégorie et à leur niveau
