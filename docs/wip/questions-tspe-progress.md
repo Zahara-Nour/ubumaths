@@ -10,21 +10,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2195 (fichiers du lot 3) ; migration du lot 3 en PR._
+_Mis à jour le 2026-11-02, après #2202 (migration du lot 3) et `db:migrate`._
 
-- **État** : lots 0, 1, 2 faits (2 publié) ; lot 3 (§ 16) : fichiers mergés (#2195), 6 brouillons créés en prod par
-  David ; migration nœud + tag écrite (test 10/10, rouge prouvé, `security-auditor` sans bloquant), PR à merger.
-- **Prochaine action** : merge de la PR de migration → `check:migrations --pr` → `db:migrate` depuis le dépôt
-  principal → relecture MCP → page à cocher (`page-a-cocher.ts --dir scripts/questions/tspe-3-ln-continuite-convexite`)
-  → `publier-lot` simulé → David publie.
-- **En attente de David** : rien jusqu'à la page à cocher.
+- **État** : lots 0, 1, 2 faits (2 publié) ; lot 3 (§ 16) : 6 brouillons en prod, rangés et tagués (#2202,
+  `db:migrate` relu au MCP) ; page à cocher publiée ; `publier-lot` simulé : 6 passent.
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter) ; tout OK → David lance
+  `publier-lot.ts --dir scripts/questions/tspe-3-ln-continuite-convexite --publier`, relire `published` au MCP.
+  Ensuite lot 4 « intégrales et primitives : restes » (461, 462, 478, 480, 489, 491, 485, 486, 465, § 4).
+- **En attente de David** : relecture de la page à cocher https://claude.ai/artifact/72Ma4bZR8XtK6LMwMVPh5L.
 - **Pièges en cours** : un tag doit être sur le **nœud du modèle ou sa notion** (§ 14) ; le **niveau est dans la
-  clé** de `create-questions`. `create-questions` et `publier-lot` → David (`!`) ; `db:migrate` depuis le dépôt
-  principal (`echo y |`) ; corps de commit ≤ 100 caractères par ligne. **Migrations** (#2181) : `pnpm migration:horodatage`
-  = heure réelle UTC ; « inserted before the last migration » → `--dry-run --include-all`, relire, puis
-  `--include-all`. Worktree neuf : `pnpm exec svelte-kit sync` avant `question:specs` (sinon `$lib` introuvable).
-  `|` interdit dans une branche de `{{if:…}}` (`\lvert x\rvert`).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe` · `feat/questions-tspe-lot3-tags`.
+  clé** de `create-questions`, qui se lance depuis le dépôt principal APRÈS le merge (dossier absent avant).
+  `create-questions` et `publier-lot` → David (`!`) ; `db:migrate` depuis le dépôt principal (`echo y |`) ;
+  corps de commit ≤ 100 caractères par ligne. Migrations : `pnpm migration:horodatage`, `migration list --linked`
+  avant `db:migrate`. Worktree neuf : `pnpm exec svelte-kit sync` avant `question:specs`. `|` interdit dans une
+  branche de `{{if:…}}` (`\lvert x\rvert`). Job navigateur `wrapDynamicImport` en CI : relancer.
+- **Worktree / branche** : aucun (retiré après #2202) ; lot 4 → worktree neuf depuis `origin/main`.
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -821,3 +821,11 @@ rangement puis tags, `updated_at` préservé, rollback gardé en commentaire. Te
 `tests/integration/questions-tspe-lot3-rangement-tags.test.ts` : 10/10 ; **rouge** sans l'étape 4 (« lot
 incohérent : nœuds 0/6, tags du lot 0/6 »). `security-auditor` : aucun bloquant (faibles : commentaire « db push
 sans transaction » imprécis, verrou bref de `DISABLE TRIGGER` ; identiques au lot 2, laissés).
+
+**PR #2202** mergée le 2026-11-02 (CI verte, `check:migrations --pr` passé) ; **`db:migrate`** le 2026-11-02 depuis
+le dépôt principal (seule migration en attente) ; relu en prod : 6 modèles sur leur sous-notion, tag posé, brouillon,
+niveaux inchangés, `updated_at` = date de création.
+
+**Page à cocher** (2026-11-02) : `page-a-cocher.ts --dir scripts/questions/tspe-3-ln-continuite-convexite`, 6 fiches lues
+en prod (brouillons, aucune alerte), 18 exemples : https://claude.ai/artifact/72Ma4bZR8XtK6LMwMVPh5L (`verdicts` vide à
+la publication). Rendu à 390 px non vérifié. `publier-lot.ts` simulé : 6 brouillons passent le contrôle.
