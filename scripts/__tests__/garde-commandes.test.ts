@@ -134,6 +134,8 @@ describe('garde-commandes — merger par l’API : jamais, `gh pr merge` est la 
 		refuse('gh api --method=PUT "repos/o/r/pulls/12/merge" -f merge_method=merge', /gh pr merge/);
 		refuse('gh api repos/o/r/pulls/12/merge -f merge_method=merge', /gh pr merge/);
 		refuse('gh api repos/o/r/merges -f base=main -f head=feat/x', /gh pr merge/);
+		refuse('gh api repos/o/r/pulls/5/merge -fmerge_method=merge', /gh pr merge/);
+		refuse('gh api repos/o/r/pulls/5/merge -Fmerge_method=merge', /gh pr merge/);
 		refuse(
 			`gh api graphql -f query='mutation { mergePullRequest(input: {pullRequestId: "x"}) { clientMutationId } }'`,
 			/gh pr merge/
@@ -144,6 +146,7 @@ describe('garde-commandes — merger par l’API : jamais, `gh pr merge` est la 
 	it('les lectures passent', () => {
 		passe('gh api repos/o/r/pulls/12/merge'); // GET : la PR est-elle mergée ?
 		passe('gh api repos/o/r/pulls/12 --jq .merged');
+		passe('gh api -X get repos/o/r/pulls/12/merge');
 		passe('gh api "repos/Zahara-Nour/ubumaths/activity?ref=refs/heads/main"');
 		passe(`gh api graphql -f query='{ repository(owner: "o", name: "r") { mergeCommitAllowed } }'`);
 		passe('git commit -m "refuser gh api -X PUT …/pulls/12/merge" -- docs/x.md');

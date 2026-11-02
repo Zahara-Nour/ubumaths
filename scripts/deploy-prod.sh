@@ -91,13 +91,16 @@ run_de() {
 # Vrai si TOUS les jobs rouges du run de ce commit — « CI Summary » mis à part,
 # rouge par conséquence — sont tombés sur le plantage connu. Un seul job rouge
 # pour une autre raison, ou des logs illisibles : faux (une vraie erreur ne se
-# relance pas).
+# relance pas). Les jobs rouges se lisent dans la liste des jobs, pas dans les
+# logs : un job en timeout ou tombé au setup n'a pas de log d'étape échouée.
 plantage_connu() {
-	local run log jobs job
+	local run log rouges jobs job
 	run="$(run_de "$1")" || return 1
 	[ -n "$run" ] || return 1
+	rouges="$(gh run view "$run" --json jobs \
+		--jq '.jobs[] | select(.conclusion != "success" and .conclusion != "skipped" and .conclusion != "neutral") | .name' 2>/dev/null)" || return 1
 	log="$(gh run view "$run" --log-failed 2>/dev/null)" || return 1
-	jobs="$(printf '%s\n' "$log" | cut -f1 | grep -vx -e "$CHECK" -e '' | sort -u)" || return 1
+	jobs="$(printf '%s\n' "$rouges" | grep -vx -e "$CHECK" -e '' | sort -u)" || return 1
 	while IFS= read -r job; do
 		printf '%s\n' "$log" | awk -F'\t' -v j="$job" '$1 == j' | grep -qF "$SIGNATURE" || return 1
 	done <<<"$jobs"
@@ -132,8 +135,13 @@ relancer() {
 	gh run rerun "$run" --failed ||
 		arreter "⛔ gh n'a pas pu relancer la CI de $(decrire "$sha")." "Rien n'est mis en prod."
 	echo "🔁 $motif sur $(decrire "$sha") : relance $relance_n/$RELANCES_MAX sous le verrou"
-	# Laisser GitHub repasser le run « en cours » avant de relire son état
-	sleep "$PAUSE"
+	# Attendre que GitHub repasse le run « en cours » : relu trop tôt, il rendrait
+	# encore la conclusion rouge de la tentative précédente (et une 2e relance
+	# sur un run en cours, que gh refuse). Au plus 10 pauses, puis on relit quand même.
+	for _ in 1 2 3 4 5 6 7 8 9 10; do
+		sleep "$PAUSE"
+		[ "$(gh run view "$run" --json status --jq .status 2>/dev/null)" = completed ] || break
+	done
 }
 
 # Ajouté aux arrêts sur CI rouge.

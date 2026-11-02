@@ -39,3 +39,9 @@ Piste : **A + C + D, sans B**.
 Écarts constatés au passage : un commit de doc fait dans le dépôt principal entre l'étape 0 et `pnpm release` serait entré **dans** le commit de version (fermé par C). Reste ouvert : un `gh pr merge` lancé juste avant le verrou (merge côté serveur, aucun hook git) ; détecté par l'étape 0 ou le push de la version, qui arrêtent le script.
 
 Tests : `deploy-prod.test.ts` (+11), `garde-deploy-en-cours.test.ts` (nouveau, 8), `garde-commandes.test.ts` (+2).
+
+## Revue (code-reviewer, Sonnet) — 2026-11-02
+
+Corrigés dans la PR : (1) `gh api … -fmerge_method=merge` (champ collé) passait le hook ; (2) `plantage_connu` ne voyait que les jobs présents dans `--log-failed` : un job rouge sans log d'étape (timeout, setup) était ignoré → relance indue ; jobs rouges désormais lus dans `gh run view --json jobs` ; (3) après `gh run rerun`, attente que le run repasse « en cours » (au plus 10 pauses) avant de relire son état. `-X get` en minuscules n'est plus pris pour une écriture.
+
+Laissés, jugés rares : `etat_ci` / `run_de` ne regardent que le run le plus récent du commit (deux runs pour un même SHA : push + `workflow_dispatch`) ; `--relancer-ci` est consommé à la première relance, étape 1 comprise (y compris un commit `cancelled`) ; un processus d'arrière-plan lancé sous le verrou qui survivrait garderait le verrou, donc les gardes git (déjà vrai avant pour le verrou).

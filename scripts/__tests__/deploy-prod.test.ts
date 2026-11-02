@@ -129,7 +129,9 @@ beforeEach(() => {
 	// « running-then-success » : deux lectures en cours, puis vert ;
 	// « plantage » : rouge sur le plantage connu des tests navigateur ;
 	// « mixte » : un job sur ce plantage, un autre vraiment rouge ;
-	// « muet » : rouge, logs illisibles.
+	// « muet » : rouge, logs illisibles ;
+	// « plantage-et-silencieux » : un job sur le plantage connu, un autre rouge
+	// SANS log d'étape (timeout, setup) : absent de --log-failed.
 	// `gh run rerun <sha> --failed` note la relance dans $RELANCES et donne au
 	// commit l'état $APRES_RELANCE (vert par défaut) ; $RELANCE_REFUSEE la fait échouer.
 	writeFileSync(
@@ -153,8 +155,21 @@ if [ "$etat" = running-then-success ]; then
 fi
 case "$1 $2" in
 "run view")
+	if printf '%s\\n' "$@" | grep -qx jobs; then
+		case "$etat" in
+		plantage) printf 'Client Tests (browser, shard 1/2)\\nCI Summary\\n' ;;
+		mixte) printf 'Client Tests (browser, shard 1/2)\\nServer Tests\\nCI Summary\\n' ;;
+		plantage-et-silencieux) printf 'Client Tests (browser, shard 1/2)\\nBuild\\nCI Summary\\n' ;;
+		*) printf 'Server Tests\\nCI Summary\\n' ;;
+		esac
+		exit 0
+	fi
+	if printf '%s\\n' "$@" | grep -qx status; then
+		case "$etat" in running) echo in_progress ;; *) echo completed ;; esac
+		exit 0
+	fi
 	case "$etat" in
-	plantage)
+	plantage | plantage-et-silencieux)
 		printf 'Client Tests (browser, shard 1/2)\\tUNKNOWN STEP\\t09:22:29Z TypeError: Cannot read properties of undefined (reading %swrapDynamicImport%s)\\n' "'" "'"
 		printf 'CI Summary\\tUNKNOWN STEP\\t09:29:30Z ❌ Client Tests: failure\\n' ;;
 	mixte)
@@ -173,7 +188,7 @@ case "$1 $2" in
 		case "$etat" in running) echo in_progress ;; '') echo aucun ;; *) echo completed ;; esac
 	fi ;;
 *)
-	case "$etat" in running | '') echo absent ;; plantage | mixte | muet) echo failure ;; *) echo "$etat" ;; esac ;;
+	case "$etat" in running | '') echo absent ;; plantage | plantage-et-silencieux | mixte | muet) echo failure ;; *) echo "$etat" ;; esac ;;
 esac
 `
 	);
@@ -485,6 +500,15 @@ describe('deploy-prod.sh — relancer sous le verrou, au lieu de le rendre', () 
 	it('un job sur le plantage connu, un autre vraiment rouge : aucune relance', () => {
 		pousser('success', 'src/a.ts');
 		ciVersion = 'mixte';
+		const r = lancer();
+		expect(r.status, r.sortie).toBe(1);
+		expect(relances()).toEqual([]);
+		expect(production()).toBeNull();
+	});
+
+	it('un autre job rouge sans log d’échec (timeout, setup) : aucune relance', () => {
+		pousser('success', 'src/a.ts');
+		ciVersion = 'plantage-et-silencieux';
 		const r = lancer();
 		expect(r.status, r.sortie).toBe(1);
 		expect(relances()).toEqual([]);

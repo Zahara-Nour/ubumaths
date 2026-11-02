@@ -153,7 +153,8 @@ for brut in segments:
     # la voie documentée. Les lectures (GET de …/pulls/<n>/merge : mergée ?) passent.
     if re.match(r"gh\s+api\b", s):
         texte = re.sub(r'"Q(\d+)"', lambda m: citations[int(m.group(1))], s)
-        ecrit = re.search(r"\s(?:-X|--method)[\s=]*(?!GET\b)[A-Za-z]+|\s(?:-f|-F|--field|--raw-field|--input)[\s=]", texte)
+        # Un champ (`-f x=y`, `-fx=y` collé, `--field`…) fait passer gh api en écriture.
+        ecrit = re.search(r"\s(?:-X|--method)[\s=]*(?![Gg][Ee][Tt]\b)[A-Za-z]+|\s(?:-[fF]|--field|--raw-field|--input)", texte)
         merge_rest = re.search(r"(?:^|[\s/])(?:repos/\S+/)?pulls/[^/\s]+/merge\b", texte) and ecrit
         merge_branche = re.search(r"(?:^|[\s/])repos/\S+/merges\b", texte)
         merge_graphql = re.search(r"\b(?:mergePullRequest|mergeBranch|enablePullRequestAutoMerge)\s*\(", texte)
