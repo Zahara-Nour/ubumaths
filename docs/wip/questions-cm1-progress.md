@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2222 (lot 5b rangé, page à cocher)._
+_Mis à jour le 2026-11-02, après #2222 (lot 5b rangé, page à cocher) ; phase 0 du lot 5d écrite._
 
 - **État** : lots 0 à 5a publiés. **Lot 5b** (masses + contenances, 10 brouillons) rangé et tagué en prod (#2222, `db:migrate` fait, vérifié au MCP) ; page à cocher publiée (§ 14 nonies).
-- **Prochaine action** : David relit https://claude.ai/artifact/AbSGVphXpE4a34gWngHjmK ; lire `verdicts` et compter (10) ; « À revoir » → corriger ; puis `publier-lot --dir scripts/questions/cm1-5b` (simulation), David lance `--publier`. Ensuite lot 5d (périmètres 073-075).
-- **En attente de David** : la relecture de la page.
+- **Prochaine action** : (a) lot 5b : lire `verdicts` de https://claude.ai/artifact/AbSGVphXpE4a34gWngHjmK (vide le 2026-11-02 en reprise) et compter (10) ; « À revoir » → corriger ; puis `publier-lot --dir scripts/questions/cm1-5b` (simulation), David lance `--publier`. (b) lot 5d : phase 0 écrite (§ 15), attendre les réponses aux 4 questions, puis écrire.
+- **En attente de David** : la relecture de la page du lot 5b ; les 4 questions du § 15.
 - **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `create-questions` = `pnpm tsx scripts/create-questions.ts …` (pas de script pnpm de ce nom) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; positions du `ranger` lues par essai des permutations ; aperçu : corrigé derrière le bouton « Voir la correction » (Playwright à 390 px).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot5b-rangement` (mergée ; prochaine branche : `feat/questions-cm1-lot5d`).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot5d` (phase 0 seulement).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -1008,3 +1008,49 @@ modèles CM1 propres, case « choix ».
   défilement horizontal) ; `verdicts` vide à la publication. Alertes attendues : bloc `ranger` non dessiné (05, à
   jouer dans l'aperçu) ; homonyme « Estimer une longueur » du CE1 (`1bd819dd`, niveau 5) écarté, le bon modèle est
   `1e01404d`.
+
+## 15. Lot 5d — périmètres : phase 0 (à valider)
+
+Relevé MCP du 2026-11-02 : CM1-073, 074, 075 ont 0 modèle, posés sur la **notion** « Périmètres » (sous-notions
+carré, rectangle, disque : celles de la 6e, aucune ne convient à un polygone quelconque). Modèles voisins en prod :
+6e seulement (`Grandeurs · Périmètres` : carré, rectangle, disque, avec formules). Rien au CE2 : **CE2-042, 043,
+044 ont aussi 0 modèle** (aucun journal ne les traite).
+
+Bornes : aucune formule (BO c3 p.17) ; « longueurs mesurées à la règle graduée **ou fournies** » (074) ; ex. de
+réussite « rectangle de côté 8 cm et de périmètre 27 cm » (075). Le BO permet que l'élève établisse lui-même « le
+périmètre d'un carré est le quadruple du côté ». Décimaux : deux décimales au plus (lot 4).
+
+Outils : bloc `figure` (polygone, `texte()` pour les longueurs, en-tête `grille:`), case « choix » de figures, et la
+**règle graduée dessinée** du CE1 (`ce1-10/01`, `cp-b2/09`) — pas de règle à manipuler. Classe B pour les trois.
+
+Catégorie : `Grandeurs · Périmètres · Périmètre d'un polygone` (neuve, à côté des sous-catégories de 6e), niveaux
+1 à 4. Nœud : la notion « Périmètres » (le point est sur le nœud du modèle, comme au lot 5a).
+
+| #    | Point   | Modèle                              | Variations, plages                                                                                                                                                                                                                                                                                                                                                                     | Réponse        |
+| ---- | ------- | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| 5d-1 | CM1-073 | Qu'est-ce que le périmètre ?        | V1 définition (« la longueur de son contour » / l'intérieur / le nombre de côtés / le plus grand côté) ; V2 quatre dessins d'un même polygone : lequel montre son périmètre (contour en couleur, intérieur colorié, un seul côté, une diagonale) ; V3 deux figures sur quadrillage, même nombre de carreaux, contours différents : laquelle a le plus grand périmètre ? (A, B, autant) | choix          |
+| 5d-2 | CM1-074 | Calculer le périmètre d'un polygone | V1 longueurs écrites sur les côtés, entiers en cm, triangle à hexagone ; V2 polygone à côtés droits sur un quadrillage de 1 cm (compter les côtés de carreaux) ; V3 longueurs écrites en cm et mm mêlés, réponse en cm (virgule) ; V4 les côtés posés bout à bout au-dessus de la règle dessinée (lire le bout)                                                                        | nombre + cm    |
+| 5d-3 | CM1-075 | Problèmes : calculer un périmètre   | V1 tour d'un jardin rectangulaire (m, entiers ≤ 100) ; V2 clôture d'un champ à 5 côtés (m) ; V3 carré : côté donné, « combien de ruban pour faire le tour ? » (décimal possible)                                                                                                                                                                                                       | nombre + unité |
+| 5d-4 | CM1-075 | Problèmes : retrouver un côté       | V1 triangle ou quadrilatère : périmètre et tous les côtés sauf un ; V2 rectangle : un côté et le périmètre (8 cm et 27 cm → 5,5 cm) ; V3 carré : périmètre → côté (division par 4, entier ou une décimale)                                                                                                                                                                             | nombre + unité |
+
+Corrigés : toujours « on fait le tour » (somme des côtés, écrite en entier), jamais une formule ; rectangle : « les
+deux côtés de 8 cm font 16 cm ; il reste 27 − 16 = 11 cm pour les deux autres, chacun 11 : 2 = 5,5 cm ».
+
+Specs d'erreurs typiques : aire au lieu du périmètre (carreaux de l'intérieur comptés), un côté oublié, unités non
+converties (4 cm + 35 mm = 39), rectangle : 27 − 8 = 19, demi-périmètre non partagé (11 au lieu de 5,5), carré :
+côté × 2.
+
+Questions :
+
+1. **Quatre modèles** (075 coupé en « calculer » et « retrouver un côté ») plutôt que trois ? Reco : quatre, les
+   deux tâches n'ont pas la même difficulté (niveaux 3 et 4).
+2. **La règle graduée (074, V4)** : côtés posés bout à bout au-dessus de la règle du CE1, l'élève lit le bout du
+   dernier — c'est la seule façon de faire jouer la règle sans geste ; à garder ? Reco : oui, en plus des longueurs
+   fournies et du quadrillage.
+3. **073, V3 (aire ≠ périmètre)** : deux figures de même aire sur quadrillage ; garder cette variation, qui pointe la
+   confusion la plus fréquente ? Reco : oui.
+4. **CE2-042, 043, 044** (0 modèle) : ajouter `CE2` aux grades de 5d-1 et 5d-2 (et le tag CE2-042, 044), ou les
+   laisser au chantier `questions-ce2` ? Reco : les laisser (CE2-043 demande le compas, et les plages du CE2 sont
+   plus petites).
+
+**Question d'accès** : brouillons, puis migration nœud + tag → **personne** ne gagne d'accès.
