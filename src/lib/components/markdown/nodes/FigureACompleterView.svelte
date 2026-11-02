@@ -50,6 +50,7 @@
 	} from '$lib/ubumark/types/construction';
 	import {
 		intersectionsOf,
+		isInFrame,
 		isStraight,
 		straightAt,
 		traitsOfObjects,
@@ -204,8 +205,9 @@
 		const { xMin, xMax, yMin, yMax } = scene.viewport;
 		return {
 			points: [...namedPointPositions(scene).values(), ...placedPoints],
-			intersections: intersectionsOf(traits).filter(
-				(p) => p.x >= xMin && p.x <= xMax && p.y >= yMin && p.y <= yMax
+			// Marge de `isInFrame` : une intersection construite sur le bord reste atteignable (revue)
+			intersections: intersectionsOf(traits).filter((p) =>
+				isInFrame(p, { xMin, xMax, yMin, yMax })
 			),
 			traits
 		};
@@ -313,6 +315,10 @@
 	function handlePointKey(event: KeyboardEvent, position: Position) {
 		if (event.key !== 'Enter' && event.key !== ' ') return;
 		event.preventDefault();
+		if (tool === 'equerre' && !drawing.guide) {
+			hint = { node, text: 'Touche d’abord une droite.' };
+			return;
+		}
 		tapAt({ x: position.x, y: position.y });
 	}
 
@@ -541,7 +547,8 @@
 						{/if}
 					{/each}
 				{:else}
-					{#each targets.intersections as position, i (i)}
+					<!-- Une intersection sur un point nommé : le bouton du point suffit -->
+					{#each targets.intersections.filter((q) => ![...points.values()].some((p) => Math.hypot(p.x - q.x, p.y - q.y) < 1e-9)) as position, i (i)}
 						{@const p = transformer.mathToSvg(position.x, position.y)}
 						<circle
 							class="point-cible"

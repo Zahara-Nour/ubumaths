@@ -144,8 +144,10 @@
 							>
 								<p class="text-sm font-medium">Figure de travail — non notée</p>
 								<p class="text-xs text-muted-foreground">
-									Outil : {workFigure.tool}. L'élève peut y tracer pour vérifier ; rien n'est noté.
-									Elle se modifie dans l'énoncé.
+									{workFigure.tools.length > 1 ? 'Outils' : 'Outil'} : {workFigure.tools.join(
+										', '
+									)}. L'élève peut y tracer pour vérifier ; rien n'est noté. Elle se modifie dans
+									l'énoncé.
 								</p>
 								{#each workFigure.errors as message (message)}
 									<p class="text-xs text-destructive">{message}</p>

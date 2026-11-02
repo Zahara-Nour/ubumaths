@@ -28,6 +28,13 @@ export type StraightTrait = Extract<Trait, { a: Position }>;
 /** Deux positions plus proches que ça (relatif) : la même */
 const EPSILON = 1e-9;
 
+/**
+ * Demi-corde en dessous de laquelle deux intersections n'en font qu'une
+ * (tangence) : l'erreur flottante d'un discriminant nul passe par une racine
+ * carrée, elle vaut ~√ε, bien au-dessus de EPSILON (revue du lot 2b)
+ */
+const TANGENT_EPSILON = 1e-7;
+
 const scaleOf = (...points: Position[]) =>
 	Math.max(1, ...points.flatMap((p) => [Math.abs(p.x), Math.abs(p.y)]));
 
@@ -101,7 +108,12 @@ function intersectStraightCircle(
 	// Tangente : une seule solution (discriminant nul au calcul flottant près)
 	if (disc < -EPSILON * b * b - EPSILON * scale) return [];
 	const root = Math.sqrt(Math.max(0, disc));
-	const ts = root === 0 ? [-b / (2 * a)] : [(-b - root) / (2 * a), (-b + root) / (2 * a)];
+	// Demi-corde, en unités de la figure : root / (2a) en paramètre, × la longueur de (a, b)
+	const halfChord = root / (2 * Math.sqrt(a));
+	const ts =
+		halfChord <= TANGENT_EPSILON * scale
+			? [-b / (2 * a)]
+			: [(-b - root) / (2 * a), (-b + root) / (2 * a)];
 	return ts
 		.filter((t) => withinStraight(line, t, slackOf(line)))
 		.map((t) => ({ x: line.a.x + t * ux, y: line.a.y + t * uy }));
@@ -121,7 +133,9 @@ function intersectCircles(
 	const h = Math.sqrt(Math.max(0, p.radius * p.radius - along * along));
 	const mx = p.center.x + (along * dx) / d;
 	const my = p.center.y + (along * dy) / d;
-	if (h === 0) return [{ x: mx, y: my }];
+	if (h <= TANGENT_EPSILON * (scaleOf(p.center, q.center) + p.radius + q.radius)) {
+		return [{ x: mx, y: my }];
+	}
 	return [
 		{ x: mx - (h * dy) / d, y: my + (h * dx) / d },
 		{ x: mx + (h * dy) / d, y: my - (h * dx) / d }

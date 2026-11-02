@@ -30,7 +30,7 @@ export const INSTRUMENT_TOOLS: readonly ConstructionTool[] = ['equerre', 'compas
  * symétrique sur papier uni demande les instruments.
  */
 export const PLAIN_PAPER_TOOLS: Partial<Record<ConstructionCheckKind, ConstructionTool[]>> = {
-	point: ['droite', 'equerre', 'compas', 'point'],
+	point: ['point', 'droite', 'equerre', 'compas'],
 	symetrique: ['segment', 'droite', 'equerre', 'compas']
 };
 

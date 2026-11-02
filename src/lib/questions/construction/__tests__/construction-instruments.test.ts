@@ -30,6 +30,7 @@ import {
 import {
 	intersectTraits,
 	intersectionsOf,
+	isInFrame,
 	lineCrossesFrame,
 	perpendicularThrough,
 	snapInstrument,
@@ -147,12 +148,12 @@ class Screen {
 // ============================================================================
 
 describe('palette déduite', () => {
-	it('point sans quadrillage : règle, équerre, compas, point', () => {
+	it('point sans quadrillage : point (l’outil de départ), règle, équerre, compas', () => {
 		expect(readConstructionHeader(OBLIQUE).spec.tools).toEqual([
+			'point',
 			'droite',
 			'equerre',
-			'compas',
-			'point'
+			'compas'
 		]);
 	});
 
@@ -292,6 +293,31 @@ describe('intersections', () => {
 		expect(intersectTraits(circle(0, 0, 1), circle(6, 0, 1))).toEqual([]);
 	});
 
+	it('tangence au calcul flottant près : un seul point (revue du lot 2b)', () => {
+		// Tangente en A au cercle de centre O passant par A ; deux cercles tangents en A
+		for (const [x, y] of [
+			[3, 7],
+			[5, 2],
+			[7, 6],
+			[1, 9]
+		]) {
+			const tangent = perpendicularThrough(line(0, 0, x, y) as never, { x, y });
+			const t = {
+				kind: 'line' as const,
+				a: { x: tangent.x1, y: tangent.y1 },
+				b: { x: tangent.x2, y: tangent.y2 }
+			};
+			const radius = Math.hypot(x, y);
+			for (const crossing of [
+				intersectTraits(t, circle(0, 0, radius)),
+				intersectTraits(circle(0, 0, radius), circle(2 * x, 2 * y, radius))
+			]) {
+				expect(crossing).toHaveLength(1);
+				expect(Math.hypot(crossing[0].x - x, crossing[0].y - y)).toBeLessThan(1e-9);
+			}
+		}
+	});
+
 	it('toutes les intersections, sans doublon', () => {
 		// Trois droites concourantes en (0 ; 0) : un seul point
 		const traits = [line(0, 0, 1, 0), line(0, 0, 0, 1), line(0, 0, 1, 1)];
@@ -337,6 +363,12 @@ describe('aimantation des instruments', () => {
 	it('perpendiculaire par un point', () => {
 		const perpendicular = perpendicularThrough(line(0, 0, 1, 1) as never, { x: 2, y: 5 });
 		expect(perpendicular).toEqual({ kind: 'droite', x1: 2, y1: 5, x2: 1, y2: 6 });
+	});
+
+	it('une intersection construite sur le bord, au flottant près : dans la fenêtre', () => {
+		const frame = { xMin: 0, xMax: 10, yMin: 0, yMax: 8 };
+		expect(isInFrame({ x: 1.000000000000004, y: 8.000000000000004 }, frame)).toBe(true);
+		expect(isInFrame({ x: 1, y: 8.01 }, frame)).toBe(false);
 	});
 
 	it('une droite traverse-t-elle la fenêtre ?', () => {
@@ -486,6 +518,24 @@ describe('symétrique d’un point, papier uni — erreurs d’auteur', () => {
 		);
 	});
 
+	it('axe non tracé (visible=faux) : refusé, rien à longer', () => {
+		const source = figure("point A' = symetrie(A, axe=d)", [
+			'P = point(0, 0)',
+			'Q = point(8, 8)',
+			'd = droite(P, Q, visible=faux)',
+			'A = point(2, 5)'
+		]);
+		expect(() => assertChecks(source)).toThrow('l’axe d n’est pas tracé');
+	});
+
+	it('centre invisible ou hors de la fenêtre : refusé', () => {
+		const hidden = figure("point A' = symetrie(A, centre=O)", [
+			'O = point(6, 4, visible=faux)',
+			'A = point(2, 5)'
+		]);
+		expect(() => assertChecks(hidden)).toThrow('le centre O n’est pas visible');
+	});
+
 	it('axe hors de la fenêtre : refusé (A hors de la fenêtre, A’ dedans)', () => {
 		const source = figure("point A' = symetrie(A, axe=d)", [
 			'P = point(20, 0)',
@@ -545,6 +595,6 @@ describe('symétrique d’une figure, papier uni', () => {
 			'B = point(30.5, 6)',
 			'segment(A, B)'
 		]);
-		expect(() => assertChecks(away)).toThrow('l’axe est hors de la fenêtre');
+		expect(() => assertChecks(away)).toThrow('l’axe d est hors de la fenêtre');
 	});
 });

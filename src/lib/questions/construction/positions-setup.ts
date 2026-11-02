@@ -117,11 +117,17 @@ export function figureShapes(scene: FigureScene, header: FigureHeader): FigureSh
 		const a = position(ends[0]);
 		const b = position(ends[1]);
 		if (!a || !b) continue;
-		const line = { a, b, owner: element.id };
+		const line = {
+			a,
+			b,
+			owner: element.id,
+			visible: scene.elements.some((e) => e.id === element.id)
+		};
 		lines.set(element.id, line);
 		if (element.label) lines.set(element.label, line);
 	}
-	return { segments, lines, traits, grid: header.grid, window: header.window };
+	const visiblePoints = new Set(namedPointPositions(scene).keys());
+	return { segments, lines, traits, visiblePoints, grid: header.grid, window: header.window };
 }
 
 /**

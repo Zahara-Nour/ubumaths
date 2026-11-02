@@ -26,10 +26,10 @@
 
 import type { ConstructionCheck, PointCheck } from '$lib/ubumark/types/construction';
 import { isDrawnPoint, type DrawnObject } from './answer';
-import { isConstructed, isInFrame, lineCrossesFrame, traitsOfObjects } from './instruments';
+import { isConstructed, isInFrame, traitsOfObjects } from './instruments';
 import type { ConstructionVerdict, Position } from './judge';
 import { dot, sub, tolerance } from './polygon';
-import type { FigureShapes } from './symmetry';
+import { plainPaperSupportError, type FigureShapes } from './symmetry';
 
 export const POINT_EXTRA_FEEDBACK = 'Tu as placé un point de trop.';
 export const POINT_MISSING_FEEDBACK = 'Il manque un point.';
@@ -107,7 +107,11 @@ function expectedOf(check: PointCheck, expected: ExpectedPoints | undefined): Po
  * Papier uni (lot 2b) : seul un symétrique se construit avec les instruments du
  * lot ; par un axe, l'axe doit traverser la fenêtre (le compas s'y pique).
  */
-function assertPlainPaper(check: PointCheck, shapes: FigureShapes): void {
+function assertPlainPaper(
+	check: PointCheck,
+	points: ReadonlyMap<string, Position>,
+	shapes: FigureShapes
+): void {
 	const label = `verifier: point ${check.name}`;
 	const symmetry = symmetryOf(check.expression);
 	if (!symmetry || !symmetry.target) {
@@ -115,10 +119,9 @@ function assertPlainPaper(check: PointCheck, shapes: FigureShapes): void {
 			`${label} : sans quadrillage, seulement un symétrique (symetrie(A, axe=d) ou symetrie(A, centre=O)) ; sinon ajouter « grille: 1 »`
 		);
 	}
-	const axis = symmetry.by === 'axe' ? shapes.lines.get(symmetry.target) : undefined;
-	if (axis && shapes.window && !lineCrossesFrame(axis.a, axis.b, shapes.window)) {
-		throw new PointAuthorError(`${label} : l’axe ${symmetry.target} est hors de la fenêtre`);
-	}
+	const axis = symmetry.by === 'axe' ? (shapes.lines.get(symmetry.target) ?? null) : null;
+	const message = plainPaperSupportError(symmetry.target, axis, points, shapes);
+	if (message) throw new PointAuthorError(`${label} : ${message}`);
 }
 
 /**
@@ -151,7 +154,7 @@ export function assertPoints(
 		if (window && !isInFrame(at, window)) {
 			throw new PointAuthorError(`${label} : le point attendu est hors de la fenêtre`);
 		}
-		if (!grid) assertPlainPaper(check, shapes);
+		if (!grid) assertPlainPaper(check, points, shapes);
 		else if (!isOnGrid(at.x, grid.x, eps) || !isOnGrid(at.y, grid.y, eps)) {
 			throw new PointAuthorError(
 				`${label} : le point attendu n’est pas sur un nœud du quadrillage (l’élève ne peut pas l’atteindre)`

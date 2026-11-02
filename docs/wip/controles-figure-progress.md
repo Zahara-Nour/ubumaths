@@ -6,20 +6,19 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2233._
+_Mis à jour le 2026-11-02, lot 2b en PR (instruments sur papier uni)._
 
-- **État** : lot 1 (#2226) et lot 2a (#2233, `verifier: point A' = <expression>`, outil point sur
-  quadrillage) **mergés**, pas encore en prod (`deploy:prod` sur demande de David). Vérifications à
-  l'œil notées dans `verifications-manuelles.md`.
-- **Prochaine action** : lot 2b — équerre (perpendiculaire à une droite par un point), compas (cercle
-  par son centre et un point), aimantation sur les intersections des traits, papier uni (§ 5,
-  décisions) : phase 0 des gestes d'abord. Puis angle, triangle, médiatrice, bissectrice, cercle
-  circonscrit, 4e sommet (§ 1) ; modèles CE2-073, CM1-107/108, CM2-097, 6-179/180 (journaux de niveau).
-- **En attente de David** : rien.
-- **Pièges en cours** : le langage des figures n'a pas de prime (`A'` = nom de correction seulement,
-  § 6) ; geometry-core : `symetrie(P, axe=d)` échoue si P définit d (« duplicate parent IDs ») ;
-  `testSpecs` = statut seulement ; sans `grille:`, `symetrique` et `point` refusés à la publication.
-- **Worktree / branche** : aucun (retiré après #2233).
+- **État** : lots 1 (#2226) et 2a (#2233) mergés ; lot 2b (équerre, compas, palette, aimantation sur
+  intersections et traits, papier uni pour `point` et `symetrique`) en PR depuis
+  `feat/controles-figure-instruments`, revue Opus faite et corrigée (§ 8). Rien en prod.
+- **Prochaine action** : merger le lot 2b (CI verte), ligne dans `verifications-manuelles.md` ; puis
+  angle, triangle, médiatrice, bissectrice, cercle circonscrit, 4e sommet (§ 1), report de longueur au
+  compas avec le triangle ; modèles CE2-073, CM1-107/108, CM2-097, 6-179/180.
+- **En attente de David** : point posé à l'œil pile sur A' (coordonnées rondes) jugé juste — l'accepter
+  ou exiger un point construit ? (§ 8, dernier point).
+- **Pièges en cours** : pas de prime dans le langage des figures (§ 6) ; `symetrie(P, axe=d)` échoue si
+  P définit d ; l'« Essayer » de l'aide ne rend pas la case jouable (essai dans un modèle brouillon).
+- **Worktree / branche** : `../ubumaths-wt-controles-figure`, `feat/controles-figure-instruments`.
 
 ---
 
@@ -330,3 +329,14 @@ Même contrôle qu'au lot 2a ; **sans `grille:`**, il n'est plus refusé : l'él
   (`check-template-figure`, 2), énoncé masqué (1).
 - Non vu à l'œil dans le navigateur : l'« Essayer » de l'aide ne rend pas la case jouable ; à faire dans
   un modèle brouillon (ligne de `verifications-manuelles.md` au merge).
+- Revue Opus (2026-11-02), corrigé : intersection construite sur le bord de la fenêtre écartée de
+  l'aimantation (filtre strict → `isInFrame`) ; tangence au flottant près rendue en deux points
+  (`TANGENT_EPSILON`, test rouge avant / vert après) ; outil de départ = Point aussi dans une évaluation
+  (palette `point` en tête) ; axe `visible=faux`, centre invisible ou hors fenêtre refusés sur papier
+  uni ; clavier : pas de bouton d'intersection doublant un point nommé, « Touche d'abord une droite. »
+  aussi au clavier ; carte de l'éditeur : tous les outils d'une figure de travail. Non corrigé : droites
+  annoncées « Droite 1, 2… » au clavier (pas leur nom), plafond de 20 objets atteint sans message.
+- **Question ouverte à David (revue, point 2)** : un toucher libre est arrondi au centième ; posé pile
+  sur un A' « rond » (ex. (5 ; 2)), il est jugé JUSTE sans construction. Phase 0 : « placé à l'œil » =
+  hors intersection ET loin de A'. Gardé tel quel (choix qui ne change rien) en attendant sa réponse ;
+  autre choix : exiger un point construit (point nommé ou intersection) même bien placé.

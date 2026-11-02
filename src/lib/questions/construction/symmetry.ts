@@ -26,7 +26,7 @@
 import type { SymetriqueCheck } from '$lib/ubumark/types/construction';
 import type { FigureStep, FigureWindow } from '$lib/ubumark/types/figure';
 import type { DrawnLine } from './answer';
-import { lineCrossesFrame, type Trait } from './instruments';
+import { isInFrame, lineCrossesFrame, type Trait } from './instruments';
 import type { ConstructionVerdict, Position } from './judge';
 import {
 	OVERSHOOT_FEEDBACK,
@@ -62,6 +62,8 @@ export interface FigureSegment extends Segment {
 /** Droite, segment ou demi-droite NOMMÉ de la figure (un axe possible) */
 export interface FigureLine extends Segment {
 	owner: string;
+	/** Tracé (les instruments s'y appuient) ; un axe `visible=faux` ne l'est pas */
+	visible: boolean;
 }
 
 /** Ce que la figure de départ trace, pour le symétrique */
@@ -75,6 +77,8 @@ export interface FigureShapes {
 	 * quoi les instruments s'aimantent (papier uni, lot 2b)
 	 */
 	readonly traits: readonly Trait[];
+	/** Noms des points VISIBLES (le compas ne se pique que sur ce qu'on voit) */
+	readonly visiblePoints: ReadonlySet<string>;
 	readonly grid: FigureStep | null;
 	readonly window: FigureWindow | null;
 }
@@ -174,11 +178,15 @@ export function assertSymmetry(
 ): void {
 	const { expected, figure, axis } = settingOf(check, points, shapes);
 	const { grid, window } = shapes as FigureShapes;
-	// Papier uni (lot 2b) : construit aux instruments ; le compas se pique sur l'axe
-	if (!grid && axis && window && !lineCrossesFrame(axis.a, axis.b, window)) {
-		throw new SymmetryAuthorError(
-			`verifier: symetrique par ${check.by} : l’axe est hors de la fenêtre`
+	// Papier uni (lot 2b) : construit aux instruments, sur l'axe ou le centre qu'on voit
+	if (!grid) {
+		const message = plainPaperSupportError(
+			check.by,
+			axis ? (axis as FigureLine) : null,
+			points,
+			shapes as FigureShapes
 		);
+		if (message) throw new SymmetryAuthorError(`verifier: symetrique par ${check.by} : ${message}`);
 	}
 	for (const p of expected.flatMap((s) => [s.a, s.b])) {
 		const eps = tolerance(p);
@@ -206,6 +214,32 @@ export function assertSymmetry(
 			`verifier: symetrique par ${check.by} : la figure est déjà symétrique, il n’y a rien à tracer`
 		);
 	}
+}
+
+/**
+ * Papier uni : l'axe ou le centre doit se voir dans la fenêtre (l'équerre longe
+ * l'axe, le compas s'y pique) ; le message, null s'il n'y a rien à redire
+ */
+export function plainPaperSupportError(
+	by: string,
+	axis: FigureLine | null,
+	points: ReadonlyMap<string, Position>,
+	shapes: FigureShapes
+): string | null {
+	const { window } = shapes;
+	if (axis) {
+		if (!axis.visible)
+			return `l’axe ${by} n’est pas tracé (visible=faux) : rien à longer ni où piquer le compas`;
+		if (window && !lineCrossesFrame(axis.a, axis.b, window))
+			return `l’axe ${by} est hors de la fenêtre`;
+		return null;
+	}
+	const center = points.get(by);
+	if (!center) return null;
+	if (!shapes.visiblePoints.has(by))
+		return `le centre ${by} n’est pas visible : le compas ne peut pas s’y piquer`;
+	if (window && !isInFrame(center, window)) return `le centre ${by} est hors de la fenêtre`;
+	return null;
 }
 
 /** Longueur du morceau `c` couverte par les morceaux de sa droite */
