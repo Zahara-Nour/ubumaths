@@ -207,6 +207,18 @@ begin
 			(select count(*) from _qtl4_modeles where noeud is null),
 			(select count(*) from _qtl4_tags where point_id is null);
 	end if;
+	-- Une notion désignée sans sous-notion ne doit en avoir AUCUNE (sinon le modèle irait par erreur
+	-- sur la notion au lieu d'une de ses sous-notions)
+	if exists (select 1 from _qtl4_modeles r
+	             join public.classification_nodes s on s.parent_id = r.notion_id
+	              and s.kind = 'subnotion' and s.archived_at is null
+	            where r.sous_notion is null) then
+		raise exception 'notion visée sans sous-notion, mais elle en a : % modèle(s)',
+			(select count(*) from _qtl4_modeles r
+			  where r.sous_notion is null
+			    and exists (select 1 from public.classification_nodes s where s.parent_id = r.notion_id
+			                  and s.kind = 'subnotion' and s.archived_at is null));
+	end if;
 end $resolution$;
 
 -- ---- 4. Rangement, puis tags (le trigger des tags lit le nœud du modèle) -----------------

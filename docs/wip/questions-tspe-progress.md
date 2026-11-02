@@ -13,7 +13,7 @@
 _Mis à jour le 2026-11-02, lot 4 : brouillons créés en prod, migration écrite._
 
 - **État** : lots 0 à 3 publiés. Lot 4 (§ 17) : #2215 mergée, 9 brouillons créés en prod ; migration nœud + tag
-  écrite et testée (vert, rouge sans l'étape 4), `security-auditor` en cours, PR à ouvrir.
+  écrite et testée (vert, rouge sans l'étape 4), `security-auditor` sans bloquant, PR ouverte.
 - **Prochaine action** : PR de la migration → CI → `check:migrations --pr` → merge → `db:migrate` depuis le dépôt
   principal → relecture MCP → page à cocher → publication.
 - **En attente de David** : rien avant la publication (`publier-lot --publier`, `!`).
@@ -881,4 +881,6 @@ sans nœud ni tag (relu au MCP).
 aller sur une **notion sans sous-notion** (M6 sur « Valeur moyenne », qui n'en a aucune ; ses 3 modèles publiés y
 sont déjà) : `sous_notion` nulle → résolution sur la notion, dans la migration et dans le rollback. Test
 `tests/integration/questions-tspe-lot4-rangement-tags.test.ts` : 10/10 ; **rouge** sans l'étape 4 (« lot
-incohérent : nœuds 0/9, tags du lot 0/9 »).
+incohérent : nœuds 0/9, tags du lot 0/9 »). `security-auditor` (2026-11-02, recoupé en prod) : **aucun finding
+bloquant** ; faible : rien n'imposait qu'une notion visée sans sous-notion n'en ait aucune → garde ajoutée (« notion
+visée sans sous-notion, mais elle en a ») et son test (11/11).

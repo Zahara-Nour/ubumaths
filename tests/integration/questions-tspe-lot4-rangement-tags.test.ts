@@ -271,6 +271,21 @@ describe('Terminale spé, lot 4 : les branches d’échec de la migration', () =
 		});
 	});
 
+	it('la notion Valeur moyenne a reçu une sous-notion : la migration échoue', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			const chemins = await cheminsActifs(pg);
+			await pg.query(
+				`insert into public.classification_nodes (kind, parent_id, name, position)
+				 values ('subnotion', $1, 'sous-notion ajoutée depuis le relevé', 99)`,
+				[chemins.get('Intégration > Valeur moyenne')]
+			);
+			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
+				/notion visée sans sous-notion, mais elle en a : 1 modèle\(s\)/
+			);
+		});
+	});
+
 	it('rollback refusé si un modèle du lot a été déplacé depuis la migration', async () => {
 		await enTransaction(async () => {
 			await poserEtatProd(pg, auteur);
