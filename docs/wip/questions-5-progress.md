@@ -5,13 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 9 validé en phase 0._
+_Mis à jour le 2026-11-02, après #2209._
 
-- **État** : lots 1 à 8 publiés ; lot 9 « Statistiques » validé (§ 23), à écrire. Classe A couverte sauf 5-122
-  (étiquettes à ranger, outil neuf).
-- **Prochaine action** : écrire le lot 9 dans le worktree `ubumaths-wt-questions-5` (branche
-  `feat/questions-5-lot9`) : script `docs/wip/questions/lot-5-statistiques.py` → `scripts/questions/5-statistiques/` ;
-  vérifier le rendu de la ` ```courbe ` à segments (09-10) dans l'aperçu.
+- **État** : lots 1 à 8 publiés ; lot 9 « Statistiques » (§ 23) : fichiers mergés (#2209), pas encore en prod.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/5-statistiques
+--publier` (brouillons en prod) ; puis relever les `id`, migration nœud + tag (gabarit lot 8), page à cocher.
 - **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la
   main : au pilotage Chrome, la frappe dans la 2e case arrivait aussi dans la 1re — extension ou appli ?
 - **Pièges en cours** : `db:migrate` en prod refusé par le classifieur du mode auto → David le lance ; il pousse
@@ -19,7 +17,7 @@ _Mis à jour le 2026-11-02, lot 9 validé en phase 0._
   `pnpm check:migrations --pr <n>` avant merge ; horodatage = `pnpm migration:horodatage` ; garde
   `docs:check-a-jour` sur une migration de données → ligne `Doc-inchangée:` dans un COMMIT (pas la PR) ;
   `gh pr checks --watch` rend la main avant l'intégration : suivre les runs ; jamais `e`.
-- **Worktree / branche** : `../ubumaths-wt-questions-5`, `feat/questions-5-lot9`.
+- **Worktree / branche** : `../ubumaths-wt-questions-5` (branche `feat/questions-5-lot9` mergée ; nouvelle branche pour la migration).
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -670,3 +668,5 @@ barres 1-3 (CE1) ; diagrammes circulaires et courbes et repères : aucun. Borne 
 - Base locale : 10 brouillons ; rendu vu dans l'aperçu : ligne brisée de la ` ```courbe ` (09, points aux
   sommets), circulaire sans étiquettes en huitièmes (07), en pourcentages (08), barres de 5 en 5 (05), tableau à
   4 cases (04). Saisie au pilotage Chrome sans effet (même symptôme qu'au lot 7) : juge couvert par les specs.
+- #2209 mergée (CI verte après correctif : la garde `student-answer-safety` refuse un `{{if:…}}` imbriqué sur 7
+  niveaux en réponse attendue → passer par une variable).
