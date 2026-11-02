@@ -1340,3 +1340,20 @@ de l'auteur seuls jusqu'à la publication, la migration ne fait que ranger et ta
 v3 : trois tableaux A, B, C dans l'énoncé, réponse A / B / C. (3) Phase 0 validée, avec la correction de 196 v2 :
 nombre de répétitions accordé à l'angle (4 × 90° carré, 3 × 120° triangle équilatéral, 6 × 60° hexagone ; leurre
 « rectangle ») ; corrigé : le lutin tourne du supplément de l'angle de la figure (120° pour un angle de 60°).
+
+### 22.1 Écriture (2026-11-02)
+
+- `docs/wip/questions/lot-9-tableaux-programmes.py scripts/questions` → 7 modèles dans
+  `scripts/questions/6-tableaux-programmes/`. `question:specs` à 300 tirages par variation : 59 specs vertes,
+  6 600 tirages réussis ; `sonde-figures` : 0 problème ; programmes Scratch passés à `check:ubumark` (énoncés tirés
+  par `--apercu`, témoin fautif vérifié détecté) : 0 problème ; `create-questions` en simulation contre la prod :
+  7 « à créer ».
+- Catégories : Calcul littéral / Pensée algébrique / Motifs évolutifs (1) ; Statistiques / Représenter des
+  données / Tableaux (3, après CP et CE1) ; Statistiques / Exploiter des données / Filtrer un tableau (1) ;
+  Proportionnalité / Tableaux de proportionnalité / Représenter (1) ; Algorithmique / Variables et instructions /
+  Séquence d'instructions (1), Exécuter un programme (1) ; Algorithmique / Boucles / Boucle bornée (1).
+- Base locale, aperçu admin à 390 px (Playwright hors dépôt) : trois défauts vus et corrigés — triangles
+  d'allumettes mal comptés (étape 1 = une allumette : sommets du zigzag), jetons minuscules (disques de rayon 0,3,
+  fenêtre accordée au nombre de lignes, rapport hauteur/largeur ≥ 1/4), tableaux à cases en ligne qui débordaient
+  (pluie de la semaine, prix des cahiers : passés en colonnes, une ligne par jour / par achat).
+- Corrections relues en texte (`--apercu`) : l'aperçu ne montre la correction qu'après une réponse.
