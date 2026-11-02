@@ -144,3 +144,11 @@ relus (`;+` au lieu de « +(−12) », « √N = » seulement si N a un facteur 
 05 coordonnées échangées (faux, case par case), 02 choix (juste).
 
 PR #2249 (fichiers) mergée le 2026-11-02 (CI verte, 9 succès, 6 sautés).
+
+## Lot formules : prod et migration (2026-11-02)
+
+Création en prod par David (18 h 52 UTC), relue (MCP) : 5 `draft`, Propriétés 6-10, sans nœud ni tag : 6ba40e95 (413),
+1608d73f (315), 1ef71e63 (416), 8bc17308 (414), d43747e1 (314). Nœuds des points : 413 → Géométrie › Produit scalaire ›
+propriétés ; 315, 416 → … › angles et longueurs ; 414, 314 → … › expressions du produit scalaire. Migration
+`20261102185249` (gabarit 6b) et test `tests/integration/questions-1spe-formules-rangement-tags.test.ts` : 10/10, rouge
+sans l'étape 4 (« lot incohérent : nœuds 0/5 »), restauré depuis une copie.
