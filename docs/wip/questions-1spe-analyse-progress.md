@@ -10,10 +10,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot A écrit (pas encore de PR)._
+_Mis à jour le 2026-11-02, lot A essayé en base locale, PR ouverte._
 
-- **État** : phase 0 validée (Q1-Q7) ; lot A écrit : `docs/wip/questions/lot-1spe-analyse-a.py` → `scripts/questions/1spe-analyse-a/` (5 modèles, 47 specs vertes, tirages relus) ; simulation `create-questions` : 5 à créer, 0 en base.
-- **Prochaine action** : essai en base locale (`set -a; . ./.env.local; set +a` puis `create-questions --dir scripts/questions/1spe-analyse-a --publier`, doc § 4 l. 211), jouer les modèles dans l'aperçu admin, puis PR des fichiers.
+- **État** : phase 0 validée (Q1-Q7) ; lot A (5 modèles, `scripts/questions/1spe-analyse-a/`) essayé en base locale (5 créés, joués dans l'aperçu : juste, faux, correction, OK ; sonde-courbes 0 problème) ; PR des fichiers ouverte.
+- **Prochaine action** : CI verte → merge ; puis David lance `create-questions --dir scripts/questions/1spe-analyse-a --publier` en prod (brouillons), relever les `id`, migration nœud + tag (doc § 6).
 - **En attente de David** : rien.
 - **Pièges en cours** : `create-questions` vise la **PROD** même avec `.env.local` présent → charger `.env.local` dans le shell avant tout `--publier` local ; worktree neuf → `pnpm exec svelte-kit sync` avant `question:specs` ; spec `bad_form` → `constraintViolations: ['form']` ; 306 en lot B (outil #2189 en prod).
 - **Worktree / branche** : `../ubumaths-wt-questions-1spe-analyse`, `content/questions-1spe-analyse`.
@@ -164,3 +164,13 @@ Q3 deux lots (A, B) ; Q4 A1 en case choix ; Q5 B4 tagué aussi 1GEN-062 et 1TECH
 
 - ce tag) ; Q7 personne ne gagne d'accès (brouillons ; seul 7d6cf480, publié, apparaît aux classes de 1re dans le
   cahier de texte).
+
+## Essai en base locale du lot A (2026-11-02)
+
+- `sonde-courbes` : 0 problème (300 tirages par modèle, 211 blocs ``courbe pour 04 et 05).
+- `create-questions --publier` sur la base locale : 5 créés en brouillon.
+- Aperçu admin, chaque modèle : réponse juste → « Juste » ; piège (somme `x(x+2)−24`, « le seul polynôme »,
+  `[−6;1]`, courbe 𝒞₁ au lieu de 𝒞₂, courbe passant par (0 ; 2)) → « Faux » ; correction rendue (tableau de
+  signes de 03, courbes de 04 et 05).
+- Détails visuels sans gravité, laissés tels quels : l'étiquette 𝒞₂ de 04 (variation 2) touche l'axe des
+  abscisses vers t = 2,7 ; le point (0 ; 1) de la correction de 05 est nommé `A` sans que le texte le nomme.
