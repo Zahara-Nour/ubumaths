@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, migration 8a écrite et testée._
+_Mis à jour le 2026-11-02, après #2260 (migration 8a passée en prod)._
 
-- **État** : lot 8 (D-L8 : 26 « à savoir » en 8a/8b/8c) ; fichiers de 8a mergés (#2259), 11 modèles, pas encore en prod.
-- **Prochaine action** : `security-auditor` sur la migration 8a, PR + `check:migrations --pr`, merge, `db:migrate`, page à cocher.
-- **En attente de David** : rien.
+- **État** : lot 8 (D-L8 : 26 « à savoir » en 8a/8b/8c) ; 8a : 11 brouillons en prod, rangés et tagués (#2259, #2260), page à cocher publiée.
+- **Prochaine action** : lire les verdicts de https://claude.ai/artifact/BEs9jcWtrZegQoP7vN2toa (compter) ; puis `publier-lot.ts --dir scripts/questions/tspe-8a-savoir` simulé, `--publier` par David ; ensuite 8b (primitives, y′ = ay + b, IPP : 7 modèles).
+- **En attente de David** : la relecture des 11 fiches de 8a.
 - **Pièges en cours** : relevé de nœuds → filtrer `archived_at is null` ; `!=` dans `$…$` lu « ≠ » (écrire `!\,=`) ; garde « notion sans sous-notion » : liste `sous_notions_admises` (migration `20261102181059`).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · `feat/questions-tspe-restes-8a-migration`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · branche neuve depuis `origin/main` pour 8b.
 
 ---
 
@@ -229,3 +229,13 @@ Migration `20261102204034_questions_tspe_lot8a_rangement_tags.sql` (copie du lot
 gabarit = les lignes du lot). Test `tests/integration/questions-tspe-lot8a-rangement-tags.test.ts` (copie du lot 7, sans
 les trois cas propres à M6) : 10/10 ; **rouge** sans l'étape 4 (suite principale « lot incohérent », 5 sautés, et le
 test du rollback).
+
+`security-auditor` (2026-11-02, prod relue au MCP) : **aucun finding bloquant** (diff avec le gabarit refait : les lignes
+du lot seulement). Non bloquants : pas de garde `status = 'draft'` (comme le gabarit) ; garde « notion sans sous-notion »
+sans effet ici. `check:migrations --pr 2260` vert ; **#2260 mergée** (CI 16/16). `migration list --linked` : seule
+`20261102204034` en attente ; **`db:migrate`** lancé depuis le dépôt principal (4 conditions réunies). Prod relue au
+MCP : 11 modèles sur leur sous-notion, un tag chacun, `updated_at` = `created_at`, toujours `draft`.
+
+**Page à cocher** : `page-a-cocher.ts --dir scripts/questions/tspe-8a-savoir`, 11 fiches lues en prod, aucune alerte,
+31 exemples : https://claude.ai/artifact/BEs9jcWtrZegQoP7vN2toa (`verdicts` vide à la publication ; rendu non regardé
+dans Chrome).
