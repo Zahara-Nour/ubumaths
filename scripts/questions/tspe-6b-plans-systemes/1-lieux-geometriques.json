@@ -1,0 +1,416 @@
+{
+	"title": "Espace : lieux géométriques",
+	"description": "Point du plan médiateur de [AB] (MA² = MB²), équation du plan médiateur, ensemble des M tels que MA·MB = 0 (sphère de diamètre [AB]) (pièges : point A au lieu du milieu, rayon AB au lieu de AB/2)",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Orthogonalité et distances dans l'espace",
+	"subdomain": "Lieux géométriques",
+	"level": 1,
+	"delay": 180,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les points $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$, et le point $M({{mx}}\\,;\\,{{my}}\\,;\\,{{mz}})$.\n\nLe point $M$ appartient-il au plan médiateur de $[AB]$ ?\n\n```choix\n- Oui, $M$ est sur le plan médiateur de $[AB]$.\n- Non, $M$ n'est pas sur le plan médiateur de $[AB]$.\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "{{o}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le **plan médiateur** de $[AB]$ est l'ensemble des points $M$ équidistants de $A$ et de $B$ : $MA=MB$, soit $MA^2=MB^2$.",
+					"$MA^2={{eval:ax-mx;()}}^2+{{eval:ay-my;()}}^2+{{eval:az-mz;()}}^2={{eval:(ax-mx)^2+(ay-my)^2+(az-mz)^2}}$ et $MB^2={{eval:bx-mx;()}}^2+{{eval:by-my;()}}^2+{{eval:bz-mz;()}}^2={{eval:(bx-mx)^2+(by-my)^2+(bz-mz)^2}}$.",
+					"{{if:o==0|$MA^2=MB^2$ : $\\textcolor{{{color:primary.0}}}{ M\\text{ est sur le plan médiateur de }[AB] }$.}}{{if:o==1|$MA^2\\neq MB^2$ : $\\textcolor{{{color:primary.0}}}{ M\\text{ n'est pas sur le plan médiateur de }[AB] }$.}}"
+				]
+			},
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-3..3"
+				},
+				{
+					"name": "ay",
+					"expression": "-3..3"
+				},
+				{
+					"name": "az",
+					"expression": "-3..3"
+				},
+				{
+					"name": "w1",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "w2",
+					"expression": "-2..2"
+				},
+				{
+					"name": "w3",
+					"expression": "-2..2"
+				},
+				{
+					"name": "bx",
+					"expression": "{{eval:ax+2*w1}}"
+				},
+				{
+					"name": "by",
+					"expression": "{{eval:ay+2*w2}}"
+				},
+				{
+					"name": "bz",
+					"expression": "{{eval:az+2*w3}}"
+				},
+				{
+					"name": "ix",
+					"expression": "{{eval:ax+w1}}"
+				},
+				{
+					"name": "iy",
+					"expression": "{{eval:ay+w2}}"
+				},
+				{
+					"name": "iz",
+					"expression": "{{eval:az+w3}}"
+				},
+				{
+					"name": "r",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "sel",
+					"expression": "0..1"
+				},
+				{
+					"name": "o",
+					"expression": "0..1"
+				},
+				{
+					"name": "p1",
+					"expression": "{{eval:r*(1-sel)*w2}}"
+				},
+				{
+					"name": "p2",
+					"expression": "{{eval:r*((sel-1)*w1+sel*w3)}}"
+				},
+				{
+					"name": "p3",
+					"expression": "{{eval:-r*sel*w2}}"
+				},
+				{
+					"name": "mx",
+					"expression": "{{eval:ix+p1+o*w1}}"
+				},
+				{
+					"name": "my",
+					"expression": "{{eval:iy+p2+o*w2}}"
+				},
+				{
+					"name": "mz",
+					"expression": "{{eval:iz+p3+o*w3}}"
+				}
+			],
+			"conditions": ["abs(p1)+abs(p2)+abs(p3) > 0"]
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les points $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$.\n\nDonne une équation cartésienne du plan médiateur de $[AB]$.\n\n$?$",
+			"blanks": [
+				{
+					"answerKind": "equation",
+					"expectedAnswer": "{{eval:2*w1}}x+({{eval:2*w2}})y+({{eval:2*w3}})z+({{eval:-2*(ix*w1+iy*w2+iz*w3)}})=0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le **plan médiateur** de $[AB]$ est l'ensemble des points $M$ équidistants de $A$ et de $B$ : $MA=MB$, soit $MA^2=MB^2$. C'est aussi le plan qui passe par le milieu $I$ de $[AB]$ et de vecteur normal $\\overrightarrow{AB}$.",
+					"$I({{ix}}\\,;\\,{{iy}}\\,;\\,{{iz}})$ et $\\overrightarrow{AB}\\begin{pmatrix}{{eval:2*w1}}\\\\{{eval:2*w2}}\\\\{{eval:2*w3}}\\end{pmatrix}$.",
+					"$M(x\\,;\\,y\\,;\\,z)$ est sur ce plan si et seulement si $\\overrightarrow{AB}\\cdot\\overrightarrow{IM}=0$ : ${{if:2*w1==1|\\left(x{{if:ix!=0|{{if:-ix>0|+}}{{eval:-ix}}}}\\right)}}{{if:2*w1==-1|-\\left(x{{if:ix!=0|{{if:-ix>0|+}}{{eval:-ix}}}}\\right)}}{{if:2*w1!=1 && 2*w1!=-1|{{eval:2*w1}}\\left(x{{if:ix!=0|{{if:-ix>0|+}}{{eval:-ix}}}}\\right)}}{{if:2*w2==1|+\\left(y{{if:iy!=0|{{if:-iy>0|+}}{{eval:-iy}}}}\\right)}}{{if:2*w2==-1|-\\left(y{{if:iy!=0|{{if:-iy>0|+}}{{eval:-iy}}}}\\right)}}{{if:2*w2>1|+{{eval:2*w2}}\\left(y{{if:iy!=0|{{if:-iy>0|+}}{{eval:-iy}}}}\\right)}}{{if:2*w2< -1|{{eval:2*w2}}\\left(y{{if:iy!=0|{{if:-iy>0|+}}{{eval:-iy}}}}\\right)}}{{if:2*w3==1|+\\left(z{{if:iz!=0|{{if:-iz>0|+}}{{eval:-iz}}}}\\right)}}{{if:2*w3==-1|-\\left(z{{if:iz!=0|{{if:-iz>0|+}}{{eval:-iz}}}}\\right)}}{{if:2*w3>1|+{{eval:2*w3}}\\left(z{{if:iz!=0|{{if:-iz>0|+}}{{eval:-iz}}}}\\right)}}{{if:2*w3< -1|{{eval:2*w3}}\\left(z{{if:iz!=0|{{if:-iz>0|+}}{{eval:-iz}}}}\\right)}}=0$.",
+					"Une équation : $\\textcolor{{{color:primary.0}}}{ {{if:2*w1==1|x}}{{if:2*w1==-1|-x}}{{if:2*w1!=1 && 2*w1!=-1|{{eval:2*w1}}x}}{{if:2*w2==1|+y}}{{if:2*w2==-1|-y}}{{if:2*w2>1|+{{eval:2*w2}}y}}{{if:2*w2< -1|{{eval:2*w2}}y}}{{if:2*w3==1|+z}}{{if:2*w3==-1|-z}}{{if:2*w3>1|+{{eval:2*w3}}z}}{{if:2*w3< -1|{{eval:2*w3}}z}}{{if:ix*w1+iy*w2+iz*w3!=0|{{if:-2*(ix*w1+iy*w2+iz*w3)>0|+}}{{eval:-2*(ix*w1+iy*w2+iz*w3)}}}}=0 }$ (toute équation proportionnelle convient)."
+				]
+			},
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-3..3"
+				},
+				{
+					"name": "ay",
+					"expression": "-3..3"
+				},
+				{
+					"name": "az",
+					"expression": "-3..3"
+				},
+				{
+					"name": "w1",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "w2",
+					"expression": "-2..2"
+				},
+				{
+					"name": "w3",
+					"expression": "-2..2"
+				},
+				{
+					"name": "bx",
+					"expression": "{{eval:ax+2*w1}}"
+				},
+				{
+					"name": "by",
+					"expression": "{{eval:ay+2*w2}}"
+				},
+				{
+					"name": "bz",
+					"expression": "{{eval:az+2*w3}}"
+				},
+				{
+					"name": "ix",
+					"expression": "{{eval:ax+w1}}"
+				},
+				{
+					"name": "iy",
+					"expression": "{{eval:ay+w2}}"
+				},
+				{
+					"name": "iz",
+					"expression": "{{eval:az+w3}}"
+				}
+			]
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les points $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$.\n\nL'ensemble des points $M$ de l'espace tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=0$ est une sphère. Donne son centre et son rayon (valeur exacte).\n\nCentre $\\Omega(?\\,;\\,?\\,;\\,?)$, rayon $?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{ix}}"
+				},
+				{
+					"expectedAnswer": "{{iy}}"
+				},
+				{
+					"expectedAnswer": "{{iz}}"
+				},
+				{
+					"expectedAnswer": "{{eval:sqrt(w1^2+w2^2+w3^2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Soit $\\Omega$ le milieu de $[AB]$ : $\\overrightarrow{\\Omega B}=-\\overrightarrow{\\Omega A}$.",
+					"$\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=\\left(\\overrightarrow{M\\Omega}+\\overrightarrow{\\Omega A}\\right)\\cdot\\left(\\overrightarrow{M\\Omega}-\\overrightarrow{\\Omega A}\\right)=M\\Omega^2-\\Omega A^2$. Donc $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=0$ si et seulement si $M\\Omega=\\Omega A$ : c'est la sphère de diamètre $[AB]$.",
+					"Centre : $\\textcolor{{{color:primary.0}}}{ \\Omega({{ix}}\\,;\\,{{iy}}\\,;\\,{{iz}}) }$ ; rayon $\\Omega A=\\sqrt{{{eval:w1;()}}^2+{{eval:w2;()}}^2+{{eval:w3;()}}^2}=\\textcolor{{{color:primary.0}}}{ {{eval:sqrt(w1^2+w2^2+w3^2)}} }$ (la moitié de $AB$)."
+				]
+			},
+			"variables": [
+				{
+					"name": "ax",
+					"expression": "-3..3"
+				},
+				{
+					"name": "ay",
+					"expression": "-3..3"
+				},
+				{
+					"name": "az",
+					"expression": "-3..3"
+				},
+				{
+					"name": "w1",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "w2",
+					"expression": "-2..2"
+				},
+				{
+					"name": "w3",
+					"expression": "-2..2"
+				},
+				{
+					"name": "bx",
+					"expression": "{{eval:ax+2*w1}}"
+				},
+				{
+					"name": "by",
+					"expression": "{{eval:ay+2*w2}}"
+				},
+				{
+					"name": "bz",
+					"expression": "{{eval:az+2*w3}}"
+				},
+				{
+					"name": "ix",
+					"expression": "{{eval:ax+w1}}"
+				},
+				{
+					"name": "iy",
+					"expression": "{{eval:ay+w2}}"
+				},
+				{
+					"name": "iz",
+					"expression": "{{eval:az+w3}}"
+				}
+			]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : M sur le plan médiateur",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"w1": "1",
+				"w2": "2",
+				"w3": "-1",
+				"r": "1",
+				"sel": "0",
+				"o": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : M sur le plan, répondu « non »",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"w1": "1",
+				"w2": "2",
+				"w3": "-1",
+				"r": "1",
+				"sel": "0",
+				"o": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : M hors du plan",
+			"variationIndex": 0,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"w1": "1",
+				"w2": "2",
+				"w3": "-1",
+				"r": "-1",
+				"sel": "1",
+				"o": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 2x + 4y - 2z - 16 = 0",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"w1": "1",
+				"w2": "2",
+				"w3": "-1"
+			},
+			"answers": ["2x+4y-2z-16=0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : équation proportionnelle",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"w1": "1",
+				"w2": "2",
+				"w3": "-1"
+			},
+			"answers": ["x+2y-z-8=0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : plan passant par A (piège)",
+			"variationIndex": 1,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"w1": "1",
+				"w2": "2",
+				"w3": "-1"
+			},
+			"answers": ["2x+4y-2z-4=0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : Ω(2 ; 2 ; -2), r = √6",
+			"variationIndex": 2,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"w1": "1",
+				"w2": "2",
+				"w3": "-1"
+			},
+			"answers": ["2", "2", "-2", "\\sqrt{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : rayon AB (piège)",
+			"variationIndex": 2,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"w1": "1",
+				"w2": "2",
+				"w3": "-1"
+			},
+			"answers": ["2", "2", "-2", "2\\sqrt{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : centre A (piège)",
+			"variationIndex": 2,
+			"variables": {
+				"ax": "1",
+				"ay": "0",
+				"az": "-1",
+				"w1": "1",
+				"w2": "2",
+				"w3": "-1"
+			},
+			"answers": ["1", "0", "-1", "\\sqrt{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

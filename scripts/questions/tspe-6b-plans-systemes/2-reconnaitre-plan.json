@@ -1,0 +1,299 @@
+{
+	"title": "Espace : reconnaître un plan par son équation",
+	"description": "Nature d'un ensemble de points par son équation (plan, sphère, droite, point), plans x = k, y = k, z = k, équation non développée d'un plan à réduire (pièges : somme de carrés nulle, z = k pris pour une droite, signe de d)",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Représentations paramétriques et équations cartésiennes",
+	"subdomain": "Équation cartésienne d'un plan",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère l'ensemble $\\mathcal{E}$ des points $M(x\\,;\\,y\\,;\\,z)$ dont les coordonnées vérifient\n\n$${{if:k==0|{{if:a==1|\\left(x{{if:-p>0|+}}{{eval:-p}}\\right)}}{{if:a==-1|-\\left(x{{if:-p>0|+}}{{eval:-p}}\\right)}}{{if:a!=1 && a!=-1|{{eval:a}}\\left(x{{if:-p>0|+}}{{eval:-p}}\\right)}}{{if:b==1|+y}}{{if:b==-1|-y}}{{if:b>1|+{{eval:b}}y}}{{if:b< -1|{{eval:b}}y}}={{if:c==1|z}}{{if:c==-1|-z}}{{if:c!=1 && c!=-1|{{eval:c}}z}}{{if:q>0|+}}{{eval:q}}}}{{if:k==1|\\left(x{{if:-p>0|+}}{{eval:-p}}\\right)^2+\\left(y{{if:-q>0|+}}{{eval:-q}}\\right)^2+\\left(z{{if:-s>0|+}}{{eval:-s}}\\right)^2={{eval:R^2}}}}{{if:k==2|\\begin{cases} x{{if:b==1|+y}}{{if:b==-1|-y}}{{if:b>1|+{{eval:b}}y}}{{if:b< -1|{{eval:b}}y}}={{p}}\\\\ y{{if:c==1|+z}}{{if:c==-1|-z}}{{if:c>1|+{{eval:c}}z}}{{if:c< -1|{{eval:c}}z}}={{q}}\\end{cases}}}{{if:k==3|\\left(x{{if:-p>0|+}}{{eval:-p}}\\right)^2+\\left(y{{if:-q>0|+}}{{eval:-q}}\\right)^2+\\left(z{{if:-s>0|+}}{{eval:-s}}\\right)^2=0}}$$\n\nQuelle est la nature de $\\mathcal{E}$ ?\n\n```choix\n- Un plan.\n- Une sphère.\n- Une droite.\n- Un point.\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une équation du premier degré $ax+by+cz+d=0$, avec $a$, $b$, $c$ non tous nuls, caractérise un plan.",
+					"{{if:k==0|En développant, chaque membre est du premier degré en $x$, $y$, $z$ : l'équation s'écrit $ax+by+cz+d=0$ avec $(a\\,;\\,b\\,;\\,c)=({{a}}\\,;\\,{{b}}\\,;\\,{{eval:-c}})\\neq(0\\,;\\,0\\,;\\,0)$. C'est donc $\\textcolor{{{color:primary.0}}}{ \\text{un plan} }$, de vecteur normal $\\vec{n}\\begin{pmatrix}{{a}}\\\\{{b}}\\\\{{eval:-c}}\\end{pmatrix}$.}}{{if:k==1|L'équation s'écrit $M\\Omega^2={{eval:R^2}}$ avec $\\Omega({{p}}\\,;\\,{{q}}\\,;\\,{{s}})$ : c'est $\\textcolor{{{color:primary.0}}}{ \\text{une sphère} }$, de centre $\\Omega$ et de rayon ${{R}}$.}}{{if:k==2|Chaque équation est celle d'un plan, de vecteurs normaux $\\vec{n}\\begin{pmatrix}1\\\\{{b}}\\\\0\\end{pmatrix}$ et $\\vec{n}'\\begin{pmatrix}0\\\\1\\\\{{c}}\\end{pmatrix}$, non colinéaires : les deux plans sont sécants, l'ensemble est leur intersection, $\\textcolor{{{color:primary.0}}}{ \\text{une droite} }$.}}{{if:k==3|Une somme de carrés est nulle si et seulement si chaque carré est nul : $x={{p}}$, $y={{q}}$, $z={{s}}$. L'ensemble est $\\textcolor{{{color:primary.0}}}{ \\text{un point} }$, $\\Omega({{p}}\\,;\\,{{q}}\\,;\\,{{s}})$ (ce n'est ni une sphère ni un plan).}}"
+				]
+			},
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..3"
+				},
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "s",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "R",
+					"expression": "1..4"
+				}
+			]
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère l'ensemble $\\mathcal{P}$ des points $M(x\\,;\\,y\\,;\\,z)$ tels que ${{if:j==0|x}}{{if:j==1|y}}{{if:j==2|z}}={{k}}$.\n\nQue peut-on dire de $\\mathcal{P}$ ?\n\n```choix\n- C'est un plan parallèle au plan $(xOy)$.\n- C'est un plan parallèle au plan $(xOz)$.\n- C'est un plan parallèle au plan $(yOz)$.\n- Ce n'est pas un plan : c'est une droite.\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2-j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'équation ${{if:j==0|x}}{{if:j==1|y}}{{if:j==2|z}}={{k}}$ s'écrit ${{if:j==0|1x+0y+0z}}{{if:j==1|0x+1y+0z}}{{if:j==2|0x+0y+1z}}{{if:-k>0|+}}{{eval:-k}}=0$ : c'est l'équation d'un plan, de vecteur normal ${{if:j==0|\\vec{\\imath}}}{{if:j==1|\\vec{\\jmath}}}{{if:j==2|\\vec{k}}}$ (les deux autres coordonnées sont libres).",
+					"Le plan {{if:j==0|$(yOz)$}}{{if:j==1|$(xOz)$}}{{if:j==2|$(xOy)$}} a pour équation ${{if:j==0|x}}{{if:j==1|y}}{{if:j==2|z}}=0$ : même vecteur normal. Donc $\\mathcal{P}$ est $\\textcolor{{{color:primary.0}}}{ \\text{parallèle au plan }{{if:j==0|(yOz)}}{{if:j==1|(xOz)}}{{if:j==2|(xOy)}} }$."
+				]
+			},
+			"variables": [
+				{
+					"name": "j",
+					"expression": "0..2"
+				},
+				{
+					"name": "k",
+					"expression": "1..5;±"
+				}
+			]
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère l'ensemble $\\mathcal{P}$ des points $M(x\\,;\\,y\\,;\\,z)$ tels que\n\n$${{if:a==1|\\left(x{{if:-p>0|+}}{{eval:-p}}\\right)}}{{if:a==-1|-\\left(x{{if:-p>0|+}}{{eval:-p}}\\right)}}{{if:a!=1 && a!=-1|{{eval:a}}\\left(x{{if:-p>0|+}}{{eval:-p}}\\right)}}{{if:b==1|+\\left(y{{if:-q>0|+}}{{eval:-q}}\\right)}}{{if:b==-1|-\\left(y{{if:-q>0|+}}{{eval:-q}}\\right)}}{{if:b>1|+{{eval:b}}\\left(y{{if:-q>0|+}}{{eval:-q}}\\right)}}{{if:b< -1|{{eval:b}}\\left(y{{if:-q>0|+}}{{eval:-q}}\\right)}}=z{{if:s>0|+}}{{eval:s}}$$\n\n$\\mathcal{P}$ est un plan : écrit sous la forme ${{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b==1|+y}}{{if:b==-1|-y}}{{if:b>1|+{{eval:b}}y}}{{if:b< -1|{{eval:b}}y}}-z+d=0$, détermine $d$.\n\n$d=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-a*p-b*q-s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On développe et on passe tout dans le membre de gauche : ${{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:-a*p>0|+}}{{eval:-a*p}}{{if:b==1|+y}}{{if:b==-1|-y}}{{if:b>1|+{{eval:b}}y}}{{if:b< -1|{{eval:b}}y}}{{if:-b*q>0|+}}{{eval:-b*q}}-z{{if:-s>0|+}}{{eval:-s}}=0$.",
+					"L'équation est du premier degré, avec des coefficients de $x$, $y$, $z$ non tous nuls : c'est bien un plan, et $d={{eval:-a*p;()}}+{{eval:-b*q;()}}+{{eval:-s;()}}=\\textcolor{{{color:primary.0}}}{ {{eval:-a*p-b*q-s}} }$."
+				]
+			},
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "s",
+					"expression": "1..4;±"
+				}
+			]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : plan",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"p": "1",
+				"q": "2",
+				"s": "1",
+				"R": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : sphère",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"p": "1",
+				"q": "2",
+				"s": "-1",
+				"R": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : droite",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"p": "1",
+				"q": "2",
+				"s": "-1",
+				"R": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : point",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"p": "1",
+				"q": "2",
+				"s": "-1",
+				"R": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : somme de carrés nulle prise pour une sphère",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"a": "2",
+				"b": "-1",
+				"c": "3",
+				"p": "1",
+				"q": "2",
+				"s": "-1",
+				"R": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : z = 3, parallèle à (xOy)",
+			"variationIndex": 1,
+			"variables": {
+				"j": "2",
+				"k": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : x = -2, parallèle à (yOz)",
+			"variationIndex": 1,
+			"variables": {
+				"j": "0",
+				"k": "-2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : z = 3 pris pour une droite",
+			"variationIndex": 1,
+			"variables": {
+				"j": "2",
+				"k": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 2(x - 1) + 3(y + 2) = z + 1, d = 3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"p": "1",
+				"q": "-2",
+				"s": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : s oublié",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"p": "1",
+				"q": "-2",
+				"s": "1"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : signe de d",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"p": "1",
+				"q": "-2",
+				"s": "1"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2246._
+_Mis à jour le 2026-11-02, lot 6b écrit (PR des fichiers à ouvrir)._
 
-- **État** : lot 6a fini — 9 brouillons créés en prod, rangés et tagués (#2246, `db:migrate` fait, vérifié au MCP) ; publication par David quand il veut (`publier-lot`).
-- **Prochaine action** : phase 0 du lot 6b (points 358, 368, 566, 568 : plans, représentations paramétriques, équations cartésiennes), relevé MCP des nœuds d'abord.
-- **En attente de David** : rien.
-- **Pièges en cours** : voir « Décisions communes et pièges » ; `--publier` : donner la commande avec `!` (un « go » ne passe pas le classifieur) ; d192da3e v1 (367) fait déjà le plan médiateur (358).
-- **Worktree / branche** : aucun (rangé après #2246) ; worktree neuf `../ubumaths-wt-questions-tspe-espace` depuis `origin/main` pour le 6b.
+- **État** : lot 6b écrit et vérifié — 4 modèles (N1 358, N2 368, N3 566, N4 568) dans `scripts/questions/tspe-6b-plans-systemes/`, specs vertes, simulation `create-questions` : 4 à créer, base locale : 4 brouillons, aperçu joué. Commit sur la branche, pas encore poussé.
+- **Prochaine action** : pousser, ouvrir la PR des fichiers (revue : aucune, contenu), CI verte → merge ; puis David lance `create-questions --publier` depuis le dépôt principal ; migration nœud + tag (gabarit 6a).
+- **En attente de David** : rien avant le merge.
+- **Pièges en cours** : voir « Décisions communes et pièges » ; `--publier` : donner la commande avec `!` ; commitlint refuse le type `content` (prendre `feat`) ; le choix est mélangé à l'affichage.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-espace`, `feat/questions-tspe-espace-6b`.
 
 ---
 
@@ -175,3 +175,15 @@ choix, jamais les deux) :
 
 **Question d'accès** (migration nœud + tag, après la création) : personne ne gagne ni ne perd d'accès (brouillons ;
 visibles des élèves après `publier-lot`).
+
+**Décisions (David, 2026-11-02, « tes recos ? » puis « je valide »)** : Q1 à Q4 selon les recos (N1 sur le lieu ;
+catégorie neuve « Lieux géométriques » ; N3 v1 en case choix ; N4 donne le résultat du calcul).
+
+**Écriture** : `docs/wip/questions/lot-tspe-espace-6b.py` → `scripts/questions/tspe-6b-plans-systemes/`. Specs 9 + 11
+
+- 6 + 12 vertes, 2 200 tirages (200 par variation), 0 avertissement ; `create-questions` en simulation : 4 à créer.
+  N1 v1 en `answerKind: equation` : une équation proportionnelle est acceptée (spec). Corrigé après relecture des
+  tirages : « +(−2)(y+1) » et « (x0) » dans la correction de N1 v1 (`coef`/`terme` sur les facteurs, constante nulle
+  gardée) ; « 0+3t » dans les triplets de N4 (`comp()`) ; « b = 0, donc b = 0 » dans N3 v0 (substitution écrite) ;
+  « le système 2 » retiré de N3 v1 (le choix est mélangé à l'affichage). Base locale : 4 brouillons ; N4 v2 (choix juste
+  accepté) et N3 v1 (système transposé refusé, bonne réponse montrée) joués dans l'aperçu.

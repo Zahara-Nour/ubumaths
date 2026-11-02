@@ -1,0 +1,345 @@
+{
+	"title": "Espace : interpréter les solutions d'un système",
+	"description": "Interpréter le résultat d'une résolution : droite et plan (une solution, aucune, une infinité), deux plans, trois plans (pièges : deux plans sécants en un point, « 0 = 0 » pris pour « aucune solution »)",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Représentations paramétriques et équations cartésiennes",
+	"subdomain": "Positions relatives",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on étudie l'intersection d'une droite $d$, donnée par une représentation paramétrique de paramètre $t$, et d'un plan $\\mathcal{P}$, donné par une équation cartésienne. En remplaçant $x$, $y$, $z$ dans l'équation de $\\mathcal{P}$, on obtient l'équation d'inconnue $t$ :\n\n$${{if:c==0|{{if:k==1|t}}{{if:k==-1|-t}}{{if:k!=1 && k!=-1|{{eval:k}}t}}{{if:m>0|+}}{{eval:m}}=0}}{{if:c==1|0\\times t{{if:m>0|+}}{{eval:m}}=0}}{{if:c==2|0\\times t=0}}$$\n\nQue peut-on en conclure ?\n\n```choix\n- $d$ et $\\mathcal{P}$ sont sécants en un point.\n- $d$ est strictement parallèle à $\\mathcal{P}$.\n- $d$ est incluse dans $\\mathcal{P}$.\n- $d$ est orthogonale à $\\mathcal{P}$.\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque solution $t$ donne un point de $d$ qui est aussi sur $\\mathcal{P}$.",
+					"{{if:c==0|L'équation a une seule solution, $t={{eval:-m/k}}$ : un seul point commun, $\\textcolor{{{color:primary.0}}}{ d\\text{ et }\\mathcal{P}\\text{ sont sécants en un point} }$.}}{{if:c==1|L'équation s'écrit ${{eval:m}}=0$ : elle n'a aucune solution, aucun point commun. $\\textcolor{{{color:primary.0}}}{ d\\text{ est strictement parallèle à }\\mathcal{P} }$.}}{{if:c==2|Tout réel $t$ est solution : tous les points de $d$ sont sur $\\mathcal{P}$, $\\textcolor{{{color:primary.0}}}{ d\\text{ est incluse dans }\\mathcal{P} }$.}}",
+					"L'orthogonalité ne se lit pas sur cette équation : elle se décide avec un vecteur directeur de $d$ et un vecteur normal de $\\mathcal{P}$."
+				]
+			},
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..2"
+				},
+				{
+					"name": "k",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "m",
+					"expression": "1..6;±"
+				}
+			]
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on étudie l'intersection de deux plans $\\mathcal{P}$ et $\\mathcal{Q}$ en résolvant le système formé par leurs équations cartésiennes. On trouve :\n\n{{if:c==0|les solutions sont les triplets $\\left({{if:x0!=0|{{x0}}{{if:al==1|+t}}{{if:al==-1|-t}}{{if:al>1|+{{eval:al}}t}}{{if:al< -1|{{eval:al}}t}}}}{{if:x0==0 && al!=0|{{if:al==1|t}}{{if:al==-1|-t}}{{if:al!=1 && al!=-1|{{eval:al}}t}}}}{{if:x0==0 && al==0|0}}\\,;\\,{{if:y0!=0|{{y0}}{{if:be==1|+t}}{{if:be==-1|-t}}{{if:be>1|+{{eval:be}}t}}{{if:be< -1|{{eval:be}}t}}}}{{if:y0==0 && be!=0|{{if:be==1|t}}{{if:be==-1|-t}}{{if:be!=1 && be!=-1|{{eval:be}}t}}}}{{if:y0==0 && be==0|0}}\\,;\\,{{if:z0!=0|{{z0}}{{if:ga==1|+t}}{{if:ga==-1|-t}}{{if:ga>1|+{{eval:ga}}t}}{{if:ga< -1|{{eval:ga}}t}}}}{{if:z0==0 && ga!=0|{{if:ga==1|t}}{{if:ga==-1|-t}}{{if:ga!=1 && ga!=-1|{{eval:ga}}t}}}}{{if:z0==0 && ga==0|0}}\\right)$, $t\\in\\mathbb{R}$.}}{{if:c==1|le système n'a aucune solution.}}{{if:c==2|la seconde équation est la première multipliée par ${{k}}$ : le système se réduit à une seule équation.}}\n\nQue peut-on en conclure ?\n\n```choix\n- $\\mathcal{P}$ et $\\mathcal{Q}$ sont sécants selon une droite.\n- $\\mathcal{P}$ et $\\mathcal{Q}$ sont strictement parallèles.\n- $\\mathcal{P}$ et $\\mathcal{Q}$ sont confondus.\n- $\\mathcal{P}$ et $\\mathcal{Q}$ sont sécants en un point.\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:c==0|Les solutions décrivent une représentation paramétrique : c'est la droite passant par $A({{x0}}\\,;\\,{{y0}}\\,;\\,{{z0}})$ et de vecteur directeur $\\vec{u}\\begin{pmatrix}{{al}}\\\\{{be}}\\\\{{ga}}\\end{pmatrix}$. $\\textcolor{{{color:primary.0}}}{ \\mathcal{P}\\text{ et }\\mathcal{Q}\\text{ sont sécants selon une droite} }$.}}{{if:c==1|Aucun point n'est sur les deux plans : $\\textcolor{{{color:primary.0}}}{ \\mathcal{P}\\text{ et }\\mathcal{Q}\\text{ sont strictement parallèles} }$.}}{{if:c==2|Les deux équations ont les mêmes solutions : elles décrivent le même plan, $\\textcolor{{{color:primary.0}}}{ \\mathcal{P}\\text{ et }\\mathcal{Q}\\text{ sont confondus} }$.}}",
+					"Deux plans ne peuvent pas avoir un seul point commun : s'ils sont sécants, ils le sont selon une droite."
+				]
+			},
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..2"
+				},
+				{
+					"name": "k",
+					"expression": "2..4;±"
+				},
+				{
+					"name": "x0",
+					"expression": "-3..3"
+				},
+				{
+					"name": "y0",
+					"expression": "-3..3"
+				},
+				{
+					"name": "z0",
+					"expression": "-3..3"
+				},
+				{
+					"name": "al",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "be",
+					"expression": "-3..3"
+				},
+				{
+					"name": "ga",
+					"expression": "-3..3"
+				}
+			]
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on cherche les points communs à trois plans en résolvant le système formé par leurs trois équations cartésiennes. On trouve :\n\n{{if:c==0|une unique solution, $(x\\,;\\,y\\,;\\,z)=({{x0}}\\,;\\,{{y0}}\\,;\\,{{z0}})$.}}{{if:c==1|le système n'a aucune solution.}}{{if:c==2|les solutions sont les triplets $\\left({{if:x0!=0|{{x0}}{{if:al==1|+t}}{{if:al==-1|-t}}{{if:al>1|+{{eval:al}}t}}{{if:al< -1|{{eval:al}}t}}}}{{if:x0==0 && al!=0|{{if:al==1|t}}{{if:al==-1|-t}}{{if:al!=1 && al!=-1|{{eval:al}}t}}}}{{if:x0==0 && al==0|0}}\\,;\\,{{if:y0!=0|{{y0}}{{if:be==1|+t}}{{if:be==-1|-t}}{{if:be>1|+{{eval:be}}t}}{{if:be< -1|{{eval:be}}t}}}}{{if:y0==0 && be!=0|{{if:be==1|t}}{{if:be==-1|-t}}{{if:be!=1 && be!=-1|{{eval:be}}t}}}}{{if:y0==0 && be==0|0}}\\,;\\,{{if:z0!=0|{{z0}}{{if:ga==1|+t}}{{if:ga==-1|-t}}{{if:ga>1|+{{eval:ga}}t}}{{if:ga< -1|{{eval:ga}}t}}}}{{if:z0==0 && ga!=0|{{if:ga==1|t}}{{if:ga==-1|-t}}{{if:ga!=1 && ga!=-1|{{eval:ga}}t}}}}{{if:z0==0 && ga==0|0}}\\right)$, $t\\in\\mathbb{R}$.}}\n\nQue peut-on en conclure ?\n\n```choix\n- Les trois plans ont un unique point commun.\n- Les trois plans n'ont aucun point commun.\n- Les trois plans ont une droite commune.\n- Les trois plans sont confondus.\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les solutions du système sont les coordonnées des points communs aux trois plans.",
+					"{{if:c==0|Une seule solution : $\\textcolor{{{color:primary.0}}}{ \\text{un unique point commun} }$, $I({{x0}}\\,;\\,{{y0}}\\,;\\,{{z0}})$.}}{{if:c==1|Aucune solution : $\\textcolor{{{color:primary.0}}}{ \\text{aucun point commun} }$ aux trois plans (deux d'entre eux peuvent pourtant être sécants).}}{{if:c==2|Les solutions décrivent une représentation paramétrique de droite : $\\textcolor{{{color:primary.0}}}{ \\text{les trois plans ont une droite commune} }$, passant par $A({{x0}}\\,;\\,{{y0}}\\,;\\,{{z0}})$ et dirigée par $\\vec{u}\\begin{pmatrix}{{al}}\\\\{{be}}\\\\{{ga}}\\end{pmatrix}$.}}"
+				]
+			},
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..2"
+				},
+				{
+					"name": "x0",
+					"expression": "-3..3"
+				},
+				{
+					"name": "y0",
+					"expression": "-3..3"
+				},
+				{
+					"name": "z0",
+					"expression": "-3..3"
+				},
+				{
+					"name": "al",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "be",
+					"expression": "-3..3"
+				},
+				{
+					"name": "ga",
+					"expression": "-3..3"
+				}
+			]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : sécants en un point",
+			"variationIndex": 0,
+			"variables": {
+				"c": "0",
+				"k": "2",
+				"m": "-6"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : strictement parallèle",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"k": "2",
+				"m": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : incluse",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"k": "2",
+				"m": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 0 = 0 pris pour « aucune solution » (piège)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"k": "2",
+				"m": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : droite",
+			"variationIndex": 1,
+			"variables": {
+				"x0": "1",
+				"y0": "-2",
+				"z0": "0",
+				"al": "2",
+				"be": "-1",
+				"ga": "3",
+				"k": "3",
+				"m": "4",
+				"c": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : droite prise pour un point (piège)",
+			"variationIndex": 1,
+			"variables": {
+				"x0": "1",
+				"y0": "-2",
+				"z0": "0",
+				"al": "2",
+				"be": "-1",
+				"ga": "3",
+				"k": "3",
+				"m": "4",
+				"c": "0"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : parallèles",
+			"variationIndex": 1,
+			"variables": {
+				"x0": "1",
+				"y0": "-2",
+				"z0": "0",
+				"al": "2",
+				"be": "-1",
+				"ga": "3",
+				"k": "3",
+				"m": "4",
+				"c": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : confondus",
+			"variationIndex": 1,
+			"variables": {
+				"x0": "1",
+				"y0": "-2",
+				"z0": "0",
+				"al": "2",
+				"be": "-1",
+				"ga": "3",
+				"k": "3",
+				"m": "4",
+				"c": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : un point",
+			"variationIndex": 2,
+			"variables": {
+				"x0": "1",
+				"y0": "-2",
+				"z0": "0",
+				"al": "2",
+				"be": "-1",
+				"ga": "3",
+				"k": "3",
+				"m": "4",
+				"c": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : aucun",
+			"variationIndex": 2,
+			"variables": {
+				"x0": "1",
+				"y0": "-2",
+				"z0": "0",
+				"al": "2",
+				"be": "-1",
+				"ga": "3",
+				"k": "3",
+				"m": "4",
+				"c": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : droite commune",
+			"variationIndex": 2,
+			"variables": {
+				"x0": "1",
+				"y0": "-2",
+				"z0": "0",
+				"al": "2",
+				"be": "-1",
+				"ga": "3",
+				"k": "3",
+				"m": "4",
+				"c": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : droite prise pour un point",
+			"variationIndex": 2,
+			"variables": {
+				"x0": "1",
+				"y0": "-2",
+				"z0": "0",
+				"al": "2",
+				"be": "-1",
+				"ga": "3",
+				"k": "3",
+				"m": "4",
+				"c": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
