@@ -21,13 +21,16 @@ afterEach(() => {
 	mains = [];
 });
 
-/** Boîte écran du texte de l'étiquette `latex` (MathLive la dessine après coup : attendre sa largeur) */
+/**
+ * Boîte écran de l'étiquette `latex` : le cadre (foreignObject) que place
+ * `getLabelBox`, pas le texte dessiné par MathLive (largeur nulle en CI)
+ */
 function labelBox(root: Element, latex: string): DOMRect {
 	const label = [...root.querySelectorAll('.trig-label')].find(
 		(l) => l.querySelector('math-span')?.textContent === latex
 	);
 	if (!label) throw new Error(`étiquette ${latex} absente`);
-	return label.querySelector('math-span')!.getBoundingClientRect();
+	return label.closest('foreignObject')!.getBoundingClientRect();
 }
 
 describe('TrigCircle — étiquettes des repères', () => {
@@ -38,9 +41,6 @@ describe('TrigCircle — étiquettes des repères', () => {
 		const svg = root.querySelector('svg')!.getBoundingClientRect();
 		const centerX = svg.left + svg.width / 2;
 		const centerY = svg.top + svg.height / 2;
-		await expect
-			.poll(() => labelBox(root, '\\frac{\\pi}{2}').width, { timeout: 10_000 })
-			.toBeGreaterThan(0);
 		expect(labelBox(root, '\\frac{\\pi}{2}').left).toBeGreaterThan(centerX);
 		expect(labelBox(root, '\\frac{3\\pi}{2}').left).toBeGreaterThan(centerX);
 		expect(labelBox(root, '0').bottom).toBeLessThan(centerY);
@@ -55,9 +55,6 @@ describe('TrigCircle — étiquettes des repères', () => {
 		const scale = svg.width / 320;
 		const pointX = svg.left + (160 + 120 * Math.SQRT1_2) * scale;
 		const pointY = svg.top + (160 - 120 * Math.SQRT1_2) * scale;
-		await expect
-			.poll(() => labelBox(root, '\\frac{\\pi}{4}').width, { timeout: 10_000 })
-			.toBeGreaterThan(0);
 		const box = labelBox(root, '\\frac{\\pi}{4}');
 		expect(box.left).toBeGreaterThan(pointX);
 		expect(box.bottom).toBeLessThan(pointY);
