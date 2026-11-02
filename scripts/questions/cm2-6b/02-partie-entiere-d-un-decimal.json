@@ -1,0 +1,226 @@
+{
+	"title": "Donner la partie entière d'un nombre décimal",
+	"description": "Donner la partie entière d'un nombre décimal à une, deux ou trois décimales (3,7 → 3 ; 105,78 → 105 ; 0,045 → 0)",
+	"grades": ["CM2"],
+	"theme": "Décimaux",
+	"domain": "Apprivoiser",
+	"subdomain": "Arrondir",
+	"level": 6,
+	"delay": 30,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Quelle est la partie entière de ${{x}}$ ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..99"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "D",
+					"expression": "1..{{eval:10^k-1}}"
+				},
+				{
+					"name": "x",
+					"expression": "eval:(10^k*a+D)/10^k;d"
+				}
+			],
+			"conditions": ["mod(D,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La partie entière**, c'est le nombre d'unités entières : ce qui est écrit avant la virgule.",
+					"${{x}} = \\textcolor{{{color:primary.0}}}{{{a}}} + {{eval:D/10^k;d}}$"
+				]
+			}
+		},
+		{
+			"statement": "Quelle est la partie entière de ${{x}}$ ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "100..999"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "D",
+					"expression": "1..{{eval:10^k-1}}"
+				},
+				{
+					"name": "x",
+					"expression": "eval:(10^k*a+D)/10^k;d"
+				}
+			],
+			"conditions": ["mod(D,10)!=0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La partie entière**, c'est le nombre d'unités entières : ce qui est écrit avant la virgule.",
+					"${{x}} = \\textcolor{{{color:primary.0}}}{{{a}}} + {{eval:D/10^k;d}}$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3,7 → 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"k": "1",
+				"D": "7",
+				"x": "3.7"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 (arrondi)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"k": "1",
+				"D": "7",
+				"x": "3.7"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 7 (chiffre des dixièmes)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"k": "1",
+				"D": "7",
+				"x": "3.7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,045 → 0",
+			"variationIndex": 0,
+			"variables": {
+				"a": "0",
+				"k": "3",
+				"D": "45",
+				"x": "0.045"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 45",
+			"variationIndex": 0,
+			"variables": {
+				"a": "0",
+				"k": "3",
+				"D": "45",
+				"x": "0.045"
+			},
+			"answers": ["45"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "105,78 → 105",
+			"variationIndex": 1,
+			"variables": {
+				"a": "105",
+				"k": "2",
+				"D": "78",
+				"x": "105.78"
+			},
+			"answers": ["105"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 106 (arrondi)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "105",
+				"k": "2",
+				"D": "78",
+				"x": "105.78"
+			},
+			"answers": ["106"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 78",
+			"variationIndex": 1,
+			"variables": {
+				"a": "105",
+				"k": "2",
+				"D": "78",
+				"x": "105.78"
+			},
+			"answers": ["78"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "999,999 → 999",
+			"variationIndex": 1,
+			"variables": {
+				"a": "999",
+				"k": "3",
+				"D": "999",
+				"x": "999.999"
+			},
+			"answers": ["999"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1000 (arrondi)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "999",
+				"k": "3",
+				"D": "999",
+				"x": "999.999"
+			},
+			"answers": ["1\\,000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

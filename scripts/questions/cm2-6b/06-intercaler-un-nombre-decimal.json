@@ -1,0 +1,247 @@
+{
+	"title": "Intercaler un nombre décimal",
+	"description": "Écrire un nombre décimal compris entre deux dixièmes consécutifs (3,4 < 3,45 < 3,5), ou entre un centième et l'entier suivant (1,99 < 1,995 < 2) ; toute réponse strictement entre est juste, fraction décimale comprise",
+	"grades": ["CM2"],
+	"theme": "Décimaux",
+	"domain": "Apprivoiser",
+	"subdomain": "Encadrer",
+	"level": 7,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"reducedFractions": "off",
+			"spacesFromFourDigits": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Écris un nombre décimal compris entre ${{lo}}$ et ${{hi}}$.\n\n$${{lo}} < ? < {{hi}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..20"
+				},
+				{
+					"name": "b",
+					"expression": "0..8"
+				},
+				{
+					"name": "lo",
+					"expression": "eval:(10*a+b)/10;d"
+				},
+				{
+					"name": "hi",
+					"expression": "eval:(10*a+b+1)/10;d"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(100*a+10*b+5)/100;d}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "range",
+							"min": "{{lo}}",
+							"max": "{{hi}}",
+							"inclusive": false
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Intercaler.** On écrit les deux nombres avec un chiffre de plus après la virgule : il apparaît de la place entre eux.",
+					"${{lo}} = {{a}}.{{b}}0$ et ${{hi}} = {{a}}.{{eval:b+1}}0$ : par exemple $\\textcolor{{{color:primary.0}}}{{{eval:(100*a+10*b+5)/100;d}}}$ (mais aussi ${{eval:(100*a+10*b+1)/100;d}}$, ${{eval:(1000*a+100*b+25)/1000;d}}$…)."
+				]
+			}
+		},
+		{
+			"statement": "Écris un nombre décimal compris entre ${{lo}}$ et ${{hi}}$.\n\n$${{lo}} < ? < {{hi}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..20"
+				},
+				{
+					"name": "lo",
+					"expression": "eval:(100*a+99)/100;d"
+				},
+				{
+					"name": "hi",
+					"expression": "eval:a+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(1000*a+995)/1000;d}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "range",
+							"min": "{{lo}}",
+							"max": "{{hi}}",
+							"inclusive": false
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Intercaler.** On écrit les deux nombres avec un chiffre de plus après la virgule : il apparaît de la place entre eux.",
+					"${{lo}} = {{a}}.990$ et ${{hi}} = {{hi}}.000$ : par exemple $\\textcolor{{{color:primary.0}}}{{{eval:(1000*a+995)/1000;d}}}$ (mais aussi ${{eval:(1000*a+991)/1000;d}}$, ${{eval:(1000*a+999)/1000;d}}$…)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3,45",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"lo": "3.4",
+				"hi": "3.5"
+			},
+			"answers": ["3,45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3,456 (trois décimales)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"lo": "3.4",
+				"hi": "3.5"
+			},
+			"answers": ["3,456"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3456/1000 (fraction décimale)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"lo": "3.4",
+				"hi": "3.5"
+			},
+			"answers": ["\\frac{3\\,456}{1\\,000}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3,5 (borne)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"lo": "3.4",
+				"hi": "3.5"
+			},
+			"answers": ["3,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3,39",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"lo": "3.4",
+				"hi": "3.5"
+			},
+			"answers": ["3,39"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1,995",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"lo": "1.99",
+				"hi": "2"
+			},
+			"answers": ["1,995"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1,991",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"lo": "1.99",
+				"hi": "2"
+			},
+			"answers": ["1,991"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1995/1000 (fraction décimale)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"lo": "1.99",
+				"hi": "2"
+			},
+			"answers": ["\\frac{1\\,995}{1\\,000}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1,100 (« après 1,99 vient 1,100 »)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"lo": "1.99",
+				"hi": "2"
+			},
+			"answers": ["1,100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1,99 (borne)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"lo": "1.99",
+				"hi": "2"
+			},
+			"answers": ["1,99"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"lo": "1.99",
+				"hi": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
