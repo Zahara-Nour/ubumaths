@@ -1,23 +1,19 @@
 ---
-status: phase 0
+status: clos
 ---
 
 # Chantier `cercle-trotteuse` — trotteuse de l'horloge et point à placer sur le cercle trigonométrique
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, PR 2 en cours._
+_Mis à jour le 2026-11-02, après #2189. **Chantier clos**, journal archivé._
 
-- **État** : PR 1 (trotteuse) mergée (#2179). PR 2 (point à placer sur le cercle trigo) codée et testée
-  sur `feat/cercle-trigo-placer` (§ 8), revue et PR à faire.
-- **Prochaine action** : revue (`code-reviewer`), PR, CI, merge ; vérification manuelle à noter dans
-  `verifications-manuelles.md`.
-- **En attente de David** : confirmer l'interprétation du § 8 (les repères 0, π/2, π, 3π/2 ne comptent
-  jamais comme « angle déjà montré »).
-- **Pièges en cours** : un geste ne doit jamais donner la réponse (énoncé masqué, `placer: M=?`) ;
-  client vitest « Orchestrator not found » = relancer par dossier ; aucune ligne `Claude-Session` dans
-  les commits ni la PR.
-- **Worktree / branche** : `../ubumaths-wt-cercle-trotteuse`, `feat/cercle-trigo-placer`.
+- **État** : trotteuse (#2179) et point à placer sur le cercle trigonométrique (#2189) mergés, pas encore
+  en prod (`deploy:prod`). Doc versée dans `docs/systeme/ubumark.md` et `questions.md`.
+- **Prochaine action** : aucune. Les modèles de questions (CM2-082 à 084 et 153, 1re spé 306) restent aux
+  sessions « questions ».
+- **En attente de David** : vérifications manuelles de #2179 et #2189 (`docs/wip/verifications-manuelles.md`).
+- **Worktree / branche** : aucun.
 
 ---
 
@@ -212,3 +208,19 @@ bloc (`pi/3`, `-5*pi/4`, `13*pi/6`, `90°`).
 - Tests : `trig-placer.test.ts` (15), `trig-circle-placer.test.ts` (17), `generation-trig-placer.test.ts`
   (17), `TrigPlacer.svelte.test.ts` (14 ; sans le branchement FillBlanksInput / BuildAnswer : 3 rouges),
   `trig-circle-placer-typst.test.ts` (2).
+
+## 9. Fin du chantier (2026-11-02)
+
+- **Étiquettes du cercle** (retour de David sur le rendu) : π/2 et 3π/2 mêlées à la flèche et à la
+  graduation, les autres collées au cercle. Cause : `justify-content: center` écrasait l'alignement, chaque
+  étiquette était centrée sur un point à 25 px du cercle. `getLabelBox` accroche la boîte juste à
+  l'extérieur du point ; avec les axes, π/2 et 3π/2 à droite de l'axe vertical, 0 et π au-dessus de l'axe
+  horizontal. Vaut pour tous les cercles trigo (écran ; le PDF n'est pas touché). Test
+  `TrigCircle-etiquettes.svelte.test.ts` : il mesure le cadre (foreignObject), le texte MathLive a une
+  largeur nulle en CI.
+- **David, 2026-11-02** : rendu validé ; interprétation des quatre repères **confirmée** (§ 8 : 0, π/2, π,
+  3π/2 ne comptent jamais comme « angle déjà montré »).
+- Revue `code-reviewer` (Opus) : rien de bloquant ; import circulaire parseur ↔ juge retiré
+  (`utils/trig-steps.ts`). Remarque gardée : un angle masqué (`M = ?`) est relu à 0 ; une correction affichée
+  sur l'énoncé masqué mettrait les points justes sur 0 (même défaut latent dans `CourbePlacer`), aucun
+  chemin ne l'atteint aujourd'hui.

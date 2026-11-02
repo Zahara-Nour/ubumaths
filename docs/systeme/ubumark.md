@@ -357,7 +357,7 @@ justes ; le repère juste à côté, points nommés en vert. Hors question : le 
 PDF : le repère sans les points (l'enfant fait ses croix) ; option `solved` de `courbe-typst.ts` qui
 dessine les points attendus, qu'aucun corrigé imprimé n'appelle encore.
 
-**Cercle trigonométrique à placer** (chantier [cercle-trotteuse](../wip/cercle-trotteuse-progress.md)
+**Cercle trigonométrique à placer** (chantier [cercle-trotteuse](../archive/wip/cercle-trotteuse-progress.md)
 § 4 et § 6, 1re spé 306) — `src/lib/ubumark/__tests__/parser/trig-circle-placer.test.ts`,
 `__tests__/trig/trig-placer.test.ts`, `TrigPlacer.svelte.test.ts`, `trig-circle-placer-typst.test.ts` :
 `placer: M = 2*pi/3 ; N = -pi/4` dans un ` ```trig ` (nœud : `placer`, liste de `TrigNamedPoint` ;
@@ -606,7 +606,7 @@ chiffres: quarts
 `heure:` (obligatoire) : 1 à 4 heures `9 h`, `9 h 30`, `9h5`, `9 h 30 min`, `9 h 30 min 15 s`
 (heures 0 à 23, minutes et secondes 0 à 59 ; `9:30`, `9 h 40 s` et `9 h 25 40 s` refusés : les secondes demandent `min`), une horloge par heure.
 **Des secondes écrites dessinent la trotteuse** (fine, à contrepoids, sans couleur de plus ; chantier
-[cercle-trotteuse](../wip/cercle-trotteuse-progress.md)) ; la grande aiguille reste alors pile sur sa minute.
+[cercle-trotteuse](../archive/wip/cercle-trotteuse-progress.md)) ; la grande aiguille reste alors pile sur sa minute.
 Des secondes avec `minutes: cachées` : refus. Facultatives : `légendes:` (une par horloge, 40 caractères, sans `;`),
 `chiffres: tous | quarts | aucun`, `graduations: minutes | heures | aucune`,
 `minutes: visibles | cachées` (cachées : heure entière exigée), `cadran: 12 | 24` (couronne
@@ -632,7 +632,7 @@ lecture `readHands` (petite pile sur l'heure si minutes = 0, strictement entre d
 9 h 05 sur le 9, 9 h 55 sur le 10), phrases `handsMistakes` (rien placé, aiguille pas posée, aiguilles inversées,
 « Tu as placé les aiguilles sur 5 h 45. », petite pile sur l'heure ou entre deux heures à tort).
 Hors question (cours, aperçu) : le même geste, rien de jugé. PDF : le cadran sans aiguilles,
-l'enfant les dessine. **Trotteuse** (CM2-083, chantier [cercle-trotteuse](../wip/cercle-trotteuse-progress.md)) :
+l'enfant les dessine. **Trotteuse** (CM2-083, chantier [cercle-trotteuse](../archive/wip/cercle-trotteuse-progress.md)) :
 `placer: 9 h 25 min 40 s` ajoute une troisième aiguille et l'étiquette « trotteuse » (ordre de pose : grande,
 petite, trotteuse ; ◀ ▶ d'une seconde) ; réponse `'47 25 40'`, attendue `'9 h 25 min 40 s'` (`timeText`), la
 trotteuse jugée à la seconde exacte ; phrases en plus : trotteuse pas posée, grande aiguille et trotteuse
