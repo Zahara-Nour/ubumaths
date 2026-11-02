@@ -5,19 +5,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 8 publié (5/5)._
+_Mis à jour le 2026-11-02, après #2205._
 
-- **État** : lot 8 « Assemblages de cubes » publié par David le 2026-11-02 ; MCP : 5 `published`, nœud et tag
-  conformes, 3a7a5711 toujours en brouillon. 6e : 158 publiés + 1 brouillon. **37 points sans modèle publié** (§ 21).
-- **Prochaine action** : écrire le lot 9 « tableaux et programmes » (§ 22, phase 0 validée le 2026-11-02 : 7
-  modèles, 143, 184, 185, 192, 194-196) dans le worktree `ubumaths-wt-questions-6` ; puis lots 10-11 géométrie.
-- **En attente de David** : rien.
+- **État** : lot 9 « Tableaux et programmes » (7 modèles, 143, 184, 185, 192, 194-196) écrit, vérifié en local,
+  #2205 mergée (§ 22.1). Lot 8 publié. 6e : 158 publiés + 1 brouillon ; 37 points sans modèle avant le lot 9.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir
+scripts/questions/6-tableaux-programmes --publier` (brouillons en prod) ; relever les 7 `id` au MCP ; puis
+  migration nœud + tag (nouveau worktree, patron `20261101224700`), page à cocher, publication. Ensuite lots 10-11.
+- **En attente de David** : le `create-questions --publier` du lot 9.
 - **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs --file`. Jamais de variable
-  `e`. `Doc-inchangée:` va dans un message de COMMIT. PR en conflit = pas de CI : vérifier `mergeable`. Horodatage
-  de migration : `pnpm migration:horodatage` (heure réelle UTC, #2181) ; si `db:migrate` refuse « inserted before
-  the last migration » : `--dry-run --include-all`, relire, puis `--include-all`. `publier-lot`, même en
-  simulation, est refusé par le classifieur du mode auto (base prod) : David le lance avec `!`.
-- **Worktree / branche** : aucun ; prochain lot → nouveau worktree.
+  `e`. PR en conflit = pas de CI : vérifier `mergeable`. Horodatage de migration : `pnpm migration:horodatage` ;
+  si `db:migrate` refuse « inserted before the last migration » : `--dry-run --include-all`, relire, puis
+  `--include-all`. `publier-lot` (même en simulation) refusé au mode auto : David le lance avec `!`. Nœuds du lot 9 :
+  143 → sous-notion « suites de motifs », 184-185 → sous-notion « tableaux », 192 et 194-196 → notions.
+  Aperçu admin : Playwright hors dépôt (Chrome refuse localhost) ; la correction n'apparaît qu'après une réponse.
+- **Worktree / branche** : aucun (retiré après #2205) ; migration → nouveau worktree.
 
 ## 1. Relevé (prod, 2026-10-26)
 
