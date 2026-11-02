@@ -5,21 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2211, #2217, #2219 et #2230._
+_Mis à jour le 2026-11-02, après #2230 et la publication du lot 10._
 
-- **État** : lots 0 à 9 publiés. Lot 10 : 9 brouillons rangés et tagués en prod (#2211), corrections recolorées (#2219,
-  `--mettre-a-jour` fait), relus 9/9 OK (page https://claude.ai/artifact/6q3oJbAwbPBsF7JXfPyR8V). #2230 (01 au niveau 6)
-  mergée, **`db:migrate` PAS ENCORE JOUÉ** : le dry-run pousserait aussi les migrations d'autres sessions (2de, 6, 1spe).
-- **Prochaine action** : dry-run → `db:migrate` quand seule `20261102091820_questions_ce1_lot10_niveau` reste (ou go de
-  David pour pousser le tout), vérifier au MCP (niveau 6), simulation `publier-lot --dir scripts/questions/ce1-10`, puis
-  David : `--publier`.
-- **En attente de David** : chantier `verrou-deploy` (mémoire) ; futur chantier « `\textcolor` hors formule » (53 fichiers).
-- **Pièges en cours** : jamais de variable `e` ni `i` ; **mots en couleur dans le texte = `colt()` (`$\textcolor{…}{\text{…}}$`),
-  jamais `\textcolor` nu** ; `{{if:}}` à condition contenant `{{eval:}}` non résolu → relire `--apercu` ; **niveaux :
-  relever la catégorie juste avant la publication** (01 pris le matin même) ; horodatage `pnpm migration:horodatage`,
-  `check:migrations --pr <n>` ; commitlint : sujet sans majuscule, corps ≤ 100 colonnes ; shards navigateur de la CI :
-  « Browser connection was closed » = relancer les jobs ; `create-questions --mettre-a-jour` même en simulation refusé
-  au mode auto.
+- **État** : lots 0 à 10 publiés (lot 10 : 9/9, relu, publié par David le 2026-11-02). Dernier lot du découpage (§ 12).
+- **Prochaine action** : relevé MCP des points CE1 encore sans modèle (requêtes du § 1 de `couvrir-un-niveau.md`), puis
+  questions à David sur la suite (`centaines:` de `collection` pour 001, 002 ; ce qui reste en C ou D).
+- **En attente de David** : chantier `verrou-deploy` (mémoire) ; futur chantier « `\textcolor` hors formule » (53
+  fichiers de lots, beaucoup publiés : texte brut chez l'élève).
+- **Pièges en cours** : jamais de variable `e` ni `i` ; **mots en couleur dans le texte = `colt()`
+  (`$\textcolor{…}{\text{…}}$`), jamais `\textcolor` nu** ; `{{if:}}` à condition contenant `{{eval:}}` non résolu →
+  relire `--apercu` ; **niveaux : relever la catégorie juste avant la publication** ; horodatage
+  `pnpm migration:horodatage`, `check:migrations --pr <n>` ; `db:migrate` : dry-run d'abord, ne pas pousser les
+  migrations des autres sessions ; commitlint : sujet sans majuscule, corps ≤ 100 colonnes ; shards navigateur de la CI :
+  « Browser connection was closed » = relancer les jobs ; `create-questions --mettre-a-jour` refusé au mode auto (même
+  en simulation).
 - **Worktree / branche** : aucun. `!` de David : toujours préfixer `cd /Users/david/Coding/js/ubumaths &&`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
@@ -848,3 +847,5 @@ Réponse de David (« tes recos ? » puis « go », 2026-11-02) : les cinq recom
   « Grandeurs · Longueurs · Comparaison et mesure » pris ce matin par 8aa2821f (CM1, publié). Premier libre : 6 (décision
   de phase 0 ; question d'accès : personne, David). Migration `20261102091820_questions_ce1_lot10_niveau` + fichier :
   rouge sans (2 échecs), vert 6/6.
+- 2026-11-02 : #2230 mergée ; migration jouée (niveau 6 vérifié au MCP, contenu intact) ; `publier-lot` simulé 9/9 ;
+  publié par David, 9/9 `published` (MCP). **Lot 10 clos.**
