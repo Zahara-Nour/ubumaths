@@ -85,11 +85,11 @@ brouillon `.ts` non suivi d'une session y bloquait le push de doc de toutes les 
 
 **Hooks husky** (`.husky/`) :
 
-| Hook         | Ce qu'il fait                                                                                                                                                                                                                                                                                                                                                              |
-| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pre-commit` | `scripts/garde-main-a-jour.sh` : sur `main`, refuse le commit si `origin/main` a des commits que le `main` local n'a pas (`git fetch` d'abord, laisse passer hors ligne). Puis `pnpm lint-staged` (`.lintstagedrc.js`) : oxlint (`--fix` sur JS/TS, sans `--fix` sur `.svelte`) + prettier ; prettier seul sur json/md/css/html. Bloque sur une _erreur_ oxlint seulement. |
-| `commit-msg` | commitlint, sur **toutes** les branches (les commits de branche arrivent tels quels sur main).                                                                                                                                                                                                                                                                             |
-| `pre-push`   | `pnpm check:migrations` (horodatages des migrations neuves contre `origin/main`) → `pnpm format:check` (fichiers suivis seulement) → `lint:fast --push` (fichiers des commits poussés seulement) → `docs:check-links` → `docs:check-refs --strict` → `docs:check-a-jour --couverture` (bloquants), puis `docs:check-a-jour --depuis origin/main` (avertissement).          |
+| Hook         | Ce qu'il fait                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pre-commit` | `scripts/garde-deploy-en-cours.sh commit` : sur `main`, refuse le commit pendant un `deploy:prod` (verrou « deploy » tenu ; le script lui-même passe, par `DEPLOY_PROD_SOUS_VERROU`). Puis `scripts/garde-main-a-jour.sh` : sur `main`, refuse le commit si `origin/main` a des commits que le `main` local n'a pas (`git fetch` d'abord, laisse passer hors ligne). Puis `pnpm lint-staged` (`.lintstagedrc.js`) : oxlint (`--fix` sur JS/TS, sans `--fix` sur `.svelte`) + prettier ; prettier seul sur json/md/css/html. Bloque sur une _erreur_ oxlint seulement. |
+| `commit-msg` | commitlint, sur **toutes** les branches (les commits de branche arrivent tels quels sur main).                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `pre-push`   | `scripts/garde-deploy-en-cours.sh push` (push vers `main` refusé pendant un `deploy:prod`) → `pnpm check:migrations` (horodatages des migrations neuves contre `origin/main`) → `pnpm format:check` (fichiers suivis seulement) → `lint:fast --push` (fichiers des commits poussés seulement) → `docs:check-links` → `docs:check-refs --strict` → `docs:check-a-jour --couverture` (bloquants), puis `docs:check-a-jour --depuis origin/main` (avertissement).                                                                                                        |
 
 Le pre-push est le seul filet des commits de doc poussés directement sur `main`, que la CI de push
 ignore. « Code modifié ⇒ doc modifiée » n'y fait qu'avertir ; c'est la CI de la PR qui bloque
@@ -122,11 +122,15 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
   worktree, CLI Supabase directe, `--no-verify` au commit comme au push, `pnpm release` seul,
   `tsc --noEmit`, `svelte-check` nu, `git -C ""`, `2>/dev/null` sur `git add`, suppression de
   branche chaînée à `gh pr merge`, `pull --rebase` d'une autre branche sur une branche déjà
-  poussée) et demande confirmation pour un `--force` ou un `-D` placé n'importe où.
+  poussée, merge par `gh api` — `…/pulls/<n>/merge` en écriture, `…/merges`, mutation GraphQL
+  `mergePullRequest`) et demande confirmation pour un `--force` ou un `-D` placé n'importe où.
   Sur `main` (partagé par toutes les sessions) : refuse un pull qui fusionne, un merge non
   fast-forward, `git add -A` / `.`, `git commit -a` ; pendant un `deploy:prod` (verrou « deploy »),
   refuse `gh pr merge` et les commits ou pushes vers `main`
-  ([git-workflow.md § 2](git-workflow.md#2-le-dépôt-principal-partagé)).
+  ([git-workflow.md § 2](git-workflow.md#2-le-dépôt-principal-partagé)). Il ne juge qu'une commande
+  écrite, à son lancement : les hooks git `pre-commit` et `pre-push`
+  (`scripts/garde-deploy-en-cours.sh`) refusent aussi, au moment même, tout commit sur `main` et
+  tout push vers `main` pendant le `deploy:prod`, quelle qu'en soit la forme.
   `deploy:prod` n'y est plus soumis (décision de David, 2026-10-10) : la règle vit dans CLAUDE.md.
 - Agents : [.claude/agents/README.md](../../.claude/agents/README.md). Skills du projet
   (`.claude/skills/`) et skills personnels (`~/.claude/skills/`) : [skills-claude.md](skills-claude.md).
@@ -203,6 +207,13 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
   de s'arrêter ; les sessions Claude ne mergent plus, la CI ne repart donc pas de zéro. `--essai`
   n'attend pas. `main` local qui diffère d'`origin/main` : arrêt, en nommant les commits en cause
   (le commit local d'une autre session ne peut plus être poussé sous le verrou).
+- CI rouge (version, ou dernier commit de code de main) : si **tous** les jobs rouges, hors
+  « CI Summary », sont tombés sur le plantage connu des tests navigateur (`reading
+'wrapDynamicImport'` dans `gh run view --log-failed`), le script relance lui-même les jobs rouges
+  (`gh run rerun --failed`), **sous le verrou**, au plus 2 fois par commit, puis attend.
+  `--relancer-ci` relance aussi, une fois, un échec qu'il ne reconnaît pas. Autrement : arrêt et
+  verrou rendu (la correction passe par une PR). Avant, relancer à la main se faisait hors verrou
+  et les merges annulaient la relance en attente (2026-11-02, v0.63.0 restée hors prod).
 - `scripts/vercel-ignore-build.sh` (`ignoreCommand`) saute la doc seule et les commits dépassés par
   la pointe ; un redéploiement se construit toujours (`pnpm maintenance:on|off`).
 - Quotas qui ont dicté ces choix : 100 déploiements par jour (un déploiement annulé **compte**),

@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, phase 0 rédigée._
+_Mis à jour le 2026-11-02, code et tests écrits, PR à ouvrir._
 
-- **État** : phase 0 (comportements + choix de piste) proposée à David, aucun code.
-- **Prochaine action** : après validation, tests rouges dans `scripts/__tests__/deploy-prod.test.ts`, puis le code.
-- **En attente de David** : validation de la piste et des questions Q1-Q5 ci-dessous.
-- **Pièges en cours** : ne jamais lancer `pnpm deploy:prod` soi-même.
+- **État** : A + C + D codés et testés sur `fix/verrou-deploy` ; docs `environnement-de-dev.md` et `git-workflow.md` à jour.
+- **Prochaine action** : PR, revue `code-reviewer`, CI verte, merge.
+- **En attente de David** : rien. Pas de `deploy:prod` (jamais lancé par Claude).
+- **Pièges en cours** : `deploy-prod.sh` et `lock.py` sont indentés en tabulations (éditions par motif en espaces → échec). Une relance réelle (`gh run rerun`) n'a jamais été jouée hors bouchon : à surveiller au prochain `deploy:prod` rouge.
 - **Worktree / branche** : `../ubumaths-wt-verrou-deploy`, `fix/verrou-deploy`.
 
 ## Problème
@@ -27,6 +27,15 @@ _Mis à jour le 2026-11-02, phase 0 rédigée._
 2. Trou entre deux lancements (cause de l'incident ci-dessus).
 3. Formes non vues par le hook : `gh api …/merge`, `bash -c "git push"`, scripts qui poussent.
 
-## Phase 0 — proposition
+## Phase 0 — validée par David le 2026-11-02 (« je suis tes reco »)
 
-Voir le message de phase 0 de la session (comportements N/L/E, piste recommandée A + C + D, questions Q1-Q5). Recopié ici après validation.
+Piste : **A + C + D, sans B**.
+
+- **A. Relance sous le même verrou** (`scripts/deploy-prod.sh`) : version ou dernier commit de code de main rouge, et **tous** les jobs rouges (hors « CI Summary ») portent `reading 'wrapDynamicImport'` → `gh run rerun --failed` sous le verrou, au plus 2 fois par commit (`DEPLOY_PROD_RELANCES_MAX`), attente remise à zéro à chaque relance. `--relancer-ci` : relance une fois un échec non reconnu. `etat_ci` lit d'abord l'état du run (en cours → `pending`), car pendant une relance « CI Summary » garde la conclusion rouge précédente.
+- **C. Gardes git** (`scripts/garde-deploy-en-cours.sh`, en tête de `.husky/pre-commit` et `.husky/pre-push`) : commit sur main et push vers main refusés tant que le verrou est tenu ; `deploy-prod.sh` passe par `DEPLOY_PROD_SOUS_VERROU` (héritée). Bloque aussi David (contournement humain : `--no-verify`). Test du verrou : `lock.py --tenu <nom>`.
+- **D. Hook Claude** : merge par `gh api` toujours refusé (`…/pulls/<n>/merge` en écriture, `…/merges`, mutations GraphQL `mergePullRequest` / `mergeBranch` / `enablePullRequestAutoMerge`).
+- **Pas B** (drapeau persistant) : verrou périmé à gérer, et bloquerait la PR correctrice d'une vraie CI rouge.
+
+Écarts constatés au passage : un commit de doc fait dans le dépôt principal entre l'étape 0 et `pnpm release` serait entré **dans** le commit de version (fermé par C). Reste ouvert : un `gh pr merge` lancé juste avant le verrou (merge côté serveur, aucun hook git) ; détecté par l'étape 0 ou le push de la version, qui arrêtent le script.
+
+Tests : `deploy-prod.test.ts` (+11), `garde-deploy-en-cours.test.ts` (nouveau, 8), `garde-commandes.test.ts` (+2).
