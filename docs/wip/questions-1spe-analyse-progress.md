@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, migration nœud + tags écrite (PR à ouvrir)._
+_Mis à jour le 2026-11-02, après #2258 (migration nœud + tags passée en prod)._
 
-- **État** : lots A (#2245) et B (#2253) créés en prod en brouillon. Migration `20261102192857_questions_1spe_analyse_rangement_tags.sql` + test `tests/integration/questions-1spe-analyse-rangement-tags.test.ts` (12 verts, rouge sans l'étape 4), branche `content/questions-1spe-analyse-rangement`.
-- **Prochaine action** : PR → CI verte → `check:migrations --pr` → merge → `migration list --linked` puis `db:migrate` depuis le dépôt principal (4 conditions : Q7 tranchée, preuve rouge, `security-auditor`, additive + rollback) → relevé MCP → page à cocher → `publier-lot` (David).
+- **État** : lots A et B en prod en brouillon, rangés et tagués (relevé MCP après `db:migrate` : 10 modèles conformes, `updated_at` préservé) ; 7d6cf480 tagué 1SPE-434, 1GEN-064, 1TECHNO-141, niveaux `{2, 1_SPE, 1_GEN, 1_TECHNO}`.
+- **Prochaine action** : page à cocher des 9 brouillons (collection `verdicts`, rendu à 390 px), puis `publier-lot` (simulation, puis `--publier` par David).
 - **En attente de David** : rien.
-- **Pièges en cours** : `db:migrate` passe toutes les migrations en attente (celles des autres sessions comprises) ; regarder sur la page à cocher le tableau de signes de B4 qui déborde en case choix.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-analyse-rangement` · `content/questions-1spe-analyse-rangement`.
+- **Pièges en cours** : regarder sur la page à cocher le tableau de signes de B4 qui déborde en case choix.
+- **Worktree / branche** : aucun.
 
 ---
 
@@ -223,3 +223,4 @@ l'origine », nœud de 7d6cf480) ; 7d6cf480 publié, niveaux `{2}`, tagué 2-313
 - Test : 12 verts ; sans l'étape 4, suite rouge (la garde du rollback refuse l'état non migré).
 - PR #2258. `security-auditor` : aucun finding bloquant (aucune policy ne lit `grades` ; 7d6cf480 déjà publié, donc
   déjà lisible) ; remarque faible prise : la garde du rollback vérifie aussi le nœud des 9 brouillons.
+- Mergée (#2258) ; `migration list --linked` : seule celle-ci en attente ; `db:migrate` passé ; relevé MCP conforme.
