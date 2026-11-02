@@ -62,6 +62,7 @@ function env(): NodeJS.ProcessEnv {
 		GIT_COMMITTER_NAME: 'test',
 		GIT_COMMITTER_EMAIL: 'test@example.com',
 		ETATS_CI: etats,
+		RELANCES: join(racine, 'relances'),
 		DEPLOY_PROD_RELEASE: `bash ${join(racine, 'bin/release')}`,
 		DEPLOY_PROD_PAUSE: '0',
 		DEPLOY_PROD_ATTENTE_MAX: '0',
@@ -122,30 +123,73 @@ beforeEach(() => {
 	mkdirSync(github);
 	mkdirSync(local);
 	mkdirSync(join(racine, 'bin'));
-	// Bouchon de `gh api …/commits/<sha>/check-runs` : rend l'état noté pour ce SHA.
+	// Bouchon de `gh` : l'état de la CI de chaque commit est lu dans $ETATS_CI
+	// (dernière ligne pour ce SHA). Le n° de run d'un commit est son SHA.
+	// « running » : la CI tourne, donc « CI Summary » n'existe pas encore ;
+	// « running-then-success » : deux lectures en cours, puis vert ;
+	// « plantage » : rouge sur le plantage connu des tests navigateur ;
+	// « mixte » : un job sur ce plantage, un autre vraiment rouge ;
+	// « muet » : rouge, logs illisibles ;
+	// « plantage-et-silencieux » : un job sur le plantage connu, un autre rouge
+	// SANS log d'étape (timeout, setup) : absent de --log-failed.
+	// `gh run rerun <sha> --failed` note la relance dans $RELANCES et donne au
+	// commit l'état $APRES_RELANCE (vert par défaut) ; $RELANCE_REFUSEE la fait échouer.
 	writeFileSync(
 		join(racine, 'bin/gh'),
-		// « running » : la CI tourne, donc « CI Summary » n'existe pas encore ;
-		// « running-then-success » : deux lectures en cours, puis vert.
 		`#!/bin/bash
-if [ "$1" = run ]; then
-	sha=$(printf '%s\\n' "$@" | grep -A1 -x -- '--commit' | tail -1)
-else
-	sha=$(printf '%s\\n' "$@" | grep -oE 'commits/[0-9a-f]+' | head -1 | cut -d/ -f2)
-fi
+case "$1 $2" in
+"run rerun")
+	[ -n "\${RELANCE_REFUSEE:-}" ] && { echo "HTTP 403: Must have admin rights" >&2; exit 1; }
+	echo "$3" >> "$RELANCES"
+	echo "$3 \${APRES_RELANCE:-success}" >> "$ETATS_CI"
+	exit 0 ;;
+"run view") sha="$3" ;;
+"run list") sha=$(printf '%s\\n' "$@" | grep -A1 -x -- '--commit' | tail -1) ;;
+*) sha=$(printf '%s\\n' "$@" | grep -oE 'commits/[0-9a-f]+' | head -1 | cut -d/ -f2) ;;
+esac
 etat=$(grep "^$sha " "$ETATS_CI" | tail -1 | cut -d' ' -f2)
 if [ "$etat" = running-then-success ]; then
 	n=$(cat "$ETATS_CI.$sha" 2>/dev/null || echo 0)
-	[ "$1" = run ] || echo $((n + 1)) > "$ETATS_CI.$sha"
-	# « gh run » suit le « gh api » du même tour, qui a déjà compté : seuil décalé d'un
-	if [ "$1" = run ]; then seuil=3; else seuil=2; fi
-	[ "$n" -lt "$seuil" ] && etat=running || etat=success
+	[ "$1 $2" = "run list" ] && echo $((n + 1)) > "$ETATS_CI.$sha"
+	[ "$n" -lt 2 ] && etat=running || etat=success
 fi
-if [ "$1" = run ]; then
-	case "$etat" in running) echo in_progress ;; '') echo aucun ;; *) echo completed ;; esac
-else
-	case "$etat" in running) echo absent ;; '') echo absent ;; *) echo "$etat" ;; esac
-fi
+case "$1 $2" in
+"run view")
+	if printf '%s\\n' "$@" | grep -qx jobs; then
+		case "$etat" in
+		plantage) printf 'Client Tests (browser, shard 1/2)\\nCI Summary\\n' ;;
+		mixte) printf 'Client Tests (browser, shard 1/2)\\nServer Tests\\nCI Summary\\n' ;;
+		plantage-et-silencieux) printf 'Client Tests (browser, shard 1/2)\\nBuild\\nCI Summary\\n' ;;
+		*) printf 'Server Tests\\nCI Summary\\n' ;;
+		esac
+		exit 0
+	fi
+	if printf '%s\\n' "$@" | grep -qx status; then
+		case "$etat" in running) echo in_progress ;; *) echo completed ;; esac
+		exit 0
+	fi
+	case "$etat" in
+	plantage | plantage-et-silencieux)
+		printf 'Client Tests (browser, shard 1/2)\\tUNKNOWN STEP\\t09:22:29Z TypeError: Cannot read properties of undefined (reading %swrapDynamicImport%s)\\n' "'" "'"
+		printf 'CI Summary\\tUNKNOWN STEP\\t09:29:30Z ❌ Client Tests: failure\\n' ;;
+	mixte)
+		printf 'Client Tests (browser, shard 1/2)\\tUNKNOWN STEP\\t09:22:29Z TypeError: Cannot read properties of undefined (reading %swrapDynamicImport%s)\\n' "'" "'"
+		printf 'Server Tests\\tUNKNOWN STEP\\t09:22:30Z AssertionError: expected 2 to be 3\\n'
+		printf 'CI Summary\\tUNKNOWN STEP\\t09:29:30Z ❌ failure\\n' ;;
+	muet) exit 1 ;;
+	*)
+		printf 'Server Tests\\tUNKNOWN STEP\\t09:22:30Z AssertionError: expected 2 to be 3\\n'
+		printf 'CI Summary\\tUNKNOWN STEP\\t09:29:30Z ❌ failure\\n' ;;
+	esac ;;
+"run list")
+	if printf '%s\\n' "$@" | grep -qx databaseId; then
+		[ -n "$etat" ] && echo "$sha"
+	else
+		case "$etat" in running) echo in_progress ;; '') echo aucun ;; *) echo completed ;; esac
+	fi ;;
+*)
+	case "$etat" in running | '') echo absent ;; plantage | plantage-et-silencieux | mixte | muet) echo failure ;; *) echo "$etat" ;; esac ;;
+esac
 `
 	);
 	chmodSync(join(racine, 'bin/gh'), 0o755);
@@ -402,6 +446,137 @@ describe('deploy-prod.sh — ce qui arrête tout', () => {
 		expect(r.status, r.sortie).toBe(1);
 		expect(r.sortie).toContain("n'est pas un ancêtre");
 		expect(production()).toBe(avant);
+	});
+});
+
+describe('deploy-prod.sh — relancer sous le verrou, au lieu de le rendre', () => {
+	// Incident du 2026-11-02 : v0.63.0 rouge sur le plantage connu des tests
+	// navigateur, script arrêté, verrou rendu, trois merges en 7 s ; la relance
+	// lancée à la main, hors verrou, a été annulée en attente. Prod restée en v0.62.0.
+	function relances(): string[] {
+		const f = join(racine, 'relances');
+		return existsSync(f) ? readFileSync(f, 'utf8').trim().split('\n') : [];
+	}
+
+	function lancer(args: string[] = [], extra: NodeJS.ProcessEnv = {}) {
+		const r = spawnSync('bash', [SCRIPT, ...args], {
+			cwd: dansLeBac(local),
+			env: { ...env(), DEPLOY_PROD_ATTENTE_MAX: '60', DEPLOY_PROD_PAUSE: '0', ...extra },
+			encoding: 'utf8'
+		});
+		return { status: r.status, sortie: `${r.stdout}${r.stderr}` };
+	}
+
+	it('version rouge sur le plantage connu : relancée sous le verrou, puis mise en prod', () => {
+		pousser('success', 'src/a.ts');
+		ciVersion = 'plantage';
+		const r = lancer();
+		expect(r.status, r.sortie).toBe(0);
+		expect(r.sortie).toContain('relance 1/2 sous le verrou');
+		expect(relances()).toEqual([version().sha]);
+		expect(production()).toBe(version().sha);
+	});
+
+	it('plantage connu encore après deux relances : arrêt, la prod ne bouge pas', () => {
+		pousser('success', 'src/a.ts');
+		ciVersion = 'plantage';
+		const r = lancer([], { APRES_RELANCE: 'plantage' });
+		expect(r.status, r.sortie).toBe(1);
+		expect(relances()).toHaveLength(2);
+		expect(r.sortie).toContain('sur la version');
+		expect(production()).toBeNull();
+	});
+
+	it('vraie CI rouge : aucune relance, et le message propose --relancer-ci', () => {
+		pousser('success', 'src/a.ts');
+		ciVersion = 'failure';
+		const r = lancer();
+		expect(r.status, r.sortie).toBe(1);
+		expect(relances()).toEqual([]);
+		expect(r.sortie).toContain('--relancer-ci');
+		expect(production()).toBeNull();
+	});
+
+	it('un job sur le plantage connu, un autre vraiment rouge : aucune relance', () => {
+		pousser('success', 'src/a.ts');
+		ciVersion = 'mixte';
+		const r = lancer();
+		expect(r.status, r.sortie).toBe(1);
+		expect(relances()).toEqual([]);
+		expect(production()).toBeNull();
+	});
+
+	it('un autre job rouge sans log d’échec (timeout, setup) : aucune relance', () => {
+		pousser('success', 'src/a.ts');
+		ciVersion = 'plantage-et-silencieux';
+		const r = lancer();
+		expect(r.status, r.sortie).toBe(1);
+		expect(relances()).toEqual([]);
+		expect(production()).toBeNull();
+	});
+
+	it('logs d’échec illisibles : traité comme un échec inconnu, aucune relance', () => {
+		pousser('success', 'src/a.ts');
+		ciVersion = 'muet';
+		const r = lancer();
+		expect(r.status, r.sortie).toBe(1);
+		expect(relances()).toEqual([]);
+		expect(production()).toBeNull();
+	});
+
+	it('pointe de main rouge sur le plantage connu : relancée, puis livrée', () => {
+		pousser('success', 'src/a.ts');
+		const pointe = pousser('plantage', 'src/b.ts');
+		const r = lancer();
+		expect(r.status, r.sortie).toBe(0);
+		expect(relances()).toEqual([pointe]);
+		expect(version().parent).toBe(pointe);
+		expect(production()).toBe(version().sha);
+	});
+
+	it('--relancer-ci relance un échec que le script ne reconnaît pas, une fois', () => {
+		pousser('success', 'src/a.ts');
+		ciVersion = 'failure';
+		const r = lancer(['--relancer-ci']);
+		expect(r.status, r.sortie).toBe(0);
+		expect(relances()).toEqual([version().sha]);
+		expect(production()).toBe(version().sha);
+	});
+
+	it('rejouer l’incident : la version rouge reste en pointe, --relancer-ci la livre sans nouvelle version', () => {
+		pousser('success', 'src/a.ts');
+		ciVersion = 'failure';
+		expect(lancer().status).toBe(1);
+		const v = version();
+		const r = lancer(['--relancer-ci']);
+		expect(r.status, r.sortie).toBe(0);
+		expect(relances()).toEqual([v.sha]);
+		expect(git(local, 'tag')).toBe(v.tag); // pas de seconde version
+		expect(production()).toBe(v.sha);
+	});
+
+	it('gh refuse la relance : arrêt, avec son message', () => {
+		pousser('success', 'src/a.ts');
+		ciVersion = 'plantage';
+		const r = lancer([], { RELANCE_REFUSEE: '1' });
+		expect(r.status, r.sortie).toBe(1);
+		expect(r.sortie).toContain('HTTP 403');
+		expect(production()).toBeNull();
+	});
+
+	it('--essai ne relance rien', () => {
+		pousser('success', 'src/a.ts');
+		pousser('plantage', 'src/b.ts');
+		const r = lancer(['--essai']);
+		expect(r.status, r.sortie).toBe(1);
+		expect(relances()).toEqual([]);
+	});
+
+	it('option inconnue : refusée avant toute chose', () => {
+		const r = lancer(['--relance']);
+		expect(r.status, r.sortie).toBe(1);
+		expect(r.sortie).toContain('Usage');
+		expect(git(local, 'tag')).toBe('');
 	});
 });
 

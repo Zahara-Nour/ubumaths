@@ -10,7 +10,8 @@
 #      sur main, sauf si ce commit est déjà une version ;
 #   3. attend que la CI de ce commit de version soit verte : c'est la seule CI
 #      COMPLÈTE de main (un push de main ordinaire n'a que typecheck et build,
-#      quality.yml) ; rien n'entre en prod sans elle ;
+#      quality.yml) ; rien n'entre en prod sans elle. Rouge sur un plantage
+#      connu des tests navigateur → la relance lui-même, sous le verrou ;
 #   4. avance `production` jusqu'à lui, en avance rapide seulement.
 # Lancé par David, ou par Claude à sa demande explicite : jamais de mise en
 # prod — ni de version — à l'initiative de Claude.
@@ -21,8 +22,11 @@
 # commits de doc qui suivent le dernier commit vérifié ne changent rien au site
 # (l'ignore step les saute) : on les enjambe. Tout le reste arrête le script.
 #
-# Usage : pnpm deploy:prod            version + mise en prod
-#         pnpm deploy:prod --essai    montre ce qui partirait, sans rien créer
+# Usage : pnpm deploy:prod                 version + mise en prod
+#         pnpm deploy:prod --essai         montre ce qui partirait, sans rien créer
+#         pnpm deploy:prod --relancer-ci   relance aussi, une fois, un échec de CI
+#                                          que le script ne reconnaît pas (jugé sans
+#                                          lien avec le code), sous le verrou
 # À lancer depuis le dépôt principal, sur main propre et à jour.
 # Tests : scripts/__tests__/deploy-prod.test.ts.
 set -euo pipefail
@@ -33,8 +37,23 @@ PROFONDEUR=50
 RELEASE="${DEPLOY_PROD_RELEASE:-pnpm release}"
 PAUSE="${DEPLOY_PROD_PAUSE:-30}"
 ATTENTE_MAX="${DEPLOY_PROD_ATTENTE_MAX:-1500}"
+RELANCES_MAX="${DEPLOY_PROD_RELANCES_MAX:-2}"
+# Plantage connu du serveur de vitest dans les tests navigateur, sans lien avec le
+# code (vu sur main et sur des PR depuis octobre ; v0.60.0, v0.61.0, v0.63.0).
+SIGNATURE="reading 'wrapDynamicImport'"
 essai=0
-[ "${1:-}" = "--essai" ] && essai=1
+relancer_ci=0
+for option in "$@"; do
+	case "$option" in
+	--essai) essai=1 ;;
+	--relancer-ci) relancer_ci=1 ;;
+	*)
+		echo "⛔ Option inconnue : $option"
+		echo "   Usage : pnpm deploy:prod [--essai] [--relancer-ci]"
+		exit 1
+		;;
+	esac
+done
 
 # Verrou noyau « deploy » (scripts/lib/lock.py), dans le répertoire git commun à
 # tous les worktrees : tant qu'il est tenu, le hook .claude/hooks/garde-commandes.py
@@ -49,20 +68,84 @@ fi
 
 # success | failure | cancelled | pending | absent
 etat_ci() {
-	local e
-	e="$(gh api "repos/{owner}/{repo}/commits/$1/check-runs?check_name=CI%20Summary" \
-		--jq '.check_runs[0] | if . == null then "absent" elif .status != "completed" then "pending" else .conclusion end')"
-	# « CI Summary » n'existe qu'une fois les autres jobs finis : pendant toute la
-	# CI il est absent. Un workflow encore en cours vaut donc « en cours », pas
-	# « commit sans CI » (vu le 2026-10-10 au premier deploy:prod).
-	if [ "$e" = absent ]; then
-		case "$(gh run list --workflow quality.yml --commit "$1" --json status --jq '.[0].status // "aucun"')" in
-		aucun | completed) ;;
-		*) e="pending" ;;
-		esac
-	fi
-	echo "$e"
+	# Workflow encore en cours → « en cours », quoi que dise « CI Summary » :
+	# il n'existe qu'une fois les autres jobs finis (absent pendant toute la CI,
+	# vu le 2026-10-10 au premier deploy:prod), et pendant une relance il garde
+	# la conclusion rouge de la tentative précédente.
+	case "$(gh run list --workflow quality.yml --commit "$1" --json status --jq '.[0].status // "aucun"')" in
+	aucun | completed) ;;
+	*)
+		echo pending
+		return
+		;;
+	esac
+	gh api "repos/{owner}/{repo}/commits/$1/check-runs?check_name=CI%20Summary" \
+		--jq '.check_runs[0] | if . == null then "absent" elif .status != "completed" then "pending" else .conclusion end'
 }
+
+# Le run de quality.yml d'un commit (vide s'il n'y en a pas).
+run_de() {
+	gh run list --workflow quality.yml --commit "$1" --json databaseId --jq '.[0].databaseId // empty'
+}
+
+# Vrai si TOUS les jobs rouges du run de ce commit — « CI Summary » mis à part,
+# rouge par conséquence — sont tombés sur le plantage connu. Un seul job rouge
+# pour une autre raison, ou des logs illisibles : faux (une vraie erreur ne se
+# relance pas). Les jobs rouges se lisent dans la liste des jobs, pas dans les
+# logs : un job en timeout ou tombé au setup n'a pas de log d'étape échouée.
+plantage_connu() {
+	local run log rouges jobs job
+	run="$(run_de "$1")" || return 1
+	[ -n "$run" ] || return 1
+	rouges="$(gh run view "$run" --json jobs \
+		--jq '.jobs[] | select(.conclusion != "success" and .conclusion != "skipped" and .conclusion != "neutral") | .name' 2>/dev/null)" || return 1
+	log="$(gh run view "$run" --log-failed 2>/dev/null)" || return 1
+	jobs="$(printf '%s\n' "$rouges" | grep -vx -e "$CHECK" -e '' | sort -u)" || return 1
+	while IFS= read -r job; do
+		printf '%s\n' "$log" | awk -F'\t' -v j="$job" '$1 == j' | grep -qF "$SIGNATURE" || return 1
+	done <<<"$jobs"
+}
+
+# Relance les jobs rouges du run de ce commit, sous le verrou, si c'est permis :
+# plantage connu (au plus RELANCES_MAX fois par commit), ou `--relancer-ci`
+# (une fois). Vrai si relancé. Rendre le verrou pour relancer à la main laissait
+# les merges annuler la relance en attente (2026-11-02, v0.63.0 : groupe de
+# concurrence de quality.yml, un seul run en attente par ref).
+relance_sha=""
+relance_n=0
+relancer() {
+	local sha="$1" etat="$2" motif run
+	[ "$essai" = 0 ] || return 1
+	[ "$sha" = "$relance_sha" ] || {
+		relance_sha="$sha"
+		relance_n=0
+	}
+	[ "$relance_n" -lt "$RELANCES_MAX" ] || return 1
+	if [ "$relancer_ci" = 1 ]; then
+		motif="--relancer-ci"
+		relancer_ci=0
+	elif [ "$etat" = failure ] && plantage_connu "$sha"; then
+		motif="plantage connu (wrapDynamicImport)"
+	else
+		return 1
+	fi
+	relance_n=$((relance_n + 1))
+	run="$(run_de "$sha")"
+	[ -n "$run" ] || arreter "⛔ Aucun run de CI à relancer pour $(decrire "$sha")." "Rien n'est mis en prod."
+	gh run rerun "$run" --failed ||
+		arreter "⛔ gh n'a pas pu relancer la CI de $(decrire "$sha")." "Rien n'est mis en prod."
+	echo "🔁 $motif sur $(decrire "$sha") : relance $relance_n/$RELANCES_MAX sous le verrou"
+	# Attendre que GitHub repasse le run « en cours » : relu trop tôt, il rendrait
+	# encore la conclusion rouge de la tentative précédente (et une 2e relance
+	# sur un run en cours, que gh refuse). Au plus 10 pauses, puis on relit quand même.
+	for _ in 1 2 3 4 5 6 7 8 9 10; do
+		sleep "$PAUSE"
+		[ "$(gh run view "$run" --json status --jq .status 2>/dev/null)" = completed ] || break
+	done
+}
+
+# Ajouté aux arrêts sur CI rouge.
+CONSEIL="Échec sans lien avec le code ? pnpm deploy:prod --relancer-ci le relance sous le verrou."
 
 # Vrai si la CI de push ignore ce commit (même filtre que quality.yml) : rien
 # que de la doc, hors data/corrections, src/ et static/.
@@ -104,6 +187,7 @@ fi
 # ne tient pas le verrou : il n'attend pas.
 pointe="$(git rev-parse origin/main)"
 attendu_main=0
+premier_tour=1
 while :; do
 	cible=""
 	en_cours=""
@@ -116,15 +200,23 @@ while :; do
 			;;
 		absent)
 			sans_ci "$c" || arreter "⛔ Commit de code sans « $CHECK » : $(decrire "$c")" "Sa CI n'a pas tourné. Rien n'est créé."
-			[ "$attendu_main" -gt 0 ] || echo "↷ enjambé (doc seule, sans CI) : $(decrire "$c")"
+			[ "$premier_tour" = 0 ] || echo "↷ enjambé (doc seule, sans CI) : $(decrire "$c")"
 			;;
 		pending)
 			en_cours="$c"
 			break
 			;;
-		*) arreter "⛔ « $CHECK » = $etat sur $(decrire "$c")" "Rien n'est créé." ;;
+		*)
+			if relancer "$c" "$etat"; then
+				en_cours="$c"
+				attendu_main=0
+				break
+			fi
+			arreter "⛔ « $CHECK » = $etat sur $(decrire "$c")" "Rien n'est créé. $CONSEIL"
+			;;
 		esac
 	done
+	premier_tour=0
 	[ -z "$en_cours" ] && break
 	[ "$essai" = 0 ] && [ "$attendu_main" -lt "$ATTENTE_MAX" ] ||
 		arreter "⏳ CI en cours sur $(decrire "$en_cours")" "Relancer quand « $CHECK » sera vert. Rien n'est créé."
@@ -184,7 +276,13 @@ while :; do
 	# Seule CI complète de main : deux PR vertes chacune peuvent casser ici une fois
 	# réunies. La version et son tag restent (GitHub Release comprise) ; la suivante
 	# prendra le numéro d'après.
-	failure | cancelled | timed_out) arreter "⛔ « $CHECK » = $etat sur la version $(decrire "$version")." "Rien n'est mis en prod. Lire la CI de la version, corriger par une PR, merger, puis relancer pnpm deploy:prod." ;;
+	failure | cancelled | timed_out)
+		if relancer "$version" "$etat"; then
+			attendu=0
+			continue
+		fi
+		arreter "⛔ « $CHECK » = $etat sur la version $(decrire "$version")." "Rien n'est mis en prod. Lire la CI de la version, corriger par une PR, merger, puis relancer pnpm deploy:prod. $CONSEIL"
+		;;
 	esac
 	[ "$attendu" -lt "$ATTENTE_MAX" ] ||
 		arreter "⏳ CI de la version toujours pas verte après ${ATTENTE_MAX} s." "Relancer pnpm deploy:prod plus tard : la version existe, seule la mise en prod reste."
