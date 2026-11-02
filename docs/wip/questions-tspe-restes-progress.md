@@ -63,7 +63,7 @@ migration de données, aucun code couvert` dans un commit de la PR de migration.
 - **Aperçu local** : la saisie MathLive n'est pas pilotable par l'automate (jouer les cases choix ; les réponses
   tapées sont couvertes par les specs).
 
-## Lot 7 : phase 0 (2026-11-02, à valider)
+## Lot 7 : phase 0 (2026-11-02, validée)
 
 _Relevé MCP prod (lecture seule) : nœuds des six points et modèles déjà rangés dessus._
 
@@ -92,3 +92,16 @@ Proposition : six modèles, niveau `T_SPE` seul, un point chacun, trois variatio
 - **M5** : 618d795c a déjà une hérédité sur une suite ; M5 la complète par le schéma « f croissante » et une formule conjecturée. D'accord, ou autre angle ?
 - **M6** : rangé sous « pourcentages » (contextes mêlés : abonnés, médicament, lac) plutôt que « placements » ?
 - **Question d'accès** (migration nœud + tag) : personne ne gagne ni ne perd d'accès (brouillons ; visibles des élèves seulement après `publier-lot`).
+
+**Décisions (David, 2026-11-02, « je valide » après « tes recos ? »)** : M5 garde l'angle « f croissante » +
+formule conjecturée, sans suite affine (618d795c en a une) ; M6 sous « pourcentages », contextes mêlés (une
+variation d'épargne comprise) ; accès : personne ne gagne ni ne perd d'accès. Catégories : M4 dans « Définition de
+la limite » (celle des voisins c0f49b76, ddaa7529, edb636bf), les autres au nom de leur sous-notion.
+
+**Écriture** : `docs/wip/questions/lot-tspe-restes.py` → `scripts/questions/tspe-7-restes/`. Specs 8 + 10 + 8 + 8 +
+9 + 10 vertes, 3 800 tirages ; aperçus relus (scratchpad). Corrigés après relecture : `0!=1` lu « 0 ≠ 1 » par le
+nettoyage (écrire `0!\,=1` partout où `!` précède `=`), `({{eval:n+2}})!` rendu « (7)! », étape
+« k²+2k+1=(k²+2k+1) » quand a = 1 ; `{{eval:…}}` ne lit pas un `{{if:…}}` imbriqué (factorielles par cas, `fact()`).
+M5 v2 : la forme développée est refusée (`bad_form`), l'énoncé demande la forme factorisée (formule au rang k+1).
+Décimaux : l'aperçu montre « 0.8 », la virgule vient au rendu. Simulation `create-questions` (prod) : 6 à créer, 0
+en base. Base locale : 6 brouillons créés ; aperçu admin non joué (l'extension Chrome n'ouvre pas `localhost`).
