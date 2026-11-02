@@ -36,8 +36,10 @@ trigo, courbes et grapheur, droite graduée, arbres, statistiques, géométrie (
 lire `figure-et-choix`), horloge, opérations posées, collection,
 monnaie ; réponses en case, QCM (**en cours de réécriture en case « choix »**, chantier
 `figure-et-choix` : demander à David la forme à écrire tant que ce n'est pas en prod), construire,
-figure à compléter. Un point classé C à tort coûte
-un chantier.
+figure à compléter, gestes `placer:` (droite, repère, cercle trigo, horloge). Un point classé C à
+tort coûte un chantier. **Puis la liste unique des outils manquants,
+`docs/wip/outils-manquants.md`** : le geste y est peut-être déjà prévu ; un point classé C s'y ajoute
+(jamais une liste à part dans le journal du niveau).
 
 Un point qui demande un outil absent n'est pas abandonné : je **propose l'outil** (bloc ubumark
 d'affichage, QCM de dessins, geste de réponse comme « construire » ou « placer »), ce qu'il

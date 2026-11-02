@@ -119,6 +119,11 @@ coûte un chantier. Détail de chaque bloc : [ubumark.md § Blocs spéciaux](../
   choix seulement, et « QCM ou cases » (§ 9) ne vaut plus.
 - **opération posée à compléter** (saisie chiffre par chiffre du bloc `operation`) ;
 - **construire** : `construire:` dans ` ```collection ` ou ` ```monnaie ` (la valeur posée est la réponse) ;
+- **placer, ranger, colorier** : point sur une droite graduée (` ```line `), points dans un repère
+  (` ```courbe `), points sur le cercle trigonométrique (` ```trig `), aiguilles et trotteuse
+  (` ```horloge `), toutes avec `placer:` ; barres et boîte à moustaches à construire ; étiquettes à
+  ranger (` ```ranger `) ; parts à colorier (` ```partage colorier:`) ; vues et faces (` ```cubes `,
+  ` ```patron `) ;
 - **figure à compléter** (` ```figure-a-completer `, case « figure » : objets de l'élève retrouvés
   sur les nœuds) et **figure de travail** (` ```figure-de-travail `, jamais notée) ; figure d'énoncé
   à manipuler (` ```figure ` + `deplacable: oui`, rien de noté).
@@ -132,9 +137,9 @@ venir comme vraie fonctionnalité).
 `deplacable:` bougent dans le chantier `figure-et-choix`. Lire son
 « Reprendre ici » (`docs/wip/`) avant de proposer un modèle ou un outil de géométrie.
 
-**Manquent encore** (connus au CP) : réponses à placer (point sur une droite graduée, étiquettes
-à ranger, hauteur de barres), aiguilles à placer sur l'horloge ; demi-droite ou intervalle sur une
-droite graduée, avec crochet (3e, 3-014 ; 2de, intervalles) : ` ```line ` ne la trace pas.
+**Manquent encore** : **une seule liste, [outils-manquants.md](../wip/outils-manquants.md)** (gestes à
+créer, transformations géométriques, points à trancher). La lire avant de classer un point en C ;
+un point classé C s'y ajoute, au geste qui le couvre.
 
 ## 3 ter. Créer l'outil qui manque (classe C)
 
@@ -162,8 +167,7 @@ Un point de classe C n'est pas laissé sans modèle : je propose l'outil.
 5. **En prod** : les modèles qui utilisent le bloc restent en **brouillon** jusqu'au
    `deploy:prod` qui livre le bloc ; le lot de modèles suit la démarche normale (§ 4 à 8).
 
-Restent ouverts (CP) : les **réponses à placer** (CP-008, CP-072) et la **case « figure »**
-(CP-034, 059, 060 ; chantier `figure-et-choix`).
+Outils encore à créer : [outils-manquants.md](../wip/outils-manquants.md).
 
 ## 4. Phase 0 d'un lot
 
