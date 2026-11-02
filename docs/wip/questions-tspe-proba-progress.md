@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2252 et le `db:migrate`._
+_Mis à jour le 2026-11-02, après la publication du lot 5b._
 
-- **État** : lot 5b rangé et tagué en prod (#2252 mergée, `db:migrate` passé avec `--include-all` : deux migrations d'autres sessions étaient passées après la sienne ; relu au MCP : 4/4 sur leur nœud, un point chacun, brouillons). Page à cocher : https://claude.ai/artifact/D11yhkJtKpXxioeVu7tNh8.
-- **Prochaine action** : relecture de David sur la page ; puis `publier-lot` en simulation, `--publier` par David, relu au MCP → lot 5b clos, chantier `questions-tspe-proba` à verser.
-- **En attente de David** : la relecture des 4 fiches.
-- **Pièges en cours** : la garde de doc veut `Doc-inchangée:` dans un **commit**, pas dans le corps de PR ; voir aussi « Décisions communes et pièges ».
-- **Worktree / branche** : aucun (worktree supprimé après #2252) ; la suite se fait depuis le dépôt principal.
+- **État** : ✅ **sous-chantier clos** : lots 5a (9 modèles) et 5b (4 modèles) publiés en prod. Fin notée au § 18 de l'index.
+- **Prochaine action** : aucune ici. Le versement (durable → `docs/systeme/`, journaux → `docs/archive/wip/`) se fait avec celui de `questions-tspe`, à la fin des trois sous-chantiers.
+- **En attente de David** : rien.
+- **Pièges en cours** : voir « Décisions communes et pièges » (à reprendre au versement).
+- **Worktree / branche** : aucun.
 
 ---
 
@@ -255,3 +255,6 @@ trigger (« n'est rangé dans aucun nœud »), la garde « déjà tagués » est
 20261102192857 d'autres sessions passées après) → `--dry-run --include-all` (seule la 5b à pousser) puis `--include-all` ;
 relu au MCP : 4/4 sur leur nœud, un point chacun, brouillons. Page à cocher :
 https://claude.ai/artifact/D11yhkJtKpXxioeVu7tNh8.
+
+**Publication** (2026-11-02) : relecture 4/4 « OK » sur la page à cocher ; `publier-lot` en simulation, 4 contrôles
+passés ; `--publier` par David ; relu au MCP : 4/4 `published`. **Lot 5b clos ; sous-chantier `questions-tspe-proba` clos.**

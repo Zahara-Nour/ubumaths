@@ -903,7 +903,7 @@ lots 0 à 4) ; chaque sous-chantier a son journal, son worktree et sa session.
 
 | Sous-chantier           | Lots                              | Journal                                                                |
 | ----------------------- | --------------------------------- | ---------------------------------------------------------------------- |
-| `questions-tspe-proba`  | 5a, 5b                            | [questions-tspe-proba-progress.md](questions-tspe-proba-progress.md)   |
+| `questions-tspe-proba`  | 5a, 5b — ✅ publiés le 2026-11-02 | [questions-tspe-proba-progress.md](questions-tspe-proba-progress.md)   |
 | `questions-tspe-espace` | 6a, 6b — ✅ publiés le 2026-11-02 | [questions-tspe-espace-progress.md](questions-tspe-espace-progress.md) |
 | `questions-tspe-restes` | 7, puis 8 (après les deux autres) | [questions-tspe-restes-progress.md](questions-tspe-restes-progress.md) |
 
