@@ -2,13 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, code et tests écrits, PR à ouvrir._
+_Mis à jour le 2026-11-02, après #2232. Chantier clos, journal archivé._
 
-- **État** : A + C + D codés et testés sur `fix/verrou-deploy` ; docs `environnement-de-dev.md` et `git-workflow.md` à jour.
-- **Prochaine action** : PR, revue `code-reviewer`, CI verte, merge.
-- **En attente de David** : rien. Pas de `deploy:prod` (jamais lancé par Claude).
-- **Pièges en cours** : `deploy-prod.sh` et `lock.py` sont indentés en tabulations (éditions par motif en espaces → échec). Une relance réelle (`gh run rerun`) n'a jamais été jouée hors bouchon : à surveiller au prochain `deploy:prod` rouge.
-- **Worktree / branche** : `../ubumaths-wt-verrou-deploy`, `fix/verrou-deploy`.
+- **État** : livré par #2232 (mergée, `59668435a`) : relance sous le verrou (A), gardes git pre-commit / pre-push (C), merge par `gh api` refusé (D). Docs : `docs/pratiques/environnement-de-dev.md`, `docs/pratiques/git-workflow.md`.
+- **Prochaine action** : aucune. Au prochain `deploy:prod` tombé sur `wrapDynamicImport`, vérifier que la relance réelle (`gh run rerun --failed`) se passe comme dans les tests (bouchon seulement jusqu'ici).
+- **En attente de David** : rien. Le code n'est pas en prod tant que `deploy:prod` n'a pas tourné, mais les hooks (Claude et git) agissent dès le `git pull` du dépôt.
+- **Pièges** : `deploy-prod.sh` et `lock.py` indentés en tabulations.
 
 ## Problème
 
