@@ -6,12 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, phase 0 du lot 8 proposée._
+_Mis à jour le 2026-11-02, après #2190 (lot 8 A)._
 
 - **État** : lots 1 à 7 publiés. Lot 8 (information chiffrée, statistiques, tableaux croisés, probabilités) :
-  phase 0 validée (§ 51). Aucune PR ouverte.
-- **Prochaine action** : vague 8 A (script `questions-2de/lot-evolutions-a-2de.py`), puis 8 B, 8 C ; PR
-  page à cocher (blocs statistiques, arbres) avant la relecture.
+  phase 0 validée (§ 51) ; 8 A mergé (#2190), 8 B en PR (#2196), 8 C écrit (§ 52).
+- **Prochaine action** : merger #2196 (8 B), puis la PR de 8 C ; PR page à cocher (blocs statistiques,
+  arbres, § 52) ; puis David crée les 22 brouillons (trois `create-questions --publier`), migration nœud +
+  tag, page à cocher de la vague 8.
 - **En attente de David** : rien.
 - **Pièges en cours** : le worktree n'a pas de `.env` ; `publier-lot` (même en simulation) → David avec `!`
   et `set -a && . ../ubumaths/.env && set +a`, pas `pnpm -s` ; `Doc-inchangée:` dans un commit, jamais dans
@@ -1379,3 +1380,25 @@ Vague 8 bis « Tableaux croisés et probabilités » (15 + 6 anciens brouillons)
 toutes : L8-a deux modèles neufs (coefficients en entrée et en sortie) ; L8-b 2-392 sans modèle ; L8-c 2-491
 dans 8 A ; L8-d les 6 anciens brouillons relus et publiés avec 8 bis ; L8-e deux vagues (8 = A, B, C ; 8 bis =
 D, E) ; L8-f PR « page à cocher : blocs statistiques et arbres » avant la relecture de la vague 8.
+
+## 52. Lot 8 A, B, C : PR des fichiers (2026-11-02)
+
+- **8 A** : `questions-2de/lot-evolutions-a-2de.py` → `scripts/questions/2de-evolutions-a/` (8 modèles). Catégories :
+  Pourcentages › Variations niv. 12 (2-365) ; › Coefficient niv. 4, 5 (2-368, 2-478) ; › Proportion niv. 4, 5, 6
+  (2-364, 2-375, 2-490) ; › Problèmes niv. 2 (2-376) ; Fonctions › Généralités › Lecture graphique niv. 4
+  (2-491). Specs vertes, simulation prod « 8 à créer », base locale, aperçu joué. **#2190 mergée.**
+- **8 B** : `questions-2de/lot-indicateurs-b-2de.py` → `scripts/questions/2de-indicateurs-b/` (7 modèles).
+  Statistiques › Indicateurs › Moyenne niv. 4, 5 (2-369, 2-371) ; › Écart type niv. 1 (2-370, séries à écart
+  type entier) ; › Médiane niv. 3 (2-479) ; › Quartiles niv. 2 (2-402) ; Problèmes › Comparer des séries niv. 2,
+  3 (2-382, 2-483). PR #2196.
+- **8 C** : `questions-2de/lot-classes-c-2de.py` → `scripts/questions/2de-classes-c/` (7 modèles). Représenter
+  des données › Histogramme niv. 1 (2-372) ; › Fréquences cumulées niv. 1 (2-480) ; Indicateurs › Moyenne
+  niv. 6, 7 (2-380, 2-481) ; › Médiane niv. 4, 5 (2-381, 2-482) ; Problèmes › Comparer des séries niv. 4
+  (2-484). Branche `feat/questions-2de-lot8c`, empilée sur 8 B.
+- **Pièges** : un choix d'index par variable s'écrit avec l'indicatrice `(1-min(1,abs((p)-k)))` dans un `eval` ;
+  le générateur ne retente que 100 fois les conditions (tirages à faible taux d'acceptation → tirer la valeur
+  dérivée) ; « en écriture décimale » → une fraction est `bad_form` (`constraintViolations: ['form']`) ;
+  histogramme quadrillé de 2 en 2 → effectifs pairs ; polygone des fréquences cumulées quadrillé de 10 en
+  10 % → effectifs multiples de 10 (vu dans l'aperçu).
+- **L8-f** : PR « page à cocher : blocs statistiques et arbres » confiée à un agent (branche
+  `feat/page-a-cocher-stats`).
