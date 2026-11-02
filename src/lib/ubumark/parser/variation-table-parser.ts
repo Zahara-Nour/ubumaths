@@ -221,7 +221,7 @@ function parseDomainPoint(expr: string, refuse: Refuse, line: number): DomainPoi
 		expression = expression.slice(0, -1).trim();
 	}
 
-	const point: DomainPoint = { expression, open: open || undefined };
+	const point: DomainPoint = open ? { expression, open: true } : { expression };
 
 	// `?` devant la valeur : case à compléter
 	if (expression.startsWith('?')) {
@@ -653,7 +653,9 @@ function parseVariationRowEntries(
 	const values = new Map<string, VariationValue>();
 
 	for (let i = 0; i < lines.length; i++) {
-		if (lines[i].includes('?')) {
+		// `?` en tête de clé ou de valeur = cellule cachée ; ailleurs, simple texte
+		const entry = lines[i].match(ROW_ENTRY_REGEX);
+		if (entry && (entry[1].trim().startsWith('?') || entry[2].trim().startsWith('?'))) {
 			refuse(
 				startLine + i,
 				lines[i],
@@ -703,9 +705,23 @@ function parseVariationRowEntries(
 function buildHiddenCells(
 	domain: DomainPoint[],
 	hiddenByRow: Map<number, PendingCell[]>,
-	refuse: Refuse
+	refuse: Refuse,
+	domainLine: number
 ): HiddenCell[] {
 	const cells: HiddenCell[] = [];
+	// Une valeur de x répétée rendrait deux cellules indiscernables (clés identiques)
+	const seen = new Set<string>();
+	for (const point of domain) {
+		if (seen.has(point.expression)) {
+			refuse(
+				domainLine,
+				`domain: … ${point.expression} …`,
+				`la valeur de x « ${point.expression} » est répétée dans le domaine`
+			);
+			return [];
+		}
+		seen.add(point.expression);
+	}
 	const push = (cell: Omit<HiddenCell, 'index'>) => cells.push({ index: cells.length, ...cell });
 
 	for (const point of domain) {
@@ -778,6 +794,7 @@ export function parseVariationTableContent(lines: string[]): VariationTableParse
 	const rows: TableRow[] = [];
 	const hiddenByRow = new Map<number, PendingCell[]>();
 	let caseIndex: number | undefined;
+	let domainLine = 0;
 	let refused = false;
 
 	const refuse: Refuse = (line, content, message) => {
@@ -844,6 +861,7 @@ export function parseVariationTableContent(lines: string[]): VariationTableParse
 				});
 			}
 			domain = parseDomainContent(domainMatch[1], refuse, lineNum);
+			domainLine = lineNum;
 			i++;
 			continue;
 		}
@@ -852,7 +870,7 @@ export function parseVariationTableContent(lines: string[]): VariationTableParse
 		const signMatch = line.match(SIGN_HEADER_REGEX);
 		if (signMatch) {
 			const label = signMatch[1];
-			if (label.includes('?')) {
+			if (label.trimStart().startsWith('?')) {
 				refuse(lineNum, line, 'on ne peut pas cacher une étiquette de ligne (sign: …)');
 			}
 			i++;
@@ -874,7 +892,7 @@ export function parseVariationTableContent(lines: string[]): VariationTableParse
 		const variationMatch = line.match(VARIATION_HEADER_REGEX);
 		if (variationMatch) {
 			const label = variationMatch[1];
-			if (label.includes('?')) {
+			if (label.trimStart().startsWith('?')) {
 				refuse(lineNum, line, 'on ne peut pas cacher une étiquette de ligne (variation: …)');
 			}
 			i++;
@@ -929,7 +947,9 @@ export function parseVariationTableContent(lines: string[]): VariationTableParse
 		errors.push({ message: 'No sign or variation rows defined' });
 	}
 
-	const cases = refused ? [] : buildHiddenCells(domain, hiddenByRow, refuse);
+	const hasHidden = hiddenByRow.size > 0 || domain.some((point) => point.hidden);
+	const cases =
+		refused || !hasHidden ? [] : buildHiddenCells(domain, hiddenByRow, refuse, domainLine);
 
 	// If we have critical errors, return null node
 	if (!variable || domain.length === 0 || refused) {

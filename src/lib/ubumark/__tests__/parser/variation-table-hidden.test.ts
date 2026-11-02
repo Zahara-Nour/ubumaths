@@ -201,3 +201,45 @@ describe('un bloc sans ? est inchangé', () => {
 		expect(node.domain.every((p) => !('hidden' in p))).toBe(true);
 	});
 });
+
+describe('un ? hors tête de cellule reste du texte (revue #2267)', () => {
+	it('accepte une étiquette sign: qui contient un ? ailleurs qu’en tête', () => {
+		const node = parseOk('variable: x\ndomain: -inf, 0, +inf\n\nsign: f(x) vrai ?\n  0: z');
+		expect(node.rows[0].label).toBe('f(x) vrai ?');
+		expect('cases' in node).toBe(false);
+	});
+
+	it('accepte une valeur de ligne variation: qui contient un ? ailleurs qu’en tête', () => {
+		const result = parse(
+			'variable: x\ndomain: -inf, 0, +inf\n\nvariation: f(x)\n  -inf: 1?, top\n  0: 0, bottom'
+		);
+		expect(result.errors.filter((e) => e.message.startsWith('Ligne'))).toEqual([]);
+	});
+
+	it('refuse toujours un ? en tête de valeur dans une ligne variation:', () => {
+		const result = parse(
+			'variable: x\ndomain: -inf, 0, +inf\n\nvariation: f(x)\n  -inf: ?1, top\n  0: 0, bottom'
+		);
+		expect(result.node).toBeNull();
+	});
+});
+
+describe('valeur de x répétée avec des cases cachées', () => {
+	it('refuse le bloc, message situé', () => {
+		const result = parse('variable: x\ndomain: -inf, ?0, ?0, +inf\n\nsign: f(x)\n  0: ?z');
+		expect(result.node).toBeNull();
+		expect(result.errors.some((e) => /^Ligne 2 : .*répétée/.test(e.message))).toBe(true);
+	});
+
+	it('laisse un bloc sans ? comme avant', () => {
+		const result = parse('variable: x\ndomain: -inf, 0, 0, +inf\n\nsign: f(x)\n  0: z');
+		expect(result.errors.filter((e) => e.message.includes('répétée'))).toEqual([]);
+	});
+});
+
+describe('domaine simple : pas de clé open sans borne ouverte', () => {
+	it('ne pose pas open: undefined', () => {
+		const node = parseOk('variable: x\ndomain: -inf, 0, +inf\n\nsign: f(x)\n  0: z');
+		expect(node.domain.every((p) => !('open' in p))).toBe(true);
+	});
+});
