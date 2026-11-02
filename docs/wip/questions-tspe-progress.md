@@ -13,7 +13,7 @@
 _Mis à jour le 2026-11-02, lot 4 : brouillons créés en prod, migration écrite._
 
 - **État** : lots 0 à 3 publiés. Lot 4 (§ 17) : #2215 mergée, 9 brouillons créés en prod ; migration nœud + tag
-  écrite et testée (vert, rouge sans l'étape 4), `security-auditor` sans bloquant, PR ouverte.
+  écrite et testée (vert, rouge sans l'étape 4), `security-auditor` sans bloquant, PR #2223 ouverte.
 - **Prochaine action** : PR de la migration → CI → `check:migrations --pr` → merge → `db:migrate` depuis le dépôt
   principal → relecture MCP → page à cocher → publication.
 - **En attente de David** : rien avant la publication (`publier-lot --publier`, `!`).
