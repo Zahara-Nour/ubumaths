@@ -5,22 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2205 et les brouillons du lot 9 en prod._
+_Mis à jour le 2026-11-02, migration du lot 9 en PR._
 
-- **État** : lot 9 « Tableaux et programmes » : 7 brouillons en prod (§ 22.2, MCP vérifié : `['6']`, niveaux
-  justes, sans nœud ni tag). Lot 8 publié. 6e : 158 publiés + 1 brouillon (3a7a5711).
-- **Prochaine action** : migration nœud + tag des 7 (nouveau worktree `ubumaths-wt-questions-6`, patron
-  `20261101224700_questions_6_lot8_rangement_tags.sql` + son test ; horodatage `pnpm migration:horodatage`) ;
-  question d'accès déjà tranchée (§ 22 : personne ne lit rien de plus) ; puis page à cocher, publication ; puis
-  lots 10-11 (géométrie dessinée).
+- **État** : lot 9 « Tableaux et programmes » : 7 brouillons en prod ; migration nœud + tag
+  `20261102070305_questions_6_lot9_rangement_tags.sql` écrite, test 15/15 (rouge vérifié sans elle),
+  `security-auditor` sans bloquant (§ 22.3). Lot 8 publié. 6e : 158 publiés + 1 brouillon (3a7a5711).
+- **Prochaine action** : PR verte → merge → `db:migrate` depuis le dépôt principal (4 conditions réunies) → MCP :
+  7 nœuds + 7 tags, trigger `updated_at` en `O` ; puis page à cocher, publication ; puis lots 10-11 (géométrie
+  dessinée).
 - **En attente de David** : rien.
-- **Pièges en cours** : 3a7a5711 : NE PAS publier. Nœuds du lot 9 : 143 → sous-notion « suites de motifs »,
-  184-185 → sous-notion « tableaux » (la résolution du lot 8 s'arrêtait à une NOTION : l'adapter), 192 →
-  « Situations de proportionnalité », 194-196 → « Préalgorithmique » (notions). `svelte-kit sync` avant
-  `question:specs --file`. Jamais de variable `e`. PR en conflit = pas de CI : vérifier `mergeable`. `db:migrate`
-  refusant « inserted before » : `--dry-run --include-all`, relire, puis `--include-all`. `publier-lot` refusé au
-  mode auto : David le lance avec `!`. Aperçu admin : Playwright hors dépôt (Chrome refuse localhost).
-- **Worktree / branche** : aucun ; migration → nouveau worktree.
+- **Pièges en cours** : 3a7a5711 : NE PAS publier. `svelte-kit sync` avant `question:specs --file`. Jamais de
+  variable `e`. PR en conflit = pas de CI : vérifier `mergeable`. `db:migrate` refusant « inserted before » :
+  `--dry-run --include-all`, relire, puis `--include-all`. `publier-lot` refusé au mode auto : David le lance
+  avec `!`. Aperçu admin : Playwright hors dépôt (Chrome refuse localhost).
+- **Worktree / branche** : `ubumaths-wt-questions-6` · `feat/questions-6-lot9-tags`.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -1366,3 +1364,14 @@ nombre de répétitions accordé à l'angle (4 × 90° carré, 3 × 120° triang
 - #2205 mergée (CI verte), worktree retiré. David lance `create-questions --publier` : 01 39bafe0e, 02 6cabd2db,
   03 b371908d, 04 3838457d, 05 4aa51892, 06 f1295102, 07 a8ec4c14, en brouillon. MCP : 7 brouillons, `['6']`,
   niveaux 1, 3, 1, 1, 1, 1, 1, catégories du § 22.1, sans nœud ni tag.
+
+### 22.3 Migration nœud + tag (2026-11-02)
+
+- `20261102070305_questions_6_lot9_rangement_tags.sql`, patron du lot 8 ; résolution adaptée : `sous_notion`
+  facultative (nulle → nœud = notion). 01 → « Algèbre > Premiers pas algébriques > suites de motifs » (6-143) ;
+  02-03 → « Statistiques > Représenter des données > tableaux » (6-184, 6-185) ; 04 → « Proportionnalité >
+  Situations de proportionnalité » (6-192) ; 05-07 → « Algorithmique > Préalgorithmique » (6-194 à 6-196).
+- Test `questions-6-lot9-rangement-tags.test.ts` : 15/15, rouge vérifié avec une migration vidée (8 échecs + suite
+  nominale tombée) ; cas ajouté : sous-notion archivée → résolution refusée.
+- `security-auditor` : aucun bloquant. Remarques faibles déjà vraies au lot 8 : `set local lock_timeout` sans
+  effet hors transaction explicite ; rollback atomique seulement en un seul envoi (le commentaire le dit).
