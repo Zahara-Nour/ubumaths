@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, avant le premier commit (fichiers écrits, PR pas encore ouverte)._
+_Mis à jour le 2026-11-02, après #2244._
 
-- **État** : phase 0 validée (D1) ; 7 modèles écrits (`docs/wip/questions/lot-1spe-logique.py` → `scripts/questions/1spe-logique/`), 64 specs vertes, 4 400 tirages, 280 aperçus relus ; simulation `create-questions` (prod) : 7 à créer ; essai en base **locale** : 7 créés, 05 joué (case par case juste), 02 pas encore regardé.
-- **Prochaine action** : regarder 02 (choix en code) et 01 dans l'aperçu local (port 5176, `pnpm exec svelte-kit sync` déjà fait), puis PR des fichiers (revue : aucune, `Doc-inchangée: contenu`), merge ; ensuite David lance `create-questions --publier` depuis `main`.
-- **En attente de David** : rien.
-- **Pièges en cours** : `i` et `e` interdits comme noms de variables ; `{{if:}}` imbriqué refusé dans une variable ; `eval:` sans comparaisons (indicatrices `min`/`max`/`abs`) ; `create-questions` vise la PROD sans `set -a; . ./.env.local; set +a`.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-logique`, `content/questions-1spe-logique`.
+- **État** : 7 modèles en fichiers sur `main` (#2244 : `scripts/questions/1spe-logique/`, 64 specs, 4 400 tirages) ; aperçus locaux 01, 02, 05 joués (rendu, mélange des choix, validation : bons). Rien en prod encore.
+- **Prochaine action** : David lance la création en brouillons depuis le dépôt principal (`! pnpm tsx scripts/create-questions.ts …` sur `scripts/questions/1spe-logique/`, `--publier`) ; puis nouveau worktree : migration nœud + tags (gabarit `20261102090607_questions_1spe_savoir_a_rangement_tags.sql` + son test d'intégration), page à cocher, `publier-lot`.
+- **En attente de David** : la commande `create-questions --publier` (écriture en prod).
+- **Pièges en cours** : `i` et `e` interdits comme noms de variables ; `{{if:}}` imbriqué refusé dans une variable ; `eval:` sans comparaisons ; `create-questions` vise la PROD sans `set -a; . ./.env.local; set +a`.
+- **Worktree / branche** : aucun (`ubumaths-wt-questions-1spe-logique` retiré après #2244).
 
 ---
 
