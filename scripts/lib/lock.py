@@ -2,6 +2,8 @@
 """Verrou inter-worktree, tenu par le noyau.
 
 Usage : lock.py <nom> <libellé> -- <commande…>
+        lock.py --tenu <nom>   sortie 0 si un autre processus tient le verrou, 1 sinon
+                               (pour les gardes : hooks git, hook Claude)
 
 POURQUOI PAS UN VERROU EN SHELL
 -------------------------------
@@ -84,8 +86,41 @@ def decrire_le_detenteur(fd):
 	return pid, worktree, depuis
 
 
+def verrou_tenu(nom):
+	"""Vrai si un autre processus tient le verrou exclusif.
+
+	On tente un verrou PARTAGÉ non bloquant : il n'échoue que contre un verrou
+	exclusif, et on le relâche aussitôt. Ne crée rien : sans fichier, personne
+	n'a jamais tenu ce verrou.
+	"""
+	try:
+		commun = subprocess.run(
+			["git", "rev-parse", "--path-format=absolute", "--git-common-dir"],
+			capture_output=True, text=True, check=True,
+		).stdout.strip()
+	except (subprocess.CalledProcessError, FileNotFoundError):
+		return False
+	if not commun:
+		return False
+	try:
+		fd = os.open(os.path.join(commun, ".locks", nom), os.O_RDONLY)
+	except OSError:
+		return False
+	try:
+		fcntl.flock(fd, fcntl.LOCK_SH | fcntl.LOCK_NB)
+	except OSError:
+		return True
+	else:
+		fcntl.flock(fd, fcntl.LOCK_UN)
+		return False
+	finally:
+		os.close(fd)
+
+
 def main():
 	args = sys.argv[1:]
+	if len(args) == 2 and args[0] == "--tenu":
+		sys.exit(0 if verrou_tenu(args[1]) else 1)
 	if "--" not in args or len(args) < 3:
 		refuser("usage : lock.py <nom> <libellé> -- <commande…>")
 	coupure = args.index("--")

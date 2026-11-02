@@ -1,3 +1,4 @@
+bash scripts/garde-deploy-en-cours.sh push
 # Fichiers SUIVIS uniquement (cf. scripts/format-check-tracked.sh) : la CI voit un
 # clone frais, donc un fichier non commité ne peut pas la faire rougir. Vérifier
 # tout l'arbre bloquait des push pour le brouillon non suivi d'une autre session,
