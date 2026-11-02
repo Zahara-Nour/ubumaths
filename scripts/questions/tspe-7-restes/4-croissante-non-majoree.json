@@ -1,0 +1,171 @@
+{
+	"title": "Suite croissante non majorée : limite",
+	"description": "Une suite croissante non majorée tend vers +∞ : conclure à partir des propriétés, écart minoré par une constante positive, contre-exemple (pièges : non majorée seule, croissante seule)",
+	"grades": ["T_SPE"],
+	"theme": "Suites",
+	"domain": "Limites de suites",
+	"subdomain": "Définition de la limite",
+	"level": 5,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On sait seulement que la suite $(u_n)$ est {{if:k==0|croissante et non majorée}}{{if:k==1|décroissante et non minorée}}{{if:k==2|non majorée}}{{if:k==3|croissante}}.\n\nQue peut-on en déduire ?\n\n```choix\n- {{if:k==0|$(u_n)$ tend vers $+\\infty$}}{{if:k==1|$(u_n)$ tend vers $-\\infty$}}{{if:k==2|On ne peut pas conclure sur la limite}}{{if:k==3|On ne peut pas conclure sur la limite}}\n- {{if:k==0|$(u_n)$ converge vers un réel}}{{if:k==1|$(u_n)$ converge vers un réel}}{{if:k==2|$(u_n)$ tend vers $+\\infty$}}{{if:k==3|$(u_n)$ tend vers $+\\infty$}}\n- {{if:k==0|On ne peut pas conclure sur la limite}}{{if:k==1|On ne peut pas conclure sur la limite}}{{if:k==2|$(u_n)$ converge vers un réel}}{{if:k==3|$(u_n)$ converge vers un réel}}\n- {{if:k==0|$(u_n)$ tend vers $-\\infty$}}{{if:k==1|$(u_n)$ tend vers $+\\infty$}}{{if:k==2|$(u_n)$ tend vers $-\\infty$}}{{if:k==3|$(u_n)$ tend vers $-\\infty$}}\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==0|Théorème : une suite **croissante et non majorée** tend vers $+\\infty$.}}{{if:k==1|Théorème : une suite **décroissante et non minorée** tend vers $-\\infty$.}}{{if:k==2|Sans monotonie, « non majorée » ne suffit pas : $u_n=(-1)^n n$ n'est pas majorée, et n'a pas de limite.}}{{if:k==3|Une suite croissante peut tendre vers $+\\infty$ ($u_n=n$) ou converger ($u_n=-\\dfrac{1}{n+1}$) : il manque « majorée » ou « non majorée ».}}",
+					"Conclusion : {{if:k==0|$\\textcolor{{{color:primary.0}}}{\\lim u_n=+\\infty}$}}{{if:k==1|$\\textcolor{{{color:primary.0}}}{\\lim u_n=-\\infty}$}}{{if:k==2|$\\textcolor{{{color:primary.0}}}{\\text{on ne peut pas conclure}}$}}{{if:k==3|$\\textcolor{{{color:primary.0}}}{\\text{on ne peut pas conclure}}$}}."
+				]
+			},
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..3"
+				}
+			]
+		},
+		{
+			"statement": "La suite $(u_n)$ vérifie, pour tout entier naturel $n$, $u_{n+1}-u_n\\geqslant{{eval:c/2;d}}$.\n\nQue peut-on en déduire ?\n\n```choix\n- $(u_n)$ tend vers $+\\infty$\n- $(u_n)$ converge vers un réel\n- $(u_n)$ est majorée par $u_0+{{eval:c/2;d}}$\n- On ne peut pas conclure sur la limite\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_{n+1}-u_n\\geqslant{{eval:c/2;d}}>0$ : la suite est **croissante**.",
+					"En ajoutant ces inégalités de $0$ à $n-1$ : $u_n\\geqslant u_0+{{eval:c/2;d}}n$, qui dépasse tout réel quand $n$ grandit : la suite n'est **pas majorée**.",
+					"Croissante et non majorée : $\\textcolor{{{color:primary.0}}}{(u_n)\\text{ tend vers }+\\infty}$."
+				]
+			},
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..6"
+				}
+			]
+		},
+		{
+			"statement": "Une suite non majorée tend-elle forcément vers $+\\infty$ ?\n\n```choix\n- Non : par exemple $u_n={{if:k==0|(-1)^n n}}{{if:k==1|n\\left(1+(-1)^n\\right)}}$\n- Oui : c'est un théorème du cours\n- Non : par exemple $u_n={{if:k==0|n^2}}{{if:k==1|2n}}$\n- Non : par exemple $u_n=\\dfrac{1}{n+1}$\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le théorème demande **deux** hypothèses : croissante **et** non majorée.",
+					"{{if:k==0|$u_n=(-1)^n n$ prend les valeurs $0,-1,2,-3,4,\\dots$ : elle n'est pas majorée, mais ses termes impairs tendent vers $-\\infty$.}}{{if:k==1|$u_n=n\\left(1+(-1)^n\\right)$ prend les valeurs $0,0,4,0,8,\\dots$ : elle n'est pas majorée, mais elle revient à $0$ une fois sur deux.}}",
+					"Réponse : $\\textcolor{{{color:primary.0}}}{\\text{non}}$, elle n'a pas de limite. ($n^2$ et $2n$ tendent vers $+\\infty$ ; $\\dfrac{1}{n+1}$ est majorée.)"
+				]
+			},
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				}
+			]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : +∞",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : converge",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : non majorée seule",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : non majorée → +∞",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : +∞",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : on ne peut pas conclure",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : (−1)ⁿ n",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : oui",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

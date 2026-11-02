@@ -1,0 +1,187 @@
+{
+	"title": "Récurrence sur une suite définie par une fonction croissante",
+	"description": "Hérédité d'un encadrement et de la monotonie quand u_{n+1} = f(u_n) avec f croissante, hérédité d'une formule conjecturée (pièges : vérifier l'initialisation seule, partir de la conclusion)",
+	"grades": ["T_SPE"],
+	"theme": "Suites",
+	"domain": "Raisonnement par récurrence",
+	"subdomain": "Structure d'une récurrence",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0=1$ et $u_{n+1}=f(u_n)$, où $f(x)=\\dfrac{{{p}}x}{x+1}$. La fonction $f$ est croissante sur $\\left[0\\,;+\\infty\\right[$.\n\nOn démontre par récurrence que, pour tout entier naturel $n$, $1\\leqslant u_n\\leqslant{{eval:p-1}}$.\n\nHérédité : on suppose $1\\leqslant u_k\\leqslant{{eval:p-1}}$. Comme $f$ est croissante, $f(1)\\leqslant u_{k+1}\\leqslant f({{eval:p-1}})$.\n\nCalcule $f(1)$ et $f({{eval:p-1}})$.\n\n$f(1)=?$ et $f({{eval:p-1}})=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p/2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:p-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(1)=\\dfrac{{{p}}\\times1}{1+1}=\\textcolor{{{color:primary.0}}}{{{eval:p/2;d}}}$ et $f({{eval:p-1}})=\\dfrac{{{p}}\\times{{eval:p-1}}}{{{p}}}=\\textcolor{{{color:primary.0}}}{{{eval:p-1}}}$.",
+					"Donc ${{eval:p/2;d}}\\leqslant u_{k+1}\\leqslant{{eval:p-1}}$, et comme ${{eval:p/2;d}}\\geqslant1$ : $1\\leqslant u_{k+1}\\leqslant{{eval:p-1}}$. La propriété est héréditaire.",
+					"Initialisation : $u_0=1$ vérifie $1\\leqslant u_0\\leqslant{{eval:p-1}}$ ; la propriété est vraie pour tout $n$."
+				]
+			},
+			"variables": [
+				{
+					"name": "p",
+					"expression": "3..9"
+				}
+			]
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0=0$ et $u_{n+1}=\\sqrt{u_n+{{c}}}$. Ses termes sont positifs.\n\nOn démontre par récurrence que, pour tout entier naturel $n$, $u_n\\leqslant u_{n+1}$. On suppose $u_k\\leqslant u_{k+1}$ pour un entier $k$.\n\nQuelle rédaction prouve l'hérédité ?\n\n```choix\n- $x\\mapsto\\sqrt{x+{{c}}}$ est croissante sur $\\left[0\\,;+\\infty\\right[$, donc $\\sqrt{u_k+{{c}}}\\leqslant\\sqrt{u_{k+1}+{{c}}}$, c'est-à-dire $u_{k+1}\\leqslant u_{k+2}$\n- $u_1=\\sqrt{{{c}}}\\geqslant u_0$, donc $u_{k+1}\\leqslant u_{k+2}$\n- On suppose $u_{k+1}\\leqslant u_{k+2}$, donc $\\sqrt{u_k+{{c}}}\\leqslant\\sqrt{u_{k+1}+{{c}}}$, donc $u_k\\leqslant u_{k+1}$\n- $u_{k+1}-u_k\\geqslant0$, donc $u_{k+2}-u_{k+1}\\geqslant0$\n```",
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On part de l'hypothèse $u_k\\leqslant u_{k+1}$ et on applique la fonction croissante $f : x\\mapsto\\sqrt{x+{{c}}}$, qui **conserve l'ordre**.",
+					"$f(u_k)\\leqslant f(u_{k+1})$, soit $\\textcolor{{{color:primary.0}}}{u_{k+1}\\leqslant u_{k+2}}$.",
+					"Les autres rédactions vérifient seulement l'initialisation, partent de la conclusion, ou affirment le résultat sans le justifier."
+				]
+			},
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			]
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0=0$ et $u_{n+1}=u_n+{{eval:2*a}}n+{{a}}$. On conjecture que, pour tout entier naturel $n$, $u_n={{if:a==1|n^2}}{{if:a==-1|-n^2}}{{if:a!=1 && a!=-1|{{eval:a}}n^2}}$.\n\nHérédité : on suppose $u_k={{if:a==1|k^2}}{{if:a==-1|-k^2}}{{if:a!=1 && a!=-1|{{eval:a}}k^2}}$ pour un entier $k$. Écris $u_{k+1}$ en fonction de $k$, sous la forme de la formule au rang $k+1$ (factorisée).\n\n$u_{k+1}=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a==1|(k+1)^2}}{{if:a==-1|-(k+1)^2}}{{if:a!=1 && a!=-1|{{eval:a}}(k+1)^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_{k+1}=u_k+{{eval:2*a}}k+{{a}}={{if:a==1|k^2}}{{if:a==-1|-k^2}}{{if:a!=1 && a!=-1|{{eval:a}}k^2}}+{{eval:2*a}}k+{{a}}$.",
+					"${{if:a==1|k^2}}{{if:a==-1|-k^2}}{{if:a!=1 && a!=-1|{{eval:a}}k^2}}+{{eval:2*a}}k+{{a}}{{if:a==1||={{if:a==1|(k^2+2k+1)}}{{if:a==-1|-(k^2+2k+1)}}{{if:a!=1 && a!=-1|{{eval:a}}(k^2+2k+1)}}}}=\\textcolor{{{color:primary.0}}}{{{if:a==1|(k+1)^2}}{{if:a==-1|-(k+1)^2}}{{if:a!=1 && a!=-1|{{eval:a}}(k+1)^2}}}$ : c'est la formule au rang $k+1$.",
+					"Avec l'initialisation $u_0=0$, qui vérifie la formule pour $n=0$, elle est vraie pour tout $n$."
+				]
+			},
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..4"
+				}
+			]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : p/2 et p − 1",
+			"variationIndex": 0,
+			"variables": {
+				"p": "5"
+			},
+			"answers": ["2.5", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : f(1) = p",
+			"variationIndex": 0,
+			"variables": {
+				"p": "5"
+			},
+			"answers": ["5", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : f croissante",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : initialisation seule",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : part de la conclusion",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : a(k+1)²",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["3(k+1)^2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : développé, forme refusée",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["3k^2+6k+3"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "v2 : 3k² + 3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["3k^2+3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : a = 1",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1"
+			},
+			"answers": ["(k+1)^2"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
