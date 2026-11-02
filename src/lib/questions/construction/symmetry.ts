@@ -2,7 +2,8 @@
  * Symétrique à tracer (vérification `symetrique`, chantier `controles-figure`)
  * ===========================================================================
  *
- * `symetrique par d` : l'élève trace (outil segment, sur quadrillage) l'image
+ * `symetrique par d` : l'élève trace (outil segment, sur quadrillage ou, lot 2b,
+ * sur papier uni avec les instruments, traits de construction ignorés) l'image
  * de tout ce qui est tracé dans la figure sauf l'axe ; `par O` (un point) :
  * symétrie centrale ; `symetrique A ; B ; C par d` : seulement les traits dont
  * les deux bouts sont parmi ces points. Phase 0 validée par David le
@@ -25,6 +26,7 @@
 import type { SymetriqueCheck } from '$lib/ubumark/types/construction';
 import type { FigureStep, FigureWindow } from '$lib/ubumark/types/figure';
 import type { DrawnLine } from './answer';
+import { lineCrossesFrame, type Trait } from './instruments';
 import type { ConstructionVerdict, Position } from './judge';
 import {
 	OVERSHOOT_FEEDBACK,
@@ -68,6 +70,11 @@ export interface FigureShapes {
 	readonly segments: readonly FigureSegment[];
 	/** Objets droits, par nom (identifiant et nom affiché) */
 	readonly lines: ReadonlyMap<string, FigureLine>;
+	/**
+	 * Traits VISIBLES (droites, demi-droites, segments, côtés, cercles) : ce sur
+	 * quoi les instruments s'aimantent (papier uni, lot 2b)
+	 */
+	readonly traits: readonly Trait[];
 	readonly grid: FigureStep | null;
 	readonly window: FigureWindow | null;
 }
@@ -155,8 +162,9 @@ const isOnGrid = (value: number, step: number, eps: number) =>
 
 /**
  * Le symétrique est-il traçable ? Erreur d'AUTEUR sinon : axe ou centre
- * inconnu, rien à transformer, pas de quadrillage, image hors de la fenêtre ou
- * hors des nœuds (l'élève ne pourrait pas l'atteindre), figure déjà symétrique
+ * inconnu, rien à transformer, image hors de la fenêtre ou hors des nœuds du
+ * quadrillage, axe hors de la fenêtre sur papier uni (l'élève ne pourrait pas
+ * l'atteindre), figure déjà symétrique
  * (rien à tracer : repasser la figure serait juste).
  */
 export function assertSymmetry(
@@ -164,11 +172,12 @@ export function assertSymmetry(
 	points: ReadonlyMap<string, Position>,
 	shapes: FigureShapes | undefined
 ): void {
-	const { expected, figure } = settingOf(check, points, shapes);
+	const { expected, figure, axis } = settingOf(check, points, shapes);
 	const { grid, window } = shapes as FigureShapes;
-	if (!grid) {
+	// Papier uni (lot 2b) : construit aux instruments ; le compas se pique sur l'axe
+	if (!grid && axis && window && !lineCrossesFrame(axis.a, axis.b, window)) {
 		throw new SymmetryAuthorError(
-			'verifier: symetrique se trace sur quadrillage : ajouter « grille: 1 »'
+			`verifier: symetrique par ${check.by} : l’axe est hors de la fenêtre`
 		);
 	}
 	for (const p of expected.flatMap((s) => [s.a, s.b])) {
@@ -184,7 +193,7 @@ export function assertSymmetry(
 				`verifier: symetrique par ${check.by} : le symétrique sort de la fenêtre`
 			);
 		}
-		if (!isOnGrid(p.x, grid.x, eps) || !isOnGrid(p.y, grid.y, eps)) {
+		if (grid && (!isOnGrid(p.x, grid.x, eps) || !isOnGrid(p.y, grid.y, eps))) {
 			throw new SymmetryAuthorError(
 				`verifier: symetrique par ${check.by} : un sommet du symétrique n’est pas sur un nœud du quadrillage`
 			);

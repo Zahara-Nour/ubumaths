@@ -13,11 +13,26 @@
  */
 
 /**
- * Outils proposés à l'élève (un seul par figure) : droite (CP-059), segment
- * (CP-060), point (un toucher, chantier `controles-figure` lot 2a)
+ * Outils proposés à l'élève : droite (la règle, CP-059), segment (CP-060), point
+ * (un toucher, chantier `controles-figure` lot 2a), équerre (perpendiculaire à
+ * une droite par un point) et compas (cercle par son centre et un point),
+ * lot 2b. Plusieurs outils : une palette (papier uni, instruments).
  */
-export const CONSTRUCTION_TOOLS = ['droite', 'segment', 'point'] as const;
+export const CONSTRUCTION_TOOLS = ['droite', 'segment', 'point', 'equerre', 'compas'] as const;
 export type ConstructionTool = (typeof CONSTRUCTION_TOOLS)[number];
+
+/** Les instruments du papier uni (une palette qui en contient permet le papier uni) */
+export const INSTRUMENT_TOOLS: readonly ConstructionTool[] = ['equerre', 'compas'];
+
+/**
+ * Palette déduite sans `grille:` (décision de David, 2026-11-02,
+ * `docs/wip/controles-figure-progress.md` § 7) : placer un point ou tracer un
+ * symétrique sur papier uni demande les instruments.
+ */
+export const PLAIN_PAPER_TOOLS: Partial<Record<ConstructionCheckKind, ConstructionTool[]>> = {
+	point: ['droite', 'equerre', 'compas', 'point'],
+	symetrique: ['segment', 'droite', 'equerre', 'compas']
+};
 
 /** Vérifications que l'auteur peut nommer dans `verifier:` */
 export const CONSTRUCTION_CHECK_KINDS = [

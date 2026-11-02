@@ -60,7 +60,6 @@ import { unnestedLine } from '$lib/ubumark/parser/nested-line';
 import { MASKED_VALUE } from '$lib/ubumark/utils/masked-value';
 import { sideColumns } from '$lib/ubumark/utils/espace-scene';
 import { transformGrid, trimGrid } from '$lib/ubumark/utils/espace-patrons';
-import { CHECK_TOOL } from '$lib/ubumark/types/construction';
 
 // Types
 interface FoundBlock {
@@ -304,7 +303,8 @@ function maskFigure(block: FoundBlock): MaskLine {
 	const separator = block.body.findIndex((line) => FIGURE_SEPARATOR.test(line.trim()));
 	const headerEnd = separator === -1 ? block.body.length : separator;
 	const toolsWritten = block.body.slice(0, headerEnd).some((line) => keyOf(line) === 'outils');
-	const tool = CHECK_TOOL[header.spec.checks[0].kind];
+	// La palette déduite (un outil, ou les instruments du papier uni) : écrite telle quelle
+	const tools = header.spec.tools.join(', ');
 	let first = true;
 	return (line, rank) => {
 		if (rank >= headerEnd || !/^(verifier|vérifier)$/.test(keyOf(line) ?? '')) return null;
@@ -312,7 +312,7 @@ function maskFigure(block: FoundBlock): MaskLine {
 		first = false;
 		return toolsWritten
 			? `verifier: ${MASKED_VALUE}`
-			: [`outils: ${tool}`, `verifier: ${MASKED_VALUE}`];
+			: [`outils: ${tools}`, `verifier: ${MASKED_VALUE}`];
 	};
 }
 

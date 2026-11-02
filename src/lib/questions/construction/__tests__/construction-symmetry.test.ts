@@ -141,8 +141,11 @@ describe('symétrique axial — erreurs', () => {
 		});
 	});
 
-	it('des droites au lieu de segments → faux', () => {
-		expect(judge(VERTICAL, 'droite(10;2;8;2)')).toEqual({ status: 'incorrect' });
+	it('des droites au lieu de segments → faux (droites = construction, ignorées : lot 2b)', () => {
+		expect(judge(VERTICAL, 'droite(10;2;8;2)')).toEqual({
+			status: 'incorrect',
+			feedback: SYMMETRY_MISSING_FEEDBACK
+		});
 	});
 });
 

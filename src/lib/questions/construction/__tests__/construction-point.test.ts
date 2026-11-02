@@ -331,9 +331,13 @@ describe('erreurs d’auteur (refus à la publication)', () => {
 		expect(() => assertChecks(source)).toThrow('nœud');
 	});
 
-	it('sans quadrillage : refusé (papier uni = lot suivant)', () => {
-		const source = figure("point A' = symetrie(A, axe=d)", AXIS_BODY, []);
-		expect(() => assertChecks(source)).toThrow('grille:');
+	it('sans quadrillage : un symétrique se construit aux instruments (lot 2b), le reste est refusé', () => {
+		expect(() =>
+			assertChecks(figure("point A' = symetrie(A, axe=d)", AXIS_BODY, []))
+		).not.toThrow();
+		expect(() => assertChecks(figure("point A' = milieu(A, Q)", AXIS_BODY, []))).toThrow(
+			'sans quadrillage, seulement un symétrique'
+		);
 	});
 
 	it('deux points attendus au même endroit', () => {

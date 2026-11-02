@@ -11,6 +11,9 @@ import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser'
 import { buildFigureScene, type FigureScene } from '$lib/ubumark/utils/figure-scene';
 import { isPointElement, type GeoElement } from '$lib/geometry-core/types/elements';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+import { circleToSVG } from '$lib/geometry-core/rendering/svg-primitives';
+import { createTransformer } from '$lib/geometry-core/viewport/viewport';
+import type { Trait } from './instruments';
 import { ConstructionAuthorError, type Position } from './judge';
 import { registerConstructionPositions, type ConstructionGeometry } from './positions';
 import type { ExpectedPoints } from './point';
@@ -80,6 +83,33 @@ export function figureShapes(scene: FigureScene, header: FigureHeader): FigureSh
 			ids.forEach((id, i) => addSegment(element.id, id, ids[(i + 1) % ids.length]));
 		}
 	}
+	const traits: Trait[] = segments.map(({ a, b }) => ({ kind: 'segment', a, b }));
+	// Cercles : centre et rayon relus du rendu (même calcul que le dessin), à l'échelle 1
+	const { xMin, xMax, yMin, yMax } = scene.viewport;
+	const transformer = createTransformer(scene.viewport, xMax - xMin, yMax - yMin);
+	for (const element of scene.elements) {
+		if (element.type === 'line' || element.type === 'ray') {
+			const [from, to] = straightEnds(element) as [string, string];
+			const a = position(from);
+			const b = position(to);
+			if (a && b) traits.push({ kind: element.type, a, b });
+			continue;
+		}
+		if (
+			element.type !== 'circleByRadius' &&
+			element.type !== 'circleByPoint' &&
+			element.type !== 'circleBy3Points'
+		) {
+			continue;
+		}
+		const svg = circleToSVG(element.id, scene.figure, transformer);
+		if (!svg) continue;
+		const center = transformer.svgToMath(svg.cx, svg.cy);
+		const radius = svg.r;
+		if (Number.isFinite(center.x) && Number.isFinite(center.y) && radius > 0) {
+			traits.push({ kind: 'circle', center, radius });
+		}
+	}
 	const lines = new Map<string, FigureLine>();
 	for (const element of scene.figure.getAllElements()) {
 		const ends = straightEnds(element);
@@ -91,7 +121,7 @@ export function figureShapes(scene: FigureScene, header: FigureHeader): FigureSh
 		lines.set(element.id, line);
 		if (element.label) lines.set(element.label, line);
 	}
-	return { segments, lines, grid: header.grid, window: header.window };
+	return { segments, lines, traits, grid: header.grid, window: header.window };
 }
 
 /**

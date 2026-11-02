@@ -4,7 +4,8 @@
  *
  * Ce que l'élève a tracé, écrit en coordonnées : `droite(x1;y1;x2;y2)` ou
  * `segment(x1;y1;x2;y2)` (par ses deux bouts), `point(x;y)` (outil point,
- * chantier `controles-figure` lot 2a), les objets séparés par `|`. Entrée de l'élève : bornée (longueur, nombre
+ * chantier `controles-figure` lot 2a), `cercle(cx;cy;x;y)` (compas : le centre
+ * et un point du cercle, lot 2b), les objets séparés par `|`. Entrée de l'élève : bornée (longueur, nombre
  * d'objets, valeurs finies et modérées) avant toute lecture ; illisible → null.
  *
  * @module questions/construction/answer
@@ -12,9 +13,13 @@
 
 import { z } from 'zod';
 
-/** Plafonds : au-delà, la réponse est illisible (jamais jugée) */
+/**
+ * Plafonds : au-delà, la réponse est illisible (jamais jugée). 2 000 caractères :
+ * ceux de l'envoi (`MAX_ANSWER_LENGTH`, `submission.ts`) ; les traits des
+ * instruments sont en pleine précision (~90 caractères chacun).
+ */
 export const CONSTRUCTION_ANSWER_LIMITS = {
-	chars: 1_000,
+	chars: 2_000,
 	objects: 20,
 	coordinate: 1e6
 } as const;
@@ -27,6 +32,9 @@ const LINE_REGEX = new RegExp(
 	`^(droite|segment)\\(\\s*(${NUMBER})\\s*;\\s*(${NUMBER})\\s*;\\s*(${NUMBER})\\s*;\\s*(${NUMBER})\\s*\\)$`
 );
 const POINT_REGEX = new RegExp(`^point\\(\\s*(${NUMBER})\\s*;\\s*(${NUMBER})\\s*\\)$`);
+const CIRCLE_REGEX = new RegExp(
+	`^cercle\\(\\s*(${NUMBER})\\s*;\\s*(${NUMBER})\\s*;\\s*(${NUMBER})\\s*;\\s*(${NUMBER})\\s*\\)$`
+);
 
 const coordinate = z
 	.number()
@@ -52,11 +60,28 @@ const drawnPointSchema = z.object({ kind: z.literal('point'), x: coordinate, y: 
 /** Point placé par l'élève (outil point) */
 export type DrawnPoint = z.infer<typeof drawnPointSchema>;
 
+const drawnCircleSchema = z
+	.object({
+		kind: z.literal('cercle'),
+		cx: coordinate,
+		cy: coordinate,
+		x: coordinate,
+		y: coordinate
+	})
+	.refine((c) => Math.hypot(c.x - c.cx, c.y - c.cy) > SAME_POINT_EPSILON);
+
+/** Cercle tracé au compas : son centre et un de ses points */
+export type DrawnCircle = z.infer<typeof drawnCircleSchema>;
+
 /** Ce que l'élève a tracé ou placé */
-export type DrawnObject = DrawnLine | DrawnPoint;
+export type DrawnObject = DrawnLine | DrawnPoint | DrawnCircle;
 
 export function isDrawnLine(object: DrawnObject): object is DrawnLine {
-	return object.kind !== 'point';
+	return object.kind === 'droite' || object.kind === 'segment';
+}
+
+export function isDrawnCircle(object: DrawnObject): object is DrawnCircle {
+	return object.kind === 'cercle';
 }
 
 export function isDrawnPoint(object: DrawnObject): object is DrawnPoint {
@@ -71,6 +96,17 @@ function parseObject(part: string): DrawnObject | null {
 			kind: 'point',
 			x: Number(point[1]),
 			y: Number(point[2])
+		});
+		return parsed.success ? parsed.data : null;
+	}
+	const circle = CIRCLE_REGEX.exec(part);
+	if (circle) {
+		const parsed = drawnCircleSchema.safeParse({
+			kind: 'cercle',
+			cx: Number(circle[1]),
+			cy: Number(circle[2]),
+			x: Number(circle[3]),
+			y: Number(circle[4])
 		});
 		return parsed.success ? parsed.data : null;
 	}
@@ -105,8 +141,10 @@ export function parseConstructionAnswer(answer: string): DrawnObject[] | null {
 /** Écrire ce que l'élève a tracé (écran de l'élève, tests) */
 export function serializeConstructionAnswer(objects: readonly DrawnObject[]): string {
 	return objects
-		.map((o) =>
-			isDrawnLine(o) ? `${o.kind}(${o.x1};${o.y1};${o.x2};${o.y2})` : `point(${o.x};${o.y})`
-		)
+		.map((o) => {
+			if (isDrawnLine(o)) return `${o.kind}(${o.x1};${o.y1};${o.x2};${o.y2})`;
+			if (isDrawnCircle(o)) return `cercle(${o.cx};${o.cy};${o.x};${o.y})`;
+			return `point(${o.x};${o.y})`;
+		})
 		.join('|');
 }

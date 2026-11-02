@@ -4,8 +4,10 @@
  *
  * Logique PURE de l'écran : toucher un point puis un autre trace une droite ;
  * près d'un point de la figure, le toucher est aimanté sur lui ; outil point :
- * un toucher place un point ; « Effacer » enlève le départ en attente, sinon
- * le dernier objet. Comportements validés
+ * un toucher place un point ; équerre : une droite choisie (`guide`), puis un
+ * point → la perpendiculaire ; compas : le centre, puis un point du cercle
+ * (lot 2b, aimantation des instruments : `instruments.ts`) ; « Effacer »
+ * enlève le départ ou la droite en attente, sinon le dernier objet. Comportements validés
  * par David le 2026-10-25 (`docs/wip/geometrie-validation-progress.md` § 5).
  *
  * Aucune dépendance à geometry-core : les positions des points sont données
@@ -24,6 +26,12 @@ import {
 	type DrawnObject
 } from './answer';
 import type { Position } from './judge';
+import {
+	perpendicularThrough,
+	snapInstrument,
+	type SnapTargets,
+	type StraightTrait
+} from './instruments';
 import { isPointCheck, pointSolution, type ExpectedPoints, type PointSolution } from './point';
 import { polygonSolution } from './polygon';
 import { symmetrySolution, type FigureShapes } from './symmetry';
@@ -47,10 +55,14 @@ export interface ConstructionAnswerInput {
 	onChange: (value: string) => void;
 }
 
-/** Ce que l'élève a tracé ou placé, et le départ d'une droite en attente du second toucher */
+/**
+ * Ce que l'élève a tracé ou placé, le départ d'un trait (ou le centre du
+ * compas) en attente du second toucher, et la droite choisie pour l'équerre
+ */
 export interface Drawing {
 	objects: DrawnObject[];
 	start: Position | null;
+	guide?: StraightTrait | null;
 }
 
 export interface FigureWindow {
@@ -89,6 +101,11 @@ export function snapTap(
 	return best ? { x: best.x, y: best.y } : { x: round(tap.x), y: round(tap.y) };
 }
 
+/** Avec des instruments (papier uni) : point, intersection, trait, sinon toucher libre arrondi */
+export function snapWithInstruments(tap: Position, targets: SnapTargets, radius: number): Position {
+	return snapInstrument(tap, targets, radius) ?? { x: round(tap.x), y: round(tap.y) };
+}
+
 /**
  * Quadrillage avec l'outil segment (CP-060) : chaque toucher va au nœud le
  * plus proche (plus de toucher libre, verdict du conseil § 2).
@@ -120,6 +137,16 @@ function withObject(drawing: Drawing, object: DrawnObject): Drawing {
 	return { objects, start: null };
 }
 
+/** Équerre, premier toucher : la droite à longer (le départ éventuel est oublié) */
+export function chooseGuide(drawing: Drawing, guide: StraightTrait): Drawing {
+	return { objects: drawing.objects, start: null, guide };
+}
+
+/** Changer d'outil : le départ et la droite en attente sont oubliés */
+export function cancelPending(drawing: Drawing): Drawing {
+	return { objects: drawing.objects, start: null };
+}
+
 /**
  * Un toucher : outil point → le point (rien s'il y est déjà) ; sinon premier → départ ; second → la
  * droite (ou le segment, qui s'arrête à ses deux bouts). Toucher le départ une
@@ -130,6 +157,11 @@ export function addTap(
 	position: Position,
 	tool: ConstructionTool = 'droite'
 ): Drawing {
+	if (tool === 'equerre') {
+		// Sans droite choisie, l'écran appelle `chooseGuide` : un toucher seul ne trace rien
+		if (!drawing.guide) return drawing;
+		return withObject(drawing, perpendicularThrough(drawing.guide, position));
+	}
 	if (tool === 'point') {
 		// Toucher un point déjà posé (double toucher) ne fait rien, comme le départ d'un trait
 		const placed = drawing.objects.some(
@@ -142,6 +174,15 @@ export function addTap(
 	const { start } = drawing;
 	if (!start) return { objects: drawing.objects, start: position };
 	if (Math.hypot(position.x - start.x, position.y - start.y) <= SAME_TAP_EPSILON) return drawing;
+	if (tool === 'compas') {
+		return withObject(drawing, {
+			kind: 'cercle',
+			cx: start.x,
+			cy: start.y,
+			x: position.x,
+			y: position.y
+		});
+	}
 	return withObject(drawing, {
 		kind: tool,
 		x1: start.x,
@@ -151,14 +192,14 @@ export function addTap(
 	});
 }
 
-/** « Effacer » : le départ en attente, sinon le dernier objet */
+/** « Effacer » : le départ ou la droite en attente, sinon le dernier objet */
 export function eraseLast(drawing: Drawing): Drawing {
-	if (drawing.start) return { objects: drawing.objects, start: null };
+	if (drawing.start || drawing.guide) return cancelPending(drawing);
 	return { objects: drawing.objects.slice(0, -1), start: null };
 }
 
 export function canErase(drawing: Drawing): boolean {
-	return drawing.start !== null || drawing.objects.length > 0;
+	return drawing.start !== null || Boolean(drawing.guide) || drawing.objects.length > 0;
 }
 
 /**

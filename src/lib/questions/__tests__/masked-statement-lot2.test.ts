@@ -186,6 +186,17 @@ describe('figure à compléter (```figure-a-completer)', () => {
 		expect(header.figureSource.split('---')[1]).toBe(real.figureSource.split('---')[1]);
 	});
 
+	it('papier uni : la palette des instruments est écrite (lot 2b)', () => {
+		const { statement } = sent(
+			`Construis le symétrique de A.\n\n${block('figure-a-completer', 'fenetre: 0 ; 10 ; 0 ; 6', "verifier: point A' = symetrie(A, axe=d)", '---', 'P = point(0, 0)', 'Q = point(6, 6)', 'd = droite(P, Q)', 'A = point(1, 4)')}`
+		);
+		const masked = body(statement, 'figure-a-completer');
+		expect(masked).not.toContain('symetrie(A');
+		const header = readConstructionHeader(masked);
+		expect(header.errors).toEqual([]);
+		expect(header.spec.tools).toEqual(['droite', 'equerre', 'compas', 'point']);
+	});
+
 	it('deux droites, outil écrit : plus aucun point nommé dans verifier:', () => {
 		const { statement } = sent(
 			`Trace (AB) et (AC).\n\n${block('figure-a-completer', 'fenetre: 0 ; 10 ; 0 ; 6', 'outils: droite', 'verifier: droite_par A ; B', 'verifier: droite_par A ; C', '---', 'A = point(2, 1)', 'B = point(8, 2)', 'C = point(4, 5)')}`

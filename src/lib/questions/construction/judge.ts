@@ -211,18 +211,23 @@ export function judgeConstruction(
 			throw asAuthorError(error);
 		}
 	}
-	// Un point placé sans outil point : réponse forgée
-	const lines = objects.filter(isDrawnLine);
-	if (lines.length !== objects.length) return { status: 'incorrect' };
-
 	const symmetry = allChecks.find((c) => c.kind === 'symetrique');
 	if (symmetry) {
+		// Papier uni (lot 2b) : droites de la règle et de l'équerre, cercles du compas = construction
+		const segments = objects.filter((o): o is DrawnLine => o.kind === 'segment');
+		const constructions = objects.filter((o) => o.kind === 'droite' || o.kind === 'cercle');
+		// Un point placé sans outil point : réponse forgée
+		if (segments.length + constructions.length !== objects.length) return { status: 'incorrect' };
 		try {
-			return judgeSymmetry(symmetry, points, shapes, lines);
+			return judgeSymmetry(symmetry, points, shapes, segments);
 		} catch (error) {
 			throw asAuthorError(error);
 		}
 	}
+	// Un point ou un cercle sans leur outil : réponse forgée
+	const lines = objects.filter(isDrawnLine);
+	if (lines.length !== objects.length) return { status: 'incorrect' };
+
 	const polygon = allChecks.find(isPolygonCheck);
 	if (polygon) {
 		try {
