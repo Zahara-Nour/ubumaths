@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, phase 0 du lot 7 proposée (§ 12)._
+_Mis à jour le 2026-11-02, après #2212 (lot 7a mergé)._
 
-- **État** : lots 0 à 5, 6a et **6b publiés** (6b : 6/6, vérifiés au MCP le 2026-11-02 : `published`, rangés, tagués). **Lot 6 clos.**
-- **Prochaine action** : écriture du lot 7a (droites graduées) dans le worktree, branche `feat/questions-cm2-lot7a`.
-- **En attente de David** : rien (décisions au § 12.1).
+- **État** : lots 0 à 6 publiés. Lot 7a (droites graduées, entiers et fractions, 6 modèles) : #2212 mergée (fichiers + correctif des étiquettes longues de la droite graduée).
+- **Prochaine action** : simulation `create-questions` (prod) depuis le dépôt principal ; `--publier` par David ; migration nœud + tag (`feat/questions-cm2-lot7a-rangement`). Publication des #1-#2 après le `deploy:prod` qui livre le correctif des étiquettes.
+- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-7a --publier` (depuis le dépôt principal à jour, après ma simulation) ; plus tard, le `deploy:prod` qui livre le correctif des étiquettes (#2212).
 - **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; garde = doublon seulement ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `pnpm db:migrate --dry-run --include-all`, liste relue, puis `--include-all`. `Doc-inchangée:` dans un COMMIT, pas dans la PR. `spacesFromFourDigits` → specs en `1\,000` ; homonymes du CM1 sur la page ; `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2` en HEAD détachée sur `origin/main` (remis à jour le 2026-11-02 : son journal était périmé).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2` en HEAD détachée sur `origin/main` (`feat/questions-cm2-lot7a` mergée, supprimée).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -723,3 +723,11 @@ Recommandations suivies (« je suis tes recos ») : (a) deux lots, **7a** (entie
 1-6) puis **7b** (fractions décimales et décimaux, modèles 7-10) ; (b) #4 garde la V2 « entier moins
 une fraction » ; (c) 038, 053, 055-057 en **petit lot 8** juste après le lot 7 ; (d) après le lot 7,
 reclasser le § 3 (outils de la classe C maintenant en prod). Tableau du § 12 gardé.
+
+### 12.2 Lot 7a : écriture (2026-11-02)
+
+- `docs/wip/questions/lot-cm2-7a.py` → `scripts/questions/cm2-7a/` (6 modèles) ; `question:specs` : 40 specs vertes, 600 tirages réussis.
+- Entiers : 10 intervalles, étiquettes sur la graduation de départ et la 5e (`labels:` remplace les étiquettes calculées), le pas est à trouver. Fractions : au plus 12 intervalles ; morceaux de droite (de k à k + 1, ou de m à m + 2) pour les dénominateurs 7 à 12.
+- Piège : la réponse d'une droite à placer passe par le juge de forme, écrite sans espaces (`placerAnswer`) → dès 5 chiffres, « forme à améliorer » (contrôle `spaces` en `warn` par défaut). `spaces: off` sur « Placer un entier ». **Tout futur modèle à placer avec des grands nombres** : même réglage.
+- Essai en base locale (David : `create-questions --publier` avec `.env.local`, le classifieur refuse même en local) ; aperçu à 390 px : **étiquettes de 7 chiffres coupées** (« 6 700 0 », cadre de 60 px dans `NumberLine.svelte`). Correctif dans la même PR : cadre de 100 px, centré ; test `NumberLine-etiquettes-longues` rouge (64 > 60) puis vert ; `ubumark.md` mis à jour. Ensuite : 30 tirages, rien de coupé, aucun avertissement « téléphone ».
+- #2212 (fichiers + correctif) : CI verte, mergée. ⚠️ Les modèles #1 et #2 ne se publient qu'après le `deploy:prod` qui livre le correctif.
