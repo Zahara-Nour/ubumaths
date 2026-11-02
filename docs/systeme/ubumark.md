@@ -253,6 +253,24 @@ Une ligne `variation: f(x)` suivie de `-1: 3, top` / `0: 0, bottom` ajoute les f
 un ` ```variation ` sans ligne `variation:`. Une borne ±∞ sans entrée est complétée au rendu
 par `withImplicitEndpoints`. Les virgules séparent les valeurs : écrire `11/2`, pas `5,5`.
 
+**Cellules cachées** (tableau de signes à compléter, chantier `tableau-signes`,
+`src/lib/ubumark/__tests__/parser/variation-table-hidden.test.ts`) : l'auteur écrit le tableau juste et
+préfixe d'un `?` chaque cellule à faire compléter — valeur de x (`domain: -inf, ?-3, 2, +inf`, jamais ±∞),
+signe d'un intervalle (`-inf,-3: ?-`), marque d'un point (`-3: ?z`, `?||`, `?rien` pour « ni 0 ni double
+barre » ; `?0` = `?z`). Le parseur range l'expression sans `?` (`DomainPoint.hidden`), garde la vraie valeur
+dans `values` et liste les cellules dans `cases` (`HiddenCell` : `kind` valeur / signe / marque, `answer`),
+numérotées dans l'**ordre de lecture** (domaine, puis chaque ligne `sign:` colonne par colonne), quel que
+soit l'ordre d'écriture. Ligne `case: N` (numéro de la première case, posé par le générateur) ; `source`
+garde le texte brut (l'éditeur riche repart de lui : les `?` survivent à l'aller-retour). Énoncé masqué
+d'évaluation : `??n` (valeur de x masquée, reprise telle quelle dans les clés d'intervalles) et `?` seul
+(signe ou marque masqué), `answer` vide. Refusés, message « Ligne N : … » et bloc rendu en source : `?` sur
+±∞, dans une étiquette `sign:` ou une ligne `variation:`, `?|h|`, `?d`, signe caché sur un point, marque
+cachée sur un intervalle, clé hors du domaine. Un bloc sans `?` donne l'arbre d'avant (ni `cases`, ni
+`source`). Typst (`generateVariationTableTypst`, option `hiddenCells`) : `blank` (défaut) dessine une case
+vide pour une valeur ou un signe, retire le « 0 » d'une marque (le trait reste, comme pour toute colonne) ;
+`filled` dessine la valeur. ⚠️ Sur papier, une marque cachée ne se distingue pas encore d'une colonne « sans
+marque » donnée (vartable 0.2.1 ne place rien sur le trait).
+
 **Arbre, cercle, droite graduée** — `src/lib/ubumark/__tests__/blocs-speciaux-listes.test.ts`
 (les quatre blocs « historiques », en item de liste) :
 

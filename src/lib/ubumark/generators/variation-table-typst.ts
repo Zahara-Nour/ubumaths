@@ -33,7 +33,19 @@ interface VariationTableTypstOptions {
 	extraOptions?: string;
 	/** Langue du document : `en` garde le point décimal, sinon virgule (défaut : fr) */
 	language?: string;
+	/**
+	 * Cellules cachées (`?` dans le bloc) : `blank` les laisse vides (énoncé, défaut),
+	 * `filled` dessine leur valeur comme un tableau sans `?` (corrigé). Sans effet
+	 * sur un tableau sans `?`.
+	 */
+	hiddenCells?: 'blank' | 'filled';
 }
+
+/** Case vide dessinée à la place d'une valeur de x ou d'un signe caché (garde la largeur) */
+const BLANK_CELL = 'box(width: 1.4em, height: 1.1em, stroke: 0.4pt)';
+
+/** Cellules de lignes de signes à laisser vides : par indice de ligne, les clés cachées */
+type BlankSignCells = Map<number, Set<string>>;
 
 /** Fond blanc sous le « 0 » (équation bloc) que vartable dessine sur le trait d'une racine */
 const ZERO_ON_BAR_SHOW_RULE =
@@ -120,9 +132,10 @@ export function generateVariationTableTypst(
 	try {
 		const importStatement = '#import "@preview/vartable:0.2.1": tabvar\n\n';
 		const variable = formatVariable(node.variable);
-		const domain = generateDomain(node.domain, language);
+		const blank = (options.hiddenCells ?? 'blank') === 'blank';
+		const domain = generateDomain(node.domain, language, blank);
 		const labels = generateLabels(node.rows);
-		const content = generateContent(node, language);
+		const content = generateContent(node, language, blankSignCells(node, blank));
 
 		// Wrap in a scaled block to fit column width
 		// Text enlarged then scaled down = readable text but reduced padding
@@ -186,8 +199,10 @@ function formatVariable(variable: string): string {
  * @example
  * "($-infinity$, $0$, $2$, $+infinity$)"
  */
-function generateDomain(domain: DomainPoint[], language: string): string {
+function generateDomain(domain: DomainPoint[], language: string, blank = false): string {
 	const points = domain.map((point) => {
+		// Valeur cachée : case vide à l'énoncé ; un jeton `??n` n'a jamais de valeur à dessiner
+		if (point.hidden && (blank || point.expression.startsWith('??'))) return BLANK_CELL;
 		const expr = formatMathExpression(point.expression, language);
 		// Note: vartable doesn't have built-in open bound notation like LaTeX ]a[
 		// Open bounds would need to be handled via styling if supported
@@ -260,6 +275,22 @@ function generateLabels(rows: (SignRow | VariationRow)[]): string {
 	return formatTypstTuple(labels);
 }
 
+/**
+ * Cellules de lignes de signes cachées à laisser vides (énoncé) ; vide si `filled`
+ * ou si le tableau n'a aucun `?`.
+ */
+function blankSignCells(node: VariationTableNode, blank: boolean): BlankSignCells {
+	const result: BlankSignCells = new Map();
+	if (!blank) return result;
+	for (const cell of node.cases ?? []) {
+		if (cell.row === 'domain') continue;
+		const keys = result.get(cell.row) ?? new Set<string>();
+		keys.add(cell.key);
+		result.set(cell.row, keys);
+	}
+	return result;
+}
+
 // ============================================================================
 // CONTENT GENERATION
 // ============================================================================
@@ -285,7 +316,11 @@ function generateLabels(rows: (SignRow | VariationRow)[]): string {
  * @param language - Langue du document (séparateur décimal)
  * @returns Content rows indented and formatted
  */
-function generateContent(node: VariationTableNode, language: string): string {
+function generateContent(
+	node: VariationTableNode,
+	language: string,
+	blankCells: BlankSignCells
+): string {
 	const lines: string[] = [];
 
 	for (let i = 0; i < node.rows.length; i++) {
@@ -298,7 +333,7 @@ function generateContent(node: VariationTableNode, language: string): string {
 		const needsComma = node.rows.length === 1 || !isLast;
 
 		if (row.type === 'sign') {
-			const line = generateSignRow(row, node.domain);
+			const line = generateSignRow(row, node.domain, blankCells.get(i) ?? new Set());
 			lines.push(`    ${line}${needsComma ? ',' : ''}`);
 		} else {
 			const line = generateVariationRow(row, node.domain, language);
@@ -330,7 +365,11 @@ function generateContent(node: VariationTableNode, language: string): string {
  * Domain: [-inf, 0, +inf] with sign +, zero at 0, sign -
  * Output: "($+$, (\"z\", $-$))"
  */
-function generateSignRow(row: SignRow, domain: DomainPoint[]): string {
+function generateSignRow(
+	row: SignRow,
+	domain: DomainPoint[],
+	blankKeys: Set<string> = new Set()
+): string {
 	const values: string[] = [];
 
 	// n-1 elements for n domain points (interval-based)
@@ -347,13 +386,16 @@ function generateSignRow(row: SignRow, domain: DomainPoint[]): string {
 		// For i>0: marker is combined with the following sign as a tuple (marker, sign)
 		let marker: string | null = null;
 		const markerValue = row.values.get(startPoint);
-		if (markerValue && markerValue.type === 'marker') {
+		// Marque cachée à l'énoncé : ni trait ni « 0 », la colonne reste
+		if (markerValue && markerValue.type === 'marker' && !blankKeys.has(startPoint)) {
 			marker = convertSignMarkerToTypst(markerValue.marker);
 		}
 
 		// Format the element
 		let signStr = '""';
-		if (intervalValue) {
+		if (blankKeys.has(intervalKey)) {
+			signStr = BLANK_CELL;
+		} else if (intervalValue) {
 			if (intervalValue.type === 'sign') {
 				signStr = `$${intervalValue.value}$`;
 			} else {
@@ -374,7 +416,7 @@ function generateSignRow(row: SignRow, domain: DomainPoint[]): string {
 	// vartable handles "||" at the end by drawing a bar at the boundary
 	const lastPoint = domain[domain.length - 1].expression;
 	const trailingValue = row.values.get(lastPoint);
-	if (trailingValue && trailingValue.type === 'marker') {
+	if (trailingValue && trailingValue.type === 'marker' && !blankKeys.has(lastPoint)) {
 		values.push(convertSignMarkerToTypst(trailingValue.marker));
 	}
 
