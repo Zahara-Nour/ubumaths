@@ -1,6 +1,6 @@
 # Chantier « questions-1spe » — couvrir la première spécialité en modèles de questions
 
-> Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
+> Démarche : [couvrir-un-niveau.md](../../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
 > Bornes : `docs/systeme/programmes/bornes/lycee/1spe.json` → `["1_SPE"].points` (décisions l1s-1 à l1s-6
 > dans `1spe.md`). En base, le niveau est `1_SPE`. Chantiers par thème déjà faits (septembre-octobre 2026) :
 > `suites-1spe`, `second-degre-1spe`, `derivation-1spe`, `exponentielle-1spe`, `trigo-1spe`,
@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, les trois sous-chantiers clos (§ 24)._
+_Mis à jour le 2026-11-02 : chantier CLOS et versé._
 
-- **État** : lots 0 à 6a publiés ; les trois sous-chantiers du § 24 (`geometrie`, `analyse`, `logique`) sont clos,
-  leurs modèles publiés. 306 a été couvert par `analyse` (B3, geste ` ```trig placer: `).
-- **Prochaine action** : versement du chantier (le durable vers `docs/systeme/`, les quatre journaux archivés) — à
-  lancer sur go de David.
-- **En attente de David** : go du versement ; outils C restants (433, 271) dans des chantiers à part (D5).
+- **État** : ✅ clos. 273 modèles `1_SPE` publiés, 171 points sur 237 couverts ; les 66 autres sont voulus (P, couverts
+  par un voisin, D, C). Bilan durable : `docs/systeme/programmes/bornes/lycee/1spe.md` § « Couverture en modèles de
+  questions » ; pièges : `docs/pratiques/couvrir-un-niveau.md` § 9.
+- **Prochaine action** : aucune. Outils C restants (433, 271) : ligne 2 de `docs/wip/outils-manquants.md`.
+- **En attente de David** : rien.
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-27)

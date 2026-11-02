@@ -320,6 +320,25 @@ scripts/questions/<niveau>-0-<thème> --ids <id8>,…` ; chaque fichier porte so
   des niveaux publiés de la catégorie** (`theme`, `domain`, `subdomain`) : un niveau pris bloque
   la publication, et `create-questions` cherche un modèle par son niveau (`--mettre-a-jour` ne le
   change pas) ; corriger après coup = migration + fichiers (CE1 lot 1, 2026-10-27).
+- **Niveaux d'une catégorie relevés tous niveaux scolaires confondus** : l'index d'unicité ignore
+  `grades` (1re spé, lot 1-dérivation).
+- Modèle tagué d'un point d'un autre niveau : `grades` porte les **deux** niveaux (`['2', '1_SPE']`), le
+  cahier de texte filtrant `grades` par égalité exacte.
+- **Réponses refusées en `bad_form` sans erreur de l'élève** (1re spé) : décimal sans
+  `blankDefaults.acceptDecimal` (qui ne vaut que pour un nombre seul : `1 + 0,5h` → `form: off`) ;
+  intervalle sans `answerKind: intervalles` ; forme non normalisée (`u₁ + (n − 1)r`, `(n² + n)/2`) →
+  `requiredForm: {pattern: 'u'}`. Une spec `incorrect` à réponse décimale échoue aussi sans
+  `acceptDecimal`. Une spec `unoptimal_form` nomme sa contrainte (`constraintViolations: ['signs']`).
+- **Noms de variables** : ni `e` (Euler) ni `i` (imaginaire, « Complex numbers not supported »).
+  `eval:` ne connaît ni `==` ni `>` → indicatrices `min(max(x-s,0),1)`, `1-min(abs(r-k),1)` ; dans une
+  variable, `eval:…` sans accolades et `{{if:}}` sur un seul niveau.
+- **Rendu** : `cleanCoefficients` lit `\sigma(X)` comme σ·(X) (« σX ») → option retirée ; `-E(X)^2` →
+  `{E(X)}^2` ; tableau de variations à borne ouverte : `domain: ]0, [a, [+inf[` (le parseur ne coupe
+  qu'avant un crochet). Les choix sont mélangés à l'affichage : le corrigé nomme la bonne réponse,
+  jamais son rang.
+- Worktree neuf : `pnpm exec svelte-kit sync` avant `question:specs` (`$lib` introuvable).
+- Brouillons déjà en base : `export-question-templates.ts --dir … --ids …` (un id par fichier) ; les
+  anciens dossiers `scripts/questions/` ne concordent plus forcément avec la base.
 - Migration qui change l'arbre ou les points : `LATER` + copies figées dans le test.
 - `gh pr checks --watch` peut rendre la main avant le job d'intégration : suivre le **run**.
 - Écriture en prod (`create-questions --publier`, publication) : **David** la lance (`!`), je

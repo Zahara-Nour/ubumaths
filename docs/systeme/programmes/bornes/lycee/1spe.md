@@ -42,6 +42,30 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
 - **l1s-6** — Linéarité de l'espérance : E(aX + b) seulement, ou aussi E(X + Y) ? → **affine** (2026-10-23)
 - **l1s-7** — Automatismes « privilégiant l'activité mentale » : bornent-ils les valeurs numériques ? → **mental** (2026-10-23)
 
+## Couverture en modèles de questions (prod, 2026-11-02)
+
+Chantier `questions-1spe` (démarche [couvrir-un-niveau.md](../../../../pratiques/couvrir-un-niveau.md)), clos le
+2026-11-02 ; journaux dans `docs/archive/wip/questions-1spe*-progress.md` (index + sous-chantiers `geometrie`,
+`analyse`, `logique`).
+
+- **273 modèles publiés** de niveau `1_SPE` ; **171 points sur 237** ont au moins un modèle publié, aucun n'a que
+  des brouillons.
+- **66 points sans modèle, tous voulus** :
+  - **P** (52) — démonstrations, points-compétences (205, 435, 436, 437…), approfondissements « en aucun cas
+    obligatoires » (BO p.3) : hors questions. 5a89b292 couvre déjà le résultat de 308 / 411.
+  - **Couverts par leur voisin** (10) — même savoir-faire sur deux lignes du BO : 211 → 223, 220 → 231,
+    328 → 331, 368 → 377, 371 → 224, 373 → 225, 382 → 251, 389 → 272, 417 → 327, 421 → 340. Les faits « à
+    connaître » de ces doublons ont, eux, leur modèle « à savoir ».
+  - **D** (2) — 362, 365 (simuler avec Python ou un tableur) : exercices Python, pas des questions.
+  - **C** (2) — 433 (tracer une droite), 271 (tracer une tangente) : attendent le geste « tracer » (ligne 2 de
+    [outils-manquants.md](../../../../wip/outils-manquants.md), chantier commun avec 2-316, 2-445).
+- **10 brouillons `1_SPE` laissés tels quels** : 5 tagués d'un point de seconde, `grades = ['2', '1_SPE']`
+  (5b20321f, 8c31675a, db8b5dc8, 5062197a, f98164b1 — le cahier de texte filtre `grades` par égalité exacte —),
+  qui relèvent de la seconde ; 174e202b, dc4b8d08 (angles associés : hors l1s-3) ; 0495289a (hors borne 377, pour la
+  terminale) ; c90fa022, d2067413 (tagués de 1TECHNO).
+- Hors 1re spé (voulu) : 8b599a53 (`g(ax + b)`, TSPE-408) et fece187e, afd9b3ff (cos x = a, TSPE-457) n'ont plus
+  `1_SPE` dans leurs niveaux (l1s-1, pas d'équation trigonométrique en 1re).
+
 ## Première spécialité (237 points, 232 avec une borne propre)
 
 ### Bornes générales (héritées par tous les points du niveau)
