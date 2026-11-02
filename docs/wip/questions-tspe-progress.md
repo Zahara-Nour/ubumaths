@@ -10,21 +10,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après la publication du lot 2._
+_Mis à jour le 2026-11-02, phase 0 du lot 3 validée, fichiers écrits._
 
-- **État** : lots 0, 1 et 2 faits ; lot 2 (limites, § 15) **publié** le 2026-11-02 (4/4 `published`, relu au MCP).
-- **Prochaine action** : lot 3 « logarithme, continuité, convexité : restes » (593, 447, 626, 426, 589, 591, § 4) :
-  worktree neuf depuis `origin/main`, relevé MCP des voisins, phase 0 (rangement, variations) à faire valider.
-  626 n'a pas de borne : l'écrire dans `tspe.json` / `tspe.md` avec ce lot (Q6).
-- **En attente de David** : rien (la phase 0 du lot 3 est à produire).
+- **État** : lots 0, 1, 2 faits (2 publié) ; lot 3 (§ 16) : 6 modèles écrits, specs vertes, essayés en base locale ;
+  borne de TSPE-626 écrite (Q6). PR des fichiers à ouvrir / merger.
+- **Prochaine action** : PR des fichiers mergée → David lance `create-questions --dir
+scripts/questions/tspe-3-ln-continuite-convexite --publier` (prod) → relever les `id` → migration nœud + tag
+  (aucune sous-notion neuve) → page à cocher → publication.
+- **En attente de David** : `create-questions --publier` en prod, après le merge.
 - **Pièges en cours** : un tag doit être sur le **nœud du modèle ou sa notion** (§ 14) ; le **niveau est dans la
   clé** de `create-questions`. `create-questions` et `publier-lot` → David (`!`) ; `db:migrate` depuis le dépôt
   principal (`echo y |`) ; corps de commit ≤ 100 caractères par ligne. **Migrations** (#2181) : `pnpm migration:horodatage`
-  = heure réelle UTC, plus de renommage si main a avancé ; `db:migrate` refuse « inserted before the last
-  migration » → `--dry-run --include-all`, relire, puis `--include-all` ; une sous-notion neuve → copie figée
-  `tests/integration/fixtures/arbre-notions-seed.json`, comptes de `seed-classification-nodes.test.ts` et
-  `tests/helpers/database/later-migrations.ts` dans la même PR (CI rouge sinon).
-- **Worktree / branche** : aucun (retiré après #2173) ; prochain chantier → worktree neuf depuis `origin/main`.
+  = heure réelle UTC ; « inserted before the last migration » → `--dry-run --include-all`, relire, puis
+  `--include-all`. Worktree neuf : `pnpm exec svelte-kit sync` avant `question:specs` (sinon `$lib` introuvable).
+  `|` interdit dans une branche de `{{if:…}}` (`\lvert x\rvert`).
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe` · `feat/questions-tspe-lot3`.
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -775,3 +775,37 @@ la publication). Rendu à 390 px non vérifié.
 
 **Publication** (2026-11-02) : David a validé les 4 dans la conversation (page sans verdict enregistré) ;
 `publier-lot.ts` simulé (4 passent), lancé par David avec `--publier` : 4/4 `published`, relus au MCP.
+
+## 16. Lot 3 : logarithme, continuité, convexité, restes (593, 447, 626, 426, 589, 591)
+
+_2026-11-02. Relevé MCP : « Logarithmes › dérivée » vide (593) ; 447 sur la notion Logarithmes ; 626 sur
+« Fonction exponentielle › propriétés algébriques » (niveaux 1 à 7 pris par la 1re spé, 1SPE-294 : réduire un
+exposant) ; 426 sur « Continuité › continuité en un point » (10393ff9 niveau 1) ; 589 et 591 sur « Convexité ›
+point d'inflexion » (08f9ad7b niveau 2, 98f9d4b2 niveau 5). Voisins à ne pas répéter : ffd5c051, d3301f2d,
+14036c68, f1963ef2 (seuil discret), e3e19d28 / 225c8682 (convexité lue sur f′, f″)._
+
+**Décisions (David, 2026-11-02, « je suis tes recos »)** : M2 en valeur exacte ; M3 modèle de terminale neuf (pas
+de tag 626 sur un modèle de 1re spé) ; M2 rangé dans « équations et inéquations » (pas de sous-notion
+« problèmes ») ; aucune sous-notion neuve ; niveau `T_SPE` seul ; M4 interroge le fait, jamais une justification de
+continuité (borne générale). **Q6** : borne de TSPE-626 écrite dans `tspe.json` / `tspe.md`.
+
+| #   | Point    | Titre                                       | Rangement visé                                     |
+| --- | -------- | ------------------------------------------- | -------------------------------------------------- |
+| M1  | TSPE-593 | Variations de ln : comparer, signe          | Logarithmes › dérivée, 1                           |
+| M2  | TSPE-447 | Problème : demi-vie, doublement (exp et ln) | Logarithmes › équations et inéquations, 4          |
+| M3  | TSPE-626 | Transformer une écriture exponentielle      | Fonction exponentielle › propriétés algébriques, 8 |
+| M4  | TSPE-426 | Dérivable implique continue                 | Continuité › continuité en un point, 2             |
+| M5  | TSPE-589 | Point d'inflexion lu sur la courbe de f′    | Convexité › point d'inflexion, 3                   |
+| M6  | TSPE-591 | Point d'inflexion lu sur la courbe de f″    | Convexité › point d'inflexion, 4                   |
+
+**Écriture** : `docs/wip/questions/lot-tspe-ln-continuite-convexite.py` →
+`scripts/questions/tspe-3-ln-continuite-convexite/`. Specs 9 + 12 + 13 + 6 + 5 + 4 vertes, 1 800 tirages ;
+`sonde-courbes` 0 problème (600 blocs). L'Atelier rend `bad_form` (contrainte `form`) pour `ln 2 / 0,04` et
+`2e^{0}` : réponse non simplifiée, spec écrite ainsi. Corrigés après relecture des tirages : `|x|` dans un
+`{{if}}` (la barre coupait la condition → `\lvert x\rvert`), couleur hors formule (M6), `round(…, 1)` refusé par
+`eval`. Base locale : 6 brouillons créés ; M2 (`10\ln 2` juste, décimales à virgule), M3 (réponse fausse refusée,
+corrigé rendu `e^x`), M4 (choix faux refusé, bonne réponse montrée), M5 (cubique bien dessinée) joués dans
+l'aperçu.
+
+**Question d'accès** (migration à venir) : personne ne gagne ni ne perd d'accès (brouillons ; les élèves ne les
+voient qu'après `publier-lot`).

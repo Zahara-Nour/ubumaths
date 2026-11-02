@@ -2062,6 +2062,19 @@
 					"raison": "la ligne du BO nomme exponentielle et logarithme : on coupe (règle 1a), comme pour résoudre une équation / inéquation"
 				}
 			},
+			"TSPE-626": {
+				"libelle": "Utiliser l'équation fonctionnelle de l'exponentielle pour transformer une écriture",
+				"rubrique": "Analyse > Fonction logarithme",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Transformer une écriture avec exp par l'équation fonctionnelle (exp(a + b) = exp(a)·exp(b) et ses conséquences : exp(−a) = 1/exp(a), exp(na) = exp(a)ⁿ) : factoriser, réduire au même dénominateur, diviser par eˣ.",
+						"source": "BO Tle spé p.10",
+						"force": "BO"
+					}
+				],
+				"remarque": "Point neuf, coupé de TSPE-444 (décision du 2026-10-23) ; borne écrite le 2026-11-02 (questions-tspe, Q6), pendant de 444 côté exponentielle. La simple réduction d'un exposant est de 1re spé (1SPE-294)."
+			},
 			"TSPE-445": {
 				"libelle": "Utiliser l'équation fonctionnelle de l'exponentielle pour résoudre une équation",
 				"rubrique": "Analyse > Fonction logarithme",

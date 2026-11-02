@@ -1,0 +1,141 @@
+{
+	"title": "Point d'inflexion lu sur la courbe de f′",
+	"description": "Lire sur la courbe de f′ l'abscisse des points d'inflexion de f : extremums de f′ (piège : les zéros de f′, extremums de f)",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions",
+	"domain": "Convexité",
+	"subdomain": "Point d'inflexion",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		},
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On a représenté ci-dessous la courbe de la fonction **dérivée** $f'$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:h-4}} ; {{eval:h+4}}\ny: -5 ; 5\ngrille: 1 ; 1\ng(x) = {{s}}*0.5*((x-{{h}})^2-{{eval:m^2}})   rouge\ntaille: moyenne\ndescription: Courbe de la dérivée f′ : une parabole qui coupe l'axe des abscisses en deux points.\n```\n\nQuelle est l'abscisse du point d'inflexion de la courbe de $f$ ?\n\n$x=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{h}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La courbe de $f$ a un point d'inflexion là où la convexité change, c'est-à-dire là où $f'$ change de sens de variation : à un **extremum** de $f'$.",
+					"$f'$ est {{if:s>0|décroissante puis croissante|croissante puis décroissante}}, avec un {{if:s>0|minimum|maximum}} en $x={{h}}$.",
+					"Le point d'inflexion a pour abscisse $x=\\textcolor{{{color:primary.0}}}{{{h}}}$. (Les points où $f'$ s'annule, $x={{eval:h-m}}$ et $x={{eval:h+m}}$, sont les extremums de $f$.)"
+				]
+			},
+			"variables": [
+				{
+					"name": "s",
+					"expression": "-1|1"
+				},
+				{
+					"name": "h",
+					"expression": "-2..2"
+				},
+				{
+					"name": "m",
+					"expression": "1..2"
+				}
+			]
+		},
+		{
+			"statement": "On a représenté ci-dessous la courbe de la fonction **dérivée** $f'$ d'une fonction $f$ deux fois dérivable sur $\\mathbb{R}$.\n\n```courbe\nx: {{eval:h-3}} ; {{eval:h+3}}\ny: -4 ; 4\ngrille: 1 ; 1\ng(x) = {{s}}*0.5*((x-{{h}})^3-3*(x-{{h}}))   rouge\ntaille: moyenne\ndescription: Courbe de la dérivée f′ : elle monte et descend, avec deux sommets.\n```\n\nLa courbe de $f$ a deux points d'inflexion. Donne leurs abscisses, de la plus petite à la plus grande.\n\n$x_1=?$ et $x_2=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:h-1}}"
+				},
+				{
+					"expectedAnswer": "{{eval:h+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un point d'inflexion de la courbe de $f$ correspond à un **extremum** de $f'$ : là, $f'$ change de sens de variation, donc $f$ change de convexité.",
+					"$f'$ a un {{if:s>0|maximum|minimum}} en $x={{eval:h-1}}$ et un {{if:s>0|minimum|maximum}} en $x={{eval:h+1}}$.",
+					"$x_1=\\textcolor{{{color:primary.0}}}{{{eval:h-1}}}$ et $x_2=\\textcolor{{{color:primary.0}}}{{{eval:h+1}}}$. (Là où $f'$ s'annule, $f$ a un extremum, pas un point d'inflexion.)"
+				]
+			},
+			"variables": [
+				{
+					"name": "s",
+					"expression": "-1|1"
+				},
+				{
+					"name": "h",
+					"expression": "-1..1"
+				}
+			]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : sommet h",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"h": "1",
+				"m": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : zéro de f′",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"h": "1",
+				"m": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : zéro de f′ (gauche)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "-1",
+				"h": "1",
+				"m": "2"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : h ± 1",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"h": "0"
+			},
+			"answers": ["-1", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : zéro h de f′",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"h": "0"
+			},
+			"answers": ["0", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
