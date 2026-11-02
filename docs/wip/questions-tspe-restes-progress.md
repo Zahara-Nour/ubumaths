@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, 8b écrit (PR à merger)._
+_Mis à jour le 2026-11-02, 8b créé en prod, migration en PR._
 
-- **État** : lot 8 (D-L8 : 26 « à savoir » en 8a/8b/8c) ; 8a clos ; **8b** : 7 modèles écrits (`scripts/questions/tspe-8b-savoir/`), specs 68 vertes, simulation `create-questions` : 7 à créer.
-- **Prochaine action** : merger la PR de 8b ; puis `create-questions --dir scripts/questions/tspe-8b-savoir --publier` par David (dépôt principal) ; relevé MCP ; migration nœud + tag (copie de `20261102204034`, TSPE-466 va sur la NOTION « Équations différentielles › y′ = ay + b » : relever ses sous-notions pour `sous_notions_admises`).
-- **En attente de David** : `create-questions --publier` après le merge.
+- **État** : lot 8 (D-L8 : 26 « à savoir » en 8a/8b/8c) ; 8a clos ; **8b** : 7 brouillons en prod (#2263), migration nœud + tag `20261102222541` en PR (test 11 vert, rouge sans l'étape 4).
+- **Prochaine action** : `security-auditor`, `check:migrations --pr`, merge, `migration list --linked` puis `db:migrate` ; relecture MCP ; page à cocher `page-a-cocher.ts --dir scripts/questions/tspe-8b-savoir`.
+- **En attente de David** : rien (puis relecture de la page à cocher).
 - **Pièges en cours** : relevé de nœuds → filtrer `archived_at is null` ; `!=` dans `$…$` lu « ≠ » (écrire `!\,=`) ; garde « notion sans sous-notion » : liste `sous_notions_admises` (migration `20261102181059`).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · `content/questions-tspe-8b`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · `content/questions-tspe-8b-rangement`.
 
 ---
 
@@ -256,3 +256,15 @@ dans les formules qu'il analyse, comme dans les modèles d'exponentielle de 1re)
 créer, 0 en base. Nœuds des points (MCP) : 463, 603-606 → Équations différentielles › y′ = f › primitives des fonctions
 de référence ; 466 → NOTION Équations différentielles › y′ = ay + b ; 484 → Intégration › Calcul d'intégrales ›
 intégration par parties. Aucun de ces points n'a de tag.
+
+## Lot 8b : création en prod et migration nœud + tag (2026-11-02)
+
+**#2263 mergée** (CI verte). **Création en prod** (David, 2026-11-02, 22 h 25 UTC), relue au MCP : 7 brouillons [T_SPE],
+« À savoir », sans nœud ni tag — 9f47bf89 (463), 10c6d48e (603), b46ed512 (604), 31789847 (605), e002fdd3 (606),
+c79a1c43 (466), b4554528 (484).
+
+Migration `20261102222541_questions_tspe_lot8b_rangement_tags.sql` (copie de 8a, préfixe `_qtl8b_`). TSPE-466 va sur la
+NOTION « Équations différentielles › y′ = ay + b » : ses deux sous-notions (« solution générale », « condition
+initiale ») sont archivées depuis le 2026-10-10 (MCP) → `sous_notions_admises` vide, garde entière. Test
+`tests/integration/questions-tspe-lot8b-rangement-tags.test.ts` (copie de 8a + un cas : « solution générale »
+désarchivée → la migration échoue) : 11/11 ; **rouge** sans l'étape 4 (suite principale, 5 sautés, rollback).
