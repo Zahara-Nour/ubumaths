@@ -13,15 +13,14 @@ _Mis à jour le 2026-11-02, après #2185._
 - **Prochaine action** : après le `--publier` du lot 8, vérifier `published` au MCP. Lot 9 : compter les verdicts en base,
   relever les catégories, `publier-lot` (simulation, puis David). Ensuite lot 10 (espace et mesure, § 12).
 - **En attente de David** : `! cd /Users/david/Coding/js/ubumaths && pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/ce1-8 --publier` ;
-  relecture du lot 9 ; supprimer `scripts/questions/.partage-tmp.ts` et `.planche-tmp.ts` (jetables, non suivis) pour
-  retirer le worktree. Chantier `verrou-deploy` à ouvrir dans sa session (mémoire).
+  relecture du lot 9. Chantier `verrou-deploy` à ouvrir dans sa session (mémoire).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; **niveaux : relever la
   catégorie juste avant la publication** ; horodatage de migration : `pnpm migration:horodatage`, `pnpm check:migrations
 --pr <n>` avant le merge ; commitlint : sujet sans majuscule ; aucun lien de session dans une PR ; **un défaut vu sur
   la page à cocher peut venir du script de la page : comparer à l'aperçu admin avant d'accuser le modèle**.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (HEAD détachée sur main, en attente du retrait). `!` de David :
+- **Worktree / branche** : aucun (retiré le 2026-11-02 ; le prochain lot en repart un neuf sur `origin/main`). `!` de David :
   toujours préfixer `cd /Users/david/Coding/js/ubumaths &&`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
