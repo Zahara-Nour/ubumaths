@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après la création en prod du 6a._
+_Mis à jour le 2026-11-02, après #2246._
 
-- **État** : 9 brouillons du 6a créés en prod (ids au § Lot 6a) ; migration nœud + tag écrite, test vert et prouvé rouge, PR en cours.
-- **Prochaine action** : merger la PR de migration, `db:migrate` depuis le dépôt principal (après `migration list --linked`), vérifier au MCP ; puis phase 0 du lot 6b.
+- **État** : lot 6a fini — 9 brouillons créés en prod, rangés et tagués (#2246, `db:migrate` fait, vérifié au MCP) ; publication par David quand il veut (`publier-lot`).
+- **Prochaine action** : phase 0 du lot 6b (points 358, 368, 566, 568 : plans, représentations paramétriques, équations cartésiennes), relevé MCP des nœuds d'abord.
 - **En attente de David** : rien.
-- **Pièges en cours** : voir « Décisions communes et pièges » ; `--publier` : donner la commande avec `!` (un « go » ne passe pas le classifieur).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-espace`, `feat/questions-tspe-espace-6a-tags`.
+- **Pièges en cours** : voir « Décisions communes et pièges » ; `--publier` : donner la commande avec `!` (un « go » ne passe pas le classifieur) ; d192da3e v1 (367) fait déjà le plan médiateur (358).
+- **Worktree / branche** : aucun (rangé après #2246) ; worktree neuf `../ubumaths-wt-questions-tspe-espace` depuis `origin/main` pour le 6b.
 
 ---
 
@@ -135,3 +135,5 @@ moi sur un simple « go » : refusé par le classifieur, David l'a lancé avec `
 **Migration nœud + tag** : `20261102181329_questions_tspe_lot6a_rangement_tags.sql` (copie du gabarit du lot 5a),
 test `tests/integration/questions-tspe-lot6a-rangement-tags.test.ts` : 10 verts, rouge sans la migration (4 échecs,
 5 sautés). Nœuds des 9 points revérifiés au MCP le même jour.
+
+**Migration** : #2246 mergée le 2026-11-02 (CI verte, security-auditor sans finding), `db:migrate` passé (seule en attente), 9 modèles vérifiés au MCP sur leur nœud avec leur point.
