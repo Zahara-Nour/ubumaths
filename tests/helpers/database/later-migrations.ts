@@ -27,7 +27,7 @@ export const QUESTIONS_TSPE_LOT2 =
 	'supabase/migrations/20261101224702_questions_tspe_lot2_rangement_tags.sql';
 /** Sous-notion « Algorithmique > Variables et instructions > blocs personnalisés » (3-050), lots 7 et 8 de la 3e. */
 export const QUESTIONS_3_LOTS7_8 =
-	'supabase/migrations/20261102055453_questions_3_lots7_8_rangement_tags.sql';
+	'supabase/migrations/20261102070008_questions_3_lots7_8_rangement_tags.sql';
 /** Du plus récent au plus ancien. */
 const LATER = [
 	QUESTIONS_3_LOTS7_8,

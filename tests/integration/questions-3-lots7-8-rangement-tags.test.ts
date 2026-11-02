@@ -2,7 +2,7 @@
  * Chantier « questions-3 », lots 7 et 8 (algorithmique, boîte à moustaches) : nœuds et tags (Supabase local requis)
  * ===================================================================================================
  *
- * Migration `20261102055453_questions_3_lots7_8_rangement_tags` : une sous-notion neuve, « Algorithmique >
+ * Migration `20261102070008_questions_3_lots7_8_rangement_tags` : une sous-notion neuve, « Algorithmique >
  * Variables et instructions > blocs personnalisés », où passe le point 3-050 ; les 6 brouillons des
  * lots 7 et 8 (créés sans nœud ni tag) vont sur le nœud de leur point, tag posé (3-047, 3-048, 3-049,
  * 3-050, 3-062, 3-030). Aucun niveau ni statut ne change. Décisions de David (journal
@@ -60,7 +60,7 @@ interface Etat {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261102055453_questions_3_lots7_8_rangement_tags.sql';
+const MIGRATION = 'supabase/migrations/20261102070008_questions_3_lots7_8_rangement_tags.sql';
 /** Le lot, tel que relevé en prod le 2026-11-02 (tags en « programme§code »). */
 const LOT: Modele[] = JSON.parse(
 	readFileSync('tests/integration/fixtures/questions-3-lots7-8-rangement.json', 'utf-8')

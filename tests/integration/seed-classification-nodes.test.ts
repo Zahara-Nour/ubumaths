@@ -18,7 +18,7 @@
  * 20261101190200 « Représenter des données > choisir une représentation » → 474 ; puis
  * 20261101224702 « limites usuelles » (Limites de suites, Limites de fonctions) et
  * « Limites de suites > croissances comparées » → 477 ; puis
- * 20261102055453 « Variables et instructions > blocs personnalisés » → 478.
+ * 20261102070008 « Variables et instructions > blocs personnalisés » → 478.
  *
  * La preuve est INTÉGRALE, pas un échantillon : l'ensemble exact des chemins
  * « branche > notion > sous-notion » du JSON source

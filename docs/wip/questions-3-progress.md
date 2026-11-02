@@ -1115,7 +1115,7 @@ publiés de plus. Aucune règle ne change.
 ## 16. Rangement des lots 7 et 8 (2026-11-02)
 
 - Brouillons en prod (David) : lot 7 (§ 14.11), lot 8 `1bd7378d` (lire, 3-062), `9a9026fc` (construire, 3-030).
-- Migration `20261102055453_questions_3_lots7_8_rangement_tags.sql`, générée par
+- Migration `20261102070008_questions_3_lots7_8_rangement_tags.sql`, générée par
   `docs/wip/questions/lot-rangement-3-7-8.py` (gabarit : `questions-5/lot-6-rangement.py`, qui crée aussi une
   sous-notion) depuis le relevé `etat-prod-2026-11-02-3e-lots7-8/` : sous-notion **neuve** « Algorithmique >
   Variables et instructions > blocs personnalisés » (§ 14.10), où passe le point **3-050** (comme 5-079 au lot 6
