@@ -1,0 +1,118 @@
+{
+	"title": "Indépendance de deux événements",
+	"description": "À savoir : A et B indépendants ⟺ P(A ∩ B) = P(A)P(B), soit P_B(A) = P(A) si P(B) ≠ 0 ; distracteur principal : incompatibles (P(A ∩ B) = 0)",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Probabilités conditionnelles",
+	"subdomain": "À savoir",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $A$ et $B$ deux événements. Les événements $A$ et $B$ sont **indépendants** lorsque :\n\n```choix\n- $P(A\\cap B)=P(A)\\times P(B)$\n- $P(A\\cap B)=0$\n- $P(A\\cup B)=P(A)+P(B)$\n- $P_A(B)=P(A)\\times P(B)$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : $A$ et $B$ sont indépendants lorsque $\\textcolor{{{color:primary.0}}}{P(A\\cap B)=P(A)\\times P(B)}$.",
+					"Ne pas confondre avec des événements **incompatibles**, pour lesquels $P(A\\cap B)=0$ : ils ne peuvent pas se produire en même temps."
+				]
+			}
+		},
+		{
+			"statement": "Soit $A$ et $B$ deux événements **indépendants**, avec $P(B)\\neq 0$.\n\nLa probabilité conditionnelle $P_B(A)$ est égale à :\n\n```choix\n- $P(A)$\n- $P(B)$\n- $P(A)\\times P(B)$\n- $0$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"À connaître : si $P(B)\\neq 0$, $A$ et $B$ sont indépendants lorsque $P_B(A)=P(A)$.",
+					"Savoir que $B$ est réalisé ne change pas la probabilité de $A$ : $P_B(A)=\\textcolor{{{color:primary.0}}}{P(A)}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "produit",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : incompatibles",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : réunion",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : P_A(B) = produit",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "P(A)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : P(B)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : P(A)P(B)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

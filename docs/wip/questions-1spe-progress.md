@@ -9,14 +9,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 4 publié (après #2210)._
+_Mis à jour le 2026-11-02, lot 6a écrit (PR des fichiers ouverte)._
 
-- **État** : lots 4-probabilités et 5-variables aléatoires **clos** (8 + 8 publiés). Pluriel « 1 boules rouges » corrigé avant publication (#2210, `--mettre-a-jour`).
-- **Prochaine action** : lot suivant de D7 — lot « à savoir » (D2) : relevé prod, phase 0 à soumettre à David.
-- **En attente de David** : rien.
-- **Pièges en cours** : `blankDefaults.acceptDecimal` obligatoire ; **variable `e` = Euler** ; pluriel d'une quantité 1..n → `{{if:…}}` ; choix mélangés → jamais « première phrase » dans un corrigé ; `col()` hors `$…$` (`colt`) ; `Doc-inchangée:` dans un COMMIT (≤ 100 caractères) ; aucun trailer `Claude-Session:` ; `--include-all` pousse TOUTES les migrations en attente.
-- **Worktree / branche** : aucun.
-- **Ensuite (D7)** : lot « à savoir » (D2), restes (produit scalaire formules, second degré / exponentielle / trigo, logique et listes Python), lots en attente d'un outil.
+- **État** : lot 6 « à savoir » (D2, D29) : 6a (264, 391, 392, 290, 404, 336, 350) écrit, PR des fichiers ouverte ; 6b (412, 310, 313, 311, 415, 316, 329) à écrire.
+- **Prochaine action** : merger la PR 6a, puis David lance `create-questions --publier` sur `scripts/questions/1spe-savoir-a` ; relever les `id`, migration nœud + tags (catégories neuves « À savoir »).
+- **En attente de David** : `create-questions --publier` après le merge.
+- **Pièges en cours** : **pas de `cleanCoefficients` sur un modèle sans variable** (`\sigma(X)` rendu « σX ») ; `blankDefaults.acceptDecimal` obligatoire (réponses numériques) ; **variable `e` = Euler** ; choix mélangés → jamais « première phrase » dans un corrigé ; `col()` hors `$…$` (`colt`) ; `Doc-inchangée:` dans un COMMIT (≤ 100 caractères) ; aucun trailer `Claude-Session:` ; `--include-all` pousse TOUTES les migrations en attente.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `feat/questions-1spe-lot6a`.
+- **Ensuite (D7)** : lot 6b, restes (produit scalaire formules, second degré / exponentielle / trigo, logique et listes Python), lots en attente d'un outil.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1112,3 +1112,48 @@ sont `published` en base. **Lot 5-variables aléatoires clos.**
 **Pièges du lot** : variable `e` lue comme la constante d'Euler (renommée `u`) ; `E(X)^2` après un signe moins rendu
 « E X² » → `{E(X)}^2` (rendu « (E(X))² ») ; réponses colorées dans le texte hors formule → `colt` (`$…$`) ; les choix
 sont mélangés à l'affichage, le corrigé nomme la bonne réponse, jamais son rang.
+
+## 23. Lot 6 « à savoir » (D2) : faits à connaître (D7)
+
+_Relevé prod du 2026-11-02 (MCP) : les 14 points de D2 (264, 391, 392, 290, 404, 310, 412, 313, 311, 415, 316, 329, 336,
+350), tous « connaissance », toujours sans modèle. Voisin le plus proche : a86442c1 « Calculer une dérivée » (Dérivation ›
+Apprivoiser 1, tagué 266, publié) qui demande déjà en case ouverte la dérivée de x², xᵃ et 1/x. Aucune catégorie « à
+savoir » en base ; catégories voisines pleines (Fonctions dérivées 1-7, Propriétés algébriques 1-8, Calculer un produit
+scalaire 1-5, Propriétés 1-5, Angles et longueurs 1-3, Équation de cercle 1-5, Indépendance 1-3, Variance et écart-type
+1-4)._
+
+**Phase 0 (D29, David, 2026-11-02, « je valide » sur les recos)** : un modèle par point, rangé sur le nœud de son point ;
+2-3 variations dans les deux sens (formule → propriété, propriété → formule) ; case choix à 4 propositions, erreurs
+typiques en distracteurs.
+
+| #   | Point | Modèle                                      | Catégorie, niveau                                  |
+| --- | ----- | ------------------------------------------- | -------------------------------------------------- |
+| 1   | 264   | Dérivée de la fonction carré                | Dérivation › À savoir (neuve), 1                   |
+| 2   | 391   | Dérivée de la fonction cube                 | Dérivation › À savoir, 2                           |
+| 3   | 392   | Dérivée de la fonction inverse              | Dérivation › À savoir, 3                           |
+| 4   | 290   | exp(x + y)                                  | Fonction exponentielle › À savoir (neuve), 1       |
+| 5   | 404   | exp(x)·exp(−x)                              | Fonction exponentielle › À savoir, 2               |
+| 6   | 336   | Indépendance de deux événements             | Probabilités conditionnelles › À savoir (neuve), 1 |
+| 7   | 350   | Variance et écart type                      | Variables aléatoires › À savoir (neuve), 1         |
+| 8   | 412   | Produit scalaire et cosinus                 | Produit scalaire › À savoir (neuve), 1             |
+| 9   | 310   | Produit scalaire et projection orthogonale  | Produit scalaire › À savoir, 2                     |
+| 10  | 313   | Produit scalaire en base orthonormée        | Produit scalaire › À savoir, 3                     |
+| 11  | 311   | Caractérisation de l'orthogonalité          | Produit scalaire › À savoir, 4                     |
+| 12  | 415   | Critère d'orthogonalité en base orthonormée | Produit scalaire › À savoir, 5                     |
+| 13  | 316   | Formule d'Al-Kashi                          | Produit scalaire › À savoir, 6                     |
+| 14  | 329   | Équation de cercle                          | Géométrie repérée › À savoir (neuve), 1            |
+
+Q1 deux lots de 7 (6a : 1-7, analyse et probabilités ; 6b : 8-14, géométrie) : oui. Q2 case choix à 4 propositions, deux
+sens : oui. Q3 catégorie neuve « À savoir » dans chaque domaine : oui. Q4 264, 391, 392 créés malgré a86442c1 (forme
+différente : reconnaissance parmi des erreurs typiques, sens inverse) : oui. Q5 pas de König-Huygens dans 350 (352 a
+58c55bba) : oui. Q6 question d'accès : personne (brouillons ; la migration ne pose que nœud et tags).
+
+**Écriture 6a** : `docs/wip/questions/lot-1spe-savoir-a.py` → `scripts/questions/1spe-savoir-a/`. Specs : 56 vertes (une juste
+et trois erreurs typiques par variation) ; simulation `create-questions` : 7 / 7 importables. Essai en base **locale** : 03
+(choix en fractions, corrigé) joué juste, 07 regardé ; sonde `generateInstance` de chaque variation : formules intactes.
+Écarts au tableau de phase 0, en distracteurs seulement : 392 « ln x » remplacé par « 0 » (ln hors programme de 1re), sens
+inverse de 392 sur ]0 ; +∞[ (l'ensemble de dérivabilité reste à d2bca2d8).
+
+**Piège du lot** : `cleanCoefficients` lit `\sigma(X)` comme le produit σ·(X) et le rend « σX » (V(X), f(x) intacts). Lot
+sans variable → option retirée. Prod non touchée : les 5 modèles publiés qui écrivent `\sigma(…)` (35ad8891, bad86bec,
+aced2e6c, 38001c3f, 71cb8ab7) n'ont pas l'option (relevé MCP du 2026-11-02).
