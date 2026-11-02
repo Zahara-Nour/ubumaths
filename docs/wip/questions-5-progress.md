@@ -5,15 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2184._
+_Mis à jour le 2026-11-02, PR de migration #2197 ouverte._
 
-- **État** : lots 1 à 7 publiés. Lot 8 « Opérations » : 6 modèles en fichiers, **#2184 mergée**
-  (`scripts/questions/5-operations/`, § 20) ; rien encore en prod.
-- **Prochaine action** : David lance
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/5-operations --publier` (brouillons en prod) ;
-  relever les `id` ; migration nœud + tag (sous-catégorie neuve « Traduire en une expression » pour 04-06) ;
-  page à cocher ; publication.
-- **En attente de David** : le `--publier` ci-dessus ; 02 du lot 7 (deux cases sur deux lignes) à essayer à la
+- **État** : lots 1 à 7 publiés. Lot 8 « Opérations » : 6 brouillons en prod (#2184, § 21) ; migration nœud +
+  tag `20261102051844` en PR #2197 (test rouge puis 19/19 vert, `security-auditor` sans finding bloquant).
+- **Prochaine action** : CI verte → `check:migrations --pr 2197` → merge → David lance `db:migrate` depuis le
+  dépôt principal → vérifier en prod → page à cocher.
+- **En attente de David** : `db:migrate` après le merge de #2197 ; 02 du lot 7 (deux cases sur deux lignes) à essayer à la
   main : au pilotage Chrome, la frappe dans la 2e case arrivait aussi dans la 1re — extension ou appli ?
 - **Pièges en cours** : `db:migrate` en prod refusé par le classifieur du mode auto → David le lance ; il pousse
   toutes les migrations en attente (se coordonner avec les autres sessions) ; `pnpm check:migrations --pr <n>`
@@ -603,3 +601,12 @@ opératoires › écriture d'une expression ». Chaque modèle sur le nœud de s
 - Nombres décimaux construits (`P = 10p + 5`) plutôt que filtrés par `mod` : 33 tirages sur 200 échouaient.
 - Simulation prod : 6 « à créer ». Base locale : 6 brouillons ; 01 (3,8 juste), 04 (40 − 2·5 juste, correction
   affichée), 02 (rendu des choix) joués dans l'aperçu.
+
+## 21. Lot 8 en prod, rangement (2026-11-02)
+
+- Brouillons créés par David : c241cf63 (01), eb5ecee6 (02), ab4cf356 (03), d9811133 (04), c7fc49c4 (05),
+  091c2784 (06) ; relevé `docs/wip/questions-5/etat-prod-2026-11-02-lot8/` (6 modèles, sans nœud ni tag).
+- Migration `20261102051844_questions_5_lot8_rangement_tags` (générateur `lot-8-rangement.py`, gabarit du lot 7) :
+  01-03 → notion « Nombres et calculs > Décimaux : calculs » ; 04-06 → « Entiers : priorités opératoires >
+  écriture d'une expression ». Test `questions-5-lot8-rangement-tags` : 11 rouges avec une migration vide,
+  19/19 vert. `security-auditor` : aucun finding (diff SQL exécutable nul avec le lot 7, relevé recoupé au MCP).
