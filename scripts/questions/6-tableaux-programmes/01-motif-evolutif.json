@@ -1,0 +1,234 @@
+{
+	"title": "Motif évolutif : trouver la régularité",
+	"description": "Motif dessiné en trois étapes (carrés ou triangles d'allumettes, rectangle de jetons) : compter l'étape suivante, ce qu'on ajoute à chaque étape, une étape lointaine, l'étape qui compte un nombre donné",
+	"grades": ["6"],
+	"theme": "Calcul littéral",
+	"domain": "Pensée algébrique",
+	"subdomain": "Motifs évolutifs",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici les trois premières étapes d'un motif d'allumettes.\n\n```figure\nfenetre: -0.5 ; 9.5 ; -1.5 ; 1.5\ntaille: grande\ndescription: Trois étapes d'un motif d'allumettes : une rangée de 1, 2 puis 3 carrés accolés, qui comptent 4, 7 puis 10 allumettes.\n---\nQ1 = point(0, 0, visible=faux)\nQ2 = point(0, 1, visible=faux)\nQ3 = point(1, 0, visible=faux)\nQ4 = point(1, 1, visible=faux)\nsegment(Q1, Q3, couleur=\"marron\", epaisseur=3)\nsegment(Q2, Q4, couleur=\"marron\", epaisseur=3)\nsegment(Q1, Q2, couleur=\"marron\", epaisseur=3)\nsegment(Q3, Q4, couleur=\"marron\", epaisseur=3)\ntexte(0.5, -0.9, \"Étape 1\")\nQ5 = point(2.5, 0, visible=faux)\nQ6 = point(2.5, 1, visible=faux)\nQ7 = point(3.5, 0, visible=faux)\nQ8 = point(3.5, 1, visible=faux)\nQ9 = point(4.5, 0, visible=faux)\nQ10 = point(4.5, 1, visible=faux)\nsegment(Q5, Q7, couleur=\"marron\", epaisseur=3)\nsegment(Q6, Q8, couleur=\"marron\", epaisseur=3)\nsegment(Q7, Q9, couleur=\"marron\", epaisseur=3)\nsegment(Q8, Q10, couleur=\"marron\", epaisseur=3)\nsegment(Q5, Q6, couleur=\"marron\", epaisseur=3)\nsegment(Q7, Q8, couleur=\"marron\", epaisseur=3)\nsegment(Q9, Q10, couleur=\"marron\", epaisseur=3)\ntexte(3.5, -0.9, \"Étape 2\")\nQ11 = point(6.0, 0, visible=faux)\nQ12 = point(6.0, 1, visible=faux)\nQ13 = point(7.0, 0, visible=faux)\nQ14 = point(7.0, 1, visible=faux)\nQ15 = point(8.0, 0, visible=faux)\nQ16 = point(8.0, 1, visible=faux)\nQ17 = point(9.0, 0, visible=faux)\nQ18 = point(9.0, 1, visible=faux)\nsegment(Q11, Q13, couleur=\"marron\", epaisseur=3)\nsegment(Q12, Q14, couleur=\"marron\", epaisseur=3)\nsegment(Q13, Q15, couleur=\"marron\", epaisseur=3)\nsegment(Q14, Q16, couleur=\"marron\", epaisseur=3)\nsegment(Q15, Q17, couleur=\"marron\", epaisseur=3)\nsegment(Q16, Q18, couleur=\"marron\", epaisseur=3)\nsegment(Q11, Q12, couleur=\"marron\", epaisseur=3)\nsegment(Q13, Q14, couleur=\"marron\", epaisseur=3)\nsegment(Q15, Q16, couleur=\"marron\", epaisseur=3)\nsegment(Q17, Q18, couleur=\"marron\", epaisseur=3)\ntexte(7.5, -0.9, \"Étape 3\")\n```\n\nCombien d'allumettes faut-il pour l'étape ${{s}}$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "4..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:3*s+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La régularité.** $4$, puis $7$, puis $10$ : on ajoute $3$ allumettes à chaque étape (un carré de plus, qui partage un côté avec le précédent).",
+					"{{if:s==4|$10 + 3 = \\textcolor{{{color:primary.0}}}{13}$.|$10 + 3 = 13$ pour l'étape $4$, puis $13 + 3 = \\textcolor{{{color:primary.0}}}{16}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "Voici les trois premières étapes d'un motif de jetons.\n\n```figure\nfenetre: -0.7 ; {{eval:6+3*c+3+0.7;d}} ; -1.6 ; {{eval:max(r-0.3,(10.4+3*c)/4-1.5);d}}\ntaille: grande\ndescription: Trois étapes d'un motif de jetons : des rectangles de {{r}} lignes et {{eval:1+c}}, {{eval:2+c}} puis {{eval:3+c}} colonnes.\n---\nJ100 = point({{eval:0+0;d}}, 0, visible=faux)\ncercle(J100, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:0<1+c && 0<r|vrai|faux}})\nJ101 = point({{eval:0+0;d}}, 1, visible=faux)\ncercle(J101, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:0<1+c && 1<r|vrai|faux}})\nJ102 = point({{eval:0+0;d}}, 2, visible=faux)\ncercle(J102, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:0<1+c && 2<r|vrai|faux}})\nJ103 = point({{eval:0+0;d}}, 3, visible=faux)\ncercle(J103, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:0<1+c && 3<r|vrai|faux}})\nJ110 = point({{eval:0+1;d}}, 0, visible=faux)\ncercle(J110, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:1<1+c && 0<r|vrai|faux}})\nJ111 = point({{eval:0+1;d}}, 1, visible=faux)\ncercle(J111, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:1<1+c && 1<r|vrai|faux}})\nJ112 = point({{eval:0+1;d}}, 2, visible=faux)\ncercle(J112, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:1<1+c && 2<r|vrai|faux}})\nJ113 = point({{eval:0+1;d}}, 3, visible=faux)\ncercle(J113, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:1<1+c && 3<r|vrai|faux}})\nJ120 = point({{eval:0+2;d}}, 0, visible=faux)\ncercle(J120, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:2<1+c && 0<r|vrai|faux}})\nJ121 = point({{eval:0+2;d}}, 1, visible=faux)\ncercle(J121, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:2<1+c && 1<r|vrai|faux}})\nJ122 = point({{eval:0+2;d}}, 2, visible=faux)\ncercle(J122, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:2<1+c && 2<r|vrai|faux}})\nJ123 = point({{eval:0+2;d}}, 3, visible=faux)\ncercle(J123, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:2<1+c && 3<r|vrai|faux}})\ntexte({{eval:0+(1+c-1)/2;d}}, -1, \"Étape 1\")\nJ200 = point({{eval:0+(1+c+1.5)+0;d}}, 0, visible=faux)\ncercle(J200, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:0<2+c && 0<r|vrai|faux}})\nJ201 = point({{eval:0+(1+c+1.5)+0;d}}, 1, visible=faux)\ncercle(J201, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:0<2+c && 1<r|vrai|faux}})\nJ202 = point({{eval:0+(1+c+1.5)+0;d}}, 2, visible=faux)\ncercle(J202, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:0<2+c && 2<r|vrai|faux}})\nJ203 = point({{eval:0+(1+c+1.5)+0;d}}, 3, visible=faux)\ncercle(J203, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:0<2+c && 3<r|vrai|faux}})\nJ210 = point({{eval:0+(1+c+1.5)+1;d}}, 0, visible=faux)\ncercle(J210, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:1<2+c && 0<r|vrai|faux}})\nJ211 = point({{eval:0+(1+c+1.5)+1;d}}, 1, visible=faux)\ncercle(J211, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:1<2+c && 1<r|vrai|faux}})\nJ212 = point({{eval:0+(1+c+1.5)+1;d}}, 2, visible=faux)\ncercle(J212, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:1<2+c && 2<r|vrai|faux}})\nJ213 = point({{eval:0+(1+c+1.5)+1;d}}, 3, visible=faux)\ncercle(J213, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:1<2+c && 3<r|vrai|faux}})\nJ220 = point({{eval:0+(1+c+1.5)+2;d}}, 0, visible=faux)\ncercle(J220, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:2<2+c && 0<r|vrai|faux}})\nJ221 = point({{eval:0+(1+c+1.5)+2;d}}, 1, visible=faux)\ncercle(J221, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:2<2+c && 1<r|vrai|faux}})\nJ222 = point({{eval:0+(1+c+1.5)+2;d}}, 2, visible=faux)\ncercle(J222, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:2<2+c && 2<r|vrai|faux}})\nJ223 = point({{eval:0+(1+c+1.5)+2;d}}, 3, visible=faux)\ncercle(J223, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:2<2+c && 3<r|vrai|faux}})\nJ230 = point({{eval:0+(1+c+1.5)+3;d}}, 0, visible=faux)\ncercle(J230, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:3<2+c && 0<r|vrai|faux}})\nJ231 = point({{eval:0+(1+c+1.5)+3;d}}, 1, visible=faux)\ncercle(J231, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:3<2+c && 1<r|vrai|faux}})\nJ232 = point({{eval:0+(1+c+1.5)+3;d}}, 2, visible=faux)\ncercle(J232, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:3<2+c && 2<r|vrai|faux}})\nJ233 = point({{eval:0+(1+c+1.5)+3;d}}, 3, visible=faux)\ncercle(J233, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:3<2+c && 3<r|vrai|faux}})\ntexte({{eval:0+(1+c+1.5)+(2+c-1)/2;d}}, -1, \"Étape 2\")\nJ300 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+0;d}}, 0, visible=faux)\ncercle(J300, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:0<3+c && 0<r|vrai|faux}})\nJ301 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+0;d}}, 1, visible=faux)\ncercle(J301, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:0<3+c && 1<r|vrai|faux}})\nJ302 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+0;d}}, 2, visible=faux)\ncercle(J302, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:0<3+c && 2<r|vrai|faux}})\nJ303 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+0;d}}, 3, visible=faux)\ncercle(J303, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:0<3+c && 3<r|vrai|faux}})\nJ310 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+1;d}}, 0, visible=faux)\ncercle(J310, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:1<3+c && 0<r|vrai|faux}})\nJ311 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+1;d}}, 1, visible=faux)\ncercle(J311, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:1<3+c && 1<r|vrai|faux}})\nJ312 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+1;d}}, 2, visible=faux)\ncercle(J312, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:1<3+c && 2<r|vrai|faux}})\nJ313 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+1;d}}, 3, visible=faux)\ncercle(J313, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:1<3+c && 3<r|vrai|faux}})\nJ320 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+2;d}}, 0, visible=faux)\ncercle(J320, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:2<3+c && 0<r|vrai|faux}})\nJ321 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+2;d}}, 1, visible=faux)\ncercle(J321, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:2<3+c && 1<r|vrai|faux}})\nJ322 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+2;d}}, 2, visible=faux)\ncercle(J322, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:2<3+c && 2<r|vrai|faux}})\nJ323 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+2;d}}, 3, visible=faux)\ncercle(J323, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:2<3+c && 3<r|vrai|faux}})\nJ330 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+3;d}}, 0, visible=faux)\ncercle(J330, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:3<3+c && 0<r|vrai|faux}})\nJ331 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+3;d}}, 1, visible=faux)\ncercle(J331, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:3<3+c && 1<r|vrai|faux}})\nJ332 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+3;d}}, 2, visible=faux)\ncercle(J332, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:3<3+c && 2<r|vrai|faux}})\nJ333 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+3;d}}, 3, visible=faux)\ncercle(J333, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:3<3+c && 3<r|vrai|faux}})\nJ340 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+4;d}}, 0, visible=faux)\ncercle(J340, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:4<3+c && 0<r|vrai|faux}})\nJ341 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+4;d}}, 1, visible=faux)\ncercle(J341, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:4<3+c && 1<r|vrai|faux}})\nJ342 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+4;d}}, 2, visible=faux)\ncercle(J342, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:4<3+c && 2<r|vrai|faux}})\nJ343 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+4;d}}, 3, visible=faux)\ncercle(J343, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:4<3+c && 3<r|vrai|faux}})\ntexte({{eval:0+(1+c+1.5)+(2+c+1.5)+(3+c-1)/2;d}}, -1, \"Étape 3\")\n```\n\nCombien de jetons ajoute-t-on d'une étape à la suivante ?\n\n$?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..4"
+				},
+				{
+					"name": "c",
+					"expression": "0..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**On compte chaque étape.** Étape $1$ : ${{eval:r*(1+c)}}$ ; étape $2$ : ${{eval:r*(2+c)}}$ ; étape $3$ : ${{eval:r*(3+c)}}$.",
+					"**La régularité.** À chaque étape, on ajoute une colonne de ${{r}}$ jetons : $\\textcolor{{{color:primary.0}}}{{{r}}}$ jetons de plus."
+				]
+			}
+		},
+		{
+			"statement": "Voici les trois premières étapes d'un motif d'allumettes.\n\n```figure\nfenetre: -0.5 ; 8 ; -1.5 ; 1.5\ntaille: grande\ndescription: Trois étapes d'un motif d'allumettes : une rangée de 1, 2 puis 3 triangles accolés, qui comptent 3, 5 puis 7 allumettes.\n---\nT1 = point(0, 0, visible=faux)\nT2 = point(1, 0, visible=faux)\nT3 = point(0.5, 0.87, visible=faux)\nsegment(T1, T2, couleur=\"marron\", epaisseur=3)\nsegment(T1, T3, couleur=\"marron\", epaisseur=3)\nsegment(T3, T2, couleur=\"marron\", epaisseur=3)\ntexte(0.5, -0.9, \"Étape 1\")\nT4 = point(2.5, 0, visible=faux)\nT5 = point(3.5, 0, visible=faux)\nT6 = point(3.0, 0.87, visible=faux)\nT7 = point(4.0, 0.87, visible=faux)\nsegment(T4, T5, couleur=\"marron\", epaisseur=3)\nsegment(T6, T7, couleur=\"marron\", epaisseur=3)\nsegment(T4, T6, couleur=\"marron\", epaisseur=3)\nsegment(T6, T5, couleur=\"marron\", epaisseur=3)\nsegment(T5, T7, couleur=\"marron\", epaisseur=3)\ntexte(3.25, -0.9, \"Étape 2\")\nT8 = point(5.5, 0, visible=faux)\nT9 = point(6.5, 0, visible=faux)\nT10 = point(7.5, 0, visible=faux)\nT11 = point(6.0, 0.87, visible=faux)\nT12 = point(7.0, 0.87, visible=faux)\nsegment(T8, T9, couleur=\"marron\", epaisseur=3)\nsegment(T9, T10, couleur=\"marron\", epaisseur=3)\nsegment(T11, T12, couleur=\"marron\", epaisseur=3)\nsegment(T8, T11, couleur=\"marron\", epaisseur=3)\nsegment(T11, T9, couleur=\"marron\", epaisseur=3)\nsegment(T9, T12, couleur=\"marron\", epaisseur=3)\nsegment(T12, T10, couleur=\"marron\", epaisseur=3)\ntexte(6.5, -0.9, \"Étape 3\")\n```\n\nCombien d'allumettes faut-il pour l'étape ${{s}}$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "8..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*s+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La régularité.** $3$, puis $5$, puis $7$ : on ajoute $2$ allumettes à chaque étape (un triangle de plus, qui partage un côté avec le précédent).",
+					"**Jusqu'à l'étape ${{s}}$.** On part des $3$ allumettes de l'étape $1$ et on ajoute $2$ allumettes ${{eval:s-1}}$ fois : $3 + 2 \\times {{eval:s-1}} = \\textcolor{{{color:primary.0}}}{{{eval:2*s+1}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici les trois premières étapes d'un motif de jetons.\n\n```figure\nfenetre: -0.7 ; {{eval:6+3*c+3+0.7;d}} ; -1.6 ; {{eval:max(r-0.3,(10.4+3*c)/4-1.5);d}}\ntaille: grande\ndescription: Trois étapes d'un motif de jetons : des rectangles de {{r}} lignes et {{eval:1+c}}, {{eval:2+c}} puis {{eval:3+c}} colonnes.\n---\nJ100 = point({{eval:0+0;d}}, 0, visible=faux)\ncercle(J100, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:0<1+c && 0<r|vrai|faux}})\nJ101 = point({{eval:0+0;d}}, 1, visible=faux)\ncercle(J101, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:0<1+c && 1<r|vrai|faux}})\nJ102 = point({{eval:0+0;d}}, 2, visible=faux)\ncercle(J102, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:0<1+c && 2<r|vrai|faux}})\nJ103 = point({{eval:0+0;d}}, 3, visible=faux)\ncercle(J103, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:0<1+c && 3<r|vrai|faux}})\nJ110 = point({{eval:0+1;d}}, 0, visible=faux)\ncercle(J110, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:1<1+c && 0<r|vrai|faux}})\nJ111 = point({{eval:0+1;d}}, 1, visible=faux)\ncercle(J111, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:1<1+c && 1<r|vrai|faux}})\nJ112 = point({{eval:0+1;d}}, 2, visible=faux)\ncercle(J112, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:1<1+c && 2<r|vrai|faux}})\nJ113 = point({{eval:0+1;d}}, 3, visible=faux)\ncercle(J113, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:1<1+c && 3<r|vrai|faux}})\nJ120 = point({{eval:0+2;d}}, 0, visible=faux)\ncercle(J120, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:2<1+c && 0<r|vrai|faux}})\nJ121 = point({{eval:0+2;d}}, 1, visible=faux)\ncercle(J121, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:2<1+c && 1<r|vrai|faux}})\nJ122 = point({{eval:0+2;d}}, 2, visible=faux)\ncercle(J122, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:2<1+c && 2<r|vrai|faux}})\nJ123 = point({{eval:0+2;d}}, 3, visible=faux)\ncercle(J123, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:2<1+c && 3<r|vrai|faux}})\ntexte({{eval:0+(1+c-1)/2;d}}, -1, \"Étape 1\")\nJ200 = point({{eval:0+(1+c+1.5)+0;d}}, 0, visible=faux)\ncercle(J200, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:0<2+c && 0<r|vrai|faux}})\nJ201 = point({{eval:0+(1+c+1.5)+0;d}}, 1, visible=faux)\ncercle(J201, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:0<2+c && 1<r|vrai|faux}})\nJ202 = point({{eval:0+(1+c+1.5)+0;d}}, 2, visible=faux)\ncercle(J202, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:0<2+c && 2<r|vrai|faux}})\nJ203 = point({{eval:0+(1+c+1.5)+0;d}}, 3, visible=faux)\ncercle(J203, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:0<2+c && 3<r|vrai|faux}})\nJ210 = point({{eval:0+(1+c+1.5)+1;d}}, 0, visible=faux)\ncercle(J210, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:1<2+c && 0<r|vrai|faux}})\nJ211 = point({{eval:0+(1+c+1.5)+1;d}}, 1, visible=faux)\ncercle(J211, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:1<2+c && 1<r|vrai|faux}})\nJ212 = point({{eval:0+(1+c+1.5)+1;d}}, 2, visible=faux)\ncercle(J212, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:1<2+c && 2<r|vrai|faux}})\nJ213 = point({{eval:0+(1+c+1.5)+1;d}}, 3, visible=faux)\ncercle(J213, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:1<2+c && 3<r|vrai|faux}})\nJ220 = point({{eval:0+(1+c+1.5)+2;d}}, 0, visible=faux)\ncercle(J220, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:2<2+c && 0<r|vrai|faux}})\nJ221 = point({{eval:0+(1+c+1.5)+2;d}}, 1, visible=faux)\ncercle(J221, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:2<2+c && 1<r|vrai|faux}})\nJ222 = point({{eval:0+(1+c+1.5)+2;d}}, 2, visible=faux)\ncercle(J222, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:2<2+c && 2<r|vrai|faux}})\nJ223 = point({{eval:0+(1+c+1.5)+2;d}}, 3, visible=faux)\ncercle(J223, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:2<2+c && 3<r|vrai|faux}})\nJ230 = point({{eval:0+(1+c+1.5)+3;d}}, 0, visible=faux)\ncercle(J230, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:3<2+c && 0<r|vrai|faux}})\nJ231 = point({{eval:0+(1+c+1.5)+3;d}}, 1, visible=faux)\ncercle(J231, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:3<2+c && 1<r|vrai|faux}})\nJ232 = point({{eval:0+(1+c+1.5)+3;d}}, 2, visible=faux)\ncercle(J232, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:3<2+c && 2<r|vrai|faux}})\nJ233 = point({{eval:0+(1+c+1.5)+3;d}}, 3, visible=faux)\ncercle(J233, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:3<2+c && 3<r|vrai|faux}})\ntexte({{eval:0+(1+c+1.5)+(2+c-1)/2;d}}, -1, \"Étape 2\")\nJ300 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+0;d}}, 0, visible=faux)\ncercle(J300, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:0<3+c && 0<r|vrai|faux}})\nJ301 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+0;d}}, 1, visible=faux)\ncercle(J301, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:0<3+c && 1<r|vrai|faux}})\nJ302 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+0;d}}, 2, visible=faux)\ncercle(J302, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:0<3+c && 2<r|vrai|faux}})\nJ303 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+0;d}}, 3, visible=faux)\ncercle(J303, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:0<3+c && 3<r|vrai|faux}})\nJ310 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+1;d}}, 0, visible=faux)\ncercle(J310, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:1<3+c && 0<r|vrai|faux}})\nJ311 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+1;d}}, 1, visible=faux)\ncercle(J311, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:1<3+c && 1<r|vrai|faux}})\nJ312 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+1;d}}, 2, visible=faux)\ncercle(J312, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:1<3+c && 2<r|vrai|faux}})\nJ313 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+1;d}}, 3, visible=faux)\ncercle(J313, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:1<3+c && 3<r|vrai|faux}})\nJ320 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+2;d}}, 0, visible=faux)\ncercle(J320, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:2<3+c && 0<r|vrai|faux}})\nJ321 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+2;d}}, 1, visible=faux)\ncercle(J321, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:2<3+c && 1<r|vrai|faux}})\nJ322 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+2;d}}, 2, visible=faux)\ncercle(J322, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:2<3+c && 2<r|vrai|faux}})\nJ323 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+2;d}}, 3, visible=faux)\ncercle(J323, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:2<3+c && 3<r|vrai|faux}})\nJ330 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+3;d}}, 0, visible=faux)\ncercle(J330, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:3<3+c && 0<r|vrai|faux}})\nJ331 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+3;d}}, 1, visible=faux)\ncercle(J331, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:3<3+c && 1<r|vrai|faux}})\nJ332 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+3;d}}, 2, visible=faux)\ncercle(J332, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:3<3+c && 2<r|vrai|faux}})\nJ333 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+3;d}}, 3, visible=faux)\ncercle(J333, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:3<3+c && 3<r|vrai|faux}})\nJ340 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+4;d}}, 0, visible=faux)\ncercle(J340, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:4<3+c && 0<r|vrai|faux}})\nJ341 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+4;d}}, 1, visible=faux)\ncercle(J341, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:4<3+c && 1<r|vrai|faux}})\nJ342 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+4;d}}, 2, visible=faux)\ncercle(J342, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:4<3+c && 2<r|vrai|faux}})\nJ343 = point({{eval:0+(1+c+1.5)+(2+c+1.5)+4;d}}, 3, visible=faux)\ncercle(J343, rayon=0.3, couleur=\"bleu\", remplissage=\"bleu\", opacite_fond=1, visible={{if:4<3+c && 3<r|vrai|faux}})\ntexte({{eval:0+(1+c+1.5)+(2+c+1.5)+(3+c-1)/2;d}}, -1, \"Étape 3\")\n```\n\nÀ quelle étape le motif compte-t-il ${{eval:r*(s+c)}}$ jetons ?\n\nÉtape $?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..4"
+				},
+				{
+					"name": "c",
+					"expression": "0..2"
+				},
+				{
+					"name": "s",
+					"expression": "6..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La régularité.** Chaque étape a ${{r}}$ lignes ; l'étape $1$ a ${{eval:1+c}}$ colonne{{if:c==0||s}}, et on ajoute une colonne à chaque étape.",
+					"${{eval:r*(s+c)}} \\div {{r}} = {{eval:s+c}}$ colonnes, soit l'étape $\\textcolor{{{color:primary.0}}}{{{s}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Étape 4 : 13",
+			"variationIndex": 0,
+			"variables": {
+				"s": "4"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 16 (4 × 4, carrés séparés)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "4"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étape 5 : 16",
+			"variationIndex": 0,
+			"variables": {
+				"s": "5"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 13 (une étape de moins)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "5"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 jetons de plus",
+			"variationIndex": 1,
+			"variables": {
+				"r": "3",
+				"c": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6 (nombre de jetons de l'étape 1)",
+			"variationIndex": 1,
+			"variables": {
+				"r": "3",
+				"c": "1"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étape 10 : 21",
+			"variationIndex": 2,
+			"variables": {
+				"s": "10"
+			},
+			"answers": ["21"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 30 (3 × 10, triangles séparés)",
+			"variationIndex": 2,
+			"variables": {
+				"s": "10"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 20 (2 × 10)",
+			"variationIndex": 2,
+			"variables": {
+				"s": "10"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "24 jetons = étape 7",
+			"variationIndex": 3,
+			"variables": {
+				"r": "3",
+				"c": "1",
+				"s": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8 (colonnes)",
+			"variationIndex": 3,
+			"variables": {
+				"r": "3",
+				"c": "1",
+				"s": "7"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
