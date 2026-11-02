@@ -10,18 +10,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 4 écrit, PR des fichiers ouverte._
+_Mis à jour le 2026-11-02, lot 4 : brouillons créés en prod, migration écrite._
 
-- **État** : lots 0 à 3 publiés. Lot 4 (intégrales et primitives, 9 modèles, § 17) : phase 0 validée, fichiers
-  écrits dans `scripts/questions/tspe-4-integrales-primitives/`, specs et sonde vertes, essai local fait.
-- **Prochaine action** : PR des fichiers → CI → merge ; puis David lance `create-questions --publier` depuis le
-  dépôt principal ; migration nœud + tag (gabarit lot 3) ; page à cocher ; publication.
-- **En attente de David** : rien avant le merge ; ensuite `create-questions --publier` (`!`).
-- **Pièges en cours** : `cleanCoefficients` ne nettoie que les formules analysables → signes par `coef()`/`terme()`
-  (§ 17) ; couleur toujours dans `$…$` ; un tag sur le **nœud du modèle ou sa notion** (§ 14) ; niveau dans la clé de
-  `create-questions` ; `db:migrate` depuis le dépôt principal (`echo y |`) ; `pnpm migration:horodatage`. Port 5176
-  pris par une autre session (dev sur 5178).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe` · `feat/questions-tspe-lot4`.
+- **État** : lots 0 à 3 publiés. Lot 4 (§ 17) : #2215 mergée, 9 brouillons créés en prod ; migration nœud + tag
+  écrite et testée (vert, rouge sans l'étape 4), `security-auditor` en cours, PR à ouvrir.
+- **Prochaine action** : PR de la migration → CI → `check:migrations --pr` → merge → `db:migrate` depuis le dépôt
+  principal → relecture MCP → page à cocher → publication.
+- **En attente de David** : rien avant la publication (`publier-lot --publier`, `!`).
+- **Pièges en cours** : M6 rangé sur une **notion** (Valeur moyenne, sans sous-notion) ; `cleanCoefficients` ne
+  nettoie que les formules analysables (§ 17) ; un tag sur le nœud du modèle ou sa notion (§ 14) ; `db:migrate`
+  depuis le dépôt principal (`echo y |`), `migration list --linked` avant. Port 5176 pris (dev sur 5178).
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe` · `feat/questions-tspe-lot4-migration`.
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -871,3 +870,15 @@ signes écrits par `coef()` / `terme()` ; couleurs hors `$…$` (13) → `colm()
 illisible par ```courbe → `{{s}}*{{h}}*x/2`. Base locale : 9 brouillons créés ; M5 (courbe et aire dessinées,
 choix faux refusé, bonne réponse montrée) et M9 v1 (choix juste accepté) joués dans l'aperçu ; saisie MathLive non
 pilotable par l'automate (M7 non joué en saisie, réponses tapées couvertes par les specs).
+
+**PR des fichiers** : #2215 mergée le 2026-11-02 (CI verte après relance des deux jobs navigateur, `wrapDynamicImport`).
+
+**Création en prod** (David, 2026-11-02) : b822359e (M1), 4329e837 (M2), 31defbfe (M3), e68152f7 (M4), affbbde3 (M5),
+b9d542d5 (M6), fafe2d94 (M7), 6035aa61 (M8), 16974687 (M9), en brouillon, [T_SPE], niveaux 3, 2, 4, 1, 2, 1, 3, 1, 1,
+sans nœud ni tag (relu au MCP).
+
+**Migration** `20261102083457_questions_tspe_lot4_rangement_tags.sql` (gabarit du lot 3) : nouveauté, un modèle peut
+aller sur une **notion sans sous-notion** (M6 sur « Valeur moyenne », qui n'en a aucune ; ses 3 modèles publiés y
+sont déjà) : `sous_notion` nulle → résolution sur la notion, dans la migration et dans le rollback. Test
+`tests/integration/questions-tspe-lot4-rangement-tags.test.ts` : 10/10 ; **rouge** sans l'étape 4 (« lot
+incohérent : nœuds 0/9, tags du lot 0/9 »).
