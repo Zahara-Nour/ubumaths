@@ -6,21 +6,21 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2231 (corpus lot 2 mergé)._
+_Mis à jour le 2026-11-02, après #2231 ; ordre et portée de Q9 tranchés._
 
-- **État** : corpus complet (193 entrées : PR 0 + lot 2), juge étendu (grandeurs, degrés,
-  factorielles, écriture décimale). Connues fausses : registre 69, Atelier 21.
-- **Prochaine action** : PR 1 (`.dériver` réduite, D1) selon le § Découpage — ou d'abord les PR
-  à part de tidy (Q9 rouverte, `signes-06`, tidy-units:24) ; demander à David l'ordre.
-- **En attente de David** : portée de Q9 rouverte (seulement `0.5/x`, ou aussi `1.5/x`,
-  `0.5/(x+1)`, `(0.5x+0.5)/(x+1)` ?) — avant la PR de tidy.
-- **Tranché** : A-D du lot 2 ; `decimal` en LaTeX ; `plafond-02` → 1000 ; Q24 gardée ; `12000 m`
-  gardé ; `signes-06` → `(x+1)/(2(x+1))` ; ordre des termes, S3, R-point, domaine — NE PAS reposer.
-- **Pièges** : greper TOUT le journal avant une question ; sonde = vitest jetable sous `src/` ;
-  revue du juge (#2231) : `\sin^2 x` / `\sin x^2` jugés `forme`, `parseLatex('@@@')` ne lève pas
-  (contrôle d'attendu plus faible que « se parse ») — non corrigés.
-- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `refactor/registre-reference`
-  (gardée pour la suite du chantier, comme après #2163).
+- **État** : corpus complet (193 entrées), juge étendu. Connues fausses : registre 69, Atelier 21.
+- **Prochaine action** : **PR tidy (Q9 + `signes-06`)**, sur le § « Ordre et Q9 » ci-dessous :
+  phase 0 (comportements) → tests rouges → tidy → corpus (retirer `decimal-10`, `signes-06` des
+  connues fausses) → banc des 1 008 modèles × 8 tirages → revue `code-reviewer` opus.
+- **Ensuite** : petite PR `tidy-units.test.ts:24` (12000 m gardé), puis PR 1 (`.dériver`, D1).
+- **En attente de David** : rien.
+- **Tranché** : Q9 rouverte EN ENTIER ; A-D du lot 2 ; `decimal` en LaTeX ; `plafond-02` → 1000 ;
+  Q24 gardée ; `12000 m` gardé ; `signes-06` → `(x+1)/(2(x+1))` ; ordre des termes, S3, R-point,
+  domaine — NE PAS reposer.
+- **Pièges** : idempotence (`0.5·x⁻¹ → 0.5/x → 1/(2x)`, B1 de simplify-carte § 37) ; greper TOUT le
+  journal avant une question ; sonde = vitest jetable sous `src/` ; `\sin^2 x`/`\sin x^2` jugés
+  `forme`, `parseLatex('@@@')` ne lève pas (non corrigés).
+- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `refactor/registre-reference`.
 
 ---
 
@@ -350,3 +350,15 @@ Sonde jetable (vitest sous `src/`, `produceRegistre` / `produceAtelier`), 25 lig
 - **PR à part, à venir** : tidy — Q9 rouverte (portée à faire préciser), `signes-06` (garde-fou de
   `mergeFactors`, spec + `tidy-fraction-reduce.test.ts:77-84`), `tidy-units.test.ts:24` (12000 m → 12 km,
   contraire à `grandeurs-01`).
+
+## Ordre et Q9 (David, 2026-11-02, « je valide »)
+
+- **Q9 de simplify-carte rouverte en entier** : un décimal sous une barre se chasse aussi quand le
+  dénominateur a une lettre — `0.5/x → 1/(2x)`, `1.5/x → 3/(2x)`, `0.5/(x+1) → 1/(2(x+1))`,
+  `(x+0.5)/(x−1) → (2x+1)/(2(x−1))`, `x/(0.5x+1) → 2x/(x+2)`, `(0.5x+0.5)/(x+1) → (x+1)/(2(x+1))`
+  (comme `signes-06`), `0.5x/x → x/(2x)` (S3 : x/x gardé). Raisons de 2026-10-23 tombées : S3 (David
+  accepte `(x+1)/(2(x+1))`) et piste A (David corrige `0.5/x` en `1/(2x)`) ; une règle limitée à
+  `0.5/x` dépendrait de l'écriture. Source : `docs/archive/wip/simplify-carte-progress.md` § 38.
+- **Ordre** : (1) PR tidy Q9 + `signes-06` (même mécanisme ; `(0.5x+0.5)/(x+1)` a besoin des deux) ;
+  (2) petite PR `tidy-units.test.ts:24` (vérifier d'abord qui utilise la conversion) ; (3) PR 1
+  `.dériver`. Revue de la PR tidy : `code-reviewer` opus (change l'affichage élève).
