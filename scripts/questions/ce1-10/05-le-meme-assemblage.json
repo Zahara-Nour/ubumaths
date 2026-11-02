@@ -38,7 +38,7 @@
 			"correction": {
 				"steps": [
 					"On compare pile par pile, de gauche à droite : ${{a}}$, ${{b}}$, ${{c}}$ et ${{d}}$ cubes.",
-					"Le \\textcolor{{{color:primary.0}}}{même assemblage} a les mêmes piles, aux mêmes places. Un autre a un cube de plus ; un autre a le même nombre de cubes, mais deux piles ont changé de place."
+					"Le $\\textcolor{{{color:primary.0}}}{\\text{même assemblage}}$ a les mêmes piles, aux mêmes places. Un autre a un cube de plus ; un autre a le même nombre de cubes, mais deux piles ont changé de place."
 				]
 			}
 		},
@@ -71,7 +71,7 @@
 			"correction": {
 				"steps": [
 					"On compare pile par pile, de gauche à droite : ${{a}}$ devant, ${{b}}$ derrière, ${{c}}$ devant, ${{d}}$ derrière.",
-					"Le \\textcolor{{{color:primary.0}}}{même assemblage} a les mêmes piles, aux mêmes places. Un autre a un cube de plus ; un autre a le même nombre de cubes, mais deux piles ont changé de place."
+					"Le $\\textcolor{{{color:primary.0}}}{\\text{même assemblage}}$ a les mêmes piles, aux mêmes places. Un autre a un cube de plus ; un autre a le même nombre de cubes, mais deux piles ont changé de place."
 				]
 			}
 		}

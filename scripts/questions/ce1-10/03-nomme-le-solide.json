@@ -33,7 +33,7 @@
 			"correction": {
 				"steps": [
 					"Le cube a $6$ faces, toutes des carrés de la même taille.",
-					"C'est \\textcolor{{{color:primary.0}}}{un cube}."
+					"C'est $\\textcolor{{{color:primary.0}}}{\\text{un cube}}$."
 				]
 			}
 		},
@@ -61,7 +61,7 @@
 			"correction": {
 				"steps": [
 					"Le pavé a $6$ faces, des rectangles : il est plus long dans un sens.",
-					"C'est \\textcolor{{{color:primary.0}}}{un pavé}."
+					"C'est $\\textcolor{{{color:primary.0}}}{\\text{un pavé}}$."
 				]
 			}
 		},
@@ -89,7 +89,7 @@
 			"correction": {
 				"steps": [
 					"La boule est toute ronde : elle n'a ni face plate, ni pointe, ni arête.",
-					"C'est \\textcolor{{{color:primary.0}}}{une boule}."
+					"C'est $\\textcolor{{{color:primary.0}}}{\\text{une boule}}$."
 				]
 			}
 		},
@@ -117,7 +117,7 @@
 			"correction": {
 				"steps": [
 					"Le cône a une base ronde, un disque, et une face courbe qui finit en pointe.",
-					"C'est \\textcolor{{{color:primary.0}}}{un cône}."
+					"C'est $\\textcolor{{{color:primary.0}}}{\\text{un cône}}$."
 				]
 			}
 		},
@@ -145,7 +145,7 @@
 			"correction": {
 				"steps": [
 					"La pyramide a une base plate ({{if:q==1|un carré|un triangle}}) et des faces en triangles qui se rejoignent en une pointe.",
-					"C'est \\textcolor{{{color:primary.0}}}{une pyramide}."
+					"C'est $\\textcolor{{{color:primary.0}}}{\\text{une pyramide}}$."
 				]
 			}
 		}
