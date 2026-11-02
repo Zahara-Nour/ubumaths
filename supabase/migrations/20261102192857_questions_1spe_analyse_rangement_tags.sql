@@ -92,7 +92,9 @@
 -- 	 where (q.id = '7d6cf480-b062-4e45-a593-2e85fbeb28b3' and q.status = 'published'
 -- 	        and q.grades = array['2', '1_SPE', '1_GEN', '1_TECHNO'])
 -- 	    or (q.id in (select id from _q1ar_tags where id <> '7d6cf480-b062-4e45-a593-2e85fbeb28b3')
--- 	        and q.status = 'draft');
+-- 	        and q.status = 'draft'
+-- 	        and q.classification_node_id = (select p.node_id from _q1ar_tags t join public.curriculum_points p on p.id = t.point
+-- 	                                         where t.id = q.id and t.grade = '1_SPE'));
 -- 	select count(*), count(*) filter (where exists (select 1 from _q1ar_tags t where t.id = q.template_id and t.point = q.point_id))
 -- 	  into v_total, v_attendus
 -- 	  from public.question_template_points q where q.template_id in (select id from _q1ar_tags);
