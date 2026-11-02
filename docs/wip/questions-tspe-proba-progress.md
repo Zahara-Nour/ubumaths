@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, migration du lot 5a en PR (#2241)._
+_Mis à jour le 2026-11-02, après #2241 (migration passée en prod)._
 
-- **État** : 9 brouillons créés en prod par David (#2240) ; migration nœud + tag `20261102173448_questions_tspe_lot5a_rangement_tags.sql` en PR #2241 (test 10/10, rouge sans l'étape 4, `security-auditor` sans finding, `check:migrations --pr` passé) ; CI en cours à la relance.
-- **Prochaine action** : CI de #2241 verte → merge → `db:migrate` depuis le dépôt principal (`migration list --linked` d'abord : rien d'autre en attente au 2026-11-02 17 h 50) → relire en prod → page à cocher (`page-a-cocher.ts --dir scripts/questions/tspe-5a-succession`) → publication par David.
-- **En attente de David** : dire si le défaut ` ```probtree ` (étiquette sans `\` écrite en texte) va dans `docs/wip/outils-manquants.md`.
+- **État** : lot 5a en prod en brouillons, rangés et tagués (#2240, #2241, `db:migrate` passé par David, relu au MCP : 9/9 nœud + point). Page à cocher publiée : https://claude.ai/artifact/4pTuHyH4DZ1CfwXgqgtZeV (collection `verdicts`, vide au départ).
+- **Prochaine action** : David relit la page → compter les verdicts (`ArtifactData list verdicts`) → corriger les « À revoir » (`--mettre-a-jour`) → `publier-lot.ts --dir scripts/questions/tspe-5a-succession` en simulation, puis `--publier` par David. Ensuite, phase 0 du lot 5b.
+- **En attente de David** : la relecture ; dire si le défaut ` ```probtree ` (étiquette sans `\` écrite en texte) va dans `docs/wip/outils-manquants.md`.
 - **Pièges en cours** : voir « Décisions communes et pièges » ci-dessous.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-proba`, `feat/questions-tspe-proba-5a-migration` (PR #2241).
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-proba` ; branche `feat/questions-tspe-proba-5a-migration` mergée (prochaine branche à créer pour 5b).
 
 ---
 
@@ -169,3 +169,7 @@ tag (relu au MCP).
 de la loi », les six autres sur « épreuves indépendantes successives ». Test
 `tests/integration/questions-tspe-lot5a-rangement-tags.test.ts` : 10/10 ; **rouge** sans l'étape 4 (« lot incohérent :
 nœuds 0/9 »). `security-auditor` (2026-11-02, recoupé en prod) : aucun finding. PR #2241, `check:migrations --pr` passé.
+
+**Migration en prod** : #2241 mergée le 2026-11-02 (CI verte) ; `db:migrate` passé par David (seule migration en attente) ;
+relu au MCP : les 9 modèles sur leur nœud, un point chacun, toujours brouillons. Page à cocher :
+https://claude.ai/artifact/4pTuHyH4DZ1CfwXgqgtZeV.
