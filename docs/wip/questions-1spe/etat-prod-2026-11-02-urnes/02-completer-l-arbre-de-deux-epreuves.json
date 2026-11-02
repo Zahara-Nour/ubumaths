@@ -1,0 +1,183 @@
+{
+	"title": "Compléter l'arbre de deux épreuves",
+	"description": "Deux épreuves indépendantes (deux urnes ; penalty puis lancer franc) : compléter les pondérations de l'arbre, les mêmes sous chaque branche du premier niveau",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Probabilités conditionnelles",
+	"subdomain": "Épreuves indépendantes",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Une urne $U_1$ contient ${{eval:r}}$ boules rouges et ${{eval:v}}$ boules vertes. Une urne $U_2$ contient ${{eval:b}}$ boules blanches et ${{eval:k}}$ boules noires. On tire une boule au hasard dans $U_1$, puis une boule au hasard dans $U_2$ : les deux tirages sont indépendants.\n\nOn note $R$, $V$, $B$ et $N$ les événements « la boule tirée est rouge », « verte », « blanche », « noire ».\n\nComplète l'arbre pondéré qui représente cette expérience.\n\n```probtree\nR:{{eval:r/(r+v)}}\n  B:?\n  N:?\nV:?\n  B:?\n  N:?\n```\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nBranche $V$ : $?$\n\nChaque branche $B$ : $?$\n\nChaque branche $N$ : $?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "1..6"
+				},
+				{
+					"name": "v",
+					"expression": "1..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..6"
+				},
+				{
+					"name": "k",
+					"expression": "1..6"
+				}
+			],
+			"conditions": ["r != v", "b != k"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:v/(r+v)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:b/(b+k)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:k/(b+k)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Premier tirage, dans $U_1$ : $P(V)=1-P(R)=\\dfrac{{{eval:v}}}{{{eval:r+v}}}=\\textcolor{{{color:primary.0}}}{{{eval:v/(r+v)}}}$.",
+					"Second tirage, dans $U_2$ : il ne dépend pas de la couleur de la première boule (tirages indépendants). Les branches du second niveau portent donc les **mêmes** pondérations sous $R$ et sous $V$ : $P(B)=\\dfrac{{{eval:b}}}{{{eval:b+k}}}=\\textcolor{{{color:primary.0}}}{{{eval:b/(b+k)}}}$ et $P(N)=\\dfrac{{{eval:k}}}{{{eval:b+k}}}=\\textcolor{{{color:primary.0}}}{{{eval:k/(b+k)}}}$.\n\n```probtree\nR:{{eval:r/(r+v)}}\n  B:{{eval:b/(b+k)}}\n  N:{{eval:k/(b+k)}}\nV:{{eval:v/(r+v)}}\n  B:{{eval:b/(b+k)}}\n  N:{{eval:k/(b+k)}}\n```"
+				]
+			}
+		},
+		{
+			"statement": "Inès tire un penalty au football, puis un lancer franc au basket. Elle réussit son penalty avec la probabilité ${{eval:a/10;d}}$ et son lancer franc avec la probabilité ${{eval:c/10;d}}$ ; les deux tirs sont indépendants.\n\nOn note $F$ l'événement « le penalty est réussi » et $L$ l'événement « le lancer franc est réussi ».\n\nComplète l'arbre pondéré qui représente cette expérience.\n\n```probtree\nF:{{eval:a/10;d}}\n  L:?\n  \\overline{L}:?\n\\overline{F}:?\n  L:?\n  \\overline{L}:?\n```\n\nBranche $\\overline{F}$ : $?$\n\nChaque branche $L$ : $?$\n\nChaque branche $\\overline{L}$ : $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..8"
+				}
+			],
+			"conditions": ["a != c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-a/10}}"
+				},
+				{
+					"expectedAnswer": "{{eval:c/10}}"
+				},
+				{
+					"expectedAnswer": "{{eval:1-c/10}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$P(\\overline{F})=1-{{eval:a/10;d}}=\\textcolor{{{color:primary.0}}}{{{eval:1-a/10;d}}}$.",
+					"Les deux tirs sont indépendants : le lancer franc est réussi avec la même probabilité, que le penalty soit réussi ou non. Sous $F$ comme sous $\\overline{F}$ : $P(L)=\\textcolor{{{color:primary.0}}}{{{eval:c/10;d}}}$ et $P(\\overline{L})=1-{{eval:c/10;d}}=\\textcolor{{{color:primary.0}}}{{{eval:1-c/10;d}}}$.\n\n```probtree\nF:{{eval:a/10;d}}\n  L:{{eval:c/10;d}}\n  \\overline{L}:{{eval:1-c/10;d}}\n\\overline{F}:{{eval:1-a/10;d}}\n  L:{{eval:c/10;d}}\n  \\overline{L}:{{eval:1-c/10;d}}\n```"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Urnes 2R 3V, 4B 1N",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"v": "3",
+				"b": "4",
+				"k": "1"
+			},
+			"answers": ["\\frac{3}{5}", "\\frac{4}{5}", "\\frac{1}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Urnes, décimaux",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"v": "3",
+				"b": "4",
+				"k": "1"
+			},
+			"answers": ["0{,}6", "0{,}8", "0{,}2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rapport blanches / noires",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"v": "3",
+				"b": "4",
+				"k": "1"
+			},
+			"answers": ["\\frac{3}{5}", "4", "\\frac{1}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : U₂ conditionné par la couleur (U₁ mélangée)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"v": "3",
+				"b": "4",
+				"k": "1"
+			},
+			"answers": ["\\frac{3}{5}", "\\frac{2}{5}", "\\frac{1}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Tirs 0,7 et 0,4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"c": "4"
+			},
+			"answers": ["0{,}3", "0{,}4", "0{,}6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Tirs, fractions",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"c": "4"
+			},
+			"answers": ["\\frac{3}{10}", "\\frac{2}{5}", "\\frac{3}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : branches inversées",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"c": "4"
+			},
+			"answers": ["0{,}3", "0{,}6", "0{,}4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

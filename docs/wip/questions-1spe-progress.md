@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 5 publié._
+_Mis à jour le 2026-11-02, correctif du pluriel du lot 4 en PR._
 
-- **État** : lot 5-variables aléatoires **clos** (8 publiés). Lot 4-probabilités : 8 brouillons rangés, tagués, 8 « ok », simulation `publier-lot` verte ; non publié.
-- **Prochaine action** : selon la réponse de David — corriger « 1 boules rouges » (§ 21, `ENONCE_URNES`, fe6f5606 et 2f4f4ae0 : instantané, `{{if:…}}` ×4, PR, David `--mettre-a-jour`) puis publication du lot 4, ou l'inverse.
-- **En attente de David** : correction du pluriel avant ou après la publication du lot 4 (reco : avant).
+- **État** : lot 5-variables aléatoires **clos** (8 publiés). Lot 4-probabilités : 8 brouillons rangés, tagués, 8 « ok » ; pluriel « 1 boules rouges » corrigé (fe6f5606, 2f4f4ae0, `accord()` → `{{if:…}}` ×4, 800 tirages propres), branche `fix/questions-1spe-pluriel-urnes`.
+- **Prochaine action** : PR mergée → **David** lance `create-questions --dir scripts/questions/1spe-probas --publier --mettre-a-jour` ; je vérifie (MCP, md5), puis publication du lot 4 (David : « corriger avant », 2026-11-02).
+- **En attente de David** : le `--mettre-a-jour` après le merge.
 - **Pièges en cours** : `blankDefaults.acceptDecimal` obligatoire ; **variable `e` = Euler** ; pluriel d'une quantité 1..n → `{{if:…}}` ; choix mélangés → jamais « première phrase » dans un corrigé ; `col()` hors `$…$` (`colt`) ; `Doc-inchangée:` dans un COMMIT (≤ 100 caractères) ; aucun trailer `Claude-Session:` ; `--include-all` pousse TOUTES les migrations en attente.
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `fix/questions-1spe-pluriel-urnes`.
 - **Ensuite (D7)** : lot « à savoir » (D2), restes (produit scalaire formules, second degré / exponentielle / trigo, logique et listes Python), lots en attente d'un outil.
 
 ## 1. Relevé (prod, 2026-10-27)
@@ -1051,6 +1051,12 @@ l'étape 4.
 valent 1..6 → `{{if:r == 1|boule rouge|boules rouges}}` (×4), correction § 7 à faire (instantané, `--mettre-a-jour`).
 **Verdicts** : 8 « ok » sur 8 (2026-11-02), aucun commentaire ; simulation `publier-lot` : 8 passent. Publication
 suspendue à la question posée à David : corriger le pluriel avant (reco) ou après publication.
+
+**Correctif du pluriel (David, 2026-11-02 : « corriger avant »)** : instantané
+`docs/wip/questions-1spe/etat-prod-2026-11-02-urnes/` (brouillons, md5 des variations = fichiers du lot) ; fonction
+`accord(n, un, plusieurs)` du script → `{{if:r==1|boule rouge|boules rouges}}` (×4, énoncé `ENONCE_URNES`) ; seuls 02
+et 03 changent ; simulation `create-questions` : 8 importables, « CONTENU DIFFÉRENT » sur 02 et 03 seulement ; sonde
+de 400 tirages par modèle (`generateInstance`) : aucun « 1 boules », aucun singulier fautif.
 
 ## 22. Lot 5-variables aléatoires : notations et registres (D7)
 
