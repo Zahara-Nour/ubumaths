@@ -1,0 +1,192 @@
+{
+	"title": "Distance entre deux points",
+	"description": "La distance AB est la longueur du segment [AB] : l'additionner quand C est sur [AB], la comparer à AC + CB quand C n'y est pas, dire si C est sur [AB] d'après trois longueurs",
+	"grades": ["6"],
+	"theme": "Géométrie",
+	"domain": "Figures planes",
+	"subdomain": "Distances",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le point $C$ est sur le segment $[AB]$.\n\n```figure\nfenetre: -0.8 ; {{eval:(p+q)/10+0.8;d}} ; -1.8 ; 1.8\ndescription: Un segment [AB] et un point C sur ce segment ; AC = {{eval:p/10;d}} cm et CB = {{eval:q/10;d}} cm.\n---\nA = point(0, 0, etiquette=\"bas\")\nC = point({{eval:p/10;d}}, 0, etiquette=\"bas\")\nB = point({{eval:(p+q)/10;d}}, 0, etiquette=\"bas\")\nsegment(A, B)\ntexte({{eval:p/20;d}}, 0.5, \"{{eval:p/10;d}} cm\")\ntexte({{eval:p/10+q/20;d}}, 0.5, \"{{eval:q/10;d}} cm\")\n```\n\nQuelle est la distance $AB$ ?\n\n$AB = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "20..60"
+				},
+				{
+					"name": "q",
+					"expression": "20..60"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(p+q)/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**$C$ est sur le segment $[AB]$.** Pour aller de $A$ à $B$, on passe par $C$ : $AB = AC + CB$.",
+					"$AB = {{eval:p/10;d}} + {{eval:q/10;d}} = \\textcolor{{{color:primary.0}}}{{{eval:(p+q)/10;d}}~\\unit{cm}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le point $C$ n'est pas sur le segment $[AB]$.\n\n```figure\nfenetre: -0.8 ; {{eval:0.75*(p+q)/10+0.8;d}} ; -0.8 ; {{eval:max(sqrt((p/10)^2-(((p/10)^2-(q/10)^2+(0.75*(p+q)/10)^2)/(2*0.75*(p+q)/10))^2)+1,(0.75*(p+q)/10+1.6)/3-0.8);d}}\ndescription: Un triangle ABC : AC = {{eval:p/10;d}} cm et CB = {{eval:q/10;d}} cm ; le côté [AB] est en pointillés.\n---\nA = point(0, 0, etiquette=\"bas\")\nB = point({{eval:0.75*(p+q)/10;d}}, 0, etiquette=\"bas\")\nC = point({{eval:((p/10)^2-(q/10)^2+(0.75*(p+q)/10)^2)/(2*0.75*(p+q)/10);d}}, {{eval:sqrt((p/10)^2-(((p/10)^2-(q/10)^2+(0.75*(p+q)/10)^2)/(2*0.75*(p+q)/10))^2);d}}, etiquette=\"haut\")\nsegment(A, C)\nsegment(C, B)\nsegment(A, B, trait=\"pointilles\")\ntexte({{eval:(((p/10)^2-(q/10)^2+(0.75*(p+q)/10)^2)/(2*0.75*(p+q)/10))/2-0.5;d}}, {{eval:sqrt((p/10)^2-(((p/10)^2-(q/10)^2+(0.75*(p+q)/10)^2)/(2*0.75*(p+q)/10))^2)/2+0.2;d}}, \"{{eval:p/10;d}} cm\")\ntexte({{eval:(((p/10)^2-(q/10)^2+(0.75*(p+q)/10)^2)/(2*0.75*(p+q)/10)+0.75*(p+q)/10)/2+0.6;d}}, {{eval:sqrt((p/10)^2-(((p/10)^2-(q/10)^2+(0.75*(p+q)/10)^2)/(2*0.75*(p+q)/10))^2)/2+0.2;d}}, \"{{eval:q/10;d}} cm\")\n```\n\nQue peut-on dire de la distance $AB$ ?\n\n```choix\nmelanger: non\n- $AB$ est plus petite que ${{eval:(p+q)/10;d}}~\\unit{cm}$\n- $AB$ est égale à ${{eval:(p+q)/10;d}}~\\unit{cm}$\n- $AB$ est plus grande que ${{eval:(p+q)/10;d}}~\\unit{cm}$\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "25..50"
+				},
+				{
+					"name": "q",
+					"expression": "25..50"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le plus court chemin.** Le plus court chemin pour aller de $A$ à $B$ est le segment $[AB]$. Passer par $C$, hors du segment, est plus long.",
+					"$AC + CB = {{eval:p/10;d}} + {{eval:q/10;d}} = {{eval:(p+q)/10;d}}~\\unit{cm}$, donc $AB$ est $\\textcolor{{{color:primary.0}}}{\\text{plus petite que } {{eval:(p+q)/10;d}}~\\unit{cm}}$."
+				]
+			}
+		},
+		{
+			"statement": "On sait que $AB = {{n}}~\\unit{cm}$, $AC = {{a}}~\\unit{cm}$ et $CB = {{b}}~\\unit{cm}$.\n\nLe point $C$ est-il sur le segment $[AB]$ ?\n\n```choix\nmelanger: non\n- oui\n- non\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "n",
+					"expression": "6..11"
+				},
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "b",
+					"expression": "eval:n-a+k-1"
+				},
+				{
+					"name": "j",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**On additionne.** $AC + CB = {{a}} + {{b}} = {{eval:a+b}}~\\unit{cm}$.",
+					"{{if:k==1|$AC + CB = AB$ : passer par $C$ ne rallonge pas le chemin, $C$ est **sur** le segment $[AB]$ : $\\textcolor{{{color:primary.0}}}{\\text{oui}}$.|$AC + CB$ est plus grand que $AB$ : passer par $C$ rallonge le chemin, $C$ n'est **pas** sur le segment $[AB]$ : $\\textcolor{{{color:primary.0}}}{\\text{non}}$.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3,2 + 4,5 = 7,7",
+			"variationIndex": 0,
+			"variables": {
+				"p": "32",
+				"q": "45"
+			},
+			"answers": ["7,7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1,3 (différence)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "32",
+				"q": "45"
+			},
+			"answers": ["1,3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Plus petite",
+			"variationIndex": 1,
+			"variables": {
+				"p": "32",
+				"q": "45"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : égale (comme si C était sur [AB])",
+			"variationIndex": 1,
+			"variables": {
+				"p": "32",
+				"q": "45"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 = 3 + 4 : oui",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"n": "7",
+				"a": "3",
+				"b": "4",
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3 + 5 > 7 : non",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"n": "7",
+				"a": "3",
+				"b": "5",
+				"j": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : oui quand AC + CB > AB",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"n": "7",
+				"a": "3",
+				"b": "5",
+				"j": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

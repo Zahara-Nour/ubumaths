@@ -1461,3 +1461,19 @@ de l'auteur seuls jusqu'à la publication, la migration ne fait que ranger et ta
 suivront le point. (3) 166 sans construction ; une variation construite viendra si `controles-figure` livre le
 contrôle « médiatrice ». (4) 163 sans figure, distances écrites. (5) Phase 0 validée, avec un ajout : 167 v2 joue
 aussi le leurre « au milieu de [AB] » (centre confondu avec le milieu de la corde).
+
+### 24.1 Écriture (2026-11-02)
+
+Script `docs/wip/questions/lot-10-distances-cercle-mediatrice.py` → `scripts/questions/6-distances-cercle-mediatrice/`
+(8 modèles, 72 specs). Catégories neuves sous « Géométrie > Figures planes » (titres du BO) : « Distances » (160 :
+1, 161 : 2), « Cercles et disques » (162-164 : 1-3), « Médiatrice d'un segment » (165-167 : 1-3). Simulation verte,
+`sonde-figures` à 0 problème (fenêtres de segments relevées au ratio 1/4), essai en base locale et rendu de la page à
+cocher vérifié à 390 px.
+
+Pièges rencontrés :
+
+- `{{eval:p/10}}` s'affiche en fraction (`\dfrac{11}{5}`), dans le texte comme dans la figure : toujours `;d`, y
+  compris pour afficher une variable calculée (`{{eval:dA;d}}`).
+- Mot coloré du corrigé hors des `$…$` (`col('\\text{non}')`) : LaTeX brut ; helper `colt` qui ajoute les `$`.
+- Case choix à plusieurs réponses : un sous-ensemble des bonnes réponses est jugé `unoptimal_form` (réussite
+  partielle), pas `incorrect` ; specs alignées.

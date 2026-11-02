@@ -1,0 +1,141 @@
+{
+	"title": "Problèmes avec la médiatrice",
+	"description": "S'appuyer sur la propriété de la médiatrice : le centre d'un cercle est sur la médiatrice de chaque corde, le centre d'un cercle passant par A et B est sur la médiatrice de [AB], un point à égale distance de deux maisons",
+	"grades": ["6"],
+	"theme": "Géométrie",
+	"domain": "Figures planes",
+	"subdomain": "Médiatrice d'un segment",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici un cercle de centre $O$ et une corde $[AB]$.\n\n```figure\nfenetre: -3.8 ; 3.8 ; -3.6 ; 3.6\ndescription: Un cercle de centre O et une corde [AB] qui ne passe pas par O.\n---\nO = point(0, 0, etiquette=\"haut\")\ncercle(O, rayon=3)\nA = point(-2.82, -1.03, etiquette=\"gauche\")\nB = point(2.3, -1.93, etiquette=\"droite\")\nsegment(A, B, couleur=\"bleu\")\nsegment(O, A, trait=\"tirets\")\nsegment(O, B, trait=\"tirets\")\n```\n\nPourquoi le centre $O$ est-il sur la médiatrice de la corde $[AB]$ ?\n\n```choix\n- parce que $OA = OB$ : ce sont deux rayons du cercle\n- parce que $O$ est le milieu de $[AB]$\n- parce que $[AB]$ est un diamètre du cercle\n- parce que $(OA)$ est perpendiculaire à $(AB)$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La propriété de la médiatrice.** Un point à égale distance de $A$ et de $B$ est sur la médiatrice de $[AB]$.",
+					"$A$ et $B$ sont sur le cercle : $OA$ et $OB$ sont deux rayons, donc $OA = OB$. Le centre $O$ est sur la médiatrice $\\textcolor{{{color:primary.0}}}{\\text{parce que } OA = OB}$."
+				]
+			}
+		},
+		{
+			"statement": "Un cercle passe par les points $A$ et $B$. Où se trouve forcément son centre ?\n\n```choix\n- sur la médiatrice de $[AB]$\n- au milieu de $[AB]$\n- sur le segment $[AB]$\n- sur la droite $(AB)$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le centre** $O$ est à la même distance de $A$ et de $B$ (deux rayons : $OA = OB$).",
+					"Les points à égale distance de $A$ et de $B$ forment la médiatrice de $[AB]$ : le centre est $\\textcolor{{{color:primary.0}}}{\\text{sur la médiatrice de } [AB]}$. Il n'est au milieu de $[AB]$ que si $[AB]$ est un diamètre."
+				]
+			}
+		},
+		{
+			"statement": "On veut creuser un puits **au bord de la route**, **à la même distance** des maisons $A$ et $B$. La droite en tirets est la médiatrice du segment $[AB]$.\n\n```figure\nfenetre: -1 ; 7 ; -1.2 ; 5.2\ndescription: Deux maisons A et B, une route droite en bas, la médiatrice de [AB] en tirets, et trois points P, Q, R sur la route.\n---\nA = point(1, 4, etiquette=\"haut\")\nB = point(5, 2, etiquette=\"droite\")\nsegment(A, B, trait=\"pointilles\")\nmediatrice(A, B, couleur=\"bleu\", trait=\"tirets\")\nG = point(-1, 0, visible=faux)\nD = point(7, 0, visible=faux)\ndroite(G, D, couleur=\"gris\", epaisseur=3)\ntexte(6.5, 0.4, \"route\")\nX1 = point(1.5, 0, etiquette=\"aucune\")\nX2 = point(4, 0, etiquette=\"aucune\")\nX3 = point(5.8, 0, etiquette=\"aucune\")\ntexte(1.5, -0.6, \"{{if:k==1|P|{{if:k==2|Q|R}}}}\")\ntexte(4, -0.6, \"{{if:k==1|Q|{{if:k==2|R|P}}}}\")\ntexte(5.8, -0.6, \"{{if:k==1|R|{{if:k==2|P|Q}}}}\")\n```\n\nOù faut-il creuser le puits ?\n\n```choix\nmelanger: non\n- au point $P$\n- au point $Q$\n- au point $R$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "j",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**À la même distance de $A$ et de $B$** : le puits est sur la médiatrice de $[AB]$. **Au bord de la route** : il est sur la route.",
+					"C'est le point où la médiatrice coupe la route : le point $\\textcolor{{{color:primary.0}}}{{{if:k==1|P|{{if:k==2|Q|R}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "OA = OB",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : O milieu de [AB]",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sur la médiatrice",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : au milieu de [AB]",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Puits en P",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Puits en R",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"j": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le point le plus proche de B",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"j": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
