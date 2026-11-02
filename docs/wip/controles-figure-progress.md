@@ -6,19 +6,17 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2226._
+_Mis à jour le 2026-11-02, phase 0 du lot 2 validée (§ 5)._
 
-- **État** : lot 1 (symétrique sur quadrillage, axial + central, `verifier: symetrique par d`) **mergé**
-  (#2226), pas encore en prod (`deploy:prod` sur demande de David). Vérification à l'œil notée dans
-  `verifications-manuelles.md`.
-- **Prochaine action** : phase 0 du lot 2 — outil « point » (réponse `point(x;y)`, symétrique d'un point,
-  6-179 / 6-180 sur papier uni), puis angle, triangle, médiatrice, bissectrice, cercle circonscrit,
-  4e sommet (§ 1). Puis écrire les modèles CE2-073, CM1-107/108, CM2-097 (journaux de niveau).
+- **État** : lot 1 mergé (#2226), pas encore en prod. Phase 0 du lot 2 **validée** (§ 5, décisions).
+- **Prochaine action** : lot 2a — outil `point`, contrôle `verifier: point A' = <expression>` sur
+  quadrillage (tests rouges d'abord). Puis lot 2b (équerre, compas, intersections, papier uni), puis
+  angle, triangle, médiatrice, bissectrice, cercle circonscrit, 4e sommet (§ 1).
 - **En attente de David** : rien.
 - **Pièges en cours** : les `testSpecs` d'un modèle ne vérifient que le statut (pas de `feedback`) ;
   sans `grille:`, `symetrique` est refusé à la publication ; un contrôle ne doit jamais donner la
   réponse (`verifier: ?`).
-- **Worktree / branche** : aucun (worktree retiré après #2226).
+- **Worktree / branche** : `../ubumaths-wt-controles-figure`, `feat/controles-figure-point` (lot 2a).
 
 ---
 
@@ -197,3 +195,13 @@ calculée à chaque tirage. Plusieurs lignes `point …` dans le même `verifier
    l'étiquette de chaque point ?
 4. **Messages 2 et 3** (perpendiculaire / même distance) : les garder (recommandé, ils disent la
    propriété du BO) ou s'en tenir au message générique ?
+
+### Décisions de David (2026-11-02, « je valide » mes recommandations)
+
+1. Papier uni : **instruments** (équerre = perpendiculaire à une droite par un point ; compas = cercle par
+   son centre et un point ; aimantation sur les intersections des traits ; juge exact).
+2. Contrôle écrit en **expression du langage des figures** : `verifier: point A' = symetrie(A, axe=d)`.
+3. Plusieurs points : **non nommés, jugés comme un ensemble** ; étiquettes posées à la correction.
+4. Messages « perpendiculaire » et « même distance » **gardés**.
+5. Découpage : **lot 2a** = outil point + contrôle `point …` (quadrillage, nœuds aimantés) ; **lot 2b** =
+   équerre, compas, aimantation sur les intersections (papier uni).
