@@ -1,0 +1,254 @@
+{
+	"title": "Développement de ‖u − v‖²",
+	"description": "Utiliser ‖u − v‖² = ‖u‖² − 2u·v + ‖v‖² : la formule parmi des erreurs typiques (signe, ‖u‖² − ‖v‖²), le cas de deux vecteurs orthogonaux, et ‖u‖² retrouvé à partir de ‖u − v‖², u·v et ‖v‖",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Produit scalaire",
+	"subdomain": "Propriétés",
+	"level": 8,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $\\vec{u}$ et $\\vec{v}$ deux vecteurs. Le nombre $\\|\\vec{u}-\\vec{v}\\|^2$ est égal à :\n\n```choix\n- $\\|\\vec{u}\\|^2-2\\,\\vec{u}\\cdot \\vec{v}+\\|\\vec{v}\\|^2$\n- $\\|\\vec{u}\\|^2+2\\,\\vec{u}\\cdot \\vec{v}+\\|\\vec{v}\\|^2$\n- $\\|\\vec{u}\\|^2-\\|\\vec{v}\\|^2$\n- $\\|\\vec{u}\\|^2-\\vec{u}\\cdot \\vec{v}+\\|\\vec{v}\\|^2$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\|\\vec{u}-\\vec{v}\\|^2=(\\vec{u}-\\vec{v})\\cdot(\\vec{u}-\\vec{v})$ : on développe par bilinéarité, comme une identité remarquable.",
+					"$\\|\\vec{u}-\\vec{v}\\|^2=\\vec{u}\\cdot \\vec{u}-\\vec{u}\\cdot \\vec{v}-\\vec{v}\\cdot \\vec{u}+\\vec{v}\\cdot \\vec{v}$, et $\\vec{v}\\cdot \\vec{u}=\\vec{u}\\cdot \\vec{v}$ (symétrie).",
+					"Donc $\\|\\vec{u}-\\vec{v}\\|^2=\\textcolor{{{color:primary.0}}}{\\|\\vec{u}\\|^2-2\\,\\vec{u}\\cdot \\vec{v}+\\|\\vec{v}\\|^2}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $\\vec{u}$ et $\\vec{v}$ deux vecteurs orthogonaux tels que $\\|\\vec{u}\\|={{a}}$ et $\\|\\vec{v}\\|={{b}}$.\n\nCalcule $\\|\\vec{u}-\\vec{v}\\|^2$.\n\n$\\|\\vec{u}-\\vec{v}\\|^2=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a^2+b^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\|\\vec{u}-\\vec{v}\\|^2=\\|\\vec{u}\\|^2-2\\,\\vec{u}\\cdot \\vec{v}+\\|\\vec{v}\\|^2$.",
+					"Les vecteurs sont orthogonaux, donc $\\vec{u}\\cdot \\vec{v}=0$ et $\\|\\vec{u}-\\vec{v}\\|^2=\\|\\vec{u}\\|^2+\\|\\vec{v}\\|^2$.",
+					"$\\|\\vec{u}-\\vec{v}\\|^2={{a}}^2+{{b}}^2={{eval:a^2}}+{{eval:b^2}}=\\textcolor{{{color:primary.0}}}{{{eval:a^2+b^2}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $\\vec{u}$ et $\\vec{v}$ deux vecteurs tels que $\\|\\vec{u}-\\vec{v}\\|^2={{S}}$, $\\vec{u}\\cdot \\vec{v}={{p}}$ et $\\|\\vec{v}\\|={{b}}$.\n\nCalcule $\\|\\vec{u}\\|^2$.\n\n$\\|\\vec{u}\\|^2=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "p",
+					"expression": "{{eval:max(-9,1-a*b)}}..{{eval:min(9,a*b-1)}}"
+				},
+				{
+					"name": "S",
+					"expression": "{{eval:a^2-2*p+b^2}}"
+				}
+			],
+			"conditions": ["p != 0", "abs(p) < a*b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\|\\vec{u}-\\vec{v}\\|^2=\\|\\vec{u}\\|^2-2\\,\\vec{u}\\cdot \\vec{v}+\\|\\vec{v}\\|^2$, donc $\\|\\vec{u}\\|^2=\\|\\vec{u}-\\vec{v}\\|^2+2\\,\\vec{u}\\cdot \\vec{v}-\\|\\vec{v}\\|^2$.",
+					"$\\|\\vec{u}\\|^2={{S}}+2\\times {{p;()}}-{{b}}^2={{S}}{{eval:2*p;+}}-{{eval:b^2}}=\\textcolor{{{color:primary.0}}}{{{eval:a^2}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "‖u‖² − 2u·v + ‖v‖²",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe de 2u·v",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ‖u‖² − ‖v‖²",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : facteur 2 oublié",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5² + 3² = 34",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["34"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a² − b²",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : (a − b)²",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a − b",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"b": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 + 6 − 4 = 9",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"p": "3",
+				"S": "7"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe de 2u·v",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"p": "3",
+				"S": "7"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : facteur 2 oublié",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"p": "3",
+				"S": "7"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ‖v‖² oublié",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"p": "3",
+				"S": "7"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ‖u‖ au lieu de ‖u‖²",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"p": "3",
+				"S": "7"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

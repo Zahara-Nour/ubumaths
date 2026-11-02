@@ -1,0 +1,202 @@
+{
+	"title": "Symétrie du produit scalaire",
+	"description": "Utiliser la symétrie u·v = v·u : valeur de v·u, somme de produits scalaires écrits dans l'autre ordre, et l'égalité toujours vraie parmi des pièges (vecteur remplacé par son opposé)",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Produit scalaire",
+	"subdomain": "Propriétés",
+	"level": 6,
+	"delay": 45,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $\\vec{u}$ et $\\vec{v}$ deux vecteurs tels que $\\vec{u}\\cdot \\vec{v}={{k}}$.\n\nQue vaut $\\vec{v}\\cdot \\vec{u}$ ?\n\n$\\vec{v}\\cdot \\vec{u}=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..12;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le produit scalaire est symétrique : pour tous vecteurs $\\vec{u}$ et $\\vec{v}$, $\\vec{v}\\cdot \\vec{u}=\\vec{u}\\cdot \\vec{v}$.",
+					"Donc $\\vec{v}\\cdot \\vec{u}=\\textcolor{{{color:primary.0}}}{{{k}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $\\vec{u}$, $\\vec{v}$ et $\\vec{w}$ trois vecteurs tels que $\\vec{u}\\cdot \\vec{v}={{k}}$ et $\\vec{w}\\cdot \\vec{u}={{m}}$.\n\nCalcule $\\vec{v}\\cdot \\vec{u}+\\vec{u}\\cdot \\vec{w}$.\n\n$\\vec{v}\\cdot \\vec{u}+\\vec{u}\\cdot \\vec{w}=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "m",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["k != m", "k + m != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k+m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le produit scalaire est symétrique : $\\vec{v}\\cdot \\vec{u}=\\vec{u}\\cdot \\vec{v}={{k}}$ et $\\vec{u}\\cdot \\vec{w}=\\vec{w}\\cdot \\vec{u}={{m}}$.",
+					"Donc $\\vec{v}\\cdot \\vec{u}+\\vec{u}\\cdot \\vec{w}={{k}}{{eval:m;+}}=\\textcolor{{{color:primary.0}}}{{{eval:k+m}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $A$, $B$ et $C$ trois points du plan. Laquelle de ces égalités est toujours vraie ?\n\n```choix\n- $\\overrightarrow{AB}\\cdot \\overrightarrow{AC}=\\overrightarrow{AC}\\cdot \\overrightarrow{AB}$\n- $\\overrightarrow{AB}\\cdot \\overrightarrow{AC}=\\overrightarrow{BA}\\cdot \\overrightarrow{AC}$\n- $\\overrightarrow{AB}\\cdot \\overrightarrow{AC}=\\overrightarrow{AB}\\cdot \\overrightarrow{CA}$\n- $\\overrightarrow{AB}\\cdot \\overrightarrow{AC}=-\\overrightarrow{AC}\\cdot \\overrightarrow{AB}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le produit scalaire est symétrique : on peut échanger les deux vecteurs, $\\textcolor{{{color:primary.0}}}{\\overrightarrow{AB}\\cdot \\overrightarrow{AC}=\\overrightarrow{AC}\\cdot \\overrightarrow{AB}}$.",
+					"En revanche, $\\overrightarrow{BA}=-\\overrightarrow{AB}$ : remplacer un seul vecteur par son opposé change le signe du produit scalaire."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v·u = u·v = 7",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe changé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7"
+			},
+			"answers": ["-7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : « nul »",
+			"variationIndex": 0,
+			"variables": {
+				"k": "7"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5 + (−3) = 2",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"m": "-3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : différence",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"m": "-3"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : opposé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"m": "-3"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : produit",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"m": "-3"
+			},
+			"answers": ["-15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "AB·AC = AC·AB",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : BA au lieu de AB",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : CA au lieu de AC",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signe moins",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
