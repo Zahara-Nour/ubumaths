@@ -1,0 +1,256 @@
+{
+	"title": "Longueur d'un arc du cercle trigonométrique",
+	"description": "Sur le cercle de rayon 1, la longueur d'un arc est la différence des réels associés : arc IM, arc AB, réel associé à un arc parcouru dans un sens, fractions de tour",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Cercle et radians",
+	"level": 5,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le point $M$ du cercle trigonométrique est associé au réel ${{r}}$.\n\n```trig\npreset: quarters\npoints: M = {{p}}*pi/12\n```\n\nQuelle est la longueur de l'arc parcouru de $I$ à $M$ dans le sens direct ?\n\n$?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}|\\frac{2\\pi}{3}|\\frac{3\\pi}{4}|\\frac{5\\pi}{6}|\\frac{7\\pi}{6}|\\frac{5\\pi}{4}|\\frac{4\\pi}{3}|\\frac{5\\pi}{3}|\\frac{7\\pi}{4}|\\frac{11\\pi}{6}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:12*r/\\pi"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le cercle trigonométrique a pour rayon $1$ : un arc intercepté par un angle de $\\theta$ radians mesure $\\theta\\times1=\\theta$. Le réel associé à un point est **la longueur de l'arc parcouru depuis $I$** (dans le sens direct pour un réel positif).",
+					"```trig\npreset: custom\nmode: arc\nangles: {{p}}*pi/12\n```",
+					"${{r}}\\in\\left]0\\,;2\\pi\\right[$ : l'arc de $I$ à $M$ dans le sens direct mesure $\\textcolor{{{color:primary.0}}}{{{r}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Les points $A$ et $B$ du cercle trigonométrique sont associés aux réels ${{a}}$ et ${{b}}$.\n\nQuelle est la longueur de l'arc parcouru de $A$ à $B$ dans le sens direct ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0|\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}|\\frac{\\pi}{2}|\\frac{2\\pi}{3}|\\frac{3\\pi}{4}|\\frac{5\\pi}{6}"
+				},
+				{
+					"name": "b",
+					"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}|\\frac{2\\pi}{3}|\\frac{3\\pi}{4}|\\frac{5\\pi}{6}|\\frac{7\\pi}{6}|\\frac{5\\pi}{4}|\\frac{4\\pi}{3}|\\frac{5\\pi}{3}|\\frac{7\\pi}{4}|\\frac{11\\pi}{6}"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b-a"
+				}
+			],
+			"conditions": ["b > a"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur le cercle de rayon $1$, la longueur d'un arc est égale à la différence des réels associés à ses extrémités (pris dans le bon ordre).",
+					"${{b}}-{{if:a==0|0|\\left({{a}}\\right)}}=\\textcolor{{{color:primary.0}}}{{{d}}}$"
+				]
+			}
+		},
+		{
+			"statement": "Un point $M$ part de $I$ et parcourt le cercle trigonométrique dans le sens {{if:w==0|direct|indirect}}, sur un arc de longueur ${{l}}$.\n\nQuel est le réel de $\\left]-\\pi\\,;\\pi\\right]$ associé au point d'arrivée ?\n\n$?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0|1"
+				},
+				{
+					"name": "l",
+					"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}|\\frac{\\pi}{2}|\\frac{2\\pi}{3}|\\frac{3\\pi}{4}|\\frac{5\\pi}{6}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:w==0|{{l}}|-{{l}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur le cercle de rayon $1$, parcourir depuis $I$ un arc de longueur $\\ell$ mène au point associé à $\\ell$ dans le sens direct, et à $-\\ell$ dans le sens indirect.",
+					"Ici, le sens est {{if:w==0|direct|indirect}} : le réel associé est $\\textcolor{{{color:primary.0}}}{{{if:w==0|{{l}}|-{{l}}}}}$, qui appartient bien à $\\left]-\\pi\\,;\\pi\\right]$."
+				]
+			}
+		},
+		{
+			"statement": "Quelle est la longueur {{if:q==1|d'un quart de tour|{{if:q==2|d'un demi-tour|{{if:q==3|de trois quarts de tour|d'un tour complet}}}}}} du cercle trigonométrique ?\n\n$?$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1|2|3|4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q*\\pi/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le cercle trigonométrique a pour rayon $1$ : un tour complet mesure $2\\pi$, un quart de tour $\\dfrac{2\\pi}{4}=\\dfrac{\\pi}{2}$.",
+					"${{q}}\\times\\dfrac{\\pi}{2}=\\textcolor{{{color:primary.0}}}{{{eval:q*\\pi/2}}}$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "M en 2π/3 : 2π/3",
+			"variationIndex": 0,
+			"variables": {
+				"r": "\\frac{2\\pi}{3}"
+			},
+			"answers": ["\\frac{2\\pi}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "M en 5π/3 : 5π/3",
+			"variationIndex": 0,
+			"variables": {
+				"r": "\\frac{5\\pi}{3}"
+			},
+			"answers": ["\\frac{5\\pi}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : mesure principale −π/3",
+			"variationIndex": 0,
+			"variables": {
+				"r": "\\frac{5\\pi}{3}"
+			},
+			"answers": ["-\\frac{\\pi}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Arc de π/6 à 3π/4 : 7π/12",
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{6}",
+				"b": "\\frac{3\\pi}{4}"
+			},
+			"answers": ["\\frac{7\\pi}{12}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : somme",
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{6}",
+				"b": "\\frac{3\\pi}{4}"
+			},
+			"answers": ["\\frac{11\\pi}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Arc de 0 à 4π/3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "0",
+				"b": "\\frac{4\\pi}{3}"
+			},
+			"answers": ["\\frac{4\\pi}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Sens indirect, π/3 : −π/3",
+			"variationIndex": 2,
+			"variables": {
+				"w": "1",
+				"l": "\\frac{\\pi}{3}"
+			},
+			"answers": ["-\\frac{\\pi}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sens oublié",
+			"variationIndex": 2,
+			"variables": {
+				"w": "1",
+				"l": "\\frac{\\pi}{3}"
+			},
+			"answers": ["\\frac{\\pi}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sens direct, 3π/4",
+			"variationIndex": 2,
+			"variables": {
+				"w": "0",
+				"l": "\\frac{3\\pi}{4}"
+			},
+			"answers": ["\\frac{3\\pi}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Demi-tour : π",
+			"variationIndex": 3,
+			"variables": {
+				"q": "2"
+			},
+			"answers": ["\\pi"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : demi-tour 180",
+			"variationIndex": 3,
+			"variables": {
+				"q": "2"
+			},
+			"answers": ["180"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Trois quarts : 3π/2",
+			"variationIndex": 3,
+			"variables": {
+				"q": "3"
+			},
+			"answers": ["\\frac{3\\pi}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

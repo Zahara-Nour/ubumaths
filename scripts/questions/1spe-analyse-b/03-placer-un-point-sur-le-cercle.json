@@ -1,0 +1,231 @@
+{
+	"title": "Placer un point sur le cercle trigonométrique",
+	"description": "Placer le point image d'un réel multiple de π/6 ou π/4, dans ]−π ; π] puis hors de cet intervalle (mesure principale), ou deux points symétriques",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Cercle et radians",
+	"level": 6,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Place sur le cercle trigonométrique le point $M$ associé au réel ${{r}}$.\n\n```trig\npreset: quarters\nplacer: M = {{p}}*pi/12\n```",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{3}|\\frac{2\\pi}{3}|\\frac{5\\pi}{6}|-\\frac{\\pi}{6}|-\\frac{\\pi}{3}|-\\frac{2\\pi}{3}|-\\frac{5\\pi}{6}|\\frac{\\pi}{4}|\\frac{3\\pi}{4}|-\\frac{\\pi}{4}|-\\frac{3\\pi}{4}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:12*r/\\pi"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"Les repères $0$, $\\dfrac{\\pi}{2}$, $\\pi$ et $-\\dfrac{\\pi}{2}$ partagent le cercle en quarts ; $\\dfrac{\\pi}{6}$ est le tiers d'un quart de tour, $\\dfrac{\\pi}{4}$ sa moitié. Un réel positif se place dans le sens direct depuis $I$, un réel négatif dans le sens indirect.",
+					"${{r}}={{if:p<0|-|}}{{if:mod(p,2)==0|{{eval:abs(p)/2}}\\times\\dfrac{\\pi}{6}|{{eval:abs(p)/3}}\\times\\dfrac{\\pi}{4}}}$ : on part de $I$ et on tourne dans le sens {{if:p<0|indirect|direct}}.",
+					"```trig\npreset: quarters\npoints: M = {{p}}*pi/12\n```"
+				]
+			}
+		},
+		{
+			"statement": "Place sur le cercle trigonométrique le point $M$ associé au réel ${{r}}$.\n\n```trig\npreset: quarters\nplacer: M = {{p}}*pi/12\n```",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{13\\pi}{6}|\\frac{7\\pi}{3}|\\frac{9\\pi}{4}|\\frac{11\\pi}{4}|\\frac{17\\pi}{6}|\\frac{7\\pi}{6}|\\frac{5\\pi}{3}|\\frac{7\\pi}{4}|-\\frac{7\\pi}{4}|-\\frac{11\\pi}{6}|-\\frac{5\\pi}{4}|-\\frac{4\\pi}{3}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:12*r/\\pi"
+				},
+				{
+					"name": "q",
+					"expression": "eval:12-mod(12-p,24)"
+				},
+				{
+					"name": "m",
+					"expression": "eval:q*\\pi/12"
+				},
+				{
+					"name": "n",
+					"expression": "eval:(p-q)/24"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"${{r}}$ n'est pas dans $\\left]-\\pi\\,;\\pi\\right]$ : on cherche sa **mesure principale** en ajoutant ou en retirant des tours complets ($2\\pi$), qui ramènent au même point.",
+					"${{r}}={{m}}{{if:n>0|+|-}}{{if:n*n>1|{{eval:2*abs(n)}}|2}}\\pi$, et ${{m}}\\in\\left]-\\pi\\,;\\pi\\right]$ : $M$ est le point associé à $\\textcolor{{{color:primary.0}}}{{{m}}}$.",
+					"```trig\npreset: quarters\npoints: M = {{q}}*pi/12\n```"
+				]
+			}
+		},
+		{
+			"statement": "Soit $x={{r}}$. Place sur le cercle trigonométrique le point $M$ associé à $x$ et le point $N$ associé à ${{if:w==0|-x|\\pi-x}}$.\n\n```trig\npreset: quarters\nplacer: M = {{p}}*pi/12 ; N = {{v}}*pi/12\n```",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0|1"
+				},
+				{
+					"name": "r",
+					"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{3}|\\frac{2\\pi}{3}|\\frac{5\\pi}{6}|-\\frac{\\pi}{6}|-\\frac{\\pi}{3}|-\\frac{2\\pi}{3}|-\\frac{5\\pi}{6}|\\frac{\\pi}{4}|\\frac{3\\pi}{4}|-\\frac{\\pi}{4}|-\\frac{3\\pi}{4}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:12*r/\\pi"
+				},
+				{
+					"name": "v",
+					"expression": "eval:12*w-p"
+				},
+				{
+					"name": "m",
+					"expression": "eval:(12-mod(12-v,24))*\\pi/12"
+				}
+			],
+			"blanks": [],
+			"correction": {
+				"steps": [
+					"{{if:w==0|Les points associés à $x$ et à $-x$ sont **symétriques par rapport à l'axe des abscisses**.|Les points associés à $x$ et à $\\pi-x$ sont **symétriques par rapport à l'axe des ordonnées**.}}",
+					"${{if:w==0|-x|\\pi-x}}=\\textcolor{{{color:primary.0}}}{{{m}}}$",
+					"```trig\npreset: quarters\npoints: M = {{p}}*pi/12, N = {{v}}*pi/12\n```"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2π/3 : cran 8",
+			"variationIndex": 0,
+			"variables": {
+				"r": "\\frac{2\\pi}{3}"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2π/3 placé en π/3",
+			"variationIndex": 0,
+			"variables": {
+				"r": "\\frac{2\\pi}{3}"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−π/4 : cran 21",
+			"variationIndex": 0,
+			"variables": {
+				"r": "-\\frac{\\pi}{4}"
+			},
+			"answers": ["21"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −π/4 placé en π/4",
+			"variationIndex": 0,
+			"variables": {
+				"r": "-\\frac{\\pi}{4}"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "13π/6 : cran 2",
+			"variationIndex": 1,
+			"variables": {
+				"r": "\\frac{13\\pi}{6}"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "−7π/4 : cran 3",
+			"variationIndex": 1,
+			"variables": {
+				"r": "-\\frac{7\\pi}{4}"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −7π/4 placé en −π/4",
+			"variationIndex": 1,
+			"variables": {
+				"r": "-\\frac{7\\pi}{4}"
+			},
+			"answers": ["21"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5π/3 : cran 20",
+			"variationIndex": 1,
+			"variables": {
+				"r": "\\frac{5\\pi}{3}"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x = π/3, −x : crans 4 et 20",
+			"variationIndex": 2,
+			"variables": {
+				"w": "0",
+				"r": "\\frac{\\pi}{3}"
+			},
+			"answers": ["4", "20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : N = π − x au lieu de −x",
+			"variationIndex": 2,
+			"variables": {
+				"w": "0",
+				"r": "\\frac{\\pi}{3}"
+			},
+			"answers": ["4", "8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x = −π/4, π − x : crans 21 et 15",
+			"variationIndex": 2,
+			"variables": {
+				"w": "1",
+				"r": "-\\frac{\\pi}{4}"
+			},
+			"answers": ["21", "15"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
