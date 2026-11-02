@@ -1,0 +1,243 @@
+{
+	"title": "Carré et rectangle : angles droits et côtés",
+	"description": "Longueur d'un côté d'après les propriétés ; phrases vraies pour tous les carrés, tous les rectangles",
+	"grades": ["CE1"],
+	"theme": "Géométrie",
+	"domain": "Figures planes",
+	"subdomain": "Propriétés",
+	"level": 6,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "$ABCD$ est un rectangle. Combien mesure le côté $[{{if:k==1|CD|DA}}]$ ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6\ndescription: Le rectangle ABCD, AB et BC écrits, quatre angles droits codés.\n---\na = point(1.5, 1.5, visible=faux)\nb = point(8.5, 1.5, visible=faux)\nc = point(8.5, 4.5, visible=faux)\nd = point(1.5, 4.5, visible=faux)\nq = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\ng0 = angle(d, a, b, marque=\"carre\", couleur=\"noir\")\ng1 = angle(a, b, c, marque=\"carre\", couleur=\"noir\")\ng2 = angle(b, c, d, marque=\"carre\", couleur=\"noir\")\ng3 = angle(c, d, a, marque=\"carre\", couleur=\"noir\")\ntexte(1.15, 1.15, \"A\")\ntexte(8.85, 1.15, \"B\")\ntexte(8.85, 4.85, \"C\")\ntexte(1.15, 4.85, \"D\")\ntexte(5, 1.05, \"{{u}} cm\")\ntexte(9.35, 3, \"{{w}} cm\")\n```\n\n$[{{if:k==1|CD|DA}}]$ mesure $?$ cm.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "u",
+					"expression": "5..9"
+				},
+				{
+					"name": "w",
+					"expression": "2..4"
+				},
+				{
+					"name": "a",
+					"expression": "eval:u*(2-k) + w*(k-1)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans un rectangle, les côtés qui se font face ont la $\\textcolor{{{color:primary.0}}}{\\text{même longueur}}$.",
+					"$[{{if:k==1|CD|DA}}]$ est en face de $[{{if:k==1|AB|BC}}]$ : il mesure $\\textcolor{{{color:primary.0}}}{{{a}}}$ cm."
+				]
+			}
+		},
+		{
+			"statement": "$ABCD$ est un carré. Combien mesure le côté $[{{if:k==1|BC|{{if:k==2|CD|DA}}}}]$ ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 6\ndescription: Le carré ABCD, AB écrit, quatre angles droits codés.\n---\na = point(3.25, 0.9, visible=faux)\nb = point(6.75, 0.9, visible=faux)\nc = point(6.75, 4.4, visible=faux)\nd = point(3.25, 4.4, visible=faux)\nq = polygone(a, b, c, d, couleur=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", epaisseur=2)\ng0 = angle(d, a, b, marque=\"carre\", couleur=\"noir\")\ng1 = angle(a, b, c, marque=\"carre\", couleur=\"noir\")\ng2 = angle(b, c, d, marque=\"carre\", couleur=\"noir\")\ng3 = angle(c, d, a, marque=\"carre\", couleur=\"noir\")\ntexte(2.9, 0.55, \"A\")\ntexte(7.1, 0.55, \"B\")\ntexte(7.1, 4.75, \"C\")\ntexte(2.9, 4.75, \"D\")\ntexte(5, 0.45, \"{{n}} cm\")\n```\n\n$[{{if:k==1|BC|{{if:k==2|CD|DA}}}}]$ mesure $?$ cm.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "n",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un carré a ses $4$ côtés de la $\\textcolor{{{color:primary.0}}}{\\text{même longueur}}$.",
+					"Tous ses côtés mesurent, comme $[AB]$, $\\textcolor{{{color:primary.0}}}{{{n}}}$ cm."
+				]
+			}
+		},
+		{
+			"statement": "Quelle phrase est vraie pour tous les rectangles ?\n\n```choix\n- Ils ont $4$ angles droits.\n- Ils ont $4$ côtés de la même longueur.\n- Ils ont $2$ angles droits seulement.\n- Leurs côtés qui se font face n'ont pas la même longueur.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un rectangle a $\\textcolor{{{color:primary.0}}}{\\text{$4$ angles droits}}$, et ses côtés qui se font face ont la même longueur.",
+					"Ses $4$ côtés n'ont pas toujours la même longueur : un long, un court."
+				]
+			}
+		},
+		{
+			"statement": "Quelle phrase est vraie pour tous les carrés ?\n\n```choix\n- Ils ont $4$ côtés de la même longueur et $4$ angles droits.\n- Ils ont $4$ côtés de la même longueur, mais pas d'angle droit.\n- Ils ont $4$ angles droits, deux côtés longs et deux côtés courts.\n- Ils ont $3$ côtés de la même longueur.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un carré a $\\textcolor{{{color:primary.0}}}{\\text{$4$ côtés de la même longueur}}$ et $\\textcolor{{{color:primary.1}}}{\\text{$4$ angles droits}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "CD = AB = 7",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"k": "1",
+				"u": "7",
+				"w": "3",
+				"a": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "DA = BC = 3",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"k": "2",
+				"u": "7",
+				"w": "3",
+				"a": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le côté voisin (CD pris pour BC)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"k": "1",
+				"u": "7",
+				"w": "3",
+				"a": "7"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le côté voisin (DA pris pour AB)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "2",
+				"k": "2",
+				"u": "7",
+				"w": "3",
+				"a": "3"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Carré : BC = 5",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"k": "1",
+				"n": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Carré : DA = 8",
+			"variationIndex": 1,
+			"variables": {
+				"c": "4",
+				"k": "3",
+				"n": "8"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le tour (20)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"k": "1",
+				"n": "5"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rectangle : 4 angles droits",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 côtés égaux (le carré)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Carré : côtés égaux et angles droits",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sans angle droit",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -5,20 +5,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, phase 0 du lot 11 écrite (§ 18)._
+_Mis à jour le 2026-11-02, lot 11 écrit (§ 18)._
 
-- **État** : lots 0 à 10 publiés. Relevé de fin de découpage (§ 18) : 023, 066, 067, 071 oubliés, `a7dfe502` (073)
-  jamais publié. Décidé : lot 11 (ces points + 072 en partie), puis chantier `centaines:` de `collection` (001, 002).
-- **Prochaine action** : phase 0 du lot 11 (§ 18) à valider, puis écrire `lot-ce1-11.py` dans un worktree.
-- **En attente de David** : 3 questions du § 18 ; essai tablette des cases « figure » (CP-060, CP-058) ; chantier
-  `verrou-deploy` ; futur chantier « `\textcolor` hors formule » (53 fichiers de lots).
+- **État** : lots 0 à 10 publiés. Lot 11 écrit et joué en local (§ 18) : 01-04 (`ce1-11/`), 05 (`ce1-11-figure/`).
+- **Prochaine action** : PR des fichiers → merge → David : `create-questions --publier` sur les deux dossiers → migration
+  nœud + tag (5 neufs) et niveau 2 de `a7dfe502` → page à cocher → publication de `ce1-11/` ; `ce1-11-figure/` (05 +
+  instantané de `a7dfe502`) après l'essai tablette. Puis chantier `centaines:` de `collection` (001, 002).
+- **En attente de David** : essai tablette des cases « figure » (CP-060, CP-058) ; chantier `verrou-deploy` ; futur
+  chantier « `\textcolor` hors formule » (53 fichiers de lots).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; **mots en couleur dans le texte = `colt()`
-  (`$\textcolor{…}{\text{…}}$`), jamais `\textcolor` nu** ; `{{if:}}` à condition contenant `{{eval:}}` non résolu →
-  relire `--apercu` ; **niveaux : relever la catégorie juste avant la publication** ; `publier-lot` = tout le dossier
-  ou rien ; horodatage `pnpm migration:horodatage`, `check:migrations --pr <n>` ; `db:migrate` : dry-run d'abord ;
-  commitlint : sujet sans majuscule, corps ≤ 100 colonnes ; shards navigateur : « Browser connection was closed » =
-  relancer ; `create-questions --mettre-a-jour` refusé au mode auto.
-- **Worktree / branche** : aucun. `!` de David : toujours préfixer `cd /Users/david/Coding/js/ubumaths &&`.
+  (`$\textcolor{…}{\text{…}}$`), jamais `\textcolor` nu** ; points invisibles (`visible=faux`) jamais nommés dans le
+  corrigé ; **niveaux : relever la catégorie juste avant la publication** ; `publier-lot` = tout le dossier ou rien ;
+  horodatage `pnpm migration:horodatage`, `check:migrations --pr <n>` ; `db:migrate` : dry-run d'abord ; commitlint :
+  sujet sans majuscule, corps ≤ 100 colonnes ; shards navigateur : « Browser connection was closed » = relancer ;
+  `create-questions --mettre-a-jour` refusé au mode auto ; worktree neuf : `svelte-kit sync` avant `tsx`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1`, `content/questions-ce1-lot11`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -918,3 +919,13 @@ Questions à David :
    oui, c'est le cas qui distingue le CE1 du CP.
 3. **Niveaux** : premiers libres (Sens 6 ; Reconnaître et décrire 9, 10 ; Propriétés 6 ; Carrés et rectangles 2 ;
    Droites 2 pour `a7dfe502`). Recommandation : oui, relevés de nouveau avant la publication.
+
+Réponse de David (« je suis tes recos », 2026-11-02) : les trois recommandations — publication en deux fois
+(`ce1-11/` : 01 à 04 ; `ce1-11-figure/` : 05 et `a7dfe502`, après l'essai des cases « figure »), pavé à base carrée au
+067, premiers niveaux libres.
+
+- 2026-11-02 : lot 11 écrit (`lot-ce1-11.py`, `scripts/questions/ce1-11/` et `ce1-11-figure/`) : 5 modèles, 80 specs ;
+  `create-questions` simulé 5/5 ; `question:specs` 7 200 tirages verts, aucune accolade résiduelle ; `sonde-cubes`
+  600 blocs et `sonde-figures` 451 blocs, 0 problème ; 5 brouillons en base locale, joués dans l'aperçu (rectangle coté,
+  cube coté, carré oblique terminé : « juste »). **Piège trouvé à l'aperçu** : le corrigé du 05 nommait $A$, $B$, $C$,
+  points invisibles à l'écran → corrigé sans lettres (« carreaux en largeur, en hauteur »).

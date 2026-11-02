@@ -1,0 +1,312 @@
+{
+	"title": "Termine le carré ou le rectangle aux côtés obliques",
+	"description": "Sur quadrillage, compléter un carré (un côté oblique tracé) ou un rectangle (deux côtés obliques tracés)",
+	"grades": ["CE1"],
+	"theme": "Géométrie",
+	"domain": "Tracés",
+	"subdomain": "Carrés et rectangles",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Termine le carré.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 8\ngrille: 1\noutils: segment\nverifier: carre A ; B\n---\nA = point({{if:k==1|5|{{if:k==2|5|{{if:k==3|5|{{if:k==4|5|5}}}}}}}}, {{if:k==1|3|{{if:k==2|3|{{if:k==3|4|{{if:k==4|5|2}}}}}}}}, visible=faux)\nB = point({{if:k==1|7|{{if:k==2|6|{{if:k==3|7|{{if:k==4|6|6}}}}}}}}, {{if:k==1|4|{{if:k==2|5|{{if:k==3|3|{{if:k==4|3|5}}}}}}}}, visible=faux)\nab = segment(A, B)\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un carré a $4$ côtés de la même longueur et $4$ angles droits.",
+					"Le côté tracé avance de {{if:k==1|$2$ carreaux en largeur et $1$ carreau en hauteur|{{if:k==2|$1$ carreau en largeur et $2$ carreaux en hauteur|{{if:k==3|$2$ carreaux en largeur et $1$ carreau en hauteur|{{if:k==4|$1$ carreau en largeur et $2$ carreaux en hauteur|$1$ carreau en largeur et $3$ carreaux en hauteur}}}}}}}}.",
+					"Le côté suivant tourne d'un angle droit : il $\\textcolor{{{color:primary.0}}}{\\text{échange les deux nombres}}$, {{if:k==1|$1$ carreau en largeur et $2$ carreaux en hauteur|{{if:k==2|$2$ carreaux en largeur et $1$ carreau en hauteur|{{if:k==3|$1$ carreau en largeur et $2$ carreaux en hauteur|{{if:k==4|$2$ carreaux en largeur et $1$ carreau en hauteur|$3$ carreaux en largeur et $1$ carreau en hauteur}}}}}}}}.",
+					"On trace ainsi les trois côtés qui manquent, d'un côté ou de l'autre du côté tracé ; la figure se ferme."
+				]
+			}
+		},
+		{
+			"statement": "Termine le rectangle.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 8\ngrille: 1\noutils: segment\nverifier: rectangle A ; B ; C\n---\nA = point({{if:k==1|2|{{if:k==2|3|{{if:k==3|7|{{if:k==4|2|{{if:k==5|5|2}}}}}}}}}}, {{if:k==1|2|{{if:k==2|1|{{if:k==3|1|{{if:k==4|3|{{if:k==5|1|2}}}}}}}}}}, visible=faux)\nB = point({{if:k==1|6|{{if:k==2|7|{{if:k==3|9|{{if:k==4|6|{{if:k==5|7|8}}}}}}}}}}, {{if:k==1|4|{{if:k==2|5|{{if:k==3|5|{{if:k==4|1|{{if:k==5|3|4}}}}}}}}}}, visible=faux)\nC = point({{if:k==1|5|{{if:k==2|5|{{if:k==3|7|{{if:k==4|7|{{if:k==5|4|7}}}}}}}}}}, {{if:k==1|6|{{if:k==2|7|{{if:k==3|6|{{if:k==4|3|{{if:k==5|6|7}}}}}}}}}}, visible=faux)\nab = segment(A, B)\nbc = segment(B, C)\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans un rectangle, les côtés qui se font face ont la même longueur, et les $4$ angles sont droits.",
+					"Les deux côtés tracés se touchent en un angle droit. En face de chacun, on trace un côté $\\textcolor{{{color:primary.0}}}{\\text{pareil}}$ : le même nombre de carreaux en largeur et en hauteur.",
+					"Ici : {{if:k==1|$4$ carreaux en largeur et $2$ carreaux en hauteur|{{if:k==2|$4$ carreaux en largeur et $4$ carreaux en hauteur|{{if:k==3|$2$ carreaux en largeur et $4$ carreaux en hauteur|{{if:k==4|$4$ carreaux en largeur et $2$ carreaux en hauteur|{{if:k==5|$2$ carreaux en largeur et $2$ carreaux en hauteur|$6$ carreaux en largeur et $2$ carreaux en hauteur}}}}}}}}}} pour l'un, {{if:k==1|$1$ carreau en largeur et $2$ carreaux en hauteur|{{if:k==2|$2$ carreaux en largeur et $2$ carreaux en hauteur|{{if:k==3|$2$ carreaux en largeur et $1$ carreau en hauteur|{{if:k==4|$1$ carreau en largeur et $2$ carreaux en hauteur|{{if:k==5|$3$ carreaux en largeur et $3$ carreaux en hauteur|$1$ carreau en largeur et $3$ carreaux en hauteur}}}}}}}}}} pour l'autre. La figure se ferme."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "carré 1, à gauche de AB",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(7;4;6;6)|segment(6;6;4;5)|segment(4;5;5;3)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "carré 1, à droite de AB",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(7;4;8;2)|segment(8;2;6;1)|segment(6;1;5;3)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : carré 1, un côté manque",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(7;4;6;6)|segment(6;6;4;5)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : carré 1, côtés suivants à la verticale",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(7;4;7;6)|segment(7;6;5;5)|segment(5;5;5;3)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "carré 2, à gauche de AB",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["segment(6;5;4;6)|segment(4;6;3;4)|segment(3;4;5;3)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "carré 2, à droite de AB",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["segment(6;5;8;4)|segment(8;4;7;2)|segment(7;2;5;3)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : carré 2, un côté manque",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["segment(6;5;4;6)|segment(4;6;3;4)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : carré 2, côtés suivants à la verticale",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["segment(6;5;6;7)|segment(6;7;5;5)|segment(5;5;5;3)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "carré 3, à gauche de AB",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["segment(7;3;8;5)|segment(8;5;6;6)|segment(6;6;5;4)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "carré 3, à droite de AB",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["segment(7;3;6;1)|segment(6;1;4;2)|segment(4;2;5;4)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : carré 3, un côté manque",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["segment(7;3;8;5)|segment(8;5;6;6)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : carré 3, côtés suivants à la verticale",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["segment(7;3;7;5)|segment(7;5;5;6)|segment(5;6;5;4)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "rectangle 1",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(5;6;1;4)|segment(1;4;2;2)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "rectangle 1, dans l'autre sens",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(2;2;1;4)|segment(1;4;5;6)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rectangle 1, un côté manque",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(5;6;1;4)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rectangle 1, quatrième sommet décalé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["segment(5;6;2;4)|segment(2;4;2;2)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "rectangle 2",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["segment(5;7;1;3)|segment(1;3;3;1)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "rectangle 2, dans l'autre sens",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["segment(3;1;1;3)|segment(1;3;5;7)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rectangle 2, un côté manque",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["segment(5;7;1;3)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rectangle 2, quatrième sommet décalé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["segment(5;7;2;3)|segment(2;3;3;1)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "rectangle 3",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["segment(7;6;5;2)|segment(5;2;7;1)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "rectangle 3, dans l'autre sens",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["segment(7;1;5;2)|segment(5;2;7;6)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rectangle 3, un côté manque",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["segment(7;6;5;2)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rectangle 3, quatrième sommet décalé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["segment(7;6;6;2)|segment(6;2;7;1)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
