@@ -15,9 +15,11 @@ _Mis à jour le 2026-11-02, après #2242 (mergée, migration appliquée en prod 
 - **État** : 6b en prod, 7 brouillons rangés (relu au MCP : nœud du point, 1 tag chacun) : 4f8c7b91 (412),
   7bf472bc (310), 24ca7584 (313), 52a3ad9b (311), 9af16245 (415), 71205949 (316), 47d451b4 (329). Page à cocher
   publiée : https://claude.ai/artifact/3v9Z4Yu1kvxdAcvEZ3gt7p (collection `verdicts`, vide à la publication).
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`) ; corriger les « À revoir » ; puis
-  `publier-lot` du 6b. Ensuite le lot formules (413, 414, 314, 315, 416), nouveau worktree/branche.
-- **En attente de David** : la relecture sur la page à cocher.
+- **6b CLOS** : 7/7 « OK » sur la page à cocher, publiés par David (`publier-lot --publier`), `published` relu au
+  MCP le 2026-11-02.
+- **Prochaine action** : lot formules (413, 414, 314, 315, 416) : phase 0 (relever les niveaux des catégories
+  voisines après le 6b), nouveau worktree `ubumaths-wt-questions-1spe-geometrie`, branche neuve.
+- **En attente de David** : rien.
 - **Pièges en cours** : `pnpm migration:horodatage` sans `-s` ; KaTeX absent du dépôt, sonde de formules par
   `mathlive-ssr` (`validateLatex`). `db:migrate` refusé par le classifieur du mode auto → David le lance (`!`).
   CI : shard client coupé (« Browser connection was closed ») = panne, `gh run rerun --failed`.
