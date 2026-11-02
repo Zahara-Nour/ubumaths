@@ -16,15 +16,16 @@ export const horlogeEntry: BlockCatalogEntry = {
 	summary:
 		'Une à quatre horloges à lire ou à comparer, cadran 12 ou 24 heures ; dans une question, une horloge où l’élève place les aiguilles.',
 	intro:
-		'Le bloc dessine une horloge par heure donnée. La petite aiguille avance avec les minutes, comme sur une vraie horloge. L’heure n’est jamais écrite à côté : c’est la réponse.',
+		'Le bloc dessine une horloge par heure donnée. La petite aiguille avance avec les minutes, comme sur une vraie horloge. Des secondes écrites ajoutent la trotteuse (la grande aiguille reste alors pile sur sa minute). L’heure n’est jamais écrite à côté : c’est la réponse.',
 	settingGroups: [
 		{
 			settings: [
 				{
 					key: 'heure',
-					values: '1 à 4 heures séparées par ;, écrites 9 h, 9 h 30 ou 9h5',
+					values: '1 à 4 heures séparées par ;, écrites 9 h, 9 h 30, 9h5 ou 9 h 30 min 15 s',
 					defaultValue: null,
-					description: 'Une horloge par heure. Heures de 0 à 23, minutes de 0 à 59.'
+					description:
+						'Une horloge par heure. Heures de 0 à 23, minutes et secondes de 0 à 59. Avec des secondes, la trotteuse est dessinée.'
 				},
 				{
 					key: 'légendes',
@@ -69,10 +70,11 @@ export const horlogeEntry: BlockCatalogEntry = {
 			settings: [
 				{
 					key: 'placer',
-					values: 'une heure, écrite 9 h, 9 h 25 ou 14 h 25 (à la place de heure:)',
+					values:
+						'une heure, écrite 9 h, 9 h 25, 14 h 25 ou 9 h 25 min 40 s (à la place de heure:)',
 					defaultValue: 'aucune',
 					description:
-						'Un cadran sans aiguilles : l’élève pose la petite et la grande aiguille (étiquettes sous le cadran, toucher, boutons ◀ ▶). Juste si la grande aiguille est sur la bonne minute et la petite dans le bon secteur : pile sur l’heure à minutes = 0, entre l’heure et la suivante sinon, ou à sa vraie place (9 h 05 : sur le 9). 14 h 25 se place comme 2 h 25. Jamais écrite à l’écran. Une légende au plus ; minutes: cachées refusé. Sur le PDF, le cadran sans aiguilles : l’enfant les dessine.'
+						'Un cadran sans aiguilles : l’élève pose la petite et la grande aiguille (étiquettes sous le cadran, toucher, boutons ◀ ▶). Juste si la grande aiguille est sur la bonne minute et la petite dans le bon secteur : pile sur l’heure à minutes = 0, entre l’heure et la suivante sinon, ou à sa vraie place (9 h 05 : sur le 9). 14 h 25 se place comme 2 h 25. Avec des secondes, l’élève pose aussi la trotteuse, juste sur la seconde exacte. Jamais écrite à l’écran. Une légende au plus ; minutes: cachées refusé. Sur le PDF, le cadran sans aiguilles : l’enfant les dessine.'
 				}
 			]
 		}
@@ -97,6 +99,12 @@ export const horlogeEntry: BlockCatalogEntry = {
 			title: 'Heures entières, sans grande aiguille',
 			source: fence('horloge', 'heure: 3 h ; 7 h', 'minutes: cachées', 'graduations: heures'),
 			explanation: 'Pour les premières lectures, au CP.'
+		},
+		{
+			title: 'Avec la trotteuse',
+			source: fence('horloge', 'heure: 9 h 25 min 40 s'),
+			explanation:
+				'Les secondes écrites ajoutent la trotteuse, fine, avec son contrepoids. La grande aiguille reste pile sur le 25.'
 		},
 		{
 			title: 'Cadran de 24 heures',

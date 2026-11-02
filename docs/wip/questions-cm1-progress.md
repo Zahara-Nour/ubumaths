@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2149._
+_Mis à jour le 2026-11-01, après #2159 et `db:migrate`._
 
-- **État** : lot 4 publié ; lot 4b (calcul posé, 6 modèles, `scripts/questions/cm1-4b/`) écrit et mergé (#2149), pas encore en prod.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm1-4b --publier` ; relever les 6 ids au MCP ; migration nœud + tag (050 → « Décimaux : calculs › addition », 165 ×2 → « › soustraction », 052 → « › multiplication », 051 et 053 → « calcul posé » de leur notion) ; page à cocher ; publication. Puis lot 5 grandeurs.
-- **En attente de David** : le `create-questions --publier` du lot 4b.
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = max de `origin/main`, des worktrees ET des branches distantes + 1 min, **revérifié juste avant le merge** (collision `20261101190200` sur `main` le 2026-11-01, réparée par #2114) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») et le type `content` (prendre `feat`) ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; dépôt partagé : relire `git diff --cached --name-only` avant CHAQUE commit (journal ce2 emporté le 2026-11-01) ; coloriage : specs non mesurées par le test du corpus, sauf si un modèle active `orderIndependent` (la prod le mesurerait alors) ; extension Chrome muette → Playwright à 390 px.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1` (branche `content/questions-cm1-lot4b` mergée ; repartir d'`origin/main` sur une branche neuve pour la migration).
+- **État** : lot 4b (calcul posé, 6 modèles) en brouillons en prod, rangés et tagués (migration `20261101224741`, #2159, jouée et vérifiée au MCP) ; page à cocher publiée (§ 13 quinquies).
+- **Prochaine action** : compter les verdicts de la page (`ArtifactData list verdicts`) → `publier-lot --dir scripts/questions/cm1-4b` en simulation → David lance `--publier` → relire `published` au MCP. Puis lot 5 grandeurs (nouveau worktree, nouvelle branche).
+- **En attente de David** : verdicts sur la page https://claude.ai/artifact/QwvVUKnuztGXrZ7ermrd6F ; accord pour supprimer la branche locale `sauvegarde/questions-cm1-lot4b-rebase` (rebase abandonné, contenu identique, `-D`).
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** (main avance vite : #2159 renumérotée 3 fois, 224100 → 224701 → 224702 → 224741 ; tant que #2177 n'est pas mergée, `--prochain` donne « max + 1 s » à toutes les sessions en même temps) ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule (« CM1 ») et le type `content` (prendre `feat`) ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; dépôt partagé : relire `git diff --cached --name-only` avant CHAQUE commit (journal ce2 emporté le 2026-11-01) ; coloriage : specs non mesurées par le test du corpus, sauf si un modèle active `orderIndependent` (la prod le mesurerait alors) ; extension Chrome muette → Playwright à 390 px.
+- **Worktree / branche** : aucun (worktree de #2159 retiré) ; recréer `../ubumaths-wt-questions-cm1` pour le lot 5.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -812,3 +812,28 @@ CE1 ; 3. 050 et 165 rangés sous « Décimaux : calculs › addition » et « �
   corrigé : virgules alignées et carreaux vides (34,5 ; 13 − 4,43), produits partiels en cases d'aide
   (605 × 303), potence à 4 chiffres qui défile dans son cadre (page sans défilement horizontal), corrigés à
   virgule.
+
+### 13 quater. Lot 4b — brouillons en prod, rangement et tags (2026-11-01)
+
+- `create-questions --publier` lancé par David. MCP : 6 brouillons [CM1], sans nœud ni tag, créés à
+  18:11 UTC, niveaux 1 (cassage 2) dans les catégories « Calcul posé ». Ids : `39e7d0a5-c605-4e1c-b0db-91a67f53f117`
+  (addition), `613817ea-58af-4c94-b82a-a2dba19e687a` (soustraction, compensation), `1ed5202f-d031-4964-8f4b-a8dc0ade21c5`
+  (soustraction, cassage), `e8086f21-13e4-4adf-8691-347c65f88258` (multiplication d'entiers),
+  `c3246792-8dbf-4afb-8ad5-33c6f37feeb0` (décimal × entier), `4b666c28-0357-41b6-ae08-daae13ac0642` (division).
+- Migration `20261101224741_questions_cm1_lot4b_rangement_tags` et son test, générés du gabarit du lot 4
+  (remplacements vérifiés au `diff`). **Seul écart de logique** : le point est cherché sur le nœud du
+  modèle OU sur sa notion (050 et 165 sont posés sur la notion « Décimaux : calculs », leurs modèles sous
+  « addition » / « soustraction »), comme la règle des tags l'admet ; test ajouté : un point posé ailleurs
+  fait échouer la migration. Horodatage : d’abord `20261101223100`, pris aussi par `questions_ce2_lot6a` (#2158) → `20261101224100` (max des PR ouvertes + 1 min) → refusé par `check:migrations --pr 2159` (plus ancien que `20261101224700`, 6e lot 8, entré sur main pendant la CI) → `20261101224701` (`pnpm migration:horodatage`), pris au même moment par la 1re spé probas → `20261101224702`, pris par la terminale spé lot 2 (#2173) → `20261101224741`, tiré par le script de #2177 (aléa de 1 à 59 s).
+- Test d'intégration : rouge sans le corps de la migration (6 échecs), 10/10 vert avec.
+
+### 13 quinquies. Lot 4b — rangement vérifié, page à cocher (2026-11-01)
+
+- #2159 mergée. David a lancé `pnpm db:migrate --include-all` (dry-run relu : 3 migrations, toutes
+  sur main — 2de lot 7, CM1 lot 4b, CE2 lot 6b).
+- MCP : les 6 modèles sur le bon nœud (addition, soustraction ×2, multiplication sous « Décimaux :
+  calculs » ; « calcul posé » sous « Entiers : multiplication » et « Entiers : division »), un tag
+  chacun (CM1-050, 165, 165, 052, 051, 053), toujours brouillons.
+- Page : https://claude.ai/artifact/QwvVUKnuztGXrZ7ermrd6F (capacité `db`), rendu vu à 390 px
+  (6 fiches, pas de défilement horizontal) ; `verdicts` vide à la publication. Alertes attendues :
+  bloc `operation` non dessiné (6), à jouer dans l'aperçu.

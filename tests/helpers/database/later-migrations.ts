@@ -22,8 +22,17 @@ export const QUESTIONS_CP_FORMES =
 /** Sous-notion « Statistiques > Représenter des données > choisir une représentation » (5-079) et lot 6 de la 5e. */
 export const QUESTIONS_5_LOT6 =
 	'supabase/migrations/20261101190200_questions_5_lot6_rangement_tags.sql';
+/** Sous-notions « limites usuelles » (×2) et « Limites de suites > croissances comparées », lot 2 de terminale spé. */
+export const QUESTIONS_TSPE_LOT2 =
+	'supabase/migrations/20261101224702_questions_tspe_lot2_rangement_tags.sql';
 /** Du plus récent au plus ancien. */
-const LATER = [QUESTIONS_5_LOT6, QUESTIONS_CP_FORMES, PASSE_LYCEE_LIBELLES, PASSE_LYCEE];
+const LATER = [
+	QUESTIONS_TSPE_LOT2,
+	QUESTIONS_5_LOT6,
+	QUESTIONS_CP_FORMES,
+	PASSE_LYCEE_LIBELLES,
+	PASSE_LYCEE
+];
 
 /** Défait les migrations postérieures à `after` (toutes si absent), de la plus récente à la plus ancienne. */
 export async function undoLaterMigrations(pg: Client, after?: string): Promise<void> {

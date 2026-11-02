@@ -6,19 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2172._
+_Mis à jour le 2026-11-01, après #2175 et #2182._
 
-- **État** : lots 1 à 6 publiés ; lot 7 (21 modèles) : fichiers sur `main` (7 A #2164, 7 B #2170, 7 C #2172).
-- **Prochaine action** : brouillons du lot 7 en prod (David, `!`), migration nœud + tag, page à cocher. **Décidé par David (2026-11-01)** : avant la relecture du lot 7, faire dessiner
-  les tableaux ` ```variation ` par `page-a-cocher.ts` (15 fiches sur 21 en ont ; alerte « bloc variation non
-  dessiné » aujourd'hui) — PR de code à part.
-- **En attente de David** : rien.
-- **Pièges en cours** : horodatage de migration → `pnpm migration:horodatage` et `pnpm check:migrations --pr
-<n>` avant le merge ; `page-a-cocher.ts` voit des défauts de fenêtre que `sonde-courbes` ne voit pas : la
-  lancer avant la PR ; `db push`, `--publier` → David avec `!` ; worktree neuf → `pnpm exec svelte-kit sync` ;
-  CI allégée pour les PR de contenu (« skipped » voulu, CI Summary fait foi).
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, HEAD détachée sur `origin/main` (aucune branche
-  ouverte) ; 21 brouillons en base LOCALE seulement.
+- **État** : lots 1 à 6 publiés ; lot 7 (21 modèles) en brouillons en prod, rangés et tagués (§ 48) ; page à
+  cocher publiée (tableaux ` ```variation ` dessinés, #2182, § 49) : https://claude.ai/artifact/JvwcMAT212utBRQL1AQ6Mp
+- **Prochaine action** : David relit la page ; lire `verdicts` (ArtifactData list) et COMPTER ; « À revoir » →
+  corriger (`--mettre-a-jour` par David) ; puis `publier-lot` en simulation (trois dossiers), `--publier` par David.
+- **En attente de David** : relecture du lot 7 sur la page.
+- **Pièges en cours** : page générée depuis une copie des trois dossiers (préfixes a-/b-/c-, scratchpad) ;
+  `Doc-inchangée:` dans un commit, jamais dans le corps de PR ; horodatage → `pnpm migration:horodatage` ;
+  `db push`, `--publier` → David avec `!`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, HEAD détachée sur `origin/main` (aucune branche ouverte).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1197,3 +1195,38 @@ ni 2-348 ; L7-d trois PR de fichiers (7 A = 6, 7 B = 6, 7 C = 9), une migration,
   créer ». Base locale : 9 brouillons ; aperçu : 04 (quatre tableaux de variations dans la case choix, courbe
   au-dessus), 08 (décimaux rendus avec la virgule).
 - Branche `feat/questions-2de-lot7c`, empilée sur 7 B.
+
+## 48. Lot 7, brouillons en prod et migration nœud + tag (2026-11-01)
+
+- Brouillons créés par David (`create-questions --publier`, trois dossiers) ; relevé MCP : les 21 en `draft`,
+  `['2']`, sans nœud, sans tag ; chaque point sur le nœud prévu au § 44 (2-475 sur sa notion).
+  - 7 A : 0cecc7f2 (2-329), 23908ef7 (2-475), 71c7933f (2-476), 6670b161 (2-352), 6bb5ff09 (2-268),
+    80826238 (2-426) ;
+  - 7 B : f0163416 (2-330), 9c7ab1c7 (2-446), d80a7d42 (2-337), 284bc012 (2-449), 71174c9c (2-450),
+    118c4696 (2-451) ;
+  - 7 C : 93bc8b5e (2-345), 9e35f8ba (2-473), e372112e (2-346), 3810a06c (2-349), 39154ac5 (2-350),
+    752c6c5e (2-354), a1cd5403 (2-355), 4f887f53 (2-356), 275cb665 (2-477).
+- Migration `20261101224703_questions_2de_signes_variations_rangement_tags` (`pnpm migration:horodatage`) et
+  `tests/integration/questions-2de-signes-variations-rangement-tags.test.ts`, générés depuis ceux du lot 6
+  (seul le lot change). Rouge sans la migration (fichier réduit au rollback : 5 échecs, 5 verts) ; vert avec :
+  10/10. Horodatage 20261101224702 pris par la T_SPE entre-temps → 224703.
+- #2175 mergée (CI verte ; `Doc-inchangée` doit être dans un COMMIT, pas dans le corps de la PR ; horodatage
+  224702 pris entre-temps par la T_SPE → 224703). `security-auditor` : aucun finding. Migration jouée en prod
+  par une autre session (avec 224741 du CM1) ; MCP : les 21 en `draft`, bon nœud, un seul tag, le bon,
+  `updated_at` préservé.
+
+## 49. Page à cocher : tableaux de signes et de variations dessinés (2026-11-01)
+
+- Décidé par David (2026-11-01) avant la relecture du lot 7. Branche `feat/page-a-cocher-variation`.
+- `scripts/lib/page-a-cocher.ts` : bloc `variation` lu par `parseVariationTableContent` (+
+  `withImplicitEndpoints`), dessiné comme `VariationTable.svelte` (tableau, zéros, double barre, hachures,
+  valeurs en haut / au milieu / en bas, flèches SVG avec pointe dessinée, sens par les limites comme l'écran) ;
+  formules en `data-tex`, rendues en KaTeX par le gabarit (`formules()`). Bloc en erreur → la page s'arrête.
+- Tests : 4 nouveaux (rouges avant, 40/40 verts après). Page du lot 7 générée : 21 fiches, **aucune alerte**,
+  67 tableaux ; vus dans Chrome (quotient : 0 et double barre justes ; flèches lisibles dans les choix).
+- Pause des merges (deploy:prod relancé par questions-cm2) : branche poussée, PR à ouvrir au « go ».
+- Revue `code-reviewer` (Sonnet) : aucun bloquant. Corrigés : case d'intervalle = signe ou hachure seulement
+  (comme l'écran), hachure pleine largeur, ligne et contenu fautifs dans le message d'erreur ; tests ajoutés
+  (asymptote à deux limites, bornes implicites, case d'intervalle) : 43/43. Une zone interdite SANS limite
+  n'est pas écrivable dans une ligne de variation (le parseur exige des limites).
+- #2182 mergée (CI verte). Page du lot 7 publiée (artefact, capacité `db`), `verdicts` vide au départ.

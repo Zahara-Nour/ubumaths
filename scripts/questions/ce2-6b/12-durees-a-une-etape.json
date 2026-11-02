@@ -1,0 +1,471 @@
+{
+	"title": "Durées à une étape",
+	"description": "Durée entre deux heures (8 h 30 -> 12 h 30), heure de fin, heure de début",
+	"grades": ["CE2"],
+	"theme": "Grandeurs",
+	"domain": "Durées",
+	"subdomain": "Durée écoulée",
+	"level": 3,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|La visite du musée|Le tournoi}}}}}} commence à ${{h}}~\\text{h}~{{eval:10*q}}$ et finit à ${{eval:h+d}}~\\text{h}~{{eval:10*q}}$. Combien de temps dure-t-il ?\n\nIl dure $?~\\text{h}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "h",
+					"expression": "6..11"
+				},
+				{
+					"name": "d",
+					"expression": "2..6"
+				},
+				{
+					"name": "q",
+					"expression": "1..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les minutes sont les mêmes au début et à la fin : on compte les heures sur l'axe.",
+					"${{h}}~\\text{h}~{{eval:10*q}}$ $\\to$ ${{eval:h+d}}~\\text{h}~{{eval:10*q}}$ : ${{d}}$ heures.",
+					"{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|La visite du musée|Le tournoi}}}}}} dure $\\textcolor{{{color:primary.0}}}{{{d}}}~\\text{h}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|La visite du musée|Le tournoi}}}}}} commence à ${{h}}~\\text{h}~{{eval:10*p}}$ et finit à ${{h}}~\\text{h}~{{eval:10*q}}$. Combien de temps dure-t-il ?\n\nIl dure $?~\\text{min}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "h",
+					"expression": "6..11"
+				},
+				{
+					"name": "p",
+					"expression": "1..4"
+				},
+				{
+					"name": "q",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["q > p"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*(q-p)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'heure ne change pas : seules les minutes avancent.",
+					"De ${{eval:10*p}}$ à ${{eval:10*q}}$ minutes, il s'est écoulé ${{eval:10*(q-p)}}$ minutes.",
+					"{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|La visite du musée|Le tournoi}}}}}} dure $\\textcolor{{{color:primary.0}}}{{{eval:10*(q-p)}}}~\\text{min}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|La visite du musée|Le tournoi}}}}}} commence à ${{h}}~\\text{h}~{{eval:10*p}}$ et finit à ${{eval:h+d}}~\\text{h}~{{eval:10*q}}$. Combien de temps dure-t-il ?\n\nIl dure $?~\\text{h}~?~\\text{min}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "h",
+					"expression": "6..11"
+				},
+				{
+					"name": "d",
+					"expression": "1..4"
+				},
+				{
+					"name": "p",
+					"expression": "1..4"
+				},
+				{
+					"name": "q",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["q > p"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}"
+				},
+				{
+					"expectedAnswer": "{{eval:10*(q-p)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte d'abord les heures pleines, puis les minutes.",
+					"${{h}}~\\text{h}~{{eval:10*p}}$ $\\to$ ${{eval:h+d}}~\\text{h}~{{eval:10*p}}$ : ${{d}}$ {{if:d==1|heure|heures}}, puis ${{eval:h+d}}~\\text{h}~{{eval:10*p}}$ $\\to$ ${{eval:h+d}}~\\text{h}~{{eval:10*q}}$ : ${{eval:10*(q-p)}}$ minutes.",
+					"{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|La visite du musée|Le tournoi}}}}}} dure $\\textcolor{{{color:primary.0}}}{{{d}}}~\\text{h}~\\textcolor{{{color:primary.0}}}{{{eval:10*(q-p)}}}~\\text{min}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|La visite du musée|Le tournoi}}}}}} commence à ${{h}}~\\text{h}~{{eval:10*p}}$ et finit à ${{eval:h+d}}~\\text{h}~{{eval:10*q}}$. Combien de temps dure-t-il ?\n\nIl dure $?~\\text{h}~?~\\text{min}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "h",
+					"expression": "6..11"
+				},
+				{
+					"name": "d",
+					"expression": "2..4"
+				},
+				{
+					"name": "p",
+					"expression": "2..5"
+				},
+				{
+					"name": "q",
+					"expression": "1..4"
+				}
+			],
+			"conditions": ["p > q"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:d-1}}"
+				},
+				{
+					"expectedAnswer": "{{eval:60-10*(p-q)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On avance de repère en repère sur l'axe : jusqu'à l'heure ronde, puis les heures pleines, puis les minutes qui restent.",
+					"${{h}}~\\text{h}~{{eval:10*p}}$ $\\to$ ${{eval:h+1}}~\\text{h}$ : ${{eval:60-10*p}}$ minutes. Puis ${{eval:h+1}}~\\text{h}$ $\\to$ ${{eval:h+d}}~\\text{h}$ : ${{eval:d-1}}$ {{if:d==2|heure|heures}}. Enfin ${{eval:h+d}}~\\text{h}$ $\\to$ ${{eval:h+d}}~\\text{h}~{{eval:10*q}}$ : ${{eval:10*q}}$ minutes.",
+					"${{eval:60-10*p}} + {{eval:10*q}} = {{eval:60-10*p+10*q}}$ minutes, et ${{eval:d-1}}$ {{if:d==2|heure|heures}} pleines.",
+					"{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|La visite du musée|Le tournoi}}}}}} dure $\\textcolor{{{color:primary.0}}}{{{eval:d-1}}}~\\text{h}~\\textcolor{{{color:primary.0}}}{{{eval:60-10*(p-q)}}}~\\text{min}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|La visite du musée|Le tournoi}}}}}} commence à ${{h}}~\\text{h}~{{eval:10*p}}$ et dure ${{a}}~\\text{h}~{{eval:10*r}}~\\text{min}$. À quelle heure finit-il ?\n\nIl finit à $?~\\text{h}~?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "h",
+					"expression": "6..14"
+				},
+				{
+					"name": "a",
+					"expression": "1..4"
+				},
+				{
+					"name": "p",
+					"expression": "1..4"
+				},
+				{
+					"name": "r",
+					"expression": "1..4"
+				}
+			],
+			"conditions": ["p + r < 6"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:h+a}}"
+				},
+				{
+					"expectedAnswer": "{{eval:10*(p+r)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On ajoute les heures, puis les minutes.",
+					"${{h}}~\\text{h}~{{eval:10*p}}$ + ${{a}}~\\text{h}$ = ${{eval:h+a}}~\\text{h}~{{eval:10*p}}$ ; puis + ${{eval:10*r}}~\\text{min}$ : ${{eval:10*p}} + {{eval:10*r}} = {{eval:10*(p+r)}}$.",
+					"{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|La visite du musée|Le tournoi}}}}}} finit à $\\textcolor{{{color:primary.0}}}{{{eval:h+a}}}~\\text{h}~\\textcolor{{{color:primary.0}}}{{{eval:10*(p+r)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|La visite du musée|Le tournoi}}}}}} finit à ${{h}}~\\text{h}~{{eval:10*q}}$ et dure ${{d}}~\\text{h}$. À quelle heure a-t-il commencé ?\n\nIl a commencé à $?~\\text{h}~{{eval:10*q}}$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "h",
+					"expression": "12..20"
+				},
+				{
+					"name": "d",
+					"expression": "2..6"
+				},
+				{
+					"name": "q",
+					"expression": "1..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:h-d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour trouver le début, on recule sur l'axe : on enlève les heures, les minutes ne changent pas.",
+					"${{h}}~\\text{h} - {{d}}~\\text{h} = {{eval:h-d}}~\\text{h}$.",
+					"{{if:k==1|Le spectacle|{{if:k==2|Le film|{{if:k==3|La visite du musée|Le tournoi}}}}}} a commencé à $\\textcolor{{{color:primary.0}}}{{{eval:h-d}}}~\\text{h}~{{eval:10*q}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "8 h 30 -> 12 h 30 = 4 h",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"h": "8",
+				"d": "4",
+				"q": "3"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8 h 30 -> 12 h 30 = 5 h",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"h": "8",
+				"d": "4",
+				"q": "3"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 8 h 30 -> 12 h 30 = 12",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"h": "8",
+				"d": "4",
+				"q": "3"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "9 h 20 -> 9 h 50 = 30 min",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"h": "9",
+				"p": "2",
+				"q": "5"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 9 h 20 -> 9 h 50 = 3 min",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"h": "9",
+				"p": "2",
+				"q": "5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 9 h 20 -> 9 h 50 = 70 min",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"h": "9",
+				"p": "2",
+				"q": "5"
+			},
+			"answers": ["70"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "14 h 10 -> 16 h 40 = 2 h 30",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"h": "14",
+				"d": "2",
+				"p": "1",
+				"q": "4"
+			},
+			"answers": ["2", "30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 14 h 10 -> 16 h 40 = 2 h 50",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"h": "14",
+				"d": "2",
+				"p": "1",
+				"q": "4"
+			},
+			"answers": ["2", "50"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : heures et minutes échangées",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"h": "14",
+				"d": "2",
+				"p": "1",
+				"q": "4"
+			},
+			"answers": ["30", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "14 h 40 -> 16 h 10 = 1 h 30",
+			"variationIndex": 3,
+			"variables": {
+				"k": "4",
+				"h": "14",
+				"d": "2",
+				"p": "4",
+				"q": "1"
+			},
+			"answers": ["1", "30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 14 h 40 -> 16 h 10 = 2 h 30",
+			"variationIndex": 3,
+			"variables": {
+				"k": "4",
+				"h": "14",
+				"d": "2",
+				"p": "4",
+				"q": "1"
+			},
+			"answers": ["2", "30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 14 h 40 -> 16 h 10 = 2 h 30 sans recul des minutes",
+			"variationIndex": 3,
+			"variables": {
+				"k": "4",
+				"h": "14",
+				"d": "2",
+				"p": "4",
+				"q": "1"
+			},
+			"answers": ["1", "70"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7 h 20 + 2 h 30 = 9 h 50",
+			"variationIndex": 4,
+			"variables": {
+				"k": "1",
+				"h": "7",
+				"a": "2",
+				"p": "2",
+				"r": "3"
+			},
+			"answers": ["9", "50"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 7 h 20 + 2 h 30 = 9 h 30",
+			"variationIndex": 4,
+			"variables": {
+				"k": "1",
+				"h": "7",
+				"a": "2",
+				"p": "2",
+				"r": "3"
+			},
+			"answers": ["9", "30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "fin à 16 h 30, durée 3 h : début 13 h",
+			"variationIndex": 5,
+			"variables": {
+				"k": "2",
+				"h": "16",
+				"d": "3",
+				"q": "3"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : début 19 h (on avance au lieu de reculer)",
+			"variationIndex": 5,
+			"variables": {
+				"k": "2",
+				"h": "16",
+				"d": "3",
+				"q": "3"
+			},
+			"answers": ["19"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
