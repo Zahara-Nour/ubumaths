@@ -2,7 +2,7 @@
 scripts/questions/1spe-analyse-a/.
 
 Phase 0 validée par David le 2026-11-02 (« je valide » sur les recos, journal
-« docs/wip/questions-1spe-analyse-progress.md », § Phase 0), un point par modèle :
+« docs/archive/wip/questions-1spe-analyse-progress.md », § Phase 0), un point par modèle :
 
 | #  | Point    | Titre                                      | Catégorie, niveau                                    |
 | A1 | 1SPE-385 | Factoriser un trinôme quand c'est possible | Polynôme du second degré › Formes, 4                 |

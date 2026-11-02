@@ -2,7 +2,7 @@
 dans scripts/questions/1spe-va/.
 
 Phase 0 validée par David le 2026-11-02 (« je valide » sur les recos, § 22 du journal
-« docs/wip/questions-1spe-progress.md », D28), un point par modèle :
+« docs/archive/wip/questions-1spe-progress.md », D28), un point par modèle :
 
 | # | Point    | Titre                                         | Catégorie, niveau                                |
 | 1 | 1SPE-347 | Image d'une issue par une variable aléatoire  | Modéliser par une variable aléatoire, 1          |

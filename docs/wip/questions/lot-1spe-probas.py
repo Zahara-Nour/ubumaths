@@ -2,7 +2,7 @@
 1re spé dans scripts/questions/1spe-probas/.
 
 Phase 0 validée par David le 2026-11-01 (« je valide » sur les recos, § 21 du journal
-« docs/wip/questions-1spe-progress.md »), un point par modèle :
+« docs/archive/wip/questions-1spe-progress.md »), un point par modèle :
 
 | # | Point    | Titre                                    | Catégorie, niveau                                              |
 | 1 | 1SPE-337 | Partition de l'univers                   | Probabilités conditionnelles › Partition de l'univers, 1       |

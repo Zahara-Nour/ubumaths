@@ -5,7 +5,7 @@
  * Migration `20261102182612_questions_1spe_logique_rangement_tags` : les 7 brouillons
  * « logique et listes » (quantification implicite, listes Python) créés le 2026-11-02 par
  * scripts/create-questions.ts (sans nœud ni tag) vont sur le nœud de leur point et reçoivent ce point,
- * un seul (ADR 0020). Phase 0 : journal docs/wip/questions-1spe-logique-progress.md.
+ * un seul (ADR 0020). Phase 0 : journal docs/archive/wip/questions-1spe-logique-progress.md.
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, sans nœud ni tag — puis rejoue la migration **depuis
