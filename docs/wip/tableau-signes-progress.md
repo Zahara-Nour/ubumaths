@@ -9,13 +9,18 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, phase 0 validée._
+_Mis à jour le 2026-11-02, après #2267 (PR 1 mergée)._
 
-- **État** : phase 0 et plan technique validés (Q1-Q6, a, b) ; PR 1 (ubumark : AST, parseur, éditeur, Typst) en cours.
-- **Prochaine action** : PR 1 tests rouges puis implémentation ; puis PR 2, 3, 4 (§ Plan technique).
+- **État** : PR 1 mergée (#2267) — ubumark lit les `?` du ` ```variation ` (`cases`, `case: N`, `??n`), refus en
+  français, Typst `hiddenCells`, éditeur riche. Rien n'est encore visible pour l'élève.
+- **Prochaine action** : PR 2 — génération, jugement, masquage d'évaluation (§ Plan technique) : nouveau worktree
+  `git worktree add -b feat/tableau-signes-generation ../ubumaths-wt-tableau-signes origin/main`, tests rouges d'abord ;
+  revue `code-reviewer` Opus + `security-auditor` (masquage).
 - **En attente de David** : rien.
-- **Pièges en cours** : PDF — une marque cachée ne se voit pas sur papier (trait nu, comme une colonne « sans marque » donnée) ; vartable 0.2.1 ne place rien sur le trait (essais `place`, `block` : la case reste collée au signe) → à régler en PR 4.
-- **Worktree / branche** : `../ubumaths-wt-tableau-signes`, `feat/tableau-signes-cases`.
+- **Pièges en cours** : PDF — une marque cachée est un trait nu, sans repère « à compléter » (vartable 0.2.1 ne place
+  rien sur le trait ; essais `place` / `block` vains) → PR 4. Décimal dans le domaine coupé aux virgules (fraction).
+  Valeur de x jugée : vérifier `1,5` contre `\frac{3}{2}` (PR 2).
+- **Worktree / branche** : aucun (à recréer pour la PR 2).
 
 ---
 
@@ -91,3 +96,7 @@ avant) ; `test:server src/lib/ubumark src/lib/components/rich-text` 6333 verts ;
 nul (bloc rendu en source). PDF compilé par le compilateur de prod (`compile-prod.mjs`, fiche d'essai du scratchpad) :
 valeurs et signes cachés = case vide bordée ; marque cachée = trait nu, sans « 0 » — pas de fuite (vartable trace un
 trait à chaque colonne), mais pas de repère « à compléter » (piège ci-dessus).
+
+Revue (`code-reviewer` Sonnet) : `?` refusé partout dans une étiquette ou une valeur `variation:` → refusé seulement en
+tête (régression évitée) ; valeur de x répétée avec cases → refusée ; `open: undefined` retiré. 6 tests (4 rouges).
+CI verte, mergée (#2267).
