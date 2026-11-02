@@ -6,17 +6,19 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 1 codé et relu, PR #2226 ouverte._
+_Mis à jour le 2026-11-02, après #2226._
 
-- **État** : lot 1 (symétrique sur quadrillage, axial + central) codé et testé sur `feat/controles-figure`
-  (§ 4) ; PR pas encore ouverte.
-- **Prochaine action** : CI de la PR #2226, merge ; puis lot 2 (outil « point »,
-  symétrique d'un point, 6-179 / 6-180).
-- **En attente de David** : essai sur le serveur de la branche (port 5178).
-- **Pièges en cours** : les `testSpecs` d'un modèle ne vérifient que le statut, pas le message (`TestSpecExpected`
-  n'a pas de `feedback`) : le message se teste à l'écran ou au juge. Un contrôle ne doit jamais donner la
+- **État** : lot 1 (symétrique sur quadrillage, axial + central, `verifier: symetrique par d`) **mergé**
+  (#2226), pas encore en prod (`deploy:prod` sur demande de David). Vérification à l'œil notée dans
+  `verifications-manuelles.md`.
+- **Prochaine action** : phase 0 du lot 2 — outil « point » (réponse `point(x;y)`, symétrique d'un point,
+  6-179 / 6-180 sur papier uni), puis angle, triangle, médiatrice, bissectrice, cercle circonscrit,
+  4e sommet (§ 1). Puis écrire les modèles CE2-073, CM1-107/108, CM2-097 (journaux de niveau).
+- **En attente de David** : rien.
+- **Pièges en cours** : les `testSpecs` d'un modèle ne vérifient que le statut (pas de `feedback`) ;
+  sans `grille:`, `symetrique` est refusé à la publication ; un contrôle ne doit jamais donner la
   réponse (`verifier: ?`).
-- **Worktree / branche** : `../ubumaths-wt-controles-figure`, `feat/controles-figure`.
+- **Worktree / branche** : aucun (worktree retiré après #2226).
 
 ---
 
