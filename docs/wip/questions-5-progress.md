@@ -5,21 +5,23 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 8 écrit (§ 20), PR des fichiers ouverte._
+_Mis à jour le 2026-11-02, après #2184._
 
-- **État** : lots 1 à 7 publiés. Lot 8 « Opérations » : 6 modèles écrits (`scripts/questions/5-operations/`),
-  simulation verte, essai local fait (§ 20) ; PR des fichiers ouverte.
-- **Prochaine action** : merge de la PR des fichiers ; David lance `create-questions --publier` ; migration
-  nœud + tag ; page à cocher.
-- **En attente de David** : rien sur le lot 8 (question du 04 tranchée, § 20).
-- **En attente de David** : 02 du lot 7 (deux cases sur deux lignes, publié) à essayer à la main : au
-  pilotage Chrome, la frappe dans la 2e case arrivait aussi dans la 1re — extension ou appli ?
+- **État** : lots 1 à 7 publiés. Lot 8 « Opérations » : 6 modèles en fichiers, **#2184 mergée**
+  (`scripts/questions/5-operations/`, § 20) ; rien encore en prod.
+- **Prochaine action** : David lance
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/5-operations --publier` (brouillons en prod) ;
+  relever les `id` ; migration nœud + tag (sous-catégorie neuve « Traduire en une expression » pour 04-06) ;
+  page à cocher ; publication.
+- **En attente de David** : le `--publier` ci-dessus ; 02 du lot 7 (deux cases sur deux lignes) à essayer à la
+  main : au pilotage Chrome, la frappe dans la 2e case arrivait aussi dans la 1re — extension ou appli ?
 - **Pièges en cours** : `db:migrate` en prod refusé par le classifieur du mode auto → David le lance ; il pousse
   toutes les migrations en attente (se coordonner avec les autres sessions) ; `pnpm check:migrations --pr <n>`
   avant merge ; horodatage = `pnpm migration:horodatage` ; si « inserted before the last migration » →
   `--dry-run --include-all`, relire, `--include-all` ; `git merge origin/main` avant push ; worktree non lié à
   Supabase → `db:migrate` depuis le dépôt principal ; jamais `e`.
-- **Worktree / branche** : `../ubumaths-wt-questions-5` · `feat/questions-5-operations`.
+- **Worktree / branche** : `../ubumaths-wt-questions-5` (branche `feat/questions-5-operations` mergée ; la
+  migration se fera sur une branche neuve depuis `origin/main`).
 
 ## 1. Relevé (prod, 2026-10-28)
 
