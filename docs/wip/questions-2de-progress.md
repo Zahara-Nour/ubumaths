@@ -6,12 +6,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après la publication du lot 7._
+_Mis à jour le 2026-11-02, phase 0 du lot 8 proposée._
 
-- **État** : lots 1 à 7 publiés (lot 7 : 21/21, vérifié en base de prod, § 50). Aucune PR ouverte.
-- **Prochaine action** : nouveau relevé en prod des points de seconde encore sans modèle, puis proposer le
-  lot 8 en phase 0 (skill `couvrir-niveau`), en greppant d'abord ce qui est déjà tranché dans le journal.
-- **En attente de David** : rien.
+- **État** : lots 1 à 7 publiés. Lot 8 (information chiffrée, statistiques, tableaux croisés, probabilités) :
+  relevé et phase 0 écrits au § 51, **à valider**. Aucune PR ouverte.
+- **Prochaine action** : réponses de David à L8-a à L8-f (§ 51), puis vague 8 A (script de lot).
+- **En attente de David** : L8-a à L8-f.
 - **Pièges en cours** : le worktree n'a pas de `.env` ; `publier-lot` (même en simulation) → David avec `!`
   et `set -a && . ../ubumaths/.env && set +a`, pas `pnpm -s` ; `Doc-inchangée:` dans un commit, jamais dans
   le corps de PR ; horodatage → `pnpm migration:horodatage` ; `db push`, `--publier` → David avec `!`.
@@ -1239,3 +1239,137 @@ ni 2-348 ; L7-d trois PR de fichiers (7 A = 6, 7 B = 6, 7 C = 9), une migration,
 - MCP (prod) : les 21 `published`, 21 rangés sur un nœud, un tag chacun.
 - Le mode auto refuse de copier le `.env` de prod dans le worktree, même pour une simulation : David lance la
   commande avec `!` en chargeant `../ubumaths/.env`.
+
+## 51. Lot 8 « Information chiffrée, statistiques, tableaux croisés, probabilités » : relevé et phase 0 (proposée le 2026-11-02, à valider)
+
+**Relevé MCP (prod, 2026-11-02)** : 154 points de seconde sans modèle. Dans le champ du lot (§ 3.10 à 3.12,
+plus les automatismes 2-490 et 2-402) : **36 sans modèle** — 364, 365, 368, 478, 375, 376, 490 (évolutions,
+proportions) ; 369, 370, 371, 479, 402, 382, 483 (indicateurs) ; 372, 480, 380, 481, 381, 482, 484 (séries en
+classes, graphiques) ; 383, 384, 485, 385, 486, 386, 487 (tableaux croisés) ; 389, 391, 393, 394, 395, 397,
+400 (probabilités) ; 392 (simulation). 387, 388 = P (Q2).
+
+- **Déjà couverts, publiés** : 2-366 (e12e58cb, d98aa53a), 2-367 (2562438e, e05bb79b), 2-377 (c4372fd8,
+  1c443c35), 2-378 (8b59ca4b, 36abc642), 2-379 (bbd511cb).
+- **Brouillons d'avant le chantier, jamais publiés** (vérifiés OK au § 2.1) : 77d6fedc (2-390), f3e68e4b et
+  4016b05c (2-396), 9d7c4d98 (2-398), 1cfc575d (2-399), cf548ea1 (2-488) — tous dans le champ du lot. Les 16
+  autres brouillons de 2de (ensembles, logique, intervalles) relèvent du lot 10.
+- **Oubli trouvé** : **2-491** (« déterminer graphiquement des images ») n'a aucun modèle. Le § 6 prévoyait un
+  modèle neuf au lot 2 bis (68db64b0 et f96d3e43 partis en T_SPE) ; il n'a pas été écrit — même cas que 2-350
+  au lot 7.
+
+**Bornes** : séries en classes **de même amplitude** (372, 480, 380, 481, 381, 482) ; écart type seul
+indicateur de dispersion, pas de variance (370) ; quartiles comme en 3e (402, c4-2) ; « données réelles »
+n'est pas une borne, effectifs tirés admis (l2-9) ; arbres : probabilité d'un chemin et lecture des
+conditionnelles, **pas de probabilités totales** (l2-4) ; P_B(A) par inversion **sur un tableau croisé
+seulement** (400, l2-4) ; 394 = tableau croisé d'effectifs seulement (l2-10).
+
+**Outils** (en prod) : ` ```histogramme `, ` ```frequences-cumulees ` (`lecture: médiane`),
+` ```boite-a-moustaches `, ` ```effectifs `, ` ```barres `, ` ```tableau-croise ` (totaux, `masquer:`, case
+`?`), ` ```probtree ` (poids `?`), ` ```simulation `, ` ```courbe `, case choix. Aucun modèle publié n'utilise
+encore `histogramme` ni `frequences-cumulees`. Patrons : 3e 96992ea8, acaa7317, c2497d96 (`barres`,
+`effectifs`) ; 4e bb4dc318, 17a469bb (`simulation`) ; 1re spé 2c116f4d (`probtree`).
+
+**Phase 0 proposée** : un modèle par point, niveau `['2']`, brouillons. 37 modèles neufs + 6 anciens
+brouillons à relire, en **deux vagues** (L8-e).
+
+Vague 8 « Information chiffrée et statistiques » (22) :
+
+8 A « Évolutions et proportions » (8) :
+
+1. **2-365 · Variation absolue** : V₁, V₂ → V₂ − V₁ (avec son signe et son unité) ; niveau 2 : deux
+   grandeurs, « la plus forte hausse en euros / en % » (case choix). Erreur typique : V₁ − V₂.
+2. **2-368 · CM successifs = produit** : « multiplié par 1,2 puis par 0,85 : multiplié en tout par ? » — des
+   coefficients en entrée et en sortie, sans taux (36abc642, 2-378, part des taux). Erreur : 1,2 + 0,85 − 1.
+3. **2-478 · CM réciproque = inverse** : « multiplié par 1,25 : par combien multiplier pour revenir ? » (0,8 ou
+   4/5) ; CM non décimal à l'inverse → fraction attendue. Distinct de bbd511cb (taux, 2-379).
+4. **2-364 · Pourcentage de pourcentage** (notion) : « 40 % des élèves sont des filles, 25 % d'entre elles…
+   quelle proportion de l'ensemble ? » → 10 % ; forme p × p′.
+5. **2-376 · Pourcentages de pourcentages en situation** : même calcul dans un contexte à trois ensembles
+   emboîtés, effectif total donné → effectif final.
+6. **2-375 · Effectifs, proportions, pourcentages** : deux des trois donnés, le troisième demandé (trois
+   variations).
+7. **2-490 · Le tout connaissant une partie** : « 18 élèves, soit 3/8 (0,375 ; 37,5 %) de la classe » → 48 ;
+   les trois formes de proportion (borne).
+8. **2-491 · Images lues sur une courbe** (l'oubli) : ` ```courbe `, f(a) entier lu ; niveau 2 : image d'un
+   point de la grille entre deux nœuds marqués.
+
+8 B « Indicateurs » (7) :
+
+9. **2-369 · Linéarité de la moyenne** : moyenne m des xᵢ → moyenne des a·xᵢ + b (« chaque note est
+   augmentée de 2 », « convertie sur 10 »).
+10. **2-370 · Écart type** : petite série (4 à 8 valeurs) construite pour un écart type entier ; niveau 2 :
+    deux séries de même moyenne en ` ```barres `, « laquelle a le plus grand écart type ? ».
+11. **2-371 · Moyenne après ajout ou retrait d'une valeur** : n, m, valeur ajoutée (retirée) → nouvelle
+    moyenne ; niveau 2 : « augmente / diminue / inchangée » sans calcul.
+12. **2-479 · Médiane après ajout ou retrait** : série triée → nouvelle médiane (effectif pair ↔ impair).
+13. **2-402 · Interpréter un quartile** : case choix de la phrase juste (« au moins 25 % des valeurs ⩽ Q₁ ») ;
+    niveau 2 : « Q₃ = 15, 40 valeurs : au moins combien sont ⩽ 15 ? » (30).
+14. **2-382 · Moyenne–écart type** : deux séries (m, σ) → « plus élevée en moyenne », « plus homogène »
+    (case choix).
+15. **2-483 · Médiane–écart interquartile** : Q₁, Me, Q₃ de deux séries → écarts interquartiles (cases) puis
+    choix.
+
+8 C « Séries en classes, graphiques » (7) :
+
+16. **2-372 · Histogramme** : ` ```histogramme ` (classes de même amplitude) → effectif d'une classe, effectif
+    total, classe modale.
+17. **2-480 · Polygone des fréquences cumulées** : ` ```frequences-cumulees ` → proportion ⩽ une borne de
+    classe ; médiane lue (`lecture: médiane`).
+18. **2-380 · Moyenne pondérée des moyennes de classes** : tableau (groupes, effectif, moyenne) → moyenne
+    générale. Erreur : moyenne des moyennes.
+19. **2-481 · Moyenne par les centres de classes** : tableau de classes → centres, puis moyenne.
+20. **2-381 · Classe médiane** : effectifs des classes → la classe qui contient la médiane (case choix).
+21. **2-482 · Médiane estimée** (répartition uniforme dans la classe médiane) : interpolation, valeur exacte
+    choisie par les tirages.
+22. **2-484 · Comparer deux représentations données** : deux histogrammes ou deux boîtes à moustaches → case
+    choix d'affirmations.
+
+Vague 8 bis « Tableaux croisés et probabilités » (15 + 6 anciens brouillons) :
+
+8 D « Tableaux croisés » (7) — ` ```tableau-croise ` à effectifs tirés :
+
+23. **2-383 · Lire un tableau croisé** : effectif d'une case, d'une marge, total.
+24. **2-485 · Fréquence marginale (notion)** : case choix entre quatre quotients (le bon dénominateur).
+25. **2-486 · Calculer une fréquence marginale** : fraction ou pourcentage.
+26. **2-384 · Fréquence conditionnelle (notion)** : case choix, « parmi les A, proportion de X » ↔ quotient.
+27. **2-385 · Calculer une fréquence conditionnelle** : erreur typique : diviser par le total.
+28. **2-386 · Compléter par les effectifs** : cases `?` dans le tableau (différences, totaux).
+29. **2-487 · Compléter avec une fréquence conditionnelle** : « 30 % des 120 filles… » → effectif de la case.
+
+8 E « Probabilités » (7) :
+
+30. **2-389 · Loi des grands nombres** : ` ```simulation ` à n = 20, 100, 10 000 → case choix (fréquence la
+    plus proche de p ; affirmation juste).
+31. **2-391 · Arbre de probabilités** : deux épreuves indépendantes (pièce, dé) en ` ```probtree ` →
+    probabilité d'une issue (produit). Distinct de 1cfc575d (2-399, chemin d'un arbre conditionnel).
+32. **2-393 · Construire un arbre pondéré** : énoncé → arbre à poids `?` (cases) ; complément à 1 compris.
+33. **2-394 · Construire un tableau croisé** : énoncé (« sur 200 élèves, 120 filles, 30 % des filles… ») →
+    tableau à cases `?`.
+34. **2-395 · Traduire en notations** : phrase → P(A ∩ B), P_A(B), P(Ā)… (case choix) et l'inverse.
+35. **2-397 · Probabilité conditionnelle lue sur un arbre** : P_A(B) sur une branche de 2e niveau ; jamais
+    P(B) (l2-4).
+36. **2-400 · P_A(B) ou P_B(A) : faux positifs** : test de dépistage sur un tableau croisé → les deux
+    probabilités, vocabulaire (sensibilité, spécificité, faux positif).
+
+- **Corrigé** : formule écrite, puis le calcul ; tableau ou arbre redessiné, case cherchée mise en avant.
+- **Erreurs typiques en specs** : V₁ − V₂ ; somme des coefficients ; moyenne des moyennes ; dénominateur =
+  effectif total au lieu de la marge ; P_B(A) pour P_A(B) ; médiane non triée.
+- **Question d'accès** : personne pour les modèles neufs (brouillons, aucune policy). Publier les 6 anciens
+  brouillons les ouvre aux profs et élèves de seconde **et de terminale** (ils portent aussi TCOMP-302) —
+  comme toute publication.
+
+**Questions à David** :
+
+- **L8-a — 2-368 / 2-478** (relations sur les coefficients) contre 36abc642 / bbd511cb (taux, 2-378 / 2-379) :
+  → je recommande **deux modèles neufs, coefficients en entrée et en sortie** (comme 268 / 330 au lot 7).
+- **L8-b — 2-392** (observer à l'aide d'une simulation sur Python ou tableur) : → je recommande **sans
+  modèle** (programmer = exercices Python, Q3) ; l'observation est déjà le 2-389 avec ` ```simulation `.
+- **L8-c — 2-491** (l'oubli du lot 2 bis) : → je recommande **dans le lot 8 A**.
+- **L8-d — 6 anciens brouillons de probabilités** : → je recommande de les **mettre sur la page à cocher de
+  8 bis et de les publier avec elle**.
+- **L8-e — Découpage** : vague 8 (A 8, B 7, C 7 = 22) puis vague 8 bis (D 7, E 7 + 6 relectures) ; chacune
+  ses PR de fichiers, une migration, une page à cocher. → je recommande **oui**.
+- **L8-f — Page à cocher** : elle ne dessine pas encore les blocs statistiques ni `probtree` (montrés en
+  source, alerte « non dessiné »). → je recommande une **PR « page à cocher : blocs statistiques et arbres »**
+  (scènes `stat-chart-scene.ts`, comme #2182 pour `variation`) avant la relecture de la vague 8 ; sinon,
+  relecture dans l'aperçu admin.
