@@ -10,11 +10,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, phase 0 du lot 8 proposée._
+_Mis à jour le 2026-11-02, phase 0 du lot 8 validée (D-L8)._
 
 - **État** : lot 7 publié (6/6) ; lot 8 : phase 0 écrite (§ « Lot 8 : phase 0 »), 26 « à savoir » en 3 sous-lots, 31 couverts, 4 déjà tagués.
-- **Prochaine action** : validation de la phase 0 par David, puis écriture du sous-lot 8a.
-- **En attente de David** : Q1-Q5 de la phase 0 du lot 8.
+- **Prochaine action** : écrire le sous-lot 8a (11 modèles, gabarit `scripts/questions/1spe-savoir-a/`).
+- **En attente de David** : rien.
 - **Pièges en cours** : relevé de nœuds → filtrer `archived_at is null` ; `!=` dans `$…$` lu « ≠ » (écrire `!\,=`) ; garde « notion sans sous-notion » : liste `sous_notions_admises` (migration `20261102181059`).
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · `feat/questions-tspe-restes-8`.
 
@@ -149,7 +149,7 @@ la publication). Rendu vu dans Chrome à ~606 px (la fenêtre ne descend pas à 
 **Relecture** (David, 2026-11-02) : 6 « ok » sur 6, aucun commentaire (lu en base). **Publication** : `publier-lot.ts`
 simulé (6 passent), lancé par David avec `--publier` : 6/6 `published`, relus au MCP, toujours sur leur nœud.
 
-## Lot 8 : phase 0 (2026-11-02, proposée)
+## Lot 8 : phase 0 (2026-11-02, validée)
 
 _Relevé MCP prod (lecture seule) des 61 points « = » du § 3 de l'index : tags actuels et catégories `T_SPE`._
 
@@ -202,3 +202,6 @@ en `T_SPE` en prod) → aucune collision de niveaux avec les sessions `proba` et
 « À savoir » neuf par domaine ; Q4 cas limites : 427 (suite convergente et fonction continue), 477 (∫ = F(b) − F(a)),
 398 (asymptote) laissés « couverts » ; Q5 question d'accès : personne ne gagne ni ne perd d'accès (brouillons ; la
 migration ne pose que nœud et tags).
+
+**D-L8 (David, 2026-11-02, « je valide », sur les recos)** : Q1 26 à savoir, 31 couverts ; Q2 8a → 8b → 8c ; Q3
+sous-domaine « À savoir » neuf par domaine ; Q4 427, 477, 398 couverts ; Q5 accès : personne.
