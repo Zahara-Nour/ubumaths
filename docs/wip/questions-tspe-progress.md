@@ -831,3 +831,31 @@ la publication). Rendu à 390 px non vérifié. `publier-lot.ts` simulé : 6 bro
 
 **Publication** (2026-11-02) : 6 verdicts « OK » lus en base de la page (comptés) ; `publier-lot.ts --publier` lancé
 par David : 6/6 `published`, relus au MCP.
+
+## 17. Lot 4 : intégrales et primitives, restes (461, 462, 478, 480, 485, 486, 489, 491, 465)
+
+_2026-11-02. Relevé MCP : 461 sur la notion « y′ = f », 462 et 478 sur « y′ = f › primitives : notion » (3dbc5a7b
+niveau 1), 480 sur « Calcul d'intégrales › linéarité » (vide), 485 sur « Intégrale et aire › aire algébrique »
+(6ed907d7, a32e6d38), 486 sur la notion « Valeur moyenne » (76843d15, 298e2335, 7a0b795c), 489 sur « Calcul
+d'intégrales › positivité et inégalités » (dd0ee69a), 491 sur « Calcul d'intégrales › suites d'intégrales » (vide),
+465 sur « Généralités › allure des courbes » (624bf511). **Déjà tagués** : 465 (624bf511 : y′ = ay + b, b ≠ 0 en v0 ;
+y′ = ay seulement si m = 0 en v1, 1 tirage sur 9) et 489 (dd0ee69a : encadrement par des **constantes** ou par la
+monotonie, jamais par une autre fonction)._
+
+**Phase 0 (proposée, en attente de David)** : niveau `T_SPE` seul, un point par modèle, réponses en case ou en
+case choix (jamais les deux), estimations graphiques en case choix (pas de tolérance en case).
+
+| #   | Point    | Titre                                         | Catégorie (niveau)                                          | Nœud                                  |
+| --- | -------- | --------------------------------------------- | ----------------------------------------------------------- | ------------------------------------- |
+| M1  | TSPE-461 | Résoudre l'équation y′ = f                    | Primitives › Notion de primitive (3)                        | y′ = f › primitives : notion          |
+| M2  | TSPE-462 | F est-elle une primitive de f ?               | Primitives › Notion de primitive (2)                        | y′ = f › primitives : notion          |
+| M3  | TSPE-478 | Existence de primitives d'une fonction continue | Primitives › Notion de primitive (4)                      | y′ = f › primitives : notion          |
+| M4  | TSPE-480 | Linéarité de l'intégrale                      | Propriétés de l'intégrale › Linéarité (1)                   | Calcul d'intégrales › linéarité       |
+| M5  | TSPE-485 | Estimer graphiquement une intégrale           | Intégrale et aire › Lecture graphique (2)                   | Intégrale et aire › aire algébrique   |
+| M6  | TSPE-486 | Estimer graphiquement une valeur moyenne      | Valeur moyenne › Lecture graphique (1)                      | Valeur moyenne (notion)               |
+| M7  | TSPE-489 | Majorer une intégrale par une autre fonction  | Propriétés de l'intégrale › Positivité et inégalités (3)    | Calcul d'intégrales › positivité…     |
+| M8  | TSPE-491 | Suite d'intégrales                            | Calcul intégral › Suites d'intégrales (1)                   | Calcul d'intégrales › suites d'intégrales |
+| M9  | TSPE-465 | Allure des solutions de y′ = ay               | Équations différentielles › Allure des courbes (1)          | Généralités › allure des courbes      |
+
+Niveaux : relevé MCP des catégories (2026-11-02), aucun pris. Aucune sous-notion neuve.
+**Question d'accès** : personne ne gagne ni ne perd d'accès (brouillons ; visibles des élèves après `publier-lot`).
