@@ -9,9 +9,10 @@
 _Mis à jour le 2026-11-02, phase 0 du lot 8 proposée._
 
 - **État** : lots 1 à 7 publiés. Lot 8 (information chiffrée, statistiques, tableaux croisés, probabilités) :
-  relevé et phase 0 écrits au § 51, **à valider**. Aucune PR ouverte.
-- **Prochaine action** : réponses de David à L8-a à L8-f (§ 51), puis vague 8 A (script de lot).
-- **En attente de David** : L8-a à L8-f.
+  phase 0 validée (§ 51). Aucune PR ouverte.
+- **Prochaine action** : vague 8 A (script `questions-2de/lot-evolutions-a-2de.py`), puis 8 B, 8 C ; PR
+  page à cocher (blocs statistiques, arbres) avant la relecture.
+- **En attente de David** : rien.
 - **Pièges en cours** : le worktree n'a pas de `.env` ; `publier-lot` (même en simulation) → David avec `!`
   et `set -a && . ../ubumaths/.env && set +a`, pas `pnpm -s` ; `Doc-inchangée:` dans un commit, jamais dans
   le corps de PR ; horodatage → `pnpm migration:horodatage` ; `db push`, `--publier` → David avec `!`.
@@ -1240,7 +1241,7 @@ ni 2-348 ; L7-d trois PR de fichiers (7 A = 6, 7 B = 6, 7 C = 9), une migration,
 - Le mode auto refuse de copier le `.env` de prod dans le worktree, même pour une simulation : David lance la
   commande avec `!` en chargeant `../ubumaths/.env`.
 
-## 51. Lot 8 « Information chiffrée, statistiques, tableaux croisés, probabilités » : relevé et phase 0 (proposée le 2026-11-02, à valider)
+## 51. Lot 8 « Information chiffrée, statistiques, tableaux croisés, probabilités » : relevé et phase 0 (validée le 2026-11-02)
 
 **Relevé MCP (prod, 2026-11-02)** : 154 points de seconde sans modèle. Dans le champ du lot (§ 3.10 à 3.12,
 plus les automatismes 2-490 et 2-402) : **36 sans modèle** — 364, 365, 368, 478, 375, 376, 490 (évolutions,
@@ -1373,3 +1374,8 @@ Vague 8 bis « Tableaux croisés et probabilités » (15 + 6 anciens brouillons)
   source, alerte « non dessiné »). → je recommande une **PR « page à cocher : blocs statistiques et arbres »**
   (scènes `stat-chart-scene.ts`, comme #2182 pour `variation`) avant la relecture de la vague 8 ; sinon,
   relecture dans l'aperçu admin.
+
+**Décisions de David (2026-11-02)** : « je te suis », en réponse aux six questions → mes recommandations,
+toutes : L8-a deux modèles neufs (coefficients en entrée et en sortie) ; L8-b 2-392 sans modèle ; L8-c 2-491
+dans 8 A ; L8-d les 6 anciens brouillons relus et publiés avec 8 bis ; L8-e deux vagues (8 = A, B, C ; 8 bis =
+D, E) ; L8-f PR « page à cocher : blocs statistiques et arbres » avant la relecture de la vague 8.
