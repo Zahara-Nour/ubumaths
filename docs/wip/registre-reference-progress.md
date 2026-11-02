@@ -6,20 +6,20 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2231 ; ordre et portée de Q9 tranchés._
+_Mis à jour le 2026-11-02, PR tidy (Q9 + `signes-06`) en cours, avant revue._
 
-- **État** : corpus complet (193 entrées), juge étendu. Connues fausses : registre 69, Atelier 21.
-- **Prochaine action** : **PR tidy (Q9 + `signes-06`)**, sur le § « Ordre et Q9 » ci-dessous :
-  phase 0 (comportements) → tests rouges → tidy → corpus (retirer `decimal-10`, `signes-06` des
-  connues fausses) → banc des 1 008 modèles × 8 tirages → revue `code-reviewer` opus.
+- **État** : tests rouges (8d96b07e7) puis correctif `collect.ts` (c135fefa9) commités, non poussés.
+  Suite serveur verte (sauf `deploy-prod.test.ts`, rouge aussi sur main) ; banc 1 982 × 8 :
+  0 différence ; `check:incremental` 0 ; cliquet tenu ; `tidy-spec.md` à jour.
+- **Prochaine action** : revue `code-reviewer` opus (lancée) → corrections → ligne
+  `Doc-inchangée:` pour `mathast/README.md` → push, PR, CI, merge.
 - **Ensuite** : petite PR `tidy-units.test.ts:24` (12000 m gardé), puis PR 1 (`.dériver`, D1).
 - **En attente de David** : rien.
-- **Tranché** : Q9 rouverte EN ENTIER ; A-D du lot 2 ; `decimal` en LaTeX ; `plafond-02` → 1000 ;
-  Q24 gardée ; `12000 m` gardé ; `signes-06` → `(x+1)/(2(x+1))` ; ordre des termes, S3, R-point,
-  domaine — NE PAS reposer.
-- **Pièges** : idempotence (`0.5·x⁻¹ → 0.5/x → 1/(2x)`, B1 de simplify-carte § 37) ; greper TOUT le
-  journal avant une question ; sonde = vitest jetable sous `src/` ; `\sin^2 x`/`\sin x^2` jugés
-  `forme`, `parseLatex('@@@')` ne lève pas (non corrigés).
+- **Tranché** : Q9 EN ENTIER + Q-a (tout dénominateur) ; A-D du lot 2 ; `decimal` en LaTeX ;
+  `plafond-02` → 1000 ; Q24 gardée ; `12000 m` gardé ; `signes-06` → `(x+1)/(2(x+1))` — NE PAS reposer.
+- **Pièges** : idempotence (B1) ; greper TOUT le journal avant une question ; sonde = vitest
+  jetable sous `src/` ; banc = script jetable sous `scripts/` (dump prod en lecture, `generatedAt`
+  retiré, `collect.ts` de main remis puis restauré d'une copie vérifiée par `cmp`).
 - **Worktree / branche** : `../ubumaths-wt-registre-reference` · `refactor/registre-reference`.
 
 ---
@@ -380,3 +380,20 @@ Sonde jetable (vitest sous `src/`, `produceRegistre` / `produceAtelier`), 25 lig
   les deux écritures (`1/2`, x ≠ −1).
 - **Erreurs** : division par zéro, grandeurs, écriture gardée : inchangés ; `checkForm` n'utilise
   pas `tidy` (correction des élèves non touchée).
+
+## PR tidy Q9 + `signes-06` — écriture (2026-11-02)
+
+- **Code** (`collect.ts`) : `readsFraction` — une barre est une fraction quel que soit le
+  dénominateur, un facteur resté au dénominateur aussi (`0,5x⁻¹`) ; `reduceFractionOfSums` ne garde
+  plus les décimaux sous une barre à lettre ; `mergeKeepingDomain` remplace `mergeFactors` dans la
+  réduction (S3 via `keepDomain`, au lieu d'abandonner) ; `meetsAcross` envoie le nombre d'une
+  somme qui rejoint un facteur de l'autre côté au coefficient (`(4x+4)/(2(x+1)) → 2(x+1)/(x+1)`,
+  sinon `(2x+2)/(x+1)`). `mergeFactors` reste pour `flipNumerator`.
+- **Changement de plus, voulu** : Atelier, `0,5x/x` → « 1/2, pour x ≠ 0 » (avant « 0,5 » : revue du
+  2026-10-26 qui découlait de l'ancienne Q9) — `domaine-garde.test.ts`.
+- **Corpus** : `decimal-10`, `signes-06` justes pour l'Atelier (retirés) ; le registre reste connu
+  faux sur ces deux lignes, pour la décision D (il recopie la ligne à lettres).
+- **Mesures** : 41 rouges avant ; suite serveur 63 709 verts, 2 rouges (`domaine-garde`, corrigé ;
+  `deploy-prod` « CI toujours en cours », rouge aussi sur main) ; banc **1 982 modèles de prod × 8
+  tirages (15 856) : 0 différence** (témoin non construit) ; `check:incremental` 0 ; cliquet tenu ;
+  `lint:fast` propre.
