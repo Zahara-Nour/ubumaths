@@ -35,6 +35,8 @@ import {
 	CHECK_TOOL,
 	CONSTRUCTION_CHECK_KINDS,
 	CONSTRUCTION_TOOLS,
+	INSTRUMENT_TOOLS,
+	PLAIN_PAPER_TOOLS,
 	type ConstructionCheck,
 	type ConstructionCheckKind,
 	type ConstructionSpec,
@@ -47,6 +49,8 @@ const CONSTRUCTION_BLOCK_START_REGEX = /^```figure-(?:a-completer|de-travail)\s*
 const WORK_FIGURE_BLOCK_START_REGEX = /^```figure-de-travail\s*$/;
 const SEPARATOR_REGEX = /^\s*---\s*$/;
 const KEY_LINE_REGEX = /^(outils|verifier|vérifier|case)\s*:\s*(.*)$/i;
+/** `grille:` de l'en-tête de la figure (lue par le parseur de ```figure) : `non` = papier uni */
+const GRID_LINE_REGEX = /^grille\s*:\s*(.*)$/i;
 const POINT_NAME_REGEX = /^[A-Za-z][A-Za-z0-9_']*$/;
 const CASE_INDEX_REGEX = /^\d{1,3}$/;
 /** `point A' = <expression>` : le nom, puis l'expression du langage des figures */
@@ -86,9 +90,15 @@ function readTools(value: string): ConstructionTool[] {
 			throw new LineError(`outil « ${word} » inconnu (${CONSTRUCTION_TOOLS.join(', ')})`);
 		}
 	}
-	const tools = [...new Set(words)] as ConstructionTool[];
-	if (tools.length > 1) throw new LineError('un seul outil par figure');
-	return tools;
+	return [...new Set(words)] as ConstructionTool[];
+}
+
+/** L'en-tête a-t-il un quadrillage (`grille:` autre que `non`) ? */
+function hasGrid(lines: readonly string[], headerEnd: number): boolean {
+	return lines.slice(0, headerEnd).some((line) => {
+		const match = GRID_LINE_REGEX.exec(line.trim());
+		return match !== null && match[1].trim().toLowerCase() !== 'non';
+	});
 }
 
 /** Nombre de points de chaque vérification, et comment l'écrire */
@@ -175,7 +185,11 @@ function readCheck(value: string, line: number): ConstructionCheck {
  * de la figure, ou c'est un second carré / rectangle (le juge compte les
  * segments en trop sur UN polygone).
  */
-function coherenceError(check: ConstructionCheck, spec: ConstructionSpec): string | null {
+function coherenceError(
+	check: ConstructionCheck,
+	spec: ConstructionSpec,
+	grid: boolean
+): string | null {
 	const tool = CHECK_TOOL[check.kind];
 	if (!spec.tools.includes(tool))
 		return check.kind === 'point'
@@ -183,14 +197,22 @@ function coherenceError(check: ConstructionCheck, spec: ConstructionSpec): strin
 			: `${check.kind} se trace avec l’outil ${tool} (outils: ${tool})`;
 	if (check.kind === 'point') {
 		const first = spec.checks.find((c) => c.kind === 'point' && c.name === check.name);
-		return first === check ? null : `deux points nommés ${check.name.replace("'", '’')}`;
+		if (first !== check) return `deux points nommés ${check.name.replace("'", '’')}`;
+	} else {
+		const segmentChecks = spec.checks.filter((c) => c.kind !== 'droite_par' && c.kind !== 'point');
+		if (check.kind !== 'droite_par' && segmentChecks[0] !== check) {
+			const symmetry = check.kind === 'symetrique' || segmentChecks[0].kind === 'symetrique';
+			return symmetry
+				? 'un seul carré, rectangle ou symétrique par figure'
+				: 'un seul carré ou rectangle par figure';
+		}
 	}
-	const segmentChecks = spec.checks.filter((c) => c.kind !== 'droite_par' && c.kind !== 'point');
-	if (check.kind !== 'droite_par' && segmentChecks[0] !== check) {
-		const symmetry = check.kind === 'symetrique' || segmentChecks[0].kind === 'symetrique';
-		return symmetry
-			? 'un seul carré, rectangle ou symétrique par figure'
-			: 'un seul carré ou rectangle par figure';
+	const plainPaper = PLAIN_PAPER_TOOLS[check.kind];
+	if (!plainPaper) {
+		// Droite, carré, rectangle : le juge ne connaît que les traits de leur outil
+		if (spec.tools.length > 1) return `${check.kind} : un seul outil par figure (outils: ${tool})`;
+	} else if (!grid && !spec.tools.some((t) => INSTRUMENT_TOOLS.includes(t))) {
+		return `sans quadrillage, ${check.kind} demande les instruments (outils: ${plainPaper.join(', ')}), ou ajouter « grille: 1 »`;
 	}
 	return null;
 }
@@ -254,11 +276,17 @@ export function readConstructionHeader(
 	if (!work && !spec.masked && spec.checks.length === 0 && checkErrors === 0) {
 		errors.push({ message: CONSTRUCTION_MISSING_CHECK_MESSAGE });
 	}
-	// `outils:` absent : l'outil de la première vérification (droite par défaut)
-	if (!toolsSeen && spec.checks.length > 0) spec.tools = [CHECK_TOOL[spec.checks[0].kind]];
+	// `outils:` absent : l'outil de la première vérification (droite par défaut) ;
+	// point ou symétrique sans quadrillage : les instruments (lot 2b)
+	const grid = hasGrid(lines, headerEnd);
+	if (!toolsSeen && spec.checks.length > 0) {
+		const kind = spec.checks[0].kind;
+		const plainPaper = grid ? undefined : PLAIN_PAPER_TOOLS[kind];
+		spec.tools = plainPaper ? [...plainPaper] : [CHECK_TOOL[kind]];
+	}
 	const coherent: ConstructionCheck[] = [];
 	for (const check of spec.checks) {
-		const message = coherenceError(check, spec);
+		const message = coherenceError(check, spec, grid);
 		if (message) errors.push({ message: `Ligne ${check.line} : ${message}`, line: check.line });
 		else coherent.push(check);
 	}

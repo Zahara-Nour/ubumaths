@@ -13,9 +13,15 @@
 	- outil point (chantier `controles-figure`, lot 2a) : un toucher place un
 	  point (au nœud sur quadrillage) ; la correction montre chaque point attendu
 	  avec son nom et, pour un symétrique, [AA'] codé ;
-	- clavier : les points nommés sont des boutons (Tab, puis Entrée ou Espace) ;
+	- instruments sur papier uni (lot 2b, `docs/wip/controles-figure-progress.md`
+	  § 7) : plusieurs outils = une palette (Règle, Équerre, Compas…) ; équerre :
+	  toucher une droite (surlignée), puis un point → la perpendiculaire ; compas :
+	  le centre, puis un point → le cercle ; aimantation : point → intersection
+	  de deux traits → sur un trait → libre ;
+	- clavier : les points nommés sont des boutons (Tab, puis Entrée ou Espace),
+	  avec les instruments les intersections aussi, et les droites pour l'équerre ;
 	  sur quadrillage, un curseur se déplace de nœud en nœud avec les flèches ;
-	- « Effacer » : le départ en attente, sinon la dernière droite ;
+	- « Effacer » : le départ ou la droite en attente, sinon le dernier objet ;
 	- après Valider : juste → ses droites en vert ; faux → la bonne droite en
 	  pointillés par-dessus (le message est celui de l'écran) ;
 	- `showSolution` (mode correction) : la figure et la bonne droite ;
@@ -38,6 +44,22 @@
 		namedPointPositions
 	} from '$lib/questions/construction/positions-setup';
 	import {
+		CHECK_TOOL,
+		INSTRUMENT_TOOLS,
+		type ConstructionTool
+	} from '$lib/ubumark/types/construction';
+	import {
+		intersectionsOf,
+		isInFrame,
+		isStraight,
+		straightAt,
+		traitsOfObjects,
+		type SnapTargets,
+		type StraightTrait,
+		type Trait
+	} from '$lib/questions/construction/instruments';
+	import {
+		isDrawnCircle,
 		isDrawnLine,
 		isDrawnPoint,
 		parseConstructionAnswer,
@@ -54,9 +76,12 @@
 		SNAP_RADIUS_PX,
 		addTap,
 		canErase,
+		cancelPending,
+		chooseGuide,
 		clipLineToWindow,
 		eraseLast,
 		snapTap,
+		snapWithInstruments,
 		snapToGrid,
 		solutionLines,
 		solutionPoints,
@@ -90,18 +115,40 @@
 	 * la suivante (`{#each}` de `FillBlanksInput` indexé par position)
 	 */
 	// `raw` : sans proxy, le nœud reste comparable par référence
-	let pending = $state.raw<{ node: FigureNode; at: Position } | null>(null);
+	let pending = $state.raw<{
+		node: FigureNode;
+		at: Position | null;
+		guide?: StraightTrait | null;
+	} | null>(null);
+	/** Outil choisi dans la palette, lié au bloc comme `pending` */
+	let chosen = $state.raw<{ node: FigureNode; tool: ConstructionTool } | null>(null);
+	/** « Touche d'abord une droite. » (équerre), lié au bloc */
+	let hint = $state.raw<{ node: FigureNode; text: string } | null>(null);
 
 	let interactive = $derived(answer !== undefined && !answer.disabled);
 	let objects = $derived(parseConstructionAnswer(answer?.value ?? '') ?? []);
 	let lines = $derived(objects.filter(isDrawnLine));
 	let placedPoints = $derived(objects.filter(isDrawnPoint));
+	let circles = $derived(objects.filter(isDrawnCircle));
 	// Plus de saisie (Valider, correction) ou autre bloc : le départ en attente disparaît
-	let start = $derived(interactive && pending?.node === node ? pending.at : null);
-	let drawing: Drawing = $derived({ objects, start });
+	let mine = $derived(interactive && pending?.node === node ? pending : null);
+	let drawing: Drawing = $derived({
+		objects,
+		start: mine?.at ?? null,
+		...(mine?.guide && { guide: mine.guide })
+	});
 	let corrected = $derived(answer?.isCorrect === false || showSolution);
 	let checks = $derived(node.construction?.checks ?? []);
-	let tool = $derived(node.construction?.tools[0] ?? 'droite');
+	let tools = $derived<ConstructionTool[]>(node.construction?.tools ?? ['droite']);
+	/** Outil de départ : celui de la vérification s'il est dans la palette (le point, le segment) */
+	let firstTool = $derived.by((): ConstructionTool => {
+		const own = checks[0] ? CHECK_TOOL[checks[0].kind] : null;
+		return own && tools.includes(own) ? own : (tools[0] ?? 'droite');
+	});
+	let tool = $derived(chosen?.node === node ? chosen.tool : firstTool);
+	/** Palette avec équerre ou compas : aimantation des instruments (hors quadrillage) */
+	let instruments = $derived(tools.some((t) => INSTRUMENT_TOOLS.includes(t)));
+	let hintText = $derived(interactive && hint?.node === node ? hint.text : '');
 	/** Figure de travail : traits gris une fois la saisie finie, jamais de verdict */
 	let workDone = $derived(node.construction?.work === true && answer !== undefined && !interactive);
 	/** Quadrillage + segment ou point : touchers sur les nœuds (sinon aimantation sur les points) */
@@ -124,7 +171,8 @@
 	let cursor = $state.raw<Position | null>(null);
 
 	function apply(next: Drawing) {
-		pending = next.start ? { node, at: next.start } : null;
+		pending = next.start || next.guide ? { node, at: next.start, guide: next.guide ?? null } : null;
+		hint = null;
 		if (next.objects !== drawing.objects) {
 			answer?.onChange(serializeConstructionAnswer(next.objects));
 		}
@@ -134,6 +182,44 @@
 		if (!interactive) return;
 		apply(addTap(drawing, position, tool));
 	}
+
+	function selectTool(next: ConstructionTool) {
+		chosen = { node, tool: next };
+		apply(cancelPending(drawing));
+	}
+
+	/** Équerre : la droite à longer */
+	function chooseLine(guide: StraightTrait) {
+		if (!interactive) return;
+		apply(chooseGuide(drawing, guide));
+	}
+
+	/** Traits visibles : ceux de la figure et ceux de l'élève */
+	function traitsOf(scene: FigureScene): Trait[] {
+		return [...figureShapes(scene, node.header).traits, ...traitsOfObjects(objects)];
+	}
+
+	/** Ce sur quoi les instruments s'aimantent ; intersections dans la fenêtre seulement */
+	function snapTargets(scene: FigureScene): SnapTargets {
+		const traits = traitsOf(scene);
+		const { xMin, xMax, yMin, yMax } = scene.viewport;
+		return {
+			points: [...namedPointPositions(scene).values(), ...placedPoints],
+			// Marge de `isInFrame` : une intersection construite sur le bord reste atteignable (revue)
+			intersections: intersectionsOf(traits).filter((p) =>
+				isInFrame(p, { xMin, xMax, yMin, yMax })
+			),
+			traits
+		};
+	}
+
+	const TOOL_LABELS: Record<ConstructionTool, string> = {
+		droite: 'Règle',
+		segment: 'Segment',
+		point: 'Point',
+		equerre: 'Équerre',
+		compas: 'Compas'
+	};
 
 	/** Toucher (doigt, souris) : coordonnées de la fenêtre, puis de la figure */
 	function handleTap(event: MouseEvent, scene: FigureScene, width: number, height: number) {
@@ -153,7 +239,18 @@
 			return;
 		}
 		const radius = SNAP_RADIUS_PX / Math.abs(matrix.a) / transformer.scaleX;
-		tapAt(snapTap(math, namedPointPositions(scene), radius));
+		if (!instruments) {
+			tapAt(snapTap(math, namedPointPositions(scene), radius));
+			return;
+		}
+		const targets = snapTargets(scene);
+		if (tool === 'equerre' && !drawing.guide) {
+			const guide = straightAt(math, targets.traits, radius);
+			if (guide) chooseLine(guide);
+			else if (interactive) hint = { node, text: 'Touche d’abord une droite.' };
+			return;
+		}
+		tapAt(snapWithInstruments(math, targets, radius));
 	}
 
 	const ARROWS: Record<string, [number, number]> = {
@@ -200,9 +297,14 @@
 		cursor = snapToGrid({ x: (xMin + xMax) / 2, y: (yMin + yMax) / 2 }, grid, scene.viewport);
 	}
 
-	/** Annonce du lecteur d'écran sur le quadrillage : nœud du curseur, départ choisi */
+	/** Annonce du lecteur d'écran : nœud du curseur (quadrillage), départ ou droite choisis */
 	let gridStatus = $derived.by(() => {
-		if (!cursor) return '';
+		if (hintText) return hintText;
+		if (!cursor) {
+			if (drawing.guide) return 'Équerre : droite choisie, touche un point';
+			if (drawing.start && tool === 'compas') return 'Compas : centre choisi';
+			return drawing.start ? 'Départ choisi' : '';
+		}
 		const count = tool === 'point' ? placedPoints.length : lines.length;
 		const plural = count > 1 ? 's' : '';
 		const what =
@@ -213,11 +315,27 @@
 	function handlePointKey(event: KeyboardEvent, position: Position) {
 		if (event.key !== 'Enter' && event.key !== ' ') return;
 		event.preventDefault();
+		if (tool === 'equerre' && !drawing.guide) {
+			hint = { node, text: 'Touche d’abord une droite.' };
+			return;
+		}
 		tapAt({ x: position.x, y: position.y });
 	}
 
 	function erase() {
 		apply(eraseLast(drawing));
+	}
+
+	/** Le trait droit choisi pour l'équerre, en coordonnées SVG (découpé à la fenêtre) */
+	function guideToScreen(guide: StraightTrait, scene: FigureScene, width: number, height: number) {
+		const line: DrawnLine = {
+			kind: guide.kind === 'segment' ? 'segment' : 'droite',
+			x1: guide.a.x,
+			y1: guide.a.y,
+			x2: guide.b.x,
+			y2: guide.b.y
+		};
+		return toScreen(line, scene, width, height);
 	}
 
 	/** Un trait à l'écran, en coordonnées SVG : la droite est découpée à la fenêtre, le segment tel quel */
@@ -335,6 +453,25 @@
 				/>
 			{/if}
 		{/each}
+		{#each circles as c, i (i)}
+			{@const center = transformer.mathToSvg(c.cx, c.cy)}
+			{@const edge = transformer.mathToSvg(c.x, c.y)}
+			<circle
+				data-testid="cercle-eleve"
+				class="cercle-eleve"
+				class:droite-juste={answer?.isCorrect === true}
+				class:droite-travail={workDone}
+				cx={center.x}
+				cy={center.y}
+				r={Math.hypot(edge.x - center.x, edge.y - center.y)}
+			/>
+		{/each}
+		{#if interactive && drawing.guide}
+			{@const g = guideToScreen(drawing.guide, scene, width, height)}
+			{#if g}
+				<line data-testid="droite-choisie" class="droite-choisie" {...g} />
+			{/if}
+		{/if}
 		{#if corrected}
 			{#each solutionLines(checks, allPoints, lines, figureShapes(scene, node.header)) as line, i (i)}
 				{@const s = toScreen(line, scene, width, height)}
@@ -387,6 +524,46 @@
 					onkeydown={(event) => handlePointKey(event, position)}
 				/>
 			{/each}
+			{#if instruments && !grid}
+				{@const targets = snapTargets(scene)}
+				{#if tool === 'equerre' && !drawing.guide}
+					<!-- Équerre au clavier : chaque droite est un bouton -->
+					{#each targets.traits.filter(isStraight) as trait, i (i)}
+						{@const g = guideToScreen(trait, scene, width, height)}
+						{#if g}
+							<line
+								class="droite-cible"
+								{...g}
+								role="button"
+								tabindex="0"
+								aria-label="Droite {i + 1}"
+								pointer-events="none"
+								onkeydown={(event) => {
+									if (event.key !== 'Enter' && event.key !== ' ') return;
+									event.preventDefault();
+									chooseLine(trait);
+								}}
+							/>
+						{/if}
+					{/each}
+				{:else}
+					<!-- Une intersection sur un point nommé : le bouton du point suffit -->
+					{#each targets.intersections.filter((q) => ![...points.values()].some((p) => Math.hypot(p.x - q.x, p.y - q.y) < 1e-9)) as position, i (i)}
+						{@const p = transformer.mathToSvg(position.x, position.y)}
+						<circle
+							class="point-cible"
+							cx={p.x}
+							cy={p.y}
+							r="11"
+							role="button"
+							tabindex="0"
+							aria-label="Intersection {i + 1}"
+							pointer-events="none"
+							onkeydown={(event) => handlePointKey(event, position)}
+						/>
+					{/each}
+				{/if}
+			{/if}
 		{/if}
 	</g>
 {/snippet}
@@ -395,10 +572,28 @@
 	<FigureBlockView {node} {errorsVisible} overlay={layer} {interactive} />
 	{#if interactive}
 		<div class="figure-a-completer-outils">
+			{#if tools.length > 1}
+				<div class="palette" role="group" aria-label="Instruments">
+					{#each tools as t (t)}
+						<Button
+							variant={t === tool ? 'default' : 'outline'}
+							size="sm"
+							aria-pressed={t === tool}
+							data-testid="outil-{t}"
+							onclick={() => selectTool(t)}
+						>
+							{TOOL_LABELS[t]}
+						</Button>
+					{/each}
+				</div>
+			{/if}
 			<Button variant="outline" size="sm" onclick={erase} disabled={!canErase(drawing)}>
 				Effacer
 			</Button>
 		</div>
+		{#if hintText}
+			<p class="figure-a-completer-consigne" data-testid="consigne-outil">{hintText}</p>
+		{/if}
 	{/if}
 	<!-- Zone toujours présente : une zone live insérée déjà remplie est souvent tue -->
 	<p class="sr-only" role="status">
@@ -511,7 +706,56 @@
 
 	.figure-a-completer-outils {
 		display: flex;
+		flex-wrap: wrap;
 		justify-content: center;
+		gap: 0.5rem;
 		margin-top: 0.25rem;
+	}
+
+	.palette {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.25rem;
+	}
+
+	.figure-a-completer-consigne {
+		margin-top: 0.25rem;
+		text-align: center;
+		font-size: 0.875rem;
+		color: var(--color-muted-foreground);
+	}
+
+	.cercle-eleve {
+		fill: none;
+		stroke: var(--color-primary);
+		stroke-width: 2;
+		pointer-events: none;
+	}
+
+	.cercle-eleve.droite-juste {
+		stroke: var(--color-success);
+	}
+
+	.cercle-eleve.droite-travail {
+		stroke: var(--color-muted-foreground);
+	}
+
+	.droite-choisie {
+		stroke: var(--color-ring);
+		stroke-width: 6;
+		stroke-opacity: 0.45;
+		stroke-linecap: round;
+		pointer-events: none;
+	}
+
+	.droite-cible {
+		stroke: transparent;
+		stroke-width: 12;
+		outline: none;
+	}
+
+	.droite-cible:focus-visible {
+		stroke: var(--color-ring);
+		stroke-opacity: 0.6;
 	}
 </style>

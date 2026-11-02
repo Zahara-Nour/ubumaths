@@ -13,8 +13,10 @@
  * hors de la perpendiculaire, « même distance » s'il est sur la perpendiculaire
  * mais pas à la bonne distance), point de trop.
  *
- * Lot 2a : sur quadrillage seulement (touchers aux nœuds) ; papier uni avec
- * équerre et compas : lot 2b.
+ * Lot 2a : sur quadrillage (touchers aux nœuds). Lot 2b (§ 7) : papier uni,
+ * l'élève construit avec la règle, l'équerre et le compas (`instruments.ts`) ;
+ * seulement un symétrique (`symetrie(A, axe=d)` ou `symetrie(A, centre=O)`) ;
+ * un point posé hors de toute intersection de traits : « placé à l'œil ».
  *
  * Pur : positions de la figure et points attendus donnés par l'appelant
  * (registre `positions.ts`, qui calcule l'expression).
@@ -24,13 +26,16 @@
 
 import type { ConstructionCheck, PointCheck } from '$lib/ubumark/types/construction';
 import { isDrawnPoint, type DrawnObject } from './answer';
+import { isConstructed, isInFrame, traitsOfObjects } from './instruments';
 import type { ConstructionVerdict, Position } from './judge';
 import { dot, sub, tolerance } from './polygon';
-import type { FigureShapes } from './symmetry';
+import { plainPaperSupportError, type FigureShapes } from './symmetry';
 
 export const POINT_EXTRA_FEEDBACK = 'Tu as placé un point de trop.';
 export const POINT_MISSING_FEEDBACK = 'Il manque un point.';
 export const POINT_NOT_IN_PLACE_FEEDBACK = 'Ce point n’est pas à sa place.';
+export const POINT_EYEBALLED_FEEDBACK =
+	'Ton point est placé à l’œil : construis-le avec tes instruments.';
 
 /** Apostrophe typographique dans les messages (A’) */
 const typographic = (name: string) => name.replaceAll("'", '’');
@@ -99,10 +104,32 @@ function expectedOf(check: PointCheck, expected: ExpectedPoints | undefined): Po
 }
 
 /**
+ * Papier uni (lot 2b) : seul un symétrique se construit avec les instruments du
+ * lot ; par un axe, l'axe doit traverser la fenêtre (le compas s'y pique).
+ */
+function assertPlainPaper(
+	check: PointCheck,
+	points: ReadonlyMap<string, Position>,
+	shapes: FigureShapes
+): void {
+	const label = `verifier: point ${check.name}`;
+	const symmetry = symmetryOf(check.expression);
+	if (!symmetry || !symmetry.target) {
+		throw new PointAuthorError(
+			`${label} : sans quadrillage, seulement un symétrique (symetrie(A, axe=d) ou symetrie(A, centre=O)) ; sinon ajouter « grille: 1 »`
+		);
+	}
+	const axis = symmetry.by === 'axe' ? (shapes.lines.get(symmetry.target) ?? null) : null;
+	const message = plainPaperSupportError(symmetry.target, axis, points, shapes);
+	if (message) throw new PointAuthorError(`${label} : ${message}`);
+}
+
+/**
  * Les points sont-ils faisables ? Erreur d'AUTEUR sinon : expression qui ne
  * se calcule pas ou ne donne pas un point, nom déjà pris, point déjà dans la
- * figure (rien à placer), hors de la fenêtre, sans quadrillage ou hors des
- * nœuds (l'élève ne pourrait pas l'atteindre), deux points au même endroit.
+ * figure (rien à placer), hors de la fenêtre, hors des nœuds du quadrillage ou,
+ * sans quadrillage, autre chose qu'un symétrique (l'élève ne pourrait pas
+ * l'atteindre), deux points au même endroit.
  */
 export function assertPoints(
 	checks: readonly PointCheck[],
@@ -118,23 +145,17 @@ export function assertPoints(
 		}
 		const at = expectedOf(check, expected);
 		const eps = tolerance(at, ...points.values());
-		const grid = shapes?.grid;
-		if (!grid) {
+		if (!shapes) {
 			throw new PointAuthorError(
-				`${label} : un point se place sur quadrillage, ajouter « grille: 1 » (sans quadrillage, l’élève ne peut pas l’atteindre)`
+				'Case « figure » : traits de la figure non fournis au juge (point)'
 			);
 		}
-		const window = shapes.window;
-		if (
-			window &&
-			(at.x < window.xMin - eps ||
-				at.x > window.xMax + eps ||
-				at.y < window.yMin - eps ||
-				at.y > window.yMax + eps)
-		) {
+		const { grid, window } = shapes;
+		if (window && !isInFrame(at, window)) {
 			throw new PointAuthorError(`${label} : le point attendu est hors de la fenêtre`);
 		}
-		if (!isOnGrid(at.x, grid.x, eps) || !isOnGrid(at.y, grid.y, eps)) {
+		if (!grid) assertPlainPaper(check, points, shapes);
+		else if (!isOnGrid(at.x, grid.x, eps) || !isOnGrid(at.y, grid.y, eps)) {
 			throw new PointAuthorError(
 				`${label} : le point attendu n’est pas sur un nœud du quadrillage (l’élève ne peut pas l’atteindre)`
 			);
@@ -220,6 +241,13 @@ export function judgePoints(
 		for (const drawn of unused) {
 			const distance = Math.hypot(drawn.x - target.at.x, drawn.y - target.at.y);
 			if (distance < best.distance) best = { target, drawn, distance };
+		}
+	}
+	// Papier uni : un point qui n'est ni un point de la figure ni une intersection de traits
+	if (shapes && !shapes.grid) {
+		const traits = [...shapes.traits, ...traitsOfObjects(objects)];
+		if (!isConstructed(best.drawn, [...points.values()], traits)) {
+			return { status: 'incorrect', feedback: POINT_EYEBALLED_FEEDBACK };
 		}
 	}
 	return {

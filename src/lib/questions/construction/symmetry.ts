@@ -2,7 +2,8 @@
  * Symétrique à tracer (vérification `symetrique`, chantier `controles-figure`)
  * ===========================================================================
  *
- * `symetrique par d` : l'élève trace (outil segment, sur quadrillage) l'image
+ * `symetrique par d` : l'élève trace (outil segment, sur quadrillage ou, lot 2b,
+ * sur papier uni avec les instruments, traits de construction ignorés) l'image
  * de tout ce qui est tracé dans la figure sauf l'axe ; `par O` (un point) :
  * symétrie centrale ; `symetrique A ; B ; C par d` : seulement les traits dont
  * les deux bouts sont parmi ces points. Phase 0 validée par David le
@@ -25,6 +26,7 @@
 import type { SymetriqueCheck } from '$lib/ubumark/types/construction';
 import type { FigureStep, FigureWindow } from '$lib/ubumark/types/figure';
 import type { DrawnLine } from './answer';
+import { isInFrame, lineCrossesFrame, type Trait } from './instruments';
 import type { ConstructionVerdict, Position } from './judge';
 import {
 	OVERSHOOT_FEEDBACK,
@@ -60,6 +62,8 @@ export interface FigureSegment extends Segment {
 /** Droite, segment ou demi-droite NOMMÉ de la figure (un axe possible) */
 export interface FigureLine extends Segment {
 	owner: string;
+	/** Tracé (les instruments s'y appuient) ; un axe `visible=faux` ne l'est pas */
+	visible: boolean;
 }
 
 /** Ce que la figure de départ trace, pour le symétrique */
@@ -68,6 +72,13 @@ export interface FigureShapes {
 	readonly segments: readonly FigureSegment[];
 	/** Objets droits, par nom (identifiant et nom affiché) */
 	readonly lines: ReadonlyMap<string, FigureLine>;
+	/**
+	 * Traits VISIBLES (droites, demi-droites, segments, côtés, cercles) : ce sur
+	 * quoi les instruments s'aimantent (papier uni, lot 2b)
+	 */
+	readonly traits: readonly Trait[];
+	/** Noms des points VISIBLES (le compas ne se pique que sur ce qu'on voit) */
+	readonly visiblePoints: ReadonlySet<string>;
 	readonly grid: FigureStep | null;
 	readonly window: FigureWindow | null;
 }
@@ -155,8 +166,9 @@ const isOnGrid = (value: number, step: number, eps: number) =>
 
 /**
  * Le symétrique est-il traçable ? Erreur d'AUTEUR sinon : axe ou centre
- * inconnu, rien à transformer, pas de quadrillage, image hors de la fenêtre ou
- * hors des nœuds (l'élève ne pourrait pas l'atteindre), figure déjà symétrique
+ * inconnu, rien à transformer, image hors de la fenêtre ou hors des nœuds du
+ * quadrillage, axe hors de la fenêtre sur papier uni (l'élève ne pourrait pas
+ * l'atteindre), figure déjà symétrique
  * (rien à tracer : repasser la figure serait juste).
  */
 export function assertSymmetry(
@@ -164,12 +176,17 @@ export function assertSymmetry(
 	points: ReadonlyMap<string, Position>,
 	shapes: FigureShapes | undefined
 ): void {
-	const { expected, figure } = settingOf(check, points, shapes);
+	const { expected, figure, axis } = settingOf(check, points, shapes);
 	const { grid, window } = shapes as FigureShapes;
+	// Papier uni (lot 2b) : construit aux instruments, sur l'axe ou le centre qu'on voit
 	if (!grid) {
-		throw new SymmetryAuthorError(
-			'verifier: symetrique se trace sur quadrillage : ajouter « grille: 1 »'
+		const message = plainPaperSupportError(
+			check.by,
+			axis ? (axis as FigureLine) : null,
+			points,
+			shapes as FigureShapes
 		);
+		if (message) throw new SymmetryAuthorError(`verifier: symetrique par ${check.by} : ${message}`);
 	}
 	for (const p of expected.flatMap((s) => [s.a, s.b])) {
 		const eps = tolerance(p);
@@ -184,7 +201,7 @@ export function assertSymmetry(
 				`verifier: symetrique par ${check.by} : le symétrique sort de la fenêtre`
 			);
 		}
-		if (!isOnGrid(p.x, grid.x, eps) || !isOnGrid(p.y, grid.y, eps)) {
+		if (grid && (!isOnGrid(p.x, grid.x, eps) || !isOnGrid(p.y, grid.y, eps))) {
 			throw new SymmetryAuthorError(
 				`verifier: symetrique par ${check.by} : un sommet du symétrique n’est pas sur un nœud du quadrillage`
 			);
@@ -197,6 +214,32 @@ export function assertSymmetry(
 			`verifier: symetrique par ${check.by} : la figure est déjà symétrique, il n’y a rien à tracer`
 		);
 	}
+}
+
+/**
+ * Papier uni : l'axe ou le centre doit se voir dans la fenêtre (l'équerre longe
+ * l'axe, le compas s'y pique) ; le message, null s'il n'y a rien à redire
+ */
+export function plainPaperSupportError(
+	by: string,
+	axis: FigureLine | null,
+	points: ReadonlyMap<string, Position>,
+	shapes: FigureShapes
+): string | null {
+	const { window } = shapes;
+	if (axis) {
+		if (!axis.visible)
+			return `l’axe ${by} n’est pas tracé (visible=faux) : rien à longer ni où piquer le compas`;
+		if (window && !lineCrossesFrame(axis.a, axis.b, window))
+			return `l’axe ${by} est hors de la fenêtre`;
+		return null;
+	}
+	const center = points.get(by);
+	if (!center) return null;
+	if (!shapes.visiblePoints.has(by))
+		return `le centre ${by} n’est pas visible : le compas ne peut pas s’y piquer`;
+	if (window && !isInFrame(center, window)) return `le centre ${by} est hors de la fenêtre`;
+	return null;
 }
 
 /** Longueur du morceau `c` couverte par les morceaux de sa droite */

@@ -26,14 +26,14 @@ export const figureACompleterEntry: BlockCatalogEntry = {
 						"droite_par A ; B · carre A ; B · rectangle A ; B ; C · symetrique par d · symetrique A ; B ; C par d · point A' = symetrie(A, axe=d)",
 					defaultValue: null,
 					description:
-						"Ce que la figure de l’élève doit contenir. droite_par : une droite qui passe par les deux points nommés (une ligne par droite ; toute droite en plus est fausse). carre : le côté [AB] est tracé, l’élève trace les trois autres, d’un côté ou de l’autre. rectangle : les côtés [AB] et [BC] sont tracés, l’élève trace les deux autres. symetrique par d : l’élève trace le symétrique de tout ce qui est tracé (segments, polygones) sauf l’axe d ; par O (un point) : symétrie centrale ; symetrique A ; B ; C par d : seulement les traits entre ces points. Sur quadrillage (grille:), le symétrique dans la fenêtre et sur les nœuds. Un seul carré, rectangle ou symétrique par figure. point A' = <expression> : l’élève place un point là où l’expression du langage des figures le met (symetrie, milieu, intersection…) ; une ligne par point, l’élève ne les nomme pas ; A' n’est pas un nom de la figure, il sert à la correction et aux messages. Sur quadrillage seulement (grille:), le point dans la fenêtre et sur un nœud."
+						"Ce que la figure de l’élève doit contenir. droite_par : une droite qui passe par les deux points nommés (une ligne par droite ; toute droite en plus est fausse). carre : le côté [AB] est tracé, l’élève trace les trois autres, d’un côté ou de l’autre. rectangle : les côtés [AB] et [BC] sont tracés, l’élève trace les deux autres. symetrique par d : l’élève trace le symétrique de tout ce qui est tracé (segments, polygones) sauf l’axe d ; par O (un point) : symétrie centrale ; symetrique A ; B ; C par d : seulement les traits entre ces points. Sur quadrillage (grille:), le symétrique dans la fenêtre et sur les nœuds. Un seul carré, rectangle ou symétrique par figure. point A' = <expression> : l’élève place un point là où l’expression du langage des figures le met (symetrie, milieu, intersection…) ; une ligne par point, l’élève ne les nomme pas ; A' n’est pas un nom de la figure, il sert à la correction et aux messages. Sur quadrillage (grille:), le point dans la fenêtre et sur un nœud. Sans quadrillage (papier uni), l’élève construit avec la règle, l’équerre et le compas : seulement un symétrique (symetrie(A, axe=d) ou symetrie(A, centre=O)), l’axe dans la fenêtre ; un point posé hors de toute intersection de traits est « placé à l’œil ». Le symétrique d’une figure se construit aussi sur papier uni."
 				},
 				{
 					key: 'outils',
-					values: 'droite, segment ou point',
-					defaultValue: 'celui de la vérification',
+					values: 'droite, segment, point, equerre, compas',
+					defaultValue: 'celui de la vérification ; sans quadrillage, les instruments',
 					description:
-						'L’outil proposé à l’élève, un seul par figure : droite pour droite_par, segment pour carre, rectangle et symetrique, point pour point. Avec un quadrillage (grille:) et le segment ou le point, chaque toucher va au nœud le plus proche.'
+						'Les outils proposés à l’élève : droite (la règle) pour droite_par, segment pour carre, rectangle et symetrique, point pour point ; un seul outil pour droite_par, carre, rectangle. Avec un quadrillage (grille:) et le segment ou le point, chaque toucher va au nœud le plus proche. Sans quadrillage, point et symetrique reçoivent une palette d’instruments (droite, equerre, compas, et point ou segment) : l’équerre trace la perpendiculaire à une droite par un point, le compas un cercle par son centre et un point ; chaque toucher s’aimante sur un point, une intersection de deux traits ou un trait. Écrire outils: pour restreindre la palette.'
 				},
 				{
 					key: 'fenetre, taille…',
@@ -142,6 +142,21 @@ export const figureACompleterEntry: BlockCatalogEntry = {
 			),
 			explanation:
 				'L’élève place A’ en (5 ; 2). À la même distance de l’axe mais à l’horizontale de A, il lit « Le segment [AA’] doit être perpendiculaire à l’axe » ; sur la perpendiculaire mais trop près ou trop loin, « A’ doit être à la même distance de l’axe que A ». Plusieurs points : une ligne « verifier: point … » par point.'
+		},
+		{
+			title: 'Construire le symétrique d’un point sur papier uni',
+			source: fence(
+				'figure-a-completer',
+				'fenetre: 0 ; 10 ; 0 ; 8',
+				"verifier: point A' = symetrie(A, axe=d)",
+				'---',
+				'P = point(1, 1, visible=faux)',
+				'Q = point(7, 7, visible=faux)',
+				'd = droite(P, Q)',
+				'A = point(2, 5)'
+			),
+			explanation:
+				'Sans grille:, l’élève reçoit la règle, l’équerre, le compas et le point. Il trace la perpendiculaire à d par A (équerre), pique le compas au pied de cette perpendiculaire et l’ouvre jusqu’à A, puis place A’ à l’autre intersection. Deux cercles centrés sur l’axe et passant par A donnent aussi A’. Un point posé à l’œil, même tout près : « Ton point est placé à l’œil : construis-le avec tes instruments. »'
 		},
 		{
 			title: 'Vérifier un alignement, puis répondre oui ou non',

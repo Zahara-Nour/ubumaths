@@ -40,7 +40,7 @@ describe('réponse de l’élève : lecture', () => {
 		expect(parseConstructionAnswer('droite(1e9;2;7;2)')).toBeNull();
 		expect(parseConstructionAnswer('droite(NaN;2;7;2)')).toBeNull();
 		expect(parseConstructionAnswer(Array(21).fill('droite(1;2;7;2)').join('|'))).toBeNull();
-		expect(parseConstructionAnswer('droite(1;2;7;2)'.padEnd(2000, ' '))).toBeNull();
+		expect(parseConstructionAnswer('droite(1;2;7;2)'.padEnd(2001, ' '))).toBeNull();
 	});
 });
 
