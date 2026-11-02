@@ -5,19 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2187._
+_Mis à jour le 2026-11-02, après #2206 et son `db:migrate`._
 
-- **État** : lots 0 à 6 publiés en prod ; lot 7 (algorithmique) mergé (#2128), pas en base ; lot 8
-  (boîte à moustaches, 2 modèles) mergé (#2187), pas en base.
-- **Prochaine action** : lots 7 et 8 en base : `create-questions --publier` (David, depuis le dépôt
-  principal à jour, `--dir scripts/questions/3-lot-7` puis `3-lot-8`), relever les `id`, migration de rangement (lot 7 : sous-notion neuve, § 14.10 ;
-  lot 8 : f2167091, § 15.2), page à cocher.
-- **En attente de David** : `create-questions --publier` du lot 8 (lot 7 en base, § 14.11).
+- **État** : lots 0 à 6 publiés ; lots 7 (Scratch, 4 modèles) et 8 (boîte à moustaches, 2) en brouillon en prod,
+  rangés (#2206, migration `20261102070008` jouée, vérifiée au MCP) ; page à cocher publiée (§ 16.1).
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, les COMPTER : 6), corriger les
+  « À revoir », puis `publier-lot.ts` en simulation sur `3-lot-7` et `3-lot-8`, puis `--publier` (David).
+- **En attente de David** : relecture de la page à cocher (Scratch et effectifs à jouer dans l'aperçu admin).
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
-  du mode auto → David les lance avec `!` ; aperçu admin : `--host 127.0.0.1` ; `audit-question-draws` :
-  faux positifs « nombres juxtaposés » (blocs statistiques), « gabarit non résolu » sur `<<` (Scratch) ;
-  sonde hors du dépôt : fichier `.mts` + `tsx --tsconfig tsconfig.json` ; `col()` hors de `$…$` s'affiche en
-  brut ; `db:migrate` « inserted before » → `--dry-run --include-all` puis `--include-all` (#2181).
+  du mode auto → David les lance avec `!` ; aperçu admin local : `--host 127.0.0.1` ; base locale en retard
+  d'une soixantaine de migrations (tests d'arbre : la CI fait foi) ; cache `.svelte-kit/.svelte-check` périmé →
+  le vider si `types:cliquet` voit des routes supprimées ; `audit-question-draws` : faux positifs « nombres
+  juxtaposés » (blocs statistiques), `<<` (Scratch).
 - **Worktree / branche** : `../ubumaths-wt-questions-3`, HEAD détachée sur `origin/main`.
 
 ## 1. Relevé (prod, 2026-10-28)
@@ -1128,3 +1127,12 @@ publiés de plus. Aucune règle ne change.
   migration → la CI fait foi.
 - Ouvert : 4-068 / 4-069 restent sur la notion (la sous-notion « leur servira », § 14.10) ; à ranger avec les
   modèles de 4e qui les couvrent.
+
+### 16.1 Migration jouée, page à cocher (2026-11-02)
+
+- #2206 mergée (CI verte après deux corrections : arbre figé à 631 chemins, migration renommée `070008` après
+  celle du CM1). `db:migrate` (David) a joué aussi `20261102070305_questions_6_lot9` (arrivée entre-temps).
+- MCP : 6 brouillons sur leur nœud, 6 tags, 3-050 sur « blocs personnalisés ».
+- Page à cocher (lots 7 et 8 ensemble) : https://claude.ai/artifact/EvgcCErh131dsTTrA19Qvq (capacité `db`,
+  collection `verdicts` vide au départ). Alertes : 4 blocs ` ```scratch ` et le ` ```effectifs ` non dessinés
+  par la page → les jouer dans l'aperçu admin de la prod (blocs en prod depuis la v0.62.0).
