@@ -9,7 +9,7 @@
 _Mis à jour le 2026-11-02, après #2212 (lot 7a mergé)._
 
 - **État** : lots 0 à 6 publiés. Lot 7a (droites graduées, entiers et fractions, 6 modèles) : #2212 mergée (fichiers + correctif des étiquettes longues de la droite graduée).
-- **Prochaine action** : simulation `create-questions` (prod) depuis le dépôt principal ; `--publier` par David ; migration nœud + tag (`feat/questions-cm2-lot7a-rangement`). Publication des #1-#2 après le `deploy:prod` qui livre le correctif des étiquettes.
+- **Prochaine action** : après le `--publier` de David (simulation prod faite le 2026-11-02 : 6 à créer, 0 en base), relever les 6 `id` au MCP ; migration nœud + tag (`feat/questions-cm2-lot7a-rangement`). Publication des #1-#2 après le `deploy:prod` qui livre le correctif des étiquettes.
 - **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-7a --publier` (depuis le dépôt principal à jour, après ma simulation) ; plus tard, le `deploy:prod` qui livre le correctif des étiquettes (#2212).
 - **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; garde = doublon seulement ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `pnpm db:migrate --dry-run --include-all`, liste relue, puis `--include-all`. `Doc-inchangée:` dans un COMMIT, pas dans la PR. `spacesFromFourDigits` → specs en `1\,000` ; homonymes du CM1 sur la page ; `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm2` en HEAD détachée sur `origin/main` (`feat/questions-cm2-lot7a` mergée, supprimée).
