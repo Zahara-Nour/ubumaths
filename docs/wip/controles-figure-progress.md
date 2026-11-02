@@ -141,3 +141,59 @@ médiatrice, bissectrice, cercle circonscrit, 4e sommet (§ 1).
   repassé sur la figure (était faux), coût borné par le tracé (figure de 150 côtés : 1,2 s → < 200 ms),
   « glissé » quand la figure glisse sur elle-même, figure déjà symétrique refusée à la publication,
   registre en lecture seule.
+
+## 5. Phase 0 — lot 2 : placer un point, symétrique sur papier uni (proposée le 2026-11-02)
+
+Points : 6-179 (définition du symétrique d'un point), 6-180 (construire, papier uni ajouté au quadrillé
+et au pointé). Le même contrôle sert ensuite au 4e sommet, au centre du cercle circonscrit et à
+l'intersection (§ 1).
+
+### Écriture par le prof
+
+```figure-a-completer
+fenetre: 0 ; 10 ; 0 ; 8
+verifier: point A' = symetrie(A, axe=d)
+---
+d = droite(point(4, 0), point(7, 8))
+A = point(2, 5)
+```
+
+À droite du `=` : une expression du langage des figures (`symetrie`, `milieu`, `intersection`…),
+calculée à chaque tirage. Plusieurs lignes `point …` dans le même `verifier:` : plusieurs points à placer.
+
+### Comportements
+
+- **Nominal** : l'élève place un point (outil `point`, un toucher, réponse `point(x;y)`) sur l'image de
+  A → juste. Le point prend l'étiquette A'. Correction : A' en pointillés, avec [AA'] et son codage.
+- **Limites** (juste) : traits de construction en plus (perpendiculaire, arcs de compas) → ignorés ;
+  avec `grille:`, le point est aimanté sur les nœuds (pas besoin d'instruments) ; A sur l'axe → A' = A
+  (refusé à la publication : rien à placer).
+- **Erreurs** (faux, première cause) :
+  1. rien placé → vide ;
+  2. point à la bonne distance de l'axe, mais [AA'] pas perpendiculaire → « Le segment [AA'] doit être
+     perpendiculaire à l'axe. » ;
+  3. point sur la perpendiculaire, mais pas à la même distance → « A' doit être à la même distance de
+     l'axe que A. » ;
+  4. ailleurs → « Ce point n'est pas le symétrique de A. » ;
+  5. un point de trop → « Tu as placé un point de trop. » ; un point manque → « Il manque un point. »
+- **Erreurs d'auteur** : expression invalide ou qui ne donne pas un point ; point attendu hors de la
+  fenêtre ; point attendu déjà présent dans la figure ; avec `grille:`, point attendu hors des nœuds.
+- **Évaluation** : `verifier: ?` masque le contrôle (rien à faire).
+
+### Questions à David
+
+1. **Papier uni : comment l'élève atteint-il A' ?**
+   (a) **instruments** (recommandé) : outils « équerre » (perpendiculaire à une droite par un point) et
+   « compas » (cercle par son centre et un point), le point s'aimante sur les intersections des traits,
+   juge exact. Fidèle au cahier ; le compas resservira à la médiatrice, au triangle, au cercle
+   circonscrit, à la bissectrice. Le lot grossit (deux outils) ;
+   (b) **tolérance** : point posé à l'œil, juste à moins d'une distance fixée — simple, mais juge
+   l'estimation, pas la construction (un élève qui devine passe) ;
+   (c) **papier pointé seulement** (nœuds aimantés, sans lignes) ; l'uni reporté.
+2. **Écriture du contrôle** : expression du langage des figures (`point A' = symetrie(A, axe=d)`,
+   recommandé : un seul contrôle pour tous les points à placer) ou un mot dédié (`symetrique A par d`) ?
+3. **Plusieurs points à placer** : l'élève ne les nomme pas, jugés comme un ensemble (recommandé :
+   chaque point attendu touché, aucun en trop ; étiquettes posées à la correction), ou l'élève choisit
+   l'étiquette de chaque point ?
+4. **Messages 2 et 3** (perpendiculaire / même distance) : les garder (recommandé, ils disent la
+   propriété du BO) ou s'en tenir au message générique ?
