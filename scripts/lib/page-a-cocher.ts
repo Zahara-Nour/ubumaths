@@ -27,6 +27,23 @@ import {
 import * as monnaieConstruire from '../../src/lib/ubumark/utils/monnaie-construire';
 import { coinFamily, denominationLabel } from '../../src/lib/ubumark/utils/monnaie-valeurs';
 import { parsePartageContent } from '../../src/lib/ubumark/parser/partage-parser';
+import { parseSolideContent } from '../../src/lib/ubumark/parser/solide-parser';
+import { parseEspaceContent } from '../../src/lib/ubumark/parser/espace-parser';
+import {
+	ESPACE_CM_PER_UNIT,
+	ESPACE_MARGIN,
+	ESPACE_STROKE,
+	buildEspaceScene,
+	espaceLabel
+} from '../../src/lib/ubumark/utils/espace-scene';
+import {
+	SOLIDE_DASH,
+	SOLIDE_DOT_RADIUS,
+	SOLIDE_LABEL_SIZE,
+	SOLIDE_THICK_STROKE,
+	buildSolideScene,
+	solideLabel
+} from '../../src/lib/ubumark/utils/espace-solides';
 import {
 	PARTAGE_CM_PER_UNIT,
 	PARTAGE_MARGIN,
@@ -674,6 +691,65 @@ function variation(source: string): Bloc {
 	};
 }
 
+// ---- Solide et cubes : scènes de l'appli, comme Solide.svelte et Cubes.svelte ----
+
+/** Coordonnée décalée de la marge, à deux décimales */
+const espaceXY = (p: { x: number; y: number }) =>
+	`${+(p.x + ESPACE_MARGIN).toFixed(2)},${+(p.y + ESPACE_MARGIN).toFixed(2)}`;
+const espacePoints = (points: { x: number; y: number }[]) => points.map(espaceXY).join(' ');
+
+/** Solide en perspective : faces marquées, section, arêtes (cachées en tirets), points, noms */
+function solide(source: string): Bloc {
+	const { spec, errors } = parseSolideContent(source);
+	if (!spec || errors.length > 0)
+		throw new Error('bloc solide en erreur : ' + errors.join(' ; ') + ' : ' + source);
+	const scene = buildSolideScene(spec);
+	const w = scene.width + 2 * ESPACE_MARGIN;
+	const h = scene.height + 2 * ESPACE_MARGIN;
+	const corps = [
+		...scene.fills.map((f) => `<polygon class="s-face" points="${espacePoints(f)}"/>`),
+		...(scene.section
+			? [`<polygon class="s-section" points="${espacePoints(scene.section)}"/>`]
+			: []),
+		...scene.lines.map(
+			(l) =>
+				`<polyline class="s-trait${l.dashed ? ' s-cache' : ''}" points="${espacePoints(l.points)}" stroke-width="${l.thick ? SOLIDE_THICK_STROKE : ESPACE_STROKE}"${l.dashed ? ` stroke-dasharray="${SOLIDE_DASH.join(' ')}"` : ''}/>`
+		),
+		...scene.dots.map((d) => {
+			const [x, y] = espaceXY(d).split(',');
+			return `<circle class="s-point" cx="${x}" cy="${y}" r="${SOLIDE_DOT_RADIUS}"/>`;
+		}),
+		...scene.labels.map((l) => {
+			const [x, y] = espaceXY(l.at).split(',');
+			return `<text class="s-point" x="${x}" y="${y}" font-size="${SOLIDE_LABEL_SIZE}" text-anchor="middle" dominant-baseline="central">${attr(l.text)}</text>`;
+		})
+	].join('');
+	return {
+		html: `<svg class="s-dessin" role="img" aria-label="${attr(solideLabel(spec))}" viewBox="0 0 ${+w.toFixed(2)} ${+h.toFixed(2)}" style="width:${+w.toFixed(2)}cm" fill="none" stroke-linecap="round" stroke-linejoin="round">${corps}</svg>`
+	};
+}
+
+/** Assemblage de cubes (ou une vue) ; un geste de l'élève (`dessiner:`, `retrouver:`) est signalé */
+function cubes(source: string): Bloc {
+	const node = parseEspaceContent(source, 'cubes');
+	const spec = node.spec?.kind === 'cubes' ? node.spec : null;
+	if (!spec || node.errors.length > 0)
+		throw new Error('bloc cubes en erreur : ' + node.errors.join(' ; ') + ' : ' + source);
+	const scene = buildEspaceScene(spec);
+	const w = scene.width + 2 * ESPACE_MARGIN;
+	const h = scene.height + 2 * ESPACE_MARGIN;
+	const faces = scene.polygons
+		.map((p) => `<polygon class="c-face c-${p.kind}" points="${espacePoints(p.points)}"/>`)
+		.join('');
+	const svg = `<svg class="c-dessin" role="img" aria-label="${attr(espaceLabel(spec))}" viewBox="0 0 ${+w.toFixed(2)} ${+h.toFixed(2)}" style="width:${+(w * ESPACE_CM_PER_UNIT).toFixed(2)}cm" stroke-width="${ESPACE_STROKE}" stroke-linejoin="round">${faces}</svg>`;
+	if (!spec.task && !spec.givenViews) return { html: svg };
+	const geste = spec.task ? `geste « ${spec.task.kind} »` : 'vues données (énoncé masqué)';
+	return {
+		html: `<div class="cons"><span class="r-tag">Cubes, ${attr(geste)} : le jouer dans l'aperçu</span>${svg}</div>`,
+		avertissements: [`bloc cubes : ${geste} non dessiné par la page`]
+	};
+}
+
 // ---- Partage : polygones de `buildPartageScenes`, comme Partage.svelte ----
 
 function partageSvg(
@@ -1307,6 +1383,8 @@ const DESSINS: Record<string, (source: string) => Bloc> = {
 	figure,
 	monnaie,
 	partage,
+	solide,
+	cubes,
 	collection,
 	horloge,
 	courbe,

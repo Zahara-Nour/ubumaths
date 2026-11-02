@@ -812,6 +812,65 @@
 		stroke: color-mix(in oklab, var(--m-primaire) 45%, black);
 		stroke-width: 0.8;
 	}
+	/* Solide (Solide.svelte) : traits au premier plan, face marquée grise, section orange */
+	.s-dessin,
+	.c-dessin {
+		max-width: 100%;
+		height: auto;
+	}
+	.choix .s-dessin,
+	.choix .c-dessin {
+		max-width: min(100%, 3cm);
+	}
+	.s-trait {
+		stroke: var(--fg);
+	}
+	.s-face {
+		fill: color-mix(in srgb, var(--fg) 18%, transparent);
+		stroke: none;
+	}
+	.s-section {
+		fill: color-mix(in srgb, #e8833a 40%, transparent);
+		stroke: none;
+	}
+	.s-point {
+		fill: var(--fg);
+		stroke: none;
+	}
+	/* Cubes (Cubes.svelte) : dessus le plus clair, côté le plus foncé, dans les deux thèmes */
+	.c-face {
+		stroke: var(--fg);
+	}
+	.c-dessus,
+	.c-case {
+		fill: var(--surface);
+	}
+	.c-devant {
+		fill: color-mix(in srgb, var(--fg) 12%, var(--surface));
+	}
+	.c-cote {
+		fill: color-mix(in srgb, var(--fg) 28%, var(--surface));
+	}
+	@media (prefers-color-scheme: dark) {
+		:root:not([data-theme='light']) .c-dessus {
+			fill: color-mix(in srgb, var(--fg) 40%, var(--surface));
+		}
+		:root:not([data-theme='light']) .c-devant {
+			fill: color-mix(in srgb, var(--fg) 22%, var(--surface));
+		}
+		:root:not([data-theme='light']) .c-cote {
+			fill: color-mix(in srgb, var(--fg) 8%, var(--surface));
+		}
+	}
+	:root[data-theme='dark'] .c-dessus {
+		fill: color-mix(in srgb, var(--fg) 40%, var(--surface));
+	}
+	:root[data-theme='dark'] .c-devant {
+		fill: color-mix(in srgb, var(--fg) 22%, var(--surface));
+	}
+	:root[data-theme='dark'] .c-cote {
+		fill: color-mix(in srgb, var(--fg) 8%, var(--surface));
+	}
 	/* Partage : parts sur le fond, la seule couleur d'accent pour les parts coloriées */
 	.p-dessin {
 		max-width: 100%;

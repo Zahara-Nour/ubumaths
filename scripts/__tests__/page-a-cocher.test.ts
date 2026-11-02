@@ -84,6 +84,33 @@ describe('dessinerBlocs', () => {
 		expect(r.markdown.match(/p-coloriee/g)).toHaveLength(3);
 	});
 
+	it('solide : arêtes en traits, cachées en tirets, nom accessible sans le nom du solide', () => {
+		const r = dessinerBlocs('```solide\nforme: cube 3\n```');
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown).toContain('class="s-dessin"');
+		// 12 arêtes d'un cube, dont 3 cachées
+		expect(r.markdown.match(/<polyline class="s-trait/g)).toHaveLength(12);
+		expect(r.markdown.match(/s-cache/g)).toHaveLength(3);
+		expect(r.markdown).not.toMatch(/aria-label="[^"]*cube/i);
+	});
+
+	it('cubes : trois faces par cube visible (dessus, devant, côté)', () => {
+		const r = dessinerBlocs('```cubes\nhauteurs: 1 2\n```');
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown).toContain('class="c-dessin"');
+		expect(r.markdown).toMatch(/class="c-face c-dessus"/);
+		expect(r.markdown).toMatch(/class="c-face c-devant"/);
+		expect(r.markdown).toMatch(/class="c-face c-cote"/);
+		expect(r.avertissements).toEqual([]);
+	});
+
+	it('cubes avec un geste : la perspective dessinée, le geste signalé', () => {
+		const r = dessinerBlocs('```cubes\nhauteurs: 1 2\ndessiner: dessus\ncase: 0\n```');
+		expect(r.markdown).toContain('class="c-dessin"');
+		expect(r.markdown).toContain('le jouer dans l');
+		expect(r.avertissements).toHaveLength(1);
+	});
+
 	it('monnaie à construire : réserve, plan vide, et la construction juste à part', () => {
 		const r = dessinerBlocs('```monnaie\ncase: 0\nconstruire: 8\n```');
 		expect(r.markdown).toContain('<span class="r-tag">Réserve</span>');
