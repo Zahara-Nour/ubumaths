@@ -5,14 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2203._
+_Mis à jour le 2026-11-02, après #2203 et les brouillons en prod._
 
-- **État** : lots 0 à 9 publiés. Lot 10 (espace et mesure, § 17) : fichiers mergés (#2203), 9 modèles, 80 specs ;
-  pas encore en prod.
-- **Prochaine action** : après les brouillons en prod, relever les `id`, puis migration nœud + tag (worktree neuf),
-  page à cocher, `publier-lot`.
-- **En attente de David** : `! cd /Users/david/Coding/js/ubumaths && pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce1-10 --publier`.
-  Chantier `verrou-deploy` à ouvrir dans sa session (mémoire).
+- **État** : lots 0 à 9 publiés. Lot 10 (espace et mesure, § 17) : 9 brouillons en prod (ids ci-dessous, vérifiés au
+  MCP le 2026-11-02), pas encore rangés ni tagués.
+- **Prochaine action** : migration nœud + tag du lot 10 (worktree neuf, test d'intégration rouge puis vert,
+  `security-auditor`), puis page à cocher et `publier-lot`.
+- **En attente de David** : chantier `verrou-deploy` à ouvrir dans sa session (mémoire).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; **niveaux : relever la
@@ -822,3 +821,9 @@ Réponse de David (« tes recos ? » puis « go », 2026-11-02) : les cinq recom
   `page-demo-diaporama.svelte.test.ts` (« Browser connection was closed »), vert en local et sur `main` ; vert après
   rebase sur `main` (32 commits de retard). Les `wrapDynamicImport` du journal de CI sont du bruit (présents aussi
   dans les runs verts).
+- 2026-11-02 : `create-questions --publier` par David : 9 brouillons en prod, vérifiés au MCP (CE1, niveaux, variations,
+  specs) — 01 `25e2fdd1-efbe-4cff-b2bd-fd583f1e9226` (044), 02 `9dba7d33-327e-434c-a1cd-8597435f386f` (064),
+  03 `a73704d7-0109-4e59-8df4-fc7f382c35f5` (065), 04 `10dcf449-569d-44ff-b3a0-c10edb4c370f` (079),
+  05 `bf4619fc-617a-4fea-9c56-3fe13f0acb2a` (079), 06 `1b29650b-bfd7-4282-b8e3-d48aa6684c1c` (076),
+  07 `48627efc-439a-48c0-b3af-c0c7a58b1079` (077), 08 `e3bacfdc-aa73-4e44-90fe-03156dce6c53` (080),
+  09 `8cbd4fb3-4414-42a5-a624-0b2370035c9d` (080).
