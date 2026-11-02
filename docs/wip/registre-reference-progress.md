@@ -362,3 +362,21 @@ Sonde jetable (vitest sous `src/`, `produceRegistre` / `produceAtelier`), 25 lig
 - **Ordre** : (1) PR tidy Q9 + `signes-06` (même mécanisme ; `(0.5x+0.5)/(x+1)` a besoin des deux) ;
   (2) petite PR `tidy-units.test.ts:24` (vérifier d'abord qui utilise la conversion) ; (3) PR 1
   `.dériver`. Revue de la PR tidy : `code-reviewer` opus (change l'affichage élève).
+
+## PR tidy Q9 + `signes-06` — phase 0 (David, 2026-11-02, « je te suis »)
+
+- **Q9 en entier** : `0,5/x → 1/(2x)`, `1,5/x → 3/(2x)`, `0,5/(x+1) → 1/(2(x+1))`,
+  `(x+0,5)/(x−1) → (2x+1)/(2(x−1))`, `x/(0,5x+1) → 2x/(x+2)`, `(0,5x+1)/(x+1) → (x+2)/(2(x+1))`,
+  `(1,2x+0,6)/(x+3) → (6x+3)/(5(x+3))`, `0,5x/x → x/(2x)` (S3).
+- **Q-a** (reco suivie) : quel que soit le dénominateur — `0,5√2/x → √2/(2x)`, `0,5/√x → 1/(2√x)`,
+  `0,5/eˣ → 1/(2eˣ)`, `0,5/ln x → 1/(2 ln x)`.
+- **`signes-06`** : une somme réduite égale à un facteur de l'autre côté y reste des deux côtés
+  (comme S3), au lieu d'abandonner la réduction : `(2x+2)/(4(x+1)) → (x+1)/(2(x+1))`,
+  `(4x+4)/(2(x+1)) → 2(x+1)/(x+1)`, `(2x+2)/(4(x+1)²) → 1/(2(x+1))` — chaque fois le résultat de
+  l'écriture déjà réduite.
+- **Limites** : L1 sans barre rien ne bouge (`0,5x`, `0,5(x+1)`, `0,5√2`, `0,4⁻¹ → 2,5`) ; L2 une
+  lettre à puissance négative = dénominateur (`0,5x⁻¹ → 1/(2x)`, idempotence B1) ; L3 somme terme
+  par terme (`0,5/x + 0,5 → 0,5 + 1/(2x)`) ; L4 idempotence ; L5 `tidyWithConditions` pareil pour
+  les deux écritures (`1/2`, x ≠ −1).
+- **Erreurs** : division par zéro, grandeurs, écriture gardée : inchangés ; `checkForm` n'utilise
+  pas `tidy` (correction des élèves non touchée).
