@@ -62,3 +62,33 @@ Le lot 8 touche toutes les catégories : il attend la fin des sessions `proba` e
 migration de données, aucun code couvert` dans un commit de la PR de migration.
 - **Aperçu local** : la saisie MathLive n'est pas pilotable par l'automate (jouer les cases choix ; les réponses
   tapées sont couvertes par les specs).
+
+## Lot 7 : phase 0 (2026-11-02, à valider)
+
+_Relevé MCP prod (lecture seule) : nœuds des six points et modèles déjà rangés dessus._
+
+| Point | Nœud du point                                                                                     | Déjà rangé là (niveau)                                                                                |
+| ----- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| 302   | Logique › Quantificateurs et négation › négation d'une proposition                                | 0ab3faa5 « Nier une proposition » (1re spé, un seul quantificateur), 2                                |
+| 303   | Logique › Raisonnements › par équivalence                                                         | rien                                                                                                  |
+| 310   | Dénombrement › Arrangements et permutations › factorielle                                         | rien (voisins : arrangements 2, 4 ; permutations 3)                                                   |
+| 569   | Suites › Limites de suites › définition                                                           | 849aabbc 1, c0f49b76 2, 146a7c79 2, ddaa7529 3, edb636bf 4                                            |
+| 386   | Suites › Raisonnement par récurrence › structure d'une récurrence                                 | 618d795c 2 (hypothèse, hérédité, initialisation ; une variation d'hérédité sur `u_{n+1} = u_n/2 + c`) |
+| 387   | Suites › Modèles d'évolution (notion ; sous-notions algorithmes, placements, pourcentages, seuil) | sur la notion : 5 modèles de 1re spé (intérêts simples / composés) ; « pourcentages » vide            |
+
+Proposition : six modèles, niveau `T_SPE` seul, un point chacun, trois variations, cases « choix » sauf indication.
+
+| #   | Point | Titre                                               | Rangement, niveau             | Variations                                                                                                                                                                                                                              |
+| --- | ----- | --------------------------------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| M1  | 302   | Nier une proposition à deux quantificateurs         | négation d'une proposition, 3 | « pour tout x, il existe y… » ; « il existe M tel que pour tout n, uₙ ≤ M » (majorée) ; « il existe N tel que pour tout n ≥ N… ». En mots, sans ∀ ∃ (borne). Leurres : un seul quantificateur changé, propriété non niée, ordre inversé |
+| M2  | 303   | Raisonner par équivalence                           | par équivalence, 1            | ⇔ ou seulement ⇒ entre deux étapes (x² = a², passage au ln, division par x) ; repérer l'étape d'une résolution qui n'est pas une équivalence ; propriété caractéristique (géométrique ⇔ uₙ₊₁ = q uₙ pour tout n…)                       |
+| M3  | 310   | Factorielle : calculer, simplifier                  | factorielle, 1                | n! pour n de 3 à 7 (nombre) ; (n+1)! connaissant n! (nombre) ; (n+2)!/n! pour n de 3 à 12 (nombre)                                                                                                                                      |
+| M4  | 569   | Suite croissante non majorée : limite               | définition, 5                 | de propriétés données (croissante non majorée / croissante majorée / non majorée seule / décroissante non minorée) → +∞, converge, −∞, « on ne peut pas conclure » ; uₙ₊₁ − uₙ ≥ c > 0 ⇒ +∞ ; contre-exemple (−1)ⁿ n                    |
+| M5  | 386   | Récurrence sur une suite uₙ₊₁ = f(uₙ), f croissante | structure d'une récurrence, 3 | hérédité d'un encadrement a ≤ uₖ ≤ b ⇒ f(a) ≤ uₖ₊₁ ≤ f(b) (calcul de f(a), f(b), nombre) ; monotonie uₖ ≤ uₖ₊₁ ⇒ f(uₖ) ≤ f(uₖ₊₁) (choix de rédaction) ; formule conjecturée (uₙ = n², hérédité uₖ₊₁ = k² + 2k + 1)                      |
+| M6  | 387   | Évolution en pourcentage avec apport constant       | pourcentages, 1               | traduire l'énoncé en uₙ₊₁ = a uₙ + b (abonnés, médicament, lac) ; calculer u₁, u₂ (nombre, valeurs exactes) ; sens de l'évolution à long terme (choix ; la limite chiffrée reste à 81ff485d)                                            |
+
+**Questions à David** :
+
+- **M5** : 618d795c a déjà une hérédité sur une suite ; M5 la complète par le schéma « f croissante » et une formule conjecturée. D'accord, ou autre angle ?
+- **M6** : rangé sous « pourcentages » (contextes mêlés : abonnés, médicament, lac) plutôt que « placements » ?
+- **Question d'accès** (migration nœud + tag) : personne ne gagne ni ne perd d'accès (brouillons ; visibles des élèves seulement après `publier-lot`).
