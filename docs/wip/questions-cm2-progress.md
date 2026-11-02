@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 7b écrit (§ 12.4)._
+_Mis à jour le 2026-11-02, après #2236 (lot 7b écrit)._
 
-- **État** : lots 0 à 7a publiés. Lot 7b (4 modèles : 138, 025, 144, 032) écrit, essayé en base locale, PR `feat/questions-cm2-lot7b` ouverte.
-- **Prochaine action** : merger la PR du lot 7b ; puis `create-questions --dir scripts/questions/cm2-7b --publier` (David, prod), migration de rangement (copie du lot 7a), page à cocher. Ensuite petit lot 8 (038, 053, 055-057), puis reclasser le § 3 (§ 12.1).
-- **En attente de David** : le `--publier` en prod après le merge.
+- **État** : lots 0 à 7a publiés. Lot 7b (138, 025, 144, 032) mergé (#2236) ; simulation `create-questions` en prod : 4 à créer, 0 en base.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cm2-7b --publier` (prod) ; puis relever les 4 ids au MCP, migration de rangement + tags (copie du lot 7a) sur `feat/questions-cm2-lot7b-rangement`, page à cocher. Ensuite petit lot 8 (038, 053, 055-057), puis reclasser le § 3.
+- **En attente de David** : le `--publier` du lot 7b en prod.
 - **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `--dry-run --include-all`, liste relue, puis `--include-all`. Worktree neuf : copier `supabase/.temp/` (lien projet) du dépôt principal. Modèle à placer avec grands nombres : `spaces: off`. Page à cocher : `line` non dessiné, à jouer dans l'aperçu. `Doc-inchangée:` dans un COMMIT. `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
-- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot7b`.
+- **Worktree / branche** : `../ubumaths-wt-questions-cm2`, branche `feat/questions-cm2-lot7b-rangement` (rien de commité dessus hors journal).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -748,3 +748,4 @@ reclasser le § 3 (outils de la classe C maintenant en prod). Tableau du § 12 g
 - `question:specs` : 41 specs vertes, 13 000 tirages réussis. Fractions : `requiredForm: 'fraction'`, `reducedFractions: off`, `spacesFromFourDigits` (réponse `\frac{2\,812}{1\,000}`, comme le lot 6a).
 - Sonde tsx hors dépôt (parseur + `number-line-placer`), 3 000 tirages par modèle : toujours 11 graduations, chaque point à placer sur une graduation, `placerAnswer` = réponse attendue (pas `0.001` sans erreur d'arrondi), aucun `phoneGapWarning`.
 - Base locale (`create-questions --publier` avec `.env.local`, passé cette fois) ; aperçu (port 5183, fenêtre de 606 px, Chrome ne descend pas plus bas) : deux points en millièmes (35,501 ; 35,507) placés → « Juste » ; étiquettes 108/100 et 109/100 lisibles.
+- CI de #2236 : Client Tests shard 1 rouge deux fois (`wrapDynamicImport` dans `get_hooks`, 112 fichiers sur 210 chargés ; PR de JSON seuls) ; après fusion de `origin/main` (nouveau commit), verte ; **#2236 mergée**. Simulation `create-questions` (prod, dépôt principal) : 4 à créer, 0 en base.
