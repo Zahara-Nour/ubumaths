@@ -10,15 +10,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2237._
+_Mis à jour le 2026-11-02, après #2237 ; #2242 ouverte._
 
-- **État** : lot 6b écrit et mergé (#2237, fichiers seuls) : 7 modèles dans `scripts/questions/1spe-savoir-b/` ; rien en prod.
-- **Prochaine action** : David lance `create-questions --dir scripts/questions/1spe-savoir-b --publier` depuis le dépôt
-  principal ; relever les 7 `id` (MCP) ; migration nœud + tag sur le gabarit 6a (branche neuve dans le worktree).
-- **En attente de David** : la création en prod (`!`).
-- **Pièges en cours** : voir « Décisions communes et pièges » ci-dessous.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-geometrie` (branche #2237 mergée : en repartir avec une branche
-  neuve depuis `origin/main` pour la migration) ; dev sur 5176.
+- **État** : 6b créé en prod par David (brouillons, 17 h 35 UTC) : 4f8c7b91 (412), 7bf472bc (310), 24ca7584 (313),
+  52a3ad9b (311), 9af16245 (415), 71205949 (316), 47d451b4 (329). Migration nœud + tag
+  `20261102173610_questions_1spe_savoir_b_rangement_tags` en PR #2242 : test 10/10, rouge sans l'étape 4,
+  `security-auditor` sans finding, `check:migrations --pr 2242` vert ; CI en cours au `/clear`.
+- **Prochaine action** : `gh pr checks 2242` → verte : merger, `db:migrate` depuis le dépôt principal (`migration list
+--linked` d'abord) ; relire en base (MCP) ; page à cocher (`scripts/questions/page-a-cocher.ts --dir
+scripts/questions/1spe-savoir-b`) ; puis `publier-lot`.
+- **En attente de David** : rien avant la page à cocher.
+- **Pièges en cours** : `pnpm migration:horodatage` sans `-s` ; KaTeX absent du dépôt, sonde de formules par
+  `mathlive-ssr` (`validateLatex`). Base locale : 7 brouillons d'essai du 6b (ids locaux, sans importance).
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-geometrie`, `feat/questions-1spe-savoir-b-tags` (#2242).
 
 ---
 
@@ -95,3 +99,11 @@ remplacés par `colt` avant l'essai. Base **locale** : 7 brouillons créés ; 07
 juste, propositions rendues à la largeur d'un téléphone) ; 01 regardé.
 
 PR #2237 (fichiers) mergée le 2026-11-02 (CI verte, 9 succès, 6 sautés).
+
+## Lot 6b : prod et migration (2026-11-02)
+
+Création en prod par David (17 h 35 UTC), relue (MCP) : 7 `draft`, sans nœud ni tag. Nœuds des points : 412, 310, 313 →
+Géométrie › Produit scalaire › expressions du produit scalaire ; 311, 415 → … › propriétés ; 316 → … › angles et
+longueurs ; 329 → Géométrie › Géométrie repérée › équation de cercle. Migration `20261102173610` (gabarit 6a) et test
+`tests/integration/questions-1spe-savoir-b-rangement-tags.test.ts` : 10/10, rouge sans l'étape 4 (« lot incohérent : nœuds
+0/7 »). `security-auditor` : aucun finding (diff = le lot ; rollback complet ; prod relue ; aucune règle d'accès). PR #2242.
