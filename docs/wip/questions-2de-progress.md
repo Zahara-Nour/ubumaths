@@ -6,18 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après la publication de la vague 8 (§ 55)._
+_Mis à jour le 2026-11-02, après #2214 et #2220 (§ 56)._
 
-- **État** : lots 1 à 7 publiés ; lot 8 : vague 8 (22 modèles, 8 A/B/C) **publiée** ; reste la vague 8 bis
-  (8 D, 8 E, voir § 51).
-- **Prochaine action** : vague 8 bis — relire le § 51 (contenu prévu de 8 D et 8 E), écrire les générateurs
-  `questions-2de/lot-*-d-2de.py` / `-e-`, specs, `page-a-cocher.ts` en local AVANT la PR des fichiers.
-- **En attente de David** : rien.
-- **Pièges en cours** : le worktree n'a pas de `.env` ; `publier-lot` (même en simulation) → David avec `!`
-  et `set -a && . ../ubumaths/.env && set +a`, pas `pnpm -s` ; `page-a-cocher.ts` passe en chargeant ce `.env`
-  dans la commande ; `Doc-inchangée:` dans un commit, jamais dans le corps de PR ; horodatage →
-  `pnpm migration:horodatage` ; `db push`, `--publier` → David avec `!`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, HEAD détachée sur `origin/main` (aucune branche ouverte).
+- **État** : lots 1 à 7 et vague 8 publiés ; vague 8 bis : fichiers 8 D (#2214) et 8 E (#2220) **mergés**,
+  pas encore en prod.
+- **Prochaine action** : David crée les 14 brouillons en prod (`create-questions --publier`, dossiers
+  `scripts/questions/2de-tableaux-d` puis `2de-probabilites-e`) ; ensuite migration nœud + tag
+  (`lot-8-rangement-2de.py` adapté, 14 neufs), page à cocher 14 + 6 anciens brouillons (L8-d), publication.
+- **En attente de David** : le `--publier` des deux dossiers ; décider du correctif des `\textcolor` hors
+  `$` dans les modèles déjà publiés (§ 56).
+- **Pièges en cours** : `--publier` et `publier-lot` → David avec `!` ; `page-a-cocher.ts` lit `.env` = prod
+  (`. ./.env.local` pour la locale) ; une valeur colorée `col()` se met DANS `$…$` (sinon LaTeX brut) ;
+  fraction en spec = `\\frac{a}{b}` ; `Doc-inchangée:` dans un commit ; horodatage →
+  `pnpm migration:horodatage`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, HEAD détachée sur `origin/main`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1440,3 +1442,25 @@ D, E) ; L8-f PR « page à cocher : blocs statistiques et arbres » avant la rel
 - `publier-lot` simulé par David (trois dossiers) : 8 + 7 + 7 passent le contrôle ; puis `--publier` : 8/8,
   7/7, 7/7.
 - MCP (prod) : les 22 `published`, rangés sur un nœud, un tag chacun.
+
+## 56. Vague 8 bis : PR des fichiers 8 D et 8 E (2026-11-02)
+
+- **8 D** : `questions-2de/lot-tableaux-d-2de.py` → `scripts/questions/2de-tableaux-d/` (7 modèles).
+  Statistiques › Tableaux croisés › Effectifs niv. 1, 2 (2-383, 2-386) ; › Fréquences marginales niv. 1, 2
+  (2-485, 2-486) ; › Fréquences conditionnelles niv. 1, 2, 3 (2-384, 2-385, 2-487). Décor unique sexe ×
+  régime ; cases à trouver écrites puis cachées par `masquer:`. **#2214 mergée.**
+- **8 E** : `questions-2de/lot-probabilites-e-2de.py` → `scripts/questions/2de-probabilites-e/` (7 modèles).
+  Probabilités › Simulation › Stabilisation niv. 1 (2-389) ; › Probabilités conditionnelles › Arbres pondérés
+  niv. 3, 4, 5 (2-391, 2-393, 2-397 ; les anciens brouillons 9d7c4d98, 1cfc575d y sont niv. 1, 2) ;
+  › Tableaux croisés niv. 4 (2-394 ; anciens niv. 1-3) ; › Notations niv. 1 (2-395) ; › Problèmes en contexte
+  niv. 4 (2-400 ; 77d6fedc niv. 3). **#2220 mergée.**
+- Vérifié : specs 14/14 importables ; brouillons en base locale ; page à cocher locale capturée (Playwright)
+  et relue : tableaux masqués vides, arbres à `?`, simulation dessinés.
+- **Pièges** : une fraction en spec s'écrit `\\frac{a}{b}` (`a/b` → `bad_form`) ; `P_G(C)` dans une case
+  s'affichait `P_{G(C)}` → `P_{G}(C)` ; le pas `a..b..k` n'existe pas → tirer `q` puis `eval:5*(q)`.
+- **Trouvé en passant — `\textcolor` hors `$…$`** : `col(x)` écrit hors du mode maths s'affiche en LaTeX
+  brut (page à cocher ET appli : aucun rendu de `\textcolor` dans le texte). Corrigé dans 8 D / 8 E avant
+  merge. Dans les modèles **déjà publiés** : 51 variations de 24 modèles, sur 7 lots (signes A 6 modèles,
+  indicateurs B 5, évolutions A 4, classes C 4, variations C 3, fonctions A 1, signes B 1) — relevé :
+  `python3 docs/wip/questions-2de/hors-maths.py scripts/questions/2de-*`. Correctif à décider avec David
+  (corriger les générateurs, régénérer les JSON, mettre à jour les modèles en prod).
