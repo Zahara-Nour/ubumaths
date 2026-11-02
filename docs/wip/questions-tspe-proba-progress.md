@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, phase 0 du lot 5a écrite._
+_Mis à jour le 2026-11-02, après #2240._
 
-- **État** : lot 5a écrit (9 modèles, specs et 6 300 tirages verts, joués en base locale), PR des fichiers ouverte.
-- **Prochaine action** : merge de la PR des fichiers, puis David lance `create-questions --publier` depuis le dépôt principal ; ensuite migration nœud + tag.
-- **En attente de David** : `create-questions --publier` après le merge.
+- **État** : lot 5a écrit, PR des fichiers #2240 mergée ; rien en prod.
+- **Prochaine action** : David lance `create-questions --publier` (dépôt principal), puis relevé MCP des `id` et migration nœud + tag (gabarit du lot 4).
+- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-5a-succession --publier`.
 - **Pièges en cours** : voir « Décisions communes et pièges » ci-dessous.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-proba`, `feat/questions-tspe-proba-5a`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-proba`, `feat/questions-tspe-proba-5a-migration` (depuis `origin/main`).
 
 ---
 
@@ -157,3 +157,5 @@ sans indice → `\mathrm{G}_1` (droit, comme les étiquettes surlignées). Vu da
 
 **Base locale** : 9 brouillons créés ; M5 v1 (arbre dessiné, choix juste accepté), M6 v1 (arbre à trous) et M8 v1
 (arbre complet) vus dans l'aperçu (port 5177).
+
+**PR des fichiers** : #2240 mergée le 2026-11-02 (CI verte).
