@@ -67,6 +67,23 @@ describe('dessinerBlocs', () => {
 		expect(r.markdown).toContain('class="m-billet"');
 	});
 
+	it('partage : une part par polygone, « gris: 2 » = deux parts coloriées', () => {
+		const r = dessinerBlocs('```partage\nforme: bande 4\ngris: 2\n```');
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown.match(/class="p-part/g)).toHaveLength(4);
+		expect(r.markdown.match(/p-coloriee/g)).toHaveLength(2);
+	});
+
+	it('partage à colorier : la figure vide, puis un coloriage juste', () => {
+		const r = dessinerBlocs('```partage\nforme: disque 8\ncolorier: 3/8\ncase: 0\n```');
+		expect(r.nonDessines).toEqual([]);
+		expect(r.markdown).toContain('À colorier : 3/8');
+		expect(r.markdown).toContain('Un coloriage juste : 3 parts sur 8');
+		// 8 parts vides, puis 8 parts dont 3 coloriées
+		expect(r.markdown.match(/class="p-part/g)).toHaveLength(16);
+		expect(r.markdown.match(/p-coloriee/g)).toHaveLength(3);
+	});
+
 	it('monnaie à construire : réserve, plan vide, et la construction juste à part', () => {
 		const r = dessinerBlocs('```monnaie\ncase: 0\nconstruire: 8\n```');
 		expect(r.markdown).toContain('<span class="r-tag">Réserve</span>');
@@ -74,7 +91,17 @@ describe('dessinerBlocs', () => {
 		expect(r.solutions).toHaveLength(1);
 		// 8 € = 5 + 2 + 1 : un billet, deux pièces
 		expect(r.solutions[0].match(/class="m-billet"/g)).toHaveLength(1);
-		expect(r.solutions[0].match(/<circle class="m-(anneau|piece)"/g)).toHaveLength(3);
+		expect(r.solutions[0].match(/<circle class="m-(anneau|piece)[" ]/g)).toHaveLength(3);
+	});
+
+	it('pièces de centimes : « 50 c » écrit sur la pièce, teinte cuivre ou dorée', () => {
+		const md = dessinerBlocs('```monnaie\npièces: 1×50c 1×5c 1×2\n```').markdown;
+		expect(md).toContain('>50 c</text>');
+		expect(md).toContain('>5 c</text>');
+		expect(md).toContain('>2 €</text>');
+		expect(md).not.toContain('0.5 €');
+		expect(md).toContain('m-piece-dore');
+		expect(md).toContain('m-piece-cuivre');
 	});
 
 	it('collection à construire : la construction juste pose les barres et les cubes', () => {

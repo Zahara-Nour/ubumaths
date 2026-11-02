@@ -617,10 +617,31 @@
 		stroke: color-mix(in oklab, var(--m-primaire) 45%, black);
 		stroke-width: 0.8;
 	}
+	/* Pièces de centimes : cuivre (1, 2, 5 c) et dorées (10, 20, 50 c), comme MonnaieObjets.svelte */
+	.m-piece-cuivre {
+		fill: #d9a27a;
+		stroke: #7a4a2a;
+	}
+	.m-piece-dore {
+		fill: #f0c840;
+		stroke: #8a6d10;
+	}
 	.m-anneau {
 		fill: color-mix(in oklab, var(--m-primaire) 65%, black);
 		stroke: color-mix(in oklab, var(--m-primaire) 45%, black);
 		stroke-width: 0.8;
+	}
+	/* Partage : parts sur le fond, la seule couleur d'accent pour les parts coloriées */
+	.p-dessin {
+		max-width: 100%;
+		height: auto;
+	}
+	.p-part {
+		fill: var(--surface);
+		stroke: var(--fg);
+	}
+	.p-coloriee {
+		fill: #e8833a;
 	}
 	.m-billet {
 		fill: color-mix(in oklab, var(--m-primaire) 35%, white);
@@ -908,6 +929,8 @@
 				.replace(/ - /g, ' − ')
 				.replace(/^-$/, '−')
 				.replace(/\^\{\\text\{([^}]*)\}\}/g, '<sup>$1</sup>')
+				// texte en maths après une case (« ?~\text{centimes} ») : écrit tel quel
+				.replace(/\\text\{([^}]*)\}/g, '$1')
 				// unité après une case : cm^2 et cm^3 écrits cm² et cm³
 				.replace(
 					/~?\\unit\{([^}]*)\}/g,
@@ -920,16 +943,16 @@
 		);
 	}
 	function enLigne(t) {
-		return t
-			.split(/\$([^$]*)\$/)
-			.map((m, i) =>
-				i % 2
-					? maths(m)
-					: esc(m)
-							.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-							.replace(/(^|[\s(])_([^_]+)_(?=$|[\s.,;:!?)])/g, '$1<em>$2</em>')
-			)
-			.join('');
+		return (
+			t
+				.split(/\$([^$]*)\$/)
+				.map((m, i) =>
+					i % 2 ? maths(m) : esc(m).replace(/(^|[\s(])_([^_]+)_(?=$|[\s.,;:!?)])/g, '$1<em>$2</em>')
+				)
+				.join('')
+				// gras après recollage : « **partagé en $4$ triangles** » enjambe une formule
+				.replace(/\*\*([\s\S]+?)\*\*/g, '<strong>$1</strong>')
+		);
 	}
 	function tableau(par) {
 		const lignes = par
