@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, à la création du sous-chantier._
+_Mis à jour le 2026-11-02, après #2238._
 
-- **État** : rien d'écrit ; points et classement repris de l'index (§ 3).
-- **Prochaine action** : lot 7 : worktree neuf, relevé MCP des voisins (nœuds, niveaux des catégories), phase 0 à faire valider. Lot 8 seulement quand `questions-tspe-proba` et `questions-tspe-espace` sont finis (il touche leurs catégories).
-- **En attente de David** : rien (la phase 0 est à produire).
-- **Pièges en cours** : voir « Décisions communes et pièges » ci-dessous.
-- **Worktree / branche** : aucun ; worktree neuf `../ubumaths-wt-questions-tspe-restes` depuis `origin/main`.
+- **État** : lot 7 (302, 303, 310, 569, 386, 387) écrit, fichiers mergés (#2238) ; 6 brouillons en base locale seulement.
+- **Prochaine action** : quand David a créé les brouillons en prod, relever les `id` (MCP), puis migration nœud + tag (gabarit lot 4 de l'index, `20261102083457_…`, rangement du § « Lot 7 : phase 0 »), page à cocher, publication. Lot 8 après la fin de `questions-tspe-proba` et `questions-tspe-espace`.
+- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-7-restes --publier` depuis le dépôt principal (brouillons en prod).
+- **Pièges en cours** : `!=` dans un `$…$` lu comme « ≠ » (écrire `!\,=`) ; aperçu admin local non joué (Chrome n'ouvrait pas `localhost`) → relecture sur la page à cocher.
+- **Worktree / branche** : aucun (supprimés après #2238) ; nouveau worktree pour la PR de migration.
 
 ---
 
