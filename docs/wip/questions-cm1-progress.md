@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 5b écrit (PR des fichiers)._
+_Mis à jour le 2026-11-02, lot 5b en brouillons, PR de la migration nœud + tag._
 
-- **État** : lots 0 à 5a publiés. **Lot 5b** (masses + contenances, 10 modèles) écrit, tout vert (§ 14 septies) ; PR des fichiers ouverte.
-- **Prochaine action** : CI verte → merge ; puis David lance `create-questions --dir scripts/questions/cm1-5b --publier` (brouillons) ; relever les ids, migration nœud + tag (gabarit du 5a). Ensuite lot 5d (périmètres 073-075).
-- **En attente de David** : deux écarts à la phase 0 (§ 14 septies) : repère du milligramme (« une petite fourmi » au lieu d'« un grain de sel », qui pèse bien moins) ; titres « Estimer une masse » et « Des masses de référence » suffixés « du milligramme à la tonne » (homonymes du CE1).
-- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** (test `student-answer-safety`, CI rouge de #2201) ; positions du `ranger` lues par essai des permutations ; aperçu : corrigé derrière le bouton « Voir la correction » (Playwright à 390 px).
-- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot5b`.
+- **État** : lots 0 à 5a publiés. **Lot 5b** (masses + contenances) : #2216 mergée, 10 brouillons en prod (§ 14 octies) ; migration `20261102083604_questions_cm1_lot5b_rangement_tags` + test (rouge 6 sans le corps, vert 10/10), PR ouverte.
+- **Prochaine action** : `security-auditor` → CI verte → `check:migrations --pr <n>` → merge ; David lance `pnpm db:migrate` ; vérifier au MCP (nœuds, tags, trigger `updated_at` actif) ; page à cocher (gabarit du 5a) ; publication. Ensuite lot 5d (périmètres 073-075).
+- **En attente de David** : rien (écarts du § 14 septies confirmés : fourmi, titres suffixés).
+- **Pièges en cours** : `db:migrate` pousse TOUTES les migrations en attente et le mode auto le refuse : David le lance (une autre session peut l'avoir fait avant : vérifier au MCP) ; `create-questions` = `pnpm tsx scripts/create-questions.ts …` (pas de script pnpm de ce nom) ; horodatage = `pnpm migration:horodatage`, puis `pnpm check:migrations --pr <n>` **juste avant le merge** ; `Doc-inchangée:` dans un message de COMMIT ; commitlint refuse un sujet qui commence par une majuscule et le type `content` ; worktree neuf : `pnpm exec svelte-kit sync` avant les scripts `tsx` ; **jamais de `{{if}}` dans une réponse attendue** ; positions du `ranger` lues par essai des permutations ; aperçu : corrigé derrière le bouton « Voir la correction » (Playwright à 390 px).
+- **Worktree / branche** : `../ubumaths-wt-questions-cm1`, `feat/questions-cm1-lot5b-rangement`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-27)
 
@@ -866,6 +866,22 @@ CE1 ; 3. 050 et 165 rangés sous « Décimaux : calculs › addition » et « �
 - `question:specs` 300 tirages par variation : tout réussi, 131 specs vertes ; `create-questions` en
   simulation (prod) : 10/10 verts ; tests `student-answer-safety.render` et `answer-complexity-corpus` verts ;
   base locale : 10 brouillons.
+
+### 14 octies. Lot 5b — brouillons en prod, rangement et tags (2026-11-02)
+
+- Écarts du § 14 septies confirmés par David : repère du milligramme « une petite fourmi » ; titres suffixés
+  « du milligramme à la tonne ». #2216 mergée (CI verte).
+- `create-questions --publier` (`pnpm tsx scripts/create-questions.ts`, demandé par David). MCP : 10 brouillons
+  [CM1], sans nœud ni tag, créés à 08:35 UTC. Ids : `8f48ef70-8e7a-444b-9a23-0e4418762332` (unités, 076),
+  `1be3eee7-337c-4ffb-b848-ee06bee78def` (relations, 077), `97781d22-6653-4f45-af32-e861bf0206a5` (choisir, 078),
+  `dceea553-c857-4f51-8246-5eadf2ae2e05` (comparer, 079), `db4e32ba-5c83-43ec-b6b9-0bcb8fdf65f0` (références, 080),
+  `5ecdc120-01b2-401b-b729-f5f628cadd35` (estimer, 081), `4b628efa-0b6d-42b7-bbc1-3bf2aafcf897` (unités de
+  contenance, 082), `e297293d-41fd-4c8d-94de-be0e4e377756` (relations, 083), `64a2c3f6-ea43-4219-b71e-66be169c20b7`
+  (choisir, 084), `5a476fc4-e9ce-4b9b-9626-4f31ee7ab1ee` (comparer, 085).
+- Migration `20261102083604_questions_cm1_lot5b_rangement_tags` et son test, générés du gabarit du lot 5a
+  (script `gen5b.py` jetable). Test « rangé à la main » : sur « Longueurs » ; « point hors du nœud » : 076 posé
+  sur la notion « Masses » ; « point archivé » : 085.
+- Test d'intégration : rouge sans le corps de la migration (6 échecs), 10/10 vert avec.
 
 ### 13 sexies. Lot 4b — publication (2026-11-02)
 
