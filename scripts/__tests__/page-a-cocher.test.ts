@@ -94,14 +94,20 @@ describe('dessinerBlocs', () => {
 		expect(r.markdown).not.toMatch(/aria-label="[^"]*cube/i);
 	});
 
-	it('cubes : trois faces par cube visible (dessus, devant, côté)', () => {
-		const r = dessinerBlocs('```cubes\nhauteurs: 1 2\n```');
+	it('cubes : un cube seul = trois faces (dessus, devant, côté)', () => {
+		const r = dessinerBlocs('```cubes\nhauteurs: 1\n```');
 		expect(r.nonDessines).toEqual([]);
 		expect(r.markdown).toContain('class="c-dessin"');
-		expect(r.markdown).toMatch(/class="c-face c-dessus"/);
-		expect(r.markdown).toMatch(/class="c-face c-devant"/);
-		expect(r.markdown).toMatch(/class="c-face c-cote"/);
+		expect(r.markdown.match(/class="c-face c-dessus"/g)).toHaveLength(1);
+		expect(r.markdown.match(/class="c-face c-devant"/g)).toHaveLength(1);
+		expect(r.markdown.match(/class="c-face c-cote"/g)).toHaveLength(1);
 		expect(r.avertissements).toEqual([]);
+	});
+
+	it('cubes à énoncé masqué : les vues données sont signalées', () => {
+		const r = dessinerBlocs('```cubes\nhauteurs: ? 1\nvues: face 1 1\nretrouver: face\n```');
+		expect(r.markdown).toContain('class="c-dessin"');
+		expect(r.avertissements).toHaveLength(1);
 	});
 
 	it('cubes avec un geste : la perspective dessinée, le geste signalé', () => {
