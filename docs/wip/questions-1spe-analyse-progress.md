@@ -221,3 +221,5 @@ l'origine », nœud de 7d6cf480) ; 7d6cf480 publié, niveaux `{2}`, tagué 2-313
   avec ceux de 7d6cf480) ; 7d6cf480 : + 1SPE-434, 1GEN-064, 1TECHNO-141, niveaux `{2, 1_SPE, 1_GEN, 1_TECHNO}`.
   Gardes : tout ou rien (10 modèles), statut, nœud, niveaux et tags EXACTS du relevé. `updated_at` préservé.
 - Test : 12 verts ; sans l'étape 4, suite rouge (la garde du rollback refuse l'état non migré).
+- PR #2258. `security-auditor` : aucun finding bloquant (aucune policy ne lit `grades` ; 7d6cf480 déjà publié, donc
+  déjà lisible) ; remarque faible prise : la garde du rollback vérifie aussi le nœud des 9 brouillons.
