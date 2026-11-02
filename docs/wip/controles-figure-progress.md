@@ -307,3 +307,26 @@ Même contrôle qu'au lot 2a ; **sans `grille:`**, il n'est plus refusé : l'él
 3. Message « placé à l'œil » **gardé**.
 4. Symétrique d'une **figure** sur papier uni **dans ce lot**.
 5. Report de longueur au compas **plus tard** (avec le triangle).
+
+## 8. Lot 2b — ce qui est fait (2026-11-02)
+
+- Outils `equerre` et `compas` (`CONSTRUCTION_TOOLS`) ; plusieurs outils = une palette. Sans `grille:`
+  (ou `grille: non`), `point` reçoit Règle · Équerre · Compas · Point, `symetrique` Segment · Règle ·
+  Équerre · Compas (`PLAIN_PAPER_TOOLS`) ; `outils:` restreint ; sans quadrillage, une palette sans
+  instrument est refusée ; `droite_par` / `carre` / `rectangle` : un seul outil.
+- Géométrie pure `construction/instruments.ts` : intersections (droite, demi-droite, segment, cercle),
+  aimantation point → intersection → trait → libre, droite la plus proche (équerre), perpendiculaire.
+  Pleine précision (jamais arrondi) : une construction exacte arrive exacte au juge.
+- Réponse `cercle(cx;cy;x;y)` ; plafond 2 000 caractères (celui de l'envoi). La perpendiculaire s'écrit
+  `droite(…)`.
+- Traits visibles de la figure (`FigureShapes.traits`, cercles compris) pour l'aimantation et le juge.
+- Juge point : « Ton point est placé à l'œil… » si le point n'est ni un point de la figure ni une
+  intersection de traits ; sans quadrillage, seulement `symetrie(…, axe=…)` / `symetrie(…, centre=…)`,
+  axe dans la fenêtre. Juge symétrique : seuls les segments sont jugés, droites et cercles ignorés.
+- Écran : palette (`aria-pressed`), droite choisie surlignée, « Touche d'abord une droite. », cercles,
+  clavier (intersections et droites en boutons). Énoncé masqué : la palette écrite en `outils:`.
+- Aide à l'écriture : exemple « Construire le symétrique d'un point sur papier uni ».
+- Tests : `construction-instruments.test.ts` (42), écran `figure-a-completer-instruments` (3), modèle
+  (`check-template-figure`, 2), énoncé masqué (1).
+- Non vu à l'œil dans le navigateur : l'« Essayer » de l'aide ne rend pas la case jouable ; à faire dans
+  un modèle brouillon (ligne de `verifications-manuelles.md` au merge).
