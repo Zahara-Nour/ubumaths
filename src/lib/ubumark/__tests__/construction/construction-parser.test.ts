@@ -73,7 +73,7 @@ describe('construction — lecture du bloc', () => {
 		);
 		expect(
 			node.construction?.checks.map((c) =>
-				c.kind === 'point' || c.kind === 'droite' ? null : c.points
+				c.kind === 'point' || c.kind === 'droite' || c.kind === 'cercle' ? null : c.points
 			)
 		).toEqual([
 			['A', 'B'],
