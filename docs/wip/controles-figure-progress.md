@@ -6,20 +6,19 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2257 ; PR « point construit exigé » en cours._
+_Mis à jour le 2026-11-02, après #2261._
 
-- **État** : lots 1 (#2226), 2a (#2233) et 2b (#2257 : équerre, compas, palette, aimantation sur
-  intersections et traits, papier uni pour `point` et `symetrique`) **mergés**, pas encore en prod
-  (`deploy:prod` sur demande de David). Vérifications à l'œil dans `verifications-manuelles.md`.
-- **Prochaine action** : angle, triangle (avec le report de longueur au compas), médiatrice,
-  bissectrice, cercle circonscrit, 4e sommet (§ 1) : phase 0 d'abord ; puis modèles CE2-073,
-  CM1-107/108, CM2-097, 6-179/180 (journaux de niveau).
-- **En attente de David** : rien (point construit exigé : tranché, PR en cours sur
-  `fix/controles-figure-point-construit`).
+- **État** : lots 1 (#2226), 2a (#2233), 2b (#2257 : équerre, compas, palette, papier uni) et « point
+  construit exigé » sur papier uni (#2261) **mergés**, pas encore en prod (`deploy:prod` sur demande de
+  David). Vérifications à l'œil dans `verifications-manuelles.md` (#2257).
+- **Prochaine action** : phase 0 de la **médiatrice** (compas + règle, déjà là ; ouvre milieu, cercle
+  circonscrit, 4e sommet), puis triangle (report de longueur au compas), puis angle et bissectrice
+  (§ 1, ordre recommandé le 2026-11-02) ; modèles CE2-073, CM1-107/108, CM2-097, 6-179/180.
+- **En attente de David** : rien.
 - **Pièges en cours** : pas de prime dans le langage des figures (§ 6) ; `symetrie(P, axe=d)` échoue si
   P définit d ; l'« Essayer » de l'aide ne rend pas la case jouable (essai dans un modèle brouillon) ;
   au clavier, droites annoncées « Droite 1, 2… » ; plafond de 20 objets sans message.
-- **Worktree / branche** : `../ubumaths-wt-controles-figure`, `fix/controles-figure-point-construit`.
+- **Worktree / branche** : aucun (retiré après #2261).
 
 ---
 
