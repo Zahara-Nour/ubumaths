@@ -5,22 +5,24 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2176._
+_Mis à jour le 2026-11-02, après #2185._
 
-- **État** : lots 0 à 7 publiés. Lot 8 (monnaie) : 6 brouillons rangés et tagués, **centimes en prod depuis v0.62.0**
-  (déployée par questions-cm2) → publiable. Lot 9 : 9 brouillons rangés et tagués (#2168, #2176, `db:migrate` joué,
-  vérifié au MCP) ; `a7dfe502` (trois points alignés) au CP ET au CE1, tags CP-058 + CE1-073.
-- **Prochaine action** : lot 8 : relever les catégories, page à cocher, `publier-lot` (simulation, puis David).
-  Lot 9 : ajouter le dessin de ` ```partage ` au script de la page à cocher (petite PR de code), puis page à cocher,
-  `publier-lot`. Ensuite lot 10 (espace et mesure, § 12).
-- **En attente de David** : rien. Chantier `verrou-deploy` à ouvrir dans sa session (mémoire).
+- **État** : lots 0 à 7 publiés. Lot 8 (monnaie) : relu 6/6 OK, `publier-lot` simulé (6 passent) → **reste le
+  `--publier` de David**. Lot 9 : 9 brouillons rangés et tagués ; page à cocher publiée
+  (https://claude.ai/artifact/NhbzfC8htps4HvudmLaCEX), 0 verdict. #2185 : la page dessine `partage`, les centimes, le gras.
+- **Prochaine action** : après le `--publier` du lot 8, vérifier `published` au MCP. Lot 9 : compter les verdicts en base,
+  relever les catégories, `publier-lot` (simulation, puis David). Ensuite lot 10 (espace et mesure, § 12).
+- **En attente de David** : `! cd /Users/david/Coding/js/ubumaths && pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/ce1-8 --publier` ;
+  relecture du lot 9 ; supprimer `scripts/questions/.partage-tmp.ts` et `.planche-tmp.ts` (jetables, non suivis) pour
+  retirer le worktree. Chantier `verrou-deploy` à ouvrir dans sa session (mémoire).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
-  non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; saisie d'une opération
-  posée dans Chrome : une case à la fois ; **niveaux : relever la catégorie juste avant la publication** ; **horodatage de migration : `pnpm migration:horodatage`, jamais « max + 1 » à la main ; `pnpm check:migrations --pr <n>` avant le merge** (#2165) ; commitlint : sujet sans majuscule ; aucun lien
-  de session dans une PR ; migration de données → ligne `Doc-inchangée:` dans un commit (garde du pre-push).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (retiré ; le prochain lot en repart un neuf sur `origin/main`). `!` de David :
-  toujours préfixer `cd /Users/david/Coding/js/ubumaths &&` (un dossier courant supprimé fait échouer node en `uv_cwd`).
+  non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; **niveaux : relever la
+  catégorie juste avant la publication** ; horodatage de migration : `pnpm migration:horodatage`, `pnpm check:migrations
+--pr <n>` avant le merge ; commitlint : sujet sans majuscule ; aucun lien de session dans une PR ; **un défaut vu sur
+  la page à cocher peut venir du script de la page : comparer à l'aperçu admin avant d'accuser le modèle**.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (HEAD détachée sur main, en attente du retrait). `!` de David :
+  toujours préfixer `cd /Users/david/Coding/js/ubumaths &&`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -680,6 +682,10 @@ Réponse de David (« tes recos ? » puis « go », 2026-11-01) : les cinq recom
   la jouerait aussi (`--include-all`). Attendre qu'elle le soit, puis `db:migrate`.
 - 2026-11-01 : `20261101215100` jouée en prod avec la migration 2de (`db push --include-all` par David, session
   questions-2de) ; vérifié au MCP : 6/6 brouillons, sur le nœud de leur point, un tag chacun, `updated_at` intact.
+- 2026-11-02 : catégories relevées au MCP avant publication, sans collision (Pièces et billets 1-7 et Rendre la monnaie
+  1-2 publiés). Page à cocher (https://claude.ai/artifact/89xuJZsVGhfCqnK4BY5cpz) : 6/6 OK comptés en base, posés sur une
+  première version où le script dessinait « 0.2 € » pour 20 c et laissait `\text{centimes}` brut (défauts de la page,
+  pas des modèles) → #2185, page republiée. `publier-lot` simulé : 6 passent ; `--publier` à lancer par David.
 
 ## 16. Lot 9 : fractions dessinées et géométrie — phase 0 (2026-11-01)
 
@@ -753,3 +759,6 @@ Réponse de David (« je suis tes recos », 2026-11-01) : les six recommandation
   après deux collisions) ; `db:migrate` joué (dry-run : nos 2 migrations seules) ; vérifié au MCP : 10/10 sur leur nœud
   et leurs points, brouillons, `updated_at` intact. Le `deploy:prod` de cette session a été arrêté par David ;
   v0.62.0 mise en prod par questions-cm2 après #2181 (horodatages à l'heure réelle).
+- 2026-11-02 : #2185 mergée (CI verte) : la page à cocher dessine ` ```partage ` (figure à colorier : vide, puis un
+  coloriage juste), les pièces de centimes, et le gras qui enjambe une formule. Page du lot 9 publiée
+  (https://claude.ai/artifact/NhbzfC8htps4HvudmLaCEX), aucune alerte, rendu vérifié.
