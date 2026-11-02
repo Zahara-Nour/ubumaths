@@ -14,7 +14,7 @@ _Mis à jour le 2026-11-02, phase 0 validée._
 - **État** : phase 0 et plan technique validés (Q1-Q6, a, b) ; PR 1 (ubumark : AST, parseur, éditeur, Typst) en cours.
 - **Prochaine action** : PR 1 tests rouges puis implémentation ; puis PR 2, 3, 4 (§ Plan technique).
 - **En attente de David** : rien.
-- **Pièges en cours** : —
+- **Pièges en cours** : PDF — une marque cachée ne se voit pas sur papier (trait nu, comme une colonne « sans marque » donnée) ; vartable 0.2.1 ne place rien sur le trait (essais `place`, `block` : la case reste collée au signe) → à régler en PR 4.
 - **Worktree / branche** : `../ubumaths-wt-tableau-signes`, `feat/tableau-signes-cases`.
 
 ---
@@ -82,3 +82,12 @@ quotient : le tableau EST la compétence) ; **laisser** 268, 426, 337, 449-451 (
   anglais (« Unknown sign value ») → messages français situés.
 - **Tranché (David, 2026-11-02, « je valide »)** : (a) marque « rien » cachée = `?rien` ; (b) `?|h|`, `?d`, signe
   caché sur un point → refusés avec message.
+
+## PR 1 — ubumark (2026-11-02)
+
+Commit 09feb3888 : AST (`hidden`, `HiddenCell`, `cases`, `caseIndex`, `source`), parseur (`?`, `??n`, `case: N`, ordre
+de lecture, 9 refus en français « Ligne N : »), Typst `hiddenCells`, éditeur riche depuis `source`. 29 tests (25 rouges
+avant) ; `test:server src/lib/ubumark src/lib/components/rich-text` 6333 verts ; `check:incremental` 0. Refus = nœud
+nul (bloc rendu en source). PDF compilé par le compilateur de prod (`compile-prod.mjs`, fiche d'essai du scratchpad) :
+valeurs et signes cachés = case vide bordée ; marque cachée = trait nu, sans « 0 » — pas de fuite (vartable trace un
+trait à chaque colonne), mais pas de repère « à compléter » (piège ci-dessus).
