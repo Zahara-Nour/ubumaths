@@ -9,12 +9,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2192 et le `db:migrate`._
+_Mis à jour le 2026-11-02, lot 5 publié._
 
-- **État** : lots 4 (probabilités) et 5 (variables aléatoires) en prod, en brouillon, rangés et tagués ; pages à cocher publiées : lot 4 https://claude.ai/artifact/3wn4CUZtvPfGAYwqF3oV96, lot 5 https://claude.ai/artifact/Gh9iWaBMbBHsGh4pwyh94E (`verdicts` vides).
-- **Prochaine action** : corriger « 1 boules rouges » du lot 4 (§ 21, `ENONCE_URNES`, 342 et 422 : instantané, correction, David `--mettre-a-jour`) ; lire et **compter** les verdicts des deux pages ; `publier-lot` en simulation puis David `--publier`.
-- **En attente de David** : relecture des deux pages à cocher.
-- **Pièges en cours** : `blankDefaults.acceptDecimal` obligatoire ; **variable `e` = Euler** ; pluriel d'une quantité 1..n → `{{if:…}}` ; choix mélangés → jamais « première phrase » dans un corrigé ; `col()` hors `$…$` (`colt`) ; `Doc-inchangée:` dans un COMMIT (≤ 100 caractères) ; aucun trailer `Claude-Session:` ; migration : heure réelle, `--include-all` pousse TOUTES les migrations en attente.
+- **État** : lot 5-variables aléatoires **clos** (8 publiés). Lot 4-probabilités : 8 brouillons rangés, tagués, 8 « ok », simulation `publier-lot` verte ; non publié.
+- **Prochaine action** : selon la réponse de David — corriger « 1 boules rouges » (§ 21, `ENONCE_URNES`, fe6f5606 et 2f4f4ae0 : instantané, `{{if:…}}` ×4, PR, David `--mettre-a-jour`) puis publication du lot 4, ou l'inverse.
+- **En attente de David** : correction du pluriel avant ou après la publication du lot 4 (reco : avant).
+- **Pièges en cours** : `blankDefaults.acceptDecimal` obligatoire ; **variable `e` = Euler** ; pluriel d'une quantité 1..n → `{{if:…}}` ; choix mélangés → jamais « première phrase » dans un corrigé ; `col()` hors `$…$` (`colt`) ; `Doc-inchangée:` dans un COMMIT (≤ 100 caractères) ; aucun trailer `Claude-Session:` ; `--include-all` pousse TOUTES les migrations en attente.
 - **Worktree / branche** : aucun.
 - **Ensuite (D7)** : lot « à savoir » (D2), restes (produit scalaire formules, second degré / exponentielle / trigo, logique et listes Python), lots en attente d'un outil.
 
@@ -1049,6 +1049,8 @@ l'étape 4.
 `probtree` non dessiné). Collection `verdicts` vide à la publication. **Défaut vu** : « 1 boules rouges » —
 `ENONCE_URNES` (342, 422) accorde « boules rouges / vertes / blanches / noires » au pluriel alors que r, v, b, k
 valent 1..6 → `{{if:r == 1|boule rouge|boules rouges}}` (×4), correction § 7 à faire (instantané, `--mettre-a-jour`).
+**Verdicts** : 8 « ok » sur 8 (2026-11-02), aucun commentaire ; simulation `publier-lot` : 8 passent. Publication
+suspendue à la question posée à David : corriger le pluriel avant (reco) ou après publication.
 
 ## 22. Lot 5-variables aléatoires : notations et registres (D7)
 
@@ -1095,6 +1097,9 @@ aléatoires », nœud de leur point) ; test d'intégration 10/10, rouge 2/10 san
 **Page à cocher** : https://claude.ai/artifact/Gh9iWaBMbBHsGh4pwyh94E (8 fiches, aucune alerte ; collection `verdicts`
 vide). Limite de la **page** seule : le tableau des sommes du corrigé de 03 s'y affiche brut (les étapes y sont des
 éléments de liste) ; l'appli joint les étapes par des lignes vides et les rend en Markdown (`CorrectionCard.svelte`).
+
+**Verdicts** : 8 « ok » sur 8, aucun commentaire. `publier-lot --publier` lancé par David le 2026-11-02 : les 8 modèles
+sont `published` en base. **Lot 5-variables aléatoires clos.**
 
 **Pièges du lot** : variable `e` lue comme la constante d'Euler (renommée `u`) ; `E(X)^2` après un signe moins rendu
 « E X² » → `{E(X)}^2` (rendu « (E(X))² ») ; réponses colorées dans le texte hors formule → `colt` (`$…$`) ; les choix
