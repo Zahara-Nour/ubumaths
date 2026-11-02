@@ -9,13 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2188 (migration des tags en cours)._
+_Mis à jour le 2026-11-02, après #2192._
 
-- **État** : lot 5-VA (§ 22, D28) mergé (#2188) : 8 modèles dans `scripts/questions/1spe-va/`, 62 specs vertes, simulation 8 / 8, essai en base locale fait.
-- **Prochaine action** : PR de la migration nœud + tag (`20261102051042`) → `security-auditor`, CI, `check:migrations --pr`, merge → `db:migrate` depuis le dépôt principal → vérif MCP → page à cocher.
-- **En attente de David** : relecture et publication des 8 brouillons du lot 4 (§ 21) ; création en prod du lot 5 après merge.
-- **Pièges en cours** : `blankDefaults.acceptDecimal` obligatoire ; **variable `e` = Euler** (renommée `u`, lot 5) ; choix mélangés à l'affichage → jamais « première phrase » dans un corrigé ; `col()` hors `$…$` ne s'affiche pas (`colt`) ; aucun trailer `Claude-Session:` ni lien claude.ai ; migration : heure réelle.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe`, `feat/questions-1spe-lot5-va-tags`.
+- **État** : lot 5-VA (§ 22, D28) : 8 brouillons en prod (fichiers #2188), migration nœud + tag `20261102051042` mergée (#2192), **pas encore appliquée** : `db push` exige `--include-all`, qui pousserait aussi `20261102051844` (questions-5, lot 8). David (2026-11-02) : attendre le `db:migrate` de questions-5, qui appliquera les deux (prévenue).
+- **Prochaine action** : vérifier `20261102051042` appliquée (`migration list --linked`) → vérif MCP (8 nœuds, 8 tags, `updated_at` intact, trigger `O`) → page à cocher du lot 5 (`pnpm tsx scripts/questions/page-a-cocher.ts --dir scripts/questions/1spe-va …`).
+- **En attente de David** : relecture et publication des 8 brouillons du lot 4 (§ 21), puis du lot 5.
+- **Pièges en cours** : `blankDefaults.acceptDecimal` obligatoire ; **variable `e` = Euler** ; choix mélangés → jamais « première phrase » dans un corrigé ; `col()` hors `$…$` (`colt`) ; `Doc-inchangée:` dans un COMMIT (pas la PR), ligne ≤ 100 caractères ; aucun trailer `Claude-Session:` ; migration : heure réelle.
+- **Worktree / branche** : aucun (retiré après #2192).
 - **Ensuite (D7)** : lot « à savoir » (D2), restes (produit scalaire formules, second degré / exponentielle / trigo, logique et listes Python), lots en attente d'un outil.
 
 ## 1. Relevé (prod, 2026-10-27)
@@ -1083,6 +1083,7 @@ le tableau des sommes du corrigé de 03 reste à voir sur la page à cocher.
 `20261102051042_questions_1spe_va_rangement_tags` (gabarit lot 4 ; 347 et 354 sur la notion « Probabilités › Variables
 aléatoires », nœud de leur point) ; test d'intégration 10/10, rouge 2/10 sans les étapes 4 et 5. `security-auditor` : aucun finding
 (diff avec le gabarit = les lignes du lot ; prod relue). `check:migrations --pr 2192` vert.
+#2192 mergée (CI verte) le 2026-11-02 ; `db:migrate` en attente de celui de questions-5 (voir « Reprendre ici »).
 
 **Pièges du lot** : variable `e` lue comme la constante d'Euler (renommée `u`) ; `E(X)^2` après un signe moins rendu
 « E X² » → `{E(X)}^2` (rendu « (E(X))² ») ; réponses colorées dans le texte hors formule → `colt` (`$…$`) ; les choix
