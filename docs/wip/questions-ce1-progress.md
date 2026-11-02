@@ -5,13 +5,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 10 écrit._
+_Mis à jour le 2026-11-02, après #2203._
 
-- **État** : lots 0 à 9 publiés. Lot 10 (espace et mesure, § 17) écrit : 9 modèles, 80 specs, simulation 9/9,
-  sondes figures et espace 0 problème, 9 brouillons en base locale joués dans l'aperçu ; PR des fichiers à ouvrir.
-- **Prochaine action** : PR `feat/questions-ce1-lot10`, CI, merge ; puis `create-questions --publier` par David
-  (brouillons en prod), migration nœud + tag, page à cocher.
-- **En attente de David** : chantier `verrou-deploy` à ouvrir dans sa session (mémoire).
+- **État** : lots 0 à 9 publiés. Lot 10 (espace et mesure, § 17) : fichiers mergés (#2203), 9 modèles, 80 specs ;
+  pas encore en prod.
+- **Prochaine action** : après les brouillons en prod, relever les `id`, puis migration nœud + tag (worktree neuf),
+  page à cocher, `publier-lot`.
+- **En attente de David** : `! cd /Users/david/Coding/js/ubumaths && pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce1-10 --publier`.
+  Chantier `verrou-deploy` à ouvrir dans sa session (mémoire).
 - **Pièges en cours** : jamais de variable `e` ni `i` ; accords au singulier quand un nombre vaut 1 ; JSON du générateur →
   `prettier --write` ; **case d'opération posée sans `expectedAnswer`** ; **`{{if:}}` à condition contenant `{{eval:}}`
   non résolu, specs vertes quand même → relire `--apercu`** ; `placer:` d'horloge : `9 h 0` ; **niveaux : relever la
@@ -817,3 +818,7 @@ Réponse de David (« tes recos ? » puis « go », 2026-11-02) : les cinq recom
   simulé 9/9 ; `sonde-figures` 0 problème (fenêtre de la règle élargie : rapport ≥ 1/4) ; `sonde-cubes` étendue aux
   blocs `solide et `patron, 0 problème sur 5 100 blocs ; aucun `{{` résiduel sur 400 tirages par modèle ; 9 brouillons
   en base locale, joués dans l'aperçu admin (règle, choix de solides et d'assemblages, étagère, plan, robots).
+- 2026-11-02 : #2203 mergée (lot 10). CI : le shard 1/2 des tests navigateur a cassé deux fois sur
+  `page-demo-diaporama.svelte.test.ts` (« Browser connection was closed »), vert en local et sur `main` ; vert après
+  rebase sur `main` (32 commits de retard). Les `wrapDynamicImport` du journal de CI sont du bruit (présents aussi
+  dans les runs verts).
