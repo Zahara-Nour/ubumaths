@@ -10,8 +10,9 @@ _Mis à jour le 2026-11-02, phase 0 du lot 10 proposée._
 - **État** : lots 1 à 9 en prod et publiés. Outils C revus le 2026-11-02 (§ 50.1) : solides et patrons LIVRÉS
   (chantier `solides`), schéma de fraction couvert par ` ```partage ` (grille = carré unité, bande = barres) →
   lot 10 (027, 028, 074) ; seul 038 (rectangle sans équerre) reste un outil neuf, rattaché à la 6e.
-- **Prochaine action** : au « go » de David sur le § 50 : écrire le lot 10 (worktree, `lot-4-10.py`).
-- **En attente de David** : les 4 questions du § 50.5.
+- **Prochaine action** : écrire le lot 10 (§ 50 validé le 2026-11-02) : worktree, branche `feat/questions-4-lot-10`,
+  `docs/wip/questions/lot-4-10.py` → `scripts/questions/4-lot-10/`.
+- **En attente de David** : rien.
 - **Pièges en cours** : migrations, dès #2165 mergée (règle de David, 2026-11-01) : horodatage par `pnpm
 migration:horodatage` (jamais un nombre rond choisi à la main), `pnpm check:migrations --pr <n>` avant `gh pr merge`,
   premier job de CI = porte des horodatages (`git merge origin/main` dans le worktree d'abord) ; `mtexte()` refusé dans une figure de question (§ 26) ; `db push --include-all` : **réservé à
@@ -1223,3 +1224,8 @@ publication, les élèves de 4e voient 3 modèles de plus.
 4. 028 variation 2 : un ` ```patron ` comme option d'un choix n'a pas encore servi (seul ` ```cubes ` a sa taille de
    choix réglée). **Reco** : l'essayer à l'écriture en base locale, la retirer si le rendu est mauvais (pas de
    correctif d'outil dans ce lot).
+
+**Décisions de David (2026-11-02, « je valide » après mes recos)** : les 3 modèles du § 50.3, **sans** « le cône
+a-t-il des arêtes ? » (027 v5 : le BO ne tranche pas) ; catégories telles quelles ; 074 v1 : `colorier:` jugé au
+nombre de parts, accepté ; 028 v2 (patron dans un choix) : essayé en base locale, retiré si le rendu est mauvais,
+le trou noté pour le chantier d'outils.
