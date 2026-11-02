@@ -6,11 +6,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après la relecture du lot 6b._
+_Mis à jour le 2026-11-02, après la publication du lot 6b._
 
-- **État** : lots 0 à 5 et 6a publiés. Lot 6b (décimaux, 6 brouillons rangés et tagués) : relu par David, 6 OK sur 6 ; `publier-lot` en simulation : 6 brouillons passent le contrôle.
-- **Prochaine action** : après le `--publier` de David, vérifier au MCP (6 `published`, rangés, tagués) et clore le lot 6b (§ 11.9) ; puis la suite du chantier (§ 3, points restants : relevé, phase 0 du lot 7).
-- **En attente de David** : `! pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/cm2-6b --publier` (depuis le dépôt principal).
+- **État** : lots 0 à 5, 6a et **6b publiés** (6b : 6/6, vérifiés au MCP le 2026-11-02 : `published`, rangés, tagués). **Lot 6 clos.**
+- **Prochaine action** : suite du chantier : relire le § 3 (points restants sans modèle), relevé MCP, puis phase 0 du lot 7 à proposer à David.
+- **En attente de David** : rien.
 - **Pièges en cours** : migrations depuis #2181 : `pnpm migration:horodatage` = heure réelle UTC ; garde = doublon seulement ; `db:migrate` refuse une migration plus ancienne que la dernière jouée → `pnpm db:migrate --dry-run --include-all`, liste relue, puis `--include-all`. `Doc-inchangée:` dans un COMMIT, pas dans la PR. `spacesFromFourDigits` → specs en `1\,000` ; homonymes du CM1 sur la page ; `git commit -m … -- <fichiers>`. Colonne du nœud au MCP : `question_templates.classification_node_id`.
 - **Worktree / branche** : `../ubumaths-wt-questions-cm2` en HEAD détachée (`feat/questions-cm2-lot6b-rangement` mergée, supprimée).
 
@@ -657,3 +657,7 @@ décimale (0,435 → message de forme, à vérifier en local). Tableau du § 11 
 ### 11.8 Lot 6b : relecture (David, 2026-11-02)
 
 - 6 OK sur 6, sans commentaire (`verdicts` lu et compté). `publier-lot` en simulation : 6 brouillons passent le contrôle.
+
+### 11.9 Lot 6b : publication (2026-11-02)
+
+- David lance `publier-lot --publier` : 6/6 publiés. MCP : 6 `published` (niveaux 13, 6, 7, 6, 7, 7), 6 rangés, 6 tagués (CM2-031, 033, 145, 034, 146, 147). **Lot 6b clos, lot 6 clos.**
