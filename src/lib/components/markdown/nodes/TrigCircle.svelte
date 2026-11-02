@@ -70,7 +70,10 @@
 	/** Demi-longueur d'une graduation du cercle, de part et d'autre du trait */
 	const CIRCLE_TICK = 4;
 	const POINT_RADIUS = 4;
-	const LABEL_OFFSET = 25;
+	/** Écart entre un point du cercle et son étiquette */
+	const LABEL_GAP = 8;
+	const LABEL_BOX_WIDTH = 80;
+	const LABEL_BOX_HEIGHT = 36;
 	const AXIS_EXTENSION = 20;
 	const TICK_SIZE = 5;
 	const TABLE_WIDTH = 200;
@@ -200,21 +203,75 @@
 	// LABEL POSITIONING
 	// =========================================================================
 
-	function getLabelPosition(radians: number): { x: number; y: number; anchor: string } {
-		const point = angleToPoint(radians);
+	/** Boîte d'une étiquette d'angle (foreignObject) et l'alignement de son texte */
+	interface LabelBox {
+		x: number;
+		y: number;
+		justify: 'flex-start' | 'center' | 'flex-end';
+		align: 'flex-start' | 'center' | 'flex-end';
+	}
+
+	/**
+	 * Étiquette accrochée juste à l'extérieur du point, du côté opposé au centre :
+	 * la boîte part du point d'accroche (texte collé à ce côté), jamais centrée
+	 * dessus, sinon elle déborde sur le cercle. Avec les axes, les quatre repères
+	 * s'écartent des axes : π/2 et 3π/2 à droite de l'axe vertical (la flèche et
+	 * la valeur ±1 sont dessus ou à gauche), 0 et π au-dessus de l'axe horizontal
+	 * (la flèche est dessus, ±1 dessous).
+	 */
+	function getLabelBox(radians: number): LabelBox {
 		const cos = Math.cos(radians);
 		const sin = Math.sin(radians);
-
-		// Position label outside the circle
-		const labelX = point.x + LABEL_OFFSET * cos;
-		const labelY = point.y - LABEL_OFFSET * sin;
-
-		// Determine text anchor based on position
-		let anchor = 'middle';
-		if (cos > 0.3) anchor = 'start';
-		else if (cos < -0.3) anchor = 'end';
-
-		return { x: labelX, y: labelY, anchor };
+		const w = LABEL_BOX_WIDTH;
+		const h = LABEL_BOX_HEIGHT;
+		if (node.config.showAxes) {
+			const quarter = Math.round(radians / (Math.PI / 2));
+			if (Math.abs(radians - (quarter * Math.PI) / 2) < 1e-9) {
+				const k = ((quarter % 4) + 4) % 4;
+				if (k === 0) {
+					return {
+						x: CENTER + RADIUS + LABEL_GAP,
+						y: CENTER - h - 2,
+						justify: 'flex-start',
+						align: 'flex-end'
+					};
+				}
+				if (k === 2) {
+					return {
+						x: CENTER - RADIUS - LABEL_GAP - w,
+						y: CENTER - h - 2,
+						justify: 'flex-end',
+						align: 'flex-end'
+					};
+				}
+				if (k === 1) {
+					return {
+						x: CENTER + LABEL_GAP,
+						y: CENTER - RADIUS - 2 - h,
+						justify: 'flex-start',
+						align: 'flex-end'
+					};
+				}
+				return {
+					x: CENTER + LABEL_GAP,
+					y: CENTER + RADIUS + 2,
+					justify: 'flex-start',
+					align: 'flex-start'
+				};
+			}
+		}
+		const ax = CENTER + (RADIUS + LABEL_GAP) * cos;
+		const ay = CENTER - (RADIUS + LABEL_GAP) * sin;
+		const right = cos > 0.3;
+		const left = cos < -0.3;
+		const up = sin > 0.3;
+		const down = sin < -0.3;
+		return {
+			x: right ? ax : left ? ax - w : ax - w / 2,
+			y: up ? ay - h : down ? ay : ay - h / 2,
+			justify: right ? 'flex-start' : left ? 'flex-end' : 'center',
+			align: up ? 'flex-end' : down ? 'flex-start' : 'center'
+		};
 	}
 
 	// =========================================================================
@@ -697,19 +754,16 @@
 				{#if node.config.showLabels}
 					<g class="trig-labels">
 						{#each labelledAngles as angle (angle.radians)}
-							{@const pos = getLabelPosition(angle.radians)}
+							{@const box = getLabelBox(angle.radians)}
 							{@const isHovered =
 								hoveredAngle !== null && Math.abs(hoveredAngle.radians - angle.radians) < 1e-6}
 							{@const isSolution = isSolutionAngle(angle.radians)}
-							<foreignObject x={pos.x - 40} y={pos.y - 16} width="80" height="32">
+							<foreignObject x={box.x} y={box.y} width={LABEL_BOX_WIDTH} height={LABEL_BOX_HEIGHT}>
 								<div
 									class="trig-label"
 									class:trig-label-highlighted={isHovered || isSolution}
-									style="text-align: {pos.anchor === 'start'
-										? 'left'
-										: pos.anchor === 'end'
-											? 'right'
-											: 'center'}"
+									style:justify-content={box.justify}
+									style:align-items={box.align}
 								>
 									<math-span>{angle.latex || angle.expression}</math-span>
 								</div>
