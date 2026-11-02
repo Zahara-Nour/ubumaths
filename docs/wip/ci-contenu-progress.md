@@ -2,17 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, PR ouverte._
+_Mis à jour le 2026-11-02, après #2250._
 
-- **État** : `quality.yml` modifié (tests client sautés, ESLint sauté, tests serveur réduits au shard 1 avec
-  `scripts/ci-tests-contenu.sh`) ; test du script vert ; doc à jour ; PR ouverte.
-- **Prochaine action** : CI verte → merge ; puis vérifier sur la **première PR de contenu** après le merge
-  que le shard 1 lance les 8 tests listés, que les shards 2-4 font « portée rien », que les tests client
-  sont « skipped » et que CI Summary est vert.
+- **État** : #2250 mergée (tests client et ESLint sautés sur une PR de contenu, tests serveur ciblés au
+  shard 1 par `scripts/ci-tests-contenu.sh`, `.js` compris). CI complète verte sur la PR elle-même.
+- **Prochaine action** : sur la **première PR de contenu** après #2250, ouvrir son run « Code Quality » et
+  vérifier : shard 1 « portée contenu » avec les tests listés, shards 2-4 « portée rien », tests client
+  « skipped », ESLint sauté, CI Summary vert. Puis archiver ce journal (verser le durable : déjà dans
+  `docs/pratiques/environnement-de-dev.md`).
 - **En attente de David** : rien.
-- **Pièges en cours** : cette PR n'est pas du contenu (elle touche `.github/` et `scripts/*.sh`) : sa CI
-  est complète et ne prouve pas le chemin « contenu ».
-- **Worktree / branche** : `../ubumaths-wt-ci-contenu`, `ci/ci-contenu-allegee`.
+- **Pièges en cours** : un test qui lit les modèles sans écrire `scripts/questions` en clair échappe au tri.
+- **Worktree / branche** : aucun (retiré après le merge).
 
 ---
 
