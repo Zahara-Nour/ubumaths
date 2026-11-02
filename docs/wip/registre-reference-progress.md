@@ -6,24 +6,24 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2163 (PR 0 mergée)._
+_Mis à jour le 2026-11-02, après #2163 (PR 0 mergée) ; lot 2 en relecture._
 
-- **État** : PR 0 **#2163 mergée** (corpus 85/85, champ `answer`). Branche distante supprimée,
-  `origin/main` intégré dans la branche locale (règles migrations #2165, CI allégée #2167).
-- **Prochaine action** : David relit la page du lot 2 (https://claude.ai/artifact/GZgw832zPgg2Eqqs9dpZF2,
-  108 fiches, 6 questions) ; puis lire `verdicts` (ArtifactData), écrire le corpus + juge, PR.
-  Même branche `refactor/registre-reference`, repoussée avec le lot 2.
-- **Tranché** (2026-11-01) : A-D du lot 2, oui ×4 (section « Lot 2 — relevé ») —
-  A le registre rend l'écriture décimale `decimal` + `decimalExact` (exacte `0.25` / arrondie
-  `0.7071`, le signe `=`/`≈` posé par l'outil ; nom `approx` rejeté par David) ; B mode décimal =
-  affichage de l'outil ; C égalité tapée seule (`2=2`) → `\text{vrai}`/`\text{faux}` ; D expression
-  nue non numérique (`2x+3x`) → forme rangée. Entrées du registre expliquées : commande, `a :=`,
-  `f(x) :=`, égalité, expression nue (`web-repl-engine.ts:259-301`).
-- ⚠️ **Déjà tranché, NE PAS reposer** : ordre des termes (juge E1 le tolère) ; S3 ; R-point ;
-  `domaine` = ℝ \ {0}. **Étape H** : étude en profondeur AVANT tout code.
-- **Pièges** : greper TOUT le journal avant une question ; `pnpm migration:horodatage`,
-  `pnpm check:migrations --pr <n>` ; sonde de l'Atelier = vitest jetable sous `src/`.
-- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `refactor/registre-reference`.
+- **État** : PR 0 #2163 mergée. Lot 2 : 108 candidats sur la page à cocher
+  https://claude.ai/artifact/GZgw832zPgg2Eqqs9dpZF2 (collection `verdicts/<id>`). Relu 82/108 au
+  2026-11-01 ; `plafond-02` corrigé en `1000`. Juge : Atelier 96/108, registre 57/108.
+- **Prochaine action** : quand David a fini, lire `verdicts` (ArtifactData), écrire le lot 2 dans
+  `tests/fixtures/mathast/registre-corpus.ts` (+ `decimal`/`decimalExact`), étendre le juge
+  (décimal, factorielles, degrés, `\unit`), connues fausses, PR sur cette branche.
+- **En attente de David** : 26 fiches non relues (grands-09, grandeurs-02..11, approche-01..15,
+  dont approche-09 format décimal et grandeurs-11) ; à trancher : `signes-06` (attendu proposé
+  `(x+1)/(2(x+1))`, garde-fou de `mergeFactors` antérieur à S3 → correctif tidy en PR à part),
+  `decimal-10` (Q9), `grands-06` (Q24, exposant négatif), `grandeurs-01` (« je ne sais pas encore »).
+- **Tranché** : A-D du lot 2 oui ×4 (`decimal` + `decimalExact`, vrai/faux, forme rangée) ;
+  ordre des termes, S3, R-point, domaine — NE PAS reposer. Étape H : étude avant code.
+- **Pièges** : greper TOUT le journal avant une question ; sonde = vitest jetable sous `src/` ;
+  bugs registre notés (degrés, `π` tapé, `pi`, égalités sans réponse) → PR à part.
+- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `refactor/registre-reference`
+  (origin/main intégré le 2026-11-01 après v0.62.0).
 
 ---
 
