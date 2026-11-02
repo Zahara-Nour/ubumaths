@@ -5,12 +5,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, phase 0 du lot 8 validée (§ 19)._
+_Mis à jour le 2026-11-02, lot 8 écrit (§ 20), PR des fichiers ouverte._
 
-- **État** : lots 1 à 7 publiés. Lot 8 « Opérations » : phase 0 **validée** (§ 19), écriture en cours.
-- **Prochaine action** : worktree `ubumaths-wt-questions-5`, branche `feat/questions-5-operations` ; mesurer le
-  juge pour 04-06 (refuse la valeur, le mauvais parenthésage ; accepte commutativité, parenthèses superflues) ;
-  écrire `lot-5-operations.py`, simulation, essai local, PR des fichiers.
+- **État** : lots 1 à 7 publiés. Lot 8 « Opérations » : 6 modèles écrits (`scripts/questions/5-operations/`),
+  simulation verte, essai local fait (§ 20) ; PR des fichiers ouverte.
+- **Prochaine action** : merge de la PR des fichiers ; David lance `create-questions --publier` ; migration
+  nœud + tag ; page à cocher.
+- **Question à David** : 04, variation « pages » : la forme développée 8 × 5 + 6 × 5 est refusée (0 point,
+  « forme ») ; l'accepter, ou garder (§ 20).
 - **En attente de David** : 02 du lot 7 (deux cases sur deux lignes, publié) à essayer à la main : au
   pilotage Chrome, la frappe dans la 2e case arrivait aussi dans la 1re — extension ou appli ?
 - **Pièges en cours** : `db:migrate` en prod refusé par le classifieur du mode auto → David le lance ; il pousse
@@ -587,3 +589,15 @@ opératoires › écriture d'une expression ». Chaque modèle sur le nœud de s
 - 01 : `zeros: off` (prix). Niveaux vérifiés libres au MCP. Accès : rien de neuf (brouillons, aucun nœud créé).
 - **Tranché par David (2026-11-02)** : (1) 5-001 en **deux modèles** (01 + 02) ; (2) sous-catégorie neuve
   **« Traduire en une expression » sous Entiers › Priorités opératoires** pour 04, 05 et 06 ; tableau validé tel quel.
+
+## 20. Lot 8 écrit (2026-11-02)
+
+- Script `docs/wip/questions/lot-5-operations.py` → `scripts/questions/5-operations/` (6 modèles, 73 specs).
+- Juge mesuré pour 04-06 (`products: off`, `form` strict par défaut) : la valeur et un calcul commencé
+  (« 6 + 1 », « 8 × 2 ») → forme refusée (0 point) ; mauvais parenthésage → faux ; ordre commutatif → juste ;
+  ÷ et : → justes ; parenthèses superflues → juste perfectible (ambre, `brackets`) ; `*` tapé au clavier
+  (affiché `·`) → juste. Écart à la phase 0 : la **forme développée** (8 × 5 + 6 × 5 pour (8 + 6) × 5) est
+  refusée en forme ; question posée à David (04, variation « pages » seulement : 05 et 06 imposent l'ordre).
+- Nombres décimaux construits (`P = 10p + 5`) plutôt que filtrés par `mod` : 33 tirages sur 200 échouaient.
+- Simulation prod : 6 « à créer ». Base locale : 6 brouillons ; 01 (3,8 juste), 04 (40 − 2·5 juste, correction
+  affichée), 02 (rendu des choix) joués dans l'aperçu.

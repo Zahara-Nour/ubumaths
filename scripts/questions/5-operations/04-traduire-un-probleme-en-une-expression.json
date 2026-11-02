@@ -1,0 +1,357 @@
+{
+	"title": "Traduire un problème en une seule expression",
+	"description": "Écrire en une seule expression, sans l'effectuer, le calcul qui résout un problème : 3 × 2 + 1, 2 × 3 + 3 × 5, 40 − 3 × 7, (8 + 6) × 5",
+	"grades": ["5"],
+	"theme": "Entiers",
+	"domain": "Priorités opératoires",
+	"subdomain": "Traduire en une expression",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"products": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Léo achète ${{a}}$ cahiers à ${{b}}~\\unit{€}$ l'un et un stylo à ${{c}}~\\unit{€}$. On cherche le prix payé.\n\nÉcris le calcul en **une seule expression**, sans l'effectuer.\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}\\times{{b}}+{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Une seule expression.** On écrit tout le calcul en une ligne, sans l'effectuer. La multiplication est prioritaire sur l'addition et la soustraction ; des **parenthèses** obligent à faire un calcul en premier.",
+					"Prix des cahiers : ${{a}} \\times {{b}}$ ; on ajoute le stylo. La multiplication se fait d'abord, pas besoin de parenthèses :",
+					"$$\\textcolor{{{color:primary.0}}}{{{a}} \\times {{b}} + {{c}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Au marché, Nora achète ${{a}}~\\unit{kg}$ de pommes à ${{b}}~\\unit{€}$ le kilogramme et ${{c}}$ melons à ${{d}}~\\unit{€}$ l'un. On cherche le prix payé.\n\nÉcris le calcul en **une seule expression**, sans l'effectuer.\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "2..4"
+				},
+				{
+					"name": "c",
+					"expression": "2..4"
+				},
+				{
+					"name": "d",
+					"expression": "3..6"
+				}
+			],
+			"conditions": ["a!=c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}\\times{{b}}+{{c}}\\times{{d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Une seule expression.** On écrit tout le calcul en une ligne, sans l'effectuer. La multiplication est prioritaire sur l'addition et la soustraction ; des **parenthèses** obligent à faire un calcul en premier.",
+					"Pommes : ${{a}} \\times {{b}}$ ; melons : ${{c}} \\times {{d}}$ ; on ajoute les deux prix. Les multiplications se font d'abord :",
+					"$$\\textcolor{{{color:primary.0}}}{{{a}} \\times {{b}} + {{c}} \\times {{d}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Inès a ${{a}}~\\unit{€}$. Elle achète ${{b}}$ places de cinéma à ${{c}}~\\unit{€}$ l'une. On cherche ce qui lui reste.\n\nÉcris le calcul en **une seule expression**, sans l'effectuer.\n\n$?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..4"
+				},
+				{
+					"name": "c",
+					"expression": "5..9"
+				},
+				{
+					"name": "a",
+					"expression": "30|40|50"
+				}
+			],
+			"conditions": ["b*c<a"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}-{{b}}\\times{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Une seule expression.** On écrit tout le calcul en une ligne, sans l'effectuer. La multiplication est prioritaire sur l'addition et la soustraction ; des **parenthèses** obligent à faire un calcul en premier.",
+					"Prix des places : ${{b}} \\times {{c}}$ ; on l'enlève à ${{a}}$. La multiplication se fait d'abord :",
+					"$$\\textcolor{{{color:primary.0}}}{{{a}} - {{b}} \\times {{c}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Chaque jour, Tom lit ${{a}}$ pages le matin et ${{b}}$ pages le soir. On cherche le nombre de pages qu'il lit en ${{c}}$ jours.\n\nÉcris le calcul en **une seule expression**, sans l'effectuer.\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "5..15"
+				},
+				{
+					"name": "b",
+					"expression": "5..15"
+				},
+				{
+					"name": "c",
+					"expression": "3..7"
+				}
+			],
+			"conditions": ["a!=b"],
+			"blanks": [
+				{
+					"expectedAnswer": "({{a}}+{{b}})\\times{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Une seule expression.** On écrit tout le calcul en une ligne, sans l'effectuer. La multiplication est prioritaire sur l'addition et la soustraction ; des **parenthèses** obligent à faire un calcul en premier.",
+					"En un jour : ${{a}} + {{b}}$ pages ; en ${{c}}$ jours, ${{c}}$ fois plus. L'addition doit se faire **d'abord** : il faut des parenthèses.",
+					"$$\\textcolor{{{color:primary.0}}}{({{a}} + {{b}}) \\times {{c}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 × 2 + 1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "1"
+			},
+			"answers": ["3\\times2+1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1 + 3 × 2 (ordre changé)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "1"
+			},
+			"answers": ["1+3\\times2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2 × 3 + 1 (ordre changé)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "1"
+			},
+			"answers": ["2\\times3+1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "(3 × 2) + 1 : parenthèses superflues",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "1"
+			},
+			"answers": ["(3\\times2)+1"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["brackets"]
+			}
+		},
+		{
+			"description": "Erreur : la valeur 7",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "1"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur : 6 + 1 (calcul commencé)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "1"
+			},
+			"answers": ["6+1"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur : 3 × (2 + 1)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "1"
+			},
+			"answers": ["3\\times(2+1)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2 × 3 + 3 × 5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "3",
+				"d": "5"
+			},
+			"answers": ["2\\times3+3\\times5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 × 3 + 3 + 5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "3",
+				"d": "5"
+			},
+			"answers": ["2\\times3+3+5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "40 − 3 × 7",
+			"variationIndex": 2,
+			"variables": {
+				"a": "40",
+				"b": "3",
+				"c": "7"
+			},
+			"answers": ["40-3\\times7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : (40 − 3) × 7",
+			"variationIndex": 2,
+			"variables": {
+				"a": "40",
+				"b": "3",
+				"c": "7"
+			},
+			"answers": ["(40-3)\\times7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3 × 7 − 40",
+			"variationIndex": 2,
+			"variables": {
+				"a": "40",
+				"b": "3",
+				"c": "7"
+			},
+			"answers": ["3\\times7-40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(8 + 6) × 5",
+			"variationIndex": 3,
+			"variables": {
+				"a": "8",
+				"b": "6",
+				"c": "5"
+			},
+			"answers": ["(8+6)\\times5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "5 × (6 + 8) (ordre changé)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "8",
+				"b": "6",
+				"c": "5"
+			},
+			"answers": ["5\\times(6+8)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8 + 6 × 5 (parenthèses oubliées)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "8",
+				"b": "6",
+				"c": "5"
+			},
+			"answers": ["8+6\\times5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Développé : 8 × 5 + 6 × 5 (forme refusée)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "8",
+				"b": "6",
+				"c": "5"
+			},
+			"answers": ["8\\times5+6\\times5"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	]
+}
