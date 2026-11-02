@@ -600,12 +600,8 @@ export function computeQuantity(written: MathNode, mode: QuantityMode): Quantity
 
 	const reduced = tidy(ast, { unitChoice: 'written' });
 	if (reducedQuantity(reduced)) {
-		// `tidy` a pu choisir une unité que l'élève n'a pas tapée (`3[kW]*2[h]` →
-		// `21600000 J`) : une unité tapée l'emporte si la valeur y tombe juste
-		const chosen = writtenUnits(ast).includes(unitWriting(quantityOf(reduced)!.unit.unit))
-			? null
-			: expressedInWritten(ast, quantityOf(reduced)!.unit.unit);
-		const quantity = chosen?.decimal === true && chosen.written ? chosen.quantity : reduced;
+		// L'unité du résultat est choisie par `tidy`, la même règle partout (2026-11-02)
+		const quantity = reduced;
 		const composite = compositeDuration(ast, quantity);
 		if (composite !== null) return answered(composite, mode, quantity, composite.exact);
 		const derived = namedDerived(quantity);

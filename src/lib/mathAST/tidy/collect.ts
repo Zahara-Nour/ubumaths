@@ -445,7 +445,12 @@ function writtenUnitOf(symbols: ReadonlyMap<string, number>, unit: Unit): Unit |
 	return composeUnit(parts);
 }
 
-/** L'unité écrite d'un terme produit, en liste (vide hors du mode `'written'`). */
+/**
+ * Les unités ÉCRITES où un terme produit peut s'exprimer (vide hors du mode
+ * `'written'`) : pour chaque dimension de base, chacune des unités simples tapées
+ * qui la portent (`7[mm]·5[cm]` → `mm^2`, `cm^2`), et l'unité composée telle que
+ * tapée quand elle n'écrit pas deux fois une dimension (`3[kW]·2[h]` → `kW.h`).
+ */
 function writtenUnitsOf(
 	symbols: ReadonlyMap<string, number>,
 	unit: Unit | null,
@@ -453,8 +458,48 @@ function writtenUnitsOf(
 	settings: Settings
 ): readonly Unit[] {
 	if (settings.unitChoice !== 'written' || unit === null || quantity === null) return [];
-	const written = writtenUnitOf(symbols, unit);
-	return written === null ? [] : [written];
+	const combos = writtenCombinations(symbols, unit);
+	const typed = coherentUnitOf(unit) === null && !isBaseFallback(symbols, unit) ? [unit] : [];
+	return distinctUnits([...combos, ...typed]);
+}
+
+/** L'unité composée n'est pas faite que d'unités tapées (repli en unités de base) */
+function isBaseFallback(symbols: ReadonlyMap<string, number>, unit: Unit): boolean {
+	const terms = parseUnitTerms(unitWriting(unit));
+	return terms === null || terms.some(({ symbol }) => !symbols.has(symbol));
+}
+
+/** Plafond des combinaisons d'unités tapées d'un produit */
+const MAX_WRITTEN_COMBINATIONS = 16;
+
+/** Toutes les écritures « une unité tapée par dimension de base » de `unit`. */
+function writtenCombinations(symbols: ReadonlyMap<string, number>, unit: Unit): Unit[] {
+	const total = exactConversion(unitWriting(unit));
+	if (total === null) return [];
+	const bySymbol = new Map<string, { symbol: string; power: number }[]>();
+	for (const symbol of symbols.keys()) {
+		const own = exactConversion(symbol);
+		if (own === null || own.offset !== null || own.piPower !== 0) continue;
+		if (own.components.size !== 1) continue;
+		const [[base, power]] = own.components;
+		const list = bySymbol.get(base) ?? [];
+		list.push({ symbol, power });
+		bySymbol.set(base, list);
+	}
+	let partials: Map<string, number>[] = [new Map()];
+	for (const [base, exponent] of total.components) {
+		const options = (bySymbol.get(base) ?? []).filter((o) => exponent % o.power === 0);
+		if (options.length === 0) return [];
+		partials = partials.flatMap((parts) =>
+			options.map((o) => {
+				const next = new Map(parts);
+				next.set(o.symbol, (next.get(o.symbol) ?? 0) + exponent / o.power);
+				return next;
+			})
+		);
+		if (partials.length > MAX_WRITTEN_COMBINATIONS) return [];
+	}
+	return partials.map(composeUnit).filter((u): u is Unit => u !== null);
 }
 
 /** Les unités, dans l'ordre, sans doublon d'écriture. */
@@ -469,28 +514,27 @@ function distinctUnits(units: readonly Unit[]): readonly Unit[] {
 }
 
 /**
- * Parmi les écritures d'une valeur dans les unités écrites (dans l'ordre, `null`
- * si elle n'y tombe pas juste) : la première, sauf si la valeur y est sous 1 —
- * alors la plus grande unité écrite où elle vaut au moins 1, sinon la plus petite.
- * `12[km]+500[m]` → `12,5 km` ; `2000[m]+3[km]` → `5000 m` ; `1[km]-999[m]` → `1 m`.
+ * Parmi les écritures d'une valeur dans les unités tapées (`null` si elle n'y
+ * tombe pas juste) : celle qui a le MOINS DE CHIFFRES ; à égalité, la plus petite
+ * unité (la plus grande valeur, celle qui évite la virgule). Une valeur sans
+ * écriture décimale finie : la fraction la plus courte (David, 2026-11-02).
+ * `12[km]+500[m]` → `12,5 km` ; `2000[m]+3[km]` → `5 km` ; `1[m]+1[km]` → `1001 m`.
  */
 function chooseWrittenUnit(candidates: readonly (TidyTerm | null)[]): TidyTerm | null {
-	const finite = candidates.filter((candidate): candidate is TidyTerm => candidate !== null);
-	const [first] = finite;
-	if (first === undefined || atLeastOne(first)) return first ?? null;
-	const above = finite.filter(atLeastOne);
-	const pool = above.length > 0 ? above : finite;
-	// La plus grande unité = la plus petite valeur au-dessus de 1 ; sinon la plus
-	// petite unité = la plus grande valeur.
-	return pool.reduce((best, candidate) => {
-		const smaller = compareMagnitude(candidate, best) < 0;
-		return above.length > 0 === smaller ? candidate : best;
+	const found = candidates.filter((candidate): candidate is TidyTerm => candidate !== null);
+	if (found.length === 0) return null;
+	return found.reduce((best, candidate) => {
+		const diff = writtenLength(candidate) - writtenLength(best);
+		if (diff !== 0) return diff < 0 ? candidate : best;
+		return compareMagnitude(candidate, best) > 0 ? candidate : best;
 	});
 }
 
-function atLeastOne(term: TidyTerm): boolean {
+/** Le nombre de chiffres écrits de la valeur : `0,001` → 4, `5000` → 4, `1003/3` → 5. */
+function writtenLength(term: TidyTerm): number {
 	const magnitude = absRational(term.coefficient);
-	return magnitude.n >= magnitude.d;
+	const text = decimalString(magnitude) ?? `${magnitude.n}/${magnitude.d}`;
+	return text.replace(/[^0-9]/g, '').length;
 }
 
 /** Signe de |a| − |b|. */
@@ -1873,7 +1917,7 @@ function chooseUnit(term: TidyTerm, imposed: Unit | null, settings: Settings): T
 	// simplifiée (`km`), la valeur en fraction si rien ne tombe juste.
 	const writtenFraction = (): TidyTerm | null => {
 		if (settings.unitChoice === 'written' && term.written.length > 0)
-			return rewritten(term.written[0], false);
+			return chooseWrittenUnit(term.written.map((unit) => rewritten(unit, false)));
 		const coherent = term.unit === null ? null : coherentUnitOf(term.unit);
 		return coherent === null ? null : rewritten(coherent, false);
 	};
@@ -1883,9 +1927,8 @@ function chooseUnit(term: TidyTerm, imposed: Unit | null, settings: Settings): T
 		if (chosen !== null) return chosen;
 	}
 
-	// `unitChoice: 'written'` — l'unité écrite d'abord, si la valeur y tombe juste ;
-	// une valeur sous 1 passe dans une autre unité écrite du calcul (`1[km]-999[m]`
-	// → `1[m]`, David, 2026-11-02).
+	// `unitChoice: 'written'` — une unité tapée, celle où la valeur s'écrit avec le
+	// moins de chiffres (David, 2026-11-02).
 	if (settings.unitChoice === 'written' && term.written.length > 0) {
 		const chosen = chooseWrittenUnit(term.written.map((unit) => rewritten(unit)));
 		if (chosen !== null) return chosen;
