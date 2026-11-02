@@ -9,6 +9,7 @@ couvre:
   - scripts/garde-deploy-en-cours.sh
   - scripts/garde-migrations-horodatage.sh
   - scripts/ci-nature-changement.sh
+  - scripts/ci-tests-contenu.sh
   - scripts/vercel-ignore-build.sh
 ---
 
@@ -25,7 +26,7 @@ couvre:
 1. **`main` toujours vert et déployable** (la prod en est un instantané, `production`). Jamais de commit de **code** directement sur `main`.
 2. Tout changement de code → **worktree → branche → PR → CI 100 % verte → merge commit → suppression de branche** ([§ 3](#3-flux-dune-pr)).
 3. **Seule exception à la PR** : changement **100 % documentaire** (`docs/**` et `**/*.md`, aucun fichier de code) → commit direct sur `main`, **quel que soit le nombre de fichiers**, selon les règles du [§ 2](#2-le-dépôt-principal-partagé).
-   - Pourquoi c'est une obligation et pas une facilité : `quality.yml` n'a **pas** de `paths-ignore` sur `pull_request` (les checks requis doivent rapporter sur toute PR, sinon une PR doc-only resterait bloquée à jamais). Une PR pour du markdown occupe donc des runners pour zéro vérification utile : même allégée (PR de contenu seul, [§ 3](#3-flux-dune-pr) point 5), elle lance encore le Lint et les 6 jobs de tests. Sur `push`, le filtre `paths` exclut `docs/**` et `**/*.md` (mais réinclut `data/**`, `src/**`, `static/**`, `.md` compris) → commit direct de doc = **aucune CI**. C'est le pre-push qui vérifie alors liens et renvois de la doc.
+   - Pourquoi c'est une obligation et pas une facilité : `quality.yml` n'a **pas** de `paths-ignore` sur `pull_request` (les checks requis doivent rapporter sur toute PR, sinon une PR doc-only resterait bloquée à jamais). Une PR pour du markdown occupe donc des runners pour zéro vérification utile : même allégée (PR de contenu seul, [§ 3](#3-flux-dune-pr) point 5), elle lance encore le Lint et les 4 jobs de tests serveur (réduits, mais chacun prend un runner). Sur `push`, le filtre `paths` exclut `docs/**` et `**/*.md` (mais réinclut `data/**`, `src/**`, `static/**`, `.md` compris) → commit direct de doc = **aucune CI**. C'est le pre-push qui vérifie alors liens et renvois de la doc.
    - L'`ignoreCommand` Vercel (`scripts/vercel-ignore-build.sh`) saute aussi un build qui ne change que `docs/**` et `**/*.md` (hors `src/`, `static/`) → un commit docs-only **ne redéploie pas** la prod.
    - ⚠️ Vérification **mécanique** avant de commiter, jamais à l'œil :
      ```bash
@@ -84,7 +85,7 @@ Branches : `fix/<slug>` · `feat/<slug>` · `refactor/<slug>` · `perf/<slug>` �
 4. `git push -u origin <branche>`, puis `gh pr create` — corps : **Quoi / Pourquoi / Risque / Tests**.
 5. `gh pr checks <n> --watch` dès l'ouverture → **tout vert** (Lint, Type Check, Types des tests, Build + garde TDZ Safari, Server/Client Tests, Security Audit, Garde SECURITY DEFINER → CI Summary ; CodeQL à part). **Jamais merger en rouge.**
    - **Porte de la CI** : le premier job (« Porte de la CI ») vérifie les horodatages des migrations. S'il échoue, tous les autres jobs sont **sautés** et seul « CI Summary » rougit, en ~20 s : lire ce premier job.
-   - **PR de contenu seul** (modèles `scripts/questions/**/*.json`, `docs/**`, `.md` hors `src/`, `static/`, `data/` — `scripts/ci-nature-changement.sh`) : Type Check, Types des tests, Build, Security Audit et Garde SECURITY DEFINER sont **sautés** (« skipped » vaut réussi) ; Lint et tests tournent toujours. Détail : [environnement-de-dev.md](environnement-de-dev.md).
+   - **PR de contenu seul** (modèles `scripts/questions/**/*.json`, `docs/**`, `.md` hors `src/`, `static/`, `data/` — `scripts/ci-nature-changement.sh`) : Type Check, Types des tests, Build, Security Audit, Garde SECURITY DEFINER et tests client sont **sautés** (« skipped » vaut réussi) ; le Lint tourne sans ESLint ; les tests serveur se réduisent à ceux qui lisent `scripts/questions` (`scripts/ci-tests-contenu.sh`). Détail : [environnement-de-dev.md](environnement-de-dev.md).
    - **Sur main, après le merge** : Type Check et Build seulement ; la CI complète repasse sur le commit de version de `pnpm deploy:prod`.
    - ⛔ **Branche déjà poussée : jamais `git pull --rebase origin main` dessus.** Le rebase réécrit les commits poussés → push refusé, et le seul push qui passe est `--force` (liste `ask`). Pour la remettre à jour : `git merge origin/main`, ou rien (GitHub merge quand même). Rattrapage si c'est fait : `git merge origin/<branche>` (le commit en double est identique, sans conflit), puis push normal (#1603, 2026-10-22).
 6. **Revue proportionnée au risque** : CLAUDE.md § Planning, point 4.

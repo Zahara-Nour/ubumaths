@@ -19,6 +19,7 @@ couvre:
   - scripts/lint-fast-fichiers.sh
   - scripts/with-db-lock.sh
   - scripts/ci-nature-changement.sh
+  - scripts/ci-tests-contenu.sh
   - scripts/garde-migrations-horodatage.sh
   - scripts/vercel-ignore-build.sh
   - scripts/releve-web-vitals.ts
@@ -160,8 +161,13 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
   pour un rouge certain (main cassée par `20261101215000` en double avait saturé la file des runners).
 - **PR de contenu seul** : modèles de questions (`scripts/questions/**/*.json`), doc, `.md` hors
   `src/`, `static/`, `data/` (`scripts/ci-nature-changement.sh`) → typecheck, types des tests, build,
-  audit et garde SECURITY DEFINER sautés (« skipped » compte comme réussi pour les checks exigés).
-  Lint et tests serveur et client tournent toujours : deux tests lisent `scripts/questions`.
+  audit, garde SECURITY DEFINER et tests client sautés (« skipped » compte comme réussi pour les
+  checks exigés). Le Lint tourne sans ESLint. Les 4 jobs de tests serveur (checks exigés) restent,
+  mais le shard 1 ne lance que les tests qui lisent `scripts/questions` (liste calculée par
+  `scripts/ci-tests-contenu.sh` d'après le chemin écrit dans leur source ; liste vide = échec), et
+  les shards 2-4 s'arrêtent aussitôt. ~6 min de runner au lieu de ~30 par PR de contenu (2026-11-02).
+  Un test qui lirait les modèles sans écrire `scripts/questions` dans sa source échapperait au tri :
+  garder ce chemin en clair.
 - **CI de main jamais annulée** (chaque commit de main doit avoir son verdict, `deploy:prod` cherche
   le dernier vert) ; sur une branche, un
   run périmé est annulé par le suivant.

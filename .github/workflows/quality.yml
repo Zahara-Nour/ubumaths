@@ -52,8 +52,11 @@ jobs:
   # de tourner 15 jobs pour un rouge certain : le 2026-11-01, main cassée par
   # `20261101215000` en double a saturé la file des runners et bloqué le correctif.
   # Il dit aussi si la PR n'est que du contenu (scripts/ci-nature-changement.sh) :
-  # typecheck, types des tests, build, audit et garde SECURITY DEFINER sont alors
-  # sautés ; Lint et tests (qui lisent scripts/questions) tournent toujours.
+  # typecheck, types des tests, build, audit, garde SECURITY DEFINER et tests client
+  # sont alors sautés ; le Lint tourne sans ESLint ; les tests serveur se réduisent à
+  # ceux qui lisent scripts/questions (scripts/ci-tests-contenu.sh, shard 1 seul).
+  # Le 2026-11-02 : 69 PR de contenu sur 179 depuis la veille, ~30 min de runner
+  # chacune, dont 24 pour des tests qui ne pouvaient pas changer de verdict.
   version:
     name: Porte de la CI
     runs-on: ubuntu-latest
@@ -185,7 +188,10 @@ jobs:
       # itself when a file or the config changes, so this is correctness-safe.
       # Key prefix is versioned (-content) so the new content-strategy cache
       # starts clean and never restores a stale metadata-strategy cache.
+      # PR de contenu : aucun fichier .ts ni .svelte changé, ESLint ne peut pas
+      # changer de verdict (Prettier et les gardes de doc, eux, tournent).
       - name: Restore ESLint cache
+        if: needs.version.outputs.contenu != 'true'
         uses: actions/cache@v6
         with:
           path: .eslintcache
@@ -198,6 +204,7 @@ jobs:
       # every file's mtime, so the default strategy treats all files as changed
       # and the cache is useless. Hashing content is stable across checkouts.
       - name: Run ESLint
+        if: needs.version.outputs.contenu != 'true'
         run: pnpm eslint . --cache --cache-strategy content
 
   typecheck:
@@ -338,6 +345,9 @@ jobs:
 
   # Server tests (node env): the real regression gate — fast, deterministic,
   # no browser. Sharded for parallelism.
+  # PR de contenu : les 4 jobs restent (checks exigés par la protection de main),
+  # mais le shard 1 ne lance que les tests qui lisent scripts/questions
+  # (scripts/ci-tests-contenu.sh) et les shards 2-4 s'arrêtent tout de suite.
   test-server:
     name: Server Tests (shard ${{ matrix.shard }}/4)
     needs: version
@@ -349,27 +359,48 @@ jobs:
       matrix:
         shard: [1, 2, 3, 4]
 
+    env:
+      # « complet », « contenu » (shard 1 d'une PR de contenu) ou « rien » (shards 2-4).
+      PORTEE: ${{ needs.version.outputs.contenu != 'true' && 'complet' || (matrix.shard == 1 && 'contenu' || 'rien') }}
+
     steps:
+      - name: Portée
+        run: echo "Tests serveur, shard ${{ matrix.shard }}/4, portée $PORTEE"
+
       - name: Checkout code
+        if: env.PORTEE != 'rien'
         uses: actions/checkout@v7
 
       - name: Setup pnpm
+        if: env.PORTEE != 'rien'
         uses: pnpm/action-setup@v6
 
       - name: Setup Node.js
+        if: env.PORTEE != 'rien'
         uses: actions/setup-node@v7
         with:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
 
       - name: Install dependencies
+        if: env.PORTEE != 'rien'
         run: pnpm install --frozen-lockfile
 
       - name: Create CI env (placeholders)
+        if: env.PORTEE != 'rien'
         run: cp .github/ci.env .env
 
       - name: Run server tests (shard ${{ matrix.shard }}/4)
+        if: env.PORTEE == 'complet'
         run: pnpm exec vitest run --project server --shard=${{ matrix.shard }}/4
+
+      - name: Run server tests (PR de contenu, tests qui lisent scripts/questions)
+        if: env.PORTEE == 'contenu'
+        run: |
+          fichiers="$(bash scripts/ci-tests-contenu.sh)"
+          echo "$fichiers"
+          # shellcheck disable=SC2086
+          pnpm exec vitest run --project server $fichiers
 
   # Client tests (browser/chromium): unit + mocked component tests.
   # The real-Pyodide integration tests (*-real.svelte.test.ts) are excluded
@@ -379,12 +410,14 @@ jobs:
   # a fait rougir la CI 3 fois du 6 au 8/10, chaque fois sur un fichier
   # DIFFÉRENT (serialize, ExerciseList-modifier, liens-dangereux) et sans test
   # qui navigue : c'est Chromium qui tombait sous 234 fichiers. Deux fois moins de
-  # charge par navigateur, et le job raccourcit. Checks exigés par la protection
-  # de main : « Client Tests (browser, shard 1/2) » et « … 2/2 ».
+  # charge par navigateur, et le job raccourcit. Pas parmi les checks exigés par la
+  # protection de main (vérifié le 2026-11-02) : CI Summary les porte.
+  # PR de contenu : sautés. Le projet `client` ne prend que src/**/*.svelte.test.*,
+  # et aucun ne lit scripts/questions ni docs/ : rien ne peut changer leur verdict.
   test-client:
     name: Client Tests (browser, shard ${{ matrix.shard }}/2)
     needs: version
-    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.allegee != 'true' }}
+    if: ${{ !cancelled() && needs.version.result == 'success' && needs.version.outputs.allegee != 'true' && needs.version.outputs.contenu != 'true' }}
     strategy:
       fail-fast: false
       matrix:
@@ -572,7 +605,8 @@ jobs:
             exit 1
           fi
           # Un job sauté vaut succès quand c'est voulu : sur main allégée (tout sauf
-          # typecheck et build), sur une PR de contenu (types, build, audit, garde).
+          # typecheck et build), sur une PR de contenu (types, build, audit, garde,
+          # tests client).
           allegee="${{ needs.version.outputs.allegee }}"
           contenu="${{ needs.version.outputs.contenu }}"
           [ "$allegee" = true ] || [ "$contenu" = true ] && allegee_ou_contenu=true || allegee_ou_contenu=false
@@ -591,7 +625,7 @@ jobs:
              ! ok "${{ needs.types-tests.result }}" "$allegee_ou_contenu" || \
              ! ok "${{ needs.build.result }}" "$contenu" || \
              ! ok "${{ needs.test-server.result }}" "$allegee" || \
-             ! ok "${{ needs.test-client.result }}" "$allegee" || \
+             ! ok "${{ needs.test-client.result }}" "$allegee_ou_contenu" || \
              ! ok "${{ needs.audit.result }}" "$allegee_ou_contenu" || \
              ! ok "${{ needs.definer-guard.result }}" "$allegee_ou_contenu"; then
             echo "::error::Some checks failed"
