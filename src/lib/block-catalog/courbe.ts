@@ -169,6 +169,18 @@ export const courbeEntry: BlockCatalogEntry = {
 						'L’élève touche le repère pour y poser chaque point (il se pose sur le nœud de grille le plus proche) : chaque point compte pour une case, juste s’il est sur ses coordonnées. Chaque point doit être sur un nœud de la grille (régler grille:) et dans la fenêtre. Jamais écrit à l’écran. Sur le PDF, le repère sans les points : l’enfant fait ses croix.'
 				}
 			]
+		},
+		{
+			title: 'Dans une question : tracer une droite',
+			settings: [
+				{
+					key: 'tracer',
+					values: 'y = 2x - 1, x = 3, ou 2x + 3y - 6 = 0 (fractions et variables permises)',
+					defaultValue: 'aucune',
+					description:
+						'L’élève pose deux points sur les nœuds de la grille ; la droite qui passe par eux se dessine. Une case, juste si les deux points sont distincts et sur la droite, quels qu’ils soient. La droite doit passer par au moins deux nœuds de la grille dans la fenêtre. Jamais avec placer: dans le même repère. Jamais écrite à l’écran avant la correction.'
+				}
+			]
 		}
 	],
 	examples: [
@@ -188,6 +200,12 @@ export const courbeEntry: BlockCatalogEntry = {
 			),
 			explanation:
 				'Dans une question, l’élève choisit l’étiquette A, B ou C sous le repère, puis touche le repère ; chaque point compte pour une case. La consigne (« Place les points A(2 ; 3)… ») va dans l’énoncé, au-dessus.'
+		},
+		{
+			title: 'Tracer une droite (question)',
+			source: fence('courbe', 'x: -5 ; 5', 'y: -5 ; 5', 'grille: 1', 'tracer: y = 2x - 1'),
+			explanation:
+				'Dans une question, l’élève pose deux points de la droite (étiquettes 1 et 2 sous le repère) ; la droite se dessine. La consigne (« Trace la droite d’équation y = 2x − 1 ») va dans l’énoncé, au-dessus.'
 		},
 		{
 			title: 'Des données dans un repère',
