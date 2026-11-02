@@ -1,0 +1,249 @@
+{
+	"title": "Propriété caractéristique de la médiatrice",
+	"description": "La médiatrice d'un segment est l'ensemble des points à égale distance de ses extrémités : trouver MB quand M est sur la médiatrice, dire si un point y est d'après MA et MB",
+	"grades": ["6"],
+	"theme": "Géométrie",
+	"domain": "Figures planes",
+	"subdomain": "Médiatrice d'un segment",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "La droite $d$ est la médiatrice du segment $[AB]$, et le point $M$ est sur $d$.\n\n```figure\nfenetre: -3.8 ; 3.8 ; -1.4 ; {{eval:sqrt((a/10)^2-9)+1;d}}\ndescription: Un segment [AB], sa médiatrice d (codée) et un point M de d ; MA = {{eval:a/10;d}} cm.\n---\nA = point(-3, 0, etiquette=\"bas-gauche\")\nB = point(3, 0, etiquette=\"bas-droite\")\nI = point(0, 0, visible=faux)\nM = point(0, {{eval:sqrt((a/10)^2-9);d}}, etiquette=\"droite\")\nsegment(A, B)\nd = mediatrice(A, B, couleur=\"bleu\")\ntexte(0.3, -1, \"d\")\nmarque_segment(A, I)\nmarque_segment(I, B)\nangle(B, I, M, marque=\"carre\")\nsegment(M, A, trait=\"tirets\")\nsegment(M, B, trait=\"tirets\")\ntexte({{eval:-1.5-0.9;d}}, {{eval:sqrt((a/10)^2-9)/2;d}}, \"{{eval:a/10;d}} cm\")\n```\n\nQuelle est la longueur $MB$ ?\n\n$MB = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "35..70"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La propriété de la médiatrice.** Tout point de la médiatrice de $[AB]$ est à la même distance de $A$ et de $B$.",
+					"$M$ est sur $d$ : $MB = MA = \\textcolor{{{color:primary.0}}}{{{eval:a/10;d}}~\\unit{cm}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le point $M$ est tel que $MA = {{eval:a/10;d}}~\\unit{cm}$ et $MB = {{eval:b/10;d}}~\\unit{cm}$.\n\n$M$ est-il sur la médiatrice du segment $[AB]$ ?\n\n```choix\nmelanger: non\n- oui\n- non : $M$ est plus près de $A$\n- non : $M$ est plus près de $B$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "a",
+					"expression": "30..60"
+				},
+				{
+					"name": "w",
+					"expression": "3..15"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+w*((1)*(k-1)*(k-3)/(-1)+(-1)*(k-1)*(k-2)/(2))"
+				},
+				{
+					"name": "j",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La médiatrice** de $[AB]$ est l'ensemble des points **à égale distance** de $A$ et de $B$.",
+					"{{if:k==1|$MA = MB$ : $M$ est $\\textcolor{{{color:primary.0}}}{\\text{sur la médiatrice}}$.|{{if:k==2|$MA < MB$ : $M$ n'est pas sur la médiatrice, il est $\\textcolor{{{color:primary.0}}}{\\text{plus près de } A}$.|$MA > MB$ : $M$ n'est pas sur la médiatrice, il est $\\textcolor{{{color:primary.0}}}{\\text{plus près de } B}$.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Voici les distances de quatre points aux extrémités du segment $[AB]$.\n\n| Point | Distance à $A$ (cm) | Distance à $B$ (cm) |\n|---|---|---|\n| $E$ | ${{eval:pE/10;d}}$ | ${{eval:qE;d}}$ |\n| $F$ | ${{eval:pF/10;d}}$ | ${{eval:qF;d}}$ |\n| $G$ | ${{eval:pG/10;d}}$ | ${{eval:qG;d}}$ |\n| $H$ | ${{eval:pH/10;d}}$ | ${{eval:qH;d}}$ |\n\nQuels points sont sur la médiatrice de $[AB]$ ?\n\n```choix\nplusieurs: oui\nmelanger: non\n- $E$\n- $F$\n- $G$\n- $H$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "w",
+					"expression": "2..9"
+				},
+				{
+					"name": "pE",
+					"expression": "20..60"
+				},
+				{
+					"name": "pF",
+					"expression": "20..60"
+				},
+				{
+					"name": "pG",
+					"expression": "20..60"
+				},
+				{
+					"name": "pH",
+					"expression": "20..60"
+				},
+				{
+					"name": "qE",
+					"expression": "eval:(pE+(w)*(k-1)*(k-3)/(-1))/10"
+				},
+				{
+					"name": "qF",
+					"expression": "eval:(pF+(w)*(k-2)*(k-3)/(2)+(-w)*(k-1)*(k-2)/(2))/10"
+				},
+				{
+					"name": "qG",
+					"expression": "eval:(pG+(-w)*(k-1)*(k-3)/(-1)+(w)*(k-1)*(k-2)/(2))/10"
+				},
+				{
+					"name": "qH",
+					"expression": "eval:(pH+(-w)*(k-2)*(k-3)/(2))/10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k==1|0;2|{{if:k==2|1;3|0;3}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La médiatrice** de $[AB]$ est l'ensemble des points **à égale distance** de $A$ et de $B$ : on cherche les lignes où les deux distances sont égales.",
+					"Sur la médiatrice : $\\textcolor{{{color:primary.0}}}{{{if:k==1|E \\text{ et } G|{{if:k==2|F \\text{ et } H|E \\text{ et } H}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "MA = 4,2 : MB = 4,2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "42"
+			},
+			"answers": ["4,2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8,4 (doublé)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "42"
+			},
+			"answers": ["8,4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "MA = MB : oui",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"a": "40",
+				"w": "5",
+				"b": "40",
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "MA < MB : plus près de A",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"a": "40",
+				"w": "5",
+				"b": "45",
+				"j": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : plus près de B quand MA < MB",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"a": "40",
+				"w": "5",
+				"b": "45",
+				"j": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "MA > MB : plus près de B",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "40",
+				"w": "5",
+				"b": "35",
+				"j": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "E et G",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"w": "5",
+				"pE": "34",
+				"pF": "41",
+				"pG": "28",
+				"pH": "50",
+				"qE": "3.4",
+				"qF": "4.6",
+				"qG": "2.8",
+				"qH": "4.5"
+			},
+			"answers": ["0;2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : tous",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"w": "5",
+				"pE": "34",
+				"pF": "41",
+				"pG": "28",
+				"pH": "50",
+				"qE": "3.4",
+				"qF": "4.6",
+				"qG": "2.8",
+				"qH": "4.5"
+			},
+			"answers": ["0;1;2;3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

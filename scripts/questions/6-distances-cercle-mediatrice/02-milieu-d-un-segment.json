@@ -1,0 +1,182 @@
+{
+	"title": "Milieu d'un segment",
+	"description": "Le milieu I de [AB] est le point du segment à égale distance de A et de B : calculer AI ou AB, puis dire si un point est le milieu (sur le segment ET à égale distance)",
+	"grades": ["6"],
+	"theme": "Géométrie",
+	"domain": "Figures planes",
+	"subdomain": "Distances",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le point $I$ est le milieu du segment $[AB]$.\n\n```figure\nfenetre: -0.8 ; {{eval:h/5+0.8;d}} ; -1.8 ; 1.8\ndescription: Un segment [AB] de {{eval:h/5;d}} cm et son milieu I, codé par deux traits égaux.\n---\nA = point(0, 0, etiquette=\"haut\")\nI = point({{eval:h/10;d}}, 0, etiquette=\"haut\")\nB = point({{eval:h/5;d}}, 0, etiquette=\"haut\")\nsegment(A, B)\nmarque_segment(A, I)\nmarque_segment(I, B)\ntexte({{eval:h/10;d}}, -0.7, \"AB = {{eval:h/5;d}} cm\")\n```\n\nQuelle est la longueur $AI$ ?\n\n$AI = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "20..60"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:h/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le milieu.** $I$ est sur $[AB]$, à la même distance de $A$ et de $B$ : il coupe le segment en deux longueurs égales.",
+					"$AI = {{eval:h/5;d}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{eval:h/10;d}}~\\unit{cm}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le point $I$ est le milieu du segment $[AB]$.\n\n```figure\nfenetre: -0.8 ; {{eval:a/5+0.8;d}} ; -1.8 ; 1.8\ndescription: Un segment [AB] et son milieu I, codé par deux traits égaux ; AI = {{eval:a/10;d}} cm.\n---\nA = point(0, 0, etiquette=\"bas\")\nI = point({{eval:a/10;d}}, 0, etiquette=\"bas\")\nB = point({{eval:a/5;d}}, 0, etiquette=\"bas\")\nsegment(A, B)\nmarque_segment(A, I)\nmarque_segment(I, B)\ntexte({{eval:a/20;d}}, 0.5, \"{{eval:a/10;d}} cm\")\n```\n\nQuelle est la longueur $AB$ ?\n\n$AB = ?~\\unit{cm}$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "20..60"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a/5;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le milieu.** $I$ est le milieu de $[AB]$ : $IB = AI = {{eval:a/10;d}}~\\unit{cm}$.",
+					"$AB = AI + IB = {{eval:a/10;d}} + {{eval:a/10;d}} = \\textcolor{{{color:primary.0}}}{{{eval:a/5;d}}~\\unit{cm}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le point $I$ est-il le milieu du segment $[AB]$ ?\n\n```figure\nfenetre: -0.8 ; 8.8 ; -1 ; 3.3\ndescription: Un segment [AB] et un point I, avec ses longueurs ou ses codages.\n---\nA = point(0, 0, etiquette=\"bas\")\nB = point(8, 0, etiquette=\"bas\")\nI = point({{eval:(3)*(k-2)*(k-3)/(2)+(4)*(k-1)*(k-3)/(-1)+(4)*(k-1)*(k-2)/(2);d}}, {{eval:(2.5)*(k-1)*(k-3)/(-1);d}}, etiquette=\"haut\")\nsegment(A, B)\nsegment(A, I, visible={{if:k==2|vrai|faux}})\nsegment(I, B, visible={{if:k==2|vrai|faux}})\nmarque_segment(A, I, visible={{if:k==1|faux|vrai}})\nmarque_segment(I, B, visible={{if:k==1|faux|vrai}})\ntexte(1.5, -0.6, \"3 cm\", visible={{if:k==1|vrai|faux}})\ntexte(5.5, -0.6, \"5 cm\", visible={{if:k==1|vrai|faux}})\n```\n\n\n\n```choix\nmelanger: non\n- oui\n- non : $I$ n'est pas à la même distance de $A$ et de $B$\n- non : $I$ n'est pas sur le segment $[AB]$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "j",
+					"expression": "eval:(1)*(k-2)*(k-3)/(2)+(2)*(k-1)*(k-3)/(-1)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le milieu de $[AB]$** est le point **du segment** $[AB]$ qui est à **la même distance** de $A$ et de $B$ : il faut les deux.",
+					"{{if:k==1|$I$ est sur $[AB]$, mais $AI = 3~\\unit{cm}$ et $IB = 5~\\unit{cm}$ : $\\textcolor{{{color:primary.0}}}{\\text{non}}$, ce n'est pas le milieu.|{{if:k==2|$AI = IB$ (codage), mais $I$ n'est pas sur le segment $[AB]$ : $\\textcolor{{{color:primary.0}}}{\\text{non}}$, ce n'est pas le milieu.|$I$ est sur $[AB]$ et $AI = IB$ (codage) : $\\textcolor{{{color:primary.0}}}{\\text{oui}}$, c'est le milieu.}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "AB = 9 : AI = 4,5",
+			"variationIndex": 0,
+			"variables": {
+				"h": "45"
+			},
+			"answers": ["4,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 9 (AB recopié)",
+			"variationIndex": 0,
+			"variables": {
+				"h": "45"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 18 (doublé)",
+			"variationIndex": 0,
+			"variables": {
+				"h": "45"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "AI = 3,7 : AB = 7,4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "37"
+			},
+			"answers": ["7,4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1,85 (divisé)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "37"
+			},
+			"answers": ["1,85"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sur le segment, pas à égale distance",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"j": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : oui pour I hors de [AB]",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"j": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Hors du segment",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"j": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Vrai milieu",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

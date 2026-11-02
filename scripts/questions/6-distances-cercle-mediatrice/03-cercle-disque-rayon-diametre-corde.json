@@ -1,0 +1,292 @@
+{
+	"title": "Cercle, disque, rayon, diamètre, corde",
+	"description": "Reconnaître un rayon, un diamètre, une corde ; passer du rayon au diamètre ; distinguer un cercle d'un disque ; savoir que le diamètre est la plus longue corde",
+	"grades": ["6"],
+	"theme": "Géométrie",
+	"domain": "Figures planes",
+	"subdomain": "Cercles et disques",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici un cercle de centre $O$.\n\n```figure\nfenetre: -4 ; 4 ; -3.8 ; 3.8\ndescription: Un cercle de centre O ; trois segments tracés : [OA], [BC] qui passe par O, et [DE].\n---\nO = point(0, 0, etiquette=\"bas-droite\")\ncercle(O, rayon=3)\nA = point(2.6, 1.5, etiquette=\"haut-droite\")\nB = point(-2.12, 2.12, etiquette=\"haut-gauche\")\nC = point(2.12, -2.12, etiquette=\"bas-droite\")\nD = point(-2.82, -1.03, etiquette=\"gauche\")\nE = point(0.52, -2.95, etiquette=\"bas\")\nsegment(O, A, couleur=\"bleu\")\nsegment(B, C, couleur=\"bleu\")\nsegment(D, E, couleur=\"bleu\")\n```\n\nQue représente le segment {{if:k==1|$[OA]$|{{if:k==2|$[BC]$|$[DE]$}}}} pour ce cercle ?\n\n```choix\nmelanger: non\n- un rayon\n- un diamètre\n- une corde\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "j",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==1|**Un rayon** joint le centre $O$ à un point du cercle : $[OA]$ est $\\textcolor{{{color:primary.0}}}{\\text{un rayon}}$.|{{if:k==2|**Un diamètre** joint deux points du cercle en passant par le centre $O$ : $[BC]$ est $\\textcolor{{{color:primary.0}}}{\\text{un diamètre}}$.|**Une corde** joint deux points du cercle ; elle ne passe pas forcément par le centre : $[DE]$ est $\\textcolor{{{color:primary.0}}}{\\text{une corde}}$.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "{{if:k==1|Le rayon d'un cercle mesure ${{eval:r/10;d}}~\\unit{cm}$. Quel est son diamètre ?\n\nDiamètre : $?~\\unit{cm}$|Le diamètre d'un cercle mesure ${{eval:r/5;d}}~\\unit{cm}$. Quel est son rayon ?\n\nRayon : $?~\\unit{cm}$}}",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "r",
+					"expression": "15..60"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(3-k)*r/10;d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le diamètre est le double du rayon** (il traverse le cercle en passant par le centre : deux rayons bout à bout).",
+					"{{if:k==1|$2 \\times {{eval:r/10;d}} = \\textcolor{{{color:primary.0}}}{{{eval:r/5;d}}~\\unit{cm}}$.|${{eval:r/5;d}} \\div 2 = \\textcolor{{{color:primary.0}}}{{{eval:r/10;d}}~\\unit{cm}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "La figure bleue est-elle un cercle ou un disque ?\n\n```figure\nfenetre: -3 ; 3 ; -2.8 ; 2.8\ndescription: Une figure bleue : {{if:k==1|un cercle (la ligne seule)|un disque (la surface coloriée et son bord)}}.\n---\nO = point(0, 0, etiquette=\"bas-droite\")\ncercle(O, rayon=2.2, couleur=\"bleu\", epaisseur=2, remplissage=\"bleu\", opacite_fond={{if:k==1|0|0.45}})\n```\n\n\n\n```choix\nmelanger: non\n- un cercle\n- un disque\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "j",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le cercle** est la ligne : les points à la même distance du centre. **Le disque** est la surface : le cercle et tout l'intérieur.",
+					"{{if:k==1|Seule la ligne est tracée : c'est $\\textcolor{{{color:primary.0}}}{\\text{un cercle}}$.|La surface est coloriée : c'est $\\textcolor{{{color:primary.0}}}{\\text{un disque}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "Dans un cercle de rayon ${{r}}~\\unit{cm}$, une corde peut-elle mesurer ${{c}}~\\unit{cm}$ ?\n\n```choix\nmelanger: non\n- oui\n- non\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "r",
+					"expression": "3..6"
+				},
+				{
+					"name": "c",
+					"expression": "eval:2*r+2*k-3"
+				},
+				{
+					"name": "j",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La plus longue corde est le diamètre** : $2 \\times {{r}} = {{eval:2*r}}~\\unit{cm}$. Toutes les cordes mesurent au plus ${{eval:2*r}}~\\unit{cm}$.",
+					"{{if:k==1|${{c}}~\\unit{cm}$, c'est moins que le diamètre : $\\textcolor{{{color:primary.0}}}{\\text{oui}}$.|${{c}}~\\unit{cm}$, c'est plus que le diamètre : $\\textcolor{{{color:primary.0}}}{\\text{non}}$.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "[OA] : rayon",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "[BC] : diamètre",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"j": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : [DE] pris pour un diamètre",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"j": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "[DE] : corde",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"j": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rayon 3,5 : diamètre 7",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"r": "35"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1,75 (divisé au lieu de doublé)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"r": "35"
+			},
+			"answers": ["1,75"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Diamètre 7 : rayon 3,5",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"r": "35"
+			},
+			"answers": ["3,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 14 (doublé au lieu de divisé)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"r": "35"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Ligne seule : cercle",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Surface : disque",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"j": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cercle pour la surface",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"j": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Rayon 4, corde 7 : oui",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"r": "4",
+				"c": "7",
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Rayon 4, corde 9 : non",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2",
+				"r": "4",
+				"c": "9",
+				"j": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : oui pour 9 (plus long que le diamètre)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2",
+				"r": "4",
+				"c": "9",
+				"j": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

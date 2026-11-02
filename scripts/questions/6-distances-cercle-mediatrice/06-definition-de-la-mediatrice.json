@@ -1,0 +1,132 @@
+{
+	"title": "Définition de la médiatrice d'un segment",
+	"description": "La médiatrice d'un segment est la droite perpendiculaire au segment qui passe par son milieu : la reconnaître sur une figure codée, choisir sa définition",
+	"grades": ["6"],
+	"theme": "Géométrie",
+	"domain": "Figures planes",
+	"subdomain": "Médiatrice d'un segment",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "La droite $d$ est-elle la médiatrice du segment $[AB]$ ?\n\n```figure\nfenetre: -0.8 ; 6.8 ; -2.6 ; 2.8\ndescription: Un segment [AB] et une droite d qui le coupe en H, avec ses codages.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point(6, 0, etiquette=\"bas-droite\")\nH = point({{eval:(2)*(k-2)*(k-3)/(2)+(3)*(k-1)*(k-3)/(-1)+(3)*(k-1)*(k-2)/(2);d}}, 0, etiquette=\"bas-droite\")\nK = point({{eval:(2)*(k-2)*(k-3)/(2)+(4.2)*(k-1)*(k-3)/(-1)+(3)*(k-1)*(k-2)/(2);d}}, 2, visible=faux)\nL = point({{eval:(2)*(k-2)*(k-3)/(2)+(1.8)*(k-1)*(k-3)/(-1)+(3)*(k-1)*(k-2)/(2);d}}, -2, visible=faux)\nsegment(A, B)\nd = droite(K, L, couleur=\"bleu\")\ntexte({{eval:(2.25)*(k-2)*(k-3)/(2)+(4.5)*(k-1)*(k-3)/(-1)+(3.25)*(k-1)*(k-2)/(2);d}}, 2.4, \"d\")\nangle(B, H, K, marque=\"carre\", visible={{if:k==2|faux|vrai}})\nmarque_segment(A, H, visible={{if:k==1|faux|vrai}})\nmarque_segment(H, B, visible={{if:k==1|faux|vrai}})\ntexte(1, -0.6, \"2 cm\", visible={{if:k==1|vrai|faux}})\ntexte(4, -0.6, \"4 cm\", visible={{if:k==1|vrai|faux}})\n```\n\n\n\n```choix\nmelanger: non\n- oui\n- non : $d$ n'est pas perpendiculaire à $[AB]$\n- non : $d$ ne passe pas par le milieu de $[AB]$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "j",
+					"expression": "eval:3-k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La médiatrice** de $[AB]$ est la droite **perpendiculaire** à $[AB]$ qui passe par son **milieu** : il faut les deux.",
+					"{{if:k==1|$d$ est perpendiculaire à $[AB]$ (angle droit), mais $AH = 2~\\unit{cm}$ et $HB = 4~\\unit{cm}$ : $H$ n'est pas le milieu, $\\textcolor{{{color:primary.0}}}{\\text{non}}$.|{{if:k==2|$d$ passe par le milieu $H$ (codage), mais aucun angle droit : $\\textcolor{{{color:primary.0}}}{\\text{non}}$.|$d$ passe par le milieu $H$ (codage) et coupe $[AB]$ à angle droit : $\\textcolor{{{color:primary.0}}}{\\text{oui}}$.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Qu'est-ce que la médiatrice d'un segment ?\n\n```choix\n- la droite perpendiculaire au segment qui passe par son milieu\n- la droite qui passe par le milieu du segment\n- la droite perpendiculaire au segment\n- la droite parallèle au segment qui passe par son milieu\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**La médiatrice** d'un segment est la droite **perpendiculaire** au segment qui passe par son **milieu**.",
+					"Une droite qui passe par le milieu sans être perpendiculaire, ou perpendiculaire ailleurs qu'au milieu, n'est pas la médiatrice."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Perpendiculaire hors du milieu",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"j": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : oui (angle droit seul)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"j": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Milieu sans angle droit",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"j": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : oui (milieu seul)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"j": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Médiatrice",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Définition",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : par le milieu seulement",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

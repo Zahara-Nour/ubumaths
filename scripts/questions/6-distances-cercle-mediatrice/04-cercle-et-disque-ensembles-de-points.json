@@ -1,0 +1,299 @@
+{
+	"title": "Cercle et disque : des ensembles de points",
+	"description": "Interpréter des égalités et inégalités de distances au centre : quels points sont sur le cercle (à la distance du rayon), lesquels appartiennent au disque (à au plus cette distance)",
+	"grades": ["6"],
+	"theme": "Géométrie",
+	"domain": "Figures planes",
+	"subdomain": "Cercles et disques",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le cercle $\\mathcal{C}$ a pour centre $O$ et pour rayon ${{r}}~\\unit{cm}$. On connaît les distances de quatre points au centre $O$ :\n\n$OA = {{eval:dA;d}}~\\unit{cm}$ ; $OB = {{eval:dB;d}}~\\unit{cm}$ ; $OC = {{eval:dC;d}}~\\unit{cm}$ ; $OD = {{eval:dD;d}}~\\unit{cm}$.\n\nQuels points sont **sur le cercle** $\\mathcal{C}$ ?\n\n```choix\nplusieurs: oui\nmelanger: non\n- $A$\n- $B$\n- $C$\n- $D$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "r",
+					"expression": "2..5"
+				},
+				{
+					"name": "x",
+					"expression": "3..9"
+				},
+				{
+					"name": "y",
+					"expression": "3..9"
+				},
+				{
+					"name": "dA",
+					"expression": "eval:r+(-x)/10*(k-1)*(k-3)/(-1)"
+				},
+				{
+					"name": "dB",
+					"expression": "eval:r+(-x)/10*(k-2)*(k-3)/(2)+(y)/10*(k-1)*(k-2)/(2)"
+				},
+				{
+					"name": "dC",
+					"expression": "eval:r+(y)/10*(k-1)*(k-3)/(-1)+(-x)/10*(k-1)*(k-2)/(2)"
+				},
+				{
+					"name": "dD",
+					"expression": "eval:r+(y)/10*(k-2)*(k-3)/(2)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k==1|0;2|{{if:k==2|1;3|0;3}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le cercle** de centre $O$ et de rayon ${{r}}~\\unit{cm}$ est l'ensemble des points situés **exactement** à ${{r}}~\\unit{cm}$ de $O$.",
+					"$OA = {{eval:dA;d}}${{if:dA==r| : sur le cercle|{{if:dA<r| : à l'intérieur| : à l'extérieur}}}} ; $OB = {{eval:dB;d}}${{if:dB==r| : sur le cercle|{{if:dB<r| : à l'intérieur| : à l'extérieur}}}} ; $OC = {{eval:dC;d}}${{if:dC==r| : sur le cercle|{{if:dC<r| : à l'intérieur| : à l'extérieur}}}} ; $OD = {{eval:dD;d}}${{if:dD==r| : sur le cercle|{{if:dD<r| : à l'intérieur| : à l'extérieur}}}}.",
+					"Sur le cercle : $\\textcolor{{{color:primary.0}}}{{{if:k==1|A \\text{ et } C|{{if:k==2|B \\text{ et } D|A \\text{ et } D}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le cercle $\\mathcal{C}$ a pour centre $O$ et pour rayon ${{r}}~\\unit{cm}$. On connaît les distances de quatre points au centre $O$ :\n\n$OA = {{eval:dA;d}}~\\unit{cm}$ ; $OB = {{eval:dB;d}}~\\unit{cm}$ ; $OC = {{eval:dC;d}}~\\unit{cm}$ ; $OD = {{eval:dD;d}}~\\unit{cm}$.\n\nQuels points appartiennent au **disque** de centre $O$ et de rayon ${{r}}~\\unit{cm}$ ?\n\n```choix\nplusieurs: oui\nmelanger: non\n- $A$\n- $B$\n- $C$\n- $D$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "r",
+					"expression": "2..5"
+				},
+				{
+					"name": "x",
+					"expression": "3..9"
+				},
+				{
+					"name": "y",
+					"expression": "3..9"
+				},
+				{
+					"name": "dA",
+					"expression": "eval:r+(-x)/10*(k-1)*(k-3)/(-1)"
+				},
+				{
+					"name": "dB",
+					"expression": "eval:r+(-x)/10*(k-2)*(k-3)/(2)+(y)/10*(k-1)*(k-2)/(2)"
+				},
+				{
+					"name": "dC",
+					"expression": "eval:r+(y)/10*(k-1)*(k-3)/(-1)+(-x)/10*(k-1)*(k-2)/(2)"
+				},
+				{
+					"name": "dD",
+					"expression": "eval:r+(y)/10*(k-2)*(k-3)/(2)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k==1|0;1;2|{{if:k==2|0;1;3|0;2;3}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Le disque** de centre $O$ et de rayon ${{r}}~\\unit{cm}$ est l'ensemble des points situés à **au plus** ${{r}}~\\unit{cm}$ de $O$ : le cercle compris.",
+					"$OA = {{eval:dA;d}}${{if:dA==r| : sur le cercle|{{if:dA<r| : à l'intérieur| : à l'extérieur}}}} ; $OB = {{eval:dB;d}}${{if:dB==r| : sur le cercle|{{if:dB<r| : à l'intérieur| : à l'extérieur}}}} ; $OC = {{eval:dC;d}}${{if:dC==r| : sur le cercle|{{if:dC<r| : à l'intérieur| : à l'extérieur}}}} ; $OD = {{eval:dD;d}}${{if:dD==r| : sur le cercle|{{if:dD<r| : à l'intérieur| : à l'extérieur}}}}.",
+					"Dans le disque : $\\textcolor{{{color:primary.0}}}{{{if:k==1|A, B \\text{ et } C|{{if:k==2|A, B \\text{ et } D|A, C \\text{ et } D}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le cercle $\\mathcal{C}$ a pour centre $O$ et pour rayon ${{r}}~\\unit{cm}$. Un point $M$ est tel que $OM = {{eval:dM;d}}~\\unit{cm}$.\n\nOù est le point $M$ ?\n\n```choix\nmelanger: non\n- sur le cercle $\\mathcal{C}$\n- à l'intérieur du disque, pas sur le cercle\n- hors du disque\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "r",
+					"expression": "2..5"
+				},
+				{
+					"name": "u",
+					"expression": "2..8"
+				},
+				{
+					"name": "dM",
+					"expression": "eval:r+u/10*(-1)*(k-1)*(k-3)/(-1)+(1)*(k-1)*(k-2)/(2)"
+				},
+				{
+					"name": "j",
+					"expression": "eval:k-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{j}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compare $OM = {{eval:dM;d}}~\\unit{cm}$ au rayon ${{r}}~\\unit{cm}$.",
+					"{{if:k==1|$OM$ est égal au rayon : $M$ est $\\textcolor{{{color:primary.0}}}{\\text{sur le cercle}}$.|{{if:k==2|$OM$ est plus petit que le rayon : $M$ n'est pas sur le cercle, il est $\\textcolor{{{color:primary.0}}}{\\text{à l'intérieur du disque}}$.|$OM$ est plus grand que le rayon : $M$ n'est ni sur le cercle ni dans le disque, il est $\\textcolor{{{color:primary.0}}}{\\text{hors du disque}}$.}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Sur le cercle : A et C",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "3",
+				"x": "6",
+				"y": "5",
+				"dA": "3",
+				"dB": "2.4",
+				"dC": "3",
+				"dD": "3.5"
+			},
+			"answers": ["0;2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : A, B, C (disque au lieu du cercle)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"r": "3",
+				"x": "6",
+				"y": "5",
+				"dA": "3",
+				"dB": "2.4",
+				"dC": "3",
+				"dD": "3.5"
+			},
+			"answers": ["0;1;2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Disque : A, B, C",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"r": "3",
+				"x": "6",
+				"y": "5",
+				"dA": "3",
+				"dB": "2.4",
+				"dC": "3",
+				"dD": "3.5"
+			},
+			"answers": ["0;1;2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Incomplet : B seul (le cercle oublié)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"r": "3",
+				"x": "6",
+				"y": "5",
+				"dA": "3",
+				"dB": "2.4",
+				"dC": "3",
+				"dD": "3.5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "unoptimal_form"
+			}
+		},
+		{
+			"description": "Incomplet : A et C (le dedans oublié)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"r": "3",
+				"x": "6",
+				"y": "5",
+				"dA": "3",
+				"dB": "2.4",
+				"dC": "3",
+				"dD": "3.5"
+			},
+			"answers": ["0;2"],
+			"expected": {
+				"status": "unoptimal_form"
+			}
+		},
+		{
+			"description": "OM = r : sur le cercle",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1",
+				"r": "3",
+				"u": "4",
+				"dM": "3",
+				"j": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "OM < r : dedans",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"r": "3",
+				"u": "4",
+				"dM": "2.6",
+				"j": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "OM > r : dehors",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"r": "3",
+				"u": "4",
+				"dM": "3.4",
+				"j": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dedans pour OM > r",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"r": "3",
+				"u": "4",
+				"dM": "3.4",
+				"j": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
