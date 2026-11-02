@@ -50,8 +50,8 @@ INTERVALLE_PRINCIPAL = "$\\left]-\\pi\\,;\\pi\\right]$"
 # ---------------------------------------------------------------------------
 
 QUARTS = "0|\\frac{\\pi}{2}|\\pi|-\\frac{\\pi}{2}|2\\pi|-\\pi|\\frac{3\\pi}{2}|\\frac{5\\pi}{2}|-\\frac{3\\pi}{2}|3\\pi"
-LETTRE = "{{if:k==0|A|{{if:k==1|B|{{if:k==2|C|D}}}}}}"
-POINTS_ABCD = "points: A = {{o}}*pi/2, B = {{eval:o+1}}*pi/2, C = {{eval:o+2}}*pi/2, D = {{eval:o+3}}*pi/2"
+LETTRE = "{{if:k==0|M|{{if:k==1|N|{{if:k==2|P|Q}}}}}}"
+POINTS_ABCD = "points: M = {{o}}*pi/2, N = {{eval:o+1}}*pi/2, P = {{eval:o+2}}*pi/2, Q = {{eval:o+3}}*pi/2"
 
 b1 = base(
     "Le cercle trigonométrique",
@@ -86,7 +86,7 @@ b1["variations"] = [
         },
     },
     {
-        "statement": "Quel point du cercle trigonométrique est associé au réel ${{r}}$ ?\n\n```trig\npreset: custom\nlabels: false\n" + POINTS_ABCD + "\n```\n\n```choix\nmelanger: non\n- $A$\n- $B$\n- $C$\n- $D$\n```",
+        "statement": "Quel point du cercle trigonométrique est associé au réel ${{r}}$ ?\n\n```trig\npreset: custom\nlabels: false\n" + POINTS_ABCD + "\n```\n\n```choix\nmelanger: non\n- $M$\n- $N$\n- $P$\n- $Q$\n```",
         "variables": [
             {"name": "r", "expression": QUARTS},
             {"name": "p", "expression": "eval:2*r/\\pi"},
@@ -110,11 +110,11 @@ b1["testSpecs"] = [
     spec("Sens direct : inverse des aiguilles", 1, {"w": "0"}, ["0"]),
     spec("Erreur : sens direct = des aiguilles", 1, {"w": "0"}, ["1"], ok=False),
     spec("Sens indirect : des aiguilles", 1, {"w": "1"}, ["1"]),
-    spec("π/2 avec A en 0 : B", 2, {"r": "\\frac{\\pi}{2}", "o": "0"}, ["1"]),
-    spec("−π/2 avec A en 0 : D", 2, {"r": "-\\frac{\\pi}{2}", "o": "0"}, ["3"]),
-    spec("Erreur : −π/2 lu dans le sens direct (B)", 2, {"r": "-\\frac{\\pi}{2}", "o": "0"}, ["1"], ok=False),
-    spec("5π/2 avec A en π/2 : A", 2, {"r": "\\frac{5\\pi}{2}", "o": "1"}, ["0"]),
-    spec("3π avec A en 0 : C", 2, {"r": "3\\pi", "o": "0"}, ["2"]),
+    spec("π/2 avec M en 0 : N", 2, {"r": "\\frac{\\pi}{2}", "o": "0"}, ["1"]),
+    spec("−π/2 avec M en 0 : Q", 2, {"r": "-\\frac{\\pi}{2}", "o": "0"}, ["3"]),
+    spec("Erreur : −π/2 lu dans le sens direct (N)", 2, {"r": "-\\frac{\\pi}{2}", "o": "0"}, ["1"], ok=False),
+    spec("5π/2 avec M en π/2 : M", 2, {"r": "\\frac{5\\pi}{2}", "o": "1"}, ["0"]),
+    spec("3π avec M en 0 : P", 2, {"r": "3\\pi", "o": "0"}, ["2"]),
 ]
 write("01-le-cercle-trigonometrique.json", b1)
 
@@ -139,7 +139,7 @@ b2 = base(
 )
 b2["variations"] = [
     {
-        "statement": "Le point $M$ du cercle trigonométrique est associé au réel ${{r}}$.\n\n```trig\npreset: quarters\npoints: M = {{p}}*pi/12\n```\n\nQuelle est la longueur de l'arc parcouru de $I$ à $M$ dans le sens direct ?\n\n$?$",
+        "statement": "Le point $M$ du cercle trigonométrique est associé au réel ${{r}}$.\n\n```trig\npreset: quarters\npoints: I = 0, M = {{p}}*pi/12\n```\n\nQuelle est la longueur de l'arc parcouru de $I$ à $M$ dans le sens direct ?\n\n$?$",
         "variables": [
             {"name": "r", "expression": DANS_0_2PI},
             {"name": "p", "expression": "eval:12*r/\\pi"},
@@ -148,7 +148,7 @@ b2["variations"] = [
         "correction": {
             "steps": [
                 "Le cercle trigonométrique a pour rayon $1$ : un arc intercepté par un angle de $\\theta$ radians mesure $\\theta\\times1=\\theta$. Le réel associé à un point est **la longueur de l'arc parcouru depuis $I$** (dans le sens direct pour un réel positif).",
-                "```trig\npreset: custom\nmode: arc\nangles: {{p}}*pi/12\n```",
+                "```trig\npreset: custom\nangles: {{p}}*pi/12\npoints: I = 0\n```",
                 "${{r}}\\in\\left]0\\,;2\\pi\\right[$ : l'arc de $I$ à $M$ dans le sens direct mesure $" + col("{{r}}") + "$.",
             ]
         },
@@ -223,7 +223,7 @@ HORS = (
     "\\frac{13\\pi}{6}|\\frac{7\\pi}{3}|\\frac{9\\pi}{4}|\\frac{11\\pi}{4}|\\frac{17\\pi}{6}|\\frac{7\\pi}{6}"
     "|\\frac{5\\pi}{3}|\\frac{7\\pi}{4}|-\\frac{7\\pi}{4}|-\\frac{11\\pi}{6}|-\\frac{5\\pi}{4}|-\\frac{4\\pi}{3}"
 )
-REPERES = "Les repères $0$, $\\dfrac{\\pi}{2}$, $\\pi$ et $-\\dfrac{\\pi}{2}$ partagent le cercle en quarts ; $\\dfrac{\\pi}{6}$ est le tiers d'un quart de tour, $\\dfrac{\\pi}{4}$ sa moitié. Un réel positif se place dans le sens direct depuis $I$, un réel négatif dans le sens indirect."
+REPERES = "Les repères $0$, $\\dfrac{\\pi}{2}$, $\\pi$ et $\\dfrac{3\\pi}{2}$ (ou $-\\dfrac{\\pi}{2}$) partagent le cercle en quarts ; $\\dfrac{\\pi}{6}$ est le tiers d'un quart de tour, $\\dfrac{\\pi}{4}$ sa moitié. Un réel positif se place dans le sens direct depuis $I$, un réel négatif dans le sens indirect."
 
 b3 = base(
     "Placer un point sur le cercle trigonométrique",
@@ -236,7 +236,7 @@ b3 = base(
 )
 b3["variations"] = [
     {
-        "statement": "Place sur le cercle trigonométrique le point $M$ associé au réel ${{r}}$.\n\n```trig\npreset: quarters\nplacer: M = {{p}}*pi/12\n```",
+        "statement": "Place sur le cercle trigonométrique le point $M$ associé au réel ${{r}}$.\n\n```trig\npreset: quarters\npoints: I = 0\nplacer: M = {{p}}*pi/12\n```",
         "variables": [
             {"name": "r", "expression": PRINCIPAUX},
             {"name": "p", "expression": "eval:12*r/\\pi"},
@@ -246,12 +246,12 @@ b3["variations"] = [
             "steps": [
                 REPERES,
                 "${{r}}={{if:p<0|-|}}{{if:mod(p,2)==0|{{eval:abs(p)/2}}\\times\\dfrac{\\pi}{6}|{{eval:abs(p)/3}}\\times\\dfrac{\\pi}{4}}}$ : on part de $I$ et on tourne dans le sens {{if:p<0|indirect|direct}}.",
-                "```trig\npreset: quarters\npoints: M = {{p}}*pi/12\n```",
+                "```trig\npreset: quarters\npoints: I = 0, M = {{p}}*pi/12\n```",
             ]
         },
     },
     {
-        "statement": "Place sur le cercle trigonométrique le point $M$ associé au réel ${{r}}$.\n\n```trig\npreset: quarters\nplacer: M = {{p}}*pi/12\n```",
+        "statement": "Place sur le cercle trigonométrique le point $M$ associé au réel ${{r}}$.\n\n```trig\npreset: quarters\npoints: I = 0\nplacer: M = {{p}}*pi/12\n```",
         "variables": [
             {"name": "r", "expression": HORS},
             {"name": "p", "expression": "eval:12*r/\\pi"},
@@ -264,12 +264,12 @@ b3["variations"] = [
             "steps": [
                 "${{r}}$ n'est pas dans " + INTERVALLE_PRINCIPAL + " : on cherche sa **mesure principale** en ajoutant ou en retirant des tours complets ($2\\pi$), qui ramènent au même point.",
                 "${{r}}={{m}}{{if:n>0|+|-}}{{if:n*n>1|{{eval:2*abs(n)}}|2}}\\pi$, et ${{m}}\\in\\left]-\\pi\\,;\\pi\\right]$ : $M$ est le point associé à $" + col("{{m}}") + "$.",
-                "```trig\npreset: quarters\npoints: M = {{q}}*pi/12\n```",
+                "```trig\npreset: quarters\npoints: I = 0, M = {{q}}*pi/12\n```",
             ]
         },
     },
     {
-        "statement": "Soit $x={{r}}$. Place sur le cercle trigonométrique le point $M$ associé à $x$ et le point $N$ associé à ${{if:w==0|-x|\\pi-x}}$.\n\n```trig\npreset: quarters\nplacer: M = {{p}}*pi/12 ; N = {{v}}*pi/12\n```",
+        "statement": "Soit $x={{r}}$. Place sur le cercle trigonométrique le point $M$ associé à $x$ et le point $N$ associé à ${{if:w==0|-x|\\pi-x}}$.\n\n```trig\npreset: quarters\npoints: I = 0\nplacer: M = {{p}}*pi/12 ; N = {{v}}*pi/12\n```",
         "variables": [
             {"name": "w", "expression": "0|1"},
             {"name": "r", "expression": PRINCIPAUX},
@@ -282,7 +282,7 @@ b3["variations"] = [
             "steps": [
                 "{{if:w==0|Les points associés à $x$ et à $-x$ sont **symétriques par rapport à l'axe des abscisses**.|Les points associés à $x$ et à $\\pi-x$ sont **symétriques par rapport à l'axe des ordonnées**.}}",
                 "${{if:w==0|-x|\\pi-x}}=" + col("{{m}}") + "$",
-                "```trig\npreset: quarters\npoints: M = {{p}}*pi/12, N = {{v}}*pi/12\n```",
+                "```trig\npreset: quarters\npoints: I = 0, M = {{p}}*pi/12, N = {{v}}*pi/12\n```",
             ]
         },
     },
@@ -308,17 +308,19 @@ write("03-placer-un-point-sur-le-cercle.json", b3)
 
 COURBE = (
     "```courbe\nx: -6 ; 6\ny: -7 ; 7\ngrille: 1 ; 1\n"
-    "f(x) = {{a}}*(x{{eval:-r;+}})*(x{{eval:-s;+}})*(x{{eval:-t;+}})/5 sur [{{eval:r-1}} ; {{eval:t+1}}]   bleu   nom=C_f\n"
+    "f(x) = {{a}}*(x{{eval:-r;+}})*(x{{eval:-s;+}})*(x{{eval:-t;+}})/4 sur [{{eval:r-1}} ; {{eval:t+1}}]   bleu   nom=C_f\n"
     "taille: moyenne\n"
     "description: Courbe d'une fonction qui coupe l'axe des abscisses en {{r}}, {{s}} et {{t}}.\n```"
 )
 VARS = [
     {"name": "a", "expression": "1|-1"},
-    {"name": "r", "expression": "-4..2"},
-    {"name": "s", "expression": "-3..3"},
-    {"name": "t", "expression": "-2..4"},
+    {"name": "r", "expression": "-4..0"},
+    {"name": "d", "expression": "2|3"},
+    {"name": "g", "expression": "2|3"},  # jamais `e` (Euler)
+    {"name": "s", "expression": "eval:r+d"},
+    {"name": "t", "expression": "eval:s+g"},
 ]
-CONDS = ["r < s", "s < t", "t - r <= 5"]
+CONDS = ["d + g <= 5", "t <= 4"]  # écarts de 2 ou 3 : bosses d'au moins 0,77, lisibles sur la grille
 DEF = "La fonction $f$ est définie sur $\\left[{{eval:r-1}}\\,;{{eval:t+1}}\\right]$ ; sa courbe $\\mathcal{C}_f$ est tracée ci-dessous."
 LECTURE = "$f(x)$ est **positif** là où $\\mathcal{C}_f$ est au-dessus de l'axe des abscisses, **négatif** là où elle est au-dessous, et **nul** là où elle le coupe : en ${{r}}$, ${{s}}$ et ${{t}}$."
 
@@ -414,17 +416,17 @@ b4["variations"] = [
     },
 ]
 b4["testSpecs"] = [
-    spec("a > 0, ]r ; s[ : positif", 0, {"a": "1", "r": "-2", "s": "0", "t": "3", "z": "0", "u": "-2", "v": "0"}, ["0"]),
-    spec("a > 0, ]s ; t[ : négatif", 0, {"a": "1", "r": "-2", "s": "0", "t": "3", "z": "1", "u": "0", "v": "3"}, ["1"]),
-    spec("Erreur : a > 0, ]s ; t[ lu positif", 0, {"a": "1", "r": "-2", "s": "0", "t": "3", "z": "1", "u": "0", "v": "3"}, ["0"], ok=False),
-    spec("a < 0, ]r ; s[ : négatif", 0, {"a": "-1", "r": "-2", "s": "0", "t": "3", "z": "0", "u": "-2", "v": "0"}, ["1"]),
-    spec("]r ; t[ : change de signe", 0, {"a": "-1", "r": "-2", "s": "0", "t": "3", "z": "2", "u": "-2", "v": "3"}, ["2"]),
-    spec("a > 0 : [−2 ; 0] ∪ [3 ; 4]", 1, {"a": "1", "r": "-2", "s": "0", "t": "3"}, ["[-2;0]\\cup[3;4]"]),
-    spec("Erreur : crochets ouverts", 1, {"a": "1", "r": "-2", "s": "0", "t": "3"}, ["]-2;0[\\cup]3;4["], ok=False),
-    spec("a < 0 : [−3 ; −2] ∪ [0 ; 3]", 1, {"a": "-1", "r": "-2", "s": "0", "t": "3"}, ["[-3;-2]\\cup[0;3]"]),
-    spec("Erreur : a < 0, ensemble de f(x) ≤ 0", 1, {"a": "-1", "r": "-2", "s": "0", "t": "3"}, ["[-2;0]\\cup[3;4]"], ok=False),
-    spec("Tableau juste", 2, {"a": "1", "r": "-2", "s": "0", "t": "3"}, ["0"]),
-    spec("Erreur : signes inversés", 2, {"a": "1", "r": "-2", "s": "0", "t": "3"}, ["1"], ok=False),
+    spec("a > 0, ]r ; s[ : positif", 0, {"a": "1", "r": "-2", "d": "2", "g": "3", "s": "0", "t": "3", "z": "0", "u": "-2", "v": "0"}, ["0"]),
+    spec("a > 0, ]s ; t[ : négatif", 0, {"a": "1", "r": "-2", "d": "2", "g": "3", "s": "0", "t": "3", "z": "1", "u": "0", "v": "3"}, ["1"]),
+    spec("Erreur : a > 0, ]s ; t[ lu positif", 0, {"a": "1", "r": "-2", "d": "2", "g": "3", "s": "0", "t": "3", "z": "1", "u": "0", "v": "3"}, ["0"], ok=False),
+    spec("a < 0, ]r ; s[ : négatif", 0, {"a": "-1", "r": "-2", "d": "2", "g": "3", "s": "0", "t": "3", "z": "0", "u": "-2", "v": "0"}, ["1"]),
+    spec("]r ; t[ : change de signe", 0, {"a": "-1", "r": "-2", "d": "2", "g": "3", "s": "0", "t": "3", "z": "2", "u": "-2", "v": "3"}, ["2"]),
+    spec("a > 0 : [−2 ; 0] ∪ [3 ; 4]", 1, {"a": "1", "r": "-2", "d": "2", "g": "3", "s": "0", "t": "3"}, ["[-2;0]\\cup[3;4]"]),
+    spec("Erreur : crochets ouverts", 1, {"a": "1", "r": "-2", "d": "2", "g": "3", "s": "0", "t": "3"}, ["]-2;0[\\cup]3;4["], ok=False),
+    spec("a < 0 : [−3 ; −2] ∪ [0 ; 3]", 1, {"a": "-1", "r": "-2", "d": "2", "g": "3", "s": "0", "t": "3"}, ["[-3;-2]\\cup[0;3]"]),
+    spec("Erreur : a < 0, ensemble de f(x) ≤ 0", 1, {"a": "-1", "r": "-2", "d": "2", "g": "3", "s": "0", "t": "3"}, ["[-2;0]\\cup[3;4]"], ok=False),
+    spec("Tableau juste", 2, {"a": "1", "r": "-2", "d": "2", "g": "3", "s": "0", "t": "3"}, ["0"]),
+    spec("Erreur : signes inversés", 2, {"a": "1", "r": "-2", "d": "2", "g": "3", "s": "0", "t": "3"}, ["1"], ok=False),
 ]
 write("04-signe-d-une-fonction-lu-sur-sa-courbe.json", b4)
 print("ok")

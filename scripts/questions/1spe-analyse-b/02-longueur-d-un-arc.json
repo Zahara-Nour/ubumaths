@@ -15,7 +15,7 @@
 	},
 	"variations": [
 		{
-			"statement": "Le point $M$ du cercle trigonométrique est associé au réel ${{r}}$.\n\n```trig\npreset: quarters\npoints: M = {{p}}*pi/12\n```\n\nQuelle est la longueur de l'arc parcouru de $I$ à $M$ dans le sens direct ?\n\n$?$",
+			"statement": "Le point $M$ du cercle trigonométrique est associé au réel ${{r}}$.\n\n```trig\npreset: quarters\npoints: I = 0, M = {{p}}*pi/12\n```\n\nQuelle est la longueur de l'arc parcouru de $I$ à $M$ dans le sens direct ?\n\n$?$",
 			"variables": [
 				{
 					"name": "r",
@@ -34,7 +34,7 @@
 			"correction": {
 				"steps": [
 					"Le cercle trigonométrique a pour rayon $1$ : un arc intercepté par un angle de $\\theta$ radians mesure $\\theta\\times1=\\theta$. Le réel associé à un point est **la longueur de l'arc parcouru depuis $I$** (dans le sens direct pour un réel positif).",
-					"```trig\npreset: custom\nmode: arc\nangles: {{p}}*pi/12\n```",
+					"```trig\npreset: custom\nangles: {{p}}*pi/12\npoints: I = 0\n```",
 					"${{r}}\\in\\left]0\\,;2\\pi\\right[$ : l'arc de $I$ à $M$ dans le sens direct mesure $\\textcolor{{{color:primary.0}}}{{{r}}}$."
 				]
 			}

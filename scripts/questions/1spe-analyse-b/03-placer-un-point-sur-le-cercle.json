@@ -15,7 +15,7 @@
 	},
 	"variations": [
 		{
-			"statement": "Place sur le cercle trigonométrique le point $M$ associé au réel ${{r}}$.\n\n```trig\npreset: quarters\nplacer: M = {{p}}*pi/12\n```",
+			"statement": "Place sur le cercle trigonométrique le point $M$ associé au réel ${{r}}$.\n\n```trig\npreset: quarters\npoints: I = 0\nplacer: M = {{p}}*pi/12\n```",
 			"variables": [
 				{
 					"name": "r",
@@ -29,14 +29,14 @@
 			"blanks": [],
 			"correction": {
 				"steps": [
-					"Les repères $0$, $\\dfrac{\\pi}{2}$, $\\pi$ et $-\\dfrac{\\pi}{2}$ partagent le cercle en quarts ; $\\dfrac{\\pi}{6}$ est le tiers d'un quart de tour, $\\dfrac{\\pi}{4}$ sa moitié. Un réel positif se place dans le sens direct depuis $I$, un réel négatif dans le sens indirect.",
+					"Les repères $0$, $\\dfrac{\\pi}{2}$, $\\pi$ et $\\dfrac{3\\pi}{2}$ (ou $-\\dfrac{\\pi}{2}$) partagent le cercle en quarts ; $\\dfrac{\\pi}{6}$ est le tiers d'un quart de tour, $\\dfrac{\\pi}{4}$ sa moitié. Un réel positif se place dans le sens direct depuis $I$, un réel négatif dans le sens indirect.",
 					"${{r}}={{if:p<0|-|}}{{if:mod(p,2)==0|{{eval:abs(p)/2}}\\times\\dfrac{\\pi}{6}|{{eval:abs(p)/3}}\\times\\dfrac{\\pi}{4}}}$ : on part de $I$ et on tourne dans le sens {{if:p<0|indirect|direct}}.",
-					"```trig\npreset: quarters\npoints: M = {{p}}*pi/12\n```"
+					"```trig\npreset: quarters\npoints: I = 0, M = {{p}}*pi/12\n```"
 				]
 			}
 		},
 		{
-			"statement": "Place sur le cercle trigonométrique le point $M$ associé au réel ${{r}}$.\n\n```trig\npreset: quarters\nplacer: M = {{p}}*pi/12\n```",
+			"statement": "Place sur le cercle trigonométrique le point $M$ associé au réel ${{r}}$.\n\n```trig\npreset: quarters\npoints: I = 0\nplacer: M = {{p}}*pi/12\n```",
 			"variables": [
 				{
 					"name": "r",
@@ -64,12 +64,12 @@
 				"steps": [
 					"${{r}}$ n'est pas dans $\\left]-\\pi\\,;\\pi\\right]$ : on cherche sa **mesure principale** en ajoutant ou en retirant des tours complets ($2\\pi$), qui ramènent au même point.",
 					"${{r}}={{m}}{{if:n>0|+|-}}{{if:n*n>1|{{eval:2*abs(n)}}|2}}\\pi$, et ${{m}}\\in\\left]-\\pi\\,;\\pi\\right]$ : $M$ est le point associé à $\\textcolor{{{color:primary.0}}}{{{m}}}$.",
-					"```trig\npreset: quarters\npoints: M = {{q}}*pi/12\n```"
+					"```trig\npreset: quarters\npoints: I = 0, M = {{q}}*pi/12\n```"
 				]
 			}
 		},
 		{
-			"statement": "Soit $x={{r}}$. Place sur le cercle trigonométrique le point $M$ associé à $x$ et le point $N$ associé à ${{if:w==0|-x|\\pi-x}}$.\n\n```trig\npreset: quarters\nplacer: M = {{p}}*pi/12 ; N = {{v}}*pi/12\n```",
+			"statement": "Soit $x={{r}}$. Place sur le cercle trigonométrique le point $M$ associé à $x$ et le point $N$ associé à ${{if:w==0|-x|\\pi-x}}$.\n\n```trig\npreset: quarters\npoints: I = 0\nplacer: M = {{p}}*pi/12 ; N = {{v}}*pi/12\n```",
 			"variables": [
 				{
 					"name": "w",
@@ -97,7 +97,7 @@
 				"steps": [
 					"{{if:w==0|Les points associés à $x$ et à $-x$ sont **symétriques par rapport à l'axe des abscisses**.|Les points associés à $x$ et à $\\pi-x$ sont **symétriques par rapport à l'axe des ordonnées**.}}",
 					"${{if:w==0|-x|\\pi-x}}=\\textcolor{{{color:primary.0}}}{{{m}}}$",
-					"```trig\npreset: quarters\npoints: M = {{p}}*pi/12, N = {{v}}*pi/12\n```"
+					"```trig\npreset: quarters\npoints: I = 0, M = {{p}}*pi/12, N = {{v}}*pi/12\n```"
 				]
 			}
 		}

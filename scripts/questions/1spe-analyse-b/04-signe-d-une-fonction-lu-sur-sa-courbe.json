@@ -15,7 +15,7 @@
 	},
 	"variations": [
 		{
-			"statement": "La fonction $f$ est définie sur $\\left[{{eval:r-1}}\\,;{{eval:t+1}}\\right]$ ; sa courbe $\\mathcal{C}_f$ est tracée ci-dessous.\n\n```courbe\nx: -6 ; 6\ny: -7 ; 7\ngrille: 1 ; 1\nf(x) = {{a}}*(x{{eval:-r;+}})*(x{{eval:-s;+}})*(x{{eval:-t;+}})/5 sur [{{eval:r-1}} ; {{eval:t+1}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction qui coupe l'axe des abscisses en {{r}}, {{s}} et {{t}}.\n```\n\nQuel est le signe de $f(x)$ pour $x\\in\\left]{{u}}\\,;{{v}}\\right[$ ?\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n- il change de signe\n```",
+			"statement": "La fonction $f$ est définie sur $\\left[{{eval:r-1}}\\,;{{eval:t+1}}\\right]$ ; sa courbe $\\mathcal{C}_f$ est tracée ci-dessous.\n\n```courbe\nx: -6 ; 6\ny: -7 ; 7\ngrille: 1 ; 1\nf(x) = {{a}}*(x{{eval:-r;+}})*(x{{eval:-s;+}})*(x{{eval:-t;+}})/4 sur [{{eval:r-1}} ; {{eval:t+1}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction qui coupe l'axe des abscisses en {{r}}, {{s}} et {{t}}.\n```\n\nQuel est le signe de $f(x)$ pour $x\\in\\left]{{u}}\\,;{{v}}\\right[$ ?\n\n```choix\nmelanger: non\n- strictement positif\n- strictement négatif\n- il change de signe\n```",
 			"variables": [
 				{
 					"name": "a",
@@ -23,15 +23,23 @@
 				},
 				{
 					"name": "r",
-					"expression": "-4..2"
+					"expression": "-4..0"
+				},
+				{
+					"name": "d",
+					"expression": "2|3"
+				},
+				{
+					"name": "g",
+					"expression": "2|3"
 				},
 				{
 					"name": "s",
-					"expression": "-3..3"
+					"expression": "eval:r+d"
 				},
 				{
 					"name": "t",
-					"expression": "-2..4"
+					"expression": "eval:s+g"
 				},
 				{
 					"name": "z",
@@ -46,7 +54,7 @@
 					"expression": "eval:s+(t-s)*z*(3-z)/2"
 				}
 			],
-			"conditions": ["r < s", "s < t", "t - r <= 5"],
+			"conditions": ["d + g <= 5", "t <= 4"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{if:z==2|2|{{eval:(1-a*(1-2*z))/2}}}}"
@@ -61,7 +69,7 @@
 			}
 		},
 		{
-			"statement": "La fonction $f$ est définie sur $\\left[{{eval:r-1}}\\,;{{eval:t+1}}\\right]$ ; sa courbe $\\mathcal{C}_f$ est tracée ci-dessous.\n\n```courbe\nx: -6 ; 6\ny: -7 ; 7\ngrille: 1 ; 1\nf(x) = {{a}}*(x{{eval:-r;+}})*(x{{eval:-s;+}})*(x{{eval:-t;+}})/5 sur [{{eval:r-1}} ; {{eval:t+1}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction qui coupe l'axe des abscisses en {{r}}, {{s}} et {{t}}.\n```\n\nRésous l'inéquation $f(x)\\geqslant0$.\n\n$S=?$",
+			"statement": "La fonction $f$ est définie sur $\\left[{{eval:r-1}}\\,;{{eval:t+1}}\\right]$ ; sa courbe $\\mathcal{C}_f$ est tracée ci-dessous.\n\n```courbe\nx: -6 ; 6\ny: -7 ; 7\ngrille: 1 ; 1\nf(x) = {{a}}*(x{{eval:-r;+}})*(x{{eval:-s;+}})*(x{{eval:-t;+}})/4 sur [{{eval:r-1}} ; {{eval:t+1}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction qui coupe l'axe des abscisses en {{r}}, {{s}} et {{t}}.\n```\n\nRésous l'inéquation $f(x)\\geqslant0$.\n\n$S=?$",
 			"variables": [
 				{
 					"name": "a",
@@ -69,18 +77,26 @@
 				},
 				{
 					"name": "r",
-					"expression": "-4..2"
+					"expression": "-4..0"
+				},
+				{
+					"name": "d",
+					"expression": "2|3"
+				},
+				{
+					"name": "g",
+					"expression": "2|3"
 				},
 				{
 					"name": "s",
-					"expression": "-3..3"
+					"expression": "eval:r+d"
 				},
 				{
 					"name": "t",
-					"expression": "-2..4"
+					"expression": "eval:s+g"
 				}
 			],
-			"conditions": ["r < s", "s < t", "t - r <= 5"],
+			"conditions": ["d + g <= 5", "t <= 4"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{if:a>0|[{{r}};{{s}}]\\cup[{{t}};{{eval:t+1}}]|[{{eval:r-1}};{{r}}]\\cup[{{s}};{{t}}]}}",
@@ -97,7 +113,7 @@
 			}
 		},
 		{
-			"statement": "La fonction $f$ est définie sur $\\left[{{eval:r-1}}\\,;{{eval:t+1}}\\right]$ ; sa courbe $\\mathcal{C}_f$ est tracée ci-dessous.\n\n```courbe\nx: -6 ; 6\ny: -7 ; 7\ngrille: 1 ; 1\nf(x) = {{a}}*(x{{eval:-r;+}})*(x{{eval:-s;+}})*(x{{eval:-t;+}})/5 sur [{{eval:r-1}} ; {{eval:t+1}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction qui coupe l'axe des abscisses en {{r}}, {{s}} et {{t}}.\n```\n\nQuel est le tableau de signes de $f(x)$ ?\n\n````choix\n- ```variation\n  variable: x\n  domain: {{eval:r-1}}, {{r}}, {{s}}, {{t}}, {{eval:t+1}}\n  \n  sign: f(x)\n    {{eval:r-1}},{{r}}: {{if:a>0|-|+}}\n    {{r}}: z\n    {{r}},{{s}}: {{if:a>0|+|-}}\n    {{s}}: z\n    {{s}},{{t}}: {{if:a>0|-|+}}\n    {{t}}: z\n    {{t}},{{eval:t+1}}: {{if:a>0|+|-}}\n  ```\n- ```variation\n  variable: x\n  domain: {{eval:r-1}}, {{r}}, {{s}}, {{t}}, {{eval:t+1}}\n  \n  sign: f(x)\n    {{eval:r-1}},{{r}}: {{if:a>0|+|-}}\n    {{r}}: z\n    {{r}},{{s}}: {{if:a>0|-|+}}\n    {{s}}: z\n    {{s}},{{t}}: {{if:a>0|+|-}}\n    {{t}}: z\n    {{t}},{{eval:t+1}}: {{if:a>0|-|+}}\n  ```\n- ```variation\n  variable: x\n  domain: {{eval:r-1}}, {{r}}, {{s}}, {{t}}, {{eval:t+1}}\n  \n  sign: f(x)\n    {{eval:r-1}},{{r}}: {{if:a>0|-|+}}\n    {{r}}: z\n    {{r}},{{s}}: {{if:a>0|+|-}}\n    {{s}}: z\n    {{s}},{{t}}: {{if:a>0|+|-}}\n    {{t}}: z\n    {{t}},{{eval:t+1}}: {{if:a>0|+|-}}\n  ```\n````",
+			"statement": "La fonction $f$ est définie sur $\\left[{{eval:r-1}}\\,;{{eval:t+1}}\\right]$ ; sa courbe $\\mathcal{C}_f$ est tracée ci-dessous.\n\n```courbe\nx: -6 ; 6\ny: -7 ; 7\ngrille: 1 ; 1\nf(x) = {{a}}*(x{{eval:-r;+}})*(x{{eval:-s;+}})*(x{{eval:-t;+}})/4 sur [{{eval:r-1}} ; {{eval:t+1}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction qui coupe l'axe des abscisses en {{r}}, {{s}} et {{t}}.\n```\n\nQuel est le tableau de signes de $f(x)$ ?\n\n````choix\n- ```variation\n  variable: x\n  domain: {{eval:r-1}}, {{r}}, {{s}}, {{t}}, {{eval:t+1}}\n  \n  sign: f(x)\n    {{eval:r-1}},{{r}}: {{if:a>0|-|+}}\n    {{r}}: z\n    {{r}},{{s}}: {{if:a>0|+|-}}\n    {{s}}: z\n    {{s}},{{t}}: {{if:a>0|-|+}}\n    {{t}}: z\n    {{t}},{{eval:t+1}}: {{if:a>0|+|-}}\n  ```\n- ```variation\n  variable: x\n  domain: {{eval:r-1}}, {{r}}, {{s}}, {{t}}, {{eval:t+1}}\n  \n  sign: f(x)\n    {{eval:r-1}},{{r}}: {{if:a>0|+|-}}\n    {{r}}: z\n    {{r}},{{s}}: {{if:a>0|-|+}}\n    {{s}}: z\n    {{s}},{{t}}: {{if:a>0|+|-}}\n    {{t}}: z\n    {{t}},{{eval:t+1}}: {{if:a>0|-|+}}\n  ```\n- ```variation\n  variable: x\n  domain: {{eval:r-1}}, {{r}}, {{s}}, {{t}}, {{eval:t+1}}\n  \n  sign: f(x)\n    {{eval:r-1}},{{r}}: {{if:a>0|-|+}}\n    {{r}}: z\n    {{r}},{{s}}: {{if:a>0|+|-}}\n    {{s}}: z\n    {{s}},{{t}}: {{if:a>0|+|-}}\n    {{t}}: z\n    {{t}},{{eval:t+1}}: {{if:a>0|+|-}}\n  ```\n````",
 			"variables": [
 				{
 					"name": "a",
@@ -105,18 +121,26 @@
 				},
 				{
 					"name": "r",
-					"expression": "-4..2"
+					"expression": "-4..0"
+				},
+				{
+					"name": "d",
+					"expression": "2|3"
+				},
+				{
+					"name": "g",
+					"expression": "2|3"
 				},
 				{
 					"name": "s",
-					"expression": "-3..3"
+					"expression": "eval:r+d"
 				},
 				{
 					"name": "t",
-					"expression": "-2..4"
+					"expression": "eval:s+g"
 				}
 			],
-			"conditions": ["r < s", "s < t", "t - r <= 5"],
+			"conditions": ["d + g <= 5", "t <= 4"],
 			"blanks": [
 				{
 					"expectedAnswer": "0"
@@ -138,6 +162,8 @@
 			"variables": {
 				"a": "1",
 				"r": "-2",
+				"d": "2",
+				"g": "3",
 				"s": "0",
 				"t": "3",
 				"z": "0",
@@ -155,6 +181,8 @@
 			"variables": {
 				"a": "1",
 				"r": "-2",
+				"d": "2",
+				"g": "3",
 				"s": "0",
 				"t": "3",
 				"z": "1",
@@ -172,6 +200,8 @@
 			"variables": {
 				"a": "1",
 				"r": "-2",
+				"d": "2",
+				"g": "3",
 				"s": "0",
 				"t": "3",
 				"z": "1",
@@ -189,6 +219,8 @@
 			"variables": {
 				"a": "-1",
 				"r": "-2",
+				"d": "2",
+				"g": "3",
 				"s": "0",
 				"t": "3",
 				"z": "0",
@@ -206,6 +238,8 @@
 			"variables": {
 				"a": "-1",
 				"r": "-2",
+				"d": "2",
+				"g": "3",
 				"s": "0",
 				"t": "3",
 				"z": "2",
@@ -223,6 +257,8 @@
 			"variables": {
 				"a": "1",
 				"r": "-2",
+				"d": "2",
+				"g": "3",
 				"s": "0",
 				"t": "3"
 			},
@@ -237,6 +273,8 @@
 			"variables": {
 				"a": "1",
 				"r": "-2",
+				"d": "2",
+				"g": "3",
 				"s": "0",
 				"t": "3"
 			},
@@ -251,6 +289,8 @@
 			"variables": {
 				"a": "-1",
 				"r": "-2",
+				"d": "2",
+				"g": "3",
 				"s": "0",
 				"t": "3"
 			},
@@ -265,6 +305,8 @@
 			"variables": {
 				"a": "-1",
 				"r": "-2",
+				"d": "2",
+				"g": "3",
 				"s": "0",
 				"t": "3"
 			},
@@ -279,6 +321,8 @@
 			"variables": {
 				"a": "1",
 				"r": "-2",
+				"d": "2",
+				"g": "3",
 				"s": "0",
 				"t": "3"
 			},
@@ -293,6 +337,8 @@
 			"variables": {
 				"a": "1",
 				"r": "-2",
+				"d": "2",
+				"g": "3",
 				"s": "0",
 				"t": "3"
 			},
