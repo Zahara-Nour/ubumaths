@@ -8,7 +8,9 @@
  * point → la perpendiculaire ; compas : le centre, puis un point du cercle
  * (lot 2b, aimantation des instruments : `instruments.ts`) ; report : deux
  * touchers prennent l'écartement (`span`), chaque toucher suivant pique un
- * cercle de ce rayon (lot 4) ; « Effacer »
+ * cercle de ce rayon (lot 4) ; rapporteur : le centre, puis un point de la base
+ * le posent (`protractor`), chaque toucher suivant place un repère au degré
+ * entier le plus proche, ‹ › le décalent, Retourner change de côté (lot 5) ; « Effacer »
  * enlève le départ ou la droite en attente, sinon le dernier objet. Comportements validés
  * par David le 2026-10-25 (`docs/wip/geometrie-validation-progress.md` § 5).
  *
@@ -25,7 +27,8 @@ import {
 	isDrawnLine,
 	serializeConstructionAnswer,
 	type DrawnLine,
-	type DrawnObject
+	type DrawnObject,
+	type DrawnRepere
 } from './answer';
 import type { Position } from './judge';
 import {
@@ -39,6 +42,7 @@ import { isLineCheck, lineCodages, lineSolution, type LineCodage } from './line'
 import { circleSolution, isCircleCheck, type CircleSolution } from './circle';
 import { polygonSolution } from './polygon';
 import { triangleCorrection, triangleSolution, type TriangleCorrection } from './triangle';
+import { angleCorrection, angleSolution, type AngleCorrection } from './angle';
 import { symmetrySolution, type FigureShapes } from './symmetry';
 
 /** Rayon d'aimantation, en pixels À L'ÉCRAN (un doigt d'enfant sur tablette) */
@@ -70,6 +74,26 @@ export interface Drawing {
 	guide?: StraightTrait | null;
 	/** Report : l'écartement pris (deux points), gardé d'un cercle à l'autre */
 	span?: { a: Position; b: Position } | null;
+	/** Rapporteur posé (lot 5), gardé d'un repère à l'autre */
+	protractor?: Protractor | null;
+}
+
+/**
+ * Rapporteur posé : centre, point de la base (le 0 de la graduation est sur la
+ * demi-droite [centre, base)), côté du corps (1 : sens trigonométrique), rayon
+ * (unités de la figure, choisi par l'écran)
+ */
+export interface Protractor {
+	center: Position;
+	base: Position;
+	sens: 1 | -1;
+	radius: number;
+}
+
+/** Réglages de l'écran pour un toucher */
+export interface TapOptions {
+	/** Rayon du rapporteur à poser, en unités de la figure */
+	protractorRadius?: number;
 }
 
 export interface FigureWindow {
@@ -138,7 +162,7 @@ export function snapToGrid(tap: Position, grid: FigureStep, window?: FigureWindo
  */
 function withObject(drawing: Drawing, object: DrawnObject): Drawing {
 	const objects = [...drawing.objects, object];
-	const kept = drawing.span ? { span: drawing.span } : {};
+	const kept = keptOf(drawing);
 	if (
 		objects.length > CONSTRUCTION_ANSWER_LIMITS.objects ||
 		serializeConstructionAnswer(objects).length > CONSTRUCTION_ANSWER_LIMITS.chars
@@ -146,6 +170,85 @@ function withObject(drawing: Drawing, object: DrawnObject): Drawing {
 		return { objects: drawing.objects, start: null, ...kept };
 	}
 	return { objects, start: null, ...kept };
+}
+
+/** Ce qui reste pris d'un objet à l'autre : l'écartement du report, le rapporteur posé */
+function keptOf(drawing: Drawing): Pick<Drawing, 'span' | 'protractor'> {
+	return {
+		...(drawing.span && { span: drawing.span }),
+		...(drawing.protractor && { protractor: drawing.protractor })
+	};
+}
+
+/**
+ * Graduation (degré entier, 0..180) que vise un toucher, comptée depuis la base
+ * dans le sens du rapporteur ; null au centre ou de l'autre côté de la base
+ */
+export function markDegree(protractor: Protractor, position: Position): number | null {
+	const { center, base, sens } = protractor;
+	const dx = position.x - center.x;
+	const dy = position.y - center.y;
+	if (Math.hypot(dx, dy) <= SAME_TAP_EPSILON) return null;
+	const ux = base.x - center.x;
+	const uy = base.y - center.y;
+	const signed = (Math.atan2(ux * dy - uy * dx, ux * dx + uy * dy) * 180) / Math.PI;
+	const deg = Math.round(sens * signed);
+	// -180 et 180 : la même direction, côté graduations
+	if (deg === -180) return 180;
+	return deg >= 0 && deg <= 180 ? deg : null;
+}
+
+/** Le repère que pose ce rapporteur à cette graduation */
+function markOf(protractor: Protractor, deg: number): DrawnRepere {
+	const { center, base, sens, radius } = protractor;
+	return {
+		kind: 'repere',
+		vx: center.x,
+		vy: center.y,
+		ax: base.x,
+		ay: base.y,
+		r: radius,
+		deg,
+		sens
+	};
+}
+
+/** Le dernier objet est-il un repère de ce rapporteur (même pose, retourné ou non) ? */
+function lastIsMarkOf(drawing: Drawing): boolean {
+	const last = drawing.objects.at(-1);
+	const p = drawing.protractor;
+	if (!p || last?.kind !== 'repere') return false;
+	return (
+		last.vx === p.center.x &&
+		last.vy === p.center.y &&
+		last.ax === p.base.x &&
+		last.ay === p.base.y &&
+		last.r === p.radius
+	);
+}
+
+/** Retourner : le corps du rapporteur passe de l'autre côté de sa base */
+export function flipProtractor(drawing: Drawing): Drawing {
+	const p = drawing.protractor;
+	if (!p) return drawing;
+	return { ...drawing, protractor: { ...p, sens: p.sens === 1 ? -1 : 1 } };
+}
+
+/**
+ * ‹ › (et flèches au clavier) : décale de `delta` degrés le dernier repère de ce
+ * rapporteur, borné à 0..180 ; sans repère, en pose un à la graduation 0 décalée
+ */
+export function nudgeMark(drawing: Drawing, delta: number): Drawing {
+	const p = drawing.protractor;
+	if (!p) return drawing;
+	const clamp = (deg: number) => Math.min(180, Math.max(0, deg));
+	if (lastIsMarkOf(drawing)) {
+		const last = drawing.objects.at(-1) as DrawnRepere;
+		const deg = clamp(last.deg + delta);
+		if (deg === last.deg) return drawing;
+		return { ...drawing, objects: [...drawing.objects.slice(0, -1), { ...last, deg }] };
+	}
+	return withObject(drawing, markOf(p, clamp(delta)));
 }
 
 /** Équerre, premier toucher : la droite à longer (le départ éventuel est oublié) */
@@ -166,8 +269,13 @@ export function cancelPending(drawing: Drawing): Drawing {
 export function addTap(
 	drawing: Drawing,
 	position: Position,
-	tool: ConstructionTool = 'droite'
+	tool: ConstructionTool = 'droite',
+	options: TapOptions = {}
 ): Drawing {
+	if (tool === 'rapporteur' && drawing.protractor) {
+		const deg = markDegree(drawing.protractor, position);
+		return deg === null ? drawing : withObject(drawing, markOf(drawing.protractor, deg));
+	}
 	if (tool === 'equerre') {
 		// Sans droite choisie, l'écran appelle `chooseGuide` : un toucher seul ne trace rien
 		if (!drawing.guide) return drawing;
@@ -199,6 +307,16 @@ export function addTap(
 	if (Math.hypot(position.x - start.x, position.y - start.y) <= SAME_TAP_EPSILON) return drawing;
 	if (tool === 'report') {
 		return { objects: drawing.objects, start: null, span: { a: start, b: position } };
+	}
+	if (tool === 'rapporteur') {
+		// Rayon par défaut : la longueur de la base (l'écran donne le sien)
+		const radius =
+			options.protractorRadius ?? Math.hypot(position.x - start.x, position.y - start.y);
+		return {
+			objects: drawing.objects,
+			start: null,
+			protractor: { center: start, base: position, sens: 1, radius }
+		};
 	}
 	if (tool === 'compas') {
 		return withObject(drawing, {
@@ -235,8 +353,9 @@ function lastUsesSpan(drawing: Drawing): boolean {
 export function eraseLast(drawing: Drawing): Drawing {
 	if (drawing.start || drawing.guide) return cancelPending(drawing);
 	if (drawing.span && !lastUsesSpan(drawing)) return cancelPending(drawing);
-	const kept = drawing.span ? { span: drawing.span } : {};
-	return { objects: drawing.objects.slice(0, -1), start: null, ...kept };
+	// Rapporteur posé : ses repères d'abord, puis lui
+	if (drawing.protractor && !lastIsMarkOf(drawing)) return cancelPending(drawing);
+	return { objects: drawing.objects.slice(0, -1), start: null, ...keptOf(drawing) };
 }
 
 export function canErase(drawing: Drawing): boolean {
@@ -244,6 +363,7 @@ export function canErase(drawing: Drawing): boolean {
 		drawing.start !== null ||
 		Boolean(drawing.guide) ||
 		Boolean(drawing.span) ||
+		Boolean(drawing.protractor) ||
 		drawing.objects.length > 0
 	);
 }
@@ -267,6 +387,7 @@ export function solutionLines(
 		if (check.kind === 'droite') return lineSolution([check], expected);
 		if (check.kind === 'symetrique') return symmetrySolution(check, points, shapes);
 		if (check.kind === 'triangle') return triangleSolution(check, points, shapes, drawn);
+		if (check.kind === 'angle') return angleSolution(check, points, shapes, drawn);
 		if (check.kind !== 'droite_par')
 			return polygonSolution(check, points, drawn.filter(isDrawnLine));
 		const a = points.get(check.points[0]);
@@ -303,6 +424,17 @@ export function solutionTriangle(
 ): TriangleCorrection | null {
 	const check = checks.find((c) => c.kind === 'triangle');
 	return check ? triangleCorrection(check, points, shapes, drawn) : null;
+}
+
+/** L'angle à construire (lot 5) : l'arc codé de sa mesure ; null sinon */
+export function solutionAngle(
+	checks: readonly ConstructionCheck[],
+	points: ReadonlyMap<string, Position>,
+	shapes: FigureShapes | undefined,
+	drawn: readonly DrawnObject[]
+): AngleCorrection | null {
+	const check = checks.find((c) => c.kind === 'angle');
+	return check ? angleCorrection(check, points, shapes, drawn) : null;
 }
 
 /** Les points à placer : où ils vont, avec leur nom (vérifications `point`) */

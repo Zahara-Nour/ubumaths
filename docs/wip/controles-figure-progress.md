@@ -6,21 +6,18 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2288._
+_Mis à jour le 2026-11-03, lot 5 codé (PR à ouvrir)._
 
-- **État** : lots 1 à 4 et « point construit de proche en proche » (#2288, § 15 : trois choix libres
-  admis — compas sur un trait droit, même rayon en A et B, équerre sur le trait qu'elle longe) mergés,
-  pas encore en prod (`deploy:prod` sur demande de David). Vérifications à l'œil dans
-  `verifications-manuelles.md`.
-- **Prochaine action** : coder le lot 5 (angle au rapporteur, § 16) (phase 0 validée) ;
-  bissectrice ensuite.
+- **État** : lots 1 à 4 et « point construit » (#2288) mergés, pas encore en prod. Lot 5 (angle au
+  rapporteur, § 16-17) codé sur `feat/angle-rapporteur` : tests verts, typecheck 0 ; revue Opus à faire.
+- **Prochaine action** : revue (`code-reviewer` Opus), PR, CI, merge ; puis lot 6 « mesurer un angle »
+  (6-169, même geste), phase 0.
 - **En attente de David** : rien.
 - **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12, sa propre
-  phase 0) ; `perpendiculaire(A, s)` échoue quand A est un bout de s ; pas de prime dans le langage des
-  figures ; `symetrie(P, axe=d)` échoue si P définit d ; l'« Essayer » de l'aide ne rend pas la case
-  jouable ; droites annoncées « Droite 1, 2… » au clavier ; plafond de 20 objets sans message ;
-  `etiquette=` ne vaut que pour les points (segment : `texte(x, y, "4 cm")`).
-- **Worktree / branche** : aucun (retiré après #2288).
+  phase 0) ; `perpendiculaire(A, s)` échoue quand A est un bout de s ; `symetrie(P, axe=d)` échoue si
+  P définit d ; l'« Essayer » de l'aide ne rend pas la case jouable ; plafond de 20 objets sans
+  message ; la demi-droite s'écrit `demidroite(O, A)` ; fenêtre au plus 4 fois plus large que haute.
+- **Worktree / branche** : `../ubumaths-wt-controles-figure`, `feat/angle-rapporteur`.
 
 ---
 
@@ -660,7 +657,7 @@ verifier: angle AOy = 50
 ---
 O = point(2, 2)
 A = point(8, 3)
-x = demi_droite(O, A)
+x = demidroite(O, A)
 ```
 
 Nouvelle vérification `angle AOy = <mesure>` : O = le sommet, A = un point du côté donné (deux points de la
@@ -688,7 +685,9 @@ Palette déduite : Rapporteur · Segment.
 - **Nominal** : rapporteur centré en O, base sur [OA), repère à 50 sur la bonne échelle, segment de O au
   repère → juste.
 - **Limites** (juste) : le côté [Oy) d'un côté ou de l'autre de (OA) ; traits et repères en trop ignorés ;
-  un côté construit autrement à la mesure exacte (60° d'un triangle équilatéral au compas).
+  un côté construit autrement à la mesure exacte (60° d'un triangle équilatéral au compas). _Note du
+  codage : sans compas dans la palette, ce dernier chemin n'existe pas ; un point de la figure à la
+  bonne mesure, lui, est juste._
 - **Erreurs** (faux, première cause) : aucun segment partant de O → « Trace le côté [Oy) de l'angle,
   depuis le sommet O. » ; segment dont le bout n'est ni un repère ni un point construit → « Ton côté est
   tracé à l'œil : place un repère avec le rapporteur. » ; angle de 180 − 50 → « Ton angle mesure 130° au
@@ -717,3 +716,25 @@ Palette déduite : Rapporteur · Segment.
 3. Bouton **Retourner** pour passer le rapporteur de l'autre côté.
 4. Message « mauvaise graduation » pour 180 − a **gardé**.
 5. Mesurer un angle (6-169) au **lot suivant**, même geste ; triangle par un côté et deux angles après.
+
+## 17. Lot 5 — ce qui est fait (2026-11-03)
+
+- Outil `rapporteur` (`CONSTRUCTION_TOOLS`, `INSTRUMENT_TOOLS`) ; vérification `angle AOy = 50`
+  (`AngleCheck`, parseur : mesure entière 1..179, `°` admis ; seule dans la figure, palette Rapporteur ·
+  Segment, papier uni ; le rapporteur refusé dans toute autre vérification).
+- Réponse `repere(vx;vy;ax;ay;r;deg;sens)` (Zod : graduation entière 0..180, sens ±1, r > 0) ; position
+  `repereAt` ; un repère est un point construit quand son centre l'est et sa base aussi, ou posée sur un
+  trait droit construit qui passe par le centre (`isBuiltMark`, dans `constructionOf`).
+- Juge `construction/angle.ts` : messages et erreurs d'auteur du § 16 ; un repère dans une case qui
+  n'est pas un angle = faux sans message (réponse forgée : il construirait n'importe quel point).
+- Geste (`drawing.ts`) : `Drawing.protractor`, `markDegree` (degré entier le plus proche, rien de
+  l'autre côté de la base), `flipProtractor`, `nudgeMark` (‹ › : le dernier repère de la même pose,
+  retourné ou non ; sans repère, en pose un), « Effacer » = ses repères puis lui, changer d'outil le lève.
+- Écran : dessin du rapporteur de `constructions-v2` (140 unités SVG, au plus 0,45 de la fenêtre),
+  repères en petits traits, boutons ‹ 1° › et Retourner, consignes, « Touche du côté des graduations, ou
+  touche Retourner. » (ajout : sinon un toucher sous la base ne faisait rien, en silence) ; clavier :
+  rapporteur `role="slider"`, flèches ±1°, Maj ±10° (Entrée inutile : les flèches posent le repère) ;
+  repères en boutons pour le segment. Correction : [Oy) en pointillés, arc codé « 50° ».
+- Aide à l'écriture : exemple « Construire un angle de mesure donnée (rapporteur) ».
+- Tests : `construction-angle.test.ts` (37), écran `figure-a-completer-angle.svelte.test.ts` (4) ; trois
+  anciens tests prenaient « rapporteur » comme outil inconnu (→ « crayon »).

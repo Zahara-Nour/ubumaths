@@ -21,6 +21,10 @@
 	- report (lot 4, § 13) : deux touchers prennent l'écartement (trait fin),
 	  chaque toucher suivant pique un cercle de ce rayon ; les bouts des
 	  segments de la figure s'aimantent (longueurs à reporter) ;
+	- rapporteur (lot 5, § 16) : le centre, puis un point de la base le posent ;
+	  chaque toucher place un repère au degré entier le plus proche ; ‹ › (ou les
+	  flèches, le rapporteur ayant le focus) le décalent d'un degré ; Retourner
+	  passe le corps de l'autre côté ; à la correction, l'arc de l'angle codé ;
 	- clavier : les points nommés sont des boutons (Tab, puis Entrée ou Espace),
 	  avec les instruments les intersections aussi, et les droites pour l'équerre ;
 	  sur quadrillage, un curseur se déplace de nœud en nœud avec les flèches ;
@@ -54,6 +58,7 @@
 	import {
 		intersectionsOf,
 		isInFrame,
+		repereAt,
 		isStraight,
 		straightAt,
 		traitsOfObjects,
@@ -66,6 +71,7 @@
 		isDrawnLine,
 		isDrawnPoint,
 		isDrawnReport,
+		isDrawnRepere,
 		parseConstructionAnswer,
 		serializeConstructionAnswer,
 		type DrawnLine
@@ -84,6 +90,9 @@
 		chooseGuide,
 		clipLineToWindow,
 		eraseLast,
+		flipProtractor,
+		markDegree,
+		nudgeMark,
 		snapTap,
 		snapWithInstruments,
 		snapToGrid,
@@ -91,10 +100,14 @@
 		solutionCodages,
 		solutionLines,
 		solutionPoints,
+		solutionAngle,
 		solutionTriangle,
 		type ConstructionAnswerInput,
-		type Drawing
+		type Drawing,
+		type Protractor as PosedProtractor
 	} from '$lib/questions/construction/drawing';
+	import { PROTRACTOR_RADIUS } from '$lib/constructions-v2/constants';
+	import Protractor from '$lib/constructions-v2/instruments/components/Protractor.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import FigureBlockView from './FigureBlockView.svelte';
 
@@ -127,6 +140,7 @@
 		at: Position | null;
 		guide?: StraightTrait | null;
 		span?: { a: Position; b: Position } | null;
+		protractor?: PosedProtractor | null;
 	} | null>(null);
 	/** Outil choisi dans la palette, lié au bloc comme `pending` */
 	let chosen = $state.raw<{ node: FigureNode; tool: ConstructionTool } | null>(null);
@@ -146,13 +160,16 @@
 			radius: Math.hypot(r.bx - r.ax, r.by - r.ay)
 		}))
 	);
+	/** Repères du rapporteur (lot 5) : des points, où le segment s'aimante */
+	let marks = $derived(objects.filter(isDrawnRepere));
 	// Plus de saisie (Valider, correction) ou autre bloc : le départ en attente disparaît
 	let mine = $derived(interactive && pending?.node === node ? pending : null);
 	let drawing: Drawing = $derived({
 		objects,
 		start: mine?.at ?? null,
 		...(mine?.guide && { guide: mine.guide }),
-		...(mine?.span && { span: mine.span })
+		...(mine?.span && { span: mine.span }),
+		...(mine?.protractor && { protractor: mine.protractor })
 	});
 	let corrected = $derived(answer?.isCorrect === false || showSolution);
 	let checks = $derived(node.construction?.checks ?? []);
@@ -167,7 +184,15 @@
 	let instruments = $derived(tools.some((t) => INSTRUMENT_TOOLS.includes(t)));
 	/** Report : ce qu'attend le prochain toucher (dont : reprendre Report pour une autre longueur) */
 	let reportHint = $derived.by(() => {
-		if (!interactive || tool !== 'report') return '';
+		if (!interactive) return '';
+		if (tool === 'rapporteur') {
+			if (drawing.protractor) {
+				return 'Touche le bord du rapporteur pour placer un repère, ‹ › pour l’ajuster. Pour le reposer, touche Rapporteur.';
+			}
+			if (drawing.start) return 'Touche un point du côté, pour y poser la base du rapporteur.';
+			return 'Touche où piquer le centre du rapporteur.';
+		}
+		if (tool !== 'report') return '';
 		if (drawing.span) return 'Touche où piquer le compas. Pour une autre longueur, touche Report.';
 		return 'Touche les deux bouts de la longueur à reporter.';
 	});
@@ -207,8 +232,14 @@
 
 	function apply(next: Drawing) {
 		pending =
-			next.start || next.guide || next.span
-				? { node, at: next.start, guide: next.guide ?? null, span: next.span ?? null }
+			next.start || next.guide || next.span || next.protractor
+				? {
+						node,
+						at: next.start,
+						guide: next.guide ?? null,
+						span: next.span ?? null,
+						protractor: next.protractor ?? null
+					}
 				: null;
 		hint = null;
 		if (next.objects !== drawing.objects) {
@@ -216,9 +247,114 @@
 		}
 	}
 
+	/** Rayon du rapporteur à poser (unités de la figure), choisi par l'écran au premier toucher */
+	let protractorRadius = $state(3);
+
 	function tapAt(position: Position) {
 		if (!interactive) return;
-		apply(addTap(drawing, position, tool));
+		apply(addTap(drawing, position, tool, { protractorRadius }));
+	}
+
+	/** ‹ › et flèches : décaler le repère du rapporteur */
+	function nudge(delta: number) {
+		if (!interactive) return;
+		apply(nudgeMark(drawing, delta));
+	}
+
+	function flip() {
+		if (!interactive) return;
+		apply(flipProtractor(drawing));
+	}
+
+	/** Rayon du rapporteur à l'écran (unités SVG de la figure), plafonné par la fenêtre */
+	const PROTRACTOR_SVG_RADIUS = 140;
+
+	function radiusFor(scene: FigureScene, width: number, height: number): number {
+		const transformer = createTransformer(scene.viewport, width, height);
+		const { xMin, xMax, yMin, yMax } = scene.viewport;
+		return Math.min(
+			PROTRACTOR_SVG_RADIUS / transformer.scaleX,
+			0.45 * Math.min(xMax - xMin, yMax - yMin)
+		);
+	}
+
+	/** Le rapporteur posé, à l'écran : centre, rotation (degrés SVG), échelle du dessin */
+	function protractorOnScreen(
+		protractor: PosedProtractor,
+		scene: FigureScene,
+		width: number,
+		height: number
+	) {
+		const transformer = createTransformer(scene.viewport, width, height);
+		const c = transformer.mathToSvg(protractor.center.x, protractor.center.y);
+		const b = transformer.mathToSvg(protractor.base.x, protractor.base.y);
+		const along = (Math.atan2(b.y - c.y, b.x - c.x) * 180) / Math.PI;
+		// Le corps du dessin est du côté trigonométrique de sa base ; retourné : un demi-tour
+		const rotation = protractor.sens === 1 ? along : along + 180;
+		const pixelsPerUnit = (protractor.radius * transformer.scaleX) / PROTRACTOR_RADIUS;
+		return { x: c.x, y: c.y, rotation, pixelsPerUnit };
+	}
+
+	/** Clavier, le rapporteur ayant le focus : flèches = ±1°, Maj + flèches = ±10° */
+	function handleProtractorKey(event: KeyboardEvent) {
+		const step = event.shiftKey ? 10 : 1;
+		const delta =
+			event.key === 'ArrowRight' || event.key === 'ArrowUp'
+				? step
+				: event.key === 'ArrowLeft' || event.key === 'ArrowDown'
+					? -step
+					: 0;
+		if (delta === 0) return;
+		event.preventDefault();
+		nudge(delta);
+	}
+
+	/** Repère du rapporteur à l'écran : un petit trait dans l'axe du centre */
+	function markTick(
+		mark: (typeof marks)[number],
+		scene: FigureScene,
+		width: number,
+		height: number
+	) {
+		const transformer = createTransformer(scene.viewport, width, height);
+		const at = repereAt(mark);
+		const c = transformer.mathToSvg(mark.vx, mark.vy);
+		const m = transformer.mathToSvg(at.x, at.y);
+		const length = Math.hypot(m.x - c.x, m.y - c.y);
+		if (length === 0) return null;
+		const u = { x: (m.x - c.x) / length, y: (m.y - c.y) / length };
+		return { x1: m.x - u.x * 5, y1: m.y - u.y * 5, x2: m.x + u.x * 8, y2: m.y + u.y * 8 };
+	}
+
+	/** Arc codé de l'angle à la correction, et sa mesure écrite au milieu */
+	const ANGLE_ARC_SVG = 30;
+
+	function angleArc(
+		arc: NonNullable<ReturnType<typeof solutionAngle>>,
+		scene: FigureScene,
+		width: number,
+		height: number
+	) {
+		const transformer = createTransformer(scene.viewport, width, height);
+		const c = transformer.mathToSvg(arc.center.x, arc.center.y);
+		const unit = (p: Position) => {
+			const q = transformer.mathToSvg(p.x, p.y);
+			const length = Math.hypot(q.x - c.x, q.y - c.y);
+			return { x: (q.x - c.x) / length, y: (q.y - c.y) / length };
+		};
+		const u = unit(arc.from);
+		const v = unit(arc.to);
+		const r = ANGLE_ARC_SVG;
+		// Sens trigonométrique à l'écran (y vers le bas) : arc SVG de sens 0
+		const sweep = arc.sens === 1 ? 0 : 1;
+		const d = `M ${c.x + u.x * r} ${c.y + u.y * r} A ${r} ${r} 0 0 ${sweep} ${c.x + v.x * r} ${c.y + v.y * r}`;
+		const mid = { x: u.x + v.x, y: u.y + v.y };
+		const midLength = Math.hypot(mid.x, mid.y) || 1;
+		const label = {
+			x: c.x + (mid.x / midLength) * (r + 16),
+			y: c.y + (mid.y / midLength) * (r + 16)
+		};
+		return { d, label, text: `${arc.measure}°` };
 	}
 
 	function selectTool(next: ConstructionTool) {
@@ -258,7 +394,8 @@
 		const traits = traitsOf(scene);
 		const { xMin, xMax, yMin, yMax } = scene.viewport;
 		return {
-			points: [...namedPointPositions(scene).values(), ...placedPoints],
+			// Repères du rapporteur : le côté de l'angle se trace jusqu'à eux (lot 5)
+			points: [...namedPointPositions(scene).values(), ...placedPoints, ...marks.map(repereAt)],
 			// Bouts des segments (figure, élève : deux côtés finis au même endroit se rejoignent),
 			// au rang des intersections : le plus proche du toucher l'emporte (revue du lot 4)
 			ends: [
@@ -284,7 +421,8 @@
 		point: 'Point',
 		equerre: 'Équerre',
 		compas: 'Compas',
-		report: 'Report'
+		report: 'Report',
+		rapporteur: 'Rapporteur'
 	};
 
 	/** Toucher (doigt, souris) : coordonnées de la fenêtre, puis de la figure */
@@ -316,6 +454,18 @@
 			tapAt(snapTap(math, namedPointPositions(scene), radius));
 			return;
 		}
+		// Rapporteur posé : le toucher vise une graduation (jamais aimanté)
+		if (tool === 'rapporteur' && drawing.protractor) {
+			if (markDegree(drawing.protractor, math) === null) {
+				if (interactive) {
+					hint = { node, text: 'Touche du côté des graduations, ou touche Retourner.' };
+				}
+				return;
+			}
+			tapAt(math);
+			return;
+		}
+		if (tool === 'rapporteur') protractorRadius = radiusFor(scene, width, height);
 		const targets = snapTargets(scene);
 		if (tool === 'equerre' && !drawing.guide) {
 			const guide = straightAt(math, targets.traits, radius);
@@ -379,6 +529,11 @@
 			if (drawing.start && tool === 'report')
 				return 'Report : premier point de l’écartement choisi';
 			if (drawing.span && tool === 'report') return 'Report : écartement pris, touche un centre';
+			if (drawing.protractor) {
+				const last = marks.at(-1);
+				return last ? `Rapporteur posé, repère à ${last.deg}` : 'Rapporteur posé';
+			}
+			if (drawing.start && tool === 'rapporteur') return 'Rapporteur : centre choisi';
 			return drawing.start ? 'Départ choisi' : '';
 		}
 		const count = tool === 'point' ? placedPoints.length : lines.length;
@@ -388,9 +543,18 @@
 		return `Nœud ${cursor.x} ; ${cursor.y}${drawing.start ? ', départ choisi' : ''}, ${count} ${what}`;
 	});
 
-	function handlePointKey(event: KeyboardEvent, position: Position) {
+	function handlePointKey(
+		event: KeyboardEvent,
+		position: Position,
+		scene: FigureScene,
+		width: number,
+		height: number
+	) {
 		if (event.key !== 'Enter' && event.key !== ' ') return;
 		event.preventDefault();
+		if (tool === 'rapporteur' && !drawing.protractor) {
+			protractorRadius = radiusFor(scene, width, height);
+		}
 		if (tool === 'equerre' && !drawing.guide) {
 			hint = { node, text: 'Touche d’abord une droite.' };
 			return;
@@ -582,6 +746,35 @@
 				r={Math.hypot(edge.x - center.x, edge.y - center.y)}
 			/>
 		{/each}
+		{#each marks as mark, i (i)}
+			{@const t = markTick(mark, scene, width, height)}
+			{#if t}
+				<line
+					data-testid="repere-eleve"
+					class="repere-eleve"
+					class:droite-juste={answer?.isCorrect === true}
+					class:droite-travail={workDone}
+					{...t}
+				/>
+			{/if}
+		{/each}
+		{#if interactive && drawing.protractor}
+			{@const p = protractorOnScreen(drawing.protractor, scene, width, height)}
+			<!-- Clavier : le rapporteur a le focus, les flèches mènent le repère -->
+			<g
+				data-testid="rapporteur"
+				class="rapporteur"
+				role="slider"
+				tabindex="0"
+				aria-label="Rapporteur : flèches pour placer le repère"
+				aria-valuemin={0}
+				aria-valuemax={180}
+				aria-valuenow={marks.at(-1)?.deg ?? 0}
+				onkeydown={handleProtractorKey}
+			>
+				<Protractor x={p.x} y={p.y} rotation={p.rotation} pixelsPerUnit={p.pixelsPerUnit} />
+			</g>
+		{/if}
 		{#if interactive && drawing.span}
 			{@const a = transformer.mathToSvg(drawing.span.a.x, drawing.span.a.y)}
 			{@const b = transformer.mathToSvg(drawing.span.b.x, drawing.span.b.y)}
@@ -685,6 +878,19 @@
 				</g>
 			{/if}
 		{/if}
+		{#if corrected}
+			<!-- Angle à construire (lot 5) : l'arc de l'angle, codé de sa mesure -->
+			{@const arc = solutionAngle(checks, allPoints, figureShapes(scene, node.header), lines)}
+			{#if arc}
+				{@const a = angleArc(arc, scene, width, height)}
+				<g data-testid="bon-angle" class="bon-point">
+					<path class="bon-point-codage" d={a.d} />
+					<text x={a.label.x} y={a.label.y} text-anchor="middle" dominant-baseline="middle"
+						>{a.text}</text
+					>
+				</g>
+			{/if}
+		{/if}
 		{#each pointSolutions as solution (solution.name)}
 			{@const p = transformer.mathToSvg(solution.at.x, solution.at.y)}
 			{@const c = codage(solution, scene, width, height)}
@@ -737,7 +943,7 @@
 					tabindex="0"
 					aria-label="Point {name}"
 					pointer-events="none"
-					onkeydown={(event) => handlePointKey(event, position)}
+					onkeydown={(event) => handlePointKey(event, position, scene, width, height)}
 				/>
 			{/each}
 			{#if instruments && (!grid || (tool === 'equerre' && !drawing.guide))}
@@ -775,7 +981,23 @@
 							tabindex="0"
 							aria-label="Intersection {i + 1}"
 							pointer-events="none"
-							onkeydown={(event) => handlePointKey(event, position)}
+							onkeydown={(event) => handlePointKey(event, position, scene, width, height)}
+						/>
+					{/each}
+					<!-- Repères du rapporteur (côté de l'angle) -->
+					{#each marks as mark, i (i)}
+						{@const position = repereAt(mark)}
+						{@const p = transformer.mathToSvg(position.x, position.y)}
+						<circle
+							class="point-cible"
+							cx={p.x}
+							cy={p.y}
+							r="11"
+							role="button"
+							tabindex="0"
+							aria-label="Repère {i + 1}"
+							pointer-events="none"
+							onkeydown={(event) => handlePointKey(event, position, scene, width, height)}
 						/>
 					{/each}
 					<!-- Bouts des segments donnés (report d'une longueur) -->
@@ -790,7 +1012,7 @@
 							tabindex="0"
 							aria-label="Extrémité {i + 1}"
 							pointer-events="none"
-							onkeydown={(event) => handlePointKey(event, position)}
+							onkeydown={(event) => handlePointKey(event, position, scene, width, height)}
 						/>
 					{/each}
 				{/if}
@@ -816,6 +1038,27 @@
 							{TOOL_LABELS[t]}
 						</Button>
 					{/each}
+				</div>
+			{/if}
+			{#if drawing.protractor}
+				<div class="palette" role="group" aria-label="Rapporteur">
+					<Button
+						variant="outline"
+						size="sm"
+						data-testid="rapporteur-moins"
+						aria-label="Repère : un degré de moins"
+						onclick={() => nudge(-1)}>‹ 1°</Button
+					>
+					<Button
+						variant="outline"
+						size="sm"
+						data-testid="rapporteur-plus"
+						aria-label="Repère : un degré de plus"
+						onclick={() => nudge(1)}>1° ›</Button
+					>
+					<Button variant="outline" size="sm" data-testid="rapporteur-retourner" onclick={flip}>
+						Retourner
+					</Button>
 				</div>
 			{/if}
 			<Button variant="outline" size="sm" onclick={erase} disabled={!canErase(drawing)}>
@@ -998,6 +1241,31 @@
 		stroke-width: 1.5;
 		stroke-dasharray: 3 3;
 		pointer-events: none;
+	}
+
+	.repere-eleve {
+		stroke: var(--color-primary);
+		stroke-width: 2;
+		stroke-linecap: round;
+		pointer-events: none;
+	}
+
+	.repere-eleve.droite-juste {
+		stroke: var(--color-success);
+	}
+
+	.repere-eleve.droite-travail {
+		stroke: var(--color-muted-foreground);
+	}
+
+	/* Le toucher passe à travers le rapporteur (zone de tracé dessous) ; le clavier le prend */
+	.rapporteur {
+		pointer-events: none;
+		outline: none;
+	}
+
+	.rapporteur:focus-visible {
+		filter: drop-shadow(0 0 2px var(--color-ring));
 	}
 
 	.bon-triangle-arc {

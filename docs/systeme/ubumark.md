@@ -506,11 +506,11 @@ C = point(4, 5)
 
 Même en-tête et même langage que ` ```figure `, plus trois lignes propres, lues par
 `construction-parser.ts` (`readConstructionHeader`) puis effacées avant le parseur de figure (numéros
-de ligne gardés) : `outils:` (`CONSTRUCTION_TOOLS` : `droite`, `segment`, `point`, `equerre`, `compas`, `report` ; un seul pour
+de ligne gardés) : `outils:` (`CONSTRUCTION_TOOLS` : `droite`, `segment`, `point`, `equerre`, `compas`, `report`, `rapporteur` ; un seul pour
 `droite_par`, `carre`, `rectangle` ; plusieurs = une palette ; absent : celui de la vérification,
 `CHECK_TOOL`, ou, sans `grille:` (ou `grille: non`), les instruments pour `point` et `symetrique` (et
-pour `droite`, quadrillage ou non ; pour `cercle` et `triangle`, refusés sur quadrillage),
-`PLAIN_PAPER_TOOLS` ; sans quadrillage, une palette sans `equerre`, `compas` ni `report` est refusée), `verifier:` (obligatoire, une par ligne ; `CONSTRUCTION_CHECK_KINDS` : `droite_par P ; Q`,
+pour `droite`, quadrillage ou non ; pour `cercle`, `triangle` et `angle`, refusés sur quadrillage),
+`PLAIN_PAPER_TOOLS` ; sans quadrillage, une palette sans `equerre`, `compas`, `report` ni `rapporteur` est refusée), `verifier:` (obligatoire, une par ligne ; `CONSTRUCTION_CHECK_KINDS` : `droite_par P ; Q`,
 `carre A ; B`, `rectangle A ; B ; C`, `symetrique par d` / `symetrique A ; B ; C par d` (`symétrique`
 accentué admis ; `d` = droite, segment ou point nommé, le centre d'une symétrie centrale) — un seul carré,
 rectangle ou symétrique, jamais mêlé à `droite_par` ; `point A' = <expression>`, outil point, une ligne par
@@ -518,7 +518,10 @@ point à placer, expression du langage des figures au plus 200 caractères, nom 
 même forme, une droite à construire, jamais mêlée à une autre vérification ; `cercle c = <expression>`, de même,
 un cercle à construire sur papier uni ; `triangle ABC : AC = u ; BC = v`, trois sommets d'une lettre, les
 longueurs de [AC] et [BC] (dans n'importe quel ordre, `CA` admis) par un segment nommé ou deux points
-(`AC = AB`), un triangle à construire sur papier uni, seul, palette Segment · Compas · Report · Règle) et `case: N`, posée
+(`AC = AB`), un triangle à construire sur papier uni, seul, palette Segment · Compas · Report · Règle ;
+`angle AOy = 50`, un point du côté donné, le sommet, le nom du côté à tracer, une mesure entière de 1 à 179
+(`°` admis), un angle à construire sur papier uni, seul, palette Rapporteur · Segment, le rapporteur refusé
+ailleurs) et `case: N`, posée
 par le générateur de questions. Le nœud est un nœud **`figure`** qui porte `construction`
 (`ConstructionSpec`, `types/construction.ts`) : partout où une figure s'affiche (écran, PDF, listes),
 le bloc s'affiche comme sa figure de départ. Le repérage est celui de ` ```figure `

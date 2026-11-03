@@ -14,7 +14,7 @@
  * @module questions/construction/instruments
  */
 
-import type { DrawnLine, DrawnObject } from './answer';
+import type { DrawnLine, DrawnObject, DrawnRepere } from './answer';
 import type { Position } from './judge';
 
 /** Droite (par deux points), demi-droite (origine `a`), segment, ou cercle */
@@ -42,9 +42,9 @@ export function isStraight(trait: Trait): trait is StraightTrait {
 	return trait.kind !== 'circle';
 }
 
-/** Le trait que dessine un objet de l'élève ; null pour un point */
+/** Le trait que dessine un objet de l'élève ; null pour un point (ou un repère du rapporteur) */
 export function traitOf(object: DrawnObject): Trait | null {
-	if (object.kind === 'point') return null;
+	if (object.kind === 'point' || object.kind === 'repere') return null;
 	if (object.kind === 'cercle') {
 		const radius = Math.hypot(object.x - object.cx, object.y - object.cy);
 		return { kind: 'circle', center: { x: object.cx, y: object.cy }, radius };
@@ -58,6 +58,16 @@ export function traitOf(object: DrawnObject): Trait | null {
 		a: { x: object.x1, y: object.y1 },
 		b: { x: object.x2, y: object.y2 }
 	};
+}
+
+/**
+ * Où est le repère du rapporteur (lot 5) : à `r` du centre, à `deg` degrés de
+ * la base [centre, (ax ; ay)), dans le sens trigonométrique si `sens` = 1
+ */
+export function repereAt(mark: DrawnRepere): Position {
+	const base = Math.atan2(mark.ay - mark.vy, mark.ax - mark.vx);
+	const angle = base + (mark.sens * mark.deg * Math.PI) / 180;
+	return { x: mark.vx + mark.r * Math.cos(angle) + 0, y: mark.vy + mark.r * Math.sin(angle) + 0 };
 }
 
 /** Paramètre t (p = a + t·(b − a)) admis sur le trait droit, au jeu près */
@@ -356,7 +366,7 @@ function isSupported(
 	isBuilt: (p: Position) => boolean,
 	traits: readonly Trait[]
 ): boolean {
-	if (object.kind === 'point') return false;
+	if (object.kind === 'point' || object.kind === 'repere') return false;
 	if (object.kind === 'cercle') {
 		const center = { x: object.cx, y: object.cy };
 		if (!isBuilt({ x: object.x, y: object.y })) return false;
@@ -380,6 +390,25 @@ function isSupported(
 		const square = perpendicularThrough(t, p);
 		return Math.hypot(square.x2 - q.x, square.y2 - q.y) <= eps;
 	});
+}
+
+/**
+ * Repère du rapporteur construit (lot 5, § 16) : centre construit, et point de
+ * la base construit ou posé SUR un trait droit construit qui passe par le centre
+ * (la base longe le côté, touché n'importe où)
+ */
+function isBuiltMark(
+	mark: DrawnRepere,
+	isBuilt: (p: Position) => boolean,
+	traits: readonly Trait[]
+): boolean {
+	const center = { x: mark.vx, y: mark.vy };
+	const base = { x: mark.ax, y: mark.ay };
+	if (!isBuilt(center)) return false;
+	if (isBuilt(base)) return true;
+	return traits.some(
+		(t) => isStraight(t) && isOnSomeTrait(center, [t]) && isOnSomeTrait(base, [t])
+	);
 }
 
 /**
@@ -418,6 +447,8 @@ function sameRadiusCrossings(
  * (`isSupported`). Exception (§ 15) : deux cercles de même rayon, même pris à
  * l'œil, centrés sur deux points construits (la médiatrice « à écartement
  * quelconque ») construisent leurs DEUX intersections, sans devenir des traits.
+ * Un repère du rapporteur (lot 5) est un point construit quand il tient sur des
+ * points construits (`isBuiltMark`).
  * On recommence tant que quelque chose s'ajoute : deux traits tracés à l'œil ne
  * construisent rien, un trait ne se justifie jamais par lui-même ni par un trait
  * qui dépend de lui, et l'ordre des tracés ne compte pas.
@@ -432,14 +463,24 @@ export function constructionOf(
 	let crossings = intersectionsOf(traits);
 	/** Intersections des paires de cercles de même rayon (exception du § 15) */
 	const paired: Position[] = [];
+	/** Repères du rapporteur construits (indices dans `objects`) et leurs positions */
+	const markedIndices = new Set<number>();
+	const marks: Position[] = [];
 	const isBuilt = (p: Position) => {
 		const eps = EPSILON * scaleOf(p);
 		const at = (q: Position) => Math.hypot(p.x - q.x, p.y - q.y) <= eps;
-		return base.some(at) || crossings.some(at) || paired.some(at);
+		return base.some(at) || crossings.some(at) || paired.some(at) || marks.some(at);
 	};
 	let grew = true;
 	while (grew) {
 		grew = false;
+		objects.forEach((object, index) => {
+			if (object.kind !== 'repere' || markedIndices.has(index)) return;
+			if (!isBuiltMark(object, isBuilt, traits)) return;
+			markedIndices.add(index);
+			marks.push(repereAt(object));
+			grew = true;
+		});
 		objects.forEach((object, index) => {
 			if (built.has(index)) return;
 			const trait = traitOf(object);

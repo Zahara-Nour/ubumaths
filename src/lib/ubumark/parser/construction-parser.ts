@@ -103,7 +103,7 @@ function hasGrid(lines: readonly string[], headerEnd: number): boolean {
 }
 
 /** Vérifications à forme propre (pas une liste de points) */
-type NamedKind = 'symetrique' | 'point' | 'droite' | 'cercle' | 'triangle';
+type NamedKind = 'symetrique' | 'point' | 'droite' | 'cercle' | 'triangle' | 'angle';
 
 /** Nombre de points de chaque vérification, et comment l'écrire */
 const CHECK_ARITY: Record<
@@ -184,6 +184,35 @@ function readTriangle(rest: string, line: number): ConstructionCheck {
 	return { kind: 'triangle', points: [a, b, c], lengths: [ac, bc], line };
 }
 
+const ANGLE_EXAMPLE = 'angle AOy = 50';
+/** `AOy = 50` : point du côté donné, sommet, nom du côté à tracer ; mesure entière (° permis) */
+const ANGLE_REGEX = /^([A-Z])([A-Z])([A-Za-z])\s*=\s*(\d{1,3})\s*°?$/;
+const ANGLE_MIN = 1;
+const ANGLE_MAX = 179;
+
+/** `angle AOy = 50` (lot 5) : [OA) est donné, l'élève trace [Oy) */
+function readAngle(rest: string, line: number): ConstructionCheck {
+	const match = ANGLE_REGEX.exec(rest.trim());
+	if (!match) {
+		throw new LineError(
+			`angle attend un point du côté donné, le sommet, le nom du côté à tracer et une mesure entière en degrés : « ${ANGLE_EXAMPLE} »`
+		);
+	}
+	const [a, o, side] = [match[1], match[2], match[3]];
+	if (new Set([a, o, side]).size !== 3) {
+		throw new LineError(
+			`angle ${a}${o}${side} : le point, le sommet et le côté doivent être différents`
+		);
+	}
+	const measure = Number(match[4]);
+	if (measure < ANGLE_MIN || measure > ANGLE_MAX) {
+		throw new LineError(
+			`angle ${a}${o}${side} : mesure en degrés entière, de ${ANGLE_MIN} à ${ANGLE_MAX}`
+		);
+	}
+	return { kind: 'angle', points: [a, o], side, measure, line };
+}
+
 const NAMED_EXAMPLES = {
 	point: "point A' = symetrie(A, axe=d)",
 	droite: 'droite m = mediatrice(A, B)',
@@ -218,6 +247,7 @@ function readCheck(value: string, line: number): ConstructionCheck {
 	const word = rawWord.toLowerCase() === 'symétrique' ? 'symetrique' : rawWord;
 	if (word === 'symetrique') return readSymetrique(rest.join(' '), line);
 	if (word === 'triangle') return readTriangle(rest.join(' '), line);
+	if (word === 'angle') return readAngle(rest.join(' '), line);
 	if (word === 'point' || word === 'droite' || word === 'cercle') {
 		return readNamed(word, rest.join(' '), line);
 	}
@@ -252,11 +282,30 @@ function coherenceError(
 	grid: boolean
 ): string | null {
 	const tool = CHECK_TOOL[check.kind];
+	// Lot 5 (§ 16) : le rapporteur ne sert qu'à l'angle (ses repères construisent des points)
+	if (check.kind !== 'angle' && spec.tools.includes('rapporteur')) {
+		return `le rapporteur ne sert qu’à construire un angle (« verifier: ${ANGLE_EXAMPLE} ») ; le retirer de outils:`;
+	}
 	if (!spec.tools.includes(tool))
 		return check.kind === 'point'
 			? 'point se place avec l’outil point (outils: point)'
 			: `${check.kind} se trace avec l’outil ${tool} (outils: ${tool})`;
-	if (check.kind === 'triangle') {
+	if (check.kind === 'angle') {
+		// Lot 5 (§ 16) : seul dans la figure, papier uni, rapporteur et segment
+		const name = `${check.points[0]}${check.points[1]}${check.side}`;
+		if (spec.checks.length > 1) {
+			return `angle ${name} : un angle à construire ne se mêle pas à d’autres vérifications`;
+		}
+		const allowed = PLAIN_PAPER_TOOLS.angle ?? [];
+		const other = spec.tools.find((t) => !allowed.includes(t));
+		if (other) return `angle ${name} : outil ${other} hors de la palette (${allowed.join(', ')})`;
+		if (!spec.tools.includes('segment')) {
+			return `angle ${name} : le côté se trace au segment (outils: ${allowed.join(', ')})`;
+		}
+		if (grid) {
+			return `angle ${name} : l’angle se construit sur papier uni ; retirer « grille: » (ou écrire « grille: non »)`;
+		}
+	} else if (check.kind === 'triangle') {
 		// Lot 4 (§ 13) : seul dans la figure, papier uni, palette du triangle
 		const name = check.points.join('');
 		if (spec.checks.length > 1) {
@@ -299,7 +348,8 @@ function coherenceError(
 				c.kind !== 'point' &&
 				c.kind !== 'droite' &&
 				c.kind !== 'cercle' &&
-				c.kind !== 'triangle'
+				c.kind !== 'triangle' &&
+				c.kind !== 'angle'
 		);
 		if (check.kind !== 'droite_par' && segmentChecks[0] !== check) {
 			const symmetry = check.kind === 'symetrique' || segmentChecks[0].kind === 'symetrique';
@@ -383,7 +433,7 @@ export function readConstructionHeader(
 	if (!toolsSeen && spec.checks.length > 0) {
 		const kind = spec.checks[0].kind;
 		// La droite (lot 3) garde ses instruments sur quadrillage ; le cercle (lot 3b) y est refusé
-		const keeps = kind === 'droite' || kind === 'cercle' || kind === 'triangle';
+		const keeps = kind === 'droite' || kind === 'cercle' || kind === 'triangle' || kind === 'angle';
 		const plainPaper = grid && !keeps ? undefined : PLAIN_PAPER_TOOLS[kind];
 		spec.tools = plainPaper ? [...plainPaper] : [CHECK_TOOL[kind]];
 	}

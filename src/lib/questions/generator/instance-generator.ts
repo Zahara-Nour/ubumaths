@@ -658,6 +658,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					// Symétrique : l'axe ou le centre est nommé aussi (`d = droite(P, Q)`, `O = point(…)`) ;
 					// point à placer : son expression est calculée à la publication (`check-template`) ;
 					// triangle (lot 4) : A, B et ce qui donne les longueurs, C est à construire
+					// angle (lot 5) : A et O (`check.points`), le côté est à tracer
 					const names =
 						check.kind === 'point' || check.kind === 'droite' || check.kind === 'cercle'
 							? []
