@@ -535,8 +535,9 @@ un cercle à construire sur papier uni ; `triangle ABC : AC = u ; BC = v`, trois
 longueurs de [AC] et [BC] (dans n'importe quel ordre, `CA` admis) par un segment nommé ou deux points
 (`AC = AB`), un triangle à construire sur papier uni, seul, palette Segment · Compas · Report · Règle ;
 `angle AOy = 50`, un point du côté donné, le sommet, le nom du côté à tracer, une mesure entière de 1 à 179
-(`°` admis), un angle à construire sur papier uni, seul, palette Rapporteur · Segment, le rapporteur refusé
-ailleurs) et `case: N`, posée
+(`°` admis), un angle à construire sur papier uni, seul, palette Rapporteur · Segment ; `mesure AOB`, trois
+points dont le sommet au milieu, un angle à mesurer sur papier uni, seul, le rapporteur seul ; le rapporteur
+refusé ailleurs) et `case: N`, posée
 par le générateur de questions. Le nœud est un nœud **`figure`** qui porte `construction`
 (`ConstructionSpec`, `types/construction.ts`) : partout où une figure s'affiche (écran, PDF, listes),
 le bloc s'affiche comme sa figure de départ. Le repérage est celui de ` ```figure `
@@ -1321,7 +1322,7 @@ Points à retenir :
     `givenViews` ; `CubesGeste` les dessine telles quelles) : tout assemblage qui a ces vues étant
     juste, les hauteurs ne pouvaient pas partir ; ` ```patron ` `completer:` → le patron amputé en
     grille, déjà tourné et retourné, et `completer: ? ?` (`task.masked` faces à poser,
-    `completerStart`) ; ` ```figure-a-completer ` → `verifier: ?` (`spec.masked`, l'outil ou la palette
+    `completerStart`) ; ` ```figure-a-completer ` → `verifier: ?` (sauf `verifier: mesure AOB`, laissé tel quel : la mesure se lit sur la figure) (`spec.masked`, l'outil ou la palette
     déduite écrits en `outils:`). Pas masqués : `dessiner:` des cubes (la perspective est la figure), `designer:` du
     patron (la tâche, dans la consigne). Gardes : `questions/__tests__/masked-statement.test.ts` et
     `masked-statement-lot2.test.ts`, `FillBlanksInput-enonce-masque.svelte.test.ts` (même HTML

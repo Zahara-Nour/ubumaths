@@ -6,19 +6,18 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2305._
+_Mis à jour le 2026-11-03, lot 6 (mesurer un angle) en PR._
 
-- **État** : lots 1 à 5 mergés, plus #2305 (rapporteur près du bord, § 18) ; rien de tout ça n'est
-  encore en prod. Ligne #2305 ajoutée dans `verifications-manuelles.md`. Pas de worktree en cours.
-- **Prochaine action** : phase 0 du lot 6 « mesurer un angle », dans un worktree neuf.
-- **En attente de David** : M1 du § 18 — refuser à la publication une fenêtre trop allongée pour un
-  angle (rapport > 2, ma reco) ou laisser tel quel.
+- **État** : lots 1 à 5 et #2305 mergés ; lot 6 (`mesure AOB`, § 19-20) codé, en PR ; M1 tranchée et
+  faite (fenêtre d'un angle au plus 2 fois plus large que haute). Rien de tout ça n'est encore en prod.
+- **Prochaine action** : revue, merge du lot 6 ; puis phase 0 du triangle par un côté et deux angles
+  (5e), si David le veut.
+- **En attente de David** : rien.
 - **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12, sa propre
   phase 0) ; `perpendiculaire(A, s)` échoue quand A est un bout de s ; `symetrie(P, axe=d)` échoue si
   P définit d ; l'« Essayer » de l'aide ne rend pas la case jouable ; plafond de 20 objets sans
-  message ; la demi-droite s'écrit `demidroite(O, A)` ; fenêtre au plus 4 fois plus large que haute ;
-  graduations intérieures du rapporteur serrées (police fixe de 10 px).
-- **Worktree / branche** : à créer pour le lot 6 (`../ubumaths-wt-controles-figure`).
+  message ; la demi-droite s'écrit `demidroite(O, A)` ; graduations intérieures du rapporteur serrées.
+- **Worktree / branche** : `../ubumaths-wt-controles-figure`, `feat/controles-figure-lot6`.
 
 ---
 
@@ -833,3 +832,24 @@ numérique). Les poses du rapporteur et les repères ne sont pas notés. Papier 
 4. Variante « rapporteur déjà posé » : **plus tard**, si besoin.
 5. M1 du § 18 : fenêtre **refusée** à la publication pour un angle (construire ou mesurer) quand son
    rapport largeur / hauteur dépasse 2.
+
+## 20. Lot 6 — ce qui est fait (2026-11-03)
+
+- Vérification `mesure AOB` (`MeasureCheck`, parseur : trois points, sommet au milieu ; seule dans la
+  figure, le rapporteur seul, papier uni ; le rapporteur admis pour `angle` et `mesure`).
+- Réponse : les repères puis `mesure(50)` en dernier (`splitMeasuredAnswer`, `serializeMeasuredAnswer`) ;
+  hors d'une case `mesure`, `mesure(…)` est illisible (faux).
+- Juge `construction/measure.ts` : mesure calculée sur la figure, exacte ; messages du § 19 ; repères
+  seuls sans mesure tapée → « Tape la mesure de l'angle AOB, en degrés. » (Valider n'est bloqué que
+  sur une réponse vide). Erreurs d'auteur du § 19 ; côtés lus dans les traits de la figure (segment,
+  demi-droite, droite) jusqu'au rayon du rapporteur.
+- M1 : `protractorWindowError` (rapport > 2 refusé) pour `angle` et `mesure`.
+- Écran : case « Mesure de l'angle AOB : [ ] ° » sous la figure (chiffres seulement, 3 au plus ;
+  désactivée après Valider et dans la copie) ; consigne « Lis la mesure sur le rapporteur, puis
+  tape-la sous la figure. » ; correction : l'arc codé.
+- Énoncé masqué d'une évaluation : `verifier: mesure AOB` laissé tel quel (rien à cacher, l'écran en
+  tire la case) ; la garde `findUnmaskedAnswers` l'admet.
+- Aide à l'écriture : exemple « Mesurer un angle (rapporteur) » ; liste `verifier:` et `outils:` complétée.
+- Tests : `construction-measure.test.ts` (24), écran `figure-a-completer-mesure.svelte.test.ts` (4),
+  masquage (2), M1 au lot 5 (1) ; vérifiés rouges en cassant chaque règle (le juge a été écrit avant ses
+  tests : preuve rouge faite après coup, par mutation).

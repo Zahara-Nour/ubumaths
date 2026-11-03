@@ -31,7 +31,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21, attendu en h-min-s et dans l'unité imposée le 2026-11-03 ; QCM et vecteurs le 2026-10-22 ; QCM retiré (case choix seule) le 2026-10-28 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire (médiatrice) et milieu sur papier uni le 2026-11-02, cercle circonscrit le 2026-11-02, triangle de trois longueurs, report et 4e sommet le 2026-11-03, point construit de proche en proche le 2026-11-03 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26, à plusieurs points le 2026-10-27 ; horloge à placer (``horloge, `placer:`) le 2026-10-27, trotteuse le 2026-11-01 ; diagramme en barres à construire (``barres, `placer:`) le 2026-10-28, réponse d'une monnaie à centimes (`3,45`) le 2026-11-01, échelle à choisir le 2026-10-29 ; étiquettes à ranger (`ranger) le 2026-10-28 ; repère à placer (``courbe, `placer:`) le 2026-11-01, droite à tracer (``courbe, `tracer:`) le 2026-11-02, vecteur à tracer (``courbe, `tracer: vecteur`) le 2026-11-03 ; cercle trigonométrique à placer (``trig, `placer:`) le 2026-11-02 ; assemblage de cubes dans un choix (`--espace-taille`) le 2026-10-30 ; figure à colorier (`partage, `colorier:`) le 2026-10-29, assemblage de cubes à geste (`cubes, `dessiner:`/`retrouver:`) le 2026-10-30, patron à geste (`patron, `designer:`/`completer:`) le 2026-10-30, plusieurs figures (`unites:`, attendue `7/4`) le 2026-10-29 ; texte d'aide des cases à écrire le 2026-10-26 ; boîte à moustaches à construire (``boite-a-moustaches, `placer:`) le 2026-11-01 ; tableau de signes à compléter (``variation à `?` : cases, juge, masquage) le 2026-11-03, sa saisie le 2026-11-03, son corrigé (ligne `sign-table`) le 2026-11-03.
+> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21, attendu en h-min-s et dans l'unité imposée le 2026-11-03 ; QCM et vecteurs le 2026-10-22 ; QCM retiré (case choix seule) le 2026-10-28 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire (médiatrice) et milieu sur papier uni le 2026-11-02, cercle circonscrit le 2026-11-02, triangle de trois longueurs, report et 4e sommet le 2026-11-03, point construit de proche en proche le 2026-11-03, angle à mesurer (`mesure AOB`) le 2026-11-03 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26, à plusieurs points le 2026-10-27 ; horloge à placer (``horloge, `placer:`) le 2026-10-27, trotteuse le 2026-11-01 ; diagramme en barres à construire (``barres, `placer:`) le 2026-10-28, réponse d'une monnaie à centimes (`3,45`) le 2026-11-01, échelle à choisir le 2026-10-29 ; étiquettes à ranger (`ranger) le 2026-10-28 ; repère à placer (``courbe, `placer:`) le 2026-11-01, droite à tracer (``courbe, `tracer:`) le 2026-11-02, vecteur à tracer (``courbe, `tracer: vecteur`) le 2026-11-03 ; cercle trigonométrique à placer (``trig, `placer:`) le 2026-11-02 ; assemblage de cubes dans un choix (`--espace-taille`) le 2026-10-30 ; figure à colorier (`partage, `colorier:`) le 2026-10-29, assemblage de cubes à geste (`cubes, `dessiner:`/`retrouver:`) le 2026-10-30, patron à geste (`patron, `designer:`/`completer:`) le 2026-10-30, plusieurs figures (`unites:`, attendue `7/4`) le 2026-10-29 ; texte d'aide des cases à écrire le 2026-10-26 ; boîte à moustaches à construire (``boite-a-moustaches, `placer:`) le 2026-11-01 ; tableau de signes à compléter (``variation à `?` : cases, juge, masquage) le 2026-11-03, sa saisie le 2026-11-03, son corrigé (ligne `sign-table`) le 2026-11-03.
 
 ## À quoi ça sert
 
@@ -673,15 +673,32 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    un repère avec le rapporteur. », « Ton angle mesure 130° au lieu de 50° : tu as lu la mauvaise
    graduation du rapporteur. » (180 − a), « Ton angle mesure 45° au lieu de 50°. ». Erreurs de l'auteur :
    O ou A absent, invisible ou hors de la fenêtre, O et A confondus, y déjà un point de la figure,
-   quadrillage, demi-rapporteur posé en O qui sort de la fenêtre d'un côté de (OA) comme de l'autre
-   (rayon `protractorRadiusOf` : 0,35 du plus petit côté de la fenêtre ; seuls les côtés où il tient
-   comptent pour la correction).
+   quadrillage, fenêtre plus de deux fois plus large que haute ou l'inverse (`protractorWindowError`,
+   rapporteur illisible sur un petit écran), demi-rapporteur posé en O qui sort de la fenêtre d'un côté
+   de (OA) comme de l'autre (rayon `protractorRadiusOf` : 0,35 du plus petit côté de la fenêtre ; seuls
+   les côtés où il tient comptent pour la correction).
    Seul dans la figure ; palette Rapporteur · Segment (`PLAIN_PAPER_TOOLS.angle`) ; le rapporteur est
    refusé dans toute autre vérification (ses repères construiraient des points). Correction : [Oy) en
    pointillés du côté où l'élève a tracé (sinon le sens trigonométrique), l'arc de l'angle codé de sa
    mesure (`solutionAngle`). Écran : le rapporteur (`constructions-v2/.../Protractor.svelte`) a le même rayon (`protractorRadiusOf`) ; ‹ › décalent le dernier repère d'un degré (sans repère,
    en posent un) ; au clavier, le rapporteur a le focus (`role="slider"`), flèches ±1°, Maj ±10° ;
    « Effacer » retire ses repères, puis le lève.
+   Vérification `mesure AOB` (`construction/measure.ts`, lot 6) : l'angle est tracé ; l'élève le mesure
+   au rapporteur (le rapporteur seul, `PLAIN_PAPER_TOOLS.mesure` ; repères jamais notés) et tape la
+   mesure sous la figure (case « Mesure de l'angle AOB », chiffres seulement, trois au plus). Réponse :
+   les repères puis `mesure(50)` en dernier (`splitMeasuredAnswer`, `serializeMeasuredAnswer`) ; une
+   mesure ailleurs, deux fois, ou un autre objet qu'un repère : faux, sans message ; une mesure dans une
+   autre case figure : illisible, donc fausse. La mesure attendue est **calculée sur la figure** (angle
+   AOB arrondi au degré) ; juste : exacte ; messages : « L'angle mesure 50°, pas 130° : tu as lu la
+   mauvaise graduation du rapporteur. » (180 − a), « L'angle mesure 50°, pas 45°. », et sans mesure
+   tapée (repères seuls) « Tape la mesure de l'angle AOB, en degrés. » ; rien du tout : vide. Erreurs de
+   l'auteur : quadrillage, fenêtre trop allongée (même règle), point absent, O invisible ou hors de la
+   fenêtre, A ou B confondu avec O, mesure à plus de 0,01° d'un entier (« placer B avec rotation(A,
+   angle=…, centre=O) »), angle nul ou plat, côté [OA) ou [OB) non tracé (segment, demi-droite ou droite
+   de la figure) ou arrêté avant le bord du rapporteur, rapporteur posé en O qui ne tient ni sur [OA)
+   côté B ni sur [OB) côté A. Correction : l'arc de l'angle codé de sa mesure (`solutionAngle`), aucun
+   trait. Énoncé masqué d'une évaluation : `verifier: mesure AOB` reste tel quel (la mesure se lit sur
+   la figure ; l'écran en tire la case).
    **Papier uni (lot 2b)** : sans `grille:`, `point` et
    `symetrique` reçoivent une palette d'instruments (`PLAIN_PAPER_TOOLS`) ; équerre = perpendiculaire à
    une droite choisie par un point (écrite `droite(…)`), compas = cercle par son centre et un point
