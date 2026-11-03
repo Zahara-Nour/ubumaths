@@ -9,16 +9,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, lot 2 lancé._
+_Mis à jour le 2026-11-03, après #2339._
 
-- **État** : lot 1 mergé (#2331), pas encore en prod. Lot 2 (geste `tracer: vecteur`) en cours sur
-  `feat/solide-vecteur-geste`.
-- **Prochaine action** : logique (parseur, juge, phrases, chaîne des questions, PDF) par pedagogy-expert (Opus),
-  tests rouges d'abord ; puis écran `SolideGeste.svelte` (frontend-developer, Sonnet) ; revue Opus sur la PR.
+- **État** : lots 1 (#2331) et 2 (#2339, geste `tracer: vecteur`) mergés, pas encore en prod. Revue Opus de
+  #2339 : 0 bloquant, 4 remarques corrigées. Vérification manuelle notée.
+- **Prochaine action** : PR de suite D-SV2 — coefficients fractions simples (dénominateur ≤ 4, tiers :
+  `G centre BCD`) et vecteurs nommés de `vecteurs:` dans `tracer:` (`tracer: vecteur 2 u - v`). Nouveau worktree
+  `git worktree add -b feat/solide-vecteur-nommes ../ubumaths-wt-solide-vecteur origin/main`. Puis lot 3 (modèle
+  TSPE-334).
 - **En attente de David** : rien.
-- **Pièges en cours** : un clic à l'écran ne dit pas la profondeur : le geste ne vise que des points connus en
-  3D (`solidePoints3`, indices : sommets puis points déclarés). Modèle du câblage : commit 71edbf63e (patron).
-- **Worktree / branche** : `../ubumaths-wt-solide-vecteur`, `feat/solide-vecteur-geste` ; serveur 5176.
+- **Pièges en cours** : le geste ne vise que des points connus en 3D (`solideClickablePoints`). Une combinaison
+  dont l'extrémité ne tombe sur aucun point touchable est refusée (`AB + AD - 1/2 AE depuis A` sur un cube).
+  `stroke-width` explicite sur tout cercle SVG du geste (défaut = 1 cm). Code en ligne : nombre pair de backticks.
+- **Worktree / branche** : aucun (lot 2 nettoyé).
 
 ---
 
@@ -113,3 +116,7 @@ en **noir** (comme le ` ```courbe `) ; refus du coefficient nul et de plus de 6 
 (PR de suite, après #2339) : coefficients **fractions simples, dénominateur ≤ 4** (tiers : `G centre BCD`) ;
 **vecteurs nommés de `vecteurs:` admis dans `tracer:`** (`tracer: vecteur 2 u - v`, TSPE-334 « vecteurs
 donnés »).
+
+- #2339 mergé (d0e468c). Revue Opus : phrase « extrémité » dans la correction (origine imposée) et en origine
+  libre posée, exemple refusé retiré de l'aide, zones de toucher disjointes (demi-distance), nom accessible de
+  la figure de correction.
