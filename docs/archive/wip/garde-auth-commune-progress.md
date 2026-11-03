@@ -1,7 +1,7 @@
 ---
 title: Garde d'authentification commune (écart T7) — journal
 date: 2026-11-03
-status: PR ouverte, revue sécurité en cours
+status: clos — #2311 mergée le 2026-11-03 (suite dans ecarts-a-trier-progress.md)
 ---
 
 ## Reprendre ici
@@ -16,7 +16,7 @@ _Mis à jour le 2026-11-03, avant la PR._
 
 ---
 
-Chantier parent : [ecarts-a-trier-progress.md](ecarts-a-trier-progress.md) (T7).
+Chantier parent : [ecarts-a-trier-progress.md](../../wip/ecarts-a-trier-progress.md) (T7).
 
 Changements de comportement voulus : « pas de session » → 401 partout (certains répondaient 403) ; messages d'erreur de la garde ; profil absent → 403 (certains laissaient passer, ou 404/500) ; `tests/save` → `HttpError` au lieu de `json({error})` (le client ne lit que le statut).
 

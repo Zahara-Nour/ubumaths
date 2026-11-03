@@ -8,12 +8,12 @@ status: écarts revérifiés le 2026-10-18 ; tri A (seul) / B (David) fait ; lot
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2295 et T6._
+_Mis à jour le 2026-11-03, après #2311 (T7)._
 
-- **État** : liste A finie et en prod. Lot RGPD : toutes mes recos validées par David. Fait : doc (T3, T9, T12, T13, `c3a17bc02`) ; T2 = garde de test (#2293) ; T1 = présence relue toutes les 60 s (#2295) ; T6 = `unsafe-eval` gardé et documenté (`auth.md`). Mergés, **pas encore en prod** (pas de `deploy:prod` demandé).
-- **Prochaine action** : **T7** (renommer la `requireAuth` qui redirige en `requireUserOrRedirect`, passer les ~32 routes à la garde commune, revue sécurité), puis T8, T15, puis lots B « destructif » et « spécification ».
-- **En attente de David** : T14 = les infos des mentions légales (responsable de publication, statut, adresse, nom).
-- **Pièges en cours** : `cleanup_stale_presence` existe mais n'est planifiée nulle part (contourné côté navigateur par T1) ; horloge client en retard de plus de 90 s → amis affichés hors ligne (risque connu) ; CI client : `wrapDynamicImport` / « Browser connection was closed » passagers → relancer le job ; migrations : `pnpm migration:horodatage`, `check:migrations --pr <n>`.
+- **État** : liste A finie et en prod. Lot RGPD : T1, T2, T3, T6, T7, T9, T12, T13 faits (T7 = #2311 : `requireUserOrRedirect` pour les pages, 62 endpoints passés à la garde commune, panne de lecture du profil → 500). Mergés depuis #2293, **pas encore en prod** (pas de `deploy:prod` demandé).
+- **Prochaine action** : **T8** (limiteur en mémoire → limiteur en base, supprimer celui en mémoire), puis T15, puis lots B « destructif » et « spécification ».
+- **En attente de David** : T14 = infos des mentions légales (responsable de publication, statut, adresse, nom) ; **perf de la garde commune** : `requireAuth` relance `getUser()` et relit `profiles` alors que le hook l'a fait (342 endpoints) — reco : futur chantier, mesurer d'abord en prod, puis réutiliser `locals.user`/`locals.profile` (même ligne, vérifié par la revue sécurité).
+- **Pièges en cours** : `cleanup_stale_presence` non planifiée (contourné par T1) ; horloge client en retard > 90 s → amis hors ligne ; CI client : `wrapDynamicImport` / « Browser connection was closed » passagers → relancer ; garde « doc à jour » : elle compare des COMMITS (verte en local avant commit ≠ verte en CI) ; migrations : `pnpm migration:horodatage`, `check:migrations --pr <n>`.
 - **Worktree / branche** : aucun (journal sur `main`).
 
 ---
@@ -39,6 +39,7 @@ _Mis à jour le 2026-11-03, après #2295 et T6._
 - **T6** CSP `unsafe-eval` : tester si `wasm-unsafe-eval` suffit à Typst ; sinon le restreindre aux pages PDF.
   - **Mesuré le 2026-11-03** : `wasm-unsafe-eval` ne suffit pas (le WASM Typst appelle `new Function`), et une CSP par route casse à la navigation côté client. **David : garder `unsafe-eval`, documenter** (`auth.md`, point 12) — fait. Futur chantier possible : nonces à la place de `unsafe-inline`.
 - **T7** deux `requireAuth` : renommer celle qui redirige (`requireUserOrRedirect`) et passer les ~32 routes à la garde commune, avec revue sécurité.
+  - **Fait, #2311 (2026-11-03)** : 62 endpoints migrés (rôles identiques, jamais `requireAdmin`) ; laissés `admin/elevate*`, `auth/logout`, `errors/log`. Revue sécurité : aucun accès gagné. Constats hors périmètre jugés sans suite : `python-exercises/mastery` prend `student_id` du client mais la RLS (`pem_select_own` / `pem_select_teacher`) borne ; correction d'un devoir ouverte à tout prof (mono-prof). Journal : [archive](../archive/wip/garde-auth-commune-progress.md).
 - **T8** limiteur en mémoire : unifier sur le limiteur en base, supprimer celui en mémoire.
 - **T9** double CSRF : garder les deux, documenté (`auth.md`) — fait.
 - **T12** grâce du consentement : 30 jours glissants, doc corrigée (conformité) — fait.
