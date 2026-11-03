@@ -115,7 +115,12 @@ async function appelerConfirm(client: Client, userId: string, tradeId: string) {
 	try {
 		const res = await confirmerRoute({
 			params: { id: tradeId },
-			locals: { supabase: client, user: { id: userId } }
+			locals: {
+				supabase: client,
+				user: { id: userId },
+				// Comme `hooks.server.ts` : la garde commune lit la session par là
+				safeGetSession: async () => ({ user: { id: userId } })
+			}
 		} as never);
 		return { status: res.status, corps: (await res.json()) as Record<string, unknown> };
 	} catch (err) {

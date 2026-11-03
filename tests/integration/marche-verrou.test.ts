@@ -150,7 +150,8 @@ function appelRoute(user: Eleve, listingId: string, body: Record<string, unknown
 		request: { json: async () => body } as unknown as Request,
 		locals: {
 			supabase: user.client as unknown as App.Locals['supabase'],
-			user: { id: user.id } as User
+			user: { id: user.id } as User,
+			safeGetSession: async () => ({ user: { id: user.id } })
 		} as unknown as App.Locals
 	} as unknown as Parameters<typeof proposer>[0]);
 }
@@ -382,7 +383,8 @@ describe('marché verrouillé — Q140, Q147, offre d’annonce, école', () => 
 			params: { id: proposalId },
 			locals: {
 				supabase: proposant.client as unknown as App.Locals['supabase'],
-				user: { id: proposant.id } as User
+				user: { id: proposant.id } as User,
+				safeGetSession: async () => ({ user: { id: proposant.id } })
 			} as unknown as App.Locals
 		} as unknown as Parameters<typeof retirer>[0]);
 
@@ -393,7 +395,8 @@ describe('marché verrouillé — Q140, Q147, offre d’annonce, école', () => 
 	function localsDe(user: Eleve): App.Locals {
 		return {
 			supabase: user.client as unknown as App.Locals['supabase'],
-			user: { id: user.id } as User
+			user: { id: user.id } as User,
+			safeGetSession: async () => ({ user: { id: user.id } })
 		} as unknown as App.Locals;
 	}
 

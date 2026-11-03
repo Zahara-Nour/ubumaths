@@ -402,6 +402,7 @@ describe('RPC lot 3 : un élève n’agit plus sur le compte d’un autre', () =
 			locals: {
 				supabase: eleveA as unknown as App.Locals['supabase'],
 				user: { id: aId } as User,
+				safeGetSession: async () => ({ user: { id: aId } }),
 				profile: { id: aId, role: 'student' }
 			} as unknown as App.Locals
 		} as unknown as Parameters<typeof soumettreScore2048>[0]);
