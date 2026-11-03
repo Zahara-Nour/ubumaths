@@ -6,19 +6,20 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR #2327 (lot 6) ouverte, CI du dernier commit de la branche en cours._
+_Mis à jour le 2026-11-03, après #2327 (lot 6 mergé)._
 
-- **État** : lots 1 à 5 et #2305 mergés ; lot 6 (`mesure AOB`, § 19-20) codé, revu (Opus, 6 findings
-  traités), décision du masquage faite (points calculés en coordonnées). M1 faite. Rien en prod.
-- **Prochaine action** : `gh pr checks 2327` (run « Code Quality » du DERNIER commit de la branche) ; vert →
-  `gh pr merge 2327 --merge`, puis nettoyage du worktree, ligne #2327 dans
-  `verifications-manuelles.md`, « Reprendre ici » sur `main`.
-- **En attente de David** : rien.
+- **État** : lots 1 à 6 et #2305 mergés (lot 6 = `mesure AOB`, § 19-20). Rien en prod
+  (`deploy:prod` sur demande de David). Vérification à l'œil de #2327 dans `verifications-manuelles.md`.
+- **Prochaine action** : phase 0 du lot 7, le triangle donné par un côté et deux angles (5e), décidé
+  « après » le lot 6 (§ 16, décision 5) ; nouveau worktree. Plus tard : variante « rapporteur déjà
+  posé » (§ 19, décision 4).
+- **En attente de David** : rien (la phase 0 du lot 7 sera à valider).
 - **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12) ;
   `perpendiculaire(A, s)` échoue quand A est un bout de s ; `symetrie(P, axe=d)` échoue si P définit
   d ; l'« Essayer » de l'aide ne rend pas la case jouable ; plafond de 20 objets sans message ; la
-  CI ne part pas sur une PR en conflit (fusionner `origin/main` d'abord).
-- **Worktree / branche** : `../ubumaths-wt-controles-figure`, `feat/controles-figure-lot6`.
+  CI ne part pas sur une PR en conflit ; tests navigateur de #2327 : Chromium fermé en pleine suite
+  2 fois sur 3, sans assertion fausse, cause non trouvée (ni le lot 6, ni l'image du runner).
+- **Worktree / branche** : aucun (retiré après #2327).
 
 ---
 
