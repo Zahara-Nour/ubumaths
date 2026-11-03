@@ -6,13 +6,14 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR 2a (`.simplifier`) prête à ouvrir._
+_Mis à jour le 2026-11-03, après #2351._
 
-- **État** : PR 2a sur `feat/registre-reference` : `.simplifier` du registre garde le domaine
+- **État** : PR 2a mergée (#2351) : `.simplifier` du registre garde le domaine
   (`mathAST/pedagogical-simplify/keep-domain.ts`) ; l'Atelier affiche la réponse du registre (la
   fin de ses étapes quand il en a) ; `·` `⋅` `×` en syntaxe maison ; `pow-of-pow` garde le signe
-  (`(x²)^{1/2}` → `|x|`). Revue opus faite et corrigée. Rien de déployé.
-- **Prochaine action** : PR ouverte → CI → merge ; puis `.résoudre` → S (PR 2b), puis `.intégrer`.
+  (`(x²)^{1/2}` → `|x|`). Rien de déployé.
+- **Prochaine action** : `.résoudre` → S (PR 2b), nouveau worktree depuis `origin/main` ; puis
+  `.intégrer`.
 - **En attente de David** : rien.
 - **Tranché** : `unitChoice: 'school'` GARDÉE exprès — ne pas proposer de la retirer ; Q9 EN
   ENTIER, A-D du lot 2, `decimal` en LaTeX, `plafond-02` → 1000, Q24, `signes-06` — NE PAS
@@ -24,7 +25,7 @@ _Mis à jour le 2026-11-03, PR 2a (`.simplifier`) prête à ouvrir._
   limites connues : `.diff cos(60°)*x`, `2 ≈ 2`, `(t>1)`, `5 m * 25!/24!`, `20000!/19999!`,
   `2×π`. Le registre lit en LaTeX ce que la détection ne tranche pas (confiance 0,5 : `x*0/x`),
   l'Atelier en syntaxe maison.
-- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `feat/registre-reference`.
+- **Worktree / branche** : aucun (retiré après #2351) ; le prochain : `../ubumaths-wt-registre-reference`.
 
 ---
 
