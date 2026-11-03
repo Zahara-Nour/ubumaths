@@ -1326,7 +1326,10 @@ décisions de David du 2026-10-11) :
   `commandBeingWritten`) reste sous le champ pendant qu'on tape la suite. Garde : toute commande
   d'élève disponible a un exemple (`commands.test.ts`).
 
-**Garder le domaine** (chantier tidy-conditions, David 2026-10-26 ; `domain-guard.ts`) : toutes
+**Garder le domaine** (chantier tidy-conditions, David 2026-10-26 ; `domain-guard.ts` pour les
+boutons, le calcul dans `mathAST/pedagogical-simplify/keep-domain.ts` depuis registre-reference,
+2026-11-03 : `.simplifier` du registre rend la même réponse ; la ligne affiche la fin des étapes
+quand il y en a, sinon la réponse du registre — garde `simplifier-registre.test.ts`) : toutes
 les lignes se comportent comme une expression tapée et `.développer` — une simplification n'a lieu
 que si le domaine ne change pas (`domainLoss` de `mathAST/tidy`). `.simplifier` et `.factoriser`
 coupent le calcul du moteur pédagogique avant la première étape qui change le domaine

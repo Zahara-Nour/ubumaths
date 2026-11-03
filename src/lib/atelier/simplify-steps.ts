@@ -15,7 +15,6 @@
  */
 
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-import { generatePedagogicalSimplifySteps } from '$lib/mathAST/pedagogical-simplify/pipeline';
 import { PedagogicalSimplifyRenderer } from '$lib/mathAST/pedagogical-simplify/renderer';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { displayUnitsInLatex } from '$lib/mathAST/units/display';
@@ -23,12 +22,8 @@ import type { MathNode } from '$lib/mathAST/types';
 import { degreeSignWritten } from '$lib/mathAST/cli/core/degrees';
 import { astOf } from './parse';
 import { summaryOf } from './steps-summary';
-import {
-	engineAlternative,
-	keepingDomain,
-	writtenKeepingDomain,
-	type DomainAlternative
-} from './domain-guard';
+import { engineAlternative, type DomainAlternative } from './domain-guard';
+import { simplifiedKeepingDomain } from '$lib/mathAST/pedagogical-simplify/keep-domain';
 import type { PedagogicalSimplifyResult } from '$lib/mathAST/pedagogical-simplify/types';
 
 // =============================================================================
@@ -130,28 +125,26 @@ export function simplifySteps(expression: string): SimplifiedSteps | null {
 		const node = astOf(expression, 'text');
 		if (node === null) return null;
 
-		const full = generatePedagogicalSimplifySteps(node, {
-			intent: 'auto',
-			schoolLevel: 'lycee',
-			verbosity: 'detailed'
-		});
 		// Le domaine est gardé (David, 2026-10-26) : la ligne s'arrête avant la
-		// première étape qui le change, le bouton montre le calcul entier
-		const { kept } = keepingDomain(node, full);
-		const alternative = engineAlternative(node, full, () => rendered(full) ?? undefined);
+		// première étape qui le change, le bouton montre le calcul entier. Le
+		// même calcul que la réponse du registre (`.simplify`, keep-domain.ts).
 		// Zéro étape = rien à simplifier. C'est un repli, pas un échec : la ligne
-		// garde la réponse du moteur, qui dit déjà la même chose. Des étapes, mais
-		// aucune qui garde le domaine : la ligne garde l'expression, sans étapes
-		const shown = rendered(kept);
+		// garde la réponse du moteur, qui dit déjà la même chose
+		const simplified = simplifiedKeepingDomain(node);
+		if (simplified === null) return null;
+		const { full, domain } = simplified;
+		const alternative = engineAlternative(node, full, () => rendered(full) ?? undefined);
+		// Des étapes, mais aucune qui garde le domaine : la ligne garde
+		// l'expression, sans étapes
+		const shown = rendered(domain.kept);
 		if (shown === null) {
-			if (full.steps.length === 0) return null;
 			return {
 				steps: [],
-				answer: shownLatex(writtenKeepingDomain(node)),
+				answer: shownLatex(simplified.answer),
 				...(alternative !== undefined && { alternative })
 			};
 		}
-		const answer = shownLatex(kept.result);
+		const answer = shownLatex(simplified.answer);
 		if (answer.trim() === '') return null;
 		return {
 			steps: shown.steps,

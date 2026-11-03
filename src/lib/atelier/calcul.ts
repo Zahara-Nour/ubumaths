@@ -198,7 +198,8 @@ import { deriveSteps } from './derive-steps';
 import { variationsRendering } from './variations-steps';
 import { simplifySteps } from './simplify-steps';
 import { factorSteps } from './factor-steps';
-import { guardedAnswer, tidyFurther, writtenKeepingDomain, type DomainFacts } from './domain-guard';
+import { writtenKeepingDomain } from '$lib/mathAST/pedagogical-simplify/keep-domain';
+import { guardedAnswer, tidyFurther, type DomainFacts } from './domain-guard';
 import {
 	conditionsText,
 	guarantees,
@@ -2623,11 +2624,17 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		if (note !== null) return { kind: 'commande', input, output: rendered.text, ...notes };
 	}
 
-	// ⚠️ Même forme que `.dériver`, pour la même raison : le moteur ne SAIT pas
-	// faire une partie de ce qu'on lui demande. Mesuré — `.simplifier x+x` et
-	// `.simplifier sqrt(8)` rendaient l'entrée inchangée. L'étape n'est donc pas
-	// qu'une explication ici : c'est aussi la bonne réponse.
+	// La réponse est celle du registre (`.simplify`, keep-domain.ts : le domaine
+	// gardé, ADR 0032 S3) ; les étapes et le bouton « Simplifier pour x ≠ 0 »
+	// sont de l'Atelier, et sortent du même calcul (garde : simplifier-registre).
+	// Avec des étapes, la ligne affichée est leur fin : le même calcul, sur la
+	// ligne lue par l'Atelier — le registre lit en LaTeX ce que la détection ne
+	// tranche pas (`x*0/x` : `(x·0)/x`), et la dernière étape le contredirait.
 	if (name === 'simplify') {
+		const answer =
+			result.success && result.answer !== undefined
+				? degreeSignWritten(displayUnitsInLatex(result.answer))
+				: undefined;
 		const simplified = simplifySteps(argument);
 		if (simplified !== null) {
 			return {
@@ -2640,22 +2647,21 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 				...(simplified.alternative !== undefined && { alternative: simplified.alternative })
 			};
 		}
-		// Rien à simplifier (`2(x+3)`, `x²+2x+1`) : l'expression du moteur en
-		// LaTeX, jamais le bloc du terminal (« Custom: … Hash: 2*V(x)+6 »). Le
-		// moteur, lui, ne garde pas le domaine (`ln(x) − ln(x)` → 0) : gardé ici
-		if (result.success && result.ast !== undefined) {
+		// Rien à simplifier pour le moteur pédagogique (`2(x+3)`, `ln(x) − ln(x)`) :
+		// le registre a gardé le domaine ; le bouton montre le calcul du moteur
+		if (answer !== undefined) {
 			const typed = astOf(argument, 'text');
 			const guarded =
 				typed === null
-					? { shown: result.ast }
-					: guardedAnswer(writtenKeepingDomain(typed), result.ast);
+					? undefined
+					: guardedAnswer(writtenKeepingDomain(typed), simplify(typed).result);
 			return {
 				kind: 'commande',
 				input,
 				output: rendered.text,
 				// `cos(20°)`, gardé en degrés depuis que `.simplifier` les lit lui-même
-				latex: degreeSignWritten(displayUnitsInLatex(toLatex(guarded.shown))),
-				...(guarded.alternative !== undefined && { alternative: guarded.alternative })
+				latex: answer,
+				...(guarded?.alternative !== undefined && { alternative: guarded.alternative })
 			};
 		}
 	}

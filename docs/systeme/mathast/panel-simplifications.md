@@ -133,7 +133,9 @@ Les rendus sont en LaTeX, tels que `toLatex` les imprime.
 
 Le moteur pédagogique a aussi `exp-n-ln` : `e^{n \ln x} = xⁿ`, n entier (tidy-conditions § 4.2 :
 `e^{\ln(x^2)}` passait par `e^{2\ln x}` et s'arrêtait là). Dans l'atelier, ces réécritures qui
-changent le domaine passent au bouton « Simplifier pour … ». Hors panel : aucune ligne ci-dessus ne
+changent le domaine passent au bouton « Simplifier pour … ». La réponse de `.simplifier`, dans l'Atelier comme au registre, est
+`simplifyKeepingDomain` (`pedagogical-simplify/keep-domain.ts`, 2026-11-03) : le domaine gardé, pas
+la colonne `simplify` ni `auto` telles quelles. Hors panel : aucune ligne ci-dessus ne
 change.
 
 ## Trigonométrie

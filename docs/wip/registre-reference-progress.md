@@ -6,24 +6,25 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2329._
+_Mis à jour le 2026-11-03, PR 2a (`.simplifier`) prête à ouvrir._
 
-- **État** : PR 1 `.dériver` (#2316) et PR 1 bis (#2329, exponentielle commune sous une barre de
-  nombre) mergées. Mineurs de la 2e revue faits dans #2329 : barre commune remise au tableau SEULEMENT
-  si le numérateur se factorise (un facteur non numérique de plus), sinon forme finale
-  (`(1/2 − x/2)e^{−x}`, `(x/2 − 1/4)e^{2x}`) ; dénominateur commun plafonné à 100 ; primitives du
-  pipeline inchangées (sondé). Rien de déployé.
-- **Prochaine action** : étape 2 du découpage, nouveau worktree : `.simplifier` S3 (`simplifier-01`,
-  `-10`), puis `.résoudre` → S.
+- **État** : PR 2a sur `feat/registre-reference` : `.simplifier` du registre garde le domaine
+  (`mathAST/pedagogical-simplify/keep-domain.ts`) ; l'Atelier affiche la réponse du registre (la
+  fin de ses étapes quand il en a) ; `·` `⋅` `×` en syntaxe maison ; `pow-of-pow` garde le signe
+  (`(x²)^{1/2}` → `|x|`). Revue opus faite et corrigée. Rien de déployé.
+- **Prochaine action** : PR ouverte → CI → merge ; puis `.résoudre` → S (PR 2b), puis `.intégrer`.
 - **En attente de David** : rien.
 - **Tranché** : `unitChoice: 'school'` GARDÉE exprès — ne pas proposer de la retirer ; Q9 EN
   ENTIER, A-D du lot 2, `decimal` en LaTeX, `plafond-02` → 1000, Q24, `signes-06` — NE PAS
   reposer. Fraction devant ou division après : `(x²/3 + 2x/3)eˣ` ; tableau : `x(x + 2)eˣ/3` ;
-  barre seulement si ça factorise, q ≤ 100 (David, 2026-11-03).
+  barre seulement si ça factorise, q ≤ 100 (David, 2026-11-03). `.simplifier` : descendre le calcul
+  de l'Atelier dans le moteur, `avec`/`dans` restent à l'Atelier jusqu'à l'étape H (David, 2026-11-03).
 - **Pièges** : `docs:check-a-jour` local ne voit que le COMMITÉ ; commitlint refuse « merge … »
-  (`chore: fusion …`) ; un nombre négatif est un `opposite(number)`, pas un `number` ; limites
-  connues : `.diff cos(60°)*x`, `2 ≈ 2`, `(t>1)`, `5 m * 25!/24!`, `20000!/19999!`.
-- **Worktree / branche** : aucun (à créer pour l'étape 2).
+  (`chore: fusion …`) et un corps > 100 colonnes ; un nombre négatif est un `opposite(number)` ;
+  limites connues : `.diff cos(60°)*x`, `2 ≈ 2`, `(t>1)`, `5 m * 25!/24!`, `20000!/19999!`,
+  `2×π`. Le registre lit en LaTeX ce que la détection ne tranche pas (confiance 0,5 : `x*0/x`),
+  l'Atelier en syntaxe maison.
+- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `feat/registre-reference`.
 
 ---
 
@@ -621,3 +622,40 @@ corrigée, à confirmer).
   dénominateur gardé). Mesuré : sur `main` ces cas n'étaient PAS factorisés au tableau
   (`\dfrac{x²eˣ + 2xeˣ}{3}`), contrairement à ce que disait la revue. Preuves rouges : 2/12 et
   5/7 ; sonde avant/après sur l'oracle (626 formes factorisées du tableau) : 0 différence.
+
+## PR 2a — `.simplifier` garde le domaine (2026-11-03)
+
+Étape 2 du découpage, sur le « go » de David.
+
+- **Mesure** (sonde jetable, 208 lignes `.simplifier` des tests de l'Atelier, registre contre
+  Atelier) : 126 écarts, ~90 réels. Hors hypothèses, l'Atelier a raison chaque fois : domaine gardé
+  (`x/x`, `e^(ln x)`, `ln(x) − ln(x)`, `(x²−1)/(x+1)`) et exponentielles simplifiées
+  (`e^{2x}/e^x → eˣ`, `ln(x³) → 3 ln x`, `e^x/e → e^{x−1}`). Le registre ne lit pas `avec`/`dans`
+  (étape H). Remarque : `ln(2x) − ln(2x)` → `ln(x) − ln(x)` à l'Atelier (juste pour x > 0 : coupé
+  avant l'étape qui change le domaine), inchangé ici.
+- **Décision de David** (question posée) : descendre le calcul. `keepingDomain`,
+  `writtenKeepingDomain` passent de `atelier/domain-guard.ts` à
+  `mathAST/pedagogical-simplify/keep-domain.ts`, avec `simplifiedKeepingDomain` (moteur
+  pédagogique, coupé avant la première étape qui change le domaine) et `simplifyKeepingDomain`
+  (réponse brute ; repli : moteur de calcul gardé). `simplify.command.ts` l'appelle ; l'Atelier
+  (`simplifySteps`) part du même calcul pour ses étapes et ses boutons, et affiche `result.answer`
+  (repli sur la réponse des étapes si le registre n'en rend pas).
+- **Trouvé en route** : (1) le registre lisait `(1/2)` en division « en ligne » (`1 / 2` en LaTeX) :
+  la commande écrit les divisions tapées en fraction. (2) `2·x` (et `⋅`, `×`) tombait dans le repli
+  LaTeX de `detectInputFormat`, qui lit `·` comme une lettre : `.dériver 2·x^2` → `4x·` au registre
+  (et à l'Atelier depuis #2316). Le signe du produit est maintenant un motif de la syntaxe maison.
+- **Sonde avant/après** (Atelier de `main` contre la branche, mêmes 208 lignes) : une seule ligne
+  change, `(1/2)^x·(1/2)` tapé avec un point médian dans une phrase de test.
+- Corpus : `simplifier-01`, `-10` justes (retirés de `connues-fausses.ts`). Garde R5 :
+  `simplifier-registre.test.ts` (140 lignes, dernière étape = réponse du registre) ; détection :
+  `input-detector-signe-produit.test.ts`.
+- **Revue `code-reviewer` opus** (2026-11-03) : (1) `x/x*0` affiché `\dfrac{x}{x} * 0` — l'étoile
+  du parseur LaTeX (`displayStyle: 'star'`) : la commande l'écrit en croix (`typedSigns`) ;
+  (2) `(x²)^{1/2}` → `x`, faux pour x < 0 : `pow-of-pow` (moteur pédagogique, Atelier de `main`
+  compris) ne s'applique plus pour m pair, n non entier, base de signe inconnu
+  (`evenPowerLosesSign`) → `|x|` ; (3) avec des étapes, l'Atelier affiche leur fin
+  (`simplified.answer`) : même calcul, mais sur SA lecture — `x*0/x` est lu `(x·0)/x` par le
+  registre (repli LaTeX), `x·(0/x)` par l'Atelier (`READ_DIFFERENTLY` du test). Lire `*` en
+  syntaxe maison au portier changeait 6 tests dont `grands-08` du corpus : écarté. Laissés,
+  antérieurs : `2×π` → `2 \pi ×` (`×` à côté de π, syntaxe maison) ; `.simplifier` calcule deux
+  fois le moteur pédagogique (registre puis `simplifySteps`).

@@ -17,7 +17,8 @@
 
 import { add, fraction, func, multiply, number, subtract, superscript } from '../../factory';
 import { isEulerConstant, isFunction } from '../../guards';
-import { extractRational } from '../../common/numeric';
+import { extractExactRational, extractRational } from '../../common/numeric';
+import { constantSign } from '../../common/constant-sign';
 import { nodesEqual } from '../../normal/hash';
 import {
 	flattenProductShallow,
@@ -35,6 +36,20 @@ import { isPlainSqrt } from './sqrt';
 import { getBindingNode } from '../types';
 import type { Rule, MatchBindings, SumPatternElement } from '../types';
 import { isMathNodeBinding } from '../types';
+
+/**
+ * `(aᵐ)ⁿ` avec m entier pair, n non entier, et a de signe inconnu : aᵐ est
+ * positif même pour a < 0, a^{mn} ne l'est pas — `(x²)^{1/2}` vaut |x|,
+ * `(x²)^{3/2}` vaut |x|³. Une base positive connue (`e`, `2`) n'y perd rien.
+ */
+function evenPowerLosesSign(base: MathNode, inner: MathNode, outer: MathNode): boolean {
+	const m = extractExactRational(inner);
+	const n = extractExactRational(outer);
+	if (m === null || m.n % m.d !== 0n || (m.n / m.d) % 2n !== 0n) return false;
+	if (n !== null && n.n % n.d === 0n) return false;
+	if (isEulerConstant(base)) return false;
+	return constantSign(base) !== 1;
+}
 
 // =============================================================================
 // Helper Conditions
@@ -326,7 +341,9 @@ export const powerRules: readonly Rule[] = [
 		{ name: 'square-sqrt' }
 	),
 
-	// (a^m)^n = a^(m*n) (power of a power)
+	// (a^m)^n = a^(m*n) (power of a power) — sauf m pair et n non entier sur une
+	// base de signe inconnu : `(x²)^{1/2}` vaut |x|, pas x (revue de la PR 2a du
+	// chantier registre-reference, 2026-11-03)
 	//
 	// ⚠️ L'exposant est mis au propre. Sans ça, `(e^x)^3` rendait `e^x^3` — une
 	// écriture qui ne se relit même pas — au lieu de `e^{3x}` : la règle
@@ -351,7 +368,13 @@ export const powerRules: readonly Rule[] = [
 			name: 'pow-of-pow',
 			condition: (bindings) => {
 				const inner = unwrapDelimiters(getBindingNode(bindings, 'inner'));
-				return inner !== null && inner.type === 'superscript';
+				const outer = getBindingNode(bindings, 'n');
+				return (
+					inner !== null &&
+					inner.type === 'superscript' &&
+					outer !== null &&
+					!evenPowerLosesSign(inner.base, inner.superscript, outer)
+				);
 			}
 		}
 	),
