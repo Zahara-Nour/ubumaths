@@ -6,19 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2304 (§ 65)._
+_Mis à jour le 2026-11-03, après #2306 et son `db:migrate` (§ 65)._
 
-- **État** : lot `vecteur-tracer` mergé (#2304) : 2 modèles NEUFS dans `scripts/questions/2de-vecteur-tracer/`,
-  2-299 lire (niveau 5), 2-298 tracer (niveau 6) ; joués en base locale (aperçu admin). Pas encore en prod.
-- **Prochaine action** : David publie en brouillon ; puis relever les 2 `id` en prod, migration nœud
-  « coordonnées » (`2ad3ea7d`) + tags 2-299 / 2-298 (`couvrir-un-niveau.md` § 6), page à cocher, publication.
-- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-vecteur-tracer --publier`
-  (depuis le dépôt principal).
-- **Pièges en cours** : `--publier`, `publier-lot`, `db:migrate` et la simulation
-  d'`update-published-questions.ts` (lecture de la prod) → David avec `!` ; `create-questions` apparie par
-  (titre, thème, domaine, sous-domaine, **niveau**) ; `col()` en texte → `colt()` ; ` ```courbe ` n'a pas de
-  flèche d'affichage (` ```figure ` + `vecteur`) ; pas de ligne `Claude-Session:` ; une autre session écrit
-  aussi dans ce journal : `git pull`.
+- **État** : lot `vecteur-tracer` en prod en BROUILLON, rangé et tagué (vérifié en prod) : 2-299 `22e8272e`
+  (lire, niveau 5), 2-298 `dd286c93` (tracer, niveau 6). Garde des niveaux : 0 manquant.
+- **Prochaine action** : relire les verdicts de la page à cocher (`ArtifactData list verdicts`,
+  https://claude.ai/artifact/CdSd9fPLEoRQdPwq6KG3Nb), puis publication.
+- **En attente de David** : relecture de la page ; puis
+  `! pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/2de-vecteur-tracer` (simulation, refusée
+  à Claude par le mode auto) et `--publier`.
+- **Pièges en cours** : `--publier`, `publier-lot` (même en simulation), `db:migrate` hors les 4 conditions et la
+  simulation d'`update-published-questions.ts` → David avec `!` ; `create-questions` apparie par (titre, thème,
+  domaine, sous-domaine, **niveau**) ; ` ```courbe ` n'a pas de flèche d'affichage (` ```figure ` + `vecteur`) ;
+  `Doc-inchangée:` dans un COMMIT (pas la PR), ≤ 100 caractères ; pas de ligne `Claude-Session:` ; une autre
+  session écrit aussi dans ce journal : `git pull`.
 - **Worktree / branche** : `../ubumaths-wt-questions-2de` (HEAD détachée sur `origin/main`).
 
 ## 1. Relevé (prod, 2026-10-27)
@@ -1640,3 +1641,8 @@ tspe-ln-continuite-convexite,1spe-tracer-droite}.py`) : vérifiés d'abord fidè
   **personne** (confirmé par David). Migration `20261103121554_questions_2de_vecteur_tracer_rangement_tags`
   (nœud « coordonnées » + tag), test d'intégration rouge sans elle (5/10), vert avec (10/10).
 - PR #2306 ouverte (migration), `security-auditor` : aucun finding.
+- **#2306 mergée** (CI verte après relance d'un job navigateur instable, `wrapDynamicImport`) ;
+  `check:migrations --pr 2306` OK ; `db:migrate` le 2026-11-03 ; vérifié en prod : nœud « coordonnées »,
+  tags 2-299 / 2-298, brouillons, `updated_at` inchangé. Garde des niveaux : aucun manquant.
+- Page à cocher : https://claude.ai/artifact/CdSd9fPLEoRQdPwq6KG3Nb (capacité `db`, collection `verdicts` vide
+  à la publication).
