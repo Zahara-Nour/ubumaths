@@ -24,6 +24,8 @@ vi.mock('$lib/server/middleware/auth', () => ({
 	}))
 }));
 
+vi.mock('$lib/server/rateLimiter', () => import('$lib/server/__tests__/helpers/fake-rate-limiter'));
+
 import { POST } from '../+server';
 import { AttemptAlreadySubmittedError } from '$lib/server/evaluation-attempts';
 

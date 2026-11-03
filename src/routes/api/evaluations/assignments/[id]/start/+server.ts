@@ -31,7 +31,7 @@ import { rateLimit } from '$lib/server/middleware/rateLimit';
 export const POST: RequestHandler = async ({ locals, params }) => {
 	const { user, profile } = await requireAuth(locals);
 	// Démarrer tire et génère toutes les questions : pas de rafale
-	rateLimit(`evaluation-start:${user.id}`, 20, 60_000);
+	await rateLimit(`evaluation-start:${user.id}`, 20, 60_000);
 
 	const idValidation = uuidSchema.safeParse(params.id);
 	if (!idValidation.success) {

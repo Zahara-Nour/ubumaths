@@ -22,6 +22,8 @@ vi.mock('$lib/server/notifications', () => ({
 	notifyAdminsOfNewBugReport: vi.fn()
 }));
 
+vi.mock('$lib/server/rateLimiter', () => import('$lib/server/__tests__/helpers/fake-rate-limiter'));
+
 import { POST } from '../+server';
 
 describe('POST /api/bug-reports', () => {
