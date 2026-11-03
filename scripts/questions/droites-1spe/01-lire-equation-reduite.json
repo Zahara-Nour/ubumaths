@@ -1,0 +1,143 @@
+{
+	"title": "Lire l'équation réduite d'une droite sur un graphique",
+	"description": "Ordonnée à l'origine et pente lues sur la droite tracée, pente entière ou fractionnaire",
+	"grades": ["1_SPE", "1_GEN", "1_TECHNO"],
+	"theme": "Géométrie",
+	"domain": "Droites du plan",
+	"subdomain": "Équations de droites",
+	"level": 9,
+	"delay": 40,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": { "acceptDecimal": true },
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "La droite $d$ est tracée dans le repère ci-dessous ; elle passe par les points $A$ et $B$.\n\n```courbe\nx: -6 ; 6\ny: -6 ; 6\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=d\npoints: A(1 ; {{eval:(m)+(p)}}), B(2 ; {{eval:2*(m)+(p)}})\ntaille: moyenne\ndescription: Droite d tracée dans un repère gradué de 1 en 1, passant par les points A et B.\n```\n\nDonne l'**équation réduite** de la droite $d$.\n\n$?$",
+			"variables": [
+				{ "name": "m", "expression": "1..3;±" },
+				{ "name": "p", "expression": "-4..4" }
+			],
+			"conditions": ["abs(2*(m)+(p)) <= 5", "abs((m)+(p)) <= 5"],
+			"blanks": [
+				{
+					"answerKind": "equation",
+					"requiredForm": "reduite",
+					"expectedAnswer": "y={{m}}x{{p;+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'équation réduite s'écrit $y=mx+p$.",
+					"L'ordonnée à l'origine $p$ se lit là où $d$ coupe l'axe des ordonnées : $p={{p}}$.",
+					"La pente $m$ se lit de $A$ à $B$ : en avançant de $1$, on {{if:m>0|monte|descend}} de ${{eval:abs(m)}}$, donc $m={{m}}$.",
+					"La droite $d$ a pour équation réduite $y={{if:m==1|x}}{{if:m==-1|-x}}{{if:abs(m)>1|{{m}}x}}{{if:p!=0|{{p;+}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La droite $d$ est tracée dans le repère ci-dessous ; elle passe par les points $A$ et $B$.\n\n```courbe\nx: -6 ; 6\ny: -6 ; 6\ngrille: 1 ; 1\nf(x) = ({{n}})/({{q}})*x+({{p}})   bleu   nom=d\npoints: A(-{{q}} ; {{eval:(p)-(n)}}), B({{q}} ; {{eval:(p)+(n)}})\ntaille: moyenne\ndescription: Droite d tracée dans un repère gradué de 1 en 1, passant par les points A et B.\n```\n\nDonne l'**équation réduite** de la droite $d$.\n\n$?$",
+			"variables": [
+				{ "name": "q", "expression": "2|3" },
+				{ "name": "n", "expression": "1..2;±" },
+				{ "name": "p", "expression": "-3..3" }
+			],
+			"conditions": ["abs(n) < q"],
+			"blanks": [
+				{
+					"answerKind": "equation",
+					"requiredForm": "reduite",
+					"expectedAnswer": "y={{if:n<0|-}}\\frac{ {{eval:abs(n)}} }{ {{q}} }x{{if:p!=0|{{p;+}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'équation réduite s'écrit $y=mx+p$.",
+					"L'ordonnée à l'origine $p$ se lit là où $d$ coupe l'axe des ordonnées : $p={{p}}$.",
+					"La pente $m$ se lit de $A$ à $B$ : en avançant de ${{eval:2*(q)}}$, on {{if:n>0|monte|descend}} de ${{eval:2*abs(n)}}$, donc $m={{if:n<0|-}}\\dfrac{ {{eval:2*abs(n)}} }{ {{eval:2*(q)}} }={{if:n<0|-}}\\dfrac{ {{eval:abs(n)}} }{ {{q}} }$.",
+					"La droite $d$ a pour équation réduite $y={{if:n<0|-}}\\frac{ {{eval:abs(n)}} }{ {{q}} }x{{if:p!=0|{{p;+}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Pente 2, ordonnée à l'origine −1",
+			"variationIndex": 0,
+			"variables": { "m": "2", "p": "-1" },
+			"answers": ["y=2x-1"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "Termes dans l'autre ordre (y = −1 + 2x)",
+			"variationIndex": 0,
+			"variables": { "m": "2", "p": "-1" },
+			"answers": ["y=-1+2x"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "Forme cartésienne : pas l'équation réduite",
+			"variationIndex": 0,
+			"variables": { "m": "2", "p": "-1" },
+			"answers": ["2x-y-1=0"],
+			"expected": { "status": "bad_form", "constraintViolations": ["form"] }
+		},
+		{
+			"description": "Erreur : signe de p (y = 2x + 1)",
+			"variationIndex": 0,
+			"variables": { "m": "2", "p": "-1" },
+			"answers": ["y=2x+1"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "Erreur : m et p échangés (y = −x + 2)",
+			"variationIndex": 0,
+			"variables": { "m": "2", "p": "-1" },
+			"answers": ["y=-x+2"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "Ordonnée à l'origine nulle : y = −3x",
+			"variationIndex": 0,
+			"variables": { "m": "-3", "p": "0" },
+			"answers": ["y=-3x"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "Pente 1 : y = x + 4",
+			"variationIndex": 0,
+			"variables": { "m": "1", "p": "4" },
+			"answers": ["y=x+4"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "Pente fractionnaire 2/3, p = 1",
+			"variationIndex": 1,
+			"variables": { "q": "3", "n": "2", "p": "1" },
+			"answers": ["y=\\frac{2}{3}x+1"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "Pente fractionnaire écrite 2x/3",
+			"variationIndex": 1,
+			"variables": { "q": "3", "n": "2", "p": "1" },
+			"answers": ["y=\\frac{2x}{3}+1"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "Pente −1/2, p = 0 : y = −0,5x accepté",
+			"variationIndex": 1,
+			"variables": { "q": "2", "n": "-1", "p": "0" },
+			"answers": ["y=-0,5x"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "Erreur : pente renversée (3/2 au lieu de 2/3)",
+			"variationIndex": 1,
+			"variables": { "q": "3", "n": "2", "p": "1" },
+			"answers": ["y=\\frac{3}{2}x+1"],
+			"expected": { "status": "incorrect" }
+		}
+	]
+}

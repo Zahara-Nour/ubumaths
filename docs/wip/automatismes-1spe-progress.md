@@ -6,14 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03 : phase 0 du lot « Droites » en cours (§ Lot « Droites »)._
+_Mis à jour le 2026-11-03, PR du lot « Droites » ouverte (branche `feat/automatismes-droites`)._
 
-- **État** : pilote « évolutions » fait (#508) — 5 modèles **publiés** en prod, fiche `9217dfaa` encore en
-  **brouillon** ; lots droites, lectures graphiques, statistiques **pas commencés** · **Prochaine action** : faire valider
-  les comportements (figer `tracer:`, modèle neuf), puis worktree `automatismes-1spe` et PR ·
-  **En attente de David** : questions 2 à 4 (§ Questions ouvertes) ; la 1 est tranchée par `CONTEXT.md` (« Série »
-  = composition de questions, « Série figée » = exercice de fiche d'automatismes) · **Pièges en cours** : question 3
-  (`==` dans `conditions`) non revérifiée depuis le 2026-09-28 · **Worktree / branche** : aucun (journal seul).
+- **État** : `buildSerie` fige une droite à tracer (repère vide / droite verte au corrigé) ; modèle neuf
+  « Lire l'équation réduite d'une droite sur un graphique » créé en **brouillon** en prod (`f5585668`) ;
+  script `scripts/create-automatismes-droites-1spe.ts` prêt, simulation verte (2 séries de 8) ·
+  **Prochaine action** : David lance l'écriture de la fiche (le classifieur du mode auto l'a refusée), puis
+  `regen-depuis-base.ts` + `compile-prod.mjs` + `debord.py`, mise à jour de `fiches-exercices.md` § 1, merge ·
+  **En attente de David** : lancer `pnpm tsx scripts/create-automatismes-droites-1spe.ts --publier` depuis le
+  worktree ; questions 2 à 4 (§ Questions ouvertes) · **Pièges en cours** : corrigé d'un tracé = 2 figures
+  (droite verte + figure de la correction du modèle) ; une formule maison `~…~` n'est pas nettoyée par
+  `cleanCoefficients` dans `buildSerie` (écrire la ligne en LaTeX à `{{if}}`) ·
+  **Worktree / branche** : `../ubumaths-wt-automatismes-1spe`, `feat/automatismes-droites`.
 - Hors de ce chantier, même niveau : 18 fiches « Entraînement technique » / « Applications » de 1re spé en
   brouillon depuis septembre, à relire et publier par David (`docs/pratiques/fiches-exercices.md` § 1, § 3).
 
@@ -59,6 +63,19 @@ Relevé en prod, séries essayées par `buildSerie` (lecture seule, 3 graines pa
 **Tranché par David (2026-11-03)** : (1) apprendre à `buildSerie` à figer une droite à
 tracer (énoncé : repère vide ; corrigé : droite tracée) ; (2) modèle neuf « lire l'équation
 réduite sur un graphique », en brouillon.
+
+### Fait (PR du lot « Droites », 2026-11-03)
+
+- `droitesATracer` dans `src/lib/worksheets/serie-automatismes.ts` + 9 tests
+  (`serie-automatismes-tracer.test.ts`) ; le PDF ne posait jamais `solved` hors des tests, d'où la
+  réécriture du bloc dans le corrigé.
+- `scripts/questions/droites-1spe/01-lire-equation-reduite.json` (11 specs, 100 tirages) → `f5585668`.
+- `scripts/create-automatismes-droites-1spe.ts` : série 1 = pente par deux points, pente sur équation,
+  tracer (réduite), pente lue, lire l'équation réduite, équation réduite, tracer (point + pente),
+  parallèles ; série 2 = pente par deux points, lire l'équation (×2), équation par point + pente,
+  tracer (point + pente), équation par deux points, tracer (réduite), parallèles (m à trouver).
+  Graines changées : pente lue 1 → 5 (même droite que le tracé), pente par deux points 4 → 12
+  (« a-t-elle une pente ? »).
 
 ## Questions ouvertes (à poser à David)
 
