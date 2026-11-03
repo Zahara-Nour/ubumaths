@@ -10,6 +10,8 @@
 	- Expression convention (expressionName + answerFormat)
 	- Case « choix » (bloc ```choix) : MultipleChoiceInput à l'endroit du bloc ; valeur
 	  de la case = indices d'origine cochés (`formatChoiceAnswer`, « 0;2 »)
+	- Tableau de signes à compléter (```variation à `?`) : une case par cellule cachée,
+	  valeur de x = petite case MathLive, signe / marque = SignCellPicker
 	- Validation state display (correct/incorrect)
 
 	Architecture:
@@ -88,6 +90,9 @@
 	import BuildAnswer from '$lib/components/questions/BuildAnswer.svelte';
 	import FigureBlock from '$lib/components/markdown/nodes/FigureBlock.svelte';
 	import ChoiceBlock from '$lib/components/markdown/nodes/ChoiceBlock.svelte';
+	import VariationTable from '$lib/components/markdown/nodes/VariationTable.svelte';
+	import SignCellPicker from './SignCellPicker.svelte';
+	import type { HiddenCell, VariationTableNode } from '$lib/ubumark/types/variation-table';
 	import MultipleChoiceInput from './MultipleChoiceInput.svelte';
 	import type { ChoiceNode } from '$lib/ubumark/types/choix';
 	import {
@@ -229,7 +234,15 @@
 		if (node.type === 'figure') return node.construction?.caseIndex !== undefined;
 		if (node.type === 'choice') return node.caseIndex !== undefined;
 		if (node.type === 'ranger') return node.caseIndex !== undefined;
+		if (node.type === 'variation-table') return isTableToFill(node);
 		return false;
+	}
+
+	/** Tableau de signes à compléter : des cellules cachées et leur première case posée */
+	function isTableToFill(node: VariationTableNode): node is VariationTableNode & {
+		caseIndex: number;
+	} {
+		return node.caseIndex !== undefined && (node.cases?.length ?? 0) > 0;
 	}
 
 	/** Filter paragraph children to only keep sentences containing blanks */
@@ -516,7 +529,7 @@
 			// Plan vide : le premier bouton de la réserve ; droite à placer : la droite
 			slot.build
 				.querySelector<HTMLElement>(
-					'.construire-ajouter:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), .partage-colorier [role="button"]:not([aria-disabled="true"]), .cubes-geste [role="button"]:not([aria-disabled="true"]), .cubes-saisie input:not(:disabled), .patron-geste [role="button"]:not([aria-disabled="true"])'
+					'.construire-ajouter:not(:disabled), [data-signe-case]:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), .partage-colorier [role="button"]:not([aria-disabled="true"]), .cubes-geste [role="button"]:not([aria-disabled="true"]), .cubes-saisie input:not(:disabled), .patron-geste [role="button"]:not([aria-disabled="true"])'
 				)
 				?.focus();
 			return;
@@ -764,6 +777,39 @@
 		/>
 	{:else}
 		{@render defaultCell(cell.content)}
+	{/if}
+{/snippet}
+
+<!--
+	Cellule cachée d'un tableau de signes, case `first + index` de la question : valeur
+	de x = petite case MathLive (prompt N), signe / marque = case à menu
+-->
+{#snippet signTableCellContent(first: number, hidden: HiddenCell)}
+	{@const caseIndex = first + hidden.index}
+	{@const state = inputStates[caseIndex]}
+	{#if hidden.kind === 'valeur'}
+		<MathPrompt
+			expression={`\\placeholder[${caseIndex}]{}`}
+			syntax="latex"
+			inputs={inputStates.filter((s) => s.type === 'math')}
+			onPromptChange={handleInputChange}
+			disabled={effectiveDisabled}
+			prefilledValues={interactivePrefilledValues}
+			{mathModeSpace}
+			{capitalPairs}
+			{genericFunctions}
+		/>
+	{:else}
+		<span data-construire-case={caseIndex}>
+			<SignCellPicker
+				kind={hidden.kind}
+				value={state?.value ?? ''}
+				caseNumber={caseIndex + 1}
+				isCorrect={state?.isCorrect ?? null}
+				disabled={effectiveDisabled}
+				onChange={(value) => handleInputChange(caseIndex, value)}
+			/>
+		</span>
 	{/if}
 {/snippet}
 
@@ -1207,6 +1253,21 @@
 						onSelectionChange={(positions) => handleChoiceChange(caseIndex, positions)}
 						{genericFunctions}
 					/>
+				{/if}
+			{:else if node.type === 'variation-table' && isTableToFill(node)}
+				<!-- Tableau de signes à compléter : une case par cellule cachée (N, N + 1…, ordre
+				     de lecture). Flash : cellules vides ; bonne réponse : cellules remplies -->
+				{#if flashMode}
+					<VariationTable {node} />
+				{:else if showCorrectAnswers}
+					<VariationTable {node} hiddenCells="filled" />
+				{:else}
+					{@const first = node.caseIndex}
+					<VariationTable {node}>
+						{#snippet cell(hidden: HiddenCell)}
+							{@render signTableCellContent(first, hidden)}
+						{/snippet}
+					</VariationTable>
 				{/if}
 			{:else if node.type === 'image'}
 				<ImageDisplay
