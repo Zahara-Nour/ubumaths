@@ -1,0 +1,206 @@
+{
+	"title": "Comparer deux quantités par leur différence",
+	"description": "Deux tarifs de location (inscription + prix horaire) ; deux distances : le signe de la différence décide",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Inégalités",
+	"subdomain": "Comparer",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Un loueur de vélos propose deux tarifs.\n\n- Tarif A : ${{f}}~\\unit{€}$ d'inscription, puis ${{a}}~\\unit{€}$ par heure.\n- Tarif B : ${{b}}~\\unit{€}$ par heure, sans inscription.\n\nOn loue un vélo pendant ${{h}}$ heures. Calcule la différence (prix A) − (prix B).\n\n$$?~\\unit{€}$$\n\nLe moins cher est :\n\n```choix\nmelanger: non\n- le tarif A\n- le tarif B\n- les deux tarifs coûtent autant\n```",
+			"variables": [
+				{
+					"name": "f",
+					"expression": "6..20"
+				},
+				{
+					"name": "a",
+					"expression": "1..4"
+				},
+				{
+					"name": "g",
+					"expression": "1..4"
+				},
+				{
+					"name": "b",
+					"expression": "eval:(a)+(g)"
+				},
+				{
+					"name": "h",
+					"expression": "2..10"
+				},
+				{
+					"name": "pos",
+					"expression": "eval:min(max((f)-(g)*(h),0),1)"
+				},
+				{
+					"name": "neg",
+					"expression": "eval:min(max((g)*(h)-(f),0),1)"
+				},
+				{
+					"name": "idx",
+					"expression": "eval:(pos)+2*(1-(pos)-(neg))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(f)-(g)*(h)}}"
+				},
+				{
+					"expectedAnswer": "{{idx}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Prix A : ${{f}}+{{a}}\\times{{h}}={{eval:(f)+(a)*(h)}}~\\unit{€}$ ; prix B : ${{b}}\\times{{h}}={{eval:(b)*(h)}}~\\unit{€}$.",
+					"$$\\text{prix A}-\\text{prix B}={{eval:(f)+(a)*(h)}}-{{eval:(b)*(h)}}=\\textcolor{{{color:primary.0}}}{{{eval:(f)-(g)*(h)}}}~\\unit{€}$$",
+					"{{if:pos>0|La différence est positive : le tarif A coûte plus cher, le moins cher est **le tarif B**.|{{if:neg>0|La différence est négative : le moins cher est **le tarif A**.|La différence est nulle : les deux tarifs coûtent autant.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Léa fait ${{n}}$ tours d'une piste de ${{t}}~\\unit{m}$. Tom court ${{tom}}~\\unit{m}$ en ligne droite. Calcule la différence (distance de Léa) − (distance de Tom).\n\n$$?~\\unit{m}$$\n\nA parcouru la plus grande distance :\n\n```choix\nmelanger: non\n- Léa\n- Tom\n- aucun : la même distance\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..8"
+				},
+				{
+					"name": "t",
+					"expression": "200|300|400"
+				},
+				{
+					"name": "dw",
+					"expression": "-6..6"
+				},
+				{
+					"name": "tom",
+					"expression": "eval:(n)*(t)+100*(dw)"
+				},
+				{
+					"name": "pos",
+					"expression": "eval:min(max((n)*(t)-(tom),0),1)"
+				},
+				{
+					"name": "neg",
+					"expression": "eval:min(max((tom)-(n)*(t),0),1)"
+				},
+				{
+					"name": "idx",
+					"expression": "eval:(1-(pos))*(1-(neg))*2+(neg)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n)*(t)-(tom)}}"
+				},
+				{
+					"expectedAnswer": "{{idx}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Distance de Léa : ${{n}}\\times{{t}}={{eval:(n)*(t)}}~\\unit{m}$.",
+					"$$ {{eval:(n)*(t)}}-{{tom}}=\\textcolor{{{color:primary.0}}}{{{eval:(n)*(t)-(tom)}}}~\\unit{m}$$",
+					"{{if:pos>0|La différence est positive : **Léa** a couru plus loin.|{{if:neg>0|La différence est négative : **Tom** a couru plus loin.|La différence est nulle : ils ont couru la même distance.}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "22 − 25 = −3 : tarif A",
+			"variationIndex": 0,
+			"variables": {
+				"f": "12",
+				"a": "2",
+				"g": "3",
+				"b": "5",
+				"h": "5",
+				"pos": "0",
+				"neg": "1",
+				"idx": "0"
+			},
+			"answers": ["-3", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : B − A (3)",
+			"variationIndex": 0,
+			"variables": {
+				"f": "12",
+				"a": "2",
+				"g": "3",
+				"b": "5",
+				"h": "5",
+				"pos": "0",
+				"neg": "1",
+				"idx": "0"
+			},
+			"answers": ["3", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signe lu à l'envers (tarif B)",
+			"variationIndex": 0,
+			"variables": {
+				"f": "12",
+				"a": "2",
+				"g": "3",
+				"b": "5",
+				"h": "5",
+				"pos": "0",
+				"neg": "1",
+				"idx": "0"
+			},
+			"answers": ["-3", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 600 − 1 500 = 100 : Léa",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4",
+				"t": "400",
+				"dw": "-1",
+				"tom": "1500",
+				"pos": "1",
+				"neg": "0",
+				"idx": "0"
+			},
+			"answers": ["100", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : un tour seulement (−1 100, Tom)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4",
+				"t": "400",
+				"dw": "-1",
+				"tom": "1500",
+				"pos": "1",
+				"neg": "0",
+				"idx": "0"
+			},
+			"answers": ["-1100", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

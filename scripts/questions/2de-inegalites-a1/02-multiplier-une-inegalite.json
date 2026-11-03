@@ -1,0 +1,250 @@
+{
+	"title": "Multiplier une inégalité par un réel",
+	"description": "Sens conservé ou changé selon le signe du facteur ; encadrer mx + p, lien avec le sens de variation d'une fonction affine",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Inégalités",
+	"subdomain": "Règles de calcul",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On sait que $x<{{a}}$. Quel symbole complète l'inégalité ?\n\n$${{k}}x\\ \\ldots\\ {{eval:(k)*(a)}}$$\n\n```choix\nmelanger: non\n- $<$\n- $>$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-6..9"
+				},
+				{
+					"name": "k",
+					"expression": "2..6;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k>0|0|1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Multiplier les deux membres d'une inégalité par un réel strictement positif conserve son sens ; par un réel strictement négatif, cela le change.**",
+					"Ici on multiplie par ${{k}}$, {{if:k>0|positif : le sens est conservé|négatif : le sens change}}.",
+					"$$x<{{a}}\\quad\\text{donc}\\quad {{k}}x\\textcolor{{{color:primary.0}}}{{{if:k>0|<|>}}}{{eval:(k)*(a)}}$$"
+				]
+			}
+		},
+		{
+			"statement": "On sait que ${{a}}\\leqslant x\\leqslant {{b}}$.\n\nEncadre $f(x)={{m}}x{{eval:p;+}}$.\n\n$$?\\leqslant {{m}}x{{eval:p;+}}\\leqslant ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-5..2"
+				},
+				{
+					"name": "d",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "eval:(a)+(d)"
+				},
+				{
+					"name": "m",
+					"expression": "-5..-2"
+				},
+				{
+					"name": "p",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(m)*(b)+(p)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(m)*(a)+(p)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On multiplie par ${{m}}$, un réel **négatif** : **le sens des inégalités change**.",
+					"$$ {{eval:(m)*(a)}}\\geqslant {{m}}x\\geqslant {{eval:(m)*(b)}}$$",
+					"On ajoute ${{p}}$ (le sens ne change pas) :",
+					"$$\\textcolor{{{color:primary.0}}}{{{eval:(m)*(b)+(p)}}}\\leqslant {{m}}x{{eval:p;+}}\\leqslant \\textcolor{{{color:primary.1}}}{{{eval:(m)*(a)+(p)}}}$$",
+					"C'est le **sens de variation** de la fonction affine $f$ : son coefficient ${{m}}$ est négatif, $f$ est **décroissante**, donc $f({{b}})\\leqslant f(x)\\leqslant f({{eval:a}})$ : l'ordre des images est inversé."
+				]
+			}
+		},
+		{
+			"statement": "On sait que ${{a}}\\leqslant x\\leqslant {{b}}$.\n\nEncadre $f(x)={{m}}x{{eval:p;+}}$.\n\n$$?\\leqslant {{m}}x{{eval:p;+}}\\leqslant ?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-5..2"
+				},
+				{
+					"name": "d",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "eval:(a)+(d)"
+				},
+				{
+					"name": "m",
+					"expression": "2..5"
+				},
+				{
+					"name": "p",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(m)*(a)+(p)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(m)*(b)+(p)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On multiplie par ${{m}}$, un réel **positif** : **le sens des inégalités est conservé**.",
+					"$$ {{eval:(m)*(a)}}\\leqslant {{m}}x\\leqslant {{eval:(m)*(b)}}$$",
+					"On ajoute ${{p}}$ :",
+					"$$\\textcolor{{{color:primary.0}}}{{{eval:(m)*(a)+(p)}}}\\leqslant {{m}}x{{eval:p;+}}\\leqslant \\textcolor{{{color:primary.1}}}{{{eval:(m)*(b)+(p)}}}$$",
+					"C'est le **sens de variation** de la fonction affine $f$ : son coefficient ${{m}}$ est positif, $f$ est **croissante**, donc $f({{eval:a}})\\leqslant f(x)\\leqslant f({{b}})$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x < 3 donc −2x > −6",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"k": "-2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sens non changé (−2x < −6)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"k": "-2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x < 3 donc 4x < 12",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"k": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sens changé pour un positif",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"k": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−1 ⩽ x ⩽ 4 : −11 ⩽ −3x + 1 ⩽ 4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"d": "5",
+				"b": "4",
+				"m": "-3",
+				"p": "1"
+			},
+			"answers": ["-11", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sens non changé (4 puis −11)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"d": "5",
+				"b": "4",
+				"m": "-3",
+				"p": "1"
+			},
+			"answers": ["4", "-11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : + 1 oublié (−12 ; 3)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"d": "5",
+				"b": "4",
+				"m": "-3",
+				"p": "1"
+			},
+			"answers": ["-12", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−1 ⩽ x ⩽ 4 : −5 ⩽ 2x − 3 ⩽ 5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-1",
+				"d": "5",
+				"b": "4",
+				"m": "2",
+				"p": "-3"
+			},
+			"answers": ["-5", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sens changé pour un positif",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-1",
+				"d": "5",
+				"b": "4",
+				"m": "2",
+				"p": "-3"
+			},
+			"answers": ["5", "-5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

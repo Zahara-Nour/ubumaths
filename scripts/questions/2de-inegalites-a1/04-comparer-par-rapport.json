@@ -1,0 +1,191 @@
+{
+	"title": "Comparer deux nombres positifs par leur rapport",
+	"description": "Rapport a/b comparé à 1 : deux fractions ; deux nombres écrits avec des puissances de 10",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Inégalités",
+	"subdomain": "Comparer",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On veut comparer les nombres strictement positifs $a=\\dfrac{ {{p}} }{ {{q}} }$ et $b=\\dfrac{ {{r}} }{ {{s}} }$ en calculant leur rapport.\n\n$$\\dfrac{a}{b}=?$$\n\nOn en déduit :\n\n```choix\nmelanger: non\n- $a<b$\n- $a>b$\n- $a=b$\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "p",
+					"expression": "2..9"
+				},
+				{
+					"name": "s",
+					"expression": "2..9!q"
+				},
+				{
+					"name": "r",
+					"expression": "2..9"
+				},
+				{
+					"name": "t",
+					"expression": "eval:min(max((p)*(s)-(r)*(q),0),1)"
+				}
+			],
+			"conditions": [
+				"gcd(p,q) == 1",
+				"gcd(r,s) == 1",
+				"(p)*(s) != (r)*(q)",
+				"abs((p)*(s)-(r)*(q)) < (q)*(r)"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((p)*(s))/((q)*(r))}}"
+				},
+				{
+					"expectedAnswer": "{{t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Comparer par le rapport** (nombres strictement positifs) : si $\\dfrac{a}{b}>1$ alors $a>b$ ; si $\\dfrac{a}{b}<1$ alors $a<b$.",
+					"$$\\dfrac{a}{b}=\\dfrac{ {{p}} }{ {{q}} }\\times\\dfrac{ {{s}} }{ {{r}} }=\\textcolor{{{color:primary.0}}}{{{eval:((p)*(s))/((q)*(r))}}}$$",
+					"Le rapport est {{if:t>0|plus grand|plus petit}} que $1$, donc $\\textcolor{{{color:primary.1}}}{a{{if:t>0|>|<}}b}$."
+				]
+			}
+		},
+		{
+			"statement": "On veut comparer $a={{u}}\\times 10^{ {{n}} }$ et $b={{v}}\\times 10^{ {{eval:(n)+1}} }$ en calculant leur rapport.\n\n$$\\dfrac{a}{b}=?$$\n\nOn en déduit :\n\n```choix\nmelanger: non\n- $a<b$\n- $a>b$\n- $a=b$\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..8"
+				},
+				{
+					"name": "v",
+					"expression": "1|2|4|5"
+				},
+				{
+					"name": "u",
+					"expression": "11..49"
+				},
+				{
+					"name": "t",
+					"expression": "eval:min(max((u)-10*(v),0),1)"
+				}
+			],
+			"conditions": ["u != 10*(v)", "mod(u,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(u)/(10*(v))}}"
+				},
+				{
+					"expectedAnswer": "{{t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Comparer par le rapport** : $a$ et $b$ sont strictement positifs, on compare $\\dfrac{a}{b}$ à $1$.",
+					"$$\\dfrac{a}{b}=\\dfrac{ {{u}} }{ {{v}} }\\times\\dfrac{10^{ {{n}} }}{10^{ {{eval:(n)+1}} }}=\\dfrac{ {{u}} }{ {{v}} }\\times\\dfrac{1}{10}=\\textcolor{{{color:primary.0}}}{{{eval:(u)/(10*(v));d}}}$$",
+					"Le rapport est {{if:t>0|plus grand|plus petit}} que $1$, donc $\\textcolor{{{color:primary.1}}}{a{{if:t>0|>|<}}b}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(9/8) / (4/3) = 27/32 < 1 : a < b",
+			"variationIndex": 0,
+			"variables": {
+				"q": "8",
+				"p": "9",
+				"s": "3",
+				"r": "4",
+				"t": "0"
+			},
+			"answers": ["\\frac{27}{32}", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : b / a (32/27)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "8",
+				"p": "9",
+				"s": "3",
+				"r": "4",
+				"t": "0"
+			},
+			"answers": ["\\frac{32}{27}", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rapport < 1 lu « a > b »",
+			"variationIndex": 0,
+			"variables": {
+				"q": "8",
+				"p": "9",
+				"s": "3",
+				"r": "4",
+				"t": "0"
+			},
+			"answers": ["\\frac{27}{32}", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "36 × 10⁵ / (4 × 10⁶) = 0,9 : a < b",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5",
+				"v": "4",
+				"u": "36",
+				"t": "0"
+			},
+			"answers": ["0,9", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "0,9 en fraction",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5",
+				"v": "4",
+				"u": "36",
+				"t": "0"
+			},
+			"answers": ["\\frac{9}{10}", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : puissances oubliées (9)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "5",
+				"v": "4",
+				"u": "36",
+				"t": "0"
+			},
+			"answers": ["9", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

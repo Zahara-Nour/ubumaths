@@ -1,0 +1,139 @@
+{
+	"title": "Interpréter un rapport",
+	"description": "Rapport 1,25 : hausse de 25 % ; 0,8 : baisse de 20 % ; multiplié par 3 : hausse de 200 %",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Inégalités",
+	"subdomain": "Comparer",
+	"level": 6,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le rapport du prix d'un article en 2025 à son prix en 2024 vaut $\\dfrac{P_{2025}}{P_{2024}}={{eval:(q)/100;d}}$.\n\nEntre 2024 et 2025, le prix :\n\n```choix\nmelanger: non\n- a augmenté\n- a baissé\n```\n\nDe quel pourcentage ?\n\n$$?~\\%$$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "110|120|125|150|200|90|80|75|60|50"
+				},
+				{
+					"name": "t",
+					"expression": "eval:1-min(max((q)-100,0),1)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{t}}"
+				},
+				{
+					"expectedAnswer": "{{eval:abs((q)-100)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un rapport $\\dfrac{P_{2025}}{P_{2024}}=k$ veut dire $P_{2025}=k\\times P_{2024}$ : le prix est **multiplié par $k$** (variation multiplicative).",
+					"{{if:t>0|$k={{eval:(q)/100;d}}<1$ : le prix **a baissé**. $k=1-{{eval:(100-(q))/100;d}}$ : il a baissé de $\\textcolor{{{color:primary.0}}}{{{eval:100-(q)}}~\\%}$.|$k={{eval:(q)/100;d}}>1$ : le prix **a augmenté**. $k=1+{{eval:((q)-100)/100;d}}$ : il a augmenté de $\\textcolor{{{color:primary.0}}}{{{eval:(q)-100}}~\\%}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "Le nombre d'abonnés d'une chaîne a été **multiplié par ${{eval:(m)/100;d}}$** en un an.\n\nDe quel pourcentage a-t-il augmenté ?\n\n$$?~\\%$$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "150|200|250|300|400|500"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(m)-100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Multiplier par $k$, c'est ajouter $(k-1)$ fois la quantité de départ :",
+					"$${{eval:(m)/100;d}}=1+{{eval:((m)-100)/100;d}}$$",
+					"Le nombre d'abonnés a augmenté de $\\textcolor{{{color:primary.0}}}{{{eval:(m)-100}}~\\%}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "0,8 : baisse de 20 %",
+			"variationIndex": 0,
+			"variables": {
+				"q": "80",
+				"t": "1"
+			},
+			"answers": ["1", "20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,8 lu « 80 % »",
+			"variationIndex": 0,
+			"variables": {
+				"q": "80",
+				"t": "1"
+			},
+			"answers": ["1", "80"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0,8 lu « hausse »",
+			"variationIndex": 0,
+			"variables": {
+				"q": "80",
+				"t": "1"
+			},
+			"answers": ["0", "20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1,25 : hausse de 25 %",
+			"variationIndex": 0,
+			"variables": {
+				"q": "125",
+				"t": "0"
+			},
+			"answers": ["0", "25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "× 3 : hausse de 200 %",
+			"variationIndex": 1,
+			"variables": {
+				"m": "300"
+			},
+			"answers": ["200"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : × 3 lu « 300 % »",
+			"variationIndex": 1,
+			"variables": {
+				"m": "300"
+			},
+			"answers": ["300"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

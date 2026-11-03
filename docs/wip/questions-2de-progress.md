@@ -1865,3 +1865,22 @@ _12 a-2 — Algèbre (6 modèles)_
   factorisation** (niv. 13 ; les niveaux 3 à 12 sont pris). Sinon : une sous-notion neuve « choisir la forme »
   (migration de l'arbre, à part).
 - **L12a-d — Ordre** : 12 a-1, puis 12 a-2, une PR de fichiers chacun ? → Je recommande **oui**.
+
+**Décisions de David (2026-11-03)** : phase 0 validée avec mes quatre recommandations — L12a-a un modèle par
+point (264, 425 en calcul ; 276, 427 en contexte) ; L12a-b case choix de quatre inéquations puis la valeur
+entière ; L12a-c 2-275 rangé sous Calcul littéral › factorisation ; L12a-d 12 a-1 puis 12 a-2, une PR chacun.
+
+- **Correction des niveaux** : les « niv. » du § 71 sont ceux de la sous-notion ; le niveau d'un modèle est celui
+  de sa **catégorie** (thème, domaine, sous-domaine), relevée en prod le 2026-11-03 : Calcul littéral ›
+  Inégalités (neuf) › Règles de calcul 1, 2 (263, 424) ; › Comparer 1 à 6 (264, 425, 276, 427, 277, 428).
+
+## 72. Lot 12 a-1, PR des fichiers (2026-11-03)
+
+- `questions-2de/lot-inegalites-a1-2de.py` → `scripts/questions/2de-inegalites-a1/` (8 modèles, 49 specs).
+  Calcul littéral › Inégalités › Règles de calcul niv. 1, 2 (2-263, 2-424) ; › Comparer niv. 1 à 6 (2-264,
+  2-425, 2-276, 2-427, 2-277, 2-428). `question:specs` 49/49, 850 tirages ; `create-questions` (simulation,
+  prod) 8 « à créer ». Base locale : 8 brouillons ; aperçu joué (01 juste, 08 faux : « 200 % » pour × 2).
+- Nœuds prévus : 2-263, 424 → Algèbre › Inégalités › règles de calcul ; les six autres → › comparaison et
+  encadrement.
+- Écart à la phase 0 : 2-425, deuxième variation en `u × 10ⁿ` (u entier de 11 à 49), pas en écriture
+  scientifique stricte.

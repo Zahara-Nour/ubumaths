@@ -1,0 +1,163 @@
+{
+	"title": "Comparer deux quantités par leur rapport",
+	"description": "Rapport de deux hauteurs, de deux populations, comparé à 1",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Inégalités",
+	"subdomain": "Comparer",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "L'immeuble A mesure ${{eval:(r)*(w)}}~\\unit{m}$ et l'immeuble B ${{eval:20*(w)}}~\\unit{m}$.\n\nCalcule le rapport des hauteurs $\\dfrac{h_A}{h_B}$.\n\n$$\\dfrac{h_A}{h_B}=?$$\n\nLe plus haut est :\n\n```choix\nmelanger: non\n- l'immeuble A\n- l'immeuble B\n```",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "2..6"
+				},
+				{
+					"name": "r",
+					"expression": "25|30|40|50|60|15|10|8|16"
+				},
+				{
+					"name": "t",
+					"expression": "eval:1-min(max((r)-20,0),1)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(r)/20}}"
+				},
+				{
+					"expectedAnswer": "{{t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Comparer par le rapport** (quantités strictement positives) : on compare $\\dfrac{h_A}{h_B}$ à $1$.",
+					"$$\\dfrac{h_A}{h_B}=\\dfrac{ {{eval:(r)*(w)}} }{ {{eval:20*(w)}} }=\\textcolor{{{color:primary.0}}}{{{eval:(r)/20;d}}}$$",
+					"{{if:t>0|Le rapport est plus petit que $1$ : $h_A<h_B$, le plus haut est **l'immeuble B** ($h_A$ vaut ${{eval:(r)/20;d}}$ fois $h_B$).|Le rapport est plus grand que $1$ : $h_A>h_B$, le plus haut est **l'immeuble A**, ${{eval:(r)/20;d}}$ fois plus haut que B.}}"
+				]
+			}
+		},
+		{
+			"statement": "La ville A compte ${{eval:(r)*(w)*50}}$ habitants et la ville B ${{eval:1000*(w)}}$ habitants.\n\nCalcule le rapport $\\dfrac{\\text{population de A}}{\\text{population de B}}$.\n\n$$?$$\n\nLa ville la plus peuplée est :\n\n```choix\nmelanger: non\n- A\n- B\n```",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "3..12"
+				},
+				{
+					"name": "r",
+					"expression": "25|30|40|50|60|15|10|8|16"
+				},
+				{
+					"name": "t",
+					"expression": "eval:1-min(max((r)-20,0),1)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(r)/20}}"
+				},
+				{
+					"expectedAnswer": "{{t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compare le rapport des populations à $1$ (deux quantités strictement positives).",
+					"$$\\dfrac{ {{eval:(r)*(w)*50}} }{ {{eval:1000*(w)}} }=\\textcolor{{{color:primary.0}}}{{{eval:(r)/20;d}}}$$",
+					"{{if:t>0|Le rapport est plus petit que $1$ : la ville la plus peuplée est **B**.|Le rapport est plus grand que $1$ : la ville la plus peuplée est **A**.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "120 / 80 = 1,5 : A",
+			"variationIndex": 0,
+			"variables": {
+				"w": "4",
+				"r": "30",
+				"t": "0"
+			},
+			"answers": ["1,5", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1,5 en fraction",
+			"variationIndex": 0,
+			"variables": {
+				"w": "4",
+				"r": "30",
+				"t": "0"
+			},
+			"answers": ["\\frac{3}{2}", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rapport inversé (2/3)",
+			"variationIndex": 0,
+			"variables": {
+				"w": "4",
+				"r": "30",
+				"t": "0"
+			},
+			"answers": ["\\frac{2}{3}", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : différence (40)",
+			"variationIndex": 0,
+			"variables": {
+				"w": "4",
+				"r": "30",
+				"t": "0"
+			},
+			"answers": ["40", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4 000 / 5 000 = 0,8 : B",
+			"variationIndex": 1,
+			"variables": {
+				"w": "5",
+				"r": "16",
+				"t": "1"
+			},
+			"answers": ["0,8", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : rapport < 1 lu « A »",
+			"variationIndex": 1,
+			"variables": {
+				"w": "5",
+				"r": "16",
+				"t": "1"
+			},
+			"answers": ["0,8", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
