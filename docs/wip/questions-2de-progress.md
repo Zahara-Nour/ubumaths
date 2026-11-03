@@ -6,11 +6,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR `fix/textcolor-hors-2de` ouverte (§ 63)._
+_Mis à jour le 2026-11-03, après #2291 (§ 63)._
 
 - **État** : `\textcolor` hors `$` corrigé hors 2de : 30 fichiers (10 générateurs + 3 JSON), lot
   `textcolor-hors-2de` de 27 publiés (2 déjà corrigés en prod, 1 sans le défaut). Simulation verte.
-- **Prochaine action** : merger la PR ; puis David : `pnpm tsx scripts/update-published-questions.ts
+- **Prochaine action** : David : `pnpm tsx scripts/update-published-questions.ts
 --lot textcolor-hors-2de --publier` ; relire par export (27/27, `hors-maths.py` → 0). Ensuite § 61.
 - **En attente de David** : le `--publier` ci-dessus.
 - **Pièges en cours** : `--publier`, `publier-lot`, `db:migrate` → David avec `!` ;
@@ -18,7 +18,7 @@ _Mis à jour le 2026-11-03, PR `fix/textcolor-hors-2de` ouverte (§ 63)._
   passe par `update-published-questions.ts` (brouillons compris), sinon doublons ; `col()` en texte →
   `colt()` ; `fonctions-terminale/C-06` du dépôt périmé vs prod (§ 63) ; pas de ligne `Claude-Session:` ;
   une autre session écrit aussi dans ce journal (§ 61) : `git pull` avant d'éditer.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `fix/textcolor-hors-2de`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de` (HEAD détachée sur `origin/main`).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1596,3 +1596,4 @@ tspe-ln-continuite-convexite,1spe-tracer-droite}.py`) : vérifiés d'abord fidè
   `scripts/questions/textcolor-hors-2de-existants/<id8>.json` = export de la prod, seules les
   `variations` remplacées ; `hors-maths.py` sur les instantanés → 0. Simulation : 27 cibles, `variations`
   seules, specs vertes.
+- **#2291 mergée** (CI verte). Écriture en prod : à lancer par David.
