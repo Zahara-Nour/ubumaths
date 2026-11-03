@@ -71,9 +71,8 @@ trigonométrique (` ```trig placer:`, #2189), droite à tracer (` ```courbe trac
 2026-11-03 ; ex-ligne 2 du § 1, numéros des autres lignes gardés), vecteur à tracer (` ```courbe tracer:
 vecteur`, `depuis A`, #2274, pas en prod au 2026-11-03 ; la ligne 3 du § 1 ne garde que la somme). Détail : `docs/systeme/questions.md`, `ubumark.md`.
 
-**Contenu restant aux sessions « questions »** (l'outil existe) : droite à tracer : 1SPE-433 (sous-chantier
-`questions-1spe-tracer-droite`), 2-316 et 2-445 (modèles en case choix à réécrire au
-geste) ; vecteur à tracer : 2-298 (modèles en case choix à réécrire au geste), 3-025, 3-026 en tracé ; modèles « ranger » encore en case
+**Contenu restant aux sessions « questions »** (l'outil existe) : droite à tracer : 2-316 et 2-445 (modèles en case choix à réécrire au
+geste ; 1SPE-433 : fait, `questions-1spe-tracer-droite`, #2272, #2279) ; vecteur à tracer : 2-298 (modèles en case choix à réécrire au geste), 3-025, 3-026 en tracé ; modèles « ranger » encore en case
 à réécrire en ` ```ranger ` (6e 06, 07 ; CP, CE1, CM2) ; aucun modèle n'utilise `axe: à choisir`
 (CE2-082) ; CM2-082 à 084, 153 attendent leurs modèles (1SPE-306 : fait, `questions-1spe-analyse`).
 

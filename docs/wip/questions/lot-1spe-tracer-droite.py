@@ -2,7 +2,7 @@
 scripts/questions/1spe-tracer-droite/.
 
 Phase 0 validée par David le 2026-11-03 (« je suis tes recos », journal
-« docs/wip/questions-1spe-tracer-droite-progress.md », § 2-3) :
+« docs/archive/wip/questions-1spe-tracer-droite-progress.md », § 2-3) :
 
 | Point    | Titre                                            | Catégorie, niveau                                     |
 | 1SPE-433 | Tracer une droite donnée par un point et sa pente | Géométrie › Droites du plan › Équations de droites, 8 |

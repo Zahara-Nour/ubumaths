@@ -340,6 +340,12 @@ scripts/questions/<niveau>-0-<thème> --ids <id8>,…` ; chaque fichier porte so
   d'erreur et le corrigé l'affichent telle quelle (`s*(x-a)+b` → « y = 2 + (1 − x)/2 », « y = 1, soit y = 1 ») ;
   une tangente à tracer : **jamais** la clé `tangente:` dans l'énoncé (elle dessinerait la réponse), la courbe
   `f(x) = …` peut, elle, partager le bloc avec `tracer:` (1SPE-271).
+- **Points jumeaux** (1SPE / 1GEN / 1TECHNO, même libellé, même nœud) : au relevé, chercher les
+  points du même `node_id` et du même `name` dans les autres programmes, et trancher en phase 0 quels
+  tags poser (un par programme, ADR 0020). 1SPE-433 : phase 0 « seul », puis les trois (#2279).
+- Garde « déjà tagué » d'une migration de rangement : un trigger interdit un tag sur un modèle sans
+  nœud (« il ne peut pas perdre son rangement »), donc l'état « tagué sans nœud » ne se fabrique pas ;
+  un modèle tagué à la main est arrêté par la garde « déjà rangé » (test de #2279).
 - Worktree neuf : `pnpm exec svelte-kit sync` avant `question:specs` (`$lib` introuvable).
 - Brouillons déjà en base : `export-question-templates.ts --dir … --ids …` (un id par fichier) ; les
   anciens dossiers `scripts/questions/` ne concordent plus forcément avec la base.

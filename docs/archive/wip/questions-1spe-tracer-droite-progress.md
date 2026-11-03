@@ -7,17 +7,13 @@ Sous-chantier de `questions-1spe` (clos, journal `docs/archive/wip/questions-1sp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2279._
+_Mis à jour le 2026-11-03 : chantier CLOS, journal archivé._
 
-- **État** : brouillon 433 en prod (`dc5d7cb6`), rangé et tagué par la migration de #2279
-  (`db:migrate` fait, vérifié en prod : nœud « équations de droites », tags 1GEN-063, 1SPE-433,
-  1TECHNO-140, `updated_at` préservé).
-- **Prochaine action** : page à cocher (`scripts/questions/page-a-cocher.ts --dir
-scripts/questions/1spe-tracer-droite`), publiée en artefact (capacité `db`).
-- **En attente de David** : `pnpm tsx scripts/questions/publier-lot.ts --dir
-scripts/questions/1spe-tracer-droite --publier` (verdict « OK » 1/1, simulation verte).
-- **Pièges en cours** : 1SPE-271 repris par `questions-1spe-tangente` (ne rien écrire ici).
-- **Worktree / branche** : aucun (retiré après #2279).
+- **État** : modèle 433 (`dc5d7cb6`) **publié** en prod le 2026-11-03, rangé et tagué (1SPE-433,
+  1GEN-063, 1TECHNO-140, #2279). 1SPE-271 livré par `questions-1spe-tangente`.
+- **Versement** : pièges « points jumeaux » et « garde déjà tagué » dans
+  `docs/pratiques/couvrir-un-niveau.md` § 9 ; `outils-manquants.md` à jour.
+- **Restant** : 2-316 et 2-445 (droite à tracer) à `questions-2de`.
 
 ---
 
@@ -144,3 +140,4 @@ est donné par la figure) ; (b) les trois variations, dont m = 0 (reco : oui).
   la migration). `db:migrate` lancé depuis le dépôt principal le 2026-11-03, vérifié en prod (MCP).
 - Page à cocher publiée le 2026-11-03 (artefact `Sp18DSUP9pjLz7z6PWTQUo`, capacité `db`, lue en prod).
 - Verdicts lus le 2026-11-03 : 1/1 « OK », sans commentaire ; `publier-lot.ts` en simulation : 1 brouillon passe.
+- Publié par David le 2026-11-03 (08 h 17 UTC), vérifié en prod (MCP) : `status = published`. Chantier clos.
