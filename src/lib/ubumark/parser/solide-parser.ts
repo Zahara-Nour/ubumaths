@@ -28,8 +28,14 @@
  *   section ; cylindre `perpendiculaire 2` (hauteur) ou `parallele 1`
  *   (distance à l'axe) ; boule `1` (distance au centre). Sans distance : au
  *   milieu (pavé, cylindre ⊥), par l'axe ou le centre (cylindre ‖, boule).
+ * - `points:` (facultatif, polyèdres) : `I milieu AE, O centre ABCD` (centre
+ *   d'une face ; cube, pavé : `centre ABCDEFGH`, le centre du solide) ; un
+ *   milieu peut prendre un point déjà déclaré (`J milieu IG`).
+ * - `vecteurs:` (facultatif, polyèdres) : `AB, AE, u = AI`, entre points nommés
+ *   (sommets, points déclarés) ; `u =` pose la lettre sur la flèche.
  *
- * Chantier `solides`, lots 3 et 6 (§ 8 et 11 du journal), ADR 0034.
+ * Chantier `solides`, lots 3 et 6 (§ 8 et 11 du journal), ADR 0034 ; points et
+ * vecteurs : chantier `solide-vecteur`, lot 1.
  *
  * @module ubumark/parser/solide-parser
  */
@@ -39,18 +45,24 @@ import {
 	SOLIDE_KEYS,
 	SOLIDE_MAX_DECIMALS,
 	SOLIDE_MAX_DIMENSION,
+	SOLIDE_MAX_POINTS,
 	SOLIDE_MAX_RATIO,
+	SOLIDE_MAX_VECTORS,
 	SOLIDE_UNITS,
 	type SolideForm,
 	type SolideMark,
+	type SolidePoint,
 	type SolideSection,
-	type SolideSpec
+	type SolideSpec,
+	type SolideVector
 } from '../types/espace';
 import {
 	SOLIDE_FLAT_CONE,
 	SOLIDE_PLACES,
 	polyhedronVertices,
+	solidePoints3,
 	solideTopology,
+	type Point3,
 	type SolidePlace,
 	type SolideTopology
 } from '../utils/espace-solides';
@@ -69,6 +81,12 @@ const DIMENSION_REGEX = /^\d+(?:[.,]\d+)?$/;
 /** Un nom de sommet : une majuscule, puis des primes ou un nombre (A, A', O1) */
 const NAME_REGEX = /^[A-Z](?:'+|\d+)?$/;
 const NAMES_IN_TEXT_REGEX = /[A-Z](?:'+|\d+)?/g;
+
+/** Un nom de vecteur : une minuscule, puis éventuellement un chiffre (u, v, u1) */
+const VECTOR_NAME_REGEX = /^[a-z]\d?$/;
+
+/** Deux points plus proches que cela sont confondus (vecteur nul, milieu d'un point avec lui-même) */
+const SAME_POINT = 1e-9;
 
 const FIRST_WORDS = ['cube', 'pave', 'prisme', 'pyramide', 'cylindre', 'cone', 'boule'];
 const PRISM_BASES = ['triangle', 'triangle-rectangle'];
@@ -403,6 +421,124 @@ function readSection(
 	return `section : cube, pavé, cylindre ou boule (pas ${topology.indefinite})`;
 }
 
+/** Les points nommés d'un texte (« AE », « [AE] »), indices dans `known` ; une phrase d'erreur sinon */
+function namedPoints(text: string, known: string[]): number[] | string {
+	const bare = text.replace(/[[\]()\s]/g, '');
+	const written = bare.match(NAMES_IN_TEXT_REGEX) ?? [];
+	if (written.join('') !== bare || written.length === 0) {
+		return `« ${text.trim()} » : écris les noms des points (ex. AE)`;
+	}
+	const indices: number[] = [];
+	for (const name of written) {
+		const index = known.indexOf(name);
+		if (index < 0) return `aucun point ne s’appelle ${name}`;
+		indices.push(index);
+	}
+	return indices;
+}
+
+const samePosition = (a: Point3, b: Point3) =>
+	Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z) < SAME_POINT;
+
+/** Les points de `points:` ; une phrase d'erreur sinon */
+function readPoints(
+	value: string,
+	shape: { form: SolideForm; dims: number[] },
+	topology: SolideTopology,
+	names: (string | null)[]
+): SolidePoint[] | string {
+	const items = value.split(',').filter((i) => i.trim() !== '');
+	if (items.length > SOLIDE_MAX_POINTS) return `au plus ${SOLIDE_MAX_POINTS} points`;
+	const known = names.map((n) => n ?? '');
+	const points: SolidePoint[] = [];
+	const usage = 'ex. I milieu AE, O centre ABCD';
+	for (const item of items) {
+		const match = /^(\S+)\s+(\S+)\s*(.*)$/.exec(item.trim());
+		const name = match?.[1] ?? item.trim();
+		const kind = plain(match?.[2] ?? '');
+		if (match === null || (kind !== 'milieu' && kind !== 'centre')) {
+			return `point « ${item.trim()} » non compris (${usage})`;
+		}
+		if (!NAME_REGEX.test(name)) {
+			return `« ${name} » : un nom de point est une majuscule, puis éventuellement ' ou un nombre (I, I', O1)`;
+		}
+		if (names.includes(name)) return `« ${name} » est déjà le nom d’un sommet`;
+		if (points.some((p) => p.name === name))
+			return `« ${name} » deux fois : chaque point a son nom`;
+		if (match[3].trim() === '') return `${kind} de quels points ? (${usage})`;
+		const refs = namedPoints(match[3], known);
+		if (typeof refs === 'string') return refs;
+		// Un point répété fausserait l'isobarycentre (centre ABCDEFGA n'est pas le centre du cube)
+		const twice = refs.find((r, i) => refs.indexOf(r) !== i);
+		if (twice !== undefined && kind === 'centre')
+			return `« ${known[twice]} » deux fois dans ${kind} ${match[3].trim()}`;
+		const written = refs.map((i) => known[i]).join('');
+		if (kind === 'milieu') {
+			if (refs.length !== 2) return `milieu de deux points (ex. ${name} milieu AE)`;
+			const at = solidePoints3(shape.form, shape.dims, points);
+			if (samePosition(at[refs[0]], at[refs[1]])) {
+				return `milieu de deux points distincts (${written} : un seul point)`;
+			}
+			points.push({ name, of: refs, label: `milieu de [${written}]` });
+		} else {
+			const allVertices = sameSet(refs, [...Array(topology.vertexCount).keys()]);
+			if (allVertices && (shape.form === 'cube' || shape.form === 'pave')) {
+				points.push({
+					name,
+					of: [...refs].sort((a, b) => a - b),
+					label: `centre ${topology.ofThe}`
+				});
+				known.push(name);
+				continue;
+			}
+			const face = topology.faces.find((f) => sameSet(f, refs));
+			if (face === undefined) return `${written} n’est pas une face ${topology.ofThe}`;
+			points.push({
+				name,
+				of: face,
+				label: `centre de ${face.map((i) => known[i]).join('')}`
+			});
+		}
+		known.push(name);
+	}
+	return points;
+}
+
+/** Les vecteurs de `vecteurs:` ; une phrase d'erreur sinon */
+function readVectors(
+	value: string,
+	shape: { form: SolideForm; dims: number[] },
+	names: (string | null)[],
+	points: SolidePoint[]
+): SolideVector[] | string {
+	const items = value.split(',').filter((i) => i.trim() !== '');
+	if (items.length > SOLIDE_MAX_VECTORS) return `au plus ${SOLIDE_MAX_VECTORS} vecteurs`;
+	const known = [...names.map((n) => n ?? ''), ...points.map((p) => p.name)];
+	const at = solidePoints3(shape.form, shape.dims, points);
+	const vectors: SolideVector[] = [];
+	for (const item of items) {
+		const match = /^(?:([^=]+)=)?(.*)$/.exec(item.trim());
+		const name = match?.[1]?.trim() ?? null;
+		const what = (match?.[2] ?? '').trim();
+		if (name !== null) {
+			if (!VECTOR_NAME_REGEX.test(name)) {
+				return `« ${name} » : un nom de vecteur est une minuscule, puis éventuellement un chiffre (u, v, u1)`;
+			}
+			if (vectors.some((v) => v.name === name)) {
+				return `« ${name} » deux fois : chaque vecteur a son nom`;
+			}
+		}
+		const refs = namedPoints(what, known);
+		if (typeof refs === 'string') return refs;
+		if (refs.length !== 2) return `« ${what} » : un vecteur se désigne par deux points (ex. AB)`;
+		if (samePosition(at[refs[0]], at[refs[1]])) {
+			return `${what.replace(/[[\]()\s]/g, '')} : vecteur nul (origine et extrémité confondues)`;
+		}
+		vectors.push({ from: refs[0], to: refs[1], name });
+	}
+	return vectors;
+}
+
 /**
  * Analyser le texte d'un bloc ```solide (sans les clôtures).
  * Ligne 1 = première ligne après ```solide.
@@ -501,6 +637,52 @@ export function parseSolideContent(source: string): {
 		else section = read;
 	}
 
+	// Points et vecteurs : polyèdres nommés ; des noms faux rendent tout illisible (une erreur, celle des noms)
+	const pointsEntry = seen.get('points');
+	const vectorsEntry = seen.get('vecteurs');
+	let points: SolidePoint[] = [];
+	let vectors: SolideVector[] = [];
+	const needs = (entry: { line: number }, what: string): boolean => {
+		if (topology.curved) {
+			fail(entry.line, `${what} : polyèdres seulement (pas ${topology.indefinite})`);
+			return false;
+		}
+		if (namesEntry === undefined) {
+			fail(
+				entry.line,
+				`nomme les sommets (sommets:) pour ${what === 'points' ? 'déclarer des points' : 'dessiner des vecteurs'}`
+			);
+			return false;
+		}
+		return names !== null;
+	};
+	let pointsRead = true;
+	if (pointsEntry !== undefined) {
+		pointsRead = false;
+		if (needs(pointsEntry, 'points') && names !== null) {
+			const read = readPoints(pointsEntry.value, shape, topology, names);
+			if (typeof read === 'string') fail(pointsEntry.line, read);
+			else {
+				points = read;
+				pointsRead = true;
+			}
+		}
+	}
+	if (
+		vectorsEntry !== undefined &&
+		needs(vectorsEntry, 'vecteurs') &&
+		names !== null &&
+		pointsRead
+	) {
+		const read = readVectors(vectorsEntry.value, shape, names, points);
+		if (typeof read === 'string') fail(vectorsEntry.line, read);
+		else vectors = read;
+	}
+	const taken = points.find((p) => section?.kind === 'face' && section.names?.includes(p.name));
+	if (taken !== undefined && sectionEntry !== undefined) {
+		fail(sectionEntry.line, `« ${taken.name} » est déjà le nom d’un point (points:)`);
+	}
+
 	if (errors.length > 0) return { spec: null, errors };
 	return {
 		spec: {
@@ -511,7 +693,9 @@ export function parseSolideContent(source: string): {
 			marks,
 			cotes,
 			hidden,
-			section
+			section,
+			points,
+			vectors
 		},
 		errors
 	};

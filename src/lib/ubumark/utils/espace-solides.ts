@@ -17,6 +17,10 @@
  * Section (`section:`, lot 6) : le polygone de coupe, teinté, contour en
  * trait plein épais ; le plan n'est pas dessiné ; boule coupée : sans équateur.
  *
+ * Points déclarés (`points:`) : un disque et un nom ; vecteurs donnés
+ * (`vecteurs:`) : une flèche, et pour `u = AB` la lettre près du milieu sous
+ * une petite flèche (chantier `solide-vecteur`, lot 1).
+ *
  * Échelle : les dimensions sont des proportions ; le dessin est ramené à
  * `SOLIDE_SIZE` cm sur son plus grand côté. Repère : y vers le BAS (SVG), une
  * unité = 1 cm, étiquettes comprises dans la boîte.
@@ -24,7 +28,7 @@
  * @module ubumark/utils/espace-solides
  */
 
-import type { SolideForm, SolideSpec } from '../types/espace';
+import type { SolideForm, SolidePoint, SolideSpec } from '../types/espace';
 import type { EspacePoint } from './espace-scene';
 
 // ============================================================================
@@ -45,6 +49,17 @@ export interface SolideLabel {
 	text: string;
 }
 
+/**
+ * Une flèche : le trait s'arrête au pied de la pointe (le bout arrondi ne la
+ * dépasse pas) ; `head[0]` = l'extrémité ; `small` : flèche posée sur le nom
+ * d'un vecteur
+ */
+export interface SolideArrow {
+	shaft: [EspacePoint, EspacePoint];
+	head: EspacePoint[];
+	small: boolean;
+}
+
 export interface SolideScene {
 	/** Boîte du dessin, étiquettes comprises (cm) */
 	width: number;
@@ -62,6 +77,10 @@ export interface SolideScene {
 	labels: SolideLabel[];
 	/** Position de chaque sommet, dans l'ordre de `sommets:` */
 	vertices: EspacePoint[];
+	/** Position de chaque point déclaré (`points:`), dans l'ordre écrit */
+	points: EspacePoint[];
+	/** Vecteurs donnés, puis petites flèches de leurs noms ; dessinées après les traits */
+	arrows: SolideArrow[];
 }
 
 /** Ce qu'il faut savoir d'une forme pour lire `sommets:` et `marquer:` */
@@ -127,6 +146,19 @@ export const SOLIDE_FLAT_CONE = 0.5;
 
 /** Segments d'une ellipse ou d'un cercle complet */
 const ARC_STEPS = 72;
+
+/** Pointe d'une flèche : longueur et demi-largeur, en cm (petite flèche d'un nom : `SMALL_ARROW`) */
+export const SOLIDE_ARROW = { length: 0.26, halfWidth: 0.09 } as const;
+const SMALL_ARROW = { length: 0.09, halfWidth: 0.045 } as const;
+
+/** Hauteur de la petite flèche d'un nom de vecteur au-dessus du centre de la lettre, en cm */
+const NAME_ARROW_RISE = 0.24;
+
+/** Ce que la petite flèche dépasse au-dessus de la boîte de la lettre (`labelBox`), en cm */
+const NAME_ARROW_TOP = NAME_ARROW_RISE + SMALL_ARROW.halfWidth - SOLIDE_LABEL_SIZE / 2 - 0.03;
+
+/** Écart d'un nom de point ou de vecteur aux points dessinés (sommets, points déclarés), en cm */
+const DOT_CLEARANCE = 0.06;
 
 /** Distance d'une étiquette de sommet à son point, en cm */
 const LABEL_GAP = 0.28;
@@ -308,6 +340,27 @@ export function polyhedronVertices(form: SolideForm, dims: number[]): Point3[] {
 	}
 }
 
+/**
+ * Les points nommables d'un polyèdre, en 3D : les sommets, puis chaque point
+ * déclaré (isobarycentre de ses points `of`, sommets ou points déclarés avant lui)
+ */
+export function solidePoints3(
+	form: SolideForm,
+	dims: number[],
+	points: Pick<SolidePoint, 'of'>[]
+): Point3[] {
+	const all = polyhedronVertices(form, dims);
+	for (const point of points) {
+		const of = point.of.map((i) => all[i]);
+		all.push({
+			x: of.reduce((s, p) => s + p.x, 0) / of.length,
+			y: of.reduce((s, p) => s + p.y, 0) / of.length,
+			z: of.reduce((s, p) => s + p.z, 0) / of.length
+		});
+	}
+	return all;
+}
+
 const sub = (a: Point3, b: Point3): Point3 => ({ x: a.x - b.x, y: a.y - b.y, z: a.z - b.z });
 const dot = (a: Point3, b: Point3) => a.x * b.x + a.y * b.y + a.z * b.z;
 const cross = (a: Point3, b: Point3): Point3 => ({
@@ -375,6 +428,8 @@ interface Draft {
 	section: EspacePoint[] | null;
 	/** Noms des sommets de la section : point et direction (vers l'extérieur) */
 	sectionLabels: { at: EspacePoint; away: EspacePoint; text: string }[];
+	/** Points déclarés (`points:`) ; aucun pour un solide rond */
+	points: EspacePoint[];
 }
 
 const segment = (a: EspacePoint, b: EspacePoint, dashed: boolean): SolideLine => ({
@@ -455,6 +510,9 @@ function polyhedronDraft(spec: SolideSpec): Draft {
 		}
 	}
 	const { section, sectionLabels } = boxSection(spec, topology, points3, lines, cotes);
+	const points = solidePoints3(spec.form, spec.dims, spec.points)
+		.slice(points3.length)
+		.map(project);
 	return {
 		lines,
 		fills,
@@ -463,7 +521,8 @@ function polyhedronDraft(spec: SolideSpec): Draft {
 		edges: topology.edges,
 		cotes,
 		section,
-		sectionLabels
+		sectionLabels,
+		points
 	};
 }
 
@@ -602,7 +661,8 @@ function roundDraft(spec: SolideSpec): Draft {
 				],
 				centers: [0, 1],
 				edges: [],
-				cotes
+				cotes,
+				points: []
 			};
 		}
 		case 'cone': {
@@ -629,7 +689,8 @@ function roundDraft(spec: SolideSpec): Draft {
 				vertices: [apex, { x: 0, y: 0 }],
 				centers: [1],
 				edges: [],
-				cotes
+				cotes,
+				points: []
 			};
 		}
 		default: {
@@ -666,7 +727,8 @@ function roundDraft(spec: SolideSpec): Draft {
 				vertices: [{ x: 0, y: 0 }],
 				centers: [0],
 				edges: [],
-				cotes
+				cotes,
+				points: []
 			};
 		}
 	}
@@ -721,6 +783,86 @@ function freeDirection(
 	return { x: Math.cos(best.middle), y: Math.sin(best.middle) };
 }
 
+/** Une flèche de `from` à `to` (écran) ; pointe de taille `size` */
+function arrowOf(
+	from: EspacePoint,
+	to: EspacePoint,
+	size: { length: number; halfWidth: number },
+	small: boolean
+): SolideArrow {
+	const length = Math.hypot(to.x - from.x, to.y - from.y);
+	const ux = (to.x - from.x) / length;
+	const uy = (to.y - from.y) / length;
+	const head = Math.min(size.length, length / 2);
+	const base = { x: to.x - ux * head, y: to.y - uy * head };
+	return {
+		shaft: [from, base],
+		head: [
+			to,
+			{ x: base.x - uy * size.halfWidth, y: base.y + ux * size.halfWidth },
+			{ x: base.x + uy * size.halfWidth, y: base.y - ux * size.halfWidth }
+		],
+		small
+	};
+}
+
+/** Le segment [a, b] traverse-t-il la boîte ? (Liang-Barsky) */
+function segmentHitsBox(a: EspacePoint, b: EspacePoint, box: EspacePoint[]): boolean {
+	const [lo, hi] = box;
+	let t0 = 0;
+	let t1 = 1;
+	const dx = b.x - a.x;
+	const dy = b.y - a.y;
+	const clips: [number, number][] = [
+		[-dx, a.x - lo.x],
+		[dx, hi.x - a.x],
+		[-dy, a.y - lo.y],
+		[dy, hi.y - a.y]
+	];
+	for (const [p, q] of clips) {
+		if (p === 0) {
+			if (q < 0) return false;
+			continue;
+		}
+		const r = q / p;
+		if (p < 0) t0 = Math.max(t0, r);
+		else t1 = Math.min(t1, r);
+		if (t0 > t1) return false;
+	}
+	return true;
+}
+
+/**
+ * La première étiquette qui ne touche ni une de `placed` ni un trait de
+ * `segments` ; à défaut, la première qui ne touche aucune étiquette ; la
+ * première sinon. `rise` : hauteur en plus au-dessus de la boîte (petite flèche
+ * d'un nom de vecteur).
+ */
+function firstFree(
+	candidates: SolideLabel[],
+	placed: SolideLabel[],
+	segments: [EspacePoint, EspacePoint][],
+	dots: EspacePoint[],
+	rise = 0
+): SolideLabel {
+	const clearOfLabels = (c: SolideLabel) => !placed.some((l) => overlaps(c, l));
+	const clearOfLines = (c: SolideLabel) => {
+		const [lo, hi] = labelBox(c);
+		const box = [{ x: lo.x, y: lo.y - rise }, hi];
+		const inside = (p: EspacePoint) =>
+			p.x > box[0].x - DOT_CLEARANCE &&
+			p.x < box[1].x + DOT_CLEARANCE &&
+			p.y > box[0].y - DOT_CLEARANCE &&
+			p.y < box[1].y + DOT_CLEARANCE;
+		return !segments.some(([a, b]) => segmentHitsBox(a, b, box)) && !dots.some(inside);
+	};
+	return (
+		candidates.find((c) => clearOfLabels(c) && clearOfLines(c)) ??
+		candidates.find(clearOfLabels) ??
+		candidates[0]
+	);
+}
+
 /** Le dessin d'un solide */
 export function buildSolideScene(spec: SolideSpec): SolideScene {
 	const draft = solideTopology(spec.form).curved ? roundDraft(spec) : polyhedronDraft(spec);
@@ -737,6 +879,8 @@ export function buildSolideScene(spec: SolideSpec): SolideScene {
 	const fills = draft.fills.map((f) => f.map(toScreen));
 	const section = draft.section?.map(toScreen) ?? null;
 	const vertices = draft.vertices.map(toScreen);
+	const points = draft.points.map(toScreen);
+	const named = [...vertices, ...points];
 
 	// Noms des sommets : à l'extérieur, en s'éloignant du centre du dessin
 	const labels: SolideLabel[] = [];
@@ -808,8 +952,75 @@ export function buildSolideScene(spec: SolideSpec): SolideScene {
 		labels.push(free ?? candidates[0]);
 	}
 
+	// Flèches des vecteurs donnés ; les traits que les noms des points et des vecteurs évitent
+	const arrows: SolideArrow[] = spec.vectors.map((v) =>
+		arrowOf(named[v.from], named[v.to], SOLIDE_ARROW, false)
+	);
+	const segments: [EspacePoint, EspacePoint][] = [
+		...lines.flatMap((l) =>
+			l.points.slice(1).map((p, i): [EspacePoint, EspacePoint] => [l.points[i], p])
+		),
+		...arrows.map((a): [EspacePoint, EspacePoint] => [a.shaft[0], a.head[0]])
+	];
+
+	// Points déclarés : un disque ; le nom en s'éloignant du milieu du dessin, sinon
+	// en tournant, sans toucher une étiquette déjà posée
+	spec.points.forEach((point, k) => {
+		const p = points[k];
+		dots.push(p);
+		const dx = p.x - middleOfDrawing.x;
+		const dy = p.y - middleOfDrawing.y;
+		// Au milieu du dessin (centre du cube) : à gauche, un peu plus bas, comme un centre
+		const base = Math.hypot(dx, dy) < 1e-6 ? Math.atan2(0.35, -1) : Math.atan2(dy, dx);
+		const turns = [0, 1, -1, 2, -2, 3, -3, 4].map((t) => base + (t * Math.PI) / 4);
+		const candidates = turns.map((t) => ({
+			at: { x: p.x + Math.cos(t) * LABEL_GAP, y: p.y + Math.sin(t) * LABEL_GAP },
+			text: point.name
+		}));
+		const others = named.filter((_, i) => i !== vertices.length + k);
+		labels.push(firstFree(candidates, labels, segments, others));
+	});
+
+	// Vecteurs donnés : un nom près du milieu de la flèche, du côté extérieur d'abord
+	for (const vector of spec.vectors) {
+		const from = named[vector.from];
+		const to = named[vector.to];
+		if (vector.name === null) continue;
+		const length = Math.hypot(to.x - from.x, to.y - from.y);
+		let normal = { x: -(to.y - from.y) / length, y: (to.x - from.x) / length };
+		const mid = middle(from, to);
+		if (normal.x * (mid.x - middleOfDrawing.x) + normal.y * (mid.y - middleOfDrawing.y) < 0) {
+			normal = { x: -normal.x, y: -normal.y };
+		}
+		const candidates = [1.3, 1.9].flatMap((gap) =>
+			[0.5, 0.4, 0.6, 0.3, 0.7].flatMap((t) =>
+				[1, -1].map((side) => ({
+					at: {
+						x: from.x + (to.x - from.x) * t + side * normal.x * LABEL_GAP * gap,
+						y: from.y + (to.y - from.y) * t + side * normal.y * LABEL_GAP * gap
+					},
+					text: vector.name ?? ''
+				}))
+			)
+		);
+		const label = firstFree(candidates, labels, segments, named, NAME_ARROW_TOP);
+		labels.push(label);
+		// La petite flèche au-dessus de la lettre, de gauche à droite (sens de la lecture)
+		const half = Math.max(label.text.length * CHAR_WIDTH, CHAR_WIDTH * 1.2) / 2;
+		const y = label.at.y - NAME_ARROW_RISE;
+		arrows.push(
+			arrowOf({ x: label.at.x - half, y }, { x: label.at.x + half, y }, SMALL_ARROW, true)
+		);
+	}
+
 	// Cadrage : tout dans la boîte, étiquettes comprises
-	const all = bounds([...lines.flatMap((l) => l.points), ...vertices, ...labels.flatMap(labelBox)]);
+	const all = bounds([
+		...lines.flatMap((l) => l.points),
+		...vertices,
+		...points,
+		...labels.flatMap(labelBox),
+		...arrows.flatMap((a) => [...a.shaft, ...a.head])
+	]);
 	const shift = (p: EspacePoint): EspacePoint => ({ x: p.x - all.minX, y: p.y - all.minY });
 	const order = (l: SolideLine) => (l.thick ? 2 : l.dashed ? 0 : 1);
 	return {
@@ -824,7 +1035,13 @@ export function buildSolideScene(spec: SolideSpec): SolideScene {
 			.sort((a, b) => order(a) - order(b)),
 		dots: dots.map(shift),
 		labels: labels.map((l) => ({ ...l, at: shift(l.at) })),
-		vertices: vertices.map(shift)
+		vertices: vertices.map(shift),
+		points: points.map(shift),
+		arrows: arrows.map((a) => ({
+			shaft: [shift(a.shaft[0]), shift(a.shaft[1])],
+			head: a.head.map(shift),
+			small: a.small
+		}))
 	};
 }
 
@@ -841,6 +1058,13 @@ export function solideLabel(spec: SolideSpec): string {
 		const unit = spec.cotes.unit ? ` ${spec.cotes.unit}` : '';
 		const values = spec.dims.map((d) => `${frenchNumber(d)}${unit}`);
 		parts.push(`${values.length > 1 ? 'longueurs' : 'longueur'} ${values.join(', ')}`);
+	}
+	// Points et vecteurs donnés : ils sont dans l'énoncé
+	const known = [...(spec.names ?? []), ...spec.points.map((p) => p.name)];
+	for (const point of spec.points) parts.push(`point ${point.name} ${point.label}`);
+	for (const vector of spec.vectors) {
+		const ends = `${known[vector.from]}${known[vector.to]}`;
+		parts.push(vector.name === null ? `vecteur ${ends}` : `vecteur ${vector.name} égal à ${ends}`);
 	}
 	// Jamais la nature de la section (rectangle, disque) : la réponse de 3e-020
 	const cut = spec.section;
