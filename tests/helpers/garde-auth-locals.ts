@@ -6,7 +6,11 @@
  * un mauvais rôle. Seules les sources changent : la session vient de `locals.user`
  * (pas de `safeGetSession`) et le profil de `locals.profile` s'il existe, sinon de
  * la VRAIE `requireAuth` (requête `profiles` sur le client Supabase simulé).
- * La vraie garde est testée à part, dans `src/lib/server/__tests__`.
+ * ⚠️ Quand `locals.profile` est fourni, la doublure ne relit pas `profiles` : les
+ * chemins « profil introuvable → 403 » et « panne de lecture → 500 » de la vraie garde
+ * ne sont pas couverts par les tests qui l'utilisent. Ils le sont par les tests qui
+ * passent par la vraie garde (`api/teacher/classes/__tests__/garde.test.ts`,
+ * `api/messages/templates/[id]/approve/__tests__/garde.test.ts`).
  *
  * Usage :
  *   vi.mock('$lib/server/middleware/auth', async (importActual) =>

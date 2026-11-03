@@ -29,10 +29,12 @@ import { POST } from '../+server';
 
 vi.mock('$lib/server/middleware/auth', () => ({
 	// Garde commune simulée : la session vient de `locals.safeGetSession`
-	requireAuth: async (locals: { safeGetSession: () => Promise<{ user: unknown }> }) => ({
-		user: (await locals.safeGetSession()).user,
-		profile: { role: 'student' }
-	})
+	requireAuth: async (locals: { safeGetSession: () => Promise<{ user: unknown }> }) => {
+		const { user } = await locals.safeGetSession();
+		// Comme la vraie garde : pas de session → 401
+		if (!user) throw (await import('@sveltejs/kit')).error(401, 'Non autorisé');
+		return { user, profile: { role: 'student' } };
+	}
 }));
 
 // Constantes
