@@ -5,20 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, lot 9 publié._
+_Mis à jour le 2026-11-03, phase 0 du lot 10 proposée._
 
-- **État** : lots 1 à 9 publiés (lot 9 « Statistiques », 10 modèles, § 23). Relevé du § 22 moins les 10 points
-  du lot 9 : 59 points de 5e sans modèle (B, C, D ; 122 attend l'outil « étiquettes à ranger »).
-- **Prochaine action** : phase 0 du lot 10 : 112 (barres à construire, reporté du lot 9), puis proportionnalité et
-  graphiques (089, 090, 094, 142 ; 141, 091, 099, 096, 143) — vérifier d'abord que l'outil des barres à construire
-  est en prod.
-- **En attente de David** : 02 du lot 7 (deux cases sur deux lignes) à essayer à la
-  main : au pilotage Chrome, la frappe dans la 2e case arrivait aussi dans la 1re — extension ou appli ?
-- **Pièges en cours** : `db:migrate` en prod refusé par le classifieur du mode auto → David le lance ; il pousse
-  toutes les migrations en attente (`--include-all` si une plus ancienne arrive après coup ; dry-run d'abord) ;
-  `pnpm check:migrations --pr <n>` avant merge ; horodatage = `pnpm migration:horodatage` ; garde
-  `docs:check-a-jour` sur une migration de données → ligne `Doc-inchangée:` dans un COMMIT (pas la PR) ;
-  `gh pr checks --watch` rend la main avant l'intégration : suivre les runs ; jamais `e`.
+- **État** : lots 1 à 9 publiés. Lot 10 « Proportionnalité, fonctions, barres à construire » : phase 0 écrite
+  (§ 24 : 10 modèles, 112 089 090 141 091 099 094 142 096 143), **pas encore validée**.
+- **Prochaine action** : reposer à David les 2 questions du § 24 (niveaux 6-9 à la suite ; 04 / 05 différenciés),
+  puis écrire le lot (worktree `questions-5`, script `lot-5-proportionnalite.py`).
+- **En attente de David** : validation du § 24 ; 02 du lot 7 (deux cases sur deux lignes) à essayer à la main
+  (au pilotage Chrome, la frappe de la 2e case arrivait aussi dans la 1re — extension ou appli ?).
+- **Après le lot 10** : refaire le classement, des outils livrés font passer des C en B (courbe `placer:` #2096 →
+  128, 095, 114 ; ` ```ranger ` → 122 ; cubes / solide / patron → 144, 048, 049).
+- **Pièges en cours** : `db:migrate` en prod refusé par le classifieur du mode auto → David le lance (dry-run
+  d'abord, `--include-all` si une plus ancienne arrive après coup) ; `pnpm check:migrations --pr <n>` avant merge ;
+  horodatage = `pnpm migration:horodatage` ; `Doc-inchangée:` dans un COMMIT ; `gh pr checks --watch` rend la main
+  avant l'intégration : suivre les runs ; jamais `e`.
 - **Worktree / branche** : aucun.
 
 ## 1. Relevé (prod, 2026-10-28)
@@ -688,3 +688,37 @@ barres 1-3 (CE1) ; diagrammes circulaires et courbes et repères : aucun. Borne 
 
 - Page à cocher : **10 verdicts sur 10 « ok »**, sans commentaire (comptés en base de l'artefact). Simulation
   `publier-lot` 10/10 ; David : `--publier` → 10/10 ; vérifié au MCP (`status = published` pour les 10). **Lot 9 clos.**
+
+## 24. Lot 10 « Proportionnalité, fonctions, barres à construire » : phase 0 proposée (2026-11-02, NON validée)
+
+Relevé prod : aucun modèle sur les 10 points ; tous déjà sur leur sous-notion. Barres à construire et échelle à
+choisir en prod (#1947, release 0.64.0). Voisins : 6e « Représenter une situation de proportionnalité par un
+tableau » (3838457d, 6-192), « Reconnaître si un tableau est un tableau de proportionnalité » (6-190, niv. 1-2) →
+la 5e porte le graphique et les quotients. Niveaux pris : diagrammes en barres 1-5 ; situations de
+proportionnalité 1 (6e ×2) ; caractérisation 1-3 ; généralités sur les fonctions 1-5 (5e : 4, 5).
+
+| #   | Point | Modèle                                            | Réponse                    | Sous-notion, niveau               |
+| --- | ----- | ------------------------------------------------- | -------------------------- | --------------------------------- |
+| 01  | 5-112 | Construire un diagramme en barres                 | barres à construire        | diagrammes en barres, 6           |
+| 02  | 5-089 | Représenter une proportionnalité par un graphique | points à placer (courbe)   | situations de proportionnalité, 2 |
+| 03  | 5-090 | Reconnaître la proportionnalité par les quotients | cases (quotients) + choix  | caractérisation, 4                |
+| 04  | 5-141 | Reconnaître la proportionnalité sur un graphique  | choix                      | caractérisation, 5                |
+| 05  | 5-091 | Nuage de points et proportionnalité               | choix (oui / non + raison) | caractérisation, 6                |
+| 06  | 5-099 | Caractériser graphiquement la proportionnalité    | choix parmi des droites    | caractérisation, 7                |
+| 07  | 5-094 | Lire un tableau de valeurs                        | case                       | généralités sur les fonctions, 6  |
+| 08  | 5-142 | Interpréter un tableau de valeurs                 | choix                      | généralités sur les fonctions, 7  |
+| 09  | 5-096 | Lire un graphique cartésien                       | case                       | généralités sur les fonctions, 8  |
+| 10  | 5-143 | Interpréter un graphique cartésien                | case(s)                    | généralités sur les fonctions, 9  |
+
+- 01 : tableau d'effectifs, 4-5 catégories, toutes à construire ; axe donné de 5 en 5 (≤ 50) ou `axe: à choisir`
+  (10-80, axe ≤ 100). 02 : situation concrète, 3 points A, B, C à placer sur les nœuds, titres d'axes.
+- 03 : tableau contextualisé de 3 colonnes, quotient y ÷ x par colonne puis oui / non ; « non » = une colonne
+  fausse. 04 : sans contexte, alignés avec l'origine / alignés sans l'origine / pas alignés. 05 : contexte discret
+  (billets), choix « oui » / « non, pas alignés » / « non, alignés mais pas avec l'origine ». 06 : 3-4 droites
+  d1… d4, une seule par l'origine.
+- 07 : aire d'un carré selon son côté ou prix ; lecture directe et inverse ; pas de notation fonctionnelle.
+  08 : augmente / diminue / ni l'un ni l'autre (croissante, décroissante, température). 09 : ligne brisée ou
+  nuage, ordonnée et abscisse sur les nœuds. 10 : croissante → « à partir de x = … » ; en cloche → « de … à … ».
+- Accès : rien de neuf (brouillons jusqu'à la publication, tags lisibles par tout compte connecté).
+- **Questions posées, sans réponse** : (1) niveaux 6-9 à la suite pour 07-10 plutôt que renuméroter (reco : à la
+  suite) ; (2) 04 sans contexte oui / non, 05 en contexte avec la raison — d'accord ?
