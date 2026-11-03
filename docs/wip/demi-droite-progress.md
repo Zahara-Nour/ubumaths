@@ -10,17 +10,19 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2317._
+_Mis à jour le 2026-11-03, après #2328._
 
-- **État** : PR 1 (#2294), PR 2 (#2309) et PR 3 (#2317, réponse incomplète = case vide : Valider grisé,
-  Entrée → focus sur la droite) mergées. Pas en prod (pas de `deploy:prod` demandé).
-- **Prochaine action** : 1er modèle avec `representer:` — 3-014 d'abord ; 2-251 (|x| < k, 2de) ensuite ;
-  puis clore (versement de ce journal dans `docs/systeme/`). Nouveau worktree à créer depuis `origin/main`.
-- **En attente de David** : rien (ordre validé le 2026-11-03 : correctif, 1 modèle, clôture).
-- **Pièges en cours** : segment monté d'un étage qui frôle un point nommé (seulement si le 1er modèle le
-  montre). Flash : réponse incomplète acceptée comme une case vide. Branche distante
-  `fix/integration-locals-session` (PR doublon #2324 fermée) laissée sur GitHub.
-- **Worktree / branche** : aucun (`../ubumaths-wt-demi-droite` retiré après #2317).
+- **État** : PR 1-3 (#2294, #2309, #2317) **en prod** (0.67.0). PR 4 (#2328) mergée : modèle 3-014
+  « Représenter les solutions d'une inéquation ax ⩾ b » (niveau 2), fichiers dans
+  `scripts/questions/3-representer/` ; brouillon en base locale seulement.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/3-representer
+--publier` (brouillon en prod) → relever l'id → migration nœud + tag 3-014 (nouveau worktree) → page à
+  cocher → publication. Puis 2-251 (|x| < k, 2de), puis clôture (versement dans `docs/systeme/`).
+- **En attente de David** : le `create-questions --publier` ci-dessus.
+- **Pièges en cours** : segment monté d'un étage qui frôle un point nommé (pas vu sur 3-014). Rendu 390 px
+  du modèle (graduations en tiers) pas vu à l'œil. Branche distante `fix/integration-locals-session`
+  laissée sur GitHub.
+- **Worktree / branche** : aucun (`../ubumaths-wt-demi-droite` retiré après #2328).
 
 ---
 
