@@ -5,7 +5,7 @@
 > dans `1spe.md`). En base, le niveau est `1_SPE`. Chantiers par thème déjà faits (septembre-octobre 2026) :
 > `suites-1spe`, `second-degre-1spe`, `derivation-1spe`, `exponentielle-1spe`, `trigo-1spe`,
 > `produit-scalaire-1spe`, `geometrie-reperee-1spe`, `probas-cond-1spe`, `variables-aleatoires-1spe`,
-> `logique-1spe`, `automatismes-1spe` (journaux dans `docs/wip/`).
+> `logique-1spe`, `automatismes-1spe` (journaux dans `docs/archive/wip/`).
 
 ## Reprendre ici
 
