@@ -1,0 +1,238 @@
+{
+	"title": "Inégalités et intervalles",
+	"description": "Écrire −2 < x ⩽ 5 et x ⩾ 3 sous forme d'intervalle ; l'inégalité qui traduit x ∈ [a ; b[",
+	"grades": ["2"],
+	"theme": "Logique",
+	"domain": "Ensembles",
+	"subdomain": "Intervalles",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Écris l'ensemble des réels $x$ tels que ${{a}}{{if:sa==1|\\leqslant|<}}x{{if:sb==1|\\leqslant|<}}{{b}}$ sous la forme d'un intervalle.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..5"
+				},
+				{
+					"name": "l",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+l"
+				},
+				{
+					"name": "sa",
+					"expression": "0|1"
+				},
+				{
+					"name": "sb",
+					"expression": "0|1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:sa==1|[|]}}{{a}};{{b}}{{if:sb==1|]|[}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le crochet est **tourné vers le nombre** quand il est compris ($\\leqslant$), **tourné vers l'extérieur** quand il est exclu ($<$). Du côté de $\\pm\\infty$, le crochet est toujours ouvert.",
+					"${{a}}$ est {{if:sa==1|compris|exclu}}, ${{b}}$ est {{if:sb==1|compris|exclu}} :",
+					"$$x\\in\\textcolor{{{color:primary.0}}}{{{if:sa==1|[|]}}{{a}}\\,;\\,{{b}}{{if:sb==1|]|[}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Écris l'ensemble des réels $x$ tels que $x{{if:d==1|{{if:s==1|\\geqslant|>}}|{{if:s==1|\\leqslant|<}}}}{{a}}$ sous la forme d'un intervalle.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..9"
+				},
+				{
+					"name": "d",
+					"expression": "0|1"
+				},
+				{
+					"name": "s",
+					"expression": "0|1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:d==1|{{if:s==1|[|]}}{{a}};+\\infty[|]-\\infty;{{a}}{{if:s==1|]|[}}}}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le crochet est **tourné vers le nombre** quand il est compris ($\\leqslant$), **tourné vers l'extérieur** quand il est exclu ($<$). Du côté de $\\pm\\infty$, le crochet est toujours ouvert.",
+					"Les solutions sont {{if:d==1|à droite|à gauche}} de ${{a}}$, qui est {{if:s==1|compris|exclu}} :",
+					"$$x\\in\\textcolor{{{color:primary.0}}}{{{if:d==1|{{if:s==1|[|]}}{{a}}\\,;\\,+\\infty[|]-\\infty\\,;\\,{{a}}{{if:s==1|]|[}}}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Quelle inégalité traduit $x\\in[{{a}}\\,;\\,{{b}}[$ ?\n\n```choix\n- ${{a}}\\leqslant x<{{b}}$\n- ${{a}}<x\\leqslant{{b}}$\n- ${{a}}\\leqslant x\\leqslant{{b}}$\n- ${{a}}<x<{{b}}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..5"
+				},
+				{
+					"name": "l",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+l"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le crochet est **tourné vers le nombre** quand il est compris ($\\leqslant$), **tourné vers l'extérieur** quand il est exclu ($<$). Du côté de $\\pm\\infty$, le crochet est toujours ouvert.",
+					"Le crochet de ${{a}}$ est tourné vers lui (compris), celui de ${{b}}$ vers l'extérieur (exclu) :",
+					"$$\\textcolor{{{color:primary.0}}}{{{a}}\\leqslant x<{{b}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "−2 < x ⩽ 5 : ]−2 ; 5]",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"l": "7",
+				"b": "5",
+				"sa": "0",
+				"sb": "1"
+			},
+			"answers": ["]-2;5]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : crochet de −2 tourné vers lui",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"l": "7",
+				"b": "5",
+				"sa": "0",
+				"sb": "1"
+			},
+			"answers": ["[-2;5]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : bornes inversées",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"l": "7",
+				"b": "5",
+				"sa": "0",
+				"sb": "1"
+			},
+			"answers": ["]5;-2]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x ⩾ 3 : [3 ; +∞[",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"d": "1",
+				"s": "1"
+			},
+			"answers": ["[3;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : crochet fermé sur l'infini",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"d": "1",
+				"s": "1"
+			},
+			"answers": ["[3;+\\infty]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x < −1 : ]−∞ ; −1[",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"d": "0",
+				"s": "0"
+			},
+			"answers": ["]-\\infty;-1["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : mauvais côté",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"d": "0",
+				"s": "0"
+			},
+			"answers": ["]-1;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "[−2 ; 5[ : −2 ⩽ x < 5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-2",
+				"l": "7",
+				"b": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : crochets lus à l'envers",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-2",
+				"l": "7",
+				"b": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

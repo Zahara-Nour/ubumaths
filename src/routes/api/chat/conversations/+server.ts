@@ -1,5 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '$lib/server/middleware/auth';
 import { createConversationSchema } from '$lib/server/validation/chat';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -21,21 +22,19 @@ export const GET: RequestHandler = async ({ locals }) => {
 	// ====================================================================
 	// SECURITY: Authentication Check
 	// ====================================================================
-	if (!locals.user) {
-		throw error(401, 'Not authenticated');
-	}
+	const { user } = await requireAuth(locals);
 
 	try {
 		// ====================================================================
 		// DATABASE: Call get_user_conversations RPC (exists in migration 042)
 		// ====================================================================
 		const { data, error: dbError } = await locals.supabase.rpc('get_user_conversations', {
-			p_user_id: locals.user.id
+			p_user_id: user.id
 		});
 
 		if (dbError) {
 			logger.error('Failed to get conversations:', {
-				userId: locals.user.id,
+				userId: user.id,
 				error: dbError.message
 			});
 			throw error(500, 'Failed to load conversations');
@@ -73,9 +72,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// ====================================================================
 	// SECURITY: Authentication Check
 	// ====================================================================
-	if (!locals.user) {
-		throw error(401, 'Not authenticated');
-	}
+	const { user } = await requireAuth(locals);
 
 	// ====================================================================
 	// SECURITY: Input Validation with Zod
@@ -102,7 +99,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const { data: conversationId, error: createError } = await locals.supabase.rpc(
 			'create_1on1_chat',
 			{
-				p_user1_id: locals.user.id,
+				p_user1_id: user.id,
 				p_user2_id: friendId
 			}
 		);
@@ -117,7 +114,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			}
 
 			logger.error('Failed to create conversation:', {
-				userId: locals.user.id,
+				userId: user.id,
 				friendId,
 				error: createError.message
 			});
@@ -126,7 +123,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		if (!conversationId) {
 			logger.error('create_1on1_chat returned no conversation ID', {
-				userId: locals.user.id,
+				userId: user.id,
 				friendId
 			});
 			throw error(500, 'Échec de la création de la conversation');

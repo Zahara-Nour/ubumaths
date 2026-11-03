@@ -1,0 +1,228 @@
+{
+	"title": "Démontrer l'équation de la tangente",
+	"description": "Démonstration à trous de y = f(a) + f′(a)(x − a) : justification du coefficient directeur f′(a), ordonnée à l'origine par le point A (valeurs tirées), factorisation par f′(a)",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "Démonstrations",
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $f$ une fonction dérivable en $a={{eval:a}}$, avec $f({{eval:a}})={{eval:b}}$ et $f'({{eval:a}})={{eval:m}}$. On note $A$ le point de sa courbe d'abscisse ${{eval:a}}$ : $A({{eval:a}}\\,;\\,{{eval:b}})$. On cherche une équation de la tangente $T$ à la courbe en $A$.\n\nLa tangente $T$ a pour coefficient directeur ${{eval:m}}$. Pourquoi ?\n\n```choix\n- Par définition, la tangente en $A$ est la droite qui passe par $A$ et dont le coefficient directeur est le nombre dérivé $f'({{eval:a}})$.\n- Car $T$ passe par l'origine du repère.\n- Car toute droite qui passe par $A$ a ce coefficient directeur.\n- Car $f({{eval:a}})={{eval:b}}$.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "m",
+					"expression": "2..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre dérivé $f'({{eval:a}})$ est **par définition** le coefficient directeur de la tangente en $A$ : ici $\\textcolor{{{color:primary.0}}}{{{eval:m}}}$.",
+					"Une infinité de droites passent par $A$ ; la tangente est celle de coefficient directeur $f'({{eval:a}})$.",
+					"$f({{eval:a}})={{eval:b}}$ donne l'ordonnée de $A$, pas le coefficient directeur."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ une fonction dérivable en $a={{eval:a}}$, avec $f({{eval:a}})={{eval:b}}$ et $f'({{eval:a}})={{eval:m}}$. On note $A$ le point de sa courbe d'abscisse ${{eval:a}}$ : $A({{eval:a}}\\,;\\,{{eval:b}})$. On cherche une équation de la tangente $T$ à la courbe en $A$.\n\nLe coefficient directeur de $T$ est $f'({{eval:a}})={{eval:m}}$ : $T$ a une équation de la forme $y={{eval:m}}x+p$. Comme $A$ est sur $T$, ses coordonnées vérifient cette équation. Complète.\n\n$p=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "m",
+					"expression": "2..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b-m*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A({{eval:a}}\\,;\\,{{eval:b}})$ est sur $T$ : ${{eval:b}}={{eval:m}}\\times{{eval:a}}+p$.",
+					"Donc $p={{eval:b}}-{{eval:m*a}}=\\textcolor{{{color:primary.0}}}{{{eval:b-m*a}}}$, et $T$ a pour équation $y={{eval:m}}x+({{eval:b-m*a}})$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ une fonction dérivable en un réel $a$, et $A(a\\,;\\,f(a))$ le point de sa courbe d'abscisse $a$. La tangente en $A$ a pour coefficient directeur $f'(a)$ : elle a une équation de la forme $y=f'(a)x+p$.\n\nComme $A$ est sur la tangente, $f(a)=f'(a)\\times a+p$, donc $p=f(a)-f'(a)\\times a$. On remplace $p$, puis on factorise par $f'(a)$. Complète.\n\n$y=f'(a)x+f(a)-f'(a)\\times a=f(a)+f'(a)\\times(?)$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "x-a"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(a)x-f'(a)\\times a=f'(a)\\times(x-a)$ : on met $f'(a)$ en facteur.",
+					"Donc $y=f(a)+f'(a)(\\textcolor{{{color:primary.0}}}{x-a})$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "définition de la tangente",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"m": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : origine",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"m": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : toute droite par A",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"m": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : f(a)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"m": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−1",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"m": "3"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 11 (5 + 3 × 2)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"m": "3"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 5 (f(a))",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"m": "3"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1 (5 − 2 × 2)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"m": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x − a",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["x-a"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a − x",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["a-x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x + a",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["x+a"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

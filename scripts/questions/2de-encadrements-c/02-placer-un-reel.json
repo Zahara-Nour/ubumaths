@@ -1,0 +1,158 @@
+{
+	"title": "Placer un réel sur une droite graduée",
+	"description": "Placer 2,7 (graduée en dixièmes), −5/3 (en tiers), −7/4 (en quarts)",
+	"grades": ["2"],
+	"theme": "Décimaux",
+	"domain": "Apprivoiser",
+	"subdomain": "Repérage",
+	"level": 6,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Place le nombre ${{if:a<0|-}}{{b}}{,}{{c}}$ sur la droite graduée.\n\n```line\nstart: {{a}}\nend: {{eval:(a)+2}}\nstep: 1/10\nmajor: 10\nplacer: {{eval:10*(a)+(k)}}/10\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..3"
+				},
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:k"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une graduation vaut $0{,}1$ : ${{b}}{,}{{c}}$ est à $\\textcolor{{{color:primary.0}}}{{{k}}}$ graduations après ${{a}}$."
+				]
+			}
+		},
+		{
+			"statement": "Place le nombre ${{if:s==0||-}}\\dfrac{ {{n}} }{3}$ sur la droite graduée.\n\n```line\nstart: -3\nend: 3\nstep: 1/3\nmajor: 3\nplacer: {{if:s==0||-}}{{n}}/3\n```",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0|1"
+				},
+				{
+					"name": "n",
+					"expression": "1|2|4|5|7|8"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une graduation vaut $\\dfrac{1}{3}$ : ${{if:s==0||-}}\\dfrac{ {{n}} }{3}$ est à $\\textcolor{{{color:primary.0}}}{{{n}}}$ graduation{{if:n>1|s}} {{if:s==0|à droite|à gauche}} de $0$."
+				]
+			}
+		},
+		{
+			"statement": "Place le nombre $-\\dfrac{ {{n}} }{4}$ sur la droite graduée.\n\n```line\nstart: -3\nend: 1\nstep: 1/4\nmajor: 4\nplacer: -{{n}}/4\n```",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1|3|5|7|9|11"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une graduation vaut $\\dfrac{1}{4}$ : $-\\dfrac{ {{n}} }{4}$ est à $\\textcolor{{{color:primary.0}}}{{{n}}}$ graduation{{if:n>1|s}} à gauche de $0$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2,7 placé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"k": "7",
+				"b": "2",
+				"c": "7"
+			},
+			"answers": ["2.7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2,8",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"k": "7",
+				"b": "2",
+				"c": "7"
+			},
+			"answers": ["2.8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−5/3 placé",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"n": "5"
+			},
+			"answers": ["-5/3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 5/3 (signe)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"n": "5"
+			},
+			"answers": ["5/3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−7/4 placé",
+			"variationIndex": 2,
+			"variables": {
+				"n": "7"
+			},
+			"answers": ["-7/4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −3/4",
+			"variationIndex": 2,
+			"variables": {
+				"n": "7"
+			},
+			"answers": ["-3/4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"form": "off"
+		}
+	}
+}

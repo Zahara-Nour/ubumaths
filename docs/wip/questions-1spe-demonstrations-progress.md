@@ -9,18 +9,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2299._
+_Mis à jour le 2026-11-03, lot 2 écrit (PR à ouvrir)._
 
-- **État** : lot 1 (232, 233, 234, 235, 255) mergé (#2299) : 5 modèles × 3 variations, fichiers dans
-  `scripts/questions/1spe-demonstrations-1/`, rien en prod.
-- **Prochaine action** : David lance `create-questions --publier` en prod (commande ci-dessous) ; relever les 5 `id`, puis
-  migration nœud + tag (gabarit § 6 de `couvrir-un-niveau.md`), page à cocher, publication. Ensuite lot 2 (dérivation).
-- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-demonstrations-1 --publier`
-  (depuis le worktree, `.env` = prod). Extension `signe:` du bloc `ranger` (Q2 b) **non tranchée**, à reposer après les
-  lots à trous.
-- **Pièges en cours** : `requiredForm: {pattern: 'u'}` pour les écritures équivalentes (2³, n² + n) ; jamais de couleur sur
-  du texte (gras) ; ancienne branche distante `docs/questions-1spe-demonstrations` à supprimer (refusée au mode auto).
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, branche `feat/questions-1spe-demonstrations`.
+- **État** : lot 1 publié. Lot 2 (dérivation : 275, 276, 277, 398, 278) écrit, simulation verte, vérifié en local
+  (§ 5).
+- **Prochaine action** : PR du lot 2 → merge → David crée les brouillons en prod
+  (`pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-demonstrations-2 --publier`) → migration du
+  nœud et des tags (gabarit : `20261103115420_…_1_rangement_tags.sql` et son test) → page à cocher → publication.
+- **En attente de David** : la création des brouillons en prod après le merge. Extension `signe:` du bloc `ranger`
+  (Q2 b) **non tranchée** : à reposer après les lots à trous.
+- **Pièges en cours** : `h(…)` est lu comme une fonction (f, g, h) : jamais en réponse attendue. 398 : jumeau 392 dans
+  le même programme, ne taguer que 398. `requiredForm: {pattern: 'u'}` pour les écritures équivalentes. Jamais de
+  couleur sur du texte. `Doc-inchangée:` dans un COMMIT pour une migration. Garde `lot partiel`. Ancienne branche
+  distante `docs/questions-1spe-demonstrations` à supprimer.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, branche `feat/questions-1spe-demonstrations`
+  (rebasée sur `origin/main` le 2026-11-03).
 
 ---
 
@@ -111,3 +114,45 @@ géométriques › somme des termes (235), Algèbre › Équations : second degr
 Script : `docs/wip/questions/lot-1spe-demonstrations-1.py`. Valeurs tirées pour 232 (u₀ 1..9, r 2..9) et 233 (u₀ 1..9,
 q 2..5), lettres ailleurs. Vérifié : `create-questions` simulation verte, `validateLatex` + accolades sur 40 tirages
 (214 formules, 0 problème), brouillons créés en base locale, aperçu admin du modèle 5 (case dans un numérateur) correct.
+
+En prod (2026-11-03) : brouillons a81c4c9f (232), acaeb02a (233), 5fbb9a04 (234), b554a47f (235), 8865b98c (255), créés
+par David ; migration `20261103115420_questions_1spe_demonstrations_1_rangement_tags` (#2302 ; audit sécurité sans
+finding bloquant, son point faible « lot partiel » corrigé et testé ; 12 tests, rouges sans la migration) ; vérifié en
+base : nœud et point de chacun, brouillons, `updated_at` intact. Page à cocher :
+https://claude.ai/artifact/9ERT5tzmVmukkYbYk3ipJX
+
+Relecture (2026-11-03) : 5/5 OK, aucun commentaire. Publié par David (`publier-lot.ts --publier`), 5/5 `published` relus
+en base (MCP).
+
+## 5. Lot 2 : dérivation (2026-11-03)
+
+Relevé prod (MCP, 2026-11-03) : les 5 points sont sous Fonctions › Dérivation : tangente (275), dérivabilité en un
+point (276), fonctions dérivées (277, 398), opérations sur les dérivées (278). **398 a un jumeau dans le même
+programme** : 1SPE-392, son « à savoir », même nœud et même libellé. Le modèle ne prend que 398 (un point par
+programme, ADR 0020). Aucune catégorie « Démonstrations » sous Dérivation ; les modèles voisins sont sous Fonctions ›
+Dérivation › À savoir / Tangente / Dérivabilité en un point.
+
+| Point | Modèle (fichier `scripts/questions/1spe-demonstrations-2/`) | Catégorie, niveau                          | Variations                                                                         |
+| ----- | ----------------------------------------------------------- | ------------------------------------------ | ---------------------------------------------------------------------------------- |
+| 275   | `01-demontrer-equation-tangente`                            | Fonctions › Dérivation › Démonstrations, 4 | coefficient directeur f′(a) (choix), p par le point A (tiré), x − a                |
+| 276   | `02-demontrer-racine-non-derivable-en-0`                    | Fonctions › Dérivation › Démonstrations, 3 | taux 1/√h, sa valeur pour h = 10⁻²ᵖ (tiré), conclusion (choix)                     |
+| 277   | `03-demontrer-derivee-carre`                                | Fonctions › Dérivation › Démonstrations, 1 | (a + h)² − a² développé, taux 2a + h, limite (choix)                               |
+| 398   | `04-demontrer-derivee-inverse`                              | Fonctions › Dérivation › Démonstrations, 2 | numérateur −h, taux −1/(a(a + h)), limite −1/a²                                    |
+| 278   | `05-demontrer-derivee-produit`                              | Fonctions › Dérivation › Démonstrations, 5 | terme ajouté-retranché (choix), limite du 1er terme (choix), limite du taux (tiré) |
+
+Script : `docs/wip/questions/lot-1spe-demonstrations-2.py`. Bornes respectées (« pas plus ») ; la continuité n'est pas
+au programme de 1re, donc dans 278, « v(a + h) tend vers v(a) » est **admis** dans l'énoncé.
+
+Pièges du lot :
+
+- **`h` est une fonction générique du parseur** (f, g, h ; `parser/types.ts:131`) : `h(2a+h)` est lu comme h appliquée
+  à 2a + h, et jugé FAUX. 277 demande donc une « expression développée ». En revanche, `a(a+h)` est bien lu comme un
+  produit, et les fausses réponses sont refusées.
+- Aucune réponse attendue n'écrit une fonction appliquée (u(a), v(a + h)) : ces étapes passent en case choix ou en
+  valeurs tirées.
+- `\frac{-1}{…}` reste `unoptimal_form` (`signs`) même avec `requiredForm: {pattern: 'u'}` : les specs l'asservissent.
+
+Vérifié : `create-questions` simulation verte (66 specs). Sur 40 tirages par modèle, 4 086 formules, aucun
+`{{…}}` resté dans le texte, accolades équilibrées. Les alertes de `validateLatex` ne concernent que des notations du
+dépôt que le parseur ne lit pas : `A(x\,;\,y)`, les intervalles, `\mathbb{R}`, `(uv)'`. Brouillons créés en base
+locale ; aperçu admin correct pour 276 (h = 0,000 001, attendu 1000) et 398 (case dans le numérateur).

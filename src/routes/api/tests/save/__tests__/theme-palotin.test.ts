@@ -27,6 +27,16 @@ vi.mock('$lib/server/course-card-attempts', () => ({
 
 import { POST } from '../+server';
 
+vi.mock('$lib/server/middleware/auth', () => ({
+	// Garde commune simulée : la session vient de `locals.safeGetSession`
+	requireAuth: async (locals: { safeGetSession: () => Promise<{ user: unknown }> }) => {
+		const { user } = await locals.safeGetSession();
+		// Comme la vraie garde : pas de session → 401
+		if (!user) throw (await import('@sveltejs/kit')).error(401, 'Non autorisé');
+		return { user, profile: { role: 'student' } };
+	}
+}));
+
 // Constantes
 const ELEVE = '11111111-1111-4111-8111-111111111111';
 const MODELE_A = '22222222-2222-4222-8222-222222222222';

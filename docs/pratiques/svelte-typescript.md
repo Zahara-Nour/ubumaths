@@ -307,7 +307,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 ```
 
-`(protected)/+layout.server.ts` appelle `requireAuth(user)` puis renvoie `{ user, profile, consentStatus }` — les routes enfants héritent via `parent()` **ou** via `locals` directement.
+`(protected)/+layout.server.ts` appelle `requireUserOrRedirect(user)` puis renvoie `{ user, profile, consentStatus }` — les routes enfants héritent via `parent()` **ou** via `locals` directement.
 
 ---
 

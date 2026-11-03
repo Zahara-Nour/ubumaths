@@ -138,7 +138,7 @@ describe('GET /api/python-exercises (list)', () => {
 	it('returns 403 when profile is not found', async () => {
 		const { GET } = await import('../+server');
 		const supabase = createMockSupabase();
-		mockError(supabase, 'no profile', 'single');
+		mockError(supabase, 'no profile', 'single', 'PGRST116');
 		const locals = createMockLocals(TEACHER_ID, supabase);
 		await expect(GET({ locals, url: makeUrl() } as any)).rejects.toMatchObject({ status: 403 });
 	});

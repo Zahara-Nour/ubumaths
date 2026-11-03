@@ -146,7 +146,8 @@ function rangerLabelsCollide(
 
 /** Ce qui donne la réponse d'un bloc qui porte sa case, pour les messages au prof */
 function blockAnswerName(kind: BuildKind): string {
-	if (kind === 'line') return 'la graduation de la droite graduée (placer:)';
+	if (kind === 'line')
+		return 'la graduation ou l’intervalle de la droite graduée (placer:, representer:)';
 	if (kind === 'horloge') return 'l’heure de l’horloge (placer:)';
 	if (kind === 'barres') return 'l’effectif de la barre (placer:)';
 	if (kind === 'boite-a-moustaches') return 'les valeurs de la boîte (placer:)';
@@ -827,6 +828,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					parseMarkdown(blankResult.statement).children.flatMap((child) => {
 						if (child.type === 'number-line') {
 							const first = child.caseIndex;
+							if (child.representer !== undefined && first !== undefined) return [first];
 							if (child.placer === undefined || first === undefined) return [];
 							return child.placer.map((_, k) => first + k);
 						}

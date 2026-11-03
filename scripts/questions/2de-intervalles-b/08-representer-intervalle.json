@@ -1,0 +1,178 @@
+{
+	"title": "Représenter un intervalle sur la droite graduée",
+	"description": "Représenter x ⩾ a, x < a (demi-droites) et un intervalle borné [a ; b[ : bornes, côté, crochets",
+	"grades": ["2"],
+	"theme": "Logique",
+	"domain": "Ensembles",
+	"subdomain": "Intervalles",
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Représente sur la droite graduée l'ensemble des réels $x$ tels que $x{{if:s==1|\\geqslant|>}}{{a}}$.\n\n```line\nstart: -6\nend: 6\nstep: 1\nrepresenter: {{if:s==1|[|]}}{{a}}, +inf[\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-4..4"
+				},
+				{
+					"name": "s",
+					"expression": "0|1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une borne comprise a un crochet **tourné vers l'intervalle**, une borne exclue un crochet **tourné vers l'extérieur** ; vers $\\pm\\infty$, le trait va jusqu'au bout de la droite.",
+					"$x{{if:s==1|\\geqslant|>}}{{a}}$ : $x\\in\\textcolor{{{color:primary.0}}}{{{if:s==1|[|]}}{{a}}\\,;\\,+\\infty[}$, à droite de ${{a}}$, {{if:s==1|compris|exclu}}."
+				]
+			}
+		},
+		{
+			"statement": "Représente sur la droite graduée l'ensemble des réels $x$ tels que $x{{if:s==1|\\leqslant|<}}{{a}}$.\n\n```line\nstart: -6\nend: 6\nstep: 1\nrepresenter: ]-inf, {{a}}{{if:s==1|]|[}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-4..4"
+				},
+				{
+					"name": "s",
+					"expression": "0|1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une borne comprise a un crochet **tourné vers l'intervalle**, une borne exclue un crochet **tourné vers l'extérieur** ; vers $\\pm\\infty$, le trait va jusqu'au bout de la droite.",
+					"$x{{if:s==1|\\leqslant|<}}{{a}}$ : $x\\in\\textcolor{{{color:primary.0}}}{]-\\infty\\,;\\,{{a}}{{if:s==1|]|[}}}$, à gauche de ${{a}}$, {{if:s==1|compris|exclu}}."
+				]
+			}
+		},
+		{
+			"statement": "Représente sur la droite graduée l'intervalle ${{if:sa==1|[|]}}{{a}}\\,;\\,{{b}}{{if:sb==1|]|[}}$.\n\n```line\nstart: -6\nend: 6\nstep: 1\nrepresenter: {{if:sa==1|[|]}}{{a}}, {{b}}{{if:sb==1|]|[}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-5..2"
+				},
+				{
+					"name": "l",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+l"
+				},
+				{
+					"name": "sa",
+					"expression": "0|1"
+				},
+				{
+					"name": "sb",
+					"expression": "0|1"
+				}
+			],
+			"conditions": ["b <= 5"],
+			"correction": {
+				"steps": [
+					"Une borne comprise a un crochet **tourné vers l'intervalle**, une borne exclue un crochet **tourné vers l'extérieur** ; vers $\\pm\\infty$, le trait va jusqu'au bout de la droite.",
+					"${{a}}$ est {{if:sa==1|compris|exclu}}, ${{b}}$ est {{if:sb==1|compris|exclu}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x ⩾ 2 : [2 ; +∞[",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"s": "1"
+			},
+			"answers": ["[2 ; +∞["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : crochet exclu",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"s": "1"
+			},
+			"answers": ["]2 ; +∞["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : mauvais côté",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"s": "1"
+			},
+			"answers": ["]-∞ ; 2]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x < −1 : ]−∞ ; −1[",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"s": "0"
+			},
+			"answers": ["]-∞ ; -1["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −1 compris",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"s": "0"
+			},
+			"answers": ["]-∞ ; -1]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "]−1 ; 3]",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-1",
+				"l": "4",
+				"b": "3",
+				"sa": "0",
+				"sb": "1"
+			},
+			"answers": ["]-1 ; 3]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : crochets échangés",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-1",
+				"l": "4",
+				"b": "3",
+				"sa": "0",
+				"sb": "1"
+			},
+			"answers": ["[-1 ; 3["],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

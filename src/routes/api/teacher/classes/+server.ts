@@ -1,5 +1,6 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireRole } from '$lib/server/middleware/auth';
 import { getTeacherClassesWithCounts } from '$lib/server/students';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -19,12 +20,8 @@ const logger = createServerLogger('api/teacher/classes/+server');
  * }
  */
 export const GET: RequestHandler = async ({ locals }) => {
-	const { user, profile, supabase } = locals;
-
-	// Security: Only teachers can access
-	if (!user || !profile || profile.role !== 'teacher') {
-		throw error(403, 'Forbidden: Teacher role required');
-	}
+	const { user } = await requireRole(locals, 'teacher');
+	const { supabase } = locals;
 
 	try {
 		const classes = await getTeacherClassesWithCounts(user.id, supabase);

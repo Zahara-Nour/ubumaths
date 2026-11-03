@@ -31,7 +31,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21, attendu en h-min-s et dans l'unité imposée le 2026-11-03 ; QCM et vecteurs le 2026-10-22 ; QCM retiré (case choix seule) le 2026-10-28 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire (médiatrice) et milieu sur papier uni le 2026-11-02, cercle circonscrit le 2026-11-02, triangle de trois longueurs, report et 4e sommet le 2026-11-03, point construit de proche en proche le 2026-11-03 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26, à plusieurs points le 2026-10-27 ; horloge à placer (``horloge, `placer:`) le 2026-10-27, trotteuse le 2026-11-01 ; diagramme en barres à construire (``barres, `placer:`) le 2026-10-28, réponse d'une monnaie à centimes (`3,45`) le 2026-11-01, échelle à choisir le 2026-10-29 ; étiquettes à ranger (`ranger) le 2026-10-28 ; repère à placer (``courbe, `placer:`) le 2026-11-01, droite à tracer (``courbe, `tracer:`) le 2026-11-02, vecteur à tracer (``courbe, `tracer: vecteur`) le 2026-11-03 ; cercle trigonométrique à placer (``trig, `placer:`) le 2026-11-02 ; assemblage de cubes dans un choix (`--espace-taille`) le 2026-10-30 ; figure à colorier (`partage, `colorier:`) le 2026-10-29, assemblage de cubes à geste (`cubes, `dessiner:`/`retrouver:`) le 2026-10-30, patron à geste (`patron, `designer:`/`completer:`) le 2026-10-30, plusieurs figures (`unites:`, attendue `7/4`) le 2026-10-29 ; texte d'aide des cases à écrire le 2026-10-26 ; boîte à moustaches à construire (``boite-a-moustaches, `placer:`) le 2026-11-01 ; tableau de signes à compléter (``variation à `?` : cases, juge, masquage) le 2026-11-03, sa saisie le 2026-11-03, son corrigé (ligne `sign-table`) le 2026-11-03.
+> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21, attendu en h-min-s et dans l'unité imposée le 2026-11-03 ; QCM et vecteurs le 2026-10-22 ; QCM retiré (case choix seule) le 2026-10-28 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire (médiatrice) et milieu sur papier uni le 2026-11-02, cercle circonscrit le 2026-11-02, triangle de trois longueurs, report et 4e sommet le 2026-11-03, point construit de proche en proche le 2026-11-03 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26, à plusieurs points le 2026-10-27 ; horloge à placer (``horloge, `placer:`) le 2026-10-27, trotteuse le 2026-11-01 ; diagramme en barres à construire (``barres, `placer:`) le 2026-10-28, réponse d'une monnaie à centimes (`3,45`) le 2026-11-01, échelle à choisir le 2026-10-29 ; étiquettes à ranger (`ranger) le 2026-10-28 ; repère à placer (``courbe, `placer:`) le 2026-11-01, droite à tracer (``courbe, `tracer:`) le 2026-11-02, vecteur à tracer (``courbe, `tracer: vecteur`) le 2026-11-03 ; cercle trigonométrique à placer (``trig, `placer:`) le 2026-11-02 ; droite à représenter (``line, `representer:`) le 2026-11-03 ; assemblage de cubes dans un choix (`--espace-taille`) le 2026-10-30 ; figure à colorier (`partage, `colorier:`) le 2026-10-29, assemblage de cubes à geste (`cubes, `dessiner:`/`retrouver:`) le 2026-10-30, patron à geste (`patron, `designer:`/`completer:`) le 2026-10-30, plusieurs figures (`unites:`, attendue `7/4`) le 2026-10-29 ; texte d'aide des cases à écrire le 2026-10-26 ; boîte à moustaches à construire (``boite-a-moustaches, `placer:`) le 2026-11-01 ; tableau de signes à compléter (``variation à `?` : cases, juge, masquage) le 2026-11-03, sa saisie le 2026-11-03, son corrigé (ligne `sign-table`) le 2026-11-03.
 
 ## À quoi ça sert
 
@@ -350,60 +350,65 @@ Cercle trigonométrique à placer (``trig, `placer: M = 2*pi/3 ; N = -pi/4`) : u
    `-\frac{\pi}{4}`), réponse de l'élève = le cran de π/12 où il a posé le point (`'8'`, `''` pas posé),
    juge à part aux deux mêmes endroits (`isPlacedAngleCorrect`, `utils/trig-placer.ts` : le même cran,
    modulo 2π). Masqué en évaluation notée (`placer: M=? ; N=?`).
-   Étiquettes à ranger (``ranger, chantier `reponses-a-placer` § 21, 22 ; `ranger-parser.ts`,
-`findRangersToPlace`) : le prof écrit les étiquettes dans le **bon** ordre ; une case par place
-(`buildCaseCount` = nombre d'étiquettes, `point` = rang de la place), `type: 'text'`,
-`construire: 'ranger'` (« étiquettes à ranger »). Au tirage, `rangerOrder` (`utils/ranger.ts`) mélange
-les étiquettes sur la source de l'instance, jamais dans l'ordre écrit ni à l'envers (dès 3 ; à 2,
-l'envers est le seul désordre) ; le bloc de l'énoncé de l'instance est réécrit dans l'ordre **affiché**
-(`replaceRangerBlocks`, `serializeRangerBlock`) — l'ordre écrit trahirait la réponse, la version
-publique n'a donc rien à cacher ni à reconvertir. Réponse attendue d'une place = la position
-**affichée** de l'étiquette écrite à ce rang (`'2'`) ; l'élève répond la position de l'étiquette posée ;
-juge à part : égalité stricte (l'étiquette, jamais sa valeur : `1 + 3/4` n'est pas `7/4`). Refus :
-moins de 3 (`RANGER_MIN_LABELS_IN_QUESTION` : à 2, l'affichage serait toujours l'inverse, la réponse se
-devinerait) ou plus de 8 étiquettes, vide, `signe:` autre que `<` / `>`. Deux étiquettes identiques après
-tirage : condition implicite, le tirage des variables est refait (`rangerLabelsCollide`, résolution à part
-sur une source jetable) ; toujours identiques après 100 essais → échec, message au prof.
-Tableau de signes à compléter (``variation à `?`, chantier [tableau-signes](../wip/tableau-signes-progress.md) ;
-   `findVariationsToFill`, `questions/sign-table-case.ts`) : au premier niveau, une case par cellule cachée,
-   N, N + 1… dans l'ordre de lecture du parseur (`cases` du nœud), seul N posé (`case: N`) ;
-   `variationBlanks` (texte du bloc, rang de la cellule). Réponse attendue tirée du bloc
-   (`readSignTableCases`), jamais écrite dans `blanks` (refusée : « sa réponse vient du tableau de signes ») ;
-   `cellule` sur la case (`valeur` / `signe` / `marque`). Valeur de x : `type: 'math'`, juge ordinaire avec
-   `acceptDecimal` forcé (`1,5` vaut `\frac{3}{2}`) ; signe et marque : `type: 'text'`, attendu `+` / `-` /
-   `z` / `||` / `rien`, juge à part aux deux endroits (`isSignCellCorrect` : même jeton, `0` vaut `z`,
-   case vide jamais juste). Refus : bloc en retrait, cité ou dans un choix, non fermé, refusé par le parseur
-   (son message « Ligne N : … »), `case:` écrit, `??n` ou `?` seul (formes de l'évaluation), « ordre
-   indifférent », bloc illisible à l'écran. Tableau sans `?` : aucune case, rien ne change.
-   Figure à colorier (``partage + `colorier: 3/8`, chantier `fractions-a-colorier` ; `partage-parser.ts`,
-`findPartagesToColorier`) : au premier niveau, une case, `case: N` posé dans le bloc ; `construire: 'partage'`
-(« figure à colorier »), `type: 'text'`. Réponse attendue (`buildAnswerOf`, `expectedColoringAnswer`) :
-`parts à colorier / parts d'une figure` (`'3/8'` ; `1/2` sur une bande de 4 : `'2/4'` ; `7/4` sur trois bandes de 4, `unites: 3` : `'7/4'`), jamais du modèle
-(`blanks[]` peut l'omettre, une réponse écrite est refusée). L'élève répond les rangs qu'il a coloriés
-(`'1, 4, 6'`, `''` = rien colorié) ; juge à part, `isColoringCorrect` (`utils/partage-colorier.ts`, dans
-`validateSingleBlank` et `validateBlankValue`) : le nombre de parts, pas lesquelles. Copie corrigée :
-`BuildAnswer` (`PartageColorier` verrouillé, phrase « Tu as colorié 2 parts sur 8 ; il fallait en colorier 3
-(3/8). », figure juste dessous ; vide : « Tu n'as rien colorié. »).
-Assemblage de cubes à geste (``cubes + `dessiner: face` ou `retrouver: face, droite`, chantier `solides`
-   § 7 ; `espace-parser.ts`, `findCubesToBuild`) : au premier niveau, une case, `case: N` posé dans le bloc ;
-   `construire: 'cubes'` (« assemblage de cubes »), `type: 'text'`. Réponse attendue (`buildAnswerOf`,
-   `expectedCubesAnswer`) : la vue sans marge (`'100/111'`) ou `'face, droite : 2 1 / 1 2'`, jamais du modèle
-   (une réponse écrite est refusée, bloc en erreur → échec situé « Case 1 (assemblage de cubes) : … »).
-   L'élève répond le quadrillage colorié (`'00000/01000/01110/00000'`) ou les hauteurs (`'1 2 / 2 1'`, `-` case
-   vide) ; juge à part, `isCubesAnswerCorrect` (`utils/cubes-gestes.ts`, dans `validateSingleBlank` et
-   `validateBlankValue`) : la vue à une translation près, ou les mêmes vues. Copie corrigée : `BuildAnswer`
-   (`CubesGeste` verrouillé, phrases de la correction, solution dessous ; sans réponse : `solution`, la vue
-   coloriée ou les hauteurs du bloc) ; vide : « Tu n'as rien colorié. » / « Tu n'as pas rempli toutes les cases. »
-   (`emptyBuildText` lit le geste sur le bloc).
-   Patron à geste (``patron + `designer: opposee` ou `completer: 5`, chantier `solides` § 10 ;
-`espace-parser.ts`, `findPatronsToBuild`) : même chemin, `construire: 'patron'` (« patron à geste »),
-`type: 'text'`. Réponse attendue (`expectedPatronAnswer`) : les faces calculées par le pliage (`'6'`, `'1,2,4,6'`)
-ou le quadrillage du patron du prof (`'00000/00100/01112/00100/00000'`, `2` = face retirée). L'élève répond
-les faces touchées ou son quadrillage (`2` = face posée) ; juge à part, `isPatronAnswerCorrect`
-(`utils/patron-gestes.ts`) : mêmes faces, ou toute pose qui se plie en cube. Copie corrigée : `BuildAnswer`
-(`PatronGeste` verrouillé, phrase, réponse du prof dessous, « Il y a d'autres réponses justes. » pour
-`completer:`) ; vide : « Tu n'as touché aucune face. » / « Tu n'as posé aucune face. ».
-Un bloc ``choix (case « choix », chantier `figure-et-choix`, au premier niveau, sinon échec)
+   Droite à représenter (``line, `representer: [2, +inf[`) : UNE case `type: 'text'`, `construire: 'line'`,
+réponse attendue = l'intervalle écrit par `representerAnswer` (`'[2 ; +∞['`, `']-∞ ; 2/3]'`), réponse
+de l'élève de même (incomplète : `'2 comprise, côté ?'`) ; juge à part aux deux mêmes endroits,
+choisi quand l'attendue est un intervalle (`isLineToRepresentBlank` → `isRepresentedIntervalCorrect`,
+`utils/number-line-representer.ts`). Masquée en `representer: ?` ou `? ; ?`.
+Étiquettes à ranger (``ranger, chantier `reponses-a-placer` § 21, 22 ; `ranger-parser.ts`,
+   `findRangersToPlace`) : le prof écrit les étiquettes dans le **bon** ordre ; une case par place
+   (`buildCaseCount` = nombre d'étiquettes, `point` = rang de la place), `type: 'text'`,
+   `construire: 'ranger'` (« étiquettes à ranger »). Au tirage, `rangerOrder` (`utils/ranger.ts`) mélange
+   les étiquettes sur la source de l'instance, jamais dans l'ordre écrit ni à l'envers (dès 3 ; à 2,
+   l'envers est le seul désordre) ; le bloc de l'énoncé de l'instance est réécrit dans l'ordre **affiché**
+   (`replaceRangerBlocks`, `serializeRangerBlock`) — l'ordre écrit trahirait la réponse, la version
+   publique n'a donc rien à cacher ni à reconvertir. Réponse attendue d'une place = la position
+   **affichée** de l'étiquette écrite à ce rang (`'2'`) ; l'élève répond la position de l'étiquette posée ;
+   juge à part : égalité stricte (l'étiquette, jamais sa valeur : `1 + 3/4` n'est pas `7/4`). Refus :
+   moins de 3 (`RANGER_MIN_LABELS_IN_QUESTION` : à 2, l'affichage serait toujours l'inverse, la réponse se
+   devinerait) ou plus de 8 étiquettes, vide, `signe:` autre que `<` / `>`. Deux étiquettes identiques après
+   tirage : condition implicite, le tirage des variables est refait (`rangerLabelsCollide`, résolution à part
+   sur une source jetable) ; toujours identiques après 100 essais → échec, message au prof.
+   Tableau de signes à compléter (``variation à `?`, chantier [tableau-signes](../wip/tableau-signes-progress.md) ;
+`findVariationsToFill`, `questions/sign-table-case.ts`) : au premier niveau, une case par cellule cachée,
+N, N + 1… dans l'ordre de lecture du parseur (`cases` du nœud), seul N posé (`case: N`) ;
+`variationBlanks` (texte du bloc, rang de la cellule). Réponse attendue tirée du bloc
+(`readSignTableCases`), jamais écrite dans `blanks` (refusée : « sa réponse vient du tableau de signes ») ;
+`cellule` sur la case (`valeur` / `signe` / `marque`). Valeur de x : `type: 'math'`, juge ordinaire avec
+`acceptDecimal` forcé (`1,5` vaut `\frac{3}{2}`) ; signe et marque : `type: 'text'`, attendu `+` / `-` /
+`z` / `||` / `rien`, juge à part aux deux endroits (`isSignCellCorrect` : même jeton, `0` vaut `z`,
+case vide jamais juste). Refus : bloc en retrait, cité ou dans un choix, non fermé, refusé par le parseur
+(son message « Ligne N : … »), `case:` écrit, `??n` ou `?` seul (formes de l'évaluation), « ordre
+indifférent », bloc illisible à l'écran. Tableau sans `?` : aucune case, rien ne change.
+Figure à colorier (``partage + `colorier: 3/8`, chantier `fractions-a-colorier` ; `partage-parser.ts`,
+   `findPartagesToColorier`) : au premier niveau, une case, `case: N` posé dans le bloc ; `construire: 'partage'`
+   (« figure à colorier »), `type: 'text'`. Réponse attendue (`buildAnswerOf`, `expectedColoringAnswer`) :
+   `parts à colorier / parts d'une figure` (`'3/8'` ; `1/2` sur une bande de 4 : `'2/4'` ; `7/4` sur trois bandes de 4, `unites: 3` : `'7/4'`), jamais du modèle
+   (`blanks[]` peut l'omettre, une réponse écrite est refusée). L'élève répond les rangs qu'il a coloriés
+   (`'1, 4, 6'`, `''` = rien colorié) ; juge à part, `isColoringCorrect` (`utils/partage-colorier.ts`, dans
+   `validateSingleBlank` et `validateBlankValue`) : le nombre de parts, pas lesquelles. Copie corrigée :
+   `BuildAnswer` (`PartageColorier` verrouillé, phrase « Tu as colorié 2 parts sur 8 ; il fallait en colorier 3
+   (3/8). », figure juste dessous ; vide : « Tu n'as rien colorié. »).
+   Assemblage de cubes à geste (``cubes + `dessiner: face` ou `retrouver: face, droite`, chantier `solides`
+§ 7 ; `espace-parser.ts`, `findCubesToBuild`) : au premier niveau, une case, `case: N` posé dans le bloc ;
+`construire: 'cubes'` (« assemblage de cubes »), `type: 'text'`. Réponse attendue (`buildAnswerOf`,
+`expectedCubesAnswer`) : la vue sans marge (`'100/111'`) ou `'face, droite : 2 1 / 1 2'`, jamais du modèle
+(une réponse écrite est refusée, bloc en erreur → échec situé « Case 1 (assemblage de cubes) : … »).
+L'élève répond le quadrillage colorié (`'00000/01000/01110/00000'`) ou les hauteurs (`'1 2 / 2 1'`, `-` case
+vide) ; juge à part, `isCubesAnswerCorrect` (`utils/cubes-gestes.ts`, dans `validateSingleBlank` et
+`validateBlankValue`) : la vue à une translation près, ou les mêmes vues. Copie corrigée : `BuildAnswer`
+(`CubesGeste` verrouillé, phrases de la correction, solution dessous ; sans réponse : `solution`, la vue
+coloriée ou les hauteurs du bloc) ; vide : « Tu n'as rien colorié. » / « Tu n'as pas rempli toutes les cases. »
+(`emptyBuildText` lit le geste sur le bloc).
+Patron à geste (``patron + `designer: opposee` ou `completer: 5`, chantier `solides` § 10 ;
+   `espace-parser.ts`, `findPatronsToBuild`) : même chemin, `construire: 'patron'` (« patron à geste »),
+   `type: 'text'`. Réponse attendue (`expectedPatronAnswer`) : les faces calculées par le pliage (`'6'`, `'1,2,4,6'`)
+   ou le quadrillage du patron du prof (`'00000/00100/01112/00100/00000'`, `2` = face retirée). L'élève répond
+   les faces touchées ou son quadrillage (`2` = face posée) ; juge à part, `isPatronAnswerCorrect`
+   (`utils/patron-gestes.ts`) : mêmes faces, ou toute pose qui se plie en cube. Copie corrigée : `BuildAnswer`
+   (`PatronGeste` verrouillé, phrase, réponse du prof dessous, « Il y a d'autres réponses justes. » pour
+   `completer:`) ; vide : « Tu n'as touché aucune face. » / « Tu n'as posé aucune face. ».
+   Un bloc ``choix (case « choix », chantier `figure-et-choix`, au premier niveau, sinon échec)
    compte pour **une** case, `case: N` posé en tête du bloc (`choix-parser.ts`, lu dans
    `assignBlankIndices`) : réglages en tête (`plusieurs: oui`, `melanger: non` ; défauts : une
    réponse, mélangé), puis un choix par ligne `- …` (suite en retrait de 2 espaces ; clôture ````
@@ -469,6 +474,7 @@ Natures de réponse :
 | Collection à construire         | bloc ```collection (`construire: N`)                 | case ordinaire : la valeur posée, composition libre (`collection-construire.ts`)                                                                                                                                          |
 | Monnaie à construire            | bloc ```monnaie (`construire: N`)                    | case ordinaire : la somme posée (`35`, ou `3,45` / `2,2` / `1 000` : `amountAnswer`, sans zéro final ni millier collé), coupures libres dans la réserve (`monnaie-construire.ts`)                                         |
 | Droite à placer                 | bloc ```line (`placer: N`)                           | case ordinaire : la graduation du point de l'élève (`number-line-placer.ts`), exacte, sans tolérance ; une case par point                                                                                                 |
+| Droite à représenter            | bloc ```line (`representer: [2, +inf[`)              | `isRepresentedIntervalCorrect` (`number-line-representer.ts`) : borne(s), côté et crochets, nombres comparés ; une case                                                                                                   |
 | Repère à placer                 | bloc ```courbe (`placer: A=(2 ; 3)`)                 | `isPlacedPointCorrect` (`courbe-placer.ts`) : les deux coordonnées exactes, aimant aux nœuds de la grille ; une case par point                                                                                            |
 | Droite à tracer                 | bloc ```courbe (`tracer: y = 2x - 1`)                | `isTracedLineCorrect` (`courbe-tracer.ts`) : deux nœuds distincts de la droite, n'importe lesquels ; une case                                                                                                             |
 | Vecteur à tracer                | bloc ```courbe (`tracer: vecteur (3 ; -2)`)          | `isTracedVectorCorrect` (`courbe-vecteur.ts`) : extrémité moins origine = le vecteur, où qu'il soit (origine imposée `depuis A` : depuis A) ; une case                                                                    |
@@ -803,7 +809,8 @@ comme dans la copie corrigée, case « figure » mêlée à d'autres cases compr
 Case à construire (bloc `collection ou `monnaie, `construire:`), horloge à placer (``horloge, `placer:` :
 le cadran verrouillé avec les aiguilles de l'élève, ou à l'heure juste) ou droite à placer (``line,
 `placer:` : la droite verrouillée sans boutons, point de l'élève ou point juste ; vide : « Tu n'as rien
-placé. » ; plusieurs points : UNE ligne `build` pour la droite, à la place de sa première case, avec
+placé. » ; droite à représenter, `representer:` : `NumberLineRepresenter` verrouillé avec l'intervalle
+de l'élève et les phrases, ou l'intervalle juste en vert ; plusieurs points : UNE ligne `build` pour la droite, à la place de sa première case, avec
 `answers` (réponse et statut de chaque point), juste quand tous le sont, « rien placé » quand aucun ne
 l'est ; diagramme en barres à construire, ``barres `placer:`, de même : UN diagramme, `answers` par
 barre, « Tu n'as rien posé. » quand aucune n'est construite ; `BarresPlacer` verrouillé avec les barres

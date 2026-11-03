@@ -1,5 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireRoles } from '$lib/server/middleware/auth';
 import { unrestrictUserSchema } from '$lib/server/validation/moderation';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -24,15 +25,8 @@ const logger = createServerLogger('api/moderation/unrestrict-user/+server');
  * - 500: Database error
  */
 export const DELETE: RequestHandler = async ({ request, locals }) => {
-	// 1. Check authentication
-	if (!locals.user) {
-		throw error(401, 'Not authenticated');
-	}
-
-	// 2. Check teacher role
-	if (!locals.profile || !['teacher', 'admin'].includes(locals.profile.role ?? '')) {
-		throw error(403, 'Only teachers and admins can unrestrict users');
-	}
+	// 1-2. Authentification + rôle enseignant/admin
+	const { user, profile } = await requireRoles(locals, ['teacher', 'admin']);
 
 	// 3. Parse and validate input
 	let body;
@@ -68,7 +62,7 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 	// 5. Verify teacher has permission to unrestrict
 	// Note: RLS allows any teacher/admin to delete, but we add application-level enforcement
 	// Admins can unrestrict anyone, teachers can only unrestrict restrictions they created
-	if (locals.profile?.role !== 'admin' && restriction.restricted_by !== locals.user.id) {
+	if (profile.role !== 'admin' && restriction.restricted_by !== user.id) {
 		throw error(403, 'You can only remove restrictions that you created');
 	}
 

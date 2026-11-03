@@ -15,6 +15,7 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '$lib/server/middleware/auth';
 import { z } from 'zod';
 import { CORRECTION_RELEASE_MODES, ASSIGNMENT_STATUSES } from '$lib/types/worksheets';
 import { getCorrectionReleaseStatus } from '$lib/server/worksheets/correction-release';
@@ -82,10 +83,7 @@ const createAssignmentSchema = z
 // ============================================================================
 
 export const GET: RequestHandler = async ({ params, locals, url }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	const { user, profile } = await requireAuth(locals);
 
 	const worksheetId = params.id;
 	if (!worksheetId) {
@@ -108,20 +106,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			throw error(404, 'Fiche introuvable');
 		}
 
-		const { data: profile, error: profileError } = await locals.supabase
-			.from('profiles')
-			.select('role')
-			.eq('id', user.id)
-			.single();
-
-		// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
-		// panne produisait le même refus, indiscernable d'un refus mérité.
-		if (profileError && profileError.code !== 'PGRST116') {
-			logger.error('Rôle illisible :', profileError);
-			throw error(500, 'Impossible de vérifier les droits d’accès');
-		}
-
-		if (worksheet.created_by !== user.id && profile?.role !== 'admin') {
+		if (worksheet.created_by !== user.id && profile.role !== 'admin') {
 			throw error(403, 'Accès refusé');
 		}
 
@@ -261,10 +246,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 // ============================================================================
 
 export const POST: RequestHandler = async ({ params, locals, request }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	const { user, profile } = await requireAuth(locals);
 
 	const worksheetId = params.id;
 	if (!worksheetId) {
@@ -299,20 +281,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			throw error(404, 'Fiche introuvable');
 		}
 
-		const { data: profile, error: profileError } = await locals.supabase
-			.from('profiles')
-			.select('role')
-			.eq('id', user.id)
-			.single();
-
-		// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
-		// panne produisait le même refus, indiscernable d'un refus mérité.
-		if (profileError && profileError.code !== 'PGRST116') {
-			logger.error('Rôle illisible :', profileError);
-			throw error(500, 'Impossible de vérifier les droits d’accès');
-		}
-
-		if (worksheet.created_by !== user.id && profile?.role !== 'admin') {
+		if (worksheet.created_by !== user.id && profile.role !== 'admin') {
 			throw error(403, 'Accès refusé');
 		}
 

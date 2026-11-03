@@ -1,0 +1,196 @@
+{
+	"title": "Démontrer que la racine carrée n'est pas dérivable en 0",
+	"description": "Démonstration à trous : taux de variation de √ entre 0 et h égal à 1/√h, sa valeur pour h = 0,01, 0,0001 ou 0,000001 (tirée), conclusion (taux non borné)",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "Démonstrations",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction racine carrée, définie sur $[0\\,;+\\infty[$ par $f(x)=\\sqrt{x}$. On étudie son taux de variation entre $0$ et $h$, pour $h>0$.\n\nPour $h>0$, $h=\\sqrt{h}\\times\\sqrt{h}$. Complète.\n\n$\\dfrac{f(h)-f(0)}{h}=\\dfrac{\\sqrt{h}}{h}=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{1}{\\sqrt{h}}",
+					"requiredForm": {
+						"pattern": "u"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(0)=\\sqrt{0}=0$, donc le taux vaut $\\dfrac{\\sqrt{h}}{h}$.",
+					"On simplifie par $\\sqrt{h}$ : $\\dfrac{\\sqrt{h}}{\\sqrt{h}\\times\\sqrt{h}}=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{\\sqrt{h}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction racine carrée, définie sur $[0\\,;+\\infty[$ par $f(x)=\\sqrt{x}$. On étudie son taux de variation entre $0$ et $h$, pour $h>0$.\n\nPour $h>0$, ce taux vaut $\\dfrac{1}{\\sqrt{h}}$. Complète, pour $h={{eval:1/10^(2*p);d}}$.\n\n$\\dfrac{f(h)-f(0)}{h}=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10^p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\sqrt{{{eval:1/10^(2*p);d}}}={{eval:1/10^p;d}}$.",
+					"Donc le taux vaut $\\dfrac{1}{{{eval:1/10^p;d}}}=\\textcolor{{{color:primary.0}}}{{{eval:10^p}}}$.",
+					"Plus $h$ est proche de $0$, plus le taux est grand."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction racine carrée, définie sur $[0\\,;+\\infty[$ par $f(x)=\\sqrt{x}$. On étudie son taux de variation entre $0$ et $h$, pour $h>0$.\n\n$$\\dfrac{f(h)-f(0)}{h}=\\dfrac{\\sqrt{h}-0}{h}=\\dfrac{\\sqrt{h}}{h}=\\dfrac{1}{\\sqrt{h}}$$\n\nQue peut-on en conclure ?\n\n```choix\n- Quand $h$ tend vers $0$, $\\dfrac{1}{\\sqrt{h}}$ devient aussi grand qu'on veut : le taux n'a pas de limite finie, donc $f$ n'est pas dérivable en $0$.\n- Quand $h$ tend vers $0$, le taux tend vers $0$, donc $f'(0)=0$.\n- $f$ n'est pas dérivable en $0$ car $f$ n'est pas définie en $0$.\n- Le taux tend vers $1$, donc $f'(0)=1$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $h=0{,}01$, le taux vaut $10$ ; pour $h=0{,}0001$, il vaut $100$ : il **grandit sans limite** quand $h$ se rapproche de $0$.",
+					"Être dérivable en $0$, c'est avoir un taux qui tend vers un nombre réel : ce n'est pas le cas ici.",
+					"$f$ est bien définie en $0$ : $f(0)=\\sqrt{0}=0$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1/√h",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\frac{1}{\\sqrt{h}}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture √h/h",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\frac{\\sqrt{h}}{h}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : √h",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\sqrt{h}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/h",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\frac{1}{h}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/(2√h)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\frac{1}{2\\sqrt{h}}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "10 (h = 0,01)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0,1 (√h)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1"
+			},
+			"answers": ["0.1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 100 (1/h)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1000 (h = 0,000001)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3"
+			},
+			"answers": ["1000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "taux non borné",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : tend vers 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : non définie en 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : tend vers 1",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

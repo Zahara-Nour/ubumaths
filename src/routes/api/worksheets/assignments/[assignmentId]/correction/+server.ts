@@ -21,6 +21,7 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '$lib/server/middleware/auth';
 import { z } from 'zod';
 import { sanitizeForFileName } from '$lib/worksheets/pdf-file-name';
 import { generateWorksheetTypst } from '$lib/typst/generators';
@@ -57,10 +58,7 @@ const querySchema = z.object({
 
 export const GET: RequestHandler = async ({ params, locals, url }) => {
 	// Check authentication
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	const { user, profile } = await requireAuth(locals);
 
 	const assignmentId = params.assignmentId;
 	if (!assignmentId) {
@@ -111,27 +109,8 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			throw error(404, 'Affectation introuvable');
 		}
 
-		// Check if user is a student with access to this assignment
-		// `profiles` porte `class_ids`, un TABLEAU (un élève peut appartenir à
-		// plusieurs classes) — il n'existe pas de `class_id`. La colonne inexistante
-		// faisait rejeter la requête ENTIÈRE par PostgREST : `profile` valait donc
-		// toujours `null`, `isTeacher` toujours `false`, et seul le créateur du
-		// devoir pouvait ouvrir la correction. Échec en mode fermé, mais un
-		// professeur non créateur et les élèves concernés étaient écartés à tort.
-		const { data: profile, error: profileError } = await locals.supabase
-			.from('profiles')
-			.select('role, class_ids')
-			.eq('id', user.id)
-			.single();
-
-		// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
-		// panne produisait le même refus, indiscernable d'un refus mérité.
-		if (profileError && profileError.code !== 'PGRST116') {
-			logger.error('Rôle illisible :', profileError);
-			throw error(500, 'Impossible de vérifier les droits d’accès');
-		}
-
-		const isTeacher = profile?.role === 'teacher' || profile?.role === 'admin';
+		// Rôle fourni par la garde commune (requireAuth)
+		const isTeacher = profile.role === 'teacher' || profile.role === 'admin';
 		const isAssignmentCreator = assignment.created_by === user.id;
 
 		// L'accès élève est délégué à `can_access_assignment`, qui connaît les DEUX
@@ -158,7 +137,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 
 		logger.info('[Correction API] Access check:', {
 			userId: user.id,
-			role: profile?.role,
+			role: profile.role,
 			isTeacher,
 			isAssignmentCreator,
 			isStudentInClass,
