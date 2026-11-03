@@ -9,18 +9,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, lot 5 écrit (§ 10)._
+_Mis à jour le 2026-11-04, après #2361._
 
-- **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : lot 5 (suites : 240, 241, 381, 242) écrit et vérifié en local (§ 10, D4), PR des fichiers à ouvrir.
-- **Prochaine action** : PR des fichiers du lot 5, puis David lance `create-questions --publier` (prod), puis
-  migration nœud + tag (avec 2 sous-notions neuves, D4), page à cocher, publication. Ensuite lots 6 à 9.
+- **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : fichiers du lot 5 (suites : 240,
+  241, 381, 242) mergés (#2361, § 10, D4), brouillons pas encore en prod.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts scripts/questions/1spe-approfondissements-5 --publier`
+  (prod), puis migration nœud + tag (avec 2 sous-notions neuves, D4), page à cocher, publication. Ensuite lots 6 à 9.
 - **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de
   `docs/wip/verifications-manuelles.md`) ; suppression des branches distantes `docs/questions-1spe-demonstrations`,
   `feat/questions-1spe-demonstrations` (rien à perdre ; `git push --delete` refusé par le classifieur le 2026-11-04).
 - **Pièges en cours** : `create-questions` lit `.env` = PROD → forcer `.env.local`. Spec `bad_form` →
   `constraintViolations: ['form']`. Ports 5176-5177 pris par d'autres sessions (5178 libre le 2026-11-04).
   `db:migrate` depuis le dépôt principal à jour.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, `feat/questions-1spe-approfondissements-5`.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, `feat/questions-1spe-approfondissements-5` (mergée ; nouvelle branche depuis `origin/main` pour la migration).
 
 ---
 
