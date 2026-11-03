@@ -6,20 +6,22 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, lot 4 en PR (#2271)._
+_Mis à jour le 2026-11-03, après #2271._
 
-- **État** : lot 4 (triangle de trois longueurs, geste Report, 4e sommet du parallélogramme) codé
-  et testé sur `feat/controles-figure-triangle` (§ 14) ; lots 1 à 3b mergés, pas encore en prod.
-- **Prochaine action** : merge de #2271 (revue Opus faite, corrigée) ; puis phase 0 de l'angle (rapporteur, outil n° 4) ou
-  de la bissectrice.
-- **En attente de David** : sur papier uni, un point à l'intersection de deux droites tracées
-  à l'œil est jugé construit (règle du lot 2b) ; le resserrer pour tous les points ? (§ 14, revue).
+- **État** : lots 1 à 4 mergés (#2257, #2264, #2268, #2271 : triangle de trois longueurs, Report,
+  4e sommet), pas encore en prod (`deploy:prod` sur demande de David). Vérifications à l'œil dans
+  `verifications-manuelles.md`.
+- **Prochaine action** : PR « point construit » (décision de David du 2026-11-03, § 14) — sur papier
+  uni, un point ne compte que s'il est l'intersection de deux traits eux-mêmes construits (règle,
+  équerre, compas, report, de proche en proche), pour tous les points (lots 2b à 4) ; helper commun
+  avec `triangle.ts` (`constructedCircles`). Puis phase 0 de l'angle (rapporteur) ou de la bissectrice.
+- **En attente de David** : rien.
 - **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12, sa propre
   phase 0) ; `perpendiculaire(A, s)` échoue quand A est un bout de s ; pas de prime dans le langage des
   figures ; `symetrie(P, axe=d)` échoue si P définit d ; l'« Essayer » de l'aide ne rend pas la case
-  jouable ; au clavier, droites annoncées « Droite 1, 2… » ; plafond de 20 objets sans message ;
-  `etiquette=` ne vaut que pour les points (étiqueter un segment : `texte(x, y, "4 cm")`).
-- **Worktree / branche** : `../ubumaths-wt-controles-figure` · `feat/controles-figure-triangle`.
+  jouable ; droites annoncées « Droite 1, 2… » au clavier ; plafond de 20 objets sans message ;
+  `etiquette=` ne vaut que pour les points (segment : `texte(x, y, "4 cm")`).
+- **Worktree / branche** : aucun (retiré après #2271).
 
 ---
 
@@ -604,3 +606,9 @@ du triangle. » (ajouté après la revue, sans phase 0).
   correction (le plus haut). Non corrigé (règle du lot 2b, question à David) : sur papier uni, un
   point à l'intersection de deux droites tracées à l'œil est « construit » — D aux coordonnées rondes
   se forge avec deux droites libres. [AB] non tracé dans la figure : pas exigé (absent du § 13).
+
+### Décision de David (2026-11-03, « je te suis » sur ma recommandation)
+
+- Sur papier uni, **tout point** (lots 2b à 4) ne compte comme construit que s'il est un point de la
+  figure ou l'intersection de deux traits **eux-mêmes construits** ; deux droites tracées à l'œil ne
+  construisent plus rien. Dans une PR à part.
