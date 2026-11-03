@@ -6,22 +6,25 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR 1 `.dériver` ouverte._
+_Mis à jour le 2026-11-03, après #2316 ; PR 1 bis ouverte._
 
-- **État** : lot 2 terminé (#2281 → #2310). **PR 1 `.dériver`** (étape 1 du découpage) : registre
-  sur la forme finale de f′, l'Atelier affiche la réponse du registre (§ PR 1 — `.dériver`).
-  Branche `fix/registre-deriver-reduite`. Rien de déployé.
-- **Prochaine action** : merger la PR 1, puis l'étape 2 du découpage : `.simplifier` S3
+- **État** : PR 1 `.dériver` mergée (#2316). **PR 1 bis** (exponentielle commune sous une barre de
+  nombre, page à cocher validée) : branche `fix/registre-deriver-fraction` (§ PR 1 bis). Rien de
+  déployé.
+- **Prochaine action** : merger la PR 1 bis, puis l'étape 2 du découpage : `.simplifier` S3
   (`simplifier-01`, `-10`), `.résoudre` → S (registre et Atelier), puis `.intégrer`.
-- **En attente de David** : rien.
+- **En attente de David** : confirmer la coquille de `tem-01` — il a écrit `(3x²/2 + 3/2)eˣ`,
+  retenu `(3x/2 + 3/2)eˣ` (dérivée de 3xeˣ/2), sauf avis contraire.
 - **Tranché** : option `unitChoice: 'school'` GARDÉE exprès (David, 2026-11-03 : « utile plus
   tard ») — ne pas proposer de la retirer ; avant : Q9 EN ENTIER, A-D du lot 2, `decimal` en
-  LaTeX, `plafond-02` → 1000, Q24, `signes-06` — NE PAS reposer.
+  LaTeX, `plafond-02` → 1000, Q24, `signes-06` — NE PAS reposer. Fraction devant ou division
+  après : même écriture `(x²/3 + 2x/3)eˣ` (2026-11-03).
 - **Pièges** : `docs:check-a-jour` local ne voit que le COMMITÉ ; PR en conflit avec `main` = aucun
-  run de CI → `git merge origin/main` (sujet du commit de fusion en minuscule : commitlint) ;
-  limites connues : `.diff cos(60°)*x` (`ctx.input`), `2 ≈ 2` (caractère `≈`) mal lu, `(t>1)` →
-  faux, grandeur avec factorielles (`5 m * 25!/24!`), `20000!/19999!` gardé (prévision).
-- **Worktree / branche** : `../ubumaths-wt-registre-reference`, `fix/registre-deriver-reduite`.
+  run de CI → `git merge origin/main` (commitlint refuse « merge … » : `chore: fusion …`) ;
+  `wrapDynamicImport` au shard client = panne d'outillage, relancer le job ; limites connues :
+  `.diff cos(60°)*x` (`ctx.input`), `2 ≈ 2` (caractère `≈`) mal lu, `(t>1)` → faux, grandeur avec
+  factorielles (`5 m * 25!/24!`), `20000!/19999!` gardé (prévision).
+- **Worktree / branche** : `../ubumaths-wt-registre-reference`, `fix/registre-deriver-fraction`.
 
 ---
 
@@ -588,3 +591,26 @@ une valeur de 20000), écriture gardée.
   (`xe^{−2x}`, `x²eˣ`), `derivee-exponentielle.test.ts` (`xeˣ`).
 - Suites `mathAST` + `atelier` + `geometry-core` (36 535) et client `atelier` + `routes` (741)
   vertes ; `check:incremental` 0 erreur.
+- **Revue** (`code-reviewer` opus) : aucun bloquant. Ajouté : `derivation-chemins.test.ts`, bouton
+  et commande sur `xeˣ` (garde la forme affichée ; le branchement ne se distingue pas, étapes =
+  registre). Mergée : #2316. CI : intégration rouge héritée de #2311 (`safeGetSession` absent des
+  doublures), corrigée sur `main` par #2322 ; puis `wrapDynamicImport` au shard client 1, job relancé.
+
+## PR 1 bis — exponentielle commune sous une barre de nombre (2026-11-03)
+
+Relevée par la revue de #2316 : `.dériver (1/3)x²eˣ` → `2xeˣ/3 + x²eˣ/3` (l'exponentielle sous la
+barre n'est pas vue), alors que `0,5x²eˣ` → `(0,5x² + x)eˣ`. David : « oui » à la règle, puis page à
+cocher (https://claude.ai/artifact/XjzdKUR9M1SY1qdkVPVqXE, 11/11 relues) : famille A (coefficient
+devant) validée ; famille B (division après) écrite **comme A**, `(x²/3 + 2x/3)eˣ`, et non
+`\dfrac{(x² + 2x)eˣ}{3}` ; témoin `3xeˣ/2` aussi → `(3x/2 + 3/2)eˣ` (coquille `3x²/2` de David
+corrigée, à confirmer).
+
+- Corpus : `deriver-13` à `deriver-23` (dont 2 témoins inchangés). Rouges avant : 9 × 2 outils.
+- Code (`final-form.ts`) : `commonExponential` / `withoutFactor` voient à travers `a/q` (q nombre) ;
+  `withCommonExponential` distribue d'abord une somme divisée par un nombre ; le chemin du quotient
+  essaie la distribution sur le numérateur avant sa mise en facteur (`(u′·3 − u·0)/3²` ne devient
+  `…/3` qu'après `simplifiedQuotient`). Sans exponentielle commune, rien ne change
+  (`((x³+x)/3)′ = (3x² + 1)/3`).
+- Tests : `final-form-fraction.test.ts` (preuve rouge : 4/6 avec le `final-form.ts` de `main`, les
+  2 témoins verts) ; sonde avant/après sur l'oracle des dérivées (308 lignes) : **aucune**
+  différence. Suites `mathAST` + `atelier` + `questions` + `geometry-core` (42 643) vertes.

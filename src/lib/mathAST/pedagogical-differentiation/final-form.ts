@@ -19,7 +19,10 @@
  * 2. **Exponentielle commune** : quand tous les termes portent la même
  *    exponentielle (`eᵘ` ou `\exp(u)`), elle seule est mise en facteur, le
  *    reste réduit : `xeˣ → (x + 1)eˣ`, `x²e^{−x} → (2x − x²)e^{−x}`. Rien d'autre n'est
- *    factorisé (pas de `x(2 − x)`).
+ *    factorisé (pas de `x(2 − x)`). Elle est vue sous la barre d'un nombre, et
+ *    une somme divisée par un nombre se distribue d'abord (David, 2026-11-03) :
+ *    `((1/3)x²eˣ)′` et `(x²eˣ/3)′` donnent `(x²/3 + 2x/3)eˣ`, comme
+ *    `(0,5x²eˣ)′ = (0,5x² + x)eˣ` ; sans exponentielle commune, la barre reste.
  * 3. **Sinon** : la politique `auto`, qui ne factorise jamais (`5(x+1)⁴` reste,
  *    `x²(x + 1)` donne `3x² + 2x`).
  *
@@ -138,14 +141,26 @@ function finalForm(written: MathNode, f: MathNode, options: TidyOptions): MathNo
 		const raw = tidy(node.numerator, { ...options, order: 'kept' });
 		const denominator = tidy(node.denominator, { ...options, order: 'kept' });
 		const divided = divideByCommonFactor(raw, denominator, f, options);
-		const top = withCommonExponential(reduce(divided.numerator, options), options);
+		const reduced = reduce(divided.numerator, options);
+		const top = withCommonExponential(reduced, options);
 		if (isOne(divided.denominator)) return top;
 		// Le signe de la barre suit `tidy` (« Le signe d'une fraction », tidy-spec §A,
 		// David 2026-10-23) : `−7/(x−3)²`, `(1 − x)/eˣ`, `−(2x² + 18)/(x² − 9)²`
-		return tidy(
-			simplifiedQuotient(divide(top, divided.denominator, node.displayStyle), options),
-			options
-		);
+		const quotientOf = (numerator: MathNode) =>
+			tidy(
+				simplifiedQuotient(divide(numerator, divided.denominator, node.displayStyle), options),
+				options
+			);
+		// Quotient devenu une division par un nombre (`(u′·3 − u·0)/3²` → `…/3`), à
+		// exponentielle commune : la barre se distribue, écrite comme un coefficient
+		// en fraction devant (David, 2026-11-03) : `(x²eˣ/3)′ = (x²/3 + 2x/3)eˣ`.
+		// Cherché sur le numérateur avant sa mise en facteur (`3xeˣ + 3eˣ`).
+		const plain = quotientOf(reduced);
+		const over = overNumber(plain);
+		if (over !== null && distributedOverNumber(over.numerator, over.q) !== null) {
+			return withCommonExponential(plain, options);
+		}
+		return quotientOf(top);
 	}
 	return withCommonExponential(reduce(node, options), options);
 }
@@ -334,11 +349,16 @@ function exponentOf(term: MathNode, key: string): number {
  * `a·eᵘ + b·eᵘ` → `(a + b)eᵘ`, le reste développé réduit. Rien n'est fait si un
  * terme ne porte pas cette exponentielle, ou s'il n'y a qu'un terme.
  */
-function withCommonExponential(node: MathNode, options: TidyOptions): MathNode {
+function withCommonExponential(written: MathNode, options: TidyOptions): MathNode {
+	// Une somme divisée par un nombre (`(x²eˣ + 2xeˣ)/3`, rendue par `auto`) : la
+	// barre se distribue d'abord, comme sur le chemin du quotient
+	const quotient = overNumber(written);
+	const node =
+		(quotient === null ? null : distributedOverNumber(quotient.numerator, quotient.q)) ?? written;
 	const terms = flattenSumShallow(node);
-	if (terms.length < 2) return node;
+	if (terms.length < 2) return written;
 	const exponential = commonExponential(terms.map(({ term }) => term));
-	if (exponential === null) return node;
+	if (exponential === null) return written;
 	const key = hashMathNode(exponential);
 	const rests: SignedTerm[] = terms.map(({ sign, term }) => ({
 		sign,
@@ -352,23 +372,56 @@ function withCommonExponential(node: MathNode, options: TidyOptions): MathNode {
 /** L'exponentielle `eᵘ` facteur de chaque terme, ou `null`. */
 function commonExponential(terms: readonly MathNode[]): MathNode | null {
 	const [first, ...others] = terms;
-	for (const { factor } of flattenProductShallow(first)) {
+	for (const { factor } of factorsOf(first)) {
 		if (!isExponential(factor)) continue;
 		const key = hashMathNode(factor);
 		const everywhere = others.every((term) =>
-			flattenProductShallow(term).some((other) => hashMathNode(other.factor) === key)
+			factorsOf(term).some((other) => hashMathNode(other.factor) === key)
 		);
 		if (everywhere) return factor;
 	}
 	return null;
 }
 
-/** Le terme sans UN facteur de clé `key` (`1` s'il ne restait que lui). */
+/**
+ * Les facteurs d'un terme, ceux du numérateur quand le terme est divisé par un
+ * nombre : `2xeˣ/3` porte `eˣ` (coefficient en fraction, David 2026-11-03).
+ */
+function factorsOf(term: MathNode): ReturnType<typeof flattenProductShallow> {
+	const quotient = overNumber(term);
+	return flattenProductShallow(quotient === null ? term : quotient.numerator);
+}
+
+/** `a/q`, `q` un nombre (sous ses parenthèses) : son numérateur et `q`, sinon `null`. */
+function overNumber(term: MathNode): { readonly numerator: MathNode; readonly q: MathNode } | null {
+	const inner = unwrap(term);
+	if (inner.type !== 'division' || !isNumber(unwrap(inner.denominator))) return null;
+	return { numerator: unwrap(inner.numerator), q: unwrap(inner.denominator) };
+}
+
+/** Le terme sans UN facteur de clé `key` (`1` s'il ne restait que lui), sous la barre d'un nombre comprise. */
 function withoutFactor(term: MathNode, key: string): MathNode {
+	const quotient = overNumber(term);
+	if (quotient !== null) return fraction(withoutFactor(quotient.numerator, key), quotient.q);
 	const factors = flattenProductShallow(term);
 	const index = factors.findIndex(({ factor }) => hashMathNode(factor) === key);
 	const rest = factors.filter((_, i) => i !== index);
 	return unflattenProduct(rest) ?? number('1');
+}
+
+/**
+ * `(a + b)/q` → `a/q + b/q` quand `q` est un nombre et que les termes portent
+ * une exponentielle commune ; `null` sinon (`((x³ + x)/3)′` garde sa barre).
+ */
+function distributedOverNumber(numerator: MathNode, denominator: MathNode): MathNode | null {
+	if (!isNumber(unwrap(denominator)) || isOne(denominator)) return null;
+	const terms = flattenSumShallow(numerator);
+	if (terms.length < 2 || commonExponential(terms.map(({ term }) => term)) === null) return null;
+	const over: SignedTerm[] = terms.map(({ sign, term }) => ({
+		sign,
+		term: fraction(term, denominator)
+	}));
+	return unflattenSum(over);
 }
 
 /**
