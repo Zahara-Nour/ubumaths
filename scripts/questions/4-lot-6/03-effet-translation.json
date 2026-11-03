@@ -85,7 +85,7 @@
 			"correction": {
 				"steps": [
 					"La translation qui transforme $A$ en $B$ fait **glisser** toute la figure comme la flèche : {{if:c==0|6 carreaux vers la droite|}}{{if:c==1|5 carreaux vers la gauche|}}{{if:c==2|4 carreaux vers le haut|}}{{if:c==3|5 carreaux vers le bas|}}.",
-					"La figure F glisse sans tourner ni se retourner : son image est \\textcolor{{{color:primary.0}}}{\\text{la figure {{if:p==0|1|}}{{if:p==1|3|}}{{if:p==2|2|}}{{if:p==3|4|}}}}.",
+					"La figure F glisse sans tourner ni se retourner : son image est $\\textcolor{{{color:primary.0}}}{\\text{la figure {{if:p==0|1|}}{{if:p==1|3|}}{{if:p==2|2|}}{{if:p==3|4|}}}}$.",
 					"La figure {{if:p==0|2|}}{{if:p==1|1|}}{{if:p==2|4|}}{{if:p==3|3|}} a glissé dans une autre direction ; la figure {{if:p==0|3|}}{{if:p==1|4|}}{{if:p==2|1|}}{{if:p==3|2|}} est retournée (symétrie axiale) ; la figure {{if:p==0|4|}}{{if:p==1|2|}}{{if:p==2|3|}}{{if:p==3|1|}} a fait un demi-tour."
 				]
 			}
@@ -166,7 +166,7 @@
 			"correction": {
 				"steps": [
 					"La translation qui transforme $A$ en $B$ fait **glisser** toute la figure comme la flèche : {{if:c==0|6 carreaux vers la droite et 3 carreaux vers le haut|}}{{if:c==1|5 carreaux vers la droite et 2 carreaux vers le bas|}}{{if:c==2|4 carreaux vers la gauche et 3 carreaux vers le haut|}}{{if:c==3|7 carreaux vers la droite et 2 carreaux vers le haut|}}.",
-					"La figure F glisse sans tourner ni se retourner : son image est \\textcolor{{{color:primary.0}}}{\\text{la figure {{if:p==0|1|}}{{if:p==1|3|}}{{if:p==2|2|}}{{if:p==3|4|}}}}.",
+					"La figure F glisse sans tourner ni se retourner : son image est $\\textcolor{{{color:primary.0}}}{\\text{la figure {{if:p==0|1|}}{{if:p==1|3|}}{{if:p==2|2|}}{{if:p==3|4|}}}}$.",
 					"La figure {{if:p==0|2|}}{{if:p==1|1|}}{{if:p==2|4|}}{{if:p==3|3|}} a glissé dans une autre direction ; la figure {{if:p==0|3|}}{{if:p==1|4|}}{{if:p==2|1|}}{{if:p==3|2|}} est retournée (symétrie axiale) ; la figure {{if:p==0|4|}}{{if:p==1|2|}}{{if:p==2|3|}}{{if:p==3|1|}} a fait un demi-tour."
 				]
 			}
@@ -247,7 +247,7 @@
 			"correction": {
 				"steps": [
 					"On fait glisser $C$ comme la flèche de $A$ vers $B$ : {{if:c==0|5 carreaux vers la droite et 3 carreaux vers le haut|}}{{if:c==1|6 carreaux vers la droite et 2 carreaux vers le bas|}}{{if:c==2|4 carreaux vers la gauche et 3 carreaux vers le haut|}}{{if:c==3|3 carreaux vers la droite et 4 carreaux vers le bas|}}.",
-					"L'image de $C$ est \\textcolor{{{color:primary.0}}}{\\text{le point }{{if:p==0|R|}}{{if:p==1|T|}}{{if:p==2|S|}}{{if:p==3|U|}}}."
+					"L'image de $C$ est $\\textcolor{{{color:primary.0}}}{\\text{le point }{{if:p==0|R|}}{{if:p==1|T|}}{{if:p==2|S|}}{{if:p==3|U|}}}$."
 				]
 			}
 		},
@@ -278,7 +278,7 @@
 			],
 			"correction": {
 				"steps": [
-					"{{if:w==0|G est F qui a **glissé**, sans tourner ni se retourner : c'est|}}{{if:w==1|G est F **retournée**, comme dans un miroir vertical : c'est|}}{{if:w==2|G est F qui a **tourné d'un demi-tour** (la tête en bas) : c'est|}} \\textcolor{{{color:primary.0}}}{\\text{{{if:w==0|une translation|}}{{if:w==1|une symétrie axiale|}}{{if:w==2|un demi-tour|}}}}."
+					"{{if:w==0|G est F qui a **glissé**, sans tourner ni se retourner : c'est|}}{{if:w==1|G est F **retournée**, comme dans un miroir vertical : c'est|}}{{if:w==2|G est F qui a **tourné d'un demi-tour** (la tête en bas) : c'est|}} $\\textcolor{{{color:primary.0}}}{\\text{{{if:w==0|une translation|}}{{if:w==1|une symétrie axiale|}}{{if:w==2|un demi-tour|}}}}$."
 				]
 			}
 		}

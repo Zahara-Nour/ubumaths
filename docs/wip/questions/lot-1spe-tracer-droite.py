@@ -47,6 +47,11 @@ def col(x, k=0):
     return '\\textcolor{{{color:primary.' + str(k) + '}}}{' + x + '}'
 
 
+def colt(*a, **k):
+    """Valeur colorée en plein texte : `\\textcolor` hors `$…$` s'afficherait en LaTeX brut."""
+    return '$' + col(*a, **k) + '$'
+
+
 def ev(x):
     return '{{eval:' + x + '}}'
 
@@ -86,7 +91,7 @@ V_ENTIERE = {
         'Depuis $A$, on avance de $1$ et on {{if:m>0|monte de ${{m}}$|descend de ${{eval:-(m)}}$}} :'
         ' on arrive en $B({{xb}}\\,;\\,{{yb}})$.',
         repere_corrige('({{m}})*x+({{p}})', '{{xb}}', '{{yb}}'),
-        'La droite $d$ est ' + col('\\text{la droite }(AB)') + '.']},
+        'La droite $d$ est ' + colt('\\text{la droite }(AB)') + '.']},
 }
 
 # --- V2 : pente fractionnaire k/q -----------------------------------------------------------
@@ -106,7 +111,7 @@ V_FRACTION = {
         'Depuis $A$, on avance de ${{q}}$ et on {{if:k>0|monte de ${{k}}$|descend de ${{ak}}$}} :'
         ' on arrive en $B({{xb}}\\,;\\,{{yb}})$.',
         repere_corrige('({{k}})/({{q}})*x+({{c}})/({{q}})', '{{xb}}', '{{yb}}'),
-        'La droite $d$ est ' + col('\\text{la droite }(AB)') + '.']},
+        'La droite $d$ est ' + colt('\\text{la droite }(AB)') + '.']},
 }
 
 

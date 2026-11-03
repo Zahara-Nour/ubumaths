@@ -67,6 +67,11 @@ def col(x, k=0):
     return '\\textcolor{{{color:primary.' + str(k) + '}}}{' + x + '}'
 
 
+def colt(*a, **k):
+    """Valeur colorée en plein texte : `\\textcolor` hors `$…$` s'afficherait en LaTeX brut."""
+    return '$' + col(*a, **k) + '$'
+
+
 def ev(x):
     return '{{eval:' + x + '}}'
 
@@ -284,9 +289,9 @@ V_POINT_SUR = variation(
      var('b', 'eval:((t)-1)*((t)-2)/2*(n)^2+(t)*(2-(t))*2*(n)-(t)*((t)-1)/2*(n)^2')], ['0'],
     ['$A$ est sur la courbe si son ordonnée est le **carré** de son abscisse.',
      '$$' + '{{if:n<0|({{n}})|{{n}}}}' + '^2 = ' + ev('(n)^2') + '$$',
-     '{{if:t==0|L\'ordonnée de $A$ vaut bien $' + ev('(n)^2') + '$ : ' + col('\\text{oui}')
+     '{{if:t==0|L\'ordonnée de $A$ vaut bien $' + ev('(n)^2') + '$ : ' + colt('\\text{oui}')
      + ', $A$ est sur la courbe.|L\'ordonnée de $A$ est ${{b}}$, et non $' + ev('(n)^2') + '$ : '
-     + col('\\text{non}') + ', $A$ n\'est pas sur la courbe.}}'])
+     + colt('\\text{non}') + ', $A$ n\'est pas sur la courbe.}}'])
 
 MODELES.append(modele(
     '04-courbe-fonction-carre', 'La courbe de la fonction carré',
@@ -345,7 +350,7 @@ V_AUCUNE = variation(
     [var('a', '-1|-4|-9')], ['0'],
     ['Les solutions seraient les abscisses des points où la droite $y={{a}}$ coupe $\\mathcal{C}_f$.',
      'La droite est **sous** la courbe et ne la coupe pas : un carré n\'est jamais négatif. L\'équation n\'a '
-     + col('\\text{aucune solution}') + '.',
+     + colt('\\text{aucune solution}') + '.',
      '$' + ev('-sqrt(-(a))') + '$ ne convient pas : $(' + ev('-sqrt(-(a))') + ')^2=' + ev('-(a)')
      + '$, et non ${{a}}$.'])
 

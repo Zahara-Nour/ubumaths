@@ -90,6 +90,11 @@ def col(x, k=0):
     return '\\textcolor{{{color:primary.' + str(k) + '}}}{' + x + '}'
 
 
+def colt(*a, **k):
+    """Valeur colorée en plein texte : `\\textcolor` hors `$…$` s'afficherait en LaTeX brut."""
+    return '$' + col(*a, **k) + '$'
+
+
 def frac(n, d):
     return '\\frac{' + n + '}{' + d + '}'
 
@@ -360,34 +365,34 @@ CERCLE = variation(
     'r = cercle(o, rayon={{if:r==1|2|{{if:r==2|2.5|2.8}}}}, ' + COULEUR + ', epaisseur=2)\n```'
     + choix([C_CERCLE, C_CARRE, C_RECT, C_TRI]),
     ['0'], [VAR_COULEUR, var('x', '1..3'), var('r', '1..3')],
-    ['C\'est un ' + col('cercle') + ' : il est tout rond, il n\'a ni côté ni sommet.'])
+    ['C\'est un ' + colt('cercle') + ' : il est tout rond, il n\'a ni côté ni sommet.'])
 
 CARRE = variation(
     QUELLE_FIGURE + polygone('k', CARRES, 'Une figure à nommer.')
     + choix([C_CERCLE, C_CARRE, C_TRI, C_TRI_RECT]),
     ['1'], [VAR_COULEUR, var('k', '1..6')],
-    ['C\'est un ' + col('carré') + ' : il a $4$ côtés de la même longueur et $4$ angles droits.'
+    ['C\'est un ' + colt('carré') + ' : il a $4$ côtés de la même longueur et $4$ angles droits.'
      '{{if:k==6|| Il est penché, mais c\'est toujours un carré.}}'])
 
 RECTANGLE = variation(
     QUELLE_FIGURE + polygone('k', RECTANGLES, 'Une figure à nommer.')
     + choix([C_CERCLE, C_CARRE, C_RECT, C_TRI]),
     ['2'], [VAR_COULEUR, var('k', '1..6')],
-    ['C\'est un ' + col('rectangle') + ' : il a $4$ angles droits, deux grands côtés et deux'
+    ['C\'est un ' + colt('rectangle') + ' : il a $4$ angles droits, deux grands côtés et deux'
      ' petits côtés.'])
 
 TRI_RECT = variation(
     QUELLE_FIGURE + polygone('k', TRI_RECTS, 'Une figure à nommer.')
     + choix([C_RECT, C_TRI_RECT, C_CARRE, C_CERCLE]),
     ['1'], [VAR_COULEUR, var('k', '1..6')],
-    ['C\'est un ' + col('triangle rectangle') + ' : il a $3$ côtés et un angle droit.',
+    ['C\'est un ' + colt('triangle rectangle') + ' : il a $3$ côtés et un angle droit.',
      'Un rectangle a $4$ côtés : ce n\'est pas un rectangle.'])
 
 TRIANGLE = variation(
     QUELLE_FIGURE + polygone('k', TRI_ISOS, 'Une figure à nommer.')
     + choix([C_CERCLE, C_CARRE, C_TRI, C_TRI_RECT]),
     ['2'], [VAR_COULEUR, var('k', '1..6')],
-    ['C\'est un ' + col('triangle') + ' : il a $3$ côtés et $3$ sommets.',
+    ['C\'est un ' + colt('triangle') + ' : il a $3$ côtés et $3$ sommets.',
      'Aucun de ses angles n\'est droit : ce n\'est pas un triangle rectangle.'])
 
 SPECS_FIGURE = [
@@ -444,7 +449,7 @@ SOMMET = variation(
     + choix(['un sommet', 'un côté', 'un centre', 'un milieu']),
     ['0'], [var('k', '1..6'), var('v', '1..3')],
     ['Les côtés du triangle se rejoignent en ${{if:v==1|A|{{if:v==2|B|C}}}}$ : c\'est un '
-     + col('sommet') + '. Un triangle a $3$ sommets.'])
+     + colt('sommet') + '. Un triangle a $3$ sommets.'])
 
 COTES = [('a', 'b'), ('b', 'c'), ('c', 'd'), ('d', 'a')]
 
@@ -455,7 +460,7 @@ COTE = variation(
                      + selon('t', [w for _, w in COTES]) + ', couleur="rouge", epaisseur=4)'])
     + choix(['un côté', 'un sommet', 'un angle', 'un centre']),
     ['0'], [var('k', '1..4'), var('t', '1..4')],
-    ['Le trait va d\'un sommet à l\'autre, il borde le rectangle : c\'est un ' + col('côté')
+    ['Le trait va d\'un sommet à l\'autre, il borde le rectangle : c\'est un ' + colt('côté')
      + ', le côté $' + selon('t', ['[AB]', '[BC]', '[CD]', '[DA]']) + '$.'])
 
 CENTRE = variation(
@@ -466,7 +471,7 @@ CENTRE = variation(
     'r = cercle(o, rayon={{if:r==1|2|{{if:r==2|2.5|2.8}}}}, couleur="noir", epaisseur=2)\n```'
     + choix(['le centre', 'le milieu', 'un sommet', 'un côté']),
     ['0'], [var('x', '1..3'), var('r', '1..3')],
-    ['Tous les points du cercle sont à la même distance de $O$ : $O$ est le ' + col('centre')
+    ['Tous les points du cercle sont à la même distance de $O$ : $O$ est le ' + colt('centre')
      + ' du cercle.'])
 
 def au_dessus(k, presets, lettres, ecart=0.55):
@@ -502,7 +507,7 @@ MILIEU = variation(
     + '\n```' + choix(['le milieu', 'un sommet', 'une droite']),
     ['0'], [var('k', '1..4')],
     ['Les petits traits disent que $AM$ et $MB$ ont la même longueur, et $M$ est sur le segment :'
-     ' $M$ est le ' + col('milieu') + ' de $[AB]$.'])
+     ' $M$ est le ' + colt('milieu') + ' de $[AB]$.'])
 
 DROITES = [centre(tourne([(0, 0), (4, 0)], r)) for r in (10, 35, 150, 70)]
 
@@ -568,12 +573,12 @@ QUI_SUIS_JE = variation(
     + '_' + choix(['Je suis un rectangle.', 'Je suis un triangle rectangle.', 'Je suis un carré.',
                    'Je suis un cercle.']),
     ['{{w}}'], [var('q', '1..4'), var('w', 'eval:q-1')],
-    [selon('q', ['C\'est un ' + col('rectangle') + ' : $4$ angles droits, deux grands côtés et'
+    [selon('q', ['C\'est un ' + colt('rectangle') + ' : $4$ angles droits, deux grands côtés et'
                  ' deux petits.',
-                 'C\'est un ' + col('triangle rectangle') + ' : $3$ côtés, un angle droit.',
-                 'C\'est un ' + col('carré') + ' : $4$ côtés de la même longueur, $4$ angles'
+                 'C\'est un ' + colt('triangle rectangle') + ' : $3$ côtés, un angle droit.',
+                 'C\'est un ' + colt('carré') + ' : $4$ côtés de la même longueur, $4$ angles'
                  ' droits.',
-                 'C\'est un ' + col('cercle') + '.'])])
+                 'C\'est un ' + colt('cercle') + '.'])])
 
 SPECS_DECRIRE = [
     spec('Carré : 4 angles droits', 0, {'c': 1, 'k': 2}, '4', 'correct'),
@@ -599,7 +604,7 @@ SIGNIFIE = variation(
     + choix(['L\'angle est droit.', 'Les deux côtés ont la même longueur.',
              'L\'angle est aigu.', 'Le coin est le milieu du triangle.']),
     ['0'], [VAR_COULEUR, var('k', '1..6')],
-    ['Le petit carré est le ' + col('code de l\'angle droit') + ' : il dit que l\'angle est'
+    ['Le petit carré est le ' + colt('code de l\'angle droit') + ' : il dit que l\'angle est'
      ' droit, sans avoir à le vérifier avec l\'équerre.'])
 
 # quadrilatère à un seul angle droit (en p0), les autres à 20° au moins de l'angle droit
@@ -755,12 +760,12 @@ def angle_variation(presets, reponse, etape):
 
 
 ANGLE_DROIT = angle_variation(
-    DROITS, '0', 'L\'angle est ' + col('droit') + ' : le coin de l\'équerre s\'y pose juste'
+    DROITS, '0', 'L\'angle est ' + colt('droit') + ' : le coin de l\'équerre s\'y pose juste'
     ' (les côtés suivent les carreaux, ou leurs diagonales).')
 ANGLE_AIGU = angle_variation(
-    AIGUS, '1', 'L\'angle est ' + col('aigu') + ' : il est plus fermé que le coin de l\'équerre.')
+    AIGUS, '1', 'L\'angle est ' + colt('aigu') + ' : il est plus fermé que le coin de l\'équerre.')
 ANGLE_OBTUS = angle_variation(
-    OBTUS, '2', 'L\'angle est ' + col('obtus') + ' : il est plus ouvert que le coin de'
+    OBTUS, '2', 'L\'angle est ' + colt('obtus') + ' : il est plus ouvert que le coin de'
     ' l\'équerre.')
 
 SPECS_ANGLE = [

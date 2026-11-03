@@ -28,7 +28,7 @@
 			],
 			"correction": {
 				"steps": [
-					"Les côtés du triangle se rejoignent en ${{if:v==1|A|{{if:v==2|B|C}}}}$ : c'est un \\textcolor{{{color:primary.0}}}{sommet}. Un triangle a $3$ sommets."
+					"Les côtés du triangle se rejoignent en ${{if:v==1|A|{{if:v==2|B|C}}}}$ : c'est un $\\textcolor{{{color:primary.0}}}{sommet}$. Un triangle a $3$ sommets."
 				]
 			}
 		},
@@ -51,7 +51,7 @@
 			],
 			"correction": {
 				"steps": [
-					"Le trait va d'un sommet à l'autre, il borde le rectangle : c'est un \\textcolor{{{color:primary.0}}}{côté}, le côté ${{if:t==1|[AB]|{{if:t==2|[BC]|{{if:t==3|[CD]|[DA]}}}}}}$."
+					"Le trait va d'un sommet à l'autre, il borde le rectangle : c'est un $\\textcolor{{{color:primary.0}}}{côté}$, le côté ${{if:t==1|[AB]|{{if:t==2|[BC]|{{if:t==3|[CD]|[DA]}}}}}}$."
 				]
 			}
 		},
@@ -74,7 +74,7 @@
 			],
 			"correction": {
 				"steps": [
-					"Tous les points du cercle sont à la même distance de $O$ : $O$ est le \\textcolor{{{color:primary.0}}}{centre} du cercle."
+					"Tous les points du cercle sont à la même distance de $O$ : $O$ est le $\\textcolor{{{color:primary.0}}}{centre}$ du cercle."
 				]
 			}
 		},
@@ -93,7 +93,7 @@
 			],
 			"correction": {
 				"steps": [
-					"Les petits traits disent que $AM$ et $MB$ ont la même longueur, et $M$ est sur le segment : $M$ est le \\textcolor{{{color:primary.0}}}{milieu} de $[AB]$."
+					"Les petits traits disent que $AM$ et $MB$ ont la même longueur, et $M$ est sur le segment : $M$ est le $\\textcolor{{{color:primary.0}}}{milieu}$ de $[AB]$."
 				]
 			}
 		},

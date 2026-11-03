@@ -116,7 +116,7 @@
 			"correction": {
 				"steps": [
 					"**Remonter un programme.** On part du résultat et on fait les étapes **à l'envers**, en partant de la dernière, chacune remplacée par l'opération inverse.",
-					"La **dernière** étape est « ajouter ${{b}}$ » : on l'annule en premier, en \\textcolor{{{color:primary.0}}}{\\text{soustrayant } {{b}}}.",
+					"La **dernière** étape est « ajouter ${{b}}$ » : on l'annule en premier, en $\\textcolor{{{color:primary.0}}}{\\text{soustrayant } {{b}}}$.",
 					"Ensuite seulement, on divise par ${{a}}$."
 				]
 			}

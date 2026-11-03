@@ -47,7 +47,7 @@
 					"Le coefficient directeur vaut ${{m}}$ : quand on avance de $1$ vers la droite, on {{if:m>0|monte de ${{m}}$|descend de ${{eval:-(m)}}$}}.",
 					"Depuis $A$, on avance de $1$ et on {{if:m>0|monte de ${{m}}$|descend de ${{eval:-(m)}}$}} : on arrive en $B({{xb}}\\,;\\,{{yb}})$.",
 					"```courbe\nx: -6 ; 6\ny: -6 ; 6\ngrille: 1 ; 1\nf(x) = ({{m}})*x+({{p}})   bleu   nom=d\npoints: A({{xa}} ; {{ya}}), B({{xb}} ; {{yb}})\ntaille: moyenne\ndescription: Droite d et deux de ses points, A et B.\n```",
-					"La droite $d$ est \\textcolor{{{color:primary.0}}}{\\text{la droite }(AB)}."
+					"La droite $d$ est $\\textcolor{{{color:primary.0}}}{\\text{la droite }(AB)}$."
 				]
 			}
 		},
@@ -94,7 +94,7 @@
 					"Le coefficient directeur vaut $m={{if:k<0|-|}}\\dfrac{ {{ak}} }{ {{q}} }$ : quand on avance de ${{q}}$ vers la droite, on {{if:k>0|monte de ${{k}}$|descend de ${{ak}}$}}.",
 					"Depuis $A$, on avance de ${{q}}$ et on {{if:k>0|monte de ${{k}}$|descend de ${{ak}}$}} : on arrive en $B({{xb}}\\,;\\,{{yb}})$.",
 					"```courbe\nx: -6 ; 6\ny: -6 ; 6\ngrille: 1 ; 1\nf(x) = ({{k}})/({{q}})*x+({{c}})/({{q}})   bleu   nom=d\npoints: A({{xa}} ; {{ya}}), B({{xb}} ; {{yb}})\ntaille: moyenne\ndescription: Droite d et deux de ses points, A et B.\n```",
-					"La droite $d$ est \\textcolor{{{color:primary.0}}}{\\text{la droite }(AB)}."
+					"La droite $d$ est $\\textcolor{{{color:primary.0}}}{\\text{la droite }(AB)}$."
 				]
 			}
 		}

@@ -28,7 +28,7 @@
 			],
 			"correction": {
 				"steps": [
-					"L'angle est \\textcolor{{{color:primary.0}}}{droit} : le coin de l'équerre s'y pose juste (les côtés suivent les carreaux, ou leurs diagonales)."
+					"L'angle est $\\textcolor{{{color:primary.0}}}{droit}$ : le coin de l'équerre s'y pose juste (les côtés suivent les carreaux, ou leurs diagonales)."
 				]
 			}
 		},
@@ -51,7 +51,7 @@
 			],
 			"correction": {
 				"steps": [
-					"L'angle est \\textcolor{{{color:primary.0}}}{aigu} : il est plus fermé que le coin de l'équerre."
+					"L'angle est $\\textcolor{{{color:primary.0}}}{aigu}$ : il est plus fermé que le coin de l'équerre."
 				]
 			}
 		},
@@ -74,7 +74,7 @@
 			],
 			"correction": {
 				"steps": [
-					"L'angle est \\textcolor{{{color:primary.0}}}{obtus} : il est plus ouvert que le coin de l'équerre."
+					"L'angle est $\\textcolor{{{color:primary.0}}}{obtus}$ : il est plus ouvert que le coin de l'équerre."
 				]
 			}
 		}

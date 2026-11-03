@@ -63,6 +63,11 @@ def col(x):
     return '\\textcolor{{{color:primary.0}}}{' + x + '}'
 
 
+def colt(*a, **k):
+    """Valeur colorée en plein texte : `\\textcolor` hors `$…$` s'afficherait en LaTeX brut."""
+    return '$' + col(*a, **k) + '$'
+
+
 def si(cond, alors, sinon):
     return '{{if:' + cond + '|' + alors + '|' + sinon + '}}'
 
@@ -92,7 +97,7 @@ V593_SENS = variation(
     None, ['0'],
     ['$\\ln$ est définie sur $\\left]0\\,;+\\infty\\right[$ seulement, et $\\ln\'(x)=\\dfrac{1}{x}>0$ '
      'sur cet intervalle.',
-     '$\\ln$ est donc ' + col('strictement croissante sur \\left]0\\,;+\\infty\\right[') + '.',
+     '$\\ln$ est donc ' + colt('strictement croissante sur \\left]0\\,;+\\infty\\right[') + '.',
      '$\\ln x$ est négatif sur $\\left]0\\,;1\\right[$, mais il augmente quand même : le signe et le '
      'sens de variation sont deux choses différentes.'])
 
@@ -263,7 +268,7 @@ V426_DIRECT = variation(
     + choix('$f$ est continue en $a$', '$f\'(a)=0$', '$f$ n\'est pas forcément continue en $a$',
             '$f$ est dérivable sur tout l\'intervalle $I$'),
     None, ['0'],
-    ['Propriété : toute fonction ' + col('dérivable en a est continue en a') + '.',
+    ['Propriété : toute fonction ' + colt('dérivable en a est continue en a') + '.',
      '$f\'(a)=0$ n\'a aucune raison d\'être vrai : c\'est le cas seulement aux extremums.'])
 
 V426_RECIPROQUE = variation(
@@ -275,7 +280,7 @@ V426_RECIPROQUE = variation(
             'Fausse : une fonction continue en $a$ n\'est jamais dérivable en $a$'),
     [var('c', '0..1')], ['0'],
     ['Le cours dit : dérivable $\\implies$ continue. L\'affirmation est la **réciproque**, qui est '
-     + col('fausse') + '.',
+     + colt('fausse') + '.',
      si('c==0', '$x\\mapsto\\lvert x\\rvert$ est continue en $0$, mais sa courbe a un point anguleux en $0$ : '
                 'elle n\'y est pas dérivable.',
         '$x\\mapsto\\sqrt{x}$ est continue en $0$, mais sa courbe a une tangente verticale en $0$ : '
@@ -288,7 +293,7 @@ V426_CONTRAPOSEE = variation(
             'On ne peut rien dire de la dérivabilité de $f$ en $a$', '$f\'(a)=0$'),
     None, ['0'],
     ['Si $f$ était dérivable en $a$, elle serait continue en $a$ (propriété du cours).',
-     'Comme elle n\'est pas continue en $a$, ' + col('f \\text{ n\'est pas dérivable en } a') + '.'])
+     'Comme elle n\'est pas continue en $a$, ' + colt('f \\text{ n\'est pas dérivable en } a') + '.'])
 
 MODELES.append(modele(
     '4-derivable-continue', 'Dérivable implique continue',

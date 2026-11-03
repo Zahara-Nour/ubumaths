@@ -78,7 +78,7 @@
 			],
 			"correction": {
 				"steps": [
-					"{{if:q==1|C'est un \\textcolor{{{color:primary.0}}}{rectangle} : $4$ angles droits, deux grands côtés et deux petits.|{{if:q==2|C'est un \\textcolor{{{color:primary.0}}}{triangle rectangle} : $3$ côtés, un angle droit.|{{if:q==3|C'est un \\textcolor{{{color:primary.0}}}{carré} : $4$ côtés de la même longueur, $4$ angles droits.|C'est un \\textcolor{{{color:primary.0}}}{cercle}.}}}}}}"
+					"{{if:q==1|C'est un $\\textcolor{{{color:primary.0}}}{rectangle}$ : $4$ angles droits, deux grands côtés et deux petits.|{{if:q==2|C'est un $\\textcolor{{{color:primary.0}}}{triangle rectangle}$ : $3$ côtés, un angle droit.|{{if:q==3|C'est un $\\textcolor{{{color:primary.0}}}{carré}$ : $4$ côtés de la même longueur, $4$ angles droits.|C'est un $\\textcolor{{{color:primary.0}}}{cercle}$.}}}}}}"
 				]
 			}
 		}

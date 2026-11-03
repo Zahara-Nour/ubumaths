@@ -168,7 +168,7 @@
 					"**Programme de calcul.** On applique les étapes **dans l'ordre**, chacune au résultat de la précédente.",
 					"Programme A : ${{if:n<0|({{n}})|{{n}}}} \\times {{a}} = {{ra1}}$, puis ${{ra1}} + {{b}} = \\textcolor{{{color:primary.1}}}{{{ra}}}$.",
 					"Programme B : ${{n}} + {{c}} = {{rb1}}$, puis ${{if:rb1<0|({{rb1}})|{{rb1}}}} \\times {{d}} = \\textcolor{{{color:primary.2}}}{{{rb}}}$.",
-					"{{if:ra>rb|${{ra}} > {{rb}}$ : \\textcolor{{{color:primary.0}}}{\\text{le programme A}}.|${{rb}} > {{ra}}$ : \\textcolor{{{color:primary.0}}}{\\text{le programme B}}.}}"
+					"{{if:ra>rb|${{ra}} > {{rb}}$ : $\\textcolor{{{color:primary.0}}}{\\text{le programme A}}$.|${{rb}} > {{ra}}$ : $\\textcolor{{{color:primary.0}}}{\\text{le programme B}}$.}}"
 				]
 			}
 		}

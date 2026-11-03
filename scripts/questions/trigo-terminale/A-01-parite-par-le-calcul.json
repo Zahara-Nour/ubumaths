@@ -68,7 +68,7 @@
 			"correction": {
 				"steps": [
 					"Pour tout réel $x$, $f(-x)={{a}}\\sin(-x)\\cos(-{{k}}x)={{a}}\\times(-\\sin x)\\times\\cos({{k}}x)=-f(x)$.",
-					"Un produit d'une fonction impaire par une fonction paire est impair : $f$ est \\textcolor{{{color:primary.0}}}{\\text{impaire}}."
+					"Un produit d'une fonction impaire par une fonction paire est impair : $f$ est $\\textcolor{{{color:primary.0}}}{\\text{impaire}}$."
 				]
 			},
 			"blanks": [
@@ -113,7 +113,7 @@
 			"correction": {
 				"steps": [
 					"$\\mathbb{R}^{*}$ est symétrique par rapport à $0$ et, pour tout $x\\neq0$, $f(-x)=\\dfrac{ {{a}}\\sin(-x)}{-x}=\\dfrac{-{{a}}\\sin x}{-x}=f(x)$.",
-					"Quotient de deux fonctions impaires : $f$ est \\textcolor{{{color:primary.0}}}{\\text{paire}}."
+					"Quotient de deux fonctions impaires : $f$ est $\\textcolor{{{color:primary.0}}}{\\text{paire}}$."
 				]
 			},
 			"blanks": [

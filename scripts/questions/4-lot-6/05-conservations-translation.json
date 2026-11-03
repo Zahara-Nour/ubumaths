@@ -100,7 +100,7 @@
 			"correction": {
 				"steps": [
 					"Une translation fait glisser la figure sans la déformer : elle **conserve** la direction des droites.",
-					"L'image d'une droite par une translation est \\textcolor{{{color:primary.0}}}{\\text{une droite parallèle}} (parfois confondue avec elle, si la flèche suit la droite)."
+					"L'image d'une droite par une translation est $\\textcolor{{{color:primary.0}}}{\\text{une droite parallèle}}$ (parfois confondue avec elle, si la flèche suit la droite)."
 				]
 			}
 		}

@@ -76,6 +76,11 @@ def col(x, i=0):
     return '\\textcolor{{{color:primary.' + str(i) + '}}}{' + x + '}'
 
 
+def colt(*a, **k):
+    """Valeur colorée en plein texte : `\\textcolor` hors `$…$` s'afficherait en LaTeX brut."""
+    return '$' + col(*a, **k) + '$'
+
+
 def choix(lignes, melanger=True):
     tete = '' if melanger else 'melanger: non\n'
     return '\n\n```choix\n' + tete + ''.join('- ' + l + '\n' for l in lignes) + '```'
@@ -539,11 +544,11 @@ OUI_NON_VARS = [var('d', CANDIDATS), var('o', '0..1'), var('q', '4..140'), var('
                 var('s', '1..{{dm}}'), var('r', 'eval:s*o'), var('n', 'eval:d*q+r')]
 OUI_NON_COND = ['n>=20', 'n<=999']
 DIVISION = ('$${{n}} = {{d}} \\times {{q}}{{if:o==1| + {{r}}|}}$$')
-CONCLUSION_MULTIPLE = ('{{if:o==0|Le reste est $0$ : ' + col('oui') + ', ${{n}}$ est un multiple'
+CONCLUSION_MULTIPLE = ('{{if:o==0|Le reste est $0$ : ' + colt('oui') + ', ${{n}}$ est un multiple'
                        ' de ${{d}}$ (il est dans la table de ${{d}}$).|Le reste est ${{r}}$, pas'
-                       ' $0$ : ' + col('non') + ', ${{n}}$ n\'est pas un multiple de ${{d}}$.}}')
-CONCLUSION_DIVISEUR = ('{{if:o==0|Le reste est $0$ : ' + col('oui') + ', ${{d}}$ est un'
-                       ' diviseur de ${{n}}$.|Le reste est ${{r}}$, pas $0$ : ' + col('non')
+                       ' $0$ : ' + colt('non') + ', ${{n}}$ n\'est pas un multiple de ${{d}}$.}}')
+CONCLUSION_DIVISEUR = ('{{if:o==0|Le reste est $0$ : ' + colt('oui') + ', ${{d}}$ est un'
+                       ' diviseur de ${{n}}$.|Le reste est ${{r}}$, pas $0$ : ' + colt('non')
                        + ', ${{d}}$ n\'est pas un diviseur de ${{n}}$.}}')
 
 EST_MULTIPLE = variation(

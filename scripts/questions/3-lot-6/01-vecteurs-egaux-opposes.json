@@ -358,7 +358,7 @@
 			"correction": {
 				"steps": [
 					"Le **vecteur nul** $\\vec{0}$ est le vecteur de longueur $0$ : il ne déplace aucun point.",
-					"$\\overrightarrow{AB} = \\vec{0}$ signifie que $AB = 0$ : \\textcolor{{{color:primary.0}}}{\\text{A et B sont confondus}}."
+					"$\\overrightarrow{AB} = \\vec{0}$ signifie que $AB = 0$ : $\\textcolor{{{color:primary.0}}}{\\text{A et B sont confondus}}$."
 				]
 			}
 		}
