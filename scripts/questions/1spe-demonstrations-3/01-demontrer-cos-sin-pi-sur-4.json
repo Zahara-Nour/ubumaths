@@ -56,6 +56,16 @@
 					"Donc $\\cos\\left(\\dfrac{\\pi}{4}\\right)=\\sin\\left(\\dfrac{\\pi}{4}\\right)=\\textcolor{{{color:primary.0}}}{\\dfrac{\\sqrt{2}}{2}}$."
 				]
 			}
+		},
+		{
+			"statement": "Dans un repère orthonormé d'origine $O$, soit $M$ le point du cercle trigonométrique associé au réel $\\dfrac{\\pi}{4}$, et $H$ son projeté orthogonal sur l'axe des abscisses : $OH=\\cos\\left(\\dfrac{\\pi}{4}\\right)$, $HM=\\sin\\left(\\dfrac{\\pi}{4}\\right)$ et $\\widehat{HOM}=45^\\circ$. On démontre que $\\cos\\left(\\dfrac{\\pi}{4}\\right)=\\sin\\left(\\dfrac{\\pi}{4}\\right)=\\dfrac{\\sqrt{2}}{2}$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Le triangle $OHM$ est rectangle en $H$, donc $\\widehat{OMH}=90^\\circ-45^\\circ=45^\\circ$.\n- Il a deux angles égaux : il est isocèle en $H$, et $\\cos\\left(\\dfrac{\\pi}{4}\\right)=\\sin\\left(\\dfrac{\\pi}{4}\\right)$.\n- On note $c$ cette valeur commune. Comme $OM=1$, le théorème de Pythagore donne $c^2+c^2=1$.\n- Donc $c^2=\\dfrac{1}{2}$.\n- Comme $c>0$, $c=\\dfrac{\\sqrt{2}}{2}$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"Le triangle $OHM$ est rectangle isocèle : cosinus et sinus sont égaux, et Pythagore donne $2c^2=1$.",
+					"$c$ est positif : $\\textcolor{{{color:primary.0}}}{c=\\dfrac{\\sqrt{2}}{2}}$."
+				]
+			}
 		}
 	],
 	"testSpecs": [
@@ -191,6 +201,24 @@
 			"variationIndex": 2,
 			"variables": {},
 			"answers": ["\\sqrt{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "1", "0", "2", "3"],
 			"expected": {
 				"status": "incorrect"
 			}

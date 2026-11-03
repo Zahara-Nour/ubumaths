@@ -74,6 +74,16 @@
 					"Le taux tend donc vers ${{eval:p*v}}+{{eval:u*q}}=\\textcolor{{{color:primary.0}}}{{{eval:p*v+u*q}}}$ : $(uv)'(a)=u'(a)v(a)+u(a)v'(a)$, et non $u'(a)v'(a)$."
 				]
 			}
+		},
+		{
+			"statement": "Soit $u$ et $v$ deux fonctions dérivables en un réel $a$, et $h$ un réel non nul. On admet que $v(a+h)$ tend vers $v(a)$ quand $h$ tend vers $0$. On démontre que $(uv)'(a)=u'(a)v(a)+u(a)v'(a)$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- On ajoute et on retranche $u(a)v(a+h)$ au numérateur $u(a+h)v(a+h)-u(a)v(a)$ du taux de variation de $uv$.\n- Le numérateur s'écrit $\\big(u(a+h)-u(a)\\big)v(a+h)+u(a)\\big(v(a+h)-v(a)\\big)$.\n- Le taux vaut $\\dfrac{u(a+h)-u(a)}{h}\\times v(a+h)+u(a)\\times\\dfrac{v(a+h)-v(a)}{h}$.\n- Quand $h$ tend vers $0$, ce taux tend vers $u'(a)v(a)+u(a)v'(a)$.\n- Donc $uv$ est dérivable en $a$ et $(uv)'(a)=u'(a)v(a)+u(a)v'(a)$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"Le terme ajouté puis retranché permet de factoriser : apparaissent les taux de variation de $u$ et de $v$.",
+					"Ils tendent vers $u'(a)$ et $v'(a)$, et $v(a+h)$ vers $v(a)$ : $\\textcolor{{{color:primary.0}}}{(uv)'(a)=u'(a)v(a)+u(a)v'(a)}$."
+				]
+			}
 		}
 	],
 	"testSpecs": [
@@ -201,6 +211,24 @@
 				"q": "4"
 			},
 			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "1", "0", "2", "3"],
 			"expected": {
 				"status": "incorrect"
 			}
