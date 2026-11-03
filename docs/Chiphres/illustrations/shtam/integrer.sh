@@ -7,9 +7,11 @@ racine=$(git rev-parse --show-toplevel)
 dossier="$racine/docs/Chiphres/illustrations/shtam/$slug"
 article="$racine/src/lib/server/shtam/articles/$slug.md"
 mkdir -p "$dossier"
-n=1; while [ -e "$dossier/essai-$n-ia.jpg" ]; do n=$((n+1)); done
-cp "$src" "$dossier/essai-$n-ia.jpg"
-magick "$dossier/essai-$n-ia.jpg" -resize 1200x800^ -gravity center -crop 1200x800+0+0 +repage \
+ext=${src##*.}
+n=1; while ls "$dossier/essai-$n-ia."* >/dev/null 2>&1; do n=$((n+1)); done
+orig="$dossier/essai-$n-ia.$ext"
+cp "$src" "$orig"
+magick "$orig" -resize 1200x800^ -gravity center -crop 1200x800+0+0 +repage \
   -quality 85 -define webp:method=6 "$racine/static/shtam/$slug.webp"
 python3 - "$article" "$slug" "$alt" <<'PY'
 import sys
@@ -22,4 +24,4 @@ fin = s.index('---', 3) + 3
 s = s[:fin] + "\n\n" + ligne + s[fin:]
 open(p, 'w').write(s)
 PY
-echo "essai-$n-ia.jpg → static/shtam/$slug.webp ($(du -k "$racine/static/shtam/$slug.webp" | cut -f1) Ko)"
+echo "$(basename "$orig") → static/shtam/$slug.webp ($(du -k "$racine/static/shtam/$slug.webp" | cut -f1) Ko)"
