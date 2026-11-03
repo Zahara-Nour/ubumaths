@@ -1,0 +1,149 @@
+{
+	"title": "Espace : coplanarité et parallélisme sur un cube",
+	"description": "Sur un cube ou un pavé droit nommé, quatre sommets coplanaires ou non, droite parallèle à un plan ou non, en écrivant un vecteur en fonction de deux autres (pièges : quatre sommets « en rectangle » pris pour non coplanaires, droite qui ne touche pas la face mais coupe le plan)",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs, droites et plans de l'espace",
+	"subdomain": "Sur une figure",
+	"level": 5,
+	"delay": 180,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "$ABCDEFGH$ est un {{if:p==0|cube}}{{if:p==1|pavé droit}} (face $ABCD$ en bas, $E$ au-dessus de $A$).\n\n```solide\nforme: {{if:p==0|cube 4}}{{if:p==1|pave 5 3 2}}\nsommets: A B C D E F G H\nmarquer: {{if:k==0|sommet A, sommet B, sommet G, sommet H}}{{if:k==1|sommet A, sommet C, sommet G, sommet E}}{{if:k==2|sommet A, sommet B, sommet C, sommet E}}{{if:k==3|sommet B, sommet D, sommet E, sommet G}}{{if:k==4|sommet A, sommet D, sommet G, sommet F}}{{if:k==5|sommet B, sommet C, sommet H, sommet E}}{{if:k==6|sommet A, sommet C, sommet F, sommet H}}{{if:k==7|sommet C, sommet E, sommet F, sommet H}}\n```\n\nLes points {{if:k==0|$A$, $B$, $G$ et $H$}}{{if:k==1|$A$, $C$, $G$ et $E$}}{{if:k==2|$A$, $B$, $C$ et $E$}}{{if:k==3|$B$, $D$, $E$ et $G$}}{{if:k==4|$A$, $D$, $G$ et $F$}}{{if:k==5|$B$, $C$, $H$ et $E$}}{{if:k==6|$A$, $C$, $F$ et $H$}}{{if:k==7|$C$, $E$, $F$ et $H$}} sont-ils coplanaires ?\n\n```choix\n- Oui, ils sont coplanaires.\n- Non, ils ne sont pas coplanaires.\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0..1"
+				},
+				{
+					"name": "k",
+					"expression": "0..7"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:k==0|0|{{if:k==1|0|{{if:k==2|1|{{if:k==3|1|{{if:k==4|0|{{if:k==5|0|{{if:k==6|1|1}}}}}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Quatre points $X$, $Y$, $Z$, $T$ ($X$, $Y$, $Z$ non alignés) sont coplanaires si et seulement si $\\overrightarrow{XT}$ s'écrit $x\\overrightarrow{XY}+y\\overrightarrow{XZ}$.",
+					"{{if:k==0|Dans la base $(\\overrightarrow{AB},\\overrightarrow{AD},\\overrightarrow{AE})$ : $\\overrightarrow{AB}(1\\,;\\,0\\,;\\,0)$, $\\overrightarrow{AG}(1\\,;\\,1\\,;\\,1)$, $\\overrightarrow{AH}(0\\,;\\,1\\,;\\,1)$.}}{{if:k==1|Dans la base $(\\overrightarrow{AB},\\overrightarrow{AD},\\overrightarrow{AE})$ : $\\overrightarrow{AC}(1\\,;\\,1\\,;\\,0)$, $\\overrightarrow{AG}(1\\,;\\,1\\,;\\,1)$, $\\overrightarrow{AE}(0\\,;\\,0\\,;\\,1)$.}}{{if:k==2|Dans la base $(\\overrightarrow{AB},\\overrightarrow{AD},\\overrightarrow{AE})$ : $\\overrightarrow{AB}(1\\,;\\,0\\,;\\,0)$, $\\overrightarrow{AC}(1\\,;\\,1\\,;\\,0)$, $\\overrightarrow{AE}(0\\,;\\,0\\,;\\,1)$.}}{{if:k==3|Dans la base $(\\overrightarrow{AB},\\overrightarrow{AD},\\overrightarrow{AE})$ : $\\overrightarrow{BD}(-1\\,;\\,1\\,;\\,0)$, $\\overrightarrow{BE}(-1\\,;\\,0\\,;\\,1)$, $\\overrightarrow{BG}(0\\,;\\,1\\,;\\,1)$.}}{{if:k==4|Dans la base $(\\overrightarrow{AB},\\overrightarrow{AD},\\overrightarrow{AE})$ : $\\overrightarrow{AD}(0\\,;\\,1\\,;\\,0)$, $\\overrightarrow{AG}(1\\,;\\,1\\,;\\,1)$, $\\overrightarrow{AF}(1\\,;\\,0\\,;\\,1)$.}}{{if:k==5|Dans la base $(\\overrightarrow{AB},\\overrightarrow{AD},\\overrightarrow{AE})$ : $\\overrightarrow{BC}(0\\,;\\,1\\,;\\,0)$, $\\overrightarrow{BH}(-1\\,;\\,1\\,;\\,1)$, $\\overrightarrow{BE}(-1\\,;\\,0\\,;\\,1)$.}}{{if:k==6|Dans la base $(\\overrightarrow{AB},\\overrightarrow{AD},\\overrightarrow{AE})$ : $\\overrightarrow{AC}(1\\,;\\,1\\,;\\,0)$, $\\overrightarrow{AF}(1\\,;\\,0\\,;\\,1)$, $\\overrightarrow{AH}(0\\,;\\,1\\,;\\,1)$.}}{{if:k==7|Dans la base $(\\overrightarrow{AB},\\overrightarrow{AD},\\overrightarrow{AE})$ : $\\overrightarrow{CE}(-1\\,;\\,-1\\,;\\,1)$, $\\overrightarrow{CF}(0\\,;\\,-1\\,;\\,1)$, $\\overrightarrow{CH}(-1\\,;\\,0\\,;\\,1)$.}}",
+					"{{if:k==0|On cherche $x$ et $y$ tels que $\\overrightarrow{AH}=x\\overrightarrow{AB}+y\\overrightarrow{AG}$. Les première et deuxième coordonnées donnent $x=-1$ et $y=1$.}}{{if:k==1|On cherche $x$ et $y$ tels que $\\overrightarrow{AE}=x\\overrightarrow{AC}+y\\overrightarrow{AG}$. Les première et troisième coordonnées donnent $x=-1$ et $y=1$.}}{{if:k==2|On cherche $x$ et $y$ tels que $\\overrightarrow{AE}=x\\overrightarrow{AB}+y\\overrightarrow{AC}$. Les première et deuxième coordonnées donnent $x=0$ et $y=0$.}}{{if:k==3|On cherche $x$ et $y$ tels que $\\overrightarrow{BG}=x\\overrightarrow{BD}+y\\overrightarrow{BE}$. Les première et deuxième coordonnées donnent $x=1$ et $y=-1$.}}{{if:k==4|On cherche $x$ et $y$ tels que $\\overrightarrow{AF}=x\\overrightarrow{AD}+y\\overrightarrow{AG}$. Les première et deuxième coordonnées donnent $x=-1$ et $y=1$.}}{{if:k==5|On cherche $x$ et $y$ tels que $\\overrightarrow{BE}=x\\overrightarrow{BC}+y\\overrightarrow{BH}$. Les première et deuxième coordonnées donnent $x=-1$ et $y=1$.}}{{if:k==6|On cherche $x$ et $y$ tels que $\\overrightarrow{AH}=x\\overrightarrow{AC}+y\\overrightarrow{AF}$. Les première et deuxième coordonnées donnent $x=1$ et $y=-1$.}}{{if:k==7|On cherche $x$ et $y$ tels que $\\overrightarrow{CH}=x\\overrightarrow{CE}+y\\overrightarrow{CF}$. Les première et deuxième coordonnées donnent $x=1$ et $y=-1$.}}",
+					"{{if:k==0|Pour la troisième coordonnée : $-1\\times0+1\\times1=1$, et c'est bien la troisième coordonnée de $\\overrightarrow{AH}$ : $\\overrightarrow{AH}=-\\overrightarrow{AB}+\\overrightarrow{AG}$.}}{{if:k==1|Pour la deuxième coordonnée : $-1\\times1+1\\times1=0$, et c'est bien la deuxième coordonnée de $\\overrightarrow{AE}$ : $\\overrightarrow{AE}=-\\overrightarrow{AC}+\\overrightarrow{AG}$.}}{{if:k==2|Pour la troisième coordonnée : $0\\times0+0\\times0=0$, or la troisième coordonnée de $\\overrightarrow{AE}$ vaut $1$ : aucun couple ne convient.}}{{if:k==3|Pour la troisième coordonnée : $1\\times0+\\left(-1\\right)\\times1=-1$, or la troisième coordonnée de $\\overrightarrow{BG}$ vaut $1$ : aucun couple ne convient.}}{{if:k==4|Pour la troisième coordonnée : $-1\\times0+1\\times1=1$, et c'est bien la troisième coordonnée de $\\overrightarrow{AF}$ : $\\overrightarrow{AF}=-\\overrightarrow{AD}+\\overrightarrow{AG}$.}}{{if:k==5|Pour la troisième coordonnée : $-1\\times0+1\\times1=1$, et c'est bien la troisième coordonnée de $\\overrightarrow{BE}$ : $\\overrightarrow{BE}=-\\overrightarrow{BC}+\\overrightarrow{BH}$.}}{{if:k==6|Pour la troisième coordonnée : $1\\times0+\\left(-1\\right)\\times1=-1$, or la troisième coordonnée de $\\overrightarrow{AH}$ vaut $1$ : aucun couple ne convient.}}{{if:k==7|Pour la troisième coordonnée : $1\\times1+\\left(-1\\right)\\times1=0$, or la troisième coordonnée de $\\overrightarrow{CH}$ vaut $1$ : aucun couple ne convient.}}",
+					"{{if:k==0|Donc $\\textcolor{{{color:primary.0}}}{ \\text{les quatre points sont coplanaires} }$.}}{{if:k==1|Donc $\\textcolor{{{color:primary.0}}}{ \\text{les quatre points sont coplanaires} }$.}}{{if:k==2|Donc $\\textcolor{{{color:primary.0}}}{ \\text{ils ne sont pas coplanaires} }$.}}{{if:k==3|Donc $\\textcolor{{{color:primary.0}}}{ \\text{ils ne sont pas coplanaires} }$.}}{{if:k==4|Donc $\\textcolor{{{color:primary.0}}}{ \\text{les quatre points sont coplanaires} }$.}}{{if:k==5|Donc $\\textcolor{{{color:primary.0}}}{ \\text{les quatre points sont coplanaires} }$.}}{{if:k==6|Donc $\\textcolor{{{color:primary.0}}}{ \\text{ils ne sont pas coplanaires} }$.}}{{if:k==7|Donc $\\textcolor{{{color:primary.0}}}{ \\text{ils ne sont pas coplanaires} }$.}}"
+				]
+			}
+		},
+		{
+			"statement": "$ABCDEFGH$ est un {{if:p==0|cube}}{{if:p==1|pavé droit}} (face $ABCD$ en bas, $E$ au-dessus de $A$).\n\n```solide\nforme: {{if:p==0|cube 4}}{{if:p==1|pave 5 3 2}}\nsommets: A B C D E F G H\nmarquer: {{if:k==0|face ABCD}}{{if:k==1|sommet A, sommet C, sommet E, sommet G, arete BF}}{{if:k==2|face BCGF}}{{if:k==3|face ABFE}}{{if:k==4|face BCGF}}{{if:k==5|face ABCD}}{{if:k==6|sommet A, sommet C, sommet E, sommet G}}{{if:k==7|face EFGH}}\n```\n\nLa droite {{if:k==0|$(EG)$ est-elle parallèle au plan $(ABC)$}}{{if:k==1|$(BF)$ est-elle parallèle au plan $(ACG)$}}{{if:k==2|$(DE)$ est-elle parallèle au plan $(BCG)$}}{{if:k==3|$(CH)$ est-elle parallèle au plan $(ABF)$}}{{if:k==4|$(AG)$ est-elle parallèle au plan $(BCF)$}}{{if:k==5|$(EC)$ est-elle parallèle au plan $(ABD)$}}{{if:k==6|$(BH)$ est-elle parallèle au plan $(ACG)$}}{{if:k==7|$(DF)$ est-elle parallèle au plan $(EFG)$}} ?\n\n```choix\n- Oui, elle est parallèle au plan.\n- Non, elle n'est pas parallèle au plan.\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0..1"
+				},
+				{
+					"name": "k",
+					"expression": "0..7"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:k==0|0|{{if:k==1|0|{{if:k==2|0|{{if:k==3|0|{{if:k==4|1|{{if:k==5|1|{{if:k==6|1|1}}}}}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une droite $(MN)$ est parallèle au plan $(XYZ)$ si et seulement si $\\overrightarrow{MN}$ s'écrit $x\\overrightarrow{XY}+y\\overrightarrow{XZ}$.",
+					"{{if:k==0|Dans la base $(\\overrightarrow{AB},\\overrightarrow{AD},\\overrightarrow{AE})$ : $\\overrightarrow{AB}(1\\,;\\,0\\,;\\,0)$, $\\overrightarrow{AC}(1\\,;\\,1\\,;\\,0)$, $\\overrightarrow{EG}(1\\,;\\,1\\,;\\,0)$.}}{{if:k==1|Dans la base $(\\overrightarrow{AB},\\overrightarrow{AD},\\overrightarrow{AE})$ : $\\overrightarrow{AC}(1\\,;\\,1\\,;\\,0)$, $\\overrightarrow{AG}(1\\,;\\,1\\,;\\,1)$, $\\overrightarrow{BF}(0\\,;\\,0\\,;\\,1)$.}}{{if:k==2|Dans la base $(\\overrightarrow{AB},\\overrightarrow{AD},\\overrightarrow{AE})$ : $\\overrightarrow{BC}(0\\,;\\,1\\,;\\,0)$, $\\overrightarrow{BG}(0\\,;\\,1\\,;\\,1)$, $\\overrightarrow{DE}(0\\,;\\,-1\\,;\\,1)$.}}{{if:k==3|Dans la base $(\\overrightarrow{AB},\\overrightarrow{AD},\\overrightarrow{AE})$ : $\\overrightarrow{AB}(1\\,;\\,0\\,;\\,0)$, $\\overrightarrow{AF}(1\\,;\\,0\\,;\\,1)$, $\\overrightarrow{CH}(-1\\,;\\,0\\,;\\,1)$.}}{{if:k==4|Dans la base $(\\overrightarrow{AB},\\overrightarrow{AD},\\overrightarrow{AE})$ : $\\overrightarrow{BC}(0\\,;\\,1\\,;\\,0)$, $\\overrightarrow{BF}(0\\,;\\,0\\,;\\,1)$, $\\overrightarrow{AG}(1\\,;\\,1\\,;\\,1)$.}}{{if:k==5|Dans la base $(\\overrightarrow{AB},\\overrightarrow{AD},\\overrightarrow{AE})$ : $\\overrightarrow{AB}(1\\,;\\,0\\,;\\,0)$, $\\overrightarrow{AD}(0\\,;\\,1\\,;\\,0)$, $\\overrightarrow{EC}(1\\,;\\,1\\,;\\,-1)$.}}{{if:k==6|Dans la base $(\\overrightarrow{AB},\\overrightarrow{AD},\\overrightarrow{AE})$ : $\\overrightarrow{AC}(1\\,;\\,1\\,;\\,0)$, $\\overrightarrow{AG}(1\\,;\\,1\\,;\\,1)$, $\\overrightarrow{BH}(-1\\,;\\,1\\,;\\,1)$.}}{{if:k==7|Dans la base $(\\overrightarrow{AB},\\overrightarrow{AD},\\overrightarrow{AE})$ : $\\overrightarrow{EF}(1\\,;\\,0\\,;\\,0)$, $\\overrightarrow{EG}(1\\,;\\,1\\,;\\,0)$, $\\overrightarrow{DF}(1\\,;\\,-1\\,;\\,1)$.}}",
+					"{{if:k==0|On cherche $x$ et $y$ tels que $\\overrightarrow{EG}=x\\overrightarrow{AB}+y\\overrightarrow{AC}$. Les première et deuxième coordonnées donnent $x=0$ et $y=1$.}}{{if:k==1|On cherche $x$ et $y$ tels que $\\overrightarrow{BF}=x\\overrightarrow{AC}+y\\overrightarrow{AG}$. Les première et troisième coordonnées donnent $x=-1$ et $y=1$.}}{{if:k==2|On cherche $x$ et $y$ tels que $\\overrightarrow{DE}=x\\overrightarrow{BC}+y\\overrightarrow{BG}$. Les deuxième et troisième coordonnées donnent $x=-2$ et $y=1$.}}{{if:k==3|On cherche $x$ et $y$ tels que $\\overrightarrow{CH}=x\\overrightarrow{AB}+y\\overrightarrow{AF}$. Les première et troisième coordonnées donnent $x=-2$ et $y=1$.}}{{if:k==4|On cherche $x$ et $y$ tels que $\\overrightarrow{AG}=x\\overrightarrow{BC}+y\\overrightarrow{BF}$. Les deuxième et troisième coordonnées donnent $x=1$ et $y=1$.}}{{if:k==5|On cherche $x$ et $y$ tels que $\\overrightarrow{EC}=x\\overrightarrow{AB}+y\\overrightarrow{AD}$. Les première et deuxième coordonnées donnent $x=1$ et $y=1$.}}{{if:k==6|On cherche $x$ et $y$ tels que $\\overrightarrow{BH}=x\\overrightarrow{AC}+y\\overrightarrow{AG}$. Les première et troisième coordonnées donnent $x=-2$ et $y=1$.}}{{if:k==7|On cherche $x$ et $y$ tels que $\\overrightarrow{DF}=x\\overrightarrow{EF}+y\\overrightarrow{EG}$. Les première et deuxième coordonnées donnent $x=2$ et $y=-1$.}}",
+					"{{if:k==0|Pour la troisième coordonnée : $0\\times0+1\\times0=0$, et c'est bien la troisième coordonnée de $\\overrightarrow{EG}$ : $\\overrightarrow{EG}=\\overrightarrow{AC}$.}}{{if:k==1|Pour la deuxième coordonnée : $-1\\times1+1\\times1=0$, et c'est bien la deuxième coordonnée de $\\overrightarrow{BF}$ : $\\overrightarrow{BF}=-\\overrightarrow{AC}+\\overrightarrow{AG}$.}}{{if:k==2|Pour la première coordonnée : $-2\\times0+1\\times0=0$, et c'est bien la première coordonnée de $\\overrightarrow{DE}$ : $\\overrightarrow{DE}=-2\\overrightarrow{BC}+\\overrightarrow{BG}$.}}{{if:k==3|Pour la deuxième coordonnée : $-2\\times0+1\\times0=0$, et c'est bien la deuxième coordonnée de $\\overrightarrow{CH}$ : $\\overrightarrow{CH}=-2\\overrightarrow{AB}+\\overrightarrow{AF}$.}}{{if:k==4|Pour la première coordonnée : $1\\times0+1\\times0=0$, or la première coordonnée de $\\overrightarrow{AG}$ vaut $1$ : aucun couple ne convient.}}{{if:k==5|Pour la troisième coordonnée : $1\\times0+1\\times0=0$, or la troisième coordonnée de $\\overrightarrow{EC}$ vaut $-1$ : aucun couple ne convient.}}{{if:k==6|Pour la deuxième coordonnée : $-2\\times1+1\\times1=-1$, or la deuxième coordonnée de $\\overrightarrow{BH}$ vaut $1$ : aucun couple ne convient.}}{{if:k==7|Pour la troisième coordonnée : $2\\times0+\\left(-1\\right)\\times0=0$, or la troisième coordonnée de $\\overrightarrow{DF}$ vaut $1$ : aucun couple ne convient.}}",
+					"{{if:k==0|Donc $\\textcolor{{{color:primary.0}}}{ \\text{la droite est parallèle au plan} }$ (et pas contenue : $E$ n'est pas dans le plan).}}{{if:k==1|Donc $\\textcolor{{{color:primary.0}}}{ \\text{la droite est parallèle au plan} }$ (et pas contenue : $B$ n'est pas dans le plan).}}{{if:k==2|Donc $\\textcolor{{{color:primary.0}}}{ \\text{la droite est parallèle au plan} }$ (et pas contenue : $D$ n'est pas dans le plan).}}{{if:k==3|Donc $\\textcolor{{{color:primary.0}}}{ \\text{la droite est parallèle au plan} }$ (et pas contenue : $C$ n'est pas dans le plan).}}{{if:k==4|Donc $\\textcolor{{{color:primary.0}}}{ \\text{la droite n'est pas parallèle au plan} }$.}}{{if:k==5|Donc $\\textcolor{{{color:primary.0}}}{ \\text{la droite n'est pas parallèle au plan} }$.}}{{if:k==6|Donc $\\textcolor{{{color:primary.0}}}{ \\text{la droite n'est pas parallèle au plan} }$.}}{{if:k==7|Donc $\\textcolor{{{color:primary.0}}}{ \\text{la droite n'est pas parallèle au plan} }$.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : ABGH coplanaires",
+			"variationIndex": 0,
+			"variables": {
+				"p": "0",
+				"k": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : ACGE « non » (piège)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"k": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : ABCE non coplanaires",
+			"variationIndex": 0,
+			"variables": {
+				"p": "0",
+				"k": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : (EG) parallèle à (ABC)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "0",
+				"k": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : (AG) et (BCF) : « oui » (piège)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1",
+				"k": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : (BH) et (ACG) : non",
+			"variationIndex": 1,
+			"variables": {
+				"p": "0",
+				"k": "6"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

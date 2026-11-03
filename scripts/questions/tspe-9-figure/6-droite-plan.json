@@ -1,0 +1,159 @@
+{
+	"title": "Espace : position relative d'une droite et d'un plan",
+	"description": "Sur un cube ou un pavé droit nommé, une droite par deux sommets et un plan par trois sommets (face ou plan diagonal) : sécants, strictement parallèles, droite contenue (pièges : droite qui ne touche pas la face dessinée mais coupe le plan, contenue prise pour sécante)",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs, droites et plans de l'espace",
+	"subdomain": "Positions relatives",
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "$ABCDEFGH$ est un {{if:p==0|cube}}{{if:p==1|pavé droit}} (face $ABCD$ en bas, $E$ au-dessus de $A$).\n\n```solide\nforme: {{if:p==0|cube 4}}{{if:p==1|pave 5 3 2}}\nsommets: A B C D E F G H\nmarquer: {{if:k==0|face ABCD}}{{if:k==1|face BCGF}}{{if:k==2|face EFGH}}{{if:k==3|face ABFE}}{{if:k==4|sommet A, sommet C, sommet E, sommet G}}{{if:k==5|face ABCD}}\n```\n\nQuelle est la position relative de la droite {{if:k==0|$(EC)$ et du plan $(ABD)$}}{{if:k==1|$(AG)$ et du plan $(BCF)$}}{{if:k==2|$(DF)$ et du plan $(EFG)$}}{{if:k==3|$(CE)$ et du plan $(ABF)$}}{{if:k==4|$(BG)$ et du plan $(ACG)$}}{{if:k==5|$(HB)$ et du plan $(ABC)$}} ?\n\n```choix\n- Sécants : la droite coupe le plan en un seul point.\n- Strictement parallèles.\n- La droite est contenue dans le plan.\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0..1"
+				},
+				{
+					"name": "k",
+					"expression": "0..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une droite et un plan sont **sécants** (un seul point commun), **parallèles** (la droite dirigée par un vecteur du plan : strictement, ou contenue dans le plan).",
+					"{{if:k==0|$C$ est dans le plan $(ABD)$ et $E$ n'y est pas : la droite et le plan sont $\\textcolor{{{color:primary.0}}}{ \\text{sécants} }$, en $C$.}}{{if:k==1|$G$ est dans le plan $(BCF)$ et $A$ n'y est pas : la droite et le plan sont $\\textcolor{{{color:primary.0}}}{ \\text{sécants} }$, en $G$.}}{{if:k==2|$F$ est dans le plan $(EFG)$ et $D$ n'y est pas : la droite et le plan sont $\\textcolor{{{color:primary.0}}}{ \\text{sécants} }$, en $F$.}}{{if:k==3|$E$ est dans le plan $(ABF)$ et $C$ n'y est pas : la droite et le plan sont $\\textcolor{{{color:primary.0}}}{ \\text{sécants} }$, en $E$.}}{{if:k==4|$G$ est dans le plan $(ACG)$ et $B$ n'y est pas : la droite et le plan sont $\\textcolor{{{color:primary.0}}}{ \\text{sécants} }$, en $G$.}}{{if:k==5|$B$ est dans le plan $(ABC)$ et $H$ n'y est pas : la droite et le plan sont $\\textcolor{{{color:primary.0}}}{ \\text{sécants} }$, en $B$.}}"
+				]
+			}
+		},
+		{
+			"statement": "$ABCDEFGH$ est un {{if:p==0|cube}}{{if:p==1|pavé droit}} (face $ABCD$ en bas, $E$ au-dessus de $A$).\n\n```solide\nforme: {{if:p==0|cube 4}}{{if:p==1|pave 5 3 2}}\nsommets: A B C D E F G H\nmarquer: {{if:k==0|face ABCD}}{{if:k==1|sommet A, sommet C, sommet E, sommet G, arete BF}}{{if:k==2|face CDHG}}{{if:k==3|face BCGF}}{{if:k==4|face ABFE}}{{if:k==5|face EFGH}}\n```\n\nQuelle est la position relative de la droite {{if:k==0|$(EG)$ et du plan $(ABC)$}}{{if:k==1|$(BF)$ et du plan $(ACG)$}}{{if:k==2|$(AF)$ et du plan $(DCG)$}}{{if:k==3|$(DE)$ et du plan $(BCG)$}}{{if:k==4|$(CH)$ et du plan $(ABF)$}}{{if:k==5|$(BD)$ et du plan $(EFG)$}} ?\n\n```choix\n- Sécants : la droite coupe le plan en un seul point.\n- Strictement parallèles.\n- La droite est contenue dans le plan.\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0..1"
+				},
+				{
+					"name": "k",
+					"expression": "0..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une droite et un plan sont **sécants** (un seul point commun), **parallèles** (la droite dirigée par un vecteur du plan : strictement, ou contenue dans le plan).",
+					"{{if:k==0|$\\overrightarrow{EG}=\\overrightarrow{AC}$, et $A$, $C$ sont dans le plan $(ABC)$ : la droite est parallèle au plan. $E$ n'est pas dans le plan, donc elle est $\\textcolor{{{color:primary.0}}}{ \\text{strictement parallèle au plan} }$.}}{{if:k==1|$\\overrightarrow{BF}=\\overrightarrow{AE}$, et $A$, $E$ sont dans le plan $(ACG)$ : la droite est parallèle au plan. $B$ n'est pas dans le plan, donc elle est $\\textcolor{{{color:primary.0}}}{ \\text{strictement parallèle au plan} }$.}}{{if:k==2|$\\overrightarrow{AF}=\\overrightarrow{DG}$, et $D$, $G$ sont dans le plan $(DCG)$ : la droite est parallèle au plan. $A$ n'est pas dans le plan, donc elle est $\\textcolor{{{color:primary.0}}}{ \\text{strictement parallèle au plan} }$.}}{{if:k==3|$\\overrightarrow{DE}=\\overrightarrow{CF}$, et $C$, $F$ sont dans le plan $(BCG)$ : la droite est parallèle au plan. $D$ n'est pas dans le plan, donc elle est $\\textcolor{{{color:primary.0}}}{ \\text{strictement parallèle au plan} }$.}}{{if:k==4|$\\overrightarrow{CH}=\\overrightarrow{BE}$, et $B$, $E$ sont dans le plan $(ABF)$ : la droite est parallèle au plan. $C$ n'est pas dans le plan, donc elle est $\\textcolor{{{color:primary.0}}}{ \\text{strictement parallèle au plan} }$.}}{{if:k==5|$\\overrightarrow{BD}=\\overrightarrow{FH}$, et $F$, $H$ sont dans le plan $(EFG)$ : la droite est parallèle au plan. $B$ n'est pas dans le plan, donc elle est $\\textcolor{{{color:primary.0}}}{ \\text{strictement parallèle au plan} }$.}}"
+				]
+			}
+		},
+		{
+			"statement": "$ABCDEFGH$ est un {{if:p==0|cube}}{{if:p==1|pavé droit}} (face $ABCD$ en bas, $E$ au-dessus de $A$).\n\n```solide\nforme: {{if:p==0|cube 4}}{{if:p==1|pave 5 3 2}}\nsommets: A B C D E F G H\nmarquer: {{if:k==0|sommet A, sommet C, sommet E, sommet G}}{{if:k==1|sommet A, sommet B, sommet G, sommet H}}{{if:k==2|face EFGH}}{{if:k==3|sommet A, sommet C, sommet E, sommet G}}{{if:k==4|sommet B, sommet D, sommet F, sommet H}}{{if:k==5|face ADHE}}\n```\n\nQuelle est la position relative de la droite {{if:k==0|$(AG)$ et du plan $(ACE)$}}{{if:k==1|$(BH)$ et du plan $(ABG)$}}{{if:k==2|$(FH)$ et du plan $(EFG)$}}{{if:k==3|$(CE)$ et du plan $(ACG)$}}{{if:k==4|$(DF)$ et du plan $(BDH)$}}{{if:k==5|$(AH)$ et du plan $(ADE)$}} ?\n\n```choix\n- Sécants : la droite coupe le plan en un seul point.\n- Strictement parallèles.\n- La droite est contenue dans le plan.\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0..1"
+				},
+				{
+					"name": "k",
+					"expression": "0..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une droite et un plan sont **sécants** (un seul point commun), **parallèles** (la droite dirigée par un vecteur du plan : strictement, ou contenue dans le plan).",
+					"{{if:k==0|$A$ et $G$ sont tous deux dans le plan $(ACE)$ : $\\textcolor{{{color:primary.0}}}{ \\text{la droite est contenue dans le plan} }$.}}{{if:k==1|$B$ et $H$ sont tous deux dans le plan $(ABG)$ : $\\textcolor{{{color:primary.0}}}{ \\text{la droite est contenue dans le plan} }$.}}{{if:k==2|$F$ et $H$ sont tous deux dans le plan $(EFG)$ : $\\textcolor{{{color:primary.0}}}{ \\text{la droite est contenue dans le plan} }$.}}{{if:k==3|$C$ et $E$ sont tous deux dans le plan $(ACG)$ : $\\textcolor{{{color:primary.0}}}{ \\text{la droite est contenue dans le plan} }$.}}{{if:k==4|$D$ et $F$ sont tous deux dans le plan $(BDH)$ : $\\textcolor{{{color:primary.0}}}{ \\text{la droite est contenue dans le plan} }$.}}{{if:k==5|$A$ et $H$ sont tous deux dans le plan $(ADE)$ : $\\textcolor{{{color:primary.0}}}{ \\text{la droite est contenue dans le plan} }$.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : (EC) et (ABD) sécants",
+			"variationIndex": 0,
+			"variables": {
+				"p": "0",
+				"k": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : (BG) et (ACG) « contenue »",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"k": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : (EG) et (ABC) parallèles",
+			"variationIndex": 1,
+			"variables": {
+				"p": "0",
+				"k": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : (BF) et (ACG) « sécants »",
+			"variationIndex": 1,
+			"variables": {
+				"p": "0",
+				"k": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : (AG) dans (ACE)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "1",
+				"k": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : (BH) et (ABG) « sécants » (piège)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "0",
+				"k": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
