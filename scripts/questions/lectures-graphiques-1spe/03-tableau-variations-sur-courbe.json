@@ -1,0 +1,114 @@
+{
+	"title": "Dresser le tableau de variations d'une fonction lu sur sa courbe",
+	"description": "Choisir, parmi quatre, le tableau de variations d'une courbe à deux extremums (trois flèches), extremums et bornes sur les nœuds",
+	"grades": ["1_SPE", "1_GEN", "1_TECHNO"],
+	"theme": "Fonctions",
+	"domain": "Généralités",
+	"subdomain": "Variations",
+	"level": 6,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\left[{{eval:(h)-4}}\\,;{{eval:(h)+4}}\\right]$.\n\n```courbe\nx: {{eval:(h)-5}} ; {{eval:(h)+5}}\ny: {{eval:(k)-5}} ; {{eval:(k)+5}}\ngrille: 1 ; 1\nf(x) = {{a}}*((x-({{h}}))^3-12*(x-({{h}})))/4+({{k}}) sur [{{eval:(h)-4}} ; {{eval:(h)+4}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction qui {{if:a>0|monte, descend puis remonte|descend, monte puis redescend}}, avec deux extremums.\n```\n\nQuel est le tableau de variations de $f$ ?\n\n````choix\n- ```variation\n  variable: x\n  domain: {{eval:(h)-4}}, {{eval:(h)-2}}, {{eval:(h)+2}}, {{eval:(h)+4}}\n\n  variation: f(x)\n    {{eval:(h)-4}}: {{eval:(k)-4*(a)}}, {{if:a>0|bottom|top}}\n    {{eval:(h)-2}}: {{eval:(k)+4*(a)}}, {{if:a>0|top|bottom}}\n    {{eval:(h)+2}}: {{eval:(k)-4*(a)}}, {{if:a>0|bottom|top}}\n    {{eval:(h)+4}}: {{eval:(k)+4*(a)}}, {{if:a>0|top|bottom}}\n  ```\n- ```variation\n  variable: x\n  domain: {{eval:(h)-4}}, {{eval:(h)-2}}, {{eval:(h)+2}}, {{eval:(h)+4}}\n\n  variation: f(x)\n    {{eval:(h)-4}}: {{eval:(k)+4*(a)}}, {{if:a>0|top|bottom}}\n    {{eval:(h)-2}}: {{eval:(k)-4*(a)}}, {{if:a>0|bottom|top}}\n    {{eval:(h)+2}}: {{eval:(k)+4*(a)}}, {{if:a>0|top|bottom}}\n    {{eval:(h)+4}}: {{eval:(k)-4*(a)}}, {{if:a>0|bottom|top}}\n  ```\n- ```variation\n  variable: x\n  domain: {{eval:(h)-4}}, {{eval:(h)+4}}\n\n  variation: f(x)\n    {{eval:(h)-4}}: {{eval:(k)-4*(a)}}, {{if:a>0|bottom|top}}\n    {{eval:(h)+4}}: {{eval:(k)+4*(a)}}, {{if:a>0|top|bottom}}\n  ```\n- ```variation\n  variable: x\n  domain: {{eval:(h)-4}}, {{eval:(h)-2}}, {{eval:(h)+4}}\n\n  variation: f(x)\n    {{eval:(h)-4}}: {{eval:(k)-4*(a)}}, {{if:a>0|bottom|top}}\n    {{eval:(h)-2}}: {{eval:(k)+4*(a)}}, {{if:a>0|top|bottom}}\n    {{eval:(h)+4}}: {{eval:(k)-4*(a)}}, {{if:a>0|bottom|top}}\n  ```\n````",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1|-1"
+				},
+				{
+					"name": "h",
+					"expression": "-1..1"
+				},
+				{
+					"name": "k",
+					"expression": "-2..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La courbe {{if:a>0|monte jusqu'en $x={{eval:(h)-2}}$, descend jusqu'en $x={{eval:(h)+2}}$, puis remonte|descend jusqu'en $x={{eval:(h)-2}}$, monte jusqu'en $x={{eval:(h)+2}}$, puis redescend}} : le tableau a **trois flèches**, qui changent de sens en ${{eval:(h)-2}}$ et en ${{eval:(h)+2}}$.",
+					"On lit les ordonnées aux bornes et aux extremums : $f({{eval:(h)-4}})={{eval:(k)-4*(a)}}$, $f({{eval:(h)-2}})={{eval:(k)+4*(a)}}$, $f({{eval:(h)+2}})={{eval:(k)-4*(a)}}$ et $f({{eval:(h)+4}})={{eval:(k)+4*(a)}}$.",
+					"```variation\nvariable: x\ndomain: {{eval:(h)-4}}, {{eval:(h)-2}}, {{eval:(h)+2}}, {{eval:(h)+4}}\n\nvariation: f(x)\n  {{eval:(h)-4}}: {{eval:(k)-4*(a)}}, {{if:a>0|bottom|top}}\n  {{eval:(h)-2}}: {{eval:(k)+4*(a)}}, {{if:a>0|top|bottom}}\n  {{eval:(h)+2}}: {{eval:(k)-4*(a)}}, {{if:a>0|bottom|top}}\n  {{eval:(h)+4}}: {{eval:(k)+4*(a)}}, {{if:a>0|top|bottom}}\n```"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a > 0 : le bon tableau",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"h": "0",
+				"k": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : flèches à l'envers",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"h": "0",
+				"k": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une seule flèche (tendance d'ensemble)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"h": "0",
+				"k": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : dernier changement de sens oublié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"h": "0",
+				"k": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a < 0 : le bon tableau",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"h": "1",
+				"k": "-2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
