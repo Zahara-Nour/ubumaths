@@ -9,19 +9,18 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2335 ; PR du « 1x » en revue._
+_Mis à jour le 2026-11-03, après #2338._
 
-- **État** : page à cocher relue (2/2 OK) ; #2335 (gabarit, tableau qui défile seul) mergée ; branche
-  `fix/coefficients-liens-logiques` : `cleanCoefficients` nettoie chaque morceau d'une formule à liens
-  logiques (`\iff`…) — tests verts, doc à jour, revue `code-reviewer` Opus en cours.
-- **Prochaine action** : revue → PR → CI → merge ; puis essais iPhone (#2287, #2297, 2-330, 2-446) ;
-  puis verser le chantier.
-- **En attente de David** : défilement à 390 px, à juger aux essais iPhone.
+- **État** : page à cocher relue (2/2 OK) ; #2335 (gabarit : seul le tableau défile) et #2338
+  (`cleanCoefficients` sur les formules à liens logiques : « −1x » de 2-330 corrigé) mergées, CI verte.
+  #2338 = moteur : visible en prod au prochain `deploy:prod` (David), aucune écriture en prod.
+- **Prochaine action** : essais iPhone (#2287, #2297, 2-330, 2-446 ; après le `deploy:prod` pour voir
+  le corrigé) ; puis verser le chantier.
+- **En attente de David** : défilement à 390 px (513 px de tableau pour 308), à juger aux essais iPhone.
 - **Pièges en cours** : `delay` n'est plus une garde d'`update-published-questions.ts` ; la bonne réponse
   vient de `blanks` ; Chrome n'atteint pas `localhost` → Playwright ; worktree neuf → `svelte-kit sync`
-  avant `question:specs` et `page-a-cocher.ts` ; la lecture de `question_templates` plafonne à 1000 lignes
-  (paginer) ; branche locale `fix/page-a-cocher-tableau-defile` à supprimer après un pull de `main`.
-- **Worktree / branche** : `../ubumaths-wt-tableau-signes`, `fix/coefficients-liens-logiques`.
+  avant `question:specs` et `page-a-cocher.ts` ; lire `question_templates` en pages (plafond 1000 lignes).
+- **Worktree / branche** : aucun (retiré après #2338).
 
 ---
 
@@ -256,3 +255,7 @@ Branche `feat/tableau-signes-modeles`, worktree `../ubumaths-wt-tableau-signes`.
   33 modèles, 912 tirages → 15 changent, dans 2 modèles (2-330 ; « Fonction affine : variations, signe et
   droite »), tous des « 1x » corrigés. Première version : `(E)\iff y'=…` → `E\iff …` (règle des
   parenthèses) → garde « au moins un chiffre ».
+- Revue `code-reviewer` Opus : rien de bloquant (47 formules sondées) ; intégrés : doc (6 liens, pas 4),
+  3 tests (`\Rightarrow`/`\Long…`, `$$` multi-lignes, marqueur `<<expr:expressionA>>`).
+- Conflit du journal avec `main` (mon commit de #2335) : la CI ne démarrait pas ; fusion de `origin/main`,
+  les deux côtés gardés. **#2338 mergée** (CI verte, 16 checks), le 2026-11-03.
