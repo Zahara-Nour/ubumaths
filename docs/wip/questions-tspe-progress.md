@@ -10,21 +10,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2282 (fichiers du lot 10)._
+_Mis à jour le 2026-11-03, après #2286 (migration du lot 10 passée en prod)._
 
-- **État** : lots 0 à 8 publiés. Lot 10 (455, 481, 616) : fichiers mergés (#2282) dans `scripts/questions/tspe-10/`,
-  pas encore en base de prod.
-- **Prochaine action** : David crée les brouillons depuis le dépôt principal
-  (`pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-10 --publier`) ; je relève les `id`, puis
-  migration nœud + tag (gabarit lot 8c) avec son test, page à cocher, publication. Ensuite le versement (bilan dans
-  `tspe.md`, pièges dans `couvrir-un-niveau.md`, journaux vers `docs/archive/wip/`, renvois des tests dans une PR à
-  part, comme pour `questions-1spe`).
-- **En attente de David** : la commande `create-questions --publier` ci-dessus.
+- **État** : lots 0 à 8 publiés. Lot 10 : 3 brouillons en prod (96b90f36 → 455, 74da1cd6 → 481, ea48f760 → 616),
+  rangés et tagués (#2286, `db:migrate` fait, relu au MCP). Page à cocher :
+  https://claude.ai/artifact/VBKMGY8uxzMy8jGUiTpqRj (0 verdict au 2026-11-03) ; `publier-lot` en simulation : vert.
+- **Prochaine action** : compter les verdicts (`ArtifactData list verdicts`), puis David lance
+  `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/tspe-10 --publier`. Ensuite le versement (bilan
+  dans `tspe.md`, pièges dans `couvrir-un-niveau.md`, journaux vers `docs/archive/wip/`, renvois des tests dans une PR
+  à part, comme pour `questions-1spe`).
+- **En attente de David** : la relecture (le cercle de 455 n'est pas dessiné par la page : le jouer dans l'aperçu
+  `/dashboard/admin/questions/96b90f36-da1d-4d77-be73-ede6ee6420ed/preview`), puis la publication.
 - **Pièges en cours** : voir « Décisions communes et pièges » dans `questions-tspe-restes-progress.md` ; et ceux du
   lot 10 : `sonde-courbes` ne voit pas les courbes d'un choix ; `{{p}}*pi/6` s'affiche non simplifié sur le cercle ;
-  `cleanCoefficients` réécrit P_A(B) en « P_A B ».
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe` (branche `feat/questions-tspe-lot10` mergée ; la garder
-  pour la PR de migration, sur une branche neuve).
+  `cleanCoefficients` réécrit P_A(B) en « P_A B » ; la garde « déjà tagués » ne se déclenche jamais seule (un modèle
+  tagué a un nœud).
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe`, branches mergées (à retirer au versement).
 
 ## 1. Relevé (prod, 2026-10-29)
 
