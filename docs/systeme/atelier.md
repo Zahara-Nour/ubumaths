@@ -1446,7 +1446,8 @@ fractions », 2026-10-12) :
   factorielles dont la valeur est courte se calcule (`shortFactorialValue` : `1000!/999!` → 1000,
   `1000!/998!` → 999 000 ; règle « calcul puis mesure », David, 2026-11-01 — avant le 2026-11-03,
   la ligne gardait `\dfrac{1000!}{999!}`, le moteur ne réduisant aucune factorielle au-delà de
-  2⁵³). L'arrondi se lit alors sur le résultat calculé (√2 tapé
+  2⁵³) ; une comparaison aussi, membre par membre (`boundedComparison` : `1000!/999! = 1000` est
+  vraie, elle répondait faux). L'arrondi se lit alors sur le résultat calculé (√2 tapé
   n'entre en fraction que par son flottant, dont la puissance déborde).
 
 **Chaînes et « différent de »** (2026-10-12) : `1 < x < 3` est vraie si chaque maillon l'est

@@ -561,3 +561,11 @@ affiché (`toLatex(exactShown)`, la règle de `render.ts`), dans les deux modes.
 corpus, 10/11 de `plafond-reponse.test.ts` avec le moteur de `main`. Suites `mathAST` + `atelier` +
 `geometry-core` (36 228) vertes. **Liste du lot 2 vide** côté registre ; restent les entrées du lot 1
 (`.dériver`, `.simplifier`, `.résoudre`, `equivalent-04`, refus) et celles de l'Atelier.
+
+**Revue de la PR 5 (`code-reviewer`, Sonnet)** : aucun bloquant. Corrigé — faux silencieux
+antérieur, devenu incohérent : `1000!/999! = 1000` → `\text{faux}`, `1000!/999! > 999` refusé
+(« non évaluable ») ; `boundedComparison` remplace un membre de factorielles courtes par sa valeur
+(chaînes et `et` compris). Preuve rouge : 5/5 tests. **Limites notées, non corrigées** (antérieures) :
+une grandeur garde ses factorielles (`5 m * 25!/24!`, chemin `quantityResult`) ;
+`20000!/19999!` passe pour trop long (prévision par somme des tailles : `exactTooLong` 154 672 pour
+une valeur de 20000), écriture gardée.

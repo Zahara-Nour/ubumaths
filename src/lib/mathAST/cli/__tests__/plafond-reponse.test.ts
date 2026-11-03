@@ -52,3 +52,17 @@ describe('Une écriture gardée répond par elle-même', () => {
 		expect(run('(1+1/1000)^1000', 'decimal').answer).toBe('\\left( 1 + 1 / 1000 \\right)^{1000}');
 	});
 });
+
+describe('Une comparaison de factorielles courtes se tranche juste', () => {
+	it.each([
+		['1000!/999! = 1000', '\\text{vrai}'],
+		['1000!/999! > 999', '\\text{vrai}'],
+		['1000!/999! < 5', '\\text{faux}'],
+		['1 < 1000!/999! < 2000', '\\text{vrai}'],
+		['1000!/999! = 1000 et 2 > 1', '\\text{vrai}']
+	])('%s → %s', (line, answer) => {
+		const result = run(line);
+		expect(result.success).toBe(true);
+		expect(result.answer).toBe(answer);
+	});
+});
