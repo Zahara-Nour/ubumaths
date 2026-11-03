@@ -8,14 +8,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, phase 0 posée._
+_Mis à jour le 2026-11-03, phase 0 validée (D-L9)._
 
-- **État** : phase 0 du lot 9 écrite (§ Phase 0), **en attente de validation**. Aucun fichier, aucune branche.
-- **Prochaine action** : sur go, worktree `../ubumaths-wt-questions-tspe-lot9`, gabarit
-  `docs/wip/questions/lot-tspe-espace-6a.py`, fichiers `scripts/questions/tspe-9-figure/`.
-- **En attente de David** : Q1 à Q5 de la phase 0.
-- **Pièges en cours** : ceux du § 9 de `couvrir-un-niveau.md` (Rendu, suite ; tag sur le nœud ou sa notion).
-- **Worktree / branche** : aucun.
+- **État** : phase 0 du lot 9 **validée** (D-L9 : recos de Q1 à Q5). Aucun fichier, aucune branche.
+- **Prochaine action** : worktree `git worktree add -b feat/questions-tspe-lot9 ../ubumaths-wt-questions-tspe-lot9
+origin/main` ; script de lot `docs/wip/questions/lot-tspe-9-figure.py` (gabarit `lot-tspe-espace-6a.py`, réponses
+  calculées depuis les coordonnées des sommets) → `scripts/questions/tspe-9-figure/` (8 fichiers, F1-F8) ; specs,
+  tirages relus, essai en base locale, PR des fichiers seuls.
+- **En attente de David** : rien.
+- **Pièges en cours** : ceux du § 9 de `couvrir-un-niveau.md` (Rendu, suite ; tag sur le nœud ou sa notion) ;
+  ` ```solide ` ne dessine ni flèche, ni diagonale, ni point hors sommet.
+- **Worktree / branche** : aucun (à créer).
 
 ---
 
@@ -78,3 +81,8 @@ Catégories : deux sous-domaines neufs dans « Vecteurs, droites et plans de l'e
   la garde « notion sans sous-notion » liste alors les sous-notions admises (migration lot 7).
 - **Q5 (accès)** : qui pourra lire quoi, qu'il ne pouvait pas lire avant ? Reco : personne (brouillons ; la
   migration ne pose que nœud et tags).
+
+**D-L9 (David, 2026-11-03, « je suis tes recos »)** : Q1 8 modèles sur un cube nommé, vecteurs et droites écrits
+dans l'énoncé ; Q2 334 en C (ligne 12 de `outils-manquants.md`) ; Q3 sous-domaines neufs « Sur une figure » et
+« Positions relatives » ; Q4 F8 (339) rangé sur la notion « Espace » ; Q5 accès : personne ne gagne ni ne perd
+d'accès.
