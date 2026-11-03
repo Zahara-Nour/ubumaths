@@ -10,6 +10,7 @@ couvre:
   - 'src/lib/types/{question-display,question-template}.ts'
   - 'src/lib/server/{evaluation-attempts,questions-bulk-status,template-publication,template-fact-sheet,grading-budget,corrected-detail,template-review,point-bounds}.ts'
   - 'src/routes/(protected)/dev/modeles/**'
+  - src/lib/components/MathKeyboardClose.svelte
   - 'src/lib/components/dev/**'
   - scripts/questions/reprise-verdicts.ts
   - src/lib/server/exercise-search-indexed.ts

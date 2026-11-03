@@ -21,15 +21,28 @@
 	let keyboardHeight = $state(0);
 
 	/**
+	 * Fermeture demandée, pas encore faite : MathLive attend ≈ 300 ms, et un événement de
+	 * géométrie dans l'intervalle (onglets du clavier remis à zéro au `focusout` de la question,
+	 * `FillBlanksInput`) ferait réapparaître le bouton. Levé jusqu'à la fermeture réelle, ou
+	 * jusqu'à ce qu'un champ MathLive reprenne le focus.
+	 */
+	let closing = false;
+
+	/**
 	 * Le clavier (`window.mathVirtualKeyboard`) n'existe qu'une fois MathLive chargé : on s'y
 	 * accroche au premier focus venu, puis on suit son ouverture et sa taille.
 	 */
 	$effect(() => {
 		let keyboard: typeof window.mathVirtualKeyboard | undefined;
 		const update = () => {
-			keyboardHeight = keyboard?.visible ? keyboard.boundingRect.height : 0;
+			if (!keyboard?.visible) closing = false;
+			keyboardHeight = keyboard?.visible && !closing ? keyboard.boundingRect.height : 0;
 		};
-		const attach = () => {
+		const attach = (event?: FocusEvent) => {
+			if (closing && event?.target instanceof Element && event.target.tagName === 'MATH-FIELD') {
+				closing = false;
+				update();
+			}
 			if (keyboard || !window.mathVirtualKeyboard) return;
 			keyboard = window.mathVirtualKeyboard;
 			keyboard.addEventListener('virtual-keyboard-toggle', update);
@@ -59,6 +72,7 @@
 	 */
 	function closeKeyboard(event: MouseEvent) {
 		if (event.currentTarget instanceof HTMLElement) event.currentTarget.focus();
+		closing = true;
 		keyboardHeight = 0;
 	}
 </script>

@@ -44,3 +44,7 @@ pas dans le clavier par défaut qu'utilise le site. David valide les deux correc
   `userEvent.click`, clic programmatique). La preuve est la reproduction Playwright ci-dessus.
 - Vu en passant (pas traité) : en paysage, le champ tapé peut rester caché sous le clavier
   (MathLive ne le fait pas remonter) ; à juger à l'essai iPhone.
+- Revue `code-reviewer` (Sonnet) : rien de bloquant. Intégré : drapeau `closing` (le bouton pouvait
+  réapparaître pendant les 300 ms de fermeture, sur un `geometrychange`) ; remis à zéro quand un
+  champ MathLive reprend le focus. Mesuré : bouton masqué pendant toute la fermeture, de retour à
+  la réouverture. Fichier ajouté au `couvre:` de `docs/systeme/questions.md` (garde du pre-push).
