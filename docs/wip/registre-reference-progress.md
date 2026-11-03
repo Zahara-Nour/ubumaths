@@ -6,13 +6,13 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2281._
+_Mis à jour le 2026-11-03, PR 2/5 (D) en cours._
 
 - **État** : lot 2 du registre découpé en 5 PR (§ Lot 2 — correction du registre). PR 1/5 MERGÉE
-  (#2281, A/B : `decimal` + `decimalExact`, `answer` exacte dans les deux modes) ; reste 47 lignes
-  du registre connues fausses au lot 2. Pas déployée.
-- **Prochaine action** : PR 2/5 — D, expression à lettres rangée comme l'Atelier (`resultToShow`
-  de `atelier/render.ts` : `tidy(ast, { order: 'kept' })`, S3) : 23 lignes `decimal-05…10`, `signes-`.
+  (#2281, A/B). PR 2/5 (D) écrite sur `fix/registre-lot2-d` : 22 lignes justes ; reste 20 lignes
+  du registre connues fausses au lot 2 (lecture 10, plafond 5, C 5). Pas déployée.
+- **Prochaine action** : ouvrir/merger la PR 2/5, puis PR 3/5 — lecture de l'entrée (degrés, `π`,
+  refus de `pi`) : `remarquables-01…04, 08, 12`, `racines-06`, `approche-08, 09, 12`.
 - **En attente de David** : rien.
 - **Tranché** : option `unitChoice: 'school'` GARDÉE exprès (David, 2026-11-03 : « utile plus
   tard ») — ne pas proposer de la retirer ; § Unité du résultat et § Revue de #2276 ; avant : Q9 EN ENTIER, A-D du lot 2,
@@ -20,7 +20,7 @@ _Mis à jour le 2026-11-03, après #2281._
 - **Pièges** : `docs:check-a-jour` local ne voit que le COMMITÉ (CI rouge sur #2281 : 2 docs) ;
   PR en conflit avec `main` = aucun run de CI → `git merge origin/main` ; `rebase` et `restore` =
   liste `ask` ; sous-expressions de `tidy` en `durations: 'single'`.
-- **Worktree / branche** : aucun (retirés après #2281).
+- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `fix/registre-lot2-d`.
 
 ---
 
@@ -490,3 +490,13 @@ lit `decimalExact` (le signe pour l'Atelier). Preuve rouge : 14 lignes du corpus
 Revue `code-reviewer` (Sonnet) : aucun bloquant ; corrigé — « sans signe » = sans `=`/`≈`, le
 moins reste (doc + tests `-1/3`, `-3`, `2[h]-3[h]`) ; `decimal` d'une grandeur en `\unit{…}`
 comme `answer` (le juge lit `\unit` = `\mathrm`).
+
+**PR 2 (D), 2026-11-03** : une expression à lettres non liées (`createExpressionDisplayResult`)
+répond par sa forme rangée, `tidiedExpression` = `tidy(…, { order: 'kept' })` sauf grandeur — la
+règle de `resultToShow` de l'Atelier — dans `answer` ET `output` ; `ast` reste l'entrée (l'Atelier
+la range lui-même ; ses autres lecteurs y lisent la saisie, non audités un par un). Justes : 21
+lignes de D + `remarquables-06` (`2*45°` → 90°). Rendu changé, toujours faux (lecture, PR 3) :
+`remarquables-08`, `racines-06`, `approche-08`. Preuve rouge : 25 tests du corpus en échec avant
+la mise à jour de la liste. Test mis à jour : `reciproque-a-la-volee` `x^-1` → texte `1/x` (l'écran
+affichait déjà `\dfrac{1}{x}`, seul le texte retardait). 1re retouche (dans `resultToShow` du
+registre) sans effet, annulée : ce chemin ne voit que les lettres liées.

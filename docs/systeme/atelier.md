@@ -1274,7 +1274,10 @@ du registre déclare sa **réponse brute** dans le champ `answer` de `WebReplEng
 de la réponse seule, exacte dans les deux modes) et, pour un calcul tapé ou une grandeur seule,
 son **écriture décimale** dans `decimal` (au point, en LaTeX comme `answer`, sans `=` ni `≈`, moins
 compris, arrondie selon Q3, même pour un nombre déjà écrit) et `decimalExact` (`=` ou `≈`) — décisions A et B du lot 2 : le mode
-décimal est un choix d'affichage de l'outil, qui pose `=`/`≈`, la virgule et le `×`. L'Atelier
+décimal est un choix d'affichage de l'outil, qui pose `=`/`≈`, la virgule et le `×`. Une
+expression à lettres non liées répond par sa **forme rangée**, celle de l'écran (`tidy`, ordre
+de l'élève, S3 : `x/x` gardé ; décision D, 2026-11-03), dans `answer` et dans le texte ; son `ast`
+reste l'entrée lue, que `resultToShow` range. L'Atelier
 l'habille, il ne la remplace pas. Le contrat est le corpus
 `tests/fixtures/mathast/registre-corpus.ts`, joué contre le registre et contre la ligne affichée
 par l'Atelier (`src/lib/mathAST/cli/__tests__/registre-corpus/`, `src/lib/atelier/__tests__/registre-corpus.test.ts`) ;
