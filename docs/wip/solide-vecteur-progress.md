@@ -9,11 +9,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, phase 0 posée._
+_Mis à jour le 2026-11-03, phase 0 validée (D-SV)._
 
-- **État** : phase 0 écrite (ci-dessous), rien de codé.
-- **Prochaine action** : réponses de David aux questions Q1-Q5, puis lot 1 (tests d'abord).
-- **En attente de David** : Q1-Q5 de la phase 0.
+- **État** : phase 0 validée par David (D-SV : Q1-Q5 selon les recos), rien de codé.
+- **Prochaine action** : lot 1, affichage `points:` + `vecteurs:` : tests rouges d'abord (parseur, scène), puis
+  écran, PDF, catalogue, doc `ubumark.md`. Ligne 13 de `outils-manquants.md` à passer « En cours » sur `main`
+  (bloquée le 2026-11-03 par un `deploy:prod` en cours).
+- **En attente de David** : rien.
 - **Pièges en cours** : un clic à l'écran ne dit pas la profondeur en perspective cavalière : le geste ne
   peut viser que des points connus en 3D (sommets, points déclarés).
 - **Worktree / branche** : `../ubumaths-wt-solide-vecteur` · `feat/solide-vecteur` · serveur 5176.
@@ -31,7 +33,7 @@ _Mis à jour le 2026-11-03, phase 0 posée._
 - Les gestes des autres genres du nœud `espace` (`cubes` : `dessiner:` / `retrouver:` ; `patron` : `designer:` /
   `completer:`) suivent le même contrat : un geste par bloc, une case, aiguillage par genre.
 
-## Phase 0 (2026-11-03, à valider)
+## Phase 0 (2026-11-03, validée)
 
 ### Ce que verra l'élève (nominal)
 
@@ -72,6 +74,10 @@ O centre ABCD`), dessinés et nommés ? Reco : **points déclarés** — les man
   (démarche `couvrir-niveau`, lot à part) ? Reco : **oui**, dernier lot.
 - **Q5 (accès)** : qui pourra lire quoi, qu'il ne pouvait pas lire avant ? Reco : **personne** — l'outil ne
   touche pas la base ; le modèle de 334 arrivera en brouillon, rangé et tagué par migration comme les autres.
+
+**D-SV (David, 2026-11-03, réponses aux questions)** : Q1 points déclarés (`points: I milieu AE, O centre
+ABCD`), pas de milieux automatiques ; Q2 origine imposée ou libre (`depuis A` facultatif) ; Q3 `vecteurs:` en
+lot 1 ; Q4 modèle TSPE-334 en dernier lot ; Q5 accès : personne ne gagne ni ne perd d'accès.
 
 ### Lots proposés
 
