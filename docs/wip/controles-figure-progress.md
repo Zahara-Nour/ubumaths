@@ -564,3 +564,13 @@ Palette inchangée (Règle · Équerre · Compas · Report · Point).
 
 Reste ouverte depuis le lot 3b : le message « Ton compas est ouvert à l'œil : ouvre-le jusqu'à un sommet
 du triangle. » (ajouté après la revue, sans phase 0).
+
+### Décisions de David (2026-11-03, « je valide » mes recommandations)
+
+1. Longueurs = **segments de la figure à reporter** au compas ; règle graduée plus tard (avec le rapporteur).
+2. Bouton **Report** à part ; le Compas ne change pas.
+3. **Côtés [AC] et [BC] tracés exigés** ; C = leur extrémité commune, construite.
+4. **Les deux côtés de (AB) justes** ; pas de côté imposé.
+5. Règle sévère des médiatrices **laissée telle quelle** dans ce lot (sa propre phase 0 plus tard).
+6. Message du lot 3b « Ton compas est ouvert à l'œil : ouvre-le jusqu'à un sommet du triangle. »
+   **gardé**.
