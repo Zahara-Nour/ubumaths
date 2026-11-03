@@ -13,7 +13,7 @@ _Mis à jour le 2026-11-03, après #2327 (lot 6 mergé)._
 - **Prochaine action** : phase 0 du lot 7, le triangle donné par un côté et deux angles (5e), décidé
   « après » le lot 6 (§ 16, décision 5) ; nouveau worktree. Plus tard : variante « rapporteur déjà
   posé » (§ 19, décision 4).
-- **En attente de David** : validation de la phase 0 du lot 7 (§ 21, 5 questions).
+- **En attente de David** : rien (phase 0 du lot 7 validée, § 21 ; codage en cours).
 - **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12) ;
   `perpendiculaire(A, s)` échoue quand A est un bout de s ; `symetrie(P, axe=d)` échoue si P définit
   d ; l'« Essayer » de l'aide ne rend pas la case jouable ; plafond de 20 objets sans message ; la
@@ -932,3 +932,12 @@ d'angle, est donc construit. Le repère seul ne construit toujours rien.
    aucun geste neuf, Report + Rapporteur + Règle + Segment) ; ou au lot suivant ?
 5. **Angle non adjacent au côté** (côté [AB], angles en A et en C : calcul du 3e angle d'abord) : hors
    lot (recommandé : c'est un calcul, 5e « somme des angles », puis le même geste) ?
+
+### Décisions de David (2026-11-03, « je suis tes recos »)
+
+1. La vérification **`triangle` élargie** : une donnée à trois lettres est un angle (sommet A ou B).
+2. Côté d'angle prolongé à la **Règle** (par le centre du rapporteur et un repère), puis côtés au
+   Segment ; pas d'outil Demi-droite.
+3. Message « de part et d'autre de [AB] » **gardé**.
+4. **Deux côtés et l'angle compris** (`AC = u ; CAB = 40`) **dans ce lot**.
+5. Angle non adjacent au côté : **hors lot**.
