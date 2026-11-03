@@ -824,3 +824,12 @@ numérique). Les poses du rapporteur et les repères ne sont pas notés. Papier 
 3. **Message « mauvaise graduation »** pour 180 − a : le garder, comme au lot 5 (recommandé) ?
 4. **Variante « rapporteur déjà posé »** (lire seulement, sans geste) : plus tard si besoin (recommandé) ;
    ou dans ce lot ?
+
+### Décisions de David (2026-11-03, « je suis tes recos »)
+
+1. La mesure se tape **dans la case figure** (`verifier: mesure AOB`), mesure calculée sur la figure.
+2. Mesure **exacte**.
+3. Message « mauvaise graduation » pour 180 − a **gardé**.
+4. Variante « rapporteur déjà posé » : **plus tard**, si besoin.
+5. M1 du § 18 : fenêtre **refusée** à la publication pour un angle (construire ou mesurer) quand son
+   rapport largeur / hauteur dépasse 2.

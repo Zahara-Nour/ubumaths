@@ -37,11 +37,27 @@ export function protractorRadiusOf(window: FigureShapes['window']): number {
 }
 
 /**
+ * Fenêtre au plus deux fois plus large que haute (ou l'inverse) pour un angle,
+ * à construire ou à mesurer (décision de David, M1 du § 18) : au-delà, sur un
+ * petit écran, le rapporteur (part du plus petit côté) devient illisible
+ */
+export const PROTRACTOR_WINDOW_MAX_RATIO = 2;
+
+/** Ce qui ne va pas dans la fenêtre pour poser un rapporteur ; null si elle convient */
+export function protractorWindowError(window: FigureShapes['window']): string | null {
+	if (!window) return null;
+	const width = window.xMax - window.xMin;
+	const height = window.yMax - window.yMin;
+	if (Math.max(width / height, height / width) <= PROTRACTOR_WINDOW_MAX_RATIO) return null;
+	return `fenêtre trop allongée pour le rapporteur (${PROTRACTOR_WINDOW_MAX_RATIO} fois plus large que haute au plus, ou l’inverse) : il serait illisible sur un petit écran`;
+}
+
+/**
  * Le demi-rapporteur posé en `o`, base le long de [OA) (direction unitaire `u`),
  * corps du côté `sens`, tient-il entier dans la fenêtre ? (sa barre, de l'autre
  * côté de la base, peut dépasser)
  */
-function protractorFits(
+export function protractorFits(
 	o: Position,
 	u: Position,
 	sens: 1 | -1,
@@ -129,6 +145,8 @@ function settingOf(
 		throw new AngleAuthorError('Case « figure » : traits de la figure non fournis au juge (angle)');
 	}
 	if (shapes.grid) throw new AngleAuthorError(`${label} : l’angle se construit sur papier uni`);
+	const windowError = protractorWindowError(shapes.window);
+	if (windowError) throw new AngleAuthorError(`${label} : ${windowError}`);
 	const [nameA, nameO] = check.points;
 	const [a, o] = [nameA, nameO].map((name) => {
 		const at = points.get(name);

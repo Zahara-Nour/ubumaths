@@ -10,6 +10,8 @@
  * `repere(vx;vy;ax;ay;r;deg;sens)` (repère du rapporteur : centre, point de la
  * base, rayon, graduation entière 0..180, côté ±1, lot 5), les objets séparés par `|`. Entrée de l'élève : bornée (longueur, nombre
  * d'objets, valeurs finies et modérées) avant toute lecture ; illisible → null.
+ * Angle à mesurer (lot 6) : la mesure tapée en dernier, `mesure(50)`, à part des
+ * objets tracés (`splitMeasuredAnswer`).
  *
  * @module questions/construction/answer
  */
@@ -220,4 +222,33 @@ export function serializeConstructionAnswer(objects: readonly DrawnObject[]): st
 			return `point(${o.x};${o.y})`;
 		})
 		.join('|');
+}
+
+/** La mesure tapée (lot 6) : un entier, trois chiffres au plus */
+const MEASURE_PART_REGEX = /^mesure\(\s*(\d{1,3})\s*\)$/;
+
+/**
+ * Réponse d'un angle à mesurer (lot 6) : les objets tracés (repères du
+ * rapporteur, jamais notés) et la mesure tapée, en dernier ; `measure` null si
+ * rien n'est tapé ; null si la réponse est illisible (mesure ailleurs qu'en
+ * dernier, ou deux fois)
+ */
+export function splitMeasuredAnswer(
+	answer: string
+): { drawn: string; measure: number | null } | null {
+	const parts = answer.trim() === '' ? [] : answer.split('|').map((part) => part.trim());
+	const last = parts.length > 0 ? MEASURE_PART_REGEX.exec(parts[parts.length - 1]) : null;
+	const drawnParts = last ? parts.slice(0, -1) : parts;
+	if (drawnParts.some((part) => part.startsWith('mesure'))) return null;
+	return { drawn: drawnParts.join('|'), measure: last ? Number(last[1]) : null };
+}
+
+/** Écrire les objets tracés suivis de la mesure tapée (écran de l'élève, tests) */
+export function serializeMeasuredAnswer(
+	objects: readonly DrawnObject[],
+	measure: number | null
+): string {
+	const drawn = serializeConstructionAnswer(objects);
+	if (measure === null) return drawn;
+	return drawn === '' ? `mesure(${measure})` : `${drawn}|mesure(${measure})`;
 }

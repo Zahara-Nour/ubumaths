@@ -18,7 +18,12 @@ import type {
 	DroiteParCheck,
 	PolygonCheck
 } from '$lib/ubumark/types/construction';
-import { isDrawnLine, parseConstructionAnswer, type DrawnLine } from './answer';
+import {
+	isDrawnLine,
+	parseConstructionAnswer,
+	splitMeasuredAnswer,
+	type DrawnLine
+} from './answer';
 import {
 	PointAuthorError,
 	assertPoints,
@@ -32,6 +37,7 @@ import { PolygonAuthorError, givenVertices, judgePolygon } from './polygon';
 import { SymmetryAuthorError, assertSymmetry, judgeSymmetry, type FigureShapes } from './symmetry';
 import { TriangleAuthorError, assertTriangle, judgeTriangle } from './triangle';
 import { AngleAuthorError, assertAngle, judgeAngle } from './angle';
+import { MeasureAuthorError, assertMeasure, judgeMeasure } from './measure';
 
 export {
 	EXTRA_SEGMENT_FEEDBACK,
@@ -135,7 +141,8 @@ function asAuthorError(error: unknown): unknown {
 		error instanceof LineAuthorError ||
 		error instanceof CircleAuthorError ||
 		error instanceof TriangleAuthorError ||
-		error instanceof AngleAuthorError
+		error instanceof AngleAuthorError ||
+		error instanceof MeasureAuthorError
 	) {
 		return new ConstructionAuthorError(error.message);
 	}
@@ -182,6 +189,14 @@ export function assertConstructionChecks(
 	}
 	for (const check of checks) {
 		if (check.kind === 'point' || check.kind === 'droite' || check.kind === 'cercle') continue;
+		if (check.kind === 'mesure') {
+			try {
+				assertMeasure(check, points, shapes);
+			} catch (error) {
+				throw asAuthorError(error);
+			}
+			continue;
+		}
 		if (check.kind === 'angle') {
 			try {
 				assertAngle(check, points, shapes);
@@ -240,6 +255,21 @@ export function judgeConstruction(
 	shapes?: FigureShapes,
 	expected?: ExpectedPoints
 ): ConstructionVerdict {
+	// Angle à mesurer (lot 6) : seul dans la figure (garanti par le parseur) ; les repères ne
+	// sont pas notés, la mesure tapée l'est
+	const measure = allChecks.find((c) => c.kind === 'mesure');
+	if (measure) {
+		if (answer.trim() === '') return { status: 'empty' };
+		const split = splitMeasuredAnswer(answer);
+		const drawn = split ? parseConstructionAnswer(split.drawn) : null;
+		// Le rapporteur seul dans la palette : autre chose qu'un repère est une réponse forgée
+		if (!split || !drawn || drawn.some((o) => o.kind !== 'repere')) return { status: 'incorrect' };
+		try {
+			return judgeMeasure(measure, points, shapes, split.measure);
+		} catch (error) {
+			throw asAuthorError(error);
+		}
+	}
 	const objects = parseConstructionAnswer(answer);
 	if (objects === null) return { status: 'incorrect' };
 	if (objects.length === 0) return { status: 'empty' };

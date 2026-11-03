@@ -318,6 +318,14 @@ describe('erreurs d’auteur', () => {
 		expect(() => assertChecks(hidden)).toThrow(ConstructionAuthorError);
 	});
 
+	it('M1 (§ 18) : fenêtre plus de deux fois plus large que haute, refusée', () => {
+		const wide = figure('angle AOy = 50', BODY, [], '0 ; 17 ; 0 ; 8');
+		expect(() => assertChecks(wide)).toThrow(/fenêtre trop allongée/);
+		const tall = figure('angle AOy = 50', BODY, [], '0 ; 10 ; 0 ; 21');
+		expect(() => assertChecks(tall)).toThrow(/fenêtre trop allongée/);
+		expect(() => assertChecks(figure('angle AOy = 50', BODY, [], '0 ; 16 ; 0 ; 8'))).not.toThrow();
+	});
+
 	it('O et A confondus', () => {
 		const same = figure('angle AOy = 50', ['O = point(2, 2)', 'A = point(2, 2)']);
 		expect(() => assertChecks(same)).toThrow(/même endroit/);
