@@ -1025,10 +1025,22 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						construction
 					};
 				}
+				// Case d'un tableau de signes : sa propre case, sans les réglages de la variation
+				// (`answerKind`, unité, précision… jugeraient la valeur de x comme autre chose)
+				const signTableAnswer = signTableAnswers.get(i);
+				if (signTableAnswer) {
+					return {
+						expectedAnswer: signTableAnswer.answer,
+						type: blankResult.blankTypes[i],
+						cellule: signTableAnswer.kind,
+						expectedAnswerLatex: signTableAnswerLatex(signTableAnswer),
+						// Valeur de x jugée par équivalence (phase 0) : `1,5` vaut `\frac{3}{2}`
+						...(signTableAnswer.kind === 'valeur' && { acceptDecimal: true })
+					};
+				}
 				const operationAnswer = operationAnswers.get(i);
 				const buildAnswer = buildAnswers.get(i);
-				const signTableAnswer = signTableAnswers.get(i);
-				const blockAnswer = operationAnswer ?? buildAnswer?.answer ?? signTableAnswer?.answer;
+				const blockAnswer = operationAnswer ?? buildAnswer?.answer;
 				const blank =
 					blockAnswer === undefined
 						? templateBlank
@@ -1162,12 +1174,6 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				if (buildAnswer !== undefined) {
 					resolved.construire = buildAnswer.kind;
 					resolved.expectedAnswerLatex = buildAnswer.answer;
-				}
-				if (signTableAnswer !== undefined) {
-					resolved.cellule = signTableAnswer.kind;
-					resolved.expectedAnswerLatex = signTableAnswerLatex(signTableAnswer);
-					// Valeur de x jugée par équivalence (phase 0) : `1,5` vaut `\frac{3}{2}`
-					if (signTableAnswer.kind === 'valeur') resolved.acceptDecimal = true;
 				}
 				return resolved;
 			});

@@ -308,6 +308,26 @@ describe('tableau de signes : jugement', () => {
 		expect(judgeCase(instance, 0, '3')).toBe(false);
 	});
 
+	it('les cases du tableau n’héritent pas des réglages de la variation (answerKind, unité…)', () => {
+		const mixed = generate(
+			template({
+				statement: `${variation(...PRODUIT)}\n\nRésous $f(x) < 0$ : $S = ?$`,
+				blankDefaults: { answerKind: 'intervalles', precision: 'tenth', unit: { expected: true } },
+				blanks: [{ expectedAnswer: ']-3;2[' }]
+			} as never)
+		);
+		const value = mixed.blanks?.[0];
+		expect(value?.answerKind).toBeUndefined();
+		expect(value?.unit).toBeUndefined();
+		expect(value?.precision).toBeUndefined();
+		expect(mixed.blanks?.[4].answerKind).toBe('intervalles');
+		const answers = (mixed.blanks ?? []).map((b) => b.expectedAnswer);
+		expect(verdict(mixed, answers).blankFeedback?.[0]).toBeUndefined();
+		answers[4] = ']-3;2[';
+		const result = validateAnswer(answers, mixed, answers);
+		expect(result.message ?? '').not.toMatch(/: 1\b/);
+	});
+
 	it('valeur fractionnaire : 1,5 = 3/2 = \\frac{3}{2}', () => {
 		const half = generate(
 			template({

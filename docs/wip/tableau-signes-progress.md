@@ -123,3 +123,9 @@ Branche `feat/tableau-signes-generation`, worktree `../ubumaths-wt-tableau-signe
 - Tests : `generation-tableau-signes.test.ts` (24, rouges avant), parseur +1 ; suites `questions`,
   `ubumark`, `utils`, `rich-text`, `worksheets` : 14 339 verts ; `check:incremental` 0.
 - Rien de visible pour l'élève tant que la PR 3 (saisie) n'est pas là : ne pas écrire de modèle avant.
+- Revues : `security-auditor` sans bloquant ; 3 fuites de forme fermées par refus d'auteur (valeur cachée
+  écrite `f(-3)` dans une ligne `variation:`, toute erreur d'un bloc à cases — domaine répété, ligne
+  libre —, cellule écrite deux fois). Non traité (au modèle de l'éviter) : déduction par un 2e tableau,
+  par `||` d'une ligne `variation:`, par l'étiquette `sign: x+3`. `code-reviewer` Opus : une valeur de x
+  héritait de `blankDefaults` (`answerKind: 'intervalles'` → `-3` jugé faux) → case de tableau construite
+  à part, sans héritage. ⚠️ Cas frère non vérifié : les cases ```operation suivent le chemin d'héritage.
