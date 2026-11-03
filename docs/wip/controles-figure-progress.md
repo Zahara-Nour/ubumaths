@@ -11,7 +11,7 @@ _Mis à jour le 2026-11-03, après #2301 (lot 5 mergé)._
 - **État** : lots 1 à 5 mergés (#2301 : angle au rapporteur), pas encore en prod. PR du rapporteur
   près du bord (§ 18) codée sur `fix/rapporteur-bord`.
 - **Prochaine action** : PR, CI, merge ; puis phase 0 du lot 6 « mesurer un angle » (6-169, même geste).
-- **En attente de David** : rien.
+- **En attente de David** : M1 du § 18 (fenêtre très allongée, rapporteur minuscule).
 - **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12, sa propre
   phase 0) ; `perpendiculaire(A, s)` échoue quand A est un bout de s ; `symetrie(P, axe=d)` échoue si
   P définit d ; l'« Essayer » de l'aide ne rend pas la case jouable ; plafond de 20 objets sans
@@ -765,3 +765,8 @@ Palette déduite : Rapporteur · Segment.
   prend le même rayon (`radiusFor`).
 - Tests : décor déplacé (O(4 ; 3), A(10 ; 3)) ; refus des deux côtés (vérifié rouge avant), tenue d'un
   seul côté (publiable, correction de ce côté). Capture : rapporteur entier dans la figure, retourné ou non.
+- Revue Opus (#2305) : rien de bloquant (`protractorFits` comparé à un échantillonnage de l'arc sur
+  200 000 cas : aucun désaccord ; le refus ne touche que la publication, jamais un verdict). Corrigé
+  (M2) : un côté juste tracé du côté où le rapporteur ne tient pas garde sa correction de ce côté-là.
+  Ouvert (M1, question à David) : fenêtre très allongée sur un petit écran → rapporteur minuscule
+  (0,35 de 4 unités sur 320 px ≈ 22 px de rayon), graduations illisibles.

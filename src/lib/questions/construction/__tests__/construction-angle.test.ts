@@ -353,6 +353,21 @@ describe('erreurs d’auteur', () => {
 			constructionShapes(low)
 		);
 		expect(line.y2).toBeGreaterThan(2.5);
+		// L'élève a tracé dessous (le rapporteur n'y tient pas, son côté peut y être) : la
+		// correction suit son tracé (revue de #2305)
+		const base = Math.atan2(0.5, 4);
+		const below = {
+			x: 5 + Math.cos(base - (50 * Math.PI) / 180),
+			y: 2.5 + Math.sin(base - (50 * Math.PI) / 180)
+		};
+		const [under] = solutionLines(
+			checksOf(low),
+			constructionPositions(low),
+			[segment({ x: 5, y: 2.5 }, below)],
+			constructionShapes(low)
+		);
+		expect(under.y2).toBeLessThan(2.5);
+		expect(under.y2).toBeGreaterThanOrEqual(0);
 	});
 });
 

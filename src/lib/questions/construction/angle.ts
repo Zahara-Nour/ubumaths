@@ -250,8 +250,8 @@ export function judgeAngle(
 
 /**
  * Le côté de la correction : du côté de (OA) où l'élève a tracé (premier
- * segment partant de O hors de (OA)), sinon dans le sens trigonométrique
- * s'il a la place ; null si l'angle ne se construit pas
+ * segment partant de O hors de (OA)), sinon un côté où le rapporteur tient ;
+ * null si l'angle ne se construit pas
  */
 function correctionSide(
 	check: AngleCheck,
@@ -277,7 +277,14 @@ function correctionSide(
 		if (Math.abs(cross) <= eps * distance(o, p)) return [];
 		return [cross > 0 ? 1 : -1];
 	})[0];
-	const side = sides.find((s) => s.sens === drawnSens) ?? sides[0];
+	// Le côté où l'élève a tracé, même si le rapporteur n'y tient pas (son côté y est juste,
+	// revue de #2305) ; sinon un côté où il tient
+	const drawnDirection = drawnSens ? rotated(o, a, check.measure, drawnSens) : null;
+	const drawnRoom = drawnDirection ? roomAlong(o, drawnDirection, shapes?.window ?? null) : 0;
+	const side =
+		drawnSens && drawnDirection && drawnRoom > eps
+			? { direction: drawnDirection, sens: drawnSens, room: drawnRoom }
+			: (sides.find((s) => s.sens === drawnSens) ?? sides[0]);
 	const length = Math.min(Math.max(distance(o, a), radius), side.room);
 	const end = { x: o.x + side.direction.x * length, y: o.y + side.direction.y * length };
 	return { o, a, end, sens: side.sens };
