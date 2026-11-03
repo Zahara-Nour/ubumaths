@@ -25,6 +25,9 @@
  * dessine la face manquante. `solved` : les faces attendues, ou les faces
  * retirées du patron du prof, en gris.
  *
+ * Geste du solide (`tracer: vecteur …`, chantier `solide-vecteur`, lot 2) : le
+ * solide seul, l'élève trace la flèche ; `solved` : la flèche juste (`solideSolutionVector`).
+ *
  * Un bloc en erreur devient le cadre neutre « Solide indisponible » — jamais
  * une erreur de compilation (une seule erreur Typst fait échouer toute la fiche).
  *
@@ -57,6 +60,7 @@ import {
 } from '../utils/espace-solides';
 import { PATRON_FOLD_STROKE, buildPatronScene, type PatronLine } from '../utils/espace-patrons';
 import { expectedPatronAnswer, readCompleterAnswer } from '../utils/patron-gestes';
+import { solideSolutionVector } from '../utils/solide-gestes';
 
 // ============================================================================
 // CONSTANTES
@@ -299,10 +303,16 @@ export function generateEspaceTypst(node: EspaceNode, options: { solved?: boolea
 	const spec = node.spec;
 	if (node.errors.length > 0 || spec === null) return UNAVAILABLE_TYPST;
 
-	if (spec.kind === 'solide') {
-		return ['#align(center)[#block(breakable: false)[', solideTypst(spec), ']]'].join('\n');
-	}
 	const solved = options.solved ?? false;
+	if (spec.kind === 'solide') {
+		// Geste `tracer:` : le solide seul ; corrigé : la flèche juste, en plus des vecteurs donnés
+		const solution = solved ? solideSolutionVector(spec) : null;
+		const drawn =
+			solution === null
+				? spec
+				: { ...spec, vectors: [...spec.vectors, { ...solution, name: null }] };
+		return ['#align(center)[#block(breakable: false)[', solideTypst(drawn), ']]'].join('\n');
+	}
 	if (spec.kind === 'patron') {
 		const figure =
 			spec.task?.kind === 'completer' ? completerTypst(spec, solved) : patronTypst(spec, solved);

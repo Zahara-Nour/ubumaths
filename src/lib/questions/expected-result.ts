@@ -43,10 +43,12 @@ import { NOTHING_COLORED } from '$lib/ubumark/utils/partage-colorier';
 import {
 	findCubesToBuild,
 	findPatronsToBuild,
+	findSolidesToBuild,
 	parseEspaceContent
 } from '$lib/ubumark/parser/espace-parser';
 import { MISSING_HEIGHTS, NOTHING_COLORED_CUBES } from '$lib/ubumark/utils/cubes-gestes';
 import { NOTHING_PLACED, NOTHING_TOUCHED } from '$lib/ubumark/utils/patron-gestes';
+import { BOTH_MISSING, END_MISSING } from '$lib/ubumark/utils/solide-gestes';
 import { buildCaseCount } from './generator/build-answer';
 import { findVariationsToFill } from '$lib/ubumark/parser/variation-table-parser';
 import type { HiddenCellKind } from '$lib/ubumark/types/variation-table';
@@ -233,6 +235,11 @@ function emptyBuildText(kind: BuildKind, source: string): string {
 		const spec = parseEspaceContent(source, 'patron').spec;
 		return spec?.task?.kind === 'completer' ? NOTHING_PLACED : NOTHING_TOUCHED;
 	}
+	if (kind === 'solide') {
+		// Origine imposée : posée d'office, seule l'extrémité manque
+		const task = parseEspaceContent(source, 'solide').spec?.task;
+		return task?.kind === 'vecteur' && task.origin !== null ? END_MISSING : BOTH_MISSING;
+	}
 	return isPlaceKind(kind) ? EMPTY_PLACE_TEXT : EMPTY_BUILD_TEXT;
 }
 
@@ -351,7 +358,8 @@ function buildCaseBlocks(statement: string): Map<number, BuildCaseBlock> {
 		...findCubesToBuild(statement).map((b) => ({ ...b, kind: 'cubes' as const })),
 		...findPatronsToBuild(statement).map((b) => ({ ...b, kind: 'patron' as const })),
 		...findCourbesToPlace(statement).map((b) => ({ ...b, kind: 'courbe' as const })),
-		...findTrigCirclesToPlace(statement).map((b) => ({ ...b, kind: 'trig' as const }))
+		...findTrigCirclesToPlace(statement).map((b) => ({ ...b, kind: 'trig' as const })),
+		...findSolidesToBuild(statement).map((b) => ({ ...b, kind: 'solide' as const }))
 	];
 	const blocks = new Map<number, BuildCaseBlock>();
 	for (const block of found) {

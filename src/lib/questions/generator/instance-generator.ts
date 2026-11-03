@@ -71,7 +71,11 @@ import {
 } from '$lib/ubumark/parser/ranger-parser';
 import { rangerOrder } from '$lib/ubumark/utils/ranger';
 import { hasPartageToColorier } from '$lib/ubumark/parser/partage-parser';
-import { hasCubesToBuild, hasPatronsToBuild } from '$lib/ubumark/parser/espace-parser';
+import {
+	hasCubesToBuild,
+	hasPatronsToBuild,
+	hasSolidesToBuild
+} from '$lib/ubumark/parser/espace-parser';
 import type { RangerSign } from '$lib/ubumark/types/ranger';
 import { buildAnswerOf, MASKED_IN_TEMPLATE } from './build-answer';
 import { parseMarkdown } from '$lib/ubumark/parser/markdown-parser';
@@ -155,6 +159,7 @@ function blockAnswerName(kind: BuildKind): string {
 	if (kind === 'partage') return 'la fraction du bloc partage (colorier:)';
 	if (kind === 'cubes') return 'la vue ou les vues du bloc cubes (dessiner:, retrouver:)';
 	if (kind === 'patron') return 'les faces du bloc patron (designer:, completer:)';
+	if (kind === 'solide') return 'les points du bloc solide (tracer:)';
 	if (kind === 'courbe')
 		return 'les coordonnées du point, la droite ou le vecteur du repère (placer:, tracer:)';
 	if (kind === 'trig') return 'la mesure du point du cercle trigonométrique (placer:)';
@@ -569,6 +574,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				hasPartageToColorier(String(resolvedStatement)) ||
 				hasCubesToBuild(String(resolvedStatement)) ||
 				hasPatronsToBuild(String(resolvedStatement)) ||
+				hasSolidesToBuild(String(resolvedStatement)) ||
 				hasVariationToFill(String(resolvedStatement))) &&
 			getQuestionType({ options: template.options }) === 'fill_in_blanks';
 		if (resolvedVariation.blanks || hasOperationBlock) {
@@ -761,7 +767,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				// Le juge apparierait une construction avec une autre case (34 tapé ailleurs)
 				if (template.options?.orderIndependent) {
 					errors.push(
-						`${kind === 'cubes' || kind === 'patron' || kind === 'courbe' || kind === 'trig' ? 'un' : 'une'} ${kind === 'partage' || kind === 'cubes' || kind === 'patron' ? buildKindName(kind) : isPlaceKind(kind) ? `${buildKindName(kind)} à placer` : 'case à construire'} ne se combine pas avec « ordre indifférent »`
+						`${kind === 'cubes' || kind === 'patron' || kind === 'solide' || kind === 'courbe' || kind === 'trig' ? 'un' : 'une'} ${kind === 'partage' || kind === 'cubes' || kind === 'patron' || kind === 'solide' ? buildKindName(kind) : isPlaceKind(kind) ? `${buildKindName(kind)} à placer` : 'case à construire'} ne se combine pas avec « ordre indifférent »`
 					);
 				}
 				if (errors.length > 0 || !('answer' in read)) {

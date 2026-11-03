@@ -4,7 +4,8 @@
 
 	Aiguillage par genre : ```cubes → `Cubes.svelte` ; assemblage à geste
 	(`dessiner:`, `retrouver:`) hors question (cours, aperçu) → `CubesGeste.svelte`,
-	le geste sans jugement ; ```solide → `Solide.svelte` ; ```patron →
+	le geste sans jugement ; ```solide → `Solide.svelte`, ou `SolideGeste.svelte` pour un vecteur à tracer
+	(`tracer:`, chantier `solide-vecteur`) ; ```patron →
 	`Patron.svelte`, ou `PatronGeste.svelte` pour un patron à geste (`designer:`,
 	`completer:`) hors question (chantier `solides`, ADR 0034).
 
@@ -16,6 +17,7 @@
 	import CubesGeste from './CubesGeste.svelte';
 	import PatronGeste from './PatronGeste.svelte';
 	import Solide from './Solide.svelte';
+	import SolideGeste from './SolideGeste.svelte';
 	import Patron from './Patron.svelte';
 
 	interface Props {
@@ -28,7 +30,9 @@
 	let { node, showErrors, class: className = '' }: Props = $props();
 </script>
 
-{#if node.genre === 'solide'}
+{#if node.genre === 'solide' && node.spec?.kind === 'solide' && node.spec.task && node.errors.length === 0}
+	<SolideGeste {node} class={className} />
+{:else if node.genre === 'solide'}
 	<Solide {node} {showErrors} class={className} />
 {:else if node.genre === 'patron' && node.spec?.kind === 'patron' && node.spec.task && node.errors.length === 0}
 	<PatronGeste {node} class={className} />

@@ -92,6 +92,9 @@ const TASK_LINE_REGEX = /^(dessiner|retrouver)\s*:/i;
  */
 const PATRON_TASK_LINE_REGEX = /^(d[eé]signer|compl[eé]ter)\s*:/i;
 
+/** Une ligne de geste d'un solide (`tracer:`, chantier `solide-vecteur`, lot 2) */
+const SOLIDE_TASK_LINE_REGEX = /^tracer\s*:/i;
+
 // ============================================================================
 // DÉTECTION
 // ============================================================================
@@ -149,10 +152,14 @@ export interface EspaceToBuild {
  * parseur : corps sans clôtures, fermeture, et `nested` pour un bloc en retrait
  * ou cité (l'élève ne pourrait pas y répondre : sa case n'est pas créée)
  */
-function findEspaceToBuild(markdown: string, genre: 'cubes' | 'patron'): EspaceToBuild[] {
+function findEspaceToBuild(markdown: string, genre: EspaceKind): EspaceToBuild[] {
 	const lines = markdown.split('\n');
 	const plainLines = lines.map(unnestedLine);
-	const taskLine = genre === 'cubes' ? TASK_LINE_REGEX : PATRON_TASK_LINE_REGEX;
+	const taskLine = {
+		cubes: TASK_LINE_REGEX,
+		patron: PATRON_TASK_LINE_REGEX,
+		solide: SOLIDE_TASK_LINE_REGEX
+	}[genre];
 	const found: EspaceToBuild[] = [];
 	let i = 0;
 	while (i < plainLines.length) {
@@ -161,7 +168,7 @@ function findEspaceToBuild(markdown: string, genre: 'cubes' | 'patron'): EspaceT
 				plainLines,
 				i,
 				(line) => BLOCK_END_REGEX.test(line),
-				genre === 'cubes' ? CUBES_KEYS : PATRON_KEYS
+				{ cubes: CUBES_KEYS, patron: PATRON_KEYS, solide: SOLIDE_KEYS }[genre]
 			);
 			const body = plainLines.slice(i + 1, closed ? endIndex : endIndex + 1);
 			if (body.some((line) => taskLine.test(line.trim()))) {
@@ -192,6 +199,16 @@ export function findPatronsToBuild(markdown: string): EspaceToBuild[] {
 /** L'énoncé a-t-il un patron à geste ? */
 export function hasPatronsToBuild(markdown: string): boolean {
 	return findPatronsToBuild(markdown).length > 0;
+}
+
+/** Les solides à geste (`tracer:`) d'un énoncé (chantier `solide-vecteur`, lot 2) */
+export function findSolidesToBuild(markdown: string): EspaceToBuild[] {
+	return findEspaceToBuild(markdown, 'solide');
+}
+
+/** L'énoncé a-t-il un solide à geste ? */
+export function hasSolidesToBuild(markdown: string): boolean {
+	return findSolidesToBuild(markdown).length > 0;
 }
 
 // ============================================================================
@@ -233,8 +250,15 @@ export function trimHeights(heights: number[][]): number[][] {
  */
 export function parseEspaceContent(source: string, genre: EspaceKind = 'cubes'): EspaceNode {
 	if (genre === 'solide') {
-		const { spec, errors } = parseSolideContent(source);
-		return { type: 'espace', genre, source, spec, errors };
+		const { spec, errors, caseIndex } = parseSolideContent(source);
+		return {
+			type: 'espace',
+			genre,
+			source,
+			spec,
+			errors,
+			...(caseIndex !== undefined && { caseIndex })
+		};
 	}
 	if (genre === 'patron') {
 		const { spec, errors, caseIndex } = parsePatronContent(source);

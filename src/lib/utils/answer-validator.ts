@@ -87,6 +87,7 @@ import {
 import { isColoringCorrect } from '$lib/ubumark/utils/partage-colorier';
 import { isCubesAnswerCorrect } from '$lib/ubumark/utils/cubes-gestes';
 import { isPatronAnswerCorrect } from '$lib/ubumark/utils/patron-gestes';
+import { isSolideAnswerCorrect } from '$lib/ubumark/utils/solide-gestes';
 import {
 	constructionExpected,
 	constructionPositions,
@@ -835,6 +836,8 @@ function validateBlankValue(
 	if (blank.construire === 'cubes') return isCubesAnswerCorrect(userAnswer, blank.expectedAnswer);
 	// Patron : mêmes faces, ou toute pose qui se plie en cube
 	if (blank.construire === 'patron') return isPatronAnswerCorrect(userAnswer, blank.expectedAnswer);
+	// Vecteur sur un solide : l'un des couples de points justes
+	if (blank.construire === 'solide') return isSolideAnswerCorrect(userAnswer, blank.expectedAnswer);
 	// Étiquettes à ranger : l'étiquette posée (sa position affichée), jamais sa valeur
 	if (blank.construire === 'ranger') return userAnswer.trim() === blank.expectedAnswer;
 	// Signe ou marque d'un tableau de signes : le même jeton
@@ -1363,6 +1366,13 @@ function validateSingleBlank(
 	// Patron : mêmes faces, ou toute pose qui se plie en cube
 	if (blank.construire === 'patron') {
 		return isPatronAnswerCorrect(userAnswer, blank.expectedAnswer)
+			? { isCorrect: true, status: 'correct' }
+			: { isCorrect: false };
+	}
+
+	// Vecteur sur un solide : l'un des couples de points justes
+	if (blank.construire === 'solide') {
+		return isSolideAnswerCorrect(userAnswer, blank.expectedAnswer)
 			? { isCorrect: true, status: 'correct' }
 			: { isCorrect: false };
 	}

@@ -40,7 +40,11 @@ import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
 import { findBarsToPlace, findBoxPlotsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
 import { findRangersToPlace } from '$lib/ubumark/parser/ranger-parser';
 import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
-import { findCubesToBuild, findPatronsToBuild } from '$lib/ubumark/parser/espace-parser';
+import {
+	findCubesToBuild,
+	findPatronsToBuild,
+	findSolidesToBuild
+} from '$lib/ubumark/parser/espace-parser';
 import { findCourbesToPlace } from '$lib/ubumark/parser/courbe-parser';
 import { findTrigCirclesToPlace } from '$lib/ubumark/parser/trig-circle-parser';
 import { findVariationsToFill } from '$lib/ubumark/parser/variation-table-parser';
@@ -377,7 +381,8 @@ const NESTED_BLOCK_NAMES: Record<BuildKind, string> = {
 	cubes: 'Un assemblage de cubes à geste',
 	patron: 'Un patron à geste',
 	courbe: 'Un repère à points à placer',
-	trig: 'Un cercle trigonométrique à points à placer'
+	trig: 'Un cercle trigonométrique à points à placer',
+	solide: 'Un solide à geste'
 };
 
 const buildNestedMessage = (kind: BuildKind) =>
@@ -500,7 +505,8 @@ function markBuildBlocks(statement: string): {
 		...findCubesToBuild(statement).map((b) => ({ ...b, kind: 'cubes' as const })),
 		...findPatronsToBuild(statement).map((b) => ({ ...b, kind: 'patron' as const })),
 		...findCourbesToPlace(statement).map((b) => ({ ...b, kind: 'courbe' as const })),
-		...findTrigCirclesToPlace(statement).map((b) => ({ ...b, kind: 'trig' as const }))
+		...findTrigCirclesToPlace(statement).map((b) => ({ ...b, kind: 'trig' as const })),
+		...findSolidesToBuild(statement).map((b) => ({ ...b, kind: 'solide' as const }))
 	].sort((a, b) => a.startIndex - b.startIndex);
 	const errors = found.filter((b) => b.nested).map((b) => buildNestedMessage(b.kind));
 	const marked = found.filter((b) => !b.nested);
@@ -734,7 +740,8 @@ export function assignBlankIndices(
 						// Droite à représenter : un intervalle (`[2 ; +∞[`) ; horloge : la réponse est une heure (`9 h 25`), étiquettes : une position
 						// (`2`), figure à colorier : des rangs (`1, 4`), assemblage de cubes : un
 						// quadrillage ou des hauteurs, patron : des faces ou un quadrillage,
-						// point d'un repère : ses coordonnées (`2;3`) ; jamais lues comme un calcul
+						// point d'un repère : ses coordonnées (`2;3`), vecteur sur un solide : deux
+						// noms de points (`A/G`) ; jamais lues comme un calcul
 						blankTypes.push(
 							(build.kind === 'line' && isLineToRepresent(build.source)) ||
 								build.kind === 'horloge' ||
@@ -743,7 +750,8 @@ export function assignBlankIndices(
 								build.kind === 'ranger' ||
 								build.kind === 'partage' ||
 								build.kind === 'cubes' ||
-								build.kind === 'patron'
+								build.kind === 'patron' ||
+								build.kind === 'solide'
 								? 'text'
 								: 'math'
 						);
