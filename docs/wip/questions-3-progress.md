@@ -5,19 +5,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2206 et son `db:migrate`._
+_Mis à jour le 2026-11-03, après la relecture des lots 7 et 8._
 
 - **État** : lots 0 à 6 publiés ; lots 7 (Scratch, 4 modèles) et 8 (boîte à moustaches, 2) en brouillon en prod,
-  rangés (#2206, migration `20261102070008` jouée, vérifiée au MCP) ; page à cocher publiée (§ 16.1).
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, les COMPTER : 6), corriger les
-  « À revoir », puis `publier-lot.ts` en simulation sur `3-lot-7` et `3-lot-8`, puis `--publier` (David).
-- **En attente de David** : relecture de la page à cocher (Scratch et effectifs à jouer dans l'aperçu admin).
+  rangés (#2206) et **relus : 6 verdicts sur 6 « OK »**, aucun commentaire (§ 16.2).
+- **Prochaine action** : publication, lancée par David avec `!` depuis le dépôt principal :
+  `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/3-lot-7` (puis `3-lot-8`) en simulation,
+  puis les deux avec `--publier` ; ensuite vérifier au MCP que les 6 sont `published`, journal à jour.
+- **En attente de David** : lancer ces quatre commandes.
 - **Pièges en cours** : `db:migrate` et `publier-lot.ts` (même en simulation) refusés par le classifieur
-  du mode auto → David les lance avec `!` ; aperçu admin local : `--host 127.0.0.1` ; base locale en retard
-  d'une soixantaine de migrations (tests d'arbre : la CI fait foi) ; cache `.svelte-kit/.svelte-check` périmé →
-  le vider si `types:cliquet` voit des routes supprimées ; `audit-question-draws` : faux positifs « nombres
-  juxtaposés » (blocs statistiques), `<<` (Scratch).
-- **Worktree / branche** : `../ubumaths-wt-questions-3`, HEAD détachée sur `origin/main`.
+  du mode auto → David les lance avec `!` ; base locale en retard d'une soixantaine de migrations (tests
+  d'arbre : la CI fait foi) ; `audit-question-draws` : faux positifs « nombres juxtaposés » (blocs
+  statistiques), `<<` (Scratch) ; points 4-068/4-069 encore sur la notion « Variables et instructions ».
+- **Worktree / branche** : `../ubumaths-wt-questions-3`, HEAD détachée sur `origin/main` (propre).
 
 ## 1. Relevé (prod, 2026-10-28)
 
@@ -1136,3 +1136,9 @@ publiés de plus. Aucune règle ne change.
 - Page à cocher (lots 7 et 8 ensemble) : https://claude.ai/artifact/EvgcCErh131dsTTrA19Qvq (capacité `db`,
   collection `verdicts` vide au départ). Alertes : 4 blocs ` ```scratch ` et le ` ```effectifs ` non dessinés
   par la page → les jouer dans l'aperçu admin de la prod (blocs en prod depuis la v0.62.0).
+
+### 16.2 Relecture (2026-11-03)
+
+- Verdicts lus en base (`verdicts`) et comptés : **6 sur 6 « OK »**, aucun commentaire (962da675, 9f9bddbd,
+  4ce8eb3c, 0a470416, 1bd7378d, 9a9026fc). Rien à corriger.
+- Reste la publication (`publier-lot.ts`, David) : non lancée à la fin de la session du 2026-11-03.
