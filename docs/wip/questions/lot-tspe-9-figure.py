@@ -215,6 +215,8 @@ def chasles(xy):
             continue
         if d == 1:
             egal.append('$' + O(pas) + '=' + O(b) + '$')
+        elif pas == b[::-1]:
+            egal.append('$' + O(pas) + '=-' + O(b) + '$')
         else:
             egal.append('$' + O(pas) + '=' + O(b[::-1]) + '=-' + O(b) + '$')
     etapes = [pts[i] + pts[i + 1] for i in range(len(pts) - 1)]
@@ -388,6 +390,18 @@ for xy in F2_CAS[2]:
     assert tuple(a[0] * x + a[1] * y + a[2] * z for x, y, z in zip(vec('AB'), vec('AC'), vec('AE'))) == vec(xy)
 
 
+def substitue(c):
+    """a AB + b (AC − AB) + c AE, écrit avant réduction (b = ±1)."""
+    assert c[1] in (1, -1), c
+    t = comb((c[0], 0, 0))
+    par_ = '\\left(' + O('AC') + '-' + O('AB') + '\\right)'
+    t = (par_ if t == '\\vec{0}' else t + '+' + par_) if c[1] == 1 else ('' if t == '\\vec{0}' else t) + '-' + par_
+    reste = comb((0, 0, c[2]))
+    if reste != '\\vec{0}':
+        t += reste if reste.startswith('-') else '+' + reste
+    return t
+
+
 def base_tex(base):
     return '$(' + ','.join(O(b) for b in base) + ')$'
 
@@ -404,7 +418,7 @@ def v_f2(liste, base):
     if base != BASE:
         pas.append('On remplace : $' + O('AD') + '=' + O('AC') + '-' + O('AB') + '$ (relation de Chasles, $'
                    + O('AD') + '=' + O('AC') + '+' + O('CD') + '$ et $' + O('CD') + '=-' + O('AB') + '$).')
-        pas.append(cas(['$' + O(xy) + '=' + comb(cc, base) + '$, donc dans la base ' + base_tex(base) + ' : $'
+        pas.append(cas(['$' + O(xy) + '=' + substitue(vec(xy)) + '=' + comb(cc, base) + '$, donc dans la base ' + base_tex(base) + ' : $'
                         + col(O(xy) + coords(cc)) + '$.' for xy, cc in zip(liste, c)]))
     else:
         pas.append(cas(['Les coefficients de $' + O('AB') + '$, $' + O('AD') + '$, $' + O('AE')
@@ -703,8 +717,9 @@ def v_f6(liste, s_):
                                                                           + ')$' for d, pl in liste])
               + ' ?\n\n' + choix(*F6_CHOIX))
     return variation(enonce, len(liste), [str(s_)],
-                     ['Une droite et un plan sont **sécants** (un seul point commun), **parallèles** (la droite '
-                      'dirigée par un vecteur du plan : strictement, ou contenue dans le plan).',
+                     ['Une droite et un plan sont soit **sécants** (un seul point commun), soit **parallèles** '
+                      '(la droite est dirigée par un vecteur du plan) : strictement parallèles, ou droite contenue '
+                      'dans le plan.',
                       cas([detail_f6(*c) for c in liste])])
 
 

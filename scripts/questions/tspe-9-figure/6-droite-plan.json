@@ -28,7 +28,7 @@
 			],
 			"correction": {
 				"steps": [
-					"Une droite et un plan sont **sécants** (un seul point commun), **parallèles** (la droite dirigée par un vecteur du plan : strictement, ou contenue dans le plan).",
+					"Une droite et un plan sont soit **sécants** (un seul point commun), soit **parallèles** (la droite est dirigée par un vecteur du plan) : strictement parallèles, ou droite contenue dans le plan.",
 					"{{if:k==0|$C$ est dans le plan $(ABD)$ et $E$ n'y est pas : la droite et le plan sont $\\textcolor{{{color:primary.0}}}{ \\text{sécants} }$, en $C$.}}{{if:k==1|$G$ est dans le plan $(BCF)$ et $A$ n'y est pas : la droite et le plan sont $\\textcolor{{{color:primary.0}}}{ \\text{sécants} }$, en $G$.}}{{if:k==2|$F$ est dans le plan $(EFG)$ et $D$ n'y est pas : la droite et le plan sont $\\textcolor{{{color:primary.0}}}{ \\text{sécants} }$, en $F$.}}{{if:k==3|$E$ est dans le plan $(ABF)$ et $C$ n'y est pas : la droite et le plan sont $\\textcolor{{{color:primary.0}}}{ \\text{sécants} }$, en $E$.}}{{if:k==4|$G$ est dans le plan $(ACG)$ et $B$ n'y est pas : la droite et le plan sont $\\textcolor{{{color:primary.0}}}{ \\text{sécants} }$, en $G$.}}{{if:k==5|$B$ est dans le plan $(ABC)$ et $H$ n'y est pas : la droite et le plan sont $\\textcolor{{{color:primary.0}}}{ \\text{sécants} }$, en $B$.}}"
 				]
 			}
@@ -52,7 +52,7 @@
 			],
 			"correction": {
 				"steps": [
-					"Une droite et un plan sont **sécants** (un seul point commun), **parallèles** (la droite dirigée par un vecteur du plan : strictement, ou contenue dans le plan).",
+					"Une droite et un plan sont soit **sécants** (un seul point commun), soit **parallèles** (la droite est dirigée par un vecteur du plan) : strictement parallèles, ou droite contenue dans le plan.",
 					"{{if:k==0|$\\overrightarrow{EG}=\\overrightarrow{AC}$, et $A$, $C$ sont dans le plan $(ABC)$ : la droite est parallèle au plan. $E$ n'est pas dans le plan, donc elle est $\\textcolor{{{color:primary.0}}}{ \\text{strictement parallèle au plan} }$.}}{{if:k==1|$\\overrightarrow{BF}=\\overrightarrow{AE}$, et $A$, $E$ sont dans le plan $(ACG)$ : la droite est parallèle au plan. $B$ n'est pas dans le plan, donc elle est $\\textcolor{{{color:primary.0}}}{ \\text{strictement parallèle au plan} }$.}}{{if:k==2|$\\overrightarrow{AF}=\\overrightarrow{DG}$, et $D$, $G$ sont dans le plan $(DCG)$ : la droite est parallèle au plan. $A$ n'est pas dans le plan, donc elle est $\\textcolor{{{color:primary.0}}}{ \\text{strictement parallèle au plan} }$.}}{{if:k==3|$\\overrightarrow{DE}=\\overrightarrow{CF}$, et $C$, $F$ sont dans le plan $(BCG)$ : la droite est parallèle au plan. $D$ n'est pas dans le plan, donc elle est $\\textcolor{{{color:primary.0}}}{ \\text{strictement parallèle au plan} }$.}}{{if:k==4|$\\overrightarrow{CH}=\\overrightarrow{BE}$, et $B$, $E$ sont dans le plan $(ABF)$ : la droite est parallèle au plan. $C$ n'est pas dans le plan, donc elle est $\\textcolor{{{color:primary.0}}}{ \\text{strictement parallèle au plan} }$.}}{{if:k==5|$\\overrightarrow{BD}=\\overrightarrow{FH}$, et $F$, $H$ sont dans le plan $(EFG)$ : la droite est parallèle au plan. $B$ n'est pas dans le plan, donc elle est $\\textcolor{{{color:primary.0}}}{ \\text{strictement parallèle au plan} }$.}}"
 				]
 			}
@@ -76,7 +76,7 @@
 			],
 			"correction": {
 				"steps": [
-					"Une droite et un plan sont **sécants** (un seul point commun), **parallèles** (la droite dirigée par un vecteur du plan : strictement, ou contenue dans le plan).",
+					"Une droite et un plan sont soit **sécants** (un seul point commun), soit **parallèles** (la droite est dirigée par un vecteur du plan) : strictement parallèles, ou droite contenue dans le plan.",
 					"{{if:k==0|$A$ et $G$ sont tous deux dans le plan $(ACE)$ : $\\textcolor{{{color:primary.0}}}{ \\text{la droite est contenue dans le plan} }$.}}{{if:k==1|$B$ et $H$ sont tous deux dans le plan $(ABG)$ : $\\textcolor{{{color:primary.0}}}{ \\text{la droite est contenue dans le plan} }$.}}{{if:k==2|$F$ et $H$ sont tous deux dans le plan $(EFG)$ : $\\textcolor{{{color:primary.0}}}{ \\text{la droite est contenue dans le plan} }$.}}{{if:k==3|$C$ et $E$ sont tous deux dans le plan $(ACG)$ : $\\textcolor{{{color:primary.0}}}{ \\text{la droite est contenue dans le plan} }$.}}{{if:k==4|$D$ et $F$ sont tous deux dans le plan $(BDH)$ : $\\textcolor{{{color:primary.0}}}{ \\text{la droite est contenue dans le plan} }$.}}{{if:k==5|$A$ et $H$ sont tous deux dans le plan $(ADE)$ : $\\textcolor{{{color:primary.0}}}{ \\text{la droite est contenue dans le plan} }$.}}"
 				]
 			}

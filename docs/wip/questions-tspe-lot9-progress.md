@@ -8,17 +8,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, phase 0 validée (D-L9)._
+_Mis à jour le 2026-11-03, PR des fichiers ouverte._
 
-- **État** : phase 0 du lot 9 **validée** (D-L9 : recos de Q1 à Q5). Aucun fichier, aucune branche.
-- **Prochaine action** : worktree `git worktree add -b feat/questions-tspe-lot9 ../ubumaths-wt-questions-tspe-lot9
-origin/main` ; script de lot `docs/wip/questions/lot-tspe-9-figure.py` (gabarit `lot-tspe-espace-6a.py`, réponses
-  calculées depuis les coordonnées des sommets) → `scripts/questions/tspe-9-figure/` (8 fichiers, F1-F8) ; specs,
-  tirages relus, essai en base locale, PR des fichiers seuls.
-- **En attente de David** : rien.
-- **Pièges en cours** : ceux du § 9 de `couvrir-un-niveau.md` (Rendu, suite ; tag sur le nœud ou sa notion) ;
-  ` ```solide ` ne dessine ni flèche, ni diagonale, ni point hors sommet.
-- **Worktree / branche** : aucun (à créer).
+- **État** : 8 modèles écrits (`docs/wip/questions/lot-tspe-9-figure.py` → `scripts/questions/tspe-9-figure/`),
+  simulation `create-questions` verte (50 specs), `sonde-cubes` 0 problème (2 400 blocs), 4 821 formules
+  validées (`validateLatex` + accolades), essai en base locale (F1, F2, F7, F8 joués dans l'aperçu). PR des
+  fichiers ouverte (branche `feat/questions-tspe-lot9`).
+- **Prochaine action** : CI verte → merge ; puis **David** lance
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-9-figure --publier` (prod, brouillons) ;
+  relever les 8 `id` ; migration nœud + tag (§ 6 de `couvrir-un-niveau.md`, F8 sur la notion « Espace ») ;
+  page à cocher.
+- **En attente de David** : rien avant le merge ; ensuite la commande `--publier`.
+- **Pièges en cours** : ` ```solide ` sans flèche, diagonale ni point hors sommet ; les choix à options
+  variables ont la bonne en premier (réponse `0`, mélange à l'affichage) ; la saisie MathLive simulée dans
+  Chrome n'entre pas dans la 1re case (outil, pas modèle).
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-lot9` · `feat/questions-tspe-lot9` · serveur 5177.
 
 ---
 
@@ -86,3 +90,24 @@ Catégories : deux sous-domaines neufs dans « Vecteurs, droites et plans de l'e
 dans l'énoncé ; Q2 334 en C (ligne 13 de `outils-manquants.md`) ; Q3 sous-domaines neufs « Sur une figure » et
 « Positions relatives » ; Q4 F8 (339) rangé sur la notion « Espace » ; Q5 accès : personne ne gagne ni ne perd
 d'accès.
+
+## Lot écrit (2026-11-03)
+
+Script `docs/wip/questions/lot-tspe-9-figure.py` : cube A(0;0;0)…H, coordonnées dans (AB, AD, AE) ;
+chaque cas tiré est `k` (textes en `{{if:k==…}}` à plat, réponses en variables), `p` choisit cube ou pavé
+droit (`pave 5 3 2`). Réponses et corrigés calculés (Chasles le long des arêtes, colinéarité, produit
+mixte, résolution de `w = x u + y v` sur deux coordonnées), chaque cas vérifié par une assertion.
+
+| #   | Fichier                      | Variations                                                                  |
+| --- | ---------------------------- | --------------------------------------------------------------------------- |
+| F1  | `1-exprimer-vecteur`         | diagonale de face sans moins (6) ; grande diagonale (8) ; avec un moins (8) |
+| F2  | `2-coordonnees-base`         | (AB, AD, AE) coefficients ≥ 0 (8) ; avec négatifs (8) ; (AB, AC, AE) (8)    |
+| F3  | `3-base-du-plan`             | face, oui (6) ; face, non (6) ; plan diagonal, mêlé (6)                     |
+| F4  | `4-base-espace`              | base (6) ; coplanaires (6) ; deux colinéaires (5)                           |
+| F5  | `5-droites`                  | sécantes (6) ; strictement parallèles (6) ; non coplanaires (6)             |
+| F6  | `6-droite-plan`              | sécants (6) ; strictement parallèles (6) ; contenue (6)                     |
+| F7  | `7-deux-plans`               | parallèles (6) ; sécants, quelle droite (7) ; confondus (6)                 |
+| F8  | `8-coplanarite-parallelisme` | quatre sommets coplanaires ? (8, mêlé) ; droite ∥ plan ? (8, mêlé)          |
+
+Écart au tableau de phase 0, sans effet sur D-L9 :
+F8 v1 (« parallélisme droite / plan ») passe par `MN = x XY + y XZ`, pas par F6.
