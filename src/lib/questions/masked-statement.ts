@@ -326,8 +326,8 @@ function findFiguresACompleter(lines: string[]): FoundBlock[] {
 	return found;
 }
 
-/** `verifier: mesure AOB` (lot 6) : rien à cacher */
-const MEASURE_CHECK = /^mesure\s+[A-Z]{3}$/;
+/** `verifier: mesure AOB` (lot 6), `, rapporteur posé` (lot 8) : rien à cacher */
+const MEASURE_CHECK = /^mesure\s+[A-Z]{3}(?:\s*,\s*rapporteur\s+pos[ée])?$/;
 /** Définition d'un point nommé : `B = <expression>` */
 const POINT_DEFINITION = /^\s*([A-Za-z][A-Za-z0-9_']*)\s*=\s*(.+)$/;
 /** Une expression qui peut porter la mesure d'un angle (garde de l'énoncé masqué) */

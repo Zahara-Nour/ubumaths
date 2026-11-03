@@ -569,7 +569,8 @@ un angle par trois lettres, le sommet A ou B au milieu (`triangle ABC : CAB = 40
 Règle · Segment, plus Report · Compas avec une longueur) ;
 `angle AOy = 50`, un point du côté donné, le sommet, le nom du côté à tracer, une mesure entière de 1 à 179
 (`°` admis), un angle à construire sur papier uni, seul, palette Rapporteur · Segment ; `mesure AOB`, trois
-points dont le sommet au milieu, un angle à mesurer sur papier uni, seul, le rapporteur seul ; le rapporteur
+points dont le sommet au milieu, un angle à mesurer sur papier uni, seul, le rapporteur seul (suivi de
+`, rapporteur posé` : déjà posé sur le premier côté nommé, figé, `outils:` refusé) ; le rapporteur
 refusé ailleurs, sauf dans un triangle à angle donné) et `case: N`, posée
 par le générateur de questions. Le nœud est un nœud **`figure`** qui porte `construction`
 (`ConstructionSpec`, `types/construction.ts`) : partout où une figure s'affiche (écran, PDF, listes),

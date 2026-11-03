@@ -1050,3 +1050,22 @@ vide (aucun outil, ni Effacer ni Retourner) ; `outils:` interdit avec `rapporteu
 3. Rapporteur **figé** : ni déplacé, ni retourné, ni reposé ; aucun outil.
 4. Message « mauvaise graduation » **gardé**, même texte qu'au lot 6.
 5. Cas limite du § 22 (côté [AC] d'un trait à travers le repère) : **gardé tel quel** (admis, inatteignable).
+
+## 24. Lot 8 — ce qui est fait (2026-11-04)
+
+- `verifier: mesure AOB, rapporteur posé` (`MeasureCheck.posed`) ; parseur : virgule puis « rapporteur
+  posé » (accent facultatif), toute autre suite visant la pose → la forme dite ; `outils:` refusé avec la
+  pose ; palette interne inchangée (le rapporteur), l'écran n'en montre rien.
+- Juge (`measure.ts`) : `posedProtractorOf` (centre O, base A, sens vers B, rayon du § 18) ; erreur
+  d'auteur neuve : la pose demandée sort de la figure, l'autre tient → « écrire « mesure BOA, rapporteur
+  posé » » ; aucune ne tient → message du lot 6. Verdicts et messages du lot 6, inchangés.
+- Écran : `drawable` = `interactive` sans pose ; ni palette, ni Effacer, ni zone de tracé ni boutons de
+  points ; rapporteur dessiné figé (`rapporteur-pose`, `aria-hidden`) dans la copie, la correction et la
+  réponse attendue ; consigne « Lis la mesure sur le rapporteur, puis tape-la sous la figure. ».
+- Masquage : la garde `MEASURE_CHECK` admet le suffixe (sinon une évaluation refusait l'envoi).
+- Aide à l'écriture : exemple « Lire un angle sur un rapporteur déjà posé », liste `verifier:` complétée.
+- Tests : `construction-measure-posed.test.ts` (17), écran `figure-a-completer-mesure-pose.svelte.test.ts`
+  (3), garde du masquage (2). Juge et parseur : rouges avant le code (16 échecs) ; écran : preuve rouge
+  par mutation (pose désactivée → rouge).
+- Piège : la carte rend deux `.figure-a-completer` (la case et la réponse attendue) ; un test d'écran
+  compte dans celle qui porte la case.
