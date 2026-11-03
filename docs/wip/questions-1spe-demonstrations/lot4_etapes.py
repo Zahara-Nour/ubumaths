@@ -170,7 +170,7 @@ ETAPES = {
             r"Ses angles à la base valent $\dfrac{180^\circ-60^\circ}{2}=60^\circ$ : il est équilatéral.",
             r"Dans ce triangle équilatéral, la hauteur issue de $M$ est aussi une médiane : $H$ est le milieu de $[OA]$.",
             r"Donc $\cos\left(\dfrac{\pi}{3}\right)=OH=\dfrac{1}{2}$.",
-            r"Comme $\cos^2+\sin^2=1$, $\sin\left(\dfrac{\pi}{3}\right)^2=1-\dfrac{1}{4}=\dfrac{3}{4}$.",
+            r"Comme $\cos^2x+\sin^2x=1$, $\sin^2\left(\dfrac{\pi}{3}\right)=1-\dfrac{1}{4}=\dfrac{3}{4}$.",
             r"Le sinus est positif : $\sin\left(\dfrac{\pi}{3}\right)=\dfrac{\sqrt{3}}{2}$.",
         ],
         'correction': [
@@ -196,7 +196,7 @@ ETAPES = {
         'etapes': [
             r"Par la relation de Chasles, $\overrightarrow{MA}\cdot\overrightarrow{MB}=\left(\overrightarrow{MI}+\overrightarrow{IA}\right)\cdot\left(\overrightarrow{MI}+\overrightarrow{IB}\right)$.",
             r"Comme $\overrightarrow{IB}=-\overrightarrow{IA}$, $\overrightarrow{MA}\cdot\overrightarrow{MB}=\left(\overrightarrow{MI}+\overrightarrow{IA}\right)\cdot\left(\overrightarrow{MI}-\overrightarrow{IA}\right)=MI^2-IA^2$.",
-            r"Donc $\overrightarrow{MA}\cdot\overrightarrow{MB}=0$ équivaut à $MI^2=IA^2$, soit $MI=IA=\dfrac{AB}{2}$.",
+            r"Donc $\overrightarrow{MA}\cdot\overrightarrow{MB}=0$ équivaut à $MI^2=IA^2$, soit, les longueurs étant positives, $MI=IA=\dfrac{AB}{2}$.",
             r"L'ensemble cherché est le cercle de centre $I$ et de rayon $\dfrac{AB}{2}$ : le cercle de diamètre $[AB]$.",
         ],
         'correction': [
