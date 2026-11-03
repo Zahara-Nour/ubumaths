@@ -52,6 +52,21 @@ const GESTURES: [string, string][] = [
 			'x = demidroite(O, A)',
 			'y = demidroite(O, B)'
 		)
+	],
+	// Rapporteur déjà posé (lot 8) : la même rotation, la même fuite
+	[
+		'figure-a-completer',
+		block(
+			'figure-a-completer',
+			'fenetre: 0 ; 10 ; 0 ; 8',
+			'verifier: mesure AOB, rapporteur posé',
+			'---',
+			'O = point(4, 3)',
+			'A = point(9, 3)',
+			'B = rotation(A, angle=50, centre=O)',
+			'x = demidroite(O, A)',
+			'y = demidroite(O, B)'
+		)
 	]
 ];
 
@@ -102,6 +117,10 @@ describe('ce qui n’est pas une réponse à cacher', () => {
 		[
 			'angle à mesurer (la mesure se lit sur la figure)',
 			block('figure-a-completer', 'verifier: mesure AOB', '---', 'O = point(4, 3)')
+		],
+		[
+			'angle à mesurer, rapporteur posé (lot 8)',
+			block('figure-a-completer', 'verifier: mesure AOB, rapporteur posé', '---', 'O = point(4, 3)')
 		],
 		['énoncé sans bloc', 'Calcule 3 + 4.']
 	])('%s', (_name, source) => {

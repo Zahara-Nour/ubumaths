@@ -110,6 +110,7 @@
 	} from '$lib/questions/construction/drawing';
 	import { PROTRACTOR_RADIUS } from '$lib/constructions-v2/constants';
 	import { protractorRadiusOf } from '$lib/questions/construction/angle';
+	import { posedProtractorOf } from '$lib/questions/construction/measure';
 	import Protractor from '$lib/constructions-v2/instruments/components/Protractor.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -156,6 +157,10 @@
 	let measureCheck = $derived(node.construction?.checks.find((c) => c.kind === 'mesure') ?? null);
 	let measured = $derived(measureCheck ? splitMeasuredAnswer(answer?.value ?? '') : null);
 	let typedMeasure = $derived(measured?.measure ?? null);
+	/** Rapporteur déjà posé (lot 8, § 23) : figé, aucun outil ; l'élève tape seulement la mesure */
+	let posedMeasure = $derived(measureCheck?.posed === true);
+	/** L'élève peut-il tracer ? (pas quand le rapporteur est déjà posé) */
+	let drawable = $derived(interactive && !posedMeasure);
 	let objects = $derived(
 		parseConstructionAnswer(measureCheck ? (measured?.drawn ?? '') : (answer?.value ?? '')) ?? []
 	);
@@ -173,7 +178,7 @@
 	/** Repères du rapporteur (lot 5) : des points, où le segment s'aimante */
 	let marks = $derived(objects.filter(isDrawnRepere));
 	// Plus de saisie (Valider, correction) ou autre bloc : le départ en attente disparaît
-	let mine = $derived(interactive && pending?.node === node ? pending : null);
+	let mine = $derived(drawable && pending?.node === node ? pending : null);
 	let drawing: Drawing = $derived({
 		objects,
 		start: mine?.at ?? null,
@@ -195,6 +200,7 @@
 	/** Report : ce qu'attend le prochain toucher (dont : reprendre Report pour une autre longueur) */
 	let reportHint = $derived.by(() => {
 		if (!interactive) return '';
+		if (posedMeasure) return 'Lis la mesure sur le rapporteur, puis tape-la sous la figure.';
 		if (tool === 'rapporteur') {
 			if (drawing.protractor && measureCheck) {
 				return 'Lis la mesure sur le rapporteur, puis tape-la sous la figure. Pour le reposer, touche Rapporteur.';
@@ -284,18 +290,18 @@
 	let protractorRadius = $state(3);
 
 	function tapAt(position: Position) {
-		if (!interactive) return;
+		if (!drawable) return;
 		apply(addTap(drawing, position, tool, { protractorRadius }));
 	}
 
 	/** ‹ › et flèches : décaler le repère du rapporteur */
 	function nudge(delta: number) {
-		if (!interactive) return;
+		if (!drawable) return;
 		apply(nudgeMark(drawing, delta));
 	}
 
 	function flip() {
-		if (!interactive) return;
+		if (!drawable) return;
 		apply(flipProtractor(drawing));
 	}
 
@@ -393,7 +399,7 @@
 
 	/** Équerre : la droite à longer */
 	function chooseLine(guide: StraightTrait) {
-		if (!interactive) return;
+		if (!drawable) return;
 		apply(chooseGuide(drawing, guide));
 	}
 
@@ -682,7 +688,7 @@
 	{@const allPoints = allNamedPointPositions(scene)}
 	{@const transformer = createTransformer(scene.viewport, width, height)}
 	<g class="figure-a-completer-trace">
-		{#if interactive}
+		{#if drawable}
 			<!-- Zone de toucher : toute la fenêtre (un toucher hors d'un point part de là) -->
 			{#if grid}
 				<!-- Quadrillage : la zone prend le focus, les flèches mènent le curseur -->
@@ -781,7 +787,17 @@
 				/>
 			{/if}
 		{/each}
-		{#if interactive && drawing.protractor}
+		{#if measureCheck?.posed}
+			{@const posed = posedProtractorOf(measureCheck, allPoints, figureShapes(scene, node.header))}
+			{#if posed}
+				{@const p = protractorOnScreen(posed, scene, width, height)}
+				<!-- Rapporteur déjà posé (lot 8) : figé, gardé à la correction et dans la copie -->
+				<g data-testid="rapporteur-pose" class="rapporteur-pose" aria-hidden="true">
+					<Protractor x={p.x} y={p.y} rotation={p.rotation} pixelsPerUnit={p.pixelsPerUnit} />
+				</g>
+			{/if}
+		{/if}
+		{#if drawable && drawing.protractor}
 			{@const p = protractorOnScreen(drawing.protractor, scene, width, height)}
 			<!-- Clavier : le rapporteur a le focus, les flèches mènent le repère -->
 			<g
@@ -798,12 +814,12 @@
 				<Protractor x={p.x} y={p.y} rotation={p.rotation} pixelsPerUnit={p.pixelsPerUnit} />
 			</g>
 		{/if}
-		{#if interactive && drawing.span}
+		{#if drawable && drawing.span}
 			{@const a = transformer.mathToSvg(drawing.span.a.x, drawing.span.a.y)}
 			{@const b = transformer.mathToSvg(drawing.span.b.x, drawing.span.b.y)}
 			<line data-testid="ecartement" class="ecartement" x1={a.x} y1={a.y} x2={b.x} y2={b.y} />
 		{/if}
-		{#if interactive && drawing.guide}
+		{#if drawable && drawing.guide}
 			{@const g = guideToScreen(drawing.guide, scene, width, height)}
 			{#if g}
 				<line data-testid="droite-choisie" class="droite-choisie" {...g} />
@@ -960,11 +976,11 @@
 			{@const p = transformer.mathToSvg(drawing.start.x, drawing.start.y)}
 			<circle data-testid="depart" class="depart" cx={p.x} cy={p.y} r="9" />
 		{/if}
-		{#if interactive && cursor}
+		{#if drawable && cursor}
 			{@const p = transformer.mathToSvg(cursor.x, cursor.y)}
 			<circle data-testid="curseur" class="curseur" cx={p.x} cy={p.y} r="7" />
 		{/if}
-		{#if interactive}
+		{#if drawable}
 			<!-- Clavier : chaque point nommé est un bouton (le toucher passe par la zone) -->
 			{#each [...points] as [name, position] (name)}
 				{@const p = transformer.mathToSvg(position.x, position.y)}
@@ -1056,8 +1072,8 @@
 {/snippet}
 
 <div class="figure-a-completer {className}">
-	<FigureBlockView {node} {errorsVisible} overlay={layer} {interactive} />
-	{#if interactive}
+	<FigureBlockView {node} {errorsVisible} overlay={layer} interactive={drawable} />
+	{#if drawable}
 		<div class="figure-a-completer-outils">
 			{#if tools.length > 1}
 				<div class="palette" role="group" aria-label="Instruments">
@@ -1099,6 +1115,8 @@
 				Effacer
 			</Button>
 		</div>
+	{/if}
+	{#if interactive}
 		{#if hintText}
 			<p class="figure-a-completer-consigne" data-testid="consigne-outil">{hintText}</p>
 		{/if}

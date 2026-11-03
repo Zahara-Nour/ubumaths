@@ -8,6 +8,9 @@
  * pas. Juste : la mesure exacte. Phase 0 validée par David le 2026-11-03
  * (`docs/wip/controles-figure-progress.md` § 19).
  *
+ * `verifier: mesure AOB, rapporteur posé` (lot 8, § 23) : le rapporteur est déjà
+ * posé en O, base sur le premier côté nommé, figé (`posedProtractorOf`) ; même juge.
+ *
  * @module questions/construction/measure
  */
 
@@ -17,6 +20,7 @@ import type { ConstructionVerdict, Position } from './judge';
 import type { AngleCorrection } from './angle';
 import { protractorFits, protractorRadiusOf, protractorWindowError } from './angle';
 import type { FigureShapes } from './symmetry';
+import type { Protractor } from './drawing';
 
 /** Écart admis entre la mesure de la figure et un entier (degrés) */
 const INTEGER_MEASURE_EPSILON = 0.01;
@@ -42,6 +46,8 @@ interface MeasureSetting {
 	measure: number;
 	/** Sens de [OA) vers [OB) : 1 trigonométrique */
 	sens: 1 | -1;
+	/** Rayon du rapporteur, en unités de la figure (§ 18) */
+	radius: number;
 }
 
 const distance = (p: Position, q: Position) => Math.hypot(p.x - q.x, p.y - q.y);
@@ -179,7 +185,14 @@ function settingOf(
 			`${label} : le rapporteur posé en ${nameO} sort de la figure, sur [${nameO}${nameA}) comme sur [${nameO}${nameB}) : éloigner ${nameO} du bord ou agrandir la fenêtre`
 		);
 	}
-	return { o, a, b, measure, sens };
+	// Rapporteur déjà posé (lot 8) : sur le premier côté nommé, corps vers l'autre ; l'autre
+	// pose tient (sinon refusé ci-dessus) : l'ordre des lettres la choisit
+	if (check.posed && !protractorFits(o, ua, sens, radius, shapes.window)) {
+		throw new MeasureAuthorError(
+			`${label}, rapporteur posé : le rapporteur posé sur [${nameO}${nameA}) sort de la figure ; le poser sur [${nameO}${nameB}) en écrivant « mesure ${nameB}${nameO}${nameA}, rapporteur posé »`
+		);
+	}
+	return { o, a, b, measure, sens, radius };
 }
 
 /** L'angle se mesure-t-il ? Erreur d'AUTEUR sinon */
@@ -207,6 +220,25 @@ export function judgeMeasure(
 		return { status: 'incorrect', feedback: measureWrongScaleFeedback(typed, measure) };
 	}
 	return { status: 'incorrect', feedback: wrongMeasureFeedback(typed, measure) };
+}
+
+/**
+ * Rapporteur déjà posé (lot 8, § 23) : centre O, base sur le premier côté nommé
+ * ([OA) pour `AOB`), corps du côté de B ; null sans `rapporteur posé`, ou si
+ * l'angle ne se mesure pas (l'erreur est celle de l'auteur)
+ */
+export function posedProtractorOf(
+	check: MeasureCheck,
+	points: ReadonlyMap<string, Position>,
+	shapes: FigureShapes | undefined
+): Protractor | null {
+	if (!check.posed) return null;
+	try {
+		const { o, a, sens, radius } = settingOf(check, points, shapes);
+		return { center: o, base: a, sens, radius };
+	} catch {
+		return null;
+	}
 }
 
 /** Correction : l'arc de l'angle, codé de sa mesure ; null s'il ne se mesure pas */

@@ -286,10 +286,23 @@ function readAngle(rest: string, line: number): ConstructionCheck {
 const MEASURE_EXAMPLE = 'mesure AOB';
 /** `AOB` : un point d'un côté, le sommet, un point de l'autre côté */
 const MEASURE_REGEX = /^([A-Z])([A-Z])([A-Z])$/;
+/** `, rapporteur posé` (lot 8, § 23), accent facultatif */
+const POSED_REGEX = /^rapporteur\s+pos[ée]$/;
+/** Ce qui suit les trois lettres : la pose, ou autre chose (refusé) */
+const MEASURE_SUFFIX_REGEX = /^([A-Z]{3})\s*(?:,\s*(.*)|\s+(.+))$/;
 
-/** `mesure AOB` (lot 6) : l'angle est tracé, l'élève tape sa mesure */
+/**
+ * `mesure AOB` (lot 6) : l'angle est tracé, l'élève tape sa mesure ;
+ * `mesure AOB, rapporteur posé` (lot 8) : le rapporteur est déjà posé
+ */
 function readMeasure(rest: string, line: number): ConstructionCheck {
-	const match = MEASURE_REGEX.exec(rest.trim());
+	const text = rest.trim();
+	// Une suite qui vise la pose : une virgule, ou le mot rapporteur (`mesure AOB = 50` n'en est pas)
+	const found = MEASURE_SUFFIX_REGEX.exec(text);
+	const suffixed = found && (found[2] !== undefined || /rapporteur/i.test(found[3])) ? found : null;
+	const letters = suffixed ? suffixed[1] : text;
+	const suffix = suffixed ? (suffixed[2] ?? suffixed[3]).trim() : null;
+	const match = MEASURE_REGEX.exec(letters);
 	if (!match) {
 		throw new LineError(
 			`mesure attend l’angle par trois points, le sommet au milieu : « ${MEASURE_EXAMPLE} »`
@@ -299,7 +312,14 @@ function readMeasure(rest: string, line: number): ConstructionCheck {
 	if (new Set([a, o, b]).size !== 3) {
 		throw new LineError(`mesure ${a}${o}${b} : trois points différents`);
 	}
-	return { kind: 'mesure', points: [a, o, b], line };
+	if (suffix === null) return { kind: 'mesure', points: [a, o, b], line };
+	// Une virgule, puis la pose : sans virgule ou autre mot, la forme est dite
+	if (suffixed?.[2] === undefined || !POSED_REGEX.test(suffix)) {
+		throw new LineError(
+			`mesure ${a}${o}${b} : pour un rapporteur déjà posé, écrire « mesure ${a}${o}${b}, rapporteur posé »`
+		);
+	}
+	return { kind: 'mesure', points: [a, o, b], posed: true, line };
 }
 
 const NAMED_EXAMPLES = {
@@ -567,7 +587,12 @@ export function readConstructionHeader(
 	}
 	const coherent: ConstructionCheck[] = [];
 	for (const check of spec.checks) {
-		const message = coherenceError(check, spec, grid);
+		// Rapporteur déjà posé (lot 8) : l'élève n'a aucun outil, `outils:` ne dirait rien de vrai
+		const posedMessage =
+			check.kind === 'mesure' && check.posed && toolsSeen
+				? `mesure ${check.points.join('')}, rapporteur posé : l’élève n’a aucun outil ; retirer outils:`
+				: null;
+		const message = posedMessage ?? coherenceError(check, spec, grid);
 		if (message) errors.push({ message: `Ligne ${check.line} : ${message}`, line: check.line });
 		else coherent.push(check);
 	}
