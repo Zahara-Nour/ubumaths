@@ -62,12 +62,27 @@ const avecCase = {
 		}
 	]
 } as unknown as QuestionTemplate;
+const fraction = modele('fraction', `Trace la droite.\n\n${repere('tracer: y = 1/3x - 1')}`);
+const cartesienneTiers = modele(
+	'cartesienne-tiers',
+	`Trace la droite.\n\n${repere('tracer: x - 3y - 3 = 0')}`
+);
 const verticale = modele('verticale', `Trace la droite.\n\n${repere('tracer: x = 3')}`);
 const vecteur = modele('vecteur', `Trace le vecteur.\n\n${repere('tracer: vecteur (3 ; -2)')}`);
 const placer = modele('placer', `Place le point.\n\n${repere('placer: A=(2 ; 3)')}`);
 
 const modeles = new Map(
-	[reduite, cartesienne, avecF, avecCase, verticale, vecteur, placer].map((t) => [t.id, t])
+	[
+		reduite,
+		cartesienne,
+		fraction,
+		cartesienneTiers,
+		avecF,
+		avecCase,
+		verticale,
+		vecteur,
+		placer
+	].map((t) => [t.id, t])
 );
 
 /** Le premier bloc ```courbe d'un texte, analysé */
@@ -112,6 +127,22 @@ describe('buildSerie — droite à tracer', () => {
 		const corrige = bloc(buildSerie(modeles, [{ templateId: 'cartesienne', seed: 1 }]).solution);
 		expect(valeur(corrige, 'f', 0)).toBeCloseTo(2);
 		expect(valeur(corrige, 'f', 3)).toBeCloseTo(0);
+	});
+
+	it('équation réduite à pente fractionnaire : membre de droite repris tel quel, sans flottant', () => {
+		const serie = buildSerie(modeles, [{ templateId: 'fraction', seed: 1 }]);
+		expect(serie.solution).toContain('f(x) = 1/3x - 1   vert');
+		const corrige = bloc(serie.solution);
+		expect(valeur(corrige, 'f', 3)).toBeCloseTo(0);
+		expect(valeur(corrige, 'f', 0)).toBeCloseTo(-1);
+	});
+
+	it('équation cartésienne à coefficient non décimal : écrite sans traîne de flottant', () => {
+		const serie = buildSerie(modeles, [{ templateId: 'cartesienne-tiers', seed: 1 }]);
+		expect(serie.solution).not.toMatch(/\d{7,}/);
+		const corrige = bloc(serie.solution);
+		expect(valeur(corrige, 'f', 3)).toBeCloseTo(0);
+		expect(valeur(corrige, 'f', 0)).toBeCloseTo(-1);
 	});
 
 	it('repère qui porte déjà f : la droite prend un autre nom, f reste', () => {

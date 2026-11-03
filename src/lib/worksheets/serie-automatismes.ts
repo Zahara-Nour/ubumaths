@@ -168,9 +168,15 @@ const TRACER_LINE = /^\s*tracer\s*:/i;
 /** Noms possibles de la droite dessinée au corrigé, le premier libre dans le repère */
 const NOMS_DE_DROITE = ['f', 'g', 'h', 'u', 'v', 'w'];
 
-/** Un nombre écrit pour une ligne `f(x) = …` d'un repère (`-0` → `0`) */
+/** `y = 2x - 1` : le membre de droite d'une équation réduite */
+const EQUATION_REDUITE = /^\s*y\s*=(.+)$/i;
+
+/**
+ * Un nombre écrit pour une ligne `f(x) = …` d'un repère : 12 chiffres significatifs
+ * (la traîne d'un calcul flottant, `0.33333333333333326`, ne s'écrit pas), `-0` → `0`
+ */
 function nombre(n: number): string {
-	return String(n + 0);
+	return String(Number(n.toPrecision(12)) + 0);
 }
 
 /**
@@ -206,8 +212,14 @@ function droitesATracer(
 		const pris = new Set(node.spec.functions.map((f) => f.name));
 		const nom = NOMS_DE_DROITE.find((n) => !pris.has(n));
 		if (!nom) throw refus('aucun nom libre pour dessiner la droite');
-		// ax + by + c = 0 → y = (-a x - c) / b
-		const dessinee = `${nom}(x) = ((${nombre(-droite.a)})*x+(${nombre(-droite.c)}))/(${nombre(droite.b)})   vert`;
+		// Équation réduite : son membre de droite, tel qu'écrit (`1/3x - 1`, jamais un
+		// flottant) ; sinon ax + by + c = 0 → y = (-a x - c) / b
+		const membre = EQUATION_REDUITE.exec(tracer.equation)?.[1];
+		const expression =
+			membre !== undefined && !/y/i.test(membre)
+				? membre.trim()
+				: `((${nombre(-droite.a)})*x+(${nombre(-droite.c)}))/(${nombre(droite.b)})`;
+		const dessinee = `${nom}(x) = ${expression}   vert`;
 		const corps = repere.body
 			.filter((ligne) => !CASE_LINE.test(ligne))
 			.flatMap((ligne) => (TRACER_LINE.test(ligne) ? (corrige ? [dessinee] : []) : [ligne]));
