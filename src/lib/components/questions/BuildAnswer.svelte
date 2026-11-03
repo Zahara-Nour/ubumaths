@@ -48,6 +48,7 @@
 	import { parsePartageContent } from '$lib/ubumark/parser/partage-parser';
 	import CubesGeste from '$lib/components/markdown/nodes/CubesGeste.svelte';
 	import PatronGeste from '$lib/components/markdown/nodes/PatronGeste.svelte';
+	import SolideGeste from '$lib/components/markdown/nodes/SolideGeste.svelte';
 	import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
 	import StatChart from '$lib/components/markdown/nodes/StatChart.svelte';
 	import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
@@ -115,6 +116,7 @@
 	let partage = $derived(kind === 'partage' ? parsePartageContent(source) : null);
 	let cubes = $derived(kind === 'cubes' ? parseEspaceContent(source) : null);
 	let patron = $derived(kind === 'patron' ? parseEspaceContent(source, 'patron') : null);
+	let solide = $derived(kind === 'solide' ? parseEspaceContent(source, 'solide') : null);
 </script>
 
 {#if collection?.spec?.build !== undefined}
@@ -267,6 +269,13 @@
 	{:else}
 		<!-- La réponse juste, sans geste : les faces attendues, ou le patron du prof -->
 		<PatronGeste node={patron} solution />
+	{/if}
+{:else if solide?.spec?.kind === 'solide' && solide.spec.task !== undefined && solide.errors.length === 0}
+	{#if locked}
+		<SolideGeste node={solide} answer={locked} showControls={false} />
+	{:else}
+		<!-- La réponse juste, sans geste : la flèche attendue -->
+		<SolideGeste node={solide} solution />
 	{/if}
 {:else if horloge?.spec?.placer !== undefined}
 	{@const spec = horloge.spec}

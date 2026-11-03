@@ -683,7 +683,8 @@ export type ResolvedVariable = SharedResolvedVariable;
  * ```barres, ```boite-a-moustaches, `placer:`), des étiquettes à ranger (```ranger), ou une figure à colorier
  * (```partage, `colorier:`), ou un assemblage de cubes à geste (```cubes, `dessiner:` / `retrouver:`),
  * ou un patron à geste (```patron, `designer:` / `completer:`), ou des points à placer
- * dans un repère (```courbe, `placer:`) ou sur le cercle trigonométrique (```trig, `placer:`)
+ * dans un repère (```courbe, `placer:`) ou sur le cercle trigonométrique (```trig, `placer:`),
+ * ou un vecteur à tracer sur un solide (```solide, `tracer:`)
  */
 export type BuildKind =
 	| 'collection'
@@ -697,7 +698,8 @@ export type BuildKind =
 	| 'cubes'
 	| 'patron'
 	| 'courbe'
-	| 'trig';
+	| 'trig'
+	| 'solide';
 
 /** Nom du bloc pour les messages au prof : « bloc collection », « droite graduée », « horloge » */
 export function buildKindName(kind: BuildKind): string {
@@ -708,6 +710,7 @@ export function buildKindName(kind: BuildKind): string {
 	if (kind === 'partage') return 'figure à colorier';
 	if (kind === 'cubes') return 'assemblage de cubes';
 	if (kind === 'patron') return 'patron à geste';
+	if (kind === 'solide') return 'solide à geste';
 	if (kind === 'courbe') return 'repère';
 	if (kind === 'trig') return 'cercle trigonométrique';
 	return kind === 'horloge' ? 'horloge' : `bloc ${kind}`;
@@ -765,7 +768,10 @@ export interface InstanceBlank extends CalculusBlankFields {
 	 * sur le cercle trigonométrique (```trig, `placer: M = 2*pi/3`) : une case par point,
 	 * réponse = sa mesure principale en LaTeX (`\frac{2\pi}{3}`), l'élève pose le point
 	 * sur un cran de π/12 (sa case porte le cran, `8`), juge à part
-	 * (`isPlacedAngleCorrect`) : le même cran, modulo 2π.
+	 * (`isPlacedAngleCorrect`) : le même cran, modulo 2π. Vecteur à tracer sur un
+	 * solide (```solide, `tracer: vecteur AB + AD depuis A`) : réponse attendue = les
+	 * couples justes (`A/C`, ou `A/C|E/G` quand l'origine est libre), l'élève touche
+	 * deux points (`A/C`), juge à part (`isSolideAnswerCorrect`) : l'un des couples.
 	 */
 	construire?: BuildKind;
 	/**

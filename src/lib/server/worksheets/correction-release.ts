@@ -253,7 +253,7 @@ export async function releaseCorrections(
 	// Verify user is the assignment creator OR admin
 	const { data: assignment, error: fetchError } = await supabase
 		.from('worksheet_assignments')
-		.select('id, created_by, worksheet_id, correction_release_mode')
+		.select('id, created_by, correction_release_mode')
 		.eq('id', assignmentId)
 		.single();
 
@@ -292,19 +292,11 @@ export async function releaseCorrections(
 		};
 	}
 
-	// Count affected students (multi-class + individual)
+	// Élèves de l'affectation (classes actives + élèves désignés). On ne compte
+	// plus les lignes de `worksheet_instances` : la copie est recalculée
+	// (ADR 0023), cette table n'est jamais remplie et le décompte valait 0.
 	const studentIds = await getAllAssignmentStudentIds(supabase, assignmentId);
-
-	let affectedStudents = 0;
-	if (studentIds.size > 0) {
-		const { count } = await supabase
-			.from('worksheet_instances')
-			.select('id', { count: 'exact', head: true })
-			.eq('worksheet_id', assignment.worksheet_id)
-			.in('student_id', Array.from(studentIds));
-
-		affectedStudents = count ?? 0;
-	}
+	const affectedStudents = studentIds.size;
 
 	return {
 		success: true,
@@ -521,77 +513,4 @@ export async function getCorrectionReleaseStatus(
 		logger.error('[getCorrectionReleaseStatus] Unexpected error:', err);
 		return null;
 	}
-}
-
-/**
- * Check if a specific student can access corrections for their instance
- *
- * @param supabase - Supabase client
- * @param instanceId - The worksheet instance ID
- * @param studentId - The student's ID
- * @returns Access result with reason
- */
-export async function canStudentAccessInstanceCorrection(
-	supabase: SupabaseClient,
-	instanceId: string,
-	studentId: string
-): Promise<CorrectionAccessResult> {
-	// Fetch instance with related assignment
-	const { data: instance, error: instanceError } = await supabase
-		.from('worksheet_instances')
-		.select(
-			`
-			id,
-			student_id,
-			worksheet_id,
-			status
-		`
-		)
-		.eq('id', instanceId)
-		.single();
-
-	if (instanceError || !instance) {
-		return {
-			canAccess: false,
-			reason: 'Instance non trouvee',
-			releaseMode: 'manual'
-		};
-	}
-
-	// Verify student owns this instance
-	if (instance.student_id !== studentId) {
-		return {
-			canAccess: false,
-			reason: 'Acces non autorise',
-			releaseMode: 'manual'
-		};
-	}
-
-	// Find the assignment for this worksheet
-	const { data: assignment, error: assignmentError } = await supabase
-		.from('worksheet_assignments')
-		.select('*')
-		.eq('worksheet_id', instance.worksheet_id)
-		.eq('status', 'active')
-		.maybeSingle();
-
-	if (assignmentError) {
-		return {
-			canAccess: false,
-			reason: 'Erreur lors de la verification',
-			releaseMode: 'manual'
-		};
-	}
-
-	// If no assignment found, default to manual mode with no access
-	if (!assignment) {
-		return {
-			canAccess: false,
-			reason: 'Aucune assignation associee trouvee',
-			releaseMode: 'manual'
-		};
-	}
-
-	// Check access based on assignment settings
-	return canAccessCorrections(assignment as WorksheetAssignmentRow, studentId);
 }

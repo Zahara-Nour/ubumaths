@@ -9,18 +9,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2331._
+_Mis à jour le 2026-11-03, après #2339._
 
-- **État** : lot 1 (affichage `points:` + `vecteurs:`) mergé (#2331), pas encore en prod ; revue Opus : 1 bug
-  corrigé (sommet répété dans `centre`). Ligne 13 d'`outils-manquants.md` passée « En cours ».
-- **Prochaine action** : lot 2, geste `tracer: vecteur AB + AD - 1/2 AE [depuis A]` — nouveau worktree
-  `git worktree add -b feat/solide-vecteur-geste ../ubumaths-wt-solide-vecteur origin/main` ; tests rouges du
-  parseur et du juge (pedagogy-expert, Opus), puis `SolideGeste.svelte` (frontend-developer, Sonnet).
+- **État** : lots 1 (#2331) et 2 (#2339, geste `tracer: vecteur`) mergés, pas encore en prod. Revue Opus de
+  #2339 : 0 bloquant, 4 remarques corrigées. Vérification manuelle notée.
+- **Prochaine action** : PR de suite D-SV2 — coefficients fractions simples (dénominateur ≤ 4, tiers :
+  `G centre BCD`) et vecteurs nommés de `vecteurs:` dans `tracer:` (`tracer: vecteur 2 u - v`). Nouveau worktree
+  `git worktree add -b feat/solide-vecteur-nommes ../ubumaths-wt-solide-vecteur origin/main`. Puis lot 3 (modèle
+  TSPE-334).
 - **En attente de David** : rien.
-- **Pièges en cours** : un clic à l'écran ne dit pas la profondeur : le geste ne vise que des points connus en
-  3D (`solidePoints3`, indices : sommets puis points déclarés). Noms des sommets posés AVANT points et flèches :
-  ils n'évitent pas les disques des points déclarés (mineur, vu à la revue).
-- **Worktree / branche** : aucun (lot 1 nettoyé) ; serveur 5176 pour le lot 2.
+- **Pièges en cours** : le geste ne vise que des points connus en 3D (`solideClickablePoints`). Une combinaison
+  dont l'extrémité ne tombe sur aucun point touchable est refusée (`AB + AD - 1/2 AE depuis A` sur un cube).
+  `stroke-width` explicite sur tout cercle SVG du geste (défaut = 1 cm). Code en ligne : nombre pair de backticks.
+- **Worktree / branche** : aucun (lot 2 nettoyé).
 
 ---
 
@@ -100,3 +101,22 @@ revue `code-reviewer` en `model: opus` sur chaque PR (correction des réponses).
   traits ajouté.
 - Écran `Solide.svelte`, PDF `espace-typst.ts` (compilation réelle testée), catalogue (2 exemples, 1 erreur),
   doc `ubumark.md`. Tests : `solide-vecteurs.test.ts` (19, vus rouges), `Solide.svelte.test.ts` (+1).
+
+## Lot 2 — geste `tracer: vecteur` (2026-11-03)
+
+- Worktree créé ; logique confiée à pedagogy-expert (Opus), écran à frontend-developer (Sonnet).
+- PR #2339 ouverte : logique (pedagogy-expert), écran (frontend-developer). Rendu vu dans Chrome : disque
+  d'origine géant (pas de `stroke-width` → 1 cm de contour) et pointe cachée par le disque d'extrémité, corrigés
+  avec test vu rouge. Exemple `AB + AD - 1/2 AE depuis A` refusé sur un cube (hors du cube) → catalogue en
+  `+ 1/2 AE` avec `points: I milieu CG`.
+
+**D-SV2 (David, 2026-11-03, choix hors spec du lot 2)** : « Il faut placer l'extrémité. » (origine imposée,
+rien posé) et « Ta flèche ne part pas de l'origine imposée. » (garde-fou) gardés ; flèche juste du PDF corrigé
+en **noir** (comme le ` ```courbe `) ; refus du coefficient nul et de plus de 6 vecteurs gardés. **Changent**
+(PR de suite, après #2339) : coefficients **fractions simples, dénominateur ≤ 4** (tiers : `G centre BCD`) ;
+**vecteurs nommés de `vecteurs:` admis dans `tracer:`** (`tracer: vecteur 2 u - v`, TSPE-334 « vecteurs
+donnés »).
+
+- #2339 mergé (d0e468c). Revue Opus : phrase « extrémité » dans la correction (origine imposée) et en origine
+  libre posée, exemple refusé retiré de l'aide, zones de toucher disjointes (demi-distance), nom accessible de
+  la figure de correction.

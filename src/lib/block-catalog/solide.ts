@@ -77,6 +77,13 @@ export const solideEntry: BlockCatalogEntry = {
 					defaultValue: null,
 					description:
 						'Cube, pavé, prisme, pyramide : des flèches entre deux points nommés (sommets ou points de points:). u = AE écrit la lettre u près de la flèche, sous une petite flèche (une minuscule, puis éventuellement un chiffre). Les flèches sont en trait plein, même à travers le solide. Au plus 8 vecteurs.'
+				},
+				{
+					key: 'tracer',
+					values: 'vecteur AB + AD + AE | vecteur AB + AD depuis A',
+					defaultValue: null,
+					description:
+						'Geste de l’élève, dans une question : il touche un point pour l’origine, puis un point pour l’extrémité, et une flèche se dessine. La combinaison : au plus 6 vecteurs entre points nommés, signes + et -, coefficients entiers ou demis (2 AB, 1/2 AE). depuis A impose l’origine (posée d’office, l’élève ne touche que l’extrémité) ; sans lui, tout représentant du vecteur est juste. Les points à toucher : les sommets nommés, puis les points de points: (pas de milieux automatiques) ; l’extrémité doit tomber sur l’un d’eux. Polyèdres seulement, sommets nommés. Faux : une phrase, et la flèche juste en vert. Réponse de la case : les noms des deux points (A/G).'
 				}
 			]
 		}
@@ -181,6 +188,29 @@ export const solideEntry: BlockCatalogEntry = {
 			explanation: 'G est le centre de gravité de la base ABC ; la flèche va du sommet S à G.'
 		},
 		{
+			title: 'Un vecteur à tracer, origine imposée',
+			source: fence(
+				'solide',
+				'forme: cube 3',
+				'sommets: A B C D E F G H',
+				'points: I milieu CG',
+				'tracer: vecteur AB + AD + 1/2 AE depuis A'
+			),
+			explanation:
+				'L’élève touche l’extrémité, ici I, le milieu de [CG] : l’origine A est posée d’office. Les huit sommets et I se touchent.'
+		},
+		{
+			title: 'Un vecteur à tracer, origine libre',
+			source: fence(
+				'solide',
+				'forme: cube 3',
+				'sommets: A B C D E F G H',
+				'tracer: vecteur AB + AD'
+			),
+			explanation:
+				'L’élève touche l’origine puis l’extrémité : A puis C est juste, comme E puis G : toute flèche égale à AB + AD est juste.'
+		},
+		{
 			title: 'Sans arêtes cachées',
 			source: fence('solide', 'forme: pave 4 2 3', 'cachees: non'),
 			explanation: 'Toutes les arêtes en trait plein : une perspective à corriger.'
@@ -222,6 +252,17 @@ export const solideEntry: BlockCatalogEntry = {
 			source: fence('solide', 'forme: cube 2', 'sommets: A B C D E F G H', 'vecteurs: AI'),
 			message: 'aucun point ne s’appelle I',
 			explanation: 'Déclarer d’abord le point : points: I milieu EF.'
+		},
+		{
+			title: 'Un vecteur à tracer qui n’arrive nulle part',
+			source: fence(
+				'solide',
+				'forme: cube 2',
+				'sommets: A B C D E F G H',
+				'tracer: vecteur AB + 1/2 AE depuis A'
+			),
+			message: 'l’extrémité ne tombe sur aucun point',
+			explanation: 'Déclarer le milieu : points: I milieu BF, puis il devient un point à toucher.'
 		},
 		{
 			title: 'Un plan qui ne coupe pas le solide',

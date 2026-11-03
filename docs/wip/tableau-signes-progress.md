@@ -15,7 +15,7 @@ _Mis à jour le 2026-11-03, après #2338._
   (`cleanCoefficients` sur les formules à liens logiques : « −1x » de 2-330 corrigé) mergées, CI verte.
   #2338 = moteur : visible en prod au prochain `deploy:prod` (David), aucune écriture en prod.
 - **Prochaine action** : essais iPhone (#2287, #2297, 2-330, 2-446 ; après le `deploy:prod` pour voir
-  le corrigé) ; puis verser le chantier.
+  le corrigé), les 4 notés dans `verifications-manuelles.md` ; puis verser le chantier.
 - **En attente de David** : défilement à 390 px (513 px de tableau pour 308), à juger aux essais iPhone.
 - **Pièges en cours** : `delay` n'est plus une garde d'`update-published-questions.ts` ; la bonne réponse
   vient de `blanks` ; Chrome n'atteint pas `localhost` → Playwright ; worktree neuf → `svelte-kit sync`

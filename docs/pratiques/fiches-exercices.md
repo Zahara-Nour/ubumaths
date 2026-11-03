@@ -63,6 +63,7 @@ ainsi (voir la ligne du tableau) et sert de modèle.
 | Variables aléatoires       | `0ef45afb` (8 sections, 18 ex. dont « Rappels »)            | `d720d039` (5 sections, 11 ex.)  | `create-variables-aleatoires-1spe.ts` puis `refonte-variables-aleatoires-1spe.ts` |
 | Géométrie repérée          | `6ee9c178` (10 neufs + 2 existants)                         | `bb53d116`                       | `create-geometrie-reperee-1spe.ts`                                                |
 | Automatismes (évolutions)  | `9217dfaa` « Automatismes : évolutions (1) », 2 séries de 8 | —                                | `create-automatismes-evolutions-1spe.ts`                                          |
+| Automatismes (droites)     | `0f98be04` « Automatismes : droites (1) », 2 séries de 8    | —                                | `create-automatismes-droites-1spe.ts`                                             |
 
 Terminale maths complémentaires : **« Loi binomiale »** (thème `Loi binomiale`, 2026-10-16) — technique
 `f054c015` (7 sections, 14 ex.), applications `19848611` (4 sections, 8 ex., 3 illustrations) —
@@ -77,7 +78,7 @@ antécédents par le calcul, lectures graphiques ; 14 neufs + « Calcul d'images
 `create-fonctions-generalites-2nde.ts`. Courbes de lecture graphique : tout ce qu'on fait LIRE est
 sur un nœud de la grille (vérifié par sympy) ; une cubique ne le permet qu'avec une racine double.
 
-Restent (priorité) : automatismes transverses (évolutions, droites, lectures graphiques,
+Restent (priorité) : automatismes transverses (lectures graphiques,
 statistiques), listes Python injectées dans les thèmes, logique et ensembles, démonstrations
 manquantes.
 
@@ -205,7 +206,8 @@ toute la classe.
    formule LaTeX avec la liste d'un exercice. **Relire les séries en simulation** et changer une
    graine qui tombe sur un cas limite (coefficient 0) ou sur une question déjà posée (refusé
    automatiquement).
-3. Vérifier comme au § 2.6 (`regen-depuis-base.ts`, compilation, débords, pages).
+3. Vérifier comme au § 2.6 (`regen-depuis-base.ts`, compilation, débords, pages). Le corrigé se
+   compile avec `compile-prod.mjs --polices-corrige`, sinon « current font does not support math ».
 
 Un exercice figé ne suit plus son modèle : corriger un modèle ne corrige pas une fiche déjà créée.
 
