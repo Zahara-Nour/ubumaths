@@ -83,6 +83,6 @@ Catégories : deux sous-domaines neufs dans « Vecteurs, droites et plans de l'e
   migration ne pose que nœud et tags).
 
 **D-L9 (David, 2026-11-03, « je suis tes recos »)** : Q1 8 modèles sur un cube nommé, vecteurs et droites écrits
-dans l'énoncé ; Q2 334 en C (ligne 12 de `outils-manquants.md`) ; Q3 sous-domaines neufs « Sur une figure » et
+dans l'énoncé ; Q2 334 en C (ligne 13 de `outils-manquants.md`) ; Q3 sous-domaines neufs « Sur une figure » et
 « Positions relatives » ; Q4 F8 (339) rangé sur la notion « Espace » ; Q5 accès : personne ne gagne ni ne perd
 d'accès.
