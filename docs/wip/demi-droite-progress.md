@@ -10,20 +10,19 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2336._
+_Mis à jour le 2026-11-03, après la publication de 06601c87._
 
 - **État** : geste en prod (0.67.0). Modèle 3-014 « Représenter les solutions d'une inéquation ax ⩾ b »
-  (06601c87) en prod, **brouillon**, rangé sur « ax + b < c » et tagué 3-014 (#2336, `db:migrate` fait et
-  vérifié).
-- **Prochaine action** : David joue 06601c87 dans l'aperçu admin de prod (la page à cocher ne dessine pas
-  ` ```line `), puis lance `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/3-representer`
-  (simulation) puis `--publier` (classifieur : refusé à Claude, même en simulation) ; je relis `published`.
-  Ensuite 2-251 (|x| < k, 2de), puis clôture (versement dans `docs/systeme/`).
-- **En attente de David** : verdict sur 06601c87 et publication.
-- **Pièges en cours** : `page-a-cocher` ne dessine pas ` ```line ` (alerte « bloc line non dessiné »).
-  Segment monté d'un étage qui frôle un point nommé (pas vu sur 3-014). Branche distante
+  (06601c87) **publié** par David le 2026-11-03 (rangé « ax + b < c », tag 3-014, #2336).
+- **Prochaine action** : 2-251 (représenter un intervalle borné, |x| < k, 2de) : phase 0 du modèle (relevé
+  MCP : le contournement actuel en case choix entre droites, lot 6 B de la 2de), puis clôture (versement
+  de ce journal dans `docs/systeme/`). Nouveau worktree depuis `origin/main`.
+- **En attente de David** : rien.
+- **Pièges en cours** : `page-a-cocher` ne dessine pas ` ```line ` → aperçu admin. `publier-lot` refusé à
+  Claude par le classifieur (même en simulation) → David. Dépôt principal souvent bloqué par d'autres
+  sessions → commits de doc depuis un worktree sur `origin/main`. Branche distante
   `fix/integration-locals-session` laissée sur GitHub.
-- **Worktree / branche** : aucun (`../ubumaths-wt-demi-droite` retiré après #2336).
+- **Worktree / branche** : aucun.
 
 ---
 
@@ -220,3 +219,4 @@ catégorie est libre.
 - `db:migrate` lancé depuis le worktree posé sur `origin/main` (dépôt principal bloqué par le travail d'une
   autre session ; `supabase/.temp/project-ref` copié pour le lien) ; vérifié en prod.
 - Page à cocher : écrite, mais ` ```line ` non dessiné → remplacée par l'aperçu admin.
+- Joué par David dans l'aperçu de prod puis publié (`publier-lot --publier`) ; MCP : `published`.
