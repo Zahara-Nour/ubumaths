@@ -216,6 +216,22 @@ describe('dessinerBlocs', () => {
 		]);
 	});
 
+	it('variation à compléter : cellules cachées encadrées, remplies de la réponse ; « rien » écrit', () => {
+		const r = dessinerBlocs(
+			'```variation\ncase: 0\nvariable: x\ndomain: -inf, ?-3, 0, +inf\n\nsign: B(x)\n  -inf,-3: ?+\n  -3: ?z\n  -3,0: -\n  0: ?rien\n  0,+inf: -\n```'
+		);
+		expect(r.nonDessines).toEqual([]);
+		const t = r.markdown.slice(HTML.length);
+		// Quatre cellules cachées : valeur, signe, marque, « rien »
+		expect(t.match(/class="vt-cache"/g)).toHaveLength(4);
+		expect(t).toContain('<span class="vt-cache"><span class="tex" data-tex="-3"></span></span>');
+		expect(t).toContain('<span class="vt-cache"><span class="vt-signe">+</span></span>');
+		expect(t).toContain('<span class="vt-cache"><span class="vt-zero">0</span></span>');
+		expect(t).toContain('<span class="vt-cache">rien</span>');
+		// Le signe visible ne l'est pas
+		expect(t).toContain('<td class="vt-intervalle"><span class="vt-signe">−</span></td>');
+	});
+
 	it('variation : une formule échappée pour l’attribut (\\dfrac)', () => {
 		const r = dessinerBlocs(
 			'```variation\nvariable: x\ndomain: -inf, \\dfrac{1}{2}, +inf\n\nsign: f(x)\n  -inf,\\dfrac{1}{2}: -\n  \\dfrac{1}{2}: z\n  \\dfrac{1}{2},+inf: +\n```'

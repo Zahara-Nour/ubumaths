@@ -1110,6 +1110,26 @@ export function findVariationsToFill(markdown: string): VariationToFill[] {
 	return found;
 }
 
+/** `?` en tête d'une valeur du domaine (`, ?-3`, `]?3[`), pas le `??n` d'un énoncé masqué */
+const HIDDEN_DOMAIN_MARK = /([:,]\s*[[\]]?\s*)\?(?!\?)/g;
+/** Ligne d'une cellule cachée : `  clé: ?valeur` */
+const HIDDEN_ENTRY = /^(\s{2,}[^:]+:\s*)\?(?!\?)\s*(.*)$/;
+
+/**
+ * Le même tableau, cellules cachées révélées : sans `case:`, sans `?` ; une marque
+ * « rien » cachée (`?rien`) n'a pas de ligne (aucune marque à ce point). Pour le
+ * corrigé imprimé, qui dessine le tableau rempli comme un tableau ordinaire.
+ */
+export function revealVariationBody(body: readonly string[]): string[] {
+	return body.flatMap((line) => {
+		if (CASE_LINE_REGEX.test(line)) return [];
+		if (DOMAIN_REGEX.test(line)) return [line.replace(HIDDEN_DOMAIN_MARK, '$1')];
+		const entry = HIDDEN_ENTRY.exec(line);
+		if (!entry) return [line];
+		return entry[2].trim() === 'rien' ? [] : [`${entry[1]}${entry[2]}`];
+	});
+}
+
 /** L'énoncé a-t-il un tableau à compléter ? */
 export function hasVariationToFill(markdown: string): boolean {
 	return findVariationsToFill(markdown).length > 0;

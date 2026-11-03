@@ -31,6 +31,10 @@ import { withChoiceCollectionSize } from '$lib/ubumark/parser/collection-parser'
 import { withChoiceMonnaieSize } from '$lib/ubumark/parser/monnaie-parser';
 import { replaceChoiceBlocks, type ChoiceBlock } from '$lib/ubumark/parser/choix-parser';
 import { correctChoiceIndexesOf, isChoiceBlank } from '$lib/questions/choice-case';
+import {
+	findVariationsToFill,
+	revealVariationBody
+} from '$lib/ubumark/parser/variation-table-parser';
 
 export type SerieItem = { templateId: string; seed: number };
 /**
@@ -128,6 +132,28 @@ function reponse(
 	return blank.type === 'math' ? `$\\mathbf{${latex}}$` : `**${blank.expectedAnswer}**`;
 }
 
+/** Ligne `case: N` d'un bloc (posée par le générateur, inutile à l'impression) */
+const CASE_LINE = /^\s*case\s*:/;
+
+/**
+ * Tableaux de signes à compléter (```variation à `?`) : leur corps réécrit par
+ * `reecrire`, et le nombre de cases qu'ils portent (une par cellule cachée)
+ */
+function tableauxACompleter(
+	texte: string,
+	reecrire: (corps: string[]) => string[]
+): { texte: string; cases: number } {
+	const lignes = texte.split('\n');
+	const tableaux = findVariationsToFill(texte);
+	// Du dernier au premier : les rangs des tableaux précédents restent justes
+	for (const tableau of [...tableaux].reverse()) {
+		if (tableau.nested || !tableau.node) throw new Error('tableau à compléter illisible');
+		lignes.splice(tableau.startIndex + 1, tableau.body.length, ...reecrire(tableau.body));
+	}
+	const cases = tableaux.reduce((n, t) => n + (t.node?.cases?.length ?? 0), 0);
+	return { texte: lignes.join('\n'), cases };
+}
+
 /** Un choix à imprimer : taille des blocs (horloge, collection, monnaie) posée */
 function choixImprime(contenu: string): string {
 	return withChoiceMonnaieSize(withChoiceCollectionSize(withChoiceClockSize(contenu)));
@@ -204,19 +230,29 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Serie {
 		return `${liste}\n\n${reponse}`;
 	});
 
+	// Tableau de signes à compléter : cellules cachées vides à l'énoncé (le PDF les
+	// dessine vides), tableau rempli au corrigé ; une case par cellule cachée
+	const tableauxEnonce = tableauxACompleter(enonceChoix, (corps) =>
+		corps.filter((ligne) => !CASE_LINE.test(ligne))
+	);
+	const tableauxCorrige = tableauxACompleter(corrigeChoix, revealVariationBody);
+
 	// Chaque case attendue doit être remplacée, ni plus ni moins (un marqueur d'une
 	// autre convention, `<<expr:…>>`, laisserait sinon une question sans case)
-	const cases = [...texte.matchAll(PLACEHOLDER), ...texte.matchAll(TEXT_BLANK)].length + casesChoix;
+	const cases =
+		[...texte.matchAll(PLACEHOLDER), ...texte.matchAll(TEXT_BLANK)].length +
+		casesChoix +
+		tableauxEnonce.cases;
 	if (cases !== (instance.blanks?.length ?? 0)) {
 		throw new Error(
 			`${template.id} : ${cases} case(s) dans l'énoncé pour ${instance.blanks?.length ?? 0} réponse(s) attendue(s)`
 		);
 	}
 
-	const enonce = enonceChoix
+	const enonce = tableauxEnonce.texte
 		.replace(PLACEHOLDER, `\\text{${BLANK_TEXT}}`)
 		.replace(TEXT_BLANK, BLANK_TEXT);
-	const corrige = corrigeChoix
+	const corrige = tableauxCorrige.texte
 		.replace(PLACEHOLDER, (_m, i: string) => reponse(instance, Number(i), true, minDigits))
 		.replace(TEXT_BLANK, (_m, i: string) => reponse(instance, Number(i), false, minDigits));
 

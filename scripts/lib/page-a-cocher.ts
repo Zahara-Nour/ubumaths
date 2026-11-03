@@ -648,6 +648,11 @@ function variation(source: string): Bloc {
 		);
 	const d = node.domain;
 	const derniere = d.length - 1;
+	// Tableau à compléter : chaque cellule cachée encadrée, remplie de sa réponse
+	// (« rien » écrit : une marque absente ne se verrait pas)
+	const cachees = new Set((node.cases ?? []).map((c) => `${c.row}|${c.key}`));
+	const cache = (ligne: 'domain' | number, cle: string, html: string) =>
+		cachees.has(`${ligne}|${cle}`) ? `<span class="vt-cache">${html || 'rien'}</span>` : html;
 	// Une ligne : l'étiquette, puis une case par valeur et une par intervalle
 	const ligne = (
 		classe: string,
@@ -663,16 +668,22 @@ function variation(source: string): Bloc {
 			)
 			.join('')}</tr>`;
 	const tete = `<tr class="vt-tete"><th>${tex(node.variable)}</th>${d
-		.map((p, i) => `<th>${tex(p.expression)}</th>` + (i < derniere ? '<th></th>' : ''))
+		.map(
+			(p, i) =>
+				`<th>${cache('domain', p.expression, tex(p.expression))}</th>` +
+				(i < derniere ? '<th></th>' : '')
+		)
 		.join('')}</tr>`;
-	const lignes = node.rows.map((row) => {
-		if (row.type === 'sign')
+	const lignes = node.rows.map((row, rang) => {
+		if (row.type === 'sign') {
+			const intervalle = (i: number) => `${d[i].expression},${d[i + 1].expression}`;
 			return ligne(
 				'vt-ligne-signe',
 				row.label,
-				(i) => signe(row.values.get(d[i].expression)),
-				(i) => signeDIntervalle(row.values.get(`${d[i].expression},${d[i + 1].expression}`))
+				(i) => cache(rang, d[i].expression, signe(row.values.get(d[i].expression))),
+				(i) => cache(rang, intervalle(i), signeDIntervalle(row.values.get(intervalle(i))))
 			);
+		}
 		const r = withImplicitEndpoints(row, d);
 		const v = (i: number) => r.values.get(d[i].expression);
 		return ligne(
