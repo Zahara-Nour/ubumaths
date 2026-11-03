@@ -24,8 +24,10 @@
 -- Données d'élèves : aucune (1 brouillon neuf, jamais publié).
 --
 -- Accès (question posée en phase 0 le 2026-11-03, réponse de David « je suis tes recos ») :
--- personne ne gagne de lecture. Le brouillon reste lisible par l'admin seul ; il apparaît sous son
--- nœud et son point dans l'admin. Aucune règle (policy) ne change.
+-- personne ne gagne de lecture. Le brouillon reste lisible par le prof et l'admin, comme avant, et
+-- invisible aux élèves et à anon ; il apparaît sous son nœud et son point dans l'admin. Le tag posé
+-- est lisible de tout compte connecté (`question_template_points`, `using (true)`), comme tous les
+-- tags : identifiants seuls, sans contenu. Aucune règle (policy) ne change.
 --
 -- Rollback (aucune donnée d'élève). Il retire les 1 tags posés, repose les 0 retirés, rend aux
 -- modèles leur nœud (ou aucun), leurs niveaux et leur statut d'avant. Garde : il refuse si un modèle n'a plus EXACTEMENT le nœud, les
