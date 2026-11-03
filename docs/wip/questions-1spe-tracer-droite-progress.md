@@ -141,3 +141,4 @@ est donné par la figure) ; (b) les trois variations, dont m = 0 (reco : oui).
 - #2279 mergée (CI verte, `check:migrations` OK) ; `security-auditor` : rien de bloquant, un cas de
   test ajouté (un tag sans nœud est interdit par trigger : c'est la garde « déjà rangé » qui arrête
   la migration). `db:migrate` lancé depuis le dépôt principal le 2026-11-03, vérifié en prod (MCP).
+- Page à cocher publiée le 2026-11-03 (artefact `Sp18DSUP9pjLz7z6PWTQUo`, capacité `db`, lue en prod).
