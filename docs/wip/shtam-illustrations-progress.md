@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, phase 0 tranchée (6 décisions)._
+_Mis à jour le 2026-11-03, lot 1 en cours (1/6 dessins)._
 
-- **État** : phase 0 tranchée (voir « Décisions de David ») ; aucun dessin fait, pas encore de worktree.
-- **Prochaine action** : créer le worktree `ubumaths-wt-shtam-illustrations` (branche `feat/shtam-illustrations-lot-1`), repérer l'article de la une, écrire son prompt Nano Banana (style Steinlen, nuancier imprimerie, Mousched-Gogh) et le donner à David ; le style se valide sur ce premier dessin.
-- **En attente de David** : rien.
-- **Pièges en cours** : ne jamais lancer prettier sur les articles (casse `~q*2~`) ; fichiers à joindre à Nano Banana → copie dans `~/Downloads` ; la une prend la **première** image du corps (`present.ts`) → le dessin AVANT toute figure SVG.
-- **Worktree / branche** : aucun pour l'instant.
+- **État** : lot 1 sur `feat/shtam-illustrations-lot-1` (pas encore de PR) : fermat-marge-trop-petite fait, **style validé par David**. Prompts écrits pour les 5 autres (glitchistan-ha-ha, patatovie-barbier-paradoxe, bedonstan-rails-de-sandomir, nombrilie-zero-virgule-neuf, yoyolande-hotel-de-l-infini) dans `docs/Chiphres/illustrations/shtam/<slug>/prompt.md`.
+- **Prochaine action** : recevoir les images de David → `essai-N-ia.jpg` dans le dossier de l'article, `magick … -resize 1200x -gravity center -crop 1200x800+0+0 -quality 85` → `static/shtam/<slug>.webp`, ligne d'image en tête du corps ; puis PR du lot.
+- **En attente de David** : les 5 images du lot 1.
+- **Pièges en cours** : ne jamais lancer prettier sur les articles (casse `~q*2~`) ; fichiers à joindre → `~/Downloads` ; la une prend la **première** image du corps → le dessin AVANT toute figure SVG ; jamais de personne réelle dessinée (Fermat remplacé par Mère Ubu).
+- **Worktree / branche** : `../ubumaths-wt-shtam-illustrations` · `feat/shtam-illustrations-lot-1` · serveur de test sur 5178.
 
 ## À lire avant de commencer
 
@@ -36,8 +36,11 @@ _2026-11-03, phase 0 :_
 4. **Format** : paysage **3:2, 1200 px** de large, **webp q85** (~100-200 Ko), `static/shtam/<slug>.webp` ; l'original Nano Banana gardé dans un dossier de travail.
 5. **Ordre** : **l'article de la une d'abord** (il fixe le style, validé par David), puis **ordre de parution du plus récent au plus ancien**, par lots d'environ 6.
 6. **Circuit** : **une PR par lot**, depuis le worktree `ubumaths-wt-shtam-illustrations` ; merge dès la CI verte.
+7. **Style validé** (2026-11-03) sur le dessin de fermat-marge-trop-petite, sans retouche (marge pas visible, tache bleue du fond : acceptées).
+8. **Ordre précisé** (2026-11-03) : d'abord les **13 articles parus**, du plus récent au plus ancien, puis les **41 programmés** dans leur ordre de parution.
 
 ## Journal
 
 - 2026-11-03 — Chantier ouvert à la demande de David (« créer une illustration pour chaque article du shtam »).
 - 2026-11-03 — Phase 0 tranchée par David : les 6 réponses suivent les recommandations (voir « Décisions de David »).
+- 2026-11-03 — Lot 1 : dessin de fermat-marge-trop-petite (Mère Ubu et la facture ; 1264×848 recadré en 1200×800, 172 Ko), style validé ; prompts des 5 suivants écrits.
