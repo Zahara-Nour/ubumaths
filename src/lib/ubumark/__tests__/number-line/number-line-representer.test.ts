@@ -1,6 +1,6 @@
 /**
  * Droite graduée à représenter (` ```line ` + `representer:`) : parseur, réponse,
- * juge, phrases de la correction (phase 0 : `docs/wip/demi-droite-progress.md`
+ * juge, phrases de la correction (phase 0 : `docs/archive/wip/demi-droite-progress.md`
  * § « Geste de l'élève », points 10 à 17 ; décisions Q3, Q4)
  *
  * L'élève pose la borne (ou les deux bornes), choisit le côté des solutions

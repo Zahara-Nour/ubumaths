@@ -2,7 +2,7 @@
 	NumberLineRepresenter — droite graduée à représenter (```line + `representer:`)
 	===============================================================================
 
-	L'élève représente un intervalle (chantier `docs/wip/demi-droite-progress.md`
+	L'élève représente un intervalle (chantier `docs/archive/wip/demi-droite-progress.md`
 	§ « Geste de l'élève », points 10 à 17) :
 
 	- Demi-droite (`representer: [2, +inf[`) : toucher la droite pose la borne sur

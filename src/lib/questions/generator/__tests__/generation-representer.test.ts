@@ -1,6 +1,6 @@
 /**
  * Question à droite graduée à représenter (` ```line ` + `representer:`, phase 0 :
- * `docs/wip/demi-droite-progress.md` § « Geste de l'élève »)
+ * `docs/archive/wip/demi-droite-progress.md` § « Geste de l'élève »)
  *
  * Même patron que la droite à placer : le bloc compte pour une case ; sa réponse
  * attendue (`[2 ; +∞[`) n'est jamais écrite dans le modèle ; un seul juge.

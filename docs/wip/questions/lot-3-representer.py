@@ -1,7 +1,7 @@
 """Écrit le modèle « Représenter les solutions d'une inéquation ax ⩾ b » (3-014, niveau 2) dans
 scripts/questions/3-representer/.
 
-Phase 0 validée par David le 2026-11-03 (journal `demi-droite-progress.md` § PR 4) :
+Phase 0 validée par David le 2026-11-03 (journal `docs/archive/wip/demi-droite-progress.md` § PR 4) :
 - la droite seule (une case, geste `representer:`) : l'inégalité est le niveau 1 (24aff7b0) ;
 - fenêtre de 10 unités, borne jamais au milieu (début = k − d, d de 2 à 8) ;
 - v1 a > 0, v2 a < 0, v3 borne en fraction avec a = ±3, droite graduée en tiers sur 4 unités,
