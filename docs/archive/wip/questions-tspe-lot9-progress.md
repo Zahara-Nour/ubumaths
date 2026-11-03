@@ -15,9 +15,8 @@ _Mis à jour le 2026-11-03 : chantier clos et versé._
   2026-11-03 (statut relu par MCP). Bilan durable : `docs/systeme/programmes/bornes/lycee/tspe.md`
   § Couverture (273 modèles `T_SPE` publiés, 226 points sur 326).
 - **Reste** : 334 (tracer un vecteur sur un solide) classé C, ligne 13 de `docs/wip/outils-manquants.md`.
-- **Nettoyage en attente de David** : fermer la PR #2315 (doublon de #2313, ne pas la merger : sa garde
-  échouerait) ; retirer `../ubumaths-wt-questions-tspe-lot9-rangement` (branche non mergée : `git branch -D`) et
-  `../ubumaths-wt-questions-tspe-lot9` (branche mergée, serveur 5177).
+- **Nettoyage fait** (2026-11-03, accord de David) : PR #2315 fermée sans merge ; worktrees
+  `../ubumaths-wt-questions-tspe-lot9` et `-rangement` retirés, branches supprimées.
 
 ---
 
