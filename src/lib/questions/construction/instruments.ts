@@ -322,15 +322,138 @@ export function isInFrame(p: Position, frame: Frame): boolean {
 	);
 }
 
-/** `p` est-il un point construit : un des `points`, ou l'intersection de deux traits ? */
-export function isConstructed(
-	p: Position,
-	points: readonly Position[],
+/** Points de départ d'une construction : points de la figure, bouts de ses segments (même anonymes) */
+export function basePointsOf(
+	points: ReadonlyMap<string, Position>,
+	segments: readonly { a: Position; b: Position }[]
+): Position[] {
+	return [...points.values(), ...segments.flatMap((s) => [s.a, s.b])];
+}
+
+/** Ce que l'élève a construit, de proche en proche (voir `constructionOf`) */
+export interface Construction {
+	/** Indices, dans les objets de l'élève, de ceux dont le trait est construit */
+	readonly built: ReadonlySet<number>;
+	/** Traits de la figure et traits construits de l'élève */
+	readonly traits: readonly Trait[];
+	/** `p` est-il un point de départ ou l'intersection de deux traits construits ? */
+	isBuilt(p: Position): boolean;
+}
+
+/**
+ * Le trait de l'objet tient-il sur des points construits ? Droite ou segment :
+ * ses deux bouts, ou (droite à l'équerre) son départ et, comme second point,
+ * exactement celui que pose l'équerre le long d'un trait droit construit
+ * (`perpendicularThrough`, qu'un toucher à la règle n'atteint pas) ; cercle :
+ * point de passage, et centre construit ou piqué SUR un trait construit (le
+ * symétrique par un axe : compas piqué n'importe où sur l'axe, décision de David
+ * du 2026-11-03, § 15) ; report : centre et les deux bouts de l'écartement.
+ */
+function isSupported(
+	object: DrawnObject,
+	isBuilt: (p: Position) => boolean,
 	traits: readonly Trait[]
 ): boolean {
-	const eps = EPSILON * scaleOf(p);
-	const at = (q: Position) => Math.hypot(p.x - q.x, p.y - q.y) <= eps;
-	return points.some(at) || intersectionsOf(traits).some(at);
+	if (object.kind === 'point') return false;
+	if (object.kind === 'cercle') {
+		const center = { x: object.cx, y: object.cy };
+		if (!isBuilt({ x: object.x, y: object.y })) return false;
+		return isBuilt(center) || isOnSomeTrait(center, traits);
+	}
+	if (object.kind === 'report') {
+		return [
+			{ x: object.cx, y: object.cy },
+			{ x: object.ax, y: object.ay },
+			{ x: object.bx, y: object.by }
+		].every(isBuilt);
+	}
+	const p = { x: object.x1, y: object.y1 };
+	const q = { x: object.x2, y: object.y2 };
+	if (!isBuilt(p)) return false;
+	if (isBuilt(q)) return true;
+	if (object.kind !== 'droite') return false;
+	const eps = EPSILON * scaleOf(p, q);
+	return traits.some((t) => {
+		if (!isStraight(t)) return false;
+		const square = perpendicularThrough(t, p);
+		return Math.hypot(square.x2 - q.x, square.y2 - q.y) <= eps;
+	});
+}
+
+/**
+ * Intersections des paires de cercles (compas ou report) non construits, de même
+ * rayon, centrés sur deux points construits distincts : la médiatrice tracée avec
+ * un écartement quelconque gardé (§ 15)
+ */
+function sameRadiusCrossings(
+	objects: readonly DrawnObject[],
+	built: ReadonlySet<number>,
+	isBuilt: (p: Position) => boolean
+): Position[] {
+	const circles = objects.flatMap((object, index) => {
+		if (built.has(index) || (object.kind !== 'cercle' && object.kind !== 'report')) return [];
+		const trait = traitOf(object);
+		if (!trait || isStraight(trait) || !isBuilt(trait.center)) return [];
+		return [trait];
+	});
+	const found: Position[] = [];
+	for (let i = 0; i < circles.length; i++) {
+		for (let j = i + 1; j < circles.length; j++) {
+			const [p, q] = [circles[i], circles[j]];
+			const eps = EPSILON * (scaleOf(p.center, q.center) + p.radius + q.radius);
+			if (Math.abs(p.radius - q.radius) > eps) continue;
+			found.push(...intersectTraits(p, q));
+		}
+	}
+	return found;
+}
+
+/**
+ * Sur papier uni, ce que l'élève a CONSTRUIT (décision de David du 2026-11-03,
+ * `docs/wip/controles-figure-progress.md` § 14) : un point l'est s'il est un
+ * point de départ (`base`, voir `basePointsOf`) ou l'intersection de deux traits
+ * construits ; un trait de l'élève l'est quand il tient sur des points construits
+ * (`isSupported`). Exception (§ 15) : deux cercles de même rayon, même pris à
+ * l'œil, centrés sur deux points construits (la médiatrice « à écartement
+ * quelconque ») construisent leurs DEUX intersections, sans devenir des traits.
+ * On recommence tant que quelque chose s'ajoute : deux traits tracés à l'œil ne
+ * construisent rien, un trait ne se justifie jamais par lui-même ni par un trait
+ * qui dépend de lui, et l'ordre des tracés ne compte pas.
+ */
+export function constructionOf(
+	objects: readonly DrawnObject[],
+	base: readonly Position[],
+	figureTraits: readonly Trait[]
+): Construction {
+	const built = new Set<number>();
+	const traits: Trait[] = [...figureTraits];
+	let crossings = intersectionsOf(traits);
+	/** Intersections des paires de cercles de même rayon (exception du § 15) */
+	const paired: Position[] = [];
+	const isBuilt = (p: Position) => {
+		const eps = EPSILON * scaleOf(p);
+		const at = (q: Position) => Math.hypot(p.x - q.x, p.y - q.y) <= eps;
+		return base.some(at) || crossings.some(at) || paired.some(at);
+	};
+	let grew = true;
+	while (grew) {
+		grew = false;
+		objects.forEach((object, index) => {
+			if (built.has(index)) return;
+			const trait = traitOf(object);
+			if (!trait || !isSupported(object, isBuilt, traits)) return;
+			built.add(index);
+			traits.push(trait);
+			crossings = intersectionsOf(traits);
+			grew = true;
+		});
+		for (const p of sameRadiusCrossings(objects, built, isBuilt)) {
+			if (isBuilt(p)) continue;
+			paired.push(p);
+			grew = true;
+		}
+	}
+	return { built, traits, isBuilt };
 }
 
 /** Les traits de ce qu'a tracé l'élève */
