@@ -81,7 +81,7 @@ import { isPlacedTimeCorrect } from '$lib/ubumark/utils/horloge-placer';
 import { isCourbeAnswerCorrect } from '$lib/ubumark/utils/courbe-tracer';
 import { isPlacedAngleCorrect } from '$lib/ubumark/utils/trig-placer';
 import {
-	isIntervalAnswer,
+	isLineToRepresentBlank,
 	isRepresentedIntervalCorrect
 } from '$lib/ubumark/utils/number-line-representer';
 import { isColoringCorrect } from '$lib/ubumark/utils/partage-colorier';
@@ -807,11 +807,6 @@ export function isBlankValueCorrect(
 ): boolean {
 	if (!userAnswer.trim()) return false;
 	return validateBlankValue(userAnswer, blank, instance);
-}
-
-/** Case d'une droite à représenter : sa réponse attendue est un intervalle (`[2 ; +∞[`) */
-function isLineToRepresentBlank(blank: InstanceBlank): boolean {
-	return blank.construire === 'line' && isIntervalAnswer(blank.expectedAnswer);
 }
 
 /**

@@ -31,6 +31,10 @@
 	import type { QuestionInstance } from '$lib/questions/types';
 	import { getQuestionType } from '$lib/questions/types';
 	import { isWorkFigureBlank } from '$lib/questions/graded-part';
+	import {
+		isIncompleteRepresentation,
+		isLineToRepresentBlank
+	} from '$lib/ubumark/utils/number-line-representer';
 	import type { AnswerData } from '$lib/types/question-display';
 	import { validateAnswer } from '$lib/utils/answer-validator';
 	import { MarkdownRenderer } from '$lib/components/markdown';
@@ -152,11 +156,15 @@
 	 */
 	function hasValidInput(): boolean {
 		switch (getQuestionType(instance)) {
-			// Une figure de travail, jamais notée, peut rester vide
+			// Une figure de travail, jamais notée, peut rester vide ; une droite à
+			// représenter sans côté ou sans seconde borne compte comme vide
 			case 'fill_in_blanks':
-				return fillBlankValues.every(
-					(v, index) => isWorkFigureBlank(instance.blanks?.[index]) || v.trim().length > 0
-				);
+				return fillBlankValues.every((v, index) => {
+					const blank = instance.blanks?.[index];
+					if (isWorkFigureBlank(blank)) return true;
+					if (isLineToRepresentBlank(blank) && isIncompleteRepresentation(v)) return false;
+					return v.trim().length > 0;
+				});
 
 			default:
 				return false;

@@ -106,6 +106,10 @@
 		readCapitalPairs
 	} from '$lib/components/markdown/content-capital-pairs';
 	import { readDigitGrouping } from '$lib/components/markdown/content-digit-grouping';
+	import {
+		isIncompleteRepresentation,
+		isLineToRepresentBlank
+	} from '$lib/ubumark/utils/number-line-representer';
 
 	// Utility functions
 	import {
@@ -517,7 +521,12 @@
 		if ('build' in slot) {
 			// Droite à plusieurs points : vide tant qu'un point manque
 			const cases = Array.from({ length: slot.count }, (_, k) => values[slot.index + k] ?? '');
-			return cases.some((value) => value === '') ? '' : cases.join(' ');
+			if (cases.some((value) => value === '')) return '';
+			// Droite à représenter : vide tant que le côté ou la seconde borne manque
+			if (isLineToRepresentBlank(blanks[slot.index]) && isIncompleteRepresentation(cases[0])) {
+				return '';
+			}
+			return cases.join(' ');
 		}
 		if ('operation' in slot) return values[slot.index] ?? '';
 		return 'input' in slot ? slot.input.value : (slot.field.getPromptValue(slot.promptId) ?? '');

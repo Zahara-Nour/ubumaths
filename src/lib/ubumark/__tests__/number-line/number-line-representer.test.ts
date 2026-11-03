@@ -12,6 +12,7 @@ import { describe, it, expect } from 'vitest';
 import { findLinesToPlace, parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
 import {
 	expectedInterval,
+	isIncompleteRepresentation,
 	isRepresentedIntervalCorrect,
 	representerAnswer,
 	representerMistakes,
@@ -266,5 +267,19 @@ describe('phrases de la correction (points 13, 15 à 17)', () => {
 	it('juste ou vide : aucune phrase', () => {
 		expect(representerMistakes('[2 ; +∞[', '[2 ; +∞[')).toEqual([]);
 		expect(representerMistakes('', '[2 ; +∞[')).toEqual([]);
+	});
+});
+
+describe('réponse en chantier : ni Entrée ni « Valider »', () => {
+	it('borne sans côté, ou sans seconde borne : incomplète', () => {
+		expect(isIncompleteRepresentation('2 comprise, côté ?')).toBe(true);
+		expect(isIncompleteRepresentation('-1 exclue, autre borne ?')).toBe(true);
+	});
+
+	it('vide ou intervalle complet, même faux : pas « incomplète »', () => {
+		expect(isIncompleteRepresentation('')).toBe(false);
+		expect(isIncompleteRepresentation('[2 ; +∞[')).toBe(false);
+		expect(isIncompleteRepresentation(']-∞ ; 2]')).toBe(false);
+		expect(isIncompleteRepresentation('[-1 ; 3[')).toBe(false);
 	});
 });

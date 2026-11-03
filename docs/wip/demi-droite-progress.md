@@ -10,18 +10,20 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2309 (PR 2 mergée)._
+_Mis à jour le 2026-11-03, PR 3 (#2317) ouverte, CI en cours._
 
-- **État** : PR 1 (affichage, #2294) et PR 2 (geste `representer:`, #2309) mergées. Pas en prod
-  (`deploy:prod` sur demande de David). Vérifications à l'œil notées dans `verifications-manuelles.md`.
-- **Prochaine action** : à proposer à David : un 1er modèle avec `representer:` (3-014, 2-251, corrigés de
-  |x| < k de la 2de), ou clore le chantier (versement de ce journal dans `docs/systeme/`, déjà décrit
-  dans `ubumark.md` et `questions.md`).
-- **En attente de David** : le choix ci-dessus.
-- **Pièges en cours** : Entrée avec une réponse incomplète (`2 comprise, côté ?`) valide la question ; un
-  segment monté d'un étage peut frôler un point nommé, non traité. CI : erreur non rattrapée
-  `wrapDynamicImport` (hooks SvelteKit, shard navigateur 1/2), hors tests, passée à la relance.
-- **Worktree / branche** : aucun (retiré après #2309).
+- **État** : PR 1 (#2294) et PR 2 (#2309) mergées. PR 3 #2317 (`fix/demi-droite-entree`) : réponse incomplète
+  = case vide (Valider grisé, Entrée → focus sur la droite), revue `code-reviewer` faite et suivie. CI rouge
+  le 2026-11-03 à cause de `main` (#2311, `locals.safeGetSession`), réparé par a3be00758 ; branche remise
+  à jour par merge de `main`. Pas en prod.
+- **Prochaine action** : `gh pr checks 2317` sur le DERNIER commit (Code Quality + Nightly Integration
+  Tests) ; vert → merger, puis 1er modèle avec `representer:` (3-014 d'abord ; 2-251, |x| < k de la 2de
+  ensuite), puis clore (versement de ce journal dans `docs/systeme/`).
+- **En attente de David** : rien (ordre validé le 2026-11-03 : correctif, 1 modèle, clôture).
+- **Pièges en cours** : segment monté d'un étage qui frôle un point nommé (seulement si le 1er modèle le
+  montre). Flash : réponse incomplète acceptée comme une case vide. Branche distante
+  `fix/integration-locals-session` (PR doublon #2324 fermée) laissée sur GitHub.
+- **Worktree / branche** : `../ubumaths-wt-demi-droite`, `fix/demi-droite-entree`.
 
 ---
 
