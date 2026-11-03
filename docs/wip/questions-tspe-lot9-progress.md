@@ -8,21 +8,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2312._
+_Mis à jour le 2026-11-03, PR du rangement ouverte._
 
-- **État** : 8 modèles du lot 9 sur `main` (`scripts/questions/tspe-9-figure/`, #2312), essayés en base locale ;
-  rien en prod.
-- **Prochaine action** : **David** lance (`!`)
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-9-figure --publier` depuis le dépôt
-  principal (prod, brouillons) ; relever les 8 `id` (MCP) ; migration nœud + tag (§ 6 de
-  `couvrir-un-niveau.md`, F8 sur la notion « Espace », sous-notions admises) dans un worktree neuf ; page à
-  cocher ; publication.
-- **En attente de David** : la commande `--publier` ci-dessus.
-- **Pièges en cours** : ` ```solide ` sans flèche, diagonale ni point hors sommet ; les choix à options variables
-  ont la bonne en premier (réponse `0`, mélangés à l'affichage) ; la saisie MathLive simulée dans Chrome
-  n'entre pas dans la 1re case (outil, pas modèle).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-lot9` (branche mergée), gardé tant que son serveur
-  5177 sert à l'essai ; à retirer ensuite (`git worktree remove`, `git branch -d`).
+- **État** : 8 brouillons en prod (créés par David le 2026-11-03, ids au § « En prod ») ; migration nœud + tag
+  `20261103131044_questions_tspe_lot9_rangement_tags.sql` écrite, test d'intégration 12/12 vert (8 rouges
+  sans elle), PR ouverte (branche `feat/questions-tspe-lot9-rangement`).
+- **Prochaine action** : `security-auditor` sans bloquant, CI verte, `pnpm check:migrations --pr <n>`, merge,
+  `pnpm db:migrate` depuis le dépôt principal, vérifier en prod ; page à cocher (après la migration : elle lit
+  nœud et points en prod) ; publication.
+- **En attente de David** : rien avant la page à cocher.
+- **Pièges en cours** : ` ```solide ` sans flèche, diagonale ni point hors sommet ; F8 (TSPE-339) va sur la
+  NOTION « Espace », ses 6 sous-notions admises par la garde.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-lot9-rangement` · `feat/questions-tspe-lot9-rangement`.
+  L'ancien worktree `../ubumaths-wt-questions-tspe-lot9` (branche mergée, #2312) reste à retirer.
 
 ---
 
@@ -111,3 +109,22 @@ mixte, résolution de `w = x u + y v` sur deux coordonnées), chaque cas vérifi
 
 Écart au tableau de phase 0, sans effet sur D-L9 :
 F8 v1 (« parallélisme droite / plan ») passe par `MN = x XY + y XZ`, pas par F6.
+
+## En prod (2026-11-03)
+
+David a lancé `create-questions --publier` le 2026-11-03 : 8 brouillons `T_SPE`, sans nœud ni tag (relevé MCP).
+
+| #   | id                                     | Point    | Nœud                                                |
+| --- | -------------------------------------- | -------- | --------------------------------------------------- |
+| F1  | `d7a361ca-3a71-430a-82e4-720a1b14c0ad` | TSPE-335 | Géométrie > Espace > coplanarité et décomposition   |
+| F2  | `63669e60-3140-4f55-8d5e-cc9d390adaf1` | TSPE-338 | Géométrie > Espace > coplanarité et décomposition   |
+| F3  | `4c19f2cb-1c90-4b43-83ad-521ee4edb1f0` | TSPE-337 | Géométrie > Espace > coplanarité et décomposition   |
+| F4  | `f9df1cd9-9791-42a3-bb5f-c0c84ad84d9c` | TSPE-553 | Géométrie > Espace > coplanarité et décomposition   |
+| F5  | `d6d9d5f7-8af1-45ba-aa9f-fb5f9e0fc82e` | TSPE-336 | Géométrie > Espace > positions relatives et inters. |
+| F6  | `f61cd451-0435-4fa7-ba72-93b1f98f65b8` | TSPE-551 | Géométrie > Espace > positions relatives et inters. |
+| F7  | `14a02a32-092f-4c1c-83cc-44f912c66f43` | TSPE-552 | Géométrie > Espace > positions relatives et inters. |
+| F8  | `a45a315b-9610-4452-9ab3-df00d5eb24bf` | TSPE-339 | Géométrie > Espace (notion, 6 sous-notions admises) |
+
+Migration `20261103131044_questions_tspe_lot9_rangement_tags.sql` (gabarit du lot 10) et son test
+`tests/integration/questions-tspe-lot9-rangement-tags.test.ts` : 12/12 verts, 8 rouges sans la migration
+(fichier remplacé par `select 1;`, restauré d'une copie, md5 identique).
