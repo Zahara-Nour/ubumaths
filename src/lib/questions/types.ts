@@ -50,6 +50,7 @@ import type { RenderedStep, SchoolLevel } from '$lib/mathAST/common/step-rendere
 import type { CapitalPairs } from '$lib/mathAST/parser/types';
 import type { SuperfluRuleId } from '$lib/mathAST/superflu/rules';
 import type { ConstructionCheck } from '$lib/ubumark/types/construction';
+import type { HiddenCellKind } from '$lib/ubumark/types/variation-table';
 
 /**
  * French educational grade levels
@@ -767,6 +768,13 @@ export interface InstanceBlank extends CalculusBlankFields {
 	 * (`isPlacedAngleCorrect`) : le même cran, modulo 2π.
 	 */
 	construire?: BuildKind;
+	/**
+	 * Case d'un tableau de signes à compléter (```variation à `?`) : la nature de la
+	 * cellule cachée. Réponse attendue tirée du bloc : valeur de x (`valeur`, case
+	 * `math`, juge ordinaire), signe `+`/`-` (`signe`) ou marque `z`/`||`/`rien`
+	 * (`marque`), cases `text` jugées à l'égalité exacte (`isSignCellCorrect`).
+	 */
+	cellule?: HiddenCellKind;
 	/**
 	 * Case « figure » portée par un bloc ```figure-a-completer ou ```figure-de-travail (`type: 'graphical'`) :
 	 * texte du bloc (variables résolues, sans `case:`) et vérifications. Le juge

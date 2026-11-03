@@ -28,6 +28,34 @@ const ANSWER_KEY_LINE = /^(?:placer|tracer|construire|colorier)\s*:(.*)$/i;
  */
 const MASKED_DATUM_LINE = /=\s*\?(?:\s*;\s*\?)*\s*;?\s*$/;
 
+/** Valeur d'un vecteur à tracer : `vecteur u = (3 ; -2) depuis A` */
+const VECTOR_VALUE = /^\s*vecteur\b/i;
+
+/**
+ * `?` à la place des coordonnées d'un vecteur (`vecteur ?`, `vecteur u = ? depuis A`,
+ * et `vecteur?` écrit collé)
+ */
+const MASKED_VECTOR_COORDS = /(?:^|[\s=]|vecteur)\?(?:\s|$)/i;
+
+/** La valeur est-elle celle d'un vecteur à tracer (`tracer: vecteur …`) ? */
+export function isVectorValue(value: string): boolean {
+	return VECTOR_VALUE.test(value);
+}
+
+/** Les coordonnées d'un vecteur à tracer sont-elles masquées ? */
+export function isMaskedVectorValue(value: string): boolean {
+	return isVectorValue(value) && !value.includes('(') && MASKED_VECTOR_COORDS.test(value);
+}
+
+/**
+ * Masquer un vecteur à tracer : seules ses coordonnées deviennent `?` ; le mot
+ * `vecteur`, son nom et l'origine imposée restent (l'écran en a besoin)
+ */
+export function maskVectorValue(value: string): string {
+	// Une espace avant le `?` : `vecteur(3;-2)` → `vecteur ?`, `u = (3 ; -2)` → `u = ?`
+	return value.trim().replace(/\s*\([^)]*\)/, ` ${MASKED_VALUE}`);
+}
+
 /** La valeur écrite est-elle masquée ? */
 export function isMaskedValue(value: string): boolean {
 	return value.trim() === MASKED_VALUE;
@@ -45,6 +73,7 @@ export function hasMaskedValue(source: string): boolean {
 		const line = raw.trim();
 		const answer = ANSWER_KEY_LINE.exec(line);
 		if (answer) {
+			if (isVectorValue(answer[1])) return isMaskedVectorValue(answer[1]);
 			return answer[1]
 				.split(';')
 				.some((part) =>

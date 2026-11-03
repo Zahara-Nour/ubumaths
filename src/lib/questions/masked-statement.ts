@@ -23,6 +23,10 @@
  *   `completer: ? ?` (une face à poser par `?`) ;
  * - ```figure-a-completer : `verifier: ?`, l'outil écrit (`outils:`). Les points
  *   restent : un point invisible posé sur la réponse fuirait (aucun modèle).
+ * Tableau de signes à compléter (```variation à `?`, chantier `tableau-signes`) : chaque
+ * valeur de x cachée devient un jeton `??1`, `??2`… dans `domain:` ET dans les clés des
+ * lignes (`-inf,-3` → `-inf,??1`, sinon la clé dirait la valeur) ; chaque signe ou
+ * marque cachés devient `?` seul. Le parseur lit ces formes comme des cases sans réponse.
  * Un bloc dans une option d'un ```choix n'est pas un geste (le générateur met le
  * choix à l'abri avant de repérer les gestes) : il reste tel quel, sinon les options
  * deviendraient identiques.
@@ -57,8 +61,14 @@ import {
 	parseEspaceContent
 } from '$lib/ubumark/parser/espace-parser';
 import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
+import { findVariationsToFill } from '$lib/ubumark/parser/variation-table-parser';
 import { unnestedLine } from '$lib/ubumark/parser/nested-line';
-import { MASKED_VALUE } from '$lib/ubumark/utils/masked-value';
+import {
+	isMaskedVectorValue,
+	isVectorValue,
+	MASKED_VALUE,
+	maskVectorValue
+} from '$lib/ubumark/utils/masked-value';
 import { sideColumns } from '$lib/ubumark/utils/espace-scene';
 import { transformGrid, trimGrid } from '$lib/ubumark/utils/espace-patrons';
 
@@ -318,6 +328,59 @@ function maskFigure(block: FoundBlock): MaskLine {
 	};
 }
 
+/** Ligne `domain:` d'un tableau */
+const DOMAIN_LINE = /^(\s*domain\s*:\s*)(.*)$/i;
+/** Valeur de x cachée dans `domain:` : borne éventuelle, `?`, valeur, borne éventuelle */
+const HIDDEN_DOMAIN_POINT = /^(\s*[[\]]?\s*)\?(.*?)(\s*[[\]]?\s*)$/;
+/** Cellule d'une ligne du tableau (`  -inf,-3: ?-`) : retrait, clé, séparateur, valeur */
+const TABLE_ENTRY = /^(\s{2,})(.+?)(\s*:\s*)(.+?)\s*$/;
+
+/**
+ * Tableau de signes à compléter : valeurs de x cachées → `??n` (dans `domain:` et dans
+ * les clés), signes et marques cachés → `?`. Les lignes sont réécrites d'après tout le
+ * corps (les clés dépendent du domaine).
+ */
+function maskVariation(block: FoundBlock): MaskLine {
+	const tokens = new Map<string, string>();
+	const masked = block.body.map((line) => {
+		const domain = DOMAIN_LINE.exec(line);
+		if (!domain) return null;
+		const points = domain[2].split(',').map((part) => {
+			const hidden = HIDDEN_DOMAIN_POINT.exec(part);
+			if (!hidden || hidden[2].trim().startsWith('?')) return part;
+			const token = `??${tokens.size + 1}`;
+			tokens.set(hidden[2].trim(), token);
+			return `${hidden[1]}${token}${hidden[3]}`;
+		});
+		// Sans retrait : `maskLines` remet ce qui précédait la ligne
+		return `${domain[1].trimStart()}${points.join(',')}`;
+	});
+	return (line, rank) => {
+		if (masked[rank] !== null) return masked[rank];
+		const entry = TABLE_ENTRY.exec(line);
+		if (!entry) return null;
+		const [, , key, separator, value] = entry;
+		const parts = key.split(',').map((part) => part.trim());
+		const renamed = parts.map((part) => tokens.get(part) ?? part).join(',');
+		const shownValue = value.trim().startsWith('?') ? MASKED_VALUE : value;
+		if (renamed === parts.join(',') && shownValue === value) return null;
+		return `${renamed}${separator}${shownValue}`;
+	};
+}
+
+/**
+ * Tableau à compléter masqué : chaque case sans réponse, et aucune clé de ligne qui
+ * ne soit une valeur du domaine (une clé `-3` dirait la valeur cachée `??1`)
+ */
+function variationMasked(node: ReturnType<typeof findVariationsToFill>[number]['node']): boolean {
+	if (node === null) return false;
+	if ((node.cases ?? []).some((cell) => cell.answer !== '')) return false;
+	const domain = new Set(node.domain.map((point) => point.expression));
+	return node.rows.every((row) =>
+		[...row.values.keys()].every((key) => key.split(',').every((part) => domain.has(part)))
+	);
+}
+
 /** `A=? ; B=?`, `?` : chaque cible de la ligne est masquée */
 function allMasked(value: string): boolean {
 	return value
@@ -376,7 +439,15 @@ export function findUnmaskedAnswers(statement: string): string[] {
 		valuesOf(block.body, keys).every(allMasked);
 	return [
 		...leaks('line', findLinesToPlace(statement), keyMasked(['placer'])),
-		...leaks('courbe', findCourbesToPlace(statement), keyMasked(['placer', 'tracer'])),
+		...leaks(
+			'courbe',
+			findCourbesToPlace(statement),
+			(block) =>
+				valuesOf(block.body, ['placer']).every(allMasked) &&
+				valuesOf(block.body, ['tracer']).every((v) =>
+					isVectorValue(v) ? isMaskedVectorValue(v) : allMasked(v)
+				)
+		),
 		...leaks('trig', findTrigCirclesToPlace(statement), keyMasked(['placer'])),
 		...leaks('horloge', findHorlogesToPlace(statement), (block) =>
 			valuesOf(block.body, ['placer']).every(isMaskedPlacerValue)
@@ -391,7 +462,12 @@ export function findUnmaskedAnswers(statement: string): string[] {
 				v.split(/\s+/).every((w) => w === MASKED_VALUE)
 			)
 		),
-		...leaks('figure-a-completer', findFiguresACompleter(lines), keyMasked(['verifier']))
+		...leaks('figure-a-completer', findFiguresACompleter(lines), keyMasked(['verifier'])),
+		...(findVariationsToFill(statement).some(
+			(block) => !block.nested && !inChoice(block) && !variationMasked(block.node)
+		)
+			? ['variation']
+			: [])
 	];
 }
 
@@ -413,7 +489,10 @@ export function maskGestureAnswers(statement: string): string {
 	const placer = keyLine(PLACER_LINE, maskLineTargets);
 	maskBlocks(findLinesToPlace(statement), () => placer);
 	const courbePoints = keyLine(PLACER_LINE, maskCourbeTargets);
-	const courbeLine = keyLine(TRACER_LINE, () => MASKED_VALUE);
+	// Droite : l'équation entière ; vecteur : ses coordonnées seules (nom, origine gardés)
+	const courbeLine = keyLine(TRACER_LINE, (value) =>
+		isVectorValue(value) ? maskVectorValue(value) : MASKED_VALUE
+	);
 	maskBlocks(
 		findCourbesToPlace(statement),
 		() => (line, rank) => courbePoints(line, rank) ?? courbeLine(line, rank)
@@ -432,5 +511,6 @@ export function maskGestureAnswers(statement: string): string {
 	maskBlocks(ownBlocks(findCubesToBuild(statement)), maskCubes);
 	maskBlocks(ownBlocks(findPatronsToBuild(statement)), maskPatron);
 	maskBlocks(findFiguresACompleter(statement.split('\n')), maskFigure);
+	maskBlocks(ownBlocks(findVariationsToFill(statement)), maskVariation);
 	return lines.filter((line) => line !== REMOVED_LINE).join('\n');
 }

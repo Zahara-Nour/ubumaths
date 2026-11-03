@@ -135,4 +135,15 @@ describe('courbe → Typst : titres d’axes et points à placer', () => {
 		expect(out).toMatch(/line\(\([\d.]+, 0\), \([\d.]+, [\d.]+\), stroke: 1pt/);
 		expect(count(out, /circle\([^)]*\), radius: 0\.06/g)).toBe(2);
 	});
+
+	it('vecteur à tracer : énoncé avec A seul, corrigé = la flèche depuis A', () => {
+		const source =
+			'x: -5 ; 5\ny: -5 ; 5\ngrille: 1\npoints: A(-1;2)\ntracer: vecteur (3 ; -2) depuis A';
+		const statement = generateCourbeTypst(parseCourbeContent(source));
+		expect(statement).not.toContain('// solution');
+		expect(statement).toContain('[A]');
+		const out = generateCourbeTypst(parseCourbeContent(source), { solved: true });
+		expect(count(out, /^\s*\/\/ solution vecteur/gm)).toBe(1);
+		expect(out).toMatch(/line\([^\n]*mark: \(end: ">"/);
+	});
 });

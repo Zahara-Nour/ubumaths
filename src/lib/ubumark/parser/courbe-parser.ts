@@ -29,6 +29,11 @@
  * cartésienne `2x + 3y - 6 = 0`), jamais avec `placer:` ; la droite doit passer par
  * au moins deux nœuds de la grille dans la fenêtre.
  *
+ * Vecteur à tracer (une question) : `tracer: vecteur (3 ; -2)`, nommé
+ * `tracer: vecteur u = (3 ; -2)`, origine imposée `… depuis A` (A de `points:`) ;
+ * coordonnées multiples du pas de la grille, vecteur non nul qui tient dans la
+ * fenêtre.
+ *
  * Les variables de template (`{{a}}`) sont remplacées AVANT l'analyse : une
  * valeur négative produit donc `x--2` ou `+-3`, normalisés ici.
  *
@@ -54,6 +59,7 @@ import type {
 	CourbeIssue,
 	CourbeLabel,
 	CourbeLineToTrace,
+	CourbeVectorToTrace,
 	CourbeNode,
 	CourbePoint,
 	CourbeSize,
@@ -73,6 +79,7 @@ import { differentiate } from '$lib/mathAST/differentiation';
 import { computeSequenceTerms, PREV_TERM_VARIABLE } from '$lib/grapheur/sequence';
 import { isGridNode, isInWindow, courbeGridSteps } from '../utils/courbe-placer';
 import { lineCoefficients, lineNodes } from '../utils/courbe-tracer';
+import { vectorProblem } from '../utils/courbe-vecteur';
 
 // ============================================================================
 // CONSTANTES
@@ -994,6 +1001,29 @@ function spacedEquation(equation: string): string {
 		);
 }
 
+/** `tracer: vecteur u = (3 ; -2) depuis A` ; coordonnées `?` dans l'énoncé masqué */
+const VECTOR_REGEX =
+	/^vecteur\s*(?:([a-z])\s*=\s*)?(?:\(\s*(-?\d+(?:[.,]\d+)?)\s*;\s*(-?\d+(?:[.,]\d+)?)\s*\)|(\?))(?:\s+depuis\s+([A-Z]))?$/;
+
+/** Le tracer: est-il celui d'un vecteur ? */
+function isVectorLine(value: string): boolean {
+	return /^vecteur\b/i.test(value);
+}
+
+/** `tracer: vecteur …` : nom, coordonnées (null si masquées), origine imposée (nom) */
+function parseVectorToTrace(value: string, line: number): CourbeVectorToTrace {
+	const match = VECTOR_REGEX.exec(value);
+	if (!match) {
+		throw new LineError(
+			`tracer : vecteur « ${value} » illisible (ex. tracer: vecteur (3 ; -2), tracer: vecteur u = (3 ; -2) depuis A ; des nombres seulement)`
+		);
+	}
+	const [, name = '', x, y, masked, from] = match;
+	const coords =
+		masked !== undefined ? null : { x: Number(decimalPoint(x)), y: Number(decimalPoint(y)) };
+	return { name, coords, ...(from !== undefined && { from }), line };
+}
+
 /** Ce qui empêche l'élève de tracer la droite : moins de deux nœuds dans la fenêtre */
 function traceProblem(
 	tracer: CourbeLineToTrace,
@@ -1064,6 +1094,7 @@ export function parseCourbeContent(source: string): CourbeNode {
 	const seenKeys = new Set<string>();
 	let axisTitles: CourbeAxisTitles | undefined;
 	let tracer: CourbeLineToTrace | undefined;
+	let vecteur: CourbeVectorToTrace | undefined;
 	let caseIndex: number | undefined;
 	let caseLine = 0;
 
@@ -1176,7 +1207,8 @@ export function parseCourbeContent(source: string): CourbeNode {
 					axisTitles = parseAxisTitles(value);
 					break;
 				case 'tracer':
-					tracer = parseLineToTrace(value, line);
+					if (isVectorLine(value)) vecteur = parseVectorToTrace(value, line);
+					else tracer = parseLineToTrace(value, line);
 					break;
 				case 'case':
 					if (!/^\d+$/.test(value)) {
@@ -1302,6 +1334,28 @@ export function parseCourbeContent(source: string): CourbeNode {
 		}
 	}
 
+	// Vecteur à tracer : seul sur son repère, origine imposée prise dans points:
+	if (errors.length === 0 && vecteur !== undefined) {
+		const origin =
+			vecteur.from === undefined ? undefined : points.find((p) => p.name === vecteur!.from);
+		if (origin !== undefined) vecteur = { ...vecteur, origin: { x: origin.x, y: origin.y } };
+		const problem =
+			placer !== undefined
+				? 'tracer: et placer: ne vont pas ensemble : un seul geste par repère'
+				: vecteur.from !== undefined && origin === undefined
+					? `origine ${vecteur.from} absente : la donner dans points: (ex. points: ${vecteur.from}(1;2))`
+					: vecteur.coords === null
+						? null
+						: vectorProblem({ window: window as CourbeWindow, grid, size }, vecteur.coords, origin);
+		if (problem !== null) {
+			errors.push({
+				message: `Ligne ${vecteur.line} : tracer : ${problem}`,
+				line: vecteur.line,
+				content: lines[vecteur.line - 1].trim()
+			});
+		}
+	}
+
 	const spec: CourbeSpec | null =
 		errors.length === 0
 			? {
@@ -1317,6 +1371,7 @@ export function parseCourbeContent(source: string): CourbeNode {
 					description,
 					...(placer !== undefined && { placer }),
 					...(tracer !== undefined && { tracer }),
+					...(vecteur !== undefined && { vecteur }),
 					...(axisTitles !== undefined && { axisTitles })
 				}
 			: null;

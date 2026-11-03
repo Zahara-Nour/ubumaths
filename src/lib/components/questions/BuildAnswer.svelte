@@ -34,6 +34,7 @@
 	import Courbe from '$lib/components/markdown/nodes/Courbe.svelte';
 	import { parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
 	import { solutionLine } from '$lib/ubumark/utils/courbe-tracer';
+	import { solutionVector } from '$lib/ubumark/utils/courbe-vecteur';
 	import Horloge from '$lib/components/markdown/nodes/Horloge.svelte';
 	import HorlogePlacer from '$lib/components/markdown/nodes/HorlogePlacer.svelte';
 	import { parseHorlogeContent } from '$lib/ubumark/parser/horloge-parser';
@@ -153,6 +154,19 @@
 			traces={solution
 				? [{ from: solution.segment[0], to: solution.segment[1], color: 'vert' }]
 				: []}
+		/>
+	{/if}
+{:else if courbe?.spec?.vecteur !== undefined}
+	{@const spec = courbe.spec}
+	{#if lineCases}
+		<Courbe node={courbe} answers={lineCases} showControls={false} />
+	{:else}
+		<!-- Le repère avec la flèche juste, sans `tracer:` : dessiné seul -->
+		{@const vector = spec.vecteur!}
+		{@const arrow = vector.coords ? solutionVector(spec, vector.coords, null, vector.origin) : null}
+		<Courbe
+			node={{ ...courbe, spec: { ...spec, vecteur: undefined } }}
+			traces={arrow ? [{ ...arrow, color: 'vert', arrow: true }] : []}
 		/>
 	{/if}
 {:else if courbe?.spec?.placer !== undefined}
