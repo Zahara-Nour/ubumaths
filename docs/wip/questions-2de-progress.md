@@ -6,20 +6,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR `feat/tracer-droites-2de` ouverte (§ 64)._
+_Mis à jour le 2026-11-03, après #2296 (§ 64)._
 
-- **État** : 2-316 (B-06 `8d4bd94d`) et 2-445 (B-07 `2cfae58d`) réécrits au geste ` ```courbe tracer: `,
-  specs 12/12 et 11/11, lot `tracer-droites-2de` (2 cibles). Lot `textcolor-hors-2de` (§ 63) **pas encore
-  publié** (vérifié en prod le 2026-11-03 : 27/27 portent encore `\textcolor`).
-- **Prochaine action** : merger la PR ; puis David, dans l'ordre : `--lot textcolor-hors-2de --publier`,
-  `--lot tracer-droites-2de` (simulation, refusée à Claude par le mode auto) puis `--publier` ; relire en base.
-- **En attente de David** : les deux `--publier` ci-dessus.
-- **Pièges en cours** : `--publier`, `publier-lot`, `db:migrate` → David avec `!` ; la simulation
-  d'`update-published-questions.ts` (lecture de la prod) est aussi refusée à Claude ; `create-questions`
-  apparie par (titre, thème, domaine, sous-domaine, **niveau**) ; `col()` en texte → `colt()` ;
-  `fonctions-terminale/C-06` du dépôt périmé vs prod (§ 63) ; pas de ligne `Claude-Session:` ; une autre
-  session écrit aussi dans ce journal : `git pull` avant d'éditer. 2-298 (vecteur) attend le `deploy:prod` de #2274.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `feat/tracer-droites-2de`.
+- **État** : lot `textcolor-hors-2de` publié et relu (27/27 conformes aux instantanés, `hors-maths.py` → 0).
+  2-316 (`8d4bd94d`) et 2-445 (`2cfae58d`) réécrits au geste ` ```courbe tracer: ` (#2296 mergée),
+  **pas encore écrits en prod**.
+- **Prochaine action** : David, depuis le dépôt principal à jour : `pnpm tsx
+scripts/update-published-questions.ts --lot tracer-droites-2de` (simulation) puis `--publier` ; relire
+  en base (export, variations = instantanés). Ensuite : 2-298 (vecteur, § 61) après le `deploy:prod` de #2274.
+- **En attente de David** : les deux commandes ci-dessus.
+- **Pièges en cours** : `--publier`, `publier-lot`, `db:migrate` et la simulation
+  d'`update-published-questions.ts` (lecture de la prod) → David avec `!` ; un lot ajouté sur une branche
+  n'existe dans le dépôt principal qu'après le merge ; `create-questions` apparie par (titre, thème, domaine,
+  sous-domaine, **niveau**) ; `col()` en texte → `colt()` ; `fonctions-terminale/C-06` du dépôt périmé vs
+  prod (§ 63) ; pas de ligne `Claude-Session:` ; une autre session écrit aussi dans ce journal : `git pull`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de` (HEAD détachée sur `origin/main`).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1613,3 +1614,5 @@ tspe-ln-continuite-convexite,1spe-tracer-droite}.py`) : vérifiés d'abord fidè
   Claude par le mode auto : à lancer par David avant le `--publier`.
 - Ligne « droite à tracer : 2-316 et 2-445 » retirée de `docs/wip/outils-manquants.md`.
 - 2-298 (vecteur) : reste au § 61, après le `deploy:prod` de #2274.
+- **#2296 mergée** (CI verte). Lot `textcolor-hors-2de` (§ 63) publié par David le 2026-11-03, relu :
+  27 exportés, `variations` identiques aux instantanés, `hors-maths.py` → 0.
