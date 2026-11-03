@@ -8,12 +8,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, migration de rangement en PR._
+_Mis à jour le 2026-11-03, migration de rangement en PR #2313._
 
 - **État** : 8 brouillons en prod (2026-11-03, ids au § « En prod »). Migration nœud + tag
   `20261103130717_questions_tspe_lot9_rangement_tags.sql` + test d'intégration (12 verts, rouges sans elle)
-  en PR sur `feat/questions-tspe-lot9-tags`.
-- **Prochaine action** : `security-auditor` ; CI verte ; `pnpm check:migrations --pr <n>` ; merge ;
+  en PR #2313 (`feat/questions-tspe-lot9-tags`).
+- **Prochaine action** : `security-auditor` ; CI verte ; `pnpm check:migrations --pr 2313` ; merge ;
   `pnpm db:migrate` depuis le dépôt principal ; vérifier en prod (nœud, un tag, brouillon) ; page à cocher ;
   publication par David.
 - **En attente de David** : rien avant le merge ; ensuite la relecture (page à cocher) et la publication.
