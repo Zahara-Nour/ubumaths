@@ -1,0 +1,209 @@
+{
+	"title": "Démontrer la dérivée d'un produit",
+	"description": "Démonstration à trous de (uv)′ = u′v + uv′ (taux de variation de uv) : terme ajouté et retranché, limite du premier terme, limite du taux avec des valeurs tirées",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "Démonstrations",
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $u$ et $v$ deux fonctions dérivables en un réel $a$. Pour $h\\neq 0$, on étudie le taux de variation du produit $uv$ entre $a$ et $a+h$ :\n\n$$\\dfrac{u(a+h)v(a+h)-u(a)v(a)}{h}$$\n\nPour faire apparaître les taux de variation de $u$ et de $v$, on ajoute et on retranche un même terme au numérateur. Lequel ?\n\n```choix\n- $u(a)v(a+h)$\n- $u(a)v(a)$\n- $u(a+h)+v(a+h)$\n- $u'(a)v'(a)$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u(a+h)v(a+h)-\\textcolor{{{color:primary.0}}}{u(a)v(a+h)}=(u(a+h)-u(a))v(a+h)$ fait apparaître le taux de $u$.",
+					"$\\textcolor{{{color:primary.0}}}{u(a)v(a+h)}-u(a)v(a)=u(a)(v(a+h)-v(a))$ fait apparaître le taux de $v$.",
+					"Ajouter et retrancher $u(a)v(a)$ ne change rien : le numérateur reste le même."
+				]
+			}
+		},
+		{
+			"statement": "Soit $u$ et $v$ deux fonctions dérivables en un réel $a$. Pour $h\\neq 0$, on étudie le taux de variation du produit $uv$ entre $a$ et $a+h$ :\n\n$$\\dfrac{u(a+h)v(a+h)-u(a)v(a)}{h}$$\n\nOn ajoute et on retranche $u(a)v(a+h)$ au numérateur, ce qui donne\n\n$$\\dfrac{u(a+h)-u(a)}{h}\\times v(a+h)+u(a)\\times\\dfrac{v(a+h)-v(a)}{h}$$\n\nOn admet que $v(a+h)$ tend vers $v(a)$ quand $h$ tend vers $0$.\n\nQuand $h$ tend vers $0$, vers quoi tend le premier terme $\\dfrac{u(a+h)-u(a)}{h}\\times v(a+h)$ ?\n\n```choix\n- $u'(a)v(a)$\n- $u'(a)v'(a)$\n- $u(a)v(a)$\n- $u'(a)$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{u(a+h)-u(a)}{h}$ est le taux de variation de $u$ : il tend vers $u'(a)$.",
+					"$v(a+h)$ tend vers $v(a)$ (admis).",
+					"Le produit tend donc vers $\\textcolor{{{color:primary.0}}}{u'(a)v(a)}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $u$ et $v$ deux fonctions dérivables en un réel $a$. Pour $h\\neq 0$, on étudie le taux de variation du produit $uv$ entre $a$ et $a+h$ :\n\n$$\\dfrac{u(a+h)v(a+h)-u(a)v(a)}{h}$$\n\nOn ajoute et on retranche $u(a)v(a+h)$ au numérateur, ce qui donne\n\n$$\\dfrac{u(a+h)-u(a)}{h}\\times v(a+h)+u(a)\\times\\dfrac{v(a+h)-v(a)}{h}$$\n\nOn admet que $v(a+h)$ tend vers $v(a)$ quand $h$ tend vers $0$.\n\nOn prend $u(a)={{eval:u}}$, $u'(a)={{eval:p}}$, $v(a)={{eval:v}}$ et $v'(a)={{eval:q}}$. Complète.\n\nQuand $h$ tend vers $0$, le taux de variation de $uv$ tend vers $?$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..6"
+				},
+				{
+					"name": "p",
+					"expression": "2..5"
+				},
+				{
+					"name": "v",
+					"expression": "1..6"
+				},
+				{
+					"name": "q",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p*v+u*q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le premier terme tend vers $u'(a)v(a)={{eval:p}}\\times{{eval:v}}={{eval:p*v}}$.",
+					"Le second terme tend vers $u(a)v'(a)={{eval:u}}\\times{{eval:q}}={{eval:u*q}}$.",
+					"Le taux tend donc vers ${{eval:p*v}}+{{eval:u*q}}=\\textcolor{{{color:primary.0}}}{{{eval:p*v+u*q}}}$ : $(uv)'(a)=u'(a)v(a)+u(a)v'(a)$, et non $u'(a)v'(a)$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u(a)v(a + h)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : u(a)v(a)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : somme",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : u′(a)v′(a)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u′(a)v(a)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : u′(a)v′(a)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : u(a)v(a)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : u′(a)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "22 (2 × 5 + 3 × 4)",
+			"variationIndex": 2,
+			"variables": {
+				"u": "3",
+				"p": "2",
+				"v": "5",
+				"q": "4"
+			},
+			"answers": ["22"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8 (u′v′)",
+			"variationIndex": 2,
+			"variables": {
+				"u": "3",
+				"p": "2",
+				"v": "5",
+				"q": "4"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 10 (u′v seulement)",
+			"variationIndex": 2,
+			"variables": {
+				"u": "3",
+				"p": "2",
+				"v": "5",
+				"q": "4"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 15 (uv)",
+			"variationIndex": 2,
+			"variables": {
+				"u": "3",
+				"p": "2",
+				"v": "5",
+				"q": "4"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

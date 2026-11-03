@@ -1,0 +1,185 @@
+{
+	"title": "Démontrer la dérivée de la fonction carré",
+	"description": "Démonstration à trous de (x²)′ = 2x par le taux de variation entre a et a + h : (a + h)² − a² à développer, taux 2a + h, justification de la limite",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "Démonstrations",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction carré, définie sur $\\mathbb{R}$ par $f(x)=x^2$, et $a$ un réel. Pour $h\\neq 0$, on calcule le taux de variation de $f$ entre $a$ et $a+h$ :\n\n$$\\dfrac{f(a+h)-f(a)}{h}=\\dfrac{(a+h)^2-a^2}{h}$$\n\nOn développe $(a+h)^2$, puis on réduit. Complète par une expression développée.\n\n$(a+h)^2-a^2=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2ah+h^2",
+					"requiredForm": {
+						"pattern": "u"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(a+h)^2=a^2+2ah+h^2$ (identité remarquable).",
+					"Donc $(a+h)^2-a^2=\\textcolor{{{color:primary.0}}}{2ah+h^2}$ : les $a^2$ se compensent."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction carré, définie sur $\\mathbb{R}$ par $f(x)=x^2$, et $a$ un réel. Pour $h\\neq 0$, on calcule le taux de variation de $f$ entre $a$ et $a+h$ :\n\n$$\\dfrac{f(a+h)-f(a)}{h}=\\dfrac{(a+h)^2-a^2}{h}$$\n\nComme $(a+h)^2-a^2=2ah+h^2$, on simplifie par $h$. Complète.\n\n$\\dfrac{f(a+h)-f(a)}{h}=\\dfrac{2ah+h^2}{h}=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2a+h",
+					"requiredForm": {
+						"pattern": "u"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"$2ah+h^2=h(2a+h)$ : on met $h$ en facteur.",
+					"Comme $h\\neq 0$, on simplifie : le taux vaut $\\textcolor{{{color:primary.0}}}{2a+h}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction carré, définie sur $\\mathbb{R}$ par $f(x)=x^2$, et $a$ un réel. Pour $h\\neq 0$, on calcule le taux de variation de $f$ entre $a$ et $a+h$ :\n\n$$\\dfrac{f(a+h)-f(a)}{h}=\\dfrac{(a+h)^2-a^2}{h}$$\n\nCe taux vaut $2a+h$. On en déduit que $f$ est dérivable en $a$, avec $f'(a)=2a$. Pourquoi ?\n\n```choix\n- Car quand $h$ tend vers $0$, $2a+h$ tend vers $2a$.\n- Car $2a+h=2a$ pour tout réel $h$.\n- Car on remplace $h$ par $0$ dans $\\dfrac{(a+h)^2-a^2}{h}$.\n- Car $f(a)=a^2$, et on multiplie par $2$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre dérivé est la limite du taux quand $h$ tend vers $0$.",
+					"Ici le taux vaut $2a+h$, qui tend vers $\\textcolor{{{color:primary.0}}}{2a}$ : $f'(a)=2a$.",
+					"On ne peut pas remplacer $h$ par $0$ dans $\\dfrac{(a+h)^2-a^2}{h}$ : on diviserait par $0$. C'est pour cela qu'on simplifie d'abord."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2ah + h²",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2ah+h^2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture h² + 2ah",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["h^2+2ah"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : h²",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["h^2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2ah",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2ah"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2a + h (taux au lieu de la différence)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2a+h"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2a + h",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2a+h"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2a (limite au lieu du taux)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2a"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2ah + h",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2ah+h"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : a + h",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["a+h"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "limite de 2a + h",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : égalité pour tout h",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : h remplacé par 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : f(a) multiplié par 2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
