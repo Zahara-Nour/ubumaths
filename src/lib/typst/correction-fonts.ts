@@ -23,11 +23,16 @@
 // CONSTANTES
 // ============================================================================
 
-/** Les trois fichiers, servis depuis `static/` : téléchargés pour un Corrigé seulement */
+/**
+ * Les trois fichiers, servis depuis `static/` : téléchargés pour un Corrigé seulement.
+ * `/fonts/` est gardé 30 jours en cache (`vercel.json`) : changer une police =
+ * changer son `?v=`, sinon un navigateur garde l'ancienne (2026-11-03 : gras
+ * mathématique ajouté à Chiphre Math).
+ */
 export const CORRECTION_FONT_FILES = [
 	'/fonts/chiphre-math-typst/ShantellSans-Light.ttf',
 	'/fonts/chiphre-math-typst/ShantellSans-Bold.ttf',
-	'/fonts/chiphre-math-typst/ChiphreMath.ttf'
+	'/fonts/chiphre-math-typst/ChiphreMath.ttf?v=2026-11-03'
 ] as const;
 
 const START_MARK = '// <polices-du-corrige>';
