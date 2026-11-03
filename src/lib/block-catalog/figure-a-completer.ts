@@ -206,6 +206,20 @@ export const figureACompleterEntry: BlockCatalogEntry = {
 				'Le côté [AB] est tracé ; les longueurs de [AC] et [BC] sont données par les segments u et v (ou par deux points : « AC = AB » pour un triangle isocèle). L’élève reçoit le segment, le compas, le report et la règle : avec le report, il prend l’écartement de u (ses deux bouts s’aimantent), pique en A, puis fait de même avec v en B ; il trace [AC] et [BC] jusqu’à une intersection. Les deux triangles, de part et d’autre de (AB), sont justes. Un sommet hors d’une intersection de cercles construits : « Ton sommet C est placé à l’œil » ; un côté trop long ou trop court : « Ton côté [AC] n’a pas la bonne longueur ». Trois longueurs qui ne font pas un triangle sont refusées à la publication. À la correction, les côtés en pointillés, les arcs de report en traits fins, les longueurs codées.'
 		},
 		{
+			title: 'Construire un angle de mesure donnée (rapporteur)',
+			source: fence(
+				'figure-a-completer',
+				'fenetre: 0 ; 10 ; 0 ; 8',
+				'verifier: angle AOy = 50',
+				'---',
+				'O = point(2, 2)',
+				'A = point(8, 3)',
+				'x = demidroite(O, A)'
+			),
+			explanation:
+				'Le côté [OA) est tracé ; « angle AOy = 50 » demande le côté [Oy) tel que l’angle AOy mesure 50° (une mesure entière, de 1 à 179). L’élève reçoit le rapporteur et le segment : il pique le centre du rapporteur en O, touche le côté [OA) pour y poser la base, puis touche le bord du rapporteur à la graduation voulue (‹ › ajustent d’un degré, Retourner passe de l’autre côté) ; il trace au segment le côté de O jusqu’au repère. Les deux côtés de (OA) sont justes. Un côté sans repère : « Ton côté est tracé à l’œil » ; 130° au lieu de 50° : « tu as lu la mauvaise graduation du rapporteur ». À la correction, le côté en pointillés et l’arc de l’angle codé de sa mesure.'
+		},
+		{
 			title: 'Placer le 4e sommet d’un parallélogramme',
 			source: fence(
 				'figure-a-completer',

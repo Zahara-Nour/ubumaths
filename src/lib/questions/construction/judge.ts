@@ -31,6 +31,7 @@ import { CircleAuthorError, assertCircles, isCircleCheck, judgeCircles } from '.
 import { PolygonAuthorError, givenVertices, judgePolygon } from './polygon';
 import { SymmetryAuthorError, assertSymmetry, judgeSymmetry, type FigureShapes } from './symmetry';
 import { TriangleAuthorError, assertTriangle, judgeTriangle } from './triangle';
+import { AngleAuthorError, assertAngle, judgeAngle } from './angle';
 
 export {
 	EXTRA_SEGMENT_FEEDBACK,
@@ -133,7 +134,8 @@ function asAuthorError(error: unknown): unknown {
 		error instanceof PointAuthorError ||
 		error instanceof LineAuthorError ||
 		error instanceof CircleAuthorError ||
-		error instanceof TriangleAuthorError
+		error instanceof TriangleAuthorError ||
+		error instanceof AngleAuthorError
 	) {
 		return new ConstructionAuthorError(error.message);
 	}
@@ -180,6 +182,14 @@ export function assertConstructionChecks(
 	}
 	for (const check of checks) {
 		if (check.kind === 'point' || check.kind === 'droite' || check.kind === 'cercle') continue;
+		if (check.kind === 'angle') {
+			try {
+				assertAngle(check, points, shapes);
+			} catch (error) {
+				throw asAuthorError(error);
+			}
+			continue;
+		}
 		if (check.kind === 'triangle') {
 			try {
 				assertTriangle(check, points, shapes);
@@ -233,6 +243,17 @@ export function judgeConstruction(
 	const objects = parseConstructionAnswer(answer);
 	if (objects === null) return { status: 'incorrect' };
 	if (objects.length === 0) return { status: 'empty' };
+	// Repère du rapporteur (lot 5) hors d'un angle à construire : sans son outil, réponse forgée
+	const angle = allChecks.find((c) => c.kind === 'angle');
+	if (!angle && objects.some((o) => o.kind === 'repere')) return { status: 'incorrect' };
+	// Angle à construire (lot 5) : seul dans la figure (garanti par le parseur)
+	if (angle) {
+		try {
+			return judgeAngle(angle, points, shapes, objects);
+		} catch (error) {
+			throw asAuthorError(error);
+		}
+	}
 
 	const pointChecks = allChecks.filter(isPointCheck);
 	if (pointChecks.length > 0) {

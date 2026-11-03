@@ -18,7 +18,8 @@
  * une droite par un point) et compas (cercle par son centre et un point),
  * lot 2b. Plusieurs outils : une palette (papier uni, instruments). Report :
  * prendre un écartement entre deux points, puis piquer le compas ailleurs
- * (lot 4, `docs/wip/controles-figure-progress.md` § 13).
+ * (lot 4, `docs/wip/controles-figure-progress.md` § 13). Rapporteur : poser
+ * son centre et sa base, puis placer des repères aux graduations (lot 5, § 16).
  */
 export const CONSTRUCTION_TOOLS = [
 	'droite',
@@ -26,12 +27,18 @@ export const CONSTRUCTION_TOOLS = [
 	'point',
 	'equerre',
 	'compas',
-	'report'
+	'report',
+	'rapporteur'
 ] as const;
 export type ConstructionTool = (typeof CONSTRUCTION_TOOLS)[number];
 
 /** Les instruments du papier uni (une palette qui en contient permet le papier uni) */
-export const INSTRUMENT_TOOLS: readonly ConstructionTool[] = ['equerre', 'compas', 'report'];
+export const INSTRUMENT_TOOLS: readonly ConstructionTool[] = [
+	'equerre',
+	'compas',
+	'report',
+	'rapporteur'
+];
 
 /**
  * Palette déduite sans `grille:` (décision de David, 2026-11-02,
@@ -47,7 +54,9 @@ export const PLAIN_PAPER_TOOLS: Partial<Record<ConstructionCheckKind, Constructi
 	// Lot 3b (§ 11) : cercle circonscrit, papier uni seulement
 	cercle: ['droite', 'equerre', 'compas'],
 	// Lot 4 (§ 13) : triangle de trois longueurs, papier uni seulement
-	triangle: ['segment', 'compas', 'report', 'droite']
+	triangle: ['segment', 'compas', 'report', 'droite'],
+	// Lot 5 (§ 16) : angle de mesure donnée, papier uni seulement
+	angle: ['rapporteur', 'segment']
 };
 
 /** Vérifications que l'auteur peut nommer dans `verifier:` */
@@ -59,7 +68,8 @@ export const CONSTRUCTION_CHECK_KINDS = [
 	'point',
 	'droite',
 	'cercle',
-	'triangle'
+	'triangle',
+	'angle'
 ] as const;
 export type ConstructionCheckKind = (typeof CONSTRUCTION_CHECK_KINDS)[number];
 
@@ -175,8 +185,29 @@ export interface TriangleCheck {
 	line: number;
 }
 
+/**
+ * `angle AOy = 50` : le côté [OA) est donné ; l'élève trace au segment le côté
+ * [Oy) (y : son nom, pour les messages) tel que l'angle AOy mesure 50°, d'un
+ * côté ou de l'autre de (OA), depuis un repère du rapporteur (chantier
+ * `controles-figure`, lot 5, 2026-11-03). `points` : A puis O ; `measure` :
+ * degrés entiers, de 1 à 179.
+ */
+export interface AngleCheck {
+	kind: 'angle';
+	points: [string, string];
+	side: string;
+	measure: number;
+	line: number;
+}
+
 export type ConstructionCheck =
-	DroiteParCheck | SegmentFigureCheck | PointCheck | LineCheck | CircleCheck | TriangleCheck;
+	| DroiteParCheck
+	| SegmentFigureCheck
+	| PointCheck
+	| LineCheck
+	| CircleCheck
+	| TriangleCheck
+	| AngleCheck;
 
 /** L'outil avec lequel se trace chaque vérification */
 export const CHECK_TOOL: Record<ConstructionCheckKind, ConstructionTool> = {
@@ -187,7 +218,9 @@ export const CHECK_TOOL: Record<ConstructionCheckKind, ConstructionTool> = {
 	point: 'point',
 	droite: 'droite',
 	cercle: 'compas',
-	triangle: 'segment'
+	triangle: 'segment',
+	// Le segment est exigé aussi (coherence du parseur) ; le rapporteur est l'outil de départ
+	angle: 'rapporteur'
 };
 
 export interface ConstructionSpec {

@@ -6,7 +6,9 @@
  * `segment(x1;y1;x2;y2)` (par ses deux bouts), `point(x;y)` (outil point,
  * chantier `controles-figure` lot 2a), `cercle(cx;cy;x;y)` (compas : le centre
  * et un point du cercle, lot 2b), `report(cx;cy;ax;ay;bx;by)` (report de
- * longueur : le centre, puis les deux points de l'écartement, lot 4), les objets séparés par `|`. Entrée de l'élève : bornée (longueur, nombre
+ * longueur : le centre, puis les deux points de l'écartement, lot 4),
+ * `repere(vx;vy;ax;ay;r;deg;sens)` (repère du rapporteur : centre, point de la
+ * base, rayon, graduation entière 0..180, côté ±1, lot 5), les objets séparés par `|`. Entrée de l'élève : bornée (longueur, nombre
  * d'objets, valeurs finies et modérées) avant toute lecture ; illisible → null.
  *
  * @module questions/construction/answer
@@ -39,6 +41,10 @@ const CIRCLE_REGEX = new RegExp(
 
 const REPORT_REGEX = new RegExp(
 	`^report\\(${Array.from({ length: 6 }, () => `\\s*(${NUMBER})\\s*`).join(';')}\\)$`
+);
+
+const REPERE_REGEX = new RegExp(
+	`^repere\\(${Array.from({ length: 7 }, () => `\\s*(${NUMBER})\\s*`).join(';')}\\)$`
 );
 
 const coordinate = z
@@ -96,8 +102,29 @@ const drawnReportSchema = z
  */
 export type DrawnReport = z.infer<typeof drawnReportSchema>;
 
+const drawnRepereSchema = z
+	.object({
+		kind: z.literal('repere'),
+		vx: coordinate,
+		vy: coordinate,
+		ax: coordinate,
+		ay: coordinate,
+		r: coordinate.positive(),
+		deg: z.number().int().min(0).max(180),
+		sens: z.union([z.literal(1), z.literal(-1)])
+	})
+	.refine((m) => Math.hypot(m.ax - m.vx, m.ay - m.vy) > SAME_POINT_EPSILON);
+
+/**
+ * Repère du rapporteur (lot 5) : rapporteur centré en (vx ; vy), base le long de
+ * la demi-droite vers (ax ; ay), repère à la graduation `deg` (degrés comptés
+ * depuis la base, dans le sens trigonométrique si `sens` = 1), à `r` du centre.
+ * Un point, pas un trait (position : `repereAt`, `instruments.ts`).
+ */
+export type DrawnRepere = z.infer<typeof drawnRepereSchema>;
+
 /** Ce que l'élève a tracé ou placé */
-export type DrawnObject = DrawnLine | DrawnPoint | DrawnCircle | DrawnReport;
+export type DrawnObject = DrawnLine | DrawnPoint | DrawnCircle | DrawnReport | DrawnRepere;
 
 export function isDrawnLine(object: DrawnObject): object is DrawnLine {
 	return object.kind === 'droite' || object.kind === 'segment';
@@ -109,6 +136,10 @@ export function isDrawnCircle(object: DrawnObject): object is DrawnCircle {
 
 export function isDrawnReport(object: DrawnObject): object is DrawnReport {
 	return object.kind === 'report';
+}
+
+export function isDrawnRepere(object: DrawnObject): object is DrawnRepere {
+	return object.kind === 'repere';
 }
 
 export function isDrawnPoint(object: DrawnObject): object is DrawnPoint {
@@ -124,6 +155,12 @@ function parseObject(part: string): DrawnObject | null {
 			x: Number(point[1]),
 			y: Number(point[2])
 		});
+		return parsed.success ? parsed.data : null;
+	}
+	const mark = REPERE_REGEX.exec(part);
+	if (mark) {
+		const [vx, vy, ax, ay, r, deg, sens] = mark.slice(1).map(Number);
+		const parsed = drawnRepereSchema.safeParse({ kind: 'repere', vx, vy, ax, ay, r, deg, sens });
 		return parsed.success ? parsed.data : null;
 	}
 	const report = REPORT_REGEX.exec(part);
@@ -178,6 +215,8 @@ export function serializeConstructionAnswer(objects: readonly DrawnObject[]): st
 			if (isDrawnLine(o)) return `${o.kind}(${o.x1};${o.y1};${o.x2};${o.y2})`;
 			if (isDrawnCircle(o)) return `cercle(${o.cx};${o.cy};${o.x};${o.y})`;
 			if (isDrawnReport(o)) return `report(${o.cx};${o.cy};${o.ax};${o.ay};${o.bx};${o.by})`;
+			if (isDrawnRepere(o))
+				return `repere(${o.vx};${o.vy};${o.ax};${o.ay};${o.r};${o.deg};${o.sens})`;
 			return `point(${o.x};${o.y})`;
 		})
 		.join('|');

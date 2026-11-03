@@ -108,10 +108,10 @@ describe('construction — erreurs situées', () => {
 	it('outil inconnu', () => {
 		expect(
 			messages(
-				block('fenetre: 0 ; 10 ; 0 ; 6', 'outils: rapporteur', 'verifier: droite_par A ; B', '---')
+				block('fenetre: 0 ; 10 ; 0 ; 6', 'outils: crayon', 'verifier: droite_par A ; B', '---')
 			)
 		).toContain(
-			'Ligne 2 : outil « rapporteur » inconnu (droite, segment, point, equerre, compas, report)'
+			'Ligne 2 : outil « crayon » inconnu (droite, segment, point, equerre, compas, report, rapporteur)'
 		);
 	});
 
@@ -119,7 +119,7 @@ describe('construction — erreurs situées', () => {
 		expect(
 			messages(block('fenetre: 0 ; 10 ; 0 ; 6', 'verifier: cercle_par A ; B', '---'))
 		).toContain(
-			'Ligne 2 : vérification « cercle_par » inconnue (droite_par, carre, rectangle, symetrique, point, droite, cercle, triangle)'
+			'Ligne 2 : vérification « cercle_par » inconnue (droite_par, carre, rectangle, symetrique, point, droite, cercle, triangle, angle)'
 		);
 	});
 

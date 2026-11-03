@@ -124,10 +124,10 @@ describe('lecture du bloc ```figure-de-travail', () => {
 
 	it('outil inconnu refusé, comme pour la figure à compléter', () => {
 		const node = figureNode(
-			['```figure-de-travail', BODY[0], 'outils: rapporteur', ...BODY.slice(2), '```'].join('\n')
+			['```figure-de-travail', BODY[0], 'outils: crayon', ...BODY.slice(2), '```'].join('\n')
 		);
 		expect(node.errors.map((e) => e.message)).toEqual([
-			'Ligne 2 : outil « rapporteur » inconnu (droite, segment, point, equerre, compas, report)'
+			'Ligne 2 : outil « crayon » inconnu (droite, segment, point, equerre, compas, report, rapporteur)'
 		]);
 	});
 

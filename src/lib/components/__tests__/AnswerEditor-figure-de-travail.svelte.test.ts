@@ -68,13 +68,13 @@ describe('AnswerEditor — figure de travail', () => {
 	it('outil inconnu : l’erreur est sur la carte', async () => {
 		await render(AnswerEditorChoiceHarness, {
 			props: {
-				initialStatement: `${WORK('outils: rapporteur')}\n\n${OUI_NON}`,
+				initialStatement: `${WORK('outils: crayon')}\n\n${OUI_NON}`,
 				initialAnswers: ['', '1']
 			}
 		});
 		await expect
 			.element(page.getByTestId('carte-figure-de-travail'))
-			.toHaveTextContent('outil « rapporteur » inconnu');
+			.toHaveTextContent('outil « crayon » inconnu');
 	});
 
 	it('énoncé collé, une seule entrée de cases : la case choix a sa carte, à sa place', async () => {
