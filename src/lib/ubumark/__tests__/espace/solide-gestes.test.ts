@@ -326,6 +326,18 @@ describe('D-SV2 : fractions de dénominateur 2, 3 ou 4', () => {
 		expect(read(...TETRA, 'tracer: vecteur 5/3 AG - 2/3 AG depuis A').errors).toEqual([]);
 	});
 
+	it('quarts et tiers au-delà de 1 : extrémité calculée juste', () => {
+		expect(expectedOf(...CUBE, 'points: I milieu AE', 'tracer: vecteur 3/4 AE + 1/4AE')).toMatch(
+			/^A\/E(\||$)/
+		);
+		expect(expectedOf(...TETRA, 'tracer: vecteur 5/3 AG - 2/3 AG depuis A')).toBe('A/G');
+	});
+
+	it('refusé : zéro en tête dans une fraction', () => {
+		expect(errors(...CUBE, 'tracer: vecteur 1/04 AB')).toMatch(/1\/04 : écrire 1\/4/);
+		expect(errors(...CUBE, 'tracer: vecteur 01/2 AB')).toMatch(/01\/2 : écrire 1\/2/);
+	});
+
 	it('refusé : fraction réductible, avec l’écriture attendue', () => {
 		expect(errors(...CUBE, 'tracer: vecteur 2/4 AB + AD')).toMatch(/2\/4 : écrire 1\/2/);
 		expect(errors(...CUBE, 'tracer: vecteur 4/2 AB')).toMatch(/4\/2 : écrire 2/);

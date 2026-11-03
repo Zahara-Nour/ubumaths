@@ -586,6 +586,10 @@ function readTask(
 		if (term === null || (terms.length > 0 && term[1] === undefined)) {
 			return `vecteur « ${match[1].trim()} » non compris (${TRACER_USAGE})`;
 		}
+		// Pas de zéro en tête (01/2, 1/04) : la phrase de l'élève reprend l'écriture de l'auteur
+		if (term[3] !== undefined && (/^0\d/.test(term[2] ?? '') || /^0\d/.test(term[3]))) {
+			return `coefficient ${term[2]}/${term[3]} : écrire ${Number(term[2])}/${Number(term[3])}`;
+		}
 		const numerator = term[2] === undefined ? 1 : Number(term[2]);
 		const denominator = term[3] === undefined ? 1 : Number(term[3]);
 		if (!TRACER_DENOMINATORS.includes(denominator)) {
