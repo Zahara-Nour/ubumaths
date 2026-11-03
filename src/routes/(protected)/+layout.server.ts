@@ -48,7 +48,7 @@
 
 import type { LayoutServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
-import { requireAuth } from '$lib/server/auth';
+import { requireUserOrRedirect } from '$lib/server/auth';
 import { createServerLogger } from '$lib/utils/logger';
 import { logError } from '$lib/server/errorMonitoring';
 import { getConsentStatus, type ConsentProfile } from '$lib/utils/consent';
@@ -62,8 +62,8 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 	logger.info('🎨 [PROTECTED LAYOUT SERVER] Exécution');
 
 	// Require authentication for ALL routes in (protected) group
-	// If user is null, requireAuth() throws a redirect to /auth/login
-	requireAuth(user);
+	// If user is null, requireUserOrRedirect() throws a redirect to /auth/login
+	requireUserOrRedirect(user);
 
 	// Verify profile exists
 	// Every authenticated user should have a profile

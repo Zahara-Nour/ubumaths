@@ -16,6 +16,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '$lib/server/middleware/auth';
 import { z } from 'zod';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { createServerLogger } from '$lib/utils/logger';
@@ -28,11 +29,8 @@ const cellIdSchema = z.string().min(1).max(100);
 
 export const PATCH: RequestHandler = async ({ locals, params }) => {
 	const notebookId = validateUuidParam(params.id);
-	const { user, supabase } = locals;
-
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	await requireAuth(locals);
+	const { supabase } = locals;
 
 	const cellIdValidation = cellIdSchema.safeParse(params.cell_id);
 	if (!cellIdValidation.success) {

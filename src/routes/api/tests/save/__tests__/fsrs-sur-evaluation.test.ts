@@ -37,6 +37,14 @@ vi.mock('$lib/server/serviceRoleClient', () => ({
 
 import { POST } from '../+server';
 
+vi.mock('$lib/server/middleware/auth', () => ({
+	// Garde commune simulée : la session vient de `locals.safeGetSession`
+	requireAuth: async (locals: { safeGetSession: () => Promise<{ user: unknown }> }) => ({
+		user: (await locals.safeGetSession()).user,
+		profile: { role: 'student' }
+	})
+}));
+
 const ELEVE = '11111111-1111-4111-8111-111111111111';
 const MODELE_A = '22222222-2222-4222-8222-222222222222';
 const MODELE_B = '33333333-3333-4333-8333-333333333333';

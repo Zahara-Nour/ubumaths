@@ -6,6 +6,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth, requireRole } from '$lib/server/middleware/auth';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import {
 	createExerciseSchema,
@@ -42,22 +43,8 @@ type ZodIssue = { path: (string | number)[]; message: string };
  * - offset: number (default 0)
  */
 export const GET: RequestHandler = async ({ locals, url }) => {
-	const { user, supabase } = locals;
-
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
-
-	// Get user role
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (profileError || !profile) {
-		throw error(403, 'Profil introuvable');
-	}
+	const { user, profile } = await requireAuth(locals);
+	const { supabase } = locals;
 
 	// Validate query parameters. `searchParams.get(absent)` returns null, but
 	// the schema fields are .optional() (= undefined-tolerant), so coerce null → undefined.
@@ -217,22 +204,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
  * @returns Created exercise
  */
 export const POST: RequestHandler = async ({ locals, request }) => {
-	const { user, supabase } = locals;
-
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
-
-	// Verify teacher role
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (profileError || !profile || profile.role !== 'teacher') {
-		throw error(403, 'Réservé aux professeurs');
-	}
+	const { user } = await requireRole(locals, 'teacher');
+	const { supabase } = locals;
 
 	// Parse and validate request body
 	const body = await request.json();

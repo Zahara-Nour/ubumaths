@@ -15,6 +15,11 @@ import {
 	expectHttpStatus
 } from '$tests/helpers/write-verdict-supabase';
 
+// Garde commune : session/profil lus dans `locals` (cf. helper)
+vi.mock('$lib/server/middleware/auth', async (importActual) =>
+	(await import('$tests/helpers/garde-auth-locals')).gardeAuthDepuisLocals(importActual)
+);
+
 const TEACHER_ID = '550e8400-e29b-41d4-a716-446655440001';
 const STUDENT_ID = '550e8400-e29b-41d4-a716-446655440003';
 const RESTRICTION_ID = '550e8400-e29b-41d4-a716-446655440011';

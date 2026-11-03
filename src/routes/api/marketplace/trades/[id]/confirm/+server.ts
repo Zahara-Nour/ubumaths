@@ -1,5 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '$lib/server/middleware/auth';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { notifyTradeCompleted } from '$lib/server/marketplace/notifications';
 import { executeTradeSchema } from '$lib/server/validation/marketplace-rpc';
@@ -30,11 +31,8 @@ const CONFIRMATION_TIMEOUT = 5 * 60 * 1000;
 export const POST: RequestHandler = async ({ params, locals }) => {
 	const tradeId = validateUuidParam(params.id);
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifie');
-	}
+	const { user } = await requireAuth(locals);
+	const userId = user.id;
 
 	// Get trade details
 	const { data: trade, error: tradeError } = await supabase

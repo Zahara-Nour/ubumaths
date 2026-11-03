@@ -15,6 +15,7 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireRole } from '$lib/server/middleware/auth';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import {
 	submitMathemoScoreSchema,
@@ -35,15 +36,8 @@ const logger = createServerLogger('api/games/mathemo/scores/+server');
 // ============================================================================
 
 export const GET: RequestHandler = async ({ locals }) => {
-	const { user, profile, supabase } = locals;
-
-	if (!user || !profile) {
-		throw error(401, 'Authentication required');
-	}
-
-	if (profile.role !== 'student') {
-		throw error(403, 'This endpoint is only accessible to students');
-	}
+	const { user } = await requireRole(locals, 'student');
+	const { supabase } = locals;
 
 	try {
 		const { data: scoreData, error: fetchError } = await supabase
@@ -85,15 +79,8 @@ export const GET: RequestHandler = async ({ locals }) => {
 // ============================================================================
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	const { user, profile, supabase } = locals;
-
-	if (!user || !profile) {
-		throw error(401, 'Authentication required');
-	}
-
-	if (profile.role !== 'student') {
-		throw error(403, 'This endpoint is only accessible to students');
-	}
+	const { user, profile } = await requireRole(locals, 'student');
+	const { supabase } = locals;
 
 	requireConsent(profile, 'play_games');
 

@@ -1,6 +1,7 @@
 import { json, error } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '$lib/server/middleware/auth';
 // Supabase client is now accessed via locals.supabase
 import { createListingSchema, listingsQuerySchema } from '$lib/server/marketplace/validation';
 import { getHiddenMarketplaceCreators } from '$lib/server/marketplace/hidden-creators';
@@ -27,11 +28,8 @@ const logger = createServerLogger('api/marketplace/listings/+server');
  */
 export const GET: RequestHandler = async ({ url, locals }) => {
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifié');
-	}
+	const { user, profile } = await requireAuth(locals);
+	const userId = user.id;
 
 	// Validate query parameters
 	const queryValidation = listingsQuerySchema.safeParse({
@@ -52,17 +50,6 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		throw error(400, 'creator_id invalide');
 	}
 	const creatorId = creatorIdValidation.data;
-
-	// Get user profile to check role
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role, school_id')
-		.eq('id', userId)
-		.single();
-
-	if (profileError || !profile) {
-		throw error(404, 'Profil non trouvé');
-	}
 
 	let schoolId: string;
 
@@ -214,11 +201,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifié');
-	}
+	const { user } = await requireAuth(locals);
+	const userId = user.id;
 
 	// Validate request body
 	const body = await request.json().catch(() => ({}));
