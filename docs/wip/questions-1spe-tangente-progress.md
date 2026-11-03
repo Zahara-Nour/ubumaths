@@ -6,16 +6,16 @@ Sous-chantier de [questions-1spe](../archive/wip/questions-1spe-progress.md) (cl
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2275._
+_Mis à jour le 2026-11-03, PR de la migration de rangement ouverte._
 
-- **État** : modèle 271 mergé (#2275, fichiers seuls : `scripts/questions/1spe-tangente/`), 13 specs, joué
-  en local · **Prochaine action** : après le `deploy:prod` qui livre #2265, David lance
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-tangente --publier` (brouillon) ;
-  puis migration nœud (`e7f414da`, à vérifier) + tags 1SPE-271 et 1TECHNO-078, page à cocher, publication
-  · **En attente de David** : le `deploy:prod` · **Pièges en cours** : ne pas toucher
-  `docs/wip/outils-manquants.md` ; voisins de Tangente tagués 1TECHNO-079 sans `1_TECHNO` dans `grades`
-  (écart noté § 5, non corrigé) · **Worktree / branche** : aucun (retiré après #2275) ; worktree neuf
-  depuis `origin/main` pour la migration.
+- **État** : brouillon en prod (`edb094bd`, créé par David le 2026-11-03) ; migration nœud + tags écrite
+  (`20261103060900_questions_1spe_tangente_rangement_tags`), test d'intégration rouge sans elle puis
+  10/10 vert · **Prochaine action** : `security-auditor`, CI, `check:migrations --pr`, merge,
+  `db:migrate` depuis le dépôt principal, vérification en prod ; puis page à cocher ; publication après le
+  `deploy:prod` qui livre #2265 · **En attente de David** : le `deploy:prod` · **Pièges en cours** :
+  ne pas toucher `docs/wip/outils-manquants.md` ; voisins Tangente tagués 1TECHNO-079 sans `1_TECHNO`
+  (§ 5) · **Worktree / branche** : `../ubumaths-wt-questions-1spe-tangente`,
+  `feat/questions-1spe-tangente-rangement`.
 
 ## 1. Vérification de l'outil (2026-11-03)
 
@@ -119,3 +119,14 @@ Retouches en cours de route :
 La session `questions-1spe-tracer-droite` avait une phase 0 de 271 (§ 6 de son journal, sur `main`).
 David suit ma reco : ce modèle-ci est gardé ; son erreur « sécante » est reprise dans les specs (13 specs) ;
 la session `tracer-droite` est prévenue (message) d'abandonner son § 6.
+
+## 8. Migration nœud + tags (2026-11-03)
+
+Brouillon créé en prod par David : `edb094bd-ad97-4144-b293-9a4fea4bfa84` (niveau 4, `[1_SPE, 1_TECHNO]`, sans
+nœud ni tag). Nœud `e7f414da` = « Fonctions > Dérivation > tangente » (celui des trois voisins) ; 1SPE-271 et
+1TECHNO-078 sont tous deux sur ce nœud. #2265 n'est pas encore sur `production` (v0.64.0 du 2026-11-02) :
+publication après le prochain `deploy:prod`.
+
+Migration `20261103060900_questions_1spe_tangente_rangement_tags.sql` (gabarit : lot 8c de Terminale) et
+`tests/integration/questions-1spe-tangente-rangement-tags.test.ts` : rouge sans la migration (4 échecs, 5
+sautés), vert avec (10/10).
