@@ -656,13 +656,16 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				const named = namesAssignedIn(header.figureSource);
 				for (const check of header.spec.checks) {
 					// Symétrique : l'axe ou le centre est nommé aussi (`d = droite(P, Q)`, `O = point(…)`) ;
-					// point à placer : son expression est calculée à la publication (`check-template`)
+					// point à placer : son expression est calculée à la publication (`check-template`) ;
+					// triangle (lot 4) : A, B et ce qui donne les longueurs, C est à construire
 					const names =
 						check.kind === 'point' || check.kind === 'droite' || check.kind === 'cercle'
 							? []
 							: check.kind === 'symetrique'
 								? [...(check.points ?? []), check.by]
-								: check.points;
+								: check.kind === 'triangle'
+									? [check.points[0], check.points[1], ...check.lengths.flatMap((l) => l.source)]
+									: check.points;
 					for (const name of names) {
 						if (!named.has(name)) {
 							errors.push({

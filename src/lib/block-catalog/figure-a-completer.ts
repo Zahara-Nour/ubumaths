@@ -188,6 +188,40 @@ export const figureACompleterEntry: BlockCatalogEntry = {
 				'L’élève reçoit la règle, l’équerre et le compas. Il construit deux médiatrices (deux cercles de même rayon centrés aux bouts d’un côté, la droite par leurs intersections), pique le compas à leur intersection et l’ouvre jusqu’à un sommet. Un cercle dont le centre n’est pas construit : « Ton cercle est tracé à l’œil » ; le bon centre mais pas le bon rayon : « Ton cercle a le bon centre mais ne passe pas par les sommets du triangle » ; un centre sur une seule médiatrice : « Ton cercle passe par A et B mais pas par C ». À la correction, le cercle et son centre en pointillés, et deux médiatrices en traits fins.'
 		},
 		{
+			title: 'Construire un triangle de trois longueurs données',
+			source: fence(
+				'figure-a-completer',
+				'fenetre: 0 ; 12 ; 0 ; 9',
+				'verifier: triangle ABC : AC = u ; BC = v',
+				'---',
+				'A = point(2, 2)',
+				'B = point(8, 2)',
+				's = segment(A, B)',
+				'u = segment(point(1, 8), point(5, 8))',
+				'v = segment(point(7, 8), point(10, 8))',
+				'texte(2.5, 8.5, "4 cm")',
+				'texte(8, 8.5, "3 cm")'
+			),
+			explanation:
+				'Le côté [AB] est tracé ; les longueurs de [AC] et [BC] sont données par les segments u et v (ou par deux points : « AC = AB » pour un triangle isocèle). L’élève reçoit le segment, le compas, le report et la règle : avec le report, il prend l’écartement de u (ses deux bouts s’aimantent), pique en A, puis fait de même avec v en B ; il trace [AC] et [BC] jusqu’à une intersection. Les deux triangles, de part et d’autre de (AB), sont justes. Un sommet hors d’une intersection de cercles construits : « Ton sommet C est placé à l’œil » ; un côté trop long ou trop court : « Ton côté [AC] n’a pas la bonne longueur ». Trois longueurs qui ne font pas un triangle sont refusées à la publication. À la correction, les côtés en pointillés, les arcs de report en traits fins, les longueurs codées.'
+		},
+		{
+			title: 'Placer le 4e sommet d’un parallélogramme',
+			source: fence(
+				'figure-a-completer',
+				'fenetre: 0 ; 10 ; 0 ; 8',
+				'verifier: point D = sommet(parallelogramme(A, B, C), 4)',
+				'---',
+				'A = point(2, 2)',
+				'B = point(7, 2)',
+				'C = point(8, 6)',
+				'segment(A, B)',
+				'segment(B, C)'
+			),
+			explanation:
+				'L’élève reçoit le point, la règle, l’équerre, le compas et le report. Trois chemins sont justes : reporter BC depuis A et AB depuis C, puis placer le point à l’intersection ; par les diagonales (milieu de [AC], compas centré au milieu passant par B) ; par les parallèles (équerre deux fois). Le point à l’autre intersection des reports : « Avec ce point, ABCD est croisé : prends l’autre intersection. »'
+		},
+		{
 			title: 'Vérifier un alignement, puis répondre oui ou non',
 			source: fence(
 				'figure-a-completer',

@@ -5,7 +5,8 @@
  * Ce que l'élève a tracé, écrit en coordonnées : `droite(x1;y1;x2;y2)` ou
  * `segment(x1;y1;x2;y2)` (par ses deux bouts), `point(x;y)` (outil point,
  * chantier `controles-figure` lot 2a), `cercle(cx;cy;x;y)` (compas : le centre
- * et un point du cercle, lot 2b), les objets séparés par `|`. Entrée de l'élève : bornée (longueur, nombre
+ * et un point du cercle, lot 2b), `report(cx;cy;ax;ay;bx;by)` (report de
+ * longueur : le centre, puis les deux points de l'écartement, lot 4), les objets séparés par `|`. Entrée de l'élève : bornée (longueur, nombre
  * d'objets, valeurs finies et modérées) avant toute lecture ; illisible → null.
  *
  * @module questions/construction/answer
@@ -34,6 +35,10 @@ const LINE_REGEX = new RegExp(
 const POINT_REGEX = new RegExp(`^point\\(\\s*(${NUMBER})\\s*;\\s*(${NUMBER})\\s*\\)$`);
 const CIRCLE_REGEX = new RegExp(
 	`^cercle\\(\\s*(${NUMBER})\\s*;\\s*(${NUMBER})\\s*;\\s*(${NUMBER})\\s*;\\s*(${NUMBER})\\s*\\)$`
+);
+
+const REPORT_REGEX = new RegExp(
+	`^report\\(${Array.from({ length: 6 }, () => `\\s*(${NUMBER})\\s*`).join(';')}\\)$`
 );
 
 const coordinate = z
@@ -73,8 +78,26 @@ const drawnCircleSchema = z
 /** Cercle tracé au compas : son centre et un de ses points */
 export type DrawnCircle = z.infer<typeof drawnCircleSchema>;
 
+const drawnReportSchema = z
+	.object({
+		kind: z.literal('report'),
+		cx: coordinate,
+		cy: coordinate,
+		ax: coordinate,
+		ay: coordinate,
+		bx: coordinate,
+		by: coordinate
+	})
+	.refine((r) => Math.hypot(r.bx - r.ax, r.by - r.ay) > SAME_POINT_EPSILON);
+
+/**
+ * Report de longueur : cercle centré en (cx ; cy), de rayon l'écartement entre
+ * (ax ; ay) et (bx ; by) — gardé pour juger si l'écartement est construit
+ */
+export type DrawnReport = z.infer<typeof drawnReportSchema>;
+
 /** Ce que l'élève a tracé ou placé */
-export type DrawnObject = DrawnLine | DrawnPoint | DrawnCircle;
+export type DrawnObject = DrawnLine | DrawnPoint | DrawnCircle | DrawnReport;
 
 export function isDrawnLine(object: DrawnObject): object is DrawnLine {
 	return object.kind === 'droite' || object.kind === 'segment';
@@ -82,6 +105,10 @@ export function isDrawnLine(object: DrawnObject): object is DrawnLine {
 
 export function isDrawnCircle(object: DrawnObject): object is DrawnCircle {
 	return object.kind === 'cercle';
+}
+
+export function isDrawnReport(object: DrawnObject): object is DrawnReport {
+	return object.kind === 'report';
 }
 
 export function isDrawnPoint(object: DrawnObject): object is DrawnPoint {
@@ -97,6 +124,12 @@ function parseObject(part: string): DrawnObject | null {
 			x: Number(point[1]),
 			y: Number(point[2])
 		});
+		return parsed.success ? parsed.data : null;
+	}
+	const report = REPORT_REGEX.exec(part);
+	if (report) {
+		const [cx, cy, ax, ay, bx, by] = report.slice(1).map(Number);
+		const parsed = drawnReportSchema.safeParse({ kind: 'report', cx, cy, ax, ay, bx, by });
 		return parsed.success ? parsed.data : null;
 	}
 	const circle = CIRCLE_REGEX.exec(part);
@@ -144,6 +177,7 @@ export function serializeConstructionAnswer(objects: readonly DrawnObject[]): st
 		.map((o) => {
 			if (isDrawnLine(o)) return `${o.kind}(${o.x1};${o.y1};${o.x2};${o.y2})`;
 			if (isDrawnCircle(o)) return `cercle(${o.cx};${o.cy};${o.x};${o.y})`;
+			if (isDrawnReport(o)) return `report(${o.cx};${o.cy};${o.ax};${o.ay};${o.bx};${o.by})`;
 			return `point(${o.x};${o.y})`;
 		})
 		.join('|');

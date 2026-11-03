@@ -127,7 +127,7 @@ describe('lecture du bloc ```figure-de-travail', () => {
 			['```figure-de-travail', BODY[0], 'outils: rapporteur', ...BODY.slice(2), '```'].join('\n')
 		);
 		expect(node.errors.map((e) => e.message)).toEqual([
-			'Ligne 2 : outil « rapporteur » inconnu (droite, segment, point, equerre, compas)'
+			'Ligne 2 : outil « rapporteur » inconnu (droite, segment, point, equerre, compas, report)'
 		]);
 	});
 

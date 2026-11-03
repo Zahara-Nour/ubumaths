@@ -110,14 +110,16 @@ describe('construction — erreurs situées', () => {
 			messages(
 				block('fenetre: 0 ; 10 ; 0 ; 6', 'outils: rapporteur', 'verifier: droite_par A ; B', '---')
 			)
-		).toContain('Ligne 2 : outil « rapporteur » inconnu (droite, segment, point, equerre, compas)');
+		).toContain(
+			'Ligne 2 : outil « rapporteur » inconnu (droite, segment, point, equerre, compas, report)'
+		);
 	});
 
 	it('vérification inconnue', () => {
 		expect(
 			messages(block('fenetre: 0 ; 10 ; 0 ; 6', 'verifier: cercle_par A ; B', '---'))
 		).toContain(
-			'Ligne 2 : vérification « cercle_par » inconnue (droite_par, carre, rectangle, symetrique, point, droite, cercle)'
+			'Ligne 2 : vérification « cercle_par » inconnue (droite_par, carre, rectangle, symetrique, point, droite, cercle, triangle)'
 		);
 	});
 

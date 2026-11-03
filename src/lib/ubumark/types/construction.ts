@@ -16,13 +16,22 @@
  * Outils proposés à l'élève : droite (la règle, CP-059), segment (CP-060), point
  * (un toucher, chantier `controles-figure` lot 2a), équerre (perpendiculaire à
  * une droite par un point) et compas (cercle par son centre et un point),
- * lot 2b. Plusieurs outils : une palette (papier uni, instruments).
+ * lot 2b. Plusieurs outils : une palette (papier uni, instruments). Report :
+ * prendre un écartement entre deux points, puis piquer le compas ailleurs
+ * (lot 4, `docs/wip/controles-figure-progress.md` § 13).
  */
-export const CONSTRUCTION_TOOLS = ['droite', 'segment', 'point', 'equerre', 'compas'] as const;
+export const CONSTRUCTION_TOOLS = [
+	'droite',
+	'segment',
+	'point',
+	'equerre',
+	'compas',
+	'report'
+] as const;
 export type ConstructionTool = (typeof CONSTRUCTION_TOOLS)[number];
 
 /** Les instruments du papier uni (une palette qui en contient permet le papier uni) */
-export const INSTRUMENT_TOOLS: readonly ConstructionTool[] = ['equerre', 'compas'];
+export const INSTRUMENT_TOOLS: readonly ConstructionTool[] = ['equerre', 'compas', 'report'];
 
 /**
  * Palette déduite sans `grille:` (décision de David, 2026-11-02,
@@ -30,12 +39,15 @@ export const INSTRUMENT_TOOLS: readonly ConstructionTool[] = ['equerre', 'compas
  * symétrique sur papier uni demande les instruments.
  */
 export const PLAIN_PAPER_TOOLS: Partial<Record<ConstructionCheckKind, ConstructionTool[]>> = {
-	point: ['point', 'droite', 'equerre', 'compas'],
+	// Lot 4 (§ 13) : le Report, pour le 4e sommet d'un parallélogramme
+	point: ['point', 'droite', 'equerre', 'compas', 'report'],
 	symetrique: ['segment', 'droite', 'equerre', 'compas'],
 	// Lot 3 (§ 9) : la même palette sur quadrillage (équerre gardée, décision de David)
 	droite: ['droite', 'equerre', 'compas'],
 	// Lot 3b (§ 11) : cercle circonscrit, papier uni seulement
-	cercle: ['droite', 'equerre', 'compas']
+	cercle: ['droite', 'equerre', 'compas'],
+	// Lot 4 (§ 13) : triangle de trois longueurs, papier uni seulement
+	triangle: ['segment', 'compas', 'report', 'droite']
 };
 
 /** Vérifications que l'auteur peut nommer dans `verifier:` */
@@ -46,7 +58,8 @@ export const CONSTRUCTION_CHECK_KINDS = [
 	'symetrique',
 	'point',
 	'droite',
-	'cercle'
+	'cercle',
+	'triangle'
 ] as const;
 export type ConstructionCheckKind = (typeof CONSTRUCTION_CHECK_KINDS)[number];
 
@@ -139,8 +152,31 @@ export interface CircleCheck {
 	line: number;
 }
 
+/**
+ * Une longueur donnée d'un triangle : le côté (ses deux sommets) et ce qui la
+ * donne, un segment nommé de la figure (`['u']`) ou deux points visibles
+ * (`['A', 'B']`)
+ */
+export interface TriangleLength {
+	side: [string, string];
+	source: [string] | [string, string];
+}
+
+/**
+ * `triangle ABC : AC = u ; BC = v` : [AB] est tracé ; l'élève trace [AC] et
+ * [BC] (outil segment), C = leur extrémité commune, construite au compas, aux
+ * longueurs données (chantier `controles-figure`, lot 4, 2026-11-03).
+ * `lengths` : [AC] puis [BC].
+ */
+export interface TriangleCheck {
+	kind: 'triangle';
+	points: [string, string, string];
+	lengths: [TriangleLength, TriangleLength];
+	line: number;
+}
+
 export type ConstructionCheck =
-	DroiteParCheck | SegmentFigureCheck | PointCheck | LineCheck | CircleCheck;
+	DroiteParCheck | SegmentFigureCheck | PointCheck | LineCheck | CircleCheck | TriangleCheck;
 
 /** L'outil avec lequel se trace chaque vérification */
 export const CHECK_TOOL: Record<ConstructionCheckKind, ConstructionTool> = {
@@ -150,7 +186,8 @@ export const CHECK_TOOL: Record<ConstructionCheckKind, ConstructionTool> = {
 	symetrique: 'segment',
 	point: 'point',
 	droite: 'droite',
-	cercle: 'compas'
+	cercle: 'compas',
+	triangle: 'segment'
 };
 
 export interface ConstructionSpec {

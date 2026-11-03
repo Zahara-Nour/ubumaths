@@ -148,12 +148,13 @@ class Screen {
 // ============================================================================
 
 describe('palette déduite', () => {
-	it('point sans quadrillage : point (l’outil de départ), règle, équerre, compas', () => {
+	it('point sans quadrillage : point (l’outil de départ), règle, équerre, compas, report', () => {
 		expect(readConstructionHeader(OBLIQUE).spec.tools).toEqual([
 			'point',
 			'droite',
 			'equerre',
-			'compas'
+			'compas',
+			'report'
 		]);
 	});
 
@@ -625,5 +626,41 @@ describe('symétrique d’une figure, papier uni', () => {
 			'segment(A, B)'
 		]);
 		expect(() => assertChecks(away)).toThrow('l’axe d est hors de la fenêtre');
+	});
+});
+
+describe('aimantation : bouts de segments au rang des intersections (revue du lot 4)', () => {
+	const traits: Trait[] = [];
+	it('une intersection plus proche du toucher qu’un bout de segment l’emporte', () => {
+		const targets: SnapTargets = {
+			points: [],
+			intersections: [{ x: 5, y: 5 }],
+			ends: [{ x: 5.3, y: 5 }],
+			traits
+		};
+		expect(snapInstrument({ x: 5.05, y: 5 }, targets, 0.5)).toEqual({ x: 5, y: 5 });
+		expect(snapInstrument({ x: 5.25, y: 5 }, targets, 0.5)).toEqual({ x: 5.3, y: 5 });
+	});
+
+	it('un point nommé passe toujours devant', () => {
+		const targets: SnapTargets = {
+			points: [{ x: 5.4, y: 5 }],
+			intersections: [],
+			ends: [{ x: 5.1, y: 5 }],
+			traits
+		};
+		expect(snapInstrument({ x: 5.1, y: 5 }, targets, 0.5)).toEqual({ x: 5.4, y: 5 });
+	});
+});
+
+describe('symétrique avec le Report dans la palette (revue du lot 4)', () => {
+	it('un report est un trait de construction, pas une réponse forgée', () => {
+		const source = figure(
+			'symetrique par d',
+			[...AXIS_BODY, 'B = point(3, 2)', 'C = point(0.5, 2.5)', 'polygone(A, B, C)'],
+			['outils: segment, droite, equerre, compas, report']
+		);
+		const image = 'segment(5;2;2;3)|segment(2;3;2.5;0.5)|segment(2.5;0.5;5;2)';
+		expect(judge(source, `report(1;1;2;5;3;2)|${image}`)).toEqual({ status: 'correct' });
 	});
 });

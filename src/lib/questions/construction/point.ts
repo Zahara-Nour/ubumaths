@@ -17,7 +17,8 @@
  * l'élève construit avec la règle, l'équerre et le compas (`instruments.ts`) ;
  * seulement un symétrique (`symetrie(A, axe=d)` ou `symetrie(A, centre=O)`) ou,
  * lot 3, un milieu (`milieu(A, B)`, par la médiatrice) ou, lot 3b, le centre
- * d'un cercle circonscrit (`centre(cercle_circonscrit(A, B, C))`) ;
+ * d'un cercle circonscrit (`centre(cercle_circonscrit(A, B, C))`) ou, lot 4,
+ * le 4e sommet d'un parallélogramme (`sommet(parallelogramme(A, B, C), 4)`) ;
  * un point qui n'est ni un point de la figure ni une intersection de deux traits
  * est « placé à l'œil », faux même posé pile au bon endroit.
  *
@@ -28,8 +29,8 @@
  */
 
 import type { ConstructionCheck, PointCheck } from '$lib/ubumark/types/construction';
-import { isDrawnPoint, type DrawnObject } from './answer';
-import { isConstructed, isInFrame, traitsOfObjects } from './instruments';
+import { isDrawnPoint, isDrawnReport, type DrawnObject } from './answer';
+import { intersectTraits, isConstructed, isInFrame, traitsOfObjects } from './instruments';
 import { mediatriceSupportError } from './line';
 import { circumcenterOf, circumcenterSupportError } from './circle';
 import type { ConstructionVerdict, Position } from './judge';
@@ -89,6 +90,23 @@ export interface PointSolution {
 	foot?: Position;
 	/** Symétrie axiale (codage de l'angle droit), sinon centrale */
 	axial?: boolean;
+	/** 4e sommet (lot 4) : les côtés [CD] et [DA] à tracer en pointillés */
+	sides?: [Position, Position][];
+	/** 4e sommet : côtés opposés codés, `count` marques sur chaque */
+	marks?: { from: Position; to: Position; count: number }[];
+}
+
+/** Le 4e sommet pris à l'autre intersection des deux reports (lot 4) */
+export const crossedParallelogramFeedback = (name: string) =>
+	`Avec ce point, ${name} est croisé : prends l’autre intersection.`;
+
+/** `sommet(parallelogramme(A, B, C), 4)` : les trois sommets donnés (lot 4, § 13) */
+const PARALLELOGRAM_REGEX =
+	/^sommet\(\s*parallelogramme\(\s*([A-Za-z][A-Za-z0-9_]*)\s*,\s*([A-Za-z][A-Za-z0-9_]*)\s*,\s*([A-Za-z][A-Za-z0-9_]*)\s*\)\s*,\s*4\s*\)$/;
+
+function parallelogramOf(expression: string): [string, string, string] | null {
+	const match = PARALLELOGRAM_REGEX.exec(expression.trim());
+	return match ? [match[1], match[2], match[3]] : null;
 }
 
 /** `milieu(A, B)` : deux points nommés (le milieu d'un segment nommé n'est pas pris) */
@@ -152,10 +170,21 @@ function assertPlainPaper(
 		if (message) throw new PointAuthorError(`${label} : ${message}`);
 		return;
 	}
+	// Lot 4 (§ 13) : le 4e sommet, par deux reports, les diagonales ou les parallèles
+	const parallelogram = parallelogramOf(check.expression);
+	if (parallelogram) {
+		const hidden = parallelogram.find((name) => !shapes.visiblePoints.has(name));
+		if (hidden) {
+			throw new PointAuthorError(
+				`${label} : ${hidden} n’est pas visible (l’élève ne peut pas y piquer le compas)`
+			);
+		}
+		return;
+	}
 	const symmetry = symmetryOf(check.expression);
 	if (!symmetry || !symmetry.target) {
 		throw new PointAuthorError(
-			`${label} : sans quadrillage, seulement un symétrique (symetrie(A, axe=d) ou symetrie(A, centre=O)), un milieu (milieu(A, B)) ou le centre d’un cercle circonscrit (centre(cercle_circonscrit(A, B, C))) ; sinon ajouter « grille: 1 »`
+			`${label} : sans quadrillage, seulement un symétrique (symetrie(A, axe=d) ou symetrie(A, centre=O)), un milieu (milieu(A, B)), le centre d’un cercle circonscrit (centre(cercle_circonscrit(A, B, C))) ou le 4e sommet d’un parallélogramme (sommet(parallelogramme(A, B, C), 4)) ; sinon ajouter « grille: 1 »`
 		);
 	}
 	const axis = symmetry.by === 'axe' ? (shapes.lines.get(symmetry.target) ?? null) : null;
@@ -226,6 +255,8 @@ function wrongPointFeedback(
 	points: ReadonlyMap<string, Position>,
 	shapes: FigureShapes | undefined
 ): string {
+	const parallelogram = parallelogramOf(check.expression);
+	if (parallelogram) return parallelogramFeedback(check, parallelogram, drawn, at, points);
 	const symmetry = symmetryOf(check.expression);
 	if (!symmetry) return POINT_NOT_IN_PLACE_FEEDBACK;
 	const generic = notImageFeedback(symmetry.source);
@@ -247,6 +278,32 @@ function wrongPointFeedback(
 }
 
 /**
+ * 4e sommet mal placé : à l'autre intersection des reports (cercle de centre A
+ * et de rayon BC, cercle de centre C et de rayon AB), ABCD est croisé
+ */
+function parallelogramFeedback(
+	check: PointCheck,
+	[nameA, nameB, nameC]: [string, string, string],
+	drawn: Position,
+	at: Position,
+	points: ReadonlyMap<string, Position>
+): string {
+	const [a, b, c] = [nameA, nameB, nameC].map((name) => points.get(name));
+	if (!a || !b || !c) return POINT_NOT_IN_PLACE_FEEDBACK;
+	const length = (p: Position, q: Position) => Math.hypot(p.x - q.x, p.y - q.y);
+	const eps = tolerance(a, b, c, drawn, at);
+	const crossed = intersectTraits(
+		{ kind: 'circle', center: a, radius: length(b, c) },
+		{ kind: 'circle', center: c, radius: length(a, b) }
+		// Losange (AB = BC) : l'autre intersection est B lui-même, pas un ABCD croisé
+	).find((p) => !near(p, at, eps) && ![a, b, c].some((q) => near(p, q, eps)));
+	if (crossed && near(drawn, crossed, eps)) {
+		return crossedParallelogramFeedback(`${nameA}${nameB}${nameC}${check.name}`);
+	}
+	return POINT_NOT_IN_PLACE_FEEDBACK;
+}
+
+/**
  * Verdict : chaque point attendu prend un point de l'élève à sa place ; parmi
  * les points attendus sans preneur et les points de l'élève qu'aucun n'a pris,
  * la paire la plus proche est expliquée ; un point que personne ne prend est
@@ -264,8 +321,21 @@ export function judgePoints(
 	// Papier uni : chaque point doit être CONSTRUIT (point de la figure ou intersection de deux
 	// traits), même posé pile au bon endroit (décision de David, 2026-11-02, § 8)
 	if (shapes && !shapes.grid && unused.length > 0) {
-		const traits = [...shapes.traits, ...traitsOfObjects(objects)];
 		const named = [...points.values()];
+		// Report (lot 4, § 13) : un trait seulement si son centre et son écartement sont
+		// construits (points nommés, bouts des segments de la figure, intersections des
+		// autres traits) ; un écartement pris à l'œil ne construit rien (revue du lot 4)
+		const others = traitsOfObjects(objects.filter((o) => !isDrawnReport(o)));
+		const baseTraits = [...shapes.traits, ...others];
+		const base = [...named, ...shapes.segments.flatMap((s) => [s.a, s.b])];
+		const built = objects.filter(isDrawnReport).filter((r) =>
+			[
+				{ x: r.cx, y: r.cy },
+				{ x: r.ax, y: r.ay },
+				{ x: r.bx, y: r.by }
+			].every((p) => isConstructed(p, base, baseTraits))
+		);
+		const traits = [...baseTraits, ...traitsOfObjects(built)];
 		if (unused.some((p) => !isConstructed(p, named, traits))) {
 			return { status: 'incorrect', feedback: POINT_EYEBALLED_FEEDBACK };
 		}
@@ -306,6 +376,27 @@ export function pointSolution(
 	return checks.flatMap((check): PointSolution[] => {
 		const at = expected?.positions.get(check.name);
 		if (!at) return [];
+		const parallelogram = parallelogramOf(check.expression);
+		const vertices = parallelogram?.map((name) => points.get(name));
+		if (vertices?.every((p) => p !== undefined)) {
+			const [a, b, c] = vertices as [Position, Position, Position];
+			return [
+				{
+					name: check.name,
+					at,
+					sides: [
+						[c, at],
+						[at, a]
+					],
+					marks: [
+						{ from: a, to: b, count: 1 },
+						{ from: c, to: at, count: 1 },
+						{ from: b, to: c, count: 2 },
+						{ from: at, to: a, count: 2 }
+					]
+				}
+			];
+		}
 		const symmetry = symmetryOf(check.expression);
 		const from = symmetry ? points.get(symmetry.source) : undefined;
 		if (!symmetry || !from) return [{ name: check.name, at }];

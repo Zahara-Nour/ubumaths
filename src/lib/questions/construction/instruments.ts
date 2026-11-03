@@ -49,6 +49,10 @@ export function traitOf(object: DrawnObject): Trait | null {
 		const radius = Math.hypot(object.x - object.cx, object.y - object.cy);
 		return { kind: 'circle', center: { x: object.cx, y: object.cy }, radius };
 	}
+	if (object.kind === 'report') {
+		const radius = Math.hypot(object.bx - object.ax, object.by - object.ay);
+		return { kind: 'circle', center: { x: object.cx, y: object.cy }, radius };
+	}
 	return {
 		kind: object.kind === 'droite' ? 'line' : 'segment',
 		a: { x: object.x1, y: object.y1 },
@@ -216,12 +220,18 @@ export interface SnapTargets {
 	points: readonly Position[];
 	/** Intersections deux à deux de `traits` (calculées une fois par l'appelant) */
 	intersections: readonly Position[];
+	/**
+	 * Bouts des segments (de la figure, anonymes, ou de l'élève ; lot 4) : au même
+	 * rang que les intersections, la plus proche du toucher l'emporte (revue du lot 4 :
+	 * un bout posé à l'œil ne doit pas masquer une intersection plus proche)
+	 */
+	ends?: readonly Position[];
 	traits: readonly Trait[];
 }
 
 /**
- * Où va un toucher, avec des instruments : point → intersection → sur un
- * trait → `null` (toucher libre : l'appelant l'arrondit).
+ * Où va un toucher, avec des instruments : point → intersection ou bout de
+ * segment (le plus proche) → sur un trait → `null` (toucher libre : l'appelant l'arrondit).
  *
  * @param radius - Rayon d'aimantation, en unités de la figure
  */
@@ -232,7 +242,7 @@ export function snapInstrument(
 ): Position | null {
 	const point = nearest(tap, targets.points, radius);
 	if (point) return { x: point.x, y: point.y };
-	const crossing = nearest(tap, targets.intersections, radius);
+	const crossing = nearest(tap, [...targets.intersections, ...(targets.ends ?? [])], radius);
 	if (crossing) return { x: crossing.x, y: crossing.y };
 	let best: Position | null = null;
 	let bestDistance = Infinity;
