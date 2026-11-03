@@ -333,4 +333,17 @@ describe('tableau de signes à compléter — évaluation notée', () => {
 		await choose('plus');
 		expect(values[3]).toBe('+');
 	});
+
+	it('bonne réponse sur un énoncé masqué : lue dans les cases de la question', async () => {
+		const full = generated(PRODUIT);
+		const masked = toDisplayInstance(toPublicQuestion(full, { position: 0, delaySeconds: 20 }));
+		const screen = await render(FillBlanksInput, {
+			target: mainElement(),
+			props: { statement: masked.statement, blanks: full.blanks ?? [], showCorrectAnswers: true }
+		});
+		const shown = [...screen.container.querySelectorAll<HTMLElement>('[data-vt-case]')].map((c) =>
+			c.textContent?.trim()
+		);
+		expect(shown).toEqual(['-3', '+', '0', '+']);
+	});
 });

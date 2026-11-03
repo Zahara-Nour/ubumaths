@@ -1260,7 +1260,14 @@
 				{#if flashMode}
 					<VariationTable {node} />
 				{:else if showCorrectAnswers}
-					<VariationTable {node} hiddenCells="filled" />
+					<!-- Réponses lues dans les cases : un énoncé masqué ne les porte pas -->
+					<VariationTable
+						{node}
+						hiddenCells="filled"
+						answers={(node.cases ?? []).map(
+							(_, k) => blanks[node.caseIndex + k]?.expectedAnswer ?? ''
+						)}
+					/>
 				{:else}
 					{@const first = node.caseIndex}
 					<VariationTable {node}>

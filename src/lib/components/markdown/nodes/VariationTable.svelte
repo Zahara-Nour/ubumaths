@@ -45,9 +45,14 @@
 		hiddenCells?: 'blank' | 'filled';
 		/** Contenu d'une cellule cachée (saisie de l'élève) ; prime sur `hiddenCells` */
 		cell?: Snippet<[HiddenCell]>;
+		/**
+		 * Réponses des cellules cachées pour `filled` (une par case, ordre de lecture) : celles
+		 * de la question, quand l'énoncé est masqué (`??n`, `?` seul : le nœud ne les a pas)
+		 */
+		answers?: readonly string[];
 	}
 
-	let { node, class: className = '', hiddenCells = 'blank', cell }: Props = $props();
+	let { node, class: className = '', hiddenCells = 'blank', cell, answers }: Props = $props();
 
 	/** Cellules cachées, par ligne (`'domain'` ou rang dans `rows`) et clé */
 	let hiddenByKey = $derived(
@@ -279,24 +284,26 @@
 
 <!-- Cellule cachée : saisie de l'appelant, sinon case vide ou remplie de la réponse -->
 {#snippet hiddenCell(hidden: HiddenCell)}
+	{@const answer = answers?.[hidden.index] ?? hidden.answer}
 	<span
 		class="vt-case"
 		class:vt-case-vide={!cell && hiddenCells === 'blank'}
 		class:vt-case-remplie={!cell && hiddenCells === 'filled'}
 		data-vt-case={hidden.index}
+		aria-label={!cell && hiddenCells === 'blank' ? 'à compléter' : undefined}
 	>
 		{#if cell}
 			{@render cell(hidden)}
-		{:else if hiddenCells === 'filled' && hidden.answer !== ''}
+		{:else if hiddenCells === 'filled' && answer !== ''}
 			{#if hidden.kind === 'valeur'}
-				<math-span>{toLatex(hidden.answer)}</math-span>
-			{:else if hidden.answer === 'z'}
+				<math-span>{toLatex(answer)}</math-span>
+			{:else if answer === 'z'}
 				<span class="vt-zero">0</span>
-			{:else if hidden.answer === '||'}
+			{:else if answer === '||'}
 				<span class="vt-asymptote-bar vt-asymptote-bar-sign" aria-label="double barre"></span>
-			{:else if hidden.answer === '+' || hidden.answer === '-'}
-				<span class="vt-sign-value vt-sign-{hidden.answer === '+' ? 'plus' : 'minus'}">
-					{hidden.answer}
+			{:else if answer === '+' || answer === '-'}
+				<span class="vt-sign-value vt-sign-{answer === '+' ? 'plus' : 'minus'}">
+					{answer}
 				</span>
 			{/if}
 		{/if}

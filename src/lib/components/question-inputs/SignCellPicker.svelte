@@ -71,17 +71,25 @@
 		open = false;
 	}
 
-	function handleKeydown(event: KeyboardEvent) {
-		if (disabled || event.ctrlKey || event.metaKey || event.altKey) return;
+	/** Jeton écrit au clavier ; sinon la touche va au déclencheur de bits-ui (Entrée, Espace) */
+	function handleKeydown(event: KeyboardEvent, triggerKeydown: unknown) {
+		if (writeFromKey(event)) return;
+		if (typeof triggerKeydown === 'function') triggerKeydown(event);
+	}
+
+	/** Touche qui écrit ou vide la case : `true` si elle a été prise */
+	function writeFromKey(event: KeyboardEvent): boolean {
+		if (disabled || event.ctrlKey || event.metaKey || event.altKey) return false;
 		if (event.key === 'Backspace' || event.key === 'Delete') {
 			event.preventDefault();
 			onChange('');
-			return;
+			return true;
 		}
 		const token = KEYS[kind][event.key];
-		if (token === undefined) return;
+		if (token === undefined) return false;
 		event.preventDefault();
 		onChange(token);
+		return true;
 	}
 </script>
 
@@ -94,10 +102,11 @@
 				class="signe-case"
 				class:signe-case-pleine={chosen !== undefined}
 				class:signe-case-rien={chosen?.token === 'rien'}
+				class:signe-case-zero={chosen?.token === 'z'}
 				data-signe-case={kind}
 				data-etat={verdict}
 				aria-label={ariaLabel}
-				onkeydown={handleKeydown}
+				onkeydown={(event) => handleKeydown(event, props.onkeydown)}
 			>
 				{chosen?.display ?? ''}
 			</button>
@@ -150,6 +159,11 @@
 	.signe-case-pleine {
 		border-style: solid;
 		border-color: var(--color-border);
+	}
+
+	/* Le 0 comme celui du tableau : graisse normale */
+	.signe-case-zero {
+		font-weight: normal;
 	}
 
 	.signe-case-rien {
