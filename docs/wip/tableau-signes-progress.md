@@ -9,18 +9,18 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après la page à cocher._
+_Mis à jour le 2026-11-03, PR du gabarit de la page à cocher ouverte._
 
 - **État** : 2-330 et 2-446 réécrits (#2308), écrits en prod, publiés ; **page à cocher relue par David :
   2/2 OK** (verdicts comptés en base, artefact 76pRvYk72EuRYtV9nto4Ly).
-- **Prochaine action** : essais iPhone (#2287, #2297, et ces deux modèles) ; puis verser le chantier.
+- **Prochaine action** : merger la PR du gabarit ; diagnostic du « 1x » du corrigé (moteur ou contenu ?
+  chercher les autres modèles touchés en prod) ; essais iPhone ; puis verser le chantier.
 - **En attente de David** : défilement horizontal à 390 px (513 px de tableau pour 308) — à juger aux
-  essais iPhone ; corrigé de 2-330 qui écrit « −1x − 3 = 0 », « 1x − 3 = 0 » (corriger ?) ; petite PR
-  du gabarit `scripts/questions/page-a-cocher.html` (`.vt` sans défilement : la page entière déborde à 390 px).
+  essais iPhone (reco validée : ne rien changer avant).
 - **Pièges en cours** : `delay` n'est plus une garde d'`update-published-questions.ts` (relancer un ancien
   lot réécrit son temps) ; la bonne réponse vient de `blanks`, jamais du bloc ; Chrome n'atteint pas
   `localhost` → Playwright sans fenêtre ; un worktree neuf veut `svelte-kit sync` avant `question:specs`.
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `../ubumaths-wt-tableau-signes`, `fix/page-a-cocher-tableau-defile`.
 
 ---
 
@@ -232,3 +232,11 @@ Branche `feat/tableau-signes-modeles`, worktree `../ubumaths-wt-tableau-signes`.
   (`display: block; width: fit-content; max-width: 100%; overflow-x: auto`), pas encore dans le gabarit.
 - Relue par David : **2/2 OK**, sans commentaire (collection `verdicts` lue).
 - Vu en passant : le corrigé de 2-330 écrit « −1x − 3 = 0 » et « 1x − 3 = 0 » (étape 2). → David.
+- David valide (2026-11-03) : « 1x » à corriger (diagnostic d'abord : moteur ou contenu), PR du gabarit,
+  défilement jugé aux essais iPhone.
+
+## PR — gabarit de la page à cocher (2026-11-03)
+
+- `.vt` en `display: block; width: fit-content; max-width: 100%; overflow-x: auto` : seul le tableau défile.
+  Page régénérée (2 fiches) : 390 px → page à 390 px, 18 tableaux sur 20 défilent dedans ; 1280 px → aucun.
+  Test `page-a-cocher` : 63 verts. Revue : aucune (CSS, < 30 lignes).
