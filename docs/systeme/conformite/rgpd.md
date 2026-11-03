@@ -325,6 +325,7 @@ CRON_SECRET                   # Secret taches planifiees
 - `user_presence` : **30 jours**
 - `friendships` (rejected) : **2 ans**
 - `error_logs` : **30 jours** (tous ; réel `run_cleanup_expired_data`, corrigé le 2026-10-11)
+- `rate_limits` : clés de limites de débit, dont des **IP** (connexion, inscription, OAuth, `error-log`) et des **e-mails** (connexion, reset) ; ligne gardée le temps de sa fenêtre (≤ 24 h), purgée chaque jour par `run_cleanup_all` (job `cleanup-all`, 2 h). Lue et écrite par `service_role` seul.
 
 > **Amelioration 2026-01-15** : Implementation de la politique de retention via pg_cron. Job hebdomadaire `rgpd-retention-cleanup` (dimanche 03:00 UTC) nettoie automatiquement les donnees expirees. Audit complet dans `background_job_runs` avec compteurs par table pour preuve de conformite. Messages en HARD delete (pas soft delete) conformement a l'Art. 17.
 
