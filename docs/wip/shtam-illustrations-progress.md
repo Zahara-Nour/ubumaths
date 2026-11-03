@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, ouverture du chantier (rien de fait)._
+_Mis à jour le 2026-11-03, phase 0 tranchée (6 décisions)._
 
-- **État** : chantier ouvert, phase 0. 54 articles dans `src/lib/server/shtam/articles/`, 5 seulement illustrés (bedonstan-rails-de-sandomir, bedonstan-thales-puits, bedonstan-triangle-pole-nord, pifometrie-pile-ou-face, pythagore-vie-courante), par des **figures SVG** de `static/shtam/` (8 fichiers, tous insérés ; plusieurs dans un même article : 3 dans les rails de Sandomir, 2 dans Pythagore).
-- **Prochaine action** : poser à David les questions de phase 0 ci-dessous, une par une ; ne rien générer avant.
-- **En attente de David** : toutes les questions de phase 0.
-- **Pièges en cours** : ne jamais lancer prettier sur les articles (casse `~q*2~`) ; fichiers à joindre à Nano Banana → copie dans `~/Downloads` ; l'article et l'image = code (hors `docs/`) → branche + PR, sauf dérogation de David.
+- **État** : phase 0 tranchée (voir « Décisions de David ») ; aucun dessin fait, pas encore de worktree.
+- **Prochaine action** : créer le worktree `ubumaths-wt-shtam-illustrations` (branche `feat/shtam-illustrations-lot-1`), repérer l'article de la une, écrire son prompt Nano Banana (style Steinlen, nuancier imprimerie, Mousched-Gogh) et le donner à David ; le style se valide sur ce premier dessin.
+- **En attente de David** : rien.
+- **Pièges en cours** : ne jamais lancer prettier sur les articles (casse `~q*2~`) ; fichiers à joindre à Nano Banana → copie dans `~/Downloads` ; la une prend la **première** image du corps (`present.ts`) → le dessin AVANT toute figure SVG.
 - **Worktree / branche** : aucun pour l'instant.
 
 ## À lire avant de commencer
@@ -17,7 +17,7 @@ _Mis à jour le 2026-11-03, ouverture du chantier (rien de fait)._
 - Ce qui est déjà tranché par ce chantier et le Compendium : le Shtam est un **objet imprimé** → nuancier _imprimerie_ ; Mousched-Gogh est l'illustrateur du Shtam ; Merdranpo en est le reporter.
 - Page du journal : chantier `shtam-journal` (`docs/wip/shtam-journal-progress.md`) ; la une affiche l'image de l'article s'il y en a une.
 
-## Questions de phase 0 (à poser, aucune tranchée)
+## Questions de phase 0 (tranchées le 2026-11-03)
 
 1. **Nature de l'image** : gravure / dessin de presse Steinlen par Nano Banana (raster), figure mathématique SVG comme les 5 existantes, ou les deux selon l'article ?
 2. **Les 5 figures SVG existantes** : gardées telles quelles, complétées d'un dessin, ou remplacées ?
@@ -28,8 +28,16 @@ _Mis à jour le 2026-11-03, ouverture du chantier (rien de fait)._
 
 ## Décisions de David
 
-_(aucune pour l'instant)_
+_2026-11-03, phase 0 :_
+
+1. **Nature** : un **dessin de presse** façon Steinlen (Nano Banana, nuancier imprimerie, Mousched-Gogh) pour **chaque** article.
+2. **Figures SVG existantes** : **gardées** dans le corps ; on **ajoute** le dessin en plus.
+3. **Place** : **un seul** dessin par article, **en tête du corps** (sous le chapô) → c'est lui que reprend la une ; les figures SVG viennent après.
+4. **Format** : paysage **3:2, 1200 px** de large, **webp q85** (~100-200 Ko), `static/shtam/<slug>.webp` ; l'original Nano Banana gardé dans un dossier de travail.
+5. **Ordre** : **l'article de la une d'abord** (il fixe le style, validé par David), puis **ordre de parution du plus récent au plus ancien**, par lots d'environ 6.
+6. **Circuit** : **une PR par lot**, depuis le worktree `ubumaths-wt-shtam-illustrations` ; merge dès la CI verte.
 
 ## Journal
 
 - 2026-11-03 — Chantier ouvert à la demande de David (« créer une illustration pour chaque article du shtam »).
+- 2026-11-03 — Phase 0 tranchée par David : les 6 réponses suivent les recommandations (voir « Décisions de David »).
