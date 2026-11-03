@@ -9,15 +9,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2319 (migration du lot 2 appliquée)._
+_Mis à jour le 2026-11-03, lot 2 publié (#2314, #2319)._
 
-- **État** : lot 2 (dérivation) en prod en brouillon, rangé et tagué (#2314, #2319, `db:migrate` fait, vérifié en
-  base). Page à cocher : https://claude.ai/artifact/Qk72A5QTYbfDJAwGB9ZN4Y (relecture de David en cours).
-- **Prochaine action** : compter les verdicts (`ArtifactData list verdicts`, 5 attendus) ; « À revoir » → corriger
-  (`--mettre-a-jour`) ; tout OK → David publie (`pnpm tsx scripts/questions/publier-lot.ts --dir
-scripts/questions/1spe-demonstrations-2 --publier`), relire `published` en base. Puis lot 3 (300, 301, 302, 308,
-  411, 322, 323).
-- **En attente de David** : la relecture du lot 2. Extension `signe:` du bloc `ranger` (Q2 b) **non tranchée**.
+- **État** : lots 1 (suites, second degré) et 2 (dérivation) **publiés** en prod, relus 5/5 OK chacun.
+- **Prochaine action** : lot 3, exponentielle, trigo, produit scalaire (300, 301, 302, 308, 411, 322, 323) : relevé
+  MCP (nœuds, jumeaux, catégories « Démonstrations »), script `docs/wip/questions/lot-1spe-demonstrations-3.py`
+  (gabarit : lot 2), même chaîne (simulation, base locale, PR, brouillons par David, migration, page à cocher).
+- **En attente de David** : rien. Extension `signe:` du bloc `ranger` (Q2 b) **non tranchée** : à reposer après le
+  lot 3.
 - **Pièges en cours** : `h(…)` est lu comme une fonction (f, g, h) : jamais en réponse attendue. 398 : jumeau 392 dans
   le même programme, ne taguer que 398. `requiredForm: {pattern: 'u'}` pour les écritures équivalentes. Jamais de
   couleur sur du texte. `Doc-inchangée:` dans un COMMIT pour une migration. Garde `lot partiel`. Ancienne branche
@@ -167,3 +166,5 @@ une seule transaction ; homonymes impossibles grâce aux index uniques ; garde �
 `db:migrate` du 2026-11-03 (après #2322, qui réparait les doublures de tests cassées par #2311) : vérifié en base, les 5
 modèles sur leur sous-notion avec leur seul point (398 sans 392), `draft`, `updated_at` intact. Page à cocher :
 https://claude.ai/artifact/Qk72A5QTYbfDJAwGB9ZN4Y
+
+Relecture (2026-11-03) : 5/5 OK, sans commentaire. Publié par David, 5/5 `published` relus en base (MCP).
