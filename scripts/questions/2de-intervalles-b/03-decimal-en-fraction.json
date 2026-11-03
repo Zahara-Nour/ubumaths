@@ -1,0 +1,163 @@
+{
+	"title": "Écrire un décimal comme quotient d'entiers",
+	"description": "Écrire −1,4 = −7/5 ou 0,125 = 1/8 en fraction irréductible",
+	"grades": ["2"],
+	"theme": "Logique",
+	"domain": "Ensembles",
+	"subdomain": "Ensembles de nombres",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Écris ce nombre sous la forme d'une fraction irréductible.\n\n$${{if:s==1|-}}{{a}}{,}{{b}}=?$$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0|1"
+				},
+				{
+					"name": "a",
+					"expression": "0..9"
+				},
+				{
+					"name": "b",
+					"expression": "2|4|5|6|8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==1|-}}\\frac{ {{eval:(10*(a)+(b))/gcd(10*(a)+(b),10)}} }{ {{eval:10/gcd(10*(a)+(b),10)}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un nombre est **rationnel** s'il s'écrit $\\dfrac{a}{b}$, avec $a$ et $b\\neq0$ entiers.",
+					"$${{if:s==1|-}}{{a}}{,}{{b}}={{if:s==1|-}}\\dfrac{ {{eval:10*(a)+(b)}} }{10}=\\textcolor{{{color:primary.0}}}{{{if:s==1|-}}\\dfrac{ {{eval:(10*(a)+(b))/gcd(10*(a)+(b),10)}} }{ {{eval:10/gcd(10*(a)+(b),10)}} }}$$",
+					"On a simplifié par ${{eval:gcd(10*(a)+(b),10)}}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris ce nombre sous la forme d'une fraction irréductible.\n\n$$0{,}{{c}}{{d}}5=?$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "0..9"
+				},
+				{
+					"name": "d",
+					"expression": "0..9"
+				}
+			],
+			"conditions": ["10*c+d > 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{eval:(100*(c)+10*(d)+5)/gcd(100*(c)+10*(d)+5,1000)}} }{ {{eval:1000/gcd(100*(c)+10*(d)+5,1000)}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un nombre est **rationnel** s'il s'écrit $\\dfrac{a}{b}$, avec $a$ et $b\\neq0$ entiers.",
+					"$$0{,}{{c}}{{d}}5=\\dfrac{ {{eval:100*(c)+10*(d)+5}} }{1000}=\\textcolor{{{color:primary.0}}}{\\dfrac{ {{eval:(100*(c)+10*(d)+5)/gcd(100*(c)+10*(d)+5,1000)}} }{ {{eval:1000/gcd(100*(c)+10*(d)+5,1000)}} }}$$",
+					"On a simplifié par ${{eval:gcd(100*(c)+10*(d)+5,1000)}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1,4 = 7/5",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"a": "1",
+				"b": "4"
+			},
+			"answers": ["\\frac{7}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Non simplifiée (14/10)",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"a": "1",
+				"b": "4"
+			},
+			"answers": ["\\frac{14}{10}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "Erreur : 1/4",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"a": "1",
+				"b": "4"
+			},
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−2,5 = −5/2",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"a": "2",
+				"b": "5"
+			},
+			"answers": ["-\\frac{5}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "0,125 = 1/8",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1",
+				"d": "2"
+			},
+			"answers": ["\\frac{1}{8}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Non simplifiée (125/1000)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1",
+				"d": "2"
+			},
+			"answers": ["\\frac{125}{1000}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "Erreur : 125/100",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1",
+				"d": "2"
+			},
+			"answers": ["\\frac{125}{100}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

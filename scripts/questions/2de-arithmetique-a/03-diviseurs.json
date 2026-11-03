@@ -1,0 +1,187 @@
+{
+	"title": "Tous les diviseurs d'un nombre, par paires",
+	"description": "Écrire les 6 diviseurs de p × q² (50, 75, 98, 147…), puis les 9 diviseurs de p² × q² (36, 100, 196, 225)",
+	"grades": ["2"],
+	"theme": "Entiers",
+	"domain": "Diviser",
+	"subdomain": "Multiples et diviseurs",
+	"level": 10,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"orderIndependent": true
+	},
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Écris tous les diviseurs positifs de ${{eval:(p)*(q)^2}}$. Il y en a $6$.\n\n$?$ ; $?$ ; $?$ ; $?$ ; $?$ ; $?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2|3|5|7"
+				},
+				{
+					"name": "q",
+					"expression": "3|5|7"
+				}
+			],
+			"conditions": ["p != q", "p*q^2 <= 250"],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "{{p}}"
+				},
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(p)*(q)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(q)^2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(p)*(q)^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définition** : $b$ est un **diviseur** de $a$ (« $b$ divise $a$ ») si $a$ est un multiple de $b$, c'est-à-dire s'il existe un entier $k$ tel que $a=k\\times b$. Les diviseurs vont **par paires** : $a=b\\times k$ donne les deux diviseurs $b$ et $k$.",
+					"On cherche les produits égaux à ${{eval:(p)*(q)^2}}$ :",
+					"$${{eval:(p)*(q)^2}}=1\\times{{eval:(p)*(q)^2}}={{p}}\\times{{eval:(q)^2}}={{q}}\\times{{eval:(p)*(q)}}$$",
+					"Chaque produit donne deux diviseurs : les $6$ diviseurs de ${{eval:(p)*(q)^2}}$ sont les $\\textcolor{{{color:primary.0}}}{6}$ facteurs de ces produits."
+				]
+			}
+		},
+		{
+			"statement": "Écris tous les diviseurs positifs de ${{eval:(p)^2*(q)^2}}$. Il y en a $9$.\n\n$?$ ; $?$ ; $?$ ; $?$ ; $?$ ; $?$ ; $?$ ; $?$ ; $?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2|3"
+				},
+				{
+					"name": "q",
+					"expression": "3|5|7"
+				}
+			],
+			"conditions": ["p != q", "p^2*q^2 <= 225"],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "{{p}}"
+				},
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(p)^2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(p)*(q)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(q)^2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(p)^2*(q)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(p)*(q)^2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(p)^2*(q)^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définition** : $b$ est un **diviseur** de $a$ (« $b$ divise $a$ ») si $a$ est un multiple de $b$, c'est-à-dire s'il existe un entier $k$ tel que $a=k\\times b$. Les diviseurs vont **par paires** : $a=b\\times k$ donne les deux diviseurs $b$ et $k$.",
+					"On cherche les produits égaux à ${{eval:(p)^2*(q)^2}}$, jusqu'à ce que les paires se croisent :",
+					"$${{eval:(p)^2*(q)^2}}=1\\times{{eval:(p)^2*(q)^2}}={{p}}\\times{{eval:(p)*(q)^2}}={{q}}\\times{{eval:(p)^2*(q)}}={{eval:(p)^2}}\\times{{eval:(q)^2}}={{eval:(p)*(q)}}\\times{{eval:(p)*(q)}}$$",
+					"${{eval:(p)*(q)}}\\times{{eval:(p)*(q)}}$ ne donne qu'**un** diviseur : leur nombre est impair.",
+					"Les $9$ diviseurs de ${{eval:(p)^2*(q)^2}}$ sont les $\\textcolor{{{color:primary.0}}}{9}$ facteurs de ces produits."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Diviseurs de 50",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "5"
+			},
+			"answers": ["1", "2", "5", "10", "25", "50"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Diviseurs de 50, dans le désordre",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "5"
+			},
+			"answers": ["50", "1", "25", "2", "10", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 oublié, 100 ajouté",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "5"
+			},
+			"answers": ["2", "5", "10", "25", "50", "100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Diviseurs de 36",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"q": "3"
+			},
+			"answers": ["1", "2", "3", "4", "6", "9", "12", "18", "36"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6 écrit deux fois, 8 au lieu de 9",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"q": "3"
+			},
+			"answers": ["1", "2", "3", "4", "6", "6", "12", "18", "36"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 8 au lieu de 9",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"q": "3"
+			},
+			"answers": ["1", "2", "3", "4", "6", "8", "12", "18", "36"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

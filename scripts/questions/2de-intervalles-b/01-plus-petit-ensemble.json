@@ -1,0 +1,249 @@
+{
+	"title": "Le plus petit ensemble de nombres",
+	"description": "Choisir le plus petit des ensembles ℕ ⊂ ℤ ⊂ 𝔻 ⊂ ℚ ⊂ ℝ qui contient 12/4, −√49, 7/4, 5/3, √7",
+	"grades": ["2"],
+	"theme": "Logique",
+	"domain": "Ensembles",
+	"subdomain": "Ensembles de nombres",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Quel est le **plus petit** ensemble de nombres qui contient $x=\\dfrac{ {{eval:(a)*(b)}} }{ {{b}} }$ ?\n\n```choix\nmelanger: non\n- $\\mathbb{N}$\n- $\\mathbb{Z}$\n- $𝔻$\n- $\\mathbb{Q}$\n- $\\mathbb{R}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On a $\\mathbb{N}\\subset\\mathbb{Z}\\subset𝔻\\subset\\mathbb{Q}\\subset\\mathbb{R}$ : chaque ensemble contient le précédent.",
+					"$x=\\dfrac{ {{eval:(a)*(b)}} }{ {{b}} }={{a}}$ est un entier positif : $x\\in\\textcolor{{{color:primary.0}}}{\\mathbb{N}}$, le plus petit des cinq."
+				]
+			}
+		},
+		{
+			"statement": "Quel est le **plus petit** ensemble de nombres qui contient $x=-\\sqrt{ {{eval:(a)^2}} }$ ?\n\n```choix\nmelanger: non\n- $\\mathbb{N}$\n- $\\mathbb{Z}$\n- $𝔻$\n- $\\mathbb{Q}$\n- $\\mathbb{R}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On a $\\mathbb{N}\\subset\\mathbb{Z}\\subset𝔻\\subset\\mathbb{Q}\\subset\\mathbb{R}$ : chaque ensemble contient le précédent.",
+					"$x=-\\sqrt{ {{eval:(a)^2}} }=-{{a}}$ est un entier négatif : $x\\notin\\mathbb{N}$ mais $x\\in\\textcolor{{{color:primary.0}}}{\\mathbb{Z}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel est le **plus petit** ensemble de nombres qui contient $x=\\dfrac{ {{p}} }{ {{q}} }$ ?\n\n```choix\nmelanger: non\n- $\\mathbb{N}$\n- $\\mathbb{Z}$\n- $𝔻$\n- $\\mathbb{Q}$\n- $\\mathbb{R}$\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "4|5|20|25|50"
+				},
+				{
+					"name": "p",
+					"expression": "1..99"
+				}
+			],
+			"conditions": ["gcd(p,q) == 1", "p > q"],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On a $\\mathbb{N}\\subset\\mathbb{Z}\\subset𝔻\\subset\\mathbb{Q}\\subset\\mathbb{R}$ : chaque ensemble contient le précédent.",
+					"$x=\\dfrac{ {{p}} }{ {{q}} }=\\dfrac{ {{eval:(p)*100/(q)}} }{100}$ : une fraction de dénominateur $100$, donc $x$ est **décimal**, sans être entier : $x\\in\\textcolor{{{color:primary.0}}}{𝔻}$, $x\\notin\\mathbb{Z}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel est le **plus petit** ensemble de nombres qui contient $x=\\dfrac{ {{p}} }{ {{q}} }$ ?\n\n```choix\nmelanger: non\n- $\\mathbb{N}$\n- $\\mathbb{Z}$\n- $𝔻$\n- $\\mathbb{Q}$\n- $\\mathbb{R}$\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "3|6|7|9|11"
+				},
+				{
+					"name": "p",
+					"expression": "1..40"
+				}
+			],
+			"conditions": ["gcd(p,q) == 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On a $\\mathbb{N}\\subset\\mathbb{Z}\\subset𝔻\\subset\\mathbb{Q}\\subset\\mathbb{R}$ : chaque ensemble contient le précédent.",
+					"La fraction $\\dfrac{ {{p}} }{ {{q}} }$ est irréductible et son dénominateur ${{q}}$ a un facteur premier autre que $2$ et $5$ : $x$ n'est pas décimal (son écriture décimale ne s'arrête pas).",
+					"C'est un quotient d'entiers : $x\\in\\textcolor{{{color:primary.0}}}{\\mathbb{Q}}$."
+				]
+			}
+		},
+		{
+			"statement": "Quel est le **plus petit** ensemble de nombres qui contient $x=\\sqrt{ {{k}} }$ ?\n\n```choix\nmelanger: non\n- $\\mathbb{N}$\n- $\\mathbb{Z}$\n- $𝔻$\n- $\\mathbb{Q}$\n- $\\mathbb{R}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2|3|5|6|7|8|10|11|12|13"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On a $\\mathbb{N}\\subset\\mathbb{Z}\\subset𝔻\\subset\\mathbb{Q}\\subset\\mathbb{R}$ : chaque ensemble contient le précédent.",
+					"${{k}}$ n'est pas le carré d'un entier : $\\sqrt{ {{k}} }$ est **irrationnel** (admis), il n'est dans aucun des quatre premiers ensembles : $x\\in\\textcolor{{{color:primary.0}}}{\\mathbb{R}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "15/5 : ℕ",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ℚ (une fraction)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−√49 : ℤ",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ℝ (une racine)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7/4 : 𝔻",
+			"variationIndex": 2,
+			"variables": {
+				"q": "4",
+				"p": "7"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ℚ",
+			"variationIndex": 2,
+			"variables": {
+				"q": "4",
+				"p": "7"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5/3 : ℚ",
+			"variationIndex": 3,
+			"variables": {
+				"q": "3",
+				"p": "5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 𝔻",
+			"variationIndex": 3,
+			"variables": {
+				"q": "3",
+				"p": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "√7 : ℝ",
+			"variationIndex": 4,
+			"variables": {
+				"k": "7"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ℚ",
+			"variationIndex": 4,
+			"variables": {
+				"k": "7"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
