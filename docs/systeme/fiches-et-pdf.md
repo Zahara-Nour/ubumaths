@@ -188,8 +188,8 @@ worksheets (type, status, config jsonb, translations, style_id, school_id)
   (`buildWorksheetCopy`) et par les API qui composent la vue élève
   (`StudentExerciseView.capital_pairs` : le sens, pas le thème). Une instance stockée sans le
   champ s'imprime comme avant (produit).
-- **Instance par élève** : à l'ouverture, l'API élève prend la ligne `worksheet_instances` si elle
-  existe, sinon résout à la volée avec une graine `hash(worksheet_id, student_id)` + position.
+- **Instance par élève** : à l'ouverture, l'API élève **recalcule** la copie (ADR 0023) ;
+  `worksheet_instances` n'est plus lue par aucun code (table vide, suppression prévue).
   L'élève ne peut pas écrire d'instance (`tests/integration/worksheet-instance-not-writable-by-student.test.ts`).
 - **Affectation** : l'accès est **hérité** à chaque lecture (`student_has_worksheet_access` →
   jonction des classes / élèves désignés → `class_members`), jamais matérialisé ; un ancien membre
@@ -787,8 +787,10 @@ Aucun test ne compile un vrai PDF dans la CI : la compilation se vérifie par `p
    exercice à variables en prod, mesuré le 2026-10-11).
 2. ~~Restes du tirage d'avant l'ADR 0023~~ : **retirés** (`worksheets/instance-generator.ts`,
    routes `api/worksheets/[id]/instances` et `[id]/preview`, `VariantPreview.svelte`).
-3. **`worksheet_instances` vide (0 ligne) et sans écrivain**, encore lue par `correction-release.ts`
-   (décompte, toujours 0). Sa suppression est destructive : décision de David.
+3. **`worksheet_instances` vide (0 ligne) et sans écrivain** : plus lue par aucun code depuis M4
+   (2026-11-03). Le décompte « Publié pour N élève(s) » compte les élèves de l'affectation ;
+   `canStudentAccessInstanceCorrection`, sans appelant, est retirée. `DROP` décidé par David,
+   **après** le `deploy:prod` qui livre ce code.
 4. ~~Routes PDF serveur mortes~~ : **corrigé** (K11, 2026-10-12), `api/worksheets/[id]/pdf` et
    `pdf/batch` retirées.
 5. ~~`CorrectionManager.svelte` charge typst.ts sans version~~ : **corrigé** (K11) : il passe par
