@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, lot 1 en cours (4/6 dessins)._
+_Mis à jour le 2026-11-03, lot 1 complet (6/6), PR à ouvrir._
 
-- **État** : lot 1 sur `feat/shtam-illustrations-lot-1` (pas encore de PR) : faits : fermat-marge-trop-petite (**style validé**), glitchistan-ha-ha, patatovie-barbier-paradoxe (retouché, **validé**), bedonstan-rails-de-sandomir (**gardé**). Restent, prompts écrits : nombrilie-zero-virgule-neuf, yoyolande-hotel-de-l-infini dans `docs/Chiphres/illustrations/shtam/<slug>/prompt.md`.
-- **Prochaine action** : recevoir les images de David → `essai-N-ia.jpg` dans le dossier de l'article, `magick … -resize 1200x -gravity center -crop 1200x800+0+0 -quality 85` → `static/shtam/<slug>.webp`, ligne d'image en tête du corps ; puis PR du lot.
-- **En attente de David** : les 2 dernières images du lot 1.
-- **Pièges en cours** : ne jamais lancer prettier sur les articles (casse `~q*2~`) ; fichiers à joindre → `~/Downloads` ; la une prend la **première** image du corps → le dessin AVANT toute figure SVG ; jamais de personne réelle dessinée (Fermat remplacé par Mère Ubu).
+- **État** : lot 1 fait sur `feat/shtam-illustrations-lot-1` : fermat-marge-trop-petite, glitchistan-ha-ha, patatovie-barbier-paradoxe (retouché), bedonstan-rails-de-sandomir, nombrilie-zero-virgule-neuf, yoyolande-hotel-de-l-infini. Skill `shtam` mise à jour (dessin en tête).
+- **Prochaine action** : merger la PR du lot 1 (CI verte), puis lot 2 = les 7 derniers articles parus, du plus récent au plus ancien (`pifometrie-moyenne-des-jambes`, `pifometrie-pile-ou-face`, …) : lire chaque article, écrire les prompts dans `docs/Chiphres/illustrations/shtam/<slug>/prompt.md`.
+- **En attente de David** : rien.
+- **Pièges en cours** : ne jamais lancer prettier sur les articles ; pièces jointes → `~/Downloads` ; dessin AVANT toute figure SVG ; jamais de personne réelle dessinée ; image non 3:2 → recadrage à vérifier à l'œil (hôtel 16:9 recadré à la main, `+50+0`) ; retouche = carré par tête, une demande, `coller-retouches.sh` du barbier comme modèle.
 - **Worktree / branche** : `../ubumaths-wt-shtam-illustrations` · `feat/shtam-illustrations-lot-1` · serveur de test sur 5178.
 
 ## À lire avant de commencer
@@ -46,3 +46,4 @@ _2026-11-03, phase 0 :_
 - 2026-11-03 — Lot 1 : dessin de fermat-marge-trop-petite (Mère Ubu et la facture ; 1264×848 recadré en 1200×800, 172 Ko), style validé ; prompts des 5 suivants écrits.
 - 2026-11-03 — glitchistan-ha-ha intégré (`integrer.sh` écrit). Barbier : essai 1 refusé (reflet au crâne rasé), prompt v2 « très mauvais » ; retenu = essai 1 **retouché par deux carrés** (barbe de trois jours / reflet rasé, mousse sur une joue — idée de David), `coller-retouches.sh` par masque de différence ; **validé par David**.
 - 2026-11-03 — bedonstan-rails-de-sandomir : essai 1 (4:3, recadré en 3:2), trait plus fin et texture crayon, différent des autres ; **gardé par David**.
+- 2026-11-03 — nombrilie-zero-virgule-neuf et yoyolande-hotel-de-l-infini intégrés (hôtel en 16:9, recadré à gauche pour garder le voyageur). Lot 1 complet ; skill `shtam` mise à jour.
