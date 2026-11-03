@@ -14,6 +14,8 @@ vi.mock('$lib/server/serviceRoleClient', () => ({
 	createServiceRoleClient: () => ({ from: serviceFrom })
 }));
 
+vi.mock('$lib/server/rateLimiter', () => import('$lib/server/__tests__/helpers/fake-rate-limiter'));
+
 import { POST } from '../+server';
 import { createFakeSupabase, called } from '$lib/server/__tests__/helpers/fake-supabase';
 

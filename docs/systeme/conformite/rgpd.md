@@ -619,7 +619,7 @@ WHERE job_name = 'retention_cleanup' ORDER BY started_at DESC LIMIT 1;
   élèves, page profil). En mono-prof, la cascade d'un prof emporterait classes et travaux de tous
   les élèves ; ces comptes se ferment à la main. La fonction refuse aussi tout rôle non élève.
 - **Confirmation** : saisie de `SUPPRIMER MON COMPTE` (`src/lib/server/validation/account.ts`).
-- **Limite** : 1 demande / 24 h (limiteur en mémoire, par instance).
+- **Limite** : 1 demande / 24 h (limiteur en base, partagé par toutes les instances).
 - **Audit** : `account_deletion_audit` (hash SHA-256 de l'e-mail, IP, navigateur, statut) ;
   `user_id` passé à NULL une fois la suppression terminée.
 - **Navigateur** : après la suppression réussie, `AccountDeletionDialog` efface de l'appareil les

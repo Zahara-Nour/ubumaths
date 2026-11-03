@@ -16,7 +16,7 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
 	try {
 		// ✅ SECURITY: Rate limit by IP to prevent DoS
 		const clientIp = getClientAddress();
-		rateLimit(`error-log:${clientIp}`, 20, 60000); // 20 errors per minute per IP
+		await rateLimit(`error-log:${clientIp}`, 20, 60000); // 20 errors per minute per IP
 
 		// ✅ SECURITY: Validate input with Zod
 		const bodyRaw = await request.json();
