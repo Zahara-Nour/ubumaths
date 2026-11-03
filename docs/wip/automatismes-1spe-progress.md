@@ -6,12 +6,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2350._
+_Mis à jour le 2026-11-04, phase 0 du lot « Statistiques »._
 
 - **État** : lots « évolutions », « droites » et « lectures graphiques » faits ; fiche
   `7ff081db` « Automatismes : lectures graphiques (1) » écrite en brouillon et vérifiée ; ensemble
-  fini du corrigé corrigé (#2350) · **Prochaine action** : lot « Statistiques » (§ Suite, point 3),
-  phase 0 · **En attente de David** : publier `f5585668`, `95ee57c8`, `5397c20f`, `7f82d15a` et
+  fini du corrigé corrigé (#2350) · **Prochaine action** : lot « Statistiques », phase 0 posée (§ Lot
+  « Statistiques ») · **En attente de David** : les 4 questions de cette phase 0 ; publier `f5585668`, `95ee57c8`, `5397c20f`, `7f82d15a` et
   les fiches `9217dfaa`, `0f98be04`, `7ff081db` ; garder ou non les 2 figures d'un corrigé de
   tracé ; questions 2 à 4 (§ Questions ouvertes) · **Pièges en cours** :
   `compile-prod.mjs --polices-corrige` pour un corrigé ; `?v=` de `CORRECTION_FONT_FILES` à changer
@@ -145,6 +145,33 @@ neuf ; un tableau de signes à compléter se fait déjà (`buildSerie` le fige, 
   (`regen-depuis-base.ts`, `compile-prod.mjs`, `--polices-corrige` pour le corrigé, `debord.py`) :
   fiche 5 p., réponses 1 p., corrigé 7 p., 0 débord ; tableau de signes vide à l'énoncé, rempli au
   corrigé ; `S = {−3 ; −1 ; 1}` au corrigé.
+
+## Lot « Statistiques » — phase 0 (2026-11-04)
+
+Capacités (BO 1re, Automatismes, « Statistiques ») : (A) lire un graphique, un histogramme, un
+diagramme en barres ou circulaire, une boîte à moustaches (repérer l'origine du repère, les unités
+de graduation, les échelles) ; (B) passer du graphique aux données **et vice-versa** ; (C) calculer
+et interpréter des indicateurs. Entretien de 2de : moyenne, médiane, quartiles (données brutes,
+regroupées, graphiques), comparer avec des boîtes. Le BO de 1re a aussi un bloc « Probabilités »
+(P_A(B) sur tableau croisé ou arbre ; distinguer P(A ∩ B), P_A(B), P_B(A)), absent de § Suite.
+
+Relevé en prod (⚠️ l'API plafonne à 1 000 lignes : relevé fait page par page, 2 078 modèles), séries
+essayées par `buildSerie` (lecture seule, graines 1-3) : **35 candidats, 34 passent**.
+
+| Capacité                             | Modèles                                                                                                                                                                                                                        | Manque                                                                   |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| (A) Lire un graphique                | 2de : `7ca1d2da` histogramme, `7a56029d` polygone des fréquences cumulées, `b73677c8` deux boîtes ; 3e : `1bd7378d` boîte (**brouillon**, lot 8 de `questions-3`), `96992ea8`/`acaa7317` (barres) ; 5e : `86e43598` circulaire | **origine, graduations, échelle** (axe qui ne part pas de 0)             |
+| (B) Graphique → données              | les mêmes (effectifs lus, total, pourcentage → effectif)                                                                                                                                                                       | —                                                                        |
+| (B) Données → graphique              | `9a9026fc` construire une boîte (**brouillon**, 3e) : ❌ « 0 case pour 5 réponses » (`placer:` non figé)                                                                                                                       | figer `placer:` ; aucun « angle d'un secteur », aucun choix de diagramme |
+| (C) Moyenne                          | 2de : `ba0925ce` linéarité, `a4de4154` ajout/retrait, `03d8f171` moyennes des classes, `90e2e7d8` regroupée ; 4e-5e : `c2497d96` pondérée (barres), `c73289f0`, `087c7c9c`                                                     | —                                                                        |
+| (C) Médiane, quartiles               | 2de : `3c411c3b` ajout/retrait, `b7c71958` classe médiane, `8d94fd69` médiane estimée, `82ba1365` interpréter un quartile ; 3e : `96992ea8`, `acaa7317`, `6acde723` effectifs cumulés ; 4e : `b2908d52`                        | —                                                                        |
+| (C) Écart type, comparer             | 2de : `ef92701a` écart type (calcul ou choix), `893eb3cd` moyenne + écart type, `6b2b7055` médiane + écart interquartile ; 4e : `3afa8d97`, `7bb351d0`, `4604b429` étendue                                                     | —                                                                        |
+| Fréquences conditionnelles (§ Suite) | 2de : `eb0dcd85`, `89e928a4`, `ba16b4f4`, `ed96107e`, `b6ab5599`, `d64946e4`, `62105594` (tableaux croisés)                                                                                                                    | —                                                                        |
+
+Questions à David : (1) apprendre à `buildSerie` à figer une boîte à placer (énoncé : axe vide ;
+corrigé : boîte), comme la droite à tracer ; (2) modèle neuf « échelle d'un graphique » (axe qui
+ne part pas de 0 : lecture juste, comparaison trompeuse) ; (3) modèle neuf « données → graphique »
+(angle d'un secteur circulaire) ; (4) bloc « Probabilités » du BO : dans ce lot ou lot à part.
 
 ## Questions ouvertes (à poser à David)
 
