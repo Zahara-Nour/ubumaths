@@ -4,7 +4,7 @@ status: clos
 
 # Chantier « tableau-signes » — tableau de signes à compléter
 
-> Outil n° 8 de [outils-manquants.md](outils-manquants.md) : cases dans le bloc ` ```variation `.
+> Outil n° 8 de [outils-manquants.md](../../wip/outils-manquants.md) : cases dans le bloc ` ```variation `.
 > Points servis : 2-268, 426, 330, 446, 337, 449-451 (2de), puis 1re et Tle. Ouvert le 2026-11-02.
 
 ## Reprendre ici
