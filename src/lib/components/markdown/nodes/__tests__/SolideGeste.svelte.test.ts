@@ -131,6 +131,33 @@ describe('SolideGeste — origine libre', () => {
 		expect(point(root, 'B').getAttribute('aria-pressed')).toBe('false');
 	});
 
+	it('la flèche se lit : par-dessus les points, extrémité sans disque, trait fin des points', async () => {
+		// Vu au rendu : un disque bleu à l'extrémité cachait la pointe, et le point choisi
+		// sans stroke-width prenait 1 unité du viewBox (1 cm) de contour, disque géant
+		const screen = await render(SolideGeste, {
+			target: mainElement(),
+			props: { node: free(), answer: answerProbe('A/C').answer() }
+		});
+		const svg = screen.container.querySelector('svg')!;
+		await expect.poll(() => studentArrow(svg).length).toBeGreaterThan(0);
+		const arrow = studentArrow(svg)[0];
+		const circles = [...svg.querySelectorAll('circle')];
+		const last = circles[circles.length - 1];
+		expect(last.compareDocumentPosition(arrow) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+		const chosen = [...svg.querySelectorAll<SVGCircleElement>('.solide-choisi')];
+		expect(chosen).toHaveLength(1);
+		expect(parseFloat(getComputedStyle(chosen[0]).strokeWidth)).toBeLessThan(0.1);
+	});
+
+	it('origine imposée : son disque garde un trait fin', async () => {
+		const screen = await render(SolideGeste, {
+			target: mainElement(),
+			props: { node: imposed(), answer: answerProbe().answer() }
+		});
+		const origin = screen.container.querySelector<SVGCircleElement>('.solide-origine')!;
+		expect(parseFloat(getComputedStyle(origin).strokeWidth)).toBeLessThan(0.1);
+	});
+
 	it('le bouton « Origine » reprend l’origine ; « Extrémité » l’extrémité', async () => {
 		const { probe, answer } = answerProbe('A/C');
 		const screen = await render(SolideGeste, {

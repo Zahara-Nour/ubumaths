@@ -212,20 +212,6 @@
 				dominant-baseline="central">{label.text}</text
 			>
 		{/each}
-		{#if arrow !== null}
-			{@const drawing = arrowOf(arrow)}
-			<g class={kind === 'juste' ? 'solide-fleche-juste' : 'solide-fleche-eleve'}>
-				<line
-					class="solide-fleche-trait"
-					x1={drawing.shaft[0].x + ESPACE_MARGIN}
-					y1={drawing.shaft[0].y + ESPACE_MARGIN}
-					x2={drawing.shaft[1].x + ESPACE_MARGIN}
-					y2={drawing.shaft[1].y + ESPACE_MARGIN}
-					stroke-width={ARROW_STROKE}
-				/>
-				<polygon class="solide-fleche-pointe" points={pointsOf(drawing.head)} />
-			</g>
-		{/if}
 		{#if markers}
 			{#each clickable as c (c.index)}
 				{@const at = solidePointAt(scene, c.index)}
@@ -240,13 +226,14 @@
 						r={CHOSEN_RADIUS}
 					/>
 				{:else}
-					<!-- Anneau qui dit « ce point se touche » -->
+					<!-- Anneau qui dit « ce point se touche » ; l'extrémité le garde : un disque bleu cacherait
+					     la pointe de la flèche -->
 					<circle
 						class="solide-anneau"
-						class:solide-choisi={isFrom || isTo}
+						class:solide-choisi={isFrom}
 						cx={at.x + ESPACE_MARGIN}
 						cy={at.y + ESPACE_MARGIN}
-						r={isFrom || isTo ? CHOSEN_RADIUS : RING_RADIUS}
+						r={isFrom ? CHOSEN_RADIUS : RING_RADIUS}
 					/>
 					<!-- Zone de toucher confortable (doigt), invisible, autour de l'anneau -->
 					<circle
@@ -264,6 +251,21 @@
 					/>
 				{/if}
 			{/each}
+		{/if}
+		<!-- Flèche par-dessus les points : sa pointe reste visible sur le point choisi -->
+		{#if arrow !== null}
+			{@const drawing = arrowOf(arrow)}
+			<g class={kind === 'juste' ? 'solide-fleche-juste' : 'solide-fleche-eleve'}>
+				<line
+					class="solide-fleche-trait"
+					x1={drawing.shaft[0].x + ESPACE_MARGIN}
+					y1={drawing.shaft[0].y + ESPACE_MARGIN}
+					x2={drawing.shaft[1].x + ESPACE_MARGIN}
+					y2={drawing.shaft[1].y + ESPACE_MARGIN}
+					stroke-width={ARROW_STROKE}
+				/>
+				<polygon class="solide-fleche-pointe" points={pointsOf(drawing.head)} />
+			</g>
 		{/if}
 	</svg>
 {/snippet}
@@ -414,9 +416,11 @@
 		pointer-events: none;
 	}
 
+	/* stroke-width explicite : sinon 1 unité du viewBox, soit 1 cm (disque géant) */
 	.solide-choisi {
 		fill: var(--color-fig-bleu);
 		stroke: var(--color-fig-bleu);
+		stroke-width: 0.04;
 	}
 
 	.solide-origine {
