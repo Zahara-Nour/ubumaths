@@ -10,16 +10,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, relevé de fin de chantier (§ 19)._
+_Mis à jour le 2026-11-03, après #2282 (fichiers du lot 10)._
 
-- **État** : lots 0 à 8 publiés, les trois sous-chantiers clos. En prod : 262 modèles `T_SPE` publiés, 215 points
-  sur 326 couverts. Le relevé a trouvé trois points oubliés (455, 481, 616) → lot 10 (D-L10, § 19).
-- **Prochaine action** : lot 10 (un modèle par point) dans le worktree `ubumaths-wt-questions-tspe` sur la branche
-  `feat/questions-tspe-lot10`, puis le versement (bilan dans `tspe.md`, pièges dans `couvrir-un-niveau.md`, journaux
-  vers `docs/archive/wip/`, renvois des tests dans une PR à part, comme pour `questions-1spe`).
-- **En attente de David** : rien.
-- **Pièges en cours** : voir « Décisions communes et pièges » dans `questions-tspe-restes-progress.md`.
-- **Worktree / branche** : à créer.
+- **État** : lots 0 à 8 publiés. Lot 10 (455, 481, 616) : fichiers mergés (#2282) dans `scripts/questions/tspe-10/`,
+  pas encore en base de prod.
+- **Prochaine action** : David crée les brouillons depuis le dépôt principal
+  (`pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-10 --publier`) ; je relève les `id`, puis
+  migration nœud + tag (gabarit lot 8c) avec son test, page à cocher, publication. Ensuite le versement (bilan dans
+  `tspe.md`, pièges dans `couvrir-un-niveau.md`, journaux vers `docs/archive/wip/`, renvois des tests dans une PR à
+  part, comme pour `questions-1spe`).
+- **En attente de David** : la commande `create-questions --publier` ci-dessus.
+- **Pièges en cours** : voir « Décisions communes et pièges » dans `questions-tspe-restes-progress.md` ; et ceux du
+  lot 10 : `sonde-courbes` ne voit pas les courbes d'un choix ; `{{p}}*pi/6` s'affiche non simplifié sur le cercle ;
+  `cleanCoefficients` réécrit P_A(B) en « P_A B ».
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe` (branche `feat/questions-tspe-lot10` mergée ; la garder
+  pour la PR de migration, sur une branche neuve).
 
 ## 1. Relevé (prod, 2026-10-29)
 
