@@ -124,6 +124,11 @@ function settingOf(
 				`${label} : ${name} n’est pas visible (l’élève ne peut pas y piquer le compas)`
 			);
 		}
+		if (shapes.window && !isInFrame(at, shapes.window)) {
+			throw new TriangleAuthorError(
+				`${label} : ${name} est hors de la fenêtre (l’élève ne peut pas y piquer le compas)`
+			);
+		}
 		return at;
 	});
 	if (points.has(nameC)) {
@@ -295,7 +300,11 @@ export function triangleSolution(
 	);
 	const score = (c: Position) =>
 		ends.length === 0 ? -c.y : Math.min(...ends.map((e) => distance(e, c)));
-	const c = [...inFrame].sort((p, q) => score(p) - score(q))[0];
+	// À égalité au calcul flottant près (aucun bout du côté de C), le plus haut
+	const c = [...inFrame].sort((p, q) => {
+		const gap = score(p) - score(q);
+		return Math.abs(gap) > tolerance(a, b, p, q) ? gap : q.y - p.y;
+	})[0];
 	return [
 		{ kind: 'segment', x1: a.x, y1: a.y, x2: c.x, y2: c.y },
 		{ kind: 'segment', x1: b.x, y1: b.y, x2: c.x, y2: c.y }

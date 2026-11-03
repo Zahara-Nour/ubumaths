@@ -273,7 +273,10 @@ export function judgeConstruction(
 	if (symmetry) {
 		// Papier uni (lot 2b) : droites de la règle et de l'équerre, cercles du compas = construction
 		const segments = objects.filter((o): o is DrawnLine => o.kind === 'segment');
-		const constructions = objects.filter((o) => o.kind === 'droite' || o.kind === 'cercle');
+		// Report (revue du lot 4) : construction aussi, si l'auteur l'a mis dans la palette
+		const constructions = objects.filter(
+			(o) => o.kind === 'droite' || o.kind === 'cercle' || o.kind === 'report'
+		);
 		// Un point placé sans outil point : réponse forgée
 		if (segments.length + constructions.length !== objects.length) return { status: 'incorrect' };
 		try {

@@ -6,13 +6,14 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, lot 4 codé (PR à ouvrir)._
+_Mis à jour le 2026-11-03, lot 4 en PR (#2271)._
 
 - **État** : lot 4 (triangle de trois longueurs, geste Report, 4e sommet du parallélogramme) codé
   et testé sur `feat/controles-figure-triangle` (§ 14) ; lots 1 à 3b mergés, pas encore en prod.
-- **Prochaine action** : revue Opus, PR, merge ; puis phase 0 de l'angle (rapporteur, outil n° 4) ou
+- **Prochaine action** : merge de #2271 (revue Opus faite, corrigée) ; puis phase 0 de l'angle (rapporteur, outil n° 4) ou
   de la bissectrice.
-- **En attente de David** : rien.
+- **En attente de David** : sur papier uni, un point à l'intersection de deux droites tracées
+  à l'œil est jugé construit (règle du lot 2b) ; le resserrer pour tous les points ? (§ 14, revue).
 - **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12, sa propre
   phase 0) ; `perpendiculaire(A, s)` échoue quand A est un bout de s ; pas de prime dans le langage des
   figures ; `symetrie(P, axe=d)` échoue si P définit d ; l'« Essayer » de l'aide ne rend pas la case
@@ -593,3 +594,13 @@ du triangle. » (ajouté après la revue, sans phase 0).
   (`solutionTriangle`). Aide à l'écriture : deux exemples (testés : ils se construisent).
 - Tests : `construction-triangle.test.ts`, `construction-parallelogramme.test.ts`, Report dans
   `construction-drawing.test.ts`, écran `figure-a-completer-triangle.svelte.test.ts` (3).
+- Revue Opus (2026-11-03), 7 findings. Corrigés : report à l'écartement pris à l'œil compté comme
+  construit pour le 4e sommet (un report n'est un trait que si centre ET écartement sont construits) ;
+  symétrique avec `report` dans `outils:` jugé « faux » sans message (le report y est un trait de
+  construction) ; bouts de segments avant les intersections dans l'aimantation (désormais au même
+  rang, le plus proche l'emporte : `SnapTargets.ends`) ; losange, B pris pour « l'autre intersection »
+  (« croisé ») ; A ou B hors de la fenêtre non refusé (erreur d'auteur) ; correction du 4e sommet du
+  § 13 non livrée (D, [CD], [DA] en pointillés, côtés opposés codés) ; égalité dans le choix du C de la
+  correction (le plus haut). Non corrigé (règle du lot 2b, question à David) : sur papier uni, un
+  point à l'intersection de deux droites tracées à l'œil est « construit » — D aux coordonnées rondes
+  se forge avec deux droites libres. [AB] non tracé dans la figure : pas exigé (absent du § 13).

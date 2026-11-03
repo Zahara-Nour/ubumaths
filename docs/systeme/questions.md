@@ -531,7 +531,8 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    calcul que `constructionPositions`). Erreurs de l'auteur : axe ou centre inconnu, rien à transformer,
    image hors de la fenêtre ou hors des nœuds (quadrillage), axe hors de la fenêtre (papier uni). Sur
    papier uni (lot 2b), seuls les segments sont jugés : droites de la règle et de l'équerre, cercles du
-   compas sont des traits de construction, ignorés. Vérification `point A' = <expression>`
+   compas (et reports, si l'auteur a mis le Report dans la palette) sont des traits de construction,
+   ignorés. Vérification `point A' = <expression>`
    (outil point, réponse `point(x;y)`, `construction/point.ts`, lot 2a du chantier) : l'élève place des
    points, non nommés, jugés comme un ensemble (chaque point attendu touché, aucun de trop ; traits de
    construction ignorés). L'expression (langage des figures : `symetrie`, `milieu`…) est calculée par le
@@ -550,7 +551,11 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    `sommet(parallelogramme(A, B, C), 4)` (A, B, C visibles ; lot 4), ou axe hors de la fenêtre ; deux
    points au même endroit. 4e sommet mal placé, à l'autre intersection des reports (cercle de centre A
    de rayon BC, cercle de centre C de rayon AB) : « Avec ce point, ABCD est croisé : prends l'autre
-   intersection. » (`crossedParallelogramFeedback`). Vérification
+   intersection. » (`crossedParallelogramFeedback` ; jamais quand cette intersection est un sommet
+   donné, losange). Un report ne compte comme trait, pour dire un point construit, que si son centre et
+   son écartement sont construits (points nommés, bouts des segments de la figure, intersections des
+   autres traits). Correction du 4e sommet : D, [CD] et [DA] en pointillés, côtés opposés codés
+   (`PointSolution.sides`, `marks`). Vérification
    `droite m = <expression>` (`construction/line.ts`, lot 3 du chantier) : une des droites de l'élève
    (règle, équerre) recouvre la droite que donne l'expression (calculée comme les points, `expected.lines`) ;
    ses autres droites et ses cercles sont des traits de construction, ignorés ; plusieurs vérifications
@@ -605,13 +610,13 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    manque le côté [BC]. », « Tes côtés [AC] et [BC] doivent se rejoindre en C. », « Ton sommet C est
    placé à l'œil : construis-le avec ton compas. » (même pile au bon endroit, ou compas ouvert à l'œil au
    bon rayon), « Ton côté [AC] n'a pas la bonne longueur. » (puis [BC]). Erreurs de l'auteur : A ou B
-   absent ou invisible, C déjà dans la figure, longueur qui n'est ni un segment visible dans la fenêtre
+   absent, invisible ou hors de la fenêtre, C déjà dans la figure, longueur qui n'est ni un segment visible dans la fenêtre
    ni deux points visibles, longueurs qui ne font pas un triangle (cercles de centres A et B qui ne se
    coupent pas en deux points), les deux C hors de la fenêtre, quadrillage (aussi refusé par le
    parseur). Seul dans la figure ; palette Segment · Compas · Report · Règle (`PLAIN_PAPER_TOOLS.triangle`).
    Le générateur exige que A, B et les longueurs soient nommés dans la figure, pas C (à construire).
    Correction : [AC] et [BC] en pointillés vers le C le plus proche du tracé de l'élève (sinon le plus
-   haut), arcs de report (centre A rayon AC, centre B rayon BC) en traits fins, longueurs codées (une
+   haut, aussi à égalité), arcs de report (centre A rayon AC, centre B rayon BC) en traits fins, longueurs codées (une
    marque sur [AC] et sa longueur donnée, deux sur [BC] et la sienne ; `solutionTriangle`).
    **Papier uni (lot 2b)** : sans `grille:`, `point` et
    `symetrique` reçoivent une palette d'instruments (`PLAIN_PAPER_TOOLS`) ; équerre = perpendiculaire à
@@ -619,8 +624,8 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    (`cercle(…)`), report (lot 4) = deux touchers prennent l'écartement, chaque toucher suivant pique un
    cercle de ce rayon (`report(…)`, écartement gardé pour juger s'il est construit ; reprendre Report ou
    changer d'outil le lâche, « Effacer » sans cercle aussi) ; la palette de `point` le reçoit (4e
-   sommet) ; chaque toucher s'aimante sur un point nommé (et les bouts des segments, de la figure ou de
-   l'élève), puis une intersection de deux traits,
+   sommet) ; chaque toucher s'aimante sur un point nommé, puis une intersection de deux traits ou un bout de
+   segment (de la figure ou de l'élève, `SnapTargets.ends` : le plus proche du toucher l'emporte),
    puis un trait (`instruments.ts`), en pleine précision : une construction exacte arrive exacte au juge
    (1e-9 près). Correction (point) : chaque point en pointillés avec son
    nom ; symétrique : [AA'] codé (angle droit pour un axe, une marque sur chaque moitié). Réponse illisible ou démesurée

@@ -258,11 +258,11 @@
 		const traits = traitsOf(scene);
 		const { xMin, xMax, yMin, yMax } = scene.viewport;
 		return {
-			// Bouts des segments de l'élève aussi : deux côtés finis au même endroit se rejoignent
-			points: [
-				...namedPointPositions(scene).values(),
+			points: [...namedPointPositions(scene).values(), ...placedPoints],
+			// Bouts des segments (figure, élève : deux côtés finis au même endroit se rejoignent),
+			// au rang des intersections : le plus proche du toucher l'emporte (revue du lot 4)
+			ends: [
 				...segmentEnds(scene),
-				...placedPoints,
 				...lines
 					.filter((l) => l.kind === 'segment')
 					.flatMap((l) => [
@@ -689,6 +689,24 @@
 			{@const p = transformer.mathToSvg(solution.at.x, solution.at.y)}
 			{@const c = codage(solution, scene, width, height)}
 			<g data-testid="bon-point" class="bon-point">
+				<!-- 4e sommet (lot 4) : [CD], [DA] en pointillés, côtés opposés codés -->
+				{#each solution.sides ?? [] as [from, to], i (i)}
+					{@const p1 = transformer.mathToSvg(from.x, from.y)}
+					{@const p2 = transformer.mathToSvg(to.x, to.y)}
+					<line
+						data-testid="bon-point-cote"
+						class="bon-point-segment"
+						x1={p1.x}
+						y1={p1.y}
+						x2={p2.x}
+						y2={p2.y}
+					/>
+				{/each}
+				{#each solution.marks ?? [] as mark, i (i)}
+					{#each lengthTicks(mark, scene, width, height) as t, j (j)}
+						<line class="bon-point-codage" {...t} />
+					{/each}
+				{/each}
 				{#if c}
 					<line class="bon-point-segment" {...c.segment} />
 					{#if c.corner}<path class="bon-point-codage" d={c.corner} />{/if}

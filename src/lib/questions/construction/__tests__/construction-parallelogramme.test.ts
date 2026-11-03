@@ -14,6 +14,7 @@ import { assertConstructionChecks, judgeConstruction } from '../judge';
 import { POINT_EYEBALLED_FEEDBACK, crossedParallelogramFeedback } from '../point';
 import { intersectTraits, perpendicularThrough, traitOf, type Trait } from '../instruments';
 import { serializeConstructionAnswer, type DrawnObject } from '../answer';
+import { solutionPoints } from '../drawing';
 import type { Position } from '../judge';
 import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
 
@@ -169,5 +170,44 @@ describe('4e sommet : faux', () => {
 			status: 'incorrect',
 			feedback: POINT_EYEBALLED_FEEDBACK
 		});
+	});
+});
+
+describe('4e sommet : revue du lot 4', () => {
+	it('reports d’écartement pris à l’œil : le point n’est pas construit', () => {
+		const looseA = report({ x: 3, y: 0.5 }, { x: 0, y: 0 }, { x: 0, y: 5.5 });
+		const looseB = report({ x: 0.5, y: 6 }, { x: 0, y: 0 }, { x: 2.5, y: 0 });
+		expect(judge(SOURCE, [looseA, looseB, point(D)])).toEqual({
+			status: 'incorrect',
+			feedback: POINT_EYEBALLED_FEEDBACK
+		});
+	});
+
+	it('losange (AB = BC) : posé en B, pas « croisé »', () => {
+		const source = figure(['A = point(2, 2)', 'B = point(5, 2)', 'C = point(5, 5)']);
+		const b = { x: 5, y: 2 };
+		const objects = [report({ x: 2, y: 2 }, b, { x: 5, y: 5 }), point(b)];
+		const verdict = judge(source, objects);
+		expect(verdict.status).toBe('incorrect');
+		expect(verdict.feedback).not.toBe(crossedParallelogramFeedback('ABCD'));
+	});
+
+	it('correction : D, les côtés [CD] et [DA], côtés opposés codés', () => {
+		const [solution] = solutionPoints(
+			checksOf(SOURCE),
+			constructionExpected(SOURCE),
+			constructionPositions(SOURCE)
+		);
+		expect(solution.at).toEqual(D);
+		expect(solution.sides).toEqual([
+			[C, D],
+			[D, A]
+		]);
+		expect(solution.marks).toEqual([
+			{ from: A, to: B, count: 1 },
+			{ from: C, to: D, count: 1 },
+			{ from: B, to: C, count: 2 },
+			{ from: D, to: A, count: 2 }
+		]);
 	});
 });

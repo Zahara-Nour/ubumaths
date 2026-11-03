@@ -29,7 +29,7 @@
  */
 
 import type { ConstructionCheck, PointCheck } from '$lib/ubumark/types/construction';
-import { isDrawnPoint, type DrawnObject } from './answer';
+import { isDrawnPoint, isDrawnReport, type DrawnObject } from './answer';
 import { intersectTraits, isConstructed, isInFrame, traitsOfObjects } from './instruments';
 import { mediatriceSupportError } from './line';
 import { circumcenterOf, circumcenterSupportError } from './circle';
@@ -90,6 +90,10 @@ export interface PointSolution {
 	foot?: Position;
 	/** Symétrie axiale (codage de l'angle droit), sinon centrale */
 	axial?: boolean;
+	/** 4e sommet (lot 4) : les côtés [CD] et [DA] à tracer en pointillés */
+	sides?: [Position, Position][];
+	/** 4e sommet : côtés opposés codés, `count` marques sur chaque */
+	marks?: { from: Position; to: Position; count: number }[];
 }
 
 /** Le 4e sommet pris à l'autre intersection des deux reports (lot 4) */
@@ -291,7 +295,8 @@ function parallelogramFeedback(
 	const crossed = intersectTraits(
 		{ kind: 'circle', center: a, radius: length(b, c) },
 		{ kind: 'circle', center: c, radius: length(a, b) }
-	).find((p) => !near(p, at, eps));
+		// Losange (AB = BC) : l'autre intersection est B lui-même, pas un ABCD croisé
+	).find((p) => !near(p, at, eps) && ![a, b, c].some((q) => near(p, q, eps)));
 	if (crossed && near(drawn, crossed, eps)) {
 		return crossedParallelogramFeedback(`${nameA}${nameB}${nameC}${check.name}`);
 	}
@@ -316,8 +321,21 @@ export function judgePoints(
 	// Papier uni : chaque point doit être CONSTRUIT (point de la figure ou intersection de deux
 	// traits), même posé pile au bon endroit (décision de David, 2026-11-02, § 8)
 	if (shapes && !shapes.grid && unused.length > 0) {
-		const traits = [...shapes.traits, ...traitsOfObjects(objects)];
 		const named = [...points.values()];
+		// Report (lot 4, § 13) : un trait seulement si son centre et son écartement sont
+		// construits (points nommés, bouts des segments de la figure, intersections des
+		// autres traits) ; un écartement pris à l'œil ne construit rien (revue du lot 4)
+		const others = traitsOfObjects(objects.filter((o) => !isDrawnReport(o)));
+		const baseTraits = [...shapes.traits, ...others];
+		const base = [...named, ...shapes.segments.flatMap((s) => [s.a, s.b])];
+		const built = objects.filter(isDrawnReport).filter((r) =>
+			[
+				{ x: r.cx, y: r.cy },
+				{ x: r.ax, y: r.ay },
+				{ x: r.bx, y: r.by }
+			].every((p) => isConstructed(p, base, baseTraits))
+		);
+		const traits = [...baseTraits, ...traitsOfObjects(built)];
 		if (unused.some((p) => !isConstructed(p, named, traits))) {
 			return { status: 'incorrect', feedback: POINT_EYEBALLED_FEEDBACK };
 		}
@@ -358,6 +376,27 @@ export function pointSolution(
 	return checks.flatMap((check): PointSolution[] => {
 		const at = expected?.positions.get(check.name);
 		if (!at) return [];
+		const parallelogram = parallelogramOf(check.expression);
+		const vertices = parallelogram?.map((name) => points.get(name));
+		if (vertices?.every((p) => p !== undefined)) {
+			const [a, b, c] = vertices as [Position, Position, Position];
+			return [
+				{
+					name: check.name,
+					at,
+					sides: [
+						[c, at],
+						[at, a]
+					],
+					marks: [
+						{ from: a, to: b, count: 1 },
+						{ from: c, to: at, count: 1 },
+						{ from: b, to: c, count: 2 },
+						{ from: at, to: a, count: 2 }
+					]
+				}
+			];
+		}
 		const symmetry = symmetryOf(check.expression);
 		const from = symmetry ? points.get(symmetry.source) : undefined;
 		if (!symmetry || !from) return [{ name: check.name, at }];

@@ -347,6 +347,12 @@ describe('triangle : erreurs d’auteur', () => {
 		expect(() => assertChecks(source)).toThrow(/existe déjà/);
 	});
 
+	it('A hors de la fenêtre (revue du lot 4)', () => {
+		const body = ['A = point(-0.5, 2)', 'B = point(5.5, 2)', ...BODY.slice(2)];
+		const source = figure('triangle ABC : AC = u ; BC = v', body);
+		expect(() => assertChecks(source)).toThrow(/A est hors de la fenêtre/);
+	});
+
 	it('A invisible', () => {
 		const body = ['A = point(2, 2, visible=faux)', ...BODY.slice(1)];
 		const source = figure('triangle ABC : AC = u ; BC = v', body);
@@ -370,6 +376,17 @@ describe('triangle : correction', () => {
 			expect(end.y).toBeCloseTo(C_LOW.y, 9);
 		}
 		expect(lines.every((l) => l.kind === 'segment')).toBe(true);
+	});
+
+	it('égalité (seulement [AB] repassé) : le C du haut (revue du lot 4)', () => {
+		const lines = solutionLines(
+			checksOf(TRIANGLE),
+			constructionPositions(TRIANGLE),
+			[segment(A, B)],
+			constructionShapes(TRIANGLE),
+			constructionExpected(TRIANGLE)
+		);
+		expect(lines[0].y2).toBeCloseTo(C_HIGH.y, 9);
 	});
 
 	it('sans tracé : le C du haut', () => {
