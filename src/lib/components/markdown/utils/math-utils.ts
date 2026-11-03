@@ -61,8 +61,7 @@ export function expressionToLatex(
 	capitalPairs?: CapitalPairs,
 	minDigits?: number
 ): string {
-	// `\unit` (siunitx) n'existe ni dans MathLive ni dans le préambule de
-	// l'export `.tex` : on l'affiche en LaTeX de base.
+	// `\unit` (siunitx) n'existe pas dans MathLive : on l'affiche en LaTeX de base.
 	return displayUnitsInLatex(
 		expressionToRawLatex(expression, syntax, genericFunctions, locale, capitalPairs, minDigits)
 	);

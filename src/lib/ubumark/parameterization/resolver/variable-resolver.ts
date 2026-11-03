@@ -46,7 +46,7 @@ import { barePiRefusal } from '../validator/bare-pi';
 /**
  * Prevent French digit grouping on a LaTeX value.
  *
- * Problem: generators (latex-generator, typst-generator) call toFrenchDecimal()
+ * Problem: the generators (typst-generator) call toFrenchDecimal()
  * on all math content, turning 12345 → 12\,345. For exercises where students must
  * add digit grouping themselves, we need to prevent this.
  *

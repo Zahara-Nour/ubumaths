@@ -4,14 +4,12 @@
  *
  * En 1re, un tableau de variations d'un trinôme ne porte pas de limites :
  * « -inf » et « +inf » n'ont pas de valeur. Sans elles, le PDF plantait
- * (vartable : « array is empty »), l'écran ne dessinait aucune flèche et
- * l'export LaTeX produisait un \tkzTabVar incomplet.
+ * (vartable : « array is empty ») et l'écran ne dessinait aucune flèche.
  */
 import { describe, it, expect } from 'vitest';
 import { withImplicitEndpoints } from '$lib/ubumark/parser/variation-table-parser';
 import { parseMarkdown } from '$lib/ubumark';
 import { generateVariationTableTypst } from '$lib/ubumark/generators/variation-table-typst';
-import { generateVariationTableLatex } from '$lib/ubumark/generators/variation-table-latex';
 import type {
 	DomainPoint,
 	VariationRow,
@@ -99,11 +97,5 @@ describe('Rendus d’un tableau sans valeur aux bornes', () => {
 		const typst = generateVariationTableTypst(parseTable(TABLE_MIN));
 		// `()` en première ou dernière colonne fait planter vartable
 		expect(typst).toContain('((top, $$), (bottom, $-11$), (top, $$))');
-	});
-
-	it('export LaTeX : autant d’entrées \\tkzTabVar que de points du domaine', () => {
-		const latex = generateVariationTableLatex(parseTable(TABLE_MIN));
-		const line = latex.match(/\\tkzTabVar\{([^\n]*)\}/)?.[1] ?? '';
-		expect(line.split(',')).toHaveLength(3);
 	});
 });
