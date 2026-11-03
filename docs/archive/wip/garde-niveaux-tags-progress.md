@@ -7,15 +7,12 @@ si l'oubli revient.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2284._
+_Mis à jour le 2026-11-03, après #2284 et le `db:migrate` de #2285. **Chantier clos, versé.**_
 
-- **État** : #2284 MERGÉE (garde `scripts/questions/garde-niveaux-tags.ts` + appel dans `publier-lot.ts`,
-  `EXCEPTIONS_NIVEAUX` pour les 5 brouillons de seconde, 11 tests verts). CI : deux échecs de l'outillage navigateur
-  (`wrapDynamicImport`, « Browser connection was closed »), sans lien avec le diff, verts à la relance ·
-  **Prochaine action** : après le `db:migrate` de #2285 (chantier `questions-1gen-grades`, encore ouverte), lancer
-  la garde en prod : elle doit sortir en code 0, avec les 5 écarts voulus montrés à part ; puis verser le chantier
-  (archiver ce journal) · **En attente de David** : rien · **Pièges en cours** : les scripts ne sont pas dans le
-  périmètre du typecheck · **Worktree / branche** : `../ubumaths-wt-garde-niveaux-tags` à retirer.
+- **État** : garde en prod, code 0 (1892 modèles tagués, 2061 tags, aucun niveau manquant ; 5 écarts voulus à
+  part). Durable : `docs/pratiques/couvrir-un-niveau.md` § 8 et `EXCEPTIONS_NIVEAUX` dans le code · **Prochaine
+  action** : aucune · **En attente de David** : rien · **Pièges** : les 5 exceptions de seconde sont désormais
+  PUBLIÉES ; à rouvrir si on les ouvre à la Terminale complémentaire · **Worktree / branche** : retirés.
 
 ## 1. Premier passage en prod (2026-11-03, avant le `db:migrate` de #2280)
 
@@ -39,3 +36,8 @@ Tests écrits après le code (fonctions pures, 8 cas), pas avant.
 
 Tests de `separerExceptions` écrits d'abord (3 rouges), puis le code : 11/11. Prod : 23 écarts (21 de #2285,
 pas encore migrée, + 2 de Terminale), 5 voulus.
+
+## 3. Clôture (2026-11-03)
+
+Après le `db:migrate` de #2285 (2 migrations, appliquées à 11:53), garde relancée en prod : code 0, 5 écarts voulus.
+Branche distante `feat/garde-niveaux-tags` supprimée ; worktree déjà retiré. Journal archivé.
