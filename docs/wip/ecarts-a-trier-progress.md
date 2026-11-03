@@ -8,13 +8,13 @@ status: écarts revérifiés le 2026-10-18 ; tri A (seul) / B (David) fait ; V62
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR T2 (garde des canaux publics) ouverte._
+_Mis à jour le 2026-11-03, après #2293 ; PR T1 ouverte._
 
-- **État** : liste A finie et en prod. Lot RGPD : toutes mes recos validées par David ; lot doc fait (T3, T9, T12, T13, commit `c3a17bc02` sur `main`) ; T2 = garde de test (PR `test/ecarts-a-trier-garde-canaux`).
-- **Prochaine action** : merger la PR T2, puis **T1** (présence relue toutes les 60 s), T6, T7, T8, T15, puis lots B « destructif » et « spécification ».
+- **État** : liste A finie et en prod. Lot RGPD : toutes mes recos validées par David. Fait : doc (T3, T9, T12, T13, `c3a17bc02`) ; T2 = garde de test (#2293 mergée) ; T1 = présence relue toutes les 60 s (PR `fix/ecarts-a-trier-presence-amis`, revue Sonnet faite, courses corrigées).
+- **Prochaine action** : merger la PR T1, puis **T6** (CSP `unsafe-eval` : tester si `wasm-unsafe-eval` suffit à Typst), T7, T8, T15, puis lots B « destructif » et « spécification ».
 - **En attente de David** : T14 = les infos des mentions légales (responsable de publication, statut, adresse, nom).
-- **Pièges en cours** : migrations : `pnpm migration:horodatage`, `pnpm check:migrations --pr <n>` avant merge ; CI allégée pour le contenu, CI Summary fait foi ; `charger-repartir-annuler.svelte.test.ts` (client) instable.
-- **Worktree / branche** : `../ubumaths-wt-ecarts-a-trier` · `test/ecarts-a-trier-garde-canaux`.
+- **Pièges en cours** : `cleanup_stale_presence` existe mais n'est planifiée nulle part (contourné côté navigateur par T1) ; horloge du client en retard de plus de 90 s → amis affichés hors ligne (risque connu) ; CI client : erreurs `wrapDynamicImport` passagères → relancer le job ; migrations : `pnpm migration:horodatage`, `check:migrations --pr <n>`.
+- **Worktree / branche** : `../ubumaths-wt-ecarts-a-trier-presence` · `fix/ecarts-a-trier-presence-amis`.
 
 ---
 
@@ -33,7 +33,7 @@ _Mis à jour le 2026-11-03, PR T2 (garde des canaux publics) ouverte._
 
 ## Décisions de David (2026-11-03, page à cocher RGPD, toutes mes recos validées)
 
-- **T1** présence des amis : relecture toutes les 60 s, `user_presence` reste non publiée.
+- **T1** présence des amis : relecture toutes les 60 s, `user_presence` reste non publiée. Phase 0 validée : ami en ligne si signal de vie < 270 s (calcul navigateur, pas de cron), échec → dernier statut gardé, abonnement et bandeau « système de présence » retirés.
 - **T2** canaux match / présence / notifications / succès : ~~passer en privé~~ → mesure en prod (2026-11-03) : ils ne portent que des `postgres_changes` filtrés par la RLS, le privé n'apporte rien. **David a choisi une garde de test** (`canaux-publics-garde.test.ts`), sans passage en privé.
 - **T3** canal privé gardé après retrait d'un droit : limite acceptée et documentée (`realtime.md`) — fait.
 - **T6** CSP `unsafe-eval` : tester si `wasm-unsafe-eval` suffit à Typst ; sinon le restreindre aux pages PDF.

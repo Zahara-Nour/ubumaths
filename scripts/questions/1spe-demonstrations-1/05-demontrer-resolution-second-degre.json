@@ -1,0 +1,182 @@
+{
+	"title": "Démontrer la résolution de l'équation du second degré",
+	"description": "Démonstration à trous de la résolution de ax² + bx + c = 0 par la forme canonique : terme b²/(4a²) du carré, numérateur b² − 4ac, justification du cas Δ < 0",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"subdomain": "Démonstrations",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $a$, $b$ et $c$ trois réels, avec $a\\neq 0$. On résout l'équation $ax^2+bx+c=0$.\n\nComme $a\\neq 0$, elle équivaut à $x^2+\\dfrac{b}{a}x+\\dfrac{c}{a}=0$.\n\nOn fait apparaître le début du carré $\\left(x+\\dfrac{b}{2a}\\right)^2$. Complète.\n\n$x^2+\\dfrac{b}{a}x=\\left(x+\\dfrac{b}{2a}\\right)^2-?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{b^2}{4a^2}",
+					"requiredForm": {
+						"pattern": "u"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"On développe : $\\left(x+\\dfrac{b}{2a}\\right)^2=x^2+2\\times x\\times\\dfrac{b}{2a}+\\left(\\dfrac{b}{2a}\\right)^2=x^2+\\dfrac{b}{a}x+\\dfrac{b^2}{4a^2}$.",
+					"Pour retrouver $x^2+\\dfrac{b}{a}x$, on retranche $\\textcolor{{{color:primary.0}}}{\\dfrac{b^2}{4a^2}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $a$, $b$ et $c$ trois réels, avec $a\\neq 0$. On résout l'équation $ax^2+bx+c=0$.\n\nComme $a\\neq 0$, elle équivaut à $x^2+\\dfrac{b}{a}x+\\dfrac{c}{a}=0$.\n\nComme $x^2+\\dfrac{b}{a}x=\\left(x+\\dfrac{b}{2a}\\right)^2-\\dfrac{b^2}{4a^2}$, l'équation équivaut à $\\left(x+\\dfrac{b}{2a}\\right)^2=\\dfrac{b^2}{4a^2}-\\dfrac{c}{a}$.\n\nOn réduit au même dénominateur. Complète.\n\n$\\dfrac{b^2}{4a^2}-\\dfrac{c}{a}=\\dfrac{?}{4a^2}$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "b^2-4ac"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{c}{a}=\\dfrac{4ac}{4a^2}$ (on multiplie le numérateur et le dénominateur par $4a$).",
+					"Donc $\\dfrac{b^2}{4a^2}-\\dfrac{c}{a}=\\dfrac{\\textcolor{{{color:primary.0}}}{b^2-4ac}}{4a^2}$ : son numérateur est le discriminant $\\Delta=b^2-4ac$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $a$, $b$ et $c$ trois réels, avec $a\\neq 0$. On résout l'équation $ax^2+bx+c=0$.\n\nComme $a\\neq 0$, elle équivaut à $x^2+\\dfrac{b}{a}x+\\dfrac{c}{a}=0$.\n\nComme $x^2+\\dfrac{b}{a}x=\\left(x+\\dfrac{b}{2a}\\right)^2-\\dfrac{b^2}{4a^2}$, l'équation équivaut à\n\n$$\\left(x+\\dfrac{b}{2a}\\right)^2=\\dfrac{b^2}{4a^2}-\\dfrac{c}{a}=\\dfrac{b^2-4ac}{4a^2}$$\n\nOn pose $\\Delta=b^2-4ac$. Si $\\Delta<0$, l'équation n'a aucune solution réelle. Pourquoi ?\n\n```choix\n- Car un carré serait égal à $\\dfrac{\\Delta}{4a^2}$, qui est strictement négatif.\n- Car $a\\neq 0$.\n- Car on ne peut pas diviser par $\\Delta$.\n- Car $4a^2$ est strictement négatif.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$4a^2>0$ car $a\\neq 0$ ; si $\\Delta<0$, alors $\\dfrac{\\Delta}{4a^2}<0$.",
+					"Or un carré est toujours positif ou nul : $\\left(x+\\dfrac{b}{2a}\\right)^2$ ne peut pas être égal à **un nombre strictement négatif**.",
+					"Aucun réel $x$ ne vérifie donc l'équation."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "b²/(4a²)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\frac{b^2}{4a^2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture (b/(2a))²",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\left(\\frac{b}{2a}\\right)^2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : b/(2a)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\frac{b}{2a}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : b²/(2a)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\frac{b^2}{2a}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : b²/a²",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\frac{b^2}{a^2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "b² − 4ac",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["b^2-4ac"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : b² − ac",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["b^2-ac"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : b² + 4ac",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["b^2+4ac"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : b² − 4c",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["b^2-4c"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "carré négatif",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : a ≠ 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : division par Δ",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4a² négatif",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,173 @@
+{
+	"title": "Démontrer la somme 1 + 2 + ⋯ + n",
+	"description": "Démonstration à trous de 1 + 2 + ⋯ + n = n(n + 1)/2 (S écrite deux fois, à l'envers) : somme d'une colonne, 2S, justification du produit n(n + 1)",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Sommes",
+	"subdomain": "Démonstrations",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $n$ un entier naturel non nul et $S=1+2+\\cdots+n$. On écrit $S$ deux fois, la seconde dans l'ordre inverse :\n\n$$S=1+2+\\cdots+(n-1)+n$$\n\n$$S=n+(n-1)+\\cdots+2+1$$\n\npuis on additionne ces deux égalités terme à terme (le premier terme avec le premier, le deuxième avec le deuxième, etc.).\n\nLes sommes $1+n$, $2+(n-1)$, …, $n+1$ sont toutes égales. Complète.\n\nChacune vaut $?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "n+1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1+n=n+1$, $2+(n-1)=n+1$, … : quand on avance d'un rang, le terme du haut augmente de $1$ et celui du bas diminue de $1$.",
+					"Chaque somme vaut donc $\\textcolor{{{color:primary.0}}}{n+1}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $n$ un entier naturel non nul et $S=1+2+\\cdots+n$. On écrit $S$ deux fois, la seconde dans l'ordre inverse :\n\n$$S=1+2+\\cdots+(n-1)+n$$\n\n$$S=n+(n-1)+\\cdots+2+1$$\n\npuis on additionne ces deux égalités terme à terme (le premier terme avec le premier, le deuxième avec le deuxième, etc.).\n\nChacune des sommes $1+n$, $2+(n-1)$, …, $n+1$ vaut $n+1$. Complète.\n\n$2S=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "n(n+1)",
+					"requiredForm": {
+						"pattern": "u"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"Il y a $n$ sommes (une par terme de $S$), chacune égale à $n+1$.",
+					"Donc $2S=\\textcolor{{{color:primary.0}}}{n(n+1)}$, et $S=\\dfrac{n(n+1)}{2}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $n$ un entier naturel non nul et $S=1+2+\\cdots+n$. On écrit $S$ deux fois, la seconde dans l'ordre inverse :\n\n$$S=1+2+\\cdots+(n-1)+n$$\n\n$$S=n+(n-1)+\\cdots+2+1$$\n\npuis on additionne ces deux égalités terme à terme (le premier terme avec le premier, le deuxième avec le deuxième, etc.).\n\nOn obtient $2S=n(n+1)$. Pourquoi ?\n\n```choix\n- Il y a $n$ sommes de deux termes, et chacune vaut $n+1$.\n- Il y a $n+1$ sommes de deux termes, et chacune vaut $n$.\n- Il y a $n$ sommes de deux termes, et chacune vaut $n$.\n- Il y a $\\dfrac{n}{2}$ sommes de deux termes, et chacune vaut $n+1$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$S$ compte $n$ termes : en les additionnant deux à deux, on obtient $\\textcolor{{{color:primary.0}}}{n}$ sommes.",
+					"Chacune vaut $\\textcolor{{{color:primary.1}}}{n+1}$ : $1+n$, $2+(n-1)$, …, $n+1$.",
+					"Donc $2S=n(n+1)$ et $S=\\dfrac{n(n+1)}{2}$. Les $\\dfrac{n}{2}$ sommes donneraient $S$, pas $2S$, et seulement si $n$ est pair."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "n + 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["n+1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n − 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["n-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n(n + 1)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["n(n+1)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture n² + n",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["n^2+n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n(n + 1)/2 (S au lieu de 2S)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\frac{n(n+1)}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : (n + 1)²",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["(n+1)^2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n²",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["n^2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n sommes de n + 1",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : n + 1 sommes de n",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n sommes de n",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n/2 sommes",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
