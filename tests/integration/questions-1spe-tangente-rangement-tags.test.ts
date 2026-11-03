@@ -238,6 +238,41 @@ describe('1re spé, tangente (271) : les branches d’échec de la migration', (
 		});
 	});
 
+	it('rollback refusé si un tag étranger a été ajouté depuis la migration', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await pg.query(readFileSync(MIGRATION, 'utf-8'));
+			// Un troisième programme : un point de Terminale sur le nœud du modèle ou sa notion (TSPE-423)
+			const etranger = await pg.query<{ id: string; grade: string }>(
+				`select p.id, p.grade from public.curriculum_points p
+				  join public.classification_nodes s on s.id = (select classification_node_id
+				       from public.question_templates where id = $1)
+				 where p.node_id in (s.id, s.parent_id) and p.archived_at is null
+				   and p.grade not in ('1_SPE', '1_TECHNO')
+				 order by p.code limit 1`,
+				[ids[0]]
+			);
+			expect(etranger.rows).toHaveLength(1);
+			await pg.query(
+				'alter table public.question_templates disable trigger update_question_templates_updated_at'
+			);
+			await pg.query(
+				'update public.question_templates set grades = grades || $2::text where id = $1',
+				[ids[0], etranger.rows[0].grade]
+			);
+			await pg.query(
+				'alter table public.question_templates enable trigger update_question_templates_updated_at'
+			);
+			await pg.query(
+				'insert into public.question_template_points (template_id, point_id) values ($1, $2)',
+				[ids[0], etranger.rows[0].id]
+			);
+			await expect(pg.query(extractRollback(MIGRATION))).rejects.toThrow(
+				/rollback : tags changés depuis la migration \(2 du lot sur 3, attendus 2\)/
+			);
+		});
+	});
+
 	it('rollback refusé si un tag a été retiré depuis la migration', async () => {
 		await enTransaction(async () => {
 			await poserEtatProd(pg, auteur);
