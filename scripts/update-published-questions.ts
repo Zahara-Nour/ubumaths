@@ -11,7 +11,8 @@
  * Chaque cible a son fichier JSON (modèle complet en camelCase, avec ses `testSpecs`). Pour
  * chaque cible :
  *  - le modèle est relu en base ; le fichier doit porter le même `id` ;
- *  - seuls `variations`, `options`, `test_specs`, `title`, `description`, `level` sont écrits ;
+ *  - seuls `variations`, `options`, `test_specs`, `title`, `description`, `level`, `delay` sont
+ *    écrits ;
  *    tout autre champ du fichier (thème, domaine, sous-domaine, classes…) doit être
  *    IDENTIQUE à la base, sinon arrêt ; `status` n'est jamais écrit ;
  *  - `shared` : seul l'AJOUT de `cleanCoefficients: true` s'écrit (valeur = `shared` de la
@@ -29,7 +30,7 @@
  *   pnpm tsx scripts/update-published-questions.ts --lot <lot>            (simulation, diff)
  *   pnpm tsx scripts/update-published-questions.ts --lot <lot> --publier  (écrit)
  *   lots : second-degre, suites, derivation, textcolor-2de, niveaux-2de-probabilites,
- *          textcolor-hors-2de, tracer-droites-2de
+ *          textcolor-hors-2de, tracer-droites-2de, tableau-signes-2de
  *   … --seulement <id8>[,<id8>]   restreint aux cibles dont l'id commence ainsi
  *   … --sans-diff                 simulation sans le diff (preuves rouges seulement)
  */
@@ -120,7 +121,8 @@ const TEXTCOLOR_2DE: readonly string[] = [
 	'6670b161-4120-44a4-a6fd-22c8db71d2a1', // signes-a › Fonction affine : variations, signe et droite
 	'6bb5ff09-34ba-401b-a7d5-8edb76d9dee0', // signes-a › Signe d'un produit, sans tableau
 	'80826238-a393-4840-b6be-b115dbfae8d7', // signes-a › Signe d'un quotient, sans tableau
-	'9c7ab1c7-d3f3-4c78-96f4-c14e5a657574', // signes-b › Tableau de signes d'un quotient
+	// 9c7ab1c7 (signes-b › Tableau de signes d'un quotient) retiré le 2026-11-03 : réécrit par le lot
+	// `tableau-signes-2de` ; son instantané d'ici (90 s, cases sous le tableau) le ramènerait en arrière
 	'93bc8b5e-b2a5-4793-b64e-271601504498', // variations-c › Croissante ou décroissante sur un intervalle
 	'4f887f53-263e-4ef3-b497-b3b50d83ec59', // variations-c › Comparer des images par le sens de variation
 	'275cb665-f0ab-4649-8188-df9ae44bb322' // variations-c › Comparer des images sur la courbe
@@ -180,6 +182,13 @@ const TRACER_DROITES_2DE: readonly string[] = [
 	'2cfae58d-7fdb-45f7-8ea1-777a4a307b5a' // droites-b › Tracer une droite donnée par une équation cartésienne
 ];
 
+/** 2-330 et 2-446 réécrits avec le tableau à compléter (chantier `tableau-signes`, Q6 de David du
+ *  2026-11-02 ; phase 0 du 2026-11-03 : tout caché, temps porté à 180 s) */
+const TABLEAU_SIGNES_2DE: readonly string[] = [
+	'f0163416-0610-49cc-bf2d-83db744dbf43', // signes-b › Tableau de signes d'un produit
+	'9c7ab1c7-d3f3-4c78-96f4-c14e5a657574' // signes-b › Tableau de signes d'un quotient
+];
+
 const LOTS: Record<string, Lot> = {
 	'second-degre': { dossier: 'scripts/questions/second-degre-existants', cibles: SECOND_DEGRE },
 	suites: { dossier: 'scripts/questions/suites-existants', cibles: SUITES },
@@ -196,6 +205,10 @@ const LOTS: Record<string, Lot> = {
 	'tracer-droites-2de': {
 		dossier: 'scripts/questions/2de-tracer-droites-existants',
 		cibles: TRACER_DROITES_2DE
+	},
+	'tableau-signes-2de': {
+		dossier: 'scripts/questions/2de-tableau-signes-existants',
+		cibles: TABLEAU_SIGNES_2DE
 	}
 };
 
@@ -207,7 +220,8 @@ const CHAMPS_ECRITS = [
 	'testSpecs',
 	'title',
 	'description',
-	'level'
+	'level',
+	'delay'
 ] as const;
 type ChampEcrit = (typeof CHAMPS_ECRITS)[number];
 
@@ -217,7 +231,6 @@ const CHAMPS_FIGES = [
 	'domain',
 	'subdomain',
 	'grades',
-	'delay',
 	'status',
 	'exerciseInstruction',
 	'defaultDisplayOptions',
@@ -237,7 +250,7 @@ function colonne(champ: ChampEcrit): keyof TablesUpdate<'question_templates'> {
 function valeurColonne(modele: QuestionTemplate, champ: ChampEcrit): unknown {
 	const valeur = modele[champ];
 	if (champ === 'description') return valeur || null;
-	if (champ === 'title' || champ === 'level') return valeur;
+	if (champ === 'title' || champ === 'level' || champ === 'delay') return valeur;
 	return toJson(valeur ?? null);
 }
 
