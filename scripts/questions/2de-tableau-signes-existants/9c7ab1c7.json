@@ -1,0 +1,464 @@
+{
+	"id": "9c7ab1c7-d3f3-4c78-96f4-c14e5a657574",
+	"title": "Tableau de signes d'un quotient",
+	"description": "Compléter le tableau de signes de (ax + b)/(cx + d) : valeur qui annule, valeur interdite, signes, 0 et double barre ; lire la ligne du quotient (pièges : 0 sous la valeur interdite, valeur interdite et zéro échangés, double barre dans la ligne du dénominateur)",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Inéquations",
+	"subdomain": "Produit et quotient",
+	"level": 4,
+	"delay": 180,
+	"status": "published",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Complète le tableau de signes de $B(x)=\\dfrac{ {{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}x{{b;+}} }{ {{if:c==-1|-|}}{{if:c*c>1|{{c}}|}}x{{d;+}} }$.\n\n```variation\nvariable: x\ndomain: -inf, ?{{ra}}, ?{{rb}}, +inf\n\nsign: {{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}x{{b;+}}\n  -inf,{{ra}}: ?{{if:a>0|-|+}}\n  {{ra}}: ?z\n  {{ra}},{{rb}}: ?{{if:a>0|+|-}}\n  {{rb}},+inf: ?{{if:a>0|+|-}}\n  {{rb}}: ?rien\n\nsign: {{if:c==-1|-|}}{{if:c*c>1|{{c}}|}}x{{d;+}}\n  -inf,{{ra}}: ?{{if:c>0|-|+}}\n  {{ra}},{{rb}}: ?{{if:c>0|-|+}}\n  {{rb}}: ?z\n  {{rb}},+inf: ?{{if:c>0|+|-}}\n  {{ra}}: ?rien\n\nsign: B(x)\n  -inf,{{ra}}: ?{{if:ac>0|+|-}}\n  {{ra}}: ?z\n  {{ra}},{{rb}}: ?{{if:ac>0|-|+}}\n  {{rb}}: ?||\n  {{rb}},+inf: ?{{if:ac>0|+|-}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "ra",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-(a)*(ra)"
+				},
+				{
+					"name": "c",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "rb",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "d",
+					"expression": "eval:-(c)*(rb)"
+				},
+				{
+					"name": "ac",
+					"expression": "eval:(a)*(c)"
+				}
+			],
+			"conditions": ["ra < rb"],
+			"correction": {
+				"steps": [
+					"Le numérateur ${{a}}x{{b;+}}$ s'annule en $\\textcolor{{{color:primary.1}}}{{{ra}}}$ : $B$ y vaut $0$. Le dénominateur ${{c}}x{{d;+}}$ s'annule en $\\textcolor{{{color:primary.1}}}{{{rb}}}$ : c'est la **valeur interdite**, marquée d'une double barre.",
+					"Le signe d'un quotient suit la même règle que celui d'un produit. Dans chaque colonne, on applique la **règle des signes** : deux signes identiques donnent $+$, deux signes contraires donnent $-$.",
+					"```variation\nvariable: x\ndomain: -inf, {{ra}}, {{rb}}, +inf\n\nsign: {{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}x{{b;+}}\n  -inf,{{ra}}: {{if:a>0|-|+}}\n  {{ra}}: z\n  {{ra}},{{rb}}: {{if:a>0|+|-}}\n  {{rb}},+inf: {{if:a>0|+|-}}\n\nsign: {{if:c==-1|-|}}{{if:c*c>1|{{c}}|}}x{{d;+}}\n  -inf,{{ra}}: {{if:c>0|-|+}}\n  {{ra}},{{rb}}: {{if:c>0|-|+}}\n  {{rb}}: z\n  {{rb}},+inf: {{if:c>0|+|-}}\n\nsign: B(x)\n  -inf,{{ra}}: {{if:ac>0|+|-}}\n  {{ra}}: z\n  {{ra}},{{rb}}: {{if:ac>0|-|+}}\n  {{rb}}: ||\n  {{rb}},+inf: {{if:ac>0|+|-}}\n```"
+				]
+			}
+		},
+		{
+			"statement": "Complète le tableau de signes de $B(x)=\\dfrac{ {{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}x{{b;+}} }{ {{if:c==-1|-|}}{{if:c*c>1|{{c}}|}}x{{d;+}} }$.\n\n```variation\nvariable: x\ndomain: -inf, ?{{rb}}, ?{{ra}}, +inf\n\nsign: {{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}x{{b;+}}\n  -inf,{{rb}}: ?{{if:a>0|-|+}}\n  {{rb}},{{ra}}: ?{{if:a>0|-|+}}\n  {{ra}}: ?z\n  {{ra}},+inf: ?{{if:a>0|+|-}}\n  {{rb}}: ?rien\n\nsign: {{if:c==-1|-|}}{{if:c*c>1|{{c}}|}}x{{d;+}}\n  -inf,{{rb}}: ?{{if:c>0|-|+}}\n  {{rb}}: ?z\n  {{rb}},{{ra}}: ?{{if:c>0|+|-}}\n  {{ra}},+inf: ?{{if:c>0|+|-}}\n  {{ra}}: ?rien\n\nsign: B(x)\n  -inf,{{rb}}: ?{{if:ac>0|+|-}}\n  {{rb}}: ?||\n  {{rb}},{{ra}}: ?{{if:ac>0|-|+}}\n  {{ra}}: ?z\n  {{ra}},+inf: ?{{if:ac>0|+|-}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "ra",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-(a)*(ra)"
+				},
+				{
+					"name": "c",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "rb",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "d",
+					"expression": "eval:-(c)*(rb)"
+				},
+				{
+					"name": "ac",
+					"expression": "eval:(a)*(c)"
+				}
+			],
+			"conditions": ["ra > rb"],
+			"correction": {
+				"steps": [
+					"Le numérateur ${{a}}x{{b;+}}$ s'annule en $\\textcolor{{{color:primary.1}}}{{{ra}}}$ : $B$ y vaut $0$. Le dénominateur ${{c}}x{{d;+}}$ s'annule en $\\textcolor{{{color:primary.1}}}{{{rb}}}$ : c'est la **valeur interdite**, marquée d'une double barre.",
+					"Le signe d'un quotient suit la même règle que celui d'un produit. Dans chaque colonne, on applique la **règle des signes** : deux signes identiques donnent $+$, deux signes contraires donnent $-$.",
+					"```variation\nvariable: x\ndomain: -inf, {{rb}}, {{ra}}, +inf\n\nsign: {{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}x{{b;+}}\n  -inf,{{rb}}: {{if:a>0|-|+}}\n  {{rb}},{{ra}}: {{if:a>0|-|+}}\n  {{ra}}: z\n  {{ra}},+inf: {{if:a>0|+|-}}\n\nsign: {{if:c==-1|-|}}{{if:c*c>1|{{c}}|}}x{{d;+}}\n  -inf,{{rb}}: {{if:c>0|-|+}}\n  {{rb}}: z\n  {{rb}},{{ra}}: {{if:c>0|+|-}}\n  {{ra}},+inf: {{if:c>0|+|-}}\n\nsign: B(x)\n  -inf,{{rb}}: {{if:ac>0|+|-}}\n  {{rb}}: ||\n  {{rb}},{{ra}}: {{if:ac>0|-|+}}\n  {{ra}}: z\n  {{ra}},+inf: {{if:ac>0|+|-}}\n```"
+				]
+			}
+		},
+		{
+			"statement": "Voici les signes du numérateur et du dénominateur de $B(x)=\\dfrac{ {{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}x{{b;+}} }{ {{if:c==-1|-|}}{{if:c*c>1|{{c}}|}}x{{d;+}} }$. Complète la ligne de $B(x)$.\n\n```variation\nvariable: x\ndomain: -inf, {{ra}}, {{rb}}, +inf\n\nsign: {{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}x{{b;+}}\n  -inf,{{ra}}: {{if:a>0|-|+}}\n  {{ra}}: z\n  {{ra}},{{rb}}: {{if:a>0|+|-}}\n  {{rb}},+inf: {{if:a>0|+|-}}\n\nsign: {{if:c==-1|-|}}{{if:c*c>1|{{c}}|}}x{{d;+}}\n  -inf,{{ra}}: {{if:c>0|-|+}}\n  {{ra}},{{rb}}: {{if:c>0|-|+}}\n  {{rb}}: z\n  {{rb}},+inf: {{if:c>0|+|-}}\n\nsign: B(x)\n  -inf,{{ra}}: ?{{if:ac>0|+|-}}\n  {{ra}}: ?z\n  {{ra}},{{rb}}: ?{{if:ac>0|-|+}}\n  {{rb}}: ?||\n  {{rb}},+inf: ?{{if:ac>0|+|-}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "ra",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-(a)*(ra)"
+				},
+				{
+					"name": "c",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "rb",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "d",
+					"expression": "eval:-(c)*(rb)"
+				},
+				{
+					"name": "ac",
+					"expression": "eval:(a)*(c)"
+				}
+			],
+			"conditions": ["ra < rb"],
+			"correction": {
+				"steps": [
+					"Dans chaque colonne, on applique la **règle des signes** : deux signes identiques donnent $+$, deux signes contraires donnent $-$.",
+					"En ${{rb}}$ le dénominateur est nul : $B({{rb}})$ n'existe pas, d'où la $\\textcolor{{{color:primary.0}}}{\\text{double barre}}$.",
+					"```variation\nvariable: x\ndomain: -inf, {{ra}}, {{rb}}, +inf\n\nsign: {{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}x{{b;+}}\n  -inf,{{ra}}: {{if:a>0|-|+}}\n  {{ra}}: z\n  {{ra}},{{rb}}: {{if:a>0|+|-}}\n  {{rb}},+inf: {{if:a>0|+|-}}\n\nsign: {{if:c==-1|-|}}{{if:c*c>1|{{c}}|}}x{{d;+}}\n  -inf,{{ra}}: {{if:c>0|-|+}}\n  {{ra}},{{rb}}: {{if:c>0|-|+}}\n  {{rb}}: z\n  {{rb}},+inf: {{if:c>0|+|-}}\n\nsign: B(x)\n  -inf,{{ra}}: {{if:ac>0|+|-}}\n  {{ra}}: z\n  {{ra}},{{rb}}: {{if:ac>0|-|+}}\n  {{rb}}: ||\n  {{rb}},+inf: {{if:ac>0|+|-}}\n```"
+				]
+			}
+		},
+		{
+			"statement": "Voici les signes du numérateur et du dénominateur de $B(x)=\\dfrac{ {{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}x{{b;+}} }{ {{if:c==-1|-|}}{{if:c*c>1|{{c}}|}}x{{d;+}} }$. Complète la ligne de $B(x)$.\n\n```variation\nvariable: x\ndomain: -inf, {{rb}}, {{ra}}, +inf\n\nsign: {{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}x{{b;+}}\n  -inf,{{rb}}: {{if:a>0|-|+}}\n  {{rb}},{{ra}}: {{if:a>0|-|+}}\n  {{ra}}: z\n  {{ra}},+inf: {{if:a>0|+|-}}\n\nsign: {{if:c==-1|-|}}{{if:c*c>1|{{c}}|}}x{{d;+}}\n  -inf,{{rb}}: {{if:c>0|-|+}}\n  {{rb}}: z\n  {{rb}},{{ra}}: {{if:c>0|+|-}}\n  {{ra}},+inf: {{if:c>0|+|-}}\n\nsign: B(x)\n  -inf,{{rb}}: ?{{if:ac>0|+|-}}\n  {{rb}}: ?||\n  {{rb}},{{ra}}: ?{{if:ac>0|-|+}}\n  {{ra}}: ?z\n  {{ra}},+inf: ?{{if:ac>0|+|-}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "ra",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-(a)*(ra)"
+				},
+				{
+					"name": "c",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "rb",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "d",
+					"expression": "eval:-(c)*(rb)"
+				},
+				{
+					"name": "ac",
+					"expression": "eval:(a)*(c)"
+				}
+			],
+			"conditions": ["ra > rb"],
+			"correction": {
+				"steps": [
+					"Dans chaque colonne, on applique la **règle des signes** : deux signes identiques donnent $+$, deux signes contraires donnent $-$.",
+					"En ${{rb}}$ le dénominateur est nul : $B({{rb}})$ n'existe pas, d'où la $\\textcolor{{{color:primary.0}}}{\\text{double barre}}$.",
+					"```variation\nvariable: x\ndomain: -inf, {{rb}}, {{ra}}, +inf\n\nsign: {{if:a==-1|-|}}{{if:a*a>1|{{a}}|}}x{{b;+}}\n  -inf,{{rb}}: {{if:a>0|-|+}}\n  {{rb}},{{ra}}: {{if:a>0|-|+}}\n  {{ra}}: z\n  {{ra}},+inf: {{if:a>0|+|-}}\n\nsign: {{if:c==-1|-|}}{{if:c*c>1|{{c}}|}}x{{d;+}}\n  -inf,{{rb}}: {{if:c>0|-|+}}\n  {{rb}}: z\n  {{rb}},{{ra}}: {{if:c>0|+|-}}\n  {{ra}},+inf: {{if:c>0|+|-}}\n\nsign: B(x)\n  -inf,{{rb}}: {{if:ac>0|+|-}}\n  {{rb}}: ||\n  {{rb}},{{ra}}: {{if:ac>0|-|+}}\n  {{ra}}: z\n  {{ra}},+inf: {{if:ac>0|+|-}}\n```"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(2x+2)/(−x+3) : −1, 3 ; B : − 0 + || −",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"ra": "-1",
+				"b": "2",
+				"c": "-1",
+				"rb": "3",
+				"d": "3",
+				"ac": "-2"
+			},
+			"answers": [
+				"-1",
+				"3",
+				"-",
+				"z",
+				"+",
+				"rien",
+				"+",
+				"+",
+				"rien",
+				"+",
+				"z",
+				"-",
+				"-",
+				"z",
+				"+",
+				"||",
+				"-"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : zéro et valeur interdite échangés",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"ra": "-1",
+				"b": "2",
+				"c": "-1",
+				"rb": "3",
+				"d": "3",
+				"ac": "-2"
+			},
+			"answers": [
+				"-1",
+				"3",
+				"-",
+				"z",
+				"+",
+				"rien",
+				"+",
+				"+",
+				"rien",
+				"+",
+				"z",
+				"-",
+				"-",
+				"||",
+				"+",
+				"z",
+				"-"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0 sous la valeur interdite",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"ra": "-1",
+				"b": "2",
+				"c": "-1",
+				"rb": "3",
+				"d": "3",
+				"ac": "-2"
+			},
+			"answers": [
+				"-1",
+				"3",
+				"-",
+				"z",
+				"+",
+				"rien",
+				"+",
+				"+",
+				"rien",
+				"+",
+				"z",
+				"-",
+				"-",
+				"z",
+				"+",
+				"z",
+				"-"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : double barre dans la ligne du dénominateur",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"ra": "-1",
+				"b": "2",
+				"c": "-1",
+				"rb": "3",
+				"d": "3",
+				"ac": "-2"
+			},
+			"answers": [
+				"-1",
+				"3",
+				"-",
+				"z",
+				"+",
+				"rien",
+				"+",
+				"+",
+				"rien",
+				"+",
+				"||",
+				"-",
+				"-",
+				"z",
+				"+",
+				"||",
+				"-"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(x−4)/(3x+6) : −2, 4 ; B : + || − 0 +",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"ra": "4",
+				"b": "-4",
+				"c": "3",
+				"rb": "-2",
+				"d": "6",
+				"ac": "3"
+			},
+			"answers": [
+				"-2",
+				"4",
+				"-",
+				"rien",
+				"-",
+				"z",
+				"+",
+				"-",
+				"z",
+				"+",
+				"rien",
+				"+",
+				"+",
+				"||",
+				"-",
+				"z",
+				"+"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ordre 4, −2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"ra": "4",
+				"b": "-4",
+				"c": "3",
+				"rb": "-2",
+				"d": "6",
+				"ac": "3"
+			},
+			"answers": [
+				"4",
+				"-2",
+				"-",
+				"rien",
+				"-",
+				"z",
+				"+",
+				"-",
+				"z",
+				"+",
+				"rien",
+				"+",
+				"+",
+				"||",
+				"-",
+				"z",
+				"+"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Lire : − 0 + || −",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"ra": "-1",
+				"b": "2",
+				"c": "-1",
+				"rb": "3",
+				"d": "3",
+				"ac": "-2"
+			},
+			"answers": ["-", "z", "+", "||", "-"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0 sous la valeur interdite",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"ra": "-1",
+				"b": "2",
+				"c": "-1",
+				"rb": "3",
+				"d": "3",
+				"ac": "-2"
+			},
+			"answers": ["-", "z", "+", "z", "-"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Lire (ordre inverse) : + || − 0 +",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"ra": "4",
+				"b": "-4",
+				"c": "3",
+				"rb": "-2",
+				"d": "6",
+				"ac": "3"
+			},
+			"answers": ["+", "||", "-", "z", "+"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signes inversés",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"ra": "4",
+				"b": "-4",
+				"c": "3",
+				"rb": "-2",
+				"d": "6",
+				"ac": "3"
+			},
+			"answers": ["-", "||", "+", "z", "-"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

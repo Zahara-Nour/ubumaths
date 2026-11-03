@@ -9,21 +9,18 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2297 (PR 4 mergée)._
+_Mis à jour le 2026-11-03, réécriture de 2-330 et 2-446 en cours._
 
-- **État** : outil complet — PR 1 (#2267 ubumark), 2 (#2273 génération, juge, masquage), 3 (#2287 saisie),
-  4 (#2297 corrigé, série PDF, page à cocher) mergées.
-- **Prochaine action** : réécrire les modèles 2-330 et 2-446 avec le tableau à compléter (Q6), page à
-  cocher pour David, publication ; puis verser le chantier (`docs/systeme/` à jour,
-  journal archivé). Nouveau worktree `git worktree add -b feat/tableau-signes-modeles
-../ubumaths-wt-tableau-signes origin/main`.
-- **Tranché (David, 2026-11-03, « je valide »)** : marque cachée au PDF = trait nu (vartable non patché) ;
-  essais iPhone (#2287, #2297) en une fois, APRÈS la réécriture de 330 et 446 ; parseur `]a[, +inf` →
-  ligne 12 de `outils-manquants.md`, non corrigé.
+- **État** : branche `feat/tableau-signes-modeles` : 2-330 et 2-446 réécrits (tableau à compléter),
+  lot `tableau-signes-2de` d'`update-published-questions.ts` (+ `delay` écrit) ; specs 17/17 et 10/10.
+- **Prochaine action** : voir les deux modèles à l'écran (base locale), PR, page à cocher, simulation puis
+  `--publier` par David ; essais iPhone (#2287, #2297) ; puis verser le chantier.
+- **Tranché (David, 2026-11-03)** : réécriture = tout caché (17 cases), ligne de k gardée, 180 s ; marque
+  cachée au PDF = trait nu ; parseur `]a[, +inf` → ligne 12 de `outils-manquants.md`.
 - **En attente de David** : rien.
 - **Pièges en cours** : la bonne réponse vient de `blanks`, jamais du bloc (énoncé masqué) ; une case
-  hors `$…$` (`?` nu) n'est pas une case ; `domain: ]a[, +inf` mal découpé par le parseur (hors chantier).
-- **Worktree / branche** : aucun (à recréer).
+  hors `$…$` (`?` nu) n'est pas une case ; un worktree neuf veut `svelte-kit sync` avant `question:specs`.
+- **Worktree / branche** : `../ubumaths-wt-tableau-signes`, `feat/tableau-signes-modeles`.
 
 ---
 
@@ -193,3 +190,25 @@ construire héritent d'`answerKind`, unité, précision, `requiredForm`), mais *
   `check:incremental` 0.
 - Vu dans Chrome : impossible (l'extension n'atteint pas `localhost:5177`, page d'erreur) ; serveur de la
   branche laissé sur 5177.
+
+## Réécriture de 2-330 et 2-446 (2026-11-03)
+
+Branche `feat/tableau-signes-modeles`, worktree `../ubumaths-wt-tableau-signes`.
+
+- **Phase 0 validée par David** : variations « dresser » = **tout caché** (valeurs de x, 9 signes, 6 marques ;
+  `?rien` là où un facteur ne s'annule pas : 17 cases), étiquettes données ; k(ax + b) = **trois lignes**
+  (k, facteur, produit : 10 cases) ; « lire » = ligne du produit / quotient seule (5 cases) ; plus de case
+  sous le tableau ni de `blanks` ; **180 s** (au lieu de 90) ; titre, catégorie, niveau, variables,
+  conditions, corrigés inchangés.
+- Prod relue (MCP) : f0163416 (2-330) et 9c7ab1c7 (2-446) **publiés** ; empreintes md5 de `variations`,
+  `test_specs`, `shared` identiques aux fichiers du dépôt → instantanés construits depuis eux.
+- Script `docs/wip/tableau-signes/reecrire-330-446.py` (source lue au commit 2d2343108) : le tableau du
+  corrigé, préfixé de `?` → énoncé ; specs réécrites en cases (−b/a, ordre, signe de a seul, 0 du mauvais
+  facteur, constante oubliée, 0 sous la valeur interdite, zéro et valeur interdite échangés, double barre
+  dans la ligne du dénominateur, `0` tapé = `z`). Sorties : `scripts/questions/2de-signes-b/01`, `02` et
+  `scripts/questions/2de-tableau-signes-existants/<id8>.json`.
+- `update-published-questions.ts` : lot `tableau-signes-2de` ; **`delay` passe des champs figés aux champs
+  écrits** (il était comparé, donc le 180 s aurait arrêté le script).
+- `question:specs` : 17/17 et 10/10, 500/500 tirages. Preuve rouge (nouvelles specs, ancien contenu) :
+  toutes les specs « correct » rouges (10/17 et 6/10 vertes = les « incorrect »).
+- Base locale : `create-questions --publier --mettre-a-jour` (brouillons locaux 7bee0067, 39c39209).
