@@ -6,7 +6,7 @@
  * le 2026-11-02 par scripts/create-questions.ts (sans nœud ni tag), vont sur un nœud existant (une
  * sous-notion, ou la NOTION « y′ = ay + b » pour TSPE-466, dont les sous-notions sont archivées) et
  * reçoivent leur point (TSPE-463, 603, 604, 605, 606, 466, 484).
- * Phase 0 validée par David le 2026-11-02 (D-L8, journal docs/wip/questions-tspe-restes-progress.md).
+ * Phase 0 validée par David le 2026-11-02 (D-L8, journal docs/archive/wip/questions-tspe-restes-progress.md).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, en [T_SPE], sans nœud ni tag — puis rejoue la migration

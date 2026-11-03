@@ -1,6 +1,6 @@
 {
 	"title": "Tracer une droite donnée par son équation réduite",
-	"description": "Choisir la droite tracée qui représente y = mx + p, pente entière puis fractionnaire (pièges : signe de la pente, m et p échangés, pente inversée, signe de p)",
+	"description": "Tracer la droite y = mx + p dans un repère (deux points posés), pente entière puis fractionnaire (pièges : signe de la pente, m et p échangés, pente inversée, signe de p)",
 	"grades": ["2"],
 	"theme": "Géométrie",
 	"domain": "Droites du plan",
@@ -16,7 +16,7 @@
 	},
 	"variations": [
 		{
-			"statement": "Dans un repère du plan, on considère la droite $d$ d'équation $y={{m}}x{{p;+}}$.\n\nQuelle figure représente la droite $d$ ?\n\n````choix\n- ```courbe\n  x: -6 ; 6\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = ({{m}})*x+({{p}})   bleu   nom=d\n  taille: petite\n  description: Droite passant par les points (0 ; {{eval:(p)}}) et (1 ; {{eval:(p)+(m)}}).\n  ```\n- ```courbe\n  x: -6 ; 6\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = ({{eval:-(m)}})*x+({{p}})   bleu   nom=d\n  taille: petite\n  description: Droite passant par les points (0 ; {{eval:(p)}}) et (1 ; {{eval:(p)+-(m)}}).\n  ```\n- ```courbe\n  x: -6 ; 6\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = ({{p}})*x+({{m}})   bleu   nom=d\n  taille: petite\n  description: Droite passant par les points (0 ; {{eval:(m)}}) et (1 ; {{eval:(m)+(p)}}).\n  ```\n- ```courbe\n  x: -6 ; 6\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = ({{m}})*x+({{eval:-(p)}})   bleu   nom=d\n  taille: petite\n  description: Droite passant par les points (0 ; {{eval:-(p)}}) et (1 ; {{eval:-(p)+(m)}}).\n  ```\n````",
+			"statement": "Dans un repère du plan, on considère la droite $d$ d'équation $y={{m}}x{{p;+}}$.\n\nTrace la droite $d$ : place deux de ses points.\n\n```courbe\nx: -6 ; 6\ny: -6 ; 6\ngrille: 1 ; 1\ntracer: y = {{m}}x + {{p}}\ntaille: moyenne\ndescription: Repère gradué de 1 en 1, de −6 à 6 sur les deux axes.\n```",
 			"variables": [
 				{
 					"name": "m",
@@ -28,11 +28,6 @@
 				}
 			],
 			"conditions": ["m != p", "abs((p)+(m)) <= 6", "abs((m)-(p)) <= 6"],
-			"blanks": [
-				{
-					"expectedAnswer": "0"
-				}
-			],
 			"correction": {
 				"steps": [
 					"Pour tracer $y=mx+p$ : on place le point $(0\\,;\\,p)$ sur l'axe des ordonnées, puis, en avançant de $1$, on monte de $m$ (on descend si $m<0$).",
@@ -42,7 +37,7 @@
 			}
 		},
 		{
-			"statement": "Dans un repère du plan, on considère la droite $d$ d'équation $y={{if:n<0|-}}\\dfrac{ {{eval:abs(n)}} }{ {{q}} }x{{p;+}}$.\n\nQuelle figure représente la droite $d$ ?\n\n````choix\n- ```courbe\n  x: -6 ; 6\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = ({{n}})/({{q}})*x+({{p}})   bleu   nom=d\n  taille: petite\n  description: Droite passant par les points (0 ; {{p}}) et ({{q}} ; {{eval:(p)+(n)}}).\n  ```\n- ```courbe\n  x: -6 ; 6\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = ({{eval:-(n)}})/({{q}})*x+({{p}})   bleu   nom=d\n  taille: petite\n  description: Droite passant par les points (0 ; {{p}}) et ({{q}} ; {{eval:(p)-(n)}}).\n  ```\n- ```courbe\n  x: -6 ; 6\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = ({{q}})/({{n}})*x+({{p}})   bleu   nom=d\n  taille: petite\n  description: Droite passant par les points (0 ; {{p}}) et ({{eval:abs(n)}} ; {{eval:(p)+(q)*abs(n)/(n)}}).\n  ```\n- ```courbe\n  x: -6 ; 6\n  y: -6 ; 6\n  grille: 1 ; 1\n  f(x) = ({{n}})/({{q}})*x+({{eval:-(p)}})   bleu   nom=d\n  taille: petite\n  description: Droite passant par les points (0 ; {{eval:-(p)}}) et ({{q}} ; {{eval:(n)-(p)}}).\n  ```\n````",
+			"statement": "Dans un repère du plan, on considère la droite $d$ d'équation $y={{if:n<0|-}}\\dfrac{ {{eval:abs(n)}} }{ {{q}} }x{{p;+}}$.\n\nTrace la droite $d$ : place deux de ses points.\n\n```courbe\nx: -6 ; 6\ny: -6 ; 6\ngrille: 1 ; 1\ntracer: y = {{n}}/{{q}}x + {{p}}\ntaille: moyenne\ndescription: Repère gradué de 1 en 1, de −6 à 6 sur les deux axes.\n```",
 			"variables": [
 				{
 					"name": "q",
@@ -58,11 +53,6 @@
 				}
 			],
 			"conditions": ["mod(n, q) != 0", "abs((p)+(n)) <= 5", "abs((p)-(n)) <= 5"],
-			"blanks": [
-				{
-					"expectedAnswer": "0"
-				}
-			],
 			"correction": {
 				"steps": [
 					"Pour tracer $y=mx+p$ : on place le point $(0\\,;\\,p)$ sur l'axe des ordonnées, puis, en avançant de $1$, on monte de $m$ (on descend si $m<0$).",
@@ -74,15 +64,39 @@
 	],
 	"testSpecs": [
 		{
-			"description": "y = 2x − 1 : la bonne",
+			"description": "y = 2x − 1 : (0 ; −1) et (1 ; 1)",
 			"variationIndex": 0,
 			"variables": {
 				"m": "2",
 				"p": "-1"
 			},
-			"answers": ["0"],
+			"answers": ["0;-1/1;1"],
 			"expected": {
 				"status": "correct"
+			}
+		},
+		{
+			"description": "y = 2x − 1 : deux autres points",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"p": "-1"
+			},
+			"answers": ["2;3/-1;-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : pente opposée",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"p": "-1"
+			},
+			"answers": ["0;-1/1;-3"],
+			"expected": {
+				"status": "incorrect"
 			}
 		},
 		{
@@ -92,20 +106,69 @@
 				"m": "2",
 				"p": "-1"
 			},
-			"answers": ["2"],
+			"answers": ["0;2/1;1"],
 			"expected": {
 				"status": "incorrect"
 			}
 		},
 		{
-			"description": "y = 2/3 x + 1 : la bonne",
+			"description": "Erreur : signe de p",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"p": "-1"
+			},
+			"answers": ["0;1/1;3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Un seul point posé",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"p": "-1"
+			},
+			"answers": ["0;-1/"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Deux fois le même point",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"p": "-1"
+			},
+			"answers": ["0;-1/0;-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "y = 2/3 x + 1 : (0 ; 1) et (3 ; 3)",
 			"variationIndex": 1,
 			"variables": {
 				"q": "3",
 				"n": "2",
 				"p": "1"
 			},
-			"answers": ["0"],
+			"answers": ["0;1/3;3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "y = 2/3 x + 1 : deux autres points",
+			"variationIndex": 1,
+			"variables": {
+				"q": "3",
+				"n": "2",
+				"p": "1"
+			},
+			"answers": ["-3;-1/6;5"],
 			"expected": {
 				"status": "correct"
 			}
@@ -118,7 +181,33 @@
 				"n": "2",
 				"p": "1"
 			},
-			"answers": ["2"],
+			"answers": ["0;1/2;4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : pente opposée",
+			"variationIndex": 1,
+			"variables": {
+				"q": "3",
+				"n": "2",
+				"p": "1"
+			},
+			"answers": ["0;1/3;-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signe de p",
+			"variationIndex": 1,
+			"variables": {
+				"q": "3",
+				"n": "2",
+				"p": "1"
+			},
+			"answers": ["0;-1/3;1"],
 			"expected": {
 				"status": "incorrect"
 			}

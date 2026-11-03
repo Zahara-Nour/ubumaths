@@ -200,7 +200,8 @@ describe('les refus', () => {
 
 describe('x^-1, 2^-1, a^-1, f(x)^-1 restent des puissances', () => {
 	it.each([
-		['x^-1', 'x^{-1}'],
+		// La puissance, rangée comme à l'écran (décision D du lot 2 de `registre-reference`)
+		['x^-1', '1/x'],
 		['2^-1', '1/2']
 	])('%s → %s', (input, text) => {
 		const desk = deskWith('f(x) = 2x+3', input);

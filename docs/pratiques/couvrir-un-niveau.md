@@ -342,6 +342,25 @@ scripts/questions/<niveau>-0-<thème> --ids <id8>,…` ; chaque fichier porte so
   `{E(X)}^2` ; tableau de variations à borne ouverte : `domain: ]0, [a, [+inf[` (le parseur ne coupe
   qu'avant un crochet). Les choix sont mélangés à l'affichage : le corrigé nomme la bonne réponse,
   jamais son rang.
+- **Rendu, suite** (Tle spé) : `cleanCoefficients` ne nettoie que les formules que le moteur sait
+  analyser (`(E) : y′ = …`, `x ↦ …` gardent « +-2x », « 1x³ ») → signes écrits par le gabarit
+  (`coef()`, `terme()` de `docs/wip/questions/lot-tspe-integrales-primitives.py`) ; il réécrit
+  `P_{A}(B)` en « P_A B » et `(E)` en « E » → phrase sans formule. `!=` dans `$…$` est lu « ≠ »
+  (`3!=6` → « 3 ≠ 6 ») : écrire `3!\,=6`. Couleur toujours dans `$…$`. `|x|` dans un `{{if:}}`
+  coupe la condition → `\lvert x\rvert`. `{{eval:…}}` peut rendre `\dfrac{1}{2}`, illisible dans un
+  ` ```courbe ` ; `round(…, 1)` est refusé par `eval`. `$i$` nu est rendu `\imaginaryI`. Sur le cercle
+  ` ```trig `, `{{p}}*pi/6` s'affiche sans simplification (précalculer la fraction). Étiquette de
+  ` ```probtree ` sans `\` écrite en texte (« G_1 ») → `\mathrm{G}_1` (ligne 11 d'
+  [outils-manquants.md](../wip/outils-manquants.md)).
+- **`sonde-courbes` ne voit pas les courbes d'une case choix** : les relire dans l'aperçu.
+- **Tag : le point doit être sur le nœud du modèle OU sur sa notion** (`question_template_points_check_rules`) :
+  une migration de tags écrite sans cette règle a vu 8 tags sur 13 refusés (Tle spé, Q3). Relever les
+  nœuds avec `archived_at is null`. Modèle rangé sur une notion : la garde « notion sans
+  sous-notion » liste les sous-notions admises (`sous_notions_admises`, migration
+  `20261102181059`).
+- **Niveau qui chevauche** (`T_SPE` + `T_COMP`, 81 modèles) : tirer contre les **deux** bornes.
+- Migration de données : la garde de doc veut `Doc-inchangée: migration de données, aucun code
+couvert` dans un **commit** de la PR, pas dans son corps.
 - **Droite à tracer** (` ```courbe tracer:`) : attendue en **forme réduite** (`(s)*x+(p)`), car le message
   d'erreur et le corrigé l'affichent telle quelle (`s*(x-a)+b` → « y = 2 + (1 − x)/2 », « y = 1, soit y = 1 ») ;
   une tangente à tracer : **jamais** la clé `tangente:` dans l'énoncé (elle dessinerait la réponse), la courbe

@@ -10,7 +10,7 @@ couvre:
 # L'atelier (et `/grapheur`)
 
 > Synthèse des journaux archivés `docs/archive/wip/atelier-*`. Syntaxe des commandes de Calcul :
-> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; π au numérateur d'un périmètre, #1634, 2026-10-24 ; espaces de groupement dès 5 chiffres, 2026-10-23 ; étapes de `.résoudre` écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; ouvrir dans l'atelier depuis Python, 2026-10-25 ; ligne réservée sous la barre de la grille et libellé de « Résoudre », 2026-10-26 ; conditions sur la lettre, points irrationnels, `tan`/`arcsin`, `avec x ≥ e`, tidy-conditions § 5 PR A, 2026-10-26 ; Partager et Enregistrer d'une grille seule, confirmation de Charger, `X suit …` tapé, 2026-10-26 ; valeurs remarquables et degrés de `.simplifier`, `.développer`, `.résoudre`, 2026-10-27).
+> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; lecture des degrés et de `π` partagée avec le registre, 2026-11-03 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; π au numérateur d'un périmètre, #1634, 2026-10-24 ; espaces de groupement dès 5 chiffres, 2026-10-23 ; étapes de `.résoudre` écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; ouvrir dans l'atelier depuis Python, 2026-10-25 ; ligne réservée sous la barre de la grille et libellé de « Résoudre », 2026-10-26 ; conditions sur la lettre, points irrationnels, `tan`/`arcsin`, `avec x ≥ e`, tidy-conditions § 5 PR A, 2026-10-26 ; Partager et Enregistrer d'une grille seule, confirmation de Charger, `X suit …` tapé, 2026-10-26 ; valeurs remarquables et degrés de `.simplifier`, `.développer`, `.résoudre`, 2026-10-27).
 
 ## À quoi ça sert
 
@@ -353,7 +353,8 @@ erreur avec son message (`quantityProblem`) ; une fonction ne refuse qu'un angle
 (`hasBareAngle` : `cos(angle(…))·x` passe, `T·x` non) ; la grille dit « T est une grandeur (un
 angle) » ; une ligne de mesure écrit `π`, `vrai`/`faux` sans « ≈ », et refuse une puissance d'un
 angle (choix prudent) ; le champ de la carte montre `\operatorname{aire}` (`measureFieldLatex`). Dans l'arbre substitué d'un objet, un angle mesuré pris
-par un sin, cos, tan devient un nombre de radians (`angle-radians.ts`) : le moteur n'évalue pas le
+par un sin, cos, tan devient un nombre de radians (`angle-radians.ts`, dont la réduction sur l'arbre,
+`radiansInTrigonometry`, vit dans `mathAST/cli/core/angle-radians.ts`) : le moteur n'évalue pas le
 cosinus d'une grandeur dans une fonction (`g(x) = cos(R)·x`, R = 90°). La carte recopie le mode
 de la console (`Atelier.calcMode`, posé par le pupitre après chaque saisie). Revue (2026-10-18) : une mesure se cite aussi
 dans les nombres d'une construction (`cercle(A ; AM)`) et dans des coordonnées (`G = (aire(B, C, D) ;
@@ -369,7 +370,8 @@ ne s'arrête pas quand deux sommets se rejoignent au glisser ; une valeur APPROC
 en pleine précision et toute ligne qui la cite, même par un autre objet (`approximateNames`), se dit
 `≈`, 4 décimales, jamais en fraction.
 
-**Écrire un angle en degrés** (`degrees.ts`, 2026-10-19) : comme sur la copie. Un `°` collé
+**Écrire un angle en degrés** (`degrees.ts`, 2026-10-19 ; dans `mathAST/cli/core/` depuis le
+2026-11-03 : le registre lit la ligne de la même façon, `typed-line.ts`) : comme sur la copie. Un `°` collé
 après un nombre, un nom ou une parenthèse fermante est l'unité degré (`60[°]`, π/180 rad) —
 `cos(60°)` → `1/2`, `a = 60°`, `cos(a°)` avec a = 60, `cos((30+30)°)`, `60 °` aussi. En LaTeX,
 `60^\circ`, `60^{\circ}`, `60{}^{\circ}` et `60\degree` (ce que MathLive écrit quand on tape `°`,
@@ -948,7 +950,8 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   être calculé, `médiane(L)` lu « Fonction inconnue : diane » (2026-10-15) ; `max`, `min`, `abs`,
   `ln`, `exp`, que Calcul connaît, restent des calculs, comme un nom de deux lettres sans point
   (`nb(…)`, `si(…)` : des produits, la règle de `readFunctionCall`). `pi` en lettres est refusé dans la grille
-  comme dans Calcul (`PI_IN_LETTERS`, `names.ts`, décision de David du 2026-10-06), et dans la
+  comme dans Calcul (`PI_IN_LETTERS`, `mathAST/cli/core/typed-line.ts`, partagé avec le registre,
+  décision de David du 2026-10-06), et dans la
   grille en toutes casses (`=PI`, `=Pi`) hors des guillemets ; `PI()` et `π` restent lus. `plainSyntax` ramène au tableur les guillemets
   courbes ou français (`“fille”`, `«fille»` : la ponctuation intelligente de l'iPad) et `≤ ≥ ≠` ;
   la barre et les cases ont `autocorrect="off"`. Le critère de NB.SI peut être une case seule, dont
@@ -1274,7 +1277,10 @@ du registre déclare sa **réponse brute** dans le champ `answer` de `WebReplEng
 de la réponse seule, exacte dans les deux modes) et, pour un calcul tapé ou une grandeur seule,
 son **écriture décimale** dans `decimal` (au point, en LaTeX comme `answer`, sans `=` ni `≈`, moins
 compris, arrondie selon Q3, même pour un nombre déjà écrit) et `decimalExact` (`=` ou `≈`) — décisions A et B du lot 2 : le mode
-décimal est un choix d'affichage de l'outil, qui pose `=`/`≈`, la virgule et le `×`. L'Atelier
+décimal est un choix d'affichage de l'outil, qui pose `=`/`≈`, la virgule et le `×`. Une
+expression à lettres non liées répond par sa **forme rangée**, celle de l'écran (`tidy`, ordre
+de l'élève, S3 : `x/x` gardé ; décision D, 2026-11-03), dans `answer` et dans le texte ; son `ast`
+reste l'entrée lue, que `resultToShow` range. L'Atelier
 l'habille, il ne la remplace pas. Le contrat est le corpus
 `tests/fixtures/mathast/registre-corpus.ts`, joué contre le registre et contre la ligne affichée
 par l'Atelier (`src/lib/mathAST/cli/__tests__/registre-corpus/`, `src/lib/atelier/__tests__/registre-corpus.test.ts`) ;

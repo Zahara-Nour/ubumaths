@@ -10,17 +10,20 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR 1 en cours (pas encore ouverte)._
+_Mis à jour le 2026-11-03, après #2294 (PR 1 mergée)._
 
-- **État** : phase 0 validée (« je suis tes recos », Q1 à Q4). PR 1 (affichage) codée sur `feat/demi-droite` :
-  `-inf` / `+inf`, crochets écran + PDF, segments sur l'axe ; tests verts, typecheck 0. Relecture
-  `code-reviewer` lancée.
-- **Prochaine action** : findings de la relecture, `types:cliquet`, ouvrir la PR 1, CI, merge. Puis PR 2 : geste
-  `representer:`.
+- **État** : PR 1 (affichage) mergée, #2294 : `segments: [2, +inf[` / `]-inf, 3]`, crochets écran + PDF, trait sur
+  l'axe, étage si chevauchement. Pas en prod (`deploy:prod` sur demande de David). Vérification à l'œil notée
+  dans `verifications-manuelles.md`.
+- **Prochaine action** : PR 2 — geste `representer:` (phase 0 § « Geste de l'élève », points 10 à 17 ; décisions
+  Q3, Q4) : tests rouges d'abord, sur le modèle de `placer:` (`NumberLinePlacer.svelte`,
+  `utils/number-line-placer.ts`, `case: N`). Nouveau worktree :
+  `git worktree add -b feat/demi-droite-geste ../ubumaths-wt-demi-droite origin/main`.
 - **En attente de David** : rien.
-- **Pièges en cours** : `qlmanage`/`timeout` absents ou muets sur ce Mac → PDF en image avec `sips` (lent, en
-  fond). PDF compilé avec `node scripts/fiches/compile-prod.mjs` (compilateur de la prod).
-- **Worktree / branche** : `../ubumaths-wt-demi-droite`, `feat/demi-droite` ; serveur de test 5176.
+- **Pièges en cours** : format de la réponse de la case (à fixer en PR 2 ; `answerKind: 'intervalles'` existe et
+  pourrait juger) ; un segment monté d'un étage peut frôler un point nommé (`points:`), non traité. PDF :
+  `node scripts/fiches/compile-prod.mjs`, image avec `sips` (lent, en fond).
+- **Worktree / branche** : aucun (retiré après #2294).
 
 ---
 
@@ -128,3 +131,5 @@ _Mis à jour le 2026-11-03, PR 1 en cours (pas encore ouverte)._
   Tests des anciens disques réécrits : `block-colors-typst.test.ts`, `couleurs-lot3.svelte.test.ts`.
 - Vu à l'œil : capture 390 px (vitest navigateur) et PDF compilé avec le compilateur de la prod.
 - Catalogue des blocs : exemple « Demi-droite (solutions d'une inéquation) ».
+- #2294 : relecture `code-reviewer` sans bloquant ; deux mineurs corrigés (une seule erreur pour un infini mal
+  écrit, `+inf` écrit dans l'avertissement « outside bounds »). CI verte, mergée le 2026-11-03.

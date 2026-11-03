@@ -5,7 +5,7 @@
  * Migration `20261102204034_questions_tspe_lot8a_rangement_tags` : les 11 brouillons du lot 8a, créés
  * le 2026-11-02 par scripts/create-questions.ts (sans nœud ni tag), vont sur une sous-notion
  * existante et reçoivent leur point (TSPE-381, 570, 400, 401, 410, 411, 585, 428, 429, 439, 440).
- * Phase 0 validée par David le 2026-11-02 (D-L8, journal docs/wip/questions-tspe-restes-progress.md).
+ * Phase 0 validée par David le 2026-11-02 (D-L8, journal docs/archive/wip/questions-tspe-restes-progress.md).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, en [T_SPE], sans nœud ni tag — puis rejoue la migration

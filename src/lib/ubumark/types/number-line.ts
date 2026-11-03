@@ -65,11 +65,12 @@ export interface NumberLinePoint {
 }
 
 /**
- * A segment (interval) on the number line
+ * A segment (interval) on the number line, borné ou non (demi-droite)
  *
- * Uses French mathematical notation for open/closed endpoints:
- * - [ = closed (filled circle)
- * - ] = open (empty circle)
+ * Notation française, extrémités dessinées en crochets :
+ * - [ au début, ] à la fin = borne comprise (becs vers l'intérieur)
+ * - ] au début, [ à la fin = borne exclue (becs vers l'extérieur)
+ * - `-inf` / `+inf` (ou ∞, \infty) : borne infinie, toujours exclue
  *
  * @example
  * ```typescript
@@ -88,6 +89,13 @@ export interface NumberLineSegment {
 	startOpen: boolean;
 	/** true = open endpoint ([ in French notation) */
 	endOpen: boolean;
+	/**
+	 * Borne de gauche infinie (`]-inf, 3]`) : `start` vaut alors le début de la
+	 * fenêtre, le trait va jusqu'au bout gauche de la droite, sans crochet.
+	 */
+	startInfinite?: boolean;
+	/** Borne de droite infinie (`[2, +inf[`) : `end` vaut la fin de la fenêtre */
+	endInfinite?: boolean;
 	/** Couleur de la palette (français ou anglais) ou hex ; résolue par `resolveNumberLineColors` */
 	color?: string;
 }

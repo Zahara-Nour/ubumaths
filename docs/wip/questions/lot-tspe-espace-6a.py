@@ -2,7 +2,7 @@
 dans scripts/questions/tspe-6a-orthogonalite-distances/.
 
 Phase 0 validée par David le 2026-11-02 (« je valide », recos Q1-Q4, journal
-« docs/wip/questions-tspe-espace-progress.md » § « Lot 6a »), un point par modèle :
+« docs/archive/wip/questions-tspe-espace-progress.md » § « Lot 6a »), un point par modèle :
 
 | # | Point    | Titre                                          | Catégorie, niveau                                       |
 | 1 | TSPE-549 | Translations de l'espace                       | Vecteurs, droites et plans de l'espace › Translations, 1 |

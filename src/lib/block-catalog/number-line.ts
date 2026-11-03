@@ -163,7 +163,21 @@ export const numberLineEntry: BlockCatalogEntry = {
 				'step: 1',
 				'segments: [-2, 1] vert, ]2, 4[ orange'
 			),
-			explanation: '[-2, 1] est fermé aux deux bouts ; ]2, 4[ est ouvert aux deux bouts.'
+			explanation:
+				'[-2, 1] est fermé aux deux bouts (crochets tournés vers l’intervalle) ; ]2, 4[ est ouvert aux deux bouts (crochets tournés vers l’extérieur).'
+		},
+		{
+			title: 'Demi-droite (solutions d’une inéquation)',
+			source: fence(
+				'line',
+				'start: -3',
+				'end: 5',
+				'step: 1',
+				'arrows: true',
+				'segments: [2, +inf[ vert'
+			),
+			explanation:
+				'x ⩾ 2 : crochet tourné vers les solutions en 2, trait jusqu’au bout de la flèche. -inf s’écrit à gauche (]-inf, 3]) ; l’infini est toujours exclu.'
 		},
 		{
 			title: 'Placer un nombre (question)',

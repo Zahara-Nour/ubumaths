@@ -13,6 +13,8 @@ import { createFunctionBinding, getFunctionNames, getFunction } from '../core/ev
 import type { EvalState } from '../core';
 import type { PipelineOptions } from '../core/pipeline';
 import { createDefaultRegistry } from '../commands';
+import { readTypedLine } from '../core/typed-line';
+import { remarkableValuesInTrigonometry } from '../core/angle-radians';
 import type { ReplExecutionResult, WebFunctionInfo } from './types';
 import {
 	toCustom,
@@ -92,7 +94,8 @@ import {
 	type ApproximateDigits
 } from '../approximation';
 import { exactValueToShow } from '../../eval/exact-value';
-import { mapNode } from '../../transforms';
+import { findNodes, mapNode } from '../../transforms';
+import { tidy } from '../../tidy';
 
 // =============================================================================
 // Constants
@@ -193,6 +196,15 @@ function keptValue(
 }
 
 /**
+ * Une expression à lettres rangée comme sur l'écran de l'Atelier (`resultToShow`
+ * de `render.ts`) : une grandeur est déjà mise au propre (`quantities.ts`), `tidy`
+ * recalculerait l'écriture juxtaposée `2 h 30 min` en une seule unité (lot C).
+ */
+function tidiedExpression(node: MathNode): MathNode {
+	return findNodes(node, isUnit).length > 0 ? node : tidy(node, { order: 'kept' });
+}
+
+/**
  * La réponse brute d'un calcul tapé seul (`1/2+1/3` → `\dfrac{5}{6}`) : l'arbre
  * affiché, en LaTeX. Une réponse trop longue (`exactTooLong`) n'en a pas : son
  * arbre est l'écriture tapée, pas un résultat.
@@ -213,6 +225,23 @@ function decimalFields(digits: ApproximateDigits | null): {
 } {
 	return digits === null ? {} : { decimal: approximationLatex(digits), decimalExact: digits.exact };
 }
+
+/**
+ * Les commandes qui ne lisent pas une expression : des valeurs (`.stats 1 ; 2`, `.linreg`) ou
+ * une unité cible (`.convert °` — le `°` y est l'unité, pas un angle à porter), ou un nom de
+ * commande (`.help`).
+ */
+const NOT_AN_EXPRESSION = /^\.(?:stats|linreg|convert|help)(?:\s|$)/i;
+
+/** Les commandes d'écriture : elles montrent l'expression telle que tapée, sans la calculer. */
+const WRITING_COMMANDS: ReadonlySet<string> = new Set([
+	'parse',
+	'tree',
+	'latex',
+	'custom',
+	'hash',
+	'normal'
+]);
 
 /**
  * Browser-safe REPL execution engine.
@@ -268,14 +297,29 @@ export class WebReplEngine {
 	}
 
 	private executeInput(input: string): ReplExecutionResult {
-		const trimmedInput = input.trim();
+		const trimmed = input.trim();
 
-		if (!trimmedInput) {
+		if (!trimmed) {
 			return {
 				success: true,
 				output: ''
 			};
 		}
+
+		// La ligne lue comme dans l'Atelier (degrés, `π`, refus de `pi`) : le registre est la
+		// référence commune (registre-reference, lot 2, PR 3). Pas pour une commande qui ne lit
+		// pas d'expression (`NOT_AN_EXPRESSION`)
+		const read = NOT_AN_EXPRESSION.test(trimmed)
+			? { ok: true as const, text: trimmed }
+			: readTypedLine(trimmed);
+		if (!read.ok) {
+			return {
+				success: false,
+				output: read.message,
+				error: { code: 'INPUT_REFUSED', message: read.message }
+			};
+		}
+		const trimmedInput = read.text;
 
 		// Handle dot-commands
 		if (trimmedInput.startsWith('.')) {
@@ -469,7 +513,12 @@ export class WebReplEngine {
 			const parseResult = parse(args, this.parseOptions());
 
 			if (parseResult.ast) {
-				ast = parseResult.ast;
+				// La valeur remarquable d'un angle mesuré (`.simplify cos(420°)` → 1/2) : le moteur
+				// ne calcule pas le cosinus d'une grandeur ; `cos(20°)` garde son angle. Pas pour
+				// une commande d'ÉCRITURE, qui montre l'expression telle que tapée
+				ast = WRITING_COMMANDS.has(cmdName)
+					? parseResult.ast
+					: remarkableValuesInTrigonometry(parseResult.ast);
 				cmdInput = args;
 			} else if (parseResult.errors.length > 0) {
 				// ⚠️ Un argument qui ne se lit pas comme une expression n'est une
@@ -669,12 +718,15 @@ export class WebReplEngine {
 			return this.executeExpression(input);
 		}
 
+		// La valeur remarquable d'un angle mesuré, comme une commande : sans elle,
+		// `cos(60°) = 1/2` répondait faux (revue de la PR 3 du lot 2)
+		const left = remarkableValuesInTrigonometry(result1.ast);
+		const right = remarkableValuesInTrigonometry(result2.ast);
+
 		// Substitute bound variables before comparison
 		const bindings = bindingsToRecord(this.evalState.bindings);
-		let substituted1 =
-			Object.keys(bindings).length > 0 ? substitute(result1.ast, bindings) : result1.ast;
-		let substituted2 =
-			Object.keys(bindings).length > 0 ? substitute(result2.ast, bindings) : result2.ast;
+		let substituted1 = Object.keys(bindings).length > 0 ? substitute(left, bindings) : left;
+		let substituted2 = Object.keys(bindings).length > 0 ? substitute(right, bindings) : right;
 
 		// Le plafond de calcul, membre par membre (`boundedComparison`) :
 		// `2^{30000000}/2^{29999999} = 2` prenait 3,5 s, et
@@ -834,21 +886,26 @@ export class WebReplEngine {
 	}
 
 	/**
-	 * Create a simple display result for expressions with unbound variables.
+	 * Une expression à lettres non liées : sa forme rangée, celle de l'écran de
+	 * l'Atelier (`render.ts`, décision D du lot 2 de `registre-reference`) —
+	 * dans l'ordre de l'élève (`2x+3x → 5x`, `x*x → x^2`, `3-2x+x^2` gardé) et
+	 * sans changer le domaine (`x/x` reste `x/x`, S3). `ast` reste l'entrée lue :
+	 * l'Atelier la range lui-même, et ses autres lecteurs y lisent la saisie.
 	 */
 	private createExpressionDisplayResult(
 		ast: MathNode,
 		unboundVars: Set<string>
 	): ReplExecutionResult {
-		const exprStr = toCustom(ast);
+		const shown = tidiedExpression(ast);
 		const varList = [...unboundVars].sort().join(', ');
 
-		const output = `${exprStr}  (variables: ${varList})`;
+		const output = `${toCustom(shown)}  (variables: ${varList})`;
 
 		return {
 			success: true,
 			output,
-			ast
+			ast,
+			answer: toLatex(shown)
 		};
 	}
 

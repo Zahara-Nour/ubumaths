@@ -1,6 +1,6 @@
 # Chantier « questions-tspe » — couvrir la terminale spécialité en modèles de questions
 
-> Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
+> Démarche : [couvrir-un-niveau.md](../../pratiques/couvrir-un-niveau.md) (skill `couvrir-niveau`).
 > Bornes : `docs/systeme/programmes/bornes/lycee/tspe.json` → `["T_SPE"].points` (décisions lts-1 à lts-9
 > dans `tspe.md`). En base, le niveau est `T_SPE`. Chantiers par thème déjà faits (septembre-octobre 2026),
 > fichiers dans `scripts/questions/` : `suites-terminale`, `fonctions-terminale`,
@@ -10,20 +10,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après la publication du lot 10._
+_Mis à jour le 2026-11-03 : chantier CLOS et versé._
 
-- **État** : lots 0 à 8 et lot 10 publiés (96b90f36 → 455, 74da1cd6 → 481, ea48f760 → 616 : `published`, relu au
-  MCP le 2026-11-03 ; relecture 3/3 OK). Plus aucun modèle à écrire.
-- **Prochaine action** : le versement, comme pour `questions-1spe` (3087b3844 puis 1c9b259d8) : bilan « Couverture en
-  modèles de questions » dans `docs/systeme/programmes/bornes/lycee/tspe.md`, pièges dans
-  `docs/pratiques/couvrir-un-niveau.md` § 9, `docs/wip/outils-manquants.md` si besoin, journaux
-  `questions-tspe*-progress.md` → `docs/archive/wip/` ; puis, dans une PR à part, les renvois des tests et des scripts
-  `docs/wip/questions/lot-tspe-*.py` vers `docs/archive` (jamais les migrations appliquées).
+- **État** : ✅ clos. 265 modèles `T_SPE` publiés, aucun brouillon ; 218 points sur 326 couverts, les 108 autres
+  voulus (68 P, 31 couverts par un voisin, 9 B\* du lot 9). Bilan durable :
+  `docs/systeme/programmes/bornes/lycee/tspe.md` § « Couverture en modèles de questions » ; pièges :
+  `docs/pratiques/couvrir-un-niveau.md` § 9.
+- **Prochaine action** : aucune. Lot 9 (334-339, 551-553, espace sur figure) : attend le chantier `solides`.
 - **En attente de David** : rien.
-- **Pièges en cours** : voir « Décisions communes et pièges » dans `questions-tspe-restes-progress.md` ; et ceux du
-  lot 10 : `sonde-courbes` ne voit pas les courbes d'un choix ; `{{p}}*pi/6` s'affiche non simplifié sur le cercle ;
-  `cleanCoefficients` réécrit P_A(B) en « P_A B » ; la garde « déjà tagués » ne se déclenche jamais seule.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe`, branches mergées (à retirer au versement).
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe` à retirer (branches mergées).
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -945,3 +940,9 @@ Un modèle par point, niveau `T_SPE` seul, rangé sur le nœud du point (ou sa s
 
 P(B) n'est jamais demandé (il relève de 617). 1cfc575d, un brouillon de seconde tagué TSPE-616, reste tel quel : son tag ne
 vaut pas couverture. Question d'accès : personne ne gagne ni ne perd d'accès (migration nœud + tag sur trois brouillons).
+
+### Lot 10 : fin (2026-11-03)
+
+Fichiers #2282 ; brouillons créés par David (96b90f36 → 455, 74da1cd6 → 481, ea48f760 → 616) ; migration
+`20261103084808_questions_tspe_lot10_rangement_tags.sql` (#2286), jouée en prod ; publiés par David. Relu au MCP : 3/3
+`published`, sur leur sous-notion, un tag chacun. **Chantier clos** ; versement le 2026-11-03.
