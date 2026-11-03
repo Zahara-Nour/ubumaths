@@ -67,12 +67,17 @@ export const SOLIDE_KEYS = [
 	'cachees',
 	'section',
 	'points',
-	'vecteurs'
+	'vecteurs',
+	'tracer',
+	'case'
 ] as const;
 
 /** Points déclarés (`points:`) et vecteurs donnés (`vecteurs:`) d'un ```solide : au plus */
 export const SOLIDE_MAX_POINTS = 8;
 export const SOLIDE_MAX_VECTORS = 8;
+
+/** Vecteurs de la combinaison de `tracer:` : au plus */
+export const SOLIDE_MAX_TERMS = 6;
 
 /**
  * Les formes d'un ```solide (mot de `forme:`, puis la base s'il y a lieu) et le
@@ -208,8 +213,30 @@ export interface SolideSpec {
 	points: SolidePoint[];
 	/** Vecteurs donnés (`vecteurs:`), dessinés en flèches */
 	vectors: SolideVector[];
-	/** Aucun geste (lot 3) : `spec.task` se lit sans savoir le genre */
-	task?: undefined;
+	/** Geste de l'élève (`tracer:`, chantier `solide-vecteur`, lot 2) ; absent : affichage seul */
+	task?: SolideTask;
+}
+
+/**
+ * Un terme de la combinaison de `tracer:` : `coef` × vecteur de `from` à `to`
+ * (indices des points : sommets, puis points déclarés) ; `coef` entier ou demi, non nul
+ */
+export interface SolideVectorTerm {
+	coef: number;
+	from: number;
+	to: number;
+}
+
+/**
+ * Geste de l'élève sur un solide (`tracer: vecteur AB + AD - 1/2 AE depuis A`) :
+ * il trace une flèche d'un point cliquable à un autre ; juste si extrémité −
+ * origine = la combinaison (en 3D), et si l'origine est `origin` quand elle est
+ * imposée (null : libre, tout représentant est juste)
+ */
+export interface SolideTask {
+	kind: 'vecteur';
+	terms: SolideVectorTerm[];
+	origin: number | null;
 }
 
 /**

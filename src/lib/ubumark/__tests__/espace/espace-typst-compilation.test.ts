@@ -118,6 +118,14 @@ it('un document avec des blocs ```cubes, ```solide et ```patron compile en PDF',
 				'vecteurs: AB, u = AI, v = OG',
 				'```',
 				'',
+				// ```solide à geste (chantier solide-vecteur, lot 2) : le solide seul
+				'```solide',
+				'forme: cube 2',
+				'sommets: A B C D E F G H',
+				'points: K milieu CG',
+				'tracer: vecteur AB + AD - 1/2 AE depuis E',
+				'```',
+				'',
 				'- ```solide',
 				'  forme: pyramide carree 4 3',
 				'  ```',
@@ -177,7 +185,17 @@ it('un document avec des blocs ```cubes, ```solide et ```patron compile en PDF',
 			generateEspaceTypst(parseEspaceContent(`solide: cube\n${task}`, 'patron'), { solved: true })
 		)
 		.join('\n\n');
-	const pdf = await $typst.pdf({ mainContent: `${source}\n\n${solved}\n\n${solvedPatrons}` });
+	// Corrigé du geste du solide : la flèche juste
+	const solvedSolide = generateEspaceTypst(
+		parseEspaceContent(
+			'forme: cube 2\nsommets: A B C D E F G H\nvecteurs: AB\ntracer: vecteur AB + AD + AE',
+			'solide'
+		),
+		{ solved: true }
+	);
+	const pdf = await $typst.pdf({
+		mainContent: `${source}\n\n${solved}\n\n${solvedPatrons}\n\n${solvedSolide}`
+	});
 	expect(pdf?.length ?? 0).toBeGreaterThan(1000);
 
 	await expect($typst.pdf({ mainContent: '#place(dx: 1cm, rect(width: ' })).rejects.toBeDefined();

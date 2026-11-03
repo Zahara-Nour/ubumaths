@@ -44,6 +44,7 @@ import { expectedColoringAnswer } from '$lib/ubumark/utils/partage-colorier';
 import { parseEspaceContent } from '$lib/ubumark/parser/espace-parser';
 import { expectedCubesAnswer } from '$lib/ubumark/utils/cubes-gestes';
 import { expectedPatronAnswer } from '$lib/ubumark/utils/patron-gestes';
+import { expectedSolideAnswer } from '$lib/ubumark/utils/solide-gestes';
 import { timeText } from '$lib/ubumark/utils/horloge-placer';
 import { indexOfValue, placerAnswer } from '$lib/ubumark/utils/number-line-placer';
 import { expectedInterval, representerAnswer } from '$lib/ubumark/utils/number-line-representer';
@@ -213,6 +214,15 @@ export function buildAnswerOf(
 			return { errors: [MASKED_IN_TEMPLATE] };
 		}
 		return { answer: expectedPatronAnswer(node.spec) };
+	}
+	if (kind === 'solide') {
+		const node = parseEspaceContent(source, 'solide');
+		if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
+		if (node.errors.length > 0) return { errors: node.errors };
+		if (node.spec?.kind !== 'solide' || node.spec.task === undefined) {
+			return { errors: ['tracer: absent'] };
+		}
+		return { answer: expectedSolideAnswer(node.spec) };
 	}
 	if (kind === 'horloge') {
 		const node = parseHorlogeContent(source);

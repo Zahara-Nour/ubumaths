@@ -806,6 +806,11 @@ function arrowOf(
 	};
 }
 
+/** Une flèche de vecteur (taille `SOLIDE_ARROW`) de `from` à `to`, à l'écran : celle que trace l'élève */
+export function solideArrowBetween(from: EspacePoint, to: EspacePoint): SolideArrow {
+	return arrowOf(from, to, SOLIDE_ARROW, false);
+}
+
 /** Le segment [a, b] traverse-t-il la boîte ? (Liang-Barsky) */
 function segmentHitsBox(a: EspacePoint, b: EspacePoint, box: EspacePoint[]): boolean {
 	const [lo, hi] = box;

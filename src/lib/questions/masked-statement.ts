@@ -33,7 +33,8 @@
  * deviendraient identiques.
  * Sans objet : ```ranger (déjà mélangé), ```patron `designer:` (la tâche, que la
  * consigne dit ; les faces se trouvent par le pliage), ```cubes `dessiner:` (la
- * perspective est la figure), opération posée.
+ * perspective est la figure), ```solide `tracer:` (la combinaison est la tâche, que
+ * la consigne dit ; les points se trouvent par le calcul), opération posée.
  *
  * @module questions/masked-statement
  */

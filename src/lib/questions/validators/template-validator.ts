@@ -24,7 +24,11 @@ import { hasCourbeToPlace } from '$lib/ubumark/parser/courbe-parser';
 import { hasTrigCircleToPlace } from '$lib/ubumark/parser/trig-circle-parser';
 import { hasRangerToPlace } from '$lib/ubumark/parser/ranger-parser';
 import { hasPartageToColorier } from '$lib/ubumark/parser/partage-parser';
-import { hasCubesToBuild, hasPatronsToBuild } from '$lib/ubumark/parser/espace-parser';
+import {
+	hasCubesToBuild,
+	hasPatronsToBuild,
+	hasSolidesToBuild
+} from '$lib/ubumark/parser/espace-parser';
 import { WORK_FIGURE_ALONE_MESSAGE } from '$lib/ubumark/parser/construction-parser';
 
 /**
@@ -201,6 +205,7 @@ function validateVariation(
 				!hasPartageToColorier(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasCubesToBuild(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasPatronsToBuild(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasSolidesToBuild(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasVariationToFill(String(variation.statement ?? shared?.statement ?? '')) &&
 				!/^\s*>?\s*```figure-a-completer\s*$/m.test(
 					String(variation.statement ?? shared?.statement ?? '')
