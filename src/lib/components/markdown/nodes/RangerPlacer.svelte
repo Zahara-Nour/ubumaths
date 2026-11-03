@@ -347,7 +347,7 @@
 		{/if}
 
 		{#if judged && !allRight && solution}
-			<div class="ranger-correction flex flex-col items-center gap-1">
+			<div class="ranger-correction flex flex-col gap-1 {steps ? 'items-stretch' : 'items-center'}">
 				<p class="text-sm font-medium text-muted-foreground">Correction</p>
 				{@render places(solution, [], false)}
 			</div>
