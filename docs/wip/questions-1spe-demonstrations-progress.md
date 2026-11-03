@@ -9,18 +9,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR de migration #2319 ouverte._
+_Mis à jour le 2026-11-03, après #2319 (migration du lot 2 appliquée)._
 
-- **État** : lot 2 mergé (#2314), brouillons créés en prod par David (9e377c97, f7938cd3, b05ec37a, e2908d60,
-  16ee6f33). Migration `20261103132133_…_2_rangement_tags` en PR #2319 : test 13/13 vert, rouge sans elle, audit
-  sécurité sans finding bloquant, `check:migrations --pr 2319` OK.
-- **Prochaine action** : CI verte → merge #2319 → `db:migrate` depuis `main` (4 conditions réunies) → vérifier en base
-  (MCP) → page à cocher → publication.
-- **En attente de David** : la CI de #2319 est ROUGE à cause de `main`, pas de la PR : #2311 (`garde-auth-commune`,
-  38e599df6) fait appeler `locals.safeGetSession()` par `requireAuth`, et 5 tests d'intégration fabriquent des
-  `locals` sans cette méthode (marche-verrou, echanges-delai-confirmation, srs-stats-echanges-delai,
-  rpc-lot3-compte-autrui, succes-gidouilles). Reproduit en local. Qui le corrige ? Extension `signe:` du bloc
-  `ranger` (Q2 b) **non tranchée**.
+- **État** : lot 2 (dérivation) en prod en brouillon, rangé et tagué (#2314, #2319, `db:migrate` fait, vérifié en
+  base). Page à cocher : https://claude.ai/artifact/Qk72A5QTYbfDJAwGB9ZN4Y (relecture de David en cours).
+- **Prochaine action** : compter les verdicts (`ArtifactData list verdicts`, 5 attendus) ; « À revoir » → corriger
+  (`--mettre-a-jour`) ; tout OK → David publie (`pnpm tsx scripts/questions/publier-lot.ts --dir
+scripts/questions/1spe-demonstrations-2 --publier`), relire `published` en base. Puis lot 3 (300, 301, 302, 308,
+  411, 322, 323).
+- **En attente de David** : la relecture du lot 2. Extension `signe:` du bloc `ranger` (Q2 b) **non tranchée**.
 - **Pièges en cours** : `h(…)` est lu comme une fonction (f, g, h) : jamais en réponse attendue. 398 : jumeau 392 dans
   le même programme, ne taguer que 398. `requiredForm: {pattern: 'u'}` pour les écritures équivalentes. Jamais de
   couleur sur du texte. `Doc-inchangée:` dans un COMMIT pour une migration. Garde `lot partiel`. Ancienne branche
@@ -166,3 +163,7 @@ Migration `20261103132133_questions_1spe_demonstrations_2_rangement_tags` (#2319
 « 392 non posé » : vert, et rouge sans la migration (6 cas rouges, la suite principale ne s'exécute pas). Audit
 sécurité : aucun finding bloquant ; 3 notes non bloquantes (garde « tout ou rien » après les écritures, sûre dans
 une seule transaction ; homonymes impossibles grâce aux index uniques ; garde « déjà tagué » = simple filet).
+
+`db:migrate` du 2026-11-03 (après #2322, qui réparait les doublures de tests cassées par #2311) : vérifié en base, les 5
+modèles sur leur sous-notion avec leur seul point (398 sans 392), `draft`, `updated_at` intact. Page à cocher :
+https://claude.ai/artifact/Qk72A5QTYbfDJAwGB9ZN4Y
