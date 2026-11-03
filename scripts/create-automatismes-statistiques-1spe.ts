@@ -17,7 +17,9 @@
  *  - 2 modèles neufs (`scripts/questions/statistiques-1spe/`, créés par
  *    `scripts/create-questions.ts`), retrouvés par identifiant.
  * Une boîte à construire : axe seul à l'énoncé, boîte dessinée au corrigé (`buildSerie`).
- * Changer une graine change la copie : les graines sont la fiche.
+ * Changer une graine change la copie : les graines sont la fiche. Graines changées :
+ * fréquence conditionnelle 1 → 5 (4/5 plutôt que 8/67) ; axe tronqué 1 → 7 (variante en
+ * choix : la comparaison trompeuse) ; angle d’un secteur 1 → 12 (données → angle).
  *
  * Garde-fous : base = prod ; modèles tous retrouvés ; séries construites et validées
  * (Zod) AVANT la moindre écriture ; arrêt si un titre d'exercice existe déjà dans le
@@ -82,9 +84,9 @@ const MODELES = {
 	/** 2de — calculer une fréquence marginale */
 	frequenceMarginale: '62105594-17b0-4a0e-91e1-f5be360db13f',
 	/** 1re, neuf — graphique à axe tronqué (01-graphique-axe-tronque.json) */
-	axeTronque: 'A_CREER',
+	axeTronque: '1c86d122-92f8-4bee-a566-b023ffb79dda',
 	/** 1re, neuf — angle d'un secteur circulaire (02-angle-secteur-circulaire.json) */
-	angleSecteur: 'A_CREER'
+	angleSecteur: '9852d62c-4109-4155-aa56-afef8c72d923'
 };
 
 type Cle = keyof typeof MODELES;
@@ -100,8 +102,8 @@ const SERIES = [
 			q('moyenneRegroupee', 1),
 			q('mediane', 1),
 			q('ecartType', 1),
-			q('frequenceConditionnelle', 1),
-			q('axeTronque', 1)
+			q('frequenceConditionnelle', 5),
+			q('axeTronque', 7)
 		]
 	},
 	{
@@ -114,7 +116,7 @@ const SERIES = [
 			q('quartiles', 1),
 			q('comparerSeries', 1),
 			q('frequenceMarginale', 1),
-			q('angleSecteur', 1)
+			q('angleSecteur', 12)
 		]
 	}
 ];
