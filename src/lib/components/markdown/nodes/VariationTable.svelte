@@ -595,7 +595,10 @@
 		font-size: inherit;
 	}
 
+	/* `relative` : un descendant absolu (libellé MathLive, `.sr-only`) reste dans la zone
+	   qui défile, au lieu d'élargir la page */
 	.vt-defilement {
+		position: relative;
 		overflow-x: auto;
 	}
 
@@ -606,6 +609,7 @@
 		position: absolute;
 		top: 0;
 		bottom: 0;
+		z-index: 1;
 		width: 1rem;
 		pointer-events: none;
 	}

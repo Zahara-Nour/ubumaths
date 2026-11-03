@@ -116,6 +116,29 @@ describe('VariationTable — ombre du bord qui défile', () => {
 		expect(ombre.content).not.toBe('none');
 		expect(ombre.backgroundImage).toContain('gradient');
 		expect(ombre.pointerEvents).toBe('none');
+		expect(ombre.position).toBe('absolute');
+		expect(parseFloat(ombre.width)).toBeGreaterThan(0);
+	});
+
+	it('défilé : l’ombre gauche se dessine aussi', async () => {
+		const main = await monter(PRODUIT, '120px');
+		await expect.poll(() => tableau(main).dataset.debordeDroite).toBe('');
+		const zone = defilement(main);
+		zone.scrollLeft = zone.scrollWidth;
+		zone.dispatchEvent(new Event('scroll'));
+		await expect.poll(() => tableau(main).dataset.debordeGauche).toBe('');
+		const ombre = getComputedStyle(tableau(main), '::before');
+		expect(ombre.content).not.toBe('none');
+		expect(ombre.backgroundImage).toContain('gradient');
+		expect(ombre.position).toBe('absolute');
+		expect(parseFloat(ombre.width)).toBeGreaterThan(0);
+	});
+
+	it('à 390 px, un tableau à compléter trop large ne fait pas déborder la page', async () => {
+		await page.viewport(390, 844);
+		await monter(PRODUIT_A_COMPLETER, '300px');
+		const racine = document.documentElement;
+		await expect.poll(() => racine.scrollWidth).toBeLessThanOrEqual(racine.clientWidth);
 	});
 });
 
