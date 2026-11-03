@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2307 (lot 1 mergé)._
+_Mis à jour le 2026-11-03, lot 2 complet, PR ouverte._
 
-- **État** : lot 1 en `main` (#2307) : 6 articles parus illustrés (fermat, glitchistan-ha-ha, barbier, rails de Sandomir, 0,999…, Hôtel de l'Infini). Pas en prod tant que David n'a pas lancé `deploy:prod`.
-- **Prochaine action** : lot 2 = les 7 derniers articles parus, du plus récent au plus ancien (`pifometrie-moyenne-des-jambes`, `pifometrie-pile-ou-face`, …) ; nouveau worktree `ubumaths-wt-shtam-illustrations`, branche `feat/shtam-illustrations-lot-2` ; lire chaque article, écrire les prompts dans `docs/Chiphres/illustrations/shtam/<slug>/prompt.md`, les donner à David.
+- **État** : lot 1 en `main` (#2307). Lot 2 (7 articles parus restants) : 7 dessins intégrés sur `feat/shtam-illustrations-lot-2`, PR ouverte. Les 13 articles parus sont alors illustrés.
+- **Prochaine action** : après le merge, lot 3 = les 41 articles programmés, dans leur ordre de parution (le plus proche d'abord : `pifometrie-anniversaires`… vérifier par `date:`), par lots d'environ 6.
 - **En attente de David** : rien.
-- **Pièges en cours** : ne jamais lancer prettier sur les articles ; pièces jointes → `~/Downloads` ; dessin AVANT toute figure SVG ; jamais de personne réelle dessinée ; image non 3:2 → recadrage vérifié à l'œil ; retouche = un carré par tête, une demande (modèle : `coller-retouches.sh` du barbier) ; port 5176 souvent pris → prendre un port libre.
-- **Worktree / branche** : aucun (lot 1 nettoyé).
+- **Pièges en cours** : ne jamais lancer prettier sur les articles ; pièces jointes → `~/Downloads` ; **couleurs d'un personnage : les recopier de son portrait** (Czar = bleu ciel, Bordure = veste verte), jamais de mémoire ; **pas de kippa/redingote noire/longue barbe** pour un savant (caricature) ; une blague abstraite a besoin d'un signe lisible (exceptions « ÷ 0 », « ∞ », « LUNDI/MARDI », π) ; Nano Banana rend parfois du 16:9 ou du carré → demander « extend to 3:2 » dans la même conversation (il redessine) ; texte illisible → réécrit par `magick -annotate` (voir `nombrilie-division-par-zero/retouche.txt`) ; jamais de personne réelle dessinée.
+- **Worktree / branche** : `ubumaths-wt-shtam-illustrations`, `feat/shtam-illustrations-lot-2`.
 
 ## À lire avant de commencer
 
@@ -48,3 +48,5 @@ _2026-11-03, phase 0 :_
 - 2026-11-03 — bedonstan-rails-de-sandomir : essai 1 (4:3, recadré en 3:2), trait plus fin et texture crayon, différent des autres ; **gardé par David**.
 - 2026-11-03 — nombrilie-zero-virgule-neuf et yoyolande-hotel-de-l-infini intégrés (hôtel en 16:9, recadré à gauche pour garder le voyageur). Lot 1 complet ; skill `shtam` mise à jour.
 - 2026-11-03 — #2307 mergé (lot 1, CI verte), worktree retiré.
+- 2026-11-03 — Lot 2 ouvert : prompts des 7 derniers articles parus écrits. Choix : π seul symbole permis (pi-transcendant) ; triangle 3-4-5 par des graduations, sans chiffres ; ni jambe de bois ni troisième jambe (moyenne-des-jambes : Bordure qui compte) ; aucun portrait de Pythagore.
+- 2026-11-03 — Lot 2 : 7 dessins intégrés. moyenne-des-jambes, pile-ou-face : essai 1. triangle-plainte : 4:3, fenêtre de recadrage décalée (+70) pour garder les pieds. czar-alexis : redingote verte (erreur de prompt) recolorée en bleu du portrait. division-par-zero : essai 1 refusé (illisible, gardes confus), v2 en 16:9, redessiné en 3:2, écran « ÷0 » réécrit à la main. pi-transcendant : essai 1 refusé (incompréhensible, savant caricatural), v2 LUNDI/MARDI retenue. pythagore : essai 1.

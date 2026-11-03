@@ -5,6 +5,8 @@ author: pile
 lede: Selon des documents que le Shtam a pu consulter, le palais d'Hiver du Czar utiliserait un π « simplifié » depuis plusieurs années. Les roues des carrosses seraient concernées.
 ---
 
+![Dans la cour enneigée du palais d’Hiver, le Czar Alexis lève les bras au ciel : la roue de son carrosse ne fait pas tout le tour, la clôture du massif rond reste ouverte, et la nappe de la table ronde est trop petite.](/shtam/czar-alexis-pi-arrondi.webp){size=large}
+
 L'affaire pourrait ébranler l'Empire. D'après une note interne du palais d'Hiver, que le Shtam s'est procurée, le Czar Alexis aurait ordonné que ~\pi~ soit arrondi à 3 dans tous les calculs officiels. Motif invoqué : « trop de décimales, trop de dépenses ».
 
 Les conséquences commencent à se voir. Les clôtures des jardins impériaux seraient trop courtes, les nappes des banquets ne couvriraient plus les tables rondes, et les roues des carrosses présenteraient « un léger défaut de tour ».

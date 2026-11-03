@@ -1,0 +1,3 @@
+Essai 1 : refusé (on ne comprend pas la division par zéro). Essai 2 (prompt v2) : bon mais 16:9, recadrage impossible.
+Essai 3 (essai-1-ia.webp, « agrandis en 3:2 » dans la même conversation : scène redessinée) : retenu, écran illisible (« ÷C ») réécrit à la main :
+magick essai-1-ia.webp -fill "srgb(234,226,172)" -draw "translate 249,657 rotate -12 rectangle -11,-6 11,6" -fill "#1b2340" -font "/System/Library/Fonts/Supplemental/Arial Bold.ttf" -pointsize 14 -annotate -12x-12+240+667 "÷0" retouche-ecran.png
