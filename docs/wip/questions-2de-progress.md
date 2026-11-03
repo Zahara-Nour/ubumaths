@@ -6,17 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2355 (rangement du lot 12 a) et la page à cocher (§ 75)._
+_Mis à jour le 2026-11-04, après la publication du lot 12 a (§ 76)._
 
-- **État** : lots 1 à 9 publiés. Lot 12 a (14 modèles) en prod en brouillon, rangé et tagué (#2355, migration
-  jouée) ; page à cocher publiée (§ 75). Ordre ensuite : 12 b, puis 10, puis 11.
-- **Prochaine action** : lire et compter les verdicts de la page ; corriger les « À revoir » ; puis `publier-lot`
-  en simulation sur `2de-inegalites-a1` et `2de-algebre-a2`, et David lance `--publier`. Ensuite phase 0 du 12 b.
-- **En attente de David** : la relecture de la page à cocher.
-- **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!` ; liste blanche : pas de
-  `{{if:}}` à plus de ~6 niveaux dans une réponse attendue ; corps de commit ≤ 100 caractères par ligne ;
-  une autre session écrit aussi dans ce journal : `git pull` ; `db:migrate` depuis le dépôt principal
-  seulement (le worktree n'est pas lié à Supabase) ; un relevé de lot n'est pas un relevé du niveau.
+- **État** : lots 1 à 9 et 12 a publiés. Ordre ensuite : 12 b, puis 10, puis 11.
+- **Prochaine action** : phase 0 du lot 12 b (oubliés du § 70 : vecteurs sans coordonnées 287, 433,
+  288-292, 296, 297 ; automatismes 489, 401) — relevé MCP, puis comportements à faire valider.
+- **En attente de David** : rien.
+- **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!`, puis vérifier le
+  statut au MCP (1er essai du 12 a : rien d'écrit) ; liste blanche : pas de `{{if:}}` à plus de ~6 niveaux
+  dans une réponse attendue ; corps de commit ≤ 100 caractères par ligne ; une autre session écrit aussi
+  dans ce journal : `git pull` ; `db:migrate` depuis le dépôt principal seulement ; un relevé de lot n'est
+  pas un relevé du niveau.
 - **Worktree / branche** : `../ubumaths-wt-questions-2de` (HEAD détachée sur `origin/main`).
 
 ## 1. Relevé (prod, 2026-10-27)
@@ -1922,3 +1922,9 @@ entière ; L12a-c 2-275 rangé sous Calcul littéral › factorisation ; L12a-d 
 
 - `page-a-cocher.ts` sur les deux dossiers (copie dans le scratchpad, préfixes `a1-`/`a2-`, `.env` de prod) :
   14 fiches, aucune alerte. Page (capacité `db`, `verdicts` vide) : https://claude.ai/artifact/SWKNyEvkVTR8PF6E19cPKb
+
+## 76. Lot 12 a publié (2026-11-04)
+
+- Page à cocher relue par David : 14/14 « ok », sans commentaire. `publier-lot` (simulation puis
+  `--publier`) lancé par David sur `2de-inegalites-a1` et `2de-algebre-a2` ; un premier essai n'avait rien
+  écrit (MCP : 14 `draft`), le second oui. MCP (prod) : 14/14 `published`.
