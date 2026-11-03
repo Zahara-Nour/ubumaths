@@ -15,7 +15,8 @@ _Mis à jour le 2026-11-04, versement (chantier clos)._
   en prod (0.68.0) ; #2353 et #2358 mergées, en prod au prochain `deploy:prod`.
 - **Reste, hors chantier** : essais iPhone de David dans `docs/wip/verifications-manuelles.md` (dont
   les 88 px qui défilent encore, deux racines) ; domaine `]a[, +inf` et tableau de variations à
-  compléter : lignes 12 et 14 de `docs/wip/outils-manquants.md`. Un essai raté → PR de correctif.
+  compléter, repère PDF d'une marque cachée : lignes 12, 14 et 16 de
+  `docs/wip/outils-manquants.md`. Un essai raté → PR de correctif.
 - **Worktree / branche** : aucun.
 
 ---
