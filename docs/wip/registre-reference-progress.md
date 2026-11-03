@@ -614,3 +614,11 @@ corrigée, à confirmer).
 - Tests : `final-form-fraction.test.ts` (preuve rouge : 4/6 avec le `final-form.ts` de `main`, les
   2 témoins verts) ; sonde avant/après sur l'oracle des dérivées (308 lignes) : **aucune**
   différence. Suites `mathAST` + `atelier` + `questions` + `geometry-core` (42 643) vertes.
+- **Revue** (`code-reviewer` opus) : 2 importants, corrigés. (1) Fraction négative : tidy écrit
+  `−(a/3)` (nœud `opposite`), `-\frac{x^2e^x}{3}` tapé en LaTeX (questions) gardait sa barre alors
+  que la saisie de l'atelier la distribuait → `distributable` traverse le −. (2) Tableau de
+  variations : `factoredForSign` donnait `x(x/3 + 2/3)eˣ` → la barre commune ressort d'abord
+  (`overCommonDenominator`, `display.ts`) : `x(x + 2)eˣ/3`, règle D2 (numérateur factorisé,
+  dénominateur gardé). Mesuré : sur `main` ces cas n'étaient PAS factorisés au tableau
+  (`\dfrac{x²eˣ + 2xeˣ}{3}`), contrairement à ce que disait la revue. Preuves rouges : 2/12 et
+  5/7 ; sonde avant/après sur l'oracle (626 formes factorisées du tableau) : 0 différence.

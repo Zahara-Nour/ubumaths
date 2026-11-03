@@ -1328,6 +1328,10 @@ division par un nombre, identités).
   (`1,5x² − 3x → 1,5x(x − 2)`, `0,3x² − 0,3 → 0,3(x − 1)(x + 1)`, `0,2x³ − 0,6x → 0,2x(x − √3)(x + √3)`,
   `0,3x² + 0,1x → 0,1x(3x + 1)`) ; refusé par les mêmes règles, la politique seule ensuite. Vaut
   aussi pour la forme demandée (D4).
+  Exponentielle commune à fractions distribuées (`(x²/3 + 2x/3)eˣ`, forme finale du 2026-11-03) :
+  la barre commune ressort d'abord (`overCommonDenominator`), puis le numérateur se factorise comme
+  celui d'un quotient — `x(x + 2)eˣ/3`, `−x(x + 2)eˣ/3`, `(1 − x)e^{−x}/2`, jamais `x(x/3 + 2/3)eˣ`
+  (revue de #2329).
   **Forme demandée par l'énoncé** (`requested-form.ts`, `requestedForm`, simplify-carte lot 5e, D4) :
   `finalForm` d'une correction automatique ajoute « On factorise » / « On développe » après la
   forme par défaut (`withRequestedFormStep` de `tidy-step.ts` pour f′ ; option `finalForm` de
