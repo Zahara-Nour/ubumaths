@@ -1636,3 +1636,6 @@ tspe-ln-continuite-convexite,1spe-tracer-droite}.py`) : vérifiés d'abord fidè
 - `create-questions` (simulation) : 8/8 et 12/12 ; `question:specs` 200/200 tirages ; `sonde-courbes`
   et `sonde-figures` : 0 problème.
 - **#2304 mergée** (CI verte), le 2026-11-03.
+- Brouillons créés en prod par David le 2026-11-03 : 2-299 `22e8272e`, 2-298 `dd286c93`. Question d'accès :
+  **personne** (confirmé par David). Migration `20261103121554_questions_2de_vecteur_tracer_rangement_tags`
+  (nœud « coordonnées » + tag), test d'intégration rouge sans elle (5/10), vert avec (10/10).
