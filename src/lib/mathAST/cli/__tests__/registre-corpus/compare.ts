@@ -300,7 +300,11 @@ function judgeQuantity(expected: Quantity, rendered: string): Verdict {
 /** `\approx 4{,}0239 \times 10^{2567}` → `{ text: '4.0239*10^2567', exact: false }` ; sans signe : `exact` absent */
 function readDecimal(latex: string): { readonly text: string; readonly exact?: boolean } | null {
 	// `\text{,}` avant `compact`, qui en ferait `\text,`
-	let text = compact(latex.replace(/\\text\{,\}/g, '.')).replace(/,/g, '.');
+	// `\unit{km}` du registre vaut `\mathrm{km}` d'un outil
+	let text = compact(latex.replace(/\\text\{,\}/g, '.').replace(/\\unit\{/g, '\\mathrm{')).replace(
+		/,/g,
+		'.'
+	);
 	let exact: boolean | undefined;
 	const sign = /^(=|\\approx|≈)/.exec(text);
 	if (sign !== null) {

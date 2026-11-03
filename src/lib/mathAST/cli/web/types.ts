@@ -44,12 +44,14 @@ export interface ReplExecutionResult {
 
 	/**
 	 * L'**écriture décimale** de la réponse d'un calcul, rendue À CÔTÉ de
-	 * `answer` (décisions A et B du lot 2) : au point, en LaTeX, sans signe,
-	 * arrondie selon Q3 (4 décimales ; `8.7700 \times 10^{9}` hors de
-	 * [10⁻⁶ ; 10⁹[ ; un entier jusqu'à 15 chiffres) — `0.25`, `3`,
-	 * `0.3333~\mathrm{km}`. Présente dans les DEUX modes, même pour un nombre
-	 * déjà écrit (`3` → `3`). Absente sans valeur décimale (lettres,
-	 * comparaison, valeur non réelle). L'outil pose `=` / `≈`, la virgule, le `×`.
+	 * `answer` (décisions A et B du lot 2) : au point, en LaTeX comme `answer`
+	 * (unité `\unit{…}`), sans `=` ni `≈` devant (le moins d'un négatif, lui,
+	 * reste), arrondie selon Q3 (4 décimales ; `8.7700 \times 10^{9}` hors de
+	 * [10⁻⁶ ; 10⁹[ ; un entier jusqu'à 15 chiffres) — `0.25`, `-3`,
+	 * `0.3333~\unit{km}`. Présente dans les DEUX modes, même pour un nombre
+	 * déjà écrit (`3` → `3`) et pour une écriture gardée (sans `answer`).
+	 * Absente sans valeur décimale (lettres, comparaison, valeur non réelle,
+	 * durée en h-min-s). L'outil pose `=` / `≈`, la virgule, le `×`.
 	 */
 	readonly decimal?: string;
 

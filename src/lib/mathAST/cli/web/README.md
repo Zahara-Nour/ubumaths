@@ -26,7 +26,7 @@ mènent à `/atelier`.
   `getState` (`syncEngine`) ; champs `output`, `latex`, `ast`, `error`, `approximateLatex`,
   `exactLatex`, `quantityAst`, `exactTooLong`.
 - **Corpus du registre** (`cli/__tests__/registre-corpus/`) : `answer` (réponse brute, exacte dans
-  les deux modes), `decimal` et `decimalExact` (écriture décimale au point, en LaTeX, sans signe,
+  les deux modes), `decimal` et `decimalExact` (écriture décimale au point, en LaTeX comme `answer`, sans `=`/`≈`, moins compris,
   d'un calcul tapé ou d'une grandeur seule, présente même pour un nombre déjà écrit — décisions A
   et B du lot 2 de `registre-reference`). Seul lecteur à ce jour ; l'Atelier lit encore
   `approximateLatex` pour son bouton ≈.

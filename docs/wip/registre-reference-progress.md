@@ -486,3 +486,6 @@ Relevé : 61 lignes du registre connues fausses (lot 2), 5 familles. Ordre (le c
 lit `decimalExact` (le signe pour l'Atelier). Preuve rouge : 14 lignes du corpus + 6/9 tests de
 `reponse-decimale.test.ts`. Suites `cli` + `atelier` : 8 038 verts. L'Atelier lit encore
 `approximateLatex` (bouton ≈) : passer au champ `decimal` = travail de R1, plus tard.
+Revue `code-reviewer` (Sonnet) : aucun bloquant ; corrigé — « sans signe » = sans `=`/`≈`, le
+moins reste (doc + tests `-1/3`, `-3`, `2[h]-3[h]`) ; `decimal` d'une grandeur en `\unit{…}`
+comme `answer` (le juge lit `\unit` = `\mathrm`).

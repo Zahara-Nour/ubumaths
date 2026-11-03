@@ -36,7 +36,10 @@ describe('decimal et decimalExact, dans les deux modes', () => {
 		['1/4', '\\dfrac{1}{4}', '0.25', true],
 		['3', '3', '3', true],
 		['2^40', '1099511627776', '1099511627776', true],
-		['2^64', '18446744073709551616', '1.8447 \\times 10^{19}', false]
+		['2^64', '18446744073709551616', '1.8447 \\times 10^{19}', false],
+		// Négatifs : le moins reste, seuls `=` / `≈` sont à l'outil (revue)
+		['-1/3', '-\\dfrac{1}{3}', '-0.3333', false],
+		['-3', '-3', '-3', true]
 	] as const)('%s', (input, answer, decimal, exact) => {
 		for (const mode of ['exact', 'decimal'] as const) {
 			const result = run(input, mode);
@@ -52,9 +55,15 @@ describe('une grandeur garde son unité', () => {
 		for (const mode of ['exact', 'decimal'] as const) {
 			const result = run('1/3[km]', mode);
 			expect(result.answer, mode).toBe('\\dfrac{1}{3}~\\unit{km}');
-			expect(result.decimal, mode).toBe('0.3333~\\mathrm{km}');
+			expect(result.decimal, mode).toBe('0.3333~\\unit{km}');
 			expect(result.decimalExact, mode).toBe(false);
 		}
+	});
+
+	it('une grandeur négative garde son moins', () => {
+		const result = run('2[h]-3[h]');
+		expect(result.decimal).toBe('-1~\\unit{h}');
+		expect(result.decimalExact).toBe(true);
 	});
 
 	it('une conversion (`.convert`) n’a pas encore de réponse brute', () => {

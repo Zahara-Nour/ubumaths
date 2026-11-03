@@ -1091,7 +1091,7 @@ export class WebReplEngine {
 			...(typed && { answer: toLatex(outcome.exact.node) }),
 			...(typed &&
 				outcome.decimalWriting !== undefined && {
-					decimal: displayUnitsInLatex(toLatex(outcome.decimalWriting.node)),
+					decimal: toLatex(outcome.decimalWriting.node),
 					decimalExact: outcome.decimalWriting.exact
 				})
 		};
