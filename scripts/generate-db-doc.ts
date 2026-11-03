@@ -161,13 +161,7 @@ export const DOMAINS: Domain[] = [
 	},
 	{
 		title: 'Google Classroom',
-		match: [
-			'google_',
-			'class_google_classroom_links',
-			'coursework_',
-			'shared_coursework',
-			'shared_materials'
-		]
+		match: ['google_', 'coursework_', 'shared_coursework', 'shared_materials']
 	},
 	{
 		title: 'Outils du professeur (kanban, tableau blanc, constructions, figures, liens courts)',
