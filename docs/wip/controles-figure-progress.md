@@ -6,20 +6,19 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2268._
+_Mis à jour le 2026-11-03, lot 4 codé (PR à ouvrir)._
 
-- **État** : lots 1, 2a, 2b, « point construit exigé », 3 (médiatrice, #2264) et 3b (cercle circonscrit,
-  centre seul, #2268) **mergés**, pas encore en prod (`deploy:prod` sur demande de David). Vérifications à
-  l'œil dans `verifications-manuelles.md` (#2257, #2264, #2268).
-- **Prochaine action** : phase 0 du lot **triangle** (report de longueur au compas, 4e sommet du
-  parallélogramme), puis angle, bissectrice.
-- **En attente de David** : avis sur le message neuf « Ton compas est ouvert à l'œil : ouvre-le jusqu'à un
-  sommet du triangle. » (§ 12, ajouté après la revue sans phase 0).
-- **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12, à revoir avec le
-  report de longueur) ; `perpendiculaire(A, s)` échoue quand A est un bout de s ; pas de prime dans le
-  langage des figures ; `symetrie(P, axe=d)` échoue si P définit d ; l'« Essayer » de l'aide ne rend pas la
-  case jouable ; au clavier, droites annoncées « Droite 1, 2… » ; plafond de 20 objets sans message.
-- **Worktree / branche** : aucun (retiré après #2268).
+- **État** : lot 4 (triangle de trois longueurs, geste Report, 4e sommet du parallélogramme) codé
+  et testé sur `feat/controles-figure-triangle` (§ 14) ; lots 1 à 3b mergés, pas encore en prod.
+- **Prochaine action** : revue Opus, PR, merge ; puis phase 0 de l'angle (rapporteur, outil n° 4) ou
+  de la bissectrice.
+- **En attente de David** : rien.
+- **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12, sa propre
+  phase 0) ; `perpendiculaire(A, s)` échoue quand A est un bout de s ; pas de prime dans le langage des
+  figures ; `symetrie(P, axe=d)` échoue si P définit d ; l'« Essayer » de l'aide ne rend pas la case
+  jouable ; au clavier, droites annoncées « Droite 1, 2… » ; plafond de 20 objets sans message ;
+  `etiquette=` ne vaut que pour les points (étiqueter un segment : `texte(x, y, "4 cm")`).
+- **Worktree / branche** : `../ubumaths-wt-controles-figure` · `feat/controles-figure-triangle`.
 
 ---
 
@@ -574,3 +573,23 @@ du triangle. » (ajouté après la revue, sans phase 0).
 5. Règle sévère des médiatrices **laissée telle quelle** dans ce lot (sa propre phase 0 plus tard).
 6. Message du lot 3b « Ton compas est ouvert à l'œil : ouvre-le jusqu'à un sommet du triangle. »
    **gardé**.
+
+## 14. Lot 4 — ce qui est fait (2026-11-03)
+
+- Geste **Report** (`report`, `CONSTRUCTION_TOOLS`) : deux touchers = l'écartement (`Drawing.span`,
+  trait fin `ecartement`), chaque toucher suivant = un cercle ; reprendre Report ou changer d'outil le
+  lâche, « Effacer » sans cercle aussi. Réponse `report(cx;cy;ax;ay;bx;by)` (Zod). Consigne visible :
+  « Touche les deux bouts de la longueur à reporter. » puis « Touche où piquer le compas. Pour une autre
+  longueur, touche Report. » (ajout hors phase 0 : sans elle, rien ne dit comment changer de longueur).
+- Aimantation : bouts des segments de la figure (même anonymes) et **bouts des segments de l'élève**
+  (ajout : sans lui, deux côtés finis au même toucher libre ne se rejoignaient pas — test d'écran
+  instable, 1 échec sur 3).
+- Vérification `triangle ABC : AC = u ; BC = v` (`construction/triangle.ts`) : C = bout commun de [AC]
+  et [BC], intersection de deux cercles construits (compas ou report sur des points de la figure).
+  Messages et erreurs d'auteur du § 13. Générateur : A, B et les longueurs nommés, pas C.
+- 4e sommet : `point D = sommet(parallelogramme(A, B, C), 4)` accepté sur papier uni ; message « ABCD
+  est croisé » à l'autre intersection des reports ; palette de `point` + Report.
+- Correction du triangle : côtés en pointillés, arcs de report fins, longueurs codées
+  (`solutionTriangle`). Aide à l'écriture : deux exemples (testés : ils se construisent).
+- Tests : `construction-triangle.test.ts`, `construction-parallelogramme.test.ts`, Report dans
+  `construction-drawing.test.ts`, écran `figure-a-completer-triangle.svelte.test.ts` (3).
