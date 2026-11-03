@@ -7,17 +7,16 @@ Sous-chantier de `questions-1spe` (clos, journal `docs/archive/wip/questions-1sp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR #2279 (migration nœud + tags du 433) ouverte._
+_Mis à jour le 2026-11-03, après #2279._
 
-- **État** : brouillon 433 en prod (`dc5d7cb6`, créé par David le 2026-11-03) ; migration nœud +
-  tags écrite (§ 7), test d'intégration vert (11), rouge sans elle ; `security-auditor` : rien de bloquant.
-- **Prochaine action** : CI verte + `security-auditor` → `check:migrations --pr`, merge,
-  `db:migrate` depuis le dépôt principal, vérification en prod (MCP) ; puis page à cocher.
+- **État** : brouillon 433 en prod (`dc5d7cb6`), rangé et tagué par la migration de #2279
+  (`db:migrate` fait, vérifié en prod : nœud « équations de droites », tags 1GEN-063, 1SPE-433,
+  1TECHNO-140, `updated_at` préservé).
+- **Prochaine action** : page à cocher (`scripts/questions/page-a-cocher.ts --dir
+scripts/questions/1spe-tracer-droite`), publiée en artefact (capacité `db`).
 - **En attente de David** : verdict sur la page à cocher, puis `publier-lot.ts --publier`.
-- **Pièges en cours** : 1SPE-271 repris par `questions-1spe-tangente` (ne rien écrire ici) ; un
-  serveur de dev de la veille bloquait le SSR : le relancer a suffi.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-tracer-droite`,
-  `feat/questions-1spe-tracer-droite-tags`.
+- **Pièges en cours** : 1SPE-271 repris par `questions-1spe-tangente` (ne rien écrire ici).
+- **Worktree / branche** : aucun (retiré après #2279).
 
 ---
 
@@ -139,3 +138,6 @@ est donné par la figure) ; (b) les trois variations, dont m = 0 (reco : oui).
 - Migration `20261103065951_questions_1spe_tracer_droite_rangement_tags.sql` (gabarit lot 8c tspe) ;
   test `tests/integration/questions-1spe-tracer-droite-rangement-tags.test.ts` : 10 verts ; contenu
   de la migration vidé → suite principale + 3 cas d'échec rouges.
+- #2279 mergée (CI verte, `check:migrations` OK) ; `security-auditor` : rien de bloquant, un cas de
+  test ajouté (un tag sans nœud est interdit par trigger : c'est la garde « déjà rangé » qui arrête
+  la migration). `db:migrate` lancé depuis le dépôt principal le 2026-11-03, vérifié en prod (MCP).
