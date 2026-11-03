@@ -107,6 +107,18 @@ export const numberLineEntry: BlockCatalogEntry = {
 						'L’élève touche la droite pour y poser son point (ou les boutons ◀ ▶) : la droite compte pour une case, juste si le point est sur ce nombre. Jamais écrit à l’écran. Sans points: (un seul point, celui de l’élève). Sur le PDF, la droite sans point : l’enfant fait sa croix.'
 				}
 			]
+		},
+		{
+			title: 'Dans une question : représenter un intervalle',
+			settings: [
+				{
+					key: 'representer',
+					values: 'un intervalle, bornes sur des graduations ([2, +inf[, ]-inf, 3], [-1, 3[)',
+					defaultValue: 'aucun',
+					description:
+						'L’élève touche la droite pour poser la borne, choisit le côté des solutions (← vers la gauche, vers la droite →) et bascule la borne comprise / exclue ; intervalle borné : il pose les deux bornes. La droite compte pour une case, juste si bornes, côté et crochets le sont. Jamais écrit à l’écran. Ni placer: ni segments: avec.'
+				}
+			]
 		}
 	],
 	examples: [
@@ -184,6 +196,19 @@ export const numberLineEntry: BlockCatalogEntry = {
 			source: fence('line', 'start: 0', 'end: 20', 'step: 1', 'labels: 0, 10, 20', 'placer: 7'),
 			explanation:
 				'Dans une question, l’élève pose son point ; la réponse est juste s’il est sur 7. La consigne (« Place le nombre 7. ») va dans l’énoncé, au-dessus.'
+		},
+		{
+			title: 'Représenter les solutions d’une inéquation (question)',
+			source: fence(
+				'line',
+				'start: -3',
+				'end: 5',
+				'step: 1',
+				'arrows: true',
+				'representer: [2, +inf['
+			),
+			explanation:
+				'x ⩾ 2 : l’élève pose la borne en 2, choisit « vers la droite → » et garde la borne comprise. Un intervalle borné ([-1, 3[) se représente en posant deux bornes. La consigne va dans l’énoncé, au-dessus.'
 		},
 		{
 			title: 'Placer plusieurs nombres (question)',

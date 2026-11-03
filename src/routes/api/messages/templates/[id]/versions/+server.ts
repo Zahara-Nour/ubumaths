@@ -8,6 +8,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import { requireAuth } from '$lib/server/middleware/auth';
 import type { RequestHandler } from './$types';
 import { templateVersionSchema } from '$lib/server/validation/message-templates';
 import { createServerLogger } from '$lib/utils/logger';
@@ -16,12 +17,10 @@ const logger = createServerLogger('api/messages/templates/[id]/versions/+server'
 
 // GET - List versions
 export const GET: RequestHandler = async ({ locals, params }) => {
-	const { supabase, user } = locals;
+	const { supabase } = locals;
 	const { id } = params;
 
-	if (!user) {
-		return error(401, 'Non authentifié');
-	}
+	const { user, profile } = await requireAuth(locals);
 
 	// Check access to template
 	const { data: template, error: templateError } = await supabase
@@ -42,22 +41,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		return error(404, 'Template non trouvé');
 	}
 
-	// Get user profile
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
-	// panne produisait le même refus, indiscernable d'un refus mérité.
-	if (profileError && profileError.code !== 'PGRST116') {
-		logger.error('Rôle illisible :', profileError);
-		return error(500, 'Impossible de vérifier les droits');
-	}
-
 	// Check permissions
-	const isAdmin = profile?.role === 'admin';
+	const isAdmin = profile.role === 'admin';
 	const isOwner = template.created_by === user.id;
 
 	if (!isAdmin && !isOwner) {
@@ -97,12 +82,10 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 // POST - Restore version
 export const POST: RequestHandler = async ({ locals, params, request }) => {
-	const { supabase, user } = locals;
+	const { supabase } = locals;
 	const { id } = params;
 
-	if (!user) {
-		return error(401, 'Non authentifié');
-	}
+	const { user, profile } = await requireAuth(locals);
 
 	// ✅ SECURITY: Validate request body with Zod
 	const validation = templateVersionSchema.safeParse(await request.json());
@@ -131,21 +114,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		return error(404, 'Template non trouvé');
 	}
 
-	// Get user profile
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
-	// panne produisait le même refus, indiscernable d'un refus mérité.
-	if (profileError && profileError.code !== 'PGRST116') {
-		logger.error('Rôle illisible :', profileError);
-		return error(500, 'Impossible de vérifier les droits');
-	}
-
-	const isAdmin = profile?.role === 'admin';
+	const isAdmin = profile.role === 'admin';
 	const isOwner = template.created_by === user.id;
 
 	if (!isAdmin && !isOwner) {

@@ -1,5 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '$lib/server/middleware/auth';
 // Supabase client is now accessed via locals.supabase
 import {
 	unlockCardsForEntity,
@@ -20,11 +21,8 @@ const idSchema = z.string().uuid("ID d'échange invalide");
  */
 export const GET: RequestHandler = async ({ params, locals }) => {
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifié');
-	}
+	const { user } = await requireAuth(locals);
+	const userId = user.id;
 
 	// Validate trade ID
 	const idValidation = idSchema.safeParse(params.id);
@@ -108,11 +106,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
  */
 export const DELETE: RequestHandler = async ({ params, locals }) => {
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifié');
-	}
+	const { user } = await requireAuth(locals);
+	const userId = user.id;
 
 	// Validate trade ID
 	const idValidation = idSchema.safeParse(params.id);

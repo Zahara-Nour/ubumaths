@@ -12,11 +12,10 @@ status: en cours
 _Mis à jour le 2026-11-03, après #2308._
 
 - **État** : 2-330 et 2-446 réécrits (tableau à compléter, 17 cases, 180 s), mergés (#2308) ; lot
-  `tableau-signes-2de` d'`update-published-questions.ts` prêt. **Pas encore écrit en prod.**
-- **Prochaine action** : David lance, depuis le dépôt principal, la simulation puis `--publier` :
-  `! pnpm tsx scripts/update-published-questions.ts --lot tableau-signes-2de` ; relire en prod (MCP) ; page à
-  cocher ; essais iPhone (#2287, #2297, et ces deux modèles) ; puis verser le chantier.
-- **En attente de David** : le `--publier` ; avis sur le défilement horizontal à 390 px (513 px de tableau
+  `tableau-signes-2de` **écrit en prod par David** le 2026-11-03, relu (MCP) : publiés, 180 s, 0 `blanks`.
+- **Prochaine action** : page à cocher des deux modèles ; essais iPhone (#2287, #2297, et ces deux
+  modèles) ; puis verser le chantier.
+- **En attente de David** : avis sur le défilement horizontal à 390 px (513 px de tableau
   pour 308, cases de valeur 117 px) — reco : juger aux essais iPhone.
 - **Pièges en cours** : `delay` n'est plus une garde d'`update-published-questions.ts` (relancer un ancien
   lot réécrit son temps) ; la bonne réponse vient de `blanks`, jamais du bloc ; Chrome n'atteint pas
@@ -221,3 +220,6 @@ Branche `feat/tableau-signes-modeles`, worktree `../ubumaths-wt-tableau-signes`.
   → défilement horizontal, +∞ hors écran ; cases de valeur 117 px (MathLive + bouton clavier). → David
   (à juger aux essais iPhone).
 - **#2308 mergée** (CI verte), le 2026-11-03.
+- **Écrit en prod par David** (`--lot tableau-signes-2de --publier`, 2026-11-03) après simulation (17 et 10
+  specs vertes ; preuve rouge 10/17 et 6/10 sur l'ancien contenu). MCP : f0163416 et 9c7ab1c7 `published`,
+  niveaux 3 et 4, `delay` 180, 6 et 4 variations à tableau à compléter, aucune `blanks`, 17 et 10 specs.

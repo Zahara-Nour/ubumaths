@@ -12,6 +12,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import { requireAuth } from '$lib/server/middleware/auth';
 import type { RequestHandler } from './$types';
 import type { TriggerType } from '$lib/types/messageTemplates';
 import { createServerLogger } from '$lib/utils/logger';
@@ -22,11 +23,9 @@ const logger = createServerLogger('api/messages/templates/match/+server');
 // GET - Find matching template
 // =====================================================
 export const GET: RequestHandler = async ({ locals, url }) => {
-	const { supabase, user } = locals;
+	const { supabase } = locals;
 
-	if (!user) {
-		return error(401, 'Non authentifié');
-	}
+	const { user } = await requireAuth(locals);
 
 	// Parse query parameters
 	const triggerType = url.searchParams.get('trigger_type') as TriggerType;

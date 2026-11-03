@@ -1,5 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '$lib/server/middleware/auth';
 import { isMarketplaceEnabled } from '$lib/server/marketplace/helpers';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -32,11 +33,8 @@ function formatCardNames(names: string[]): string {
 
 export const GET: RequestHandler = async ({ locals }) => {
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifié');
-	}
+	const { user } = await requireAuth(locals);
+	const userId = user.id;
 
 	const marketplaceEnabled = await isMarketplaceEnabled(supabase, userId);
 	if (!marketplaceEnabled) {

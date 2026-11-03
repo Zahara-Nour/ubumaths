@@ -80,6 +80,10 @@ import { judgeConstruction } from '$lib/questions/construction/judge';
 import { isPlacedTimeCorrect } from '$lib/ubumark/utils/horloge-placer';
 import { isCourbeAnswerCorrect } from '$lib/ubumark/utils/courbe-tracer';
 import { isPlacedAngleCorrect } from '$lib/ubumark/utils/trig-placer';
+import {
+	isIntervalAnswer,
+	isRepresentedIntervalCorrect
+} from '$lib/ubumark/utils/number-line-representer';
 import { isColoringCorrect } from '$lib/ubumark/utils/partage-colorier';
 import { isCubesAnswerCorrect } from '$lib/ubumark/utils/cubes-gestes';
 import { isPatronAnswerCorrect } from '$lib/ubumark/utils/patron-gestes';
@@ -805,6 +809,11 @@ export function isBlankValueCorrect(
 	return validateBlankValue(userAnswer, blank, instance);
 }
 
+/** Case d'une droite à représenter : sa réponse attendue est un intervalle (`[2 ; +∞[`) */
+function isLineToRepresentBlank(blank: InstanceBlank): boolean {
+	return blank.construire === 'line' && isIntervalAnswer(blank.expectedAnswer);
+}
+
 /**
  * Check if a single answer matches a blank's expected value (value only, no form/constraints).
  * Uses inferred validation mode based on blank configuration.
@@ -815,6 +824,10 @@ function validateBlankValue(
 	blank: InstanceBlank,
 	instance: QuestionInstance
 ): boolean {
+	// Droite à représenter : borne(s), côté et crochets
+	if (isLineToRepresentBlank(blank)) {
+		return isRepresentedIntervalCorrect(userAnswer, blank.expectedAnswer);
+	}
 	// Horloge à placer : la même lecture des aiguilles que la correction
 	if (blank.construire === 'horloge') return isPlacedTimeCorrect(userAnswer, blank.expectedAnswer);
 	// Repère : les coordonnées exactes du nœud posé, ou deux points distincts de la droite à tracer
@@ -1308,6 +1321,13 @@ function validateSingleBlank(
 	// Case « figure » (bloc ```figure-a-completer) : chaîne à part, cf. questions/construction/
 	if (blank.construction) {
 		return constructionBlankResult(userAnswer, blank.construction);
+	}
+
+	// Droite à représenter : borne(s), côté et crochets, sans règle ni forme
+	if (isLineToRepresentBlank(blank)) {
+		return isRepresentedIntervalCorrect(userAnswer, blank.expectedAnswer)
+			? { isCorrect: true, status: 'correct' }
+			: { isCorrect: false };
 	}
 
 	// Horloge à placer : les deux aiguilles de l'élève, petite aiguille jugée sur son secteur

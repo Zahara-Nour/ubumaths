@@ -10,20 +10,18 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2294 (PR 1 mergée)._
+_Mis à jour le 2026-11-03, après #2309 (PR 2 mergée)._
 
-- **État** : PR 1 (affichage) mergée, #2294 : `segments: [2, +inf[` / `]-inf, 3]`, crochets écran + PDF, trait sur
-  l'axe, étage si chevauchement. Pas en prod (`deploy:prod` sur demande de David). Vérification à l'œil notée
-  dans `verifications-manuelles.md`.
-- **Prochaine action** : PR 2 — geste `representer:` (phase 0 § « Geste de l'élève », points 10 à 17 ; décisions
-  Q3, Q4) : tests rouges d'abord, sur le modèle de `placer:` (`NumberLinePlacer.svelte`,
-  `utils/number-line-placer.ts`, `case: N`). Nouveau worktree :
-  `git worktree add -b feat/demi-droite-geste ../ubumaths-wt-demi-droite origin/main`.
-- **En attente de David** : rien.
-- **Pièges en cours** : format de la réponse de la case (à fixer en PR 2 ; `answerKind: 'intervalles'` existe et
-  pourrait juger) ; un segment monté d'un étage peut frôler un point nommé (`points:`), non traité. PDF :
-  `node scripts/fiches/compile-prod.mjs`, image avec `sips` (lent, en fond).
-- **Worktree / branche** : aucun (retiré après #2294).
+- **État** : PR 1 (affichage, #2294) et PR 2 (geste `representer:`, #2309) mergées. Pas en prod
+  (`deploy:prod` sur demande de David). Vérifications à l'œil notées dans `verifications-manuelles.md`.
+- **Prochaine action** : à proposer à David : un 1er modèle avec `representer:` (3-014, 2-251, corrigés de
+  |x| < k de la 2de), ou clore le chantier (versement de ce journal dans `docs/systeme/`, déjà décrit
+  dans `ubumark.md` et `questions.md`).
+- **En attente de David** : le choix ci-dessus.
+- **Pièges en cours** : Entrée avec une réponse incomplète (`2 comprise, côté ?`) valide la question ; un
+  segment monté d'un étage peut frôler un point nommé, non traité. CI : erreur non rattrapée
+  `wrapDynamicImport` (hooks SvelteKit, shard navigateur 1/2), hors tests, passée à la relance.
+- **Worktree / branche** : aucun (retiré après #2309).
 
 ---
 
@@ -133,3 +131,27 @@ _Mis à jour le 2026-11-03, après #2294 (PR 1 mergée)._
 - Catalogue des blocs : exemple « Demi-droite (solutions d'une inéquation) ».
 - #2294 : relecture `code-reviewer` sans bloquant ; deux mineurs corrigés (une seule erreur pour un infini mal
   écrit, `+inf` écrit dans l'avertissement « outside bounds »). CI verte, mergée le 2026-11-03.
+
+## PR 2 — geste `representer:` (2026-11-03)
+
+- Format de la réponse (piège ouvert de la PR 1) : texte lisible, une écriture pour l'attendu et pour
+  l'élève (`representerAnswer`) : `[2 ; +∞[`, `]-1 ; 3]`, bornes comme les graduations (`placerText`) ;
+  incomplète `2 comprise, côté ?` / `-1 comprise, autre borne ?` (jamais juste, relue au remontage).
+  Case `type: 'text'` ; juge à part `isRepresentedIntervalCorrect` (nombres comparés, sans la droite),
+  choisi quand l'attendue est un intervalle. `answerKind: 'intervalles'` pas utilisé : la réponse est
+  toujours écrite par le geste, une seule écriture.
+- Masque de l'énoncé envoyé : `representer: ?` (demi-droite) / `? ; ?` (borné) — le geste (une borne +
+  côté, ou deux bornes) reste connu de l'élève, comme le dit la phase 0 (points 10 et 11).
+- Refusés en plus de la phase 0 : plusieurs intervalles, couleur, `]-inf, +inf[`, avec `placer:` ou
+  `segments:`, échelle log.
+- Borne posée sans côté : la phrase 13 s'affiche en direct sous la droite (et après correction).
+  Intervalle borné à une seule borne, après correction : « Pose les deux bornes. » (ajout).
+- Tests : `number-line-representer.test.ts`, `generation-representer.test.ts`,
+  `NumberLineRepresenter.svelte.test.ts` (dont la question générée dans `FillBlanksInput`) ; vus rouges
+  avant le code (module absent ; composant : 9/13 rouges sans le branchement de `NumberLine.svelte`).
+- Catalogue des blocs : réglage `representer` et exemple « Représenter les solutions d'une inéquation ».
+- Relecture `code-reviewer` (Opus) : aucun bloquant ; un important corrigé (intervalle borné : la borne
+  active suivie par son indice changeait de borne quand la case relue trie les bornes → suivie par sa
+  graduation) ; deux mineurs corrigés (côté grisé sans borne ; juge : crochet fermé sur l'infini refusé).
+  Tests ajoutés, vus rouges. Variable `state` renommée (`$state` lu comme un store au typecheck).
+- #2309 mergée le 2026-11-03 (CI : un job relancé, erreur d'outillage hors tests).
