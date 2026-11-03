@@ -6,19 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2323 (migration lot 9), § 69._
+_Mis à jour le 2026-11-03, lot 9 publié (§ 70), relevé de toute la seconde._
 
-- **État** : lot 9 (18 modèles) en prod en BROUILLON, rangés (nœud + un point chacun, relu par MCP).
-  Page à cocher publiée : https://claude.ai/artifact/Rs77PKsCfgBSSYxV8grGxq (`verdicts` vide).
-- **Prochaine action** : David relit la page ; lire et COMPTER les `verdicts` (`ArtifactData list`) ;
-  « À revoir » → corriger (§ 7 de la doc) ; tout « OK » → `publier-lot` en simulation sur les trois
-  dossiers (`2de-arithmetique-a`, `2de-intervalles-b`, `2de-encadrements-c`), lancé par David.
-- **En attente de David** : la relecture de la page. 2-246, 2-251, 2-249, 2-250 (bloc `line` non dessiné
-  par la page) : à jouer dans l'aperçu admin. #2294 et #2309 sont en prod (0.67.0) : plus de blocage.
+- **État** : lots 1 à 9 publiés (lot 9 : 18/18 `published`, rangés). Relevé du 2026-11-03 (§ 70) : 115
+  points de 2de sans modèle publié, dont ~40 P (Q2) et 12 D (Q3, Q6).
+- **Prochaine action** : selon l'ordre que David tranche (ci-dessous), phase 0 du lot suivant (skill
+  `couvrir-niveau`, relevé MCP du lot d'abord).
+- **En attente de David** : ORDRE. Recommandé : lot 12 « oubliés » (24 points A/B absents du § 4 :
+  12a inégalités, comparaisons, algèbre, 489 ; 12b vecteurs sans coordonnées, 401), puis lot 10 (ensembles
+  et logique : 13 vieux brouillons à relire dont 8c31675a, 11 points neufs), puis lot 11 (lire un programme).
+  Sinon l'ordre du § 4 (10, 11, puis oubliés).
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!` ; liste blanche : pas de
   `{{if:}}` à plus de ~6 niveaux dans une réponse attendue ; corps de commit ≤ 100 caractères par ligne ;
   une autre session écrit aussi dans ce journal : `git pull` ; `db:migrate` depuis le dépôt principal
-  seulement (le worktree n'est pas lié à Supabase).
+  seulement (le worktree n'est pas lié à Supabase) ; un relevé de lot n'est pas un relevé du niveau.
 - **Worktree / branche** : `../ubumaths-wt-questions-2de` (HEAD détachée sur `origin/main`).
 
 ## 1. Relevé (prod, 2026-10-27)
@@ -1771,3 +1772,26 @@ PR chacun ; L9-b multiples consécutifs de l'amplitude ; L9-c problèmes courts 
   l'aperçu), aucune alerte de point, de nœud ou de niveau. Page (capacité `db`, `verdicts` vide) :
   https://claude.ai/artifact/Rs77PKsCfgBSSYxV8grGxq ; rendu vérifié dans Chrome (pas à 390 px : la fenêtre
   ne s'est pas redimensionnée).
+
+## 70. Lot 9 publié ; relevé de toute la seconde (2026-11-03)
+
+- Page à cocher relue par David : 18/18 « OK », sans commentaire (ids = ceux du § 68). `publier-lot`
+  (simulation puis `--publier`) lancé par David sur les trois dossiers. MCP (prod) : 18 `published`, un
+  nœud et un point chacun.
+- **Erreur de lecture corrigée** : les « 18 points sans modèle » du § 66 ne valaient que pour la partie 3.4
+  (nombres réels), pas pour la seconde entière.
+- **Relevé MCP (prod) : 115 points de 2de sans modèle publié.** Croisé avec le § 3 :
+  - P (Q2, voulus) : 216, 217, 239-242, 255-259, 282-286, 357 (L7-c), 493, 494, 304, 438, 305-310, 320-324,
+    495, 353, 358-363, 387, 388.
+  - D (Q3, Q6) : 224, 414, 415, 225-227, 231, 234, 230 (Python ; 224, 415 en « compléter la ligne »),
+    452, 454, 351 ; 392 (B ou D).
+  - Lot 10 (ensembles et logique) : sans rien 201, 202, 203, 206, 208, 209, 211, 213, 409, 215, 412 ;
+    brouillons d'avant le chantier seulement 403 (5062197a), 404 (9724dc3d), 405 (0598a535), 406
+    (5676627b), 204 (5b20321f), 205 (db8b5dc8), 207 (0a1ff14f), 210 (219c9470, 6c3ee9e6), 408 (1e9a534f,
+    55341e85), 212 (f98164b1), 410 (e05203b0), 214 (5426cead), 411 (bed58c24) ; et 244 (8c31675a, bug
+    des intervalles accolés, § 2).
+  - Lot 11 (lire un programme) : 218-223, 413, 229, 416, 228, 232, 233, 417.
+  - **Oubliés** (A ou B au § 3, dans aucun lot du § 4) : 263, 424, 264, 425, 276, 427, 277, 428
+    (inégalités, comparaisons) ; 269, 273, 274, 275, 278 (algèbre) ; 287, 433, 288, 289, 290, 291, 292,
+    296, 297 (vecteurs sans coordonnées ; 297 en case choix de figures, Q5) ; 489, 401 (automatismes).
+- Recommandation à David : oubliés d'abord (lot 12 : 12a, 12b), puis lots 10 et 11. En attente.
