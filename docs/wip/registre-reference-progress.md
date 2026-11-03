@@ -8,10 +8,10 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 _Mis à jour le 2026-11-03, PR « unité du résultat » en cours (branche `fix/tidy-unite-ecrite`)._
 
-- **État** : 34/34 fiches validées « ok » (page à cocher, 2026-11-03). Règle codée : une unité
-  tapée (moins de chiffres) + durées en h-min-s au niveau de tête (`tidy/duration.ts`) ; la
-  correction lit un attendu h-min-s (`singleExpectedDuration`) : oracle 0 verdict changé. Doc à jour.
-- **Prochaine action** : revue (code-reviewer opus : mathAST + correction) → PR → CI → merge.
+- **État** : PR #2276 ouverte. Règle codée (unité tapée, h-min-s au niveau de tête) ; revue Opus :
+  3 findings corrigés sur décision de David (variables = UNE grandeur, attendu dans l'unité
+  imposée, étape `tidy-write-duration`). Oracle 0 verdict changé. Doc à jour.
+- **Prochaine action** : CI verte + contre-revue des correctifs → merge, puis « Reprendre ici ».
 - **En attente de David** : retirer les sondes non suivies `src/lib/mathAST/__sonde__/` (règle 0) ;
   garder ou retirer le mode `unitChoice: 'school'` (plus aucun appelant).
 - **Tranché** : voir § Unité du résultat ; avant : Q9 EN ENTIER, A-D du lot 2, `decimal` en LaTeX,
@@ -452,3 +452,18 @@ Sonde jetable (vitest sous `src/`, `produceRegistre` / `produceAtelier`), 25 lig
   90aaf9dd) changent l'AFFICHAGE de l'attendu à presque chaque tirage (34 attendus sur 200), pas
   seulement les 5 du banc d'avant ; verdicts inchangés.
 - **Perf** : banc `tidy` (9 expressions × 3000) égal à `main` une fois la machine calmée.
+
+## Revue de #2276 et correctifs (2026-11-03)
+
+- **Findings** (code-reviewer Opus) : (1) une variable `{{eval}}` de durée en h-min-s cassait
+  `{{eval:{{t}}*2}}` ; (2) unité imposée : l'attendu change d'unité (`1.5[km]` pour `m` imposé) →
+  bonne réponse refusée ; l'oracle ne le voyait pas (0 modèle avec `required` dans les fixtures) ;
+  (3) `1[h]+30[min]` sans étape ; (4) `;+ ;() ;d` perdus sur h-min-s ; (5) simplify ≠ tidy avec un
+  terme à lettre (dimension invalide, laissé) ; (6) défaut `'hms'` pour tous (gardé : choix « tout
+  sauf les variables »).
+- **Prod (lecture seule)** : 0 modèle sur 2 013 avec `required` ; les seuls `{{eval}}` à plusieurs
+  unités de durée sans `;hms` sont les attendus des 4 modèles de durées.
+- **Décisions de David** : h-min-s partout sauf la valeur d'une variable ; attendu réécrit dans
+  l'unité imposée au tirage ; dire le geste (`tidy-write-duration` « On décompose la durée en
+  heures, minutes, secondes »).
+- **Piège** : `1[h]+30[min]` en une grandeur donne `90[min]` (1,5 et 90 : 2 chiffres, la plus petite).

@@ -113,8 +113,11 @@ validés un à un le 2026-11-03) :
 - une **durée** où au moins deux de h, min, s sont tapées, juste en secondes : en h-min-s
   (`2[h]+30[min]` → 2 h 30 min, `2*(1[h] 30[min])` → 3 h, `1[h]-59[min]` → 1 min), au niveau de
   tête seulement (`(2[h]+30[min])/1[s]` → 9000) ; l'arbre est la somme juxtaposée
-  (`tidy/duration.ts`). `{{eval}}` l'écrit `{2[h]}{30[min]}` (comme `;hms`), sauf négative ou en
-  `;sci` (une grandeur) ; `durations: 'single'` demande UNE grandeur (calcul tapé par l'élève) ;
+  (`tidy/duration.ts`). `{{eval}}` l'écrit `{2[h]}{30[min]}` (comme `;hms`) dans ce qui s'affiche
+  (énoncé, corrigé, attendu) ; la **valeur d'une variable** reste UNE grandeur, réutilisable dans
+  un autre calcul (`resolveVariables` → `durations: 'single'`, David, 2026-11-03), comme une durée
+  négative ou un modificateur d'écriture (`;sci`, `;d`, `;+`, `;()`) ; `durations: 'single'`
+  demande UNE grandeur (calcul tapé par l'élève) ;
 - un terme à lettre impose son unité à la somme (`x[km]+500[m]` → x km + 0,5 km).
 
 Le mode `unitChoice: 'school'` (la plus grande unité scolaire où la valeur est ≥ 1) reste une
@@ -178,6 +181,10 @@ encore en flottants (`convertAffine`) ; aucun modèle publié n'en demande (octo
 est lue à part (`\unit{…}` + parseur d'unités) : c'est un calculateur hors du circuit ci-dessus,
 mais valeur et égalité suivent désormais `tidy` (rationnels exacts). Le catalogue des unités et les opérations de base viennent de `mathAST/units`
 (`resolveUnit`, conversions) : `questions/units` n'en garde plus de copie depuis le lot D.
+
+Case à **unité imposée** (`unit.required`) : au tirage, l'attendu est réécrit dans cette unité
+(`1.5[km]` → `1500[m]`, `expectedInRequiredUnit`, `questions/units/required-unit.ts`, David,
+2026-11-03), sinon la règle de l'unité tapée rendait la bonne réponse impossible.
 
 Un attendu en h-min-s (`{2[h]}{58[min]}`, écrit par `{{eval}}`) se lit comme UNE durée dans sa plus
 petite unité (`178[min]`, `singleExpectedDuration`, `composite-duration.ts`), pour la correction
