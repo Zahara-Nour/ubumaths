@@ -8,10 +8,10 @@ status: écarts revérifiés le 2026-10-18 ; tri A (seul) / B (David) fait ; lot
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2345._
+_Mis à jour le 2026-11-04, après #2345 et la remise à jour de `ecarts-a-trier.md` (tableaux = source unique, bilan : 23 ouverts + 11 T)._
 
 - **État** : lot B en cours. **Faits** : M4 code (#2340, en prod), M11 `DROP` + `db:types` (#2342, #2345, mergées), M8 (#2343) ; L13 et V63 fermés (déjà tranchés). Liste A et lot RGPD comme avant (T14 attend David).
-- **Prochaine action** : D11 + C10 ; C14 ; V35 ; V39 (mesurer les modèles d'abord) ; V40 ; L9 ; L20 (doc). Clore V4, V8, M2, M20, V41, D10, D20, V49 et M4/M8/M11 dans `ecarts-a-trier.md`. **M4 `DROP worksheet_instances`** : le `deploy:prod` du 2026-11-04 livre le code qui ne la lit plus → `DROP` possible (stop + explication à David avant `db:migrate`) (retirer aussi les tests d'intégration qui la lisent : `phantom-columns`, `anon-option-b`, `eleve-inscrit-apres-publication`, `profiles-columns`, `worksheet-instance-not-writable-by-student`).
+- **Prochaine action** : D11 + C10 ; C14 ; V35 ; V39 (mesurer les modèles d'abord) ; V40 ; L9 ; L20 (doc). **M4 `DROP worksheet_instances`** : le `deploy:prod` du 2026-11-04 livre le code qui ne la lit plus → `DROP` possible (stop + explication à David avant `db:migrate`) (retirer aussi les tests d'intégration qui la lisent : `phantom-columns`, `anon-option-b`, `eleve-inscrit-apres-publication`, `profiles-columns`, `worksheet-instance-not-writable-by-student`).
 - **En attente de David** : DPA (Drive privé, preuves d'acceptation) ; relire `conformite/violation-de-donnees.md` ; T14 ; perf `requireAuth` ; `account/delete` 1 / 24 h.
 - **Pièges en cours** : `db:migrate` refusé par le mode auto → David le lance (`! cd <worktree> && pnpm db:migrate`) ; worktree non lié → copier `../ubumaths/supabase/.temp` ; un `DROP` garde la ligne de `generate-db-doc.ts` jusqu'à `db:types` (test « aucune table sans domaine ») ; migration appliquée en local par `psql` sous verrou (pas de `db:reset`, base partagée).
 - **Worktree / branche** : `../ubumaths-wt-ecarts-a-trier`, une branche par PR du lot (aucune en cours : worktree détaché sur `origin/main`).
