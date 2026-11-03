@@ -1271,7 +1271,11 @@ retirée du moteur le 2026-10-13) n'est pas au catalogue non plus.
 
 **La réponse du registre fait foi** (chantier `registre-reference`, 2026-11-01) : chaque commande
 du registre déclare sa **réponse brute** dans le champ `answer` de `WebReplEngine.execute` (LaTeX
-de la réponse seule) ; l'Atelier l'habille, il ne la remplace pas. Le contrat est le corpus
+de la réponse seule, exacte dans les deux modes) et, pour un calcul tapé ou une grandeur seule,
+son **écriture décimale** dans `decimal` (au point, en LaTeX, sans signe, arrondie selon Q3, même
+pour un nombre déjà écrit) et `decimalExact` (`=` ou `≈`) — décisions A et B du lot 2 : le mode
+décimal est un choix d'affichage de l'outil, qui pose `=`/`≈`, la virgule et le `×`. L'Atelier
+l'habille, il ne la remplace pas. Le contrat est le corpus
 `tests/fixtures/mathast/registre-corpus.ts`, joué contre le registre et contre la ligne affichée
 par l'Atelier (`src/lib/mathAST/cli/__tests__/registre-corpus/`, `src/lib/atelier/__tests__/registre-corpus.test.ts`) ;
 les écarts d'aujourd'hui sont listés dans `connues-fausses.ts` et se retirent au fil du chantier.

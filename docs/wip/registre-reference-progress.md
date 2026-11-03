@@ -6,12 +6,12 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2276._
+_Mis à jour le 2026-11-03, PR lot 2 · A/B en cours._
 
-- **État** : #2276 MERGÉE — une seule règle d'unité du résultat (unité tapée, moins de chiffres)
-  dans `tidy`, `{{eval}}` et l'Atelier ; durées en h-min-s (variables et contextes de valeur : UNE
-  grandeur) ; attendu dans l'unité imposée ; étape `tidy-write-duration`. Pas déployée.
-- **Prochaine action** : reprise du lot 2 du registre.
+- **État** : lot 2 du registre repris (61 lignes connues fausses), découpé en 5 PR (§ Lot 2 —
+  correction du registre). PR 1/5 (A/B : `decimal` + `decimalExact`, `answer` exacte dans les deux
+  modes) écrite sur `feat/registre-reference`, corpus 205/205, à pousser et faire relire.
+- **Prochaine action** : PR A/B → revue `code-reviewer` → merge ; puis PR D (expressions à lettres).
 - **En attente de David** : rien.
 - **Tranché** : option `unitChoice: 'school'` GARDÉE exprès (David, 2026-11-03 : « utile plus
   tard ») — ne pas proposer de la retirer ; § Unité du résultat et § Revue de #2276 ; avant : Q9 EN ENTIER, A-D du lot 2,
@@ -19,7 +19,7 @@ _Mis à jour le 2026-11-03, après #2276._
 - **Pièges** : une PR en conflit avec `main` n'a AUCUN run de CI (état « dirty ») → `git merge
 origin/main` ; `rebase` et `restore` = liste `ask` ; sous-expressions de `tidy` toujours en
   `durations: 'single'` ; budgets de temps de tabuler rouges sous charge seulement.
-- **Worktree / branche** : aucun (sondes supprimées, worktree et branche retirés le 2026-11-03).
+- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `feat/registre-reference`.
 
 ---
 
@@ -467,3 +467,22 @@ Sonde jetable (vitest sous `src/`, `produceRegistre` / `produceAtelier`), 25 lig
   l'unité imposée au tirage ; dire le geste (`tidy-write-duration` « On décompose la durée en
   heures, minutes, secondes »).
 - **Piège** : `1[h]+30[min]` en une grandeur donne `90[min]` (1,5 et 90 : 2 chiffres, la plus petite).
+
+## Lot 2 — correction du registre (2026-11-03)
+
+Relevé : 61 lignes du registre connues fausses (lot 2), 5 familles. Ordre (le contrat d'abord) :
+
+1. **A/B** — `decimal` + `decimalExact` (14 lignes `décimal : absente`).
+2. **D** — expression à lettres rangée comme l'Atelier (`tidy`, ordre gardé, S3) : 23 lignes.
+3. **Lecture de l'entrée** — degrés, `π`, refus de `pi` (11 lignes).
+4. **C** — égalité seule → `\text{vrai}`/`\text{faux}` (5 registre, 5 Atelier dont `comparer-13`).
+5. **Plafond** — `1000!/999!` → 1000 (les deux outils) ; réponse de l'écriture gardée (4 lignes).
+
+**PR 1 (A/B), écrite** : `ReplExecutionResult.decimal` (LaTeX au point, sans signe,
+`approximationLatex`) et `decimalExact`, pour un calcul tapé (dans les deux modes, nombre déjà
+écrit compris) et une grandeur seule (`QuantityOutcome.decimalWriting`, `0.3333~\mathrm{km}`) ;
+`answer` posée par le calcul, exacte même en mode décimal (avant : `0.3333` pour `1/3`). Pas pour
+`.convert` (aucune réponse brute encore), ni l'écriture gardée (`answer` absente, PR 5). Le juge
+lit `decimalExact` (le signe pour l'Atelier). Preuve rouge : 14 lignes du corpus + 6/9 tests de
+`reponse-decimale.test.ts`. Suites `cli` + `atelier` : 8 038 verts. L'Atelier lit encore
+`approximateLatex` (bouton ≈) : passer au champ `decimal` = travail de R1, plus tard.

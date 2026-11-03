@@ -25,6 +25,11 @@ mènent à `/atelier`.
 - **Atelier** (vue Calcul) : `execute`, `getCommands` (catalogue), `getEvalState` (mode),
   `getState` (`syncEngine`) ; champs `output`, `latex`, `ast`, `error`, `approximateLatex`,
   `exactLatex`, `quantityAst`, `exactTooLong`.
+- **Corpus du registre** (`cli/__tests__/registre-corpus/`) : `answer` (réponse brute, exacte dans
+  les deux modes), `decimal` et `decimalExact` (écriture décimale au point, en LaTeX, sans signe,
+  d'un calcul tapé ou d'une grandeur seule, présente même pour un nombre déjà écrit — décisions A
+  et B du lot 2 de `registre-reference`). Seul lecteur à ce jour ; l'Atelier lit encore
+  `approximateLatex` pour son bouton ≈.
 - `getFunctions` n'est lu que par des tests (`atelier/__tests__/engine.test.ts` s'en sert pour
   vérifier `syncEngine`).
 

@@ -24,7 +24,8 @@
  * - **Verdict** (`\text{vrai}`) et **refus** (message) : texte exact.
  * - **Écriture décimale** (`decimal`, décision A du lot 2) : jugée une fois la
  *   réponse juste, au texte près (virgule ou point, `\times 10^{n}` ou
- *   `*10^n`), `=` ou `≈` compris. Le registre DOIT la rendre (décision B) ;
+ *   `*10^n`), `=` ou `≈` compris (le registre le dit par `decimalExact`, un
+ *   outil par son signe). Le registre DOIT la rendre (décision B) ;
  *   un outil qui l'habille n'est jugé que s'il l'affiche.
  * - Lisible = se parse : `1000!` ne se calcule pas, mais se compare au texte.
  */
@@ -45,8 +46,13 @@ export type Produced =
 	| {
 			readonly kind: 'reponse';
 			readonly latex: string;
-			/** L'écriture décimale affichée, `=` ou `\approx` devant (`\approx 0{,}8333`) */
+			/**
+			 * L'écriture décimale : celle du registre, sans signe (`0.8333`), ou
+			 * celle qu'affiche l'outil, `=` ou `\approx` devant (`\approx 0{,}8333`)
+			 */
 			readonly decimal?: string;
+			/** Le registre dit si elle est exacte (`decimalExact`) ; sinon, le signe le dit */
+			readonly decimalExact?: boolean;
 	  }
 	| { readonly kind: 'refus'; readonly message: string }
 	/** Ni réponse brute lisible ni refus (sortie texte seule, champ absent) */
@@ -125,7 +131,7 @@ export function judge(c: RegistreCase, produced: Produced, options: JudgeOptions
 	if (verdict.status !== 'juste' || produced.kind !== 'reponse' || c.decimal === undefined) {
 		return verdict;
 	}
-	return judgeDecimal(c.decimal, c.decimalExact === true, produced.decimal, options);
+	return judgeDecimal(c.decimal, c.decimalExact === true, produced, options);
 }
 
 function judgeAnswer(c: RegistreCase, produced: Produced): Verdict {
@@ -308,9 +314,10 @@ function readDecimal(latex: string): { readonly text: string; readonly exact?: b
 function judgeDecimal(
 	expected: string,
 	expectedExact: boolean,
-	rendered: string | undefined,
+	produced: { readonly decimal?: string; readonly decimalExact?: boolean },
 	options: JudgeOptions
 ): Verdict {
+	const rendered = produced.decimal;
 	if (rendered === undefined) {
 		return options.decimalRequired === true
 			? { status: 'décimal', rendu: 'absente' }
@@ -319,7 +326,7 @@ function judgeDecimal(
 	const want = readDecimal(expected);
 	const got = readDecimal(rendered);
 	if (want === null || got === null) return { status: 'décimal', rendu: rendered };
-	return got.text === want.text && (got.exact ?? true) === expectedExact
+	return got.text === want.text && (produced.decimalExact ?? got.exact ?? true) === expectedExact
 		? { status: 'juste' }
 		: { status: 'décimal', rendu: rendered };
 }

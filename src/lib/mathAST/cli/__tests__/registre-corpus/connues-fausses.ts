@@ -36,21 +36,6 @@ export const REGISTRE_CONNUES_FAUSSES: Readonly<Record<string, string>> = {
 	'refus-01': 'message : Commande inconnue : .foo — tape .help pour la liste',
 	'refus-02':
 		'message : Rien à dériver : écris une expression après la commande. Forme attendue : .diff <expression>[ ; <variable>]',
-	// Lot 2 · décision B : le registre rend toujours l'écriture décimale (`approximateLatex` manque quand la réponse est déjà un nombre décimal)
-	'decimal-03': 'décimal : absente',
-	'grands-01': 'décimal : absente',
-	'grands-02': 'décimal : absente',
-	'grands-03': 'décimal : absente',
-	'grands-04': 'décimal : absente',
-	'grands-05': 'décimal : absente',
-	'grands-07': 'décimal : absente',
-	'plafond-01': 'décimal : absente',
-	'plafond-03': 'décimal : absente',
-	'remarquables-09': 'décimal : absente',
-	'racines-01': 'décimal : absente',
-	'racines-08': 'décimal : absente',
-	'approche-13': 'décimal : absente',
-	'approche-15': 'décimal : absente',
 	// Lot 2 · décision D : une expression à lettres tapée seule est rangée (le registre la recopie)
 	'decimal-05': 'forme : 2.5 x / 5',
 	'decimal-06': 'forme : x / 0.5',
