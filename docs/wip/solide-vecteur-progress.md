@@ -15,10 +15,10 @@ _Mis à jour le 2026-11-03, après #2347._
   `vecteurs:` dans `tracer:`) mergés, pas en prod. Revue Opus de #2347 : 0 erreur de correction ; zéros en tête
   (`1/04`) désormais refusés, tests d'extrémité ajoutés.
 - **Prochaine action** : lot 3 (modèle TSPE-334), nouveau worktree
-  `git worktree add -b feat/solide-vecteur-modele ../ubumaths-wt-solide-vecteur origin/main`.
-- **En attente de David** : nom indicé `w1` = « w1 » en texte brut sur la figure (`solide-gestes.ts`, étiquette)
-  mais `\vec{w_{1}}` dans la phrase de correction — (a) indice sur la figure, (b) `w1` sans indice dans la
-  phrase, (c) laisser.
+  `git worktree add -b feat/solide-vecteur-modele ../ubumaths-wt-solide-vecteur origin/main`. En ouverture du
+  lot : étiquette indicée sur la figure (`w1` → w₁, comme `\vec{w_{1}}` de la phrase), tranché (a) par David le
+  2026-11-03 ; suivre la convention des noms de points indicés déjà affichés sur les solides.
+- **En attente de David** : rien.
 - **Pièges en cours** : le geste ne vise que des points connus en 3D (`solideClickablePoints`) ; une
   combinaison dont l'extrémité ne tombe sur aucun point touchable est refusée. `stroke-width` explicite sur
   tout cercle SVG du geste. Une ligne `vecteurs:` fausse masque les erreurs de `tracer:` (voulu). Code en
