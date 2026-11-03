@@ -194,7 +194,7 @@ describe('figure à compléter (```figure-a-completer)', () => {
 		expect(masked).not.toContain('symetrie(A');
 		const header = readConstructionHeader(masked);
 		expect(header.errors).toEqual([]);
-		expect(header.spec.tools).toEqual(['point', 'droite', 'equerre', 'compas']);
+		expect(header.spec.tools).toEqual(['point', 'droite', 'equerre', 'compas', 'report']);
 	});
 
 	it('deux droites, outil écrit : plus aucun point nommé dans verifier:', () => {

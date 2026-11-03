@@ -6,7 +6,9 @@
  * près d'un point de la figure, le toucher est aimanté sur lui ; outil point :
  * un toucher place un point ; équerre : une droite choisie (`guide`), puis un
  * point → la perpendiculaire ; compas : le centre, puis un point du cercle
- * (lot 2b, aimantation des instruments : `instruments.ts`) ; « Effacer »
+ * (lot 2b, aimantation des instruments : `instruments.ts`) ; report : deux
+ * touchers prennent l'écartement (`span`), chaque toucher suivant pique un
+ * cercle de ce rayon (lot 4) ; « Effacer »
  * enlève le départ ou la droite en attente, sinon le dernier objet. Comportements validés
  * par David le 2026-10-25 (`docs/wip/geometrie-validation-progress.md` § 5).
  *
@@ -36,6 +38,7 @@ import { isPointCheck, pointSolution, type ExpectedPoints, type PointSolution } 
 import { isLineCheck, lineCodages, lineSolution, type LineCodage } from './line';
 import { circleSolution, isCircleCheck, type CircleSolution } from './circle';
 import { polygonSolution } from './polygon';
+import { triangleCorrection, triangleSolution, type TriangleCorrection } from './triangle';
 import { symmetrySolution, type FigureShapes } from './symmetry';
 
 /** Rayon d'aimantation, en pixels À L'ÉCRAN (un doigt d'enfant sur tablette) */
@@ -65,6 +68,8 @@ export interface Drawing {
 	objects: DrawnObject[];
 	start: Position | null;
 	guide?: StraightTrait | null;
+	/** Report : l'écartement pris (deux points), gardé d'un cercle à l'autre */
+	span?: { a: Position; b: Position } | null;
 }
 
 export interface FigureWindow {
@@ -127,16 +132,20 @@ export function snapToGrid(tap: Position, grid: FigureStep, window?: FigureWindo
 	};
 }
 
-/** L'objet ajouté, sauf au-delà des plafonds du juge (il rendrait la réponse illisible) */
+/**
+ * L'objet ajouté, sauf au-delà des plafonds du juge (il rendrait la réponse
+ * illisible) ; l'écartement du report est gardé
+ */
 function withObject(drawing: Drawing, object: DrawnObject): Drawing {
 	const objects = [...drawing.objects, object];
+	const kept = drawing.span ? { span: drawing.span } : {};
 	if (
 		objects.length > CONSTRUCTION_ANSWER_LIMITS.objects ||
 		serializeConstructionAnswer(objects).length > CONSTRUCTION_ANSWER_LIMITS.chars
 	) {
-		return { objects: drawing.objects, start: null };
+		return { objects: drawing.objects, start: null, ...kept };
 	}
-	return { objects, start: null };
+	return { objects, start: null, ...kept };
 }
 
 /** Équerre, premier toucher : la droite à longer (le départ éventuel est oublié) */
@@ -144,7 +153,7 @@ export function chooseGuide(drawing: Drawing, guide: StraightTrait): Drawing {
 	return { objects: drawing.objects, start: null, guide };
 }
 
-/** Changer d'outil : le départ et la droite en attente sont oubliés */
+/** Changer d'outil : le départ, la droite et l'écartement en attente sont oubliés */
 export function cancelPending(drawing: Drawing): Drawing {
 	return { objects: drawing.objects, start: null };
 }
@@ -173,9 +182,24 @@ export function addTap(
 		if (placed) return { objects: drawing.objects, start: null };
 		return withObject(drawing, { kind: 'point', x: position.x, y: position.y });
 	}
+	if (tool === 'report' && drawing.span) {
+		const { a, b } = drawing.span;
+		return withObject(drawing, {
+			kind: 'report',
+			cx: position.x,
+			cy: position.y,
+			ax: a.x,
+			ay: a.y,
+			bx: b.x,
+			by: b.y
+		});
+	}
 	const { start } = drawing;
 	if (!start) return { objects: drawing.objects, start: position };
 	if (Math.hypot(position.x - start.x, position.y - start.y) <= SAME_TAP_EPSILON) return drawing;
+	if (tool === 'report') {
+		return { objects: drawing.objects, start: null, span: { a: start, b: position } };
+	}
 	if (tool === 'compas') {
 		return withObject(drawing, {
 			kind: 'cercle',
@@ -194,14 +218,34 @@ export function addTap(
 	});
 }
 
-/** « Effacer » : le départ ou la droite en attente, sinon le dernier objet */
+/** Le dernier objet est-il un cercle piqué avec cet écartement ? */
+function lastUsesSpan(drawing: Drawing): boolean {
+	const last = drawing.objects.at(-1);
+	const span = drawing.span;
+	if (!span || last?.kind !== 'report') return false;
+	return (
+		last.ax === span.a.x && last.ay === span.a.y && last.bx === span.b.x && last.by === span.b.y
+	);
+}
+
+/**
+ * « Effacer » : le départ ou la droite en attente ; un écartement sans cercle
+ * piqué depuis ; sinon le dernier objet (l'écartement reste pris)
+ */
 export function eraseLast(drawing: Drawing): Drawing {
 	if (drawing.start || drawing.guide) return cancelPending(drawing);
-	return { objects: drawing.objects.slice(0, -1), start: null };
+	if (drawing.span && !lastUsesSpan(drawing)) return cancelPending(drawing);
+	const kept = drawing.span ? { span: drawing.span } : {};
+	return { objects: drawing.objects.slice(0, -1), start: null, ...kept };
 }
 
 export function canErase(drawing: Drawing): boolean {
-	return drawing.start !== null || Boolean(drawing.guide) || drawing.objects.length > 0;
+	return (
+		drawing.start !== null ||
+		Boolean(drawing.guide) ||
+		Boolean(drawing.span) ||
+		drawing.objects.length > 0
+	);
 }
 
 /**
@@ -222,6 +266,7 @@ export function solutionLines(
 		if (check.kind === 'point' || check.kind === 'cercle') return [];
 		if (check.kind === 'droite') return lineSolution([check], expected);
 		if (check.kind === 'symetrique') return symmetrySolution(check, points, shapes);
+		if (check.kind === 'triangle') return triangleSolution(check, points, shapes, drawn);
 		if (check.kind !== 'droite_par')
 			return polygonSolution(check, points, drawn.filter(isDrawnLine));
 		const a = points.get(check.points[0]);
@@ -247,6 +292,17 @@ export function solutionCircles(
 	shapes?: FigureShapes
 ): CircleSolution[] {
 	return circleSolution(checks.filter(isCircleCheck), expected, points, shapes);
+}
+
+/** Le triangle à construire (lot 4) : arcs de report et codage des longueurs ; null sinon */
+export function solutionTriangle(
+	checks: readonly ConstructionCheck[],
+	points: ReadonlyMap<string, Position>,
+	shapes: FigureShapes | undefined,
+	drawn: readonly DrawnObject[]
+): TriangleCorrection | null {
+	const check = checks.find((c) => c.kind === 'triangle');
+	return check ? triangleCorrection(check, points, shapes, drawn) : null;
 }
 
 /** Les points à placer : où ils vont, avec leur nom (vérifications `point`) */

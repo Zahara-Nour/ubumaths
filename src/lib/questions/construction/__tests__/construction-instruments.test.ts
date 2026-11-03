@@ -148,12 +148,13 @@ class Screen {
 // ============================================================================
 
 describe('palette déduite', () => {
-	it('point sans quadrillage : point (l’outil de départ), règle, équerre, compas', () => {
+	it('point sans quadrillage : point (l’outil de départ), règle, équerre, compas, report', () => {
 		expect(readConstructionHeader(OBLIQUE).spec.tools).toEqual([
 			'point',
 			'droite',
 			'equerre',
-			'compas'
+			'compas',
+			'report'
 		]);
 	});
 

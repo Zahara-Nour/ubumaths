@@ -18,6 +18,9 @@
 	  toucher une droite (surlignée), puis un point → la perpendiculaire ; compas :
 	  le centre, puis un point → le cercle ; aimantation : point → intersection
 	  de deux traits → sur un trait → libre ;
+	- report (lot 4, § 13) : deux touchers prennent l'écartement (trait fin),
+	  chaque toucher suivant pique un cercle de ce rayon ; les bouts des
+	  segments de la figure s'aimantent (longueurs à reporter) ;
 	- clavier : les points nommés sont des boutons (Tab, puis Entrée ou Espace),
 	  avec les instruments les intersections aussi, et les droites pour l'équerre ;
 	  sur quadrillage, un curseur se déplace de nœud en nœud avec les flèches ;
@@ -62,6 +65,7 @@
 		isDrawnCircle,
 		isDrawnLine,
 		isDrawnPoint,
+		isDrawnReport,
 		parseConstructionAnswer,
 		serializeConstructionAnswer,
 		type DrawnLine
@@ -87,6 +91,7 @@
 		solutionCodages,
 		solutionLines,
 		solutionPoints,
+		solutionTriangle,
 		type ConstructionAnswerInput,
 		type Drawing
 	} from '$lib/questions/construction/drawing';
@@ -121,6 +126,7 @@
 		node: FigureNode;
 		at: Position | null;
 		guide?: StraightTrait | null;
+		span?: { a: Position; b: Position } | null;
 	} | null>(null);
 	/** Outil choisi dans la palette, lié au bloc comme `pending` */
 	let chosen = $state.raw<{ node: FigureNode; tool: ConstructionTool } | null>(null);
@@ -132,12 +138,21 @@
 	let lines = $derived(objects.filter(isDrawnLine));
 	let placedPoints = $derived(objects.filter(isDrawnPoint));
 	let circles = $derived(objects.filter(isDrawnCircle));
+	/** Cercles du report, dessinés comme ceux du compas */
+	let reports = $derived(
+		objects.filter(isDrawnReport).map((r) => ({
+			cx: r.cx,
+			cy: r.cy,
+			radius: Math.hypot(r.bx - r.ax, r.by - r.ay)
+		}))
+	);
 	// Plus de saisie (Valider, correction) ou autre bloc : le départ en attente disparaît
 	let mine = $derived(interactive && pending?.node === node ? pending : null);
 	let drawing: Drawing = $derived({
 		objects,
 		start: mine?.at ?? null,
-		...(mine?.guide && { guide: mine.guide })
+		...(mine?.guide && { guide: mine.guide }),
+		...(mine?.span && { span: mine.span })
 	});
 	let corrected = $derived(answer?.isCorrect === false || showSolution);
 	let checks = $derived(node.construction?.checks ?? []);
@@ -150,7 +165,13 @@
 	let tool = $derived(chosen?.node === node ? chosen.tool : firstTool);
 	/** Palette avec équerre ou compas : aimantation des instruments (hors quadrillage) */
 	let instruments = $derived(tools.some((t) => INSTRUMENT_TOOLS.includes(t)));
-	let hintText = $derived(interactive && hint?.node === node ? hint.text : '');
+	/** Report : ce qu'attend le prochain toucher (dont : reprendre Report pour une autre longueur) */
+	let reportHint = $derived.by(() => {
+		if (!interactive || tool !== 'report') return '';
+		if (drawing.span) return 'Touche où piquer le compas. Pour une autre longueur, touche Report.';
+		return 'Touche les deux bouts de la longueur à reporter.';
+	});
+	let hintText = $derived(interactive && hint?.node === node ? hint.text : reportHint);
 	/** Figure de travail : traits gris une fois la saisie finie, jamais de verdict */
 	let workDone = $derived(node.construction?.work === true && answer !== undefined && !interactive);
 	/** Droite à construire (lot 3) : sur quadrillage, tous ses outils vont aux nœuds */
@@ -185,7 +206,10 @@
 	let cursor = $state.raw<Position | null>(null);
 
 	function apply(next: Drawing) {
-		pending = next.start || next.guide ? { node, at: next.start, guide: next.guide ?? null } : null;
+		pending =
+			next.start || next.guide || next.span
+				? { node, at: next.start, guide: next.guide ?? null, span: next.span ?? null }
+				: null;
 		hint = null;
 		if (next.objects !== drawing.objects) {
 			answer?.onChange(serializeConstructionAnswer(next.objects));
@@ -213,12 +237,39 @@
 		return [...figureShapes(scene, node.header).traits, ...traitsOfObjects(objects)];
 	}
 
+	/**
+	 * Bouts des segments de la figure qui ne sont pas des points nommés : le
+	 * report y prend l'écartement d'une longueur donnée (lot 4)
+	 */
+	function segmentEnds(scene: FigureScene): Position[] {
+		const named = [...namedPointPositions(scene).values()];
+		const ends: Position[] = [];
+		for (const s of figureShapes(scene, node.header).segments) {
+			for (const p of [s.a, s.b]) {
+				const known = [...named, ...ends].some((q) => Math.hypot(p.x - q.x, p.y - q.y) < 1e-9);
+				if (!known) ends.push(p);
+			}
+		}
+		return ends;
+	}
+
 	/** Ce sur quoi les instruments s'aimantent ; intersections dans la fenêtre seulement */
 	function snapTargets(scene: FigureScene): SnapTargets {
 		const traits = traitsOf(scene);
 		const { xMin, xMax, yMin, yMax } = scene.viewport;
 		return {
-			points: [...namedPointPositions(scene).values(), ...placedPoints],
+			// Bouts des segments de l'élève aussi : deux côtés finis au même endroit se rejoignent
+			points: [
+				...namedPointPositions(scene).values(),
+				...segmentEnds(scene),
+				...placedPoints,
+				...lines
+					.filter((l) => l.kind === 'segment')
+					.flatMap((l) => [
+						{ x: l.x1, y: l.y1 },
+						{ x: l.x2, y: l.y2 }
+					])
+			],
 			// Marge de `isInFrame` : une intersection construite sur le bord reste atteignable (revue)
 			intersections: intersectionsOf(traits).filter((p) =>
 				isInFrame(p, { xMin, xMax, yMin, yMax })
@@ -232,7 +283,8 @@
 		segment: 'Segment',
 		point: 'Point',
 		equerre: 'Équerre',
-		compas: 'Compas'
+		compas: 'Compas',
+		report: 'Report'
 	};
 
 	/** Toucher (doigt, souris) : coordonnées de la fenêtre, puis de la figure */
@@ -324,6 +376,9 @@
 		if (!cursor) {
 			if (drawing.guide) return 'Équerre : droite choisie, touche un point';
 			if (drawing.start && tool === 'compas') return 'Compas : centre choisi';
+			if (drawing.start && tool === 'report')
+				return 'Report : premier point de l’écartement choisi';
+			if (drawing.span && tool === 'report') return 'Report : écartement pris, touche un centre';
 			return drawing.start ? 'Départ choisi' : '';
 		}
 		const count = tool === 'point' ? placedPoints.length : lines.length;
@@ -406,6 +461,33 @@
 			]
 		};
 	}
+
+	/** Codage d'une longueur (triangle) : `count` petits traits au milieu du segment, en SVG */
+	function lengthTicks(
+		mark: { from: Position; to: Position; count: number },
+		scene: FigureScene,
+		width: number,
+		height: number
+	) {
+		const transformer = createTransformer(scene.viewport, width, height);
+		const a = transformer.mathToSvg(mark.from.x, mark.from.y);
+		const b = transformer.mathToSvg(mark.to.x, mark.to.y);
+		const length = Math.hypot(b.x - a.x, b.y - a.y);
+		if (length === 0) return [];
+		const u = { x: (b.x - a.x) / length, y: (b.y - a.y) / length };
+		const v = { x: -u.y, y: u.x };
+		const middle = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+		return Array.from({ length: mark.count }, (_, k) => {
+			const shift = (k - (mark.count - 1) / 2) * 4;
+			const m = { x: middle.x + u.x * shift, y: middle.y + u.y * shift };
+			return {
+				x1: m.x - (v.x * MARK) / 2,
+				y1: m.y - (v.y * MARK) / 2,
+				x2: m.x + (v.x * MARK) / 2,
+				y2: m.y + (v.y * MARK) / 2
+			};
+		});
+	}
 </script>
 
 {#snippet layer({ scene, width, height }: { scene: FigureScene; width: number; height: number })}
@@ -487,6 +569,24 @@
 				r={Math.hypot(edge.x - center.x, edge.y - center.y)}
 			/>
 		{/each}
+		{#each reports as c, i (i)}
+			{@const center = transformer.mathToSvg(c.cx, c.cy)}
+			{@const edge = transformer.mathToSvg(c.cx + c.radius, c.cy)}
+			<circle
+				data-testid="report-eleve"
+				class="cercle-eleve"
+				class:droite-juste={answer?.isCorrect === true}
+				class:droite-travail={workDone}
+				cx={center.x}
+				cy={center.y}
+				r={Math.hypot(edge.x - center.x, edge.y - center.y)}
+			/>
+		{/each}
+		{#if interactive && drawing.span}
+			{@const a = transformer.mathToSvg(drawing.span.a.x, drawing.span.a.y)}
+			{@const b = transformer.mathToSvg(drawing.span.b.x, drawing.span.b.y)}
+			<line data-testid="ecartement" class="ecartement" x1={a.x} y1={a.y} x2={b.x} y2={b.y} />
+		{/if}
 		{#if interactive && drawing.guide}
 			{@const g = guideToScreen(drawing.guide, scene, width, height)}
 			{#if g}
@@ -555,6 +655,35 @@
 					<circle class="bon-cercle-centre" cx={center.x} cy={center.y} r="3.5" />
 				</g>
 			{/each}
+		{/if}
+		{#if corrected}
+			<!-- Triangle à construire (lot 4) : arcs de report en traits fins, longueurs codées -->
+			{@const triangle = solutionTriangle(
+				checks,
+				allPoints,
+				figureShapes(scene, node.header),
+				lines
+			)}
+			{#if triangle}
+				<g data-testid="bon-triangle" class="bon-cercle">
+					{#each triangle.arcs as arc, i (i)}
+						{@const center = transformer.mathToSvg(arc.center.x, arc.center.y)}
+						{@const edge = transformer.mathToSvg(arc.center.x + arc.radius, arc.center.y)}
+						<circle
+							data-testid="bon-triangle-arc"
+							class="bon-triangle-arc"
+							cx={center.x}
+							cy={center.y}
+							r={Math.hypot(edge.x - center.x, edge.y - center.y)}
+						/>
+					{/each}
+					{#each triangle.marks as mark, i (i)}
+						{#each lengthTicks(mark, scene, width, height) as t, j (j)}
+							<line data-testid="bon-triangle-marque" class="bon-point-codage" {...t} />
+						{/each}
+					{/each}
+				</g>
+			{/if}
 		{/if}
 		{#each pointSolutions as solution (solution.name)}
 			{@const p = transformer.mathToSvg(solution.at.x, solution.at.y)}
@@ -627,6 +756,21 @@
 							role="button"
 							tabindex="0"
 							aria-label="Intersection {i + 1}"
+							pointer-events="none"
+							onkeydown={(event) => handlePointKey(event, position)}
+						/>
+					{/each}
+					<!-- Bouts des segments donnés (report d'une longueur) -->
+					{#each segmentEnds(scene) as position, i (i)}
+						{@const p = transformer.mathToSvg(position.x, position.y)}
+						<circle
+							class="point-cible"
+							cx={p.x}
+							cy={p.y}
+							r="11"
+							role="button"
+							tabindex="0"
+							aria-label="Extrémité {i + 1}"
 							pointer-events="none"
 							onkeydown={(event) => handlePointKey(event, position)}
 						/>
@@ -829,6 +973,21 @@
 
 	.cercle-eleve.droite-travail {
 		stroke: var(--color-muted-foreground);
+	}
+
+	.ecartement {
+		stroke: var(--color-ring);
+		stroke-width: 1.5;
+		stroke-dasharray: 3 3;
+		pointer-events: none;
+	}
+
+	.bon-triangle-arc {
+		fill: none;
+		stroke: var(--color-success);
+		stroke-width: 1;
+		stroke-dasharray: 4 4;
+		opacity: 0.7;
 	}
 
 	.droite-choisie {

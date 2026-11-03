@@ -49,6 +49,10 @@ export function traitOf(object: DrawnObject): Trait | null {
 		const radius = Math.hypot(object.x - object.cx, object.y - object.cy);
 		return { kind: 'circle', center: { x: object.cx, y: object.cy }, radius };
 	}
+	if (object.kind === 'report') {
+		const radius = Math.hypot(object.bx - object.ax, object.by - object.ay);
+		return { kind: 'circle', center: { x: object.cx, y: object.cy }, radius };
+	}
 	return {
 		kind: object.kind === 'droite' ? 'line' : 'segment',
 		a: { x: object.x1, y: object.y1 },

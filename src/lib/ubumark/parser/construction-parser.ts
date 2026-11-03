@@ -40,7 +40,8 @@ import {
 	type ConstructionCheck,
 	type ConstructionCheckKind,
 	type ConstructionSpec,
-	type ConstructionTool
+	type ConstructionTool,
+	type TriangleLength
 } from '../types/construction';
 import type { FigureIssue } from '../types/figure';
 import { isMaskedValue } from '../utils/masked-value';
@@ -101,9 +102,12 @@ function hasGrid(lines: readonly string[], headerEnd: number): boolean {
 	});
 }
 
+/** Vérifications à forme propre (pas une liste de points) */
+type NamedKind = 'symetrique' | 'point' | 'droite' | 'cercle' | 'triangle';
+
 /** Nombre de points de chaque vérification, et comment l'écrire */
 const CHECK_ARITY: Record<
-	Exclude<ConstructionCheckKind, 'symetrique' | 'point' | 'droite' | 'cercle'>,
+	Exclude<ConstructionCheckKind, NamedKind>,
 	{ count: number; example: string; word: string }
 > = {
 	droite_par: { count: 2, example: 'droite_par A ; B', word: 'deux' },
@@ -135,6 +139,49 @@ function readSymetrique(rest: string, line: number): ConstructionCheck {
 		throw new LineError('symetrique attend des points différents');
 	}
 	return { kind: 'symetrique', by, points, line };
+}
+
+const TRIANGLE_EXAMPLE = 'triangle ABC : AC = u ; BC = v';
+const TRIANGLE_REGEX = /^([A-Z])([A-Z])([A-Z])\s*:\s*(.+)$/;
+const TRIANGLE_LENGTH_REGEX = /^([A-Z])([A-Z])\s*=\s*(\S+)$/;
+const POINT_PAIR_REGEX = /^([A-Z])([A-Z])$/;
+
+/**
+ * `triangle ABC : AC = u ; BC = v` (lot 4) : [AB] est tracé ; les longueurs de
+ * [AC] et [BC], par un segment nommé ou deux points (`AC = AB`), dans
+ * n'importe quel ordre ; rendues [AC] puis [BC]
+ */
+function readTriangle(rest: string, line: number): ConstructionCheck {
+	const match = TRIANGLE_REGEX.exec(rest.trim());
+	const parts = match ? match[4].split(';').map((part) => part.trim()) : [];
+	const lengths = parts.map((part) => TRIANGLE_LENGTH_REGEX.exec(part));
+	if (!match || lengths.length !== 2 || lengths.some((l) => l === null)) {
+		throw new LineError(`triangle attend ses sommets et deux longueurs : « ${TRIANGLE_EXAMPLE} »`);
+	}
+	const [a, b, c] = [match[1], match[2], match[3]];
+	if (new Set([a, b, c]).size !== 3)
+		throw new LineError('triangle attend trois sommets différents');
+	const read = (l: RegExpExecArray): TriangleLength | null => {
+		const ends = [l[1], l[2]];
+		if (!ends.includes(c)) return null;
+		const other = ends.find((name) => name !== c);
+		if (other !== a && other !== b) return null;
+		const pair = POINT_PAIR_REGEX.exec(l[3]);
+		if (!pair && !POINT_NAME_REGEX.test(l[3])) return null;
+		return {
+			side: [other, c],
+			source: pair ? [pair[1], pair[2]] : [l[3]]
+		};
+	};
+	const given = (lengths as RegExpExecArray[]).map(read);
+	const ac = given.find((l) => l?.side[0] === a);
+	const bc = given.find((l) => l?.side[0] === b);
+	if (!ac || !bc) {
+		throw new LineError(
+			`triangle ${a}${b}${c} : donner les longueurs des côtés [${a}${c}] et [${b}${c}] ([${a}${b}] est tracé), un segment ou deux points chacune : « ${TRIANGLE_EXAMPLE} »`
+		);
+	}
+	return { kind: 'triangle', points: [a, b, c], lengths: [ac, bc], line };
 }
 
 const NAMED_EXAMPLES = {
@@ -170,6 +217,7 @@ function readCheck(value: string, line: number): ConstructionCheck {
 	// `symétrique` accentué, comme `vérifier:`
 	const word = rawWord.toLowerCase() === 'symétrique' ? 'symetrique' : rawWord;
 	if (word === 'symetrique') return readSymetrique(rest.join(' '), line);
+	if (word === 'triangle') return readTriangle(rest.join(' '), line);
 	if (word === 'point' || word === 'droite' || word === 'cercle') {
 		return readNamed(word, rest.join(' '), line);
 	}
@@ -178,7 +226,7 @@ function readCheck(value: string, line: number): ConstructionCheck {
 			`vérification « ${word} » inconnue (${CONSTRUCTION_CHECK_KINDS.join(', ')})`
 		);
 	}
-	const kind = word as Exclude<ConstructionCheckKind, 'symetrique' | 'point' | 'droite' | 'cercle'>;
+	const kind = word as Exclude<ConstructionCheckKind, NamedKind>;
 	const { count, example, word: countWord } = CHECK_ARITY[kind];
 	const points = splitPoints(rest.join(' '));
 	if (points.length !== count || !points.every((name) => POINT_NAME_REGEX.test(name))) {
@@ -208,7 +256,20 @@ function coherenceError(
 		return check.kind === 'point'
 			? 'point se place avec l’outil point (outils: point)'
 			: `${check.kind} se trace avec l’outil ${tool} (outils: ${tool})`;
-	if (check.kind === 'droite' || check.kind === 'cercle') {
+	if (check.kind === 'triangle') {
+		// Lot 4 (§ 13) : seul dans la figure, papier uni, palette du triangle
+		const name = check.points.join('');
+		if (spec.checks.length > 1) {
+			return `triangle ${name} : un triangle à construire ne se mêle pas à d’autres vérifications`;
+		}
+		const allowed = PLAIN_PAPER_TOOLS.triangle ?? [];
+		const other = spec.tools.find((t) => !allowed.includes(t));
+		if (other)
+			return `triangle ${name} : outil ${other} hors de la palette (${allowed.join(', ')})`;
+		if (grid) {
+			return `triangle ${name} : le triangle se construit sur papier uni ; retirer « grille: » (ou écrire « grille: non »)`;
+		}
+	} else if (check.kind === 'droite' || check.kind === 'cercle') {
 		// Lots 3 et 3b : ce juge ignore les autres traits ; il ne juge rien d'autre
 		const what = check.kind === 'droite' ? 'une droite' : 'un cercle';
 		if (spec.checks.some((c) => c.kind !== check.kind)) {
@@ -234,7 +295,11 @@ function coherenceError(
 	} else {
 		const segmentChecks = spec.checks.filter(
 			(c) =>
-				c.kind !== 'droite_par' && c.kind !== 'point' && c.kind !== 'droite' && c.kind !== 'cercle'
+				c.kind !== 'droite_par' &&
+				c.kind !== 'point' &&
+				c.kind !== 'droite' &&
+				c.kind !== 'cercle' &&
+				c.kind !== 'triangle'
 		);
 		if (check.kind !== 'droite_par' && segmentChecks[0] !== check) {
 			const symmetry = check.kind === 'symetrique' || segmentChecks[0].kind === 'symetrique';
@@ -318,7 +383,7 @@ export function readConstructionHeader(
 	if (!toolsSeen && spec.checks.length > 0) {
 		const kind = spec.checks[0].kind;
 		// La droite (lot 3) garde ses instruments sur quadrillage ; le cercle (lot 3b) y est refusé
-		const keeps = kind === 'droite' || kind === 'cercle';
+		const keeps = kind === 'droite' || kind === 'cercle' || kind === 'triangle';
 		const plainPaper = grid && !keeps ? undefined : PLAIN_PAPER_TOOLS[kind];
 		spec.tools = plainPaper ? [...plainPaper] : [CHECK_TOOL[kind]];
 	}

@@ -30,6 +30,7 @@ import { LineAuthorError, assertLines, isLineCheck, judgeLines } from './line';
 import { CircleAuthorError, assertCircles, isCircleCheck, judgeCircles } from './circle';
 import { PolygonAuthorError, givenVertices, judgePolygon } from './polygon';
 import { SymmetryAuthorError, assertSymmetry, judgeSymmetry, type FigureShapes } from './symmetry';
+import { TriangleAuthorError, assertTriangle, judgeTriangle } from './triangle';
 
 export {
 	EXTRA_SEGMENT_FEEDBACK,
@@ -131,7 +132,8 @@ function asAuthorError(error: unknown): unknown {
 		error instanceof SymmetryAuthorError ||
 		error instanceof PointAuthorError ||
 		error instanceof LineAuthorError ||
-		error instanceof CircleAuthorError
+		error instanceof CircleAuthorError ||
+		error instanceof TriangleAuthorError
 	) {
 		return new ConstructionAuthorError(error.message);
 	}
@@ -178,6 +180,14 @@ export function assertConstructionChecks(
 	}
 	for (const check of checks) {
 		if (check.kind === 'point' || check.kind === 'droite' || check.kind === 'cercle') continue;
+		if (check.kind === 'triangle') {
+			try {
+				assertTriangle(check, points, shapes);
+			} catch (error) {
+				throw asAuthorError(error);
+			}
+			continue;
+		}
 		if (check.kind === 'symetrique') {
 			try {
 				assertSymmetry(check, points, shapes);
@@ -246,6 +256,15 @@ export function judgeConstruction(
 	if (circleChecks.length > 0) {
 		try {
 			return judgeCircles(circleChecks, expected, points, shapes, objects);
+		} catch (error) {
+			throw asAuthorError(error);
+		}
+	}
+	// Triangle à construire (lot 4) : seul dans la figure (garanti par le parseur)
+	const triangle = allChecks.find((c) => c.kind === 'triangle');
+	if (triangle) {
+		try {
+			return judgeTriangle(triangle, points, shapes, objects);
 		} catch (error) {
 			throw asAuthorError(error);
 		}
