@@ -2,7 +2,7 @@
  * VariationTable — cellules cachées (`?`, tableau de signes à compléter)
  * =====================================================================
  *
- * Chantier `docs/wip/tableau-signes-progress.md`, PR 3. Le nœud garde la vraie
+ * Chantier `docs/archive/wip/tableau-signes-progress.md`, PR 3. Le nœud garde la vraie
  * valeur des cellules cachées (corrigé, éditeur) : rendu sans saisie, elles
  * restent VIDES par défaut — un aperçu ou un renderer ordinaire ne montre jamais
  * la réponse. `hiddenCells="filled"` les remplit (éditeur, bonne réponse).

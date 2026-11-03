@@ -13,7 +13,7 @@ SOURCE. Sorties : les fichiers du dépôt (`scripts/questions/2de-signes-b/`, `s
 avant) et les instantanés du lot `tableau-signes-2de` d'`update-published-questions.ts`
 (`scripts/questions/2de-tableau-signes-existants/<id8>.json`, `status` publié).
 
-    python3 docs/wip/tableau-signes/reecrire-330-446.py
+    python3 docs/archive/wip/tableau-signes/reecrire-330-446.py
 """
 import json
 import re

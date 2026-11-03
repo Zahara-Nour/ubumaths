@@ -372,7 +372,7 @@ la droite (`FillBlanksInput`) — même critère aux deux endroits (`isLineToRep
    devinerait) ou plus de 8 étiquettes, vide, `signe:` autre que `<` / `>`. Deux étiquettes identiques après
    tirage : condition implicite, le tirage des variables est refait (`rangerLabelsCollide`, résolution à part
    sur une source jetable) ; toujours identiques après 100 essais → échec, message au prof.
-   Tableau de signes à compléter (``variation à `?`, chantier [tableau-signes](../wip/tableau-signes-progress.md) ;
+   Tableau de signes à compléter (``variation à `?`, chantier [tableau-signes](../archive/wip/tableau-signes-progress.md) ;
 `findVariationsToFill`, `questions/sign-table-case.ts`) : au premier niveau, une case par cellule cachée,
 N, N + 1… dans l'ordre de lecture du parseur (`cases` du nœud), seul N posé (`case: N`) ;
 `variationBlanks` (texte du bloc, rang de la cellule). Réponse attendue tirée du bloc
@@ -436,6 +436,10 @@ multiple }` (choix dans l'ordre d'origine, `order[position]` = indice d'origine)
 6. Chaque case reçoit ses réglages fusionnés : **case ▸ `blankDefaults`** pour `precision`,
    `unit`, `answerKind`, `rulesSuffice`, `acceptDecimal`… ; `requiredForm` : case ▸
    `blankDefaults` ▸ `requiredForm` de la variation ; `validationRules` : case ▸ variation.
+   ⚠️ Exception : une case de tableau de signes à compléter est construite à part, **sans** cet
+   héritage (`answerKind: 'intervalles'` aurait jugé `-3` faux). Les cases ``operation et « à
+construire » héritent encore (`answerKind`, unité, précision, `requiredForm`) ; aucun modèle
+``operation de prod n'a de `blankDefaults` (relevé du 2026-11-03), donc pas corrigé.
 7. Correction résolue, puis **mode B** : `generateCorrection` pré-rend les étapes si
    `correction.generatedSteps` est déclaré (voir § 7).
 
@@ -530,7 +534,7 @@ collection ou monnaie à construire, ni droite ou horloge à placer, ni barres �
 `construire`). Hors question
 (`MarkdownRenderer`, cours, aperçu) : liste A, B, C non cliquable ; PDF (typst) : « A) … ».
 
-Tableau de signes à compléter (chantier [tableau-signes](../wip/tableau-signes-progress.md)) :
+Tableau de signes à compléter (chantier [tableau-signes](../archive/wip/tableau-signes-progress.md)) :
 saisie dans `FillBlanksInput` — le tableau rendu par `VariationTable` (snippet `cell`), valeur de x =
 petite case MathLive (`MathPrompt`, `\placeholder[N]{}`), signe / marque = `SignCellPicker` (case en
 pointillés, un toucher ouvre dessous + / −, ou 0 / ‖ / rien ; au clavier `+` `-` `0` `z` `|` `r`,
@@ -1032,7 +1036,9 @@ Concise / détaillée (ADR 0017) : `splitCorrectionDetail` retire ou garde `\det
    garde le genre de son bloc (`cellule` pour une case de tableau) (`construire`, ou `figure`
    pour une figure à compléter, jamais `construction`), pour le même écran qu'hors évaluation
    (chantier [fuite-enonce](../archive/wip/fuite-enonce-progress.md)). Limite : un point invisible
-   (`visible=faux`) d'une figure à compléter, posé sur la réponse, partirait tel quel. Garde :
+   (`visible=faux`) d'une figure à compléter, posé sur la réponse, partirait tel quel ; une cellule
+   cachée d'un tableau de signes se déduit d'un 2e tableau du même énoncé, d'une `||` d'une ligne
+   `variation:` ou de l'étiquette (`sign: x+3`) — au modèle de l'éviter. Garde :
    `findUnmaskedAnswers` relit l'énoncé à envoyer (texte seul, sans les masques) ; au tirage, une
    question dont l'énoncé masqué dirait encore la réponse est écartée et journalisée comme une
    génération impossible (`gestureAnswerLeaks`, la tentative ne se perd pas) ; `toPublicQuestion`

@@ -2,7 +2,7 @@
  * Résultat attendu d'un tableau de signes à compléter (```variation à `?`)
  * ========================================================================
  *
- * Chantier `docs/wip/tableau-signes-progress.md`, PR 4 : le corrigé montre le
+ * Chantier `docs/archive/wip/tableau-signes-progress.md`, PR 4 : le corrigé montre le
  * TABLEAU lui-même, chaque cellule cachée avec la réponse de l'élève et son
  * statut, la bonne valeur dans la cellule fausse (phase 0, point 5) — jamais une
  * ligne « Réponse attendue » par case.

@@ -2,7 +2,7 @@
 	Case signe / marque d'un tableau de signes à compléter
 	=======================================================
 
-	Chantier `docs/wip/tableau-signes-progress.md`, PR 3. Une case vide en pointillés ;
+	Chantier `docs/archive/wip/tableau-signes-progress.md`, PR 3. Une case vide en pointillés ;
 	un toucher ouvre juste en dessous les choix (+ / −, ou 0 / ‖ / rien), le choix
 	s'écrit dans la case et le menu se referme. Le tableau garde sa taille : rien de
 	plus large qu'une cellule n'y est posé (390 px).
