@@ -335,3 +335,46 @@ describe('formule réduite à un caractère hors BMP (𝔻, logique 1re SPE)', (
 		expect(String(result)).toBe(`On note $${symbol}$ cet ensemble.`);
 	});
 });
+
+// Corrigé de 2-330 : `$-1x-3=0\iff x=-3$` ne se lit pas en entier (`\iff`), la formule
+// restait brute et « −1x » s'affichait malgré `cleanCoefficients`. Chaque morceau entre
+// deux liens logiques est nettoyé pour lui-même.
+describe('cleanCoefficients — formule à liens logiques (\\iff, \\implies…)', () => {
+	const resolve = (content: string, clean = true) =>
+		String(resolveMarkdownContent(templateMarkdown(content), [], Math.random, undefined, clean));
+
+	it('\\iff : chaque membre nettoyé', () => {
+		expect(resolve('$-1x-3=0\\iff x=-3$')).toBe('$-x - 3 = 0\\iff x=-3$');
+	});
+
+	it('\\implies et \\Leftrightarrow : même traitement', () => {
+		expect(resolve('$1x+0=5\\implies x=5$')).toBe('$x = 5\\implies x=5$');
+		expect(resolve('$2x+0>4 \\Leftrightarrow x>2$')).toBe('$2 x > 4 \\Leftrightarrow x>2$');
+	});
+
+	it('morceau illisible : gardé tel quel, les autres nettoyés', () => {
+		expect(resolve('$1x-1=0\\iff x\\in\\left\\{1\\right\\}$')).toBe(
+			'$x - 1 = 0\\iff x\\in\\left\\{1\\right\\}$'
+		);
+	});
+
+	it('rien à nettoyer : formule d’origine à l’octet près', () => {
+		expect(resolve('$2x-3=0\\iff x=\\dfrac{3}{2}$')).toBe('$2x-3=0\\iff x=\\dfrac{3}{2}$');
+	});
+
+	it('chaîne de calcul dans un morceau : laissée telle quelle', () => {
+		expect(resolve('$r=-1-(-4)=3\\iff 1x=3$')).toBe('$r=-1-(-4)=3\\iff x = 3$');
+	});
+
+	it('case ? gardée', () => {
+		expect(resolve('$1x+0=?\\iff x=?$')).toBe('$x = ?\\iff x=?$');
+	});
+
+	it('nom d’équation entre parenthèses : gardé', () => {
+		expect(resolve('$(E)\\iff 1y=4$')).toBe('$(E)\\iff y = 4$');
+	});
+
+	it('sans l’option : formule inchangée', () => {
+		expect(resolve('$-1x-3=0\\iff x=-3$', false)).toBe('$-1x-3=0\\iff x=-3$');
+	});
+});
