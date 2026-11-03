@@ -11,8 +11,8 @@ _Mis à jour le 2026-11-03, après #2337._
 - **État** : lot « Droites » fait — #2333 (droite à tracer figée, modèle `f5585668` en **brouillon**,
   script) ; fiche « Automatismes : droites (1) » `0f98be04` écrite en **brouillon**, PDF vérifiés
   (0 débord) ; #2337 : gras mathématique ajouté à Chiphre Math (réponses du corrigé PDF lisibles, fiche
-  « évolutions » comprise) · **Prochaine action** : compléter `fiches-exercices.md` § 1 (fiche droites),
-  puis phase 0 du lot « Lectures graphiques » (§ Suite) · **En attente de David** : publier `f5585668`
+  « évolutions » comprise) ; `fiches-exercices.md` § 1 complété (fiche droites) · **Prochaine action** :
+  phase 0 du lot « Lectures graphiques » (§ Suite) · **En attente de David** : publier `f5585668`
   et les fiches `9217dfaa`, `0f98be04` ; garder ou non les 2 figures d'un corrigé de tracé ; questions
   2 à 4 (§ Questions ouvertes) · **Pièges en cours** : `compile-prod.mjs --polices-corrige` pour un
   corrigé ; polices `/fonts/` en cache 30 j → changer le `?v=` de `CORRECTION_FONT_FILES` à chaque
