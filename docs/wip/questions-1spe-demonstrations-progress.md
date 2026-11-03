@@ -9,21 +9,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2349._
+_Mis à jour le 2026-11-04, à l'ouverture de la suite « approfondissements » (§ 9)._
 
-- **État** : lots 1 à 4 en prod. #2341 (`signe: aucun`) livré par `deploy:prod` 0.68.0 ; #2349 mergée,
-  migration de contenu jouée (`db:migrate` depuis le dépôt principal) ; vérifié au MCP : 14 modèles
-  publiés, 4 variations dont « étapes à ranger », 14 tags.
-- **Prochaine action** : aucune dans le périmètre décidé (14 démonstrations, D1-D2). Reste à décider
-  avec David : fin du chantier (versement dans `docs/systeme/`, archivage du journal) ou suite.
-- **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de
-  `docs/wip/verifications-manuelles.md`).
+- **État** : démonstrations terminées, lots 1 à 4 en prod (#2341, #2349, 0.68.0). Suite ouverte par David :
+  les **20 approfondissements** du BO (§ 9 ; 240, 241, 242 et 381 sont reclassés, le § 1 les comptait parmi les algorithmes).
+- **Prochaine action** : phase 0 du § 9 (Q1 à Q5), posée le 2026-11-04 ; attendre les réponses avant de coder.
+- **En attente de David** : Q1-Q5 du § 9 ; vérification à l'œil en prod (ligne du 2026-11-03 de
+  `docs/wip/verifications-manuelles.md`) ; suppression des branches distantes `docs/questions-1spe-demonstrations`,
+  `feat/questions-1spe-demonstrations` (rien à perdre ; `git push --delete` refusé par le classifieur le 2026-11-04).
 - **Pièges en cours** : `create-questions` lit `.env` = PROD → forcer les variables de `.env.local`.
   Relevé prod par script refusé par le classifieur → MCP + md5 contre l'ancienne source. `db:migrate`
   depuis une branche en retard sur `main` : une migration distante manque en local → le lancer depuis
-  le dépôt principal à jour. Anciennes branches distantes `docs/questions-1spe-demonstrations`,
-  `feat/questions-1spe-demonstrations` à supprimer.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations` (branche mergée, à retirer).
+  le dépôt principal à jour.
+- **Worktree / branche** : aucun (l'ancien est retiré) ; worktree neuf depuis `origin/main` au premier lot.
 
 ---
 
@@ -259,3 +257,60 @@ injoignable en CI), relancé par `--relancer-ci`.
 #2349 mergée (2026-11-03) ; `deploy:prod` 0.68.0 (#2341 en prod) ; `db:migrate` de
 `20261103194133` depuis le dépôt principal (seule migration en attente, `--dry-run` d'abord) ; MCP : 14/14
 à 4 variations, publiés, tags intacts.
+
+## 9. Suite : les approfondissements (ouverte le 2026-11-04)
+
+David, le 2026-11-04 : prolonger le chantier (« Prolonger ») vers les **approfondissements** (choisi parmi
+algorithmes, approfondissements et points-compétences). Démonstrations : terminées (lots 1 à 4).
+
+**Correction du relevé du § 1** : 240 (Tour de Hanoï), 241 (somme des n premiers carrés), 381 (somme des n premiers
+cubes) et 242 (emprunt par annuités constantes) sont des **approfondissements** au BO (transcription `1_SPE.md`,
+l. 265-269, rubrique Suites), pas des exemples d'algorithmes. Il y a donc **20** approfondissements, pas 16.
+
+| Domaine           | Point | Approfondissement                                              | Forme pressentie                  |
+| ----------------- | ----- | -------------------------------------------------------------- | --------------------------------- |
+| Suites            | 240   | Tour de Hanoï                                                  | calcul (2ⁿ − 1 coups), récurrence |
+| Suites            | 241   | Somme des n premiers carrés                                    | calcul avec la formule donnée     |
+| Suites            | 381   | Somme des n premiers cubes                                     | calcul avec la formule donnée     |
+| Suites            | 242   | Emprunt remboursé par annuités constantes                      | calcul (suite géométrique)        |
+| Second degré      | 256   | Factoriser un polynôme de degré 3 qui a une racine connue      | calcul, valeurs tirées            |
+| Second degré      | 387   | Résoudre l'équation de degré 3 associée                        | calcul, valeurs tirées            |
+| Second degré      | 257   | xⁿ − 1 par x − 1, xⁿ − aⁿ par x − a                            | calcul / preuve à trous           |
+| Second degré      | 258   | Deux réels de somme s et de produit p                          | calcul, valeurs tirées            |
+| Exponentielle     | 300   | Unicité de f dérivable avec f′ = f, f(0) = 1                   | preuve (à trous, étapes à ranger) |
+| Exponentielle     | 301   | exp(x + y) = exp(x) exp(y)                                     | preuve (à trous, étapes à ranger) |
+| Exponentielle     | 302   | exp strictement positive et croissante                         | preuve (à trous, étapes à ranger) |
+| Produit scalaire  | 324   | Loi des sinus                                                  | calcul dans un triangle (figure)  |
+| Produit scalaire  | 325   | Concourance des hauteurs                                       | preuve vectorielle à trous        |
+| Produit scalaire  | 326   | Concourance des médianes au centre de gravité                  | preuve vectorielle à trous        |
+| Géométrie repérée | 334   | Points équidistants de l'axe des abscisses et d'un point       | calcul (équation de parabole)     |
+| Géométrie repérée | 335   | Intersection d'un cercle et d'une droite parallèle à un axe    | calcul, valeurs tirées            |
+| Géométrie repérée | 420   | Intersection d'une parabole et d'une droite parallèle à un axe | calcul, valeurs tirées            |
+| Probabilités      | 345   | Succession de plusieurs épreuves indépendantes                 | calcul (arbre ` ```probtree `)    |
+| Probabilités      | 346   | Marches aléatoires                                             | calcul sur des exemples           |
+| Probabilités      | 361   | Fonction x ↦ E((X − x)²) du second degré                       | calcul / preuve à trous           |
+
+Outils vus dans le code (2026-11-04, seulement leur présence, pas encore leurs limites) : `figure`,
+`courbe`, arbre de probabilités (`probability-tree-parser.ts`), `ranger` avec `signe: aucun` (#2341),
+case ouverte et case choix.
+
+### Phase 0 — questions à David (posées le 2026-11-04)
+
+- **Q1 — Périmètre.** Les 20 approfondissements du tableau ; les algorithmes et les points-compétences restent
+  hors chantier. _Reco : oui._
+- **Q2 — Forme.** Les preuves (300-302, 325, 326, et 257 et 361 en partie) sont traitées comme les
+  démonstrations : à trous plus une variation « étapes à ranger » (D1, D2). Les autres points sont des
+  **exercices d'application**, avec des valeurs tirées et 2 à 3 variations. Pour 241 et 381, la formule
+  est donnée dans l'énoncé, puisque le BO ne demande pas de la connaître. _Reco : oui._
+- **Q3 — Rangement.** Un modèle par point (ADR 0020), tagué sur son point P. Il irait dans une catégorie neuve
+  **« Approfondissements »** dans chaque domaine, comme « Démonstrations », pour que le prof voie que c'est
+  facultatif. _Reco : oui. Autre choix : sous la notion du résultat._
+- **Q4 — Publication.** Publier comme les démonstrations : visibles des élèves de 1re spé, et c'est le prof qui
+  choisit de les donner. _Reco : oui._
+- **Q5 — Accès** (avant toute migration) : « qui pourra lire quoi, qu'il ne pouvait pas lire avant ? »
+  _Reco : personne de plus au moment de la migration (brouillons, nœud et tags seulement). À la publication,
+  les élèves de 1re spé voient les modèles, comme pour tout modèle publié._
+
+Lots proposés après validation : (5) suites (240, 241, 381, 242) ; (6) algèbre (256, 387, 257, 258) ;
+(7) exponentielle (300, 301, 302) ; (8) géométrie (324, 325, 326, 334, 335, 420) ; (9) probabilités
+(345, 346, 361).
