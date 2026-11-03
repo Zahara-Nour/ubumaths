@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2307 (lot 1 mergé)._
+_Mis à jour le 2026-11-03, lot 2 en cours (prompts écrits)._
 
-- **État** : lot 1 en `main` (#2307) : 6 articles parus illustrés (fermat, glitchistan-ha-ha, barbier, rails de Sandomir, 0,999…, Hôtel de l'Infini). Pas en prod tant que David n'a pas lancé `deploy:prod`.
-- **Prochaine action** : lot 2 = les 7 derniers articles parus, du plus récent au plus ancien (`pifometrie-moyenne-des-jambes`, `pifometrie-pile-ou-face`, …) ; nouveau worktree `ubumaths-wt-shtam-illustrations`, branche `feat/shtam-illustrations-lot-2` ; lire chaque article, écrire les prompts dans `docs/Chiphres/illustrations/shtam/<slug>/prompt.md`, les donner à David.
-- **En attente de David** : rien.
-- **Pièges en cours** : ne jamais lancer prettier sur les articles ; pièces jointes → `~/Downloads` ; dessin AVANT toute figure SVG ; jamais de personne réelle dessinée ; image non 3:2 → recadrage vérifié à l'œil ; retouche = un carré par tête, une demande (modèle : `coller-retouches.sh` du barbier) ; port 5176 souvent pris → prendre un port libre.
-- **Worktree / branche** : aucun (lot 1 nettoyé).
+- **État** : lot 1 en `main` (#2307). Lot 2 : prompts des 7 articles écrits (`pifometrie-moyenne-des-jambes`, `pifometrie-pile-ou-face`, `bedonstan-triangle-plainte`, `czar-alexis-pi-arrondi`, `nombrilie-division-par-zero`, `pi-transcendant-le-mardi`, `pythagore-vie-courante`) ; pièces jointes copiées dans `~/Downloads`.
+- **Prochaine action** : David génère les dessins ; les intégrer un par un (`bash docs/Chiphres/illustrations/shtam/integrer.sh <slug> <image> "<alt>"`), vérifier le recadrage, puis PR du lot.
+- **En attente de David** : les dessins du lot 2.
+- **Pièges en cours** : ne jamais lancer prettier sur les articles ; pièces jointes → `~/Downloads` ; dessin AVANT toute figure SVG (pile-ou-face et pythagore en ont déjà) ; jamais de personne réelle dessinée (Pythagore absent, Lobatchevski aussi) ; image non 3:2 → recadrage vérifié à l'œil ; retouche = un carré par tête, une demande (modèle : `coller-retouches.sh` du barbier) ; port 5176 souvent pris → prendre un port libre.
+- **Worktree / branche** : `ubumaths-wt-shtam-illustrations`, `feat/shtam-illustrations-lot-2`.
 
 ## À lire avant de commencer
 
@@ -48,3 +48,4 @@ _2026-11-03, phase 0 :_
 - 2026-11-03 — bedonstan-rails-de-sandomir : essai 1 (4:3, recadré en 3:2), trait plus fin et texture crayon, différent des autres ; **gardé par David**.
 - 2026-11-03 — nombrilie-zero-virgule-neuf et yoyolande-hotel-de-l-infini intégrés (hôtel en 16:9, recadré à gauche pour garder le voyageur). Lot 1 complet ; skill `shtam` mise à jour.
 - 2026-11-03 — #2307 mergé (lot 1, CI verte), worktree retiré.
+- 2026-11-03 — Lot 2 ouvert : prompts des 7 derniers articles parus écrits. Choix : π seul symbole permis (pi-transcendant) ; triangle 3-4-5 par des graduations, sans chiffres ; ni jambe de bois ni troisième jambe (moyenne-des-jambes : Bordure qui compte) ; aucun portrait de Pythagore.
