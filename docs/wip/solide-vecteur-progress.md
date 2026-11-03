@@ -9,17 +9,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, lot 1 codé (PR en cours)._
+_Mis à jour le 2026-11-03, après #2331._
 
-- **État** : lot 1 (affichage `points:` + `vecteurs:`) codé, testé, PR ouverte ; revue `code-reviewer` (Opus).
-- **Prochaine action** : merger le lot 1 (CI verte), puis lot 2, geste `tracer: vecteur` : tests rouges du
-  parseur et du juge (pedagogy-expert), puis `SolideGeste.svelte`. Ligne 13 de `outils-manquants.md` à passer
-  « En cours » sur `main` (bloquée par un `deploy:prod` en cours le 2026-11-03).
+- **État** : lot 1 (affichage `points:` + `vecteurs:`) mergé (#2331), pas encore en prod ; revue Opus : 1 bug
+  corrigé (sommet répété dans `centre`). Ligne 13 d'`outils-manquants.md` passée « En cours ».
+- **Prochaine action** : lot 2, geste `tracer: vecteur AB + AD - 1/2 AE [depuis A]` — nouveau worktree
+  `git worktree add -b feat/solide-vecteur-geste ../ubumaths-wt-solide-vecteur origin/main` ; tests rouges du
+  parseur et du juge (pedagogy-expert, Opus), puis `SolideGeste.svelte` (frontend-developer, Sonnet).
 - **En attente de David** : rien.
 - **Pièges en cours** : un clic à l'écran ne dit pas la profondeur : le geste ne vise que des points connus en
-  3D (sommets, points déclarés : `solidePoints3`, indices sommets puis points). Noms de vecteurs posés par
-  `firstFree` (évite étiquettes, traits, points).
-- **Worktree / branche** : `../ubumaths-wt-solide-vecteur` · `feat/solide-vecteur` · serveur 5176.
+  3D (`solidePoints3`, indices : sommets puis points déclarés). Noms des sommets posés AVANT points et flèches :
+  ils n'évitent pas les disques des points déclarés (mineur, vu à la revue).
+- **Worktree / branche** : aucun (lot 1 nettoyé) ; serveur 5176 pour le lot 2.
 
 ---
 
