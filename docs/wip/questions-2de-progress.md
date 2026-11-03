@@ -6,23 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2235 et son `--publier` (§ 59)._
+_Mis à jour le 2026-11-03, PR de la garde `\textcolor` ouverte (§ 60)._
 
 - **État** : vague 8 bis en brouillon en prod, rangée ; page à cocher (20 fiches) :
-  https://claude.ai/artifact/AH7MKr1qcSeK2c7Du7EMYY. Correctif `\textcolor` des 24 publiés **en prod**
-  (vérifié par export : variations = fichiers, 0 hors `$`, toujours publiés).
-- **Prochaine action** : garde contre `\textcolor` hors `$` — place à trancher par David : (a) bloquante dans
-  `checkTemplate` (garde AUSSI la publication dans l'appli), (b) avertissement, (c) `question:specs` seul ;
-  puis les 35 fichiers hors 2de (§ 58), rien sans son accord.
-- **En attente de David** : la place de la garde (reco du 2026-11-02, sans réponse : (a) bloquante, famille
-  des commandes de texte hors `$` — `\\textbf`, `\\boxed`… —, après mesure en prod des modèles de profs
-  touchés ; puis les 35 hors 2de dans ce chantier, en lots par niveau) ; la relecture de la page, puis `verdicts`, corrections,
-  `publier-lot` (ids § 57).
+  https://claude.ai/artifact/AH7MKr1qcSeK2c7Du7EMYY. Garde `\textcolor` hors `$` dans `question:specs`
+  (décision § 58) : branche `fix/garde-textcolor-hors-maths`, PR à merger.
+- **Prochaine action** : merger la PR ; puis les 35 fichiers hors 2de (§ 58) — rien sans l'accord de David.
+- **En attente de David** : son accord sur les 35 hors 2de (reco : dans ce chantier, en lots par niveau) ;
+  la relecture de la page, puis `verdicts`, corrections, `publier-lot` (ids § 57).
 - **Pièges en cours** : `--publier`, `publier-lot`, `db:migrate` → David avec `!` ;
   `create-questions --mettre-a-jour` ne touche JAMAIS un publié → `update-published-questions.ts` ;
   `col()` en texte → `colt()` ; spec fraction = `\\frac{a}{b}` ; pas de ligne `Claude-Session:` ;
   une suite de ligne commençant par `--` est désindentée par prettier.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, HEAD détachée sur `origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `fix/garde-textcolor-hors-maths`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1525,3 +1521,16 @@ Avant de corriger : revérifier dans le code de rendu que `\textcolor` hors math
   seules à modifier, specs vertes.
 - **Écrit en prod** par David (`--lot textcolor-2de --publier`, 2026-11-02). Revérifié par export de la
   prod : 24/24 publiés, variations identiques aux instantanés, `hors-maths.py` → 0.
+
+## 60. Garde `\textcolor` hors `$` dans `question:specs` (2026-11-03)
+
+- **Place** : celle décidée au § 58 (« garde dans `question:specs` ») ; la reco (a) « bloquante dans
+  `checkTemplate` » du 2026-11-02 est restée sans réponse → pas retenue. `checkTemplate` et la
+  publication dans l'appli ne l'appliquent pas.
+- `src/lib/questions/review/textcolor-hors-maths.ts` : chaque tirage (50 par variation, `--instances`)
+  → énoncé (choix compris) et corrigé passés à `parseMarkdown` ; un nœud texte (hors code en ligne) qui
+  porte `\textcolor` = signalement. Le script sort en 1, avec « VERDICT FINAL : à corriger » sous le
+  verdict de `checkTemplate`.
+- Tests : 5 (nominal, énoncé, corrigé, code en ligne, couleur apportée par une variable) ; rouges sans la
+  détection (3/5, les attendus). Sur fichiers réels : `2de-signes-a/01` corrigé → 0/100, sa version
+  d'avant le correctif → 25/25 et sortie 1, `ce1-9/05` (hors 2de) → signalé.
