@@ -869,3 +869,66 @@ coordonnées (`maskMeasureFigure` ; `visible=faux` gardé, autres réglages d'af
 évaluation) ; une `rotation(` ou un `angle=` restés dans la figure → la garde refuse l'envoi. Reste
 admis : recalculer l'angle depuis les coordonnées. Fait, tests vérifiés rouges sans la réécriture
 et sans la garde.
+
+## 21. Phase 0 — lot 7 : triangle par un côté et deux angles (proposée le 2026-11-03, à valider)
+
+BO 5e « Construire des triangles à partir de données partielles » (5-059). Décidé au § 16 (décision 5).
+Existant : le rapporteur et ses repères (lot 5) ; le triangle de trois longueurs (lot 4,
+`triangle ABC : AC = u ; BC = v`, C = bout commun de [AC] et [BC], construit). Ce qui manque : un
+repère n'est pas un point construit (revue du lot 5) et le côté d'angle du lot 5 n'est qu'un segment
+de O au repère, trop court pour rejoindre l'autre côté. Il faut donc pouvoir **prolonger** un côté
+d'angle.
+
+### Écriture par le prof (recommandée : la vérification `triangle` du lot 4, élargie)
+
+```figure-a-completer
+fenetre: 0 ; 12 ; 0 ; 8
+verifier: triangle ABC : CAB = {{a}} ; ABC = {{b}}
+---
+A = point(2, 2)
+B = point(9, 2)
+s = segment(A, B)
+```
+
+Une donnée à trois lettres est un angle en degrés (entier, de 1 à 179), le sommet au milieu, et ce sommet
+est A ou B ; à deux lettres, une longueur comme au lot 4. Palette déduite : Rapporteur · Règle · Segment.
+
+### Le geste (rien de neuf à l'écran)
+
+Rapporteur posé en A, base sur [AB), repère à 40 ; **Règle** de A au repère → la droite, qui va jusqu'au
+bord ; idem en B ; puis les côtés [AC] et [BC] au Segment, C aimanté à l'intersection des deux droites.
+Règle neuve dans `constructionOf` : **un trait droit qui passe par le centre d'un rapporteur et par un
+repère construit de ce rapporteur est construit** (un « côté d'angle ») ; C, intersection de deux côtés
+d'angle, est donc construit. Le repère seul ne construit toujours rien.
+
+### Comportements
+
+- **Nominal** : 40° en A, 65° en B, du même côté de (AB), droites, côtés → juste.
+- **Limites** (juste) : C d'un côté ou de l'autre de (AB) (comme au lot 4) ; rapporteur retourné ;
+  côté [AC] tracé au Segment directement de A à C, à travers le repère, sans la Règle ; traits et repères
+  en trop ignorés.
+- **Erreurs** (faux, première cause) : celles du lot 4 (« Trace les côtés [AC] et [BC] du triangle. »,
+  « Il manque le côté [BC]. », « Tes côtés … doivent se rejoindre en C. ») ; C pas construit → « Ton
+  sommet C est placé à l'œil : trace ses côtés avec le rapporteur. » ; angles tracés de part et d'autre
+  de (AB) → « Tes deux angles sont tracés de part et d'autre de [AB] : trace-les du même côté. » (sans ce
+  message, l'élève lirait « ton angle ABC mesure 115° ») ; 180 − a → « Ton angle CAB mesure 140° au lieu
+  de 40° : tu as lu la mauvaise graduation du rapporteur. » ; autre mesure → « Ton angle CAB mesure 45°
+  au lieu de 40°. »
+- **Erreurs d'auteur** : angle non entier ou hors 1..179 ; somme des deux angles ≥ 180 (« ces deux
+  angles ne font pas un triangle ») ; sommet de l'angle autre que A ou B ; A ou B invisible, confondus,
+  hors de la fenêtre ; les deux C possibles hors de la fenêtre ; le rapporteur ne tient ni en A ni en B
+  d'un même côté de (AB) (règle du § 18) ; fenêtre de rapport > 2 (§ 19, décision 5) ; quadrillage.
+- **Correction** : [AC] et [BC] en pointillés, les deux arcs codés « 40° » et « 65° ».
+
+### Questions à David
+
+1. **Écriture** : la vérification `triangle` élargie, angles à trois lettres (recommandé : une seule
+   vérification pour tous les triangles) ; ou une vérification à part ?
+2. **Prolonger le côté d'angle** : Règle par A et le repère, puis les côtés au Segment (recommandé :
+   c'est le geste du cahier, et la Règle existe) ; ou un outil **Demi-droite** neuf ; ou un Segment de A
+   prolongé au-delà du repère, sans Règle ?
+3. **Message « de part et d'autre de [AB] »** pour deux angles de côtés opposés : le garder (recommandé) ?
+4. **Deux côtés et l'angle compris** (`AC = u ; CAB = 40`) : dans ce lot (recommandé : même vérification,
+   aucun geste neuf, Report + Rapporteur + Règle + Segment) ; ou au lot suivant ?
+5. **Angle non adjacent au côté** (côté [AB], angles en A et en C : calcul du 3e angle d'abord) : hors
+   lot (recommandé : c'est un calcul, 5e « somme des angles », puis le même geste) ?
