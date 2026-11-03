@@ -215,8 +215,20 @@ function parsePoints(
 // SEGMENT PARSING
 // ============================================================================
 
+/** `-inf`, `+inf`, `inf`, `-∞`, `+\\infty`… : borne infinie d'un segment */
+const INFINITE_BOUND_REGEX = /^([+-]?)\s*(?:inf|∞|\\infty)$/;
+
 /**
- * Parse segments: "[-1, 3] green, ]3, 5[ orange"
+ * Signe d'une borne infinie (`inf` sans signe = `+`), `null` pour une borne finie
+ */
+function infiniteSign(expr: string): '+' | '-' | null {
+	const match = INFINITE_BOUND_REGEX.exec(expr.trim());
+	if (!match) return null;
+	return match[1] === '-' ? '-' : '+';
+}
+
+/**
+ * Parse segments: "[-1, 3] green, ]3, 5[ orange", "[2, +inf[" (demi-droite)
  *
  * French notation:
  * - [ or ] at start: [ = closed, ] = open
@@ -224,6 +236,7 @@ function parsePoints(
  */
 function parseSegments(
 	value: string,
+	window: { start: NumberLineValue; end: NumberLineValue },
 	errors: NumberLineParseError[],
 	lineNum?: number,
 	lineContent?: string
@@ -250,8 +263,32 @@ function parseSegments(
 		// French notation: ] at end = closed, [ at end = open
 		const endOpen = endBracket === '[';
 
-		const startVal = resolveExpression(startExpr, errors, lineNum, lineContent);
-		const endVal = resolveExpression(endExpr, errors, lineNum, lineContent);
+		const startInf = infiniteSign(startExpr);
+		const endInf = infiniteSign(endExpr);
+		const written = `${startBracket}${startExpr}, ${endExpr}${endBracket}`;
+
+		// Demi-droite : -inf à gauche, +inf (ou inf) à droite, jamais l'inverse
+		if (startInf === '+' || endInf === '-') {
+			errors.push({
+				message: `${written} : la borne de gauche doit être plus petite que celle de droite (-inf à gauche, +inf à droite)`,
+				line: lineNum,
+				content: lineContent
+			});
+			continue;
+		}
+		if ((startInf && !startOpen) || (endInf && !endOpen)) {
+			errors.push({
+				message: `${written} : l'infini est toujours exclu, le crochet s'ouvre vers lui (]-inf, … ou …, +inf[)`,
+				line: lineNum,
+				content: lineContent
+			});
+			continue;
+		}
+
+		const startVal = startInf
+			? window.start
+			: resolveExpression(startExpr, errors, lineNum, lineContent);
+		const endVal = endInf ? window.end : resolveExpression(endExpr, errors, lineNum, lineContent);
 
 		if (!startVal || !endVal) continue;
 
@@ -260,6 +297,8 @@ function parseSegments(
 			end: endVal,
 			startOpen,
 			endOpen,
+			...(startInf && { startInfinite: true }),
+			...(endInf && { endInfinite: true }),
 			...(color && { color })
 		});
 	}
@@ -571,7 +610,9 @@ export function parseNumberLineContent(content: string | string[]): NumberLinePa
 	const labels = labelsExpr ? parseValueList(labelsExpr, errors) : [];
 	const hidden = hiddenExpr ? parseValueList(hiddenExpr, errors) : [];
 	const points = pointsStr ? parsePoints(pointsStr, errors) : [];
-	const segments = segmentsStr ? parseSegments(segmentsStr, errors) : [];
+	const segments = segmentsStr
+		? parseSegments(segmentsStr, { start: startVal, end: endVal }, errors)
+		: [];
 
 	if (errors.length > 0) {
 		return { node: null, errors, warnings };
@@ -581,12 +622,20 @@ export function parseNumberLineContent(content: string | string[]): NumberLinePa
 	for (const segment of segments) {
 		const sNum = numericValue(segment.start);
 		const eNum = numericValue(segment.end);
-		if (sNum >= eNum) {
+		// Une borne infinie n'a pas de valeur à comparer : `start`/`end` y valent la fenêtre
+		const bothFinite = !segment.startInfinite && !segment.endInfinite;
+		if (bothFinite && sNum >= eNum) {
 			errors.push({
 				message: `Segment start (${sNum}) must be less than end (${eNum})`
 			});
 		}
-		if (sNum < startNum - 1e-10 || eNum > endNum + 1e-10) {
+		const startOutside = !segment.startInfinite && sNum < startNum - 1e-10;
+		const endOutside = !segment.endInfinite && eNum > endNum + 1e-10;
+		// Borne finie de l'autre côté de la fenêtre (`[12, +inf[` sur [0 ; 10])
+		const finiteOutside =
+			(segment.startInfinite && !segment.endInfinite && eNum < startNum - 1e-10) ||
+			(segment.endInfinite && !segment.startInfinite && sNum > endNum + 1e-10);
+		if (startOutside || endOutside || finiteOutside) {
 			warnings.push({
 				message: `Segment [${sNum}, ${eNum}] extends outside bounds [${startNum}, ${endNum}]`
 			});

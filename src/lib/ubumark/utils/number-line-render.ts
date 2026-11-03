@@ -228,6 +228,41 @@ export function computeLineExtents(
 }
 
 // =========================================================================
+// CROCHETS (extrémités des segments, chantier `docs/wip/demi-droite-progress.md`)
+// =========================================================================
+
+/**
+ * Sens des becs d'un crochet : +1 vers la droite, −1 vers la gauche.
+ * Borne comprise : becs vers l'intérieur du segment ; exclue : vers l'extérieur.
+ * `[2, …` → +1, `]2, …` → −1, `…, 5]` → −1, `…, 5[` → +1.
+ */
+export function bracketDirection(side: 'start' | 'end', open: boolean): 1 | -1 {
+	const inward = side === 'start' ? 1 : -1;
+	return open ? (-inward as 1 | -1) : inward;
+}
+
+/**
+ * Les quatre points d'un crochet en abscisse `x`, ordonnée `y` : bec du haut,
+ * coin du haut, coin du bas, bec du bas. `height` = demi-hauteur, `beak` = longueur
+ * des becs. Repère quelconque (px à l'écran, cm au PDF).
+ */
+export function bracketPoints(
+	x: number,
+	y: number,
+	direction: 1 | -1,
+	height: number,
+	beak: number
+): [number, number][] {
+	const tip = x + direction * beak;
+	return [
+		[tip, y - height],
+		[x, y - height],
+		[x, y + height],
+		[tip, y + height]
+	];
+}
+
+// =========================================================================
 // ÉCART ENTRE GRADUATIONS (téléphone)
 // =========================================================================
 

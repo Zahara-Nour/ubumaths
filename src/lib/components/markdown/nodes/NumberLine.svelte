@@ -9,7 +9,7 @@
 	- Labels under major graduations via foreignObject + math-span
 	- Hidden labels shown as "?"
 	- Named points above the line (colored circles + labels)
-	- Colored segments with open/closed endpoints
+	- Colored segments (demi-droites comprises) with bracket endpoints
 	- Optional arrows at line endpoints
 	- Linear or logarithmic scale
 	- Thème clair / sombre : tokens d'app.css ; couleurs d'auteur de la palette
@@ -40,7 +40,9 @@
 		valueToX,
 		computeGraduations,
 		computeLineExtents,
-		resolveNumberLineColors
+		resolveNumberLineColors,
+		bracketDirection,
+		bracketPoints
 	} from '$lib/ubumark/utils/number-line-render';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import { readContentLocale } from '../content-locale';
@@ -133,22 +135,41 @@
 	// SEGMENTS
 	// =========================================================================
 
+	/** Demi-hauteur et becs des crochets (px) */
+	const BRACKET_HEIGHT = 6;
+	const BRACKET_BEAK = 4;
+
+	/** Bout de la droite (pointe de la flèche) : là où s'arrête une borne infinie */
+	let { lineStartX, lineEndX } = $derived(computeLineExtents(node.config.arrows, width));
+
 	let renderedSegments = $derived(
-		node.segments.map((s: NumberLineSegment, i: number) => ({
-			x1: valueToX(numVal(s.start), startNum, endNum, scale, width),
-			x2: valueToX(numVal(s.end), startNum, endNum, scale, width),
-			y: LINE_Y + SEGMENT_Y_OFFSET + i * 10,
-			startOpen: s.startOpen,
-			endOpen: s.endOpen,
-			color: colors.segments[i].screen
-		}))
+		node.segments.map((s: NumberLineSegment, i: number) => {
+			const x1 = s.startInfinite
+				? lineStartX
+				: valueToX(numVal(s.start), startNum, endNum, scale, width);
+			const x2 = s.endInfinite ? lineEndX : valueToX(numVal(s.end), startNum, endNum, scale, width);
+			const y = LINE_Y + SEGMENT_Y_OFFSET + i * 10;
+			/** Crochet d'une borne finie, en chemin SVG */
+			const bracket = (x: number, side: 'start' | 'end', open: boolean) =>
+				bracketPoints(x, y, bracketDirection(side, open), BRACKET_HEIGHT, BRACKET_BEAK)
+					.map(([px, py], k) => `${k === 0 ? 'M' : 'L'} ${px} ${py}`)
+					.join(' ');
+			return {
+				x1,
+				x2,
+				y,
+				brackets: [
+					...(s.startInfinite ? [] : [bracket(x1, 'start', s.startOpen)]),
+					...(s.endInfinite ? [] : [bracket(x2, 'end', s.endOpen)])
+				],
+				color: colors.segments[i].screen
+			};
+		})
 	);
 
 	// =========================================================================
-	// ARROWS & HEIGHT
+	// HEIGHT
 	// =========================================================================
-
-	let { lineStartX, lineEndX } = $derived(computeLineExtents(node.config.arrows, width));
 
 	let svgHeight = $derived.by(() => {
 		let h = SVG_HEIGHT;
@@ -239,17 +260,15 @@
 					style:stroke={seg.color}
 					stroke-width="3"
 				/>
-				<!-- Extrémités : un point ouvert prend la couleur du fond (classe), un fermé celle du segment -->
-				{#each [{ x: seg.x1, open: seg.startOpen }, { x: seg.x2, open: seg.endOpen }] as end, k (k)}
-					<circle
-						class="nl-endpoint"
-						class:nl-endpoint-open={end.open}
-						cx={end.x}
-						cy={seg.y}
-						r="4"
-						style:fill={end.open ? undefined : seg.color}
+				<!-- Extrémités : crochets (notation française), aucun sur une borne infinie -->
+				{#each seg.brackets as d, k (k)}
+					<path
+						class="nl-bracket"
+						{d}
+						fill="none"
 						style:stroke={seg.color}
-						stroke-width="2"
+						stroke-width="2.5"
+						stroke-linejoin="miter"
 					/>
 				{/each}
 			{/each}
@@ -313,11 +332,7 @@
 		fill: var(--color-foreground);
 	}
 
-	/* Point ouvert et halo des points : la couleur du fond */
-	.nl-endpoint-open {
-		fill: var(--color-background);
-	}
-
+	/* Halo des points : la couleur du fond */
 	.nl-point {
 		stroke: var(--color-background);
 	}

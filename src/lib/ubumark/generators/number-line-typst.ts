@@ -9,7 +9,7 @@
  * - Minor/major graduations with labels
  * - Hidden labels shown as "?" for exercises
  * - Named points with colors
- * - Segments (intervals) with open/closed endpoints
+ * - Segments (intervals, demi-droites comprises) with bracket endpoints
  * - Linear and logarithmic scales
  * - LaTeX → Typst math conversion for labels
  *
@@ -22,7 +22,9 @@ import {
 	computeGraduations,
 	mapValueToRange,
 	NL_DEFAULT_POINT_COLOR,
-	NL_DEFAULT_SEGMENT_COLOR
+	NL_DEFAULT_SEGMENT_COLOR,
+	bracketDirection,
+	bracketPoints
 } from '../utils/number-line-render';
 import { authorColorTypst, resolveAuthorColor } from '$lib/theme/author-color';
 import { convertLatexToTypstMath } from './typst-generator';
@@ -49,8 +51,10 @@ export interface NumberLineTypstOptions {
 	segmentOffset?: number;
 	/** Point radius (default: 0.08) */
 	pointRadius?: number;
-	/** Segment endpoint radius (default: 0.07) */
-	endpointRadius?: number;
+	/** Demi-hauteur d'un crochet d'extrémité (défaut : 0.15) */
+	bracketHeight?: number;
+	/** Longueur des becs d'un crochet (défaut : 0.08) */
+	bracketBeak?: number;
 	/** Langue du document : virgule décimale en français (défaut), point en anglais */
 	language?: string;
 }
@@ -64,7 +68,8 @@ const DEFAULT_OPTIONS: Required<NumberLineTypstOptions> = {
 	pointLabelOffset: 0.7,
 	segmentOffset: -0.9,
 	pointRadius: 0.08,
-	endpointRadius: 0.07,
+	bracketHeight: 0.15,
+	bracketBeak: 0.08,
 	language: 'fr'
 };
 
@@ -99,7 +104,9 @@ export function generateNumberLineTypst(
 
 		// Segments (rendered below labels, before points)
 		if (node.segments.length > 0) {
-			parts.push(generateSegments(node.segments, startNum, endNum, scale, opts));
+			parts.push(
+				generateSegments(node.segments, startNum, endNum, scale, node.config.arrows, opts)
+			);
 		}
 
 		// Points
@@ -126,6 +133,9 @@ function fmt(n: number, decimals: number = 3): string {
 // AXIS
 // ============================================================================
 
+/** Dépassement (cm) de l'axe de chaque côté quand il a des flèches */
+const AXIS_ARROW_EXTENSION = 0.3;
+
 function generateAxis(
 	startNum: number,
 	endNum: number,
@@ -135,7 +145,7 @@ function generateAxis(
 	const lines: string[] = [];
 	lines.push('  // Main axis');
 
-	const extension = arrows ? 0.3 : 0;
+	const extension = arrows ? AXIS_ARROW_EXTENSION : 0;
 	const x0 = -extension;
 	const x1 = opts.lineWidth + extension;
 
@@ -234,15 +244,23 @@ function generateSegments(
 	startNum: number,
 	endNum: number,
 	scale: 'linear' | 'log',
+	arrows: boolean,
 	opts: Required<NumberLineTypstOptions>
 ): string {
 	const lines: string[] = [];
 	lines.push('  // Segments');
 
+	// Bout de la droite (pointe de la flèche, `generateAxis`) : là où s'arrête une borne infinie
+	const extension = arrows ? AXIS_ARROW_EXTENSION : 0;
+
 	for (let i = 0; i < segments.length; i++) {
 		const seg = segments[i];
-		const x1 = mapValueToRange(numVal(seg.start), startNum, endNum, opts.lineWidth, scale);
-		const x2 = mapValueToRange(numVal(seg.end), startNum, endNum, opts.lineWidth, scale);
+		const x1 = seg.startInfinite
+			? -extension
+			: mapValueToRange(numVal(seg.start), startNum, endNum, opts.lineWidth, scale);
+		const x2 = seg.endInfinite
+			? opts.lineWidth + extension
+			: mapValueToRange(numVal(seg.end), startNum, endNum, opts.lineWidth, scale);
 		const y = opts.segmentOffset - i * 0.3;
 		const color = authorColorTypst(resolveAuthorColor(seg.color, NL_DEFAULT_SEGMENT_COLOR));
 
@@ -251,17 +269,21 @@ function generateSegments(
 			`  line((${fmt(x1)}, ${fmt(y)}), (${fmt(x2)}, ${fmt(y)}), stroke: (paint: ${color}, thickness: 2pt))`
 		);
 
-		// Start endpoint
-		const startFill = seg.startOpen ? 'white' : color;
-		lines.push(
-			`  circle((${fmt(x1)}, ${fmt(y)}), radius: ${fmt(opts.endpointRadius)}, fill: ${startFill}, stroke: ${color})`
-		);
-
-		// End endpoint
-		const endFill = seg.endOpen ? 'white' : color;
-		lines.push(
-			`  circle((${fmt(x2)}, ${fmt(y)}), radius: ${fmt(opts.endpointRadius)}, fill: ${endFill}, stroke: ${color})`
-		);
+		// Extrémités : crochets (notation française), aucun sur une borne infinie
+		const bracket = (x: number, side: 'start' | 'end', open: boolean) => {
+			const points = bracketPoints(
+				x,
+				y,
+				bracketDirection(side, open),
+				opts.bracketHeight,
+				opts.bracketBeak
+			)
+				.map(([px, py]) => `(${fmt(px)}, ${fmt(py)})`)
+				.join(', ');
+			return `  line(${points}, stroke: (paint: ${color}, thickness: 1.5pt)) // crochet`;
+		};
+		if (!seg.startInfinite) lines.push(bracket(x1, 'start', seg.startOpen));
+		if (!seg.endInfinite) lines.push(bracket(x2, 'end', seg.endOpen));
 	}
 
 	lines.push('');
