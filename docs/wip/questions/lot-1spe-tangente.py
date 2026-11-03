@@ -110,6 +110,8 @@ MODELE = {
         spec('Erreur : pente inverse 1/2', 0, V0, '1;2/3;3', 'incorrect'),
         spec('Erreur : bonne pente, mais par (0 ; f(a)) au lieu de A', 0, V0, '0;2/1;4',
              'incorrect'),
+        spec('Erreur : sécante par A et (−1 ; 0), autre point de la courbe', 0, V0, '1;2/-1;0',
+             'incorrect'),
         spec('Un seul point posé', 0, V0, '1;2/', 'incorrect'),
         spec('Deux points confondus', 0, V0, '1;2/1;2', 'incorrect'),
         spec('f′(−2) = 0 : tangente horizontale y = 1', 0, V0_NUL, '-2;1/0;1', 'correct'),

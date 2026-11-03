@@ -153,6 +153,20 @@
 			}
 		},
 		{
+			"description": "Erreur : sécante par A et (−1 ; 0), autre point de la courbe",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"k": "1",
+				"s": "2"
+			},
+			"answers": ["1;2/-1;0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
 			"description": "Un seul point posé",
 			"variationIndex": 0,
 			"variables": {

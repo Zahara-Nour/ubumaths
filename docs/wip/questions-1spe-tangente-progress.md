@@ -112,3 +112,9 @@ Retouches en cours de route :
   y = 1 » pour s = 0 et « y = (x + 3) + 2 » pour s = 1). Reste « y = 4 − x » pour s = −1 (juste, lisible).
 - Vu, hors de ce chantier (#2265) : pas d'espace entre « d'équation » et la formule dans le message
   d'erreur du geste `tracer`.
+
+## 7. Doublon avec la session tracer-droite (2026-11-03)
+
+La session `questions-1spe-tracer-droite` avait une phase 0 de 271 (§ 6 de son journal, sur `main`).
+David suit ma reco : ce modèle-ci est gardé ; son erreur « sécante » est reprise dans les specs (13 specs) ;
+la session `tracer-droite` est prévenue (message) d'abandonner son § 6.
