@@ -12,7 +12,7 @@ _Mis à jour le 2026-11-03, PR de la garde `\textcolor` ouverte (§ 60)._
   https://claude.ai/artifact/AH7MKr1qcSeK2c7Du7EMYY. Garde `\textcolor` hors `$` dans `question:specs`
   (décision § 58) : branche `fix/garde-textcolor-hors-maths`, PR à merger.
 - **Prochaine action** : merger la PR ; puis les 35 fichiers hors 2de (§ 58) — rien sans l'accord de David.
-  À faire aussi : 2-316 et 2-445 réécrits au geste ` ```courbe tracer: ` (§ 61).
+  À faire aussi : 2-316 et 2-445 réécrits au geste ` ```courbe tracer: `, puis 2-298 (vecteur) (§ 61).
 - **En attente de David** : son accord sur les 35 hors 2de (reco : dans ce chantier, en lots par niveau) ;
   la relecture de la page, puis `verdicts`, corrections, `publier-lot` (ids § 57).
 - **Pièges en cours** : `--publier`, `publier-lot`, `db:migrate` → David avec `!` ;
@@ -1536,7 +1536,7 @@ Avant de corriger : revérifier dans le code de rendu que `\textcolor` hors math
   détection (3/5, les attendus). Sur fichiers réels : `2de-signes-a/01` corrigé → 0/100, sa version
   d'avant le correctif → 25/25 et sortie 1, `ce1-9/05` (hors 2de) → signalé.
 
-## 61. À faire : 2-316 et 2-445 au geste « droite à tracer » (ajouté le 2026-11-03)
+## 61. À faire : 2-316, 2-445 (droite) et 2-298 (vecteur) au geste « tracer » (ajouté le 2026-11-03)
 
 - Les deux modèles du lot 5 B (B-06 `8d4bd94d`, 2-316, équation réduite ; B-07 `2cfae58d`, 2-445, équation
   cartésienne) sont en case choix entre 4 ` ```courbe ` (§ 30, § 36 publiés, faute de geste à l'époque).
@@ -1545,3 +1545,7 @@ Avant de corriger : revérifier dans le code de rendu que `\textcolor` hors math
   journal archivé `questions-1spe-tracer-droite`) ; pièges dans `couvrir-un-niveau.md` § 9.
 - Publiés → `update-published-questions.ts`, pas `create-questions --mettre-a-jour`. Retirer la ligne de
   `docs/wip/outils-manquants.md` (« Contenu restant aux sessions questions ») une fois faits.
+- **2-298 · Représenter un vecteur dont on connaît les coordonnées** : même cas, modèles en case choix à
+  réécrire au geste ` ```courbe tracer: vecteur ` (`depuis A` pour l'origine imposée, #2274). ⚠️ #2274 n'est
+  **pas en prod** au 2026-11-03 : rien à publier avant le `deploy:prod` qui la livre. Ids des modèles : à relever
+  en prod (tag 2-298) ; origine du besoin : `docs/archive/wip/points-repere-progress.md`, lot 3.
