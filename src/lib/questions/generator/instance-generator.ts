@@ -53,6 +53,13 @@ import { hasHorlogeToPlace } from '$lib/ubumark/parser/horloge-parser';
 import { hasStatChartToPlace } from '$lib/ubumark/parser/stat-chart-parser';
 import { hasCourbeToPlace } from '$lib/ubumark/parser/courbe-parser';
 import { hasTrigCircleToPlace } from '$lib/ubumark/parser/trig-circle-parser';
+import { hasVariationToFill } from '$lib/ubumark/parser/variation-table-parser';
+import {
+	readSignTableCases,
+	signTableAnswerLatex,
+	signTableCaseIndices,
+	type SignTableAnswer
+} from '../sign-table-case';
 import { barsCaseCount } from '$lib/ubumark/utils/barres-placer';
 import { boxPlotCaseCount } from '$lib/ubumark/utils/boxplot-placer';
 import {
@@ -553,7 +560,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				hasRangerToPlace(String(resolvedStatement)) ||
 				hasPartageToColorier(String(resolvedStatement)) ||
 				hasCubesToBuild(String(resolvedStatement)) ||
-				hasPatronsToBuild(String(resolvedStatement))) &&
+				hasPatronsToBuild(String(resolvedStatement)) ||
+				hasVariationToFill(String(resolvedStatement))) &&
 			getQuestionType({ options: template.options }) === 'fill_in_blanks';
 		if (resolvedVariation.blanks || hasOperationBlock) {
 			// 7a. Fill-in-blanks pipeline
@@ -595,6 +603,9 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			}
 			if (blankResult.choiceErrors) {
 				return { success: false, errors: blankResult.choiceErrors };
+			}
+			if (blankResult.variationErrors) {
+				return { success: false, errors: blankResult.variationErrors };
 			}
 
 			// Cases des blocs ```choix : choix et réglages lus ici ; bonne réponse portée par
@@ -768,6 +779,37 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				}
 				buildAnswers.set(index, { kind, answer: read.answer });
 			}
+			// Cases des tableaux de signes à compléter : réponse = la cellule cachée du bloc
+			const signTableAnswers = new Map<number, SignTableAnswer>();
+			for (const [key, { source, cell }] of Object.entries(blankResult.variationBlanks ?? {})) {
+				// Un tableau est lu une fois, à sa première case
+				if (cell > 0) continue;
+				const first = Number(key);
+				const read = readSignTableCases(source, first, {
+					orderIndependent: template.options?.orderIndependent
+				});
+				if ('errors' in read) return { success: false, errors: read.errors };
+				read.answers.forEach((answer, k) => signTableAnswers.set(first + k, answer));
+			}
+			if (signTableAnswers.size > 0) {
+				// Le tableau que l'écran de l'élève lit vraiment porte chacune de ses cases
+				const shown = new Set(
+					parseMarkdown(blankResult.statement).children.flatMap((child) =>
+						child.type === 'variation-table' ? signTableCaseIndices(child) : []
+					)
+				);
+				for (const index of signTableAnswers.keys()) {
+					if (!shown.has(index)) {
+						return {
+							success: false,
+							errors: [
+								`Case ${index + 1} (tableau de signes) : bloc illisible à l'écran (fence de fin \`\`\` en retrait, ou bloc dans un bloc de code ?)`
+							]
+						};
+					}
+				}
+			}
+
 			// Chaque case à construire doit être un bloc que l'écran de l'élève lit vraiment
 			// (droite à placer : ses cases, une par point) :
 			// une fence de fin en retrait, un bloc montré dans un bloc de code ``` ne le sont
@@ -850,8 +892,12 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			// elles ne donnent que des réglages.
 			// Les cases des blocs ```figure-a-completer aussi.
 			const isBlockCase = (index: number) =>
-				operationAnswers.has(index) || constructionCases.has(index) || buildAnswers.has(index);
-			const blockCaseCount = operationAnswers.size + constructionCases.size + buildAnswers.size;
+				operationAnswers.has(index) ||
+				constructionCases.has(index) ||
+				buildAnswers.has(index) ||
+				signTableAnswers.has(index);
+			const blockCaseCount =
+				operationAnswers.size + constructionCases.size + buildAnswers.size + signTableAnswers.size;
 			let alignedBlanks: TemplateBlank[];
 			if (templateBlanks.length === blankResult.totalBlanks) {
 				for (const index of operationAnswers.keys()) {
@@ -871,6 +917,16 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 							success: false,
 							errors: [
 								`Case ${index + 1} : sa réponse est la figure de l’élève (bloc ${name}) ; laisser expectedAnswer vide`
+							]
+						};
+					}
+				}
+				for (const index of signTableAnswers.keys()) {
+					if ((templateBlanks[index].expectedAnswer ?? '').trim() !== '') {
+						return {
+							success: false,
+							errors: [
+								`Case ${index + 1} : sa réponse vient du tableau de signes ; laisser expectedAnswer vide`
 							]
 						};
 					}
@@ -970,6 +1026,19 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 							.join('|'),
 						type: 'graphical',
 						construction
+					};
+				}
+				// Case d'un tableau de signes : sa propre case, sans les réglages de la variation
+				// (`answerKind`, unité, précision… jugeraient la valeur de x comme autre chose)
+				const signTableAnswer = signTableAnswers.get(i);
+				if (signTableAnswer) {
+					return {
+						expectedAnswer: signTableAnswer.answer,
+						type: blankResult.blankTypes[i],
+						cellule: signTableAnswer.kind,
+						expectedAnswerLatex: signTableAnswerLatex(signTableAnswer),
+						// Valeur de x jugée par équivalence (phase 0) : `1,5` vaut `\frac{3}{2}`
+						...(signTableAnswer.kind === 'valeur' && { acceptDecimal: true })
 					};
 				}
 				const operationAnswer = operationAnswers.get(i);

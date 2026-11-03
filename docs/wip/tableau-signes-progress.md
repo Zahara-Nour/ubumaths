@@ -9,18 +9,19 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2267 (PR 1 mergée)._
+_Mis à jour le 2026-11-03, après #2273 (PR 2 mergée)._
 
-- **État** : PR 1 mergée (#2267) — ubumark lit les `?` du ` ```variation ` (`cases`, `case: N`, `??n`), refus en
-  français, Typst `hiddenCells`, éditeur riche. Rien n'est encore visible pour l'élève.
-- **Prochaine action** : PR 2 — génération, jugement, masquage d'évaluation (§ Plan technique) : nouveau worktree
-  `git worktree add -b feat/tableau-signes-generation ../ubumaths-wt-tableau-signes origin/main`, tests rouges d'abord ;
-  revue `code-reviewer` Opus + `security-auditor` (masquage).
+- **État** : PR 1 (#2267, ubumark) et PR 2 (#2273, génération, juge, masquage d'évaluation) mergées. Les cases
+  existent (`InstanceBlank.cellule`, `variationBlanks`) mais l'élève n'a pas encore de quoi les remplir :
+  **aucun modèle à écrire avant la PR 3**.
+- **Prochaine action** : PR 3 — saisie (`VariationTable.svelte`, `FillBlanksInput.svelte`) : valeur = petite case
+  MathLive, signe = boutons + / −, marque = 0 / ‖ / rien, au doigt à 390 px. Nouveau worktree
+  `git worktree add -b feat/tableau-signes-saisie ../ubumaths-wt-tableau-signes origin/main`.
 - **En attente de David** : rien.
-- **Pièges en cours** : PDF — une marque cachée est un trait nu, sans repère « à compléter » (vartable 0.2.1 ne place
-  rien sur le trait ; essais `place` / `block` vains) → PR 4. Décimal dans le domaine coupé aux virgules (fraction).
-  Valeur de x jugée : vérifier `1,5` contre `\frac{3}{2}` (PR 2).
-- **Worktree / branche** : aucun (à recréer pour la PR 2).
+- **Pièges en cours** : réponses envoyées par la saisie = jetons `+` `-` `z` `||` `rien` (juge `isSignCellCorrect`).
+  Énoncé d'évaluation : `??n` / `?` seul, cases à `answer` vide — la saisie doit marcher dessus. PDF : marque
+  cachée = trait nu (PR 4). Cas frère non vérifié : les cases ```operation héritent des `blankDefaults`.
+- **Worktree / branche** : aucun (à recréer pour la PR 3).
 
 ---
 
@@ -100,3 +101,32 @@ trait à chaque colonne), mais pas de repère « à compléter » (piège ci-des
 Revue (`code-reviewer` Sonnet) : `?` refusé partout dans une étiquette ou une valeur `variation:` → refusé seulement en
 tête (régression évitée) ; valeur de x répétée avec cases → refusée ; `open: undefined` retiré. 6 tests (4 rouges).
 CI verte, mergée (#2267).
+
+## PR 2 — génération, jugement, masquage (2026-11-03)
+
+Branche `feat/tableau-signes-generation`, worktree `../ubumaths-wt-tableau-signes`.
+
+- Repérage : `findVariationsToFill` (parseur ; seul le préfixe de la fence est retiré, le retrait des
+  cellules compte) ; `markVariationBlocks` (`assign-blank-indices.ts`) → `variationBlanks` (texte, rang
+  de la cellule), `variationErrors` (bloc cité / en liste / dans un choix, non fermé). Valeur = case
+  `math`, signe/marque = `text`.
+- Génération : `questions/sign-table-case.ts` (`readSignTableCases`) ; `InstanceBlank.cellule` ; refus :
+  parseur (« Ligne N : »), `case:` écrit, `??n` / `?` seul, ordre indifférent, réponse dans `blanks`,
+  bloc illisible à l'écran. `template-validator` : tableau à compléter sans `blanks[]` accepté.
+- Juge : signe/marque `isSignCellCorrect` (jeton, `0` = `z`, vide jamais juste) ; valeur : juge ordinaire
+  avec **`acceptDecimal` forcé** — sans lui, `1,5` contre `\frac{3}{2}` = `bad_form` (piège vérifié).
+  `3/2` en texte brut reste `bad_form` (MathLive écrit `\frac`).
+- Masquage : `maskVariation` (`??n` dans `domain:` et dans les clés de TOUTES les lignes, `?` seul pour
+  signe/marque) ; garde `findUnmaskedAnswers` → `variation` si une case a une réponse ou une clé hors du
+  domaine. Parseur : clé `??n` acceptée dans une ligne `variation:` (refusée avant).
+- Lecteurs des cases de bloc mis à jour : `choice-case-editor`, `choice-answer-count`, `figure-name-check`.
+  ⚠️ Écart vu, hors périmètre : `choice-answer-count` et `figure-name-check` ignorent déjà `buildBlanks`.
+- Tests : `generation-tableau-signes.test.ts` (24, rouges avant), parseur +1 ; suites `questions`,
+  `ubumark`, `utils`, `rich-text`, `worksheets` : 14 339 verts ; `check:incremental` 0.
+- Rien de visible pour l'élève tant que la PR 3 (saisie) n'est pas là : ne pas écrire de modèle avant.
+- Revues : `security-auditor` sans bloquant ; 3 fuites de forme fermées par refus d'auteur (valeur cachée
+  écrite `f(-3)` dans une ligne `variation:`, toute erreur d'un bloc à cases — domaine répété, ligne
+  libre —, cellule écrite deux fois). Non traité (au modèle de l'éviter) : déduction par un 2e tableau,
+  par `||` d'une ligne `variation:`, par l'étiquette `sign: x+3`. `code-reviewer` Opus : une valeur de x
+  héritait de `blankDefaults` (`answerKind: 'intervalles'` → `-3` jugé faux) → case de tableau construite
+  à part, sans héritage. ⚠️ Cas frère non vérifié : les cases ```operation suivent le chemin d'héritage.
