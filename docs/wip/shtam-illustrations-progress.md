@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, lot 1 en cours (1/6 dessins)._
+_Mis à jour le 2026-11-03, lot 1 en cours (3/6 dessins)._
 
-- **État** : lot 1 sur `feat/shtam-illustrations-lot-1` (pas encore de PR) : fermat-marge-trop-petite fait, **style validé par David**. Prompts écrits pour les 5 autres (glitchistan-ha-ha, patatovie-barbier-paradoxe, bedonstan-rails-de-sandomir, nombrilie-zero-virgule-neuf, yoyolande-hotel-de-l-infini) dans `docs/Chiphres/illustrations/shtam/<slug>/prompt.md`.
+- **État** : lot 1 sur `feat/shtam-illustrations-lot-1` (pas encore de PR) : faits : fermat-marge-trop-petite (**style validé**), glitchistan-ha-ha, patatovie-barbier-paradoxe (retouché, **validé**). Restent, prompts écrits : bedonstan-rails-de-sandomir, nombrilie-zero-virgule-neuf, yoyolande-hotel-de-l-infini dans `docs/Chiphres/illustrations/shtam/<slug>/prompt.md`.
 - **Prochaine action** : recevoir les images de David → `essai-N-ia.jpg` dans le dossier de l'article, `magick … -resize 1200x -gravity center -crop 1200x800+0+0 -quality 85` → `static/shtam/<slug>.webp`, ligne d'image en tête du corps ; puis PR du lot.
-- **En attente de David** : les 5 images du lot 1.
+- **En attente de David** : les 3 dernières images du lot 1.
 - **Pièges en cours** : ne jamais lancer prettier sur les articles (casse `~q*2~`) ; fichiers à joindre → `~/Downloads` ; la une prend la **première** image du corps → le dessin AVANT toute figure SVG ; jamais de personne réelle dessinée (Fermat remplacé par Mère Ubu).
 - **Worktree / branche** : `../ubumaths-wt-shtam-illustrations` · `feat/shtam-illustrations-lot-1` · serveur de test sur 5178.
 
@@ -44,3 +44,4 @@ _2026-11-03, phase 0 :_
 - 2026-11-03 — Chantier ouvert à la demande de David (« créer une illustration pour chaque article du shtam »).
 - 2026-11-03 — Phase 0 tranchée par David : les 6 réponses suivent les recommandations (voir « Décisions de David »).
 - 2026-11-03 — Lot 1 : dessin de fermat-marge-trop-petite (Mère Ubu et la facture ; 1264×848 recadré en 1200×800, 172 Ko), style validé ; prompts des 5 suivants écrits.
+- 2026-11-03 — glitchistan-ha-ha intégré (`integrer.sh` écrit). Barbier : essai 1 refusé (reflet au crâne rasé), prompt v2 « très mauvais » ; retenu = essai 1 **retouché par deux carrés** (barbe de trois jours / reflet rasé, mousse sur une joue — idée de David), `coller-retouches.sh` par masque de différence ; **validé par David**.
