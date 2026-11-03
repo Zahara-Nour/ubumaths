@@ -8,13 +8,13 @@ status: écarts revérifiés le 2026-10-18 ; tri A (seul) / B (David) fait ; lot
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après la page à cocher du lot B._
+_Mis à jour le 2026-11-03, après #2340, #2342, #2343 ; #2345 ouverte._
 
-- **État** : liste A et lot RGPD comme avant (T14 attend David ; #2330 pas encore en prod). **Lot B tranché** (§ « Décisions de David, page à cocher lot B », en bas) sauf L13 et V63, reposés à David.
-- **Prochaine action** : les PR du lot B, dans l'ordre : M4 (code, puis `DROP` après `deploy:prod`) + M11 (`DROP`) ; M8 ; D11 + C10 ; C14 ; V35 ; V39 (mesurer les modèles d'abord) ; V40 ; L9 ; L20 (doc). Clore V4, V8, M2, M20, V41, D10, D20, V49 dans `ecarts-a-trier.md`.
-- **En attente de David** : **L13** (lire `12 km` sans crochets ? « m » = mètre ou variable m) ; **V63** (réexpliqué simplement) ; DPA (Drive privé, preuves d'acceptation) ; relire `conformite/violation-de-donnees.md` ; T14 ; perf `requireAuth` ; `account/delete` 1 / 24 h.
-- **Pièges en cours** : test d'une route limitée → `vi.mock('$lib/server/rateLimiter', () => import('$lib/server/__tests__/helpers/fake-rate-limiter'))` ; garde « doc à jour » compare des COMMITS ; commitlint refuse un sujet en majuscule ; dépôt PUBLIC : ni e-mail ni document signé dans `docs/`.
-- **Worktree / branche** : aucun (journal sur `main`).
+- **État** : lot B en cours. **Faits** : M4 code (#2340), M11 `DROP` appliqué en prod + `db:types` (#2342, #2345), M8 (#2343). Liste A et lot RGPD comme avant (T14 attend David ; #2330 pas encore en prod).
+- **Prochaine action** : **#2345** (`db:types` M11) : porte de la CI fermée 2 fois, « origin/main injoignable » (panne réseau GitHub, `main` rouge aussi à 19:30) → relancer le run (`gh run rerun <id>`), merger si verte, supprimer la branche ; puis D11 + C10 ; C14 ; V35 ; V39 (mesurer les modèles d'abord) ; V40 ; L9 ; L20 (doc). Clore V4, V8, M2, M20, V41, D10, D20, V49 et M4/M8/M11 dans `ecarts-a-trier.md`. **M4 `DROP worksheet_instances`** : seulement après le prochain `deploy:prod` (retirer aussi les tests d'intégration qui la lisent : `phantom-columns`, `anon-option-b`, `eleve-inscrit-apres-publication`, `profiles-columns`, `worksheet-instance-not-writable-by-student`).
+- **En attente de David** : DPA (Drive privé, preuves d'acceptation) ; relire `conformite/violation-de-donnees.md` ; T14 ; perf `requireAuth` ; `account/delete` 1 / 24 h.
+- **Pièges en cours** : `db:migrate` refusé par le mode auto → David le lance (`! cd <worktree> && pnpm db:migrate`) ; worktree non lié → copier `../ubumaths/supabase/.temp` ; un `DROP` garde la ligne de `generate-db-doc.ts` jusqu'à `db:types` (test « aucune table sans domaine ») ; migration appliquée en local par `psql` sous verrou (pas de `db:reset`, base partagée).
+- **Worktree / branche** : `../ubumaths-wt-ecarts-a-trier`, une branche par PR du lot (actuelle : `chore/ecarts-db-types-m11`).
 
 ---
 
@@ -64,3 +64,11 @@ Page : https://claude.ai/artifact/J4Z8UfhGXAwSafQX59x1nm (20 fiches, revérifié
 - **D11 + C10** : renommer « capacité » dans le code (point du programme). **C14** : `src/lib/lexicon/` → `src/lib/dictionary/`.
 - **D21** : tuteur en pause, V31 / L32 / L33 suspendus avec lui. **C13** : David relit les récits du chiffrement (→ vérifications manuelles).
 - **Sans choix** : **L13** (commentaire : « l'atelier est censé lire tout seul les unités ») et **V63** (« je ne comprends rien ») → reposés dans la conversation.
+
+## Lot B, avancement (2026-11-03)
+
+- **M4** (#2340) : « Publié pour N élève(s) » compte les élèves de l'affectation ; `canStudentAccessInstanceCorrection` retirée ; plus aucun code ne lit `worksheet_instances`. `DROP` après le prochain `deploy:prod`.
+- **M11** (#2342 + #2345) : `class_google_classroom_links` supprimée (0 ligne, aucune dépendance), migration `20261103170936` appliquée en prod par David ; types régénérés.
+- **M8** (#2343) : export `.tex` d'ubumark retiré (`latex-generator.ts`, `variation-table-latex.ts`, `probability-tree-latex.ts` + tests).
+- **L13 fermé** (2026-11-03) : déjà tranché (lecture naturelle des unités, 2026-10-11, `grandeurs.md`) ; question reposée à tort.
+- **V63 fermé** (2026-11-03) : corrigé depuis le 2026-10-19 (`atelier.md`, « Noms indicés ») ; la liste ne l'avait pas noté.

@@ -6,17 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2337._
+_Mis à jour le 2026-11-03, après #2344._
 
-- **État** : lot « Droites » fait — #2333 (droite à tracer figée, modèle `f5585668` en **brouillon**,
-  script) ; fiche « Automatismes : droites (1) » `0f98be04` écrite en **brouillon**, PDF vérifiés
-  (0 débord) ; #2337 : gras mathématique ajouté à Chiphre Math (réponses du corrigé PDF lisibles, fiche
-  « évolutions » comprise) ; `fiches-exercices.md` § 1 complété (fiche droites) ; phase 0 du lot « Lectures graphiques » tranchée · **Prochaine action** : 3 modèles neufs (§ Lot
-  « Lectures graphiques »), puis fiche « Automatismes : lectures graphiques (1) » · **En attente de David** : publier `f5585668`
-  et les fiches `9217dfaa`, `0f98be04` ; garder ou non les 2 figures d'un corrigé de tracé ; questions
-  2 à 4 (§ Questions ouvertes) · **Pièges en cours** : `compile-prod.mjs --polices-corrige` pour un
-  corrigé ; polices `/fonts/` en cache 30 j → changer le `?v=` de `CORRECTION_FONT_FILES` à chaque
-  reconstruction ; `~…~` non nettoyé par `cleanCoefficients` dans `buildSerie` · **Worktree / branche** : aucun.
+- **État** : lots « évolutions » et « droites » faits ; lot « Lectures graphiques » : 3 modèles neufs
+  en **brouillon** (`95ee57c8`, `5397c20f`, `7f82d15a`) et script de fiche
+  `create-automatismes-lectures-graphiques-1spe.ts` (simulation propre), mergés (#2344) · **Prochaine
+  action** : écrire la fiche (`--publier`, par David ou sur sa demande), vérifier
+  les PDF (`regen-depuis-base.ts`, `compile-prod.mjs --polices-corrige`, `debord.py`), ajouter la ligne
+  à `fiches-exercices.md` § 1 · **En attente de David** : écrire la fiche ; publier `f5585668`,
+  `95ee57c8`, `5397c20f`, `7f82d15a` et les fiches `9217dfaa`, `0f98be04` ; corriger ou non
+  l'ensemble fini `{a}∪{b}` du corrigé (§ Lot « Lectures graphiques ») ; garder ou non les 2 figures
+  d'un corrigé de tracé ; questions 2 à 4 (§ Questions ouvertes) · **Pièges en cours** :
+  `compile-prod.mjs --polices-corrige` pour un corrigé ; `?v=` de `CORRECTION_FONT_FILES` à changer
+  à chaque reconstruction des polices ; `~…~` non nettoyé par `cleanCoefficients` dans `buildSerie`
+  · **Worktree / branche** : aucun (la fiche s'écrit depuis `main`).
 - Hors de ce chantier, même niveau : 18 fiches « Entraînement technique » / « Applications » de 1re spé en
   brouillon depuis septembre, à relire et publier par David (`docs/pratiques/fiches-exercices.md` § 1, § 3).
 
@@ -96,13 +99,13 @@ variations. Entretien de 2de : images et antécédents. Relevé en prod (modèle
 ` ```variation `), séries essayées par `buildSerie` (lecture seule, graines 1-3) : **les 29 candidats
 passent** (✅ ci-dessous).
 
-| Capacité                               | Modèles (courbe quelconque d'abord)                                                                                                                                            | Manque                                               |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------- |
-| Images (2de)                           | `cc88ebd3`                                                                                                                                                                     | —                                                    |
-| $f(x) = k$ / antécédents               | `17809937` (courbe quelconque) ; `406fd9a8` ($f = g$) ; références : `9c4f6b4f` x², `98892db9` x³, `60207cfd` 1/x, `1ac09759` √x, `b807cc6c` \|x\| ; `eb04ebf7` (linéaire, 3e) | —                                                    |
-| $f(x) < k$                             | `a55ad3b4` (affine), `77500c81` (linéaire), `7efd2e76` ($f < g$), `33dffa7a` v2 ($f \geqslant 0$) ; références : `08c059b8`, `52e58bd6`, `2d4c0b35`, `a371b402`, `cbf00ce7`    | **$f(x) < k$ sur une courbe quelconque, $k \neq 0$** |
-| Signe lu sur la courbe                 | `33dffa7a` (signe sur un intervalle en choix, $f \geqslant 0$, tableau de signes **en choix**)                                                                                 | tableau de signes **à compléter** (outil existant)   |
-| Tableau de variations lu sur la courbe | indirects seulement : `3810a06c` (tableau → quelle courbe ?), `93bc8b5e` (croissante sur un intervalle ?), `39154ac5` (extremums), `275cb665` (comparer des images)            | **courbe → tableau de variations** : aucun modèle    |
+| Capacité                               | Modèles (courbe quelconque d'abord)                                                                                                                                                                     | Manque                                               |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| Images (2de)                           | `cc88ebd3`                                                                                                                                                                                              | —                                                    |
+| $f(x) = k$ / antécédents               | `17809937` (courbe quelconque) ; `406fd9a8` ($f = g$) ; références : `9c4f6b4f` x², `98892db9` x³, `60207cfd` 1/x, `1ac09759` √x, `b807cc6c` \|x\| ; `eb04ebf7` (linéaire, 3e)                          | —                                                    |
+| $f(x) < k$                             | `a55ad3b4` (affine), `77500c81` (linéaire), `7efd2e76` ($f < g$), `33dffa7a` v2 ($f \geqslant 0$) ; références : `08c059b8`, `52e58bd6`, `2d4c0b35`, `a371b402`, `cbf00ce7`                             | **$f(x) < k$ sur une courbe quelconque, $k \neq 0$** |
+| Signe lu sur la courbe                 | `33dffa7a` (signe sur un intervalle en choix, $f \geqslant 0$, tableau de signes **en choix**)                                                                                                          | tableau de signes **à compléter** (outil existant)   |
+| Tableau de variations lu sur la courbe | `3810a06c` v0 (courbe → quel tableau ?, **parabole** seulement ; v1 : tableau → quelle courbe ?), `93bc8b5e` (croissante sur un intervalle ?), `39154ac5` (extremums), `275cb665` (comparer des images) | **courbe → tableau de variations** : aucun modèle    |
 
 **Tranché par David (2026-11-03)** : 3 modèles neufs, en brouillon — (1) $f(x) < k$ (et $\leqslant$,
 $>$, $\geqslant$) sur une courbe quelconque, $k \neq 0$ ; (2) « courbe → quel tableau de variations ? »
@@ -113,6 +116,27 @@ Aucun modèle ne fait compléter un tableau à partir d'une courbe (seuls `f0163
 sans courbe, ont des cellules cachées). Le parseur **refuse `?` dans une ligne `variation:`**
 (`docs/systeme/ubumark.md`, « Cellules cachées ») : un tableau de variations à compléter est un geste
 neuf ; un tableau de signes à compléter se fait déjà (`buildSerie` le fige, lot `tableau-signes`).
+
+### Fait (PR #2344 du lot « Lectures graphiques », 2026-11-03)
+
+- ⚠️ Correction du relevé : `3810a06c` (2de) a déjà une variante « courbe → quel tableau ? », mais
+  sur une parabole (une bosse, 2 flèches) ; le modèle neuf (3) prend une cubique à deux extremums
+  (3 flèches).
+- `scripts/questions/lectures-graphiques-1spe/` → brouillons en prod :
+  `95ee57c8` « Résoudre graphiquement une inéquation f(x) < k sur une courbe » (cubique
+  $k + a(x-r)(x-s)(x-t)/4$, v0 sans la droite $y = k$, v1 avec ; 8 specs, 100 tirages) ;
+  `5397c20f` « Dresser le tableau de signes d'une fonction lu sur sa courbe » (cubique 3 zéros /
+  parabole 2 zéros ; 9 specs) ; `7f82d15a` « Dresser le tableau de variations d'une fonction lu sur
+  sa courbe » (cubique $(u^3 - 12u)/4$, 4 tableaux : juste, flèches inversées, une flèche, dernier
+  changement oublié ; 5 specs). Les 3 passent `buildSerie` (12 graines chacun).
+- `scripts/create-automatismes-lectures-graphiques-1spe.ts` : série 1 = image, antécédents,
+  f < k (droite tracée), f ⩾ 0 (`33dffa7a`), tableau de signes (cubique), extremums, tableau de
+  variations, f = g ; série 2 = image, antécédents, sens de variation, f < k (sans droite), tableau de
+  signes (parabole), f ⩽ g, tableau de variations, x² > k. Graines changées hors cas limites :
+  antécédents 2 → 15 (S = ∅), x² < k 1 → 7 (S = ℝ ; ce modèle tombe sur ∅ ou ℝ 8 fois sur 15).
+- ⚠️ **Défaut relevé, antérieur au lot** : au corrigé d'une série, la réponse en gras d'un ensemble
+  fini s'écrit `{−3}∪{−1}∪{1}` (forme normalisée de l'attendu) au lieu de `{−3 ; −1 ; 1}` ;
+  touche `17809937`, `406fd9a8`. L'étape de correction juste en dessous l'écrit bien.
 
 ## Questions ouvertes (à poser à David)
 
