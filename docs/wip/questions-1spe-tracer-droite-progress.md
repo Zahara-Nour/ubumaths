@@ -14,7 +14,8 @@ _Mis à jour le 2026-11-03, après #2279._
   1TECHNO-140, `updated_at` préservé).
 - **Prochaine action** : page à cocher (`scripts/questions/page-a-cocher.ts --dir
 scripts/questions/1spe-tracer-droite`), publiée en artefact (capacité `db`).
-- **En attente de David** : verdict sur la page à cocher, puis `publier-lot.ts --publier`.
+- **En attente de David** : `pnpm tsx scripts/questions/publier-lot.ts --dir
+scripts/questions/1spe-tracer-droite --publier` (verdict « OK » 1/1, simulation verte).
 - **Pièges en cours** : 1SPE-271 repris par `questions-1spe-tangente` (ne rien écrire ici).
 - **Worktree / branche** : aucun (retiré après #2279).
 
@@ -142,3 +143,4 @@ est donné par la figure) ; (b) les trois variations, dont m = 0 (reco : oui).
   test ajouté (un tag sans nœud est interdit par trigger : c'est la garde « déjà rangé » qui arrête
   la migration). `db:migrate` lancé depuis le dépôt principal le 2026-11-03, vérifié en prod (MCP).
 - Page à cocher publiée le 2026-11-03 (artefact `Sp18DSUP9pjLz7z6PWTQUo`, capacité `db`, lue en prod).
+- Verdicts lus le 2026-11-03 : 1/1 « OK », sans commentaire ; `publier-lot.ts` en simulation : 1 brouillon passe.
