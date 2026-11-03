@@ -21,7 +21,6 @@ import {
 	domainChange,
 	domainChanges,
 	plainConditions,
-	tidy,
 	tidyWithConditions,
 	type TidyCondition,
 	type TidyOptions
@@ -56,16 +55,6 @@ export interface DomainFacts {
 	readonly answer: string;
 	readonly ast: MathNode;
 	/** Le domaine rétrécit (`ln(x²) → 2 ln x`, § 4.2) : la note dit l'écriture qu'on aurait. */
-	readonly narrows: boolean;
-}
-
-/** Un calcul pédagogique coupé avant la première étape qui change le domaine. */
-export interface KeptDomain {
-	/** Le calcul gardé : le résultat entier si le domaine ne change pas. */
-	readonly kept: PedagogicalSimplifyResult;
-	/** Ce que le résultat entier change ; `[]` : rien, `null` : on ne sait pas l'écrire. */
-	readonly lost: readonly TidyCondition[] | null;
-	/** Le domaine du résultat entier est plus petit (§ 4.2). */
 	readonly narrows: boolean;
 }
 
@@ -150,36 +139,6 @@ export function tidyFurther(
 }
 
 /**
- * Le calcul du moteur pédagogique, coupé avant la première étape qui change
- * le domaine de `input` (`fraction-cancel` sur `x/x`, `square-sqrt`,
- * `exp-ln`…). Les étapes d'avant restent : `x²/x + x` garde son rangement.
- * Le résumé n'est pas recoupé : il fondrait des étapes des deux côtés.
- */
-export function keepingDomain(input: MathNode, result: PedagogicalSimplifyResult): KeptDomain {
-	const change = domainChanges(input, result.result);
-	const lost = change?.conditions ?? null;
-	const narrows = change?.narrows ?? false;
-	if (lost !== null && lost.length === 0) return { kept: result, lost, narrows };
-	const changes = (node: MathNode) => {
-		const loss = domainChange(input, node);
-		return loss === null || loss.length > 0;
-	};
-	const first = result.steps.findIndex((step) => changes(step.globalAfter ?? step.after));
-	// Aucune étape ne le dit (la perte vient de l'assemblage final) : rien n'est gardé
-	if (first === -1)
-		return { kept: { ...result, result: input, steps: [], summary: undefined }, lost, narrows };
-	// La factorisation qui n'est là que pour simplifier la fraction part avec
-	// elle : `auto` ne rend jamais une forme factorisée (ADR 0007)
-	let kept = first;
-	while (kept > 0 && result.steps[kept - 1].rule === 'fraction-factorise') kept--;
-	const steps = result.steps.slice(0, kept);
-	const at =
-		result.steps[kept].globalBefore ??
-		(kept === 0 ? input : (result.steps[kept - 1].globalAfter ?? input));
-	return { kept: { ...result, result: at, steps, summary: undefined }, lost, narrows };
-}
-
-/**
  * Le bouton du calcul entier du moteur pédagogique (revue du § 4.2). Le moteur
  * s'arrête parfois avant la fin (`ln(x²) − ln(x²)` → `2ln(x) − 2ln(x)`, que
  * `tidy` garde) : `tidy` finit (`0`, pour x ≠ 0). Les étapes ne sont montrées
@@ -238,15 +197,4 @@ export function guardedAnswer(
 		shown: input,
 		alternative: domainAlternative(answer, change.conditions, undefined, change.narrows)
 	};
-}
-
-/**
- * L'expression mise au propre sans changer son domaine : `tidy`, sauf là où il
- * le changerait encore — l'expression lue. Filet : `tidy` garde le domaine
- * (S3, `1/(1/x)` compris depuis tidy-conditions § 4.3).
- */
-export function writtenKeepingDomain(node: MathNode, options?: TidyOptions): MathNode {
-	const tidied = tidy(node, options);
-	const lost = domainChange(node, tidied);
-	return lost !== null && lost.length === 0 ? tidied : stripUnnecessaryBrackets(node);
 }

@@ -16,9 +16,6 @@
 
 /** Le registre (`WebReplEngine`, champ `answer`) */
 export const REGISTRE_CONNUES_FAUSSES: Readonly<Record<string, string>> = {
-	// PR 2 : `.simplifier` ne perd pas le domaine (S3)
-	'simplifier-01': 'forme : x - 1',
-	'simplifier-10': 'forme : 1',
 	// PR 2 : `.résoudre` répond par S (Q2), sans valeur approchée
 	'resoudre-01': 'structure : x = 3',
 	'resoudre-06': 'structure : x = \\ln\\left( 3 \\right) \\approx 1{,}10',
