@@ -6,20 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2344._
+_Mis à jour le 2026-11-03, après #2350._
 
-- **État** : lots « évolutions » et « droites » faits ; lot « Lectures graphiques » : 3 modèles neufs
-  en **brouillon** (`95ee57c8`, `5397c20f`, `7f82d15a`) et script de fiche
-  `create-automatismes-lectures-graphiques-1spe.ts` (simulation propre), mergés (#2344) · **Prochaine
-  action** : écrire la fiche (`--publier`, par David ou sur sa demande), vérifier
-  les PDF (`regen-depuis-base.ts`, `compile-prod.mjs --polices-corrige`, `debord.py`), ajouter la ligne
-  à `fiches-exercices.md` § 1 · **En attente de David** : écrire la fiche ; publier `f5585668`,
-  `95ee57c8`, `5397c20f`, `7f82d15a` et les fiches `9217dfaa`, `0f98be04` ; corriger ou non
-  l'ensemble fini `{a}∪{b}` du corrigé (§ Lot « Lectures graphiques ») ; garder ou non les 2 figures
-  d'un corrigé de tracé ; questions 2 à 4 (§ Questions ouvertes) · **Pièges en cours** :
+- **État** : lots « évolutions », « droites » et « lectures graphiques » faits ; fiche
+  `7ff081db` « Automatismes : lectures graphiques (1) » écrite en brouillon et vérifiée ; ensemble
+  fini du corrigé corrigé (#2350) · **Prochaine action** : lot « Statistiques » (§ Suite, point 3),
+  phase 0 · **En attente de David** : publier `f5585668`, `95ee57c8`, `5397c20f`, `7f82d15a` et
+  les fiches `9217dfaa`, `0f98be04`, `7ff081db` ; garder ou non les 2 figures d'un corrigé de
+  tracé ; questions 2 à 4 (§ Questions ouvertes) · **Pièges en cours** :
   `compile-prod.mjs --polices-corrige` pour un corrigé ; `?v=` de `CORRECTION_FONT_FILES` à changer
-  à chaque reconstruction des polices ; `~…~` non nettoyé par `cleanCoefficients` dans `buildSerie`
-  · **Worktree / branche** : aucun (la fiche s'écrit depuis `main`).
+  à chaque reconstruction des polices ; `~…~` non nettoyé par `cleanCoefficients` dans `buildSerie` ;
+  un worktree neuf doit faire `pnpm exec svelte-kit sync` avant `pnpm tsx` (alias `$lib`)
+  · **Worktree / branche** : aucun.
 - Hors de ce chantier, même niveau : 18 fiches « Entraînement technique » / « Applications » de 1re spé en
   brouillon depuis septembre, à relire et publier par David (`docs/pratiques/fiches-exercices.md` § 1, § 3).
 
@@ -137,6 +135,16 @@ neuf ; un tableau de signes à compléter se fait déjà (`buildSerie` le fige, 
 - ⚠️ **Défaut relevé, antérieur au lot** : au corrigé d'une série, la réponse en gras d'un ensemble
   fini s'écrit `{−3}∪{−1}∪{1}` (forme normalisée de l'attendu) au lieu de `{−3 ; −1 ; 1}` ;
   touche `17809937`, `406fd9a8`. L'étape de correction juste en dessous l'écrit bien.
+
+### Fiche « Automatismes : lectures graphiques (1) » écrite (2026-11-03)
+
+- Avant la fiche, choix de David : l'ensemble fini du corrigé s'écrit `{−3 ; −1 ; 1}` et non
+  `{−3}∪{−1}∪{1}` (#2350, `expectedIntervalsLatex` : singletons consécutifs regroupés ; touche aussi
+  le corrigé et le flash back de l'appli).
+- Fiche `7ff081db` (brouillon, 2 séries de 8) écrite sur demande de David. Vérifiée
+  (`regen-depuis-base.ts`, `compile-prod.mjs`, `--polices-corrige` pour le corrigé, `debord.py`) :
+  fiche 5 p., réponses 1 p., corrigé 7 p., 0 débord ; tableau de signes vide à l'énoncé, rempli au
+  corrigé ; `S = {−3 ; −1 ; 1}` au corrigé.
 
 ## Questions ouvertes (à poser à David)
 

@@ -51,19 +51,20 @@ parfois `autonomous`). Depuis le 2026-10-12, David veut des **sections dans les 
 **illustrations** dans la fiche d'applications : le thème « Variables aléatoires » a été refait
 ainsi (voir la ligne du tableau) et sert de modèle.
 
-| Thème (topic en base)      | Entraînement technique                                      | Applications                     | Script                                                                            |
-| -------------------------- | ----------------------------------------------------------- | -------------------------------- | --------------------------------------------------------------------------------- |
-| Second degré               | `b5ca9ed3`                                                  | `d6c03510` (de David, complétée) | `create-fiche-technique-second-degre.ts`                                          |
-| Suites                     | `f09992e6`                                                  | `2d043bf5`                       | `create-suites-1spe.ts`                                                           |
-| Fonction exponentielle     | `ad1083a2`                                                  | `18f2252a`                       | `create-exponentielle-1spe.ts`                                                    |
-| Dérivation                 | `139ec069` (12 neufs + 17 existants)                        | `4fea9f37`                       | `create-derivation-1spe.ts`                                                       |
-| Fonctions trigonométriques | `808e2eee`                                                  | `dde45b26`                       | `create-trigonometrie-1spe.ts`                                                    |
-| Géométrie (produit scal.)  | `c20d4094` (10 neufs + 6 existants)                         | `7d94d681` (7 + 5 existants)     | `create-produit-scalaire-1spe.ts`                                                 |
-| Probabilités               | `570376ab`                                                  | `eaf297d5`                       | `create-probabilites-conditionnelles-1spe.ts`                                     |
-| Variables aléatoires       | `0ef45afb` (8 sections, 18 ex. dont « Rappels »)            | `d720d039` (5 sections, 11 ex.)  | `create-variables-aleatoires-1spe.ts` puis `refonte-variables-aleatoires-1spe.ts` |
-| Géométrie repérée          | `6ee9c178` (10 neufs + 2 existants)                         | `bb53d116`                       | `create-geometrie-reperee-1spe.ts`                                                |
-| Automatismes (évolutions)  | `9217dfaa` « Automatismes : évolutions (1) », 2 séries de 8 | —                                | `create-automatismes-evolutions-1spe.ts`                                          |
-| Automatismes (droites)     | `0f98be04` « Automatismes : droites (1) », 2 séries de 8    | —                                | `create-automatismes-droites-1spe.ts`                                             |
+| Thème (topic en base)              | Entraînement technique                                               | Applications                     | Script                                                                            |
+| ---------------------------------- | -------------------------------------------------------------------- | -------------------------------- | --------------------------------------------------------------------------------- |
+| Second degré                       | `b5ca9ed3`                                                           | `d6c03510` (de David, complétée) | `create-fiche-technique-second-degre.ts`                                          |
+| Suites                             | `f09992e6`                                                           | `2d043bf5`                       | `create-suites-1spe.ts`                                                           |
+| Fonction exponentielle             | `ad1083a2`                                                           | `18f2252a`                       | `create-exponentielle-1spe.ts`                                                    |
+| Dérivation                         | `139ec069` (12 neufs + 17 existants)                                 | `4fea9f37`                       | `create-derivation-1spe.ts`                                                       |
+| Fonctions trigonométriques         | `808e2eee`                                                           | `dde45b26`                       | `create-trigonometrie-1spe.ts`                                                    |
+| Géométrie (produit scal.)          | `c20d4094` (10 neufs + 6 existants)                                  | `7d94d681` (7 + 5 existants)     | `create-produit-scalaire-1spe.ts`                                                 |
+| Probabilités                       | `570376ab`                                                           | `eaf297d5`                       | `create-probabilites-conditionnelles-1spe.ts`                                     |
+| Variables aléatoires               | `0ef45afb` (8 sections, 18 ex. dont « Rappels »)                     | `d720d039` (5 sections, 11 ex.)  | `create-variables-aleatoires-1spe.ts` puis `refonte-variables-aleatoires-1spe.ts` |
+| Géométrie repérée                  | `6ee9c178` (10 neufs + 2 existants)                                  | `bb53d116`                       | `create-geometrie-reperee-1spe.ts`                                                |
+| Automatismes (évolutions)          | `9217dfaa` « Automatismes : évolutions (1) », 2 séries de 8          | —                                | `create-automatismes-evolutions-1spe.ts`                                          |
+| Automatismes (droites)             | `0f98be04` « Automatismes : droites (1) », 2 séries de 8             | —                                | `create-automatismes-droites-1spe.ts`                                             |
+| Automatismes (lectures graphiques) | `7ff081db` « Automatismes : lectures graphiques (1) », 2 séries de 8 | —                                | `create-automatismes-lectures-graphiques-1spe.ts`                                 |
 
 Terminale maths complémentaires : **« Loi binomiale »** (thème `Loi binomiale`, 2026-10-16) — technique
 `f054c015` (7 sections, 14 ex.), applications `19848611` (4 sections, 8 ex., 3 illustrations) —
