@@ -2,7 +2,7 @@
 scripts/questions/tspe-9-figure/.
 
 Phase 0 validée par David le 2026-11-03 (D-L9, « je suis tes recos », journal
-« docs/wip/questions-tspe-lot9-progress.md »), un point par modèle :
+« docs/archive/wip/questions-tspe-lot9-progress.md »), un point par modèle :
 
 | #  | Point    | Titre                                              | Catégorie, niveau                        |
 | F1 | TSPE-335 | Exprimer un vecteur à l'aide des arêtes            | Vecteurs, droites et plans › Sur une figure, 1 |

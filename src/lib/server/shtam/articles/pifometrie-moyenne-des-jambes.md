@@ -5,6 +5,8 @@ author: cotice
 lede: Selon l'Institut des Statistiques de Bonneteau-sur-Vistule, l'habitant moyen du Royaume n'aurait que 1,999 jambe. Mère Ubu promet « une jambe supplémentaire pour chacun d'ici la fin du trimestre ».
 ---
 
+![Sur une place pavée, le Capitaine Bordure, au garde-à-vous, pointe sa baguette vers le genou levé du premier d’une longue file d’habitants qui marchent au pas jusqu’aux collines ; en vitrine, des chaussettes pendues par paquets de trois.](/shtam/pifometrie-moyenne-des-jambes.webp){size=large}
+
 C'est un chiffre qui a fait l'effet d'un coup de croc à phynances. D'après la dernière enquête de l'Institut des Statistiques de Bonneteau-sur-Vistule, le Polonais moyen possède très exactement $1{,}999$ jambe. « Nous sommes en dessous de deux », confirme le directeur de l'Institut. « Ce n'est pas encore alarmant, mais c'est préoccupant. »
 
 La réaction du pouvoir ne s'est pas fait attendre. Mère Ubu a annoncé un « plan de rattrapage des membres inférieurs » : chaque Polonais recevra une jambe supplémentaire, financée par une taxe exceptionnelle sur les chaussettes. La moyenne nationale passerait ainsi à $2{,}999$ jambes, « un net progrès » selon le Cabinet. « Les chaussettes, elles, seront désormais vendues par trois », a-t-elle précisé.

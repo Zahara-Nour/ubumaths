@@ -4,16 +4,19 @@
  *
  * Rendu dans <main> : décor réel de l'application (`app.css` y impose des règles).
  */
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, beforeAll } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import NumberLine from '../NumberLine.svelte';
 import BuildAnswer from '$lib/components/questions/BuildAnswer.svelte';
 import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
 import FillBlanksBoundHarness from './FillBlanksBoundHarness.svelte';
+import QuestionCard from '$lib/components/questions/QuestionCard.svelte';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import { templateMarkdown } from '$lib/ubumark';
 import type { QuestionTemplate } from '$lib/questions/types';
+import type { ResolvedMarkdown } from '$lib/ubumark';
+import type { MathfieldElement } from 'mathlive';
 import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
 import { NL_LAYOUT } from '$lib/ubumark/utils/number-line-render';
 
@@ -398,5 +401,123 @@ describe('Revue de la PR 2 : borne active et côté', () => {
 		expect(button(root, RIGHT).disabled).toBe(true);
 		tapAt(root, 2);
 		await expect.poll(() => button(root, RIGHT).disabled).toBe(false);
+	});
+});
+
+describe('Réponse incomplète : ni Entrée ni « Valider »', () => {
+	beforeAll(async () => {
+		// Import dynamique : un `import 'mathlive'` statique casse le mocker de vitest
+		await import('mathlive');
+		await customElements.whenDefined('math-field');
+	});
+
+	function halfLineInstance(representer = ']1, +inf[') {
+		const result = generateInstance(
+			{
+				id: 'test-representer-incomplet',
+				title: 'Représenter',
+				status: 'draft',
+				variations: [
+					{
+						statement: templateMarkdown(
+							[
+								'Représente $x > 1$.',
+								'',
+								'```line',
+								...LINE,
+								`representer: ${representer}`,
+								'```'
+							].join('\n')
+						)
+					}
+				],
+				grades: ['3'],
+				theme: 'Test',
+				domain: 'Test',
+				level: 1
+			} as QuestionTemplate,
+			42
+		);
+		if (!result.success) throw new Error(result.errors.join(' ; '));
+		return result.instance;
+	}
+
+	it('Entrée depuis une autre case : la droite sans côté bloque, le focus y va', async () => {
+		const instance = halfLineInstance();
+		let submitted = 0;
+		const values: string[] = [];
+		const screen = await render(FillBlanksInput, {
+			target: mainElement(),
+			props: {
+				// Une seconde case, une formule, d'où l'élève appuie sur Entrée
+				statement:
+					`${instance.statement}\n\nUn nombre solution : $\\placeholder[1]{}$` as ResolvedMarkdown,
+				blanks: [...(instance.blanks ?? []), { type: 'math', expectedAnswer: '2' }],
+				values,
+				validationResults: [],
+				onSubmit: () => submitted++
+			}
+		});
+		const root = screen.container;
+		// La formule à case (l'énoncé peut en rendre d'autres, sans case)
+		const promptField = () =>
+			[...root.querySelectorAll<MathfieldElement>('math-field')].find(
+				(f) => f.getPrompts().length > 0
+			);
+		await expect.poll(() => promptField() !== undefined).toBe(true);
+		const field = promptField()!;
+		tapAt(root, 1);
+		await expect.poll(() => values[0]).toBe('1 comprise, côté ?');
+		await expect
+			.poll(() => {
+				field.focus();
+				return document.activeElement === field;
+			})
+			.toBe(true);
+		await userEvent.keyboard('2');
+		await userEvent.keyboard('{Enter}');
+		expect(submitted).toBe(0);
+		await expect.poll(() => document.activeElement).toBe(zone(root));
+
+		await userEvent.click(button(root, RIGHT));
+		await expect.poll(() => values[0]).toBe('[1 ; +∞[');
+		await expect
+			.poll(() => {
+				field.focus();
+				return document.activeElement === field;
+			})
+			.toBe(true);
+		await userEvent.keyboard('{Enter}');
+		await expect.poll(() => submitted).toBe(1);
+	});
+
+	it('« Valider » grisé tant que le côté manque', async () => {
+		const screen = await render(QuestionCard, {
+			target: mainElement(),
+			props: { instance: halfLineInstance(), interactive: true }
+		});
+		const root = screen.container;
+		const validate = () => button(root, 'Valider');
+		await expect.poll(() => validate().disabled).toBe(true);
+		tapAt(root, 1);
+		await expect.poll(() => button(root, '1 comprise')).toBeTruthy();
+		expect(validate().disabled).toBe(true);
+		await userEvent.click(button(root, RIGHT));
+		await expect.poll(() => validate().disabled).toBe(false);
+	});
+
+	it('borné : « Valider » grisé tant que la seconde borne manque', async () => {
+		const screen = await render(QuestionCard, {
+			target: mainElement(),
+			props: { instance: halfLineInstance('[-1, 3['), interactive: true }
+		});
+		const root = screen.container;
+		const validate = () => button(root, 'Valider');
+		await expect.poll(() => validate().disabled).toBe(true);
+		tapAt(root, 3);
+		await expect.poll(() => hasButton(root, '3 comprise')).toBe(true);
+		expect(validate().disabled).toBe(true);
+		tapAt(root, -1);
+		await expect.poll(() => validate().disabled).toBe(false);
 	});
 });

@@ -82,7 +82,7 @@ export const DELETE: RequestHandler = async ({ request, locals, getClientAddress
 
 	// Step 3: Rate limiting (1 per 24 hours)
 	try {
-		rateLimit(`account_delete:${userId}`, RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS);
+		await rateLimit(`account_delete:${userId}`, RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS);
 	} catch (rateLimitError) {
 		// Log rate-limited attempt to audit
 		const serviceClient = createServiceRoleClient();

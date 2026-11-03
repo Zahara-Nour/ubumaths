@@ -8,13 +8,12 @@ status: écarts revérifiés le 2026-10-18 ; tri A (seul) / B (David) fait ; lot
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2311 (T7)._
+_Mis à jour le 2026-11-03, après #2325 (T8)._
 
-- **État** : liste A finie et en prod. Lot RGPD : T1, T2, T3, T6, T7, T9, T12, T13 faits (T7 = #2311 : `requireUserOrRedirect` pour les pages, 62 endpoints passés à la garde commune, panne de lecture du profil → 500). Mergés depuis #2293, **pas encore en prod** (pas de `deploy:prod` demandé).
-- **Prochaine action** : **T8** (limiteur en mémoire → limiteur en base, supprimer celui en mémoire), puis T15, puis lots B « destructif » et « spécification ».
-- **En attente de David** : T14 = infos des mentions légales (responsable de publication, statut, adresse, nom) ; **perf de la garde commune** : `requireAuth` relance `getUser()` et relit `profiles` alors que le hook l'a fait (342 endpoints) — reco : futur chantier, mesurer d'abord en prod, puis réutiliser `locals.user`/`locals.profile` (même ligne, vérifié par la revue sécurité).
-- **Suite de T7 (2026-11-03)** : #2311 avait cassé 5 tests d'intégration (`marche-verrou`, `echanges-delai-confirmation`, `srs-stats-echanges-delai`, `rpc-lot3-compte-autrui`, `succes-gidouilles`) : leurs faux `locals` n'avaient pas `safeGetSession`, que `requireAuth` appelle désormais. L'application n'était pas touchée. Corrigé par #2322 (chantier `questions-1spe-demonstrations`, qui en était bloqué). **Écart à trier** : la CI de #2311 n'a pas lancé les tests d'intégration ; une PR qui touche `src/lib/server/middleware/**` ou `src/routes/api/**` devrait les déclencher (filtre de chemins du workflow).
-- **Pièges en cours** : `cleanup_stale_presence` non planifiée (contourné par T1) ; horloge client en retard > 90 s → amis hors ligne ; CI client : `wrapDynamicImport` / « Browser connection was closed » passagers → relancer ; garde « doc à jour » : elle compare des COMMITS (verte en local avant commit ≠ verte en CI) ; migrations : `pnpm migration:horodatage`, `check:migrations --pr <n>`.
+- **État** : liste A finie et en prod. Lot RGPD : T1, T2, T3, T6, T7, T8, T9, T12, T13 faits (T8 = #2325 : tout limiteur de débit compte en base, plus de compteur en mémoire). Mergés depuis #2293, **pas encore en prod** (pas de `deploy:prod` demandé).
+- **Prochaine action** : **T15** (archiver les DPA, bouton « signaler » dans le chat, finaliser l'AIPD), puis lots B « destructif » et « spécification ».
+- **En attente de David** : T14 = infos des mentions légales ; **perf de la garde commune** (`requireAuth` relit session et profil, 342 endpoints — reco : futur chantier, mesurer d'abord) ; **suppression de compte limitée à 1 / 24 h, comptée avant la suppression** : un échec en cours bloque la nouvelle tentative 24 h — reco : remettre le compteur à zéro si la suppression échoue (ou 3 / 24 h).
+- **Pièges en cours** : test unitaire d'une route limitée → `vi.mock('$lib/server/rateLimiter', () => import('$lib/server/__tests__/helpers/fake-rate-limiter'))`, sinon il écrit dans la base locale ; `cleanup_stale_presence` non planifiée (contourné par T1) ; CI client : `wrapDynamicImport` passagers → relancer ; garde « doc à jour » compare des COMMITS ; migrations : `pnpm migration:horodatage`, `check:migrations --pr <n>`.
 - **Worktree / branche** : aucun (journal sur `main`).
 
 ---
@@ -42,6 +41,7 @@ _Mis à jour le 2026-11-03, après #2311 (T7)._
 - **T7** deux `requireAuth` : renommer celle qui redirige (`requireUserOrRedirect`) et passer les ~32 routes à la garde commune, avec revue sécurité.
   - **Fait, #2311 (2026-11-03)** : 62 endpoints migrés (rôles identiques, jamais `requireAdmin`) ; laissés `admin/elevate*`, `auth/logout`, `errors/log`. Revue sécurité : aucun accès gagné. Constats hors périmètre jugés sans suite : `python-exercises/mastery` prend `student_id` du client mais la RLS (`pem_select_own` / `pem_select_teacher`) borne ; correction d'un devoir ouverte à tout prof (mono-prof). Journal : [archive](../archive/wip/garde-auth-commune-progress.md).
 - **T8** limiteur en mémoire : unifier sur le limiteur en base, supprimer celui en mémoire.
+  - **Fait, #2325 (2026-11-03)** : `rateLimit()` (12 appels, désormais `await`) et la `Map` de `api/admin/cron/trigger` comptent dans `rate_limits` via `checkEndpointRateLimit`, échec ouvert ; double `fake-rate-limiter.ts` pour les tests de routes. Revues : code rien de bloquant ; sécurité aucun accès gagné, rien de bloquant. Constats ouverts : **`account/delete` 1 / 24 h devient une vraie limite**, comptée avant la suppression (un échec en cours empêche de réessayer 24 h → question à David) ; `error-log` par IP partagé derrière le NAT d'un collège (20/min pour toute la classe, faible) ; IP dans `rate_limits` ajoutée au § conservation de `rgpd.md`.
 - **T9** double CSRF : garder les deux, documenté (`auth.md`) — fait.
 - **T12** grâce du consentement : 30 jours glissants, doc corrigée (conformité) — fait.
 - **T13** registre des sous-traitants : HuggingFace (non activé) + Vercel Analytics ajoutés — fait.

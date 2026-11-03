@@ -9,18 +9,18 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2308._
+_Mis à jour le 2026-11-03, après la page à cocher._
 
-- **État** : 2-330 et 2-446 réécrits (tableau à compléter, 17 cases, 180 s), mergés (#2308) ; lot
-  `tableau-signes-2de` **écrit en prod par David** le 2026-11-03, relu (MCP) : publiés, 180 s, 0 `blanks`.
-- **Prochaine action** : page à cocher des deux modèles ; essais iPhone (#2287, #2297, et ces deux
-  modèles) ; puis verser le chantier.
-- **En attente de David** : avis sur le défilement horizontal à 390 px (513 px de tableau
-  pour 308, cases de valeur 117 px) — reco : juger aux essais iPhone.
+- **État** : 2-330 et 2-446 réécrits (#2308), écrits en prod, publiés ; **page à cocher relue par David :
+  2/2 OK** (verdicts comptés en base, artefact 76pRvYk72EuRYtV9nto4Ly).
+- **Prochaine action** : essais iPhone (#2287, #2297, et ces deux modèles) ; puis verser le chantier.
+- **En attente de David** : défilement horizontal à 390 px (513 px de tableau pour 308) — à juger aux
+  essais iPhone ; corrigé de 2-330 qui écrit « −1x − 3 = 0 », « 1x − 3 = 0 » (corriger ?) ; petite PR
+  du gabarit `scripts/questions/page-a-cocher.html` (`.vt` sans défilement : la page entière déborde à 390 px).
 - **Pièges en cours** : `delay` n'est plus une garde d'`update-published-questions.ts` (relancer un ancien
   lot réécrit son temps) ; la bonne réponse vient de `blanks`, jamais du bloc ; Chrome n'atteint pas
   `localhost` → Playwright sans fenêtre ; un worktree neuf veut `svelte-kit sync` avant `question:specs`.
-- **Worktree / branche** : aucun (retiré après #2308).
+- **Worktree / branche** : aucun.
 
 ---
 
@@ -223,3 +223,12 @@ Branche `feat/tableau-signes-modeles`, worktree `../ubumaths-wt-tableau-signes`.
 - **Écrit en prod par David** (`--lot tableau-signes-2de --publier`, 2026-11-03) après simulation (17 et 10
   specs vertes ; preuve rouge 10/17 et 6/10 sur l'ancien contenu). MCP : f0163416 et 9c7ab1c7 `published`,
   niveaux 3 et 4, `delay` 180, 6 et 4 variations à tableau à compléter, aucune `blanks`, 17 et 10 specs.
+
+## Page à cocher (2026-11-03)
+
+- `page-a-cocher.ts` sur 01 et 02 de `2de-signes-b` (copiés seuls dans le scratchpad), base prod : 2 fiches,
+  aucune alerte. Artefact `76pRvYk72EuRYtV9nto4Ly` (capacité `db`).
+- À 390 px, `table.vt` débordait (442 px, page entière qui défile) : corrigé dans la page publiée
+  (`display: block; width: fit-content; max-width: 100%; overflow-x: auto`), pas encore dans le gabarit.
+- Relue par David : **2/2 OK**, sans commentaire (collection `verdicts` lue).
+- Vu en passant : le corrigé de 2-330 écrit « −1x − 3 = 0 » et « 1x − 3 = 0 » (étape 2). → David.

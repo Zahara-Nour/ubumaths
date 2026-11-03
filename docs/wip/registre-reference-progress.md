@@ -6,15 +6,14 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2310._
+_Mis à jour le 2026-11-03, PR 1 `.dériver` ouverte._
 
-- **État** : lot 2 du registre TERMINÉ (§ Lot 2 — correction du registre) : PR 1-5 mergées
-  (#2281, #2292, #2300, #2303, #2310). Plus aucune ligne du lot 2 fausse côté registre ni Atelier.
-  Pas déployées.
-- **Prochaine action** : choisir la suite avec David — lot 1 restant dans `connues-fausses.ts`
-  (registre : `.dériver` réduite, `.simplifier` S3, `.résoudre` → S, `equivalent-04`, refus R6 ;
-  Atelier : `.résoudre` → S, `.equivalent` sans réponse, refus).
-- **En attente de David** : le choix de la suite.
+- **État** : lot 2 terminé (#2281 → #2310). **PR 1 `.dériver`** (étape 1 du découpage) : registre
+  sur la forme finale de f′, l'Atelier affiche la réponse du registre (§ PR 1 — `.dériver`).
+  Branche `fix/registre-deriver-reduite`. Rien de déployé.
+- **Prochaine action** : merger la PR 1, puis l'étape 2 du découpage : `.simplifier` S3
+  (`simplifier-01`, `-10`), `.résoudre` → S (registre et Atelier), puis `.intégrer`.
+- **En attente de David** : rien.
 - **Tranché** : option `unitChoice: 'school'` GARDÉE exprès (David, 2026-11-03 : « utile plus
   tard ») — ne pas proposer de la retirer ; avant : Q9 EN ENTIER, A-D du lot 2, `decimal` en
   LaTeX, `plafond-02` → 1000, Q24, `signes-06` — NE PAS reposer.
@@ -22,7 +21,7 @@ _Mis à jour le 2026-11-03, après #2310._
   run de CI → `git merge origin/main` (sujet du commit de fusion en minuscule : commitlint) ;
   limites connues : `.diff cos(60°)*x` (`ctx.input`), `2 ≈ 2` (caractère `≈`) mal lu, `(t>1)` →
   faux, grandeur avec factorielles (`5 m * 25!/24!`), `20000!/19999!` gardé (prévision).
-- **Worktree / branche** : aucun (retirés après #2310).
+- **Worktree / branche** : `../ubumaths-wt-registre-reference`, `fix/registre-deriver-reduite`.
 
 ---
 
@@ -568,3 +567,24 @@ antérieur, devenu incohérent : `1000!/999! = 1000` → `\text{faux}`, `1000!/9
 une grandeur garde ses factorielles (`5 m * 25!/24!`, chemin `quantityResult`) ;
 `20000!/19999!` passe pour trop long (prévision par somme des tailles : `exactTooLong` 154 672 pour
 une valeur de 20000), écriture gardée.
+
+## PR 1 — `.dériver` réduite (2026-11-03)
+
+Étape 1 du découpage (validé avec Q1-Q6), reprise après le lot 2 sur le « go » de David.
+
+- **Registre** : `diff.command.ts` passait la dérivée du moteur par `tidyTerms` seul (`eˣ + xeˣ`) ;
+  elle passe maintenant par `finalDerivative` (`final-form.ts`, ADR 0032 D1), la forme de la
+  dernière étape de l'Atelier. Justes : `deriver-03, 04, 09, 10, 12` (liste du registre).
+- **Mesure avant de brancher l'Atelier** (sonde jetable sur l'oracle des dérivées, 319 saisies de
+  l'atelier) : registre et Atelier identiques à la virgule décimale près (habillage).
+- **Atelier** : `.dériver` tapé et le bouton « Dériver » affichent la réponse du registre
+  (`result.answer`, `f'(x) = …` pour le bouton) ; repli sur la réponse des étapes si le registre
+  n'en rend pas. Les étapes ne changent pas.
+- **Garde R5** : `src/lib/atelier/__tests__/deriver-registre.test.ts` — la réponse de
+  `deriveSteps` = celle du registre, sur l'oracle (variable `t` comprise, lignes à `setup` et sans
+  étapes — `sec`, valeur absolue — hors du test). Preuve rouge : 78 échecs avec le
+  `diff.command.ts` de `main` (73 lignes de l'oracle + 5 du corpus).
+- Tests mis à jour (ils figeaient l'ancienne forme du registre) : `diff-tidy.test.ts`
+  (`xe^{−2x}`, `x²eˣ`), `derivee-exponentielle.test.ts` (`xeˣ`).
+- Suites `mathAST` + `atelier` + `geometry-core` (36 535) et client `atelier` + `routes` (741)
+  vertes ; `check:incremental` 0 erreur.

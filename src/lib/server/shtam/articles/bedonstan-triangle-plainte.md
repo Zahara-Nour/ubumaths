@@ -5,6 +5,8 @@ author: cotice
 lede: Le plaignant, un triangle de Lobatchevsk aux côtés de 3 et 4 unités, conteste la longueur de son plus grand côté. Le Professeur Achras se dit « peiné ».
 ---
 
+![Au tribunal, un triangle rectangle doré, furieux, brandit sa plainte ; le Professeur Achras, penché sur lui, le console d’une main, un juge en perruque bâille derrière son pupitre, et par la fenêtre des triangles quelconques manifestent avec des pancartes.](/shtam/bedonstan-triangle-plainte.webp){size=large}
+
 Le tribunal de Lobatchevsk a enregistré hier une plainte peu ordinaire. Un triangle rectangle, dont les côtés de l'angle droit mesurent 3 et 4 unités, accuse les autorités du Bedonstan de lui avoir « imposé » une hypoténuse de 5 unités « sans la moindre concertation ».
 
 « On ne m'a rien demandé », a déclaré le plaignant à la sortie de l'audience, l'angle droit encore tremblant. « J'aurais aimé 6. Ou 4,5, pour la sobriété. On m'a répondu que c'était 5 et que c'était comme ça. »

@@ -22,7 +22,7 @@ import { toCustom } from '../../custom-generator';
 import { toLatex } from '../../latex-generator';
 import { parse } from '../core/pipeline';
 import { differentiate, DifferentiationError } from '../../differentiation';
-import { tidyTerms } from '../../tidy/terms';
+import { finalDerivative } from '../../pedagogical-differentiation/final-form';
 import { variable as variableNode } from '../../factory';
 import {
 	bareFunctionMessage,
@@ -143,11 +143,13 @@ export class DiffCommand extends BaseCommand {
 			// Get function bindings from state if available
 			const functions = ctx.evalState?.functions;
 
-			// Dérivée mise au propre comme dans l'atelier : la dérivée brute
-			// s'écrivait `e^{3x} 3`, `2(−e^{−x})`, `cos x + (−sin x)`. `tidyTerms`
-			// garde l'ordre de la règle (u′v + uv′).
+			// La forme finale de f′ (ADR 0032, D1 ; `final-form.ts`) : numérateur
+			// réduit, facteur commun simplifié, exponentielle commune en facteur —
+			// `(x+1)eˣ`, `−7/(x−3)²`, `18x − 6`. La même que la dernière étape de
+			// l'Atelier : le registre fait foi (chantier registre-reference, D1).
 			// Le domaine de f est acquis pour f′ (S3) : `x·(1/x)` s'y simplifie.
-			const derivative = tidyTerms(
+			const f = indexed.restore(indexed.node);
+			const derivative = finalDerivative(
 				indexed.restore(
 					differentiate(indexed.node, {
 						variable,
@@ -155,7 +157,7 @@ export class DiffCommand extends BaseCommand {
 						functions
 					})
 				),
-				{ domain: [indexed.restore(indexed.node)] }
+				f
 			);
 
 			// Format output
