@@ -46,6 +46,7 @@ import { expectedCubesAnswer } from '$lib/ubumark/utils/cubes-gestes';
 import { expectedPatronAnswer } from '$lib/ubumark/utils/patron-gestes';
 import { timeText } from '$lib/ubumark/utils/horloge-placer';
 import { indexOfValue, placerAnswer } from '$lib/ubumark/utils/number-line-placer';
+import { expectedInterval, representerAnswer } from '$lib/ubumark/utils/number-line-representer';
 import { numVal } from '$lib/ubumark/utils/number-line-render';
 import { parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
 import { pointAnswer } from '$lib/ubumark/utils/courbe-placer';
@@ -111,6 +112,11 @@ export function buildAnswerOf(
 		const { node, errors } = parseNumberLineContent(source);
 		if (node === null) return { errors: errors.map((e) => e.message) };
 		if (node.caseIndex !== undefined) return { errors: [CASE_IS_AUTOMATIC] };
+		// Droite à représenter : l'intervalle, écrit comme la réponse de l'élève
+		if (node.representer?.interval) {
+			const state = expectedInterval(node.config, node.representer.interval);
+			return { answer: representerAnswer(node.config, state, node.representer.bounded) };
+		}
 		const target = node.placer?.[point];
 		const k = target ? indexOfValue(node.config, numVal(target.value)) : null;
 		if (k === null) return { errors: ['placer: absent ou hors graduation'] };

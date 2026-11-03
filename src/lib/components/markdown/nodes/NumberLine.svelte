@@ -21,6 +21,8 @@
 	  graduations se resserre (droite à placer : avertissement téléphone dans
 	  `NumberLinePlacer`).
 	- Droite à placer (`placer:`) : `NumberLinePlacer.svelte` (l'élève pose ses points)
+	- Droite à représenter (`representer:`) : `NumberLineRepresenter.svelte` (l'élève
+	  dessine l'intervalle)
 
 	@module components/markdown/nodes/NumberLine
 -->
@@ -49,6 +51,7 @@
 	import { readContentLocale } from '../content-locale';
 	import { toLocaleDecimal } from '$lib/utils/french-math';
 	import NumberLinePlacer from './NumberLinePlacer.svelte';
+	import NumberLineRepresenter from './NumberLineRepresenter.svelte';
 	import type { BuildCase } from './CollectionConstruire.svelte';
 
 	interface Props {
@@ -181,6 +184,8 @@
 
 {#if node.placer !== undefined}
 	<NumberLinePlacer {node} {answers} {showErrors} class={className} />
+{:else if node.representer !== undefined}
+	<NumberLineRepresenter {node} {answers} {showErrors} class={className} />
 {:else}
 	<div
 		class="number-line-container {className}"

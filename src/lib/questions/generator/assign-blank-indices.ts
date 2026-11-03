@@ -15,6 +15,7 @@
  *   division euclidienne : DEUX cases, N (quotient) et N + 1 (reste), seul N est posé
  * - Bloc ```collection ou ```monnaie à construire (`construire: N`) → UNE case, `case: N`
  *   posé dans le bloc ; droite à placer (```line, `placer: A=3 ; B=7`) → une case par point,
+ *   droite à représenter (```line, `representer: [2, +inf[`) → une case (texte),
  *   N, N + 1…, seul N est posé ; diagramme en barres à construire (```barres, `placer:`) →
  *   une case par barre, de même ; repère à points à placer (```courbe, `placer: A=(2 ; 3)`)
  *   → une case par point, de même (refusé aussi comme option d'un bloc choix)
@@ -34,7 +35,7 @@ import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
 import { findFigureBlocks } from '$lib/ubumark/parser/figure-parser';
 import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
 import { findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
-import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
+import { findLinesToPlace, isLineToRepresent } from '$lib/ubumark/parser/number-line-parser';
 import { findHorlogesToPlace } from '$lib/ubumark/parser/horloge-parser';
 import { findBarsToPlace, findBoxPlotsToPlace } from '$lib/ubumark/parser/stat-chart-parser';
 import { findRangersToPlace } from '$lib/ubumark/parser/ranger-parser';
@@ -730,12 +731,13 @@ export function assignBlankIndices(
 							})
 						};
 						counter++;
-						// Horloge : la réponse est une heure (`9 h 25`), étiquettes : une position
+						// Droite à représenter : un intervalle (`[2 ; +∞[`) ; horloge : la réponse est une heure (`9 h 25`), étiquettes : une position
 						// (`2`), figure à colorier : des rangs (`1, 4`), assemblage de cubes : un
 						// quadrillage ou des hauteurs, patron : des faces ou un quadrillage,
 						// point d'un repère : ses coordonnées (`2;3`) ; jamais lues comme un calcul
 						blankTypes.push(
-							build.kind === 'horloge' ||
+							(build.kind === 'line' && isLineToRepresent(build.source)) ||
+								build.kind === 'horloge' ||
 								build.kind === 'courbe' ||
 								build.kind === 'trig' ||
 								build.kind === 'ranger' ||
