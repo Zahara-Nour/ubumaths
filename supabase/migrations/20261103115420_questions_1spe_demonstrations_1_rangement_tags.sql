@@ -211,6 +211,11 @@ begin
 	  into v_total, v_tags
 	  from public.question_template_points q
 	  join _qdem1_modeles m on m.id = q.template_id;
+	-- Tout ou rien : les 5 modèles (prod) ou aucun (base locale), jamais une partie.
+	if v_presents not in (0, (select count(*) from _qdem1_modeles)) then
+		raise exception 'lot partiel : % modèle(s) présent(s) sur %', v_presents,
+			(select count(*) from _qdem1_modeles);
+	end if;
 	if v_noeuds <> v_presents or v_tags <> v_attendus or v_total <> v_attendus then
 		raise exception 'lot incohérent : nœuds %/%, tags du lot %/%, tags en base %',
 			v_noeuds, v_presents, v_tags, v_attendus, v_total;

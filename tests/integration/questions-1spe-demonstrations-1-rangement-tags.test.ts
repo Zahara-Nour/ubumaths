@@ -214,6 +214,16 @@ describe('1re spé, démonstrations lot 1 : les branches d’échec de la migrat
 		});
 	});
 
+	it('un modèle supprimé depuis le relevé fait échouer la migration (tout ou rien)', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await pg.query('delete from public.question_templates where id = $1', [ids[4]]);
+			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
+				/lot partiel : 4 modèle\(s\) présent\(s\) sur 5/
+			);
+		});
+	});
+
 	it('un modèle rangé à la main depuis le relevé fait échouer la migration', async () => {
 		await enTransaction(async () => {
 			await poserEtatProd(pg, auteur);
