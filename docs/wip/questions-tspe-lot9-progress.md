@@ -8,21 +8,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR des fichiers ouverte._
+_Mis à jour le 2026-11-03, après #2312._
 
-- **État** : 8 modèles écrits (`docs/wip/questions/lot-tspe-9-figure.py` → `scripts/questions/tspe-9-figure/`),
-  simulation `create-questions` verte (50 specs), `sonde-cubes` 0 problème (2 400 blocs), 4 821 formules
-  validées (`validateLatex` + accolades), essai en base locale (F1, F2, F7, F8 joués dans l'aperçu). PR des
-  fichiers ouverte (branche `feat/questions-tspe-lot9`).
-- **Prochaine action** : CI verte → merge ; puis **David** lance
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-9-figure --publier` (prod, brouillons) ;
-  relever les 8 `id` ; migration nœud + tag (§ 6 de `couvrir-un-niveau.md`, F8 sur la notion « Espace ») ;
-  page à cocher.
-- **En attente de David** : rien avant le merge ; ensuite la commande `--publier`.
-- **Pièges en cours** : ` ```solide ` sans flèche, diagonale ni point hors sommet ; les choix à options
-  variables ont la bonne en premier (réponse `0`, mélange à l'affichage) ; la saisie MathLive simulée dans
-  Chrome n'entre pas dans la 1re case (outil, pas modèle).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-lot9` · `feat/questions-tspe-lot9` · serveur 5177.
+- **État** : 8 modèles du lot 9 sur `main` (`scripts/questions/tspe-9-figure/`, #2312), essayés en base locale ;
+  rien en prod.
+- **Prochaine action** : **David** lance (`!`)
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-9-figure --publier` depuis le dépôt
+  principal (prod, brouillons) ; relever les 8 `id` (MCP) ; migration nœud + tag (§ 6 de
+  `couvrir-un-niveau.md`, F8 sur la notion « Espace », sous-notions admises) dans un worktree neuf ; page à
+  cocher ; publication.
+- **En attente de David** : la commande `--publier` ci-dessus.
+- **Pièges en cours** : ` ```solide ` sans flèche, diagonale ni point hors sommet ; les choix à options variables
+  ont la bonne en premier (réponse `0`, mélangés à l'affichage) ; la saisie MathLive simulée dans Chrome
+  n'entre pas dans la 1re case (outil, pas modèle).
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-lot9` (branche mergée), gardé tant que son serveur
+  5177 sert à l'essai ; à retirer ensuite (`git worktree remove`, `git branch -d`).
 
 ---
 
