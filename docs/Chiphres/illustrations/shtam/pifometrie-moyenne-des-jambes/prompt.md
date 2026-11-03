@@ -9,7 +9,7 @@ Scene: in the foreground on the left, the captain from the attached character im
 
 Style: 1896 Montmartre lithographic print in the manner of Théophile-Alexandre Steinlen, as a press drawing printed in an old newspaper: bold thick dark contours, flat color areas, no gradients, no 3D, flat shadow shapes only. Funny, never scary, for students aged 11 to 17.
 
-Colors: use only the colors of the attached palette image (muted printing inks on cream paper): navy ink for the outlines, deep crimson and marigold yellow for the captain's uniform and its trim, emerald green and brown for the townspeople's clothes and the shop front, marigold yellow and crimson for the bundled socks, cream parchment for the background.
+Colors: use only the colors of the attached palette image (muted printing inks on cream paper): navy ink for the outlines, emerald green for the captain's jacket, marigold yellow for its braid and epaulettes, deep crimson for his cap and sash (as on the attached character image), emerald green and brown for the townspeople's clothes and the shop front, marigold yellow and crimson for the bundled socks, cream parchment for the background.
 
 Composition: horizontal 3:2 landscape format, the captain and the start of the queue on the left, the queue winding away to the right into the distance, plain cream paper background around the scene. No text, no letters, no numbers, no signature.
 ```
