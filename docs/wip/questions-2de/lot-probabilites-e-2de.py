@@ -29,6 +29,8 @@ import subprocess
 import sys
 
 DOSSIER = sys.argv[1]
+# Niveaux : 1 (Stabilisation) et 3-5 (Arbres pondérés) sont pris par des modèles publiés de 3e et de
+# 1re (une catégorie = un modèle publié) → 2 et 6-8 (décision de David du 2026-11-03, § 62)
 SIMULATION = ('Probabilités', 'Simulation', 'Stabilisation')
 ARBRES = ('Probabilités', 'Probabilités conditionnelles', 'Arbres pondérés')
 TABLEAUX = ('Probabilités', 'Probabilités conditionnelles', 'Tableaux croisés')
@@ -135,7 +137,7 @@ MODELES.append(modele(
     '01-loi-des-grands-nombres', 'Loi des grands nombres',
     'Lancers d\'un dé : la fréquence d\'une grande série est, sauf exception, proche de la'
     ' probabilité',
-    SIMULATION, 1, [LGN_SERIE, LGN_AFFIRMATION],
+    SIMULATION, 2, [LGN_SERIE, LGN_AFFIRMATION],
     [spec('0,1672 vient des 10 000 lancers (rang 0)', 0, SP_389, '0', 'correct'),
      spec('Erreur : 0,21', 0, SP_389, '1', 'incorrect'),
      spec('Erreur : 0,25 (20 lancers)', 0, SP_389, '2', 'incorrect'),
@@ -175,7 +177,7 @@ SP_391 = {'n': 5, 'r': 3, 'bl': 2}
 MODELES.append(modele(
     '02-arbre-deux-epreuves', 'Arbre de deux épreuves indépendantes',
     'Pièce puis urne : probabilité d\'un chemin de l\'arbre (produit des branches)',
-    ARBRES, 3, [ARBRE_PR, ARBRE_FB],
+    ARBRES, 6, [ARBRE_PR, ARBRE_FB],
     [spec('1/2 × 3/5 = 3/10', 0, SP_391, tex_frac(3, 10), 'correct'),
      spec('3/10 en décimal', 0, SP_391, '0.3', 'correct'),
      spec('Erreur : somme 1/2 + 3/5', 0, SP_391, tex_frac(11, 10), 'incorrect'),
@@ -218,7 +220,7 @@ SP_393 = {'a': 6, 'b': 3, 'c': 5, 'ga': 4, 'nb': 7, 'nc': 5}
 MODELES.append(modele(
     '03-construire-un-arbre-pondere', 'Construire un arbre pondéré',
     'Énoncé « x % des…, parmi eux y % » traduit en arbre : six pondérations',
-    ARBRES, 4, [CONSTRUIRE_ARBRE],
+    ARBRES, 7, [CONSTRUIRE_ARBRE],
     [spec('0,6 ; 0,4 ; 0,3 ; 0,7 ; 0,5 ; 0,5', 0, SP_393,
           ['0.6', '0.4', '0.3', '0.7', '0.5', '0.5'], 'correct'),
      spec('Erreur : P_F(C̄) = 1 − P(F)', 0, SP_393, ['0.6', '0.4', '0.3', '0.4', '0.5', '0.5'],
@@ -375,7 +377,7 @@ SP_397 = {'a': 4, 'b': 3, 'c': 7, 'na': 6, 'nb': 7, 'nc': 3, 'ab': 12}
 MODELES.append(modele(
     '06-probabilite-conditionnelle-arbre', 'Probabilité conditionnelle sur un arbre',
     'Lire P_Ā(B) sur une branche du second niveau ; retrouver P_A(B) à partir de P(A ∩ B)',
-    ARBRES, 5, [LIRE_COND, CALC_COND],
+    ARBRES, 8, [LIRE_COND, CALC_COND],
     [spec('P_Ā(B) = 0,7', 0, SP_397, '0.7', 'correct'),
      spec('Erreur : P(Ā) = 0,6', 0, SP_397, '0.6', 'incorrect'),
      spec('Erreur : P_A(B) = 0,3', 0, SP_397, '0.3', 'incorrect'),

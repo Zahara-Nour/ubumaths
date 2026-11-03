@@ -6,20 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR de la garde `\textcolor` ouverte (§ 60)._
+_Mis à jour le 2026-11-03, après #2283 (garde `\textcolor`) et la publication de 8 D + 6 anciens (§ 62)._
 
-- **État** : vague 8 bis en brouillon en prod, rangée ; page à cocher (20 fiches) :
-  https://claude.ai/artifact/AH7MKr1qcSeK2c7Du7EMYY. Garde `\textcolor` hors `$` dans `question:specs`
-  (décision § 58) : branche `fix/garde-textcolor-hors-maths`, PR à merger.
-- **Prochaine action** : merger la PR ; puis les 35 fichiers hors 2de (§ 58) — rien sans l'accord de David.
-  À faire aussi : 2-316 et 2-445 réécrits au geste ` ```courbe tracer: `, puis 2-298 (vecteur) (§ 61).
-- **En attente de David** : son accord sur les 35 hors 2de (reco : dans ce chantier, en lots par niveau) ;
-  la relecture de la page, puis `verdicts`, corrections, `publier-lot` (ids § 57).
+- **État** : 8 D (7) et les 6 anciens brouillons **publiés** (13/13, MCP). 8 E : 4 brouillons sur une
+  catégorie déjà prise (3e, 1re) → niveaux 2 et 6-8 validés par David ; PR `fix/niveaux-2de-probabilites-e`.
+- **Prochaine action** : merger la PR ; David : `update-published-questions.ts --lot niveaux-2de-probabilites
+--publier`, puis `publier-lot --dir scripts/questions/2de-probabilites-e --publier` (simulation d'abord).
+  Ensuite : les 35 fichiers hors 2de (§ 58, accord de David : ce chantier, lots par niveau) ; § 61.
+- **En attente de David** : les deux `--publier` ci-dessus.
 - **Pièges en cours** : `--publier`, `publier-lot`, `db:migrate` → David avec `!` ;
-  `create-questions --mettre-a-jour` ne touche JAMAIS un publié → `update-published-questions.ts` ;
-  `col()` en texte → `colt()` ; spec fraction = `\\frac{a}{b}` ; pas de ligne `Claude-Session:` ;
-  une suite de ligne commençant par `--` est désindentée par prettier.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `fix/garde-textcolor-hors-maths`.
+  `create-questions` apparie par (titre, thème, domaine, sous-domaine, **niveau**) : un changement de niveau
+  passe par `update-published-questions.ts` (brouillons compris), sinon doublons ; `col()` en texte →
+  `colt()` ; spec fraction = `\\frac{a}{b}` ; pas de ligne `Claude-Session:` ; une autre session écrit
+  aussi dans ce journal (§ 61) : `git pull` avant d'éditer.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `fix/niveaux-2de-probabilites-e`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1549,3 +1549,22 @@ Avant de corriger : revérifier dans le code de rendu que `\textcolor` hors math
   réécrire au geste ` ```courbe tracer: vecteur ` (`depuis A` pour l'origine imposée, #2274). ⚠️ #2274 n'est
   **pas en prod** au 2026-11-03 : rien à publier avant le `deploy:prod` qui la livre. Ids des modèles : à relever
   en prod (tag 2-298) ; origine du besoin : `docs/archive/wip/points-repere-progress.md`, lot 3.
+
+## 62. Vague 8 bis : relue, 8 D + anciens publiés, niveaux de 8 E (2026-11-03)
+
+- **#2283 mergée** : garde `\textcolor` hors `$` dans `question:specs` ; la revue (`code-reviewer`) a trouvé
+  des faux négatifs (choix d'un ```choix, cellules de tableau, texte de lien, `correction.feedback`) →
+  lus aussi, 9 tests. Aucun faux positif trouvé.
+- **Relecture** : `verdicts` lus et comptés, 20/20 « ok », aucun commentaire ; les 20 ids sont ceux du § 57.
+- `publier-lot` (simulation) : 8 D 7/7, anciens 6/6 (instantanés exportés au scratchpad, l'id apparie) ;
+  **8 E refusé** : 4 catégories prises par des publiés d'autres classes — Stabilisation niv. 1 (3e,
+  302655b9), Arbres pondérés niv. 3, 4, 5 (1re, 5ba712bc, 69a05f98, 6dd2f133).
+- David a publié 8 D et les anciens : MCP 13/13 `published`.
+- **Décision de David** (reco suivie) : ne déplacer que les brouillons de 2de, vers des niveaux libres
+  (MCP : aucun modèle à Stabilisation 2 ni Arbres pondérés 6-8). 7953dcfc 1 → 2 ; 38fe4cd5 3 → 6 ;
+  b28f4a68 4 → 7 ; d7507e78 5 → 8. Rien de publié ne bouge.
+- `create-questions --mettre-a-jour` exclu : le niveau est dans sa clé d'appariement → 4 doublons. Lot
+  **`niveaux-2de-probabilites`** de `update-published-questions.ts` (écrit `level`, tout statut) ;
+  instantanés `scripts/questions/2de-niveaux-probabilites-existants/` = export de la prod, `level` seul
+  modifié. Générateur et fichiers de 8 E : seul `level` change. Simulation : 4 cibles, `level` seul, specs
+  vertes.

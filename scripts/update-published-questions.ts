@@ -28,7 +28,7 @@
  * Usage :
  *   pnpm tsx scripts/update-published-questions.ts --lot <lot>            (simulation, diff)
  *   pnpm tsx scripts/update-published-questions.ts --lot <lot> --publier  (écrit)
- *   lots : second-degre, suites, derivation, textcolor-2de
+ *   lots : second-degre, suites, derivation, textcolor-2de, niveaux-2de-probabilites
  *   … --seulement <id8>[,<id8>]   restreint aux cibles dont l'id commence ainsi
  *   … --sans-diff                 simulation sans le diff (preuves rouges seulement)
  */
@@ -125,11 +125,24 @@ const TEXTCOLOR_2DE: readonly string[] = [
 	'275cb665-f0ab-4649-8188-df9ae44bb322' // variations-c › Comparer des images sur la courbe
 ];
 
+/** Seconde, lot 8 E : 4 brouillons sur une catégorie déjà prise par un modèle publié de 3e ou de 1re
+ *  (une catégorie = un modèle publié) ; seul `level` change (§ 62, décision de David du 2026-11-03) */
+const NIVEAUX_2DE_PROBABILITES: readonly string[] = [
+	'7953dcfc-bedc-465e-9abe-b8db19647d7e', // Stabilisation › Loi des grands nombres, 1 → 2
+	'38fe4cd5-90ad-446d-a2cc-936faa2dde13', // Arbres pondérés › Arbre de deux épreuves indépendantes, 3 → 6
+	'b28f4a68-de95-4437-9e5a-c423fce38ead', // Arbres pondérés › Construire un arbre pondéré, 4 → 7
+	'd7507e78-4041-441a-82fc-40de926f92cc' // Arbres pondérés › Probabilité conditionnelle sur un arbre, 5 → 8
+];
+
 const LOTS: Record<string, Lot> = {
 	'second-degre': { dossier: 'scripts/questions/second-degre-existants', cibles: SECOND_DEGRE },
 	suites: { dossier: 'scripts/questions/suites-existants', cibles: SUITES },
 	derivation: { dossier: 'scripts/questions/derivation-existants', cibles: DERIVATION },
-	'textcolor-2de': { dossier: 'scripts/questions/2de-textcolor-existants', cibles: TEXTCOLOR_2DE }
+	'textcolor-2de': { dossier: 'scripts/questions/2de-textcolor-existants', cibles: TEXTCOLOR_2DE },
+	'niveaux-2de-probabilites': {
+		dossier: 'scripts/questions/2de-niveaux-probabilites-existants',
+		cibles: NIVEAUX_2DE_PROBABILITES
+	}
 };
 
 /** Champs écrits ; tout le reste doit être identique entre le fichier et la base */
