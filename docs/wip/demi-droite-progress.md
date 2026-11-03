@@ -154,3 +154,53 @@ _Mis à jour le 2026-11-03, après #2317._
   graduation) ; deux mineurs corrigés (côté grisé sans borne ; juge : crochet fermé sur l'infini refusé).
   Tests ajoutés, vus rouges. Variable `state` renommée (`$state` lu comme un store au typecheck).
 - #2309 mergée le 2026-11-03 (CI : un job relancé, erreur d'outillage hors tests).
+
+## PR 4 — 1er modèle : représenter les solutions de ax ⩾ b (3-014)
+
+Relevé MCP du 2026-11-03 : 3-014 a un modèle, 24aff7b0 « Résoudre une inéquation ax ⩾ b » (publié,
+Calcul littéral › Inéquations › ax ⩾ b, niveau 1, réponse en inégalité « x > 4 »). Le niveau 2 de la
+catégorie est libre.
+
+- **Modèle** : « Représenter les solutions d'une inéquation ax ⩾ b » · point **3-014** · catégorie
+  Calcul littéral › Inéquations › ax ⩾ b, **niveau 2** · 3e.
+- **Énoncé** : « Résous l'inéquation $3x \geqslant 12$, puis représente ses solutions sur la droite
+  graduée. » + ` ```line ` à `representer:` (arrows, pas de 1).
+- **Fenêtre** : 10 unités, la borne **pas au milieu** (début = k − d, d tiré de 2 à 8) : la fenêtre ne
+  donne pas la borne.
+- **Variations** (mêmes tirages que 24aff7b0) : v1 a > 0, b = a·k, les quatre sens (3x ⩾ 12 →
+  [4 ; +∞[) ; v2 a < 0 (−2x < 6 → ]−3 ; +∞[) ; v3 selon Q6.
+- **Réponse** : la droite seule (une case), cf. Q5. Phrases d'erreur du geste déjà écrites (PR 2).
+- **Corrigé** : la résolution de 24aff7b0 (diviser par a, sens qui change ou non, large / stricte), puis la
+  droite dessinée (`segments:` avec crochet), « le crochet est tourné vers les solutions quand la borne
+  est comprise ».
+- **testSpecs** : justes + erreurs typiques — sens non changé pour a < 0 (mauvais côté), crochet faux
+  (large/stricte), mauvaise borne (soustraction : 9 pour 3x > 12).
+- **Fichiers** : `docs/wip/questions/lot-3-representer.py` → `scripts/questions/3-representer/`.
+- **Prod** : le geste n'est pas en prod → brouillon (David : `create-questions --publier`), migration
+  nœud + tag, **publication seulement après un `deploy:prod`** (David).
+- **Question d'accès** de la migration de rangement : personne ne lit rien de nouveau ; un modèle rangé
+  sous un nœud existant et tagué 3-014, lu comme les autres modèles.
+
+### Questions à David
+
+- **Q5 — Une case ou deux ?** Droite seule (l'inégalité est déjà le niveau 1), ou case « x ⩾ 4 » puis
+  droite. Reco : **droite seule**.
+- **Q6 — Borne en fraction (3x ⩾ 2 → x ⩾ 2/3) ?** Reco : **oui, a = ±3 seulement**, droite graduée en
+  tiers sur 4 unités, entiers seuls étiquetés (12 graduations, lisible à 390 px). Autre choix : bornes
+  entières seules.
+
+### Décisions (David, 2026-11-03, « je suis tes recos »)
+
+- Q5 : droite seule. Q6 : bornes en fraction, a = ±3, droite en tiers sur 4 unités.
+
+### Écrit (2026-11-03)
+
+- `docs/wip/questions/lot-3-representer.py` → `scripts/questions/3-representer/01-representer-solutions-inequation.json`
+  (v3 : borne n/3, n = 3q + m, m ∈ {1, 2}, fenêtre q − d … q − d + 4, d ∈ {1, 2} ; côté r = s si a > 0,
+  s + 2 modulo 4 sinon).
+- `create-questions` en simulation : 14 specs vertes ; balayage 300 tirages × 3 variations (borne dans la
+  fenêtre, réponse attendue jugée juste, corrigé sans `{{`) ; `sonde-horloges` : 600 blocs, 0 problème.
+- Base locale (43c75d10) : joué dans l'aperçu admin — 7x < 35, mauvais côté → « Les solutions sont de
+  l'autre côté de 5. », faux ; −3x < 7, borne −7/3 exclue, côté droit → juste ; corrigé lu (division,
+  crochet, droite). Pas vu à 390 px (fenêtre Chrome restée large) : affichage déjà vu à 390 px en PR 1.
+- Corrigé : « x > 7/(−3) » écrit tel quel avant la simplification, comme 24aff7b0.
