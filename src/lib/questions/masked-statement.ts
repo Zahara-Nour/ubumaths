@@ -86,6 +86,7 @@ type MaskLine = (line: string, rank: number) => string | string[] | null;
 
 // Constantes
 const PLACER_LINE = /^(placer\s*:)(.*)$/i;
+const REPRESENTER_LINE = /^(representer\s*:)(.*)$/i;
 const TRACER_LINE = /^(tracer\s*:)(.*)$/i;
 const BUILD_LINE = /^(construire\s*:)(.*)$/i;
 const COLORIER_LINE = /^(colorier\s*:)(.*)$/i;
@@ -107,6 +108,20 @@ function maskLineTargets(value: string): string {
 			return named ? `${named[1]}=${MASKED_VALUE}` : MASKED_VALUE;
 		})
 		.join(' ; ');
+}
+
+/**
+ * `representer:` masqué en gardant le geste : `?` (demi-droite, une borne et un
+ * côté), `? ; ?` (intervalle borné, deux bornes) ; ni bornes ni crochets
+ */
+function maskRepresenter(value: string): string {
+	return isLineToRepresentBounded(value) ? `${MASKED_VALUE} ; ${MASKED_VALUE}` : MASKED_VALUE;
+}
+
+/** `[-1, 3[` : deux bornes finies ; `[2, +inf[` : non (une borne infinie) */
+function isLineToRepresentBounded(value: string): boolean {
+	if (/^\s*\?\s*;\s*\?\s*$/.test(value)) return true;
+	return !/(?:inf|∞|\\infty)/i.test(value);
 }
 
 /** Ligne retirée d'un bloc réécrit (filtrée à la fin) */
@@ -438,7 +453,7 @@ export function findUnmaskedAnswers(statement: string): string[] {
 	const keyMasked = (keys: string[]) => (block: FoundBlock) =>
 		valuesOf(block.body, keys).every(allMasked);
 	return [
-		...leaks('line', findLinesToPlace(statement), keyMasked(['placer'])),
+		...leaks('line', findLinesToPlace(statement), keyMasked(['placer', 'representer'])),
 		...leaks(
 			'courbe',
 			findCourbesToPlace(statement),
@@ -487,7 +502,11 @@ export function maskGestureAnswers(statement: string): string {
 			maskFor
 		);
 	const placer = keyLine(PLACER_LINE, maskLineTargets);
-	maskBlocks(findLinesToPlace(statement), () => placer);
+	const representer = keyLine(REPRESENTER_LINE, maskRepresenter);
+	maskBlocks(
+		findLinesToPlace(statement),
+		() => (line, rank) => placer(line, rank) ?? representer(line, rank)
+	);
 	const courbePoints = keyLine(PLACER_LINE, maskCourbeTargets);
 	// Droite : l'équation entière ; vecteur : ses coordonnées seules (nom, origine gardés)
 	const courbeLine = keyLine(TRACER_LINE, (value) =>
