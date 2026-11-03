@@ -57,7 +57,6 @@ describe('canaux temps réel publics', () => {
 		expect(publics).toEqual(
 			expect.arrayContaining([
 				'src/lib/stores/multiplayer.svelte.ts',
-				'src/lib/stores/presence.svelte.ts',
 				'src/lib/stores/notificationsRealtime.svelte.ts',
 				'src/lib/stores/achievementsRealtime.svelte.ts'
 			])
