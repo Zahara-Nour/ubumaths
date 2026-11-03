@@ -1901,3 +1901,16 @@ entière ; L12a-c 2-275 rangé sous Calcul littéral › factorisation ; L12a-d 
 - **Écart à la phase 0** : 2-274, `(6 − 2x)/3` était refusé (`bad_form`) → `constraints.form: warn` : accepté en
   `unoptimal_form`, l'élève est invité à écrire la forme réduite.
 - **#2354 mergée** (12 a-2).
+
+## 74. Lot 12 a : brouillons en prod, migration nœud + tag (2026-11-03)
+
+- `create-questions --publier` lancé par David sur les deux dossiers : 12 a-1 57585d68 (2-263), d15b096f (2-424),
+  9660771f (2-264), d8b9e814 (2-425), 5ffcde13 (2-276), 313ae1a2 (2-427), 52516a54 (2-277), 1d25a492 (2-428) ;
+  12 a-2 9ed8c72e (2-269), ec690625 (2-273), d7aa3f33 (2-274), 610a25fb (2-275), ab668c94 (2-278), 36a37542
+  (2-489). Relus en base : brouillons, niveaux prévus, sans nœud.
+- **2-278 : sous-notion « mettre en inéquation » archivée le 2026-10-10** (facette d'activité) ; décision de David
+  (2026-11-03) : modèle sur « Inéquations : premier degré › ax + b < c », point sur la notion.
+- Points sur leur notion (2-275, 2-278, 2-489) : la migration résout le point sur le nœud OU sur sa notion (règle
+  de `question_template_points_check_rules`).
+- Migration `20261103225125_questions_2de_lot12a_rangement_tags` (gabarit du lot 9), test
+  `questions-2de-lot12a-rangement-tags.test.ts` : 10 verts, 5 rouges sans la migration.
