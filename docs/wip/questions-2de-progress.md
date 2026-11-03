@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2354 (12 a-2)._
+_Mis à jour le 2026-11-04, après #2355 (rangement du lot 12 a) et la page à cocher (§ 75)._
 
-- **État** : lots 1 à 9 publiés. Ordre : lot 12 (12 a, 12 b), puis 10, puis 11. 12 a-1 (#2352, 8 modèles) et
-  12 a-2 (#2354, 6 modèles) mergés ; brouillons en base locale seulement.
-- **Prochaine action** : David lance `create-questions --publier` sur
-  `2de-inegalites-a1` et `2de-algebre-a2` ; relever les ids, migration nœud + tag des 14 (§ 72, § 73).
-- **En attente de David** : les deux `create-questions --publier` (12 a-1, 12 a-2).
+- **État** : lots 1 à 9 publiés. Lot 12 a (14 modèles) en prod en brouillon, rangé et tagué (#2355, migration
+  jouée) ; page à cocher publiée (§ 75). Ordre ensuite : 12 b, puis 10, puis 11.
+- **Prochaine action** : lire et compter les verdicts de la page ; corriger les « À revoir » ; puis `publier-lot`
+  en simulation sur `2de-inegalites-a1` et `2de-algebre-a2`, et David lance `--publier`. Ensuite phase 0 du 12 b.
+- **En attente de David** : la relecture de la page à cocher.
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!` ; liste blanche : pas de
   `{{if:}}` à plus de ~6 niveaux dans une réponse attendue ; corps de commit ≤ 100 caractères par ligne ;
   une autre session écrit aussi dans ce journal : `git pull` ; `db:migrate` depuis le dépôt principal
@@ -1914,3 +1914,11 @@ entière ; L12a-c 2-275 rangé sous Calcul littéral › factorisation ; L12a-d 
   de `question_template_points_check_rules`).
 - Migration `20261103225125_questions_2de_lot12a_rangement_tags` (gabarit du lot 9), test
   `questions-2de-lot12a-rangement-tags.test.ts` : 10 verts, 5 rouges sans la migration.
+- `security-auditor` : aucun finding bloquant (mesure en prod : 14 brouillons sans nœud ni tag, 14 points actifs).
+  **#2355 mergée** ; `check:migrations --pr 2355` OK ; `db:migrate` depuis le dépôt principal (à blanc : seule
+  `20261103225125`). MCP (prod) : les 14 en `draft`, sur leur nœud, un point chacun, `updated_at` préservé.
+
+## 75. Lot 12 a : page à cocher (2026-11-04)
+
+- `page-a-cocher.ts` sur les deux dossiers (copie dans le scratchpad, préfixes `a1-`/`a2-`, `.env` de prod) :
+  14 fiches, aucune alerte. Page (capacité `db`, `verdicts` vide) : https://claude.ai/artifact/SWKNyEvkVTR8PF6E19cPKb
