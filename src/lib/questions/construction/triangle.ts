@@ -18,10 +18,12 @@
 import type { TriangleCheck, TriangleLength } from '$lib/ubumark/types/construction';
 import type { DrawnLine, DrawnObject } from './answer';
 import {
+	basePointsOf,
+	constructionOf,
 	intersectTraits,
 	intersectionsOf,
-	isConstructed,
 	isInFrame,
+	traitOf,
 	type Trait
 } from './instruments';
 import type { ConstructionVerdict, Position } from './judge';
@@ -168,39 +170,21 @@ export function assertTriangle(
 }
 
 /**
- * Cercles CONSTRUITS de l'élève : compas piqué et ouvert sur des points construits
- * de la figure ; report piqué sur un point construit, écartement pris entre deux
- * points construits. Un cercle ouvert à l'œil n'en est pas un, même pile au bon rayon.
+ * Cercles CONSTRUITS de l'élève (compas ou report), de proche en proche
+ * (`constructionOf`, décision de David du 2026-11-03, § 14) : un cercle ouvert à
+ * l'œil n'en est pas un, même pile au bon rayon.
  */
 function constructedCircles(
 	objects: readonly DrawnObject[],
-	base: readonly Position[],
-	figureTraits: readonly Trait[]
+	points: ReadonlyMap<string, Position>,
+	shapes: FigureShapes
 ): Trait[] {
-	const built = (p: Position) => isConstructed(p, base, figureTraits);
-	return objects.flatMap((o): Trait[] => {
-		if (o.kind === 'cercle') {
-			const center = { x: o.cx, y: o.cy };
-			const through = { x: o.x, y: o.y };
-			if (!built(center) || !built(through)) return [];
-			return [{ kind: 'circle', center, radius: distance(center, through) }];
-		}
-		if (o.kind === 'report') {
-			const center = { x: o.cx, y: o.cy };
-			const ends = [
-				{ x: o.ax, y: o.ay },
-				{ x: o.bx, y: o.by }
-			];
-			if (!built(center) || !ends.every(built)) return [];
-			return [{ kind: 'circle', center, radius: distance(ends[0], ends[1]) }];
-		}
-		return [];
+	const { built } = constructionOf(objects, basePointsOf(points, shapes.segments), shapes.traits);
+	return objects.flatMap((o, i): Trait[] => {
+		if (!built.has(i) || (o.kind !== 'cercle' && o.kind !== 'report')) return [];
+		const trait = traitOf(o);
+		return trait ? [trait] : [];
 	});
-}
-
-/** Points où l'élève peut piquer ou ouvrir le compas : points nommés et bouts des segments de la figure */
-function basePoints(points: ReadonlyMap<string, Position>, shapes: FigureShapes): Position[] {
-	return [...points.values(), ...shapes.segments.flatMap((s) => [s.a, s.b])];
 }
 
 /** L'autre bout d'un segment qui part de `from` (pas [AB] repassé), sinon null */
@@ -251,7 +235,7 @@ export function judgeTriangle(
 	if (vertices.length === 0) {
 		return { status: 'incorrect', feedback: notJoinedFeedback(nameA, nameB, nameC) };
 	}
-	const circles = constructedCircles(objects, basePoints(points, figure), figure.traits);
+	const circles = constructedCircles(objects, points, figure);
 	const crossings = intersectionsOf(circles);
 	const built = (c: Position) => crossings.some((p) => near(p, c, tolerance(p, c)));
 	const feedbackOf = (c: Position): string | null => {

@@ -218,5 +218,14 @@ Historique : [canal privé du chat](../archive/wip/realtime-chat-prive-progress.
   lu au démarrage du suivi, et le bandeau « connecté » de la page amis reflète l'abonnement, pas
   la réception.
 - Les canaux `match:<id>`, présence, notifications et succès restent publics : ils ne portent que
-  des `postgres_changes`, filtrés par la RLS des tables.
+  des `postgres_changes`, filtrés par la RLS des tables (mesuré le 2026-11-03 : un intrus qui
+  rejoint le canal ne reçoit que ce qu'il pourrait déjà lire ; décision de David, écart T2 : pas de
+  passage en privé). **Garde** : `src/lib/stores/__tests__/canaux-publics-garde.test.ts` échoue
+  si un fichier qui ouvre un canal public utilise `broadcast`, `presence`, `.track()` ou
+  `.send()` ; ce canal doit alors passer en privé.
 - Un canal privé déjà joint le reste jusqu'à la reconnexion ou au rafraîchissement du JWT (~1 h).
+  **Limite acceptée** (décision de David du 2026-11-03, écart T3) : aucun code ne sort un élève
+  d'un canal quand ses droits changent (retrait d'une conversation, fin d'un troc). Les policies de
+  `realtime.messages` ne sont relues qu'à la jonction et au rafraîchissement du jeton ; une
+  suspension de compte ne coupe pas, à elle seule, un canal déjà joint. Pour une exclusion
+  urgente, il faut que l'élève soit déconnecté.

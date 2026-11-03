@@ -8,13 +8,13 @@ status: écarts revérifiés le 2026-10-18 ; tri A (seul) / B (David) fait ; V62
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-01, après #2155._
+_Mis à jour le 2026-11-03, PR T2 (garde des canaux publics) ouverte._
 
-- **État** : liste A finie — lots A, 2b, 3, 4, 5 mergés (#2062→#2068, #2097, #2118, #2131, #2144 = L8 clos) ; ménage #2142 ; #2061, #1850, #2155 (test `award_achievement_manual` réactivé) mergés, #1802 fermée. Tout en prod (v0.62.0). Aucun worktree ouvert pour ce chantier.
-- **Prochaine action** : lire les réponses de la **page à cocher du lot RGPD** (liste B, T1-T15) : https://claude.ai/artifact/2qkUgP9ygUJ3J9ocggY6fe (`ArtifactData list`, collection `reponses`, une fiche par id `T1`…`T15`) ; puis lots : doc seule (T9, T12, T13, T14 si infos données), technique (T2 d'abord, puis T1, T6, T7, T8, T15), ensuite les lots B « destructif » et « spécification ».
-- **En attente de David** : cocher la page RGPD (collection `reponses` vide au 2026-11-01) ; T14 = infos des mentions légales dans le commentaire.
-- **Pièges en cours** : nouvelles règles de migration (#2165, mergée) : `pnpm migration:horodatage`, `pnpm check:migrations --pr <n>` avant merge ; CI allégée pour les PR de contenu, « skipped » voulu, CI Summary fait foi ; `charger-repartir-annuler.svelte.test.ts` (client) instable.
-- **Worktree / branche** : aucun (journal sur `main`).
+- **État** : liste A finie et en prod. Lot RGPD : toutes mes recos validées par David ; lot doc fait (T3, T9, T12, T13, commit `c3a17bc02` sur `main`) ; T2 = garde de test (PR `test/ecarts-a-trier-garde-canaux`).
+- **Prochaine action** : merger la PR T2, puis **T1** (présence relue toutes les 60 s), T6, T7, T8, T15, puis lots B « destructif » et « spécification ».
+- **En attente de David** : T14 = les infos des mentions légales (responsable de publication, statut, adresse, nom).
+- **Pièges en cours** : migrations : `pnpm migration:horodatage`, `pnpm check:migrations --pr <n>` avant merge ; CI allégée pour le contenu, CI Summary fait foi ; `charger-repartir-annuler.svelte.test.ts` (client) instable.
+- **Worktree / branche** : `../ubumaths-wt-ecarts-a-trier` · `test/ecarts-a-trier-garde-canaux`.
 
 ---
 
@@ -30,3 +30,17 @@ _Mis à jour le 2026-11-01, après #2155._
 - Liste A : **L8 d'abord** ; **M19 jamais seul** (seulement en passant, dans un chantier de géométrie) ; **L12 sur demande** seulement.
 - Écriture : racines approchées → **décimal arrondi avec ≈** (ou forme exacte), jamais une fraction décimale géante ; `\sin(x)^2` → **`\sin^2(x)`** ; `\dfrac{-6}{\pi-9}` → **`\dfrac{6}{9-\pi}`** (dénominateur positif ; touche `tidy` → chantier `fusion-moteurs`).
 - `a(x) = x^2` puis `a = 2` : **fonction constante gardée** (cohérent avec #905), l'Atelier doit afficher `a(x) = 2`.
+
+## Décisions de David (2026-11-03, page à cocher RGPD, toutes mes recos validées)
+
+- **T1** présence des amis : relecture toutes les 60 s, `user_presence` reste non publiée.
+- **T2** canaux match / présence / notifications / succès : ~~passer en privé~~ → mesure en prod (2026-11-03) : ils ne portent que des `postgres_changes` filtrés par la RLS, le privé n'apporte rien. **David a choisi une garde de test** (`canaux-publics-garde.test.ts`), sans passage en privé.
+- **T3** canal privé gardé après retrait d'un droit : limite acceptée et documentée (`realtime.md`) — fait.
+- **T6** CSP `unsafe-eval` : tester si `wasm-unsafe-eval` suffit à Typst ; sinon le restreindre aux pages PDF.
+- **T7** deux `requireAuth` : renommer celle qui redirige (`requireUserOrRedirect`) et passer les ~32 routes à la garde commune, avec revue sécurité.
+- **T8** limiteur en mémoire : unifier sur le limiteur en base, supprimer celui en mémoire.
+- **T9** double CSRF : garder les deux, documenté (`auth.md`) — fait.
+- **T12** grâce du consentement : 30 jours glissants, doc corrigée (conformité) — fait.
+- **T13** registre des sous-traitants : HuggingFace (non activé) + Vercel Analytics ajoutés — fait.
+- **T14** mentions légales : David donne les infos (en attente).
+- **T15** dans l'ordre : archiver les DPA (Supabase, Vercel, Sentry, Groq), bouton « signaler » dans le chat, finaliser l'AIPD.

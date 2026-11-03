@@ -92,7 +92,8 @@ import {
 	type ApproximateDigits
 } from '../approximation';
 import { exactValueToShow } from '../../eval/exact-value';
-import { mapNode } from '../../transforms';
+import { findNodes, mapNode } from '../../transforms';
+import { tidy } from '../../tidy';
 
 // =============================================================================
 // Constants
@@ -190,6 +191,15 @@ function keptValue(
 	const value = decimalResult.value;
 	const outOfRange = !Number.isFinite(value) || (value === 0 && digits.digits !== '0');
 	return outOfRange ? exact : decimalResult.node;
+}
+
+/**
+ * Une expression à lettres rangée comme sur l'écran de l'Atelier (`resultToShow`
+ * de `render.ts`) : une grandeur est déjà mise au propre (`quantities.ts`), `tidy`
+ * recalculerait l'écriture juxtaposée `2 h 30 min` en une seule unité (lot C).
+ */
+function tidiedExpression(node: MathNode): MathNode {
+	return findNodes(node, isUnit).length > 0 ? node : tidy(node, { order: 'kept' });
 }
 
 /**
@@ -834,21 +844,26 @@ export class WebReplEngine {
 	}
 
 	/**
-	 * Create a simple display result for expressions with unbound variables.
+	 * Une expression à lettres non liées : sa forme rangée, celle de l'écran de
+	 * l'Atelier (`render.ts`, décision D du lot 2 de `registre-reference`) —
+	 * dans l'ordre de l'élève (`2x+3x → 5x`, `x*x → x^2`, `3-2x+x^2` gardé) et
+	 * sans changer le domaine (`x/x` reste `x/x`, S3). `ast` reste l'entrée lue :
+	 * l'Atelier la range lui-même, et ses autres lecteurs y lisent la saisie.
 	 */
 	private createExpressionDisplayResult(
 		ast: MathNode,
 		unboundVars: Set<string>
 	): ReplExecutionResult {
-		const exprStr = toCustom(ast);
+		const shown = tidiedExpression(ast);
 		const varList = [...unboundVars].sort().join(', ');
 
-		const output = `${exprStr}  (variables: ${varList})`;
+		const output = `${toCustom(shown)}  (variables: ${varList})`;
 
 		return {
 			success: true,
 			output,
-			ast
+			ast,
+			answer: toLatex(shown)
 		};
 	}
 

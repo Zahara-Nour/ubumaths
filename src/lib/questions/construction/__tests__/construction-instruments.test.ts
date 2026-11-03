@@ -12,11 +12,7 @@ import { describe, it, expect } from 'vitest';
 import '../positions-setup';
 import { constructionExpected, constructionPositions, constructionShapes } from '../positions';
 import { assertConstructionChecks, judgeConstruction, type Position } from '../judge';
-import {
-	POINT_EYEBALLED_FEEDBACK,
-	notPerpendicularFeedback,
-	notSameDistanceFeedback
-} from '../point';
+import { POINT_EYEBALLED_FEEDBACK } from '../point';
 import { SYMMETRY_MISSING_FEEDBACK } from '../symmetry';
 import {
 	addTap,
@@ -502,8 +498,9 @@ describe('symétrique d’un point, papier uni — faux', () => {
 		});
 	});
 
-	it('sur la perpendiculaire, compas mal centré : « même distance »', () => {
-		// Compas piqué en (0,5 ; 3), hors de l'axe, par A : recoupe la perpendiculaire en (2,5 ; 4,5)
+	it('sur la perpendiculaire, compas piqué à l’œil hors de l’axe : à l’œil (§ 15)', () => {
+		// Compas piqué en (0,5 ; 3), toucher libre hors de l'axe, par A : recoupe la perpendiculaire
+		// en (2,5 ; 4,5) ; ce cercle n'est pas construit (point construit de proche en proche)
 		const screen = new Screen(OBLIQUE)
 			.tap('equerre', 6, 6.2)
 			.tap('equerre', 2.1, 5)
@@ -513,12 +510,12 @@ describe('symétrique d’un point, papier uni — faux', () => {
 		expect(screen.drawing.objects.at(-1)).toEqual({ kind: 'point', x: 2.5, y: 4.5 });
 		expect(judge(OBLIQUE, screen.answer)).toEqual({
 			status: 'incorrect',
-			feedback: notSameDistanceFeedback('A', "A'")
+			feedback: POINT_EYEBALLED_FEEDBACK
 		});
 	});
 
-	it('à la bonne distance de l’axe, hors de la perpendiculaire : « perpendiculaire »', () => {
-		// Parallèle à d par A (règle aimantée sur A puis sur d), coupée par la droite x = 4
+	it('au croisement de deux droites passant par des touchers libres : à l’œil (§ 14)', () => {
+		// Droite par A et un toucher libre, coupée par la droite libre x = 4 : aucune n'est construite
 		const screen = new Screen(OBLIQUE);
 		screen.drawing = {
 			objects: [
@@ -531,7 +528,7 @@ describe('symétrique d’un point, papier uni — faux', () => {
 		expect(screen.drawing.objects.at(-1)).toEqual({ kind: 'point', x: 4, y: 7 });
 		expect(judge(OBLIQUE, screen.answer)).toEqual({
 			status: 'incorrect',
-			feedback: notPerpendicularFeedback('A', "A'")
+			feedback: POINT_EYEBALLED_FEEDBACK
 		});
 	});
 });

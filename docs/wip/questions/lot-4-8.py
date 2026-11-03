@@ -76,6 +76,11 @@ def col(x, k=0):
     return '\\textcolor{{{color:primary.' + str(k) + '}}}{' + x + '}'
 
 
+def colt(*a, **k):
+    """Valeur colorée en plein texte : `\\textcolor` hors `$…$` s'afficherait en LaTeX brut."""
+    return '$' + col(*a, **k) + '$'
+
+
 def choix(lignes, melanger=True):
     tete = '' if melanger else 'melanger: non\n'
     return '\n\n```choix\n' + tete + ''.join('- ' + l + '\n' for l in lignes) + '```'
@@ -172,8 +177,8 @@ COMPARER = variation(
      + col('{{ra}}', 1) + '$.',
      'Programme B : ${{n}} + {{c}} = {{rb1}}$, puis $' + par('rb1') + ' ' + X + ' {{d}} = '
      + col('{{rb}}', 2) + '$.',
-     '{{if:ra>rb|${{ra}} > {{rb}}$ : ' + col('\\text{le programme A}')
-     + '.|${{rb}} > {{ra}}$ : ' + col('\\text{le programme B}') + '.}}'],
+     '{{if:ra>rb|${{ra}} > {{rb}}$ : ' + colt('\\text{le programme A}')
+     + '.|${{rb}} > {{ra}}$ : ' + colt('\\text{le programme B}') + '.}}'],
     ['ra!=rb', 'n!=0'])
 
 MODELES.append(modele(
@@ -313,7 +318,7 @@ PREMIERE = variation(
     [var('a', '2..9'), var('b', '1..20')], ['0'],
     [REMONTER,
      'La **dernière** étape est « ajouter ${{b}}$ » : on l\'annule en premier, en '
-     + col('\\text{soustrayant } {{b}}') + '.',
+     + colt('\\text{soustrayant } {{b}}') + '.',
      'Ensuite seulement, on divise par ${{a}}$.'],
     ['a!=b'])
 
@@ -622,8 +627,8 @@ SENS = variation(
     [var('s', '1|-1'), var('a', '1..2'), var('t0', '{{if:s>0|2..8|12..20}}')], ['0'],
     [TROIS_FORMES,
      'On lit le graphique **de gauche à droite**, comme le temps qui passe.',
-     '{{if:s>0|La droite monte : la température ' + col('\\text{augmente}')
-     + '.|La droite descend : la température ' + col('\\text{diminue}') + '.}}'])
+     '{{if:s>0|La droite monte : la température ' + colt('\\text{augmente}')
+     + '.|La droite descend : la température ' + colt('\\text{diminue}') + '.}}'])
 
 MODELES.append(modele(
     '06-formule-tableau-et-graphique', 'Formule, tableau et graphique',

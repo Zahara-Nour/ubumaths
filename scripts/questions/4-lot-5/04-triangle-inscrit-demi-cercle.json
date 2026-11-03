@@ -45,7 +45,7 @@
 			"correction": {
 				"steps": [
 					"Si un triangle est inscrit dans un cercle qui a pour diamètre l'un de ses côtés, alors il est **rectangle**, et l'angle droit est le sommet opposé à ce diamètre.",
-					"Ici le diamètre est $[{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}]$ : le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est \\textcolor{{{color:primary.0}}}{\\text{rectangle en }{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}}."
+					"Ici le diamètre est $[{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}]$ : le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est $\\textcolor{{{color:primary.0}}}{\\text{rectangle en }{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}}$."
 				]
 			}
 		},
@@ -89,7 +89,7 @@
 			"correction": {
 				"steps": [
 					"Un triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ est rectangle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$ **seulement si** ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$ est sur le cercle de diamètre $[{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}]$.",
-					"Ici ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$ n'est pas sur ce cercle : le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ \\textcolor{{{color:primary.0}}}{\\text{n'est pas rectangle en }{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}}. Son angle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$ est {{if:d<10|plus grand|plus petit}} qu'un angle droit."
+					"Ici ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$ n'est pas sur ce cercle : le triangle ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}$ $\\textcolor{{{color:primary.0}}}{\\text{n'est pas rectangle en }{{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}}$. Son angle en ${{if:s==0|A|}}{{if:s==1|R|}}{{if:s==2|E|}}$ est {{if:d<10|plus grand|plus petit}} qu'un angle droit."
 				]
 			}
 		},

@@ -351,9 +351,10 @@ function plainPaperPointTemplate(xa: string, expression = 'symetrie(A, axe=d)'):
 		...template,
 		testSpecs: [
 			{
-				description: 'construit : perpendiculaire, compas au pied, point à l’intersection',
+				description:
+					'construit : perpendiculaire à l’équerre, compas au pied, point à l’intersection',
 				variables: { xa: '2' },
-				answers: ['droite(2;5;3;5)|cercle(6;5;2;5)|point(10;5)'],
+				answers: ['droite(2;5;-6;5)|cercle(6;5;2;5)|point(10;5)'],
 				expected: { status: 'correct' }
 			},
 			{

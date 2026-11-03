@@ -29,7 +29,7 @@
 			"correction": {
 				"steps": [
 					"Dans un triangle, la droite qui passe par les milieux de deux côtés est **parallèle** au troisième côté.",
-					"Donc $({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})$ et $({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})$ sont \\textcolor{{{color:primary.0}}}{\\text{parallèles}}."
+					"Donc $({{if:s==0|M|}}{{if:s==1|U|}}{{if:s==2|K|}}{{if:s==0|N|}}{{if:s==1|V|}}{{if:s==2|L|}})$ et $({{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}})$ sont $\\textcolor{{{color:primary.0}}}{\\text{parallèles}}$."
 				]
 			}
 		},

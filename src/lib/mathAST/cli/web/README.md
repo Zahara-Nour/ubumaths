@@ -28,7 +28,9 @@ mènent à `/atelier`.
 - **Corpus du registre** (`cli/__tests__/registre-corpus/`) : `answer` (réponse brute, exacte dans
   les deux modes), `decimal` et `decimalExact` (écriture décimale au point, en LaTeX comme `answer`, sans `=`/`≈`, moins compris,
   d'un calcul tapé ou d'une grandeur seule, présente même pour un nombre déjà écrit — décisions A
-  et B du lot 2 de `registre-reference`). Seul lecteur à ce jour ; l'Atelier lit encore
+  et B du lot 2 de `registre-reference`). Une expression à lettres non liées répond par sa forme
+  rangée (`tidiedExpression` : `tidy`, ordre de l'élève, comme l'écran de l'Atelier ; décision D),
+  dans `answer` et `output` ; son `ast` reste l'entrée lue. Seul lecteur à ce jour ; l'Atelier lit encore
   `approximateLatex` pour son bouton ≈.
 - `getFunctions` n'est lu que par des tests (`atelier/__tests__/engine.test.ts` s'en sert pour
   vérifier `syncEngine`).

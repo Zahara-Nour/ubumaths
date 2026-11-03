@@ -24,7 +24,7 @@
 			],
 			"correction": {
 				"steps": [
-					"Propriété : toute fonction \\textcolor{{{color:primary.0}}}{dérivable en a est continue en a}.",
+					"Propriété : toute fonction $\\textcolor{{{color:primary.0}}}{dérivable en a est continue en a}$.",
 					"$f'(a)=0$ n'a aucune raison d'être vrai : c'est le cas seulement aux extremums."
 				]
 			}
@@ -38,7 +38,7 @@
 			],
 			"correction": {
 				"steps": [
-					"Le cours dit : dérivable $\\implies$ continue. L'affirmation est la **réciproque**, qui est \\textcolor{{{color:primary.0}}}{fausse}.",
+					"Le cours dit : dérivable $\\implies$ continue. L'affirmation est la **réciproque**, qui est $\\textcolor{{{color:primary.0}}}{fausse}$.",
 					"{{if:c==0|$x\\mapsto\\lvert x\\rvert$ est continue en $0$, mais sa courbe a un point anguleux en $0$ : elle n'y est pas dérivable.|$x\\mapsto\\sqrt{x}$ est continue en $0$, mais sa courbe a une tangente verticale en $0$ : elle n'y est pas dérivable.}}"
 				]
 			},
@@ -59,7 +59,7 @@
 			"correction": {
 				"steps": [
 					"Si $f$ était dérivable en $a$, elle serait continue en $a$ (propriété du cours).",
-					"Comme elle n'est pas continue en $a$, \\textcolor{{{color:primary.0}}}{f \\text{ n'est pas dérivable en } a}."
+					"Comme elle n'est pas continue en $a$, $\\textcolor{{{color:primary.0}}}{f \\text{ n'est pas dérivable en } a}$."
 				]
 			}
 		}

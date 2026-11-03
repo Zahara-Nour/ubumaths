@@ -53,7 +53,7 @@
 			"correction": {
 				"steps": [
 					"Un plan qui passe par le centre de la sphère la coupe suivant un **grand cercle** : même centre et même rayon que la sphère.",
-					"Son rayon est donc \\textcolor{{{color:primary.0}}}{{{r}}~\\unit{cm}}."
+					"Son rayon est donc $\\textcolor{{{color:primary.0}}}{{{r}}~\\unit{cm}}$."
 				]
 			}
 		},
@@ -68,7 +68,7 @@
 			"correction": {
 				"steps": [
 					"Un **grand cercle** est un cercle de la sphère dont le centre est celui de la sphère : son plan passe par le centre de la Terre.",
-					"C'est le cas de \\textcolor{{{color:primary.0}}}{\\text{l'équateur}} et d'\\textcolor{{{color:primary.0}}}{\\text{un cercle qui passe par les deux pôles}} (deux méridiens opposés).",
+					"C'est le cas de $\\textcolor{{{color:primary.0}}}{\\text{l'équateur}}$ et d'$\\textcolor{{{color:primary.0}}}{\\text{un cercle qui passe par les deux pôles}}$ (deux méridiens opposés).",
 					"Les autres parallèles (le $45^{\\circ}$ Nord, le cercle polaire) ont leur centre sur l'axe des pôles, hors du centre : leur rayon est plus petit."
 				]
 			}

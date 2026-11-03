@@ -6,22 +6,21 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2271._
+_Mis à jour le 2026-11-03, après #2288._
 
-- **État** : lots 1 à 4 mergés (#2257, #2264, #2268, #2271 : triangle de trois longueurs, Report,
-  4e sommet), pas encore en prod (`deploy:prod` sur demande de David). Vérifications à l'œil dans
+- **État** : lots 1 à 4 et « point construit de proche en proche » (#2288, § 15 : trois choix libres
+  admis — compas sur un trait droit, même rayon en A et B, équerre sur le trait qu'elle longe) mergés,
+  pas encore en prod (`deploy:prod` sur demande de David). Vérifications à l'œil dans
   `verifications-manuelles.md`.
-- **Prochaine action** : PR « point construit » (décision de David du 2026-11-03, § 14) — sur papier
-  uni, un point ne compte que s'il est l'intersection de deux traits eux-mêmes construits (règle,
-  équerre, compas, report, de proche en proche), pour tous les points (lots 2b à 4) ; helper commun
-  avec `triangle.ts` (`constructedCircles`). Puis phase 0 de l'angle (rapporteur) ou de la bissectrice.
+- **Prochaine action** : coder le lot 5 (angle au rapporteur, § 16) (phase 0 validée) ;
+  bissectrice ensuite.
 - **En attente de David** : rien.
 - **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12, sa propre
   phase 0) ; `perpendiculaire(A, s)` échoue quand A est un bout de s ; pas de prime dans le langage des
   figures ; `symetrie(P, axe=d)` échoue si P définit d ; l'« Essayer » de l'aide ne rend pas la case
   jouable ; droites annoncées « Droite 1, 2… » au clavier ; plafond de 20 objets sans message ;
   `etiquette=` ne vaut que pour les points (segment : `texte(x, y, "4 cm")`).
-- **Worktree / branche** : aucun (retiré après #2271).
+- **Worktree / branche** : aucun (retiré après #2288).
 
 ---
 
@@ -612,3 +611,109 @@ du triangle. » (ajouté après la revue, sans phase 0).
 - Sur papier uni, **tout point** (lots 2b à 4) ne compte comme construit que s'il est un point de la
   figure ou l'intersection de deux traits **eux-mêmes construits** ; deux droites tracées à l'œil ne
   construisent plus rien. Dans une PR à part.
+
+## 15. Point construit, de proche en proche (2026-11-03)
+
+Phase 0 validée par David le 2026-11-03 (« ok »), deux exceptions tranchées en cours de route
+(« Deux exceptions », sur ma recommandation, quand 4 tests anciens ont cassé).
+
+- **Règle** (`constructionOf`, `instruments.ts`, une seule fonction pour les points, droites,
+  cercles et le sommet du triangle ; remplace `isConstructed`, `isConstructedLine`,
+  `constructedParts`, l'ancien `constructedCircles`) : points de départ = points de la figure et bouts
+  de ses segments ; un trait de l'élève est construit s'il tient sur des points construits (droite :
+  deux bouts, ou équerre le long d'un trait droit construit ; cercle : centre et point de passage ;
+  report : centre et écartement) ; un point est construit s'il est de départ ou l'intersection de deux
+  traits construits ; on recommence jusqu'à ce que rien ne s'ajoute (l'ordre des tracés ne compte pas,
+  rien ne se justifie par soi-même).
+- **Exception 1 (symétrique, lot 2b)** : un cercle piqué SUR un trait construit (n'importe où sur
+  l'axe) et passant par un point construit est construit. Sans elle, un axe sans point visible dans
+  la fenêtre rendait le symétrique impossible.
+- **Exception 3 (parallèle « à la 6e », revue Opus, tranchée par David)** : une droite à l'équerre le
+  long d'un trait droit construit, partie d'un point posé SUR ce trait (perpendiculaire en un point
+  quelconque d'un côté), est construite ; partie d'un point d'un autre trait, non. L'exception 1 est
+  réservée aux traits droits (compas piqué sur un cercle construit : rien), tranché au même moment.
+- **Exception 2 (médiatrice à écartement quelconque, lot 3)** : deux cercles (compas ou report) de
+  même rayon, même pris à l'œil, centrés sur deux points construits, construisent leurs deux
+  intersections, sans devenir des traits (leurs autres intersections ne comptent pas).
+- **Ce qui change pour l'élève** : deux droites à l'œil ne construisent plus rien (le D forgé de la
+  revue du lot 4) ; un compas piqué sur un toucher libre hors de tout trait non plus. Deux tests du
+  lot 2b passent de « même distance » / « perpendiculaire » à « placé à l'œil » (leurs traits étaient
+  libres) ; ces messages restent testés sur quadrillage.
+- **Tests** : `construction-point-construit.test.ts` (16, vérifiés rouges sans le correctif, sauf le
+  test de garde de l'équerre), 389 tests de construction et 47 tests d'écran verts.
+- **Revue Opus** (2026-11-03) : 3 findings, tous traités (parallèle à la 6e → exception 3 ; compas sur
+  un cercle → traits droits seulement ; en-tête du test). Simulations de bout en bout (symétriques,
+  milieu, médiatrice, parallélogramme) toutes justes.
+
+## 16. Phase 0 — lot 5 : angle de mesure donnée, au rapporteur (validée le 2026-11-03)
+
+BO 6e « Mesurer un angle » (6-169), « Construire un angle de mesure donnée » (6-170) ; outil n° 4 de
+[outils-manquants.md](outils-manquants.md). Le CM2 n'utilise pas le rapporteur (BO CM2 grandeurs) : 6e
+d'abord. Existant : le dessin du rapporteur (`constructions-v2/instruments/components/Protractor.svelte`,
+deux échelles, rayon `PROTRACTOR_RADIUS`) et sa chorégraphie (`bissectrice @mesure`) ; aucun geste élève.
+
+### Écriture par le prof
+
+```figure-a-completer
+fenetre: 0 ; 10 ; 0 ; 8
+verifier: angle AOy = 50
+---
+O = point(2, 2)
+A = point(8, 3)
+x = demi_droite(O, A)
+```
+
+Nouvelle vérification `angle AOy = <mesure>` : O = le sommet, A = un point du côté donné (deux points de la
+figure), y = le nom du côté à tracer (lettre libre, pour les messages : « [Oy) ») ; mesure en degrés,
+entière, de 1 à 179 (`{{a}}` d'une variable du modèle, comme le reste du bloc). Papier uni seulement.
+Palette déduite : Rapporteur · Segment.
+
+### Le geste neuf : rapporteur
+
+- **Poser** : 1er toucher = le centre (aimanté comme le compas), 2e toucher = un point du côté, ou
+  n'importe où sur un trait droit qui part du centre → le rapporteur apparaît, sa base le long de ce
+  côté, le 0 sur lui, le corps du côté trigonométrique. Un bouton **Retourner** le passe de l'autre côté.
+- **Viser** : toucher près du bord → un **repère** (petit trait, comme au crayon) à la graduation entière
+  la plus proche. Deux boutons ‹ 1° › le décalent d'un degré (1° au bord du rapporteur ≈ 3 px : trop fin
+  pour un doigt). Le repère se lit sur l'une ou l'autre échelle : rien ne dit « 50 » à l'élève.
+- **Tracer** : le Segment, du centre au repère (le repère est un point aimanté). Le rapporteur reste posé
+  jusqu'au changement d'outil ; « Effacer » = le dernier repère, puis le rapporteur.
+- **Clavier** : centre et côté parmi les boutons de points ; puis flèches = ±1°, Maj+flèches = ±10°,
+  Entrée pose le repère.
+- **Réponse** : `repere(vx;vy;ax;ay;deg;sens)` (centre, point de la base, graduation 0..180, côté ±1),
+  Zod ; c'est un point construit si le centre et le point de la base le sont (§ 15).
+
+### Comportements
+
+- **Nominal** : rapporteur centré en O, base sur [OA), repère à 50 sur la bonne échelle, segment de O au
+  repère → juste.
+- **Limites** (juste) : le côté [Oy) d'un côté ou de l'autre de (OA) ; traits et repères en trop ignorés ;
+  un côté construit autrement à la mesure exacte (60° d'un triangle équilatéral au compas).
+- **Erreurs** (faux, première cause) : aucun segment partant de O → « Trace le côté [Oy) de l'angle,
+  depuis le sommet O. » ; segment dont le bout n'est ni un repère ni un point construit → « Ton côté est
+  tracé à l'œil : place un repère avec le rapporteur. » ; angle de 180 − 50 → « Ton angle mesure 130° au
+  lieu de 50° : tu as lu la mauvaise graduation du rapporteur. » ; autre mesure → « Ton angle mesure 45°
+  au lieu de 50°. »
+- **Erreurs d'auteur** : mesure non entière ou hors 1..179 ; O ou A invisible ou confondus ; quadrillage
+  (refusé) ; aucun des deux côtés possibles n'a la place d'un segment d'au moins 2 unités dans la fenêtre.
+- **Correction** : [Oy) en pointillés, l'arc de l'angle codé « 50° ».
+
+### Questions à David
+
+1. **Côté tracé** au **Segment** (recommandé : rien de neuf, le juge lit la direction O → l'autre bout) ;
+   ou un outil **Demi-droite** neuf (fidèle à la notation [Oy)) ?
+2. **Viser le degré** : toucher, puis boutons ‹ 1° › (recommandé) ; ou glisser le doigt le long du bord
+   avec une loupe ?
+3. **Côté du rapporteur** : bouton **Retourner** (recommandé) ; ou le corps se pose du côté où l'élève
+   touche ensuite ?
+4. **Message « mauvaise graduation »** pour 180 − a : le garder (recommandé : c'est l'erreur type) ?
+5. **Mesurer un angle (6-169)** : lot suivant, avec le même geste et une réponse en degrés (recommandé) ;
+   ou dans ce lot ? Le triangle donné par un côté et deux angles (5e) viendrait après.
+
+### Décisions de David (2026-11-03, « je suis tes recos »)
+
+1. Côté tracé au **Segment** (pas d'outil Demi-droite).
+2. Viser : toucher le bord, puis boutons **‹ 1° ›** (flèches au clavier).
+3. Bouton **Retourner** pour passer le rapporteur de l'autre côté.
+4. Message « mauvaise graduation » pour 180 − a **gardé**.
+5. Mesurer un angle (6-169) au **lot suivant**, même geste ; triangle par un côté et deux angles après.

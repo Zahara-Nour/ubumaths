@@ -57,7 +57,7 @@
 			"correction": {
 				"steps": [
 					"$C$ glisse comme $A$ glisse vers $B$ : $(CD)$ est parallèle à $(AB)$, et $CD = AB$.",
-					"Si $D$ est l'image de $C$ par la translation qui transforme $A$ en $B$, alors $ABDC$ est \\textcolor{{{color:primary.0}}}{\\text{un parallélogramme}} (attention à l'ordre des lettres : $A$, $B$, puis $D$, $C$)."
+					"Si $D$ est l'image de $C$ par la translation qui transforme $A$ en $B$, alors $ABDC$ est $\\textcolor{{{color:primary.0}}}{\\text{un parallélogramme}}$ (attention à l'ordre des lettres : $A$, $B$, puis $D$, $C$)."
 				]
 			}
 		},
@@ -113,7 +113,7 @@
 			"correction": {
 				"steps": [
 					"$ABDC$ est un parallélogramme : {{if:q==0|$C$ glisse vers $D$ comme $A$ glisse vers $B$|}}{{if:q==1|$A$ glisse vers $B$ comme $C$ glisse vers $D$|}} (côtés opposés $[AB]$ et $[CD]$ parallèles et de même longueur).",
-					"L'image est \\textcolor{{{color:primary.0}}}{\\text{le point }{{if:q==0|D|}}{{if:q==1|B|}}}."
+					"L'image est $\\textcolor{{{color:primary.0}}}{\\text{le point }{{if:q==0|D|}}{{if:q==1|B|}}}$."
 				]
 			}
 		},
@@ -133,7 +133,7 @@
 			"correction": {
 				"steps": [
 					"La flèche mesure {{eval:3*k}} carreaux vers la droite : la figure 1 glisse de {{eval:3*k}} carreaux.",
-					"Son image est \\textcolor{{{color:primary.0}}}{\\text{la figure }{{eval:1 + k}}}."
+					"Son image est $\\textcolor{{{color:primary.0}}}{\\text{la figure }{{eval:1 + k}}}$."
 				]
 			}
 		}

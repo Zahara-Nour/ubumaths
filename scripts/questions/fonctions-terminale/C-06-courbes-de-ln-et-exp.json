@@ -21,7 +21,7 @@
 				"steps": [
 					"La courbe de $\\ln$ passe par le point $(1\\,;0)$ ($\\ln 1=0$) et par $(e\\,;1)$.",
 					"Elle n'existe que pour $x>0$, monte (fonction croissante) et a l'axe des ordonnées pour asymptote : $\\displaystyle\\lim_{x\\to0}\\ln x=-\\infty$.",
-					"C'est la courbe \\textcolor{{{color:primary.0}}}{\\text{croissante passant par }(1\\,;0)}."
+					"C'est la courbe $\\textcolor{{{color:primary.0}}}{\\text{croissante passant par }(1\\,;0)}$."
 				]
 			},
 			"blanks": [
@@ -41,7 +41,7 @@
 			"correction": {
 				"steps": [
 					"$\\ln$ est la fonction réciproque de $\\exp$ : le point $(a\\,;b)$ est sur la courbe de $\\exp$ si et seulement si $(b\\,;a)$ est sur celle de $\\ln$.",
-					"Échanger abscisse et ordonnée, c'est la \\textcolor{{{color:primary.0}}}{\\text{symétrie par rapport à la droite d'équation }y=x}."
+					"Échanger abscisse et ordonnée, c'est la $\\textcolor{{{color:primary.0}}}{\\text{symétrie par rapport à la droite d'équation }y=x}$."
 				]
 			},
 			"blanks": [

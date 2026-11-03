@@ -29,7 +29,7 @@
 			"correction": {
 				"steps": [
 					"Dans un triangle rectangle, le centre du cercle circonscrit est le **milieu de l'hypoténuse**.",
-					"L'hypoténuse est le côté opposé à l'angle droit, $[{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}]$ : le centre est \\textcolor{{{color:primary.0}}}{\\text{le milieu de }[{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}]}."
+					"L'hypoténuse est le côté opposé à l'angle droit, $[{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}]$ : le centre est $\\textcolor{{{color:primary.0}}}{\\text{le milieu de }[{{if:s==0|B|}}{{if:s==1|S|}}{{if:s==2|F|}}{{if:s==0|C|}}{{if:s==1|T|}}{{if:s==2|G|}}]}$."
 				]
 			}
 		},

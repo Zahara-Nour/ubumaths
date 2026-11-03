@@ -38,7 +38,7 @@
 			"correction": {
 				"steps": [
 					"La section d'un pavé droit par un plan parallèle à une face est un **rectangle** de mêmes dimensions que cette face.",
-					"La face $EFGH$ mesure $EF = AB = {{l}}~\\unit{cm}$ sur $FG = BC = {{p}}~\\unit{cm}$ : la section est \\textcolor{{{color:primary.0}}}{\\text{un rectangle de {{l}} cm sur {{p}} cm}}."
+					"La face $EFGH$ mesure $EF = AB = {{l}}~\\unit{cm}$ sur $FG = BC = {{p}}~\\unit{cm}$ : la section est $\\textcolor{{{color:primary.0}}}{\\text{un rectangle de {{l}} cm sur {{p}} cm}}$."
 				]
 			}
 		},
@@ -66,7 +66,7 @@
 			],
 			"correction": {
 				"steps": [
-					"La section d'un cylindre de révolution par un plan **perpendiculaire à son axe** est un disque de même rayon que la base : \\textcolor{{{color:primary.0}}}{\\text{un disque de rayon {{r}} cm}}.",
+					"La section d'un cylindre de révolution par un plan **perpendiculaire à son axe** est un disque de même rayon que la base : $\\textcolor{{{color:primary.0}}}{\\text{un disque de rayon {{r}} cm}}$.",
 					"Sur le dessin en perspective, ce disque est **vu** comme une ellipse, mais c'est bien un disque."
 				]
 			}
@@ -96,7 +96,7 @@
 			"correction": {
 				"steps": [
 					"La section d'un cylindre de révolution par un plan **parallèle à son axe** est un rectangle.",
-					"Deux de ses côtés sont des génératrices du cylindre : ils mesurent la hauteur. C'est \\textcolor{{{color:primary.0}}}{\\text{un rectangle dont un côté mesure {{h}} cm}}."
+					"Deux de ses côtés sont des génératrices du cylindre : ils mesurent la hauteur. C'est $\\textcolor{{{color:primary.0}}}{\\text{un rectangle dont un côté mesure {{h}} cm}}$."
 				]
 			}
 		},
