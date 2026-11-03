@@ -30,7 +30,7 @@
  *   pnpm tsx scripts/update-published-questions.ts --lot <lot>            (simulation, diff)
  *   pnpm tsx scripts/update-published-questions.ts --lot <lot> --publier  (écrit)
  *   lots : second-degre, suites, derivation, textcolor-2de, niveaux-2de-probabilites,
- *          textcolor-hors-2de, tracer-droites-2de, tableau-signes-2de
+ *          textcolor-hors-2de, tracer-droites-2de, tableau-signes-2de, valeur-absolue-droite-2de
  *   … --seulement <id8>[,<id8>]   restreint aux cibles dont l'id commence ainsi
  *   … --sans-diff                 simulation sans le diff (preuves rouges seulement)
  */
@@ -189,6 +189,10 @@ const TABLEAU_SIGNES_2DE: readonly string[] = [
 	'9c7ab1c7-d3f3-4c78-96f4-c14e5a657574' // signes-b › Tableau de signes d'un quotient
 ];
 
+const VALEUR_ABSOLUE_DROITE_2DE: readonly string[] = [
+	'80a87e34-251c-481a-a086-7b7add231cc9' // intervalles-b › Résoudre |x| < k (droite graduée au corrigé)
+];
+
 const LOTS: Record<string, Lot> = {
 	'second-degre': { dossier: 'scripts/questions/second-degre-existants', cibles: SECOND_DEGRE },
 	suites: { dossier: 'scripts/questions/suites-existants', cibles: SUITES },
@@ -209,6 +213,10 @@ const LOTS: Record<string, Lot> = {
 	'tableau-signes-2de': {
 		dossier: 'scripts/questions/2de-tableau-signes-existants',
 		cibles: TABLEAU_SIGNES_2DE
+	},
+	'valeur-absolue-droite-2de': {
+		dossier: 'scripts/questions/2de-valeur-absolue-droite-existants',
+		cibles: VALEUR_ABSOLUE_DROITE_2DE
 	}
 };
 
