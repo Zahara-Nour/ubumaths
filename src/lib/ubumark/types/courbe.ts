@@ -185,6 +185,21 @@ export interface CourbeTarget {
 }
 
 /**
+ * Vecteur à tracer par l'élève (`tracer: vecteur u = (3 ; -2) depuis A`, une
+ * question) : ses coordonnées (multiples du pas de la grille, vecteur non nul),
+ * `null` dans l'énoncé masqué d'une évaluation notée ; nom facultatif (une
+ * minuscule, '' sans nom) ; origine imposée `from` (un point de `points:`), dont
+ * `origin` donne les coordonnées. Jamais dessiné avant la correction.
+ */
+export interface CourbeVectorToTrace {
+	name: string;
+	coords: { x: number; y: number } | null;
+	from?: string;
+	origin?: { x: number; y: number };
+	line: number;
+}
+
+/**
  * Droite à tracer par l'élève (`tracer: y = 2x - 1`, une question) : l'équation
  * telle qu'écrite (normalisée), passant par au moins deux nœuds de la grille dans
  * la fenêtre (vérifié à l'analyse) ; `?` dans l'énoncé masqué d'une évaluation
@@ -226,6 +241,11 @@ export interface CourbeSpec {
 	 * jamais dessinée ni écrite dans le DOM avant la correction
 	 */
 	tracer?: CourbeLineToTrace;
+	/**
+	 * Vecteur à tracer (`tracer: vecteur …`, jamais avec `placer:`) : la RÉPONSE
+	 * attendue, jamais dessinée ni écrite dans le DOM avant la correction
+	 */
+	vecteur?: CourbeVectorToTrace;
 	/** Titres des axes (`axes:`) ; absent sans la clé */
 	axisTitles?: CourbeAxisTitles;
 }
