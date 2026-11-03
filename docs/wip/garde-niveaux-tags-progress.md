@@ -7,12 +7,15 @@ si l'oubli revient.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, avant la PR._
+_Mis à jour le 2026-11-03 ; #2284 ouverte._
 
-- **État** : `scripts/lib/niveaux-des-tags.ts` (fonctions pures + lecture paginée), `scripts/questions/garde-niveaux-tags.ts`
-  (toute la base, code 1 si écart), alerte dans `publier-lot.ts`, 8 tests unitaires, doc `couvrir-un-niveau.md` § 8 ·
-  **Prochaine action** : PR, CI, merge · **En attente de David** : rien · **Pièges en
-  cours** : aucun ; exceptions `EXCEPTIONS_NIVEAUX` (§ 2) · **Worktree / branche** : `../ubumaths-wt-garde-niveaux-tags`, `feat/garde-niveaux-tags`.
+- **État** : #2284 OUVERTE (garde + `EXCEPTIONS_NIVEAUX` pour les 5 brouillons de seconde, 11 tests verts) ; CI du
+  dernier commit `3ba91ce26` en cours au `/clear`, avec **Client Tests (browser, shard 1/2) en échec** (le diff ne
+  touche que `scripts/` et la doc : à lire avant de conclure) · **Prochaine action** : lire le job en échec
+  (`gh run view <run> --log-failed`) ; sans lien → relancer (`gh run rerun <run> --failed`), CI verte → merger ;
+  après le `db:migrate` de #2285, la garde doit sortir en code 0 (5 écarts voulus) · **En attente de David** : rien ·
+  **Pièges en cours** : les scripts ne sont pas dans le périmètre du typecheck · **Worktree / branche** :
+  `../ubumaths-wt-garde-niveaux-tags`, `feat/garde-niveaux-tags`.
 
 ## 1. Premier passage en prod (2026-11-03, avant le `db:migrate` de #2280)
 
