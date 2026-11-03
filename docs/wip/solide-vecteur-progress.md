@@ -102,3 +102,14 @@ revue `code-reviewer` en `model: opus` sur chaque PR (correction des réponses).
 ## Lot 2 — geste `tracer: vecteur` (2026-11-03)
 
 - Worktree créé ; logique confiée à pedagogy-expert (Opus), écran à frontend-developer (Sonnet).
+- PR #2339 ouverte : logique (pedagogy-expert), écran (frontend-developer). Rendu vu dans Chrome : disque
+  d'origine géant (pas de `stroke-width` → 1 cm de contour) et pointe cachée par le disque d'extrémité, corrigés
+  avec test vu rouge. Exemple `AB + AD - 1/2 AE depuis A` refusé sur un cube (hors du cube) → catalogue en
+  `+ 1/2 AE` avec `points: I milieu CG`.
+
+**D-SV2 (David, 2026-11-03, choix hors spec du lot 2)** : « Il faut placer l'extrémité. » (origine imposée,
+rien posé) et « Ta flèche ne part pas de l'origine imposée. » (garde-fou) gardés ; flèche juste du PDF corrigé
+en **noir** (comme le ` ```courbe `) ; refus du coefficient nul et de plus de 6 vecteurs gardés. **Changent**
+(PR de suite, après #2339) : coefficients **fractions simples, dénominateur ≤ 4** (tiers : `G centre BCD`) ;
+**vecteurs nommés de `vecteurs:` admis dans `tracer:`** (`tracer: vecteur 2 u - v`, TSPE-334 « vecteurs
+donnés »).
