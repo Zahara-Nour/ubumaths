@@ -179,7 +179,7 @@ Lecture d'un terme : le survol montre la **valeur exacte** (`exact.ts`, plafonds
 
 Le moteur de suites sert aussi le bloc ubumark ` ```courbe ` (`src/lib/ubumark/parser/courbe-parser.ts`,
 `src/lib/ubumark/utils/courbe-scene.ts`) : le modifier, c'est modifier ce bloc. Ce bloc a aussi son
-geste « placer des points », son geste « tracer une droite » (`tracer:`) et ses titres d'axes, décrits dans [ubumark](ubumark.md) (Repère à placer) :
+geste « placer des points », son geste « tracer une droite » (`tracer:`), son geste « tracer un vecteur » (`tracer: vecteur`) et ses titres d'axes, décrits dans [ubumark](ubumark.md) (Repère à placer) :
 le pas de grille automatique (`courbeGridSteps`) y est partagé par la scène, le parseur et l'écran.
 En évaluation notée, `placer: A=? ; B=?` (coordonnées masquées) se lit aussi : point de remplacement,
 ni nœud ni fenêtre vérifiés ([ubumark](ubumark.md), invariant 12).
