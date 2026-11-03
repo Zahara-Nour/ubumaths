@@ -10,16 +10,18 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR 2 (geste `representer:`) ouverte._
+_Mis à jour le 2026-11-03, après #2309 (PR 2 mergée)._
 
-- **État** : PR 1 (affichage) mergée, #2294. PR 2 (geste de l'élève, `representer:`) codée, tests verts,
-  PR ouverte (n° dans « PR 2 » plus bas) ; relecture `code-reviewer` (Opus, correction des réponses) à faire.
-- **Prochaine action** : relecture, CI verte, merge ; puis noter la vérification à l'œil (geste au doigt sur
-  téléphone) dans `verifications-manuelles.md` et proposer à David un 1er modèle (3-014, 2-251).
-- **En attente de David** : rien.
-- **Pièges en cours** : Entrée avec une réponse incomplète (`2 comprise, côté ?`) valide la question (la
-  case n'est pas vide) ; un segment monté d'un étage peut frôler un point nommé, non traité.
-- **Worktree / branche** : `../ubumaths-wt-demi-droite`, `feat/demi-droite-geste`.
+- **État** : PR 1 (affichage, #2294) et PR 2 (geste `representer:`, #2309) mergées. Pas en prod
+  (`deploy:prod` sur demande de David). Vérifications à l'œil notées dans `verifications-manuelles.md`.
+- **Prochaine action** : à proposer à David : un 1er modèle avec `representer:` (3-014, 2-251, corrigés de
+  |x| < k de la 2de), ou clore le chantier (versement de ce journal dans `docs/systeme/`, déjà décrit
+  dans `ubumark.md` et `questions.md`).
+- **En attente de David** : le choix ci-dessus.
+- **Pièges en cours** : Entrée avec une réponse incomplète (`2 comprise, côté ?`) valide la question ; un
+  segment monté d'un étage peut frôler un point nommé, non traité. CI : erreur non rattrapée
+  `wrapDynamicImport` (hooks SvelteKit, shard navigateur 1/2), hors tests, passée à la relance.
+- **Worktree / branche** : aucun (retiré après #2309).
 
 ---
 
@@ -148,3 +150,8 @@ _Mis à jour le 2026-11-03, PR 2 (geste `representer:`) ouverte._
   `NumberLineRepresenter.svelte.test.ts` (dont la question générée dans `FillBlanksInput`) ; vus rouges
   avant le code (module absent ; composant : 9/13 rouges sans le branchement de `NumberLine.svelte`).
 - Catalogue des blocs : réglage `representer` et exemple « Représenter les solutions d'une inéquation ».
+- Relecture `code-reviewer` (Opus) : aucun bloquant ; un important corrigé (intervalle borné : la borne
+  active suivie par son indice changeait de borne quand la case relue trie les bornes → suivie par sa
+  graduation) ; deux mineurs corrigés (côté grisé sans borne ; juge : crochet fermé sur l'infini refusé).
+  Tests ajoutés, vus rouges. Variable `state` renommée (`$state` lu comme un store au typecheck).
+- #2309 mergée le 2026-11-03 (CI : un job relancé, erreur d'outillage hors tests).
