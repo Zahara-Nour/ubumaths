@@ -23,7 +23,7 @@ describe('.diff (moteur)', () => {
 
 	it('x*e^x', () => {
 		expect(diff('x*e^x')).toBe(
-			'd/dx(x*e^x) = e^x+xe^x\nLaTeX: \\exponentialE^x + x \\exponentialE^x'
+			'd/dx(x*e^x) = (x+1)e^x\nLaTeX: \\left( x + 1 \\right) \\exponentialE^x'
 		);
 	});
 
