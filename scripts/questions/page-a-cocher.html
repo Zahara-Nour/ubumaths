@@ -489,9 +489,14 @@
 	}
 
 	/* Bloc variation : tableau de VariationTable.svelte (signes en couleur du texte) */
+	/* Bloc de type block : seul le tableau défile sur un écran étroit, pas la page */
 	.vt {
 		border-collapse: collapse;
 		margin: 0.5rem auto;
+		display: block;
+		width: fit-content;
+		max-width: 100%;
+		overflow-x: auto;
 	}
 	.vt th,
 	.vt td {
