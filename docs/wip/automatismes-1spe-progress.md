@@ -11,8 +11,8 @@ _Mis à jour le 2026-11-03, après #2337._
 - **État** : lot « Droites » fait — #2333 (droite à tracer figée, modèle `f5585668` en **brouillon**,
   script) ; fiche « Automatismes : droites (1) » `0f98be04` écrite en **brouillon**, PDF vérifiés
   (0 débord) ; #2337 : gras mathématique ajouté à Chiphre Math (réponses du corrigé PDF lisibles, fiche
-  « évolutions » comprise) ; `fiches-exercices.md` § 1 complété (fiche droites) · **Prochaine action** :
-  phase 0 du lot « Lectures graphiques » (§ Suite) · **En attente de David** : publier `f5585668`
+  « évolutions » comprise) ; `fiches-exercices.md` § 1 complété (fiche droites) ; phase 0 du lot « Lectures graphiques » écrite · **Prochaine action** : selon les réponses de
+  David, modèles neufs puis fiche « Automatismes : lectures graphiques (1) » · **En attente de David** : 3 choix de la phase 0 « Lectures graphiques » ; publier `f5585668`
   et les fiches `9217dfaa`, `0f98be04` ; garder ou non les 2 figures d'un corrigé de tracé ; questions
   2 à 4 (§ Questions ouvertes) · **Pièges en cours** : `compile-prod.mjs --polices-corrige` pour un
   corrigé ; polices `/fonts/` en cache 30 j → changer le `?v=` de `CORRECTION_FONT_FILES` à chaque
@@ -87,6 +87,27 @@ droite verte au corrigé.
 Typst) s'affichent en **carrés vides** : la police du corrigé (Chiphre Math) n'a pas les chiffres gras
 mathématiques. Touche aussi la fiche « évolutions » `9217dfaa` (vérifié), donc toute série figée.
 L'écran (KaTeX) n'est pas touché. Corrigé par #2337 (gras ajouté à la police, choix de David).
+
+## Lot « Lectures graphiques » — phase 0 (2026-11-03)
+
+Capacités (BO 1re, Automatismes, « Fonctions et représentations ») : résoudre graphiquement
+$f(x) = k$, $f(x) < k$ ; déterminer graphiquement le signe d'une fonction ou son tableau de
+variations. Entretien de 2de : images et antécédents. Relevé en prod (modèles à ` ```courbe ` ou
+` ```variation `), séries essayées par `buildSerie` (lecture seule, graines 1-3) : **les 29 candidats
+passent** (✅ ci-dessous).
+
+| Capacité                               | Modèles (courbe quelconque d'abord)                                                                                                                                            | Manque                                               |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------- |
+| Images (2de)                           | `cc88ebd3`                                                                                                                                                                     | —                                                    |
+| $f(x) = k$ / antécédents               | `17809937` (courbe quelconque) ; `406fd9a8` ($f = g$) ; références : `9c4f6b4f` x², `98892db9` x³, `60207cfd` 1/x, `1ac09759` √x, `b807cc6c` \|x\| ; `eb04ebf7` (linéaire, 3e) | —                                                    |
+| $f(x) < k$                             | `a55ad3b4` (affine), `77500c81` (linéaire), `7efd2e76` ($f < g$), `33dffa7a` v2 ($f \geqslant 0$) ; références : `08c059b8`, `52e58bd6`, `2d4c0b35`, `a371b402`, `cbf00ce7`    | **$f(x) < k$ sur une courbe quelconque, $k \neq 0$** |
+| Signe lu sur la courbe                 | `33dffa7a` (signe sur un intervalle en choix, $f \geqslant 0$, tableau de signes **en choix**)                                                                                 | tableau de signes **à compléter** (outil existant)   |
+| Tableau de variations lu sur la courbe | indirects seulement : `3810a06c` (tableau → quelle courbe ?), `93bc8b5e` (croissante sur un intervalle ?), `39154ac5` (extremums), `275cb665` (comparer des images)            | **courbe → tableau de variations** : aucun modèle    |
+
+Aucun modèle ne fait compléter un tableau à partir d'une courbe (seuls `f0163416`, `9c7ab1c7`, de 2de,
+sans courbe, ont des cellules cachées). Le parseur **refuse `?` dans une ligne `variation:`**
+(`docs/systeme/ubumark.md`, « Cellules cachées ») : un tableau de variations à compléter est un geste
+neuf ; un tableau de signes à compléter se fait déjà (`buildSerie` le fige, lot `tableau-signes`).
 
 ## Questions ouvertes (à poser à David)
 
