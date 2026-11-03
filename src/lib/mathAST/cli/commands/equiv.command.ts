@@ -13,6 +13,7 @@ import { readCommandArguments } from '../core/variable-argument';
 import type { CommandContext, CommandResult } from '../types';
 import { normalize, hashNormalForm, normalFormsEquivalent } from '../../normal';
 import { parse } from '../core/pipeline';
+import { remarkableValuesInTrigonometry } from '../core/angle-radians';
 
 // =============================================================================
 // Equiv Command
@@ -255,9 +256,10 @@ export class EquivCommand extends BaseCommand {
 		expr2: import('../../types').MathNode
 	): CommandResult {
 		try {
-			// Normalize both expressions
-			const form1 = normalize(expr1);
-			const form2 = normalize(expr2);
+			// Normalize both expressions — la valeur remarquable d'un angle mesuré d'abord :
+			// `.equiv cos(60°) 1/2` répondait faux (revue de la PR 3 du lot 2)
+			const form1 = normalize(remarkableValuesInTrigonometry(expr1));
+			const form2 = normalize(remarkableValuesInTrigonometry(expr2));
 
 			// Check equivalence
 			const isEquivalent = normalFormsEquivalent(form1, form2);

@@ -79,6 +79,22 @@ describe('Les commandes et les degrés', () => {
 		expect(run('.latex cos(60°)').output).toContain('°');
 	});
 
+	it('`.simplify` descend dans un sin, cos, tan imbriqué', () => {
+		expect(run('.simplify sin(cos(60°))').answer).toBe('\\sin\\left( \\dfrac{1}{2} \\right)');
+	});
+
+	it('une égalité tapée seule lit la valeur remarquable', () => {
+		expect(run('cos(60°)=1/2').output).toBe('true');
+	});
+
+	it('`.equiv` lit la valeur remarquable', () => {
+		expect(run('.equiv cos(60°) === 1/2').output).toContain('true');
+	});
+
+	it('`.help pi` n’est pas un calcul', () => {
+		expect(run('.help pi').error?.message).not.toBe(PI_IN_LETTERS_MESSAGE);
+	});
+
 	it('`.convert °` : le ° est l’unité cible, pas un angle', () => {
 		expect(run('1[rad]', '.convert °').success).toBe(true);
 	});

@@ -228,9 +228,10 @@ function decimalFields(digits: ApproximateDigits | null): {
 
 /**
  * Les commandes qui ne lisent pas une expression : des valeurs (`.stats 1 ; 2`, `.linreg`) ou
- * une unité cible (`.convert °` — le `°` y est l'unité, pas un angle à porter).
+ * une unité cible (`.convert °` — le `°` y est l'unité, pas un angle à porter), ou un nom de
+ * commande (`.help`).
  */
-const NOT_AN_EXPRESSION = /^\.(?:stats|linreg|convert)(?:\s|$)/i;
+const NOT_AN_EXPRESSION = /^\.(?:stats|linreg|convert|help)(?:\s|$)/i;
 
 /** Les commandes d'écriture : elles montrent l'expression telle que tapée, sans la calculer. */
 const WRITING_COMMANDS: ReadonlySet<string> = new Set([
@@ -717,12 +718,15 @@ export class WebReplEngine {
 			return this.executeExpression(input);
 		}
 
+		// La valeur remarquable d'un angle mesuré, comme une commande : sans elle,
+		// `cos(60°) = 1/2` répondait faux (revue de la PR 3 du lot 2)
+		const left = remarkableValuesInTrigonometry(result1.ast);
+		const right = remarkableValuesInTrigonometry(result2.ast);
+
 		// Substitute bound variables before comparison
 		const bindings = bindingsToRecord(this.evalState.bindings);
-		let substituted1 =
-			Object.keys(bindings).length > 0 ? substitute(result1.ast, bindings) : result1.ast;
-		let substituted2 =
-			Object.keys(bindings).length > 0 ? substitute(result2.ast, bindings) : result2.ast;
+		let substituted1 = Object.keys(bindings).length > 0 ? substitute(left, bindings) : left;
+		let substituted2 = Object.keys(bindings).length > 0 ? substitute(right, bindings) : right;
 
 		// Le plafond de calcul, membre par membre (`boundedComparison`) :
 		// `2^{30000000}/2^{29999999} = 2` prenait 3,5 s, et

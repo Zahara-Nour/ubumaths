@@ -84,9 +84,11 @@ export function remarkableValuesInTrigonometry(ast: MathNode): MathNode {
 			if (!TRIGONOMETRIC.has(node.name)) return undefined;
 			const result = withRadiansInTrigonometry(node);
 			if (!result.changed) return undefined;
-			// Encore un sin, cos, tan : pas de valeur exacte, l'angle reste écrit
+			// Encore un sin, cos, tan : pas de valeur exacte pour celui-ci, l'angle reste
+			// écrit ; on descend dans ses arguments, où un sin, cos, tan imbriqué peut en
+			// avoir une (`sin(cos(60°))` → `sin(1/2)`, revue de la PR 3)
 			const remaining = findNodes(result.ast, isTrigonometric);
-			return remaining.length > 0 ? { node, skip: true } : { node: result.ast, skip: true };
+			return remaining.length > 0 ? undefined : { node: result.ast, skip: true };
 		}
 	});
 }

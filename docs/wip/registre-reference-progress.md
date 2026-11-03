@@ -517,3 +517,12 @@ rendait `cos(π/9)`). L'Atelier lit toujours avant d'appeler le moteur : relectu
 `geometry-core` (29 939) et composants de l'Atelier (651) vertes. Non fait : `.diff sin(x°)`
 (échoue toujours, hors corpus), les commandes qui relisent `ctx.input` (`.solve`, `.eval`…) ne
 reçoivent pas les radians — pas d'écart du corpus.
+
+**Revue de la PR 3 (`code-reviewer`, Sonnet)** : un bloquant corrigé — `cos(60°)=1/2` et
+`.equiv cos(60°) === 1/2` répondaient faux sans erreur (lus en degrés, jamais réduits) :
+`remarkableValuesInTrigonometry` aussi dans `executeEquality` et `compareExpressions` de
+`equiv.command.ts`. Corrigés aussi : un sin, cos, tan imbriqué (`sin(cos(60°))` → `sin(1/2)`, le
+transformateur descend quand l'externe n'a pas de valeur), `.help pi` n'est plus refusé. Preuve
+rouge : 4/16 tests. **Limite notée, non corrigée** : les commandes qui relisent `ctx.input`
+(`.diff cos(60°)*x` → `cos(60[°])`, `.integrate`, `.taylor`) ne reçoivent pas la valeur
+remarquable — aucune ligne du corpus ; à reprendre avec la descente des commandes (Q1).
