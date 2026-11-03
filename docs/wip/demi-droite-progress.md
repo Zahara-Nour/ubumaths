@@ -1,0 +1,105 @@
+---
+status: en-cours
+---
+
+# Chantier `demi-droite` — demi-droite et intervalle à crochets sur ` ```line `
+
+> Outil n° 7 de [outils-manquants.md](outils-manquants.md). Points servis : 3-014 et 3-057 (solutions
+> d'une inéquation ax ⩾ b « représentées sur la droite graduée avec un crochet »), 2-251 (représenter un
+> intervalle, borné ou non). Ouvert le 2026-11-03.
+
+## Reprendre ici
+
+_Mis à jour le 2026-11-03, à l'ouverture._
+
+- **État** : phase 0 écrite, **pas encore validée**.
+- **Prochaine action** : réponses de David aux questions Q1 à Q4, puis les tests rouges de la PR 1.
+- **En attente de David** : Q1 à Q4 (§ Phase 0).
+- **Pièges en cours** : aucun.
+- **Worktree / branche** : aucun. À créer après la validation :
+  `git worktree add -b feat/demi-droite ../ubumaths-wt-demi-droite origin/main`.
+
+---
+
+## Existant (relevé du 2026-11-03)
+
+- ` ```line ` sait tracer `segments: [-1, 3] vert, ]3, 5[ orange` : deux bornes **finies**, toutes deux
+  dans la fenêtre (`number-line-parser.ts`, `parseSegments` ; erreur « extends outside bounds »).
+  Les extrémités sont des **disques** (plein = fermé, vide = ouvert), pas des crochets : `NumberLine.svelte`
+  (`nl-endpoint`), PDF `number-line-typst.ts` (`generateSegments`).
+- Pas de borne infinie, donc pas de demi-droite.
+- Geste existant à imiter : droite à placer (`placer:`, `NumberLinePlacer.svelte`, `utils/number-line-placer.ts`,
+  `case: N` posée par le générateur).
+- Case de réponse `answerKind: 'intervalles'` (S = ?, `[a ; b[`, ∅, ℝ, réunion) : déjà en prod, sert de juge
+  possible.
+- Ce que disent les textes : « Il représente l'ensemble des solutions sur la droite graduée avec un crochet. La
+  notation des intervalles (avec les crochets) peut être introduite mais n'est pas un enjeu d'apprentissage. »
+  (Exemples cycle 4, 2026, p. 21) ; 2-251 : « Intervalle de la droite numérique, borné ou non » (BO 2de p. 7).
+- Contournements actuels : 2-251 en case choix entre droites à `segments:` ; 2de lot 6 B, corrigé de |x| < k
+  dessiné sur une ` ```courbe ` faute d'intervalle sur ` ```line `.
+
+## Phase 0 — comportements (à valider)
+
+### Affichage (énoncé, corrigé, PDF)
+
+**Nominal**
+
+1. L'auteur écrit une borne infinie avec `-inf` / `+inf` dans `segments:` : `segments: [2, +inf[ vert`.
+   La droite montre un crochet en 2, ouvert vers la droite (« [ » tourné vers les solutions), et un trait
+   épais coloré de 2 jusqu'au bout de la flèche.
+2. `]-inf, 3]` : trait du début de la droite jusqu'à 3, crochet « ] » fermé en 3.
+3. Intervalle borné `[-1, 3[` : crochet à chaque bout, selon Q2.
+4. Même dessin à l'écran (téléphone 390 px compris) et dans le PDF.
+
+**Limites**
+
+5. Borne en fraction ou racine (`[2/3, +inf[`, `]-inf, sqrt(2)]`) : placée comme les points actuels,
+   crochet à la bonne abscisse, étiquette selon les graduations.
+6. Borne finie hors de la fenêtre : erreur de l'auteur, comme aujourd'hui.
+7. `]-inf, +inf[` : toute la droite colorée, sans crochet.
+
+**Erreurs (auteur)**
+
+8. `[-inf, 2]` ou `[3, +inf]` (crochet fermé sur l'infini) : erreur claire « l'infini est toujours exclu ».
+9. `[+inf, 2[` (ordre inversé) : erreur « la borne de gauche doit être plus petite ».
+
+### Geste de l'élève (case de réponse)
+
+**Nominal**
+
+10. L'auteur écrit `representer: [2, +inf[` (nom à trancher) dans un ` ```line ` ; la droite s'affiche vide,
+    l'élève :
+    a. touche une graduation pour poser la borne (accrochée à la graduation la plus proche, comme `placer:`) ;
+    b. choisit le sens avec deux boutons « vers la gauche ← » / « vers la droite → » ;
+    c. choisit la borne « comprise » / « exclue » (bouton qui bascule le crochet).
+    La droite redessine à chaque étape ce qu'il a fait.
+11. 2-251 (borné) : `representer: [-1, 3[` → deux bornes posées, chacune comprise / exclue, pas de sens.
+12. Juste si borne(s), sens et crochets sont tous justes ; un seul juge, que la réponse soit tapée au doigt ou
+    à la souris.
+
+**Limites**
+
+13. L'élève a posé la borne mais pas choisi le sens : « Choisis de quel côté sont les solutions. »
+14. Borne entre deux graduations (2/3 sur une droite graduée en tiers) : la graduation existe, le geste l'atteint ;
+    l'auteur est averti si la borne n'est sur aucune graduation (comme `placer:`).
+
+**Erreurs (élève) — phrases après la réponse**
+
+15. Bon côté, borne juste, crochet faux : « Le nombre 2 est-il solution ? Le crochet dit le contraire. »
+16. Mauvais côté : « Les solutions sont de l'autre côté de 2. »
+17. Mauvaise borne : « La limite des solutions n'est pas là. »
+
+### Questions à David
+
+- **Q1 — Disques ou crochets pour les segments qui existent déjà ?** Aujourd'hui `[-1, 3]` se dessine avec
+  des disques pleins ou vides. Le texte de 3e demande « un crochet ». Reco : **crochets partout** (les
+  segments existants passent aux crochets, c'est la notation française du lycée) ; les modèles déjà publiés
+  qui ont des `segments:` changent d'aspect (relevé à faire avant, en base). Autre choix : crochets pour les
+  seules demi-droites, disques gardés ailleurs.
+- **Q2 — Deux PR ?** Reco : PR 1 = affichage (`-inf`/`+inf`, crochets, écran + PDF) ; PR 2 = geste de l'élève.
+  La PR 1 sert déjà aux corrigés (3-014, |x| < k de la 2de).
+- **Q3 — Le geste en trois temps (borne, sens, compris/exclu) te va-t-il ?** Autre choix : l'élève tape
+  deux fois sur la droite (borne puis un point du côté des solutions) et un seul bouton bascule le crochet.
+  Reco : les trois temps, chaque choix visible et rattrapable, plus simple au doigt.
+- **Q4 — Le nom de la clé du geste** : `representer:` (le verbe des textes), `colorier:`, autre ? Reco :
+  `representer:`.

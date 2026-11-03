@@ -220,3 +220,8 @@ Historique : [canal privé du chat](../archive/wip/realtime-chat-prive-progress.
 - Les canaux `match:<id>`, présence, notifications et succès restent publics : ils ne portent que
   des `postgres_changes`, filtrés par la RLS des tables.
 - Un canal privé déjà joint le reste jusqu'à la reconnexion ou au rafraîchissement du JWT (~1 h).
+  **Limite acceptée** (décision de David du 2026-11-03, écart T3) : aucun code ne sort un élève
+  d'un canal quand ses droits changent (retrait d'une conversation, fin d'un troc). Les policies de
+  `realtime.messages` ne sont relues qu'à la jonction et au rafraîchissement du jeton ; une
+  suspension de compte ne coupe pas, à elle seule, un canal déjà joint. Pour une exclusion
+  urgente, il faut que l'élève soit déconnecté.
