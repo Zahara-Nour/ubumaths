@@ -9,18 +9,19 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, réécriture de 2-330 et 2-446 en cours._
+_Mis à jour le 2026-11-03, après #2308._
 
-- **État** : branche `feat/tableau-signes-modeles` : 2-330 et 2-446 réécrits (tableau à compléter),
-  lot `tableau-signes-2de` d'`update-published-questions.ts` (+ `delay` écrit) ; specs 17/17 et 10/10.
-- **Prochaine action** : voir les deux modèles à l'écran (base locale), PR, page à cocher, simulation puis
-  `--publier` par David ; essais iPhone (#2287, #2297) ; puis verser le chantier.
-- **Tranché (David, 2026-11-03)** : réécriture = tout caché (17 cases), ligne de k gardée, 180 s ; marque
-  cachée au PDF = trait nu ; parseur `]a[, +inf` → ligne 12 de `outils-manquants.md`.
-- **En attente de David** : rien.
-- **Pièges en cours** : la bonne réponse vient de `blanks`, jamais du bloc (énoncé masqué) ; une case
-  hors `$…$` (`?` nu) n'est pas une case ; un worktree neuf veut `svelte-kit sync` avant `question:specs`.
-- **Worktree / branche** : `../ubumaths-wt-tableau-signes`, `feat/tableau-signes-modeles`.
+- **État** : 2-330 et 2-446 réécrits (tableau à compléter, 17 cases, 180 s), mergés (#2308) ; lot
+  `tableau-signes-2de` d'`update-published-questions.ts` prêt. **Pas encore écrit en prod.**
+- **Prochaine action** : David lance, depuis le dépôt principal, la simulation puis `--publier` :
+  `! pnpm tsx scripts/update-published-questions.ts --lot tableau-signes-2de` ; relire en prod (MCP) ; page à
+  cocher ; essais iPhone (#2287, #2297, et ces deux modèles) ; puis verser le chantier.
+- **En attente de David** : le `--publier` ; avis sur le défilement horizontal à 390 px (513 px de tableau
+  pour 308, cases de valeur 117 px) — reco : juger aux essais iPhone.
+- **Pièges en cours** : `delay` n'est plus une garde d'`update-published-questions.ts` (relancer un ancien
+  lot réécrit son temps) ; la bonne réponse vient de `blanks`, jamais du bloc ; Chrome n'atteint pas
+  `localhost` → Playwright sans fenêtre ; un worktree neuf veut `svelte-kit sync` avant `question:specs`.
+- **Worktree / branche** : aucun (retiré après #2308).
 
 ---
 
@@ -219,3 +220,4 @@ Branche `feat/tableau-signes-modeles`, worktree `../ubumaths-wt-tableau-signes`.
 - Vu à 390 px (Playwright, Chrome n'atteint pas `localhost`) : tableau juste, mais 513 px pour 308 de place
   → défilement horizontal, +∞ hors écran ; cases de valeur 117 px (MathLive + bouton clavier). → David
   (à juger aux essais iPhone).
+- **#2308 mergée** (CI verte), le 2026-11-03.
