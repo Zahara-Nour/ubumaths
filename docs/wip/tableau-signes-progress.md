@@ -13,12 +13,14 @@ _Mis à jour le 2026-11-03, après #2297 (PR 4 mergée)._
 
 - **État** : outil complet — PR 1 (#2267 ubumark), 2 (#2273 génération, juge, masquage), 3 (#2287 saisie),
   4 (#2297 corrigé, série PDF, page à cocher) mergées.
-- **Prochaine action** : réécrire les modèles 2-330 et 2-446 avec le tableau à compléter (Q6), puis
-  mettre à jour la ligne 8 de `outils-manquants.md` et verser le chantier (`docs/systeme/` à jour,
+- **Prochaine action** : réécrire les modèles 2-330 et 2-446 avec le tableau à compléter (Q6), page à
+  cocher pour David, publication ; puis verser le chantier (`docs/systeme/` à jour,
   journal archivé). Nouveau worktree `git worktree add -b feat/tableau-signes-modeles
 ../ubumaths-wt-tableau-signes origin/main`.
-- **En attente de David** : essais (lignes #2287 et #2297 de `verifications-manuelles.md`) ; repère « à
-  compléter » d'une marque cachée au PDF (reco : garder le trait nu ; sinon patcher vartable).
+- **Tranché (David, 2026-11-03, « je valide »)** : marque cachée au PDF = trait nu (vartable non patché) ;
+  essais iPhone (#2287, #2297) en une fois, APRÈS la réécriture de 330 et 446 ; parseur `]a[, +inf` →
+  ligne 12 de `outils-manquants.md`, non corrigé.
+- **En attente de David** : rien.
 - **Pièges en cours** : la bonne réponse vient de `blanks`, jamais du bloc (énoncé masqué) ; une case
   hors `$…$` (`?` nu) n'est pas une case ; `domain: ]a[, +inf` mal découpé par le parseur (hors chantier).
 - **Worktree / branche** : aucun (à recréer).
