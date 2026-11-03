@@ -6,17 +6,18 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, phase 0 du lot 3 validée._
+_Mis à jour le 2026-11-03, après #2274._
 
-- **État** : lots 1 (`placer:`, #2096) et 2 (`tracer:` une droite, #2265) mergés, pas en prod ; lot 3
-  (vecteur, 2-298) en cours, phase 0 validée (§ 10).
-- **Prochaine action** : lot 3 codé (§ 11) ; revue `code-reviewer` (Opus), PR, CI, merge.
-- **En attente de David** : essais à l'œil des lots 1 et 2 (`docs/wip/verifications-manuelles.md`) ;
+- **État** : les trois lots sont mergés, pas en prod : `placer:` (#2096), `tracer:` une droite (#2265),
+  `tracer: vecteur` (#2274, § 10-11). Tout le § 3 est couvert.
+- **Prochaine action** : à demander à David — fin de chantier (versement du durable dans `docs/systeme/`,
+  journal archivé) une fois ses essais faits, ou autre chose d'abord.
+- **En attente de David** : essais à l'œil des lots 1, 2 et 3 (`docs/wip/verifications-manuelles.md`) ;
   corrigé PDF des blocs à placer, à brancher le jour d'un corrigé imprimé (§ 7).
-- **Pièges en cours** : un geste ne doit jamais donner la réponse (masqué : `tracer: vecteur ? depuis A`,
-  garder `vecteur` et `depuis`) ; CI « Client Tests » `wrapDynamicImport` = bruit, `/demo/lexique`
-  instable ; `pnpm types:cliquet` avant la PR.
-- **Worktree / branche** : `ubumaths-wt-points-repere`, `feat/points-repere-vecteur`.
+- **Pièges en cours** : un geste ne doit jamais donner la réponse (masqué : `tracer: ?`, vecteur
+  `tracer: vecteur u = ? depuis A`, collé `vecteur(3;-2)` → `vecteur ?`) ; `/aide-ecriture` est réservée
+  au prof, le Chrome du poste a une session admin (capture via le navigateur des tests).
+- **Worktree / branche** : aucun (retiré après #2274).
 
 ---
 
