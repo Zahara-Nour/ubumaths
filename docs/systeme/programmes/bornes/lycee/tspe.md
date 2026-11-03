@@ -45,10 +45,10 @@ Les points « approfondissement » du BO (« en aucun cas obligatoires », p.3) 
 
 Chantier `questions-tspe` (démarche [couvrir-un-niveau.md](../../../../pratiques/couvrir-un-niveau.md)), clos le
 2026-11-03 ; journaux dans `docs/archive/wip/questions-tspe*-progress.md` (index + sous-chantiers `proba`,
-`espace`, `restes`).
+`espace`, `restes`, `lot9`).
 
-- **265 modèles publiés** de niveau `T_SPE`, aucun brouillon ; **218 points sur 326** ont au moins un modèle publié.
-- **108 points sans modèle, tous voulus** :
+- **273 modèles publiés** de niveau `T_SPE`, aucun brouillon ; **226 points sur 326** ont au moins un modèle publié.
+- **100 points sans modèle, tous voulus** :
   - **P** (68) — 19 démonstrations, 18 algorithmes, 31 savoir-faire d'approfondissement : hors questions (les
     modèles d'approfondissement déjà écrits, 322, 323, 325, 360, 375, 376, ont été publiés avec leur thème).
   - **Couverts par leur voisin** (31) — même savoir-faire sur deux lignes du BO, ou notion dont le savoir-faire
@@ -57,9 +57,11 @@ Chantier `questions-tspe` (démarche [couvrir-un-niveau.md](../../../../pratique
     398 → 404 ; 399, 574, 575 → 403 ; 581 → 415 ; 427 → 432 ; 453 → 597-601 ; 477 → 487 ; 608 → 489 ; 503, 504 →
     508 ; 523 → 524. Les faits « à connaître » des points « = » ont, eux, leur modèle « à savoir » (26, sous-domaine
     « À savoir » de chaque domaine).
-  - **B\*** (9) — 334-339, 551-553 : figures de l'espace, **lot 9 en cours** (bloc ` ```solide `, en prod ;
-    journal `docs/wip/questions-tspe-lot9-progress.md`). 334 (représenter une combinaison linéaire) demande un
-    geste « tracer un vecteur » sur un solide.
+  - **C** (1) — 334 (représenter une combinaison linéaire de vecteurs) : demande un geste « tracer un vecteur »
+    sur un solide (` ```solide ` ne dessine aucune flèche), ligne 13 de `docs/wip/outils-manquants.md`.
+- **Figures de l'espace** (lot 9, publié le 2026-11-03) : 335-339, 551-553 ont chacun un modèle sur un cube ou un
+  pavé nommé (bloc ` ```solide `), vecteurs et droites écrits dans l'énoncé ; sous-domaines « Sur une figure » et
+  « Positions relatives » ; 339 rangé sur la notion « Espace ».
 - Chevauchement avec maths complémentaires : les modèles qui portent aussi `T_COMP` ont été tirés contre les deux
   bornes (`tcomp.json`, plus étroites).
 - 1cfc575d (brouillon de niveau `2`, tagué TSPE-616) reste tel quel : son tag ne vaut pas couverture, 616 a son

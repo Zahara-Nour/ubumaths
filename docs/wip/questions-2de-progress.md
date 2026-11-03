@@ -6,20 +6,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2321 (lot 9 : #2318, #2320, #2321 mergées, § 67)._
+_Mis à jour le 2026-11-03, #2323 (migration lot 9) ouverte, § 68._
 
-- **État** : lot 9 « Nombres réels, arithmétique, intervalles » écrit et mergé : 9 A (5 modèles, #2318), 9 B (8,
-  #2320), 9 C (5, #2321). 18 brouillons en base LOCALE seulement.
-- **Prochaine action** : David lance `create-questions --publier` (prod, brouillons)
-  sur `2de-arithmetique-a`, `2de-intervalles-b`, `2de-encadrements-c` ; relever les ids ; migration nœud + tag
-  (18 modèles, nœuds au § 67).
-- **En attente de David** : les trois `--publier` (`!`). 2-246 et 2-251 (9 B) ne s'affichent qu'après le
-  `deploy:prod` qui livre #2294 / #2309 : brouillons jusque-là.
-- **Pièges en cours** : `--publier`, `publier-lot` (même en simulation), `db:migrate` hors les 4 conditions → David
-  avec `!` ; `create-questions` apparie par (titre, thème, domaine, sous-domaine, **niveau**) ; liste blanche :
-  pas de `{{if:}}` à plus de ~6 niveaux dans une réponse attendue ; `Doc-inchangée:` dans un COMMIT, corps
-  ≤ 100 caractères par ligne ; une autre session écrit aussi dans ce journal : `git pull`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de` (HEAD détachée sur `origin/main`).
+- **État** : lot 9 (18 modèles) créé en prod en BROUILLON par David (ids au § 68). Migration nœud + tag :
+  PR #2323, test d'intégration vert (10) et vérifié rouge sans elle, `security-auditor` sans finding
+  bloquant. CI : tout vert sauf « Integration tests », rouge à cause de `main` (marche-verrou,
+  succes-gidouilles), réparé par #2324 (autre session), qui vient de se fermer.
+- **Prochaine action** : mettre #2323 à jour (`gh pr update-branch 2323`), relancer la CI ; verte →
+  `pnpm check:migrations --pr 2323`, merge, `db:migrate` depuis le dépôt principal (les 4 conditions
+  sont réunies), relire en prod (nœuds, tags, garde des niveaux) ; puis page à cocher des 18 modèles.
+- **En attente de David** : rien avant la page à cocher. 2-246 et 2-251 restent en brouillon jusqu'au
+  `deploy:prod` qui livre #2294 / #2309.
+- **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!` ; liste blanche : pas de
+  `{{if:}}` à plus de ~6 niveaux dans une réponse attendue ; corps de commit ≤ 100 caractères par ligne ;
+  une autre session écrit aussi dans ce journal : `git pull`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, branche `feat/questions-2de-lot9-rangement`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1745,3 +1746,16 @@ PR chacun ; L9-b multiples consécutifs de l'amplitude ; L9-c problèmes courts 
   (`bad_form`) → 2-250 en `constraints.form: off` (aucun modèle en prod concerné) ; la liste blanche des réponses
   (`student-answer-safety.render.test.ts`) plafonne la profondeur des accolades : un `selon` à 21 cas dans une
   réponse attendue fait échouer la CI → bornes calculées par `floor` dans `eval`.
+
+## 68. Lot 9 : brouillons en prod, migration nœud + tag (2026-11-03)
+
+- `create-questions --publier` lancé par David : 9 A be39c27d (2-235), fa65910d (2-236), 5e6ce5a3 (2-418),
+  d264f7aa (2-419), 53c55b4a (2-237) ; 9 B bfcbf381 (2-243), d7392618 (2-247), b6ece43a (2-248), 30585711
+  (2-422), b720edd7 (2-407), 98eee50d (2-252), 2069ac7e (2-251), f4a12cab (2-246) ; 9 C a692569a (2-249),
+  3b0a04c0 (2-250), c99ae1e8 (2-421), 7d411132 (2-253), 22b0a9d6 (2-254). Relus en base : brouillons, niveaux
+  prévus, sans nœud.
+- Migration `20261103135331_questions_2de_lot9_rangement_tags` (gabarit vecteur-tracer), test
+  `questions-2de-lot9-rangement-tags.test.ts` : 10 verts, 5 rouges sans la migration. `security-auditor` :
+  aucun finding bloquant (SQL identique au gabarit hors liste et compte). PR #2323.
+- CI de #2323 : « Integration tests » rouge hors du lot (marche-verrou, succes-gidouilles, aussi sur d'autres
+  branches) ; réparation par #2324 (autre session). Pas de merge en rouge.

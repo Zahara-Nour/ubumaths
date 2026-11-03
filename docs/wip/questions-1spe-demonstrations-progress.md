@@ -9,15 +9,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, lot 2 écrit (PR à ouvrir)._
+_Mis à jour le 2026-11-03, PR de migration #2319 ouverte._
 
-- **État** : lot 1 publié. Lot 2 (dérivation : 275, 276, 277, 398, 278) écrit, simulation verte, vérifié en local
-  (§ 5).
-- **Prochaine action** : PR du lot 2 → merge → David crée les brouillons en prod
-  (`pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-demonstrations-2 --publier`) → migration du
-  nœud et des tags (gabarit : `20261103115420_…_1_rangement_tags.sql` et son test) → page à cocher → publication.
-- **En attente de David** : la création des brouillons en prod après le merge. Extension `signe:` du bloc `ranger`
-  (Q2 b) **non tranchée** : à reposer après les lots à trous.
+- **État** : lot 2 mergé (#2314), brouillons créés en prod par David (9e377c97, f7938cd3, b05ec37a, e2908d60,
+  16ee6f33). Migration `20261103132133_…_2_rangement_tags` en PR #2319 : test 13/13 vert, rouge sans elle, audit
+  sécurité sans finding bloquant, `check:migrations --pr 2319` OK.
+- **Prochaine action** : CI verte → merge #2319 → `db:migrate` depuis `main` (4 conditions réunies) → vérifier en base
+  (MCP) → page à cocher → publication.
+- **En attente de David** : la CI de #2319 est ROUGE à cause de `main`, pas de la PR : #2311 (`garde-auth-commune`,
+  38e599df6) fait appeler `locals.safeGetSession()` par `requireAuth`, et 5 tests d'intégration fabriquent des
+  `locals` sans cette méthode (marche-verrou, echanges-delai-confirmation, srs-stats-echanges-delai,
+  rpc-lot3-compte-autrui, succes-gidouilles). Reproduit en local. Qui le corrige ? Extension `signe:` du bloc
+  `ranger` (Q2 b) **non tranchée**.
 - **Pièges en cours** : `h(…)` est lu comme une fonction (f, g, h) : jamais en réponse attendue. 398 : jumeau 392 dans
   le même programme, ne taguer que 398. `requiredForm: {pattern: 'u'}` pour les écritures équivalentes. Jamais de
   couleur sur du texte. `Doc-inchangée:` dans un COMMIT pour une migration. Garde `lot partiel`. Ancienne branche
@@ -156,3 +159,10 @@ Vérifié : `create-questions` simulation verte (66 specs). Sur 40 tirages par m
 `{{…}}` resté dans le texte, accolades équilibrées. Les alertes de `validateLatex` ne concernent que des notations du
 dépôt que le parseur ne lit pas : `A(x\,;\,y)`, les intervalles, `\mathbb{R}`, `(uv)'`. Brouillons créés en base
 locale ; aperçu admin correct pour 276 (h = 0,000 001, attendu 1000) et 398 (case dans le numérateur).
+
+En prod (2026-11-03) : brouillons 9e377c97 (275), f7938cd3 (276), b05ec37a (277), e2908d60 (398), 16ee6f33 (278),
+créés par David. Relevé MCP : `draft`, {1_SPE}, sans nœud ni tag ; les 4 sous-notions sont actives et uniques.
+Migration `20261103132133_questions_1spe_demonstrations_2_rangement_tags` (#2319). Test d'intégration à 13 cas, dont
+« 392 non posé » : vert, et rouge sans la migration (6 cas rouges, la suite principale ne s'exécute pas). Audit
+sécurité : aucun finding bloquant ; 3 notes non bloquantes (garde « tout ou rien » après les écritures, sûre dans
+une seule transaction ; homonymes impossibles grâce aux index uniques ; garde « déjà tagué » = simple filet).
