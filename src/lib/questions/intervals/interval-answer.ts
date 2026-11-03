@@ -466,15 +466,41 @@ function boundLatex(value: MathNode): string {
 	);
 }
 
-function intervalLatex(interval: Interval): string {
+/** Intervalle réduit à un point (`[a;a]`) */
+function isSingleton(interval: Interval): boolean {
 	const { lower, upper } = interval;
-	if (
+	return (
 		lower.type === 'closed' &&
 		upper.type === 'closed' &&
 		compareNumericNodes(lower.value, upper.value) === 0
-	) {
-		return `\\{${boundLatex(lower.value)}\\}`;
+	);
+}
+
+/**
+ * Réunion d'intervalles en LaTeX ; des points isolés consécutifs forment un seul
+ * ensemble fini : `\{-3;-1;1\}`, pas `\{-3\}\cup\{-1\}\cup\{1\}`
+ */
+function intervalsLatex(intervals: readonly Interval[]): string {
+	const parts: string[] = [];
+	let points: string[] = [];
+	const flushPoints = () => {
+		if (points.length > 0) parts.push(`\\{${points.join(';')}\\}`);
+		points = [];
+	};
+	for (const interval of intervals) {
+		if (isSingleton(interval)) {
+			points.push(boundLatex(interval.lower.value));
+		} else {
+			flushPoints();
+			parts.push(intervalLatex(interval));
+		}
 	}
+	flushPoints();
+	return parts.join('\\cup');
+}
+
+function intervalLatex(interval: Interval): string {
+	const { lower, upper } = interval;
 	const open = lower.type === 'closed' ? '[' : ']';
 	const close = upper.type === 'closed' ? ']' : '[';
 	return `${open}${boundLatex(lower.value)};${boundLatex(upper.value)}${close}`;
@@ -503,7 +529,7 @@ function domainLatex(domain: Domain): string {
 	) {
 		return '\\mathbb{R}';
 	}
-	return expanded.intervals.map(intervalLatex).join('\\cup');
+	return intervalsLatex(expanded.intervals);
 }
 
 /**
