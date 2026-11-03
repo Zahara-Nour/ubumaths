@@ -10,7 +10,7 @@ _Mis à jour le 2026-11-03, phase 0 du lot 3 validée._
 
 - **État** : lots 1 (`placer:`, #2096) et 2 (`tracer:` une droite, #2265) mergés, pas en prod ; lot 3
   (vecteur, 2-298) en cours, phase 0 validée (§ 10).
-- **Prochaine action** : tests rouges puis moteur (parseur, juge, phrases, masquage), puis écran, PDF, doc.
+- **Prochaine action** : lot 3 codé (§ 11) ; revue `code-reviewer` (Opus), PR, CI, merge.
 - **En attente de David** : essais à l'œil des lots 1 et 2 (`docs/wip/verifications-manuelles.md`) ;
   corrigé PDF des blocs à placer, à brancher le jour d'un corrigé imprimé (§ 7).
 - **Pièges en cours** : un geste ne doit jamais donner la réponse (masqué : `tracer: vecteur ? depuis A`,
@@ -260,3 +260,15 @@ David, « je te suis » aux cinq recos :
 Refusé au prof : vecteur nul, coordonnée hors grille, vecteur qui ne tient dans la fenêtre depuis aucun
 nœud, `depuis A` sans A dans `points:` (ou A hors nœud, A + u hors fenêtre), coordonnée non numérique,
 `tracer:` avec `placer:`.
+
+## 11. Lot 3 — fait (2026-11-03)
+
+Commits : moteur (`utils/courbe-vecteur.ts` : `vectorExpected`, `isTracedVectorCorrect`,
+`tracedVectorMistake`, `vectorProblem`, `solutionVector` ; parseur `tracer: vecteur`, `spec.vecteur` ;
+juge commun `isCourbeAnswerCorrect` ; masquage `tracer: vecteur u = ? depuis A`), écran (`CourbePlacer`
+en mode vecteur, flèche `arrow` de `Courbe.svelte`, `BuildAnswer`, `FillBlanksInput`, Typst `solved`),
+doc (ubumark, questions, grapheur, catalogue : deux exemples). Vu à l'œil (capture Chromium des tests) :
+le disque de l'extrémité cachait la pointe → retiré dès que la flèche est tracée ; la phrase collait
+« pas » à la formule (« pasu⃗ ») — **défaut du lot 2 aussi** (« d'équationy », en prod) → espace
+insécable, testé dans les deux. Essai à l'œil sur `/aide-ecriture/blocs/courbe` pas fait : le Chrome
+du poste a une session admin, et la page est réservée au prof.
