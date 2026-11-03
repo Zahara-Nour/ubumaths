@@ -2627,7 +2627,9 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// La réponse est celle du registre (`.simplify`, keep-domain.ts : le domaine
 	// gardé, ADR 0032 S3) ; les étapes et le bouton « Simplifier pour x ≠ 0 »
 	// sont de l'Atelier, et sortent du même calcul (garde : simplifier-registre).
-	// Repli sur la réponse des étapes si le registre n'en rend pas.
+	// Avec des étapes, la ligne affichée est leur fin : le même calcul, sur la
+	// ligne lue par l'Atelier — le registre lit en LaTeX ce que la détection ne
+	// tranche pas (`x*0/x` : `(x·0)/x`), et la dernière étape le contredirait.
 	if (name === 'simplify') {
 		const answer =
 			result.success && result.answer !== undefined
@@ -2639,7 +2641,7 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 				kind: 'commande',
 				input,
 				output: rendered.text,
-				latex: answer ?? simplified.answer,
+				latex: simplified.answer,
 				...(simplified.steps.length > 0 && { steps: simplified.steps }),
 				...summaryField(simplified),
 				...(simplified.alternative !== undefined && { alternative: simplified.alternative })

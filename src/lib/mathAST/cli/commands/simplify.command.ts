@@ -19,11 +19,19 @@ import type { MathNode } from '../../types';
 // Fonctions
 // =============================================================================
 
-/** Les divisions tapées en ligne (`1/2`), écrites en fraction. */
-function typedFractions(node: MathNode): MathNode {
-	return mapNode(node, (n) =>
-		n.type === 'division' && n.displayStyle === 'inline' ? { ...n, displayStyle: 'fraction' } : n
-	);
+/**
+ * Les signes tapés au clavier, écrits comme l'Atelier les affiche : la division
+ * en ligne (`1/2`) en fraction, l'étoile (`x*0`) en croix — `toLatex` écrirait
+ * `1 / 2` et `x * 0` quand le domaine garde l'expression telle quelle.
+ */
+function typedSigns(node: MathNode): MathNode {
+	return mapNode(node, (n) => {
+		if (n.type === 'division' && n.displayStyle === 'inline')
+			return { ...n, displayStyle: 'fraction' };
+		if (n.type === 'multiplication' && n.displayStyle === 'star')
+			return { ...n, displayStyle: 'cross' };
+		return n;
+	});
 }
 
 // =============================================================================
@@ -65,7 +73,7 @@ export class SimplifyCommand extends BaseCommand {
 			// écrit, `e^{2x}/e^x` → `e^x` — la réponse de l'Atelier. Une division
 			// tapée `1/2` est une fraction : le parseur maison la lit « en ligne »,
 			// que `toLatex` écrirait `1 / 2`
-			const result = simplifyKeepingDomain(typedFractions(ctx.ast));
+			const result = simplifyKeepingDomain(typedSigns(ctx.ast));
 
 			// Generate hash from normal form (for structural comparison)
 			const normalForm = normalize(preprocess(result));

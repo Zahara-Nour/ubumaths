@@ -14,6 +14,8 @@ import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { displayUnitsInLatex } from '$lib/mathAST/units/display';
 import { degreeSignWritten } from '$lib/mathAST/cli/core/degrees';
 import { simplifySteps } from '../simplify-steps';
+import { Atelier } from '../atelier.svelte';
+import { runInput } from '../calcul';
 
 const LINES: readonly string[] = [
 	// Le signe du produit tapé tel quel (input-detector-signe-produit)
@@ -155,7 +157,12 @@ const LINES: readonly string[] = [
 	'x^2/x+x',
 	'x^2+2x+1',
 	'x^3/x^2',
-	'x+x'
+	'x+x',
+	// L'étoile tapée, lue en LaTeX par le registre (revue de la PR 2a)
+	'x*0/x',
+	'x/x*0',
+	'x^2/x*0',
+	'(x^2-1)/(x-1)*0'
 ];
 
 /** La réponse du registre, habillée comme l'Atelier l'affiche (unités, degrés). */
@@ -172,12 +179,53 @@ const PAIRS = LINES.flatMap((expression) => {
 	return steps === null || registre === null ? [] : [[expression, steps.answer, registre] as const];
 });
 
+/**
+ * Lues autrement par le registre (LaTeX, la détection ne tranche pas) et par
+ * l'Atelier (syntaxe maison) : l'Atelier affiche alors la fin de ses étapes.
+ * Devenue égale → retirer la ligne.
+ */
+const READ_DIFFERENTLY: ReadonlySet<string> = new Set(['x*0/x']);
+
 describe('.simplifier : la dernière étape est la réponse du registre', () => {
-	it.each(PAIRS)('%s', (_expression, steps, registre) => {
-		expect(steps).toBe(registre);
+	it.each(PAIRS)('%s', (expression, steps, registre) => {
+		if (READ_DIFFERENTLY.has(expression)) expect(steps).not.toBe(registre);
+		else expect(steps).toBe(registre);
 	});
 
 	it('les lignes ont bien des étapes à comparer', () => {
 		expect(PAIRS.length).toBeGreaterThan(80);
+	});
+});
+
+describe('.simplifier dans l’Atelier : jamais d’étoile dans la ligne affichée', () => {
+	// Le domaine gardé rend l'expression tapée : `toLatex` écrivait `x * 0` (revue de la PR 2a)
+	it.each([
+		['.simplifier x*0/x', 'x \\times \\dfrac{0}{x}'],
+		['.simplifier x/x*0', '\\dfrac{x}{x} \\times 0'],
+		['.simplifier x^2/x*0', '\\dfrac{x^2}{x} \\times 0']
+	])('%s', (input, latex) => {
+		const result = runInput({ atelier: new Atelier(), engine: new WebReplEngine() }, input);
+		expect(result.kind === 'commande' ? result.latex : undefined).toBe(latex);
+	});
+});
+
+describe('.simplifier : (aᵐ)ⁿ, m pair et n non entier, garde le signe', () => {
+	// `pow-of-pow` rendait x — faux pour x < 0 (revue de la PR 2a)
+	it.each([
+		['(x^2)^{1/2}', '\\left| x \\right|'],
+		['(x^2)^(1/2)', '\\left| x \\right|'],
+		['(x^4)^{1/4}', '\\left( x^4 \\right)^{\\dfrac{1}{4}}'],
+		['(x^2)^{3/2}', '\\left( x^2 \\right)^{\\dfrac{3}{2}}'],
+		// Base positive ou exposant entier : la règle s'applique
+		['(x^2)^3', 'x^6'],
+		['(e^{2x})^{1/2}', '\\exponentialE^x'],
+		['(2^x)^{1/2}', '2^{\\dfrac{x}{2}}']
+	])('%s → %s', (expression, latex) => {
+		expect(registreAnswer(expression)).toBe(latex);
+		const result = runInput(
+			{ atelier: new Atelier(), engine: new WebReplEngine() },
+			`.simplifier ${expression}`
+		);
+		expect(result.kind === 'commande' ? result.latex : undefined).toBe(latex);
 	});
 });
