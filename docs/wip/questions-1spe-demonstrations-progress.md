@@ -9,18 +9,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, contenu du lot 4 poussé (e3f7841d3), pas de PR._
+_Mis à jour le 2026-11-03, après #2349._
 
-- **État** : lots 1-3 publiés. Lot 4 : variation « étapes à ranger » écrite dans les 14 JSON (§ 8), specs
-  vertes, rendu vu en local. #2341 (`signe: aucun`) mergé mais PAS en prod.
-- **Prochaine action** : migration de contenu des 14 modèles publiés, générée par script de lot (patron
-  `docs/wip/questions-6/lot-contenu-6-ranger.py`, relevé prod d'abord), + test d'intégration rouge sans elle.
-- **En attente de David** : `deploy:prod` de #2341 ; réponse à la question d'accès (reco : personne de plus).
-- **Pièges en cours** : `create-questions` lit `.env` = PROD → forcer `PUBLIC_SUPABASE_URL` et
-  `SUPABASE_SERVICE_ROLE_KEY` de `.env.local` pour la base locale. Script tsx hors dépôt : extension `.mts`.
-  Aperçu admin : seed 100004 → variation 4. Worktree sans lien Supabase : copier `supabase/.temp/…` pour
-  `db:migrate`. Juge strict (étapes non permutables).
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, `feat/questions-1spe-demonstrations-4`.
+- **État** : lots 1 à 4 en prod. #2341 (`signe: aucun`) livré par `deploy:prod` 0.68.0 ; #2349 mergée,
+  migration de contenu jouée (`db:migrate` depuis le dépôt principal) ; vérifié au MCP : 14 modèles
+  publiés, 4 variations dont « étapes à ranger », 14 tags.
+- **Prochaine action** : aucune dans le périmètre décidé (14 démonstrations, D1-D2). Reste à décider
+  avec David : fin du chantier (versement dans `docs/systeme/`, archivage du journal) ou suite.
+- **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de
+  `docs/wip/verifications-manuelles.md`).
+- **Pièges en cours** : `create-questions` lit `.env` = PROD → forcer les variables de `.env.local`.
+  Relevé prod par script refusé par le classifieur → MCP + md5 contre l'ancienne source. `db:migrate`
+  depuis une branche en retard sur `main` : une migration distante manque en local → le lancer depuis
+  le dépôt principal à jour. Anciennes branches distantes `docs/questions-1spe-demonstrations`,
+  `feat/questions-1spe-demonstrations` à supprimer.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations` (branche mergée, à retirer).
 
 ---
 
@@ -252,3 +255,7 @@ Migration de contenu `20261103194133_questions_1spe_demonstrations_etapes_conten
 vert avec (12 verts, 16 sautés : modèles neufs), ROUGE sans (fichier remplacé par `select 1;`, restauré
 d'une copie, md5 identique). `deploy:prod` d'abord refusé (CI de #2344 : porte des migrations, origin/main
 injoignable en CI), relancé par `--relancer-ci`.
+
+#2349 mergée (2026-11-03) ; `deploy:prod` 0.68.0 (#2341 en prod) ; `db:migrate` de
+`20261103194133` depuis le dépôt principal (seule migration en attente, `--dry-run` d'abord) ; MCP : 14/14
+à 4 variations, publiés, tags intacts.
