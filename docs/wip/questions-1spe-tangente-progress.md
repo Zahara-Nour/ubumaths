@@ -6,15 +6,16 @@ Sous-chantier de [questions-1spe](../archive/wip/questions-1spe-progress.md) (cl
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR des fichiers ouverte._
+_Mis à jour le 2026-11-03, après #2275._
 
-- **État** : modèle écrit (`scripts/questions/1spe-tangente/`), simulation verte (12 specs), sonde des
-  courbes 0 problème, joué en local (juste, faux, correction) · **Prochaine action** : merge de la PR des
-  fichiers ; puis, **après le `deploy:prod` qui livre #2265**, David lance `create-questions --publier`
-  (brouillon), migration nœud + tags (1SPE-271, 1TECHNO-078), page à cocher, publication ·
-  **En attente de David** : le `deploy:prod` · **Pièges en cours** : ne pas toucher
-  `docs/wip/outils-manquants.md` (session `tracer-droite`) · **Worktree / branche** :
-  `../ubumaths-wt-questions-1spe-tangente`, `feat/questions-1spe-tangente`.
+- **État** : modèle 271 mergé (#2275, fichiers seuls : `scripts/questions/1spe-tangente/`), 13 specs, joué
+  en local · **Prochaine action** : après le `deploy:prod` qui livre #2265, David lance
+  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-tangente --publier` (brouillon) ;
+  puis migration nœud (`e7f414da`, à vérifier) + tags 1SPE-271 et 1TECHNO-078, page à cocher, publication
+  · **En attente de David** : le `deploy:prod` · **Pièges en cours** : ne pas toucher
+  `docs/wip/outils-manquants.md` ; voisins de Tangente tagués 1TECHNO-079 sans `1_TECHNO` dans `grades`
+  (écart noté § 5, non corrigé) · **Worktree / branche** : aucun (retiré après #2275) ; worktree neuf
+  depuis `origin/main` pour la migration.
 
 ## 1. Vérification de l'outil (2026-11-03)
 
