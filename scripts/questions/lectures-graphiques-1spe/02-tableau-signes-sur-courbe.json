@@ -1,0 +1,224 @@
+{
+	"title": "Dresser le tableau de signes d'une fonction lu sur sa courbe",
+	"description": "Tableau de signes à compléter (zéros, signes, marques) d'après la courbe : cubique à trois zéros ou parabole à deux zéros",
+	"grades": ["1_SPE", "1_GEN", "1_TECHNO"],
+	"theme": "Fonctions",
+	"domain": "Généralités",
+	"subdomain": "Signe",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La fonction $f$ est définie sur $\\left[{{eval:r-1}}\\,;{{eval:t+1}}\\right]$ ; sa courbe $\\mathcal{C}_f$ est tracée ci-dessous.\n\n```courbe\nx: -6 ; 6\ny: -7 ; 7\ngrille: 1 ; 1\nf(x) = {{a}}*(x{{eval:-r;+}})*(x{{eval:-s;+}})*(x{{eval:-t;+}})/4 sur [{{eval:r-1}} ; {{eval:t+1}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction qui coupe l'axe des abscisses en trois points.\n```\n\nComplète le tableau de signes de $f(x)$.\n\n```variation\nvariable: x\ndomain: {{eval:r-1}}, ?{{r}}, ?{{s}}, ?{{t}}, {{eval:t+1}}\n\nsign: f(x)\n  {{eval:r-1}},{{r}}: ?{{if:a>0|-|+}}\n  {{r}}: ?z\n  {{r}},{{s}}: ?{{if:a>0|+|-}}\n  {{s}}: ?z\n  {{s}},{{t}}: ?{{if:a>0|-|+}}\n  {{t}}: ?z\n  {{t}},{{eval:t+1}}: ?{{if:a>0|+|-}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1|-1"
+				},
+				{
+					"name": "r",
+					"expression": "-4..0"
+				},
+				{
+					"name": "d",
+					"expression": "2|3"
+				},
+				{
+					"name": "g",
+					"expression": "2|3"
+				},
+				{
+					"name": "s",
+					"expression": "eval:r+d"
+				},
+				{
+					"name": "t",
+					"expression": "eval:s+g"
+				}
+			],
+			"conditions": ["d + g <= 5", "t <= 4"],
+			"correction": {
+				"steps": [
+					"$f(x)$ est **positif** là où $\\mathcal{C}_f$ est au-dessus de l'axe des abscisses, **négatif** là où elle est au-dessous, et **nul** là où elle le coupe : en ${{r}}$, ${{s}}$ et ${{t}}$.",
+					"La courbe est {{if:a>0|au-dessous|au-dessus}} de l'axe avant ${{r}}$, puis elle **traverse** l'axe en chacun des trois zéros : le signe change à chaque fois.",
+					"```variation\nvariable: x\ndomain: {{eval:r-1}}, {{r}}, {{s}}, {{t}}, {{eval:t+1}}\n\nsign: f(x)\n  {{eval:r-1}},{{r}}: {{if:a>0|-|+}}\n  {{r}}: z\n  {{r}},{{s}}: {{if:a>0|+|-}}\n  {{s}}: z\n  {{s}},{{t}}: {{if:a>0|-|+}}\n  {{t}}: z\n  {{t}},{{eval:t+1}}: {{if:a>0|+|-}}\n```"
+				]
+			}
+		},
+		{
+			"statement": "La fonction $f$ est définie sur $\\left[{{eval:r-1}}\\,;{{eval:s+1}}\\right]$ ; sa courbe $\\mathcal{C}_f$ est tracée ci-dessous.\n\n```courbe\nx: -6 ; 6\ny: -7 ; 7\ngrille: 1 ; 1\nf(x) = {{a}}*(x{{eval:-r;+}})*(x{{eval:-s;+}})/2 sur [{{eval:r-1}} ; {{eval:s+1}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Parabole qui coupe l'axe des abscisses en deux points.\n```\n\nComplète le tableau de signes de $f(x)$.\n\n```variation\nvariable: x\ndomain: {{eval:r-1}}, ?{{r}}, ?{{s}}, {{eval:s+1}}\n\nsign: f(x)\n  {{eval:r-1}},{{r}}: ?{{if:a>0|+|-}}\n  {{r}}: ?z\n  {{r}},{{s}}: ?{{if:a>0|-|+}}\n  {{s}}: ?z\n  {{s}},{{eval:s+1}}: ?{{if:a>0|+|-}}\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1|-1"
+				},
+				{
+					"name": "r",
+					"expression": "-4..1"
+				},
+				{
+					"name": "d",
+					"expression": "2..5"
+				},
+				{
+					"name": "s",
+					"expression": "eval:r+d"
+				}
+			],
+			"conditions": ["s <= 4"],
+			"correction": {
+				"steps": [
+					"$f(x)$ est **positif** là où $\\mathcal{C}_f$ est au-dessus de l'axe des abscisses, **négatif** là où elle est au-dessous, et **nul** là où elle le coupe : en ${{r}}$ et ${{s}}$.",
+					"La parabole est tournée vers le {{if:a>0|haut|bas}} : elle est {{if:a>0|au-dessus|au-dessous}} de l'axe à l'extérieur des zéros, {{if:a>0|au-dessous|au-dessus}} entre eux.",
+					"```variation\nvariable: x\ndomain: {{eval:r-1}}, {{r}}, {{s}}, {{eval:s+1}}\n\nsign: f(x)\n  {{eval:r-1}},{{r}}: {{if:a>0|+|-}}\n  {{r}}: z\n  {{r}},{{s}}: {{if:a>0|-|+}}\n  {{s}}: z\n  {{s}},{{eval:s+1}}: {{if:a>0|+|-}}\n```"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Cubique a > 0, zéros −2, 0, 3 : − 0 + 0 − 0 +",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"d": "2",
+				"g": "3",
+				"s": "0",
+				"t": "3"
+			},
+			"answers": ["-2", "0", "3", "-", "z", "+", "z", "-", "z", "+"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Zéro écrit « 0 » au lieu du jeton z",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"d": "2",
+				"g": "3",
+				"s": "0",
+				"t": "3"
+			},
+			"answers": ["-2", "0", "3", "-", "0", "+", "0", "-", "0", "+"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signes inversés",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"d": "2",
+				"g": "3",
+				"s": "0",
+				"t": "3"
+			},
+			"answers": ["-2", "0", "3", "+", "z", "-", "z", "+", "z", "-"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : pas de 0 sous les zéros",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"d": "2",
+				"g": "3",
+				"s": "0",
+				"t": "3"
+			},
+			"answers": ["-2", "0", "3", "-", "rien", "+", "rien", "-", "rien", "+"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Cubique a < 0, zéros −4, −1, 1 : + 0 − 0 + 0 −",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"r": "-4",
+				"d": "3",
+				"g": "2",
+				"s": "-1",
+				"t": "1"
+			},
+			"answers": ["-4", "-1", "1", "+", "z", "-", "z", "+", "z", "-"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : valeurs dans le désordre",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"r": "-4",
+				"d": "3",
+				"g": "2",
+				"s": "-1",
+				"t": "1"
+			},
+			"answers": ["1", "-1", "-4", "+", "z", "-", "z", "+", "z", "-"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Parabole a > 0, zéros −1, 2 : + 0 − 0 +",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"r": "-1",
+				"d": "3",
+				"s": "2"
+			},
+			"answers": ["-1", "2", "+", "z", "-", "z", "+"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : − 0 + 0 −",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"r": "-1",
+				"d": "3",
+				"s": "2"
+			},
+			"answers": ["-1", "2", "-", "z", "+", "z", "-"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Parabole a < 0, zéros −3, 1 : − 0 + 0 −",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"r": "-3",
+				"d": "4",
+				"s": "1"
+			},
+			"answers": ["-3", "1", "-", "z", "+", "z", "-"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
