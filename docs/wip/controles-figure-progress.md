@@ -6,17 +6,16 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2348 (lot 7 mergé)._
+_Mis à jour le 2026-11-03, après #2348 (lot 7 mergé) ; phase 0 du lot 8 proposée._
 
 - **État** : lots 1 à 7 et #2305 mergés (lot 7 = triangle par un côté et deux angles, et deux côtés et
   l'angle compris, § 21-22). Rien en prod (`deploy:prod` sur demande de David). Vérification à l'œil
   de #2348 dans `verifications-manuelles.md`.
-- **Prochaine action** : à décider avec David, rien n'est décidé après le lot 7. Restent ouverts : variante
-  « rapporteur déjà posé » (§ 19, décision 4) ; la règle sévère des médiatrices (§ 12, sa propre phase 0) ;
-  l'angle non adjacent au côté (§ 21, décision 5 : calcul du 3e angle, hors lot).
-- **En attente de David** : le cas limite du § 21 « côté [AC] tracé d'un trait à travers le repère » est
-  admis par le juge mais inatteignable à la main (§ 22) : le garder tel quel, ou aimanter le segment sur
-  la direction du repère ?
+- **Prochaine action** : lot 8 = variante « rapporteur déjà posé » (§ 19, décision 4), phase 0
+  proposée au § 23 ; après validation, nouveau worktree `controles-figure-lot8`. Restent ouverts : la
+  règle sévère des médiatrices (§ 12) ; l'angle non adjacent au côté (§ 21, décision 5).
+- **En attente de David** : les 4 questions du § 23 ; et le cas limite du § 22 (côté [AC] d'un trait à
+  travers le repère, admis mais inatteignable) : ma reco = le garder tel quel, à confirmer.
 - **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12) ;
   `perpendiculaire(A, s)` échoue quand A est un bout de s ; `symetrie(P, axe=d)` échoue si P définit
   d ; l'« Essayer » de l'aide ne rend pas la case jouable ; plafond de 20 objets sans message ; la
@@ -992,3 +991,55 @@ d'angle, est donc construit. Le repère seul ne construit toujours rien.
   - Cas limite du § 21 « côté [AC] tracé d'un trait à travers le repère » : admis par le juge, mais
     **inatteignable à la main** (rien n'aimante le bout du segment sur la direction du repère) ; le test
     le dit. À montrer à David.
+
+## 23. Phase 0 — lot 8 : mesurer un angle, rapporteur déjà posé (proposée le 2026-11-03, à valider)
+
+BO 6e « Mesurer un angle » (6-169), premier temps : **lire** le rapporteur avant de savoir le poser.
+Décidé « plus tard » au § 19 (décision 4). Existant : `verifier: mesure AOB` (lot 6), mesure calculée
+sur la figure, messages « mauvaise graduation » / « L'angle mesure 50°, pas 45° », masquage de l'énoncé ;
+le dessin du rapporteur, son rayon fixé (§ 18), `protractorFits`. Ce qui est neuf : le rapporteur
+**apparaît posé** au chargement, l'élève n'a aucun outil, il tape seulement la mesure.
+
+### Écriture par le prof (recommandée : un mot de plus sur la vérification)
+
+```figure-a-completer
+fenetre: 0 ; 10 ; 0 ; 8
+verifier: mesure AOB, rapporteur posé
+---
+O = point(4, 3)
+A = point(9, 3)
+B = rotation(A, angle={{a}}, centre=O)
+x = demidroite(O, A)
+y = demidroite(O, B)
+```
+
+Le rapporteur est posé en O, **base sur le premier côté nommé** ([OA) pour `AOB`), le corps du côté de
+B. L'ordre des lettres choisit donc la pose : `BOA` le pose sur [OB). Selon la pose, le 0 du côté de base
+est sur l'échelle extérieure ou intérieure : l'auteur choisit ainsi la difficulté de lecture. Palette
+vide (aucun outil, ni Effacer ni Retourner) ; `outils:` interdit avec `rapporteur posé`.
+
+### Comportements
+
+- **Nominal** : rapporteur posé en O sur [OA), l'élève lit 50, tape 50 → juste.
+- **Limites** (juste) : « 50 » ou « 50° » ; angle obtus (130) ; lecture sur l'échelle intérieure
+  (pose `BOA`) ; « 50,5 » → « Au degré près : tape un nombre entier. » (comme au lot 6).
+- **Erreurs** (faux) : celles du lot 6, inchangées : 180 − a → « L'angle mesure 50°, pas 130° : tu as lu
+  la mauvaise graduation du rapporteur. » ; autre mesure → « L'angle mesure 50°, pas 45°. » ; case vide
+  → Valider bloqué.
+- **Erreurs d'auteur** : toutes celles du lot 6 ; en plus, le demi-rapporteur posé sur le premier côté,
+  du côté du second, ne tient pas dans la fenêtre → « le rapporteur posé sur [OA) sort de la figure :
+  écrire mesure BOA » si l'autre pose tient, sinon « déplacer O » ; `rapporteur posé` avec `outils:`.
+- **Correction** : l'arc codé « 50° », rapporteur laissé posé.
+- **Masquage (évaluation)** : identique au lot 6 (`maskMeasureFigure`) ; `rapporteur posé` n'apprend rien
+  de la réponse, laissé tel quel.
+
+### Questions à David
+
+1. **Écriture** : `verifier: mesure AOB, rapporteur posé` (recommandé : la même vérification, un mot de
+   plus) ; ou une ligne à part `rapporteur: O ; A` (posable aussi dans d'autres figures plus tard) ?
+2. **Côté de la base** : le premier côté nommé, l'auteur choisit en ordonnant les lettres (recommandé :
+   prévisible, et c'est lui qui règle échelle extérieure ou intérieure) ; ou le moteur choisit la pose qui
+   tient, [OA) d'abord ?
+3. **Rapporteur figé** : l'élève ne peut ni le bouger ni le reposer (recommandé : c'est l'exercice de
+   lecture seule ; le lot 6 couvre le geste complet) ; ou Retourner permis ?
+4. **Message « mauvaise graduation »** : le garder, même texte qu'au lot 6 (recommandé) ?
