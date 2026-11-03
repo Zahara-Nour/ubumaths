@@ -1,5 +1,5 @@
 /**
- * Vecteur à tracer à l'écran (chantier `docs/wip/points-repere-progress.md` § 3 et § 10, lot 3)
+ * Vecteur à tracer à l'écran (chantier `docs/archive/wip/points-repere-progress.md` § 3 et § 10, lot 3)
  *
  * Rendu dans <main> : décor réel de l'application (`app.css` y impose des règles).
  */

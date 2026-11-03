@@ -233,7 +233,7 @@ export interface CourbeSpec {
 	/**
 	 * Points à placer (`placer:`, 1 à 6), dans l'ordre écrit : les RÉPONSES
 	 * attendues. L'écran ne doit jamais les dessiner ni les écrire dans le DOM
-	 * (chantier `docs/wip/points-repere-progress.md`).
+	 * (chantier `docs/archive/wip/points-repere-progress.md`).
 	 */
 	placer?: CourbeTarget[];
 	/**

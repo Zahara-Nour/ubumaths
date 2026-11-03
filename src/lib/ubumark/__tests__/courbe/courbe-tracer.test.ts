@@ -1,7 +1,7 @@
 /**
  * Bloc ```courbe — droite à tracer (`tracer: y = 2x - 1`) : analyse et calcul pur
  *
- * Spécification validée par David le 2026-11-01 (`docs/wip/points-repere-progress.md`
+ * Spécification validée par David le 2026-11-01 (`docs/archive/wip/points-repere-progress.md`
  * § 3, lot 2) et précisée le 2026-11-02 (§ 8) : `tracer:` refusé avec `placer:`,
  * étiquettes « 1 » / « 2 », phrases de la correction, points de la correction = les
  * deux nœuds de la droite les plus proches de l'origine.

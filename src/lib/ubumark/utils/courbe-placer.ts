@@ -3,7 +3,7 @@
  * ===========================================================
  *
  * L'élève pose des points dans le repère d'un bloc ```courbe (`placer: A=(2 ; 3)`,
- * chantier `docs/wip/points-repere-progress.md` § 3, lot 1). Un point se pose
+ * chantier `docs/archive/wip/points-repere-progress.md` § 3, lot 1). Un point se pose
  * toujours sur un NŒUD de la grille (aimant) : intersection d'une ligne
  * verticale et d'une ligne horizontale, multiples du pas de chaque axe (le pas
  * de `grille:`, sinon le pas automatique de la scène), dans la fenêtre.

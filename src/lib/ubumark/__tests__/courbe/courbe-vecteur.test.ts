@@ -1,7 +1,7 @@
 /**
  * Bloc ```courbe — vecteur à tracer (`tracer: vecteur (3 ; -2)`) : analyse et calcul pur
  *
- * Spécification validée par David le 2026-11-01 (`docs/wip/points-repere-progress.md`
+ * Spécification validée par David le 2026-11-01 (`docs/archive/wip/points-repere-progress.md`
  * § 3, lot 3) et précisée le 2026-11-03 (§ 10) : nom facultatif, origine imposée
  * `depuis A` (A de `points:`), phrases de la correction, flèche juste depuis
  * l'origine de l'élève quand elle tient dans la fenêtre.

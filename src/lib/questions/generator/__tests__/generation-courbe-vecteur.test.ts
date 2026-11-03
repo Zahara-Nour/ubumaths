@@ -1,6 +1,6 @@
 /**
  * Question à vecteur à tracer dans un repère (` ```courbe ` + `tracer: vecteur …`,
- * chantier `docs/wip/points-repere-progress.md` § 3 et § 10, lot 3)
+ * chantier `docs/archive/wip/points-repere-progress.md` § 3 et § 10, lot 3)
  *
  * Une case pour le vecteur ; réponse attendue = `vecteur 3;-2` (origine imposée :
  * `vecteur 3;-2 depuis -1;2`), jamais écrite dans le modèle ; la réponse de

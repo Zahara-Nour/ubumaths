@@ -3,7 +3,7 @@
  * ===================================================================
  *
  * L'élève trace le vecteur d'un bloc ```courbe (`tracer: vecteur u = (3 ; -2)`,
- * chantier `docs/wip/points-repere-progress.md` § 3 et § 10, lot 3) en posant
+ * chantier `docs/archive/wip/points-repere-progress.md` § 3 et § 10, lot 3) en posant
  * son origine puis son extrémité sur les nœuds de la grille ; une flèche les
  * relie. Origine imposée (`depuis A`) : il ne pose que l'extrémité.
  *
