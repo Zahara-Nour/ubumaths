@@ -534,6 +534,8 @@ Code : `src/lib/server/games/`, `src/lib/server/achievements/`, `src/routes/api/
 Synchronisation avec Google Classroom : `google_integrations` (jeton du professeur, lu par lui seul et
 l'admin) → `google_classroom_courses`, `_coursework`, `_materials`, `_topics` ; `shared_coursework` /
 `shared_materials` exposent aux élèves ce qui est partagé. Code : `src/lib/server/google/`, `src/routes/api/google`.
+La table de liaison classe ↔ cours `class_google_classroom_links`, vide et lue nulle part, est
+supprimée (M11, migration `20261103170936`).
 
 ### Outils du professeur (kanban, tableau blanc, tableur, constructions, figures)
 
