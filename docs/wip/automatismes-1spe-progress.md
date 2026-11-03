@@ -78,6 +78,18 @@ réduite sur un graphique », en brouillon.
   Graines changées : pente lue 1 → 5 (même droite que le tracé), pente par deux points 4 → 12
   (« a-t-elle une pente ? »).
 
+### Fiche « Automatismes : droites (1) » écrite (2026-11-03)
+
+Fiche `0f98be04` (brouillon, 2 séries) écrite par David. Vérifiée (`regen-depuis-base.ts`,
+`compile-prod.mjs`, avec **`--polices-corrige` pour le corrigé**, sinon « current font does not support
+math » ; `debord.py`) : fiche 2 p., réponses 1 p., corrigé 4 p., 0 débord ; repères vides à l'énoncé,
+droite verte au corrigé.
+
+⚠️ **Défaut trouvé, antérieur au lot** : au corrigé PDF, les réponses en gras (`\mathbf` → `bold()`
+Typst) s'affichent en **carrés vides** : la police du corrigé (Chiphre Math) n'a pas les chiffres gras
+mathématiques. Touche aussi la fiche « évolutions » `9217dfaa` (vérifié), donc toute série figée.
+L'écran (KaTeX) n'est pas touché. Correctif à trancher par David.
+
 ## Questions ouvertes (à poser à David)
 
 1. **Collision de vocabulaire « série ».** `CONTEXT.md` définit désormais **Série** = exercice de
