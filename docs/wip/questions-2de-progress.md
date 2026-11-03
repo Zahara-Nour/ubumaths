@@ -6,21 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, #2323 (migration lot 9) ouverte, § 68._
+_Mis à jour le 2026-11-03, après #2323 (migration lot 9), § 69._
 
-- **État** : lot 9 (18 modèles) créé en prod en BROUILLON par David (ids au § 68). Migration nœud + tag :
-  PR #2323, test d'intégration vert (10) et vérifié rouge sans elle, `security-auditor` sans finding
-  bloquant. CI : tout vert sauf « Integration tests », rouge à cause de `main` (marche-verrou,
-  succes-gidouilles), réparé par #2324 (autre session), qui vient de se fermer.
-- **Prochaine action** : mettre #2323 à jour (`gh pr update-branch 2323`), relancer la CI ; verte →
-  `pnpm check:migrations --pr 2323`, merge, `db:migrate` depuis le dépôt principal (les 4 conditions
-  sont réunies), relire en prod (nœuds, tags, garde des niveaux) ; puis page à cocher des 18 modèles.
-- **En attente de David** : rien avant la page à cocher. 2-246 et 2-251 restent en brouillon jusqu'au
-  `deploy:prod` qui livre #2294 / #2309.
+- **État** : lot 9 (18 modèles) en prod en BROUILLON, rangés (nœud + un point chacun, relu par MCP).
+  Page à cocher publiée : https://claude.ai/artifact/Rs77PKsCfgBSSYxV8grGxq (`verdicts` vide).
+- **Prochaine action** : David relit la page ; lire et COMPTER les `verdicts` (`ArtifactData list`) ;
+  « À revoir » → corriger (§ 7 de la doc) ; tout « OK » → `publier-lot` en simulation sur les trois
+  dossiers (`2de-arithmetique-a`, `2de-intervalles-b`, `2de-encadrements-c`), lancé par David.
+- **En attente de David** : la relecture de la page. 2-246, 2-251, 2-249, 2-250 (bloc `line` non dessiné
+  par la page) : à jouer dans l'aperçu admin. #2294 et #2309 sont en prod (0.67.0) : plus de blocage.
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!` ; liste blanche : pas de
   `{{if:}}` à plus de ~6 niveaux dans une réponse attendue ; corps de commit ≤ 100 caractères par ligne ;
-  une autre session écrit aussi dans ce journal : `git pull`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, branche `feat/questions-2de-lot9-rangement`.
+  une autre session écrit aussi dans ce journal : `git pull` ; `db:migrate` depuis le dépôt principal
+  seulement (le worktree n'est pas lié à Supabase).
+- **Worktree / branche** : `../ubumaths-wt-questions-2de` (HEAD détachée sur `origin/main`).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1759,3 +1758,16 @@ PR chacun ; L9-b multiples consécutifs de l'amplitude ; L9-c problèmes courts 
   aucun finding bloquant (SQL identique au gabarit hors liste et compte). PR #2323.
 - CI de #2323 : « Integration tests » rouge hors du lot (marche-verrou, succes-gidouilles, aussi sur d'autres
   branches) ; réparation par #2324 (autre session). Pas de merge en rouge.
+
+## 69. Lot 9 : migration jouée, page à cocher (2026-11-03)
+
+- #2323 mise à jour avec `origin/main` (#2322, `safeGetSession`, cause des 15 échecs d'intégration),
+  CI verte, `check:migrations --pr 2323` OK ; merge retardé par le `deploy:prod` 0.67.0 (verrou), puis
+  **#2323 mergée**.
+- `db:migrate` depuis le dépôt principal (à blanc d'abord : seule `20261103135331` à jouer). MCP (prod) :
+  les 18 en `draft`, un nœud, un point chacun.
+- `page-a-cocher.ts` sur les trois dossiers (copie dans le scratchpad, préfixes `a-`/`b-`/`c-`, `.env` de
+  prod) : 18 fiches ; 4 alertes « bloc line non dessiné » (2-246, 2-251, 2-249, 2-250 : à jouer dans
+  l'aperçu), aucune alerte de point, de nœud ou de niveau. Page (capacité `db`, `verdicts` vide) :
+  https://claude.ai/artifact/Rs77PKsCfgBSSYxV8grGxq ; rendu vérifié dans Chrome (pas à 390 px : la fenêtre
+  ne s'est pas redimensionnée).
