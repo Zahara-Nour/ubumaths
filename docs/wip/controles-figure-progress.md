@@ -771,3 +771,56 @@ Palette déduite : Rapporteur · Segment.
   (M2) : un côté juste tracé du côté où le rapporteur ne tient pas garde sa correction de ce côté-là.
   Ouvert (M1, question à David) : fenêtre très allongée sur un petit écran → rapporteur minuscule
   (0,35 de 4 unités sur 320 px ≈ 22 px de rayon), graduations illisibles.
+
+## 19. Phase 0 — lot 6 : mesurer un angle (proposée le 2026-11-03, à valider)
+
+BO 6e « Mesurer un angle » (6-169). Le geste existe (lot 5, § 16) : poser le rapporteur, le retourner.
+Ce qui est neuf : l'angle est **donné** (ses deux côtés tracés) et la réponse est **une mesure en degrés**.
+Existant relevé : la figure de travail (```figure-de-travail) accepte n'importe quel outil, rapporteur
+compris, et rien n'y est noté ; une case ordinaire `[_]` ne sait pas donner de message ciblé (feedback
+`correct` / `incorrect` seulement) ; le langage des figures a `rotation(A, angle=50, centre=O)`.
+
+### Écriture par le prof (recommandée : la mesure dans la case figure)
+
+```figure-a-completer
+fenetre: 0 ; 10 ; 0 ; 8
+verifier: mesure AOB
+---
+O = point(4, 3)
+A = point(9, 3)
+B = rotation(A, angle={{a}}, centre=O)
+x = demidroite(O, A)
+y = demidroite(O, B)
+```
+
+Nouvelle vérification `mesure AOB` : O le sommet, A et B un point de chaque côté (trois points de la
+figure). La réponse attendue est **calculée sur la figure** : l'auteur ne l'écrit pas, elle ne peut pas
+la contredire. Palette déduite : Rapporteur seul. Sous la figure, une case « AOB = [ ] ° » (entier, clavier
+numérique). Les poses du rapporteur et les repères ne sont pas notés. Papier uni seulement.
+
+### Comportements
+
+- **Nominal** : l'élève pose le rapporteur en O, lit 50, tape 50 → juste.
+- **Limites** (juste) : « 50° » ou « 50 » ; angle obtus (130) ; rapporteur jamais posé (rien ne le
+  distingue d'une lecture faite ailleurs, et rien ne l'exige) ; rapporteur posé sur [OB) au lieu de [OA).
+- **Erreurs** (faux) : 130 au lieu de 50 → « L'angle mesure 50°, pas 130° : tu as lu la mauvaise
+  graduation du rapporteur. » ; autre mesure → « L'angle mesure 50°, pas 45°. » ; case vide → « Valider »
+  bloqué comme toute case vide ; nombre non entier → refusé à la saisie (« au degré près »).
+- **Erreurs d'auteur** : mesure de AOB non entière (à 0,01° près) → « l'angle AOB mesure 47,3° : placer B
+  avec rotation(A, angle=…, centre=O) » ; angle nul ou plat ; O, A ou B invisible ou confondus ; pas de
+  trait de la figure le long de [OA) ou de [OB) ; un côté qui s'arrête avant le bord du rapporteur (rien à
+  lire) ; le demi-rapporteur posé en O ne tient dans la fenêtre ni sur [OA) côté B, ni sur [OB) côté A
+  (règle du § 18) ; quadrillage.
+- **Correction** : l'arc de l'angle codé « 50° » (comme au lot 5).
+
+### Questions à David
+
+1. **Où taper la mesure** : dans la case figure, mesure calculée sur la figure, message « mauvaise
+   graduation », erreurs d'auteur (recommandé) ; ou une figure de travail avec le rapporteur + une case
+   `[_]°` ordinaire (presque rien à coder, mais la réponse est écrite à la main par l'auteur, sans message
+   ciblé ni contrôle que le rapporteur tient dans la figure) ?
+2. **Tolérance** : mesure exacte (recommandé : la figure est construite au degré et le geste vise au degré) ;
+   ou ± 1° comme sur papier ?
+3. **Message « mauvaise graduation »** pour 180 − a : le garder, comme au lot 5 (recommandé) ?
+4. **Variante « rapporteur déjà posé »** (lire seulement, sans geste) : plus tard si besoin (recommandé) ;
+   ou dans ce lot ?
