@@ -6,11 +6,11 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR #2327 (lot 6) ouverte, CI du dernier commit `d1cc38d1b` en cours._
+_Mis à jour le 2026-11-03, PR #2327 (lot 6) ouverte, CI du dernier commit de la branche en cours._
 
 - **État** : lots 1 à 5 et #2305 mergés ; lot 6 (`mesure AOB`, § 19-20) codé, revu (Opus, 6 findings
   traités), décision du masquage faite (points calculés en coordonnées). M1 faite. Rien en prod.
-- **Prochaine action** : `gh pr checks 2327` (run « Code Quality » de `d1cc38d1b`) ; vert →
+- **Prochaine action** : `gh pr checks 2327` (run « Code Quality » du DERNIER commit de la branche) ; vert →
   `gh pr merge 2327 --merge`, puis nettoyage du worktree, ligne #2327 dans
   `verifications-manuelles.md`, « Reprendre ici » sur `main`.
 - **En attente de David** : rien.
