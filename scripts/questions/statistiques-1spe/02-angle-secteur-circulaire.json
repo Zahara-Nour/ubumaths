@@ -1,0 +1,195 @@
+{
+	"title": "Angle d'un secteur d'un diagramme circulaire",
+	"description": "Passer des effectifs à l'angle d'un secteur (données → diagramme) et de l'angle à l'effectif (diagramme → données)",
+	"grades": ["1_SPE", "1_GEN", "1_TECHNO"],
+	"theme": "Statistiques",
+	"domain": "Représenter des données",
+	"subdomain": "Diagramme circulaire",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On a demandé à ${{eval:d*m}}$ élèves comment ils viennent au lycée.\n\n| Moyen de transport | À pied | Vélo | Bus | Voiture |\n| --- | --- | --- | --- | --- |\n| Effectif | {{eval:a*m}} | {{eval:b*m}} | {{eval:c*m}} | {{eval:(d-a-b-c)*m}} |\n\nOn représente ces données par un diagramme circulaire. Quelle est la mesure de l'angle du secteur « Vélo » ?\n\n$?^\\circ$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "12|20"
+				},
+				{
+					"name": "m",
+					"expression": "2..5"
+				},
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..5"
+				}
+			],
+			"conditions": ["a + b + c < d", "b != c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:360*b/d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les ${{eval:d*m}}$ élèves correspondent au disque entier, soit $360^\\circ$ : l'angle d'un secteur est proportionnel à son effectif.",
+					"Vélo : $\\dfrac{ {{eval:b*m}} }{ {{eval:d*m}} } \\times 360 = \\dfrac{ {{b}} }{ {{d}} } \\times 360 = {{eval:360*b/d}}^\\circ$.",
+					"```circulaire\ntitre: Moyen de transport des {{eval:d*m}} élèves\nÀ pied = {{eval:a*m}}\nVélo = {{eval:b*m}}\nBus = {{eval:c*m}}\nVoiture = {{eval:(d-a-b-c)*m}}\nétiquettes: angles\n```"
+				]
+			}
+		},
+		{
+			"statement": "Le diagramme circulaire ci-dessous représente le moyen de transport des ${{eval:d*m}}$ élèves d'une classe de lycée.\n\n```circulaire\ntitre: Moyen de transport des {{eval:d*m}} élèves\nÀ pied = {{eval:a*m}}\nVélo = {{eval:b*m}}\nBus = {{eval:c*m}}\nVoiture = {{eval:(d-a-b-c)*m}}\nétiquettes: angles\n```\n\nCombien d'élèves viennent en bus ?\n\n$?$ élèves",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "12|20"
+				},
+				{
+					"name": "m",
+					"expression": "2..5"
+				},
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..5"
+				}
+			],
+			"conditions": ["a + b + c < d", "b != c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c*m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le disque entier, $360^\\circ$, représente les ${{eval:d*m}}$ élèves : l'effectif d'un secteur est proportionnel à son angle.",
+					"Bus : $\\dfrac{ {{eval:360*c/d}} }{360} \\times {{eval:d*m}} = {{eval:c*m}}$ élèves."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "24 élèves, 6 à vélo : 90°",
+			"variationIndex": 0,
+			"variables": {
+				"d": "12",
+				"m": "2",
+				"a": "2",
+				"b": "3",
+				"c": "4"
+			},
+			"answers": ["90"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'effectif au lieu de l'angle",
+			"variationIndex": 0,
+			"variables": {
+				"d": "12",
+				"m": "2",
+				"a": "2",
+				"b": "3",
+				"c": "4"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le pourcentage (25) au lieu de l'angle",
+			"variationIndex": 0,
+			"variables": {
+				"d": "12",
+				"m": "2",
+				"a": "2",
+				"b": "3",
+				"c": "4"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "60 élèves, 12 à vélo : 72°",
+			"variationIndex": 0,
+			"variables": {
+				"d": "20",
+				"m": "3",
+				"a": "5",
+				"b": "4",
+				"c": "2"
+			},
+			"answers": ["72"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Bus : 144° sur 360 de 50 élèves → 20",
+			"variationIndex": 1,
+			"variables": {
+				"d": "20",
+				"m": "5",
+				"a": "1",
+				"b": "2",
+				"c": "4"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'angle au lieu de l'effectif",
+			"variationIndex": 1,
+			"variables": {
+				"d": "20",
+				"m": "5",
+				"a": "1",
+				"b": "2",
+				"c": "4"
+			},
+			"answers": ["144"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Bus : 150° de 36 élèves → 15",
+			"variationIndex": 1,
+			"variables": {
+				"d": "12",
+				"m": "3",
+				"a": "2",
+				"b": "1",
+				"c": "5"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
