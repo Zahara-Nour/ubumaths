@@ -11,8 +11,8 @@ _Mis à jour le 2026-11-03, avant la PR._
 
 - **État** : `scripts/lib/niveaux-des-tags.ts` (fonctions pures + lecture paginée), `scripts/questions/garde-niveaux-tags.ts`
   (toute la base, code 1 si écart), alerte dans `publier-lot.ts`, 8 tests unitaires, doc `couvrir-un-niveau.md` § 8 ·
-  **Prochaine action** : PR, CI, merge · **En attente de David** : les 7 écarts de Terminale (§ 1) · **Pièges en
-  cours** : aucun · **Worktree / branche** : `../ubumaths-wt-garde-niveaux-tags`, `feat/garde-niveaux-tags`.
+  **Prochaine action** : PR, CI, merge · **En attente de David** : rien · **Pièges en
+  cours** : aucun ; exceptions `EXCEPTIONS_NIVEAUX` (§ 2) · **Worktree / branche** : `../ubumaths-wt-garde-niveaux-tags`, `feat/garde-niveaux-tags`.
 
 ## 1. Premier passage en prod (2026-11-03, avant le `db:migrate` de #2280)
 
@@ -24,3 +24,15 @@ et **7 hors de ce qui a été tranché** :
 - 5 brouillons de seconde `[2]` + T_COMP (1cfc575d aussi + T_SPE) : arbres pondérés, tableaux croisés.
 
 Tests écrits après le code (fonctions pures, 8 cas), pas avant.
+
+## 2. Les 7 écarts de Terminale tranchés (David, 2026-11-03, « oui » à mes recos)
+
+- 4ff9d049 (+ T_TECHNO) et 07bce646 (+ T_COMP), publiés : **corrigés** par une migration de même forme (chantier
+  `questions-1techno-grades`).
+- Les 5 brouillons de seconde (`[2]`, tagués TCOMP-302, 1cfc575d aussi TSPE-616) : **laissés** — décision
+  `questions-2de` Q7 (c) (« `['2']` seul »). Ils entrent dans `EXCEPTIONS_NIVEAUX` (ids, niveaux tolérés, raison
+  citée) : la garde les montre à part sans échouer ; un AUTRE niveau manquant chez eux reste un écart. À rouvrir
+  si on les publie pour la Terminale complémentaire.
+
+Tests de `separerExceptions` écrits d'abord (3 rouges), puis le code : 11/11. Prod : 23 écarts (21 de #2285,
+pas encore migrée, + 2 de Terminale), 5 voulus.

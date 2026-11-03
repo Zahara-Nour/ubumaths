@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
 	ecartsNiveaux,
+	EXCEPTIONS_NIVEAUX,
 	formaterEcart,
 	niveauxManquants,
+	separerExceptions,
+	type Exception,
 	type LigneTag
 } from '../lib/niveaux-des-tags';
 
@@ -67,5 +70,36 @@ describe('formaterEcart', () => {
 			tag('f52395d1-31ca-4bdb-be8f-723c5d96d2ac', ['1_SPE'], '1_TECHNO', { title: 'Tangente' })
 		]);
 		expect(formaterEcart(e)).toBe('  f52395d1 published [1_SPE] + 1_TECHNO  « Tangente »');
+	});
+});
+
+describe('separerExceptions', () => {
+	const exceptions: ReadonlyMap<string, Exception> = new Map([
+		['e', { niveaux: ['T_COMP', 'T_SPE'], raison: 'décision X' }]
+	]);
+
+	it('un écart couvert par son exception est mis à part, avec sa raison', () => {
+		const ecarts = ecartsNiveaux([tag('e', ['2'], 'T_COMP'), tag('a', ['1_SPE'], '1_GEN')]);
+		const { restants, excuses } = separerExceptions(ecarts, exceptions);
+		expect(restants.map((r) => r.id)).toEqual(['a']);
+		expect(excuses.map((x) => [x.ecart.id, x.raison])).toEqual([['e', 'décision X']]);
+	});
+
+	it('un niveau manquant hors de l’exception reste un écart', () => {
+		const ecarts = ecartsNiveaux([tag('e', ['2'], 'T_COMP'), tag('e', ['2'], '1_GEN')]);
+		const { restants, excuses } = separerExceptions(ecarts, exceptions);
+		expect(restants.map((r) => [r.id, r.manquants])).toEqual([['e', ['1_GEN', 'T_COMP']]]);
+		expect(excuses).toEqual([]);
+	});
+
+	it('les exceptions du dépôt : les 5 brouillons de seconde (questions-2de Q7 c)', () => {
+		expect([...EXCEPTIONS_NIVEAUX.keys()].map((id) => id.slice(0, 8)).sort()).toEqual([
+			'1cfc575d',
+			'4016b05c',
+			'77d6fedc',
+			'9d7c4d98',
+			'f3e68e4b'
+		]);
+		expect([...EXCEPTIONS_NIVEAUX.values()].every((e) => e.raison.includes('Q7'))).toBe(true);
 	});
 });

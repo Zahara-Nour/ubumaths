@@ -33,7 +33,35 @@ export interface EcartNiveaux {
 	manquants: string[];
 }
 
+/** Écart voulu : niveaux qu'un modèle peut ne pas porter malgré ses tags, et pourquoi */
+export interface Exception {
+	niveaux: string[];
+	raison: string;
+}
+
+/** Un écart couvert par son exception */
+export interface EcartExcuse {
+	ecart: EcartNiveaux;
+	raison: string;
+}
+
 // Constantes
+
+/** Raison commune des 5 brouillons de seconde tagués aussi d'un point de Terminale */
+const Q7_SECONDE =
+	'décision de David, questions-2de Q7 (c) : brouillon de seconde, niveau `2` seul malgré son tag de Terminale';
+
+/**
+ * Écarts voulus (décision de David écrite dans un journal) : la garde les montre à part, sans
+ * échouer. N'en ajouter qu'avec la décision citée.
+ */
+export const EXCEPTIONS_NIVEAUX: ReadonlyMap<string, Exception> = new Map([
+	['1cfc575d-e122-406d-9b4e-60556d3260a5', { niveaux: ['T_COMP', 'T_SPE'], raison: Q7_SECONDE }],
+	['4016b05c-f6cf-4fe1-a1e8-19067a57a931', { niveaux: ['T_COMP'], raison: Q7_SECONDE }],
+	['77d6fedc-1643-4451-a685-2451dc1616cb', { niveaux: ['T_COMP'], raison: Q7_SECONDE }],
+	['9d7c4d98-c7fe-4c2e-8993-d162294e1dde', { niveaux: ['T_COMP'], raison: Q7_SECONDE }],
+	['f3e68e4b-9855-4e91-bc0d-7363b7650b86', { niveaux: ['T_COMP'], raison: Q7_SECONDE }]
+]);
 
 /** PostgREST plafonne une lecture à 1000 lignes : on lit par pages */
 const PAGE = 1000;
@@ -76,6 +104,24 @@ export function ecartsNiveaux(lignes: readonly LigneTag[]): EcartNiveaux[] {
 	return ecarts.sort(
 		(a, b) => rang(a.status) - rang(b.status) || a.title.localeCompare(b.title, 'fr')
 	);
+}
+
+/** Met à part les écarts dont TOUS les niveaux manquants sont couverts par leur exception */
+export function separerExceptions(
+	ecarts: readonly EcartNiveaux[],
+	exceptions: ReadonlyMap<string, Exception> = EXCEPTIONS_NIVEAUX
+): { restants: EcartNiveaux[]; excuses: EcartExcuse[] } {
+	const restants: EcartNiveaux[] = [];
+	const excuses: EcartExcuse[] = [];
+	for (const e of ecarts) {
+		const exception = exceptions.get(e.id);
+		if (exception && e.manquants.every((g) => exception.niveaux.includes(g))) {
+			excuses.push({ ecart: e, raison: exception.raison });
+		} else {
+			restants.push(e);
+		}
+	}
+	return { restants, excuses };
 }
 
 /** Une ligne lisible par écart : `id8 statut [niveaux] + manquants « titre »` */

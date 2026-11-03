@@ -24,7 +24,12 @@
 import { createScriptClient, hasFlag } from '../relecture/common';
 import { publishTemplates } from '../../src/lib/server/questions-bulk-status';
 import { apparierLot, lireLot, titresDuLot, valeurArgument } from '../lib/lot-questions';
-import { ecartsNiveaux, formaterEcart, lireLignesTags } from '../lib/niveaux-des-tags';
+import {
+	ecartsNiveaux,
+	formaterEcart,
+	lireLignesTags,
+	separerExceptions
+} from '../lib/niveaux-des-tags';
 
 const LIBELLE: Record<string, string> = { draft: 'brouillon', published: 'publié' };
 
@@ -65,7 +70,9 @@ async function main(): Promise<number> {
 	const ids = appariement.paires.map((p) => p.ligne.id);
 
 	// Alerte, sans bloquer : un tag dont le niveau manque à `grades` cache le modèle à ce niveau
-	const ecarts = ecartsNiveaux(await lireLignesTags(supabase, ids));
+	const { restants: ecarts } = separerExceptions(
+		ecartsNiveaux(await lireLignesTags(supabase, ids))
+	);
 	if (ecarts.length > 0) {
 		console.warn(
 			`\n⚠️  niveaux de tags absents de \`grades\` (le cahier de texte ne les montre pas) :`
