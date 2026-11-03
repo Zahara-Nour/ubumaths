@@ -9,6 +9,8 @@ couvre:
   - scripts/questions/sonde-cubes.ts
   - scripts/lib/page-a-cocher.ts
   - scripts/lib/lot-questions.ts
+  - scripts/lib/niveaux-des-tags.ts
+  - scripts/questions/garde-niveaux-tags.ts
 ---
 
 # Couvrir un niveau en modèles de questions — démarche, choix et pièges
@@ -305,7 +307,11 @@ scripts/questions/<niveau>-0-<thème> --ids <id8>,…` ; chaque fichier porte so
    (`publishTemplates` en simulation : contrôle de l'admin, collisions de catégorie). Un seul
    refus, et rien n'est écrit. **David** le lance avec `--publier`, puis le statut `published`
    est relu en base. Un modèle déjà publié est laissé tel quel : relancer reprend une
-   publication interrompue.
+   publication interrompue. Il **alerte** (sans bloquer) si un tag d'un modèle du lot a un niveau
+   absent de ses `grades`.
+4. **Garde des niveaux**, après la migration de rangement et avant la publication :
+   `pnpm tsx scripts/questions/garde-niveaux-tags.ts` (lecture seule, toute la base) liste les
+   modèles tagués d'un point dont le niveau manque à `grades`, et sort en code 1 s'il y en a.
 
 ## 9. Pièges
 
@@ -322,7 +328,7 @@ scripts/questions/<niveau>-0-<thème> --ids <id8>,…` ; chaque fichier porte so
   change pas) ; corriger après coup = migration + fichiers (CE1 lot 1, 2026-10-27).
 - **Niveaux d'une catégorie relevés tous niveaux scolaires confondus** : l'index d'unicité ignore
   `grades` (1re spé, lot 1-dérivation).
-- Modèle tagué d'un point d'un autre niveau : `grades` porte les **deux** niveaux (`['2', '1_SPE']`), le
+- Modèle tagué d'un point d'un autre niveau (1TECHNO, 1GEN compris) : `grades` porte les **deux** niveaux (`['2', '1_SPE']`), le
   cahier de texte filtrant `grades` par égalité exacte.
 - **Réponses refusées en `bad_form` sans erreur de l'élève** (1re spé) : décimal sans
   `blankDefaults.acceptDecimal` (qui ne vaut que pour un nombre seul : `1 + 0,5h` → `form: off`) ;
