@@ -35,13 +35,7 @@ export const REGISTRE_CONNUES_FAUSSES: Readonly<Record<string, string>> = {
 	// Messages de refus (R6)
 	'refus-01': 'message : Commande inconnue : .foo — tape .help pour la liste',
 	'refus-02':
-		'message : Rien à dériver : écris une expression après la commande. Forme attendue : .diff <expression>[ ; <variable>]',
-	// Lot 2 · plafond : `1000!/999!` se calcule (David) ; écriture gardée (> 1 000 caractères) sans `answer`
-	'plafond-02': 'valeur : \\dfrac{1000!}{999!}',
-	'plafond-04': 'sans-reponse : (1+1/1000)^1000',
-	'plafond-05': 'sans-reponse : 1.01^365',
-	'plafond-06': 'sans-reponse : factorial(1000)',
-	'approche-11': 'sans-reponse : 0.3^1000'
+		'message : Rien à dériver : écris une expression après la commande. Forme attendue : .diff <expression>[ ; <variable>]'
 };
 
 /** L'Atelier (`runInput`, champ `latex`) */
@@ -64,7 +58,5 @@ export const ATELIER_CONNUES_FAUSSES: Readonly<Record<string, string>> = {
 	'refus-02':
 		'message : Je n’ai pas su lire cette expression : vérifie les parenthèses et les signes.',
 	'refus-03':
-		'message : Je n’ai pas su lire cette expression : vérifie les parenthèses et les signes.',
-	// Lot 2 · plafond : `1000!/999!` se calcule (David, 2026-11-01)
-	'plafond-02': 'valeur : \\dfrac{1000!}{999!}'
+		'message : Je n’ai pas su lire cette expression : vérifie les parenthèses et les signes.'
 };
