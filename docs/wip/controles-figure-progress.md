@@ -6,15 +6,14 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2348 (lot 7 mergé) ; phase 0 du lot 8 proposée._
+_Mis à jour le 2026-11-04, PR #2359 (lot 8) ouverte._
 
-- **État** : lots 1 à 7 et #2305 mergés (lot 7 = triangle par un côté et deux angles, et deux côtés et
-  l'angle compris, § 21-22). Rien en prod (`deploy:prod` sur demande de David). Vérification à l'œil
-  de #2348 dans `verifications-manuelles.md`.
-- **Prochaine action** : lot 8 = variante « rapporteur déjà posé » (§ 19, décision 4), phase 0
-  validée au § 23 ; codage dans le worktree `controles-figure-lot8`. Restent ouverts : la
-  règle sévère des médiatrices (§ 12) ; l'angle non adjacent au côté (§ 21, décision 5).
-- **En attente de David** : rien (phase 0 du lot 8 validée, § 23 ; codage en cours).
+- **État** : lots 1 à 7 et #2305 mergés ; lot 8 (rapporteur déjà posé, § 23-24) en PR #2359, revue
+  faite. Rien en prod (`deploy:prod` sur demande de David).
+- **Prochaine action** : CI verte → merger #2359, noter la vérification à l'œil dans
+  `verifications-manuelles.md`, retirer le worktree. Restent ouverts : la règle sévère des médiatrices
+  (§ 12) ; l'angle non adjacent au côté (§ 21, décision 5).
+- **En attente de David** : rien.
 - **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12) ;
   `perpendiculaire(A, s)` échoue quand A est un bout de s ; `symetrie(P, axe=d)` échoue si P définit
   d ; l'« Essayer » de l'aide ne rend pas la case jouable ; plafond de 20 objets sans message ; la
@@ -22,7 +21,7 @@ _Mis à jour le 2026-11-03, après #2348 (lot 7 mergé) ; phase 0 du lot 8 propo
   fois sur #2348, `ConstructionPlayer-points-auxiliaires`, `atelier/serialize`) et `demo/lexique`
   instable (« aire » absent, vert en local) ; la garde « doc à jour » peut passer en local et
   échouer en CI : la relancer après `git fetch`.
-- **Worktree / branche** : aucun (retiré après #2348).
+- **Worktree / branche** : `../ubumaths-wt-controles-figure-lot8`, `feat/controles-figure-lot8`.
 
 ---
 
@@ -1069,3 +1068,5 @@ vide (aucun outil, ni Effacer ni Retourner) ; `outils:` interdit avec `rapporteu
   par mutation (pose désactivée → rouge).
 - Piège : la carte rend deux `.figure-a-completer` (la case et la réponse attendue) ; un test d'écran
   compte dans celle qui porte la case.
+- Revue (code-reviewer, #2359) : rien de bloquant ni d'important ; mineur traité : l'orientation du
+  rapporteur posé assertée à l'écran (AOB 0°, BOA 130°), rouge en inversant le sens de la pose.

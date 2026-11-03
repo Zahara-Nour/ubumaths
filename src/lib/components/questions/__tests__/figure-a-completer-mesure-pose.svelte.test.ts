@@ -14,35 +14,41 @@ import { generateInstance } from '$lib/questions/generator/instance-generator';
 import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
 import { templateMarkdown } from '$lib/ubumark';
 
-const BLOCK = [
-	'```figure-a-completer',
-	'fenetre: 0 ; 10 ; 0 ; 8',
-	'verifier: mesure AOB, rapporteur posé',
-	'---',
-	'O = point(4, 3)',
-	'A = point(9, 3)',
-	'B = rotation(A, angle=50, centre=O)',
-	'x = demidroite(O, A)',
-	'y = demidroite(O, B)',
-	'```'
-].join('\n');
+const block = (angle: string) =>
+	[
+		'```figure-a-completer',
+		'fenetre: 0 ; 10 ; 0 ; 8',
+		`verifier: mesure ${angle}, rapporteur posé`,
+		'---',
+		'O = point(4, 3)',
+		'A = point(9, 3)',
+		'B = rotation(A, angle=50, centre=O)',
+		'x = demidroite(O, A)',
+		'y = demidroite(O, B)',
+		'```'
+	].join('\n');
 
-const TEMPLATE = {
-	id: 'test-mesure-rapporteur-pose',
-	title: 'Lire un angle',
-	status: 'draft',
-	type: 'fill_in_blanks',
-	variations: [
-		{ statement: templateMarkdown(`Lis la mesure de l’angle $\\widehat{AOB}$.\n\n${BLOCK}`) }
-	],
-	grades: ['6e'],
-	theme: 'Test',
-	domain: 'Test',
-	level: 1
-} as unknown as QuestionTemplate;
+const template = (angle: string) =>
+	({
+		id: 'test-mesure-rapporteur-pose',
+		title: 'Lire un angle',
+		status: 'draft',
+		type: 'fill_in_blanks',
+		variations: [
+			{
+				statement: templateMarkdown(
+					`Lis la mesure de l’angle $\\widehat{${angle}}$.\n\n${block(angle)}`
+				)
+			}
+		],
+		grades: ['6e'],
+		theme: 'Test',
+		domain: 'Test',
+		level: 1
+	}) as unknown as QuestionTemplate;
 
-function instance(): QuestionInstance {
-	const result = generateInstance(TEMPLATE, 42);
+function instance(angle: string): QuestionInstance {
+	const result = generateInstance(template(angle), 42);
 	if (!result.success) throw new Error(result.errors.join(' ; '));
 	return result.instance;
 }
@@ -85,10 +91,10 @@ function typeMeasure(container: HTMLElement, text: string) {
 	input.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
-async function rendered() {
+async function rendered(angle = 'AOB') {
 	const { container } = await render(FlashCard, {
 		target: mainElement(),
-		props: { instance: instance(), interactive: true }
+		props: { instance: instance(angle), interactive: true }
 	});
 	await expect.poll(() => all(container, 'rapporteur-pose').length, { timeout: 5000 }).toBe(1);
 	return container;
@@ -126,5 +132,19 @@ describe('case « figure » : rapporteur déjà posé', () => {
 			.toContain('L’angle mesure 50°, pas 130° : tu as lu la mauvaise graduation du rapporteur.');
 		await expect.poll(() => all(container, 'bon-angle').length).toBe(1);
 		expect(all(container, 'rapporteur-pose')).toHaveLength(1);
+	});
+
+	it('orientation : AOB base vers A (0°) ; BOA base vers B, corps vers A (−50° + 180°)', async () => {
+		const rotationOf = (container: HTMLElement) => {
+			const transform =
+				own(container)
+					.querySelector('[data-testid="rapporteur-pose"] .protractor-instrument')
+					?.getAttribute('transform') ?? '';
+			return Number(/rotate\(([-\d.e]+)\)/.exec(transform)?.[1]);
+		};
+		expect(rotationOf(await rendered('AOB'))).toBeCloseTo(0);
+		for (const m of mains) m.remove();
+		mains = [];
+		expect(rotationOf(await rendered('BOA'))).toBeCloseTo(130);
 	});
 });
