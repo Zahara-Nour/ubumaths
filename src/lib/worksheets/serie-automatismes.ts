@@ -8,7 +8,9 @@
  * une case choix la liste de ses choix à la place de son bloc ; le corrigé met
  * les réponses à la place des cases (sous la liste, la bonne réponse d'une case
  * choix), puis la correction du modèle. Une carte
- * de cours donne son recto à l'énoncé et son verso au corrigé.
+ * de cours donne son recto à l'énoncé et son verso au corrigé. Les gestes à figer :
+ * tableau de signes à compléter (vide / rempli), droite à tracer (repère vide / droite
+ * dessinée), boîte à moustaches à construire (axe seul / boîte dessinée).
  *
  * Formules maison (`~…~`, `~~…~~`) : converties en LaTeX AU MOMENT DE FIGER, avec les
  * fonctions déclarées par le modèle de la question (`shared.genericFunctions`). L'écran
@@ -33,6 +35,12 @@ import { replaceChoiceBlocks, type ChoiceBlock } from '$lib/ubumark/parser/choix
 import { correctChoiceIndexesOf, isChoiceBlank } from '$lib/questions/choice-case';
 import { findCourbesToPlace, parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
 import { lineCoefficients } from '$lib/ubumark/utils/courbe-tracer';
+import {
+	findBoxPlotsToPlace,
+	parseStatChartContent,
+	PLACER_LINE_REGEX
+} from '$lib/ubumark/parser/stat-chart-parser';
+import { boxPlotCaseCount } from '$lib/ubumark/utils/boxplot-placer';
 import {
 	findVariationsToFill,
 	revealVariationBody
@@ -231,6 +239,38 @@ function droitesATracer(
 	return { texte: lignes.join('\n'), cases: reperes.length };
 }
 
+/**
+ * Boîtes à moustaches à construire (```boite-a-moustaches à `placer:`) : à l'énoncé,
+ * la ligne `placer:` reste (le PDF ne dessine que l'axe et le nom des boîtes à
+ * construire), `case:` retirée ; au corrigé (`corrige`), `placer:` retirée : toutes les
+ * boîtes sont dessinées. Cinq cases par boîte à construire (minimum, Q1, médiane, Q3,
+ * maximum). Bloc en retrait ou cité, ou illisible → refus, message à l'appui.
+ */
+function boitesAConstruire(
+	modele: string,
+	texte: string,
+	corrige: boolean
+): { texte: string; cases: number } {
+	const lignes = texte.split('\n');
+	const blocs = findBoxPlotsToPlace(texte);
+	let cases = 0;
+	// Du dernier au premier : les rangs des blocs précédents restent justes
+	for (const bloc of [...blocs].reverse()) {
+		const refus = (raison: string) => new Error(`${modele} : ${raison}`);
+		if (bloc.nested) throw refus('boîte à construire en retrait ou citée');
+		const node = parseStatChartContent('boite-a-moustaches', bloc.body.join('\n'));
+		if (!node.spec) {
+			throw refus(`boîte illisible (${node.errors.map((e) => e.message).join(' ; ')})`);
+		}
+		cases += boxPlotCaseCount(node.spec);
+		const corps = bloc.body.filter(
+			(ligne) => !CASE_LINE.test(ligne) && !(corrige && PLACER_LINE_REGEX.test(ligne.trim()))
+		);
+		lignes.splice(bloc.startIndex + 1, bloc.body.length, ...corps);
+	}
+	return { texte: lignes.join('\n'), cases };
+}
+
 /** Un choix à imprimer : taille des blocs (horloge, collection, monnaie) posée */
 function choixImprime(contenu: string): string {
 	return withChoiceMonnaieSize(withChoiceCollectionSize(withChoiceClockSize(contenu)));
@@ -318,23 +358,28 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Serie {
 	const droitesEnonce = droitesATracer(template.id, tableauxEnonce.texte, false);
 	const droitesCorrige = droitesATracer(template.id, tableauxCorrige.texte, true);
 
+	// Boîte à construire : axe seul à l'énoncé, boîte dessinée au corrigé ; cinq cases chacune
+	const boitesEnonce = boitesAConstruire(template.id, droitesEnonce.texte, false);
+	const boitesCorrige = boitesAConstruire(template.id, droitesCorrige.texte, true);
+
 	// Chaque case attendue doit être remplacée, ni plus ni moins (un marqueur d'une
 	// autre convention, `<<expr:…>>`, laisserait sinon une question sans case)
 	const cases =
 		[...texte.matchAll(PLACEHOLDER), ...texte.matchAll(TEXT_BLANK)].length +
 		casesChoix +
 		tableauxEnonce.cases +
-		droitesEnonce.cases;
+		droitesEnonce.cases +
+		boitesEnonce.cases;
 	if (cases !== (instance.blanks?.length ?? 0)) {
 		throw new Error(
 			`${template.id} : ${cases} case(s) dans l'énoncé pour ${instance.blanks?.length ?? 0} réponse(s) attendue(s)`
 		);
 	}
 
-	const enonce = droitesEnonce.texte
+	const enonce = boitesEnonce.texte
 		.replace(PLACEHOLDER, `\\text{${BLANK_TEXT}}`)
 		.replace(TEXT_BLANK, BLANK_TEXT);
-	const corrige = droitesCorrige.texte
+	const corrige = boitesCorrige.texte
 		.replace(PLACEHOLDER, (_m, i: string) => reponse(instance, Number(i), true, minDigits))
 		.replace(TEXT_BLANK, (_m, i: string) => reponse(instance, Number(i), false, minDigits));
 

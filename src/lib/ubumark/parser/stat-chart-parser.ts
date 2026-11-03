@@ -536,8 +536,8 @@ export function findStatChartBlocks(lines: string[]): StatChartBlockRange[] {
 /** `axe: à choisir` : l'élève choisit l'échelle */
 const CHOOSE_SCALE = 'à choisir';
 
-/** Ligne `placer:` d'un diagramme en barres à construire */
-const PLACER_LINE_REGEX = /^placer\s*:/i;
+/** Ligne `placer:` (ligne rognée) d'un diagramme à construire : barres, boîte à moustaches */
+export const PLACER_LINE_REGEX = /^placer\s*:/i;
 
 /**
  * Les diagrammes en barres à construire (`placer:`) d'un énoncé, délimités comme
