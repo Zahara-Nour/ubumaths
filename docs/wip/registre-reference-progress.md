@@ -6,26 +6,24 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2316 ; #2329 ouverte._
+_Mis à jour le 2026-11-03, après #2329._
 
-- **État** : PR 1 `.dériver` mergée (#2316). **#2329** (PR 1 bis, exponentielle commune sous une
-  barre de nombre + barre remise au tableau de variations) OUVERTE, 2 revues opus faites (2e :
-  « prêt »), CI du commit `a509853e8` en cours au moment du `/clear`. Rien de déployé.
-- **Prochaine action** : (1) `gh pr checks 2329` : vert → `gh pr merge 2329 --merge` (rouge
-  `wrapDynamicImport` au shard client = relancer le job). (2) Avant le merge si rapide, mineurs de
-  la 2e revue : commentaire de `factoredForSign` (`display.ts`) faux — `(1/2 − x/2)e^{−x}` DONNE
-  `(1−x)e^{−x}/2`, le corriger ou le fixer par un test ; plafond sur q dans `commonDenominator`
-  (`(x⁴/7 + x³/11 + x/13)eˣ` → `/1001`) ; sonder `requestedForm('factorisee')` d'une primitive
-  `(ax+b)e^{kx}` (`pedagogical-integration/pipeline.ts:474` passe par `factoredForSign`).
-  (3) Puis étape 2 du découpage : `.simplifier` S3 (`simplifier-01`, `-10`), `.résoudre` → S.
-- **En attente de David** : rien (`tem-01` = `(3x/2 + 3/2)eˣ`, confirmé le 2026-11-03).
+- **État** : PR 1 `.dériver` (#2316) et PR 1 bis (#2329, exponentielle commune sous une barre de
+  nombre) mergées. Mineurs de la 2e revue faits dans #2329 : barre commune remise au tableau SEULEMENT
+  si le numérateur se factorise (un facteur non numérique de plus), sinon forme finale
+  (`(1/2 − x/2)e^{−x}`, `(x/2 − 1/4)e^{2x}`) ; dénominateur commun plafonné à 100 ; primitives du
+  pipeline inchangées (sondé). Rien de déployé.
+- **Prochaine action** : étape 2 du découpage, nouveau worktree : `.simplifier` S3 (`simplifier-01`,
+  `-10`), puis `.résoudre` → S.
+- **En attente de David** : rien.
 - **Tranché** : `unitChoice: 'school'` GARDÉE exprès — ne pas proposer de la retirer ; Q9 EN
   ENTIER, A-D du lot 2, `decimal` en LaTeX, `plafond-02` → 1000, Q24, `signes-06` — NE PAS
-  reposer. Fraction devant ou division après : `(x²/3 + 2x/3)eˣ` ; tableau : `x(x + 2)eˣ/3`.
+  reposer. Fraction devant ou division après : `(x²/3 + 2x/3)eˣ` ; tableau : `x(x + 2)eˣ/3` ;
+  barre seulement si ça factorise, q ≤ 100 (David, 2026-11-03).
 - **Pièges** : `docs:check-a-jour` local ne voit que le COMMITÉ ; commitlint refuse « merge … »
   (`chore: fusion …`) ; un nombre négatif est un `opposite(number)`, pas un `number` ; limites
   connues : `.diff cos(60°)*x`, `2 ≈ 2`, `(t>1)`, `5 m * 25!/24!`, `20000!/19999!`.
-- **Worktree / branche** : `../ubumaths-wt-registre-reference`, `fix/registre-deriver-fraction`.
+- **Worktree / branche** : aucun (à créer pour l'étape 2).
 
 ---
 
