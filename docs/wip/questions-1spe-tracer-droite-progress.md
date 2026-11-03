@@ -7,17 +7,19 @@ Sous-chantier de `questions-1spe` (clos, journal `docs/archive/wip/questions-1sp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR #2272 ouverte._
+_Mis à jour le 2026-11-03, après #2272._
 
-- **État** : phase 0 validée (§ 4) ; modèle 433 écrit, créé en base locale (`18bd977d`), PR #2272
-  (fichiers) en CI.
-- **Prochaine action** : merge de #2272 ; phase 0 de 1SPE-271 (§ 6) à faire valider, puis son modèle
-  (PR à part).
-- **En attente de David** : § 6 (tangente) ; aperçu admin du modèle à jouer à l'œil (Chrome n'a pas pu
-  ouvrir `localhost` dans cette session).
-- **Pièges en cours** : #2265 pas en prod → brouillons seulement, `create-questions --publier` en prod
-  après un `deploy:prod` (David) ; niveaux 1 à 8 de « Équations de droites » pris après ce modèle.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-tracer-droite`, `feat/questions-1spe-tracer-droite`.
+- **État** : modèle 433 mergé (#2272), brouillon en base locale seulement ; pas en prod (#2265 non
+  déployé).
+- **Prochaine action** : 1SPE-271 (§ 6) : réponses de David, puis worktree neuf, modèle en
+  Fonctions › Dérivation › Tangente, **niveau 4** (1 à 3 pris, nœud `e7f414da` = celui de 271,
+  relevé du 2026-11-03).
+- **En attente de David** : § 6 (a) et (b) ; aperçu admin du 433 à jouer à l'œil ; après un
+  `deploy:prod` qui livre #2265, `create-questions --dir scripts/questions/1spe-tracer-droite --publier`
+  (brouillon en prod), puis migration nœud + tag, page à cocher, publication.
+- **Pièges en cours** : brouillons seulement tant que #2265 n'est pas en prod ; Chrome n'ouvrait pas
+  `localhost` dans la session du 2026-11-03 (aperçu non joué).
+- **Worktree / branche** : aucun (retiré après #2272).
 
 ---
 
