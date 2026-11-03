@@ -12,8 +12,9 @@ _Mis à jour le 2026-11-03, après #2288._
   admis — compas sur un trait droit, même rayon en A et B, équerre sur le trait qu'elle longe) mergés,
   pas encore en prod (`deploy:prod` sur demande de David). Vérifications à l'œil dans
   `verifications-manuelles.md`.
-- **Prochaine action** : phase 0 de l'angle (rapporteur) ou de la bissectrice (choix de David).
-- **En attente de David** : rien.
+- **Prochaine action** : coder le lot 5 (angle au rapporteur, § 16) une fois la phase 0 validée ;
+  bissectrice ensuite.
+- **En attente de David** : les 5 questions du § 16.
 - **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12, sa propre
   phase 0) ; `perpendiculaire(A, s)` échoue quand A est un bout de s ; pas de prime dans le langage des
   figures ; `symetrie(P, axe=d)` échoue si P définit d ; l'« Essayer » de l'aide ne rend pas la case
@@ -643,3 +644,68 @@ Phase 0 validée par David le 2026-11-03 (« ok »), deux exceptions tranchées 
 - **Revue Opus** (2026-11-03) : 3 findings, tous traités (parallèle à la 6e → exception 3 ; compas sur
   un cercle → traits droits seulement ; en-tête du test). Simulations de bout en bout (symétriques,
   milieu, médiatrice, parallélogramme) toutes justes.
+
+## 16. Phase 0 — lot 5 : angle de mesure donnée, au rapporteur (proposée le 2026-11-03, à valider)
+
+BO 6e « Mesurer un angle » (6-169), « Construire un angle de mesure donnée » (6-170) ; outil n° 4 de
+[outils-manquants.md](outils-manquants.md). Le CM2 n'utilise pas le rapporteur (BO CM2 grandeurs) : 6e
+d'abord. Existant : le dessin du rapporteur (`constructions-v2/instruments/components/Protractor.svelte`,
+deux échelles, rayon `PROTRACTOR_RADIUS`) et sa chorégraphie (`bissectrice @mesure`) ; aucun geste élève.
+
+### Écriture par le prof
+
+```figure-a-completer
+fenetre: 0 ; 10 ; 0 ; 8
+verifier: angle AOy = 50
+---
+O = point(2, 2)
+A = point(8, 3)
+x = demi_droite(O, A)
+```
+
+Nouvelle vérification `angle AOy = <mesure>` : O = le sommet, A = un point du côté donné (deux points de la
+figure), y = le nom du côté à tracer (lettre libre, pour les messages : « [Oy) ») ; mesure en degrés,
+entière, de 1 à 179 (`{{a}}` d'une variable du modèle, comme le reste du bloc). Papier uni seulement.
+Palette déduite : Rapporteur · Segment.
+
+### Le geste neuf : rapporteur
+
+- **Poser** : 1er toucher = le centre (aimanté comme le compas), 2e toucher = un point du côté, ou
+  n'importe où sur un trait droit qui part du centre → le rapporteur apparaît, sa base le long de ce
+  côté, le 0 sur lui, le corps du côté trigonométrique. Un bouton **Retourner** le passe de l'autre côté.
+- **Viser** : toucher près du bord → un **repère** (petit trait, comme au crayon) à la graduation entière
+  la plus proche. Deux boutons ‹ 1° › le décalent d'un degré (1° au bord du rapporteur ≈ 3 px : trop fin
+  pour un doigt). Le repère se lit sur l'une ou l'autre échelle : rien ne dit « 50 » à l'élève.
+- **Tracer** : le Segment, du centre au repère (le repère est un point aimanté). Le rapporteur reste posé
+  jusqu'au changement d'outil ; « Effacer » = le dernier repère, puis le rapporteur.
+- **Clavier** : centre et côté parmi les boutons de points ; puis flèches = ±1°, Maj+flèches = ±10°,
+  Entrée pose le repère.
+- **Réponse** : `repere(vx;vy;ax;ay;deg;sens)` (centre, point de la base, graduation 0..180, côté ±1),
+  Zod ; c'est un point construit si le centre et le point de la base le sont (§ 15).
+
+### Comportements
+
+- **Nominal** : rapporteur centré en O, base sur [OA), repère à 50 sur la bonne échelle, segment de O au
+  repère → juste.
+- **Limites** (juste) : le côté [Oy) d'un côté ou de l'autre de (OA) ; traits et repères en trop ignorés ;
+  un côté construit autrement à la mesure exacte (60° d'un triangle équilatéral au compas).
+- **Erreurs** (faux, première cause) : aucun segment partant de O → « Trace le côté [Oy) de l'angle,
+  depuis le sommet O. » ; segment dont le bout n'est ni un repère ni un point construit → « Ton côté est
+  tracé à l'œil : place un repère avec le rapporteur. » ; angle de 180 − 50 → « Ton angle mesure 130° au
+  lieu de 50° : tu as lu la mauvaise graduation du rapporteur. » ; autre mesure → « Ton angle mesure 45°
+  au lieu de 50°. »
+- **Erreurs d'auteur** : mesure non entière ou hors 1..179 ; O ou A invisible ou confondus ; quadrillage
+  (refusé) ; aucun des deux côtés possibles n'a la place d'un segment d'au moins 2 unités dans la fenêtre.
+- **Correction** : [Oy) en pointillés, l'arc de l'angle codé « 50° ».
+
+### Questions à David
+
+1. **Côté tracé** au **Segment** (recommandé : rien de neuf, le juge lit la direction O → l'autre bout) ;
+   ou un outil **Demi-droite** neuf (fidèle à la notation [Oy)) ?
+2. **Viser le degré** : toucher, puis boutons ‹ 1° › (recommandé) ; ou glisser le doigt le long du bord
+   avec une loupe ?
+3. **Côté du rapporteur** : bouton **Retourner** (recommandé) ; ou le corps se pose du côté où l'élève
+   touche ensuite ?
+4. **Message « mauvaise graduation »** pour 180 − a : le garder (recommandé : c'est l'erreur type) ?
+5. **Mesurer un angle (6-169)** : lot suivant, avec le même geste et une réponse en degrés (recommandé) ;
+   ou dans ce lot ? Le triangle donné par un côté et deux angles (5e) viendrait après.
