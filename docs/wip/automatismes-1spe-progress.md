@@ -6,12 +6,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR « Lectures graphiques » ouverte._
+_Mis à jour le 2026-11-03, après #2344._
 
 - **État** : lots « évolutions » et « droites » faits ; lot « Lectures graphiques » : 3 modèles neufs
   en **brouillon** (`95ee57c8`, `5397c20f`, `7f82d15a`) et script de fiche
-  `create-automatismes-lectures-graphiques-1spe.ts` (simulation propre), PR ouverte · **Prochaine
-  action** : merger la PR, puis écrire la fiche (`--publier`, par David ou sur sa demande), vérifier
+  `create-automatismes-lectures-graphiques-1spe.ts` (simulation propre), mergés (#2344) · **Prochaine
+  action** : écrire la fiche (`--publier`, par David ou sur sa demande), vérifier
   les PDF (`regen-depuis-base.ts`, `compile-prod.mjs --polices-corrige`, `debord.py`), ajouter la ligne
   à `fiches-exercices.md` § 1 · **En attente de David** : écrire la fiche ; publier `f5585668`,
   `95ee57c8`, `5397c20f`, `7f82d15a` et les fiches `9217dfaa`, `0f98be04` ; corriger ou non
@@ -19,7 +19,7 @@ _Mis à jour le 2026-11-03, PR « Lectures graphiques » ouverte._
   d'un corrigé de tracé ; questions 2 à 4 (§ Questions ouvertes) · **Pièges en cours** :
   `compile-prod.mjs --polices-corrige` pour un corrigé ; `?v=` de `CORRECTION_FONT_FILES` à changer
   à chaque reconstruction des polices ; `~…~` non nettoyé par `cleanCoefficients` dans `buildSerie`
-  · **Worktree / branche** : `ubumaths-wt-automatismes-1spe`, `feat/automatismes-lectures-graphiques`.
+  · **Worktree / branche** : aucun (la fiche s'écrit depuis `main`).
 - Hors de ce chantier, même niveau : 18 fiches « Entraînement technique » / « Applications » de 1re spé en
   brouillon depuis septembre, à relire et publier par David (`docs/pratiques/fiches-exercices.md` § 1, § 3).
 
@@ -117,7 +117,7 @@ sans courbe, ont des cellules cachées). Le parseur **refuse `?` dans une ligne 
 (`docs/systeme/ubumark.md`, « Cellules cachées ») : un tableau de variations à compléter est un geste
 neuf ; un tableau de signes à compléter se fait déjà (`buildSerie` le fige, lot `tableau-signes`).
 
-### Fait (PR du lot « Lectures graphiques », 2026-11-03)
+### Fait (PR #2344 du lot « Lectures graphiques », 2026-11-03)
 
 - ⚠️ Correction du relevé : `3810a06c` (2de) a déjà une variante « courbe → quel tableau ? », mais
   sur une parabole (une bosse, 2 flèches) ; le modèle neuf (3) prend une cubique à deux extremums
