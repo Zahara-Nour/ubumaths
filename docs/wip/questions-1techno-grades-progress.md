@@ -6,12 +6,19 @@ le cas de 53 modèles.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, avant la PR._
+_Mis à jour le 2026-11-03, après #2280 (mergée, migrée) ; #2285 ouverte._
 
-- **État** : migration `20261103082130_questions_1techno_grades.sql` + test d'intégration (rouge sans, 9/9
-  vert avec) · **Prochaine action** : audit, PR, CI, merge, `db:migrate`, vérifier en prod · **En attente de
-  David** : les 21 modèles tagués 1GEN sans `1_GEN` (§ 3) · **Pièges en cours** : aucun · **Worktree /
-  branche** : `../ubumaths-wt-questions-1techno-grades`, `feat/questions-1techno-grades`.
+- **État** : #2280 en prod (53 modèles + `1_TECHNO`, vérifié, trigger `O`). **#2285 OUVERTE**, CI en cours au
+  `/clear` : deux migrations, `20261103084609_questions_1gen_grades` (21 modèles + `1_GEN`) et
+  `20261103085358_questions_terminale_grades` (07bce646 + T_COMP, 4ff9d049 + T_TECHNO) ; tests rouges sans, 9/9 avec ;
+  deux audits `security-auditor` sans finding bloquant · **Prochaine action** : `gh pr checks 2285` (suivre le RUN
+  du dernier commit de la branche) → verte : `pnpm check:migrations --pr 2285`, `gh pr merge 2285 --merge`, puis
+  depuis le dépôt principal `git pull --rebase` + `pnpm db:migrate` (2 migrations attendues seules) ; vérifier en
+  prod (plus aucun écart hors exceptions : `pnpm tsx scripts/questions/garde-niveaux-tags.ts` depuis le worktree
+  `garde-niveaux-tags`, trigger `O`) · **En attente de David** : rien · **Pièges en cours** : `db:migrate` seulement
+  depuis le dépôt principal (worktree non lié) ; `gh pr checks --watch` rend la main trop tôt · **Worktree /
+  branche** : `../ubumaths-wt-questions-1techno-grades`, `feat/questions-1gen-grades`. Chantier frère :
+  `garde-niveaux-tags` (#2284).
 
 ## 1. Relevé MCP prod (2026-11-03)
 
@@ -44,3 +51,23 @@ rouge sans la migration (4 échecs + suite nominale tombée au `beforeAll`), ver
 `security-auditor` : aucun finding bloquant. F1 (les 5 brouillons apparaissent aussi au sélecteur du prof,
 accès inchangé) : commentaire de la migration précisé. F2 (atomicité de `db push`) : après `db:migrate`,
 vérifier `select tgenabled from pg_trigger where tgname = 'update_question_templates_updated_at'` = `O`.
+
+## 6. #2280 en prod, puis le lot 1GEN (2026-11-03)
+
+#2280 mergée (CI verte, intégration comprise), `db:migrate` depuis le dépôt principal (seule migration en attente).
+Vérifié en prod : plus aucun modèle tagué 1TECHNO sans `1_TECHNO` ; trigger `O` ; voisins Tangente en
+`[1_SPE, 1_TECHNO]` ; aucun `updated_at` du lot touché (le seul récent, dc5d7cb6, est d'une autre session, 08:17).
+
+Lot 1GEN validé par David (« oui, fais 1 », même question d'accès : classes de 1re générale). Relevé APRÈS #2280 :
+**21 modèles** (19 publiés), 19 en `[1_SPE, 1_TECHNO]` ou `[T_COMP, 1_TECHNO]`, 2 en `[1_SPE]` (8ed02829,
+eb9517ed). Migration `20261103084609_questions_1gen_grades.sql` (même forme) + `tests/integration/questions-1gen-grades.test.ts` :
+rouge sans (4 échecs, 5 sautés), vert avec (9/9).
+
+Garde d'alerte (option a) : chantier `garde-niveaux-tags`, #2284.
+
+## 7. Les 2 modèles de Terminale, dans #2285 (2026-11-03)
+
+Trouvés par la garde (#2284), tranchés par David (journal `garde-niveaux-tags` § 2) : 07bce646 `[T_SPE]` + T_COMP
+(TCOMP-204), 4ff9d049 `[T_SPE, T_COMP]` + T_TECHNO (TTECHNO-089). Migration à part, même PR (un seul `db:migrate`) :
+`20261103085358_questions_terminale_grades.sql` + `tests/integration/questions-terminale-grades.test.ts`, rouge sans
+(4 échecs, 5 sautés), vert avec (9/9). Les 5 brouillons de seconde restent `['2']` (questions-2de Q7 c).
