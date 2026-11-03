@@ -18,6 +18,7 @@
  * @module ubumark/utils/number-line-representer
  */
 
+import type { InstanceBlank } from '$lib/questions/types';
 import type { NumberLineConfig, NumberLineSegment } from '../types/number-line';
 import { numVal } from './number-line-render';
 import { graduationCount, indexOfValue, placerText } from './number-line-placer';
@@ -201,6 +202,20 @@ export function isRepresentedIntervalCorrect(answer: string, expected: string): 
 /** La réponse attendue est-elle un intervalle (droite à représenter) ? */
 export function isIntervalAnswer(expected: string): boolean {
 	return readInterval(expected) !== null;
+}
+
+/** Case d'une droite à représenter : sa réponse attendue est un intervalle (`[2 ; +∞[`) */
+export function isLineToRepresentBlank(blank: InstanceBlank | undefined): boolean {
+	return blank?.construire === 'line' && isIntervalAnswer(blank.expectedAnswer);
+}
+
+/**
+ * Réponse d'une droite à représenter encore en chantier (`2 comprise, côté ?`) :
+ * ni Entrée ni « Valider » ne la valident, comme une case vide. Vide ou complète
+ * (même fausse) : false.
+ */
+export function isIncompleteRepresentation(answer: string): boolean {
+	return answer.trim() !== '' && readInterval(answer) === null;
 }
 
 /** « Le nombre 2 est-il solution ? Le crochet dit le contraire. » */

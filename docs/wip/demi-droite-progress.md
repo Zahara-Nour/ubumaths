@@ -10,18 +10,16 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2309 (PR 2 mergée)._
+_Mis à jour le 2026-11-03, PR 3 (réponse incomplète bloquée) ouverte._
 
-- **État** : PR 1 (affichage, #2294) et PR 2 (geste `representer:`, #2309) mergées. Pas en prod
-  (`deploy:prod` sur demande de David). Vérifications à l'œil notées dans `verifications-manuelles.md`.
-- **Prochaine action** : à proposer à David : un 1er modèle avec `representer:` (3-014, 2-251, corrigés de
-  |x| < k de la 2de), ou clore le chantier (versement de ce journal dans `docs/systeme/`, déjà décrit
-  dans `ubumark.md` et `questions.md`).
-- **En attente de David** : le choix ci-dessus.
-- **Pièges en cours** : Entrée avec une réponse incomplète (`2 comprise, côté ?`) valide la question ; un
-  segment monté d'un étage peut frôler un point nommé, non traité. CI : erreur non rattrapée
-  `wrapDynamicImport` (hooks SvelteKit, shard navigateur 1/2), hors tests, passée à la relance.
-- **Worktree / branche** : aucun (retiré après #2309).
+- **État** : PR 1 (#2294) et PR 2 (#2309) mergées ; PR 3 `fix/demi-droite-entree` : une droite sans côté
+  ou sans seconde borne compte comme vide (Valider grisé, Entrée → focus sur la droite). Pas en prod.
+- **Prochaine action** : merger la PR 3, puis un 1er modèle avec `representer:` (3-014 d'abord ; 2-251,
+  corrigés de |x| < k de la 2de ensuite), puis clore (versement de ce journal dans `docs/systeme/`).
+- **En attente de David** : rien (ordre validé le 2026-11-03 : correctif, 1 modèle, clôture).
+- **Pièges en cours** : un segment monté d'un étage peut frôler un point nommé, non traité (seulement si le
+  1er modèle le montre). Flash : réponse incomplète acceptée comme une case vide (jugée fausse).
+- **Worktree / branche** : `../ubumaths-wt-demi-droite`, `fix/demi-droite-entree`.
 
 ---
 
