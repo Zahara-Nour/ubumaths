@@ -110,13 +110,20 @@ function settingOf(
 		}
 		return at;
 	});
-	if (!shapes.visiblePoints.has(nameO)) {
-		throw new MeasureAuthorError(
-			`${label} : ${nameO} n’est pas visible (l’élève ne peut pas y poser le rapporteur)`
-		);
-	}
-	if (shapes.window && !isInFrame(o, shapes.window)) {
-		throw new MeasureAuthorError(`${label} : ${nameO} est hors de la fenêtre`);
+	// Les trois points nommés à l'écran : la case dit « Mesure de l'angle AOB » (revue du lot 6)
+	for (const [p, pName] of [
+		[a, nameA],
+		[o, nameO],
+		[b, nameB]
+	] as const) {
+		if (!shapes.visiblePoints.has(pName)) {
+			throw new MeasureAuthorError(
+				`${label} : ${pName} n’est pas visible (l’élève doit voir quel angle mesurer)`
+			);
+		}
+		if (shapes.window && !isInFrame(p, shapes.window)) {
+			throw new MeasureAuthorError(`${label} : ${pName} est hors de la fenêtre`);
+		}
 	}
 	for (const [p, pName] of [
 		[a, nameA],
@@ -149,7 +156,8 @@ function settingOf(
 		[ub, nameB]
 	] as const) {
 		const reach = Math.max(0, ...straight.map((t) => reachAlong(t, o, u)));
-		if (reach === 0) {
+		// Un trait qui ne fait que toucher O (venu de l'autre côté) : pas tracé (revue)
+		if (reach <= ALONG_EPSILON * Math.max(1, Math.abs(o.x), Math.abs(o.y))) {
 			throw new MeasureAuthorError(
 				`${label} : le côté [${nameO}${pName}) n’est pas tracé : ajouter demidroite(${nameO}, ${pName})`
 			);

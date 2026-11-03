@@ -49,11 +49,11 @@ function figure(body: string[], header: string[] = [], window = '0 ; 10 ; 0 ; 8'
 	return [`fenetre: ${window}`, ...header, 'verifier: mesure AOB', '---', ...body].join('\n');
 }
 
-/** Angle AOB de `measure` degrés, sommet O(4 ; 3), [OA) horizontal */
+/** Angle AOB de `measure` degrés, sommet O(4 ; 3), [OA) horizontal, OA = OB = 3 (B dans la fenêtre) */
 function body(measure: number): string[] {
 	return [
 		'O = point(4, 3)',
-		'A = point(9, 3)',
+		'A = point(7, 3)',
 		`B = rotation(A, angle=${measure}, centre=O)`,
 		'x = demidroite(O, A)',
 		'y = demidroite(O, B)'
@@ -228,6 +228,44 @@ describe('Erreurs d’auteur', () => {
 		expect(() => assertChecks(line)).not.toThrow();
 	});
 
+	it('A ou B invisible, ou hors de la fenêtre (revue)', () => {
+		const hidden = figure(
+			body(50).map((l) => (l.startsWith('A =') ? 'A = point(9, 3, visible=faux)' : l))
+		);
+		expect(() => assertChecks(hidden)).toThrow(/A n’est pas visible/);
+		const outside = figure([
+			'O = point(4, 3)',
+			'A = point(10, 3)',
+			'B = rotation(A, angle=90, centre=O)',
+			'x = demidroite(O, A)',
+			'y = demidroite(O, B)'
+		]);
+		expect(() => assertChecks(outside)).toThrow(/B est hors de la fenêtre/);
+	});
+
+	it('segment venu de l’autre côté de O : « n’est pas tracé » (revue)', () => {
+		const opposite = figure([
+			...body(50).slice(0, 4),
+			'M = rotation(point(1, 3), angle=50, centre=O)',
+			's = segment(M, O)'
+		]);
+		expect(() => assertChecks(opposite)).toThrow(/\[OB\) n’est pas tracé/);
+	});
+
+	it('rapporteur qui ne tient que posé sur [OB), corps vers A : se mesure (revue)', () => {
+		// O près du bord gauche : posé sur [OA) (horizontal), corps vers B, il sort à gauche ;
+		// posé sur [OB) (à 80°), corps vers A, il tient
+		const source = figure([
+			'O = point(1, 4)',
+			'A = point(4, 4)',
+			'B = rotation(A, angle=80, centre=O)',
+			'x = demidroite(O, A)',
+			'y = demidroite(O, B)'
+		]);
+		expect(() => assertChecks(source)).not.toThrow();
+		expect(judge(source, 'mesure(80)').status).toBe('correct');
+	});
+
 	it('sommet invisible', () => {
 		const hidden = figure(
 			body(50).map((l) => (l.startsWith('O =') ? 'O = point(4, 3, visible=faux)' : l))
@@ -236,12 +274,12 @@ describe('Erreurs d’auteur', () => {
 	});
 
 	it('rapporteur qui sort de la figure des deux côtés', () => {
-		// O près du bord bas, [OA) horizontal, B au-dessous : posé sur [OA) vers B il sort ;
-		// posé sur [OB) vers A, aussi
+		// O dans le coin bas gauche : posé sur [OA) vers B il sort à gauche ; posé sur [OB)
+		// vers A, il sort en bas
 		const source = figure([
-			'O = point(4, 0.5)',
-			'A = point(9, 0.5)',
-			'B = rotation(A, angle=-100, centre=O)',
+			'O = point(0.5, 0.5)',
+			'A = point(3, 0.5)',
+			'B = rotation(A, angle=60, centre=O)',
 			'x = demidroite(O, A)',
 			'y = demidroite(O, B)'
 		]);

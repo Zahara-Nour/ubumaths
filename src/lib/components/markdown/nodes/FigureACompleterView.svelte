@@ -264,9 +264,18 @@
 		}
 	}
 
-	/** Mesure tapée (lot 6) : chiffres seulement, trois au plus ; vide = rien de tapé */
+	/** « Au degré près » : une virgule a été tapée (lot 6), liée au bloc */
+	let measureHint = $state.raw<FigureNode | null>(null);
+
+	/**
+	 * Mesure tapée (lot 6) : chiffres seulement, trois au plus ; vide = rien de
+	 * tapé. Une virgule ou un point : les chiffres d'avant, et la consigne (revue)
+	 */
 	function typeMeasure(event: Event & { currentTarget: HTMLInputElement }) {
-		const digits = event.currentTarget.value.replace(/\D/g, '').slice(0, 3);
+		const raw = event.currentTarget.value;
+		const decimal = /[,.]/.test(raw);
+		measureHint = decimal ? node : null;
+		const digits = raw.split(/[,.]/)[0].replace(/\D/g, '').slice(0, 3);
 		event.currentTarget.value = digits;
 		answer?.onChange(serializeMeasuredAnswer(objects, digits === '' ? null : Number(digits)));
 	}
@@ -1103,6 +1112,11 @@
 			/>
 			<span aria-hidden="true">°</span>
 		</label>
+		{#if interactive && measureHint === node}
+			<p class="figure-a-completer-consigne" data-testid="mesure-consigne">
+				Au degré près : tape un nombre entier.
+			</p>
+		{/if}
 	{/if}
 	<!-- Zone toujours présente : une zone live insérée déjà remplie est souvent tue -->
 	<p class="sr-only" role="status">

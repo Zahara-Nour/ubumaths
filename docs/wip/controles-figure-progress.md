@@ -853,3 +853,9 @@ numérique). Les poses du rapporteur et les repères ne sont pas notés. Papier 
 - Tests : `construction-measure.test.ts` (24), écran `figure-a-completer-mesure.svelte.test.ts` (4),
   masquage (2), M1 au lot 5 (1) ; vérifiés rouges en cassant chaque règle (le juge a été écrit avant ses
   tests : preuve rouge faite après coup, par mutation).
+- Revue Opus (#2327), 6 findings. Corrigés : A et B visibles et dans la fenêtre (la case nomme
+  l'angle) ; « 50,5 » garde 50 et dit « Au degré près : tape un nombre entier. » ; test de la pose sur
+  [OB) seule (vérifié rouge en inversant le signe) ; un segment qui ne fait que toucher O = « n'est pas
+  tracé ». Vérifié : aucun modèle en prod n'a `verifier: angle` ni `mesure` (pas de régression M1).
+  Ouvert (question à David) : l'énoncé masqué garde `B = rotation(A, angle={{a}}, …)`, soit la
+  réponse en clair dans la source envoyée pendant une évaluation.

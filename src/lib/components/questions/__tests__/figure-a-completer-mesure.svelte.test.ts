@@ -153,6 +153,17 @@ describe('case « figure » : mesurer un angle au rapporteur', () => {
 		expect(measureInput(container).disabled).toBe(true);
 	});
 
+	it('« 50,5 » : 50 gardé, et la consigne du degré près (revue)', async () => {
+		const { container } = await rendered();
+		typeMeasure(container, '50,5');
+		await expect.poll(() => measureInput(container).value).toBe('50');
+		await expect
+			.poll(() => container.textContent)
+			.toContain('Au degré près : tape un nombre entier.');
+		typeMeasure(container, '51');
+		await expect.poll(() => byTestId(container, 'mesure-consigne')).toBeNull();
+	});
+
 	it('repère et mesure se gardent l’un l’autre', async () => {
 		const { container, rect } = await posed();
 		typeMeasure(container, '50');
