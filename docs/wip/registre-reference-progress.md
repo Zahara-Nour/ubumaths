@@ -6,12 +6,11 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR 4/5 ouverte._
+_Mis à jour le 2026-11-03, après #2303._
 
 - **État** : lot 2 du registre découpé en 5 PR (§ Lot 2 — correction du registre). PR 1/5 (#2281,
-  A/B), 2/5 (#2292, D), 3/5 (#2300, lecture) MERGÉES ; PR 4/5 (C, égalité → vrai / faux, `≈`
-  refusé) ouverte sur `fix/registre-lot2-egalite`. Reste 5 lignes connues fausses au lot 2
-  (plafond). Pas déployées.
+  A/B), 2/5 (#2292, D), 3/5 (#2300, lecture), 4/5 (#2303, C : égalité → vrai / faux, `≈` refusé,
+  comparaison non gardée) MERGÉES ; reste 5 lignes connues fausses au lot 2 (plafond). Pas déployées.
 - **Prochaine action** : PR 5/5 — plafond : `1000!/999!` → 1000 (les deux outils), `answer` de
   l'écriture gardée (`plafond-04, 05, 06`, `approche-11`).
 - **En attente de David** : rien.
@@ -19,10 +18,11 @@ _Mis à jour le 2026-11-03, PR 4/5 ouverte._
   tard ») — ne pas proposer de la retirer ; avant : Q9 EN ENTIER, A-D du lot 2, `decimal` en
   LaTeX, `plafond-02` → 1000, Q24, `signes-06` — NE PAS reposer.
 - **Pièges** : `docs:check-a-jour` local ne voit que le COMMITÉ ; PR en conflit avec `main` = aucun
-  run de CI → `git merge origin/main` ; `gh pr checks --watch` juste après un push ne voit que
-  l'auto-merge → suivre le run « Code Quality » du commit ; limites connues : `.diff cos(60°)*x`
-  (commandes qui relisent `ctx.input`), `2 ≈ 2` (caractère `≈`) mal lu, `(t>1)` → faux.
-- **Worktree / branche** : `ubumaths-wt-registre-reference` · `fix/registre-lot2-egalite`.
+  run de CI → `git merge origin/main` (sujet du commit de fusion en minuscule : commitlint) ;
+  `gh pr checks --watch` juste après un push ne voit que l'auto-merge → suivre le run « Code
+  Quality » du commit ; limites connues : `.diff cos(60°)*x` (`ctx.input`), `2 ≈ 2` (caractère
+  `≈`) mal lu, `(t>1)` → faux.
+- **Worktree / branche** : aucun (retirés après #2303).
 
 ---
 
