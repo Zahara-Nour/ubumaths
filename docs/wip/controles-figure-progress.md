@@ -971,3 +971,18 @@ d'angle, est donc construit. Le repère seul ne construit toujours rien.
   rouge par mutation de chaque règle (côté d'angle, repère refusé au triangle, part et d'autre,
   graduation, C construit, somme, angle compris, repère à base libre — ce dernier a fait ajouter un
   test).
+- Revue Opus (#2348), 4 findings, tous traités, tests vérifiés rouges avant le correctif :
+  - **Important** : C passait pour construit par les exceptions du § 15 (deux cercles de même rayon
+    sans rapporteur, compas piqué sur le côté d'angle, droite exacte au pied de la hauteur) :
+    réponses forgées jugées justes. Désormais C = croisement d'un côté d'angle parti de A et d'un parti
+    de B (`angleSideVertex`), ou, angle compris, du côté d'angle et d'un cercle construit centré au même
+    sommet ; cercle ou report sans longueur donnée = faux sans message (hors palette).
+  - « De part et d'autre de [AB] » seulement si un angle est faux (un repère à 180 − a de l'autre côté,
+    droite prolongée, donne un angle juste).
+  - Erreurs d'auteur : « le rapporteur ne tient pas en A et en B du même côté de (AB) » quand chacun tient
+    d'un côté ; « poser le rapporteur » au lieu de « piquer le compas » ; le refus du rapporteur cite le
+    triangle. Le cas donné par la revue (A(3 ; 1)) était faux : le rapporteur n'y tient d'aucun côté (sa
+    barre déborde sous la base) ; le test prend A(3,5 ; 2,2), B(8,5 ; 5,8).
+  - Cas limite du § 21 « côté [AC] tracé d'un trait à travers le repère » : admis par le juge, mais
+    **inatteignable à la main** (rien n'aimante le bout du segment sur la direction du repère) ; le test
+    le dit. À montrer à David.

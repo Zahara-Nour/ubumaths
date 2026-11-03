@@ -422,6 +422,25 @@ function isAngleSide(
 }
 
 /**
+ * Le sommet d'où part un côté d'angle construit (lot 7, revue de #2348) : le
+ * centre du repère qui le porte, si l'objet est un trait droit construit qui part
+ * de ce centre et passe par ce repère ; null sinon
+ */
+export function angleSideVertex(
+	object: DrawnObject,
+	marks: readonly DrawnRepere[],
+	construction: Construction
+): Position | null {
+	if (object.kind !== 'droite' && object.kind !== 'segment') return null;
+	const p = { x: object.x1, y: object.y1 };
+	const q = { x: object.x2, y: object.y2 };
+	const own = marks.find((mark) =>
+		isAngleSide(p, q, construction.isBuilt, construction.traits, [mark])
+	);
+	return own ? { x: own.vx, y: own.vy } : null;
+}
+
+/**
  * Intersections des paires de cercles (compas ou report) non construits, de même
  * rayon, centrés sur deux points construits distincts : la médiatrice tracée avec
  * un écartement quelconque gardé (§ 15)

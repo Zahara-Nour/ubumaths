@@ -31,6 +31,7 @@ import {
 } from './angle';
 import type { DrawnLine, DrawnObject, DrawnRepere } from './answer';
 import {
+	angleSideVertex,
 	basePointsOf,
 	constructionOf,
 	intersectTraits,
@@ -184,18 +185,19 @@ function settingOf(
 		throw new TriangleAuthorError(`${label} : le triangle se construit sur papier uni`);
 	}
 	const [nameA, nameB, nameC] = check.points;
+	const gesture = check.angles.length > 0 ? 'poser le rapporteur' : 'piquer le compas';
 	const [a, b] = [nameA, nameB].map((name) => {
 		const at = points.get(name);
 		if (!at)
 			throw new TriangleAuthorError(`${label} : le point ${name} n’existe pas dans la figure`);
 		if (!shapes.visiblePoints.has(name)) {
 			throw new TriangleAuthorError(
-				`${label} : ${name} n’est pas visible (l’élève ne peut pas y piquer le compas)`
+				`${label} : ${name} n’est pas visible (l’élève ne peut pas y ${gesture})`
 			);
 		}
 		if (shapes.window && !isInFrame(at, shapes.window)) {
 			throw new TriangleAuthorError(
-				`${label} : ${name} est hors de la fenêtre (l’élève ne peut pas y piquer le compas)`
+				`${label} : ${name} est hors de la fenêtre (l’élève ne peut pas y ${gesture})`
 			);
 		}
 		return at;
@@ -299,7 +301,12 @@ export function assertTriangle(
 				(sens) => !protractorFitsAt(check, g, sens, setting.a, setting.b, shapes?.window ?? null)
 			)
 		);
-		const at = (stuck.length > 0 ? stuck : check.angles).map((g) => g.vertex).join(' ou en ');
+		if (stuck.length === 0) {
+			throw new TriangleAuthorError(
+				`${label} : le rapporteur ne tient pas en ${a} et en ${b} du même côté de (${a}${b}) : éloigner [${a}${b}] du bord ou agrandir la fenêtre`
+			);
+		}
+		const at = stuck.map((g) => g.vertex).join(' comme en ');
 		throw new TriangleAuthorError(
 			`${label} : le rapporteur posé en ${at} sort de la figure, d’un côté de (${a}${b}) comme de l’autre : éloigner [${a}${b}] du bord ou agrandir la fenêtre`
 		);
@@ -323,6 +330,38 @@ function constructedCircles(objects: readonly DrawnObject[], construction: Const
 		const trait = traitOf(o);
 		return trait ? [trait] : [];
 	});
+}
+
+/**
+ * Avec un angle donné : les croisements qui construisent C (§ 21) — deux côtés
+ * d'angle partis l'un de A, l'autre de B ; ou, deux côtés et l'angle compris, le
+ * côté d'angle et un cercle construit (report ou compas) centré au même sommet
+ */
+function angleCrossings(
+	check: TriangleCheck,
+	objects: readonly DrawnObject[],
+	marks: readonly DrawnRepere[],
+	construction: Construction,
+	at: (name: string) => Position
+): Position[] {
+	const sidesFrom = (v: Position): Trait[] =>
+		objects.flatMap((o, i): Trait[] => {
+			if (!construction.built.has(i)) return [];
+			const vertex = angleSideVertex(o, marks, construction);
+			if (!vertex || !near(vertex, v, tolerance(v))) return [];
+			const trait = traitOf(o);
+			return trait ? [trait] : [];
+		});
+	const pairs = (left: Trait[], right: Trait[]) =>
+		left.flatMap((p) => right.flatMap((q) => intersectTraits(p, q)));
+	if (check.angles.length === 2) {
+		return pairs(sidesFrom(at(check.angles[0].vertex)), sidesFrom(at(check.angles[1].vertex)));
+	}
+	const v = at(check.angles[0].vertex);
+	const circles = constructedCircles(objects, construction).filter(
+		(t) => t.kind === 'circle' && near(t.center, v, tolerance(v))
+	);
+	return pairs(sidesFrom(v), circles);
 }
 
 /** L'autre bout d'un segment qui part de `from` (pas [AB] repassé), sinon null */
@@ -349,8 +388,13 @@ export function judgeTriangle(
 	const { a, b, lengths } = settingOf(check, points, shapes);
 	const figure = shapes as FigureShapes;
 	const [nameA, nameB, nameC] = check.points;
-	// Un point placé sans l'outil point : réponse forgée
+	// Un point placé sans l'outil point : réponse forgée ; un cercle sans longueur donnée
+	// (palette Rapporteur · Règle · Segment, revue de #2348) aussi
 	if (objects.some((o) => o.kind === 'point')) return { status: 'incorrect' };
+	const circles = objects.some((o) => o.kind === 'cercle' || o.kind === 'report');
+	if (check.angles.length > 0 && check.lengths.length === 0 && circles) {
+		return { status: 'incorrect' };
+	}
 	const segments = objects.filter((o): o is DrawnLine => o.kind === 'segment');
 	const eps = tolerance(
 		a,
@@ -378,13 +422,19 @@ export function judgeTriangle(
 		basePointsOf(points, figure.segments),
 		figure.traits
 	);
-	// Trois longueurs (lot 4) : C au croisement de deux cercles construits ; avec un angle
-	// (lot 7) : au croisement de deux traits construits (côtés d'angle, reports)
-	const crossings = intersectionsOf(constructedCircles(objects, construction));
-	const built = (p: Position) =>
-		check.angles.length > 0
-			? construction.isBuilt(p)
-			: crossings.some((q) => near(q, p, tolerance(q, p)));
+	const at = (name: string) => (name === nameA ? a : b);
+	const marks = objects.filter(
+		(o): o is DrawnRepere => o.kind === 'repere' && isBuiltMark(o, construction)
+	);
+	// Trois longueurs (lot 4) : C au croisement de deux cercles construits. Avec un angle
+	// (lot 7, revue de #2348) : au croisement de ce que dit le § 21, deux côtés d'angle (un
+	// depuis A, un depuis B), ou le côté d'angle et un cercle construit centré au même
+	// sommet ; un point construit par les exceptions du § 15 ne suffit pas
+	const crossings =
+		check.angles.length === 0
+			? intersectionsOf(constructedCircles(objects, construction))
+			: angleCrossings(check, objects, marks, construction, at);
+	const built = (p: Position) => crossings.some((q) => near(q, p, tolerance(q, p)));
 	const constructed = vertices.filter(built);
 	if (constructed.length === 0) {
 		return {
@@ -395,10 +445,6 @@ export function judgeTriangle(
 					: vertexEyeballedFeedback(nameC)
 		};
 	}
-	const at = (name: string) => (name === nameA ? a : b);
-	const marks = objects.filter(
-		(o): o is DrawnRepere => o.kind === 'repere' && isBuiltMark(o, construction)
-	);
 	const feedbackOf = (c: Position): string | null => {
 		// Le repère qui porte le côté [VC) : centré en V, dans la direction de C
 		const markSide = (v: Position) => {
@@ -409,21 +455,24 @@ export function judgeTriangle(
 			});
 			return mark ? sideOf(a, b, repereAt(mark)) : null;
 		};
-		if (check.angles.length === 2) {
-			const [sideA, sideB] = check.angles.map((g) => markSide(at(g.vertex)));
-			if (sideA && sideB && sideA !== sideB) return oppositeAnglesFeedback(nameA, nameB);
-		}
-		for (const g of check.angles) {
+		const angleErrors = check.angles.flatMap((g) => {
 			const v = at(g.vertex);
 			const measured = angleBetween(v, at(g.base), c);
-			if (Math.abs(measured - g.measure) <= ANGLE_EPSILON) continue;
+			if (Math.abs(measured - g.measure) <= ANGLE_EPSILON) return [];
 			const name = angleName(check, g);
 			const sameSide = markSide(v) === sideOf(a, b, c);
 			if (sameSide && Math.abs(measured - (180 - g.measure)) <= ANGLE_EPSILON) {
-				return wrongScaleAngleFeedback(name, measured, g.measure);
+				return [wrongScaleAngleFeedback(name, measured, g.measure)];
 			}
-			return wrongAngleTriangleFeedback(name, measured, g.measure);
+			return [wrongAngleTriangleFeedback(name, measured, g.measure)];
+		});
+		// Repères de part et d'autre de [AB] : seulement si un angle est faux (un repère
+		// à 180 − a de l'autre côté, droite prolongée, donne un angle juste : revue de #2348)
+		if (angleErrors.length > 0 && check.angles.length === 2) {
+			const [sideA, sideB] = check.angles.map((g) => markSide(at(g.vertex)));
+			if (sideA && sideB && sideA !== sideB) return oppositeAnglesFeedback(nameA, nameB);
 		}
+		if (angleErrors.length > 0) return angleErrors[0];
 		const lengthEps = tolerance(a, b, c);
 		for (const [i, length] of check.lengths.entries()) {
 			const vertex = length.side[0];

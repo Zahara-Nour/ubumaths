@@ -263,7 +263,9 @@ describe('triangle par un côté et deux angles : verdict', () => {
 		});
 	});
 
-	it('juste : le côté [AC] tracé directement à travers le repère, sans la règle', () => {
+	// Réponse exacte : à l'écran, rien n'aimante le bout du segment sur la direction du repère
+	// (revue de #2348) ; la règle du côté d'angle l'admet quand même
+	it('juste : le côté [AC] tracé d’un trait à travers le repère, sans la règle', () => {
 		expect(judge(ANGLES, [MARK_A, MARK_B, LINE_B, segment(A, C), segment(B, C)])).toEqual({
 			status: 'correct'
 		});
@@ -357,6 +359,90 @@ describe('triangle par un côté et deux angles : verdict', () => {
 		expect(judge(ANGLES, [...NOMINAL, { kind: 'point', x: C.x, y: C.y }])).toEqual({
 			status: 'incorrect'
 		});
+	});
+});
+
+describe('revue de #2348 : réponses forgées par les exceptions du § 15', () => {
+	const cercle = (c: Position, p: Position): DrawnObject => ({
+		kind: 'cercle',
+		cx: c.x,
+		cy: c.y,
+		x: p.x,
+		y: p.y
+	});
+	const mid = (p: Position, q: Position) => ({ x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 });
+
+	it('S1 : deux cercles de même rayon, sans rapporteur (hors palette : faux sans message)', () => {
+		const source = figure('triangle ABC : CAB = 50 ; ABC = 50');
+		const mA = repere(A, B, 50, 1);
+		const mB = repere(B, A, 50, -1);
+		const [c] = cross(droite(A, repereAt(mA)), droite(B, repereAt(mB)));
+		const r = Math.hypot(c.x - A.x, c.y - A.y);
+		const objects = [
+			cercle(A, { x: A.x - r, y: A.y }),
+			cercle(B, { x: B.x + r, y: B.y }),
+			segment(A, c),
+			segment(B, c)
+		];
+		expect(judge(source, objects)).toEqual({ status: 'incorrect' });
+	});
+
+	it('S2 : un seul rapporteur, compas piqué sur le côté d’angle (hors palette)', () => {
+		expect(
+			judge(ANGLES, [MARK_A, LINE_A, cercle(mid(A, C), A), segment(A, C), segment(B, C)])
+		).toEqual({ status: 'incorrect' });
+	});
+
+	it('S3 : un seul rapporteur, droite exacte au pied de la hauteur : placé à l’œil', () => {
+		const H = { x: C.x, y: 3 };
+		for (const d of [droite(H, { x: H.x, y: H.y + 6 }), droite(H, { x: H.x, y: H.y - 6 })]) {
+			expect(judge(ANGLES, [MARK_A, LINE_A, d, segment(A, C), segment(B, C)])).toEqual({
+				status: 'incorrect',
+				feedback: vertexEyeballedAnglesFeedback('C')
+			});
+		}
+	});
+
+	it('S4 : angle compris, compas piqué sur le côté d’angle au lieu du report : placé à l’œil', () => {
+		const source = figure('triangle ABC : AC = u ; CAB = 40', [
+			...BODY,
+			'u = segment(point(1, 7), point(5, 7))'
+		]);
+		const p = repereAt(MARK_A);
+		const d = Math.hypot(p.x - A.x, p.y - A.y);
+		const c = { x: A.x + ((p.x - A.x) / d) * 4, y: A.y + ((p.y - A.y) / d) * 4 };
+		expect(
+			judge(source, [MARK_A, LINE_A, cercle(mid(A, c), A), segment(A, c), segment(B, c)])
+		).toEqual({ status: 'incorrect', feedback: vertexEyeballedAnglesFeedback('C') });
+	});
+
+	it('S5 : repère à 140 de l’autre côté en A, droite prolongée : angle juste, donc juste', () => {
+		const mA = repere(A, B, 140, -1);
+		const lA = droite(A, repereAt(mA));
+		const [c] = cross(lA, LINE_B).filter((q) => q.y > 3);
+		expect(judge(ANGLES, [mA, lA, MARK_B, LINE_B, segment(A, c), segment(B, c)])).toEqual({
+			status: 'correct'
+		});
+	});
+
+	it('S6 : rapporteur qui tient en A d’un côté, en B de l’autre : le message le dit', () => {
+		const source = figure('triangle ABC : CAB = 30 ; ABC = 30', [
+			'A = point(3.5, 2.2)',
+			'B = point(8.5, 5.8)',
+			's = segment(A, B)'
+		]);
+		expect(() => assertChecks(source)).toThrow(
+			/le rapporteur ne tient pas en A et en B du même côté de \(AB\)/
+		);
+	});
+
+	it('message d’auteur : « poser le rapporteur » quand un angle est donné', () => {
+		const source = figure('triangle ABC : CAB = 40 ; ABC = 65', [
+			'A = point(3, 3, visible=faux)',
+			'B = point(9, 3)',
+			's = segment(A, B)'
+		]);
+		expect(() => assertChecks(source)).toThrow(/poser le rapporteur/);
 	});
 });
 
