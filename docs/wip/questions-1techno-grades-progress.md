@@ -6,13 +6,19 @@ le cas de 53 modèles.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2280 (migrée)._
+_Mis à jour le 2026-11-03, après #2280 (mergée, migrée) ; #2285 ouverte._
 
-- **État** : #2280 mergée et migrée (53 modèles en `1_TECHNO`, vérifié en prod, trigger `O`) ; lot 1GEN
-  (21 modèles) et 2 de Terminale (§ 7) : #2285, deux migrations + tests (rouges sans, 9/9 avec) ·
-  **Prochaine action** : audit, PR, CI, merge, `db:migrate`, vérifier en prod · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** :
-  `../ubumaths-wt-questions-1techno-grades`, `feat/questions-1gen-grades` (garde : `../ubumaths-wt-garde-niveaux-tags`,
-  #2284).
+- **État** : #2280 en prod (53 modèles + `1_TECHNO`, vérifié, trigger `O`). **#2285 OUVERTE**, CI en cours au
+  `/clear` : deux migrations, `20261103084609_questions_1gen_grades` (21 modèles + `1_GEN`) et
+  `20261103085358_questions_terminale_grades` (07bce646 + T_COMP, 4ff9d049 + T_TECHNO) ; tests rouges sans, 9/9 avec ;
+  deux audits `security-auditor` sans finding bloquant · **Prochaine action** : `gh pr checks 2285` (suivre le RUN
+  du dernier commit `1c256b9d1`) → verte : `pnpm check:migrations --pr 2285`, `gh pr merge 2285 --merge`, puis
+  depuis le dépôt principal `git pull --rebase` + `pnpm db:migrate` (2 migrations attendues seules) ; vérifier en
+  prod (plus aucun écart hors exceptions : `pnpm tsx scripts/questions/garde-niveaux-tags.ts` depuis le worktree
+  `garde-niveaux-tags`, trigger `O`) · **En attente de David** : rien · **Pièges en cours** : `db:migrate` seulement
+  depuis le dépôt principal (worktree non lié) ; `gh pr checks --watch` rend la main trop tôt · **Worktree /
+  branche** : `../ubumaths-wt-questions-1techno-grades`, `feat/questions-1gen-grades`. Chantier frère :
+  `garde-niveaux-tags` (#2284).
 
 ## 1. Relevé MCP prod (2026-11-03)
 
