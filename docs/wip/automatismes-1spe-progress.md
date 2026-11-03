@@ -6,12 +6,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, phase 0 du lot « Statistiques »._
+_Mis à jour le 2026-11-04, lot « Statistiques » en cours._
 
 - **État** : lots « évolutions », « droites » et « lectures graphiques » faits ; fiche
   `7ff081db` « Automatismes : lectures graphiques (1) » écrite en brouillon et vérifiée ; ensemble
-  fini du corrigé corrigé (#2350) · **Prochaine action** : lot « Statistiques », phase 0 posée (§ Lot
-  « Statistiques ») · **En attente de David** : les 4 questions de cette phase 0 ; publier `f5585668`, `95ee57c8`, `5397c20f`, `7f82d15a` et
+  fini du corrigé corrigé (#2350) · **Prochaine action** : lot « Statistiques » (décisions du 2026-11-04 tranchées) : `buildSerie` fige la boîte à placer (fait), 2 modèles neufs, PR, puis la fiche · **En attente de David** : publier `f5585668`, `95ee57c8`, `5397c20f`, `7f82d15a` et
   les fiches `9217dfaa`, `0f98be04`, `7ff081db` ; garder ou non les 2 figures d'un corrigé de
   tracé ; questions 2 à 4 (§ Questions ouvertes) · **Pièges en cours** :
   `compile-prod.mjs --polices-corrige` pour un corrigé ; `?v=` de `CORRECTION_FONT_FILES` à changer
@@ -168,10 +167,15 @@ essayées par `buildSerie` (lecture seule, graines 1-3) : **35 candidats, 34 pas
 | (C) Écart type, comparer             | 2de : `ef92701a` écart type (calcul ou choix), `893eb3cd` moyenne + écart type, `6b2b7055` médiane + écart interquartile ; 4e : `3afa8d97`, `7bb351d0`, `4604b429` étendue                                                     | —                                                                        |
 | Fréquences conditionnelles (§ Suite) | 2de : `eb0dcd85`, `89e928a4`, `ba16b4f4`, `ed96107e`, `b6ab5599`, `d64946e4`, `62105594` (tableaux croisés)                                                                                                                    | —                                                                        |
 
-Questions à David : (1) apprendre à `buildSerie` à figer une boîte à placer (énoncé : axe vide ;
-corrigé : boîte), comme la droite à tracer ; (2) modèle neuf « échelle d'un graphique » (axe qui
-ne part pas de 0 : lecture juste, comparaison trompeuse) ; (3) modèle neuf « données → graphique »
-(angle d'un secteur circulaire) ; (4) bloc « Probabilités » du BO : dans ce lot ou lot à part.
+**Tranché par David (2026-11-04)**, sur mes recommandations : (1) `buildSerie` fige une boîte à
+placer (énoncé : axe seul ; corrigé : boîte dessinée) ; (2) modèle neuf « échelle d'un graphique »
+(axe qui ne part pas de 0 : lecture juste, comparaison trompeuse) ; (3) modèle neuf « angle d'un
+secteur circulaire » (données → graphique) ; (4) bloc « Probabilités » : lot à part, après celui-ci.
+Fiche : 2 séries de 8 — série 1 = histogramme, circulaire, boîte à lire, moyenne regroupée, médiane,
+écart type, fréquence conditionnelle, échelle ; série 2 = fréquences cumulées, deux boîtes,
+construire une boîte, linéarité de la moyenne, quartile, comparer deux séries, fréquence marginale,
+angle d'un secteur. Les brouillons `1bd7378d`, `9a9026fc` (lot 8 de `questions-3`) y servent tels
+quels.
 
 ## Questions ouvertes (à poser à David)
 
