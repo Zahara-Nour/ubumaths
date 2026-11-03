@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2270 (8c rangé et tagué en prod)._
+_Mis à jour le 2026-11-03, après la publication du lot 8c._
 
-- **État** : lot 8 (D-L8 : 26 « à savoir ») ; **8a et 8b clos** (18 publiés) ; **8c** : 8 brouillons en prod sur leur nœud avec leur tag (#2269, #2270, migration appliquée), page à cocher publiée.
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, https://claude.ai/artifact/SgpQqwvtABvxX555sreUS7), compter 8/8 → `publier-lot.ts` simulé → David `--publier` → relecture MCP → lot 8 clos ; puis lot 9 (« espace sur figure », index `questions-tspe`) et versement.
-- **En attente de David** : relecture des 8 fiches de 8c (page à cocher).
+- **État** : ✅ **sous-chantier clos** : lot 7 et lot 8 (8a 11, 8b 7, 8c 8 : 26 « à savoir ») publiés en prod. Fin notée au § 18 de l'index.
+- **Prochaine action** : aucune ici. Les trois sous-chantiers sont clos ; le versement (durable → `docs/systeme/`, journaux → `docs/archive/wip/`) se fait avec celui de `questions-tspe` ; lot 9 (espace sur figure) attend le chantier `solides`.
+- **En attente de David** : rien.
 - **Pièges en cours** : relevé de nœuds → filtrer `archived_at is null` ; `!=` dans `$…$` lu « ≠ » (écrire `!\,=`) ; garde « notion sans sous-notion » : liste `sous_notions_admises` (migration `20261102181059`) ; worktree sans `.env*` → les copier pour les tests d'intégration.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · aucune branche ouverte (HEAD détaché sur `origin/main`).
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · aucune branche ouverte ; worktree à retirer.
 
 ---
 
@@ -316,3 +316,7 @@ enregistrée, 8 modèles sur leur sous-notion, un tag chacun, `updated_at` = `cr
 **Page à cocher** : `page-a-cocher.ts --dir scripts/questions/tspe-8c-savoir`, 8 fiches lues en prod, aucune alerte, 19
 exemples : https://claude.ai/artifact/SgpQqwvtABvxX555sreUS7 (`verdicts` vide à la publication ; rendu non regardé dans
 Chrome).
+
+**Relecture** (David, 2026-11-03) : 8 « ok » sur 8, aucun commentaire (lu en base de l'artefact). **Publication** :
+`publier-lot.ts` simulé (8 passent), lancé par David avec `--publier` : 8/8 `published`, relus au MCP, toujours sur leur
+nœud, un tag chacun. **8c clos ; lot 8 clos (26 « à savoir » publiés) ; sous-chantier clos.**
