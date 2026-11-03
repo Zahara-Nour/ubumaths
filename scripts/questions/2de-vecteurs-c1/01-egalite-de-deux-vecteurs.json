@@ -1,0 +1,355 @@
+{
+	"title": "Égalité de deux vecteurs",
+	"description": "Reconnaître le vecteur égal à u parmi des flèches, puis dans un parallélogramme (pièges : l'opposé, même longueur autre direction, ordre des lettres)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs du plan",
+	"subdomain": "Égalité",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Parmi les vecteurs représentés ci-dessous, lequel est égal à $\\vec{u}$ ?\n\n```figure\nfenetre: 0 ; 18 ; 0 ; 12\naxes: non\ngrille: 1\ntaille: moyenne\ndescription: Quadrillage ; six flèches nommées u, v, w, s, t et z, chacune dans sa case.\n---\nvecteur({{a}}, {{b}}, ancre=({{ux}}, {{uy}}))\ntexte({{eval:round(100*((ux)+(a)/2-0.6*(b)/sqrt((a)^2+(b)^2)))/100;d}}, {{eval:round(100*((uy)+(b)/2+0.6*(a)/sqrt((a)^2+(b)^2)))/100;d}}, \"u⃗\")\nvecteur({{dx0}}, {{dy0}}, ancre=({{ox0}}, {{oy0}}))\ntexte({{eval:round(100*((ox0)+(dx0)/2-0.6*(dy0)/sqrt((dx0)^2+(dy0)^2)))/100;d}}, {{eval:round(100*((oy0)+(dy0)/2+0.6*(dx0)/sqrt((dx0)^2+(dy0)^2)))/100;d}}, \"v⃗\")\nvecteur({{dx1}}, {{dy1}}, ancre=({{ox1}}, {{oy1}}))\ntexte({{eval:round(100*((ox1)+(dx1)/2-0.6*(dy1)/sqrt((dx1)^2+(dy1)^2)))/100;d}}, {{eval:round(100*((oy1)+(dy1)/2+0.6*(dx1)/sqrt((dx1)^2+(dy1)^2)))/100;d}}, \"w⃗\")\nvecteur({{dx2}}, {{dy2}}, ancre=({{ox2}}, {{oy2}}))\ntexte({{eval:round(100*((ox2)+(dx2)/2-0.6*(dy2)/sqrt((dx2)^2+(dy2)^2)))/100;d}}, {{eval:round(100*((oy2)+(dy2)/2+0.6*(dx2)/sqrt((dx2)^2+(dy2)^2)))/100;d}}, \"s⃗\")\nvecteur({{dx3}}, {{dy3}}, ancre=({{ox3}}, {{oy3}}))\ntexte({{eval:round(100*((ox3)+(dx3)/2-0.6*(dy3)/sqrt((dx3)^2+(dy3)^2)))/100;d}}, {{eval:round(100*((oy3)+(dy3)/2+0.6*(dx3)/sqrt((dx3)^2+(dy3)^2)))/100;d}}, \"t⃗\")\nvecteur({{dx4}}, {{dy4}}, ancre=({{ox4}}, {{oy4}}))\ntexte({{eval:round(100*((ox4)+(dx4)/2-0.6*(dy4)/sqrt((dx4)^2+(dy4)^2)))/100;d}}, {{eval:round(100*((oy4)+(dy4)/2+0.6*(dx4)/sqrt((dx4)^2+(dy4)^2)))/100;d}}, \"z⃗\")\n```\n\n```choix\nmelanger: non\n- $\\vec{v}$\n- $\\vec{w}$\n- $\\vec{s}$\n- $\\vec{t}$\n- $\\vec{z}$\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0..4"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "ux",
+					"expression": "eval:3-floor((a)/2)"
+				},
+				{
+					"name": "uy",
+					"expression": "eval:9-floor((b)/2)"
+				},
+				{
+					"name": "r0",
+					"expression": "eval:(0+(p))-5*floor((0+(p))/5)"
+				},
+				{
+					"name": "dx0",
+					"expression": "eval:(1-min(abs((r0)-0),1))*((a))+(1-min(abs((r0)-1),1))*(-(a))+(1-min(abs((r0)-2),1))*((b))+(1-min(abs((r0)-3),1))*((a))+(1-min(abs((r0)-4),1))*(-(b))"
+				},
+				{
+					"name": "dy0",
+					"expression": "eval:(1-min(abs((r0)-0),1))*((b))+(1-min(abs((r0)-1),1))*(-(b))+(1-min(abs((r0)-2),1))*((a))+(1-min(abs((r0)-3),1))*(-(b))+(1-min(abs((r0)-4),1))*((a))"
+				},
+				{
+					"name": "ox0",
+					"expression": "eval:9-floor((dx0)/2)"
+				},
+				{
+					"name": "oy0",
+					"expression": "eval:9-floor((dy0)/2)"
+				},
+				{
+					"name": "r1",
+					"expression": "eval:(1+(p))-5*floor((1+(p))/5)"
+				},
+				{
+					"name": "dx1",
+					"expression": "eval:(1-min(abs((r1)-0),1))*((a))+(1-min(abs((r1)-1),1))*(-(a))+(1-min(abs((r1)-2),1))*((b))+(1-min(abs((r1)-3),1))*((a))+(1-min(abs((r1)-4),1))*(-(b))"
+				},
+				{
+					"name": "dy1",
+					"expression": "eval:(1-min(abs((r1)-0),1))*((b))+(1-min(abs((r1)-1),1))*(-(b))+(1-min(abs((r1)-2),1))*((a))+(1-min(abs((r1)-3),1))*(-(b))+(1-min(abs((r1)-4),1))*((a))"
+				},
+				{
+					"name": "ox1",
+					"expression": "eval:15-floor((dx1)/2)"
+				},
+				{
+					"name": "oy1",
+					"expression": "eval:9-floor((dy1)/2)"
+				},
+				{
+					"name": "r2",
+					"expression": "eval:(2+(p))-5*floor((2+(p))/5)"
+				},
+				{
+					"name": "dx2",
+					"expression": "eval:(1-min(abs((r2)-0),1))*((a))+(1-min(abs((r2)-1),1))*(-(a))+(1-min(abs((r2)-2),1))*((b))+(1-min(abs((r2)-3),1))*((a))+(1-min(abs((r2)-4),1))*(-(b))"
+				},
+				{
+					"name": "dy2",
+					"expression": "eval:(1-min(abs((r2)-0),1))*((b))+(1-min(abs((r2)-1),1))*(-(b))+(1-min(abs((r2)-2),1))*((a))+(1-min(abs((r2)-3),1))*(-(b))+(1-min(abs((r2)-4),1))*((a))"
+				},
+				{
+					"name": "ox2",
+					"expression": "eval:3-floor((dx2)/2)"
+				},
+				{
+					"name": "oy2",
+					"expression": "eval:3-floor((dy2)/2)"
+				},
+				{
+					"name": "r3",
+					"expression": "eval:(3+(p))-5*floor((3+(p))/5)"
+				},
+				{
+					"name": "dx3",
+					"expression": "eval:(1-min(abs((r3)-0),1))*((a))+(1-min(abs((r3)-1),1))*(-(a))+(1-min(abs((r3)-2),1))*((b))+(1-min(abs((r3)-3),1))*((a))+(1-min(abs((r3)-4),1))*(-(b))"
+				},
+				{
+					"name": "dy3",
+					"expression": "eval:(1-min(abs((r3)-0),1))*((b))+(1-min(abs((r3)-1),1))*(-(b))+(1-min(abs((r3)-2),1))*((a))+(1-min(abs((r3)-3),1))*(-(b))+(1-min(abs((r3)-4),1))*((a))"
+				},
+				{
+					"name": "ox3",
+					"expression": "eval:9-floor((dx3)/2)"
+				},
+				{
+					"name": "oy3",
+					"expression": "eval:3-floor((dy3)/2)"
+				},
+				{
+					"name": "r4",
+					"expression": "eval:(4+(p))-5*floor((4+(p))/5)"
+				},
+				{
+					"name": "dx4",
+					"expression": "eval:(1-min(abs((r4)-0),1))*((a))+(1-min(abs((r4)-1),1))*(-(a))+(1-min(abs((r4)-2),1))*((b))+(1-min(abs((r4)-3),1))*((a))+(1-min(abs((r4)-4),1))*(-(b))"
+				},
+				{
+					"name": "dy4",
+					"expression": "eval:(1-min(abs((r4)-0),1))*((b))+(1-min(abs((r4)-1),1))*(-(b))+(1-min(abs((r4)-2),1))*((a))+(1-min(abs((r4)-3),1))*(-(b))+(1-min(abs((r4)-4),1))*((a))"
+				},
+				{
+					"name": "ox4",
+					"expression": "eval:15-floor((dx4)/2)"
+				},
+				{
+					"name": "oy4",
+					"expression": "eval:3-floor((dy4)/2)"
+				},
+				{
+					"name": "bon",
+					"expression": "eval:(5-(p))*min(p,1)"
+				}
+			],
+			"conditions": ["abs(a) != abs(b)"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{bon}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Deux vecteurs sont égaux** lorsqu'ils ont **la même direction, le même sens et la même longueur** : leurs flèches se superposent par glissement, sans tourner.",
+					"On compte les carreaux : $\\vec{u}$ avance de ${{a}}$ horizontalement et de ${{b}}$ verticalement. Une seule autre flèche fait exactement le même déplacement : c'est la bonne réponse. L'opposé a la même direction et la même longueur, mais pas le même sens ; les autres n'ont pas la même direction."
+				]
+			}
+		},
+		{
+			"statement": "$ABCD$ est un parallélogramme.\n\n```figure\nfenetre: -1 ; 11 ; -1 ; 10\naxes: non\ngrille: 1\ntaille: moyenne\ndescription: Quadrillage ; le parallélogramme ABCD, sommets nommés dans l'ordre.\n---\nA = point({{xa}}, {{ya}}, etiquette=\"bas\")\nB = point({{eval:(xa)+(p1)}}, {{eval:(ya)+(q1)}}, etiquette=\"bas\")\nC = point({{eval:(xa)+(p1)+(p2)}}, {{eval:(ya)+(q1)+(q2)}}, etiquette=\"haut\")\nD = point({{eval:(xa)+(p2)}}, {{eval:(ya)+(q2)}}, etiquette=\"haut\")\npolygone(A, B, C, D)\n```\n\nQuel vecteur est égal à $\\overrightarrow{{{if:w>0|AD|AB}}}$ ?\n\n```choix\n- $\\overrightarrow{{{if:w>0|BC|DC}}}$\n- $\\overrightarrow{{{if:w>0|CB|CD}}}$\n- $\\overrightarrow{{{if:w>0|DC|BC}}}$\n- $\\overrightarrow{{{if:w>0|AB|AD}}}$\n```",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..1"
+				},
+				{
+					"name": "xa",
+					"expression": "1..3"
+				},
+				{
+					"name": "ya",
+					"expression": "1..3"
+				},
+				{
+					"name": "p1",
+					"expression": "3..5"
+				},
+				{
+					"name": "q1",
+					"expression": "-1..2"
+				},
+				{
+					"name": "p2",
+					"expression": "-1..2"
+				},
+				{
+					"name": "q2",
+					"expression": "2..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**$ABCD$ est un parallélogramme si et seulement si $\\overrightarrow{AB}=\\overrightarrow{DC}$** (et alors aussi $\\overrightarrow{AD}=\\overrightarrow{BC}$). Attention à l'ordre des lettres : le vecteur va de la première lettre à la seconde.",
+					"Les côtés opposés $[{{if:w>0|AD|AB}}]$ et $[{{if:w>0|BC|DC}}]$ sont parallèles, de même longueur, et parcourus dans le même sens : $\\overrightarrow{{{if:w>0|AD|AB}}}=\\textcolor{{{color:primary.0}}}{\\overrightarrow{{{if:w>0|BC|DC}}}}$. $\\overrightarrow{{{if:w>0|CB|CD}}}$ est son opposé."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Bonne case (rôle 0 en case 3)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"a": "2",
+				"b": "-1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : l'opposé (case 4)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"a": "2",
+				"b": "-1"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : coordonnées échangées (case 0)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"a": "2",
+				"b": "-1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : quart de tour (case 2)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"a": "2",
+				"b": "-1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Sans décalage : bonne case 0",
+			"variationIndex": 0,
+			"variables": {
+				"p": "0",
+				"a": "2",
+				"b": "-1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "AB = DC",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0",
+				"xa": "1",
+				"ya": "2",
+				"p1": "4",
+				"q1": "1",
+				"p2": "1",
+				"q2": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : AB = CD (sens)",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0",
+				"xa": "1",
+				"ya": "2",
+				"p1": "4",
+				"q1": "1",
+				"p2": "1",
+				"q2": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : AB = BC (côté voisin)",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0",
+				"xa": "1",
+				"ya": "2",
+				"p1": "4",
+				"q1": "1",
+				"p2": "1",
+				"q2": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "AD = BC",
+			"variationIndex": 1,
+			"variables": {
+				"w": "1",
+				"xa": "1",
+				"ya": "2",
+				"p1": "4",
+				"q1": "1",
+				"p2": "1",
+				"q2": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : AD = CB",
+			"variationIndex": 1,
+			"variables": {
+				"w": "1",
+				"xa": "1",
+				"ya": "2",
+				"p1": "4",
+				"q1": "1",
+				"p2": "1",
+				"q2": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
