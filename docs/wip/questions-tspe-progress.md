@@ -10,15 +10,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, répartition en trois sous-chantiers (§ 18)._
+_Mis à jour le 2026-11-03, relevé de fin de chantier (§ 19)._
 
-- **État** : lots 0 à 4 publiés. La suite est répartie en trois sessions parallèles (§ 18) :
-  `questions-tspe-proba` (5a, 5b), `questions-tspe-espace` (6a, 6b), `questions-tspe-restes` (7, puis 8).
-- **Prochaine action** : aucune ici ; chaque session part de `/reprendre <sous-chantier>`. Ce journal reste
-  l'index : y noter seulement la fin de chaque sous-chantier.
-- **En attente de David** : ouvrir les trois sessions.
-- **Pièges en cours** : repris dans chaque sous-journal (« Décisions communes et pièges »).
-- **Worktree / branche** : aucun.
+- **État** : lots 0 à 8 publiés, les trois sous-chantiers clos. En prod : 262 modèles `T_SPE` publiés, 215 points
+  sur 326 couverts. Le relevé a trouvé trois points oubliés (455, 481, 616) → lot 10 (D-L10, § 19).
+- **Prochaine action** : lot 10 (un modèle par point) dans le worktree `ubumaths-wt-questions-tspe` sur la branche
+  `feat/questions-tspe-lot10`, puis le versement (bilan dans `tspe.md`, pièges dans `couvrir-un-niveau.md`, journaux
+  vers `docs/archive/wip/`, renvois des tests dans une PR à part, comme pour `questions-1spe`).
+- **En attente de David** : rien.
+- **Pièges en cours** : voir « Décisions communes et pièges » dans `questions-tspe-restes-progress.md`.
+- **Worktree / branche** : à créer.
 
 ## 1. Relevé (prod, 2026-10-29)
 
@@ -908,3 +909,22 @@ lots 0 à 4) ; chaque sous-chantier a son journal, son worktree et sa session.
 | `questions-tspe-restes` | 7, 8 — ✅ publiés le 2026-11-03   | [questions-tspe-restes-progress.md](questions-tspe-restes-progress.md) |
 
 Lot 9 (espace sur figure, B\*) : attend le chantier `solides`, non attribué.
+
+## 19. Relevé de fin de chantier, lot 10 (2026-11-03)
+
+_Relevé MCP en prod (lecture seule) le 2026-11-03._
+
+- **326 points**, dont **215** ont au moins un modèle publié. 262 modèles `T_SPE` sont publiés et aucun n'est en
+  brouillon.
+- **111 points sans modèle publié** : 68 P (19 démonstrations, 18 algorithmes et 31 savoir-faire d'approfondissement),
+  31 « couverts par leur voisin » (D-L8, `questions-tspe-restes`), 9 B\* (334-339, 551-553 : lot 9, chantier
+  `solides`) et **3 points oubliés** :
+  - **455** « Lier la représentation graphique de sin et cos et le cercle trigonométrique » : classé B au § 3.10, mais
+    absent de tous les lots du § 4 ;
+  - **481** « Positivité et intégration des inégalités » (connaissance) : il a perdu son seul modèle quand dd0ee69a a
+    été retagué vers 489 (§ 14), et il n'est ni dans les 26 « à savoir » ni dans les 31 « couverts » ;
+  - **616** « Calculer une probabilité en utilisant des probabilités conditionnelles » : son seul modèle est 1cfc575d,
+    un brouillon de niveau `2`, et le lot 5 l'a compté à tort comme « déjà couvert ».
+- **D-L10 (David, 2026-11-03, recommandations retenues)** : lot 10 avec un modèle `T_SPE` par point. 455 : ` ```trig `
+  et ` ```courbe ` ; 481 : un modèle « à savoir » dans le sous-domaine « À savoir » du calcul intégral, comme au lot 8 ;
+  616 : un modèle neuf sur arbre (` ```probtree `). Le versement vient après le lot 10.
