@@ -155,7 +155,7 @@ _Mis à jour le 2026-11-03, après #2317._
   Tests ajoutés, vus rouges. Variable `state` renommée (`$state` lu comme un store au typecheck).
 - #2309 mergée le 2026-11-03 (CI : un job relancé, erreur d'outillage hors tests).
 
-## PR 4 — 1er modèle : représenter les solutions de ax ⩾ b (3-014), phase 0 (à valider)
+## PR 4 — 1er modèle : représenter les solutions de ax ⩾ b (3-014)
 
 Relevé MCP du 2026-11-03 : 3-014 a un modèle, 24aff7b0 « Résoudre une inéquation ax ⩾ b » (publié,
 Calcul littéral › Inéquations › ax ⩾ b, niveau 1, réponse en inégalité « x > 4 »). Le niveau 2 de la
@@ -188,3 +188,19 @@ catégorie est libre.
 - **Q6 — Borne en fraction (3x ⩾ 2 → x ⩾ 2/3) ?** Reco : **oui, a = ±3 seulement**, droite graduée en
   tiers sur 4 unités, entiers seuls étiquetés (12 graduations, lisible à 390 px). Autre choix : bornes
   entières seules.
+
+### Décisions (David, 2026-11-03, « je suis tes recos »)
+
+- Q5 : droite seule. Q6 : bornes en fraction, a = ±3, droite en tiers sur 4 unités.
+
+### Écrit (2026-11-03)
+
+- `docs/wip/questions/lot-3-representer.py` → `scripts/questions/3-representer/01-representer-solutions-inequation.json`
+  (v3 : borne n/3, n = 3q + m, m ∈ {1, 2}, fenêtre q − d … q − d + 4, d ∈ {1, 2} ; côté r = s si a > 0,
+  s + 2 modulo 4 sinon).
+- `create-questions` en simulation : 14 specs vertes ; balayage 300 tirages × 3 variations (borne dans la
+  fenêtre, réponse attendue jugée juste, corrigé sans `{{`) ; `sonde-horloges` : 600 blocs, 0 problème.
+- Base locale (43c75d10) : joué dans l'aperçu admin — 7x < 35, mauvais côté → « Les solutions sont de
+  l'autre côté de 5. », faux ; −3x < 7, borne −7/3 exclue, côté droit → juste ; corrigé lu (division,
+  crochet, droite). Pas vu à 390 px (fenêtre Chrome restée large) : affichage déjà vu à 390 px en PR 1.
+- Corrigé : « x > 7/(−3) » écrit tel quel avant la simplification, comme 24aff7b0.
