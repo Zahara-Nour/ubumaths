@@ -6,20 +6,23 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR « unité du résultat » en cours (branche `fix/tidy-unite-ecrite`)._
+_Mis à jour le 2026-11-03, après #2276._
 
-- **État** : PR #2276 ouverte. Règle codée (unité tapée, h-min-s au niveau de tête) ; revue Opus :
-  3 findings corrigés sur décision de David (variables = UNE grandeur, attendu dans l'unité
-  imposée, étape `tidy-write-duration`). Oracle 0 verdict changé. Doc à jour.
-- **Prochaine action** : CI verte + contre-revue des correctifs → merge, puis « Reprendre ici ».
-- **En attente de David** : retirer les sondes non suivies `src/lib/mathAST/__sonde__/` (règle 0) ;
-  garder ou retirer le mode `unitChoice: 'school'` (plus aucun appelant).
-- **Tranché** : voir § Unité du résultat ; avant : Q9 EN ENTIER, A-D du lot 2, `decimal` en LaTeX,
-  `plafond-02` → 1000, Q24, `signes-06` — NE PAS reposer.
-- **Pièges** : `rebase` = liste `ask` → nouvelle branche + cherry-pick ; sous-expressions de `tidy`
-  toujours en `durations: 'single'` (sinon `valueIn` casse) ; budget 20 ms de tabuler : rouge sous
-  charge seulement ; zsh ne découpe pas `$FILES`.
-- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `fix/tidy-unite-ecrite`.
+- **État** : #2276 MERGÉE — une seule règle d'unité du résultat (unité tapée, moins de chiffres)
+  dans `tidy`, `{{eval}}` et l'Atelier ; durées en h-min-s (variables et contextes de valeur : UNE
+  grandeur) ; attendu dans l'unité imposée ; étape `tidy-write-duration`. Pas déployée.
+- **Prochaine action** : selon David — PR « retirer l'option `unitChoice: 'school'` » (garder le
+  repli scolaire interne, réécrire `tidy-units.test.ts`), puis reprise du lot 2 du registre.
+- **En attente de David** : (1) oui/non pour supprimer les sondes non suivies
+  `../ubumaths-wt-registre-reference/src/lib/mathAST/__sonde__/` (bloquent `worktree remove`) ;
+  (2) oui/non pour retirer l'option `'school'` (reco : oui, PR à part).
+- **Tranché** : § Unité du résultat et § Revue de #2276 ; avant : Q9 EN ENTIER, A-D du lot 2,
+  `decimal` en LaTeX, `plafond-02` → 1000, Q24, `signes-06` — NE PAS reposer.
+- **Pièges** : une PR en conflit avec `main` n'a AUCUN run de CI (état « dirty ») → `git merge
+origin/main` ; `rebase` et `restore` = liste `ask` ; sous-expressions de `tidy` toujours en
+  `durations: 'single'` ; budgets de temps de tabuler rouges sous charge seulement.
+- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `fix/tidy-unite-ecrite` (mergée,
+  à retirer après la décision sur les sondes).
 
 ---
 
