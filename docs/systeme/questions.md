@@ -569,9 +569,9 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    **Construit, de proche en proche** (`constructionOf`, `instruments.ts`, la même règle pour les points,
    les droites, les cercles et le sommet du triangle) : points de départ = points de la figure et bouts
    de ses segments ; un trait de l'élève est construit s'il tient sur des points construits (droite ou
-   segment : deux bouts, ou le tracé exact de l'équerre le long d'un trait droit construit ; cercle :
-   point de passage, et centre construit ou piqué SUR un trait construit, le compas « sur l'axe » du
-   symétrique ; report : centre et deux bouts de l'écartement) ; un point est construit s'il est de
+   segment : deux bouts, ou le tracé exact de l'équerre le long d'un trait droit construit, partie d'un
+   point construit ou posée SUR ce trait, la parallèle « à la 6e » ; cercle : point de passage, et
+   centre construit ou piqué SUR un trait droit construit, le compas « sur l'axe » du symétrique ; report : centre et deux bouts de l'écartement) ; un point est construit s'il est de
    départ ou l'intersection de deux traits construits ; on recommence jusqu'à ce que rien ne s'ajoute.
    Deux traits tracés à l'œil ne construisent donc rien. Exception : deux cercles (compas ou report) de
    même rayon, même pris à l'œil, centrés sur deux points construits, construisent leurs deux

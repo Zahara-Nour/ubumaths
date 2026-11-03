@@ -342,12 +342,14 @@ export interface Construction {
 
 /**
  * Le trait de l'objet tient-il sur des points construits ? Droite ou segment :
- * ses deux bouts, ou (droite à l'équerre) son départ et, comme second point,
- * exactement celui que pose l'équerre le long d'un trait droit construit
- * (`perpendicularThrough`, qu'un toucher à la règle n'atteint pas) ; cercle :
- * point de passage, et centre construit ou piqué SUR un trait construit (le
- * symétrique par un axe : compas piqué n'importe où sur l'axe, décision de David
- * du 2026-11-03, § 15) ; report : centre et les deux bouts de l'écartement.
+ * ses deux bouts, ou (droite à l'équerre) comme second point exactement celui que
+ * pose l'équerre le long d'un trait droit construit (`perpendicularThrough`,
+ * qu'un toucher à la règle n'atteint pas) et un départ construit ou posé SUR ce
+ * trait-là (la parallèle « à la 6e » : perpendiculaire en un point quelconque du
+ * côté) ; cercle : point de passage, et centre construit ou piqué SUR un trait
+ * droit construit (le symétrique : compas piqué n'importe où sur l'axe) ; report :
+ * centre et les deux bouts de l'écartement. Choix libres sur un trait : décisions
+ * de David du 2026-11-03, § 15.
  */
 function isSupported(
 	object: DrawnObject,
@@ -358,7 +360,7 @@ function isSupported(
 	if (object.kind === 'cercle') {
 		const center = { x: object.cx, y: object.cy };
 		if (!isBuilt({ x: object.x, y: object.y })) return false;
-		return isBuilt(center) || isOnSomeTrait(center, traits);
+		return isBuilt(center) || isOnSomeTrait(center, traits.filter(isStraight));
 	}
 	if (object.kind === 'report') {
 		return [
@@ -369,12 +371,12 @@ function isSupported(
 	}
 	const p = { x: object.x1, y: object.y1 };
 	const q = { x: object.x2, y: object.y2 };
-	if (!isBuilt(p)) return false;
-	if (isBuilt(q)) return true;
+	const start = isBuilt(p);
+	if (start && isBuilt(q)) return true;
 	if (object.kind !== 'droite') return false;
 	const eps = EPSILON * scaleOf(p, q);
 	return traits.some((t) => {
-		if (!isStraight(t)) return false;
+		if (!isStraight(t) || (!start && !isOnSomeTrait(p, [t]))) return false;
 		const square = perpendicularThrough(t, p);
 		return Math.hypot(square.x2 - q.x, square.y2 - q.y) <= eps;
 	});

@@ -9,8 +9,8 @@ status: en-cours
 _Mis à jour le 2026-11-03, après #2271._
 
 - **État** : lots 1 à 4 mergés (#2257, #2264, #2268, #2271), pas encore en prod (`deploy:prod` sur
-  demande de David). PR « point construit » (§ 15) en cours sur `feat/point-construit` : tests verts,
-  revue Opus puis PR.
+  demande de David). PR « point construit » (§ 15) ouverte sur `feat/point-construit` : revue Opus
+  traitée, CI en cours.
 - **Prochaine action** : finir la PR « point construit » (revue, CI, merge) ; puis phase 0 de l'angle
   (rapporteur) ou de la bissectrice.
 - **En attente de David** : rien.
@@ -627,6 +627,10 @@ Phase 0 validée par David le 2026-11-03 (« ok »), deux exceptions tranchées 
 - **Exception 1 (symétrique, lot 2b)** : un cercle piqué SUR un trait construit (n'importe où sur
   l'axe) et passant par un point construit est construit. Sans elle, un axe sans point visible dans
   la fenêtre rendait le symétrique impossible.
+- **Exception 3 (parallèle « à la 6e », revue Opus, tranchée par David)** : une droite à l'équerre le
+  long d'un trait droit construit, partie d'un point posé SUR ce trait (perpendiculaire en un point
+  quelconque d'un côté), est construite ; partie d'un point d'un autre trait, non. L'exception 1 est
+  réservée aux traits droits (compas piqué sur un cercle construit : rien), tranché au même moment.
 - **Exception 2 (médiatrice à écartement quelconque, lot 3)** : deux cercles (compas ou report) de
   même rayon, même pris à l'œil, centrés sur deux points construits, construisent leurs deux
   intersections, sans devenir des traits (leurs autres intersections ne comptent pas).
@@ -634,5 +638,8 @@ Phase 0 validée par David le 2026-11-03 (« ok »), deux exceptions tranchées 
   revue du lot 4) ; un compas piqué sur un toucher libre hors de tout trait non plus. Deux tests du
   lot 2b passent de « même distance » / « perpendiculaire » à « placé à l'œil » (leurs traits étaient
   libres) ; ces messages restent testés sur quadrillage.
-- **Tests** : `construction-point-construit.test.ts` (13, vérifiés rouges sans le correctif),
-  386 tests de construction et 47 tests d'écran verts.
+- **Tests** : `construction-point-construit.test.ts` (16, vérifiés rouges sans le correctif, sauf le
+  test de garde de l'équerre), 389 tests de construction et 47 tests d'écran verts.
+- **Revue Opus** (2026-11-03) : 3 findings, tous traités (parallèle à la 6e → exception 3 ; compas sur
+  un cercle → traits droits seulement ; en-tête du test). Simulations de bout en bout (symétriques,
+  milieu, médiatrice, parallélogramme) toutes justes.

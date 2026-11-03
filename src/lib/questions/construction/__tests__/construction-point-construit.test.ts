@@ -6,7 +6,7 @@
  * l'intersection de deux traits EUX-MÊMES construits : droite par deux points
  * construits (ou à l'équerre le long d'un trait construit), cercle de centre et
  * de point de passage construits, report de centre et d'écartement construits.
- * Deux droites tracées à l'œil ne construisent plus rien, pour tous les juges.
+ * Deux droites tracées à l'œil ne construisent plus rien (juges des points, droites, cercles et du triangle).
  */
 import { describe, it, expect } from 'vitest';
 import '../positions-setup';
@@ -15,7 +15,14 @@ import { judgeConstruction, type Position } from '../judge';
 import { POINT_EYEBALLED_FEEDBACK } from '../point';
 import { LINE_EYEBALLED_FEEDBACK } from '../line';
 import { CIRCLE_EYEBALLED_FEEDBACK } from '../circle';
-import { constructionOf, intersectTraits, traitOf, type Trait } from '../instruments';
+import {
+	constructionOf,
+	intersectTraits,
+	perpendicularThrough,
+	traitOf,
+	type StraightTrait,
+	type Trait
+} from '../instruments';
 import { serializeConstructionAnswer, type DrawnObject } from '../answer';
 import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
 
@@ -149,7 +156,7 @@ describe('point construit : de proche en proche', () => {
 	});
 });
 
-describe('point construit : les deux choix libres admis (décision de David, § 15)', () => {
+describe('point construit : les choix libres admis (décisions de David, § 15)', () => {
 	const SEGMENT: Trait = { kind: 'segment', a: A, b: B };
 
 	it('compas piqué n’importe où sur un trait construit, ouvert sur un point construit → construit', () => {
@@ -192,5 +199,48 @@ describe('point construit : les deux choix libres admis (décision de David, § 
 		const arcs = [cercle(A, { x: 2, y: 7 }), cercle(B, { x: 6, y: 7.5 })];
 		const [low] = cross(arcs[0], arcs[1]);
 		expect(constructionOf(arcs, [A, B], [SEGMENT]).isBuilt(low)).toBe(false);
+	});
+});
+
+describe('point construit : équerre posée n’importe où sur le trait qu’elle longe (§ 15)', () => {
+	// A(2 ; 2), B(7 ; 2), C(8 ; 6) : D(3 ; 6)
+	const source = figure('point D = sommet(parallelogramme(A, B, C), 4)', [
+		'A = point(2, 2)',
+		'B = point(7, 2)',
+		'C = point(8, 6)'
+	]);
+	const P = { x: 2, y: 2 };
+	const Q = { x: 7, y: 2 };
+	const R = { x: 8, y: 6 };
+	const straight = (o: DrawnObject) => traitOf(o) as StraightTrait;
+
+	/** Parallèle à (UV) par W, « à la 6e » : perpendiculaire en `foot` de (UV), puis par W */
+	function parallel(u: Position, v: Position, foot: Position, w: Position): DrawnObject[] {
+		const side = droite(u, v);
+		const first = perpendicularThrough(straight(side), foot);
+		return [side, first, perpendicularThrough(straight(first), w)];
+	}
+
+	it('deux parallèles par des perpendiculaires posées en un point quelconque des côtés → juste', () => {
+		const objects = [
+			...parallel(P, Q, { x: 4.5, y: 2 }, R),
+			...parallel(Q, R, { x: 7.5, y: 4 }, P),
+			point({ x: 3, y: 6 })
+		];
+		expect(judge(source, objects)).toEqual({ status: 'correct' });
+	});
+
+	it('équerre partie d’un point d’un AUTRE trait que celui qu’elle longe → rien', () => {
+		// (4,5 ; 2) est sur (AB), l'équerre longe (AC), construite, qui ne passe pas par lui
+		const side = droite(P, Q);
+		const diagonal = droite(P, R);
+		const square = perpendicularThrough(straight(diagonal), { x: 4.5, y: 2 });
+		expect(constructionOf([side, diagonal, square], [P, Q, R], []).built).toEqual(new Set([0, 1]));
+	});
+
+	it('compas piqué sur un CERCLE construit → rien (seulement sur un trait droit)', () => {
+		const around = cercle(P, Q);
+		const onIt = cercle({ x: 2, y: 7 }, Q);
+		expect(constructionOf([around, onIt], [P, Q, R], []).built).toEqual(new Set([0]));
 	});
 });
