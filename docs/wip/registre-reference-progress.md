@@ -660,3 +660,30 @@ corrigée, à confirmer).
   syntaxe maison au portier changeait 6 tests dont `grands-08` du corpus : écarté. Laissés,
   antérieurs : `2×π` → `2 \pi ×` (`×` à côté de π, syntaxe maison) ; `.simplifier` calcule deux
   fois le moteur pédagogique (registre puis `simplifySteps`).
+
+## PR 2b — `.résoudre` répond par S (2026-11-03)
+
+Étape 2 du découpage, sur le « go » de David.
+
+- **Mesure** (sonde jetable, 193 lignes `.résoudre` des tests de l'Atelier, registre contre
+  Atelier) : 81 écarts, dont ~55 titres de tests pris pour des lignes. Écarts réels : (1) solution
+  unique `x = 3` (les deux outils ; `≈` dans la réponse pour `ln`) ; (2) inéquation : l'Atelier
+  conclut `x < 3` (dernière étape `divide-both-sides`), le registre `S = ]−∞ ; 3[` ; (3) ordre :
+  `-x^2+x+1=0` et produit nul non rangés à l'Atelier ; (4) paramètre : registre `x = 4/a`, Atelier
+  refuse (V57) ; (5) décimaux tapés : registre `3/2`, Atelier `1,5` (Q46) ; (6) degrés : registre
+  `1/cos(π/3 rad)`, Atelier `2` (limite notée à la PR 3 : `.solve` relit `ctx.input`). Familles
+  périodiques et seuils de suites : même réponse, `x = … , k ∈ ℤ` et `n > … ≈ …`.
+- **Décisions de David** (questions posées, recos suivies) : famille périodique
+  `S = \{ π/4 + kπ, k ∈ ℤ \}` (deux familles : `S = \{ π/6 + 2kπ ; 5π/6 + 2kπ, k ∈ ℤ \}`) ; **seuil
+  d'une suite gardé tel quel, `≈` compris** (exception assumée à Q2) ; paramètre : **le registre
+  refuse aussi** (V57 descend) ; décimaux tapés : **Q46 descend dans le registre** (`1,5`).
+- **Découpage** : PR 2b = la FORME (1-3 + périodiques) ; PR 2c = la LECTURE et les refus (4-6).
+
+### Phase 0 de la PR 2b — comportements
+
+- **Nominal** : `.résoudre 2x+1=7` → `S = \{3\}` (registre et Atelier) ; `e^x=3` → `S = \{\ln(3)\}`,
+  `≈ 1,10` au bouton ; `2x+1<7` → `S = ]−∞ ; 3[` dans l'Atelier, dernière étape comprise (les
+  étapes passent par `x < 3`, Q2) ; `cos(x)=sin(x)` → `S = \{ π/4 + kπ, k ∈ ℤ \}`.
+- **Limites** : solutions rangées par valeur croissante (R-ordre), produit nul compris ; seuil
+  `0.8^n<0.1 ; n` inchangé ; solution sous condition (`\text{si}`) : S aussi, condition gardée.
+- **Erreurs** : aucun refus ne change.
