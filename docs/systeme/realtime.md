@@ -221,7 +221,7 @@ Historique : [canal privé du chat](../archive/wip/realtime-chat-prive-progress.
 - **`user_presence` n'est pas publiée** (gardé par `realtime-publication.test.ts` : la publier
   diffuserait l'UUID d'un compte supprimé). Réglé le 2026-11-03 (écart T1) : la présence des amis
   est relue toutes les 60 s, sans canal.
-- Les canaux `match:<id>`, présence, notifications et succès restent publics : ils ne portent que
+- Les canaux `match:<id>`, notifications et succès restent publics : ils ne portent que
   des `postgres_changes`, filtrés par la RLS des tables (mesuré le 2026-11-03 : un intrus qui
   rejoint le canal ne reçoit que ce qu'il pourrait déjà lire ; décision de David, écart T2 : pas de
   passage en privé). **Garde** : `src/lib/stores/__tests__/canaux-publics-garde.test.ts` échoue
