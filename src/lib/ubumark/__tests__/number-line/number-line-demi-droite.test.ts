@@ -70,9 +70,9 @@ describe('Demi-droite — lecture de segments:', () => {
 		expect(warnings.filter((w) => w.message.includes('outside'))).toEqual([]);
 	});
 
-	it('borne finie hors de la fenêtre : averti, comme un segment', () => {
+	it('borne finie hors de la fenêtre : averti, l’infini écrit tel quel', () => {
 		const { warnings } = parse('[12, +inf[');
-		expect(warnings.some((w) => w.message.includes('outside'))).toBe(true);
+		expect(warnings.some((w) => w.message.includes('Segment [12, +inf]'))).toBe(true);
 	});
 });
 
@@ -81,6 +81,8 @@ describe('Demi-droite — erreurs de l’auteur', () => {
 		const { node, errors } = parse('[3, +inf]');
 		expect(node).toBeNull();
 		expect(errors.some((e) => e.message.includes("l'infini est toujours exclu"))).toBe(true);
+		// Une seule erreur : pas de « Could not parse any segments » en plus
+		expect(errors).toHaveLength(1);
 	});
 
 	it('crochet fermé sur -inf : refusé', () => {

@@ -244,6 +244,8 @@ function parseSegments(
 	if (!value.trim()) return [];
 
 	const segments: NumberLineSegment[] = [];
+	// Segments lus mais refusés (infini mal écrit) : leur erreur précise suffit
+	let rejected = 0;
 
 	// Split on comma-space followed by [ or ] (segment delimiter)
 	// We need to be careful: commas inside segments separate start/end values
@@ -274,6 +276,7 @@ function parseSegments(
 				line: lineNum,
 				content: lineContent
 			});
+			rejected++;
 			continue;
 		}
 		if ((startInf && !startOpen) || (endInf && !endOpen)) {
@@ -282,6 +285,7 @@ function parseSegments(
 				line: lineNum,
 				content: lineContent
 			});
+			rejected++;
 			continue;
 		}
 
@@ -303,7 +307,7 @@ function parseSegments(
 		});
 	}
 
-	if (segments.length === 0 && value.trim()) {
+	if (segments.length === 0 && rejected === 0 && value.trim()) {
 		errors.push({
 			message: `Could not parse any segments from "${value}", expected format: [-1, 3] or ]0, 5[ [color]`,
 			line: lineNum,
@@ -637,7 +641,7 @@ export function parseNumberLineContent(content: string | string[]): NumberLinePa
 			(segment.endInfinite && !segment.startInfinite && sNum > endNum + 1e-10);
 		if (startOutside || endOutside || finiteOutside) {
 			warnings.push({
-				message: `Segment [${sNum}, ${eNum}] extends outside bounds [${startNum}, ${endNum}]`
+				message: `Segment [${segment.startInfinite ? '-inf' : sNum}, ${segment.endInfinite ? '+inf' : eNum}] extends outside bounds [${startNum}, ${endNum}]`
 			});
 		}
 	}
