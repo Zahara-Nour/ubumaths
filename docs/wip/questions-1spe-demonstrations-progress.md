@@ -18,11 +18,11 @@ _Mis à jour le 2026-11-03, après la publication du lot 3._
   `docs/wip/outils-manquants.md` et fin de chantier (versement, archivage du journal).
 - **En attente de David** : Q2 b, **non tranchée**.
 - **Pièges en cours** : `1/√2` est jugé `bad_form` (spec asservie). Migration copiée d'un lot précédent :
-  transformer LIGNE À LIGNE. Worktree sans lien Supabase : copier `supabase/.temp/{project-ref,linked-project.json,
-pooler-url,postgres-version}` du dépôt principal pour `db:migrate`. Ancienne branche distante
+  transformer LIGNE À LIGNE. Worktree sans lien Supabase : copier
+  `supabase/.temp/{project-ref,linked-project.json,pooler-url,postgres-version}` du dépôt principal pour `db:migrate`. Ancienne branche distante
   `docs/questions-1spe-demonstrations` à supprimer.
 - **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, branche `feat/questions-1spe-demonstrations`
-  (PR mergées ; journal commité sur `main`).
+  (PR mergées ; ce journal en avance sur `main`, à y reporter).
 
 ---
 
