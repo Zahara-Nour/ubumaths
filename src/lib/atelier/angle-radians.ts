@@ -18,68 +18,14 @@
  */
 
 import type { MathNode } from '$lib/mathAST/types';
-import { isUnit } from '$lib/mathAST/guards';
-import { format as formatUnit } from '$lib/mathAST/units';
-import {
-	divide,
-	multiply,
-	number as mathNumber,
-	parentheses,
-	piConstant
-} from '$lib/mathAST/factory';
-import { transformAST } from '$lib/mathAST/visitor';
-import { simplifyExact } from '$lib/geometry-core/compute/geo-arithmetic';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { parseLatexSafe } from '$lib/mathAST/parser';
+import { withRadiansInTrigonometry } from '$lib/mathAST/cli/core/angle-radians';
 import { astOf } from './parse';
 
-/** Les fonctions qui prennent un angle et rendent un nombre. */
-const TRIGONOMETRIC = new Set(['sin', 'cos', 'tan']);
-
-/** Une grandeur d'angle en nombre de radians, ou `null` si ce n'en est pas une. */
-function radiansOf(node: MathNode): MathNode | null {
-	if (!isUnit(node)) return null;
-	const symbol = formatUnit(node.unit, 'original');
-	if (symbol === 'rad') return simplifyExact(node.expression);
-	if (symbol === '°') {
-		return simplifyExact(
-			divide(multiply(node.expression, piConstant(), 'implicit'), mathNumber('180'), 'fraction')
-		);
-	}
-	return null;
-}
-
-/** Retirer l'unité des angles DANS un sin, cos, tan : `cos(90 °)` → `cos(π/2)`. */
-export function radiansInTrigonometry(ast: MathNode): MathNode {
-	return converted(ast).ast;
-}
-
-/** `radiansInTrigonometry`, et si quelque chose a changé. */
-function converted(ast: MathNode): { readonly ast: MathNode; readonly changed: boolean } {
-	let changedSomewhere = false;
-	const result = transformAST(ast, {
-		enterFunction: (node) => {
-			if (!TRIGONOMETRIC.has(node.name)) return undefined;
-			let changed = false;
-			const args = node.args.map((arg) =>
-				transformAST(arg, {
-					enterUnit: (unit) => {
-						const radians = radiansOf(unit);
-						if (radians === null) return undefined;
-						changed = true;
-						return { node: parentheses(radians), skip: true };
-					}
-				})
-			);
-			// Rien d'autre ne change : un sin(x) sans angle mesuré reste tel quel
-			if (!changed) return undefined;
-			changedSomewhere = true;
-			return { node: simplifyExact({ ...node, args }), skip: true };
-		}
-	});
-	return { ast: result, changed: changedSomewhere };
-}
+// La réduction sur l'arbre vit dans le registre depuis le 2026-11-03 (`registre-reference`)
+export { radiansInTrigonometry } from '$lib/mathAST/cli/core/angle-radians';
 
 /** Une unité d'angle écrite : `[°]`, `[rad]`, `\unit{°}`. */
 const ANGLE_UNIT_WRITTEN = /\[(?:°|rad)\]|\\unit\s*\{(?:°|rad)\}/;
@@ -94,7 +40,7 @@ export function radiansInText(text: string, functionNames?: readonly string[]): 
 	if (!ANGLE_UNIT_WRITTEN.test(text)) return text;
 	const ast = astOf(text, 'url', functionNames);
 	if (ast === null) return text;
-	const result = converted(ast);
+	const result = withRadiansInTrigonometry(ast);
 	return result.changed ? toCustom(result.ast) : text;
 }
 
@@ -109,7 +55,7 @@ export function radiansInLatex(
 	if (!ANGLE_UNIT_WRITTEN.test(latex)) return null;
 	const ast = parseLatexSafe(latex).ast;
 	if (ast === null || ast === undefined) return null;
-	const result = converted(ast);
+	const result = withRadiansInTrigonometry(ast);
 	return result.changed
 		? { latex: toLatex(result.ast), text: toCustom(result.ast), ast: result.ast }
 		: null;

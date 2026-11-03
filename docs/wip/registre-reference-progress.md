@@ -6,21 +6,22 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2292._
+_Mis à jour le 2026-11-03, PR 3/5 ouverte._
 
 - **État** : lot 2 du registre découpé en 5 PR (§ Lot 2 — correction du registre). PR 1/5 (#2281,
-  A/B) et PR 2/5 (#2292, D : expression à lettres rangée) MERGÉES ; reste 20 lignes du registre
-  connues fausses au lot 2 (lecture 10, plafond 5, C 5). Pas déployées.
-- **Prochaine action** : PR 3/5 — lecture de l'entrée (degrés, `π`, refus de `pi`) :
-  `remarquables-01…04, 08, 12`, `racines-06`, `approche-08, 09, 12`.
+  A/B) et PR 2/5 (#2292, D) MERGÉES ; PR 3/5 (lecture : degrés, `π`, refus de `pi`) codée sur
+  `fix/registre-lot2-lecture`, 10 lignes justes. Reste 10 lignes connues fausses au lot 2
+  (plafond 5, C 5). Pas déployées.
+- **Prochaine action** : merger la PR 3/5, puis PR 4/5 — C : égalité seule → `\text{vrai}` /
+  `\text{faux}` (`comparer-01, 05, 09, 12, 14`, et `comparer-13` côté Atelier).
 - **En attente de David** : rien.
 - **Tranché** : option `unitChoice: 'school'` GARDÉE exprès (David, 2026-11-03 : « utile plus
   tard ») — ne pas proposer de la retirer ; § Unité du résultat et § Revue de #2276 ; avant : Q9 EN ENTIER, A-D du lot 2,
   `decimal` en LaTeX, `plafond-02` → 1000, Q24, `signes-06` — NE PAS reposer.
-- **Pièges** : `docs:check-a-jour` local ne voit que le COMMITÉ (CI rouge sur #2281 : 2 docs) ;
-  PR en conflit avec `main` = aucun run de CI → `git merge origin/main` ; `rebase` et `restore` =
-  liste `ask` ; sous-expressions de `tidy` en `durations: 'single'`.
-- **Worktree / branche** : aucun (retirés après #2292).
+- **Pièges** : `docs:check-a-jour` local ne voit que le COMMITÉ ; PR en conflit avec `main` = aucun
+  run de CI → `git merge origin/main` ; `rebase` et `restore` = liste `ask` ; sous-expressions de
+  `tidy` en `durations: 'single'`.
+- **Worktree / branche** : `../ubumaths-wt-registre-reference`, `fix/registre-lot2-lecture`.
 
 ---
 
@@ -500,3 +501,28 @@ lignes de D + `remarquables-06` (`2*45°` → 90°). Rendu changé, toujours fau
 la mise à jour de la liste. Test mis à jour : `reciproque-a-la-volee` `x^-1` → texte `1/x` (l'écran
 affichait déjà `\dfrac{1}{x}`, seul le texte retardait). 1re retouche (dans `resultToShow` du
 registre) sans effet, annulée : ce chemin ne voit que les lettres liées.
+
+**PR 3 (lecture de l'entrée), 2026-11-03** : la lecture de l'Atelier descend dans le registre
+(`mathAST/cli/core/`) : `degrees.ts` déplacé tel quel, `typed-line.ts` (`readTypedLine` :
+`PI_IN_LETTERS` et `withPiCommand` venus de `names.ts`/`parse.ts`, `DEGREE_POWER` et
+`ANGLE_POWER_MESSAGE` de `calcul.ts`), `angle-radians.ts` (`radiansInTrigonometry` venu de
+l'Atelier, qui garde ses passages texte/LaTeX). `WebReplEngine.executeInput` lit chaque ligne
+ainsi, sauf `.stats`, `.linreg`, `.convert` (le `°` de `.convert °` est l'unité cible : 3 tests de
+`degres-revue` l'ont montré). Une commande de calcul reçoit `remarkableValuesInTrigonometry` :
+valeur exacte seulement, sinon l'angle reste écrit — `.simplifier cos(20°)x` garde ses degrés
+(`valeurs-remarquables.test.ts`, règle de l'Atelier ; une 1re version qui convertissait tout
+rendait `cos(π/9)`). L'Atelier lit toujours avant d'appeler le moteur : relecture idempotente
+(testé). Justes : `remarquables-01…04, 08, 12`, `racines-06`, `approche-08, 09, 12`. Preuve rouge :
+6/12 tests de `lecture-saisie.test.ts` avec le moteur de `main`. Suites `mathAST` +
+`geometry-core` (29 939) et composants de l'Atelier (651) vertes. Non fait : `.diff sin(x°)`
+(échoue toujours, hors corpus), les commandes qui relisent `ctx.input` (`.solve`, `.eval`…) ne
+reçoivent pas les radians — pas d'écart du corpus.
+
+**Revue de la PR 3 (`code-reviewer`, Sonnet)** : un bloquant corrigé — `cos(60°)=1/2` et
+`.equiv cos(60°) === 1/2` répondaient faux sans erreur (lus en degrés, jamais réduits) :
+`remarkableValuesInTrigonometry` aussi dans `executeEquality` et `compareExpressions` de
+`equiv.command.ts`. Corrigés aussi : un sin, cos, tan imbriqué (`sin(cos(60°))` → `sin(1/2)`, le
+transformateur descend quand l'externe n'a pas de valeur), `.help pi` n'est plus refusé. Preuve
+rouge : 4/16 tests. **Limite notée, non corrigée** : les commandes qui relisent `ctx.input`
+(`.diff cos(60°)*x` → `cos(60[°])`, `.integrate`, `.taylor`) ne reçoivent pas la valeur
+remarquable — aucune ligne du corpus ; à reprendre avec la descente des commandes (Q1).

@@ -47,7 +47,6 @@ import {
 	referencesOf,
 	variablesOf,
 	individualEntries,
-	withPiCommand,
 	latexUnitsWithPi,
 	mixedNotationMessage,
 	withLatexFunctionNames
@@ -163,7 +162,13 @@ import {
 	segmentLength,
 	type BuiltOutcome
 } from './construction';
-import { PI_IN_LETTERS, PI_IN_LETTERS_MESSAGE } from './names';
+import {
+	ANGLE_POWER_MESSAGE,
+	DEGREE_POWER,
+	PI_IN_LETTERS,
+	PI_IN_LETTERS_MESSAGE,
+	withPiCommand
+} from '$lib/mathAST/cli/core/typed-line';
 import { crossCommand } from './cross';
 import { compareCommand } from './compare';
 import { binomialCommand } from './binomial';
@@ -179,7 +184,11 @@ import { filterCommand } from './filter';
 import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
 import { solveSteps, type SolvedSteps } from './solve-steps';
 import { readNaturalQuantities, singleLetterHint, type NaturalReading } from './natural-quantities';
-import { degreeSignWritten, strayDegreeRefusal, withDegreeUnits } from './degrees';
+import {
+	degreeSignWritten,
+	strayDegreeRefusal,
+	withDegreeUnits
+} from '$lib/mathAST/cli/core/degrees';
 import { radiansInLatex, radiansInText } from './angle-radians';
 import { quantityProblem } from '$lib/mathAST/cli/quantities';
 import { EQUATION_UNSOLVED, INEQUALITY_UNSOLVED } from '$lib/mathAST/cli/commands/solve.command';
@@ -429,7 +438,8 @@ const STUDENT_FACING_ERRORS: ReadonlySet<string> = new Set([
 	VALUE_FORBIDDEN
 ]);
 
-// `PI_IN_LETTERS` : la règle, partagée avec la grille, vit dans `names.ts`
+// `PI_IN_LETTERS` : la règle, partagée avec la grille et le registre, vit dans
+// `mathAST/cli/core/typed-line.ts`
 
 /** Un comparateur d'événement : `⩽ ⩾ ≤ ≥ < > =`, `<=`, `>=`, `\leqslant`, `\leq`… */
 const EVENT_COMPARATOR = String.raw`(?:<=|>=|[⩽⩾≤≥<>=]|\\(?:leqslant|geqslant|leq|geq|le|ge|lt|gt))`;
@@ -4001,12 +4011,6 @@ function measureLine(atelier: Atelier, text: string, result: CalcResult): CalcRe
 	}
 	return { ...result, output: result.output.replace(/\\pi(?![A-Za-z])/g, 'π') };
 }
-
-/** Un exposant collé à l'unité degré : `60[°]^2`, `60\unit{°}^{2}`. */
-const DEGREE_POWER = /(?:\[°\]|\\unit\{°\})\s*\^/;
-
-const ANGLE_POWER_MESSAGE =
-	'Une puissance d’un angle n’est pas une mesure : élève plutôt son cosinus, son sinus, ou une valeur sans unité.';
 
 /** Une puissance d'un angle dans l'arbre d'un résultat (`°^2`, `rad^2`) : décidé sur l'ARBRE. */
 function hasAnglePower(ast: MathNode): boolean {
