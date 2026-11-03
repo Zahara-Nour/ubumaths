@@ -5,6 +5,8 @@ author: merdranpo
 lede: Personne ne sait si la machine finira un jour par s'arrêter d'elle-même. Les ingénieurs du Glitchistan ont décidé d'attendre. Ils attendent toujours.
 ---
 
+![Dans une salle des machines, une immense calculatrice à vapeur déroule sans fin un ruban de papier ; Bosse-de-Nage rit aux éclats à côté, un garde vérifie le ruban, et trois ingénieurs attendent, montre à la main, couverts de toiles d’araignée.](/shtam/glitchistan-ha-ha.webp){size=large}
+
 Dans la salle des machines de Turingrad, la grande calculatrice à vapeur du Glitchistan affiche, depuis 1898, un seul et unique message : « ha ha ». Puis à nouveau « ha ha ». Puis encore « ha ha ». Le programme a été écrit par le gouverneur de la Province, Bosse-de-Nage, qui, selon ses proches, n'a jamais rien su dire d'autre.
 
 « Nous avons tout essayé pour savoir s'il allait s'arrêter un jour », raconte l'ingénieure en chef. « Nous avons lu le programme, nous avons attendu, nous avons attendu encore. » Après cent vingt-huit ans d'observation, son équipe est parvenue à une conclusion prudente : « Il ne s'est pas encore arrêté. »
