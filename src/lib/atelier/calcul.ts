@@ -4724,7 +4724,8 @@ export function promote(
 	//
 	// Une commande ne porte pas l'arbre de son résultat — celui qu'elle rend est
 	// l'arbre de l'ENTRÉE. On refuse donc, plutôt que de deviner.
-	if (result.kind !== 'calcul' || result.ast === undefined) {
+	// … et une comparaison tranchée (`2=2` → vrai) n'est pas une valeur : `a = true` (revue de #2303)
+	if (result.kind !== 'calcul' || result.ast === undefined || isBoolean(result.ast)) {
 		return {
 			ok: false,
 			message:

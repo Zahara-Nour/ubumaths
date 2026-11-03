@@ -21,7 +21,7 @@ _Mis à jour le 2026-11-03, PR 4/5 ouverte._
 - **Pièges** : `docs:check-a-jour` local ne voit que le COMMITÉ ; PR en conflit avec `main` = aucun
   run de CI → `git merge origin/main` ; `gh pr checks --watch` juste après un push ne voit que
   l'auto-merge → suivre le run « Code Quality » du commit ; limites connues : `.diff cos(60°)*x`
-  (commandes qui relisent `ctx.input`), `2 ≈ 2` (caractère `≈`) mal lu.
+  (commandes qui relisent `ctx.input`), `2 ≈ 2` (caractère `≈`) mal lu, `(t>1)` → faux.
 - **Worktree / branche** : `ubumaths-wt-registre-reference` · `fix/registre-lot2-egalite`.
 
 ---
@@ -541,3 +541,10 @@ l'Atelier : refus au lieu de la ligne « Erreur de calcul : … ». Sonde avant/
 
 - `atelier` (32 426) et composants de l'Atelier (651) vertes. **Vu, hors périmètre** : `2 ≈ 2` avec
   le caractère `≈` (pas `\approx`) répond « Nombre « 2 » écrit après un facteur » dans les deux outils.
+
+**Revue de la PR 4 (`code-reviewer`, Sonnet)** : aucun bloquant. Corrigé — « Garder » une
+comparaison tranchée créait `a = true` (`promote` acceptait tout `ast` ; `2=2` n'en avait pas
+avant, `2<3` déjà) : refusée comme une ligne sans valeur, preuve rouge 4/4 (`calcul.test.ts`).
+**Limite notée, non corrigée** (antérieure, plus visible) : une variable libre entre parenthèses
+est tranchée fausse — `(t>1)` → `\text{faux}`, `\lnot (t>1)` → `\text{vrai}`, `2<3<t` →
+`\text{faux}` (`t>1` seul reste la relation). Aussi : `1/0=1` → « normalize: division by zero », en anglais.

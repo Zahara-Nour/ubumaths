@@ -262,6 +262,19 @@ describe('garder un résultat sous un nom', () => {
 		expect(promote(s, result).ok).toBe(false);
 	});
 
+	// Une comparaison tranchée (`\text{vrai}`, décision C du lot 2 du registre) n'est pas une
+	// valeur : la garder créait `a = true` (revue de #2303)
+	it.each(['2=2', '2 < 3', '1<2<3', '2=3 \\land 1<2'])(
+		'refuse de garder la comparaison %s',
+		(line) => {
+			const s = session();
+			const kept = promote(s, runInput(s, line), 'a');
+
+			expect(kept).toEqual({ ok: false, message: 'Il n’y a rien à garder dans cette ligne.' });
+			expect(s.atelier.get('a')).toBeUndefined();
+		}
+	);
+
 	it('refuse de garder une définition — l’objet existe déjà', () => {
 		const s = session();
 		const result = runInput(s, 'f(x) = x^2');
