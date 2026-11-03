@@ -75,7 +75,31 @@ export function readSignTableCases(
 			]
 		};
 	}
+	// Une ligne que le parseur ignore (domaine répété, texte libre) partirait telle quelle
+	// dans l'énoncé d'une évaluation : un tableau à compléter n'a aucune erreur
+	if (errors.length > 0) {
+		return { errors: [`${prefixOf(first)} ${errors.map((e) => e.message).join(' ; ')}`] };
+	}
 	const cells = node.cases ?? [];
+	// Valeur cachée évaluée dans une ligne de variations (`f(-3)`) : elle partirait en clair
+	for (const cell of cells) {
+		if (cell.kind !== 'valeur') continue;
+		const shown = node.rows.some(
+			(row) =>
+				row.type === 'variation' &&
+				[...row.values.values()].some((value) =>
+					// Même échappement des deux côtés (`\\frac` dans le JSON)
+					JSON.stringify(value).includes(JSON.stringify(`(${cell.answer})`).slice(1, -1))
+				)
+		);
+		if (shown) {
+			return {
+				errors: [
+					`${prefixOf(first + cell.index)} la valeur cachée ${cell.answer} est écrite dans une ligne variation: (« (${cell.answer}) ») ; elle partirait en clair, l’écrire autrement`
+				]
+			};
+		}
+	}
 	const masked = cells.find((cell) => cell.answer === '');
 	if (masked) return { errors: [`${prefixOf(first + masked.index)} ${MASKED_FORM_MESSAGE}`] };
 	return { answers: cells.map((cell) => ({ kind: cell.kind, answer: cell.answer })) };

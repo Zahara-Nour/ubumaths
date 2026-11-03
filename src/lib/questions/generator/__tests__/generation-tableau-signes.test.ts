@@ -239,6 +239,40 @@ describe('tableau de signes : les cases et leurs réponses', () => {
 		expect(errors).toMatch(/Case 1 \(tableau de signes\) : Ligne 2 : on ne peut pas cacher -inf/);
 	});
 
+	it('valeur cachée écrite f(-3) dans une ligne variation: : refusée (elle partirait en évaluation)', () => {
+		const errors = failure(
+			template({
+				statement: variation(...PRODUIT, '', 'variation: f(x)', '  -3: f(-3), bottom')
+			})
+		);
+		expect(errors).toMatch(/Case 1 \(tableau de signes\) : .*-3.*ligne variation/);
+		const frac = [
+			'variable: x',
+			'domain: -inf, ?\\frac{3}{2}, +inf',
+			'',
+			'sign: 2x-3',
+			'  \\frac{3}{2}: z',
+			'',
+			'variation: f(x)',
+			'  \\frac{3}{2}: f(\\frac{3}{2}), bottom'
+		];
+		expect(failure(template({ statement: variation(...frac) }))).toMatch(/ligne variation/);
+	});
+
+	it('bloc à cases avec une erreur (domaine répété, ligne libre) : refusé', () => {
+		expect(
+			failure(template({ statement: variation('domain: -inf, -3, 2, +inf', ...PRODUIT) }))
+		).toMatch(/Case 1 \(tableau de signes\) : .*[Dd]omain/);
+		expect(failure(template({ statement: variation(...PRODUIT, 'racine -3') }))).toMatch(
+			/Case 1 \(tableau de signes\)/
+		);
+	});
+
+	it('cellule écrite deux fois, l’une cachée : refusée', () => {
+		const twice = [...PRODUIT.slice(0, 4), '  -inf,-3: +', ...PRODUIT.slice(4)];
+		expect(failure(template({ statement: variation(...twice) }))).toMatch(/deux fois/);
+	});
+
 	it('ordre indifférent : refusé', () => {
 		expect(
 			failure(template({ statement: variation(...PRODUIT) }, { orderIndependent: true }))

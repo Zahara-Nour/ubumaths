@@ -582,6 +582,10 @@ function parseSignRowEntries(
 ): { values: Map<string, SignValue>; hidden: PendingCell[] } {
 	const values = new Map<string, SignValue>();
 	const hidden = new Map<string, PendingCell>();
+	// Clés déjà écrites : une cellule cachée ne s'écrit qu'une fois
+	const written = new Set<string>();
+	const twiceMessage = (key: string) =>
+		`la cellule « ${key} » est écrite deux fois, l’une cachée : n’en garder qu’une`;
 
 	for (let i = 0; i < lines.length; i++) {
 		const match = lines[i].match(ROW_ENTRY_REGEX);
@@ -608,6 +612,12 @@ function parseSignRowEntries(
 				(m) => refuse(lineNumber, lines[i], m)
 			);
 			if (!read) continue;
+			// Écrite aussi en clair : le texte envoyé en évaluation garderait la réponse
+			if (written.has(normalizedKey)) {
+				refuse(lineNumber, lines[i], twiceMessage(normalizedKey));
+				continue;
+			}
+			written.add(normalizedKey);
 			if (read.value) values.set(normalizedKey, read.value);
 			else values.delete(normalizedKey);
 			hidden.set(normalizedKey, {
@@ -631,9 +641,12 @@ function parseSignRowEntries(
 			continue;
 		}
 
+		if (hidden.has(parsed[0])) {
+			refuse(lineNumber, lines[i], twiceMessage(parsed[0]));
+			continue;
+		}
+		written.add(parsed[0]);
 		values.set(parsed[0], parsed[1]);
-		// Une écriture ordinaire plus loin remplace la case cachée de la même clé
-		hidden.delete(parsed[0]);
 	}
 
 	return { values, hidden: [...hidden.values()] };
