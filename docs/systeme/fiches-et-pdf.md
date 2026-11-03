@@ -605,6 +605,12 @@ compilation avec ces polices lève une erreur → le même corrigé recompilé s
 Glyphes absents de Chiphre Math (`≠`, `·`, lettres calligraphiques, `″`, lettres accentuées en
 mode math) et de Shantell Sans (grec en texte) : Typst prend une autre police pour ce glyphe, sans
 erreur (inventaire du 2026-10-13 sur les 32 fiches en base).
+Gras mathématique (`bold()` de Typst, `\mathbf` : réponses en gras d'une série figée) : chiffres
+U+1D7CE…, lettres grasses U+1D400… et grasses italiques U+1D468…, tous dessinés avec Main-Bold
+(manuscrit, droit, comme `\mathbf` à l'écran), depuis le 2026-11-03. Avant, la police ne les avait
+pas et le PDF dessinait des **carrés vides**, sans erreur : Typst prend une autre police pour un
+glyphe absent, sauf ici. `chiphre-math-gras.test.ts` lit la `cmap`. Le chemin de `ChiphreMath.ttf`
+porte un `?v=` à changer à chaque reconstruction de la police (`/fonts/` est en cache 30 jours).
 
 **Noms de fichier** : tout PDF ou ZIP de fiche (fiche, corrigé, lot par élève, dossier et archive
 du lot par classe) est nommé par `sanitizeForFileName` (`src/lib/worksheets/pdf-file-name.ts`) :
