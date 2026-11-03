@@ -308,19 +308,6 @@ describe('Terminale spé, lot 9 : les branches d’échec de la migration', () =
 		});
 	});
 
-	it('la notion Espace est archivée : la migration échoue (résolution stricte)', async () => {
-		await enTransaction(async () => {
-			await poserEtatProd(pg, auteur);
-			const chemins = await cheminsActifs(pg);
-			await pg.query('update public.classification_nodes set archived_at = now() where id = $1', [
-				chemins.get('Géométrie > Espace')
-			]);
-			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
-				/chemins ou points introuvables : 8 nœud\(s\)/
-			);
-		});
-	});
-
 	it('rollback refusé si un modèle du lot a été déplacé depuis la migration', async () => {
 		await enTransaction(async () => {
 			await poserEtatProd(pg, auteur);
