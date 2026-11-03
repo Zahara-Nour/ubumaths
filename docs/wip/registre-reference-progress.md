@@ -11,18 +11,15 @@ _Mis à jour le 2026-11-03, après #2276._
 - **État** : #2276 MERGÉE — une seule règle d'unité du résultat (unité tapée, moins de chiffres)
   dans `tidy`, `{{eval}}` et l'Atelier ; durées en h-min-s (variables et contextes de valeur : UNE
   grandeur) ; attendu dans l'unité imposée ; étape `tidy-write-duration`. Pas déployée.
-- **Prochaine action** : selon David — PR « retirer l'option `unitChoice: 'school'` » (garder le
-  repli scolaire interne, réécrire `tidy-units.test.ts`), puis reprise du lot 2 du registre.
-- **En attente de David** : (1) oui/non pour supprimer les sondes non suivies
-  `../ubumaths-wt-registre-reference/src/lib/mathAST/__sonde__/` (bloquent `worktree remove`) ;
-  (2) oui/non pour retirer l'option `'school'` (reco : oui, PR à part).
-- **Tranché** : § Unité du résultat et § Revue de #2276 ; avant : Q9 EN ENTIER, A-D du lot 2,
+- **Prochaine action** : reprise du lot 2 du registre.
+- **En attente de David** : rien.
+- **Tranché** : option `unitChoice: 'school'` GARDÉE exprès (David, 2026-11-03 : « utile plus
+  tard ») — ne pas proposer de la retirer ; § Unité du résultat et § Revue de #2276 ; avant : Q9 EN ENTIER, A-D du lot 2,
   `decimal` en LaTeX, `plafond-02` → 1000, Q24, `signes-06` — NE PAS reposer.
 - **Pièges** : une PR en conflit avec `main` n'a AUCUN run de CI (état « dirty ») → `git merge
 origin/main` ; `rebase` et `restore` = liste `ask` ; sous-expressions de `tidy` toujours en
   `durations: 'single'` ; budgets de temps de tabuler rouges sous charge seulement.
-- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `fix/tidy-unite-ecrite` (mergée,
-  à retirer après la décision sur les sondes).
+- **Worktree / branche** : aucun (sondes supprimées, worktree et branche retirés le 2026-11-03).
 
 ---
 
