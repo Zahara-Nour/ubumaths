@@ -9,16 +9,15 @@ Sous-chantier de `questions-1spe` (clos, journal `docs/archive/wip/questions-1sp
 
 _Mis à jour le 2026-11-03, après #2272._
 
-- **État** : modèle 433 mergé (#2272), brouillon en base locale seulement ; pas en prod (#2265 non
-  déployé).
+- **État** : modèle 433 mergé (#2272), brouillon en base locale ; **aperçu admin validé par David
+  le 2026-11-03** ; #2265 en prod (0.65.0) : le brouillon peut être créé en prod.
 - **Prochaine action** : aucune sur 1SPE-271 : **repris par le chantier `questions-1spe-tangente`**
   (branche `feat/questions-1spe-tangente`, décision de David du 2026-11-03) ; § 6 abandonné, ne pas
   écrire de modèle 271 ici. Il reste la livraison du 433 (ligne suivante).
-- **En attente de David** : aperçu admin du 433 à jouer à l'œil ; après un
-  `deploy:prod` qui livre #2265, `create-questions --dir scripts/questions/1spe-tracer-droite --publier`
+- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-tracer-droite --publier`
   (brouillon en prod), puis migration nœud + tag, page à cocher, publication.
-- **Pièges en cours** : brouillons seulement tant que #2265 n'est pas en prod ; Chrome n'ouvrait pas
-  `localhost` dans la session du 2026-11-03 (aperçu non joué).
+- **Pièges en cours** : un serveur de dev de la veille bloquait le SSR (connexion sans fin) : le
+  relancer a suffi.
 - **Worktree / branche** : aucun (retiré après #2272).
 
 ---
