@@ -8,13 +8,13 @@ status: écarts revérifiés le 2026-10-18 ; tri A (seul) / B (David) fait ; V62
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après le lot doc RGPD (commit direct sur `main`)._
+_Mis à jour le 2026-11-03, PR T2 (garde des canaux publics) ouverte._
 
-- **État** : liste A finie et en prod (v0.62.0). Lot RGPD (liste B) : **David a validé toutes mes recos** de la page à cocher (2026-11-03, voir « Décisions » ci-dessous). Lot doc fait : T3, T9, T12, T13.
-- **Prochaine action** : **T2** (canaux temps réel publics → privés) dans un worktree `ubumaths-wt-ecarts-a-trier`. ⚠️ `realtime.md` dit que ces canaux ne portent que des `postgres_changes` filtrés par la RLS : **mesurer d'abord ce qui fuit vraiment** (présence `track` ? broadcast ?) avant de coder. Puis T1, T6, T7, T8, T15, puis lots B « destructif » et « spécification ».
+- **État** : liste A finie et en prod. Lot RGPD : toutes mes recos validées par David ; lot doc fait (T3, T9, T12, T13, commit `c3a17bc02` sur `main`) ; T2 = garde de test (PR `test/ecarts-a-trier-garde-canaux`).
+- **Prochaine action** : merger la PR T2, puis **T1** (présence relue toutes les 60 s), T6, T7, T8, T15, puis lots B « destructif » et « spécification ».
 - **En attente de David** : T14 = les infos des mentions légales (responsable de publication, statut, adresse, nom).
 - **Pièges en cours** : migrations : `pnpm migration:horodatage`, `pnpm check:migrations --pr <n>` avant merge ; CI allégée pour le contenu, CI Summary fait foi ; `charger-repartir-annuler.svelte.test.ts` (client) instable.
-- **Worktree / branche** : aucun pour l'instant (journal sur `main`).
+- **Worktree / branche** : `../ubumaths-wt-ecarts-a-trier` · `test/ecarts-a-trier-garde-canaux`.
 
 ---
 
@@ -34,7 +34,7 @@ _Mis à jour le 2026-11-03, après le lot doc RGPD (commit direct sur `main`)._
 ## Décisions de David (2026-11-03, page à cocher RGPD, toutes mes recos validées)
 
 - **T1** présence des amis : relecture toutes les 60 s, `user_presence` reste non publiée.
-- **T2** canaux match / présence / notifications / succès : passer en privé (+ policies + tests d'intégration).
+- **T2** canaux match / présence / notifications / succès : ~~passer en privé~~ → mesure en prod (2026-11-03) : ils ne portent que des `postgres_changes` filtrés par la RLS, le privé n'apporte rien. **David a choisi une garde de test** (`canaux-publics-garde.test.ts`), sans passage en privé.
 - **T3** canal privé gardé après retrait d'un droit : limite acceptée et documentée (`realtime.md`) — fait.
 - **T6** CSP `unsafe-eval` : tester si `wasm-unsafe-eval` suffit à Typst ; sinon le restreindre aux pages PDF.
 - **T7** deux `requireAuth` : renommer celle qui redirige (`requireUserOrRedirect`) et passer les ~32 routes à la garde commune, avec revue sécurité.
