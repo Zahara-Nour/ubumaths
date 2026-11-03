@@ -268,7 +268,7 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
 
 ### Limites de débit
 
-En mémoire, par instance (voir [serveur.md](serveur.md) §1.5) : `error-log:<ip>` 20/min,
+En base, partagées par toutes les instances (`rateLimit()`, voir [serveur.md](serveur.md) §1.5) : `error-log:<ip>` 20/min,
 `bug-report:<userId>` 10/h (test : `src/routes/api/bug-reports/__tests__/rate-limit.test.ts`),
 `search:<userId>` 30/min. Côté navigateur, 10 erreurs par minute.
 
