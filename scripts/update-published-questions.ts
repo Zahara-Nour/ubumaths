@@ -29,7 +29,7 @@
  *   pnpm tsx scripts/update-published-questions.ts --lot <lot>            (simulation, diff)
  *   pnpm tsx scripts/update-published-questions.ts --lot <lot> --publier  (écrit)
  *   lots : second-degre, suites, derivation, textcolor-2de, niveaux-2de-probabilites,
- *          textcolor-hors-2de
+ *          textcolor-hors-2de, tracer-droites-2de
  *   … --seulement <id8>[,<id8>]   restreint aux cibles dont l'id commence ainsi
  *   … --sans-diff                 simulation sans le diff (preuves rouges seulement)
  */
@@ -173,6 +173,13 @@ const TEXTCOLOR_HORS_2DE: readonly string[] = [
 	'86c59a05-936c-41a5-a05e-d85ab56a2bfb' // Variations de ln : comparer, signe
 ];
 
+/** Seconde, 2-316 et 2-445 : la droite se trace au geste ` ```courbe tracer: ` au lieu d'un choix
+ *  entre 4 figures (docs/wip/questions-2de-progress.md, § 61, § 64) ; variations, description, specs */
+const TRACER_DROITES_2DE: readonly string[] = [
+	'8d4bd94d-73f7-4589-8b3f-67c84edcf778', // droites-b › Tracer une droite donnée par son équation réduite
+	'2cfae58d-7fdb-45f7-8ea1-777a4a307b5a' // droites-b › Tracer une droite donnée par une équation cartésienne
+];
+
 const LOTS: Record<string, Lot> = {
 	'second-degre': { dossier: 'scripts/questions/second-degre-existants', cibles: SECOND_DEGRE },
 	suites: { dossier: 'scripts/questions/suites-existants', cibles: SUITES },
@@ -185,6 +192,10 @@ const LOTS: Record<string, Lot> = {
 	'textcolor-hors-2de': {
 		dossier: 'scripts/questions/textcolor-hors-2de-existants',
 		cibles: TEXTCOLOR_HORS_2DE
+	},
+	'tracer-droites-2de': {
+		dossier: 'scripts/questions/2de-tracer-droites-existants',
+		cibles: TRACER_DROITES_2DE
 	}
 };
 

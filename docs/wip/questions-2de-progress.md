@@ -6,19 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2291 (§ 63)._
+_Mis à jour le 2026-11-03, PR `feat/tracer-droites-2de` ouverte (§ 64)._
 
-- **État** : `\textcolor` hors `$` corrigé hors 2de : 30 fichiers (10 générateurs + 3 JSON), lot
-  `textcolor-hors-2de` de 27 publiés (2 déjà corrigés en prod, 1 sans le défaut). Simulation verte.
-- **Prochaine action** : David : `pnpm tsx scripts/update-published-questions.ts
---lot textcolor-hors-2de --publier` ; relire par export (27/27, `hors-maths.py` → 0). Ensuite § 61.
-- **En attente de David** : le `--publier` ci-dessus.
-- **Pièges en cours** : `--publier`, `publier-lot`, `db:migrate` → David avec `!` ;
-  `create-questions` apparie par (titre, thème, domaine, sous-domaine, **niveau**) : un changement de niveau
-  passe par `update-published-questions.ts` (brouillons compris), sinon doublons ; `col()` en texte →
-  `colt()` ; `fonctions-terminale/C-06` du dépôt périmé vs prod (§ 63) ; pas de ligne `Claude-Session:` ;
-  une autre session écrit aussi dans ce journal (§ 61) : `git pull` avant d'éditer.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de` (HEAD détachée sur `origin/main`).
+- **État** : 2-316 (B-06 `8d4bd94d`) et 2-445 (B-07 `2cfae58d`) réécrits au geste ` ```courbe tracer: `,
+  specs 12/12 et 11/11, lot `tracer-droites-2de` (2 cibles). Lot `textcolor-hors-2de` (§ 63) **pas encore
+  publié** (vérifié en prod le 2026-11-03 : 27/27 portent encore `\textcolor`).
+- **Prochaine action** : merger la PR ; puis David, dans l'ordre : `--lot textcolor-hors-2de --publier`,
+  `--lot tracer-droites-2de` (simulation, refusée à Claude par le mode auto) puis `--publier` ; relire en base.
+- **En attente de David** : les deux `--publier` ci-dessus.
+- **Pièges en cours** : `--publier`, `publier-lot`, `db:migrate` → David avec `!` ; la simulation
+  d'`update-published-questions.ts` (lecture de la prod) est aussi refusée à Claude ; `create-questions`
+  apparie par (titre, thème, domaine, sous-domaine, **niveau**) ; `col()` en texte → `colt()` ;
+  `fonctions-terminale/C-06` du dépôt périmé vs prod (§ 63) ; pas de ligne `Claude-Session:` ; une autre
+  session écrit aussi dans ce journal : `git pull` avant d'éditer. 2-298 (vecteur) attend le `deploy:prod` de #2274.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `feat/tracer-droites-2de`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1597,3 +1598,18 @@ tspe-ln-continuite-convexite,1spe-tracer-droite}.py`) : vérifiés d'abord fidè
   `variations` remplacées ; `hors-maths.py` sur les instantanés → 0. Simulation : 27 cibles, `variations`
   seules, specs vertes.
 - **#2291 mergée** (CI verte). Écriture en prod : à lancer par David.
+
+## 64. 2-316 et 2-445 au geste « tracer » (2026-11-03)
+
+- **Phase 0 validée par David** (2026-11-03) : énoncé « Trace la droite $d$ : place deux de ses points. »
+  dans un repère −6..6 gradué de 1 ; titre, niveaux (6, 7), `grades`, `delay` (120 s), variations et bornes
+  de tirage gardés ; corrigés inchangés. 2-445 : la ligne `tracer:` porte l'**équation cartésienne de
+  l'énoncé** (option a : le message d'erreur reprend l'équation lue, sans souffler la forme réduite).
+- Prod exportée d'abord (`2de-tracer-droites-existants/`) : identique aux fichiers du dépôt hors `status`.
+  Réécriture par script (fichiers du dépôt et instantanés) : `statement` (choix → `tracer:`), `blanks`
+  retirés, `description`, `testSpecs` (pièges de l'ancien choix en specs `incorrect`, un point seul, deux
+  points confondus). `question:specs` : 12/12 et 11/11, 100/100 tirages.
+- Lot **`tracer-droites-2de`** de `update-published-questions.ts`. Simulation contre la prod refusée à
+  Claude par le mode auto : à lancer par David avant le `--publier`.
+- Ligne « droite à tracer : 2-316 et 2-445 » retirée de `docs/wip/outils-manquants.md`.
+- 2-298 (vecteur) : reste au § 61, après le `deploy:prod` de #2274.
