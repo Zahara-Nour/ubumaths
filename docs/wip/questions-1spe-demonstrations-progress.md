@@ -9,31 +9,27 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR de migration #2319 ouverte._
+_Mis à jour le 2026-11-03, lot 3 écrit (PR à ouvrir)._
 
-- **État** : lot 2 mergé (#2314), brouillons créés en prod par David (9e377c97, f7938cd3, b05ec37a, e2908d60,
-  16ee6f33). Migration `20261103132133_…_2_rangement_tags` en PR #2319 : test 13/13 vert, rouge sans elle, audit
-  sécurité sans finding bloquant, `check:migrations --pr 2319` OK.
-- **Prochaine action** : CI verte → merge #2319 → `db:migrate` depuis `main` (4 conditions réunies) → vérifier en base
-  (MCP) → page à cocher → publication.
-- **En attente de David** : la CI de #2319 est ROUGE à cause de `main`, pas de la PR : #2311 (`garde-auth-commune`,
-  38e599df6) fait appeler `locals.safeGetSession()` par `requireAuth`, et 5 tests d'intégration fabriquent des
-  `locals` sans cette méthode (marche-verrou, echanges-delai-confirmation, srs-stats-echanges-delai,
-  rpc-lot3-compte-autrui, succes-gidouilles). Reproduit en local. Qui le corrige ? Extension `signe:` du bloc
-  `ranger` (Q2 b) **non tranchée**.
-- **Pièges en cours** : `h(…)` est lu comme une fonction (f, g, h) : jamais en réponse attendue. 398 : jumeau 392 dans
-  le même programme, ne taguer que 398. `requiredForm: {pattern: 'u'}` pour les écritures équivalentes. Jamais de
-  couleur sur du texte. `Doc-inchangée:` dans un COMMIT pour une migration. Garde `lot partiel`. Ancienne branche
-  distante `docs/questions-1spe-demonstrations` à supprimer.
+- **État** : lots 1 et 2 **publiés** en prod (5/5 OK chacun). Lot 3 (308, 411, 322, 323 ; 300-302 hors chantier,
+  § 1) écrit, simulation verte, brouillons en base locale ; PR des modèles à ouvrir et merger.
+- **Prochaine action** : après le merge, David crée les 4 brouillons en prod
+  (`pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-demonstrations-3 --publier`), puis migration
+  de rangement et tags (gabarit : lot 2, #2319), `db:migrate`, page à cocher.
+- **En attente de David** : création des brouillons en prod (après le merge). Extension `signe:` du bloc `ranger`
+  (Q2 b) **non tranchée** : à reposer une fois le lot 3 publié.
+- **Pièges en cours** : `h(…)` est lu comme une fonction (f, g, h). `1/√2` est jugé `bad_form` (spec asservie).
+  Jamais de couleur sur du texte. `Doc-inchangée:` dans un COMMIT pour une migration. Garde `lot partiel`. Ancienne
+  branche distante `docs/questions-1spe-demonstrations` à supprimer.
 - **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, branche `feat/questions-1spe-demonstrations`
-  (rebasée sur `origin/main` le 2026-11-03).
+  (`origin/main` fusionnée le 2026-11-03).
 
 ---
 
 ## 1. Relevé : les démonstrations du BO (bornes `1spe.json`, 2026-11-03)
 
-Les 52 points P sans modèle (couverture du 2026-11-03) se répartissent en **17 démonstrations** (rubrique
-« Démonstrations » du BO), des exemples d'algorithmes et des approfondissements (« en aucun cas obligatoires »), et
+Les 52 points P sans modèle (couverture du 2026-11-03) se répartissent en **14 démonstrations** (rubrique
+« Démonstrations » du BO ; le relevé en comptait d'abord 17, voir la correction sous le tableau), des exemples d'algorithmes et des approfondissements (« en aucun cas obligatoires »), et
 5 points-compétences. Ce chantier ne prend que les démonstrations.
 
 | Thème            | Point | Démonstration                                              | Voisin déjà couvert (le résultat) |
@@ -56,8 +52,12 @@ Les 52 points P sans modèle (couverture du 2026-11-03) se répartissent en **17
 | Produit scalaire | 322   | Al-Kashi par le produit scalaire                           | 316 (« à savoir »)                |
 | Produit scalaire | 323   | Ensemble des M tels que MA·MB = 0                          | cercle de diamètre [AB]           |
 
+**Correction du 2026-11-03 (lot 3)** : 300, 301 et 302 ne sont PAS des démonstrations. Au BO, ils sont dans
+« Approfondissements possibles » (transcription `1_SPE.md`, l. 405-409 ; la rubrique Fonction exponentielle n'a pas
+de « Démonstrations »). David : hors chantier, comme les autres approfondissements (D1 Q1).
+
 **Hors chantier** (restent P) : exemples d'algorithmes (238-242, 279, 288, 298, 299, 309, 344, 359, 360, 380, 381,
-427, 431), approfondissements (256-258, 387, 324-326, 334, 335, 420, 345, 346, 361), points-compétences (205, 284,
+427, 431), approfondissements (256-258, 300-302, 387, 324-326, 334, 335, 420, 345, 346, 361), points-compétences (205, 284,
 435, 436, 437). Couverts par un voisin (10) et D (362, 365) : inchangés.
 
 ## 2. Outils pour une démonstration en question (vérifié dans le code, 2026-11-03)
@@ -166,3 +166,34 @@ Migration `20261103132133_questions_1spe_demonstrations_2_rangement_tags` (#2319
 « 392 non posé » : vert, et rouge sans la migration (6 cas rouges, la suite principale ne s'exécute pas). Audit
 sécurité : aucun finding bloquant ; 3 notes non bloquantes (garde « tout ou rien » après les écritures, sûre dans
 une seule transaction ; homonymes impossibles grâce aux index uniques ; garde « déjà tagué » = simple filet).
+
+`db:migrate` du 2026-11-03 (après #2322, qui réparait les doublures de tests cassées par #2311) : vérifié en base, les 5
+modèles sur leur sous-notion avec leur seul point (398 sans 392), `draft`, `updated_at` intact. Page à cocher :
+https://claude.ai/artifact/Qk72A5QTYbfDJAwGB9ZN4Y
+
+Relecture (2026-11-03) : 5/5 OK, sans commentaire. Publié par David, 5/5 `published` relus en base (MCP).
+
+## 6. Lot 3 : trigonométrie et produit scalaire (2026-11-03)
+
+Périmètre : 308, 411, 322, 323 (300-302 hors chantier, § 1). Recos validées par David (« oui »).
+
+Relevé prod (MCP, 2026-11-03) : nœuds Fonctions › Fonctions trigonométriques › cosinus et sinus d'un réel (308, 411),
+Géométrie › Produit scalaire › angles et longueurs (322), lieux de points (323) ; aucun point jumeau ; aucune
+catégorie « Démonstrations » sous Fonctions trigonométriques ni Produit scalaire.
+
+| Point | Modèle (fichier `scripts/questions/1spe-demonstrations-3/`) | Catégorie, niveau                                          | Variations                                                    |
+| ----- | ----------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------- |
+| 308   | `01-demontrer-cos-sin-pi-sur-4`                             | Fonctions › Fonctions trigonométriques › Démonstrations, 1 | triangle rectangle isocèle (choix), cos² = 1/2, √2/2          |
+| 411   | `02-demontrer-cos-sin-pi-sur-3`                             | Fonctions › Fonctions trigonométriques › Démonstrations, 2 | triangle équilatéral (choix), cos = 1/2, sin = √3/2           |
+| 322   | `03-demontrer-al-kashi`                                     | Géométrie › Produit scalaire › Démonstrations, 1           | Chasles (choix), développement (choix), BC² à 60° (tiré)      |
+| 323   | `04-demontrer-cercle-de-diametre`                           | Géométrie › Produit scalaire › Démonstrations, 2           | MI² − IA² (choix), MI pour AB = 2d (tiré), conclusion (choix) |
+
+Script : `docs/wip/questions/lot-1spe-demonstrations-3.py`. Aucune réponse attendue n'écrit un vecteur : ces étapes
+passent en case choix. Juge : `0,5` est accepté pour 1/2 (`acceptDecimal`) ; `1/√2` est `bad_form` (forme), spec
+asservie.
+
+Vérifié : `create-questions` simulation verte (53 specs). Sur 40 tirages par modèle, 3 419 formules, aucun `{{…}}`
+resté, accolades équilibrées ; les alertes de `validateLatex` ne portent que sur des notations d'affichage que le
+parseur ne lit pas (`\overrightarrow`, `\widehat`, `A(1\,;0)`). Brouillons créés en base locale ; aperçu admin correct
+pour 308 (choix) et 322 (vecteurs, normes, valeurs tirées). Bonne réponse des choix 308 et 411 raccourcie : seule
+sans « Car » et la plus longue, elle se trahissait.

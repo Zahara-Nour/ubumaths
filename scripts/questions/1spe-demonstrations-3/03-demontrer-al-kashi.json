@@ -1,0 +1,204 @@
+{
+	"title": "Démontrer la formule d'Al-Kashi",
+	"description": "Démonstration à trous de la formule d'Al-Kashi par le produit scalaire : BC = AC − AB (Chasles), développement du carré scalaire, BC² pour un angle de 60° (valeurs tirées)",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Produit scalaire",
+	"subdomain": "Démonstrations",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $ABC$ un triangle. On veut démontrer la formule d'Al-Kashi :\n\n$$BC^2=AB^2+AC^2-2\\times AB\\times AC\\times\\cos\\widehat{BAC}$$\n\nOn commence par écrire $\\overrightarrow{BC}$ à l'aide de $\\overrightarrow{AB}$ et de $\\overrightarrow{AC}$. Quelle égalité est juste ?\n\n```choix\n- $\\overrightarrow{BC}=\\overrightarrow{AC}-\\overrightarrow{AB}$\n- $\\overrightarrow{BC}=\\overrightarrow{AB}-\\overrightarrow{AC}$\n- $\\overrightarrow{BC}=\\overrightarrow{AB}+\\overrightarrow{AC}$\n- $\\overrightarrow{BC}=\\overrightarrow{AC}+\\overrightarrow{CB}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Relation de Chasles : $\\overrightarrow{BC}=\\overrightarrow{BA}+\\overrightarrow{AC}$.",
+					"Comme $\\overrightarrow{BA}=-\\overrightarrow{AB}$ : $\\overrightarrow{BC}=\\textcolor{{{color:primary.0}}}{\\overrightarrow{AC}-\\overrightarrow{AB}}$.",
+					"$\\overrightarrow{AB}-\\overrightarrow{AC}=\\overrightarrow{CB}$ : c'est l'opposé de $\\overrightarrow{BC}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $ABC$ un triangle. On veut démontrer la formule d'Al-Kashi :\n\n$$BC^2=AB^2+AC^2-2\\times AB\\times AC\\times\\cos\\widehat{BAC}$$\n\nD'après la relation de Chasles, $\\overrightarrow{BC}=\\overrightarrow{BA}+\\overrightarrow{AC}=\\overrightarrow{AC}-\\overrightarrow{AB}$, donc $BC^2=\\left\\|\\overrightarrow{AC}-\\overrightarrow{AB}\\right\\|^2$.\n\nOn développe ce carré scalaire. Quelle égalité est juste ?\n\n```choix\n- $\\left\\|\\overrightarrow{AC}-\\overrightarrow{AB}\\right\\|^2=AC^2-2\\,\\overrightarrow{AC}\\cdot\\overrightarrow{AB}+AB^2$\n- $\\left\\|\\overrightarrow{AC}-\\overrightarrow{AB}\\right\\|^2=AC^2-AB^2$\n- $\\left\\|\\overrightarrow{AC}-\\overrightarrow{AB}\\right\\|^2=AC^2+AB^2$\n- $\\left\\|\\overrightarrow{AC}-\\overrightarrow{AB}\\right\\|^2=AC^2+2\\,\\overrightarrow{AC}\\cdot\\overrightarrow{AB}+AB^2$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\|\\vec{u}-\\vec{v}\\|^2=\\|\\vec{u}\\|^2-2\\,\\vec{u}\\cdot\\vec{v}+\\|\\vec{v}\\|^2$, comme $(a-b)^2=a^2-2ab+b^2$.",
+					"Ici : $BC^2=AC^2-\\textcolor{{{color:primary.0}}}{2\\,\\overrightarrow{AC}\\cdot\\overrightarrow{AB}}+AB^2$.",
+					"Et $\\overrightarrow{AC}\\cdot\\overrightarrow{AB}=AC\\times AB\\times\\cos\\widehat{BAC}$ : on obtient la formule d'Al-Kashi."
+				]
+			}
+		},
+		{
+			"statement": "Soit $ABC$ un triangle. On veut démontrer la formule d'Al-Kashi :\n\n$$BC^2=AB^2+AC^2-2\\times AB\\times AC\\times\\cos\\widehat{BAC}$$\n\nD'après la relation de Chasles, $\\overrightarrow{BC}=\\overrightarrow{BA}+\\overrightarrow{AC}=\\overrightarrow{AC}-\\overrightarrow{AB}$, donc $BC^2=\\left\\|\\overrightarrow{AC}-\\overrightarrow{AB}\\right\\|^2$.\n\nEn développant, $BC^2=AC^2-2\\,\\overrightarrow{AC}\\cdot\\overrightarrow{AB}+AB^2$. On prend $AB={{eval:c}}$, $AC={{eval:b}}$ et $\\widehat{BAC}=60^\\circ$, avec $\\cos 60^\\circ=\\dfrac{1}{2}$. Complète.\n\n$BC^2=?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b^2+c^2-b*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{AC}\\cdot\\overrightarrow{AB}={{eval:b}}\\times{{eval:c}}\\times\\dfrac{1}{2}={{eval:b*c/2}}$.",
+					"Donc $BC^2={{eval:b^2}}-2\\times{{eval:b*c/2}}+{{eval:c^2}}=\\textcolor{{{color:primary.0}}}{{{eval:b^2+c^2-b*c}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "AC − AB",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : AB − AC",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : AB + AC",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : AC + CB",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "AC² − 2AC·AB + AB²",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : AC² − AB²",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : AC² + AB²",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : avec + 2AC·AB",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "19 (25 + 9 − 15)",
+			"variationIndex": 2,
+			"variables": {
+				"b": "5",
+				"c": "3"
+			},
+			"answers": ["19"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 34 (sans le produit scalaire)",
+			"variationIndex": 2,
+			"variables": {
+				"b": "5",
+				"c": "3"
+			},
+			"answers": ["34"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 4 (25 + 9 − 30, cosinus oublié)",
+			"variationIndex": 2,
+			"variables": {
+				"b": "5",
+				"c": "3"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 49 (signe +)",
+			"variationIndex": 2,
+			"variables": {
+				"b": "5",
+				"c": "3"
+			},
+			"answers": ["49"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : √19 (BC au lieu de BC²)",
+			"variationIndex": 2,
+			"variables": {
+				"b": "5",
+				"c": "3"
+			},
+			"answers": ["\\sqrt{19}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

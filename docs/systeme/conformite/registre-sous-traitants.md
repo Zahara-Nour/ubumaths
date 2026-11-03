@@ -3,6 +3,11 @@
 > **Complété le 2026-11-03** (décision de David, écart T13) : HuggingFace ajouté (**non activé**),
 > Vercel Analytics / Speed Insights détaillés, Supabase en **eu-west-3 (Paris)**. Les sections
 > détaillées 3.1 à 3.6 restent celles de janvier 2026, hors ces points.
+>
+> **DPA archivés le 2026-11-03** (écart T15) : version en vigueur de chaque DPA (Supabase, Vercel,
+> Sentry, Groq, Google Cloud, Brevo) imprimée en PDF et rangée dans le dossier privé de conformité,
+> **hors du dépôt** (public). Reste à y ajouter, pour chacun, la preuve d'acceptation tirée du
+> compte (DPA signé pour Supabase, date d'acceptation des conditions pour les autres).
 
 > **Article RGPD** : Art. 28 - Sous-traitant
 > **Derniere mise a jour** : 2026-01-16
@@ -252,12 +257,12 @@ DPA disponible sur demande via le dashboard Brevo.
 
 ### 3.5 Groq Inc.
 
-| Attribut           | Valeur                                                 |
-| ------------------ | ------------------------------------------------------ |
-| **Raison sociale** | Groq Inc.                                              |
-| **Adresse**        | Mountain View, CA, USA                                 |
-| **Site web**       | https://groq.com                                       |
-| **DPA**            | https://groq.com/legal/dpa (ou via contrat entreprise) |
+| Attribut           | Valeur                                                                |
+| ------------------ | --------------------------------------------------------------------- |
+| **Raison sociale** | Groq Inc.                                                             |
+| **Adresse**        | Mountain View, CA, USA                                                |
+| **Site web**       | https://groq.com                                                      |
+| **DPA**            | https://console.groq.com/docs/legal/customer-data-processing-addendum |
 
 #### Donnees traitees
 
@@ -278,6 +283,9 @@ DPA disponible sur demande via le dashboard Brevo.
 - Inference en temps reel (pas de stockage)
 
 #### Lien DPA
+
+https://console.groq.com/docs/legal/customer-data-processing-addendum (en vigueur depuis le
+2025-10-15, intégré au contrat de service GroqCloud : accepté avec lui).
 
 **Actions requises** :
 
