@@ -1,17 +1,17 @@
 ---
 title: Écarts de la doc système — journal du chantier
 date: 2026-10-19
-status: écarts revérifiés le 2026-10-18 ; tri A (seul) / B (David) fait ; V62 + V65 à corriger
+status: écarts revérifiés le 2026-10-18 ; tri A (seul) / B (David) fait ; lot RGPD en cours (T7 ensuite)
 ---
 
 # Écarts de la doc système — journal
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2295._
+_Mis à jour le 2026-11-03, après #2295 et T6._
 
-- **État** : liste A finie et en prod. Lot RGPD : toutes mes recos validées par David. Fait : doc (T3, T9, T12, T13, `c3a17bc02`) ; T2 = garde de test (#2293) ; T1 = présence relue toutes les 60 s (#2295). Mergés, **pas encore en prod** (pas de `deploy:prod` demandé).
-- **Prochaine action** : **T6** (CSP `unsafe-eval` : tester si `wasm-unsafe-eval` suffit à Typst, sinon le restreindre aux pages PDF), puis T7, T8, T15, puis lots B « destructif » et « spécification ».
+- **État** : liste A finie et en prod. Lot RGPD : toutes mes recos validées par David. Fait : doc (T3, T9, T12, T13, `c3a17bc02`) ; T2 = garde de test (#2293) ; T1 = présence relue toutes les 60 s (#2295) ; T6 = `unsafe-eval` gardé et documenté (`auth.md`). Mergés, **pas encore en prod** (pas de `deploy:prod` demandé).
+- **Prochaine action** : **T7** (renommer la `requireAuth` qui redirige en `requireUserOrRedirect`, passer les ~32 routes à la garde commune, revue sécurité), puis T8, T15, puis lots B « destructif » et « spécification ».
 - **En attente de David** : T14 = les infos des mentions légales (responsable de publication, statut, adresse, nom).
 - **Pièges en cours** : `cleanup_stale_presence` existe mais n'est planifiée nulle part (contourné côté navigateur par T1) ; horloge client en retard de plus de 90 s → amis affichés hors ligne (risque connu) ; CI client : `wrapDynamicImport` / « Browser connection was closed » passagers → relancer le job ; migrations : `pnpm migration:horodatage`, `check:migrations --pr <n>`.
 - **Worktree / branche** : aucun (journal sur `main`).
@@ -37,6 +37,7 @@ _Mis à jour le 2026-11-03, après #2295._
 - **T2** canaux match / présence / notifications / succès : ~~passer en privé~~ → mesure en prod (2026-11-03) : ils ne portent que des `postgres_changes` filtrés par la RLS, le privé n'apporte rien. **David a choisi une garde de test** (`canaux-publics-garde.test.ts`), sans passage en privé.
 - **T3** canal privé gardé après retrait d'un droit : limite acceptée et documentée (`realtime.md`) — fait.
 - **T6** CSP `unsafe-eval` : tester si `wasm-unsafe-eval` suffit à Typst ; sinon le restreindre aux pages PDF.
+  - **Mesuré le 2026-11-03** : `wasm-unsafe-eval` ne suffit pas (le WASM Typst appelle `new Function`), et une CSP par route casse à la navigation côté client. **David : garder `unsafe-eval`, documenter** (`auth.md`, point 12) — fait. Futur chantier possible : nonces à la place de `unsafe-inline`.
 - **T7** deux `requireAuth` : renommer celle qui redirige (`requireUserOrRedirect`) et passer les ~32 routes à la garde commune, avec revue sécurité.
 - **T8** limiteur en mémoire : unifier sur le limiteur en base, supprimer celui en mémoire.
 - **T9** double CSRF : garder les deux, documenté (`auth.md`) — fait.
