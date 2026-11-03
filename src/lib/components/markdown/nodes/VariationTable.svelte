@@ -15,13 +15,19 @@
 	- Diagonal hatches for forbidden zones (|h|)
 	- MathLive rendering for mathematical expressions
 	- Dark mode support via CSS variables
+	- Cellules cachées (`?`, tableau de signes à compléter) : case vide en pointillés
+	  (`hiddenCells="blank"`, défaut : la réponse ne s'affiche jamais par mégarde),
+	  remplie (`"filled"` : éditeur, bonne réponse), ou rendue par l'appelant
+	  (`cell`, saisie de l'élève)
 
 	@module components/markdown/nodes/VariationTable
 -->
 <script lang="ts">
 	import '$lib/utils/mathlive-styles';
 	import 'mathlive';
+	import type { Snippet } from 'svelte';
 	import type {
+		HiddenCell,
 		VariationTableNode,
 		SignRow,
 		VariationRow,
@@ -35,9 +41,28 @@
 	interface Props {
 		node: VariationTableNode;
 		class?: string;
+		/** Cellules cachées sans `cell` : vides (défaut) ou remplies de la réponse */
+		hiddenCells?: 'blank' | 'filled';
+		/** Contenu d'une cellule cachée (saisie de l'élève) ; prime sur `hiddenCells` */
+		cell?: Snippet<[HiddenCell]>;
+		/**
+		 * Réponses des cellules cachées pour `filled` (une par case, ordre de lecture) : celles
+		 * de la question, quand l'énoncé est masqué (`??n`, `?` seul : le nœud ne les a pas)
+		 */
+		answers?: readonly string[];
 	}
 
-	let { node, class: className = '' }: Props = $props();
+	let { node, class: className = '', hiddenCells = 'blank', cell, answers }: Props = $props();
+
+	/** Cellules cachées, par ligne (`'domain'` ou rang dans `rows`) et clé */
+	let hiddenByKey = $derived(
+		new Map((node.cases ?? []).map((hidden) => [`${hidden.row}|${hidden.key}`, hidden]))
+	);
+
+	/** La cellule cachée de cette ligne et de cette clé, s'il y en a une */
+	function hiddenAt(row: 'domain' | number, key: string): HiddenCell | undefined {
+		return hiddenByKey.get(`${row}|${key}`);
+	}
 
 	/**
 	 * Unique ID for this component instance - CRITICAL for SVG markers.
@@ -74,7 +99,10 @@
 	}
 
 	// Separate sign rows from variation rows
-	let signRows = $derived(node.rows.filter((row): row is SignRow => row.type === 'sign'));
+	// Rang de chaque ligne dans `rows` gardé : il repère les cellules cachées
+	let signRows = $derived(
+		node.rows.flatMap((row, rowIndex) => (row.type === 'sign' ? [{ row, rowIndex }] : []))
+	);
 	// Bornes sans valeur (tableau de 1re, sans limites) : position déduite de la
 	// valeur voisine, sinon aucune flèche n'était dessinée vers ±∞
 	let variationRows = $derived(
@@ -254,6 +282,34 @@
 	}
 </script>
 
+<!-- Cellule cachée : saisie de l'appelant, sinon case vide ou remplie de la réponse -->
+{#snippet hiddenCell(hidden: HiddenCell)}
+	{@const answer = answers?.[hidden.index] ?? hidden.answer}
+	<span
+		class="vt-case"
+		class:vt-case-vide={!cell && hiddenCells === 'blank'}
+		class:vt-case-remplie={!cell && hiddenCells === 'filled'}
+		data-vt-case={hidden.index}
+		aria-label={!cell && hiddenCells === 'blank' ? 'à compléter' : undefined}
+	>
+		{#if cell}
+			{@render cell(hidden)}
+		{:else if hiddenCells === 'filled' && answer !== ''}
+			{#if hidden.kind === 'valeur'}
+				<math-span>{toLatex(answer)}</math-span>
+			{:else if answer === 'z'}
+				<span class="vt-zero">0</span>
+			{:else if answer === '||'}
+				<span class="vt-asymptote-bar vt-asymptote-bar-sign" aria-label="double barre"></span>
+			{:else if answer === '+' || answer === '-'}
+				<span class="vt-sign-value vt-sign-{answer === '+' ? 'plus' : 'minus'}">
+					{answer}
+				</span>
+			{/if}
+		{/if}
+	</span>
+{/snippet}
+
 <div class="variation-table {className}">
 	<table class="vt-grid" aria-label="Tableau de variations de {node.variable}">
 		<caption class="sr-only">Tableau de variations de la fonction {node.variable}</caption>
@@ -266,10 +322,15 @@
 				</th>
 				<!-- Domain points - each point gets its own column -->
 				{#each node.domain as point, idx (idx)}
+					{@const hiddenPoint = hiddenAt('domain', point.expression)}
 					<th class="vt-domain-cell">
-						<span class="vt-domain-point" class:vt-open={point.open}>
-							<math-span>{toLatex(point.expression)}</math-span>
-						</span>
+						{#if hiddenPoint}
+							{@render hiddenCell(hiddenPoint)}
+						{:else}
+							<span class="vt-domain-point" class:vt-open={point.open}>
+								<math-span>{toLatex(point.expression)}</math-span>
+							</span>
+						{/if}
 					</th>
 					<!-- Interval columns between domain points -->
 					{#if idx < node.domain.length - 1}
@@ -281,7 +342,7 @@
 
 		<tbody>
 			<!-- Sign rows -->
-			{#each signRows as row, rowIdx (`sign-${rowIdx}`)}
+			{#each signRows as { row, rowIndex }, rowIdx (`sign-${rowIdx}`)}
 				<tr class="vt-sign-row">
 					<!-- Label column -->
 					<td class="vt-label-cell">
@@ -291,9 +352,12 @@
 					{#each node.domain as point, idx (idx)}
 						{@const pointValue = renderSignPointValue(row, point)}
 						{@const intervalData = getIntervalData(row, point, idx)}
+						{@const hiddenPoint = hiddenAt(rowIndex, point.expression)}
 						<!-- Point cell (for markers like zero, asymptote) -->
 						<td class="vt-sign-point-cell">
-							{#if pointValue}
+							{#if hiddenPoint}
+								{@render hiddenCell(hiddenPoint)}
+							{:else if pointValue}
 								{#if pointValue.type === 'marker'}
 									<span class="vt-sign-marker {getMarkerClass(pointValue.marker)}">
 										{#if pointValue.marker === 'zero'}
@@ -315,8 +379,11 @@
 						</td>
 						<!-- Interval cell (for signs between points) -->
 						{#if intervalData}
+							{@const hiddenInterval = hiddenAt(rowIndex, intervalData.intervalKey)}
 							<td class="vt-sign-interval-cell">
-								{#if intervalData.intervalValue}
+								{#if hiddenInterval}
+									{@render hiddenCell(hiddenInterval)}
+								{:else if intervalData.intervalValue}
 									{#if intervalData.intervalValue.type === 'sign'}
 										<span
 											class="vt-sign-value vt-sign-{intervalData.intervalValue.value === '+'
@@ -582,6 +649,32 @@
 	.vt-sign-plus,
 	.vt-sign-minus {
 		color: inherit;
+	}
+
+	/* Cellule cachée : case vide en pointillés, ou remplie (bordure pointillée gardée) */
+	.vt-case {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		vertical-align: middle;
+	}
+
+	.vt-case-vide,
+	.vt-case-remplie {
+		min-width: 1.75em;
+		min-height: 1.75em;
+		padding: 0 0.2em;
+		border: 1.5px dashed var(--color-muted-foreground);
+		border-radius: 0.25rem;
+	}
+
+	/* Petite case MathLive de la valeur de x : sans menu, à la taille de la cellule */
+	.vt-case :global(math-field) {
+		min-width: 2.5em;
+	}
+
+	.vt-case :global(math-field::part(menu-toggle)) {
+		display: none;
 	}
 
 	/* Zero marker */

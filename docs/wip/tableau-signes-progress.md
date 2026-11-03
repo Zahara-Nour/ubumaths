@@ -21,7 +21,7 @@ _Mis à jour le 2026-11-03, après #2273 (PR 2 mergée)._
 - **Pièges en cours** : réponses envoyées par la saisie = jetons `+` `-` `z` `||` `rien` (juge `isSignCellCorrect`).
   Énoncé d'évaluation : `??n` / `?` seul, cases à `answer` vide — la saisie doit marcher dessus. PDF : marque
   cachée = trait nu (PR 4). Cas frère non vérifié : les cases ```operation héritent des `blankDefaults`.
-- **Worktree / branche** : aucun (à recréer pour la PR 3).
+- **Worktree / branche** : `../ubumaths-wt-tableau-signes`, `feat/tableau-signes-saisie` (PR 3 en cours).
 
 ---
 
@@ -130,3 +130,20 @@ Branche `feat/tableau-signes-generation`, worktree `../ubumaths-wt-tableau-signe
   par `||` d'une ligne `variation:`, par l'étiquette `sign: x+3`. `code-reviewer` Opus : une valeur de x
   héritait de `blankDefaults` (`answerKind: 'intervalles'` → `-3` jugé faux) → case de tableau construite
   à part, sans héritage. ⚠️ Cas frère non vérifié : les cases ```operation suivent le chemin d'héritage.
+
+## PR 3 — saisie (2026-11-03)
+
+Branche `feat/tableau-signes-saisie`, worktree `../ubumaths-wt-tableau-signes`.
+
+- **Tranché (David, 2026-11-03)** : signe / marque = **case + menu** (une case en pointillés, un toucher
+  ouvre juste dessous + / −, ou 0 / ‖ / rien) plutôt que des boutons posés dans la cellule : le tableau
+  garde sa taille à 390 px. Au clavier : `+` `-` `0` `z` `|` `r`, Retour arrière vide.
+- `VariationTable.svelte` : cellule cachée **vide par défaut** (`hiddenCells: 'blank'`) — un renderer
+  ordinaire ne montre jamais la réponse ; `'filled'` (éditeur riche, bonne réponse) ; snippet `cell`
+  pour la saisie. Lignes de signes repérées par leur rang dans `rows`.
+- `SignCellPicker.svelte` (Popover bits-ui) : jetons `+` `-` `z` `||` `rien`, `data-etat` juste/fausse,
+  libellé « Case N : signe, moins, fausse ».
+- `FillBlanksInput.svelte` : valeur de x = `MathPrompt` `\placeholder[N]{}` ; signe / marque dans un
+  `data-construire-case` (Entrée → première case vide). Flash : vide ; bonne réponse : rempli.
+- Tests : `FillBlanksInput-tableau-signes` (14), `VariationTable-cases` (4), énoncé masqué +1 (même
+  écran, ids `bits-cN` normalisés).
