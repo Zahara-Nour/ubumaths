@@ -1,0 +1,217 @@
+{
+	"title": "Entiers naturels, entiers relatifs",
+	"description": "Compter les x de ℕ, puis de ℤ, tels que −a < x ⩽ b ; vrai ou faux : −a ∈ ℕ, 0 ∈ ℕ, 15/5 ∈ ℕ, 7/2 ∈ ℤ, ℤ ⊂ ℕ",
+	"grades": ["2"],
+	"theme": "Logique",
+	"domain": "Ensembles",
+	"subdomain": "Appartenance et inclusion",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Combien y a-t-il d'entiers $x\\in\\mathbb{N}$ tels que $-{{a}}<x\\leqslant{{b}}$ ?\n\nIl y en a $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "3..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(b)+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\mathbb{N}$ est l'ensemble des **entiers naturels** : $0$, $1$, $2$, $3$… ; $\\mathbb{Z}$ est l'ensemble des **entiers relatifs** : les entiers naturels et leurs opposés, $\\ldots,-2,-1,0,1,2,\\ldots$.",
+					"Un entier **naturel** n'est jamais négatif : les entiers cherchés vont de $0$ à ${{b}}$ ($-{{a}}<0$ ne retire rien, ${{b}}$ est compris).",
+					"$$\\textcolor{{{color:primary.0}}}{0\\ ;\\ 1\\ ;\\ \\ldots\\ ;\\ {{b}}}$$",
+					"Il y en a $\\textcolor{{{color:primary.0}}}{{{eval:(b)+1}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Combien y a-t-il d'entiers $x\\in\\mathbb{Z}$ tels que $-{{a}}<x\\leqslant{{b}}$ ?\n\nIl y en a $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..6"
+				},
+				{
+					"name": "b",
+					"expression": "3..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a)+(b)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\mathbb{N}$ est l'ensemble des **entiers naturels** : $0$, $1$, $2$, $3$… ; $\\mathbb{Z}$ est l'ensemble des **entiers relatifs** : les entiers naturels et leurs opposés, $\\ldots,-2,-1,0,1,2,\\ldots$.",
+					"Les entiers **relatifs** cherchés vont de $-{{eval:(a)-1}}$ (car $-{{a}}$ est exclu) à ${{b}}$ (compris) :",
+					"$$\\textcolor{{{color:primary.0}}}{-{{eval:(a)-1}}\\ ;\\ \\ldots\\ ;\\ -1}\\ ;\\ \\textcolor{{{color:primary.1}}}{0\\ ;\\ \\ldots\\ ;\\ {{b}}}$$",
+					"$\\textcolor{{{color:primary.0}}}{{{eval:(a)-1}}}$ entiers négatifs et $\\textcolor{{{color:primary.1}}}{{{eval:(b)+1}}}$ entiers de $0$ à ${{b}}$ : il y en a $\\textcolor{{{color:primary.2}}}{ {{eval:(a)+(b)}} }$."
+				]
+			}
+		},
+		{
+			"statement": "Quelles affirmations sont vraies ?\n\n```choix\nplusieurs: oui\n- $-{{a}}\\in\\mathbb{N}$\n- $-{{a}}\\in\\mathbb{Z}$\n- $0\\in\\mathbb{N}$\n- $\\dfrac{ {{eval:(b)*(c)}} }{ {{c}} }\\in\\mathbb{N}$\n- $\\dfrac{ {{eval:2*(d)+1}} }{2}\\in\\mathbb{Z}$\n- $\\mathbb{Z}\\subset\\mathbb{N}$\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "3..7"
+				},
+				{
+					"name": "d",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1;2;3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\mathbb{N}$ est l'ensemble des **entiers naturels** : $0$, $1$, $2$, $3$… ; $\\mathbb{Z}$ est l'ensemble des **entiers relatifs** : les entiers naturels et leurs opposés, $\\ldots,-2,-1,0,1,2,\\ldots$. Tout entier naturel est un entier relatif : $\\mathbb{N}\\subset\\mathbb{Z}$.",
+					"**Vraies** : $\\textcolor{{{color:primary.0}}}{-{{a}}\\in\\mathbb{Z}}$ ; $\\textcolor{{{color:primary.0}}}{0\\in\\mathbb{N}}$ ($0$ est un entier naturel) ; $\\textcolor{{{color:primary.0}}}{\\dfrac{ {{eval:(b)*(c)}} }{ {{c}} }={{b}}\\in\\mathbb{N}}$.",
+					"**Fausses** : $-{{a}}\\notin\\mathbb{N}$ (négatif) ; $\\dfrac{ {{eval:2*(d)+1}} }{2}\\notin\\mathbb{Z}$ (${{eval:2*(d)+1}}$ est impair, le quotient n'est pas entier) ; $\\mathbb{Z}\\not\\subset\\mathbb{N}$ (par exemple $-1\\in\\mathbb{Z}$ mais $-1\\notin\\mathbb{N}$)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "ℕ, −3 < x ⩽ 5 : 0 à 5, six entiers",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0 oublié (5)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : négatifs comptés comme dans ℤ (8)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "ℤ, −3 < x ⩽ 5 : −2 à 5, huit entiers",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −3 compté (9)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0 oublié (7)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Vraies : −4 ∈ ℤ, 0 ∈ ℕ, 15/5 ∈ ℕ",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "3",
+				"c": "5",
+				"d": "3"
+			},
+			"answers": ["1;2;3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 0 ∉ ℕ (une vraie oubliée, ½)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "3",
+				"c": "5",
+				"d": "3"
+			},
+			"answers": ["1;3"],
+			"expected": {
+				"status": "unoptimal_form"
+			}
+		},
+		{
+			"description": "Erreur : ℤ ⊂ ℕ coché",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "3",
+				"c": "5",
+				"d": "3"
+			},
+			"answers": ["1;2;3;5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

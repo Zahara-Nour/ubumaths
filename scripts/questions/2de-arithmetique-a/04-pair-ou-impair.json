@@ -1,0 +1,289 @@
+{
+	"title": "Pair ou impair : écrire 2k ou 2k + 1",
+	"description": "Parité de an + b selon les coefficients ; (2n + 1) + (2m + 3) = 2(n + m + 2) ; 4n + 3 = 2(2n + 1) + 1 ; 2n(2m + 3) = 2(2nm + 3n)",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Produire une formule",
+	"subdomain": "Pairs et impairs",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"form": "off"
+		}
+	},
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "$n$ désigne un entier.\n\nLe nombre $A={{eval:2*(u)+(s)}}n+{{eval:2*(v)+(t)}}$ est…\n\n```choix\nmelanger: non\n- toujours pair\n- toujours impair\n- pair ou impair, selon $n$\n```",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..4"
+				},
+				{
+					"name": "s",
+					"expression": "0|1"
+				},
+				{
+					"name": "v",
+					"expression": "0..4"
+				},
+				{
+					"name": "t",
+					"expression": "0|1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*(s)+(1-(s))*(t)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un entier est **pair** s'il s'écrit $2k$, **impair** s'il s'écrit $2k+1$, avec $k$ **entier**.",
+					"{{if:s==0|$A=2\\times{{u}}n+{{eval:2*(v)+(t)}}$ : $\\textcolor{{{color:primary.0}}}{2\\times{{u}}n}$ est pair quel que soit $n$, donc $A$ a la parité de ${{eval:2*(v)+(t)}}$ : $A$ est **{{if:t==0|toujours pair|toujours impair}}**.|Le coefficient de $n$, ${{eval:2*(u)+1}}$, est impair : ${{eval:2*(u)+1}}n$ a la parité de $n$. Pour $n=0$, $A={{eval:2*(v)+(t)}}$ ; pour $n=1$, $A={{eval:2*(u)+1+2*(v)+(t)}}$ : l'un est pair, l'autre impair. $A$ est **pair ou impair, selon $n$**.}}"
+				]
+			}
+		},
+		{
+			"statement": "$n$ et $m$ désignent des entiers. Complète pour montrer que la somme est paire.\n\n$$(2n+{{a}})+(2m+{{b}})=2\\times\\left(?\\right)$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1|3|5|7"
+				},
+				{
+					"name": "b",
+					"expression": "1|3|5|7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "n+m+{{eval:((a)+(b))/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un entier est **pair** s'il s'écrit $2k$, **impair** s'il s'écrit $2k+1$, avec $k$ **entier**.",
+					"$$(2n+{{a}})+(2m+{{b}})=2n+2m+{{eval:(a)+(b)}}=2\\times\\textcolor{{{color:primary.0}}}{\\left(n+m+{{eval:((a)+(b))/2}}\\right)}$$",
+					"$k=\\textcolor{{{color:primary.0}}}{n+m+{{eval:((a)+(b))/2}}}$ est un entier : la somme de deux impairs est **paire**."
+				]
+			}
+		},
+		{
+			"statement": "$n$ désigne un entier. Complète pour montrer que ce nombre est impair.\n\n$${{eval:2*(c)}}n+{{eval:2*(d)+1}}=2\\times\\left(?\\right)+1$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..5"
+				},
+				{
+					"name": "d",
+					"expression": "1..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}n+{{d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un entier est **pair** s'il s'écrit $2k$, **impair** s'il s'écrit $2k+1$, avec $k$ **entier**.",
+					"$$\\begin{aligned}{{eval:2*(c)}}n+{{eval:2*(d)+1}}&={{eval:2*(c)}}n+{{eval:2*(d)}}+1\\\\&=2\\times\\textcolor{{{color:primary.0}}}{\\left({{c}}n+{{d}}\\right)}+1\\end{aligned}$$",
+					"$k=\\textcolor{{{color:primary.0}}}{{{c}}n+{{d}}}$ est un entier : le nombre est **impair**."
+				]
+			}
+		},
+		{
+			"statement": "$n$ et $m$ désignent des entiers. Complète pour montrer que le produit est pair.\n\n$$2n\\times(2m+{{a}})=2\\times\\left(?\\right)$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3|5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "2nm+{{a}}n"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un entier est **pair** s'il s'écrit $2k$, **impair** s'il s'écrit $2k+1$, avec $k$ **entier**.",
+					"$$2n\\times(2m+{{a}})=2\\times\\textcolor{{{color:primary.0}}}{n(2m+{{a}})}=2\\times\\textcolor{{{color:primary.0}}}{\\left(2nm+{{a}}n\\right)}$$",
+					"$k=\\textcolor{{{color:primary.0}}}{2nm+{{a}}n}$ est un entier : le produit d'un pair par un entier est **pair**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4n + 3 : toujours impair",
+			"variationIndex": 0,
+			"variables": {
+				"u": "2",
+				"s": "0",
+				"v": "1",
+				"t": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4n + 3 pair",
+			"variationIndex": 0,
+			"variables": {
+				"u": "2",
+				"s": "0",
+				"v": "1",
+				"t": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2n + 4 : toujours pair",
+			"variationIndex": 0,
+			"variables": {
+				"u": "1",
+				"s": "0",
+				"v": "2",
+				"t": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3n + 2 : selon n",
+			"variationIndex": 0,
+			"variables": {
+				"u": "1",
+				"s": "1",
+				"v": "1",
+				"t": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3n + 2 toujours pair",
+			"variationIndex": 0,
+			"variables": {
+				"u": "1",
+				"s": "1",
+				"v": "1",
+				"t": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(2n + 1) + (2m + 3) = 2(n + m + 2)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "3"
+			},
+			"answers": ["n+m+2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Même somme, écrite autrement",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "3"
+			},
+			"answers": ["m+n+2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 4 non divisé (n + m + 4)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "3"
+			},
+			"answers": ["n+m+4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4n + 3 = 2(2n + 1) + 1",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2",
+				"d": "1"
+			},
+			"answers": ["2n+1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 de trop (2n + 3/2)",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2",
+				"d": "1"
+			},
+			"answers": ["2n+\\frac{3}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2n(2m + 3) = 2(2nm + 3n)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["2nm+3n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme factorisée, acceptée",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["n(2m+3)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2 laissé dedans (4nm + 6n)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["4nm+6n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

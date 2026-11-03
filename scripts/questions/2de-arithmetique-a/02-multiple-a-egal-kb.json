@@ -1,0 +1,213 @@
+{
+	"title": "Multiple : a = k × b",
+	"description": "Trouver k dans 351 = k × 13 ; dire si 391 est un multiple de 17 (nombres ⩽ 800) ; écrire 6n + 15 = 3 × (2n + 5)",
+	"grades": ["2"],
+	"theme": "Entiers",
+	"domain": "Diviser",
+	"subdomain": "Multiples et diviseurs",
+	"level": 9,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Trouve l'entier $k$ tel que ${{eval:(k)*(b)}}=k\\times{{b}}$.\n\n$$k=?$$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "11..19"
+				},
+				{
+					"name": "k",
+					"expression": "12..45"
+				}
+			],
+			"conditions": ["k*b <= 800"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définition** : $a$ est un **multiple** de $b$ s'il existe un **entier** $k$ tel que $a=k\\times b$.",
+					"$$k=\\dfrac{ {{eval:(k)*(b)}} }{ {{b}} }=\\textcolor{{{color:primary.0}}}{{{k}}}$$",
+					"$k$ est un entier : ${{eval:(k)*(b)}}={{k}}\\times{{b}}$ est un multiple de ${{b}}$."
+				]
+			}
+		},
+		{
+			"statement": "${{eval:(k)*(b)+(w)*(r)}}$ est-il un multiple de ${{b}}$ ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "11..19"
+				},
+				{
+					"name": "k",
+					"expression": "12..45"
+				},
+				{
+					"name": "w",
+					"expression": "0|1"
+				},
+				{
+					"name": "r",
+					"expression": "1..10"
+				}
+			],
+			"conditions": ["k*b <= 800", "r < b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définition** : $a$ est un **multiple** de $b$ s'il existe un **entier** $k$ tel que $a=k\\times b$.",
+					"On divise : ${{eval:(k)*(b)+(w)*(r)}}={{k}}\\times{{b}}{{if:w==1|+{{r}}}}$.",
+					"{{if:w==0|Le reste est nul : $k={{k}}$ est entier, **oui**, $\\textcolor{{{color:primary.0}}}{{{eval:(k)*(b)}}={{k}}\\times{{b}}}$ est un multiple de ${{b}}$.|Le reste vaut ${{r}}\\neq0$ : le quotient $\\dfrac{ {{eval:(k)*(b)+(r)}} }{ {{b}} }$ n'est pas entier, **non**, ce n'est pas un multiple de ${{b}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "$n$ désigne un entier. Complète pour montrer que ${{eval:(d)*(p)}}n+{{eval:(d)*(q)}}$ est un multiple de ${{d}}$.\n\n$${{eval:(d)*(p)}}n+{{eval:(d)*(q)}}={{d}}\\times\\left(?\\right)$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..9"
+				},
+				{
+					"name": "p",
+					"expression": "2..5"
+				},
+				{
+					"name": "q",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["gcd(p,q) == 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}n+{{q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Définition** : $a$ est un **multiple** de $b$ s'il existe un **entier** $k$ tel que $a=k\\times b$. On met ${{d}}$ en facteur :",
+					"$${{eval:(d)*(p)}}n+{{eval:(d)*(q)}}={{d}}\\times{{p}}n+{{d}}\\times{{q}}={{d}}\\times\\textcolor{{{color:primary.0}}}{\\left({{p}}n+{{q}}\\right)}$$",
+					"$k=\\textcolor{{{color:primary.0}}}{{{p}}n+{{q}}}$ est un entier (produit et somme d'entiers) : le nombre est un multiple de ${{d}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "351 = k × 13 : k = 27",
+			"variationIndex": 0,
+			"variables": {
+				"b": "13",
+				"k": "27"
+			},
+			"answers": ["27"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 13 × 27 (4563)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "13",
+				"k": "27"
+			},
+			"answers": ["4563"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "391 = 23 × 17 : oui",
+			"variationIndex": 1,
+			"variables": {
+				"b": "17",
+				"k": "23",
+				"w": "0",
+				"r": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : non",
+			"variationIndex": 1,
+			"variables": {
+				"b": "17",
+				"k": "23",
+				"w": "0",
+				"r": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "396 = 23 × 17 + 5 : non",
+			"variationIndex": 1,
+			"variables": {
+				"b": "17",
+				"k": "23",
+				"w": "1",
+				"r": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "6n + 15 = 3(2n + 5)",
+			"variationIndex": 2,
+			"variables": {
+				"d": "3",
+				"p": "2",
+				"q": "5"
+			},
+			"answers": ["2n+5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : constante non divisée (2n + 15)",
+			"variationIndex": 2,
+			"variables": {
+				"d": "3",
+				"p": "2",
+				"q": "5"
+			},
+			"answers": ["2n+15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : coefficient non divisé (6n + 5)",
+			"variationIndex": 2,
+			"variables": {
+				"d": "3",
+				"p": "2",
+				"q": "5"
+			},
+			"answers": ["6n+5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
