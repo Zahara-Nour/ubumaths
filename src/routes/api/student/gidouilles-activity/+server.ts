@@ -24,6 +24,7 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireRole } from '$lib/server/middleware/auth';
 import { z } from 'zod';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -43,17 +44,8 @@ export interface GidouilleActivityEntry {
 }
 
 export const GET: RequestHandler = async ({ locals, url }) => {
-	const { user, profile, supabase } = locals;
-
-	// Auth check: Must be logged in
-	if (!user || !profile) {
-		throw error(401, 'Connexion requise');
-	}
-
-	// Auth check: Must be a student
-	if (profile.role !== 'student') {
-		throw error(403, 'Réservé aux élèves');
-	}
+	const { user } = await requireRole(locals, 'student');
+	const { supabase } = locals;
 
 	// Validate query parameters
 	const validation = getGidouillesActivitySchema.safeParse({

@@ -24,7 +24,12 @@ import { assignmentCopyScope, copyExerciseOrder } from '$lib/worksheets/workshee
 const currentUser = vi.hoisted(() => ({ id: '' }));
 
 vi.mock('$lib/server/middleware/auth', () => ({
-	requireRole: async () => ({ user: { id: currentUser.id } })
+	requireRole: async () => ({ user: { id: currentUser.id } }),
+	// Garde commune simulée : la session vient de `locals.safeGetSession` (le prof)
+	requireAuth: async (locals: { safeGetSession: () => Promise<{ user: unknown }> }) => ({
+		user: (await locals.safeGetSession()).user,
+		profile: { role: 'teacher' }
+	})
 }));
 vi.mock('$lib/server/worksheets/assignment-access', () => ({
 	resolveAssignmentAccess: async () => ({ canRead: true, readOnly: false })

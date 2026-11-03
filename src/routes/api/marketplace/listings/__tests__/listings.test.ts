@@ -25,6 +25,11 @@ import {
 // guard functions (so each test can drive them) while keeping the username
 // enrichment real and turning listing/card enrichment into a passthrough
 // (tests assert on raw listing fields, not on derived card-template data).
+// Garde commune : session/profil lus dans `locals` (cf. helper)
+vi.mock('$lib/server/middleware/auth', async (importActual) =>
+	(await import('$tests/helpers/garde-auth-locals')).gardeAuthDepuisLocals(importActual)
+);
+
 vi.mock('$lib/server/marketplace/helpers', async (importActual) => {
 	const actual = await importActual<typeof import('$lib/server/marketplace/helpers')>();
 	return {
@@ -272,7 +277,10 @@ describe('/api/marketplace/listings', () => {
 					locals: mockLocals
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
-			).rejects.toMatchObject({ status: 401, body: { message: 'Non authentifié' } });
+			).rejects.toMatchObject({
+				status: 401,
+				body: { message: 'Non autorisé - Authentification requise' }
+			});
 		});
 
 		test('validates query parameters', async () => {
@@ -591,7 +599,10 @@ describe('/api/marketplace/listings', () => {
 					locals: mockLocals
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
-			).rejects.toMatchObject({ status: 401, body: { message: 'Non authentifié' } });
+			).rejects.toMatchObject({
+				status: 401,
+				body: { message: 'Non autorisé - Authentification requise' }
+			});
 		});
 
 		test('validates request body with Zod schema', async () => {

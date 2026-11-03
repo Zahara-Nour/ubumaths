@@ -14,6 +14,7 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '$lib/server/middleware/auth';
 import { z } from 'zod';
 import type { TablesUpdate } from '$lib/types/database';
 import {
@@ -64,10 +65,7 @@ const actionSchema = z.object({
 // ============================================================================
 
 export const GET: RequestHandler = async ({ params, locals }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	const { user, profile } = await requireAuth(locals);
 
 	const assignmentId = params.assignmentId;
 	if (!assignmentId) {
@@ -107,24 +105,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			throw error(404, 'Affectation introuvable');
 		}
 
-		// Check permissions
-		const { data: profile, error: profileError } = await locals.supabase
-			.from('profiles')
-			.select('role')
-			.eq('id', user.id)
-			.single();
-
-		// `.single()` sur zéro ligne rend PGRST116 : le profil n'existe pas, et le
-		// refus qui suit est légitime. Toute AUTRE panne produisait le même refus,
-		// indiscernable d'un refus mérité — un administrateur pouvait ainsi se voir
-		// fermer la porte sans que rien ne le signale.
-		if (profileError && profileError.code !== 'PGRST116') {
-			logger.error('Rôle illisible :', profileError);
-			throw error(500, 'Impossible de vérifier les droits d’accès');
-		}
-
 		const isCreator = assignment.created_by === user.id;
-		const isAdmin = profile?.role === 'admin';
+		const isAdmin = profile.role === 'admin';
 
 		if (!isCreator && !isAdmin) {
 			throw error(403, 'Accès refusé');
@@ -187,10 +169,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 // ============================================================================
 
 export const PATCH: RequestHandler = async ({ params, locals, request }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	const { user, profile } = await requireAuth(locals);
 
 	const assignmentId = params.assignmentId;
 	if (!assignmentId) {
@@ -239,22 +218,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 			throw error(404, 'Affectation introuvable');
 		}
 
-		const { data: profile, error: profileError } = await locals.supabase
-			.from('profiles')
-			.select('role')
-			.eq('id', user.id)
-			.single();
-
-		// `.single()` sur zéro ligne rend PGRST116 : le profil n'existe pas, et le
-		// refus qui suit est légitime. Toute AUTRE panne produisait le même refus,
-		// indiscernable d'un refus mérité — un administrateur pouvait ainsi se voir
-		// fermer la porte sans que rien ne le signale.
-		if (profileError && profileError.code !== 'PGRST116') {
-			logger.error('Rôle illisible :', profileError);
-			throw error(500, 'Impossible de vérifier les droits d’accès');
-		}
-
-		if (assignment.created_by !== user.id && profile?.role !== 'admin') {
+		if (assignment.created_by !== user.id && profile.role !== 'admin') {
 			throw error(403, 'Modification de cette affectation non autorisée');
 		}
 
@@ -543,10 +507,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 // ============================================================================
 
 export const POST: RequestHandler = async ({ params, locals, request }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	const { user } = await requireAuth(locals);
 
 	const assignmentId = params.assignmentId;
 	if (!assignmentId) {
@@ -569,10 +530,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 // ============================================================================
 
 export const DELETE: RequestHandler = async ({ params, locals }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	const { user, profile } = await requireAuth(locals);
 
 	const assignmentId = params.assignmentId;
 	if (!assignmentId) {
@@ -592,22 +550,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		}
 
 		if (assignment.created_by !== user.id) {
-			const { data: profile, error: profileError } = await locals.supabase
-				.from('profiles')
-				.select('role')
-				.eq('id', user.id)
-				.single();
-
-			// `.single()` sur zéro ligne rend PGRST116 : le profil n'existe pas, et le
-			// refus qui suit est légitime. Toute AUTRE panne produisait le même refus,
-			// indiscernable d'un refus mérité — un administrateur pouvait ainsi se voir
-			// fermer la porte sans que rien ne le signale.
-			if (profileError && profileError.code !== 'PGRST116') {
-				logger.error('Rôle illisible :', profileError);
-				throw error(500, 'Impossible de vérifier les droits d’accès');
-			}
-
-			if (profile?.role !== 'admin') {
+			if (profile.role !== 'admin') {
 				throw error(403, 'Suppression de cette affectation non autorisée');
 			}
 		}

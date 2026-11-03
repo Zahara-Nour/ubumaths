@@ -1,5 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '$lib/server/middleware/auth';
 import { validateSaveTest } from '$lib/server/validation/tests';
 import { addBuddyXpFromTest } from '$lib/server/buddy-xp-service';
 import { fetchTemplateThemeIds } from '$lib/server/buddy-themes';
@@ -24,12 +25,8 @@ const logger = createServerLogger('api/tests/save/+server');
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const supabase = locals.supabase;
-	const { user } = await locals.safeGetSession();
-
-	// Check authentication
-	if (!user) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
+	// Authentification : 401 sans session, 403 sans profil (garde commune)
+	const { user } = await requireAuth(locals);
 
 	try {
 		// SECURITY: Validate request body with Zod schema

@@ -1,5 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireRoles } from '$lib/server/middleware/auth';
 import { restrictUserSchema } from '$lib/server/validation/moderation';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -32,15 +33,8 @@ const logger = createServerLogger('api/moderation/restrict-user/+server');
  * - 500: Database error
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
-	// 1. Check authentication
-	if (!locals.user) {
-		throw error(401, 'Not authenticated');
-	}
-
-	// 2. Check teacher role
-	if (!locals.profile || !['teacher', 'admin'].includes(locals.profile.role ?? '')) {
-		throw error(403, 'Only teachers and admins can restrict users');
-	}
+	// 1-2. Authentification + rôle enseignant/admin
+	const { user, profile } = await requireRoles(locals, ['teacher', 'admin']);
 
 	// 3. Parse and validate input
 	let body;
@@ -74,7 +68,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// Teachers cannot restrict other teachers or admins
-	if (locals.profile?.role === 'teacher' && targetUser.role !== 'student') {
+	if (profile.role === 'teacher' && targetUser.role !== 'student') {
 		throw error(403, 'Teachers can only restrict students');
 	}
 
@@ -92,7 +86,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			scope_id: scopeId,
 			restriction_type: restrictionType,
 			reason,
-			restricted_by: locals.user.id,
+			restricted_by: user.id,
 			expires_at: expiresAt
 		})
 		.select()

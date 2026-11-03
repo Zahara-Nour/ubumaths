@@ -15,6 +15,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '$lib/server/middleware/auth';
 import { pythonMasteryQuerySchema } from '$lib/server/validation/python-exercises';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -23,11 +24,8 @@ const logger = createServerLogger('api/python-exercises/mastery/+server');
 type ZodIssue = { path: (string | number)[]; message: string };
 
 export const GET: RequestHandler = async ({ locals, url }) => {
-	const { user, supabase } = locals;
-
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	const { user } = await requireAuth(locals);
+	const { supabase } = locals;
 
 	const parsed = pythonMasteryQuerySchema.safeParse({
 		student_id: url.searchParams.get('student_id') ?? undefined,

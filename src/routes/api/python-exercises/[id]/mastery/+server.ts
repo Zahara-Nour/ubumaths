@@ -11,6 +11,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '$lib/server/middleware/auth';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { pythonMasterySingleQuerySchema } from '$lib/server/validation/python-exercises';
 import { createServerLogger } from '$lib/utils/logger';
@@ -21,11 +22,8 @@ type ZodIssue = { path: (string | number)[]; message: string };
 
 export const GET: RequestHandler = async ({ locals, params, url }) => {
 	const exerciseId = validateUuidParam(params.id);
-	const { user, supabase } = locals;
-
-	if (!user) {
-		throw error(401, 'Connexion requise');
-	}
+	const { user } = await requireAuth(locals);
+	const { supabase } = locals;
 
 	const parsed = pythonMasterySingleQuerySchema.safeParse({
 		student_id: url.searchParams.get('student_id') ?? undefined
