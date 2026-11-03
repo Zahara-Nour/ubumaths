@@ -146,7 +146,10 @@ Ce que fait `computeQuantity` en plus de `tidy` :
   unité dérivée nommée en égalité (`6 kW·h = 21600000 J`, `6 kg·m/s² = 6 N`) ;
 - ce que `tidy` ne réduit pas (racine, valeur absolue, fonction d'un angle) passe par un repli
   exact en unités de base ;
-- mode décimal : la règle du bouton ≈ (4 décimales, « = » quand c'est exact), comme les nombres.
+- mode décimal : la règle du bouton ≈ (4 décimales, « = » quand c'est exact), comme les nombres ;
+- écriture décimale d'une grandeur seule, exacte ou non, dans les deux modes : `decimalWriting` de
+  l'issue (posée par `both`, absente pour une conversion et une durée en h-min-s), d'où les champs
+  `decimal` / `decimalExact` du registre (`0.3333~\unit{km}`, lot 2 de `registre-reference`).
 
 ⛔ `evaluateWithUnits` et `.unitmode`/`.mode-unités` sont **retirés** (lot A) : ne pas les
 recréer.
