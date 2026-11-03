@@ -74,6 +74,8 @@
 		isDrawnRepere,
 		parseConstructionAnswer,
 		serializeConstructionAnswer,
+		serializeMeasuredAnswer,
+		splitMeasuredAnswer,
 		type DrawnLine
 	} from '$lib/questions/construction/answer';
 	import type { Position } from '$lib/questions/construction/judge';
@@ -110,6 +112,7 @@
 	import { protractorRadiusOf } from '$lib/questions/construction/angle';
 	import Protractor from '$lib/constructions-v2/instruments/components/Protractor.svelte';
 	import { Button } from '$lib/components/ui/button';
+	import { Input } from '$lib/components/ui/input';
 	import FigureBlockView from './FigureBlockView.svelte';
 
 	interface Props {
@@ -149,7 +152,13 @@
 	let hint = $state.raw<{ node: FigureNode; text: string } | null>(null);
 
 	let interactive = $derived(answer !== undefined && !answer.disabled);
-	let objects = $derived(parseConstructionAnswer(answer?.value ?? '') ?? []);
+	/** Angle à mesurer (lot 6, § 19) : la mesure se tape sous la figure, à part des repères */
+	let measureCheck = $derived(node.construction?.checks.find((c) => c.kind === 'mesure') ?? null);
+	let measured = $derived(measureCheck ? splitMeasuredAnswer(answer?.value ?? '') : null);
+	let typedMeasure = $derived(measured?.measure ?? null);
+	let objects = $derived(
+		parseConstructionAnswer(measureCheck ? (measured?.drawn ?? '') : (answer?.value ?? '')) ?? []
+	);
 	let lines = $derived(objects.filter(isDrawnLine));
 	let placedPoints = $derived(objects.filter(isDrawnPoint));
 	let circles = $derived(objects.filter(isDrawnCircle));
@@ -187,6 +196,9 @@
 	let reportHint = $derived.by(() => {
 		if (!interactive) return '';
 		if (tool === 'rapporteur') {
+			if (drawing.protractor && measureCheck) {
+				return 'Lis la mesure sur le rapporteur, puis tape-la sous la figure. Pour le reposer, touche Rapporteur.';
+			}
 			if (drawing.protractor) {
 				return 'Touche le bord du rapporteur pour placer un repère, ‹ › pour l’ajuster. Pour le reposer, touche Rapporteur.';
 			}
@@ -244,8 +256,19 @@
 				: null;
 		hint = null;
 		if (next.objects !== drawing.objects) {
-			answer?.onChange(serializeConstructionAnswer(next.objects));
+			answer?.onChange(
+				measureCheck
+					? serializeMeasuredAnswer(next.objects, typedMeasure)
+					: serializeConstructionAnswer(next.objects)
+			);
 		}
+	}
+
+	/** Mesure tapée (lot 6) : chiffres seulement, trois au plus ; vide = rien de tapé */
+	function typeMeasure(event: Event & { currentTarget: HTMLInputElement }) {
+		const digits = event.currentTarget.value.replace(/\D/g, '').slice(0, 3);
+		event.currentTarget.value = digits;
+		answer?.onChange(serializeMeasuredAnswer(objects, digits === '' ? null : Number(digits)));
 	}
 
 	/** Rayon du rapporteur à poser (unités de la figure), choisi par l'écran au premier toucher */
@@ -1060,6 +1083,27 @@
 			<p class="figure-a-completer-consigne" data-testid="consigne-outil">{hintText}</p>
 		{/if}
 	{/if}
+	{#if measureCheck && answer !== undefined}
+		{@const name = measureCheck.points.join('')}
+		<!-- Angle à mesurer (lot 6) : la mesure lue au rapporteur, en degrés entiers -->
+		<label class="figure-a-completer-mesure">
+			<span>Mesure de l’angle {name} :</span>
+			<Input
+				class="w-20 text-center"
+				type="text"
+				inputmode="numeric"
+				autocomplete="off"
+				maxlength={3}
+				data-testid="mesure-angle"
+				aria-label="Mesure de l’angle {name}, en degrés"
+				value={typedMeasure === null ? '' : String(typedMeasure)}
+				disabled={!interactive}
+				aria-invalid={answer.isCorrect === false || undefined}
+				oninput={typeMeasure}
+			/>
+			<span aria-hidden="true">°</span>
+		</label>
+	{/if}
 	<!-- Zone toujours présente : une zone live insérée déjà remplie est souvent tue -->
 	<p class="sr-only" role="status">
 		{#if answer?.isCorrect === true}réponse juste{:else if answer?.isCorrect === false}réponse
@@ -1068,6 +1112,14 @@
 </div>
 
 <style>
+	.figure-a-completer-mesure {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		margin-top: 0.5rem;
+	}
+
 	.zone-de-trace {
 		cursor: crosshair;
 		/* Pas de double-tap pour zoomer : deux touchers rapides tracent une droite */

@@ -63,6 +63,10 @@ describe('ce qui n’est pas une réponse à cacher', () => {
 		['cubes à dessiner', block('cubes', 'hauteurs: 2 1 / 1 1', 'dessiner: face')],
 		['patron à désigner', block('patron', 'solide: cube', 'marquer: face 1', 'designer: opposee')],
 		['droite sans geste', block('line', 'start: 0', 'end: 20', 'step: 1', 'labels: 0, 10, 20')],
+		[
+			'angle à mesurer (la mesure se lit sur la figure)',
+			block('figure-a-completer', 'verifier: mesure AOB', '---', 'O = point(4, 3)')
+		],
 		['énoncé sans bloc', 'Calcule 3 + 4.']
 	])('%s', (_name, source) => {
 		expect(findUnmaskedAnswers(source)).toEqual([]);

@@ -23,6 +23,7 @@
  *   `completer: ? ?` (une face à poser par `?`) ;
  * - ```figure-a-completer : `verifier: ?`, l'outil écrit (`outils:`). Les points
  *   restent : un point invisible posé sur la réponse fuirait (aucun modèle).
+ *   `verifier: mesure AOB` reste tel quel : la mesure se lit sur la figure.
  * Tableau de signes à compléter (```variation à `?`, chantier `tableau-signes`) : chaque
  * valeur de x cachée devient un jeton `??1`, `??2`… dans `domain:` ET dans les clés des
  * lignes (`-inf,-3` → `-inf,??1`, sinon la clé dirait la valeur) ; chaque signe ou
@@ -304,6 +305,9 @@ function findFiguresACompleter(lines: string[]): FoundBlock[] {
 	return found;
 }
 
+/** `verifier: mesure AOB` (lot 6) : rien à cacher */
+const MEASURE_CHECK = /^mesure\s+[A-Z]{3}$/;
+
 /**
  * Figure à compléter : la première ligne `verifier:` devient `verifier: ?` (précédée
  * de `outils:` si l'outil venait de la vérification), les autres sont retirées.
@@ -312,6 +316,9 @@ function findFiguresACompleter(lines: string[]): FoundBlock[] {
 function maskFigure(block: FoundBlock): MaskLine {
 	const header = readConstructionHeader(block.body.join('\n'));
 	if (header.spec.masked || header.spec.checks.length === 0) return () => null;
+	// Angle à mesurer (lot 6) : la ligne ne dit rien que la figure ne montre, et l'écran
+	// en a besoin pour la case de la mesure
+	if (header.spec.checks.some((c) => c.kind === 'mesure')) return () => null;
 	const separator = block.body.findIndex((line) => FIGURE_SEPARATOR.test(line.trim()));
 	const headerEnd = separator === -1 ? block.body.length : separator;
 	const toolsWritten = block.body.slice(0, headerEnd).some((line) => keyOf(line) === 'outils');
@@ -462,7 +469,10 @@ export function findUnmaskedAnswers(statement: string): string[] {
 				v.split(/\s+/).every((w) => w === MASKED_VALUE)
 			)
 		),
-		...leaks('figure-a-completer', findFiguresACompleter(lines), keyMasked(['verifier'])),
+		// Angle à mesurer (lot 6) : `mesure AOB` ne dit rien que la figure ne montre
+		...leaks('figure-a-completer', findFiguresACompleter(lines), (block) =>
+			valuesOf(block.body, ['verifier']).every((v) => allMasked(v) || MEASURE_CHECK.test(v.trim()))
+		),
 		...(findVariationsToFill(statement).some(
 			(block) => !block.nested && !inChoice(block) && !variationMasked(block.node)
 		)

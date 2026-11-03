@@ -186,6 +186,15 @@ describe('figure à compléter (```figure-a-completer)', () => {
 		expect(header.figureSource.split('---')[1]).toBe(real.figureSource.split('---')[1]);
 	});
 
+	it('angle à mesurer (lot 6) : verifier: mesure AOB reste, l’écran y lit la case', () => {
+		const { statement } = sent(
+			`Mesure l’angle.\n\n${block('figure-a-completer', 'fenetre: 0 ; 10 ; 0 ; 8', 'verifier: mesure AOB', '---', 'O = point(4, 3)', 'A = point(9, 3)', 'B = rotation(A, angle=50, centre=O)', 'x = demidroite(O, A)', 'y = demidroite(O, B)')}`
+		);
+		const header = readConstructionHeader(body(statement, 'figure-a-completer'));
+		expect(header.errors).toEqual([]);
+		expect(header.spec.checks.map((c) => c.kind)).toEqual(['mesure']);
+	});
+
 	it('papier uni : la palette des instruments est écrite (lot 2b)', () => {
 		const { statement } = sent(
 			`Construis le symétrique de A.\n\n${block('figure-a-completer', 'fenetre: 0 ; 10 ; 0 ; 6', "verifier: point A' = symetrie(A, axe=d)", '---', 'P = point(0, 0)', 'Q = point(6, 6)', 'd = droite(P, Q)', 'A = point(1, 4)')}`
