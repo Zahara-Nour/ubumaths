@@ -212,3 +212,10 @@ Branche `feat/tableau-signes-modeles`, worktree `../ubumaths-wt-tableau-signes`.
 - `question:specs` : 17/17 et 10/10, 500/500 tirages. Preuve rouge (nouvelles specs, ancien contenu) :
   toutes les specs « correct » rouges (10/17 et 6/10 vertes = les « incorrect »).
 - Base locale : `create-questions --publier --mettre-a-jour` (brouillons locaux 7bee0067, 39c39209).
+- Revue (`code-reviewer` Sonnet) : specs recalculées à la main, toutes justes ; aucune fuite. Corrigés :
+  9c7ab1c7 retiré du lot `textcolor-2de` (son instantané de 90 s, cases sous le tableau, aurait défait la
+  réécriture, `delay` n'étant plus une garde) ; description d'une spec. ⚠️ `delay` n'est plus comparé pour
+  aucun lot : relancer un ancien lot réécrit le temps de son instantané.
+- Vu à 390 px (Playwright, Chrome n'atteint pas `localhost`) : tableau juste, mais 513 px pour 308 de place
+  → défilement horizontal, +∞ hors écran ; cases de valeur 117 px (MathLive + bouton clavier). → David
+  (à juger aux essais iPhone).

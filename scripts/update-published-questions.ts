@@ -121,7 +121,8 @@ const TEXTCOLOR_2DE: readonly string[] = [
 	'6670b161-4120-44a4-a6fd-22c8db71d2a1', // signes-a › Fonction affine : variations, signe et droite
 	'6bb5ff09-34ba-401b-a7d5-8edb76d9dee0', // signes-a › Signe d'un produit, sans tableau
 	'80826238-a393-4840-b6be-b115dbfae8d7', // signes-a › Signe d'un quotient, sans tableau
-	'9c7ab1c7-d3f3-4c78-96f4-c14e5a657574', // signes-b › Tableau de signes d'un quotient
+	// 9c7ab1c7 (signes-b › Tableau de signes d'un quotient) retiré le 2026-11-03 : réécrit par le lot
+	// `tableau-signes-2de` ; son instantané d'ici (90 s, cases sous le tableau) le ramènerait en arrière
 	'93bc8b5e-b2a5-4793-b64e-271601504498', // variations-c › Croissante ou décroissante sur un intervalle
 	'4f887f53-263e-4ef3-b497-b3b50d83ec59', // variations-c › Comparer des images par le sens de variation
 	'275cb665-f0ab-4649-8188-df9ae44bb322' // variations-c › Comparer des images sur la courbe

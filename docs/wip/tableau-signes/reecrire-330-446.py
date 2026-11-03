@@ -135,7 +135,7 @@ SPECS_PRODUIT = [
          ['-1', '3', *P0_F1, *P0_F2, '+', 'z', '-', 'z', '+'], 'incorrect'),
     spec('Erreur : 0 de chaque facteur sous les deux valeurs', 0, PRODUIT_0,
          ['-1', '3', '-', 'z', '+', 'z', '+', '+', 'z', '+', 'z', '-', *P0_A], 'incorrect'),
-    spec('Erreur : facteur −x+3 du signe de x à droite (− + +)', 0, PRODUIT_0,
+    spec('Erreur : signes de −x+3 inversés (− R + 0 +)', 0, PRODUIT_0,
          ['-1', '3', *P0_F1, '-', R, '+', 'z', '+', *P0_A], 'incorrect'),
     spec('(x−4)(3x+6) : −2, 4', 1, PRODUIT_1,
          ['-2', '4', *P1_F1, *P1_F2, *P1_A], 'correct'),

@@ -408,7 +408,7 @@
 			}
 		},
 		{
-			"description": "Erreur : facteur −x+3 du signe de x à droite (− + +)",
+			"description": "Erreur : signes de −x+3 inversés (− R + 0 +)",
 			"variationIndex": 0,
 			"variables": {
 				"a": "2",
