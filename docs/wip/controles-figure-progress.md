@@ -6,20 +6,20 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2271._
+_Mis à jour le 2026-11-03, après #2288._
 
-- **État** : lots 1 à 4 mergés (#2257, #2264, #2268, #2271), pas encore en prod (`deploy:prod` sur
-  demande de David). PR « point construit » (§ 15) ouverte sur `feat/point-construit` : revue Opus
-  traitée, CI en cours.
-- **Prochaine action** : finir la PR « point construit » (revue, CI, merge) ; puis phase 0 de l'angle
-  (rapporteur) ou de la bissectrice.
+- **État** : lots 1 à 4 et « point construit de proche en proche » (#2288, § 15 : trois choix libres
+  admis — compas sur un trait droit, même rayon en A et B, équerre sur le trait qu'elle longe) mergés,
+  pas encore en prod (`deploy:prod` sur demande de David). Vérifications à l'œil dans
+  `verifications-manuelles.md`.
+- **Prochaine action** : phase 0 de l'angle (rapporteur) ou de la bissectrice (choix de David).
 - **En attente de David** : rien.
 - **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12, sa propre
   phase 0) ; `perpendiculaire(A, s)` échoue quand A est un bout de s ; pas de prime dans le langage des
   figures ; `symetrie(P, axe=d)` échoue si P définit d ; l'« Essayer » de l'aide ne rend pas la case
   jouable ; droites annoncées « Droite 1, 2… » au clavier ; plafond de 20 objets sans message ;
   `etiquette=` ne vaut que pour les points (segment : `texte(x, y, "4 cm")`).
-- **Worktree / branche** : `../ubumaths-wt-controles-figure`, `feat/point-construit`.
+- **Worktree / branche** : aucun (retiré après #2288).
 
 ---
 
