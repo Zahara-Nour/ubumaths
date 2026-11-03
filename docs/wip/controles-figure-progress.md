@@ -6,19 +6,25 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, lot 7 codé, PR à ouvrir._
+_Mis à jour le 2026-11-03, après #2348 (lot 7 mergé)._
 
-- **État** : lots 1 à 6 et #2305 mergés ; lot 7 (triangle par un côté et deux angles, et deux côtés
-  et l'angle compris, § 21-22) codé et testé, en revue. Rien en prod.
-- **Prochaine action** : revue Opus de la PR du lot 7, CI verte → merge ; ligne dans
-  `verifications-manuelles.md`. Plus tard : variante « rapporteur déjà posé » (§ 19, décision 4).
-- **En attente de David** : rien.
+- **État** : lots 1 à 7 et #2305 mergés (lot 7 = triangle par un côté et deux angles, et deux côtés et
+  l'angle compris, § 21-22). Rien en prod (`deploy:prod` sur demande de David). Vérification à l'œil
+  de #2348 dans `verifications-manuelles.md`.
+- **Prochaine action** : à décider avec David, rien n'est décidé après le lot 7. Restent ouverts : variante
+  « rapporteur déjà posé » (§ 19, décision 4) ; la règle sévère des médiatrices (§ 12, sa propre phase 0) ;
+  l'angle non adjacent au côté (§ 21, décision 5 : calcul du 3e angle, hors lot).
+- **En attente de David** : le cas limite du § 21 « côté [AC] tracé d'un trait à travers le repère » est
+  admis par le juge mais inatteignable à la main (§ 22) : le garder tel quel, ou aimanter le segment sur
+  la direction du repère ?
 - **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12) ;
   `perpendiculaire(A, s)` échoue quand A est un bout de s ; `symetrie(P, axe=d)` échoue si P définit
   d ; l'« Essayer » de l'aide ne rend pas la case jouable ; plafond de 20 objets sans message ; la
-  CI ne part pas sur une PR en conflit ; tests navigateur de #2327 : Chromium fermé en pleine suite
-  2 fois sur 3, sans assertion fausse, cause non trouvée.
-- **Worktree / branche** : `../ubumaths-wt-controles-figure`, `feat/controles-figure-lot7`.
+  CI ne part pas sur une PR en conflit ; tests navigateur : Chromium fermé en pleine suite (encore 2
+  fois sur #2348, `ConstructionPlayer-points-auxiliaires`, `atelier/serialize`) et `demo/lexique`
+  instable (« aire » absent, vert en local) ; la garde « doc à jour » peut passer en local et
+  échouer en CI : la relancer après `git fetch`.
+- **Worktree / branche** : aucun (retiré après #2348).
 
 ---
 
