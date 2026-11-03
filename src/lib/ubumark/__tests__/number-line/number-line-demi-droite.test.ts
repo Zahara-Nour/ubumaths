@@ -6,7 +6,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
-import { bracketDirection } from '$lib/ubumark/utils/number-line-render';
+import { bracketDirection, segmentLevels } from '$lib/ubumark/utils/number-line-render';
 
 const WINDOW = ['start: -5', 'end: 5', 'step: 1', 'arrows: true'];
 
@@ -111,5 +111,23 @@ describe('Crochets — sens des becs', () => {
 	it('borne de droite : ] fermé vers la gauche, [ ouvert vers la droite', () => {
 		expect(bracketDirection('end', false)).toBe(-1);
 		expect(bracketDirection('end', true)).toBe(1);
+	});
+});
+
+describe('Segments — étage (sur l’axe, plus haut s’ils se chevauchent)', () => {
+	it('une réunion d’intervalles disjoints reste sur l’axe', () => {
+		expect(segmentLevels(segmentsOf(']-inf, -1[, ]2, +inf['))).toEqual([0, 0]);
+	});
+
+	it('deux intervalles qui se chevauchent : le second monte d’un étage', () => {
+		expect(segmentLevels(segmentsOf('[-3, 2], [0, +inf['))).toEqual([0, 1]);
+	});
+
+	it('un bout commun compte comme un chevauchement (crochets superposés)', () => {
+		expect(segmentLevels(segmentsOf('[-2, 1], [1, 3]'))).toEqual([0, 1]);
+	});
+
+	it('un troisième segment reprend le premier étage libre', () => {
+		expect(segmentLevels(segmentsOf('[-4, 0], [-1, 2], [1, 4]'))).toEqual([0, 1, 0]);
 	});
 });

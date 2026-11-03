@@ -177,16 +177,16 @@ describe('generateNumberLineTypst', () => {
 	});
 
 	it('crochet de gauche : becs vers la droite si fermé, vers la gauche si ouvert', () => {
-		// lineWidth 12 sur [0, 10] : x = 2 → 2.4 ; becs de 0.08
+		// lineWidth 12 sur [0, 10] : x = 2 → 2.4 ; becs de 0.1
 		const at = (seg: string) =>
 			brackets(
 				generateNumberLineTypst(createNode(['start: 0', 'end: 10', 'step: 1', `segments: ${seg}`]))
 			)[0];
-		expect(at('[2, 5]')).toMatch(/^\s*line\(\(2\.48, /);
-		expect(at(']2, 5]')).toMatch(/^\s*line\(\(2\.32, /);
+		expect(at('[2, 5]')).toMatch(/^\s*line\(\(2\.5, /);
+		expect(at(']2, 5]')).toMatch(/^\s*line\(\(2\.3, /);
 	});
 
-	it('demi-droite [2, +inf[ : un seul crochet, trait jusqu’au bout de la flèche', () => {
+	it('demi-droite [2, +inf[ : un seul crochet, trait jusqu’à la flèche', () => {
 		const node = createNode([
 			'start: 0',
 			'end: 10',
@@ -197,8 +197,8 @@ describe('generateNumberLineTypst', () => {
 		const typst = generateNumberLineTypst(node);
 
 		expect(brackets(typst)).toHaveLength(1);
-		// lineWidth 12 + flèche 0.3
-		expect(typst).toMatch(/line\(\(2\.4, -0\.9\), \(12\.3, -0\.9\)/);
+		// lineWidth 12 + axis 0.3 − pointe 0.25 : le trait s'arrête à la base de la flèche
+		expect(typst).toMatch(/line\(\(2\.4, 0\), \(12\.05, 0\)/);
 	});
 
 	it(']-inf, +inf[ : toute la droite, sans crochet', () => {
@@ -206,7 +206,7 @@ describe('generateNumberLineTypst', () => {
 		const typst = generateNumberLineTypst(node);
 
 		expect(brackets(typst)).toHaveLength(0);
-		expect(typst).toMatch(/line\(\(0, -0\.9\), \(12, -0\.9\)/);
+		expect(typst).toMatch(/line\(\(0, 0\), \(12, 0\)/);
 	});
 
 	// ========================================================================
