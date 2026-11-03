@@ -70,6 +70,12 @@ describe('```solide — points:', () => {
 		).toMatch(/n’est pas une face/);
 	});
 
+	it('erreurs : un point deux fois dans un centre ou un milieu ; milieu sans points', () => {
+		expect(errors(...CUBE, 'points: O centre ABCDEFGA')[0]).toMatch(/« A » deux fois/);
+		expect(errors(...CUBE, 'points: O centre ABCA')[0]).toMatch(/« A » deux fois/);
+		expect(errors(...CUBE, 'points: I milieu')[0]).toMatch(/milieu de quels points/);
+	});
+
 	it('erreurs : solide rond, trop de points', () => {
 		expect(errors('forme: cylindre 2 5', "sommets: O O'", 'points: I milieu OO')[0]).toMatch(
 			/polyèdres seulement/

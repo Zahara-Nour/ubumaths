@@ -465,8 +465,13 @@ function readPoints(
 		if (names.includes(name)) return `« ${name} » est déjà le nom d’un sommet`;
 		if (points.some((p) => p.name === name))
 			return `« ${name} » deux fois : chaque point a son nom`;
+		if (match[3].trim() === '') return `${kind} de quels points ? (${usage})`;
 		const refs = namedPoints(match[3], known);
 		if (typeof refs === 'string') return refs;
+		// Un point répété fausserait l'isobarycentre (centre ABCDEFGA n'est pas le centre du cube)
+		const twice = refs.find((r, i) => refs.indexOf(r) !== i);
+		if (twice !== undefined && kind === 'centre')
+			return `« ${known[twice]} » deux fois dans ${kind} ${match[3].trim()}`;
 		const written = refs.map((i) => known[i]).join('');
 		if (kind === 'milieu') {
 			if (refs.length !== 2) return `milieu de deux points (ex. ${name} milieu AE)`;
