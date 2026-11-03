@@ -42,27 +42,27 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
 - **l1s-6** — Linéarité de l'espérance : E(aX + b) seulement, ou aussi E(X + Y) ? → **affine** (2026-10-23)
 - **l1s-7** — Automatismes « privilégiant l'activité mentale » : bornent-ils les valeurs numériques ? → **mental** (2026-10-23)
 
-## Couverture en modèles de questions (prod, 2026-11-02)
+## Couverture en modèles de questions (prod, 2026-11-03)
 
 Chantier `questions-1spe` (démarche [couvrir-un-niveau.md](../../../../pratiques/couvrir-un-niveau.md)), clos le
-2026-11-02 ; journaux dans `docs/archive/wip/questions-1spe*-progress.md` (index + sous-chantiers `geometrie`,
-`analyse`, `logique`).
+2026-11-02, complété le 2026-11-03 par `questions-1spe-tracer-droite` et `questions-1spe-tangente` ; journaux dans
+`docs/archive/wip/` (`questions-1spe*-progress.md` : index + sous-chantiers `geometrie`, `analyse`, `logique`,
+`tracer-droite`, `tangente` ; journaux par thème `*-1spe-progress.md` de septembre-octobre 2026).
 
-- **273 modèles publiés** de niveau `1_SPE` ; **171 points sur 237** ont au moins un modèle publié, aucun n'a que
-  des brouillons.
-- **66 points sans modèle, tous voulus** :
+- **275 modèles publiés** de niveau `1_SPE` ; **173 points sur 237** ont au moins un modèle publié, aucun n'a que
+  des brouillons (relevé MCP du 2026-11-03).
+- **64 points sans modèle, tous voulus** :
   - **P** (52) — démonstrations, points-compétences (205, 435, 436, 437…), approfondissements « en aucun cas
     obligatoires » (BO p.3) : hors questions. 5a89b292 couvre déjà le résultat de 308 / 411.
   - **Couverts par leur voisin** (10) — même savoir-faire sur deux lignes du BO : 211 → 223, 220 → 231,
     328 → 331, 368 → 377, 371 → 224, 373 → 225, 382 → 251, 389 → 272, 417 → 327, 421 → 340. Les faits « à
     connaître » de ces doublons ont, eux, leur modèle « à savoir ».
   - **D** (2) — 362, 365 (simuler avec Python ou un tableur) : exercices Python, pas des questions.
-  - **C** (2) — 433 (tracer une droite), 271 (tracer une tangente) : attendent le geste « tracer » (ligne 2 de
-    [outils-manquants.md](../../../../wip/outils-manquants.md), chantier commun avec 2-316, 2-445).
-    **271 couvert le 2026-11-03** : `edb094bd` « Tracer une tangente connaissant le nombre dérivé » (geste
-    `tracer:`, niveau 4 de « Fonctions > Dérivation > tangente », tagué aussi 1TECHNO-078,
-    `grades = ['1_SPE', '1_TECHNO']`), sous-chantier `questions-1spe-tangente` (journal archivé). Écart laissé :
-    les trois voisins tagués 1TECHNO-079 n'ont que `['1_SPE']`.
+- **Geste `tracer:`** (#2265, en prod depuis la 0.65.0) : **433** couvert par `dc5d7cb6` « Tracer une droite par un
+  point et sa pente » (tagué aussi 1GEN-063, 1TECHNO-140, #2272, #2279) ; **271** par `edb094bd` « Tracer une
+  tangente connaissant le nombre dérivé » (niveau 4 de « Fonctions > Dérivation > tangente », tagué aussi
+  1TECHNO-078, `grades = ['1_SPE', '1_TECHNO']`, #2275, #2277). Les trois voisins tagués 1TECHNO-079 (05387201,
+  ed8444bb, f52395d1) ont reçu `1_TECHNO` par #2280 (migration `20261103082130`, appliquée).
 - **10 brouillons `1_SPE` laissés tels quels** : 5 tagués d'un point de seconde, `grades = ['2', '1_SPE']`
   (5b20321f, 8c31675a, db8b5dc8, 5062197a, f98164b1 — le cahier de texte filtre `grades` par égalité exacte —),
   qui relèvent de la seconde ; 174e202b, dc4b8d08 (angles associés : hors l1s-3) ; 0495289a (hors borne 377, pour la
