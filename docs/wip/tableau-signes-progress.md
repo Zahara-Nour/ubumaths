@@ -9,18 +9,19 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2267 (PR 1 mergée)._
+_Mis à jour le 2026-11-03, après #2273 (PR 2 mergée)._
 
-- **État** : PR 1 mergée (#2267) — ubumark lit les `?` du ` ```variation ` (`cases`, `case: N`, `??n`), refus en
-  français, Typst `hiddenCells`, éditeur riche. Rien n'est encore visible pour l'élève.
-- **Prochaine action** : PR 2 — génération, jugement, masquage d'évaluation (§ Plan technique) : nouveau worktree
-  `git worktree add -b feat/tableau-signes-generation ../ubumaths-wt-tableau-signes origin/main`, tests rouges d'abord ;
-  revue `code-reviewer` Opus + `security-auditor` (masquage).
+- **État** : PR 1 (#2267, ubumark) et PR 2 (#2273, génération, juge, masquage d'évaluation) mergées. Les cases
+  existent (`InstanceBlank.cellule`, `variationBlanks`) mais l'élève n'a pas encore de quoi les remplir :
+  **aucun modèle à écrire avant la PR 3**.
+- **Prochaine action** : PR 3 — saisie (`VariationTable.svelte`, `FillBlanksInput.svelte`) : valeur = petite case
+  MathLive, signe = boutons + / −, marque = 0 / ‖ / rien, au doigt à 390 px. Nouveau worktree
+  `git worktree add -b feat/tableau-signes-saisie ../ubumaths-wt-tableau-signes origin/main`.
 - **En attente de David** : rien.
-- **Pièges en cours** : PDF — une marque cachée est un trait nu, sans repère « à compléter » (vartable 0.2.1 ne place
-  rien sur le trait ; essais `place` / `block` vains) → PR 4. Décimal dans le domaine coupé aux virgules (fraction).
-  Valeur de x jugée : vérifier `1,5` contre `\frac{3}{2}` (PR 2).
-- **Worktree / branche** : aucun (à recréer pour la PR 2).
+- **Pièges en cours** : réponses envoyées par la saisie = jetons `+` `-` `z` `||` `rien` (juge `isSignCellCorrect`).
+  Énoncé d'évaluation : `??n` / `?` seul, cases à `answer` vide — la saisie doit marcher dessus. PDF : marque
+  cachée = trait nu (PR 4). Cas frère non vérifié : les cases ```operation héritent des `blankDefaults`.
+- **Worktree / branche** : aucun (à recréer pour la PR 3).
 
 ---
 
