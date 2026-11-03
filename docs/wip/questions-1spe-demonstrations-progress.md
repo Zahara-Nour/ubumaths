@@ -9,17 +9,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2299._
+_Mis à jour le 2026-11-03, après #2302._
 
-- **État** : lot 1 (232, 233, 234, 235, 255) mergé (#2299) : 5 modèles × 3 variations, fichiers dans
-  `scripts/questions/1spe-demonstrations-1/`, rien en prod.
-- **Prochaine action** : David lance `create-questions --publier` en prod (commande ci-dessous) ; relever les 5 `id`, puis
-  migration nœud + tag (gabarit § 6 de `couvrir-un-niveau.md`), page à cocher, publication. Ensuite lot 2 (dérivation).
-- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-demonstrations-1 --publier`
-  (depuis le worktree, `.env` = prod). Extension `signe:` du bloc `ranger` (Q2 b) **non tranchée**, à reposer après les
-  lots à trous.
+- **État** : lot 1 en prod en brouillon, rangé et tagué (#2299 fichiers, #2302 migration `20261103115420`, `db:migrate`
+  fait, vérifié en base) ; garde des niveaux verte ; page à cocher publiée : https://claude.ai/artifact/9ERT5tzmVmukkYbYk3ipJX
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 5) ; « À revoir » → corriger (§ 7 de
+  `couvrir-un-niveau.md`) ; tout OK → `publier-lot.ts --dir scripts/questions/1spe-demonstrations-1` (simulation), puis
+  David `--publier`. Ensuite lot 2 (dérivation : 275, 276, 277, 398, 278).
+- **En attente de David** : la relecture (page à cocher). Extension `signe:` du bloc `ranger` (Q2 b) **non tranchée**.
 - **Pièges en cours** : `requiredForm: {pattern: 'u'}` pour les écritures équivalentes (2³, n² + n) ; jamais de couleur sur
-  du texte (gras) ; ancienne branche distante `docs/questions-1spe-demonstrations` à supprimer (refusée au mode auto).
+  du texte (gras) ; `Doc-inchangée:` dans un COMMIT (pas la PR) pour une migration ; ancienne branche distante
+  `docs/questions-1spe-demonstrations` à supprimer (refusée au mode auto).
 - **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, branche `feat/questions-1spe-demonstrations`.
 
 ---
@@ -111,3 +111,9 @@ géométriques › somme des termes (235), Algèbre › Équations : second degr
 Script : `docs/wip/questions/lot-1spe-demonstrations-1.py`. Valeurs tirées pour 232 (u₀ 1..9, r 2..9) et 233 (u₀ 1..9,
 q 2..5), lettres ailleurs. Vérifié : `create-questions` simulation verte, `validateLatex` + accolades sur 40 tirages
 (214 formules, 0 problème), brouillons créés en base locale, aperçu admin du modèle 5 (case dans un numérateur) correct.
+
+En prod (2026-11-03) : brouillons a81c4c9f (232), acaeb02a (233), 5fbb9a04 (234), b554a47f (235), 8865b98c (255), créés
+par David ; migration `20261103115420_questions_1spe_demonstrations_1_rangement_tags` (#2302 ; audit sécurité sans
+finding bloquant, son point faible « lot partiel » corrigé et testé ; 12 tests, rouges sans la migration) ; vérifié en
+base : nœud et point de chacun, brouillons, `updated_at` intact. Page à cocher :
+https://claude.ai/artifact/9ERT5tzmVmukkYbYk3ipJX
