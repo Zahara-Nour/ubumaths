@@ -12,9 +12,9 @@ _Mis à jour le 2026-11-03, après #2288._
   admis — compas sur un trait droit, même rayon en A et B, équerre sur le trait qu'elle longe) mergés,
   pas encore en prod (`deploy:prod` sur demande de David). Vérifications à l'œil dans
   `verifications-manuelles.md`.
-- **Prochaine action** : coder le lot 5 (angle au rapporteur, § 16) une fois la phase 0 validée ;
+- **Prochaine action** : coder le lot 5 (angle au rapporteur, § 16) (phase 0 validée) ;
   bissectrice ensuite.
-- **En attente de David** : les 5 questions du § 16.
+- **En attente de David** : rien.
 - **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12, sa propre
   phase 0) ; `perpendiculaire(A, s)` échoue quand A est un bout de s ; pas de prime dans le langage des
   figures ; `symetrie(P, axe=d)` échoue si P définit d ; l'« Essayer » de l'aide ne rend pas la case
@@ -645,7 +645,7 @@ Phase 0 validée par David le 2026-11-03 (« ok »), deux exceptions tranchées 
   un cercle → traits droits seulement ; en-tête du test). Simulations de bout en bout (symétriques,
   milieu, médiatrice, parallélogramme) toutes justes.
 
-## 16. Phase 0 — lot 5 : angle de mesure donnée, au rapporteur (proposée le 2026-11-03, à valider)
+## 16. Phase 0 — lot 5 : angle de mesure donnée, au rapporteur (validée le 2026-11-03)
 
 BO 6e « Mesurer un angle » (6-169), « Construire un angle de mesure donnée » (6-170) ; outil n° 4 de
 [outils-manquants.md](outils-manquants.md). Le CM2 n'utilise pas le rapporteur (BO CM2 grandeurs) : 6e
@@ -709,3 +709,11 @@ Palette déduite : Rapporteur · Segment.
 4. **Message « mauvaise graduation »** pour 180 − a : le garder (recommandé : c'est l'erreur type) ?
 5. **Mesurer un angle (6-169)** : lot suivant, avec le même geste et une réponse en degrés (recommandé) ;
    ou dans ce lot ? Le triangle donné par un côté et deux angles (5e) viendrait après.
+
+### Décisions de David (2026-11-03, « je suis tes recos »)
+
+1. Côté tracé au **Segment** (pas d'outil Demi-droite).
+2. Viser : toucher le bord, puis boutons **‹ 1° ›** (flèches au clavier).
+3. Bouton **Retourner** pour passer le rapporteur de l'autre côté.
+4. Message « mauvaise graduation » pour 180 − a **gardé**.
+5. Mesurer un angle (6-169) au **lot suivant**, même geste ; triangle par un côté et deux angles après.
