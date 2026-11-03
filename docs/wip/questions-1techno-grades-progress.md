@@ -6,12 +6,14 @@ le cas de 53 modèles.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, avant la PR._
+_Mis à jour le 2026-11-03, après #2280 (migrée)._
 
-- **État** : migration `20261103082130_questions_1techno_grades.sql` + test d'intégration (rouge sans, 9/9
-  vert avec) · **Prochaine action** : audit, PR, CI, merge, `db:migrate`, vérifier en prod · **En attente de
-  David** : les 21 modèles tagués 1GEN sans `1_GEN` (§ 3) · **Pièges en cours** : aucun · **Worktree /
-  branche** : `../ubumaths-wt-questions-1techno-grades`, `feat/questions-1techno-grades`.
+- **État** : #2280 mergée et migrée (53 modèles en `1_TECHNO`, vérifié en prod, trigger `O`) ; lot 1GEN
+  (21 modèles) : migration `20261103084609_questions_1gen_grades.sql` + test (rouge sans, 9/9 avec) ·
+  **Prochaine action** : audit, PR, CI, merge, `db:migrate`, vérifier en prod · **En attente de David** : les 7
+  écarts de Terminale (journal `garde-niveaux-tags` § 1) · **Pièges en cours** : aucun · **Worktree / branche** :
+  `../ubumaths-wt-questions-1techno-grades`, `feat/questions-1gen-grades` (garde : `../ubumaths-wt-garde-niveaux-tags`,
+  #2284).
 
 ## 1. Relevé MCP prod (2026-11-03)
 
@@ -44,3 +46,16 @@ rouge sans la migration (4 échecs + suite nominale tombée au `beforeAll`), ver
 `security-auditor` : aucun finding bloquant. F1 (les 5 brouillons apparaissent aussi au sélecteur du prof,
 accès inchangé) : commentaire de la migration précisé. F2 (atomicité de `db push`) : après `db:migrate`,
 vérifier `select tgenabled from pg_trigger where tgname = 'update_question_templates_updated_at'` = `O`.
+
+## 6. #2280 en prod, puis le lot 1GEN (2026-11-03)
+
+#2280 mergée (CI verte, intégration comprise), `db:migrate` depuis le dépôt principal (seule migration en attente).
+Vérifié en prod : plus aucun modèle tagué 1TECHNO sans `1_TECHNO` ; trigger `O` ; voisins Tangente en
+`[1_SPE, 1_TECHNO]` ; aucun `updated_at` du lot touché (le seul récent, dc5d7cb6, est d'une autre session, 08:17).
+
+Lot 1GEN validé par David (« oui, fais 1 », même question d'accès : classes de 1re générale). Relevé APRÈS #2280 :
+**21 modèles** (19 publiés), 19 en `[1_SPE, 1_TECHNO]` ou `[T_COMP, 1_TECHNO]`, 2 en `[1_SPE]` (8ed02829,
+eb9517ed). Migration `20261103084609_questions_1gen_grades.sql` (même forme) + `tests/integration/questions-1gen-grades.test.ts` :
+rouge sans (4 échecs, 5 sautés), vert avec (9/9).
+
+Garde d'alerte (option a) : chantier `garde-niveaux-tags`, #2284.
