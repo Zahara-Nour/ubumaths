@@ -2,7 +2,7 @@
 spécialité dans scripts/questions/tspe-7-restes/.
 
 Phase 0 validée par David le 2026-11-02 (« je valide », journal
-« docs/wip/questions-tspe-restes-progress.md »), un point par modèle :
+« docs/archive/wip/questions-tspe-restes-progress.md »), un point par modèle :
 
 | # | Point    | Titre                                                 | Catégorie, niveau                                              |
 | 1 | TSPE-302 | Nier une proposition à deux quantificateurs           | Logique › Quantificateurs et négation › négation, 3            |

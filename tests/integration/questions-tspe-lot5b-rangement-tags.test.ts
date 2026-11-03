@@ -5,7 +5,7 @@
  * Migration `20261102185349_questions_tspe_lot5b_rangement_tags` : les 4 brouillons du lot 5b, créés
  * le 2026-11-02 par scripts/create-questions.ts (sans nœud ni tag), vont sur une sous-notion existante
  * de « Probabilités > Sommes et concentration » et reçoivent leur point (TSPE-518, 521, 525, 532).
- * Phase 0 validée par David le 2026-11-02 (journal docs/wip/questions-tspe-proba-progress.md, § Lot 5b).
+ * Phase 0 validée par David le 2026-11-02 (journal docs/archive/wip/questions-tspe-proba-progress.md, § Lot 5b).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, en [T_SPE], sans nœud ni tag — puis rejoue la migration

@@ -2,7 +2,7 @@
 terminale spécialité dans scripts/questions/tspe-5b-sommes/.
 
 Phase 0 validée par David le 2026-11-02 (« tes recos ? » puis « je valide », journal
-« docs/wip/questions-tspe-proba-progress.md » § Lot 5b), un point par modèle :
+« docs/archive/wip/questions-tspe-proba-progress.md » § Lot 5b), un point par modèle :
 
 | # | Point    | Titre                                 | Catégorie, niveau                                                 |
 | 1 | TSPE-518 | Loi de la somme de deux variables     | Sommes de variables aléatoires › Loi d'une somme, 1               |

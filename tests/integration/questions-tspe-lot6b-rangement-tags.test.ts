@@ -6,7 +6,7 @@
  * le 2026-11-02 par scripts/create-questions.ts (sans nœud ni tag), vont sur une sous-notion existante
  * de « Géométrie » et reçoivent leur point (TSPE-358, 368, 566, 568 ; 566 est sur la notion « Espace »,
  * le modèle sur sa sous-notion « vecteurs de l'espace »).
- * Phase 0 validée par David le 2026-11-02 (journal docs/wip/questions-tspe-espace-progress.md, § Lot 6b).
+ * Phase 0 validée par David le 2026-11-02 (journal docs/archive/wip/questions-tspe-espace-progress.md, § Lot 6b).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, en [T_SPE], sans nœud ni tag — puis rejoue la migration

@@ -5,7 +5,7 @@
  * Migration `20261102173448_questions_tspe_lot5a_rangement_tags` : les 9 brouillons du lot 5a, créés
  * le 2026-11-02 par scripts/create-questions.ts (sans nœud ni tag), vont sur une sous-notion existante
  * de « Probabilités » et reçoivent leur point (TSPE-612, 501, 505, 507, 613, 506, 615, 617, 509).
- * Phase 0 validée par David le 2026-11-02 (journal docs/wip/questions-tspe-proba-progress.md, § Lot 5a).
+ * Phase 0 validée par David le 2026-11-02 (journal docs/archive/wip/questions-tspe-proba-progress.md, § Lot 5a).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, en [T_SPE], sans nœud ni tag — puis rejoue la migration
