@@ -1,0 +1,229 @@
+{
+	"title": "Espace : coordonnées d'un vecteur dans une base",
+	"description": "Sur un cube ou un pavé droit nommé, coordonnées d'un vecteur entre deux sommets dans la base (AB, AD, AE), puis dans la base (AB, AC, AE) (pièges : signe, coefficients de l'ancienne base)",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs, droites et plans de l'espace",
+	"subdomain": "Sur une figure",
+	"level": 2,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "$ABCDEFGH$ est un {{if:p==0|cube}}{{if:p==1|pavé droit}} (face $ABCD$ en bas, $E$ au-dessus de $A$).\n\n```solide\nforme: {{if:p==0|cube 4}}{{if:p==1|pave 5 3 2}}\nsommets: A B C D E F G H\nmarquer: {{if:k==0|arete AB, arete AD, arete AE, sommet B, sommet G}}{{if:k==1|arete AB, arete AD, arete AE, sommet D, sommet G}}{{if:k==2|arete AB, arete AD, arete AE, sommet E, sommet G}}{{if:k==3|arete AB, arete AD, arete AE, arete HG}}{{if:k==4|arete AB, arete AD, arete AE, sommet A, sommet F}}{{if:k==5|arete AB, arete AD, arete AE, arete FG}}{{if:k==6|arete AB, arete AD, arete AE, sommet A, sommet G}}{{if:k==7|arete AB, arete AD, arete AE, arete BF}}\n```\n\nDonne les coordonnées de {{if:k==0|$\\overrightarrow{BG}$}}{{if:k==1|$\\overrightarrow{DG}$}}{{if:k==2|$\\overrightarrow{EG}$}}{{if:k==3|$\\overrightarrow{HG}$}}{{if:k==4|$\\overrightarrow{AF}$}}{{if:k==5|$\\overrightarrow{FG}$}}{{if:k==6|$\\overrightarrow{AG}$}}{{if:k==7|$\\overrightarrow{BF}$}} dans la base $(\\overrightarrow{AB},\\overrightarrow{AD},\\overrightarrow{AE})$.\n\nCoordonnées : $(?\\,;\\,?\\,;\\,?)$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0..1"
+				},
+				{
+					"name": "k",
+					"expression": "0..7"
+				},
+				{
+					"name": "x",
+					"expression": "{{if:k==0|0|{{if:k==1|1|{{if:k==2|1|{{if:k==3|1|{{if:k==4|1|{{if:k==5|0|{{if:k==6|1|0}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "y",
+					"expression": "{{if:k==0|1|{{if:k==1|0|{{if:k==2|1|{{if:k==3|0|{{if:k==4|0|{{if:k==5|1|{{if:k==6|1|0}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "z",
+					"expression": "{{if:k==0|1|{{if:k==1|1|{{if:k==2|0|{{if:k==3|0|{{if:k==4|1|{{if:k==5|0|{{if:k==6|1|1}}}}}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				},
+				{
+					"expectedAnswer": "{{y}}"
+				},
+				{
+					"expectedAnswer": "{{z}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==0|On va de $B$ à $G$ le long des arêtes (relation de Chasles) : $\\overrightarrow{BG}=\\overrightarrow{BC}+\\overrightarrow{CG}$. Les faces sont des parallélogrammes : $\\overrightarrow{BC}=\\overrightarrow{AD}$, $\\overrightarrow{CG}=\\overrightarrow{AE}$.}}{{if:k==1|On va de $D$ à $G$ le long des arêtes (relation de Chasles) : $\\overrightarrow{DG}=\\overrightarrow{DC}+\\overrightarrow{CG}$. Les faces sont des parallélogrammes : $\\overrightarrow{DC}=\\overrightarrow{AB}$, $\\overrightarrow{CG}=\\overrightarrow{AE}$.}}{{if:k==2|On va de $E$ à $G$ le long des arêtes (relation de Chasles) : $\\overrightarrow{EG}=\\overrightarrow{EF}+\\overrightarrow{FG}$. Les faces sont des parallélogrammes : $\\overrightarrow{EF}=\\overrightarrow{AB}$, $\\overrightarrow{FG}=\\overrightarrow{AD}$.}}{{if:k==3|On va de $H$ à $G$ le long des arêtes (relation de Chasles) : $\\overrightarrow{HG}=\\overrightarrow{HG}$. Les faces sont des parallélogrammes : $\\overrightarrow{HG}=\\overrightarrow{AB}$.}}{{if:k==4|On va de $A$ à $F$ le long des arêtes (relation de Chasles) : $\\overrightarrow{AF}=\\overrightarrow{AB}+\\overrightarrow{BF}$. Les faces sont des parallélogrammes : $\\overrightarrow{BF}=\\overrightarrow{AE}$.}}{{if:k==5|On va de $F$ à $G$ le long des arêtes (relation de Chasles) : $\\overrightarrow{FG}=\\overrightarrow{FG}$. Les faces sont des parallélogrammes : $\\overrightarrow{FG}=\\overrightarrow{AD}$.}}{{if:k==6|On va de $A$ à $G$ le long des arêtes (relation de Chasles) : $\\overrightarrow{AG}=\\overrightarrow{AB}+\\overrightarrow{BC}+\\overrightarrow{CG}$. Les faces sont des parallélogrammes : $\\overrightarrow{BC}=\\overrightarrow{AD}$, $\\overrightarrow{CG}=\\overrightarrow{AE}$.}}{{if:k==7|On va de $B$ à $F$ le long des arêtes (relation de Chasles) : $\\overrightarrow{BF}=\\overrightarrow{BF}$. Les faces sont des parallélogrammes : $\\overrightarrow{BF}=\\overrightarrow{AE}$.}}",
+					"{{if:k==0|Donc $\\overrightarrow{BG}=\\overrightarrow{AD}+\\overrightarrow{AE}$.}}{{if:k==1|Donc $\\overrightarrow{DG}=\\overrightarrow{AB}+\\overrightarrow{AE}$.}}{{if:k==2|Donc $\\overrightarrow{EG}=\\overrightarrow{AB}+\\overrightarrow{AD}$.}}{{if:k==3|Donc $\\overrightarrow{HG}=\\overrightarrow{AB}$.}}{{if:k==4|Donc $\\overrightarrow{AF}=\\overrightarrow{AB}+\\overrightarrow{AE}$.}}{{if:k==5|Donc $\\overrightarrow{FG}=\\overrightarrow{AD}$.}}{{if:k==6|Donc $\\overrightarrow{AG}=\\overrightarrow{AB}+\\overrightarrow{AD}+\\overrightarrow{AE}$.}}{{if:k==7|Donc $\\overrightarrow{BF}=\\overrightarrow{AE}$.}}",
+					"{{if:k==0|Les coefficients de $\\overrightarrow{AB}$, $\\overrightarrow{AD}$, $\\overrightarrow{AE}$ sont les coordonnées : $\\textcolor{{{color:primary.0}}}{ \\overrightarrow{BG}(0\\,;\\,1\\,;\\,1) }$.}}{{if:k==1|Les coefficients de $\\overrightarrow{AB}$, $\\overrightarrow{AD}$, $\\overrightarrow{AE}$ sont les coordonnées : $\\textcolor{{{color:primary.0}}}{ \\overrightarrow{DG}(1\\,;\\,0\\,;\\,1) }$.}}{{if:k==2|Les coefficients de $\\overrightarrow{AB}$, $\\overrightarrow{AD}$, $\\overrightarrow{AE}$ sont les coordonnées : $\\textcolor{{{color:primary.0}}}{ \\overrightarrow{EG}(1\\,;\\,1\\,;\\,0) }$.}}{{if:k==3|Les coefficients de $\\overrightarrow{AB}$, $\\overrightarrow{AD}$, $\\overrightarrow{AE}$ sont les coordonnées : $\\textcolor{{{color:primary.0}}}{ \\overrightarrow{HG}(1\\,;\\,0\\,;\\,0) }$.}}{{if:k==4|Les coefficients de $\\overrightarrow{AB}$, $\\overrightarrow{AD}$, $\\overrightarrow{AE}$ sont les coordonnées : $\\textcolor{{{color:primary.0}}}{ \\overrightarrow{AF}(1\\,;\\,0\\,;\\,1) }$.}}{{if:k==5|Les coefficients de $\\overrightarrow{AB}$, $\\overrightarrow{AD}$, $\\overrightarrow{AE}$ sont les coordonnées : $\\textcolor{{{color:primary.0}}}{ \\overrightarrow{FG}(0\\,;\\,1\\,;\\,0) }$.}}{{if:k==6|Les coefficients de $\\overrightarrow{AB}$, $\\overrightarrow{AD}$, $\\overrightarrow{AE}$ sont les coordonnées : $\\textcolor{{{color:primary.0}}}{ \\overrightarrow{AG}(1\\,;\\,1\\,;\\,1) }$.}}{{if:k==7|Les coefficients de $\\overrightarrow{AB}$, $\\overrightarrow{AD}$, $\\overrightarrow{AE}$ sont les coordonnées : $\\textcolor{{{color:primary.0}}}{ \\overrightarrow{BF}(0\\,;\\,0\\,;\\,1) }$.}}"
+				]
+			}
+		},
+		{
+			"statement": "$ABCDEFGH$ est un {{if:p==0|cube}}{{if:p==1|pavé droit}} (face $ABCD$ en bas, $E$ au-dessus de $A$).\n\n```solide\nforme: {{if:p==0|cube 4}}{{if:p==1|pave 5 3 2}}\nsommets: A B C D E F G H\nmarquer: {{if:k==0|arete AB, arete AD, arete AE, sommet C, sommet E}}{{if:k==1|arete AB, arete AD, arete AE, sommet G, sommet A}}{{if:k==2|arete AB, arete AD, arete AE, sommet B, sommet D}}{{if:k==3|arete AB, arete AD, arete AE, sommet F, sommet H}}{{if:k==4|arete AB, arete AD, arete AE, sommet H, sommet B}}{{if:k==5|arete AB, arete AD, arete AE, sommet G, sommet E}}{{if:k==6|arete AB, arete AD, arete AE, sommet C, sommet F}}{{if:k==7|arete AB, arete AD, arete AE, sommet F, sommet D}}\n```\n\nDonne les coordonnées de {{if:k==0|$\\overrightarrow{CE}$}}{{if:k==1|$\\overrightarrow{GA}$}}{{if:k==2|$\\overrightarrow{BD}$}}{{if:k==3|$\\overrightarrow{FH}$}}{{if:k==4|$\\overrightarrow{HB}$}}{{if:k==5|$\\overrightarrow{GE}$}}{{if:k==6|$\\overrightarrow{CF}$}}{{if:k==7|$\\overrightarrow{FD}$}} dans la base $(\\overrightarrow{AB},\\overrightarrow{AD},\\overrightarrow{AE})$.\n\nCoordonnées : $(?\\,;\\,?\\,;\\,?)$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0..1"
+				},
+				{
+					"name": "k",
+					"expression": "0..7"
+				},
+				{
+					"name": "x",
+					"expression": "{{if:k==0|-1|{{if:k==1|-1|{{if:k==2|-1|{{if:k==3|-1|{{if:k==4|1|{{if:k==5|-1|{{if:k==6|0|-1}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "y",
+					"expression": "{{if:k==0|-1|{{if:k==1|-1|{{if:k==2|1|{{if:k==3|1|{{if:k==4|-1|{{if:k==5|-1|{{if:k==6|-1|1}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "z",
+					"expression": "{{if:k==0|1|{{if:k==1|-1|{{if:k==2|0|{{if:k==3|0|{{if:k==4|-1|{{if:k==5|0|{{if:k==6|1|-1}}}}}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				},
+				{
+					"expectedAnswer": "{{y}}"
+				},
+				{
+					"expectedAnswer": "{{z}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==0|On va de $C$ à $E$ le long des arêtes (relation de Chasles) : $\\overrightarrow{CE}=\\overrightarrow{CD}+\\overrightarrow{DA}+\\overrightarrow{AE}$. Les faces sont des parallélogrammes : $\\overrightarrow{CD}=\\overrightarrow{BA}=-\\overrightarrow{AB}$, $\\overrightarrow{DA}=-\\overrightarrow{AD}$.}}{{if:k==1|On va de $G$ à $A$ le long des arêtes (relation de Chasles) : $\\overrightarrow{GA}=\\overrightarrow{GH}+\\overrightarrow{HE}+\\overrightarrow{EA}$. Les faces sont des parallélogrammes : $\\overrightarrow{GH}=\\overrightarrow{BA}=-\\overrightarrow{AB}$, $\\overrightarrow{HE}=\\overrightarrow{DA}=-\\overrightarrow{AD}$, $\\overrightarrow{EA}=-\\overrightarrow{AE}$.}}{{if:k==2|On va de $B$ à $D$ le long des arêtes (relation de Chasles) : $\\overrightarrow{BD}=\\overrightarrow{BA}+\\overrightarrow{AD}$. Les faces sont des parallélogrammes : $\\overrightarrow{BA}=-\\overrightarrow{AB}$.}}{{if:k==3|On va de $F$ à $H$ le long des arêtes (relation de Chasles) : $\\overrightarrow{FH}=\\overrightarrow{FE}+\\overrightarrow{EH}$. Les faces sont des parallélogrammes : $\\overrightarrow{FE}=\\overrightarrow{BA}=-\\overrightarrow{AB}$, $\\overrightarrow{EH}=\\overrightarrow{AD}$.}}{{if:k==4|On va de $H$ à $B$ le long des arêtes (relation de Chasles) : $\\overrightarrow{HB}=\\overrightarrow{HG}+\\overrightarrow{GF}+\\overrightarrow{FB}$. Les faces sont des parallélogrammes : $\\overrightarrow{HG}=\\overrightarrow{AB}$, $\\overrightarrow{GF}=\\overrightarrow{DA}=-\\overrightarrow{AD}$, $\\overrightarrow{FB}=\\overrightarrow{EA}=-\\overrightarrow{AE}$.}}{{if:k==5|On va de $G$ à $E$ le long des arêtes (relation de Chasles) : $\\overrightarrow{GE}=\\overrightarrow{GH}+\\overrightarrow{HE}$. Les faces sont des parallélogrammes : $\\overrightarrow{GH}=\\overrightarrow{BA}=-\\overrightarrow{AB}$, $\\overrightarrow{HE}=\\overrightarrow{DA}=-\\overrightarrow{AD}$.}}{{if:k==6|On va de $C$ à $F$ le long des arêtes (relation de Chasles) : $\\overrightarrow{CF}=\\overrightarrow{CB}+\\overrightarrow{BF}$. Les faces sont des parallélogrammes : $\\overrightarrow{CB}=\\overrightarrow{DA}=-\\overrightarrow{AD}$, $\\overrightarrow{BF}=\\overrightarrow{AE}$.}}{{if:k==7|On va de $F$ à $D$ le long des arêtes (relation de Chasles) : $\\overrightarrow{FD}=\\overrightarrow{FE}+\\overrightarrow{EH}+\\overrightarrow{HD}$. Les faces sont des parallélogrammes : $\\overrightarrow{FE}=\\overrightarrow{BA}=-\\overrightarrow{AB}$, $\\overrightarrow{EH}=\\overrightarrow{AD}$, $\\overrightarrow{HD}=\\overrightarrow{EA}=-\\overrightarrow{AE}$.}}",
+					"{{if:k==0|Donc $\\overrightarrow{CE}=-\\overrightarrow{AB}-\\overrightarrow{AD}+\\overrightarrow{AE}$.}}{{if:k==1|Donc $\\overrightarrow{GA}=-\\overrightarrow{AB}-\\overrightarrow{AD}-\\overrightarrow{AE}$.}}{{if:k==2|Donc $\\overrightarrow{BD}=-\\overrightarrow{AB}+\\overrightarrow{AD}$.}}{{if:k==3|Donc $\\overrightarrow{FH}=-\\overrightarrow{AB}+\\overrightarrow{AD}$.}}{{if:k==4|Donc $\\overrightarrow{HB}=\\overrightarrow{AB}-\\overrightarrow{AD}-\\overrightarrow{AE}$.}}{{if:k==5|Donc $\\overrightarrow{GE}=-\\overrightarrow{AB}-\\overrightarrow{AD}$.}}{{if:k==6|Donc $\\overrightarrow{CF}=-\\overrightarrow{AD}+\\overrightarrow{AE}$.}}{{if:k==7|Donc $\\overrightarrow{FD}=-\\overrightarrow{AB}+\\overrightarrow{AD}-\\overrightarrow{AE}$.}}",
+					"{{if:k==0|Les coefficients de $\\overrightarrow{AB}$, $\\overrightarrow{AD}$, $\\overrightarrow{AE}$ sont les coordonnées : $\\textcolor{{{color:primary.0}}}{ \\overrightarrow{CE}(-1\\,;\\,-1\\,;\\,1) }$.}}{{if:k==1|Les coefficients de $\\overrightarrow{AB}$, $\\overrightarrow{AD}$, $\\overrightarrow{AE}$ sont les coordonnées : $\\textcolor{{{color:primary.0}}}{ \\overrightarrow{GA}(-1\\,;\\,-1\\,;\\,-1) }$.}}{{if:k==2|Les coefficients de $\\overrightarrow{AB}$, $\\overrightarrow{AD}$, $\\overrightarrow{AE}$ sont les coordonnées : $\\textcolor{{{color:primary.0}}}{ \\overrightarrow{BD}(-1\\,;\\,1\\,;\\,0) }$.}}{{if:k==3|Les coefficients de $\\overrightarrow{AB}$, $\\overrightarrow{AD}$, $\\overrightarrow{AE}$ sont les coordonnées : $\\textcolor{{{color:primary.0}}}{ \\overrightarrow{FH}(-1\\,;\\,1\\,;\\,0) }$.}}{{if:k==4|Les coefficients de $\\overrightarrow{AB}$, $\\overrightarrow{AD}$, $\\overrightarrow{AE}$ sont les coordonnées : $\\textcolor{{{color:primary.0}}}{ \\overrightarrow{HB}(1\\,;\\,-1\\,;\\,-1) }$.}}{{if:k==5|Les coefficients de $\\overrightarrow{AB}$, $\\overrightarrow{AD}$, $\\overrightarrow{AE}$ sont les coordonnées : $\\textcolor{{{color:primary.0}}}{ \\overrightarrow{GE}(-1\\,;\\,-1\\,;\\,0) }$.}}{{if:k==6|Les coefficients de $\\overrightarrow{AB}$, $\\overrightarrow{AD}$, $\\overrightarrow{AE}$ sont les coordonnées : $\\textcolor{{{color:primary.0}}}{ \\overrightarrow{CF}(0\\,;\\,-1\\,;\\,1) }$.}}{{if:k==7|Les coefficients de $\\overrightarrow{AB}$, $\\overrightarrow{AD}$, $\\overrightarrow{AE}$ sont les coordonnées : $\\textcolor{{{color:primary.0}}}{ \\overrightarrow{FD}(-1\\,;\\,1\\,;\\,-1) }$.}}"
+				]
+			}
+		},
+		{
+			"statement": "$ABCDEFGH$ est un {{if:p==0|cube}}{{if:p==1|pavé droit}} (face $ABCD$ en bas, $E$ au-dessus de $A$).\n\n```solide\nforme: {{if:p==0|cube 4}}{{if:p==1|pave 5 3 2}}\nsommets: A B C D E F G H\nmarquer: {{if:k==0|arete AB, sommet A, sommet C, arete AE}}{{if:k==1|arete AB, sommet A, sommet C, arete AE, sommet G}}{{if:k==2|arete AB, sommet A, sommet C, arete AE, sommet B, sommet H}}{{if:k==3|arete AB, sommet A, sommet C, arete AE, sommet D, sommet F}}{{if:k==4|arete AB, sommet A, sommet C, arete AE, arete AD}}{{if:k==5|arete AB, sommet A, sommet C, arete AE, arete EH}}{{if:k==6|arete AB, sommet A, sommet C, arete AE, sommet E}}{{if:k==7|arete AB, sommet A, sommet C, arete AE, sommet D, sommet B}}\n```\n\nDonne les coordonnées de {{if:k==0|$\\overrightarrow{AC}$}}{{if:k==1|$\\overrightarrow{AG}$}}{{if:k==2|$\\overrightarrow{BH}$}}{{if:k==3|$\\overrightarrow{DF}$}}{{if:k==4|$\\overrightarrow{AD}$}}{{if:k==5|$\\overrightarrow{EH}$}}{{if:k==6|$\\overrightarrow{CE}$}}{{if:k==7|$\\overrightarrow{DB}$}} dans la base $(\\overrightarrow{AB},\\overrightarrow{AC},\\overrightarrow{AE})$.\n\nCoordonnées : $(?\\,;\\,?\\,;\\,?)$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0..1"
+				},
+				{
+					"name": "k",
+					"expression": "0..7"
+				},
+				{
+					"name": "x",
+					"expression": "{{if:k==0|0|{{if:k==1|0|{{if:k==2|-2|{{if:k==3|2|{{if:k==4|-1|{{if:k==5|-1|{{if:k==6|0|2}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "y",
+					"expression": "{{if:k==0|1|{{if:k==1|1|{{if:k==2|1|{{if:k==3|-1|{{if:k==4|1|{{if:k==5|1|{{if:k==6|-1|-1}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "z",
+					"expression": "{{if:k==0|0|{{if:k==1|1|{{if:k==2|1|{{if:k==3|1|{{if:k==4|0|{{if:k==5|0|{{if:k==6|1|0}}}}}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{x}}"
+				},
+				{
+					"expectedAnswer": "{{y}}"
+				},
+				{
+					"expectedAnswer": "{{z}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==0|On va de $A$ à $C$ le long des arêtes (relation de Chasles) : $\\overrightarrow{AC}=\\overrightarrow{AB}+\\overrightarrow{BC}$. Les faces sont des parallélogrammes : $\\overrightarrow{BC}=\\overrightarrow{AD}$.}}{{if:k==1|On va de $A$ à $G$ le long des arêtes (relation de Chasles) : $\\overrightarrow{AG}=\\overrightarrow{AB}+\\overrightarrow{BC}+\\overrightarrow{CG}$. Les faces sont des parallélogrammes : $\\overrightarrow{BC}=\\overrightarrow{AD}$, $\\overrightarrow{CG}=\\overrightarrow{AE}$.}}{{if:k==2|On va de $B$ à $H$ le long des arêtes (relation de Chasles) : $\\overrightarrow{BH}=\\overrightarrow{BA}+\\overrightarrow{AD}+\\overrightarrow{DH}$. Les faces sont des parallélogrammes : $\\overrightarrow{BA}=-\\overrightarrow{AB}$, $\\overrightarrow{DH}=\\overrightarrow{AE}$.}}{{if:k==3|On va de $D$ à $F$ le long des arêtes (relation de Chasles) : $\\overrightarrow{DF}=\\overrightarrow{DC}+\\overrightarrow{CB}+\\overrightarrow{BF}$. Les faces sont des parallélogrammes : $\\overrightarrow{DC}=\\overrightarrow{AB}$, $\\overrightarrow{CB}=\\overrightarrow{DA}=-\\overrightarrow{AD}$, $\\overrightarrow{BF}=\\overrightarrow{AE}$.}}{{if:k==4|On va de $A$ à $D$ le long des arêtes (relation de Chasles) : $\\overrightarrow{AD}=\\overrightarrow{AD}$.}}{{if:k==5|On va de $E$ à $H$ le long des arêtes (relation de Chasles) : $\\overrightarrow{EH}=\\overrightarrow{EH}$. Les faces sont des parallélogrammes : $\\overrightarrow{EH}=\\overrightarrow{AD}$.}}{{if:k==6|On va de $C$ à $E$ le long des arêtes (relation de Chasles) : $\\overrightarrow{CE}=\\overrightarrow{CD}+\\overrightarrow{DA}+\\overrightarrow{AE}$. Les faces sont des parallélogrammes : $\\overrightarrow{CD}=\\overrightarrow{BA}=-\\overrightarrow{AB}$, $\\overrightarrow{DA}=-\\overrightarrow{AD}$.}}{{if:k==7|On va de $D$ à $B$ le long des arêtes (relation de Chasles) : $\\overrightarrow{DB}=\\overrightarrow{DC}+\\overrightarrow{CB}$. Les faces sont des parallélogrammes : $\\overrightarrow{DC}=\\overrightarrow{AB}$, $\\overrightarrow{CB}=\\overrightarrow{DA}=-\\overrightarrow{AD}$.}}",
+					"{{if:k==0|Donc $\\overrightarrow{AC}=\\overrightarrow{AB}+\\overrightarrow{AD}$.}}{{if:k==1|Donc $\\overrightarrow{AG}=\\overrightarrow{AB}+\\overrightarrow{AD}+\\overrightarrow{AE}$.}}{{if:k==2|Donc $\\overrightarrow{BH}=-\\overrightarrow{AB}+\\overrightarrow{AD}+\\overrightarrow{AE}$.}}{{if:k==3|Donc $\\overrightarrow{DF}=\\overrightarrow{AB}-\\overrightarrow{AD}+\\overrightarrow{AE}$.}}{{if:k==4|Donc $\\overrightarrow{AD}=\\overrightarrow{AD}$.}}{{if:k==5|Donc $\\overrightarrow{EH}=\\overrightarrow{AD}$.}}{{if:k==6|Donc $\\overrightarrow{CE}=-\\overrightarrow{AB}-\\overrightarrow{AD}+\\overrightarrow{AE}$.}}{{if:k==7|Donc $\\overrightarrow{DB}=\\overrightarrow{AB}-\\overrightarrow{AD}$.}}",
+					"On remplace : $\\overrightarrow{AD}=\\overrightarrow{AC}-\\overrightarrow{AB}$ (relation de Chasles, $\\overrightarrow{AD}=\\overrightarrow{AC}+\\overrightarrow{CD}$ et $\\overrightarrow{CD}=-\\overrightarrow{AB}$).",
+					"{{if:k==0|$\\overrightarrow{AC}=\\overrightarrow{AB}+\\left(\\overrightarrow{AC}-\\overrightarrow{AB}\\right)=\\overrightarrow{AC}$, donc dans la base $(\\overrightarrow{AB},\\overrightarrow{AC},\\overrightarrow{AE})$ : $\\textcolor{{{color:primary.0}}}{ \\overrightarrow{AC}(0\\,;\\,1\\,;\\,0) }$.}}{{if:k==1|$\\overrightarrow{AG}=\\overrightarrow{AB}+\\left(\\overrightarrow{AC}-\\overrightarrow{AB}\\right)+\\overrightarrow{AE}=\\overrightarrow{AC}+\\overrightarrow{AE}$, donc dans la base $(\\overrightarrow{AB},\\overrightarrow{AC},\\overrightarrow{AE})$ : $\\textcolor{{{color:primary.0}}}{ \\overrightarrow{AG}(0\\,;\\,1\\,;\\,1) }$.}}{{if:k==2|$\\overrightarrow{BH}=-\\overrightarrow{AB}+\\left(\\overrightarrow{AC}-\\overrightarrow{AB}\\right)+\\overrightarrow{AE}=-2\\overrightarrow{AB}+\\overrightarrow{AC}+\\overrightarrow{AE}$, donc dans la base $(\\overrightarrow{AB},\\overrightarrow{AC},\\overrightarrow{AE})$ : $\\textcolor{{{color:primary.0}}}{ \\overrightarrow{BH}(-2\\,;\\,1\\,;\\,1) }$.}}{{if:k==3|$\\overrightarrow{DF}=\\overrightarrow{AB}-\\left(\\overrightarrow{AC}-\\overrightarrow{AB}\\right)+\\overrightarrow{AE}=2\\overrightarrow{AB}-\\overrightarrow{AC}+\\overrightarrow{AE}$, donc dans la base $(\\overrightarrow{AB},\\overrightarrow{AC},\\overrightarrow{AE})$ : $\\textcolor{{{color:primary.0}}}{ \\overrightarrow{DF}(2\\,;\\,-1\\,;\\,1) }$.}}{{if:k==4|$\\overrightarrow{AD}=\\left(\\overrightarrow{AC}-\\overrightarrow{AB}\\right)=-\\overrightarrow{AB}+\\overrightarrow{AC}$, donc dans la base $(\\overrightarrow{AB},\\overrightarrow{AC},\\overrightarrow{AE})$ : $\\textcolor{{{color:primary.0}}}{ \\overrightarrow{AD}(-1\\,;\\,1\\,;\\,0) }$.}}{{if:k==5|$\\overrightarrow{EH}=\\left(\\overrightarrow{AC}-\\overrightarrow{AB}\\right)=-\\overrightarrow{AB}+\\overrightarrow{AC}$, donc dans la base $(\\overrightarrow{AB},\\overrightarrow{AC},\\overrightarrow{AE})$ : $\\textcolor{{{color:primary.0}}}{ \\overrightarrow{EH}(-1\\,;\\,1\\,;\\,0) }$.}}{{if:k==6|$\\overrightarrow{CE}=-\\overrightarrow{AB}-\\left(\\overrightarrow{AC}-\\overrightarrow{AB}\\right)+\\overrightarrow{AE}=-\\overrightarrow{AC}+\\overrightarrow{AE}$, donc dans la base $(\\overrightarrow{AB},\\overrightarrow{AC},\\overrightarrow{AE})$ : $\\textcolor{{{color:primary.0}}}{ \\overrightarrow{CE}(0\\,;\\,-1\\,;\\,1) }$.}}{{if:k==7|$\\overrightarrow{DB}=\\overrightarrow{AB}-\\left(\\overrightarrow{AC}-\\overrightarrow{AB}\\right)=2\\overrightarrow{AB}-\\overrightarrow{AC}$, donc dans la base $(\\overrightarrow{AB},\\overrightarrow{AC},\\overrightarrow{AE})$ : $\\textcolor{{{color:primary.0}}}{ \\overrightarrow{DB}(2\\,;\\,-1\\,;\\,0) }$.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : BG(0 ; 1 ; 1)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "0",
+				"k": "0"
+			},
+			"answers": ["0", "1", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : BG, ordre des coordonnées",
+			"variationIndex": 0,
+			"variables": {
+				"p": "0",
+				"k": "0"
+			},
+			"answers": ["1", "1", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : CE(-1 ; -1 ; 1)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1",
+				"k": "0"
+			},
+			"answers": ["-1", "-1", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : CE, signes oubliés",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1",
+				"k": "0"
+			},
+			"answers": ["1", "1", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : AC(0 ; 1 ; 0) dans (AB, AC, AE)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "0",
+				"k": "0"
+			},
+			"answers": ["0", "1", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : AC, coordonnées dans (AB, AD, AE)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "0",
+				"k": "0"
+			},
+			"answers": ["1", "1", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : BH(-2 ; 1 ; 1)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "0",
+				"k": "2"
+			},
+			"answers": ["-2", "1", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

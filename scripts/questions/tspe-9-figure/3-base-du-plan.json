@@ -1,0 +1,171 @@
+{
+	"title": "Espace : deux vecteurs forment-ils une base d'un plan ?",
+	"description": "Sur un cube ou un pavé droit nommé, deux vecteurs d'une face ou d'un plan diagonal : base du plan si et seulement s'ils ne sont pas colinéaires (pièges : exiger l'orthogonalité, vecteurs parallèles de sens contraire)",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs, droites et plans de l'espace",
+	"subdomain": "Sur une figure",
+	"level": 3,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "$ABCDEFGH$ est un {{if:p==0|cube}}{{if:p==1|pavé droit}} (face $ABCD$ en bas, $E$ au-dessus de $A$).\n\n```solide\nforme: {{if:p==0|cube 4}}{{if:p==1|pave 5 3 2}}\nsommets: A B C D E F G H\nmarquer: {{if:k==0|face ABCD}}{{if:k==1|face BCGF}}{{if:k==2|face EFGH}}{{if:k==3|face ADHE}}{{if:k==4|face ABFE}}{{if:k==5|face CDHG}}\n```\n\nLes vecteurs {{if:k==0|$\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont deux vecteurs du plan $(ABC)$}}{{if:k==1|$\\overrightarrow{BC}$ et $\\overrightarrow{BG}$ sont deux vecteurs du plan $(BCG)$}}{{if:k==2|$\\overrightarrow{EG}$ et $\\overrightarrow{FH}$ sont deux vecteurs du plan $(EFG)$}}{{if:k==3|$\\overrightarrow{AD}$ et $\\overrightarrow{EH}$ sont deux vecteurs du plan $(ADH)$}}{{if:k==4|$\\overrightarrow{AF}$ et $\\overrightarrow{BF}$ sont deux vecteurs du plan $(ABF)$}}{{if:k==5|$\\overrightarrow{DC}$ et $\\overrightarrow{CH}$ sont deux vecteurs du plan $(CDH)$}}. Forment-ils une base de ce plan ?\n\n```choix\n- Oui : ils ne sont pas colinéaires.\n- Non : ils sont colinéaires.\n- Non : ils ne sont pas orthogonaux.\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0..1"
+				},
+				{
+					"name": "k",
+					"expression": "0..5"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:k==0|0|{{if:k==1|0|{{if:k==2|0|{{if:k==3|1|{{if:k==4|0|0}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Deux vecteurs d'un plan en forment une base si et seulement s'ils ne sont **pas colinéaires** ; ils n'ont pas besoin d'être orthogonaux.",
+					"{{if:k==0|$\\overrightarrow{AB}=\\overrightarrow{AB}$ et $\\overrightarrow{AC}=\\overrightarrow{AB}+\\overrightarrow{AD}$ : aucun réel $k$ ne donne $\\overrightarrow{AC}=k\\overrightarrow{AB}$. Les vecteurs ne sont pas colinéaires, $\\textcolor{{{color:primary.0}}}{ \\text{ils forment une base du plan} }$ (même s'ils ne sont pas orthogonaux).}}{{if:k==1|$\\overrightarrow{BC}=\\overrightarrow{AD}$ et $\\overrightarrow{BG}=\\overrightarrow{AD}+\\overrightarrow{AE}$ : aucun réel $k$ ne donne $\\overrightarrow{BG}=k\\overrightarrow{BC}$. Les vecteurs ne sont pas colinéaires, $\\textcolor{{{color:primary.0}}}{ \\text{ils forment une base du plan} }$ (même s'ils ne sont pas orthogonaux).}}{{if:k==2|$\\overrightarrow{EG}=\\overrightarrow{AB}+\\overrightarrow{AD}$ et $\\overrightarrow{FH}=-\\overrightarrow{AB}+\\overrightarrow{AD}$ : aucun réel $k$ ne donne $\\overrightarrow{FH}=k\\overrightarrow{EG}$. Les vecteurs ne sont pas colinéaires, $\\textcolor{{{color:primary.0}}}{ \\text{ils forment une base du plan} }$.}}{{if:k==3|$\\overrightarrow{EH}=\\overrightarrow{AD}$ : les vecteurs sont colinéaires, $\\textcolor{{{color:primary.0}}}{ \\text{ils ne forment pas une base} }$.}}{{if:k==4|$\\overrightarrow{AF}=\\overrightarrow{AB}+\\overrightarrow{AE}$ et $\\overrightarrow{BF}=\\overrightarrow{AE}$ : aucun réel $k$ ne donne $\\overrightarrow{BF}=k\\overrightarrow{AF}$. Les vecteurs ne sont pas colinéaires, $\\textcolor{{{color:primary.0}}}{ \\text{ils forment une base du plan} }$ (même s'ils ne sont pas orthogonaux).}}{{if:k==5|$\\overrightarrow{DC}=\\overrightarrow{AB}$ et $\\overrightarrow{CH}=-\\overrightarrow{AB}+\\overrightarrow{AE}$ : aucun réel $k$ ne donne $\\overrightarrow{CH}=k\\overrightarrow{DC}$. Les vecteurs ne sont pas colinéaires, $\\textcolor{{{color:primary.0}}}{ \\text{ils forment une base du plan} }$ (même s'ils ne sont pas orthogonaux).}}"
+				]
+			}
+		},
+		{
+			"statement": "$ABCDEFGH$ est un {{if:p==0|cube}}{{if:p==1|pavé droit}} (face $ABCD$ en bas, $E$ au-dessus de $A$).\n\n```solide\nforme: {{if:p==0|cube 4}}{{if:p==1|pave 5 3 2}}\nsommets: A B C D E F G H\nmarquer: {{if:k==0|face ABCD}}{{if:k==1|face ABCD}}{{if:k==2|face EFGH}}{{if:k==3|face BCGF}}{{if:k==4|face ABFE}}{{if:k==5|face CDHG}}\n```\n\nLes vecteurs {{if:k==0|$\\overrightarrow{AB}$ et $\\overrightarrow{DC}$ sont deux vecteurs du plan $(ABC)$}}{{if:k==1|$\\overrightarrow{AD}$ et $\\overrightarrow{CB}$ sont deux vecteurs du plan $(ABC)$}}{{if:k==2|$\\overrightarrow{EF}$ et $\\overrightarrow{GH}$ sont deux vecteurs du plan $(EFG)$}}{{if:k==3|$\\overrightarrow{BF}$ et $\\overrightarrow{CG}$ sont deux vecteurs du plan $(BCG)$}}{{if:k==4|$\\overrightarrow{AF}$ et $\\overrightarrow{EB}$ sont deux vecteurs du plan $(ABF)$}}{{if:k==5|$\\overrightarrow{DH}$ et $\\overrightarrow{GC}$ sont deux vecteurs du plan $(CDH)$}}. Forment-ils une base de ce plan ?\n\n```choix\n- Oui : ils ne sont pas colinéaires.\n- Non : ils sont colinéaires.\n- Non : ils ne sont pas orthogonaux.\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0..1"
+				},
+				{
+					"name": "k",
+					"expression": "0..5"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:k==0|1|{{if:k==1|1|{{if:k==2|1|{{if:k==3|1|{{if:k==4|0|1}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Deux vecteurs d'un plan en forment une base si et seulement s'ils ne sont **pas colinéaires** ; ils n'ont pas besoin d'être orthogonaux.",
+					"{{if:k==0|$\\overrightarrow{DC}=\\overrightarrow{AB}$ : les vecteurs sont colinéaires, $\\textcolor{{{color:primary.0}}}{ \\text{ils ne forment pas une base} }$.}}{{if:k==1|$\\overrightarrow{CB}=-\\overrightarrow{AD}$ : les vecteurs sont colinéaires, $\\textcolor{{{color:primary.0}}}{ \\text{ils ne forment pas une base} }$.}}{{if:k==2|$\\overrightarrow{GH}=-\\overrightarrow{EF}$ : les vecteurs sont colinéaires, $\\textcolor{{{color:primary.0}}}{ \\text{ils ne forment pas une base} }$.}}{{if:k==3|$\\overrightarrow{CG}=\\overrightarrow{BF}$ : les vecteurs sont colinéaires, $\\textcolor{{{color:primary.0}}}{ \\text{ils ne forment pas une base} }$.}}{{if:k==4|$\\overrightarrow{AF}=\\overrightarrow{AB}+\\overrightarrow{AE}$ et $\\overrightarrow{EB}=\\overrightarrow{AB}-\\overrightarrow{AE}$ : aucun réel $k$ ne donne $\\overrightarrow{EB}=k\\overrightarrow{AF}$. Les vecteurs ne sont pas colinéaires, $\\textcolor{{{color:primary.0}}}{ \\text{ils forment une base du plan} }$.}}{{if:k==5|$\\overrightarrow{GC}=-\\overrightarrow{DH}$ : les vecteurs sont colinéaires, $\\textcolor{{{color:primary.0}}}{ \\text{ils ne forment pas une base} }$.}}"
+				]
+			}
+		},
+		{
+			"statement": "$ABCDEFGH$ est un {{if:p==0|cube}}{{if:p==1|pavé droit}} (face $ABCD$ en bas, $E$ au-dessus de $A$).\n\n```solide\nforme: {{if:p==0|cube 4}}{{if:p==1|pave 5 3 2}}\nsommets: A B C D E F G H\nmarquer: {{if:k==0|sommet A, sommet C, sommet E, sommet G}}{{if:k==1|sommet A, sommet C, sommet E, sommet G}}{{if:k==2|sommet A, sommet C, sommet E, sommet G}}{{if:k==3|sommet A, sommet C, sommet E, sommet G}}{{if:k==4|sommet B, sommet D, sommet F, sommet H}}{{if:k==5|sommet B, sommet D, sommet F, sommet H}}\n```\n\nLes vecteurs {{if:k==0|$\\overrightarrow{AC}$ et $\\overrightarrow{EG}$ sont deux vecteurs du plan $(ACG)$}}{{if:k==1|$\\overrightarrow{AC}$ et $\\overrightarrow{AG}$ sont deux vecteurs du plan $(ACG)$}}{{if:k==2|$\\overrightarrow{AE}$ et $\\overrightarrow{GC}$ sont deux vecteurs du plan $(ACG)$}}{{if:k==3|$\\overrightarrow{CE}$ et $\\overrightarrow{AG}$ sont deux vecteurs du plan $(ACG)$}}{{if:k==4|$\\overrightarrow{BD}$ et $\\overrightarrow{HF}$ sont deux vecteurs du plan $(BDH)$}}{{if:k==5|$\\overrightarrow{BH}$ et $\\overrightarrow{DF}$ sont deux vecteurs du plan $(BDH)$}}. Forment-ils une base de ce plan ?\n\n```choix\n- Oui : ils ne sont pas colinéaires.\n- Non : ils sont colinéaires.\n- Non : ils ne sont pas orthogonaux.\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "0..1"
+				},
+				{
+					"name": "k",
+					"expression": "0..5"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:k==0|1|{{if:k==1|0|{{if:k==2|1|{{if:k==3|0|{{if:k==4|1|0}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Deux vecteurs d'un plan en forment une base si et seulement s'ils ne sont **pas colinéaires** ; ils n'ont pas besoin d'être orthogonaux.",
+					"{{if:k==0|$\\overrightarrow{EG}=\\overrightarrow{AC}$ : les vecteurs sont colinéaires, $\\textcolor{{{color:primary.0}}}{ \\text{ils ne forment pas une base} }$.}}{{if:k==1|$\\overrightarrow{AC}=\\overrightarrow{AB}+\\overrightarrow{AD}$ et $\\overrightarrow{AG}=\\overrightarrow{AB}+\\overrightarrow{AD}+\\overrightarrow{AE}$ : aucun réel $k$ ne donne $\\overrightarrow{AG}=k\\overrightarrow{AC}$. Les vecteurs ne sont pas colinéaires, $\\textcolor{{{color:primary.0}}}{ \\text{ils forment une base du plan} }$ (même s'ils ne sont pas orthogonaux).}}{{if:k==2|$\\overrightarrow{GC}=-\\overrightarrow{AE}$ : les vecteurs sont colinéaires, $\\textcolor{{{color:primary.0}}}{ \\text{ils ne forment pas une base} }$.}}{{if:k==3|$\\overrightarrow{CE}=-\\overrightarrow{AB}-\\overrightarrow{AD}+\\overrightarrow{AE}$ et $\\overrightarrow{AG}=\\overrightarrow{AB}+\\overrightarrow{AD}+\\overrightarrow{AE}$ : aucun réel $k$ ne donne $\\overrightarrow{AG}=k\\overrightarrow{CE}$. Les vecteurs ne sont pas colinéaires, $\\textcolor{{{color:primary.0}}}{ \\text{ils forment une base du plan} }$ (même s'ils ne sont pas orthogonaux).}}{{if:k==4|$\\overrightarrow{HF}=-\\overrightarrow{BD}$ : les vecteurs sont colinéaires, $\\textcolor{{{color:primary.0}}}{ \\text{ils ne forment pas une base} }$.}}{{if:k==5|$\\overrightarrow{BH}=-\\overrightarrow{AB}+\\overrightarrow{AD}+\\overrightarrow{AE}$ et $\\overrightarrow{DF}=\\overrightarrow{AB}-\\overrightarrow{AD}+\\overrightarrow{AE}$ : aucun réel $k$ ne donne $\\overrightarrow{DF}=k\\overrightarrow{BH}$. Les vecteurs ne sont pas colinéaires, $\\textcolor{{{color:primary.0}}}{ \\text{ils forment une base du plan} }$ (même s'ils ne sont pas orthogonaux).}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : AB, AC : oui",
+			"variationIndex": 0,
+			"variables": {
+				"p": "0",
+				"k": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : AB, AC : « pas orthogonaux » (piège)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "0",
+				"k": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : AB, DC : non",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1",
+				"k": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : AD, CB : « oui » (piège du sens)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "0",
+				"k": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : AC, EG : non",
+			"variationIndex": 2,
+			"variables": {
+				"p": "0",
+				"k": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : AC, AG : oui",
+			"variationIndex": 2,
+			"variables": {
+				"p": "0",
+				"k": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
