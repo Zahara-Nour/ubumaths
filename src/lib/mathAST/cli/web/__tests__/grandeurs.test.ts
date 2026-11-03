@@ -19,7 +19,7 @@ describe('une grandeur calculée garde son unité écrite', () => {
 	it.each([
 		['10[km]/1[h]', '10 km/h'],
 		['7[mm]*5[mm]', '35 mm^2'],
-		['7[mm]*5[cm]', '350 mm^2'],
+		['7[mm]*5[cm]', '3.5 cm^2'],
 		['90[km/h]*2[h]', '180 km'],
 		['100[g]/2[L]', '50 g/L'],
 		['12[km]+300[m]', '12.3 km'],

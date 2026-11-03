@@ -61,8 +61,8 @@ describe('un calcul avec une grandeur garde son unité', () => {
 	it.each([
 		['4*a', '28[mm]'],
 		['a*b', '35[mm^2]'],
-		['3[h]+20[min]', '200[min]'],
-		['5[km]+3[m]', '5.003[km]'],
+		['3[h]+20[min]', '{3[h]}{20[min]}'],
+		['5[km]+3[m]', '5003[m]'],
 		['120[km]/2[h]', '60[km/h]'],
 		['(1[h]+30[min])*60[km/h]', '90[km]'],
 		['90[min]*60[km/h]', '90[km]']

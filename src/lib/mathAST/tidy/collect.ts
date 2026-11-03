@@ -22,7 +22,14 @@ import type { Unit } from '../units/types';
 import type { Rational } from '../normal/types';
 import type { TypeContext } from '../numtype';
 import type { TidyCondition, TidyFactor, TidyQuantity, TidyTerm } from './types';
-import type { TermOrder, TidyOptions, TidyRule, UnitChoice } from './step-recorder';
+import type {
+	DurationWriting,
+	TermOrder,
+	TidyOptions,
+	TidyRule,
+	UnitChoice
+} from './step-recorder';
+import { compositeDurationNode, typesCompositeDuration } from './duration';
 import { TidyStepRecorder } from './step-recorder';
 import { flattenProductShallow, flattenSumShallow } from '../flatten';
 import { findNodes, getChildren, stripUnnecessaryBrackets } from '../transforms';
@@ -110,6 +117,11 @@ type Settings = {
 	 * S3 refuse à `tidy`. `undefined` : `tidy`, qui garde le domaine.
 	 */
 	readonly conditions: TidyCondition[] | undefined;
+	/**
+	 * `'hms'` : appel de tête où l'élève a tapé au moins deux de h, min, s — la
+	 * durée du résultat s'écrit en h-min-s ; `'single'` : UNE grandeur.
+	 */
+	readonly durations: DurationWriting;
 };
 
 /**
@@ -469,6 +481,9 @@ function isBaseFallback(symbols: ReadonlyMap<string, number>, unit: Unit): boole
 	return terms === null || terms.some(({ symbol }) => !symbols.has(symbol));
 }
 
+/** La dimension d'une durée (`s^1`), clé de `TidyQuantity.dimension`. */
+const DURATION_DIMENSION = 's^1:pi^0';
+
 /** Plafond des combinaisons d'unités tapées d'un produit */
 const MAX_WRITTEN_COMBINATIONS = 16;
 
@@ -598,7 +613,11 @@ function quantityOf(unit: Unit): TidyQuantity | null {
  */
 function factorKey(base: MathNode, settings: Settings): string {
 	if (settings.order === 'canonical' || !containsSum(base)) return hashMathNode(base);
-	return hashMathNode(tidyExpression(base, { settings: { ...settings, order: 'canonical' } }));
+	return hashMathNode(
+		tidyExpression(base, {
+			settings: { ...settings, order: 'canonical', durations: 'single' }
+		})
+	);
 }
 
 /** Une somme quelque part dans l'arbre : sa clé dépend alors de l'ordre. */
@@ -1927,6 +1946,11 @@ function chooseUnit(term: TidyTerm, imposed: Unit | null, settings: Settings): T
 		if (chosen !== null) return chosen;
 	}
 
+	// `unitChoice: 'written'` — une durée tapée en au moins deux de h, min, s :
+	// h-min-s, si elle tombe juste en secondes (David, 2026-11-02).
+	const composite = compositeDuration(term, value, settings);
+	if (composite !== null) return composite;
+
 	// `unitChoice: 'written'` — une unité tapée, celle où la valeur s'écrit avec le
 	// moins de chiffres (David, 2026-11-02).
 	if (settings.unitChoice === 'written' && term.written.length > 0) {
@@ -1962,6 +1986,18 @@ function chooseUnit(term: TidyTerm, imposed: Unit | null, settings: Settings): T
 	const fraction = writtenFraction();
 	if (fraction !== null) return fraction;
 	return decimalString(absRational(term.coefficient)) === null ? term : { ...term, decimal: true };
+}
+
+/**
+ * La durée composée d'un terme (`2[h] 30[min]`), en terme gardé tel quel, ou
+ * `null` : hors du mode `'written'` ou de `durations: 'hms'` (l'élève a tapé au
+ * moins deux de h, min, s), ou si la durée ne tombe pas juste en secondes.
+ */
+function compositeDuration(term: TidyTerm, seconds: Rational, settings: Settings): TidyTerm | null {
+	if (settings.unitChoice !== 'written' || settings.durations !== 'hms') return null;
+	if (term.quantity === null || term.quantity.dimension !== DURATION_DIMENSION) return null;
+	const node = compositeDurationNode(seconds);
+	return node === null ? null : verbatimTerm(node, false);
 }
 
 /**
@@ -2047,8 +2083,12 @@ function tidyAtom(node: MathNode, settings: Settings): MathNode {
 	}
 }
 
-/** Les réglages d'un appel, lus une fois dans ses options. */
-function settingsOf(options: InnerOptions | undefined): Settings {
+/**
+ * Les réglages d'un appel, lus une fois dans ses options. `node` : l'expression
+ * de l'appel de tête, où se lisent les unités de durée tapées (sans lui, une
+ * durée reste UNE grandeur).
+ */
+function settingsOf(options: InnerOptions | undefined, node?: MathNode): Settings {
 	if (options?.settings !== undefined) return options.settings;
 	const domain = options?.domain ?? [];
 	return {
@@ -2057,8 +2097,20 @@ function settingsOf(options: InnerOptions | undefined): Settings {
 		nonZero: domain.length === 0 ? NO_BASE : nonZeroBases(domain, (n) => tidyExpression(n)),
 		positive: domain.length === 0 ? NO_BASE : positiveBases(domain, (n) => tidyExpression(n)),
 		order: options?.order ?? 'canonical',
-		conditions: options?.conditions
+		conditions: options?.conditions,
+		durations:
+			options?.durations !== 'single' && node !== undefined && typesDurations(node)
+				? 'hms'
+				: 'single'
 	};
+}
+
+/** Au moins deux de h, min, s tapées dans le calcul (`2*(1[h] 30[min])` compris). */
+function typesDurations(node: MathNode): boolean {
+	const units = findNodes(node, (n) => n.type === 'unit');
+	return typesCompositeDuration(
+		units.map((n) => (n.type === 'unit' ? (n.unit.original ?? '') : ''))
+	);
 }
 
 /** Les termes dans l'ordre réglé : rangés, ou tels qu'écrits (S2). */
@@ -2068,18 +2120,14 @@ function ordered(terms: readonly TidyTerm[], settings: Settings): readonly TidyT
 
 /**
  * Les options à transmettre à une sous-expression : les réglages, jamais
- * l'enregistreur. Les réglages par défaut ne transmettent rien : le chemin sans
- * option reste exactement celui d'avant les options.
+ * l'enregistreur. Une durée ne s'écrit en h-min-s qu'au niveau de tête : dans
+ * `(2[h]+30[min])/1[s]`, la somme reste UNE grandeur, sinon le quotient ne se
+ * simplifie plus (`valueIn`, 2026-11-03).
  */
-function innerOptions(settings: Settings): InnerOptions | undefined {
-	const isDefault =
-		settings.unitChoice === 'school' &&
-		settings.typeCtx === undefined &&
-		settings.nonZero.size === 0 &&
-		settings.positive.size === 0 &&
-		settings.order === 'canonical' &&
-		settings.conditions === undefined;
-	return isDefault ? undefined : { settings };
+function innerOptions(settings: Settings): InnerOptions {
+	return {
+		settings: settings.durations === 'single' ? settings : { ...settings, durations: 'single' }
+	};
 }
 
 /** Une expression : somme de termes, regroupés puis ordonnés puis réécrits. */
@@ -2089,7 +2137,7 @@ export function tidyExpression(
 	source?: MathNode
 ): MathNode {
 	const recorder = options?.recorder;
-	const settings = settingsOf(options);
+	const settings = settingsOf(options, node);
 	const written = source ?? node;
 
 	// §D.2 — l'arithmétique des températures est à part : elle ne se ramène pas

@@ -27,6 +27,7 @@ import { isNumber, isSuperscript } from '../guards';
 import { extractRational } from '../common/numeric';
 import { divRational, negRational } from '../normal/rational';
 import { decimalString } from '../tidy/decimal';
+import { isCompositeDuration } from '../tidy/duration';
 import { exactValueToShow } from './exact-value';
 import { parse as parseUnit, parseUnitTerms } from '../units/parser';
 import { exactConversion } from '../units/exact';
@@ -477,17 +478,30 @@ function evaluateQuantity(ast: MathNode, modifiers: EvalModifiers): string {
 		const expressed = expressedIn(ast, modifiers.unit);
 		return withSignModifiers(withScientificQuantity(expressed, modifiers), modifiers);
 	}
-	const reduced = tidy(ast, { unitChoice: 'written' });
+	const reduced = durationOrQuantity(ast, modifiers);
 	if (!hasQuantity(reduced)) {
 		const value = rationalOf(reduced);
 		const zeroUnit = value !== null && value.n === 0n ? zeroQuantityUnit(ast) : null;
 		if (zeroUnit !== null) return `0[${zeroUnit}]`;
 		return evaluateAstWithModifiers(reduced, modifiers);
 	}
+	if (isCompositeDuration(reduced)) return hmsWriting(ast);
 	return withSignModifiers(
 		withScientificQuantity(quantityWriting(reduced, ast), modifiers),
 		modifiers
 	);
+}
+
+/**
+ * Le résultat de `tidy` : une durée tapée en au moins deux de h, min, s s'écrit
+ * en h-min-s comme avec `;hms` (règle commune, 2026-11-02) ; négative ou en
+ * `;sci`, elle reste UNE grandeur, que `;hms` refuserait.
+ */
+function durationOrQuantity(ast: MathNode, modifiers: EvalModifiers): MathNode {
+	const reduced = tidy(ast, { unitChoice: 'written' });
+	if (!isCompositeDuration(reduced)) return reduced;
+	if (reduced.type !== 'opposite' && !modifiers.scientific) return reduced;
+	return tidy(ast, { unitChoice: 'written', durations: 'single' });
 }
 
 /** Grandeur écrite en syntaxe maison : `-0.0000003[m]` → signe, nombre, unité */

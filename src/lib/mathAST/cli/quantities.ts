@@ -26,7 +26,6 @@ import { toCustom } from '../custom-generator';
 import {
 	delimiter,
 	divide,
-	juxtaposedSum,
 	multiply,
 	number,
 	opposite,
@@ -51,6 +50,7 @@ import {
 } from '../units/conversion';
 import { addRational, divRational, mulRational, subRational } from '../normal/rational';
 import { decimalString } from '../tidy/decimal';
+import { durationParts, isCompositeDuration } from '../tidy/duration';
 import { rationalOf, valueIn } from '../eval/evaluate-with-modifiers';
 import { approximateDigitsOf, approximationNode, approximationText } from './approximation';
 
@@ -512,47 +512,21 @@ function namedDerived(node: MathNode): MathNode | null {
 	return value === null ? null : signedQuantity(rationalNode(value), derived);
 }
 
-/** Les unités d'une durée composée, de la plus grande à la plus petite. */
-const DURATION_PARTS: readonly (readonly [string, bigint])[] = [
-	['h', 3600n],
-	['min', 60n],
-	['s', 1n]
-];
-
 /**
- * Une durée écrite en h, min, s : `2 h 30 min` (décision de David, lot C des
- * grandeurs : « par défaut on garde l'unité écrite »). Seulement si l'élève a
- * écrit au moins deux de ces unités, et que la durée tombe juste en secondes.
- * L'arbre est la somme JUXTAPOSÉE des parties (lecture-grandeurs, PR 5) : il
- * s'écrit `2[h] 30[min]` et se relit à l'identique ; `.convert` et « Garder »
- * reprennent la grandeur exacte.
+ * Une durée écrite en h, min, s (`2 h 30 min`) : c'est `tidy` qui la compose,
+ * la même règle partout (`tidy/duration.ts`). La grandeur gardée pour
+ * `.convert` et « Garder » est celle d'UNE unité (`durations: 'single'`).
  */
-function compositeDuration(ast: MathNode, quantity: MathNode): Shown | null {
-	const written = writtenUnits(ast);
-	const used = DURATION_PARTS.filter(([symbol]) => written.includes(symbol));
-	if (used.length < 2) return null;
+function compositeDuration(ast: MathNode, reduced: MathNode): QuantityOutcome | null {
+	if (!isCompositeDuration(reduced)) return null;
+	const quantity = tidy(ast, { unitChoice: 'written', durations: 'single' });
 	const seconds = valueIn(quantity, 's');
-	if (seconds === null || seconds.d !== 1n) return null;
-	const negative = seconds.n < 0n;
-	let rest = negative ? -seconds.n : seconds.n;
-	const parts: MathNode[] = [];
-	const words: string[] = [];
-	for (const [symbol, size] of DURATION_PARTS) {
-		const count = rest / size;
-		rest %= size;
-		if (count === 0n) continue;
-		const unit = parseUnit(symbol);
-		if (unit === null) return null;
-		parts.push(withUnit(number(count.toString()), { ...unit, original: symbol }));
-		words.push(`${count} ${symbol}`);
-	}
-	// `1 h 30 min / 2` → 45 min : une seule partie suffit, l'élève a écrit h et min
-	if (parts.length === 0) return null;
-	const sum = parts.reduce((left, right) => juxtaposedSum(left, right));
-	const node = negative ? opposite(sum) : sum;
-	const text = `${negative ? '-' : ''}${words.join(' ')}`;
-	const shown = { node, text };
-	return { exact: shown, decimal: shown, approximate: null };
+	if (seconds === null) return null;
+	const words = durationParts(seconds.n < 0n ? -seconds.n : seconds.n).map(
+		({ count, symbol }) => `${count} ${symbol}`
+	);
+	const shown = { node: reduced, text: `${seconds.n < 0n ? '-' : ''}${words.join(' ')}` };
+	return answered({ exact: shown, decimal: shown, approximate: null }, 'exact', quantity, shown);
 }
 
 /** La réponse pour le mode demandé, avec la bascule et le bouton ≈. */
@@ -598,18 +572,13 @@ export function computeQuantity(written: MathNode, mode: QuantityMode): Quantity
 	if ('message' in dimensions) return { ok: false, message: dimensions.message };
 	const resultUnit = dimensions.unit;
 
+	// L'unité du résultat est choisie par `tidy`, la même règle partout (2026-11-02)
 	const reduced = tidy(ast, { unitChoice: 'written' });
+	const composite = compositeDuration(ast, reduced);
+	if (composite !== null) return composite;
 	if (reducedQuantity(reduced)) {
-		// L'unité du résultat est choisie par `tidy`, la même règle partout (2026-11-02)
-		const quantity = reduced;
-		const composite = compositeDuration(ast, quantity);
-		if (composite !== null) return answered(composite, mode, quantity, composite.exact);
-		const derived = namedDerived(quantity);
-		return answered(
-			derived === null ? both(quantity) : equality(quantity, derived),
-			mode,
-			quantity
-		);
+		const derived = namedDerived(reduced);
+		return answered(derived === null ? both(reduced) : equality(reduced, derived), mode, reduced);
 	}
 
 	const value = rationalOf(reduced);

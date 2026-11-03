@@ -134,7 +134,8 @@ export function readStudentCalculation(latex: string): StudentCalculation | null
 	const problem = quantityProblem(parsed.ast);
 	if (problem !== null) return { kind: 'refused', reason: 'dimensions', feedback: problem };
 
-	const reduced = tidy(parsed.ast, { unitChoice: 'written' });
+	// UNE grandeur, même pour une durée tapée en h et min (`durations: 'single'`)
+	const reduced = tidy(parsed.ast, { unitChoice: 'written', durations: 'single' });
 	const quantity = unsignedQuantity(reduced);
 	if (!isUnit(quantity)) return { kind: 'refused', reason: 'unreadable' };
 	// `2\sqrt{2}\,m` : une valeur qui n'est pas un nombre décimal ou rationnel
