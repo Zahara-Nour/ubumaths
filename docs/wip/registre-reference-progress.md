@@ -1,31 +1,29 @@
 ---
 title: Le registre des commandes, référence commune (pnpm math, Atelier, calculatrice) — journal
 date: 2026-11-01
-status: PR 2b écrite (.résoudre en S), PR à ouvrir
+status: PR 2b mergée (#2360), PR 2c à préparer
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, PR 2b écrite (non ouverte)._
+_Mis à jour le 2026-11-04, après #2360._
 
-- **État** : PR 2b (`.résoudre` répond par S) écrite et commitée sur
-  `feat/registre-reference-resoudre`, poussée, **PR pas encore ouverte**. Tests `atelier` +
-  `mathAST` + `questions` + `routes` + client verts, `check:incremental` 0 erreur. Détail : § PR 2b.
-- **Prochaine action** : `pnpm types:cliquet`, `pnpm docs:check-a-jour --depuis origin/main`,
-  ouvrir la PR, revue `code-reviewer` en opus (correction des réponses, gros diff), CI, merge ;
-  puis PR 2c (lecture et refus : V57 paramètre, Q46 décimaux, degrés — `READ_DIFFERENTLY` de
-  `resoudre-registre.test.ts`), puis `.intégrer`.
+- **État** : PR 2b (`.résoudre` répond par S) mergée (#2360). Détail : § PR 2b.
+- **Prochaine action** : PR 2c, phase 0 d'abord. Au programme : lecture et refus (V57 paramètre,
+  Q46 décimaux, degrés : `READ_DIFFERENTLY` de `resoudre-registre.test.ts`), plus le texte brut de
+  `.résoudre` aligné sur S (terminal `pnpm math`, David, 2026-11-04). Ensuite `.intégrer`.
 - **En attente de David** : rien.
 - **Tranché** : `unitChoice: 'school'` GARDÉE exprès — ne pas proposer de la retirer ; Q9 EN
   ENTIER, A-D du lot 2, `decimal` en LaTeX, `plafond-02` → 1000, Q24, `signes-06` — NE PAS
   reposer. Fraction devant ou division après : `(x²/3 + 2x/3)eˣ` ; tableau : `x(x + 2)eˣ/3`.
   `.simplifier` : calcul descendu, `avec`/`dans` à l'étape H. `.résoudre` (2026-11-03) : S partout,
-  périodique `S = {a + kπ, k ∈ ℤ}`, seuil gardé avec `≈`, V57 et Q46 descendent (PR 2c).
+  texte brut compris (2026-11-04), périodique `S = {a + kπ, k ∈ ℤ}`, seuil gardé avec `≈`.
 - **Pièges** : `docs:check-a-jour` local ne voit que le COMMITÉ ; commitlint refuse « merge … »
-  et un corps > 100 colonnes ; un nombre négatif est un `opposite(number)` ; script de mise à jour
-  d'attendus : il peut réécrire une ENTRÉE égale à l'attendu (`u_{n+1}=3`, rattrapé) ; limites
-  connues : `.diff cos(60°)*x`, `2 ≈ 2`, `(t>1)`, `5 m * 25!/24!`, `20000!/19999!`, `2×π`.
-- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `feat/registre-reference-resoudre`.
+  et un corps > 100 colonnes ; le hook laisse parfois l'index ≠ HEAD (`MM`, disque = HEAD) →
+  `git restore --staged` ; la garde R5 envoie au registre une ligne au POINT (virgule = refus de
+  lecture, test sans assertion) ; le juge du corpus confond `{,}` et `.` ; limites connues :
+  `.diff cos(60°)*x`, `2 ≈ 2`, `(t>1)`, `5 m * 25!/24!`, `20000!/19999!`, `2×π`.
+- **Worktree / branche** : `../ubumaths-wt-registre-reference` · nouvelle branche à créer pour 2c.
 
 ---
 
@@ -712,3 +710,15 @@ corrigée, à confirmer).
   rétablie.
 - Suites `atelier` + `mathAST/cli` (8 549), `mathAST` + `questions` + `geometry-core` + `routes`
   (38 284) et client `atelier` + `routes` (741) vertes.
+
+### PR 2b — revue et merge (2026-11-04)
+
+- `docs/systeme/mathast/README.md` : la forme de `.solve` décrite (ligne `cli/`, champ `answer`).
+- Revue `code-reviewer` (opus), rien de bloquant. Corrigé : plusieurs solutions en ln
+  s'écrivaient au point dans `answer` (`S = {ln(0.5) ; ln 3}`) → virgule pour chacune ; garde :
+  `(e^x-0.5)(e^x-3)=0`, avec et sans `dans`, dans `resoudre-registre.test.ts`, rouge avant.
+  `approximateSolutionsLatex` perd `variable` et `asSet`.
+- Relevé par la revue, laissé pour la PR 2c (David : « je te suis ») : le champ `text` de
+  `.résoudre` reste `x = 3`, `x = ln(3) ≈ 1.10`, `x = π/6 + 2kπ ou …`. Seul le terminal de
+  `pnpm math` l'affiche ; l'Atelier montre toujours le LaTeX.
+- Mergée : #2360.
