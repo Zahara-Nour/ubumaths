@@ -10,20 +10,17 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR 3 (#2317) ouverte, CI en cours._
+_Mis à jour le 2026-11-03, après #2317._
 
-- **État** : PR 1 (#2294) et PR 2 (#2309) mergées. PR 3 #2317 (`fix/demi-droite-entree`) : réponse incomplète
-  = case vide (Valider grisé, Entrée → focus sur la droite), revue `code-reviewer` faite et suivie. CI rouge
-  le 2026-11-03 à cause de `main` (#2311, `locals.safeGetSession`), réparé par a3be00758 ; branche remise
-  à jour par merge de `main`. Pas en prod.
-- **Prochaine action** : `gh pr checks 2317` sur le DERNIER commit (Code Quality + Nightly Integration
-  Tests) ; vert → merger, puis 1er modèle avec `representer:` (3-014 d'abord ; 2-251, |x| < k de la 2de
-  ensuite), puis clore (versement de ce journal dans `docs/systeme/`).
+- **État** : PR 1 (#2294), PR 2 (#2309) et PR 3 (#2317, réponse incomplète = case vide : Valider grisé,
+  Entrée → focus sur la droite) mergées. Pas en prod (pas de `deploy:prod` demandé).
+- **Prochaine action** : 1er modèle avec `representer:` — 3-014 d'abord ; 2-251 (|x| < k, 2de) ensuite ;
+  puis clore (versement de ce journal dans `docs/systeme/`). Nouveau worktree à créer depuis `origin/main`.
 - **En attente de David** : rien (ordre validé le 2026-11-03 : correctif, 1 modèle, clôture).
 - **Pièges en cours** : segment monté d'un étage qui frôle un point nommé (seulement si le 1er modèle le
   montre). Flash : réponse incomplète acceptée comme une case vide. Branche distante
   `fix/integration-locals-session` (PR doublon #2324 fermée) laissée sur GitHub.
-- **Worktree / branche** : `../ubumaths-wt-demi-droite`, `fix/demi-droite-entree`.
+- **Worktree / branche** : aucun (`../ubumaths-wt-demi-droite` retiré après #2317).
 
 ---
 
