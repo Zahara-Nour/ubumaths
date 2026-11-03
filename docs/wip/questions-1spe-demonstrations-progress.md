@@ -9,19 +9,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2334 (lot 3 rangé, page à cocher publiée)._
+_Mis à jour le 2026-11-03, après la publication du lot 3._
 
-- **État** : lots 1 et 2 publiés. Lot 3 (308, 411, 322, 323) : 4 brouillons en prod, rangés et tagués
-  (#2334, `db:migrate` fait, vérifié en base). Page à cocher : https://claude.ai/artifact/7Bb7HVkpfgdTTNfiDn4P1Y
-- **Prochaine action** : lire les verdicts de la page (`ArtifactData` list `verdicts`), corriger ce qui est « à
-  revoir » ; 4/4 OK → David publie (`publier-lot.ts --publier`), relire `published` en base (MCP).
-- **En attente de David** : relecture de la page à cocher. Ensuite, reposer l'extension `signe:` du bloc `ranger`
-  (Q2 b, **non tranchée**) : ce sera la fin des 14 démonstrations.
+- **État** : lots 1, 2 et 3 publiés (lot 3 : 4/4 OK sur la page à cocher, publié par David, 4/4 `published` relus
+  en base). Les démonstrations à trous (Q2 a) sont faites.
+- **Prochaine action** : reposer à David Q2 b (étapes à ranger, extension `signe:` du bloc `ranger`, § 2 et § 3).
+  Oui → petit lot de code sur une branche neuve depuis `origin/main` ; non → ligne dans
+  `docs/wip/outils-manquants.md` et fin de chantier (versement, archivage du journal).
+- **En attente de David** : Q2 b, **non tranchée**.
 - **Pièges en cours** : `1/√2` est jugé `bad_form` (spec asservie). Migration copiée d'un lot précédent :
-  transformer LIGNE À LIGNE (une regex multi-lignes a mangé le ROLLBACK commenté). Worktree sans lien Supabase :
-  copier `supabase/.temp/{project-ref,linked-project.json,pooler-url,postgres-version}` du dépôt principal pour
-  `db:migrate`. Ancienne branche distante `docs/questions-1spe-demonstrations` à supprimer.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, branche `feat/questions-1spe-demonstrations`.
+  transformer LIGNE À LIGNE. Worktree sans lien Supabase : copier `supabase/.temp/{project-ref,linked-project.json,
+pooler-url,postgres-version}` du dépôt principal pour `db:migrate`. Ancienne branche distante
+  `docs/questions-1spe-demonstrations` à supprimer.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, branche `feat/questions-1spe-demonstrations`
+  (PR mergées ; journal commité sur `main`).
 
 ---
 
@@ -208,3 +209,6 @@ introuvable » sans test propre, garde « déjà tagué » = filet). CI : deux j
 (le `git pull` du dépôt principal était bloqué par une modification d'une autre session) : vérifié en base, les 4
 modèles sur leur sous-notion avec leur seul point, `draft`, `updated_at` intact. Page à cocher :
 https://claude.ai/artifact/7Bb7HVkpfgdTTNfiDn4P1Y
+
+Relecture (2026-11-03) : 4/4 OK, aucun commentaire. Publié par David (`publier-lot.ts --publier`), 4/4 `published`
+relus en base (MCP).
