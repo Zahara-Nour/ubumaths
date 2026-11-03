@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; largeur des étiquettes de la droite graduée le 2026-11-02 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire le 2026-11-02, cercle circonscrit le 2026-11-02, triangle et report le 2026-11-03) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; graduations décimales en virgule le 2026-11-01 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30 ; sections du bloc solide (`section:`) le 2026-10-31 ; repère à placer (` ```courbe ` + `placer:`) et titres d'axes (`axes:`) le 2026-11-01, droite à tracer (`tracer:`) le 2026-11-02 ; valeur masquée `?` (énoncé d'évaluation) le 2026-11-01 ; trotteuse du bloc horloge (lire, placer) le 2026-11-01 ; point à placer sur le cercle trigonométrique (` ```trig ` + `placer:`) le 2026-11-02 ; centimes et billets de 200 / 500 € du bloc monnaie le 2026-11-01 (réponse de la case et messages après revue, le même jour) ; boîte à moustaches (affichage) le 2026-11-01, à construire (`placer:`) le 2026-11-01 ; tableaux à compléter d'un énoncé (`findVariationsToFill`) et clé `??n` d'une ligne `variation:` le 2026-11-03.
+> Vérifié contre le code le 2026-10-11 ; largeur des étiquettes de la droite graduée le 2026-11-02 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire le 2026-11-02, cercle circonscrit le 2026-11-02, triangle et report le 2026-11-03) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26 ; droite à placer (`placer:`) le 2026-10-26 ; graduations décimales en virgule le 2026-11-01 ; à plusieurs points le 2026-10-27 ; horloge à placer le 2026-10-27 ; diagramme en barres à construire le 2026-10-28 ; échelle à choisir (`axe: à choisir`) le 2026-10-29 ; bloc ranger le 2026-10-28 ; bloc partage (affichage) le 2026-10-29, figure à colorier (`colorier:`) le 2026-10-29, plusieurs figures (`unites:`) le 2026-10-29 ; figure à manipuler (`deplacable:`, `rendu:`) le 2026-10-29 ; bloc cubes (affichage) le 2026-10-30, gestes `dessiner:` / `retrouver:` le 2026-10-30 ; bloc solide (affichage) le 2026-10-30 ; bloc patron (affichage) le 2026-10-30, gestes `designer:` / `completer:` le 2026-10-30 ; sections du bloc solide (`section:`) le 2026-10-31 ; repère à placer (` ```courbe ` + `placer:`) et titres d'axes (`axes:`) le 2026-11-01, droite à tracer (`tracer:`) le 2026-11-02, vecteur à tracer (`tracer: vecteur`) le 2026-11-03 ; valeur masquée `?` (énoncé d'évaluation) le 2026-11-01 ; trotteuse du bloc horloge (lire, placer) le 2026-11-01 ; point à placer sur le cercle trigonométrique (` ```trig ` + `placer:`) le 2026-11-02 ; centimes et billets de 200 / 500 € du bloc monnaie le 2026-11-01 (réponse de la case et messages après revue, le même jour) ; boîte à moustaches (affichage) le 2026-11-01, à construire (`placer:`) le 2026-11-01 ; tableaux à compléter d'un énoncé (`findVariationsToFill`) et clé `??n` d'une ligne `variation:` le 2026-11-03.
 
 ## À quoi ça sert
 
@@ -401,7 +401,34 @@ n'est pas celle d'équation » suivie de l'équation en formule (`MathInline`), 
 `equationLatex` (`tidy` de mathAST côté par côté : `y = 1x + 0` des variables s'écrit `y = x`) ;
 correction : la droite juste et ses deux nœuds les plus proches de l'origine (`correctionPoints`,
 `solutionLine`), en vert ; rien quand l'équation est masquée (`tracer: ?`). PDF : le repère seul ;
-`solved` dessine la droite et ses deux nœuds.
+`solved` dessine la droite et ses deux nœuds. La phrase écrit une espace insécable avant la formule
+(`&nbsp;` dans le gabarit : Svelte retire celle du texte).
+
+**Vecteur à tracer** (même chantier, lot 3, 2-298, décisions § 10) — `courbe-vecteur.test.ts`,
+`CourbeVecteur.svelte.test.ts` : `tracer: vecteur (3 ; -2)`, nommé `tracer: vecteur u = (3 ; -2)`
+(une minuscule), origine imposée `… depuis A` (A pris dans `points:`, quel que soit l'ordre des
+lignes) dans un ` ```courbe ` (nœud : `spec.vecteur`, `CourbeVectorToTrace` `name`, `coords`,
+`from`, `origin`, `line` ; `tracer:` sans `vecteur` reste une droite). Coordonnées : des nombres
+(virgule décimale permise), multiples du pas de la grille. Refusé : vecteur nul, coordonnée hors
+grille, vecteur qui ne tient dans la fenêtre depuis aucun nœud, `depuis A` sans A dans `points:`,
+A hors nœud ou A + u hors fenêtre, avec `placer:` (`vectorProblem`, `utils/courbe-vecteur.ts`).
+`CourbePlacer.svelte` fait le geste : étiquettes-boutons « Origine » / « Extrémité » (nom accessible
+sans « Point ») ; origine imposée : posée d'office, ni déplaçable ni reprenable, un seul bouton
+« Extrémité », pas de disque (A est dessiné par `points:`) ; dès que les deux bouts sont distincts,
+une flèche (prop `traces`, `arrow: true` de `Courbe.svelte` : trait arrêté au pied de la pointe,
+triangle `polygon`, groupe `.courbe-fleche`) ; l'extrémité perd son disque, qui cacherait la pointe.
+`aria-valuetext` « extrémité en (3 ; -2) ». Une case, réponse `x1;y1/x2;y2` (origine imposée :
+toujours A en premier) ; attendue `vecteur 3;-2` ou `vecteur 3;-2 depuis -1;2` (`vectorExpected`) ;
+juste si l'extrémité moins l'origine donne le vecteur, et si l'origine est A quand elle est imposée
+(`isTracedVectorCorrect`). Phrases (`tracedVectorMistake`) : « Il faut placer l'origine et
+l'extrémité. » (imposée : « Il faut placer l'extrémité. »), « Ton origine et ton extrémité sont au
+même endroit. », sens inversé « Ta flèche va dans le mauvais sens : elle représente le vecteur
+(-3 ; 2). », échange « Ta flèche représente le vecteur (-2 ; 3) : tu as échangé l'abscisse et
+l'ordonnée. », sinon « Ta flèche représente le vecteur (2 ; 1), pas (3 ; -2). » (nommé : `\vec{u}`
+et les coordonnées en formule). Correction : la flèche juste en vert (`solutionVector`) depuis A,
+sinon depuis l'origine de l'élève si elle tient dans la fenêtre, sinon depuis le nœud le plus proche
+de l'origine du repère où elle tient ; rien quand les coordonnées sont masquées. PDF : le repère (avec
+A) ; `solved` dessine la flèche juste (`mark: (end: ">")`).
 
 **Cercle trigonométrique à placer** (chantier [cercle-trotteuse](../archive/wip/cercle-trotteuse-progress.md)
 § 4 et § 6, 1re spé 306) — `src/lib/ubumark/__tests__/parser/trig-circle-placer.test.ts`,
@@ -1253,7 +1280,7 @@ Points à retenir :
     aussi la conclusion ; recalculer les ferait diverger.
 12. **Valeur masquée `?` d'un bloc à geste** (chantier [fuite-enonce](../archive/wip/fuite-enonce-progress.md)) :
     l'énoncé envoyé pendant une évaluation notée remplace la valeur à trouver par `?`
-    (`placer: A=? ; B=?` en ` ```line ` / ` ```courbe `, `tracer: ?` en ` ```courbe `, `placer: M=? ; N=?` en ` ```trig `, `placer: ?` en ` ```horloge ` — `? s` pour une heure à secondes —,
+    (`placer: A=? ; B=?` en ` ```line ` / ` ```courbe `, `tracer: ?` en ` ```courbe ` (vecteur : `tracer: vecteur u = ? depuis A`, seules les coordonnées masquées, `maskVectorValue`), `placer: M=? ; N=?` en ` ```trig `, `placer: ?` en ` ```horloge ` — `? s` pour une heure à secondes —,
     `construire: ?`, `colorier: ?`, `??1` et `?` dans un tableau de signes à compléter, `Natation = ?` pour une barre de `placer:`, `Notes = ? ; ? ; ? ;
 ? ; ?` pour une boîte à moustaches de `placer:`, `données:` compris). Les parseurs la
     lisent comme une valeur de remplacement (`utils/masked-value.ts`) : mêmes noms, même nombre de

@@ -180,6 +180,14 @@ export const courbeEntry: BlockCatalogEntry = {
 					defaultValue: 'aucune',
 					description:
 						'L’élève pose deux points sur les nœuds de la grille ; la droite qui passe par eux se dessine. Une case, juste si les deux points sont distincts et sur la droite, quels qu’ils soient. La droite doit passer par au moins deux nœuds de la grille dans la fenêtre. Jamais avec placer: dans le même repère. Jamais écrite à l’écran avant la correction.'
+				},
+				{
+					key: 'tracer: vecteur',
+					values:
+						'vecteur (3 ; -2), vecteur u = (3 ; -2), vecteur (3 ; -2) depuis A (A donné dans points:) ; des nombres seulement (variables permises)',
+					defaultValue: 'aucune',
+					description:
+						'L’élève pose l’origine puis l’extrémité sur les nœuds de la grille (étiquettes Origine / Extrémité) ; une flèche les relie. Une case, juste si l’extrémité moins l’origine donne le vecteur, où qu’il soit. Avec depuis A, l’origine est A, déjà dessiné : l’élève ne pose que l’extrémité. Coordonnées multiples du pas de la grille ; le vecteur doit tenir dans la fenêtre. Le nom (une minuscule) n’apparaît que dans la phrase de correction. Jamais avec placer: dans le même repère.'
 				}
 			]
 		}
@@ -207,6 +215,25 @@ export const courbeEntry: BlockCatalogEntry = {
 			source: fence('courbe', 'x: -5 ; 5', 'y: -5 ; 5', 'grille: 1', 'tracer: y = 2x - 1'),
 			explanation:
 				'Dans une question, l’élève pose deux points de la droite (étiquettes 1 et 2 sous le repère) ; la droite se dessine. La consigne (« Trace la droite d’équation y = 2x − 1 ») va dans l’énoncé, au-dessus.'
+		},
+		{
+			title: 'Tracer un vecteur (question)',
+			source: fence('courbe', 'x: -5 ; 5', 'y: -5 ; 5', 'grille: 1', 'tracer: vecteur (3 ; -2)'),
+			explanation:
+				'Dans une question, l’élève pose l’origine où il veut, puis l’extrémité ; une flèche se dessine. La consigne (« Représente le vecteur de coordonnées (3 ; −2) ») va dans l’énoncé, au-dessus.'
+		},
+		{
+			title: 'Tracer un vecteur depuis un point (question)',
+			source: fence(
+				'courbe',
+				'x: -5 ; 5',
+				'y: -5 ; 5',
+				'grille: 1',
+				'points: A(-1 ; 2)',
+				'tracer: vecteur u = (3 ; -2) depuis A'
+			),
+			explanation:
+				'Origine imposée : A est dessiné, l’élève ne pose que l’extrémité. Le nom u sert à la phrase de correction.'
 		},
 		{
 			title: 'Des données dans un repère',

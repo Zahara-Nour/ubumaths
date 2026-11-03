@@ -35,6 +35,7 @@ import {
 	type CourbeGridSpec,
 	type CourbePlacedPoint
 } from './courbe-placer';
+import { isTracedVectorCorrect } from './courbe-vecteur';
 
 // Types
 
@@ -210,10 +211,12 @@ export function isTracedLineCorrect(answer: string, equation: string): boolean {
 }
 
 /**
- * Juge d'une case de repère : un point à placer (attendu `2;3`) ou une droite à
- * tracer (attendu : une équation, reconnue à son « = »)
+ * Juge d'une case de repère : un point à placer (attendu `2;3`), un vecteur à
+ * tracer (attendu `vecteur 3;-2`, lot 3) ou une droite à tracer (attendu : une
+ * équation, reconnue à son « = »)
  */
 export function isCourbeAnswerCorrect(answer: string, expected: string): boolean {
+	if (expected.startsWith('vecteur')) return isTracedVectorCorrect(answer, expected);
 	return expected.includes('=')
 		? isTracedLineCorrect(answer, expected)
 		: isPlacedPointCorrect(answer, expected);

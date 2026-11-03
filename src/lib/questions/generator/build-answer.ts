@@ -49,6 +49,7 @@ import { indexOfValue, placerAnswer } from '$lib/ubumark/utils/number-line-place
 import { numVal } from '$lib/ubumark/utils/number-line-render';
 import { parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
 import { pointAnswer } from '$lib/ubumark/utils/courbe-placer';
+import { vectorExpected } from '$lib/ubumark/utils/courbe-vecteur';
 import { parseTrigCircleContent } from '$lib/ubumark/parser/trig-circle-parser';
 import { expectedStepAnswer, stepOfRadians } from '$lib/ubumark/utils/trig-placer';
 import { hasMaskedValue } from '$lib/ubumark/utils/masked-value';
@@ -121,6 +122,9 @@ export function buildAnswerOf(
 		if (node.spec === null) return { errors: node.errors.map((e) => e.message) };
 		// Droite à tracer : l'équation (le juge accepte toute paire de points de la droite)
 		if (node.spec.tracer !== undefined) return { answer: node.spec.tracer.equation };
+		// Vecteur à tracer : ses coordonnées, et l'origine imposée (le juge accepte toute flèche du vecteur)
+		const vecteur = node.spec.vecteur;
+		if (vecteur?.coords) return { answer: vectorExpected(vecteur.coords, vecteur.origin) };
 		const target = node.spec.placer?.[point];
 		if (target === undefined) return { errors: ['placer: absent'] };
 		return { answer: pointAnswer(target.x, target.y) };

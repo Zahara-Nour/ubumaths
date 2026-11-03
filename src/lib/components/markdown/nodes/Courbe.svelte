@@ -26,11 +26,15 @@
 		color: CourbeColor;
 	}
 
-	/** Droite tracée par-dessus la figure (droite à tracer), d'un bord à l'autre de la fenêtre */
+	/**
+	 * Trait par-dessus la figure : droite à tracer (d'un bord à l'autre de la
+	 * fenêtre) ou, avec `arrow`, flèche d'un vecteur à tracer (de `from` à `to`)
+	 */
 	export interface CourbeTrace {
 		from: { x: number; y: number };
 		to: { x: number; y: number };
 		color: CourbeColor;
+		arrow?: boolean;
 	}
 </script>
 
@@ -75,6 +79,10 @@
 	/** Décalage des rangs u_k de l'escalier sous l'axe, en px (sous les graduations) */
 	const RANK_OFFSET = 26;
 
+	/** Pointe de la flèche d'un vecteur à tracer : longueur et demi-largeur, en px */
+	const ARROW_LENGTH = 11;
+	const ARROW_HALF_WIDTH = 5;
+
 	/** Couleurs : palette commune des figures (app.css), claire ou sombre */
 	const COLOR_VAR = namedColorTable(COURBE_COLORS, namedColorScreen);
 
@@ -100,7 +108,11 @@
 	 * Repère à points à placer ou à droite à tracer : c'est la figure dérivée de
 	 * `CourbePlacer` qui compte au budget
 	 */
-	let toPlace = $derived(node.spec?.placer !== undefined || node.spec?.tracer !== undefined);
+	let toPlace = $derived(
+		node.spec?.placer !== undefined ||
+			node.spec?.tracer !== undefined ||
+			node.spec?.vecteur !== undefined
+	);
 	let admitted = $derived(toPlace || (budget()?.admits(node) ?? true));
 	let computed = $derived.by(() => {
 		const spec = node.spec;
@@ -130,6 +142,34 @@
 		if (!scene) return 0;
 		const w = scene.window;
 		return PAD + ((w.yMax - y) / (w.yMax - w.yMin)) * height;
+	}
+
+	/**
+	 * Pointe d'une flèche (vecteur à tracer), en px : le triangle au bout de `to`
+	 * et le pied de la pointe, où s'arrête le trait (le bout arrondi du trait ne
+	 * dépasse pas la pointe)
+	 */
+	function arrowHead(t: CourbeTrace): { base: { x: number; y: number }; points: string } {
+		const x1 = sx(t.from.x);
+		const y1 = sy(t.from.y);
+		const x2 = sx(t.to.x);
+		const y2 = sy(t.to.y);
+		const length = Math.hypot(x2 - x1, y2 - y1);
+		if (length === 0) return { base: { x: x2, y: y2 }, points: '' };
+		const ux = (x2 - x1) / length;
+		const uy = (y2 - y1) / length;
+		const headLength = Math.min(ARROW_LENGTH, length / 2);
+		const bx = x2 - ux * headLength;
+		const by = y2 - uy * headLength;
+		const corners = [
+			[x2, y2],
+			[bx - uy * ARROW_HALF_WIDTH, by + ux * ARROW_HALF_WIDTH],
+			[bx + uy * ARROW_HALF_WIDTH, by - ux * ARROW_HALF_WIDTH]
+		];
+		return {
+			base: { x: bx, y: by },
+			points: corners.map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`).join(' ')
+		};
 	}
 
 	function pointsAttr(points: ScenePoint[]): string {
@@ -363,16 +403,34 @@
 				<text class="courbe-point-nom" x={sx(p.x) + 5} y={sy(p.y) - 5}>{p.name}</text>
 			{/each}
 
-			<!-- Droites tracées (droite à tracer) -->
+			<!-- Droites tracées (droite à tracer) et flèches (vecteur à tracer) -->
 			{#each traces as t, i (i)}
-				<line
-					class="courbe-trace"
-					x1={sx(t.from.x)}
-					y1={sy(t.from.y)}
-					x2={sx(t.to.x)}
-					y2={sy(t.to.y)}
-					style:stroke={COLOR_VAR[t.color]}
-				/>
+				{#if t.arrow}
+					{@const head = arrowHead(t)}
+					<g
+						class="courbe-fleche"
+						style:stroke={COLOR_VAR[t.color]}
+						style:fill={COLOR_VAR[t.color]}
+					>
+						<line
+							class="courbe-trace"
+							x1={sx(t.from.x)}
+							y1={sy(t.from.y)}
+							x2={head.base.x}
+							y2={head.base.y}
+						/>
+						<polygon points={head.points} stroke-linejoin="round" />
+					</g>
+				{:else}
+					<line
+						class="courbe-trace"
+						x1={sx(t.from.x)}
+						y1={sy(t.from.y)}
+						x2={sx(t.to.x)}
+						y2={sy(t.to.y)}
+						style:stroke={COLOR_VAR[t.color]}
+					/>
+				{/if}
 			{/each}
 
 			<!-- Points posés (repère à points à placer) -->

@@ -6,16 +6,15 @@ Sous-chantier de [questions-1spe](../archive/wip/questions-1spe-progress.md) (cl
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2275._
+_Mis à jour le 2026-11-03, après #2277._
 
-- **État** : modèle 271 mergé (#2275, fichiers seuls : `scripts/questions/1spe-tangente/`), 13 specs, joué
-  en local · **Prochaine action** : après le `deploy:prod` qui livre #2265, David lance
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-tangente --publier` (brouillon) ;
-  puis migration nœud (`e7f414da`, à vérifier) + tags 1SPE-271 et 1TECHNO-078, page à cocher, publication
-  · **En attente de David** : le `deploy:prod` · **Pièges en cours** : ne pas toucher
-  `docs/wip/outils-manquants.md` ; voisins de Tangente tagués 1TECHNO-079 sans `1_TECHNO` dans `grades`
-  (écart noté § 5, non corrigé) · **Worktree / branche** : aucun (retiré après #2275) ; worktree neuf
-  depuis `origin/main` pour la migration.
+- **État** : brouillon `edb094bd` en prod, rangé sur « Fonctions > Dérivation > tangente » et tagué 1SPE-271 +
+  1TECHNO-078 (#2277, `db:migrate` fait et vérifié) · **Prochaine action** : page à cocher
+  (`scripts/questions/page-a-cocher.ts --dir scripts/questions/1spe-tangente`), puis publication
+  (`publier-lot.ts`, lancée par David) **après le `deploy:prod` qui livre #2265** (`tracer:` absent de
+  `production`, v0.64.0) · **En attente de David** : le `deploy:prod` · **Pièges en cours** : ne pas toucher
+  `docs/wip/outils-manquants.md` ; voisins Tangente tagués 1TECHNO-079 sans `1_TECHNO` (§ 5, lot à part si
+  David le veut) · **Worktree / branche** : aucun.
 
 ## 1. Vérification de l'outil (2026-11-03)
 
@@ -119,3 +118,22 @@ Retouches en cours de route :
 La session `questions-1spe-tracer-droite` avait une phase 0 de 271 (§ 6 de son journal, sur `main`).
 David suit ma reco : ce modèle-ci est gardé ; son erreur « sécante » est reprise dans les specs (13 specs) ;
 la session `tracer-droite` est prévenue (message) d'abandonner son § 6.
+
+## 8. Migration nœud + tags (2026-11-03)
+
+Brouillon créé en prod par David : `edb094bd-ad97-4144-b293-9a4fea4bfa84` (niveau 4, `[1_SPE, 1_TECHNO]`, sans
+nœud ni tag). Nœud `e7f414da` = « Fonctions > Dérivation > tangente » (celui des trois voisins) ; 1SPE-271 et
+1TECHNO-078 sont tous deux sur ce nœud. #2265 n'est pas encore sur `production` (v0.64.0 du 2026-11-02) :
+publication après le prochain `deploy:prod`.
+
+Migration `20261103060900_questions_1spe_tangente_rangement_tags.sql` (gabarit : lot 8c de Terminale) et
+`tests/integration/questions-1spe-tangente-rangement-tags.test.ts` : rouge sans la migration (4 échecs, 5
+sautés), vert avec (10/10).
+
+## 9. Migration appliquée (2026-11-03, #2277)
+
+Audit `security-auditor` : aucun finding bloquant ; R3 (rollback refusé si un tag étranger est ajouté) ajouté
+au test (11/11). CI : la garde de doc voulait la ligne `Doc-inchangée:` dans un **commit**, pas dans la PR.
+`pnpm db:migrate` a appliqué **aussi** `20261103051912` (lot 8c de Terminale, mergé mais pas migré par la
+session `questions-tspe-restes`) : vérifié en prod (8 brouillons rangés et tagués), session prévenue.
+Vérifié en prod : `edb094bd` sur « tangente », tags 1SPE-271 et 1TECHNO-078, toujours `draft`.
