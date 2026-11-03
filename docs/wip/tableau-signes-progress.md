@@ -9,18 +9,19 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2338 (en prod, 0.68.0) et #2353 (chantier `clavier-mathlive`)._
+_Mis à jour le 2026-11-04, PR #2358 ouverte (tableau resserré au téléphone)._
 
-- **État** : page à cocher relue (2/2 OK) ; #2335 et #2338 mergées et **en prod (0.68.0)** : le corrigé
-  de 2-330 sans « 1x » est en ligne. Aux essais iPhone, David ne pouvait pas fermer le clavier MathLive
-  → chantier `clavier-mathlive`, #2353 mergée (en prod au prochain `deploy:prod`).
-- **Prochaine action** : essais iPhone (#2287, #2297, 2-330, 2-446, faisables dès maintenant ; #2353
-  après `deploy:prod`), notés dans `verifications-manuelles.md` ; puis verser le chantier.
-- **En attente de David** : défilement à 390 px (513 px de tableau pour 308), à juger aux essais iPhone.
-- **Pièges en cours** : `delay` n'est plus une garde d'`update-published-questions.ts` ; la bonne réponse
-  vient de `blanks` ; Chrome n'atteint pas `localhost` → Playwright ; worktree neuf → `svelte-kit sync`
-  avant `question:specs` et `page-a-cocher.ts` ; lire `question_templates` en pages (plafond 1000 lignes).
-- **Worktree / branche** : aucun (retiré après #2338).
+- **État** : #2335, #2338 en prod (0.68.0) ; #2353 (`clavier-mathlive`) mergée, pas déployée. #2358 :
+  2-330 à 390 px passe de 565 à 396 px (308 de place), ombre du bord qui défile, pas de bouton clavier
+  dans les cases sur écran tactile.
+- **Prochaine action** : merger #2358 (CI verte) ; puis essais iPhone de David (#2287, #2297, 2-330, 2-446 ;
+  #2353 et #2358 après `deploy:prod`), notés dans `verifications-manuelles.md` ; puis verser le chantier.
+- **En attente de David** : juger au doigt les 88 px qui défilent encore (deux racines) ; un tableau à
+  une racine devrait tenir (non mesuré).
+- **Pièges en cours** : `delay` n'est plus une garde d'`update-published-questions.ts` ; Chrome n'atteint
+  pas `localhost` → Playwright (`devices['iPhone 13']` = `pointer: coarse`) ; worktree neuf →
+  `svelte-kit sync` ; lire `question_templates` en pages (plafond 1000 lignes).
+- **Worktree / branche** : `../ubumaths-wt-tableau-signes` · `fix/tableau-signes-mobile`.
 
 ---
 
@@ -259,3 +260,17 @@ Branche `feat/tableau-signes-modeles`, worktree `../ubumaths-wt-tableau-signes`.
   3 tests (`\Rightarrow`/`\Long…`, `$$` multi-lignes, marqueur `<<expr:expressionA>>`).
 - Conflit du journal avec `main` (mon commit de #2335) : la CI ne démarrait pas ; fusion de `origin/main`,
   les deux côtés gardés. **#2338 mergée** (CI verte, 16 checks), le 2026-11-03.
+
+## PR — tableau à compléter au téléphone (2026-11-04)
+
+- Mesure d'abord (Playwright, iPhone 13, base locale, brouillon 7bee0067 = 2-330, CSS injecté) : 565 px
+  pour 308 ; bouton clavier de chaque case de valeur = 64 px (case 124 px) ; sans lui 437 ; marges de
+  moitié 412. Cases de signe 31 px : pas plus petit (Apple conseille 44). Toucher la case sans bouton
+  ouvre le clavier (« Fermer le clavier » de #2353 présent).
+- David : « lance la PR ». `VariationTable.svelte` : `pointer: coarse` → plus de
+  `virtual-keyboard-toggle` dans `.vt-case` ; ≤ 30rem et `:has(.vt-case)` → `--vt-cell-padding: 0.25em`,
+  math-field `padding: 2px 4px` ; défilement dans `.vt-defilement`, ombres `data-deborde-gauche/droite`
+  (attachement `watchOverflow` : scroll + ResizeObserver). Ombre gauche ajoutée en plus de la droite.
+- Tests : `VariationTable-telephone.svelte.test.ts`, 6, rouges d'abord (5/6) ; 11 fichiers qui montent
+  le tableau : 95 verts. Rendu réel après : 396 px, ombre droite puis gauche, ordinateur inchangé.
+- **#2358 ouverte**.
