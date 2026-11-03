@@ -6,20 +6,21 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR lot 2 · A/B en cours._
+_Mis à jour le 2026-11-03, après #2281._
 
-- **État** : lot 2 du registre repris (61 lignes connues fausses), découpé en 5 PR (§ Lot 2 —
-  correction du registre). PR 1/5 (A/B : `decimal` + `decimalExact`, `answer` exacte dans les deux
-  modes) écrite sur `feat/registre-reference`, corpus 205/205, à pousser et faire relire.
-- **Prochaine action** : PR A/B → revue `code-reviewer` → merge ; puis PR D (expressions à lettres).
+- **État** : lot 2 du registre découpé en 5 PR (§ Lot 2 — correction du registre). PR 1/5 MERGÉE
+  (#2281, A/B : `decimal` + `decimalExact`, `answer` exacte dans les deux modes) ; reste 47 lignes
+  du registre connues fausses au lot 2. Pas déployée.
+- **Prochaine action** : PR 2/5 — D, expression à lettres rangée comme l'Atelier (`resultToShow`
+  de `atelier/render.ts` : `tidy(ast, { order: 'kept' })`, S3) : 23 lignes `decimal-05…10`, `signes-`.
 - **En attente de David** : rien.
 - **Tranché** : option `unitChoice: 'school'` GARDÉE exprès (David, 2026-11-03 : « utile plus
   tard ») — ne pas proposer de la retirer ; § Unité du résultat et § Revue de #2276 ; avant : Q9 EN ENTIER, A-D du lot 2,
   `decimal` en LaTeX, `plafond-02` → 1000, Q24, `signes-06` — NE PAS reposer.
-- **Pièges** : une PR en conflit avec `main` n'a AUCUN run de CI (état « dirty ») → `git merge
-origin/main` ; `rebase` et `restore` = liste `ask` ; sous-expressions de `tidy` toujours en
-  `durations: 'single'` ; budgets de temps de tabuler rouges sous charge seulement.
-- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `feat/registre-reference`.
+- **Pièges** : `docs:check-a-jour` local ne voit que le COMMITÉ (CI rouge sur #2281 : 2 docs) ;
+  PR en conflit avec `main` = aucun run de CI → `git merge origin/main` ; `rebase` et `restore` =
+  liste `ask` ; sous-expressions de `tidy` en `durations: 'single'`.
+- **Worktree / branche** : aucun (retirés après #2281).
 
 ---
 
@@ -478,7 +479,7 @@ Relevé : 61 lignes du registre connues fausses (lot 2), 5 familles. Ordre (le c
 4. **C** — égalité seule → `\text{vrai}`/`\text{faux}` (5 registre, 5 Atelier dont `comparer-13`).
 5. **Plafond** — `1000!/999!` → 1000 (les deux outils) ; réponse de l'écriture gardée (4 lignes).
 
-**PR 1 (A/B), écrite** : `ReplExecutionResult.decimal` (LaTeX au point, sans signe,
+**PR 1 (A/B), mergée (#2281)** : `ReplExecutionResult.decimal` (LaTeX au point, sans signe,
 `approximationLatex`) et `decimalExact`, pour un calcul tapé (dans les deux modes, nombre déjà
 écrit compris) et une grandeur seule (`QuantityOutcome.decimalWriting`, `0.3333~\mathrm{km}`) ;
 `answer` posée par le calcul, exacte même en mode décimal (avant : `0.3333` pour `1/3`). Pas pour
