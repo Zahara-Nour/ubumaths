@@ -11,8 +11,8 @@ _Mis à jour le 2026-11-03, après #2337._
 - **État** : lot « Droites » fait — #2333 (droite à tracer figée, modèle `f5585668` en **brouillon**,
   script) ; fiche « Automatismes : droites (1) » `0f98be04` écrite en **brouillon**, PDF vérifiés
   (0 débord) ; #2337 : gras mathématique ajouté à Chiphre Math (réponses du corrigé PDF lisibles, fiche
-  « évolutions » comprise) ; `fiches-exercices.md` § 1 complété (fiche droites) ; phase 0 du lot « Lectures graphiques » écrite · **Prochaine action** : selon les réponses de
-  David, modèles neufs puis fiche « Automatismes : lectures graphiques (1) » · **En attente de David** : 3 choix de la phase 0 « Lectures graphiques » ; publier `f5585668`
+  « évolutions » comprise) ; `fiches-exercices.md` § 1 complété (fiche droites) ; phase 0 du lot « Lectures graphiques » tranchée · **Prochaine action** : 3 modèles neufs (§ Lot
+  « Lectures graphiques »), puis fiche « Automatismes : lectures graphiques (1) » · **En attente de David** : publier `f5585668`
   et les fiches `9217dfaa`, `0f98be04` ; garder ou non les 2 figures d'un corrigé de tracé ; questions
   2 à 4 (§ Questions ouvertes) · **Pièges en cours** : `compile-prod.mjs --polices-corrige` pour un
   corrigé ; polices `/fonts/` en cache 30 j → changer le `?v=` de `CORRECTION_FONT_FILES` à chaque
@@ -103,6 +103,11 @@ passent** (✅ ci-dessous).
 | $f(x) < k$                             | `a55ad3b4` (affine), `77500c81` (linéaire), `7efd2e76` ($f < g$), `33dffa7a` v2 ($f \geqslant 0$) ; références : `08c059b8`, `52e58bd6`, `2d4c0b35`, `a371b402`, `cbf00ce7`    | **$f(x) < k$ sur une courbe quelconque, $k \neq 0$** |
 | Signe lu sur la courbe                 | `33dffa7a` (signe sur un intervalle en choix, $f \geqslant 0$, tableau de signes **en choix**)                                                                                 | tableau de signes **à compléter** (outil existant)   |
 | Tableau de variations lu sur la courbe | indirects seulement : `3810a06c` (tableau → quelle courbe ?), `93bc8b5e` (croissante sur un intervalle ?), `39154ac5` (extremums), `275cb665` (comparer des images)            | **courbe → tableau de variations** : aucun modèle    |
+
+**Tranché par David (2026-11-03)** : 3 modèles neufs, en brouillon — (1) $f(x) < k$ (et $\leqslant$,
+$>$, $\geqslant$) sur une courbe quelconque, $k \neq 0$ ; (2) « courbe → quel tableau de variations ? »
+en choix multiple (l'inverse de `3810a06c`), le geste « tableau de variations à compléter » passé à
+`outils-manquants.md` ; (3) tableau de signes à compléter, lu sur la courbe.
 
 Aucun modèle ne fait compléter un tableau à partir d'une courbe (seuls `f0163416`, `9c7ab1c7`, de 2de,
 sans courbe, ont des cellules cachées). Le parseur **refuse `?` dans une ligne `variation:`**
