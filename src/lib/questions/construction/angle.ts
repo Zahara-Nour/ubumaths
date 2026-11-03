@@ -5,8 +5,8 @@
  * `verifier: angle AOy = 50` : le côté [OA) est donné. L'élève pose le
  * rapporteur (centre O, base le long de [OA)), place un repère à la graduation
  * voulue (`repere(…)`), puis trace au segment le côté [Oy), de O au repère.
- * Juste : un segment partant de O dont l'autre bout est CONSTRUIT (repère du
- * rapporteur ou point construit, `constructionOf`) et qui fait avec [OA) un
+ * Juste : un segment partant de O dont l'autre bout est CONSTRUIT (repère d'un
+ * rapporteur centré en O, ou point construit, `constructionOf`) et qui fait avec [OA) un
  * angle de la mesure donnée, d'un côté ou de l'autre de (OA). Phase 0 validée
  * par David le 2026-11-03 (`docs/wip/controles-figure-progress.md` § 16).
  *
@@ -15,7 +15,7 @@
 
 import type { AngleCheck } from '$lib/ubumark/types/construction';
 import type { DrawnLine, DrawnObject } from './answer';
-import { basePointsOf, constructionOf, isInFrame } from './instruments';
+import { basePointsOf, constructionOf, isBuiltMark, isInFrame, repereAt } from './instruments';
 import type { ConstructionVerdict, Position } from './judge';
 import { tolerance } from './polygon';
 import type { FigureShapes } from './symmetry';
@@ -173,8 +173,21 @@ export function judgeAngle(
 			feedback: missingAngleSideFeedback(check.points[1], check.side)
 		};
 	}
-	const { isBuilt } = constructionOf(objects, basePointsOf(points, figure.segments), figure.traits);
-	const built = sides.filter(isBuilt);
+	const construction = constructionOf(
+		objects,
+		basePointsOf(points, figure.segments),
+		figure.traits
+	);
+	// Repères d'un rapporteur centré en O : leur direction depuis O est construite (revue)
+	const eps = tolerance(o, a);
+	const marks = objects.flatMap((m) =>
+		m.kind === 'repere' && distance({ x: m.vx, y: m.vy }, o) <= eps && isBuiltMark(m, construction)
+			? [repereAt(m)]
+			: []
+	);
+	const built = sides.filter(
+		(p) => construction.isBuilt(p) || marks.some((q) => distance(p, q) <= tolerance(p, q))
+	);
 	if (built.length === 0) return { status: 'incorrect', feedback: angleEyeballedFeedback() };
 	const measures = built.map((p) => angleBetween(o, a, p));
 	if (measures.some((m) => Math.abs(m - check.measure) <= MEASURE_EPSILON)) {

@@ -9,10 +9,11 @@ status: en-cours
 _Mis à jour le 2026-11-03, lot 5 codé (PR à ouvrir)._
 
 - **État** : lots 1 à 4 et « point construit » (#2288) mergés, pas encore en prod. Lot 5 (angle au
-  rapporteur, § 16-17) codé sur `feat/angle-rapporteur` : tests verts, typecheck 0 ; revue Opus à faire.
-- **Prochaine action** : revue (`code-reviewer` Opus), PR, CI, merge ; puis lot 6 « mesurer un angle »
+  rapporteur, § 16-17) codé sur `feat/angle-rapporteur`, revue Opus faite et corrigée ; tests verts.
+- **Prochaine action** : PR, CI, merge ; puis lot 6 « mesurer un angle »
   (6-169, même geste), phase 0.
-- **En attente de David** : rien.
+- **En attente de David** : rapporteur près du bord (refus à la publication, rapporteur réduit, ou
+  conseil dans l'aide ; § 17).
 - **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12, sa propre
   phase 0) ; `perpendiculaire(A, s)` échoue quand A est un bout de s ; `symetrie(P, axe=d)` échoue si
   P définit d ; l'« Essayer » de l'aide ne rend pas la case jouable ; plafond de 20 objets sans
@@ -735,6 +736,13 @@ Palette déduite : Rapporteur · Segment.
   touche Retourner. » (ajout : sinon un toucher sous la base ne faisait rien, en silence) ; clavier :
   rapporteur `role="slider"`, flèches ±1°, Maj ±10° (Entrée inutile : les flèches posent le repère) ;
   repères en boutons pour le segment. Correction : [Oy) en pointillés, arc codé « 50° ».
+- Revue Opus (2026-11-03), 5 findings. Corrigés : un repère n'est plus un point construit (sa distance
+  au centre est libre : un rapporteur piqué en A, r = AO, forgeait un isocèle à 50° en O) ; il ne vaut
+  que pour un côté tiré depuis son propre centre O (`isBuiltMark`, `judgeAngle`) ; après Retourner,
+  ‹ › posent un repère du nouveau côté (au lieu de décaler l'ancien) ; test d'un côté [OA) oblique.
+  Ouverts (question à David) : rapporteur coupé par le bord de la figure quand O en est près, et côté
+  admis par l'auteur (2 unités de place) dont le repère tombe hors de la fenêtre ; retourné, le 0 sur
+  [OA) est celui de l'échelle intérieure, graduée de 10 en 10 seulement (l'extérieure y lit 180 − a).
 - Aide à l'écriture : exemple « Construire un angle de mesure donnée (rapporteur) ».
 - Tests : `construction-angle.test.ts` (37), écran `figure-a-completer-angle.svelte.test.ts` (4) ; trois
   anciens tests prenaient « rapporteur » comme outil inconnu (→ « crayon »).

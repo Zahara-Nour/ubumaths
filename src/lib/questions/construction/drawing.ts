@@ -242,8 +242,9 @@ export function nudgeMark(drawing: Drawing, delta: number): Drawing {
 	const p = drawing.protractor;
 	if (!p) return drawing;
 	const clamp = (deg: number) => Math.min(180, Math.max(0, deg));
-	if (lastIsMarkOf(drawing)) {
-		const last = drawing.objects.at(-1) as DrawnRepere;
+	const last = drawing.objects.at(-1);
+	// Après Retourner, le repère d'avant reste où il est : ‹ › en posent un du nouveau côté (revue)
+	if (lastIsMarkOf(drawing) && last?.kind === 'repere' && last.sens === p.sens) {
 		const deg = clamp(last.deg + delta);
 		if (deg === last.deg) return drawing;
 		return { ...drawing, objects: [...drawing.objects.slice(0, -1), { ...last, deg }] };

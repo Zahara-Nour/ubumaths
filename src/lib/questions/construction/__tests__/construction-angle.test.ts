@@ -18,7 +18,7 @@ import {
 	wrongAngleFeedback,
 	wrongScaleFeedback
 } from '../angle';
-import { constructionOf, repereAt } from '../instruments';
+import { constructionOf, isBuiltMark, repereAt } from '../instruments';
 import {
 	addTap,
 	canErase,
@@ -165,14 +165,14 @@ describe('réponse : repere(vx;vy;ax;ay;r;deg;sens)', () => {
 	it('un repère est construit si le centre et le point de la base le sont, ou la base sur un trait par le centre', () => {
 		const base = [O, A];
 		const traits = constructionShapes(ANGLE_50).traits;
-		const built = constructionOf([repere(50)], base, traits);
-		expect(built.isBuilt(repereAt(repere(50)))).toBe(true);
+		const of = (mark: DrawnRepere) => isBuiltMark(mark, constructionOf([mark], base, traits));
+		expect(of(repere(50))).toBe(true);
 		// Base touchée n'importe où sur [OA) : construite (choix libre sur un trait par le centre)
-		const onRay = repere(50, 1, { x: 5, y: 2 });
-		expect(constructionOf([onRay], base, traits).isBuilt(repereAt(onRay))).toBe(true);
+		expect(of(repere(50, 1, { x: 5, y: 2 }))).toBe(true);
 		// Centre libre : rien
-		const free: DrawnRepere = { ...repere(50), vx: 3.1, vy: 4.2 };
-		expect(constructionOf([free], base, traits).isBuilt(repereAt(free))).toBe(false);
+		expect(of({ ...repere(50), vx: 3.1, vy: 4.2 })).toBe(false);
+		// Jamais un point construit : sa distance au centre est libre (revue)
+		expect(constructionOf([repere(50)], base, traits).isBuilt(repereAt(repere(50)))).toBe(false);
 	});
 });
 
@@ -241,6 +241,44 @@ describe('juge : angle AOy = 50', () => {
 		expect(
 			judge(ANGLE_50, [repere(50), { kind: 'droite', x1: O.x, y1: O.y, x2: end.x, y2: end.y }])
 		).toEqual({ status: 'incorrect' });
+	});
+
+	it('repère d’un rapporteur centré ailleurs qu’en O : sa distance est à l’œil, pas un côté (revue)', () => {
+		// O(2 ; 2), A(8 ; 3) : rapporteur en A, base vers O, 80°, r = AO → triangle isocèle, 50° pile en O
+		const oblique = figure('angle AOy = 50', [
+			'O = point(2, 2)',
+			'A = point(8, 3)',
+			'x = demidroite(O, A)'
+		]);
+		for (const sens of [1, -1] as const) {
+			const forged: DrawnRepere = {
+				kind: 'repere',
+				vx: 8,
+				vy: 3,
+				ax: 2,
+				ay: 2,
+				r: Math.hypot(6, 1),
+				deg: 80,
+				sens
+			};
+			expect(judge(oblique, [forged, segment(O, repereAt(forged))])).toEqual({
+				status: 'incorrect',
+				feedback: angleEyeballedFeedback()
+			});
+		}
+	});
+
+	it('côté [OA) oblique, base touchée loin de A, retourné ou non → juste', () => {
+		const oblique = figure('angle AOy = 50', [
+			'O = point(2, 2)',
+			'A = point(8, 3)',
+			'x = demidroite(O, A)'
+		]);
+		const base = { x: 2 + 6 * 0.4, y: 2 + 1 * 0.4 };
+		for (const sens of [1, -1] as const) {
+			const mark = repere(50, sens, base, 3.4);
+			expect(judge(oblique, [mark, side(mark)])).toEqual({ status: 'correct' });
+		}
 	});
 
 	it('un repère dans une autre case : réponse forgée', () => {
@@ -370,6 +408,12 @@ describe('geste : rapporteur', () => {
 		expect(nudgeMark(nudgeMark(posed(), -1), -1).objects).toEqual([repere(0)]);
 		const end = { ...posed(), objects: [repere(180)] };
 		expect(nudgeMark(end, 10).objects).toEqual([repere(180)]);
+	});
+
+	it('après Retourner, ‹ › posent un repère du nouveau côté (revue)', () => {
+		const placed = addTap(posed(), { x: 2, y: 9 }, 'rapporteur', R);
+		const next = nudgeMark(flipProtractor(placed), 1);
+		expect(next.objects).toEqual([repere(90), repere(1, -1)]);
 	});
 
 	it('Effacer : le dernier repère, puis le rapporteur ; changer d’outil le lève', () => {

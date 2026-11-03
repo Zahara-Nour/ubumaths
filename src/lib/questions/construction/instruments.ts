@@ -393,25 +393,6 @@ function isSupported(
 }
 
 /**
- * Repère du rapporteur construit (lot 5, § 16) : centre construit, et point de
- * la base construit ou posé SUR un trait droit construit qui passe par le centre
- * (la base longe le côté, touché n'importe où)
- */
-function isBuiltMark(
-	mark: DrawnRepere,
-	isBuilt: (p: Position) => boolean,
-	traits: readonly Trait[]
-): boolean {
-	const center = { x: mark.vx, y: mark.vy };
-	const base = { x: mark.ax, y: mark.ay };
-	if (!isBuilt(center)) return false;
-	if (isBuilt(base)) return true;
-	return traits.some(
-		(t) => isStraight(t) && isOnSomeTrait(center, [t]) && isOnSomeTrait(base, [t])
-	);
-}
-
-/**
  * Intersections des paires de cercles (compas ou report) non construits, de même
  * rayon, centrés sur deux points construits distincts : la médiatrice tracée avec
  * un écartement quelconque gardé (§ 15)
@@ -447,8 +428,8 @@ function sameRadiusCrossings(
  * (`isSupported`). Exception (§ 15) : deux cercles de même rayon, même pris à
  * l'œil, centrés sur deux points construits (la médiatrice « à écartement
  * quelconque ») construisent leurs DEUX intersections, sans devenir des traits.
- * Un repère du rapporteur (lot 5) est un point construit quand il tient sur des
- * points construits (`isBuiltMark`).
+ * Un repère du rapporteur (lot 5) n'y entre pas : sa DIRECTION seule est
+ * construite, sa distance au centre est libre (`isBuiltMark`).
  * On recommence tant que quelque chose s'ajoute : deux traits tracés à l'œil ne
  * construisent rien, un trait ne se justifie jamais par lui-même ni par un trait
  * qui dépend de lui, et l'ordre des tracés ne compte pas.
@@ -463,24 +444,14 @@ export function constructionOf(
 	let crossings = intersectionsOf(traits);
 	/** Intersections des paires de cercles de même rayon (exception du § 15) */
 	const paired: Position[] = [];
-	/** Repères du rapporteur construits (indices dans `objects`) et leurs positions */
-	const markedIndices = new Set<number>();
-	const marks: Position[] = [];
 	const isBuilt = (p: Position) => {
 		const eps = EPSILON * scaleOf(p);
 		const at = (q: Position) => Math.hypot(p.x - q.x, p.y - q.y) <= eps;
-		return base.some(at) || crossings.some(at) || paired.some(at) || marks.some(at);
+		return base.some(at) || crossings.some(at) || paired.some(at);
 	};
 	let grew = true;
 	while (grew) {
 		grew = false;
-		objects.forEach((object, index) => {
-			if (object.kind !== 'repere' || markedIndices.has(index)) return;
-			if (!isBuiltMark(object, isBuilt, traits)) return;
-			markedIndices.add(index);
-			marks.push(repereAt(object));
-			grew = true;
-		});
 		objects.forEach((object, index) => {
 			if (built.has(index)) return;
 			const trait = traitOf(object);
@@ -497,6 +468,24 @@ export function constructionOf(
 		}
 	}
 	return { built, traits, isBuilt };
+}
+
+/**
+ * Repère du rapporteur construit (lot 5, § 16) : centre construit, et point de
+ * la base construit ou posé SUR un trait droit construit qui passe par le centre
+ * (la base longe le côté, touchée n'importe où). Seule la direction centre →
+ * repère est construite : sa distance au centre est libre (revue du lot 5 : un
+ * repère n'est jamais un point construit, il ne vaut que pour un trait tiré
+ * depuis son propre centre).
+ */
+export function isBuiltMark(mark: DrawnRepere, construction: Construction): boolean {
+	const center = { x: mark.vx, y: mark.vy };
+	const base = { x: mark.ax, y: mark.ay };
+	if (!construction.isBuilt(center)) return false;
+	if (construction.isBuilt(base)) return true;
+	return construction.traits.some(
+		(t) => isStraight(t) && isOnSomeTrait(center, [t]) && isOnSomeTrait(base, [t])
+	);
 }
 
 /** Les traits de ce qu'a tracé l'élève */
