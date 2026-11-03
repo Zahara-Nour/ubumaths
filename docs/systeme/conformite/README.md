@@ -27,6 +27,7 @@ Il rassemble la documentation existante **et** confronte l'audit RGPD historique
 | `registre-sous-traitants.md` | Sous-traitants & DPA (Art. 28)                   | 2026-01-16 — **daté**   |
 | `consentement-parental.md`   | Doc d'implémentation consentement (Art. 8)       | 2026-01-16 — **daté**   |
 | `audit-trail.md`             | Schéma de l'audit trail                          | 2026-01-16 — **daté**   |
+| `violation-de-donnees.md`    | Procédure de violation de données (Art. 33-34)   | 2026-11-03 (brouillon)  |
 
 **Pages publiques liées** : `src/routes/(public)/legal/{mentions-legales,confidentialite,cgu}/+page.svelte`.
 
