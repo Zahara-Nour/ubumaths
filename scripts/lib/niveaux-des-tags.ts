@@ -4,8 +4,7 @@
  *
  * Règle : un modèle tagué d'un point d'un niveau porte ce niveau dans `grades`. Le cahier de texte
  * filtre les modèles par niveau (`.contains('grades', [niveau])`) : sans lui, une classe de ce
- * niveau ne voit pas le modèle, sans rien signaler. 74 modèles l'avaient oublié au 2026-11-03
- * (1TECHNO, 1GEN ; chantier `questions-1techno-grades`).
+ * niveau ne voit pas le modèle, sans rien signaler.
  *
  * Fonctions pures, appelées par `scripts/questions/garde-niveaux-tags.ts` (toute la base) et par
  * `publier-lot.ts` (les modèles du lot).
@@ -38,6 +37,8 @@ export interface EcartNiveaux {
 
 /** PostgREST plafonne une lecture à 1000 lignes : on lit par pages */
 const PAGE = 1000;
+/** Identifiants par requête `.in()` : la liste part dans l'URL (cf. `reprise-verdicts.ts`) */
+const PAQUET = 200;
 
 // Fonctions
 
@@ -90,6 +91,19 @@ export function formaterEcart(e: EcartNiveaux): string {
 export async function lireLignesTags(
 	supabase: SupabaseClient<Database>,
 	ids?: readonly string[]
+): Promise<LigneTag[]> {
+	if (!ids) return lirePages(supabase, null);
+	const lignes: LigneTag[] = [];
+	for (let i = 0; i < ids.length; i += PAQUET) {
+		lignes.push(...(await lirePages(supabase, ids.slice(i, i + PAQUET))));
+	}
+	return lignes;
+}
+
+/** Les tags par pages de 1000 ; `ids` : seulement ces modèles (null : toute la base) */
+async function lirePages(
+	supabase: SupabaseClient<Database>,
+	ids: readonly string[] | null
 ): Promise<LigneTag[]> {
 	const lignes: LigneTag[] = [];
 	for (let debut = 0; ; debut += PAGE) {
