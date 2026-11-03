@@ -1646,3 +1646,74 @@ tspe-ln-continuite-convexite,1spe-tracer-droite}.py`) : vérifiés d'abord fidè
   à la publication).
 - Page à cocher relue par David : 2/2 « OK ». `publier-lot` (simulation puis `--publier`) par David le
   2026-11-03 : 2/2 publiés, relu en base (statut `published`, nœud, tags).
+
+## 66. Lot 9 « Nombres réels, arithmétique, intervalles » : relevé et phase 0 (proposée le 2026-11-03, à valider)
+
+**Relevé MCP (prod, 2026-11-03)** : 18 points sans modèle, hors P (239-242, 255-259, Q2) : 235, 236, 418, 419,
+237 (arithmétique) ; 243, 247, 248, 422 (ensembles de nombres) ; 407, 252, 246, 251 (intervalles) ; 249, 250
+(droite graduée) ; 421, 253, 254 (encadrements, arrondis). 2-238 est couvert (b0c57a57, lot 3).
+
+- Déjà là, à ne pas refaire : 5b20321f (2-204, brouillon : à quels ensembles appartient ce nombre) ;
+  8c31675a (2-244, brouillon : réunion, intersection d'intervalles) ; collège : faf57d3b (5e, multiples et
+  diviseurs ≤ 100), 9a06de2e (4e, 2n et 2n + 1), 70c52ae9 (4e, nombre rationnel).
+- Outils : ` ```line ` + `placer:` (en prod) ; `segments: [2, +inf[` à crochets (#2294) et geste
+  `representer:` (#2309) **mergés, pas en prod** → les modèles qui s'en servent restent en brouillon jusqu'au
+  `deploy:prod` qui les livre. Case `answerKind: 'intervalles'` en prod. Aucun juge d'encadrement libre.
+
+**Phase 0 proposée** : 18 modèles en trois sous-lots, niveau `['2']`, brouillons ; une PR de fichiers par
+sous-lot, une migration nœud + tag pour les trois.
+
+_9 A — Arithmétique_
+
+1. **2-235 · ℕ et ℤ** : −18/6, 0, 2,5, √16, −√9 ∈ ℕ ? ∈ ℤ ? (case choix, plusieurs bonnes réponses).
+2. **2-236 · Multiple, a = kb** : 391 est-il multiple de 17 ? donner k ; 6n + 9 = 3 × (…) → 2n + 3 ;
+   10n + 15 multiple de 5. Entiers ≤ 1 000.
+3. **2-418 · Diviseurs** : liste des diviseurs de 36, 48, 60, 84 (réponse : ensemble fini) ; « 7 divise-t-il 91 ? ».
+4. **2-419 · Pair, impair** : écrire sous la forme 2k ou 2k + 1 : (2n + 1) + (2m + 1), 2n × (2m + 1),
+   4n + 3 → 2(2n + 1) + 1 ; case choix « pair / impair / ça dépend de n ».
+5. **2-237 · Problèmes** : courts énoncés à une seule notion (nombre de paquets égaux, rangées, deux entiers
+   consécutifs dont la somme est impaire…). Réponse numérique.
+
+_9 B — Ensembles de nombres, intervalles_
+
+6. **2-243 · ℝ et inclusions** : ℕ ⊂ ℤ ⊂ 𝔻 ⊂ ℚ ⊂ ℝ, vrai / faux (« tout décimal est rationnel »…).
+7. **2-247 · 𝔻** : 7/8, 3/20, 1/3, 5/12 décimal ? (dénominateur irréductible en 2 et 5) ; écrire 7/8 en décimal.
+8. **2-248 · ℚ** : écrire 0,125, −2,35, 1,4 comme fraction irréductible.
+9. **2-422 · Irrationnels de la géométrie** : diagonale d'un carré de côté 1, périmètre d'un cercle de
+   diamètre 1 → √2, π ; « ce nombre est-il rationnel ? » (case choix).
+10. **2-407 · Notation** : −2 < x ⩽ 5 → ]−2 ; 5] ; x ⩾ 3 → [3 ; +∞[ ; et l'inverse (intervalle → inégalité).
+    Case `intervalles`.
+11. **2-252 · Appartenance** : 3,99 ∈ [−1 ; 4[ ? 4 ∈ [−1 ; 4[ ? √2 ∈ [1,4 ; 1,5] ? π ∈ ]3,14 ; 3,15[ ?
+12. **2-246 · |x − a| ⩽ r** : |x − 3| ⩽ 2 → [1 ; 5] ; |x + 1| < 3 → ]−4 ; 2[ ; l'inverse ([2 ; 8] → a = 5,
+    r = 3). Sens ⩽ et < seulement (l2-3). Corrigé : distance à a, intervalle dessiné (`segments:`).
+13. **2-251 · Représenter un intervalle** : geste `representer:` sur ` ```line ` — borné, demi-droite, borne
+    comprise ou exclue.
+
+_9 C — Droite graduée, encadrements, arrondis_
+
+14. **2-249 · Lire une abscisse** : ` ```line ` graduée en 0,1, 0,25, 1/3 ; abscisses négatives.
+15. **2-250 · Placer** : `placer:` sur une graduation (décimal, fraction de dénominateur 2, 3, 4, 5).
+16. **2-421 · Encadrement à 10⁻ⁿ près** : x donné par son développement (3,14159…, √2 = 1,41421…) →
+    deux cases, n = 1 à 3.
+17. **2-253 · Amplitude donnée** : encadrer par deux multiples consécutifs de l'amplitude (0,5, 0,2, 0,05),
+    pour que la réponse soit unique.
+18. **2-254 · Chiffres significatifs** : petit problème (aire d'un disque de rayon 3,2 cm, vitesse…) : données
+    à 2 ou 3 chiffres significatifs → résultat arrondi au même nombre.
+
+- **Erreurs typiques en specs** : 0 ∉ ℕ ; −18/6 ∉ ℤ ; 1/3 décimal ; crochet tourné à l'envers pour une borne
+  exclue ; [a − r ; a + r] pris pour [r − a ; r + a] ; encadrement à 10⁻ⁿ arrondi au lieu de tronqué ;
+  arrondi à n décimales au lieu de n chiffres significatifs.
+- **Question d'accès** : personne (brouillons neufs, aucune policy).
+
+**Questions à David** :
+
+- **L9-a — Ordre** : 9 A, puis 9 B, puis 9 C, une PR de fichiers chacun ? → Je recommande **oui** ; 9 B et
+  9 C se servent de `segments:` et de `representer:` : ils restent en brouillon jusqu'au `deploy:prod`.
+- **L9-b — 2-253, amplitude donnée** : plusieurs encadrements sont justes (0,6 < 2/3 < 0,7 comme
+  0,65 < 2/3 < 0,75). → Je recommande **des multiples consécutifs de l'amplitude** (réponse unique, aucun juge
+  neuf). L'autre choix demanderait un juge « encadrement » (outil neuf, liste `outils-manquants.md`).
+- **L9-c — 2-237, problèmes** : « modéliser et résoudre » est en partie une compétence (remarque des bornes).
+  → Je recommande **des problèmes courts à réponse numérique**, une seule notion chacun ; pas de
+  démonstration (2-239, 2-240 sont des P).
+- **L9-d — 2-422** : seulement √2 et π (exemples du BO), ou aussi √3, √5 (diagonales, hauteurs) ?
+  → Je recommande **√2, π et √3** (hauteur du triangle équilatéral) : la liste du BO n'est pas limitative.
