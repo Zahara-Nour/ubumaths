@@ -23,7 +23,7 @@ _Mis à jour le 2026-11-04, après #2360._
   `git restore --staged` ; la garde R5 envoie au registre une ligne au POINT (virgule = refus de
   lecture, test sans assertion) ; le juge du corpus confond `{,}` et `.` ; limites connues :
   `.diff cos(60°)*x`, `2 ≈ 2`, `(t>1)`, `5 m * 25!/24!`, `20000!/19999!`, `2×π`.
-- **Worktree / branche** : `../ubumaths-wt-registre-reference` · nouvelle branche à créer pour 2c.
+- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `feat/registre-reference-lecture` (créée, vide).
 
 ---
 
