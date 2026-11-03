@@ -10,19 +10,20 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR « droite graduée au corrigé de |x| < k » ouverte._
+_Mis à jour le 2026-11-03, après #2346._
 
 - **État** : 3-014 (06601c87) publié. 2-251 **déjà couvert** par 2069ac7e (chantier `questions-2de`, lot 9 :
-  `representer:`, demi-droites et borné, publié) : pas de modèle à faire. PR en cours : lot
+  `representer:`, demi-droites et borné, publié) : pas de modèle à faire. #2346 mergée : lot
   `valeur-absolue-droite-2de` de `update-published-questions.ts`, droite graduée ajoutée au corrigé de 80a87e34.
-- **Prochaine action** : PR mergée → David lance la simulation puis `--publier` du lot → relire 80a87e34 en prod
+- **Prochaine action** : David lance la simulation puis `--publier` du lot → relire 80a87e34 en prod
   (MCP) → clôture (archiver ce journal, outil n° 7 livré dans `outils-manquants.md`). La doc système est déjà
   versée (`ubumark.md`, `questions.md`).
 - **En attente de David** : les deux commandes du lot (classifieur : simulation refusée à Claude).
 - **Pièges en cours** : `update-published-questions` lit `.env` (prod) : simulation et écriture → David avec `!`.
-  Rendu à l'œil non vu (Chrome n'a pas navigué) ; copie locale a917fb27 en base locale.
+  Rendu à l'œil non vu (Chrome n'a pas navigué) : le voir dans l'aperçu admin après `--publier` ; copie
+  locale a917fb27 en base locale.
   Branche distante `fix/integration-locals-session` laissée sur GitHub.
-- **Worktree / branche** : `../ubumaths-wt-demi-droite`, `feat/demi-droite-intervalle`.
+- **Worktree / branche** : `../ubumaths-wt-demi-droite` (HEAD détachée sur `origin/main`, pour la clôture).
 
 ---
 
