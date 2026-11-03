@@ -638,7 +638,8 @@
 					"sous_notions": [
 						"explicite ou par récurrence",
 						"représentation graphique",
-						"sens de variation"
+						"sens de variation",
+						"sommes de termes"
 					],
 					"note": null
 				},
@@ -657,7 +658,7 @@
 				{
 					"nom": "Modèles d'évolution",
 					"niveaux": "1re, Tle, Tle comp.",
-					"sous_notions": ["seuil"],
+					"sous_notions": ["seuil", "emprunt"],
 					"note": null
 				},
 				{
