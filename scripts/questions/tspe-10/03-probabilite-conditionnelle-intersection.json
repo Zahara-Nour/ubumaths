@@ -1,0 +1,237 @@
+{
+	"title": "Calculer avec des probabilités conditionnelles",
+	"description": "Arbre à deux épreuves dépendantes (P(A), P_A(B), P_Ā(B) donnés) : P(A ∩ B), P(Ā ∩ B̄), P(A ∩ B̄) par P(A) × P_A(B) ; branches à compléter (événement contraire) ; jamais P(B) (probabilités totales, TSPE-617)",
+	"grades": ["T_SPE"],
+	"theme": "Probabilités",
+	"domain": "Succession d'épreuves",
+	"subdomain": "Épreuves dépendantes",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On choisit au hasard un élève d'un lycée. On note $A$ l'événement « l'élève est demi-pensionnaire » et $B$ l'événement « l'élève vient au lycée en bus ». On sait que $P(A)={{eval:a/10;d}}$, $P_A(B)={{eval:b/10;d}}$ et $P_{\\overline{A}}(B)={{eval:c/10;d}}$. L'arbre pondéré ci-dessous représente la situation.\n\n```probtree\nA:{{eval:a/10;d}}\n  B:{{eval:b/10;d}}\n  \\overline{B}:{{eval:1-b/10;d}}\n\\overline{A}:{{eval:1-a/10;d}}\n  B:{{eval:c/10;d}}\n  \\overline{B}:{{eval:1-c/10;d}}\n```\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(A\\cap B)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*b/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On suit le chemin $A$ puis $B$ : $P(A\\cap B)=P(A)\\times P_A(B)$ (la probabilité d'un chemin est le produit des probabilités de ses branches).",
+					"$P(A\\cap B)={{eval:a/10;d}}\\times{{eval:b/10;d}}=\\textcolor{{{color:primary.0}}}{{{eval:a*b/100;d}}}$."
+				]
+			},
+			"conditions": ["b != c"]
+		},
+		{
+			"statement": "On choisit au hasard un élève d'un lycée. On note $A$ l'événement « l'élève est demi-pensionnaire » et $B$ l'événement « l'élève vient au lycée en bus ». On sait que $P(A)={{eval:a/10;d}}$, $P_A(B)={{eval:b/10;d}}$ et $P_{\\overline{A}}(B)={{eval:c/10;d}}$.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité que l'élève ne soit pas demi-pensionnaire et ne vienne pas en bus : $P(\\overline{A}\\cap\\overline{B})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(10-a)*(10-c)/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On complète l'arbre : $P(\\overline{A})=1-{{eval:a/10;d}}={{eval:1-a/10;d}}$ et $P_{\\overline{A}}(\\overline{B})=1-{{eval:c/10;d}}={{eval:1-c/10;d}}$.\n\n```probtree\nA:{{eval:a/10;d}}\n  B:{{eval:b/10;d}}\n  \\overline{B}:{{eval:1-b/10;d}}\n\\overline{A}:{{eval:1-a/10;d}}\n  B:{{eval:c/10;d}}\n  \\overline{B}:{{eval:1-c/10;d}}\n```",
+					"$P(\\overline{A}\\cap\\overline{B})=P(\\overline{A})\\times P_{\\overline{A}}(\\overline{B})={{eval:1-a/10;d}}\\times{{eval:1-c/10;d}}=\\textcolor{{{color:primary.0}}}{{{eval:(10-a)*(10-c)/100;d}}}$."
+				]
+			},
+			"conditions": ["b != c"]
+		},
+		{
+			"statement": "On choisit au hasard un élève d'un lycée. On note $A$ l'événement « l'élève est demi-pensionnaire » et $B$ l'événement « l'élève vient au lycée en bus ». On sait que $P(A)={{eval:a/10;d}}$, $P_A(B)={{eval:b/10;d}}$ et $P_{\\overline{A}}(B)={{eval:c/10;d}}$.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité que l'élève soit demi-pensionnaire et ne vienne pas en bus : $P(A\\cap\\overline{B})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*(10-b)/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sachant $A$, les événements $B$ et $\\overline{B}$ sont contraires : $P_A(\\overline{B})=1-P_A(B)=1-{{eval:b/10;d}}={{eval:1-b/10;d}}$.\n\n```probtree\nA:{{eval:a/10;d}}\n  B:{{eval:b/10;d}}\n  \\overline{B}:{{eval:1-b/10;d}}\n\\overline{A}:{{eval:1-a/10;d}}\n  B:{{eval:c/10;d}}\n  \\overline{B}:{{eval:1-c/10;d}}\n```",
+					"$P(A\\cap\\overline{B})=P(A)\\times P_A(\\overline{B})={{eval:a/10;d}}\\times{{eval:1-b/10;d}}=\\textcolor{{{color:primary.0}}}{{{eval:a*(10-b)/100;d}}}$."
+				]
+			},
+			"conditions": ["b != c"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "0,6 × 0,3 = 0,18",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "3",
+				"c": "7"
+			},
+			"answers": ["0{,}18"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "En fraction",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "3",
+				"c": "7"
+			},
+			"answers": ["\\frac{9}{50}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : P_A(B) seul",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "3",
+				"c": "7"
+			},
+			"answers": ["0{,}3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : somme",
+			"variationIndex": 0,
+			"variables": {
+				"a": "6",
+				"b": "3",
+				"c": "7"
+			},
+			"answers": ["0{,}9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,4 × 0,3 = 0,12",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"b": "3",
+				"c": "7"
+			},
+			"answers": ["0{,}12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : P_Ā(B) au lieu du complément",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"b": "3",
+				"c": "7"
+			},
+			"answers": ["0{,}28"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1 − P(A ∩ B)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "6",
+				"b": "3",
+				"c": "7"
+			},
+			"answers": ["0{,}82"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0,6 × 0,7 = 0,42",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"b": "3",
+				"c": "7"
+			},
+			"answers": ["0{,}42"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : P(A ∩ B)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"b": "3",
+				"c": "7"
+			},
+			"answers": ["0{,}18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : P_A(B̄) seul",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"b": "3",
+				"c": "7"
+			},
+			"answers": ["0{,}7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

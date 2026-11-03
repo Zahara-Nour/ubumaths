@@ -1,0 +1,244 @@
+{
+	"title": "Lier la courbe de sinus ou cosinus et le cercle",
+	"description": "Point M du cercle associé à x → point (x ; sin x) ou (x ; cos x) de la courbe (distracteurs −x, π − x, π/2 − x, tous sur la courbe) ; signe de cos x lu sur le quadrant de M → position du point de la courbe",
+	"grades": ["T_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Fonctions cosinus et sinus",
+	"level": 6,
+	"delay": 60,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Le point $M$ du cercle trigonométrique est associé au réel $x={{if:p==1|\\dfrac{\\pi}{6}}}{{if:p==2|\\dfrac{\\pi}{3}}}{{if:p==4|\\dfrac{2\\pi}{3}}}{{if:p==5|\\dfrac{5\\pi}{6}}}$.\n\n```trig\npreset: custom\nangles: {{if:p==1|pi/6}}{{if:p==2|pi/3}}{{if:p==4|2*pi/3}}{{if:p==5|5*pi/6}}\nprojections: true\n```\n\nSur quelle figure le point $P$ de la courbe de la fonction sinus correspond-il au point $M$ ?\n\n````choix\n- ```courbe\n  x: -pi ; pi\n  y: -1.5 ; 1.5\n  grille: pi/6 ; 0.5\n  f(x) = sin(x)   bleu\n  points: P({{p}}*pi/6 ; f({{p}}*pi/6))\n  taille: petite\n  description: Courbe de la fonction sinus entre −π et π, avec un point P marqué sur la courbe.\n  ```\n- ```courbe\n  x: -pi ; pi\n  y: -1.5 ; 1.5\n  grille: pi/6 ; 0.5\n  f(x) = sin(x)   bleu\n  points: P({{eval:-p}}*pi/6 ; f({{eval:-p}}*pi/6))\n  taille: petite\n  description: Courbe de la fonction sinus entre −π et π, avec un point P marqué sur la courbe.\n  ```\n- ```courbe\n  x: -pi ; pi\n  y: -1.5 ; 1.5\n  grille: pi/6 ; 0.5\n  f(x) = sin(x)   bleu\n  points: P({{eval:6-p}}*pi/6 ; f({{eval:6-p}}*pi/6))\n  taille: petite\n  description: Courbe de la fonction sinus entre −π et π, avec un point P marqué sur la courbe.\n  ```\n- ```courbe\n  x: -pi ; pi\n  y: -1.5 ; 1.5\n  grille: pi/6 ; 0.5\n  f(x) = sin(x)   bleu\n  points: P({{eval:3-p}}*pi/6 ; f({{eval:3-p}}*pi/6))\n  taille: petite\n  description: Courbe de la fonction sinus entre −π et π, avec un point P marqué sur la courbe.\n  ```\n````",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1|2|4|5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le sinus de $x$ est l'ordonnée du point $M$ du cercle associé à $x$.",
+					"Le point de la courbe qui correspond à $M$ a donc pour abscisse $x={{if:p==1|\\dfrac{\\pi}{6}}}{{if:p==2|\\dfrac{\\pi}{3}}}{{if:p==4|\\dfrac{2\\pi}{3}}}{{if:p==5|\\dfrac{5\\pi}{6}}}$ et pour ordonnée $\\sin(x)$ : c'est le point $\\textcolor{{{color:primary.0}}}{P\\left({{if:p==1|\\dfrac{\\pi}{6}}}{{if:p==2|\\dfrac{\\pi}{3}}}{{if:p==4|\\dfrac{2\\pi}{3}}}{{if:p==5|\\dfrac{5\\pi}{6}}}\\,;\\sin x\\right)}$.",
+					"Attention : $\\pi-x$ a le même sinus que $x$, mais le point de la courbe d'abscisse $\\pi-x$ ne correspond pas à $M$ ; et l'abscisse de $M$ donne l'autre fonction."
+				]
+			}
+		},
+		{
+			"statement": "Le point $M$ du cercle trigonométrique est associé au réel $x={{if:p==1|\\dfrac{\\pi}{6}}}{{if:p==2|\\dfrac{\\pi}{3}}}{{if:p==4|\\dfrac{2\\pi}{3}}}{{if:p==5|\\dfrac{5\\pi}{6}}}$.\n\n```trig\npreset: custom\nangles: {{if:p==1|pi/6}}{{if:p==2|pi/3}}{{if:p==4|2*pi/3}}{{if:p==5|5*pi/6}}\nprojections: true\n```\n\nSur quelle figure le point $P$ de la courbe de la fonction cosinus correspond-il au point $M$ ?\n\n````choix\n- ```courbe\n  x: -pi ; pi\n  y: -1.5 ; 1.5\n  grille: pi/6 ; 0.5\n  f(x) = cos(x)   bleu\n  points: P({{p}}*pi/6 ; f({{p}}*pi/6))\n  taille: petite\n  description: Courbe de la fonction cosinus entre −π et π, avec un point P marqué sur la courbe.\n  ```\n- ```courbe\n  x: -pi ; pi\n  y: -1.5 ; 1.5\n  grille: pi/6 ; 0.5\n  f(x) = cos(x)   bleu\n  points: P({{eval:-p}}*pi/6 ; f({{eval:-p}}*pi/6))\n  taille: petite\n  description: Courbe de la fonction cosinus entre −π et π, avec un point P marqué sur la courbe.\n  ```\n- ```courbe\n  x: -pi ; pi\n  y: -1.5 ; 1.5\n  grille: pi/6 ; 0.5\n  f(x) = cos(x)   bleu\n  points: P({{eval:6-p}}*pi/6 ; f({{eval:6-p}}*pi/6))\n  taille: petite\n  description: Courbe de la fonction cosinus entre −π et π, avec un point P marqué sur la courbe.\n  ```\n- ```courbe\n  x: -pi ; pi\n  y: -1.5 ; 1.5\n  grille: pi/6 ; 0.5\n  f(x) = cos(x)   bleu\n  points: P({{eval:3-p}}*pi/6 ; f({{eval:3-p}}*pi/6))\n  taille: petite\n  description: Courbe de la fonction cosinus entre −π et π, avec un point P marqué sur la courbe.\n  ```\n````",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1|2|4|5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le cosinus de $x$ est l'abscisse du point $M$ du cercle associé à $x$.",
+					"Le point de la courbe qui correspond à $M$ a donc pour abscisse $x={{if:p==1|\\dfrac{\\pi}{6}}}{{if:p==2|\\dfrac{\\pi}{3}}}{{if:p==4|\\dfrac{2\\pi}{3}}}{{if:p==5|\\dfrac{5\\pi}{6}}}$ et pour ordonnée $\\cos(x)$ : c'est le point $\\textcolor{{{color:primary.0}}}{P\\left({{if:p==1|\\dfrac{\\pi}{6}}}{{if:p==2|\\dfrac{\\pi}{3}}}{{if:p==4|\\dfrac{2\\pi}{3}}}{{if:p==5|\\dfrac{5\\pi}{6}}}\\,;\\cos x\\right)}$.",
+					"Attention : $-x$ a le même cosinus que $x$, mais le point de la courbe d'abscisse $-x$ ne correspond pas à $M$ ; et l'ordonnée de $M$ donne l'autre fonction."
+				]
+			}
+		},
+		{
+			"statement": "Le point $M$ du cercle trigonométrique est associé au réel $x$.\n\n```trig\npreset: all\nlabels: false\npoints: M = {{p}}*pi/6\n```\n\nSur la courbe de la fonction cosinus, le point d'abscisse $x$ est :\n\n```choix\n- au-dessus de l'axe des abscisses\n- en dessous de l'axe des abscisses\n- sur l'axe des abscisses\n- on ne peut pas savoir sans calculatrice\n```",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1|2|4|5|7|8|10|11"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:p==1|0}}{{if:p==2|0}}{{if:p==4|1}}{{if:p==5|1}}{{if:p==7|1}}{{if:p==8|1}}{{if:p==10|0}}{{if:p==11|0}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos x$ est l'**abscisse** du point $M$ : elle est {{if:p==1|positive}}{{if:p==2|positive}}{{if:p==4|négative}}{{if:p==5|négative}}{{if:p==7|négative}}{{if:p==8|négative}}{{if:p==10|positive}}{{if:p==11|positive}}, car $M$ est {{if:p==1|à droite}}{{if:p==2|à droite}}{{if:p==4|à gauche}}{{if:p==5|à gauche}}{{if:p==7|à gauche}}{{if:p==8|à gauche}}{{if:p==10|à droite}}{{if:p==11|à droite}} de l'axe des ordonnées.",
+					"Le point de la courbe de cosinus d'abscisse $x$ a pour ordonnée $\\cos x$ : il est $\\textcolor{{{color:primary.0}}}{\\text{{{if:p==1|au-dessus}}{{if:p==2|au-dessus}}{{if:p==4|en dessous}}{{if:p==5|en dessous}}{{if:p==7|en dessous}}{{if:p==8|en dessous}}{{if:p==10|au-dessus}}{{if:p==11|au-dessus}}}}$ de l'axe des abscisses.",
+					"L'ordonnée de $M$, elle, est $\\sin x$ : elle ne dit rien du signe de $\\cos x$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Point (x ; f(x)), p = 2",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −x",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : π − x",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : π/2 − x (sin et cos confondus)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Point (x ; f(x)), p = 2",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −x",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : π − x",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : π/2 − x (sin et cos confondus)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "p = 1 : au-dessus",
+			"variationIndex": 2,
+			"variables": {
+				"p": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur p = 1 : en dessous",
+			"variationIndex": 2,
+			"variables": {
+				"p": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "p = 4 : en dessous (sin x > 0 mais cos x < 0)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur p = 4 : ordonnée lue",
+			"variationIndex": 2,
+			"variables": {
+				"p": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "p = 11 : au-dessus",
+			"variationIndex": 2,
+			"variables": {
+				"p": "11"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sur l'axe",
+			"variationIndex": 2,
+			"variables": {
+				"p": "11"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : on ne peut pas savoir",
+			"variationIndex": 2,
+			"variables": {
+				"p": "7"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
