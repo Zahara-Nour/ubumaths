@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, 8c en prod (brouillons), migration en PR._
+_Mis à jour le 2026-11-03, après #2270 (8c rangé et tagué en prod)._
 
-- **État** : lot 8 (D-L8 : 26 « à savoir ») ; **8a et 8b clos** (18 publiés) ; **8c** : #2269 mergée, 8 brouillons créés en prod, migration nœud + tag `20261103051912` en PR (test 10/10, rouge prouvé).
-- **Prochaine action** : `security-auditor` → `check:migrations --pr` → merge → `migration list --linked` puis `db:migrate` depuis le dépôt principal → relecture MCP → page à cocher (`page-a-cocher.ts --dir scripts/questions/tspe-8c-savoir`) → relecture de David → `publier-lot`.
-- **En attente de David** : rien.
+- **État** : lot 8 (D-L8 : 26 « à savoir ») ; **8a et 8b clos** (18 publiés) ; **8c** : 8 brouillons en prod sur leur nœud avec leur tag (#2269, #2270, migration appliquée), page à cocher publiée.
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, https://claude.ai/artifact/SgpQqwvtABvxX555sreUS7), compter 8/8 → `publier-lot.ts` simulé → David `--publier` → relecture MCP → lot 8 clos ; puis lot 9 (« espace sur figure », index `questions-tspe`) et versement.
+- **En attente de David** : relecture des 8 fiches de 8c (page à cocher).
 - **Pièges en cours** : relevé de nœuds → filtrer `archived_at is null` ; `!=` dans `$…$` lu « ≠ » (écrire `!\,=`) ; garde « notion sans sous-notion » : liste `sous_notions_admises` (migration `20261102181059`) ; worktree sans `.env*` → les copier pour les tests d'intégration.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · branche `content/questions-tspe-8c-rangement`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · aucune branche ouverte (HEAD détaché sur `origin/main`).
 
 ---
 
@@ -307,3 +307,12 @@ Migration `20261103051912_questions_tspe_lot8c_rangement_tags.sql` (copie de 8a,
 diff avec le gabarit = les lignes du lot). Chemins relevés au MCP : univoques, apostrophes droites. Test
 `tests/integration/questions-tspe-lot8c-rangement-tags.test.ts` (copie de 8a) : 10/10 ; **rouge** sans l'étape 4 (suite
 principale « lot incohérent », 5 sautés, et le test du rollback).
+
+`security-auditor` (2026-11-03, prod relue au MCP) : **aucun finding bloquant** (diff avec le gabarit = les lignes du lot).
+`check:migrations --pr 2270` vert ; **#2270 mergée** (CI 16/16). **Migration appliquée en prod par une autre session**
+(`questions-1spe-tangente`, son `db:migrate` du 2026-11-03 a passé aussi `20261103051912`) ; vérifié au MCP : migration
+enregistrée, 8 modèles sur leur sous-notion, un tag chacun, `updated_at` = `created_at`, toujours `draft`.
+
+**Page à cocher** : `page-a-cocher.ts --dir scripts/questions/tspe-8c-savoir`, 8 fiches lues en prod, aucune alerte, 19
+exemples : https://claude.ai/artifact/SgpQqwvtABvxX555sreUS7 (`verdicts` vide à la publication ; rendu non regardé dans
+Chrome).
