@@ -6,12 +6,14 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2301 (lot 5 mergé)._
+_Mis à jour le 2026-11-03, #2305 ouverte._
 
-- **État** : lots 1 à 5 mergés (#2301 : angle au rapporteur), pas encore en prod. PR du rapporteur
-  près du bord (§ 18) codée sur `fix/rapporteur-bord`.
-- **Prochaine action** : PR, CI, merge ; puis phase 0 du lot 6 « mesurer un angle » (6-169, même geste).
-- **En attente de David** : M1 du § 18 (fenêtre très allongée, rapporteur minuscule).
+- **État** : lots 1 à 5 mergés (#2301 : angle au rapporteur), pas encore en prod. #2305 (rapporteur
+  près du bord, § 18) ouverte, relue (Opus), CI en cours.
+- **Prochaine action** : CI verte → merger #2305, ligne `verifications-manuelles.md` (graduations
+  intérieures serrées à regarder), retirer le worktree ; puis phase 0 du lot 6 « mesurer un angle ».
+- **En attente de David** : M1 du § 18 — refuser à la publication une fenêtre trop allongée pour un
+  angle (rapport > 2, ma reco) ou laisser tel quel.
 - **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12, sa propre
   phase 0) ; `perpendiculaire(A, s)` échoue quand A est un bout de s ; `symetrie(P, axe=d)` échoue si
   P définit d ; l'« Essayer » de l'aide ne rend pas la case jouable ; plafond de 20 objets sans
