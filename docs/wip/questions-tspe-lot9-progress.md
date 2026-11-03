@@ -8,19 +8,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, migration de rangement en PR #2313._
+_Mis à jour le 2026-11-03, après #2313._
 
-- **État** : 8 brouillons en prod (2026-11-03, ids au § « En prod »). Migration nœud + tag
-  `20261103130717_questions_tspe_lot9_rangement_tags.sql` + test d'intégration (12 verts, rouges sans elle)
-  en PR #2313 (`feat/questions-tspe-lot9-tags`).
-- **Prochaine action** : `security-auditor` ; CI verte ; `pnpm check:migrations --pr 2313` ; merge ;
-  `pnpm db:migrate` depuis le dépôt principal ; vérifier en prod (nœud, un tag, brouillon) ; page à cocher ;
-  publication par David.
-- **En attente de David** : rien avant le merge ; ensuite la relecture (page à cocher) et la publication.
-- **Pièges en cours** : ` ```solide ` sans flèche, diagonale ni point hors sommet ; une notion ne s'archive pas
-  tant qu'elle a des sous-notions actives (trigger) : test retiré.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-lot9-tags` · `feat/questions-tspe-lot9-tags`.
-  L'ancien `../ubumaths-wt-questions-tspe-lot9` (branche mergée, serveur 5177) est à retirer quand l'essai sera fini.
+- **État** : 8 brouillons en prod, rangés et tagués (#2313, `db:migrate` fait, vérifié par MCP). Page à cocher
+  publiée : https://claude.ai/artifact/KxmPebhEVXtNgPub3LwZzm (8 fiches, aucune alerte, collection `verdicts`).
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 8) ; « À revoir » →
+  corriger (§ 7 de `couvrir-un-niveau.md`, `--mettre-a-jour`) ; tout OK → publication par David ; puis
+  versement du journal (fin du chantier).
+- **En attente de David** : la relecture sur la page à cocher.
+- **Pièges en cours** : ` ```solide ` sans flèche, diagonale ni point hors sommet ; les choix à options variables
+  ont la bonne en premier (réponse `0`, mélangés à l'affichage).
+- **Worktree / branche** : aucun en cours (`-tags` retiré). L'ancien `../ubumaths-wt-questions-tspe-lot9`
+  (branche mergée, serveur 5177) est à retirer quand l'essai sera fini.
 
 ---
 
@@ -130,3 +129,9 @@ tag », tout ou rien sur 8, résolution stricte, `updated_at` préservé, rollba
 `tests/integration/questions-tspe-lot9-rangement-tags.test.ts` : 7 rouges sur la migration vidée (le nominal
 sauté, pas de bloc de rollback), 12 verts avec elle ; deux tests de la garde « notion sans sous-notion » ajoutés
 (sous-notion non admise → échec ; l'archivage de la notion, infaisable par trigger, retiré).
+
+**Merge et prod (2026-11-03)** : #2313 mergée (CI 16/16, `security-auditor` sans finding bloquant,
+`check:migrations` OK), `db:migrate` depuis le dépôt principal ; relevé MCP : 8 brouillons, chacun sur son nœud
+avec son seul tag, `updated_at` inchangé. Page à cocher : `page-a-cocher.ts --dir
+scripts/questions/tspe-9-figure`, 8 fiches lues en prod, aucune alerte,
+https://claude.ai/artifact/KxmPebhEVXtNgPub3LwZzm.
