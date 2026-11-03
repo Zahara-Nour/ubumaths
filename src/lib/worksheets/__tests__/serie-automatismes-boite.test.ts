@@ -14,6 +14,7 @@ import { buildSerie } from '../serie-automatismes';
 import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
 import { generateStatChartTypst } from '$lib/ubumark/generators/stat-chart-typst';
 import type { StatChartNode } from '$lib/ubumark/types/stat-chart';
+import { generateInstance } from '$lib/questions/generator/instance-generator';
 
 /** Un modèle d'une variation, énoncé donné, variables q = 8 et m = 12 */
 function modele(id: string, statement: string, blanks?: unknown[]): QuestionTemplate {
@@ -86,6 +87,13 @@ function blocs(texte: string): StatChartNode[] {
 	);
 }
 
+/** Nombre de réponses attendues d'une instance (graine 1) */
+function cases(id: string): number {
+	const genere = generateInstance(modeles.get(id)!, 1);
+	if (!genere.success) throw new Error(`génération en échec : ${id}`);
+	return genere.instance.blanks?.length ?? 0;
+}
+
 /** Le Typst d'un bloc : ce que le PDF dessine */
 const typst = (node: StatChartNode) => generateStatChartTypst(node);
 
@@ -105,24 +113,32 @@ describe('buildSerie — boîte à moustaches à construire', () => {
 		expect(serie.solution).not.toMatch(/placer:|case:/);
 	});
 
-	it('le PDF : boîte absente de l’énoncé, présente au corrigé', () => {
+	it('le PDF : axe seul à l’énoncé, boîte dessinée au corrigé', () => {
 		const serie = buildSerie(modeles, [{ templateId: 'une', seed: 1 }]);
 		const [enonce] = blocs(serie.statement);
 		const [corrige] = blocs(serie.solution);
-		expect(typst(corrige)).not.toEqual(typst(enonce));
-		expect(typst(corrige).length).toBeGreaterThan(typst(enonce).length);
+		// Le générateur Typst marque chaque boîte dessinée d'un commentaire `// boîte`
+		expect(typst(enonce)).not.toContain('// boîte');
+		expect(typst(enonce)).toContain('// axe');
+		expect(typst(corrige).match(/\/\/ boîte/g)).toHaveLength(1);
 	});
 
 	it('deux boîtes à construire : dix cases, les deux dessinées au corrigé', () => {
 		const serie = buildSerie(modeles, [{ templateId: 'deux', seed: 1 }]);
 		expect(blocs(serie.statement)[0].spec?.boxPlot?.toPlace).toEqual([0, 1]);
 		expect(blocs(serie.solution)[0].spec?.boxPlot?.toPlace ?? null).toBeNull();
+		expect(cases('deux')).toBe(10);
+		expect(typst(blocs(serie.statement)[0])).not.toContain('// boîte');
+		expect(typst(blocs(serie.solution)[0]).match(/\/\/ boîte/g)).toHaveLength(2);
 	});
 
 	it('une boîte sur deux à construire : l’autre reste dessinée à l’énoncé', () => {
 		const serie = buildSerie(modeles, [{ templateId: 'une-sur-deux', seed: 1 }]);
 		expect(blocs(serie.statement)[0].spec?.boxPlot?.toPlace).toEqual([1]);
 		expect(blocs(serie.solution)[0].spec?.boxPlot?.toPlace ?? null).toBeNull();
+		expect(cases('une-sur-deux')).toBe(5);
+		expect(typst(blocs(serie.statement)[0]).match(/\/\/ boîte/g)).toHaveLength(1);
+		expect(typst(blocs(serie.solution)[0]).match(/\/\/ boîte/g)).toHaveLength(2);
 	});
 
 	it('avec une autre case : la boîte compte pour cinq cases, la formule remplie', () => {
@@ -136,7 +152,7 @@ describe('buildSerie — boîte à moustaches à construire', () => {
 		expect(blocs(serie.solution)[0].spec?.boxPlot?.boxes[0].values).toEqual([4, 8, 12, 14, 19]);
 	});
 
-	it('boîte en retrait ou citée : refusée, message à l’appui', () => {
+	it('boîte en retrait ou citée : refusée dès la génération (avant buildSerie)', () => {
 		expect(() => buildSerie(modeles, [{ templateId: 'en-retrait', seed: 1 }])).toThrow(
 			/premier niveau de l’énoncé/
 		);

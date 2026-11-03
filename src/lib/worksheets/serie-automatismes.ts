@@ -35,7 +35,11 @@ import { replaceChoiceBlocks, type ChoiceBlock } from '$lib/ubumark/parser/choix
 import { correctChoiceIndexesOf, isChoiceBlank } from '$lib/questions/choice-case';
 import { findCourbesToPlace, parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
 import { lineCoefficients } from '$lib/ubumark/utils/courbe-tracer';
-import { findBoxPlotsToPlace, parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
+import {
+	findBoxPlotsToPlace,
+	parseStatChartContent,
+	PLACER_LINE_REGEX
+} from '$lib/ubumark/parser/stat-chart-parser';
 import { boxPlotCaseCount } from '$lib/ubumark/utils/boxplot-placer';
 import {
 	findVariationsToFill,
@@ -235,9 +239,6 @@ function droitesATracer(
 	return { texte: lignes.join('\n'), cases: reperes.length };
 }
 
-/** Ligne `placer:` d'un bloc */
-const PLACER_LINE = /^\s*placer\s*:/i;
-
 /**
  * Boîtes à moustaches à construire (```boite-a-moustaches à `placer:`) : à l'énoncé,
  * la ligne `placer:` reste (le PDF ne dessine que l'axe et le nom des boîtes à
@@ -263,7 +264,7 @@ function boitesAConstruire(
 		}
 		cases += boxPlotCaseCount(node.spec);
 		const corps = bloc.body.filter(
-			(ligne) => !CASE_LINE.test(ligne) && !(corrige && PLACER_LINE.test(ligne))
+			(ligne) => !CASE_LINE.test(ligne) && !(corrige && PLACER_LINE_REGEX.test(ligne.trim()))
 		);
 		lignes.splice(bloc.startIndex + 1, bloc.body.length, ...corps);
 	}
