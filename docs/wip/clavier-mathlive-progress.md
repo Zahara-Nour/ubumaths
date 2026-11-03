@@ -6,15 +6,17 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, avant la PR._
+_Mis à jour le 2026-11-03, après #2353._
 
-- **État** : bouton « Fermer le clavier » au-dessus du clavier MathLive + touches de 32 px sous 500 px
-  de haut ; tests clients 3/3, `check:incremental` 0, lint rapide propre. PR à ouvrir.
-- **Prochaine action** : PR, CI, merge ; puis David essaie sur l'iPhone en paysage (après `deploy:prod`).
-- **En attente de David** : essai iPhone réel (Playwright n'émule pas Safari).
-- **Pièges en cours** : `blur()` sur un champ MathLive le laisse se croire actif (garde
-  `blurInProgress`) → il rouvre le clavier ; vitest tourne en iframe → `initVirtualKeyboardInCurrentBrowsingContext()`.
-- **Worktree / branche** : `../ubumaths-wt-clavier-mathlive` · `fix/clavier-mathlive`.
+- **État** : #2353 mergée (CI verte) : bouton « Fermer le clavier » au-dessus du clavier MathLive,
+  touches de 32 px sous 500 px de haut ; 5 tests (faux clavier), preuves rouges des deux correctifs.
+- **Prochaine action** : essai iPhone en paysage après le prochain `deploy:prod` (noté dans
+  `verifications-manuelles.md`) ; puis archiver ce journal (le durable est dans `docs/systeme/questions.md`).
+- **En attente de David** : `deploy:prod`, puis l'essai iPhone.
+- **Pièges en cours** : `blur()` sur un champ MathLive le laisse se croire actif → il rouvre le clavier ;
+  ne jamais monter le vrai clavier dans un test client (`initVirtualKeyboardInCurrentBrowsingContext`
+  s'accroche à `window.top` et a fait tomber le navigateur de la CI).
+- **Worktree / branche** : aucun (retiré après #2353).
 
 ---
 
@@ -54,3 +56,4 @@ pas dans le clavier par défaut qu'utilise le site. David valide les deux correc
   `message` à `window.top`, partagé par tout le shard, qui survit à l'iframe du test. Test réécrit avec
   un **faux clavier** (5 tests) ; preuves rouges : sans `closing` → « reste caché pendant la fermeture »
   rouge ; avec l'ancien `blur()` → « prend le focus au clic » rouge.
+- **#2353 mergée** (CI verte, 14 checks), le 2026-11-03. Worktree et branche retirés.

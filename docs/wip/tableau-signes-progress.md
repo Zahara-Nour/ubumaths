@@ -9,13 +9,13 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2338._
+_Mis à jour le 2026-11-03, après #2338 (en prod, 0.68.0) et #2353 (chantier `clavier-mathlive`)._
 
-- **État** : page à cocher relue (2/2 OK) ; #2335 (gabarit : seul le tableau défile) et #2338
-  (`cleanCoefficients` sur les formules à liens logiques : « −1x » de 2-330 corrigé) mergées, CI verte.
-  #2338 = moteur : visible en prod au prochain `deploy:prod` (David), aucune écriture en prod.
-- **Prochaine action** : essais iPhone (#2287, #2297, 2-330, 2-446 ; après le `deploy:prod` pour voir
-  le corrigé), les 4 notés dans `verifications-manuelles.md` ; puis verser le chantier.
+- **État** : page à cocher relue (2/2 OK) ; #2335 et #2338 mergées et **en prod (0.68.0)** : le corrigé
+  de 2-330 sans « 1x » est en ligne. Aux essais iPhone, David ne pouvait pas fermer le clavier MathLive
+  → chantier `clavier-mathlive`, #2353 mergée (en prod au prochain `deploy:prod`).
+- **Prochaine action** : essais iPhone (#2287, #2297, 2-330, 2-446, faisables dès maintenant ; #2353
+  après `deploy:prod`), notés dans `verifications-manuelles.md` ; puis verser le chantier.
 - **En attente de David** : défilement à 390 px (513 px de tableau pour 308), à juger aux essais iPhone.
 - **Pièges en cours** : `delay` n'est plus une garde d'`update-published-questions.ts` ; la bonne réponse
   vient de `blanks` ; Chrome n'atteint pas `localhost` → Playwright ; worktree neuf → `svelte-kit sync`
