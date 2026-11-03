@@ -190,6 +190,12 @@ NOMBRES = [
 ]
 
 
+def valeur(rang):
+    """x du nombre de rang `rang` (variable du gabarit), en somme d'indicatrices (eval sans `==`)."""
+    return 'eval:' + '+'.join('(1-min(abs(' + rang + '-' + str(i) + '),1))*' + str(x)
+                              for i, (_, _, x) in enumerate(NOMBRES))
+
+
 def troncature(x, pas):
     return (x / pas).to_integral_value(rounding=ROUND_FLOOR) * pas
 
@@ -211,14 +217,17 @@ ENC_HAUT = selon('m', [virgule(p[4]) for p in PRECISION])
 A_10N = variation(
     'On donne $' + ENC_NOM + '=' + ENC_DEV + '$. Donne son encadrement décimal à $10^{-' + ENC_N + '}$ près.\n\n'
     '$$?<' + ENC_NOM + '<?$$',
-    [var('m', '0..' + str(len(PRECISION) - 1))],
-    [case(selon('m', [point(p[3]) for p in PRECISION])), case(selon('m', [point(p[4]) for p in PRECISION]))],
+    [var('t', '0..' + str(len(NOMBRES) - 1)), var('n', '1..3'), var('m', 'eval:3*t+n-1'), var('x', valeur('t'))],
+    # bornes calculées par `floor` : une réponse attendue courte (la liste blanche des réponses plafonne
+    # la profondeur à 12 accolades, un `selon` à 21 cas la dépasse)
+    [case('{{eval:floor((x)*10^(n))/10^(n)}}'), case('{{eval:(floor((x)*10^(n))+1)/10^(n)}}')],
     ['À $10^{-' + ENC_N + '}$ près : deux décimaux à ' + selon('m', [['un chiffre', 'deux chiffres', 'trois chiffres'][p[2] - 1] for p in PRECISION]) + ' après la virgule, qui se suivent'
      ' (écart $10^{-' + ENC_N + '}$). On **tronque** le développement pour la borne du bas, on ajoute $10^{-'
      + ENC_N + '}$ pour celle du haut.',
      '$$' + col(ENC_BAS) + '<' + ENC_NOM + '<' + col(ENC_HAUT, 1) + '$$'])
 
-SP_P = {'m': 4}  # √3 à 10⁻² près : 1,73 < √3 < 1,74
+SP_P = {'t': 1, 'n': 2, 'm': 4, 'x': '1.7320508'}  # √3 à 10⁻² près : 1,73 < √3 < 1,74
+SP_53 = {'t': 6, 'n': 3, 'm': 20, 'x': '1.66666666'}
 MODELES.append(modele(
     '03-encadrement-10-n', 'Encadrement décimal à 10⁻ⁿ près',
     'Encadrer √2, √3, √5, √7, π, 2/7 ou 5/3, développement donné, à 10⁻¹, 10⁻² ou 10⁻³ près',
@@ -227,8 +236,8 @@ MODELES.append(modele(
     [spec('√3 à 10⁻² près : 1,73 et 1,74', 0, SP_P, ['1.73', '1.74'], 'correct'),
      spec('Erreur : arrondi au lieu de tronqué (1,73 et 1,73)', 0, SP_P, ['1.73', '1.73'], 'incorrect'),
      spec('Erreur : à 10⁻¹ près (1,7 et 1,8)', 0, SP_P, ['1.7', '1.8'], 'incorrect'),
-     spec('5/3 à 10⁻³ près : 1,666 et 1,667', 0, {'m': 20}, ['1.666', '1.667'], 'correct'),
-     spec('Erreur : bornes échangées', 0, {'m': 20}, ['1.667', '1.666'], 'incorrect')]))
+     spec('5/3 à 10⁻³ près : 1,666 et 1,667', 0, SP_53, ['1.666', '1.667'], 'correct'),
+     spec('Erreur : bornes échangées', 0, SP_53, ['1.667', '1.666'], 'incorrect')]))
 
 # 2-253 : amplitudes 0,5 ; 0,2 ; 0,05 ; m = 3 × (rang du nombre) + rang de l'amplitude
 AMPLITUDES = [Decimal('0.5'), Decimal('0.2'), Decimal('0.05')]
@@ -248,8 +257,10 @@ AM_K = selon('m', [str(int(p[3] / p[2])) for p in AMPL])
 AMPLITUDE = variation(
     'On donne $' + AM_NOM + '=' + AM_DEV + '$. Encadre ce nombre entre **deux multiples consécutifs** de $'
     + AM_A + '$ (encadrement d\'amplitude $' + AM_A + '$).\n\n$$?<' + AM_NOM + '<?$$',
-    [var('m', '0..' + str(len(AMPL) - 1))],
-    [case(selon('m', [point(p[3]) for p in AMPL])), case(selon('m', [point(p[4]) for p in AMPL]))],
+    [var('t', '0..' + str(len(NOMBRES) - 1)), var('j', '0..2'), var('m', 'eval:3*t+j'), var('x', valeur('t')),
+     var('q', 'eval:2+3*(1-min(abs(j-1),1))+18*(1-min(abs(j-2),1))')],
+    # amplitude 1/q (0,5 ; 0,2 ; 0,05) : bornes entières sur q, sans erreur d'arrondi
+    [case('{{eval:floor((x)*(q))/(q)}}'), case('{{eval:(floor((x)*(q))+1)/(q)}}')],
     ['Les multiples de $' + AM_A + '$ : $0$, $' + AM_A + '$, $2\\times' + AM_A + '$… On cherche les deux qui'
      ' entourent le nombre :',
      '$$' + AM_K + '\\times' + AM_A + '=' + col(AM_BAS) + '<' + AM_NOM + '<' + col(AM_HAUT, 1) + '$$',
@@ -260,11 +271,11 @@ MODELES.append(modele(
     'Encadrer √2, π, 2/7… entre deux multiples consécutifs de 0,5, 0,2 ou 0,05',
     ('Décimaux', 'Apprivoiser', 'Encadrer'), 9,
     [AMPLITUDE],
-    [spec('π et 0,2 : 3 et 3,2', 0, {'m': 13}, ['3', '3.2'], 'correct'),
-     spec('Erreur : 3,1 et 3,3 (pas des multiples de 0,2)', 0, {'m': 13}, ['3.1', '3.3'], 'incorrect'),
-     spec('√2 et 0,05 : 1,4 et 1,45', 0, {'m': 2}, ['1.4', '1.45'], 'correct'),
-     spec('Erreur : 1,41 et 1,46', 0, {'m': 2}, ['1.41', '1.46'], 'incorrect'),
-     spec('√7 et 0,5 : 2,5 et 3', 0, {'m': 9}, ['2.5', '3'], 'correct')]))
+    [spec('π et 0,2 : 3 et 3,2', 0, {'t': 4, 'j': 1, 'm': 13, 'x': '3.14159265', 'q': 5}, ['3', '3.2'], 'correct'),
+     spec('Erreur : 3,1 et 3,3 (pas des multiples de 0,2)', 0, {'t': 4, 'j': 1, 'm': 13, 'x': '3.14159265', 'q': 5}, ['3.1', '3.3'], 'incorrect'),
+     spec('√2 et 0,05 : 1,4 et 1,45', 0, {'t': 0, 'j': 2, 'm': 2, 'x': '1.41421356', 'q': 20}, ['1.4', '1.45'], 'correct'),
+     spec('Erreur : 1,41 et 1,46', 0, {'t': 0, 'j': 2, 'm': 2, 'x': '1.41421356', 'q': 20}, ['1.41', '1.46'], 'incorrect'),
+     spec('√7 et 0,5 : 2,5 et 3', 0, {'t': 3, 'j': 0, 'm': 9, 'x': '2.64575131', 'q': 2}, ['2.5', '3'], 'correct')]))
 
 # --- 5. 2-254 : chiffres significatifs ----------------------------------------------------------------
 
@@ -277,7 +288,7 @@ def arrondi_cs(x, cs):
 
 
 # Disques : rayon à 2 chiffres significatifs (en cm)
-RAYONS = [Decimal(r) for r in ('1.5', '2.4', '3.2', '4.5', '5.8', '6.3', '7.1', '8.6', '9.4')]
+RAYONS = [Decimal(r) for r in ('1.5', '2.4', '3.2', '4.5', '6.3', '8.6')]
 DISQUES = []
 for r in RAYONS:
     aire = Decimal(math.pi) * r * r
@@ -338,9 +349,9 @@ MODELES.append(modele(
     [spec('0,00340 : 3', 0, {'m': 0}, '3', 'correct'),
      spec('Erreur : zéros de tête comptés (6)', 0, {'m': 0}, '6', 'incorrect'),
      spec('2,050 : 4', 0, {'m': 1}, '4', 'correct'),
-     spec('r = 3,2 : 32 cm²', 1, {'m': 2}, '32', 'correct'),
-     spec('Erreur : trop de chiffres (32,17)', 1, {'m': 2}, '32.17', 'incorrect'),
-     spec('Erreur : π × 3,2 (10)', 1, {'m': 2}, '10', 'incorrect'),
+     spec('r = 3,2 : 32 cm²', 1, {'t': 0, 'j': 2, 'm': 2, 'x': '1.41421356', 'q': 20}, '32', 'correct'),
+     spec('Erreur : trop de chiffres (32,17)', 1, {'t': 0, 'j': 2, 'm': 2, 'x': '1.41421356', 'q': 20}, '32.17', 'incorrect'),
+     spec('Erreur : π × 3,2 (10)', 1, {'t': 0, 'j': 2, 'm': 2, 'x': '1.41421356', 'q': 20}, '10', 'incorrect'),
      spec('125 km en 1,75 h : 71,4 km/h', 2, {'m': 0}, '71.4', 'correct'),
      spec('Erreur : 71 (deux chiffres seulement)', 2, {'m': 0}, '71', 'incorrect')],
     delay=90))
