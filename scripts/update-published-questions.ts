@@ -71,7 +71,7 @@ const SECOND_DEGRE: readonly string[] = [
 	'eae2ff6a-5e46-445b-bfa6-02cadb6d956a' // Apprivoiser 7 — racines lues (courbe, Q57)
 ];
 
-/** Suites 1re SPE (docs/wip/suites-1spe-progress.md, lot 1) */
+/** Suites 1re SPE (docs/archive/wip/suites-1spe-progress.md, lot 1) */
 const SUITES: readonly string[] = [
 	'8ed02829-51de-40e2-af77-8fa47d01ea98', // Arithmétiques › calculer un terme 3 — u_a quelconque (n'est plus le double du 4)
 	'a8b51d16-261f-4acd-a2c2-933d3ea9bab5', // Arithmétiques › calculer un terme 4 — terme éloigné, rang inférieur
