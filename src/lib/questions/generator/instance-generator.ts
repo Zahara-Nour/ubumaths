@@ -99,6 +99,7 @@ import { expectedVectorLatex } from '../vectors/vector-answer';
 import { expectedMatrixLatex } from '../matrices/matrix-answer';
 import { evaluateConditions } from './condition-evaluator';
 import { createRandomSource, randomIndex, type RandomSource } from '$lib/utils/random';
+import { expectedInRequiredUnit } from '$lib/questions/units/required-unit';
 
 // ============================================================================
 // SHARED DEFAULTS MERGING
@@ -1008,9 +1009,13 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					answerKind !== 'intervalles' &&
 					answerKind !== 'vecteur' &&
 					answerKind !== 'matrice';
+				// Unité imposée : l'attendu s'écrit dans cette unité (`1.5[km]` → `1500[m]`)
+				const required = (blank.unit ?? resolvedVariation.blankDefaults?.unit)?.required;
 				const expectedAnswer = isCleanable
 					? cleanCoefficientsCustom(resolvedExpected, genericFunctions, capitalPairs)
-					: resolvedExpected;
+					: required
+						? expectedInRequiredUnit(resolvedExpected, required)
+						: resolvedExpected;
 
 				// `i` matches the blank counter assigned by `assignBlankIndices`
 				// (left-to-right, consecutive, 0-based). If that contract changes,

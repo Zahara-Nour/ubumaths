@@ -293,10 +293,13 @@ describe('tidy raconte — n’invente aucune écriture', () => {
 		const { resultat, etapes } = raconte('1[h]+45[min]+30[min]');
 		expect(resultat).toBe('2[h] 15[min]');
 		expect(etapes.at(-1)?.apres).toBe('2[h] 15[min]');
-		// `2[h]+30[min]` → `2[h] 30[min]` : même somme, seul l'affichage change — pas un geste
+		// `2[h]+30[min]` → `2[h] 30[min]` : même arbre, seul l'affichage change — le geste
+		// est dit quand même (David, 2026-11-03)
 		const somme = raconte('2[h]+30[min]');
 		expect(somme.resultat).toBe('2[h] 30[min]');
-		expect(somme.etapes).toEqual([]);
+		expect(somme.etapes).toEqual([
+			{ regle: 'tidy-write-duration', avant: '2[h]+30[min]', apres: '2[h] 30[min]' }
+		]);
 	});
 
 	it('regroupe des grandeurs de même unité sans parler de conversion', () => {

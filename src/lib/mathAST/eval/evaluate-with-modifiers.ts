@@ -28,11 +28,26 @@ import { extractRational } from '../common/numeric';
 import { divRational, negRational } from '../normal/rational';
 import { decimalString } from '../tidy/decimal';
 import { isCompositeDuration } from '../tidy/duration';
+import type { DurationWriting } from '../tidy/step-recorder';
 import { exactValueToShow } from './exact-value';
 import { parse as parseUnit, parseUnitTerms } from '../units/parser';
 import { exactConversion } from '../units/exact';
 import { format as formatUnit } from '../units';
 import { analyzeDimensions } from '../dimensional/analyzer';
+
+// =============================================================================
+// Types
+// =============================================================================
+
+/** Le contexte d'un `{{eval}}` : la valeur d'une variable ou ce qui s'affiche. */
+export type EvalDurationOptions = {
+	/**
+	 * `'single'` : une durée reste UNE grandeur — la valeur d'une variable, que
+	 * d'autres calculs réutilisent (David, 2026-11-03) ; `'hms'` (défaut) : ce qui
+	 * s'affiche (énoncé, corrigé, attendu), en h-min-s.
+	 */
+	readonly durations?: DurationWriting;
+};
 
 // =============================================================================
 // Helper Functions
@@ -462,7 +477,11 @@ function zeroQuantityUnit(ast: MathNode): string | null {
  * Un calcul avec des grandeurs : `tidy` (unité écrite d'abord) garde l'unité ; un
  * quotient de même dimension redevient un nombre (`3[h]/1[min]` → 180).
  */
-function evaluateQuantity(ast: MathNode, modifiers: EvalModifiers): string {
+function evaluateQuantity(
+	ast: MathNode,
+	modifiers: EvalModifiers,
+	durations: DurationWriting
+): string {
 	if (multipliesDurations(ast)) {
 		throw new Error(
 			`Produit de durées : ${toCustom(ast)} (une durée ne se multiplie pas par une durée)`
@@ -478,7 +497,7 @@ function evaluateQuantity(ast: MathNode, modifiers: EvalModifiers): string {
 		const expressed = expressedIn(ast, modifiers.unit);
 		return withSignModifiers(withScientificQuantity(expressed, modifiers), modifiers);
 	}
-	const reduced = durationOrQuantity(ast, modifiers);
+	const reduced = durationOrQuantity(ast, modifiers, durations);
 	if (!hasQuantity(reduced)) {
 		const value = rationalOf(reduced);
 		const zeroUnit = value !== null && value.n === 0n ? zeroQuantityUnit(ast) : null;
@@ -494,13 +513,21 @@ function evaluateQuantity(ast: MathNode, modifiers: EvalModifiers): string {
 
 /**
  * Le résultat de `tidy` : une durée tapée en au moins deux de h, min, s s'écrit
- * en h-min-s comme avec `;hms` (règle commune, 2026-11-02) ; négative ou en
- * `;sci`, elle reste UNE grandeur, que `;hms` refuserait.
+ * en h-min-s comme avec `;hms` (règle commune, 2026-11-02). Elle reste UNE
+ * grandeur pour la valeur d'une variable (`durations: 'single'`, réutilisée dans
+ * un autre calcul : David, 2026-11-03), négative, ou avec un modificateur
+ * d'écriture (`;sci`, `;d`, `;+`, `;()`), que `;hms` ignorerait ou refuserait.
  */
-function durationOrQuantity(ast: MathNode, modifiers: EvalModifiers): MathNode {
-	const reduced = tidy(ast, { unitChoice: 'written' });
+function durationOrQuantity(
+	ast: MathNode,
+	modifiers: EvalModifiers,
+	durations: DurationWriting
+): MathNode {
+	const reduced = tidy(ast, { unitChoice: 'written', durations });
 	if (!isCompositeDuration(reduced)) return reduced;
-	if (reduced.type !== 'opposite' && !modifiers.scientific) return reduced;
+	const written =
+		modifiers.scientific || modifiers.decimal || modifiers.addPositive || modifiers.bracketNegative;
+	if (reduced.type !== 'opposite' && !written) return reduced;
 	return tidy(ast, { unitChoice: 'written', durations: 'single' });
 }
 
@@ -578,13 +605,14 @@ function withScientificQuantity(writing: string, modifiers: EvalModifiers): stri
 export function evaluateAstWithModifiers(
 	ast: MathNode,
 	modifiers: EvalModifiers = {},
-	literalLetters: ReadonlySet<string> = new Set()
+	literalLetters: ReadonlySet<string> = new Set(),
+	options: EvalDurationOptions = {}
 ): string {
 	// Grandeurs : `evaluate` ignore l'unité par construction — le calcul passe par `tidy`.
 	// Un calcul littéral (lettres tirées) garde son chemin ci-dessous.
 	const quantityRequested = modifiers.hms === true || modifiers.unit !== undefined;
 	if (quantityRequested || (hasQuantity(ast) && getVariables(ast).size === 0)) {
-		return evaluateQuantity(ast, modifiers);
+		return evaluateQuantity(ast, modifiers, options.durations ?? 'hms');
 	}
 
 	// Valeur numérique d'abord (signe des modificateurs, garde-fou de formatExact)

@@ -145,6 +145,7 @@ export {
 	evalResultToCustom,
 	evalResultToNumber
 } from './evaluate-with-modifiers';
+export type { EvalDurationOptions } from './evaluate-with-modifiers';
 
 // =============================================================================
 // Numeric Comparison

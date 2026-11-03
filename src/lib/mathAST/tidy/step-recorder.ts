@@ -44,7 +44,8 @@ export type TidyRule =
 	| 'tidy-collect-like-terms'
 	| 'tidy-sort-terms'
 	| 'tidy-number-first'
-	| 'tidy-choose-unit';
+	| 'tidy-choose-unit'
+	| 'tidy-write-duration';
 
 /** Une étape de mise au propre. */
 export type TidyStep = BaseStep<TidyRule>;
@@ -65,7 +66,8 @@ export const TIDY_RULE_DESCRIPTIONS: Readonly<Record<TidyRule, string>> = {
 	'tidy-collect-like-terms': 'On regroupe les termes semblables',
 	'tidy-sort-terms': 'On range par degré décroissant',
 	'tidy-number-first': 'On écrit le nombre en tête',
-	'tidy-choose-unit': "On choisit l'unité adaptée"
+	'tidy-choose-unit': "On choisit l'unité adaptée",
+	'tidy-write-duration': 'On décompose la durée en heures, minutes, secondes'
 };
 
 // =============================================================================

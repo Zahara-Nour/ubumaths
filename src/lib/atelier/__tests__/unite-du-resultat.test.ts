@@ -19,6 +19,9 @@ import { simplify } from '$lib/mathAST/simplify';
 import { parseCustom } from '$lib/mathAST/parser/custom';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { evaluateAstWithModifiers } from '$lib/mathAST/eval/evaluate-with-modifiers';
+import { resolveVariables } from '$lib/ubumark/parameterization';
+import { expectedInRequiredUnit } from '$lib/questions/units/required-unit';
+import { validateQuantityAnswer } from '$lib/questions/units/validator';
 import { Atelier } from '../atelier.svelte';
 import { runInput, type CalcResult } from '../calcul';
 
@@ -129,5 +132,51 @@ describe('durées en h-min-s : au niveau de tête seulement', () => {
 
 	it('{{eval}} : une durée négative reste UNE grandeur (`;hms` la refuserait)', () => {
 		expect(evaluateAstWithModifiers(parseCustom('1[h]-3[h]-30[min]'))).toBe('-2.5[h]');
+	});
+});
+
+describe('{{eval}} : une variable garde UNE grandeur (David, 2026-11-03)', () => {
+	it('une durée calculée dans une variable se réutilise dans un produit', () => {
+		const [t, u] = resolveVariables([
+			{ name: 't', expression: '{{eval:1[h]+30[min]}}' },
+			{ name: 'u', expression: '{{eval:{{t}}*2}}' }
+		]);
+		// 1,5 h ou 90 min : 2 chiffres partout, la plus petite unité
+		expect(t.value).toBe('90[min]');
+		expect(u.value).toBe('180[min]');
+	});
+
+	it.each([
+		[{ addPositive: true }, '+90[min]'],
+		[{ decimal: true }, '90[min]']
+	])(
+		'modificateur d’écriture %o : UNE grandeur, le modificateur appliqué',
+		(modifiers, expected) => {
+			expect(evaluateAstWithModifiers(parseCustom('1[h]+30[min]'), modifiers)).toBe(expected);
+		}
+	);
+});
+
+describe('case à unité imposée : l’attendu dans cette unité (David, 2026-11-03)', () => {
+	it.each([
+		['1.5[km]', 'm', '1500[m]'],
+		['{1[h]}{30[min]}', 'h', '1.5[h]'],
+		['{1[h]}{30[min]}', 'min', '90[min]'],
+		['-1.5[km]', 'm', '-1500[m]'],
+		['1500[m]', 'm', '1500[m]'],
+		['(-3[m])', 'm', '(-3[m])'],
+		['5[kg]', 'm', '5[kg]'],
+		['7', 'm', '7'],
+		['(1/3)[km]', 'm', '(1/3)[km]']
+	])('%s, %s imposé → %s', (expected, required, rewritten) => {
+		expect(expectedInRequiredUnit(expected, required)).toBe(rewritten);
+	});
+
+	it('la bonne réponse dans l’unité imposée est juste', () => {
+		const expected = expectedInRequiredUnit('1.5[km]', 'm');
+		expect(validateQuantityAnswer('1500\\unit{m}', expected, undefined, 'm').isCorrect).toBe(true);
+		expect(validateQuantityAnswer('1{,}5\\unit{km}', expected, undefined, 'm').isCorrect).toBe(
+			false
+		);
 	});
 });

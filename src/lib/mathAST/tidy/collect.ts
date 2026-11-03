@@ -69,7 +69,7 @@ import {
 	withUnit,
 	sqrt as sqrtNode
 } from '../factory';
-import { isDelimiter, isEulerConstant, isFunction } from '../guards';
+import { isDelimiter, isEulerConstant, isFunction, isJuxtaposedSum } from '../guards';
 import { parse as parseUnit, parseUnitTerms } from '../units/parser';
 import { format as formatUnit } from '../units/formatter';
 import { exactConversion, dimensionKey } from '../units/exact';
@@ -2296,6 +2296,11 @@ function narrateSum(
 		if (!nodesEqual(previous, after)) {
 			recorder.recordRule(rule, previous, after);
 			previous = after;
+		} else if (writesDuration(after) && !writesDuration(previous)) {
+			// `1[h]+30[min]` → `1[h] 30[min]` : même arbre, seul l'affichage change ; c'est
+			// pourtant un geste que l'élève voit (David, 2026-11-03)
+			recorder.recordRule('tidy-write-duration', previous, after);
+			previous = after;
 		}
 		return after;
 	};
@@ -2333,6 +2338,11 @@ function narrateSum(
 	if (settings.order === 'kept') return step('tidy-terms', buildSum(unitedCollected));
 	step('tidy-number-first', buildSum(numberFirst(unitedCollected)));
 	return step('tidy-sort-terms', buildSum(sortKeepingCancelled(unitedCollected)));
+}
+
+/** L'expression contient-elle une durée écrite en h-min-s (`2[h] 30[min]`) ? */
+function writesDuration(node: MathNode): boolean {
+	return findNodes(node, isJuxtaposedSum).length > 0;
 }
 
 /**
