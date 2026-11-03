@@ -6,24 +6,23 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR 5/5 du lot 2 en cours (`fix/registre-lot2-plafond`)._
+_Mis à jour le 2026-11-03, après #2310._
 
-- **État** : lot 2 du registre (§ Lot 2 — correction du registre) : PR 1-4 mergées (#2281, #2292,
-  #2300, #2303) ; PR 5/5 (plafond : `1000!/999!` → 1000, `answer` de l'écriture gardée) ouverte.
-  Après elle, plus aucune ligne du lot 2 fausse côté registre. Pas déployées.
-- **Prochaine action** : merger la PR 5 ; puis choisir la suite avec David (lot 1 restant :
-  `.dériver` réduite, `.simplifier` S3, `.résoudre` → S, `equivalent-04`, refus R6 ; Atelier :
-  `.résoudre`, `.equivalent` sans réponse).
-- **En attente de David** : rien.
+- **État** : lot 2 du registre TERMINÉ (§ Lot 2 — correction du registre) : PR 1-5 mergées
+  (#2281, #2292, #2300, #2303, #2310). Plus aucune ligne du lot 2 fausse côté registre ni Atelier.
+  Pas déployées.
+- **Prochaine action** : choisir la suite avec David — lot 1 restant dans `connues-fausses.ts`
+  (registre : `.dériver` réduite, `.simplifier` S3, `.résoudre` → S, `equivalent-04`, refus R6 ;
+  Atelier : `.résoudre` → S, `.equivalent` sans réponse, refus).
+- **En attente de David** : le choix de la suite.
 - **Tranché** : option `unitChoice: 'school'` GARDÉE exprès (David, 2026-11-03 : « utile plus
   tard ») — ne pas proposer de la retirer ; avant : Q9 EN ENTIER, A-D du lot 2, `decimal` en
   LaTeX, `plafond-02` → 1000, Q24, `signes-06` — NE PAS reposer.
 - **Pièges** : `docs:check-a-jour` local ne voit que le COMMITÉ ; PR en conflit avec `main` = aucun
   run de CI → `git merge origin/main` (sujet du commit de fusion en minuscule : commitlint) ;
-  `gh pr checks --watch` juste après un push ne voit que l'auto-merge → suivre le run « Code
-  Quality » du commit ; limites connues : `.diff cos(60°)*x` (`ctx.input`), `2 ≈ 2` (caractère
-  `≈`) mal lu, `(t>1)` → faux.
-- **Worktree / branche** : `../ubumaths-wt-registre-reference`, `fix/registre-lot2-plafond`.
+  limites connues : `.diff cos(60°)*x` (`ctx.input`), `2 ≈ 2` (caractère `≈`) mal lu, `(t>1)` →
+  faux, grandeur avec factorielles (`5 m * 25!/24!`), `20000!/19999!` gardé (prévision).
+- **Worktree / branche** : aucun (retirés après #2310).
 
 ---
 
