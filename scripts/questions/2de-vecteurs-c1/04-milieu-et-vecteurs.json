@@ -1,0 +1,234 @@
+{
+	"title": "Milieu d'un segment et vecteurs",
+	"description": "Caractériser le milieu I de [AB] par des vecteurs : AI = IB, AB = 2AI, IA = −IB, IA + IB = 0⃗ (pièges : AI = BI, IA = IB, 1/2 et 2 échangés, le nombre 0)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs du plan",
+	"subdomain": "Milieu",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "$I$ est le milieu du segment $[AB]$ si et seulement si :\n\n```choix\n- $\\overrightarrow{AI}=\\overrightarrow{IB}$\n- $\\overrightarrow{AI}=\\overrightarrow{BI}$\n- $\\overrightarrow{IA}=\\overrightarrow{IB}$\n- $\\overrightarrow{AB}=\\overrightarrow{AI}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**$I$ est le milieu de $[AB]$ si et seulement si $\\overrightarrow{AI}=\\overrightarrow{IB}$** : pour aller de $A$ à $I$ puis de $I$ à $B$, on fait deux fois le même déplacement.",
+					"$\\overrightarrow{IA}$ et $\\overrightarrow{IB}$ ont la même longueur mais des sens contraires : ils sont **opposés**, pas égaux."
+				]
+			}
+		},
+		{
+			"statement": "$I$ est le milieu du segment $[AB]$.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 4\naxes: non\ngrille: non\ntaille: moyenne\ndescription: Le segment [AB] et son milieu I, les deux moitiés codées.\n---\nA = point(1, 1, etiquette=\"bas\")\nB = point(9, 3, etiquette=\"bas\")\nI = point(5, 2, etiquette=\"haut\")\nsegment(A, B)\nmarque_segment(A, I)\nmarque_segment(I, B)\n```\n\nComplète l'égalité.\n\n$$\\overrightarrow{{{if:t>0|AI|AB}}}=?\\,\\overrightarrow{{{if:t>0|AB|AI}}}$$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2^(1-2*(t))}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$I$ est au milieu : $\\overrightarrow{AB}$ fait deux fois $\\overrightarrow{AI}$ (même direction, même sens, longueur double).",
+					"$$\\overrightarrow{{{if:t>0|AI|AB}}}=\\textcolor{{{color:primary.0}}}{{{eval:2^(1-2*(t))}}}\\,\\overrightarrow{{{if:t>0|AB|AI}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "$I$ est le milieu du segment $[AB]$.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 4\naxes: non\ngrille: non\ntaille: moyenne\ndescription: Le segment [AB] et son milieu I, les deux moitiés codées.\n---\nA = point(1, 1, etiquette=\"bas\")\nB = point(9, 3, etiquette=\"bas\")\nI = point(5, 2, etiquette=\"haut\")\nsegment(A, B)\nmarque_segment(A, I)\nmarque_segment(I, B)\n```\n\nComplète l'égalité.\n\n$$\\overrightarrow{{{if:t>0|BA|IA}}}=?\\,\\overrightarrow{{{if:t>0|IA|IB}}}$$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t>0|2|-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compare les deux vecteurs : direction (la droite $(AB)$ pour les deux), sens et longueur. {{if:t>0|Tous deux vont vers A, et BA est le double de IA.|Même longueur, sens contraires : ils sont opposés.}}",
+					"$$\\overrightarrow{{{if:t>0|BA|IA}}}=\\textcolor{{{color:primary.0}}}{{{if:t>0|2|-1}}}\\,\\overrightarrow{{{if:t>0|IA|IB}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "$I$ est le milieu du segment $[AB]$. Le vecteur $\\overrightarrow{IA}+\\overrightarrow{IB}$ est égal à :\n\n```choix\n- $\\vec{0}$\n- $\\overrightarrow{AB}$\n- $2\\overrightarrow{IA}$\n- $0$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{IA}$ et $\\overrightarrow{IB}$ sont **opposés** ($I$ est au milieu) : $\\overrightarrow{IA}+\\overrightarrow{IB}=\\textcolor{{{color:primary.0}}}{\\vec{0}}$.",
+					"C'est une autre façon de dire que $I$ est le milieu de $[AB]$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "AI = IB",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : AI = BI",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : IA = IB",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "AB = 2 AI",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : AB = ½ AI",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0"
+			},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "AI = ½ AB",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1"
+			},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "AI = 0,5 AB (décimal)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1"
+			},
+			"answers": ["0.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : AI = 2 AB",
+			"variationIndex": 1,
+			"variables": {
+				"t": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "IA = −IB",
+			"variationIndex": 2,
+			"variables": {
+				"t": "0"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : IA = IB",
+			"variationIndex": 2,
+			"variables": {
+				"t": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "BA = 2 IA",
+			"variationIndex": 2,
+			"variables": {
+				"t": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : BA = −2 IA",
+			"variationIndex": 2,
+			"variables": {
+				"t": "1"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "IA + IB = 0⃗",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le nombre 0",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

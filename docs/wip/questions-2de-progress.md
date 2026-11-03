@@ -6,18 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après la publication du lot 12 a (§ 76)._
+_Mis à jour le 2026-11-04, lot 12 b-1 écrit (§ 78), PR des fichiers à ouvrir._
 
-- **État** : lots 1 à 9 et 12 a publiés. Ordre ensuite : 12 b, puis 10, puis 11.
-- **Prochaine action** : phase 0 du lot 12 b (oubliés du § 70 : vecteurs sans coordonnées 287, 433,
-  288-292, 296, 297 ; automatismes 489, 401) — relevé MCP, puis comportements à faire valider.
-- **En attente de David** : validation de la phase 0 du 12 b (§ 77, questions L12b-a à d).
+- **État** : lots 1 à 9 et 12 a publiés. Phase 0 du 12 b validée (§ 77). 12 b-1 (5 modèles, 287, 433, 288,
+  296, 297) écrit, simulé, joué en local. Ordre ensuite : 12 b-2, puis 10, puis 11.
+- **Prochaine action** : PR des fichiers du 12 b-1 (CI, merge) ; puis David lance `create-questions
+--publier` sur `scripts/questions/2de-vecteurs-c1` ; puis 12 b-2 (289, 290, 291, 292, 401).
+- **En attente de David** : rien.
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!`, puis vérifier le
-  statut au MCP (1er essai du 12 a : rien d'écrit) ; liste blanche : pas de `{{if:}}` à plus de ~6 niveaux
-  dans une réponse attendue ; corps de commit ≤ 100 caractères par ligne ; une autre session écrit aussi
-  dans ce journal : `git pull` ; `db:migrate` depuis le dépôt principal seulement ; un relevé de lot n'est
-  pas un relevé du niveau.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de` (HEAD détachée sur `origin/main`).
+  statut au MCP ; jamais `| head` derrière un `--publier` (le tuyau coupe le script en route) ; liste
+  blanche : pas de `{{if:}}` à plus de ~6 niveaux dans une réponse attendue ; corps de commit ≤ 100
+  caractères par ligne ; une autre session écrit aussi dans ce journal : `git pull` ; `db:migrate` depuis
+  le dépôt principal seulement.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, branche `feat/questions-2de-lot12b1`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1995,3 +1996,23 @@ _12 b-2 — Produit, colinéarité, combinaison, base ; périmètre (5 modèles)
 - **L12b-c — 2-401, nœud** : aucune sous-notion « polygone » sous Périmètres. → Je recommande **la notion
   Périmètres elle-même** (le point y est). Sinon : une sous-notion neuve « polygone » (migration de l'arbre).
 - **L12b-d — Ordre** : 12 b-1 puis 12 b-2, une PR de fichiers chacun ? → Je recommande **oui**.
+
+**Décisions de David (2026-11-04)** : phase 0 validée avec mes quatre recommandations (« je suis tes
+recos ») — L12b-a 2-297 au geste « tracer un vecteur » ; L12b-b 2-296 rangé sous Vecteurs › égalité de
+vecteurs ; L12b-c 2-401 rangé sur la notion Périmètres elle-même ; L12b-d 12 b-1 puis 12 b-2, une PR chacun.
+
+## 78. Lot 12 b-1, fichiers (2026-11-04)
+
+- `questions-2de/lot-vecteurs-c1-2de.py` → `scripts/questions/2de-vecteurs-c1/` (5 modèles, 43 specs).
+  Catégories : Géométrie › Vecteurs du plan › Égalité 1, 2, 3 (287, 433, 288), › Milieu 2 (296), › Somme 1
+  (297).
+- Flèches à reconnaître (287, 288) : la bonne change de case à chaque tirage (décalage `p`, rôles par
+  indicatrices, rang = (n − p)·min(p, 1)). Rôles de 287 : égal, opposé, coordonnées échangées, symétrique,
+  quart de tour ; |a| ≠ |b| les rend tous distincts.
+- 2-297 : ` ```courbe ` n'a pas de flèche d'affichage → u⃗ = AB⃗ et v⃗ = AC⃗ donnés par `points: A, B, C`,
+  geste `tracer: vecteur (…) depuis A` ; le corrigé dessine le parallélogramme ABDC (` ```figure `).
+- Joué en local (aperçu admin, Chrome) : deux corrections faites — étiquette de B hors cadre dans le
+  parallélogramme (fenêtre −1..11 × −1..10) ; points de 288 renommés K et P, Q, R, S (C et E-H se
+  mélangeaient aux lettres A-D des cases choix) ; « 3 + (2) » → `{{eval:c;+}}`. Fraction 1/2 acceptée.
+- `create-questions` (simulation, prod) : 5/5 à créer ; `question:specs` 5/5 importables ; `sonde-figures`
+  et `sonde-courbes` : 0 problème. Base locale : `-3..3` au lieu de `0..3;±` (refusé par le tirage).

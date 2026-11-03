@@ -1,0 +1,137 @@
+{
+	"title": "Le vecteur nul",
+	"description": "Reconnaître le vecteur nul (somme de deux vecteurs opposés) et ce que signifie AB = 0⃗ (pièges : le nombre 0, 2AB, l'opposé)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs du plan",
+	"subdomain": "Égalité",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le vecteur $\\overrightarrow{{{if:k>0|MN|AB}}}+\\overrightarrow{{{if:k>0|NM|BA}}}$ est égal à :\n\n```choix\n- $\\vec{0}$\n- $0$\n- $2\\overrightarrow{{{if:k>0|MN|AB}}}$\n- $\\overrightarrow{{{if:k>0|NM|BA}}}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{{{if:k>0|NM|BA}}}$ est l'**opposé** de $\\overrightarrow{{{if:k>0|MN|AB}}}$ : même direction, même longueur, sens contraire. Leur somme est le **vecteur nul**.",
+					"Avec la relation de Chasles : $\\overrightarrow{{{if:k>0|MN|AB}}}+\\overrightarrow{{{if:k>0|NM|BA}}}=\\overrightarrow{{{if:k>0|MM|AA}}}=\\textcolor{{{color:primary.0}}}{\\vec{0}}$.",
+					"Le résultat est un **vecteur** ($\\vec{0}$), pas le nombre $0$."
+				]
+			}
+		},
+		{
+			"statement": "On sait que $\\overrightarrow{{{if:k>0|RS|AB}}}=\\vec{0}$. Que peut-on dire des points ${{if:k>0|R|A}}$ et ${{if:k>0|S|B}}$ ?\n\n```choix\n- Ils sont confondus.\n- Ils sont symétriques par rapport à l'origine du repère.\n- La droite $({{if:k>0|RS|AB}})$ passe par l'origine du repère.\n- On ne peut rien en dire.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\vec{0}$ est le seul vecteur de longueur nulle : $\\overrightarrow{{{if:k>0|RS|AB}}}=\\vec{0}$ signifie que ${{if:k>0|R|A}}{{if:k>0|S|B}}=0$, donc que **${{if:k>0|R|A}}$ et ${{if:k>0|S|B}}$ sont confondus**. Réciproquement, $\\overrightarrow{{{if:k>0|RR|AA}}}=\\vec{0}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "AB + BA = 0⃗",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le nombre 0",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 2AB",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "MN + NM = 0⃗",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "AB = 0⃗ : confondus",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : symétriques",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rien",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
