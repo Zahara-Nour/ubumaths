@@ -15,7 +15,8 @@ _Mis à jour le 2026-11-03, après #2313._
 - **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 8) ; « À revoir » →
   corriger (§ 7 de `couvrir-un-niveau.md`, `--mettre-a-jour`) ; tout OK → publication par David ; puis
   versement du journal (fin du chantier).
-- **En attente de David** : la relecture sur la page à cocher.
+- **En attente de David** : la relecture sur la page à cocher ; fermer la PR #2315 (doublon de #2313, faite
+  par une autre session, à ne pas merger : sa garde échouerait) et retirer `../ubumaths-wt-questions-tspe-lot9-rangement`.
 - **Pièges en cours** : ` ```solide ` sans flèche, diagonale ni point hors sommet ; les choix à options variables
   ont la bonne en premier (réponse `0`, mélangés à l'affichage).
 - **Worktree / branche** : aucun en cours (`-tags` retiré). L'ancien `../ubumaths-wt-questions-tspe-lot9`
