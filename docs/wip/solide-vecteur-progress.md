@@ -9,16 +9,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR D-SV2 en cours._
+_Mis à jour le 2026-11-03, après #2347._
 
-- **État** : lots 1 (#2331) et 2 (#2339) mergés, pas en prod. PR D-SV2 (fractions de dénominateur ≤ 4,
-  vecteurs nommés dans `tracer:`) codée, tests verts, sur `feat/solide-vecteur-nommes`.
-- **Prochaine action** : revue Opus, CI, merge ; puis lot 3 (modèle TSPE-334).
-- **En attente de David** : rien.
+- **État** : lots 1 (#2331), 2 (#2339) et D-SV2 (#2347 : fractions de dénominateur ≤ 4, vecteurs nommés de
+  `vecteurs:` dans `tracer:`) mergés, pas en prod. Revue Opus de #2347 : 0 erreur de correction ; zéros en tête
+  (`1/04`) désormais refusés, tests d'extrémité ajoutés.
+- **Prochaine action** : lot 3 (modèle TSPE-334), nouveau worktree
+  `git worktree add -b feat/solide-vecteur-modele ../ubumaths-wt-solide-vecteur origin/main`.
+- **En attente de David** : nom indicé `w1` = « w1 » en texte brut sur la figure (`solide-gestes.ts`, étiquette)
+  mais `\vec{w_{1}}` dans la phrase de correction — (a) indice sur la figure, (b) `w1` sans indice dans la
+  phrase, (c) laisser.
 - **Pièges en cours** : le geste ne vise que des points connus en 3D (`solideClickablePoints`) ; une
   combinaison dont l'extrémité ne tombe sur aucun point touchable est refusée. `stroke-width` explicite sur
-  tout cercle SVG du geste. Code en ligne : nombre pair de backticks.
-- **Worktree / branche** : `../ubumaths-wt-solide-vecteur`, `feat/solide-vecteur-nommes`.
+  tout cercle SVG du geste. Une ligne `vecteurs:` fausse masque les erreurs de `tracer:` (voulu). Code en
+  ligne : nombre pair de backticks.
+- **Worktree / branche** : aucun (D-SV2 nettoyé).
 
 ---
 
