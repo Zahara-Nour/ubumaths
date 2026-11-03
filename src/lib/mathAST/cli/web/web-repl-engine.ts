@@ -79,7 +79,8 @@ import {
 	estimatedExactDigits,
 	exactCharacters,
 	isTooLongToCompute,
-	productValue
+	productValue,
+	shortFactorialValue
 } from '../exact-size';
 import { rationalToNode } from '../../common/numeric';
 import { boundedComparison } from '../bounded-comparison';
@@ -157,6 +158,18 @@ function measuredTooLong(result: EvalResult, expanded: MathNode): number | null 
 	return length > MAX_EXACT_CHARACTERS ? length : null;
 }
 
+/**
+ * Un résultat calculé dont les factorielles se réduisent à une valeur courte (`1000!/999!` →
+ * 1000) : le moteur garde toute factorielle au-delà de 2⁵³, même quand le quotient est petit.
+ */
+function withFactorialsReduced(result: EvalResult): EvalResult {
+	if (result.status !== 'value' || result.node.type === 'boolean') return result;
+	const value = shortFactorialValue(result.node);
+	if (value === null) return result;
+	const node = rationalToNode(value);
+	return { status: 'value', value: node, node, exact: true };
+}
+
 /** Les fonctions de l'utilisateur remplacées par leur définition (l'expression telle quelle sinon). */
 function withFunctionsExpanded(node: MathNode, functions: FunctionBindings | undefined): MathNode {
 	if (functions === undefined) return node;
@@ -206,13 +219,11 @@ function tidiedExpression(node: MathNode): MathNode {
 
 /**
  * La réponse brute d'un calcul tapé seul (`1/2+1/3` → `\dfrac{5}{6}`) : l'arbre
- * affiché, en LaTeX. Une réponse trop longue (`exactTooLong`) n'en a pas : son
- * arbre est l'écriture tapée, pas un résultat.
+ * affiché, en LaTeX — l'écriture tapée pour un résultat exact trop long
+ * (`exactTooLong`), posée par le calcul lui-même (lot 2).
  */
 function withExpressionAnswer(result: ReplExecutionResult): ReplExecutionResult {
-	if (!result.success || result.ast === undefined || result.exactTooLong !== undefined) {
-		return result;
-	}
+	if (!result.success || result.ast === undefined) return result;
 	// Un calcul la pose lui-même, exacte même en mode décimal (décision B)
 	if (result.answer !== undefined) return result;
 	return { ...result, answer: toLatex(result.ast) };
@@ -981,10 +992,12 @@ export class WebReplEngine {
 				factorsNode !== null
 					? { status: 'value', value: factorsNode, node: factorsNode, exact: true }
 					: notComputed === null
-						? evaluate(boundedComparison(expanded) ?? substituted, {
-								mode: 'exact',
-								functions: this.evalState.functions
-							})
+						? withFactorialsReduced(
+								evaluate(boundedComparison(expanded) ?? substituted, {
+									mode: 'exact',
+									functions: this.evalState.functions
+								})
+							)
 						: { status: 'value', value: expanded, node: expanded, exact: true };
 			// En deçà, la règle des 1 000 caractères se lit sur le résultat calculé : la
 			// prévision ignorait une base irrationnelle (`\sqrt{2}^{100000}`, 15 052
@@ -1096,8 +1109,9 @@ export class WebReplEngine {
 				...approximationFields(currentMode, exactResult.node, canToggle, digits, tooLong !== null),
 				...(tooLong !== null && { exactTooLong: Math.round(tooLong) }),
 				// La réponse brute, exacte dans les deux modes, et son écriture décimale
-				// (décisions A et B du lot 2) ; une écriture gardée n'a pas de réponse
-				...(tooLong === null && { answer: toLatex(exactShown) }),
+				// (décisions A et B du lot 2) ; une écriture gardée répond par elle-même,
+				// comme l'écran de l'Atelier (`(1+1/1000)^{1000}`, lot 2)
+				answer: toLatex(exactShown),
 				...decimalFields(digits)
 			};
 		} catch (err) {
