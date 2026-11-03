@@ -1639,3 +1639,4 @@ tspe-ln-continuite-convexite,1spe-tracer-droite}.py`) : vérifiés d'abord fidè
 - Brouillons créés en prod par David le 2026-11-03 : 2-299 `22e8272e`, 2-298 `dd286c93`. Question d'accès :
   **personne** (confirmé par David). Migration `20261103121554_questions_2de_vecteur_tracer_rangement_tags`
   (nœud « coordonnées » + tag), test d'intégration rouge sans elle (5/10), vert avec (10/10).
+- PR #2306 ouverte (migration), `security-auditor` : aucun finding.
