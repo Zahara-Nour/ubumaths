@@ -81,6 +81,16 @@
 					"Donc $y=f(a)+f'(a)(\\textcolor{{{color:primary.0}}}{x-a})$."
 				]
 			}
+		},
+		{
+			"statement": "Soit $f$ une fonction dérivable en un réel $a$, et $A(a\\,;f(a))$ le point de sa courbe d'abscisse $a$. On démontre que la tangente $T$ à la courbe en $A$ a pour équation $y=f(a)+f'(a)(x-a)$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- $T$ a pour coefficient directeur $f'(a)$ : elle a une équation de la forme $y=f'(a)x+p$.\n- $A(a\\,;f(a))$ est sur $T$ : $f(a)=f'(a)\\times a+p$.\n- Donc $p=f(a)-f'(a)\\times a$.\n- $T$ a pour équation $y=f'(a)x+f(a)-f'(a)\\times a$.\n- Soit $y=f(a)+f'(a)(x-a)$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"Le coefficient directeur vient de la définition de la tangente ; l'ordonnée à l'origine $p$, du point $A$.",
+					"On remplace $p$, puis on met $f'(a)$ en facteur : $\\textcolor{{{color:primary.0}}}{y=f(a)+f'(a)(x-a)}$."
+				]
+			}
 		}
 	],
 	"testSpecs": [
@@ -220,6 +230,24 @@
 			"variationIndex": 2,
 			"variables": {},
 			"answers": ["x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "1", "0", "2", "3"],
 			"expected": {
 				"status": "incorrect"
 			}

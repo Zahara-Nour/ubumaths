@@ -60,6 +60,16 @@
 					"La médiatrice de $[AB]$ est l'ensemble des points $M$ tels que $MA=MB$."
 				]
 			}
+		},
+		{
+			"statement": "Soit $A$ et $B$ deux points distincts, et $I$ le milieu de $[AB]$. On démontre que l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=0$ est le cercle de diamètre $[AB]$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Par la relation de Chasles, $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=\\left(\\overrightarrow{MI}+\\overrightarrow{IA}\\right)\\cdot\\left(\\overrightarrow{MI}+\\overrightarrow{IB}\\right)$.\n- Comme $\\overrightarrow{IB}=-\\overrightarrow{IA}$, $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=\\left(\\overrightarrow{MI}+\\overrightarrow{IA}\\right)\\cdot\\left(\\overrightarrow{MI}-\\overrightarrow{IA}\\right)=MI^2-IA^2$.\n- Donc $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=0$ équivaut à $MI^2=IA^2$, soit $MI=IA=\\dfrac{AB}{2}$.\n- L'ensemble cherché est le cercle de centre $I$ et de rayon $\\dfrac{AB}{2}$ : le cercle de diamètre $[AB]$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On passe par le milieu $I$ : le produit scalaire devient $MI^2-IA^2$.",
+					"Il est nul quand $MI=\\dfrac{AB}{2}$ : $M$ décrit $\\textcolor{{{color:primary.0}}}{\\text{le cercle de diamètre }[AB]}$."
+				]
+			}
 		}
 	],
 	"testSpecs": [
@@ -175,6 +185,24 @@
 			"variationIndex": 2,
 			"variables": {},
 			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
 			"expected": {
 				"status": "incorrect"
 			}

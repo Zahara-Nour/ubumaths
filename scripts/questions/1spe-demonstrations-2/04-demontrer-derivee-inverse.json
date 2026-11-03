@@ -60,6 +60,16 @@
 					"Le taux tend donc vers $\\textcolor{{{color:primary.0}}}{-\\dfrac{1}{a^2}}$ : $f$ est dérivable en $a$ et $f'(a)=-\\dfrac{1}{a^2}$."
 				]
 			}
+		},
+		{
+			"statement": "Soit $f$ la fonction inverse, définie sur $]-\\infty\\,;0[\\,\\cup\\,]0\\,;+\\infty[$ par $f(x)=\\dfrac{1}{x}$, $a$ un réel non nul et $h$ un réel non nul tel que $a+h\\neq 0$. On démontre que $f'(a)=-\\dfrac{1}{a^2}$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- $f(a+h)-f(a)=\\dfrac{1}{a+h}-\\dfrac{1}{a}=\\dfrac{-h}{a(a+h)}$.\n- Le taux de variation vaut $\\dfrac{f(a+h)-f(a)}{h}=-\\dfrac{1}{a(a+h)}$.\n- Quand $h$ tend vers $0$, $a(a+h)$ tend vers $a^2$, non nul : le taux tend vers $-\\dfrac{1}{a^2}$.\n- Donc $f$ est dérivable en $a$ et $f'(a)=-\\dfrac{1}{a^2}$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On réduit au même dénominateur, on simplifie le taux par $h$ (non nul), puis on fait tendre $h$ vers $0$.",
+					"Le taux tend vers $-\\dfrac{1}{a^2}$ : $\\textcolor{{{color:primary.0}}}{f'(a)=-\\dfrac{1}{a^2}}$."
+				]
+			}
 		}
 	],
 	"testSpecs": [
@@ -205,6 +215,24 @@
 			"variationIndex": 2,
 			"variables": {},
 			"answers": ["-\\frac{1}{2a}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
 			"expected": {
 				"status": "incorrect"
 			}

@@ -58,6 +58,16 @@
 					"Donc $2S=n(n+1)$ et $S=\\dfrac{n(n+1)}{2}$. Les $\\dfrac{n}{2}$ sommes donneraient $S$, pas $2S$, et seulement si $n$ est pair."
 				]
 			}
+		},
+		{
+			"statement": "Soit $n$ un entier naturel non nul et $S=1+2+\\cdots+n$. On démontre que $S=\\dfrac{n(n+1)}{2}$. On écrit $S$ deux fois, la seconde dans l'ordre inverse :\n\n$$S=1+2+\\cdots+(n-1)+n$$\n\n$$S=n+(n-1)+\\cdots+2+1$$\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- On additionne ces deux égalités terme à terme : $2S=(1+n)+(2+(n-1))+\\cdots+(n+1)$.\n- Chacune de ces sommes vaut $n+1$.\n- Il y a $n$ sommes, donc $2S=n(n+1)$.\n- Donc $S=\\dfrac{n(n+1)}{2}$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"L'addition terme à terme donne $n$ sommes de deux termes, toutes égales à $n+1$.",
+					"Donc $2S=n(n+1)$ et $\\textcolor{{{color:primary.0}}}{S=\\dfrac{n(n+1)}{2}}$."
+				]
+			}
 		}
 	],
 	"testSpecs": [
@@ -165,6 +175,24 @@
 			"variationIndex": 2,
 			"variables": {},
 			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
 			"expected": {
 				"status": "incorrect"
 			}

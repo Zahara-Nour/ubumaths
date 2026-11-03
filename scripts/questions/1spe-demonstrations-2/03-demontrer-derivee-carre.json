@@ -61,6 +61,16 @@
 					"On ne peut pas remplacer $h$ par $0$ dans $\\dfrac{(a+h)^2-a^2}{h}$ : on diviserait par $0$. C'est pour cela qu'on simplifie d'abord."
 				]
 			}
+		},
+		{
+			"statement": "Soit $f$ la fonction carré, définie sur $\\mathbb{R}$ par $f(x)=x^2$, $a$ un réel et $h$ un réel non nul. On démontre que $f'(a)=2a$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- $f(a+h)-f(a)=(a+h)^2-a^2=2ah+h^2$.\n- Le taux de variation vaut $\\dfrac{f(a+h)-f(a)}{h}=\\dfrac{2ah+h^2}{h}=2a+h$.\n- Quand $h$ tend vers $0$, le taux $2a+h$ tend vers $2a$.\n- Donc $f$ est dérivable en $a$ et $f'(a)=2a$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On développe, on simplifie le taux par $h$ (non nul), puis on fait tendre $h$ vers $0$.",
+					"Le taux tend vers $2a$ : $\\textcolor{{{color:primary.0}}}{f'(a)=2a}$."
+				]
+			}
 		}
 	],
 	"testSpecs": [
@@ -177,6 +187,24 @@
 			"variationIndex": 2,
 			"variables": {},
 			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
 			"expected": {
 				"status": "incorrect"
 			}

@@ -232,3 +232,14 @@ compilateur de la prod) : places pleine largeur, numérotées, espacées ; le ra
 PR 1 mergée (#2341, 2026-11-03). Revue `code-reviewer` (Sonnet) : aucun bloquant ; un mineur corrigé (correction
 aussi large que la colonne en mode étapes). Vu à l'écran (page d'aide du bloc) : colonne numérotée, geste juste.
 Conflit de fusion sur deux lignes « Vérifié » de la doc système, résolu en gardant `main` + nos ajouts.
+
+## 8. Lot 4 : étapes à ranger (2026-11-03)
+
+Contenu écrit : `questions-1spe-demonstrations/lot4_etapes.py` (énoncé, étapes dans l'ordre, corrigé) ;
+variation ajoutée en DERNIER aux 14 JSON (indices 0-2 inchangés), 4 à 6 étapes, `signe: aucun`. Étapes
+interchangeables évitées : passées dans l'énoncé (03 : les deux écritures de S ; 10 : « v(a+h) tend vers
+v(a) » admis) ou fusionnées (13 : produit scalaire et cosinus dans la dernière étape ; 09 : limite de
+a(a+h) et du taux). Specs calculées par le générateur (`generateInstanceWithFixedVariables`) : ordre juste
+et 2e/3e étapes échangées ; `checkTemplate` vert sur les 14. Vu à l'écran en base locale (aperçu admin,
+seed 100004 → variation 4) : 10 (produit) et 05 (second degré), formules lisibles, places numérotées.
+Reste : migration de contenu (les 14 sont publiés), après la question d'accès et le `deploy:prod` de #2341.

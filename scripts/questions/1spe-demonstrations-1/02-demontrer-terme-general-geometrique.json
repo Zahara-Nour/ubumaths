@@ -87,6 +87,16 @@
 					"La suite est géométrique, pas arithmétique : c'est le quotient de deux termes consécutifs qui est constant, pas leur différence."
 				]
 			}
+		},
+		{
+			"statement": "Soit $(u_n)$ une suite géométrique de premier terme $u_0\\neq 0$ et de raison $q\\neq 0$, et $n$ un entier naturel non nul. On démontre que $u_n=u_0q^n$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Pour tout entier naturel $k$, $u_{k+1}=q\\times u_k$ : de proche en proche, aucun terme n'est nul.\n- Donc pour tout entier naturel $k$, $\\dfrac{u_{k+1}}{u_k}=q$.\n- On écrit cette égalité pour $k=0$, …, $k=n-1$ et on multiplie : $\\dfrac{u_1}{u_0}\\times\\cdots\\times\\dfrac{u_n}{u_{n-1}}=q\\times\\cdots\\times q$.\n- Les termes $u_1$, …, $u_{n-1}$ se simplifient : $\\dfrac{u_n}{u_0}=q^n$.\n- Donc $u_n=u_0q^n$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"Avant d'écrire un quotient $\\dfrac{u_{k+1}}{u_k}$, il faut savoir que $u_k\\neq 0$ : c'est la première étape.",
+					"Le produit des $n$ quotients se télescope : $\\dfrac{u_n}{u_0}=q^n$, d'où $\\textcolor{{{color:primary.0}}}{u_n=u_0q^n}$."
+				]
+			}
 		}
 	],
 	"testSpecs": [
@@ -230,6 +240,24 @@
 				"q": "2"
 			},
 			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "1", "0", "2", "3"],
 			"expected": {
 				"status": "incorrect"
 			}

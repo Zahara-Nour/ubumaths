@@ -65,6 +65,16 @@
 					"Donc $BC^2={{eval:b^2}}-2\\times{{eval:b*c/2}}+{{eval:c^2}}=\\textcolor{{{color:primary.0}}}{{{eval:b^2+c^2-b*c}}}$."
 				]
 			}
+		},
+		{
+			"statement": "Soit $ABC$ un triangle. On démontre la formule d'Al-Kashi : $BC^2=AB^2+AC^2-2\\times AB\\times AC\\times\\cos\\widehat{BAC}$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Par la relation de Chasles, $\\overrightarrow{BC}=\\overrightarrow{BA}+\\overrightarrow{AC}=\\overrightarrow{AC}-\\overrightarrow{AB}$.\n- Donc $BC^2=\\left\\|\\overrightarrow{AC}-\\overrightarrow{AB}\\right\\|^2$.\n- En développant, $BC^2=AC^2-2\\,\\overrightarrow{AC}\\cdot\\overrightarrow{AB}+AB^2$.\n- Comme $\\overrightarrow{AC}\\cdot\\overrightarrow{AB}=AC\\times AB\\times\\cos\\widehat{BAC}$, $BC^2=AB^2+AC^2-2\\times AB\\times AC\\times\\cos\\widehat{BAC}$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On écrit $\\overrightarrow{BC}$ avec $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$, puis on développe son carré scalaire, comme $(a-b)^2=a^2-2ab+b^2$.",
+					"Le produit scalaire s'écrit avec le cosinus de l'angle : on obtient $\\textcolor{{{color:primary.0}}}{\\text{la formule d'Al-Kashi}}$."
+				]
+			}
 		}
 	],
 	"testSpecs": [
@@ -196,6 +206,24 @@
 				"c": "3"
 			},
 			"answers": ["\\sqrt{19}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
 			"expected": {
 				"status": "incorrect"
 			}
