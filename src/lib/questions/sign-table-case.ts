@@ -111,7 +111,7 @@ export function signTableAnswerLatex({ kind, answer }: SignTableAnswer): string 
 }
 
 /** Réponse d'un signe ou d'une marque, ramenée à son jeton (`0` → `z`, `−` → `-`) */
-function cellToken(answer: string): string {
+export function signCellToken(answer: string): string {
 	const token = answer.trim().replace(/−/g, '-');
 	return token === '0' ? 'z' : token;
 }
@@ -123,7 +123,7 @@ export function isSignTableCell(blank: InstanceBlank): boolean {
 
 /** Signe ou marque : le même jeton (une case vide n'est jamais juste, même pour « rien ») */
 export function isSignCellCorrect(userAnswer: string, expected: string): boolean {
-	return userAnswer.trim() !== '' && cellToken(userAnswer) === cellToken(expected);
+	return userAnswer.trim() !== '' && signCellToken(userAnswer) === signCellToken(expected);
 }
 
 /** Les numéros des cases d'un tableau affiché (première case posée par `case: N`) */
