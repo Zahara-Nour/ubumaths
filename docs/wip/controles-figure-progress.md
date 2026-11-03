@@ -12,10 +12,9 @@ _Mis à jour le 2026-11-03, après #2348 (lot 7 mergé) ; phase 0 du lot 8 propo
   l'angle compris, § 21-22). Rien en prod (`deploy:prod` sur demande de David). Vérification à l'œil
   de #2348 dans `verifications-manuelles.md`.
 - **Prochaine action** : lot 8 = variante « rapporteur déjà posé » (§ 19, décision 4), phase 0
-  proposée au § 23 ; après validation, nouveau worktree `controles-figure-lot8`. Restent ouverts : la
+  validée au § 23 ; codage dans le worktree `controles-figure-lot8`. Restent ouverts : la
   règle sévère des médiatrices (§ 12) ; l'angle non adjacent au côté (§ 21, décision 5).
-- **En attente de David** : les 4 questions du § 23 ; et le cas limite du § 22 (côté [AC] d'un trait à
-  travers le repère, admis mais inatteignable) : ma reco = le garder tel quel, à confirmer.
+- **En attente de David** : rien (phase 0 du lot 8 validée, § 23 ; codage en cours).
 - **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12) ;
   `perpendiculaire(A, s)` échoue quand A est un bout de s ; `symetrie(P, axe=d)` échoue si P définit
   d ; l'« Essayer » de l'aide ne rend pas la case jouable ; plafond de 20 objets sans message ; la
@@ -1043,3 +1042,11 @@ vide (aucun outil, ni Effacer ni Retourner) ; `outils:` interdit avec `rapporteu
 3. **Rapporteur figé** : l'élève ne peut ni le bouger ni le reposer (recommandé : c'est l'exercice de
    lecture seule ; le lot 6 couvre le geste complet) ; ou Retourner permis ?
 4. **Message « mauvaise graduation »** : le garder, même texte qu'au lot 6 (recommandé) ?
+
+### Décisions de David (2026-11-03, « je suis tes recos »)
+
+1. Écriture **`verifier: mesure AOB, rapporteur posé`** (la vérification du lot 6, un mot de plus).
+2. Base sur le **premier côté nommé** ([OA) pour `AOB`) : l'auteur choisit la pose par l'ordre des lettres.
+3. Rapporteur **figé** : ni déplacé, ni retourné, ni reposé ; aucun outil.
+4. Message « mauvaise graduation » **gardé**, même texte qu'au lot 6.
+5. Cas limite du § 22 (côté [AC] d'un trait à travers le repère) : **gardé tel quel** (admis, inatteignable).
