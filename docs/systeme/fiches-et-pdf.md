@@ -24,7 +24,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; écarts 4 à 6 le 2026-10-12 (K11) ; Réponses et Corrigé le 2026-10-13 ; espaces des séries d'automatismes le 2026-10-23 ; tableau de signes à compléter dans une série le 2026-11-03 ; droite à tracer dans une série le 2026-11-03.
+> Vérifié contre le code le 2026-10-11 ; écarts 4 à 6 le 2026-10-12 (K11) ; Réponses et Corrigé le 2026-10-13 ; espaces des séries d'automatismes le 2026-10-23 ; tableau de signes à compléter dans une série le 2026-11-03 ; droite à tracer dans une série le 2026-11-03 ; étiquettes à ranger en étapes (`signe: aucun`) le 2026-11-03.
 
 ## À quoi ça sert
 
@@ -635,7 +635,8 @@ cadres de réponse (`answer-frames.ts`) → [qr-codes.md](qr-codes.md). Une **ho
 retenue non dessinées : l'élève écrit sur papier libre), une **collection** (` ```collection `),
 des **pièces et billets** (` ```monnaie `) une **figure partagée en parts égales** (` ```partage `, parts coloriées grisées) et un **assemblage de cubes** (` ```cubes `, faces en trois gris) sont aussi du Typst natif et comptent chacune pour une figure dans ces cadres → [ubumark.md](ubumark.md).
 Des **étiquettes à ranger** (` ```ranger `) : étiquettes encadrées puis places en pointillés, Typst
-natif, deux lignes dans les cadres de réponse.
+natif, deux lignes dans les cadres de réponse ; en étapes (`signe: aucun`), étiquettes en colonne puis
+places numérotées pleine largeur, une ligne par étiquette et une par place.
 Un **programme Scratch** (` ```scratch `, palier 1) sort en texte brut monospace, clôture plus
 longue que toute suite d'accents graves du programme (le dessin en blocs n'existe qu'à l'écran),
 et compte une ligne par ligne du programme dans les cadres de réponse ; en erreur, « Programme
