@@ -15,7 +15,7 @@ import type { AtelierObject, ObjectKind } from './types';
 import { dependsOnMessage, isList, isQualitative, parametersOf } from './types';
 import type { MathNode, RelationNode } from '$lib/mathAST/types';
 import type { Provenance } from './parse';
-import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { RELATION_UNDECIDABLE, WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import type { ReplExecutionResult } from '$lib/mathAST/cli/web/types';
 import { displayUnitsInLatex } from '$lib/mathAST/units/display';
 import { getVariables, substitute } from '$lib/mathAST/eval/substitute';
@@ -435,7 +435,9 @@ const STUDENT_FACING_ERRORS: ReadonlySet<string> = new Set([
 	// `5[m]+3[s]`, `.convertir kg` après une longueur (phase 0 grandeurs, lot A)
 	'QUANTITY_ERROR',
 	// `.évaluer \frac{x+1}{x-1} en x=1` : « $x = 1$ est une valeur interdite… »
-	VALUE_FORBIDDEN
+	VALUE_FORBIDDEN,
+	// `2 \approx 2` : « Relation « ≈ » non évaluable… » (décision C du lot 2)
+	RELATION_UNDECIDABLE
 ]);
 
 // `PI_IN_LETTERS` : la règle, partagée avec la grille et le registre, vit dans
