@@ -1,0 +1,183 @@
+{
+	"title": "Démontrer l'ensemble des points M tels que MA·MB = 0",
+	"description": "Démonstration à trous, par le milieu I de [AB] : MA·MB = MI² − IA², MI pour AB tiré, conclusion (le cercle de diamètre [AB])",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Produit scalaire",
+	"subdomain": "Démonstrations",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $A$ et $B$ deux points distincts, et $I$ le milieu de $[AB]$. On cherche l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=0$.\n\nPar la relation de Chasles, $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=\\left(\\overrightarrow{MI}+\\overrightarrow{IA}\\right)\\cdot\\left(\\overrightarrow{MI}+\\overrightarrow{IB}\\right)$. Comme $I$ est le milieu de $[AB]$, $\\overrightarrow{IB}=-\\overrightarrow{IA}$. Que vaut ce produit scalaire ?\n\n```choix\n- $MI^2-IA^2$\n- $MI^2+IA^2$\n- $\\left(MI-IA\\right)^2$\n- $MI^2-2\\,\\overrightarrow{MI}\\cdot\\overrightarrow{IA}$\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\left(\\overrightarrow{MI}+\\overrightarrow{IA}\\right)\\cdot\\left(\\overrightarrow{MI}-\\overrightarrow{IA}\\right)$ se développe comme $(a+b)(a-b)=a^2-b^2$.",
+					"Les termes $\\overrightarrow{MI}\\cdot\\overrightarrow{IA}$ se compensent : il reste $\\textcolor{{{color:primary.0}}}{MI^2-IA^2}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $A$ et $B$ deux points distincts, et $I$ le milieu de $[AB]$. On cherche l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=0$.\n\nEn introduisant $I$ par la relation de Chasles, et comme $\\overrightarrow{IB}=-\\overrightarrow{IA}$, on obtient $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=MI^2-IA^2$.\n\nOn prend $AB={{eval:2*d}}$. Le point $M$ vérifie $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=0$ si et seulement si $MI^2=IA^2$, c'est-à-dire $MI=IA$ (des longueurs sont positives). Complète.\n\n$MI=?$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$I$ est le milieu de $[AB]$ : $IA=\\dfrac{AB}{2}=\\dfrac{{{eval:2*d}}}{2}={{eval:d}}$.",
+					"Donc $MI=\\textcolor{{{color:primary.0}}}{{{eval:d}}}$ : $M$ est à la distance ${{eval:d}}$ de $I$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $A$ et $B$ deux points distincts, et $I$ le milieu de $[AB]$. On cherche l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=0$.\n\nEn introduisant $I$ par la relation de Chasles, et comme $\\overrightarrow{IB}=-\\overrightarrow{IA}$, on obtient $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=MI^2-IA^2$.\n\nDonc $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=0$ si et seulement si $MI=IA=\\dfrac{AB}{2}$. Quel est l'ensemble des points $M$ cherché ?\n\n```choix\n- Le cercle de diamètre $[AB]$.\n- La médiatrice de $[AB]$.\n- Le cercle de centre $A$ et de rayon $AB$.\n- Le seul point $I$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les points $M$ tels que $MI=\\dfrac{AB}{2}$ forment le cercle de centre $I$ et de rayon $\\dfrac{AB}{2}$.",
+					"Son centre est le milieu de $[AB]$ et son rayon la moitié de $AB$ : c'est le **cercle de diamètre $[AB]$**.",
+					"La médiatrice de $[AB]$ est l'ensemble des points $M$ tels que $MA=MB$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "MI² − IA²",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : MI² + IA²",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : (MI − IA)²",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : MI² − 2MI·IA",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3 (AB = 6)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 6 (AB)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 9 (IA²)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 0",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "cercle de diamètre [AB]",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : médiatrice",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : cercle de centre A",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : point I",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

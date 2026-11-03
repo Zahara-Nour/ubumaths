@@ -1,0 +1,179 @@
+{
+	"title": "Démontrer les valeurs de cos(π/3) et sin(π/3)",
+	"description": "Démonstration à trous de cos(π/3) = 1/2 et sin(π/3) = √3/2 : triangle OAM équilatéral (justification), H milieu de [OA], sinus par cos² + sin² = 1",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Démonstrations",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Dans un repère orthonormé d'origine $O$, soit $A(1\\,;0)$ et $M$ le point du cercle trigonométrique associé au réel $\\dfrac{\\pi}{3}$. On note $H$ le projeté orthogonal de $M$ sur l'axe des abscisses : $OH=\\cos\\left(\\dfrac{\\pi}{3}\\right)$ et $HM=\\sin\\left(\\dfrac{\\pi}{3}\\right)$. L'angle $\\widehat{AOM}$ mesure $60^\\circ$.\n\nLe triangle $OAM$ est équilatéral. Pourquoi ?\n\n```choix\n- Car il est isocèle en $O$, avec un angle de $60^\\circ$ en $O$.\n- Car $OA=OM=1$.\n- Car tout triangle dont les sommets sont sur le cercle trigonométrique est équilatéral.\n- Car l'angle $\\widehat{AOM}$ est droit.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$OA=OM=1$ (rayons du cercle) : le triangle est isocèle en $O$, ce qui ne suffit pas.",
+					"Ses angles à la base sont égaux et valent $\\dfrac{180^\\circ-60^\\circ}{2}=60^\\circ$ : les trois angles valent $60^\\circ$, le triangle est **équilatéral**."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère orthonormé d'origine $O$, soit $A(1\\,;0)$ et $M$ le point du cercle trigonométrique associé au réel $\\dfrac{\\pi}{3}$. On note $H$ le projeté orthogonal de $M$ sur l'axe des abscisses : $OH=\\cos\\left(\\dfrac{\\pi}{3}\\right)$ et $HM=\\sin\\left(\\dfrac{\\pi}{3}\\right)$. L'angle $\\widehat{AOM}$ mesure $60^\\circ$.\n\nLe triangle $OAM$ est équilatéral : sa hauteur issue de $M$ est aussi une médiane, donc $H$ est le milieu de $[OA]$. Complète.\n\n$\\cos\\left(\\dfrac{\\pi}{3}\\right)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{1}{2}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"$H$ est le milieu de $[OA]$ et $OA=1$.",
+					"Donc $\\cos\\left(\\dfrac{\\pi}{3}\\right)=OH=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{2}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère orthonormé d'origine $O$, soit $A(1\\,;0)$ et $M$ le point du cercle trigonométrique associé au réel $\\dfrac{\\pi}{3}$. On note $H$ le projeté orthogonal de $M$ sur l'axe des abscisses : $OH=\\cos\\left(\\dfrac{\\pi}{3}\\right)$ et $HM=\\sin\\left(\\dfrac{\\pi}{3}\\right)$. L'angle $\\widehat{AOM}$ mesure $60^\\circ$.\n\nOn a obtenu $\\cos\\left(\\dfrac{\\pi}{3}\\right)=\\dfrac{1}{2}$. On sait que $\\cos^2 x+\\sin^2 x=1$ pour tout réel $x$, et $\\sin\\left(\\dfrac{\\pi}{3}\\right)>0$ car $M$ a une ordonnée positive. Complète par la valeur exacte.\n\n$\\sin\\left(\\dfrac{\\pi}{3}\\right)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{\\sqrt{3}}{2}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\sin\\left(\\dfrac{\\pi}{3}\\right)^2=1-\\left(\\dfrac{1}{2}\\right)^2=1-\\dfrac{1}{4}=\\dfrac{3}{4}$.",
+					"Le sinus est positif : $\\sin\\left(\\dfrac{\\pi}{3}\\right)=\\sqrt{\\dfrac{3}{4}}=\\textcolor{{{color:primary.0}}}{\\dfrac{\\sqrt{3}}{2}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "isocèle avec un angle de 60°",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : isocèle seulement",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : tout triangle inscrit",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : angle droit",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture décimale 0,5",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : √3/2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "√3/2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3/4 (le carré)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\frac{3}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : √2/2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −√3/2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["-\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

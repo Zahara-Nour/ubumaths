@@ -1,0 +1,199 @@
+{
+	"title": "Démontrer les valeurs de cos(π/4) et sin(π/4)",
+	"description": "Démonstration à trous de cos(π/4) = sin(π/4) = √2/2 : triangle OHM rectangle isocèle (justification), cos²(π/4) = 1/2, valeur exacte positive",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Démonstrations",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Dans un repère orthonormé d'origine $O$, soit $M$ le point du cercle trigonométrique associé au réel $\\dfrac{\\pi}{4}$, et $H$ son projeté orthogonal sur l'axe des abscisses. Ainsi $OH=\\cos\\left(\\dfrac{\\pi}{4}\\right)$, $HM=\\sin\\left(\\dfrac{\\pi}{4}\\right)$, et l'angle $\\widehat{HOM}$ mesure $45^\\circ$.\n\nOn en déduit que $\\cos\\left(\\dfrac{\\pi}{4}\\right)=\\sin\\left(\\dfrac{\\pi}{4}\\right)$. Pourquoi ?\n\n```choix\n- Car le triangle $OHM$ est rectangle isocèle en $H$.\n- Car $\\cos x=\\sin x$ pour tout réel $x$.\n- Car le cercle trigonométrique a pour rayon $1$.\n- Car $\\dfrac{\\pi}{4}$ est plus petit que $\\dfrac{\\pi}{2}$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans le triangle $OHM$ rectangle en $H$, les angles aigus sont complémentaires : $\\widehat{OMH}=90^\\circ-45^\\circ=45^\\circ$.",
+					"Deux angles égaux : le triangle est isocèle en $H$, donc $OH=HM$, c'est-à-dire $\\textcolor{{{color:primary.0}}}{\\cos\\left(\\dfrac{\\pi}{4}\\right)=\\sin\\left(\\dfrac{\\pi}{4}\\right)}$.",
+					"En général, $\\cos x\\neq\\sin x$ : par exemple $\\cos(0)=1$ et $\\sin(0)=0$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère orthonormé d'origine $O$, soit $M$ le point du cercle trigonométrique associé au réel $\\dfrac{\\pi}{4}$, et $H$ son projeté orthogonal sur l'axe des abscisses. Ainsi $OH=\\cos\\left(\\dfrac{\\pi}{4}\\right)$, $HM=\\sin\\left(\\dfrac{\\pi}{4}\\right)$, et l'angle $\\widehat{HOM}$ mesure $45^\\circ$.\n\nOn sait que $\\cos\\left(\\dfrac{\\pi}{4}\\right)=\\sin\\left(\\dfrac{\\pi}{4}\\right)$, et que $\\cos^2 x+\\sin^2 x=1$ pour tout réel $x$. On note $c=\\cos\\left(\\dfrac{\\pi}{4}\\right)$, donc $c^2+c^2=1$. Complète.\n\n$c^2=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{1}{2}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"$c^2+c^2=2c^2$, donc $2c^2=1$.",
+					"Donc $c^2=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{2}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère orthonormé d'origine $O$, soit $M$ le point du cercle trigonométrique associé au réel $\\dfrac{\\pi}{4}$, et $H$ son projeté orthogonal sur l'axe des abscisses. Ainsi $OH=\\cos\\left(\\dfrac{\\pi}{4}\\right)$, $HM=\\sin\\left(\\dfrac{\\pi}{4}\\right)$, et l'angle $\\widehat{HOM}$ mesure $45^\\circ$.\n\nOn a obtenu $\\cos\\left(\\dfrac{\\pi}{4}\\right)^2=\\dfrac{1}{2}$. Comme $M$ a une abscisse positive, $\\cos\\left(\\dfrac{\\pi}{4}\\right)>0$. Complète par la valeur exacte.\n\n$\\cos\\left(\\dfrac{\\pi}{4}\\right)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{\\sqrt{2}}{2}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre positif dont le carré vaut $\\dfrac{1}{2}$ est $\\sqrt{\\dfrac{1}{2}}=\\dfrac{1}{\\sqrt{2}}=\\dfrac{\\sqrt{2}}{2}$.",
+					"Donc $\\cos\\left(\\dfrac{\\pi}{4}\\right)=\\sin\\left(\\dfrac{\\pi}{4}\\right)=\\textcolor{{{color:primary.0}}}{\\dfrac{\\sqrt{2}}{2}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "triangle rectangle isocèle",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : cos = sin toujours",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : rayon 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : π/4 < π/2",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture décimale 0,5",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : √2/2 (la valeur au lieu du carré)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "√2/2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme 1/√2 : dénominateur à rendre rationnel",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\frac{1}{\\sqrt{2}}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur : 1/2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −√2/2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["-\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : √3/2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : √2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\sqrt{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
