@@ -32,7 +32,7 @@
 			],
 			"correction": {
 				"steps": [
-					"C'est un \\textcolor{{{color:primary.0}}}{cercle} : il est tout rond, il n'a ni côté ni sommet."
+					"C'est un $\\textcolor{{{color:primary.0}}}{cercle}$ : il est tout rond, il n'a ni côté ni sommet."
 				]
 			}
 		},
@@ -55,7 +55,7 @@
 			],
 			"correction": {
 				"steps": [
-					"C'est un \\textcolor{{{color:primary.0}}}{carré} : il a $4$ côtés de la même longueur et $4$ angles droits.{{if:k==6|| Il est penché, mais c'est toujours un carré.}}"
+					"C'est un $\\textcolor{{{color:primary.0}}}{carré}$ : il a $4$ côtés de la même longueur et $4$ angles droits.{{if:k==6|| Il est penché, mais c'est toujours un carré.}}"
 				]
 			}
 		},
@@ -78,7 +78,7 @@
 			],
 			"correction": {
 				"steps": [
-					"C'est un \\textcolor{{{color:primary.0}}}{rectangle} : il a $4$ angles droits, deux grands côtés et deux petits côtés."
+					"C'est un $\\textcolor{{{color:primary.0}}}{rectangle}$ : il a $4$ angles droits, deux grands côtés et deux petits côtés."
 				]
 			}
 		},
@@ -101,7 +101,7 @@
 			],
 			"correction": {
 				"steps": [
-					"C'est un \\textcolor{{{color:primary.0}}}{triangle rectangle} : il a $3$ côtés et un angle droit.",
+					"C'est un $\\textcolor{{{color:primary.0}}}{triangle rectangle}$ : il a $3$ côtés et un angle droit.",
 					"Un rectangle a $4$ côtés : ce n'est pas un rectangle."
 				]
 			}
@@ -125,7 +125,7 @@
 			],
 			"correction": {
 				"steps": [
-					"C'est un \\textcolor{{{color:primary.0}}}{triangle} : il a $3$ côtés et $3$ sommets.",
+					"C'est un $\\textcolor{{{color:primary.0}}}{triangle}$ : il a $3$ côtés et $3$ sommets.",
 					"Aucun de ses angles n'est droit : ce n'est pas un triangle rectangle."
 				]
 			}

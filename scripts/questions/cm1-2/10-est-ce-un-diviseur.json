@@ -56,7 +56,7 @@
 				"steps": [
 					"**Diviseur.** ${{d}}$ est un diviseur de ${{n}}$ si la division de ${{n}}$ par ${{d}}$ tombe juste : le reste est $0$. C'est la même chose que « ${{n}}$ est un multiple de ${{d}}$ ».",
 					"$${{n}} = {{d}} \\times {{q}}{{if:o==1| + {{r}}|}}$$",
-					"{{if:o==0|Le reste est $0$ : \\textcolor{{{color:primary.0}}}{oui}, ${{d}}$ est un diviseur de ${{n}}$.|Le reste est ${{r}}$, pas $0$ : \\textcolor{{{color:primary.0}}}{non}, ${{d}}$ n'est pas un diviseur de ${{n}}$.}}"
+					"{{if:o==0|Le reste est $0$ : $\\textcolor{{{color:primary.0}}}{oui}$, ${{d}}$ est un diviseur de ${{n}}$.|Le reste est ${{r}}$, pas $0$ : $\\textcolor{{{color:primary.0}}}{non}$, ${{d}}$ n'est pas un diviseur de ${{n}}$.}}"
 				]
 			}
 		},

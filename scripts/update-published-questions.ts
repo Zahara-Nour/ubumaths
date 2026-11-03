@@ -28,7 +28,8 @@
  * Usage :
  *   pnpm tsx scripts/update-published-questions.ts --lot <lot>            (simulation, diff)
  *   pnpm tsx scripts/update-published-questions.ts --lot <lot> --publier  (écrit)
- *   lots : second-degre, suites, derivation, textcolor-2de, niveaux-2de-probabilites
+ *   lots : second-degre, suites, derivation, textcolor-2de, niveaux-2de-probabilites,
+ *          textcolor-hors-2de
  *   … --seulement <id8>[,<id8>]   restreint aux cibles dont l'id commence ainsi
  *   … --sans-diff                 simulation sans le diff (preuves rouges seulement)
  */
@@ -134,6 +135,44 @@ const NIVEAUX_2DE_PROBABILITES: readonly string[] = [
 	'd7507e78-4041-441a-82fc-40de926f92cc' // Arbres pondérés › Probabilité conditionnelle sur un arbre, 5 → 8
 ];
 
+/** `\\textcolor` hors `$` hors de la seconde (§ 58 et § 63) : 27 modèles publiés, du CE1 à la
+ *  terminale ; seules les variations changent (générateurs régénérés, ou JSON corrigé à la main) */
+const TEXTCOLOR_HORS_2DE: readonly string[] = [
+	// CE1
+	'bbb43bf4-2cb7-4aa0-abf2-946b7199d159', // Angle droit, aigu ou obtus ?
+	'0fa9f1f8-268c-421c-b5dd-b21dc3f7a826', // Décrire une figure : côtés et angles droits
+	'9733e97c-0313-429a-bd0e-bfe5b4ee82b1', // Le bon mot : sommet, côté, centre, milieu, droite, segment
+	'803969b5-2a86-44c1-8168-f125c191235e', // Le code de l'angle droit
+	'b3ff17bc-74f7-4fbe-a696-675d83aa45a3', // Quelle est cette figure ? Cercle, carré, rectangle, triangles
+	// CM1
+	'6dbea912-4647-4021-91e8-18e6f9dc36b9', // Est-ce un diviseur ?
+	'5dbcc8dd-861a-4d4d-ba98-735fb7418c3d', // Est-ce un multiple ?
+	// 4e
+	'edcc194a-bf2a-45ea-a20f-dd1d06713cdc', // Appliquer un programme de calcul
+	'e7ef2835-a2c6-4666-b288-a56c2570e7a5', // Ce que conserve une translation
+	'f7d802ae-0dfa-4bd9-ad31-44bfd9f68254', // Centre du cercle circonscrit
+	'bdcc75c5-697a-44ae-824a-41ed7dd8ba81', // Droite des milieux
+	'0150ef82-b5bf-4a87-8fa9-8144e4f3e284', // Effet d'une translation
+	'e678f1d0-9b29-4829-a3fa-96420eb9cff2', // Formule, tableau et graphique
+	'bd2aa548-31ca-4cbc-9ae0-b38f93dbcedb', // Remonter un programme de calcul
+	'75713f0c-f3d9-4c89-af22-9d6f3a4f5ee0', // Triangle inscrit dans un demi-cercle
+	'c8306505-e030-4d65-8a56-3271669f28b5', // Translation et parallélogramme (4e et 3e)
+	// 3e
+	'6bcb3535-6632-4659-9a83-23a740b8e685', // Boule ou sphère ?
+	'cd756e21-af71-4922-8106-8387658a45e1', // Grands cercles et diamètre d'une sphère
+	'7407f328-e770-49da-8bc8-38cdf6081b6d', // La courbe de la fonction carré
+	'8cb2cdfd-d905-4e37-bff4-cceeb774fdc9', // Résoudre x² = a graphiquement
+	'7bb95104-9256-4bdb-a481-bdd2aae66a67', // Sections de solides
+	'787cc937-5bc7-435f-9a63-7d4d0f102ea1', // Somme de deux vecteurs
+	'ff3bd841-6d22-40f6-a4e3-4ddc7e017905', // Vecteurs égaux, opposés, nul
+	// 1re
+	'e0520082-84d1-417b-b344-b3bdea05300e', // Partition de l'univers
+	'dc5d7cb6-5d9a-41ca-89c3-83f4d6750613', // Tracer une droite donnée par un point et sa pente
+	// Terminale spé
+	'7ea93a82-d1d2-4dd3-8089-5f58cc1fe08f', // Dérivable implique continue
+	'86c59a05-936c-41a5-a05e-d85ab56a2bfb' // Variations de ln : comparer, signe
+];
+
 const LOTS: Record<string, Lot> = {
 	'second-degre': { dossier: 'scripts/questions/second-degre-existants', cibles: SECOND_DEGRE },
 	suites: { dossier: 'scripts/questions/suites-existants', cibles: SUITES },
@@ -142,6 +181,10 @@ const LOTS: Record<string, Lot> = {
 	'niveaux-2de-probabilites': {
 		dossier: 'scripts/questions/2de-niveaux-probabilites-existants',
 		cibles: NIVEAUX_2DE_PROBABILITES
+	},
+	'textcolor-hors-2de': {
+		dossier: 'scripts/questions/textcolor-hors-2de-existants',
+		cibles: TEXTCOLOR_HORS_2DE
 	}
 };
 

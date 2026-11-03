@@ -28,7 +28,7 @@
 			],
 			"correction": {
 				"steps": [
-					"Le petit carré est le \\textcolor{{{color:primary.0}}}{code de l'angle droit} : il dit que l'angle est droit, sans avoir à le vérifier avec l'équerre."
+					"Le petit carré est le $\\textcolor{{{color:primary.0}}}{code de l'angle droit}$ : il dit que l'angle est droit, sans avoir à le vérifier avec l'équerre."
 				]
 			}
 		},

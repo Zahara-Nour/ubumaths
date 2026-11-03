@@ -41,7 +41,7 @@
 				"steps": [
 					"L'univers est $\\Omega=\\{1\\,;2\\,;\\ldots\\,;{{eval:n}}\\}$. Des événements forment une partition de $\\Omega$ lorsqu'ils sont deux à deux disjoints (aucune issue commune) et que leur réunion est $\\Omega$ (chaque issue est dans l'un d'eux).",
 					"$A=\\{1\\,;\\ldots\\,;{{eval:a}}\\}$, $B=\\{{{eval:a+1}}\\,;\\ldots\\,;{{eval:b}}\\}$ et $C=\\{{{eval:b+1}}\\,;\\ldots\\,;{{eval:n}}\\}$.",
-					"Ces trois ensembles se suivent sans se chevaucher ni laisser de trou : ils sont deux à deux disjoints et leur réunion est $\\Omega$. \\textcolor{{{color:primary.0}}}{\\text{Oui}}, c'est une partition."
+					"Ces trois ensembles se suivent sans se chevaucher ni laisser de trou : ils sont deux à deux disjoints et leur réunion est $\\Omega$. $\\textcolor{{{color:primary.0}}}{\\text{Oui}}$, c'est une partition."
 				]
 			}
 		},
@@ -71,7 +71,7 @@
 				"steps": [
 					"L'univers est $\\Omega=\\{1\\,;2\\,;\\ldots\\,;{{eval:n}}\\}$. Des événements forment une partition de $\\Omega$ lorsqu'ils sont deux à deux disjoints (aucune issue commune) et que leur réunion est $\\Omega$ (chaque issue est dans l'un d'eux).",
 					"$A=\\{1\\,;\\ldots\\,;{{eval:a}}\\}$, $B=\\{{{eval:a}}\\,;\\ldots\\,;{{eval:b}}\\}$ et $C=\\{{{eval:b+1}}\\,;\\ldots\\,;{{eval:n}}\\}$.",
-					"L'issue ${{eval:a}}$ appartient à la fois à $A$ et à $B$ : $A\\cap B\\neq\\varnothing$. \\textcolor{{{color:primary.0}}}{\\text{Non}}, ce n'est pas une partition."
+					"L'issue ${{eval:a}}$ appartient à la fois à $A$ et à $B$ : $A\\cap B\\neq\\varnothing$. $\\textcolor{{{color:primary.0}}}{\\text{Non}}$, ce n'est pas une partition."
 				]
 			}
 		},
@@ -101,7 +101,7 @@
 				"steps": [
 					"L'univers est $\\Omega=\\{1\\,;2\\,;\\ldots\\,;{{eval:n}}\\}$. Des événements forment une partition de $\\Omega$ lorsqu'ils sont deux à deux disjoints (aucune issue commune) et que leur réunion est $\\Omega$ (chaque issue est dans l'un d'eux).",
 					"$A=\\{1\\,;\\ldots\\,;{{eval:a}}\\}$, $B=\\{{{eval:a+2}}\\,;\\ldots\\,;{{eval:b}}\\}$ et $C=\\{{{eval:b+1}}\\,;\\ldots\\,;{{eval:n}}\\}$.",
-					"L'issue ${{eval:a+1}}$ n'appartient ni à $A$, ni à $B$, ni à $C$ : la réunion n'est pas $\\Omega$. \\textcolor{{{color:primary.0}}}{\\text{Non}}, ce n'est pas une partition."
+					"L'issue ${{eval:a+1}}$ n'appartient ni à $A$, ni à $B$, ni à $C$ : la réunion n'est pas $\\Omega$. $\\textcolor{{{color:primary.0}}}{\\text{Non}}$, ce n'est pas une partition."
 				]
 			}
 		},

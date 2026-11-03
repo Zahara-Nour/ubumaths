@@ -74,7 +74,7 @@
 			"correction": {
 				"steps": [
 					"Les solutions seraient les abscisses des points où la droite $y={{a}}$ coupe $\\mathcal{C}_f$.",
-					"La droite est **sous** la courbe et ne la coupe pas : un carré n'est jamais négatif. L'équation n'a \\textcolor{{{color:primary.0}}}{\\text{aucune solution}}.",
+					"La droite est **sous** la courbe et ne la coupe pas : un carré n'est jamais négatif. L'équation n'a $\\textcolor{{{color:primary.0}}}{\\text{aucune solution}}$.",
 					"${{eval:-sqrt(-(a))}}$ ne convient pas : $({{eval:-sqrt(-(a))}})^2={{eval:-(a)}}$, et non ${{a}}$."
 				]
 			}

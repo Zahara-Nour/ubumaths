@@ -6,18 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2290 et la publication de 8 E (§ 62)._
+_Mis à jour le 2026-11-03, PR `fix/textcolor-hors-2de` ouverte (§ 63)._
 
-- **État** : vague 8 bis **toute publiée** : 8 D (7), 6 anciens, 8 E (7, niveaux 2 et 6-8) — MCP.
-- **Prochaine action** : les 35 fichiers hors 2de (§ 58, accord de David : ce chantier, lots par
-  niveau, méthode du § 59 : `colt()`, régénérer, `update-published-questions.ts`) ; puis § 61.
-- **En attente de David** : rien.
+- **État** : `\textcolor` hors `$` corrigé hors 2de : 30 fichiers (10 générateurs + 3 JSON), lot
+  `textcolor-hors-2de` de 27 publiés (2 déjà corrigés en prod, 1 sans le défaut). Simulation verte.
+- **Prochaine action** : merger la PR ; puis David : `pnpm tsx scripts/update-published-questions.ts
+--lot textcolor-hors-2de --publier` ; relire par export (27/27, `hors-maths.py` → 0). Ensuite § 61.
+- **En attente de David** : le `--publier` ci-dessus.
 - **Pièges en cours** : `--publier`, `publier-lot`, `db:migrate` → David avec `!` ;
   `create-questions` apparie par (titre, thème, domaine, sous-domaine, **niveau**) : un changement de niveau
   passe par `update-published-questions.ts` (brouillons compris), sinon doublons ; `col()` en texte →
-  `colt()` ; spec fraction = `\\frac{a}{b}` ; pas de ligne `Claude-Session:` ; une autre session écrit
-  aussi dans ce journal (§ 61) : `git pull` avant d'éditer.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de` (HEAD détachée sur `origin/main`).
+  `colt()` ; `fonctions-terminale/C-06` du dépôt périmé vs prod (§ 63) ; pas de ligne `Claude-Session:` ;
+  une autre session écrit aussi dans ce journal (§ 61) : `git pull` avant d'éditer.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `fix/textcolor-hors-2de`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1569,3 +1570,29 @@ Avant de corriger : revérifier dans le code de rendu que `\textcolor` hors math
 - **#2290 mergée** ; David a lancé le lot `niveaux-2de-probabilites` (4 niveaux, relus conformes) puis
   `publier-lot --dir scripts/questions/2de-probabilites-e` : 7/7. MCP : 7/7 `published`, niveaux 2, 6, 7,
   8 et 1, 4, 4 (inchangés).
+
+## 63. `\textcolor` hors `$` hors de la seconde : correctif des 27 modèles publiés (2026-11-03)
+
+- **Mesure refaite** (`hors-maths.py` sur `scripts/questions/*/`) : 57 textes dans **30 fichiers** (le § 58
+  disait 35 fichiers, compte faux ; 55 textes dans 29 fichiers, plus `1spe-tracer-droite/01`, ajouté
+  aujourd'hui, 2 textes).
+- **10 générateurs** (`docs/wip/questions/lot-{ce1-9,3-6,4-6,4-5,4-8,3-4b,1spe-probas,cm1-2,
+tspe-ln-continuite-convexite,1spe-tracer-droite}.py`) : vérifiés d'abord fidèles (régénérés à vide =
+  JSON suivis, à l'identique). `col()` instrumenté (position de chaque appel dans le source), 59 appels
+  hors `$`, aucun tantôt dedans tantôt dehors → `colt()` à ces positions exactes, assertion par position.
+  Piège : `positions.col_offset` de Python compte en **octets UTF-8** (lignes accentuées).
+- **3 fichiers sans générateur** (`fonctions-terminale/A-06`, `C-06`, `trigo-terminale/A-01`) : le
+  `\textcolor{…}{…}` hors `$` entouré de `$`, par script (groupes d'accolades équilibrés).
+- **Contrôles** : diff des 30 JSON = **uniquement des `$` insérés** (aucun `$$` créé) ;
+  `hors-maths.py` sur tout `scripts/questions/` → 0 ; `question:specs` (garde du § 60 comprise) 30/30.
+- **Prod** (export, lecture seule) : 30 publiés retrouvés. 26 identiques au fichier d'avant correctif ;
+  `c8306505` ne diffère que par `grades` (prod `4, 3`, fichier `4` ; on garde la prod). **Déjà corrigés
+  en prod** : `10393ff9` (A-06) et `4c4d43dc` (A-01), variations identiques à la correction → hors lot.
+  `9ad36217` (C-06) : la prod porte une autre version (« Courbes de ln et exp : symétrie par rapport à
+  y = x »), sans le défaut → hors lot ; **le fichier `C-06` du dépôt est périmé** par rapport à la prod
+  (titre, description, variations, specs) : ne pas le réimporter tel quel.
+- Lot **`textcolor-hors-2de`** de `update-published-questions.ts` : **27 cibles** (CE1 5, CM1 2, 4e 9,
+  3e 7, 1re 2, Tle spé 2), un seul lot avec les ids rangés par niveau. Instantanés
+  `scripts/questions/textcolor-hors-2de-existants/<id8>.json` = export de la prod, seules les
+  `variations` remplacées ; `hors-maths.py` sur les instantanés → 0. Simulation : 27 cibles, `variations`
+  seules, specs vertes.

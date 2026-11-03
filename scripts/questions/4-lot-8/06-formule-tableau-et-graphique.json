@@ -153,7 +153,7 @@
 				"steps": [
 					"**Trois façons de dire la même chose.** Une formule, un tableau de valeurs et un graphique traduisent tous comment une grandeur **dépend** d'une autre.",
 					"On lit le graphique **de gauche à droite**, comme le temps qui passe.",
-					"{{if:s>0|La droite monte : la température \\textcolor{{{color:primary.0}}}{\\text{augmente}}.|La droite descend : la température \\textcolor{{{color:primary.0}}}{\\text{diminue}}.}}"
+					"{{if:s>0|La droite monte : la température $\\textcolor{{{color:primary.0}}}{\\text{augmente}}$.|La droite descend : la température $\\textcolor{{{color:primary.0}}}{\\text{diminue}}$.}}"
 				]
 			}
 		}

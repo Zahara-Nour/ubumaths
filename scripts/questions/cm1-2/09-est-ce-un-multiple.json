@@ -56,7 +56,7 @@
 				"steps": [
 					"**Multiple.** ${{n}}$ est un multiple de ${{d}}$ si la division de ${{n}}$ par ${{d}}$ tombe juste : le reste est $0$.",
 					"$${{n}} = {{d}} \\times {{q}}{{if:o==1| + {{r}}|}}$$",
-					"{{if:o==0|Le reste est $0$ : \\textcolor{{{color:primary.0}}}{oui}, ${{n}}$ est un multiple de ${{d}}$ (il est dans la table de ${{d}}$).|Le reste est ${{r}}$, pas $0$ : \\textcolor{{{color:primary.0}}}{non}, ${{n}}$ n'est pas un multiple de ${{d}}$.}}"
+					"{{if:o==0|Le reste est $0$ : $\\textcolor{{{color:primary.0}}}{oui}$, ${{n}}$ est un multiple de ${{d}}$ (il est dans la table de ${{d}}$).|Le reste est ${{r}}$, pas $0$ : $\\textcolor{{{color:primary.0}}}{non}$, ${{n}}$ n'est pas un multiple de ${{d}}$.}}"
 				]
 			}
 		},

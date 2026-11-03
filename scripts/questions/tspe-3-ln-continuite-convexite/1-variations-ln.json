@@ -25,7 +25,7 @@
 			"correction": {
 				"steps": [
 					"$\\ln$ est définie sur $\\left]0\\,;+\\infty\\right[$ seulement, et $\\ln'(x)=\\dfrac{1}{x}>0$ sur cet intervalle.",
-					"$\\ln$ est donc \\textcolor{{{color:primary.0}}}{strictement croissante sur \\left]0\\,;+\\infty\\right[}.",
+					"$\\ln$ est donc $\\textcolor{{{color:primary.0}}}{strictement croissante sur \\left]0\\,;+\\infty\\right[}$.",
 					"$\\ln x$ est négatif sur $\\left]0\\,;1\\right[$, mais il augmente quand même : le signe et le sens de variation sont deux choses différentes."
 				]
 			}

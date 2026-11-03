@@ -161,7 +161,7 @@
 				"steps": [
 					"Enchaîner la translation de vecteur $\\vec{u}$ et celle de vecteur $\\vec{v}$, c'est appliquer la translation de vecteur $\\vec{u} + \\vec{v}$.",
 					"Depuis $A$ : $\\vec{u}$ fait {{eval:abs(ux)}} carreau(x) vers la {{if:ux>0|droite|gauche}} et {{eval:abs(uy)}} vers le {{if:uy>0|haut|bas}}, puis $\\vec{v}$ fait {{eval:abs(vx)}} carreau(x) vers la {{if:vx>0|droite|gauche}} et {{eval:abs(vy)}} vers le {{if:vy>0|haut|bas}}.",
-					"On arrive au point \\textcolor{{{color:primary.0}}}{{{if:p==0|M|}}{{if:p==1|N|}}{{if:p==2|P|}}{{if:p==3|R|}}}."
+					"On arrive au point $\\textcolor{{{color:primary.0}}}{{{if:p==0|M|}}{{if:p==1|N|}}{{if:p==2|P|}}{{if:p==3|R|}}}$."
 				]
 			}
 		},

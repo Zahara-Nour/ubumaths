@@ -83,7 +83,7 @@
 				"steps": [
 					"$A$ est sur la courbe si son ordonnée est le **carré** de son abscisse.",
 					"$${{if:n<0|({{n}})|{{n}}}}^2 = {{eval:(n)^2}}$$",
-					"{{if:t==0|L'ordonnée de $A$ vaut bien ${{eval:(n)^2}}$ : \\textcolor{{{color:primary.0}}}{\\text{oui}}, $A$ est sur la courbe.|L'ordonnée de $A$ est ${{b}}$, et non ${{eval:(n)^2}}$ : \\textcolor{{{color:primary.0}}}{\\text{non}}, $A$ n'est pas sur la courbe.}}"
+					"{{if:t==0|L'ordonnée de $A$ vaut bien ${{eval:(n)^2}}$ : $\\textcolor{{{color:primary.0}}}{\\text{oui}}$, $A$ est sur la courbe.|L'ordonnée de $A$ est ${{b}}$, et non ${{eval:(n)^2}}$ : $\\textcolor{{{color:primary.0}}}{\\text{non}}$, $A$ n'est pas sur la courbe.}}"
 				]
 			}
 		}

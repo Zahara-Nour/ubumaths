@@ -24,7 +24,7 @@
 			"correction": {
 				"steps": [
 					"Une fonction est continue sur un intervalle quand sa courbe se trace **sans lever le crayon**.",
-					"Ici, la courbe saute en $x={{c}}$ : \\textcolor{{{color:primary.0}}}{f\\text{ n'est pas continue en }{{c}}} (elle l'est sur $\\left[{{eval:c-3}}\\,;{{c}}\\right]$ et sur $\\left]{{c}}\\,;{{eval:c+3}}\\right]$)."
+					"Ici, la courbe saute en $x={{c}}$ : $\\textcolor{{{color:primary.0}}}{f\\text{ n'est pas continue en }{{c}}}$ (elle l'est sur $\\left[{{eval:c-3}}\\,;{{c}}\\right]$ et sur $\\left]{{c}}\\,;{{eval:c+3}}\\right]$)."
 				]
 			},
 			"blanks": [
@@ -51,7 +51,7 @@
 			],
 			"correction": {
 				"steps": [
-					"La courbe se trace **sans lever le crayon** : \\textcolor{{{color:primary.0}}}{f\\text{ est continue sur }\\left[{{eval:c-3}}\\,;{{eval:c+3}}\\right]}.",
+					"La courbe se trace **sans lever le crayon** : $\\textcolor{{{color:primary.0}}}{f\\text{ est continue sur }\\left[{{eval:c-3}}\\,;{{eval:c+3}}\\right]}$.",
 					"Le point anguleux en $x={{c}}$ montre que $f$ n'y est pas **dérivable** (deux demi-tangentes différentes) : ce n'est pas un défaut de continuité. Une fonction dérivable est continue, mais une fonction continue n'est pas toujours dérivable."
 				]
 			},
