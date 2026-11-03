@@ -11,10 +11,10 @@ _Mis à jour le 2026-11-03, après #2272._
 
 - **État** : modèle 433 mergé (#2272), brouillon en base locale seulement ; pas en prod (#2265 non
   déployé).
-- **Prochaine action** : 1SPE-271 (§ 6) : réponses de David, puis worktree neuf, modèle en
-  Fonctions › Dérivation › Tangente, **niveau 4** (1 à 3 pris, nœud `e7f414da` = celui de 271,
-  relevé du 2026-11-03).
-- **En attente de David** : § 6 (a) et (b) ; aperçu admin du 433 à jouer à l'œil ; après un
+- **Prochaine action** : aucune sur 1SPE-271 : **repris par le chantier `questions-1spe-tangente`**
+  (branche `feat/questions-1spe-tangente`, décision de David du 2026-11-03) ; § 6 abandonné, ne pas
+  écrire de modèle 271 ici. Il reste la livraison du 433 (ligne suivante).
+- **En attente de David** : aperçu admin du 433 à jouer à l'œil ; après un
   `deploy:prod` qui livre #2265, `create-questions --dir scripts/questions/1spe-tracer-droite --publier`
   (brouillon en prod), puis migration nœud + tag, page à cocher, publication.
 - **Pièges en cours** : brouillons seulement tant que #2265 n'est pas en prod ; Chrome n'ouvrait pas
@@ -103,6 +103,12 @@ la met au propre (`equationLatex` : `y = -1/2x + 2/2` → « y = 1 − x/2 »). 
 revenait à un onglet vide sur `localhost:5180`).
 
 ## 6. Phase 0 de 1SPE-271 : proposée le 2026-11-03
+
+> ⛔ **Abandonné le 2026-11-03 : repris par le chantier `questions-1spe-tangente`** (journal
+> `docs/wip/questions-1spe-tangente-progress.md`, branche `feat/questions-1spe-tangente`), sur décision
+> de David. Modèle 271 écrit là-bas (Fonctions › Dérivation › Tangente, niveau 4 ; tags 1SPE-271 +
+> 1TECHNO-078 ; 1_SPE + 1_TECHNO). Ne pas écrire de modèle 271 dans ce chantier ; la phase 0
+> ci-dessous reste pour l'historique.
 
 Un modèle, **« Tracer la tangente connaissant le nombre dérivé »** (Analyse › Dérivation : catégorie
 et niveau à relever en prod avant d'écrire ; niveaux scolaires 1_SPE seul, le point n'est pas un
