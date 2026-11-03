@@ -1,80 +1,127 @@
 /**
  * MathKeyboardClose — bouton « Fermer le clavier » au-dessus du clavier virtuel MathLive.
  *
- * Avec le vrai MathLive : le piège mesuré (un `blur()` sur le champ le laisse se croire
- * actif, et il rouvre le clavier) ne se voit qu'avec lui.
+ * Faux clavier (`window.mathVirtualKeyboard`) : monter le vrai clavier dans le test
+ * (`initVirtualKeyboardInCurrentBrowsingContext`) accroche un écouteur à `window.top`, la page
+ * de vitest partagée par tous les fichiers du shard ; il survit à l'iframe du test et a fait
+ * tomber le navigateur de la CI sur le fichier suivant (#2353). Le piège de `blur()` côté
+ * MathLive, lui, ne se reproduit qu'avec l'émulation tactile : il est mesuré au navigateur
+ * (docs/wip/clavier-mathlive-progress.md), pas ici.
  */
 
-import { describe, it, expect, beforeAll, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
-import { MathfieldElement, initVirtualKeyboardInCurrentBrowsingContext } from 'mathlive';
 import MathKeyboardClose from '../MathKeyboardClose.svelte';
 
-/** Délai de MathLive entre la perte de focus et la fermeture du clavier (300 ms), plus une marge */
-const MATHLIVE_HIDE_DELAY = 500;
+/** Faux clavier : ce que le composant lit (`visible`, `boundingRect`) et ses deux événements */
+class FakeKeyboard extends EventTarget {
+	visible = false;
+	boundingRect = new DOMRect(0, 0, 0, 0);
 
-function wait(ms: number) {
-	return new Promise((resolve) => setTimeout(resolve, ms));
+	open(height: number) {
+		this.visible = true;
+		this.boundingRect = new DOMRect(0, window.innerHeight - height, window.innerWidth, height);
+		this.dispatchEvent(new Event('virtual-keyboard-toggle'));
+	}
+
+	close() {
+		this.visible = false;
+		this.boundingRect = new DOMRect(0, 0, 0, 0);
+		this.dispatchEvent(new Event('virtual-keyboard-toggle'));
+	}
+
+	/** Changement de géométrie sans fermeture (onglets remis à zéro, rotation…) */
+	reflow() {
+		this.dispatchEvent(new Event('geometrychange'));
+	}
 }
 
-describe('MathKeyboardClose', () => {
-	let field: MathfieldElement;
+const KEYBOARD_HEIGHT = 200;
 
-	// Les tests tournent dans une iframe, où MathLive ne monte qu'un relais vers la page
-	// parente : on monte ici le vrai clavier
-	beforeAll(() => {
-		initVirtualKeyboardInCurrentBrowsingContext();
-	});
+describe('MathKeyboardClose', () => {
+	let keyboard: FakeKeyboard;
+	let field: HTMLElement;
 
 	beforeEach(() => {
-		field = new MathfieldElement();
+		keyboard = new FakeKeyboard();
+		Object.defineProperty(window, 'mathVirtualKeyboard', {
+			value: keyboard,
+			configurable: true,
+			writable: true
+		});
+		// Un `math-field` focalisable, sans charger MathLive
+		field = document.createElement('math-field');
+		field.tabIndex = 0;
 		document.body.append(field);
 	});
 
 	afterEach(() => {
-		window.mathVirtualKeyboard.hide();
 		field.remove();
+		Reflect.deleteProperty(window, 'mathVirtualKeyboard');
 	});
+
+	const button = () => page.getByRole('button', { name: 'Fermer le clavier' });
 
 	it("n'affiche rien tant que le clavier est fermé", async () => {
 		await render(MathKeyboardClose);
 		field.focus();
-		await wait(50);
-		await expect
-			.element(page.getByRole('button', { name: 'Fermer le clavier' }))
-			.not.toBeInTheDocument();
+		await expect.element(button()).not.toBeInTheDocument();
 	});
 
-	it('apparaît au-dessus du clavier ouvert', async () => {
+	it('apparaît juste au-dessus du clavier ouvert', async () => {
 		await render(MathKeyboardClose);
-		field.focus();
-		window.mathVirtualKeyboard.show();
-		const button = page.getByRole('button', { name: 'Fermer le clavier' });
-		await expect.element(button).toBeVisible();
-		const height = window.mathVirtualKeyboard.boundingRect.height;
-		expect(height).toBeGreaterThan(0);
-		expect(button.element().getBoundingClientRect().bottom).toBeLessThanOrEqual(
-			window.innerHeight - height
-		);
+		keyboard.open(KEYBOARD_HEIGHT);
+		await expect.element(button()).toBeVisible();
+		const bottom = button().element().getBoundingClientRect().bottom;
+		expect(bottom).toBeLessThanOrEqual(window.innerHeight - KEYBOARD_HEIGHT);
+		expect(bottom).toBeGreaterThan(window.innerHeight - KEYBOARD_HEIGHT - 20);
 	});
 
-	it('ferme le clavier : le champ perd vraiment le focus, et le bouton disparaît', async () => {
+	it('prend le focus au clic, comme un toucher sur iOS où le bouton ne le prend pas seul', async () => {
 		await render(MathKeyboardClose);
 		field.focus();
-		window.mathVirtualKeyboard.show();
-		const button = page.getByRole('button', { name: 'Fermer le clavier' });
-		await expect.element(button).toBeVisible();
-		expect(field.hasFocus()).toBe(true);
+		keyboard.open(KEYBOARD_HEIGHT);
+		await expect.element(button()).toBeVisible();
 
-		// Comme un toucher sur iOS : le bouton ne prend pas le focus de lui-même (un clic de
-		// souris le lui donnerait et masquerait le piège)
-		(button.element() as HTMLButtonElement).click();
-		await wait(MATHLIVE_HIDE_DELAY);
+		const focused: EventTarget[] = [];
+		const track = (event: FocusEvent) => event.target && focused.push(event.target);
+		document.addEventListener('focusin', track);
+		// Clic programmatique : il ne déplace pas le focus de lui-même
+		(button().element() as HTMLButtonElement).click();
+		document.removeEventListener('focusin', track);
 
-		// Avec `field.blur()`, hasFocus() restait vrai et le clavier se rouvrait
-		expect(field.hasFocus()).toBe(false);
-		expect(window.mathVirtualKeyboard.visible).toBe(false);
-		await expect.element(button).not.toBeInTheDocument();
+		expect(focused[0]).toBeInstanceOf(HTMLButtonElement);
+		expect(document.activeElement).not.toBe(field);
+	});
+
+	it('reste caché pendant la fermeture, même si la géométrie du clavier change', async () => {
+		await render(MathKeyboardClose);
+		field.focus();
+		keyboard.open(KEYBOARD_HEIGHT);
+		await expect.element(button()).toBeVisible();
+
+		(button().element() as HTMLButtonElement).click();
+		await expect.element(button()).not.toBeInTheDocument();
+		// MathLive n'a pas encore fermé (≈ 300 ms) : un changement de géométrie arrive
+		keyboard.reflow();
+		await expect.element(button()).not.toBeInTheDocument();
+
+		keyboard.close();
+		await expect.element(button()).not.toBeInTheDocument();
+	});
+
+	it('revient quand un champ reprend le focus et que le clavier se rouvre', async () => {
+		await render(MathKeyboardClose);
+		field.focus();
+		keyboard.open(KEYBOARD_HEIGHT);
+		await expect.element(button()).toBeVisible();
+		(button().element() as HTMLButtonElement).click();
+		await expect.element(button()).not.toBeInTheDocument();
+
+		// Toucher le champ avant même la fermeture : le clavier reste ouvert, le bouton revient
+		field.focus();
+		keyboard.reflow();
+		await expect.element(button()).toBeVisible();
 	});
 });

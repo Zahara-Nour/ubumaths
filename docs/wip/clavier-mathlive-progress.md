@@ -48,3 +48,9 @@ pas dans le clavier par défaut qu'utilise le site. David valide les deux correc
   réapparaître pendant les 300 ms de fermeture, sur un `geometrychange`) ; remis à zéro quand un
   champ MathLive reprend le focus. Mesuré : bouton masqué pendant toute la fermeture, de retour à
   la réouverture. Fichier ajouté au `couvre:` de `docs/systeme/questions.md` (garde du pre-push).
+- **CI de #2353 rouge** : Lint (garde doc : `coquille-et-caches.md`, `css-color-tokens.md`) et Client
+  Tests shard 2 (« Browser connection was closed » sur `aide-ecriture/cercle-trigo`, 14 s après mon
+  test). Cause probable : `initVirtualKeyboardInCurrentBrowsingContext()` accroche un écouteur
+  `message` à `window.top`, partagé par tout le shard, qui survit à l'iframe du test. Test réécrit avec
+  un **faux clavier** (5 tests) ; preuves rouges : sans `closing` → « reste caché pendant la fermeture »
+  rouge ; avec l'ancien `blur()` → « prend le focus au clic » rouge.
