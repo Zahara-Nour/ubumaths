@@ -9,18 +9,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR de migration du lot 3 ouverte (#2334)._
+_Mis à jour le 2026-11-03, après #2334 (lot 3 rangé, page à cocher publiée)._
 
-- **État** : lots 1 et 2 publiés. Lot 3 (308, 411, 322, 323) : modèles mergés (#2332), 4 brouillons créés en prod
-  par David ; migration `20261103155449_…_3_rangement_tags` en PR **#2334** (test 12/12, rouge sans elle).
-- **Prochaine action** : lire le verdict de l'audit `security-auditor` (lancé, à relancer si la session a été
-  vidée) et la CI de #2334 ; puis `pnpm check:migrations --pr 2334`, merge, `db:migrate` depuis la branche
-  mergée, vérification MCP (nœud, point, `updated_at`), page à cocher (gabarit : lot 2).
-- **En attente de David** : rien avant la page à cocher. Extension `signe:` du bloc `ranger` (Q2 b) **non
-  tranchée** : à reposer une fois le lot 3 publié.
-- **Pièges en cours** : `1/√2` est jugé `bad_form` (spec asservie). Migration copiée du lot 2 : transformer
-  LIGNE À LIGNE (une regex multi-lignes a mangé le bloc ROLLBACK commenté, refait). `Doc-inchangée:` dans un
-  COMMIT pour une migration. Ancienne branche distante `docs/questions-1spe-demonstrations` à supprimer.
+- **État** : lots 1 et 2 publiés. Lot 3 (308, 411, 322, 323) : 4 brouillons en prod, rangés et tagués
+  (#2334, `db:migrate` fait, vérifié en base). Page à cocher : https://claude.ai/artifact/7Bb7HVkpfgdTTNfiDn4P1Y
+- **Prochaine action** : lire les verdicts de la page (`ArtifactData` list `verdicts`), corriger ce qui est « à
+  revoir » ; 4/4 OK → David publie (`publier-lot.ts --publier`), relire `published` en base (MCP).
+- **En attente de David** : relecture de la page à cocher. Ensuite, reposer l'extension `signe:` du bloc `ranger`
+  (Q2 b, **non tranchée**) : ce sera la fin des 14 démonstrations.
+- **Pièges en cours** : `1/√2` est jugé `bad_form` (spec asservie). Migration copiée d'un lot précédent :
+  transformer LIGNE À LIGNE (une regex multi-lignes a mangé le ROLLBACK commenté). Worktree sans lien Supabase :
+  copier `supabase/.temp/{project-ref,linked-project.json,pooler-url,postgres-version}` du dépôt principal pour
+  `db:migrate`. Ancienne branche distante `docs/questions-1spe-demonstrations` à supprimer.
 - **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, branche `feat/questions-1spe-demonstrations`.
 
 ---
@@ -201,3 +201,10 @@ En prod (2026-11-03) : brouillons 66ecbb33 (308), 0931c87e (411), e8011f4e (322)
 Relevé MCP : `draft`, {1_SPE}, sans nœud ni tag ; les 3 sous-notions sont actives et uniques. Migration
 `20261103155449_questions_1spe_demonstrations_3_rangement_tags` (#2334), calquée sur celle du lot 2. Test d'intégration
 à 12 cas : vert, et rouge sans la migration (6 cas rouges, la suite principale ne s'exécute pas).
+
+Audit sécurité : aucun finding bloquant (diff identique au lot 2 hors données ; notes : branche « nœud
+introuvable » sans test propre, garde « déjà tagué » = filet). CI : deux jobs tombés sur une panne du runner
+(« Could not get pnpm cache folder path »), relancés, verts. `db:migrate` du 2026-11-03, joué depuis le worktree
+(le `git pull` du dépôt principal était bloqué par une modification d'une autre session) : vérifié en base, les 4
+modèles sur leur sous-notion avec leur seul point, `draft`, `updated_at` intact. Page à cocher :
+https://claude.ai/artifact/7Bb7HVkpfgdTTNfiDn4P1Y
