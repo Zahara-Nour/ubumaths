@@ -9,15 +9,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, à l'ouverture du chantier._
+_Mis à jour le 2026-11-03, phase 0 validée (§ 3, D1)._
 
-- **État** : relevé fait (§ 1, 17 démonstrations du BO) ; outils regardés (§ 2) ; phase 0 écrite (§ 3), **non validée**.
-- **Prochaine action** : faire trancher Q1-Q5 (§ 3) par David, puis relevé MCP (nœuds des points, catégories et niveaux voisins).
-- **En attente de David** : Q1-Q5 du § 3, dont la question d'accès (Q5).
+- **État** : relevé fait (§ 1, 17 démonstrations) ; phase 0 validée (David, « je te suis » sur les recos Q1-Q5, § 3).
+- **Prochaine action** : lot 1 (232, 233, 234, 235, 255) : relevé MCP (nœuds des points, catégories et niveaux voisins), puis écriture du script `docs/wip/questions/lot-1spe-demonstrations-1.py` (gabarit `lot-1spe-savoir-a.py`) ; branche à renommer en `feat/…`.
+- **En attente de David** : rien. Extension `signe:` du bloc `ranger` (Q2 b) **non tranchée** : à reposer après les lots à trous.
 - **Pièges en cours** : le bloc `ranger` n'accepte que `signe: <` / `>` (§ 2) ; pièges des lots 1re spé dans
   `couvrir-un-niveau.md` § 9 (`cleanCoefficients`, `acceptDecimal`, `e` = Euler, choix mélangés, `colt`).
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, branche `docs/questions-1spe-demonstrations`
-  (renommer en `feat/…` au premier fichier de code ou de modèle).
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, branche `docs/questions-1spe-demonstrations`.
 
 ---
 
@@ -82,3 +81,10 @@ Les 52 points P sans modèle (couverture du 2026-11-03) se répartissent en **17
 
 Découpage en lots proposé après validation : (1) suites et second degré (232, 233, 234, 235, 255) ; (2) dérivation
 (275, 276, 277, 398, 278) ; (3) exponentielle, trigo, produit scalaire (300, 301, 302, 308, 411, 322, 323).
+
+**D1 (David, 2026-11-03, « je te suis » sur les recos)** : Q1 les 17 démonstrations seulement ; Q2 (a) démonstration
+à trous (étape clé en case, ou justification en case choix à 4 propositions), sans outil neuf. (b) étapes à ranger :
+**non tranché**, à reposer une fois les lots à trous faits ; Q3 2-3 variations, une par étape clé, valeurs tirées
+quand la preuve s'y prête ; Q4 un modèle par point, tagué sur son point P, catégorie neuve « Démonstrations » par
+domaine ; Q5 accès : personne de plus (brouillons ; migration de nœud et de tags seulement). Lots : 1 suites et
+second degré, 2 dérivation, 3 exponentielle, trigo, produit scalaire.
