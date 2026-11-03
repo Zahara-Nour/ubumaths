@@ -9,14 +9,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, lot 3 écrit (PR à ouvrir)._
+_Mis à jour le 2026-11-03, après #2332 (lot 3, modèles)._
 
 - **État** : lots 1 et 2 **publiés** en prod (5/5 OK chacun). Lot 3 (308, 411, 322, 323 ; 300-302 hors chantier,
-  § 1) écrit, simulation verte, brouillons en base locale ; PR des modèles à ouvrir et merger.
-- **Prochaine action** : après le merge, David crée les 4 brouillons en prod
+  § 1) mergé (#2332) : simulation verte, brouillons en base locale ; pas encore en prod.
+- **Prochaine action** : David crée les 4 brouillons en prod
   (`pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-demonstrations-3 --publier`), puis migration
   de rangement et tags (gabarit : lot 2, #2319), `db:migrate`, page à cocher.
-- **En attente de David** : création des brouillons en prod (après le merge). Extension `signe:` du bloc `ranger`
+- **En attente de David** : création des 4 brouillons en prod. Extension `signe:` du bloc `ranger`
   (Q2 b) **non tranchée** : à reposer une fois le lot 3 publié.
 - **Pièges en cours** : `h(…)` est lu comme une fonction (f, g, h). `1/√2` est jugé `bad_form` (spec asservie).
   Jamais de couleur sur du texte. `Doc-inchangée:` dans un COMMIT pour une migration. Garde `lot partiel`. Ancienne
