@@ -35,11 +35,28 @@ export interface ReplExecutionResult {
 	 * l'Atelier, `pnpm math` et la calculatrice montrent tous (chantier
 	 * `registre-reference`, D1) ; le corpus `tests/fixtures/mathast/registre-corpus.ts`
 	 * en est le contrat. Absente : la commande n'a pas encore de réponse déclarée.
-	 * ⚠️ Défini et jugé en mode exact seulement (corpus, lot 1) : le mode décimal
-	 * (`.decimal`), l'égalité tapée seule (`2=2`, pas de champ) et l'expression
-	 * non évaluée (`x+1` recopiée) seront tranchés avec le lot 2 du corpus.
+	 * Exacte dans les deux modes : le mode décimal (`.decimal`) est un choix
+	 * d'affichage de l'outil, qui lit `decimal` (décision B du lot 2).
+	 * ⚠️ L'égalité tapée seule (`2=2`, pas de champ) et l'expression non évaluée
+	 * (`x+1` recopiée) seront tranchées par les PR suivantes du lot 2.
 	 */
 	readonly answer?: string;
+
+	/**
+	 * L'**écriture décimale** de la réponse d'un calcul, rendue À CÔTÉ de
+	 * `answer` (décisions A et B du lot 2) : au point, en LaTeX comme `answer`
+	 * (unité `\unit{…}`), sans `=` ni `≈` devant (le moins d'un négatif, lui,
+	 * reste), arrondie selon Q3 (4 décimales ; `8.7700 \times 10^{9}` hors de
+	 * [10⁻⁶ ; 10⁹[ ; un entier jusqu'à 15 chiffres) — `0.25`, `-3`,
+	 * `0.3333~\unit{km}`. Présente dans les DEUX modes, même pour un nombre
+	 * déjà écrit (`3` → `3`) et pour une écriture gardée (sans `answer`).
+	 * Absente sans valeur décimale (lettres, comparaison, valeur non réelle,
+	 * durée en h-min-s). L'outil pose `=` / `≈`, la virgule, le `×`.
+	 */
+	readonly decimal?: string;
+
+	/** `true` : `decimal` est la valeur exacte (`=`) ; `false` : un arrondi (`≈`). Avec `decimal`. */
+	readonly decimalExact?: boolean;
 
 	/** Error details if execution failed */
 	readonly error?: {

@@ -75,6 +75,12 @@ export type QuantityOutcome =
 			readonly decimal: QuantityAnswer;
 			/** L'arbre du bouton ≈ de l'atelier, quand la valeur exacte n'est pas décimale */
 			readonly approximate: MathNode | null;
+			/**
+			 * L'écriture décimale d'une grandeur seule (`0.3333 km`), exacte ou non,
+			 * dans les deux modes : le champ `decimal` du registre (décision A du
+			 * lot 2). Absente pour une conversion (une égalité) ou une durée en h-min-s.
+			 */
+			readonly decimalWriting?: DecimalWriting;
 			/** La grandeur EXACTE que `.convert` reprendra */
 			readonly quantity: MathNode | null;
 			/**
@@ -93,10 +99,17 @@ export type QuantityOutcome =
 
 export type QuantityMode = 'exact' | 'decimal';
 
+/** Une écriture décimale et si elle est la valeur exacte. */
+export interface DecimalWriting {
+	readonly node: MathNode;
+	readonly exact: boolean;
+}
+
 type Shown = {
 	readonly exact: QuantityAnswer;
 	readonly decimal: QuantityAnswer;
 	readonly approximate: MathNode | null;
+	readonly decimalWriting?: DecimalWriting;
 };
 
 // =============================================================================
@@ -245,7 +258,8 @@ function both(node: MathNode): Shown {
 	return {
 		exact,
 		decimal: { node: decimal.node, text: `${decimal.exact ? '' : '≈ '}${decimal.text}` },
-		approximate: decimal.exact ? null : decimal.node
+		approximate: decimal.exact ? null : decimal.node,
+		decimalWriting: { node: decimal.node, exact: decimal.exact }
 	};
 }
 
@@ -542,6 +556,7 @@ function answered(
 		exact: shown.exact,
 		decimal: shown.decimal,
 		approximate: mode === 'exact' ? shown.approximate : null,
+		...(shown.decimalWriting !== undefined && { decimalWriting: shown.decimalWriting }),
 		quantity,
 		...(written !== undefined && { written })
 	};

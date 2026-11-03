@@ -85,6 +85,7 @@ import { withFrenchErrors } from './french-errors';
 import {
 	approximateDigitsOf,
 	approximateLatexOf,
+	approximationLatex,
 	approximationNode,
 	approximationText,
 	isWrittenNumber,
@@ -200,7 +201,17 @@ function withExpressionAnswer(result: ReplExecutionResult): ReplExecutionResult 
 	if (!result.success || result.ast === undefined || result.exactTooLong !== undefined) {
 		return result;
 	}
+	// Un calcul la pose lui-même, exacte même en mode décimal (décision B)
+	if (result.answer !== undefined) return result;
 	return { ...result, answer: toLatex(result.ast) };
+}
+
+/** `decimal` / `decimalExact` d'un calcul (décision A du lot 2) ; rien sans écriture décimale. */
+function decimalFields(digits: ApproximateDigits | null): {
+	decimal?: string;
+	decimalExact?: boolean;
+} {
+	return digits === null ? {} : { decimal: approximationLatex(digits), decimalExact: digits.exact };
 }
 
 /**
@@ -878,7 +889,8 @@ export class WebReplEngine {
 			if (hasUnits) {
 				// Une grandeur : calculée par `tidy`, unité écrite d'abord (lot A)
 				return this.quantityResult(
-					computeQuantity(substituted, this.evalState.mode === 'decimal' ? 'decimal' : 'exact')
+					computeQuantity(substituted, this.evalState.mode === 'decimal' ? 'decimal' : 'exact'),
+					true
 				);
 			}
 
@@ -1014,7 +1026,11 @@ export class WebReplEngine {
 				...(currentMode === 'decimal' &&
 					digits !== null && { quantityAst: keptValue(decimalResult, digits, exactResult.node) }),
 				...approximationFields(currentMode, exactResult.node, canToggle, digits, tooLong !== null),
-				...(tooLong !== null && { exactTooLong: Math.round(tooLong) })
+				...(tooLong !== null && { exactTooLong: Math.round(tooLong) }),
+				// La réponse brute, exacte dans les deux modes, et son écriture décimale
+				// (décisions A et B du lot 2) ; une écriture gardée n'a pas de réponse
+				...(tooLong === null && { answer: toLatex(exactShown) }),
+				...decimalFields(digits)
 			};
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'Unknown error during evaluation';
@@ -1038,7 +1054,7 @@ export class WebReplEngine {
 	}
 
 	/** La réponse de la console pour un calcul ou une conversion de grandeurs. */
-	private quantityResult(outcome: QuantityOutcome): ReplExecutionResult {
+	private quantityResult(outcome: QuantityOutcome, typed = false): ReplExecutionResult {
 		if (outcome.ok === false) {
 			return {
 				success: false,
@@ -1069,7 +1085,15 @@ export class WebReplEngine {
 			...(outcome.quantity !== null &&
 				outcome.quantity !== outcome.answer.node && { quantityAst: outcome.quantity }),
 			// Le bouton ≈ de l'atelier (#1086), écrit pour l'affichage
-			...(approximate !== undefined && { approximateLatex: approximate })
+			...(approximate !== undefined && { approximateLatex: approximate }),
+			// Un calcul tapé : la réponse brute, exacte dans les deux modes, et son
+			// écriture décimale (décisions A et B du lot 2) ; `.convert` n'en a pas encore
+			...(typed && { answer: toLatex(outcome.exact.node) }),
+			...(typed &&
+				outcome.decimalWriting !== undefined && {
+					decimal: toLatex(outcome.decimalWriting.node),
+					decimalExact: outcome.decimalWriting.exact
+				})
 		};
 	}
 

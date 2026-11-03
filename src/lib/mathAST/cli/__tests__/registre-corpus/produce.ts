@@ -5,7 +5,7 @@
  * - **Registre** : le champ `answer` de `WebReplEngine`, sur la ligne aux
  *   noms traduits (`.dériver` → `.diff`) et RIEN d'autre de réécrit : ce qui
  *   ne se lit qu'à travers l'Atelier (virgule décimale…) se voit. Écriture
- *   décimale : `approximateLatex`, en attendant le champ `decimal` (décision A).
+ *   décimale : les champs `decimal` et `decimalExact` (décision A du lot 2).
  * - **Atelier** : le `latex` de la ligne affichée par `runInput` ; écriture
  *   décimale : l'autre écriture du bouton (`= 0{,}25`, `\approx 0{,}7071`).
  */
@@ -28,7 +28,12 @@ export function produceRegistre(ligne: string): Produced {
 	}
 	return result.answer === undefined
 		? { kind: 'sans-reponse', detail: firstLine(result.output) }
-		: { kind: 'reponse', latex: result.answer, decimal: result.approximateLatex };
+		: {
+				kind: 'reponse',
+				latex: result.answer,
+				...(result.decimal !== undefined && { decimal: result.decimal }),
+				...(result.decimalExact !== undefined && { decimalExact: result.decimalExact })
+			};
 }
 
 /** La réponse affichée par l'Atelier, dans un atelier neuf. */
