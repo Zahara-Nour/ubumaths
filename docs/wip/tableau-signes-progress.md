@@ -9,19 +9,19 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2273 (PR 2 mergée)._
+_Mis à jour le 2026-11-03, après #2287 (PR 3 mergée)._
 
-- **État** : PR 1 (#2267, ubumark) et PR 2 (#2273, génération, juge, masquage d'évaluation) mergées. Les cases
-  existent (`InstanceBlank.cellule`, `variationBlanks`) mais l'élève n'a pas encore de quoi les remplir :
-  **aucun modèle à écrire avant la PR 3**.
-- **Prochaine action** : PR 3 — saisie (`VariationTable.svelte`, `FillBlanksInput.svelte`) : valeur = petite case
-  MathLive, signe = boutons + / −, marque = 0 / ‖ / rien, au doigt à 390 px. Nouveau worktree
-  `git worktree add -b feat/tableau-signes-saisie ../ubumaths-wt-tableau-signes origin/main`.
-- **En attente de David** : rien.
-- **Pièges en cours** : réponses envoyées par la saisie = jetons `+` `-` `z` `||` `rien` (juge `isSignCellCorrect`).
-  Énoncé d'évaluation : `??n` / `?` seul, cases à `answer` vide — la saisie doit marcher dessus. PDF : marque
-  cachée = trait nu (PR 4). Cas frère non vérifié : les cases ```operation héritent des `blankDefaults`.
-- **Worktree / branche** : `../ubumaths-wt-tableau-signes`, `feat/tableau-signes-saisie` (PR 3 en cours).
+- **État** : PR 1 (#2267 ubumark), 2 (#2273 génération, juge, masquage) et 3 (#2287 saisie : case + menu,
+  valeur MathLive) mergées. L'élève peut remplir un tableau ; manquent le corrigé et la page à cocher.
+- **Prochaine action** : PR 4 — corrigé (`ExpectedLine` `sign-table`, cellules fausses marquées), page à
+  cocher, `testSpecs`, PDF (repère « à compléter » sur une marque cachée, aujourd'hui trait nu) ; vérifier le
+  cas frère ```operation / `blankDefaults`. Puis réécrire 330 et 446 (Q6). Nouveau worktree
+  `git worktree add -b feat/tableau-signes-corrige ../ubumaths-wt-tableau-signes origin/main`.
+- **En attente de David** : essai au doigt sur iPhone (ligne #2287 de `verifications-manuelles.md`).
+- **Pièges en cours** : `VariationTable` vide les cellules cachées par défaut ; la bonne réponse vient de
+  `blanks` (prop `answers`), jamais du nœud (énoncé masqué). Question d'essai en base LOCALE :
+  `7ab1e5a0-0000-4000-8000-000000000001` (brouillon, page `/dashboard/admin/questions/<id>/preview`).
+- **Worktree / branche** : aucun (à recréer pour la PR 4).
 
 ---
 
@@ -147,3 +147,8 @@ Branche `feat/tableau-signes-saisie`, worktree `../ubumaths-wt-tableau-signes`.
   `data-construire-case` (Entrée → première case vide). Flash : vide ; bonne réponse : rempli.
 - Tests : `FillBlanksInput-tableau-signes` (14), `VariationTable-cases` (4), énoncé masqué +1 (même
   écran, ids `bits-cN` normalisés).
+- Revue (`code-reviewer` Sonnet) : rien de bloquant. Corrigés : bonne réponse lue dans `blanks` (énoncé masqué
+  → cases vides sinon), `onkeydown` de bits-ui gardé, `aria-label` « à compléter », 0 en graisse normale.
+  Laissés : case ≈ 35 px (menu 44 px), pas de position dans le libellé (elle donnerait la valeur cachée),
+  Entrée sur une case signe ouvre le menu. Vu au clic dans Chrome ; 390 px non vérifiable (fenêtre bloquée
+  à 1568 px). CI verte, mergée (#2287).
