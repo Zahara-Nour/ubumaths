@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, phase 0 tranchée (6 décisions)._
+_Mis à jour le 2026-11-03, lot 1 complet (6/6), PR à ouvrir._
 
-- **État** : phase 0 tranchée (voir « Décisions de David ») ; aucun dessin fait, pas encore de worktree.
-- **Prochaine action** : créer le worktree `ubumaths-wt-shtam-illustrations` (branche `feat/shtam-illustrations-lot-1`), repérer l'article de la une, écrire son prompt Nano Banana (style Steinlen, nuancier imprimerie, Mousched-Gogh) et le donner à David ; le style se valide sur ce premier dessin.
+- **État** : lot 1 fait sur `feat/shtam-illustrations-lot-1` : fermat-marge-trop-petite, glitchistan-ha-ha, patatovie-barbier-paradoxe (retouché), bedonstan-rails-de-sandomir, nombrilie-zero-virgule-neuf, yoyolande-hotel-de-l-infini. Skill `shtam` mise à jour (dessin en tête).
+- **Prochaine action** : merger la PR du lot 1 (CI verte), puis lot 2 = les 7 derniers articles parus, du plus récent au plus ancien (`pifometrie-moyenne-des-jambes`, `pifometrie-pile-ou-face`, …) : lire chaque article, écrire les prompts dans `docs/Chiphres/illustrations/shtam/<slug>/prompt.md`.
 - **En attente de David** : rien.
-- **Pièges en cours** : ne jamais lancer prettier sur les articles (casse `~q*2~`) ; fichiers à joindre à Nano Banana → copie dans `~/Downloads` ; la une prend la **première** image du corps (`present.ts`) → le dessin AVANT toute figure SVG.
-- **Worktree / branche** : aucun pour l'instant.
+- **Pièges en cours** : ne jamais lancer prettier sur les articles ; pièces jointes → `~/Downloads` ; dessin AVANT toute figure SVG ; jamais de personne réelle dessinée ; image non 3:2 → recadrage à vérifier à l'œil (hôtel 16:9 recadré à la main, `+50+0`) ; retouche = carré par tête, une demande, `coller-retouches.sh` du barbier comme modèle.
+- **Worktree / branche** : `../ubumaths-wt-shtam-illustrations` · `feat/shtam-illustrations-lot-1` · serveur de test sur 5178.
 
 ## À lire avant de commencer
 
@@ -36,8 +36,14 @@ _2026-11-03, phase 0 :_
 4. **Format** : paysage **3:2, 1200 px** de large, **webp q85** (~100-200 Ko), `static/shtam/<slug>.webp` ; l'original Nano Banana gardé dans un dossier de travail.
 5. **Ordre** : **l'article de la une d'abord** (il fixe le style, validé par David), puis **ordre de parution du plus récent au plus ancien**, par lots d'environ 6.
 6. **Circuit** : **une PR par lot**, depuis le worktree `ubumaths-wt-shtam-illustrations` ; merge dès la CI verte.
+7. **Style validé** (2026-11-03) sur le dessin de fermat-marge-trop-petite, sans retouche (marge pas visible, tache bleue du fond : acceptées).
+8. **Ordre précisé** (2026-11-03) : d'abord les **13 articles parus**, du plus récent au plus ancien, puis les **41 programmés** dans leur ordre de parution.
 
 ## Journal
 
 - 2026-11-03 — Chantier ouvert à la demande de David (« créer une illustration pour chaque article du shtam »).
 - 2026-11-03 — Phase 0 tranchée par David : les 6 réponses suivent les recommandations (voir « Décisions de David »).
+- 2026-11-03 — Lot 1 : dessin de fermat-marge-trop-petite (Mère Ubu et la facture ; 1264×848 recadré en 1200×800, 172 Ko), style validé ; prompts des 5 suivants écrits.
+- 2026-11-03 — glitchistan-ha-ha intégré (`integrer.sh` écrit). Barbier : essai 1 refusé (reflet au crâne rasé), prompt v2 « très mauvais » ; retenu = essai 1 **retouché par deux carrés** (barbe de trois jours / reflet rasé, mousse sur une joue — idée de David), `coller-retouches.sh` par masque de différence ; **validé par David**.
+- 2026-11-03 — bedonstan-rails-de-sandomir : essai 1 (4:3, recadré en 3:2), trait plus fin et texture crayon, différent des autres ; **gardé par David**.
+- 2026-11-03 — nombrilie-zero-virgule-neuf et yoyolande-hotel-de-l-infini intégrés (hôtel en 16:9, recadré à gauche pour garder le voyageur). Lot 1 complet ; skill `shtam` mise à jour.

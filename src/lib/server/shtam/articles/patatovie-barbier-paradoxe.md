@@ -5,6 +5,8 @@ author: giron
 lede: Il s'est regardé dans le miroir mardi matin, et la question l'a laissé sans voix. Le Docteur Faustroll, gouverneur de Patatovie, a dû légiférer.
 ---
 
+![Dans son salon, le barbier, rasoir levé et blaireau à la main, fixe, perplexe, son reflet dans un grand miroir doré : lui porte une barbe de trois jours, son reflet est rasé de près, un reste de mousse sur la joue ; derrière lui, des clients barbus attendent en lisant le journal.](/shtam/patatovie-barbier-paradoxe.webp){size=large}
+
 Depuis l'ouverture de son salon, en 1901, le seul barbier de Cracovenn affiche la même règle sur sa vitrine : « Je rase tous ceux, et seulement ceux, qui ne se rasent pas eux-mêmes. » La règle a longtemps donné satisfaction. Jusqu'à mardi matin, où le barbier s'est regardé dans le miroir.
 
 « Si je me rase, alors je me rase moi-même, donc je ne dois pas me raser », explique-t-il. « Mais si je ne me rase pas, alors je fais partie de ceux que je dois raser. » Faute de mieux, il a tenté de ne se raser qu'une joue. Le problème se pose désormais sur les deux joues.
