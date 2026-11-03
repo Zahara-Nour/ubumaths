@@ -7,18 +7,17 @@ Sous-chantier de `questions-1spe` (clos, journal `docs/archive/wip/questions-1sp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2272._
+_Mis à jour le 2026-11-03, PR #2279 (migration nœud + tags du 433) ouverte._
 
-- **État** : modèle 433 mergé (#2272), brouillon en base locale ; **aperçu admin validé par David
-  le 2026-11-03** ; #2265 en prod (0.65.0) : le brouillon peut être créé en prod.
-- **Prochaine action** : aucune sur 1SPE-271 : **repris par le chantier `questions-1spe-tangente`**
-  (branche `feat/questions-1spe-tangente`, décision de David du 2026-11-03) ; § 6 abandonné, ne pas
-  écrire de modèle 271 ici. Il reste la livraison du 433 (ligne suivante).
-- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-tracer-droite --publier`
-  (brouillon en prod), puis migration nœud + tag, page à cocher, publication.
-- **Pièges en cours** : un serveur de dev de la veille bloquait le SSR (connexion sans fin) : le
-  relancer a suffi.
-- **Worktree / branche** : aucun (retiré après #2272).
+- **État** : brouillon 433 en prod (`dc5d7cb6`, créé par David le 2026-11-03) ; migration nœud +
+  tags écrite (§ 7), test d'intégration vert (11), rouge sans elle ; `security-auditor` : rien de bloquant.
+- **Prochaine action** : CI verte + `security-auditor` → `check:migrations --pr`, merge,
+  `db:migrate` depuis le dépôt principal, vérification en prod (MCP) ; puis page à cocher.
+- **En attente de David** : verdict sur la page à cocher, puis `publier-lot.ts --publier`.
+- **Pièges en cours** : 1SPE-271 repris par `questions-1spe-tangente` (ne rien écrire ici) ; un
+  serveur de dev de la veille bloquait le SSR : le relancer a suffi.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-tracer-droite`,
+  `feat/questions-1spe-tracer-droite-tags`.
 
 ---
 
@@ -127,3 +126,16 @@ automatisme).
 
 Questions : (a) A dessiné sur la courbe (reco : oui, la tangente en un point de la courbe, le point
 est donné par la figure) ; (b) les trois variations, dont m = 0 (reco : oui).
+
+## 7. Brouillon en prod et migration nœud + tags (2026-11-03)
+
+- Aperçu admin du 433 joué et **validé par David** ; `deploy:prod` 0.65.0 (livre #2265) ; brouillon
+  créé en prod par David : `dc5d7cb6-5d9a-41ca-89c3-83f4d6750613`, sans nœud ni tag, niveau 8,
+  niveaux `{1_SPE, 1_GEN, 1_TECHNO}`.
+- **Points jumeaux** (relevé MCP) : 1GEN-063 et 1TECHNO-140, même libellé, même sous-notion
+  « Géométrie > Géométrie repérée > équations de droites ». David : **les trois** tags (la phase 0
+  disait « 1SPE-433 seul »).
+- **Question d'accès** reposée avant le SQL : « personne », confirmée par David.
+- Migration `20261103065951_questions_1spe_tracer_droite_rangement_tags.sql` (gabarit lot 8c tspe) ;
+  test `tests/integration/questions-1spe-tracer-droite-rangement-tags.test.ts` : 10 verts ; contenu
+  de la migration vidé → suite principale + 3 cas d'échec rouges.
