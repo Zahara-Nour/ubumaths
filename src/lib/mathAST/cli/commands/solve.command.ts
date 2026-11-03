@@ -1281,11 +1281,10 @@ export class SolveCommand extends BaseCommand {
 		const values = [...zeros]
 			.sort((a, b) => (a.approximate ?? 0) - (b.approximate ?? 0))
 			.map((zero) => zero.value);
-		// Une solution en ln : décimaux gardés, comme sans `dans` ; l'ensemble des
+		// Les solutions en ln : décimaux gardés, comme sans `dans` ; l'ensemble des
 		// solutions toujours (Q2), la valeur approchée au bouton ≈
 		const only = zeros.length === 1 ? zeros[0] : null;
-		const written = (v: MathNode) =>
-			(only !== null && logarithmicExactLatex(v)) || toLatex(exactValueToShow(v));
+		const written = (v: MathNode) => logarithmicExactLatex(v) ?? toLatex(exactValueToShow(v));
 		const latex =
 			values.length === 0
 				? 'S = \\emptyset'
@@ -1300,7 +1299,7 @@ export class SolveCommand extends BaseCommand {
 						)
 						.join(' ou ');
 		// Leurs valeurs approchées, pour le bouton ≈ de l'atelier
-		const approximateLatex = approximateSolutionsLatex(variable, values, true);
+		const approximateLatex = approximateSolutionsLatex(values);
 		return { success: true, output, latex, ...(approximateLatex !== null && { approximateLatex }) };
 	}
 

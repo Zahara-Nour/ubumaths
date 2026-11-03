@@ -208,8 +208,8 @@ describe('hors de l’échelle : la notation scientifique', () => {
 	});
 
 	it('les solutions aussi', () => {
-		expect(approximateSolutionsLatex('x', [parseLatex('\\frac{1}{7000000}')], false)).toBe(
-			'x \\approx 1.4286 \\times 10^{-7}'
+		expect(approximateSolutionsLatex([parseLatex('\\frac{1}{7000000}')])).toBe(
+			'S \\approx \\left\\{ 1.4286 \\times 10^{-7} \\right\\}'
 		);
 	});
 });

@@ -309,8 +309,7 @@ export function solveSteps(
 			ordered !== null
 				? shownAnswer(answer, ordered, decimal)
 				: (inequalitySet(shown[shown.length - 1].after, variable) ?? answer);
-		const approximate =
-			solutions === null ? null : approximateSolutionsLatex(variable, ascending(solutions), true);
+		const approximate = solutions === null ? null : approximateSolutionsLatex(ascending(solutions));
 		const detailed = concludedOn(rendered, line, 'detailed');
 		// Le même calcul, rédigé sans les « pourquoi » (interrupteur du dépliage)
 		const summary = summaryOf(detailed, concludedOn(summarized, line, 'summarized'));
@@ -468,7 +467,7 @@ function restrictedSteps(
 		steps.map((step, i) => ({ ...step, id: i + 1 }));
 	const detailed = numbered([...first, ...rendered, last(rendered)]);
 	const summary = summaryOf(detailed, numbered([...first, ...summarized, last(summarized)]));
-	const approximate = approximateSolutionsLatex(variable, ascending(kept), true);
+	const approximate = approximateSolutionsLatex(ascending(kept));
 	return {
 		steps: detailed,
 		answer,

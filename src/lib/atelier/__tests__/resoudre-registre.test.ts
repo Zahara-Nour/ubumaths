@@ -18,6 +18,9 @@ import { runInput } from '../calcul';
 
 const LINES: readonly string[] = [
 	'-x^2+x+1=0',
+	// Plusieurs solutions en ln : décimaux à la française (revue de la PR 2b)
+	'(e^x-0.5)(e^x-3)=0',
+	'(e^x-0.5)(e^x-3)=0 dans [-5;5]',
 	'(x-1)^(2/3)=4',
 	'(x^2-1)^2>0',
 	'(x+1)^2=4',

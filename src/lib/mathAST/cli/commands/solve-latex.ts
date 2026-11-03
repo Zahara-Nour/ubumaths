@@ -327,11 +327,10 @@ export function solutionsLatex(result: SolveResult): string | null {
 			if (result.periodicSolutions !== undefined) return null;
 			const ordered = sorted(result.solutions);
 			const common = commonCondition(ordered);
-			// Une solution en ln garde ses décimaux (`\ln(0{,}5)`, S1)
+			// Une solution en ln garde ses décimaux (`\ln(0{,}5)`, S1), qu'elle soit
+			// seule ou non (revue de la PR 2b)
 			const written = (value: MathNode) =>
-				ordered.length === 1
-					? (logarithmicExactLatex(value) ?? toLatex(exactValueToShow(value)))
-					: toLatex(exactValueToShow(value));
+				logarithmicExactLatex(value) ?? toLatex(exactValueToShow(value));
 			const values = ordered.map(
 				(s) =>
 					written(s.value) +
@@ -370,7 +369,7 @@ export function solutionsApproximationLatex(result: SolveResult): string | null 
 
 	// Dans l'ordre et la forme de `solutionsLatex` : la ligne qu'elles accompagnent
 	const values = sorted(result.solutions).map((s) => exactValueToShow(s.value));
-	return approximateSolutionsLatex(result.variable, values, true);
+	return approximateSolutionsLatex(values);
 }
 
 /** Une borne d'intervalle : `+\infty`, `-\infty`, sinon la valeur mise au propre. */
