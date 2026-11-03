@@ -1,0 +1,2799 @@
+[
+	{
+		"id": "0931c87e-2038-422e-a783-a096c3bd23e8",
+		"theme": "Fonctions",
+		"domain": "Fonctions trigonométriques",
+		"subdomain": "Démonstrations",
+		"level": 2,
+		"status": "published",
+		"grades": ["1_SPE"],
+		"classification_node_id": "f7e20059-daa8-400c-bab1-42c02f37f252",
+		"title": "Démontrer les valeurs de cos(π/3) et sin(π/3)",
+		"description": "Démonstration à trous de cos(π/3) = 1/2 et sin(π/3) = √3/2 : triangle OAM équilatéral (justification), H milieu de [OA], sinus par cos² + sin² = 1",
+		"variations": [
+			{
+				"statement": "Dans un repère orthonormé d'origine $O$, soit $A(1\\,;0)$ et $M$ le point du cercle trigonométrique associé au réel $\\dfrac{\\pi}{3}$. On note $H$ le projeté orthogonal de $M$ sur l'axe des abscisses : $OH=\\cos\\left(\\dfrac{\\pi}{3}\\right)$ et $HM=\\sin\\left(\\dfrac{\\pi}{3}\\right)$. L'angle $\\widehat{AOM}$ mesure $60^\\circ$.\n\nLe triangle $OAM$ est équilatéral. Pourquoi ?\n\n```choix\n- Car il est isocèle en $O$, avec un angle de $60^\\circ$ en $O$.\n- Car $OA=OM=1$.\n- Car tout triangle dont les sommets sont sur le cercle trigonométrique est équilatéral.\n- Car l'angle $\\widehat{AOM}$ est droit.\n```",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$OA=OM=1$ (rayons du cercle) : le triangle est isocèle en $O$, ce qui ne suffit pas.",
+						"Ses angles à la base sont égaux et valent $\\dfrac{180^\\circ-60^\\circ}{2}=60^\\circ$ : les trois angles valent $60^\\circ$, le triangle est **équilatéral**."
+					]
+				}
+			},
+			{
+				"statement": "Dans un repère orthonormé d'origine $O$, soit $A(1\\,;0)$ et $M$ le point du cercle trigonométrique associé au réel $\\dfrac{\\pi}{3}$. On note $H$ le projeté orthogonal de $M$ sur l'axe des abscisses : $OH=\\cos\\left(\\dfrac{\\pi}{3}\\right)$ et $HM=\\sin\\left(\\dfrac{\\pi}{3}\\right)$. L'angle $\\widehat{AOM}$ mesure $60^\\circ$.\n\nLe triangle $OAM$ est équilatéral : sa hauteur issue de $M$ est aussi une médiane, donc $H$ est le milieu de $[OA]$. Complète.\n\n$\\cos\\left(\\dfrac{\\pi}{3}\\right)=?$",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{1}{2}",
+						"acceptDecimal": true
+					}
+				],
+				"correction": {
+					"steps": [
+						"$H$ est le milieu de $[OA]$ et $OA=1$.",
+						"Donc $\\cos\\left(\\dfrac{\\pi}{3}\\right)=OH=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{2}}$."
+					]
+				}
+			},
+			{
+				"statement": "Dans un repère orthonormé d'origine $O$, soit $A(1\\,;0)$ et $M$ le point du cercle trigonométrique associé au réel $\\dfrac{\\pi}{3}$. On note $H$ le projeté orthogonal de $M$ sur l'axe des abscisses : $OH=\\cos\\left(\\dfrac{\\pi}{3}\\right)$ et $HM=\\sin\\left(\\dfrac{\\pi}{3}\\right)$. L'angle $\\widehat{AOM}$ mesure $60^\\circ$.\n\nOn a obtenu $\\cos\\left(\\dfrac{\\pi}{3}\\right)=\\dfrac{1}{2}$. On sait que $\\cos^2 x+\\sin^2 x=1$ pour tout réel $x$, et $\\sin\\left(\\dfrac{\\pi}{3}\\right)>0$ car $M$ a une ordonnée positive. Complète par la valeur exacte.\n\n$\\sin\\left(\\dfrac{\\pi}{3}\\right)=?$",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{\\sqrt{3}}{2}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\sin\\left(\\dfrac{\\pi}{3}\\right)^2=1-\\left(\\dfrac{1}{2}\\right)^2=1-\\dfrac{1}{4}=\\dfrac{3}{4}$.",
+						"Le sinus est positif : $\\sin\\left(\\dfrac{\\pi}{3}\\right)=\\sqrt{\\dfrac{3}{4}}=\\textcolor{{{color:primary.0}}}{\\dfrac{\\sqrt{3}}{2}}$."
+					]
+				}
+			}
+		],
+		"shared": {},
+		"test_specs": [
+			{
+				"description": "isocèle avec un angle de 60°",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : isocèle seulement",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : tout triangle inscrit",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : angle droit",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "1/2",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["\\frac{1}{2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Écriture décimale 0,5",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["0{,}5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : √3/2",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["\\frac{\\sqrt{3}}{2}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 1",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "√3/2",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["\\frac{\\sqrt{3}}{2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 3/4 (le carré)",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["\\frac{3}{4}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 1/2",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["\\frac{1}{2}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : √2/2",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["\\frac{\\sqrt{2}}{2}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : −√3/2",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["-\\frac{\\sqrt{3}}{2}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	},
+	{
+		"id": "16ee6f33-695d-45c0-b6fe-deb1ae02138f",
+		"theme": "Fonctions",
+		"domain": "Dérivation",
+		"subdomain": "Démonstrations",
+		"level": 5,
+		"status": "published",
+		"grades": ["1_SPE"],
+		"classification_node_id": "a4c971ee-ce04-4d1b-bf4f-22653977b4b7",
+		"title": "Démontrer la dérivée d'un produit",
+		"description": "Démonstration à trous de (uv)′ = u′v + uv′ (taux de variation de uv) : terme ajouté et retranché, limite du premier terme, limite du taux avec des valeurs tirées",
+		"variations": [
+			{
+				"statement": "Soit $u$ et $v$ deux fonctions dérivables en un réel $a$. Pour $h\\neq 0$, on étudie le taux de variation du produit $uv$ entre $a$ et $a+h$ :\n\n$$\\dfrac{u(a+h)v(a+h)-u(a)v(a)}{h}$$\n\nPour faire apparaître les taux de variation de $u$ et de $v$, on ajoute et on retranche un même terme au numérateur. Lequel ?\n\n```choix\n- $u(a)v(a+h)$\n- $u(a)v(a)$\n- $u(a+h)+v(a+h)$\n- $u'(a)v'(a)$\n```",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$u(a+h)v(a+h)-\\textcolor{{{color:primary.0}}}{u(a)v(a+h)}=(u(a+h)-u(a))v(a+h)$ fait apparaître le taux de $u$.",
+						"$\\textcolor{{{color:primary.0}}}{u(a)v(a+h)}-u(a)v(a)=u(a)(v(a+h)-v(a))$ fait apparaître le taux de $v$.",
+						"Ajouter et retrancher $u(a)v(a)$ ne change rien : le numérateur reste le même."
+					]
+				}
+			},
+			{
+				"statement": "Soit $u$ et $v$ deux fonctions dérivables en un réel $a$. Pour $h\\neq 0$, on étudie le taux de variation du produit $uv$ entre $a$ et $a+h$ :\n\n$$\\dfrac{u(a+h)v(a+h)-u(a)v(a)}{h}$$\n\nOn ajoute et on retranche $u(a)v(a+h)$ au numérateur, ce qui donne\n\n$$\\dfrac{u(a+h)-u(a)}{h}\\times v(a+h)+u(a)\\times\\dfrac{v(a+h)-v(a)}{h}$$\n\nOn admet que $v(a+h)$ tend vers $v(a)$ quand $h$ tend vers $0$.\n\nQuand $h$ tend vers $0$, vers quoi tend le premier terme $\\dfrac{u(a+h)-u(a)}{h}\\times v(a+h)$ ?\n\n```choix\n- $u'(a)v(a)$\n- $u'(a)v'(a)$\n- $u(a)v(a)$\n- $u'(a)$\n```",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\dfrac{u(a+h)-u(a)}{h}$ est le taux de variation de $u$ : il tend vers $u'(a)$.",
+						"$v(a+h)$ tend vers $v(a)$ (admis).",
+						"Le produit tend donc vers $\\textcolor{{{color:primary.0}}}{u'(a)v(a)}$."
+					]
+				}
+			},
+			{
+				"statement": "Soit $u$ et $v$ deux fonctions dérivables en un réel $a$. Pour $h\\neq 0$, on étudie le taux de variation du produit $uv$ entre $a$ et $a+h$ :\n\n$$\\dfrac{u(a+h)v(a+h)-u(a)v(a)}{h}$$\n\nOn ajoute et on retranche $u(a)v(a+h)$ au numérateur, ce qui donne\n\n$$\\dfrac{u(a+h)-u(a)}{h}\\times v(a+h)+u(a)\\times\\dfrac{v(a+h)-v(a)}{h}$$\n\nOn admet que $v(a+h)$ tend vers $v(a)$ quand $h$ tend vers $0$.\n\nOn prend $u(a)={{eval:u}}$, $u'(a)={{eval:p}}$, $v(a)={{eval:v}}$ et $v'(a)={{eval:q}}$. Complète.\n\nQuand $h$ tend vers $0$, le taux de variation de $uv$ tend vers $?$",
+				"variables": [
+					{
+						"name": "u",
+						"expression": "1..6"
+					},
+					{
+						"name": "p",
+						"expression": "2..5"
+					},
+					{
+						"name": "v",
+						"expression": "1..6"
+					},
+					{
+						"name": "q",
+						"expression": "2..5"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:p*v+u*q}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le premier terme tend vers $u'(a)v(a)={{eval:p}}\\times{{eval:v}}={{eval:p*v}}$.",
+						"Le second terme tend vers $u(a)v'(a)={{eval:u}}\\times{{eval:q}}={{eval:u*q}}$.",
+						"Le taux tend donc vers ${{eval:p*v}}+{{eval:u*q}}=\\textcolor{{{color:primary.0}}}{{{eval:p*v+u*q}}}$ : $(uv)'(a)=u'(a)v(a)+u(a)v'(a)$, et non $u'(a)v'(a)$."
+					]
+				}
+			}
+		],
+		"shared": {},
+		"test_specs": [
+			{
+				"description": "u(a)v(a + h)",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : u(a)v(a)",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : somme",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : u′(a)v′(a)",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "u′(a)v(a)",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : u′(a)v′(a)",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : u(a)v(a)",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : u′(a)",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "22 (2 × 5 + 3 × 4)",
+				"variationIndex": 2,
+				"variables": {
+					"u": "3",
+					"p": "2",
+					"v": "5",
+					"q": "4"
+				},
+				"answers": ["22"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 8 (u′v′)",
+				"variationIndex": 2,
+				"variables": {
+					"u": "3",
+					"p": "2",
+					"v": "5",
+					"q": "4"
+				},
+				"answers": ["8"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 10 (u′v seulement)",
+				"variationIndex": 2,
+				"variables": {
+					"u": "3",
+					"p": "2",
+					"v": "5",
+					"q": "4"
+				},
+				"answers": ["10"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 15 (uv)",
+				"variationIndex": 2,
+				"variables": {
+					"u": "3",
+					"p": "2",
+					"v": "5",
+					"q": "4"
+				},
+				"answers": ["15"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	},
+	{
+		"id": "5fbb9a04-d4c3-4810-b717-075493df916b",
+		"theme": "Suites",
+		"domain": "Sommes",
+		"subdomain": "Démonstrations",
+		"level": 1,
+		"status": "published",
+		"grades": ["1_SPE"],
+		"classification_node_id": "3890b49e-ea75-49dd-8ecf-8a82671a79f1",
+		"title": "Démontrer la somme 1 + 2 + ⋯ + n",
+		"description": "Démonstration à trous de 1 + 2 + ⋯ + n = n(n + 1)/2 (S écrite deux fois, à l'envers) : somme d'une colonne, 2S, justification du produit n(n + 1)",
+		"variations": [
+			{
+				"statement": "Soit $n$ un entier naturel non nul et $S=1+2+\\cdots+n$. On écrit $S$ deux fois, la seconde dans l'ordre inverse :\n\n$$S=1+2+\\cdots+(n-1)+n$$\n\n$$S=n+(n-1)+\\cdots+2+1$$\n\npuis on additionne ces deux égalités terme à terme (le premier terme avec le premier, le deuxième avec le deuxième, etc.).\n\nLes sommes $1+n$, $2+(n-1)$, …, $n+1$ sont toutes égales. Complète.\n\nChacune vaut $?$",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "n+1"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$1+n=n+1$, $2+(n-1)=n+1$, … : quand on avance d'un rang, le terme du haut augmente de $1$ et celui du bas diminue de $1$.",
+						"Chaque somme vaut donc $\\textcolor{{{color:primary.0}}}{n+1}$."
+					]
+				}
+			},
+			{
+				"statement": "Soit $n$ un entier naturel non nul et $S=1+2+\\cdots+n$. On écrit $S$ deux fois, la seconde dans l'ordre inverse :\n\n$$S=1+2+\\cdots+(n-1)+n$$\n\n$$S=n+(n-1)+\\cdots+2+1$$\n\npuis on additionne ces deux égalités terme à terme (le premier terme avec le premier, le deuxième avec le deuxième, etc.).\n\nChacune des sommes $1+n$, $2+(n-1)$, …, $n+1$ vaut $n+1$. Complète.\n\n$2S=?$",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "n(n+1)",
+						"requiredForm": {
+							"pattern": "u"
+						}
+					}
+				],
+				"correction": {
+					"steps": [
+						"Il y a $n$ sommes (une par terme de $S$), chacune égale à $n+1$.",
+						"Donc $2S=\\textcolor{{{color:primary.0}}}{n(n+1)}$, et $S=\\dfrac{n(n+1)}{2}$."
+					]
+				}
+			},
+			{
+				"statement": "Soit $n$ un entier naturel non nul et $S=1+2+\\cdots+n$. On écrit $S$ deux fois, la seconde dans l'ordre inverse :\n\n$$S=1+2+\\cdots+(n-1)+n$$\n\n$$S=n+(n-1)+\\cdots+2+1$$\n\npuis on additionne ces deux égalités terme à terme (le premier terme avec le premier, le deuxième avec le deuxième, etc.).\n\nOn obtient $2S=n(n+1)$. Pourquoi ?\n\n```choix\n- Il y a $n$ sommes de deux termes, et chacune vaut $n+1$.\n- Il y a $n+1$ sommes de deux termes, et chacune vaut $n$.\n- Il y a $n$ sommes de deux termes, et chacune vaut $n$.\n- Il y a $\\dfrac{n}{2}$ sommes de deux termes, et chacune vaut $n+1$.\n```",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$S$ compte $n$ termes : en les additionnant deux à deux, on obtient $\\textcolor{{{color:primary.0}}}{n}$ sommes.",
+						"Chacune vaut $\\textcolor{{{color:primary.1}}}{n+1}$ : $1+n$, $2+(n-1)$, …, $n+1$.",
+						"Donc $2S=n(n+1)$ et $S=\\dfrac{n(n+1)}{2}$. Les $\\dfrac{n}{2}$ sommes donneraient $S$, pas $2S$, et seulement si $n$ est pair."
+					]
+				}
+			}
+		],
+		"shared": {},
+		"test_specs": [
+			{
+				"description": "n + 1",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["n+1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : n",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["n"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : n − 1",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["n-1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "n(n + 1)",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["n(n+1)"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Écriture n² + n",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["n^2+n"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : n(n + 1)/2 (S au lieu de 2S)",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["\\frac{n(n+1)}{2}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : (n + 1)²",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["(n+1)^2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : n²",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["n^2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "n sommes de n + 1",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : n + 1 sommes de n",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : n sommes de n",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : n/2 sommes",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	},
+	{
+		"id": "66ecbb33-60fc-46a9-bdfe-2a978c5dec47",
+		"theme": "Fonctions",
+		"domain": "Fonctions trigonométriques",
+		"subdomain": "Démonstrations",
+		"level": 1,
+		"status": "published",
+		"grades": ["1_SPE"],
+		"classification_node_id": "f7e20059-daa8-400c-bab1-42c02f37f252",
+		"title": "Démontrer les valeurs de cos(π/4) et sin(π/4)",
+		"description": "Démonstration à trous de cos(π/4) = sin(π/4) = √2/2 : triangle OHM rectangle isocèle (justification), cos²(π/4) = 1/2, valeur exacte positive",
+		"variations": [
+			{
+				"statement": "Dans un repère orthonormé d'origine $O$, soit $M$ le point du cercle trigonométrique associé au réel $\\dfrac{\\pi}{4}$, et $H$ son projeté orthogonal sur l'axe des abscisses. Ainsi $OH=\\cos\\left(\\dfrac{\\pi}{4}\\right)$, $HM=\\sin\\left(\\dfrac{\\pi}{4}\\right)$, et l'angle $\\widehat{HOM}$ mesure $45^\\circ$.\n\nOn en déduit que $\\cos\\left(\\dfrac{\\pi}{4}\\right)=\\sin\\left(\\dfrac{\\pi}{4}\\right)$. Pourquoi ?\n\n```choix\n- Car le triangle $OHM$ est rectangle isocèle en $H$.\n- Car $\\cos x=\\sin x$ pour tout réel $x$.\n- Car le cercle trigonométrique a pour rayon $1$.\n- Car $\\dfrac{\\pi}{4}$ est plus petit que $\\dfrac{\\pi}{2}$.\n```",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Dans le triangle $OHM$ rectangle en $H$, les angles aigus sont complémentaires : $\\widehat{OMH}=90^\\circ-45^\\circ=45^\\circ$.",
+						"Deux angles égaux : le triangle est isocèle en $H$, donc $OH=HM$, c'est-à-dire $\\textcolor{{{color:primary.0}}}{\\cos\\left(\\dfrac{\\pi}{4}\\right)=\\sin\\left(\\dfrac{\\pi}{4}\\right)}$.",
+						"En général, $\\cos x\\neq\\sin x$ : par exemple $\\cos(0)=1$ et $\\sin(0)=0$."
+					]
+				}
+			},
+			{
+				"statement": "Dans un repère orthonormé d'origine $O$, soit $M$ le point du cercle trigonométrique associé au réel $\\dfrac{\\pi}{4}$, et $H$ son projeté orthogonal sur l'axe des abscisses. Ainsi $OH=\\cos\\left(\\dfrac{\\pi}{4}\\right)$, $HM=\\sin\\left(\\dfrac{\\pi}{4}\\right)$, et l'angle $\\widehat{HOM}$ mesure $45^\\circ$.\n\nOn sait que $\\cos\\left(\\dfrac{\\pi}{4}\\right)=\\sin\\left(\\dfrac{\\pi}{4}\\right)$, et que $\\cos^2 x+\\sin^2 x=1$ pour tout réel $x$. On note $c=\\cos\\left(\\dfrac{\\pi}{4}\\right)$, donc $c^2+c^2=1$. Complète.\n\n$c^2=?$",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{1}{2}",
+						"acceptDecimal": true
+					}
+				],
+				"correction": {
+					"steps": [
+						"$c^2+c^2=2c^2$, donc $2c^2=1$.",
+						"Donc $c^2=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{2}}$."
+					]
+				}
+			},
+			{
+				"statement": "Dans un repère orthonormé d'origine $O$, soit $M$ le point du cercle trigonométrique associé au réel $\\dfrac{\\pi}{4}$, et $H$ son projeté orthogonal sur l'axe des abscisses. Ainsi $OH=\\cos\\left(\\dfrac{\\pi}{4}\\right)$, $HM=\\sin\\left(\\dfrac{\\pi}{4}\\right)$, et l'angle $\\widehat{HOM}$ mesure $45^\\circ$.\n\nOn a obtenu $\\cos\\left(\\dfrac{\\pi}{4}\\right)^2=\\dfrac{1}{2}$. Comme $M$ a une abscisse positive, $\\cos\\left(\\dfrac{\\pi}{4}\\right)>0$. Complète par la valeur exacte.\n\n$\\cos\\left(\\dfrac{\\pi}{4}\\right)=?$",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{\\sqrt{2}}{2}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le nombre positif dont le carré vaut $\\dfrac{1}{2}$ est $\\sqrt{\\dfrac{1}{2}}=\\dfrac{1}{\\sqrt{2}}=\\dfrac{\\sqrt{2}}{2}$.",
+						"Donc $\\cos\\left(\\dfrac{\\pi}{4}\\right)=\\sin\\left(\\dfrac{\\pi}{4}\\right)=\\textcolor{{{color:primary.0}}}{\\dfrac{\\sqrt{2}}{2}}$."
+					]
+				}
+			}
+		],
+		"shared": {},
+		"test_specs": [
+			{
+				"description": "triangle rectangle isocèle",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : cos = sin toujours",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : rayon 1",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : π/4 < π/2",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "1/2",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["\\frac{1}{2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Écriture décimale 0,5",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["0{,}5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 2",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 1",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : √2/2 (la valeur au lieu du carré)",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["\\frac{\\sqrt{2}}{2}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "√2/2",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["\\frac{\\sqrt{2}}{2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Forme 1/√2 : dénominateur à rendre rationnel",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["\\frac{1}{\\sqrt{2}}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "Erreur : 1/2",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["\\frac{1}{2}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : −√2/2",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["-\\frac{\\sqrt{2}}{2}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : √3/2",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["\\frac{\\sqrt{3}}{2}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : √2",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["\\sqrt{2}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	},
+	{
+		"id": "8865b98c-ba20-4188-bd16-5c6637cd6fad",
+		"theme": "Fonctions",
+		"domain": "Polynôme du second degré",
+		"subdomain": "Démonstrations",
+		"level": 1,
+		"status": "published",
+		"grades": ["1_SPE"],
+		"classification_node_id": "34c8c2c8-8911-4952-bd9a-edbe69e61552",
+		"title": "Démontrer la résolution de l'équation du second degré",
+		"description": "Démonstration à trous de la résolution de ax² + bx + c = 0 par la forme canonique : terme b²/(4a²) du carré, numérateur b² − 4ac, justification du cas Δ < 0",
+		"variations": [
+			{
+				"statement": "Soit $a$, $b$ et $c$ trois réels, avec $a\\neq 0$. On résout l'équation $ax^2+bx+c=0$.\n\nComme $a\\neq 0$, elle équivaut à $x^2+\\dfrac{b}{a}x+\\dfrac{c}{a}=0$.\n\nOn fait apparaître le début du carré $\\left(x+\\dfrac{b}{2a}\\right)^2$. Complète.\n\n$x^2+\\dfrac{b}{a}x=\\left(x+\\dfrac{b}{2a}\\right)^2-?$",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{b^2}{4a^2}",
+						"requiredForm": {
+							"pattern": "u"
+						}
+					}
+				],
+				"correction": {
+					"steps": [
+						"On développe : $\\left(x+\\dfrac{b}{2a}\\right)^2=x^2+2\\times x\\times\\dfrac{b}{2a}+\\left(\\dfrac{b}{2a}\\right)^2=x^2+\\dfrac{b}{a}x+\\dfrac{b^2}{4a^2}$.",
+						"Pour retrouver $x^2+\\dfrac{b}{a}x$, on retranche $\\textcolor{{{color:primary.0}}}{\\dfrac{b^2}{4a^2}}$."
+					]
+				}
+			},
+			{
+				"statement": "Soit $a$, $b$ et $c$ trois réels, avec $a\\neq 0$. On résout l'équation $ax^2+bx+c=0$.\n\nComme $a\\neq 0$, elle équivaut à $x^2+\\dfrac{b}{a}x+\\dfrac{c}{a}=0$.\n\nComme $x^2+\\dfrac{b}{a}x=\\left(x+\\dfrac{b}{2a}\\right)^2-\\dfrac{b^2}{4a^2}$, l'équation équivaut à $\\left(x+\\dfrac{b}{2a}\\right)^2=\\dfrac{b^2}{4a^2}-\\dfrac{c}{a}$.\n\nOn réduit au même dénominateur. Complète.\n\n$\\dfrac{b^2}{4a^2}-\\dfrac{c}{a}=\\dfrac{?}{4a^2}$",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "b^2-4ac"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\dfrac{c}{a}=\\dfrac{4ac}{4a^2}$ (on multiplie le numérateur et le dénominateur par $4a$).",
+						"Donc $\\dfrac{b^2}{4a^2}-\\dfrac{c}{a}=\\dfrac{\\textcolor{{{color:primary.0}}}{b^2-4ac}}{4a^2}$ : son numérateur est le discriminant $\\Delta=b^2-4ac$."
+					]
+				}
+			},
+			{
+				"statement": "Soit $a$, $b$ et $c$ trois réels, avec $a\\neq 0$. On résout l'équation $ax^2+bx+c=0$.\n\nComme $a\\neq 0$, elle équivaut à $x^2+\\dfrac{b}{a}x+\\dfrac{c}{a}=0$.\n\nComme $x^2+\\dfrac{b}{a}x=\\left(x+\\dfrac{b}{2a}\\right)^2-\\dfrac{b^2}{4a^2}$, l'équation équivaut à\n\n$$\\left(x+\\dfrac{b}{2a}\\right)^2=\\dfrac{b^2}{4a^2}-\\dfrac{c}{a}=\\dfrac{b^2-4ac}{4a^2}$$\n\nOn pose $\\Delta=b^2-4ac$. Si $\\Delta<0$, l'équation n'a aucune solution réelle. Pourquoi ?\n\n```choix\n- Car un carré serait égal à $\\dfrac{\\Delta}{4a^2}$, qui est strictement négatif.\n- Car $a\\neq 0$.\n- Car on ne peut pas diviser par $\\Delta$.\n- Car $4a^2$ est strictement négatif.\n```",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$4a^2>0$ car $a\\neq 0$ ; si $\\Delta<0$, alors $\\dfrac{\\Delta}{4a^2}<0$.",
+						"Or un carré est toujours positif ou nul : $\\left(x+\\dfrac{b}{2a}\\right)^2$ ne peut pas être égal à **un nombre strictement négatif**.",
+						"Aucun réel $x$ ne vérifie donc l'équation."
+					]
+				}
+			}
+		],
+		"shared": {},
+		"test_specs": [
+			{
+				"description": "b²/(4a²)",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["\\frac{b^2}{4a^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Écriture (b/(2a))²",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["\\left(\\frac{b}{2a}\\right)^2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : b/(2a)",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["\\frac{b}{2a}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : b²/(2a)",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["\\frac{b^2}{2a}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : b²/a²",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["\\frac{b^2}{a^2}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "b² − 4ac",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["b^2-4ac"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : b² − ac",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["b^2-ac"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : b² + 4ac",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["b^2+4ac"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : b² − 4c",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["b^2-4c"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "carré négatif",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : a ≠ 0",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : division par Δ",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 4a² négatif",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	},
+	{
+		"id": "9e377c97-6940-48c9-9442-d64f05cb9a94",
+		"theme": "Fonctions",
+		"domain": "Dérivation",
+		"subdomain": "Démonstrations",
+		"level": 4,
+		"status": "published",
+		"grades": ["1_SPE"],
+		"classification_node_id": "e7f414da-e4fa-49cb-9b96-b1b2e0f1068d",
+		"title": "Démontrer l'équation de la tangente",
+		"description": "Démonstration à trous de y = f(a) + f′(a)(x − a) : justification du coefficient directeur f′(a), ordonnée à l'origine par le point A (valeurs tirées), factorisation par f′(a)",
+		"variations": [
+			{
+				"statement": "Soit $f$ une fonction dérivable en $a={{eval:a}}$, avec $f({{eval:a}})={{eval:b}}$ et $f'({{eval:a}})={{eval:m}}$. On note $A$ le point de sa courbe d'abscisse ${{eval:a}}$ : $A({{eval:a}}\\,;\\,{{eval:b}})$. On cherche une équation de la tangente $T$ à la courbe en $A$.\n\nLa tangente $T$ a pour coefficient directeur ${{eval:m}}$. Pourquoi ?\n\n```choix\n- Par définition, la tangente en $A$ est la droite qui passe par $A$ et dont le coefficient directeur est le nombre dérivé $f'({{eval:a}})$.\n- Car $T$ passe par l'origine du repère.\n- Car toute droite qui passe par $A$ a ce coefficient directeur.\n- Car $f({{eval:a}})={{eval:b}}$.\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..6"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "m",
+						"expression": "2..6"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le nombre dérivé $f'({{eval:a}})$ est **par définition** le coefficient directeur de la tangente en $A$ : ici $\\textcolor{{{color:primary.0}}}{{{eval:m}}}$.",
+						"Une infinité de droites passent par $A$ ; la tangente est celle de coefficient directeur $f'({{eval:a}})$.",
+						"$f({{eval:a}})={{eval:b}}$ donne l'ordonnée de $A$, pas le coefficient directeur."
+					]
+				}
+			},
+			{
+				"statement": "Soit $f$ une fonction dérivable en $a={{eval:a}}$, avec $f({{eval:a}})={{eval:b}}$ et $f'({{eval:a}})={{eval:m}}$. On note $A$ le point de sa courbe d'abscisse ${{eval:a}}$ : $A({{eval:a}}\\,;\\,{{eval:b}})$. On cherche une équation de la tangente $T$ à la courbe en $A$.\n\nLe coefficient directeur de $T$ est $f'({{eval:a}})={{eval:m}}$ : $T$ a une équation de la forme $y={{eval:m}}x+p$. Comme $A$ est sur $T$, ses coordonnées vérifient cette équation. Complète.\n\n$p=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..6"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "m",
+						"expression": "2..6"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b-m*a}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$A({{eval:a}}\\,;\\,{{eval:b}})$ est sur $T$ : ${{eval:b}}={{eval:m}}\\times{{eval:a}}+p$.",
+						"Donc $p={{eval:b}}-{{eval:m*a}}=\\textcolor{{{color:primary.0}}}{{{eval:b-m*a}}}$, et $T$ a pour équation $y={{eval:m}}x+({{eval:b-m*a}})$."
+					]
+				}
+			},
+			{
+				"statement": "Soit $f$ une fonction dérivable en un réel $a$, et $A(a\\,;\\,f(a))$ le point de sa courbe d'abscisse $a$. La tangente en $A$ a pour coefficient directeur $f'(a)$ : elle a une équation de la forme $y=f'(a)x+p$.\n\nComme $A$ est sur la tangente, $f(a)=f'(a)\\times a+p$, donc $p=f(a)-f'(a)\\times a$. On remplace $p$, puis on factorise par $f'(a)$. Complète.\n\n$y=f'(a)x+f(a)-f'(a)\\times a=f(a)+f'(a)\\times(?)$",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "x-a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$f'(a)x-f'(a)\\times a=f'(a)\\times(x-a)$ : on met $f'(a)$ en facteur.",
+						"Donc $y=f(a)+f'(a)(\\textcolor{{{color:primary.0}}}{x-a})$."
+					]
+				}
+			}
+		],
+		"shared": {},
+		"test_specs": [
+			{
+				"description": "définition de la tangente",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "5",
+					"m": "3"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : origine",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "5",
+					"m": "3"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : toute droite par A",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "5",
+					"m": "3"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : f(a)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "5",
+					"m": "3"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "−1",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2",
+					"b": "5",
+					"m": "3"
+				},
+				"answers": ["-1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 11 (5 + 3 × 2)",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2",
+					"b": "5",
+					"m": "3"
+				},
+				"answers": ["11"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 5 (f(a))",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2",
+					"b": "5",
+					"m": "3"
+				},
+				"answers": ["5"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 1 (5 − 2 × 2)",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2",
+					"b": "5",
+					"m": "3"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "x − a",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["x-a"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : a − x",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["a-x"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : x + a",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["x+a"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : x",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["x"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	},
+	{
+		"id": "a81c4c9f-7a25-48a4-89c4-d48cadf0fa1b",
+		"theme": "Suites",
+		"domain": "Suites arithmétiques",
+		"subdomain": "Démonstrations",
+		"level": 1,
+		"status": "published",
+		"grades": ["1_SPE"],
+		"classification_node_id": "51c396af-438d-4b70-9e45-0dc7ffb39549",
+		"title": "Démontrer le terme général d'une suite arithmétique",
+		"description": "Démonstration à trous de uₙ = u₀ + nr (somme télescopique des n égalités uₖ₊₁ − uₖ = r) : uₙ − u₀ à compléter, nombre de termes de la somme, justification du télescopage",
+		"variations": [
+			{
+				"statement": "Soit $(u_n)$ la suite arithmétique de premier terme $u_0={{eval:a}}$ et de raison ${{eval:r}}$. On cherche l'expression de $u_n$ en fonction de $n$, pour tout entier naturel $n$ non nul.\n\nPour tout entier naturel $k$, $u_{k+1}-u_k={{eval:r}}$. On écrit cette égalité pour $k=0$, $k=1$, …, $k=n-1$, puis on additionne membre à membre :\n\n$$(u_1-u_0)+(u_2-u_1)+\\cdots+(u_n-u_{n-1})={{eval:r}}+{{eval:r}}+\\cdots+{{eval:r}}$$\n\nLes termes $u_1$, …, $u_{n-1}$ se simplifient. Complète.\n\n$u_n-u_0=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "r",
+						"expression": "2..9"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:r}}n"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Dans le membre de gauche, chacun des termes $u_1$, …, $u_{n-1}$ apparaît une fois avec le signe $+$ et une fois avec le signe $-$ : il ne reste que $u_n-u_0$.",
+						"Le membre de droite compte $n$ termes (un par valeur de $k$, de $0$ à $n-1$), tous égaux à ${{eval:r}}$.",
+						"Donc $u_n-u_0=\\textcolor{{{color:primary.0}}}{{{eval:r}}n}$, soit $u_n={{eval:a}}+{{eval:r}}n$."
+					]
+				}
+			},
+			{
+				"statement": "Soit $(u_n)$ la suite arithmétique de premier terme $u_0={{eval:a}}$ et de raison ${{eval:r}}$. On cherche l'expression de $u_n$ en fonction de $n$, pour tout entier naturel $n$ non nul.\n\nPour tout entier naturel $k$, $u_{k+1}-u_k={{eval:r}}$. On écrit cette égalité pour $k=0$, $k=1$, …, $k=n-1$, puis on additionne membre à membre :\n\n$$(u_1-u_0)+(u_2-u_1)+\\cdots+(u_n-u_{n-1})={{eval:r}}+{{eval:r}}+\\cdots+{{eval:r}}$$\n\nCombien de termes la somme ${{eval:r}}+{{eval:r}}+\\cdots+{{eval:r}}$ du membre de droite compte-t-elle ?\n\n$?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "r",
+						"expression": "2..9"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "n"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On a écrit une égalité pour chaque valeur de $k$ de $0$ à $n-1$ : il y en a $n$.",
+						"Le membre de droite compte donc $\\textcolor{{{color:primary.0}}}{n}$ termes égaux à ${{eval:r}}$ : $u_n-u_0={{eval:r}}n$.",
+						"Attention : de $0$ à $n-1$, il y a $n$ entiers, pas $n-1$ ni $n+1$."
+					]
+				}
+			},
+			{
+				"statement": "Soit $(u_n)$ la suite arithmétique de premier terme $u_0={{eval:a}}$ et de raison ${{eval:r}}$. On cherche l'expression de $u_n$ en fonction de $n$, pour tout entier naturel $n$ non nul.\n\nPour tout entier naturel $k$, $u_{k+1}-u_k={{eval:r}}$. On écrit cette égalité pour $k=0$, $k=1$, …, $k=n-1$, puis on additionne membre à membre :\n\n$$(u_1-u_0)+(u_2-u_1)+\\cdots+(u_n-u_{n-1})={{eval:r}}+{{eval:r}}+\\cdots+{{eval:r}}$$\n\nLe membre de gauche est égal à $u_n-u_0$. Pourquoi ?\n\n```choix\n- Chacun des termes $u_1$, …, $u_{n-1}$ apparaît une fois avec le signe $+$ et une fois avec le signe $-$.\n- Les termes $u_1$, …, $u_{n-1}$ sont tous égaux à $0$.\n- Les termes $u_1$, …, $u_{n-1}$ sont tous égaux à ${{eval:r}}$.\n- La suite $(u_n)$ est constante.\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "r",
+						"expression": "2..9"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\textcolor{{{color:primary.0}}}{u_1}$ apparaît dans $(u_1-u_0)$ avec le signe $+$ et dans $(u_2-u_1)$ avec le signe $-$ ; de même pour $u_2$, …, $u_{n-1}$.",
+						"Ces termes se compensent deux à deux : il ne reste que $u_n-u_0$.",
+						"Les termes de la suite ne sont ni nuls ni égaux à la raison : la suite augmente de ${{eval:r}}$ à chaque rang."
+					]
+				}
+			}
+		],
+		"shared": {},
+		"test_specs": [
+			{
+				"description": "3n",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"r": "3"
+				},
+				"answers": ["3n"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 3(n + 1)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"r": "3"
+				},
+				"answers": ["3(n+1)"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 4 + 3n (uₙ au lieu de uₙ − u₀)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"r": "3"
+				},
+				"answers": ["4+3n"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 3(n − 1)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"r": "3"
+				},
+				"answers": ["3(n-1)"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "n",
+				"variationIndex": 1,
+				"variables": {
+					"a": "4",
+					"r": "3"
+				},
+				"answers": ["n"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : n − 1",
+				"variationIndex": 1,
+				"variables": {
+					"a": "4",
+					"r": "3"
+				},
+				"answers": ["n-1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : n + 1",
+				"variationIndex": 1,
+				"variables": {
+					"a": "4",
+					"r": "3"
+				},
+				"answers": ["n+1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "télescopage",
+				"variationIndex": 2,
+				"variables": {
+					"a": "4",
+					"r": "3"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : termes nuls",
+				"variationIndex": 2,
+				"variables": {
+					"a": "4",
+					"r": "3"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : termes égaux à r",
+				"variationIndex": 2,
+				"variables": {
+					"a": "4",
+					"r": "3"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : suite constante",
+				"variationIndex": 2,
+				"variables": {
+					"a": "4",
+					"r": "3"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	},
+	{
+		"id": "acaeb02a-e934-43b6-99bc-46bb1ffb4f0f",
+		"theme": "Suites",
+		"domain": "Suites géométriques",
+		"subdomain": "Démonstrations",
+		"level": 1,
+		"status": "published",
+		"grades": ["1_SPE"],
+		"classification_node_id": "c89e6615-e4f2-447e-baba-ac49c14dee5a",
+		"title": "Démontrer le terme général d'une suite géométrique",
+		"description": "Démonstration à trous de uₙ = u₀qⁿ : produit télescopique des n quotients uₖ₊₁/uₖ = q, calcul de proche en proche jusqu'à u₃, justification de l'existence des quotients",
+		"variations": [
+			{
+				"statement": "Soit $(u_n)$ la suite géométrique de premier terme $u_0={{eval:a}}$ et de raison ${{eval:q}}$. On cherche l'expression de $u_n$ en fonction de $n$, pour tout entier naturel $n$ non nul.\n\nPour tout entier naturel $k$, $u_{k+1}={{eval:q}}\\times u_k$. Comme $u_0\\neq 0$ et ${{eval:q}}\\neq 0$, aucun terme de la suite n'est nul, et pour tout $k$, $\\dfrac{u_{k+1}}{u_k}={{eval:q}}$. On écrit cette égalité pour $k=0$, …, $k=n-1$, puis on multiplie membre à membre :\n\n$$\\dfrac{u_1}{u_0}\\times\\dfrac{u_2}{u_1}\\times\\cdots\\times\\dfrac{u_n}{u_{n-1}}={{eval:q}}\\times{{eval:q}}\\times\\cdots\\times{{eval:q}}$$\n\nLes termes $u_1$, …, $u_{n-1}$ se simplifient. Complète.\n\n$\\dfrac{u_n}{u_0}=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "q",
+						"expression": "2..5"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:q}}^n"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Dans le membre de gauche, chaque terme $u_1$, …, $u_{n-1}$ est une fois au numérateur et une fois au dénominateur : il reste $\\dfrac{u_n}{u_0}$.",
+						"Le membre de droite est le produit de $n$ facteurs égaux à ${{eval:q}}$.",
+						"Donc $\\dfrac{u_n}{u_0}=\\textcolor{{{color:primary.0}}}{{{eval:q}}^n}$, soit $u_n={{eval:a}}\\times{{eval:q}}^n$."
+					]
+				}
+			},
+			{
+				"statement": "Soit $(u_n)$ la suite géométrique de premier terme $u_0={{eval:a}}$ et de raison ${{eval:q}}$. On cherche l'expression de $u_n$ en fonction de $n$, pour tout entier naturel $n$ non nul.\n\nPour tout entier naturel $k$, $u_{k+1}={{eval:q}}\\times u_k$. On calcule les premiers termes de proche en proche :\n\n$$u_1={{eval:q}}\\times u_0,\\qquad u_2={{eval:q}}\\times u_1={{eval:q}}^2\\times u_0$$\n\nComplète.\n\n$u_3={{eval:q}}\\times u_2=?\\times u_0$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "q",
+						"expression": "2..5"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:q^3}}",
+						"requiredForm": {
+							"pattern": "u"
+						}
+					}
+				],
+				"correction": {
+					"steps": [
+						"$u_3={{eval:q}}\\times u_2={{eval:q}}\\times{{eval:q}}^2\\times u_0={{eval:q}}^3\\times u_0$.",
+						"Donc $u_3=\\textcolor{{{color:primary.0}}}{{{eval:q^3}}}\\times u_0$ : à chaque rang, on multiplie une fois de plus par la raison.",
+						"De même, $u_n={{eval:q}}^n\\times u_0$ : il y a $n$ multiplications par ${{eval:q}}$ de $u_0$ à $u_n$."
+					]
+				}
+			},
+			{
+				"statement": "Soit $(u_n)$ la suite géométrique de premier terme $u_0={{eval:a}}$ et de raison ${{eval:q}}$. On cherche l'expression de $u_n$ en fonction de $n$, pour tout entier naturel $n$ non nul.\n\nPour tout entier naturel $k$, $u_{k+1}={{eval:q}}\\times u_k$. Pour démontrer l'expression de $u_n$, on veut écrire les quotients $\\dfrac{u_{k+1}}{u_k}$. Pourquoi ces quotients existent-ils ?\n\n```choix\n- Car $u_0\\neq 0$ et la raison est non nulle : aucun terme de la suite n'est nul.\n- Car la suite $(u_n)$ est arithmétique.\n- Car on peut toujours diviser par un terme d'une suite.\n- Car $u_{k+1}-u_k$ est constant.\n```",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "q",
+						"expression": "2..5"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Un quotient $\\dfrac{u_{k+1}}{u_k}$ n'existe que si $u_k\\neq 0$.",
+						"Ici $u_0={{eval:a}}\\neq 0$ et $u_{k+1}={{eval:q}}\\times u_k$ avec ${{eval:q}}\\neq 0$ : de proche en proche, **aucun terme n'est nul**.",
+						"La suite est géométrique, pas arithmétique : c'est le quotient de deux termes consécutifs qui est constant, pas leur différence."
+					]
+				}
+			}
+		],
+		"shared": {},
+		"test_specs": [
+			{
+				"description": "2ⁿ",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"q": "2"
+				},
+				"answers": ["2^n"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 2n (raisonnement arithmétique)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"q": "2"
+				},
+				"answers": ["2n"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 2ⁿ⁺¹",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"q": "2"
+				},
+				"answers": ["2^{n+1}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 5 × 2ⁿ (uₙ au lieu du quotient)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"q": "2"
+				},
+				"answers": ["5\\times2^n"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "8",
+				"variationIndex": 1,
+				"variables": {
+					"a": "5",
+					"q": "2"
+				},
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Écriture 2³",
+				"variationIndex": 1,
+				"variables": {
+					"a": "5",
+					"q": "2"
+				},
+				"answers": ["2^3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 6 (3 × 2)",
+				"variationIndex": 1,
+				"variables": {
+					"a": "5",
+					"q": "2"
+				},
+				"answers": ["6"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 4 (2²)",
+				"variationIndex": 1,
+				"variables": {
+					"a": "5",
+					"q": "2"
+				},
+				"answers": ["4"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "aucun terme nul",
+				"variationIndex": 2,
+				"variables": {
+					"a": "5",
+					"q": "2"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : arithmétique",
+				"variationIndex": 2,
+				"variables": {
+					"a": "5",
+					"q": "2"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : toujours possible",
+				"variationIndex": 2,
+				"variables": {
+					"a": "5",
+					"q": "2"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : différence",
+				"variationIndex": 2,
+				"variables": {
+					"a": "5",
+					"q": "2"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	},
+	{
+		"id": "b05ec37a-3e3a-4a98-bd32-635636b84281",
+		"theme": "Fonctions",
+		"domain": "Dérivation",
+		"subdomain": "Démonstrations",
+		"level": 1,
+		"status": "published",
+		"grades": ["1_SPE"],
+		"classification_node_id": "9f11f79d-6065-4361-a40f-df8d9dd52a9a",
+		"title": "Démontrer la dérivée de la fonction carré",
+		"description": "Démonstration à trous de (x²)′ = 2x par le taux de variation entre a et a + h : (a + h)² − a² à développer, taux 2a + h, justification de la limite",
+		"variations": [
+			{
+				"statement": "Soit $f$ la fonction carré, définie sur $\\mathbb{R}$ par $f(x)=x^2$, et $a$ un réel. Pour $h\\neq 0$, on calcule le taux de variation de $f$ entre $a$ et $a+h$ :\n\n$$\\dfrac{f(a+h)-f(a)}{h}=\\dfrac{(a+h)^2-a^2}{h}$$\n\nOn développe $(a+h)^2$, puis on réduit. Complète par une expression développée.\n\n$(a+h)^2-a^2=?$",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "2ah+h^2",
+						"requiredForm": {
+							"pattern": "u"
+						}
+					}
+				],
+				"correction": {
+					"steps": [
+						"$(a+h)^2=a^2+2ah+h^2$ (identité remarquable).",
+						"Donc $(a+h)^2-a^2=\\textcolor{{{color:primary.0}}}{2ah+h^2}$ : les $a^2$ se compensent."
+					]
+				}
+			},
+			{
+				"statement": "Soit $f$ la fonction carré, définie sur $\\mathbb{R}$ par $f(x)=x^2$, et $a$ un réel. Pour $h\\neq 0$, on calcule le taux de variation de $f$ entre $a$ et $a+h$ :\n\n$$\\dfrac{f(a+h)-f(a)}{h}=\\dfrac{(a+h)^2-a^2}{h}$$\n\nComme $(a+h)^2-a^2=2ah+h^2$, on simplifie par $h$. Complète.\n\n$\\dfrac{f(a+h)-f(a)}{h}=\\dfrac{2ah+h^2}{h}=?$",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "2a+h",
+						"requiredForm": {
+							"pattern": "u"
+						}
+					}
+				],
+				"correction": {
+					"steps": [
+						"$2ah+h^2=h(2a+h)$ : on met $h$ en facteur.",
+						"Comme $h\\neq 0$, on simplifie : le taux vaut $\\textcolor{{{color:primary.0}}}{2a+h}$."
+					]
+				}
+			},
+			{
+				"statement": "Soit $f$ la fonction carré, définie sur $\\mathbb{R}$ par $f(x)=x^2$, et $a$ un réel. Pour $h\\neq 0$, on calcule le taux de variation de $f$ entre $a$ et $a+h$ :\n\n$$\\dfrac{f(a+h)-f(a)}{h}=\\dfrac{(a+h)^2-a^2}{h}$$\n\nCe taux vaut $2a+h$. On en déduit que $f$ est dérivable en $a$, avec $f'(a)=2a$. Pourquoi ?\n\n```choix\n- Car quand $h$ tend vers $0$, $2a+h$ tend vers $2a$.\n- Car $2a+h=2a$ pour tout réel $h$.\n- Car on remplace $h$ par $0$ dans $\\dfrac{(a+h)^2-a^2}{h}$.\n- Car $f(a)=a^2$, et on multiplie par $2$.\n```",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le nombre dérivé est la limite du taux quand $h$ tend vers $0$.",
+						"Ici le taux vaut $2a+h$, qui tend vers $\\textcolor{{{color:primary.0}}}{2a}$ : $f'(a)=2a$.",
+						"On ne peut pas remplacer $h$ par $0$ dans $\\dfrac{(a+h)^2-a^2}{h}$ : on diviserait par $0$. C'est pour cela qu'on simplifie d'abord."
+					]
+				}
+			}
+		],
+		"shared": {},
+		"test_specs": [
+			{
+				"description": "2ah + h²",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["2ah+h^2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Écriture h² + 2ah",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["h^2+2ah"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : h²",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["h^2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 2ah",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["2ah"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 2a + h (taux au lieu de la différence)",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["2a+h"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "2a + h",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["2a+h"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 2a (limite au lieu du taux)",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["2a"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 2ah + h",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["2ah+h"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : a + h",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["a+h"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "limite de 2a + h",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : égalité pour tout h",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : h remplacé par 0",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : f(a) multiplié par 2",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	},
+	{
+		"id": "b554a47f-1b2e-4530-a979-44d785890adf",
+		"theme": "Suites",
+		"domain": "Sommes",
+		"subdomain": "Démonstrations",
+		"level": 2,
+		"status": "published",
+		"grades": ["1_SPE"],
+		"classification_node_id": "2adca282-538d-4779-81aa-84b368d1765f",
+		"title": "Démontrer la somme 1 + q + ⋯ + qⁿ",
+		"description": "Démonstration à trous de 1 + q + ⋯ + qⁿ = (1 − qⁿ⁺¹)/(1 − q), q ≠ 1 : qS à compléter, S − qS, justification de la division par 1 − q",
+		"variations": [
+			{
+				"statement": "Soit $q$ un réel différent de $1$, $n$ un entier naturel et $S=1+q+q^2+\\cdots+q^n$.\n\nOn multiplie chaque terme de $S$ par $q$. Complète.\n\n$qS=q+q^2+\\cdots+q^n+?$",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "q^{n+1}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Multiplier par $q$ ajoute $1$ à chaque exposant : $1$ devient $q$, $q$ devient $q^2$, …, $q^n$ devient $q^{n+1}$.",
+						"Donc $qS=q+q^2+\\cdots+q^n+\\textcolor{{{color:primary.0}}}{q^{n+1}}$."
+					]
+				}
+			},
+			{
+				"statement": "Soit $q$ un réel différent de $1$, $n$ un entier naturel et $S=1+q+q^2+\\cdots+q^n$.\n\nOn multiplie $S$ par $q$ :\n\n$$qS=q+q^2+\\cdots+q^n+q^{n+1}$$\n\npuis on soustrait membre à membre. Les termes $q$, $q^2$, …, $q^n$ se simplifient. Complète.\n\n$S-qS=?$",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "1-q^{n+1}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les termes $q$, …, $q^n$ sont à la fois dans $S$ et dans $qS$ : ils disparaissent.",
+						"Il reste le premier terme de $S$, $1$, et le dernier terme de $qS$, $q^{n+1}$, avec le signe $-$.",
+						"Donc $S-qS=\\textcolor{{{color:primary.0}}}{1-q^{n+1}}$."
+					]
+				}
+			},
+			{
+				"statement": "Soit $q$ un réel différent de $1$, $n$ un entier naturel et $S=1+q+q^2+\\cdots+q^n$.\n\nOn multiplie $S$ par $q$ :\n\n$$qS=q+q^2+\\cdots+q^n+q^{n+1}$$\n\npuis on soustrait membre à membre : $S-qS=1-q^{n+1}$, soit $S(1-q)=1-q^{n+1}$.\n\nOn en déduit $S=\\dfrac{1-q^{n+1}}{1-q}$ en divisant par $1-q$. Pourquoi cette division est-elle permise ?\n\n```choix\n- Car $q\\neq 1$, donc $1-q\\neq 0$.\n- Car $q\\neq 0$.\n- Car $q>0$.\n- Car $n\\neq 0$.\n```",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"correction": {
+					"steps": [
+						"On ne peut diviser que par un nombre non nul.",
+						"Ici $q\\neq 1$, donc $\\textcolor{{{color:primary.0}}}{1-q\\neq 0}$ : $S=\\dfrac{1-q^{n+1}}{1-q}$.",
+						"Si $q=1$, la formule ne s'applique pas : $S=1+1+\\cdots+1=n+1$."
+					]
+				}
+			}
+		],
+		"shared": {},
+		"test_specs": [
+			{
+				"description": "qⁿ⁺¹",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["q^{n+1}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : qⁿ",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["q^n"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : nq",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["nq"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "1 − qⁿ⁺¹",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["1-q^{n+1}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Écriture −qⁿ⁺¹ + 1",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["-q^{n+1}+1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 1 − qⁿ",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["1-q^n"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 1 + qⁿ⁺¹",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["1+q^{n+1}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : qⁿ⁺¹ − 1 (sens inversé)",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["q^{n+1}-1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "q ≠ 1",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : q ≠ 0",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : q > 0",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : n ≠ 0",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	},
+	{
+		"id": "dbdf02be-9dbe-4b9a-97ff-3ab197135785",
+		"theme": "Géométrie",
+		"domain": "Produit scalaire",
+		"subdomain": "Démonstrations",
+		"level": 2,
+		"status": "published",
+		"grades": ["1_SPE"],
+		"classification_node_id": "26b15bc5-3885-432e-9cb7-518da9d73fd0",
+		"title": "Démontrer l'ensemble des points M tels que MA·MB = 0",
+		"description": "Démonstration à trous, par le milieu I de [AB] : MA·MB = MI² − IA², MI pour AB tiré, conclusion (le cercle de diamètre [AB])",
+		"variations": [
+			{
+				"statement": "Soit $A$ et $B$ deux points distincts, et $I$ le milieu de $[AB]$. On cherche l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=0$.\n\nPar la relation de Chasles, $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=\\left(\\overrightarrow{MI}+\\overrightarrow{IA}\\right)\\cdot\\left(\\overrightarrow{MI}+\\overrightarrow{IB}\\right)$. Comme $I$ est le milieu de $[AB]$, $\\overrightarrow{IB}=-\\overrightarrow{IA}$. Que vaut ce produit scalaire ?\n\n```choix\n- $MI^2-IA^2$\n- $MI^2+IA^2$\n- $\\left(MI-IA\\right)^2$\n- $MI^2-2\\,\\overrightarrow{MI}\\cdot\\overrightarrow{IA}$\n```",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\left(\\overrightarrow{MI}+\\overrightarrow{IA}\\right)\\cdot\\left(\\overrightarrow{MI}-\\overrightarrow{IA}\\right)$ se développe comme $(a+b)(a-b)=a^2-b^2$.",
+						"Les termes $\\overrightarrow{MI}\\cdot\\overrightarrow{IA}$ se compensent : il reste $\\textcolor{{{color:primary.0}}}{MI^2-IA^2}$."
+					]
+				}
+			},
+			{
+				"statement": "Soit $A$ et $B$ deux points distincts, et $I$ le milieu de $[AB]$. On cherche l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=0$.\n\nEn introduisant $I$ par la relation de Chasles, et comme $\\overrightarrow{IB}=-\\overrightarrow{IA}$, on obtient $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=MI^2-IA^2$.\n\nOn prend $AB={{eval:2*d}}$. Le point $M$ vérifie $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=0$ si et seulement si $MI^2=IA^2$, c'est-à-dire $MI=IA$ (des longueurs sont positives). Complète.\n\n$MI=?$",
+				"variables": [
+					{
+						"name": "d",
+						"expression": "2..9"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:d}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$I$ est le milieu de $[AB]$ : $IA=\\dfrac{AB}{2}=\\dfrac{{{eval:2*d}}}{2}={{eval:d}}$.",
+						"Donc $MI=\\textcolor{{{color:primary.0}}}{{{eval:d}}}$ : $M$ est à la distance ${{eval:d}}$ de $I$."
+					]
+				}
+			},
+			{
+				"statement": "Soit $A$ et $B$ deux points distincts, et $I$ le milieu de $[AB]$. On cherche l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=0$.\n\nEn introduisant $I$ par la relation de Chasles, et comme $\\overrightarrow{IB}=-\\overrightarrow{IA}$, on obtient $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=MI^2-IA^2$.\n\nDonc $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=0$ si et seulement si $MI=IA=\\dfrac{AB}{2}$. Quel est l'ensemble des points $M$ cherché ?\n\n```choix\n- Le cercle de diamètre $[AB]$.\n- La médiatrice de $[AB]$.\n- Le cercle de centre $A$ et de rayon $AB$.\n- Le seul point $I$.\n```",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les points $M$ tels que $MI=\\dfrac{AB}{2}$ forment le cercle de centre $I$ et de rayon $\\dfrac{AB}{2}$.",
+						"Son centre est le milieu de $[AB]$ et son rayon la moitié de $AB$ : c'est le **cercle de diamètre $[AB]$**.",
+						"La médiatrice de $[AB]$ est l'ensemble des points $M$ tels que $MA=MB$."
+					]
+				}
+			}
+		],
+		"shared": {},
+		"test_specs": [
+			{
+				"description": "MI² − IA²",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : MI² + IA²",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : (MI − IA)²",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : MI² − 2MI·IA",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "3 (AB = 6)",
+				"variationIndex": 1,
+				"variables": {
+					"d": "3"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 6 (AB)",
+				"variationIndex": 1,
+				"variables": {
+					"d": "3"
+				},
+				"answers": ["6"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 9 (IA²)",
+				"variationIndex": 1,
+				"variables": {
+					"d": "3"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 0",
+				"variationIndex": 1,
+				"variables": {
+					"d": "3"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "cercle de diamètre [AB]",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : médiatrice",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : cercle de centre A",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : point I",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	},
+	{
+		"id": "e2908d60-2360-453c-a6e2-5c0318d8b9b2",
+		"theme": "Fonctions",
+		"domain": "Dérivation",
+		"subdomain": "Démonstrations",
+		"level": 2,
+		"status": "published",
+		"grades": ["1_SPE"],
+		"classification_node_id": "9f11f79d-6065-4361-a40f-df8d9dd52a9a",
+		"title": "Démontrer la dérivée de la fonction inverse",
+		"description": "Démonstration à trous de (1/x)′ = −1/x² par le taux de variation entre a et a + h : numérateur −h, taux −1/(a(a + h)), limite −1/a²",
+		"variations": [
+			{
+				"statement": "Soit $f$ la fonction inverse, définie sur $]-\\infty\\,;0[\\,\\cup\\,]0\\,;+\\infty[$ par $f(x)=\\dfrac{1}{x}$, et $a$ un réel non nul. Pour $h\\neq 0$ tel que $a+h\\neq 0$, on calcule le taux de variation de $f$ entre $a$ et $a+h$.\n\nOn réduit au même dénominateur. Complète.\n\n$f(a+h)-f(a)=\\dfrac{1}{a+h}-\\dfrac{1}{a}=\\dfrac{?}{a(a+h)}$",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "-h"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\dfrac{1}{a+h}=\\dfrac{a}{a(a+h)}$ et $\\dfrac{1}{a}=\\dfrac{a+h}{a(a+h)}$.",
+						"Le numérateur vaut $a-(a+h)=\\textcolor{{{color:primary.0}}}{-h}$."
+					]
+				}
+			},
+			{
+				"statement": "Soit $f$ la fonction inverse, définie sur $]-\\infty\\,;0[\\,\\cup\\,]0\\,;+\\infty[$ par $f(x)=\\dfrac{1}{x}$, et $a$ un réel non nul. Pour $h\\neq 0$ tel que $a+h\\neq 0$, on calcule le taux de variation de $f$ entre $a$ et $a+h$.\n\nComme $f(a+h)-f(a)=\\dfrac{-h}{a(a+h)}$, on divise par $h$. Complète.\n\n$\\dfrac{f(a+h)-f(a)}{h}=?$",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "-\\frac{1}{a(a+h)}",
+						"requiredForm": {
+							"pattern": "u"
+						}
+					}
+				],
+				"correction": {
+					"steps": [
+						"Diviser par $h$, c'est multiplier par $\\dfrac{1}{h}$ : $\\dfrac{-h}{a(a+h)}\\times\\dfrac{1}{h}$.",
+						"Comme $h\\neq 0$, on simplifie par $h$ : le taux vaut $\\textcolor{{{color:primary.0}}}{-\\dfrac{1}{a(a+h)}}$."
+					]
+				}
+			},
+			{
+				"statement": "Soit $f$ la fonction inverse, définie sur $]-\\infty\\,;0[\\,\\cup\\,]0\\,;+\\infty[$ par $f(x)=\\dfrac{1}{x}$, et $a$ un réel non nul. Pour $h\\neq 0$ tel que $a+h\\neq 0$, on calcule le taux de variation de $f$ entre $a$ et $a+h$.\n\nLe taux vaut $-\\dfrac{1}{a(a+h)}$. Quand $h$ tend vers $0$, $a(a+h)$ tend vers $a\\times a$. Complète.\n\n$f'(a)=?$",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "-\\frac{1}{a^2}",
+						"requiredForm": {
+							"pattern": "u"
+						}
+					}
+				],
+				"correction": {
+					"steps": [
+						"Quand $h$ tend vers $0$, $a+h$ tend vers $a$, donc $a(a+h)$ tend vers $a^2$, qui n'est pas nul.",
+						"Le taux tend donc vers $\\textcolor{{{color:primary.0}}}{-\\dfrac{1}{a^2}}$ : $f$ est dérivable en $a$ et $f'(a)=-\\dfrac{1}{a^2}$."
+					]
+				}
+			}
+		],
+		"shared": {},
+		"test_specs": [
+			{
+				"description": "−h",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["-h"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : h (soustraction inversée)",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["h"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 1",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : −1",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["-1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "−1/(a(a + h))",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["-\\frac{1}{a(a+h)}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Forme (−1)/(a(a + h)) : signe à sortir",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["\\frac{-1}{a(a+h)}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["signs"]
+				}
+			},
+			{
+				"description": "Écriture −1/(a² + ah)",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["-\\frac{1}{a^2+ah}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : −1/(a(2a + h))",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["-\\frac{1}{a(2a+h)}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 1/(a(a + h))",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["\\frac{1}{a(a+h)}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : −h/(a(a + h)) (pas divisé)",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["\\frac{-h}{a(a+h)}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : −1/a² (limite au lieu du taux)",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["-\\frac{1}{a^2}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "−1/a²",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["-\\frac{1}{a^2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Forme (−1)/a² : signe à sortir",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["\\frac{-1}{a^2}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["signs"]
+				}
+			},
+			{
+				"description": "Erreur : 1/a²",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["\\frac{1}{a^2}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : −1/a",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["-\\frac{1}{a}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : −1/(2a)",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["-\\frac{1}{2a}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	},
+	{
+		"id": "e8011f4e-72fe-4419-8ba2-6956775ce5f7",
+		"theme": "Géométrie",
+		"domain": "Produit scalaire",
+		"subdomain": "Démonstrations",
+		"level": 1,
+		"status": "published",
+		"grades": ["1_SPE"],
+		"classification_node_id": "35cfd263-d25e-4680-ae51-471ef852b8ac",
+		"title": "Démontrer la formule d'Al-Kashi",
+		"description": "Démonstration à trous de la formule d'Al-Kashi par le produit scalaire : BC = AC − AB (Chasles), développement du carré scalaire, BC² pour un angle de 60° (valeurs tirées)",
+		"variations": [
+			{
+				"statement": "Soit $ABC$ un triangle. On veut démontrer la formule d'Al-Kashi :\n\n$$BC^2=AB^2+AC^2-2\\times AB\\times AC\\times\\cos\\widehat{BAC}$$\n\nOn commence par écrire $\\overrightarrow{BC}$ à l'aide de $\\overrightarrow{AB}$ et de $\\overrightarrow{AC}$. Quelle égalité est juste ?\n\n```choix\n- $\\overrightarrow{BC}=\\overrightarrow{AC}-\\overrightarrow{AB}$\n- $\\overrightarrow{BC}=\\overrightarrow{AB}-\\overrightarrow{AC}$\n- $\\overrightarrow{BC}=\\overrightarrow{AB}+\\overrightarrow{AC}$\n- $\\overrightarrow{BC}=\\overrightarrow{AC}+\\overrightarrow{CB}$\n```",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Relation de Chasles : $\\overrightarrow{BC}=\\overrightarrow{BA}+\\overrightarrow{AC}$.",
+						"Comme $\\overrightarrow{BA}=-\\overrightarrow{AB}$ : $\\overrightarrow{BC}=\\textcolor{{{color:primary.0}}}{\\overrightarrow{AC}-\\overrightarrow{AB}}$.",
+						"$\\overrightarrow{AB}-\\overrightarrow{AC}=\\overrightarrow{CB}$ : c'est l'opposé de $\\overrightarrow{BC}$."
+					]
+				}
+			},
+			{
+				"statement": "Soit $ABC$ un triangle. On veut démontrer la formule d'Al-Kashi :\n\n$$BC^2=AB^2+AC^2-2\\times AB\\times AC\\times\\cos\\widehat{BAC}$$\n\nD'après la relation de Chasles, $\\overrightarrow{BC}=\\overrightarrow{BA}+\\overrightarrow{AC}=\\overrightarrow{AC}-\\overrightarrow{AB}$, donc $BC^2=\\left\\|\\overrightarrow{AC}-\\overrightarrow{AB}\\right\\|^2$.\n\nOn développe ce carré scalaire. Quelle égalité est juste ?\n\n```choix\n- $\\left\\|\\overrightarrow{AC}-\\overrightarrow{AB}\\right\\|^2=AC^2-2\\,\\overrightarrow{AC}\\cdot\\overrightarrow{AB}+AB^2$\n- $\\left\\|\\overrightarrow{AC}-\\overrightarrow{AB}\\right\\|^2=AC^2-AB^2$\n- $\\left\\|\\overrightarrow{AC}-\\overrightarrow{AB}\\right\\|^2=AC^2+AB^2$\n- $\\left\\|\\overrightarrow{AC}-\\overrightarrow{AB}\\right\\|^2=AC^2+2\\,\\overrightarrow{AC}\\cdot\\overrightarrow{AB}+AB^2$\n```",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\|\\vec{u}-\\vec{v}\\|^2=\\|\\vec{u}\\|^2-2\\,\\vec{u}\\cdot\\vec{v}+\\|\\vec{v}\\|^2$, comme $(a-b)^2=a^2-2ab+b^2$.",
+						"Ici : $BC^2=AC^2-\\textcolor{{{color:primary.0}}}{2\\,\\overrightarrow{AC}\\cdot\\overrightarrow{AB}}+AB^2$.",
+						"Et $\\overrightarrow{AC}\\cdot\\overrightarrow{AB}=AC\\times AB\\times\\cos\\widehat{BAC}$ : on obtient la formule d'Al-Kashi."
+					]
+				}
+			},
+			{
+				"statement": "Soit $ABC$ un triangle. On veut démontrer la formule d'Al-Kashi :\n\n$$BC^2=AB^2+AC^2-2\\times AB\\times AC\\times\\cos\\widehat{BAC}$$\n\nD'après la relation de Chasles, $\\overrightarrow{BC}=\\overrightarrow{BA}+\\overrightarrow{AC}=\\overrightarrow{AC}-\\overrightarrow{AB}$, donc $BC^2=\\left\\|\\overrightarrow{AC}-\\overrightarrow{AB}\\right\\|^2$.\n\nEn développant, $BC^2=AC^2-2\\,\\overrightarrow{AC}\\cdot\\overrightarrow{AB}+AB^2$. On prend $AB={{eval:c}}$, $AC={{eval:b}}$ et $\\widehat{BAC}=60^\\circ$, avec $\\cos 60^\\circ=\\dfrac{1}{2}$. Complète.\n\n$BC^2=?$",
+				"variables": [
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b^2+c^2-b*c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\overrightarrow{AC}\\cdot\\overrightarrow{AB}={{eval:b}}\\times{{eval:c}}\\times\\dfrac{1}{2}={{eval:b*c/2}}$.",
+						"Donc $BC^2={{eval:b^2}}-2\\times{{eval:b*c/2}}+{{eval:c^2}}=\\textcolor{{{color:primary.0}}}{{{eval:b^2+c^2-b*c}}}$."
+					]
+				}
+			}
+		],
+		"shared": {},
+		"test_specs": [
+			{
+				"description": "AC − AB",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : AB − AC",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : AB + AC",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : AC + CB",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "AC² − 2AC·AB + AB²",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : AC² − AB²",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : AC² + AB²",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : avec + 2AC·AB",
+				"variationIndex": 1,
+				"variables": {},
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "19 (25 + 9 − 15)",
+				"variationIndex": 2,
+				"variables": {
+					"b": "5",
+					"c": "3"
+				},
+				"answers": ["19"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 34 (sans le produit scalaire)",
+				"variationIndex": 2,
+				"variables": {
+					"b": "5",
+					"c": "3"
+				},
+				"answers": ["34"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 4 (25 + 9 − 30, cosinus oublié)",
+				"variationIndex": 2,
+				"variables": {
+					"b": "5",
+					"c": "3"
+				},
+				"answers": ["4"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 49 (signe +)",
+				"variationIndex": 2,
+				"variables": {
+					"b": "5",
+					"c": "3"
+				},
+				"answers": ["49"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : √19 (BC au lieu de BC²)",
+				"variationIndex": 2,
+				"variables": {
+					"b": "5",
+					"c": "3"
+				},
+				"answers": ["\\sqrt{19}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	},
+	{
+		"id": "f7938cd3-471f-43e8-81e0-3108215d399a",
+		"theme": "Fonctions",
+		"domain": "Dérivation",
+		"subdomain": "Démonstrations",
+		"level": 3,
+		"status": "published",
+		"grades": ["1_SPE"],
+		"classification_node_id": "3cfed021-5c0a-4150-8b81-2558a8561682",
+		"title": "Démontrer que la racine carrée n'est pas dérivable en 0",
+		"description": "Démonstration à trous : taux de variation de √ entre 0 et h égal à 1/√h, sa valeur pour h = 0,01, 0,0001 ou 0,000001 (tirée), conclusion (taux non borné)",
+		"variations": [
+			{
+				"statement": "Soit $f$ la fonction racine carrée, définie sur $[0\\,;+\\infty[$ par $f(x)=\\sqrt{x}$. On étudie son taux de variation entre $0$ et $h$, pour $h>0$.\n\nPour $h>0$, $h=\\sqrt{h}\\times\\sqrt{h}$. Complète.\n\n$\\dfrac{f(h)-f(0)}{h}=\\dfrac{\\sqrt{h}}{h}=?$",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{1}{\\sqrt{h}}",
+						"requiredForm": {
+							"pattern": "u"
+						}
+					}
+				],
+				"correction": {
+					"steps": [
+						"$f(0)=\\sqrt{0}=0$, donc le taux vaut $\\dfrac{\\sqrt{h}}{h}$.",
+						"On simplifie par $\\sqrt{h}$ : $\\dfrac{\\sqrt{h}}{\\sqrt{h}\\times\\sqrt{h}}=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{\\sqrt{h}}}$."
+					]
+				}
+			},
+			{
+				"statement": "Soit $f$ la fonction racine carrée, définie sur $[0\\,;+\\infty[$ par $f(x)=\\sqrt{x}$. On étudie son taux de variation entre $0$ et $h$, pour $h>0$.\n\nPour $h>0$, ce taux vaut $\\dfrac{1}{\\sqrt{h}}$. Complète, pour $h={{eval:1/10^(2*p);d}}$.\n\n$\\dfrac{f(h)-f(0)}{h}=?$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "1..3"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:10^p}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$\\sqrt{{{eval:1/10^(2*p);d}}}={{eval:1/10^p;d}}$.",
+						"Donc le taux vaut $\\dfrac{1}{{{eval:1/10^p;d}}}=\\textcolor{{{color:primary.0}}}{{{eval:10^p}}}$.",
+						"Plus $h$ est proche de $0$, plus le taux est grand."
+					]
+				}
+			},
+			{
+				"statement": "Soit $f$ la fonction racine carrée, définie sur $[0\\,;+\\infty[$ par $f(x)=\\sqrt{x}$. On étudie son taux de variation entre $0$ et $h$, pour $h>0$.\n\n$$\\dfrac{f(h)-f(0)}{h}=\\dfrac{\\sqrt{h}-0}{h}=\\dfrac{\\sqrt{h}}{h}=\\dfrac{1}{\\sqrt{h}}$$\n\nQue peut-on en conclure ?\n\n```choix\n- Quand $h$ tend vers $0$, $\\dfrac{1}{\\sqrt{h}}$ devient aussi grand qu'on veut : le taux n'a pas de limite finie, donc $f$ n'est pas dérivable en $0$.\n- Quand $h$ tend vers $0$, le taux tend vers $0$, donc $f'(0)=0$.\n- $f$ n'est pas dérivable en $0$ car $f$ n'est pas définie en $0$.\n- Le taux tend vers $1$, donc $f'(0)=1$.\n```",
+				"variables": [],
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Pour $h=0{,}01$, le taux vaut $10$ ; pour $h=0{,}0001$, il vaut $100$ : il **grandit sans limite** quand $h$ se rapproche de $0$.",
+						"Être dérivable en $0$, c'est avoir un taux qui tend vers un nombre réel : ce n'est pas le cas ici.",
+						"$f$ est bien définie en $0$ : $f(0)=\\sqrt{0}=0$."
+					]
+				}
+			}
+		],
+		"shared": {},
+		"test_specs": [
+			{
+				"description": "1/√h",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["\\frac{1}{\\sqrt{h}}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Écriture √h/h",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["\\frac{\\sqrt{h}}{h}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : √h",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["\\sqrt{h}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 1/h",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["\\frac{1}{h}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 1/(2√h)",
+				"variationIndex": 0,
+				"variables": {},
+				"answers": ["\\frac{1}{2\\sqrt{h}}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "10 (h = 0,01)",
+				"variationIndex": 1,
+				"variables": {
+					"p": "1"
+				},
+				"answers": ["10"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : 0,1 (√h)",
+				"variationIndex": 1,
+				"variables": {
+					"p": "1"
+				},
+				"answers": ["0.1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : 100 (1/h)",
+				"variationIndex": 1,
+				"variables": {
+					"p": "1"
+				},
+				"answers": ["100"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "1000 (h = 0,000001)",
+				"variationIndex": 1,
+				"variables": {
+					"p": "3"
+				},
+				"answers": ["1000"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "taux non borné",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "Erreur : tend vers 0",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : non définie en 0",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "Erreur : tend vers 1",
+				"variationIndex": 2,
+				"variables": {},
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+]
