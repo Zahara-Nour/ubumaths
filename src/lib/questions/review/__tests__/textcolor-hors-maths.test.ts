@@ -75,4 +75,38 @@ describe('findTextcolorOutsideMath', () => {
 		expect(report.checked).toBe(2);
 		expect(report.findings).toHaveLength(2);
 	});
+
+	it('erreur : couleur hors $ dans un choix ; entre $ → juste', () => {
+		const choix = (contenu: string) =>
+			findTextcolorOutsideMath(
+				modele('Laquelle ?', [], {
+					statement: `Laquelle ?\n\n\`\`\`choix\n- ${contenu}\n- non\n\`\`\``
+				}),
+				2
+			).findings;
+		expect(choix('\\textcolor{red}{2}')).toHaveLength(2);
+		expect(choix('$\\textcolor{red}{2}$')).toEqual([]);
+	});
+
+	it('erreur : couleur hors $ dans une cellule de tableau ; entre $ → juste', () => {
+		const cellule = (contenu: string) =>
+			findTextcolorOutsideMath(modele(`| a | b |\n|---|---|\n| ${contenu} | 1 |`), 2).findings;
+		expect(cellule('\\textcolor{red}{2}')).toHaveLength(2);
+		expect(cellule('$\\textcolor{red}{2}$')).toEqual([]);
+	});
+
+	it('erreur : couleur hors $ dans le texte d’un lien', () => {
+		const report = findTextcolorOutsideMath(modele('Voir [\\textcolor{red}{ici}](#x).'), 2);
+		expect(report.findings).toHaveLength(2);
+	});
+
+	it('erreur : couleur hors $ dans un retour feedback', () => {
+		const report = findTextcolorOutsideMath(
+			modele('Que vaut $a$ ?', [], {
+				correction: { feedback: { incorrect: 'Revois \\textcolor{red}{le signe}.' } }
+			}),
+			2
+		);
+		expect(report.findings).toHaveLength(2);
+	});
 });
