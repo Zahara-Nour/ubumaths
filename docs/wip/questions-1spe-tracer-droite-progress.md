@@ -7,13 +7,16 @@ Sous-chantier de `questions-1spe` (clos, journal `docs/archive/wip/questions-1sp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, ouverture._
+_Mis à jour le 2026-11-03, PR #2272 ouverte._
 
-- **État** : relevé fait (§ 1), phase 0 proposée (§ 2).
-- **Prochaine action** : écrire le lot après validation de la phase 0.
-- **En attente de David** : réponses aux questions du § 3.
-- **Pièges en cours** : #2265 pas en prod → brouillons seulement, publication après un `deploy:prod`
-  (David) ; niveaux 1 à 7 de « Équations de droites » pris.
+- **État** : phase 0 validée (§ 4) ; modèle 433 écrit, créé en base locale (`18bd977d`), PR #2272
+  (fichiers) en CI.
+- **Prochaine action** : merge de #2272 ; phase 0 de 1SPE-271 (§ 6) à faire valider, puis son modèle
+  (PR à part).
+- **En attente de David** : § 6 (tangente) ; aperçu admin du modèle à jouer à l'œil (Chrome n'a pas pu
+  ouvrir `localhost` dans cette session).
+- **Pièges en cours** : #2265 pas en prod → brouillons seulement, `create-questions --publier` en prod
+  après un `deploy:prod` (David) ; niveaux 1 à 8 de « Équations de droites » pris après ce modèle.
 - **Worktree / branche** : `../ubumaths-wt-questions-1spe-tracer-droite`, `feat/questions-1spe-tracer-droite`.
 
 ---
@@ -81,3 +84,39 @@ Un modèle, **« Tracer une droite donnée par un point et sa pente »**.
    validation de ce modèle-ci.
 4. **2-316 / 2-445** : leurs modèles publiés (case choix) sont à réécrire au geste ; ce sous-chantier
    ne les touche pas (ils appartiennent à `questions-2de`) — d'accord ?
+
+## 4. Phase 0 : décisions (David, 2026-11-03, « je suis tes recos »)
+
+1. A **non dessiné** : l'élève le place d'après ses coordonnées.
+2. Pente fractionnaire **gardée** (variation 2).
+3. 1SPE-271 (tangente) : **dans ce sous-chantier**, après ce modèle-ci (phase 0 au § 6).
+4. 2-316 / 2-445 : laissés à `questions-2de` (ajoutés au « Contenu restant » de `outils-manquants.md`).
+
+## 5. Modèle 433 : fait (2026-11-03, #2272)
+
+`docs/wip/questions/lot-1spe-tracer-droite.py` → `scripts/questions/1spe-tracer-droite/01-…json`.
+Équation de `tracer:` : `y = mx + p` (V1), `y = k/qx + c/q` (V2, `\frac` refusé) ; la phrase d'erreur
+la met au propre (`equationLatex` : `y = -1/2x + 2/2` → « y = 1 − x/2 »). 11 specs vertes,
+`sonde-courbes` 300 tirages 0 problème, base locale `18bd977d`. Aperçu admin pas joué (Chrome
+revenait à un onglet vide sur `localhost:5180`).
+
+## 6. Phase 0 de 1SPE-271 : proposée le 2026-11-03
+
+Un modèle, **« Tracer la tangente connaissant le nombre dérivé »** (Analyse › Dérivation : catégorie
+et niveau à relever en prod avant d'écrire ; niveaux scolaires 1_SPE seul, le point n'est pas un
+automatisme).
+
+- **Énoncé** : courbe 𝒞f tracée, point A(a ; f(a)) **dessiné** sur elle (`points:`), « f′(a) = m.
+  Trace la tangente à 𝒞f au point A. » ; `tracer:` = y = f(a) + m(x − a).
+- **Fonction** : parabole f(x) = α(x − a)² + m(x − a) + b (α = ±1/2 ou ±1), a et b entiers, pour que
+  f′(a) = m soit vrai et que la courbe tienne dans la fenêtre −6..6.
+- **Variations** : 1. m entier ±1..3 ; 2. m = 0 (tangente horizontale, au sommet) ; 3. m fractionnaire
+  ±1/2, ±3/2.
+- **Correction** : « La tangente passe par A et a pour coefficient directeur f′(a) = m : depuis A, on
+  avance de 1 (de q) et on monte de m (de k) » ; repère avec 𝒞f, la tangente, A et B.
+- **Specs** : A et B justes ; erreurs : tangente de pente opposée, droite par A et un autre point de la
+  courbe (sécante), pente inversée.
+- **Question d'accès** : brouillon, personne ne lit rien de neuf.
+
+Questions : (a) A dessiné sur la courbe (reco : oui, la tangente en un point de la courbe, le point
+est donné par la figure) ; (b) les trois variations, dont m = 0 (reco : oui).
