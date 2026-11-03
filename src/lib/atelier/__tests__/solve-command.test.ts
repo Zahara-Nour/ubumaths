@@ -33,7 +33,7 @@ describe('`.résoudre` rend les étapes pédagogiques', () => {
 
 		// La ligne montre `x = 3` en mathématiques ; les étapes se déplient
 		// dessous (décision Q1).
-		expect(result.kind === 'commande' && result.latex).toBe('x = 3');
+		expect(result.kind === 'commande' && result.latex).toBe('S = \\left\\{ 3 \\right\\}');
 	});
 
 	it('N2 : plus aucune trace du formateur de terminal', () => {
@@ -77,7 +77,7 @@ describe('la ligne corrige le moteur au lieu de le suivre', () => {
 
 		expect(result.kind).toBe('commande');
 		if (result.kind !== 'commande') return;
-		expect(result.latex).toBe('x = \\dfrac{5}{11}');
+		expect(result.latex).toBe('S = \\left\\{ \\dfrac{5}{11} \\right\\}');
 		// Le moteur répondait « x = 3 » ; depuis le 2026-10-06 (variable après
 		// « ; »), il lit lui aussi `3x+5=14x`.
 		expect(result.output).toContain('x = 5/11');
@@ -89,7 +89,7 @@ describe('la ligne corrige le moteur au lieu de le suivre', () => {
 
 		expect(result.kind).toBe('commande');
 		if (result.kind !== 'commande') return;
-		expect(result.latex).toBe('v = 2');
+		expect(result.latex).toBe('S = \\left\\{ 2 \\right\\}');
 	});
 });
 
@@ -152,7 +152,7 @@ describe('la ligne d’historique porte les étapes', () => {
 		expect(desk.entries.length).toBe(1);
 		expect(desk.entries[0].steps).toBeDefined();
 		expect(desk.entries[0].steps![0].title).toBe('Équation du premier degré');
-		expect(desk.entries[0].latex).toBe('x = 3');
+		expect(desk.entries[0].latex).toBe('S = \\left\\{ 3 \\right\\}');
 	});
 
 	it('une commande sans étapes n’en invente pas', () => {
@@ -177,7 +177,7 @@ describe('`.résoudre` sur une inéquation', () => {
 
 		expect(result.kind).toBe('commande');
 		if (result.kind !== 'commande') return;
-		expect(result.latex).toBe('x < 3');
+		expect(result.latex).toBe('S = ]-\\infty ; 3[');
 		expect(result.steps).toBeDefined();
 		// Le moteur ne rendait rien ici ; depuis le lot « radicaux du lycée »
 		// (2026-10-08), `.solve` résout l'inéquation lui aussi. Les étapes

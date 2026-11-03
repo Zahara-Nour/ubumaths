@@ -29,7 +29,7 @@ import {
 	periodicSolutionsText,
 	inequalitySolutionLatex,
 	inequalityThresholdText,
-	logarithmicValueLatex,
+	logarithmicExactLatex,
 	logarithmicValueText,
 	logarithmicBounds,
 	withRealLineWritten
@@ -1281,14 +1281,14 @@ export class SolveCommand extends BaseCommand {
 		const values = [...zeros]
 			.sort((a, b) => (a.approximate ?? 0) - (b.approximate ?? 0))
 			.map((zero) => zero.value);
-		// Une solution en ln : décimaux gardés, valeur approchée, comme sans `dans`
+		// Les solutions en ln : décimaux gardés, comme sans `dans` ; l'ensemble des
+		// solutions toujours (Q2), la valeur approchée au bouton ≈
 		const only = zeros.length === 1 ? zeros[0] : null;
+		const written = (v: MathNode) => logarithmicExactLatex(v) ?? toLatex(exactValueToShow(v));
 		const latex =
 			values.length === 0
 				? 'S = \\emptyset'
-				: values.length === 1
-					? `${variable} = ${(only && logarithmicValueLatex(only.value, only.approximate)) ?? toLatex(exactValueToShow(values[0]))}`
-					: `S = \\left\\{ ${values.map((v) => toLatex(exactValueToShow(v))).join(' \\,;\\, ')} \\right\\}`;
+				: `S = \\left\\{ ${values.map(written).join(' \\,;\\, ')} \\right\\}`;
 		const output =
 			values.length === 0
 				? 'Pas de solution dans cet intervalle'
@@ -1298,12 +1298,8 @@ export class SolveCommand extends BaseCommand {
 								`${variable} = ${(only && logarithmicValueText(only.value, only.approximate)) ?? toCustom(v)}`
 						)
 						.join(' ou ');
-		// Leurs valeurs approchées, pour le bouton ≈ de l'atelier — sauf une solution
-		// en ln, qui donne déjà la sienne
-		const approximateLatex =
-			only !== null && logarithmicValueLatex(only.value, only.approximate) !== null
-				? null
-				: approximateSolutionsLatex(variable, values, values.length > 1);
+		// Leurs valeurs approchées, pour le bouton ≈ de l'atelier
+		const approximateLatex = approximateSolutionsLatex(values);
 		return { success: true, output, latex, ...(approximateLatex !== null && { approximateLatex }) };
 	}
 

@@ -14,7 +14,8 @@
  *   `valeur`. Une faute de frappe dans un attendu se voit ainsi comme un
  *   écart de valeur sur TOUS les outils à la fois, pas comme un moteur faux.
  * - **Ensemble** (`S = …`, `D = …`) : `checkForm` ne les lit pas. Ils sont
- *   découpés (réunion, intervalle, ℝ privé de, ensemble fini, vide) et chaque
+ *   découpés (réunion, intervalle, ℝ privé de, ensemble fini, famille
+ *   périodique `, k \in \mathbb{Z}`, vide) et chaque
  *   borne ou élément est jugé comme une expression ; l'ordre des éléments
  *   compte (rangés dans l'ordre croissant).
  * - **Grandeur, angle** (`12.5~\mathrm{km}`, `90{}^{\circ}`) : même unité
@@ -83,6 +84,8 @@ type Part =
 	| { readonly kind: 'reals' }
 	| { readonly kind: 'reals-minus'; readonly points: readonly string[] }
 	| { readonly kind: 'finite'; readonly elements: readonly string[] }
+	/** Une ou plusieurs familles `\{ a + 2k\pi ; b + 2k\pi, k \in \mathbb{Z} \}` */
+	| { readonly kind: 'periodic'; readonly elements: readonly string[] }
 	| {
 			readonly kind: 'interval';
 			readonly open: string;
@@ -357,6 +360,9 @@ function readPart(piece: string): Part | null {
 	if (piece === '\\mathbb{R}') return { kind: 'reals' };
 	const minus = /^\\mathbb\{R\}\\setminus\\\{(.*)\\\}$/.exec(piece);
 	if (minus !== null) return { kind: 'reals-minus', points: splitTop(minus[1], ';') };
+	// Avant l'ensemble fini, qui la lirait comme un seul élément illisible
+	const periodic = /^\\\{(.*),k\\in\\mathbb\{Z\}\\\}$/.exec(piece);
+	if (periodic !== null) return { kind: 'periodic', elements: splitTop(periodic[1], ';') };
 	const finite = /^\\\{(.*)\\\}$/.exec(piece);
 	if (finite !== null) return { kind: 'finite', elements: splitTop(finite[1], ';') };
 	const interval = /^([[\]])(.*)([[\]])$/.exec(piece);
@@ -401,6 +407,7 @@ function partExpressions(part: Part): string[] {
 		case 'reals-minus':
 			return [...part.points];
 		case 'finite':
+		case 'periodic':
 			return [...part.elements];
 		case 'interval':
 			return [part.lower, part.upper].filter((b) => !/\\infty/.test(b));

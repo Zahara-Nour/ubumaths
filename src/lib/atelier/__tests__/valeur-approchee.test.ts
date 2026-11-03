@@ -89,7 +89,7 @@ describe('les valeurs approchées des solutions', () => {
 		expect(result.kind === 'commande' && result.latex).toMatch(/^S = /);
 
 		expect(alternativeOf(result)?.latex).toBe(
-			'S \\approx \\left\\{ 1{,}6180 \\,;\\, -0{,}6180 \\right\\}'
+			'S \\approx \\left\\{ -0{,}6180 \\,;\\, 1{,}6180 \\right\\}'
 		);
 	});
 

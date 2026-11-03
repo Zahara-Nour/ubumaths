@@ -71,7 +71,7 @@ describe('virgule décimale dans les valeurs et les bornes', () => {
 	});
 
 	it('.résoudre x^2=1/4 dans [0,1;1] → 1/2', () => {
-		expect(latex('.résoudre x^2=1/4 dans [0,1;1]')).toBe('x=\\dfrac{1}{2}');
+		expect(latex('.résoudre x^2=1/4 dans [0,1;1]')).toBe('S=\\left\\{\\dfrac{1}{2}\\right\\}');
 	});
 
 	it('.intégrer x de 0 à 0,5 → 1/8', () => {

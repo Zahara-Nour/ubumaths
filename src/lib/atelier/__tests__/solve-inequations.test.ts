@@ -21,13 +21,13 @@ describe('inéquations du premier degré', () => {
 		// de deux lignes. L'afficher comme « la réponse » mettrait un bloc de
 		// calcul là où l'élève attend `x < 3`. La réponse se lit donc sur
 		// l'arbre `after`, pas sur le rendu.
-		expect(solved!.answer).toBe('x < 3');
+		expect(solved!.answer).toBe('S = ]-\\infty ; 3[');
 	});
 
 	it('N2 : le changement de sens est appliqué ET expliqué', () => {
 		const solved = solveSteps('-2x>=6');
 
-		expect(solved!.answer).toBe('x \\leqslant -3');
+		expect(solved!.answer).toBe('S = ]-\\infty ; -3]');
 		const titres = solved!.steps.map((s) => s.title).join(' ');
 		expect(titres).toContain('changement de sens');
 	});

@@ -156,11 +156,13 @@ describe('.dériver / .résoudre : variable devinée ou exigée', () => {
 	});
 
 	it('.résoudre 2t+1=7 : t deviné, t = 3', () => {
-		expect(latex('.résoudre 2t+1=7')?.replace(/\s/g, '')).toContain('t=3');
+		expect(latex('.résoudre 2t+1=7')?.replace(/\s/g, '')).toContain('S=\\left\\{3\\right\\}');
 	});
 
 	it('.résoudre a t = 3 pour t', () => {
-		expect(latex('.résoudre 2 t = 3 pour t')?.replace(/\s/g, '')).toMatch(/t=\\dfrac\{3\}\{2\}/);
+		expect(latex('.résoudre 2 t = 3 pour t')?.replace(/\s/g, '')).toBe(
+			'S=\\left\\{\\dfrac{3}{2}\\right\\}'
+		);
 	});
 });
 
@@ -232,10 +234,12 @@ describe('.résoudre … dans INTERVALLE : ordre libre', () => {
 	});
 
 	it('intervalle ouvert : ]0;2\\pi[ ne garde que π', () => {
-		expect(latex('.résoudre sin(x)=0 dans ]0;2\\pi[')?.replace(/\s/g, '')).toBe('x=\\pi');
+		expect(latex('.résoudre sin(x)=0 dans ]0;2\\pi[')?.replace(/\s/g, '')).toBe(
+			'S=\\left\\{\\pi\\right\\}'
+		);
 	});
 
 	it('x^2=4 dans [0;5] : x = 2', () => {
-		expect(latex('.résoudre x^2=4 dans [0;5]')?.replace(/\s/g, '')).toBe('x=2');
+		expect(latex('.résoudre x^2=4 dans [0;5]')?.replace(/\s/g, '')).toBe('S=\\left\\{2\\right\\}');
 	});
 });

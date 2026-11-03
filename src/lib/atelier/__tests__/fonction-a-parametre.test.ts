@@ -288,7 +288,7 @@ describe('sans paramètre : inchangé', () => {
 	it.each([
 		['.dériver f', ['f(x) = 2 x'], '2'],
 		['.intégrer f', ['f(x) = 2 x'], 'x^2+C'],
-		['.résoudre f(x)=0', ['f(x) = 2 x'], 'x=0'],
+		['.résoudre f(x)=0', ['f(x) = 2 x'], 'S=\\left\\{0\\right\\}'],
 		['f(2)', ['f(x) = 2 x'], '4'],
 		['.résoudre g(x)=0', ['g(x) = x^2 + 3'], 'S=\\emptyset']
 	])('%s', (input, setup, expected) => {
@@ -300,7 +300,7 @@ describe('sans paramètre : inchangé', () => {
 	});
 
 	it('le paramètre posé : .résoudre f(x)=0 répond', () => {
-		expect(latex('.résoudre f(x)=0', ['f(x) = a x', 'a = 2'])).toBe('x=0');
+		expect(latex('.résoudre f(x)=0', ['f(x) = a x', 'a = 2'])).toBe('S=\\left\\{0\\right\\}');
 	});
 });
 
@@ -389,12 +389,12 @@ describe('Q5 (V57) : une résolution qui divise par le paramètre refuse', () =>
 	});
 
 	it.each([
-		['x + a = 0', 'x=-a'],
-		['2x = a', 'x=\\dfrac{a}{2}'],
+		['x + a = 0', 'S=\\left\\{-a\\right\\}'],
+		['2x = a', 'S=\\left\\{\\dfrac{a}{2}\\right\\}'],
 		['(x-a)(x-1) = 0', 'S=\\left\\{a\\,;\\,1\\right\\}'],
-		['\\ln(x) = a', 'x=\\exponentialE^a'],
+		['\\ln(x) = a', 'S=\\left\\{\\exponentialE^a\\right\\}'],
 		// la solution a + 1 n'est jamais la valeur interdite a
-		['1/(x-a)=1', 'x=a+1'],
+		['1/(x-a)=1', 'S=\\left\\{a+1\\right\\}'],
 		// pas de division : le moteur écrit lui-même la condition sur a
 		['x^2 = a', 'S=\\left\\{\\sqrt{a}\\,;\\,-\\sqrt{a}\\right\\}\\quad\\text{si}a\\geqslant0']
 	])('juste pour tout a, gardé : .résoudre %s', (equation, expected) => {
@@ -408,7 +408,7 @@ describe('Q5 (V57) : une résolution qui divise par le paramètre refuse', () =>
 	});
 
 	it('le paramètre posé : .résoudre a x = 4, a = 2 → x = 2', () => {
-		expect(latex('.résoudre a x = 4', ['a = 2'])).toBe('x=2');
+		expect(latex('.résoudre a x = 4', ['a = 2'])).toBe('S=\\left\\{2\\right\\}');
 	});
 });
 

@@ -74,20 +74,20 @@ describe('seuil d’une inéquation : décimaux gardés, valeur approchée', () 
 	});
 });
 
-describe('équation : décimaux gardés, valeur approchée', () => {
+describe('équation : décimaux gardés, valeur approchée au bouton ≈ (David, 2026-11-03)', () => {
 	it.each([
 		[
 			'1.5^n=10',
-			'n=\\dfrac{\\ln\\left(10\\right)}{\\ln\\left(1{,}5\\right)}\\approx5{,}68',
+			'S=\\left\\{\\dfrac{\\ln\\left(10\\right)}{\\ln\\left(1{,}5\\right)}\\right\\}',
 			'n = ln(10)/ln(1,5) ≈ 5,68'
 		],
 		[
 			// La cible 1500/1000 s'écrit 1,5 : l'élève a tapé des décimaux
 			'1000*1.02^n=1500',
-			'n=\\dfrac{\\ln\\left(1{,}5\\right)}{\\ln\\left(1{,}02\\right)}\\approx20{,}48',
+			'S=\\left\\{\\dfrac{\\ln\\left(1{,}5\\right)}{\\ln\\left(1{,}02\\right)}\\right\\}',
 			'n = ln(1,5)/ln(1,02) ≈ 20,48'
 		],
-		['e^x=5', 'x=\\ln\\left(5\\right)\\approx1{,}61', 'x = ln(5) ≈ 1,61']
+		['e^x=5', 'S=\\left\\{\\ln\\left(5\\right)\\right\\}', 'x = ln(5) ≈ 1,61']
 	])('%s → %s', (input, latex, output) => {
 		const result = solve(input);
 		expect(answer(result)).toBe(latex);
@@ -97,7 +97,7 @@ describe('équation : décimaux gardés, valeur approchée', () => {
 	it('avec `dans` : la même écriture', () => {
 		const result = solve('1.5^n=10 dans [0 ; 100]');
 		expect(answer(result)).toBe(
-			'n=\\dfrac{\\ln\\left(10\\right)}{\\ln\\left(1{,}5\\right)}\\approx5{,}68'
+			'S=\\left\\{\\dfrac{\\ln\\left(10\\right)}{\\ln\\left(1{,}5\\right)}\\right\\}'
 		);
 		expect(text(result)).toBe('n = ln(10)/ln(1,5) ≈ 5,68');
 	});
@@ -105,14 +105,14 @@ describe('équation : décimaux gardés, valeur approchée', () => {
 
 describe('sans ln : rien ne change', () => {
 	it.each([
-		['2^n=1024', 'n=10'],
-		['3^x=1/9', 'x=-2'],
+		['2^n=1024', 'S=\\left\\{10\\right\\}'],
+		['3^x=1/9', 'S=\\left\\{-2\\right\\}'],
 		['0.5^n<=0.25', 'S=[2;+\\infty['],
-		['2*0.5^n=1', 'n=1'],
+		['2*0.5^n=1', 'S=\\left\\{1\\right\\}'],
 		['2^n=-3', 'S=\\emptyset'],
-		['0.3x=1', 'x=\\dfrac{10}{3}'],
-		['ln(x)=1', 'x=\\exponentialE'],
-		['2x+1<7', 'x<3']
+		['0.3x=1', 'S=\\left\\{\\dfrac{10}{3}\\right\\}'],
+		['ln(x)=1', 'S=\\left\\{\\exponentialE\\right\\}'],
+		['2x+1<7', 'S=]-\\infty;3[']
 	])('%s → %s', (input, expected) => {
 		expect(answer(solve(input))).toBe(expected);
 	});
@@ -133,10 +133,10 @@ describe('sans ln : rien ne change', () => {
 
 describe('base e : la même règle (revue, 2026-10-09)', () => {
 	it.each([
-		['e^x=0.5', 'x=\\ln\\left(0{,}5\\right)\\approx-0{,}69', 'x = ln(0,5) ≈ -0,69'],
-		['e^x=2.5', 'x=\\ln\\left(2{,}5\\right)\\approx0{,}92', 'x = ln(2,5) ≈ 0,92'],
+		['e^x=0.5', 'S=\\left\\{\\ln\\left(0{,}5\\right)\\right\\}', 'x = ln(0,5) ≈ -0,69'],
+		['e^x=2.5', 'S=\\left\\{\\ln\\left(2{,}5\\right)\\right\\}', 'x = ln(2,5) ≈ 0,92'],
 		// Une exponentielle dans la solution : valeur approchée aussi
-		['ln(x)=2', 'x=\\exponentialE^2\\approx7{,}39', 'x = e^2 ≈ 7,39']
+		['ln(x)=2', 'S=\\left\\{\\exponentialE^2\\right\\}', 'x = e^2 ≈ 7,39']
 	])('%s → %s', (input, latex, output) => {
 		const result = solve(input);
 		expect(answer(result)).toBe(latex);
@@ -155,8 +155,9 @@ describe('base e : la même règle (revue, 2026-10-09)', () => {
 		expect(text(result)).toMatch(/^x < .*ln.* ≈ 0,69$/);
 	});
 
-	it('e^(-x)=0,5 est résolue : x ≈ 0,69', () => {
-		expect(answer(solve('e^(-x)=0.5'))).toMatch(/^x=.*\\ln.*\\approx0\{,\}69$/);
+	// La réponse est l'ensemble ; sa valeur approchée va au bouton ≈ (David, 2026-11-03)
+	it('e^(-x)=0,5 est résolue : S = {−ln(0,5)}', () => {
+		expect(answer(solve('e^(-x)=0.5'))).toBe('S=\\left\\{-\\ln\\left(0{,}5\\right)\\right\\}');
 	});
 
 	it('cible décimale après division : 200*1.05^n>300 → ln(1,5)', () => {
