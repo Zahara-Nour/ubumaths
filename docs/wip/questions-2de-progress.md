@@ -6,16 +6,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, lot 9 publié (§ 70), relevé de toute la seconde._
+_Mis à jour le 2026-11-03, phase 0 du lot 12 a proposée (§ 71)._
 
-- **État** : lots 1 à 9 publiés (lot 9 : 18/18 `published`, rangés). Relevé du 2026-11-03 (§ 70) : 115
-  points de 2de sans modèle publié, dont ~40 P (Q2) et 12 D (Q3, Q6).
-- **Prochaine action** : selon l'ordre que David tranche (ci-dessous), phase 0 du lot suivant (skill
-  `couvrir-niveau`, relevé MCP du lot d'abord).
-- **En attente de David** : ORDRE. Recommandé : lot 12 « oubliés » (24 points A/B absents du § 4 :
-  12a inégalités, comparaisons, algèbre, 489 ; 12b vecteurs sans coordonnées, 401), puis lot 10 (ensembles
-  et logique : 13 vieux brouillons à relire dont 8c31675a, 11 points neufs), puis lot 11 (lire un programme).
-  Sinon l'ordre du § 4 (10, 11, puis oubliés).
+- **État** : lots 1 à 9 publiés. Ordre tranché (2026-11-03) : lot 12 (12 a, 12 b), puis 10, puis 11. Phase 0
+  du lot 12 a (14 points : inégalités, comparaisons, algèbre, 489) écrite au § 71.
+- **Prochaine action** : après validation, écrire 12 a-1 (8 modèles), puis 12 a-2 (6 modèles).
+- **En attente de David** : L12a-a à L12a-d (§ 71).
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!` ; liste blanche : pas de
   `{{if:}}` à plus de ~6 niveaux dans une réponse attendue ; corps de commit ≤ 100 caractères par ligne ;
   une autre session écrit aussi dans ce journal : `git pull` ; `db:migrate` depuis le dépôt principal
@@ -1795,3 +1791,96 @@ PR chacun ; L9-b multiples consécutifs de l'amplitude ; L9-c problèmes courts 
     (inégalités, comparaisons) ; 269, 273, 274, 275, 278 (algèbre) ; 287, 433, 288, 289, 290, 291, 292,
     296, 297 (vecteurs sans coordonnées ; 297 en case choix de figures, Q5) ; 489, 401 (automatismes).
 - Recommandation à David : oubliés d'abord (lot 12 : 12a, 12b), puis lots 10 et 11. En attente.
+
+## 71. Lot 12 a « Inégalités, comparaisons, algèbre » : relevé et phase 0 (proposée le 2026-11-03, à valider)
+
+Ordre tranché par David (2026-11-03) : lot 12 (12 a puis 12 b), puis lot 10, puis lot 11.
+
+**Relevé MCP (prod, 2026-11-03)** : aucun modèle, en aucun statut, sur les 14 points du lot (263, 424, 264, 425,
+276, 427, 277, 428, 269, 273, 274, 275, 278, 489). Voisins à ne pas refaire : 342cff76 (4e, 4-053, comparer avec
+un rapport) ; de146ac1 (2-365, variation absolue V2 − V1) ; 33d8874a (2-272, écritures fractionnaires, dont
+(a/x) ÷ (b/x²)) ; 9723b1e4 (2-326, ensemble de définition d'un quotient) ; 7c0ee046 (2-348, sens de variation
+d'une fonction affine). Sous-notions visées, toutes vides en seconde : Inégalités › règles de calcul,
+› comparaison et encadrement ; Équations : produit et quotient › équation quotient ; Calcul littéral › isoler une
+variable ; Inéquations : premier degré › mettre en inéquation.
+
+- Outils : tout en prod. Réponse « ensemble des solutions » = case `intervalles` (`S = \{…\}`, comme
+  `2de-equations/05`). **Aucun juge d'inéquation** (`answerKind` : intervalles, equation, vecteur, matrice,
+  primitive, solution-ed) → 2-278 en case choix.
+
+**Phase 0 proposée** : 14 modèles en deux sous-lots, niveau `['2']`, brouillons ; une PR de fichiers par
+sous-lot, une migration nœud + tag pour les deux.
+
+_12 a-1 — Inégalités et comparaisons (8 modèles)_
+
+1. **2-263 · Somme d'inégalités** (Inégalités › règles de calcul, niv. 1) : 2 ⩽ a ⩽ 5 et −1 ⩽ b ⩽ 3 → encadrer
+   a + b (deux cases) ; puis a − b = a + (−b) (niv. supérieur dans le modèle). Erreur typique : a − b encadré par
+   2 − (−1) et 5 − 3.
+2. **2-424 · Produit par un réel** (› règles de calcul, niv. 2) : x < 3 ⇒ −2x ? −6 (case choix <, >) ;
+   −1 ⩽ x ⩽ 4 → encadrer −3x + 1 ; corrigé relié à f(x) = −3x + 1 décroissante. Erreur : sens non changé.
+3. **2-264 · Comparer par différence, en calcul** (› comparaison et encadrement, niv. 1) : a = 3/7, b = 5/12 :
+   a − b = ? puis a ? b ; A = x² + 4, B = 4x : A − B = (x − 2)², donc A ⩾ B pour tout x.
+4. **2-425 · Comparer par rapport, en calcul** (› comparaison et encadrement, niv. 2) : nombres > 0 seulement ;
+   a/b = ? puis a ? b (a = 9/8, b = 4/3 ; a = 7 × 10⁵, b = 3,5 × 10⁵…). Erreur : rapport < 1 lu « a > b ».
+5. **2-276 · Comparer deux quantités par leur différence** (› comparaison et encadrement, niv. 3) : deux
+   forfaits (20 € + 0,10 €/min contre 0,25 €/min) pour t minutes donné, deux prix, deux distances.
+6. **2-427 · Comparer deux quantités par leur rapport** (› comparaison et encadrement, niv. 4) : hauteurs, aires,
+   populations > 0 ; « A est ? fois plus … que B ».
+7. **2-277 · Interpréter une différence** (› comparaison et encadrement, niv. 5) : x − y = −12 (salaires,
+   températures, scores) → phrase en case choix (« x est 12 de moins que y »…) + valeur.
+8. **2-428 · Interpréter un rapport** (› comparaison et encadrement, niv. 6) : rapport 1,25 → « 25 % de plus » ;
+   0,8 → « 20 % de moins » ; 2 → « deux fois plus ». Case choix + pourcentage. Erreur : 0,8 lu « 80 % de moins ».
+
+_12 a-2 — Algèbre (6 modèles)_
+
+9. **2-269 · Équation quotient** (Équations : produit et quotient › équation quotient, niv. 1) :
+   (ax + b)/(cx + d) = k, A et B du premier degré, valeur interdite d'abord ; a/x = b (automatisme) ; un cas où
+   la seule solution est la valeur interdite → S = ∅. Réponse `S = \{…\}`.
+10. **2-273 · Isoler une variable dans une formule** (Calcul littéral › isoler une variable, niv. 1) : U = RI,
+    d = vt, V = abc, V = πr²h, P = UI, ρ = m/V (liste du BO, non limitative) ; S = πr² → r = √(S/π) (r > 0).
+    Réponse : expression en case.
+11. **2-274 · ax + by = c** (› isoler une variable, niv. 2) : 2x + 3y = 6 → y = −(2/3)x + 2 ; x en fonction de y.
+12. **2-275 · Choisir la forme** (sous-notion à trancher, L12a-c) : f(x) donnée sous ses deux formes
+    ((x − 1)(x + 3) = x² + 2x − 3) ; f(0) ? f(x) = 0 ? f(x) = −3 ? → quelle forme (case choix), puis la réponse.
+13. **2-278 · Mettre en inéquation** (Inéquations : premier degré › mettre en inéquation, niv. 1) : « au plus »,
+    « au moins », « strictement » → l'inéquation en case choix (distracteurs : sens inversé, large / strict,
+    coefficient mal placé), puis la plus grande ou la plus petite valeur entière.
+14. **2-489 · Calcul littéral multiplicatif** (Calcul littéral › écriture simplifiée, niv. 8) : égalités de la
+    liste du BO : 1/(a/b) = b/a, (a/b)/(c/d) = ad/(bc), x/a = (1/a)x, ab/c = a × (b/c), (−1) × a = −a,
+    0/a = 0. Flash, une case. Pas de doublon avec 33d8874a (calculs enchaînés, 2-272).
+
+- **Erreurs typiques en specs** : sens non changé par un négatif ; a − b mal encadré ; rapport < 1 lu à
+  l'envers ; 0,8 lu « 80 % de moins » ; valeur interdite gardée dans S ; r = S/π sans racine ; « au plus » écrit
+  < ; y = (c − ax)/b laissé non simplifié (accepté : la case juge l'expression, pas la forme).
+- **Question d'accès** : personne (brouillons neufs, aucune policy).
+
+**Questions à David** :
+
+- **L12a-a — Paires de points** : 264 / 276 et 425 / 427 disent presque la même chose. → Je recommande **un
+  modèle par point** : 264, 425 en calcul (nombres, expressions) ; 276, 427 sur des quantités en contexte.
+- **L12a-b — 2-278** : aucun juge d'inéquation. → Je recommande **la case choix** (quatre inéquations) **suivie
+  de la réponse entière**. L'autre choix (l'élève écrit l'inéquation) demande un juge neuf (liste
+  `outils-manquants.md`).
+- **L12a-c — 2-275, sous-notion** : aucune ne dit « choisir la forme ». → Je recommande **Calcul littéral ›
+  factorisation** (niv. 13 ; les niveaux 3 à 12 sont pris). Sinon : une sous-notion neuve « choisir la forme »
+  (migration de l'arbre, à part).
+- **L12a-d — Ordre** : 12 a-1, puis 12 a-2, une PR de fichiers chacun ? → Je recommande **oui**.
+
+**Décisions de David (2026-11-03)** : phase 0 validée avec mes quatre recommandations — L12a-a un modèle par
+point (264, 425 en calcul ; 276, 427 en contexte) ; L12a-b case choix de quatre inéquations puis la valeur
+entière ; L12a-c 2-275 rangé sous Calcul littéral › factorisation ; L12a-d 12 a-1 puis 12 a-2, une PR chacun.
+
+- **Correction des niveaux** : les « niv. » du § 71 sont ceux de la sous-notion ; le niveau d'un modèle est celui
+  de sa **catégorie** (thème, domaine, sous-domaine), relevée en prod le 2026-11-03 : Calcul littéral ›
+  Inégalités (neuf) › Règles de calcul 1, 2 (263, 424) ; › Comparer 1 à 6 (264, 425, 276, 427, 277, 428).
+
+## 72. Lot 12 a-1, PR des fichiers (2026-11-03)
+
+- `questions-2de/lot-inegalites-a1-2de.py` → `scripts/questions/2de-inegalites-a1/` (8 modèles, 49 specs).
+  Calcul littéral › Inégalités › Règles de calcul niv. 1, 2 (2-263, 2-424) ; › Comparer niv. 1 à 6 (2-264,
+  2-425, 2-276, 2-427, 2-277, 2-428). `question:specs` 49/49, 850 tirages ; `create-questions` (simulation,
+  prod) 8 « à créer ». Base locale : 8 brouillons ; aperçu joué (01 juste, 08 faux : « 200 % » pour × 2).
+- Nœuds prévus : 2-263, 424 → Algèbre › Inégalités › règles de calcul ; les six autres → › comparaison et
+  encadrement.
+- Écart à la phase 0 : 2-425, deuxième variation en `u × 10ⁿ` (u entier de 11 à 49), pas en écriture
+  scientifique stricte.

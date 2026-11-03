@@ -1,0 +1,168 @@
+{
+	"title": "Comparer deux nombres par leur différence",
+	"description": "Signe de a − b pour comparer deux fractions ; A = x² + k², B = 2kx : A − B = (x − k)² ⩾ 0",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Inégalités",
+	"subdomain": "Comparer",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On veut comparer $a=\\dfrac{ {{p}} }{ {{q}} }$ et $b=\\dfrac{ {{r}} }{ {{s}} }$ en calculant leur différence.\n\n$$a-b=?$$\n\nOn en déduit :\n\n```choix\nmelanger: non\n- $a<b$\n- $a>b$\n- $a=b$\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "3..9"
+				},
+				{
+					"name": "p",
+					"expression": "1..8"
+				},
+				{
+					"name": "s",
+					"expression": "3..9!q"
+				},
+				{
+					"name": "r",
+					"expression": "1..8"
+				},
+				{
+					"name": "t",
+					"expression": "eval:min(max((p)*(s)-(r)*(q),0),1)"
+				}
+			],
+			"conditions": [
+				"gcd(p,q) == 1",
+				"gcd(r,s) == 1",
+				"(p)*(s) != (r)*(q)",
+				"p < q",
+				"r < s",
+				"abs((p)/(q)-(r)/(s)) < 0.2"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(p)/(q)-(r)/(s)}}"
+				},
+				{
+					"expectedAnswer": "{{t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Comparer par la différence** : si $a-b>0$ alors $a>b$ ; si $a-b<0$ alors $a<b$.",
+					"$$a-b=\\dfrac{ {{eval:(p)*(s)}} }{ {{eval:(q)*(s)}} }-\\dfrac{ {{eval:(r)*(q)}} }{ {{eval:(q)*(s)}} }=\\textcolor{{{color:primary.0}}}{{{eval:(p)/(q)-(r)/(s)}}}$$",
+					"La différence est {{if:t>0|positive|négative}}, donc $\\textcolor{{{color:primary.1}}}{a{{if:t>0|>|<}}b}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout réel $x$, on pose $A=x^2+{{eval:(k)^2}}$ et $B={{eval:2*(k)}}x$.\n\nComplète :\n\n$$A-B=(x-?)^2$$\n\nOn en déduit que, pour tout réel $x$ :\n\n```choix\nmelanger: non\n- $A\\geqslant B$\n- $A\\leqslant B$\n- cela dépend de $x$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				},
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule la différence et on reconnaît une identité remarquable :",
+					"$$A-B=x^2-{{eval:2*(k)}}x+{{eval:(k)^2}}=\\textcolor{{{color:primary.0}}}{(x-{{k}})^2}$$",
+					"Un carré est toujours positif ou nul : $A-B\\geqslant 0$, donc $\\textcolor{{{color:primary.1}}}{A\\geqslant B}$ pour tout réel $x$ (égalité pour $x={{k}}$)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3/7 − 5/12 = 1/84 > 0 : a > b",
+			"variationIndex": 0,
+			"variables": {
+				"q": "7",
+				"p": "3",
+				"s": "12",
+				"r": "5",
+				"t": "1"
+			},
+			"answers": ["\\frac{1}{84}", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : b − a (−1/84)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "7",
+				"p": "3",
+				"s": "12",
+				"r": "5",
+				"t": "1"
+			},
+			"answers": ["-\\frac{1}{84}", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : conclusion inversée",
+			"variationIndex": 0,
+			"variables": {
+				"q": "7",
+				"p": "3",
+				"s": "12",
+				"r": "5",
+				"t": "1"
+			},
+			"answers": ["\\frac{1}{84}", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "k = 3 : (x − 3)², A ⩾ B",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["3", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « cela dépend de x »",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["3", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : (x − 6)²",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["6", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

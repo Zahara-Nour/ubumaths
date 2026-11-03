@@ -1,0 +1,147 @@
+{
+	"title": "Interpréter une différence",
+	"description": "x − y = −120 : « 120 € de moins » ; L − T = 25 : « 25 points de plus » ; retrouver une des deux quantités",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Inégalités",
+	"subdomain": "Comparer",
+	"level": 5,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Paul et Zoé comparent leurs salaires mensuels, en euros. On note $x$ celui de Paul et $y$ celui de Zoé ; on calcule $x-y={{eval:10*(d)}}$.\n\nQue signifie ce résultat ?\n\n```choix\n- Paul gagne ${{eval:10*abs(d)}}~\\unit{€}$ de plus que Zoé.\n- Paul gagne ${{eval:10*abs(d)}}~\\unit{€}$ de moins que Zoé.\n- Paul gagne ${{eval:10*abs(d)}}$ fois plus que Zoé.\n```\n\nZoé gagne ${{y}}~\\unit{€}$. Combien gagne Paul ?\n\n$$?~\\unit{€}$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "5..40;±"
+				},
+				{
+					"name": "y",
+					"expression": "1500..2400"
+				},
+				{
+					"name": "t",
+					"expression": "eval:1-min(max(d,0),1)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{t}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(y)+10*(d)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La **différence** $x-y$ mesure un **écart additif** : de combien l'un dépasse l'autre.",
+					"{{if:t>0|$x-y$ est négatif : $x<y$, Paul gagne **${{eval:10*abs(d)}}~\\unit{€}$ de moins** que Zoé.|$x-y$ est positif : $x>y$, Paul gagne **${{eval:10*abs(d)}}~\\unit{€}$ de plus** que Zoé.}}",
+					"$$x=y+({{eval:10*(d)}})={{y}}+({{eval:10*(d)}})=\\textcolor{{{color:primary.0}}}{{{eval:(y)+10*(d)}}}~\\unit{€}$$"
+				]
+			}
+		},
+		{
+			"statement": "Au même jeu, on note $L$ le score de Léa et $T$ celui de Tom ; on calcule $L-T={{d}}$.\n\nQue signifie ce résultat ?\n\n```choix\n- Léa a ${{eval:abs(d)}}$ points de plus que Tom.\n- Léa a ${{eval:abs(d)}}$ points de moins que Tom.\n- Léa a ${{eval:abs(d)}}$ fois plus de points que Tom.\n```\n\nTom a ${{s}}$ points. Combien Léa en a-t-elle ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3..60;±"
+				},
+				{
+					"name": "s",
+					"expression": "80..300"
+				},
+				{
+					"name": "t",
+					"expression": "eval:1-min(max(d,0),1)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{t}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(s)+(d)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La **différence** $L-T$ dit de combien de points Léa dépasse Tom (si elle est positive) ou est dépassée (si elle est négative).",
+					"{{if:t>0|$L-T<0$ : Léa a **${{eval:abs(d)}}$ points de moins** que Tom.|$L-T>0$ : Léa a **${{eval:abs(d)}}$ points de plus** que Tom.}}",
+					"$$L=T+({{d}})={{s}}+({{d}})=\\textcolor{{{color:primary.0}}}{{{eval:(s)+(d)}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x − y = −120 : 120 € de moins, 1 680 €",
+			"variationIndex": 0,
+			"variables": {
+				"d": "-12",
+				"y": "1800",
+				"t": "1"
+			},
+			"answers": ["1", "1680"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : signe lu à l'envers",
+			"variationIndex": 0,
+			"variables": {
+				"d": "-12",
+				"y": "1800",
+				"t": "1"
+			},
+			"answers": ["0", "1920"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : bonne phrase, y − 120 mal fait (1 920)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "-12",
+				"y": "1800",
+				"t": "1"
+			},
+			"answers": ["1", "1920"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "L − T = 25 : 25 de plus, 165",
+			"variationIndex": 1,
+			"variables": {
+				"d": "25",
+				"s": "140",
+				"t": "0"
+			},
+			"answers": ["0", "165"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : « fois plus »",
+			"variationIndex": 1,
+			"variables": {
+				"d": "25",
+				"s": "140",
+				"t": "0"
+			},
+			"answers": ["2", "165"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
