@@ -51,6 +51,11 @@ import { toCustom } from '../custom-generator';
 
 /** Le budget de la politique `factoriser`, comme celui d'`auto` dans final-form. */
 const FACTOR_TIMEOUT_MS = 1000;
+/**
+ * Au-delà, la barre commune ne ressort pas (David, 2026-11-03) :
+ * `(x⁴/7 + x³/11 + x/13)eˣ` ne passe pas sur 1001.
+ */
+const MAX_COMMON_DENOMINATOR = 100;
 
 /**
  * Ce que la factorisation accepte en plus de la règle du tableau (D4, lot 5e) :
@@ -115,11 +120,12 @@ function factoredForSign(node: MathNode, options: FactoredFormOptions = {}): Mat
 	// `(x²/3 + 2x/3)eˣ` (forme finale, 2026-11-03) : la barre commune ressort,
 	// puis le numérateur se factorise comme celui de tout quotient
 	// (`x(x + 2)eˣ/3`, jamais `x(x/3 + 2/3)eˣ`). Rien d'autre à factoriser que
-	// ce nombre (`(1/2 − x/2)e^{−x}`) : la forme finale reste (revue de #2329).
+	// ce nombre (`(1/2 − x/2)e^{−x}`, `(x/2 − 1/4)e^{2x}`) : la forme finale
+	// reste (David, 2026-11-03, revue de #2329)
 	const over = overCommonDenominator(node);
 	if (over !== null) {
 		const candidate = factoredForSign(over, options);
-		if (candidate !== over) return candidate;
+		if (letterFactorCount(candidate) > letterFactorCount(over)) return candidate;
 	}
 	if (isOpposite(node) && isDivision(node.operand)) {
 		const quotient = node.operand;
@@ -361,7 +367,20 @@ function overCommonDenominator(node: MathNode): MathNode | null {
 	return sign ? opposite(quotient) : quotient;
 }
 
-/** Le plus petit dénominateur commun (> 1) des termes d'une somme, `null` sinon. */
+/**
+ * Le nombre de facteurs non numériques du numérateur (sous un éventuel −) :
+ * `x(x + 2)eˣ/3` en a 3, `(1 − x)e^{−x}/2` et `2(x + 1)eˣ/3` en ont 2.
+ */
+function letterFactorCount(node: MathNode): number {
+	const inner = isOpposite(node) ? node.operand : node;
+	const numerator = isDivision(inner) ? inner.numerator : inner;
+	return flattenProductShallow(numerator).filter(({ factor }) => !isNumber(unwrap(factor))).length;
+}
+
+/**
+ * Le plus petit dénominateur commun (> 1, ≤ `MAX_COMMON_DENOMINATOR`) des termes
+ * d'une somme, `null` sinon.
+ */
 function commonDenominator(sum: MathNode): number | null {
 	let q = 1;
 	for (const { term } of flattenSumShallow(sum)) {
@@ -370,9 +389,10 @@ function commonDenominator(sum: MathNode): number | null {
 			if (!isPositiveInteger(inner.denominator)) return null;
 			const d = Number(inner.denominator.value);
 			q = (q * d) / gcd(q, d);
+			if (q > MAX_COMMON_DENOMINATOR) return null;
 		} else if (findNodes(inner, isDivision).length > 0) return null;
 	}
-	return q > 1 && Number.isSafeInteger(q) ? q : null;
+	return q > 1 ? q : null;
 }
 
 function gcd(a: number, b: number): number {

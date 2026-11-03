@@ -1330,8 +1330,10 @@ division par un nombre, identités).
   aussi pour la forme demandée (D4).
   Exponentielle commune à fractions distribuées (`(x²/3 + 2x/3)eˣ`, forme finale du 2026-11-03) :
   la barre commune ressort d'abord (`overCommonDenominator`), puis le numérateur se factorise comme
-  celui d'un quotient — `x(x + 2)eˣ/3`, `−x(x + 2)eˣ/3`, `(1 − x)e^{−x}/2`, jamais `x(x/3 + 2/3)eˣ`
-  (revue de #2329).
+  celui d'un quotient — `x(x + 2)eˣ/3`, `−x(x + 2)eˣ/3`, jamais `x(x/3 + 2/3)eˣ` (revue de #2329).
+  Seulement si le numérateur se factorise vraiment (un facteur non numérique de plus) : sinon la
+  forme finale reste (`(1/2 − x/2)e^{−x}`, `(x/2 − 1/4)e^{2x}`) ; dénominateur commun plafonné à 100
+  (`MAX_COMMON_DENOMINATOR` : `(x⁴/7 + x³/11 + x/13)eˣ` ne passe pas sur 1001), David 2026-11-03.
   **Forme demandée par l'énoncé** (`requested-form.ts`, `requestedForm`, simplify-carte lot 5e, D4) :
   `finalForm` d'une correction automatique ajoute « On factorise » / « On développe » après la
   forme par défaut (`withRequestedFormStep` de `tidy-step.ts` pour f′ ; option `finalForm` de
