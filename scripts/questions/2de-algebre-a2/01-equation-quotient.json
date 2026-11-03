@@ -1,0 +1,194 @@
+{
+	"title": "Résoudre une équation quotient",
+	"description": "a/x = b ; (x + p)/(x + q) = k avec sa valeur interdite ; un cas où la seule solution est la valeur interdite (S = ∅)",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Equations",
+	"subdomain": "Quotient égal à k",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Résous dans $\\mathbb{R}\\setminus\\{0\\}$ l'équation $\\dfrac{ {{a}} }{x}={{b}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..9;±"
+				}
+			],
+			"conditions": ["gcd(abs(a),abs(b)) == 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{eval:(a)/(b)}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $x\\neq 0$, on multiplie les deux membres par $x$ :",
+					"$$\\dfrac{ {{a}} }{x}={{b}}\\iff {{a}}={{b}}x\\iff x=\\dfrac{ {{a}} }{ {{b}} }$$",
+					"$\\dfrac{ {{a}} }{ {{b}} }\\neq 0$ : c'est bien une solution. $S=\\textcolor{{{color:primary.0}}}{\\left\\{ {{eval:(a)/(b)}} \\right\\}}$."
+				]
+			}
+		},
+		{
+			"statement": "On veut résoudre l'équation $\\dfrac{x{{eval:p;+}}}{x{{eval:q;+}}}={{k}}$.\n\nValeur interdite : $x\\neq ?$\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..9;±!p"
+				},
+				{
+					"name": "k",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "s",
+					"expression": "eval:((k)*(q)-(p))/(1-(k))"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-(q)}}"
+				},
+				{
+					"expectedAnswer": "\\{ {{s}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Valeur interdite** : le dénominateur ne doit pas s'annuler, $x{{eval:q;+}}\\neq 0$, donc $x\\neq \\textcolor{{{color:primary.0}}}{{{eval:-(q)}}}$.",
+					"Pour $x\\neq {{eval:-(q)}}$, on multiplie par $x{{eval:q;+}}$ :",
+					"$$x{{eval:p;+}}={{k}}(x{{eval:q;+}})\\iff x-{{k}}x={{eval:(k)*(q)}}{{eval:-(p);+}}\\iff {{eval:1-(k)}}x={{eval:(k)*(q)-(p)}}\\iff x={{s}}$$",
+					"${{s}}\\neq {{eval:-(q)}}$ : la solution est acceptée. $S=\\textcolor{{{color:primary.1}}}{\\left\\{ {{s}} \\right\\}}$."
+				]
+			}
+		},
+		{
+			"statement": "On veut résoudre l'équation $\\dfrac{ {{a}}x{{eval:(a)*(q);+}} }{x{{eval:q;+}}}={{k}}$.\n\nValeur interdite : $x\\neq ?$\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "q",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "k",
+					"expression": "2..7!a"
+				}
+			],
+			"conditions": ["abs((a)-(k)) != 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-(q)}}"
+				},
+				{
+					"expectedAnswer": "\\varnothing",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**Valeur interdite** : $x{{eval:q;+}}\\neq 0$, donc $x\\neq \\textcolor{{{color:primary.0}}}{{{eval:-(q)}}}$.",
+					"Pour $x\\neq {{eval:-(q)}}$ :",
+					"$${{a}}x{{eval:(a)*(q);+}}={{k}}(x{{eval:q;+}})\\iff {{eval:(a)-(k)}}x={{eval:((k)-(a))*(q)}}\\iff x={{eval:-(q)}}$$",
+					"Mais ${{eval:-(q)}}$ est la **valeur interdite** : elle n'est pas solution. L'équation n'a aucune solution, $S=\\textcolor{{{color:primary.1}}}{\\varnothing}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3/x = 4 : S = {3/4}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["\\{\\frac{3}{4}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : b/a",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"answers": ["\\{\\frac{4}{3}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(x − 4)/(x + 1) = −2 : x ≠ −1, S = {2/3}",
+			"variationIndex": 1,
+			"variables": {
+				"p": "-4",
+				"q": "1",
+				"k": "-2"
+			},
+			"answers": ["-1", "\\{\\frac{2}{3}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : valeur interdite de signe opposé",
+			"variationIndex": 1,
+			"variables": {
+				"p": "-4",
+				"q": "1",
+				"k": "-2"
+			},
+			"answers": ["1", "\\{\\frac{2}{3}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(2x + 6)/(x + 3) = 3 : x ≠ −3, S = ∅",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"q": "3",
+				"k": "3"
+			},
+			"answers": ["-3", "\\varnothing"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : valeur interdite gardée (S = {−3})",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"q": "3",
+				"k": "3"
+			},
+			"answers": ["-3", "\\{-3\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -1,0 +1,162 @@
+{
+	"title": "Mettre un problème en inéquation",
+	"description": "« Au plus », « au moins » : choisir l'inéquation qui traduit la situation, puis la valeur entière extrême",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Inéquations",
+	"subdomain": "Mettre en inéquation",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Une course de taxi coûte ${{f}}~\\unit{€}$ de prise en charge, puis ${{a}}~\\unit{€}$ par kilomètre. Léo dispose d'**au plus** ${{m}}~\\unit{€}$. On note $x$ la distance parcourue, en km.\n\nQuelle inéquation traduit la situation ?\n\n```choix\n- ${{f}}+{{a}}x\\leqslant {{m}}$\n- ${{f}}+{{a}}x<{{m}}$\n- ${{f}}+{{a}}x\\geqslant {{m}}$\n- ${{a}}+{{f}}x\\leqslant {{m}}$\n```\n\nQuelle distance entière maximale, en km, Léo peut-il parcourir ?\n\n$$?~\\unit{km}$$",
+			"variables": [
+				{
+					"name": "f",
+					"expression": "3..8"
+				},
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "m",
+					"expression": "25..60"
+				}
+			],
+			"conditions": ["f != a"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "{{eval:floor(((m)-(f))/(a))}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« **Au plus** $m$ » se traduit par « $\\leqslant m$ » (l'égalité est permise) ; le prix est ${{f}}+{{a}}x$.",
+					"$$\\textcolor{{{color:primary.0}}}{{{f}}+{{a}}x\\leqslant {{m}}}\\iff {{a}}x\\leqslant {{eval:(m)-(f)}}\\iff x\\leqslant \\dfrac{ {{eval:(m)-(f)}} }{ {{a}} }$$",
+					"La plus grande distance entière est $\\textcolor{{{color:primary.1}}}{{{eval:floor(((m)-(f))/(a))}}}~\\unit{km}$."
+				]
+			}
+		},
+		{
+			"statement": "Une association vend des billets à ${{a}}~\\unit{€}$ ; la salle lui coûte ${{f}}~\\unit{€}$. Elle veut un bénéfice d'**au moins** ${{m}}~\\unit{€}$. On note $x$ le nombre de billets vendus.\n\nQuelle inéquation traduit la situation ?\n\n```choix\n- ${{a}}x-{{f}}\\geqslant {{m}}$\n- ${{a}}x-{{f}}>{{m}}$\n- ${{a}}x-{{f}}\\leqslant {{m}}$\n- ${{a}}x+{{f}}\\geqslant {{m}}$\n```\n\nCombien de billets doit-elle vendre au minimum ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "4..12"
+				},
+				{
+					"name": "f",
+					"expression": "50..200"
+				},
+				{
+					"name": "m",
+					"expression": "100..400"
+				}
+			],
+			"conditions": ["mod((m)+(f), a) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "{{eval:-floor(-((m)+(f))/(a))}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le bénéfice est la recette moins le coût : ${{a}}x-{{f}}$. « **Au moins** $m$ » se traduit par « $\\geqslant m$ ».",
+					"$$\\textcolor{{{color:primary.0}}}{{{a}}x-{{f}}\\geqslant {{m}}}\\iff {{a}}x\\geqslant {{eval:(m)+(f)}}\\iff x\\geqslant \\dfrac{ {{eval:(m)+(f)}} }{ {{a}} }$$",
+					"Le plus petit nombre entier de billets est $\\textcolor{{{color:primary.1}}}{{{eval:-floor(-((m)+(f))/(a))}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "5 + 3x ⩽ 40 : 11 km",
+			"variationIndex": 0,
+			"variables": {
+				"f": "5",
+				"a": "3",
+				"m": "40"
+			},
+			"answers": ["0", "11"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : inégalité stricte",
+			"variationIndex": 0,
+			"variables": {
+				"f": "5",
+				"a": "3",
+				"m": "40"
+			},
+			"answers": ["1", "11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : arrondi au-dessus (12)",
+			"variationIndex": 0,
+			"variables": {
+				"f": "5",
+				"a": "3",
+				"m": "40"
+			},
+			"answers": ["0", "12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "8x − 100 ⩾ 150 : 32 billets",
+			"variationIndex": 1,
+			"variables": {
+				"a": "8",
+				"f": "100",
+				"m": "150"
+			},
+			"answers": ["0", "32"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : coût ajouté",
+			"variationIndex": 1,
+			"variables": {
+				"a": "8",
+				"f": "100",
+				"m": "150"
+			},
+			"answers": ["3", "32"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : arrondi en dessous (31)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "8",
+				"f": "100",
+				"m": "150"
+			},
+			"answers": ["0", "31"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

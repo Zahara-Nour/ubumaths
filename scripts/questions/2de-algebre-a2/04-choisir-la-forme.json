@@ -1,0 +1,190 @@
+{
+	"title": "Choisir la forme adaptée d'une expression",
+	"description": "f(x) = (x − p)(x − q) = x² − (p + q)x + pq : quelle forme pour f(0), f(x) = 0, f(x) = pq ?",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Transformation",
+	"subdomain": "Factorisation",
+	"level": 13,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Pour tout réel $x$, $f(x)=(x{{eval:-(p);+}})(x{{eval:-(q);+}})$ (forme factorisée) $=x^2{{eval:-(p)-(q);+}}x{{eval:(p)*(q);+}}$ (forme développée réduite).\n\nPour calculer $f(0)$, la forme la plus adaptée est :\n\n```choix\nmelanger: non\n- la forme factorisée\n- la forme développée réduite\n```\n\n$f(0)=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..9;±!p"
+				}
+			],
+			"conditions": ["(p)+(q) != 0", "(p)*(q) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "{{eval:(p)*(q)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans la **forme développée**, $f(0)$ est le **terme constant** : on le lit sans calcul.",
+					"$$f(0)=\\textcolor{{{color:primary.0}}}{{{eval:(p)*(q)}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Pour tout réel $x$, $f(x)=(x{{eval:-(p);+}})(x{{eval:-(q);+}})$ (forme factorisée) $=x^2{{eval:-(p)-(q);+}}x{{eval:(p)*(q);+}}$ (forme développée réduite).\n\nPour résoudre $f(x)=0$, la forme la plus adaptée est :\n\n```choix\nmelanger: non\n- la forme factorisée\n- la forme développée réduite\n```\n\nL'ensemble des solutions de $f(x)=0$ est $S=?$.",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..9;±!p"
+				}
+			],
+			"conditions": ["(p)+(q) != 0", "(p)*(q) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "\\{ {{p}} ; {{q}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec la **forme factorisée**, on reconnaît une **équation produit nul** :",
+					"$$(x{{eval:-(p);+}})(x{{eval:-(q);+}})=0\\iff x={{p}}\\ \\text{ou}\\ x={{q}}$$",
+					"$S=\\textcolor{{{color:primary.0}}}{\\{ {{p}} ; {{q}} \\}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout réel $x$, $f(x)=(x{{eval:-(p);+}})(x{{eval:-(q);+}})$ (forme factorisée) $=x^2{{eval:-(p)-(q);+}}x{{eval:(p)*(q);+}}$ (forme développée réduite).\n\nPour résoudre $f(x)={{eval:(p)*(q)}}$, la forme la plus adaptée est :\n\n```choix\nmelanger: non\n- la forme factorisée\n- la forme développée réduite\n```\n\nL'ensemble des solutions de $f(x)={{eval:(p)*(q)}}$ est $S=?$.",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..9;±!p"
+				}
+			],
+			"conditions": ["(p)+(q) != 0", "(p)*(q) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "\\{ 0 ; {{eval:(p)+(q)}} \\}",
+					"answerKind": "intervalles"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec la **forme développée**, le terme constant ${{eval:(p)*(q)}}$ disparaît des deux membres :",
+					"$$x^2{{eval:-(p)-(q);+}}x{{eval:(p)*(q);+}}={{eval:(p)*(q)}}\\iff x^2{{eval:-(p)-(q);+}}x=0\\iff x(x{{eval:-(p)-(q);+}})=0$$",
+					"Produit nul : $x=0$ ou $x={{eval:(p)+(q)}}$, $S=\\textcolor{{{color:primary.0}}}{\\{ 0 ; {{eval:(p)+(q)}} \\}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "f(0) = −3 par la forme développée",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"q": "-3"
+			},
+			"answers": ["1", "-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : forme factorisée choisie",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"q": "-3"
+			},
+			"answers": ["0", "-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f(x) = 0 : forme factorisée, S = {1 ; −3}",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1",
+				"q": "-3"
+			},
+			"answers": ["0", "\\{1;-3\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : solutions de signe opposé",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1",
+				"q": "-3"
+			},
+			"answers": ["0", "\\{-1;3\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f(x) = −3 : forme développée, S = {0 ; −2}",
+			"variationIndex": 2,
+			"variables": {
+				"p": "1",
+				"q": "-3"
+			},
+			"answers": ["1", "\\{0;-2\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : forme factorisée choisie",
+			"variationIndex": 2,
+			"variables": {
+				"p": "1",
+				"q": "-3"
+			},
+			"answers": ["0", "\\{0;-2\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : x = 0 oublié",
+			"variationIndex": 2,
+			"variables": {
+				"p": "1",
+				"q": "-3"
+			},
+			"answers": ["1", "\\{-2\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

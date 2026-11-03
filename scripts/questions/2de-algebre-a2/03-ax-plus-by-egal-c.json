@@ -1,0 +1,160 @@
+{
+	"title": "Exprimer une variable en fonction de l'autre",
+	"description": "ax + by = c : y en fonction de x, x en fonction de y",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Transformation",
+	"subdomain": "Isoler une variable",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"form": "warn"
+		}
+	},
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Les nombres $x$ et $y$ vérifient ${{a}}x{{eval:b;+}}y={{c}}$. Exprime $y$ en fonction de $x$.\n\n$y=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..6;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..12;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-(a)/(b)}}x{{eval:(c)/(b);+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On isole le terme en $y$, puis on divise par ${{b}}$ :",
+					"$${{eval:b}}y={{c}}{{eval:-(a);+}}x\\iff y=\\dfrac{ {{c}}{{eval:-(a);+}}x}{ {{b}} }$$",
+					"$$\\textcolor{{{color:primary.0}}}{y={{eval:-(a)/(b)}}x{{eval:(c)/(b);+}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Les nombres $x$ et $y$ vérifient ${{a}}x{{eval:b;+}}y={{c}}$. Exprime $x$ en fonction de $y$.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..12;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-(b)/(a)}}y{{eval:(c)/(a);+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On isole le terme en $x$, puis on divise par ${{a}}$ :",
+					"$${{a}}x={{c}}{{eval:-(b);+}}y\\iff x=\\dfrac{ {{c}}{{eval:-(b);+}}y}{ {{a}} }$$",
+					"$$\\textcolor{{{color:primary.0}}}{x={{eval:-(b)/(a)}}y{{eval:(c)/(a);+}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2x + 3y = 6 : y = −(2/3)x + 2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "6"
+			},
+			"answers": ["-\\frac{2}{3}x+2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme (6 − 2x)/3 : acceptée, forme réduite demandée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "6"
+			},
+			"answers": ["\\frac{6-2x}{3}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur : signe de a gardé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "6"
+			},
+			"answers": ["\\frac{2}{3}x+2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : c non divisé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "6"
+			},
+			"answers": ["-\\frac{2}{3}x+6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4x − y = 8 : x = y/4 + 2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "-1",
+				"c": "8"
+			},
+			"answers": ["\\frac{1}{4}y+2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : x = −y/4 + 2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "-1",
+				"c": "8"
+			},
+			"answers": ["-\\frac{1}{4}y+2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

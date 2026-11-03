@@ -1,0 +1,232 @@
+{
+	"title": "Isoler une grandeur dans une formule",
+	"description": "U = RI, d = vt, ρ = m/V : exprimer l'une des grandeurs ; V = πr²h → h ; S = πr² → r = √(S/π)",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Transformation",
+	"subdomain": "Isoler une variable",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On donne la formule $U=RI$ (loi d'Ohm). Exprime ${{if:w==0|I|R}}$ en fonction des autres grandeurs (toutes non nulles).\n\n${{if:w==0|I|R}}=?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0|1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:w==0|\\frac{U}{R}|\\frac{U}{I}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On isole la grandeur cherchée en **divisant** (ou en multipliant) les deux membres par la même grandeur non nulle.",
+					"{{if:w==0|$U=RI$ : on divise par $R$, $\\textcolor{{{color:primary.0}}}{I=\\dfrac{U}{R}}$.|$U=RI$ : on divise par $I$, $\\textcolor{{{color:primary.0}}}{R=\\dfrac{U}{I}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "On donne la formule $d=vt$ (distance, vitesse, durée). Exprime ${{if:w==0|v|t}}$ en fonction des autres grandeurs (toutes non nulles).\n\n${{if:w==0|v|t}}=?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0|1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:w==0|\\frac{d}{t}|\\frac{d}{v}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On isole la grandeur cherchée en **divisant** (ou en multipliant) les deux membres par la même grandeur non nulle.",
+					"{{if:w==0|$d=vt$ : on divise par $t$, $\\textcolor{{{color:primary.0}}}{v=\\dfrac{d}{t}}$.|$d=vt$ : on divise par $v$, $\\textcolor{{{color:primary.0}}}{t=\\dfrac{d}{v}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "On donne la formule $\\rho=\\dfrac{m}{V}$ (masse volumique). Exprime ${{if:w==0|m|V}}$ en fonction des autres grandeurs (toutes non nulles).\n\n${{if:w==0|m|V}}=?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0|1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:w==0|\\rho V|\\frac{m}{\\rho}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On isole la grandeur cherchée en **divisant** (ou en multipliant) les deux membres par la même grandeur non nulle.",
+					"{{if:w==0|$\\rho=\\dfrac{m}{V}$ : on multiplie par $V$, $\\textcolor{{{color:primary.0}}}{m=\\rho V}$.|$\\rho=\\dfrac{m}{V}$ : on multiplie par $V$ ($\\rho V=m$), puis on divise par $\\rho$, $\\textcolor{{{color:primary.0}}}{V=\\dfrac{m}{\\rho}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "Le volume d'un cylindre de rayon $r$ et de hauteur $h$ est $V=\\pi r^2h$. Exprime $h$ en fonction de $V$ et $r$.\n\n$h=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{V}{\\pi r^2}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On divise les deux membres par $\\pi r^2$ (non nul) :",
+					"$$\\textcolor{{{color:primary.0}}}{h=\\dfrac{V}{\\pi r^2}}$$"
+				]
+			}
+		},
+		{
+			"statement": "L'aire d'un disque de rayon $r$ est $S=\\pi r^2$. Exprime $r$ en fonction de $S$.\n\n$r=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\sqrt{\\frac{S}{\\pi}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On divise par $\\pi$ : $r^2=\\dfrac{S}{\\pi}$.",
+					"Un rayon est **positif** : $r$ est la racine carrée positive, $\\textcolor{{{color:primary.0}}}{r=\\sqrt{\\dfrac{S}{\\pi}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "I = U/R",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0"
+			},
+			"answers": ["\\frac{U}{R}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : I = R/U",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0"
+			},
+			"answers": ["\\frac{R}{U}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : I = UR",
+			"variationIndex": 0,
+			"variables": {
+				"w": "0"
+			},
+			"answers": ["UR"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "t = d/v",
+			"variationIndex": 1,
+			"variables": {
+				"w": "1"
+			},
+			"answers": ["\\frac{d}{v}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : t = dv",
+			"variationIndex": 1,
+			"variables": {
+				"w": "1"
+			},
+			"answers": ["dv"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "m = ρV",
+			"variationIndex": 2,
+			"variables": {
+				"w": "0"
+			},
+			"answers": ["\\rho V"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "V = m/ρ",
+			"variationIndex": 2,
+			"variables": {
+				"w": "1"
+			},
+			"answers": ["\\frac{m}{\\rho}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : V = ρ/m",
+			"variationIndex": 2,
+			"variables": {
+				"w": "1"
+			},
+			"answers": ["\\frac{\\rho}{m}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "h = V/(πr²)",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["\\frac{V}{\\pi r^2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : h = V/(πr)",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["\\frac{V}{\\pi r}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "r = √(S/π)",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["\\sqrt{\\frac{S}{\\pi}}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : racine oubliée",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["\\frac{S}{\\pi}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

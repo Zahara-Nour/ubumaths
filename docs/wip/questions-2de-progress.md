@@ -6,12 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, phase 0 du lot 12 a proposée (§ 71)._
+_Mis à jour le 2026-11-03, après #2352 (12 a-1) ; 12 a-2 en PR (§ 73)._
 
-- **État** : lots 1 à 9 publiés. Ordre tranché (2026-11-03) : lot 12 (12 a, 12 b), puis 10, puis 11. Phase 0
-  du lot 12 a (14 points : inégalités, comparaisons, algèbre, 489) écrite au § 71.
-- **Prochaine action** : après validation, écrire 12 a-1 (8 modèles), puis 12 a-2 (6 modèles).
-- **En attente de David** : L12a-a à L12a-d (§ 71).
+- **État** : lots 1 à 9 publiés. Ordre : lot 12 (12 a, 12 b), puis 10, puis 11. 12 a-1 (8 modèles) mergé,
+  12 a-2 (6 modèles) en PR ; brouillons en base locale seulement.
+- **Prochaine action** : merger 12 a-2, puis David lance `create-questions --publier` sur
+  `2de-inegalites-a1` et `2de-algebre-a2` ; relever les ids, migration nœud + tag des 14 (§ 72, § 73).
+- **En attente de David** : rien (phase 0 du 12 a validée, § 71).
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!` ; liste blanche : pas de
   `{{if:}}` à plus de ~6 niveaux dans une réponse attendue ; corps de commit ≤ 100 caractères par ligne ;
   une autre session écrit aussi dans ce journal : `git pull` ; `db:migrate` depuis le dépôt principal
@@ -1884,3 +1885,18 @@ entière ; L12a-c 2-275 rangé sous Calcul littéral › factorisation ; L12a-d 
   encadrement.
 - Écart à la phase 0 : 2-425, deuxième variation en `u × 10ⁿ` (u entier de 11 à 49), pas en écriture
   scientifique stricte.
+- **#2352 mergée** (12 a-1).
+
+## 73. Lot 12 a-2, PR des fichiers (2026-11-03)
+
+- `questions-2de/lot-algebre-a2-2de.py` → `scripts/questions/2de-algebre-a2/` (6 modèles, 45 specs). Calcul
+  littéral › Equations › Quotient égal à k niv. 1 (2-269) ; › Transformation › Isoler une variable niv. 1, 2
+  (2-273, 2-274) ; › Transformation › Factorisation niv. 13 (2-275) ; › Inéquations › Mettre en inéquation
+  niv. 1 (2-278) ; › Transformation › Simplification d'écriture niv. 5 (2-489). `question:specs` 45/45, 1 900
+  tirages ; simulation (prod) 6 « à créer » ; base locale : 6 brouillons, aperçu joué (02 juste, 01 faux :
+  S = {−1} pour la valeur interdite, message « −1 ne fait pas partie de l'ensemble »).
+- Nœuds prévus : 2-269 → Équations : produit et quotient › équation quotient ; 2-273, 274 → Calcul littéral ›
+  isoler une variable ; 2-275 → › factorisation ; 2-278 → Inéquations : premier degré › mettre en inéquation ;
+  2-489 → Calcul littéral › écriture simplifiée.
+- **Écart à la phase 0** : 2-274, `(6 − 2x)/3` était refusé (`bad_form`) → `constraints.form: warn` : accepté en
+  `unoptimal_form`, l'élève est invité à écrire la forme réduite.
