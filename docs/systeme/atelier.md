@@ -1280,7 +1280,8 @@ compris, arrondie selon Q3, même pour un nombre déjà écrit) et `decimalExact
 décimal est un choix d'affichage de l'outil, qui pose `=`/`≈`, la virgule et le `×`. Une
 expression à lettres non liées répond par sa **forme rangée**, celle de l'écran (`tidy`, ordre
 de l'élève, S3 : `x/x` gardé ; décision D, 2026-11-03), dans `answer` et dans le texte ; son `ast`
-reste l'entrée lue, que `resultToShow` range. L'Atelier
+reste l'entrée lue, que `resultToShow` range. Un résultat exact trop long répond par son
+**écriture gardée**, celle de l'écran (`(1+1/1000)^{1000}`, `1000!` ; lot 2, 2026-11-03). L'Atelier
 l'habille, il ne la remplace pas. Le contrat est le corpus
 `tests/fixtures/mathast/registre-corpus.ts`, joué contre le registre et contre la ligne affichée
 par l'Atelier (`src/lib/mathAST/cli/__tests__/registre-corpus/`, `src/lib/atelier/__tests__/registre-corpus.test.ts`) ;
@@ -1441,8 +1442,11 @@ fractions », 2026-10-12) :
   caractères se lit sur sa **longueur réelle** (`exactCharacters`) : une base irrationnelle
   échappait à la prévision (`\sqrt{2}^{100000}` affichait 15 052 caractères), et la prévision
   ignore les simplifications (`10^{600}×10^{-598}` gardait son écriture pour 100). Une factorielle
-  que le moteur garde (`1000!`) compte par sa valeur (2 568 chiffres) ; `1000!/999!` n'est plus
-  annoncé « environ 5 000 chiffres ». L'arrondi se lit alors sur le résultat calculé (√2 tapé
+  que le moteur garde (`1000!`) compte par sa valeur (2 568 chiffres) ; un résultat fait de
+  factorielles dont la valeur est courte se calcule (`shortFactorialValue` : `1000!/999!` → 1000,
+  `1000!/998!` → 999 000 ; règle « calcul puis mesure », David, 2026-11-01 — avant le 2026-11-03,
+  la ligne gardait `\dfrac{1000!}{999!}`, le moteur ne réduisant aucune factorielle au-delà de
+  2⁵³). L'arrondi se lit alors sur le résultat calculé (√2 tapé
   n'entre en fraction que par son flottant, dont la puissance déborde).
 
 **Chaînes et « différent de »** (2026-10-12) : `1 < x < 3` est vraie si chaque maillon l'est

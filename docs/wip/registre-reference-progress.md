@@ -6,13 +6,14 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2303._
+_Mis à jour le 2026-11-03, PR 5/5 du lot 2 en cours (`fix/registre-lot2-plafond`)._
 
-- **État** : lot 2 du registre découpé en 5 PR (§ Lot 2 — correction du registre). PR 1/5 (#2281,
-  A/B), 2/5 (#2292, D), 3/5 (#2300, lecture), 4/5 (#2303, C : égalité → vrai / faux, `≈` refusé,
-  comparaison non gardée) MERGÉES ; reste 5 lignes connues fausses au lot 2 (plafond). Pas déployées.
-- **Prochaine action** : PR 5/5 — plafond : `1000!/999!` → 1000 (les deux outils), `answer` de
-  l'écriture gardée (`plafond-04, 05, 06`, `approche-11`).
+- **État** : lot 2 du registre (§ Lot 2 — correction du registre) : PR 1-4 mergées (#2281, #2292,
+  #2300, #2303) ; PR 5/5 (plafond : `1000!/999!` → 1000, `answer` de l'écriture gardée) ouverte.
+  Après elle, plus aucune ligne du lot 2 fausse côté registre. Pas déployées.
+- **Prochaine action** : merger la PR 5 ; puis choisir la suite avec David (lot 1 restant :
+  `.dériver` réduite, `.simplifier` S3, `.résoudre` → S, `equivalent-04`, refus R6 ; Atelier :
+  `.résoudre`, `.equivalent` sans réponse).
 - **En attente de David** : rien.
 - **Tranché** : option `unitChoice: 'school'` GARDÉE exprès (David, 2026-11-03 : « utile plus
   tard ») — ne pas proposer de la retirer ; avant : Q9 EN ENTIER, A-D du lot 2, `decimal` en
@@ -22,7 +23,7 @@ _Mis à jour le 2026-11-03, après #2303._
   `gh pr checks --watch` juste après un push ne voit que l'auto-merge → suivre le run « Code
   Quality » du commit ; limites connues : `.diff cos(60°)*x` (`ctx.input`), `2 ≈ 2` (caractère
   `≈`) mal lu, `(t>1)` → faux.
-- **Worktree / branche** : aucun (retirés après #2303).
+- **Worktree / branche** : `../ubumaths-wt-registre-reference`, `fix/registre-lot2-plafond`.
 
 ---
 
@@ -548,3 +549,15 @@ avant, `2<3` déjà) : refusée comme une ligne sans valeur, preuve rouge 4/4 (`
 **Limite notée, non corrigée** (antérieure, plus visible) : une variable libre entre parenthèses
 est tranchée fausse — `(t>1)` → `\text{faux}`, `\lnot (t>1)` → `\text{vrai}`, `2<3<t` →
 `\text{faux}` (`t>1` seul reste la relation). Aussi : `1/0=1` → « normalize: division by zero », en anglais.
+
+**PR 5 (plafond), 2026-11-03** : deux causes. (1) `1000!/999!` : le moteur (`evaluate`) ne réduit
+aucune factorielle au-delà de 2⁵³ et rendait `\dfrac{1000!}{999!}` (pas une affaire de plafond : la
+mesure lisait déjà 1000). `shortFactorialValue` (`exact-size.ts`) : un résultat calculé fait de
+factorielles / coefficients binomiaux, sans symbole, dont la valeur tient en 1 000 caractères, est
+remplacé par sa valeur (`withFactorialsReduced` de `web-repl-engine.ts`) — l'Atelier suit, il lit
+l'arbre. (2) L'écriture gardée (`exactTooLong`) n'avait pas d'`answer` : elle répond par l'arbre
+affiché (`toLatex(exactShown)`, la règle de `render.ts`), dans les deux modes. Justes :
+`plafond-02` (les deux outils), `plafond-04, 05, 06`, `approche-11`. Preuve rouge : 5 + 1 tests du
+corpus, 10/11 de `plafond-reponse.test.ts` avec le moteur de `main`. Suites `mathAST` + `atelier` +
+`geometry-core` (36 228) vertes. **Liste du lot 2 vide** côté registre ; restent les entrées du lot 1
+(`.dériver`, `.simplifier`, `.résoudre`, `equivalent-04`, refus) et celles de l'Atelier.
