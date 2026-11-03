@@ -289,7 +289,7 @@ describe('FillBlanksInput — droite à représenter', () => {
 						)
 					}
 				],
-				grades: ['3e'],
+				grades: ['3'],
 				theme: 'Test',
 				domain: 'Test',
 				level: 1

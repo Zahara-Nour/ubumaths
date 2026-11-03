@@ -20,7 +20,7 @@ function template(variation: Omit<QuestionVariation, 'statement'> & { statement:
 		title: 'Représenter',
 		status: 'draft',
 		variations: [{ ...variation, statement: templateMarkdown(variation.statement) }],
-		grades: ['3e'],
+		grades: ['3'],
 		theme: 'Test',
 		domain: 'Test',
 		level: 1
