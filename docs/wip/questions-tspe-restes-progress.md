@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, 8c écrit (PR ouverte)._
+_Mis à jour le 2026-11-03, 8c en prod (brouillons), migration en PR._
 
-- **État** : lot 8 (D-L8 : 26 « à savoir » en 8a/8b/8c) ; **8a et 8b clos** (18 publiés) ; **8c écrit** (8 modèles, specs vertes, PR de contenu ouverte).
-- **Prochaine action** : merge de la PR 8c → David crée les brouillons en prod (`create-questions --dir scripts/questions/tspe-8c-savoir --publier`, depuis le dépôt principal) → migration nœud + tag (gabarit `20261102222541`, préfixe `_qtl8c_`, nœuds relevés au § « Lot 8c : écriture »).
+- **État** : lot 8 (D-L8 : 26 « à savoir ») ; **8a et 8b clos** (18 publiés) ; **8c** : #2269 mergée, 8 brouillons créés en prod, migration nœud + tag `20261103051912` en PR (test 10/10, rouge prouvé).
+- **Prochaine action** : `security-auditor` → `check:migrations --pr` → merge → `migration list --linked` puis `db:migrate` depuis le dépôt principal → relecture MCP → page à cocher (`page-a-cocher.ts --dir scripts/questions/tspe-8c-savoir`) → relecture de David → `publier-lot`.
 - **En attente de David** : rien.
 - **Pièges en cours** : relevé de nœuds → filtrer `archived_at is null` ; `!=` dans `$…$` lu « ≠ » (écrire `!\,=`) ; garde « notion sans sous-notion » : liste `sous_notions_admises` (migration `20261102181059`) ; worktree sans `.env*` → les copier pour les tests d'intégration.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · branche `content/questions-tspe-8c-savoir`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · branche `content/questions-tspe-8c-rangement`.
 
 ---
 
@@ -296,3 +296,14 @@ Probabilités › Loi binomiale › expression de la loi ; 519, 520 → Probabil
 variance d'une somme ; 343 → Géométrie › Orthogonalité et distances dans l'espace › produit scalaire dans l'espace ; 351
 → même notion › orthogonalité de droites et plans ; 329 → Géométrie › Espace › colinéarité et alignement ; 331 →
 Géométrie › Espace › coplanarité et décomposition.
+
+## Lot 8c : création en prod et migration nœud + tag (2026-11-03)
+
+**#2269 mergée** (CI verte). **Création en prod** (David, 2026-11-03, 5 h 18 UTC), relue au MCP : 8 brouillons [T_SPE],
+« À savoir », sans nœud ni tag — 3ebbca97 (541), e56be9b5 (614), 7a8a67fa (519), 26e12581 (520), f727b567 (343),
+f81bbacb (351), d3ae0ac1 (329), 66685cd0 (331).
+
+Migration `20261103051912_questions_tspe_lot8c_rangement_tags.sql` (copie de 8a, que des sous-notions, préfixe `_qtl8c_` ;
+diff avec le gabarit = les lignes du lot). Chemins relevés au MCP : univoques, apostrophes droites. Test
+`tests/integration/questions-tspe-lot8c-rangement-tags.test.ts` (copie de 8a) : 10/10 ; **rouge** sans l'étape 4 (suite
+principale « lot incohérent », 5 sautés, et le test du rollback).

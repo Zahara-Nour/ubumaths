@@ -471,3 +471,106 @@ constructibles » : remplacé par celui de l'aide, revue du 2026-11-02.)_
   sommet n'est jamais l'essai (indiscernable d'un arc de médiatrice) ; règle « deux médiatrices au
   compas de rayon un côté » sévère (refuse des triangles ordinaires dans 0..10 × 0..8) — même règle que
   la médiatrice, à revoir avec le report de longueur (lot triangle).
+
+## 13. Phase 0 — lot 4 : triangle et 4e sommet (proposée le 2026-11-03, à valider)
+
+BO 6e « Construire des triangles » (« à l'aide du compas, l'élève remarque que la donnée de trois longueurs
+ne permet pas toujours de construire un triangle ») ; 5e « Construire des parallélogrammes ». Points 6-173,
+5-131, 5-132, 5-068, 5-133. Angle donné (rapporteur) : hors lot (outil n° 4).
+
+### Le geste neuf : report de longueur
+
+- **Report** (bouton de la palette, à côté du Compas) : 1er et 2e touchers = prendre l'écartement entre
+  deux points construits (montré en trait fin, rien dans la réponse) ; chaque toucher suivant = un cercle
+  centré là, de ce rayon. Changer d'outil ou « Effacer » sans cercle = lâcher l'écartement.
+- **Réponse** : `report(cx;cy;ax;ay;bx;by)` (centre, puis les deux points de l'écartement), Zod. Le juge
+  le traite comme un cercle ; il est construit si le centre ET les deux points de l'écartement le sont.
+  (Un `cercle(…)` ne suffit pas : un rayon rond pris à l'œil passerait pour un report.)
+- **Aimantation** : les extrémités des segments de la figure deviennent des points (même anonymes), pour
+  prendre l'écartement d'une longueur donnée.
+
+### Écriture par le prof — triangle
+
+```figure-a-completer
+fenetre: 0 ; 12 ; 0 ; 9
+verifier: triangle ABC : AC = u ; BC = v
+---
+A = point(2, 2)
+B = point(8, 2)
+s = segment(A, B)
+u = segment(point(1, 8), point(5, 8), etiquette="4 cm")
+v = segment(point(7, 8), point(10, 8), etiquette="3 cm")
+```
+
+Nouvelle vérification `triangle ABC : AC = <long.> ; BC = <long.>` ; une longueur = un segment nommé de la
+figure ou deux points visibles (`AC = AB` : isocèle ; `AC = AB ; BC = AB` : équilatéral). Palette déduite :
+Segment · Compas · Report · Règle. L'élève trace [AC] et [BC] au segment ; C = leur extrémité commune.
+
+### Comportements — triangle
+
+- **Nominal** : report de u centré en A, de v centré en B, segments de A et de B jusqu'à une intersection
+  → juste. Équilatéral : compas de rayon AB en A et en B, sans report.
+- **Limites** (juste) : C de l'un OU l'autre côté de (AB) ; cercles et traits en trop ignorés ; côté
+  repassé.
+- **Erreurs** (faux, première cause) : aucun segment → « Trace les côtés [AC] et [BC] du triangle. » ;
+  un seul → « Il manque le côté [BC]. » ; les deux côtés ne se rejoignent pas → « Tes côtés [AC] et [BC]
+  doivent se rejoindre en C. » ; C hors de toute intersection → « Ton sommet C est placé à l'œil :
+  construis-le avec ton compas. » ; côté de mauvaise longueur → « Ton côté [AC] n'a pas la bonne
+  longueur. »
+- **Erreurs d'auteur** : longueurs impossibles (inégalité triangulaire : « ces trois longueurs ne font
+  pas un triangle »), les deux C possibles hors de la fenêtre, segment de longueur inconnu ou invisible,
+  A ou B invisible, quadrillage (refusé, comme le cercle circonscrit).
+- **Correction** : côtés [AC] et [BC] en pointillés, les deux arcs de report en traits fins, longueurs
+  codées.
+
+### Écriture par le prof — 4e sommet
+
+```figure-a-completer
+fenetre: 0 ; 10 ; 0 ; 8
+verifier: point D = sommet(parallelogramme(A, B, C), 4)
+---
+A = point(2, 2)
+B = point(7, 2)
+C = point(8, 6)
+p = polyligne(A, B, C)
+```
+
+Vérification `point` existante ; sur papier uni, elle accepte aussi `sommet(parallelogramme(A, B, C), 4)`.
+Palette inchangée (Règle · Équerre · Compas · Report · Point).
+
+### Comportements — 4e sommet
+
+- **Nominal** : report de BC centré en A, de AB centré en C, point à l'intersection → juste. Autres
+  chemins justes : par les diagonales (milieu de [AC] construit, compas centré au milieu passant par B,
+  droite (BI)) ; par les parallèles (équerre deux fois).
+- **Erreurs** : celles du point (lot 2b), plus, en tête : point à l'autre intersection des deux reports
+  → « Avec ce point, ABCD est croisé : prends l'autre intersection. »
+- **Erreurs d'auteur** : D hors de la fenêtre ; A, B ou C invisible ; une construction par report qui
+  sort de la fenêtre.
+- **Correction** : D et les côtés [CD], [DA] en pointillés, côtés opposés codés.
+
+### Questions à David
+
+1. **Longueurs données** : segments de la figure à reporter au compas (recommandé : c'est le geste du
+   BO, et aucun outil neuf de mesure) ; ou nombres en cm avec une **règle graduée** (outil neuf, plus
+   tard, avec le rapporteur) ?
+2. **Geste** : bouton **Report** à part (recommandé : le Compas ne change pas) ; ou compas à trois
+   touchers (écartement, puis centre) ?
+3. **Côtés tracés exigés** (recommandé : c'est un triangle à construire) ; ou seul le sommet C placé
+   (outil Point) ?
+4. **Côté de C** : les deux justes (recommandé) ; ou le prof peut imposer le côté (`C au-dessus de (AB)`) ?
+5. **Règle sévère des médiatrices** (§ 12) : la laisser telle quelle dans ce lot (recommandé : la
+   relâcher par le report demande sa propre phase 0) ?
+
+Reste ouverte depuis le lot 3b : le message « Ton compas est ouvert à l'œil : ouvre-le jusqu'à un sommet
+du triangle. » (ajouté après la revue, sans phase 0).
+
+### Décisions de David (2026-11-03, « je valide » mes recommandations)
+
+1. Longueurs = **segments de la figure à reporter** au compas ; règle graduée plus tard (avec le rapporteur).
+2. Bouton **Report** à part ; le Compas ne change pas.
+3. **Côtés [AC] et [BC] tracés exigés** ; C = leur extrémité commune, construite.
+4. **Les deux côtés de (AB) justes** ; pas de côté imposé.
+5. Règle sévère des médiatrices **laissée telle quelle** dans ce lot (sa propre phase 0 plus tard).
+6. Message du lot 3b « Ton compas est ouvert à l'œil : ouvre-le jusqu'à un sommet du triangle. »
+   **gardé**.

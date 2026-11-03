@@ -44,6 +44,7 @@ import type {
 	HiddenCellKind
 } from '../types/variation-table';
 import { specialBlockEnd } from './unclosed-block';
+import { unnestedLine } from './nested-line';
 
 /** Les clés du bloc : une ligne qui commence par l'une d'elles n'est jamais du texte (Q66) */
 const BLOCK_KEYS = [
@@ -120,6 +121,8 @@ const CASE_INDEX_REGEX = /^\d{1,3}$/;
 
 /** Valeur de x d'un tableau d'évaluation : jeton de rang `??1`, `??2`… */
 const MASK_TOKEN_REGEX = /^\?\d{1,3}$/;
+/** Le même jeton écrit en clé d'une ligne (`??1: 0, bottom`) */
+const MASKED_KEY_REGEX = /^\?\?\d{1,3}$/;
 
 /** Les infinis ne se cachent pas : ce ne sont pas des valeurs à calculer */
 const INFINITY_EXPRESSIONS = ['-inf', '+inf', 'inf', '-∞', '+∞', '∞'];
@@ -579,6 +582,10 @@ function parseSignRowEntries(
 ): { values: Map<string, SignValue>; hidden: PendingCell[] } {
 	const values = new Map<string, SignValue>();
 	const hidden = new Map<string, PendingCell>();
+	// Clés déjà écrites : une cellule cachée ne s'écrit qu'une fois
+	const written = new Set<string>();
+	const twiceMessage = (key: string) =>
+		`la cellule « ${key} » est écrite deux fois, l’une cachée : n’en garder qu’une`;
 
 	for (let i = 0; i < lines.length; i++) {
 		const match = lines[i].match(ROW_ENTRY_REGEX);
@@ -605,6 +612,12 @@ function parseSignRowEntries(
 				(m) => refuse(lineNumber, lines[i], m)
 			);
 			if (!read) continue;
+			// Écrite aussi en clair : le texte envoyé en évaluation garderait la réponse
+			if (written.has(normalizedKey)) {
+				refuse(lineNumber, lines[i], twiceMessage(normalizedKey));
+				continue;
+			}
+			written.add(normalizedKey);
 			if (read.value) values.set(normalizedKey, read.value);
 			else values.delete(normalizedKey);
 			hidden.set(normalizedKey, {
@@ -628,9 +641,12 @@ function parseSignRowEntries(
 			continue;
 		}
 
+		if (hidden.has(parsed[0])) {
+			refuse(lineNumber, lines[i], twiceMessage(parsed[0]));
+			continue;
+		}
+		written.add(parsed[0]);
 		values.set(parsed[0], parsed[1]);
-		// Une écriture ordinaire plus loin remplace la case cachée de la même clé
-		hidden.delete(parsed[0]);
 	}
 
 	return { values, hidden: [...hidden.values()] };
@@ -653,9 +669,12 @@ function parseVariationRowEntries(
 	const values = new Map<string, VariationValue>();
 
 	for (let i = 0; i < lines.length; i++) {
-		// `?` en tête de clé ou de valeur = cellule cachée ; ailleurs, simple texte
+		// `?` en tête de clé ou de valeur = cellule cachée ; ailleurs, simple texte. Une
+		// clé `??1` est une valeur de x masquée (énoncé d'évaluation), pas une cellule
 		const entry = lines[i].match(ROW_ENTRY_REGEX);
-		if (entry && (entry[1].trim().startsWith('?') || entry[2].trim().startsWith('?'))) {
+		const entryKey = entry?.[1].trim() ?? '';
+		const maskedKey = MASKED_KEY_REGEX.test(entryKey);
+		if (entry && ((entryKey.startsWith('?') && !maskedKey) || entry[2].trim().startsWith('?'))) {
 			refuse(
 				startLine + i,
 				lines[i],
@@ -1041,6 +1060,59 @@ export function findVariationBlocks(lines: string[]): VariationBlockRange[] {
 	}
 
 	return blocks;
+}
+
+/** Un `?` en tête d'une valeur (`domain: -inf, ?-3`, `  -3: ?z`, `sign: ?f`) */
+const LEADING_MARK_REGEX = /[:,]\s*[[\]]?\s*\?/;
+
+/** Tableau à compléter d'un énoncé : délimité comme le parseur, et ce qu'il en lit */
+export interface VariationToFill {
+	startIndex: number;
+	/** Corps sans clôtures (lignes sans ce qui les imbrique) */
+	body: string[];
+	closed: boolean;
+	/** Bloc en retrait ou cité : l'élève ne pourrait pas y répondre */
+	nested: boolean;
+	/** Le nœud lu, null si le parseur refuse le bloc (`errors` dit pourquoi) */
+	node: VariationTableNode | null;
+	errors: VariationTableParseError[];
+}
+
+/**
+ * Les tableaux à compléter d'un énoncé : ceux qui ont au moins une case cachée
+ * (`?`), ou que le parseur refuse à cause d'un `?` en tête de valeur (le
+ * générateur dira pourquoi, plutôt que de rendre le bloc en source).
+ */
+export function findVariationsToFill(markdown: string): VariationToFill[] {
+	const lines = markdown.split('\n');
+	const found: VariationToFill[] = [];
+	let i = 0;
+	while (i < lines.length) {
+		const fence = unnestedLine(lines[i]);
+		if (isVariationBlockStart(fence)) {
+			// Le retrait des lignes du corps compte (`  -3: z`) : seul ce qui imbrique la
+			// fence (citation, retrait de liste) est retiré, sur toutes les lignes
+			const nesting = lines[i].length - fence.length;
+			const plain = lines.map((line, k) =>
+				k < i ? line : line.slice(Math.min(nesting, /^[\s>]*/.exec(line)![0].length))
+			);
+			const { endIndex, closed } = specialBlockEnd(plain, i, isBlockEnd, BLOCK_KEYS);
+			const body = plain.slice(i + 1, closed ? endIndex : endIndex + 1);
+			const { node, errors } = parseVariationTableContent(body);
+			const refusedMark = node === null && body.some((line) => LEADING_MARK_REGEX.test(line));
+			if ((node?.cases?.length ?? 0) > 0 || refusedMark) {
+				found.push({ startIndex: i, body, closed, nested: nesting > 0, node, errors });
+			}
+			i = endIndex;
+		}
+		i++;
+	}
+	return found;
+}
+
+/** L'énoncé a-t-il un tableau à compléter ? */
+export function hasVariationToFill(markdown: string): boolean {
+	return findVariationsToFill(markdown).length > 0;
 }
 
 // ============================================================================

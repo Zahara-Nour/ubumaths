@@ -222,6 +222,15 @@ describe('un ? hors tête de cellule reste du texte (revue #2267)', () => {
 		);
 		expect(result.node).toBeNull();
 	});
+
+	it('accepte une clé ??1 (valeur masquée) dans une ligne variation:, pas ?1', () => {
+		const masked = parseOk(
+			'variable: x\ndomain: -inf, ??1, +inf\n\nsign: f(x)\n  ??1: ?\n\nvariation: g(x)\n  ??1: 0, bottom'
+		);
+		expect(masked.rows[1].values.get('??1')).toBeDefined();
+		const cell = parse('variable: x\ndomain: -inf, 0, +inf\n\nvariation: f(x)\n  ?0: 0, bottom');
+		expect(cell.node).toBeNull();
+	});
 });
 
 describe('valeur de x répétée avec des cases cachées', () => {

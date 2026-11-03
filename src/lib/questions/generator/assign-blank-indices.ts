@@ -23,6 +23,9 @@
  * - Bloc ```figure-de-travail → de même UNE case, jamais notée (l'élève trace pour vérifier)
  * - Bloc ```choix → UNE case (type 'choice'), `case: N` posé dans le bloc ; une case
  *   écrite dans un choix (`?` en formule, `[_]`) est refusée avec un message situé
+ * - Tableau de signes à compléter (```variation à `?`) → une case par cellule cachée,
+ *   N, N + 1… dans l'ordre de lecture du parseur, seul N est posé (`case: N`) ;
+ *   valeur de x : case `math`, signe et marque : case `text`
  *
  * @module questions/generator/assign-blank-indices
  */
@@ -39,6 +42,7 @@ import { findPartagesToColorier } from '$lib/ubumark/parser/partage-parser';
 import { findCubesToBuild, findPatronsToBuild } from '$lib/ubumark/parser/espace-parser';
 import { findCourbesToPlace } from '$lib/ubumark/parser/courbe-parser';
 import { findTrigCirclesToPlace } from '$lib/ubumark/parser/trig-circle-parser';
+import { findVariationsToFill } from '$lib/ubumark/parser/variation-table-parser';
 import { NESTED_PREFIX } from '$lib/ubumark/parser/nested-line';
 import { buildCaseCount } from './build-answer';
 import { buildKindName, type BuildKind } from '../types';
@@ -114,6 +118,20 @@ export interface AssignBlankIndicesResult {
 	choiceBlanks?: Record<number, string>;
 	/** Blocs ```choix mal placés, non fermés, ou qui contiennent une case : messages pour l'auteur */
 	choiceErrors?: string[];
+	/**
+	 * Case → texte du tableau à compléter qui la porte (sans `case:`) et rang de sa
+	 * cellule cachée dans `cases` du nœud, pour que le générateur lise la réponse
+	 * attendue. Absent sans tel tableau.
+	 */
+	variationBlanks?: Record<number, VariationBlank>;
+	/** Tableaux à compléter mal placés (liste, citation) : messages pour l'auteur */
+	variationErrors?: string[];
+}
+
+/** Case d'un tableau de signes à compléter : le texte du bloc, le rang de la cellule */
+export interface VariationBlank {
+	source: string;
+	cell: number;
 }
 
 /** Marque d'un bloc ```choix mis à l'abri : début, rang du bloc, fin */
@@ -243,6 +261,9 @@ function choiceBlockErrors(block: MarkedChoiceBlock, caseIndex: number): string[
 	}
 	if (findTrigCirclesToPlace(block.body.join('\n')).length > 0) {
 		errors.push(`${prefix} ${buildNestedMessage('trig')}`);
+	}
+	if (findVariationsToFill(block.body.join('\n')).length > 0) {
+		errors.push(`${prefix} ${VARIATION_NESTED_MESSAGE}`);
 	}
 	parseChoiceBody(block.body).choices.forEach((choice, index) => {
 		if (choiceHasBlank(choice)) {
@@ -497,6 +518,47 @@ function markBuildBlocks(statement: string): {
 	};
 }
 
+/** Marque provisoire de la première case d'un tableau à compléter */
+const VARIATION_CASE_MARK = '\u0000variation-case\u0000';
+
+const VARIATION_NESTED_MESSAGE =
+	'Un tableau de signes à compléter doit être au premier niveau de l’énoncé (ni dans une liste, ni dans une citation)';
+
+/** Tableau à compléter, et ce que ses cases sont */
+interface VariationBlock {
+	source: string;
+	closed: boolean;
+	/** Type de chaque case ; tableau refusé par le parseur : une case (refusé au générateur) */
+	types: AssignedBlankType[];
+}
+
+/**
+ * Repère les tableaux de signes à compléter : une marque est posée après la fence de
+ * chacun. Délimités comme leur parseur (`findVariationsToFill`, lignes vides comprises).
+ */
+function markVariationBlocks(statement: string): {
+	statement: string;
+	blocks: VariationBlock[];
+	errors: string[];
+} {
+	const found = findVariationsToFill(statement);
+	const errors = found.filter((b) => b.nested).map(() => VARIATION_NESTED_MESSAGE);
+	const marked = found.filter((b) => !b.nested);
+	const markAfter = new Set(marked.map((b) => b.startIndex));
+	const out = statement
+		.split('\n')
+		.flatMap((line, i) => (markAfter.has(i) ? [line, VARIATION_CASE_MARK] : [line]));
+	return {
+		statement: out.join('\n'),
+		blocks: marked.map((b) => ({
+			source: b.body.join('\n'),
+			closed: b.closed,
+			types: b.node?.cases?.map((cell) => (cell.kind === 'valeur' ? 'math' : 'text')) ?? ['text']
+		})),
+		errors
+	};
+}
+
 /**
  * Regex to match expression markers in math zones: <<expr:NAME>>
  * NAME MUST start with the literal string "expression" (e.g. `expression1`,
@@ -537,7 +599,10 @@ export function assignBlankIndices(
 	const workFigureBlanks: Record<number, string> = {};
 	const operations = markCaseBlocks(constructions.statement, OPERATION_BLOCKS);
 	const builds = markBuildBlocks(operations.statement);
-	const statement = builds.statement;
+	const variations = markVariationBlocks(builds.statement);
+	const statement = variations.statement;
+	const variationBlanks: Record<number, VariationBlank> = {};
+	let variationCount = 0;
 	let operationCount = 0;
 	const buildBlanks: Record<number, BuildBlank> = {};
 	let buildCount = 0;
@@ -682,6 +747,20 @@ export function assignBlankIndices(
 						);
 					}
 					i += BUILD_CASE_MARK.length;
+				} else if (text.startsWith(VARIATION_CASE_MARK, i)) {
+					newText += `case: ${counter}`;
+					const block = variations.blocks[variationCount++];
+					if (!block.closed) {
+						variations.errors.push(
+							`Case ${counter + 1} (tableau de signes) : bloc non fermé (\`\`\` manquant après la dernière ligne)`
+						);
+					}
+					block.types.forEach((type, cell) => {
+						variationBlanks[counter] = { source: block.source, cell };
+						counter++;
+						blankTypes.push(type);
+					});
+					i += VARIATION_CASE_MARK.length;
 				} else if (text[i] === '[' && text[i + 1] === '_' && text[i + 2] === ']') {
 					newText += `{{blank:${counter}}}`;
 					counter++;
@@ -711,7 +790,9 @@ export function assignBlankIndices(
 		...(Object.keys(workFigureBlanks).length > 0 && { workFigureBlanks }),
 		...(constructions.errors.length > 0 && { constructionErrors: constructions.errors }),
 		...(choices.blocks.length > 0 && { choiceBlanks }),
-		...(choiceErrors.length > 0 && { choiceErrors })
+		...(choiceErrors.length > 0 && { choiceErrors }),
+		...(variationCount > 0 && { variationBlanks }),
+		...(variations.errors.length > 0 && { variationErrors: variations.errors })
 	};
 }
 
