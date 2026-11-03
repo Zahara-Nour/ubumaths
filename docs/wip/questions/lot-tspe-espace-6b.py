@@ -2,7 +2,7 @@
 terminale spécialité dans scripts/questions/tspe-6b-plans-systemes/.
 
 Phase 0 validée par David le 2026-11-02 (« je valide », recos Q1-Q4, journal
-« docs/wip/questions-tspe-espace-progress.md » § « Lot 6b »), un point par modèle :
+« docs/archive/wip/questions-tspe-espace-progress.md » § « Lot 6b »), un point par modèle :
 
 | # | Point    | Titre                                  | Catégorie, niveau                                                    |
 | 1 | TSPE-358 | Lieux géométriques dans l'espace       | Orthogonalité… › Lieux géométriques, 1                               |

@@ -2,7 +2,7 @@
 chantier) dans scripts/questions/tspe-10/.
 
 Phase 0 validée par David le 2026-11-03 (« tes recos ? » puis « go », journal
-« docs/wip/questions-tspe-progress.md » § 19), un point par modèle :
+« docs/archive/wip/questions-tspe-progress.md » § 19), un point par modèle :
 
 | # | Point    | Titre                                         | Catégorie, niveau                                             |
 | 1 | TSPE-455 | Lier la courbe de sin ou cos et le cercle     | Fonctions trigonométriques › Fonctions cosinus et sinus, 6    |

@@ -5,7 +5,7 @@
  * Migration `20261030120100_questions_tspe_niveaux` : 14 brouillons de terminale spé partagent
  * leur niveau avec un autre modèle de leur catégorie (13 brouillons, 1 modèle publié de 1re spé),
  * ce qui bloque leur publication ; un modèle de chaque paire prend un niveau libre. Décision de
- * David du 2026-10-30 (journal docs/wip/questions-tspe-progress.md, § 6).
+ * David du 2026-10-30 (journal docs/archive/wip/questions-tspe-progress.md, § 6).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, en brouillon, dans leur catégorie et à leur niveau

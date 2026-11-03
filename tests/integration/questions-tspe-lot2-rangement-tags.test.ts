@@ -7,7 +7,7 @@
  * comparées » sous Limites de suites) ; les 4 brouillons du lot 2, créés le 2026-11-01 par
  * scripts/create-questions.ts (sans nœud ni tag), vont sur leur sous-notion et reçoivent leur point
  * (TSPE-402, 576, 403, 582), resté sur la notion. Décisions de David du 2026-11-01 (journal
- * docs/wip/questions-tspe-progress.md § 15, D-L1).
+ * docs/archive/wip/questions-tspe-progress.md § 15, D-L1).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, en [T_SPE], sans nœud ni tag — puis rejoue la migration

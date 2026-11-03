@@ -2,7 +2,7 @@
 aléatoires, espace) de la terminale spécialité dans scripts/questions/tspe-8c-savoir/.
 
 Phase 0 validée par David le 2026-11-02 (« je valide » sur les recos, D-L8 du journal
-« docs/wip/questions-tspe-restes-progress.md »), un point par modèle :
+« docs/archive/wip/questions-tspe-restes-progress.md »), un point par modèle :
 
 | # | Point    | Fait                                                  | Domaine › À savoir, niveau                    |
 | 1 | TSPE-541 | un ensemble à n éléments a 2ⁿ parties                 | Dénombrement, 1                               |

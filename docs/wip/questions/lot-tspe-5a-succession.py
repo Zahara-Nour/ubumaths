@@ -2,7 +2,7 @@
 spécialité dans scripts/questions/tspe-5a-succession/.
 
 Phase 0 validée par David le 2026-11-02 (« tes recos ? » puis « je valide », journal
-« docs/wip/questions-tspe-proba-progress.md » § Lot 5a), un point par modèle :
+« docs/archive/wip/questions-tspe-proba-progress.md » § Lot 5a), un point par modèle :
 
 | # | Point    | Titre                                          | Catégorie, niveau                                  |
 | 1 | TSPE-612 | Univers d'une succession d'épreuves            | Succession d'épreuves › Épreuves indépendantes, 1  |

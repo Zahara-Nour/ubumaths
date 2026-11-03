@@ -7,7 +7,7 @@
  * TSPE (dd0ee69a change de point, 481 → 489), ef3c495c passe sous « triangle de Pascal »
  * (TCOMP-296 → TCOMP-361, + TSPE-316), et l'ordre de « Loi binomiale / Coefficients binomiaux »
  * devient 07ebdcbe 1, 4dcbae71 2, 970dab52 3, ef3c495c 4 (D-D1). Décisions de David le 2026-11-01
- * (journal docs/wip/questions-tspe-progress.md § 14).
+ * (journal docs/archive/wip/questions-tspe-progress.md § 14).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, publiées, à leur nœud et à leur niveau, avec leurs

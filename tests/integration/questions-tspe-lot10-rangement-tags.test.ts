@@ -5,7 +5,7 @@
  * Migration `20261103084808_questions_tspe_lot10_rangement_tags` : les 3 brouillons du lot 10, créés
  * le 2026-11-03 par scripts/create-questions.ts (sans nœud ni tag), vont sur une sous-notion
  * existante et reçoivent leur point (TSPE-455, 481, 616 ; 616 est sur la notion de la sous-notion).
- * Phase 0 validée par David le 2026-11-03 (D-L10, journal docs/wip/questions-tspe-progress.md § 19).
+ * Phase 0 validée par David le 2026-11-03 (D-L10, journal docs/archive/wip/questions-tspe-progress.md § 19).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, en [T_SPE], sans nœud ni tag — puis rejoue la migration

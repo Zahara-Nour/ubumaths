@@ -6,7 +6,7 @@
  * le 2026-11-02 par scripts/create-questions.ts (sans nœud ni tag), vont sur un nœud existant (une
  * sous-notion, ou la notion « Valeur moyenne » qui n'en a pas) et reçoivent leur point (TSPE-461, 462,
  * 478, 480, 485, 486, 489, 491, 465). Décisions de David du 2026-11-02 (journal
- * docs/wip/questions-tspe-progress.md § 17).
+ * docs/archive/wip/questions-tspe-progress.md § 17).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des copies
  * minimales portant les VRAIS identifiants, en [T_SPE], sans nœud ni tag — puis rejoue la migration
