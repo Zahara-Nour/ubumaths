@@ -9,21 +9,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2341._
+_Mis à jour le 2026-11-03, contenu du lot 4 poussé (e3f7841d3), pas de PR._
 
-- **État** : lots 1, 2 et 3 publiés. `signe: aucun` du bloc `ranger` mergé (#2341, D2, § 7) ; pas encore en prod
-  (attend un `deploy:prod` de David, à demander avant de publier le lot 4).
-- **Prochaine action** : lot 4 = une variation « étapes à ranger » (`signe: aucun`, 4 à 6 étapes) dans chacun des
-  14 JSON `scripts/questions/1spe-demonstrations-{1,2,3}/` ; une étape interchangeable passe dans l'énoncé. Les 14
-  sont PUBLIÉS : `--mettre-a-jour` ne les touche pas → migration de contenu générée par un script de lot
-  (`couvrir-un-niveau.md` § 7, précédent `docs/wip/questions-6/lot-contenu-6-ranger.py`). Avant le SQL : poser
-  la question d'accès à David (reco : personne de plus ; les élèves de 1re spé voient une variation de plus).
-- **En attente de David** : rien pour l'instant.
-- **Pièges en cours** : juge strict (étapes non permutables). `1/√2` jugé `bad_form`. Migration copiée : transformer
-  LIGNE À LIGNE. Worktree sans lien Supabase : copier
-  `supabase/.temp/{project-ref,linked-project.json,pooler-url,postgres-version}` du dépôt principal pour `db:migrate`.
-  Anciennes branches distantes `docs/questions-1spe-demonstrations`, `feat/questions-1spe-demonstrations` à supprimer.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, branche `feat/questions-1spe-demonstrations-4`.
+- **État** : lots 1-3 publiés. Lot 4 : variation « étapes à ranger » écrite dans les 14 JSON (§ 8), specs
+  vertes, rendu vu en local. #2341 (`signe: aucun`) mergé mais PAS en prod.
+- **Prochaine action** : migration de contenu des 14 modèles publiés, générée par script de lot (patron
+  `docs/wip/questions-6/lot-contenu-6-ranger.py`, relevé prod d'abord), + test d'intégration rouge sans elle.
+- **En attente de David** : `deploy:prod` de #2341 ; réponse à la question d'accès (reco : personne de plus).
+- **Pièges en cours** : `create-questions` lit `.env` = PROD → forcer `PUBLIC_SUPABASE_URL` et
+  `SUPABASE_SERVICE_ROLE_KEY` de `.env.local` pour la base locale. Script tsx hors dépôt : extension `.mts`.
+  Aperçu admin : seed 100004 → variation 4. Worktree sans lien Supabase : copier `supabase/.temp/…` pour
+  `db:migrate`. Juge strict (étapes non permutables).
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, `feat/questions-1spe-demonstrations-4`.
 
 ---
 
