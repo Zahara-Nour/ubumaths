@@ -9,18 +9,19 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR 4 en cours (branche `feat/tableau-signes-corrige`)._
+_Mis à jour le 2026-11-03, après #2297 (PR 4 mergée)._
 
-- **État** : PR 1-3 mergées (#2267, #2273, #2287). PR 4 (corrigé, série PDF, page à cocher) codée et
-  testée, pas encore poussée.
-- **Prochaine action** : voir le corrigé dans l'appli (question d'essai locale), revue `code-reviewer`
-  Opus (correction des réponses), docs, PR. Puis réécrire 330 et 446 (Q6).
-- **En attente de David** : essai au doigt sur iPhone (ligne #2287 de `verifications-manuelles.md`) ;
-  repère « à compléter » sur une marque cachée au PDF (voir PR 4 : vartable ne le permet pas).
-- **Pièges en cours** : `VariationTable` vide les cellules cachées par défaut ; la bonne réponse vient de
-  `blanks`, jamais du nœud (énoncé masqué). Question d'essai en base LOCALE :
-  `7ab1e5a0-0000-4000-8000-000000000001`.
-- **Worktree / branche** : `../ubumaths-wt-tableau-signes` · `feat/tableau-signes-corrige`.
+- **État** : outil complet — PR 1 (#2267 ubumark), 2 (#2273 génération, juge, masquage), 3 (#2287 saisie),
+  4 (#2297 corrigé, série PDF, page à cocher) mergées.
+- **Prochaine action** : réécrire les modèles 2-330 et 2-446 avec le tableau à compléter (Q6), puis
+  mettre à jour la ligne 8 de `outils-manquants.md` et verser le chantier (`docs/systeme/` à jour,
+  journal archivé). Nouveau worktree `git worktree add -b feat/tableau-signes-modeles
+../ubumaths-wt-tableau-signes origin/main`.
+- **En attente de David** : essais (lignes #2287 et #2297 de `verifications-manuelles.md`) ; repère « à
+  compléter » d'une marque cachée au PDF (reco : garder le trait nu ; sinon patcher vartable).
+- **Pièges en cours** : la bonne réponse vient de `blanks`, jamais du bloc (énoncé masqué) ; une case
+  hors `$…$` (`?` nu) n'est pas une case ; `domain: ]a[, +inf` mal découpé par le parseur (hors chantier).
+- **Worktree / branche** : aucun (à recréer).
 
 ---
 
