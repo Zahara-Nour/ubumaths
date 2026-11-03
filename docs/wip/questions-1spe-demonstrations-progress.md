@@ -9,14 +9,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, lot 1 écrit (§ 4), PR à ouvrir._
+_Mis à jour le 2026-11-03, après #2299._
 
-- **État** : lot 1 (232, 233, 234, 235, 255) écrit, 5 modèles × 3 variations, `checkTemplate` vert (60 specs), 214 formules
-  vérifiées, joué en base locale ; PR des fichiers en cours.
-- **Prochaine action** : PR mergée → David lance `create-questions --dir scripts/questions/1spe-demonstrations-1 --publier`
-  (prod), puis migration nœud + tag (gabarit § 6 de `couvrir-un-niveau.md`), page à cocher, publication. Ensuite lot 2.
-- **En attente de David** : l'écriture en prod des brouillons. Extension `signe:` du bloc `ranger` (Q2 b) **non
-  tranchée** : à reposer après les lots à trous.
+- **État** : lot 1 (232, 233, 234, 235, 255) mergé (#2299) : 5 modèles × 3 variations, fichiers dans
+  `scripts/questions/1spe-demonstrations-1/`, rien en prod.
+- **Prochaine action** : David lance `create-questions --publier` en prod (commande ci-dessous) ; relever les 5 `id`, puis
+  migration nœud + tag (gabarit § 6 de `couvrir-un-niveau.md`), page à cocher, publication. Ensuite lot 2 (dérivation).
+- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-demonstrations-1 --publier`
+  (depuis le worktree, `.env` = prod). Extension `signe:` du bloc `ranger` (Q2 b) **non tranchée**, à reposer après les
+  lots à trous.
 - **Pièges en cours** : `requiredForm: {pattern: 'u'}` pour les écritures équivalentes (2³, n² + n) ; jamais de couleur sur
   du texte (gras) ; ancienne branche distante `docs/questions-1spe-demonstrations` à supprimer (refusée au mode auto).
 - **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, branche `feat/questions-1spe-demonstrations`.
