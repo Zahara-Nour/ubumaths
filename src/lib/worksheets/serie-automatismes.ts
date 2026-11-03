@@ -31,6 +31,8 @@ import { withChoiceCollectionSize } from '$lib/ubumark/parser/collection-parser'
 import { withChoiceMonnaieSize } from '$lib/ubumark/parser/monnaie-parser';
 import { replaceChoiceBlocks, type ChoiceBlock } from '$lib/ubumark/parser/choix-parser';
 import { correctChoiceIndexesOf, isChoiceBlank } from '$lib/questions/choice-case';
+import { findCourbesToPlace, parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
+import { lineCoefficients } from '$lib/ubumark/utils/courbe-tracer';
 import {
 	findVariationsToFill,
 	revealVariationBody
@@ -160,6 +162,75 @@ function tableauxACompleter(
 	return { texte: lignes.join('\n'), cases };
 }
 
+/** Ligne `tracer:` d'un repère */
+const TRACER_LINE = /^\s*tracer\s*:/i;
+
+/** Noms possibles de la droite dessinée au corrigé, le premier libre dans le repère */
+const NOMS_DE_DROITE = ['f', 'g', 'h', 'u', 'v', 'w'];
+
+/** `y = 2x - 1` : le membre de droite d'une équation réduite */
+const EQUATION_REDUITE = /^\s*y\s*=(.+)$/i;
+
+/**
+ * Un nombre écrit pour une ligne `f(x) = …` d'un repère : 12 chiffres significatifs
+ * (la traîne d'un calcul flottant, `0.33333333333333326`, ne s'écrit pas), `-0` → `0`
+ */
+function nombre(n: number): string {
+	const texte = String(Number(n.toPrecision(12)) + 0);
+	// `1e-7` se lirait 1 × e − 7 (e = Euler) : refuser plutôt que dessiner faux
+	if (/e/i.test(texte)) throw new Error(`coefficient hors d'écriture décimale : ${texte}`);
+	return texte;
+}
+
+/**
+ * Droites à tracer (```courbe à `tracer: y = 2x - 1`) : à l'énoncé, le repère vide
+ * (lignes `tracer:` et `case:` retirées) ; au corrigé (`corrige`), la ligne `tracer:`
+ * devient la droite dessinée, en vert. Une case par droite. Seule une droite non
+ * verticale se dessine (`f(x) = …`) : vecteur à tracer, points à placer, droite
+ * masquée ou verticale, repère en retrait ou cité → refus, message à l'appui.
+ */
+function droitesATracer(
+	modele: string,
+	texte: string,
+	corrige: boolean
+): { texte: string; cases: number } {
+	const lignes = texte.split('\n');
+	const reperes = findCourbesToPlace(texte);
+	// Du dernier au premier : les rangs des repères précédents restent justes
+	for (const repere of [...reperes].reverse()) {
+		const refus = (raison: string) => new Error(`${modele} : ${raison}`);
+		if (repere.nested) throw refus('repère à compléter en retrait ou cité');
+		const node = parseCourbeContent(repere.body.join('\n'));
+		if (!node.spec) {
+			throw refus(`repère illisible (${node.errors.map((e) => e.message).join(' ; ')})`);
+		}
+		if (node.spec.placer?.length) throw refus('points à placer non pris en charge');
+		if (node.spec.vecteur) throw refus('vecteur à tracer non pris en charge');
+		const tracer = node.spec.tracer;
+		if (!tracer) throw refus('repère à compléter sans droite à tracer');
+		const droite = lineCoefficients(tracer.equation);
+		if (typeof droite === 'string') throw refus(`droite à tracer masquée ou illisible (${droite})`);
+		if (droite.b === 0) throw refus('droite verticale non prise en charge');
+
+		const pris = new Set(node.spec.functions.map((f) => f.name));
+		const nom = NOMS_DE_DROITE.find((n) => !pris.has(n));
+		if (!nom) throw refus('aucun nom libre pour dessiner la droite');
+		// Équation réduite : son membre de droite, tel qu'écrit (`1/3x - 1`, jamais un
+		// flottant) ; sinon ax + by + c = 0 → y = (-a x - c) / b
+		const membre = EQUATION_REDUITE.exec(tracer.equation)?.[1];
+		const expression =
+			membre !== undefined && !/y/i.test(membre)
+				? membre.trim()
+				: `((${nombre(-droite.a)})*x+(${nombre(-droite.c)}))/(${nombre(droite.b)})`;
+		const dessinee = `${nom}(x) = ${expression}   vert`;
+		const corps = repere.body
+			.filter((ligne) => !CASE_LINE.test(ligne))
+			.flatMap((ligne) => (TRACER_LINE.test(ligne) ? (corrige ? [dessinee] : []) : [ligne]));
+		lignes.splice(repere.startIndex + 1, repere.body.length, ...corps);
+	}
+	return { texte: lignes.join('\n'), cases: reperes.length };
+}
+
 /** Un choix à imprimer : taille des blocs (horloge, collection, monnaie) posée */
 function choixImprime(contenu: string): string {
 	return withChoiceMonnaieSize(withChoiceCollectionSize(withChoiceClockSize(contenu)));
@@ -243,22 +314,27 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Serie {
 	);
 	const tableauxCorrige = tableauxACompleter(template.id, corrigeChoix, revealVariationBody);
 
+	// Droite à tracer : repère vide à l'énoncé, droite dessinée au corrigé ; une case chacune
+	const droitesEnonce = droitesATracer(template.id, tableauxEnonce.texte, false);
+	const droitesCorrige = droitesATracer(template.id, tableauxCorrige.texte, true);
+
 	// Chaque case attendue doit être remplacée, ni plus ni moins (un marqueur d'une
 	// autre convention, `<<expr:…>>`, laisserait sinon une question sans case)
 	const cases =
 		[...texte.matchAll(PLACEHOLDER), ...texte.matchAll(TEXT_BLANK)].length +
 		casesChoix +
-		tableauxEnonce.cases;
+		tableauxEnonce.cases +
+		droitesEnonce.cases;
 	if (cases !== (instance.blanks?.length ?? 0)) {
 		throw new Error(
 			`${template.id} : ${cases} case(s) dans l'énoncé pour ${instance.blanks?.length ?? 0} réponse(s) attendue(s)`
 		);
 	}
 
-	const enonce = tableauxEnonce.texte
+	const enonce = droitesEnonce.texte
 		.replace(PLACEHOLDER, `\\text{${BLANK_TEXT}}`)
 		.replace(TEXT_BLANK, BLANK_TEXT);
-	const corrige = tableauxCorrige.texte
+	const corrige = droitesCorrige.texte
 		.replace(PLACEHOLDER, (_m, i: string) => reponse(instance, Number(i), true, minDigits))
 		.replace(TEXT_BLANK, (_m, i: string) => reponse(instance, Number(i), false, minDigits));
 

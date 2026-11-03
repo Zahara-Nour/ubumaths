@@ -346,12 +346,23 @@
 
 							<!-- Message Actions (3-dot menu) - Outside bubble -->
 							{#if canReportMessage(message) || canDeleteMessage(message)}
-								<div class="flex-shrink-0 opacity-0 transition-opacity group-hover:opacity-100">
+								<!-- Visible au survol ; toujours visible sur écran tactile (sans survol) et au clavier -->
+								<div
+									class="flex-shrink-0 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
+								>
 									<DropdownMenu.Root>
-										<DropdownMenu.Trigger class="cursor-pointer">
-											<Button variant="ghost" size="sm" class="h-6 w-6 p-0">
-												<MoreVertical class="h-4 w-4" />
-											</Button>
+										<DropdownMenu.Trigger>
+											{#snippet child({ props })}
+												<Button
+													{...props}
+													variant="ghost"
+													size="sm"
+													class="h-6 w-6 cursor-pointer p-0"
+													aria-label="Actions sur le message"
+												>
+													<MoreVertical class="h-4 w-4" />
+												</Button>
+											{/snippet}
 										</DropdownMenu.Trigger>
 										<DropdownMenu.Content>
 											{#if canReportMessage(message)}
@@ -407,7 +418,9 @@
 
 						<!-- Quick Reactions (only for other users' messages) -->
 						{#if onReact && !isOwnMessage(message)}
-							<div class="mt-1 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+							<div
+								class="mt-1 flex gap-1 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
+							>
 								{#each reactionEmojis as emoji (emoji)}
 									<button
 										onclick={() => onReact?.(message.id, emoji)}
