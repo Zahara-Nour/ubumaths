@@ -355,7 +355,7 @@ au plus, `spec.axisTitles`), au bout de chaque axe, à l'écran (`Courbe.svelte`
 (`courbe-typst.ts`, chaîne Typst entre guillemets : un `#` ou un `[` ne casse pas la fiche). Refusé :
 titre vide, axe nommé deux fois, autre axe que x ou y.
 
-**Repère à placer** (chantier [points-repere](../wip/points-repere-progress.md), CM1-136, 5-128…) —
+**Repère à placer** (chantier [points-repere](../archive/wip/points-repere-progress.md), CM1-136, 5-128…) —
 `src/lib/ubumark/__tests__/courbe/courbe-placer.test.ts`, `CourbePlacer.svelte.test.ts` :
 `placer: A=(2 ; 3) ; B=(-1 ; 2)` dans un ` ```courbe ` (nœud : `spec.placer`, liste de `CourbeTarget`
 `name`, `x`, `y` ; `caseIndex` lu de `case: N`, posée par le générateur ; `placer: (2 ; 3)` = un point
@@ -1392,6 +1392,14 @@ problème. À lancer **avant** d'écrire des énoncés ou corrigés en base.
   à geste comme option d'un ` ````choix `) : le générateur masque le choix avant de chercher les
   gestes, d'où ni refus ni case (la spécification des gestes dit « refusé »). Trou relevé le
   2026-11-01 (#2065), pas encore corrigé : la décision revient à David.
+- **Repère à placer / à tracer** (` ```courbe `, chantier points-repere, versé le 2026-11-03), laissés
+  tels quels : virgule décimale permise dans `placer:`, `grille:` et `tracer:`, jamais dans `x:` / `y:`
+  (`x: -3, 3` est l'erreur type « virgule à la place du point-virgule » : l'accepter la rendrait
+  ambiguë) ; tolérance de `isGridNode` (1e-9 × pas) : un pas irrationnel avec de grandes valeurs
+  (`grille: pi/2`, `y: 1000 ; 1010`) peut refuser au prof une cible écrite en décimal, le juge n'est pas
+  touché ; les juges de la droite et du vecteur ne vérifient pas que les points sont des nœuds (l'écran
+  n'en pose pas d'autres) ; le corrigé PDF (`solved`) n'est appelé par aucun corrigé imprimé (comme la
+  droite graduée, l'horloge et les barres à placer) ; `\frac` refusé dans `tracer:` (écrire `1/2x`).
 - ` ```ranger ` dans une liste sort en bloc de code (absent de `SPECIAL_BLOCK_KINDS`) : ne touche que
   le cours ; dans une question, il est refusé de toute façon.
 - Blocs d'espace, laissés tels quels : la cote d'un cylindre coupé parallèlement à l'axe est posée sous

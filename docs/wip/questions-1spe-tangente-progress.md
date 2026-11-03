@@ -2,7 +2,7 @@
 
 Sous-chantier de [questions-1spe](../archive/wip/questions-1spe-progress.md) (clos) : le modèle du point
 1SPE-271, classé C là-bas en attendant le geste `tracer:` du bloc ` ```courbe ` (#2265,
-[points-repere § 8-9](points-repere-progress.md)). Démarche : skill `couvrir-niveau`.
+[points-repere § 8-9](../archive/wip/points-repere-progress.md)). Démarche : skill `couvrir-niveau`.
 
 ## Reprendre ici
 
