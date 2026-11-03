@@ -1,0 +1,2 @@
+Retouche : manteau du Czar vert (erreur du prompt) recoloré en bleu du portrait :
+magick essai-1-ia.webp -region 520x848+744+0 -fuzz 22% -fill "#8BB8BE" -opaque "#039463" +region retouche-manteau-bleu.png

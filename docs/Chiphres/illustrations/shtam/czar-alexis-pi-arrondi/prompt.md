@@ -9,7 +9,7 @@ Scene: on the right, the emperor from the attached character image (Czar Alexis,
 
 Style: 1896 Montmartre lithographic print in the manner of Théophile-Alexandre Steinlen, as a press drawing printed in an old newspaper: bold thick dark contours, flat color areas, no gradients, no 3D, flat shadow shapes only. Funny, never scary, for students aged 11 to 17.
 
-Colors: use only the colors of the attached palette image (muted printing inks on cream paper): navy ink for the outlines, emerald green and marigold yellow for the Czar's uniform and the gold trim, deep crimson for the carriage, brown for the wheels and the fence, white and cream for the snow, cream parchment for the background.
+Colors: use only the colors of the attached palette image (muted printing inks on cream paper): navy ink for the outlines, pale sky blue for the Czar's fur-trimmed coat (as on the attached character image), marigold yellow for its gold trim, deep crimson for the carriage, brown for the wheels and the fence, white and cream for the snow, cream parchment for the background.
 
 Composition: horizontal 3:2 landscape format, the banquet window and the fence on the left, the limping carriage in the center, the Czar on the right, plain cream paper background around the scene. No text, no letters, no numbers, no signature.
 ```
