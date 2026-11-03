@@ -364,7 +364,8 @@ export interface Construction {
 function isSupported(
 	object: DrawnObject,
 	isBuilt: (p: Position) => boolean,
-	traits: readonly Trait[]
+	traits: readonly Trait[],
+	marks: readonly DrawnRepere[]
 ): boolean {
 	if (object.kind === 'point' || object.kind === 'repere') return false;
 	if (object.kind === 'cercle') {
@@ -383,12 +384,40 @@ function isSupported(
 	const q = { x: object.x2, y: object.y2 };
 	const start = isBuilt(p);
 	if (start && isBuilt(q)) return true;
+	if (isAngleSide(p, q, isBuilt, traits, marks)) return true;
 	if (object.kind !== 'droite') return false;
 	const eps = EPSILON * scaleOf(p, q);
 	return traits.some((t) => {
 		if (!isStraight(t) || (!start && !isOnSomeTrait(p, [t]))) return false;
 		const square = perpendicularThrough(t, p);
 		return Math.hypot(square.x2 - q.x, square.y2 - q.y) <= eps;
+	});
+}
+
+/**
+ * Côté d'angle (lot 7, § 21) : un trait droit qui part du centre d'un repère
+ * construit et passe par ce repère (la règle posée du sommet au repère, ou le
+ * côté tracé d'un trait à travers lui). Le repère seul ne construit toujours
+ * rien : c'est la DIRECTION centre → repère qui l'est, et le trait la porte.
+ */
+function isAngleSide(
+	p: Position,
+	q: Position,
+	isBuilt: (p: Position) => boolean,
+	traits: readonly Trait[],
+	marks: readonly DrawnRepere[]
+): boolean {
+	return marks.some((mark) => {
+		const center = { x: mark.vx, y: mark.vy };
+		const eps = EPSILON * scaleOf(center, p, q);
+		const at = (r: Position) => Math.hypot(r.x - center.x, r.y - center.y) <= eps;
+		const other = at(p) ? q : at(q) ? p : null;
+		if (!other || !isMarkSupported(mark, isBuilt, traits)) return false;
+		const m = repereAt(mark);
+		const u = { x: other.x - center.x, y: other.y - center.y };
+		const v = { x: m.x - center.x, y: m.y - center.y };
+		const lengths = Math.hypot(u.x, u.y) * Math.hypot(v.x, v.y);
+		return lengths > 0 && Math.abs(u.x * v.y - u.y * v.x) <= EPSILON * scaleOf(m, other) * lengths;
 	});
 }
 
@@ -449,13 +478,14 @@ export function constructionOf(
 		const at = (q: Position) => Math.hypot(p.x - q.x, p.y - q.y) <= eps;
 		return base.some(at) || crossings.some(at) || paired.some(at);
 	};
+	const marks = objects.filter((o): o is DrawnRepere => o.kind === 'repere');
 	let grew = true;
 	while (grew) {
 		grew = false;
 		objects.forEach((object, index) => {
 			if (built.has(index)) return;
 			const trait = traitOf(object);
-			if (!trait || !isSupported(object, isBuilt, traits)) return;
+			if (!trait || !isSupported(object, isBuilt, traits, marks)) return;
 			built.add(index);
 			traits.push(trait);
 			crossings = intersectionsOf(traits);
@@ -479,11 +509,19 @@ export function constructionOf(
  * depuis son propre centre).
  */
 export function isBuiltMark(mark: DrawnRepere, construction: Construction): boolean {
+	return isMarkSupported(mark, construction.isBuilt, construction.traits);
+}
+
+function isMarkSupported(
+	mark: DrawnRepere,
+	isBuilt: (p: Position) => boolean,
+	traits: readonly Trait[]
+): boolean {
 	const center = { x: mark.vx, y: mark.vy };
 	const base = { x: mark.ax, y: mark.ay };
-	if (!construction.isBuilt(center)) return false;
-	if (construction.isBuilt(base)) return true;
-	return construction.traits.some(
+	if (!isBuilt(center)) return false;
+	if (isBuilt(base)) return true;
+	return traits.some(
 		(t) => isStraight(t) && isOnSomeTrait(center, [t]) && isOnSomeTrait(base, [t])
 	);
 }

@@ -6,20 +6,19 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2327 (lot 6 mergé)._
+_Mis à jour le 2026-11-03, lot 7 codé, PR à ouvrir._
 
-- **État** : lots 1 à 6 et #2305 mergés (lot 6 = `mesure AOB`, § 19-20). Rien en prod
-  (`deploy:prod` sur demande de David). Vérification à l'œil de #2327 dans `verifications-manuelles.md`.
-- **Prochaine action** : phase 0 du lot 7, le triangle donné par un côté et deux angles (5e), décidé
-  « après » le lot 6 (§ 16, décision 5) ; nouveau worktree. Plus tard : variante « rapporteur déjà
-  posé » (§ 19, décision 4).
-- **En attente de David** : rien (phase 0 du lot 7 validée, § 21 ; codage en cours).
+- **État** : lots 1 à 6 et #2305 mergés ; lot 7 (triangle par un côté et deux angles, et deux côtés
+  et l'angle compris, § 21-22) codé et testé, en revue. Rien en prod.
+- **Prochaine action** : revue Opus de la PR du lot 7, CI verte → merge ; ligne dans
+  `verifications-manuelles.md`. Plus tard : variante « rapporteur déjà posé » (§ 19, décision 4).
+- **En attente de David** : rien.
 - **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12) ;
   `perpendiculaire(A, s)` échoue quand A est un bout de s ; `symetrie(P, axe=d)` échoue si P définit
   d ; l'« Essayer » de l'aide ne rend pas la case jouable ; plafond de 20 objets sans message ; la
   CI ne part pas sur une PR en conflit ; tests navigateur de #2327 : Chromium fermé en pleine suite
-  2 fois sur 3, sans assertion fausse, cause non trouvée (ni le lot 6, ni l'image du runner).
-- **Worktree / branche** : aucun (retiré après #2327).
+  2 fois sur 3, sans assertion fausse, cause non trouvée.
+- **Worktree / branche** : `../ubumaths-wt-controles-figure`, `feat/controles-figure-lot7`.
 
 ---
 
@@ -941,3 +940,34 @@ d'angle, est donc construit. Le repère seul ne construit toujours rien.
 3. Message « de part et d'autre de [AB] » **gardé**.
 4. **Deux côtés et l'angle compris** (`AC = u ; CAB = 40`) **dans ce lot**.
 5. Angle non adjacent au côté : **hors lot**.
+
+## 22. Lot 7 — ce qui est fait (2026-11-03)
+
+- Vérification `triangle` élargie (`TriangleCheck` : `lengths` et `angles`, deux données en tout) :
+  `CAB = 40 ; ABC = 65` (un côté et deux angles), `AC = u ; CAB = 40` (deux côtés et l'angle compris) ;
+  `BAC` admis pour `CAB`, `°` permis. Parseur : angle de sommet A ou B seulement, mesure entière 1..179,
+  somme < 180, un angle en A et un en B, angle compris au bout du côté donné.
+- Palette (`triangleTools`) : Rapporteur · Règle · Segment, plus Report et Compas avec une longueur ;
+  le rapporteur admis dans ce triangle (et lui seul hors angle / mesure) ; palette sans rapporteur,
+  règle ou segment refusée.
+- Règle neuve (`constructionOf`, `isAngleSide`) : un trait droit qui part du centre d'un repère
+  construit et passe par ce repère est construit (« côté d'angle ») ; le repère seul ne construit
+  toujours rien.
+- Juge (`triangle.ts`) : avec un angle, C = croisement de deux traits construits ; messages du § 21
+  (« placé à l'œil : trace ses côtés avec le rapporteur », « de part et d'autre de [AB] », mauvaise
+  graduation si le repère est du côté de C, sinon la mesure lue). Le côté de chaque repère est lu sur
+  le repère qui porte [VC). Trois longueurs : inchangé (cercles construits).
+- Erreurs d'auteur : fenêtre de rapport > 2 ; rapporteur qui ne tient ni d'un côté ni de l'autre (le
+  message nomme le sommet où il ne tient d'aucun côté) ; les deux C hors de la fenêtre ; A et B
+  confondus.
+- Correction : côtés en pointillés (du côté où le rapporteur tient quand l'élève n'a rien tracé),
+  arcs de report pour les longueurs, angles codés (`TriangleCorrection.angles`, dessinés comme au
+  lot 5).
+- Aide à l'écriture : deux exemples (un côté et deux angles ; deux côtés et l'angle compris), liste
+  `verifier:` complétée (le triangle n'y était pas depuis le lot 4).
+- Tests : `construction-triangle-angles.test.ts` (35), écran
+  `figure-a-completer-triangle-angles.svelte.test.ts` (3, geste complet avec Retourner en B) ; deux
+  tests du lot 4 adaptés (`angles: []`, message « [AC] ou [BC] »). Écrits après le code : preuve
+  rouge par mutation de chaque règle (côté d'angle, repère refusé au triangle, part et d'autre,
+  graduation, C construit, somme, angle compris, repère à base libre — ce dernier a fait ajouter un
+  test).

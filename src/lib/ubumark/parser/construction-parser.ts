@@ -37,10 +37,12 @@ import {
 	CONSTRUCTION_TOOLS,
 	INSTRUMENT_TOOLS,
 	PLAIN_PAPER_TOOLS,
+	triangleTools,
 	type ConstructionCheck,
 	type ConstructionCheckKind,
 	type ConstructionSpec,
 	type ConstructionTool,
+	type TriangleAngle,
 	type TriangleLength
 } from '../types/construction';
 import type { FigureIssue } from '../types/figure';
@@ -141,30 +143,41 @@ function readSymetrique(rest: string, line: number): ConstructionCheck {
 	return { kind: 'symetrique', by, points, line };
 }
 
+/** Mesure d'un angle à construire (lots 5 et 7), en degrés entiers */
+const ANGLE_MIN = 1;
+const ANGLE_MAX = 179;
+
 const TRIANGLE_EXAMPLE = 'triangle ABC : AC = u ; BC = v';
+const TRIANGLE_ANGLES_EXAMPLE = 'triangle ABC : CAB = 40 ; ABC = 65';
 const TRIANGLE_REGEX = /^([A-Z])([A-Z])([A-Z])\s*:\s*(.+)$/;
 const TRIANGLE_LENGTH_REGEX = /^([A-Z])([A-Z])\s*=\s*(\S+)$/;
+/** `CAB = 40` : un angle du triangle, le sommet au milieu, mesure entière (° permis) */
+const TRIANGLE_ANGLE_REGEX = /^([A-Z])([A-Z])([A-Z])\s*=\s*(\d{1,3})\s*°?$/;
 const POINT_PAIR_REGEX = /^([A-Z])([A-Z])$/;
 
 /**
  * `triangle ABC : AC = u ; BC = v` (lot 4) : [AB] est tracé ; les longueurs de
  * [AC] et [BC], par un segment nommé ou deux points (`AC = AB`), dans
- * n'importe quel ordre ; rendues [AC] puis [BC]
+ * n'importe quel ordre ; rendues [AC] puis [BC].
+ * Lot 7 (§ 21) : un angle s'écrit par trois points, le sommet (A ou B) au milieu
+ * (`CAB = 40`) ; deux angles (un côté et deux angles), ou une longueur et
+ * l'angle qu'elle forme avec [AB] (deux côtés et l'angle compris).
  */
 function readTriangle(rest: string, line: number): ConstructionCheck {
 	const match = TRIANGLE_REGEX.exec(rest.trim());
 	const parts = match ? match[4].split(';').map((part) => part.trim()) : [];
-	const lengths = parts.map((part) => TRIANGLE_LENGTH_REGEX.exec(part));
-	if (!match || lengths.length !== 2 || lengths.some((l) => l === null)) {
-		throw new LineError(`triangle attend ses sommets et deux longueurs : « ${TRIANGLE_EXAMPLE} »`);
+	const usage = `« ${TRIANGLE_EXAMPLE} », « ${TRIANGLE_ANGLES_EXAMPLE} » ou « triangle ABC : AC = u ; CAB = 40 »`;
+	if (!match || parts.length !== 2) {
+		throw new LineError(`triangle attend ses sommets et deux données : ${usage}`);
 	}
 	const [a, b, c] = [match[1], match[2], match[3]];
 	if (new Set([a, b, c]).size !== 3)
 		throw new LineError('triangle attend trois sommets différents');
-	const read = (l: RegExpExecArray): TriangleLength | null => {
+	const name = `${a}${b}${c}`;
+	const readLength = (l: RegExpExecArray): TriangleLength | null => {
 		const ends = [l[1], l[2]];
 		if (!ends.includes(c)) return null;
-		const other = ends.find((name) => name !== c);
+		const other = ends.find((end) => end !== c);
 		if (other !== a && other !== b) return null;
 		const pair = POINT_PAIR_REGEX.exec(l[3]);
 		if (!pair && !POINT_NAME_REGEX.test(l[3])) return null;
@@ -173,22 +186,79 @@ function readTriangle(rest: string, line: number): ConstructionCheck {
 			source: pair ? [pair[1], pair[2]] : [l[3]]
 		};
 	};
-	const given = (lengths as RegExpExecArray[]).map(read);
-	const ac = given.find((l) => l?.side[0] === a);
-	const bc = given.find((l) => l?.side[0] === b);
-	if (!ac || !bc) {
+	const readAngleOf = (l: RegExpExecArray): TriangleAngle => {
+		const vertex = l[2];
+		const base = vertex === a ? b : vertex === b ? a : null;
+		const outer = [l[1], l[3]].sort().join('');
+		if (!base || outer !== [base, c].sort().join('')) {
+			throw new LineError(
+				`triangle ${name} : un angle donné a pour sommet ${a} ou ${b}, entre [${a}${b}] et le côté vers ${c} (« ${c}${a}${b} = 40 » ou « ${a}${b}${c} = 65 »)`
+			);
+		}
+		const measure = Number(l[4]);
+		if (measure < ANGLE_MIN || measure > ANGLE_MAX) {
+			throw new LineError(
+				`triangle ${name} : mesure d’angle en degrés entière, de ${ANGLE_MIN} à ${ANGLE_MAX}`
+			);
+		}
+		return { vertex, base, measure };
+	};
+	const lengths: TriangleLength[] = [];
+	const angles: TriangleAngle[] = [];
+	for (const part of parts) {
+		const angle = TRIANGLE_ANGLE_REGEX.exec(part);
+		if (angle) {
+			angles.push(readAngleOf(angle));
+			continue;
+		}
+		const length = TRIANGLE_LENGTH_REGEX.exec(part);
+		const read = length ? readLength(length) : null;
+		if (!read) {
+			throw new LineError(
+				`triangle ${name} : « ${part} » n’est ni la longueur d’un côté [${a}${c}] ou [${b}${c}] (un segment ou deux points), ni un angle en ${a} ou en ${b} : ${usage}`
+			);
+		}
+		lengths.push(read);
+	}
+	if (lengths.length === 2) {
+		const ac = lengths.find((l) => l.side[0] === a);
+		const bc = lengths.find((l) => l.side[0] === b);
+		if (!ac || !bc) {
+			throw new LineError(
+				`triangle ${name} : donner les longueurs des côtés [${a}${c}] et [${b}${c}] ([${a}${b}] est tracé), un segment ou deux points chacune : « ${TRIANGLE_EXAMPLE} »`
+			);
+		}
+		return { kind: 'triangle', points: [a, b, c], lengths: [ac, bc], angles: [], line };
+	}
+	if (angles.length === 2) {
+		const atA = angles.find((g) => g.vertex === a);
+		const atB = angles.find((g) => g.vertex === b);
+		if (!atA || !atB) {
+			throw new LineError(
+				`triangle ${name} : donner un angle en ${a} et un angle en ${b} : « ${TRIANGLE_ANGLES_EXAMPLE} »`
+			);
+		}
+		if (atA.measure + atB.measure >= 180) {
+			throw new LineError(
+				`triangle ${name} : ces deux angles ne font pas un triangle (${atA.measure}° + ${atB.measure}° = ${atA.measure + atB.measure}°, il faut moins de 180°)`
+			);
+		}
+		return { kind: 'triangle', points: [a, b, c], lengths: [], angles: [atA, atB], line };
+	}
+	// Deux côtés et l'angle compris : l'angle est au bout du côté donné ([AC] → l'angle en A)
+	const [length] = lengths;
+	const [angle] = angles;
+	if (length.side[0] !== angle.vertex) {
 		throw new LineError(
-			`triangle ${a}${b}${c} : donner les longueurs des côtés [${a}${c}] et [${b}${c}] ([${a}${b}] est tracé), un segment ou deux points chacune : « ${TRIANGLE_EXAMPLE} »`
+			`triangle ${name} : l’angle donné doit être compris entre [${a}${b}] et le côté [${length.side.join('')}] : l’angle en ${length.side[0]}`
 		);
 	}
-	return { kind: 'triangle', points: [a, b, c], lengths: [ac, bc], line };
+	return { kind: 'triangle', points: [a, b, c], lengths: [length], angles: [angle], line };
 }
 
 const ANGLE_EXAMPLE = 'angle AOy = 50';
 /** `AOy = 50` : point du côté donné, sommet, nom du côté à tracer ; mesure entière (° permis) */
 const ANGLE_REGEX = /^([A-Z])([A-Z])([A-Za-z])\s*=\s*(\d{1,3})\s*°?$/;
-const ANGLE_MIN = 1;
-const ANGLE_MAX = 179;
 
 /** `angle AOy = 50` (lot 5) : [OA) est donné, l'élève trace [Oy) */
 function readAngle(rest: string, line: number): ConstructionCheck {
@@ -304,7 +374,12 @@ function coherenceError(
 	const tool = CHECK_TOOL[check.kind];
 	// Lot 5 (§ 16) : le rapporteur ne sert qu'à l'angle (ses repères construisent des points) ;
 	// lot 6 (§ 19) : ou à le mesurer
-	if (check.kind !== 'angle' && check.kind !== 'mesure' && spec.tools.includes('rapporteur')) {
+	// lot 7 (§ 21) : ou à un triangle dont un angle est donné
+	const protractorAllowed =
+		check.kind === 'angle' ||
+		check.kind === 'mesure' ||
+		(check.kind === 'triangle' && check.angles.length > 0);
+	if (!protractorAllowed && spec.tools.includes('rapporteur')) {
 		return `le rapporteur ne sert qu’à construire un angle (« verifier: ${ANGLE_EXAMPLE} ») ou à le mesurer (« verifier: ${MEASURE_EXAMPLE} ») ; le retirer de outils:`;
 	}
 	if (!spec.tools.includes(tool))
@@ -343,10 +418,19 @@ function coherenceError(
 		if (spec.checks.length > 1) {
 			return `triangle ${name} : un triangle à construire ne se mêle pas à d’autres vérifications`;
 		}
-		const allowed = PLAIN_PAPER_TOOLS.triangle ?? [];
+		const allowed = triangleTools(check);
 		const other = spec.tools.find((t) => !allowed.includes(t));
 		if (other)
 			return `triangle ${name} : outil ${other} hors de la palette (${allowed.join(', ')})`;
+		// Lot 7 (§ 21) : les angles se construisent au rapporteur, leurs côtés à la règle
+		if (check.angles.length > 0) {
+			const missing = (['rapporteur', 'droite', 'segment'] as const).find(
+				(t) => !spec.tools.includes(t)
+			);
+			if (missing) {
+				return `triangle ${name} : un angle donné se construit au rapporteur, son côté à la règle, puis les côtés au segment (outils: ${allowed.join(', ')})`;
+			}
+		}
 		if (grid) {
 			return `triangle ${name} : le triangle se construit sur papier uni ; retirer « grille: » (ou écrire « grille: non »)`;
 		}
@@ -472,7 +556,13 @@ export function readConstructionHeader(
 			kind === 'triangle' ||
 			kind === 'angle' ||
 			kind === 'mesure';
-		const plainPaper = grid && !keeps ? undefined : PLAIN_PAPER_TOOLS[kind];
+		const first = spec.checks[0];
+		const plainPaper =
+			grid && !keeps
+				? undefined
+				: first.kind === 'triangle'
+					? triangleTools(first)
+					: PLAIN_PAPER_TOOLS[kind];
 		spec.tools = plainPaper ? [...plainPaper] : [CHECK_TOOL[kind]];
 	}
 	const coherent: ConstructionCheck[] = [];

@@ -53,13 +53,27 @@ export const PLAIN_PAPER_TOOLS: Partial<Record<ConstructionCheckKind, Constructi
 	droite: ['droite', 'equerre', 'compas'],
 	// Lot 3b (§ 11) : cercle circonscrit, papier uni seulement
 	cercle: ['droite', 'equerre', 'compas'],
-	// Lot 4 (§ 13) : triangle de trois longueurs, papier uni seulement
+	// Lot 4 (§ 13) : triangle de trois longueurs, papier uni seulement ; lot 7 (§ 21) : le
+	// rapporteur s'y ajoute quand un angle est donné (`triangleTools`)
 	triangle: ['segment', 'compas', 'report', 'droite'],
 	// Lot 5 (§ 16) : angle de mesure donnée, papier uni seulement
 	angle: ['rapporteur', 'segment'],
 	// Lot 6 (§ 19) : mesurer un angle, le rapporteur seul
 	mesure: ['rapporteur']
 };
+
+/**
+ * Palette d'un triangle à construire : celle du lot 4 (trois longueurs), ou,
+ * avec un angle (lot 7, § 21), Rapporteur · Règle · Segment, plus le Report et
+ * le Compas s'il reste une longueur à reporter
+ */
+export function triangleTools(
+	check: Pick<TriangleCheck, 'angles' | 'lengths'>
+): ConstructionTool[] {
+	if (check.angles.length === 0) return [...(PLAIN_PAPER_TOOLS.triangle ?? [])];
+	const tools: ConstructionTool[] = ['rapporteur', 'droite', 'segment'];
+	return check.lengths.length > 0 ? [...tools, 'report', 'compas'] : tools;
+}
 
 /** Vérifications que l'auteur peut nommer dans `verifier:` */
 export const CONSTRUCTION_CHECK_KINDS = [
@@ -176,15 +190,28 @@ export interface TriangleLength {
 }
 
 /**
+ * Un angle donné d'un triangle (lot 7) : `CAB = 40` — `vertex` (A ou B) est
+ * son sommet, `base` l'autre bout de [AB] ; mesure entière en degrés, 1..179
+ */
+export interface TriangleAngle {
+	vertex: string;
+	base: string;
+	measure: number;
+}
+
+/**
  * `triangle ABC : AC = u ; BC = v` : [AB] est tracé ; l'élève trace [AC] et
  * [BC] (outil segment), C = leur extrémité commune, construite au compas, aux
  * longueurs données (chantier `controles-figure`, lot 4, 2026-11-03).
- * `lengths` : [AC] puis [BC].
+ * Lot 7 (§ 21) : un côté et deux angles (`CAB = 40 ; ABC = 65`, au rapporteur)
+ * ou deux côtés et l'angle compris (`AC = u ; CAB = 40`).
+ * Deux données en tout : `lengths` ([AC] puis [BC]) et `angles` (en A puis en B).
  */
 export interface TriangleCheck {
 	kind: 'triangle';
 	points: [string, string, string];
-	lengths: [TriangleLength, TriangleLength];
+	lengths: TriangleLength[];
+	angles: TriangleAngle[];
 	line: number;
 }
 
