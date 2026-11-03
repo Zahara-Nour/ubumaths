@@ -9,14 +9,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, phase 0 validée (§ 3, D1)._
+_Mis à jour le 2026-11-03, lot 1 écrit (§ 4), PR à ouvrir._
 
-- **État** : relevé fait (§ 1, 17 démonstrations) ; phase 0 validée (David, « je te suis » sur les recos Q1-Q5, § 3).
-- **Prochaine action** : lot 1 (232, 233, 234, 235, 255) : relevé MCP (nœuds des points, catégories et niveaux voisins), puis écriture du script `docs/wip/questions/lot-1spe-demonstrations-1.py` (gabarit `lot-1spe-savoir-a.py`) ; branche à renommer en `feat/…`.
-- **En attente de David** : rien. Extension `signe:` du bloc `ranger` (Q2 b) **non tranchée** : à reposer après les lots à trous.
-- **Pièges en cours** : le bloc `ranger` n'accepte que `signe: <` / `>` (§ 2) ; pièges des lots 1re spé dans
-  `couvrir-un-niveau.md` § 9 (`cleanCoefficients`, `acceptDecimal`, `e` = Euler, choix mélangés, `colt`).
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, branche `docs/questions-1spe-demonstrations`.
+- **État** : lot 1 (232, 233, 234, 235, 255) écrit, 5 modèles × 3 variations, `checkTemplate` vert (60 specs), 214 formules
+  vérifiées, joué en base locale ; PR des fichiers en cours.
+- **Prochaine action** : PR mergée → David lance `create-questions --dir scripts/questions/1spe-demonstrations-1 --publier`
+  (prod), puis migration nœud + tag (gabarit § 6 de `couvrir-un-niveau.md`), page à cocher, publication. Ensuite lot 2.
+- **En attente de David** : l'écriture en prod des brouillons. Extension `signe:` du bloc `ranger` (Q2 b) **non
+  tranchée** : à reposer après les lots à trous.
+- **Pièges en cours** : `requiredForm: {pattern: 'u'}` pour les écritures équivalentes (2³, n² + n) ; jamais de couleur sur
+  du texte (gras) ; ancienne branche distante `docs/questions-1spe-demonstrations` à supprimer (refusée au mode auto).
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, branche `feat/questions-1spe-demonstrations`.
 
 ---
 
@@ -88,3 +91,22 @@ Découpage en lots proposé après validation : (1) suites et second degré (232
 quand la preuve s'y prête ; Q4 un modèle par point, tagué sur son point P, catégorie neuve « Démonstrations » par
 domaine ; Q5 accès : personne de plus (brouillons ; migration de nœud et de tags seulement). Lots : 1 suites et
 second degré, 2 dérivation, 3 exponentielle, trigo, produit scalaire.
+
+## 4. Lot 1 : suites et second degré (2026-11-03)
+
+Relevé prod (MCP, 2026-11-03) : nœuds Suites › Suites arithmétiques › terme général (232), Suites › Suites
+géométriques › terme général (233), Suites › Suites arithmétiques › somme des termes (234), Suites › Suites
+géométriques › somme des termes (235), Algèbre › Équations : second degré › discriminant (255) ; aucun point jumeau
+(même nœud, même libellé) ; aucune catégorie « Démonstrations », tous niveaux confondus.
+
+| Point | Modèle (fichier `scripts/questions/1spe-demonstrations-1/`) | Catégorie, niveau                                        | Variations                                                       |
+| ----- | ----------------------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------------------- |
+| 232   | `01-demontrer-terme-general-arithmetique`                   | Suites › Suites arithmétiques › Démonstrations, 1        | uₙ − u₀ (case), nombre de termes, télescopage (choix)            |
+| 233   | `02-demontrer-terme-general-geometrique`                    | Suites › Suites géométriques › Démonstrations, 1         | uₙ/u₀ (case), u₃ de proche en proche, quotients non nuls (choix) |
+| 234   | `03-demontrer-somme-des-entiers`                            | Suites › Sommes › Démonstrations, 1                      | colonne n + 1, 2S, pourquoi n(n + 1) (choix)                     |
+| 235   | `04-demontrer-somme-geometrique`                            | Suites › Sommes › Démonstrations, 2                      | qS, S − qS, division par 1 − q (choix)                           |
+| 255   | `05-demontrer-resolution-second-degre`                      | Fonctions › Polynôme du second degré › Démonstrations, 1 | b²/(4a²), numérateur b² − 4ac, cas Δ < 0 (choix)                 |
+
+Script : `docs/wip/questions/lot-1spe-demonstrations-1.py`. Valeurs tirées pour 232 (u₀ 1..9, r 2..9) et 233 (u₀ 1..9,
+q 2..5), lettres ailleurs. Vérifié : `create-questions` simulation verte, `validateLatex` + accolades sur 40 tirages
+(214 formules, 0 problème), brouillons créés en base locale, aperçu admin du modèle 5 (case dans un numérateur) correct.
