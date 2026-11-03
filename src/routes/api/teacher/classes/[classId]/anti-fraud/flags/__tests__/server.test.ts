@@ -72,10 +72,16 @@ async function get(query = '', flagRows: unknown[] = [FLAG_ROW]) {
 
 describe('GET anti-fraud/flags', () => {
 	it('rend le point du programme du signalement', async () => {
-		const { response } = await get();
+		const { response, fake } = await get();
 		expect(response.status).toBe(200);
 		const body = await response.json();
 		expect(body.flags[0].point).toEqual({ id: POINT_ID, name: 'Additionner deux fractions' });
+		// Le faux client rend la fixture quel que soit le select : on vérifie la jointure demandée.
+		const flagsQuery = fake.queries.find(
+			(q) => q.table === 'srs_anti_fraud_flags' && q.calls.some((c) => c.method === 'limit')
+		);
+		const select = flagsQuery?.calls.find((c) => c.method === 'select');
+		expect(String(select?.args[0])).toContain('curriculum_points(id, name)');
 	});
 
 	it('rend point: null pour un signalement sans point', async () => {
