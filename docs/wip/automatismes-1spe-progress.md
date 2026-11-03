@@ -1,8 +1,21 @@
 # Automatismes de 1re — point de reprise
 
 > Mis à jour le 2026-09-28. Pour reprendre dans une nouvelle session : lire ce fichier, puis
-> [ADR 0011](../../adr/0011-fiche-d-automatismes-figee-par-graine.md) et
-> [`docs/pratiques/fiches-exercices.md`](../../pratiques/fiches-exercices.md) § 2 bis.
+> [ADR 0011](../adr/0011-fiche-d-automatismes-figee-par-graine.md) et
+> [`docs/pratiques/fiches-exercices.md`](../pratiques/fiches-exercices.md) § 2 bis.
+
+## Reprendre ici
+
+_Mis à jour le 2026-11-03 : journal rouvert (archivé le matin même avec les journaux de 1re spé, lots non faits)._
+
+- **État** : pilote « évolutions » fait (#508) — 5 modèles **publiés** en prod, fiche `9217dfaa` encore en
+  **brouillon** ; lots droites, lectures graphiques, statistiques **pas commencés** · **Prochaine action** : phase 0
+  du lot « Droites » (§ Suite) : relever les modèles de seconde réutilisables en prod, proposer la liste à David ·
+  **En attente de David** : questions 2 à 4 (§ Questions ouvertes) ; la 1 est tranchée par `CONTEXT.md` (« Série »
+  = composition de questions, « Série figée » = exercice de fiche d'automatismes) · **Pièges en cours** : question 3
+  (`==` dans `conditions`) non revérifiée depuis le 2026-09-28 · **Worktree / branche** : aucun (journal seul).
+- Hors de ce chantier, même niveau : 18 fiches « Entraînement technique » / « Applications » de 1re spé en
+  brouillon depuis septembre, à relire et publier par David (`docs/pratiques/fiches-exercices.md` § 1, § 3).
 
 ## Décisions de David (figées)
 
@@ -34,7 +47,7 @@ fiche régénérée depuis la base, compilée par le compilateur de prod, 0 déb
 
 1. **Collision de vocabulaire « série ».** `CONTEXT.md` définit désormais **Série** = exercice de
    fiche fait d'instances figées (ADR 0011). Mais la spec en attente
-   [`series-de-questions-dans-un-chapitre-spec.md`](series-de-questions-dans-un-chapitre-spec.md)
+   [`series-de-questions-dans-un-chapitre-spec.md`](../archive/wip/series-de-questions-dans-un-chapitre-spec.md)
    (2026-09-14) appelle « série » une évaluation interactive (`assessments`). Deux sens pour un même
    mot : faire trancher lequel garde « série » et renommer l'autre (puis corriger `CONTEXT.md`).
 2. **Modèle 5 (évolution répétée)** : `(1+0{,}03)^5`, `(103/100)^5` sont jugés `bad_form` (calcul
