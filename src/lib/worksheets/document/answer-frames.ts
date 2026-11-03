@@ -147,8 +147,9 @@ function nodeLines(node: ASTNode): number {
 			// Bloc ```choix : une ligne par choix
 			return node.choices.length;
 		case 'ranger':
-			// Bloc ```ranger : la ligne des étiquettes, puis celle des places
-			return 2;
+			// Bloc ```ranger : la ligne des étiquettes, puis celle des places ; en étapes
+			// (`signe: aucun`), une ligne par étiquette, puis une par place
+			return node.sign === 'aucun' ? 2 * node.labels.length : 2;
 		default:
 			// Nœud en ligne isolé : une ligne de texte
 			return inlineLines([node]);

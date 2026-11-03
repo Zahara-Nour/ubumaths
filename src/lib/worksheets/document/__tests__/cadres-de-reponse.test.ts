@@ -98,6 +98,13 @@ describe('taille estimée d’après la longueur de la réponse', () => {
 		expect(answerLines(parseMarkdown(text).children)).toBe(1);
 	});
 
+	it('étiquettes à ranger : une rangée de chaque ; en étapes, une ligne par étiquette et par place', () => {
+		const row = ['```ranger', '- 1', '- 2', '- 3', '```'].join('\n');
+		const steps = ['```ranger', 'signe: aucun', '- a', '- b', '- c', '```'].join('\n');
+		expect(answerLines(parseMarkdown(row).children)).toBe(2);
+		expect(answerLines(parseMarkdown(steps).children)).toBe(6);
+	});
+
 	it('hauteurs : petit < moyen < grand', () => {
 		expect(ANSWER_FRAME_HEIGHT_CM.small).toBeLessThan(ANSWER_FRAME_HEIGHT_CM.medium);
 		expect(ANSWER_FRAME_HEIGHT_CM.medium).toBeLessThan(ANSWER_FRAME_HEIGHT_CM.large);

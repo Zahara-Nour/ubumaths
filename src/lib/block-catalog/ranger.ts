@@ -14,7 +14,7 @@ export const rangerEntry: BlockCatalogEntry = {
 	fences: ['ranger'],
 	nodeType: 'ranger',
 	summary:
-		'Des nombres (ou des mots) sur des étiquettes : l’élève les range dans l’ordre croissant ou décroissant.',
+		'Des nombres (ou des mots) sur des étiquettes : l’élève les range dans l’ordre croissant ou décroissant, ou remet dans l’ordre les étapes d’une démonstration.',
 	intro:
 		'Écrivez les étiquettes dans le BON ordre, une par ligne. L’élève les voit mélangées (jamais déjà rangées, ni à l’envers) et les pose sur les places, au doigt ou à la souris : en les glissant, ou en touchant l’étiquette puis la place. Une place prise : les deux étiquettes s’échangent. Il ne recopie rien : il est jugé sur l’étiquette posée, une place à la fois (note partielle). Sur la fiche PDF, les étiquettes puis les places vides : l’enfant écrit.',
 	settingGroups: [
@@ -30,9 +30,10 @@ export const rangerEntry: BlockCatalogEntry = {
 				},
 				{
 					key: 'signe',
-					values: '< | >',
+					values: '< | > | aucun',
 					defaultValue: '<',
-					description: '< : du plus petit au plus grand ; > : du plus grand au plus petit.'
+					description:
+						'< : du plus petit au plus grand ; > : du plus grand au plus petit ; aucun : des étapes à remettre dans l’ordre (démonstration), places numérotées l’une sous l’autre, sans signe.'
 				}
 			]
 		}
@@ -48,6 +49,19 @@ export const rangerEntry: BlockCatalogEntry = {
 			title: 'Ordre décroissant',
 			source: fence('ranger', 'signe: >', '- 1 200', '- 1 020', '- 1 002', '- 120'),
 			explanation: 'Toujours écrites dans le bon ordre : ici du plus grand au plus petit.'
+		},
+		{
+			title: 'Étapes d’une démonstration',
+			source: fence(
+				'ranger',
+				'signe: aucun',
+				'- $(a+h)^2-a^2=2ah+h^2$',
+				'- $\\dfrac{f(a+h)-f(a)}{h}=2a+h$',
+				'- $\\lim\\limits_{h\\to 0}(2a+h)=2a$',
+				"- donc $f'(a)=2a$"
+			),
+			explanation:
+				'Une étape par ligne, dans le bon ordre. Ne gardez que des étapes qui ne peuvent pas permuter (chacune découle de la précédente) : sinon un élève juste serait compté faux. Une étape interchangeable va dans l’énoncé.'
 		},
 		{
 			title: 'Deux écritures d’un nombre',
@@ -72,8 +86,8 @@ export const rangerEntry: BlockCatalogEntry = {
 		{
 			title: 'Signe inconnu',
 			source: fence('ranger', 'signe: ≤', '- 1', '- 2'),
-			message: 'signe: écrire < (croissant) ou > (décroissant)',
-			explanation: 'Seuls < et > sont compris.'
+			message: 'signe: écrire < (croissant), > (décroissant) ou aucun (étapes)',
+			explanation: 'Seuls <, > et aucun sont compris.'
 		}
 	],
 	tryIt: fence('ranger', '- 0,25', '- 0,3', '- 0,45', '- 1,2')

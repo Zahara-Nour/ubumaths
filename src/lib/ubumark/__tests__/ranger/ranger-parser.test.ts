@@ -39,6 +39,12 @@ describe('lecture du corps d’un bloc ranger', () => {
 		expect(spec.errors).toEqual([]);
 	});
 
+	it('signe: aucun (étapes d’une démonstration, sans signe entre les places)', () => {
+		const spec = parseRangerBody(['signe: aucun', '- a', '- b', '- c']);
+		expect(spec.sign).toBe('aucun');
+		expect(spec.errors).toEqual([]);
+	});
+
 	it('case: N lue (posée par le générateur)', () => {
 		expect(parseRangerBody(['case: 4', '- a', '- b']).caseIndex).toBe(4);
 	});
@@ -70,7 +76,7 @@ describe('lecture du corps d’un bloc ranger', () => {
 
 	it('signe inconnu : refusé', () => {
 		expect(parseRangerBody(['signe: =', '- 1', '- 2']).errors).toContain(
-			'signe: écrire < (croissant) ou > (décroissant)'
+			'signe: écrire < (croissant), > (décroissant) ou aucun (étapes)'
 		);
 	});
 
@@ -135,6 +141,9 @@ describe('nœud et réécriture', () => {
 		expect(serializeRangerBlock({ caseIndex: 0, sign: '>', labels: ['1', '9'] })).toBe(
 			block('case: 0', 'signe: >', '- 1', '- 9')
 		);
+		expect(serializeRangerBlock({ caseIndex: 1, sign: 'aucun', labels: ['b', 'a'] })).toBe(
+			block('case: 1', 'signe: aucun', '- b', '- a')
+		);
 	});
 
 	it('replaceRangerBlocks : le reste du texte intact', () => {
@@ -178,6 +187,22 @@ describe('PDF (Typst)', () => {
 		expect(labels).toEqual(['4', '9', '1']);
 		expect(typst.match(/ranger-place[,)]/g)).toHaveLength(3);
 		expect(typst.match(/\$>\$/g)).toHaveLength(2);
+	});
+
+	it('signe: aucun : aucun signe, les places en colonne, numérotées', () => {
+		const typst = generateTypst(
+			parseMarkdown(block('case: 0', 'signe: aucun', '- b', '- c', '- a'))
+		);
+		const labels = [...typst.matchAll(/ranger-etiquette\[(.*?)\]/g)].map((m) => m[1].trim());
+		expect(labels).toEqual(['b', 'c', 'a']);
+		expect(typst).not.toMatch(/\$[<>]\$/);
+		expect(typst.match(/ranger-etape\(\d\)/g)).toEqual([
+			'ranger-etape(1)',
+			'ranger-etape(2)',
+			'ranger-etape(3)'
+		]);
+		// Une colonne : places sur toute la largeur, l'une sous l'autre
+		expect(typst).toMatch(/grid\(columns: 1,[^\n]*ranger-etape/);
 	});
 
 	it('hors question : le même mélange fixe qu’à l’écran', () => {

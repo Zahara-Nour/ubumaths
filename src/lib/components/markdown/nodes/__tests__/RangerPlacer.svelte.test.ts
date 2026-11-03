@@ -66,6 +66,53 @@ describe('Étiquettes à ranger — le geste', () => {
 		expect(root.querySelector('.ranger-signe')?.textContent).toBe('<');
 	});
 
+	it('signe: aucun : places numérotées en colonne, aucun signe, consigne « étapes »', async () => {
+		const screen = await render(RangerPlacer, {
+			target: mainElement(),
+			props: {
+				node: shown('signe: aucun', '- b', '- c', '- a'),
+				answers: answersProbe(3).answers()
+			}
+		});
+		const root = screen.container;
+		expect(root.querySelectorAll('.ranger-signe')).toHaveLength(0);
+		expect([...root.querySelectorAll('.ranger-numero')].map((n) => n.textContent?.trim())).toEqual([
+			'1.',
+			'2.',
+			'3.'
+		]);
+		// Une colonne : chaque place sous la précédente
+		const [first, second] = places(root).map((p) => p.getBoundingClientRect());
+		expect(second.top).toBeGreaterThanOrEqual(first.bottom);
+		expect(root.textContent).toContain(
+			'Étapes à remettre dans l’ordre, de la première à la dernière'
+		);
+		expect(root.textContent).not.toContain('plus petit que');
+	});
+
+	it('signe: aucun : une étape longue passe à la ligne, rien ne déborde à 360 px', async () => {
+		const main = mainElement();
+		main.style.width = '360px';
+		const long = `- ${'une étape de démonstration assez longue '.repeat(4)}`;
+		const screen = await render(RangerPlacer, {
+			target: main,
+			props: {
+				node: shown('signe: aucun', long, '- b', '- c'),
+				answers: answersProbe(3).answers()
+			}
+		});
+		const root = screen.container;
+		await userEvent.click(tray(root)[0]);
+		await userEvent.click(places(root)[0]);
+		const ranger = root.querySelector<HTMLElement>('.ranger');
+		expect(ranger?.scrollWidth).toBeLessThanOrEqual(360);
+		for (const box of [...tray(root), ...places(root)]) {
+			expect(box.getBoundingClientRect().right).toBeLessThanOrEqual(
+				main.getBoundingClientRect().right + 0.5
+			);
+		}
+	});
+
 	it('toucher une étiquette puis une place : posée, réponse = sa position affichée', async () => {
 		const { probe, answers } = answersProbe(3);
 		const screen = await render(RangerPlacer, {

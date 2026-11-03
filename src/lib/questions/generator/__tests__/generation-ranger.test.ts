@@ -131,6 +131,13 @@ describe('étiquettes à ranger : les cases et leurs réponses', () => {
 		expect(shownBlock(instance).sign).toBe('>');
 	});
 
+	it('signe: aucun gardé dans le bloc affiché', () => {
+		const instance = generate(
+			template({ statement: ranger('signe: aucun', '- a', '- b', '- c', '- d') })
+		);
+		expect(shownBlock(instance).sign).toBe('aucun');
+	});
+
 	it('variables résolues avant le mélange', () => {
 		const instance = generate(
 			template({

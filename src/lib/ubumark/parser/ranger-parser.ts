@@ -11,7 +11,8 @@
  * - $\frac{6}{7}$
  * ```
  *
- * `signe: <` (défaut, croissant) ou `signe: >` (décroissant), en tête. Chaque
+ * `signe: <` (défaut, croissant), `signe: >` (décroissant) ou `signe: aucun`
+ * (étapes d'une démonstration : places numérotées en colonne), en tête. Chaque
  * étiquette est de l'ubumark sur une ligne (formules, variables résolues au
  * tirage). De 2 à 8 étiquettes, deux à deux différentes : l'élève est jugé sur
  * l'étiquette posée, jamais sur sa valeur.
@@ -100,8 +101,8 @@ export function hasRangerToPlace(markdown: string): boolean {
 
 function readSign(value: string, errors: string[]): RangerSign | undefined {
 	const sign = value.trim();
-	if (sign === '<' || sign === '>') return sign;
-	errors.push('signe: écrire < (croissant) ou > (décroissant)');
+	if (sign === '<' || sign === '>' || sign === 'aucun') return sign;
+	errors.push('signe: écrire < (croissant), > (décroissant) ou aucun (étapes)');
 	return undefined;
 }
 
@@ -178,7 +179,7 @@ export function parseRangerBlock(
 }
 
 /**
- * Écrit le bloc d'une instance : `case: N`, `signe: >` s'il y a lieu, les
+ * Écrit le bloc d'une instance : `case: N`, `signe: >` ou `signe: aucun` s'il y a lieu, les
  * étiquettes dans l'ordre donné (l'ordre AFFICHÉ)
  */
 export function serializeRangerBlock(block: {
@@ -189,7 +190,7 @@ export function serializeRangerBlock(block: {
 	return [
 		'```ranger',
 		`case: ${block.caseIndex}`,
-		...(block.sign === '>' ? ['signe: >'] : []),
+		...(block.sign === '<' ? [] : [`signe: ${block.sign}`]),
 		...block.labels.map((label) => `- ${label}`),
 		'```'
 	].join('\n');
