@@ -13,8 +13,8 @@ _Mis à jour le 2026-11-04, à l'ouverture de la suite « approfondissements » 
 
 - **État** : démonstrations terminées, lots 1 à 4 en prod (#2341, #2349, 0.68.0). Suite ouverte par David :
   les **20 approfondissements** du BO (§ 9 ; 240, 241, 242 et 381 sont reclassés, le § 1 les comptait parmi les algorithmes).
-- **Prochaine action** : phase 0 du § 9 (Q1 à Q5), posée le 2026-11-04 ; attendre les réponses avant de coder.
-- **En attente de David** : Q1-Q5 du § 9 ; vérification à l'œil en prod (ligne du 2026-11-03 de
+- **Prochaine action** : lot 5 (suites : 240, 241, 381, 242), D3 du § 9.
+- **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de
   `docs/wip/verifications-manuelles.md`) ; suppression des branches distantes `docs/questions-1spe-demonstrations`,
   `feat/questions-1spe-demonstrations` (rien à perdre ; `git push --delete` refusé par le classifieur le 2026-11-04).
 - **Pièges en cours** : `create-questions` lit `.env` = PROD → forcer les variables de `.env.local`.
@@ -314,3 +314,9 @@ case ouverte et case choix.
 Lots proposés après validation : (5) suites (240, 241, 381, 242) ; (6) algèbre (256, 387, 257, 258) ;
 (7) exponentielle (300, 301, 302) ; (8) géométrie (324, 325, 326, 334, 335, 420) ; (9) probabilités
 (345, 346, 361).
+
+**D3 (David, 2026-11-04, « go » puis « Oui aux 5 recos »)** : Q1 les 20 approfondissements ; Q2 preuves (300-302,
+325, 326, en partie 257 et 361) à trous + variation « étapes à ranger », les autres en exercices d'application à
+valeurs tirées (2-3 variations), formule donnée dans l'énoncé pour 241 et 381 ; Q3 un modèle par point, tagué sur
+son point P, catégorie neuve « Approfondissements » par domaine ; Q4 publiés comme les démonstrations ; Q5 accès :
+personne de plus (brouillons ; migration de nœud et de tags seulement). Lots 5 à 9 dans l'ordre du § 9.
