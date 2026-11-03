@@ -1,6 +1,6 @@
 # Chantier garde-niveaux-tags — alerte quand un niveau de tag manque à `grades`
 
-Suite du chantier `questions-1techno-grades` (journal `docs/wip/questions-1techno-grades-progress.md`, #2280) :
+Suite du chantier `questions-1techno-grades` (journal `docs/archive/wip/questions-1techno-grades-progress.md`, #2280) :
 74 modèles tagués d'un point sans le niveau de ce point dans `grades`, invisibles du cahier de texte à ce niveau.
 Option (a) retenue par David le 2026-11-03 : une garde d'alerte, rien ne change en base ; (b), un trigger, seulement
 si l'oubli revient.

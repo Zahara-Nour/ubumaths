@@ -1,24 +1,17 @@
 # Chantier questions-1techno-grades — niveau `1_TECHNO` des modèles tagués 1TECHNO
 
-Né de la clôture de `questions-1spe-tangente` ([journal archivé](../archive/wip/questions-1spe-tangente-progress.md),
+Né de la clôture de `questions-1spe-tangente` ([journal archivé](questions-1spe-tangente-progress.md),
 § 5) : les voisins Tangente tagués 1TECHNO-079 n'avaient que `grades = ['1_SPE']`. Le relevé montre que c'est
 le cas de 53 modèles.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2280 (mergée, migrée) ; #2285 ouverte._
+_Mis à jour le 2026-11-03, après #2285 (mergée, migrée) — chantier CLOS, journal archivé._
 
-- **État** : #2280 en prod (53 modèles + `1_TECHNO`, vérifié, trigger `O`). **#2285 OUVERTE**, CI en cours au
-  `/clear` : deux migrations, `20261103084609_questions_1gen_grades` (21 modèles + `1_GEN`) et
-  `20261103085358_questions_terminale_grades` (07bce646 + T_COMP, 4ff9d049 + T_TECHNO) ; tests rouges sans, 9/9 avec ;
-  deux audits `security-auditor` sans finding bloquant · **Prochaine action** : `gh pr checks 2285` (suivre le RUN
-  du dernier commit de la branche) → verte : `pnpm check:migrations --pr 2285`, `gh pr merge 2285 --merge`, puis
-  depuis le dépôt principal `git pull --rebase` + `pnpm db:migrate` (2 migrations attendues seules) ; vérifier en
-  prod (plus aucun écart hors exceptions : `pnpm tsx scripts/questions/garde-niveaux-tags.ts` depuis le worktree
-  `garde-niveaux-tags`, trigger `O`) · **En attente de David** : rien · **Pièges en cours** : `db:migrate` seulement
-  depuis le dépôt principal (worktree non lié) ; `gh pr checks --watch` rend la main trop tôt · **Worktree /
-  branche** : `../ubumaths-wt-questions-1techno-grades`, `feat/questions-1gen-grades`. Chantier frère :
-  `garde-niveaux-tags` (#2284).
+- **État** : clos. #2280 (53 modèles + `1_TECHNO`) et #2285 (21 modèles + `1_GEN` ; 07bce646 + T_COMP,
+  4ff9d049 + T_TECHNO) en prod. Garde `garde-niveaux-tags.ts` en prod : 1892 modèles tagués, aucun niveau
+  manquant hors les 5 exceptions voulues · **Prochaine action** : aucune · **En attente de David** : rien ·
+  **Pièges en cours** : aucun · **Worktree / branche** : supprimés.
 
 ## 1. Relevé MCP prod (2026-11-03)
 
@@ -71,3 +64,12 @@ Trouvés par la garde (#2284), tranchés par David (journal `garde-niveaux-tags`
 (TCOMP-204), 4ff9d049 `[T_SPE, T_COMP]` + T_TECHNO (TTECHNO-089). Migration à part, même PR (un seul `db:migrate`) :
 `20261103085358_questions_terminale_grades.sql` + `tests/integration/questions-terminale-grades.test.ts`, rouge sans
 (4 échecs, 5 sautés), vert avec (9/9). Les 5 brouillons de seconde restent `['2']` (questions-2de Q7 c).
+
+## 8. #2285 en prod, clôture (2026-11-03)
+
+CI de #2285 : un test client sans rapport avec la PR (`page-demo-lexique`) rouge au premier run, vert à la
+relance du job. `check:migrations` OK, merge. `db:migrate` refusé (« inserted before » : une migration plus
+récente d'une autre session déjà en prod) → `db push --dry-run --include-all` (mes 2 migrations seules), puis
+`--include-all` lancé par David. Garde en prod : ✅ 1892 modèles tagués (2061 tags), aucun niveau manquant ;
+5 écarts voulus (brouillons de seconde, questions-2de Q7 c). Rien de durable à verser dans `docs/systeme/` :
+la règle et sa garde vivent dans `scripts/lib/niveaux-des-tags.ts` (chantier `garde-niveaux-tags`).
