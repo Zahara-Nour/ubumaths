@@ -101,6 +101,8 @@ describe('Vecteur à tracer — le geste', () => {
 		tapAt(root, 3, -2);
 		await expect.poll(() => probe.value).toBe('0;0/3;-2');
 		await expect.poll(() => arrows(root)).toBe(1);
+		// La pointe n'est pas cachée : seul le disque de l'origine reste
+		expect(posed(root)).toBe(1);
 		expect(zone(root).getAttribute('aria-valuetext')).toBe('extrémité en (3 ; -2)');
 	});
 
@@ -119,7 +121,8 @@ describe('Vecteur à tracer — le geste', () => {
 		tapAt(root, 2, 0);
 		await expect.poll(() => probe.value).toBe('-1;2/2;0');
 		await expect.poll(() => arrows(root)).toBe(1);
-		expect(posed(root)).toBe(1);
+		// A est dessiné par points: ; l'extrémité, sous la pointe, n'a pas de disque
+		expect(posed(root)).toBe(0);
 	});
 
 	it('jamais les coordonnées dans le DOM ni dans le dessin avant la correction', async () => {
@@ -157,8 +160,9 @@ describe('Vecteur à tracer — correction', () => {
 			props: { node: node(...WINDOW, ...IMPOSED), answers: [locked('-1;2/0;3', false)] }
 		});
 		const root = screen.container;
-		expect(root.textContent).toContain('Ta flèche représente le vecteur (1 ; 1), pas');
-		expect(root.querySelector('p math-span')).not.toBeNull();
+		const sentence = root.querySelector('p math-span')!.closest('p')!;
+		// Une espace entre le texte et la formule (« pas u⃗ », jamais « pasu⃗ »)
+		expect(sentence.textContent).toMatch(/^Ta flèche représente le vecteur \(1 ; 1\), pas\s+\S/);
 	});
 
 	it('extrémité manquante (origine imposée) : la phrase dédiée', async () => {

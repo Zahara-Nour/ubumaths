@@ -148,10 +148,14 @@
 		caseIndex: undefined
 	});
 
-	/** Points de l'élève (l'origine imposée est déjà dessinée par `points:`) */
+	/**
+	 * Points de l'élève. Vecteur : l'origine imposée est déjà dessinée par
+	 * `points:` ; l'extrémité n'a plus de disque dès que la flèche est tracée (il
+	 * cacherait la pointe)
+	 */
 	let marks = $derived<CourbeMark[]>(
 		positions.flatMap((p, i) =>
-			p === null || isFixed(i)
+			p === null || isFixed(i) || (i === VECTOR_END && traces.length > 0 && vectoring)
 				? []
 				: [{ name: targets[i]?.name ?? '', x: p.x, y: p.y, color: STUDENT_COLOR }]
 		)
@@ -469,8 +473,11 @@
 	{#if verdict === false}
 		{#each mistakes as mistake (mistake.text)}
 			<p class="text-sm">
-				{mistake.text}{#if mistake.latex !== undefined}
-					<MathInline expression={mistake.latex} syntax="latex" />.{/if}
+				<!-- L'espace avant la formule est écrite : Svelte retire celle du gabarit -->
+				{mistake.text}{#if mistake.latex !== undefined}{' '}<MathInline
+						expression={mistake.latex}
+						syntax="latex"
+					/>.{/if}
 			</p>
 		{/each}
 		<div class="placer-correction flex w-full flex-col items-center gap-1">
