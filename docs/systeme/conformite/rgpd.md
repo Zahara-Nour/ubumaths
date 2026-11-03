@@ -17,7 +17,7 @@ couvre:
 
 > ⚠️ **DOCUMENT HISTORIQUE (2026-01-16), partiellement daté.** État **actuel** et écarts confrontés au
 > code dans [`README.md`](README.md). Drifts connus : hébergement US→**UE (eu-west-3)** ; emails
-> consentement Gmail→**Brevo** ; grâce 30 j→**date fixe 2026-06-30** ; rétention **pédagogique retirée
+> consentement Gmail→**Brevo** ; grâce **30 j glissants** (date fixe retirée) ; rétention **pédagogique retirée
 > du cron** ; `audit_logs` 730 j→**60 j** ; IA **Groq actif** + **HuggingFace** à documenter.
 
 > **Date d'audit** : 2026-01-16

@@ -1,10 +1,8 @@
 # Registre des Sous-Traitants - UbuMaths
 
-> ⚠️ **DOCUMENT DATÉ (2026-01-16).** À compléter : **HuggingFace** (RAG embeddings) absent, **Groq**
-> désormais actif en prod, **Supabase** maintenant **UE (eu-west-3)**, **Vercel Analytics** sans cookie
-> à détailler. Voir [`README.md`](README.md) §7.
-> HuggingFace : **inactif en prod** au 2026-10-13 (`HF_API_KEY` absente, corpus vide ; aucun message
-> envoyé sans extrait lisible, T16). À déclarer ici **avant** de définir la clé.
+> **Complété le 2026-11-03** (décision de David, écart T13) : HuggingFace ajouté (**non activé**),
+> Vercel Analytics / Speed Insights détaillés, Supabase en **eu-west-3 (Paris)**. Les sections
+> détaillées 3.1 à 3.6 restent celles de janvier 2026, hors ces points.
 
 > **Article RGPD** : Art. 28 - Sous-traitant
 > **Derniere mise a jour** : 2026-01-16
@@ -37,14 +35,16 @@ Conformement a l'article 28 du RGPD, UbuMaths documente tous les sous-traitants 
 
 ## 2. Liste des sous-traitants
 
-| Sous-traitant    | Fonction                | Donnees traitees      | Localisation   | DPA       |
-| ---------------- | ----------------------- | --------------------- | -------------- | --------- |
-| **Supabase**     | Base de donnees, Auth   | Toutes les donnees    | UE (Frankfurt) | Oui       |
-| **Vercel**       | Hebergement, CDN        | Logs, cookies session | USA + UE       | Oui       |
-| **Google Cloud** | OAuth, Classroom, Drive | Tokens, fichiers      | USA + UE       | Oui       |
-| **Brevo**        | Emails transactionnels  | Emails destinataires  | UE (France)    | Oui       |
-| **Groq**         | API LLM (tuteur IA)     | Messages tuteur       | USA            | Oui       |
-| **Sentry**       | Monitoring erreurs      | Logs erreurs, user_id | USA + UE       | Optionnel |
+| Sous-traitant                          | Fonction                                         | Donnees traitees                              | Localisation | DPA                         |
+| -------------------------------------- | ------------------------------------------------ | --------------------------------------------- | ------------ | --------------------------- |
+| **Supabase**                           | Base de donnees, Auth                            | Toutes les donnees                            | UE (Paris)   | Oui                         |
+| **Vercel**                             | Hebergement, CDN                                 | Logs, cookies session                         | USA + UE     | Oui                         |
+| **Google Cloud**                       | OAuth, Classroom, Drive                          | Tokens, fichiers                              | USA + UE     | Oui                         |
+| **Brevo**                              | Emails transactionnels                           | Emails destinataires                          | UE (France)  | Oui                         |
+| **Groq**                               | API LLM (tuteur IA)                              | Messages tuteur                               | USA          | Oui                         |
+| **Sentry**                             | Monitoring erreurs                               | Logs erreurs, user_id                         | USA + UE     | Optionnel                   |
+| **Vercel** (Analytics, Speed Insights) | Mesure d'audience et de performance, sans cookie | Pages vues, métriques de chargement, agrégées | USA + UE     | DPA Vercel                  |
+| **HuggingFace**                        | Embeddings RAG (tuteur IA) — **non activé**      | Extraits de cours (aucun message d'élève)     | USA          | À conclure avant activation |
 
 ---
 
@@ -70,7 +70,7 @@ Conformement a l'article 28 du RGPD, UbuMaths documente tous les sous-traitants 
 
 #### Localisation des donnees
 
-- **Region principale** : `eu-central-1` (Frankfurt, Allemagne)
+- **Region principale** : `eu-west-3` (Paris, France) — migration de `eu-central-1` faite en 2026
 - **Backups** : Meme region UE
 - **Pas de transfert hors UE** pour les donnees de production
 
@@ -131,6 +131,19 @@ Le DPA Vercel est disponible a : https://vercel.com/legal/dpa
 
 - [x] DPA standard accepte via ToS
 - [ ] Configurer la region preferee en UE si possible
+
+#### Vercel Analytics et Speed Insights
+
+Chargés côté navigateur par `src/routes/+layout.svelte` (`@vercel/analytics`,
+`@vercel/speed-insights`).
+
+- **Finalité** : mesure d'audience (pages vues) et de performance (temps de chargement).
+- **Sans cookie** ni identifiant persistant : Vercel compte les visites par une empreinte
+  quotidienne non réversible, renouvelée chaque jour.
+- **Données** : URL de la page, référent, pays, type d'appareil et de navigateur, métriques Web
+  Vitals ; agrégées, sans lien avec un compte.
+- **Base légale** : intérêt légitime (mesure d'audience exemptée de consentement, sans cookie).
+- **Couvert par** le même DPA Vercel.
 
 ---
 
@@ -274,6 +287,21 @@ DPA disponible sur demande via le dashboard Brevo.
 
 ---
 
+### 3.6 bis HuggingFace — **non activé**
+
+| Attribut           | Valeur                                                     |
+| ------------------ | ---------------------------------------------------------- |
+| **Raison sociale** | Hugging Face, Inc.                                         |
+| **Site web**       | https://huggingface.co                                     |
+| **Service**        | API d'inférence, modèle `intfloat/multilingual-e5-large`   |
+| **Code**           | `src/lib/server/rag/embeddings.ts`                         |
+| **Statut**         | **Non activé en prod** : `HF_API_KEY` absente, corpus vide |
+
+- **Données envoyées une fois activé** : des extraits de cours à transformer en vecteurs ; aucun
+  message d'élève n'est envoyé sans extrait lisible.
+- **Avant de définir `HF_API_KEY`** : conclure le DPA, vérifier l'absence de conservation des
+  données, mettre à jour ce registre et la page de confidentialité.
+
 ### 3.6 Sentry (Functional Software Inc.)
 
 | Attribut           | Valeur                                                     |
@@ -348,11 +376,12 @@ La Commission europeenne a reconnu un niveau de protection adequat pour :
 
 ### Historique des modifications
 
-| Date       | Version | Modification                                        |
-| ---------- | ------- | --------------------------------------------------- |
-| 2026-01-16 | 1.2     | Strategie hybride: Brevo (parents) + Gmail (eleves) |
-| 2026-01-16 | 1.1     | Ajout Brevo pour emails consentement parental       |
-| 2026-01-16 | 1.0     | Creation initiale du registre                       |
+| Date       | Version | Modification                                                   |
+| ---------- | ------- | -------------------------------------------------------------- |
+| 2026-11-03 | 1.3     | HuggingFace (non activé), Vercel Analytics, Supabase eu-west-3 |
+| 2026-01-16 | 1.2     | Strategie hybride: Brevo (parents) + Gmail (eleves)            |
+| 2026-01-16 | 1.1     | Ajout Brevo pour emails consentement parental                  |
+| 2026-01-16 | 1.0     | Creation initiale du registre                                  |
 
 ---
 

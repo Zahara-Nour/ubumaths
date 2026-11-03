@@ -19,8 +19,8 @@ couvre:
 > ⚠️ **Règle actuelle des niveaux** : tout niveau sauf 1re/Tle (base, 2026-10-01 ; code aligné le
 > 2026-10-10) — voir [`README.md`](README.md) §4. Ce document cite encore « grades 6-2 ».
 
-> ⚠️ **DOCUMENT DATÉ (2026-01-16).** Drifts actuels : période de grâce **= date fixe 2026-06-30** (et
-> non 30 jours) ; emails via **Brevo** (et non Gmail) ; **19** endpoints protégés (et non ~12). Voir
+> ⚠️ **DOCUMENT DATÉ (2026-01-16).** Drifts actuels : période de grâce **= 30 jours glissants** (la date
+> fixe 2026-06-30 a disparu) ; emails via **Brevo** (et non Gmail) ; **19** endpoints protégés (et non ~12). Voir
 > [`README.md`](README.md) §4.
 
 > **Adresse du parent et lien (2026-10-21, PR 3 de l'inscription par le parent)** : l'adresse
