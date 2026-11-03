@@ -38,3 +38,9 @@ Même correction possible, même question d'accès (classes de 1re générale).
 Ajoute `1_TECHNO` aux 53 (ids en dur, niveaux du relevé), `updated_at` préservé ; garde : niveaux EXACTEMENT
 ceux du relevé, tout ou rien ; rollback en commentaire. `tests/integration/questions-1techno-grades.test.ts` :
 rouge sans la migration (4 échecs + suite nominale tombée au `beforeAll`), vert avec (9/9).
+
+## 5. Audit (2026-11-03)
+
+`security-auditor` : aucun finding bloquant. F1 (les 5 brouillons apparaissent aussi au sélecteur du prof,
+accès inchangé) : commentaire de la migration précisé. F2 (atomicité de `db push`) : après `db:migrate`,
+vérifier `select tgenabled from pg_trigger where tgname = 'update_question_templates_updated_at'` = `O`.

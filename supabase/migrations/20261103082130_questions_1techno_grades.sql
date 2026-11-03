@@ -25,8 +25,10 @@
 -- Accès : aucune règle (policy) ne change. Question posée à David AVANT le SQL (« qui pourra voir
 -- quoi, qu'il ne voyait pas avant ? »), tranchée le 2026-11-03 : élargissement voulu — le prof et
 -- les élèves d'une classe de 1re technologique voient ces modèles publiés dans le cahier de texte
--- et les listes filtrées par niveau ; personne ne perd rien. Les brouillons restent invisibles des
--- élèves.
+-- et les listes filtrées par niveau ; personne ne perd rien. Les 5 brouillons apparaissent aussi dans
+-- le sélecteur du cahier de texte du prof (qui les lisait déjà par la RLS : un tri, pas un droit) ;
+-- ils restent invisibles des élèves et d'anon (policies bornées à `status = 'published'`).
+-- Audit `security-auditor` du 2026-11-03 : aucun finding bloquant.
 --
 -- Rollback (aucune donnée d'élève). Il rend les 53 modèles à leurs niveaux du relevé. Garde : il
 -- refuse si un modèle n'est plus EXACTEMENT aux niveaux posés par la migration. Bloc éprouvé par
