@@ -62,6 +62,8 @@ const EXPECTED_REGEX =
 const BOTH_MISSING = 'Il faut placer l’origine et l’extrémité.';
 const END_MISSING = 'Il faut placer l’extrémité.';
 const SAME_POINT = 'Ton origine et ton extrémité sont au même endroit.';
+/** Origine imposée, bon vecteur ailleurs : réponse que l'écran ne produit pas (origine posée d'office) */
+const WRONG_ORIGIN = 'Ta flèche ne part pas de l’origine imposée.';
 
 // Functions
 
@@ -126,7 +128,7 @@ export function tracedVectorMistake(
 	if (d.x === 0 && d.y === 0) return { text: SAME_POINT };
 	const { u } = vector;
 	const fromOrigin = vector.origin === undefined || sameVector(p, vector.origin);
-	if (fromOrigin && sameVector(d, u)) return null;
+	if (sameVector(d, u)) return fromOrigin ? null : { text: WRONG_ORIGIN };
 	const drawn = `Ta flèche représente le vecteur ${pointText(d.x, d.y)}`;
 	if (sameVector(d, { x: -u.x, y: -u.y })) {
 		return {

@@ -94,6 +94,7 @@ describe('vecteur à tracer : la case et sa réponse', () => {
 	it('`tracer: vecteur ?` écrit dans un modèle : refusé', () => {
 		expect(hasMaskedValue('tracer: vecteur u = ? depuis A')).toBe(true);
 		expect(hasMaskedValue('tracer: vecteur (3 ; -2) depuis A')).toBe(false);
+		expect(hasMaskedValue('tracer: vecteur?')).toBe(true);
 		expect(
 			generationErrors(template({ statement: courbe(...WINDOW, 'tracer: vecteur ?') }))
 		).toMatch(/« \? » à la place d’une valeur/);
@@ -120,6 +121,13 @@ describe('évaluation notée : l’énoncé envoyé ne dit pas le vecteur', () =
 	it('garde : un vecteur non masqué est signalé, masqué il ne l’est plus', () => {
 		expect(findUnmaskedAnswers(STATEMENT)).toEqual(['courbe']);
 		expect(findUnmaskedAnswers(maskGestureAnswers(STATEMENT))).toEqual([]);
+	});
+
+	it('écrit sans espace (`vecteur(3;-2)`) : masqué en `vecteur ?`, la garde se tait', () => {
+		const statement = courbe(...WINDOW, 'tracer: vecteur(3;-2)');
+		const masked = maskGestureAnswers(statement);
+		expect(masked).toContain('tracer: vecteur ?');
+		expect(findUnmaskedAnswers(masked)).toEqual([]);
 	});
 
 	it('la droite à tracer se masque toujours en entier', () => {

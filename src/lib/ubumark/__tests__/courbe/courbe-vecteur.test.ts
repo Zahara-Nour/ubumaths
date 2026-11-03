@@ -174,6 +174,12 @@ describe('phrases de la correction', () => {
 		});
 	});
 
+	it('origine imposée, bon vecteur mais autre origine : la phrase le dit', () => {
+		expect(tracedVectorMistake('0;0/3;-2', { ...U, origin: { x: -1, y: 2 } })).toEqual({
+			text: 'Ta flèche ne part pas de l’origine imposée.'
+		});
+	});
+
 	it('décimaux en virgule', () => {
 		expect(tracedVectorMistake('0;0/1;1', { u: { x: 1.5, y: 1 }, name: '' })?.text).toBe(
 			'Ta flèche représente le vecteur (1 ; 1), pas (1,5 ; 1).'

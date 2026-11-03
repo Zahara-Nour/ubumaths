@@ -31,8 +31,11 @@ const MASKED_DATUM_LINE = /=\s*\?(?:\s*;\s*\?)*\s*;?\s*$/;
 /** Valeur d'un vecteur à tracer : `vecteur u = (3 ; -2) depuis A` */
 const VECTOR_VALUE = /^\s*vecteur\b/i;
 
-/** `?` à la place des coordonnées d'un vecteur (`vecteur ?`, `vecteur u = ? depuis A`) */
-const MASKED_VECTOR_COORDS = /(?:^|[\s=])\?(?:\s|$)/;
+/**
+ * `?` à la place des coordonnées d'un vecteur (`vecteur ?`, `vecteur u = ? depuis A`,
+ * et `vecteur?` écrit collé)
+ */
+const MASKED_VECTOR_COORDS = /(?:^|[\s=]|vecteur)\?(?:\s|$)/i;
 
 /** La valeur est-elle celle d'un vecteur à tracer (`tracer: vecteur …`) ? */
 export function isVectorValue(value: string): boolean {
@@ -49,7 +52,8 @@ export function isMaskedVectorValue(value: string): boolean {
  * `vecteur`, son nom et l'origine imposée restent (l'écran en a besoin)
  */
 export function maskVectorValue(value: string): string {
-	return value.trim().replace(/\([^)]*\)/, MASKED_VALUE);
+	// Une espace avant le `?` : `vecteur(3;-2)` → `vecteur ?`, `u = (3 ; -2)` → `u = ?`
+	return value.trim().replace(/\s*\([^)]*\)/, ` ${MASKED_VALUE}`);
 }
 
 /** La valeur écrite est-elle masquée ? */
