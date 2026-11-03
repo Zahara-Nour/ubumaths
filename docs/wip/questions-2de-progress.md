@@ -6,20 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2283 (garde `\textcolor`) et la publication de 8 D + 6 anciens (§ 62)._
+_Mis à jour le 2026-11-03, après #2290 et la publication de 8 E (§ 62)._
 
-- **État** : 8 D (7) et les 6 anciens brouillons **publiés** (13/13, MCP). 8 E : 4 brouillons sur une
-  catégorie déjà prise (3e, 1re) → niveaux 2 et 6-8 validés par David ; PR `fix/niveaux-2de-probabilites-e`.
-- **Prochaine action** : merger la PR ; David : `update-published-questions.ts --lot niveaux-2de-probabilites
---publier`, puis `publier-lot --dir scripts/questions/2de-probabilites-e --publier` (simulation d'abord).
-  Ensuite : les 35 fichiers hors 2de (§ 58, accord de David : ce chantier, lots par niveau) ; § 61.
-- **En attente de David** : les deux `--publier` ci-dessus.
+- **État** : vague 8 bis **toute publiée** : 8 D (7), 6 anciens, 8 E (7, niveaux 2 et 6-8) — MCP.
+- **Prochaine action** : les 35 fichiers hors 2de (§ 58, accord de David : ce chantier, lots par
+  niveau, méthode du § 59 : `colt()`, régénérer, `update-published-questions.ts`) ; puis § 61.
+- **En attente de David** : rien.
 - **Pièges en cours** : `--publier`, `publier-lot`, `db:migrate` → David avec `!` ;
   `create-questions` apparie par (titre, thème, domaine, sous-domaine, **niveau**) : un changement de niveau
   passe par `update-published-questions.ts` (brouillons compris), sinon doublons ; `col()` en texte →
   `colt()` ; spec fraction = `\\frac{a}{b}` ; pas de ligne `Claude-Session:` ; une autre session écrit
   aussi dans ce journal (§ 61) : `git pull` avant d'éditer.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `fix/niveaux-2de-probabilites-e`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de` (HEAD détachée sur `origin/main`).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1568,3 +1566,6 @@ Avant de corriger : revérifier dans le code de rendu que `\textcolor` hors math
   instantanés `scripts/questions/2de-niveaux-probabilites-existants/` = export de la prod, `level` seul
   modifié. Générateur et fichiers de 8 E : seul `level` change. Simulation : 4 cibles, `level` seul, specs
   vertes.
+- **#2290 mergée** ; David a lancé le lot `niveaux-2de-probabilites` (4 niveaux, relus conformes) puis
+  `publier-lot --dir scripts/questions/2de-probabilites-e` : 7/7. MCP : 7/7 `published`, niveaux 2, 6, 7,
+  8 et 1, 4, 4 (inchangés).
