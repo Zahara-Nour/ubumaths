@@ -21,6 +21,7 @@ import { resolvedMarkdown } from '$lib/ubumark';
 import { resolveVariableExpression } from './variable-resolver';
 import { resolveColorReferences } from '../parser/color-parser';
 import type { RandomSource } from '$lib/utils/random';
+import type { DurationWriting } from '$lib/mathAST/tidy';
 import { parseCustomSafe, toLatex, type GenericFunctionConfig, type MathNode } from '$lib/mathAST';
 import type { CapitalPairs } from '$lib/mathAST/parser/types';
 import { parse as parseUnit } from '$lib/mathAST/units/parser';
@@ -353,11 +354,17 @@ export function resolveMarkdownContent(
 export function resolveExpression(
 	expression: string,
 	resolvedVariables: ResolvedVariable[],
-	random: RandomSource = Math.random
+	random: RandomSource = Math.random,
+	options?: {
+		/** `'single'` : une valeur (motif, borne, formule à lire), une durée reste UNE grandeur */
+		durations?: DurationWriting;
+	}
 ): string {
 	// Database now stores pure markdown syntax ({{...}}) directly
 	// No conversion needed anymore
-	let resolved = resolveVariableExpression(expression, resolvedVariables, random);
+	let resolved = resolveVariableExpression(expression, resolvedVariables, random, {
+		durations: options?.durations
+	});
 	// Also resolve color references
 	resolved = resolveColorReferences(resolved, random);
 	return resolved;

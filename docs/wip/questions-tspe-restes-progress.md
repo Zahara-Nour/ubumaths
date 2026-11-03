@@ -10,13 +10,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, 8c en prod (brouillons), migration en PR._
+_Mis à jour le 2026-11-03, après la publication du lot 8c._
 
-- **État** : lot 8 (D-L8 : 26 « à savoir ») ; **8a et 8b clos** (18 publiés) ; **8c** : #2269 mergée, 8 brouillons créés en prod, migration nœud + tag `20261103051912` en PR (test 10/10, rouge prouvé).
-- **Prochaine action** : `security-auditor` → `check:migrations --pr` → merge → `migration list --linked` puis `db:migrate` depuis le dépôt principal → relecture MCP → page à cocher (`page-a-cocher.ts --dir scripts/questions/tspe-8c-savoir`) → relecture de David → `publier-lot`.
+- **État** : ✅ **sous-chantier clos** : lot 7 et lot 8 (8a 11, 8b 7, 8c 8 : 26 « à savoir ») publiés en prod. Fin notée au § 18 de l'index.
+- **Prochaine action** : aucune ici. Les trois sous-chantiers sont clos ; le versement (durable → `docs/systeme/`, journaux → `docs/archive/wip/`) se fait avec celui de `questions-tspe` ; lot 9 (espace sur figure) attend le chantier `solides`.
 - **En attente de David** : rien.
 - **Pièges en cours** : relevé de nœuds → filtrer `archived_at is null` ; `!=` dans `$…$` lu « ≠ » (écrire `!\,=`) ; garde « notion sans sous-notion » : liste `sous_notions_admises` (migration `20261102181059`) ; worktree sans `.env*` → les copier pour les tests d'intégration.
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · branche `content/questions-tspe-8c-rangement`.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-restes` · aucune branche ouverte ; worktree à retirer.
 
 ---
 
@@ -307,3 +307,16 @@ Migration `20261103051912_questions_tspe_lot8c_rangement_tags.sql` (copie de 8a,
 diff avec le gabarit = les lignes du lot). Chemins relevés au MCP : univoques, apostrophes droites. Test
 `tests/integration/questions-tspe-lot8c-rangement-tags.test.ts` (copie de 8a) : 10/10 ; **rouge** sans l'étape 4 (suite
 principale « lot incohérent », 5 sautés, et le test du rollback).
+
+`security-auditor` (2026-11-03, prod relue au MCP) : **aucun finding bloquant** (diff avec le gabarit = les lignes du lot).
+`check:migrations --pr 2270` vert ; **#2270 mergée** (CI 16/16). **Migration appliquée en prod par une autre session**
+(`questions-1spe-tangente`, son `db:migrate` du 2026-11-03 a passé aussi `20261103051912`) ; vérifié au MCP : migration
+enregistrée, 8 modèles sur leur sous-notion, un tag chacun, `updated_at` = `created_at`, toujours `draft`.
+
+**Page à cocher** : `page-a-cocher.ts --dir scripts/questions/tspe-8c-savoir`, 8 fiches lues en prod, aucune alerte, 19
+exemples : https://claude.ai/artifact/SgpQqwvtABvxX555sreUS7 (`verdicts` vide à la publication ; rendu non regardé dans
+Chrome).
+
+**Relecture** (David, 2026-11-03) : 8 « ok » sur 8, aucun commentaire (lu en base de l'artefact). **Publication** :
+`publier-lot.ts` simulé (8 passent), lancé par David avec `--publier` : 8/8 `published`, relus au MCP, toujours sur leur
+nœud, un tag chacun. **8c clos ; lot 8 clos (26 « à savoir » publiés) ; sous-chantier clos.**

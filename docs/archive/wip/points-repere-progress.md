@@ -1,23 +1,15 @@
 ---
-status: en cours
+status: clos
 ---
 
 # Chantier `points-repere` — placer des points dans un repère (le geste « placer » en 2D)
 
-## Reprendre ici
-
-_Mis à jour le 2026-11-03, après #2274._
-
-- **État** : les trois lots sont mergés, pas en prod : `placer:` (#2096), `tracer:` une droite (#2265),
-  `tracer: vecteur` (#2274, § 10-11). Tout le § 3 est couvert.
-- **Prochaine action** : à demander à David — fin de chantier (versement du durable dans `docs/systeme/`,
-  journal archivé) une fois ses essais faits, ou autre chose d'abord.
-- **En attente de David** : essais à l'œil des lots 1, 2 et 3 (`docs/wip/verifications-manuelles.md`) ;
-  corrigé PDF des blocs à placer, à brancher le jour d'un corrigé imprimé (§ 7).
-- **Pièges en cours** : un geste ne doit jamais donner la réponse (masqué : `tracer: ?`, vecteur
-  `tracer: vecteur u = ? depuis A`, collé `vecteur(3;-2)` → `vecteur ?`) ; `/aide-ecriture` est réservée
-  au prof, le Chrome du poste a une session admin (capture via le navigateur des tests).
-- **Worktree / branche** : aucun (retiré après #2274).
+> **Archivé le 2026-11-03** (versement) : chantier clos après #2096 (placer des points), #2265 (tracer une
+> droite) et #2274 (tracer un vecteur). Le durable est dans [ubumark.md](../../systeme/ubumark.md) (Repère à
+> placer, Droite à tracer, Vecteur à tracer, « Doutes et écarts connus ») et
+> [questions.md](../../systeme/questions.md) ; les gestes restants (somme de vecteurs 2-297, relier des
+> points) et les modèles à réécrire au geste sont dans `docs/wip/outils-manquants.md`. Vérifications
+> manuelles : `docs/wip/verifications-manuelles.md`. Historique : ne décrit pas forcément le code actuel.
 
 ---
 

@@ -18,6 +18,7 @@ import { unitWritingToLatex } from '$lib/mathAST/units/display';
 import { unitsAreCompatible } from '$lib/mathAST/units/conversion';
 import type { Unit } from '$lib/mathAST/units/types';
 import { extractUnitFromLatex, parseUnitExpression } from './parser';
+import { singleExpectedDuration } from './composite-duration';
 
 // ============================================================================
 // CONSTANTES
@@ -55,7 +56,7 @@ const KEYS_PER_ROW = 6;
 
 /** Unité de la réponse attendue d'un trou (`5\unit{km}` → km), ou null si illisible */
 function expectedUnit(expectedAnswer: string): Unit | null {
-	const writing = extractUnitFromLatex(expectedAnswer);
+	const writing = extractUnitFromLatex(singleExpectedDuration(expectedAnswer));
 	return writing ? parseUnitExpression(writing) : null;
 }
 

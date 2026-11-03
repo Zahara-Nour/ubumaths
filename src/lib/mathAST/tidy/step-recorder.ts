@@ -44,7 +44,8 @@ export type TidyRule =
 	| 'tidy-collect-like-terms'
 	| 'tidy-sort-terms'
 	| 'tidy-number-first'
-	| 'tidy-choose-unit';
+	| 'tidy-choose-unit'
+	| 'tidy-write-duration';
 
 /** Une étape de mise au propre. */
 export type TidyStep = BaseStep<TidyRule>;
@@ -65,7 +66,8 @@ export const TIDY_RULE_DESCRIPTIONS: Readonly<Record<TidyRule, string>> = {
 	'tidy-collect-like-terms': 'On regroupe les termes semblables',
 	'tidy-sort-terms': 'On range par degré décroissant',
 	'tidy-number-first': 'On écrit le nombre en tête',
-	'tidy-choose-unit': "On choisit l'unité adaptée"
+	'tidy-choose-unit': "On choisit l'unité adaptée",
+	'tidy-write-duration': 'On décompose la durée en heures, minutes, secondes'
 };
 
 // =============================================================================
@@ -112,9 +114,10 @@ export interface TidyOptions {
 	/**
 	 * Le choix de l'unité d'une grandeur numérique (§D.3 et lot 1 des grandeurs
 	 * dans `{{eval}}`, 2026-09-27) :
-	 * - `'school'` (défaut) : la plus grande unité scolaire dont la valeur est ≥ 1 ;
-	 * - `'written'` : l'unité écrite d'abord, si la valeur y a une écriture
-	 *   décimale finie — sinon le choix scolaire, sinon l'écriture inchangée.
+	 * - `'written'` (défaut, 2026-11-02) : une des unités TAPÉES, celle où la
+	 *   valeur s'écrit avec le moins de chiffres (à égalité la plus petite) ;
+	 *   sinon le choix scolaire, sinon l'écriture inchangée ;
+	 * - `'school'` : la plus grande unité scolaire dont la valeur est ≥ 1.
 	 */
 	readonly unitChoice?: UnitChoice;
 	/**
@@ -138,7 +141,17 @@ export interface TidyOptions {
 	 * L'ordre des facteurs d'un produit reste canonique dans les deux cas.
 	 */
 	readonly order?: TermOrder;
+	/**
+	 * Une durée où l'élève a tapé au moins deux de h, min, s (2026-11-02) :
+	 * - `'hms'` (défaut) : écrite en h-min-s (`2[h]+30[min]` → `2[h] 30[min]`) ;
+	 * - `'single'` : une seule grandeur, la règle commune (`150[min]`) — pour
+	 *   qui a besoin d'UNE unité (calcul tapé par l'élève, `.convertir`).
+	 */
+	readonly durations?: DurationWriting;
 }
+
+/** L'écriture d'une durée tapée en plusieurs unités : h-min-s ou une seule grandeur. */
+export type DurationWriting = 'hms' | 'single';
 
 /** Les deux politiques de choix d'unité de `tidy`. */
 export type UnitChoice = 'school' | 'written';

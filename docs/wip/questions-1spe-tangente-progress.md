@@ -2,15 +2,15 @@
 
 Sous-chantier de [questions-1spe](../archive/wip/questions-1spe-progress.md) (clos) : le modèle du point
 1SPE-271, classé C là-bas en attendant le geste `tracer:` du bloc ` ```courbe ` (#2265,
-[points-repere § 8-9](points-repere-progress.md)). Démarche : skill `couvrir-niveau`.
+[points-repere § 8-9](../archive/wip/points-repere-progress.md)). Démarche : skill `couvrir-niveau`.
 
 ## Reprendre ici
 
 _Mis à jour le 2026-11-03, après #2277._
 
 - **État** : brouillon `edb094bd` en prod, rangé sur « Fonctions > Dérivation > tangente » et tagué 1SPE-271 +
-  1TECHNO-078 (#2277, `db:migrate` fait et vérifié) · **Prochaine action** : page à cocher
-  (`scripts/questions/page-a-cocher.ts --dir scripts/questions/1spe-tangente`), puis publication
+  1TECHNO-078 (#2277, `db:migrate` fait et vérifié) · **Prochaine action** : lire les verdicts de la page à cocher
+  (https://claude.ai/artifact/7ojQQi6QqfPsgQsMNgyofk, `ArtifactData list verdicts`, 0 le 2026-11-03), puis publication
   (`publier-lot.ts`, lancée par David) **après le `deploy:prod` qui livre #2265** (`tracer:` absent de
   `production`, v0.64.0) · **En attente de David** : le `deploy:prod` · **Pièges en cours** : ne pas toucher
   `docs/wip/outils-manquants.md` ; voisins Tangente tagués 1TECHNO-079 sans `1_TECHNO` (§ 5, lot à part si
@@ -137,3 +137,9 @@ au test (11/11). CI : la garde de doc voulait la ligne `Doc-inchangée:` dans un
 `pnpm db:migrate` a appliqué **aussi** `20261103051912` (lot 8c de Terminale, mergé mais pas migré par la
 session `questions-tspe-restes`) : vérifié en prod (8 brouillons rangés et tagués), session prévenue.
 Vérifié en prod : `edb094bd` sur « tangente », tags 1SPE-271 et 1TECHNO-078, toujours `draft`.
+
+## 10. Page à cocher (2026-11-03)
+
+Générée depuis la prod (`page-a-cocher.ts --dir scripts/questions/1spe-tangente`), 1 fiche, 2 exemples, aucune
+alerte ; publiée avec la capacité `db` : https://claude.ai/artifact/7ojQQi6QqfPsgQsMNgyofk. Collection
+`verdicts` vide à la publication. Rendu à 390 px non vérifié (gabarit commun).

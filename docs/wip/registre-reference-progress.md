@@ -6,23 +6,23 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, PR tidy (Q9 + `signes-06`) : revue corrigée, NON poussée._
+_Mis à jour le 2026-11-03, après #2276._
 
-- **État** : 4 commits sur la branche (tests rouges, correctif, journal, corrections de revue),
-  non poussés. Revue opus corrigée (§ écriture ci-dessous) ; banc 0 différence ; typecheck 0 ;
-  cliquet tenu. Suite serveur complète relancée après la revue : résultat NON lu
-  (log : scratchpad de la session, perdu au /clear → la relancer).
-- **Prochaine action** : `pnpm test:server` complet (seul rouge admis : `deploy-prod.test.ts`,
-  rouge aussi sur main) → `lint:fast` → commit avec la ligne
-  `Doc-inchangée: mathast/README.md résume tidy, détail dans tidy-spec.md` → push, PR, CI, merge.
-- **Ensuite** : petite PR `tidy-units.test.ts:24` (12000 m gardé), puis PR 1 (`.dériver`, D1).
-- **En attente de David** : rien. À lui signaler dans la PR : Atelier `0,5x/x` → « 1/2, pour x ≠ 0 »
-  (avant « 0,5 ») ; point 4 de la revue laissé (`(2x+2)/(4x+4)`, déjà ainsi avant).
-- **Tranché** : Q9 EN ENTIER + Q-a ; A-D du lot 2 ; `decimal` en LaTeX ; `plafond-02` → 1000 ;
-  Q24 gardée ; `12000 m` gardé ; `signes-06` → `(x+1)/(2(x+1))` — NE PAS reposer.
-- **Pièges** : idempotence (B1) ; sonde = vitest jetable sous `src/` ; banc = script jetable sous
-  `scripts/` (dump prod en lecture, `generatedAt` retiré) ; jamais `cat >` sans fichier source.
-- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `refactor/registre-reference`.
+- **État** : #2276 MERGÉE — une seule règle d'unité du résultat (unité tapée, moins de chiffres)
+  dans `tidy`, `{{eval}}` et l'Atelier ; durées en h-min-s (variables et contextes de valeur : UNE
+  grandeur) ; attendu dans l'unité imposée ; étape `tidy-write-duration`. Pas déployée.
+- **Prochaine action** : selon David — PR « retirer l'option `unitChoice: 'school'` » (garder le
+  repli scolaire interne, réécrire `tidy-units.test.ts`), puis reprise du lot 2 du registre.
+- **En attente de David** : (1) oui/non pour supprimer les sondes non suivies
+  `../ubumaths-wt-registre-reference/src/lib/mathAST/__sonde__/` (bloquent `worktree remove`) ;
+  (2) oui/non pour retirer l'option `'school'` (reco : oui, PR à part).
+- **Tranché** : § Unité du résultat et § Revue de #2276 ; avant : Q9 EN ENTIER, A-D du lot 2,
+  `decimal` en LaTeX, `plafond-02` → 1000, Q24, `signes-06` — NE PAS reposer.
+- **Pièges** : une PR en conflit avec `main` n'a AUCUN run de CI (état « dirty ») → `git merge
+origin/main` ; `rebase` et `restore` = liste `ask` ; sous-expressions de `tidy` toujours en
+  `durations: 'single'` ; budgets de temps de tabuler rouges sous charge seulement.
+- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `fix/tidy-unite-ecrite` (mergée,
+  à retirer après la décision sur les sondes).
 
 ---
 
@@ -408,3 +408,65 @@ Sonde jetable (vitest sous `src/`, `produceRegistre` / `produceAtelier`), 25 lig
   `(4x+4)/(6x+6) → (2x+2)/(3x+3)`, `(2−2x)/(4(x−1))` sans `−1/2` conditionnel. Rien vu sur valeur,
   domaine, idempotence (74 entrées), narration. Après correction : banc 0 différence,
   `check:incremental` 0, cliquet tenu.
+
+## Unité du résultat — reprise à zéro (David, 2026-11-02)
+
+- **Constat** : deux choix d'unité. `tidy` par défaut (`'school'`, 12000 m → 12 km, contraire à
+  l'ADR 0026) atteint l'Atelier par `f(4)` (f(x)=3000[m]·x → 12 km) et le registre par `.simplify`.
+  `cli/quantities.ts` refait un choix par-dessus (`expressedInWritten`, écriture la plus courte) :
+  `tidy` 21 600 000 J contre Atelier 6 kW·h, `tidy` 2,5 h contre Atelier 2 h 30 min.
+- **Principes** (validés) : (1) indépendant de l'ordre d'écriture ; (2) indépendant du chemin, une
+  seule fonction ; (3) pas de conversion non demandée → candidats = unités TAPÉES dans le calcul,
+  `.convertir` sinon ; (4) lisible et exact.
+- **Règle** (validée) : parmi les unités tapées, celle où la valeur s'écrit avec le MOINS DE
+  CHIFFRES (zéros compris : `0,001` = 4, `5000` = 4) ; à égalité la plus petite unité ; produit /
+  quotient : une unité tapée par dimension de base, ou l'unité composée tapée (`kW·h`). Sans écriture
+  finie : la fraction la plus courte. Écartés : première tapée (ordre), plus petite toujours
+  (`5000 m`), plus grande ≥ 1 (seuil arbitraire), toutes les unités usuelles (convertit à la place
+  de l'élève).
+- **Recos validées** : durées h-min-s quand ≥ 2 de h/min/s tapées et durée juste en secondes,
+  DANS la règle commune ; terme à lettre inchangé (`x km + 0,5 km`) ; banc prod avant de coder ;
+  retirer le second choix de `quantities.ts`. Ordre : banc → page à cocher → PR.
+- **Mesures du prototype** : `12[km]+500[m]` 12,5 km ; `2000[m]+3[km]` 5 km (les deux ordres) ;
+  `1[m]+1[km]` 1001 m ; `7[mm]×5[cm]` 3,5 cm² ; `2[cm]×3[mm]` 60 mm² ; `3[kW]×2[h]` 6 kW·h ;
+  `2500[mL]` par `simplify` gardé (garde : le candidat développé ne gagne pas s'il écrit une unité
+  absente). Tests : 31 rouges, tous des attentes de l'ancienne règle (dont `octets-calcul`
+  `1[Ko]+1[o]` → 1001 o, `5[km]+3[m]` → 5003 m, `1[h]+45[min]+30[min]` → 135 min avant durées).
+- **Banc** (25 modèles de `tests/fixtures/correction-cases-unite/`, 8 graines) : 5/200 changent,
+  réponse attendue seule, énoncés « tu choisis l'unité » : `0bb7a4ca` 1,1 h → 66 min, `75956b22`
+  3,85 h → 231 min (→ h-min avec la reco durées), `64e55fc7` 1,005 kL → 1005 L, 1,06 hg → 106 g.
+  Oracle : 1 724 réponses, 0 verdict changé.
+- **Banc prod** (12 modèles lus par David : 10 absents des fixtures + 2 peut-être périmés, 96
+  tirages) : 0 différence. Total : 35 modèles à unités, 5 tirages changent (les 3 modèles ci-dessus).
+- **Page à cocher** publiée : 5 cas réels, 24 cas types (avant : tidy / {{eval}} / Atelier
+  mesurés, souvent en désaccord), 5 durées (prévues, pas codées).
+
+## Unité du résultat — avis et PR (2026-11-03)
+
+- **Avis** : 34/34 « ok », aucun commentaire (collection `avis`).
+- **Durées** : `typesDurations` lit les unités tapées dans TOUT le calcul (`2*(1[h] 30[min])` → 3 h,
+  comme l'Atelier avant) ; une partie suffit (`1[min]+3540[s]` → 1 h) ; négative : `-(2[h] 30[min])`
+  sans parenthèses. `{{eval}}` : `{2[h]}{30[min]}` (format de `;hms`), négative ou `;sci` → une grandeur.
+- **Mesure qui a changé le plan** : l'attendu h-min-s rendait FAUSSES toutes les réponses justes des
+  4 modèles de durées (oracle : 160 verdicts ; corpus 462-468 rouge). Correctif : la correction et
+  le clavier lisent l'attendu comme une durée dans sa plus petite unité. Après : 1 724/1 724 verdicts
+  inchangés (sonde), oracle régénéré (1 647 saisies communes : verdict ET message identiques).
+- **Portée réelle** : avec les durées, les 4 modèles de durées (0bb7a4ca, 2f3b42a3, 75956b22,
+  90aaf9dd) changent l'AFFICHAGE de l'attendu à presque chaque tirage (34 attendus sur 200), pas
+  seulement les 5 du banc d'avant ; verdicts inchangés.
+- **Perf** : banc `tidy` (9 expressions × 3000) égal à `main` une fois la machine calmée.
+
+## Revue de #2276 et correctifs (2026-11-03)
+
+- **Findings** (code-reviewer Opus) : (1) une variable `{{eval}}` de durée en h-min-s cassait
+  `{{eval:{{t}}*2}}` ; (2) unité imposée : l'attendu change d'unité (`1.5[km]` pour `m` imposé) →
+  bonne réponse refusée ; l'oracle ne le voyait pas (0 modèle avec `required` dans les fixtures) ;
+  (3) `1[h]+30[min]` sans étape ; (4) `;+ ;() ;d` perdus sur h-min-s ; (5) simplify ≠ tidy avec un
+  terme à lettre (dimension invalide, laissé) ; (6) défaut `'hms'` pour tous (gardé : choix « tout
+  sauf les variables »).
+- **Prod (lecture seule)** : 0 modèle sur 2 013 avec `required` ; les seuls `{{eval}}` à plusieurs
+  unités de durée sans `;hms` sont les attendus des 4 modèles de durées.
+- **Décisions de David** : h-min-s partout sauf la valeur d'une variable ; attendu réécrit dans
+  l'unité imposée au tirage ; dire le geste (`tidy-write-duration` « On décompose la durée en
+  heures, minutes, secondes »).
+- **Piège** : `1[h]+30[min]` en une grandeur donne `90[min]` (1,5 et 90 : 2 chiffres, la plus petite).

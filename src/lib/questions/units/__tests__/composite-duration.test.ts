@@ -9,7 +9,8 @@
 
 import { describe, it, expect } from 'vitest';
 import { validateQuantityAnswer } from '../validator';
-import { compositeDurationFormIssue } from '../composite-duration';
+import { compositeDurationFormIssue, singleExpectedDuration } from '../composite-duration';
+import { unitKeysFor } from '../keyboard-units';
 
 // Chaînes exactes reçues par le correcteur (mesure du 2026-09-28)
 const TWO_H_15 = '2\\,h\\,15\\,\\min';
@@ -122,5 +123,36 @@ describe('compositeDurationFormIssue — forme', () => {
 
 	it.each(['15\\,\\min\\,2\\,h', '2\\,h\\,3\\,h'])('%s : mauvaise forme (ordre)', (answer) => {
 		expect(compositeDurationFormIssue(answer)?.severity).toBe('error');
+	});
+});
+
+// Attendu écrit en h-min-s par `{{eval}}` (règle commune de l'unité du résultat,
+// 2026-11-02) : la correction le lit comme UNE durée, dans sa plus petite unité
+describe('attendu en h-min-s ({{eval}})', () => {
+	it.each([
+		['{2[h]}{58[min]}', '178[min]'],
+		['{1[h]}{5[min]}{30[s]}', '3930[s]'],
+		['{3[h]}', '3[h]'],
+		['178[min]', '178[min]'],
+		['5[km]', '5[km]']
+	])('%s → %s', (expected, single) => {
+		expect(singleExpectedDuration(expected)).toBe(single);
+	});
+
+	it.each([
+		[TWO_H_15, true],
+		['135\\unit{min}', true],
+		['2{,}25\\unit{h}', true],
+		['8100\\unit{s}', true],
+		['2\\,h\\,10\\,\\min', false],
+		['135', false]
+	])('attendu {2[h]}{15[min]}, réponse %s : %s', (answer, correct) => {
+		expect(validateQuantityAnswer(answer, '{2[h]}{15[min]}').isCorrect).toBe(correct);
+	});
+
+	it('les touches d’unité sont celles des durées', () => {
+		expect(unitKeysFor(['{2[h]}{15[min]}'], [undefined])).toEqual(
+			unitKeysFor(['135[min]'], [undefined])
+		);
 	});
 });

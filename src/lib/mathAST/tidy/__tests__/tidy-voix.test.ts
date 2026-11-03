@@ -271,8 +271,8 @@ describe('tidy raconte — il ne dit jamais une phrase fausse', () => {
 describe('tidy raconte — n’invente aucune écriture', () => {
 	it('ne montre jamais une grandeur en fraction', () => {
 		const { resultat, etapes } = raconte('0.005[m]');
-		expect(resultat).toBe('5[mm]');
-		expect(etapes).toEqual([{ regle: 'tidy-choose-unit', avant: '0.005[m]', apres: '5[mm]' }]);
+		expect(resultat).toBe('0.005[m]');
+		expect(etapes).toEqual([]);
 	});
 
 	it('convertit les unités en un seul geste', () => {
@@ -283,10 +283,23 @@ describe('tidy raconte — n’invente aucune écriture', () => {
 		]);
 	});
 
-	it('choisit l’unité adaptée d’un terme seul', () => {
+	it('garde l’unité tapée d’un terme seul (règle commune, 2026-11-02)', () => {
 		const { resultat, etapes } = raconte('3600[s]');
-		expect(resultat).toBe('1[h]');
-		expect(etapes).toEqual([{ regle: 'tidy-choose-unit', avant: '3600[s]', apres: '1[h]' }]);
+		expect(resultat).toBe('3600[s]');
+		expect(etapes).toEqual([]);
+	});
+
+	it('écrit une durée tapée en h et min en h-min-s, la chaîne finit sur le résultat', () => {
+		const { resultat, etapes } = raconte('1[h]+45[min]+30[min]');
+		expect(resultat).toBe('2[h] 15[min]');
+		expect(etapes.at(-1)?.apres).toBe('2[h] 15[min]');
+		// `2[h]+30[min]` → `2[h] 30[min]` : même arbre, seul l'affichage change — le geste
+		// est dit quand même (David, 2026-11-03)
+		const somme = raconte('2[h]+30[min]');
+		expect(somme.resultat).toBe('2[h] 30[min]');
+		expect(somme.etapes).toEqual([
+			{ regle: 'tidy-write-duration', avant: '2[h]+30[min]', apres: '2[h] 30[min]' }
+		]);
 	});
 
 	it('regroupe des grandeurs de même unité sans parler de conversion', () => {

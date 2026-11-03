@@ -2,7 +2,7 @@
 
 Sous-chantier de `questions-1spe` (clos, journal `docs/archive/wip/questions-1spe-progress.md`, § 3.2 :
 433 classé C). Le geste existe : `tracer:` du bloc ` ```courbe `, livré par #2265 (journal
-`points-repere-progress.md` § 8-9). Skill `couvrir-niveau` ; pièges `couvrir-un-niveau.md` § 9 ; bornes
+`docs/archive/wip/points-repere-progress.md` § 8-9). Skill `couvrir-niveau` ; pièges `couvrir-un-niveau.md` § 9 ; bornes
 `docs/systeme/programmes/bornes/lycee/1spe.md`.
 
 ## Reprendre ici
