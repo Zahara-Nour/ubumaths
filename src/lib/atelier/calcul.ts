@@ -2601,7 +2601,9 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 				kind: 'commande',
 				input,
 				output: rendered.text,
-				latex: derived.answer,
+				// La réponse du registre, qui fait foi (registre-reference, D1) ; les
+				// étapes y aboutissent (R5, `deriver-registre.test.ts`)
+				latex: result.success && result.answer !== undefined ? result.answer : derived.answer,
 				steps: derived.steps,
 				...summaryField(derived),
 				...notes
@@ -4921,7 +4923,11 @@ function computeAction(
 			return {
 				ok: true,
 				output: rendered.text,
-				latex: derived.answer,
+				// La réponse du registre, comme `.dériver` tapé (registre-reference, D1)
+				latex:
+					result.success && result.answer !== undefined
+						? `${latexName(name)}'(x) = ${result.answer}`
+						: derived.answer,
 				steps: derived.steps,
 				...summaryField(derived)
 			};
