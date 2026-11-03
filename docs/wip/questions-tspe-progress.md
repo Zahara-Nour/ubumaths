@@ -10,20 +10,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2286 et la relecture du lot 10 (3/3 OK)._
+_Mis à jour le 2026-11-03, après la publication du lot 10._
 
-- **État** : lots 0 à 8 publiés. Lot 10 : 3 brouillons en prod (96b90f36 → 455, 74da1cd6 → 481, ea48f760 → 616),
-  rangés et tagués (#2286, `db:migrate` fait, relu au MCP). Page à cocher :
-  https://claude.ai/artifact/VBKMGY8uxzMy8jGUiTpqRj (3 verdicts « OK » sur 3, comptés en base le 2026-11-03) ; `publier-lot` en simulation : vert.
-- **Prochaine action** : David lance
-  `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/tspe-10 --publier`. Ensuite le versement (bilan
-  dans `tspe.md`, pièges dans `couvrir-un-niveau.md`, journaux vers `docs/archive/wip/`, renvois des tests dans une PR
-  à part, comme pour `questions-1spe`).
-- **En attente de David** : la publication du lot 10 (relecture faite) ; je relis ensuite `published` en base.
+- **État** : lots 0 à 8 et lot 10 publiés (96b90f36 → 455, 74da1cd6 → 481, ea48f760 → 616 : `published`, relu au
+  MCP le 2026-11-03 ; relecture 3/3 OK). Plus aucun modèle à écrire.
+- **Prochaine action** : le versement, comme pour `questions-1spe` (3087b3844 puis 1c9b259d8) : bilan « Couverture en
+  modèles de questions » dans `docs/systeme/programmes/bornes/lycee/tspe.md`, pièges dans
+  `docs/pratiques/couvrir-un-niveau.md` § 9, `docs/wip/outils-manquants.md` si besoin, journaux
+  `questions-tspe*-progress.md` → `docs/archive/wip/` ; puis, dans une PR à part, les renvois des tests et des scripts
+  `docs/wip/questions/lot-tspe-*.py` vers `docs/archive` (jamais les migrations appliquées).
+- **En attente de David** : rien.
 - **Pièges en cours** : voir « Décisions communes et pièges » dans `questions-tspe-restes-progress.md` ; et ceux du
   lot 10 : `sonde-courbes` ne voit pas les courbes d'un choix ; `{{p}}*pi/6` s'affiche non simplifié sur le cercle ;
-  `cleanCoefficients` réécrit P_A(B) en « P_A B » ; la garde « déjà tagués » ne se déclenche jamais seule (un modèle
-  tagué a un nœud).
+  `cleanCoefficients` réécrit P_A(B) en « P_A B » ; la garde « déjà tagués » ne se déclenche jamais seule.
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe`, branches mergées (à retirer au versement).
 
 ## 1. Relevé (prod, 2026-10-29)
