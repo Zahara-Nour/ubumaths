@@ -208,6 +208,28 @@ describe('1re spé, tracer une droite (433) : les branches d’échec de la migr
 		});
 	});
 
+	it('un modèle tagué à la main depuis le relevé fait échouer la migration', async () => {
+		// Un trigger interdit un tag sur un modèle sans nœud : un modèle tagué est donc forcément
+		// rangé, et c'est la garde « déjà rangé » qui l'arrête (la garde « déjà tagué » est un filet).
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			const chemins = await cheminsActifs(pg);
+			await pg.query(
+				'update public.question_templates set classification_node_id = $2 where id = $1',
+				[ids[0], chemins.get(LOT[0].noeud)]
+			);
+			await pg.query(
+				`insert into public.question_template_points (template_id, point_id)
+				 select $1, p.id from public.curriculum_points p
+				  where p.grade = '1_SPE' and p.code = '1SPE-433' and p.archived_at is null`,
+				[ids[0]]
+			);
+			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
+				/modèle déjà rangé depuis le relevé : 1/
+			);
+		});
+	});
+
 	it('un point jumeau archivé (1GEN-063) fait échouer la migration (résolution stricte)', async () => {
 		await enTransaction(async () => {
 			await poserEtatProd(pg, auteur);

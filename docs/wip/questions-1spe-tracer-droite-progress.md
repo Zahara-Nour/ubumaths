@@ -10,7 +10,7 @@ Sous-chantier de `questions-1spe` (clos, journal `docs/archive/wip/questions-1sp
 _Mis à jour le 2026-11-03, PR #2279 (migration nœud + tags du 433) ouverte._
 
 - **État** : brouillon 433 en prod (`dc5d7cb6`, créé par David le 2026-11-03) ; migration nœud +
-  tags écrite (§ 7), test d'intégration vert, rouge sans elle.
+  tags écrite (§ 7), test d'intégration vert (11), rouge sans elle ; `security-auditor` : rien de bloquant.
 - **Prochaine action** : CI verte + `security-auditor` → `check:migrations --pr`, merge,
   `db:migrate` depuis le dépôt principal, vérification en prod (MCP) ; puis page à cocher.
 - **En attente de David** : verdict sur la page à cocher, puis `publier-lot.ts --publier`.
