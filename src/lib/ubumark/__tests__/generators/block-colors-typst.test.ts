@@ -52,7 +52,7 @@ describe('Droite graduée — PDF', () => {
 			numberLine(['start: 0', 'end: 10', 'step: 1', 'segments: [1, 3] green'])
 		);
 		expect(fr).toBe(en);
-		expect(fr).toContain('stroke: (paint: rgb("#018639"), thickness: 2pt)');
+		expect(fr).toContain('stroke: (paint: rgb("#018639"), thickness: 2.5pt)');
 	});
 
 	it('chaque couleur écrite est une forme Typst valide (inconnue, hex, défauts)', () => {
@@ -71,14 +71,17 @@ describe('Droite graduée — PDF', () => {
 		// Inconnue → défaut des points (rouge) ; hex tel quel ; segment sans couleur → bleu
 		expect(code).toContain('text(fill: rgb("#dc2626"))[A]');
 		expect(code).toContain('text(fill: rgb("#000080"))[B]');
-		expect(code).toContain('stroke: (paint: rgb("#2563eb"), thickness: 2pt)');
+		expect(code).toContain('stroke: (paint: rgb("#2563eb"), thickness: 2.5pt)');
 	});
 
-	it('points ouverts : fond blanc du papier', () => {
+	it('bornes exclues : crochets à la couleur du segment, aucun disque blanc', () => {
 		const code = generateNumberLineTypst(
 			numberLine(['start: 0', 'end: 10', 'step: 1', 'segments: ]1, 3[ rouge'])
 		);
-		expect(code).toMatch(/radius: [\d.]+, fill: white, stroke: rgb\("#dc2626"\)/);
+		const brackets = code.split('\n').filter((l) => l.includes('// crochet'));
+		expect(brackets).toHaveLength(2);
+		expect(brackets.every((l) => l.includes('paint: rgb("#dc2626")'))).toBe(true);
+		expect(code).not.toContain('fill: white');
 	});
 });
 

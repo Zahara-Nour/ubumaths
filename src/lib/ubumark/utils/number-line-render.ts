@@ -10,7 +10,8 @@
 import type {
 	NumberLineValue,
 	NumberLineConfig,
-	NumberLineNode
+	NumberLineNode,
+	NumberLineSegment
 } from '$lib/ubumark/types/number-line';
 import { resolveAuthorColor, type AuthorColor } from '$lib/theme/author-color';
 import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
@@ -32,7 +33,8 @@ export const NL_LAYOUT = {
 	POINT_RADIUS: 5,
 	POINT_Y_OFFSET: -18,
 	POINT_LABEL_Y_OFFSET: -30,
-	SEGMENT_Y_OFFSET: 12,
+	/** Écart (px) entre deux étages de segments qui se chevauchent, au-dessus de l'axe */
+	SEGMENT_LEVEL_GAP: 10,
 	ARROW_SIZE: 8,
 	LINE_WIDTH: 600 - 40 - 40 // SVG_WIDTH - MARGIN_LEFT - MARGIN_RIGHT
 } as const;
@@ -225,6 +227,59 @@ export function computeLineExtents(
 		lineStartX: MARGIN_LEFT - offset,
 		lineEndX: MARGIN_LEFT + lineWidthFor(width) + offset
 	};
+}
+
+// =========================================================================
+// CROCHETS (extrémités des segments, chantier `docs/wip/demi-droite-progress.md`)
+// =========================================================================
+
+/**
+ * Sens des becs d'un crochet : +1 vers la droite, −1 vers la gauche.
+ * Borne comprise : becs vers l'intérieur du segment ; exclue : vers l'extérieur.
+ * `[2, …` → +1, `]2, …` → −1, `…, 5]` → −1, `…, 5[` → +1.
+ */
+export function bracketDirection(side: 'start' | 'end', open: boolean): 1 | -1 {
+	const inward = side === 'start' ? 1 : -1;
+	return open ? (-inward as 1 | -1) : inward;
+}
+
+/**
+ * Étage de chaque segment : 0 = sur l'axe ; un segment qui chevauche un segment
+ * déjà posé monte d'un étage (au-dessus de l'axe). Deux intervalles d'une réunion,
+ * disjoints, restent tous deux sur l'axe. Bornes infinies = ±Infinity.
+ */
+export function segmentLevels(segments: NumberLineSegment[]): number[] {
+	const placed: { level: number; from: number; to: number }[] = [];
+	return segments.map((s) => {
+		const from = s.startInfinite ? -Infinity : numVal(s.start);
+		const to = s.endInfinite ? Infinity : numVal(s.end);
+		let level = 0;
+		// Un bout commun ([1, 2] et [2, 3]) compte comme un chevauchement : les crochets se gêneraient
+		while (placed.some((p) => p.level === level && from <= p.to && p.from <= to)) level++;
+		placed.push({ level, from, to });
+		return level;
+	});
+}
+
+/**
+ * Les quatre points d'un crochet en abscisse `x`, ordonnée `y` : bec du haut,
+ * coin du haut, coin du bas, bec du bas. `height` = demi-hauteur, `beak` = longueur
+ * des becs. Repère quelconque (px à l'écran, cm au PDF).
+ */
+export function bracketPoints(
+	x: number,
+	y: number,
+	direction: 1 | -1,
+	height: number,
+	beak: number
+): [number, number][] {
+	const tip = x + direction * beak;
+	return [
+		[tip, y - height],
+		[x, y - height],
+		[x, y + height],
+		[tip, y + height]
+	];
 }
 
 // =========================================================================
