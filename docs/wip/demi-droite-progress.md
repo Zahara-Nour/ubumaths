@@ -10,14 +10,17 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, à l'ouverture._
+_Mis à jour le 2026-11-03, PR 1 en cours (pas encore ouverte)._
 
-- **État** : phase 0 écrite, **pas encore validée**.
-- **Prochaine action** : réponses de David aux questions Q1 à Q4, puis les tests rouges de la PR 1.
-- **En attente de David** : Q1 à Q4 (§ Phase 0).
-- **Pièges en cours** : aucun.
-- **Worktree / branche** : aucun. À créer après la validation :
-  `git worktree add -b feat/demi-droite ../ubumaths-wt-demi-droite origin/main`.
+- **État** : phase 0 validée (« je suis tes recos », Q1 à Q4). PR 1 (affichage) codée sur `feat/demi-droite` :
+  `-inf` / `+inf`, crochets écran + PDF, segments sur l'axe ; tests verts, typecheck 0. Relecture
+  `code-reviewer` lancée.
+- **Prochaine action** : findings de la relecture, `types:cliquet`, ouvrir la PR 1, CI, merge. Puis PR 2 : geste
+  `representer:`.
+- **En attente de David** : rien.
+- **Pièges en cours** : `qlmanage`/`timeout` absents ou muets sur ce Mac → PDF en image avec `sips` (lent, en
+  fond). PDF compilé avec `node scripts/fiches/compile-prod.mjs` (compilateur de la prod).
+- **Worktree / branche** : `../ubumaths-wt-demi-droite`, `feat/demi-droite` ; serveur de test 5176.
 
 ---
 
@@ -103,3 +106,25 @@ _Mis à jour le 2026-11-03, à l'ouverture._
   Reco : les trois temps, chaque choix visible et rattrapable, plus simple au doigt.
 - **Q4 — Le nom de la clé du geste** : `representer:` (le verbe des textes), `colorier:`, autre ? Reco :
   `representer:`.
+
+## Décisions (David, 2026-11-03, « je suis tes recos »)
+
+- Q1 : **crochets partout**, segments finis compris. Relevé en prod avant : **aucun** modèle, exercice, carte,
+  fiche, journal de classe ni énigme n'utilise `segments:` (requêtes `::text ~ 'segments:'` sur
+  `question_templates`, `exercises`, `srs_cards`, `class_journal_entries`, `riddles`, `worksheet_templates`,
+  `journal_entry_homework`, `rag_documents` : 0) → rien de publié ne change d'aspect.
+- Q2 : deux PR, affichage puis geste.
+- Q3 : geste en trois temps (borne, côté, comprise / exclue).
+- Q4 : clé `representer:`.
+
+## PR 1 — affichage (2026-11-03)
+
+- Écart à la phase 0, vu sur capture : crochets petits et trait sous l'axe qui gênait les nombres → trait **sur
+  l'axe**, crochets ±9 px (PDF ±0,2 cm) ; un segment qui en chevauche un autre (bout commun compris) monte
+  d'un étage (`segmentLevels`) ; une réunion disjointe reste sur l'axe. Écran : flèches et graduations
+  par-dessus le trait. PDF : trait d'une borne infinie arrêté à la base de la flèche (creuse, sinon cachée).
+- Tests : `number-line-demi-droite.test.ts` (lecture, erreurs, sens des becs, étages),
+  `NumberLine-crochets.svelte.test.ts`, `number-line-typst.test.ts` ; vus rouges avant le code (17 serveur).
+  Tests des anciens disques réécrits : `block-colors-typst.test.ts`, `couleurs-lot3.svelte.test.ts`.
+- Vu à l'œil : capture 390 px (vitest navigateur) et PDF compilé avec le compilateur de la prod.
+- Catalogue des blocs : exemple « Demi-droite (solutions d'une inéquation) ».
