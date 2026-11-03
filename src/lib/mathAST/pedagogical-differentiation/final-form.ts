@@ -156,10 +156,7 @@ function finalForm(written: MathNode, f: MathNode, options: TidyOptions): MathNo
 		// en fraction devant (David, 2026-11-03) : `(x²eˣ/3)′ = (x²/3 + 2x/3)eˣ`.
 		// Cherché sur le numérateur avant sa mise en facteur (`3xeˣ + 3eˣ`).
 		const plain = quotientOf(reduced);
-		const over = overNumber(plain);
-		if (over !== null && distributedOverNumber(over.numerator, over.q) !== null) {
-			return withCommonExponential(plain, options);
-		}
+		if (distributable(plain) !== null) return withCommonExponential(plain, options);
 		return quotientOf(top);
 	}
 	return withCommonExponential(reduce(node, options), options);
@@ -352,9 +349,7 @@ function exponentOf(term: MathNode, key: string): number {
 function withCommonExponential(written: MathNode, options: TidyOptions): MathNode {
 	// Une somme divisée par un nombre (`(x²eˣ + 2xeˣ)/3`, rendue par `auto`) : la
 	// barre se distribue d'abord, comme sur le chemin du quotient
-	const quotient = overNumber(written);
-	const node =
-		(quotient === null ? null : distributedOverNumber(quotient.numerator, quotient.q)) ?? written;
+	const node = distributable(written) ?? written;
 	const terms = flattenSumShallow(node);
 	if (terms.length < 2) return written;
 	const exponential = commonExponential(terms.map(({ term }) => term));
@@ -407,6 +402,26 @@ function withoutFactor(term: MathNode, key: string): MathNode {
 	const index = factors.findIndex(({ factor }) => hashMathNode(factor) === key);
 	const rest = factors.filter((_, i) => i !== index);
 	return unflattenProduct(rest) ?? number('1');
+}
+
+/**
+ * Une somme divisée par un nombre, distribuée (`distributedOverNumber`), sous un
+ * éventuel − : `−(x²eˣ + 2xeˣ)/3` → `−x²eˣ/3 − 2xeˣ/3` (tidy écrit `−(a/3)` ; sans
+ * ce cas, `-\frac{x^2e^x}{3}` tapé en LaTeX gardait sa barre, revue de #2329).
+ */
+function distributable(node: MathNode): MathNode | null {
+	const inner = unwrap(node);
+	if (isOpposite(inner)) {
+		const distributed = distributable(inner.operand);
+		if (distributed === null) return null;
+		const flipped: SignedTerm[] = flattenSumShallow(distributed).map(({ sign, term }) => ({
+			sign: flipSign(sign),
+			term
+		}));
+		return unflattenSum(flipped);
+	}
+	const quotient = overNumber(inner);
+	return quotient === null ? null : distributedOverNumber(quotient.numerator, quotient.q);
 }
 
 /**

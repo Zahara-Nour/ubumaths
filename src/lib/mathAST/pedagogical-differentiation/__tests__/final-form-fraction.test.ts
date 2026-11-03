@@ -12,10 +12,16 @@
 import { describe, it, expect } from 'vitest';
 import { finalDerivativeOf } from '../final-form';
 import { parseCustom } from '../../parser/custom';
+import { parseLatex } from '../../parser';
 import { toLatex } from '../../latex-generator';
 
 const derived = (f: string) => {
 	const result = finalDerivativeOf(parseCustom(f));
+	return result === null ? null : toLatex(result);
+};
+
+const derivedLatex = (f: string) => {
+	const result = finalDerivativeOf(parseLatex(f));
 	return result === null ? null : toLatex(result);
 };
 
@@ -30,6 +36,24 @@ describe('f′ finale : exponentielle commune sous une barre de nombre', () => {
 	])('%s → %s', (f, expected) => {
 		expect(derived(f)).toBe(expected);
 	});
+});
+
+describe('f′ finale : une fraction négative aussi, quelle que soit la saisie (revue de #2329)', () => {
+	const expected = `-\\left( \\dfrac{x^2}{3} + \\dfrac{2 x}{3} \\right) ${E}^x`;
+
+	it.each(['-x^2*e^x/3', '-(1/3)x^2*e^x', 'x^2*e^x/(-3)'])('saisie de l’atelier %s', (f) => {
+		expect(derived(f)).toBe(expected);
+	});
+
+	it.each(['-\\frac{x^2e^x}{3}', '\\frac{x^2e^x}{-3}', '\\frac{x^2e^x}{3}'])(
+		'saisie d’une question %s',
+		(f) => {
+			const sign = f.startsWith('\\frac{x^2e^x}{3}') ? '' : '-';
+			expect(derivedLatex(f)).toBe(
+				`${sign}\\left( \\dfrac{x^2}{3} + \\dfrac{2 x}{3} \\right) ${E}^x`
+			);
+		}
+	);
 });
 
 describe('f′ finale : sans exponentielle commune, la barre reste', () => {

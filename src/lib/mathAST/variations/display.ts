@@ -35,9 +35,9 @@ import {
 	isOpposite,
 	isSuperscript
 } from '../guards';
-import { delimiter, divide, multiply, number, opposite, variable } from '../factory';
+import { delimiter, divide, fraction, multiply, number, opposite, variable } from '../factory';
 import { findNodes, mapNode } from '../transforms';
-import { flattenProductShallow, unflattenProduct } from '../flatten';
+import { flattenProductShallow, flattenSumShallow, unflattenProduct } from '../flatten';
 import { decimalString, hasDecimalLiteral } from '../tidy/decimal';
 import { getVariables } from '../eval/substitute';
 import { toPolynomial } from '../factor/polynomial';
@@ -112,6 +112,15 @@ export function factoredForm(node: MathNode, options: FactoredFormOptions = {}):
 
 /** Quotient (sous un éventuel −) : numérateur seul ; sinon l'expression entière. */
 function factoredForSign(node: MathNode, options: FactoredFormOptions = {}): MathNode {
+	// `(x²/3 + 2x/3)eˣ` (forme finale, 2026-11-03) : la barre commune ressort,
+	// puis le numérateur se factorise comme celui de tout quotient
+	// (`x(x + 2)eˣ/3`, jamais `x(x/3 + 2/3)eˣ`). Rien d'autre à factoriser que
+	// ce nombre (`(1/2 − x/2)e^{−x}`) : la forme finale reste (revue de #2329).
+	const over = overCommonDenominator(node);
+	if (over !== null) {
+		const candidate = factoredForSign(over, options);
+		if (candidate !== over) return candidate;
+	}
 	if (isOpposite(node) && isDivision(node.operand)) {
 		const quotient = node.operand;
 		const top = factored(quotient.numerator, options);
@@ -312,6 +321,62 @@ function decimalQuotient(node: DivisionNode): MathNode | null {
 	if (decimal === null) return null;
 	const rest = unflattenProduct(others);
 	return rest === null ? number(decimal) : multiply(number(decimal), rest, 'implicit');
+}
+
+/**
+ * `(a/q + b/q′)·eᵘ` → `(q″a/q + …)eᵘ / q″`, q″ le plus petit dénominateur commun
+ * des termes de la somme : la barre qu'a distribuée la forme finale, remise.
+ * `null` sans exponentielle, sans somme à fractions d'entiers, ou si un
+ * terme n'est ni une fraction d'entier ni sans barre.
+ */
+function overCommonDenominator(node: MathNode): MathNode | null {
+	const sign = isOpposite(node);
+	const inner = sign ? node.operand : node;
+	const factors = flattenProductShallow(inner);
+	if (!factors.some(({ factor }) => isExponential(factor))) return null;
+	const sumIndex = factors.findIndex(({ factor }) => isSum(unwrap(factor)));
+	if (sumIndex === -1) return null;
+	const sum = unwrap(factors[sumIndex].factor);
+	const q = commonDenominator(sum);
+	if (q === null) return null;
+	const scaled = generatePedagogicalSimplifySteps(
+		multiply(number(String(q)), delimiter('parentheses', sum), 'implicit'),
+		{
+			intent: 'developper',
+			schoolLevel: 'lycee',
+			timeoutMs: FACTOR_TIMEOUT_MS
+		}
+	);
+	if (scaled.aborted === true || findNodes(scaled.result, isDivision).length > 0) return null;
+	const rest = tidy(scaled.result, { order: 'kept' });
+	const numerator = unflattenProduct(
+		factors.map((entry, i) =>
+			i === sumIndex
+				? { ...entry, factor: isSum(rest) ? delimiter('parentheses', rest) : rest }
+				: entry
+		)
+	);
+	if (numerator === null) return null;
+	const quotient = fraction(numerator, number(String(q)));
+	return sign ? opposite(quotient) : quotient;
+}
+
+/** Le plus petit dénominateur commun (> 1) des termes d'une somme, `null` sinon. */
+function commonDenominator(sum: MathNode): number | null {
+	let q = 1;
+	for (const { term } of flattenSumShallow(sum)) {
+		const inner = unwrap(term);
+		if (isDivision(inner)) {
+			if (!isPositiveInteger(inner.denominator)) return null;
+			const d = Number(inner.denominator.value);
+			q = (q * d) / gcd(q, d);
+		} else if (findNodes(inner, isDivision).length > 0) return null;
+	}
+	return q > 1 && Number.isSafeInteger(q) ? q : null;
+}
+
+function gcd(a: number, b: number): number {
+	return b === 0 ? a : gcd(b, a % b);
 }
 
 /** Un entier positif écrit : `5`. */
