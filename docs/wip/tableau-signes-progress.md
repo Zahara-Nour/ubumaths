@@ -233,6 +233,14 @@ Branche `feat/tableau-signes-modeles`, worktree `../ubumaths-wt-tableau-signes`.
   (`display: block; width: fit-content; max-width: 100%; overflow-x: auto`), pas encore dans le gabarit.
 - Relue par David : **2/2 OK**, sans commentaire (collection `verdicts` lue).
 - Vu en passant : le corrigé de 2-330 écrit « −1x − 3 = 0 » et « 1x − 3 = 0 » (étape 2). → David.
+- David valide (2026-11-03) : « 1x » à corriger (diagnostic d'abord : moteur ou contenu), PR du gabarit,
+  défilement jugé aux essais iPhone.
+
+## PR — gabarit de la page à cocher (2026-11-03)
+
+- `.vt` en `display: block; width: fit-content; max-width: 100%; overflow-x: auto` : seul le tableau défile.
+  Page régénérée (2 fiches) : 390 px → page à 390 px, 18 tableaux sur 20 défilent dedans ; 1280 px → aucun.
+  Test `page-a-cocher` : 63 verts. Revue : aucune (CSS, < 30 lignes).
 - **#2335 mergée** (CI verte), le 2026-11-03.
 
 ## PR — `cleanCoefficients` et formules à liens logiques (2026-11-03)

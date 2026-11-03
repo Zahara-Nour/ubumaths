@@ -8,12 +8,12 @@ status: écarts revérifiés le 2026-10-18 ; tri A (seul) / B (David) fait ; lot
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2330 (T15)._
+_Mis à jour le 2026-11-03, après la page à cocher du lot B._
 
-- **État** : liste A finie et en prod. Lot RGPD : T1, T2, T3, T6, T7, T8, T9, T12, T13 faits ; T15 fait en partie (signalement visible au toucher #2330, DPA en PDF, AIPD à jour, procédure de violation rédigée). #2330 est mergé après le `deploy:prod` du 2026-11-03 : **pas encore en prod**.
-- **Prochaine action** : lots B « destructif » et « spécification ».
-- **En attente de David** : **DPA** : David les range lui-même dans son Drive privé (les connecteurs Google de claude.ai ne sont pas sur son compte : n'y rien écrire) ; les 6 PDF sont dans `~/Downloads/Chiphre-DPA/` ; **preuves d'acceptation** des DPA à tirer de ses comptes ; **relire `conformite/violation-de-donnees.md`** (brouillon) ; T14 = infos des mentions légales ; perf de `requireAuth` (reco : futur chantier, mesurer d'abord) ; `account/delete` 1 / 24 h compté avant la suppression (reco : compteur remis à zéro si elle échoue).
-- **Pièges en cours** : test unitaire d'une route limitée → `vi.mock('$lib/server/rateLimiter', () => import('$lib/server/__tests__/helpers/fake-rate-limiter'))` ; `cleanup_stale_presence` non planifiée (contourné par T1) ; garde « doc à jour » compare des COMMITS ; commitlint refuse un sujet qui commence par une majuscule (« AIPD… ») ; dépôt PUBLIC : aucune adresse e-mail ni document signé dans `docs/`.
+- **État** : liste A et lot RGPD comme avant (T14 attend David ; #2330 pas encore en prod). **Lot B tranché** (§ « Décisions de David, page à cocher lot B », en bas) sauf L13 et V63, reposés à David.
+- **Prochaine action** : les PR du lot B, dans l'ordre : M4 (code, puis `DROP` après `deploy:prod`) + M11 (`DROP`) ; M8 ; D11 + C10 ; C14 ; V35 ; V39 (mesurer les modèles d'abord) ; V40 ; L9 ; L20 (doc). Clore V4, V8, M2, M20, V41, D10, D20, V49 dans `ecarts-a-trier.md`.
+- **En attente de David** : **L13** (lire `12 km` sans crochets ? « m » = mètre ou variable m) ; **V63** (réexpliqué simplement) ; DPA (Drive privé, preuves d'acceptation) ; relire `conformite/violation-de-donnees.md` ; T14 ; perf `requireAuth` ; `account/delete` 1 / 24 h.
+- **Pièges en cours** : test d'une route limitée → `vi.mock('$lib/server/rateLimiter', () => import('$lib/server/__tests__/helpers/fake-rate-limiter'))` ; garde « doc à jour » compare des COMMITS ; commitlint refuse un sujet en majuscule ; dépôt PUBLIC : ni e-mail ni document signé dans `docs/`.
 - **Worktree / branche** : aucun (journal sur `main`).
 
 ---
@@ -48,3 +48,19 @@ _Mis à jour le 2026-11-03, après #2330 (T15)._
 - **T14** mentions légales : David donne les infos (en attente).
 - **T15** dans l'ordre : archiver les DPA (Supabase, Vercel, Sentry, Groq), bouton « signaler » dans le chat, finaliser l'AIPD.
   - **2026-11-03** : le signalement existait déjà et sert en prod (4 signalements, tous traités) ; seul défaut, le menu « ⋮ » n'apparaissait qu'au survol → **#2330** (visible au toucher et au clavier, réactions comprises). DPA : David a choisi un **Drive privé** ; les 6 DPA en vigueur (Supabase, Vercel, Sentry, Groq, Google Cloud en français, Brevo) imprimés en PDF ; lien Groq du registre corrigé (404). AIPD : David a choisi « doc + #6 » → statuts à jour, procédure de violation rédigée (`conformite/violation-de-donnees.md`, à valider) ; #1 rétention pédagogique = futur chantier, #8 attend T14.
+
+## Décisions de David (2026-11-03, page à cocher lot B)
+
+Page : https://claude.ai/artifact/J4Z8UfhGXAwSafQX59x1nm (20 fiches, revérifiées le jour même).
+
+- **Destructif** : **M4** `worksheet_instances` (0 ligne, aucune FK ni fonction) → PR de code (décompte « Publié pour N élève(s) » sur les élèves de l'affectation au lieu de la table, toujours 0 aujourd'hui ; `canStudentAccessInstanceCorrection` sans appelant retirée), puis `DROP` après le `deploy:prod` suivant. **M11** `class_google_classroom_links` (0 ligne, aucune référence dans `src/`) → `DROP` + `db:types` + ligne de `scripts/generate-db-doc.ts`. **M20** retiré de la liste : `question_templates.type` est lu (stats prof, anti-fraude, filtres admin).
+- **Fermés** : V4 (tableur retiré, 55bc75c0d), V8 (ADR 0007 faite), M2 (`'graphical'` porte les cases figure), V41, D10 + L11, D20.
+- **V35** : partie imaginaire écrite **i derrière** : `-\dfrac{1}{2} + \dfrac{\sqrt{3}}{2}i` (aujourd'hui `\dfrac{i\sqrt{3}}{2}`, mesuré).
+- **V39** : `\ln 5^2` lu **ln(5²)** comme les manuels, après mesure des modèles touchés (aujourd'hui (ln 5)², mesuré).
+- **V40** : rédiger |u| = c ⇔ u = c ou u = −c (c > 0), u = 0 (c = 0), ∅ (c < 0).
+- **V48** (a) : en attente du sélecteur résumé / détaillé. **V49** : limite connue, fermé. **L20** : limite connue, à écrire dans la doc.
+- **L9** : STIX Two Math (OFL) dans le dépôt, polices listées. **D6** : reporté.
+- **M8** : retirer l'export `.tex` d'ubumark. **M22** : **garder** les règles trigo / hyperboliques (futur « Comment ? » trigo).
+- **D11 + C10** : renommer « capacité » dans le code (point du programme). **C14** : `src/lib/lexicon/` → `src/lib/dictionary/`.
+- **D21** : tuteur en pause, V31 / L32 / L33 suspendus avec lui. **C13** : David relit les récits du chiffrement (→ vérifications manuelles).
+- **Sans choix** : **L13** (commentaire : « l'atelier est censé lire tout seul les unités ») et **V63** (« je ne comprends rien ») → reposés dans la conversation.

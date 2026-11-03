@@ -88,6 +88,66 @@ export const REGISTRE_CORPUS: Readonly<Record<string, readonly RegistreCase[]>> 
 			ligne: '.dériver (3x-1)^2',
 			attendu: '18x-6',
 			note: 'Réduite : 6(3x−1) est une forme factorisée.'
+		},
+		{
+			id: 'deriver-13',
+			ligne: '.dériver (1/3)x^2*e^x',
+			attendu: '(\\frac{x^2}{3}+\\frac{2x}{3})e^x',
+			note: 'Coefficient en fraction : l’exponentielle commune sort quand même (D1), la fraction distribuée. Validé par David le 2026-11-03 (page à cocher « Exponentielle commune en facteur »).'
+		},
+		{
+			id: 'deriver-14',
+			ligne: '.dériver (1/2)x^2*e^x',
+			attendu: '(\\frac{x^2}{2}+x)e^x'
+		},
+		{
+			id: 'deriver-15',
+			ligne: '.dériver (2/5)x*e^(-x)',
+			attendu: '(\\frac{2}{5}-\\frac{2x}{5})e^{-x}'
+		},
+		{
+			id: 'deriver-16',
+			ligne: '.dériver (2/3)x*e^(3x)',
+			attendu: '(2x+\\frac{2}{3})e^{3x}'
+		},
+		{
+			id: 'deriver-17',
+			ligne: '.dériver x^2*e^x/3',
+			attendu: '(\\frac{x^2}{3}+\\frac{2x}{3})e^x',
+			note: 'Division écrite après : même écriture que le coefficient devant. Validé par David le 2026-11-03 (page à cocher « Exponentielle commune en facteur »).'
+		},
+		{
+			id: 'deriver-18',
+			ligne: '.dériver x*e^x/3',
+			attendu: '(\\frac{x}{3}+\\frac{1}{3})e^x'
+		},
+		{
+			id: 'deriver-19',
+			ligne: '.dériver (x+1)e^x/4',
+			attendu: '(\\frac{x}{4}+\\frac{1}{2})e^x'
+		},
+		{
+			id: 'deriver-20',
+			ligne: '.dériver (x^2+1)*e^x/2',
+			attendu: '(\\frac{x^2}{2}+x+\\frac{1}{2})e^x',
+			note: 'Rien d’autre de factorisé (D1) : pas de (x + 1)².'
+		},
+		{
+			id: 'deriver-21',
+			ligne: '.dériver 3x*e^x/2',
+			attendu: '(\\frac{3x}{2}+\\frac{3}{2})e^x'
+		},
+		{
+			id: 'deriver-22',
+			ligne: '.dériver 0.5x^2*e^x',
+			attendu: '(0.5x^2+x)e^x',
+			note: 'Un décimal reste décimal.'
+		},
+		{
+			id: 'deriver-23',
+			ligne: '.dériver (1/4)e^(2x)',
+			attendu: '\\frac{e^{2x}}{2}',
+			note: 'Un seul terme : rien à mettre en facteur.'
 		}
 	],
 

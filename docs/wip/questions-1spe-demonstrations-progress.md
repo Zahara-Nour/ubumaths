@@ -9,20 +9,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, lot 3 écrit (PR à ouvrir)._
+_Mis à jour le 2026-11-03, PR de migration du lot 3 ouverte (#2334)._
 
-- **État** : lots 1 et 2 **publiés** en prod (5/5 OK chacun). Lot 3 (308, 411, 322, 323 ; 300-302 hors chantier,
-  § 1) écrit, simulation verte, brouillons en base locale ; PR des modèles à ouvrir et merger.
-- **Prochaine action** : après le merge, David crée les 4 brouillons en prod
-  (`pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-demonstrations-3 --publier`), puis migration
-  de rangement et tags (gabarit : lot 2, #2319), `db:migrate`, page à cocher.
-- **En attente de David** : création des brouillons en prod (après le merge). Extension `signe:` du bloc `ranger`
-  (Q2 b) **non tranchée** : à reposer une fois le lot 3 publié.
-- **Pièges en cours** : `h(…)` est lu comme une fonction (f, g, h). `1/√2` est jugé `bad_form` (spec asservie).
-  Jamais de couleur sur du texte. `Doc-inchangée:` dans un COMMIT pour une migration. Garde `lot partiel`. Ancienne
-  branche distante `docs/questions-1spe-demonstrations` à supprimer.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, branche `feat/questions-1spe-demonstrations`
-  (`origin/main` fusionnée le 2026-11-03).
+- **État** : lots 1 et 2 publiés. Lot 3 (308, 411, 322, 323) : modèles mergés (#2332), 4 brouillons créés en prod
+  par David ; migration `20261103155449_…_3_rangement_tags` en PR **#2334** (test 12/12, rouge sans elle).
+- **Prochaine action** : lire le verdict de l'audit `security-auditor` (lancé, à relancer si la session a été
+  vidée) et la CI de #2334 ; puis `pnpm check:migrations --pr 2334`, merge, `db:migrate` depuis la branche
+  mergée, vérification MCP (nœud, point, `updated_at`), page à cocher (gabarit : lot 2).
+- **En attente de David** : rien avant la page à cocher. Extension `signe:` du bloc `ranger` (Q2 b) **non
+  tranchée** : à reposer une fois le lot 3 publié.
+- **Pièges en cours** : `1/√2` est jugé `bad_form` (spec asservie). Migration copiée du lot 2 : transformer
+  LIGNE À LIGNE (une regex multi-lignes a mangé le bloc ROLLBACK commenté, refait). `Doc-inchangée:` dans un
+  COMMIT pour une migration. Ancienne branche distante `docs/questions-1spe-demonstrations` à supprimer.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, branche `feat/questions-1spe-demonstrations`.
 
 ---
 
@@ -197,3 +196,8 @@ resté, accolades équilibrées ; les alertes de `validateLatex` ne portent que 
 parseur ne lit pas (`\overrightarrow`, `\widehat`, `A(1\,;0)`). Brouillons créés en base locale ; aperçu admin correct
 pour 308 (choix) et 322 (vecteurs, normes, valeurs tirées). Bonne réponse des choix 308 et 411 raccourcie : seule
 sans « Car » et la plus longue, elle se trahissait.
+
+En prod (2026-11-03) : brouillons 66ecbb33 (308), 0931c87e (411), e8011f4e (322), dbdf02be (323), créés par David.
+Relevé MCP : `draft`, {1_SPE}, sans nœud ni tag ; les 3 sous-notions sont actives et uniques. Migration
+`20261103155449_questions_1spe_demonstrations_3_rangement_tags` (#2334), calquée sur celle du lot 2. Test d'intégration
+à 12 cas : vert, et rouge sans la migration (6 cas rouges, la suite principale ne s'exécute pas).
