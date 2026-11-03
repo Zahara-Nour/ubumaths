@@ -9,19 +9,19 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, PR #2358 ouverte (tableau resserré au téléphone)._
+_Mis à jour le 2026-11-04, après #2358._
 
-- **État** : #2335, #2338 en prod (0.68.0) ; #2353 (`clavier-mathlive`) mergée, pas déployée. #2358 :
-  2-330 à 390 px passe de 565 à 396 px (308 de place), ombre du bord qui défile, pas de bouton clavier
-  dans les cases sur écran tactile.
-- **Prochaine action** : merger #2358 (CI verte) ; puis essais iPhone de David (#2287, #2297, 2-330, 2-446 ;
-  #2353 et #2358 après `deploy:prod`), notés dans `verifications-manuelles.md` ; puis verser le chantier.
-- **En attente de David** : juger au doigt les 88 px qui défilent encore (deux racines) ; un tableau à
-  une racine devrait tenir (non mesuré).
+- **État** : #2335, #2338 en prod (0.68.0) ; #2353 (`clavier-mathlive`) et #2358 (tableau resserré au
+  téléphone : 2-330 à 390 px de 565 à 396 px, ombre du bord qui défile, pas de bouton clavier dans les
+  cases sur écran tactile) mergées, **pas encore déployées**.
+- **Prochaine action** : essais iPhone de David (#2287, #2297, 2-330, 2-446 dès maintenant ; #2353 et
+  #2358 après `deploy:prod`), notés dans `verifications-manuelles.md` ; puis verser le chantier.
+- **En attente de David** : `deploy:prod` (sa décision) ; juger au doigt les 88 px qui défilent encore
+  (deux racines).
 - **Pièges en cours** : `delay` n'est plus une garde d'`update-published-questions.ts` ; Chrome n'atteint
   pas `localhost` → Playwright (`devices['iPhone 13']` = `pointer: coarse`) ; worktree neuf →
   `svelte-kit sync` ; lire `question_templates` en pages (plafond 1000 lignes).
-- **Worktree / branche** : `../ubumaths-wt-tableau-signes` · `fix/tableau-signes-mobile`.
+- **Worktree / branche** : aucun (retiré après #2358).
 
 ---
 
@@ -273,4 +273,7 @@ Branche `feat/tableau-signes-modeles`, worktree `../ubumaths-wt-tableau-signes`.
   (attachement `watchOverflow` : scroll + ResizeObserver). Ombre gauche ajoutée en plus de la droite.
 - Tests : `VariationTable-telephone.svelte.test.ts`, 6, rouges d'abord (5/6) ; 11 fichiers qui montent
   le tableau : 95 verts. Rendu réel après : 396 px, ombre droite puis gauche, ordinateur inchangé.
-- **#2358 ouverte**.
+- Revue `code-reviewer` Sonnet : intégrés `position: relative` sur `.vt-defilement` (débordement non
+  reproduit : 390 = 390 avec et sans), `z-index` des ombres, tests ombre gauche et largeur de page (8).
+  Non fait : test `pointer: coarse` (pas d'émulation tactile en vitest browser). Doc : `ubumark.md`.
+- **#2358 mergée** (CI verte), le 2026-11-04.
