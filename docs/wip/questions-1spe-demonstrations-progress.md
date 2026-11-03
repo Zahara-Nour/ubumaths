@@ -9,15 +9,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, lot 2 écrit (PR à ouvrir)._
+_Mis à jour le 2026-11-03, après #2314 (lot 2 mergé)._
 
-- **État** : lot 1 publié. Lot 2 (dérivation : 275, 276, 277, 398, 278) écrit, simulation verte, vérifié en local
-  (§ 5).
-- **Prochaine action** : PR du lot 2 → merge → David crée les brouillons en prod
-  (`pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-demonstrations-2 --publier`) → migration du
-  nœud et des tags (gabarit : `20261103115420_…_1_rangement_tags.sql` et son test) → page à cocher → publication.
-- **En attente de David** : la création des brouillons en prod après le merge. Extension `signe:` du bloc `ranger`
-  (Q2 b) **non tranchée** : à reposer après les lots à trous.
+- **État** : lot 1 publié. Lot 2 (dérivation : 275, 276, 277, 398, 278) mergé (#2314), brouillons **pas encore en
+  prod** (§ 5).
+- **Prochaine action** : dès que David a créé les brouillons en prod, relevé MCP de leurs id (sans nœud ni tag), puis
+  PR de migration du nœud et des tags (gabarit : `20261103115420_…_1_rangement_tags.sql` et son test d'intégration),
+  page à cocher, publication.
+- **En attente de David** : `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-demonstrations-2
+--publier` (depuis `main` à jour). Extension `signe:` du bloc `ranger` (Q2 b) **non tranchée** : à reposer après
+  les lots à trous.
 - **Pièges en cours** : `h(…)` est lu comme une fonction (f, g, h) : jamais en réponse attendue. 398 : jumeau 392 dans
   le même programme, ne taguer que 398. `requiredForm: {pattern: 'u'}` pour les écritures équivalentes. Jamais de
   couleur sur du texte. `Doc-inchangée:` dans un COMMIT pour une migration. Garde `lot partiel`. Ancienne branche
