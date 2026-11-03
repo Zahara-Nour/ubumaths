@@ -6,24 +6,25 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2316 ; PR 1 bis ouverte._
+_Mis à jour le 2026-11-03, après #2316 ; #2329 ouverte._
 
-- **État** : PR 1 `.dériver` mergée (#2316). **PR 1 bis** (exponentielle commune sous une barre de
-  nombre, page à cocher validée) : branche `fix/registre-deriver-fraction` (§ PR 1 bis). Rien de
-  déployé.
-- **Prochaine action** : merger la PR 1 bis, puis l'étape 2 du découpage : `.simplifier` S3
-  (`simplifier-01`, `-10`), `.résoudre` → S (registre et Atelier), puis `.intégrer`.
-- **En attente de David** : confirmer la coquille de `tem-01` — il a écrit `(3x²/2 + 3/2)eˣ`,
-  retenu `(3x/2 + 3/2)eˣ` (dérivée de 3xeˣ/2), sauf avis contraire.
-- **Tranché** : option `unitChoice: 'school'` GARDÉE exprès (David, 2026-11-03 : « utile plus
-  tard ») — ne pas proposer de la retirer ; avant : Q9 EN ENTIER, A-D du lot 2, `decimal` en
-  LaTeX, `plafond-02` → 1000, Q24, `signes-06` — NE PAS reposer. Fraction devant ou division
-  après : même écriture `(x²/3 + 2x/3)eˣ` (2026-11-03).
-- **Pièges** : `docs:check-a-jour` local ne voit que le COMMITÉ ; PR en conflit avec `main` = aucun
-  run de CI → `git merge origin/main` (commitlint refuse « merge … » : `chore: fusion …`) ;
-  `wrapDynamicImport` au shard client = panne d'outillage, relancer le job ; limites connues :
-  `.diff cos(60°)*x` (`ctx.input`), `2 ≈ 2` (caractère `≈`) mal lu, `(t>1)` → faux, grandeur avec
-  factorielles (`5 m * 25!/24!`), `20000!/19999!` gardé (prévision).
+- **État** : PR 1 `.dériver` mergée (#2316). **#2329** (PR 1 bis, exponentielle commune sous une
+  barre de nombre + barre remise au tableau de variations) OUVERTE, 2 revues opus faites (2e :
+  « prêt »), CI du commit `a509853e8` en cours au moment du `/clear`. Rien de déployé.
+- **Prochaine action** : (1) `gh pr checks 2329` : vert → `gh pr merge 2329 --merge` (rouge
+  `wrapDynamicImport` au shard client = relancer le job). (2) Avant le merge si rapide, mineurs de
+  la 2e revue : commentaire de `factoredForSign` (`display.ts`) faux — `(1/2 − x/2)e^{−x}` DONNE
+  `(1−x)e^{−x}/2`, le corriger ou le fixer par un test ; plafond sur q dans `commonDenominator`
+  (`(x⁴/7 + x³/11 + x/13)eˣ` → `/1001`) ; sonder `requestedForm('factorisee')` d'une primitive
+  `(ax+b)e^{kx}` (`pedagogical-integration/pipeline.ts:474` passe par `factoredForSign`).
+  (3) Puis étape 2 du découpage : `.simplifier` S3 (`simplifier-01`, `-10`), `.résoudre` → S.
+- **En attente de David** : rien (`tem-01` = `(3x/2 + 3/2)eˣ`, confirmé le 2026-11-03).
+- **Tranché** : `unitChoice: 'school'` GARDÉE exprès — ne pas proposer de la retirer ; Q9 EN
+  ENTIER, A-D du lot 2, `decimal` en LaTeX, `plafond-02` → 1000, Q24, `signes-06` — NE PAS
+  reposer. Fraction devant ou division après : `(x²/3 + 2x/3)eˣ` ; tableau : `x(x + 2)eˣ/3`.
+- **Pièges** : `docs:check-a-jour` local ne voit que le COMMITÉ ; commitlint refuse « merge … »
+  (`chore: fusion …`) ; un nombre négatif est un `opposite(number)`, pas un `number` ; limites
+  connues : `.diff cos(60°)*x`, `2 ≈ 2`, `(t>1)`, `5 m * 25!/24!`, `20000!/19999!`.
 - **Worktree / branche** : `../ubumaths-wt-registre-reference`, `fix/registre-deriver-fraction`.
 
 ---
