@@ -1647,7 +1647,7 @@ tspe-ln-continuite-convexite,1spe-tracer-droite}.py`) : vérifiés d'abord fidè
 - Page à cocher relue par David : 2/2 « OK ». `publier-lot` (simulation puis `--publier`) par David le
   2026-11-03 : 2/2 publiés, relu en base (statut `published`, nœud, tags).
 
-## 66. Lot 9 « Nombres réels, arithmétique, intervalles » : relevé et phase 0 (proposée le 2026-11-03, à valider)
+## 66. Lot 9 « Nombres réels, arithmétique, intervalles » : relevé et phase 0 (validée le 2026-11-03)
 
 **Relevé MCP (prod, 2026-11-03)** : 18 points sans modèle, hors P (239-242, 255-259, Q2) : 235, 236, 418, 419,
 237 (arithmétique) ; 243, 247, 248, 422 (ensembles de nombres) ; 407, 252, 246, 251 (intervalles) ; 249, 250
@@ -1717,3 +1717,7 @@ _9 C — Droite graduée, encadrements, arrondis_
   démonstration (2-239, 2-240 sont des P).
 - **L9-d — 2-422** : seulement √2 et π (exemples du BO), ou aussi √3, √5 (diagonales, hauteurs) ?
   → Je recommande **√2, π et √3** (hauteur du triangle équilatéral) : la liste du BO n'est pas limitative.
+
+**Décisions de David (2026-11-03)** : phase 0 validée avec mes quatre recommandations — L9-a 9 A, 9 B, 9 C, une
+PR chacun ; L9-b multiples consécutifs de l'amplitude ; L9-c problèmes courts à réponse numérique ; L9-d √2,
+π et √3.
