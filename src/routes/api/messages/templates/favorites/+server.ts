@@ -9,6 +9,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import { requireAuth } from '$lib/server/middleware/auth';
 import type { RequestHandler } from './$types';
 import { uuidSchema, validateRequest } from '$lib/server/validation';
 import { createServerLogger } from '$lib/utils/logger';
@@ -32,11 +33,9 @@ type FavoriteWithTemplate = {
 
 // GET - List favorites
 export const GET: RequestHandler = async ({ locals }) => {
-	const { supabase, user } = locals;
+	const { supabase } = locals;
 
-	if (!user) {
-		return error(401, 'Non authentifié');
-	}
+	const { user } = await requireAuth(locals);
 
 	const { data: favorites, error: dbError } = await supabase
 		.from('user_favorite_templates')
@@ -89,14 +88,9 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 // POST - Add to favorites
 export const POST: RequestHandler = async ({ locals, request }) => {
-	const { supabase, user } = locals;
+	const { supabase } = locals;
 
-	// ====================================================================
-	// SECURITY: Authentication Check
-	// ====================================================================
-	if (!user) {
-		return error(401, 'Non authentifié');
-	}
+	const { user } = await requireAuth(locals);
 
 	// ====================================================================
 	// SECURITY: Input Validation
@@ -153,11 +147,9 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 
 // DELETE - Remove from favorites
 export const DELETE: RequestHandler = async ({ locals, url }) => {
-	const { supabase, user } = locals;
+	const { supabase } = locals;
 
-	if (!user) {
-		return error(401, 'Non authentifié');
-	}
+	const { user } = await requireAuth(locals);
 
 	const templateId = url.searchParams.get('template_id');
 

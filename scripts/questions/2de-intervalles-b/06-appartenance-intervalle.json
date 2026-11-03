@@ -1,0 +1,213 @@
+{
+	"title": "Un réel appartient-il à un intervalle ?",
+	"description": "Une borne comprise ou exclue ; 3,99 ou 4,01 et [−1 ; 4[ ; √2 ∈ [1,4 ; 1,5], π ∈ ]3,14 ; 3,15[, √3 ∈ [1,8 ; 2]…",
+	"grades": ["2"],
+	"theme": "Logique",
+	"domain": "Ensembles",
+	"subdomain": "Intervalles",
+	"level": 3,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "${{if:w==1|{{b}}|{{a}}}}\\in{{if:sa==1|[|]}}{{a}}\\,;\\,{{b}}{{if:sb==1|]|[}}$ ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..5"
+				},
+				{
+					"name": "l",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+l"
+				},
+				{
+					"name": "sa",
+					"expression": "0|1"
+				},
+				{
+					"name": "sb",
+					"expression": "0|1"
+				},
+				{
+					"name": "w",
+					"expression": "0|1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(1-(w))*(1-(sa))+(w)*(1-(sb))}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le crochet est **tourné vers le nombre** quand il est compris ($\\leqslant$), **tourné vers l'extérieur** quand il est exclu ($<$). Du côté de $\\pm\\infty$, le crochet est toujours ouvert.",
+					"${{if:w==1|{{b}}|{{a}}}}$ est une borne de l'intervalle ; son crochet est tourné {{if:w==1|{{if:sb==1|vers lui : elle est **comprise**, oui|vers l'extérieur : elle est **exclue**, non}}|{{if:sa==1|vers lui : elle est **comprise**, oui|vers l'extérieur : elle est **exclue**, non}}}}."
+				]
+			}
+		},
+		{
+			"statement": "${{if:u==1|{{b}}{,}01|{{eval:(b)-1}}{,}99}}\\in[{{a}}\\,;\\,{{b}}[$ ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-5..0"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "u",
+					"expression": "0|1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$x\\in[{{a}}\\,;\\,{{b}}[$ veut dire ${{a}}\\leqslant x<{{b}}$.",
+					"{{if:u==1|$\\textcolor{{{color:primary.0}}}{{{b}}{,}01>{{b}}}$ : **non**, il est à droite de l'intervalle.|$\\textcolor{{{color:primary.0}}}{{{a}}\\leqslant{{eval:(b)-1}}{,}99<{{b}}}$ : **oui**, il est juste avant ${{b}}$, exclu.}}"
+				]
+			}
+		},
+		{
+			"statement": "${{if:t==0|\\sqrt{2}\\in[1{,}4\\,;\\,1{,}5]|{{if:t==1|\\pi\\in\\,]3{,}14\\,;\\,3{,}15[|{{if:t==2|\\sqrt{3}\\in[1{,}8\\,;\\,2]|{{if:t==3|\\sqrt{5}\\in\\,]2{,}2\\,;\\,2{,}3[|\\sqrt{10}\\in[3\\,;\\,3{,}1]}}}}}}}}$ ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:t==0|0|{{if:t==1|0|{{if:t==2|1|{{if:t==3|0|1}}}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compare les carrés (tous les nombres sont positifs), ou on utilise une valeur approchée.",
+					"{{if:t==0|$1{,}4^2=1{,}96<2<2{,}25=1{,}5^2$ : $\\textcolor{{{color:primary.0}}}{1{,}4<\\sqrt{2}<1{,}5}$, **oui**.|{{if:t==1|$\\pi\\approx3{,}14159$ : $\\textcolor{{{color:primary.0}}}{3{,}14<\\pi<3{,}15}$, **oui**.|{{if:t==2|$1{,}8^2=3{,}24>3$ : $\\textcolor{{{color:primary.0}}}{\\sqrt{3}<1{,}8}$, **non** ($\\sqrt{3}\\approx1{,}732$).|{{if:t==3|$2{,}2^2=4{,}84<5<5{,}29=2{,}3^2$ : $\\textcolor{{{color:primary.0}}}{2{,}2<\\sqrt{5}<2{,}3}$, **oui**.|$3{,}1^2=9{,}61<10$ : $\\textcolor{{{color:primary.0}}}{\\sqrt{10}>3{,}1}$, **non** ($\\sqrt{10}\\approx3{,}162$).}}}}}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "5 ∈ ]−2 ; 5] : oui",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"l": "7",
+				"b": "5",
+				"sa": "0",
+				"sb": "1",
+				"w": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "−2 ∈ ]−2 ; 5] : non",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"l": "7",
+				"b": "5",
+				"sa": "0",
+				"sb": "1",
+				"w": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −2 ∈ ]−2 ; 5]",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"l": "7",
+				"b": "5",
+				"sa": "0",
+				"sb": "1",
+				"w": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3,99 ∈ [−1 ; 4[ : oui",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"b": "4",
+				"u": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "4,01 ∈ [−1 ; 4[ : non",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"b": "4",
+				"u": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "√2 ∈ [1,4 ; 1,5] : oui",
+			"variationIndex": 2,
+			"variables": {
+				"t": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "√3 ∈ [1,8 ; 2] : non",
+			"variationIndex": 2,
+			"variables": {
+				"t": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : √3 ∈ [1,8 ; 2]",
+			"variationIndex": 2,
+			"variables": {
+				"t": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

@@ -9,7 +9,8 @@
 	et une construction juste à côté) ; sans réponse (R9), la construction juste
 	seule. Lecture seule : jamais de réserve active. Droite à placer (```line,
 	`placer:`) : la droite verrouillée avec les points de l'élève (`answers`, un par
-	point, quand il y en a plusieurs), ou les points justes. Horloge à placer
+	point, quand il y en a plusieurs), ou les points justes. Droite à représenter
+	(```line, `representer:`) : l'intervalle de l'élève, ou l'intervalle juste. Horloge à placer
 	(```horloge, `placer:`) : le cadran verrouillé avec les aiguilles de l'élève,
 	ou le cadran à l'heure juste. Figure à colorier (```partage, `colorier:`) : la
 	figure verrouillée avec les parts de l'élève, ou la figure juste. Diagramme en barres à construire (```barres,
@@ -31,6 +32,7 @@
 	import MonnaieConstruire from '$lib/components/markdown/nodes/MonnaieConstruire.svelte';
 	import NumberLine from '$lib/components/markdown/nodes/NumberLine.svelte';
 	import NumberLinePlacer from '$lib/components/markdown/nodes/NumberLinePlacer.svelte';
+	import NumberLineRepresenter from '$lib/components/markdown/nodes/NumberLineRepresenter.svelte';
 	import Courbe from '$lib/components/markdown/nodes/Courbe.svelte';
 	import { parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
 	import { solutionLine } from '$lib/ubumark/utils/courbe-tracer';
@@ -124,6 +126,19 @@
 			node={{
 				...collection,
 				spec: { ...spec, build: undefined, sets: [collectionSolution(spec.build!)] }
+			}}
+		/>
+	{/if}
+{:else if line?.representer !== undefined}
+	{#if lineCases}
+		<NumberLineRepresenter node={line} answers={lineCases} showControls={false} />
+	{:else if line.representer.interval}
+		<!-- L'intervalle juste, sans `representer:` : dessiné seul -->
+		<NumberLine
+			node={{
+				...line,
+				representer: undefined,
+				segments: [{ ...line.representer.interval, color: 'vert' }]
 			}}
 		/>
 	{/if}

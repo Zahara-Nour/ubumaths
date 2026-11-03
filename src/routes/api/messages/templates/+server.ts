@@ -8,6 +8,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import { requireAuth, requireRoles } from '$lib/server/middleware/auth';
 import type { RequestHandler } from './$types';
 import { validateTemplate } from '$lib/templates/templateEngine';
 import type { MessageTemplateInput } from '$lib/types/messageTemplates';
@@ -21,32 +22,9 @@ const logger = createServerLogger('api/messages/templates/+server');
 // GET - List templates
 // =====================================================
 export const GET: RequestHandler = async ({ locals, url }) => {
-	const { supabase, user } = locals;
+	const { supabase } = locals;
 
-	// ====================================================================
-	// SECURITY: Authentication Check
-	// ====================================================================
-	if (!user) {
-		return error(401, 'Non authentifié');
-	}
-
-	// Get user profile
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
-	// panne produisait le même refus, indiscernable d'un refus mérité.
-	if (profileError && profileError.code !== 'PGRST116') {
-		logger.error('Rôle illisible :', profileError);
-		return error(500, 'Impossible de vérifier les droits');
-	}
-
-	if (!profile) {
-		return error(404, 'Profil non trouvé');
-	}
+	const { user, profile } = await requireAuth(locals);
 
 	// ====================================================================
 	// SECURITY: Input Validation (Query Parameters)
@@ -154,39 +132,9 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 // POST - Create template
 // =====================================================
 export const POST: RequestHandler = async ({ locals, request }) => {
-	const { supabase, user } = locals;
+	const { supabase } = locals;
 
-	// ====================================================================
-	// SECURITY: Authentication Check
-	// ====================================================================
-	if (!user) {
-		return error(401, 'Non authentifié');
-	}
-
-	// Get user profile
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
-	// panne produisait le même refus, indiscernable d'un refus mérité.
-	if (profileError && profileError.code !== 'PGRST116') {
-		logger.error('Rôle illisible :', profileError);
-		return error(500, 'Impossible de vérifier les droits');
-	}
-
-	if (!profile) {
-		return error(404, 'Profil non trouvé');
-	}
-
-	// ====================================================================
-	// SECURITY: Authorization Check
-	// ====================================================================
-	if (profile.role !== 'admin' && profile.role !== 'teacher') {
-		return error(403, 'Permissions insuffisantes');
-	}
+	const { user, profile } = await requireRoles(locals, ['teacher', 'admin']);
 
 	// ====================================================================
 	// SECURITY: Input Validation

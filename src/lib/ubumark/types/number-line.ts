@@ -131,6 +131,17 @@ export interface NumberLineConfig {
 	scale: NumberLineScale;
 }
 
+/**
+ * Droite à représenter (`representer: [2, +inf[`) : l'intervalle que l'élève
+ * dessine (chantier `docs/wip/demi-droite-progress.md`). `bounded` dit le geste :
+ * deux bornes (intervalle borné) ou une borne et un côté (demi-droite).
+ * `interval` null : valeur masquée (`representer: ?`, `? ; ?`), énoncé envoyé.
+ */
+export interface NumberLineRepresenter {
+	bounded: boolean;
+	interval: NumberLineSegment | null;
+}
+
 // ============================================================================
 // AST NODE
 // ============================================================================
@@ -187,6 +198,8 @@ export interface NumberLineNode extends BaseNode {
 	 * écrit (chantier `docs/wip/reponses-a-placer-progress.md`). Jamais dessinés.
 	 */
 	placer?: NumberLineTarget[];
+	/** Droite à représenter (`representer:`) : l'intervalle de l'élève. Jamais dessiné. */
+	representer?: NumberLineRepresenter;
 	/**
 	 * Première case d'une droite à placer dans une question (`case: N`, posée par
 	 * le générateur) : le point k a la case N + k

@@ -1,5 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '$lib/server/middleware/auth';
 // Supabase client is now accessed via locals.supabase
 import { updateProposalSchema } from '$lib/server/marketplace/validation';
 import { unlockProposalCards } from '$lib/server/marketplace/proposal-locks';
@@ -35,11 +36,8 @@ const acceptProposalResponseSchema = z.object({
  */
 export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifié');
-	}
+	const { user } = await requireAuth(locals);
+	const userId = user.id;
 
 	// Validate proposal ID
 	const idValidation = idSchema.safeParse(params.id);
@@ -246,11 +244,8 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
  */
 export const DELETE: RequestHandler = async ({ params, locals }) => {
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifié');
-	}
+	const { user } = await requireAuth(locals);
+	const userId = user.id;
 
 	// Validate proposal ID
 	const idValidation = idSchema.safeParse(params.id);

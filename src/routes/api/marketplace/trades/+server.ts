@@ -1,5 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '$lib/server/middleware/auth';
 // Supabase client is now accessed via locals.supabase
 import { createTradeSchema } from '$lib/server/marketplace/validation';
 import { dailyTradeLimitSchema } from '$lib/server/validation/marketplace-rpc';
@@ -35,11 +36,8 @@ const tradesQuerySchema = z.object({
  */
 export const GET: RequestHandler = async ({ url, locals }) => {
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifié');
-	}
+	const { user } = await requireAuth(locals);
+	const userId = user.id;
 
 	// Validate query parameters
 	const queryValidation = tradesQuerySchema.safeParse({
@@ -162,15 +160,12 @@ export const GET: RequestHandler = async ({ url, locals }) => {
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const supabase = locals.supabase;
-	const userId = locals.user?.id;
-
-	if (!userId) {
-		throw error(401, 'Non authentifié');
-	}
+	const { user, profile } = await requireAuth(locals);
+	const userId = user.id;
 
 	// Check consent for students (teachers/admins can trade without consent)
-	if (locals.profile && hasConsentFields(locals.profile)) {
-		requireConsent(locals.profile, 'purchase_items');
+	if (hasConsentFields(profile)) {
+		requireConsent(profile, 'purchase_items');
 	}
 
 	// Validate request body

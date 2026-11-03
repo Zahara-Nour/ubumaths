@@ -126,13 +126,13 @@ export async function getUserProfile(
  *   const { user } = await safeGetSession();
  *
  *   // Protect all dashboard routes - redirect to login if not authenticated
- *   requireAuth(user);
+ *   requireUserOrRedirect(user);
  *
  *   // User is authenticated, continue...
  * };
  * ```
  */
-export function requireAuth(user: { id: string } | null) {
+export function requireUserOrRedirect(user: { id: string } | null) {
 	if (!user) {
 		// User is not authenticated - redirect to login page
 		// 303 status ensures a GET request is made to /auth/login

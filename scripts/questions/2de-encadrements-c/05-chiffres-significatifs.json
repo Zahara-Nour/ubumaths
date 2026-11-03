@@ -1,0 +1,183 @@
+{
+	"title": "Arrondir avec le bon nombre de chiffres significatifs",
+	"description": "Compter les chiffres significatifs d'une mesure ; aire d'un disque (rayon à 2 c. s.) et vitesse moyenne (données à 3 c. s.) arrondies en conséquence",
+	"grades": ["2"],
+	"theme": "Décimaux",
+	"domain": "Apprivoiser",
+	"subdomain": "Arrondir",
+	"level": 8,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Combien de chiffres significatifs la mesure ${{if:m==0|0{,}00340|{{if:m==1|2{,}050|{{if:m==2|0{,}07|{{if:m==3|12{,}0|{{if:m==4|305|0{,}1020}}}}}}}}}}$ a-t-elle ?\n\n$$?$$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "0..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:m==0|3|{{if:m==1|4|{{if:m==2|1|{{if:m==3|3|{{if:m==4|3|4}}}}}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte les chiffres à partir du **premier chiffre non nul** : {{if:m==0|les zéros de tête ne comptent pas, le zéro final si|{{if:m==1|le zéro entre deux chiffres compte, le zéro final aussi|{{if:m==2|les zéros de tête ne comptent pas|{{if:m==3|le zéro final d'une mesure compte|{{if:m==4|le zéro entre deux chiffres compte|le zéro de tête ne compte pas, les autres si}}}}}}}}}}.",
+					"${{if:m==0|0{,}00340|{{if:m==1|2{,}050|{{if:m==2|0{,}07|{{if:m==3|12{,}0|{{if:m==4|305|0{,}1020}}}}}}}}}}$ a $\\textcolor{{{color:primary.0}}}{{{if:m==0|3|{{if:m==1|4|{{if:m==2|1|{{if:m==3|3|{{if:m==4|3|4}}}}}}}}}}}$ chiffres significatifs."
+				]
+			}
+		},
+		{
+			"statement": "Le rayon d'un disque, mesuré à la règle, vaut ${{if:m==0|1{,}5|{{if:m==1|2{,}4|{{if:m==2|3{,}2|{{if:m==3|4{,}5|{{if:m==4|6{,}3|8{,}6}}}}}}}}}}$ cm (deux chiffres significatifs). Donne son aire en cm², arrondie au nombre de chiffres significatifs adapté.\n\n$$\\mathcal{A}\\approx?\\text{ cm}^2$$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "0..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:m==0|7.1|{{if:m==1|18|{{if:m==2|32|{{if:m==3|64|{{if:m==4|120|230}}}}}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\mathcal{A}=\\pi r^2=\\pi\\times{{if:m==0|1{,}5^2|{{if:m==1|2{,}4^2|{{if:m==2|3{,}2^2|{{if:m==3|4{,}5^2|{{if:m==4|6{,}3^2|8{,}6^2}}}}}}}}}}\\approx{{if:m==0|7{,}069|{{if:m==1|18{,}096|{{if:m==2|32{,}17|{{if:m==3|63{,}617|{{if:m==4|124{,}69|232{,}352}}}}}}}}}}$$",
+					"Le rayon n'a que **deux** chiffres significatifs : le résultat n'en garde pas plus.",
+					"$$\\mathcal{A}\\approx\\textcolor{{{color:primary.0}}}{{{if:m==0|7{,}1|{{if:m==1|18|{{if:m==2|32|{{if:m==3|64|{{if:m==4|120|230}}}}}}}}}}}\\text{ cm}^2$$"
+				]
+			}
+		},
+		{
+			"statement": "Une voiture parcourt ${{if:m==0|125|{{if:m==1|248|{{if:m==2|312|{{if:m==3|87{,}5|{{if:m==4|163|405}}}}}}}}}}$ km en ${{if:m==0|1{,}75|{{if:m==1|2{,}25|{{if:m==2|3{,}5|{{if:m==3|1{,}25|{{if:m==4|2{,}75|4{,}5}}}}}}}}}}$ h (mesures à trois chiffres significatifs). Donne sa vitesse moyenne en km/h, arrondie au nombre de chiffres significatifs adapté.\n\n$$v\\approx?\\text{ km/h}$$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "0..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:m==0|71.4|{{if:m==1|110|{{if:m==2|89.1|{{if:m==3|70|{{if:m==4|59.3|90}}}}}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$v=\\dfrac{d}{t}=\\dfrac{{{if:m==0|125|{{if:m==1|248|{{if:m==2|312|{{if:m==3|87{,}5|{{if:m==4|163|405}}}}}}}}}}}{{{if:m==0|1{,}75|{{if:m==1|2{,}25|{{if:m==2|3{,}5|{{if:m==3|1{,}25|{{if:m==4|2{,}75|4{,}5}}}}}}}}}}}\\approx{{if:m==0|71{,}429|{{if:m==1|110{,}222|{{if:m==2|89{,}143|{{if:m==3|70|{{if:m==4|59{,}273|90}}}}}}}}}}$$",
+					"Les données ont **trois** chiffres significatifs : on en garde trois.",
+					"$$v\\approx\\textcolor{{{color:primary.0}}}{{{if:m==0|71{,}4|{{if:m==1|110|{{if:m==2|89{,}1|{{if:m==3|70|{{if:m==4|59{,}3|90}}}}}}}}}}}\\text{ km/h}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "0,00340 : 3",
+			"variationIndex": 0,
+			"variables": {
+				"m": "0"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : zéros de tête comptés (6)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "0"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2,050 : 4",
+			"variationIndex": 0,
+			"variables": {
+				"m": "1"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "r = 3,2 : 32 cm²",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"j": "2",
+				"m": "2",
+				"x": "1.41421356",
+				"q": "20"
+			},
+			"answers": ["32"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : trop de chiffres (32,17)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"j": "2",
+				"m": "2",
+				"x": "1.41421356",
+				"q": "20"
+			},
+			"answers": ["32.17"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : π × 3,2 (10)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "0",
+				"j": "2",
+				"m": "2",
+				"x": "1.41421356",
+				"q": "20"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "125 km en 1,75 h : 71,4 km/h",
+			"variationIndex": 2,
+			"variables": {
+				"m": "0"
+			},
+			"answers": ["71.4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 71 (deux chiffres seulement)",
+			"variationIndex": 2,
+			"variables": {
+				"m": "0"
+			},
+			"answers": ["71"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
