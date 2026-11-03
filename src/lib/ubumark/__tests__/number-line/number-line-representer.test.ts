@@ -210,7 +210,10 @@ describe('juge (point 12) : borne(s), côté et crochets tous justes', () => {
 		['[2/3 ; +∞[', '[2/3 ; +∞[', true],
 		['[4/6 ; +∞[', '[2/3 ; +∞[', true],
 		['[0,5 ; +∞[', '[1/2 ; +∞[', true],
-		['', '[2 ; +∞[', false]
+		['', '[2 ; +∞[', false],
+		// Crochet fermé sur l'infini : jamais écrit par le geste, jamais juste
+		['[-∞ ; 2]', ']-∞ ; 2]', false],
+		['[2 ; +∞]', '[2 ; +∞[', false]
 	])('%s pour %s → %s', (answer, expected, correct) => {
 		expect(isRepresentedIntervalCorrect(answer, expected)).toBe(correct);
 	});

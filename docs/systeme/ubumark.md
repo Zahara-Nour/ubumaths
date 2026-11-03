@@ -349,15 +349,15 @@ dans l'énoncé envoyé (`masked-statement.ts`, `maskRepresenter`) en gardant le
 droites ; `isLineToRepresent(source)`. `NumberLine.svelte` passe la main à
 `NumberLineRepresenter.svelte` : toucher la droite pose la borne sur la graduation la plus proche (la
 retoucher la déplace) ; demi-droite : « ← vers la gauche » / « vers la droite → » (`aria-pressed`)
-choisissent le côté ; un bouton par borne la bascule (« 2 comprise » / « 2 exclue ») ; borné : deux
+choisissent le côté (grisés sans borne) ; un bouton par borne la bascule (« 2 comprise » / « 2 exclue ») ; borné : deux
 touchers posent les deux bornes, puis toucher déplace la plus proche, pas de côté ; ◀ ▶ et le clavier
-déplacent la borne active. Dessin de l'élève en bleu : un point tant que le trait n'est pas connu,
+déplacent la borne active (suivie par sa graduation : la case relue trie les bornes). Dessin de l'élève en bleu : un point tant que le trait n'est pas connu,
 puis le segment et ses crochets. Borne posée sans côté : « Choisis de quel côté sont les solutions. »
 Calcul pur `utils/number-line-representer.ts` : état (`RepresenterState` : bornes en rangs de
 graduation, comprise ou non ; côté), réponse `representerAnswer` (`[2 ; +∞[`, bornes écrites par
 `placerText` ; incomplète `2 comprise, côté ?`, `-1 comprise, autre borne ?`), la même pour l'attendu
 (`expectedInterval`) et l'élève, relue par `stateOfAnswer` ; juge `isRepresentedIntervalCorrect`
-(sans la droite, sur les nombres : `4/6` vaut `2/3`) ; phrases `representerMistakes` : « La limite
+(sans la droite, sur les nombres : `4/6` vaut `2/3` ; crochet fermé sur l'infini jamais juste) ; phrases `representerMistakes` : « La limite
 des solutions n'est pas là. », « Les solutions sont de l'autre côté de 2. », « Le nombre 2 est-il
 solution ? Le crochet dit le contraire. » (une par borne fausse), « Pose les deux bornes. ».
 Correction : les phrases et la droite juste en vert (énoncé non masqué). PDF : la droite seule.

@@ -339,3 +339,64 @@ describe('FillBlanksInput — droite à représenter', () => {
 		expect(hasButton(root, '1 exclue')).toBe(true);
 	});
 });
+
+describe('Revue de la PR 2 : borne active et côté', () => {
+	function boundedInstance() {
+		const result = generateInstance(
+			{
+				id: 'test-representer-borne',
+				title: 'Représenter',
+				status: 'draft',
+				variations: [
+					{
+						statement: templateMarkdown(
+							['```line', ...LINE, 'representer: [-1, 3[', '```'].join('\n')
+						)
+					}
+				],
+				grades: ['3'],
+				theme: 'Test',
+				domain: 'Test',
+				level: 1
+			} as QuestionTemplate,
+			42
+		);
+		if (!result.success) throw new Error(result.errors.join(' ; '));
+		return result.instance;
+	}
+
+	it('parent lié, borné : ◀ déplace la borne posée en dernier, même relue triée', async () => {
+		const instance = boundedInstance();
+		let last: string[] = [];
+		const screen = await render(FillBlanksBoundHarness, {
+			target: mainElement(),
+			props: {
+				statement: instance.statement,
+				blanks: instance.blanks ?? [],
+				onValues: (v: string[]) => (last = v)
+			}
+		});
+		const root = screen.container;
+		tapAt(root, 3);
+		await expect.poll(() => last[0]).toBe('3 comprise, autre borne ?');
+		tapAt(root, -1);
+		await expect.poll(() => last[0]).toBe('[-1 ; 3]');
+		const back = [...root.querySelectorAll<HTMLButtonElement>('button')].find(
+			(b) => b.getAttribute('aria-label') === 'Reculer la borne d’une graduation'
+		)!;
+		await userEvent.click(back);
+		await expect.poll(() => last[0]).toBe('[-2 ; 3]');
+	});
+
+	it('côté grisé tant qu’aucune borne n’est posée', async () => {
+		const { answer } = answerProbe();
+		const screen = await render(NumberLine, {
+			target: mainElement(),
+			props: { node: node(...LINE, 'representer: [2, +inf['), answers: [answer()] }
+		});
+		const root = screen.container;
+		expect(button(root, RIGHT).disabled).toBe(true);
+		tapAt(root, 2);
+		await expect.poll(() => button(root, RIGHT).disabled).toBe(false);
+	});
+});

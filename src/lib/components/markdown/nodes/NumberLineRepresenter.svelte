@@ -7,8 +7,8 @@
 
 	- Demi-droite (`representer: [2, +inf[`) : toucher la droite pose la borne sur
 	  la graduation la plus proche (la retoucher ailleurs la déplace) ; deux boutons
-	  « ← vers la gauche » / « vers la droite → » choisissent le côté des solutions ;
-	  un bouton bascule la borne comprise / exclue (crochet).
+	  « ← vers la gauche » / « vers la droite → » choisissent le côté des solutions
+	  (grisés tant que la borne n'est pas posée) ; un bouton bascule la borne comprise / exclue (crochet).
 	- Intervalle borné (`representer: [-1, 3[`) : deux touchers posent les deux
 	  bornes, puis toucher déplace la plus proche ; un bouton par borne la bascule ;
 	  pas de côté.
@@ -87,8 +87,11 @@
 	 * vide, composant remonté), réassigné à chaque geste (dérivé modifiable)
 	 */
 	let state = $derived<RepresenterState>(stateOfAnswer(config, answer?.value ?? '', bounded));
-	/** Rang (dans `state.bornes`) de la borne que le geste déplace */
-	let active = $state(0);
+	/**
+	 * Graduation de la borne que le geste déplace : suivie par sa graduation, pas
+	 * par son rang dans `state.bornes`, que la relecture de la case trie
+	 */
+	let activeGraduation = $state<number | null>(null);
 	let dragging = $state(false);
 	let zone: HTMLDivElement | undefined = $state();
 
@@ -141,7 +144,12 @@
 		!bounded && !locked && verdict === null && state.bornes.length > 0 && state.side === null
 	);
 
-	let activeRank = $derived(state.bornes[Math.min(active, state.bornes.length - 1)]?.rank ?? null);
+	/** Rang dans `state.bornes` de la borne active (la dernière si sa graduation est perdue) ; -1 sans borne */
+	let active = $derived.by(() => {
+		const found = state.bornes.findIndex((b) => b.rank === activeGraduation);
+		return found !== -1 ? found : state.bornes.length - 1;
+	});
+	let activeRank = $derived(state.bornes[active]?.rank ?? null);
 	let valueText = $derived.by(() => {
 		if (state.bornes.length === 0) return 'aucune borne';
 		const bornes = [...state.bornes]
@@ -167,18 +175,18 @@
 		if (!bounded) {
 			const borne = bornes[0];
 			if (borne?.rank === rank) return;
+			activeGraduation = rank;
 			commit({ ...state, bornes: [{ rank, included: borne?.included ?? true }] });
-			active = 0;
 			return;
 		}
 		const existing = bornes.findIndex((b) => b.rank === rank);
 		if (existing !== -1) {
-			active = existing;
+			activeGraduation = rank;
 			return;
 		}
 		if (bornes.length < 2) {
+			activeGraduation = rank;
 			commit({ ...state, bornes: [...bornes, { rank, included: true }] });
-			active = bornes.length;
 			return;
 		}
 		move(nearestBorne(rank), rank);
@@ -190,13 +198,13 @@
 		const target = Math.max(0, Math.min(count - 1, rank));
 		if (bornes[i] === undefined || bornes[i].rank === target) return;
 		if (bornes.some((b, j) => j !== i && b.rank === target)) return;
-		active = i;
+		activeGraduation = target;
 		commit({ ...state, bornes: bornes.with(i, { ...bornes[i], rank: target }) });
 	}
 
 	/** La borne la plus proche d'une graduation (la borne active à égalité) */
 	function nearestBorne(rank: number): number {
-		let best = Math.min(active, state.bornes.length - 1);
+		let best = Math.max(0, active);
 		state.bornes.forEach((b, i) => {
 			const d = Math.abs(b.rank - rank);
 			const bestD = Math.abs(state.bornes[best].rank - rank);
@@ -206,7 +214,7 @@
 	}
 
 	function setSide(side: RepresenterSide) {
-		if (locked || state.side === side) return;
+		if (locked || state.bornes.length === 0 || state.side === side) return;
 		commit({ ...state, side });
 	}
 
@@ -246,7 +254,7 @@
 		const k = indexAt(event);
 		if (k === null) return;
 		if (state.bornes.length === 0) placeAt(k);
-		else move(Math.min(active, state.bornes.length - 1), k);
+		else move(active, k);
 	}
 
 	function handlePointerUp() {
@@ -256,12 +264,12 @@
 	/** Un cran ; sans borne, ▶ pose sur la première graduation, ◀ sur la dernière */
 	function stepBy(delta: 1 | -1) {
 		if (activeRank === null) placeAt(delta === 1 ? 0 : count - 1);
-		else move(Math.min(active, state.bornes.length - 1), activeRank + delta);
+		else move(active, activeRank + delta);
 	}
 
 	function moveTo(rank: number) {
 		if (activeRank === null) placeAt(rank);
-		else move(Math.min(active, state.bornes.length - 1), rank);
+		else move(active, rank);
 	}
 
 	function handleKeyDown(event: KeyboardEvent) {
@@ -334,7 +342,7 @@
 						class="representer-choix min-h-11 rounded-md border px-3 text-sm"
 						class:representer-choix-actif={state.side === 'gauche'}
 						aria-pressed={state.side === 'gauche'}
-						disabled={locked}
+						disabled={locked || state.bornes.length === 0}
 						onclick={() => setSide('gauche')}
 					>
 						← vers la gauche
@@ -344,7 +352,7 @@
 						class="representer-choix min-h-11 rounded-md border px-3 text-sm"
 						class:representer-choix-actif={state.side === 'droite'}
 						aria-pressed={state.side === 'droite'}
-						disabled={locked}
+						disabled={locked || state.bornes.length === 0}
 						onclick={() => setSide('droite')}
 					>
 						vers la droite →

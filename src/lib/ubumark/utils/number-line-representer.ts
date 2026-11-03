@@ -177,6 +177,8 @@ function readInterval(answer: string): ReadInterval | null {
 	const left = bound(match[2]);
 	const right = bound(match[3]);
 	if (left === null && right === null) return null;
+	// L'infini est toujours exclu : `[-∞` ou `+∞]` n'est pas un intervalle
+	if ((left === null && match[1] === '[') || (right === null && match[4] === ']')) return null;
 	if (left !== null && right !== null && left.value >= right.value) return null;
 	return { left, right, leftOpen: match[1] === ']', rightOpen: match[4] === '[' };
 }
