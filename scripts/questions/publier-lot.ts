@@ -10,6 +10,8 @@
  * - `--publier` simule d'abord : un seul refus, et rien n'est écrit (tout ou rien).
  * - Un modèle déjà publié est laissé tel quel : relancer après une publication interrompue
  *   reprend les brouillons qui restent.
+ * - Alerte (sans bloquer) si un tag d'un modèle du lot a un niveau absent de ses `grades`
+ *   (`scripts/lib/niveaux-des-tags.ts`).
  * Démarche : docs/pratiques/couvrir-un-niveau.md § 8.
  *
  *   pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/cp-c             # simulation
@@ -22,6 +24,7 @@
 import { createScriptClient, hasFlag } from '../relecture/common';
 import { publishTemplates } from '../../src/lib/server/questions-bulk-status';
 import { apparierLot, lireLot, titresDuLot, valeurArgument } from '../lib/lot-questions';
+import { ecartsNiveaux, formaterEcart, lireLignesTags } from '../lib/niveaux-des-tags';
 
 const LIBELLE: Record<string, string> = { draft: 'brouillon', published: 'publié' };
 
@@ -60,6 +63,16 @@ async function main(): Promise<number> {
 		return 1;
 	}
 	const ids = appariement.paires.map((p) => p.ligne.id);
+
+	// Alerte, sans bloquer : un tag dont le niveau manque à `grades` cache le modèle à ce niveau
+	const ecarts = ecartsNiveaux(await lireLignesTags(supabase, ids));
+	if (ecarts.length > 0) {
+		console.warn(
+			`\n⚠️  niveaux de tags absents de \`grades\` (le cahier de texte ne les montre pas) :`
+		);
+		for (const e of ecarts) console.warn(formaterEcart(e));
+	}
+
 	const brouillons = appariement.paires
 		.filter((p) => p.ligne.status === 'draft')
 		.map((p) => p.ligne.id);
