@@ -1,0 +1,280 @@
+{
+	"title": "Résoudre graphiquement une inéquation f(x) < k sur une courbe",
+	"description": "Inéquation f(x) < k, ⩽, >, ⩾ lue sur une courbe quelconque (k ≠ 0) : réunion de deux intervalles, bornes de l'ensemble de définition comprises",
+	"grades": ["1_SPE", "1_GEN", "1_TECHNO"],
+	"theme": "Fonctions",
+	"domain": "Généralités",
+	"subdomain": "Lecture graphique",
+	"level": 5,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\left[{{eval:r-1}}\\,;{{eval:t+1}}\\right]$.\n\n```courbe\nx: -6 ; 6\ny: -8 ; 8\ngrille: 1 ; 1\nf(x) = {{a}}*(x{{eval:-r;+}})*(x{{eval:-s;+}})*(x{{eval:-t;+}})/4+({{k}}) sur [{{eval:r-1}} ; {{eval:t+1}}]   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f qui coupe la droite d'équation y = {{k}} en {{r}}, {{s}} et {{t}}.\n```\n\nRésous graphiquement l'inéquation $f(x){{if:o==0|<|{{if:o==1|\\leqslant |{{if:o==2|>|\\geqslant }}}}}}{{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1|-1"
+				},
+				{
+					"name": "r",
+					"expression": "-4..0"
+				},
+				{
+					"name": "d",
+					"expression": "2|3"
+				},
+				{
+					"name": "g",
+					"expression": "2|3"
+				},
+				{
+					"name": "s",
+					"expression": "eval:r+d"
+				},
+				{
+					"name": "t",
+					"expression": "eval:s+g"
+				},
+				{
+					"name": "k",
+					"expression": "-3..3!0"
+				},
+				{
+					"name": "c",
+					"expression": "0..3"
+				},
+				{
+					"name": "o",
+					"expression": "eval:(c)-(1-(a))*((c)-1.5)/abs((c)-1.5)"
+				}
+			],
+			"conditions": ["d + g <= 5", "t <= 4", "abs(k) + 2.25*(d+g) <= 12.25"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:c==0|[{{eval:r-1}};{{r}}[\\cup]{{s}};{{t}}[|{{if:c==1|[{{eval:r-1}};{{r}}]\\cup[{{s}};{{t}}]|{{if:c==2|]{{r}};{{s}}[\\cup]{{t}};{{eval:t+1}}]|[{{r}};{{s}}]\\cup[{{t}};{{eval:t+1}}]}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{k}}$ : elle coupe $\\mathcal{C}_f$ aux points d'abscisses ${{r}}$, ${{s}}$ et ${{t}}$. On cherche les abscisses des points de $\\mathcal{C}_f$ situés {{if:o==0|**strictement au-dessous de**|{{if:o==1|**au-dessous ou sur**|{{if:o==2|**strictement au-dessus de**|**au-dessus ou sur**}}}}}} cette droite, sans sortir de l'ensemble de définition.",
+					"```courbe\nx: -6 ; 6\ny: -8 ; 8\ngrille: 1 ; 1\nf(x) = {{a}}*(x{{eval:-r;+}})*(x{{eval:-s;+}})*(x{{eval:-t;+}})/4+({{k}}) sur [{{eval:r-1}} ; {{eval:t+1}}]   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\nh(x) = {{a}}*(x{{eval:-r;+}})*(x{{eval:-s;+}})*(x{{eval:-t;+}})/4+({{k}}) sur {{if:c==0|[{{eval:r-1}} ; {{r}}[|{{if:c==1|[{{eval:r-1}} ; {{r}}]|{{if:c==2|]{{r}} ; {{s}}[|[{{r}} ; {{s}}]}}}}}}   vert\nu(x) = {{a}}*(x{{eval:-r;+}})*(x{{eval:-s;+}})*(x{{eval:-t;+}})/4+({{k}}) sur {{if:c==0|]{{s}} ; {{t}}[|{{if:c==1|[{{s}} ; {{t}}]|{{if:c==2|]{{t}} ; {{eval:t+1}}]|[{{t}} ; {{eval:t+1}}]}}}}}}   vert\nv(x) = 0 sur {{if:c==0|[{{eval:r-1}} ; {{r}}[|{{if:c==1|[{{eval:r-1}} ; {{r}}]|{{if:c==2|]{{r}} ; {{s}}[|[{{r}} ; {{s}}]}}}}}}   vert\nw(x) = 0 sur {{if:c==0|]{{s}} ; {{t}}[|{{if:c==1|[{{s}} ; {{t}}]|{{if:c==2|]{{t}} ; {{eval:t+1}}]|[{{t}} ; {{eval:t+1}}]}}}}}}   vert\ntaille: moyenne\ndescription: Courbe C_f, droite y = {{k}} en pointillés, parties cherchées en vert ; l'ensemble des solutions est repassé en vert sur l'axe des abscisses.\n```",
+					"{{if:o==1|Les points d'intersection comptent (inégalité large).|{{if:o==3|Les points d'intersection comptent (inégalité large).|Les points d'intersection ne comptent pas (inégalité stricte).}}}} $S=\\textcolor{{{color:primary.0}}}{{{if:c==0|\\left[{{eval:r-1}}\\,;{{r}}\\right[\\cup\\left]{{s}}\\,;{{t}}\\right[|{{if:c==1|\\left[{{eval:r-1}}\\,;{{r}}\\right]\\cup\\left[{{s}}\\,;{{t}}\\right]|{{if:c==2|\\left]{{r}}\\,;{{s}}\\right[\\cup\\left]{{t}}\\,;{{eval:t+1}}\\right]|\\left[{{r}}\\,;{{s}}\\right]\\cup\\left[{{t}}\\,;{{eval:t+1}}\\right]}}}}}}}$"
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\left[{{eval:r-1}}\\,;{{eval:t+1}}\\right]$ ; la droite d'équation $y={{k}}$ est tracée en pointillés.\n\n```courbe\nx: -6 ; 6\ny: -8 ; 8\ngrille: 1 ; 1\nf(x) = {{a}}*(x{{eval:-r;+}})*(x{{eval:-s;+}})*(x{{eval:-t;+}})/4+({{k}}) sur [{{eval:r-1}} ; {{eval:t+1}}]   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\ntaille: moyenne\ndescription: Courbe d'une fonction f qui coupe la droite d'équation y = {{k}} en {{r}}, {{s}} et {{t}}, droite tracée en pointillés.\n```\n\nRésous graphiquement l'inéquation $f(x){{if:o==0|<|{{if:o==1|\\leqslant |{{if:o==2|>|\\geqslant }}}}}}{{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1|-1"
+				},
+				{
+					"name": "r",
+					"expression": "-4..0"
+				},
+				{
+					"name": "d",
+					"expression": "2|3"
+				},
+				{
+					"name": "g",
+					"expression": "2|3"
+				},
+				{
+					"name": "s",
+					"expression": "eval:r+d"
+				},
+				{
+					"name": "t",
+					"expression": "eval:s+g"
+				},
+				{
+					"name": "k",
+					"expression": "-3..3!0"
+				},
+				{
+					"name": "c",
+					"expression": "0..3"
+				},
+				{
+					"name": "o",
+					"expression": "eval:(c)-(1-(a))*((c)-1.5)/abs((c)-1.5)"
+				}
+			],
+			"conditions": ["d + g <= 5", "t <= 4", "abs(k) + 2.25*(d+g) <= 12.25"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:c==0|[{{eval:r-1}};{{r}}[\\cup]{{s}};{{t}}[|{{if:c==1|[{{eval:r-1}};{{r}}]\\cup[{{s}};{{t}}]|{{if:c==2|]{{r}};{{s}}[\\cup]{{t}};{{eval:t+1}}]|[{{r}};{{s}}]\\cup[{{t}};{{eval:t+1}}]}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On trace la droite horizontale d'équation $y={{k}}$ : elle coupe $\\mathcal{C}_f$ aux points d'abscisses ${{r}}$, ${{s}}$ et ${{t}}$. On cherche les abscisses des points de $\\mathcal{C}_f$ situés {{if:o==0|**strictement au-dessous de**|{{if:o==1|**au-dessous ou sur**|{{if:o==2|**strictement au-dessus de**|**au-dessus ou sur**}}}}}} cette droite, sans sortir de l'ensemble de définition.",
+					"```courbe\nx: -6 ; 6\ny: -8 ; 8\ngrille: 1 ; 1\nf(x) = {{a}}*(x{{eval:-r;+}})*(x{{eval:-s;+}})*(x{{eval:-t;+}})/4+({{k}}) sur [{{eval:r-1}} ; {{eval:t+1}}]   bleu   nom=C_f\ng(x) = {{k}}   rouge   pointillé\nh(x) = {{a}}*(x{{eval:-r;+}})*(x{{eval:-s;+}})*(x{{eval:-t;+}})/4+({{k}}) sur {{if:c==0|[{{eval:r-1}} ; {{r}}[|{{if:c==1|[{{eval:r-1}} ; {{r}}]|{{if:c==2|]{{r}} ; {{s}}[|[{{r}} ; {{s}}]}}}}}}   vert\nu(x) = {{a}}*(x{{eval:-r;+}})*(x{{eval:-s;+}})*(x{{eval:-t;+}})/4+({{k}}) sur {{if:c==0|]{{s}} ; {{t}}[|{{if:c==1|[{{s}} ; {{t}}]|{{if:c==2|]{{t}} ; {{eval:t+1}}]|[{{t}} ; {{eval:t+1}}]}}}}}}   vert\nv(x) = 0 sur {{if:c==0|[{{eval:r-1}} ; {{r}}[|{{if:c==1|[{{eval:r-1}} ; {{r}}]|{{if:c==2|]{{r}} ; {{s}}[|[{{r}} ; {{s}}]}}}}}}   vert\nw(x) = 0 sur {{if:c==0|]{{s}} ; {{t}}[|{{if:c==1|[{{s}} ; {{t}}]|{{if:c==2|]{{t}} ; {{eval:t+1}}]|[{{t}} ; {{eval:t+1}}]}}}}}}   vert\ntaille: moyenne\ndescription: Courbe C_f, droite y = {{k}} en pointillés, parties cherchées en vert ; l'ensemble des solutions est repassé en vert sur l'axe des abscisses.\n```",
+					"{{if:o==1|Les points d'intersection comptent (inégalité large).|{{if:o==3|Les points d'intersection comptent (inégalité large).|Les points d'intersection ne comptent pas (inégalité stricte).}}}} $S=\\textcolor{{{color:primary.0}}}{{{if:c==0|\\left[{{eval:r-1}}\\,;{{r}}\\right[\\cup\\left]{{s}}\\,;{{t}}\\right[|{{if:c==1|\\left[{{eval:r-1}}\\,;{{r}}\\right]\\cup\\left[{{s}}\\,;{{t}}\\right]|{{if:c==2|\\left]{{r}}\\,;{{s}}\\right[\\cup\\left]{{t}}\\,;{{eval:t+1}}\\right]|\\left[{{r}}\\,;{{s}}\\right]\\cup\\left[{{t}}\\,;{{eval:t+1}}\\right]}}}}}}}$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a > 0, f(x) < 2 : [−4 ; −3[ ∪ ]−1 ; 1[",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "-3",
+				"d": "2",
+				"g": "2",
+				"s": "-1",
+				"t": "1",
+				"k": "2",
+				"c": "0",
+				"o": "0"
+			},
+			"answers": ["[-4;-3[\\cup]-1;1["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : borne −4 de l'ensemble de définition exclue",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "-3",
+				"d": "2",
+				"g": "2",
+				"s": "-1",
+				"t": "1",
+				"k": "2",
+				"c": "0",
+				"o": "0"
+			},
+			"answers": ["]-4;-3[\\cup]-1;1["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : mauvais côté de la droite",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "-3",
+				"d": "2",
+				"g": "2",
+				"s": "-1",
+				"t": "1",
+				"k": "2",
+				"c": "0",
+				"o": "0"
+			},
+			"answers": ["]-3;-1[\\cup]1;2]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : crochets fermés aux intersections (inégalité stricte)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "-3",
+				"d": "2",
+				"g": "2",
+				"s": "-1",
+				"t": "1",
+				"k": "2",
+				"c": "0",
+				"o": "0"
+			},
+			"answers": ["[-4;-3]\\cup[-1;1]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a < 0, f(x) ⩽ −2 : [−3 ; −1] ∪ [1 ; 2]",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"r": "-3",
+				"d": "2",
+				"g": "2",
+				"s": "-1",
+				"t": "1",
+				"k": "-2",
+				"c": "3",
+				"o": "1"
+			},
+			"answers": ["[-3;-1]\\cup[1;2]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Droite tracée, a > 0, f(x) > 1 : ]−2 ; 1[ ∪ ]3 ; 4]",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"d": "3",
+				"g": "2",
+				"s": "1",
+				"t": "3",
+				"k": "1",
+				"c": "2",
+				"o": "2"
+			},
+			"answers": ["]-2;1[\\cup]3;4]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : jusqu'à +∞ au lieu de la borne 4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"d": "3",
+				"g": "2",
+				"s": "1",
+				"t": "3",
+				"k": "1",
+				"c": "2",
+				"o": "2"
+			},
+			"answers": ["]-2;1[\\cup]3;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Droite tracée, a < 0, f(x) ⩾ −1 : [−5 ; −4] ∪ [−2 ; 0]",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"r": "-4",
+				"d": "2",
+				"g": "2",
+				"s": "-2",
+				"t": "0",
+				"k": "-1",
+				"c": "1",
+				"o": "3"
+			},
+			"answers": ["[-5;-4]\\cup[-2;0]"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
