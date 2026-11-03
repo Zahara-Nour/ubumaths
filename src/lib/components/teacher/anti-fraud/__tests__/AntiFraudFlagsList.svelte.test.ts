@@ -15,7 +15,7 @@ const sampleFlags = {
 		{
 			id: 'f1',
 			student: { id: 's1', first_name: 'Alice', last_name: 'Martin' },
-			capacity: { id: 'cap1', name: 'Additionner' },
+			point: { id: 'cap1', name: 'Additionner' },
 			flag_type: 'burst',
 			severity: 4,
 			score: 0.85,
@@ -27,7 +27,7 @@ const sampleFlags = {
 		{
 			id: 'f2',
 			student: { id: 's2', first_name: 'Bob', last_name: 'Dupont' },
-			capacity: null,
+			point: null,
 			flag_type: 'composite',
 			severity: 5,
 			score: 0.95,
@@ -59,7 +59,7 @@ describe('AntiFraudFlagsList', () => {
 		} as Response);
 	}
 
-	it('renders student names with capacity after fetch', async () => {
+	it('renders student names with curriculum point after fetch', async () => {
 		mockFetch(sampleFlags);
 		await render(AntiFraudFlagsList, { classId: 'class-1' });
 		await expect.element(page.getByText('Alice Martin')).toBeVisible();

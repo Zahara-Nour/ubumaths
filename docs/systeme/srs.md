@@ -56,17 +56,17 @@ Quatre sortes de paquets :
 
 ### Serveur — `src/lib/server/srs/`
 
-| Fichier                    | Rôle                                                                                                                                                                |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `fsrs-actions.ts`          | **Seul écrivain de la mémoire** : `applyFsrsReview` (lit → `reviewCard` → écrit), `loadOrInitCardStats`, `upsertCardStats` (client service).                        |
-| `best-of-day.ts`           | `reviewBestOfDay` : auto-évaluation, un seul résultat par jour et par question, le meilleur ([ADR 0016](../adr/0016-auto-evaluation-meilleur-resultat-du-jour.md)). |
-| `srs-attempt.ts`           | `recordSrsReviewAttempt` : la trace `skill_attempts` (source `srs`) d'une révision de modèle.                                                                       |
-| `record-series-reviews.ts` | `recordSeriesReviews` : FSRS + Programme pour une séance de série (`/api/tests/save`) ou une évaluation (`evaluation-attempts.ts`).                                 |
-| `programme-deck.ts`        | `ensureProgrammeDeck`, `ensureProgrammeDeckCard` : crée le paquet Programme et y ajoute une carte, au client service, idempotent (23505 = déjà là).                 |
-| `programme-deck-rule.ts`   | `entersProgrammeDeck` : la règle unique d'entrée au Programme (modèle publié, jamais une question de cours — décision Q113).                                        |
-| `chapter-deck.ts`          | Paquet calculé d'un chapitre : `loadChapterDeck`, `loadChapterDecks`, `selectChapterSession`, `summarizeChapterDecks`, `CHAPTER_SESSION_NEW_LIMIT` (10).            |
-| `deck-copy.ts`             | Copie d'un paquet assigné : `planDeckCopies`, `planSectionCopies`, `resolveCardSection`, `findAssignedDeckCopy` (par `source_deck_id`, jamais par le nom).          |
-| `capacity-badge.ts`        | Badge de mémoire d'un point du programme : `templateToBadge`, `worstBadge`, `aggregateBadge` (purs), `computePointBadges` (lit la base).                            |
+| Fichier                     | Rôle                                                                                                                                                                |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fsrs-actions.ts`           | **Seul écrivain de la mémoire** : `applyFsrsReview` (lit → `reviewCard` → écrit), `loadOrInitCardStats`, `upsertCardStats` (client service).                        |
+| `best-of-day.ts`            | `reviewBestOfDay` : auto-évaluation, un seul résultat par jour et par question, le meilleur ([ADR 0016](../adr/0016-auto-evaluation-meilleur-resultat-du-jour.md)). |
+| `srs-attempt.ts`            | `recordSrsReviewAttempt` : la trace `skill_attempts` (source `srs`) d'une révision de modèle.                                                                       |
+| `record-series-reviews.ts`  | `recordSeriesReviews` : FSRS + Programme pour une séance de série (`/api/tests/save`) ou une évaluation (`evaluation-attempts.ts`).                                 |
+| `programme-deck.ts`         | `ensureProgrammeDeck`, `ensureProgrammeDeckCard` : crée le paquet Programme et y ajoute une carte, au client service, idempotent (23505 = déjà là).                 |
+| `programme-deck-rule.ts`    | `entersProgrammeDeck` : la règle unique d'entrée au Programme (modèle publié, jamais une question de cours — décision Q113).                                        |
+| `chapter-deck.ts`           | Paquet calculé d'un chapitre : `loadChapterDeck`, `loadChapterDecks`, `selectChapterSession`, `summarizeChapterDecks`, `CHAPTER_SESSION_NEW_LIMIT` (10).            |
+| `deck-copy.ts`              | Copie d'un paquet assigné : `planDeckCopies`, `planSectionCopies`, `resolveCardSection`, `findAssignedDeckCopy` (par `source_deck_id`, jamais par le nom).          |
+| `curriculum-point-badge.ts` | Badge de mémoire d'un point du programme : `templateToBadge`, `worstBadge`, `aggregateBadge` (purs), `computePointBadges` (lit la base).                            |
 
 Hors du dossier, `src/lib/server/course-card-attempts.ts` dit si une tentative porte sur une carte
 de cours, en lisant la base (`question_templates.options`), jamais l'instance envoyée par le
@@ -84,7 +84,7 @@ Validation Zod : `src/lib/server/validation/srs.ts` (paquets, cartes, sections, 
 `ReviewSession.svelte` (la séance, pour toute `ReviewSource`) · `FSRSButtons.svelte` (les 4 notes) ·
 `CustomFlashCard.svelte` / `CustomCardEditor.svelte` (cartes libres recto/verso) ·
 `TemplateSelector.svelte` (ajouter un modèle à un paquet) · `DeckCard.svelte` (liste des paquets) ·
-`CapacityFsrsBadge.svelte` (badge de mémoire, utilisé par `NotionsPanel.svelte` et
+`CurriculumPointFsrsBadge.svelte` (badge de mémoire, utilisé par `NotionsPanel.svelte` et
 `dashboard/student/notions/[id]`). Sur le deck « Programme », la notion d'une carte mène à sa page
 (`?depuis=programme`) quand le point est actif et du niveau de l'élève (`notionLinkable`) ;
 sinon son nom reste sans lien.
@@ -119,7 +119,10 @@ sinon son nom reste sans lien.
 (GET), `…/flags/[flagId]` (PATCH, « Marquer comme OK »), `…/anti-fraud/count` (GET), gardées
 par `requireTeacherOfClass` (rôle `teacher` seul : le compte admin est refusé depuis le 2026-10-11). UI : `src/lib/components/teacher/anti-fraud/`
 (`AntiFraudFlagsList`, `FlagDetailsDialog`, `AntiFraudFilters`), onglet « Surveillance » de
-`dashboard/teacher/classes/[classId]/analytics`.
+`dashboard/teacher/classes/[classId]/analytics`. La liste `GET …/flags` rend pour chaque drapeau son
+`point` (`{ id, name }`, lu par `curriculum_points(id, name)`, `null` hors point) et se filtre par
+`?point=<uuid>` ; jusqu'au 2026-11-04 elle lisait une jointure `skills` absente et chaque drapeau
+s'affichait « toutes capacités ».
 
 ## Le modèle
 
@@ -310,8 +313,8 @@ saute un drapeau identique non résolu de moins de 7 jours, écrit dans `srs_ant
   `ensureProgrammeDeckCard`. Ne jamais écrire `srs_card_stats` à la main.
 - **Nouvelle source de séance** : un cas de `ReviewSource` dans `review-source.ts` (URL des dues,
   corps de réponse, schéma de la réponse) ; `ReviewSession.svelte` ne change pas.
-- **Nouveau badge** : `CapacityBadge`, `BADGE_PRIORITY`, `BADGE_LABEL`, `BADGE_VISUAL`,
-  `templateToBadge` (`capacity-badge.ts`), puis `CapacityFsrsBadge.svelte` et `ProgrammeBadge`
+- **Nouveau badge** : `CurriculumPointBadge`, `BADGE_PRIORITY`, `BADGE_LABEL`, `BADGE_VISUAL`,
+  `templateToBadge` (`curriculum-point-badge.ts`), puis `CurriculumPointFsrsBadge.svelte` et `ProgrammeBadge`
   (`decks/programme/+page.server.ts`).
 - **Nouvelle route** : Zod dans `validation/srs.ts`, vérification de propriété explicite (la RLS
   rend 0 ligne, pas une erreur), 403 explicite sur paquet assigné / Programme.
@@ -323,10 +326,10 @@ saute un drapeau identique non résolu de moins de 7 jours, écrit dans `srs_ant
 | Où                                                                                                                                                                        | Quoi                                                                                                                                                                                                                                                                                                                       |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `src/lib/srs/__tests__/` (`fsrs`, `config`, `generator`, `review-source`)                                                                                                 | algorithme FSRS-6, constantes, instances, traduction des réponses de séance                                                                                                                                                                                                                                                |
-| `src/lib/server/srs/__tests__/`                                                                                                                                           | `best-of-day`, `capacity-badge`, `chapter-deck`, `deck-copy`, `fsrs-actions`, `programme-deck`, `programme-deck-rule`                                                                                                                                                                                                      |
+| `src/lib/server/srs/__tests__/`                                                                                                                                           | `best-of-day`, `curriculum-point-badge`, `chapter-deck`, `deck-copy`, `fsrs-actions`, `programme-deck`, `programme-deck-rule`                                                                                                                                                                                              |
 | `src/lib/server/anti-fraud/__tests__/` (`detectors`, `runner`)                                                                                                            | seuils des 5 signaux, composite, runner (base simulée)                                                                                                                                                                                                                                                                     |
 | `src/lib/server/validation/__tests__/` (`srs`, `srs-chantier`, `anti-fraud`)                                                                                              | schémas Zod                                                                                                                                                                                                                                                                                                                |
-| `src/lib/components/srs/__tests__/`, `src/lib/components/teacher/anti-fraud/__tests__/`                                                                                   | `ReviewSession`, `CapacityFsrsBadge`, liste / filtres / détail des drapeaux                                                                                                                                                                                                                                                |
+| `src/lib/components/srs/__tests__/`, `src/lib/components/teacher/anti-fraud/__tests__/`                                                                                   | `ReviewSession`, `CurriculumPointFsrsBadge`, liste / filtres / détail des drapeaux                                                                                                                                                                                                                                         |
 | `src/routes/api/srs/__tests__/api-routes.test.ts`, `…/review/submit/__tests__/questions-de-cours.test.ts`                                                                 | routes SRS ; question de cours hors Programme                                                                                                                                                                                                                                                                              |
 | `src/routes/api/skill-attempts/__tests__/`, `src/routes/api/tests/save/__tests__/fsrs-sur-evaluation.test.ts`, `src/lib/server/__tests__/evaluation-attempts-srs.test.ts` | FSRS depuis les réponses, séries et évaluations                                                                                                                                                                                                                                                                            |
 | `src/routes/(protected)/dashboard/revisions/decks/programme/__tests__/`                                                                                                   | sections du Programme                                                                                                                                                                                                                                                                                                      |
@@ -379,9 +382,6 @@ Colonnes et policies : [base-de-donnees-tables.md](base-de-donnees-tables.md) et
   intervalle (22 j dans l'essai). Futur chantier `fsrs`.
 - `reviewedToday` (`src/lib/server/course-card-attempts.ts`) n'a aucun appelant hors de ses tests
   (relevé du 2026-10-12).
-- Des en-têtes de code (renvois corrigés par la PR #1027) parlent encore de
-  « famille A » (`capacity-badge.ts`, `programme-deck.ts`, `decks/programme/+page.server.ts`,
-  `api/skill-attempts`).
 
 ---
 

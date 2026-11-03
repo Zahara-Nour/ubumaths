@@ -521,7 +521,7 @@ describe('GET /api/account/export', () => {
 			const response = await GET(event as never);
 			const data = await response.json();
 
-			// Évaluation référentielle (connaissances famille A + compétences famille B)
+			// Évaluation (points du programme + compétences mathématiques)
 			expect(data.evaluation.connaissances).toBeDefined();
 			expect(data.evaluation.competences).toBeDefined();
 			expect(data.evaluation.tentatives).toBeDefined();
@@ -640,7 +640,7 @@ describe('GET /api/account/export', () => {
 			const fromCalls = mockSupabase.from.mock.calls.map((call) => call[0]);
 
 			expect(fromCalls).toContain('profiles');
-			// Évaluation référentielle (connaissances famille A + compétences famille B)
+			// Évaluation (points du programme + compétences mathématiques)
 			expect(fromCalls).toContain('student_point_state');
 			expect(fromCalls).toContain('student_competence_level');
 			expect(fromCalls).toContain('skill_attempts');

@@ -1,14 +1,14 @@
 /**
- * TopCapacitiesToRemediate — component tests (Widget E).
+ * TopCurriculumPointsToRemediate — component tests (Widget E).
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { lore } from '$lib/config/lore';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
-import TopCapacitiesToRemediate from '../TopCapacitiesToRemediate.svelte';
+import TopCurriculumPointsToRemediate from '../TopCurriculumPointsToRemediate.svelte';
 
-describe('TopCapacitiesToRemediate', () => {
+describe('TopCurriculumPointsToRemediate', () => {
 	let originalFetch: typeof globalThis.fetch;
 	beforeEach(() => {
 		originalFetch = globalThis.fetch;
@@ -36,7 +36,7 @@ describe('TopCapacitiesToRemediate', () => {
 				}
 			]
 		});
-		await render(TopCapacitiesToRemediate, { classId: 'class-1' });
+		await render(TopCurriculumPointsToRemediate, { classId: 'class-1' });
 		await expect.element(page.getByText('Calcul fractions')).toBeVisible();
 		await expect.element(page.getByText('Fractions', { exact: true })).toBeVisible();
 		await expect
@@ -46,7 +46,7 @@ describe('TopCapacitiesToRemediate', () => {
 
 	it('shows congratulations when no rows', async () => {
 		mockFetch({ rows: [] });
-		await render(TopCapacitiesToRemediate, { classId: 'class-1' });
+		await render(TopCurriculumPointsToRemediate, { classId: 'class-1' });
 		await expect
 			.element(page.getByText(new RegExp(`Bravo, votre ${lore.entities.class}`)))
 			.toBeVisible();
@@ -58,7 +58,7 @@ describe('TopCapacitiesToRemediate', () => {
 			status: 500,
 			json: async () => ({ error: 'Boom' })
 		} as Response);
-		await render(TopCapacitiesToRemediate, { classId: 'class-1' });
+		await render(TopCurriculumPointsToRemediate, { classId: 'class-1' });
 		await expect.element(page.getByText('⚠ Boom')).toBeVisible();
 	});
 });

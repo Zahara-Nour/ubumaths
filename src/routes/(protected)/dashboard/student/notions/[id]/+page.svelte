@@ -20,7 +20,7 @@
 		MessageCircleQuestion
 	} from '@lucide/svelte';
 	import { formatNotionLevel, getNotionLevelVisual, notionLevel } from '$lib/types/skills';
-	import CapacityFsrsBadge from '$lib/components/srs/CapacityFsrsBadge.svelte';
+	import CurriculumPointFsrsBadge from '$lib/components/srs/CurriculumPointFsrsBadge.svelte';
 	import type { PageData } from './$types';
 	import type { NotionPointDetail } from '$lib/server/progression/student-progression';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
@@ -45,7 +45,7 @@
 	};
 
 	// Helpers visuels — verdict BO formel uniquement (le badge FSRS dynamique
-	// est affiché séparément via <CapacityFsrsBadge>).
+	// est affiché séparément via <CurriculumPointFsrsBadge>).
 	function pointBadgeVariant(p: NotionPointDetail): 'default' | 'outline' | 'destructive' {
 		if (p.needs_remediation) return 'destructive';
 		if (p.is_acquired) return 'default';
@@ -125,7 +125,7 @@
 							</Badge>
 						{/if}
 						{#if point.trainable}
-							<CapacityFsrsBadge badge={point.badge} showLabel />
+							<CurriculumPointFsrsBadge badge={point.badge} showLabel />
 						{:else}
 							<Badge variant="outline" class="text-xs text-muted-foreground">
 								Pas encore d'entraînement ici

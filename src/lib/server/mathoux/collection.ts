@@ -52,7 +52,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import { computePointBadges } from '$lib/server/srs/capacity-badge';
+import { computePointBadges } from '$lib/server/srs/curriculum-point-badge';
 import { fetchInChunks } from '$lib/server/utils/chunked-in';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import {

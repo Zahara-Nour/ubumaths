@@ -1,9 +1,9 @@
 /**
- * Agrégations famille A (knowledge / FSRS) au niveau classe.
+ * Agrégations par point du programme (knowledge / FSRS) au niveau classe.
  *
  * 5 fonctions exposées :
- *   - getClassCapacityGrid          → Widget A (grille élève × capacité)
- *   - getClassTopCapacitiesToRemediate → Widget E (top à remédier)
+ *   - getClassCurriculumPointGrid          → Widget A (grille élève × point du programme)
+ *   - getClassTopCurriculumPointsToRemediate → Widget E (top à remédier)
  *   - getStudentRetentionCurve      → Widget B (8 semaines, stability moyenne par branche)
  *   - getClassActivityHeatmap       → Widget C (30 jours × élèves, reviews/jour)
  *   - getStudentGradeHistogram      → Widget D (7 jours, distribution {1,2,3,4})
@@ -21,8 +21,8 @@ import { placeOfNode, type ProgrammePointRow } from '$lib/utils/programme-tree';
 import {
 	templateToBadge,
 	BADGE_PRIORITY,
-	type CapacityBadge
-} from '$lib/server/srs/capacity-badge';
+	type CurriculumPointBadge
+} from '$lib/server/srs/curriculum-point-badge';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('server/stats/class-knowledge');
@@ -41,27 +41,27 @@ export interface ClassStudent {
 }
 
 /** Colonne de la grille : un point neuf du programme, étiqueté par sa notion. */
-export interface ClassCapacity {
+export interface ClassCurriculumPoint {
 	id: string;
 	name: string;
 	/** `null` si le point n'a pas pu être placé dans l'arbre (nœud illisible). */
 	notion_name: string | null;
 }
 
-export interface ClassCapacityGrid {
+export interface ClassCurriculumPointGrid {
 	students: ClassStudent[];
-	capacities: ClassCapacity[];
-	/** Map clé `${studentId}:${capacityId}` → badge. */
-	cells: Record<string, CapacityBadge>;
+	points: ClassCurriculumPoint[];
+	/** Map clé `${studentId}:${pointId}` → badge. */
+	cells: Record<string, CurriculumPointBadge>;
 	/** Stats colonne : pointId → { acquise_pct, remediate_pct }. */
 	columnStats: Record<string, { acquise_pct: number; remediate_pct: number }>;
 }
 
-export interface TopCapacityToRemediate {
+export interface TopCurriculumPointToRemediate {
 	point_id: string;
 	point_name: string;
 	notion_name: string | null;
-	students_concerned: { student_id: string; display_name: string; badge: CapacityBadge }[];
+	students_concerned: { student_id: string; display_name: string; badge: CurriculumPointBadge }[];
 	remediate_pct: number;
 }
 
@@ -106,7 +106,10 @@ function isLivePoint(p: ProgrammePointRow): boolean {
  * Un point qu'on ne sait pas placer (nœud illisible) garde sa colonne, en
  * dernier et sans étiquette, plutôt que de disparaître en silence.
  */
-async function placeInTree(supabase: SB, points: ProgrammePointRow[]): Promise<ClassCapacity[]> {
+async function placeInTree(
+	supabase: SB,
+	points: ProgrammePointRow[]
+): Promise<ClassCurriculumPoint[]> {
 	const nodeIds = points.map((p) => p.node_id);
 	const nodes = await loadNodesWithAncestors(supabase, nodeIds);
 	const nodeById = new Map(nodes.map((n) => [n.id, n]));
@@ -136,19 +139,19 @@ async function placeInTree(supabase: SB, points: ProgrammePointRow[]): Promise<C
 }
 
 // ===========================================================================
-// Widget A — Grille capacité × classe
+// Widget A — Grille point du programme × classe
 // ===========================================================================
 
-interface GetClassCapacityGridOpts {
-	/** Si true, inclut toutes les capacités du cycle, même celles sans skill_attempts. */
+interface GetClassCurriculumPointGridOpts {
+	/** Si true, inclut tous les points du cycle, même ceux sans skill_attempts. */
 	includeAllCycle?: boolean;
 }
 
-export async function getClassCapacityGrid(
+export async function getClassCurriculumPointGrid(
 	supabase: SB,
 	classId: string,
-	opts: GetClassCapacityGridOpts = {}
-): Promise<ClassCapacityGrid> {
+	opts: GetClassCurriculumPointGridOpts = {}
+): Promise<ClassCurriculumPointGrid> {
 	const { data: members, error: membersErr } = await supabase
 		.from('class_members')
 		.select('student_id, profiles!class_members_student_id_fkey(id, firstname, lastname)')
@@ -157,7 +160,7 @@ export async function getClassCapacityGrid(
 
 	if (membersErr) {
 		logger.error('[class-knowledge] class_members lookup failed:', membersErr);
-		return { students: [], capacities: [], cells: {}, columnStats: {} };
+		return { students: [], points: [], cells: {}, columnStats: {} };
 	}
 
 	type MemberRow = {
@@ -174,7 +177,7 @@ export async function getClassCapacityGrid(
 		.sort((a, b) => a.display_name.localeCompare(b.display_name, 'fr'));
 
 	if (students.length === 0) {
-		return { students: [], capacities: [], cells: {}, columnStats: {} };
+		return { students: [], points: [], cells: {}, columnStats: {} };
 	}
 
 	const studentIds = students.map((s) => s.id);
@@ -183,7 +186,7 @@ export async function getClassCapacityGrid(
 	// points des cartes partagées entre deux référentiels, et à l'option « Tout
 	// le cycle ». Sans lui, le bouton « Tout le cycle » n'étendrait rien : le
 	// professeur croirait avoir tout affiché alors qu'il ne voit que les
-	// capacités déjà travaillées.
+	// points déjà travaillés.
 	const { data: classRow, error: classRowError } = await supabase
 		.from('classes')
 		.select('grade')
@@ -191,7 +194,7 @@ export async function getClassCapacityGrid(
 		.maybeSingle();
 
 	if (classRowError) {
-		logger.error('[getClassCapacityGrid] Niveau de classe illisible :', classRowError);
+		logger.error('[getClassCurriculumPointGrid] Niveau de classe illisible :', classRowError);
 		throw new Error(classRowError.message);
 	}
 	const classGrade = classRow?.grade ?? null;
@@ -206,12 +209,12 @@ export async function getClassCapacityGrid(
 
 	if (attErr) {
 		logger.error('[class-knowledge] skill_attempts lookup failed:', attErr);
-		return { students, capacities: [], cells: {}, columnStats: {} };
+		return { students, points: [], cells: {}, columnStats: {} };
 	}
 
 	const templateIds = [...new Set((attemptsRaw ?? []).map((a) => a.template_id as string))];
 
-	let capacities: ClassCapacity[] = [];
+	let points: ClassCurriculumPoint[] = [];
 	const templateToPointIds = new Map<string, string[]>();
 	// Points retenus (lignes complètes) : on les range dans l'arbre après coup.
 	const pointById = new Map<string, ProgrammePointRow>();
@@ -240,8 +243,8 @@ export async function getClassCapacityGrid(
 			(r) => r.curriculum_points !== null && isLivePoint(r.curriculum_points)
 		);
 		// Carte partagée entre deux référentiels (ex. T_SPE et T_COMP) : seuls
-		// les points du niveau de la classe font une colonne. Sinon la même
-		// capacité apparaît deux fois, une fois par programme.
+		// les points du niveau de la classe font une colonne. Sinon le même
+		// point apparaît deux fois, une fois par programme.
 		const tagged = keepLinksOfGrade(liveTags, classGrade, (r) => ({
 			template_id: r.template_id,
 			grade: r.curriculum_points?.grade ?? null
@@ -265,7 +268,7 @@ export async function getClassCapacityGrid(
 			.is('archived_at', null);
 
 		if (gradePointsError) {
-			logger.error('[getClassCapacityGrid] Points du niveau illisibles :', gradePointsError);
+			logger.error('[getClassCurriculumPointGrid] Points du niveau illisibles :', gradePointsError);
 			throw new Error(gradePointsError.message);
 		}
 
@@ -275,7 +278,7 @@ export async function getClassCapacityGrid(
 	}
 
 	if (pointById.size > 0) {
-		capacities = await placeInTree(supabase, [...pointById.values()]);
+		points = await placeInTree(supabase, [...pointById.values()]);
 	}
 
 	// Deux `.in()` dans la même requête : seul `templateIds` est découpé.
@@ -313,74 +316,74 @@ export async function getClassCapacityGrid(
 	}
 
 	const now = Date.now();
-	const cells: Record<string, CapacityBadge> = {};
+	const cells: Record<string, CurriculumPointBadge> = {};
 	for (const student of students) {
 		const tplSeen = studentTemplateIds.get(student.id) ?? new Set<string>();
-		for (const cap of capacities) {
+		for (const point of points) {
 			const taggedTemplates = [...tplSeen].filter((tplId) =>
-				(templateToPointIds.get(tplId) ?? []).includes(cap.id)
+				(templateToPointIds.get(tplId) ?? []).includes(point.id)
 			);
-			let badge: CapacityBadge = 'non_commencee';
+			let badge: CurriculumPointBadge = 'non_commencee';
 			if (taggedTemplates.length > 0) {
-				const subBadges: CapacityBadge[] = taggedTemplates.map((tplId) => {
+				const subBadges: CurriculumPointBadge[] = taggedTemplates.map((tplId) => {
 					const fsrs = stateByStudentTpl.get(`${student.id}:${tplId}`);
 					if (!fsrs) return 'en_apprentissage';
 					return templateToBadge(fsrs.state, fsrs.next_review, now);
 				});
-				badge = subBadges.reduce<CapacityBadge>(
+				badge = subBadges.reduce<CurriculumPointBadge>(
 					(acc, b) => (BADGE_PRIORITY[b] > BADGE_PRIORITY[acc] ? b : acc),
 					'non_commencee'
 				);
 			}
-			cells[`${student.id}:${cap.id}`] = badge;
+			cells[`${student.id}:${point.id}`] = badge;
 		}
 	}
 
 	const columnStats: Record<string, { acquise_pct: number; remediate_pct: number }> = {};
-	for (const cap of capacities) {
+	for (const point of points) {
 		let acquise = 0;
 		let remediate = 0;
 		for (const s of students) {
-			const b = cells[`${s.id}:${cap.id}`];
+			const b = cells[`${s.id}:${point.id}`];
 			if (b === 'acquise_en_memoire') acquise += 1;
 			if (b === 'a_remedier' || b === 'a_renforcer') remediate += 1;
 		}
-		columnStats[cap.id] = {
+		columnStats[point.id] = {
 			acquise_pct: Math.round((acquise / students.length) * 100),
 			remediate_pct: Math.round((remediate / students.length) * 100)
 		};
 	}
 
-	return { students, capacities, cells, columnStats };
+	return { students, points, cells, columnStats };
 }
 
 // ===========================================================================
-// Widget E — Top capacités à remédier
+// Widget E — Top points du programme à remédier
 // ===========================================================================
 
-export async function getClassTopCapacitiesToRemediate(
+export async function getClassTopCurriculumPointsToRemediate(
 	supabase: SB,
 	classId: string,
 	topN = 10
-): Promise<TopCapacityToRemediate[]> {
-	const grid = await getClassCapacityGrid(supabase, classId);
-	if (grid.students.length === 0 || grid.capacities.length === 0) return [];
+): Promise<TopCurriculumPointToRemediate[]> {
+	const grid = await getClassCurriculumPointGrid(supabase, classId);
+	if (grid.students.length === 0 || grid.points.length === 0) return [];
 
-	const rows: TopCapacityToRemediate[] = grid.capacities.map((cap) => {
+	const rows: TopCurriculumPointToRemediate[] = grid.points.map((point) => {
 		const studentsConcerned = grid.students
 			.map((s) => ({
 				student_id: s.id,
 				display_name: s.display_name,
-				badge: grid.cells[`${s.id}:${cap.id}`]
+				badge: grid.cells[`${s.id}:${point.id}`]
 			}))
 			.filter((r) => r.badge === 'a_remedier' || r.badge === 'a_renforcer');
 
 		return {
-			point_id: cap.id,
-			point_name: cap.name,
-			notion_name: cap.notion_name,
+			point_id: point.id,
+			point_name: point.name,
+			notion_name: point.notion_name,
 			students_concerned: studentsConcerned,
-			remediate_pct: grid.columnStats[cap.id]?.remediate_pct ?? 0
+			remediate_pct: grid.columnStats[point.id]?.remediate_pct ?? 0
 		};
 	});
 
@@ -662,7 +665,7 @@ export async function getStudentGradeHistogram(
 		question_templates: { type: string } | null;
 	};
 	// Décision A1 (2026-09-28) : les notes d'une carte de cours (auto-évaluation)
-	// ne mesurent pas une capacité.
+	// ne mesurent pas un point du programme.
 	const attempts = ((rows ?? []) as AttRow[]).filter((a) => !isCourseCardAttempt(a));
 
 	const buckets: Record<1 | 2 | 3 | 4, { count: number; stabSum: number; stabCount: number }> = {

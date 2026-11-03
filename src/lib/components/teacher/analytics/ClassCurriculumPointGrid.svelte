@@ -14,21 +14,21 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import * as Card from '$lib/components/ui/card';
-	import type { CapacityBadge } from '$lib/server/srs/capacity-badge';
+	import type { CurriculumPointBadge } from '$lib/server/srs/curriculum-point-badge';
 
 	interface ClassStudent {
 		id: string;
 		display_name: string;
 	}
-	interface ClassCapacity {
+	interface ClassCurriculumPoint {
 		id: string;
 		name: string;
 		notion_name: string | null;
 	}
 	interface GridData {
 		students: ClassStudent[];
-		capacities: ClassCapacity[];
-		cells: Record<string, CapacityBadge>;
+		points: ClassCurriculumPoint[];
+		cells: Record<string, CurriculumPointBadge>;
 		columnStats: Record<string, { acquise_pct: number; remediate_pct: number }>;
 	}
 
@@ -73,16 +73,16 @@
 		void load();
 	});
 
-	const orderedCapacities = $derived.by(() => {
+	const orderedPoints = $derived.by(() => {
 		if (!data) return [];
-		if (!sortByAcquired) return data.capacities;
+		if (!sortByAcquired) return data.points;
 		const stats = data.columnStats;
-		return [...data.capacities].sort(
+		return [...data.points].sort(
 			(a, b) => (stats[b.id]?.acquise_pct ?? 0) - (stats[a.id]?.acquise_pct ?? 0)
 		);
 	});
 
-	function badgeMeta(badge: CapacityBadge) {
+	function badgeMeta(badge: CurriculumPointBadge) {
 		return (
 			{
 				a_remedier: { icon: AlertCircle, color: 'text-red-600', label: 'À remédier' },
@@ -136,7 +136,7 @@
 			<p class="py-8 text-center text-sm text-muted-foreground">
 				Aucun {lore.entities.student} dans cette classe.
 			</p>
-		{:else if orderedCapacities.length === 0}
+		{:else if orderedPoints.length === 0}
 			<p class="py-8 text-center text-sm text-muted-foreground">
 				Aucun point du programme travaillé pour le moment.
 			</p>
@@ -151,17 +151,17 @@
 							<th class="sticky left-0 z-10 bg-background px-2 py-2 text-left font-medium">
 								{lore.entities.student}
 							</th>
-							{#each orderedCapacities as cap (cap.id)}
+							{#each orderedPoints as point (point.id)}
 								<th
 									class="min-w-[3rem] px-1 py-2 text-center align-bottom text-xs font-normal"
-									title={cap.name}
+									title={point.name}
 								>
 									<div class="flex flex-col items-center gap-0.5">
 										<span class="line-clamp-2 max-w-[5rem]"
-											><InlineMarkdown content={cap.name} /></span
+											><InlineMarkdown content={point.name} /></span
 										>
-										{#if cap.notion_name}
-											<Badge variant="outline" class="text-[0.6rem]">{cap.notion_name}</Badge>
+										{#if point.notion_name}
+											<Badge variant="outline" class="text-[0.6rem]">{point.notion_name}</Badge>
 										{/if}
 									</div>
 								</th>
@@ -176,12 +176,12 @@
 								>
 									{displayName(student, idx)}
 								</td>
-								{#each orderedCapacities as cap (cap.id)}
-									{@const badge = data.cells[`${student.id}:${cap.id}`] ?? 'non_commencee'}
+								{#each orderedPoints as point (point.id)}
+									{@const badge = data.cells[`${student.id}:${point.id}`] ?? 'non_commencee'}
 									{@const meta = badgeMeta(badge)}
 									<td
 										class="px-1 py-2 text-center {meta.color}"
-										title={`${student.display_name} — ${cap.name} : ${meta.label}`}
+										title={`${student.display_name} — ${point.name} : ${meta.label}`}
 									>
 										<meta.icon class="mx-auto h-4 w-4" aria-label={meta.label} />
 									</td>
@@ -194,8 +194,8 @@
 							<td class="sticky left-0 z-10 bg-muted/30 px-2 py-2 font-medium">
 								% acquise / % à remédier
 							</td>
-							{#each orderedCapacities as cap (cap.id)}
-								{@const stats = data.columnStats[cap.id] ?? { acquise_pct: 0, remediate_pct: 0 }}
+							{#each orderedPoints as point (point.id)}
+								{@const stats = data.columnStats[point.id] ?? { acquise_pct: 0, remediate_pct: 0 }}
 								<td class="px-1 py-2 text-center">
 									<span class="text-emerald-600 dark:text-emerald-400">{stats.acquise_pct}%</span>
 									<span class="text-muted-foreground"> / </span>

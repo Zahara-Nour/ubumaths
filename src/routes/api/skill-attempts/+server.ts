@@ -1,13 +1,13 @@
 /**
  * API Route: POST /api/skill-attempts
  *
- * Crée une row `skill_attempts` (régime per-template famille A) à chaque réponse
+ * Crée une row `skill_attempts` (régime per-template) à chaque réponse
  * d'un quiz interactif (Monde 1 — `FlashCard.svelte`).
  *
  * Effets cumulés (Phase 2 refonte 2026-06-10) :
  *   1. UPSERT `srs_card_stats` via FSRS-6 (le grade est dérivé de `success`).
  *   2. INSERT 1 row dans `skill_attempts` (au lieu de N comme avant).
- *   3. Si template tagué famille A : auto-ajout au deck Programme.
+ *   3. Si template tagué sur un point du programme : auto-ajout au deck Programme.
  *   4. Le trigger PG recalcule `student_point_state` pour chaque point tagué.
  *
  * Famille B : non gérée ici (passe par evaluation_tasks côté prof).

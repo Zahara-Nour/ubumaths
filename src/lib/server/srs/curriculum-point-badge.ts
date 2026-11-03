@@ -1,5 +1,5 @@
 /**
- * Calcul du badge FSRS agrégé pour une capacité famille A.
+ * Calcul du badge FSRS agrégé pour un point du programme.
  *
  * Le badge dérive des états FSRS (`srs_card_stats`) des templates tagués sur
  * un `curriculum_point`. Règle d'agrégation par priorité décroissante :
@@ -23,11 +23,11 @@ import type { Database } from '$lib/types/database';
 import { fetchInChunks } from '$lib/server/utils/chunked-in';
 import { createServerLogger } from '$lib/utils/logger';
 
-const logger = createServerLogger('server/srs/capacity-badge');
+const logger = createServerLogger('server/srs/curriculum-point-badge');
 
 type SB = SupabaseClient<Database>;
 
-export type CapacityBadge =
+export type CurriculumPointBadge =
 	'a_remedier' | 'a_renforcer' | 'acquise_en_memoire' | 'en_apprentissage' | 'non_commencee';
 
 type CardState = 'new' | 'learning' | 'review' | 'relearning';
@@ -41,7 +41,7 @@ interface FsrsStateRow {
 /**
  * Récupère et agrège les badges FSRS pour une liste de point_ids et un élève.
  *
- * Retourne une Map point_id → badge. Les capacités sans aucun template tagué
+ * Retourne une Map point_id → badge. Les points sans aucun template tagué
  * (ou sans srs_card_stats sur leurs templates) reçoivent `non_commencee`.
  *
  * Les deux listes `.in()` sont découpées en lots (cf. `IN_CHUNK_SIZE`) : cette
@@ -57,8 +57,8 @@ export async function computePointBadges(
 	studentId: string,
 	pointIds: string[],
 	options: { onError?: 'neutral' | 'throw' } = {}
-): Promise<Map<string, CapacityBadge>> {
-	const result = new Map<string, CapacityBadge>();
+): Promise<Map<string, CurriculumPointBadge>> {
+	const result = new Map<string, CurriculumPointBadge>();
 	if (pointIds.length === 0) return result;
 
 	// 1. Mapping point → templates (M2M), par lots d'URL raisonnables
@@ -68,7 +68,7 @@ export async function computePointBadges(
 
 	if (tagErr) {
 		if (options.onError === 'throw') throw new Error(`Tags illisibles : ${tagErr.message}`);
-		logger.error('[capacity-badge] tag lookup failed:', tagErr);
+		logger.error('[curriculum-point-badge] tag lookup failed:', tagErr);
 		for (const id of pointIds) result.set(id, 'non_commencee');
 		return result;
 	}
@@ -103,7 +103,7 @@ export async function computePointBadges(
 		if (options.onError === 'throw') {
 			throw new Error(`Cartes de révision illisibles : ${fsrsErr.message}`);
 		}
-		logger.error('[capacity-badge] fsrs lookup failed:', fsrsErr);
+		logger.error('[curriculum-point-badge] fsrs lookup failed:', fsrsErr);
 		for (const id of pointIds) result.set(id, 'non_commencee');
 		return result;
 	}
@@ -133,7 +133,7 @@ export async function computePointBadges(
  * Source de vérité unique de la règle de mapping (state, nextReview) → badge,
  * utilisée à la fois par :
  *   - le calcul de section dans la page deck Programme (per-template)
- *   - l'agrégation montante par capacité dans la page objectifs
+ *   - l'agrégation montante par point du programme dans la page objectifs
  *
  * Convention `state='new'` : la carte n'a jamais été reviewed (cas exotique
  * où une carte a été créée mais aucun skill_attempt ne lui correspond encore).
@@ -144,7 +144,7 @@ export function templateToBadge(
 	state: CardState,
 	nextReview: string | null,
 	nowMs: number
-): CapacityBadge {
+): CurriculumPointBadge {
 	if (state === 'new') return 'en_apprentissage';
 	if (!nextReview) return 'en_apprentissage';
 
@@ -167,7 +167,7 @@ export function templateToBadge(
  * Plus la valeur est élevée, plus le badge est prioritaire dans l'agrégation
  * (un `a_remedier` parmi plusieurs templates l'emporte sur tout le reste).
  */
-export const BADGE_PRIORITY: Record<CapacityBadge, number> = {
+export const BADGE_PRIORITY: Record<CurriculumPointBadge, number> = {
 	a_remedier: 5,
 	a_renforcer: 4,
 	en_apprentissage: 3,
@@ -179,7 +179,7 @@ export const BADGE_PRIORITY: Record<CapacityBadge, number> = {
  * Retourne le badge de priorité la plus élevée parmi une liste.
  * Exporté pour usage côté UI (agrégation par objectif/groupe).
  */
-export function worstBadge(badges: CapacityBadge[]): CapacityBadge {
+export function worstBadge(badges: CurriculumPointBadge[]): CurriculumPointBadge {
 	if (badges.length === 0) return 'non_commencee';
 	return badges.reduce((acc, b) => (BADGE_PRIORITY[b] > BADGE_PRIORITY[acc] ? b : acc));
 }
@@ -189,7 +189,7 @@ export function worstBadge(badges: CapacityBadge[]): CapacityBadge {
  *
  * Délègue à `templateToBadge` puis `worstBadge` — source unique de vérité.
  */
-export function aggregateBadge(states: FsrsStateRow[], nowMs: number): CapacityBadge {
+export function aggregateBadge(states: FsrsStateRow[], nowMs: number): CurriculumPointBadge {
 	const badges = states.map((s) => templateToBadge(s.state, s.next_review, nowMs));
 	return worstBadge(badges);
 }
@@ -197,7 +197,7 @@ export function aggregateBadge(states: FsrsStateRow[], nowMs: number): CapacityB
 /**
  * Libellé court pour affichage UI.
  */
-export const BADGE_LABEL: Record<CapacityBadge, string> = {
+export const BADGE_LABEL: Record<CurriculumPointBadge, string> = {
 	a_remedier: 'À remédier',
 	a_renforcer: 'À renforcer',
 	acquise_en_memoire: 'Acquise',
@@ -208,7 +208,7 @@ export const BADGE_LABEL: Record<CapacityBadge, string> = {
 /**
  * Visuel emoji court pour badge inline.
  */
-export const BADGE_VISUAL: Record<CapacityBadge, string> = {
+export const BADGE_VISUAL: Record<CurriculumPointBadge, string> = {
 	a_remedier: '🆘',
 	a_renforcer: '🔁',
 	acquise_en_memoire: '✅',

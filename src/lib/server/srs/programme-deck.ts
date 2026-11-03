@@ -3,7 +3,7 @@
  *
  * Le deck Programme (1 par élève, `is_auto_managed=true`) est créé automatiquement
  * à la première interaction Monde 1 (quiz interactif) ou Monde 2 (review SRS)
- * sur un template tagué famille A.
+ * sur un template tagué sur un point du programme.
  *
  * Pattern lookup-then-insert avec gestion de la race condition, inspiré de
  * `resource-tags.ts` (`syncResourceTags`).
@@ -23,7 +23,7 @@ type SB = SupabaseClient<Database>;
 
 const PROGRAMME_DECK_NAME = 'Programme';
 const PROGRAMME_DECK_DESCRIPTION =
-	'Tes capacités à retravailler — mises à jour automatiquement après chaque entraînement.';
+	'Tes points du programme à retravailler — mises à jour automatiquement après chaque entraînement.';
 
 /**
  * Retourne l'ID du deck Programme de l'élève. Crée le deck si nécessaire.
@@ -111,7 +111,7 @@ export async function ensureProgrammeDeck(supabase: SB, userId: string): Promise
  * Ajoute idempotemment une carte template-based au deck Programme de l'élève.
  *
  * Pré-condition : le caller doit avoir vérifié que `template_id` est tagué
- * sur au moins une skill famille A (sinon la carte n'a pas vocation à être
+ * sur au moins un point du programme (sinon la carte n'a pas vocation à être
  * dans le Programme).
  *
  * ⚠️ `userId` doit venir de la SESSION authentifiée de l'appelant, jamais d'une
