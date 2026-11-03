@@ -192,7 +192,7 @@
 		{:else if line.kind === 'sign-table'}
 			<!-- Tableau de signes à compléter : chaque cellule cachée dit sa réponse et son statut -->
 			<div class="space-y-1" data-kind="sign-table" data-status={line.status}>
-				<SignTableAnswer source={line.source} cells={line.cells} />
+				<SignTableAnswer source={line.source} first={line.index} cells={line.cells} />
 				{#if line.status !== 'solution'}
 					<p class="flex justify-center">{@render statusTag(line.status)}</p>
 				{/if}

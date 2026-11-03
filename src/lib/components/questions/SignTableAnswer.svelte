@@ -30,35 +30,52 @@
 	interface Props {
 		/** Texte du bloc ```variation, sans `case:` */
 		source: string;
+		/** Première case du tableau : la cellule `k` est la case `first + k` */
+		first: number;
 		/** Cellules cachées, dans l'ordre de lecture du tableau */
 		cells: readonly ExpectedSignCell[];
 	}
 
-	let { source, cells }: Props = $props();
+	let { source, first, cells }: Props = $props();
 
 	const node = $derived(parseVariationTableContent(source.split('\n')).node);
 
-	/** Ce que l'écran montre d'un signe ou d'une marque */
-	const TOKEN_TEXT: Record<string, string> = {
-		'+': '+',
-		'-': '−',
-		z: '0',
-		'||': '‖',
-		rien: 'rien'
-	};
+	/** Ce que l'écran montre d'un signe ou d'une marque (Map : une réponse forgée
+	 *  `constructor` ne trouve rien) */
+	const TOKEN_TEXT = new Map([
+		['+', '+'],
+		['-', '−'],
+		['z', '0'],
+		['||', '‖'],
+		['rien', 'rien']
+	]);
 
 	/** Ce qu'un lecteur d'écran entend d'un signe ou d'une marque */
-	const TOKEN_SPOKEN: Record<string, string> = {
-		'+': 'plus',
-		'-': 'moins',
-		z: 'zéro',
-		'||': 'double barre',
-		rien: 'rien'
-	};
+	const TOKEN_SPOKEN = new Map([
+		['+', 'plus'],
+		['-', 'moins'],
+		['z', 'zéro'],
+		['||', 'double barre'],
+		['rien', 'rien']
+	]);
+
+	/** Une valeur de x lue à voix haute : `\frac{3}{2}` → « 3 sur 2 », sans commande LaTeX */
+	function spokenLatex(latex: string): string {
+		return latex
+			.replace(/\\[dt]?frac\{([^{}]*)\}\{([^{}]*)\}/g, '$1 sur $2')
+			.replace(/\\sqrt\{([^{}]*)\}/g, 'racine de $1')
+			.replace(/\\[a-zA-Z]+/g, ' ')
+			.replace(/[{}]/g, '')
+			.replace(/\s+/g, ' ')
+			.trim();
+	}
 
 	function spoken(kind: HiddenCellKind, value: string): string {
-		return kind === 'valeur' ? value : (TOKEN_SPOKEN[value] ?? value);
+		return kind === 'valeur' ? spokenLatex(value) : (TOKEN_SPOKEN.get(value) ?? value);
 	}
+
+	/** Cellule de la case `first + k` (jamais par rang dans la liste : un trou la décalerait) */
+	const cellAt = (k: number) => cells.find((c) => c.index === first + k);
 
 	/** Libellé d'une cellule : sa case, sa réponse, son statut, la bonne réponse si besoin */
 	function cellLabel(cell: ExpectedSignCell): string {
@@ -77,8 +94,8 @@
 {#snippet value(kind: HiddenCellKind, text: string)}
 	{#if kind === 'valeur'}
 		<math-span>{text}</math-span>
-	{:else if TOKEN_TEXT[text] !== undefined}
-		<span class="token" class:token-rien={text === 'rien'}>{TOKEN_TEXT[text]}</span>
+	{:else if TOKEN_TEXT.has(text)}
+		<span class="token" class:token-rien={text === 'rien'}>{TOKEN_TEXT.get(text)}</span>
 	{:else}
 		<span class="token">{text}</span>
 	{/if}
@@ -88,14 +105,9 @@
 	<div class="sign-table-answer" data-sign-table-answer>
 		<VariationTable {node}>
 			{#snippet cell(hidden: HiddenCell)}
-				{@const answer = cells[hidden.index]}
+				{@const answer = cellAt(hidden.index)}
 				{#if answer}
-					<span
-						class="answer-cell"
-						data-sign-cell={answer.index}
-						data-status={answer.status}
-						title={cellLabel(answer)}
-					>
+					<span class="answer-cell" data-sign-cell={answer.index} data-status={answer.status}>
 						<span class="sr-only">{cellLabel(answer)}</span>
 						{#if answer.student !== null}
 							<span
@@ -124,6 +136,13 @@
 			{/snippet}
 		</VariationTable>
 	</div>
+{:else}
+	<!-- Tableau illisible (instance inattendue) : les cellules en liste, jamais rien (R10) -->
+	<ul class="space-y-1" data-sign-table-fallback>
+		{#each cells as answer (answer.index)}
+			<li>{cellLabel(answer)}</li>
+		{/each}
+	</ul>
 {/if}
 
 <style>

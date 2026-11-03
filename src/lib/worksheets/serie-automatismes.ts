@@ -140,6 +140,7 @@ const CASE_LINE = /^\s*case\s*:/;
  * `reecrire`, et le nombre de cases qu'ils portent (une par cellule cachée)
  */
 function tableauxACompleter(
+	modele: string,
 	texte: string,
 	reecrire: (corps: string[]) => string[]
 ): { texte: string; cases: number } {
@@ -147,7 +148,12 @@ function tableauxACompleter(
 	const tableaux = findVariationsToFill(texte);
 	// Du dernier au premier : les rangs des tableaux précédents restent justes
 	for (const tableau of [...tableaux].reverse()) {
-		if (tableau.nested || !tableau.node) throw new Error('tableau à compléter illisible');
+		if (tableau.nested || !tableau.node) {
+			const raison = tableau.nested
+				? 'bloc en retrait ou cité'
+				: tableau.errors.map((e) => e.message).join(' ; ');
+			throw new Error(`${modele} : tableau à compléter illisible (${raison})`);
+		}
 		lignes.splice(tableau.startIndex + 1, tableau.body.length, ...reecrire(tableau.body));
 	}
 	const cases = tableaux.reduce((n, t) => n + (t.node?.cases?.length ?? 0), 0);
@@ -232,10 +238,10 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Serie {
 
 	// Tableau de signes à compléter : cellules cachées vides à l'énoncé (le PDF les
 	// dessine vides), tableau rempli au corrigé ; une case par cellule cachée
-	const tableauxEnonce = tableauxACompleter(enonceChoix, (corps) =>
+	const tableauxEnonce = tableauxACompleter(template.id, enonceChoix, (corps) =>
 		corps.filter((ligne) => !CASE_LINE.test(ligne))
 	);
-	const tableauxCorrige = tableauxACompleter(corrigeChoix, revealVariationBody);
+	const tableauxCorrige = tableauxACompleter(template.id, corrigeChoix, revealVariationBody);
 
 	// Chaque case attendue doit être remplacée, ni plus ni moins (un marqueur d'une
 	// autre convention, `<<expr:…>>`, laisserait sinon une question sans case)

@@ -78,6 +78,22 @@ describe('revealVariationBody', () => {
 		expect(content(parseOk(revealed))).toEqual(content(parseOk(body)));
 	});
 
+	it('borne ouverte écrite avec une parenthèse : (?-3 révélé', () => {
+		const body = [
+			'variable: x',
+			'domain: (-inf, (?-3, +inf)',
+			'',
+			'sign: x+3',
+			'  -inf,-3: -',
+			'  -3: z',
+			'  -3,+inf: ?+'
+		];
+		const revealed = revealVariationBody(body);
+		expect(revealed.join('\n')).not.toContain('?');
+		expect(parseOk(revealed).cases ?? []).toEqual([]);
+		expect(content(parseOk(revealed))).toEqual(content(parseOk(body)));
+	});
+
 	it('tableau sans ? : inchangé', () => {
 		const body = ['variable: x', 'domain: -inf, 2, +inf', '', 'sign: x-2', '  2: z'];
 		expect(revealVariationBody(body)).toEqual(body);

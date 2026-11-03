@@ -515,14 +515,18 @@ vide). Flash : cellules vides ; bonne réponse : remplies. Énoncé masqué d'é
 Pas de case dans un tableau de **variations** (ligne `variation:`), refusée par le parseur.
 
 Corrigé (résultat attendu, `expected-result.ts`) : le tableau sort de l'énoncé rempli et de la consigne
-(`withoutSignTableCases`, aussi dans `instructionOf`) ; une ligne `sign-table` par tableau, après
-l'énoncé rempli : `source` (bloc sans `case:`), `cells` (`ExpectedSignCell` : case, `cellule`, attendu lu
+(`withoutSignTableCases`, aussi dans `instructionOf`) ; une ligne `sign-table` par tableau, à sa place :
+tableau seul → la consigne à part, puis le tableau ; avec d'autres cases → l'énoncé rempli découpé autour
+de chaque tableau (« Complète… », tableau, « En déduire… », chaque morceau avec ses cases et sa « Ta
+réponse ») : `source` (bloc sans `case:`), `cells` (`ExpectedSignCell` : case, `cellule`, attendu lu
 dans `blanks` — jamais dans le bloc, masqué en évaluation —, réponse de l'élève : jeton pour un signe ou
 une marque, `0` ramené à `z`, sinon texte neutralisé ; LaTeX neutralisé pour une valeur), statut du
-tableau (juste, forme à améliorer, faux ; `solution` sans réponse, R9). Aucune cellule remplie : « Tu n'as
-rien rempli dans le tableau. ». Écran : `SignTableAnswer.svelte` — cellule juste en vert, fausse barrée
+tableau (juste, forme à améliorer, faux ; `solution` sans réponse, R9), puis les remarques de ses cases.
+Aucune cellule remplie : le tableau juste, sans verdict, et « Tu n'as rien rempli dans le tableau. ».
+Cellule sans case de tableau (instance inattendue) : réponses attendues seules (R10). Écran : `SignTableAnswer.svelte` — cellule juste en vert, fausse barrée
 en rouge avec la bonne valeur dessous, vide : la bonne valeur en pointillés ; libellé `sr-only` par
-cellule (« Case 2, ta réponse : moins, faux, attendu : plus »). Vue concise de la carte : rien (comme une
+cellule (« Case 2, ta réponse : moins, faux, attendu : plus » ; une fraction lue « 3 sur 2 »), cellule
+retrouvée par son numéro de case ; tableau illisible : les cellules en liste. Vue concise de la carte : rien (comme une
 case à construire), la détaillée s'affiche.
 
 ### 5. Validation d'une case (`validateAnswer` → `validateBlanks` → `validateSingleBlank`)

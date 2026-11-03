@@ -178,7 +178,15 @@ construire héritent d'`answerKind`, unité, précision, `requiredForm`), mais *
   Non corrigé (pas de cas réel).
 - Vu en passant (hors périmètre) : `domain: ]a[, +inf` est mal découpé par le parseur (un seul point
   `a[, +inf`), avec ou sans `?`.
-- Tests : `expected-result-tableau-signes` (10), `variation-table-reveal` (4),
-  `serie-automatismes-tableau-signes` (2), `page-a-cocher` +1, `SignTableAnswer` (4, navigateur) ;
-  suites `questions`, `ubumark`, `worksheets`, `utils` : 14 050 verts ; client `components/questions`,
-  `markdown`, `question-inputs` : 1 062 verts ; `check:incremental` 0.
+- Revue (`code-reviewer` Opus) : rien de bloquant ; corrigés : ordre de l'énoncé (case APRÈS le tableau :
+  énoncé rempli découpé autour des tableaux, `statementPieces`), tableau tout vide sans « faux », remarques
+  des cases gardées, `(?-3` révélé, cellule retrouvée par son numéro de case (repli `expected-only`), `Map`
+  pour les jetons (`constructor`), plus de `title` doublon, fraction lue « 3 sur 2 », tableau illisible en
+  liste, message d'erreur de série situé.
+- Tests : `expected-result-tableau-signes` (12), `variation-table-reveal` (5), `SignTableAnswer` (7),
+  `serie-automatismes-tableau-signes` (2), `page-a-cocher` +1 ; suites `questions`, `ubumark`,
+  `worksheets`, `utils` : 14 053 verts ; client `components/questions`, `markdown`, `question-inputs` :
+  1 065 verts (par dossier : la suite d'un bloc perd son navigateur, panne d'environnement) ;
+  `check:incremental` 0.
+- Vu dans Chrome : impossible (l'extension n'atteint pas `localhost:5177`, page d'erreur) ; serveur de la
+  branche laissé sur 5177.

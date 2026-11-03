@@ -1110,8 +1110,11 @@ export function findVariationsToFill(markdown: string): VariationToFill[] {
 	return found;
 }
 
-/** `?` en tête d'une valeur du domaine (`, ?-3`, `]?3[`), pas le `??n` d'un énoncé masqué */
-const HIDDEN_DOMAIN_MARK = /([:,]\s*[[\]]?\s*)\?(?!\?)/g;
+/**
+ * `?` en tête d'une valeur du domaine (`, ?-3`, `]?3[`, `(?3`), pas le `??n` d'un
+ * énoncé masqué ; mêmes bornes que `parseDomainPoint`
+ */
+const HIDDEN_DOMAIN_MARK = /([:,]\s*[[\]()]?\s*)\?(?!\?)/g;
 /** Ligne d'une cellule cachée : `  clé: ?valeur` */
 const HIDDEN_ENTRY = /^(\s{2,}[^:]+:\s*)\?(?!\?)\s*(.*)$/;
 

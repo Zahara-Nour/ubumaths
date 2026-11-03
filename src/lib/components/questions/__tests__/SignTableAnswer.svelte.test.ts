@@ -140,4 +140,69 @@ describe('SignTableAnswer — dans le résultat attendu', () => {
 		expect(container.querySelector('img')).toBeNull();
 		expect(text(cellOf(container, 1)?.querySelector('[data-student]') ?? null)).toContain('img');
 	});
+
+	it('réponse forgée « constructor » : montrée telle quelle, jamais une propriété d’objet', async () => {
+		const { container } = await show(
+			result([cell(1, 'signe', '+', 'constructor', 'incorrect')], 'incorrect')
+		);
+		const faux = cellOf(container, 1);
+		expect(text(faux?.querySelector('[data-student]') ?? null)).toBe('constructor');
+		expect(text(faux)).not.toContain('function');
+	});
+
+	it('tableau après une autre case : cellule k = case first + k ; valeur lue sans LaTeX', async () => {
+		const main = document.body.appendChild(document.createElement('main'));
+		const { container } = await render(ExpectedResultView, {
+			target: main,
+			props: {
+				result: {
+					status: 'incorrect',
+					lines: [
+						{
+							kind: 'sign-table',
+							index: 5,
+							source: SOURCE,
+							status: 'incorrect',
+							cells: [
+								cell(5, 'valeur', '-3', '-\\frac{6}{2}', 'unoptimal'),
+								cell(6, 'signe', '+', '+', 'correct'),
+								cell(7, 'marque', 'z', 'z', 'correct'),
+								cell(8, 'signe', '+', '-', 'incorrect')
+							]
+						}
+					]
+				}
+			}
+		});
+		expect(text(cellOf(container, 8)?.querySelector('[data-student]') ?? null)).toBe('−');
+		expect(text(cellOf(container, 5)?.querySelector('.sr-only') ?? null)).toBe(
+			'Case 6, ta réponse : -6 sur 2, forme à améliorer, attendu : -3'
+		);
+		// Pas de `title` : le libellé n'est annoncé qu'une fois
+		expect(container.querySelector('[data-sign-cell][title]')).toBeNull();
+	});
+
+	it('tableau illisible : les cellules en liste, jamais rien', async () => {
+		const main = document.body.appendChild(document.createElement('main'));
+		const { container } = await render(ExpectedResultView, {
+			target: main,
+			props: {
+				result: {
+					status: null,
+					lines: [
+						{
+							kind: 'sign-table',
+							index: 0,
+							source: 'domain: ???',
+							status: 'solution',
+							cells: [cell(0, 'signe', '+', null, 'solution')]
+						}
+					]
+				}
+			}
+		});
+		expect(text(container.querySelector('[data-sign-table-fallback]'))).toBe(
+			'Case 1, réponse attendue, attendu : plus'
+		);
+	});
 });

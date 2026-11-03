@@ -127,6 +127,8 @@ describe('résultat attendu : tableau de signes à compléter', () => {
 
 		const none = buildExpectedResult(instance(SEUL), { values: ['', '', '', ''] });
 		expect(none.lines.map((l) => l.kind)).toEqual(['sign-table', 'empty']);
+		// Comme une case à construire vide : le tableau juste, sans verdict « faux »
+		expect(signTable(none.lines).status).toBe('solution');
 		expect(none.lines[1]).toEqual({ kind: 'empty', text: "Tu n'as rien rempli dans le tableau." });
 	});
 
@@ -146,6 +148,11 @@ describe('résultat attendu : tableau de signes à compléter', () => {
 		const line = signTable(lines);
 		expect(line.cells[0]).toMatchObject({ student: '-\\frac{6}{2}', status: 'unoptimal' });
 		expect(line.status).toBe('unoptimal');
+		// La remarque de forme de la case suit le tableau
+		const remarks = lines.filter((l) => l.kind === 'remark');
+		expect(remarks.length).toBeGreaterThan(0);
+		expect(remarks.every((r) => r.kind === 'remark' && r.index === 0)).toBe(true);
+		expect(lines[0].kind).toBe('sign-table');
 	});
 
 	it('avec une autre case dans l’énoncé : énoncé rempli SANS le tableau, puis le tableau', () => {
@@ -173,5 +180,52 @@ describe('résultat attendu : tableau de signes à compléter', () => {
 		};
 		const line = signTable(buildExpectedResult(masked).lines);
 		expect(line.cells.map((c) => c.expected)).toEqual(JUSTE);
+	});
+
+	it('case APRÈS le tableau : la phrase, le tableau, puis « En déduire » (ordre de l’énoncé)', () => {
+		const statement = [
+			'Complète le tableau de signes de $(x+3)(x-2)$.',
+			'',
+			...TABLEAU,
+			'',
+			'En déduire le nombre de solutions de $(x+3)(x-2) = 0$ : $?$'
+		].join('\n');
+		const inst = instance(statement, [{ expectedAnswer: '2' }]);
+		const result = buildExpectedResult(inst, { values: ['-3', '+', 'z', '+', '3'] });
+		expect(result.lines.map((l) => l.kind)).toEqual([
+			'filled-statement',
+			'sign-table',
+			'filled-statement',
+			'your-answer'
+		]);
+		const [before, , after] = result.lines;
+		if (before.kind !== 'filled-statement' || after.kind !== 'filled-statement') return;
+		expect(before.markdown).toMatch(/^Complète le tableau/);
+		expect(before.fills).toEqual([]);
+		expect(after.markdown).toMatch(/^En déduire/);
+		expect(after.fills.map((f) => f.index)).toEqual([4]);
+		expect(signTable(result.lines).cells.map((c) => c.index)).toEqual([0, 1, 2, 3]);
+		// Sans réponse (R9) : le même ordre
+		expect(buildExpectedResult(inst).lines.map((l) => l.kind)).toEqual([
+			'filled-statement',
+			'sign-table',
+			'filled-statement'
+		]);
+	});
+
+	it('deux tableaux et une case entre eux : chacun à sa place, ses cases à lui', () => {
+		const statement = [...TABLEAU, '', 'Combien de racines ? $?$', '', ...TABLEAU].join('\n');
+		const inst = instance(statement, [{ expectedAnswer: '2' }]);
+		const { lines } = buildExpectedResult(inst, {
+			values: ['-3', '+', 'z', '+', '2', '-3', '+', 'z', '-']
+		});
+		// La case du milieu est juste : son morceau seul, sans « Ta réponse »
+		expect(lines.map((l) => l.kind)).toEqual(['sign-table', 'filled-statement', 'sign-table']);
+		const tables = lines.filter((l): l is SignTableLine => l.kind === 'sign-table');
+		expect(tables.map((t) => [t.index, t.status])).toEqual([
+			[0, 'correct'],
+			[5, 'incorrect']
+		]);
+		expect(tables[1].cells.map((c) => c.index)).toEqual([5, 6, 7, 8]);
 	});
 });

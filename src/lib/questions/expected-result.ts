@@ -774,8 +774,10 @@ function signCellStudent(view: BlankView, blank: InstanceBlank): string | null {
 
 /**
  * Tableau de signes à compléter : le tableau, ses cellules (réponse de l'élève,
- * statut, bonne valeur) ; juste quand toutes le sont, « rien rempli » quand aucune
- * ne l'est
+ * statut, bonne valeur), puis les remarques de ses cases ; juste quand toutes le
+ * sont ; aucune cellule remplie : le tableau juste et « rien rempli », sans verdict
+ * (comme une case à construire laissée vide). Une cellule sans case de tableau
+ * (instance inattendue) : les réponses attendues seules (R10).
  */
 function signTableLines(
 	instance: QuestionInstance,
@@ -783,25 +785,29 @@ function signTableLines(
 	cells: readonly BlankView[],
 	withAnswer: boolean
 ): ExpectedLine[] {
-	const expectedCells: ExpectedSignCell[] = cells.flatMap((view) => {
-		const blank = instance.blanks?.[view.index];
-		if (!blank?.cellule) return [];
-		return [
-			{
-				index: view.index,
-				cellule: blank.cellule,
-				expected: blank.expectedAnswer,
-				student: withAnswer ? signCellStudent(view, blank) : null,
-				status: withAnswer ? toExpectedStatus(view.status ?? 'empty') : 'solution'
-			}
-		];
+	const blanks = cells.map((view) => instance.blanks?.[view.index]);
+	if (cells.length !== table.cases || blanks.some((blank) => !blank?.cellule)) {
+		return cells.map((view) => expectedOnlyLine(view, withAnswer));
+	}
+	const expectedCells: ExpectedSignCell[] = cells.map((view, k) => {
+		const blank = blanks[k]!;
+		return {
+			index: view.index,
+			cellule: blank.cellule!,
+			expected: blank.expectedAnswer,
+			student: withAnswer ? signCellStudent(view, blank) : null,
+			status: withAnswer ? toExpectedStatus(view.status ?? 'empty') : 'solution'
+		};
 	});
+	const nothingFilled = expectedCells.every((c) => c.student === null);
 	const allCorrect = expectedCells.every((c) => c.status === 'correct');
 	const allAccepted = expectedCells.every(
 		(c) => c.status === 'correct' || c.status === 'unoptimal'
 	);
 	let status: ExpectedStatus = 'solution';
-	if (withAnswer) status = allCorrect ? 'correct' : allAccepted ? 'unoptimal' : 'incorrect';
+	if (withAnswer && !nothingFilled) {
+		status = allCorrect ? 'correct' : allAccepted ? 'unoptimal' : 'incorrect';
+	}
 	const line: ExpectedLine = {
 		kind: 'sign-table',
 		index: table.first,
@@ -809,10 +815,8 @@ function signTableLines(
 		cells: expectedCells,
 		status
 	};
-	if (withAnswer && expectedCells.every((c) => c.student === null)) {
-		return [line, { kind: 'empty', text: EMPTY_SIGN_TABLE_TEXT }];
-	}
-	return [line];
+	if (withAnswer && nothingFilled) return [line, { kind: 'empty', text: EMPTY_SIGN_TABLE_TEXT }];
+	return [line, ...(withAnswer ? remarkLines(cells) : [])];
 }
 
 function expectedOnlyLine(view: BlankView, withAnswer: boolean): ExpectedLine {
@@ -885,6 +889,37 @@ function build(
 	return work.length === 0 ? result : { ...result, lines: [...result.lines, ...work] };
 }
 
+/**
+ * L'énoncé en morceaux, dans l'ordre : le texte entre les tableaux (sans les lignes
+ * vides en bord), et chaque tableau à compléter à sa place
+ */
+function statementPieces(
+	markdown: string,
+	tables: readonly SignTableBlock[]
+): (string | SignTableBlock)[] {
+	const lines = markdown.split('\n');
+	const pieces: (string | SignTableBlock)[] = [];
+	let from = 0;
+	const pushText = (to: number) => {
+		const text = lines.slice(from, to).join('\n').trim();
+		if (text !== '') pieces.push(text);
+	};
+	for (const table of [...tables].sort((a, b) => a.startIndex - b.startIndex)) {
+		pushText(table.startIndex);
+		pieces.push(table);
+		from = table.endIndex + 1;
+	}
+	pushText(lines.length);
+	return pieces;
+}
+
+/** Statut d'un morceau d'énoncé, d'après ses cases : juste, vide ou faux */
+function pieceStatus(statuses: readonly ValidationStatus[]): ValidationStatus {
+	if (statuses.every((s) => s === 'correct')) return 'correct';
+	if (statuses.every((s) => s === 'empty')) return 'empty';
+	return 'incorrect';
+}
+
 /** Résultat attendu des cases notées (les figures de travail viennent après, cf. `build`) */
 function buildAnswers(
 	instance: QuestionInstance,
@@ -899,12 +934,11 @@ function buildAnswers(
 	const statement = typeof instance.statement === 'string' ? instance.statement : '';
 	// Case « figure » : hors de l'énoncé rempli, sa figure est dans sa ligne. Case
 	// « choix » : son bloc reste À SA PLACE dans l'énoncé rempli (`choiceCases`)
-	// Tableau de signes à compléter : hors de l'énoncé rempli, il est dans sa ligne
-	const markdown = prepareStatement(
-		withoutSignTableCases(withoutBuildCases(withoutFigureCases(statement))),
-		instance
-	);
-	const tables = signTableBlocks(statement);
+	// Tableau de signes à compléter : hors de l'énoncé rempli, il est dans sa ligne,
+	// À SA PLACE parmi les morceaux de l'énoncé (« En déduire… » vient après lui)
+	const withTables = prepareStatement(withoutBuildCases(withoutFigureCases(statement)), instance);
+	const markdown = withoutSignTableCases(withTables);
+	const tables = signTableBlocks(withTables);
 	const tableOf = (v: BlankView) =>
 		tables.find((t) => v.index >= t.first && v.index < t.first + t.cases);
 	const marked = markedIndexes(markdown);
@@ -934,17 +968,14 @@ function buildAnswers(
 		);
 		return placeLines(v, v.build, points, verdict !== undefined);
 	});
-	// Tableau de signes : comme une case à construire, après la phrase qui le demande
-	const tableLines = tables.flatMap((table) =>
+	const tableLinesOf = (table: SignTableBlock) =>
 		signTableLines(
 			instance,
 			table,
 			views.filter((v) => tableOf(v) === table),
 			verdict !== undefined
-		)
-	);
+		);
 	const apart = [
-		...tableLines,
 		...builds,
 		...outside.flatMap((v) =>
 			v.figure || v.build ? [] : [expectedOnlyLine(v, verdict !== undefined)]
@@ -953,7 +984,34 @@ function buildAnswers(
 	const choiceCases = choiceViews.flatMap((v) => choiceCaseOf(instance, v.index, verdict) ?? []);
 
 	if (inStatement.length === 0 && choiceCases.length === 0) {
-		return { status, lines: [...figures, ...apart] };
+		// Tableau seul : la consigne est montrée à part (`showsInstructionOnly`)
+		return { status, lines: [...figures, ...tables.flatMap(tableLinesOf), ...apart] };
+	}
+
+	// Tableau ET autres cases : l'énoncé rempli découpé autour de chaque tableau
+	if (tables.length > 0) {
+		const ordered = statementPieces(withTables, tables).flatMap((piece) => {
+			if (typeof piece !== 'string') return tableLinesOf(piece);
+			const pieceMarked = markedIndexes(piece);
+			const pieceChoices = choiceBlockIndexes(piece);
+			const pieceViews = inStatement.filter((v) => pieceMarked.has(v.index));
+			const pieceChoiceCases = choiceCases.filter((c) => pieceChoices.has(c.index));
+			if (!verdict || status === null) {
+				const filled: ExpectedLine = {
+					kind: 'filled-statement',
+					markdown: piece,
+					fills: pieceViews.map((v) => solutionFill(v, 'solution')),
+					possible: pieceViews.some((v) => v.rulesDecide),
+					...withChoiceCases(pieceChoiceCases)
+				};
+				return [filled];
+			}
+			const judged = [...pieceViews, ...choiceViews.filter((v) => pieceChoices.has(v.index))].map(
+				(v) => v.status ?? 'empty'
+			);
+			return statementLines(piece, pieceViews, pieceStatus(judged), pieceChoiceCases);
+		});
+		return { status, lines: [...figures, ...ordered, ...apart] };
 	}
 
 	const lhs = wholeRightHandSide(markdown, instance);
