@@ -10,7 +10,7 @@ couvre:
 # L'atelier (et `/grapheur`)
 
 > Synthèse des journaux archivés `docs/archive/wip/atelier-*`. Syntaxe des commandes de Calcul :
-> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; lecture des degrés et de `π` partagée avec le registre, 2026-11-03 ; égalité tapée seule → vrai / faux, `≈` refusé, 2026-11-03 ; `.dériver` affiche la réponse du registre, 2026-11-03 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; π au numérateur d'un périmètre, #1634, 2026-10-24 ; espaces de groupement dès 5 chiffres, 2026-10-23 ; étapes de `.résoudre` écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; ouvrir dans l'atelier depuis Python, 2026-10-25 ; ligne réservée sous la barre de la grille et libellé de « Résoudre », 2026-10-26 ; conditions sur la lettre, points irrationnels, `tan`/`arcsin`, `avec x ≥ e`, tidy-conditions § 5 PR A, 2026-10-26 ; Partager et Enregistrer d'une grille seule, confirmation de Charger, `X suit …` tapé, 2026-10-26 ; valeurs remarquables et degrés de `.simplifier`, `.développer`, `.résoudre`, 2026-10-27).
+> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; lecture des degrés et de `π` partagée avec le registre, 2026-11-03 ; égalité tapée seule → vrai / faux, `≈` refusé, 2026-11-03 ; `.dériver` affiche la réponse du registre, 2026-11-03 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; π au numérateur d'un périmètre, #1634, 2026-10-24 ; espaces de groupement dès 5 chiffres, 2026-10-23 ; étapes de `.résoudre` écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; ouvrir dans l'atelier depuis Python, 2026-10-25 ; ligne réservée sous la barre de la grille et libellé de « Résoudre », 2026-10-26 ; conditions sur la lettre, points irrationnels, `tan`/`arcsin`, `avec x ≥ e`, tidy-conditions § 5 PR A, 2026-10-26 ; Partager et Enregistrer d'une grille seule, confirmation de Charger, `X suit …` tapé, 2026-10-26 ; valeurs remarquables et degrés de `.simplifier`, `.développer`, `.résoudre`, 2026-10-27 ; `.résoudre` répond par l'ensemble des solutions, 2026-11-03).
 
 ## À quoi ça sert
 
@@ -2479,13 +2479,29 @@ ligne ne compile plus. Conclusions acceptées pour la ligne : `read-solution`, `
 `no-real-solution`, les conclusions d'inéquation, et `read-all-reals` (`S = ℝ`,
 `|x-1|=|1-x|`).
 
+**La réponse est l'ensemble des solutions** (chantier `registre-reference`, Q2, PR 2b,
+2026-11-03), comme celle du registre (`solve-latex.ts`, `solve.command.ts`) : `S = {3}` pour une
+seule solution, `S = ]−∞ ; 3[` pour une inéquation du premier degré, `S = ℝ \ {3}` pour `≠`,
+`S = {π/4 + kπ, k ∈ ℤ}` pour une famille périodique (deux familles : `S = {π/6 + 2kπ ; 5π/6 + 2kπ,
+k ∈ ℤ}`). Les étapes passent par `x = 3` ou `x < 3` et concluent sur S : `concludedOn` ajoute
+l'étape « L'ensemble des solutions » quand la dernière ne l'écrit pas, ou réécrit l'ensemble de la
+conclusion dans l'ordre de la réponse. Solutions rangées par valeur croissante (`ascending`,
+R-ordre du 2026-11-01 : `(x − 1)(x + 2) = 0` → `S = {−2 ; 1}`, `−x² + x + 1 = 0` aussi) ; une
+solution sans valeur (paramètre) garde l'ordre du calcul. Une solution en ln ne porte plus sa valeur
+approchée (`e^x = 3` → `S = {ln 3}`, `S ≈ {1,0986}` au bouton ≈) ; seul le **seuil** d'une
+inéquation la garde (`0,8ⁿ < 0,1` → `n > ln(0,1)/ln(0,8) ≈ 10,32`, David, 2026-11-03). Le
+bouton ≈ suit la forme de la réponse (`S ≈ {…}`). Garde : `__tests__/resoudre-registre.test.ts`
+(dernière étape = ligne affichée = réponse du registre ; écarts de lecture de la PR 2c — degrés,
+décimaux tapés, paramètre — figés dans `READ_DIFFERENTLY`). L'Atelier affiche encore la fin de
+ses étapes, pas `result.answer`, jusqu'à la PR 2c.
+
 **Étapes écrites comme la réponse** (lot 5f-4 de `simplify-carte`, Q46, 2026-10-25). Les étapes
 d'une équation ou d'une inéquation passent par `stepsAsShown` avant le rendu ; le garde-fou et
-la ligne `S = …` d'une équation lisent les étapes du calcul. Décimaux tapés gardés (`2x = 0,6` : « Solution : x = 0,3 » ;
+la ligne `S = …` d'une équation lisent les étapes du calcul. Décimaux tapés gardés (`2x = 0,6` : « Solution : x = 0,3 », puis `S = {0,3}` ;
 `0,5x + 1 = 2` : `0,5x = 1`, « On divise les deux membres par 0,5 »), solutions écrites comme la
 réponse (`2x² = 1` : `S = {−√2/2 ; √2/2}` ; `x² − x − 1 = 0` : « On simplifie les solutions »
-donne `(1 − √5)/2`). Une inéquation s'écrit de même (Q50, 2026-10-25) : `2x < 0,6` répond
-`x < 0,3` (ligne lue sur les étapes montrées), `x² < 0,5` conclut `S = ]−√2/2 ; √2/2[`,
+donne `(1 − √5)/2`). Une inéquation s'écrit de même (Q50, 2026-10-25) : `2x < 0,6` passe par
+`x < 0,3` et répond `S = ]−∞ ; 0,3[` (ligne lue sur les étapes montrées), `x² < 0,5` conclut `S = ]−√2/2 ; √2/2[`,
 `1/(2x − 1) > 0` conclut `]1/2 ; +∞[` en vraie fraction, les racines du tableau de signes
 s'écrivent comme des solutions. Détail : `docs/systeme/mathast/README.md`, `pedagogical-solve` ;
 tests `__tests__/resoudre-etapes-5f4.test.ts`, `__tests__/resoudre-inequations-q50.test.ts`.

@@ -298,19 +298,25 @@ export function solveSteps(
 				? null
 				: restrictedSteps(rendered, summarized, solutions, variable, within, decimal, conditions);
 		}
-		const approximate =
-			solutions === null
-				? null
-				: approximateSolutionsLatex(variable, solutions, answer.trimStart().startsWith('S'));
-		// Le même calcul, rédigé sans les « pourquoi » (interrupteur du dépliage)
-		const summary = summaryOf(rendered, summarized);
 		const values =
 			relation.relation !== '='
 				? null
 				: (solutions ?? solvedValue(steps[steps.length - 1].after, variable));
+		const ordered = values === null ? null : ascending(values);
+		// L'ensemble des solutions, toujours (registre-reference, Q2) : les étapes
+		// passent par `x = 3` ou `x < 3`, et concluent sur S
+		const line =
+			ordered !== null
+				? shownAnswer(answer, ordered, decimal)
+				: (inequalitySet(shown[shown.length - 1].after, variable) ?? answer);
+		const approximate =
+			solutions === null ? null : approximateSolutionsLatex(variable, ascending(solutions), true);
+		const detailed = concludedOn(rendered, line, 'detailed');
+		// Le même calcul, rédigé sans les « pourquoi » (interrupteur du dépliage)
+		const summary = summaryOf(detailed, concludedOn(summarized, line, 'summarized'));
 		return {
-			steps: rendered,
-			answer: values === null ? answer : shownAnswer(answer, values, variable, decimal),
+			steps: detailed,
+			answer: line,
 			...(summary !== undefined && { summary }),
 			...(approximate !== null && { approximate })
 		};
@@ -329,6 +335,74 @@ function numbered(steps: readonly RenderedStep[]): RenderedStep[] {
 }
 
 /**
+ * Les solutions dans l'ordre croissant de leur valeur ; une solution sans
+ * valeur (paramètre) garde l'ordre du calcul pour toutes (R-ordre, David,
+ * 2026-11-01) — `(x − 1)(x + 2) = 0` concluait `{1 ; −2}`.
+ */
+function ascending(values: readonly MathNode[]): readonly MathNode[] {
+	const numeric = values.map((value) => ({ value, at: numericValueOf(value) }));
+	if (numeric.some(({ at }) => at === null)) return values;
+	return [...numeric].sort((a, b) => (a.at ?? 0) - (b.at ?? 0)).map(({ value }) => value);
+}
+
+/**
+ * L'ensemble des solutions d'une inéquation du premier degré résolue
+ * (`x < 3` → `S = ]-\infty ; 3[`), sur l'arbre de la dernière étape montrée,
+ * écrite comme elle (`x < 0,3`, Q50) ; `null` si elle n'a pas cette forme.
+ */
+function inequalitySet(after: MathNode, variable: string): string | null {
+	if (after.type !== 'relation' || after.left.type !== 'variable') return null;
+	if (after.left.name !== variable || getVariables(after.right).size > 0) return null;
+	const bound = toLatex(after.right);
+	switch (after.relation) {
+		case '<':
+			return `S = ]-\\infty ; ${bound}[`;
+		case '<=':
+			return `S = ]-\\infty ; ${bound}]`;
+		case '>':
+			return `S = ]${bound} ; +\\infty[`;
+		case '>=':
+			return `S = [${bound} ; +\\infty[`;
+		case '!=':
+			return `S = \\mathbb{R} \\setminus \\left\\{ ${bound} \\right\\}`;
+		default:
+			return null;
+	}
+}
+
+/**
+ * Les étapes qui concluent sur la réponse : déjà le cas, ou la conclusion
+ * réécrite dans l'ordre de la réponse (le même ensemble, R-ordre), ou une
+ * étape de plus quand la dernière dit `x = 3` ou `x < 3` (Q2).
+ */
+function concludedOn(
+	steps: readonly RenderedStep[],
+	line: string,
+	verbosity: 'detailed' | 'summarized'
+): readonly RenderedStep[] {
+	const last = steps[steps.length - 1];
+	if (last === undefined || last.expressionLatex === line) return steps;
+	if (!line.trimStart().startsWith('S')) return steps;
+	if (last.expressionLatex?.trimStart().startsWith('S') === true) {
+		return [...steps.slice(0, -1), { ...last, expressionLatex: line }];
+	}
+	return numbered([
+		...steps,
+		{
+			id: 0,
+			rule: 'solution-set',
+			title: 'L’ensemble des solutions',
+			// La version résumée n'a pas de « pourquoi »
+			...(verbosity === 'detailed' && {
+				explanation: 'On donne l’ensemble des solutions sous la forme $S = \\ldots$.'
+			}),
+			expressionLatex: line,
+			...(last.schoolLevel !== undefined && { schoolLevel: last.schoolLevel })
+		}
+	]);
+}
+
+/**
  * La valeur d'une forme résolue `x = valeur` (premier degré, sans étape de
  * conclusion), ou `null`.
  */
@@ -341,30 +415,19 @@ function solvedValue(after: MathNode, variable: string): readonly MathNode[] | n
 /**
  * La ligne de réponse écrite depuis les valeurs (lot 5c, Q26) : chaque solution
  * passe par la valeur exacte à afficher commune — `−√2/2`, `(1 − √5)/2`, et le
- * registre décimal de l'équation (`2x = 0,6` → `x = 0,3`). La forme (`x = …`
- * ou `S = {…}`) est celle de la conclusion ; les étapes suivent la même règle
+ * registre décimal de l'équation (`2x = 0,6` → `S = {0,3}`). La forme est
+ * l'ensemble des solutions (Q2) ; les étapes suivent la même écriture
  * (`stepsAsShown`, lot 5f-4).
  */
-function shownAnswer(
-	answer: string,
-	values: readonly MathNode[],
-	variable: string,
-	decimal: boolean
-): string {
+function shownAnswer(answer: string, values: readonly MathNode[], decimal: boolean): string {
 	if (values.length === 0) return answer;
-	return solutionsLine(values, variable, decimal, answer.trimStart().startsWith('S'));
+	return solutionsLine(values, decimal);
 }
 
-/** `S = ∅`, `x = …` ou `S = {… ; …}`, chaque valeur écrite pour être lue. */
-function solutionsLine(
-	values: readonly MathNode[],
-	variable: string,
-	decimal: boolean,
-	asSet: boolean
-): string {
+/** `S = ∅` ou `S = {… ; …}`, chaque valeur écrite pour être lue (Q2 : une solution comprise). */
+function solutionsLine(values: readonly MathNode[], decimal: boolean): string {
 	if (values.length === 0) return 'S = \\emptyset';
 	const written = values.map((value) => toLatex(exactValueToShow(value, { decimal })));
-	if (written.length === 1 && !asSet) return `${variable} = ${written[0]}`;
 	return `S = \\left\\{ ${written.join(' \\,;\\, ')} \\right\\}`;
 }
 
@@ -387,7 +450,7 @@ function restrictedSteps(
 		if (value === null) return null;
 		if (containsValue(within, value)) kept.push(solution);
 	}
-	const answer = solutionsLine(kept, variable, decimal, false);
+	const answer = solutionsLine(ascending(kept), decimal);
 	const last = (steps: readonly RenderedStep[]): RenderedStep => ({
 		id: steps.length,
 		rule: 'keep-in-interval',
@@ -405,7 +468,7 @@ function restrictedSteps(
 		steps.map((step, i) => ({ ...step, id: i + 1 }));
 	const detailed = numbered([...first, ...rendered, last(rendered)]);
 	const summary = summaryOf(detailed, numbered([...first, ...summarized, last(summarized)]));
-	const approximate = approximateSolutionsLatex(variable, kept, kept.length > 1);
+	const approximate = approximateSolutionsLatex(variable, ascending(kept), true);
 	return {
 		steps: detailed,
 		answer,

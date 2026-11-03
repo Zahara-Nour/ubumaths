@@ -240,33 +240,33 @@ describe('f(a) = f(b) : la famille rendue est exactement celle du cours', () => 
 
 describe('.résoudre dans Calcul', () => {
 	it('cos(2x)=cos(x) → x = 2kπ/3 (2kπ y est déjà)', () => {
-		expect(latexOf('.résoudre cos(2x)=cos(x)')).toBe(`x=\\dfrac{2k\\pi}{3}${Z}`);
+		expect(latexOf('.résoudre cos(2x)=cos(x)')).toBe(`S=\\left\\{\\dfrac{2k\\pi}{3}${Z}\\right\\}`);
 	});
 
 	it('cos(x)=cos(π/3) → ±π/3 + 2kπ', () => {
 		expect(latexOf('.résoudre cos(x)=cos(\\pi/3)')).toBe(
-			`x=-\\dfrac{\\pi}{3}+2k\\pi\\text{ou}x=\\dfrac{\\pi}{3}+2k\\pi${Z}`
+			`S=\\left\\{-\\dfrac{\\pi}{3}+2k\\pi\\,;\\,\\dfrac{\\pi}{3}+2k\\pi${Z}\\right\\}`
 		);
 	});
 
 	it.each([
-		['sin(2x)=sin(x)', `x=2k\\pi\\text{ou}x=\\dfrac{\\pi}{3}+\\dfrac{2k\\pi}{3}${Z}`],
+		['sin(2x)=sin(x)', `S=\\left\\{2k\\pi\\,;\\,\\dfrac{\\pi}{3}+\\dfrac{2k\\pi}{3}${Z}\\right\\}`],
 		[
 			'sin(3x)=sin(x+\\pi/4)',
-			`x=\\dfrac{\\pi}{8}+k\\pi\\text{ou}x=\\dfrac{3\\pi}{16}+\\dfrac{k\\pi}{2}${Z}`
+			`S=\\left\\{\\dfrac{\\pi}{8}+k\\pi\\,;\\,\\dfrac{3\\pi}{16}+\\dfrac{k\\pi}{2}${Z}\\right\\}`
 		],
-		['tan(3x)=tan(x)', `x=k\\pi${Z}`],
-		['sin(x)=cos(2x)', `x=\\dfrac{\\pi}{6}+\\dfrac{2k\\pi}{3}${Z}`],
-		['cos(x)=-cos(2x)', `x=\\dfrac{\\pi}{3}+\\dfrac{2k\\pi}{3}${Z}`],
+		['tan(3x)=tan(x)', `S=\\left\\{k\\pi${Z}\\right\\}`],
+		['sin(x)=cos(2x)', `S=\\left\\{\\dfrac{\\pi}{6}+\\dfrac{2k\\pi}{3}${Z}\\right\\}`],
+		['cos(x)=-cos(2x)', `S=\\left\\{\\dfrac{\\pi}{3}+\\dfrac{2k\\pi}{3}${Z}\\right\\}`],
 		// Écriture de main figée : la division par 3 reste propre à f(a) = f(b)
 		[
 			'2cos(x)^2-cos(x)-1=0',
-			`x=-\\dfrac{2\\pi}{3}+2k\\pi\\text{ou}x=2k\\pi\\text{ou}x=\\dfrac{2\\pi}{3}+2k\\pi${Z}`
+			`S=\\left\\{-\\dfrac{2\\pi}{3}+2k\\pi\\,;\\,2k\\pi\\,;\\,\\dfrac{2\\pi}{3}+2k\\pi${Z}\\right\\}`
 		],
-		['sin(\\pi/4-x)=0', `x=\\dfrac{\\pi}{4}+k\\pi${Z}`],
+		['sin(\\pi/4-x)=0', `S=\\left\\{\\dfrac{\\pi}{4}+k\\pi${Z}\\right\\}`],
 		// #988 : inchangés
-		['sin(x)=0', `x=k\\pi${Z}`],
-		['cos(x/3)=1/2', `x=-\\pi+6k\\pi\\text{ou}x=\\pi+6k\\pi${Z}`]
+		['sin(x)=0', `S=\\left\\{k\\pi${Z}\\right\\}`],
+		['cos(x/3)=1/2', `S=\\left\\{-\\pi+6k\\pi\\,;\\,\\pi+6k\\pi${Z}\\right\\}`]
 	])('%s : chaque famille avec SA période (écriture du manuel)', (equation, expected) => {
 		expect(latexOf(`.résoudre ${equation}`)).toBe(expected);
 	});
@@ -286,7 +286,9 @@ describe('.résoudre dans Calcul', () => {
 	);
 
 	it('cos(x)=sin(x) inchangé (#988)', () => {
-		expect(latexOf('.résoudre cos(x)=sin(x)')).toBe(`x=\\dfrac{\\pi}{4}+k\\pi${Z}`);
+		expect(latexOf('.résoudre cos(x)=sin(x)')).toBe(
+			`S=\\left\\{\\dfrac{\\pi}{4}+k\\pi${Z}\\right\\}`
+		);
 	});
 
 	// Lot 5c : solutions écrites par la valeur exacte à afficher (avant : `\\dfrac{2}{3}\\pi`)

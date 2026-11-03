@@ -94,9 +94,16 @@ describe('la valeur approchée des solutions de .solve', () => {
 		);
 	});
 
+	// Sous la forme de la réponse, l'ensemble des solutions (registre-reference, Q2)
 	it('une solution unique', () => {
-		expect(solved('x^3=2').approximateLatex).toBe('x \\approx 1.2599');
-		expect(solved('2x=1').approximateLatex).toBe('x = 0.5');
+		expect(solved('x^3=2').approximateLatex).toBe('S \\approx \\left\\{ 1.2599 \\right\\}');
+		expect(solved('2x=1').approximateLatex).toBe('S = \\left\\{ 0.5 \\right\\}');
+	});
+
+	// La réponse ne porte plus sa valeur approchée : le bouton la donne (David, 2026-11-03)
+	it('une solution en ln', () => {
+		expect(solved('e^x=3').latex).toBe('S = \\left\\{ \\ln\\left( 3 \\right) \\right\\}');
+		expect(solved('e^x=3').approximateLatex).toBe('S \\approx \\left\\{ 1.0986 \\right\\}');
 	});
 
 	it('4 décimales, zéros compris, pour le nombre d’or', () => {

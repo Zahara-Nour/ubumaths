@@ -1,31 +1,31 @@
 ---
 title: Le registre des commandes, référence commune (pnpm math, Atelier, calculatrice) — journal
 date: 2026-11-01
-status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
+status: PR 2b écrite (.résoudre en S), PR à ouvrir
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2351._
+_Mis à jour le 2026-11-04, PR 2b écrite (non ouverte)._
 
-- **État** : PR 2a mergée (#2351) : `.simplifier` du registre garde le domaine
-  (`mathAST/pedagogical-simplify/keep-domain.ts`) ; l'Atelier affiche la réponse du registre (la
-  fin de ses étapes quand il en a) ; `·` `⋅` `×` en syntaxe maison ; `pow-of-pow` garde le signe
-  (`(x²)^{1/2}` → `|x|`). Rien de déployé.
-- **Prochaine action** : `.résoudre` → S (PR 2b), nouveau worktree depuis `origin/main` ; puis
-  `.intégrer`.
+- **État** : PR 2b (`.résoudre` répond par S) écrite et commitée sur
+  `feat/registre-reference-resoudre`, poussée, **PR pas encore ouverte**. Tests `atelier` +
+  `mathAST` + `questions` + `routes` + client verts, `check:incremental` 0 erreur. Détail : § PR 2b.
+- **Prochaine action** : `pnpm types:cliquet`, `pnpm docs:check-a-jour --depuis origin/main`,
+  ouvrir la PR, revue `code-reviewer` en opus (correction des réponses, gros diff), CI, merge ;
+  puis PR 2c (lecture et refus : V57 paramètre, Q46 décimaux, degrés — `READ_DIFFERENTLY` de
+  `resoudre-registre.test.ts`), puis `.intégrer`.
 - **En attente de David** : rien.
 - **Tranché** : `unitChoice: 'school'` GARDÉE exprès — ne pas proposer de la retirer ; Q9 EN
   ENTIER, A-D du lot 2, `decimal` en LaTeX, `plafond-02` → 1000, Q24, `signes-06` — NE PAS
-  reposer. Fraction devant ou division après : `(x²/3 + 2x/3)eˣ` ; tableau : `x(x + 2)eˣ/3` ;
-  barre seulement si ça factorise, q ≤ 100 (David, 2026-11-03). `.simplifier` : descendre le calcul
-  de l'Atelier dans le moteur, `avec`/`dans` restent à l'Atelier jusqu'à l'étape H (David, 2026-11-03).
+  reposer. Fraction devant ou division après : `(x²/3 + 2x/3)eˣ` ; tableau : `x(x + 2)eˣ/3`.
+  `.simplifier` : calcul descendu, `avec`/`dans` à l'étape H. `.résoudre` (2026-11-03) : S partout,
+  périodique `S = {a + kπ, k ∈ ℤ}`, seuil gardé avec `≈`, V57 et Q46 descendent (PR 2c).
 - **Pièges** : `docs:check-a-jour` local ne voit que le COMMITÉ ; commitlint refuse « merge … »
-  (`chore: fusion …`) et un corps > 100 colonnes ; un nombre négatif est un `opposite(number)` ;
-  limites connues : `.diff cos(60°)*x`, `2 ≈ 2`, `(t>1)`, `5 m * 25!/24!`, `20000!/19999!`,
-  `2×π`. Le registre lit en LaTeX ce que la détection ne tranche pas (confiance 0,5 : `x*0/x`),
-  l'Atelier en syntaxe maison.
-- **Worktree / branche** : aucun (retiré après #2351) ; le prochain : `../ubumaths-wt-registre-reference`.
+  et un corps > 100 colonnes ; un nombre négatif est un `opposite(number)` ; script de mise à jour
+  d'attendus : il peut réécrire une ENTRÉE égale à l'attendu (`u_{n+1}=3`, rattrapé) ; limites
+  connues : `.diff cos(60°)*x`, `2 ≈ 2`, `(t>1)`, `5 m * 25!/24!`, `20000!/19999!`, `2×π`.
+- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `feat/registre-reference-resoudre`.
 
 ---
 
@@ -687,3 +687,28 @@ corrigée, à confirmer).
 - **Limites** : solutions rangées par valeur croissante (R-ordre), produit nul compris ; seuil
   `0.8^n<0.1 ; n` inchangé ; solution sous condition (`\text{si}`) : S aussi, condition gardée.
 - **Erreurs** : aucun refus ne change.
+
+### PR 2b — écriture (2026-11-03)
+
+- **Registre** (`solve-latex.ts`, `solve.command.ts`) : une solution → `S = \{3\}` ; famille
+  périodique → `S = \{ a + 2kπ ; b + 2kπ, k ∈ ℤ \}` ; solution en ln sans `≈`
+  (`logarithmicExactLatex`), décimaux du ln gardés (S1) ; le bouton ≈ suit la forme
+  (`S ≈ \{1,0986\}`). Seuil d'inéquation inchangé (`thresholdOf`, `n > … ≈ …`, `x > ln 5 ≈ 1,61`
+  aussi : même mécanisme, variable x comprise). Terminal (texte) inchangé.
+- **Atelier** (`solve-steps.ts`) : `concludedOn` ajoute « L'ensemble des solutions » (explication
+  en détaillé seulement) ou réécrit l'ensemble de la conclusion dans l'ordre de la réponse ;
+  `inequalitySet` (`<`, `≤`, `>`, `≥`, `≠` → `S = ℝ \ {3}`) ; `ascending` (R-ordre, produit nul et
+  a < 0). L'Atelier affiche encore la fin de ses étapes, pas `result.answer` : sinon `x+0.5=2`,
+  `cos(60°)x=1`, `a x = 4` régresseraient avant la PR 2c.
+- **Corpus** : `resoudre-12` à `-17` (périodiques, a < 0, `dans`, variable t, racine double) ;
+  juge : famille périodique lue (`periodic`). Justes, retirées de `connues-fausses.ts` : registre
+  `resoudre-01, 06, 07` ; Atelier `resoudre-01, 02, 06, 07, 09, 10`.
+- **Garde R5** : `atelier/__tests__/resoudre-registre.test.ts` (92 lignes `.résoudre` des tests de
+  l'Atelier) : dernière étape = ligne affichée = réponse du registre ; si l'Atelier refuse, le
+  registre ne répond pas ; 11 écarts de la PR 2c figés (`READ_DIFFERENTLY` : degrés ×7, `x+0.5=2`,
+  paramètre ×3). Preuve rouge : 34 échecs (garde + corpus) avec les trois fichiers de `main`.
+- ~200 attendus de tests mis à jour (`x = …` → `S = \{…\}`, étape de conclusion en plus), par
+  script puis à la main ; une entrée de test réécrite par erreur par le script (`u_{n+1}=3`)
+  rétablie.
+- Suites `atelier` + `mathAST/cli` (8 549), `mathAST` + `questions` + `geometry-core` + `routes`
+  (38 284) et client `atelier` + `routes` (741) vertes.

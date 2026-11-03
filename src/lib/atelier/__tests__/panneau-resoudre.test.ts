@@ -46,7 +46,7 @@ describe('le bouton et la commande s’accordent', () => {
 
 		expect(clic.ok).toBe(true);
 		if (!clic.ok) return;
-		expect(clic.latex).toBe('x = 3');
+		expect(clic.latex).toBe('S = \\left\\{ 3 \\right\\}');
 		expect(clic.steps?.[0].title).toBe('Équation du premier degré');
 	});
 
