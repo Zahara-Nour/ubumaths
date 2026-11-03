@@ -138,3 +138,36 @@ Décision (a) de David : `w1` s'écrit w₁ sur la figure (écran : `tspan` abai
 points (`O1`) sont en ligne partout (figure et `\overrightarrow{O1A}`), donc cohérents ; seuls les vecteurs
 changent. Rendu vu (rendu serveur du composant ouvert dans Chrome) : w₁, v₂, u₁ u₂ u₃ lisibles sous leur
 flèche. Tests vus rouges (scène, écran, PDF), compilation Typst réelle avec `v1 = OG`.
+
+## Lot 3 — modèle TSPE-334 : phase 0 (2026-11-04, à valider)
+
+Relevé prod (MCP, 2026-11-04) : TSPE-334 « Représenter des combinaisons linéaires de vecteurs donnés », nœud
+« Géométrie > Espace > vecteurs de l'espace », **0 modèle**. Catégorie « Géométrie › Vecteurs, droites et plans
+de l'espace › Sur une figure » : niveaux 1 à 5 pris (lot 9, publiés, tous niveaux scolaires confondus). Aucun
+modèle en base n'utilise encore `tracer:` d'un ` ```solide `. En prod : le geste (lot 2) ; **pas encore** les
+fractions ni les vecteurs nommés dans `tracer:` (D-SV2, #2347), ni l'indice (#2356).
+
+**Un modèle**, `T_SPE`, « Espace : tracer une combinaison linéaire de vecteurs », réponse = le geste (une case,
+`A/G`, jugée en 3D ; aucune réponse écrite à la main). Cube A(0;0;0)…H dans (AB, AD, AE) ; chaque cas tiré est
+`k`, l'extrémité calculée par le script et vérifiée par une assertion. Corrigé : la relation de Chasles écrite,
+plus la flèche juste dessinée par le geste.
+
+| Var. | Figure                                                                                                                   | Exemples de cas                                                                                     |
+| ---- | ------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
+| v0   | cube, origine imposée, coefficients ±1, vecteurs entre sommets                                                           | AB + AD depuis A (C) ; AB + AD + AE depuis A (G) ; AB − AD + AE depuis D (F) ; AE − AB depuis B (E) |
+| v1   | cube, **origine libre** (tout représentant juste)                                                                        | AB + FG ; EF + BC + AE ; HG − HE                                                                    |
+| v2   | cube, vecteurs donnés dessinés `u = AB, v = AD, w = AE`, milieux I, J, K, L de BF, CG, DH, AE déclarés (leurres compris) | u + ½ w depuis A (I) ; u + v + ½ w depuis A (J) ; v + ½ w depuis A (K) ; ½ w − u depuis B (L)       |
+| v3   | tétraèdre SABC, `u = SA, v = SB, w = SC` dessinés, I milieu BC, G centre ABC                                             | ½ v + ½ w depuis S (I) ; ⅓ u + ⅓ v + ⅓ w depuis S (G) ; ½ v + ½ w − u depuis A (I)                  |
+
+`testSpecs` : juste ; sens inversé (`C/A`) ; extrémité fausse (terme oublié) ; en v1, un second représentant juste.
+
+### Questions
+
+- **Q1** : un modèle, ces 4 variations ? Reco : oui (BO : « vecteurs donnés », supports cube et tétraèdre).
+- **Q2 (niveau)** : niveau 6 de « Sur une figure » (1 à 5 pris et publiés) ? Reco : oui ; renuméroter des
+  modèles publiés pour le mettre en tête coûterait une migration pour rien.
+- **Q3 (ordre)** : v2 et v3 ont besoin de D-SV2 et #2356, pas en prod. Reco : PR des fichiers, puis
+  `deploy:prod` (toi), puis `create-questions --publier` en brouillon (toi), rangement + tag, page à cocher,
+  publication.
+- **Q4 (accès)** : qui pourra lire quoi, qu'il ne pouvait pas lire avant ? Reco : personne (brouillon ; la
+  migration ne pose que le nœud « vecteurs de l'espace » et le tag TSPE-334).
