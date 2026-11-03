@@ -70,6 +70,10 @@ const cartesienneTiers = modele(
 const verticale = modele('verticale', `Trace la droite.\n\n${repere('tracer: x = 3')}`);
 const vecteur = modele('vecteur', `Trace le vecteur.\n\n${repere('tracer: vecteur (3 ; -2)')}`);
 const placer = modele('placer', `Place le point.\n\n${repere('placer: A=(2 ; 3)')}`);
+const deuxReperes = modele(
+	'deux-reperes',
+	`Trace $d$.\n\n${repere('tracer: y = {{m}}x + {{p}}')}\n\nTrace $d'$.\n\n${repere('tracer: y = -x + 4')}`
+);
 
 const modeles = new Map(
 	[
@@ -81,7 +85,8 @@ const modeles = new Map(
 		avecCase,
 		verticale,
 		vecteur,
-		placer
+		placer,
+		deuxReperes
 	].map((t) => [t.id, t])
 );
 
@@ -157,6 +162,22 @@ describe('buildSerie — droite à tracer', () => {
 		const serie = buildSerie(modeles, [{ templateId: 'avec-case', seed: 1 }]);
 		expect(serie.statement).toContain('\\text{……}');
 		expect(serie.solution).toContain('\\mathbf{3}');
+	});
+
+	it('deux repères dans une question : deux cases, chacun garde sa droite', () => {
+		const serie = buildSerie(modeles, [{ templateId: 'deux-reperes', seed: 1 }]);
+		expect(serie.statement).not.toMatch(/tracer:|case:/);
+		const blocs = [...serie.solution.matchAll(/```courbe\n([\s\S]*?)\n\s*```/g)].map((m) =>
+			parseCourbeContent(
+				m[1]
+					.split('\n')
+					.map((l) => l.replace(/^ {3}/, ''))
+					.join('\n')
+			)
+		);
+		expect(blocs).toHaveLength(2);
+		expect(valeur(blocs[0], 'f', 0)).toBeCloseTo(-1);
+		expect(valeur(blocs[1], 'f', 0)).toBeCloseTo(4);
 	});
 
 	it.each([

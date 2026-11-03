@@ -176,7 +176,10 @@ const EQUATION_REDUITE = /^\s*y\s*=(.+)$/i;
  * (la traîne d'un calcul flottant, `0.33333333333333326`, ne s'écrit pas), `-0` → `0`
  */
 function nombre(n: number): string {
-	return String(Number(n.toPrecision(12)) + 0);
+	const texte = String(Number(n.toPrecision(12)) + 0);
+	// `1e-7` se lirait 1 × e − 7 (e = Euler) : refuser plutôt que dessiner faux
+	if (/e/i.test(texte)) throw new Error(`coefficient hors d'écriture décimale : ${texte}`);
+	return texte;
 }
 
 /**
