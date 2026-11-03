@@ -6,11 +6,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03 : journal rouvert (archivé le matin même avec les journaux de 1re spé, lots non faits)._
+_Mis à jour le 2026-11-03 : phase 0 du lot « Droites » en cours (§ Lot « Droites »)._
 
 - **État** : pilote « évolutions » fait (#508) — 5 modèles **publiés** en prod, fiche `9217dfaa` encore en
-  **brouillon** ; lots droites, lectures graphiques, statistiques **pas commencés** · **Prochaine action** : phase 0
-  du lot « Droites » (§ Suite) : relever les modèles de seconde réutilisables en prod, proposer la liste à David ·
+  **brouillon** ; lots droites, lectures graphiques, statistiques **pas commencés** · **Prochaine action** : faire valider
+  les comportements (figer `tracer:`, modèle neuf), puis worktree `automatismes-1spe` et PR ·
   **En attente de David** : questions 2 à 4 (§ Questions ouvertes) ; la 1 est tranchée par `CONTEXT.md` (« Série »
   = composition de questions, « Série figée » = exercice de fiche d'automatismes) · **Pièges en cours** : question 3
   (`==` dans `conditions`) non revérifiée depuis le 2026-09-28 · **Worktree / branche** : aucun (journal seul).
@@ -42,6 +42,23 @@ _Mis à jour le 2026-11-03 : journal rouvert (archivé le matin même avec les j
 
 Vérifié : `pnpm question:specs` vert pour les 5 modèles, réponses recalculées indépendamment ;
 fiche régénérée depuis la base, compilée par le compilateur de prod, 0 débord, pages relues.
+
+## Lot « Droites » — phase 0 (2026-11-03)
+
+Relevé en prod, séries essayées par `buildSerie` (lecture seule, 3 graines par modèle) :
+
+| Capacité (BO 1re, Automatismes)                     | Modèles                                                                                                                                | Série                                             |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| Coefficient directeur par deux points               | `7d6cf480` (déjà 1re)                                                                                                                  | ✅                                                |
+| Lire graphiquement l'équation réduite               | aucun ; lectures séparées `f381c646` (pente), `c64028b0` (ordonnée à l'origine), `0d0e88f5`, `b9771108` (coef. entier / fractionnaire) | ✅                                                |
+| Tracer (équation réduite ; point + coef. directeur) | `8d4bd94d`, `dc5d7cb6`                                                                                                                 | ❌ « 0 case pour 1 réponse » : `tracer:` non figé |
+| Entretien seconde                                   | `49df6491`, `7f308eb4`, `c23f5a94`, `336451af`, `e6552232`, `6e074f0e`                                                                 | ✅                                                |
+
+Écartés : `09f0c9ec`, `ae0ad163` (image PNG fixe parmi 30 ; préférer les `courbe`).
+
+**Tranché par David (2026-11-03)** : (1) apprendre à `buildSerie` à figer une droite à
+tracer (énoncé : repère vide ; corrigé : droite tracée) ; (2) modèle neuf « lire l'équation
+réduite sur un graphique », en brouillon.
 
 ## Questions ouvertes (à poser à David)
 
