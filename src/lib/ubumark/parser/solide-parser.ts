@@ -34,8 +34,9 @@
  * - `vecteurs:` (facultatif, polyèdres) : `AB, AE, u = AI`, entre points nommés
  *   (sommets, points déclarés) ; `u =` pose la lettre sur la flèche.
  * - `tracer:` (facultatif, polyèdres, geste de l'élève) : `vecteur AB + AD + AE`,
- *   puis `depuis A` pour imposer l'origine ; au plus 6 vecteurs entre points nommés,
- *   coefficients entiers ou demis (`2 AB`, `1/2 AE`, `3/2AB`). Refusé : vecteur nul,
+ *   puis `depuis A` pour imposer l'origine ; au plus 6 vecteurs entre points nommés
+ *   ou nommés dans `vecteurs:` (`2 u - v`), coefficients entiers ou fractions
+ *   irréductibles de dénominateur 2, 3 ou 4 (`2 AB`, `1/3 AE`, `3/2AB`). Refusé : vecteur nul,
  *   extrémité qui ne tombe sur aucun point cliquable (sommets nommés, points
  *   déclarés) depuis l'origine imposée, ou depuis aucun point si elle est libre.
  *   `case: N` y est posée par le générateur de questions.
@@ -95,8 +96,15 @@ const NAMES_IN_TEXT_REGEX = /[A-Z](?:'+|\d+)?/g;
 /** Un nom de vecteur : une minuscule, puis éventuellement un chiffre (u, v, u1) */
 const VECTOR_NAME_REGEX = /^[a-z]\d?$/;
 
-/** Un terme de `tracer:` : signe, coefficient (`2`, `1/2`), deux noms de points */
-const TERM_REGEX = /^([+-])?\s*(?:(\d+)\s*(?:\/\s*(\d+))?)?\s*((?:[A-Z](?:'+|\d+)?)+)\s*/;
+/**
+ * Un terme de `tracer:` : signe, coefficient (`2`, `1/3`), puis deux noms de
+ * points (`AB`) ou le nom d'un vecteur de `vecteurs:` (`u`, `w1`)
+ */
+const TERM_REGEX =
+	/^([+-])?\s*(?:(\d+)\s*(?:\/\s*(\d+))?)?\s*((?:[A-Z](?:'+|\d+)?)+|[a-z]\d?(?![A-Za-z\d]))\s*/;
+
+/** Dénominateurs admis dans `tracer:` (D-SV2 : fractions simples) */
+const TRACER_DENOMINATORS = [1, 2, 3, 4];
 
 const TRACER_USAGE = 'ex. tracer: vecteur AB + AD + AE, ou … depuis A';
 
@@ -452,6 +460,9 @@ function namedPoints(text: string, known: string[]): number[] | string {
 	return indices;
 }
 
+/** Plus grand diviseur commun de deux entiers positifs */
+const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
+
 const samePosition = (a: Point3, b: Point3) =>
 	Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z) < SAME_POINT;
 
@@ -559,7 +570,8 @@ function readTask(
 	value: string,
 	shape: { form: SolideForm; dims: number[] },
 	names: (string | null)[],
-	points: SolidePoint[]
+	points: SolidePoint[],
+	vectors: SolideVector[]
 ): SolideTask | string {
 	const match = /^vecteur\s+(.*?)(?:\s+depuis\s+(\S+))?$/i.exec(value.trim());
 	if (match === null || match[1].trim() === '') {
@@ -574,20 +586,39 @@ function readTask(
 		if (term === null || (terms.length > 0 && term[1] === undefined)) {
 			return `vecteur « ${match[1].trim()} » non compris (${TRACER_USAGE})`;
 		}
+		// Pas de zéro en tête (01/2, 1/04) : la phrase de l'élève reprend l'écriture de l'auteur
+		if (term[3] !== undefined && (/^0\d/.test(term[2] ?? '') || /^0\d/.test(term[3]))) {
+			return `coefficient ${term[2]}/${term[3]} : écrire ${Number(term[2])}/${Number(term[3])}`;
+		}
 		const numerator = term[2] === undefined ? 1 : Number(term[2]);
 		const denominator = term[3] === undefined ? 1 : Number(term[3]);
-		if (denominator !== 1 && denominator !== 2) {
-			return `coefficient ${term[2]}/${term[3]} : coefficients entiers ou demis (ex. 2 AB, 1/2 AE, 3/2 AB)`;
+		if (!TRACER_DENOMINATORS.includes(denominator)) {
+			return `coefficient ${term[2]}/${term[3]} : coefficients entiers ou fractions de dénominateur 2, 3 ou 4 (ex. 1/2 AE, 2/3 AB)`;
 		}
 		if (numerator === 0) return `coefficient nul devant ${term[4]}`;
-		const refs = namedPoints(term[4], known);
-		if (typeof refs === 'string') return refs;
-		if (refs.length !== 2) return `« ${term[4]} » : un vecteur se désigne par deux points (ex. AB)`;
-		if (samePosition(at[refs[0]], at[refs[1]])) {
-			return `${term[4]} : vecteur nul (origine et extrémité confondues)`;
+		// La phrase de l'élève reprend l'écriture de l'auteur : pas de 2/4 dans une correction
+		const divisor = gcd(numerator, denominator);
+		if (term[3] !== undefined && (divisor !== 1 || denominator === 1)) {
+			const n = numerator / divisor;
+			const d = denominator / divisor;
+			return `coefficient ${term[2]}/${term[3]} : écrire ${d === 1 ? n : `${n}/${d}`}`;
 		}
 		const sign = term[1] === '-' ? -1 : 1;
-		terms.push({ coef: (sign * numerator) / denominator, from: refs[0], to: refs[1] });
+		const coef = (sign * numerator) / denominator;
+		if (VECTOR_NAME_REGEX.test(term[4])) {
+			const named = vectors.find((v) => v.name === term[4]);
+			if (named === undefined) return `${term[4]} : aucun vecteur de ce nom dans vecteurs:`;
+			terms.push({ coef, from: named.from, to: named.to, name: term[4] });
+		} else {
+			const refs = namedPoints(term[4], known);
+			if (typeof refs === 'string') return refs;
+			if (refs.length !== 2)
+				return `« ${term[4]} » : un vecteur se désigne par deux points (ex. AB)`;
+			if (samePosition(at[refs[0]], at[refs[1]])) {
+				return `${term[4]} : vecteur nul (origine et extrémité confondues)`;
+			}
+			terms.push({ coef, from: refs[0], to: refs[1] });
+		}
 		rest = rest.slice(term[0].length);
 	}
 	if (terms.length > SOLIDE_MAX_TERMS) return `au plus ${SOLIDE_MAX_TERMS} vecteurs à additionner`;
@@ -744,21 +775,30 @@ export function parseSolideContent(source: string): {
 			}
 		}
 	}
-	if (
-		vectorsEntry !== undefined &&
-		needs(vectorsEntry, 'vecteurs') &&
-		names !== null &&
-		pointsRead
-	) {
-		const read = readVectors(vectorsEntry.value, shape, names, points);
-		if (typeof read === 'string') fail(vectorsEntry.line, read);
-		else vectors = read;
+	// `tracer:` peut nommer un vecteur de `vecteurs:` : une ligne fausse ne doit pas en ajouter une seconde
+	let vectorsRead = true;
+	if (vectorsEntry !== undefined) {
+		vectorsRead = false;
+		if (needs(vectorsEntry, 'vecteurs') && names !== null && pointsRead) {
+			const read = readVectors(vectorsEntry.value, shape, names, points);
+			if (typeof read === 'string') fail(vectorsEntry.line, read);
+			else {
+				vectors = read;
+				vectorsRead = true;
+			}
+		}
 	}
 	// Geste (`tracer:`) : sur les points nommés, comme `vecteurs:`
 	const tracerEntry = seen.get('tracer');
 	let task: SolideTask | undefined;
-	if (tracerEntry !== undefined && needs(tracerEntry, 'tracer') && names !== null && pointsRead) {
-		const read = readTask(tracerEntry.value, shape, names, points);
+	if (
+		tracerEntry !== undefined &&
+		needs(tracerEntry, 'tracer') &&
+		names !== null &&
+		pointsRead &&
+		vectorsRead
+	) {
+		const read = readTask(tracerEntry.value, shape, names, points, vectors);
 		if (typeof read === 'string') fail(tracerEntry.line, read);
 		else task = read;
 	}

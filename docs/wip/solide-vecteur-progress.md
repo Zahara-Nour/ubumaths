@@ -9,19 +9,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2339._
+_Mis à jour le 2026-11-03, PR D-SV2 en cours._
 
-- **État** : lots 1 (#2331) et 2 (#2339, geste `tracer: vecteur`) mergés, pas encore en prod. Revue Opus de
-  #2339 : 0 bloquant, 4 remarques corrigées. Vérification manuelle notée.
-- **Prochaine action** : PR de suite D-SV2 — coefficients fractions simples (dénominateur ≤ 4, tiers :
-  `G centre BCD`) et vecteurs nommés de `vecteurs:` dans `tracer:` (`tracer: vecteur 2 u - v`). Nouveau worktree
-  `git worktree add -b feat/solide-vecteur-nommes ../ubumaths-wt-solide-vecteur origin/main`. Puis lot 3 (modèle
-  TSPE-334).
+- **État** : lots 1 (#2331) et 2 (#2339) mergés, pas en prod. PR D-SV2 (fractions de dénominateur ≤ 4,
+  vecteurs nommés dans `tracer:`) codée, tests verts, sur `feat/solide-vecteur-nommes`.
+- **Prochaine action** : revue Opus, CI, merge ; puis lot 3 (modèle TSPE-334).
 - **En attente de David** : rien.
-- **Pièges en cours** : le geste ne vise que des points connus en 3D (`solideClickablePoints`). Une combinaison
-  dont l'extrémité ne tombe sur aucun point touchable est refusée (`AB + AD - 1/2 AE depuis A` sur un cube).
-  `stroke-width` explicite sur tout cercle SVG du geste (défaut = 1 cm). Code en ligne : nombre pair de backticks.
-- **Worktree / branche** : aucun (lot 2 nettoyé).
+- **Pièges en cours** : le geste ne vise que des points connus en 3D (`solideClickablePoints`) ; une
+  combinaison dont l'extrémité ne tombe sur aucun point touchable est refusée. `stroke-width` explicite sur
+  tout cercle SVG du geste. Code en ligne : nombre pair de backticks.
+- **Worktree / branche** : `../ubumaths-wt-solide-vecteur`, `feat/solide-vecteur-nommes`.
 
 ---
 
@@ -120,3 +117,14 @@ donnés »).
 - #2339 mergé (d0e468c). Revue Opus : phrase « extrémité » dans la correction (origine imposée) et en origine
   libre posée, exemple refusé retiré de l'aide, zones de toucher disjointes (demi-distance), nom accessible de
   la figure de correction.
+
+## PR D-SV2 — fractions et vecteurs nommés dans `tracer:` (2026-11-03)
+
+**Phase 0 validée (David, 2026-11-03)** : coefficients entiers ou fractions de dénominateur 2, 3 ou 4 ;
+**fraction réductible refusée** (`2/4` → « écrire 1/2 », la phrase de l'élève reprend l'écriture de
+l'auteur) ; vecteur de `vecteurs:` écrit par son nom dans `tracer:` (`2 u - v`, mélange avec `AB` permis),
+phrases en $\vec{u}$ ; nom inconnu → « u : aucun vecteur de ce nom dans vecteurs: ». Accès : personne.
+
+- Codé dans la session (pas d'agent : 3 fichiers de logique). Tests `solide-gestes.test.ts` : 10 vus rouges,
+  puis verts. `SolideVectorTerm.name` (facultatif) garde le nom pour les phrases. Catalogue : exemple
+  tétraèdre (`1/3 u + 1/3 v + 1/3 w depuis S` → G) et erreur `2/4`.

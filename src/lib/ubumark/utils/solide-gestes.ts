@@ -198,12 +198,18 @@ export function solideSolutionVector(spec: SolideSpec): SolideVectorEnds | null 
 /** `\overrightarrow{AB}` */
 const arrowLatex = (from: string, to: string) => `\\overrightarrow{${from}${to}}`;
 
-/** Un coefficient sans son signe : rien pour 1, `2`, `\frac{3}{2}` */
+/** `\vec{u}`, `\vec{w_{1}}` : un vecteur de `vecteurs:` par son nom */
+const namedVectorLatex = (name: string) =>
+	`\\vec{${name[0]}${name.length > 1 ? `_{${name.slice(1)}}` : ''}}`;
+
+/** Un coefficient sans son signe : rien pour 1, `2`, `\frac{3}{2}`, `\frac{1}{3}` */
 function coefficientLatex(coef: number): string {
 	const size = Math.abs(coef);
 	if (size === 1) return '';
 	if (Number.isInteger(size)) return String(size);
-	return `\\frac{${Math.round(size * 2)}}{2}`;
+	// Fractions irréductibles de dénominateur 2, 3 ou 4 (le parseur refuse les autres)
+	const denominator = [2, 3, 4].find((d) => Math.abs(size * d - Math.round(size * d)) < 1e-9) ?? 4;
+	return `\\frac{${Math.round(size * denominator)}}{${denominator}}`;
 }
 
 /** La combinaison en LaTeX : `\overrightarrow{AB}+\overrightarrow{AD}-\frac{1}{2}\overrightarrow{AE}` */
@@ -212,7 +218,11 @@ export function combinationLatex(spec: SolideSpec): string {
 	return terms
 		.map((t, i) => {
 			const sign = t.coef < 0 ? '-' : i === 0 ? '' : '+';
-			return `${sign}${coefficientLatex(t.coef)}${arrowLatex(nameOf(spec, t.from), nameOf(spec, t.to))}`;
+			const vector =
+				t.name === undefined
+					? arrowLatex(nameOf(spec, t.from), nameOf(spec, t.to))
+					: namedVectorLatex(t.name);
+			return `${sign}${coefficientLatex(t.coef)}${vector}`;
 		})
 		.join('');
 }
