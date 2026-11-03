@@ -12,6 +12,7 @@ _Mis à jour le 2026-11-03, PR de la garde `\textcolor` ouverte (§ 60)._
   https://claude.ai/artifact/AH7MKr1qcSeK2c7Du7EMYY. Garde `\textcolor` hors `$` dans `question:specs`
   (décision § 58) : branche `fix/garde-textcolor-hors-maths`, PR à merger.
 - **Prochaine action** : merger la PR ; puis les 35 fichiers hors 2de (§ 58) — rien sans l'accord de David.
+  À faire aussi : 2-316 et 2-445 réécrits au geste ` ```courbe tracer: ` (§ 61).
 - **En attente de David** : son accord sur les 35 hors 2de (reco : dans ce chantier, en lots par niveau) ;
   la relecture de la page, puis `verdicts`, corrections, `publier-lot` (ids § 57).
 - **Pièges en cours** : `--publier`, `publier-lot`, `db:migrate` → David avec `!` ;
@@ -1534,3 +1535,13 @@ Avant de corriger : revérifier dans le code de rendu que `\textcolor` hors math
 - Tests : 5 (nominal, énoncé, corrigé, code en ligne, couleur apportée par une variable) ; rouges sans la
   détection (3/5, les attendus). Sur fichiers réels : `2de-signes-a/01` corrigé → 0/100, sa version
   d'avant le correctif → 25/25 et sortie 1, `ce1-9/05` (hors 2de) → signalé.
+
+## 61. À faire : 2-316 et 2-445 au geste « droite à tracer » (ajouté le 2026-11-03)
+
+- Les deux modèles du lot 5 B (B-06 `8d4bd94d`, 2-316, équation réduite ; B-07 `2cfae58d`, 2-445, équation
+  cartésienne) sont en case choix entre 4 ` ```courbe ` (§ 30, § 36 publiés, faute de geste à l'époque).
+- Le geste existe : ` ```courbe tracer: ` (#2265, en prod depuis la 0.65.0). Les réécrire avec : l'élève trace
+  la droite, le juge `isTracedLineCorrect` la corrige. Exemple déjà en prod : 1SPE-433 (`dc5d7cb6`,
+  journal archivé `questions-1spe-tracer-droite`) ; pièges dans `couvrir-un-niveau.md` § 9.
+- Publiés → `update-published-questions.ts`, pas `create-questions --mettre-a-jour`. Retirer la ligne de
+  `docs/wip/outils-manquants.md` (« Contenu restant aux sessions questions ») une fois faits.
