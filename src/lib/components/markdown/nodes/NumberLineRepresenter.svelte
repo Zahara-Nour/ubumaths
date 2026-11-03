@@ -86,10 +86,10 @@
 	 * Ce que l'élève a fait : relu de la case quand sa valeur change (case remise à
 	 * vide, composant remonté), réassigné à chaque geste (dérivé modifiable)
 	 */
-	let state = $derived<RepresenterState>(stateOfAnswer(config, answer?.value ?? '', bounded));
+	let current = $derived<RepresenterState>(stateOfAnswer(config, answer?.value ?? '', bounded));
 	/**
 	 * Graduation de la borne que le geste déplace : suivie par sa graduation, pas
-	 * par son rang dans `state.bornes`, que la relecture de la case trie
+	 * par son rang dans `current.bornes`, que la relecture de la case trie
 	 */
 	let activeGraduation = $state<number | null>(null);
 	let dragging = $state(false);
@@ -130,7 +130,7 @@
 		return { ...node, representer: undefined, caseIndex: undefined, segments, points };
 	}
 
-	let shown = $derived(lineOf(state, STUDENT_COLOR));
+	let shown = $derived(lineOf(current, STUDENT_COLOR));
 	let solution = $derived.by(() => {
 		const interval = node.representer?.interval;
 		return interval ? lineOf(expectedInterval(config, interval), SOLUTION_COLOR) : null;
@@ -141,29 +141,29 @@
 		verdict === false && expected !== null ? representerMistakes(answer?.value ?? '', expected) : []
 	);
 	let missingSide = $derived(
-		!bounded && !locked && verdict === null && state.bornes.length > 0 && state.side === null
+		!bounded && !locked && verdict === null && current.bornes.length > 0 && current.side === null
 	);
 
-	/** Rang dans `state.bornes` de la borne active (la dernière si sa graduation est perdue) ; -1 sans borne */
+	/** Rang dans `current.bornes` de la borne active (la dernière si sa graduation est perdue) ; -1 sans borne */
 	let active = $derived.by(() => {
-		const found = state.bornes.findIndex((b) => b.rank === activeGraduation);
-		return found !== -1 ? found : state.bornes.length - 1;
+		const found = current.bornes.findIndex((b) => b.rank === activeGraduation);
+		return found !== -1 ? found : current.bornes.length - 1;
 	});
-	let activeRank = $derived(state.bornes[active]?.rank ?? null);
+	let activeRank = $derived(current.bornes[active]?.rank ?? null);
 	let valueText = $derived.by(() => {
-		if (state.bornes.length === 0) return 'aucune borne';
-		const bornes = [...state.bornes]
+		if (current.bornes.length === 0) return 'aucune borne';
+		const bornes = [...current.bornes]
 			.sort((a, b) => a.rank - b.rank)
 			.map((b) => `${placerText(config, b.rank)} ${b.included ? 'comprise' : 'exclue'}`)
 			.join(', ');
 		if (bounded) return `bornes : ${bornes}`;
-		const side = state.side === null ? 'côté pas choisi' : `solutions à ${state.side}`;
+		const side = current.side === null ? 'côté pas choisi' : `solutions à ${current.side}`;
 		return `borne ${bornes}, ${side}`;
 	});
 
 	/** Nouvel état : dessiné, écrit dans la case */
 	function commit(next: RepresenterState) {
-		state = next;
+		current = next;
 		answer?.onChange(representerAnswer(config, next, bounded));
 	}
 
@@ -171,12 +171,12 @@
 	function placeAt(k: number) {
 		if (locked) return;
 		const rank = Math.max(0, Math.min(count - 1, k));
-		const bornes = state.bornes;
+		const bornes = current.bornes;
 		if (!bounded) {
 			const borne = bornes[0];
 			if (borne?.rank === rank) return;
 			activeGraduation = rank;
-			commit({ ...state, bornes: [{ rank, included: borne?.included ?? true }] });
+			commit({ ...current, bornes: [{ rank, included: borne?.included ?? true }] });
 			return;
 		}
 		const existing = bornes.findIndex((b) => b.rank === rank);
@@ -186,7 +186,7 @@
 		}
 		if (bornes.length < 2) {
 			activeGraduation = rank;
-			commit({ ...state, bornes: [...bornes, { rank, included: true }] });
+			commit({ ...current, bornes: [...bornes, { rank, included: true }] });
 			return;
 		}
 		move(nearestBorne(rank), rank);
@@ -194,35 +194,35 @@
 
 	/** Déplace la borne i sur la graduation `rank` (jamais sur l'autre borne) */
 	function move(i: number, rank: number) {
-		const bornes = state.bornes;
+		const bornes = current.bornes;
 		const target = Math.max(0, Math.min(count - 1, rank));
 		if (bornes[i] === undefined || bornes[i].rank === target) return;
 		if (bornes.some((b, j) => j !== i && b.rank === target)) return;
 		activeGraduation = target;
-		commit({ ...state, bornes: bornes.with(i, { ...bornes[i], rank: target }) });
+		commit({ ...current, bornes: bornes.with(i, { ...bornes[i], rank: target }) });
 	}
 
 	/** La borne la plus proche d'une graduation (la borne active à égalité) */
 	function nearestBorne(rank: number): number {
 		let best = Math.max(0, active);
-		state.bornes.forEach((b, i) => {
+		current.bornes.forEach((b, i) => {
 			const d = Math.abs(b.rank - rank);
-			const bestD = Math.abs(state.bornes[best].rank - rank);
+			const bestD = Math.abs(current.bornes[best].rank - rank);
 			if (d < bestD) best = i;
 		});
 		return best;
 	}
 
 	function setSide(side: RepresenterSide) {
-		if (locked || state.bornes.length === 0 || state.side === side) return;
-		commit({ ...state, side });
+		if (locked || current.bornes.length === 0 || current.side === side) return;
+		commit({ ...current, side });
 	}
 
 	function toggle(i: number) {
 		if (locked) return;
-		const borne = state.bornes[i];
+		const borne = current.bornes[i];
 		if (!borne) return;
-		commit({ ...state, bornes: state.bornes.with(i, { ...borne, included: !borne.included }) });
+		commit({ ...current, bornes: current.bornes.with(i, { ...borne, included: !borne.included }) });
 	}
 
 	/** Graduation la plus proche du doigt */
@@ -253,7 +253,7 @@
 		if (!dragging || locked) return;
 		const k = indexAt(event);
 		if (k === null) return;
-		if (state.bornes.length === 0) placeAt(k);
+		if (current.bornes.length === 0) placeAt(k);
 		else move(active, k);
 	}
 
@@ -340,9 +340,9 @@
 					<button
 						type="button"
 						class="representer-choix min-h-11 rounded-md border px-3 text-sm"
-						class:representer-choix-actif={state.side === 'gauche'}
-						aria-pressed={state.side === 'gauche'}
-						disabled={locked || state.bornes.length === 0}
+						class:representer-choix-actif={current.side === 'gauche'}
+						aria-pressed={current.side === 'gauche'}
+						disabled={locked || current.bornes.length === 0}
 						onclick={() => setSide('gauche')}
 					>
 						← vers la gauche
@@ -350,16 +350,16 @@
 					<button
 						type="button"
 						class="representer-choix min-h-11 rounded-md border px-3 text-sm"
-						class:representer-choix-actif={state.side === 'droite'}
-						aria-pressed={state.side === 'droite'}
-						disabled={locked || state.bornes.length === 0}
+						class:representer-choix-actif={current.side === 'droite'}
+						aria-pressed={current.side === 'droite'}
+						disabled={locked || current.bornes.length === 0}
 						onclick={() => setSide('droite')}
 					>
 						vers la droite →
 					</button>
 				</div>
 			{/if}
-			{#each state.bornes as borne, i (i)}
+			{#each current.bornes as borne, i (i)}
 				<button
 					type="button"
 					class="representer-crochet min-h-11 rounded-md border px-3 text-sm"
