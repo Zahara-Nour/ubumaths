@@ -12,7 +12,7 @@ import { buildExpectedResult, showsInstructionOnly, type ExpectedLine } from '..
 import { instructionOf } from '../correction-card-verdict';
 import { generateInstance } from '../generator/instance-generator';
 import type { QuestionInstance, QuestionTemplate } from '../types';
-import { templateMarkdown } from '$lib/ubumark';
+import { templateMarkdown, type ResolvedMarkdown } from '$lib/ubumark';
 
 const TABLEAU = [
 	'```variation',
@@ -169,7 +169,7 @@ describe('résultat attendu : tableau de signes à compléter', () => {
 				.replaceAll('-inf,-3', '-inf,??1')
 				.replace('  -3: ?z', '  ??1: ?')
 				.replace('-3,2', '??1,2')
-				.replaceAll(': ?+', ': ?')
+				.replaceAll(': ?+', ': ?') as ResolvedMarkdown
 		};
 		const line = signTable(buildExpectedResult(masked).lines);
 		expect(line.cells.map((c) => c.expected)).toEqual(JUSTE);
