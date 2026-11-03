@@ -6,16 +6,15 @@ Sous-chantier de [questions-1spe](../archive/wip/questions-1spe-progress.md) (cl
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR de la migration de rangement ouverte._
+_Mis à jour le 2026-11-03, après #2277._
 
-- **État** : brouillon en prod (`edb094bd`, créé par David le 2026-11-03) ; migration nœud + tags écrite
-  (`20261103060900_questions_1spe_tangente_rangement_tags`), test d'intégration rouge sans elle puis
-  10/10 vert · **Prochaine action** : `security-auditor`, CI, `check:migrations --pr`, merge,
-  `db:migrate` depuis le dépôt principal, vérification en prod ; puis page à cocher ; publication après le
-  `deploy:prod` qui livre #2265 · **En attente de David** : le `deploy:prod` · **Pièges en cours** :
-  ne pas toucher `docs/wip/outils-manquants.md` ; voisins Tangente tagués 1TECHNO-079 sans `1_TECHNO`
-  (§ 5) · **Worktree / branche** : `../ubumaths-wt-questions-1spe-tangente`,
-  `feat/questions-1spe-tangente-rangement`.
+- **État** : brouillon `edb094bd` en prod, rangé sur « Fonctions > Dérivation > tangente » et tagué 1SPE-271 +
+  1TECHNO-078 (#2277, `db:migrate` fait et vérifié) · **Prochaine action** : page à cocher
+  (`scripts/questions/page-a-cocher.ts --dir scripts/questions/1spe-tangente`), puis publication
+  (`publier-lot.ts`, lancée par David) **après le `deploy:prod` qui livre #2265** (`tracer:` absent de
+  `production`, v0.64.0) · **En attente de David** : le `deploy:prod` · **Pièges en cours** : ne pas toucher
+  `docs/wip/outils-manquants.md` ; voisins Tangente tagués 1TECHNO-079 sans `1_TECHNO` (§ 5, lot à part si
+  David le veut) · **Worktree / branche** : aucun.
 
 ## 1. Vérification de l'outil (2026-11-03)
 
@@ -130,3 +129,11 @@ publication après le prochain `deploy:prod`.
 Migration `20261103060900_questions_1spe_tangente_rangement_tags.sql` (gabarit : lot 8c de Terminale) et
 `tests/integration/questions-1spe-tangente-rangement-tags.test.ts` : rouge sans la migration (4 échecs, 5
 sautés), vert avec (10/10).
+
+## 9. Migration appliquée (2026-11-03, #2277)
+
+Audit `security-auditor` : aucun finding bloquant ; R3 (rollback refusé si un tag étranger est ajouté) ajouté
+au test (11/11). CI : la garde de doc voulait la ligne `Doc-inchangée:` dans un **commit**, pas dans la PR.
+`pnpm db:migrate` a appliqué **aussi** `20261103051912` (lot 8c de Terminale, mergé mais pas migré par la
+session `questions-tspe-restes`) : vérifié en prod (8 brouillons rangés et tagués), session prévenue.
+Vérifié en prod : `edb094bd` sur « tangente », tags 1SPE-271 et 1TECHNO-078, toujours `draft`.
