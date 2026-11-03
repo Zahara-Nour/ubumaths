@@ -240,3 +240,15 @@ a(a+h) et du taux). Specs calculées par le générateur (`generateInstanceWithF
 et 2e/3e étapes échangées ; `checkTemplate` vert sur les 14. Vu à l'écran en base locale (aperçu admin,
 seed 100004 → variation 4) : 10 (produit) et 05 (second degré), formules lisibles, places numérotées.
 Reste : migration de contenu (les 14 sont publiés), après la question d'accès et le `deploy:prod` de #2341.
+
+Question d'accès (posée avant le SQL, 2026-11-03) : « qui pourra lire quoi, qu'il ne pouvait pas lire
+avant ? » ; reco « personne de plus » ; réponse de David : « je te suis ».
+
+Migration de contenu `20261103194133_questions_1spe_demonstrations_etapes_contenu.sql`, générée par
+`lot4-contenu.py` (générateur `scissions_outils.generer`, 14 MODIFIER, 0 neuf, 0 tag). Instantané
+`etat-prod-2026-11-03-etapes/` écrit par `etat_prod_releve.py` : relevé MCP (lecture seule ;
+`releve-prod.ts` refusé par le classifieur), contenu = ancienne source, md5 jsonb comparés à la prod
+(14/14, variations, specs et empreinte complète). Test `questions-1spe-demonstrations-etapes-contenu`
+vert avec (12 verts, 16 sautés : modèles neufs), ROUGE sans (fichier remplacé par `select 1;`, restauré
+d'une copie, md5 identique). `deploy:prod` d'abord refusé (CI de #2344 : porte des migrations, origin/main
+injoignable en CI), relancé par `--relancer-ci`.
