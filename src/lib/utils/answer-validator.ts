@@ -94,6 +94,7 @@ import {
 	isChoiceBlank,
 	parseChoiceAnswer
 } from '$lib/questions/choice-case';
+import { isSignCellCorrect, isSignTableCell } from '$lib/questions/sign-table-case';
 
 // ============================================================================
 // CONSTRAINT CHECKING
@@ -828,6 +829,8 @@ function validateBlankValue(
 	if (blank.construire === 'patron') return isPatronAnswerCorrect(userAnswer, blank.expectedAnswer);
 	// Étiquettes à ranger : l'étiquette posée (sa position affichée), jamais sa valeur
 	if (blank.construire === 'ranger') return userAnswer.trim() === blank.expectedAnswer;
+	// Signe ou marque d'un tableau de signes : le même jeton
+	if (isSignTableCell(blank)) return isSignCellCorrect(userAnswer, blank.expectedAnswer);
 
 	// Ensemble en notation intervalle : jugé sur l'ensemble (ni règles ni expression)
 	if (blank.answerKind === 'intervalles') {
@@ -1352,6 +1355,13 @@ function validateSingleBlank(
 	// Étiquettes à ranger : l'étiquette posée (sa position affichée), jamais sa valeur
 	if (blank.construire === 'ranger') {
 		return userAnswer.trim() === blank.expectedAnswer
+			? { isCorrect: true, status: 'correct' }
+			: { isCorrect: false };
+	}
+
+	// Signe ou marque d'un tableau de signes : le même jeton (`0` vaut `z`)
+	if (isSignTableCell(blank)) {
+		return isSignCellCorrect(userAnswer, blank.expectedAnswer)
 			? { isCorrect: true, status: 'correct' }
 			: { isCorrect: false };
 	}
