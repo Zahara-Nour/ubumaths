@@ -13,7 +13,7 @@ _Mis à jour le 2026-11-04, après #2361._
 
 - **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : fichiers du lot 5 (suites : 240,
   241, 381, 242) mergés (#2361, § 10, D4), brouillons pas encore en prod.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts scripts/questions/1spe-approfondissements-5 --publier`
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-approfondissements-5 --publier`
   (prod), puis migration nœud + tag (avec 2 sous-notions neuves, D4), page à cocher, publication. Ensuite lots 6 à 9.
 - **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de
   `docs/wip/verifications-manuelles.md`) ; suppression des branches distantes `docs/questions-1spe-demonstrations`,
