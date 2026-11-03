@@ -31,7 +31,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21, attendu en h-min-s et dans l'unité imposée le 2026-11-03 ; QCM et vecteurs le 2026-10-22 ; QCM retiré (case choix seule) le 2026-10-28 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire (médiatrice) et milieu sur papier uni le 2026-11-02, cercle circonscrit le 2026-11-02, triangle de trois longueurs, report et 4e sommet le 2026-11-03 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26, à plusieurs points le 2026-10-27 ; horloge à placer (``horloge, `placer:`) le 2026-10-27, trotteuse le 2026-11-01 ; diagramme en barres à construire (``barres, `placer:`) le 2026-10-28, réponse d'une monnaie à centimes (`3,45`) le 2026-11-01, échelle à choisir le 2026-10-29 ; étiquettes à ranger (`ranger) le 2026-10-28 ; repère à placer (``courbe, `placer:`) le 2026-11-01, droite à tracer (``courbe, `tracer:`) le 2026-11-02, vecteur à tracer (``courbe, `tracer: vecteur`) le 2026-11-03 ; cercle trigonométrique à placer (``trig, `placer:`) le 2026-11-02 ; assemblage de cubes dans un choix (`--espace-taille`) le 2026-10-30 ; figure à colorier (`partage, `colorier:`) le 2026-10-29, assemblage de cubes à geste (`cubes, `dessiner:`/`retrouver:`) le 2026-10-30, patron à geste (`patron, `designer:`/`completer:`) le 2026-10-30, plusieurs figures (`unites:`, attendue `7/4`) le 2026-10-29 ; texte d'aide des cases à écrire le 2026-10-26 ; boîte à moustaches à construire (``boite-a-moustaches, `placer:`) le 2026-11-01 ; tableau de signes à compléter (``variation à `?` : cases, juge, masquage) le 2026-11-03, sa saisie le 2026-11-03.
+> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21, attendu en h-min-s et dans l'unité imposée le 2026-11-03 ; QCM et vecteurs le 2026-10-22 ; QCM retiré (case choix seule) le 2026-10-28 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25, symétrique le 2026-11-02, instruments sur papier uni le 2026-11-02, droite à construire (médiatrice) et milieu sur papier uni le 2026-11-02, cercle circonscrit le 2026-11-02, triangle de trois longueurs, report et 4e sommet le 2026-11-03, point construit de proche en proche le 2026-11-03 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ``figure-de-travail, `graded-part.ts`) le 2026-10-26 ; droite à placer (``line, `placer:`) le 2026-10-26, à plusieurs points le 2026-10-27 ; horloge à placer (``horloge, `placer:`) le 2026-10-27, trotteuse le 2026-11-01 ; diagramme en barres à construire (``barres, `placer:`) le 2026-10-28, réponse d'une monnaie à centimes (`3,45`) le 2026-11-01, échelle à choisir le 2026-10-29 ; étiquettes à ranger (`ranger) le 2026-10-28 ; repère à placer (``courbe, `placer:`) le 2026-11-01, droite à tracer (``courbe, `tracer:`) le 2026-11-02, vecteur à tracer (``courbe, `tracer: vecteur`) le 2026-11-03 ; cercle trigonométrique à placer (``trig, `placer:`) le 2026-11-02 ; assemblage de cubes dans un choix (`--espace-taille`) le 2026-10-30 ; figure à colorier (`partage, `colorier:`) le 2026-10-29, assemblage de cubes à geste (`cubes, `dessiner:`/`retrouver:`) le 2026-10-30, patron à geste (`patron, `designer:`/`completer:`) le 2026-10-30, plusieurs figures (`unites:`, attendue `7/4`) le 2026-10-29 ; texte d'aide des cases à écrire le 2026-10-26 ; boîte à moustaches à construire (``boite-a-moustaches, `placer:`) le 2026-11-01 ; tableau de signes à compléter (``variation à `?` : cases, juge, masquage) le 2026-11-03, sa saisie le 2026-11-03.
 
 ## À quoi ça sert
 
@@ -564,9 +564,18 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    [AA'] doit être perpendiculaire à l'axe. » s'il est à la bonne distance, « A' doit être à la même
    distance de l'axe que A. » s'il est sur la perpendiculaire ; sinon « Ce point n'est pas le symétrique
    de A. », ou « Ce point n'est pas à sa place. » pour une autre expression), point manquant, point de
-   trop ; sur papier uni, avant tout, un point qui n'est ni un point de la figure ni une intersection de
-   deux traits (de la figure ou de l'élève, `isConstructed`) rend la réponse fausse, même posé pile au bon
-   endroit : « Ton point est placé à l'œil : construis-le avec tes instruments. ». Erreurs de l'auteur : expression qui ne se calcule pas ou ne donne pas un point, nom
+   trop ; sur papier uni, avant tout, un point qui n'est pas CONSTRUIT rend la réponse fausse, même posé
+   pile au bon endroit : « Ton point est placé à l'œil : construis-le avec tes instruments. ».
+   **Construit, de proche en proche** (`constructionOf`, `instruments.ts`, la même règle pour les points,
+   les droites, les cercles et le sommet du triangle) : points de départ = points de la figure et bouts
+   de ses segments ; un trait de l'élève est construit s'il tient sur des points construits (droite ou
+   segment : deux bouts, ou le tracé exact de l'équerre le long d'un trait droit construit, partie d'un
+   point construit ou posée SUR ce trait, la parallèle « à la 6e » ; cercle : point de passage, et
+   centre construit ou piqué SUR un trait droit construit, le compas « sur l'axe » du symétrique ; report : centre et deux bouts de l'écartement) ; un point est construit s'il est de
+   départ ou l'intersection de deux traits construits ; on recommence jusqu'à ce que rien ne s'ajoute.
+   Deux traits tracés à l'œil ne construisent donc rien. Exception : deux cercles (compas ou report) de
+   même rayon, même pris à l'œil, centrés sur deux points construits, construisent leurs deux
+   intersections (médiatrice à écartement quelconque), sans devenir des traits. Erreurs de l'auteur : expression qui ne se calcule pas ou ne donne pas un point, nom
    déjà pris, point déjà dans la figure, hors de la fenêtre, hors des nœuds (quadrillage) ; sans
    quadrillage, autre chose que `symetrie(A, axe=d)` / `symetrie(A, centre=O)` / `milieu(A, B)` (comme
    la médiatrice, ci-dessous) / `centre(cercle_circonscrit(A, B, C))` (comme le cercle, ci-dessous) /
@@ -574,17 +583,14 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    points au même endroit. 4e sommet mal placé, à l'autre intersection des reports (cercle de centre A
    de rayon BC, cercle de centre C de rayon AB) : « Avec ce point, ABCD est croisé : prends l'autre
    intersection. » (`crossedParallelogramFeedback` ; jamais quand cette intersection est un sommet
-   donné, losange). Un report ne compte comme trait, pour dire un point construit, que si son centre et
-   son écartement sont construits (points nommés, bouts des segments de la figure, intersections des
-   autres traits). Correction du 4e sommet : D, [CD] et [DA] en pointillés, côtés opposés codés
+   donné, losange). Correction du 4e sommet : D, [CD] et [DA] en pointillés, côtés opposés codés
    (`PointSolution.sides`, `marks`). Vérification
    `droite m = <expression>` (`construction/line.ts`, lot 3 du chantier) : une des droites de l'élève
    (règle, équerre) recouvre la droite que donne l'expression (calculée comme les points, `expected.lines`) ;
    ses autres droites et ses cercles sont des traits de construction, ignorés ; plusieurs vérifications
-   `droite` : chacune prend sa droite. Sur papier uni, la droite doit être construite : deux extrémités
-   construites (points de la figure, intersections de deux AUTRES traits), ou le tracé exact de l'équerre
-   (départ construit, second point `perpendicularThrough` d'un autre trait droit : un toucher à la règle
-   ne l'atteint pas) ; sinon « Ta droite est tracée à l'œil : construis-la
+   `droite` : chacune prend sa droite. Sur papier uni, la droite doit être construite (règle ci-dessus :
+   deux extrémités construites, ou le tracé exact de l'équerre, second point `perpendicularThrough` d'un
+   trait droit construit, qu'un toucher à la règle n'atteint pas) ; sinon « Ta droite est tracée à l'œil : construis-la
    avec tes instruments. ». Messages : il manque la droite (« Trace la médiatrice de [AB]. », « Trace la
    droite m. »), puis, pour une médiatrice, la droite qui touche au but (perpendiculaire à [AB] ou par
    son milieu ; une droite qui repasse un trait de la figure, (AB) elle-même, n'est pas un essai) : « … perpendiculaire à [AB] mais ne passe pas par son milieu. », « … passe par le milieu
@@ -602,9 +608,8 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    médiatrice : angle droit au milieu et moitiés codés (`solutionCodages`). Vérification
    `cercle c = <expression>` (`construction/circle.ts`, lot 3b du chantier) : un des cercles de l'élève
    (compas) recouvre le cercle que donne l'expression (même centre, même rayon ; `expected.circles`) ;
-   ses autres cercles et ses droites sont des traits de construction. Le cercle doit être construit : son
-   centre et son point de passage sont des points construits (points de la figure, intersections de deux
-   AUTRES traits) ; centre non construit : « Ton cercle est tracé à l'œil : construis son centre avec tes
+   ses autres cercles et ses droites sont des traits de construction. Le cercle doit être construit
+   (règle ci-dessus) ; centre non construit : « Ton cercle est tracé à l'œil : construis son centre avec tes
    instruments. » ; le bon cercle, centre construit mais compas ouvert à l'œil (toucher libre pile au bon
    rayon) : « Ton compas est ouvert à l'œil : ouvre-le jusqu'à un sommet du triangle. ». Seul le centre
    décide du « à l'œil » pour le cercle essayé : bon centre construit et compas ouvert à la main → « bon
@@ -624,9 +629,8 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    Vérification `triangle ABC : AC = u ; BC = v` (`construction/triangle.ts`, lot 4 du chantier) : [AB]
    est tracé, les longueurs de [AC] et [BC] viennent d'un segment nommé de la figure ou de deux points
    visibles (`AC = AB`). L'élève trace [AC] et [BC] (segments partant de A et de B) ; C = leur bout
-   commun, qui doit être l'intersection de deux cercles CONSTRUITS : compas piqué et ouvert sur des points
-   construits (points nommés, bouts des segments de la figure, intersections des traits de la figure),
-   report piqué sur un point construit, écartement pris entre deux points construits. Les deux C, de
+   commun, qui doit être l'intersection de deux cercles (compas ou report) CONSTRUITS (règle ci-dessus,
+   de proche en proche). Les deux C, de
    part et d'autre de (AB), sont justes ; cercles et droites en trop ignorés ; un point dans la réponse :
    faux, sans message. Messages, dans l'ordre : « Trace les côtés [AC] et [BC] du triangle. », « Il
    manque le côté [BC]. », « Tes côtés [AC] et [BC] doivent se rejoindre en C. », « Ton sommet C est

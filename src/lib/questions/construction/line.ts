@@ -25,12 +25,11 @@
 import type { LineCheck } from '$lib/ubumark/types/construction';
 import type { DrawnLine, DrawnObject } from './answer';
 import {
-	isConstructed,
+	basePointsOf,
+	constructionOf,
 	isInFrame,
 	isStraight,
 	lineCrossesFrame,
-	perpendicularThrough,
-	traitOf,
 	type Trait
 } from './instruments';
 import type { ConstructionVerdict, Position } from './judge';
@@ -197,38 +196,6 @@ export function assertLines(
 	}
 }
 
-/**
- * La droite d'indice `index` est-elle construite ? Par deux points construits,
- * ou tracée à l'équerre : son départ construit, son second point exactement
- * celui que pose l'équerre le long d'un autre trait droit (`perpendicularThrough`),
- * ce qu'un toucher à la règle n'atteint pas. Les traits autres qu'elle seule comptent : une extrémité posée
- * « sur un trait » n'est pas une intersection.
- */
-function isConstructedLine(
-	index: number,
-	objects: readonly DrawnObject[],
-	points: readonly Position[],
-	figureTraits: readonly Trait[]
-): boolean {
-	const line = objects[index] as DrawnLine;
-	const traits = [
-		...figureTraits,
-		...objects.flatMap((o, i) => {
-			const trait = i === index ? null : traitOf(o);
-			return trait ? [trait] : [];
-		})
-	];
-	const [p, q] = ends(line);
-	if (!isConstructed(p, points, traits)) return false;
-	if (isConstructed(q, points, traits)) return true;
-	const eps = tolerance(p, q);
-	return traits.some((t) => {
-		if (!isStraight(t)) return false;
-		const square = perpendicularThrough(t, p);
-		return Math.hypot(square.x2 - q.x, square.y2 - q.y) <= eps;
-	});
-}
-
 /** Pourquoi la droite n'est pas la médiatrice de [AB] */
 function mediatriceFeedback(line: DrawnLine, a: Position, b: Position, names: [string, string]) {
 	const [p, q] = ends(line);
@@ -280,11 +247,14 @@ export function judgeLines(
 	if (objects.some((o) => o.kind !== 'droite' && o.kind !== 'cercle')) {
 		return { status: 'incorrect' };
 	}
-	const plainPaper = Boolean(shapes && !shapes.grid);
-	const named = [...points.values()];
 	const figureTraits = shapes?.traits ?? [];
+	// Papier uni : droite construite de proche en proche (décision de David, 2026-11-03, § 14)
+	const construction =
+		shapes && !shapes.grid
+			? constructionOf(objects, basePointsOf(points, shapes.segments), figureTraits)
+			: null;
 	const lineIndexes = objects.flatMap((o, i) => (o.kind === 'droite' ? [i] : []));
-	const built = (i: number) => !plainPaper || isConstructedLine(i, objects, named, figureTraits);
+	const built = (i: number) => !construction || construction.built.has(i);
 	const taken = new Set<number>();
 	for (const check of checks) {
 		const target = expectedOf(check, expected);

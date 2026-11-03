@@ -27,7 +27,7 @@
 
 import type { CircleCheck } from '$lib/ubumark/types/construction';
 import type { DrawnCircle, DrawnLine, DrawnObject } from './answer';
-import { isConstructed, isInFrame, traitOf, type Trait } from './instruments';
+import { basePointsOf, constructionOf, isInFrame } from './instruments';
 import type { ConstructionVerdict, Position } from './judge';
 import { mediatriceSupportError } from './line';
 import type { ExpectedCircle, ExpectedPoints } from './point';
@@ -200,31 +200,6 @@ export function assertCircles(
 	}
 }
 
-/**
- * Le centre et le point de passage du cercle d'indice `index` sont-ils des
- * points construits ? Les traits autres que lui seul comptent (un point « sur
- * le cercle » n'est pas une intersection).
- */
-function constructedParts(
-	index: number,
-	objects: readonly DrawnObject[],
-	points: readonly Position[],
-	figureTraits: readonly Trait[]
-): { center: boolean; through: boolean } {
-	const circle = objects[index] as DrawnCircle;
-	const traits = [
-		...figureTraits,
-		...objects.flatMap((o, i) => {
-			const trait = i === index ? null : traitOf(o);
-			return trait ? [trait] : [];
-		})
-	];
-	return {
-		center: isConstructed(centerOf(circle), points, traits),
-		through: isConstructed({ x: circle.x, y: circle.y }, points, traits)
-	};
-}
-
 /** Le cercle passe-t-il par `p` (au calcul flottant près) ? */
 function passesThrough(circle: DrawnCircle, p: Position): boolean {
 	const center = centerOf(circle);
@@ -274,14 +249,23 @@ export function judgeCircles(
 	if (objects.some((o) => o.kind !== 'droite' && o.kind !== 'cercle')) {
 		return { status: 'incorrect' };
 	}
-	const named = [...points.values()];
-	const figureTraits = shapes?.traits ?? [];
+	// Cercle construit de proche en proche (décision de David, 2026-11-03, § 14)
+	const construction = constructionOf(
+		objects,
+		basePointsOf(points, shapes?.segments ?? []),
+		shapes?.traits ?? []
+	);
 	const circleIndexes = objects.flatMap((o, i) => (o.kind === 'cercle' ? [i] : []));
-	const parts = (i: number) => constructedParts(i, objects, named, figureTraits);
-	const built = (i: number) => {
-		const { center, through } = parts(i);
-		return center && through;
+	// Centre et point de passage d'un cercle NON construit (les autres : construits) ;
+	// aucun trait non construit ne compte, lui compris
+	const parts = (i: number) => {
+		const circle = objects[i] as DrawnCircle;
+		return {
+			center: construction.isBuilt(centerOf(circle)),
+			through: construction.isBuilt({ x: circle.x, y: circle.y })
+		};
 	};
+	const built = (i: number) => construction.built.has(i);
 	const taken = new Set<number>();
 	for (const check of checks) {
 		const target = expectedOf(check, expected);

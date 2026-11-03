@@ -29,8 +29,8 @@
  */
 
 import type { ConstructionCheck, PointCheck } from '$lib/ubumark/types/construction';
-import { isDrawnPoint, isDrawnReport, type DrawnObject } from './answer';
-import { intersectTraits, isConstructed, isInFrame, traitsOfObjects } from './instruments';
+import { isDrawnPoint, type DrawnObject } from './answer';
+import { basePointsOf, constructionOf, intersectTraits, isInFrame } from './instruments';
 import { mediatriceSupportError } from './line';
 import { circumcenterOf, circumcenterSupportError } from './circle';
 import type { ConstructionVerdict, Position } from './judge';
@@ -319,24 +319,12 @@ export function judgePoints(
 	const targets = checks.map((check) => ({ check, at: expectedOf(check, expected) }));
 	const unused = objects.filter(isDrawnPoint).map(({ x, y }) => ({ x, y }));
 	// Papier uni : chaque point doit être CONSTRUIT (point de la figure ou intersection de deux
-	// traits), même posé pile au bon endroit (décision de David, 2026-11-02, § 8)
+	// traits eux-mêmes construits, de proche en proche), même posé pile au bon endroit
+	// (décisions de David, 2026-11-02, § 8, et 2026-11-03, § 14)
 	if (shapes && !shapes.grid && unused.length > 0) {
-		const named = [...points.values()];
-		// Report (lot 4, § 13) : un trait seulement si son centre et son écartement sont
-		// construits (points nommés, bouts des segments de la figure, intersections des
-		// autres traits) ; un écartement pris à l'œil ne construit rien (revue du lot 4)
-		const others = traitsOfObjects(objects.filter((o) => !isDrawnReport(o)));
-		const baseTraits = [...shapes.traits, ...others];
-		const base = [...named, ...shapes.segments.flatMap((s) => [s.a, s.b])];
-		const built = objects.filter(isDrawnReport).filter((r) =>
-			[
-				{ x: r.cx, y: r.cy },
-				{ x: r.ax, y: r.ay },
-				{ x: r.bx, y: r.by }
-			].every((p) => isConstructed(p, base, baseTraits))
-		);
-		const traits = [...baseTraits, ...traitsOfObjects(built)];
-		if (unused.some((p) => !isConstructed(p, named, traits))) {
+		const base = basePointsOf(points, shapes.segments);
+		const { isBuilt } = constructionOf(objects, base, shapes.traits);
+		if (unused.some((p) => !isBuilt(p))) {
 			return { status: 'incorrect', feedback: POINT_EYEBALLED_FEEDBACK };
 		}
 	}
