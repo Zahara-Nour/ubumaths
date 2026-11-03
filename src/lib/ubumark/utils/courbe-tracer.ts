@@ -3,7 +3,7 @@
  * ===========================================================================
  *
  * L'élève trace la droite d'un bloc ```courbe (`tracer: y = 2x - 1`, chantier
- * `docs/wip/points-repere-progress.md` § 3, lot 2) en posant DEUX points sur les
+ * `docs/archive/wip/points-repere-progress.md` § 3, lot 2) en posant DEUX points sur les
  * nœuds de la grille ; la droite qui passe par eux se dessine d'un bord à l'autre.
  *
  * Équation : réduite (`y = 2x - 1`), verticale (`x = 3`) ou cartésienne

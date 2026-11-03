@@ -1,5 +1,5 @@
 /**
- * Droite à tracer à l'écran (chantier `docs/wip/points-repere-progress.md` § 3 et § 8, lot 2)
+ * Droite à tracer à l'écran (chantier `docs/archive/wip/points-repere-progress.md` § 3 et § 8, lot 2)
  *
  * Rendu dans <main> : décor réel de l'application (`app.css` y impose des règles).
  */

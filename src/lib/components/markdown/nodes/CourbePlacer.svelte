@@ -3,7 +3,7 @@
 	===============================================================
 
 	L'élève pose SES points sur les nœuds de la grille (chantier
-	`docs/wip/points-repere-progress.md` § 3, lot 1). Calqué sur la droite à placer
+	`docs/archive/wip/points-repere-progress.md` § 3, lot 1). Calqué sur la droite à placer
 	(`NumberLinePlacer`).
 
 	- Toucher le repère pose le point actif sur le nœud le plus proche (aimant) ;

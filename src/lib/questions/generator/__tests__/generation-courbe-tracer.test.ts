@@ -1,6 +1,6 @@
 /**
  * Question à droite à tracer dans un repère (` ```courbe ` + `tracer:`, chantier
- * `docs/wip/points-repere-progress.md` § 3, lot 2)
+ * `docs/archive/wip/points-repere-progress.md` § 3, lot 2)
  *
  * Une case pour la droite ; réponse attendue = l'équation (normalisée), jamais
  * écrite dans le modèle ; la réponse de l'élève (`x1;y1/x2;y2`, deux nœuds) est
