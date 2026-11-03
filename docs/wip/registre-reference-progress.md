@@ -6,16 +6,13 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR 2a (`.simplifier`) en cours._
+_Mis à jour le 2026-11-03, PR 2a (`.simplifier`) prête à ouvrir._
 
 - **État** : PR 2a sur `feat/registre-reference` : `.simplifier` du registre garde le domaine
-  (calcul de l'Atelier descendu dans `mathAST/pedagogical-simplify/keep-domain.ts`) ; l'Atelier
-  affiche `result.answer`. Plus `·` `⋅` `×` lus en syntaxe maison par le registre. Rien de déployé.
-- **Prochaine action** : finir la PR 2a — suites `mathAST` + `atelier` + `questions` +
-  `geometry-core` (42 836) vertes ; reste preuve rouge (`simplify.command.ts` de `main`),
-  `check:incremental` (verrou pris par une autre session), `types:cliquet`, client `atelier`, revue
-  `code-reviewer` opus, PR ; puis `.résoudre` → S
-  (PR 2b), puis `.intégrer`.
+  (`mathAST/pedagogical-simplify/keep-domain.ts`) ; l'Atelier affiche la réponse du registre (la
+  fin de ses étapes quand il en a) ; `·` `⋅` `×` en syntaxe maison ; `pow-of-pow` garde le signe
+  (`(x²)^{1/2}` → `|x|`). Revue opus faite et corrigée. Rien de déployé.
+- **Prochaine action** : PR ouverte → CI → merge ; puis `.résoudre` → S (PR 2b), puis `.intégrer`.
 - **En attente de David** : rien.
 - **Tranché** : `unitChoice: 'school'` GARDÉE exprès — ne pas proposer de la retirer ; Q9 EN
   ENTIER, A-D du lot 2, `decimal` en LaTeX, `plafond-02` → 1000, Q24, `signes-06` — NE PAS
@@ -23,9 +20,10 @@ _Mis à jour le 2026-11-03, PR 2a (`.simplifier`) en cours._
   barre seulement si ça factorise, q ≤ 100 (David, 2026-11-03). `.simplifier` : descendre le calcul
   de l'Atelier dans le moteur, `avec`/`dans` restent à l'Atelier jusqu'à l'étape H (David, 2026-11-03).
 - **Pièges** : `docs:check-a-jour` local ne voit que le COMMITÉ ; commitlint refuse « merge … »
-  (`chore: fusion …`) ; un nombre négatif est un `opposite(number)`, pas un `number` ; limites
-  connues : `.diff cos(60°)*x`, `2 ≈ 2`, `(t>1)`, `5 m * 25!/24!`, `20000!/19999!`. Le registre
-  lit en LaTeX ce que la détection ne tranche pas (confiance 0,5), l'Atelier en syntaxe maison.
+  (`chore: fusion …`) et un corps > 100 colonnes ; un nombre négatif est un `opposite(number)` ;
+  limites connues : `.diff cos(60°)*x`, `2 ≈ 2`, `(t>1)`, `5 m * 25!/24!`, `20000!/19999!`,
+  `2×π`. Le registre lit en LaTeX ce que la détection ne tranche pas (confiance 0,5 : `x*0/x`),
+  l'Atelier en syntaxe maison.
 - **Worktree / branche** : `../ubumaths-wt-registre-reference` · `feat/registre-reference`.
 
 ---
@@ -651,3 +649,13 @@ corrigée, à confirmer).
 - Corpus : `simplifier-01`, `-10` justes (retirés de `connues-fausses.ts`). Garde R5 :
   `simplifier-registre.test.ts` (140 lignes, dernière étape = réponse du registre) ; détection :
   `input-detector-signe-produit.test.ts`.
+- **Revue `code-reviewer` opus** (2026-11-03) : (1) `x/x*0` affiché `\dfrac{x}{x} * 0` — l'étoile
+  du parseur LaTeX (`displayStyle: 'star'`) : la commande l'écrit en croix (`typedSigns`) ;
+  (2) `(x²)^{1/2}` → `x`, faux pour x < 0 : `pow-of-pow` (moteur pédagogique, Atelier de `main`
+  compris) ne s'applique plus pour m pair, n non entier, base de signe inconnu
+  (`evenPowerLosesSign`) → `|x|` ; (3) avec des étapes, l'Atelier affiche leur fin
+  (`simplified.answer`) : même calcul, mais sur SA lecture — `x*0/x` est lu `(x·0)/x` par le
+  registre (repli LaTeX), `x·(0/x)` par l'Atelier (`READ_DIFFERENTLY` du test). Lire `*` en
+  syntaxe maison au portier changeait 6 tests dont `grands-08` du corpus : écarté. Laissés,
+  antérieurs : `2×π` → `2 \pi ×` (`×` à côté de π, syntaxe maison) ; `.simplifier` calcule deux
+  fois le moteur pédagogique (registre puis `simplifySteps`).
