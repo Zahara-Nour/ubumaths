@@ -6,12 +6,11 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, #2305 ouverte._
+_Mis à jour le 2026-11-03, après #2305._
 
-- **État** : lots 1 à 5 mergés (#2301 : angle au rapporteur), pas encore en prod. #2305 (rapporteur
-  près du bord, § 18) ouverte, relue (Opus), CI en cours.
-- **Prochaine action** : CI verte → merger #2305, ligne `verifications-manuelles.md` (graduations
-  intérieures serrées à regarder), retirer le worktree ; puis phase 0 du lot 6 « mesurer un angle ».
+- **État** : lots 1 à 5 mergés, plus #2305 (rapporteur près du bord, § 18) ; rien de tout ça n'est
+  encore en prod. Ligne #2305 ajoutée dans `verifications-manuelles.md`. Pas de worktree en cours.
+- **Prochaine action** : phase 0 du lot 6 « mesurer un angle », dans un worktree neuf.
 - **En attente de David** : M1 du § 18 — refuser à la publication une fenêtre trop allongée pour un
   angle (rapport > 2, ma reco) ou laisser tel quel.
 - **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12, sa propre
@@ -19,7 +18,7 @@ _Mis à jour le 2026-11-03, #2305 ouverte._
   P définit d ; l'« Essayer » de l'aide ne rend pas la case jouable ; plafond de 20 objets sans
   message ; la demi-droite s'écrit `demidroite(O, A)` ; fenêtre au plus 4 fois plus large que haute ;
   graduations intérieures du rapporteur serrées (police fixe de 10 px).
-- **Worktree / branche** : `../ubumaths-wt-controles-figure`, `fix/rapporteur-bord`.
+- **Worktree / branche** : à créer pour le lot 6 (`../ubumaths-wt-controles-figure`).
 
 ---
 
