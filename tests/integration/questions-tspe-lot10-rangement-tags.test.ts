@@ -227,6 +227,31 @@ describe('Terminale spé, lot 10 : les branches d’échec de la migration', () 
 		});
 	});
 
+	it('un modèle tagué à la main depuis le relevé fait échouer la migration', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			const chemins = await cheminsActifs(pg);
+			const noeud = chemins.get(LOT[1].noeud);
+			expect(noeud).toBeDefined();
+			// Un tag exige un nœud (trigger), et un modèle tagué ne peut plus perdre le sien : l'état
+			// « tagué sans nœud » ne se fabrique pas. Un modèle tagué à la main est donc arrêté par la
+			// garde du nœud, qui passe avant celle des tags.
+			await pg.query(
+				'update public.question_templates set classification_node_id = $2 where id = $1',
+				[ids[1], noeud]
+			);
+			await pg.query(
+				`insert into public.question_template_points (template_id, point_id)
+				 select $1, id from public.curriculum_points
+				  where grade = 'T_SPE' and code = 'TSPE-481' and archived_at is null`,
+				[ids[1]]
+			);
+			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
+				/modèles déjà rangés depuis le relevé : 1/
+			);
+		});
+	});
+
 	it('un point du lot archivé (TSPE-481) fait échouer la migration (résolution stricte)', async () => {
 		await enTransaction(async () => {
 			await poserEtatProd(pg, auteur);
@@ -248,9 +273,12 @@ describe('Terminale spé, lot 10 : les branches d’échec de la migration', () 
 				ids[1]
 			]);
 			const chemins = await cheminsActifs(pg);
+			const ailleurs = chemins.get('Géométrie > Espace > coplanarité et décomposition');
+			// Le chemin doit exister : sinon le modèle serait « déplacé » vers aucun nœud
+			expect(ailleurs).toBeDefined();
 			await pg.query(
 				'update public.question_templates set classification_node_id = $2 where id = $1',
-				[ids[1], chemins.get('Géométrie > Espace > coplanarité et décomposition')]
+				[ids[1], ailleurs]
 			);
 			await expect(pg.query(extractRollback(MIGRATION))).rejects.toThrow(
 				/rollback : 1 modèle\(s\) sur 3 ne sont plus sur le nœud de la migration/
