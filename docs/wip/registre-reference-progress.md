@@ -6,13 +6,13 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR 2/5 (D) en cours._
+_Mis à jour le 2026-11-03, après #2292._
 
-- **État** : lot 2 du registre découpé en 5 PR (§ Lot 2 — correction du registre). PR 1/5 MERGÉE
-  (#2281, A/B). PR 2/5 (D) écrite sur `fix/registre-lot2-d` : 22 lignes justes ; reste 20 lignes
-  du registre connues fausses au lot 2 (lecture 10, plafond 5, C 5). Pas déployée.
-- **Prochaine action** : ouvrir/merger la PR 2/5, puis PR 3/5 — lecture de l'entrée (degrés, `π`,
-  refus de `pi`) : `remarquables-01…04, 08, 12`, `racines-06`, `approche-08, 09, 12`.
+- **État** : lot 2 du registre découpé en 5 PR (§ Lot 2 — correction du registre). PR 1/5 (#2281,
+  A/B) et PR 2/5 (#2292, D : expression à lettres rangée) MERGÉES ; reste 20 lignes du registre
+  connues fausses au lot 2 (lecture 10, plafond 5, C 5). Pas déployées.
+- **Prochaine action** : PR 3/5 — lecture de l'entrée (degrés, `π`, refus de `pi`) :
+  `remarquables-01…04, 08, 12`, `racines-06`, `approche-08, 09, 12`.
 - **En attente de David** : rien.
 - **Tranché** : option `unitChoice: 'school'` GARDÉE exprès (David, 2026-11-03 : « utile plus
   tard ») — ne pas proposer de la retirer ; § Unité du résultat et § Revue de #2276 ; avant : Q9 EN ENTIER, A-D du lot 2,
@@ -20,7 +20,7 @@ _Mis à jour le 2026-11-03, PR 2/5 (D) en cours._
 - **Pièges** : `docs:check-a-jour` local ne voit que le COMMITÉ (CI rouge sur #2281 : 2 docs) ;
   PR en conflit avec `main` = aucun run de CI → `git merge origin/main` ; `rebase` et `restore` =
   liste `ask` ; sous-expressions de `tidy` en `durations: 'single'`.
-- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `fix/registre-lot2-d`.
+- **Worktree / branche** : aucun (retirés après #2292).
 
 ---
 
