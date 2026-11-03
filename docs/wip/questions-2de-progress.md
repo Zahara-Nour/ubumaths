@@ -6,15 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2306 et son `db:migrate` (§ 65)._
+_Mis à jour le 2026-11-03, après la publication du lot `vecteur-tracer` (§ 65)._
 
-- **État** : lot `vecteur-tracer` en prod en BROUILLON, rangé et tagué (vérifié en prod) : 2-299 `22e8272e`
-  (lire, niveau 5), 2-298 `dd286c93` (tracer, niveau 6). Garde des niveaux : 0 manquant.
-- **Prochaine action** : relire les verdicts de la page à cocher (`ArtifactData list verdicts`,
-  https://claude.ai/artifact/CdSd9fPLEoRQdPwq6KG3Nb), puis publication.
-- **En attente de David** : relecture de la page ; puis
-  `! pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/2de-vecteur-tracer` (simulation, refusée
-  à Claude par le mode auto) et `--publier`.
+- **État** : 2-299 `22e8272e` (lire, niveau 5) et 2-298 `dd286c93` (tracer, niveau 6) PUBLIÉS, rangés sur
+  « coordonnées », tagués (relu en base). Essai à l'écran en prod noté dans `verifications-manuelles.md`.
+- **Prochaine action** : rien d'ouvert sur ce chantier ; choisir avec David le prochain lot de seconde
+  (256 points sans modèle au relevé du § 1).
+- **En attente de David** : —
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation), `db:migrate` hors les 4 conditions et la
   simulation d'`update-published-questions.ts` → David avec `!` ; `create-questions` apparie par (titre, thème,
   domaine, sous-domaine, **niveau**) ; ` ```courbe ` n'a pas de flèche d'affichage (` ```figure ` + `vecteur`) ;
@@ -1646,3 +1644,5 @@ tspe-ln-continuite-convexite,1spe-tracer-droite}.py`) : vérifiés d'abord fidè
   tags 2-299 / 2-298, brouillons, `updated_at` inchangé. Garde des niveaux : aucun manquant.
 - Page à cocher : https://claude.ai/artifact/CdSd9fPLEoRQdPwq6KG3Nb (capacité `db`, collection `verdicts` vide
   à la publication).
+- Page à cocher relue par David : 2/2 « OK ». `publier-lot` (simulation puis `--publier`) par David le
+  2026-11-03 : 2/2 publiés, relu en base (statut `published`, nœud, tags).
