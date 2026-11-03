@@ -9,18 +9,19 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après la page à cocher._
+_Mis à jour le 2026-11-03, après #2335 ; PR du « 1x » en revue._
 
-- **État** : 2-330 et 2-446 réécrits (#2308), écrits en prod, publiés ; **page à cocher relue par David :
-  2/2 OK** (verdicts comptés en base, artefact 76pRvYk72EuRYtV9nto4Ly).
-- **Prochaine action** : essais iPhone (#2287, #2297, et ces deux modèles) ; puis verser le chantier.
-- **En attente de David** : défilement horizontal à 390 px (513 px de tableau pour 308) — à juger aux
-  essais iPhone ; corrigé de 2-330 qui écrit « −1x − 3 = 0 », « 1x − 3 = 0 » (corriger ?) ; petite PR
-  du gabarit `scripts/questions/page-a-cocher.html` (`.vt` sans défilement : la page entière déborde à 390 px).
-- **Pièges en cours** : `delay` n'est plus une garde d'`update-published-questions.ts` (relancer un ancien
-  lot réécrit son temps) ; la bonne réponse vient de `blanks`, jamais du bloc ; Chrome n'atteint pas
-  `localhost` → Playwright sans fenêtre ; un worktree neuf veut `svelte-kit sync` avant `question:specs`.
-- **Worktree / branche** : aucun.
+- **État** : page à cocher relue (2/2 OK) ; #2335 (gabarit, tableau qui défile seul) mergée ; branche
+  `fix/coefficients-liens-logiques` : `cleanCoefficients` nettoie chaque morceau d'une formule à liens
+  logiques (`\iff`…) — tests verts, doc à jour, revue `code-reviewer` Opus en cours.
+- **Prochaine action** : revue → PR → CI → merge ; puis essais iPhone (#2287, #2297, 2-330, 2-446) ;
+  puis verser le chantier.
+- **En attente de David** : défilement à 390 px, à juger aux essais iPhone.
+- **Pièges en cours** : `delay` n'est plus une garde d'`update-published-questions.ts` ; la bonne réponse
+  vient de `blanks` ; Chrome n'atteint pas `localhost` → Playwright ; worktree neuf → `svelte-kit sync`
+  avant `question:specs` et `page-a-cocher.ts` ; la lecture de `question_templates` plafonne à 1000 lignes
+  (paginer) ; branche locale `fix/page-a-cocher-tableau-defile` à supprimer après un pull de `main`.
+- **Worktree / branche** : `../ubumaths-wt-tableau-signes`, `fix/coefficients-liens-logiques`.
 
 ---
 
@@ -232,3 +233,18 @@ Branche `feat/tableau-signes-modeles`, worktree `../ubumaths-wt-tableau-signes`.
   (`display: block; width: fit-content; max-width: 100%; overflow-x: auto`), pas encore dans le gabarit.
 - Relue par David : **2/2 OK**, sans commentaire (collection `verdicts` lue).
 - Vu en passant : le corrigé de 2-330 écrit « −1x − 3 = 0 » et « 1x − 3 = 0 » (étape 2). → David.
+- **#2335 mergée** (CI verte), le 2026-11-03.
+
+## PR — `cleanCoefficients` et formules à liens logiques (2026-11-03)
+
+- Cause du « −1x − 3 = 0 » du corrigé de 2-330 : `$-1x-3=0\iff x=-3$` ne se lit pas en entier (`\iff`),
+  `customToLatex` rend `null`, la formule reste brute ; chaque morceau, lui, se lit.
+- Correctif (`content-resolver.ts`, `cleanLogicalPieces`) : découpe sur `\iff`, `\Leftrightarrow`,
+  `\Longleftrightarrow`, `\implies`, `\Rightarrow`, `\Longrightarrow` ; morceau nettoyé seulement s'il a
+  un chiffre et si le rendu nettoyé diffère du rendu brut ; sinon à l'octet près. Option absente : rien.
+- Tests : 8 dans `content-resolver.test.ts` (rouges d'abord : 5/7) ; `src/lib/questions` 6091 verts ;
+  `check:incremental` 0 ; cliquet tenu. Doc : `docs/systeme/questions.md` (piège 11).
+- Avant/après sur la prod (script scratchpad `avant-apres.mts`, même graine, 1875 publiés lus en pages) :
+  33 modèles, 912 tirages → 15 changent, dans 2 modèles (2-330 ; « Fonction affine : variations, signe et
+  droite »), tous des « 1x » corrigés. Première version : `(E)\iff y'=…` → `E\iff …` (règle des
+  parenthèses) → garde « au moins un chiffre ».
