@@ -6,15 +6,13 @@ Sous-chantier de [questions-1spe](../archive/wip/questions-1spe-progress.md) (cl
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2277._
+_Mis à jour le 2026-11-03, après la publication._
 
-- **État** : brouillon `edb094bd` en prod, rangé sur « Fonctions > Dérivation > tangente » et tagué 1SPE-271 +
-  1TECHNO-078 (#2277, `db:migrate` fait et vérifié) · **Prochaine action** : lire les verdicts de la page à cocher
-  (https://claude.ai/artifact/7ojQQi6QqfPsgQsMNgyofk, `ArtifactData list verdicts`, 0 le 2026-11-03), puis publication
-  (`publier-lot.ts`, lancée par David) **après le `deploy:prod` qui livre #2265** (`tracer:` absent de
-  `production`, v0.64.0) · **En attente de David** : le `deploy:prod` · **Pièges en cours** : ne pas toucher
-  `docs/wip/outils-manquants.md` ; voisins Tangente tagués 1TECHNO-079 sans `1_TECHNO` (§ 5, lot à part si
-  David le veut) · **Worktree / branche** : aucun.
+- **État** : ✅ modèle `edb094bd` **publié** en prod (vérifié en base, `published`, 08:11), rangé sur « Fonctions >
+  Dérivation > tangente », tagué 1SPE-271 + 1TECHNO-078 · **Prochaine action** : aucune ; clore le sous-chantier
+  (versement + archivage du journal) si David le veut · **En attente de David** : rien · **Pièges en cours** :
+  voisins Tangente tagués 1TECHNO-079 sans `1_TECHNO` (§ 5, lot à part si David le veut) · **Worktree /
+  branche** : aucun.
 
 ## 1. Vérification de l'outil (2026-11-03)
 
@@ -143,3 +141,9 @@ Vérifié en prod : `edb094bd` sur « tangente », tags 1SPE-271 et 1TECHNO-078,
 Générée depuis la prod (`page-a-cocher.ts --dir scripts/questions/1spe-tangente`), 1 fiche, 2 exemples, aucune
 alerte ; publiée avec la capacité `db` : https://claude.ai/artifact/7ojQQi6QqfPsgQsMNgyofk. Collection
 `verdicts` vide à la publication. Rendu à 390 px non vérifié (gabarit commun).
+
+## 11. Publication (2026-11-03)
+
+Verdict de la page à cocher : 1/1 `ok`, sans commentaire. Prod en v0.65.0 (contient `courbe-tracer.ts`, #2265).
+`publier-lot.ts --dir scripts/questions/1spe-tangente` : simulation verte, puis `--publier` lancé par David ;
+`edb094bd` lu `published` en base.
