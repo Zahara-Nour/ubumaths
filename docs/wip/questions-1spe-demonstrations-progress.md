@@ -9,19 +9,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR 1 de Q2 b (`signe: aucun`) en cours._
+_Mis à jour le 2026-11-03, après #2341._
 
-- **État** : lots 1, 2 et 3 publiés. Q2 b tranchée (D2, § 7) : extension `signe: aucun` du bloc `ranger`, puis une
-  variation « étapes à ranger » pour les 14 modèles. PR 1 (code) sur `feat/ranger-signe-aucun` : tests rouges puis
-  verts, PDF compilé avec le compilateur de la prod, doc système à jour.
-- **Prochaine action** : PR 1 (vérif à l'écran, revue `code-reviewer` Sonnet, CI, merge) ; puis lot 4 = les 14
-  variations ranger (vérifier d'abord comment `create-questions` met à jour un modèle PUBLIÉ).
-- **En attente de David** : rien.
-- **Pièges en cours** : `1/√2` est jugé `bad_form` (spec asservie). Une étape interchangeable va dans l'énoncé
-  (juge strict). Worktree sans lien Supabase : copier
+- **État** : lots 1, 2 et 3 publiés. `signe: aucun` du bloc `ranger` mergé (#2341, D2, § 7) ; pas encore en prod
+  (attend un `deploy:prod` de David, à demander avant de publier le lot 4).
+- **Prochaine action** : lot 4 = une variation « étapes à ranger » (`signe: aucun`, 4 à 6 étapes) dans chacun des
+  14 JSON `scripts/questions/1spe-demonstrations-{1,2,3}/` ; une étape interchangeable passe dans l'énoncé. Les 14
+  sont PUBLIÉS : `--mettre-a-jour` ne les touche pas → migration de contenu générée par un script de lot
+  (`couvrir-un-niveau.md` § 7, précédent `docs/wip/questions-6/lot-contenu-6-ranger.py`). Avant le SQL : poser
+  la question d'accès à David (reco : personne de plus ; les élèves de 1re spé voient une variation de plus).
+- **En attente de David** : rien pour l'instant.
+- **Pièges en cours** : juge strict (étapes non permutables). `1/√2` jugé `bad_form`. Migration copiée : transformer
+  LIGNE À LIGNE. Worktree sans lien Supabase : copier
   `supabase/.temp/{project-ref,linked-project.json,pooler-url,postgres-version}` du dépôt principal pour `db:migrate`.
-  Ancienne branche distante `docs/questions-1spe-demonstrations` à supprimer.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, branche `feat/ranger-signe-aucun`.
+  Anciennes branches distantes `docs/questions-1spe-demonstrations`, `feat/questions-1spe-demonstrations` à supprimer.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, branche `feat/questions-1spe-demonstrations-4`.
 
 ---
 
@@ -226,3 +228,7 @@ PR 1 (`feat/ranger-signe-aucun`) : 8 tests neufs, rouges avant le code (parseur,
 cadres de réponse, écran : colonne numérotée, consigne lue, rien ne déborde à 360 px) ; verts après, suites
 voisines vertes (348 + 60), `check:incremental` 0 erreur. PDF compilé par `scripts/fiches/compile-prod.mjs` (le
 compilateur de la prod) : places pleine largeur, numérotées, espacées ; le rangement `<` inchangé.
+
+PR 1 mergée (#2341, 2026-11-03). Revue `code-reviewer` (Sonnet) : aucun bloquant ; un mineur corrigé (correction
+aussi large que la colonne en mode étapes). Vu à l'écran (page d'aide du bloc) : colonne numérotée, geste juste.
+Conflit de fusion sur deux lignes « Vérifié » de la doc système, résolu en gardant `main` + nos ajouts.
