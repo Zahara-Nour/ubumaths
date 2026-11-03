@@ -1508,66 +1508,6 @@ export type Database = {
           },
         ]
       }
-      class_google_classroom_links: {
-        Row: {
-          class_id: string
-          created_at: string
-          created_by: string
-          google_course_id: string
-          id: string
-        }
-        Insert: {
-          class_id: string
-          created_at?: string
-          created_by: string
-          google_course_id: string
-          id?: string
-        }
-        Update: {
-          class_id?: string
-          created_at?: string
-          created_by?: string
-          google_course_id?: string
-          id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "class_google_classroom_links_class_id_fkey"
-            columns: ["class_id"]
-            isOneToOne: false
-            referencedRelation: "classes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "class_google_classroom_links_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "minesweeper_student_achievement_progress"
-            referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "class_google_classroom_links_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "class_google_classroom_links_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "riddle_progress"
-            referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "class_google_classroom_links_google_course_id_fkey"
-            columns: ["google_course_id"]
-            isOneToOne: false
-            referencedRelation: "google_classroom_courses"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       class_journal_entries: {
         Row: {
           class_id: string

@@ -4,7 +4,7 @@
 > (`pnpm db:types` régénère les deux, depuis la **production**). Ne pas éditer à la main :
 > le texte explicatif vit dans [base-de-donnees.md](base-de-donnees.md).
 
-223 tables · 24 vues · 323 fonctions. Colonne suivie de `?` : peut être nulle.
+222 tables · 24 vues · 323 fonctions. Colonne suivie de `?` : peut être nulle.
 
 ## Établissement et personnes (20)
 
@@ -1076,13 +1076,7 @@ Liens : `student_id` → `profiles`
 
 Liens : `class_id` → `classes` · `student_id` → `profiles`
 
-## Google Classroom (12)
-
-### `class_google_classroom_links`
-
-`class_id` · `created_at` · `created_by` · `google_course_id` · `id`
-
-Liens : `class_id` → `classes` · `created_by` → `profiles` · `google_course_id` → `google_classroom_courses`
+## Google Classroom (11)
 
 ### `coursework_categories`
 

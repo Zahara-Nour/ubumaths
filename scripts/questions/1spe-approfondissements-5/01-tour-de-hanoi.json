@@ -1,0 +1,209 @@
+{
+	"title": "Tour de Hanoï",
+	"description": "Nombre minimal de déplacements hₙ de la tour de Hanoï (hₙ₊₁ = 2hₙ + 1, h₁ = 1) : terme suivant par la relation, raison de la suite auxiliaire vₙ = hₙ + 1, hₙ = 2ⁿ − 1",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Apprivoiser",
+	"subdomain": "Approfondissements",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "**Tour de Hanoï.** On dispose de $n$ disques de tailles différentes, empilés du plus grand au plus petit sur le premier de trois piquets. On veut déplacer toute la pile sur le troisième piquet, un disque à la fois, sans jamais poser un disque sur un disque plus petit. On note $h_n$ le nombre minimal de déplacements ; $h_1=1$.\n\nPour déplacer $n+1$ disques, on déplace les $n$ disques du haut sur le piquet du milieu ($h_n$ déplacements), puis le grand disque sur le troisième piquet ($1$ déplacement), puis les $n$ disques par-dessus ($h_n$ déplacements). Ainsi, pour tout $n\\geqslant 1$ :\n\n$$h_{n+1}=2h_n+1$$\n\nOn sait que $h_{{{eval:k}}}={{eval:2^k-1}}$. Complète.\n\n$h_{{{eval:k+1}}}=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3..7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2^(k+1)-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$h_{{{eval:k+1}}}=2\\times h_{{{eval:k}}}+1=2\\times{{eval:2^k-1}}+1$.",
+					"Donc $h_{{{eval:k+1}}}=\\textcolor{{{color:primary.0}}}{{{eval:2^(k+1)-1}}}$.",
+					"Ne pas oublier le $+1$ : c'est le déplacement du grand disque."
+				]
+			}
+		},
+		{
+			"statement": "**Tour de Hanoï.** On dispose de $n$ disques de tailles différentes, empilés du plus grand au plus petit sur le premier de trois piquets. On veut déplacer toute la pile sur le troisième piquet, un disque à la fois, sans jamais poser un disque sur un disque plus petit. On note $h_n$ le nombre minimal de déplacements ; $h_1=1$.\n\nPour déplacer $n+1$ disques, on déplace les $n$ disques du haut sur le piquet du milieu ($h_n$ déplacements), puis le grand disque sur le troisième piquet ($1$ déplacement), puis les $n$ disques par-dessus ($h_n$ déplacements). Ainsi, pour tout $n\\geqslant 1$ :\n\n$$h_{n+1}=2h_n+1$$\n\nOn pose $v_n=h_n+1$ pour tout $n\\geqslant 1$. Alors $v_{n+1}=h_{n+1}+1=2h_n+2$. Complète.\n\n$v_{n+1}=?\\times v_n$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$v_{n+1}=2h_n+2=2(h_n+1)=2v_n$.",
+					"La suite $(v_n)$ est donc géométrique de raison $\\textcolor{{{color:primary.0}}}{2}$, de premier terme $v_1=h_1+1=2$."
+				]
+			}
+		},
+		{
+			"statement": "**Tour de Hanoï.** On dispose de $n$ disques de tailles différentes, empilés du plus grand au plus petit sur le premier de trois piquets. On veut déplacer toute la pile sur le troisième piquet, un disque à la fois, sans jamais poser un disque sur un disque plus petit. On note $h_n$ le nombre minimal de déplacements ; $h_1=1$.\n\nPour déplacer $n+1$ disques, on déplace les $n$ disques du haut sur le piquet du milieu ($h_n$ déplacements), puis le grand disque sur le troisième piquet ($1$ déplacement), puis les $n$ disques par-dessus ($h_n$ déplacements). Ainsi, pour tout $n\\geqslant 1$ :\n\n$$h_{n+1}=2h_n+1$$\n\nOn pose $v_n=h_n+1$ : la suite $(v_n)$ est géométrique de raison $2$, de premier terme $v_1=2$. Combien de déplacements faut-il au minimum pour ${{eval:n}}$ disques ?\n\n$h_{{{eval:n}}}=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2^n-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout $n\\geqslant 1$, $v_n=v_1\\times 2^{n-1}=2\\times 2^{n-1}=2^n$.",
+					"Donc $h_n=v_n-1=2^n-1$ et $h_{{{eval:n}}}=2^{{{eval:n}}}-1=\\textcolor{{{color:primary.0}}}{{{eval:2^n-1}}}$.",
+					"Attention : $v_n=2^n$, mais $h_n=v_n-1$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "h₅ = 31",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"n": "6"
+			},
+			"answers": ["31"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 30 (oubli du +1)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"n": "6"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 16 (h₄ + 1)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"n": "6"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 32 (2⁵)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"n": "6"
+			},
+			"answers": ["32"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "h₆ = 63",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"n": "6"
+			},
+			"answers": ["63"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2⁶ − 1 non calculé : forme à simplifier",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"n": "6"
+			},
+			"answers": ["2^6-1"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Erreur : 64 (vₙ au lieu de hₙ)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"n": "6"
+			},
+			"answers": ["64"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 31 (2ⁿ⁻¹ − 1)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"n": "6"
+			},
+			"answers": ["31"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 32 (2ⁿ⁻¹)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "4",
+				"n": "6"
+			},
+			"answers": ["32"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

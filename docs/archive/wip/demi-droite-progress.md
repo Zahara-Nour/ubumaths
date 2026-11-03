@@ -16,7 +16,7 @@ _Chantier clos le 2026-11-04, après #2346 et la mise à jour de 80a87e34 en pro
   publié), corrigé de |x| < k (#2346, écrit en prod). 2-251 couvert par 2069ac7e (chantier `questions-2de`).
   Doc durable : `docs/systeme/ubumark.md` et `docs/systeme/questions.md`.
 - **Reste** : vérifications à l'œil (`docs/wip/verifications-manuelles.md`, #2294, #2309, #2328, #2346) ;
-  page à cocher sans ` ```line ` (`outils-manquants.md`, ligne 13) ; branche distante
+  page à cocher sans ` ```line ` (`outils-manquants.md`, ligne 16) ; branche distante
   `fix/integration-locals-session` laissée sur GitHub (à David).
 
 ---

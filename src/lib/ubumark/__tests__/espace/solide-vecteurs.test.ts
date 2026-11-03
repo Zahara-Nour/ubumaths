@@ -174,6 +174,15 @@ describe('```solide — scène des points et des vecteurs', () => {
 		expect(Math.hypot(u!.at.x - a.at.x, u!.at.y - a.at.y)).toBeGreaterThan(0.3);
 	});
 
+	it('vecteur indicé : w1 écrit w avec 1 en indice (comme \\vec{w_{1}} de la phrase)', () => {
+		const s = buildSolideScene(spec(...CUBE, 'vecteurs: w1 = AB, u = AE'));
+		const w = s.labels.find((l) => l.text === 'w');
+		expect(w?.sub).toBe('1');
+		expect(s.labels.find((l) => l.text === 'u')?.sub).toBeUndefined();
+		// Les noms de sommets restent tels quels
+		expect(s.labels.find((l) => l.text === 'A')?.sub).toBeUndefined();
+	});
+
 	it('tout dans la boîte, flèches comprises', () => {
 		const s = buildSolideScene(spec(...CUBE, 'vecteurs: u = AB, v = EH'));
 		for (const arrow of s.arrows) {
@@ -202,5 +211,11 @@ describe('```solide — points et vecteurs au PDF', () => {
 		expect(out.split('circle(').length - 1).toBe(1);
 		expect(out).toContain('"u"');
 		expect(out).toContain('"I"');
+	});
+
+	it('vecteur indicé : l’indice en sub', () => {
+		const out = generateEspaceTypst(read(...CUBE, 'vecteurs: w1 = AB'));
+		expect(out).toContain('#"w"#sub("1")');
+		expect(out).not.toContain('"w1"');
 	});
 });

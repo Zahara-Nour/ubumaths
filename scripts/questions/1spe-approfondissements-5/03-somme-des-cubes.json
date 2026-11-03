@@ -1,0 +1,207 @@
+{
+	"title": "Somme des n premiers cubes",
+	"description": "Formule 1³ + 2³ + ⋯ + n³ = (n(n + 1)/2)² donnée : somme pour n tiré, carré de la somme 1 + 2 + ⋯ + n, somme de a³ à b³ (différence de deux sommes)",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Sommes",
+	"subdomain": "Approfondissements",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "On admet que, pour tout entier naturel $n$ non nul :\n\n$$T_n=1^3+2^3+\\cdots+n^3=\\left(\\dfrac{n(n+1)}{2}\\right)^2$$\n\nCalcule $1^3+2^3+\\cdots+{{eval:n}}^3$.\n\n$T_{{{eval:n}}}=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "4..15"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n*(n+1)/2)^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $n$ par ${{eval:n}}$ : $\\dfrac{{{eval:n}}\\times{{eval:n+1}}}{2}={{eval:n*(n+1)/2}}$.",
+					"Donc $T_{{{eval:n}}}={{eval:n*(n+1)/2}}^2=\\textcolor{{{color:primary.0}}}{{{eval:(n*(n+1)/2)^2}}}$.",
+					"Ne pas oublier le carré."
+				]
+			}
+		},
+		{
+			"statement": "On admet que, pour tout entier naturel $n$ non nul :\n\n$$T_n=1^3+2^3+\\cdots+n^3=\\left(\\dfrac{n(n+1)}{2}\\right)^2$$\n\nComme $1+2+\\cdots+n=\\dfrac{n(n+1)}{2}$, la somme des cubes est le carré d'une somme d'entiers. Complète.\n\n$1^3+2^3+\\cdots+{{eval:n}}^3=\\left(?\\right)^2$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "6..15"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*(n+1)/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$1^3+2^3+\\cdots+n^3=\\left(1+2+\\cdots+n\\right)^2$.",
+					"Ici $1+2+\\cdots+{{eval:n}}=\\dfrac{{{eval:n}}\\times{{eval:n+1}}}{2}=\\textcolor{{{color:primary.0}}}{{{eval:n*(n+1)/2}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On admet que, pour tout entier naturel $n$ non nul :\n\n$$T_n=1^3+2^3+\\cdots+n^3=\\left(\\dfrac{n(n+1)}{2}\\right)^2$$\n\nCalcule ${{eval:a}}^3+{{eval:a+1}}^3+\\cdots+{{eval:b}}^3$.\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..6"
+				},
+				{
+					"name": "b",
+					"expression": "8..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(b*(b+1)/2)^2-((a-1)*a/2)^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La somme demandée est $T_{{{eval:b}}}-T_{{{eval:a-1}}}$ : on retire les termes $1^3$, …, ${{eval:a-1}}^3$.",
+					"$T_{{{eval:b}}}={{eval:(b*(b+1)/2)^2}}$ et $T_{{{eval:a-1}}}={{eval:((a-1)*a/2)^2}}$.",
+					"Donc la somme vaut $\\textcolor{{{color:primary.0}}}{{{eval:(b*(b+1)/2)^2-((a-1)*a/2)^2}}}$.",
+					"Attention : on retire $T_{{{eval:a-1}}}$, pas $T_{{{eval:a}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "T₅ = 225",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"a": "3",
+				"b": "10"
+			},
+			"answers": ["225"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 15 (oubli du carré)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"a": "3",
+				"b": "10"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 125 (5³)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"a": "3",
+				"b": "10"
+			},
+			"answers": ["125"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 55 (somme des carrés)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "5",
+				"a": "3",
+				"b": "10"
+			},
+			"answers": ["55"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "55 pour n = 10",
+			"variationIndex": 1,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["55"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3025 (la somme elle-même)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["3025"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 110 (n(n + 1))",
+			"variationIndex": 1,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["110"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3³ + ⋯ + 10³ = 3016",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5",
+				"a": "3",
+				"b": "10"
+			},
+			"answers": ["3016"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 2989 (T₁₀ − T₃)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5",
+				"a": "3",
+				"b": "10"
+			},
+			"answers": ["2989"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 3025 (T₁₀)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5",
+				"a": "3",
+				"b": "10"
+			},
+			"answers": ["3025"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

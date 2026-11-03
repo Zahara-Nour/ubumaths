@@ -6,17 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2354 (12 a-2)._
+_Mis à jour le 2026-11-04, après la publication du lot 12 a (§ 76)._
 
-- **État** : lots 1 à 9 publiés. Ordre : lot 12 (12 a, 12 b), puis 10, puis 11. 12 a-1 (#2352, 8 modèles) et
-  12 a-2 (#2354, 6 modèles) mergés ; brouillons en base locale seulement.
-- **Prochaine action** : David lance `create-questions --publier` sur
-  `2de-inegalites-a1` et `2de-algebre-a2` ; relever les ids, migration nœud + tag des 14 (§ 72, § 73).
-- **En attente de David** : les deux `create-questions --publier` (12 a-1, 12 a-2).
-- **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!` ; liste blanche : pas de
-  `{{if:}}` à plus de ~6 niveaux dans une réponse attendue ; corps de commit ≤ 100 caractères par ligne ;
-  une autre session écrit aussi dans ce journal : `git pull` ; `db:migrate` depuis le dépôt principal
-  seulement (le worktree n'est pas lié à Supabase) ; un relevé de lot n'est pas un relevé du niveau.
+- **État** : lots 1 à 9 et 12 a publiés. Ordre ensuite : 12 b, puis 10, puis 11.
+- **Prochaine action** : phase 0 du lot 12 b (oubliés du § 70 : vecteurs sans coordonnées 287, 433,
+  288-292, 296, 297 ; automatismes 489, 401) — relevé MCP, puis comportements à faire valider.
+- **En attente de David** : validation de la phase 0 du 12 b (§ 77, questions L12b-a à d).
+- **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!`, puis vérifier le
+  statut au MCP (1er essai du 12 a : rien d'écrit) ; liste blanche : pas de `{{if:}}` à plus de ~6 niveaux
+  dans une réponse attendue ; corps de commit ≤ 100 caractères par ligne ; une autre session écrit aussi
+  dans ce journal : `git pull` ; `db:migrate` depuis le dépôt principal seulement ; un relevé de lot n'est
+  pas un relevé du niveau.
 - **Worktree / branche** : `../ubumaths-wt-questions-2de` (HEAD détachée sur `origin/main`).
 
 ## 1. Relevé (prod, 2026-10-27)
@@ -1901,3 +1901,97 @@ entière ; L12a-c 2-275 rangé sous Calcul littéral › factorisation ; L12a-d 
 - **Écart à la phase 0** : 2-274, `(6 − 2x)/3` était refusé (`bad_form`) → `constraints.form: warn` : accepté en
   `unoptimal_form`, l'élève est invité à écrire la forme réduite.
 - **#2354 mergée** (12 a-2).
+
+## 74. Lot 12 a : brouillons en prod, migration nœud + tag (2026-11-03)
+
+- `create-questions --publier` lancé par David sur les deux dossiers : 12 a-1 57585d68 (2-263), d15b096f (2-424),
+  9660771f (2-264), d8b9e814 (2-425), 5ffcde13 (2-276), 313ae1a2 (2-427), 52516a54 (2-277), 1d25a492 (2-428) ;
+  12 a-2 9ed8c72e (2-269), ec690625 (2-273), d7aa3f33 (2-274), 610a25fb (2-275), ab668c94 (2-278), 36a37542
+  (2-489). Relus en base : brouillons, niveaux prévus, sans nœud.
+- **2-278 : sous-notion « mettre en inéquation » archivée le 2026-10-10** (facette d'activité) ; décision de David
+  (2026-11-03) : modèle sur « Inéquations : premier degré › ax + b < c », point sur la notion.
+- Points sur leur notion (2-275, 2-278, 2-489) : la migration résout le point sur le nœud OU sur sa notion (règle
+  de `question_template_points_check_rules`).
+- Migration `20261103225125_questions_2de_lot12a_rangement_tags` (gabarit du lot 9), test
+  `questions-2de-lot12a-rangement-tags.test.ts` : 10 verts, 5 rouges sans la migration.
+- `security-auditor` : aucun finding bloquant (mesure en prod : 14 brouillons sans nœud ni tag, 14 points actifs).
+  **#2355 mergée** ; `check:migrations --pr 2355` OK ; `db:migrate` depuis le dépôt principal (à blanc : seule
+  `20261103225125`). MCP (prod) : les 14 en `draft`, sur leur nœud, un point chacun, `updated_at` préservé.
+
+## 75. Lot 12 a : page à cocher (2026-11-04)
+
+- `page-a-cocher.ts` sur les deux dossiers (copie dans le scratchpad, préfixes `a1-`/`a2-`, `.env` de prod) :
+  14 fiches, aucune alerte. Page (capacité `db`, `verdicts` vide) : https://claude.ai/artifact/SWKNyEvkVTR8PF6E19cPKb
+
+## 76. Lot 12 a publié (2026-11-04)
+
+- Page à cocher relue par David : 14/14 « ok », sans commentaire. `publier-lot` (simulation puis
+  `--publier`) lancé par David sur `2de-inegalites-a1` et `2de-algebre-a2` ; un premier essai n'avait rien
+  écrit (MCP : 14 `draft`), le second oui. MCP (prod) : 14/14 `published`.
+
+## 77. Lot 12 b « Vecteurs sans coordonnées, périmètre » : relevé et phase 0 (proposée le 2026-11-04, à valider)
+
+2-489 a été fait au 12 a (modèle 14) : le 12 b couvre 287, 433, 288, 289, 290, 291, 292, 296, 297 et 401.
+
+**Relevé MCP (prod, 2026-11-04)** : aucun modèle, en aucun statut, sur les 10 points. Nœuds des points :
+Géométrie › Vecteurs › égalité de vecteurs (287, 433, 288), › produit par un réel (289), › colinéarité (290),
+› combinaison linéaire (291), › coordonnées (292), › somme et relation de Chasles (297) ; 296 sur la notion
+Vecteurs ; 401 sur la notion Grandeurs et mesures › Périmètres (sous-notions : carré, rectangle, disque).
+Voisins à ne pas refaire : ff3bd841 (3e, 3-025, égaux / opposés / nul, case choix entre 4 flèches) ;
+787cc937 (3e, 3-026, somme de deux vecteurs, case choix) ; 59f818c4 (2-302, coordonnées du milieu) ; 930711ec,
+84227334 (colinéarité par le déterminant) ; 060086c8, 66f9abbf (6e, périmètre du carré, du rectangle).
+Catégories de seconde : Géométrie › Vecteurs du plan › Colinéarité 1-4, Coordonnées 1-6, Milieu 1 prises.
+
+- Outils : tout en prod. Flèches en ` ```figure ` sur quadrillage (`vecteur(A, B)`, comme `2de-vecteur-tracer`) ;
+  geste ` ```courbe tracer: vecteur ` + `depuis A` en prod depuis la 0.66.0 (2-298, `dd286c93`) → **la
+  décision Q5 (case choix « pour l'instant ») est dépassée pour 2-297**.
+
+**Phase 0 proposée** : 10 modèles en deux sous-lots, niveau `['2']`, brouillons ; une PR de fichiers par
+sous-lot, une migration nœud + tag pour les deux.
+
+_12 b-1 — Égalité, représentants, milieu, somme (5 modèles)_
+
+1. **2-287 · Égalité de deux vecteurs** (Vecteurs › égalité de vecteurs ; Vecteurs du plan › Égalité, niv. 1) :
+   flèches u⃗, v⃗, w⃗, t⃗ sur quadrillage → « quel vecteur est égal à u⃗ ? » (case choix) ; parallélogramme
+   ABCD → AB⃗ = ? (DC⃗ ; distracteurs CD⃗, BC⃗, AD⃗). Erreurs : sens inversé, même longueur autre direction.
+2. **2-433 · Vecteur nul** (› égalité de vecteurs ; Égalité, niv. 2) : AA⃗ = ? ; AB⃗ + BA⃗ = ? ; « AB⃗ = 0⃗
+   signifie… » (A = B) ; case choix. Erreur : AB⃗ + BA⃗ = 2AB⃗.
+3. **2-288 · Représentants** (› égalité de vecteurs ; Égalité, niv. 3) : u⃗ dessiné, point C ; « le point D tel
+   que CD⃗ = u⃗ est… » (points E, F, G, H nommés sur le quadrillage, case choix) ; puis l'origine connaissant
+   l'extrémité. Erreur : DC⃗ = u⃗ (sens).
+4. **2-296 · Milieu, vectoriel** (sous-notion à trancher, L12b-b ; Vecteurs du plan › Milieu, niv. 2) :
+   « I milieu de [AB] ⇔ … » (AI⃗ = IB⃗ ; distracteurs AI⃗ = BI⃗, IA⃗ = IB⃗, AB⃗ = AI⃗) ; AB⃗ = k·AI⃗ → k = 2 ;
+   IA⃗ + IB⃗ = ? (0⃗). Pas de formule de coordonnées (approfondissement, décision l2-8).
+5. **2-297 · Représenter la somme** (› somme et relation de Chasles ; Vecteurs du plan › Somme, niv. 1) :
+   u⃗ et v⃗ dessinés depuis A ; l'élève **trace** u⃗ + v⃗ `depuis A` (geste, L12b-a) ; corrigé : le
+   parallélogramme. Coordonnées 1..3 signées, somme non nulle. Erreur : u⃗ − v⃗, u⃗ seul.
+
+_12 b-2 — Produit, colinéarité, combinaison, base ; périmètre (5 modèles)_
+
+6. **2-289 · Produit par un réel** (› produit par un réel ; Vecteurs du plan › Produit par un réel, niv. 1) :
+   u⃗ dessiné → « quelle flèche représente 2u⃗ ? −u⃗ ? ½u⃗ ? » (case choix) ; v⃗ = k·u⃗ dessinés → k = ?
+   (k ∈ {−3, −2, −½, ½, 2, 3}, une case). Erreur : signe de k oublié.
+7. **2-290 · Colinéarité, sur la figure** (› colinéarité ; Colinéarité, niv. 5) : « parmi ces flèches,
+   lesquelles sont colinéaires à u⃗ ? » ; « u⃗ = −3v⃗ : u⃗ et v⃗ sont… » (colinéaires de sens contraires).
+   Sans coordonnées : le critère par le déterminant est déjà 930711ec, 84227334.
+8. **2-291 · Combinaison de deux vecteurs** (› combinaison linéaire ; Vecteurs du plan › Combinaison, niv. 1) :
+   i⃗, j⃗ non colinéaires (pas forcément orthogonaux) et w⃗ sur quadrillage → w⃗ = x i⃗ + y j⃗, deux cases ;
+   x, y entiers de −3 à 3, non tous deux nuls. Erreur : x et y échangés.
+9. **2-292 · Base orthonormée** (› coordonnées ; Coordonnées, niv. 7) : couple (i⃗, j⃗) dessiné → orthonormée,
+   orthogonale non normée, ou ni l'une ni l'autre (case choix). Erreur : orthogonale lue orthonormée.
+10. **2-401 · Périmètre d'un polygone** (nœud à trancher, L12b-c ; Grandeurs › Périmètres › Polygone, niv. 1) :
+    polygone dessiné, longueurs écrites (triangle, quadrilatère, pentagone ; décimaux à un chiffre) ; polygone
+    régulier dont un côté est donné ; puis unités mêlées (cm et mm). Réponse en case, unité imposée.
+    Automatisme : calcul de tête ou posé court.
+
+- **Question d'accès** : personne (brouillons neufs, aucune policy).
+
+**Questions à David** :
+
+- **L12b-a — 2-297** : le geste « tracer un vecteur » est en prod (2-298). → Je recommande **le geste**
+  (l'élève trace u⃗ + v⃗ depuis A) plutôt que la case choix entre figures de Q5.
+- **L12b-b — 2-296, sous-notion** : le point est sur la notion Vecteurs. → Je recommande **égalité de vecteurs**
+  (I milieu ⇔ AI⃗ = IB⃗). Sinon : coordonnées, où vit 59f818c4.
+- **L12b-c — 2-401, nœud** : aucune sous-notion « polygone » sous Périmètres. → Je recommande **la notion
+  Périmètres elle-même** (le point y est). Sinon : une sous-notion neuve « polygone » (migration de l'arbre).
+- **L12b-d — Ordre** : 12 b-1 puis 12 b-2, une PR de fichiers chacun ? → Je recommande **oui**.

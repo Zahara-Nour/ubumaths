@@ -115,7 +115,7 @@ it('un document avec des blocs ```cubes, ```solide et ```patron compile en PDF',
 				'forme: cube 2',
 				'sommets: A B C D E F G H',
 				'points: I milieu AE, O centre ABCD',
-				'vecteurs: AB, u = AI, v = OG',
+				'vecteurs: AB, u = AI, v1 = OG',
 				'```',
 				'',
 				// ```solide à geste (chantier solide-vecteur, lot 2) : le solide seul

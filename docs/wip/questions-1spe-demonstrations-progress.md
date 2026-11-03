@@ -9,19 +9,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, à l'ouverture de la suite « approfondissements » (§ 9)._
+_Mis à jour le 2026-11-04, après #2361._
 
-- **État** : démonstrations terminées, lots 1 à 4 en prod (#2341, #2349, 0.68.0). Suite ouverte par David :
-  les **20 approfondissements** du BO (§ 9 ; 240, 241, 242 et 381 sont reclassés, le § 1 les comptait parmi les algorithmes).
-- **Prochaine action** : lot 5 (suites : 240, 241, 381, 242), D3 du § 9.
+- **État** : démonstrations en prod (lots 1 à 4). Approfondissements (§ 9, D3) : fichiers du lot 5 (suites : 240,
+  241, 381, 242) mergés (#2361, § 10, D4), brouillons pas encore en prod.
+- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/1spe-approfondissements-5 --publier`
+  (prod), puis migration nœud + tag (avec 2 sous-notions neuves, D4), page à cocher, publication. Ensuite lots 6 à 9.
 - **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de
   `docs/wip/verifications-manuelles.md`) ; suppression des branches distantes `docs/questions-1spe-demonstrations`,
   `feat/questions-1spe-demonstrations` (rien à perdre ; `git push --delete` refusé par le classifieur le 2026-11-04).
-- **Pièges en cours** : `create-questions` lit `.env` = PROD → forcer les variables de `.env.local`.
-  Relevé prod par script refusé par le classifieur → MCP + md5 contre l'ancienne source. `db:migrate`
-  depuis une branche en retard sur `main` : une migration distante manque en local → le lancer depuis
-  le dépôt principal à jour.
-- **Worktree / branche** : aucun (l'ancien est retiré) ; worktree neuf depuis `origin/main` au premier lot.
+- **Pièges en cours** : `create-questions` lit `.env` = PROD → forcer `.env.local`. Spec `bad_form` →
+  `constraintViolations: ['form']`. Ports 5176-5177 pris par d'autres sessions (5178 libre le 2026-11-04).
+  `db:migrate` depuis le dépôt principal à jour.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, `feat/questions-1spe-approfondissements-5` (mergée ; nouvelle branche depuis `origin/main` pour la migration).
 
 ---
 
@@ -320,3 +320,27 @@ Lots proposés après validation : (5) suites (240, 241, 381, 242) ; (6) algèbr
 valeurs tirées (2-3 variations), formule donnée dans l'énoncé pour 241 et 381 ; Q3 un modèle par point, tagué sur
 son point P, catégorie neuve « Approfondissements » par domaine ; Q4 publiés comme les démonstrations ; Q5 accès :
 personne de plus (brouillons ; migration de nœud et de tags seulement). Lots 5 à 9 dans l'ordre du § 9.
+
+## 10. Lot 5 : approfondissements, suites (2026-11-04)
+
+Relevé prod (MCP, 2026-11-04) : 240 sur Suites › Généralités sur les suites › explicite ou par récurrence ; 241 et
+381 sur la **notion** Généralités sur les suites ; 242 sur la **notion** Modèles d'évolution (une seule sous-notion,
+« seuil »). Aucun modèle sur les 4 points. Aucune catégorie « Approfondissements ».
+
+**D4 (David, 2026-11-04, « tes recos ? » puis « Oui aux deux »)** : (1) deux sous-notions neuves, « sommes de
+termes » sous Généralités sur les suites (241, 381) et « emprunt » sous Modèles d'évolution (242), posées par la
+migration du lot ; les points restent sur leur notion ; (2) contenu tel que proposé, sans formule de l'annuité.
+
+| Point | Modèle (`scripts/questions/1spe-approfondissements-5/`) | Catégorie, niveau                             | Variations                                                         |
+| ----- | ------------------------------------------------------- | --------------------------------------------- | ------------------------------------------------------------------ |
+| 240   | `01-tour-de-hanoi`                                      | Suites › Apprivoiser › Approfondissements, 1  | hₖ₊₁ par la relation (k 3..7), raison de vₙ = hₙ + 1, hₙ (n 5..10) |
+| 241   | `02-somme-des-carres`                                   | Suites › Sommes › Approfondissements, 1       | Sₙ (n 5..20), a² + ⋯ + b², Sₙ₊₁ − Sₙ                               |
+| 381   | `03-somme-des-cubes`                                    | Suites › Sommes › Approfondissements, 2       | Tₙ (n 4..15), (1 + ⋯ + n) à compléter, a³ + ⋯ + b³                 |
+| 242   | `04-emprunt-annuites-constantes`                        | Suites › Modélisation › Approfondissements, 1 | R₁, coefficient 1 + t de la relation, nature de vₖ (case choix)    |
+
+Script : `docs/wip/questions/lot-1spe-approfondissements-5.py`. Emprunt : C ∈ {4000, …, 20000}, t 2..5 %, a = C/4,
+donc R₁ entier. Vérifié : `create-questions` simulation verte (47 specs) ; `question:specs` 150 tirages par modèle,
+`validateLatex` compris ; 2 060 formules de 40 aperçus, accolades équilibrées, 0 problème ; brouillons en base locale,
+aperçu admin (flash-card) de Hanoï (variation 1) et de l'emprunt (variation 2 : « 1,03 » à la virgule). Piège : `2⁶ − 1`
+non calculé = `bad_form` avec `constraintViolations: ['form']` (sans cette clé, la spec reste rouge alors que le
+statut est le bon). Saisie MathLive par l'extension Chrome impossible : jouer en flash-card.

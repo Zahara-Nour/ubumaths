@@ -224,7 +224,12 @@ function labelsTypst(labels: SolideLabel[]): string[] {
 		// en markup, Typst ferait de `O'` une apostrophe typographique
 		const w = 2;
 		const h = 1;
-		return `  #place(top + left, dx: ${cm(label.at.x + ESPACE_MARGIN - w / 2)}, dy: ${cm(label.at.y + ESPACE_MARGIN - h / 2)}, box(width: ${cm(w)}, height: ${cm(h)}, align(center + horizon, text(size: ${cm(SOLIDE_LABEL_SIZE)}, ${JSON.stringify(label.text)}))))`;
+		// Indice d'un nom de vecteur (w1) : `sub`, comme \vec{w_{1}} de la phrase
+		const body =
+			label.sub === undefined
+				? `, ${JSON.stringify(label.text)})`
+				: `)[#${JSON.stringify(label.text)}#sub(${JSON.stringify(label.sub)})]`;
+		return `  #place(top + left, dx: ${cm(label.at.x + ESPACE_MARGIN - w / 2)}, dy: ${cm(label.at.y + ESPACE_MARGIN - h / 2)}, box(width: ${cm(w)}, height: ${cm(h)}, align(center + horizon, text(size: ${cm(SOLIDE_LABEL_SIZE)}${body})))`;
 	});
 }
 
