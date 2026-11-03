@@ -10,7 +10,7 @@ couvre:
 # L'atelier (et `/grapheur`)
 
 > Synthèse des journaux archivés `docs/archive/wip/atelier-*`. Syntaxe des commandes de Calcul :
-> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; lecture des degrés et de `π` partagée avec le registre, 2026-11-03 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; π au numérateur d'un périmètre, #1634, 2026-10-24 ; espaces de groupement dès 5 chiffres, 2026-10-23 ; étapes de `.résoudre` écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; ouvrir dans l'atelier depuis Python, 2026-10-25 ; ligne réservée sous la barre de la grille et libellé de « Résoudre », 2026-10-26 ; conditions sur la lettre, points irrationnels, `tan`/`arcsin`, `avec x ≥ e`, tidy-conditions § 5 PR A, 2026-10-26 ; Partager et Enregistrer d'une grille seule, confirmation de Charger, `X suit …` tapé, 2026-10-26 ; valeurs remarquables et degrés de `.simplifier`, `.développer`, `.résoudre`, 2026-10-27).
+> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; lecture des degrés et de `π` partagée avec le registre, 2026-11-03 ; égalité tapée seule → vrai / faux, `≈` refusé, 2026-11-03 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; π au numérateur d'un périmètre, #1634, 2026-10-24 ; espaces de groupement dès 5 chiffres, 2026-10-23 ; étapes de `.résoudre` écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; ouvrir dans l'atelier depuis Python, 2026-10-25 ; ligne réservée sous la barre de la grille et libellé de « Résoudre », 2026-10-26 ; conditions sur la lettre, points irrationnels, `tan`/`arcsin`, `avec x ≥ e`, tidy-conditions § 5 PR A, 2026-10-26 ; Partager et Enregistrer d'une grille seule, confirmation de Charger, `X suit …` tapé, 2026-10-26 ; valeurs remarquables et degrés de `.simplifier`, `.développer`, `.résoudre`, 2026-10-27).
 
 ## À quoi ça sert
 
@@ -1496,6 +1496,13 @@ soustraction : `(1+1/20000)^{20000}×10^{16} − 27182138745278831 < 0` → `fal
 `(1+1/100000)^{100000}×(1+1/100000)^{-100000} < 1` plus de 300 s. `2^{100000} > 3^{60000}` répond toujours `true`. Le résultat porte `exactTooLong` ; le rendu ne passe pas l'écriture
 gardée à `tidy`, qui la développerait. La console ne calcule plus le résultat exact deux fois (le
 test du booléen le réutilise), ni l'arrondi deux fois (ligne et bouton ≈).
+Une égalité tranchée par `executeEquality` (`2=2`, `3! = 6`, `x+x=2x`) ou une chaîne (`2 = 2 = 3`)
+s'affiche `\text{vrai}` / `\text{faux}` comme toute comparaison (`booleanResult` du moteur :
+`latex`, `answer` et un nœud booléen ; avant le 2026-11-03, la ligne montrait le texte `true`).
+Une comparaison que le calcul ne tranche pas (`2 \approx 2`) est un **refus** de l'atelier (code
+`RELATION_UNDECIDABLE`, dans `STUDENT_FACING_ERRORS`) : « Relation « ≈ » non évaluable : seules
+= ≠ < > ≤ ≥ se tranchent » (décision C du lot 2 du registre ; avant, une ligne « Erreur de calcul »).
+Limite connue : `2 ≈ 2` avec le caractère `≈` se lit mal (« Nombre « 2 » écrit après un facteur »).
 
 **Complétion des fonctions et des lettres grecques** (PR 3, `src/lib/atelier/completion.ts`) :
 règle unique — la liste s'ouvre quand le mot qui finit au CURSEUR (lettres seulement, curseur relu

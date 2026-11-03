@@ -6,22 +6,23 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2300._
+_Mis à jour le 2026-11-03, PR 4/5 ouverte._
 
 - **État** : lot 2 du registre découpé en 5 PR (§ Lot 2 — correction du registre). PR 1/5 (#2281,
-  A/B), 2/5 (#2292, D) et 3/5 (#2300, lecture : degrés, `π`, refus de `pi`) MERGÉES ; reste 10
-  lignes du registre connues fausses au lot 2 (C 5, plafond 5). Pas déployées.
-- **Prochaine action** : PR 4/5 — C : égalité seule → `\text{vrai}` / `\text{faux}`
-  (`comparer-01, 05, 09, 12, 14` registre ; `comparer-01, 05, 12, 13, 14` Atelier, `≈` refusé).
+  A/B), 2/5 (#2292, D), 3/5 (#2300, lecture) MERGÉES ; PR 4/5 (C, égalité → vrai / faux, `≈`
+  refusé) ouverte sur `fix/registre-lot2-egalite`. Reste 5 lignes connues fausses au lot 2
+  (plafond). Pas déployées.
+- **Prochaine action** : PR 5/5 — plafond : `1000!/999!` → 1000 (les deux outils), `answer` de
+  l'écriture gardée (`plafond-04, 05, 06`, `approche-11`).
 - **En attente de David** : rien.
 - **Tranché** : option `unitChoice: 'school'` GARDÉE exprès (David, 2026-11-03 : « utile plus
-  tard ») — ne pas proposer de la retirer ; § Unité du résultat et § Revue de #2276 ; avant : Q9 EN ENTIER, A-D du lot 2,
-  `decimal` en LaTeX, `plafond-02` → 1000, Q24, `signes-06` — NE PAS reposer.
+  tard ») — ne pas proposer de la retirer ; avant : Q9 EN ENTIER, A-D du lot 2, `decimal` en
+  LaTeX, `plafond-02` → 1000, Q24, `signes-06` — NE PAS reposer.
 - **Pièges** : `docs:check-a-jour` local ne voit que le COMMITÉ ; PR en conflit avec `main` = aucun
-  run de CI → `git merge origin/main` ; `rebase` et `restore` = liste `ask` ; `gh pr checks --watch`
-  juste après un push ne voit que l'auto-merge → suivre le run « Code Quality » du commit ;
-  limite connue de #2300 : `.diff cos(60°)*x` (commandes qui relisent `ctx.input`).
-- **Worktree / branche** : aucun (retirés après #2300).
+  run de CI → `git merge origin/main` ; `gh pr checks --watch` juste après un push ne voit que
+  l'auto-merge → suivre le run « Code Quality » du commit ; limites connues : `.diff cos(60°)*x`
+  (commandes qui relisent `ctx.input`), `2 ≈ 2` (caractère `≈`) mal lu, `(t>1)` → faux.
+- **Worktree / branche** : `ubumaths-wt-registre-reference` · `fix/registre-lot2-egalite`.
 
 ---
 
@@ -526,3 +527,24 @@ transformateur descend quand l'externe n'a pas de valeur), `.help pi` n'est plus
 rouge : 4/16 tests. **Limite notée, non corrigée** : les commandes qui relisent `ctx.input`
 (`.diff cos(60°)*x` → `cos(60[°])`, `.integrate`, `.taylor`) ne reçoivent pas la valeur
 remarquable — aucune ligne du corpus ; à reprendre avec la descente des commandes (Q1).
+
+**PR 4 (C), 2026-11-03** : une égalité ou une comparaison tranchée répond `\text{vrai}` /
+`\text{faux}` dans `answer` et `latex`, avec un nœud booléen (`booleanResult` de
+`web-repl-engine.ts`) — l'égalité `a = b` (`createEqualityResult`) n'en posait aucun, et le booléen
+d'une chaîne (`2 = 2 = 3`, lue par `executeExpression` sans `withExpressionAnswer`) non plus. Le
+texte reste `true` / `false` (une chaîne s'arrête au premier maillon qui n'est pas `true`). Une
+comparaison que le calcul ne tranche pas (`2 \approx 2`, `isBooleanExpression` exporté
+d'`evaluate.ts`) rend le code `RELATION_UNDECIDABLE`, ajouté aux `STUDENT_FACING_ERRORS` de
+l'Atelier : refus au lieu de la ligne « Erreur de calcul : … ». Sonde avant/après : `x > 1`,
+`!5 > 1`, `y < y+1` inchangés. Justes : `comparer-01, 05, 09, 12, 14` (registre),
+`comparer-01, 05, 12, 13, 14` (Atelier). Preuve rouge : 10/10 tests du corpus. Suites `mathAST`
+
+- `atelier` (32 426) et composants de l'Atelier (651) vertes. **Vu, hors périmètre** : `2 ≈ 2` avec
+  le caractère `≈` (pas `\approx`) répond « Nombre « 2 » écrit après un facteur » dans les deux outils.
+
+**Revue de la PR 4 (`code-reviewer`, Sonnet)** : aucun bloquant. Corrigé — « Garder » une
+comparaison tranchée créait `a = true` (`promote` acceptait tout `ast` ; `2=2` n'en avait pas
+avant, `2<3` déjà) : refusée comme une ligne sans valeur, preuve rouge 4/4 (`calcul.test.ts`).
+**Limite notée, non corrigée** (antérieure, plus visible) : une variable libre entre parenthèses
+est tranchée fausse — `(t>1)` → `\text{faux}`, `\lnot (t>1)` → `\text{vrai}`, `2<3<t` →
+`\text{faux}` (`t>1` seul reste la relation). Aussi : `1/0=1` → « normalize: division by zero », en anglais.

@@ -41,13 +41,7 @@ export const REGISTRE_CONNUES_FAUSSES: Readonly<Record<string, string>> = {
 	'plafond-04': 'sans-reponse : (1+1/1000)^1000',
 	'plafond-05': 'sans-reponse : 1.01^365',
 	'plafond-06': 'sans-reponse : factorial(1000)',
-	'approche-11': 'sans-reponse : 0.3^1000',
-	// Lot 2 · décision C : une égalité tapée seule répond `\text{vrai}` / `\text{faux}`
-	'comparer-01': 'sans-reponse : true',
-	'comparer-05': 'sans-reponse : true',
-	'comparer-09': 'sans-reponse : false',
-	'comparer-12': 'sans-reponse : true',
-	'comparer-14': 'sans-reponse : true'
+	'approche-11': 'sans-reponse : 0.3^1000'
 };
 
 /** L'Atelier (`runInput`, champ `latex`) */
@@ -72,12 +66,5 @@ export const ATELIER_CONNUES_FAUSSES: Readonly<Record<string, string>> = {
 	'refus-03':
 		'message : Je n’ai pas su lire cette expression : vérifie les parenthèses et les signes.',
 	// Lot 2 · plafond : `1000!/999!` se calcule (David, 2026-11-01)
-	'plafond-02': 'valeur : \\dfrac{1000!}{999!}',
-	// Lot 2 · décision C : une égalité tapée seule répond `\text{vrai}` / `\text{faux}` ; `≈` refusé
-	'comparer-01': 'sans-reponse : true',
-	'comparer-05': 'sans-reponse : true',
-	'comparer-12': 'sans-reponse : true',
-	'comparer-13':
-		'sans-reponse : Erreur de calcul : Relation « ≈ » non évaluable : seules = ≠ < > ≤ ≥ se tranchent',
-	'comparer-14': 'sans-reponse : true'
+	'plafond-02': 'valeur : \\dfrac{1000!}{999!}'
 };

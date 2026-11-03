@@ -55,7 +55,9 @@ export type ErrorCode =
 	/** Équation lue mais pas résolue (aucun solveur, ou un paramètre) : message en français, destiné à l'élève */
 	| 'EQUATION_UNSOLVED'
 	/** `.eval` : valeur interdite (dénominateur nul, racine d'un négatif…) — message en français, destiné à l'élève */
-	| 'VALUE_FORBIDDEN';
+	| 'VALUE_FORBIDDEN'
+	/** Comparaison que le calcul ne tranche pas (`2 ≈ 2`, `x > 1` sans valeur) : message en français, destiné à l'élève */
+	| 'RELATION_UNDECIDABLE';
 
 /**
  * Structured error for command execution

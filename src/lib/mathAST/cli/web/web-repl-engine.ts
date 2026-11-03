@@ -6,7 +6,7 @@
  */
 
 import type { MathNode, RelationNode } from '../../types';
-import type { CommandContext } from '../types';
+import type { CommandContext, ErrorCode } from '../types';
 import { CommandRegistry, parse, createEvalState, bindingsToRecord, setBinding } from '../core';
 import { hideIndexedNames } from '../../common/indexed-names';
 import { createFunctionBinding, getFunctionNames, getFunction } from '../core/eval-state';
@@ -26,7 +26,7 @@ import {
 	toLatex
 } from '../../index';
 import type { FunctionBindings } from '../../eval/function-bindings';
-import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
+import { evaluateNodeToApproximatedNumber, isBooleanExpression } from '../../eval/evaluate';
 import { normalFormsEquivalent } from '../../normal';
 import { equivalenceForms } from '../../normal/normalize';
 import type { EvalValue, ComplexValueResult, EvalResult } from '../../eval/types';
@@ -38,7 +38,7 @@ import {
 } from '../quantities';
 import { displayUnitsInLatex } from '../../units/display';
 import { isBoolean, isLogical, isLogicalNot, isRelation, isUnit, isVariable } from '../../guards';
-import { relation } from '../../factory';
+import { boolean, relation } from '../../factory';
 import { summarizeList, summarizeTable } from '../../../statistics/describe';
 import { formatSummary } from '../../../statistics/format';
 import {
@@ -216,6 +216,19 @@ function withExpressionAnswer(result: ReplExecutionResult): ReplExecutionResult 
 	// Un calcul la pose lui-même, exacte même en mode décimal (décision B)
 	if (result.answer !== undefined) return result;
 	return { ...result, answer: toLatex(result.ast) };
+}
+
+/** Une comparaison que le calcul ne tranche pas : refus destiné à l'élève (décision C du lot 2) */
+export const RELATION_UNDECIDABLE = 'RELATION_UNDECIDABLE' satisfies ErrorCode;
+
+/**
+ * Une égalité ou une comparaison tranchée (`2=2`, `1<2<3`) : `\text{vrai}` /
+ * `\text{faux}` dans `answer` (décision C du lot 2). Le texte reste `true` / `false`
+ * (une chaîne s'arrête au premier maillon qui n'est pas `true`).
+ */
+function booleanResult(value: boolean): ReplExecutionResult {
+	const latex = value ? '\\text{vrai}' : '\\text{faux}';
+	return { success: true, output: String(value), ast: boolean(value), latex, answer: latex };
 }
 
 /** `decimal` / `decimalExact` d'un calcul (décision A du lot 2) ; rien sans écriture décimale. */
@@ -802,12 +815,7 @@ export class WebReplEngine {
 	 * Create result for equality check.
 	 */
 	private createEqualityResult(isEqual: boolean): ReplExecutionResult {
-		const resultStr = isEqual ? 'true' : 'false';
-
-		return {
-			success: true,
-			output: resultStr
-		};
+		return booleanResult(isEqual);
 	}
 
 	/**
@@ -989,14 +997,7 @@ export class WebReplEngine {
 
 			// Boolean result: no exact/decimal toggle
 			if (exactResult.status === 'value' && exactResult.node.type === 'boolean') {
-				const boolValue = exactResult.value as boolean;
-				const resultStr = String(boolValue);
-
-				return {
-					success: true,
-					output: resultStr,
-					ast: exactResult.node
-				};
+				return booleanResult(exactResult.value as boolean);
 			}
 
 			// Evaluate in BOTH modes to enable toggle
@@ -1007,6 +1008,16 @@ export class WebReplEngine {
 			});
 			this.lastQuantity = null; // Un nombre : plus de grandeur à convertir
 			this.lastWritten = undefined;
+
+			// Une comparaison que le calcul ne tranche pas (`2 \approx 2`) : un refus en
+			// français, que l'Atelier montre comme tel (décision C du lot 2)
+			if (exactResult.status === 'unevaluable' && isBooleanExpression(expanded)) {
+				return {
+					success: false,
+					output: `Erreur de calcul : ${exactResult.reason}`,
+					error: { code: RELATION_UNDECIDABLE, message: exactResult.reason }
+				};
+			}
 
 			// Non-value result (indeterminate / unevaluable): surface via the catch
 			if (exactResult.status !== 'value') {
