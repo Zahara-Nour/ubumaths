@@ -6,17 +6,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, lot « Statistiques » en cours._
+_Mis à jour le 2026-11-04, lot « Statistiques » en cours (PR à ouvrir)._
 
-- **État** : lots « évolutions », « droites » et « lectures graphiques » faits ; fiche
-  `7ff081db` « Automatismes : lectures graphiques (1) » écrite en brouillon et vérifiée ; ensemble
-  fini du corrigé corrigé (#2350) · **Prochaine action** : lot « Statistiques » (décisions du 2026-11-04 tranchées) : `buildSerie` fige la boîte à placer (fait), 2 modèles neufs, PR, puis la fiche · **En attente de David** : publier `f5585668`, `95ee57c8`, `5397c20f`, `7f82d15a` et
-  les fiches `9217dfaa`, `0f98be04`, `7ff081db` ; garder ou non les 2 figures d'un corrigé de
-  tracé ; questions 2 à 4 (§ Questions ouvertes) · **Pièges en cours** :
-  `compile-prod.mjs --polices-corrige` pour un corrigé ; `?v=` de `CORRECTION_FONT_FILES` à changer
-  à chaque reconstruction des polices ; `~…~` non nettoyé par `cleanCoefficients` dans `buildSerie` ;
-  un worktree neuf doit faire `pnpm exec svelte-kit sync` avant `pnpm tsx` (alias `$lib`)
-  · **Worktree / branche** : aucun.
+- **État** : lot « Statistiques » codé sur `feat/automatismes-statistiques` : `buildSerie` fige une
+  boîte à construire ; modèles neufs en brouillon `1c86d122` (axe tronqué) et `9852d62c` (angle d'un
+  secteur) ; script de fiche prêt, simulation verte · **Prochaine action** : PR (revue, CI, merge),
+  puis écrire la fiche (`create-automatismes-statistiques-1spe.ts --publier`) et la vérifier en PDF
+  · **En attente de David** : `create-questions.ts --dir scripts/questions/statistiques-1spe --publier
+--mettre-a-jour` (texte de `9852d62c` reformulé : « élèves interrogés dans un lycée ») ; publier
+  `f5585668`, `95ee57c8`, `5397c20f`, `7f82d15a`, `1c86d122`, `9852d62c` (+ `1bd7378d`, `9a9026fc`
+  de `questions-3`) et les fiches `9217dfaa`, `0f98be04`, `7ff081db` ; garder ou non les 2 figures
+  d'un corrigé de tracé ; questions 2 à 4 (§ Questions ouvertes) · **Pièges en cours** :
+  `create-questions.ts --publier` refusé par le classifieur du mode auto (David le lance) ; l'API
+  plafonne à 1 000 lignes (relevé page par page) ; variable `i` = imaginaire dans un modèle ;
+  `compile-prod.mjs --polices-corrige` pour un corrigé · **Worktree / branche** :
+  `../ubumaths-wt-automatismes-1spe`, `feat/automatismes-statistiques`.
+- Lot suivant décidé : « Probabilités » (bloc du BO de 1re), à part.
 - Hors de ce chantier, même niveau : 18 fiches « Entraînement technique » / « Applications » de 1re spé en
   brouillon depuis septembre, à relire et publier par David (`docs/pratiques/fiches-exercices.md` § 1, § 3).
 
@@ -176,6 +181,20 @@ Fiche : 2 séries de 8 — série 1 = histogramme, circulaire, boîte à lire, m
 construire une boîte, linéarité de la moyenne, quartile, comparer deux séries, fréquence marginale,
 angle d'un secteur. Les brouillons `1bd7378d`, `9a9026fc` (lot 8 de `questions-3`) y servent tels
 quels.
+
+### Fait (PR du lot « Statistiques », 2026-11-04)
+
+- `boitesAConstruire` dans `src/lib/worksheets/serie-automatismes.ts` + 7 tests
+  (`serie-automatismes-boite.test.ts`) : `9a9026fc` passe désormais (3 graines).
+- `scripts/questions/statistiques-1spe/` → brouillons : `1c86d122` « Lire un graphique dont l'axe ne
+  part pas de 0 » (nuage sans `origine:`, l'axe se cale sur les données : 100 → 110 sur un axe qui part
+  de 98 ; v0 choix « +10 % / × 6 / doublé / rien à dire », v1 case du pourcentage ; seules les 6
+  combinaisons (v, t) dont toutes les valeurs tombent sur une graduation, 9 specs) ; `9852d62c`
+  « Angle d'un secteur d'un diagramme circulaire » (v0 effectifs → angle, v1 angle → effectif, corrigé
+  avec `étiquettes: angles` ; 7 specs). Le bloc `barres` refuse exprès un axe qui ne part pas de 0.
+- `scripts/create-automatismes-statistiques-1spe.ts` : séries de la phase 0 ; graines changées :
+  fréquence conditionnelle 1 → 5 (4/5 et non 8/67), axe tronqué 1 → 7 (variante choix), angle 1 → 12
+  (données → angle).
 
 ## Questions ouvertes (à poser à David)
 
