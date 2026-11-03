@@ -24,6 +24,11 @@
 	  « 1 » / « 2 » ; dès qu'ils sont distincts, la droite qui passe par eux se dessine
 	  d'un bord à l'autre. UNE case : `x1;y1/x2;y2` (`tracedAnswer`). Faux : une phrase,
 	  et la droite juste avec ses deux nœuds les plus proches de l'origine.
+	- Vecteur à tracer (`tracer: vecteur (3 ; -2)`, lot 3) : origine puis extrémité,
+	  étiquettes « Origine » / « Extrémité » ; dès qu'elles sont distinctes, une flèche
+	  les relie. Origine imposée (`depuis A`, A dessiné par `points:`) : un seul bouton
+	  « Extrémité », A ni déplaçable ni reprenable. UNE case : `x1;y1/x2;y2`. Faux : une
+	  phrase, et la flèche juste en vert (depuis l'origine de l'élève si elle tient).
 
 	@module components/markdown/nodes/CourbePlacer
 -->
@@ -52,6 +57,7 @@
 		type LineCoefficients,
 		type TracedLineMistake
 	} from '$lib/ubumark/utils/courbe-tracer';
+	import { solutionVector, tracedVectorMistake } from '$lib/ubumark/utils/courbe-vecteur';
 	import Courbe, { type CourbeMark, type CourbeTrace } from './Courbe.svelte';
 	import MathInline from './MathInline.svelte';
 	import type { BuildCase } from './CollectionConstruire.svelte';
@@ -81,31 +87,54 @@
 	const MASKED_EQUATION = '?';
 	/** Les deux points d'une droite à tracer, sans nom sur la figure */
 	const TRACE_SLOTS = ['1', '2'];
+	/** Les deux bouts d'un vecteur à tracer */
+	const VECTOR_SLOTS = ['Origine', 'Extrémité'];
+	/** Rang de l'extrémité d'un vecteur (l'origine est le rang 0) */
+	const VECTOR_END = 1;
 
 	let spec = $derived(node.spec!);
 	let targets = $derived<CourbeTarget[]>(node.spec?.placer ?? []);
 	/** Droite à tracer : l'équation attendue (jamais dessinée avant la correction) */
 	let equation = $derived(node.spec?.tracer?.equation);
 	let tracing = $derived(equation !== undefined);
-	/** Noms des étiquettes : les points de `placer:`, ou « 1 » et « 2 » pour une droite */
-	let slots = $derived(tracing ? TRACE_SLOTS : targets.map((t) => t.name));
+	/** Vecteur à tracer : ses coordonnées (null si masquées), jamais dessiné avant la correction */
+	let vector = $derived(node.spec?.vecteur);
+	let vectoring = $derived(vector !== undefined);
+	/** Origine imposée (`depuis A`) : posée d'office, jamais déplacée */
+	let fixedOrigin = $derived(vector?.origin ?? null);
+	/** Deux points dans une seule case (`x1;y1/x2;y2`) : droite ou vecteur */
+	let twoPoints = $derived(tracing || vectoring);
+	/**
+	 * Noms des étiquettes : les points de `placer:`, « 1 » et « 2 » pour une droite,
+	 * « Origine » et « Extrémité » pour un vecteur
+	 */
+	let slots = $derived(
+		vectoring ? VECTOR_SLOTS : tracing ? TRACE_SLOTS : targets.map((t) => t.name)
+	);
 	let several = $derived(slots.length > 1);
+	/** Le point de rang `i` est-il l'origine imposée d'un vecteur (ni posé ni repris par l'élève) ? */
+	const isFixed = (i: number) => fixedOrigin !== null && i === 0;
 
 	/**
 	 * Position de chaque point : gardée ici, les cases n'en gardent que l'écriture.
 	 * Relue seulement quand la valeur d'une case change (case remise à vide,
 	 * composant remonté) ; réassignée à chaque geste (dérivé modifiable).
 	 */
-	let positions = $derived<(CourbePlacedPoint | null)[]>(
-		tracing
-			? readTracedAnswer(answers?.[0]?.value ?? '')
-			: targets.map((_, i) => readPointAnswer(answers?.[i]?.value ?? ''))
-	);
+	let positions = $derived.by<(CourbePlacedPoint | null)[]>(() => {
+		if (!twoPoints) return targets.map((_, i) => readPointAnswer(answers?.[i]?.value ?? ''));
+		const [p, q] = readTracedAnswer(answers?.[0]?.value ?? '');
+		return [fixedOrigin ?? p, q];
+	});
 
 	/** Point choisi par l'élève : au départ, le premier point non posé */
 	let chosen = $state(untrack(() => Math.max(0, positions.indexOf(null))));
-	/** Rang du point que le geste déplace (ramené dans les bornes si le prof retire des points) */
-	let active = $derived(Math.min(chosen, Math.max(0, slots.length - 1)));
+	/**
+	 * Rang du point que le geste déplace (ramené dans les bornes si le prof retire
+	 * des points) ; origine imposée : toujours l'extrémité
+	 */
+	let active = $derived(
+		fixedOrigin !== null ? VECTOR_END : Math.min(chosen, Math.max(0, slots.length - 1))
+	);
 	let locked = $derived(answers?.some((a) => a.disabled) ?? false);
 	let dragging = $state(false);
 	/** Le point actif était absent quand le doigt s'est posé : au lever, on passe au suivant */
@@ -115,13 +144,20 @@
 	/** Le bloc sans `placer:` : il se dessine seul (une seule fois par bloc, pour le budget) */
 	let base = $derived<CourbeNode>({
 		...node,
-		spec: { ...spec, placer: undefined, tracer: undefined },
+		spec: { ...spec, placer: undefined, tracer: undefined, vecteur: undefined },
 		caseIndex: undefined
 	});
 
+	/**
+	 * Points de l'élève. Vecteur : l'origine imposée est déjà dessinée par
+	 * `points:` ; l'extrémité n'a plus de disque dès que la flèche est tracée (il
+	 * cacherait la pointe)
+	 */
 	let marks = $derived<CourbeMark[]>(
 		positions.flatMap((p, i) =>
-			p === null ? [] : [{ name: targets[i]?.name ?? '', x: p.x, y: p.y, color: STUDENT_COLOR }]
+			p === null || isFixed(i) || (i === VECTOR_END && traces.length > 0 && vectoring)
+				? []
+				: [{ name: targets[i]?.name ?? '', x: p.x, y: p.y, color: STUDENT_COLOR }]
 		)
 	);
 
@@ -131,10 +167,14 @@
 		return segment === null ? [] : [{ from: segment[0], to: segment[1], color }];
 	}
 
-	/** La droite de l'élève, dès que ses deux points sont posés et distincts */
+	/** La droite ou la flèche de l'élève, dès que ses deux points sont posés et distincts */
 	let traces = $derived.by<CourbeTrace[]>(() => {
 		const [p, q] = positions;
-		if (!tracing || !p || !q) return [];
+		if (!twoPoints || !p || !q) return [];
+		if (vectoring) {
+			if (p.x === q.x && p.y === q.y) return [];
+			return [{ from: p, to: q, color: STUDENT_COLOR, arrow: true }];
+		}
 		return traceOf(lineThrough(p, q), STUDENT_COLOR);
 	});
 
@@ -164,26 +204,33 @@
 		return targets.map((t) => ({ name: t.name, x: t.x, y: t.y, color: SOLUTION_COLOR }));
 	});
 
-	/** La droite juste : seulement dans la correction */
+	/** La droite ou la flèche juste : seulement dans la correction */
 	let solutionTraces = $derived.by<CourbeTrace[]>(() => {
-		if (verdict !== false || knownEquation === null) return [];
+		if (verdict !== false) return [];
+		if (vector?.coords) {
+			const arrow = solutionVector(spec, vector.coords, positions[0], vector.origin);
+			return arrow === null ? [] : [{ ...arrow, color: SOLUTION_COLOR, arrow: true }];
+		}
+		if (knownEquation === null) return [];
 		const line = lineCoefficients(knownEquation);
 		return traceOf(typeof line === 'string' ? null : line, SOLUTION_COLOR);
 	});
 
 	/** Phrases de la correction : une par point faux ; droite à tracer, une (équation en formule) */
 	let mistakes = $derived<TracedLineMistake[]>(
-		tracing
-			? tracedMistakes()
-			: targets.flatMap((target, i) => {
-					if (answers?.[i]?.isCorrect !== false) return [];
-					const sentence = placedPointMistake(
-						target.name,
-						answers[i].value,
-						pointAnswer(target.x, target.y)
-					);
-					return sentence === null ? [] : [{ text: sentence }];
-				})
+		vectoring
+			? vectorMistakes()
+			: tracing
+				? tracedMistakes()
+				: targets.flatMap((target, i) => {
+						if (answers?.[i]?.isCorrect !== false) return [];
+						const sentence = placedPointMistake(
+							target.name,
+							answers[i].value,
+							pointAnswer(target.x, target.y)
+						);
+						return sentence === null ? [] : [{ text: sentence }];
+					})
 	);
 
 	/** Droite à tracer : la phrase de la correction (aucune si l'équation est masquée) */
@@ -193,16 +240,36 @@
 		return sentence === null ? [] : [sentence];
 	}
 
+	/** Vecteur à tracer : la phrase de la correction (aucune si les coordonnées sont masquées) */
+	function vectorMistakes(): TracedLineMistake[] {
+		const coords = vector?.coords;
+		if (answers?.[0]?.isCorrect !== false || !coords) return [];
+		const sentence = tracedVectorMistake(answers[0].value, {
+			u: coords,
+			name: vector?.name ?? '',
+			...(vector?.origin !== undefined && { origin: vector.origin })
+		});
+		return sentence === null ? [] : [sentence];
+	}
+
 	let zoneLabel = $derived(
-		tracing
-			? 'Repère : les deux points de ta droite'
-			: several
-				? 'Repère : tes points'
-				: 'Repère : ton point'
+		vectoring
+			? fixedOrigin !== null
+				? 'Repère : l’extrémité de ta flèche'
+				: 'Repère : l’origine et l’extrémité de ta flèche'
+			: tracing
+				? 'Repère : les deux points de ta droite'
+				: several
+					? 'Repère : tes points'
+					: 'Repère : ton point'
 	);
 	let valueText = $derived.by(() => {
 		const p = positions[active] ?? null;
 		const name = slots[active];
+		if (vectoring) {
+			const end = name.toLowerCase();
+			return p === null ? `${end} pas placée` : `${end} en ${pointText(p.x, p.y)}`;
+		}
 		const label = name ? `point ${name}` : 'point';
 		if (p === null) return name ? `${label} pas placé` : 'aucun point';
 		return `${label} en ${pointText(p.x, p.y)}`;
@@ -213,7 +280,7 @@
 		const current = positions[active];
 		if (current && current.x === p.x && current.y === p.y) return;
 		positions = positions.with(active, p);
-		if (tracing) answers?.[0]?.onChange(tracedAnswer(positions));
+		if (twoPoints) answers?.[0]?.onChange(tracedAnswer(positions));
 		else answers?.[active]?.onChange(pointAnswer(p.x, p.y));
 	}
 
@@ -221,7 +288,7 @@
 	function advance() {
 		for (let step = 1; step < slots.length; step++) {
 			const i = (active + step) % slots.length;
-			if (positions[i] === null) {
+			if (positions[i] === null && !isFixed(i)) {
 				chosen = i;
 				return;
 			}
@@ -262,7 +329,7 @@
 		const { width, height } = courbeFrame(spec.size);
 		const w = spec.window;
 		return positions.flatMap((p, i) => {
-			if (p === null) return [];
+			if (p === null || isFixed(i)) return [];
 			const x =
 				frame.rect.left + (COURBE_PAD + ((p.x - w.xMin) / (w.xMax - w.xMin)) * width) * frame.scale;
 			const y =
@@ -379,18 +446,20 @@
 	{#if showControls && several}
 		<div class="flex gap-1" role="group" aria-label="Point à déplacer">
 			{#each slots as slot, i (slot)}
-				<button
-					type="button"
-					class="placer-etiquette flex min-h-11 min-w-11 items-center justify-center rounded-md border font-semibold"
-					class:placer-etiquette-active={i === active}
-					class:placer-etiquette-absente={positions[i] === null}
-					aria-label="Point {slot}"
-					aria-pressed={i === active}
-					disabled={locked}
-					onclick={() => (chosen = i)}
-				>
-					{slot}
-				</button>
+				{#if !isFixed(i)}
+					<button
+						type="button"
+						class="placer-etiquette flex min-h-11 min-w-11 items-center justify-center rounded-md border px-2 font-semibold"
+						class:placer-etiquette-active={i === active}
+						class:placer-etiquette-absente={positions[i] === null}
+						aria-label={vectoring ? slot : `Point ${slot}`}
+						aria-pressed={i === active}
+						disabled={locked}
+						onclick={() => (chosen = i)}
+					>
+						{slot}
+					</button>
+				{/if}
 			{/each}
 		</div>
 	{/if}
@@ -404,8 +473,12 @@
 	{#if verdict === false}
 		{#each mistakes as mistake (mistake.text)}
 			<p class="text-sm">
-				{mistake.text}{#if mistake.latex !== undefined}
-					<MathInline expression={mistake.latex} syntax="latex" />.{/if}
+				<!-- Espace insécable écrite avant la formule : Svelte retire celle du gabarit,
+				     et « pas » ne se sépare pas de u⃗ en fin de ligne -->
+				{mistake.text}{#if mistake.latex !== undefined}&nbsp;<MathInline
+						expression={mistake.latex}
+						syntax="latex"
+					/>.{/if}
 			</p>
 		{/each}
 		<div class="placer-correction flex w-full flex-col items-center gap-1">

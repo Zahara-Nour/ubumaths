@@ -154,7 +154,7 @@ function blockAnswerName(kind: BuildKind): string {
 	if (kind === 'cubes') return 'la vue ou les vues du bloc cubes (dessiner:, retrouver:)';
 	if (kind === 'patron') return 'les faces du bloc patron (designer:, completer:)';
 	if (kind === 'courbe')
-		return 'les coordonnées du point ou la droite du repère (placer:, tracer:)';
+		return 'les coordonnées du point, la droite ou le vecteur du repère (placer:, tracer:)';
 	if (kind === 'trig') return 'la mesure du point du cercle trigonométrique (placer:)';
 	return `la valeur du bloc ${kind} (construire:)`;
 }
@@ -821,7 +821,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						}
 						if (child.type === 'courbe') {
 							const first = child.caseIndex;
-							if (child.spec?.tracer && first !== undefined) return [first];
+							if ((child.spec?.tracer || child.spec?.vecteur) && first !== undefined)
+								return [first];
 							if (!child.spec?.placer || first === undefined) return [];
 							return child.spec.placer.map((_, k) => first + k);
 						}

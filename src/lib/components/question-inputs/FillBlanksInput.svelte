@@ -905,11 +905,11 @@
 						/>
 					</div>
 				{/if}
-			{:else if node.type === 'courbe' && node.caseIndex !== undefined && node.spec?.tracer !== undefined}
-				<!-- Droite à tracer : l'élève pose deux points, une case (x1;y1/x2;y2) -->
+			{:else if node.type === 'courbe' && node.caseIndex !== undefined && (node.spec?.tracer !== undefined || node.spec?.vecteur !== undefined)}
+				<!-- Droite ou vecteur à tracer : l'élève pose deux points, une case (x1;y1/x2;y2) -->
 				{@const lineCase = node.caseIndex}
 				{#if showCorrectAnswers}
-					<!-- Bonne réponse : le repère avec la droite juste -->
+					<!-- Bonne réponse : le repère avec la droite ou la flèche juste -->
 					<BuildAnswer kind="courbe" source={node.source} answer={null} status="solution" />
 				{:else}
 					<div data-construire-case={lineCase} data-construire-cases={1}>

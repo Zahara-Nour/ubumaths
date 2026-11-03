@@ -6,19 +6,17 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2265._
+_Mis à jour le 2026-11-03, phase 0 du lot 3 validée._
 
-- **État** : lot 1 (`placer:`, #2096) et lot 2 (`tracer:` une droite, #2265) mergés, pas en prod.
-- **Prochaine action** : lot 3, `tracer: vecteur (3 ; -2)` (2-298, § 3) dans un worktree neuf
-  `ubumaths-wt-points-repere` depuis `origin/main` ; d'abord phase 0 des détails (origine imposée
-  `depuis A`, étiquettes, phrases), comme le § 8 pour la droite.
+- **État** : lots 1 (`placer:`, #2096) et 2 (`tracer:` une droite, #2265) mergés, pas en prod ; lot 3
+  (vecteur, 2-298) en cours, phase 0 validée (§ 10).
+- **Prochaine action** : lot 3 codé (§ 11) ; revue `code-reviewer` (Opus), PR, CI, merge.
 - **En attente de David** : essais à l'œil des lots 1 et 2 (`docs/wip/verifications-manuelles.md`) ;
   corrigé PDF des blocs à placer, à brancher le jour d'un corrigé imprimé (§ 7).
-- **Pièges en cours** : un geste ne doit jamais donner la réponse (énoncé masqué `placer: A=?`,
-  `tracer: ?`) ; phrase de correction avec une équation : `equationLatex` (tidy), jamais le texte brut ;
-  CI « Client Tests » `wrapDynamicImport` = bruit, `/demo/lexique` instable (repassé au 2e essai) ;
-  `pnpm types:cliquet` avant la PR.
-- **Worktree / branche** : aucun (retiré après #2265).
+- **Pièges en cours** : un geste ne doit jamais donner la réponse (masqué : `tracer: vecteur ? depuis A`,
+  garder `vecteur` et `depuis`) ; CI « Client Tests » `wrapDynamicImport` = bruit, `/demo/lexique`
+  instable ; `pnpm types:cliquet` avant la PR.
+- **Worktree / branche** : `ubumaths-wt-points-repere`, `feat/points-repere-vecteur`.
 
 ---
 
@@ -241,3 +239,36 @@ corrigé l'équation brute de la phrase (« y = 1x + 0 » → `equationLatex` + 
 juge des droites raides, l'exemple `1/2x` du catalogue. Laissé, documenté : le juge ne vérifie pas que les
 points sont des nœuds (une réponse forgée hors nœud désigne quand même la bonne droite). `\frac` refusé
 dans `tracer:` (écrire `1/2x`).
+
+## 10. Lot 3 — précisions validées (2026-11-03)
+
+David, « je te suis » aux cinq recos :
+
+1. Nom facultatif : `tracer: vecteur u = (3 ; -2)` (une minuscule), dit dans la phrase de correction
+   (« … pas u⃗ (3 ; −2) »), jamais dessiné sur la flèche de l'élève.
+2. Étiquettes-boutons « Origine » / « Extrémité » ; origine imposée (`depuis A`, A pris dans `points:`) :
+   un seul bouton « Extrémité », A ni déplaçable ni reprenable.
+3. Phrases : « Il faut placer l'origine et l'extrémité. » (imposée : « Il faut placer l'extrémité. ») ;
+   « Ton origine et ton extrémité sont au même endroit. » ; sens inversé « Ta flèche va dans le mauvais
+   sens : elle représente le vecteur (−3 ; 2). » ; échange « Ta flèche représente le vecteur (−2 ; 3) : tu
+   as échangé l'abscisse et l'ordonnée. » ; sinon « Ta flèche représente le vecteur (2 ; 1), pas (3 ; −2). »
+4. Correction : flèche juste en vert depuis l'origine de l'élève ; si elle sort de la fenêtre ou sans
+   origine posée, depuis le nœud le plus proche de l'origine du repère où elle tient ; `depuis A` : depuis A.
+5. Case : `x1;y1/x2;y2` comme la droite (origine imposée : toujours A). PDF : le repère seul (avec A) ;
+   `solved` dessine la flèche juste.
+
+Refusé au prof : vecteur nul, coordonnée hors grille, vecteur qui ne tient dans la fenêtre depuis aucun
+nœud, `depuis A` sans A dans `points:` (ou A hors nœud, A + u hors fenêtre), coordonnée non numérique,
+`tracer:` avec `placer:`.
+
+## 11. Lot 3 — fait (2026-11-03)
+
+Commits : moteur (`utils/courbe-vecteur.ts` : `vectorExpected`, `isTracedVectorCorrect`,
+`tracedVectorMistake`, `vectorProblem`, `solutionVector` ; parseur `tracer: vecteur`, `spec.vecteur` ;
+juge commun `isCourbeAnswerCorrect` ; masquage `tracer: vecteur u = ? depuis A`), écran (`CourbePlacer`
+en mode vecteur, flèche `arrow` de `Courbe.svelte`, `BuildAnswer`, `FillBlanksInput`, Typst `solved`),
+doc (ubumark, questions, grapheur, catalogue : deux exemples). Vu à l'œil (capture Chromium des tests) :
+le disque de l'extrémité cachait la pointe → retiré dès que la flèche est tracée ; la phrase collait
+« pas » à la formule (« pasu⃗ ») — **défaut du lot 2 aussi** (« d'équationy », en prod) → espace
+insécable, testé dans les deux. Essai à l'œil sur `/aide-ecriture/blocs/courbe` pas fait : le Chrome
+du poste a une session admin, et la page est réservée au prof.

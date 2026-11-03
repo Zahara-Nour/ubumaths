@@ -142,6 +142,8 @@ describe('Droite à tracer — correction', () => {
 		const root = screen.container;
 		expect(root.textContent).toContain('Ta droite n’est pas celle d’équation');
 		expect(root.querySelector('p math-span')?.textContent).toBe('y = 2 x - 1');
+		// Une espace entre le texte et la formule
+		expect(root.querySelector('p math-span')!.closest('p')!.textContent).toMatch(/d’équation\s+y/);
 		expect(root.querySelectorAll('.placer-correction line.courbe-trace')).toHaveLength(1);
 		expect(root.querySelectorAll('.placer-correction circle.courbe-pose')).toHaveLength(2);
 		expect(root.querySelector('.placer-faux')).not.toBeNull();

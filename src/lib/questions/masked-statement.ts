@@ -63,7 +63,12 @@ import {
 import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
 import { findVariationsToFill } from '$lib/ubumark/parser/variation-table-parser';
 import { unnestedLine } from '$lib/ubumark/parser/nested-line';
-import { MASKED_VALUE } from '$lib/ubumark/utils/masked-value';
+import {
+	isMaskedVectorValue,
+	isVectorValue,
+	MASKED_VALUE,
+	maskVectorValue
+} from '$lib/ubumark/utils/masked-value';
 import { sideColumns } from '$lib/ubumark/utils/espace-scene';
 import { transformGrid, trimGrid } from '$lib/ubumark/utils/espace-patrons';
 
@@ -434,7 +439,15 @@ export function findUnmaskedAnswers(statement: string): string[] {
 		valuesOf(block.body, keys).every(allMasked);
 	return [
 		...leaks('line', findLinesToPlace(statement), keyMasked(['placer'])),
-		...leaks('courbe', findCourbesToPlace(statement), keyMasked(['placer', 'tracer'])),
+		...leaks(
+			'courbe',
+			findCourbesToPlace(statement),
+			(block) =>
+				valuesOf(block.body, ['placer']).every(allMasked) &&
+				valuesOf(block.body, ['tracer']).every((v) =>
+					isVectorValue(v) ? isMaskedVectorValue(v) : allMasked(v)
+				)
+		),
 		...leaks('trig', findTrigCirclesToPlace(statement), keyMasked(['placer'])),
 		...leaks('horloge', findHorlogesToPlace(statement), (block) =>
 			valuesOf(block.body, ['placer']).every(isMaskedPlacerValue)
@@ -476,7 +489,10 @@ export function maskGestureAnswers(statement: string): string {
 	const placer = keyLine(PLACER_LINE, maskLineTargets);
 	maskBlocks(findLinesToPlace(statement), () => placer);
 	const courbePoints = keyLine(PLACER_LINE, maskCourbeTargets);
-	const courbeLine = keyLine(TRACER_LINE, () => MASKED_VALUE);
+	// Droite : l'équation entière ; vecteur : ses coordonnées seules (nom, origine gardés)
+	const courbeLine = keyLine(TRACER_LINE, (value) =>
+		isVectorValue(value) ? maskVectorValue(value) : MASKED_VALUE
+	);
 	maskBlocks(
 		findCourbesToPlace(statement),
 		() => (line, rank) => courbePoints(line, rank) ?? courbeLine(line, rank)
