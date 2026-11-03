@@ -9,18 +9,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2302._
+_Mis à jour le 2026-11-03, lot 1 publié (#2299, #2302)._
 
-- **État** : lot 1 en prod en brouillon, rangé et tagué (#2299 fichiers, #2302 migration `20261103115420`, `db:migrate`
-  fait, vérifié en base) ; garde des niveaux verte ; page à cocher publiée : https://claude.ai/artifact/9ERT5tzmVmukkYbYk3ipJX
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 5) ; « À revoir » → corriger (§ 7 de
-  `couvrir-un-niveau.md`) ; tout OK → `publier-lot.ts --dir scripts/questions/1spe-demonstrations-1` (simulation), puis
-  David `--publier`. Ensuite lot 2 (dérivation : 275, 276, 277, 398, 278).
-- **En attente de David** : la relecture (page à cocher). Extension `signe:` du bloc `ranger` (Q2 b) **non tranchée**.
+- **État** : lot 1 (232, 233, 234, 235, 255) **publié** en prod (5/5 relus OK par David, statut relu en base).
+- **Prochaine action** : lot 2, dérivation (275, 276, 277, 398, 278) : relevé MCP (nœuds, jumeaux, niveaux de chaque
+  catégorie « Démonstrations »), script `docs/wip/questions/lot-1spe-demonstrations-2.py` (gabarit : lot 1), même chaîne.
+- **En attente de David** : rien. Extension `signe:` du bloc `ranger` (Q2 b) **non tranchée** : à reposer après les lots
+  à trous.
 - **Pièges en cours** : `requiredForm: {pattern: 'u'}` pour les écritures équivalentes (2³, n² + n) ; jamais de couleur sur
-  du texte (gras) ; `Doc-inchangée:` dans un COMMIT (pas la PR) pour une migration ; ancienne branche distante
-  `docs/questions-1spe-demonstrations` à supprimer (refusée au mode auto).
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, branche `feat/questions-1spe-demonstrations`.
+  du texte (gras) ; `Doc-inchangée:` dans un COMMIT (pas la PR) pour une migration ; migration « tout ou rien » : garde
+  `lot partiel` (lot 1) ; ancienne branche distante `docs/questions-1spe-demonstrations` à supprimer.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, branche `feat/questions-1spe-demonstrations`
+  (déjà mergée deux fois : partir de `origin/main` à jour pour le lot 2).
 
 ---
 
@@ -117,3 +117,6 @@ par David ; migration `20261103115420_questions_1spe_demonstrations_1_rangement_
 finding bloquant, son point faible « lot partiel » corrigé et testé ; 12 tests, rouges sans la migration) ; vérifié en
 base : nœud et point de chacun, brouillons, `updated_at` intact. Page à cocher :
 https://claude.ai/artifact/9ERT5tzmVmukkYbYk3ipJX
+
+Relecture (2026-11-03) : 5/5 OK, aucun commentaire. Publié par David (`publier-lot.ts --publier`), 5/5 `published` relus
+en base (MCP).
