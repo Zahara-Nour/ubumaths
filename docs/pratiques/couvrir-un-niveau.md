@@ -336,6 +336,10 @@ scripts/questions/<niveau>-0-<thème> --ids <id8>,…` ; chaque fichier porte so
   `{E(X)}^2` ; tableau de variations à borne ouverte : `domain: ]0, [a, [+inf[` (le parseur ne coupe
   qu'avant un crochet). Les choix sont mélangés à l'affichage : le corrigé nomme la bonne réponse,
   jamais son rang.
+- **Droite à tracer** (` ```courbe tracer:`) : attendue en **forme réduite** (`(s)*x+(p)`), car le message
+  d'erreur et le corrigé l'affichent telle quelle (`s*(x-a)+b` → « y = 2 + (1 − x)/2 », « y = 1, soit y = 1 ») ;
+  une tangente à tracer : **jamais** la clé `tangente:` dans l'énoncé (elle dessinerait la réponse), la courbe
+  `f(x) = …` peut, elle, partager le bloc avec `tracer:` (1SPE-271).
 - Worktree neuf : `pnpm exec svelte-kit sync` avant `question:specs` (`$lib` introuvable).
 - Brouillons déjà en base : `export-question-templates.ts --dir … --ids …` (un id par fichier) ; les
   anciens dossiers `scripts/questions/` ne concordent plus forcément avec la base.

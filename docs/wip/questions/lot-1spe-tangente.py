@@ -1,7 +1,7 @@
 """Écrit le modèle « Tracer une tangente connaissant le nombre dérivé » (1SPE-271) dans
 scripts/questions/1spe-tangente/.
 
-Phase 0 validée par David le 2026-11-03 (journal « docs/wip/questions-1spe-tangente-progress.md »,
+Phase 0 validée par David le 2026-11-03 (journal « docs/archive/wip/questions-1spe-tangente-progress.md »,
 § 3 à 5) : Fonctions › Dérivation › Tangente, niveau 4 ; tags 1SPE-271 et 1TECHNO-078 (posés par la
 migration de rangement) ; geste `tracer:` du bloc ```courbe (#2265).
 

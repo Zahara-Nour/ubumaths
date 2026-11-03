@@ -59,6 +59,10 @@ Chantier `questions-1spe` (démarche [couvrir-un-niveau.md](../../../../pratique
   - **D** (2) — 362, 365 (simuler avec Python ou un tableur) : exercices Python, pas des questions.
   - **C** (2) — 433 (tracer une droite), 271 (tracer une tangente) : attendent le geste « tracer » (ligne 2 de
     [outils-manquants.md](../../../../wip/outils-manquants.md), chantier commun avec 2-316, 2-445).
+    **271 couvert le 2026-11-03** : `edb094bd` « Tracer une tangente connaissant le nombre dérivé » (geste
+    `tracer:`, niveau 4 de « Fonctions > Dérivation > tangente », tagué aussi 1TECHNO-078,
+    `grades = ['1_SPE', '1_TECHNO']`), sous-chantier `questions-1spe-tangente` (journal archivé). Écart laissé :
+    les trois voisins tagués 1TECHNO-079 n'ont que `['1_SPE']`.
 - **10 brouillons `1_SPE` laissés tels quels** : 5 tagués d'un point de seconde, `grades = ['2', '1_SPE']`
   (5b20321f, 8c31675a, db8b5dc8, 5062197a, f98164b1 — le cahier de texte filtre `grades` par égalité exacte —),
   qui relèvent de la seconde ; 174e202b, dc4b8d08 (angles associés : hors l1s-3) ; 0495289a (hors borne 377, pour la

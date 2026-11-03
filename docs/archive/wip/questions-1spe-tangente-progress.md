@@ -1,18 +1,18 @@
 # Chantier questions-1spe-tangente — tracer une tangente (1SPE-271)
 
-Sous-chantier de [questions-1spe](../archive/wip/questions-1spe-progress.md) (clos) : le modèle du point
+Sous-chantier de [questions-1spe](questions-1spe-progress.md) (clos) : le modèle du point
 1SPE-271, classé C là-bas en attendant le geste `tracer:` du bloc ` ```courbe ` (#2265,
-[points-repere § 8-9](../archive/wip/points-repere-progress.md)). Démarche : skill `couvrir-niveau`.
+[points-repere § 8-9](points-repere-progress.md)). Démarche : skill `couvrir-niveau`.
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après la publication._
+_Mis à jour le 2026-11-03 : **chantier clos**, journal archivé._
 
-- **État** : ✅ modèle `edb094bd` **publié** en prod (vérifié en base, `published`, 08:11), rangé sur « Fonctions >
-  Dérivation > tangente », tagué 1SPE-271 + 1TECHNO-078 · **Prochaine action** : aucune ; clore le sous-chantier
-  (versement + archivage du journal) si David le veut · **En attente de David** : rien · **Pièges en cours** :
-  voisins Tangente tagués 1TECHNO-079 sans `1_TECHNO` (§ 5, lot à part si David le veut) · **Worktree /
-  branche** : aucun.
+- **État** : ✅ clos — `edb094bd` publié en prod, rangé et tagué (1SPE-271, 1TECHNO-078) · **Versement** :
+  couverture dans [1spe.md](../../systeme/programmes/bornes/lycee/1spe.md) § Couverture, pièges du geste `tracer:`
+  dans [couvrir-un-niveau.md](../../pratiques/couvrir-un-niveau.md), 271 retiré de `outils-manquants.md` ·
+  **Laissé ouvert** : voisins Tangente tagués 1TECHNO-079 sans `1_TECHNO` (§ 5) ; espace manquant dans « Ta droite
+  n'est pas celle d'équation » (`courbe-tracer.ts`, § 6) — lots à part si David le veut.
 
 ## 1. Vérification de l'outil (2026-11-03)
 
@@ -45,7 +45,7 @@ Catégorie **Fonctions › Dérivation › Tangente** (tous publiés, `grades = 
 graphique (niv. 2, 3). Point jumeau en 1re techno : **1TECHNO-078** « Construire la tangente à une courbe en
 un point » (0 modèle vu ici).
 
-Bornes ([1spe.md](../systeme/programmes/bornes/lycee/1spe.md), l. 311) : « Tracé de la tangente en un
+Bornes ([1spe.md](../../systeme/programmes/bornes/lycee/1spe.md), l. 311) : « Tracé de la tangente en un
 point, le nombre dérivé étant connu. » Fonctions du programme : polynômes, inverse, racine…
 
 ## 3. Phase 0 (proposée le 2026-11-03)

@@ -102,7 +102,7 @@ revenait à un onglet vide sur `localhost:5180`).
 ## 6. Phase 0 de 1SPE-271 : proposée le 2026-11-03
 
 > ⛔ **Abandonné le 2026-11-03 : repris par le chantier `questions-1spe-tangente`** (journal
-> `docs/wip/questions-1spe-tangente-progress.md`, branche `feat/questions-1spe-tangente`), sur décision
+> `docs/archive/wip/questions-1spe-tangente-progress.md`, branche `feat/questions-1spe-tangente`), sur décision
 > de David. Modèle 271 écrit là-bas (Fonctions › Dérivation › Tangente, niveau 4 ; tags 1SPE-271 +
 > 1TECHNO-078 ; 1_SPE + 1_TECHNO). Ne pas écrire de modèle 271 dans ce chantier ; la phase 0
 > ci-dessous reste pour l'historique.
