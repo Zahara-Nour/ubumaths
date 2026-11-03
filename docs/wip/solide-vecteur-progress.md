@@ -15,9 +15,8 @@ _Mis à jour le 2026-11-03, après #2347._
   `vecteurs:` dans `tracer:`) mergés, pas en prod. Revue Opus de #2347 : 0 erreur de correction ; zéros en tête
   (`1/04`) désormais refusés, tests d'extrémité ajoutés.
 - **Prochaine action** : lot 3 (modèle TSPE-334), nouveau worktree
-  `git worktree add -b feat/solide-vecteur-modele ../ubumaths-wt-solide-vecteur origin/main`. En ouverture du
-  lot : étiquette indicée sur la figure (`w1` → w₁, comme `\vec{w_{1}}` de la phrase), tranché (a) par David le
-  2026-11-03 ; suivre la convention des noms de points indicés déjà affichés sur les solides.
+  `git worktree add -b feat/solide-vecteur-modele ../ubumaths-wt-solide-vecteur origin/main`. L'indice sur la
+  figure (`w1` → w₁, décision (a)) est fait dans la PR `fix/solide-vecteur-indice`, à merger d'abord.
 - **En attente de David** : rien.
 - **Pièges en cours** : le geste ne vise que des points connus en 3D (`solideClickablePoints`) ; une
   combinaison dont l'extrémité ne tombe sur aucun point touchable est refusée. `stroke-width` explicite sur
@@ -133,3 +132,11 @@ phrases en $\vec{u}$ ; nom inconnu → « u : aucun vecteur de ce nom dans vecte
 - Codé dans la session (pas d'agent : 3 fichiers de logique). Tests `solide-gestes.test.ts` : 10 vus rouges,
   puis verts. `SolideVectorTerm.name` (facultatif) garde le nom pour les phrases. Catalogue : exemple
   tétraèdre (`1/3 u + 1/3 v + 1/3 w depuis S` → G) et erreur `2/4`.
+
+## PR indice du nom d'un vecteur (2026-11-03)
+
+Décision (a) de David : `w1` s'écrit w₁ sur la figure (écran : `tspan` abaissé ; PDF : `sub`), comme
+`\vec{w_{1}}` de la phrase. La note « suivre la convention des points indicés » ne tient pas : les noms de
+points (`O1`) sont en ligne partout (figure et `\overrightarrow{O1A}`), donc cohérents ; seuls les vecteurs
+changent. Rendu vu (rendu serveur du composant ouvert dans Chrome) : w₁, v₂, u₁ u₂ u₃ lisibles sous leur
+flèche. Tests vus rouges (scène, écran, PDF), compilation Typst réelle avec `v1 = OG`.
