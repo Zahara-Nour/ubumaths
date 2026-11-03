@@ -147,6 +147,40 @@ function customToLatex(
 	return rewritten.ast ? render(rewritten.ast) : null;
 }
 
+/** Liens logiques entre deux formules (`a=0\\iff x=-3`), gardés au découpage */
+const LOGICAL_LINK_REGEX =
+	/(\\(?:iff|Leftrightarrow|Longleftrightarrow|implies|Rightarrow|Longrightarrow)(?![A-Za-z]))/;
+
+/**
+ * `cleanCoefficients` sur une formule qui ne se lit pas en entier à cause d'un lien
+ * logique (`-1x-3=0\\iff x=-3`) : chaque morceau est nettoyé pour lui-même
+ * (`-x - 3 = 0\\iff x=-3`). Un morceau illisible, ou sans rien à nettoyer, reste à
+ * l'octet près ; sans lien logique, la formule d'origine.
+ */
+function cleanLogicalPieces(
+	content: string,
+	genericFunctions?: GenericFunctionConfig,
+	capitalPairs?: CapitalPairs
+): string {
+	const pieces = content.split(LOGICAL_LINK_REGEX);
+	if (pieces.length === 1) return content;
+	return pieces
+		.map((piece, index) => {
+			// Indices impairs : les liens eux-mêmes
+			if (index % 2 === 1) return piece;
+			const core = piece.trim();
+			// Sans chiffre, aucun coefficient à nettoyer : `(E)\\iff …` garde le nom de
+			// l'équation (la règle des parenthèses en ferait `E`)
+			if (!/\d/.test(core)) return piece;
+			const cleaned = customToLatex(core, genericFunctions, true, capitalPairs);
+			const plain = customToLatex(core, genericFunctions, false, capitalPairs);
+			if (cleaned === null || cleaned === plain) return piece;
+			const start = piece.indexOf(core);
+			return piece.slice(0, start) + cleaned + piece.slice(start + core.length);
+		})
+		.join('');
+}
+
 /**
  * Convert content inside $...$ and $$...$$ from custom syntax to LaTeX
  *
@@ -195,6 +229,9 @@ function convertMathZonesToLatex(
 			cleanCoefficients,
 			capitalPairs
 		);
+		if (latex === null && cleanCoefficients) {
+			return prefix + cleanLogicalPieces(mathContent, genericFunctions, capitalPairs);
+		}
 		// On parse error, return original (will show error at render time)
 		return prefix + (latex ?? mathContent);
 	};
