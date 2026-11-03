@@ -1017,6 +1017,10 @@ listes — **pas** dans `constraint-validators.ts`.
 - **Specs de modèle** (`testSpecs`) : variables fixées, réponses, statut attendu ;
   `runAllTestSpecs`, `pnpm question:specs`. Une spec `correct` par variation est exigée pour publier
   (par lot comme modèle seul).
+- **Garde de rendu de `question:specs`** (`review/textcolor-hors-maths.ts`) : un `\textcolor` hors `$`
+  dans un tirage (énoncé, choix, corrigé, lus par `parseMarkdown`) fait échouer le script — ubumark n'a
+  pas de texte coloré, l'élève lirait le LaTeX brut. Propre au script : `checkTemplate` et la
+  publication dans l'appli ne l'appliquent pas (décision de David, 2026-11-02).
 - **Corpus de la relecture** : `data/relecture/` (633 modèles TinyMath relus, 13 lots), rejoué à
   chaque PR par `src/lib/questions/review/__tests__/corpus-relecture.test.ts` (`checkTemplate`
   complet) ; il borne aussi la garde de complexité (`answer-complexity-corpus.test.ts`) et le rendu

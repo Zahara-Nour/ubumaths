@@ -15,12 +15,20 @@
  * Avertissements (« Avertissement : … ») : à relire, sans effet sur le verdict ni sur
  * le code de sortie — ex. variable qui peut être négative citée sans parenthèses.
  *
- * Code de sortie : 0 si tout est importable, 1 sinon (aucune spec = échec).
+ * Garde du rendu (en plus de `checkTemplate`) : un `\textcolor` hors `$` dans un tirage
+ * (énoncé, choix, corrigé) fait échouer — l'élève lirait le LaTeX brut. Garde propre à ce
+ * script (décision de David du 2026-11-02) : la publication dans l'appli n'en dépend pas.
+ *
+ * Code de sortie : 0 si tout est importable et la garde verte, 1 sinon (aucune spec = échec).
  */
 
 import { readFileSync } from 'node:fs';
 import type { QuestionTemplate } from '../src/lib/questions/types';
 import { checkTemplate, formatCheckReport } from '../src/lib/questions/review/check-template';
+import {
+	findTextcolorOutsideMath,
+	formatTextcolorReport
+} from '../src/lib/questions/review/textcolor-hors-maths';
 import { generateInstance } from '../src/lib/questions/generator/instance-generator';
 import { toQuestionTemplate } from '../src/lib/types/question-template';
 import { argValue, createScriptClient, hasFlag } from './relecture/common';
@@ -99,7 +107,13 @@ async function main(): Promise<number> {
 	if (preview > 0) printPreview(template, preview);
 	const report = checkTemplate(template, { instances });
 	console.log(`\n${formatCheckReport(report)}`);
-	return report.passed ? 0 : 1;
+	const textcolor = findTextcolorOutsideMath(template, instances);
+	console.log(formatTextcolorReport(textcolor));
+	// Le verdict de `checkTemplate` ne voit pas la garde : le dire pour ne pas lire « importable »
+	if (report.passed && textcolor.findings.length > 0) {
+		console.log('VERDICT FINAL : à corriger (\\textcolor hors $)');
+	}
+	return report.passed && textcolor.findings.length === 0 ? 0 : 1;
 }
 
 if (hasFlag('--help')) {

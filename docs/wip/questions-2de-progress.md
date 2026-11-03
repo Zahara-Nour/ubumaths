@@ -6,23 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, après #2235 et son `--publier` (§ 59)._
+_Mis à jour le 2026-11-03, PR de la garde `\textcolor` ouverte (§ 60)._
 
 - **État** : vague 8 bis en brouillon en prod, rangée ; page à cocher (20 fiches) :
-  https://claude.ai/artifact/AH7MKr1qcSeK2c7Du7EMYY. Correctif `\textcolor` des 24 publiés **en prod**
-  (vérifié par export : variations = fichiers, 0 hors `$`, toujours publiés).
-- **Prochaine action** : garde contre `\textcolor` hors `$` — place à trancher par David : (a) bloquante dans
-  `checkTemplate` (garde AUSSI la publication dans l'appli), (b) avertissement, (c) `question:specs` seul ;
-  puis les 35 fichiers hors 2de (§ 58), rien sans son accord.
-- **En attente de David** : la place de la garde (reco du 2026-11-02, sans réponse : (a) bloquante, famille
-  des commandes de texte hors `$` — `\\textbf`, `\\boxed`… —, après mesure en prod des modèles de profs
-  touchés ; puis les 35 hors 2de dans ce chantier, en lots par niveau) ; la relecture de la page, puis `verdicts`, corrections,
-  `publier-lot` (ids § 57).
+  https://claude.ai/artifact/AH7MKr1qcSeK2c7Du7EMYY. Garde `\textcolor` hors `$` dans `question:specs`
+  (décision § 58) : branche `fix/garde-textcolor-hors-maths`, PR à merger.
+- **Prochaine action** : merger la PR ; puis les 35 fichiers hors 2de (§ 58) — rien sans l'accord de David.
+  À faire aussi : 2-316 et 2-445 réécrits au geste ` ```courbe tracer: `, puis 2-298 (vecteur) (§ 61).
+- **En attente de David** : son accord sur les 35 hors 2de (reco : dans ce chantier, en lots par niveau) ;
+  la relecture de la page, puis `verdicts`, corrections, `publier-lot` (ids § 57).
 - **Pièges en cours** : `--publier`, `publier-lot`, `db:migrate` → David avec `!` ;
   `create-questions --mettre-a-jour` ne touche JAMAIS un publié → `update-published-questions.ts` ;
   `col()` en texte → `colt()` ; spec fraction = `\\frac{a}{b}` ; pas de ligne `Claude-Session:` ;
   une suite de ligne commençant par `--` est désindentée par prettier.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, HEAD détachée sur `origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `fix/garde-textcolor-hors-maths`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1525,3 +1522,30 @@ Avant de corriger : revérifier dans le code de rendu que `\textcolor` hors math
   seules à modifier, specs vertes.
 - **Écrit en prod** par David (`--lot textcolor-2de --publier`, 2026-11-02). Revérifié par export de la
   prod : 24/24 publiés, variations identiques aux instantanés, `hors-maths.py` → 0.
+
+## 60. Garde `\textcolor` hors `$` dans `question:specs` (2026-11-03)
+
+- **Place** : celle décidée au § 58 (« garde dans `question:specs` ») ; la reco (a) « bloquante dans
+  `checkTemplate` » du 2026-11-02 est restée sans réponse → pas retenue. `checkTemplate` et la
+  publication dans l'appli ne l'appliquent pas.
+- `src/lib/questions/review/textcolor-hors-maths.ts` : chaque tirage (50 par variation, `--instances`)
+  → énoncé (choix compris) et corrigé passés à `parseMarkdown` ; un nœud texte (hors code en ligne) qui
+  porte `\textcolor` = signalement. Le script sort en 1, avec « VERDICT FINAL : à corriger » sous le
+  verdict de `checkTemplate`.
+- Tests : 5 (nominal, énoncé, corrigé, code en ligne, couleur apportée par une variable) ; rouges sans la
+  détection (3/5, les attendus). Sur fichiers réels : `2de-signes-a/01` corrigé → 0/100, sa version
+  d'avant le correctif → 25/25 et sortie 1, `ce1-9/05` (hors 2de) → signalé.
+
+## 61. À faire : 2-316, 2-445 (droite) et 2-298 (vecteur) au geste « tracer » (ajouté le 2026-11-03)
+
+- Les deux modèles du lot 5 B (B-06 `8d4bd94d`, 2-316, équation réduite ; B-07 `2cfae58d`, 2-445, équation
+  cartésienne) sont en case choix entre 4 ` ```courbe ` (§ 30, § 36 publiés, faute de geste à l'époque).
+- Le geste existe : ` ```courbe tracer: ` (#2265, en prod depuis la 0.65.0). Les réécrire avec : l'élève trace
+  la droite, le juge `isTracedLineCorrect` la corrige. Exemple déjà en prod : 1SPE-433 (`dc5d7cb6`,
+  journal archivé `questions-1spe-tracer-droite`) ; pièges dans `couvrir-un-niveau.md` § 9.
+- Publiés → `update-published-questions.ts`, pas `create-questions --mettre-a-jour`. Retirer la ligne de
+  `docs/wip/outils-manquants.md` (« Contenu restant aux sessions questions ») une fois faits.
+- **2-298 · Représenter un vecteur dont on connaît les coordonnées** : même cas, modèles en case choix à
+  réécrire au geste ` ```courbe tracer: vecteur ` (`depuis A` pour l'origine imposée, #2274). ⚠️ #2274 n'est
+  **pas en prod** au 2026-11-03 : rien à publier avant le `deploy:prod` qui la livre. Ids des modèles : à relever
+  en prod (tag 2-298) ; origine du besoin : `docs/archive/wip/points-repere-progress.md`, lot 3.
