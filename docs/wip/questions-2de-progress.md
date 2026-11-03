@@ -6,19 +6,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, lot `vecteur-tracer` en cours (§ 65)._
+_Mis à jour le 2026-11-03, après #2304 (§ 65)._
 
-- **État** : 2 modèles NEUFS écrits (`scripts/questions/2de-vecteur-tracer/`) : 2-299 lire (niveau 5),
-  2-298 tracer (niveau 6) ; specs 8/8 et 12/12, sondes courbes / figures 0 problème.
-- **Prochaine action** : base locale + aperçu admin (flèche, étiquette u⃗), PR, merge ; puis David
-  `create-questions --dir scripts/questions/2de-vecteur-tracer --publier` ; migration nœud + tag.
-- **En attente de David** : le `--publier` (après le merge).
+- **État** : lot `vecteur-tracer` mergé (#2304) : 2 modèles NEUFS dans `scripts/questions/2de-vecteur-tracer/`,
+  2-299 lire (niveau 5), 2-298 tracer (niveau 6) ; joués en base locale (aperçu admin). Pas encore en prod.
+- **Prochaine action** : David publie en brouillon ; puis relever les 2 `id` en prod, migration nœud
+  « coordonnées » (`2ad3ea7d`) + tags 2-299 / 2-298 (`couvrir-un-niveau.md` § 6), page à cocher, publication.
+- **En attente de David** : `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/2de-vecteur-tracer --publier`
+  (depuis le dépôt principal).
 - **Pièges en cours** : `--publier`, `publier-lot`, `db:migrate` et la simulation
-  d'`update-published-questions.ts` (lecture de la prod) → David avec `!` ; un lot ajouté sur une branche
-  n'existe dans le dépôt principal qu'après le merge ; `create-questions` apparie par (titre, thème, domaine,
-  sous-domaine, **niveau**) ; `col()` en texte → `colt()` ; `fonctions-terminale/C-06` du dépôt périmé vs
-  prod (§ 63) ; pas de ligne `Claude-Session:` ; une autre session écrit aussi dans ce journal : `git pull`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `feat/vecteur-2de`.
+  d'`update-published-questions.ts` (lecture de la prod) → David avec `!` ; `create-questions` apparie par
+  (titre, thème, domaine, sous-domaine, **niveau**) ; `col()` en texte → `colt()` ; ` ```courbe ` n'a pas de
+  flèche d'affichage (` ```figure ` + `vecteur`) ; pas de ligne `Claude-Session:` ; une autre session écrit
+  aussi dans ce journal : `git pull`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de` (HEAD détachée sur `origin/main`).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1634,3 +1635,4 @@ tspe-ln-continuite-convexite,1spe-tracer-droite}.py`) : vérifiés d'abord fidè
   ` ```courbe ` n'a pas de flèche d'affichage. Corrigé de 2-298 : flèche depuis O (origine libre) ou A.
 - `create-questions` (simulation) : 8/8 et 12/12 ; `question:specs` 200/200 tirages ; `sonde-courbes`
   et `sonde-figures` : 0 problème.
+- **#2304 mergée** (CI verte), le 2026-11-03.
