@@ -1070,3 +1070,5 @@ vide (aucun outil, ni Effacer ni Retourner) ; `outils:` interdit avec `rapporteu
   compte dans celle qui porte la case.
 - Revue (code-reviewer, #2359) : rien de bloquant ni d'important ; mineur traité : l'orientation du
   rapporteur posé assertée à l'écran (AOB 0°, BOA 130°), rouge en inversant le sens de la pose.
+- CI : la garde « doc à jour » a demandé `utilitaires-et-demos.md` (couvre `block-catalog/**`), passée en
+  local faute de `git fetch` ; doc générale du catalogue, sans liste d'exemples → `Doc-inchangée:`.
