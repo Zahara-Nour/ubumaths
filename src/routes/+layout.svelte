@@ -55,6 +55,7 @@
 	import SkeletonForm from '$lib/components/skeleton/SkeletonForm.svelte';
 	import { getSkeletonType } from '$lib/utils/skeleton-detector';
 	import ModalStackRenderer from '$lib/components/modals/ModalStackRenderer.svelte';
+	import MathKeyboardClose from '$lib/components/MathKeyboardClose.svelte';
 	import { provideReaderGrade } from '$lib/lexicon/reader-grade';
 
 	let { children, data }: { children: import('svelte').Snippet; data: LayoutData } = $props();
@@ -128,6 +129,9 @@
 
 <!-- Modal Stack Renderer - renders modal stack from modalStack store -->
 <ModalStackRenderer />
+
+<!-- « Fermer le clavier » au-dessus du clavier virtuel MathLive, tant qu'il est ouvert -->
+<MathKeyboardClose />
 
 <div class="flex h-screen flex-col">
 	<!-- Header - only show on non-dashboard routes -->

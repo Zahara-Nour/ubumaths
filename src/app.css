@@ -1144,3 +1144,16 @@ li .code-block-wrapper {
 	color: white;
 	font-size: 0.875rem;
 }
+
+/*
+ * Clavier virtuel MathLive sur un écran bas (téléphone en paysage) : touches de 32 px au lieu
+ * de 42. Avec ses 4 rangées et sa barre d'onglets, il couvrait presque tout l'écran visible
+ * de Safari (essais iPhone du 2026-11-03). Le clavier est dans <body>, hors shadow DOM :
+ * il lit ces variables sur :root.
+ */
+@media (max-height: 500px) {
+	:root {
+		--keycap-height: 32px;
+		--keyboard-padding-top: 2px;
+	}
+}
