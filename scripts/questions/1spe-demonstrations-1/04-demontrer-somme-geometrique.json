@@ -1,0 +1,171 @@
+{
+	"title": "Démontrer la somme 1 + q + ⋯ + qⁿ",
+	"description": "Démonstration à trous de 1 + q + ⋯ + qⁿ = (1 − qⁿ⁺¹)/(1 − q), q ≠ 1 : qS à compléter, S − qS, justification de la division par 1 − q",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Sommes",
+	"subdomain": "Démonstrations",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $q$ un réel différent de $1$, $n$ un entier naturel et $S=1+q+q^2+\\cdots+q^n$.\n\nOn multiplie chaque terme de $S$ par $q$. Complète.\n\n$qS=q+q^2+\\cdots+q^n+?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "q^{n+1}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Multiplier par $q$ ajoute $1$ à chaque exposant : $1$ devient $q$, $q$ devient $q^2$, …, $q^n$ devient $q^{n+1}$.",
+					"Donc $qS=q+q^2+\\cdots+q^n+\\textcolor{{{color:primary.0}}}{q^{n+1}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $q$ un réel différent de $1$, $n$ un entier naturel et $S=1+q+q^2+\\cdots+q^n$.\n\nOn multiplie $S$ par $q$ :\n\n$$qS=q+q^2+\\cdots+q^n+q^{n+1}$$\n\npuis on soustrait membre à membre. Les termes $q$, $q^2$, …, $q^n$ se simplifient. Complète.\n\n$S-qS=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1-q^{n+1}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les termes $q$, …, $q^n$ sont à la fois dans $S$ et dans $qS$ : ils disparaissent.",
+					"Il reste le premier terme de $S$, $1$, et le dernier terme de $qS$, $q^{n+1}$, avec le signe $-$.",
+					"Donc $S-qS=\\textcolor{{{color:primary.0}}}{1-q^{n+1}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $q$ un réel différent de $1$, $n$ un entier naturel et $S=1+q+q^2+\\cdots+q^n$.\n\nOn multiplie $S$ par $q$ :\n\n$$qS=q+q^2+\\cdots+q^n+q^{n+1}$$\n\npuis on soustrait membre à membre : $S-qS=1-q^{n+1}$, soit $S(1-q)=1-q^{n+1}$.\n\nOn en déduit $S=\\dfrac{1-q^{n+1}}{1-q}$ en divisant par $1-q$. Pourquoi cette division est-elle permise ?\n\n```choix\n- Car $q\\neq 1$, donc $1-q\\neq 0$.\n- Car $q\\neq 0$.\n- Car $q>0$.\n- Car $n\\neq 0$.\n```",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On ne peut diviser que par un nombre non nul.",
+					"Ici $q\\neq 1$, donc $\\textcolor{{{color:primary.0}}}{1-q\\neq 0}$ : $S=\\dfrac{1-q^{n+1}}{1-q}$.",
+					"Si $q=1$, la formule ne s'applique pas : $S=1+1+\\cdots+1=n+1$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "qⁿ⁺¹",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["q^{n+1}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : qⁿ",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["q^n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : nq",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["nq"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 − qⁿ⁺¹",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1-q^{n+1}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Écriture −qⁿ⁺¹ + 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["-q^{n+1}+1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 1 − qⁿ",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1-q^n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1 + qⁿ⁺¹",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1+q^{n+1}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : qⁿ⁺¹ − 1 (sens inversé)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["q^{n+1}-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "q ≠ 1",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : q ≠ 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : q > 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : n ≠ 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
