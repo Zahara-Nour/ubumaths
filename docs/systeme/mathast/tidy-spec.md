@@ -523,7 +523,8 @@ Cas limites :
   (`tidy-fold-numbers` « On calcule les nombres », `tidy-collect-like-terms`,
   `tidy-sort-terms`, `tidy-number-first`, `tidy-choose-unit`,
   `tidy-write-duration` « On décompose la durée en heures, minutes, secondes » — dit
-  même quand seul l'affichage change (`1[h]+30[min]` → `1[h] 30[min]`, 2026-11-03),
+  même quand seul l'affichage change (`1[h]+30[min]` → `1[h] 30[min]`, 2026-11-03 ;
+  `tidyAsSteps` compare l'écriture À L'ÉCRAN, `sameShown`, pour que `.simplifier` la montre),
   `tidy-power-to-root` « On écrit la puissance avec une racine carrée », …). Une étape
   n'est nommée que si une **seule** famille de gestes a travaillé ; sinon le
   filet `tidy-terms` « On met chaque terme au propre » (c'est le cas de la

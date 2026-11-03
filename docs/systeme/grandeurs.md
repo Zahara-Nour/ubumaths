@@ -115,7 +115,9 @@ validés un à un le 2026-11-03) :
   tête seulement (`(2[h]+30[min])/1[s]` → 9000) ; l'arbre est la somme juxtaposée
   (`tidy/duration.ts`). `{{eval}}` l'écrit `{2[h]}{30[min]}` (comme `;hms`) dans ce qui s'affiche
   (énoncé, corrigé, attendu) ; la **valeur d'une variable** reste UNE grandeur, réutilisable dans
-  un autre calcul (`resolveVariables` → `durations: 'single'`, David, 2026-11-03), comme une durée
+  un autre calcul (`resolveVariables` → `durations: 'single'`, David, 2026-11-03), comme une valeur
+  dans un motif `requiredForm`, une borne de `validationRules` ou une formule que le corrigé lit
+  (`resolveExpression(…, { durations: 'single' })`), comme une durée
   négative ou un modificateur d'écriture (`;sci`, `;d`, `;+`, `;()`) ; `durations: 'single'`
   demande UNE grandeur (calcul tapé par l'élève) ;
 - un terme à lettre impose son unité à la somme (`x[km]+500[m]` → x km + 0,5 km).
