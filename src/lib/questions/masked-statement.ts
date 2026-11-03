@@ -23,6 +23,7 @@
  *   `completer: ? ?` (une face à poser par `?`) ;
  * - ```figure-a-completer : `verifier: ?`, l'outil écrit (`outils:`). Les points
  *   restent : un point invisible posé sur la réponse fuirait (aucun modèle).
+ *   `verifier: mesure AOB` reste tel quel ; ses points calculés passent en coordonnées.
  * Tableau de signes à compléter (```variation à `?`, chantier `tableau-signes`) : chaque
  * valeur de x cachée devient un jeton `??1`, `??2`… dans `domain:` ET dans les clés des
  * lignes (`-inf,-3` → `-inf,??1`, sinon la clé dirait la valeur) ; chaque signe ou
@@ -61,6 +62,11 @@ import {
 	parseEspaceContent
 } from '$lib/ubumark/parser/espace-parser';
 import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
+import {
+	constructionPositions,
+	constructionShapes,
+	hasConstructionPositions
+} from '$lib/questions/construction/positions';
 import { findVariationsToFill } from '$lib/ubumark/parser/variation-table-parser';
 import { unnestedLine } from '$lib/ubumark/parser/nested-line';
 import {
@@ -319,6 +325,49 @@ function findFiguresACompleter(lines: string[]): FoundBlock[] {
 	return found;
 }
 
+/** `verifier: mesure AOB` (lot 6) : rien à cacher */
+const MEASURE_CHECK = /^mesure\s+[A-Z]{3}$/;
+/** Définition d'un point nommé : `B = <expression>` */
+const POINT_DEFINITION = /^\s*([A-Za-z][A-Za-z0-9_']*)\s*=\s*(.+)$/;
+/** Une expression qui peut porter la mesure d'un angle (garde de l'énoncé masqué) */
+const ANGLE_IN_FIGURE = /\bangle\s*=|\brotation\s*\(/;
+
+/** Coordonnée écrite dans l'énoncé masqué : 6 décimales, sans zéros inutiles */
+function coordinate(value: number): string {
+	return String(Number(value.toFixed(6)));
+}
+
+/**
+ * Angle à mesurer (lot 6, décision de David du 2026-11-03) : dans l'énoncé masqué,
+ * chaque point nommé défini par un calcul devient `B = point(x, y)` (invisible :
+ * `visible=faux` gardé ; ses autres réglages d'affichage tombent). Les autres lignes
+ * restent : les traits nomment leurs points. Sans le calcul des figures (positions
+ * non inscrites), rien n'est réécrit : la garde refuse alors l'envoi.
+ */
+function maskMeasureFigure(block: FoundBlock): MaskLine {
+	if (!hasConstructionPositions()) return () => null;
+	const source = block.body.join('\n');
+	let points: ReadonlyMap<string, { x: number; y: number }>;
+	let visible: ReadonlySet<string>;
+	try {
+		points = constructionPositions(source);
+		visible = constructionShapes(source).visiblePoints;
+	} catch {
+		return () => null;
+	}
+	const separator = block.body.findIndex((line) => FIGURE_SEPARATOR.test(line.trim()));
+	return (line, rank) => {
+		if (separator === -1 || rank <= separator) return null;
+		const definition = POINT_DEFINITION.exec(line);
+		if (!definition) return null;
+		const [, name, expression] = definition;
+		const at = points.get(name);
+		if (!at || /^point\s*\(/.test(expression.trim())) return null;
+		const hidden = visible.has(name) ? '' : ', visible=faux';
+		return `${name} = point(${coordinate(at.x)}, ${coordinate(at.y)}${hidden})`;
+	};
+}
+
 /**
  * Figure à compléter : la première ligne `verifier:` devient `verifier: ?` (précédée
  * de `outils:` si l'outil venait de la vérification), les autres sont retirées.
@@ -327,6 +376,9 @@ function findFiguresACompleter(lines: string[]): FoundBlock[] {
 function maskFigure(block: FoundBlock): MaskLine {
 	const header = readConstructionHeader(block.body.join('\n'));
 	if (header.spec.masked || header.spec.checks.length === 0) return () => null;
+	// Angle à mesurer (lot 6) : `verifier: mesure AOB` reste (l'écran en tire la case) ; les
+	// points calculés sont écrits en coordonnées (`B = rotation(A, angle=50, …)` dirait la réponse)
+	if (header.spec.checks.some((c) => c.kind === 'mesure')) return maskMeasureFigure(block);
 	const separator = block.body.findIndex((line) => FIGURE_SEPARATOR.test(line.trim()));
 	const headerEnd = separator === -1 ? block.body.length : separator;
 	const toolsWritten = block.body.slice(0, headerEnd).some((line) => keyOf(line) === 'outils');
@@ -477,7 +529,15 @@ export function findUnmaskedAnswers(statement: string): string[] {
 				v.split(/\s+/).every((w) => w === MASKED_VALUE)
 			)
 		),
-		...leaks('figure-a-completer', findFiguresACompleter(lines), keyMasked(['verifier'])),
+		// Angle à mesurer (lot 6) : `mesure AOB` ne dit rien que la figure ne montre ; une
+		// rotation ou un `angle=` restés dans sa figure, si
+		...leaks('figure-a-completer', findFiguresACompleter(lines), (block) => {
+			const values = valuesOf(block.body, ['verifier']);
+			if (values.every(allMasked)) return true;
+			if (!values.every((v) => allMasked(v) || MEASURE_CHECK.test(v.trim()))) return false;
+			const separator = block.body.findIndex((line) => FIGURE_SEPARATOR.test(line.trim()));
+			return block.body.slice(separator + 1).every((line) => !ANGLE_IN_FIGURE.test(line));
+		}),
 		...(findVariationsToFill(statement).some(
 			(block) => !block.nested && !inChoice(block) && !variationMasked(block.node)
 		)

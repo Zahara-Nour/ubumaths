@@ -43,6 +43,7 @@ import { circleSolution, isCircleCheck, type CircleSolution } from './circle';
 import { polygonSolution } from './polygon';
 import { triangleCorrection, triangleSolution, type TriangleCorrection } from './triangle';
 import { angleCorrection, angleSolution, type AngleCorrection } from './angle';
+import { measureCorrection } from './measure';
 import { symmetrySolution, type FigureShapes } from './symmetry';
 
 /** Rayon d'aimantation, en pixels À L'ÉCRAN (un doigt d'enfant sur tablette) */
@@ -384,7 +385,7 @@ export function solutionLines(
 	expected?: ExpectedPoints
 ): DrawnLine[] {
 	return checks.flatMap((check): DrawnLine[] => {
-		if (check.kind === 'point' || check.kind === 'cercle') return [];
+		if (check.kind === 'point' || check.kind === 'cercle' || check.kind === 'mesure') return [];
 		if (check.kind === 'droite') return lineSolution([check], expected);
 		if (check.kind === 'symetrique') return symmetrySolution(check, points, shapes);
 		if (check.kind === 'triangle') return triangleSolution(check, points, shapes, drawn);
@@ -434,6 +435,9 @@ export function solutionAngle(
 	shapes: FigureShapes | undefined,
 	drawn: readonly DrawnObject[]
 ): AngleCorrection | null {
+	// Angle à mesurer (lot 6) : son arc, codé de la mesure de la figure
+	const measure = checks.find((c) => c.kind === 'mesure');
+	if (measure) return measureCorrection(measure, points, shapes);
 	const check = checks.find((c) => c.kind === 'angle');
 	return check ? angleCorrection(check, points, shapes, drawn) : null;
 }

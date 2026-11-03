@@ -56,7 +56,9 @@ export const PLAIN_PAPER_TOOLS: Partial<Record<ConstructionCheckKind, Constructi
 	// Lot 4 (§ 13) : triangle de trois longueurs, papier uni seulement
 	triangle: ['segment', 'compas', 'report', 'droite'],
 	// Lot 5 (§ 16) : angle de mesure donnée, papier uni seulement
-	angle: ['rapporteur', 'segment']
+	angle: ['rapporteur', 'segment'],
+	// Lot 6 (§ 19) : mesurer un angle, le rapporteur seul
+	mesure: ['rapporteur']
 };
 
 /** Vérifications que l'auteur peut nommer dans `verifier:` */
@@ -69,7 +71,8 @@ export const CONSTRUCTION_CHECK_KINDS = [
 	'droite',
 	'cercle',
 	'triangle',
-	'angle'
+	'angle',
+	'mesure'
 ] as const;
 export type ConstructionCheckKind = (typeof CONSTRUCTION_CHECK_KINDS)[number];
 
@@ -200,6 +203,18 @@ export interface AngleCheck {
 	line: number;
 }
 
+/**
+ * `mesure AOB` : l'angle AOB est tracé (ses deux côtés) ; l'élève le mesure au
+ * rapporteur et tape sa mesure en degrés, sous la figure. La mesure attendue est
+ * calculée sur la figure (chantier `controles-figure`, lot 6, 2026-11-03).
+ * `points` : A, O (le sommet), B.
+ */
+export interface MeasureCheck {
+	kind: 'mesure';
+	points: [string, string, string];
+	line: number;
+}
+
 export type ConstructionCheck =
 	| DroiteParCheck
 	| SegmentFigureCheck
@@ -207,7 +222,8 @@ export type ConstructionCheck =
 	| LineCheck
 	| CircleCheck
 	| TriangleCheck
-	| AngleCheck;
+	| AngleCheck
+	| MeasureCheck;
 
 /** L'outil avec lequel se trace chaque vérification */
 export const CHECK_TOOL: Record<ConstructionCheckKind, ConstructionTool> = {
@@ -220,7 +236,8 @@ export const CHECK_TOOL: Record<ConstructionCheckKind, ConstructionTool> = {
 	cercle: 'compas',
 	triangle: 'segment',
 	// Le segment est exigé aussi (coherence du parseur) ; le rapporteur est l'outil de départ
-	angle: 'rapporteur'
+	angle: 'rapporteur',
+	mesure: 'rapporteur'
 };
 
 export interface ConstructionSpec {

@@ -119,7 +119,7 @@ describe('construction — erreurs situées', () => {
 		expect(
 			messages(block('fenetre: 0 ; 10 ; 0 ; 6', 'verifier: cercle_par A ; B', '---'))
 		).toContain(
-			'Ligne 2 : vérification « cercle_par » inconnue (droite_par, carre, rectangle, symetrique, point, droite, cercle, triangle, angle)'
+			'Ligne 2 : vérification « cercle_par » inconnue (droite_par, carre, rectangle, symetrique, point, droite, cercle, triangle, angle, mesure)'
 		);
 	});
 

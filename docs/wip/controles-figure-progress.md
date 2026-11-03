@@ -6,19 +6,19 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2305._
+_Mis à jour le 2026-11-03, PR #2327 (lot 6) ouverte, CI du dernier commit de la branche en cours._
 
-- **État** : lots 1 à 5 mergés, plus #2305 (rapporteur près du bord, § 18) ; rien de tout ça n'est
-  encore en prod. Ligne #2305 ajoutée dans `verifications-manuelles.md`. Pas de worktree en cours.
-- **Prochaine action** : phase 0 du lot 6 « mesurer un angle », dans un worktree neuf.
-- **En attente de David** : M1 du § 18 — refuser à la publication une fenêtre trop allongée pour un
-  angle (rapport > 2, ma reco) ou laisser tel quel.
-- **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12, sa propre
-  phase 0) ; `perpendiculaire(A, s)` échoue quand A est un bout de s ; `symetrie(P, axe=d)` échoue si
-  P définit d ; l'« Essayer » de l'aide ne rend pas la case jouable ; plafond de 20 objets sans
-  message ; la demi-droite s'écrit `demidroite(O, A)` ; fenêtre au plus 4 fois plus large que haute ;
-  graduations intérieures du rapporteur serrées (police fixe de 10 px).
-- **Worktree / branche** : à créer pour le lot 6 (`../ubumaths-wt-controles-figure`).
+- **État** : lots 1 à 5 et #2305 mergés ; lot 6 (`mesure AOB`, § 19-20) codé, revu (Opus, 6 findings
+  traités), décision du masquage faite (points calculés en coordonnées). M1 faite. Rien en prod.
+- **Prochaine action** : `gh pr checks 2327` (run « Code Quality » du DERNIER commit de la branche) ; vert →
+  `gh pr merge 2327 --merge`, puis nettoyage du worktree, ligne #2327 dans
+  `verifications-manuelles.md`, « Reprendre ici » sur `main`.
+- **En attente de David** : rien.
+- **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12) ;
+  `perpendiculaire(A, s)` échoue quand A est un bout de s ; `symetrie(P, axe=d)` échoue si P définit
+  d ; l'« Essayer » de l'aide ne rend pas la case jouable ; plafond de 20 objets sans message ; la
+  CI ne part pas sur une PR en conflit (fusionner `origin/main` d'abord).
+- **Worktree / branche** : `../ubumaths-wt-controles-figure`, `feat/controles-figure-lot6`.
 
 ---
 
@@ -771,3 +771,100 @@ Palette déduite : Rapporteur · Segment.
   (M2) : un côté juste tracé du côté où le rapporteur ne tient pas garde sa correction de ce côté-là.
   Ouvert (M1, question à David) : fenêtre très allongée sur un petit écran → rapporteur minuscule
   (0,35 de 4 unités sur 320 px ≈ 22 px de rayon), graduations illisibles.
+
+## 19. Phase 0 — lot 6 : mesurer un angle (proposée le 2026-11-03, à valider)
+
+BO 6e « Mesurer un angle » (6-169). Le geste existe (lot 5, § 16) : poser le rapporteur, le retourner.
+Ce qui est neuf : l'angle est **donné** (ses deux côtés tracés) et la réponse est **une mesure en degrés**.
+Existant relevé : la figure de travail (```figure-de-travail) accepte n'importe quel outil, rapporteur
+compris, et rien n'y est noté ; une case ordinaire `[_]` ne sait pas donner de message ciblé (feedback
+`correct` / `incorrect` seulement) ; le langage des figures a `rotation(A, angle=50, centre=O)`.
+
+### Écriture par le prof (recommandée : la mesure dans la case figure)
+
+```figure-a-completer
+fenetre: 0 ; 10 ; 0 ; 8
+verifier: mesure AOB
+---
+O = point(4, 3)
+A = point(9, 3)
+B = rotation(A, angle={{a}}, centre=O)
+x = demidroite(O, A)
+y = demidroite(O, B)
+```
+
+Nouvelle vérification `mesure AOB` : O le sommet, A et B un point de chaque côté (trois points de la
+figure). La réponse attendue est **calculée sur la figure** : l'auteur ne l'écrit pas, elle ne peut pas
+la contredire. Palette déduite : Rapporteur seul. Sous la figure, une case « AOB = [ ] ° » (entier, clavier
+numérique). Les poses du rapporteur et les repères ne sont pas notés. Papier uni seulement.
+
+### Comportements
+
+- **Nominal** : l'élève pose le rapporteur en O, lit 50, tape 50 → juste.
+- **Limites** (juste) : « 50° » ou « 50 » ; angle obtus (130) ; rapporteur jamais posé (rien ne le
+  distingue d'une lecture faite ailleurs, et rien ne l'exige) ; rapporteur posé sur [OB) au lieu de [OA).
+- **Erreurs** (faux) : 130 au lieu de 50 → « L'angle mesure 50°, pas 130° : tu as lu la mauvaise
+  graduation du rapporteur. » ; autre mesure → « L'angle mesure 50°, pas 45°. » ; case vide → « Valider »
+  bloqué comme toute case vide ; nombre non entier → refusé à la saisie (« au degré près »).
+- **Erreurs d'auteur** : mesure de AOB non entière (à 0,01° près) → « l'angle AOB mesure 47,3° : placer B
+  avec rotation(A, angle=…, centre=O) » ; angle nul ou plat ; O, A ou B invisible ou confondus ; pas de
+  trait de la figure le long de [OA) ou de [OB) ; un côté qui s'arrête avant le bord du rapporteur (rien à
+  lire) ; le demi-rapporteur posé en O ne tient dans la fenêtre ni sur [OA) côté B, ni sur [OB) côté A
+  (règle du § 18) ; quadrillage.
+- **Correction** : l'arc de l'angle codé « 50° » (comme au lot 5).
+
+### Questions à David
+
+1. **Où taper la mesure** : dans la case figure, mesure calculée sur la figure, message « mauvaise
+   graduation », erreurs d'auteur (recommandé) ; ou une figure de travail avec le rapporteur + une case
+   `[_]°` ordinaire (presque rien à coder, mais la réponse est écrite à la main par l'auteur, sans message
+   ciblé ni contrôle que le rapporteur tient dans la figure) ?
+2. **Tolérance** : mesure exacte (recommandé : la figure est construite au degré et le geste vise au degré) ;
+   ou ± 1° comme sur papier ?
+3. **Message « mauvaise graduation »** pour 180 − a : le garder, comme au lot 5 (recommandé) ?
+4. **Variante « rapporteur déjà posé »** (lire seulement, sans geste) : plus tard si besoin (recommandé) ;
+   ou dans ce lot ?
+
+### Décisions de David (2026-11-03, « je suis tes recos »)
+
+1. La mesure se tape **dans la case figure** (`verifier: mesure AOB`), mesure calculée sur la figure.
+2. Mesure **exacte**.
+3. Message « mauvaise graduation » pour 180 − a **gardé**.
+4. Variante « rapporteur déjà posé » : **plus tard**, si besoin.
+5. M1 du § 18 : fenêtre **refusée** à la publication pour un angle (construire ou mesurer) quand son
+   rapport largeur / hauteur dépasse 2.
+
+## 20. Lot 6 — ce qui est fait (2026-11-03)
+
+- Vérification `mesure AOB` (`MeasureCheck`, parseur : trois points, sommet au milieu ; seule dans la
+  figure, le rapporteur seul, papier uni ; le rapporteur admis pour `angle` et `mesure`).
+- Réponse : les repères puis `mesure(50)` en dernier (`splitMeasuredAnswer`, `serializeMeasuredAnswer`) ;
+  hors d'une case `mesure`, `mesure(…)` est illisible (faux).
+- Juge `construction/measure.ts` : mesure calculée sur la figure, exacte ; messages du § 19 ; repères
+  seuls sans mesure tapée → « Tape la mesure de l'angle AOB, en degrés. » (Valider n'est bloqué que
+  sur une réponse vide). Erreurs d'auteur du § 19 ; côtés lus dans les traits de la figure (segment,
+  demi-droite, droite) jusqu'au rayon du rapporteur.
+- M1 : `protractorWindowError` (rapport > 2 refusé) pour `angle` et `mesure`.
+- Écran : case « Mesure de l'angle AOB : [ ] ° » sous la figure (chiffres seulement, 3 au plus ;
+  désactivée après Valider et dans la copie) ; consigne « Lis la mesure sur le rapporteur, puis
+  tape-la sous la figure. » ; correction : l'arc codé.
+- Énoncé masqué d'une évaluation : `verifier: mesure AOB` laissé tel quel (rien à cacher, l'écran en
+  tire la case) ; la garde `findUnmaskedAnswers` l'admet.
+- Aide à l'écriture : exemple « Mesurer un angle (rapporteur) » ; liste `verifier:` et `outils:` complétée.
+- Tests : `construction-measure.test.ts` (24), écran `figure-a-completer-mesure.svelte.test.ts` (4),
+  masquage (2), M1 au lot 5 (1) ; vérifiés rouges en cassant chaque règle (le juge a été écrit avant ses
+  tests : preuve rouge faite après coup, par mutation).
+- Revue Opus (#2327), 6 findings. Corrigés : A et B visibles et dans la fenêtre (la case nomme
+  l'angle) ; « 50,5 » garde 50 et dit « Au degré près : tape un nombre entier. » ; test de la pose sur
+  [OB) seule (vérifié rouge en inversant le signe) ; un segment qui ne fait que toucher O = « n'est pas
+  tracé ». Vérifié : aucun modèle en prod n'a `verifier: angle` ni `mesure` (pas de régression M1).
+  Ouvert puis tranché : l'énoncé masqué gardait `B = rotation(A, angle={{a}}, …)`, la réponse en
+  clair dans la source envoyée pendant une évaluation.
+
+### Décision de David (2026-11-03, « je te suis » sur ma recommandation)
+
+Énoncé masqué d'un angle à mesurer : chaque point nommé défini par un calcul est réécrit en
+coordonnées (`maskMeasureFigure` ; `visible=faux` gardé, autres réglages d'affichage perdus en
+évaluation) ; une `rotation(` ou un `angle=` restés dans la figure → la garde refuse l'envoi. Reste
+admis : recalculer l'angle depuis les coordonnées. Fait, tests vérifiés rouges sans la réécriture
+et sans la garde.

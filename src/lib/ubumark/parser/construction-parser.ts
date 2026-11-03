@@ -103,7 +103,7 @@ function hasGrid(lines: readonly string[], headerEnd: number): boolean {
 }
 
 /** Vérifications à forme propre (pas une liste de points) */
-type NamedKind = 'symetrique' | 'point' | 'droite' | 'cercle' | 'triangle' | 'angle';
+type NamedKind = 'symetrique' | 'point' | 'droite' | 'cercle' | 'triangle' | 'angle' | 'mesure';
 
 /** Nombre de points de chaque vérification, et comment l'écrire */
 const CHECK_ARITY: Record<
@@ -213,6 +213,25 @@ function readAngle(rest: string, line: number): ConstructionCheck {
 	return { kind: 'angle', points: [a, o], side, measure, line };
 }
 
+const MEASURE_EXAMPLE = 'mesure AOB';
+/** `AOB` : un point d'un côté, le sommet, un point de l'autre côté */
+const MEASURE_REGEX = /^([A-Z])([A-Z])([A-Z])$/;
+
+/** `mesure AOB` (lot 6) : l'angle est tracé, l'élève tape sa mesure */
+function readMeasure(rest: string, line: number): ConstructionCheck {
+	const match = MEASURE_REGEX.exec(rest.trim());
+	if (!match) {
+		throw new LineError(
+			`mesure attend l’angle par trois points, le sommet au milieu : « ${MEASURE_EXAMPLE} »`
+		);
+	}
+	const [a, o, b] = [match[1], match[2], match[3]];
+	if (new Set([a, o, b]).size !== 3) {
+		throw new LineError(`mesure ${a}${o}${b} : trois points différents`);
+	}
+	return { kind: 'mesure', points: [a, o, b], line };
+}
+
 const NAMED_EXAMPLES = {
 	point: "point A' = symetrie(A, axe=d)",
 	droite: 'droite m = mediatrice(A, B)',
@@ -248,6 +267,7 @@ function readCheck(value: string, line: number): ConstructionCheck {
 	if (word === 'symetrique') return readSymetrique(rest.join(' '), line);
 	if (word === 'triangle') return readTriangle(rest.join(' '), line);
 	if (word === 'angle') return readAngle(rest.join(' '), line);
+	if (word === 'mesure') return readMeasure(rest.join(' '), line);
 	if (word === 'point' || word === 'droite' || word === 'cercle') {
 		return readNamed(word, rest.join(' '), line);
 	}
@@ -282,9 +302,10 @@ function coherenceError(
 	grid: boolean
 ): string | null {
 	const tool = CHECK_TOOL[check.kind];
-	// Lot 5 (§ 16) : le rapporteur ne sert qu'à l'angle (ses repères construisent des points)
-	if (check.kind !== 'angle' && spec.tools.includes('rapporteur')) {
-		return `le rapporteur ne sert qu’à construire un angle (« verifier: ${ANGLE_EXAMPLE} ») ; le retirer de outils:`;
+	// Lot 5 (§ 16) : le rapporteur ne sert qu'à l'angle (ses repères construisent des points) ;
+	// lot 6 (§ 19) : ou à le mesurer
+	if (check.kind !== 'angle' && check.kind !== 'mesure' && spec.tools.includes('rapporteur')) {
+		return `le rapporteur ne sert qu’à construire un angle (« verifier: ${ANGLE_EXAMPLE} ») ou à le mesurer (« verifier: ${MEASURE_EXAMPLE} ») ; le retirer de outils:`;
 	}
 	if (!spec.tools.includes(tool))
 		return check.kind === 'point'
@@ -304,6 +325,17 @@ function coherenceError(
 		}
 		if (grid) {
 			return `angle ${name} : l’angle se construit sur papier uni ; retirer « grille: » (ou écrire « grille: non »)`;
+		}
+	} else if (check.kind === 'mesure') {
+		// Lot 6 (§ 19) : seul dans la figure, papier uni, le rapporteur seul
+		const name = check.points.join('');
+		if (spec.checks.length > 1) {
+			return `mesure ${name} : un angle à mesurer ne se mêle pas à d’autres vérifications`;
+		}
+		const other = spec.tools.find((t) => t !== 'rapporteur');
+		if (other) return `mesure ${name} : outil ${other} hors de la palette (rapporteur)`;
+		if (grid) {
+			return `mesure ${name} : l’angle se mesure sur papier uni ; retirer « grille: » (ou écrire « grille: non »)`;
 		}
 	} else if (check.kind === 'triangle') {
 		// Lot 4 (§ 13) : seul dans la figure, papier uni, palette du triangle
@@ -349,7 +381,8 @@ function coherenceError(
 				c.kind !== 'droite' &&
 				c.kind !== 'cercle' &&
 				c.kind !== 'triangle' &&
-				c.kind !== 'angle'
+				c.kind !== 'angle' &&
+				c.kind !== 'mesure'
 		);
 		if (check.kind !== 'droite_par' && segmentChecks[0] !== check) {
 			const symmetry = check.kind === 'symetrique' || segmentChecks[0].kind === 'symetrique';
@@ -433,7 +466,12 @@ export function readConstructionHeader(
 	if (!toolsSeen && spec.checks.length > 0) {
 		const kind = spec.checks[0].kind;
 		// La droite (lot 3) garde ses instruments sur quadrillage ; le cercle (lot 3b) y est refusé
-		const keeps = kind === 'droite' || kind === 'cercle' || kind === 'triangle' || kind === 'angle';
+		const keeps =
+			kind === 'droite' ||
+			kind === 'cercle' ||
+			kind === 'triangle' ||
+			kind === 'angle' ||
+			kind === 'mesure';
 		const plainPaper = grid && !keeps ? undefined : PLAIN_PAPER_TOOLS[kind];
 		spec.tools = plainPaper ? [...plainPaper] : [CHECK_TOOL[kind]];
 	}
