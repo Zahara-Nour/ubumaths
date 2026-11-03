@@ -9,20 +9,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après la publication du lot 3._
+_Mis à jour le 2026-11-03, PR 1 de Q2 b (`signe: aucun`) en cours._
 
-- **État** : lots 1, 2 et 3 publiés (lot 3 : 4/4 OK sur la page à cocher, publié par David, 4/4 `published` relus
-  en base). Les démonstrations à trous (Q2 a) sont faites.
-- **Prochaine action** : reposer à David Q2 b (étapes à ranger, extension `signe:` du bloc `ranger`, § 2 et § 3).
-  Oui → petit lot de code sur une branche neuve depuis `origin/main` ; non → ligne dans
-  `docs/wip/outils-manquants.md` et fin de chantier (versement, archivage du journal).
-- **En attente de David** : Q2 b, **non tranchée**.
-- **Pièges en cours** : `1/√2` est jugé `bad_form` (spec asservie). Migration copiée d'un lot précédent :
-  transformer LIGNE À LIGNE. Worktree sans lien Supabase : copier
-  `supabase/.temp/{project-ref,linked-project.json,pooler-url,postgres-version}` du dépôt principal pour `db:migrate`. Ancienne branche distante
-  `docs/questions-1spe-demonstrations` à supprimer.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, branche `feat/questions-1spe-demonstrations`
-  (PR mergées ; ce journal en avance sur `main`, à y reporter).
+- **État** : lots 1, 2 et 3 publiés. Q2 b tranchée (D2, § 7) : extension `signe: aucun` du bloc `ranger`, puis une
+  variation « étapes à ranger » pour les 14 modèles. PR 1 (code) sur `feat/ranger-signe-aucun` : tests rouges puis
+  verts, PDF compilé avec le compilateur de la prod, doc système à jour.
+- **Prochaine action** : PR 1 (vérif à l'écran, revue `code-reviewer` Sonnet, CI, merge) ; puis lot 4 = les 14
+  variations ranger (vérifier d'abord comment `create-questions` met à jour un modèle PUBLIÉ).
+- **En attente de David** : rien.
+- **Pièges en cours** : `1/√2` est jugé `bad_form` (spec asservie). Une étape interchangeable va dans l'énoncé
+  (juge strict). Worktree sans lien Supabase : copier
+  `supabase/.temp/{project-ref,linked-project.json,pooler-url,postgres-version}` du dépôt principal pour `db:migrate`.
+  Ancienne branche distante `docs/questions-1spe-demonstrations` à supprimer.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, branche `feat/ranger-signe-aucun`.
 
 ---
 
@@ -212,3 +211,18 @@ https://claude.ai/artifact/7Bb7HVkpfgdTTNfiDn4P1Y
 
 Relecture (2026-11-03) : 4/4 OK, aucun commentaire. Publié par David (`publier-lot.ts --publier`), 4/4 `published`
 relus en base (MCP).
+
+## 7. Q2 b : étapes à ranger (2026-11-03)
+
+**D2 (David, 2026-11-03, « je valide » puis « oui »)** : oui à Q2 b, sur les recos. (1) Réglage **`signe: aucun`**
+du bloc `ranger` (pas de `⟹` : une étape ne découle pas toujours par implication) : étiquettes et places en
+colonne, places numérotées, sans signe ; écran, PDF, cadres de réponse, catalogue ; message d'erreur « signe: écrire
+<, > ou aucun ». (2) Les 14 démonstrations, chacune une variation « Remets les étapes de la démonstration dans
+l'ordre » (4 à 6 étapes) ; une étape interchangeable passe dans l'énoncé (ex. les deux écritures de S, 1.03) ; si ce
+n'est pas possible, la démonstration sort de la liste (le dire). (3) Variation ajoutée aux modèles existants (ADR
+0020), pas de modèle neuf ; pas de migration. Découpage : PR 1 code, puis lot 4 contenu.
+
+PR 1 (`feat/ranger-signe-aucun`) : 8 tests neufs, rouges avant le code (parseur, sérialisation du tirage, PDF,
+cadres de réponse, écran : colonne numérotée, consigne lue, rien ne déborde à 360 px) ; verts après, suites
+voisines vertes (348 + 60), `check:incremental` 0 erreur. PDF compilé par `scripts/fiches/compile-prod.mjs` (le
+compilateur de la prod) : places pleine largeur, numérotées, espacées ; le rangement `<` inchangé.
