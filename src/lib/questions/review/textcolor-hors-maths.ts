@@ -94,8 +94,10 @@ export function findTextcolorOutsideMath(
 			const texts = [
 				instance.statement,
 				...(instance.correction?.steps ?? []),
-				...Object.values(instance.correction?.feedback ?? {})
-			].filter((text): text is string => typeof text === 'string');
+				...Object.values(instance.correction?.feedback ?? {}).flatMap((text) =>
+					text ? [text] : []
+				)
+			];
 			const found = texts.flatMap((text) => textcolorTexts(parseMarkdown(text)));
 			if (found.length > 0) {
 				const excerpt = found[0].slice(
