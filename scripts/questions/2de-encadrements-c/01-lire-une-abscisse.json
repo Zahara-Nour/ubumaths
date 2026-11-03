@@ -1,0 +1,204 @@
+{
+	"title": "Lire l'abscisse d'un point",
+	"description": "Lire une abscisse sur une droite graduée en dixièmes, en tiers, en quarts, abscisses négatives comprises",
+	"grades": ["2"],
+	"theme": "Décimaux",
+	"domain": "Apprivoiser",
+	"subdomain": "Repérage",
+	"level": 5,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Lis l'abscisse du point $A$.\n\n```line\nstart: {{a}}\nend: {{eval:(a)+2}}\nstep: 1/10\nmajor: 10\npoints: A={{eval:(a)*10+(k)}}/10\n```\n\n$$A=?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-3..3"
+				},
+				{
+					"name": "k",
+					"expression": "1..19"
+				}
+			],
+			"conditions": ["k != 10"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:((a)*10+(k))/10}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Entre deux nombres entiers, la droite est partagée en $10$ : une graduation vaut $0{,}1$.",
+					"$A$ est à ${{k}}$ graduations de ${{a}}$ : $\\textcolor{{{color:primary.0}}}{A={{a}}+{{k}}\\times0{,}1}$."
+				]
+			}
+		},
+		{
+			"statement": "Lis l'abscisse du point $A$. Donne-la sous la forme d'une fraction.\n\n```line\nstart: {{a}}\nend: {{eval:(a)+2}}\nstep: 1/3\nmajor: 3\npoints: A={{eval:3*(a)+(k)}}/3\n```\n\n$$A=?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-2..2"
+				},
+				{
+					"name": "k",
+					"expression": "1|2|4|5"
+				},
+				{
+					"name": "N",
+					"expression": "eval:3*a+k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:N<0|-}}\\frac{ {{eval:abs(N)}} }{3}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Entre deux nombres entiers, la droite est partagée en $3$ : une graduation vaut $\\dfrac{1}{3}$.",
+					"$A$ est à ${{k}}$ graduations de ${{a}}$ : $A={{a}}+\\dfrac{ {{k}} }{3}=\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{3}}$."
+				]
+			}
+		},
+		{
+			"statement": "Lis l'abscisse du point $A$.\n\n```line\nstart: {{a}}\nend: {{eval:(a)+3}}\nstep: 1/4\nmajor: 4\npoints: A={{eval:4*(a)+(k)}}/4\n```\n\n$$A=?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-3..-1"
+				},
+				{
+					"name": "k",
+					"expression": "1|3|5|7|9|11"
+				},
+				{
+					"name": "N",
+					"expression": "eval:4*a+k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(4*(a)+(k))/4}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Entre deux nombres entiers, la droite est partagée en $4$ : une graduation vaut $\\dfrac{1}{4}=0{,}25$.",
+					"$A$ est à ${{k}}$ graduation{{if:k>1|s}} de ${{a}}$ : $A={{a}}+\\dfrac{ {{k}} }{4}=\\textcolor{{{color:primary.0}}}{{{if:N<0|-}}\\dfrac{ {{eval:abs(N)}} }{4}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "−2 + 7 × 0,1 = −1,3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"k": "7"
+			},
+			"answers": ["-1.3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : lu depuis 0 vers la gauche (−2,7)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"k": "7"
+			},
+			"answers": ["-2.7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1 + 2/3 = 5/3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"k": "2",
+				"N": "5"
+			},
+			"answers": ["\\frac{5}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : graduation lue 0,2 (1,2)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"k": "2",
+				"N": "5"
+			},
+			"answers": ["1.2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−2 + 4/3 = −2/3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"k": "4",
+				"N": "-2"
+			},
+			"answers": ["-\\frac{2}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "−3 + 9/4 = −3/4",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-3",
+				"k": "9",
+				"N": "-3"
+			},
+			"answers": ["-\\frac{3}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Même nombre en décimal",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-3",
+				"k": "9",
+				"N": "-3"
+			},
+			"answers": ["-0.75"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −0,25 (signe et quarts)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-3",
+				"k": "9",
+				"N": "-3"
+			},
+			"answers": ["-0.25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
