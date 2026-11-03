@@ -56,6 +56,11 @@ export interface PublicBlank {
 	 * montre déjà ; sans lui, l'écran afficherait l'aide des cases écrites
 	 */
 	construire?: InstanceBlank['construire'];
+	/**
+	 * Case d'un tableau de signes : la nature de la cellule seule (valeur, signe,
+	 * marque), que l'énoncé masqué montre déjà ; jamais la réponse
+	 */
+	cellule?: InstanceBlank['cellule'];
 }
 
 export interface PublicQuestion {
@@ -97,6 +102,7 @@ function publicBlank(blank: InstanceBlank): PublicBlank {
 	if (isWorkFigureBlank(blank)) result.workFigure = true;
 	else if (blank.construction) result.figure = true;
 	if (blank.construire) result.construire = blank.construire;
+	if (blank.cellule) result.cellule = blank.cellule;
 	if (blank.choice) {
 		const { choices, order, multiple } = blank.choice;
 		result.choice = { choices: order.map((index) => choices[index]), multiple };
@@ -180,6 +186,7 @@ export function toDisplayInstance(question: PublicQuestion): QuestionInstance {
 		...(blank.graphicalConfig && { graphicalConfig: blank.graphicalConfig }),
 		...(blank.answerKind && { answerKind: blank.answerKind }),
 		...(blank.construire && { construire: blank.construire }),
+		...(blank.cellule && { cellule: blank.cellule }),
 		// Figure de travail : la figure vient de l'énoncé, la case dit seulement qu'elle n'est pas notée
 		...(blank.workFigure && {
 			construction: { source: '', checks: [], work: true as const }

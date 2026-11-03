@@ -45,12 +45,13 @@ function choiceCaseErrors(
 			error.startsWith('Case ') ? `${prefix}, c${error.slice(1)}` : `${prefix} : ${error}`
 		);
 	}
-	// Cases de blocs ```operation / ```figure-a-completer / ```figure-de-travail :
-	// `blanks[]` peut les omettre
+	// Cases de blocs ```operation / ```figure-a-completer / ```figure-de-travail, d'un
+	// tableau de signes à compléter : `blanks[]` peut les omettre
 	const blockCases = new Set([
 		...Object.keys(result.operationBlanks ?? {}).map(Number),
 		...Object.keys(result.constructionBlanks ?? {}).map(Number),
-		...Object.keys(result.workFigureBlanks ?? {}).map(Number)
+		...Object.keys(result.workFigureBlanks ?? {}).map(Number),
+		...Object.keys(result.variationBlanks ?? {}).map(Number)
 	]);
 	const blanks = variation.blanks ?? [];
 	const others = Array.from({ length: result.totalBlanks }, (_, i) => i).filter(

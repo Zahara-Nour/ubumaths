@@ -7,6 +7,7 @@
  * @module questions/validators/template-validator
  */
 
+import { hasVariationToFill } from '$lib/ubumark/parser/variation-table-parser';
 import type { QuestionTemplate, QuestionVariation, SharedVariationDefaults } from '../types';
 import { getQuestionType } from '../types';
 import { hasCourseCardBackSource } from '../course-card';
@@ -184,7 +185,8 @@ function validateVariation(
 			// ou ```monnaie à construire aussi (sa réponse est sa valeur), une droite ou une horloge
 			// à placer aussi, un diagramme en barres à construire aussi, des étiquettes à ranger aussi, une figure à colorier aussi,
 			// un assemblage de cubes à geste aussi, un patron à geste aussi, un repère à points
-			// à placer aussi, un cercle trigonométrique à points à placer aussi
+			// à placer aussi, un cercle trigonométrique à points à placer aussi, un tableau de
+			// signes à compléter aussi (ses cellules cachées)
 			if (
 				(!variation.blanks || variation.blanks.length === 0) &&
 				!hasOperationToFill(String(variation.statement ?? shared?.statement ?? '')) &&
@@ -199,6 +201,7 @@ function validateVariation(
 				!hasPartageToColorier(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasCubesToBuild(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasPatronsToBuild(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasVariationToFill(String(variation.statement ?? shared?.statement ?? '')) &&
 				!/^\s*>?\s*```figure-a-completer\s*$/m.test(
 					String(variation.statement ?? shared?.statement ?? '')
 				)
