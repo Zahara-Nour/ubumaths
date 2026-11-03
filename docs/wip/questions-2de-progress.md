@@ -6,18 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après la publication du lot `vecteur-tracer` (§ 65)._
+_Mis à jour le 2026-11-03, après #2321 (lot 9 : #2318, #2320, #2321 mergées, § 67)._
 
-- **État** : 2-299 `22e8272e` (lire, niveau 5) et 2-298 `dd286c93` (tracer, niveau 6) PUBLIÉS, rangés sur
-  « coordonnées », tagués (relu en base). Essai à l'écran en prod noté dans `verifications-manuelles.md`.
-- **Prochaine action** : rien d'ouvert sur ce chantier ; choisir avec David le prochain lot de seconde
-  (256 points sans modèle au relevé du § 1).
-- **En attente de David** : —
-- **Pièges en cours** : `--publier`, `publier-lot` (même en simulation), `db:migrate` hors les 4 conditions et la
-  simulation d'`update-published-questions.ts` → David avec `!` ; `create-questions` apparie par (titre, thème,
-  domaine, sous-domaine, **niveau**) ; ` ```courbe ` n'a pas de flèche d'affichage (` ```figure ` + `vecteur`) ;
-  `Doc-inchangée:` dans un COMMIT (pas la PR), ≤ 100 caractères ; pas de ligne `Claude-Session:` ; une autre
-  session écrit aussi dans ce journal : `git pull`.
+- **État** : lot 9 « Nombres réels, arithmétique, intervalles » écrit et mergé : 9 A (5 modèles, #2318), 9 B (8,
+  #2320), 9 C (5, #2321). 18 brouillons en base LOCALE seulement.
+- **Prochaine action** : David lance `create-questions --publier` (prod, brouillons)
+  sur `2de-arithmetique-a`, `2de-intervalles-b`, `2de-encadrements-c` ; relever les ids ; migration nœud + tag
+  (18 modèles, nœuds au § 67).
+- **En attente de David** : les trois `--publier` (`!`). 2-246 et 2-251 (9 B) ne s'affichent qu'après le
+  `deploy:prod` qui livre #2294 / #2309 : brouillons jusque-là.
+- **Pièges en cours** : `--publier`, `publier-lot` (même en simulation), `db:migrate` hors les 4 conditions → David
+  avec `!` ; `create-questions` apparie par (titre, thème, domaine, sous-domaine, **niveau**) ; liste blanche :
+  pas de `{{if:}}` à plus de ~6 niveaux dans une réponse attendue ; `Doc-inchangée:` dans un COMMIT, corps
+  ≤ 100 caractères par ligne ; une autre session écrit aussi dans ce journal : `git pull`.
 - **Worktree / branche** : `../ubumaths-wt-questions-2de` (HEAD détachée sur `origin/main`).
 
 ## 1. Relevé (prod, 2026-10-27)
@@ -1721,3 +1722,26 @@ _9 C — Droite graduée, encadrements, arrondis_
 **Décisions de David (2026-11-03)** : phase 0 validée avec mes quatre recommandations — L9-a 9 A, 9 B, 9 C, une
 PR chacun ; L9-b multiples consécutifs de l'amplitude ; L9-c problèmes courts à réponse numérique ; L9-d √2,
 π et √3.
+
+## 67. Lot 9 : PR des fichiers (2026-11-03)
+
+- **9 A** : `questions-2de/lot-arithmetique-a-2de.py` → `scripts/questions/2de-arithmetique-a/` (5 modèles,
+  44 specs). 2-235 Logique › Ensembles › Appartenance et inclusion niv. 3 ; 2-236, 2-418 Entiers › Diviser ›
+  Multiples et diviseurs niv. 9, 10 ; 2-419 Calcul littéral › Produire une formule › Pairs et impairs niv. 2 ;
+  2-237 Entiers › Diviser › Problèmes niv. 1. Aperçu local joué. **#2318 mergée.**
+- **9 B** : `questions-2de/lot-ensembles-intervalles-b-2de.py` → `scripts/questions/2de-intervalles-b/` (8 modèles,
+  63 specs). Logique › Ensembles › Ensembles de nombres niv. 1-4 (2-243, 2-247, 2-248, 2-422) ; › Intervalles
+  niv. 1, 3, 4 (2-407, 2-252, 2-251) ; Fonctions › Valeur absolue › Inéquations niv. 1 (2-246). Écart à la
+  phase 0 : 2-243 = « le plus petit ensemble » (5062197a fait déjà le vrai / faux des inclusions). Geste
+  `representer:` joué en local (juste). **#2320 mergée.**
+- **9 C** : `questions-2de/lot-droite-encadrements-c-2de.py` → `scripts/questions/2de-encadrements-c/` (5 modèles).
+  Décimaux › Apprivoiser › Repérage niv. 5, 6 (2-249, 2-250) ; › Encadrer niv. 8, 9 (2-421, 2-253) ; › Arrondir
+  niv. 8 (2-254). Correctif après CI rouge (liste blanche, ci-dessous). **#2321 mergée.**
+- Nœuds des points (prod) : 2-235, 243, 247, 248, 249, 250 → « ℕ, ℤ, 𝔻, ℚ, ℝ » ; 2-236, 418 → « multiples et
+  diviseurs » ; 2-419 → « pair ou impair » ; 2-237 → notion « Divisibilité » ; 2-422 → « nombres irrationnels » ;
+  2-407, 251, 252 → « intervalles » ; 2-246 → « équations et inéquations » (Fonction valeur absolue) ; 2-421,
+  253 → « encadrement » ; 2-254 → « arrondis et ordres de grandeur ».
+- **Pièges** : le geste `placer:` écrit une fraction négative `-5/3`, refusée par la contrainte de forme
+  (`bad_form`) → 2-250 en `constraints.form: off` (aucun modèle en prod concerné) ; la liste blanche des réponses
+  (`student-answer-safety.render.test.ts`) plafonne la profondeur des accolades : un `selon` à 21 cas dans une
+  réponse attendue fait échouer la CI → bornes calculées par `floor` dans `eval`.
