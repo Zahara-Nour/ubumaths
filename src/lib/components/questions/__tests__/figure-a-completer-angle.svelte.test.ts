@@ -83,6 +83,22 @@ function tapAtDegree(rect: SVGRectElement, deg: number) {
 	tap(rect, 2 + 3.5 * Math.cos(angle), 2 + 3.5 * Math.sin(angle));
 }
 
+/**
+ * Viser `deg` : toucher près de la graduation (au pixel près, ±1° environ), puis
+ * ‹ › jusqu'à elle — ce que fait l'élève
+ */
+async function aimAt(container: HTMLElement, rect: SVGRectElement, deg: number) {
+	const before = all(container, 'repere-eleve').length;
+	tapAtDegree(rect, deg);
+	await expect.poll(() => all(container, 'repere-eleve').length).toBe(before + 1);
+	for (let i = 0; i < 5 && Number(degreeShown(container)) !== deg; i++) {
+		const shown = Number(degreeShown(container));
+		byTestId(container, shown < deg ? 'rapporteur-plus' : 'rapporteur-moins').click();
+		await expect.poll(() => Number(degreeShown(container))).not.toBe(shown);
+	}
+	expect(degreeShown(container)).toBe(String(deg));
+}
+
 /** Toucher le dernier repère placé (le trait du repère, à l'écran) */
 function tapLastMark(container: HTMLElement, rect: SVGRectElement) {
 	const marks = all(container, 'repere-eleve');
@@ -145,8 +161,7 @@ describe('case « figure » : construire un angle au rapporteur', () => {
 
 	it('repère à 50, côté de O au repère : juste', async () => {
 		const { container, rect } = await posed();
-		tapAtDegree(rect, 50);
-		await expect.poll(() => degreeShown(container)).toBe('50');
+		await aimAt(container, rect, 50);
 		tool(container, 'segment');
 		await expect.poll(() => all(container, 'rapporteur').length).toBe(0);
 		tap(rect, 2.05, 2.05);
@@ -158,8 +173,7 @@ describe('case « figure » : construire un angle au rapporteur', () => {
 
 	it('repère à 130 : mauvaise graduation ; à la correction, le côté et l’arc codé', async () => {
 		const { container, rect } = await posed();
-		tapAtDegree(rect, 130);
-		await expect.poll(() => degreeShown(container)).toBe('130');
+		await aimAt(container, rect, 130);
 		tool(container, 'segment');
 		tap(rect, 2.05, 2.05);
 		tapLastMark(container, rect);
@@ -175,8 +189,7 @@ describe('case « figure » : construire un angle au rapporteur', () => {
 
 	it('‹ › décalent le repère ; Retourner ; Effacer le repère puis le rapporteur', async () => {
 		const { container, rect } = await posed();
-		tapAtDegree(rect, 50);
-		await expect.poll(() => degreeShown(container)).toBe('50');
+		await aimAt(container, rect, 50);
 		byTestId(container, 'rapporteur-plus').click();
 		await expect.poll(() => degreeShown(container)).toBe('51');
 		byTestId(container, 'rapporteur-moins').click();
