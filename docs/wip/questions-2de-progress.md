@@ -6,12 +6,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, lot 9 : #2318 et #2320 mergées, #2321 en CI (§ 67)._
+_Mis à jour le 2026-11-03, après #2321 (lot 9 : #2318, #2320, #2321 mergées, § 67)._
 
-- **État** : lot 9 « Nombres réels, arithmétique, intervalles » écrit : 9 A (5 modèles, #2318), 9 B (8, #2320)
-  mergées ; 9 C (5, #2321) : CI relancée après correctif (liste blanche des réponses). 18 brouillons en base
-  LOCALE seulement.
-- **Prochaine action** : merger #2321 si verte ; puis David lance `create-questions --publier` (prod, brouillons)
+- **État** : lot 9 « Nombres réels, arithmétique, intervalles » écrit et mergé : 9 A (5 modèles, #2318), 9 B (8,
+  #2320), 9 C (5, #2321). 18 brouillons en base LOCALE seulement.
+- **Prochaine action** : David lance `create-questions --publier` (prod, brouillons)
   sur `2de-arithmetique-a`, `2de-intervalles-b`, `2de-encadrements-c` ; relever les ids ; migration nœud + tag
   (18 modèles, nœuds au § 67).
 - **En attente de David** : les trois `--publier` (`!`). 2-246 et 2-251 (9 B) ne s'affichent qu'après le
@@ -20,7 +19,7 @@ _Mis à jour le 2026-11-03, lot 9 : #2318 et #2320 mergées, #2321 en CI (§ 67)
   avec `!` ; `create-questions` apparie par (titre, thème, domaine, sous-domaine, **niveau**) ; liste blanche :
   pas de `{{if:}}` à plus de ~6 niveaux dans une réponse attendue ; `Doc-inchangée:` dans un COMMIT, corps
   ≤ 100 caractères par ligne ; une autre session écrit aussi dans ce journal : `git pull`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de`, branche `feat/questions-2de-lot9c`.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de` (HEAD détachée sur `origin/main`).
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1737,7 +1736,7 @@ PR chacun ; L9-b multiples consécutifs de l'amplitude ; L9-c problèmes courts 
   `representer:` joué en local (juste). **#2320 mergée.**
 - **9 C** : `questions-2de/lot-droite-encadrements-c-2de.py` → `scripts/questions/2de-encadrements-c/` (5 modèles).
   Décimaux › Apprivoiser › Repérage niv. 5, 6 (2-249, 2-250) ; › Encadrer niv. 8, 9 (2-421, 2-253) ; › Arrondir
-  niv. 8 (2-254). #2321.
+  niv. 8 (2-254). Correctif après CI rouge (liste blanche, ci-dessous). **#2321 mergée.**
 - Nœuds des points (prod) : 2-235, 243, 247, 248, 249, 250 → « ℕ, ℤ, 𝔻, ℚ, ℝ » ; 2-236, 418 → « multiples et
   diviseurs » ; 2-419 → « pair ou impair » ; 2-237 → notion « Divisibilité » ; 2-422 → « nombres irrationnels » ;
   2-407, 251, 252 → « intervalles » ; 2-246 → « équations et inéquations » (Fonction valeur absolue) ; 2-421,
