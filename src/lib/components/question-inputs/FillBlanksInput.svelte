@@ -951,6 +951,27 @@
 						/>
 					</div>
 				{/if}
+			{:else if node.type === 'number-line' && node.caseIndex !== undefined && node.representer !== undefined}
+				<!-- Droite à représenter : l'élève dessine l'intervalle, une case (`[2 ; +∞[`) -->
+				{@const lineCase = node.caseIndex}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : la droite avec l'intervalle juste -->
+					<BuildAnswer kind="line" source={node.source ?? ''} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={lineCase} data-construire-cases={1}>
+						<NumberLine
+							{node}
+							answers={[
+								{
+									value: inputStates[lineCase]?.value ?? '',
+									isCorrect: flashMode ? null : (inputStates[lineCase]?.isCorrect ?? null),
+									disabled: flashMode || effectiveDisabled,
+									onChange: (value: string) => handleInputChange(lineCase, value)
+								}
+							]}
+						/>
+					</div>
+				{/if}
 			{:else if node.type === 'courbe' && node.caseIndex !== undefined && (node.spec?.tracer !== undefined || node.spec?.vecteur !== undefined)}
 				<!-- Droite ou vecteur à tracer : l'élève pose deux points, une case (x1;y1/x2;y2) -->
 				{@const lineCase = node.caseIndex}

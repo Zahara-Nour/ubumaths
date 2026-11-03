@@ -416,6 +416,7 @@ describe('Jalons de jeux : gidouilles versées par la route (Q156)', () => {
 			locals: {
 				supabase: eleve as unknown as App.Locals['supabase'],
 				user: { id: eleveId } as User,
+				safeGetSession: async () => ({ user: { id: eleveId } as User }),
 				profile: { id: eleveId, role: 'student' }
 			} as unknown as App.Locals
 		} as unknown as Parameters<typeof soumettreScore2048>[0]);

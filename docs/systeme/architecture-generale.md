@@ -79,7 +79,7 @@ Les parenthèses créent des groupes de layout SvelteKit, absents de l'URL
 | `(protected)/` | `src/routes/(protected)/+layout.server.ts`, avant toute route enfant                                      |
 | `api/`         | par endpoint : `requireAuth` / `requireRole` / `requireRoles` (`src/lib/server/middleware/auth.ts`) + Zod |
 
-La garde de `(protected)/` : `requireAuth(user)` (`src/lib/server/auth.ts`, redirige vers
+La garde de `(protected)/` : `requireUserOrRedirect(user)` (`src/lib/server/auth.ts`, redirige vers
 `/auth/login`), profil obligatoire (sinon 500 + `logError`), puis **refus par défaut** sur
 `profile.status` (`pending` → `/auth/pending-approval` ; tout autre statut que `approved` →
 `signOut()` + `/auth/login?error=…`). Elle renvoie aussi l'état du consentement

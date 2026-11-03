@@ -1,0 +1,213 @@
+{
+	"title": "Démontrer la dérivée de la fonction inverse",
+	"description": "Démonstration à trous de (1/x)′ = −1/x² par le taux de variation entre a et a + h : numérateur −h, taux −1/(a(a + h)), limite −1/a²",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "Démonstrations",
+	"level": 2,
+	"delay": 90,
+	"status": "draft",
+	"shared": {},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction inverse, définie sur $]-\\infty\\,;0[\\,\\cup\\,]0\\,;+\\infty[$ par $f(x)=\\dfrac{1}{x}$, et $a$ un réel non nul. Pour $h\\neq 0$ tel que $a+h\\neq 0$, on calcule le taux de variation de $f$ entre $a$ et $a+h$.\n\nOn réduit au même dénominateur. Complète.\n\n$f(a+h)-f(a)=\\dfrac{1}{a+h}-\\dfrac{1}{a}=\\dfrac{?}{a(a+h)}$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "-h"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\dfrac{1}{a+h}=\\dfrac{a}{a(a+h)}$ et $\\dfrac{1}{a}=\\dfrac{a+h}{a(a+h)}$.",
+					"Le numérateur vaut $a-(a+h)=\\textcolor{{{color:primary.0}}}{-h}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction inverse, définie sur $]-\\infty\\,;0[\\,\\cup\\,]0\\,;+\\infty[$ par $f(x)=\\dfrac{1}{x}$, et $a$ un réel non nul. Pour $h\\neq 0$ tel que $a+h\\neq 0$, on calcule le taux de variation de $f$ entre $a$ et $a+h$.\n\nComme $f(a+h)-f(a)=\\dfrac{-h}{a(a+h)}$, on divise par $h$. Complète.\n\n$\\dfrac{f(a+h)-f(a)}{h}=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\frac{1}{a(a+h)}",
+					"requiredForm": {
+						"pattern": "u"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"Diviser par $h$, c'est multiplier par $\\dfrac{1}{h}$ : $\\dfrac{-h}{a(a+h)}\\times\\dfrac{1}{h}$.",
+					"Comme $h\\neq 0$, on simplifie par $h$ : le taux vaut $\\textcolor{{{color:primary.0}}}{-\\dfrac{1}{a(a+h)}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction inverse, définie sur $]-\\infty\\,;0[\\,\\cup\\,]0\\,;+\\infty[$ par $f(x)=\\dfrac{1}{x}$, et $a$ un réel non nul. Pour $h\\neq 0$ tel que $a+h\\neq 0$, on calcule le taux de variation de $f$ entre $a$ et $a+h$.\n\nLe taux vaut $-\\dfrac{1}{a(a+h)}$. Quand $h$ tend vers $0$, $a(a+h)$ tend vers $a\\times a$. Complète.\n\n$f'(a)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\frac{1}{a^2}",
+					"requiredForm": {
+						"pattern": "u"
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"Quand $h$ tend vers $0$, $a+h$ tend vers $a$, donc $a(a+h)$ tend vers $a^2$, qui n'est pas nul.",
+					"Le taux tend donc vers $\\textcolor{{{color:primary.0}}}{-\\dfrac{1}{a^2}}$ : $f$ est dérivable en $a$ et $f'(a)=-\\dfrac{1}{a^2}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "−h",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["-h"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : h (soustraction inversée)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["h"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−1/(a(a + h))",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["-\\frac{1}{a(a+h)}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme (−1)/(a(a + h)) : signe à sortir",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\frac{-1}{a(a+h)}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["signs"]
+			}
+		},
+		{
+			"description": "Écriture −1/(a² + ah)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["-\\frac{1}{a^2+ah}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : −1/(a(2a + h))",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["-\\frac{1}{a(2a+h)}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 1/(a(a + h))",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\frac{1}{a(a+h)}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −h/(a(a + h)) (pas divisé)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\frac{-h}{a(a+h)}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −1/a² (limite au lieu du taux)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["-\\frac{1}{a^2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−1/a²",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["-\\frac{1}{a^2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Forme (−1)/a² : signe à sortir",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\frac{-1}{a^2}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["signs"]
+			}
+		},
+		{
+			"description": "Erreur : 1/a²",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\frac{1}{a^2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −1/a",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["-\\frac{1}{a}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : −1/(2a)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["-\\frac{1}{2a}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

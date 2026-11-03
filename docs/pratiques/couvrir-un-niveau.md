@@ -372,6 +372,12 @@ couvert` dans un **commit** de la PR, pas dans son corps.
   nœud (« il ne peut pas perdre son rangement »), donc l'état « tagué sans nœud » ne se fabrique pas ;
   un modèle tagué à la main est arrêté par la garde « déjà rangé » (test de #2279).
 - Worktree neuf : `pnpm exec svelte-kit sync` avant `question:specs` (`$lib` introuvable).
+- **Réponse attendue trop imbriquée** : la liste blanche des réponses (`student-answer-safety.render.test.ts`,
+  CI) passe chaque `expectedAnswer` du dépôt et plafonne la profondeur des accolades (12) : un `{{if:}}`
+  imbriqué sur plus de ~6 cas la dépasse. Calculer la réponse par `eval` (`floor`, indicatrices) et garder les
+  `selon` longs pour l'énoncé et le corrigé (2de lot 9 C, #2321).
+- **`placer:` et fraction négative** : le geste écrit `-5/3`, que la contrainte de forme refuse (`bad_form`) ;
+  une droite à placer avec des fractions négatives prend `constraints.form: off` (2de lot 9 C).
 - Brouillons déjà en base : `export-question-templates.ts --dir … --ids …` (un id par fichier) ; les
   anciens dossiers `scripts/questions/` ne concordent plus forcément avec la base.
 - Migration qui change l'arbre ou les points : `LATER` + copies figées dans le test.

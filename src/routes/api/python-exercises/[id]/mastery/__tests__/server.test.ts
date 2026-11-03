@@ -8,8 +8,12 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { createMockSupabase, createMockLocals, mockSuccess, mockError } from '$tests/helpers';
+
+vi.mock('$lib/server/middleware/auth', async (importActual) =>
+	(await import('$tests/helpers/garde-auth-locals')).gardeAuthDepuisLocals(importActual)
+);
 
 const EXERCISE_ID = '550e8400-e29b-41d4-a716-446655440003';
 const STUDENT_ID = '550e8400-e29b-41d4-a716-446655440010';

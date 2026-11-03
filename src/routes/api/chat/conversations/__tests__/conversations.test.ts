@@ -5,6 +5,16 @@
 import { describe, it, expect, vi } from 'vitest';
 import { GET, POST } from '../+server';
 
+// Garde commune simulée : 401 sans session, sinon un profil élève
+vi.mock('$lib/server/middleware/auth', () => ({
+	requireAuth: async (locals: { user: { id: string } | null }) => {
+		if (!locals.user) {
+			throw Object.assign(new Error('Non autorisé - Authentification requise'), { status: 401 });
+		}
+		return { user: locals.user, profile: { role: 'student' } };
+	}
+}));
+
 // Mock SvelteKit
 vi.mock('@sveltejs/kit', () => ({
 	json: (data: unknown, opts?: { status?: number }) => ({

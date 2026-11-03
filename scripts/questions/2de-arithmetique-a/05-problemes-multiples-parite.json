@@ -1,0 +1,170 @@
+{
+	"title": "Problèmes : multiples et parité",
+	"description": "Trois entiers consécutifs de somme 126 ; deux pairs consécutifs de somme 70 ; un escalier monté 2 par 2 et 3 par 3 (multiple de 6 dans un intervalle)",
+	"grades": ["2"],
+	"theme": "Entiers",
+	"domain": "Diviser",
+	"subdomain": "Problèmes",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Trois entiers consécutifs ont pour somme ${{eval:3*(n)+3}}$. Quel est le plus petit des trois ?\n\nLe plus petit est $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "12..95"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On appelle $x$ le plus petit : les trois entiers sont $x$, $x+1$ et $x+2$.",
+					"$$x+(x+1)+(x+2)=3x+3=3\\times(x+1)$$",
+					"La somme est un **multiple de $3$** : $3(x+1)={{eval:3*(n)+3}}$, donc $x+1={{eval:(n)+1}}$ et $x=\\textcolor{{{color:primary.0}}}{{{n}}}$.",
+					"Vérification : ${{n}}+{{eval:(n)+1}}+{{eval:(n)+2}}={{eval:3*(n)+3}}$."
+				]
+			}
+		},
+		{
+			"statement": "Deux entiers **pairs** consécutifs ont pour somme ${{eval:4*(k)+2}}$. Quel est le plus grand des deux ?\n\nLe plus grand est $?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "8..45"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*(k)+2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Deux pairs consécutifs s'écrivent $2x$ et $2x+2$, avec $x$ entier.",
+					"$$2x+(2x+2)=4x+2={{eval:4*(k)+2}}$$",
+					"Donc $4x={{eval:4*(k)}}$, $x={{k}}$ : les deux pairs sont ${{eval:2*(k)}}$ et $\\textcolor{{{color:primary.0}}}{{{eval:2*(k)+2}}}$.",
+					"Vérification : ${{eval:2*(k)}}+{{eval:2*(k)+2}}={{eval:4*(k)+2}}$."
+				]
+			}
+		},
+		{
+			"statement": "Léa monte un escalier $2$ marches par $2$ et arrive exactement en haut. Tom le monte $3$ marches par $3$ et arrive, lui aussi, exactement en haut. L'escalier a entre ${{eval:6*(k)-3}}$ et ${{eval:6*(k)+2}}$ marches.\n\nCombien de marches a-t-il ?\n\nIl a $?$ marches.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:6*(k)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre de marches est un **multiple de $2$** (Léa) et un **multiple de $3$** (Tom) : c'est un multiple de $6$.",
+					"Les multiples de $6$ voisins : ${{eval:6*(k)-6}}$, ${{eval:6*(k)}}$, ${{eval:6*(k)+6}}$. Un seul est entre ${{eval:6*(k)-3}}$ et ${{eval:6*(k)+2}}$ : l'escalier a $\\textcolor{{{color:primary.0}}}{{{eval:6*(k)}}}$ marches."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Somme 126 : 41, 42, 43",
+			"variationIndex": 0,
+			"variables": {
+				"n": "41"
+			},
+			"answers": ["41"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le milieu (42)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "41"
+			},
+			"answers": ["42"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 126 ÷ 3 − 1 mal fait (40)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "41"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Somme 70 : 34 et 36",
+			"variationIndex": 1,
+			"variables": {
+				"k": "17"
+			},
+			"answers": ["36"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le plus petit (34)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "17"
+			},
+			"answers": ["34"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 70 ÷ 2 (35)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "17"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Entre 27 et 32 : 30 marches",
+			"variationIndex": 2,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : multiple de 2 seulement (28)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["28"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

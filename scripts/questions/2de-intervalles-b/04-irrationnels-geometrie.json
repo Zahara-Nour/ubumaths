@@ -1,0 +1,200 @@
+{
+	"title": "Nombres irrationnels de la géométrie",
+	"description": "Diagonale d'un carré (c√2), hauteur d'un triangle équilatéral (c√3), périmètre d'un cercle (dπ) ; cocher √2, π, √3 parmi des rationnels",
+	"grades": ["2"],
+	"theme": "Logique",
+	"domain": "Ensembles",
+	"subdomain": "Ensembles de nombres",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Un carré a pour côté ${{c}}$ cm. Donne la longueur exacte de sa diagonale, en cm.\n\n$$d=?$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}\\sqrt{2}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Théorème de Pythagore dans le triangle rectangle formé par deux côtés et la diagonale :",
+					"$$d^2={{c}}^2+{{c}}^2={{eval:2*(c)^2}}\\qquad d=\\sqrt{ {{eval:2*(c)^2}} }=\\textcolor{{{color:primary.0}}}{{{c}}\\sqrt{2}}$$",
+					"$\\sqrt{2}$, $\\sqrt{3}$ et $\\pi$ sont **irrationnels** (admis) : ils ne s'écrivent pas comme quotient de deux entiers. La diagonale d'un carré de côté entier n'a pas une longueur rationnelle."
+				]
+			}
+		},
+		{
+			"statement": "Un triangle équilatéral a pour côté ${{eval:2*(c)}}$ cm. Donne la longueur exacte de sa hauteur, en cm.\n\n$$h=?$$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}\\sqrt{3}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La hauteur tombe au milieu du côté : triangle rectangle d'hypoténuse ${{eval:2*(c)}}$ et de côté ${{c}}$.",
+					"$$h^2={{eval:2*(c)}}^2-{{c}}^2={{eval:3*(c)^2}}\\qquad h=\\sqrt{ {{eval:3*(c)^2}} }=\\textcolor{{{color:primary.0}}}{{{c}}\\sqrt{3}}$$",
+					"$\\sqrt{2}$, $\\sqrt{3}$ et $\\pi$ sont **irrationnels** (admis) : ils ne s'écrivent pas comme quotient de deux entiers."
+				]
+			}
+		},
+		{
+			"statement": "Un cercle a pour diamètre ${{d}}$ cm. Donne la valeur exacte de son périmètre, en cm.\n\n$$P=?$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "2..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}\\pi"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$P=\\pi\\times d=\\textcolor{{{color:primary.0}}}{{{d}}\\pi}$$",
+					"$\\sqrt{2}$, $\\sqrt{3}$ et $\\pi$ sont **irrationnels** (admis) : ils ne s'écrivent pas comme quotient de deux entiers. Une valeur approchée, $3{,}14\\times{{d}}$, n'est pas la valeur exacte."
+				]
+			}
+		},
+		{
+			"statement": "Quels nombres sont irrationnels ?\n\n```choix\nplusieurs: oui\n- $\\sqrt{2}$\n- $\\sqrt{ {{eval:(k)^2}} }$\n- $\\pi$\n- $\\dfrac{22}{7}$\n- $3{,}14$\n- $\\sqrt{3}$\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0;2;5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\sqrt{2}$, $\\sqrt{3}$ et $\\pi$ sont **irrationnels** (admis) : ils ne s'écrivent pas comme quotient de deux entiers.",
+					"**Rationnels** : $\\sqrt{ {{eval:(k)^2}} }={{k}}$ ; $\\dfrac{22}{7}$ (un quotient d'entiers, valeur approchée de $\\pi$ seulement) ; $3{,}14=\\dfrac{314}{100}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Côté 5 : 5√2",
+			"variationIndex": 0,
+			"variables": {
+				"c": "5"
+			},
+			"answers": ["5\\sqrt{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Racine non simplifiée (√50)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "5"
+			},
+			"answers": ["\\sqrt{50}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedRadicals"]
+			}
+		},
+		{
+			"description": "Erreur : 10",
+			"variationIndex": 0,
+			"variables": {
+				"c": "5"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Côté 6 : 3√3",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3"
+			},
+			"answers": ["3\\sqrt{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 3√5 (somme au lieu de différence)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3"
+			},
+			"answers": ["3\\sqrt{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Diamètre 7 : 7π",
+			"variationIndex": 2,
+			"variables": {
+				"d": "7"
+			},
+			"answers": ["7\\pi"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 14π (rayon pris pour le diamètre)",
+			"variationIndex": 2,
+			"variables": {
+				"d": "7"
+			},
+			"answers": ["14\\pi"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "√2, π, √3",
+			"variationIndex": 3,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["0;2;5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 22/7 coché",
+			"variationIndex": 3,
+			"variables": {
+				"k": "5"
+			},
+			"answers": ["0;2;3;5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

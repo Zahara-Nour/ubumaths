@@ -1,5 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '$lib/server/middleware/auth';
 import { reportMessageSchema } from '$lib/server/validation/chat';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -33,9 +34,7 @@ const logger = createServerLogger('api/chat/reports/+server');
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
 	// 1. Check authentication
-	if (!locals.user) {
-		throw error(401, 'Not authenticated');
-	}
+	await requireAuth(locals);
 
 	// 2. Parse and validate input
 	let body;
