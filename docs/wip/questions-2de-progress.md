@@ -6,15 +6,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2296 (§ 64)._
+_Mis à jour le 2026-11-03, après #2296 et ses publications (§ 64)._
 
-- **État** : lot `textcolor-hors-2de` publié et relu (27/27 conformes aux instantanés, `hors-maths.py` → 0).
-  2-316 (`8d4bd94d`) et 2-445 (`2cfae58d`) réécrits au geste ` ```courbe tracer: ` (#2296 mergée),
-  **pas encore écrits en prod**.
-- **Prochaine action** : David, depuis le dépôt principal à jour : `pnpm tsx
-scripts/update-published-questions.ts --lot tracer-droites-2de` (simulation) puis `--publier` ; relire
-  en base (export, variations = instantanés). Ensuite : 2-298 (vecteur, § 61) après le `deploy:prod` de #2274.
-- **En attente de David** : les deux commandes ci-dessus.
+- **État** : lots `textcolor-hors-2de` (27) et `tracer-droites-2de` (2-316 `8d4bd94d`, 2-445 `2cfae58d`)
+  publiés et relus en base (export = instantanés). Essai à l'écran noté dans `verifications-manuelles.md`.
+- **Prochaine action** : 2-298 (vecteur, § 61) après le `deploy:prod` de #2274 ; sinon, rien d'ouvert.
+- **En attente de David** : —
 - **Pièges en cours** : `--publier`, `publier-lot`, `db:migrate` et la simulation
   d'`update-published-questions.ts` (lecture de la prod) → David avec `!` ; un lot ajouté sur une branche
   n'existe dans le dépôt principal qu'après le merge ; `create-questions` apparie par (titre, thème, domaine,
@@ -1616,3 +1613,6 @@ tspe-ln-continuite-convexite,1spe-tracer-droite}.py`) : vérifiés d'abord fidè
 - 2-298 (vecteur) : reste au § 61, après le `deploy:prod` de #2274.
 - **#2296 mergée** (CI verte). Lot `textcolor-hors-2de` (§ 63) publié par David le 2026-11-03, relu :
   27 exportés, `variations` identiques aux instantanés, `hors-maths.py` → 0.
+- Lot `tracer-droites-2de` : simulation (preuve rouge : 8/12 et 7/11 sur le contenu d'avant) puis
+  `--publier` par David le 2026-11-03 ; relu : export identique aux instantanés (variations, specs,
+  description ; titre, niveau, `grades`, `delay`, `status` inchangés).
