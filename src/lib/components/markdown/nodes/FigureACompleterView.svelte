@@ -107,6 +107,7 @@
 		type Protractor as PosedProtractor
 	} from '$lib/questions/construction/drawing';
 	import { PROTRACTOR_RADIUS } from '$lib/constructions-v2/constants';
+	import { protractorRadiusOf } from '$lib/questions/construction/angle';
 	import Protractor from '$lib/constructions-v2/instruments/components/Protractor.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import FigureBlockView from './FigureBlockView.svelte';
@@ -266,16 +267,12 @@
 		apply(flipProtractor(drawing));
 	}
 
-	/** Rayon du rapporteur à l'écran (unités SVG de la figure), plafonné par la fenêtre */
-	const PROTRACTOR_SVG_RADIUS = 140;
-
-	function radiusFor(scene: FigureScene, width: number, height: number): number {
-		const transformer = createTransformer(scene.viewport, width, height);
-		const { xMin, xMax, yMin, yMax } = scene.viewport;
-		return Math.min(
-			PROTRACTOR_SVG_RADIUS / transformer.scaleX,
-			0.45 * Math.min(xMax - xMin, yMax - yMin)
-		);
+	/**
+	 * Rayon du rapporteur : une part de la fenêtre, le même que celui du refus à la
+	 * publication (`protractorRadiusOf`, décision de David, § 18)
+	 */
+	function radiusFor(scene: FigureScene): number {
+		return protractorRadiusOf(scene.viewport);
 	}
 
 	/** Le rapporteur posé, à l'écran : centre, rotation (degrés SVG), échelle du dessin */
@@ -465,7 +462,7 @@
 			tapAt(math);
 			return;
 		}
-		if (tool === 'rapporteur') protractorRadius = radiusFor(scene, width, height);
+		if (tool === 'rapporteur') protractorRadius = radiusFor(scene);
 		const targets = snapTargets(scene);
 		if (tool === 'equerre' && !drawing.guide) {
 			const guide = straightAt(math, targets.traits, radius);
@@ -543,17 +540,11 @@
 		return `Nœud ${cursor.x} ; ${cursor.y}${drawing.start ? ', départ choisi' : ''}, ${count} ${what}`;
 	});
 
-	function handlePointKey(
-		event: KeyboardEvent,
-		position: Position,
-		scene: FigureScene,
-		width: number,
-		height: number
-	) {
+	function handlePointKey(event: KeyboardEvent, position: Position, scene: FigureScene) {
 		if (event.key !== 'Enter' && event.key !== ' ') return;
 		event.preventDefault();
 		if (tool === 'rapporteur' && !drawing.protractor) {
-			protractorRadius = radiusFor(scene, width, height);
+			protractorRadius = radiusFor(scene);
 		}
 		if (tool === 'equerre' && !drawing.guide) {
 			hint = { node, text: 'Touche d’abord une droite.' };
@@ -943,7 +934,7 @@
 					tabindex="0"
 					aria-label="Point {name}"
 					pointer-events="none"
-					onkeydown={(event) => handlePointKey(event, position, scene, width, height)}
+					onkeydown={(event) => handlePointKey(event, position, scene)}
 				/>
 			{/each}
 			{#if instruments && (!grid || (tool === 'equerre' && !drawing.guide))}
@@ -981,7 +972,7 @@
 							tabindex="0"
 							aria-label="Intersection {i + 1}"
 							pointer-events="none"
-							onkeydown={(event) => handlePointKey(event, position, scene, width, height)}
+							onkeydown={(event) => handlePointKey(event, position, scene)}
 						/>
 					{/each}
 					<!-- Repères du rapporteur (côté de l'angle) -->
@@ -997,7 +988,7 @@
 							tabindex="0"
 							aria-label="Repère {i + 1}"
 							pointer-events="none"
-							onkeydown={(event) => handlePointKey(event, position, scene, width, height)}
+							onkeydown={(event) => handlePointKey(event, position, scene)}
 						/>
 					{/each}
 					<!-- Bouts des segments donnés (report d'une longueur) -->
@@ -1012,7 +1003,7 @@
 							tabindex="0"
 							aria-label="Extrémité {i + 1}"
 							pointer-events="none"
-							onkeydown={(event) => handlePointKey(event, position, scene, width, height)}
+							onkeydown={(event) => handlePointKey(event, position, scene)}
 						/>
 					{/each}
 				{/if}

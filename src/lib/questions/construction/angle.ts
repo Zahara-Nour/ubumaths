@@ -20,8 +20,49 @@ import type { ConstructionVerdict, Position } from './judge';
 import { tolerance } from './polygon';
 import type { FigureShapes } from './symmetry';
 
-/** Place qu'il faut, dans la fenêtre, pour tracer le côté [Oy) (unités de la figure) */
-export const ANGLE_SIDE_ROOM = 2;
+/**
+ * Rayon du rapporteur : cette part du plus petit côté de la fenêtre (décision de
+ * David du 2026-11-03, § 18). Le même pour l'écran (`FigureACompleterView`) et
+ * pour le refus à la publication : l'élève doit voir toutes les graduations.
+ */
+export const PROTRACTOR_WINDOW_RATIO = 0.35;
+
+/** Rayon par défaut sans fenêtre (unités de la figure) */
+const PROTRACTOR_DEFAULT_RADIUS = 3;
+
+/** Rayon du rapporteur pour cette fenêtre, en unités de la figure */
+export function protractorRadiusOf(window: FigureShapes['window']): number {
+	if (!window) return PROTRACTOR_DEFAULT_RADIUS;
+	return PROTRACTOR_WINDOW_RATIO * Math.min(window.xMax - window.xMin, window.yMax - window.yMin);
+}
+
+/**
+ * Le demi-rapporteur posé en `o`, base le long de [OA) (direction unitaire `u`),
+ * corps du côté `sens`, tient-il entier dans la fenêtre ? (sa barre, de l'autre
+ * côté de la base, peut dépasser)
+ */
+function protractorFits(
+	o: Position,
+	u: Position,
+	sens: 1 | -1,
+	radius: number,
+	window: FigureShapes['window']
+): boolean {
+	if (!window) return true;
+	const eps = tolerance(o);
+	// Pour chaque bord : jusqu'où le demi-disque s'étend vers lui (1 si la direction du bord est
+	// du côté du corps, sinon le plus loin des deux bouts de la base)
+	const reach = (e: Position) => {
+		const inside = sens * (u.x * e.y - u.y * e.x) >= 0;
+		return inside ? 1 : Math.abs(u.x * e.x + u.y * e.y);
+	};
+	return (
+		o.x + radius * reach({ x: 1, y: 0 }) <= window.xMax + eps &&
+		o.x - radius * reach({ x: -1, y: 0 }) >= window.xMin - eps &&
+		o.y + radius * reach({ x: 0, y: 1 }) <= window.yMax + eps &&
+		o.y - radius * reach({ x: 0, y: -1 }) >= window.yMin - eps
+	);
+}
 
 /** Écart admis sur la mesure (degrés) : un repère arrive exact, au calcul flottant près */
 const MEASURE_EPSILON = 1e-6;
@@ -50,6 +91,8 @@ interface AngleSetting {
 	a: Position;
 	/** Directions (unitaires) des deux côtés [Oy) possibles qui ont la place dans la fenêtre */
 	sides: { direction: Position; sens: 1 | -1; room: number }[];
+	/** Rayon du rapporteur */
+	radius: number;
 }
 
 const distance = (p: Position, q: Position) => Math.hypot(p.x - q.x, p.y - q.y);
@@ -108,12 +151,17 @@ function settingOf(
 			`${label} : le point ${check.side} existe déjà dans la figure (le côté [${nameO}${check.side}) est à tracer)`
 		);
 	}
+	// Côtés possibles : ceux où le demi-rapporteur posé en O tient dans la fenêtre (son
+	// repère, à son bord, y est donc aussi)
+	const radius = protractorRadiusOf(shapes.window);
+	const length = distance(o, a);
+	const u = { x: (a.x - o.x) / length, y: (a.y - o.y) / length };
 	const sides = ([1, -1] as const).flatMap((sens) => {
+		if (!protractorFits(o, u, sens, radius, shapes.window)) return [];
 		const direction = rotated(o, a, check.measure, sens);
-		const room = roomAlong(o, direction, shapes.window);
-		return room >= ANGLE_SIDE_ROOM ? [{ direction, sens, room }] : [];
+		return [{ direction, sens, room: roomAlong(o, direction, shapes.window) }];
 	});
-	return { o, a, sides };
+	return { o, a, sides, radius };
 }
 
 /** Les vérifications sont-elles faisables ? Erreur d'AUTEUR sinon */
@@ -125,7 +173,7 @@ export function assertAngle(
 	const { sides } = settingOf(check, points, shapes);
 	if (sides.length === 0) {
 		throw new AngleAuthorError(
-			`${labelOf(check)} : pas la place de tracer le côté [${check.points[1]}${check.side}) dans la fenêtre, ni d’un côté ni de l’autre : agrandir la fenêtre ou déplacer ${check.points[1]}`
+			`${labelOf(check)} : le rapporteur posé en ${check.points[1]} sort de la figure, d’un côté de (${check.points[1]}${check.points[0]}) comme de l’autre : éloigner ${check.points[1]} du bord ou agrandir la fenêtre`
 		);
 	}
 }
@@ -217,7 +265,7 @@ function correctionSide(
 	} catch {
 		return null;
 	}
-	const { o, a, sides } = setting;
+	const { o, a, sides, radius } = setting;
 	if (sides.length === 0) return null;
 	const eps = tolerance(o, a);
 	const u = { x: a.x - o.x, y: a.y - o.y };
@@ -230,7 +278,7 @@ function correctionSide(
 		return [cross > 0 ? 1 : -1];
 	})[0];
 	const side = sides.find((s) => s.sens === drawnSens) ?? sides[0];
-	const length = Math.min(Math.max(distance(o, a), ANGLE_SIDE_ROOM), side.room);
+	const length = Math.min(Math.max(distance(o, a), radius), side.room);
 	const end = { x: o.x + side.direction.x * length, y: o.y + side.direction.y * length };
 	return { o, a, end, sens: side.sens };
 }

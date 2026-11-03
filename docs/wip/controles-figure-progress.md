@@ -6,19 +6,18 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, lot 5 codé (PR à ouvrir)._
+_Mis à jour le 2026-11-03, après #2301 (lot 5 mergé)._
 
-- **État** : lots 1 à 4 et « point construit » (#2288) mergés, pas encore en prod. Lot 5 (angle au
-  rapporteur, § 16-17) codé sur `feat/angle-rapporteur`, revue Opus faite et corrigée ; tests verts.
-- **Prochaine action** : PR, CI, merge ; puis lot 6 « mesurer un angle »
-  (6-169, même geste), phase 0.
-- **En attente de David** : rapporteur près du bord (refus à la publication, rapporteur réduit, ou
-  conseil dans l'aide ; § 17).
+- **État** : lots 1 à 5 mergés (#2301 : angle au rapporteur), pas encore en prod. PR du rapporteur
+  près du bord (§ 18) codée sur `fix/rapporteur-bord`.
+- **Prochaine action** : PR, CI, merge ; puis phase 0 du lot 6 « mesurer un angle » (6-169, même geste).
+- **En attente de David** : rien.
 - **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12, sa propre
   phase 0) ; `perpendiculaire(A, s)` échoue quand A est un bout de s ; `symetrie(P, axe=d)` échoue si
   P définit d ; l'« Essayer » de l'aide ne rend pas la case jouable ; plafond de 20 objets sans
-  message ; la demi-droite s'écrit `demidroite(O, A)` ; fenêtre au plus 4 fois plus large que haute.
-- **Worktree / branche** : `../ubumaths-wt-controles-figure`, `feat/angle-rapporteur`.
+  message ; la demi-droite s'écrit `demidroite(O, A)` ; fenêtre au plus 4 fois plus large que haute ;
+  graduations intérieures du rapporteur serrées (police fixe de 10 px).
+- **Worktree / branche** : `../ubumaths-wt-controles-figure`, `fix/rapporteur-bord`.
 
 ---
 
@@ -746,3 +745,23 @@ Palette déduite : Rapporteur · Segment.
 - Aide à l'écriture : exemple « Construire un angle de mesure donnée (rapporteur) ».
 - Tests : `construction-angle.test.ts` (37), écran `figure-a-completer-angle.svelte.test.ts` (4) ; trois
   anciens tests prenaient « rapporteur » comme outil inconnu (→ « crayon »).
+
+## 18. Rapporteur près du bord (2026-11-03)
+
+### Décisions de David (2026-11-03, « je valide » mes recommandations)
+
+1. Rayon du rapporteur **fixé** à 0,35 du plus petit côté de la fenêtre (le même à l'écran et au refus).
+2. **Refus à la publication** si le demi-rapporteur posé en O ne tient entier dans la fenêtre ni d'un
+   côté de (OA) ni de l'autre : « le rapporteur posé en O sort de la figure… ». Remplace la marge de
+   2 unités (point 4 de la revue du lot 5 : le repère est toujours dans la fenêtre).
+3. Exemple de l'aide déplacé (O en (4 ; 3)).
+4. Échelle intérieure graduée de 10 en 10 **laissée telle quelle** (lire l'autre échelle est la
+   difficulté du rapporteur) ; traits au degré plus tard si les élèves bloquent.
+
+### Ce qui est fait
+
+- `protractorRadiusOf`, `protractorFits` (`angle.ts`) : un côté [Oy) possible = un côté où le
+  demi-rapporteur tient (la barre sous la base peut dépasser) ; `ANGLE_SIDE_ROOM` retiré. L'écran
+  prend le même rayon (`radiusFor`).
+- Tests : décor déplacé (O(4 ; 3), A(10 ; 3)) ; refus des deux côtés (vérifié rouge avant), tenue d'un
+  seul côté (publiable, correction de ce côté). Capture : rapporteur entier dans la figure, retourné ou non.
