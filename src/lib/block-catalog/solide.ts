@@ -80,10 +80,10 @@ export const solideEntry: BlockCatalogEntry = {
 				},
 				{
 					key: 'tracer',
-					values: 'vecteur AB + AD + AE | vecteur AB + AD depuis A',
+					values: 'vecteur AB + AD + AE | vecteur AB + AD depuis A | vecteur 2 u - v',
 					defaultValue: null,
 					description:
-						'Geste de l’élève, dans une question : il touche un point pour l’origine, puis un point pour l’extrémité, et une flèche se dessine. La combinaison : au plus 6 vecteurs entre points nommés, signes + et -, coefficients entiers ou demis (2 AB, 1/2 AE). depuis A impose l’origine (posée d’office, l’élève ne touche que l’extrémité) ; sans lui, tout représentant du vecteur est juste. Les points à toucher : les sommets nommés, puis les points de points: (pas de milieux automatiques) ; l’extrémité doit tomber sur l’un d’eux. Polyèdres seulement, sommets nommés. Faux : une phrase, et la flèche juste en vert. Réponse de la case : les noms des deux points (A/G).'
+						'Geste de l’élève, dans une question : il touche un point pour l’origine, puis un point pour l’extrémité, et une flèche se dessine. La combinaison : au plus 6 vecteurs entre points nommés, ou nommés dans vecteurs: (2 u - v), signes + et -, coefficients entiers ou fractions irréductibles de dénominateur 2, 3 ou 4 (2 AB, 1/2 AE, 1/3 SA). depuis A impose l’origine (posée d’office, l’élève ne touche que l’extrémité) ; sans lui, tout représentant du vecteur est juste. Les points à toucher : les sommets nommés, puis les points de points: (pas de milieux automatiques) ; l’extrémité doit tomber sur l’un d’eux. Polyèdres seulement, sommets nommés. Faux : une phrase, et la flèche juste en vert. Réponse de la case : les noms des deux points (A/G).'
 				}
 			]
 		}
@@ -211,6 +211,19 @@ export const solideEntry: BlockCatalogEntry = {
 				'L’élève touche l’origine puis l’extrémité : A puis C est juste, comme E puis G : toute flèche égale à AB + AD est juste.'
 		},
 		{
+			title: 'Une combinaison de vecteurs donnés',
+			source: fence(
+				'solide',
+				'forme: pyramide triangle 4 3',
+				'sommets: S A B C',
+				'points: G centre ABC',
+				'vecteurs: u = SA, v = SB, w = SC',
+				'tracer: vecteur 1/3 u + 1/3 v + 1/3 w depuis S'
+			),
+			explanation:
+				'Les vecteurs u, v, w sont dessinés et nommés ; l’élève touche l’extrémité, ici G, le centre de gravité de ABC. Une phrase de correction écrit la combinaison avec u, v, w.'
+		},
+		{
 			title: 'Sans arêtes cachées',
 			source: fence('solide', 'forme: pave 4 2 3', 'cachees: non'),
 			explanation: 'Toutes les arêtes en trait plein : une perspective à corriger.'
@@ -263,6 +276,18 @@ export const solideEntry: BlockCatalogEntry = {
 			),
 			message: 'l’extrémité ne tombe sur aucun point',
 			explanation: 'Déclarer le milieu : points: I milieu BF, puis il devient un point à toucher.'
+		},
+		{
+			title: 'Une fraction à simplifier',
+			source: fence(
+				'solide',
+				'forme: cube 2',
+				'sommets: A B C D E F G H',
+				'points: I milieu AE',
+				'tracer: vecteur 2/4 AE depuis A'
+			),
+			message: 'écrire 1/2',
+			explanation: 'La phrase de correction reprend l’écriture : 1/2 AE.'
 		},
 		{
 			title: 'Un plan qui ne coupe pas le solide',
