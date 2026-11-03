@@ -84,7 +84,7 @@ export function protractorFits(
 const MEASURE_EPSILON = 1e-6;
 
 /** Mesure lue à l'élève : entière, sinon au dixième (virgule) */
-function degrees(value: number): string {
+export function degrees(value: number): string {
 	const tenth = Math.round(value * 10) / 10;
 	return `${String(tenth).replace('.', ',')}°`;
 }

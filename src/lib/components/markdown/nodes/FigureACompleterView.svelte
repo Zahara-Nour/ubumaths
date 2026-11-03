@@ -873,7 +873,8 @@
 			{/each}
 		{/if}
 		{#if corrected}
-			<!-- Triangle à construire (lot 4) : arcs de report en traits fins, longueurs codées -->
+			<!-- Triangle à construire (lot 4) : arcs de report en traits fins, longueurs codées ;
+			     lot 7 : angles donnés codés -->
 			{@const triangle = solutionTriangle(
 				checks,
 				allPoints,
@@ -897,6 +898,16 @@
 						{#each lengthTicks(mark, scene, width, height) as t, j (j)}
 							<line data-testid="bon-triangle-marque" class="bon-point-codage" {...t} />
 						{/each}
+					{/each}
+					<!-- Angles donnés (lot 7) : l'arc codé de leur mesure, comme au lot 5 -->
+					{#each triangle.angles as angle, i (i)}
+						{@const a = angleArc(angle, scene, width, height)}
+						<g data-testid="bon-triangle-angle" class="bon-point">
+							<path class="bon-point-codage" d={a.d} />
+							<text x={a.label.x} y={a.label.y} text-anchor="middle" dominant-baseline="middle"
+								>{a.text}</text
+							>
+						</g>
 					{/each}
 				</g>
 			{/if}

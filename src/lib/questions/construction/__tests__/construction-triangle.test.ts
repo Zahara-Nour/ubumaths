@@ -123,6 +123,7 @@ describe('vérification triangle : lecture de l’en-tête', () => {
 					{ side: ['A', 'C'], source: ['u'] },
 					{ side: ['B', 'C'], source: ['v'] }
 				],
+				angles: [],
 				line: 2
 			}
 		]);
@@ -155,7 +156,7 @@ describe('vérification triangle : lecture de l’en-tête', () => {
 
 	it('refuse un côté qui ne passe pas par C', () => {
 		const source = figure('triangle ABC : AB = u ; BC = v', BODY);
-		expect(readConstructionHeader(source).errors[0]?.message).toMatch(/\[AC\] et \[BC\]/);
+		expect(readConstructionHeader(source).errors[0]?.message).toMatch(/\[AC\] ou \[BC\]/);
 	});
 
 	it('refuse une longueur manquante', () => {

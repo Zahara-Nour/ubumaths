@@ -273,9 +273,12 @@ export function judgeConstruction(
 	const objects = parseConstructionAnswer(answer);
 	if (objects === null) return { status: 'incorrect' };
 	if (objects.length === 0) return { status: 'empty' };
-	// Repère du rapporteur (lot 5) hors d'un angle à construire : sans son outil, réponse forgée
+	// Repère du rapporteur (lot 5) hors d'un angle à construire (ou d'un triangle à angle
+	// donné, lot 7) : sans son outil, réponse forgée
 	const angle = allChecks.find((c) => c.kind === 'angle');
-	if (!angle && objects.some((o) => o.kind === 'repere')) return { status: 'incorrect' };
+	const protractor =
+		angle !== undefined || allChecks.some((c) => c.kind === 'triangle' && c.angles.length > 0);
+	if (!protractor && objects.some((o) => o.kind === 'repere')) return { status: 'incorrect' };
 	// Angle à construire (lot 5) : seul dans la figure (garanti par le parseur)
 	if (angle) {
 		try {
