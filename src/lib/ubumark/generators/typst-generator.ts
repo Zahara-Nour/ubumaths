@@ -3708,7 +3708,9 @@ export async function markdownToTypst(
 /**
  * Bloc ```ranger : les étiquettes encadrées, dans l'ordre où l'élève les voit,
  * puis une place vide (pointillés) par étiquette, séparées du signe ; l'enfant
- * écrit. Signe en mode math : `<` seul ouvrirait une étiquette Typst.
+ * écrit. Signe en mode math : `<` seul ouvrirait une étiquette Typst. En étapes
+ * (`signe: aucun`) : étiquettes l'une sous l'autre, puis places numérotées sur
+ * toute la largeur, en colonne.
  */
 function generateRangerTypst(node: RangerNode, options: ResolvedTypstTranspilerOptions): string {
 	if (node.errors.length > 0) return '';
@@ -3720,6 +3722,18 @@ function generateRangerTypst(node: RangerNode, options: ResolvedTypstTranspilerO
 				: '';
 		return `ranger-etiquette[${body}]`;
 	});
+	if (node.sign === 'aucun') {
+		const steps = labels.map((_, k) => `ranger-etape(${k + 1})`).join(', ');
+		return [
+			'#[',
+			'#let ranger-etiquette(body) = box(stroke: 0.6pt, inset: (x: 6pt, y: 4pt), radius: 3pt, body)',
+			'#let ranger-etape(numero) = grid(columns: (auto, 1fr), column-gutter: 0.5em, align: horizon, [#(str(numero) + ".")], box(width: 100%, height: 0.9cm, stroke: (paint: luma(120), dash: "dashed"), radius: 3pt))',
+			`#grid(columns: 1, row-gutter: 0.4em, ${labels.join(', ')})`,
+			'',
+			`#grid(columns: 1, row-gutter: 0.8em, ${steps})`,
+			']'
+		].join('\n');
+	}
 	const sign = node.sign === '>' ? ', $>$, ' : ', $<$, ';
 	// Grilles centrées en hauteur : signes au milieu des places, étiquettes alignées
 	return [
