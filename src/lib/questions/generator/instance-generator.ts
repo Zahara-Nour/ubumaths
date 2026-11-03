@@ -106,6 +106,7 @@ import { expectedVectorLatex } from '../vectors/vector-answer';
 import { expectedMatrixLatex } from '../matrices/matrix-answer';
 import { evaluateConditions } from './condition-evaluator';
 import { createRandomSource, randomIndex, type RandomSource } from '$lib/utils/random';
+import { expectedInRequiredUnit } from '$lib/questions/units/required-unit';
 
 // ============================================================================
 // SHARED DEFAULTS MERGING
@@ -244,7 +245,10 @@ function resolveRequiredForm(
 	// parenthésé (`9 / (-3)` reconnaît `9:(-3)` ; une formule `a+1` reste un seul opérande)
 	const resolve = (pattern: string) =>
 		pattern.replace(MARKER_REGEX, (marker) => {
-			const value = resolveExpression(marker, resolvedVariables, random).trim();
+			// Une valeur dans un motif : une durée reste UNE grandeur (2026-11-03)
+			const value = resolveExpression(marker, resolvedVariables, random, {
+				durations: 'single'
+			}).trim();
 			return /^\d+(?:\.\d+)?$/.test(value) ? value : `(${value})`;
 		});
 	return requiredForm.acceptable === undefined
@@ -345,7 +349,10 @@ function resolveValidationRules(
 	const resolve = (text: string) =>
 		text.replace(MARKER_REGEX, (marker) => {
 			if (BARE_MARKER_REGEX.test(marker)) return marker;
-			const value = resolveExpression(marker, resolvedVariables, random).trim();
+			// Une valeur dans un motif : une durée reste UNE grandeur (2026-11-03)
+			const value = resolveExpression(marker, resolvedVariables, random, {
+				durations: 'single'
+			}).trim();
 			return /^\d+(?:\.\d+)?$/.test(value) ? value : `(${value})`;
 		});
 	return rules.map((rule): ValidationRule => {
@@ -1078,9 +1085,13 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					answerKind !== 'intervalles' &&
 					answerKind !== 'vecteur' &&
 					answerKind !== 'matrice';
+				// Unité imposée : l'attendu s'écrit dans cette unité (`1.5[km]` → `1500[m]`)
+				const required = (blank.unit ?? resolvedVariation.blankDefaults?.unit)?.required;
 				const expectedAnswer = isCleanable
 					? cleanCoefficientsCustom(resolvedExpected, genericFunctions, capitalPairs)
-					: resolvedExpected;
+					: required
+						? expectedInRequiredUnit(resolvedExpected, required)
+						: resolvedExpected;
 
 				// `i` matches the blank counter assigned by `assignBlankIndices`
 				// (left-to-right, consecutive, 0-based). If that contract changes,

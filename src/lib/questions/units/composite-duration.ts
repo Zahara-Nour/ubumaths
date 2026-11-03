@@ -234,3 +234,33 @@ export function compositeDurationFormIssue(latex: string): DurationFormIssue | n
 	const reading = readCompositeDuration(latex);
 	return reading?.kind === 'duration' ? reading.issue : null;
 }
+
+/** Un attendu en h-min-s, tel que l'écrit `{{eval}}` : `{2[h]}{30[min]}` */
+const HOUSE_COMPOSITE_DURATION = /^(?:\{\d+\[(?:h|min|s)\]\})+$/;
+
+/** Une partie d'un attendu en h-min-s : `2[h]` */
+const HOUSE_DURATION_PART = /\{(\d+)\[(h|min|s)\]\}/g;
+
+/**
+ * Un attendu écrit en h-min-s par `{{eval}}` (`{2[h]}{58[min]}`, règle commune
+ * de l'unité du résultat, 2026-11-02) ramené à UNE grandeur, dans sa plus petite
+ * unité (`178[min]`) : la forme que lisent la correction et le clavier. Toute
+ * autre écriture est rendue telle quelle.
+ */
+export function singleExpectedDuration(expected: string): string {
+	const trimmed = expected.trim();
+	if (!HOUSE_COMPOSITE_DURATION.test(trimmed)) return expected;
+	const parts = [...trimmed.matchAll(HOUSE_DURATION_PART)].map(([, count, unit]) => ({
+		count: BigInt(count),
+		unit: unit as DurationUnit
+	}));
+	const smallest = parts.reduce<DurationUnit>(
+		(unit, part) => (SECONDS[part.unit] < SECONDS[unit] ? part.unit : unit),
+		parts[0].unit
+	);
+	const total = parts.reduce(
+		(sum, part) => sum + (part.count * BigInt(SECONDS[part.unit])) / BigInt(SECONDS[smallest]),
+		0n
+	);
+	return `${total}[${smallest}]`;
+}

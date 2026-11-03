@@ -33,7 +33,8 @@ import {
 	evalResultToCustom,
 	getVariables
 } from '$lib/mathAST/eval';
-import type { BindingValue } from '$lib/mathAST/eval';
+import type { BindingValue, EvalDurationOptions } from '$lib/mathAST/eval';
+import type { DurationWriting } from '$lib/mathAST/tidy';
 import type { MathNode } from '$lib/mathAST/types';
 import { toFrenchDecimal } from '$lib/utils/french-math';
 import { barePiRefusal } from '../validator/bare-pi';
@@ -489,7 +490,10 @@ export function resolveVariables(
 			const expression = hooks.resolveConditionals
 				? hooks.resolveConditionals(variable.expression, resolvedVariables)
 				: variable.expression;
-			const resolvedValue = resolveExpression(expression, resolvedVariables, random);
+			// La valeur d'une variable : une durée reste UNE grandeur (David, 2026-11-03)
+			const resolvedValue = resolveExpression(expression, resolvedVariables, random, {
+				durations: 'single'
+			});
 
 			// Build the resolved variable
 			const resolved: ResolvedVariable = {
@@ -565,8 +569,15 @@ export function resolveExpression(
 		 * comme une liste de tirage et enveloppait tout le texte dans {{…}}
 		 */
 		markdown?: boolean;
+		/**
+		 * Une durée calculée par `{{eval}}` : `'single'` pour la valeur d'une variable
+		 * (UNE grandeur, réutilisable dans un autre calcul), `'hms'` (défaut) pour ce
+		 * qui s'affiche (David, 2026-11-03)
+		 */
+		durations?: DurationWriting;
 	}
 ): string {
+	const evalOptions: EvalDurationOptions = { durations: options?.durations ?? 'hms' };
 	// Check if this is an explicit text literal (text:...) BEFORE normalization
 	// Text literals should NOT have variable substitution applied
 	const isTextLiteral = !options?.markdown && expression.trim().startsWith('text:');
@@ -619,7 +630,7 @@ export function resolveExpression(
 	// The tokenizer groups nested {{}} as a single outer token, so Stage 3 would never
 	// see an {{eval:...}} inside a {{random:...}}. This step scans the raw string to
 	// find and evaluate innermost {{eval:...}} tokens at any nesting level.
-	result = resolveEmbeddedEvals(result, alreadyResolved);
+	result = resolveEmbeddedEvals(result, alreadyResolved, evalOptions);
 
 	// STAGE 2: Generate random numbers {{random:...}} or {{...}}
 	const randomTokens = tokenize(result).filter((t) => t.type === 'random');
@@ -638,7 +649,8 @@ export function resolveExpression(
 				random,
 				// Resolve sub-expressions in discrete list items (e.g., "1..9" in "0|1..9"),
 				// en poursuivant la même source
-				(subExpr) => resolveExpression(subExpr, alreadyResolved, random)
+				(subExpr) =>
+					resolveExpression(subExpr, alreadyResolved, random, { durations: options?.durations })
 			);
 			result =
 				result.slice(0, token.start) +
@@ -735,7 +747,8 @@ export function resolveExpression(
 				evaluateAstWithModifiers(
 					substituted,
 					parsed.modifiers,
-					drawnLetters(alreadyResolved, referenced)
+					drawnLetters(alreadyResolved, referenced),
+					evalOptions
 				)
 			);
 			result = result.slice(0, token.start) + String(evaluatedValue) + result.slice(token.end);
@@ -940,7 +953,11 @@ function resolveDigitValue(str: string, alreadyResolved: ResolvedVariable[]): nu
  * @param alreadyResolved - Variables already resolved
  * @returns The string with all embedded {{eval:...}} tokens resolved
  */
-function resolveEmbeddedEvals(text: string, alreadyResolved: ResolvedVariable[]): string {
+function resolveEmbeddedEvals(
+	text: string,
+	alreadyResolved: ResolvedVariable[],
+	evalOptions: EvalDurationOptions
+): string {
 	let result = text;
 	let iterations = 0;
 	const MAX_ITERATIONS = 20;
@@ -989,7 +1006,7 @@ function resolveEmbeddedEvals(text: string, alreadyResolved: ResolvedVariable[])
 			const { start, end } = positions[p];
 			const evalToken = result.substring(start, end);
 
-			const evaluated = evaluateSingleEval(evalToken, alreadyResolved);
+			const evaluated = evaluateSingleEval(evalToken, alreadyResolved, evalOptions);
 			if (evaluated !== null) {
 				result = result.substring(0, start) + evaluated + result.substring(end);
 				changed = true;
@@ -1010,7 +1027,11 @@ function resolveEmbeddedEvals(text: string, alreadyResolved: ResolvedVariable[])
  *
  * @returns The evaluated value as string, or null if evaluation fails
  */
-function evaluateSingleEval(evalToken: string, alreadyResolved: ResolvedVariable[]): string | null {
+function evaluateSingleEval(
+	evalToken: string,
+	alreadyResolved: ResolvedVariable[],
+	evalOptions: EvalDurationOptions
+): string | null {
 	const parsed = parseEvalExpressionWithModifiers(evalToken);
 	if (!parsed) return null;
 
@@ -1056,7 +1077,8 @@ function evaluateSingleEval(evalToken: string, alreadyResolved: ResolvedVariable
 		evaluateAstWithModifiers(
 			substituted,
 			parsed.modifiers,
-			drawnLetters(alreadyResolved, referenced)
+			drawnLetters(alreadyResolved, referenced),
+			evalOptions
 		)
 	);
 	return String(evaluatedValue);

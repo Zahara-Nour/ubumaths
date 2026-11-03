@@ -52,6 +52,7 @@ import { isUnit } from '../guards';
 import { rewrite, type RewriteStep } from '../common/rewriting-engine';
 import { AbortError } from '../common/abort';
 import { nodesEqual } from '../pattern/match';
+import { hashUnit } from '../normal/hash';
 
 // =============================================================================
 // Rule Set Builder
@@ -139,6 +140,11 @@ function makeTidyThenExpandIfCheaper(
 			if (error instanceof AbortError) throw error;
 			return tidied;
 		}
+		// L'unité écrite d'abord (ADR 0026) : `normalize` ramène une grandeur à ses
+		// unités de base, et le candidat rendrait `2500[mL]` en `0,0025[m^3]`. Un
+		// candidat qui écrit une unité absente de la forme mise au propre ne gagne pas.
+		if (!writesOnlyUnitsOf(expanded, tidied)) return tidied;
+
 		const expandedCost = cost(expanded);
 		const tidiedCost = cost(tidied);
 		if (expandedCost < tidiedCost) return expanded;
@@ -151,6 +157,17 @@ function makeTidyThenExpandIfCheaper(
 function containsAffineQuantity(node: MathNode): boolean {
 	if (isUnit(node) && (node.unit.offset ?? 0) !== 0) return true;
 	return getChildren(node).some(containsAffineQuantity);
+}
+
+/** Les unités écrites par `candidate` le sont toutes par `reference`. */
+function writesOnlyUnitsOf(candidate: MathNode, reference: MathNode): boolean {
+	const written = new Set(unitHashes(reference));
+	return unitHashes(candidate).every((hash) => written.has(hash));
+}
+
+function unitHashes(node: MathNode): string[] {
+	const own = isUnit(node) ? [hashUnit(node.unit)] : [];
+	return [...own, ...getChildren(node).flatMap(unitHashes)];
 }
 
 /** Nombre de termes de la somme de tête (1 pour tout ce qui n'est pas une somme). */

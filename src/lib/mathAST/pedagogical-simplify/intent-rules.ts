@@ -393,6 +393,7 @@ const RULE_CATEGORY_MAP: ReadonlyMap<string, PedagogicalSimplifyCategory> = new 
 	['tidy-power-to-root', 'radicaux'],
 	['tidy-add-fractions', 'fractions'],
 	['tidy-choose-unit', 'autre'],
+	['tidy-write-duration', 'autre'],
 
 	// ---- combinaison-termes-semblables ---------------------------------------
 	// pattern arithmetic rules

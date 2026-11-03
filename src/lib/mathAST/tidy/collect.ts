@@ -22,7 +22,14 @@ import type { Unit } from '../units/types';
 import type { Rational } from '../normal/types';
 import type { TypeContext } from '../numtype';
 import type { TidyCondition, TidyFactor, TidyQuantity, TidyTerm } from './types';
-import type { TermOrder, TidyOptions, TidyRule, UnitChoice } from './step-recorder';
+import type {
+	DurationWriting,
+	TermOrder,
+	TidyOptions,
+	TidyRule,
+	UnitChoice
+} from './step-recorder';
+import { compositeDurationNode, typesCompositeDuration, writesDuration } from './duration';
 import { TidyStepRecorder } from './step-recorder';
 import { flattenProductShallow, flattenSumShallow } from '../flatten';
 import { findNodes, getChildren, stripUnnecessaryBrackets } from '../transforms';
@@ -110,6 +117,11 @@ type Settings = {
 	 * S3 refuse à `tidy`. `undefined` : `tidy`, qui garde le domaine.
 	 */
 	readonly conditions: TidyCondition[] | undefined;
+	/**
+	 * `'hms'` : appel de tête où l'élève a tapé au moins deux de h, min, s — la
+	 * durée du résultat s'écrit en h-min-s ; `'single'` : UNE grandeur.
+	 */
+	readonly durations: DurationWriting;
 };
 
 /**
@@ -446,6 +458,109 @@ function writtenUnitOf(symbols: ReadonlyMap<string, number>, unit: Unit): Unit |
 }
 
 /**
+ * Les unités ÉCRITES où un terme produit peut s'exprimer (vide hors du mode
+ * `'written'`) : pour chaque dimension de base, chacune des unités simples tapées
+ * qui la portent (`7[mm]·5[cm]` → `mm^2`, `cm^2`), et l'unité composée telle que
+ * tapée quand elle n'écrit pas deux fois une dimension (`3[kW]·2[h]` → `kW.h`).
+ */
+function writtenUnitsOf(
+	symbols: ReadonlyMap<string, number>,
+	unit: Unit | null,
+	quantity: TidyQuantity | null,
+	settings: Settings
+): readonly Unit[] {
+	if (settings.unitChoice !== 'written' || unit === null || quantity === null) return [];
+	const combos = writtenCombinations(symbols, unit);
+	const typed = coherentUnitOf(unit) === null && !isBaseFallback(symbols, unit) ? [unit] : [];
+	return distinctUnits([...combos, ...typed]);
+}
+
+/** L'unité composée n'est pas faite que d'unités tapées (repli en unités de base) */
+function isBaseFallback(symbols: ReadonlyMap<string, number>, unit: Unit): boolean {
+	const terms = parseUnitTerms(unitWriting(unit));
+	return terms === null || terms.some(({ symbol }) => !symbols.has(symbol));
+}
+
+/** La dimension d'une durée (`s^1`), clé de `TidyQuantity.dimension`. */
+const DURATION_DIMENSION = 's^1:pi^0';
+
+/** Plafond des combinaisons d'unités tapées d'un produit */
+const MAX_WRITTEN_COMBINATIONS = 16;
+
+/** Toutes les écritures « une unité tapée par dimension de base » de `unit`. */
+function writtenCombinations(symbols: ReadonlyMap<string, number>, unit: Unit): Unit[] {
+	const total = exactConversion(unitWriting(unit));
+	if (total === null) return [];
+	const bySymbol = new Map<string, { symbol: string; power: number }[]>();
+	for (const symbol of symbols.keys()) {
+		const own = exactConversion(symbol);
+		if (own === null || own.offset !== null || own.piPower !== 0) continue;
+		if (own.components.size !== 1) continue;
+		const [[base, power]] = own.components;
+		const list = bySymbol.get(base) ?? [];
+		list.push({ symbol, power });
+		bySymbol.set(base, list);
+	}
+	let partials: Map<string, number>[] = [new Map()];
+	for (const [base, exponent] of total.components) {
+		const options = (bySymbol.get(base) ?? []).filter((o) => exponent % o.power === 0);
+		if (options.length === 0) return [];
+		partials = partials.flatMap((parts) =>
+			options.map((o) => {
+				const next = new Map(parts);
+				next.set(o.symbol, (next.get(o.symbol) ?? 0) + exponent / o.power);
+				return next;
+			})
+		);
+		if (partials.length > MAX_WRITTEN_COMBINATIONS) return [];
+	}
+	return partials.map(composeUnit).filter((u): u is Unit => u !== null);
+}
+
+/** Les unités, dans l'ordre, sans doublon d'écriture. */
+function distinctUnits(units: readonly Unit[]): readonly Unit[] {
+	const seen = new Set<string>();
+	return units.filter((unit) => {
+		const key = hashUnit(unit);
+		if (seen.has(key)) return false;
+		seen.add(key);
+		return true;
+	});
+}
+
+/**
+ * Parmi les écritures d'une valeur dans les unités tapées (`null` si elle n'y
+ * tombe pas juste) : celle qui a le MOINS DE CHIFFRES ; à égalité, la plus petite
+ * unité (la plus grande valeur, celle qui évite la virgule). Une valeur sans
+ * écriture décimale finie : la fraction la plus courte (David, 2026-11-02).
+ * `12[km]+500[m]` → `12,5 km` ; `2000[m]+3[km]` → `5 km` ; `1[m]+1[km]` → `1001 m`.
+ */
+function chooseWrittenUnit(candidates: readonly (TidyTerm | null)[]): TidyTerm | null {
+	const found = candidates.filter((candidate): candidate is TidyTerm => candidate !== null);
+	if (found.length === 0) return null;
+	return found.reduce((best, candidate) => {
+		const diff = writtenLength(candidate) - writtenLength(best);
+		if (diff !== 0) return diff < 0 ? candidate : best;
+		return compareMagnitude(candidate, best) > 0 ? candidate : best;
+	});
+}
+
+/** Le nombre de chiffres écrits de la valeur : `0,001` → 4, `5000` → 4, `1003/3` → 5. */
+function writtenLength(term: TidyTerm): number {
+	const magnitude = absRational(term.coefficient);
+	const text = decimalString(magnitude) ?? `${magnitude.n}/${magnitude.d}`;
+	return text.replace(/[^0-9]/g, '').length;
+}
+
+/** Signe de |a| − |b|. */
+function compareMagnitude(a: TidyTerm, b: TidyTerm): number {
+	const x = absRational(a.coefficient);
+	const y = absRational(b.coefficient);
+	const diff = x.n * y.d - y.n * x.d;
+	return diff === 0n ? 0 : diff < 0n ? -1 : 1;
+}
+
+/**
  * Écart B (relecture de #483) — une unité qui écrit deux fois la même dimension
  * (`min.km/h`, `h.min`) se réécrit avec la première unité écrite de chaque
  * dimension : `min.km/h` → `km`. `null` si l'unité est déjà cohérente ou si
@@ -498,7 +613,11 @@ function quantityOf(unit: Unit): TidyQuantity | null {
  */
 function factorKey(base: MathNode, settings: Settings): string {
 	if (settings.order === 'canonical' || !containsSum(base)) return hashMathNode(base);
-	return hashMathNode(tidyExpression(base, { settings: { ...settings, order: 'canonical' } }));
+	return hashMathNode(
+		tidyExpression(base, {
+			settings: { ...settings, order: 'canonical', durations: 'single' }
+		})
+	);
 }
 
 /** Une somme quelque part dans l'arbre : sa clé dépend alors de l'ordre. */
@@ -1314,10 +1433,7 @@ function toTerm(
 			(acc.decimal || acc.decimalRoot) &&
 			!readsFraction(acc, factors, unit !== null) &&
 			writesDecimal(coefficient),
-		written:
-			settings.unitChoice === 'written' && unit !== null && quantity !== null
-				? writtenUnitOf(acc.unitSymbols, unit)
-				: null
+		written: writtenUnitsOf(acc.unitSymbols, unit, quantity, settings)
 	};
 	return reduceFractionOfSums(term, settings, watch);
 }
@@ -1401,7 +1517,7 @@ function verbatimTerm(node: MathNode, negative: boolean): TidyTerm {
 		verbatim: true,
 		quantity: null,
 		decimal: false,
-		written: null
+		written: []
 	};
 }
 
@@ -1764,7 +1880,8 @@ function collectLikeTerms(terms: readonly TidyTerm[], settings: Settings): TidyT
 		result.push({
 			...term,
 			coefficient,
-			decimal: decimal && !fraction && writesDecimal(coefficient)
+			decimal: decimal && !fraction && writesDecimal(coefficient),
+			written: distinctUnits(members.flatMap((member) => member.written))
 		});
 	}
 	return result;
@@ -1818,8 +1935,8 @@ function chooseUnit(term: TidyTerm, imposed: Unit | null, settings: Settings): T
 	// Écart B : sinon, une unité qui écrit deux fois la même dimension (`min.km/h`) est
 	// simplifiée (`km`), la valeur en fraction si rien ne tombe juste.
 	const writtenFraction = (): TidyTerm | null => {
-		if (settings.unitChoice === 'written' && term.written !== null)
-			return rewritten(term.written, false);
+		if (settings.unitChoice === 'written' && term.written.length > 0)
+			return chooseWrittenUnit(term.written.map((unit) => rewritten(unit, false)));
 		const coherent = term.unit === null ? null : coherentUnitOf(term.unit);
 		return coherent === null ? null : rewritten(coherent, false);
 	};
@@ -1829,9 +1946,15 @@ function chooseUnit(term: TidyTerm, imposed: Unit | null, settings: Settings): T
 		if (chosen !== null) return chosen;
 	}
 
-	// `unitChoice: 'written'` — l'unité écrite d'abord, si la valeur y tombe juste.
-	if (settings.unitChoice === 'written' && term.written !== null) {
-		const chosen = rewritten(term.written);
+	// `unitChoice: 'written'` — une durée tapée en au moins deux de h, min, s :
+	// h-min-s, si elle tombe juste en secondes (David, 2026-11-02).
+	const composite = compositeDuration(term, value, settings);
+	if (composite !== null) return composite;
+
+	// `unitChoice: 'written'` — une unité tapée, celle où la valeur s'écrit avec le
+	// moins de chiffres (David, 2026-11-02).
+	if (settings.unitChoice === 'written' && term.written.length > 0) {
+		const chosen = chooseWrittenUnit(term.written.map((unit) => rewritten(unit)));
 		if (chosen !== null) return chosen;
 	}
 
@@ -1863,6 +1986,18 @@ function chooseUnit(term: TidyTerm, imposed: Unit | null, settings: Settings): T
 	const fraction = writtenFraction();
 	if (fraction !== null) return fraction;
 	return decimalString(absRational(term.coefficient)) === null ? term : { ...term, decimal: true };
+}
+
+/**
+ * La durée composée d'un terme (`2[h] 30[min]`), en terme gardé tel quel, ou
+ * `null` : hors du mode `'written'` ou de `durations: 'hms'` (l'élève a tapé au
+ * moins deux de h, min, s), ou si la durée ne tombe pas juste en secondes.
+ */
+function compositeDuration(term: TidyTerm, seconds: Rational, settings: Settings): TidyTerm | null {
+	if (settings.unitChoice !== 'written' || settings.durations !== 'hms') return null;
+	if (term.quantity === null || term.quantity.dimension !== DURATION_DIMENSION) return null;
+	const node = compositeDurationNode(seconds);
+	return node === null ? null : verbatimTerm(node, false);
 }
 
 /**
@@ -1948,18 +2083,34 @@ function tidyAtom(node: MathNode, settings: Settings): MathNode {
 	}
 }
 
-/** Les réglages d'un appel, lus une fois dans ses options. */
-function settingsOf(options: InnerOptions | undefined): Settings {
+/**
+ * Les réglages d'un appel, lus une fois dans ses options. `node` : l'expression
+ * de l'appel de tête, où se lisent les unités de durée tapées (sans lui, une
+ * durée reste UNE grandeur).
+ */
+function settingsOf(options: InnerOptions | undefined, node?: MathNode): Settings {
 	if (options?.settings !== undefined) return options.settings;
 	const domain = options?.domain ?? [];
 	return {
-		unitChoice: options?.unitChoice ?? 'school',
+		unitChoice: options?.unitChoice ?? 'written',
 		typeCtx: options?.typeCtx,
 		nonZero: domain.length === 0 ? NO_BASE : nonZeroBases(domain, (n) => tidyExpression(n)),
 		positive: domain.length === 0 ? NO_BASE : positiveBases(domain, (n) => tidyExpression(n)),
 		order: options?.order ?? 'canonical',
-		conditions: options?.conditions
+		conditions: options?.conditions,
+		durations:
+			options?.durations !== 'single' && node !== undefined && typesDurations(node)
+				? 'hms'
+				: 'single'
 	};
+}
+
+/** Au moins deux de h, min, s tapées dans le calcul (`2*(1[h] 30[min])` compris). */
+function typesDurations(node: MathNode): boolean {
+	const units = findNodes(node, (n) => n.type === 'unit');
+	return typesCompositeDuration(
+		units.map((n) => (n.type === 'unit' ? (n.unit.original ?? '') : ''))
+	);
 }
 
 /** Les termes dans l'ordre réglé : rangés, ou tels qu'écrits (S2). */
@@ -1969,18 +2120,14 @@ function ordered(terms: readonly TidyTerm[], settings: Settings): readonly TidyT
 
 /**
  * Les options à transmettre à une sous-expression : les réglages, jamais
- * l'enregistreur. Les réglages par défaut ne transmettent rien : le chemin sans
- * option reste exactement celui d'avant les options.
+ * l'enregistreur. Une durée ne s'écrit en h-min-s qu'au niveau de tête : dans
+ * `(2[h]+30[min])/1[s]`, la somme reste UNE grandeur, sinon le quotient ne se
+ * simplifie plus (`valueIn`, 2026-11-03).
  */
-function innerOptions(settings: Settings): InnerOptions | undefined {
-	const isDefault =
-		settings.unitChoice === 'school' &&
-		settings.typeCtx === undefined &&
-		settings.nonZero.size === 0 &&
-		settings.positive.size === 0 &&
-		settings.order === 'canonical' &&
-		settings.conditions === undefined;
-	return isDefault ? undefined : { settings };
+function innerOptions(settings: Settings): InnerOptions {
+	return {
+		settings: settings.durations === 'single' ? settings : { ...settings, durations: 'single' }
+	};
 }
 
 /** Une expression : somme de termes, regroupés puis ordonnés puis réécrits. */
@@ -1990,7 +2137,7 @@ export function tidyExpression(
 	source?: MathNode
 ): MathNode {
 	const recorder = options?.recorder;
-	const settings = settingsOf(options);
+	const settings = settingsOf(options, node);
 	const written = source ?? node;
 
 	// §D.2 — l'arithmétique des températures est à part : elle ne se ramène pas
@@ -2148,6 +2295,11 @@ function narrateSum(
 	const step = (rule: TidyRule, after: MathNode): MathNode => {
 		if (!nodesEqual(previous, after)) {
 			recorder.recordRule(rule, previous, after);
+			previous = after;
+		} else if (writesDuration(after) && !writesDuration(previous)) {
+			// `1[h]+30[min]` → `1[h] 30[min]` : même arbre, seul l'affichage change ; c'est
+			// pourtant un geste que l'élève voit (David, 2026-11-03)
+			recorder.recordRule('tidy-write-duration', previous, after);
 			previous = after;
 		}
 		return after;
