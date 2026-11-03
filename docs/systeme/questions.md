@@ -994,7 +994,7 @@ Concise / détaillée (ADR 0017) : `splitCorrectionDetail` retire ou garde `\det
     formule nettoyée est réécrite en notation maison (`readableCustom`) : `toCustom` y écrit la
     constante d'Euler `e`, relue par le parseur LaTeX du validateur (le remplacement de `\euler`,
     `CUSTOM_EULER`, est retiré le 2026-10-10). Une formule `$…$` reliée par `\iff`,
-    `\Leftrightarrow`, `\implies` ou `\Rightarrow` ne se lit pas en entier : chaque morceau est
+    `\Leftrightarrow`, `\implies` ou `\Rightarrow` (et leurs variantes `\Long…`) ne se lit pas en entier : chaque morceau est
     nettoyé pour lui-même (`cleanLogicalPieces`, `content-resolver.ts`), seulement s'il contient
     un chiffre (`(E)\iff …` garde ses parenthèses) ; un morceau illisible ou sans rien à
     nettoyer reste à l'octet près. Avant le 2026-11-03, « −1x − 3 = 0 ⟺ x = −3 » s’affichait (corrigé de 2-330).

@@ -374,6 +374,21 @@ describe('cleanCoefficients — formule à liens logiques (\\iff, \\implies…)'
 		expect(resolve('$(E)\\iff 1y=4$')).toBe('$(E)\\iff y = 4$');
 	});
 
+	it('\\Rightarrow et \\Longleftrightarrow : même traitement', () => {
+		expect(resolve('$1x=2\\Rightarrow x=2$')).toBe('$x = 2\\Rightarrow x=2$');
+		expect(resolve('$1x=2\\Longleftrightarrow x=2$')).toBe('$x = 2\\Longleftrightarrow x=2$');
+	});
+
+	it('bloc $$ sur plusieurs lignes : laissé tel quel', () => {
+		expect(resolve('$$1x+0=2\\\\ \\iff x=2$$')).toBe('$$1x+0=2\\\\ \\iff x=2$$');
+	});
+
+	it('marqueur <<expr:…>> gardé devant le morceau nettoyé', () => {
+		expect(resolve('$<<expr:expressionA>>1x+0=2\\iff x=2$')).toBe(
+			'$<<expr:expressionA>>x = 2\\iff x=2$'
+		);
+	});
+
 	it('sans l’option : formule inchangée', () => {
 		expect(resolve('$-1x-3=0\\iff x=-3$', false)).toBe('$-1x-3=0\\iff x=-3$');
 	});
