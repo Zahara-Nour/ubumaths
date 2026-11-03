@@ -23,7 +23,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	// `unaccent` par ligne, aucun index utilisable (joker en tête + fonction non
 	// immutable). Le `statement_timeout` de Supabase borne UNE requête, pas la
 	// cadence — et la base est partagée avec l'auth et les soumissions d'élèves.
-	rateLimit(`search:${user.id}`, 30, 60000);
+	await rateLimit(`search:${user.id}`, 30, 60000);
 
 	const parsed = searchQuerySchema.safeParse({
 		q: url.searchParams.get('q') ?? '',

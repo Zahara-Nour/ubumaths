@@ -17,7 +17,7 @@ _Mis à jour le 2026-11-03 : chantier versé ; lot 9 rouvert à part._
   `docs/systeme/programmes/bornes/lycee/tspe.md` § « Couverture en modèles de questions » ; pièges :
   `docs/pratiques/couvrir-un-niveau.md` § 9.
 - **Prochaine action** : lot 9 (334-339, 551-553, espace sur figure), rouvert le 2026-11-03 : `solides` est clos et
-  en prod (le versement l'a dit à tort « en attente ») → journal `docs/wip/questions-tspe-lot9-progress.md`.
+  en prod (le versement l'a dit à tort « en attente ») → journal `docs/archive/wip/questions-tspe-lot9-progress.md` (lot 9 clos et publié le 2026-11-03).
 - **En attente de David** : rien.
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe` à retirer (branches mergées).
 

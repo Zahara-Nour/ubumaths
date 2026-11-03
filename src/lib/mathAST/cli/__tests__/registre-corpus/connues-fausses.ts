@@ -16,13 +16,6 @@
 
 /** Le registre (`WebReplEngine`, champ `answer`) */
 export const REGISTRE_CONNUES_FAUSSES: Readonly<Record<string, string>> = {
-	// PR 1 : `.dériver` réduite (ADR 0032, D1)
-	'deriver-03': 'forme : \\exponentialE^x + x \\exponentialE^x',
-	'deriver-04':
-		'forme : \\dfrac{2 \\left( x - 3 \\right) - \\left( 2 x + 1 \\right)}{\\left( x - 3 \\right)^2}',
-	'deriver-09': 'forme : \\dfrac{-1}{x^2}',
-	'deriver-10': 'forme : 2 x \\exponentialE^{-x} - \\left( x^2 + 1 \\right) \\exponentialE^{-x}',
-	'deriver-12': 'forme : 6 \\left( 3 x - 1 \\right)',
 	// PR 2 : `.simplifier` ne perd pas le domaine (S3)
 	'simplifier-01': 'forme : x - 1',
 	'simplifier-10': 'forme : 1',

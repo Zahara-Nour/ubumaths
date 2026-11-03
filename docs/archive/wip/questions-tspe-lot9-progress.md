@@ -1,26 +1,22 @@
 # Chantier « questions-tspe-lot9 » — terminale spécialité, espace sur figure (lot 9)
 
-> Suite de [`questions-tspe`](../archive/wip/questions-tspe-progress.md) (journal d'index archivé : relevé § 1,
-> classement § 3.3, Q5 au § 5, lot 9 au § 4). Démarche : [couvrir-un-niveau.md](../pratiques/couvrir-un-niveau.md)
+> Suite de [`questions-tspe`](questions-tspe-progress.md) (journal d'index archivé : relevé § 1,
+> classement § 3.3, Q5 au § 5, lot 9 au § 4). Démarche : [couvrir-un-niveau.md](../../pratiques/couvrir-un-niveau.md)
 > (skill `couvrir-niveau`). Bornes : `docs/systeme/programmes/bornes/lycee/tspe.json` → `["T_SPE"].points`. En base,
 > le niveau est `T_SPE`. Rouvert le 2026-11-03 : le lot 9 attendait le chantier `solides`, clos le 2026-11-01 et en
 > prod (release 0.66.0) — le versement l'avait dit à tort « en attente ».
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2313._
+_Mis à jour le 2026-11-03 : chantier clos et versé._
 
-- **État** : 8 brouillons en prod, rangés et tagués (#2313, `db:migrate` fait, vérifié par MCP). Page à cocher
-  publiée : https://claude.ai/artifact/KxmPebhEVXtNgPub3LwZzm (8 fiches, aucune alerte, collection `verdicts`).
-- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`, compter 8) ; « À revoir » →
-  corriger (§ 7 de `couvrir-un-niveau.md`, `--mettre-a-jour`) ; tout OK → publication par David ; puis
-  versement du journal (fin du chantier).
-- **En attente de David** : la relecture sur la page à cocher ; fermer la PR #2315 (doublon de #2313, faite
-  par une autre session, à ne pas merger : sa garde échouerait) et retirer `../ubumaths-wt-questions-tspe-lot9-rangement`.
-- **Pièges en cours** : ` ```solide ` sans flèche, diagonale ni point hors sommet ; les choix à options variables
-  ont la bonne en premier (réponse `0`, mélangés à l'affichage).
-- **Worktree / branche** : aucun en cours (`-tags` retiré). L'ancien `../ubumaths-wt-questions-tspe-lot9`
-  (branche mergée, serveur 5177) est à retirer quand l'essai sera fini.
+- **État** : **8 modèles publiés** en prod (F1-F8, TSPE-335 à 339 et 551 à 553), rangés sur « Géométrie > Espace »
+  et tagués (#2313), relus par David (page à cocher : 8 « OK » sur 8), publiés par `publier-lot --publier` le
+  2026-11-03 (statut relu par MCP). Bilan durable : `docs/systeme/programmes/bornes/lycee/tspe.md`
+  § Couverture (273 modèles `T_SPE` publiés, 226 points sur 326).
+- **Reste** : 334 (tracer un vecteur sur un solide) classé C, ligne 13 de `docs/wip/outils-manquants.md`.
+- **Nettoyage fait** (2026-11-03, accord de David) : PR #2315 fermée sans merge ; worktrees
+  `../ubumaths-wt-questions-tspe-lot9` et `-rangement` retirés, branches supprimées.
 
 ---
 
@@ -136,3 +132,11 @@ sauté, pas de bloc de rollback), 12 verts avec elle ; deux tests de la garde «
 avec son seul tag, `updated_at` inchangé. Page à cocher : `page-a-cocher.ts --dir
 scripts/questions/tspe-9-figure`, 8 fiches lues en prod, aucune alerte,
 https://claude.ai/artifact/KxmPebhEVXtNgPub3LwZzm.
+
+## Relecture et publication (2026-11-03)
+
+Page à cocher (publiée par la session `questions-tspe`) : https://claude.ai/artifact/KxmPebhEVXtNgPub3LwZzm —
+8 verdicts « ok », sans commentaire. `publier-lot.ts` en simulation : 8 brouillons passent le contrôle ;
+`garde-niveaux-tags.ts` : aucun niveau manquant (1 907 modèles tagués). David a lancé `--publier` : les 8 sont
+`published` (MCP). Doublon : la PR #2315 (migration `20261103131044`, cette session) refaisait le rangement de
+#2313 (migration `20261103130717`, autre session) ; non mergée.

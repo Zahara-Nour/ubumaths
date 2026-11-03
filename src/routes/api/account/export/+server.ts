@@ -39,7 +39,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 	logger.info('Data export requested', { userId });
 
 	// Step 2: Rate limiting (1 per hour)
-	rateLimit(`account_export:${userId}`, RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS);
+	await rateLimit(`account_export:${userId}`, RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS);
 
 	try {
 		// Step 3: Fetch all user data in parallel

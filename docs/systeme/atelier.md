@@ -10,7 +10,7 @@ couvre:
 # L'atelier (et `/grapheur`)
 
 > Synthèse des journaux archivés `docs/archive/wip/atelier-*`. Syntaxe des commandes de Calcul :
-> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; lecture des degrés et de `π` partagée avec le registre, 2026-11-03 ; égalité tapée seule → vrai / faux, `≈` refusé, 2026-11-03 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; π au numérateur d'un périmètre, #1634, 2026-10-24 ; espaces de groupement dès 5 chiffres, 2026-10-23 ; étapes de `.résoudre` écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; ouvrir dans l'atelier depuis Python, 2026-10-25 ; ligne réservée sous la barre de la grille et libellé de « Résoudre », 2026-10-26 ; conditions sur la lettre, points irrationnels, `tan`/`arcsin`, `avec x ≥ e`, tidy-conditions § 5 PR A, 2026-10-26 ; Partager et Enregistrer d'une grille seule, confirmation de Charger, `X suit …` tapé, 2026-10-26 ; valeurs remarquables et degrés de `.simplifier`, `.développer`, `.résoudre`, 2026-10-27).
+> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; lecture des degrés et de `π` partagée avec le registre, 2026-11-03 ; égalité tapée seule → vrai / faux, `≈` refusé, 2026-11-03 ; `.dériver` affiche la réponse du registre, 2026-11-03 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; π au numérateur d'un périmètre, #1634, 2026-10-24 ; espaces de groupement dès 5 chiffres, 2026-10-23 ; étapes de `.résoudre` écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; ouvrir dans l'atelier depuis Python, 2026-10-25 ; ligne réservée sous la barre de la grille et libellé de « Résoudre », 2026-10-26 ; conditions sur la lettre, points irrationnels, `tan`/`arcsin`, `avec x ≥ e`, tidy-conditions § 5 PR A, 2026-10-26 ; Partager et Enregistrer d'une grille seule, confirmation de Charger, `X suit …` tapé, 2026-10-26 ; valeurs remarquables et degrés de `.simplifier`, `.développer`, `.résoudre`, 2026-10-27).
 
 ## À quoi ça sert
 
@@ -1282,7 +1282,9 @@ expression à lettres non liées répond par sa **forme rangée**, celle de l'é
 de l'élève, S3 : `x/x` gardé ; décision D, 2026-11-03), dans `answer` et dans le texte ; son `ast`
 reste l'entrée lue, que `resultToShow` range. Un résultat exact trop long répond par son
 **écriture gardée**, celle de l'écran (`(1+1/1000)^{1000}`, `1000!` ; lot 2, 2026-11-03). L'Atelier
-l'habille, il ne la remplace pas. Le contrat est le corpus
+l'habille, il ne la remplace pas : `.dériver` et « Dériver » affichent la réponse du registre
+(forme finale de f′, `(x + 1)eˣ`), les étapes de `deriveSteps` y aboutissent (garde
+`src/lib/atelier/__tests__/deriver-registre.test.ts`, PR 1, 2026-11-03). Le contrat est le corpus
 `tests/fixtures/mathast/registre-corpus.ts`, joué contre le registre et contre la ligne affichée
 par l'Atelier (`src/lib/mathAST/cli/__tests__/registre-corpus/`, `src/lib/atelier/__tests__/registre-corpus.test.ts`) ;
 les écarts d'aujourd'hui sont listés dans `connues-fausses.ts` et se retirent au fil du chantier.
