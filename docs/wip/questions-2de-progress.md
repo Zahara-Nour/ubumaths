@@ -6,13 +6,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2352 (12 a-1) ; 12 a-2 en PR (§ 73)._
+_Mis à jour le 2026-11-03, après #2354 (12 a-2)._
 
-- **État** : lots 1 à 9 publiés. Ordre : lot 12 (12 a, 12 b), puis 10, puis 11. 12 a-1 (8 modèles) mergé,
-  12 a-2 (6 modèles) en PR ; brouillons en base locale seulement.
-- **Prochaine action** : merger 12 a-2, puis David lance `create-questions --publier` sur
+- **État** : lots 1 à 9 publiés. Ordre : lot 12 (12 a, 12 b), puis 10, puis 11. 12 a-1 (#2352, 8 modèles) et
+  12 a-2 (#2354, 6 modèles) mergés ; brouillons en base locale seulement.
+- **Prochaine action** : David lance `create-questions --publier` sur
   `2de-inegalites-a1` et `2de-algebre-a2` ; relever les ids, migration nœud + tag des 14 (§ 72, § 73).
-- **En attente de David** : rien (phase 0 du 12 a validée, § 71).
+- **En attente de David** : les deux `create-questions --publier` (12 a-1, 12 a-2).
 - **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!` ; liste blanche : pas de
   `{{if:}}` à plus de ~6 niveaux dans une réponse attendue ; corps de commit ≤ 100 caractères par ligne ;
   une autre session écrit aussi dans ce journal : `git pull` ; `db:migrate` depuis le dépôt principal
@@ -1900,3 +1900,4 @@ entière ; L12a-c 2-275 rangé sous Calcul littéral › factorisation ; L12a-d 
   2-489 → Calcul littéral › écriture simplifiée.
 - **Écart à la phase 0** : 2-274, `(6 − 2x)/3` était refusé (`bad_form`) → `constraints.form: warn` : accepté en
   `unoptimal_form`, l'élève est invité à écrire la forme réduite.
+- **#2354 mergée** (12 a-2).
