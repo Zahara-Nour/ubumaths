@@ -1,0 +1,387 @@
+{
+	"title": "Espace : tracer une combinaison linéaire de vecteurs",
+	"description": "Sur un cube ou un pavé droit nommé, représenter une combinaison linéaire de vecteurs donnés (arêtes, ou u, v, w dessinés ; coefficients ±1, ½) en touchant l'origine et l'extrémité de la flèche (origine imposée ou libre ; pièges : sens, terme oublié, milieu voisin)",
+	"grades": ["T_SPE"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs, droites et plans de l'espace",
+	"subdomain": "Sur une figure",
+	"level": 6,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "$ABCDEFGH$ est un cube (face $ABCD$ en bas, $E$ au-dessus de $A$). Représente le vecteur {{if:k==0|$\\overrightarrow{AB}+\\overrightarrow{AD}$}}{{if:k==1|$\\overrightarrow{AB}+\\overrightarrow{AD}+\\overrightarrow{AE}$}}{{if:k==2|$\\overrightarrow{AB}-\\overrightarrow{AD}+\\overrightarrow{AE}$}}{{if:k==3|$\\overrightarrow{AE}-\\overrightarrow{AB}$}}{{if:k==4|$\\overrightarrow{AB}-\\overrightarrow{AE}$}}{{if:k==5|$-\\overrightarrow{AB}+\\overrightarrow{AD}$}} en partant du point {{if:k==0|$A$}}{{if:k==1|$A$}}{{if:k==2|$D$}}{{if:k==3|$B$}}{{if:k==4|$H$}}{{if:k==5|$F$}}.\n\nTouche l'extrémité de la flèche : son origine est déjà posée.\n\n```solide\nforme: cube 4\nsommets: A B C D E F G H\ntracer: vecteur {{if:k==0|AB + AD depuis A}}{{if:k==1|AB + AD + AE depuis A}}{{if:k==2|AB - AD + AE depuis D}}{{if:k==3|AE - AB depuis B}}{{if:k==4|AB - AE depuis H}}{{if:k==5|-AB + AD depuis F}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==0|Les faces du cube sont des carrés : deux arêtes parallèles de même sens donnent le même vecteur.}}{{if:k==1|Les faces du cube sont des carrés : deux arêtes parallèles de même sens donnent le même vecteur.}}{{if:k==2|Les faces du cube sont des carrés : deux arêtes parallèles de même sens donnent le même vecteur.}}{{if:k==3|Les faces du cube sont des carrés : deux arêtes parallèles de même sens donnent le même vecteur.}}{{if:k==4|Les faces du cube sont des carrés : deux arêtes parallèles de même sens donnent le même vecteur.}}{{if:k==5|Les faces du cube sont des carrés : deux arêtes parallèles de même sens donnent le même vecteur.}}",
+					"{{if:k==0|On place les vecteurs bout à bout, en partant de $A$ : $\\overrightarrow{AD}=\\overrightarrow{BC}$.}}{{if:k==1|On place les vecteurs bout à bout, en partant de $A$ : $\\overrightarrow{AD}=\\overrightarrow{BC}$, $\\overrightarrow{AE}=\\overrightarrow{CG}$.}}{{if:k==2|On place les vecteurs bout à bout, en partant de $D$ : $\\overrightarrow{AB}=\\overrightarrow{DC}$, $-\\overrightarrow{AD}=\\overrightarrow{CB}$, $\\overrightarrow{AE}=\\overrightarrow{BF}$.}}{{if:k==3|On place les vecteurs bout à bout, en partant de $B$ : $\\overrightarrow{AE}=\\overrightarrow{BF}$, $-\\overrightarrow{AB}=\\overrightarrow{FE}$.}}{{if:k==4|On place les vecteurs bout à bout, en partant de $H$ : $\\overrightarrow{AB}=\\overrightarrow{HG}$, $-\\overrightarrow{AE}=\\overrightarrow{GC}$.}}{{if:k==5|On place les vecteurs bout à bout, en partant de $F$ : $-\\overrightarrow{AB}=\\overrightarrow{FE}$, $\\overrightarrow{AD}=\\overrightarrow{EH}$.}}",
+					"{{if:k==0|Relation de Chasles : $\\overrightarrow{AB}+\\overrightarrow{AD}=\\overrightarrow{AB}+\\overrightarrow{BC}=\\textcolor{{{color:primary.0}}}{ \\overrightarrow{AC} }$.}}{{if:k==1|Relation de Chasles : $\\overrightarrow{AB}+\\overrightarrow{AD}+\\overrightarrow{AE}=\\overrightarrow{AB}+\\overrightarrow{BC}+\\overrightarrow{CG}=\\textcolor{{{color:primary.0}}}{ \\overrightarrow{AG} }$.}}{{if:k==2|Relation de Chasles : $\\overrightarrow{AB}-\\overrightarrow{AD}+\\overrightarrow{AE}=\\overrightarrow{DC}+\\overrightarrow{CB}+\\overrightarrow{BF}=\\textcolor{{{color:primary.0}}}{ \\overrightarrow{DF} }$.}}{{if:k==3|Relation de Chasles : $\\overrightarrow{AE}-\\overrightarrow{AB}=\\overrightarrow{BF}+\\overrightarrow{FE}=\\textcolor{{{color:primary.0}}}{ \\overrightarrow{BE} }$.}}{{if:k==4|Relation de Chasles : $\\overrightarrow{AB}-\\overrightarrow{AE}=\\overrightarrow{HG}+\\overrightarrow{GC}=\\textcolor{{{color:primary.0}}}{ \\overrightarrow{HC} }$.}}{{if:k==5|Relation de Chasles : $-\\overrightarrow{AB}+\\overrightarrow{AD}=\\overrightarrow{FE}+\\overrightarrow{EH}=\\textcolor{{{color:primary.0}}}{ \\overrightarrow{FH} }$.}}"
+				]
+			}
+		},
+		{
+			"statement": "$ABCDEFGH$ est un cube (face $ABCD$ en bas, $E$ au-dessus de $A$). Représente le vecteur {{if:k==0|$\\overrightarrow{AB}+\\overrightarrow{FG}$}}{{if:k==1|$\\overrightarrow{EF}+\\overrightarrow{BC}+\\overrightarrow{AE}$}}{{if:k==2|$\\overrightarrow{AB}-\\overrightarrow{AD}$}}{{if:k==3|$\\overrightarrow{AD}+\\overrightarrow{GC}$}}.\n\nTouche une origine, puis une extrémité : tu choisis l'origine, tout représentant du vecteur convient.\n\n```solide\nforme: cube 4\nsommets: A B C D E F G H\ntracer: vecteur {{if:k==0|AB + FG}}{{if:k==1|EF + BC + AE}}{{if:k==2|AB - AD}}{{if:k==3|AD + GC}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==0|Deux arêtes parallèles de même sens donnent le même vecteur ; on choisit une origine commode, ici $A$.}}{{if:k==1|Deux arêtes parallèles de même sens donnent le même vecteur ; on choisit une origine commode, ici $A$.}}{{if:k==2|Deux arêtes parallèles de même sens donnent le même vecteur ; on choisit une origine commode, ici $D$.}}{{if:k==3|Deux arêtes parallèles de même sens donnent le même vecteur ; on choisit une origine commode, ici $E$.}}",
+					"{{if:k==0|On place les vecteurs bout à bout, en partant de $A$ : $\\overrightarrow{FG}=\\overrightarrow{BC}$.}}{{if:k==1|On place les vecteurs bout à bout, en partant de $A$ : $\\overrightarrow{EF}=\\overrightarrow{AB}$, $\\overrightarrow{AE}=\\overrightarrow{CG}$.}}{{if:k==2|On place les vecteurs bout à bout, en partant de $D$ : $\\overrightarrow{AB}=\\overrightarrow{DC}$, $-\\overrightarrow{AD}=\\overrightarrow{CB}$.}}{{if:k==3|On place les vecteurs bout à bout, en partant de $E$ : $\\overrightarrow{AD}=\\overrightarrow{EH}$, $\\overrightarrow{GC}=\\overrightarrow{HD}$.}}",
+					"{{if:k==0|Relation de Chasles : $\\overrightarrow{AB}+\\overrightarrow{FG}=\\overrightarrow{AB}+\\overrightarrow{BC}=\\textcolor{{{color:primary.0}}}{ \\overrightarrow{AC} }$.}}{{if:k==1|Relation de Chasles : $\\overrightarrow{EF}+\\overrightarrow{BC}+\\overrightarrow{AE}=\\overrightarrow{AB}+\\overrightarrow{BC}+\\overrightarrow{CG}=\\textcolor{{{color:primary.0}}}{ \\overrightarrow{AG} }$.}}{{if:k==2|Relation de Chasles : $\\overrightarrow{AB}-\\overrightarrow{AD}=\\overrightarrow{DC}+\\overrightarrow{CB}=\\textcolor{{{color:primary.0}}}{ \\overrightarrow{DB} }$.}}{{if:k==3|Relation de Chasles : $\\overrightarrow{AD}+\\overrightarrow{GC}=\\overrightarrow{EH}+\\overrightarrow{HD}=\\textcolor{{{color:primary.0}}}{ \\overrightarrow{ED} }$.}}",
+					"{{if:k==0|Les autres représentants sont aussi justes : $\\overrightarrow{EG}$.}}{{if:k==1|C'est le seul représentant dont les deux extrémités sont des sommets du cube.}}{{if:k==2|Les autres représentants sont aussi justes : $\\overrightarrow{HF}$.}}{{if:k==3|Les autres représentants sont aussi justes : $\\overrightarrow{FC}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "$ABCDEFGH$ est un cube (face $ABCD$ en bas, $E$ au-dessus de $A$). Les vecteurs $\\vec{u}=\\overrightarrow{AB}$, $\\vec{v}=\\overrightarrow{AD}$ et $\\vec{w}=\\overrightarrow{AE}$ sont dessinés ; $I$, $J$, $K$ et $L$ sont les milieux des arêtes $[BF]$, $[CG]$, $[DH]$ et $[AE]$. Représente le vecteur {{if:k==0|$\\vec{u}+\\dfrac{1}{2}\\vec{w}$}}{{if:k==1|$\\vec{u}+\\vec{v}+\\dfrac{1}{2}\\vec{w}$}}{{if:k==2|$\\vec{v}+\\dfrac{1}{2}\\vec{w}$}}{{if:k==3|$\\dfrac{1}{2}\\vec{w}-\\vec{u}$}} en partant du point {{if:k==0|$A$}}{{if:k==1|$A$}}{{if:k==2|$A$}}{{if:k==3|$B$}}.\n\nTouche l'extrémité de la flèche : son origine est déjà posée.\n\n```solide\nforme: cube 4\nsommets: A B C D E F G H\npoints: I milieu BF, J milieu CG, K milieu DH, L milieu AE\nvecteurs: u = AB, v = AD, w = AE\ntracer: vecteur {{if:k==0|u + 1/2 w depuis A}}{{if:k==1|u + v + 1/2 w depuis A}}{{if:k==2|v + 1/2 w depuis A}}{{if:k==3|1/2 w - u depuis B}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..3"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==0|$\\vec{u}=\\overrightarrow{AB}$, $\\vec{v}=\\overrightarrow{AD}$, $\\vec{w}=\\overrightarrow{AE}$ ; $\\dfrac{1}{2}\\vec{w}$ va d'un sommet au milieu de l'arête verticale qui en part.}}{{if:k==1|$\\vec{u}=\\overrightarrow{AB}$, $\\vec{v}=\\overrightarrow{AD}$, $\\vec{w}=\\overrightarrow{AE}$ ; $\\dfrac{1}{2}\\vec{w}$ va d'un sommet au milieu de l'arête verticale qui en part.}}{{if:k==2|$\\vec{u}=\\overrightarrow{AB}$, $\\vec{v}=\\overrightarrow{AD}$, $\\vec{w}=\\overrightarrow{AE}$ ; $\\dfrac{1}{2}\\vec{w}$ va d'un sommet au milieu de l'arête verticale qui en part.}}{{if:k==3|$\\vec{u}=\\overrightarrow{AB}$, $\\vec{v}=\\overrightarrow{AD}$, $\\vec{w}=\\overrightarrow{AE}$ ; $\\dfrac{1}{2}\\vec{w}$ va d'un sommet au milieu de l'arête verticale qui en part.}}",
+					"{{if:k==0|On place les vecteurs bout à bout, en partant de $A$ : $\\vec{u}=\\overrightarrow{AB}$, $\\dfrac{1}{2}\\vec{w}=\\overrightarrow{BI}$ (milieu d'une arête verticale).}}{{if:k==1|On place les vecteurs bout à bout, en partant de $A$ : $\\vec{u}=\\overrightarrow{AB}$, $\\vec{v}=\\overrightarrow{BC}$, $\\dfrac{1}{2}\\vec{w}=\\overrightarrow{CJ}$ (milieu d'une arête verticale).}}{{if:k==2|On place les vecteurs bout à bout, en partant de $A$ : $\\vec{v}=\\overrightarrow{AD}$, $\\dfrac{1}{2}\\vec{w}=\\overrightarrow{DK}$ (milieu d'une arête verticale).}}{{if:k==3|On place les vecteurs bout à bout, en partant de $B$ : $\\dfrac{1}{2}\\vec{w}=\\overrightarrow{BI}$ (milieu d'une arête verticale), $-\\vec{u}=\\overrightarrow{IL}$.}}",
+					"{{if:k==0|Relation de Chasles : $\\vec{u}+\\dfrac{1}{2}\\vec{w}=\\overrightarrow{AB}+\\overrightarrow{BI}=\\textcolor{{{color:primary.0}}}{ \\overrightarrow{AI} }$.}}{{if:k==1|Relation de Chasles : $\\vec{u}+\\vec{v}+\\dfrac{1}{2}\\vec{w}=\\overrightarrow{AB}+\\overrightarrow{BC}+\\overrightarrow{CJ}=\\textcolor{{{color:primary.0}}}{ \\overrightarrow{AJ} }$.}}{{if:k==2|Relation de Chasles : $\\vec{v}+\\dfrac{1}{2}\\vec{w}=\\overrightarrow{AD}+\\overrightarrow{DK}=\\textcolor{{{color:primary.0}}}{ \\overrightarrow{AK} }$.}}{{if:k==3|Relation de Chasles : $\\dfrac{1}{2}\\vec{w}-\\vec{u}=\\overrightarrow{BI}+\\overrightarrow{IL}=\\textcolor{{{color:primary.0}}}{ \\overrightarrow{BL} }$.}}"
+				]
+			}
+		},
+		{
+			"statement": "$ABCDEFGH$ est un pavé droit (face $ABCD$ en bas, $E$ au-dessus de $A$). Les vecteurs $\\vec{u}=\\overrightarrow{AB}$, $\\vec{v}=\\overrightarrow{AD}$ et $\\vec{w}=\\overrightarrow{AE}$ sont dessinés ; $I$, $J$ et $K$ sont les centres des faces $ABCD$, $ABFE$ et $BCGF$, $O$ est le centre du pavé. Représente le vecteur {{if:k==0|$\\dfrac{1}{2}\\vec{u}+\\dfrac{1}{2}\\vec{v}$}}{{if:k==1|$\\dfrac{1}{2}\\vec{u}+\\dfrac{1}{2}\\vec{w}$}}{{if:k==2|$\\dfrac{1}{2}\\vec{u}+\\dfrac{1}{2}\\vec{v}+\\dfrac{1}{2}\\vec{w}$}}{{if:k==3|$\\dfrac{1}{2}\\vec{v}+\\dfrac{1}{2}\\vec{w}$}}{{if:k==4|$\\dfrac{1}{2}\\vec{w}-\\dfrac{1}{2}\\vec{u}$}} en partant du point {{if:k==0|$A$}}{{if:k==1|$A$}}{{if:k==2|$A$}}{{if:k==3|$B$}}{{if:k==4|$B$}}.\n\nTouche l'extrémité de la flèche : son origine est déjà posée.\n\n```solide\nforme: pave 6 6 7\nsommets: A B C D E F G H\npoints: I centre ABCD, J centre ABFE, K centre BCGF, O centre ABCDEFGH\nvecteurs: u = AB, v = AD, w = AE\ntracer: vecteur {{if:k==0|1/2 u + 1/2 v depuis A}}{{if:k==1|1/2 u + 1/2 w depuis A}}{{if:k==2|1/2 u + 1/2 v + 1/2 w depuis A}}{{if:k==3|1/2 v + 1/2 w depuis B}}{{if:k==4|1/2 w - 1/2 u depuis B}}\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:k==0|$I$ est le centre du rectangle $ABCD$, donc le milieu de sa diagonale $[AC]$ : $\\overrightarrow{AI}=\\dfrac{1}{2}\\overrightarrow{AC}$.}}{{if:k==1|$J$ est le centre du rectangle $ABFE$, donc le milieu de sa diagonale $[AF]$ : $\\overrightarrow{AJ}=\\dfrac{1}{2}\\overrightarrow{AF}$.}}{{if:k==2|$O$ est le centre du pavé, donc le milieu de la grande diagonale $[AG]$ : $\\overrightarrow{AO}=\\dfrac{1}{2}\\overrightarrow{AG}$.}}{{if:k==3|$K$ est le centre du rectangle $BCGF$, donc le milieu de sa diagonale $[BG]$ : $\\overrightarrow{BK}=\\dfrac{1}{2}\\overrightarrow{BG}$.}}{{if:k==4|$J$ est le centre du rectangle $ABFE$, donc le milieu de sa diagonale $[BE]$ : $\\overrightarrow{BJ}=\\dfrac{1}{2}\\overrightarrow{BE}$.}}",
+					"{{if:k==0|Or $\\overrightarrow{AC}=\\overrightarrow{AB}+\\overrightarrow{BC}=\\vec{u}+\\vec{v}$, donc $\\dfrac{1}{2}\\vec{u}+\\dfrac{1}{2}\\vec{v}=\\textcolor{{{color:primary.0}}}{ \\overrightarrow{AI} }$.}}{{if:k==1|Or $\\overrightarrow{AF}=\\overrightarrow{AB}+\\overrightarrow{BF}=\\vec{u}+\\vec{w}$, donc $\\dfrac{1}{2}\\vec{u}+\\dfrac{1}{2}\\vec{w}=\\textcolor{{{color:primary.0}}}{ \\overrightarrow{AJ} }$.}}{{if:k==2|Or $\\overrightarrow{AG}=\\overrightarrow{AB}+\\overrightarrow{BC}+\\overrightarrow{CG}=\\vec{u}+\\vec{v}+\\vec{w}$, donc $\\dfrac{1}{2}\\vec{u}+\\dfrac{1}{2}\\vec{v}+\\dfrac{1}{2}\\vec{w}=\\textcolor{{{color:primary.0}}}{ \\overrightarrow{AO} }$.}}{{if:k==3|Or $\\overrightarrow{BG}=\\overrightarrow{BC}+\\overrightarrow{CG}=\\vec{v}+\\vec{w}$, donc $\\dfrac{1}{2}\\vec{v}+\\dfrac{1}{2}\\vec{w}=\\textcolor{{{color:primary.0}}}{ \\overrightarrow{BK} }$.}}{{if:k==4|Or $\\overrightarrow{BE}=\\overrightarrow{BF}+\\overrightarrow{FE}=\\vec{w}-\\vec{u}$, donc $\\dfrac{1}{2}\\vec{w}-\\dfrac{1}{2}\\vec{u}=\\textcolor{{{color:primary.0}}}{ \\overrightarrow{BJ} }$.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : AB + AD depuis A → C",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["A/C"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : sens inversé (C vers A)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["C/A"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : AB + AD + AE depuis A → G",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["A/G"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : terme AE oublié (A → C)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["A/C"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : AB − AD + AE depuis D → F",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["D/F"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : signe de AD ignoré (D → G)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["D/G"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : AE − AB depuis B → E",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["B/E"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : AB + FG, représentant A → C",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["A/C"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : AB + FG, autre représentant E → G",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["E/G"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : AB + FG, sens inversé (G → E)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["G/E"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : EF + BC + AE → A → G",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["A/G"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : AB − AD, représentant H → F",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["H/F"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : AB − AD, sens inversé (B → D)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["B/D"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : u + ½ w depuis A → I",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["A/I"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : ½ oublié (A → F)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["A/F"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : u + v + ½ w depuis A → J",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["A/J"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : v + ½ w depuis A → K",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["A/K"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : leurre, mauvais milieu (A → L)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["A/L"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : ½ w − u depuis B → L",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["B/L"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : − u ignoré (B → I)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["B/I"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : ½ u + ½ v depuis A → I",
+			"variationIndex": 3,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["A/I"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : ½ oublié (A → C)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "0"
+			},
+			"answers": ["A/C"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : ½ u + ½ w depuis A → J",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1"
+			},
+			"answers": ["A/J"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : ½ (u + v + w) depuis A → O",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["A/O"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : leurre, centre de face (A → I)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["A/I"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : ½ v + ½ w depuis B → K",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["B/K"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : ½ w − ½ u depuis B → J",
+			"variationIndex": 3,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["B/J"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : signe de u ignoré (B vers K)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "4"
+			},
+			"answers": ["B/K"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

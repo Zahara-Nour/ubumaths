@@ -8,10 +8,13 @@
  * trigonométriques), c'est ce LaTeX, bâti sur les solutions STRUCTURÉES du
  * solveur, qu'il montre — jamais une relecture du texte.
  *
- * Forme : celle des étapes pédagogiques (`atelier/solve-steps.ts`) — une
- * solution `x = …`, plusieurs `S = \left\{ … \,;\, … \right\}` dans l'ordre
- * croissant, `S = \emptyset` sans solution ; plus `S = \mathbb{R}` et les
- * familles périodiques `x = a + 2k\pi, \; k \in \mathbb{Z}`.
+ * Forme : l'ensemble des solutions, toujours (chantier `registre-reference`,
+ * Q2) — `S = \left\{ … \,;\, … \right\}` dans l'ordre croissant, une solution
+ * comprise (`S = \left\{ 3 \right\}`), `S = \emptyset` sans solution,
+ * `S = \mathbb{R}`, et les familles périodiques
+ * `S = \left\{ a + 2k\pi \,;\, b + 2k\pi ,\; k \in \mathbb{Z} \right\}` (David,
+ * 2026-11-03). La valeur approchée d'une solution en ln va au bouton ≈ ; seul
+ * le seuil d'une suite la garde (`n > … \approx 10{,}32`, David, 2026-11-03).
  *
  * @module mathAST/cli/commands/solve-latex
  */
@@ -42,7 +45,9 @@ const MAX_PERIOD_INTEGER = 1000;
 
 // =============================================================================
 // Solutions en ln : décimaux gardés, valeur approchée (décision de David,
-// 2026-10-09 — seuils des suites géométriques, 1re / Tle)
+// 2026-10-09 — seuils des suites géométriques, 1re / Tle). Depuis le
+// 2026-11-03 (registre-reference), seul le SEUIL d'une inéquation la garde
+// (`n > … \approx 10{,}32`) ; une solution d'équation la laisse au bouton ≈.
 // =============================================================================
 
 /** Les logarithmes : une valeur qui en contient se lit avec sa valeur approchée. */
@@ -91,6 +96,16 @@ export function logarithmicValueLatex(value: MathNode, approximate?: number): st
 	return approximation === null
 		? written
 		: `${written} \\approx ${frenchDecimals(rounded(approximation))}`;
+}
+
+/**
+ * Une valeur qui contient un ln, en LaTeX, SANS sa valeur approchée (élément
+ * d'un ensemble de solutions : le bouton ≈ la donne) — `\ln\left( 0{,}5 \right)`.
+ * `null` sans ln.
+ */
+export function logarithmicExactLatex(value: MathNode): string | null {
+	const tidied = exactValueToShow(value);
+	return hasLogarithm(tidied) ? frenchDecimals(toLatex(tidied)) : null;
 }
 
 /**
@@ -213,7 +228,10 @@ function sorted(solutions: readonly Solution[]): readonly Solution[] {
 	return [...solutions].sort((a, b) => (a.approximate ?? 0) - (b.approximate ?? 0));
 }
 
-/** Les membres d'UNE famille (`x = a + 2kπ`), en LaTeX et en texte — ou `null`. */
+/**
+ * Les membres d'UNE famille, en LaTeX sans l'inconnue (`a + 2k\pi`, élément de
+ * S) et en texte avec (`x = a + 2kπ`) — ou `null`.
+ */
 function familyMembers(
 	variable: string,
 	periodic: PeriodicSolutionFamily
@@ -227,10 +245,12 @@ function familyMembers(
 		return { base, isZero: isNumber(base) && base.value === '0' };
 	});
 	const member = (written: string, isZero: boolean, k: string) =>
-		`${variable} = ${isZero ? k : `${written} + ${k}`}`;
+		isZero ? k : `${written} + ${k}`;
 	return {
 		latex: bases.map(({ base, isZero }) => member(toLatex(base), isZero, term.latex)),
-		text: bases.map(({ base, isZero }) => member(toCustom(base), isZero, term.text))
+		text: bases.map(
+			({ base, isZero }) => `${variable} = ${member(toCustom(base), isZero, term.text)}`
+		)
 	};
 }
 
@@ -255,11 +275,14 @@ function periodicMembers(
 	return familyMembers(result.variable, result.periodicSolutions);
 }
 
-/** La famille périodique, `x = a + 2k\pi \text{ ou } … , \; k \in \mathbb{Z}` — ou `null`. */
+/**
+ * La famille périodique, `S = \left\{ a + 2k\pi \,;\, … ,\; k \in \mathbb{Z} \right\}`
+ * — ou `null`.
+ */
 function periodicLatex(result: SolveResult): string | null {
 	const members = periodicMembers(result);
 	if (members === null) return null;
-	return `${members.latex.join(' \\text{ ou } ')}, \\; k \\in \\mathbb{Z}`;
+	return `S = \\left\\{ ${members.latex.join(' \\,;\\, ')} ,\\; k \\in \\mathbb{Z} \\right\\}`;
 }
 
 /**
@@ -304,17 +327,16 @@ export function solutionsLatex(result: SolveResult): string | null {
 			if (result.periodicSolutions !== undefined) return null;
 			const ordered = sorted(result.solutions);
 			const common = commonCondition(ordered);
+			// Une solution en ln garde ses décimaux (`\ln(0{,}5)`, S1), qu'elle soit
+			// seule ou non (revue de la PR 2b)
+			const written = (value: MathNode) =>
+				logarithmicExactLatex(value) ?? toLatex(exactValueToShow(value));
 			const values = ordered.map(
 				(s) =>
-					toLatex(exactValueToShow(s.value)) +
+					written(s.value) +
 					(common === undefined && s.condition ? ` \\text{ si } ${toLatex(s.condition)}` : '')
 			);
 			const suffix = common ? ` \\quad \\text{si } ${toLatex(common)}` : '';
-			if (values.length === 1) {
-				const [only] = result.solutions;
-				const logarithmic = logarithmicValueLatex(only.value, only.approximate);
-				return `${result.variable} = ${logarithmic ?? values[0]}${suffix}`;
-			}
 			return `S = \\left\\{ ${values.join(' \\,;\\, ')} \\right\\}${suffix}`;
 		}
 		case 'infinite':
@@ -333,7 +355,7 @@ export function solutionsLatex(result: SolveResult): string | null {
 
 /**
  * Les solutions en valeurs approchées, pour le bouton ≈ de l'atelier :
- * `S \approx \left\{ -1.4142 \,;\, 1.4142 \right\}`, `x = 0.5` (règle de
+ * `S \approx \left\{ -1.4142 \,;\, 1.4142 \right\}`, `S = \left\{ 0.5 \right\}` (règle de
  * `approximation.ts` : 4 décimales, « = » quand l'écriture décimale est exacte).
  *
  * `null` quand il n'y a rien à montrer : solutions déjà entières ou décimales,
@@ -347,8 +369,7 @@ export function solutionsApproximationLatex(result: SolveResult): string | null 
 
 	// Dans l'ordre et la forme de `solutionsLatex` : la ligne qu'elles accompagnent
 	const values = sorted(result.solutions).map((s) => exactValueToShow(s.value));
-	if (values.length === 1 && logarithmicValueLatex(values[0]) !== null) return null;
-	return approximateSolutionsLatex(result.variable, values, values.length > 1);
+	return approximateSolutionsLatex(values);
 }
 
 /** Une borne d'intervalle : `+\infty`, `-\infty`, sinon la valeur mise au propre. */

@@ -63,12 +63,12 @@ describe('.dériver', () => {
 
 describe('.résoudre', () => {
 	it('`3 = 2 x` : le x final fait partie de l’équation', () => {
-		expect(command('.résoudre 3 = 2 x').latex).toBe('x = \\dfrac{3}{2}');
+		expect(command('.résoudre 3 = 2 x').latex).toBe('S = \\left\\{ \\dfrac{3}{2} \\right\\}');
 	});
 
 	it('`3 = 2t ; t` : t = 3/2, étapes comprises, en t', () => {
 		const outcome = command('.résoudre 3 = 2t ; t');
-		expect(outcome.latex).toBe('t = \\dfrac{3}{2}');
+		expect(outcome.latex).toBe('S = \\left\\{ \\dfrac{3}{2} \\right\\}');
 		expect(outcome.note).toBeUndefined();
 		const steps = JSON.stringify(outcome.steps);
 		expect(steps).toContain('isoler t');
@@ -83,8 +83,8 @@ describe('.résoudre', () => {
 
 	// Décision de David (2026-10-08, Q1) : sans x, la seule lettre est devinée
 	it.each([
-		['.résoudre 3 = 2t', 't = \\dfrac{3}{2}'],
-		['.résoudre 2t+1<5', 't < 2']
+		['.résoudre 3 = 2t', 'S = \\left\\{ \\dfrac{3}{2} \\right\\}'],
+		['.résoudre 2t+1<5', 'S = ]-\\infty ; 2[']
 	])('%s sans « ; » : t devinée', (input, latex) => {
 		const outcome = command(input);
 		expect(outcome.latex).toBe(latex);
@@ -92,7 +92,7 @@ describe('.résoudre', () => {
 	});
 
 	it('`2t+1<5 ; t` → t < 2', () => {
-		expect(command('.résoudre 2t+1<5 ; t').latex).toBe('t < 2');
+		expect(command('.résoudre 2t+1<5 ; t').latex).toBe('S = ]-\\infty ; 2[');
 	});
 
 	it('`sin x = 0` : refus, des parenthèses', () => {

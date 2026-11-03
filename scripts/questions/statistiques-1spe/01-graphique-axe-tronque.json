@@ -1,0 +1,197 @@
+{
+	"title": "Lire un graphique dont l'axe ne part pas de 0",
+	"description": "Évolution lue sur un nuage dont l'axe vertical ne part pas de 0 : repérer la comparaison trompeuse (choix), calculer le taux d'évolution réel (case)",
+	"grades": ["1_SPE", "1_GEN", "1_TECHNO"],
+	"theme": "Statistiques",
+	"domain": "Représenter des données",
+	"subdomain": "Lire un graphique",
+	"level": 2,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le graphique ci-dessous donne le nombre d'abonnés d'un site, en milliers, de 2019 à 2024.\n\n```nuage\ntitre: Abonnés d'un site (en milliers)\nnom x: Année\nnom y: Abonnés (milliers)\nx: 2019 ; 2020 ; 2021 ; 2022 ; 2023 ; 2024\ny: {{v}} ; {{eval:v+h}} ; {{eval:v+2*h}} ; {{eval:v+3*h}} ; {{eval:v+4*h}} ; {{eval:v+5*h}}\ndescription: Nuage de six points alignés, de {{v}} milliers en 2019 à {{eval:v+5*h}} milliers en 2024 ; l'axe vertical ne part pas de 0.\n```\n\nUn journal titre : « Les abonnés ont explosé ! ». Quelle phrase est juste ?\n\n```choix\n- Le nombre d'abonnés a augmenté de ${{t}}\\,\\%$.\n- Le nombre d'abonnés a été multiplié par $6$.\n- Le nombre d'abonnés a doublé.\n- On ne peut rien dire : le graphique ne donne pas les valeurs.\n```",
+			"variables": [
+				{
+					"name": "v",
+					"expression": "100|200|500"
+				},
+				{
+					"name": "t",
+					"expression": "5|10|20"
+				},
+				{
+					"name": "h",
+					"expression": "eval:v*t/500"
+				}
+			],
+			"conditions": ["v*t != 2000", "v*t != 4000"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L’axe vertical **ne part pas de 0** : la hauteur des points au-dessus du bas du graphique exagère la hausse (le point de 2024 paraît six fois plus haut que celui de 2019).",
+					"On lit ${{v}}$ milliers d'abonnés en 2019 et ${{eval:v+5*h}}$ milliers en 2024 : une hausse de ${{eval:5*h}}$ milliers.",
+					"Taux d'évolution : $\\dfrac{ {{eval:5*h}} }{ {{v}} } = {{eval:t/100;d}} = {{t}}\\,\\%$."
+				]
+			}
+		},
+		{
+			"statement": "Le graphique ci-dessous donne le nombre d'abonnés d'un site, en milliers, de 2019 à 2024.\n\n```nuage\ntitre: Abonnés d'un site (en milliers)\nnom x: Année\nnom y: Abonnés (milliers)\nx: 2019 ; 2020 ; 2021 ; 2022 ; 2023 ; 2024\ny: {{v}} ; {{eval:v+h}} ; {{eval:v+2*h}} ; {{eval:v+3*h}} ; {{eval:v+4*h}} ; {{eval:v+5*h}}\ndescription: Nuage de six points alignés, de {{v}} milliers en 2019 à {{eval:v+5*h}} milliers en 2024 ; l'axe vertical ne part pas de 0.\n```\n\nDe quel pourcentage le nombre d'abonnés a-t-il augmenté entre 2019 et 2024 ?\n\n$?\\,\\%$",
+			"variables": [
+				{
+					"name": "v",
+					"expression": "100|200|500"
+				},
+				{
+					"name": "t",
+					"expression": "5|10|20"
+				},
+				{
+					"name": "h",
+					"expression": "eval:v*t/500"
+				}
+			],
+			"conditions": ["v*t != 2000", "v*t != 4000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L’axe vertical **ne part pas de 0** : la hauteur des points au-dessus du bas du graphique exagère la hausse (le point de 2024 paraît six fois plus haut que celui de 2019).",
+					"On lit ${{v}}$ milliers d'abonnés en 2019 et ${{eval:v+5*h}}$ milliers en 2024 : une hausse de ${{eval:5*h}}$ milliers.",
+					"Taux d'évolution : $\\dfrac{ {{eval:5*h}} }{ {{v}} } = {{eval:t/100;d}} = {{t}}\\,\\%$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "100 → 110 : hausse de 10 %",
+			"variationIndex": 0,
+			"variables": {
+				"v": "100",
+				"t": "10",
+				"h": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Piège : hauteurs comparées (× 6)",
+			"variationIndex": 0,
+			"variables": {
+				"v": "100",
+				"t": "10",
+				"h": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : « doublé »",
+			"variationIndex": 0,
+			"variables": {
+				"v": "100",
+				"t": "10",
+				"h": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : « on ne peut rien dire »",
+			"variationIndex": 0,
+			"variables": {
+				"v": "500",
+				"t": "20",
+				"h": "20"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "500 → 600 : hausse de 20 %",
+			"variationIndex": 0,
+			"variables": {
+				"v": "500",
+				"t": "20",
+				"h": "20"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "200 → 210 : 5 %",
+			"variationIndex": 1,
+			"variables": {
+				"v": "200",
+				"t": "5",
+				"h": "2"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "500 → 550 : 10 %",
+			"variationIndex": 1,
+			"variables": {
+				"v": "500",
+				"t": "10",
+				"h": "10"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Piège : écart en milliers (50) au lieu du pourcentage",
+			"variationIndex": 1,
+			"variables": {
+				"v": "500",
+				"t": "10",
+				"h": "10"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Piège : rapport des hauteurs (× 6 → 500 %)",
+			"variationIndex": 1,
+			"variables": {
+				"v": "500",
+				"t": "10",
+				"h": "10"
+			},
+			"answers": ["500"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

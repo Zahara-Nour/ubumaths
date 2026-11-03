@@ -150,7 +150,7 @@ describe('le champ produit le texte que lit runInput, et la vraie chaîne répon
 		[
 			'\\text{résous}\\,x^2=4\\,\\text{dans}\\,\\lbrack0;+\\infty\\lbrack',
 			'.résoudre x^2=4 dans [0;+∞[',
-			'x = 2'
+			'S = \\left\\{ 2 \\right\\}'
 		],
 		['\\text{dériver}\\,x^3', '.dériver x^3', '3 x^2'],
 		[

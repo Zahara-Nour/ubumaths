@@ -6,18 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2355 (rangement du lot 12 a) et la page à cocher (§ 75)._
+_Mis à jour le 2026-11-04, lot 12 b-1 écrit (§ 78), PR des fichiers à ouvrir._
 
-- **État** : lots 1 à 9 publiés. Lot 12 a (14 modèles) en prod en brouillon, rangé et tagué (#2355, migration
-  jouée) ; page à cocher publiée (§ 75). Ordre ensuite : 12 b, puis 10, puis 11.
-- **Prochaine action** : lire et compter les verdicts de la page ; corriger les « À revoir » ; puis `publier-lot`
-  en simulation sur `2de-inegalites-a1` et `2de-algebre-a2`, et David lance `--publier`. Ensuite phase 0 du 12 b.
-- **En attente de David** : la relecture de la page à cocher.
-- **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!` ; liste blanche : pas de
-  `{{if:}}` à plus de ~6 niveaux dans une réponse attendue ; corps de commit ≤ 100 caractères par ligne ;
-  une autre session écrit aussi dans ce journal : `git pull` ; `db:migrate` depuis le dépôt principal
-  seulement (le worktree n'est pas lié à Supabase) ; un relevé de lot n'est pas un relevé du niveau.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de` (HEAD détachée sur `origin/main`).
+- **État** : lots 1 à 9 et 12 a publiés. Phase 0 du 12 b validée (§ 77). 12 b-1 (5 modèles, 287, 433, 288,
+  296, 297) écrit, simulé, joué en local. Ordre ensuite : 12 b-2, puis 10, puis 11.
+- **Prochaine action** : PR des fichiers du 12 b-1 (CI, merge) ; puis David lance `create-questions
+--publier` sur `scripts/questions/2de-vecteurs-c1` ; puis 12 b-2 (289, 290, 291, 292, 401).
+- **En attente de David** : rien.
+- **Pièges en cours** : `--publier`, `publier-lot` (même en simulation) → David avec `!`, puis vérifier le
+  statut au MCP ; jamais `| head` derrière un `--publier` (le tuyau coupe le script en route) ; liste
+  blanche : pas de `{{if:}}` à plus de ~6 niveaux dans une réponse attendue ; corps de commit ≤ 100
+  caractères par ligne ; une autre session écrit aussi dans ce journal : `git pull` ; `db:migrate` depuis
+  le dépôt principal seulement.
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, branche `feat/questions-2de-lot12b1`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1922,3 +1923,96 @@ entière ; L12a-c 2-275 rangé sous Calcul littéral › factorisation ; L12a-d 
 
 - `page-a-cocher.ts` sur les deux dossiers (copie dans le scratchpad, préfixes `a1-`/`a2-`, `.env` de prod) :
   14 fiches, aucune alerte. Page (capacité `db`, `verdicts` vide) : https://claude.ai/artifact/SWKNyEvkVTR8PF6E19cPKb
+
+## 76. Lot 12 a publié (2026-11-04)
+
+- Page à cocher relue par David : 14/14 « ok », sans commentaire. `publier-lot` (simulation puis
+  `--publier`) lancé par David sur `2de-inegalites-a1` et `2de-algebre-a2` ; un premier essai n'avait rien
+  écrit (MCP : 14 `draft`), le second oui. MCP (prod) : 14/14 `published`.
+
+## 77. Lot 12 b « Vecteurs sans coordonnées, périmètre » : relevé et phase 0 (proposée le 2026-11-04, à valider)
+
+2-489 a été fait au 12 a (modèle 14) : le 12 b couvre 287, 433, 288, 289, 290, 291, 292, 296, 297 et 401.
+
+**Relevé MCP (prod, 2026-11-04)** : aucun modèle, en aucun statut, sur les 10 points. Nœuds des points :
+Géométrie › Vecteurs › égalité de vecteurs (287, 433, 288), › produit par un réel (289), › colinéarité (290),
+› combinaison linéaire (291), › coordonnées (292), › somme et relation de Chasles (297) ; 296 sur la notion
+Vecteurs ; 401 sur la notion Grandeurs et mesures › Périmètres (sous-notions : carré, rectangle, disque).
+Voisins à ne pas refaire : ff3bd841 (3e, 3-025, égaux / opposés / nul, case choix entre 4 flèches) ;
+787cc937 (3e, 3-026, somme de deux vecteurs, case choix) ; 59f818c4 (2-302, coordonnées du milieu) ; 930711ec,
+84227334 (colinéarité par le déterminant) ; 060086c8, 66f9abbf (6e, périmètre du carré, du rectangle).
+Catégories de seconde : Géométrie › Vecteurs du plan › Colinéarité 1-4, Coordonnées 1-6, Milieu 1 prises.
+
+- Outils : tout en prod. Flèches en ` ```figure ` sur quadrillage (`vecteur(A, B)`, comme `2de-vecteur-tracer`) ;
+  geste ` ```courbe tracer: vecteur ` + `depuis A` en prod depuis la 0.66.0 (2-298, `dd286c93`) → **la
+  décision Q5 (case choix « pour l'instant ») est dépassée pour 2-297**.
+
+**Phase 0 proposée** : 10 modèles en deux sous-lots, niveau `['2']`, brouillons ; une PR de fichiers par
+sous-lot, une migration nœud + tag pour les deux.
+
+_12 b-1 — Égalité, représentants, milieu, somme (5 modèles)_
+
+1. **2-287 · Égalité de deux vecteurs** (Vecteurs › égalité de vecteurs ; Vecteurs du plan › Égalité, niv. 1) :
+   flèches u⃗, v⃗, w⃗, t⃗ sur quadrillage → « quel vecteur est égal à u⃗ ? » (case choix) ; parallélogramme
+   ABCD → AB⃗ = ? (DC⃗ ; distracteurs CD⃗, BC⃗, AD⃗). Erreurs : sens inversé, même longueur autre direction.
+2. **2-433 · Vecteur nul** (› égalité de vecteurs ; Égalité, niv. 2) : AA⃗ = ? ; AB⃗ + BA⃗ = ? ; « AB⃗ = 0⃗
+   signifie… » (A = B) ; case choix. Erreur : AB⃗ + BA⃗ = 2AB⃗.
+3. **2-288 · Représentants** (› égalité de vecteurs ; Égalité, niv. 3) : u⃗ dessiné, point C ; « le point D tel
+   que CD⃗ = u⃗ est… » (points E, F, G, H nommés sur le quadrillage, case choix) ; puis l'origine connaissant
+   l'extrémité. Erreur : DC⃗ = u⃗ (sens).
+4. **2-296 · Milieu, vectoriel** (sous-notion à trancher, L12b-b ; Vecteurs du plan › Milieu, niv. 2) :
+   « I milieu de [AB] ⇔ … » (AI⃗ = IB⃗ ; distracteurs AI⃗ = BI⃗, IA⃗ = IB⃗, AB⃗ = AI⃗) ; AB⃗ = k·AI⃗ → k = 2 ;
+   IA⃗ + IB⃗ = ? (0⃗). Pas de formule de coordonnées (approfondissement, décision l2-8).
+5. **2-297 · Représenter la somme** (› somme et relation de Chasles ; Vecteurs du plan › Somme, niv. 1) :
+   u⃗ et v⃗ dessinés depuis A ; l'élève **trace** u⃗ + v⃗ `depuis A` (geste, L12b-a) ; corrigé : le
+   parallélogramme. Coordonnées 1..3 signées, somme non nulle. Erreur : u⃗ − v⃗, u⃗ seul.
+
+_12 b-2 — Produit, colinéarité, combinaison, base ; périmètre (5 modèles)_
+
+6. **2-289 · Produit par un réel** (› produit par un réel ; Vecteurs du plan › Produit par un réel, niv. 1) :
+   u⃗ dessiné → « quelle flèche représente 2u⃗ ? −u⃗ ? ½u⃗ ? » (case choix) ; v⃗ = k·u⃗ dessinés → k = ?
+   (k ∈ {−3, −2, −½, ½, 2, 3}, une case). Erreur : signe de k oublié.
+7. **2-290 · Colinéarité, sur la figure** (› colinéarité ; Colinéarité, niv. 5) : « parmi ces flèches,
+   lesquelles sont colinéaires à u⃗ ? » ; « u⃗ = −3v⃗ : u⃗ et v⃗ sont… » (colinéaires de sens contraires).
+   Sans coordonnées : le critère par le déterminant est déjà 930711ec, 84227334.
+8. **2-291 · Combinaison de deux vecteurs** (› combinaison linéaire ; Vecteurs du plan › Combinaison, niv. 1) :
+   i⃗, j⃗ non colinéaires (pas forcément orthogonaux) et w⃗ sur quadrillage → w⃗ = x i⃗ + y j⃗, deux cases ;
+   x, y entiers de −3 à 3, non tous deux nuls. Erreur : x et y échangés.
+9. **2-292 · Base orthonormée** (› coordonnées ; Coordonnées, niv. 7) : couple (i⃗, j⃗) dessiné → orthonormée,
+   orthogonale non normée, ou ni l'une ni l'autre (case choix). Erreur : orthogonale lue orthonormée.
+10. **2-401 · Périmètre d'un polygone** (nœud à trancher, L12b-c ; Grandeurs › Périmètres › Polygone, niv. 1) :
+    polygone dessiné, longueurs écrites (triangle, quadrilatère, pentagone ; décimaux à un chiffre) ; polygone
+    régulier dont un côté est donné ; puis unités mêlées (cm et mm). Réponse en case, unité imposée.
+    Automatisme : calcul de tête ou posé court.
+
+- **Question d'accès** : personne (brouillons neufs, aucune policy).
+
+**Questions à David** :
+
+- **L12b-a — 2-297** : le geste « tracer un vecteur » est en prod (2-298). → Je recommande **le geste**
+  (l'élève trace u⃗ + v⃗ depuis A) plutôt que la case choix entre figures de Q5.
+- **L12b-b — 2-296, sous-notion** : le point est sur la notion Vecteurs. → Je recommande **égalité de vecteurs**
+  (I milieu ⇔ AI⃗ = IB⃗). Sinon : coordonnées, où vit 59f818c4.
+- **L12b-c — 2-401, nœud** : aucune sous-notion « polygone » sous Périmètres. → Je recommande **la notion
+  Périmètres elle-même** (le point y est). Sinon : une sous-notion neuve « polygone » (migration de l'arbre).
+- **L12b-d — Ordre** : 12 b-1 puis 12 b-2, une PR de fichiers chacun ? → Je recommande **oui**.
+
+**Décisions de David (2026-11-04)** : phase 0 validée avec mes quatre recommandations (« je suis tes
+recos ») — L12b-a 2-297 au geste « tracer un vecteur » ; L12b-b 2-296 rangé sous Vecteurs › égalité de
+vecteurs ; L12b-c 2-401 rangé sur la notion Périmètres elle-même ; L12b-d 12 b-1 puis 12 b-2, une PR chacun.
+
+## 78. Lot 12 b-1, fichiers (2026-11-04)
+
+- `questions-2de/lot-vecteurs-c1-2de.py` → `scripts/questions/2de-vecteurs-c1/` (5 modèles, 43 specs).
+  Catégories : Géométrie › Vecteurs du plan › Égalité 1, 2, 3 (287, 433, 288), › Milieu 2 (296), › Somme 1
+  (297).
+- Flèches à reconnaître (287, 288) : la bonne change de case à chaque tirage (décalage `p`, rôles par
+  indicatrices, rang = (n − p)·min(p, 1)). Rôles de 287 : égal, opposé, coordonnées échangées, symétrique,
+  quart de tour ; |a| ≠ |b| les rend tous distincts.
+- 2-297 : ` ```courbe ` n'a pas de flèche d'affichage → u⃗ = AB⃗ et v⃗ = AC⃗ donnés par `points: A, B, C`,
+  geste `tracer: vecteur (…) depuis A` ; le corrigé dessine le parallélogramme ABDC (` ```figure `).
+- Joué en local (aperçu admin, Chrome) : deux corrections faites — étiquette de B hors cadre dans le
+  parallélogramme (fenêtre −1..11 × −1..10) ; points de 288 renommés K et P, Q, R, S (C et E-H se
+  mélangeaient aux lettres A-D des cases choix) ; « 3 + (2) » → `{{eval:c;+}}`. Fraction 1/2 acceptée.
+- `create-questions` (simulation, prod) : 5/5 à créer ; `question:specs` 5/5 importables ; `sonde-figures`
+  et `sonde-courbes` : 0 problème. Base locale : `-3..3` au lieu de `0..3;±` (refusé par le tirage).

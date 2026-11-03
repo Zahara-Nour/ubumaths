@@ -331,7 +331,7 @@ describe('la saisie lit la virgule que l’affichage écrit', () => {
 	it.each(['0{,}5x+3=1', '0,5x+3=1'])('aller-retour : la sortie recopiée se relit (%s)', (out) => {
 		const result = commande(runInput(session(), `.résoudre ${out}`));
 
-		expect(result.latex).toBe('x = -4');
+		expect(result.latex).toBe('S = \\left\\{ -4 \\right\\}');
 		expect(result.output).toContain('x = -4');
 	});
 });

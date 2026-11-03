@@ -74,31 +74,32 @@ describe('.résoudre — Q51 : un coefficient en fraction se défait en multipli
 	it('x/4 = 0,5 : « On multiplie les deux membres par 4 », x = 2', () => {
 		expect(titles('x/4=0,5')).toContain('On multiplie les deux membres par $4$');
 		expect(titles('x/4=0,5').join(' ')).not.toContain('divise');
-		expect(answer('x/4=0,5')).toBe('x=2');
+		expect(answer('x/4=0,5')).toBe('S={2}');
 	});
 
 	it('\\frac{x}{4} = 0,5 : même chose', () => {
 		expect(titles('\\frac{x}{4}=0,5')).toContain('On multiplie les deux membres par $4$');
-		expect(answer('\\frac{x}{4}=0,5')).toBe('x=2');
+		expect(answer('\\frac{x}{4}=0,5')).toBe('S={2}');
 	});
 
 	it('x/3 < 0,1 : « On multiplie les deux membres par 3 », x < 0,3', () => {
 		expect(titles('x/3<0,1')).toContain('On multiplie les deux membres par $3$');
-		expect(answer('x/3<0,1')).toBe('x<0.3');
+		expect(answer('x/3<0,1')).toBe('S=]-\\infty;0.3[');
 	});
 
 	it('(2/3)x = 1 : « On multiplie les deux membres par 3/2 »', () => {
 		expect(titles('\\frac{2}{3}x=1')).toContain(
 			'On multiplie les deux membres par $\\dfrac{3}{2}$'
 		);
-		expect(answer('\\frac{2}{3}x=1')).toBe('x=\\dfrac{3}{2}');
+		expect(answer('\\frac{2}{3}x=1')).toBe('S={\\dfrac{3}{2}}');
 	});
 
 	it('2x/3 − 1 = 1 : on ajoute 1, puis on multiplie par 3/2', () => {
 		expect(titles('\\frac{2x}{3}-1=1')).toEqual([
 			'On ajoute $1$ aux deux membres',
 			'On multiplie les deux membres par $\\dfrac{3}{2}$',
-			'Solution : $x = 3$'
+			'Solution : $x = 3$',
+			'L’ensemble des solutions'
 		]);
 	});
 
@@ -106,7 +107,7 @@ describe('.résoudre — Q51 : un coefficient en fraction se défait en multipli
 		expect(titles('-\\frac{x}{4}<1')).toContain(
 			'On multiplie les deux membres par $-4$ (changement de sens car $-4$ est négatif)'
 		);
-		expect(answer('-\\frac{x}{4}<1')).toBe('x>-4');
+		expect(answer('-\\frac{x}{4}<1')).toBe('S=]-4;+\\infty[');
 	});
 
 	it('témoins : 0,5x = 1 et 3x = 6 divisent toujours', () => {
@@ -124,18 +125,20 @@ describe('.résoudre — Q52 : un membre factorisé se résout sans le développ
 		expect(titles('0,5(x+1)=2')).toEqual([
 			'On divise les deux membres par $0.5$',
 			'On soustrait $1$ aux deux membres',
-			'Solution : $x = 3$'
+			'Solution : $x = 3$',
+			'L’ensemble des solutions'
 		]);
-		expect(forms('0,5(x+1)=2')).toEqual(['x+1=4', 'x=3']);
+		expect(forms('0,5(x+1)=2')).toEqual(['x+1=4', 'x=3', 'S={3}']);
 	});
 
 	it('−(x − 3) = 0 : on multiplie par −1, puis on ajoute 3', () => {
 		expect(titles('-(x-3)=0')).toEqual([
 			'On multiplie les deux membres par $-1$',
 			'On ajoute $3$ aux deux membres',
-			'Solution : $x = 3$'
+			'Solution : $x = 3$',
+			'L’ensemble des solutions'
 		]);
-		expect(forms('-(x-3)=0')).toEqual(['x-3=0', 'x=3']);
+		expect(forms('-(x-3)=0')).toEqual(['x-3=0', 'x=3', 'S={3}']);
 	});
 
 	it('2(x+1) + 3 = 7 : le terme constant d’abord, puis la division', () => {
@@ -143,42 +146,43 @@ describe('.résoudre — Q52 : un membre factorisé se résout sans le développ
 			'On soustrait $3$ aux deux membres',
 			'On divise les deux membres par $2$',
 			'On soustrait $1$ aux deux membres',
-			'Solution : $x = 1$'
+			'Solution : $x = 1$',
+			'L’ensemble des solutions'
 		]);
-		expect(forms('2(x+1)+3=7')).toEqual(['2(x+1)=4', 'x+1=2', 'x=1']);
+		expect(forms('2(x+1)+3=7')).toEqual(['2(x+1)=4', 'x+1=2', 'x=1', 'S={1}']);
 	});
 
 	it('3 − (x − 1) = 5 : on soustrait 3, puis on multiplie par −1', () => {
-		expect(forms('3-(x-1)=5')).toEqual(['-(x-1)=2', 'x-1=-2', 'x=-1']);
+		expect(forms('3-(x-1)=5')).toEqual(['-(x-1)=2', 'x-1=-2', 'x=-1', 'S={-1}']);
 	});
 
 	it('3(x − 1) = 2x + 1 : x des deux côtés, on développe', () => {
 		const t = titles('3(x-1)=2x+1');
 		expect(t[0]).toBe('On développe');
 		expect(forms('3(x-1)=2x+1')[0]).toBe('3x-3=2x+1');
-		expect(answer('3(x-1)=2x+1')).toBe('x=4');
+		expect(answer('3(x-1)=2x+1')).toBe('S={4}');
 	});
 
 	it('2(x − 1) + x = 4 : deux termes en x, on développe', () => {
 		expect(titles('2(x-1)+x=4')[0]).toBe('On développe');
 		expect(forms('2(x-1)+x=4')[0]).toBe('2x-2+x=4');
-		expect(answer('2(x-1)+x=4')).toBe('x=2');
+		expect(answer('2(x-1)+x=4')).toBe('S={2}');
 	});
 
 	it('3 + (x − 1) = 5 : parenthèses ôtées après un +', () => {
 		expect(titles('3+(x-1)=5')[0]).toBe('On supprime les parenthèses');
 		expect(forms('3+(x-1)=5')[0]).toBe('3+x-1=5');
-		expect(answer('3+(x-1)=5')).toBe('x=3');
+		expect(answer('3+(x-1)=5')).toBe('S={3}');
 	});
 
 	it('(x + 1)/2 = 3 : l’inconnue divisée, on multiplie par 2', () => {
 		expect(titles('\\frac{x+1}{2}=3')[0]).toBe('On multiplie les deux membres par $2$');
-		expect(forms('\\frac{x+1}{2}=3')).toEqual(['x+1=6', 'x=5']);
+		expect(forms('\\frac{x+1}{2}=3')).toEqual(['x+1=6', 'x=5', 'S={5}']);
 	});
 
 	it('(2x − 4)/2 = 0 : on multiplie par 2', () => {
 		expect(forms('(2x-4)/2=0')[0]).toBe('2x-4=0');
-		expect(answer('(2x-4)/2=0')).toBe('x=2');
+		expect(answer('(2x-4)/2=0')).toBe('S={2}');
 	});
 
 	it('½(x + 1) = 3 : coefficient en fraction, on multiplie par 2', () => {
@@ -189,7 +193,7 @@ describe('.résoudre — Q52 : un membre factorisé se résout sans le développ
 	it('4 = 2(x − 1) : l’inconnue à droite, même chemin', () => {
 		expect(titles('4=2(x-1)')[0]).toBe('On divise les deux membres par $2$');
 		expect(forms('4=2(x-1)')[0]).toBe('2=x-1');
-		expect(answer('4=2(x-1)')).toBe('x=3');
+		expect(answer('4=2(x-1)')).toBe('S={3}');
 	});
 
 	it('inéquation : −(x − 1) > 0, on multiplie par −1 et le sens change', () => {
@@ -197,7 +201,7 @@ describe('.résoudre — Q52 : un membre factorisé se résout sans le développ
 			'On multiplie les deux membres par $-1$ (changement de sens car $-1$ est négatif)'
 		);
 		expect(forms('-(x-1)>0')[0]).toBe('x-1<0');
-		expect(answer('-(x-1)>0')).toBe('x<1');
+		expect(answer('-(x-1)>0')).toBe('S=]-\\infty;1[');
 	});
 
 	it('inéquation : −2(x + 1) ≤ 4, on divise par −2 et le sens change', () => {
@@ -205,20 +209,20 @@ describe('.résoudre — Q52 : un membre factorisé se résout sans le développ
 			'On divise les deux membres par $-2$ (changement de sens car $-2$ est négatif)'
 		);
 		expect(forms('-2(x+1)\\le4')[0]).toBe('x+1\\geqslant-2');
-		expect(answer('-2(x+1)\\le4')).toBe('x\\geqslant-3');
+		expect(answer('-2(x+1)\\le4')).toBe('S=[-3;+\\infty[');
 	});
 });
 
 describe('.résoudre — Q52 : parcours, la conclusion juste au bout des étapes', () => {
 	it.each([
-		['5-2(x-1)=1', 'x=3'],
-		['2(3(x-1)+1)=8', 'x=2'],
-		['\\frac{2(x+1)}{3}=4', 'x=5'],
-		['-(x+1)+3=0', 'x=2'],
-		['\\sqrt{2}(x-1)=2', 'x=1+\\sqrt{2}'],
-		['2,5(x-0,4)=1', 'x=0.8'],
-		['3-2(x+1)>7', 'x<-3'],
-		['3(x-1)\\ne6', 'x\\neq3']
+		['5-2(x-1)=1', 'S={3}'],
+		['2(3(x-1)+1)=8', 'S={2}'],
+		['\\frac{2(x+1)}{3}=4', 'S={5}'],
+		['-(x+1)+3=0', 'S={2}'],
+		['\\sqrt{2}(x-1)=2', 'S={1+\\sqrt{2}}'],
+		['2,5(x-0,4)=1', 'S={0.8}'],
+		['3-2(x+1)>7', 'S=]-\\infty;-3['],
+		['3(x-1)\\ne6', 'S=\\mathbb{R}\\setminus{3}']
 	])('%s répond %s', (equation, expected) => {
 		expect(answer(equation)).toBe(expected);
 	});

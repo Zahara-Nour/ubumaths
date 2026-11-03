@@ -208,7 +208,27 @@ export const REGISTRE_CORPUS: Readonly<Record<string, readonly RegistreCase[]>> 
 			id: 'resoudre-11',
 			ligne: '.résoudre x^2>4',
 			attendu: 'S = ]-\\infty ; -2[ \\cup ]2 ; +\\infty['
-		}
+		},
+		{
+			id: 'resoudre-12',
+			ligne: '.résoudre cos(x)=sin(x)',
+			attendu: 'S = \\{\\frac{\\pi}{4} + k\\pi, k \\in \\mathbb{Z}\\}',
+			note: 'Famille périodique en S, comme toute équation (David, 2026-11-03).'
+		},
+		{
+			id: 'resoudre-13',
+			ligne: '.résoudre sin(x)=1/2',
+			attendu: 'S = \\{\\frac{\\pi}{6} + 2k\\pi ; \\frac{5\\pi}{6} + 2k\\pi, k \\in \\mathbb{Z}\\}'
+		},
+		{
+			id: 'resoudre-14',
+			ligne: '.résoudre -x^2+x+1=0',
+			attendu: 'S = \\{\\frac{1-\\sqrt{5}}{2} ; \\frac{1+\\sqrt{5}}{2}\\}',
+			note: 'a < 0 : les solutions restent dans l’ordre croissant.'
+		},
+		{ id: 'resoudre-15', ligne: '.résoudre x^2=4 dans [0;+∞[', attendu: 'S = \\{2\\}' },
+		{ id: 'resoudre-16', ligne: '.résoudre 2t+1<5 ; t', attendu: 'S = ]-\\infty ; 2[' },
+		{ id: 'resoudre-17', ligne: '.résoudre x^2-4x+4=0', attendu: 'S = \\{2\\}' }
 	],
 
 	intégrer: [

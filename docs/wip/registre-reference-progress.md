@@ -1,31 +1,29 @@
 ---
 title: Le registre des commandes, référence commune (pnpm math, Atelier, calculatrice) — journal
 date: 2026-11-01
-status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
+status: PR 2b mergée (#2360), PR 2c à préparer
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2351._
+_Mis à jour le 2026-11-04, après #2360._
 
-- **État** : PR 2a mergée (#2351) : `.simplifier` du registre garde le domaine
-  (`mathAST/pedagogical-simplify/keep-domain.ts`) ; l'Atelier affiche la réponse du registre (la
-  fin de ses étapes quand il en a) ; `·` `⋅` `×` en syntaxe maison ; `pow-of-pow` garde le signe
-  (`(x²)^{1/2}` → `|x|`). Rien de déployé.
-- **Prochaine action** : `.résoudre` → S (PR 2b), nouveau worktree depuis `origin/main` ; puis
-  `.intégrer`.
+- **État** : PR 2b (`.résoudre` répond par S) mergée (#2360). Détail : § PR 2b.
+- **Prochaine action** : PR 2c, phase 0 d'abord. Au programme : lecture et refus (V57 paramètre,
+  Q46 décimaux, degrés : `READ_DIFFERENTLY` de `resoudre-registre.test.ts`), plus le texte brut de
+  `.résoudre` aligné sur S (terminal `pnpm math`, David, 2026-11-04). Ensuite `.intégrer`.
 - **En attente de David** : rien.
 - **Tranché** : `unitChoice: 'school'` GARDÉE exprès — ne pas proposer de la retirer ; Q9 EN
   ENTIER, A-D du lot 2, `decimal` en LaTeX, `plafond-02` → 1000, Q24, `signes-06` — NE PAS
-  reposer. Fraction devant ou division après : `(x²/3 + 2x/3)eˣ` ; tableau : `x(x + 2)eˣ/3` ;
-  barre seulement si ça factorise, q ≤ 100 (David, 2026-11-03). `.simplifier` : descendre le calcul
-  de l'Atelier dans le moteur, `avec`/`dans` restent à l'Atelier jusqu'à l'étape H (David, 2026-11-03).
+  reposer. Fraction devant ou division après : `(x²/3 + 2x/3)eˣ` ; tableau : `x(x + 2)eˣ/3`.
+  `.simplifier` : calcul descendu, `avec`/`dans` à l'étape H. `.résoudre` (2026-11-03) : S partout,
+  texte brut compris (2026-11-04), périodique `S = {a + kπ, k ∈ ℤ}`, seuil gardé avec `≈`.
 - **Pièges** : `docs:check-a-jour` local ne voit que le COMMITÉ ; commitlint refuse « merge … »
-  (`chore: fusion …`) et un corps > 100 colonnes ; un nombre négatif est un `opposite(number)` ;
-  limites connues : `.diff cos(60°)*x`, `2 ≈ 2`, `(t>1)`, `5 m * 25!/24!`, `20000!/19999!`,
-  `2×π`. Le registre lit en LaTeX ce que la détection ne tranche pas (confiance 0,5 : `x*0/x`),
-  l'Atelier en syntaxe maison.
-- **Worktree / branche** : aucun (retiré après #2351) ; le prochain : `../ubumaths-wt-registre-reference`.
+  et un corps > 100 colonnes ; le hook laisse parfois l'index ≠ HEAD (`MM`, disque = HEAD) →
+  `git restore --staged` ; la garde R5 envoie au registre une ligne au POINT (virgule = refus de
+  lecture, test sans assertion) ; le juge du corpus confond `{,}` et `.` ; limites connues :
+  `.diff cos(60°)*x`, `2 ≈ 2`, `(t>1)`, `5 m * 25!/24!`, `20000!/19999!`, `2×π`.
+- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `feat/registre-reference-lecture` (créée, vide).
 
 ---
 
@@ -660,3 +658,67 @@ corrigée, à confirmer).
   syntaxe maison au portier changeait 6 tests dont `grands-08` du corpus : écarté. Laissés,
   antérieurs : `2×π` → `2 \pi ×` (`×` à côté de π, syntaxe maison) ; `.simplifier` calcule deux
   fois le moteur pédagogique (registre puis `simplifySteps`).
+
+## PR 2b — `.résoudre` répond par S (2026-11-03)
+
+Étape 2 du découpage, sur le « go » de David.
+
+- **Mesure** (sonde jetable, 193 lignes `.résoudre` des tests de l'Atelier, registre contre
+  Atelier) : 81 écarts, dont ~55 titres de tests pris pour des lignes. Écarts réels : (1) solution
+  unique `x = 3` (les deux outils ; `≈` dans la réponse pour `ln`) ; (2) inéquation : l'Atelier
+  conclut `x < 3` (dernière étape `divide-both-sides`), le registre `S = ]−∞ ; 3[` ; (3) ordre :
+  `-x^2+x+1=0` et produit nul non rangés à l'Atelier ; (4) paramètre : registre `x = 4/a`, Atelier
+  refuse (V57) ; (5) décimaux tapés : registre `3/2`, Atelier `1,5` (Q46) ; (6) degrés : registre
+  `1/cos(π/3 rad)`, Atelier `2` (limite notée à la PR 3 : `.solve` relit `ctx.input`). Familles
+  périodiques et seuils de suites : même réponse, `x = … , k ∈ ℤ` et `n > … ≈ …`.
+- **Décisions de David** (questions posées, recos suivies) : famille périodique
+  `S = \{ π/4 + kπ, k ∈ ℤ \}` (deux familles : `S = \{ π/6 + 2kπ ; 5π/6 + 2kπ, k ∈ ℤ \}`) ; **seuil
+  d'une suite gardé tel quel, `≈` compris** (exception assumée à Q2) ; paramètre : **le registre
+  refuse aussi** (V57 descend) ; décimaux tapés : **Q46 descend dans le registre** (`1,5`).
+- **Découpage** : PR 2b = la FORME (1-3 + périodiques) ; PR 2c = la LECTURE et les refus (4-6).
+
+### Phase 0 de la PR 2b — comportements
+
+- **Nominal** : `.résoudre 2x+1=7` → `S = \{3\}` (registre et Atelier) ; `e^x=3` → `S = \{\ln(3)\}`,
+  `≈ 1,10` au bouton ; `2x+1<7` → `S = ]−∞ ; 3[` dans l'Atelier, dernière étape comprise (les
+  étapes passent par `x < 3`, Q2) ; `cos(x)=sin(x)` → `S = \{ π/4 + kπ, k ∈ ℤ \}`.
+- **Limites** : solutions rangées par valeur croissante (R-ordre), produit nul compris ; seuil
+  `0.8^n<0.1 ; n` inchangé ; solution sous condition (`\text{si}`) : S aussi, condition gardée.
+- **Erreurs** : aucun refus ne change.
+
+### PR 2b — écriture (2026-11-03)
+
+- **Registre** (`solve-latex.ts`, `solve.command.ts`) : une solution → `S = \{3\}` ; famille
+  périodique → `S = \{ a + 2kπ ; b + 2kπ, k ∈ ℤ \}` ; solution en ln sans `≈`
+  (`logarithmicExactLatex`), décimaux du ln gardés (S1) ; le bouton ≈ suit la forme
+  (`S ≈ \{1,0986\}`). Seuil d'inéquation inchangé (`thresholdOf`, `n > … ≈ …`, `x > ln 5 ≈ 1,61`
+  aussi : même mécanisme, variable x comprise). Terminal (texte) inchangé.
+- **Atelier** (`solve-steps.ts`) : `concludedOn` ajoute « L'ensemble des solutions » (explication
+  en détaillé seulement) ou réécrit l'ensemble de la conclusion dans l'ordre de la réponse ;
+  `inequalitySet` (`<`, `≤`, `>`, `≥`, `≠` → `S = ℝ \ {3}`) ; `ascending` (R-ordre, produit nul et
+  a < 0). L'Atelier affiche encore la fin de ses étapes, pas `result.answer` : sinon `x+0.5=2`,
+  `cos(60°)x=1`, `a x = 4` régresseraient avant la PR 2c.
+- **Corpus** : `resoudre-12` à `-17` (périodiques, a < 0, `dans`, variable t, racine double) ;
+  juge : famille périodique lue (`periodic`). Justes, retirées de `connues-fausses.ts` : registre
+  `resoudre-01, 06, 07` ; Atelier `resoudre-01, 02, 06, 07, 09, 10`.
+- **Garde R5** : `atelier/__tests__/resoudre-registre.test.ts` (92 lignes `.résoudre` des tests de
+  l'Atelier) : dernière étape = ligne affichée = réponse du registre ; si l'Atelier refuse, le
+  registre ne répond pas ; 11 écarts de la PR 2c figés (`READ_DIFFERENTLY` : degrés ×7, `x+0.5=2`,
+  paramètre ×3). Preuve rouge : 34 échecs (garde + corpus) avec les trois fichiers de `main`.
+- ~200 attendus de tests mis à jour (`x = …` → `S = \{…\}`, étape de conclusion en plus), par
+  script puis à la main ; une entrée de test réécrite par erreur par le script (`u_{n+1}=3`)
+  rétablie.
+- Suites `atelier` + `mathAST/cli` (8 549), `mathAST` + `questions` + `geometry-core` + `routes`
+  (38 284) et client `atelier` + `routes` (741) vertes.
+
+### PR 2b — revue et merge (2026-11-04)
+
+- `docs/systeme/mathast/README.md` : la forme de `.solve` décrite (ligne `cli/`, champ `answer`).
+- Revue `code-reviewer` (opus), rien de bloquant. Corrigé : plusieurs solutions en ln
+  s'écrivaient au point dans `answer` (`S = {ln(0.5) ; ln 3}`) → virgule pour chacune ; garde :
+  `(e^x-0.5)(e^x-3)=0`, avec et sans `dans`, dans `resoudre-registre.test.ts`, rouge avant.
+  `approximateSolutionsLatex` perd `variable` et `asSet`.
+- Relevé par la revue, laissé pour la PR 2c (David : « je te suis ») : le champ `text` de
+  `.résoudre` reste `x = 3`, `x = ln(3) ≈ 1.10`, `x = π/6 + 2kπ ou …`. Seul le terminal de
+  `pnpm math` l'affiche ; l'Atelier montre toujours le LaTeX.
+- Mergée : #2360.

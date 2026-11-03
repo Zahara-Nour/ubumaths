@@ -16,10 +16,6 @@
 
 /** Le registre (`WebReplEngine`, champ `answer`) */
 export const REGISTRE_CONNUES_FAUSSES: Readonly<Record<string, string>> = {
-	// PR 2 : `.résoudre` répond par S (Q2), sans valeur approchée
-	'resoudre-01': 'structure : x = 3',
-	'resoudre-06': 'structure : x = \\ln\\left( 3 \\right) \\approx 1{,}10',
-	'resoudre-07': 'structure : x = \\exponentialE^2 \\approx 7{,}39',
 	// `normalFormsEquivalent` rate sin² + cos² (carte ADR 0032 : `areEquivalent`)
 	'equivalent-04': 'valeur : \\text{faux}',
 	// Messages de refus (R6)
@@ -30,14 +26,6 @@ export const REGISTRE_CONNUES_FAUSSES: Readonly<Record<string, string>> = {
 
 /** L'Atelier (`runInput`, champ `latex`) */
 export const ATELIER_CONNUES_FAUSSES: Readonly<Record<string, string>> = {
-	// `.résoudre` répond par S (Q2), sans valeur approchée, solutions rangées
-	'resoudre-01': 'structure : x = 3',
-	'resoudre-02': 'structure : x < 3',
-	'resoudre-06': 'structure : x = \\ln\\left( 3 \\right) \\approx 1{,}10',
-	'resoudre-07': 'structure : x = \\exponentialE^2 \\approx 7{,}39',
-	'resoudre-09': 'structure : x \\geqslant 5',
-	// Produit nul : ordre des facteurs, pas l'ordre croissant (règle de David, 2026-11-01)
-	'resoudre-10': 'forme : S = \\left\\{ 1 \\,;\\, -2 \\right\\}',
 	// L'Atelier affiche la sortie texte du moteur (empreintes comprises)
 	'equivalent-01': 'sans-reponse : Equivalent: true',
 	'equivalent-02': 'sans-reponse : Equivalent: false',
