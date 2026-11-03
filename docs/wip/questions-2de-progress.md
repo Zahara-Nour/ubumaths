@@ -6,18 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2296 et ses publications (§ 64)._
+_Mis à jour le 2026-11-03, lot `vecteur-tracer` en cours (§ 65)._
 
-- **État** : lots `textcolor-hors-2de` (27) et `tracer-droites-2de` (2-316 `8d4bd94d`, 2-445 `2cfae58d`)
-  publiés et relus en base (export = instantanés). Essai à l'écran noté dans `verifications-manuelles.md`.
-- **Prochaine action** : 2-298 (vecteur, § 61) après le `deploy:prod` de #2274 ; sinon, rien d'ouvert.
-- **En attente de David** : —
+- **État** : 2 modèles NEUFS écrits (`scripts/questions/2de-vecteur-tracer/`) : 2-299 lire (niveau 5),
+  2-298 tracer (niveau 6) ; specs 8/8 et 12/12, sondes courbes / figures 0 problème.
+- **Prochaine action** : base locale + aperçu admin (flèche, étiquette u⃗), PR, merge ; puis David
+  `create-questions --dir scripts/questions/2de-vecteur-tracer --publier` ; migration nœud + tag.
+- **En attente de David** : le `--publier` (après le merge).
 - **Pièges en cours** : `--publier`, `publier-lot`, `db:migrate` et la simulation
   d'`update-published-questions.ts` (lecture de la prod) → David avec `!` ; un lot ajouté sur une branche
   n'existe dans le dépôt principal qu'après le merge ; `create-questions` apparie par (titre, thème, domaine,
   sous-domaine, **niveau**) ; `col()` en texte → `colt()` ; `fonctions-terminale/C-06` du dépôt périmé vs
   prod (§ 63) ; pas de ligne `Claude-Session:` ; une autre session écrit aussi dans ce journal : `git pull`.
-- **Worktree / branche** : `../ubumaths-wt-questions-2de` (HEAD détachée sur `origin/main`).
+- **Worktree / branche** : `../ubumaths-wt-questions-2de`, `feat/vecteur-2de`.
 
 ## 1. Relevé (prod, 2026-10-27)
 
@@ -1543,7 +1544,9 @@ Avant de corriger : revérifier dans le code de rendu que `\textcolor` hors math
   journal archivé `questions-1spe-tracer-droite`) ; pièges dans `couvrir-un-niveau.md` § 9.
 - Publiés → `update-published-questions.ts`, pas `create-questions --mettre-a-jour`. Retirer la ligne de
   `docs/wip/outils-manquants.md` (« Contenu restant aux sessions questions ») une fois faits.
-- **2-298 · Représenter un vecteur dont on connaît les coordonnées** : même cas, modèles en case choix à
+- **2-298 · Représenter un vecteur dont on connaît les coordonnées** : ⚠️ **faux** (vérifié en prod le
+  2026-11-03, § 65) : aucun modèle n'existait, ni tagué ni non tagué ; créé au lot `vecteur-tracer`. Texte d'origine :
+  même cas, modèles en case choix à
   réécrire au geste ` ```courbe tracer: vecteur ` (`depuis A` pour l'origine imposée, #2274). ⚠️ #2274 n'est
   **pas en prod** au 2026-11-03 : rien à publier avant le `deploy:prod` qui la livre. Ids des modèles : à relever
   en prod (tag 2-298) ; origine du besoin : `docs/archive/wip/points-repere-progress.md`, lot 3.
@@ -1616,3 +1619,18 @@ tspe-ln-continuite-convexite,1spe-tracer-droite}.py`) : vérifiés d'abord fidè
 - Lot `tracer-droites-2de` : simulation (preuve rouge : 8/12 et 7/11 sur le contenu d'avant) puis
   `--publier` par David le 2026-11-03 ; relu : export identique aux instantanés (variations, specs,
   description ; titre, niveau, `grades`, `delay`, `status` inchangés).
+
+## 65. Lot `vecteur-tracer` : 2-299 (lire) et 2-298 (tracer), modèles neufs (2026-11-03)
+
+- #2274 en prod (0.66.0). Relevé prod : **0 modèle** tagué 2-298 ni 2-299, aucun modèle non tagué
+  ne fait le geste → le § 61 se trompait : création, pas réécriture.
+- **Phase 0 validée par David** (« je valide », recos suivies) : Géométrie › Vecteurs du plan ›
+  Coordonnées (niveaux 1-4 publiés) ; **2-299 au niveau 5** (lire : flèche AB entre deux points, puis
+  u⃗ seul ; deux cases en colonne), **2-298 au niveau 6** (tracer : origine libre, puis `depuis A`) ;
+  coordonnées 1..4 signées, |a| ≠ |b|, aucune nulle ; repère −6..6 gradué de 1 ; nœud « coordonnées »
+  (`2ad3ea7d`), tags 2-299 / 2-298 par migration après le `--publier`.
+- Script `docs/wip/questions-2de/lot-vecteur-tracer-2de.py` → `scripts/questions/2de-vecteur-tracer/`.
+  Flèches dessinées en ` ```figure ` (`vecteur(A, B)`, `vecteur(a, b, ancre=…)` + `texte` « u⃗ ») :
+  ` ```courbe ` n'a pas de flèche d'affichage. Corrigé de 2-298 : flèche depuis O (origine libre) ou A.
+- `create-questions` (simulation) : 8/8 et 12/12 ; `question:specs` 200/200 tirages ; `sonde-courbes`
+  et `sonde-figures` : 0 problème.

@@ -1,0 +1,224 @@
+{
+	"title": "Représenter un vecteur dont on connaît les coordonnées",
+	"description": "Tracer un représentant de u (a ; b) dans un repère, origine libre puis imposée (pièges : sens inversé, coordonnées échangées, signe, mauvaise origine)",
+	"grades": ["2"],
+	"theme": "Géométrie",
+	"domain": "Vecteurs du plan",
+	"subdomain": "Coordonnées",
+	"level": 6,
+	"delay": 120,
+	"status": "draft",
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans le repère ci-dessous, trace un représentant du vecteur $\\vec{u}\\begin{pmatrix}{{a}}\\\\{{b}}\\end{pmatrix}$ : place son origine où tu veux, puis son extrémité.\n\n```courbe\nx: -6 ; 6\ny: -6 ; 6\ngrille: 1 ; 1\ntracer: vecteur u = ({{a}} ; {{b}})\ntaille: moyenne\ndescription: Repère gradué de 1 en 1, de −6 à 6 sur les deux axes.\n```",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..4;±"
+				}
+			],
+			"conditions": ["abs(a) != abs(b)"],
+			"correction": {
+				"steps": [
+					"Pour représenter $\\vec{u}\\begin{pmatrix}{{a}}\\\\{{b}}\\end{pmatrix}$ : depuis l'origine choisie, on se déplace de ${{eval:abs(a)}}$ vers la {{if:a>0|droite|gauche}} et de ${{eval:abs(b)}}$ vers le {{if:b>0|haut|bas}} ; on arrive à l'extrémité, et la flèche va de l'origine à l'extrémité.",
+					"```figure\nfenetre: -6 ; 6 ; -6 ; 6\naxes: oui\ngrille: 1\ntaille: moyenne\ndescription: Repère : la flèche de O vers le point de coordonnées (a ; b), qui représente u.\n---\nO = point(0, 0, etiquette=\"bas\")\nvecteur({{a}}, {{b}}, ancre=(0, 0))\ntexte({{eval:round(100*((0)+(a)/2-0.6*(b)/sqrt((a)^2+(b)^2)))/100;d}}, {{eval:round(100*((0)+(b)/2+0.6*(a)/sqrt((a)^2+(b)^2)))/100;d}}, \"u⃗\")\n```",
+					"Par exemple depuis $O(0\\,;\\,0)$, l'extrémité est le point $(\\textcolor{{{color:primary.0}}}{{{a}}}\\,;\\,\\textcolor{{{color:primary.1}}}{{{b}}})$. Toute flèche de même direction, même sens et même longueur représente aussi $\\vec{u}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans le repère ci-dessous, trace le représentant du vecteur $\\vec{u}\\begin{pmatrix}{{a}}\\\\{{b}}\\end{pmatrix}$ d'origine $A$ : place son extrémité.\n\n```courbe\nx: -6 ; 6\ny: -6 ; 6\ngrille: 1 ; 1\npoints: A({{xa}} ; {{ya}})\ntracer: vecteur u = ({{a}} ; {{b}}) depuis A\ntaille: moyenne\ndescription: Repère gradué de 1 en 1, de −6 à 6 sur les deux axes.\n```",
+			"variables": [
+				{
+					"name": "xa",
+					"expression": "-4..4"
+				},
+				{
+					"name": "ya",
+					"expression": "-4..4"
+				},
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..4;±"
+				}
+			],
+			"conditions": ["abs(a) != abs(b)", "abs((xa)+(a)) <= 5", "abs((ya)+(b)) <= 5"],
+			"correction": {
+				"steps": [
+					"Pour représenter $\\vec{u}\\begin{pmatrix}{{a}}\\\\{{b}}\\end{pmatrix}$ : depuis l'origine choisie, on se déplace de ${{eval:abs(a)}}$ vers la {{if:a>0|droite|gauche}} et de ${{eval:abs(b)}}$ vers le {{if:b>0|haut|bas}} ; on arrive à l'extrémité, et la flèche va de l'origine à l'extrémité.",
+					"```figure\nfenetre: -6 ; 6 ; -6 ; 6\naxes: oui\ngrille: 1\ntaille: moyenne\ndescription: Repère : le point A et la flèche de A qui représente u.\n---\nA = point({{xa}}, {{ya}}, etiquette=\"bas\")\nvecteur({{a}}, {{b}}, ancre=({{xa}}, {{ya}}))\ntexte({{eval:round(100*((xa)+(a)/2-0.6*(b)/sqrt((a)^2+(b)^2)))/100;d}}, {{eval:round(100*((ya)+(b)/2+0.6*(a)/sqrt((a)^2+(b)^2)))/100;d}}, \"u⃗\")\n```",
+					"Depuis $A({{xa}}\\,;\\,{{ya}})$, l'extrémité est le point $(\\textcolor{{{color:primary.0}}}{{{eval:(xa)+(a)}}}\\,;\\,\\textcolor{{{color:primary.1}}}{{{eval:(ya)+(b)}}})$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u(3 ; −2) depuis O",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "-2"
+			},
+			"answers": ["0;0/3;-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u(3 ; −2) depuis (−4 ; 3)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "-2"
+			},
+			"answers": ["-4;3/-1;1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : sens inversé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "-2"
+			},
+			"answers": ["3;-2/0;0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : coordonnées échangées",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "-2"
+			},
+			"answers": ["0;0/-2;3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : signe de l'ordonnée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "-2"
+			},
+			"answers": ["0;0/3;2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : origine seule",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "-2"
+			},
+			"answers": ["0;0/"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : origine et extrémité confondues",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "-2"
+			},
+			"answers": ["1;1/1;1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u(−2 ; 3) depuis A(−1 ; 2) → (−3 ; 5)",
+			"variationIndex": 1,
+			"variables": {
+				"xa": "-1",
+				"ya": "2",
+				"a": "-2",
+				"b": "3"
+			},
+			"answers": ["-1;2/-3;5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : bon vecteur, autre origine que A",
+			"variationIndex": 1,
+			"variables": {
+				"xa": "-1",
+				"ya": "2",
+				"a": "-2",
+				"b": "3"
+			},
+			"answers": ["0;0/-2;3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : extrémité au point (a ; b)",
+			"variationIndex": 1,
+			"variables": {
+				"xa": "-1",
+				"ya": "2",
+				"a": "-2",
+				"b": "3"
+			},
+			"answers": ["-1;2/-2;3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : coordonnées échangées depuis A",
+			"variationIndex": 1,
+			"variables": {
+				"xa": "-1",
+				"ya": "2",
+				"a": "-2",
+				"b": "3"
+			},
+			"answers": ["-1;2/2;0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : extrémité non posée",
+			"variationIndex": 1,
+			"variables": {
+				"xa": "-1",
+				"ya": "2",
+				"a": "-2",
+				"b": "3"
+			},
+			"answers": ["-1;2/"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
