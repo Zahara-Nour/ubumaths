@@ -9,17 +9,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, lot 3 en cours (session questions-tspe)._
+_Mis à jour le 2026-11-04, après #2363._
 
-- **État** : outil mergé (#2331, #2339, #2347, #2356), pas en entier en prod (fractions, vecteurs nommés,
-  indice : non). Lot 3 : modèle TSPE-334 écrit, joué en local ; PR des fichiers à ouvrir.
-- **Prochaine action** : PR des fichiers (revue : aucune, contenu), merge ; puis **David** : `deploy:prod`,
-  `create-questions --publier` (`scripts/questions/tspe-334-tracer`) ; migration nœud « vecteurs de l'espace »
-  - tag TSPE-334 ; page à cocher ; publication.
-- **En attente de David** : `deploy:prod` après le merge des fichiers (v2 et v3 ont besoin de #2347).
+- **État** : outil mergé (#2331, #2339, #2347, #2356) ; modèle TSPE-334 mergé (#2363,
+  `scripts/questions/tspe-334-tracer/`), joué en local. Pas en prod : fractions, vecteurs nommés, indice.
+- **Prochaine action** : **David** : `pnpm deploy:prod`, puis
+  `! pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-334-tracer --publier` (brouillon) ;
+  ensuite relever l'id, migration nœud « vecteurs de l'espace » + tag TSPE-334 (nouveau worktree), page à
+  cocher, publication.
+- **En attente de David** : `deploy:prod` (v2 et v3 ont besoin de #2347), puis création du brouillon.
 - **Pièges en cours** : le geste ne vise que des points connus en 3D ; tétraèdre illisible (ligne 15 de
   `outils-manquants.md`) ; un point déclaré peut tomber sur un pointillé (vérifier le rendu).
-- **Worktree / branche** : `../ubumaths-wt-solide-vecteur`, `feat/solide-vecteur-modele`.
+- **Worktree / branche** : aucun (#2363 nettoyé).
 
 ---
 
