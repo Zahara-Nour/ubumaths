@@ -10,13 +10,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03 : chantier CLOS et versé._
+_Mis à jour le 2026-11-03 : chantier versé ; lot 9 rouvert à part._
 
 - **État** : ✅ clos. 265 modèles `T_SPE` publiés, aucun brouillon ; 218 points sur 326 couverts, les 108 autres
   voulus (68 P, 31 couverts par un voisin, 9 B\* du lot 9). Bilan durable :
   `docs/systeme/programmes/bornes/lycee/tspe.md` § « Couverture en modèles de questions » ; pièges :
   `docs/pratiques/couvrir-un-niveau.md` § 9.
-- **Prochaine action** : aucune. Lot 9 (334-339, 551-553, espace sur figure) : attend le chantier `solides`.
+- **Prochaine action** : lot 9 (334-339, 551-553, espace sur figure), rouvert le 2026-11-03 : `solides` est clos et
+  en prod (le versement l'a dit à tort « en attente ») → journal `docs/wip/questions-tspe-lot9-progress.md`.
 - **En attente de David** : rien.
 - **Worktree / branche** : `../ubumaths-wt-questions-tspe` à retirer (branches mergées).
 

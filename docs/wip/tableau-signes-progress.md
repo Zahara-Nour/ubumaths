@@ -9,19 +9,19 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2287 (PR 3 mergée)._
+_Mis à jour le 2026-11-03, après #2297 (PR 4 mergée)._
 
-- **État** : PR 1 (#2267 ubumark), 2 (#2273 génération, juge, masquage) et 3 (#2287 saisie : case + menu,
-  valeur MathLive) mergées. L'élève peut remplir un tableau ; manquent le corrigé et la page à cocher.
-- **Prochaine action** : PR 4 — corrigé (`ExpectedLine` `sign-table`, cellules fausses marquées), page à
-  cocher, `testSpecs`, PDF (repère « à compléter » sur une marque cachée, aujourd'hui trait nu) ; vérifier le
-  cas frère ```operation / `blankDefaults`. Puis réécrire 330 et 446 (Q6). Nouveau worktree
-  `git worktree add -b feat/tableau-signes-corrige ../ubumaths-wt-tableau-signes origin/main`.
-- **En attente de David** : essai au doigt sur iPhone (ligne #2287 de `verifications-manuelles.md`).
-- **Pièges en cours** : `VariationTable` vide les cellules cachées par défaut ; la bonne réponse vient de
-  `blanks` (prop `answers`), jamais du nœud (énoncé masqué). Question d'essai en base LOCALE :
-  `7ab1e5a0-0000-4000-8000-000000000001` (brouillon, page `/dashboard/admin/questions/<id>/preview`).
-- **Worktree / branche** : aucun (à recréer pour la PR 4).
+- **État** : outil complet — PR 1 (#2267 ubumark), 2 (#2273 génération, juge, masquage), 3 (#2287 saisie),
+  4 (#2297 corrigé, série PDF, page à cocher) mergées.
+- **Prochaine action** : réécrire les modèles 2-330 et 2-446 avec le tableau à compléter (Q6), puis
+  mettre à jour la ligne 8 de `outils-manquants.md` et verser le chantier (`docs/systeme/` à jour,
+  journal archivé). Nouveau worktree `git worktree add -b feat/tableau-signes-modeles
+../ubumaths-wt-tableau-signes origin/main`.
+- **En attente de David** : essais (lignes #2287 et #2297 de `verifications-manuelles.md`) ; repère « à
+  compléter » d'une marque cachée au PDF (reco : garder le trait nu ; sinon patcher vartable).
+- **Pièges en cours** : la bonne réponse vient de `blanks`, jamais du bloc (énoncé masqué) ; une case
+  hors `$…$` (`?` nu) n'est pas une case ; `domain: ]a[, +inf` mal découpé par le parseur (hors chantier).
+- **Worktree / branche** : aucun (à recréer).
 
 ---
 
@@ -152,3 +152,42 @@ Branche `feat/tableau-signes-saisie`, worktree `../ubumaths-wt-tableau-signes`.
   Laissés : case ≈ 35 px (menu 44 px), pas de position dans le libellé (elle donnerait la valeur cachée),
   Entrée sur une case signe ouvre le menu. Vu au clic dans Chrome ; 390 px non vérifiable (fenêtre bloquée
   à 1568 px). CI verte, mergée (#2287).
+
+## PR 4 — corrigé, série PDF, page à cocher (2026-11-03)
+
+Branche `feat/tableau-signes-corrige`, worktree `../ubumaths-wt-tableau-signes`.
+
+- **Corrigé** : `ExpectedLine` `sign-table` (`expected-result.ts`) — le bloc sort de l'énoncé rempli
+  (`withoutSignTableCases`, aussi dans `instructionOf`), une ligne par tableau : `source` sans `case:`,
+  `cells` (case, nature, attendu lu dans `blanks`, réponse de l'élève — jeton pour signe/marque, `0` → `z`,
+  sinon texte neutralisé —, statut). Tableau juste / forme à améliorer / faux ; tout vide → « Tu n'as rien
+  rempli dans le tableau. ». Écran : `SignTableAnswer.svelte` (cellule fausse barrée, bonne valeur
+  dessous ; vide : bonne valeur en pointillés ; libellé `sr-only` « Case 2, ta réponse : moins, faux,
+  attendu : plus »). Vue concise de la carte : rien (comme une case à construire) → détaillée.
+- **Série d'automatismes (PDF)** : chaque cellule cachée compte pour une case ; énoncé = bloc sans
+  `case:` (cellules vides) ; corrigé = `revealVariationBody` (parseur) : bloc sans `?` ni `case:`,
+  `?rien` → ligne retirée.
+- **Page à cocher** : cellules cachées encadrées en pointillés (`vt-cache`), remplies de la réponse,
+  « rien » écrit.
+- **testSpecs** : déjà pris en charge (`question:specs` sur un modèle d'essai : 3/3 vertes, 5 tirages).
+- **Repère PDF d'une marque cachée : non fait.** vartable 0.2.1 (source lue) ne dessine en un point
+  qu'un trait, un « 0 » ou une double barre : aucun contenu libre. Reste le trait nu. Options : patcher
+  vartable (paquet local), ou accepter le trait nu (usage courant des fiches). → David.
+- **Cas frère ``operation / `blankDefaults`** : confirmé dans le code (cases d'opération et à
+construire héritent d'`answerKind`, unité, précision, `requiredForm`), mais **aucun des 18 modèles
+``operation de prod** n'a de `blankDefaults`, `requiredForm` ni précision (requête du 2026-11-03).
+  Non corrigé (pas de cas réel).
+- Vu en passant (hors périmètre) : `domain: ]a[, +inf` est mal découpé par le parseur (un seul point
+  `a[, +inf`), avec ou sans `?`.
+- Revue (`code-reviewer` Opus) : rien de bloquant ; corrigés : ordre de l'énoncé (case APRÈS le tableau :
+  énoncé rempli découpé autour des tableaux, `statementPieces`), tableau tout vide sans « faux », remarques
+  des cases gardées, `(?-3` révélé, cellule retrouvée par son numéro de case (repli `expected-only`), `Map`
+  pour les jetons (`constructor`), plus de `title` doublon, fraction lue « 3 sur 2 », tableau illisible en
+  liste, message d'erreur de série situé.
+- Tests : `expected-result-tableau-signes` (12), `variation-table-reveal` (5), `SignTableAnswer` (7),
+  `serie-automatismes-tableau-signes` (2), `page-a-cocher` +1 ; suites `questions`, `ubumark`,
+  `worksheets`, `utils` : 14 053 verts ; client `components/questions`, `markdown`, `question-inputs` :
+  1 065 verts (par dossier : la suite d'un bloc perd son navigateur, panne d'environnement) ;
+  `check:incremental` 0.
+- Vu dans Chrome : impossible (l'extension n'atteint pas `localhost:5177`, page d'erreur) ; serveur de la
+  branche laissé sur 5177.

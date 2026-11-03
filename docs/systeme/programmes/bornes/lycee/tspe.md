@@ -57,8 +57,9 @@ Chantier `questions-tspe` (démarche [couvrir-un-niveau.md](../../../../pratique
     398 → 404 ; 399, 574, 575 → 403 ; 581 → 415 ; 427 → 432 ; 453 → 597-601 ; 477 → 487 ; 608 → 489 ; 503, 504 →
     508 ; 523 → 524. Les faits « à connaître » des points « = » ont, eux, leur modèle « à savoir » (26, sous-domaine
     « À savoir » de chaque domaine).
-  - **B\*** (9) — 334-339, 551-553 : figures de l'espace en perspective, attendent le chantier `solides` (lot 9) ;
-    334 (représenter une combinaison linéaire) y deviendra un geste.
+  - **B\*** (9) — 334-339, 551-553 : figures de l'espace, **lot 9 en cours** (bloc ` ```solide `, en prod ;
+    journal `docs/wip/questions-tspe-lot9-progress.md`). 334 (représenter une combinaison linéaire) demande un
+    geste « tracer un vecteur » sur un solide.
 - Chevauchement avec maths complémentaires : les modèles qui portent aussi `T_COMP` ont été tirés contre les deux
   bornes (`tcomp.json`, plus étroites).
 - 1cfc575d (brouillon de niveau `2`, tagué TSPE-616) reste tel quel : son tag ne vaut pas couverture, 616 a son
