@@ -59,7 +59,20 @@ export type CubesSideView = (typeof CUBES_SIDE_VIEWS)[number];
 export const CUBES_KEYS = ['hauteurs', 'vue', 'dessiner', 'retrouver', 'case', 'vues'] as const;
 
 /** Les clés du bloc ```solide */
-export const SOLIDE_KEYS = ['forme', 'sommets', 'marquer', 'cotes', 'cachees', 'section'] as const;
+export const SOLIDE_KEYS = [
+	'forme',
+	'sommets',
+	'marquer',
+	'cotes',
+	'cachees',
+	'section',
+	'points',
+	'vecteurs'
+] as const;
+
+/** Points déclarés (`points:`) et vecteurs donnés (`vecteurs:`) d'un ```solide : au plus */
+export const SOLIDE_MAX_POINTS = 8;
+export const SOLIDE_MAX_VECTORS = 8;
 
 /**
  * Les formes d'un ```solide (mot de `forme:`, puis la base s'il y a lieu) et le
@@ -188,6 +201,13 @@ export interface SolideSpec {
 	hidden: boolean;
 	/** Plan de coupe (`section:`, lot 6) ; null : aucun */
 	section: SolideSection | null;
+	/**
+	 * Points déclarés (`points:`, polyèdres) : le n-ième porte l'indice
+	 * `vertexCount + n` dans `SolidePoint.of` et `SolideVector` (après les sommets)
+	 */
+	points: SolidePoint[];
+	/** Vecteurs donnés (`vecteurs:`), dessinés en flèches */
+	vectors: SolideVector[];
 	/** Aucun geste (lot 3) : `spec.task` se lit sans savoir le genre */
 	task?: undefined;
 }
@@ -280,6 +300,25 @@ export type PatronMark =
 export type SolideSection =
 	| { kind: 'face'; face: number[]; distance: number; names: string[] | null; label: string }
 	| { kind: 'perpendiculaire' | 'parallele' | 'boule'; distance: number };
+
+/**
+ * Un point déclaré d'un ```solide (`points: I milieu AE, O centre ABCD`) :
+ * l'isobarycentre des points `of` (sommets, puis points déclarés avant lui) ;
+ * `label` : sa lecture (« milieu de [AE] », « centre de ABCD », « centre du cube »)
+ */
+export interface SolidePoint {
+	name: string;
+	of: number[];
+	label: string;
+}
+
+/** Un vecteur donné (`vecteurs: AB, u = AE`) : indices des points (sommets, puis points déclarés) */
+export interface SolideVector {
+	from: number;
+	to: number;
+	/** `u = AB` : u ; null : nommé par ses extrémités */
+	name: string | null;
+}
 
 /** Ce que `marquer:` désigne ; `label` : sa lecture (« face ABCD », « face du dessus ») */
 export type SolideMark =

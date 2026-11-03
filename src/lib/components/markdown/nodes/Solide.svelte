@@ -4,7 +4,9 @@
 
 	Solide en perspective cavalière (cube, pavé, prisme, pyramide, cylindre,
 	cône, boule) : arêtes cachées en tirets, face marquée teintée, noms des
-	sommets et cotes, section (`section:`, lot 6). Affichage seul. Dessiné
+	sommets et cotes, section (`section:`, lot 6), points déclarés (`points:`)
+	et vecteurs donnés en flèches (`vecteurs:`, chantier `solide-vecteur`).
+	Affichage seul. Dessiné
 	depuis `buildSolideScene`, la même scène que le PDF.
 
 	- Traits `var(--color-foreground)`, face marquée en gris translucide (les
@@ -101,6 +103,17 @@
 					stroke-dasharray={line.dashed ? SOLIDE_DASH.join(' ') : undefined}
 				/>
 			{/each}
+			{#each scene.arrows as arrow, i (i)}
+				<line
+					class="solide-trait"
+					x1={arrow.shaft[0].x + ESPACE_MARGIN}
+					y1={arrow.shaft[0].y + ESPACE_MARGIN}
+					x2={arrow.shaft[1].x + ESPACE_MARGIN}
+					y2={arrow.shaft[1].y + ESPACE_MARGIN}
+					stroke-width={arrow.small ? ESPACE_STROKE * 0.8 : ESPACE_STROKE}
+				/>
+				<polygon class="solide-pointe" points={pointsOf(arrow.head)} />
+			{/each}
 			{#each scene.dots as dot, i (i)}
 				<circle
 					class="solide-point"
@@ -146,6 +159,7 @@
 	}
 
 	.solide-point,
+	.solide-pointe,
 	.solide-etiquette {
 		fill: var(--color-foreground);
 		stroke: none;

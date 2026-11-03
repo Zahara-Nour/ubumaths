@@ -9,15 +9,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, phase 0 validée (D-SV)._
+_Mis à jour le 2026-11-03, lot 1 codé (PR en cours)._
 
-- **État** : phase 0 validée par David (D-SV : Q1-Q5 selon les recos), rien de codé.
-- **Prochaine action** : lot 1, affichage `points:` + `vecteurs:` : tests rouges d'abord (parseur, scène), puis
-  écran, PDF, catalogue, doc `ubumark.md`. Ligne 13 de `outils-manquants.md` à passer « En cours » sur `main`
-  (bloquée le 2026-11-03 par un `deploy:prod` en cours).
+- **État** : lot 1 (affichage `points:` + `vecteurs:`) codé, testé, PR ouverte ; revue `code-reviewer` (Opus).
+- **Prochaine action** : merger le lot 1 (CI verte), puis lot 2, geste `tracer: vecteur` : tests rouges du
+  parseur et du juge (pedagogy-expert), puis `SolideGeste.svelte`. Ligne 13 de `outils-manquants.md` à passer
+  « En cours » sur `main` (bloquée par un `deploy:prod` en cours le 2026-11-03).
 - **En attente de David** : rien.
-- **Pièges en cours** : un clic à l'écran ne dit pas la profondeur en perspective cavalière : le geste ne
-  peut viser que des points connus en 3D (sommets, points déclarés).
+- **Pièges en cours** : un clic à l'écran ne dit pas la profondeur : le geste ne vise que des points connus en
+  3D (sommets, points déclarés : `solidePoints3`, indices sommets puis points). Noms de vecteurs posés par
+  `firstFree` (évite étiquettes, traits, points).
 - **Worktree / branche** : `../ubumaths-wt-solide-vecteur` · `feat/solide-vecteur` · serveur 5176.
 
 ---
@@ -87,3 +88,14 @@ lot 1 ; Q4 modèle TSPE-334 en dernier lot ; Q5 accès : personne ne gagne ni ne
 
 Agents : `pedagogy-expert` (Opus) pour le juge et les phrases ; `frontend-developer` (Sonnet) pour le geste ;
 revue `code-reviewer` en `model: opus` sur chaque PR (correction des réponses).
+
+## Lot 1 — affichage `points:` + `vecteurs:` (2026-11-03)
+
+- Parseur : `points:` (`milieu`, `centre` d'une face, `centre ABCDEFGH` pour cube / pavé), `vecteurs:` (`AB`,
+  `u = AI`) ; polyèdres nommés seulement ; au plus 8 de chaque ; vecteur nul refusé en 3D.
+- Scène : `SolideScene.points`, `SolideScene.arrows` (petite flèche au-dessus d'un nom de vecteur) ; noms posés
+  sans toucher étiquette, trait ni point (`firstFree`, `segmentHitsBox`). Vérifié au rendu sur 4 figures (cube,
+  tétraèdre, pavé, cube à flèches croisées) : premier jet, la lettre v touchait la flèche w → évitement des
+  traits ajouté.
+- Écran `Solide.svelte`, PDF `espace-typst.ts` (compilation réelle testée), catalogue (2 exemples, 1 erreur),
+  doc `ubumark.md`. Tests : `solide-vecteurs.test.ts` (19, vus rouges), `Solide.svelte.test.ts` (+1).

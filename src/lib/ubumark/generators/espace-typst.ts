@@ -196,6 +196,14 @@ function solideTypst(spec: SolideSpec): string {
 			`  #place(top + left, curve(stroke: (paint: black, thickness: ${thickness}, cap: "round", join: "round"${dash}), curve.move(${at(first)}), ${rest.map((p) => `curve.line(${at(p)})`).join(', ')}))`
 		);
 	}
+	// Flèches (vecteurs donnés, petites flèches des noms) : le trait, puis la pointe noire
+	for (const arrow of scene.arrows) {
+		const thickness = cm(arrow.small ? ESPACE_STROKE * 0.8 : ESPACE_STROKE);
+		content.push(
+			`  #place(top + left, curve(stroke: (paint: black, thickness: ${thickness}, cap: "round"), curve.move(${at(arrow.shaft[0])}), curve.line(${at(arrow.shaft[1])})))`,
+			`  #place(top + left, polygon(fill: black, stroke: none, ${arrow.head.map(at).join(', ')}))`
+		);
+	}
 	for (const dot of scene.dots) {
 		content.push(
 			`  #place(top + left, dx: ${cm(dot.x + ESPACE_MARGIN - SOLIDE_DOT_RADIUS)}, dy: ${cm(dot.y + ESPACE_MARGIN - SOLIDE_DOT_RADIUS)}, circle(radius: ${cm(SOLIDE_DOT_RADIUS)}, fill: black))`
