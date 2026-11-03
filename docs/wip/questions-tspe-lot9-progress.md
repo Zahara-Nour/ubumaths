@@ -8,11 +8,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR du rangement ouverte._
+_Mis à jour le 2026-11-03, PR du rangement #2315 ouverte (audit sécurité : aucun bloquant)._
 
 - **État** : 8 brouillons en prod (créés par David le 2026-11-03, ids au § « En prod ») ; migration nœud + tag
   `20261103131044_questions_tspe_lot9_rangement_tags.sql` écrite, test d'intégration 12/12 vert (8 rouges
-  sans elle), PR ouverte (branche `feat/questions-tspe-lot9-rangement`).
+  sans elle), PR #2315 ouverte, `security-auditor` sans bloquant.
 - **Prochaine action** : `security-auditor` sans bloquant, CI verte, `pnpm check:migrations --pr <n>`, merge,
   `pnpm db:migrate` depuis le dépôt principal, vérifier en prod ; page à cocher (après la migration : elle lit
   nœud et points en prod) ; publication.
