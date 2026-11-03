@@ -8,21 +8,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2312._
+_Mis à jour le 2026-11-03, migration de rangement en PR #2313._
 
-- **État** : 8 modèles du lot 9 sur `main` (`scripts/questions/tspe-9-figure/`, #2312), essayés en base locale ;
-  rien en prod.
-- **Prochaine action** : **David** lance (`!`)
-  `pnpm tsx scripts/create-questions.ts --dir scripts/questions/tspe-9-figure --publier` depuis le dépôt
-  principal (prod, brouillons) ; relever les 8 `id` (MCP) ; migration nœud + tag (§ 6 de
-  `couvrir-un-niveau.md`, F8 sur la notion « Espace », sous-notions admises) dans un worktree neuf ; page à
-  cocher ; publication.
-- **En attente de David** : la commande `--publier` ci-dessus.
-- **Pièges en cours** : ` ```solide ` sans flèche, diagonale ni point hors sommet ; les choix à options variables
-  ont la bonne en premier (réponse `0`, mélangés à l'affichage) ; la saisie MathLive simulée dans Chrome
-  n'entre pas dans la 1re case (outil, pas modèle).
-- **Worktree / branche** : `../ubumaths-wt-questions-tspe-lot9` (branche mergée), gardé tant que son serveur
-  5177 sert à l'essai ; à retirer ensuite (`git worktree remove`, `git branch -d`).
+- **État** : 8 brouillons en prod (2026-11-03, ids au § « En prod »). Migration nœud + tag
+  `20261103130717_questions_tspe_lot9_rangement_tags.sql` + test d'intégration (12 verts, rouges sans elle)
+  en PR #2313 (`feat/questions-tspe-lot9-tags`).
+- **Prochaine action** : `security-auditor` ; CI verte ; `pnpm check:migrations --pr 2313` ; merge ;
+  `pnpm db:migrate` depuis le dépôt principal ; vérifier en prod (nœud, un tag, brouillon) ; page à cocher ;
+  publication par David.
+- **En attente de David** : rien avant le merge ; ensuite la relecture (page à cocher) et la publication.
+- **Pièges en cours** : ` ```solide ` sans flèche, diagonale ni point hors sommet ; une notion ne s'archive pas
+  tant qu'elle a des sous-notions actives (trigger) : test retiré.
+- **Worktree / branche** : `../ubumaths-wt-questions-tspe-lot9-tags` · `feat/questions-tspe-lot9-tags`.
+  L'ancien `../ubumaths-wt-questions-tspe-lot9` (branche mergée, serveur 5177) est à retirer quand l'essai sera fini.
 
 ---
 
@@ -111,3 +109,24 @@ mixte, résolution de `w = x u + y v` sur deux coordonnées), chaque cas vérifi
 
 Écart au tableau de phase 0, sans effet sur D-L9 :
 F8 v1 (« parallélisme droite / plan ») passe par `MN = x XY + y XZ`, pas par F6.
+
+## En prod (2026-11-03)
+
+`create-questions --publier` lancé par David : 8 brouillons `[T_SPE]`, sans nœud ni tag (relevé MCP).
+
+| #   | id                                     | Point    | Nœud                                                      |
+| --- | -------------------------------------- | -------- | --------------------------------------------------------- |
+| F1  | `d7a361ca-3a71-430a-82e4-720a1b14c0ad` | TSPE-335 | Géométrie › Espace › coplanarité et décomposition         |
+| F2  | `63669e60-3140-4f55-8d5e-cc9d390adaf1` | TSPE-338 | Géométrie › Espace › coplanarité et décomposition         |
+| F3  | `4c19f2cb-1c90-4b43-83ad-521ee4edb1f0` | TSPE-337 | Géométrie › Espace › coplanarité et décomposition         |
+| F4  | `f9df1cd9-9791-42a3-bb5f-c0c84ad84d9c` | TSPE-553 | Géométrie › Espace › coplanarité et décomposition         |
+| F5  | `d6d9d5f7-8af1-45ba-aa9f-fb5f9e0fc82e` | TSPE-336 | Géométrie › Espace › positions relatives et intersections |
+| F6  | `f61cd451-0435-4fa7-ba72-93b1f98f65b8` | TSPE-551 | Géométrie › Espace › positions relatives et intersections |
+| F7  | `14a02a32-092f-4c1c-83cc-44f912c66f43` | TSPE-552 | Géométrie › Espace › positions relatives et intersections |
+| F8  | `a45a315b-9610-4452-9ab3-df00d5eb24bf` | TSPE-339 | Géométrie › Espace (notion ; 6 sous-notions admises)      |
+
+Migration `20261103130717_questions_tspe_lot9_rangement_tags.sql` (gabarit du lot 10) : gardes « sans nœud ni
+tag », tout ou rien sur 8, résolution stricte, `updated_at` préservé, rollback en commentaire. Test
+`tests/integration/questions-tspe-lot9-rangement-tags.test.ts` : 7 rouges sur la migration vidée (le nominal
+sauté, pas de bloc de rollback), 12 verts avec elle ; deux tests de la garde « notion sans sous-notion » ajoutés
+(sous-notion non admise → échec ; l'archivage de la notion, infaisable par trigger, retiré).
