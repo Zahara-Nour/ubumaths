@@ -6,17 +6,18 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, lot 6 (mesurer un angle) en PR #2327._
+_Mis à jour le 2026-11-03, PR #2327 (lot 6) ouverte, CI du dernier commit `d1cc38d1b` en cours._
 
-- **État** : lots 1 à 5 et #2305 mergés ; lot 6 (`mesure AOB`, § 19-20) codé, en PR ; M1 tranchée et
-  faite (fenêtre d'un angle au plus 2 fois plus large que haute). Rien de tout ça n'est encore en prod.
-- **Prochaine action** : revue, merge du lot 6 ; puis phase 0 du triangle par un côté et deux angles
-  (5e), si David le veut.
+- **État** : lots 1 à 5 et #2305 mergés ; lot 6 (`mesure AOB`, § 19-20) codé, revu (Opus, 6 findings
+  traités), décision du masquage faite (points calculés en coordonnées). M1 faite. Rien en prod.
+- **Prochaine action** : `gh pr checks 2327` (run « Code Quality » de `d1cc38d1b`) ; vert →
+  `gh pr merge 2327 --merge`, puis nettoyage du worktree, ligne #2327 dans
+  `verifications-manuelles.md`, « Reprendre ici » sur `main`.
 - **En attente de David** : rien.
-- **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12, sa propre
-  phase 0) ; `perpendiculaire(A, s)` échoue quand A est un bout de s ; `symetrie(P, axe=d)` échoue si
-  P définit d ; l'« Essayer » de l'aide ne rend pas la case jouable ; plafond de 20 objets sans
-  message ; la demi-droite s'écrit `demidroite(O, A)` ; graduations intérieures du rapporteur serrées.
+- **Pièges en cours** : règle « deux médiatrices au compas de rayon un côté » sévère (§ 12) ;
+  `perpendiculaire(A, s)` échoue quand A est un bout de s ; `symetrie(P, axe=d)` échoue si P définit
+  d ; l'« Essayer » de l'aide ne rend pas la case jouable ; plafond de 20 objets sans message ; la
+  CI ne part pas sur une PR en conflit (fusionner `origin/main` d'abord).
 - **Worktree / branche** : `../ubumaths-wt-controles-figure`, `feat/controles-figure-lot6`.
 
 ---
