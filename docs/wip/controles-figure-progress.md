@@ -6,7 +6,7 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, lot 6 (mesurer un angle) en PR._
+_Mis à jour le 2026-11-03, lot 6 (mesurer un angle) en PR #2327._
 
 - **État** : lots 1 à 5 et #2305 mergés ; lot 6 (`mesure AOB`, § 19-20) codé, en PR ; M1 tranchée et
   faite (fenêtre d'un angle au plus 2 fois plus large que haute). Rien de tout ça n'est encore en prod.
@@ -857,5 +857,13 @@ numérique). Les poses du rapporteur et les repères ne sont pas notés. Papier 
   l'angle) ; « 50,5 » garde 50 et dit « Au degré près : tape un nombre entier. » ; test de la pose sur
   [OB) seule (vérifié rouge en inversant le signe) ; un segment qui ne fait que toucher O = « n'est pas
   tracé ». Vérifié : aucun modèle en prod n'a `verifier: angle` ni `mesure` (pas de régression M1).
-  Ouvert (question à David) : l'énoncé masqué garde `B = rotation(A, angle={{a}}, …)`, soit la
-  réponse en clair dans la source envoyée pendant une évaluation.
+  Ouvert puis tranché : l'énoncé masqué gardait `B = rotation(A, angle={{a}}, …)`, la réponse en
+  clair dans la source envoyée pendant une évaluation.
+
+### Décision de David (2026-11-03, « je te suis » sur ma recommandation)
+
+Énoncé masqué d'un angle à mesurer : chaque point nommé défini par un calcul est réécrit en
+coordonnées (`maskMeasureFigure` ; `visible=faux` gardé, autres réglages d'affichage perdus en
+évaluation) ; une `rotation(` ou un `angle=` restés dans la figure → la garde refuse l'envoi. Reste
+admis : recalculer l'angle depuis les coordonnées. Fait, tests vérifiés rouges sans la réécriture
+et sans la garde.

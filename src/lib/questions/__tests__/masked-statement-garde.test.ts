@@ -9,6 +9,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { findUnmaskedAnswers, maskGestureAnswers } from '../masked-statement';
+import '$lib/questions/construction/positions-setup';
 
 // Functions
 function block(kind: string, ...lines: string[]): string {
@@ -36,6 +37,21 @@ const GESTURES: [string, string][] = [
 			'A = point(1, 2)',
 			'B = point(4, 2)'
 		)
+	],
+	// Angle à mesurer (lot 6) : la rotation dit la mesure
+	[
+		'figure-a-completer',
+		block(
+			'figure-a-completer',
+			'fenetre: 0 ; 10 ; 0 ; 8',
+			'verifier: mesure AOB',
+			'---',
+			'O = point(4, 3)',
+			'A = point(9, 3)',
+			'B = rotation(A, angle=50, centre=O)',
+			'x = demidroite(O, A)',
+			'y = demidroite(O, B)'
+		)
 	]
 ];
 
@@ -49,6 +65,26 @@ describe('un bloc à geste qui dit encore sa réponse : nommé', () => {
 		expect(findUnmaskedAnswers(broken)).toEqual(['cubes']);
 		const patron = block('patron', 'solide: cube', 'forme: 99', 'completer: 5');
 		expect(findUnmaskedAnswers(patron)).toEqual(['patron']);
+	});
+});
+
+describe('angle à mesurer : une rotation que le masque ne réécrit pas', () => {
+	it('un segment tourné (pas un point nommé) : nommé', () => {
+		const source = block(
+			'figure-a-completer',
+			'fenetre: 0 ; 10 ; 0 ; 8',
+			'verifier: mesure AOB',
+			'---',
+			'O = point(4, 3)',
+			'A = point(7, 3)',
+			'B = point(4, 6)',
+			'x = demidroite(O, A)',
+			'y = demidroite(O, B)',
+			'rotation(segment(O, A), angle=50, centre=O)'
+		);
+		expect(findUnmaskedAnswers(maskGestureAnswers(`Question.\n\n${source}`))).toEqual([
+			'figure-a-completer'
+		]);
 	});
 });
 

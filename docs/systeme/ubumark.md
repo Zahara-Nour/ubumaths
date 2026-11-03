@@ -1348,7 +1348,7 @@ Points à retenir :
     `givenViews` ; `CubesGeste` les dessine telles quelles) : tout assemblage qui a ces vues étant
     juste, les hauteurs ne pouvaient pas partir ; ` ```patron ` `completer:` → le patron amputé en
     grille, déjà tourné et retourné, et `completer: ? ?` (`task.masked` faces à poser,
-    `completerStart`) ; ` ```figure-a-completer ` → `verifier: ?` (sauf `verifier: mesure AOB`, laissé tel quel : la mesure se lit sur la figure) (`spec.masked`, l'outil ou la palette
+    `completerStart`) ; ` ```figure-a-completer ` → `verifier: ?` (sauf `verifier: mesure AOB`, laissé tel quel, ses points calculés réécrits en coordonnées : `maskMeasureFigure`) (`spec.masked`, l'outil ou la palette
     déduite écrits en `outils:`). Pas masqués : `dessiner:` des cubes (la perspective est la figure), `designer:` du
     patron (la tâche, dans la consigne). Gardes : `questions/__tests__/masked-statement.test.ts` et
     `masked-statement-lot2.test.ts`, `FillBlanksInput-enonce-masque.svelte.test.ts` (même HTML

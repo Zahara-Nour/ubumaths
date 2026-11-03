@@ -703,8 +703,10 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    angle=…, centre=O) »), angle nul ou plat, côté [OA) ou [OB) non tracé (segment, demi-droite ou droite
    de la figure) ou arrêté avant le bord du rapporteur, rapporteur posé en O qui ne tient ni sur [OA)
    côté B ni sur [OB) côté A. Correction : l'arc de l'angle codé de sa mesure (`solutionAngle`), aucun
-   trait. Énoncé masqué d'une évaluation : `verifier: mesure AOB` reste tel quel (la mesure se lit sur
-   la figure ; l'écran en tire la case).
+   trait. Énoncé masqué d'une évaluation : `verifier: mesure AOB` reste tel quel (l'écran en tire la
+   case) ; chaque point nommé défini par un calcul est réécrit `B = point(x, y)` (6 décimales,
+   `visible=faux` gardé, autres réglages d'affichage perdus), car `rotation(A, angle=50, …)`
+   dirait la réponse ; une `rotation(` ou un `angle=` restés dans la figure → la garde refuse l'envoi.
    **Papier uni (lot 2b)** : sans `grille:`, `point` et
    `symetrique` reçoivent une palette d'instruments (`PLAIN_PAPER_TOOLS`) ; équerre = perpendiculaire à
    une droite choisie par un point (écrite `droite(…)`), compas = cercle par son centre et un point
