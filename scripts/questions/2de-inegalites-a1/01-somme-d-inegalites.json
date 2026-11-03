@@ -1,0 +1,204 @@
+{
+	"title": "Ajouter des inégalités",
+	"description": "Encadrer a + b, puis a − b = a + (−b), à partir de deux encadrements",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Inégalités",
+	"subdomain": "Règles de calcul",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On sait que ${{p}}\\leqslant a\\leqslant {{q}}$ et ${{r}}\\leqslant b\\leqslant {{s}}$.\n\nEncadre $a+b$.\n\n$$?\\leqslant a+b\\leqslant ?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "-3..6"
+				},
+				{
+					"name": "dq",
+					"expression": "1..5"
+				},
+				{
+					"name": "q",
+					"expression": "eval:(p)+(dq)"
+				},
+				{
+					"name": "r",
+					"expression": "-6..3"
+				},
+				{
+					"name": "ds",
+					"expression": "1..5"
+				},
+				{
+					"name": "s",
+					"expression": "eval:(r)+(ds)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(p)+(r)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(q)+(s)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**On peut ajouter membre à membre deux inégalités de même sens.**",
+					"$$\\begin{aligned}{{p}}&\\leqslant a\\leqslant {{q}}\\\\{{r}}&\\leqslant b\\leqslant {{s}}\\end{aligned}$$",
+					"$${{p}}+({{r}})\\leqslant a+b\\leqslant {{q}}+({{s}})$$",
+					"$$\\textcolor{{{color:primary.0}}}{{{eval:(p)+(r)}}}\\leqslant a+b\\leqslant \\textcolor{{{color:primary.1}}}{{{eval:(q)+(s)}}}$$"
+				]
+			}
+		},
+		{
+			"statement": "On sait que ${{p}}\\leqslant a\\leqslant {{q}}$ et ${{r}}\\leqslant b\\leqslant {{s}}$.\n\nEncadre $a-b$.\n\n$$?\\leqslant a-b\\leqslant ?$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "-3..6"
+				},
+				{
+					"name": "dq",
+					"expression": "1..5"
+				},
+				{
+					"name": "q",
+					"expression": "eval:(p)+(dq)"
+				},
+				{
+					"name": "r",
+					"expression": "-6..3"
+				},
+				{
+					"name": "ds",
+					"expression": "1..5"
+				},
+				{
+					"name": "s",
+					"expression": "eval:(r)+(ds)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(p)-(s)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(q)-(r)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"**On ne soustrait pas deux inégalités membre à membre.** On écrit $a-b=a+(-b)$ et on encadre d'abord $-b$ : multiplier par $-1$ **change le sens** des inégalités.",
+					"$${{r}}\\leqslant b\\leqslant {{s}}\\quad\\text{donne}\\quad {{eval:-(s)}}\\leqslant -b\\leqslant {{eval:-(r)}}$$",
+					"On ajoute membre à membre avec ${{p}}\\leqslant a\\leqslant {{q}}$ :",
+					"$$\\textcolor{{{color:primary.0}}}{{{eval:(p)-(s)}}}\\leqslant a-b\\leqslant \\textcolor{{{color:primary.1}}}{{{eval:(q)-(r)}}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a + b : 1 ⩽ a + b ⩽ 8",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"dq": "3",
+				"q": "5",
+				"r": "-1",
+				"ds": "4",
+				"s": "3"
+			},
+			"answers": ["1", "8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : bornes inversées",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"dq": "3",
+				"q": "5",
+				"r": "-1",
+				"ds": "4",
+				"s": "3"
+			},
+			"answers": ["8", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : produit des bornes (−2 ; 15)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"dq": "3",
+				"q": "5",
+				"r": "-1",
+				"ds": "4",
+				"s": "3"
+			},
+			"answers": ["-2", "15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a − b : −1 ⩽ a − b ⩽ 6",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"dq": "3",
+				"q": "5",
+				"r": "-1",
+				"ds": "4",
+				"s": "3"
+			},
+			"answers": ["-1", "6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : soustraction membre à membre (3 ; 2)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"dq": "3",
+				"q": "5",
+				"r": "-1",
+				"ds": "4",
+				"s": "3"
+			},
+			"answers": ["3", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : une seule borne juste (−1 ; 2)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"dq": "3",
+				"q": "5",
+				"r": "-1",
+				"ds": "4",
+				"s": "3"
+			},
+			"answers": ["-1", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

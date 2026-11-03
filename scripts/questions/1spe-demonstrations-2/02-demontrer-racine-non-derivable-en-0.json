@@ -64,6 +64,16 @@
 					"$f$ est bien définie en $0$ : $f(0)=\\sqrt{0}=0$."
 				]
 			}
+		},
+		{
+			"statement": "Soit $f$ la fonction racine carrée, définie sur $[0\\,;+\\infty[$ par $f(x)=\\sqrt{x}$. On démontre que $f$ n'est pas dérivable en $0$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Pour $h>0$, le taux de variation de $f$ entre $0$ et $h$ vaut $\\dfrac{f(h)-f(0)}{h}=\\dfrac{\\sqrt{h}}{h}$.\n- Comme $h=\\sqrt{h}\\times\\sqrt{h}$, ce taux vaut $\\dfrac{1}{\\sqrt{h}}$.\n- Quand $h$ se rapproche de $0$, $\\sqrt{h}$ se rapproche de $0$ : le taux $\\dfrac{1}{\\sqrt{h}}$ grandit sans limite.\n- Le taux n'a pas de limite réelle : $f$ n'est pas dérivable en $0$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On calcule le taux de variation entre $0$ et $h$, on le simplifie en $\\dfrac{1}{\\sqrt{h}}$, puis on regarde ce qu'il devient quand $h$ se rapproche de $0$.",
+					"Il grandit sans limite : $\\textcolor{{{color:primary.0}}}{f\\text{ n'est pas dérivable en }0}$."
+				]
+			}
 		}
 	],
 	"testSpecs": [
@@ -188,6 +198,24 @@
 			"variationIndex": 2,
 			"variables": {},
 			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
 			"expected": {
 				"status": "incorrect"
 			}

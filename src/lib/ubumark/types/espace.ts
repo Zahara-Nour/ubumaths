@@ -219,12 +219,15 @@ export interface SolideSpec {
 
 /**
  * Un terme de la combinaison de `tracer:` : `coef` × vecteur de `from` à `to`
- * (indices des points : sommets, puis points déclarés) ; `coef` entier ou demi, non nul
+ * (indices des points : sommets, puis points déclarés) ; `coef` non nul, entier
+ * ou fraction de dénominateur 2, 3 ou 4 ; `name` : vecteur de `vecteurs:` écrit
+ * par son nom (`2 u`), pour que les phrases reprennent l'écriture de l'auteur
  */
 export interface SolideVectorTerm {
 	coef: number;
 	from: number;
 	to: number;
+	name?: string;
 }
 
 /**

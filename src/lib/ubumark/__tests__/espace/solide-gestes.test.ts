@@ -121,8 +121,9 @@ describe('```solide — tracer: (analyse)', () => {
 		expect(errors(...CUBE, 'tracer: vecteur 1/2 AB')).toMatch(/aucun point/);
 	});
 
-	it('refusé : coefficient ni entier ni demi, coefficient nul, écriture non comprise', () => {
-		expect(errors(...CUBE, 'tracer: vecteur 1/3 AB')).toMatch(/entiers ou demis/);
+	it('refusé : dénominateur au-delà de 4, coefficient nul, écriture non comprise', () => {
+		expect(errors(...CUBE, 'tracer: vecteur 1/5 AB')).toMatch(/dénominateur 2, 3 ou 4/);
+		expect(errors(...CUBE, 'tracer: vecteur 1/0 AB')).toMatch(/dénominateur 2, 3 ou 4/);
 		expect(errors(...CUBE, 'tracer: vecteur 0 AB + AD')).toMatch(/coefficient nul/);
 		expect(errors(...CUBE, 'tracer: AB + AD')).toMatch(/tracer: vecteur AB \+ AD/);
 		expect(errors(...CUBE, 'tracer: vecteur AB AD')).toMatch(/non compris/);
@@ -306,5 +307,102 @@ describe('flèche de l’élève à l’écran', () => {
 		const points = (a: typeof arrow) => [...a.shaft, ...a.head].flatMap((p) => [p.x, p.y]);
 		points(arrow).forEach((v, i) => expect(v).toBeCloseTo(points(given)[i], 9));
 		expect(arrow.small).toBe(false);
+	});
+});
+
+const TETRA = ['forme: pyramide triangle 4 3', 'sommets: S A B C', 'points: G centre ABC'];
+
+describe('D-SV2 : fractions de dénominateur 2, 3 ou 4', () => {
+	it('tiers : le centre de gravité d’une face triangulaire', () => {
+		const s = spec(...TETRA, 'tracer: vecteur 1/3 SA + 1/3 SB + 1/3 SC depuis S');
+		expect(expectedSolideAnswer(s)).toBe('S/G');
+		expect(isSolideAnswerCorrect('S/G', expectedSolideAnswer(s))).toBe(true);
+	});
+
+	it('quarts et tiers au-delà de 1 acceptés (3/4, 5/3, sans espace)', () => {
+		expect(read(...CUBE, 'points: I milieu AE', 'tracer: vecteur 3/4 AE + 1/4AE').errors).toEqual(
+			[]
+		);
+		expect(read(...TETRA, 'tracer: vecteur 5/3 AG - 2/3 AG depuis A').errors).toEqual([]);
+	});
+
+	it('quarts et tiers au-delà de 1 : extrémité calculée juste', () => {
+		expect(expectedOf(...CUBE, 'points: I milieu AE', 'tracer: vecteur 3/4 AE + 1/4AE')).toMatch(
+			/^A\/E(\||$)/
+		);
+		expect(expectedOf(...TETRA, 'tracer: vecteur 5/3 AG - 2/3 AG depuis A')).toBe('A/G');
+	});
+
+	it('refusé : zéro en tête dans une fraction', () => {
+		expect(errors(...CUBE, 'tracer: vecteur 1/04 AB')).toMatch(/1\/04 : écrire 1\/4/);
+		expect(errors(...CUBE, 'tracer: vecteur 01/2 AB')).toMatch(/01\/2 : écrire 1\/2/);
+	});
+
+	it('refusé : fraction réductible, avec l’écriture attendue', () => {
+		expect(errors(...CUBE, 'tracer: vecteur 2/4 AB + AD')).toMatch(/2\/4 : écrire 1\/2/);
+		expect(errors(...CUBE, 'tracer: vecteur 4/2 AB')).toMatch(/4\/2 : écrire 2/);
+		expect(errors(...CUBE, 'tracer: vecteur 3/3 AB')).toMatch(/3\/3 : écrire 1/);
+	});
+
+	it('LaTeX : tiers et quarts en fractions', () => {
+		const s = spec(...TETRA, 'tracer: vecteur 1/3 SA + 1/3 SB + 1/3 SC depuis S');
+		expect(combinationLatex(s)).toBe(
+			'\\frac{1}{3}\\overrightarrow{SA}+\\frac{1}{3}\\overrightarrow{SB}+\\frac{1}{3}\\overrightarrow{SC}'
+		);
+		const q = spec(...CUBE, 'tracer: vecteur 3/4 AE + 1/4 AE');
+		expect(combinationLatex(q)).toBe(
+			'\\frac{3}{4}\\overrightarrow{AE}+\\frac{1}{4}\\overrightarrow{AE}'
+		);
+	});
+});
+
+describe('D-SV2 : vecteurs nommés de vecteurs: dans tracer:', () => {
+	const NAMED = [...CUBE, 'vecteurs: u = AB, v = AE, w1 = AD'];
+
+	it('2 u - v : le juge remplace u par AB, v par AE', () => {
+		const s = spec(...NAMED, 'tracer: vecteur u + w1 - v depuis E');
+		expect(expectedSolideAnswer(s)).toBe('E/C');
+		expect(s.task?.terms).toEqual([
+			{ coef: 1, from: 0, to: 1, name: 'u' },
+			{ coef: 1, from: 0, to: 3, name: 'w1' },
+			{ coef: -1, from: 0, to: 4, name: 'v' }
+		]);
+	});
+
+	it('noms et paires de points mélangés, coefficient collé ou non', () => {
+		const s = spec(...NAMED, 'points: J milieu BF', 'tracer: vecteur 1/2v + AB depuis A');
+		expect(expectedSolideAnswer(s)).toBe('A/J');
+		expect(s.task?.terms[0]).toEqual({ coef: 0.5, from: 0, to: 4, name: 'v' });
+		expect(s.task?.terms[1]).toEqual({ coef: 1, from: 0, to: 1 });
+	});
+
+	it('phrases : la combinaison telle que l’auteur l’a écrite', () => {
+		const s = spec(...NAMED, 'tracer: vecteur u + w1 - v depuis E');
+		expect(combinationLatex(s)).toBe('\\vec{u}+\\vec{w_{1}}-\\vec{v}');
+		expect(solideVectorMistake('E/H', s)?.text).toBe(
+			'Ta flèche représente $\\overrightarrow{EH}$, pas $\\vec{u}+\\vec{w_{1}}-\\vec{v}$.'
+		);
+		const t = spec(...NAMED, 'points: J milieu BF', 'tracer: vecteur u + 1/2 v - AD');
+		expect(combinationLatex(t)).toBe('\\vec{u}+\\frac{1}{2}\\vec{v}-\\overrightarrow{AD}');
+		expect(expectedSolideAnswer(t)).toBe('D/J');
+	});
+
+	it('refusé : nom inconnu, ou aucune ligne vecteurs:', () => {
+		expect(errors(...NAMED, 'tracer: vecteur 2 z')).toMatch(
+			/z : aucun vecteur de ce nom dans vecteurs:/
+		);
+		expect(errors(...CUBE, 'tracer: vecteur u + AB')).toMatch(
+			/u : aucun vecteur de ce nom dans vecteurs:/
+		);
+	});
+
+	it('vecteurs: fausse : une seule erreur, celle de vecteurs:', () => {
+		const node = read(...CUBE, 'vecteurs: u = AB, v =', 'tracer: vecteur u depuis A');
+		expect(node.errors).toHaveLength(1);
+		expect(node.errors[0]).toMatch(/^Ligne 3/);
+	});
+
+	it('refusé : vecteurs: sans nom, utilisé dans tracer:', () => {
+		expect(errors(...CUBE, 'vecteurs: AB', 'tracer: vecteur u')).toMatch(/aucun vecteur de ce nom/);
 	});
 });

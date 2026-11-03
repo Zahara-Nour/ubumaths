@@ -10,6 +10,7 @@ couvre:
   - 'src/lib/types/{question-display,question-template}.ts'
   - 'src/lib/server/{evaluation-attempts,questions-bulk-status,template-publication,template-fact-sheet,grading-budget,corrected-detail,template-review,point-bounds}.ts'
   - 'src/routes/(protected)/dev/modeles/**'
+  - src/lib/components/MathKeyboardClose.svelte
   - 'src/lib/components/dev/**'
   - scripts/questions/reprise-verdicts.ts
   - src/lib/server/exercise-search-indexed.ts
@@ -470,6 +471,15 @@ intervalles, vecteurs, matrices, dénombrement). Instance en mode longueur : les
 MathLive qui transforment deux majuscules (`AA` → ∀, `EE`, `!EE`, `NN`, `ZZ`, `QQ`, `RR`, `CC`,
 `TT`) sont retirés du champ au montage (`MathPrompt`, `withoutCapitalPairShortcuts`) : `AA'` reste
 la longueur AA'. Ailleurs, ils restent.
+
+Le clavier par défaut de MathLive (123, symboles, abc, grec) n'a aucune touche pour se fermer.
+Tant qu'il est ouvert, un bouton « Fermer le clavier » est posé au-dessus de lui
+(`src/lib/components/MathKeyboardClose.svelte`, monté dans le layout racine, pour tous les
+champs MathLive du site). Il fait passer le focus sur lui-même, et MathLive referme alors le
+clavier. ⚠️ Ni `blur()` sur le champ, ni `mathVirtualKeyboard.hide()` (MathLive 0.111) : avec
+`blur()`, le champ se croit encore actif ; à la fermeture, il reprend le focus et rouvre le
+clavier. Sous 500 px de haut (téléphone en paysage), les touches passent de 42 à 32 px
+(`--keycap-height`, `src/app.css`) : le clavier passe de 242 à 202 px.
 
 Natures de réponse :
 

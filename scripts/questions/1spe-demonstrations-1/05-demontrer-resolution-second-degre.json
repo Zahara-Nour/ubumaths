@@ -58,6 +58,16 @@
 					"Aucun réel $x$ ne vérifie donc l'équation."
 				]
 			}
+		},
+		{
+			"statement": "Soit $a$, $b$ et $c$ trois réels, avec $a\\neq 0$, et $\\Delta=b^2-4ac$. On démontre que si $\\Delta<0$, l'équation $ax^2+bx+c=0$ n'a pas de solution réelle.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Comme $a\\neq 0$, l'équation équivaut à $x^2+\\dfrac{b}{a}x+\\dfrac{c}{a}=0$.\n- Elle équivaut à $\\left(x+\\dfrac{b}{2a}\\right)^2-\\dfrac{b^2}{4a^2}+\\dfrac{c}{a}=0$.\n- Elle équivaut à $\\left(x+\\dfrac{b}{2a}\\right)^2=\\dfrac{b^2}{4a^2}-\\dfrac{c}{a}$.\n- Elle équivaut à $\\left(x+\\dfrac{b}{2a}\\right)^2=\\dfrac{b^2-4ac}{4a^2}=\\dfrac{\\Delta}{4a^2}$.\n- Si $\\Delta<0$, le membre de droite est strictement négatif, alors qu'un carré est positif ou nul : aucune solution.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On divise par $a$, on fait apparaître le carré $\\left(x+\\dfrac{b}{2a}\\right)^2$ (forme canonique), puis on isole ce carré.",
+					"Le membre de droite a le signe de $\\Delta$ (car $4a^2>0$) : si $\\Delta<0$, $\\textcolor{{{color:primary.0}}}{\\text{aucun réel n'est solution}}$."
+				]
+			}
 		}
 	],
 	"testSpecs": [
@@ -174,6 +184,24 @@
 			"variationIndex": 2,
 			"variables": {},
 			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "0", "1", "2", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["4", "1", "0", "2", "3"],
 			"expected": {
 				"status": "incorrect"
 			}

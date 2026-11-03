@@ -84,6 +84,16 @@
 					"Les termes de la suite ne sont ni nuls ni égaux à la raison : la suite augmente de ${{eval:r}}$ à chaque rang."
 				]
 			}
+		},
+		{
+			"statement": "Soit $(u_n)$ une suite arithmétique de raison $r$, et $n$ un entier naturel non nul. On démontre que $u_n=u_0+nr$.\n\nRemets les étapes de la démonstration dans l'ordre.\n\n```ranger\nsigne: aucun\n- Pour tout entier naturel $k$, $u_{k+1}-u_k=r$.\n- On écrit cette égalité pour $k=0$, …, $k=n-1$ et on additionne : $(u_1-u_0)+\\cdots+(u_n-u_{n-1})=r+\\cdots+r$.\n- Les termes $u_1$, …, $u_{n-1}$ se simplifient, et le membre de droite compte $n$ termes : $u_n-u_0=nr$.\n- Donc $u_n=u_0+nr$.\n```",
+			"variables": [],
+			"correction": {
+				"steps": [
+					"On part de la définition (la différence de deux termes consécutifs vaut $r$), on l'écrit $n$ fois, puis on additionne.",
+					"La somme se télescope : il reste $u_n-u_0=nr$, d'où $\\textcolor{{{color:primary.0}}}{u_n=u_0+nr}$."
+				]
+			}
 		}
 	],
 	"testSpecs": [
@@ -215,6 +225,24 @@
 				"r": "3"
 			},
 			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Étapes dans l’ordre",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "0", "1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : deuxième et troisième étapes échangées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["3", "1", "0", "2"],
 			"expected": {
 				"status": "incorrect"
 			}

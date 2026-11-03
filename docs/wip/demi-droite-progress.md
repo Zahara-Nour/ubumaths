@@ -10,19 +10,20 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après la publication de 06601c87._
+_Mis à jour le 2026-11-03, après #2346._
 
-- **État** : geste en prod (0.67.0). Modèle 3-014 « Représenter les solutions d'une inéquation ax ⩾ b »
-  (06601c87) **publié** par David le 2026-11-03 (rangé « ax + b < c », tag 3-014, #2336).
-- **Prochaine action** : 2-251 (représenter un intervalle borné, |x| < k, 2de) : phase 0 du modèle (relevé
-  MCP : le contournement actuel en case choix entre droites, lot 6 B de la 2de), puis clôture (versement
-  de ce journal dans `docs/systeme/`). Nouveau worktree depuis `origin/main`.
-- **En attente de David** : rien.
-- **Pièges en cours** : `page-a-cocher` ne dessine pas ` ```line ` → aperçu admin. `publier-lot` refusé à
-  Claude par le classifieur (même en simulation) → David. Dépôt principal souvent bloqué par d'autres
-  sessions → commits de doc depuis un worktree sur `origin/main`. Branche distante
-  `fix/integration-locals-session` laissée sur GitHub.
-- **Worktree / branche** : aucun.
+- **État** : 3-014 (06601c87) publié. 2-251 **déjà couvert** par 2069ac7e (chantier `questions-2de`, lot 9 :
+  `representer:`, demi-droites et borné, publié) : pas de modèle à faire. #2346 mergée : lot
+  `valeur-absolue-droite-2de` de `update-published-questions.ts`, droite graduée ajoutée au corrigé de 80a87e34.
+- **Prochaine action** : David lance la simulation puis `--publier` du lot → relire 80a87e34 en prod
+  (MCP) → clôture (archiver ce journal, outil n° 7 livré dans `outils-manquants.md`). La doc système est déjà
+  versée (`ubumark.md`, `questions.md`).
+- **En attente de David** : les deux commandes du lot (classifieur : simulation refusée à Claude).
+- **Pièges en cours** : `update-published-questions` lit `.env` (prod) : simulation et écriture → David avec `!`.
+  Rendu à l'œil non vu (Chrome n'a pas navigué) : le voir dans l'aperçu admin après `--publier` ; copie
+  locale a917fb27 en base locale.
+  Branche distante `fix/integration-locals-session` laissée sur GitHub.
+- **Worktree / branche** : `../ubumaths-wt-demi-droite` (HEAD détachée sur `origin/main`, pour la clôture).
 
 ---
 
@@ -220,3 +221,15 @@ catégorie est libre.
   autre session ; `supabase/.temp/project-ref` copié pour le lien) ; vérifié en prod.
 - Page à cocher : écrite, mais ` ```line ` non dessiné → remplacée par l'aperçu admin.
 - Joué par David dans l'aperçu de prod puis publié (`publier-lot --publier`) ; MCP : `published`.
+
+## PR 5 — 2-251 déjà couvert, droite graduée au corrigé de |x| < k (2026-11-03)
+
+- Relevé MCP : 2069ac7e « Représenter un intervalle sur la droite graduée » (2-251, niv. 4, publié) a trois
+  variations à `representer:` : `[a, +inf[` ou `]a, +inf[`, `]-inf, a]` ou `]-inf, a[`, borné à crochets au
+  choix. Le contournement « case choix entre droites » du relevé initial n'existe plus.
+- Dernier contournement : 80a87e34 « Résoudre |x| < k » (2de, publié), corrigé de la variation 1 sur une
+  ` ```courbe ` seule. Décision de David (« tes recos ? » puis go) : **ajouter** la droite graduée, garder la
+  courbe. Étape insérée après la première : `segments:` ]−k ; k[, [−k ; k], ou les deux demi-droites.
+- Voie : `update-published-questions.ts`, nouveau lot `valeur-absolue-droite-2de` (instantané exporté de la
+  prod, commité avant la correction : le diff de la PR est la correction). `checkTemplate` vert sur l'instantané
+  et sur la correction ; bloc lu sans erreur pour s = 0..3 et k = 1..6.

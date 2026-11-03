@@ -9,9 +9,30 @@ import chalk from 'chalk';
 import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { toLatex, toCustom } from '../../index';
-import { simplify } from '../../simplify';
+import { simplifyKeepingDomain } from '../../pedagogical-simplify/keep-domain';
 import { preprocess } from '../../normal/rules';
 import { normalize, hashNormalForm } from '../../normal';
+import { mapNode } from '../../transforms';
+import type { MathNode } from '../../types';
+
+// =============================================================================
+// Fonctions
+// =============================================================================
+
+/**
+ * Les signes tapés au clavier, écrits comme l'Atelier les affiche : la division
+ * en ligne (`1/2`) en fraction, l'étoile (`x*0`) en croix — `toLatex` écrirait
+ * `1 / 2` et `x * 0` quand le domaine garde l'expression telle quelle.
+ */
+function typedSigns(node: MathNode): MathNode {
+	return mapNode(node, (n) => {
+		if (n.type === 'division' && n.displayStyle === 'inline')
+			return { ...n, displayStyle: 'fraction' };
+		if (n.type === 'multiplication' && n.displayStyle === 'star')
+			return { ...n, displayStyle: 'cross' };
+		return n;
+	});
+}
 
 // =============================================================================
 // Simplify Command
@@ -20,8 +41,8 @@ import { normalize, hashNormalForm } from '../../normal';
 /**
  * Simplify command - simplifies expressions and shows canonical form.
  *
- * Uses both rule-based simplification and normalization to produce
- * the most simplified form of an expression.
+ * La réponse simplifie sans changer le domaine (`keep-domain.ts`, ADR 0032
+ * S3) ; le hash vient de la forme normale.
  *
  * @example
  * ```
@@ -48,8 +69,11 @@ export class SimplifyCommand extends BaseCommand {
 		}
 
 		try {
-			// Use the unified simplify pipeline
-			const { result } = simplify(ctx.ast);
+			// La forme propre qui garde le domaine (ADR 0032, S3) : `x/x` reste
+			// écrit, `e^{2x}/e^x` → `e^x` — la réponse de l'Atelier. Une division
+			// tapée `1/2` est une fraction : le parseur maison la lit « en ligne »,
+			// que `toLatex` écrirait `1 / 2`
+			const result = simplifyKeepingDomain(typedSigns(ctx.ast));
 
 			// Generate hash from normal form (for structural comparison)
 			const normalForm = normalize(preprocess(result));

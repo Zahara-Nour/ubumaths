@@ -25,7 +25,8 @@ import { toLatex } from '$lib/mathAST/latex-generator';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { astOf } from './parse';
 import { summaryOf } from './steps-summary';
-import { domainAlternative, keepingDomain, type DomainAlternative } from './domain-guard';
+import { keepingDomain } from '$lib/mathAST/pedagogical-simplify/keep-domain';
+import { domainAlternative, type DomainAlternative } from './domain-guard';
 
 // =============================================================================
 // Types

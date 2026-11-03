@@ -9,19 +9,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR 1 de Q2 b (`signe: aucun`) en cours._
+_Mis à jour le 2026-11-03, après #2349._
 
-- **État** : lots 1, 2 et 3 publiés. Q2 b tranchée (D2, § 7) : extension `signe: aucun` du bloc `ranger`, puis une
-  variation « étapes à ranger » pour les 14 modèles. PR 1 (code) sur `feat/ranger-signe-aucun` : tests rouges puis
-  verts, PDF compilé avec le compilateur de la prod, doc système à jour.
-- **Prochaine action** : PR 1 (vérif à l'écran, revue `code-reviewer` Sonnet, CI, merge) ; puis lot 4 = les 14
-  variations ranger (vérifier d'abord comment `create-questions` met à jour un modèle PUBLIÉ).
-- **En attente de David** : rien.
-- **Pièges en cours** : `1/√2` est jugé `bad_form` (spec asservie). Une étape interchangeable va dans l'énoncé
-  (juge strict). Worktree sans lien Supabase : copier
-  `supabase/.temp/{project-ref,linked-project.json,pooler-url,postgres-version}` du dépôt principal pour `db:migrate`.
-  Ancienne branche distante `docs/questions-1spe-demonstrations` à supprimer.
-- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations`, branche `feat/ranger-signe-aucun`.
+- **État** : lots 1 à 4 en prod. #2341 (`signe: aucun`) livré par `deploy:prod` 0.68.0 ; #2349 mergée,
+  migration de contenu jouée (`db:migrate` depuis le dépôt principal) ; vérifié au MCP : 14 modèles
+  publiés, 4 variations dont « étapes à ranger », 14 tags.
+- **Prochaine action** : aucune dans le périmètre décidé (14 démonstrations, D1-D2). Reste à décider
+  avec David : fin du chantier (versement dans `docs/systeme/`, archivage du journal) ou suite.
+- **En attente de David** : vérification à l'œil en prod (ligne du 2026-11-03 de
+  `docs/wip/verifications-manuelles.md`).
+- **Pièges en cours** : `create-questions` lit `.env` = PROD → forcer les variables de `.env.local`.
+  Relevé prod par script refusé par le classifieur → MCP + md5 contre l'ancienne source. `db:migrate`
+  depuis une branche en retard sur `main` : une migration distante manque en local → le lancer depuis
+  le dépôt principal à jour. Anciennes branches distantes `docs/questions-1spe-demonstrations`,
+  `feat/questions-1spe-demonstrations` à supprimer.
+- **Worktree / branche** : `../ubumaths-wt-questions-1spe-demonstrations` (branche mergée, à retirer).
 
 ---
 
@@ -226,3 +228,34 @@ PR 1 (`feat/ranger-signe-aucun`) : 8 tests neufs, rouges avant le code (parseur,
 cadres de réponse, écran : colonne numérotée, consigne lue, rien ne déborde à 360 px) ; verts après, suites
 voisines vertes (348 + 60), `check:incremental` 0 erreur. PDF compilé par `scripts/fiches/compile-prod.mjs` (le
 compilateur de la prod) : places pleine largeur, numérotées, espacées ; le rangement `<` inchangé.
+
+PR 1 mergée (#2341, 2026-11-03). Revue `code-reviewer` (Sonnet) : aucun bloquant ; un mineur corrigé (correction
+aussi large que la colonne en mode étapes). Vu à l'écran (page d'aide du bloc) : colonne numérotée, geste juste.
+Conflit de fusion sur deux lignes « Vérifié » de la doc système, résolu en gardant `main` + nos ajouts.
+
+## 8. Lot 4 : étapes à ranger (2026-11-03)
+
+Contenu écrit : `questions-1spe-demonstrations/lot4_etapes.py` (énoncé, étapes dans l'ordre, corrigé) ;
+variation ajoutée en DERNIER aux 14 JSON (indices 0-2 inchangés), 4 à 6 étapes, `signe: aucun`. Étapes
+interchangeables évitées : passées dans l'énoncé (03 : les deux écritures de S ; 10 : « v(a+h) tend vers
+v(a) » admis) ou fusionnées (13 : produit scalaire et cosinus dans la dernière étape ; 09 : limite de
+a(a+h) et du taux). Specs calculées par le générateur (`generateInstanceWithFixedVariables`) : ordre juste
+et 2e/3e étapes échangées ; `checkTemplate` vert sur les 14. Vu à l'écran en base locale (aperçu admin,
+seed 100004 → variation 4) : 10 (produit) et 05 (second degré), formules lisibles, places numérotées.
+Reste : migration de contenu (les 14 sont publiés), après la question d'accès et le `deploy:prod` de #2341.
+
+Question d'accès (posée avant le SQL, 2026-11-03) : « qui pourra lire quoi, qu'il ne pouvait pas lire
+avant ? » ; reco « personne de plus » ; réponse de David : « je te suis ».
+
+Migration de contenu `20261103194133_questions_1spe_demonstrations_etapes_contenu.sql`, générée par
+`lot4-contenu.py` (générateur `scissions_outils.generer`, 14 MODIFIER, 0 neuf, 0 tag). Instantané
+`etat-prod-2026-11-03-etapes/` écrit par `etat_prod_releve.py` : relevé MCP (lecture seule ;
+`releve-prod.ts` refusé par le classifieur), contenu = ancienne source, md5 jsonb comparés à la prod
+(14/14, variations, specs et empreinte complète). Test `questions-1spe-demonstrations-etapes-contenu`
+vert avec (12 verts, 16 sautés : modèles neufs), ROUGE sans (fichier remplacé par `select 1;`, restauré
+d'une copie, md5 identique). `deploy:prod` d'abord refusé (CI de #2344 : porte des migrations, origin/main
+injoignable en CI), relancé par `--relancer-ci`.
+
+#2349 mergée (2026-11-03) ; `deploy:prod` 0.68.0 (#2341 en prod) ; `db:migrate` de
+`20261103194133` depuis le dépôt principal (seule migration en attente, `--dry-run` d'abord) ; MCP : 14/14
+à 4 variations, publiés, tags intacts.
