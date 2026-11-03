@@ -86,6 +86,7 @@
 	import PartageColorier from '$lib/components/markdown/nodes/PartageColorier.svelte';
 	import CubesGeste from '$lib/components/markdown/nodes/CubesGeste.svelte';
 	import PatronGeste from '$lib/components/markdown/nodes/PatronGeste.svelte';
+	import SolideGeste from '$lib/components/markdown/nodes/SolideGeste.svelte';
 	import Monnaie from '$lib/components/markdown/nodes/Monnaie.svelte';
 	import BuildAnswer from '$lib/components/questions/BuildAnswer.svelte';
 	import FigureBlock from '$lib/components/markdown/nodes/FigureBlock.svelte';
@@ -538,7 +539,7 @@
 			// Plan vide : le premier bouton de la réserve ; droite à placer : la droite
 			slot.build
 				.querySelector<HTMLElement>(
-					'.construire-ajouter:not(:disabled), [data-signe-case]:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), .partage-colorier [role="button"]:not([aria-disabled="true"]), .cubes-geste [role="button"]:not([aria-disabled="true"]), .cubes-saisie input:not(:disabled), .patron-geste [role="button"]:not([aria-disabled="true"])'
+					'.construire-ajouter:not(:disabled), [data-signe-case]:not(:disabled), [role="slider"], [data-ranger-focus]:not(:disabled), .partage-colorier [role="button"]:not([aria-disabled="true"]), .cubes-geste [role="button"]:not([aria-disabled="true"]), .cubes-saisie input:not(:disabled), .patron-geste [role="button"]:not([aria-disabled="true"]), .solide-geste [role="button"]:not([aria-disabled="true"])'
 				)
 				?.focus();
 			return;
@@ -1171,6 +1172,26 @@
 				{:else}
 					<div data-construire-case={caseIndex}>
 						<PatronGeste
+							{node}
+							answer={{
+								value: state?.value ?? '',
+								isCorrect: flashMode ? null : (state?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value) => handleInputChange(caseIndex, value)
+							}}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'espace' && node.genre === 'solide' && node.caseIndex !== undefined && node.spec?.task !== undefined && node.errors.length === 0}
+				<!-- Vecteur à tracer sur un solide : l'élève touche l'origine puis l'extrémité -->
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : la flèche attendue -->
+					<BuildAnswer kind="solide" source={node.source} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={caseIndex}>
+						<SolideGeste
 							{node}
 							answer={{
 								value: state?.value ?? '',
