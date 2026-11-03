@@ -48,7 +48,7 @@ import {
 } from '$lib/ubumark/parser/espace-parser';
 import { MISSING_HEIGHTS, NOTHING_COLORED_CUBES } from '$lib/ubumark/utils/cubes-gestes';
 import { NOTHING_PLACED, NOTHING_TOUCHED } from '$lib/ubumark/utils/patron-gestes';
-import { BOTH_MISSING } from '$lib/ubumark/utils/solide-gestes';
+import { BOTH_MISSING, END_MISSING } from '$lib/ubumark/utils/solide-gestes';
 import { buildCaseCount } from './generator/build-answer';
 import { findVariationsToFill } from '$lib/ubumark/parser/variation-table-parser';
 import type { HiddenCellKind } from '$lib/ubumark/types/variation-table';
@@ -235,7 +235,11 @@ function emptyBuildText(kind: BuildKind, source: string): string {
 		const spec = parseEspaceContent(source, 'patron').spec;
 		return spec?.task?.kind === 'completer' ? NOTHING_PLACED : NOTHING_TOUCHED;
 	}
-	if (kind === 'solide') return BOTH_MISSING;
+	if (kind === 'solide') {
+		// Origine imposée : posée d'office, seule l'extrémité manque
+		const task = parseEspaceContent(source, 'solide').spec?.task;
+		return task?.kind === 'vecteur' && task.origin !== null ? END_MISSING : BOTH_MISSING;
+	}
 	return isPlaceKind(kind) ? EMPTY_PLACE_TEXT : EMPTY_BUILD_TEXT;
 }
 

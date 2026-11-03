@@ -33,7 +33,7 @@
  *   milieu peut prendre un point déjà déclaré (`J milieu IG`).
  * - `vecteurs:` (facultatif, polyèdres) : `AB, AE, u = AI`, entre points nommés
  *   (sommets, points déclarés) ; `u =` pose la lettre sur la flèche.
- * - `tracer:` (facultatif, polyèdres, geste de l'élève) : `vecteur AB + AD - 1/2 AE`,
+ * - `tracer:` (facultatif, polyèdres, geste de l'élève) : `vecteur AB + AD + AE`,
  *   puis `depuis A` pour imposer l'origine ; au plus 6 vecteurs entre points nommés,
  *   coefficients entiers ou demis (`2 AB`, `1/2 AE`, `3/2AB`). Refusé : vecteur nul,
  *   extrémité qui ne tombe sur aucun point cliquable (sommets nommés, points
@@ -98,7 +98,7 @@ const VECTOR_NAME_REGEX = /^[a-z]\d?$/;
 /** Un terme de `tracer:` : signe, coefficient (`2`, `1/2`), deux noms de points */
 const TERM_REGEX = /^([+-])?\s*(?:(\d+)\s*(?:\/\s*(\d+))?)?\s*((?:[A-Z](?:'+|\d+)?)+)\s*/;
 
-const TRACER_USAGE = 'ex. tracer: vecteur AB + AD - 1/2 AE, ou … depuis A';
+const TRACER_USAGE = 'ex. tracer: vecteur AB + AD + AE, ou … depuis A';
 
 /** Deux points plus proches que cela sont confondus (vecteur nul, milieu d'un point avec lui-même) */
 const SAME_POINT = 1e-9;

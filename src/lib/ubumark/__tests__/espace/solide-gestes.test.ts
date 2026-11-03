@@ -226,6 +226,10 @@ describe('phrases de la correction', () => {
 		expect(solideVectorMistake('A/', imposed)).toEqual({ text: END_MISSING });
 	});
 
+	it('origine libre posée, extrémité manquante : seule l’extrémité est demandée', () => {
+		expect(solideVectorMistake('A/', sum)).toEqual({ text: END_MISSING });
+	});
+
 	it('même point', () => {
 		expect(solideVectorMistake('A/A', sum)).toEqual({ text: SAME_POINT });
 		expect(SAME_POINT).toBe('Ton origine et ton extrémité sont au même endroit.');

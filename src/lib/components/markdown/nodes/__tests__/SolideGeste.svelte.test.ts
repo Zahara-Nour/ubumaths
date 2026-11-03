@@ -149,6 +149,30 @@ describe('SolideGeste — origine libre', () => {
 		expect(parseFloat(getComputedStyle(chosen[0]).strokeWidth)).toBeLessThan(0.1);
 	});
 
+	it('les zones de toucher ne se chevauchent pas, même sur un pavé aplati', async () => {
+		// Revue de #2339 : sur `pave 6 1 1`, E et H sont à 0,3 cm à l'écran ; des zones de
+		// 0,45 cm se chevauchaient et la dernière dessinée prenait le toucher
+		const screen = await render(SolideGeste, {
+			target: mainElement(),
+			props: {
+				node: node('forme: pave 6 1 1', 'sommets: A B C D E F G H', 'tracer: vecteur AB'),
+				answer: answerProbe().answer()
+			}
+		});
+		const zones = points(screen.container).map((p) => ({
+			x: Number(p.getAttribute('cx')),
+			y: Number(p.getAttribute('cy')),
+			r: Number(p.getAttribute('r'))
+		}));
+		expect(zones).toHaveLength(8);
+		for (let i = 0; i < zones.length; i++) {
+			for (let j = i + 1; j < zones.length; j++) {
+				const d = Math.hypot(zones[i].x - zones[j].x, zones[i].y - zones[j].y);
+				expect(d + 1e-9).toBeGreaterThanOrEqual(zones[i].r + zones[j].r);
+			}
+		}
+	});
+
 	it('origine imposée : son disque garde un trait fin', async () => {
 		const screen = await render(SolideGeste, {
 			target: mainElement(),

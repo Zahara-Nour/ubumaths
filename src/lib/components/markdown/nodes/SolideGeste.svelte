@@ -18,7 +18,7 @@
 	  et la flèche juste en vert sur un second dessin.
 	- Sans `answer` (aperçu du prof, cours) : le même geste, rien de jugé.
 	  `solution` : la flèche juste, sans geste (bonne réponse, verso de la copie).
-	- Nom accessible : jamais le nom du solide ni la flèche attendue.
+	- Nom accessible : jamais la forme du solide (cube, pavé…) ni la flèche attendue.
 
 	@module components/markdown/nodes/SolideGeste
 -->
@@ -66,7 +66,7 @@
 		class: className = ''
 	}: Props = $props();
 
-	/** Rayon (cm) de la zone qui reçoit le toucher : ~15 px sur la figure de 4 cm */
+	/** Rayon (cm) maximal de la zone qui reçoit le toucher : ~15 px sur la figure de 4 cm */
 	const HIT_RADIUS = 0.45;
 	/** Rayon (cm) de l'anneau qui montre qu'un point se touche, et du point choisi */
 	const RING_RADIUS = 0.15;
@@ -79,6 +79,21 @@
 	let task = $derived(spec.task!);
 	let scene = $derived(buildSolideScene(spec));
 	let clickable = $derived(solideClickablePoints(spec));
+	/**
+	 * Rayon des zones de toucher : HIT_RADIUS, réduit à la moitié de la plus petite distance
+	 * entre deux points à l'écran (pavé aplati, points déclarés serrés) — deux zones qui se
+	 * chevauchent donneraient le toucher à la dernière dessinée
+	 */
+	let hitRadius = $derived.by(() => {
+		const at = clickable.map((c) => solidePointAt(scene, c.index));
+		let radius = HIT_RADIUS;
+		for (let i = 0; i < at.length; i++) {
+			for (let j = i + 1; j < at.length; j++) {
+				radius = Math.min(radius, Math.hypot(at[i].x - at[j].x, at[i].y - at[j].y) / 2);
+			}
+		}
+		return radius;
+	});
 	let locked = $derived(solution || (answer?.disabled ?? false));
 	let verdict = $derived<boolean | null>(solution ? null : (answer?.isCorrect ?? null));
 	let value = $derived(answer?.value ?? '');
@@ -160,7 +175,7 @@
 		xmlns="http://www.w3.org/2000/svg"
 		viewBox="0 0 {width} {height}"
 		role="group"
-		aria-label="{solideLabel(spec)}, points à toucher"
+		aria-label={markers ? `${solideLabel(spec)}, points à toucher` : solideLabel(spec)}
 		class="solide-figure"
 		class:solide-verrouille={locked}
 		style:width="{width}cm"
@@ -240,7 +255,7 @@
 						class="solide-cliquable"
 						cx={at.x + ESPACE_MARGIN}
 						cy={at.y + ESPACE_MARGIN}
-						r={HIT_RADIUS}
+						r={hitRadius}
 						role="button"
 						tabindex={locked ? -1 : 0}
 						aria-label={pointLabel(c.name)}

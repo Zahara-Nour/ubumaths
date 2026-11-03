@@ -940,7 +940,7 @@ Nom accessible : « point I milieu de [AE] », « vecteur AB », « vecteur u é
 pointe `polygon(fill: black)`.
 
 **Vecteur à tracer** (chantier [solide-vecteur](../wip/solide-vecteur-progress.md), lot 2,
-`solide-gestes.test.ts`) — geste de l'élève, `tracer: vecteur AB + AD - 1/2 AE`, puis `depuis A` facultatif
+`solide-gestes.test.ts`) — geste de l'élève, `tracer: vecteur AB + AD + AE`, puis `depuis A` facultatif
 (origine imposée ; sans lui, origine libre : tout représentant est juste). Polyèdres seulement, sommets nommés
 exigés ; `vecteurs:` peut l'accompagner (vecteurs donnés dessinés). Combinaison : au plus `SOLIDE_MAX_TERMS` = 6
 vecteurs entre points nommés (sommets, points déclarés), signes `+`/`-`, coefficients **entiers ou demis**

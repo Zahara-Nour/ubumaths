@@ -152,4 +152,13 @@ describe('résultat attendu', () => {
 			buildExpectedResult(instance, { values: [''] }).lines.find((l) => l.kind === 'empty')
 		).toMatchObject({ text: 'Il faut placer l’origine et l’extrémité.' });
 	});
+
+	it('rien posé, origine imposée (posée d’office) : seule l’extrémité est demandée', () => {
+		const instance = generate(
+			template({ statement: solide(...CUBE, 'tracer: vecteur AB depuis A') })
+		);
+		expect(
+			buildExpectedResult(instance, { values: [''] }).lines.find((l) => l.kind === 'empty')
+		).toMatchObject({ text: 'Il faut placer l’extrémité.' });
+	});
 });

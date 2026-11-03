@@ -5,7 +5,7 @@
  * ```solide
  * forme: cube 2
  * sommets: A B C D E F G H
- * tracer: vecteur AB + AD - 1/2 AE depuis A
+ * tracer: vecteur AB + AD + AE depuis A
  * ```
  *
  * L'élève touche un point pour l'origine, puis un point pour l'extrémité, parmi
@@ -226,7 +226,9 @@ export function solideVectorMistake(answer: string, spec: SolideSpec): SolideVec
 	const { from, to } = readSolideAnswer(answer);
 	const p = clickable.find((c) => c.name === from);
 	const q = clickable.find((c) => c.name === to);
-	if (p === undefined || q === undefined) return { text: imposed ? END_MISSING : BOTH_MISSING };
+	// Origine posée (par l'élève ou d'office) : seule l'extrémité manque
+	if (q === undefined) return { text: imposed || p !== undefined ? END_MISSING : BOTH_MISSING };
+	if (p === undefined) return { text: BOTH_MISSING };
 	const tolerance = toleranceOf(spec);
 	const drawn = sub(q.at, p.at);
 	if (isNull(drawn, tolerance)) return { text: SAME_POINT };

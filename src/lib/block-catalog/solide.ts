@@ -80,7 +80,7 @@ export const solideEntry: BlockCatalogEntry = {
 				},
 				{
 					key: 'tracer',
-					values: 'vecteur AB + AD - 1/2 AE | vecteur AB + AD depuis A',
+					values: 'vecteur AB + AD + AE | vecteur AB + AD depuis A',
 					defaultValue: null,
 					description:
 						'Geste de l’élève, dans une question : il touche un point pour l’origine, puis un point pour l’extrémité, et une flèche se dessine. La combinaison : au plus 6 vecteurs entre points nommés, signes + et -, coefficients entiers ou demis (2 AB, 1/2 AE). depuis A impose l’origine (posée d’office, l’élève ne touche que l’extrémité) ; sans lui, tout représentant du vecteur est juste. Les points à toucher : les sommets nommés, puis les points de points: (pas de milieux automatiques) ; l’extrémité doit tomber sur l’un d’eux. Polyèdres seulement, sommets nommés. Faux : une phrase, et la flèche juste en vert. Réponse de la case : les noms des deux points (A/G).'

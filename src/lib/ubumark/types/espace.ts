@@ -228,7 +228,7 @@ export interface SolideVectorTerm {
 }
 
 /**
- * Geste de l'élève sur un solide (`tracer: vecteur AB + AD - 1/2 AE depuis A`) :
+ * Geste de l'élève sur un solide (`tracer: vecteur AB + AD + AE depuis A`) :
  * il trace une flèche d'un point cliquable à un autre ; juste si extrémité −
  * origine = la combinaison (en 3D), et si l'origine est `origin` quand elle est
  * imposée (null : libre, tout représentant est juste)
