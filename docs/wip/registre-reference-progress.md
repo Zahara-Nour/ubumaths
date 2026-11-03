@@ -6,22 +6,22 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR 3/5 ouverte._
+_Mis à jour le 2026-11-03, après #2300._
 
 - **État** : lot 2 du registre découpé en 5 PR (§ Lot 2 — correction du registre). PR 1/5 (#2281,
-  A/B) et PR 2/5 (#2292, D) MERGÉES ; PR 3/5 (lecture : degrés, `π`, refus de `pi`) codée sur
-  `fix/registre-lot2-lecture`, 10 lignes justes. Reste 10 lignes connues fausses au lot 2
-  (plafond 5, C 5). Pas déployées.
-- **Prochaine action** : merger la PR 3/5, puis PR 4/5 — C : égalité seule → `\text{vrai}` /
-  `\text{faux}` (`comparer-01, 05, 09, 12, 14`, et `comparer-13` côté Atelier).
+  A/B), 2/5 (#2292, D) et 3/5 (#2300, lecture : degrés, `π`, refus de `pi`) MERGÉES ; reste 10
+  lignes du registre connues fausses au lot 2 (C 5, plafond 5). Pas déployées.
+- **Prochaine action** : PR 4/5 — C : égalité seule → `\text{vrai}` / `\text{faux}`
+  (`comparer-01, 05, 09, 12, 14` registre ; `comparer-01, 05, 12, 13, 14` Atelier, `≈` refusé).
 - **En attente de David** : rien.
 - **Tranché** : option `unitChoice: 'school'` GARDÉE exprès (David, 2026-11-03 : « utile plus
   tard ») — ne pas proposer de la retirer ; § Unité du résultat et § Revue de #2276 ; avant : Q9 EN ENTIER, A-D du lot 2,
   `decimal` en LaTeX, `plafond-02` → 1000, Q24, `signes-06` — NE PAS reposer.
 - **Pièges** : `docs:check-a-jour` local ne voit que le COMMITÉ ; PR en conflit avec `main` = aucun
-  run de CI → `git merge origin/main` ; `rebase` et `restore` = liste `ask` ; sous-expressions de
-  `tidy` en `durations: 'single'`.
-- **Worktree / branche** : `../ubumaths-wt-registre-reference`, `fix/registre-lot2-lecture`.
+  run de CI → `git merge origin/main` ; `rebase` et `restore` = liste `ask` ; `gh pr checks --watch`
+  juste après un push ne voit que l'auto-merge → suivre le run « Code Quality » du commit ;
+  limite connue de #2300 : `.diff cos(60°)*x` (commandes qui relisent `ctx.input`).
+- **Worktree / branche** : aucun (retirés après #2300).
 
 ---
 
