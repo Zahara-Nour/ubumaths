@@ -10,19 +10,20 @@ status: en-cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, après #2328._
+_Mis à jour le 2026-11-03, après #2336._
 
-- **État** : PR 1-3 (#2294, #2309, #2317) **en prod** (0.67.0). PR 4 (#2328) mergée : modèle 3-014
-  « Représenter les solutions d'une inéquation ax ⩾ b » (niveau 2), fichiers dans
-  `scripts/questions/3-representer/` ; brouillon en base locale seulement.
-- **Prochaine action** : David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/3-representer
---publier` (brouillon en prod) → relever l'id → migration nœud + tag 3-014 (nouveau worktree) → page à
-  cocher → publication. Puis 2-251 (|x| < k, 2de), puis clôture (versement dans `docs/systeme/`).
-- **En attente de David** : le `create-questions --publier` ci-dessus.
-- **Pièges en cours** : segment monté d'un étage qui frôle un point nommé (pas vu sur 3-014). Rendu 390 px
-  du modèle (graduations en tiers) pas vu à l'œil. Branche distante `fix/integration-locals-session`
-  laissée sur GitHub.
-- **Worktree / branche** : aucun (`../ubumaths-wt-demi-droite` retiré après #2328).
+- **État** : geste en prod (0.67.0). Modèle 3-014 « Représenter les solutions d'une inéquation ax ⩾ b »
+  (06601c87) en prod, **brouillon**, rangé sur « ax + b < c » et tagué 3-014 (#2336, `db:migrate` fait et
+  vérifié).
+- **Prochaine action** : David joue 06601c87 dans l'aperçu admin de prod (la page à cocher ne dessine pas
+  ` ```line `), puis lance `pnpm tsx scripts/questions/publier-lot.ts --dir scripts/questions/3-representer`
+  (simulation) puis `--publier` (classifieur : refusé à Claude, même en simulation) ; je relis `published`.
+  Ensuite 2-251 (|x| < k, 2de), puis clôture (versement dans `docs/systeme/`).
+- **En attente de David** : verdict sur 06601c87 et publication.
+- **Pièges en cours** : `page-a-cocher` ne dessine pas ` ```line ` (alerte « bloc line non dessiné »).
+  Segment monté d'un étage qui frôle un point nommé (pas vu sur 3-014). Branche distante
+  `fix/integration-locals-session` laissée sur GitHub.
+- **Worktree / branche** : aucun (`../ubumaths-wt-demi-droite` retiré après #2336).
 
 ---
 
@@ -206,3 +207,16 @@ catégorie est libre.
   l'autre côté de 5. », faux ; −3x < 7, borne −7/3 exclue, côté droit → juste ; corrigé lu (division,
   crochet, droite). Pas vu à 390 px (fenêtre Chrome restée large) : affichage déjà vu à 390 px en PR 1.
 - Corrigé : « x > 7/(−3) » écrit tel quel avant la simplification, comme 24aff7b0.
+
+### Rangement (#2336, 2026-11-03)
+
+- Brouillon créé en prod par David : 06601c87. Relevé `etat-prod-2026-11-03-3e-representer/`, migration
+  `20261103155640_questions_3_representer_rangement_tags` générée par `lot-rangement-3-representer.py`
+  (gabarit lot 2 de la 3e), test `questions-3-representer-rangement-tags.test.ts` : 17 verts ; sans le corps
+  de la migration, 5 branches d'échec rouges et le bloc nominal en échec.
+- `security-auditor` : aucun bloquant ni important. Mineur corrigé : phrase d'accès (le brouillon est lisible
+  par le prof ET l'admin, pas l'admin seul). Mineur noté, hors chantier : `question_template_points` lisible
+  de tout compte connecté (`using (true)`), identifiants seuls, déjà vrai pour tous les tags.
+- `db:migrate` lancé depuis le worktree posé sur `origin/main` (dépôt principal bloqué par le travail d'une
+  autre session ; `supabase/.temp/project-ref` copié pour le lien) ; vérifié en prod.
+- Page à cocher : écrite, mais ` ```line ` non dessiné → remplacée par l'aperçu admin.
