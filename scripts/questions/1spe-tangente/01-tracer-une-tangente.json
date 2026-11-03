@@ -1,0 +1,254 @@
+{
+	"title": "Tracer une tangente connaissant le nombre dérivé",
+	"description": "Tracer la tangente à une courbe en un point A connaissant f′(a) : entier (nul compris) ou demi-entier ; geste « tracer » (deux nœuds de la grille)",
+	"grades": ["1_SPE", "1_TECHNO"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "Tangente",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On a tracé ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ et le point $A$ de $\\mathcal{C}_f$ d'abscisse ${{a}}$. On sait que $f'({{a}})={{s}}$.\n\nTrace la tangente à $\\mathcal{C}_f$ au point $A$.\n\n```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\nf(x) = {{k}}/2*(x-({{a}}))^2+({{s}})*(x-({{a}}))+({{b}})   bleu   nom=C_f\npoints: A({{a}} ; f({{a}}))\ntracer: y = ({{s}})*x+({{eval:b-s*a}})\ntaille: moyenne\ndescription: Courbe d'une fonction et un point A de la courbe, dans un repère gradué de 1 en 1.\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "-3..3"
+				},
+				{
+					"name": "k",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "s",
+					"expression": "-3..3"
+				}
+			],
+			"conditions": ["abs(b+s) <= 4"],
+			"correction": {
+				"steps": [
+					"La tangente à $\\mathcal{C}_f$ en $A$ passe par $A({{a}}\\,;{{b}})$ et a pour coefficient directeur le nombre dérivé $f'({{a}})={{s}}$.",
+					"Depuis $A$, on avance de $1$ en abscisse et on ajoute ${{s}}$ à l'ordonnée : on arrive en $B({{eval:a+1}}\\,;{{eval:b+s}})$. La tangente est la droite $(AB)$.",
+					"```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\nf(x) = {{k}}/2*(x-({{a}}))^2+({{s}})*(x-({{a}}))+({{b}})   bleu   nom=C_f\ng(x) = ({{s}})*(x-({{a}}))+({{b}})   rouge   pointillé\npoints: A({{a}} ; {{b}}), B({{eval:a+1}} ; {{eval:b+s}})\ntaille: moyenne\ndescription: Courbe d'une fonction et sa tangente au point A, en pointillés, qui passe aussi par le point B.\n```",
+					"Son équation réduite est $\\textcolor{{{color:primary.0}}}{y={{eval:s*x+b-s*a}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On a tracé ci-dessous la courbe $\\mathcal{C}_f$ d'une fonction $f$ et le point $A$ de $\\mathcal{C}_f$ d'abscisse ${{a}}$. On sait que $f'({{a}})={{eval:t/2}}$.\n\nTrace la tangente à $\\mathcal{C}_f$ au point $A$.\n\n```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\nf(x) = {{k}}/2*(x-({{a}}))^2+({{t}})/2*(x-({{a}}))+({{b}})   bleu   nom=C_f\npoints: A({{a}} ; f({{a}}))\ntracer: y = ({{t}})/2*x+({{eval:2*b-t*a}})/2\ntaille: moyenne\ndescription: Courbe d'une fonction et un point A de la courbe, dans un repère gradué de 1 en 1.\n```",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "-3..3"
+				},
+				{
+					"name": "k",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "t",
+					"expression": "1|3|-1|-3"
+				}
+			],
+			"conditions": ["abs(b+t) <= 4"],
+			"correction": {
+				"steps": [
+					"La tangente à $\\mathcal{C}_f$ en $A$ passe par $A({{a}}\\,;{{b}})$ et a pour coefficient directeur le nombre dérivé $f'({{a}})={{eval:t/2}}$.",
+					"Depuis $A$, on avance de $2$ en abscisse et on ajoute ${{t}}$ à l'ordonnée : on arrive en $B({{eval:a+2}}\\,;{{eval:b+t}})$. La tangente est la droite $(AB)$.",
+					"```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\nf(x) = {{k}}/2*(x-({{a}}))^2+({{t}})/2*(x-({{a}}))+({{b}})   bleu   nom=C_f\ng(x) = ({{t}})/2*(x-({{a}}))+({{b}})   rouge   pointillé\npoints: A({{a}} ; {{b}}), B({{eval:a+2}} ; {{eval:b+t}})\ntaille: moyenne\ndescription: Courbe d'une fonction et sa tangente au point A, en pointillés, qui passe aussi par le point B.\n```",
+					"Son équation réduite est $\\textcolor{{{color:primary.0}}}{y={{eval:t/2*x+b-t*a/2}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "f′(1) = 2, A(1 ; 2) : A et B(2 ; 4)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"k": "1",
+				"s": "2"
+			},
+			"answers": ["1;2/2;4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Deux autres nœuds de la tangente : (0 ; 0) et (−1 ; −2)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"k": "1",
+				"s": "2"
+			},
+			"answers": ["0;0/-1;-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur de signe : pente −2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"k": "1",
+				"s": "2"
+			},
+			"answers": ["1;2/2;0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : pente inverse 1/2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"k": "1",
+				"s": "2"
+			},
+			"answers": ["1;2/3;3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : bonne pente, mais par (0 ; f(a)) au lieu de A",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"k": "1",
+				"s": "2"
+			},
+			"answers": ["0;2/1;4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Un seul point posé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"k": "1",
+				"s": "2"
+			},
+			"answers": ["1;2/"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Deux points confondus",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"k": "1",
+				"s": "2"
+			},
+			"answers": ["1;2/1;2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f′(−2) = 0 : tangente horizontale y = 1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"b": "1",
+				"k": "1",
+				"s": "0"
+			},
+			"answers": ["-2;1/0;1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : droite verticale x = −2 pour f′(−2) = 0",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"b": "1",
+				"k": "1",
+				"s": "0"
+			},
+			"answers": ["-2;1/-2;3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "f′(2) = 1/2, A(2 ; 1) : A et B(4 ; 2)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"k": "-1",
+				"t": "1"
+			},
+			"answers": ["2;1/4;2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : avance de 1, monte de 1 (pente 1)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"k": "-1",
+				"t": "1"
+			},
+			"answers": ["2;1/3;2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : pente inverse 2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"k": "-1",
+				"t": "1"
+			},
+			"answers": ["2;1/3;3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

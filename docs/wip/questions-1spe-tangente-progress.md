@@ -6,11 +6,13 @@ Sous-chantier de [questions-1spe](../archive/wip/questions-1spe-progress.md) (cl
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, avant toute PR._
+_Mis à jour le 2026-11-03, PR des fichiers ouverte._
 
-- **État** : relevé fait, phase 0 écrite (§ 3) · **Prochaine action** : validation de la phase 0 par David,
-  puis script `lot-tangente.py` · **En attente de David** : les questions du § 4 · **Pièges en cours** :
-  #2265 pas en prod → brouillons seulement, publication après un `deploy:prod` ; ne pas toucher
+- **État** : modèle écrit (`scripts/questions/1spe-tangente/`), simulation verte (12 specs), sonde des
+  courbes 0 problème, joué en local (juste, faux, correction) · **Prochaine action** : merge de la PR des
+  fichiers ; puis, **après le `deploy:prod` qui livre #2265**, David lance `create-questions --publier`
+  (brouillon), migration nœud + tags (1SPE-271, 1TECHNO-078), page à cocher, publication ·
+  **En attente de David** : le `deploy:prod` · **Pièges en cours** : ne pas toucher
   `docs/wip/outils-manquants.md` (session `tracer-droite`) · **Worktree / branche** :
   `../ubumaths-wt-questions-1spe-tangente`, `feat/questions-1spe-tangente`.
 
@@ -84,3 +86,29 @@ pas** — un lien modèle ↔ point et un nœud, sur un modèle publié plus tar
 3. Taguer aussi **1TECHNO-078** (comme les voisins portent 1TECHNO-079) ? Le piège § 9 veut alors
    `grades = ['1_SPE', '1_TECHNO']`, ce que les voisins n'ont pas.
 4. Courbe d'une autre famille (cube, inverse) pour ne pas avoir que des paraboles ? Je propose non.
+
+## 5. Décisions (David, 2026-11-03 : « je valide » mes recos)
+
+1. Phase 0 validée : un modèle, deux variations, niveau 4.
+2. f′(a) = 0 dans la variation 0 (s ∈ −3..3) ; pour s = 0, l'erreur typique testée est la droite
+   verticale x = a (au lieu de la pente inverse).
+3. Tags **1SPE-271 et 1TECHNO-078**, `grades = ['1_SPE', '1_TECHNO']`. Écart noté, non corrigé ici : les
+   trois voisins tagués 1TECHNO-079 n'ont que `['1_SPE']` (correction = migration sur des modèles publiés ;
+   petit lot à part si David le veut).
+4. Paraboles seulement.
+
+## 6. Écriture (2026-11-03)
+
+Script `docs/wip/questions/lot-1spe-tangente.py` → `scripts/questions/1spe-tangente/01-tracer-une-tangente.json`.
+`create-questions` (simulation) : 12 specs vertes ; `sonde-courbes` : 300 tirages, 600 blocs, 0 problème.
+Base locale : brouillon `de218f51`, joué dans l'aperçu admin (réponse juste « Juste », fausse « Faux »,
+correction avec A, B et la tangente en pointillés).
+
+Retouches en cours de route :
+
+- `tracer:` en forme réduite `(s)*x+(p)` (ou `(t)/2*x+(q)/2`) : la forme `s*(x-a)+b` donnait le message
+  « Ta droite n'est pas celle d'équation y = 2 + (1 − x)/2 » ; réduite → « y = −x/2 − 3/2 ».
+- Dernière ligne du corrigé : l'équation réduite seule (la forme `s(x − a) + b` donnait « y = 1, soit
+  y = 1 » pour s = 0 et « y = (x + 3) + 2 » pour s = 1). Reste « y = 4 − x » pour s = −1 (juste, lisible).
+- Vu, hors de ce chantier (#2265) : pas d'espace entre « d'équation » et la formule dans le message
+  d'erreur du geste `tracer`.
