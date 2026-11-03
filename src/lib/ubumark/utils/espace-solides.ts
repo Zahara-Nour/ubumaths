@@ -43,11 +43,22 @@ export interface SolideLine {
 	thick: boolean;
 }
 
-/** Une étiquette, centrée sur `at` */
+/**
+ * Une étiquette, centrée sur `at` ; `sub` : indice d'un nom de vecteur (`w1` →
+ * w, indice 1), comme `\vec{w_{1}}` de la phrase de correction
+ */
 export interface SolideLabel {
 	at: EspacePoint;
 	text: string;
+	sub?: string;
 }
+
+/** Taille d'un indice, relative à celle de l'étiquette */
+export const SOLIDE_SUB_SCALE = 0.7;
+
+/** Largeur d'une étiquette, en caractères (un indice compte pour sa taille) */
+const labelChars = (label: SolideLabel) =>
+	label.text.length + (label.sub?.length ?? 0) * SOLIDE_SUB_SCALE;
 
 /**
  * Une flèche : le trait s'arrête au pied de la pointe (le bout arrondi ne la
@@ -736,7 +747,7 @@ function roundDraft(spec: SolideSpec): Draft {
 
 /** Boîte d'une étiquette centrée en `at` */
 const labelBox = (label: SolideLabel) => {
-	const halfWidth = (label.text.length * CHAR_WIDTH) / 2 + 0.03;
+	const halfWidth = (labelChars(label) * CHAR_WIDTH) / 2 + 0.03;
 	const halfHeight = SOLIDE_LABEL_SIZE / 2 + 0.03;
 	return [
 		{ x: label.at.x - halfWidth, y: label.at.y - halfHeight },
@@ -1004,14 +1015,15 @@ export function buildSolideScene(spec: SolideSpec): SolideScene {
 						x: from.x + (to.x - from.x) * t + side * normal.x * LABEL_GAP * gap,
 						y: from.y + (to.y - from.y) * t + side * normal.y * LABEL_GAP * gap
 					},
-					text: vector.name ?? ''
+					text: vector.name?.[0] ?? '',
+					...(vector.name !== null && vector.name.length > 1 && { sub: vector.name.slice(1) })
 				}))
 			)
 		);
 		const label = firstFree(candidates, labels, segments, named, NAME_ARROW_TOP);
 		labels.push(label);
 		// La petite flèche au-dessus de la lettre, de gauche à droite (sens de la lecture)
-		const half = Math.max(label.text.length * CHAR_WIDTH, CHAR_WIDTH * 1.2) / 2;
+		const half = Math.max(labelChars(label) * CHAR_WIDTH, CHAR_WIDTH * 1.2) / 2;
 		const y = label.at.y - NAME_ARROW_RISE;
 		arrows.push(
 			arrowOf({ x: label.at.x - half, y }, { x: label.at.x + half, y }, SMALL_ARROW, true)

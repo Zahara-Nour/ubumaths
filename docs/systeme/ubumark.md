@@ -940,7 +940,9 @@ positions 3D dans cet ordre). `vecteurs: AB, u = AI` (`SolideSpec.vectors`, `Sol
 `name` minuscule puis un chiffre éventuel) : au plus `SOLIDE_MAX_VECTORS` = 8 ; vecteur nul (même point, ou
 deux points confondus en 3D) → erreur. Scène : `SolideScene.points` (disque + nom), `SolideScene.arrows`
 (`SolideArrow` : trait jusqu'au pied de la pointe, `head[0]` = extrémité ; `small` = petite flèche posée
-au-dessus du nom d'un vecteur, de gauche à droite). Les flèches sont en trait plein, même à travers le solide.
+au-dessus du nom d'un vecteur, de gauche à droite). Un nom à chiffre (`w1`) s'écrit w avec 1 en indice
+(`SolideLabel.sub` : `tspan` abaissé, taille `SOLIDE_SUB_SCALE` à l'écran, `sub(…)` au PDF), comme `\vec{w_{1}}`
+de la phrase de correction ; les noms de points (`O1`) restent en ligne. Les flèches sont en trait plein, même à travers le solide.
 Noms des points et des vecteurs posés par `firstFree` : sans toucher une étiquette, un trait (arêtes, flèches,
 `segmentHitsBox`) ni un point dessiné ; nom de vecteur du côté extérieur d'abord, près du milieu de la flèche.
 Nom accessible : « point I milieu de [AE] », « vecteur AB », « vecteur u égal à AI ». PDF : trait `curve`,
