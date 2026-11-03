@@ -29,6 +29,7 @@
 		SOLIDE_DASH,
 		SOLIDE_DOT_RADIUS,
 		SOLIDE_LABEL_SIZE,
+		SOLIDE_SUB_SCALE,
 		SOLIDE_THICK_STROKE,
 		buildSolideScene,
 		solideArrowBetween,
@@ -224,7 +225,11 @@
 				y={label.at.y + ESPACE_MARGIN}
 				font-size={SOLIDE_LABEL_SIZE}
 				text-anchor="middle"
-				dominant-baseline="central">{label.text}</text
+				dominant-baseline="central"
+				>{label.text}{#if label.sub}<tspan
+						font-size={SOLIDE_LABEL_SIZE * SOLIDE_SUB_SCALE}
+						dy={SOLIDE_LABEL_SIZE * 0.3}>{label.sub}</tspan
+					>{/if}</text
 			>
 		{/each}
 		{#if markers}

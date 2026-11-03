@@ -108,6 +108,17 @@ describe('Solide — figure', () => {
 		);
 	});
 
+	it('vecteur indicé : w puis 1 en indice (tspan plus petit, abaissé)', async () => {
+		const screen = await render(Espace, {
+			target: mainElement(),
+			props: { node: node('forme: cube 2', 'sommets: A B C D E F G H', 'vecteurs: w1 = AB') }
+		});
+		const w = [...screen.container.querySelectorAll('text')].find((t) => t.textContent === 'w1');
+		const sub = w?.querySelector('tspan');
+		expect(sub?.textContent).toBe('1');
+		expect(Number(sub?.getAttribute('dy'))).toBeGreaterThan(0);
+	});
+
 	it('bloc en erreur : cadre neutre pour l’élève, messages pour le prof', async () => {
 		const pupil = await render(Espace, {
 			target: mainElement(),
