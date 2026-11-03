@@ -9,9 +9,8 @@ le cas de 53 modèles.
 _Mis à jour le 2026-11-03, après #2280 (migrée)._
 
 - **État** : #2280 mergée et migrée (53 modèles en `1_TECHNO`, vérifié en prod, trigger `O`) ; lot 1GEN
-  (21 modèles) : migration `20261103084609_questions_1gen_grades.sql` + test (rouge sans, 9/9 avec) ·
-  **Prochaine action** : audit, PR, CI, merge, `db:migrate`, vérifier en prod · **En attente de David** : les 7
-  écarts de Terminale (journal `garde-niveaux-tags` § 1) · **Pièges en cours** : aucun · **Worktree / branche** :
+  (21 modèles) et 2 de Terminale (§ 7) : #2285, deux migrations + tests (rouges sans, 9/9 avec) ·
+  **Prochaine action** : audit, PR, CI, merge, `db:migrate`, vérifier en prod · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** :
   `../ubumaths-wt-questions-1techno-grades`, `feat/questions-1gen-grades` (garde : `../ubumaths-wt-garde-niveaux-tags`,
   #2284).
 
@@ -59,3 +58,10 @@ eb9517ed). Migration `20261103084609_questions_1gen_grades.sql` (même forme) + 
 rouge sans (4 échecs, 5 sautés), vert avec (9/9).
 
 Garde d'alerte (option a) : chantier `garde-niveaux-tags`, #2284.
+
+## 7. Les 2 modèles de Terminale, dans #2285 (2026-11-03)
+
+Trouvés par la garde (#2284), tranchés par David (journal `garde-niveaux-tags` § 2) : 07bce646 `[T_SPE]` + T_COMP
+(TCOMP-204), 4ff9d049 `[T_SPE, T_COMP]` + T_TECHNO (TTECHNO-089). Migration à part, même PR (un seul `db:migrate`) :
+`20261103085358_questions_terminale_grades.sql` + `tests/integration/questions-terminale-grades.test.ts`, rouge sans
+(4 échecs, 5 sautés), vert avec (9/9). Les 5 brouillons de seconde restent `['2']` (questions-2de Q7 c).
