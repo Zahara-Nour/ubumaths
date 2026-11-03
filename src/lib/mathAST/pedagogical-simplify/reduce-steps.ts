@@ -38,6 +38,7 @@ import { isPolynomialIn } from '../analysis/expression-classify';
 import { toCustom } from '../custom-generator';
 import { orderExpanded } from './expand-order';
 import { writeExpandSteps } from './expand-steps';
+import { writesDuration } from '../tidy/duration';
 import {
 	decimalFraction,
 	hasUnfinishedArithmetic,
@@ -98,6 +99,14 @@ const MAX_FRACTIONS = 8;
 // =============================================================================
 
 /**
+ * Même écriture À L'ÉCRAN : même arbre, et une durée en h-min-s des deux côtés ou d'aucun
+ * (`1[h]+30[min]` et `1[h] 30[min]` ont le même arbre, pas le même affichage : 2026-11-03).
+ */
+function sameShown(a: MathNode, b: MathNode): boolean {
+	return sameWriting(a, b) && writesDuration(a) === writesDuration(b);
+}
+
+/**
  * `tidy`, ses gestes en étapes. Chaque étape de `tidy` est une image entière
  * de l'expression : elle sert aussi de contexte global.
  */
@@ -108,7 +117,7 @@ export function tidyAsSteps(node: MathNode, makeStep: MakeStep): Stage {
 	// l'élève : `(x+1)/(x−1)` s'affiche déjà `\frac{x+1}{x-1}`
 	const steps = recorder
 		.getSteps()
-		.filter((step) => !sameWriting(withoutGrouping(step.before), withoutGrouping(step.after)))
+		.filter((step) => !sameShown(withoutGrouping(step.before), withoutGrouping(step.after)))
 		.map((step) => makeStep(step.rule, step.before, step.after, step.before, step.after));
 	// Ranger par degré une somme qui a encore un produit à développer n'a pas de
 	// sens (`(x+1)(x−1)+1` devenait `1+(x+1)(x−1)`, « par degré décroissant ») :
@@ -117,12 +126,12 @@ export function tidyAsSteps(node: MathNode, makeStep: MakeStep): Stage {
 	if (last?.rule === 'tidy-sort-terms' && hasSumToDevelop(result)) {
 		steps.pop();
 		const before = last.globalBefore ?? last.before;
-		return steps.length === 0 && sameWriting(withoutGrouping(before), withoutGrouping(node))
+		return steps.length === 0 && sameShown(withoutGrouping(before), withoutGrouping(node))
 			? { result: node, steps }
 			: { result: before, steps };
 	}
 	// Rien de visible : l'écriture de l'élève reste la sienne
-	if (steps.length === 0 && sameWriting(withoutGrouping(result), withoutGrouping(node))) {
+	if (steps.length === 0 && sameShown(withoutGrouping(result), withoutGrouping(node))) {
 		return { result: node, steps };
 	}
 	return { result, steps };

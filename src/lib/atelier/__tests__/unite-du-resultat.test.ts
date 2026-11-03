@@ -23,6 +23,7 @@ import { resolveVariables } from '$lib/ubumark/parameterization';
 import { expectedInRequiredUnit } from '$lib/questions/units/required-unit';
 import { validateQuantityAnswer } from '$lib/questions/units/validator';
 import { Atelier } from '../atelier.svelte';
+import { simplifySteps } from '../simplify-steps';
 import { runInput, type CalcResult } from '../calcul';
 
 // Types
@@ -167,7 +168,9 @@ describe('case à unité imposée : l’attendu dans cette unité (David, 2026-1
 		['(-3[m])', 'm', '(-3[m])'],
 		['5[kg]', 'm', '5[kg]'],
 		['7', 'm', '7'],
-		['(1/3)[km]', 'm', '(1/3)[km]']
+		['(1/3)[km]', 'm', '(1/3)[km]'],
+		['(-3[km])', 'm', '(-3000[m])'],
+		['+3[km]', 'm', '+3000[m]']
 	])('%s, %s imposé → %s', (expected, required, rewritten) => {
 		expect(expectedInRequiredUnit(expected, required)).toBe(rewritten);
 	});
@@ -178,5 +181,14 @@ describe('case à unité imposée : l’attendu dans cette unité (David, 2026-1
 		expect(validateQuantityAnswer('1{,}5\\unit{km}', expected, undefined, 'm').isCorrect).toBe(
 			false
 		);
+	});
+});
+
+describe('Atelier, .simplifier : le passage en h-min-s est un geste (David, 2026-11-03)', () => {
+	it('1[h]+30[min] : une étape, et la réponse 1 h 30 min', () => {
+		const result = simplifySteps('1[h]+30[min]');
+		expect(result).not.toBeNull();
+		expect(result?.steps.length).toBeGreaterThan(0);
+		expect(result?.answer).toContain('30');
 	});
 });

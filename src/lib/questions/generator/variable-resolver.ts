@@ -24,6 +24,7 @@ import {
 	resolveExpression as sharedResolveExpression
 } from '$lib/ubumark';
 import type { RandomSource } from '$lib/utils/random';
+import type { DurationWriting } from '$lib/mathAST/tidy';
 import { resolveVariableConditionals } from './variable-conditionals';
 
 /**
@@ -55,7 +56,7 @@ export function resolveVariableExpression(
 	expression: string,
 	alreadyResolved: ResolvedVariable[],
 	random: RandomSource = Math.random,
-	options?: { useDisplayValue?: boolean; markdown?: boolean }
+	options?: { useDisplayValue?: boolean; markdown?: boolean; durations?: DurationWriting }
 ): string {
 	// Use shared library's resolveExpression for full 3-stage pipeline
 	// NOTE: expression should already be in Markdown syntax at this point

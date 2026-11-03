@@ -238,7 +238,10 @@ function resolveRequiredForm(
 	// parenthésé (`9 / (-3)` reconnaît `9:(-3)` ; une formule `a+1` reste un seul opérande)
 	const resolve = (pattern: string) =>
 		pattern.replace(MARKER_REGEX, (marker) => {
-			const value = resolveExpression(marker, resolvedVariables, random).trim();
+			// Une valeur dans un motif : une durée reste UNE grandeur (2026-11-03)
+			const value = resolveExpression(marker, resolvedVariables, random, {
+				durations: 'single'
+			}).trim();
 			return /^\d+(?:\.\d+)?$/.test(value) ? value : `(${value})`;
 		});
 	return requiredForm.acceptable === undefined
@@ -339,7 +342,10 @@ function resolveValidationRules(
 	const resolve = (text: string) =>
 		text.replace(MARKER_REGEX, (marker) => {
 			if (BARE_MARKER_REGEX.test(marker)) return marker;
-			const value = resolveExpression(marker, resolvedVariables, random).trim();
+			// Une valeur dans un motif : une durée reste UNE grandeur (2026-11-03)
+			const value = resolveExpression(marker, resolvedVariables, random, {
+				durations: 'single'
+			}).trim();
 			return /^\d+(?:\.\d+)?$/.test(value) ? value : `(${value})`;
 		});
 	return rules.map((rule): ValidationRule => {

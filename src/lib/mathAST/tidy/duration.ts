@@ -15,6 +15,7 @@
 
 import { juxtaposedSum, number, opposite, withUnit } from '../factory';
 import { isJuxtaposedSum } from '../guards';
+import { findNodes } from '../transforms';
 import { parse as parseUnit } from '../units/parser';
 import type { Rational } from '../normal/types';
 import type { MathNode } from '../types';
@@ -77,6 +78,11 @@ export function compositeDurationNode(seconds: Rational): MathNode | null {
 	}
 	const duration = nodes.reduce((left, right) => juxtaposedSum(left, right));
 	return negative ? opposite(duration) : duration;
+}
+
+/** L'expression contient-elle une durée écrite en h-min-s (`2[h] 30[min]`) ? */
+export function writesDuration(node: MathNode): boolean {
+	return findNodes(node, isJuxtaposedSum).length > 0;
 }
 
 /** Une durée composée (`2[h] 30[min]`), signée ou non. */

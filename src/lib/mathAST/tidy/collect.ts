@@ -29,7 +29,7 @@ import type {
 	TidyRule,
 	UnitChoice
 } from './step-recorder';
-import { compositeDurationNode, typesCompositeDuration } from './duration';
+import { compositeDurationNode, typesCompositeDuration, writesDuration } from './duration';
 import { TidyStepRecorder } from './step-recorder';
 import { flattenProductShallow, flattenSumShallow } from '../flatten';
 import { findNodes, getChildren, stripUnnecessaryBrackets } from '../transforms';
@@ -69,7 +69,7 @@ import {
 	withUnit,
 	sqrt as sqrtNode
 } from '../factory';
-import { isDelimiter, isEulerConstant, isFunction, isJuxtaposedSum } from '../guards';
+import { isDelimiter, isEulerConstant, isFunction } from '../guards';
 import { parse as parseUnit, parseUnitTerms } from '../units/parser';
 import { format as formatUnit } from '../units/formatter';
 import { exactConversion, dimensionKey } from '../units/exact';
@@ -2338,11 +2338,6 @@ function narrateSum(
 	if (settings.order === 'kept') return step('tidy-terms', buildSum(unitedCollected));
 	step('tidy-number-first', buildSum(numberFirst(unitedCollected)));
 	return step('tidy-sort-terms', buildSum(sortKeepingCancelled(unitedCollected)));
-}
-
-/** L'expression contient-elle une durée écrite en h-min-s (`2[h] 30[min]`) ? */
-function writesDuration(node: MathNode): boolean {
-	return findNodes(node, isJuxtaposedSum).length > 0;
 }
 
 /**

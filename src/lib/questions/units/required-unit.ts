@@ -36,5 +36,10 @@ export function expectedInRequiredUnit(expected: string, required: string): stri
 	if (value === null) return expected;
 	const negative = value.n < 0n;
 	const text = decimalString(negative ? { n: -value.n, d: value.d } : value);
-	return text === null ? expected : `${negative ? '-' : ''}${text}[${required}]`;
+	if (text === null) return expected;
+	// L'écriture de `;()` et de `;+` est gardée : `(-3[km])` → `(-3000[m])`, `+3[km]` → `+3000[m]`
+	const trimmed = expected.trim();
+	const sign = negative ? '-' : trimmed.startsWith('+') ? '+' : '';
+	const quantity = `${sign}${text}[${required}]`;
+	return /^\(.*\)$/.test(trimmed) ? `(${quantity})` : quantity;
 }
