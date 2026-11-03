@@ -14,7 +14,9 @@ _Mis à jour le 2026-11-02, après #2235 et son `--publier` (§ 59)._
 - **Prochaine action** : garde contre `\textcolor` hors `$` — place à trancher par David : (a) bloquante dans
   `checkTemplate` (garde AUSSI la publication dans l'appli), (b) avertissement, (c) `question:specs` seul ;
   puis les 35 fichiers hors 2de (§ 58), rien sans son accord.
-- **En attente de David** : la place de la garde ; la relecture de la page, puis `verdicts`, corrections,
+- **En attente de David** : la place de la garde (reco du 2026-11-02, sans réponse : (a) bloquante, famille
+  des commandes de texte hors `$` — `\\textbf`, `\\boxed`… —, après mesure en prod des modèles de profs
+  touchés ; puis les 35 hors 2de dans ce chantier, en lots par niveau) ; la relecture de la page, puis `verdicts`, corrections,
   `publier-lot` (ids § 57).
 - **Pièges en cours** : `--publier`, `publier-lot`, `db:migrate` → David avec `!` ;
   `create-questions --mettre-a-jour` ne touche JAMAIS un publié → `update-published-questions.ts` ;

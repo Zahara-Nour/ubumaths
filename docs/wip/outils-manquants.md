@@ -67,8 +67,8 @@ construire et échelle à choisir, boîte à moustaches à construire, étiquett
 patron `designer:` / `completer:`, collection et monnaie `construire:`, opération posée à
 compléter, case « figure » (` ```figure-a-completer `, 3 contrôles) et figure de travail, case
 choix (` ```choix `), repère à points à placer (` ```courbe placer:`, #2096), point sur le cercle
-trigonométrique (` ```trig placer:`, #2189), droite à tracer (` ```courbe tracer:`, #2265, pas en prod au
-2026-11-03 ; ex-ligne 2 du § 1, numéros des autres lignes gardés), vecteur à tracer (` ```courbe tracer:
+trigonométrique (` ```trig placer:`, #2189), droite à tracer (` ```courbe tracer:`, #2265, en prod depuis la
+0.65.0 du 2026-11-03 ; ex-ligne 2 du § 1, numéros des autres lignes gardés), vecteur à tracer (` ```courbe tracer:
 vecteur`, `depuis A`, #2274, pas en prod au 2026-11-03 ; la ligne 3 du § 1 ne garde que la somme). Détail : `docs/systeme/questions.md`, `ubumark.md`.
 
 **Contenu restant aux sessions « questions »** (l'outil existe) : droite à tracer : 2-316 et 2-445 (modèles en case choix à réécrire au

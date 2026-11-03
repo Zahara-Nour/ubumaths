@@ -928,3 +928,16 @@ _Relevé MCP en prod (lecture seule) le 2026-11-03._
 - **D-L10 (David, 2026-11-03, recommandations retenues)** : lot 10 avec un modèle `T_SPE` par point. 455 : ` ```trig `
   et ` ```courbe ` ; 481 : un modèle « à savoir » dans le sous-domaine « À savoir » du calcul intégral, comme au lot 8 ;
   616 : un modèle neuf sur arbre (` ```probtree `). Le versement vient après le lot 10.
+
+### Lot 10 : phase 0 (2026-11-03, validée : « go » sur les recos)
+
+Un modèle par point, niveau `T_SPE` seul, rangé sur le nœud du point (ou sa sous-notion).
+
+| Point | Nœud                                                                          | Catégorie (niveau)                                                      | Variations                                                                                            | Réponse      |
+| ----- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ------------ |
+| 455   | Fonctions trigonométriques › cosinus et sinus d'un réel                       | Fonctions › Fonctions trigonométriques › Fonctions cosinus et sinus (6) | v0 point M du cercle → point de la courbe de sin ; v1 idem cos ; v2 signe de cos x lu sur le quadrant | choix, 4     |
+| 481   | Calcul d'intégrales › positivité et inégalités                                | Intégration › Calcul intégral › À savoir (2)                            | v0 positivité ; v1 intégration des inégalités ; v2 piège, bornes inversées                            | choix, 4     |
+| 616   | Probabilités conditionnelles › arbres pondérés (sous-notion du nœud du point) | Probabilités › Succession d'épreuves › Épreuves dépendantes (3)         | arbre à deux épreuves dépendantes : v0 P(A ∩ B) ; v1 P(Ā ∩ B̄) ; v2 P(A ∩ B̄)                           | décimal tapé |
+
+P(B) n'est jamais demandé (il relève de 617). 1cfc575d, un brouillon de seconde tagué TSPE-616, reste tel quel : son tag ne
+vaut pas couverture. Question d'accès : personne ne gagne ni ne perd d'accès (migration nœud + tag sur trois brouillons).
