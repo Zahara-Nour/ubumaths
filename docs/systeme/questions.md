@@ -356,7 +356,7 @@ de l'élève de même (incomplète : `'2 comprise, côté ?'`) ; juge à part au
 choisi quand l'attendue est un intervalle (`isLineToRepresentBlank` → `isRepresentedIntervalCorrect`,
 `utils/number-line-representer.ts`). Masquée en `representer: ?` ou `? ; ?`. Réponse incomplète
 (`isIncompleteRepresentation`) = case vide : Valider grisé (`QuestionCard`), Entrée met le focus sur
-la droite (`FillBlanksInput`, `data-representer`) ; le flash l'accepte comme une case vide.
+la droite (`FillBlanksInput`) — même critère aux deux endroits (`isLineToRepresentBlank`) ; le flash l'accepte comme une case vide.
 Étiquettes à ranger (``ranger, chantier `reponses-a-placer` § 21, 22 ; `ranger-parser.ts`,
    `findRangersToPlace`) : le prof écrit les étiquettes dans le **bon** ordre ; une case par place
    (`buildCaseCount` = nombre d'étiquettes, `point` = rang de la place), `type: 'text'`,

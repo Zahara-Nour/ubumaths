@@ -106,7 +106,10 @@
 		readCapitalPairs
 	} from '$lib/components/markdown/content-capital-pairs';
 	import { readDigitGrouping } from '$lib/components/markdown/content-digit-grouping';
-	import { isIncompleteRepresentation } from '$lib/ubumark/utils/number-line-representer';
+	import {
+		isIncompleteRepresentation,
+		isLineToRepresentBlank
+	} from '$lib/ubumark/utils/number-line-representer';
 
 	// Utility functions
 	import {
@@ -520,7 +523,7 @@
 			const cases = Array.from({ length: slot.count }, (_, k) => values[slot.index + k] ?? '');
 			if (cases.some((value) => value === '')) return '';
 			// Droite à représenter : vide tant que le côté ou la seconde borne manque
-			if (slot.build.dataset.representer !== undefined && isIncompleteRepresentation(cases[0])) {
+			if (isLineToRepresentBlank(blanks[slot.index]) && isIncompleteRepresentation(cases[0])) {
 				return '';
 			}
 			return cases.join(' ');
@@ -964,7 +967,7 @@
 					<!-- Bonne réponse : la droite avec l'intervalle juste -->
 					<BuildAnswer kind="line" source={node.source ?? ''} answer={null} status="solution" />
 				{:else}
-					<div data-construire-case={lineCase} data-construire-cases={1} data-representer>
+					<div data-construire-case={lineCase} data-construire-cases={1}>
 						<NumberLine
 							{node}
 							answers={[

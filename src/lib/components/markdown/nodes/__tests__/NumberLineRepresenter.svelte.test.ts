@@ -411,7 +411,7 @@ describe('Réponse incomplète : ni Entrée ni « Valider »', () => {
 		await customElements.whenDefined('math-field');
 	});
 
-	function halfLineInstance() {
+	function halfLineInstance(representer = ']1, +inf[') {
 		const result = generateInstance(
 			{
 				id: 'test-representer-incomplet',
@@ -420,9 +420,14 @@ describe('Réponse incomplète : ni Entrée ni « Valider »', () => {
 				variations: [
 					{
 						statement: templateMarkdown(
-							['Représente $x > 1$.', '', '```line', ...LINE, 'representer: ]1, +inf[', '```'].join(
-								'\n'
-							)
+							[
+								'Représente $x > 1$.',
+								'',
+								'```line',
+								...LINE,
+								`representer: ${representer}`,
+								'```'
+							].join('\n')
 						)
 					}
 				],
@@ -498,6 +503,21 @@ describe('Réponse incomplète : ni Entrée ni « Valider »', () => {
 		await expect.poll(() => button(root, '1 comprise')).toBeTruthy();
 		expect(validate().disabled).toBe(true);
 		await userEvent.click(button(root, RIGHT));
+		await expect.poll(() => validate().disabled).toBe(false);
+	});
+
+	it('borné : « Valider » grisé tant que la seconde borne manque', async () => {
+		const screen = await render(QuestionCard, {
+			target: mainElement(),
+			props: { instance: halfLineInstance('[-1, 3['), interactive: true }
+		});
+		const root = screen.container;
+		const validate = () => button(root, 'Valider');
+		await expect.poll(() => validate().disabled).toBe(true);
+		tapAt(root, 3);
+		await expect.poll(() => hasButton(root, '3 comprise')).toBe(true);
+		expect(validate().disabled).toBe(true);
+		tapAt(root, -1);
 		await expect.poll(() => validate().disabled).toBe(false);
 	});
 });
