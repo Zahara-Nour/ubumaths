@@ -212,12 +212,12 @@ export const figureACompleterEntry: BlockCatalogEntry = {
 				'fenetre: 0 ; 10 ; 0 ; 8',
 				'verifier: angle AOy = 50',
 				'---',
-				'O = point(2, 2)',
-				'A = point(8, 3)',
+				'O = point(4, 3)',
+				'A = point(9, 4)',
 				'x = demidroite(O, A)'
 			),
 			explanation:
-				'Le côté [OA) est tracé ; « angle AOy = 50 » demande le côté [Oy) tel que l’angle AOy mesure 50° (une mesure entière, de 1 à 179). L’élève reçoit le rapporteur et le segment : il pique le centre du rapporteur en O, touche le côté [OA) pour y poser la base, puis touche le bord du rapporteur à la graduation voulue (‹ › ajustent d’un degré, Retourner passe de l’autre côté) ; il trace au segment le côté de O jusqu’au repère. Les deux côtés de (OA) sont justes. Un côté sans repère : « Ton côté est tracé à l’œil » ; 130° au lieu de 50° : « tu as lu la mauvaise graduation du rapporteur ». À la correction, le côté en pointillés et l’arc de l’angle codé de sa mesure.'
+				'Le côté [OA) est tracé ; « angle AOy = 50 » demande le côté [Oy) tel que l’angle AOy mesure 50° (une mesure entière, de 1 à 179). L’élève reçoit le rapporteur et le segment : il pique le centre du rapporteur en O, touche le côté [OA) pour y poser la base, puis touche le bord du rapporteur à la graduation voulue (‹ › ajustent d’un degré, Retourner passe de l’autre côté) ; il trace au segment le côté de O jusqu’au repère. Les deux côtés de (OA) sont justes. Le rapporteur a pour rayon 0,35 du plus petit côté de la fenêtre : posé en O, il doit tenir entier dans la figure d’un côté de (OA) au moins, sinon la figure est refusée à la publication (éloigner O du bord). Un côté sans repère : « Ton côté est tracé à l’œil » ; 130° au lieu de 50° : « tu as lu la mauvaise graduation du rapporteur ». À la correction, le côté en pointillés et l’arc de l’angle codé de sa mesure.'
 		},
 		{
 			title: 'Placer le 4e sommet d’un parallélogramme',

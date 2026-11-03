@@ -673,12 +673,13 @@ grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte
    un repère avec le rapporteur. », « Ton angle mesure 130° au lieu de 50° : tu as lu la mauvaise
    graduation du rapporteur. » (180 − a), « Ton angle mesure 45° au lieu de 50°. ». Erreurs de l'auteur :
    O ou A absent, invisible ou hors de la fenêtre, O et A confondus, y déjà un point de la figure,
-   quadrillage, aucun des deux côtés possibles n'a 2 unités de place dans la fenêtre (`ANGLE_SIDE_ROOM`).
+   quadrillage, demi-rapporteur posé en O qui sort de la fenêtre d'un côté de (OA) comme de l'autre
+   (rayon `protractorRadiusOf` : 0,35 du plus petit côté de la fenêtre ; seuls les côtés où il tient
+   comptent pour la correction).
    Seul dans la figure ; palette Rapporteur · Segment (`PLAIN_PAPER_TOOLS.angle`) ; le rapporteur est
    refusé dans toute autre vérification (ses repères construiraient des points). Correction : [Oy) en
    pointillés du côté où l'élève a tracé (sinon le sens trigonométrique), l'arc de l'angle codé de sa
-   mesure (`solutionAngle`). Écran : le rapporteur (`constructions-v2/.../Protractor.svelte`) a un rayon
-   de 140 unités SVG, au plus 0,45 de la fenêtre ; ‹ › décalent le dernier repère d'un degré (sans repère,
+   mesure (`solutionAngle`). Écran : le rapporteur (`constructions-v2/.../Protractor.svelte`) a le même rayon (`protractorRadiusOf`) ; ‹ › décalent le dernier repère d'un degré (sans repère,
    en posent un) ; au clavier, le rapporteur a le focus (`role="slider"`), flèches ±1°, Maj ±10° ;
    « Effacer » retire ses repères, puis le lève.
    **Papier uni (lot 2b)** : sans `grille:`, `point` et

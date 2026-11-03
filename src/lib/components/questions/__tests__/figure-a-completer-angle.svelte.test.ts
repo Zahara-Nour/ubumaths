@@ -15,14 +15,14 @@ import { generateInstance } from '$lib/questions/generator/instance-generator';
 import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
 import { templateMarkdown } from '$lib/ubumark';
 
-// Fenêtre 0..10 × 0..8 ; O(2 ; 2), A(8 ; 2), x = [OA)
+// Fenêtre 0..10 × 0..8 ; O(4 ; 3), A(10 ; 3), x = [OA) ; rapporteur de rayon 2,8
 const BLOCK = [
 	'```figure-a-completer',
 	'fenetre: 0 ; 10 ; 0 ; 8',
 	'verifier: angle AOy = 50',
 	'---',
-	'O = point(2, 2)',
-	'A = point(8, 2)',
+	'O = point(4, 3)',
+	'A = point(10, 3)',
 	'x = demidroite(O, A)',
 	'```'
 ].join('\n');
@@ -77,10 +77,10 @@ function tap(rect: SVGRectElement, x: number, y: number) {
 	click(rect, box.left + (x / 10) * box.width, box.top + ((8 - y) / 8) * box.height);
 }
 
-/** Toucher dans la direction faisant `deg` degrés avec [OA), à 3,5 unités de O */
+/** Toucher dans la direction faisant `deg` degrés avec [OA), à 2,5 unités de O */
 function tapAtDegree(rect: SVGRectElement, deg: number) {
 	const angle = (deg * Math.PI) / 180;
-	tap(rect, 2 + 3.5 * Math.cos(angle), 2 + 3.5 * Math.sin(angle));
+	tap(rect, 4 + 2.5 * Math.cos(angle), 3 + 2.5 * Math.sin(angle));
 }
 
 /**
@@ -142,11 +142,11 @@ async function posed() {
 	await expect
 		.poll(() => container.textContent)
 		.toContain('Touche où piquer le centre du rapporteur.');
-	tap(rect, 2.05, 2.05);
+	tap(rect, 4.05, 3.05);
 	await expect
 		.poll(() => container.textContent)
 		.toContain('Touche un point du côté, pour y poser la base du rapporteur.');
-	tap(rect, 6, 2.05);
+	tap(rect, 7, 3.05);
 	await expect.poll(() => all(container, 'rapporteur').length).toBe(1);
 	return { container, rect };
 }
@@ -164,7 +164,7 @@ describe('case « figure » : construire un angle au rapporteur', () => {
 		await aimAt(container, rect, 50);
 		tool(container, 'segment');
 		await expect.poll(() => all(container, 'rapporteur').length).toBe(0);
-		tap(rect, 2.05, 2.05);
+		tap(rect, 4.05, 3.05);
 		tapLastMark(container, rect);
 		await expect.poll(() => all(container, 'segment-eleve').length).toBe(1);
 		button(container, 'Valider').click();
@@ -175,7 +175,7 @@ describe('case « figure » : construire un angle au rapporteur', () => {
 		const { container, rect } = await posed();
 		await aimAt(container, rect, 130);
 		tool(container, 'segment');
-		tap(rect, 2.05, 2.05);
+		tap(rect, 4.05, 3.05);
 		tapLastMark(container, rect);
 		await expect.poll(() => all(container, 'segment-eleve').length).toBe(1);
 		button(container, 'Valider').click();
@@ -196,12 +196,12 @@ describe('case « figure » : construire un angle au rapporteur', () => {
 		byTestId(container, 'rapporteur-moins').click();
 		await expect.poll(() => degreeShown(container)).toBe('49');
 		// Sous la base : rien, et l'écran dit quoi faire
-		tap(rect, 4, 0.5);
+		tap(rect, 6, 1.5);
 		await expect
 			.poll(() => container.textContent)
 			.toContain('Touche du côté des graduations, ou touche Retourner.');
 		byTestId(container, 'rapporteur-retourner').click();
-		tap(rect, 4, 0.5);
+		tap(rect, 6, 1.5);
 		await expect.poll(() => all(container, 'repere-eleve').length).toBe(2);
 		button(container, 'Effacer').click();
 		button(container, 'Effacer').click();

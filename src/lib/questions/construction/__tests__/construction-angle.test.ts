@@ -74,9 +74,10 @@ function figure(
 	return [`fenetre: ${window}`, ...header, `verifier: ${verifier}`, '---', ...body].join('\n');
 }
 
-const O = { x: 2, y: 2 };
-const A = { x: 8, y: 2 };
-const BODY = ['O = point(2, 2)', 'A = point(8, 2)', 'x = demidroite(O, A)'];
+const O = { x: 4, y: 3 };
+const A = { x: 10, y: 3 };
+// Rapporteur de rayon 2,8 (0,35 de 8) : il tient en O des deux côtés de (OA)
+const BODY = ['O = point(4, 3)', 'A = point(10, 3)', 'x = demidroite(O, A)'];
 const ANGLE_50 = figure('angle AOy = 50', BODY);
 
 const repere = (deg: number, sens: 1 | -1 = 1, base: Position = A, r = 3): DrawnRepere => ({
@@ -140,7 +141,7 @@ describe('verifier: angle AOy = 50 — lecture', () => {
 describe('réponse : repere(vx;vy;ax;ay;r;deg;sens)', () => {
 	it('se lit et s’écrit', () => {
 		const text = serializeConstructionAnswer([repere(50)]);
-		expect(text).toBe('repere(2;2;8;2;3;50;1)');
+		expect(text).toBe('repere(4;3;10;3;3;50;1)');
 		expect(parseConstructionAnswer(text)).toEqual([repere(50)]);
 	});
 
@@ -156,10 +157,10 @@ describe('réponse : repere(vx;vy;ax;ay;r;deg;sens)', () => {
 
 	it('le repère est à r du centre, à deg degrés de la base, du côté de sens', () => {
 		const up = repereAt(repere(90));
-		expect(up.x).toBeCloseTo(2, 12);
-		expect(up.y).toBeCloseTo(5, 12);
+		expect(up.x).toBeCloseTo(4, 12);
+		expect(up.y).toBeCloseTo(6, 12);
 		const down = repereAt(repere(90, -1));
-		expect(down.y).toBeCloseTo(-1, 12);
+		expect(down.y).toBeCloseTo(0, 12);
 	});
 
 	it('un repère est construit si le centre et le point de la base le sont, ou la base sur un trait par le centre', () => {
@@ -168,7 +169,7 @@ describe('réponse : repere(vx;vy;ax;ay;r;deg;sens)', () => {
 		const of = (mark: DrawnRepere) => isBuiltMark(mark, constructionOf([mark], base, traits));
 		expect(of(repere(50))).toBe(true);
 		// Base touchée n'importe où sur [OA) : construite (choix libre sur un trait par le centre)
-		expect(of(repere(50, 1, { x: 5, y: 2 }))).toBe(true);
+		expect(of(repere(50, 1, { x: 7, y: 3 }))).toBe(true);
 		// Centre libre : rien
 		expect(of({ ...repere(50), vx: 3.1, vy: 4.2 })).toBe(false);
 		// Jamais un point construit : sa distance au centre est libre (revue)
@@ -244,19 +245,19 @@ describe('juge : angle AOy = 50', () => {
 	});
 
 	it('repère d’un rapporteur centré ailleurs qu’en O : sa distance est à l’œil, pas un côté (revue)', () => {
-		// O(2 ; 2), A(8 ; 3) : rapporteur en A, base vers O, 80°, r = AO → triangle isocèle, 50° pile en O
+		// O(4 ; 3), A(10 ; 4) : rapporteur en A, base vers O, 80°, r = AO → triangle isocèle, 50° pile en O
 		const oblique = figure('angle AOy = 50', [
-			'O = point(2, 2)',
-			'A = point(8, 3)',
+			'O = point(4, 3)',
+			'A = point(10, 4)',
 			'x = demidroite(O, A)'
 		]);
 		for (const sens of [1, -1] as const) {
 			const forged: DrawnRepere = {
 				kind: 'repere',
-				vx: 8,
-				vy: 3,
-				ax: 2,
-				ay: 2,
+				vx: 10,
+				vy: 4,
+				ax: 4,
+				ay: 3,
 				r: Math.hypot(6, 1),
 				deg: 80,
 				sens
@@ -270,11 +271,11 @@ describe('juge : angle AOy = 50', () => {
 
 	it('côté [OA) oblique, base touchée loin de A, retourné ou non → juste', () => {
 		const oblique = figure('angle AOy = 50', [
-			'O = point(2, 2)',
-			'A = point(8, 3)',
+			'O = point(4, 3)',
+			'A = point(10, 4)',
 			'x = demidroite(O, A)'
 		]);
-		const base = { x: 2 + 6 * 0.4, y: 2 + 1 * 0.4 };
+		const base = { x: 4 + 6 * 0.4, y: 3 + 1 * 0.4 };
 		for (const sens of [1, -1] as const) {
 			const mark = repere(50, sens, base, 3.4);
 			expect(judge(oblique, [mark, side(mark)])).toEqual({ status: 'correct' });
@@ -310,8 +311,8 @@ describe('erreurs d’auteur', () => {
 
 	it('O ou A invisible', () => {
 		const hidden = figure('angle AOy = 50', [
-			'O = point(2, 2, visible=faux)',
-			'A = point(8, 2)',
+			'O = point(4, 3, visible=faux)',
+			'A = point(10, 3)',
 			'x = demidroite(O, A)'
 		]);
 		expect(() => assertChecks(hidden)).toThrow(ConstructionAuthorError);
@@ -327,15 +328,46 @@ describe('erreurs d’auteur', () => {
 		expect(() => assertChecks(taken)).toThrow(/existe déjà/);
 	});
 
-	it('aucun des deux côtés possibles n’a la place dans la fenêtre', () => {
-		// Fenêtre basse : 1,5 au-dessus et au-dessous de O, il en faut 2
-		const corner = figure(
-			'angle AOy = 90',
-			['O = point(0.5, 1.5)', 'A = point(9, 1.5)', 'x = demidroite(O, A)'],
+	it('le rapporteur posé en O sort de la figure des deux côtés de (OA) (décision de David)', () => {
+		// Rayon 2,8 : O à 2 du bord gauche, le demi-rapporteur dépasse au-dessus comme au-dessous
+		const corner = figure('angle AOy = 50', [
+			'O = point(2, 2)',
+			'A = point(8, 2)',
+			'x = demidroite(O, A)'
+		]);
+		expect(() => assertChecks(corner)).toThrow(/sort de la figure/);
+	});
+
+	it('il ne tient que d’un côté : publiable, la correction de ce côté-là', () => {
+		// O(5 ; 2,5) : au-dessus, le demi-rapporteur tient ; au-dessous, il sort par le bas
+		const low = figure('angle AOy = 50', [
+			'O = point(5, 2.5)',
+			'A = point(9, 3)',
+			'x = demidroite(O, A)'
+		]);
+		expect(() => assertChecks(low)).not.toThrow();
+		const [line] = solutionLines(
+			checksOf(low),
+			constructionPositions(low),
 			[],
-			'0 ; 10 ; 0 ; 3'
+			constructionShapes(low)
 		);
-		expect(() => assertChecks(corner)).toThrow(/place/);
+		expect(line.y2).toBeGreaterThan(2.5);
+		// L'élève a tracé dessous (le rapporteur n'y tient pas, son côté peut y être) : la
+		// correction suit son tracé (revue de #2305)
+		const base = Math.atan2(0.5, 4);
+		const below = {
+			x: 5 + Math.cos(base - (50 * Math.PI) / 180),
+			y: 2.5 + Math.sin(base - (50 * Math.PI) / 180)
+		};
+		const [under] = solutionLines(
+			checksOf(low),
+			constructionPositions(low),
+			[segment({ x: 5, y: 2.5 }, below)],
+			constructionShapes(low)
+		);
+		expect(under.y2).toBeLessThan(2.5);
+		expect(under.y2).toBeGreaterThanOrEqual(0);
 	});
 });
 
@@ -393,7 +425,7 @@ describe('geste : rapporteur', () => {
 	});
 
 	it('toucher de l’autre côté de la base : rien ; Retourner : le repère y va', () => {
-		const below = { x: 4, y: 0 };
+		const below = { x: 6, y: 1 };
 		expect(addTap(posed(), below, 'rapporteur', R).objects).toEqual([]);
 		const flipped = flipProtractor(posed());
 		expect(flipped.protractor?.sens).toBe(-1);
@@ -403,7 +435,7 @@ describe('geste : rapporteur', () => {
 	it('‹ › : décalent le dernier repère d’un degré, bornés à 0 et 180 ; sans repère, en posent un', () => {
 		const first = nudgeMark(posed(), 1);
 		expect(first.objects).toEqual([repere(1)]);
-		const placed = addTap(posed(), { x: 2, y: 9 }, 'rapporteur', R);
+		const placed = addTap(posed(), { x: 4, y: 10 }, 'rapporteur', R);
 		expect(nudgeMark(placed, -1).objects).toEqual([repere(89)]);
 		expect(nudgeMark(nudgeMark(posed(), -1), -1).objects).toEqual([repere(0)]);
 		const end = { ...posed(), objects: [repere(180)] };
@@ -411,13 +443,13 @@ describe('geste : rapporteur', () => {
 	});
 
 	it('après Retourner, ‹ › posent un repère du nouveau côté (revue)', () => {
-		const placed = addTap(posed(), { x: 2, y: 9 }, 'rapporteur', R);
+		const placed = addTap(posed(), { x: 4, y: 10 }, 'rapporteur', R);
 		const next = nudgeMark(flipProtractor(placed), 1);
 		expect(next.objects).toEqual([repere(90), repere(1, -1)]);
 	});
 
 	it('Effacer : le dernier repère, puis le rapporteur ; changer d’outil le lève', () => {
-		const placed = addTap(posed(), { x: 2, y: 9 }, 'rapporteur', R);
+		const placed = addTap(posed(), { x: 4, y: 10 }, 'rapporteur', R);
 		const once = eraseLast(placed);
 		expect(once.objects).toEqual([]);
 		expect(once.protractor).toBeTruthy();
