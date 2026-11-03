@@ -473,8 +473,9 @@
 	{#if verdict === false}
 		{#each mistakes as mistake (mistake.text)}
 			<p class="text-sm">
-				<!-- L'espace avant la formule est écrite : Svelte retire celle du gabarit -->
-				{mistake.text}{#if mistake.latex !== undefined}{' '}<MathInline
+				<!-- Espace insécable écrite avant la formule : Svelte retire celle du gabarit,
+				     et « pas » ne se sépare pas de u⃗ en fin de ligne -->
+				{mistake.text}{#if mistake.latex !== undefined}&nbsp;<MathInline
 						expression={mistake.latex}
 						syntax="latex"
 					/>.{/if}
