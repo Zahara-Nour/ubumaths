@@ -6,22 +6,26 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR 1 `.dériver` ouverte._
+_Mis à jour le 2026-11-03, après #2316 ; #2329 ouverte._
 
-- **État** : lot 2 terminé (#2281 → #2310). **PR 1 `.dériver`** (étape 1 du découpage) : registre
-  sur la forme finale de f′, l'Atelier affiche la réponse du registre (§ PR 1 — `.dériver`).
-  Branche `fix/registre-deriver-reduite`. Rien de déployé.
-- **Prochaine action** : merger la PR 1, puis l'étape 2 du découpage : `.simplifier` S3
-  (`simplifier-01`, `-10`), `.résoudre` → S (registre et Atelier), puis `.intégrer`.
-- **En attente de David** : rien.
-- **Tranché** : option `unitChoice: 'school'` GARDÉE exprès (David, 2026-11-03 : « utile plus
-  tard ») — ne pas proposer de la retirer ; avant : Q9 EN ENTIER, A-D du lot 2, `decimal` en
-  LaTeX, `plafond-02` → 1000, Q24, `signes-06` — NE PAS reposer.
-- **Pièges** : `docs:check-a-jour` local ne voit que le COMMITÉ ; PR en conflit avec `main` = aucun
-  run de CI → `git merge origin/main` (sujet du commit de fusion en minuscule : commitlint) ;
-  limites connues : `.diff cos(60°)*x` (`ctx.input`), `2 ≈ 2` (caractère `≈`) mal lu, `(t>1)` →
-  faux, grandeur avec factorielles (`5 m * 25!/24!`), `20000!/19999!` gardé (prévision).
-- **Worktree / branche** : `../ubumaths-wt-registre-reference`, `fix/registre-deriver-reduite`.
+- **État** : PR 1 `.dériver` mergée (#2316). **#2329** (PR 1 bis, exponentielle commune sous une
+  barre de nombre + barre remise au tableau de variations) OUVERTE, 2 revues opus faites (2e :
+  « prêt »), CI du commit `a509853e8` en cours au moment du `/clear`. Rien de déployé.
+- **Prochaine action** : (1) `gh pr checks 2329` : vert → `gh pr merge 2329 --merge` (rouge
+  `wrapDynamicImport` au shard client = relancer le job). (2) Avant le merge si rapide, mineurs de
+  la 2e revue : commentaire de `factoredForSign` (`display.ts`) faux — `(1/2 − x/2)e^{−x}` DONNE
+  `(1−x)e^{−x}/2`, le corriger ou le fixer par un test ; plafond sur q dans `commonDenominator`
+  (`(x⁴/7 + x³/11 + x/13)eˣ` → `/1001`) ; sonder `requestedForm('factorisee')` d'une primitive
+  `(ax+b)e^{kx}` (`pedagogical-integration/pipeline.ts:474` passe par `factoredForSign`).
+  (3) Puis étape 2 du découpage : `.simplifier` S3 (`simplifier-01`, `-10`), `.résoudre` → S.
+- **En attente de David** : rien (`tem-01` = `(3x/2 + 3/2)eˣ`, confirmé le 2026-11-03).
+- **Tranché** : `unitChoice: 'school'` GARDÉE exprès — ne pas proposer de la retirer ; Q9 EN
+  ENTIER, A-D du lot 2, `decimal` en LaTeX, `plafond-02` → 1000, Q24, `signes-06` — NE PAS
+  reposer. Fraction devant ou division après : `(x²/3 + 2x/3)eˣ` ; tableau : `x(x + 2)eˣ/3`.
+- **Pièges** : `docs:check-a-jour` local ne voit que le COMMITÉ ; commitlint refuse « merge … »
+  (`chore: fusion …`) ; un nombre négatif est un `opposite(number)`, pas un `number` ; limites
+  connues : `.diff cos(60°)*x`, `2 ≈ 2`, `(t>1)`, `5 m * 25!/24!`, `20000!/19999!`.
+- **Worktree / branche** : `../ubumaths-wt-registre-reference`, `fix/registre-deriver-fraction`.
 
 ---
 
@@ -588,3 +592,34 @@ une valeur de 20000), écriture gardée.
   (`xe^{−2x}`, `x²eˣ`), `derivee-exponentielle.test.ts` (`xeˣ`).
 - Suites `mathAST` + `atelier` + `geometry-core` (36 535) et client `atelier` + `routes` (741)
   vertes ; `check:incremental` 0 erreur.
+- **Revue** (`code-reviewer` opus) : aucun bloquant. Ajouté : `derivation-chemins.test.ts`, bouton
+  et commande sur `xeˣ` (garde la forme affichée ; le branchement ne se distingue pas, étapes =
+  registre). Mergée : #2316. CI : intégration rouge héritée de #2311 (`safeGetSession` absent des
+  doublures), corrigée sur `main` par #2322 ; puis `wrapDynamicImport` au shard client 1, job relancé.
+
+## PR 1 bis — exponentielle commune sous une barre de nombre (2026-11-03)
+
+Relevée par la revue de #2316 : `.dériver (1/3)x²eˣ` → `2xeˣ/3 + x²eˣ/3` (l'exponentielle sous la
+barre n'est pas vue), alors que `0,5x²eˣ` → `(0,5x² + x)eˣ`. David : « oui » à la règle, puis page à
+cocher (https://claude.ai/artifact/XjzdKUR9M1SY1qdkVPVqXE, 11/11 relues) : famille A (coefficient
+devant) validée ; famille B (division après) écrite **comme A**, `(x²/3 + 2x/3)eˣ`, et non
+`\dfrac{(x² + 2x)eˣ}{3}` ; témoin `3xeˣ/2` aussi → `(3x/2 + 3/2)eˣ` (coquille `3x²/2` de David
+corrigée, à confirmer).
+
+- Corpus : `deriver-13` à `deriver-23` (dont 2 témoins inchangés). Rouges avant : 9 × 2 outils.
+- Code (`final-form.ts`) : `commonExponential` / `withoutFactor` voient à travers `a/q` (q nombre) ;
+  `withCommonExponential` distribue d'abord une somme divisée par un nombre ; le chemin du quotient
+  essaie la distribution sur le numérateur avant sa mise en facteur (`(u′·3 − u·0)/3²` ne devient
+  `…/3` qu'après `simplifiedQuotient`). Sans exponentielle commune, rien ne change
+  (`((x³+x)/3)′ = (3x² + 1)/3`).
+- Tests : `final-form-fraction.test.ts` (preuve rouge : 4/6 avec le `final-form.ts` de `main`, les
+  2 témoins verts) ; sonde avant/après sur l'oracle des dérivées (308 lignes) : **aucune**
+  différence. Suites `mathAST` + `atelier` + `questions` + `geometry-core` (42 643) vertes.
+- **Revue** (`code-reviewer` opus) : 2 importants, corrigés. (1) Fraction négative : tidy écrit
+  `−(a/3)` (nœud `opposite`), `-\frac{x^2e^x}{3}` tapé en LaTeX (questions) gardait sa barre alors
+  que la saisie de l'atelier la distribuait → `distributable` traverse le −. (2) Tableau de
+  variations : `factoredForSign` donnait `x(x/3 + 2/3)eˣ` → la barre commune ressort d'abord
+  (`overCommonDenominator`, `display.ts`) : `x(x + 2)eˣ/3`, règle D2 (numérateur factorisé,
+  dénominateur gardé). Mesuré : sur `main` ces cas n'étaient PAS factorisés au tableau
+  (`\dfrac{x²eˣ + 2xeˣ}{3}`), contrairement à ce que disait la revue. Preuves rouges : 2/12 et
+  5/7 ; sonde avant/après sur l'oracle (626 formes factorisées du tableau) : 0 différence.
