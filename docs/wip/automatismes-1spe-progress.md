@@ -6,18 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-03, PR du lot « Droites » ouverte (branche `feat/automatismes-droites`)._
+_Mis à jour le 2026-11-03, après #2333._
 
-- **État** : `buildSerie` fige une droite à tracer (repère vide / droite verte au corrigé) ; modèle neuf
-  « Lire l'équation réduite d'une droite sur un graphique » créé en **brouillon** en prod (`f5585668`) ;
-  script `scripts/create-automatismes-droites-1spe.ts` prêt, simulation verte (2 séries de 8) ·
-  **Prochaine action** : David lance l'écriture de la fiche (le classifieur du mode auto l'a refusée), puis
-  `regen-depuis-base.ts` + `compile-prod.mjs` + `debord.py`, mise à jour de `fiches-exercices.md` § 1, merge ·
-  **En attente de David** : lancer `pnpm tsx scripts/create-automatismes-droites-1spe.ts --publier` depuis le
-  worktree ; questions 2 à 4 (§ Questions ouvertes) · **Pièges en cours** : corrigé d'un tracé = 2 figures
-  (droite verte + figure de la correction du modèle) ; une formule maison `~…~` n'est pas nettoyée par
-  `cleanCoefficients` dans `buildSerie` (écrire la ligne en LaTeX à `{{if}}`) ·
-  **Worktree / branche** : `../ubumaths-wt-automatismes-1spe`, `feat/automatismes-droites`.
+- **État** : #2333 mergée — `buildSerie` fige une droite à tracer ; modèle « Lire l'équation réduite d'une
+  droite sur un graphique » en **brouillon** en prod (`f5585668`) ; script de la fiche « Automatismes :
+  droites (1) » sur `main`, simulation verte, **fiche pas encore écrite** ·
+  **Prochaine action** : après l'écriture, `regen-depuis-base.ts` + `compile-prod.mjs` + `debord.py`
+  (`fiches-exercices.md` § 2.6), relire les pages, compléter `fiches-exercices.md` § 1 ; puis lot
+  « Lectures graphiques » (§ Suite) · **En attente de David** : lancer depuis le dépôt principal
+  `pnpm tsx scripts/create-automatismes-droites-1spe.ts --publier` (refusé au classifieur du mode auto) ;
+  questions 2 à 4 (§ Questions ouvertes) ; publier `f5585668` ; garder ou non les 2 figures d'un corrigé
+  de tracé · **Pièges en cours** : une formule maison `~…~` n'est pas nettoyée par `cleanCoefficients`
+  dans `buildSerie` (écrire en LaTeX à `{{if}}`) ; `tracer: ?` n'arrive jamais dans une série (la
+  génération le refuse) · **Worktree / branche** : aucun.
 - Hors de ce chantier, même niveau : 18 fiches « Entraînement technique » / « Applications » de 1re spé en
   brouillon depuis septembre, à relire et publier par David (`docs/pratiques/fiches-exercices.md` § 1, § 3).
 
