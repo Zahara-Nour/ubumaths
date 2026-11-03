@@ -1,5 +1,6 @@
 /**
- * Atelier — écrire un angle comme sur la copie : `60°`, `60^\circ` (2026-10-19).
+ * Lire un angle écrit comme sur la copie : `60°`, `60^\circ` (2026-10-19 ; descendu de l’Atelier
+ * dans le registre le 2026-11-03, chantier `registre-reference`).
  *
  * L'unité degré existe déjà (`60[°]`, `src/lib/mathAST/units`, π/180 rad) : ce
  * module ne fait que LIRE les écritures de l'élève et les ramener à elle.
@@ -17,10 +18,10 @@
  * L'écriture de la RÉPONSE est l'autre moitié : `60°`, sans espace (la règle
  * typographique des angles), `60{}^{\circ}` en LaTeX (`degreeSignWritten`).
  *
- * @module atelier/degrees
+ * @module mathAST/cli/core/degrees
  */
 
-import { detectInputFormat } from '$lib/mathAST/cli/core/input-detector';
+import { detectInputFormat } from './input-detector';
 
 // =============================================================================
 // Constantes

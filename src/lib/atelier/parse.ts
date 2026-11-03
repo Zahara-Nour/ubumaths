@@ -33,7 +33,8 @@ import { argumentSemicolonsLatex, coupleOrSetRefusal, decimalCommaInput } from '
 import { objectKindOf, partsOf, specOf } from './construction-spec';
 import { hasMeasureCall, measureShapeRefusal, withoutMeasureCalls } from './measures-read';
 import { perfSwitches } from './perf-switches';
-import { strayDegreeRefusal, withDegreeUnits } from './degrees';
+import { strayDegreeRefusal, withDegreeUnits } from '$lib/mathAST/cli/core/degrees';
+import { withPiCommand } from '$lib/mathAST/cli/core/typed-line';
 import {
 	CURVE_NEEDS_XY,
 	CURVE_UNIT,
@@ -123,20 +124,6 @@ function genericFunctionsFor(extraNames: readonly string[] | undefined) {
 	const names = new Set<string>(DEFAULT_FUNCTION_NAMES);
 	for (const name of extraNames ?? []) names.add(name);
 	return { names: [...names], allowDerivatives: true, allowInverse: true };
-}
-
-/**
- * Le symbole `π` tapé tel quel, réécrit `\pi` — la constante, que les deux
- * parseurs connaissent. Sans quoi ils lisent une VARIABLE nommée « π » :
- * `f(x) = 2sin(π x)` ne s'évaluait pas, et sa dérivée l'affichait comme une
- * lettre. L'atelier conseille pourtant « \pi ou le symbole π » (#896).
- *
- * Le parseur maison lit lui aussi `π` comme la constante depuis le 2026-10-20
- * (lecture-grandeurs PR 4) ; la réécriture reste pour le parseur LaTeX. L'espace
- * qui suit évite de coller la commande à une lettre (`πx` → `\pi x`, pas `\pix`).
- */
-export function withPiCommand(text: string): string {
-	return text.replace(/π/g, '\\pi ');
 }
 
 /**

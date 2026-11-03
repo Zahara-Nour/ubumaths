@@ -20,7 +20,7 @@ import { PedagogicalSimplifyRenderer } from '$lib/mathAST/pedagogical-simplify/r
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { displayUnitsInLatex } from '$lib/mathAST/units/display';
 import type { MathNode } from '$lib/mathAST/types';
-import { degreeSignWritten } from './degrees';
+import { degreeSignWritten } from '$lib/mathAST/cli/core/degrees';
 import { astOf } from './parse';
 import { summaryOf } from './steps-summary';
 import {

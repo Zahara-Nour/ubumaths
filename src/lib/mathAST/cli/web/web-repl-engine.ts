@@ -13,6 +13,8 @@ import { createFunctionBinding, getFunctionNames, getFunction } from '../core/ev
 import type { EvalState } from '../core';
 import type { PipelineOptions } from '../core/pipeline';
 import { createDefaultRegistry } from '../commands';
+import { readTypedLine } from '../core/typed-line';
+import { remarkableValuesInTrigonometry } from '../core/angle-radians';
 import type { ReplExecutionResult, WebFunctionInfo } from './types';
 import {
 	toCustom,
@@ -225,6 +227,22 @@ function decimalFields(digits: ApproximateDigits | null): {
 }
 
 /**
+ * Les commandes qui ne lisent pas une expression : des valeurs (`.stats 1 ; 2`, `.linreg`) ou
+ * une unité cible (`.convert °` — le `°` y est l'unité, pas un angle à porter).
+ */
+const NOT_AN_EXPRESSION = /^\.(?:stats|linreg|convert)(?:\s|$)/i;
+
+/** Les commandes d'écriture : elles montrent l'expression telle que tapée, sans la calculer. */
+const WRITING_COMMANDS: ReadonlySet<string> = new Set([
+	'parse',
+	'tree',
+	'latex',
+	'custom',
+	'hash',
+	'normal'
+]);
+
+/**
  * Browser-safe REPL execution engine.
  *
  * Handles:
@@ -278,14 +296,29 @@ export class WebReplEngine {
 	}
 
 	private executeInput(input: string): ReplExecutionResult {
-		const trimmedInput = input.trim();
+		const trimmed = input.trim();
 
-		if (!trimmedInput) {
+		if (!trimmed) {
 			return {
 				success: true,
 				output: ''
 			};
 		}
+
+		// La ligne lue comme dans l'Atelier (degrés, `π`, refus de `pi`) : le registre est la
+		// référence commune (registre-reference, lot 2, PR 3). Pas pour une commande qui ne lit
+		// pas d'expression (`NOT_AN_EXPRESSION`)
+		const read = NOT_AN_EXPRESSION.test(trimmed)
+			? { ok: true as const, text: trimmed }
+			: readTypedLine(trimmed);
+		if (!read.ok) {
+			return {
+				success: false,
+				output: read.message,
+				error: { code: 'INPUT_REFUSED', message: read.message }
+			};
+		}
+		const trimmedInput = read.text;
 
 		// Handle dot-commands
 		if (trimmedInput.startsWith('.')) {
@@ -479,7 +512,12 @@ export class WebReplEngine {
 			const parseResult = parse(args, this.parseOptions());
 
 			if (parseResult.ast) {
-				ast = parseResult.ast;
+				// La valeur remarquable d'un angle mesuré (`.simplify cos(420°)` → 1/2) : le moteur
+				// ne calcule pas le cosinus d'une grandeur ; `cos(20°)` garde son angle. Pas pour
+				// une commande d'ÉCRITURE, qui montre l'expression telle que tapée
+				ast = WRITING_COMMANDS.has(cmdName)
+					? parseResult.ast
+					: remarkableValuesInTrigonometry(parseResult.ast);
 				cmdInput = args;
 			} else if (parseResult.errors.length > 0) {
 				// ⚠️ Un argument qui ne se lit pas comme une expression n'est une

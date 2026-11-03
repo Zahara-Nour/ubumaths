@@ -42,18 +42,6 @@ export const REGISTRE_CONNUES_FAUSSES: Readonly<Record<string, string>> = {
 	'plafond-05': 'sans-reponse : 1.01^365',
 	'plafond-06': 'sans-reponse : factorial(1000)',
 	'approche-11': 'sans-reponse : 0.3^1000',
-	// Lot 2 · degrés non lus, `pi` lu p·i, `π` tapé lu comme une lettre (rangés comme
-	// une expression à lettres depuis la décision D)
-	'remarquables-01': 'valeur : \\cos\\left( 60 ° \\right)',
-	'remarquables-02': 'valeur : \\sin\\left( 30 ° \\right) + 1',
-	'remarquables-03': 'valeur : \\tan\\left( 45 ° \\right)',
-	'remarquables-04': 'valeur : \\cos\\left( -60 ° \\right)',
-	'remarquables-08': 'accepte : \\cos\\left( \\dfrac{\\imaginaryI p}{3} \\right)',
-	'remarquables-12': 'valeur : \\cos\\left( 420 ° \\right)',
-	'racines-06': 'valeur : \\dfrac{5 π}{6}',
-	'approche-08': 'accepte : \\imaginaryI^{20} p',
-	'approche-09': 'valeur : π^{20}',
-	'approche-12': 'valeur : π',
 	// Lot 2 · décision C : une égalité tapée seule répond `\text{vrai}` / `\text{faux}`
 	'comparer-01': 'sans-reponse : true',
 	'comparer-05': 'sans-reponse : true',

@@ -45,7 +45,8 @@ import { simplifyExact } from '$lib/geometry-core/compute/geo-arithmetic';
 import { readListValue } from '$lib/statistics/read-value';
 import { intervalDomainOf, outsideIntervalMessage } from './interval';
 import { containsValue } from '$lib/mathAST/domain/algebra';
-import { displayName, PI_IN_LETTERS, PI_IN_LETTERS_MESSAGE } from './names';
+import { displayName } from './names';
+import { PI_IN_LETTERS, PI_IN_LETTERS_MESSAGE } from '$lib/mathAST/cli/core/typed-line';
 import {
 	cellsOf,
 	columnRangeOf,
