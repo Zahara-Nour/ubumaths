@@ -13,7 +13,8 @@ couvre:
 > énoncé (la notation pour l'auteur) : [notation-unites.md](../pratiques/notation-unites.md).
 > Décision : [ADR 0026](../adr/0026-grandeurs-un-contrat-et-l-espace.md). Vérifié contre le code
 > le 2026-10-21 (fin du chantier correction-cases-unite, #1543 → #1574,
-> [journal archivé](../archive/wip/correction-cases-unite-progress.md)).
+> [journal archivé](../archive/wip/correction-cases-unite-progress.md)) ; unité du résultat (une
+> unité tapée, durées en h-min-s) le 2026-11-03 (chantier registre-reference).
 
 ## Pourquoi un contrat
 
@@ -29,7 +30,7 @@ octobre). Le symptôme le plus visible : Calcul et `/cas` répondaient `10[km]/1
 **Une grandeur se lit en arbre (nœud `unit`), se calcule par `tidy`, s'écrit depuis l'arbre.**
 
 ```
-écriture ──lire──▶ arbre avec nœud `unit` ──tidy (unité écrite d'abord)──▶ arbre ──toLatex──▶ 5~\unit{km} ──displayUnitsInLatex──▶ 5~\mathrm{km}
+écriture ──lire──▶ arbre avec nœud `unit` ──tidy (une unité tapée)──▶ arbre ──toLatex──▶ 5~\unit{km} ──displayUnitsInLatex──▶ 5~\mathrm{km}
 ```
 
 ### Lire — la seule étape qui dépend du contexte
@@ -94,11 +95,30 @@ composée est rangée juxtaposée (`2\unit{h}30\unit{min}` ; avant la PR 5, `(2[
 relu) et revient dans le champ écrite `2 h 30 min`, sans `+` (`fieldLatexOf`) : elle se relit après retouche (restes du lot C, 2026-10-13), seule ou prise dans
 un calcul (`(1 h + 30 min) × 2`, dont le × reste un × après retouche). Le champ écrit la virgule de l'élève (`2{,}5 km`, pas `2.5`) ; une unité qu'il montre (`\operatorname{\mathrm{m}}`) se relit en unité, même après une puissance (`10^3 m`).
 
-### Calculer — `tidy`, unité écrite d'abord
+### Calculer — `tidy`, une unité tapée
 
-Un seul calculateur : **`tidy(ast, { unitChoice: 'written' })`**, en rationnels exacts
-(`mathAST/units/exact.ts`). L'unité du résultat est celle que l'auteur ou l'élève a écrite :
-`10[km]/1[h]` → 10 km/h, `7[mm]*5[mm]` → 35 mm², `90[km/h]*2[h]` → 180 km, `3[h]/1[min]` → 180.
+Un seul calculateur : **`tidy`** (`unitChoice: 'written'`, le défaut depuis le 2026-11-02), en
+rationnels exacts (`mathAST/units/exact.ts`). **Une seule règle de l'unité du résultat**, la même
+pour `tidy` (donc `simplify` et le registre), `{{eval}}` et l'Atelier (David, 2026-11-02, cas
+validés un à un le 2026-11-03) :
+
+- le résultat s'écrit dans une des unités **tapées** dans le calcul, celle où la valeur s'écrit
+  avec le **moins de chiffres** (zéros compris : `0,001` = 4, `5000` = 4) ; à égalité, la plus
+  petite unité : `12[km]+500[m]` → 12,5 km, `2000[m]+3[km]` → 5 km (les deux ordres),
+  `1[m]+1[km]` → 1001 m, `12000[m]` → 12000 m (jamais de conversion non demandée : `.convertir`) ;
+- produit ou quotient : une unité tapée par dimension de base, ou l'unité composée tapée :
+  `7[mm]*5[cm]` → 3,5 cm², `2[cm]*3[mm]` → 60 mm², `3[kW]*2[h]` → 6 kW·h, `10[km]/1[h]` → 10 km/h,
+  `3[h]/1[min]` → 180 ;
+- sans écriture décimale finie : la fraction la plus courte (`(1/3)[km]+1[m]` → 1003/3 m) ;
+- une **durée** où au moins deux de h, min, s sont tapées, juste en secondes : en h-min-s
+  (`2[h]+30[min]` → 2 h 30 min, `2*(1[h] 30[min])` → 3 h, `1[h]-59[min]` → 1 min), au niveau de
+  tête seulement (`(2[h]+30[min])/1[s]` → 9000) ; l'arbre est la somme juxtaposée
+  (`tidy/duration.ts`). `{{eval}}` l'écrit `{2[h]}{30[min]}` (comme `;hms`), sauf négative ou en
+  `;sci` (une grandeur) ; `durations: 'single'` demande UNE grandeur (calcul tapé par l'élève) ;
+- un terme à lettre impose son unité à la somme (`x[km]+500[m]` → x km + 0,5 km).
+
+Le mode `unitChoice: 'school'` (la plus grande unité scolaire où la valeur est ≥ 1) reste une
+option de `tidy` ; plus aucun appelant ne le demande.
 
 | Qui                    | Entrée                                                                                                           |
 | ---------------------- | ---------------------------------------------------------------------------------------------------------------- |
@@ -114,10 +134,11 @@ Ce que fait `computeQuantity` en plus de `tidy` :
   longueur et une durée. »), produit de températures, `2*20[°C]` compris (une température dont la
   valeur est un produit sans parenthèses, `isMultipliedTemperature`) ; les octets et les bits sont « une quantité
   de données », un débit (`Mbit/s`) « un débit » (`DIMENSION_NAMES`, `cli/quantities.ts`) ;
-- une unité tapée par l'élève l'emporte quand la valeur y tombe juste (`3[kW]*2[h]`) ;
-- durée composée gardée (`2 h 30 min + 45 min` → 3 h 15 min) ; `.convertir` la répète telle
+- l'unité du résultat est celle de `tidy`, sans second choix par-dessus (2026-11-02) ;
+- durée en h-min-s reprise de `tidy` (`2 h 30 min + 45 min` → 3 h 15 min), la grandeur gardée pour
+  `.convertir` étant celle d'UNE unité (`durations: 'single'`) ; `.convertir` répète la durée telle
   quelle à gauche (`2 h 30 min = 150 min`, pas `2,5 h`) : l'issue la garde dans `written` ;
-  unité dérivée nommée en égalité (`19.62 m.kg/s^2 = 19.62 N`) ;
+  unité dérivée nommée en égalité (`6 kW·h = 21600000 J`, `6 kg·m/s² = 6 N`) ;
 - ce que `tidy` ne réduit pas (racine, valeur absolue, fonction d'un angle) passe par un repli
   exact en unités de base ;
 - mode décimal : la règle du bouton ≈ (4 décimales, « = » quand c'est exact), comme les nombres.
@@ -158,6 +179,11 @@ est lue à part (`\unit{…}` + parseur d'unités) : c'est un calculateur hors d
 mais valeur et égalité suivent désormais `tidy` (rationnels exacts). Le catalogue des unités et les opérations de base viennent de `mathAST/units`
 (`resolveUnit`, conversions) : `questions/units` n'en garde plus de copie depuis le lot D.
 
+Un attendu en h-min-s (`{2[h]}{58[min]}`, écrit par `{{eval}}`) se lit comme UNE durée dans sa plus
+petite unité (`178[min]`, `singleExpectedDuration`, `composite-duration.ts`), pour la correction
+comme pour les touches d'unité du clavier (`keyboard-units.ts`) ; l'élève peut répondre « 2 h 58 min »,
+« 178 min » ou toute autre écriture juste (oracle : 0 verdict changé, 2026-11-03).
+
 Garde-fou : l'oracle `oracle-cases-unite.test.ts` fige le verdict de ~1 700 réponses typiques
 sur les 25 modèles publiés à case à unité (copiés de la production dans
 `tests/fixtures/correction-cases-unite/`). La production ne garde aucune réponse d'élève de
@@ -191,6 +217,8 @@ grandeur attendue (`5ms` pour des m·s) — décision de David du 2026-10-19.
   (les cas du bug « 10 m/s »).
 - `src/lib/atelier/__tests__/grandeurs-calcul.test.ts`, `grandeurs-ecriture.test.ts` — Calcul,
   écriture naturelle et durées composées.
-- `src/lib/mathAST/tidy/__tests__/tidy-written-unit.test.ts` — `tidy`, unité écrite d'abord.
+- `src/lib/mathAST/tidy/__tests__/tidy-written-unit.test.ts` — `tidy`, une unité tapée.
+- `src/lib/atelier/__tests__/unite-du-resultat.test.ts` — la même unité dans `tidy`, `{{eval}}` et
+  l'Atelier (les cas validés le 2026-11-03), durées en h-min-s.
 - `src/lib/questions/generator/__tests__/eval-grandeurs.test.ts` — `{{eval}}`.
 - `src/lib/questions/units/__tests__/` — la correction des cases à unité (README du dossier).

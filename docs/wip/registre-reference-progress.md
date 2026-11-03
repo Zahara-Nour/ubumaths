@@ -6,23 +6,20 @@ status: PR 0 mergée (#2163), lot 2 en cours (A-D tranchées)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-02, chantier « unité du résultat » ouvert (aucune PR encore)._
+_Mis à jour le 2026-11-03, PR « unité du résultat » en cours (branche `fix/tidy-unite-ecrite`)._
 
-- **État** : la règle de l'unité du résultat est REPRISE À ZÉRO (David : « ne te base pas sur ce que
-  j'ai validé »). Principes, règle et 4 recos validés (§ Unité du résultat). Prototype commité en
-  local (`c587a6555`, non poussé) : `tidy` choisit parmi les unités tapées (moins de chiffres) ;
-  `expressedInWritten` court-circuité. Banc fixtures : 5/200 tirages changent (affichage seul) ;
-  oracle cases à unité : 0 verdict changé sur 1 724.
-- **Prochaine action** : lire les avis de la page à cocher
-  (https://claude.ai/artifact/ACdgknQzoNEgTY1UTWkKJR, collection `avis`, 34 fiches), puis PR
-  (règle durées h-min-s dans `tidy`, tests réécrits, nouvelle branche).
-- **En attente de David** : ses avis sur la page à cocher.
+- **État** : 34/34 fiches validées « ok » (page à cocher, 2026-11-03). Règle codée : une unité
+  tapée (moins de chiffres) + durées en h-min-s au niveau de tête (`tidy/duration.ts`) ; la
+  correction lit un attendu h-min-s (`singleExpectedDuration`) : oracle 0 verdict changé. Doc à jour.
+- **Prochaine action** : revue (code-reviewer opus : mathAST + correction) → PR → CI → merge.
+- **En attente de David** : retirer les sondes non suivies `src/lib/mathAST/__sonde__/` (règle 0) ;
+  garder ou retirer le mode `unitChoice: 'school'` (plus aucun appelant).
 - **Tranché** : voir § Unité du résultat ; avant : Q9 EN ENTIER, A-D du lot 2, `decimal` en LaTeX,
   `plafond-02` → 1000, Q24, `signes-06` — NE PAS reposer.
-- **Pièges** : la branche a été rebasée sur `origin/main` → pousser sur une NOUVELLE branche
-  (`fix/tidy-unite-ecrite`), pas de push forcé ; zsh ne découpe pas `$FILES` ; sonde = vitest
-  jetable sous `src/lib/mathAST/__sonde__/` (à retirer) ; `deploy-prod.test.ts` rouge en local.
-- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `refactor/registre-reference`.
+- **Pièges** : `rebase` = liste `ask` → nouvelle branche + cherry-pick ; sous-expressions de `tidy`
+  toujours en `durations: 'single'` (sinon `valueIn` casse) ; budget 20 ms de tabuler : rouge sous
+  charge seulement ; zsh ne découpe pas `$FILES`.
+- **Worktree / branche** : `../ubumaths-wt-registre-reference` · `fix/tidy-unite-ecrite`.
 
 ---
 
@@ -440,3 +437,18 @@ Sonde jetable (vitest sous `src/`, `produceRegistre` / `produceAtelier`), 25 lig
   tirages) : 0 différence. Total : 35 modèles à unités, 5 tirages changent (les 3 modèles ci-dessus).
 - **Page à cocher** publiée : 5 cas réels, 24 cas types (avant : tidy / {{eval}} / Atelier
   mesurés, souvent en désaccord), 5 durées (prévues, pas codées).
+
+## Unité du résultat — avis et PR (2026-11-03)
+
+- **Avis** : 34/34 « ok », aucun commentaire (collection `avis`).
+- **Durées** : `typesDurations` lit les unités tapées dans TOUT le calcul (`2*(1[h] 30[min])` → 3 h,
+  comme l'Atelier avant) ; une partie suffit (`1[min]+3540[s]` → 1 h) ; négative : `-(2[h] 30[min])`
+  sans parenthèses. `{{eval}}` : `{2[h]}{30[min]}` (format de `;hms`), négative ou `;sci` → une grandeur.
+- **Mesure qui a changé le plan** : l'attendu h-min-s rendait FAUSSES toutes les réponses justes des
+  4 modèles de durées (oracle : 160 verdicts ; corpus 462-468 rouge). Correctif : la correction et
+  le clavier lisent l'attendu comme une durée dans sa plus petite unité. Après : 1 724/1 724 verdicts
+  inchangés (sonde), oracle régénéré (1 647 saisies communes : verdict ET message identiques).
+- **Portée réelle** : avec les durées, les 4 modèles de durées (0bb7a4ca, 2f3b42a3, 75956b22,
+  90aaf9dd) changent l'AFFICHAGE de l'attendu à presque chaque tirage (34 attendus sur 200), pas
+  seulement les 5 du banc d'avant ; verdicts inchangés.
+- **Perf** : banc `tidy` (9 expressions × 3000) égal à `main` une fois la machine calmée.

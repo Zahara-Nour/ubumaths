@@ -154,7 +154,9 @@ Le signe fait partie de la température (décisions de David du 2026-10-20) : `-
 
 ## Calculer avec des grandeurs
 
-**Un seul calculateur** : `tidy` avec `unitChoice: 'written'` (l'unité écrite d'abord). Il sert
+**Un seul calculateur** : `tidy` (`unitChoice: 'written'`, une unité **tapée** : celle où la valeur
+a le moins de chiffres, à égalité la plus petite ; règle détaillée dans
+[grandeurs.md](../systeme/grandeurs.md#calculer--tidy-une-unité-tapée), 2026-11-02). Il sert
 `{{eval}}` (`evaluateQuantity`, `src/lib/mathAST/eval/evaluate-with-modifiers.ts`) et, depuis le
 2026-10-11, Calcul (`src/lib/mathAST/cli/quantities.ts` ; phase 0
 `docs/archive/wip/grandeurs-phase0.md`, lot A). L'ancien `evaluateWithUnits` est retiré : il écrivait l'unité
@@ -163,15 +165,14 @@ sans son coefficient (`10[km]/1[h]` → « 10 m/s »).
 | Calcul              | Réponse                                                           |
 | ------------------- | ----------------------------------------------------------------- |
 | `10[km]/1[h]`       | `10 km/h`                                                         |
-| `3[h]+20[min]`      | `200 min`                                                         |
+| `3[h]+20[min]`      | `3 h 20 min` (`{{eval}}` : `{3[h]}{20[min]}`)                     |
+| `5[km]+3[m]`        | `5003 m` (4 chiffres partout : la plus petite unité)              |
 | `3[h]/1[min]`       | `180` (même dimension : un nombre)                                |
 | `10[km]/3`          | `10/3 km` (exact)                                                 |
 | `9.81[m/s^2]*2[kg]` | `19.62 m.kg/s^2 = 19.62 N` (Calcul : l'unité dérivée nommée suit) |
 | `5[m]+3[s]`         | « On ne peut pas ajouter une longueur et une durée. »             |
 
-Calcul ajoute deux règles (revue du lot A) : une **unité tapée** par l'élève (seule,
-en puissance, ou deux combinées) l'emporte quand la valeur y tombe juste (`3[kW]*2[h]` →
-`6 kW.h = 21600000 J`) ; ce que `tidy` ne réduit pas (racine, valeur absolue, fonction d'un angle,
+Calcul ajoute l'unité dérivée nommée à côté (`3[kW]*2[h]` → `6 kW.h = 21600000 J`) ; ce que `tidy` ne réduit pas (racine, valeur absolue, fonction d'un angle,
 comparaison) passe par un repli exact, unités ramenées à leurs unités de base
 (`sqrt(9[km^2])` → `3 km`, `sin(30[°])` → `1/2`).
 
@@ -234,4 +235,4 @@ Tests :
 - `src/lib/mathAST/parser/custom/__tests__/unite-terme.test.ts` : l'unité multiplie le terme, refus E7 et `[m]`, espaces entre chiffres, `π`, températures, rendu inchangé.
 - `src/lib/mathAST/parser/custom/__tests__/multiplication-symbols.test.ts` : `×`, `·`, `⋅` lus `*`, et `·`/`⋅` lus `.` dans une unité.
 
-Vérifié contre le code le 2026-10-20.
+Vérifié contre le code le 2026-10-20 ; calcul avec des grandeurs le 2026-11-03.

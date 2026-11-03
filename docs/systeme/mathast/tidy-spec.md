@@ -443,6 +443,13 @@ la convention de `evaluateWithUnits`.
 
 ### D.3 Affichage (`tidy`, étape 10) — décision 3
 
+> **Depuis le 2026-11-02, ce choix scolaire n'est plus le défaut** : `tidy` écrit une grandeur
+> dans une unité TAPÉE (`unitChoice: 'written'`, la valeur avec le moins de chiffres, à égalité la
+> plus petite unité ; durées en h-min-s quand au moins deux de h, min, s sont tapées). Règle et
+> exemples : [grandeurs.md](../grandeurs.md#calculer--tidy-une-unité-tapée). Ce qui suit décrit
+> l'option `unitChoice: 'school'`, que plus aucun appelant ne demande, et le repli de
+> `'written'` quand aucune unité tapée ne convient.
+
 Une grandeur **numérique** est écrite dans l'unité qui place sa valeur entre
 0,1 et 1000 (`selectBestUnit`, mode `best`), en **décimal** :
 
@@ -521,9 +528,15 @@ Cas limites :
   réduction d'une fraction de sommes, §A.1). Une relation est racontée entière
   (`3x+2x=5 → 5x=5`). Un enregistreur vaut pour **un** appel ; le résultat ne
   dépend jamais de sa présence. Spec : `docs/archive/wip/tidy-voix-phase0.md`.
-- `options.unitChoice` : `'school'` (défaut) ou `'written'` — l'unité écrite
-  d'abord, si la valeur y tombe juste (`7 mm · 5 cm → mm²`, `120 km / 2 h →
-km/h`), 2026-09-27.
+- `options.unitChoice` : `'written'` (défaut depuis le 2026-11-02) — une unité
+  tapée, celle où la valeur a le moins de chiffres, à égalité la plus petite
+  (`7 mm · 5 cm → 3,5 cm²`, `120 km / 2 h → 60 km/h`, `5 km + 3 m → 5003 m`) ;
+  ou `'school'` — §D.3 (2026-09-27).
+- `options.durations` : `'hms'` (défaut) — une durée où au moins deux de h,
+  min, s sont tapées s'écrit en h-min-s, au niveau de tête seulement
+  (`2[h]+30[min] → 2[h] 30[min]`, somme juxtaposée, `tidy/duration.ts`) ;
+  `'single'` — UNE grandeur (`2.5[h]`). Les sous-expressions reçoivent
+  toujours `'single'` : `(2[h]+30[min])/1[s] → 9000`.
 - `options.typeCtx` : les hypothèses déclarées sur les variables (ADR 0012) ;
   « x non nul » ou « x > 0 » permet `x/x → 1`, `x²/x → x` (S3, 2026-10-23).
 - `options.domain` : des expressions dont le domaine de définition est acquis
@@ -632,6 +645,8 @@ des termes notamment).
 - 2026-09-20 : phase 0, décisions fondatrices (§0), contrat (§A).
 - 2026-09-21 : narration (G.1).
 - 2026-09-27 : `unitChoice: 'written'`.
+- 2026-11-02 : `unitChoice: 'written'` par défaut, une unité tapée (moins de
+  chiffres) ; durées en h-min-s (`durations`) ; chantier registre-reference.
 - 2026-10-06 : ordre des sommes de degré 1, signe des sommes toutes négatives.
 - 2026-10-12 : rationnel en tête, forme a + ib (étape 8).
 - 2026-10-20 : fraction de sommes irréductible (§A.1) ; document réécrit
