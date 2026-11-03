@@ -1,5 +1,5 @@
 /**
- * Droite graduée : crochets et demi-droite à l'écran (chantier `docs/wip/demi-droite-progress.md`)
+ * Droite graduée : crochets et demi-droite à l'écran (chantier `docs/archive/wip/demi-droite-progress.md`)
  *
  * Rendu dans <main> : décor réel de l'application (`app.css` y impose des règles).
  */

@@ -230,7 +230,7 @@ export function computeLineExtents(
 }
 
 // =========================================================================
-// CROCHETS (extrémités des segments, chantier `docs/wip/demi-droite-progress.md`)
+// CROCHETS (extrémités des segments, chantier `docs/archive/wip/demi-droite-progress.md`)
 // =========================================================================
 
 /**

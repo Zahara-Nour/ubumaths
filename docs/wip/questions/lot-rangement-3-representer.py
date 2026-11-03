@@ -144,7 +144,7 @@ w(f"""-- =======================================================================
 -- Bilan : {N_DEPLACES} rangé sur un nœud, {N_NIVEAUX} niveau changé, {N_RETIRES} tag retiré, {N_POSES} posé. Aucun
 -- statut ne change (1 brouillon). Le contenu ne change pas : `updated_at` est PRÉSERVÉ.
 -- ============================================================================
--- Phase 0 validée par David le 2026-11-03 (journal docs/wip/demi-droite-progress.md § PR 4). Le
+-- Phase 0 validée par David le 2026-11-03 (journal docs/archive/wip/demi-droite-progress.md § PR 4). Le
 -- brouillon a été créé le 2026-11-03 par scripts/create-questions.ts (scripts/questions/3-representer/,
 -- #2328), qui ne pose ni nœud ni tag. Fichier GÉNÉRÉ par docs/wip/questions/lot-rangement-3-representer.py
 -- (relevé de la prod du 2026-11-03) — ne pas éditer à la main.

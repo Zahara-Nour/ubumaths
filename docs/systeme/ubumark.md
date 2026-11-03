@@ -304,7 +304,7 @@ Bleue:1/2          ```                  end: 5
 Branches imbriquées par indentation (`Pile:1/2` puis `  Face:1/2`), options `root:`, `outcomes:`,
 `intersection:` : `src/lib/ubumark/__tests__/parser/probability-tree-parser.test.ts`.
 
-**Segments, demi-droites, crochets** (chantier [demi-droite](../wip/demi-droite-progress.md), 3-014,
+**Segments, demi-droites, crochets** (chantier [demi-droite](../archive/wip/demi-droite-progress.md), 3-014,
 2-251) — `src/lib/ubumark/__tests__/number-line/number-line-demi-droite.test.ts`,
 `NumberLine-crochets.svelte.test.ts`, `number-line-typst.test.ts` : `segments: [-2, 1] vert, ]2, +inf[`.
 Borne infinie : `-inf` / `+inf` (`inf` seul = `+inf`, aussi `∞`, `\infty`) ; le nœud porte
@@ -348,7 +348,7 @@ actif (`aria-valuetext` « point B sur 7 »). Correction : une phrase par point 
 sur 9. », « Tu n'as pas placé C. ») ; cadre rouge dès qu'un point est faux, vert quand tous sont
 justes ; la droite juste avec tous les points, nommés, en vert.
 
-**Droite à représenter** (chantier [demi-droite](../wip/demi-droite-progress.md), PR 2, 3-014, 2-251) —
+**Droite à représenter** (chantier [demi-droite](../archive/wip/demi-droite-progress.md), PR 2, 3-014, 2-251) —
 `src/lib/ubumark/__tests__/number-line/number-line-representer.test.ts`,
 `NumberLineRepresenter.svelte.test.ts` : `representer: [2, +inf[` (demi-droite) ou `[-1, 3[` (intervalle
 borné) dans un ` ```line ` (nœud : `representer`, `NumberLineRepresenter` : `bounded` et `interval`, un

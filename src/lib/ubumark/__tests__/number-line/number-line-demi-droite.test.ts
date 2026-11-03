@@ -1,5 +1,5 @@
 /**
- * Demi-droite et crochets sur la droite graduée (chantier `docs/wip/demi-droite-progress.md`)
+ * Demi-droite et crochets sur la droite graduée (chantier `docs/archive/wip/demi-droite-progress.md`)
  *
  * `segments: [2, +inf[` : borne infinie, trait jusqu'au bout de la droite ; extrémités
  * dessinées en crochets (notation française), plus en disques.
