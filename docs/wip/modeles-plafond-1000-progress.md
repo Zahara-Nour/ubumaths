@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, après #2369._
+_Mis à jour le 2026-11-04, après le `deploy:prod` 0.69.0._
 
-- **État** : correctif mergé (#2369, `651a1e3bf`) : `readAllRows` sur les 7 lieux. **Pas encore en prod.**
-- **Prochaine action** : `deploy:prod` (sur demande de David), puis la ligne #2369 de `verifications-manuelles.md` ; ensuite versement et archivage du journal.
-- **En attente de David** : `deploy:prod`.
+- **État** : correctif (#2369) **en prod** depuis la 0.69.0 (`production` → `d1f1e55bb`, Vercel Ready).
+- **Prochaine action** : ligne #2369 de `verifications-manuelles.md` sur chiph.re ; ensuite versement et archivage du journal.
+- **En attente de David** : la vérification manuelle #2369.
 - **Suite possible (PR de ménage, non décidée)** : migrer les 9 boucles de pagination recopiées vers `readAllRows` (liste dans « Décisions »).
 - **Worktree / branche** : supprimés après le merge.
 
