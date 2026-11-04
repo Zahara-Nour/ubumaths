@@ -89,6 +89,7 @@ export async function toDbSeriesMany(
 		description: row.description,
 		grade: row.grade,
 		items: read.get(row.id)?.items ?? [],
+		unresolved_lines: read.get(row.id)?.unresolved ?? 0,
 		created_by: row.created_by,
 		created_at: row.created_at,
 		updated_at: row.updated_at

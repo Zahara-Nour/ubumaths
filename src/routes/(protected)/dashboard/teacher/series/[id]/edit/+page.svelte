@@ -114,6 +114,15 @@
 				<Card.Title>Questions</Card.Title>
 			</Card.Header>
 			<Card.Content>
+				{#if (initial.unresolved_lines ?? 0) > 0}
+					{@const lost = initial.unresolved_lines ?? 0}
+					<p class="mb-3 text-sm text-muted-foreground" role="status" data-lignes-perdues>
+						{lost} ancienne{lost > 1 ? 's' : ''} question{lost > 1 ? 's' : ''} de cette série n'existe{lost >
+						1
+							? 'nt'
+							: ''} plus : l'enregistrer la{lost > 1 ? 's' : ''} retirera.
+					</p>
+				{/if}
 				{#if items.length === 0}
 					<p class="text-sm text-destructive">Une série garde au moins un modèle.</p>
 				{:else}

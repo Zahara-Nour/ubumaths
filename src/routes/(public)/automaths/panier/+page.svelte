@@ -308,59 +308,62 @@
 				</div>
 			{/if}
 
-			<!-- Action buttons -->
-			<Card.Root>
-				<Card.Header>
-					<Card.Title>Actions disponibles</Card.Title>
-					<Card.Description>
-						{totalInstances} question{totalInstances > 1 ? 's' : ''} au total ({cartItems.length}
-						modèle{cartItems.length > 1 ? 's' : ''})
-					</Card.Description>
-				</Card.Header>
-				<Card.Content class="grid gap-4 {isTeacher ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}">
-					{#if isTeacher}
-						<Button
-							onclick={handleOpenSaveSeries}
-							class="h-auto flex-col gap-2 py-6"
-							variant="default"
-						>
-							<Save class="h-6 w-6" />
-							<div class="text-center">
-								<div class="font-semibold">Enregistrer comme série</div>
-								<div class="text-xs font-normal opacity-80">
-									Pour en faire un contrôle pour vos {lore.entities.class}s
+			<!-- Actions : seulement une fois les modèles chargés (un ancien panier attend
+			     encore les siens : enregistrer ou partager les oublierait) -->
+			{#if questionTemplatesCache.isLoaded}
+				<Card.Root>
+					<Card.Header>
+						<Card.Title>Actions disponibles</Card.Title>
+						<Card.Description>
+							{totalInstances} question{totalInstances > 1 ? 's' : ''} au total ({cartItems.length}
+							modèle{cartItems.length > 1 ? 's' : ''})
+						</Card.Description>
+					</Card.Header>
+					<Card.Content class="grid gap-4 {isTeacher ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}">
+						{#if isTeacher}
+							<Button
+								onclick={handleOpenSaveSeries}
+								class="h-auto flex-col gap-2 py-6"
+								variant="default"
+							>
+								<Save class="h-6 w-6" />
+								<div class="text-center">
+									<div class="font-semibold">Enregistrer comme série</div>
+									<div class="text-xs font-normal opacity-80">
+										Pour en faire un contrôle pour vos {lore.entities.class}s
+									</div>
 								</div>
+							</Button>
+						{/if}
+
+						<Button onclick={handleExportPDF} class="h-auto flex-col gap-2 py-6" variant="outline">
+							<FileDown class="h-6 w-6" />
+							<div class="text-center">
+								<div class="font-semibold">Export PDF</div>
+								<div class="text-xs font-normal opacity-80">Imprimer les questions</div>
 							</div>
 						</Button>
-					{/if}
 
-					<Button onclick={handleExportPDF} class="h-auto flex-col gap-2 py-6" variant="outline">
-						<FileDown class="h-6 w-6" />
-						<div class="text-center">
-							<div class="font-semibold">Export PDF</div>
-							<div class="text-xs font-normal opacity-80">Imprimer les questions</div>
+						<Button onclick={handleStartTest} class="h-auto flex-col gap-2 py-6">
+							<Rocket class="h-6 w-6" />
+							<div class="text-center">
+								<div class="font-semibold">Commencer un test</div>
+								<div class="text-xs font-normal opacity-80">Révision ou quiz</div>
+							</div>
+						</Button>
+					</Card.Content>
+					<Card.Footer class="flex-col items-stretch gap-2 border-t pt-6">
+						<div>
+							<p class="font-semibold">Partager cette série</p>
+							<p class="text-xs text-muted-foreground">
+								Sans forme, le lien met la série dans le panier de qui l'ouvre ; avec une forme, il
+								la lance directement.
+							</p>
 						</div>
-					</Button>
-
-					<Button onclick={handleStartTest} class="h-auto flex-col gap-2 py-6">
-						<Rocket class="h-6 w-6" />
-						<div class="text-center">
-							<div class="font-semibold">Commencer un test</div>
-							<div class="text-xs font-normal opacity-80">Révision ou quiz</div>
-						</div>
-					</Button>
-				</Card.Content>
-				<Card.Footer class="flex-col items-stretch gap-2 border-t pt-6">
-					<div>
-						<p class="font-semibold">Partager cette série</p>
-						<p class="text-xs text-muted-foreground">
-							Sans forme, le lien met la série dans le panier de qui l'ouvre ; avec une forme, il la
-							lance directement.
-						</p>
-					</div>
-					<SeriesLinkShare items={cartItems} canMakeQr={isTeacher} />
-				</Card.Footer>
-			</Card.Root>
+						<SeriesLinkShare items={cartItems} canMakeQr={isTeacher} />
+					</Card.Footer>
+				</Card.Root>
+			{/if}
 		</div>
 	{/if}
 </div>

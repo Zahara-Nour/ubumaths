@@ -30,7 +30,7 @@ const MAX_DELAY = 300;
 export class QuestionCartStore {
 	private items = $state<SeriesItem[]>([]);
 	/** Lignes d'un ancien panier, en attente des modèles */
-	private legacyLines: LegacyLine[] = [];
+	private legacyLines = $state<LegacyLine[]>([]);
 	private readonly storageKey = 'chiphre_question_cart';
 
 	constructor() {
@@ -177,15 +177,13 @@ export class QuestionCartStore {
 
 	/**
 	 * Remplace tout le panier par une série (lien de série, Q45). Les lignes
-	 * sont supposées validées ; la quantité reste bornée.
+	 * sont supposées validées ; la quantité reste bornée ; un modèle présent
+	 * deux fois (lien fabriqué) n'en fait qu'une ligne.
 	 */
 	replaceWith(items: readonly SeriesItem[]) {
 		this.legacyLines = [];
-		this.items = items.map((item) => ({
-			templateId: item.templateId,
-			quantity: Math.max(1, Math.min(MAX_ITEM_QUANTITY, item.quantity)),
-			delay: item.delay
-		}));
+		this.items = [];
+		this.mergeItems(items);
 		this.saveToStorage();
 	}
 

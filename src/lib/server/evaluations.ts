@@ -24,7 +24,7 @@ import type {
 } from '$lib/types/evaluation';
 import { getAttemptsRemaining, getStudentStatus, isEvaluationForm } from '$lib/types/evaluation';
 import { isDeadlinePassed } from '$lib/utils/dates';
-import { toDbSeriesMany } from '$lib/server/series';
+import { SeriesError, toDbSeriesMany } from '$lib/server/series';
 import { savedSeriesItemsSchema } from '$lib/validation/series';
 import { readStoredSeries, SeriesLinesError } from '$lib/server/series-lines';
 import type { EvaluationSettings } from '$lib/server/validation/evaluations';
@@ -84,9 +84,14 @@ export async function toEvaluationsWithSeries(
 	rows: readonly EvaluationRowWithSeries[]
 ): Promise<Array<EvaluationWithSeries | null>> {
 	const seriesRows = rows.flatMap((row) => (row.series ? [row.series] : []));
-	const series = new Map(
-		(await toDbSeriesMany(supabase, seriesRows)).map((dbSeries) => [dbSeries.id, dbSeries])
-	);
+	let dbSeriesList;
+	try {
+		dbSeriesList = await toDbSeriesMany(supabase, seriesRows);
+	} catch (readError) {
+		if (!(readError instanceof SeriesError)) throw readError;
+		throw new EvaluationError(500, 'Impossible de charger les contrôles');
+	}
+	const series = new Map(dbSeriesList.map((dbSeries) => [dbSeries.id, dbSeries]));
 	return rows.map((row) => {
 		const dbSeries = row.series ? series.get(row.series.id) : undefined;
 		if (!dbSeries) return null;
