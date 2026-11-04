@@ -392,3 +392,26 @@ aucune série au `updated_at` changé.
 - Découpage : **4a** code seul (+ `deploy:prod` sur demande) ; **4b** migration destructive + renommage.
 - Question d'accès (4b) : personne ne gagne ni ne perd de lecture — **confirmation explicite à
   recueillir avant `db:migrate`**.
+
+### 4a — code et revues (2026-11-04)
+
+- Agent Sonnet : `series-legacy.ts` supprimé, `series-lines.ts` synchrone (nouvelle forme seule,
+  composition illisible → absente et tracée) ; ancien lien → message ; ancien panier → lignes
+  retirées + toast ; `items` requis à l'enregistrement d'une séance ; theme/domain/subdomain retirés
+  des types, Zod, API, OpenAPI, `template-review` ; sens de AB : déclaration → branche → longueur
+  (exercices : `exerciseCapitalPairs(topic)` garde « Graphes et matrices » et la physique) ;
+  `OLD_CATEGORY_TAKEN` retiré ; 3 scripts ponctuels supprimés ; tests nettoyés.
+- Revues : security-auditor sans bloquant (mineur : 23505 de l'ancien index → 500 jusqu'à 4b ;
+  mesuré en prod : 0 brouillon en conflit, les nouveaux brouillons n'ont plus de thème → laissé).
+  code-reviewer (Opus) : 632 fichiers `data/relecture` portant theme → refusés par le schéma strict
+  (clés retirées par script, JSON relu valide) ; test `put-ancien-index-unique` retiré.
+- Garde le pre-commit sur `data/` : lint-staged affiche « paths are ignored » (data dans
+  `.gitignore`, fichiers suivis) mais le commit passe ; indexer par `git add -u data/…`.
+- **Pour 4b** : supprimer `fichiers-sans-quadruplet.ts` ; tests qui nomment encore les colonnes
+  (`modele-sans-theme-domaine`, `series-lignes-par-modele`, `lot-2bis-migration.ts`, 21
+  `questions-*` qui rejouent des migrations) ; vue `resources` (chemin dans l'arbre, remettre un
+  test de recherche par sous-titre, retiré de `resources-view-search`) ;
+  `base-de-donnees-tables.md:491` (`category_key`) ; niveau temporaire de
+  `update-published-questions` devenu inutile sans l'index.
+- Vérification manuelle au merge : toast « Panier d'une ancienne version vidé » au premier
+  chargement (émis avant le montage du Toaster ; non couvert par un test, toaster mocké).
