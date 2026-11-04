@@ -115,7 +115,7 @@ interface CoursePayload {
 		documents: { id: string; title: string }[];
 		worksheets: { id: string; worksheet_id: string; title: string }[];
 		checklist_items: { id: string; content: string }[];
-		series: { id: string; series_id: string; title: string; form: string }[];
+		series: { id: string; series_id: string; title: string; form: string; items: unknown }[];
 	}[];
 }
 
@@ -131,6 +131,8 @@ describe('« Mon cours » partageable par lien', () => {
 	let classD: string;
 
 	// Identifiants des contenus, remplis au setup.
+	/** Lignes de la série publiée, attendues telles quelles dans le cours partagé */
+	let lignesSerie: unknown = null;
 	const ids = {
 		chapitreVisible: '',
 		chapitreMasque: '',
@@ -403,6 +405,7 @@ describe('« Mon cours » partageable par lien', () => {
 				delay: 20
 			}
 		];
+		lignesSerie = items;
 		const serie = await insert('series', {
 			title: 'Série fractions',
 			description: 'Révisions',
@@ -513,6 +516,8 @@ describe('« Mon cours » partageable par lien', () => {
 		expect(chapitre.series.map((s) => [s.id, s.title, s.form])).toEqual([
 			[ids.seriePubliee, 'Série fractions', 'interactive']
 		]);
+		// Les lignes de la série sont rendues sous la clé `items` (lot 4b, ex-`categories`)
+		expect(chapitre.series[0].items).toEqual(lignesSerie);
 	});
 
 	it('le plan ne garde que les sections qui portent un contenu renvoyé', async () => {

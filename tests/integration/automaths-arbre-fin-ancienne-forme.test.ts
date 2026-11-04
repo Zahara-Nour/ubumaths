@@ -237,7 +237,12 @@ describe("Fin de l'ancienne forme (lot 4b) : état de la base après la migratio
 	});
 
 	describe('rollback puis migration rejouée (transaction annulée)', () => {
-		let apresRollback: { modele: string[]; series: string[]; sousTitre: string | null };
+		let apresRollback: {
+			modele: string[];
+			series: string[];
+			sousTitre: string | null;
+			partage: string;
+		};
 		let refus: Record<'serie' | 'seance' | 'sansNoeud', string>;
 		let apresRejeu: { modele: string[]; series: string[]; sousTitre: string | null };
 
@@ -251,7 +256,12 @@ describe("Fin de l'ancienne forme (lot 4b) : état de la base après la migratio
 			apresRollback = {
 				modele: await colonnes(pg, 'question_templates'),
 				series: await colonnes(pg, 'series'),
-				sousTitre: await sousTitre(pg, modeles.sousNotion)
+				sousTitre: await sousTitre(pg, modeles.sousNotion),
+				partage: (
+					await pg.query<{ prosrc: string }>(
+						`select prosrc from pg_proc where proname = 'get_class_course_by_share_token'`
+					)
+				).rows[0].prosrc
 			};
 
 			// La base locale porte des modèles publiés sans nœud laissés par d'autres suites : la
@@ -300,6 +310,10 @@ describe("Fin de l'ancienne forme (lot 4b) : état de la base après la migratio
 			expect(apresRollback.series).toContain('categories');
 			expect(apresRollback.series).not.toContain('items');
 			expect(apresRollback.sousTitre).toBe('T · D · S');
+			// La fonction du cours partagé relit `categories` et rend de nouveau la clé `categories`
+			expect(apresRollback.partage).toContain('s.categories as series_categories');
+			expect(apresRollback.partage).toContain("'categories', sp.series_categories");
+			expect(apresRollback.partage).not.toContain('s.items');
 		});
 
 		it('TOUT ou RIEN : une ancienne ligne de série ou de séance, un modèle publié sans nœud → refus', () => {
