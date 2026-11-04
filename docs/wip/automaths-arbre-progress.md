@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-11-04, lot 2a-1 en PR._
+_Mis à jour le 2026-11-04, lot 2a-2 en cours._
 
-- **État** : lot 1 mergé (#2378), pas en prod. Q5-Q8 tranchées (recos). Lot 2a-1 (migration `category_key` facultative) en PR.
-- **Prochaine action** : merger 2a-1, `db:migrate`, `db:types` ; puis 2a-2 (code : lignes `{ templateId, quantity, delay }`, lecture des deux formes) sur une nouvelle branche.
-- **En attente de David** : question d'accès de 2a-1 (« personne ne gagne de lecture ») — à confirmer explicitement avant `db:migrate`.
-- **Pièges en cours** : base locale sans modèle publié → serveur de test avec `PUBLIC_SUPABASE_URL`/`ANON_KEY` de `.env`. Conversion des données (2b) seulement APRÈS le `deploy:prod` de 2a-2. Hors chantier : QCM en `$$<$$` bruts sur les tuiles (Entiers › Apprivoiser › Comparer).
-- **Worktree / branche** : `../ubumaths-wt-automaths-arbre` · `feat/automaths-arbre-modeles`.
+- **État** : lot 1 mergé (#2378). 2a-1 mergé (#2379), migration appliquée en prod, `db:types` fait. 2a-2 (code) écrit, typecheck à 0, tests neufs verts ; tests existants en cours d'adaptation.
+- **Prochaine action** : finir les tests, revues (`code-reviewer` + `security-auditor`), PR 2a-2. Après son `deploy:prod` : 2b (conversion des 5 séries + 4 séances).
+- **En attente de David** : rien.
+- **Pièges en cours** : base locale sans modèle publié → serveur de test avec `PUBLIC_SUPABASE_URL`/`ANON_KEY` de `.env`. Prod lit l'ancienne forme jusqu'au `deploy:prod` de 2a-2. Restes pour le lot 3 : `questionCategories` store, `category-validation.ts`, méthodes « category » de `questionTemplatesCache`, `/api/questions/categories/all`. Hors chantier : QCM en `$$<$$` bruts sur les tuiles (Entiers › Apprivoiser › Comparer).
+- **Worktree / branche** : `../ubumaths-wt-automaths-arbre` · `feat/automaths-arbre-modeles-code`.
 
 ## Origine (2026-11-04)
 
@@ -156,3 +156,24 @@ Question d'accès : réponse explicite encore à recueillir avant `db:migrate`.
 Découpage : `db:types` vient de la prod, et le code qui n'écrit plus `category_key` exige le type
 facultatif → **2a-1** = migration seule (`20261104140651`, rouge sans elle : « null value in column
 category_key », vert avec, 82/82 sur les 3 fichiers de tentatives) ; **2a-2** = le code.
+
+### 2a-1 mergé (#2379, 2026-11-04)
+
+Question d'accès confirmée par David (« je confirme »). CI verte, `check:migrations` OK, migration
+appliquée en prod (`category_key` : `is_nullable = YES`), `db:types` régénéré.
+
+### Lot 2a-2 — code (2026-11-04)
+
+- Ligne `SeriesItem = { templateId, quantity, delay }` (`validation/series.ts`), lien `?modeles=`.
+- Ancienne forme isolée : `questions/series-legacy.ts` (navigateur) + `server/series-lines.ts`
+  (serveur, une requête pour toutes les anciennes lignes). Le lot 4 supprime les deux.
+- Panier : clé `templateId` ; ancien panier du navigateur converti au chargement des modèles
+  (`questionTemplatesCache` → `questionCart.resolveLegacy`).
+- Q7 : « Modèle retiré » dans le panier (`CartQuestionCard`, « Retirer du panier ») et l'éditeur
+  de série (titres des modèles publiés chargés par la page).
+- Tirage d'évaluation par `.in('id')`, `category_key` plus écrit ; paquet de révision,
+  couverture, cours partagé, Mathoux (`trainingItems`) lus par id.
+- `/api/tests/save` accepte encore `categories` (onglet ouvert avant la mise en prod).
+- Choix d'exécution (pas de décision d'archi) : pas de contrôle « modèle publié » à
+  l'enregistrement d'une série (une série dupliquée avec un modèle retiré resterait possible ;
+  le modèle est sauté au jeu et signalé).
