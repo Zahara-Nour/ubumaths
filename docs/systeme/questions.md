@@ -8,7 +8,7 @@ couvre:
   - src/lib/mathAST/cosmetic-transforms.ts
   - 'src/lib/questions/review/**'
   - 'src/lib/types/{question-display,question-template}.ts'
-  - 'src/lib/server/{evaluation-attempts,questions-bulk-status,template-publication,template-fact-sheet,grading-budget,corrected-detail,template-review,point-bounds}.ts'
+  - 'src/lib/server/{evaluation-attempts,questions-bulk-status,template-publication,template-fact-sheet,grading-budget,corrected-detail,template-review,point-bounds,classification-node-error,classification-nodes}.ts'
   - 'src/routes/(protected)/dev/modeles/**'
   - src/lib/components/MathKeyboardClose.svelte
   - 'src/lib/components/dev/**'
@@ -147,7 +147,9 @@ Seul `series.ts` concerne les questions : composition d'une série (`seriesItemS
   `exercises/VariationEditor.svelte`. Ses sous-composants, à la racine de `src/lib/components/`
   (vérifié le 2026-10-13) : `questions/ClassificationNodePicker` (« Rangé dans » : branche →
   notion → sous-notion en cascade, trois `MySelect`, tout facultatif ; écrit
-  `classification_node_id`), `VariableEditor`, `AnswerEditor` (cases ; une case choix a sa carte `ChoiceCaseEditor`, voir « Case choix dans l'éditeur »), `PrecisionEditor` (`none`, `decimal`, `significant`, `magnitude`, `tolerance`) — ces
+  `classification_node_id` ; l'arbre non archivé est lu par `server/classification-nodes.ts`, et
+  un refus de rangement de la base devient un 400 en français par
+  `server/classification-node-error.ts`), `VariableEditor`, `AnswerEditor` (cases ; une case choix a sa carte `ChoiceCaseEditor`, voir « Case choix dans l'éditeur »), `PrecisionEditor` (`none`, `decimal`, `significant`, `magnitude`, `tolerance`) — ces
   trois-là servent aussi à `SharedFieldsEditor` —, `DisplayOptionsEditor`,
   `ValidationOptionsEditor`, `CourseQuestionToggle` (`options.courseQuestion`, cochée et
   désactivée pour une carte de cours), `QuestionPreview` (instance générée, graine affichée, autre
