@@ -2808,7 +2808,6 @@ export type Database = {
       }
       evaluation_attempt_questions: {
         Row: {
-          category_key: string | null
           created_at: string
           delay_seconds: number
           instance: Json | null
@@ -2818,7 +2817,6 @@ export type Database = {
           test_session_id: string
         }
         Insert: {
-          category_key?: string | null
           created_at?: string
           delay_seconds: number
           instance?: Json | null
@@ -2828,7 +2826,6 @@ export type Database = {
           test_session_id: string
         }
         Update: {
-          category_key?: string | null
           created_at?: string
           delay_seconds?: number
           instance?: Json | null
@@ -9036,7 +9033,6 @@ export type Database = {
           default_display_options: Json | null
           delay: number | null
           description: string | null
-          domain: string | null
           exercise_instruction: string | null
           grades: string[]
           id: string
@@ -9045,9 +9041,7 @@ export type Database = {
           precision: Json | null
           shared: Json | null
           status: string
-          subdomain: string | null
           test_specs: Json | null
-          theme: string | null
           title: string
           type: string
           updated_at: string | null
@@ -9060,7 +9054,6 @@ export type Database = {
           default_display_options?: Json | null
           delay?: number | null
           description?: string | null
-          domain?: string | null
           exercise_instruction?: string | null
           grades: string[]
           id?: string
@@ -9069,9 +9062,7 @@ export type Database = {
           precision?: Json | null
           shared?: Json | null
           status: string
-          subdomain?: string | null
           test_specs?: Json | null
-          theme?: string | null
           title: string
           type: string
           updated_at?: string | null
@@ -9084,7 +9075,6 @@ export type Database = {
           default_display_options?: Json | null
           delay?: number | null
           description?: string | null
-          domain?: string | null
           exercise_instruction?: string | null
           grades?: string[]
           id?: string
@@ -9093,9 +9083,7 @@ export type Database = {
           precision?: Json | null
           shared?: Json | null
           status?: string
-          subdomain?: string | null
           test_specs?: Json | null
-          theme?: string | null
           title?: string
           type?: string
           updated_at?: string | null
@@ -9926,32 +9914,32 @@ export type Database = {
       }
       series: {
         Row: {
-          categories: Json
           created_at: string
           created_by: string
           description: string | null
           grade: string
           id: string
+          items: Json
           title: string
           updated_at: string
         }
         Insert: {
-          categories: Json
           created_at?: string
           created_by: string
           description?: string | null
           grade: string
           id?: string
+          items: Json
           title: string
           updated_at?: string
         }
         Update: {
-          categories?: Json
           created_at?: string
           created_by?: string
           description?: string | null
           grade?: string
           id?: string
+          items?: Json
           title?: string
           updated_at?: string
         }
@@ -11955,12 +11943,12 @@ export type Database = {
       }
       test_sessions: {
         Row: {
-          categories: Json
           completed_at: string | null
           created_at: string | null
           evaluation_id: string | null
           grade: number | null
           id: string
+          items: Json
           mode: string
           points_earned: number | null
           score: number | null
@@ -11970,12 +11958,12 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
-          categories: Json
           completed_at?: string | null
           created_at?: string | null
           evaluation_id?: string | null
           grade?: number | null
           id?: string
+          items: Json
           mode: string
           points_earned?: number | null
           score?: number | null
@@ -11985,12 +11973,12 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
-          categories?: Json
           completed_at?: string | null
           created_at?: string | null
           evaluation_id?: string | null
           grade?: number | null
           id?: string
+          items?: Json
           mode?: string
           points_earned?: number | null
           score?: number | null
